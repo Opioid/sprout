@@ -10,6 +10,8 @@ SOURCES +=
 
 HEADERS +=
 
+include(math/math.pri)
+
 unix {
 	target.path = /usr/lib
 	INSTALLS += target

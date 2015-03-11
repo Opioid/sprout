@@ -9,3 +9,6 @@ SOURCES += \
 	main.cpp
 
 win32:INCLUDEPATH += .
+
+INCLUDEPATH += $$PWD/../base
+DEPENDPATH += $$PWD/../base
