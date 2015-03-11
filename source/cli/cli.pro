@@ -10,5 +10,5 @@ SOURCES += \
 
 win32:INCLUDEPATH += .
 
-INCLUDEPATH += $$PWD/../base
-DEPENDPATH += $$PWD/../base
+INCLUDEPATH += $$PWD/..
+DEPENDPATH += $$PWD/..
