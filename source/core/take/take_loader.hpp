@@ -1,12 +1,11 @@
 #pragma once
 
-#include "take.hpp"
 #include <string>
 #include <memory>
 
 namespace take {
 
-//struct Take;
+struct Take;
 
 class Loader {
 public:

@@ -6,6 +6,6 @@ namespace image {
 
 class Buffer;
 
-bool write(const std::string& filename, Buffer* buffer);
+bool write(const std::string& filename, const Buffer& buffer);
 
 }

@@ -14,7 +14,7 @@ public:
 	const math::uint2& dimensions() const;
 
 	virtual math::float4 at4(uint32_t x, uint32_t y) const = 0;
-	virtual void set4(const math::float4& color, uint32_t x, uint32_t y) = 0;
+	virtual void set4(uint32_t x, uint32_t y, const math::float4& color) = 0;
 
 protected:
 

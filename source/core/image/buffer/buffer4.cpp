@@ -14,7 +14,7 @@ math::float4 Buffer4::at4(uint32_t x, uint32_t y) const {
 	return data_[i];
 }
 
-void Buffer4::set4(const math::float4& color, uint32_t x, uint32_t y) {
+void Buffer4::set4(uint32_t x, uint32_t y, const math::float4& color) {
 	uint32_t i = dimensions_.x * y + x;
 	data_[i] = color;
 }

@@ -1,4 +1,8 @@
 #include "take_loader.hpp"
+#include "take.hpp"
+#include "rendering/film/unfiltered.hpp"
+#include "scene/camera/perspective_camera.hpp"
+#include "base/math/vector.inl"
 #include "base/json/json.hpp"
 #include <fstream>
 
@@ -26,6 +30,11 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 			take->scene = node_value.GetString();
 		}
 	}
+
+	math::uint2 dimensions(512, 512);
+	film::Film* film = new film::Unfiltered(dimensions);
+
+	take->context.camera = std::make_shared<camera::Perspective>(film);
 
 	return take;
 }
