@@ -3,10 +3,20 @@
 
 namespace image {
 
-math::float4 Buffer4::at4(uint32_t x, uint32_t y) const {
-	return math::float4(1.f, 0.f, 0.f, 1.f);
+Buffer4::Buffer4(const math::uint2& dimensions) : Buffer(dimensions), data_(new math::float4[dimensions.x * dimensions.y]) {}
+
+Buffer4::~Buffer4() {
+	delete [] data_;
 }
 
-void Buffer4::set4(const math::float4& color, uint32_t x, uint32_t y) {}
+math::float4 Buffer4::at4(uint32_t x, uint32_t y) const {
+	uint32_t i = dimensions_.x * y + x;
+	return data_[i];
+}
+
+void Buffer4::set4(const math::float4& color, uint32_t x, uint32_t y) {
+	uint32_t i = dimensions_.x * y + x;
+	data_[i] = color;
+}
 
 }

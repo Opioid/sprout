@@ -10,6 +10,7 @@ SOURCES +=
 
 HEADERS +=
 
+include(color/color.pri)
 include(math/math.pri)
 
 unix {
