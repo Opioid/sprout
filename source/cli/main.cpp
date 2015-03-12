@@ -1,3 +1,4 @@
+#include "core/take/take_loader.hpp"
 #include "core/image/buffer/buffer4.hpp"
 #include "core/image/storage/writer.hpp"
 #include "base/math/vector.inl"
@@ -5,6 +6,17 @@
 
 int main() {
 	std::cout << "Welcome to sprout!" << std::endl;
+
+	std::string takename = "../data/takes/imrod.take";
+	take::Loader take_loader;
+
+	auto take = take_loader.load(takename);
+	if (!take) {
+		std::cout << "Take \"" << takename << "\" could not be loaded." << std::endl;
+		return 1;
+	}
+
+	std::cout << "We want to render \"" << take->scene << "\"!" << std::endl;
 
 	image::Buffer4 buffer(math::uint2(512, 512));
 

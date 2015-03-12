@@ -11,6 +11,7 @@ SOURCES +=
 HEADERS +=
 
 include(color/color.pri)
+include(json/json.pri)
 include(math/math.pri)
 
 unix {
@@ -19,3 +20,6 @@ unix {
 }
 
 win32:INCLUDEPATH += .
+
+INCLUDEPATH += $$PWD/../../thirdparty/include
+DEPENDPATH += $$PWD/../../thirdparty/include

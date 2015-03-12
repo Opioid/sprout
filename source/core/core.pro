@@ -22,11 +22,11 @@ unix {
 
 win32:INCLUDEPATH += .
 
-INCLUDEPATH += $$PWD
-DEPENDPATH += $$PWD
-
 INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/..
+
+INCLUDEPATH += $$PWD/../base
+DEPENDPATH += $$PWD/../base
 
 INCLUDEPATH += $$PWD/../../thirdparty/include
 DEPENDPATH += $$PWD/../../thirdparty/include
