@@ -1,3 +1,5 @@
 build-*/
+data/
+system/
 *.pro.user*
 *.fuse-hidden*

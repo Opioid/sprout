@@ -11,6 +11,9 @@ SOURCES +=
 HEADERS +=
 
 include(image/image.pri)
+include(rendering/rendering.pri)
+include(scene/scene.pri)
+include(take/take.pri)
 
 unix {
 	target.path = /usr/lib

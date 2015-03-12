@@ -1,5 +1,5 @@
 SOURCES += \
-	image/storage/writer.hpp \
+	image/storage/writer.cpp \
 
 HEADERS += \
-	image/storage/writer.cpp \
+	image/storage/writer.hpp \
