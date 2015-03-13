@@ -1,5 +1,7 @@
 #include "prop.hpp"
 #include "scene/shape/shape.hpp"
+#include "base/math/vector.inl"
+//#include "scene/entity/composed_transformation.hpp"
 
 namespace scene {
 

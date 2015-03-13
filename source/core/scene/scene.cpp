@@ -1,6 +1,8 @@
 #include "scene.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
+#include "base/math/vector.inl"
+#include "base/math/matrix.inl"
 
 namespace scene {
 
