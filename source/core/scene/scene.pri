@@ -5,3 +5,4 @@ HEADERS += \
 	scene/scene.hpp \
 
 include(camera/camera.pri)
+include(entity/entity.pri)

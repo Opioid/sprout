@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 #include "context.hpp"
+#include "worker.hpp"
 #include "rendering/film/film.hpp"
-#include "rendering/sampler/camera_sample.hpp"
 #include "scene/scene.hpp"
 #include "base/math/vector.inl"
 
@@ -12,7 +12,7 @@ void Renderer::render(const scene::Scene& scene, const Context& context) const {
 
 	auto& dimensions = film.dimensions();
 
-	sampler::Camera_sample sample;
+/*	sampler::Camera_sample sample;
 
 	for (uint32_t y = 0; y < dimensions.y; ++y) {
 		for (uint32_t x = 0; x < dimensions.x; ++x) {
@@ -21,6 +21,12 @@ void Renderer::render(const scene::Scene& scene, const Context& context) const {
 			film.add_sample(sample, color.xyz);
 		}
 	}
+	*/
+	Worker worker;
+
+	Rectui tile {math::uint2(0, 0), dimensions};
+
+	worker.render(scene, *context.camera, tile);
 }
 
 }

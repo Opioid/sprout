@@ -20,6 +20,8 @@ public:
 
 	const image::Buffer4& resolve();
 
+	void clear();
+
 	virtual void add_sample(const sampler::Camera_sample& sample, const math::float3& color) = 0;
 
 protected:

@@ -5,7 +5,9 @@ namespace film {
 
 Film::Film(const math::uint2& dimensions) :
 	pixels_(new Pixel[dimensions.x * dimensions.y]),
-	image_buffer_(dimensions) {}
+	image_buffer_(dimensions) {
+	clear();
+}
 
 Film::~Film() {
 	delete [] pixels_;
@@ -25,6 +27,15 @@ const image::Buffer4& Film::resolve() {
 	}
 
 	return image_buffer_;
+}
+
+void Film::clear() {
+	uint32_t len = image_buffer_.dimensions().x * image_buffer_.dimensions().y;
+	for (uint32_t i = 0; i < len; ++i) {
+		pixels_[i].color = math::float3(0.f, 0.f, 0.f);
+		pixels_[i].weight_sum = 0.f;
+	}
+
 }
 
 void Film::add_pixel(uint32_t x, uint32_t y, const math::float3& color, float weight) {

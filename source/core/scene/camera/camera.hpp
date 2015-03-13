@@ -1,5 +1,7 @@
 #pragma once
 
+#include "scene/entity/entity.hpp"
+
 namespace film {
 
 class Film;
@@ -14,7 +16,7 @@ struct Camera_sample;
 
 namespace camera {
 
-class Camera {
+class Camera : public scene::Entity {
 public:
 
 	Camera(film::Film* film);
