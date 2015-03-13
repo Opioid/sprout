@@ -9,6 +9,8 @@ HEADERS += \
 	math/matrix4x4.inl \
 	math/quaternion.hpp \
 	math/quaternion.inl \
+	math/ray.hpp \
+	math/ray.inl \
 	math/vector.hpp \
 	math/vector.inl \
 	math/vector2.hpp \
@@ -18,4 +20,5 @@ HEADERS += \
 	math/vector4.hpp \
 	math/vector4.inl \
 
+include(bounding/bounding.pri)
 

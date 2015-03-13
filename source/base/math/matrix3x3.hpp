@@ -15,18 +15,16 @@ struct Matrix3x3 {
 			  m20, m21, m22;
 		};
 
-		struct  {
+		struct {
 			T m[9]; 
 		};
 
-		struct  {
+		struct {
 			Vector3<T> rows[3];
 		};
 
 		struct {
-			Vector3<T> x;
-			Vector3<T> y;
-			Vector3<T> z;
+			Vector3<T> x, y, z;
 		};
 	};
 

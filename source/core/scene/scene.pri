@@ -6,3 +6,5 @@ HEADERS += \
 
 include(camera/camera.pri)
 include(entity/entity.pri)
+include(prop/prop.pri)
+include(shape/shape.pri)

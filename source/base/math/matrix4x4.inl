@@ -2,6 +2,8 @@
 
 #include "matrix4x4.hpp"
 
+namespace math {
+
 template<typename T>
 inline Matrix4x4<T>::Matrix4x4() {}
 
@@ -270,14 +272,6 @@ inline void set_rotation(Matrix4x4<T>& m, const Vector3<T>& v, T a) {
 }
 
 template<typename T>
-inline void set_reflection(Matrix4x4<T>& m, const Plane& p) {
-	m.m00 = -T(2) * p.a * p.a + T(1); m.m01 = -T(2) * p.b * p.a;        m.m02 = -T(2) * p.c * p.a;        m.m03 = T(0);
-	m.m10 = -T(2) * p.a * p.b;        m.m11 = -T(2) * p.b * p.b + T(1); m.m12 = -T(2) * p.c * p.b;        m.m13 = T(0);
-	m.m20 = -T(2) * p.a * p.c;        m.m21 = -T(2) * p.b * p.c;        m.m22 = -T(2) * p.c * p.c + T(1); m.m23 = T(0);
-	m.m30 = -T(2) * p.a * p.d,        m.m31 = -T(2) * p.b * p.d,        m.m32 = -T(2) * p.c * p.d;        m.m33 = T(1);
-}
-
-template<typename T>
 inline Matrix4x4<T> transpose(const Matrix4x4<T>& m) {
 	return Matrix4x4<T>(m.m00, m.m10, m.m20, m.m30,
 						m.m01, m.m11, m.m21, m.m31,
@@ -323,16 +317,15 @@ inline Matrix4x4<T> invert(const Matrix4x4<T>& m) {
 
 template<typename T>
 inline void set_look_at(Matrix4x4<T>& m, const Vector3<T>& eye, const Vector3<T>& at, const Vector3<T>& up) {
-	/*
-	zaxis = normal(At - Eye)
-	xaxis = normal(cross(Up, zaxis))
-	yaxis = cross(zaxis, xaxis)
+//	zaxis = normal(At - Eye)
+//	xaxis = normal(cross(Up, zaxis))
+//	yaxis = cross(zaxis, xaxis)
 
-	xaxis.x           yaxis.x           zaxis.x          0
-	xaxis.y           yaxis.y           zaxis.y          0
-	xaxis.z           yaxis.z           zaxis.z          0
-	-dot(xaxis, eye)  -dot(yaxis, eye)  -dot(zaxis, eye) 1
-	*/
+//	xaxis.x           yaxis.x           zaxis.x          0
+//	xaxis.y           yaxis.y           zaxis.y          0
+//	xaxis.z           yaxis.z           zaxis.z          0
+//	-dot(xaxis, eye)  -dot(yaxis, eye)  -dot(zaxis, eye) 1
+
 	Vector3<T> z = normalize(at - eye);
 	Vector3<T> x = normalize(cross(up, z));
 	Vector3<T> y = cross(z, x);
@@ -370,16 +363,15 @@ inline void set_look_at_negative_y(Matrix4x4<T>& m, const Vector3<T>& eye, const
 template<typename T>
 inline void set_look_at_RH(Matrix4x4<T>& m, const Vector3<T>& eye, const Vector3<T>& at, const Vector3<T>& up)
 {
-	/*
-	zaxis = normal(Eye - At)
-	xaxis = normal(cross(Up, zaxis))
-	yaxis = cross(zaxis, xaxis)
+//	zaxis = normal(Eye - At)
+//	xaxis = normal(cross(Up, zaxis))
+//	yaxis = cross(zaxis, xaxis)
 
-	xaxis.x           yaxis.x           zaxis.x          0
-	xaxis.y           yaxis.y           zaxis.y          0
-	xaxis.z           yaxis.z           zaxis.z          0
-   -dot(xaxis, eye)  -dot(yaxis, eye)  -dot(zaxis, eye)  1
-	*/
+//	xaxis.x           yaxis.x           zaxis.x          0
+//	xaxis.y           yaxis.y           zaxis.y          0
+//	xaxis.z           yaxis.z           zaxis.z          0
+//   -dot(xaxis, eye)  -dot(yaxis, eye)  -dot(zaxis, eye)  1
+
 	Vector3<T> z = normalize(eye - at);
 	Vector3<T> x = normalize(cross(up, z));
 	Vector3<T> y = cross(z, x);
@@ -410,15 +402,13 @@ inline void set_perspective(Matrix4x4<T>& m, T fov, T ratio, T z_near, T z_far, 
 
 #else
 
-	/*
-	xScale     0          0               0
-	0        yScale       0               0
-	0          0       zf/(zf-zn)         1
-	0          0       -zn*zf/(zf-zn)     0
-	where:
-	yScale = cot(fovY/2)
-	xScale = aspect ratio * yScale
-	*/
+//	xScale     0          0               0
+//	0        yScale       0               0
+//	0          0       zf/(zf-zn)         1
+//	0          0       -zn*zf/(zf-zn)     0
+//	where:
+//	yScale = cot(fovY/2)
+//	xScale = aspect ratio * yScale
 
 	T t = fov * T(0.5);
 	T y = cos(t) / sin(t);
@@ -439,15 +429,13 @@ inline void set_perspective(Matrix4x4<T>& m, T fov, T ratio, T z_near, T z_far, 
 
 template<typename T>
 inline void set_perspective_linear(Matrix4x4<T>& m, T fov, T aspect, T znear, T zfar) {
-	/*
-	xScale     0          0               0
-	0        yScale       0               0
-	0          0       zf/(zf-zn)         1
-	0          0       -zn*zf/(zf-zn)     0
-	where:
-	yScale = cot(fovY/2)
-	xScale = aspect ratio * yScale
-	*/
+//	xScale     0          0               0
+//	0        yScale       0               0
+//	0          0       zf/(zf-zn)         1
+//	0          0       -zn*zf/(zf-zn)     0
+//	where:
+//	yScale = cot(fovY/2)
+//	xScale = aspect ratio * yScale
 
 	T t = fov * T(0.5);
 	T y = cos(t) / sin(t);
@@ -476,12 +464,10 @@ inline void set_ortho(Matrix4x4<T>& m, T width, T height, T z_near, T z_far) {
 
 #else
 
-	/*
-	2/w  0    0           0
-	0    2/h  0           0
-	0    0    1/(zf-zn)   0
-	0    0    zn/(zn-zf)  1
-	*/
+//	2/w  0    0           0
+//	0    2/h  0           0
+//	0    0    1/(zf-zn)   0
+//	0    0    zn/(zn-zf)  1
 
 	m.m00 = T(2) / width; m.m01 = T(0);          m.m02 = T(0);                      m.m03 = T(0);
 	m.m10 = T(0);         m.m11 = T(2) / height; m.m12 = T(0);                      m.m13 = T(0);
@@ -493,12 +479,10 @@ inline void set_ortho(Matrix4x4<T>& m, T width, T height, T z_near, T z_far) {
 
 template<typename T>
 inline void set_clip(Matrix4x4<T>& m, T cx, T cy, T cw, T ch, T zmin, T zmax) {
-	/*
-	2/cw		0			0				 0
-	0			2/ch		0				 0
-	0			0			1/(zmax-zmin)	 0
-	-1-2(cx/cw)	1-2(cy/ch) -zmin/(zmax-zmin)	 1
-	*/
+//	2/cw		0			0				 0
+//	0			2/ch		0				 0
+//	0			0			1/(zmax-zmin)	 0
+//	-1-2(cx/cw)	1-2(cy/ch) -zmin/(zmax-zmin)	 1
 
 	const T zdif = zmax - zmin;
 
@@ -510,13 +494,10 @@ inline void set_clip(Matrix4x4<T>& m, T cx, T cy, T cw, T ch, T zmin, T zmax) {
 
 template<typename T>
 inline void set_viewport_scale(Matrix4x4<T>& m, T x, T y, T width, T height) {
-	/*
-	width	0			0	0
-	0		-height		0	0
-	0		0			1	0
-	x		height+y	0	1
-	*/
-
+//	width	0			0	0
+//	0		-height		0	0
+//	0		0			1	0
+//	x		height+y	0	1
 	m.m00 = width; m.m01 = T(0);       m.m02 = T(0); m.m03 = T(0);
 	m.m10 = T(0);  m.m11 = -height;    m.m12 = T(0); m.m13 = T(0);
 	m.m20 = T(0);  m.m21 = T(0);       m.m22 = T(1); m.m23 = T(0);
@@ -544,4 +525,6 @@ inline Vector3<T> project_to_screen(const Vector3<T>& v, const Matrix4x4<T>& wor
 	o.z = zmin + (zmax - zmin) * o.z;
 
 	return o;
+}
+
 }

@@ -21,7 +21,6 @@ struct Matrix4x4 {
 			T m[16];
 		};
 
-
 		struct {
 			Vector4<T> rows[4];
 		};
@@ -45,6 +44,7 @@ struct Matrix4x4 {
 	Matrix4x4& operator*=(const Matrix4x4& m);
 
 	static const Matrix4x4 identity;
+
 };
 
 template<typename T>
@@ -103,9 +103,6 @@ void set_rotation_z(Matrix4x4<T>& m, T a);
 
 template<typename T>
 void set_rotation(Matrix4x4<T>& m, const Vector3<T>& v, T a);
-
-template<typename T>
-void set_reflection(Matrix4x4<T>& m, const Plane& p);
 
 template<typename T>
 Matrix4x4<T> transpose(const Matrix4x4<T>& m);
