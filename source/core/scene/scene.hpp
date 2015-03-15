@@ -5,20 +5,32 @@
 
 namespace scene {
 
+namespace surrounding {
+
+class Surrounding;
+
+}
+
 class Prop;
 struct Intersection;
 
 class Scene {
 public:
 
+	Scene();
 	~Scene();
 
 	bool intersect(math::Oray& ray, Intersection& intersection) const;
 	bool intersect_p(math::Oray& ray) const;
 
+	const surrounding::Surrounding* surrounding() const;
+	void set_surrounding(const surrounding::Surrounding* surrounding);
+
 	Prop* create_prop();
 
 private:
+
+	const surrounding::Surrounding* surrounding_;
 
 	std::vector<Prop*> props_;
 };

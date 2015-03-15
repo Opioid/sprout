@@ -1,6 +1,7 @@
 #include "take_loader.hpp"
 #include "take.hpp"
 #include "rendering/film/unfiltered.hpp"
+#include "rendering/integrator/surface/ao.hpp"
 #include "scene/camera/perspective_camera.hpp"
 #include "base/math/vector.inl"
 #include "base/json/json.hpp"
@@ -28,6 +29,8 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 
 		if ("scene" == node_name) {
 			take->scene = node_value.GetString();
+		} else if ("integrator" == node_name) {
+			take->surface_integrator_factory = load_surface_integrator_factory();
 		}
 	}
 
@@ -37,6 +40,10 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 	take->context.camera = std::make_shared<camera::Perspective>(film);
 
 	return take;
+}
+
+std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_integrator_factory() {
+	return std::make_shared<rendering::Ao_factory>();
 }
 
 }

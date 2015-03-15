@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sampler/sampler.hpp"
+#include "rendering/sampler/sampler.hpp"
 #include "scene/camera/camera.hpp"
 #include <memory>
 

@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "surrounding/surrounding.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
 #include "base/math/vector.inl"
@@ -6,7 +7,11 @@
 
 namespace scene {
 
+Scene::Scene() : surrounding_(nullptr) {}
+
 Scene::~Scene() {
+	delete surrounding_;
+
 	for (auto p : props_) {
 		delete p;
 	}
@@ -33,6 +38,14 @@ bool Scene::intersect_p(math::Oray& ray) const {
 	}
 
 	return false;
+}
+
+const surrounding::Surrounding* Scene::surrounding() const {
+	return surrounding_;
+}
+
+void Scene::set_surrounding(const surrounding::Surrounding* surrounding) {
+	surrounding_ = surrounding;
 }
 
 Prop* Scene::create_prop() {

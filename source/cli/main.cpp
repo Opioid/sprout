@@ -3,6 +3,7 @@
 #include "core/rendering/renderer.hpp"
 #include "core/rendering/film/film.hpp"
 #include "core/scene/scene.hpp"
+#include "core/scene/scene_loader.hpp"
 #include "core/image/storage/writer.hpp"
 #include "base/math/vector.inl"
 #include <iostream>
@@ -18,11 +19,15 @@ int main() {
 		return 1;
 	}
 
-	std::cout << "We want to render \"" << take->scene << "\"!" << std::endl;
-
 	scene::Scene scene;
+	scene::Loader scene_loader;
 
-	rendering::Renderer renderer;
+	if (!scene_loader.load(take->scene, scene)) {
+
+		return 1;
+	}
+
+	rendering::Renderer renderer(take->surface_integrator_factory);
 
 	renderer.render(scene, take->context);
 

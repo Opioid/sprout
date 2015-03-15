@@ -2,10 +2,13 @@
 #include "context.hpp"
 #include "worker.hpp"
 #include "rendering/film/film.hpp"
+#include "rendering/integrator/integrator.hpp"
 #include "scene/scene.hpp"
 #include "base/math/vector.inl"
 
 namespace rendering {
+
+Renderer::Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory) : surface_integrator_factory_(surface_integrator_factory) {}
 
 void Renderer::render(const scene::Scene& scene, const Context& context) const {
 	auto& film = context.camera->film();
@@ -22,7 +25,7 @@ void Renderer::render(const scene::Scene& scene, const Context& context) const {
 		}
 	}
 	*/
-	Worker worker;
+	Worker worker(surface_integrator_factory_->create(0));
 
 	Rectui tile {math::uint2(0, 0), dimensions};
 

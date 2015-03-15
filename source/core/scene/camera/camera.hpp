@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/entity/entity.hpp"
+#include "base/math/ray.hpp"
 
 namespace film {
 
@@ -24,7 +25,7 @@ public:
 
 	film::Film& film() const;
 
-	virtual void generate_ray(const sampler::Camera_sample& sample) const = 0;
+	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const = 0;
 
 protected:
 
