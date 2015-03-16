@@ -7,6 +7,7 @@
 #include "scene/surrounding/surrounding.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "base/math/vector.inl"
+#include "base/math/ray.inl"
 
 namespace rendering {
 
@@ -16,8 +17,6 @@ void Worker::render(const scene::Scene& scene, const camera::Camera& camera, con
 	scene_ = &scene;
 
 	auto& film = camera.film();
-
-	auto& dimensions = film.dimensions();
 
 	sampler::Camera_sample sample;
 	math::Oray ray;

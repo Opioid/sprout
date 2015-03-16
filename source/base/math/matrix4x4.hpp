@@ -60,6 +60,12 @@ template<typename T>
 Vector4<T> operator*(const Vector4<T>& v, const Matrix4x4<T>& m);
 
 template<typename T>
+Vector3<T> transform_vector(const Matrix4x4<T>& m, const Vector3<T>& v);
+
+template<typename T>
+Vector3<T> transform_point(const Matrix4x4<T>& m, const Vector3<T>& v);
+
+template<typename T>
 void get_basis(Matrix3x3<T>& basis, const Matrix4x4<T>& m);
 
 template<typename T>

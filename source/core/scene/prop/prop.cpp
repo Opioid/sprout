@@ -1,9 +1,13 @@
 #include "prop.hpp"
+#include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape.hpp"
 #include "base/math/vector.inl"
-//#include "scene/entity/composed_transformation.hpp"
 
 namespace scene {
+
+void Prop::init(std::shared_ptr<shape::Shape> shape) {
+	shape_ = shape;
+}
 
 bool Prop::intersect(math::Oray& ray, shape::Intersection& intersection) const {
 	Composed_transformation transformation;

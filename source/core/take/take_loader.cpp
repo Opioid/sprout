@@ -57,6 +57,7 @@ std::shared_ptr<camera::Camera> Loader::load_camera(const rapidjson::Value& came
 
 	math::float3 position = math::float3::identity;
 	math::quaternion rotation = math::quaternion::identity;
+	math::float2 dimensions = math::float2::identity;
 	film::Film* film = nullptr;
 	float fov = 60.f;
 
@@ -68,23 +69,26 @@ std::shared_ptr<camera::Camera> Loader::load_camera(const rapidjson::Value& came
 			position = json::read_float3(node_value);
 		} else if ("rotation" == node_name) {
 			rotation = json::read_local_rotation(node_value);
+		} else if ("dimensions" == node_name) {
+			dimensions = json::read_float2(node_value);
 		} else if ("film" == node_name) {
 			film = load_film(node_value);
 		} else if ("fov" == node_name) {
 			fov = json::read_float(node_value);
 		}
-
 	}
 
 	std::shared_ptr<camera::Camera> camera;
 
 	if ("Perspective" == type_name) {
-		camera = std::make_shared<camera::Perspective>(film, fov);
+		camera = std::make_shared<camera::Perspective>(dimensions, film, fov);
 	} else if ("Orthographic" == type_name) {
 
 	}
 
-	camera->set_transformation(position, math::float3::identity, rotation);
+	camera->set_transformation(position, math::float3(1.f, 1.f, 1.f), rotation);
+
+	camera->update_view();
 
 	return camera;
 }

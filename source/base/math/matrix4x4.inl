@@ -130,6 +130,20 @@ inline Vector4<T> operator*(const Vector4<T>& v, const Matrix4x4<T>& m) {
 }
 
 template<typename T>
+Vector3<T> transform_vector(const Matrix4x4<T>& m, const Vector3<T>& v) {
+	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+}
+
+template<typename T>
+Vector3<T> transform_point(const Matrix4x4<T>& m, const Vector3<T>& v) {
+	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
+}
+
+template<typename T>
 inline void get_basis(Matrix3x3<T>& basis, const Matrix4x4<T>& m) {
 	basis.m00 = m.m00; basis.m01 = m.m01; basis.m02 = m.m02;
 	basis.m10 = m.m10; basis.m11 = m.m11; basis.m12 = m.m12;

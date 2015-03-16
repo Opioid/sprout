@@ -165,7 +165,7 @@ inline T squared_length(const Vector3<T>& v) {
 }
 
 template<typename T>
-inline Vector3<T> normalize(const Vector3<T>& v) {
+inline Vector3<T> normalized(const Vector3<T>& v) {
 	return v / length(v);
 }
 

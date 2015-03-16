@@ -2,7 +2,11 @@
 
 #include "base/math/bounding/aabb.hpp"
 
-namespace scene { namespace shape {
+namespace scene {
+
+struct Composed_transformation;
+
+namespace shape {
 
 struct Intersection;
 

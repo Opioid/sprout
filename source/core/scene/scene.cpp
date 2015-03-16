@@ -40,6 +40,10 @@ bool Scene::intersect_p(math::Oray& ray) const {
 	return false;
 }
 
+void Scene::compile() {
+
+}
+
 const surrounding::Surrounding* Scene::surrounding() const {
 	return surrounding_;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/vector.hpp"
+#include "math/ray.hpp"
 
 namespace math {
 

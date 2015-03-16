@@ -23,6 +23,8 @@ public:
 	bool intersect(math::Oray& ray, Intersection& intersection) const;
 	bool intersect_p(math::Oray& ray) const;
 
+	void compile();
+
 	const surrounding::Surrounding* surrounding() const;
 	void set_surrounding(const surrounding::Surrounding* surrounding);
 
