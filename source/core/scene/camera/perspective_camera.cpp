@@ -16,11 +16,11 @@ void Perspective::update_view() {
 
 	float z = ratio * math::pi / fov_ * 0.5f;
 
-	left_top_ = math::float3(-ratio, 1.f, z);
-	math::float3 right_top	( ratio, 1.f, z);
+	left_top_ = math::float3(-ratio,  1.f, z);
+	math::float3 right_top	( ratio,  1.f, z);
 	math::float3 left_bottom(-ratio, -1.f, z);
 
-	d_x_ = (right_top - left_top_) / static_cast<float>(film_->dimensions().x);
+	d_x_ = (right_top - left_top_)   / static_cast<float>(film_->dimensions().x);
 	d_y_ = (left_bottom - left_top_) / static_cast<float>(film_->dimensions().y);
 }
 

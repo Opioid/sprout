@@ -16,9 +16,9 @@ void Optimized_ray<T>::set_direction(const Vector3<T>& v) {
 	direction = v;
 	reciprocal_direction = math::float3(T(1) / v.x, T(1) / v.y, T(1) / v.z);
 
-	sign[0] = static_cast<uint8>(std::signbit(v.x));
-	sign[1] = static_cast<uint8>(std::signbit(v.y));
-	sign[2] = static_cast<uint8>(std::signbit(v.z));
+	sign[0] = static_cast<uint8_t>(std::signbit(v.x));
+	sign[1] = static_cast<uint8_t>(std::signbit(v.y));
+	sign[2] = static_cast<uint8_t>(std::signbit(v.z));
 }
 
 }
