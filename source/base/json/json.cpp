@@ -9,12 +9,18 @@
 
 namespace json {
 
-bool parse(std::istream& stream, rapidjson::Document& document){
+std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
 	Read_stream json_stream(stream);
 
-    document.ParseStream<0, rapidjson::UTF8<>>(json_stream);
+	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
-	return document.HasParseError() == false;
+	document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
+
+	if (document->HasParseError()) {
+		return nullptr;
+	}
+
+	return document;
 }
 
 size_t calculate_line_number(std::istream& stream, size_t offset);
@@ -67,6 +73,15 @@ math::float3 read_float3(const rapidjson::Value& value) {
 						static_cast<float>(value[2].GetDouble()));
 }
 
+math::float3 read_float3(const rapidjson::Value& value, const std::string& name, const math::float3& default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
+	if (value.MemberEnd() == node) {
+		return default_value;
+	}
+
+	return read_float3(node->value);
+}
+
 math::float4 read_float4(const rapidjson::Value& value) {
 	return math::float4(static_cast<float>(value[0u].GetDouble()), static_cast<float>(value[1].GetDouble()),
 						static_cast<float>(value[2].GetDouble()), static_cast<float>(value[3].GetDouble()));
@@ -113,17 +128,16 @@ bool read_bool(const rapidjson::Value& value, const std::string& name, bool defa
 
 	return node->value.GetBool();
 }
-
+*/
 std::string read_string(const rapidjson::Value& value, const std::string& name, const std::string& default_value) {
-	rapidjson::Value::Member* node = value.FindMember(name.c_str());
-
-	if (!node) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
+	if (value.MemberEnd() == node) {
 		return default_value;
 	}
 
 	return node->value.GetString();
 }
-
+/*
 uint32_t read_uint(const rapidjson::Value& value, const std::string& name, uint32_t default_value) {
 	rapidjson::Value::Member* node = value.FindMember(name.c_str());
 

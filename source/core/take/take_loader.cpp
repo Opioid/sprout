@@ -14,19 +14,18 @@ namespace take {
 
 std::shared_ptr<Take> Loader::load(const std::string& filename) {
 	std::ifstream stream(filename, std::ios::binary);
-
 	if (!stream) {
 		return nullptr;
 	}
 
-	rapidjson::Document root;
-	if (!json::parse(stream, root)) {
+	auto root = json::parse(stream);
+	if (!root) {
 		return nullptr;
 	}
 
 	auto take = std::make_shared<Take>();
 
-	for (auto n = root.MemberBegin(); n != root.MemberEnd(); ++n) {
+	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
