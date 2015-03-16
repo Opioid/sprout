@@ -105,13 +105,16 @@ template<typename T>
 void set_rotation(Matrix4x4<T>& m, const Vector3<T>& v, T a);
 
 template<typename T>
-Matrix4x4<T> transpose(const Matrix4x4<T>& m);
+Matrix4x4<T> transposed(const Matrix4x4<T>& m);
 
 template<typename T>
 T det(const Matrix4x4<T>& m);
 
 template<typename T>
-Matrix4x4<T> invert(const Matrix4x4<T>& m);
+Matrix4x4<T> inverted(const Matrix4x4<T>& m);
+
+template<typename T>
+void set_basis_scale_origin(Matrix4x4<T>& m, const Matrix3x3<T>& basis, const Vector3<T>& scale, const Vector3<T>& origin);
 
 template<typename T>
 void set_look_at(Matrix4x4<T>& m, const Vector3<T>& eye, const Vector3<T>& at, const Vector3<T>& up);

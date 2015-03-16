@@ -2,6 +2,8 @@
 
 #include "quaternion.hpp"
 
+namespace math {
+
 template<typename T>
 inline Quaternion<T>::Quaternion()
 {}
@@ -190,4 +192,6 @@ inline Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t)
 						 sclp * a.y + sclq * end.y,
 						 sclp * a.z + sclq * end.z,
 						 sclp * a.w + sclq * end.w);
+}
+
 }

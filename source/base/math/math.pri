@@ -1,6 +1,8 @@
 SOURCES += \
+	math/math.cpp \
 
 HEADERS += \
+	math/math.hpp \
 	math/matrix.hpp \
 	math/matrix.inl \
 	math/matrix3x3.hpp \

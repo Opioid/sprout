@@ -1,4 +1,5 @@
 SOURCES += \
+	scene/entity/composed_transformation.cpp \
 	scene/entity/entity.cpp \
 
 HEADERS += \

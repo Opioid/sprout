@@ -272,7 +272,7 @@ inline void set_rotation(Matrix4x4<T>& m, const Vector3<T>& v, T a) {
 }
 
 template<typename T>
-inline Matrix4x4<T> transpose(const Matrix4x4<T>& m) {
+inline Matrix4x4<T> transposed(const Matrix4x4<T>& m) {
 	return Matrix4x4<T>(m.m00, m.m10, m.m20, m.m30,
 						m.m01, m.m11, m.m21, m.m31,
 						m.m02, m.m12, m.m22, m.m32,
@@ -293,7 +293,7 @@ inline T det(const Matrix4x4<T>& m) {
 }
 
 template<typename T>
-inline Matrix4x4<T> invert(const Matrix4x4<T>& m) {
+inline Matrix4x4<T> inverted(const Matrix4x4<T>& m) {
 	return Matrix4x4<T>(m.m11*m.m22*m.m33 + m.m12*m.m23*m.m31 + m.m13*m.m21*m.m32 - m.m11*m.m23*m.m32 - m.m12*m.m21*m.m33 - m.m13*m.m22*m.m31,
 						m.m01*m.m23*m.m32 + m.m02*m.m21*m.m33 + m.m03*m.m22*m.m31 - m.m01*m.m22*m.m33 - m.m02*m.m23*m.m31 - m.m03*m.m21*m.m32,
 						m.m01*m.m12*m.m33 + m.m02*m.m13*m.m31 + m.m03*m.m11*m.m32 - m.m01*m.m13*m.m32 - m.m02*m.m11*m.m33 - m.m03*m.m12*m.m31,
@@ -313,6 +313,15 @@ inline Matrix4x4<T> invert(const Matrix4x4<T>& m) {
 						m.m00*m.m21*m.m32 + m.m01*m.m22*m.m30 + m.m02*m.m20*m.m31 - m.m00*m.m22*m.m31 - m.m01*m.m20*m.m32 - m.m02*m.m21*m.m30,
 						m.m00*m.m12*m.m31 + m.m01*m.m10*m.m32 + m.m02*m.m11*m.m30 - m.m00*m.m11*m.m32 - m.m01*m.m12*m.m30 - m.m02*m.m10*m.m31,
 						m.m00*m.m11*m.m22 + m.m01*m.m12*m.m20 + m.m02*m.m10*m.m21 - m.m00*m.m12*m.m21 - m.m01*m.m10*m.m22 - m.m02*m.m11*m.m20) / det(m);
+}
+
+template<typename T>
+inline void set_basis_scale_origin(Matrix4x4<T>& m, const Matrix3x3<T>& basis, const Vector3<T>& scale, const Vector3<T>& origin) {
+	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = T(0);
+	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = T(0);
+	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = T(0);
+	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = T(1);
+
 }
 
 template<typename T>
