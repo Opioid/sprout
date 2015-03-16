@@ -2,6 +2,7 @@
 #include "scene.hpp"
 #include "scene/surrounding/uniform_surrounding.hpp"
 #include "scene/prop/prop.hpp"
+#include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -10,7 +11,7 @@
 
 namespace scene {
 
-Loader::Loader() : sphere_(std::make_shared<shape::Sphere>()) {}
+Loader::Loader() : plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()) {}
 
 bool Loader::load(const std::string& filename, Scene& scene) const {
 	std::ifstream stream(filename, std::ios::binary);
@@ -136,7 +137,9 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 }
 
 std::shared_ptr<shape::Shape> Loader::shape(const std::string& type) const {
-	if ("Sphere" == type) {
+	if ("Plane" == type) {
+		return plane_;
+	} else if ("Sphere" == type) {
 		return sphere_;
 	}
 

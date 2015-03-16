@@ -13,6 +13,8 @@ struct Ray {
 
 	Ray();
 	Ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t = T(0), T max_t = T(1));
+
+	Vector3<T> point(T t) const;
 };
 
 template<typename T>

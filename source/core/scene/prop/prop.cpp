@@ -26,7 +26,7 @@ bool Prop::intersect(math::Oray& ray, shape::Intersection& intersection) const {
 	return false;
 }
 
-bool Prop::intersect_p(math::Oray& ray) const {
+bool Prop::intersect_p(const math::Oray& ray) const {
 	Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 

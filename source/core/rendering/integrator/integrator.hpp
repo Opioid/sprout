@@ -2,6 +2,7 @@
 
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
+#include "base/math/random/generator.hpp"
 
 namespace scene {
 
@@ -13,16 +14,28 @@ namespace rendering {
 
 class Worker;
 
-class Surface_integrator {
+class Integrator {
 public:
 
-	virtual math::float3 li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) const = 0;
+	Integrator(uint32_t id, const math::random::Generator& rng);
+
+protected:
+
+	math::random::Generator rng_;
+};
+
+class Surface_integrator : public Integrator {
+public:
+
+	Surface_integrator(uint32_t id, const math::random::Generator& rng);
+
+	virtual math::float3 li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) = 0;
 };
 
 class Surface_integrator_factory {
 public:
 
-	virtual Surface_integrator* create(uint32_t id) const = 0;
+	virtual Surface_integrator* create(uint32_t id, const math::random::Generator& rng) const = 0;
 };
 
 }

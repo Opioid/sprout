@@ -51,4 +51,8 @@ bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) const
 	return scene_->intersect(ray, intersection);
 }
 
+bool Worker::visibility(const math::Oray& ray) const {
+	return !scene_->intersect_p(ray);
+}
+
 }

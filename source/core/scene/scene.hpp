@@ -21,7 +21,7 @@ public:
 	~Scene();
 
 	bool intersect(math::Oray& ray, Intersection& intersection) const;
-	bool intersect_p(math::Oray& ray) const;
+	bool intersect_p(const math::Oray& ray) const;
 
 	void compile();
 

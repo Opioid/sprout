@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <algorithm>
 
 namespace math {
 
@@ -11,11 +12,11 @@ extern const float pi_div_2;
 extern const float pi_div_180;
 extern const float _180_div_pi;
 
-inline float to_radians(float degrees) {
+inline float degrees_to_radians(float degrees) {
 	return degrees * pi_div_180;
 }
 
-inline float to_degrees(float radians) {
+inline float radians_to_degrees(float radians) {
 	return radians * _180_div_pi;
 }
 

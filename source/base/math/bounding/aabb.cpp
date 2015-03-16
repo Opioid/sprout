@@ -1,4 +1,5 @@
 #include "aabb.hpp"
+#include "math/vector.inl"
 
 namespace math {
 

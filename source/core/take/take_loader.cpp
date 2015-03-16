@@ -3,6 +3,7 @@
 #include "rendering/film/unfiltered.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "scene/camera/perspective_camera.hpp"
+#include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
@@ -74,7 +75,7 @@ std::shared_ptr<camera::Camera> Loader::load_camera(const rapidjson::Value& came
 		} else if ("film" == node_name) {
 			film = load_film(node_value);
 		} else if ("fov" == node_name) {
-			fov = json::read_float(node_value);
+			fov = math::degrees_to_radians(json::read_float(node_value));
 		}
 	}
 
@@ -111,7 +112,7 @@ film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
 }
 
 std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value) const {
-	return std::make_shared<rendering::Ao_factory>();
+	return std::make_shared<rendering::Ao_factory>(16, 5.f);
 }
 
 }

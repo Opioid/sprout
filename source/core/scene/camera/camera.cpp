@@ -1,5 +1,6 @@
 #include "camera.hpp"
 #include "rendering/film/film.hpp"
+#include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 
 namespace camera {

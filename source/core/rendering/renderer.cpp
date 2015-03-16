@@ -5,6 +5,7 @@
 #include "rendering/integrator/integrator.hpp"
 #include "scene/scene.hpp"
 #include "base/math/vector.inl"
+#include "base/math/random/generator.inl"
 
 namespace rendering {
 
@@ -25,7 +26,10 @@ void Renderer::render(const scene::Scene& scene, const Context& context) const {
 		}
 	}
 	*/
-	Worker worker(surface_integrator_factory_->create(0));
+
+	math::random::Generator rng(0, 1, 2, 3);
+
+	Worker worker(surface_integrator_factory_->create(0, rng));
 
 	Rectui tile {math::uint2(0, 0), dimensions};
 

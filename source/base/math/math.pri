@@ -1,5 +1,6 @@
 SOURCES += \
 	math/math.cpp \
+	math/sampling.cpp \
 
 HEADERS += \
 	math/math.hpp \
@@ -11,6 +12,7 @@ HEADERS += \
 	math/matrix4x4.inl \
 	math/quaternion.hpp \
 	math/quaternion.inl \
+	math/sampling.hpp \
 	math/ray.hpp \
 	math/ray.inl \
 	math/vector.hpp \
@@ -23,4 +25,5 @@ HEADERS += \
 	math/vector4.inl \
 
 include(bounding/bounding.pri)
+include(random/random.pri)
 

@@ -217,6 +217,24 @@ inline Vector3<T> reflect(const Vector3<T>& v, const Vector3<T>& normal) {
 	return v - T(2) * dot(v, normal) * normal;
 }
 
+template<typename T>
+void coordinate_system(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b) {
+	Vector3<T> r1;
+
+	if (n.x < T(0.6) && n.x > T(-0.6)) {
+		r1 = Vector3<T>(T(1), T(0), T(0));
+	} else if (n.y < T(0.6) && n.y > T(-0.6)) {
+		r1 = Vector3<T>(T(0), T(1), T(0));
+	} else {
+		r1 = Vector3<T>(T(0), T(0), T(1));
+	}
+
+	Vector3<T> r0 = normalized(cross(n, r1));
+
+	t = r0;
+	b = cross(r0, n);
+}
+
 inline Vector3<float> min(const Vector3<float>& a, const Vector3<float>& b) {
 	/*
 	__m128 ma = _mm_set_ps(a.x, a.y, a.z, 0.f);

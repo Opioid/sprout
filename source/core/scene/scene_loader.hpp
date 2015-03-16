@@ -40,6 +40,7 @@ private:
 
 	std::shared_ptr<shape::Shape> shape(const std::string& type) const;
 
+	std::shared_ptr<shape::Shape> plane_;
 	std::shared_ptr<shape::Shape> sphere_;
 };
 

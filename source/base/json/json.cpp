@@ -103,13 +103,13 @@ math::float3x3 read_rotation_matrix(const rapidjson::Value& value) {
 	math::float3 rot = read_float3(value);
 
 	math::float3x3 rot_x;
-    set_rotation_x(rot_x, math::to_radians(rot.x));
+	set_rotation_x(rot_x, math::degrees_to_radians(rot.x));
 
 	math::float3x3 rot_y;
-    set_rotation_y(rot_y, math::to_radians(rot.y));
+	set_rotation_y(rot_y, math::degrees_to_radians(rot.y));
 
 	math::float3x3 rot_z;
-    set_rotation_z(rot_z, math::to_radians(rot.z));
+	set_rotation_z(rot_z, math::degrees_to_radians(rot.z));
 
     return rot_z * rot_x * rot_y;
 }

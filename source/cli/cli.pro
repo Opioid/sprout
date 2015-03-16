@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
-CONFIG += c++11
+CONFIG += c++14
 CONFIG(debug, release|debug):DEFINES += _DEBUG
 
 SOURCES += \

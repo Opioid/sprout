@@ -3,7 +3,7 @@ QT -= core gui
 TARGET = core
 TEMPLATE = lib
 CONFIG += staticlib
-CONFIG += c++11
+CONFIG += c++14
 CONFIG(debug, release|debug):DEFINES += _DEBUG
 
 SOURCES +=

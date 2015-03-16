@@ -32,6 +32,8 @@ public:
 
 	bool intersect(math::Oray& ray, scene::Intersection& intersection) const;
 
+	bool visibility(const math::Oray& ray) const;
+
 private:
 
 	Surface_integrator* surface_integrator_;

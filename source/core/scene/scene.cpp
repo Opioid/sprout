@@ -30,7 +30,7 @@ bool Scene::intersect(math::Oray& ray, Intersection& intersection) const {
 	return hit;
 }
 
-bool Scene::intersect_p(math::Oray& ray) const {
+bool Scene::intersect_p(const math::Oray& ray) const {
 	for (auto p : props_) {
 		if (p->intersect_p(ray)) {
 			return true;
