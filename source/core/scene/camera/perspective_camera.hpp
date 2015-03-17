@@ -7,11 +7,11 @@ namespace camera {
 class Perspective : public Camera {
 public:
 
-	Perspective(const math::float2& dimensions, film::Film* film, float fov);
+	Perspective(const math::float2& dimensions, rendering::film::Film* film, float fov);
 
 	virtual void update_view();
 
-	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const;
+	virtual void generate_ray(const rendering::sampler::Camera_sample& sample, math::Oray& ray) const;
 
 private:
 

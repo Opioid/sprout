@@ -39,7 +39,7 @@ int main() {
 	auto loading_duration = clock.now() - loading_start;
 	std::cout << "(" << duration_to_seconds(loading_duration) << "s)" << std::endl;
 
-	rendering::Renderer renderer(take->surface_integrator_factory);
+	rendering::Renderer renderer(take->surface_integrator_factory, take->sampler);
 
 	std::cout << "Rendering..." << std::endl;
 

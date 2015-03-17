@@ -13,7 +13,7 @@ public:
 		float radius;
 	};
 
-	Ao(uint32_t id,  const math::random::Generator& rng, const Settings& settings);
+	Ao(uint32_t id,  math::random::Generator& rng, const Settings& settings);
 
 	virtual math::float3 li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection);
 
@@ -27,7 +27,7 @@ public:
 
 	Ao_factory(uint32_t num_samples, float radius);
 
-	virtual Surface_integrator* create(uint32_t id,  const math::random::Generator& rng) const;
+	virtual Surface_integrator* create(uint32_t id,  math::random::Generator& rng) const;
 
 private:
 

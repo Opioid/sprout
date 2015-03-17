@@ -2,8 +2,8 @@
 
 namespace rendering {
 
-Integrator::Integrator(uint32_t id, const math::random::Generator& rng) : rng_(rng) {}
+Integrator::Integrator(uint32_t id, math::random::Generator& rng) : rng_(rng) {}
 
-Surface_integrator::Surface_integrator(uint32_t id, const math::random::Generator& rng) : Integrator(id, rng) {}
+Surface_integrator::Surface_integrator(uint32_t id, math::random::Generator& rng) : Integrator(id, rng) {}
 
 }

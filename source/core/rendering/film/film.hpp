@@ -2,6 +2,8 @@
 
 #include "image/buffer/buffer4.hpp"
 
+namespace rendering {
+
 namespace sampler {
 
 struct Camera_sample;
@@ -38,4 +40,4 @@ protected:
 	image::Buffer4 image_buffer_;
 };
 
-}
+}}

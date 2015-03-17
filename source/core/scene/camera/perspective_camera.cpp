@@ -8,7 +8,7 @@
 
 namespace camera {
 
-Perspective::Perspective(const math::float2& dimensions, film::Film* film, float fov) :
+Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film, float fov) :
 	Camera(dimensions, film), fov_(fov) {}
 
 void Perspective::update_view() {
@@ -24,7 +24,7 @@ void Perspective::update_view() {
 	d_y_ = (left_bottom - left_top_) / static_cast<float>(film_->dimensions().y);
 }
 
-void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
+void Perspective::generate_ray(const rendering::sampler::Camera_sample& sample, math::Oray& ray) const {
 	/*
 direction := p.leftTop.Add(p.dx.Scale(sample.Coordinates.X)).Add(p.dy.Scale(sample.Coordinates.Y))
 

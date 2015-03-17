@@ -1,5 +1,6 @@
 #include "worker.hpp"
 #include "rendering/sampler/camera_sample.hpp"
+#include "rendering/sampler/sampler.hpp"
 #include "rendering/film/film.hpp"
 #include "rendering/integrator/integrator.hpp"
 #include "scene/scene.hpp"
@@ -11,7 +12,13 @@
 
 namespace rendering {
 
-Worker::Worker(Surface_integrator* surface_integrator) : surface_integrator_(surface_integrator) {}
+Worker::Worker(uint32_t id, const math::random::Generator& rng,
+			   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler) :
+	rng_(rng), surface_integrator_(surface_integrator_factory.create(id, rng_)), sampler_(sampler.clone(rng_)) {}
+
+Worker::~Worker() {
+	delete sampler_;
+}
 
 void Worker::render(const scene::Scene& scene, const camera::Camera& camera, const Rectui& tile) {
 	scene_ = &scene;
@@ -23,16 +30,21 @@ void Worker::render(const scene::Scene& scene, const camera::Camera& camera, con
 
 	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
+			sampler_->restart();
 
 			uint32_t sample_id = 0;
 
-			sample.coordinates = math::float2(static_cast<float>(x), static_cast<float>(y));
+			math::float2 offset(static_cast<float>(x), static_cast<float>(y));
 
-			camera.generate_ray(sample, ray);
+			while (sampler_->generate_camera_sample(offset, sample)) {
+				camera.generate_ray(sample, ray);
 
-			math::float3 color = li(sample_id, ray);
+				math::float3 color = li(sample_id, ray);
 
-			film.add_sample(sample, color);
+				film.add_sample(sample, color);
+
+				++sample_id;
+			}
 		}
 	}
 }

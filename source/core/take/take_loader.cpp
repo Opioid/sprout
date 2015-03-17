@@ -2,6 +2,7 @@
 #include "take.hpp"
 #include "rendering/film/unfiltered.hpp"
 #include "rendering/integrator/surface/ao.hpp"
+#include "rendering/sampler/random_sampler.hpp"
 #include "scene/camera/perspective_camera.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -40,6 +41,10 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 		}
 	}
 
+	if (!take->sampler) {
+		take->sampler = std::make_shared<rendering::sampler::Random>(1, take->rng);
+	}
+
 	if (!take->context.camera) {
 		return nullptr;
 	}
@@ -59,7 +64,7 @@ std::shared_ptr<camera::Camera> Loader::load_camera(const rapidjson::Value& came
 	math::float3 position = math::float3::identity;
 	math::quaternion rotation = math::quaternion::identity;
 	math::float2 dimensions = math::float2::identity;
-	film::Film* film = nullptr;
+	rendering::film::Film* film = nullptr;
 	float fov = 60.f;
 
 	for (auto n = type_value->MemberBegin(); n != type_value->MemberEnd(); ++n) {
@@ -94,7 +99,7 @@ std::shared_ptr<camera::Camera> Loader::load_camera(const rapidjson::Value& came
 	return camera;
 }
 
-film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
+rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
 	math::uint2 dimensions(32, 32);
 
 	for (auto n = film_value.MemberBegin(); n != film_value.MemberEnd(); ++n) {
@@ -106,7 +111,7 @@ film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
 		}
 	}
 
-	film::Film* film = new film::Unfiltered(dimensions);
+	rendering::film::Film* film = new rendering::film::Unfiltered(dimensions);
 
 	return film;
 }

@@ -9,7 +9,8 @@
 
 namespace rendering {
 
-Renderer::Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory) : surface_integrator_factory_(surface_integrator_factory) {}
+Renderer::Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory, std::shared_ptr<sampler::Sampler> sampler) :
+	surface_integrator_factory_(surface_integrator_factory), sampler_(sampler) {}
 
 void Renderer::render(const scene::Scene& scene, const Context& context) const {
 	auto& film = context.camera->film();
@@ -29,7 +30,7 @@ void Renderer::render(const scene::Scene& scene, const Context& context) const {
 
 	math::random::Generator rng(0, 1, 2, 3);
 
-	Worker worker(surface_integrator_factory_->create(0, rng));
+	Worker worker(0, rng, *surface_integrator_factory_, *sampler_);
 
 	Rectui tile {math::uint2(0, 0), dimensions};
 

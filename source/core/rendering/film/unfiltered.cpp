@@ -1,7 +1,7 @@
 #include "unfiltered.hpp"
 #include "rendering/sampler/camera_sample.hpp"
 
-namespace film {
+namespace rendering { namespace film {
 
 Unfiltered::Unfiltered(const math::uint2& dimensions) : Film(dimensions) {}
 
@@ -12,4 +12,4 @@ void Unfiltered::add_sample(const sampler::Camera_sample& sample, const math::fl
 	add_pixel(x, y, color, 1.f);
 }
 
-}
+}}

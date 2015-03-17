@@ -7,7 +7,7 @@
 
 namespace rendering {
 
-Ao::Ao(uint32_t id,  const math::random::Generator& rng, const Settings& settings) : Surface_integrator(id, rng), settings_(settings) {}
+Ao::Ao(uint32_t id, math::random::Generator& rng, const Settings& settings) : Surface_integrator(id, rng), settings_(settings) {}
 
 math::float3 Ao::li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
 	math::Oray occlusion_ray;
@@ -38,7 +38,7 @@ Ao_factory::Ao_factory(uint32_t num_samples, float radius) {
 	settings_.radius = radius;
 }
 
-Surface_integrator* Ao_factory::create(uint32_t id, const math::random::Generator& rng) const {
+Surface_integrator* Ao_factory::create(uint32_t id, math::random::Generator& rng) const {
 	return new Ao(id, rng, settings_);
 }
 

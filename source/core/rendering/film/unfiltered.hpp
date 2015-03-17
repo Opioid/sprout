@@ -2,7 +2,7 @@
 
 #include "film.hpp"
 
-namespace film {
+namespace rendering { namespace film {
 
 class Unfiltered : public Film {
 public:
@@ -12,4 +12,4 @@ public:
 	virtual void add_sample(const sampler::Camera_sample& sample, const math::float3& color);
 };
 
-}
+}}

@@ -3,6 +3,7 @@
 #include "rectangle.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
+#include "base/math/random/generator.hpp"
 
 namespace scene {
 
@@ -20,11 +21,20 @@ class Camera;
 namespace rendering {
 
 class Surface_integrator;
+class Surface_integrator_factory;
+
+namespace sampler {
+
+class Sampler;
+
+}
 
 class Worker {
 public:
 
-	Worker(Surface_integrator* surface_integrator);
+	Worker(uint32_t id, const math::random::Generator& rng,
+		   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler);
+	~Worker();
 
 	void render(const scene::Scene& scene, const camera::Camera& camera, const Rectui& tile);
 
@@ -36,7 +46,9 @@ public:
 
 private:
 
+	math::random::Generator rng_;
 	Surface_integrator* surface_integrator_;
+	sampler::Sampler* sampler_;
 	const scene::Scene* scene_;
 };
 
