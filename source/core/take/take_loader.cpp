@@ -36,6 +36,7 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 		} else if ("camera" == node_name) {
 			take->context.camera = load_camera(node_value);
 		} else if ("sampler" == node_name) {
+			take->sampler = load_sampler(node_value, take->rng);
 		} else if ("integrator" == node_name) {
 			take->surface_integrator_factory = load_surface_integrator_factory(node_value);
 		}
@@ -114,6 +115,23 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 	rendering::film::Film* film = new rendering::film::Unfiltered(dimensions);
 
 	return film;
+}
+
+std::shared_ptr<rendering::sampler::Sampler> Loader::load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const {
+	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
+		const std::string type_name = n->name.GetString();
+		const rapidjson::Value& type_value = n->value;
+
+		if ("Scrambled_hammersley" == type_name) {
+			uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
+			return std::make_shared<rendering::sampler::Random>(num_samples, rng);
+		} else if ("Random" == type_name) {
+			uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
+			return std::make_shared<rendering::sampler::Random>(num_samples, rng);
+		}
+	}
+
+	return nullptr;
 }
 
 std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value) const {

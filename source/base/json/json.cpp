@@ -87,6 +87,16 @@ math::float4 read_float4(const rapidjson::Value& value) {
 						static_cast<float>(value[2].GetDouble()), static_cast<float>(value[3].GetDouble()));
 }
 
+uint32_t read_uint(const rapidjson::Value& value, const std::string& name, uint32_t default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
+
+	if (value.MemberEnd() == node) {
+		return default_value;
+	}
+
+	return node->value.GetUint();
+}
+
 math::uint2 read_uint2(const rapidjson::Value& value) {
 	return math::uint2(value[0u].GetUint(), value[1].GetUint());
 }
@@ -137,15 +147,5 @@ std::string read_string(const rapidjson::Value& value, const std::string& name, 
 
 	return node->value.GetString();
 }
-/*
-uint32_t read_uint(const rapidjson::Value& value, const std::string& name, uint32_t default_value) {
-	rapidjson::Value::Member* node = value.FindMember(name.c_str());
 
-	if (!node) {
-		return default_value;
-	}
-
-	return node->value.GetUint();
-}
-*/
 }
