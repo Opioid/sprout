@@ -1,4 +1,5 @@
 #include "take.hpp"
+#include "base/math/random/generator.inl"
 
 namespace take {
 
