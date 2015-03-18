@@ -17,7 +17,7 @@ struct Camera_sample;
 
 }}
 
-namespace camera {
+namespace scene { namespace camera {
 
 class Camera : public scene::Entity {
 public:
@@ -39,4 +39,4 @@ protected:
 	rendering::film::Film* film_;
 };
 
-}
+}}

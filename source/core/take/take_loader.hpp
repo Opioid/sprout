@@ -6,15 +6,15 @@
 
 namespace math { namespace random {
 
-struct Generator;
+class Generator;
 
 }}
 
-namespace camera {
+namespace scene { namespace camera {
 
 class Camera;
 
-}
+}}
 
 namespace rendering {
 
@@ -45,7 +45,7 @@ public:
 
 private:
 
-	std::shared_ptr<camera::Camera> load_camera(const rapidjson::Value& camera_value) const;
+	std::shared_ptr<scene::camera::Camera> load_camera(const rapidjson::Value& camera_value) const;
 
 	rendering::film::Film* load_film(const rapidjson::Value& film_value) const;
 

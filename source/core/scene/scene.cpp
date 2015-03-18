@@ -2,6 +2,7 @@
 #include "surrounding/surrounding.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
+#include "bvh/builder.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 
@@ -41,7 +42,8 @@ bool Scene::intersect_p(const math::Oray& ray) const {
 }
 
 void Scene::compile() {
-
+	bvh::Builder builder;
+	builder.build(props_, bvh_);
 }
 
 const surrounding::Surrounding* Scene::surrounding() const {

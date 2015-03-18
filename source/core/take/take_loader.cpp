@@ -54,7 +54,7 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 	return take;
 }
 
-std::shared_ptr<camera::Camera> Loader::load_camera(const rapidjson::Value& camera_value) const {
+std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Value& camera_value) const {
 	std::string type_name = "Perspective";
 	const rapidjson::Value* type_value = nullptr;
 
@@ -86,10 +86,10 @@ std::shared_ptr<camera::Camera> Loader::load_camera(const rapidjson::Value& came
 		}
 	}
 
-	std::shared_ptr<camera::Camera> camera;
+	std::shared_ptr<scene::camera::Camera> camera;
 
 	if ("Perspective" == type_name) {
-		camera = std::make_shared<camera::Perspective>(dimensions, film, fov);
+		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, fov);
 	} else if ("Orthographic" == type_name) {
 
 	}

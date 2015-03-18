@@ -10,13 +10,11 @@ namespace scene {
 class Scene;
 struct Intersection;
 
-}
-
 namespace camera {
 
 class Camera;
 
-}
+}}
 
 namespace rendering {
 
@@ -36,7 +34,7 @@ public:
 		   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler);
 	~Worker();
 
-	void render(const scene::Scene& scene, const camera::Camera& camera, const Rectui& tile);
+	void render(const scene::Scene& scene, const scene::camera::Camera& camera, const Rectui& tile);
 
 	math::float3 li(uint32_t subsample, math::Oray& ray) const;
 

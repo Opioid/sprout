@@ -20,7 +20,7 @@ Worker::~Worker() {
 	delete sampler_;
 }
 
-void Worker::render(const scene::Scene& scene, const camera::Camera& camera, const Rectui& tile) {
+void Worker::render(const scene::Scene& scene, const scene::camera::Camera& camera, const Rectui& tile) {
 	scene_ = &scene;
 
 	auto& film = camera.film();

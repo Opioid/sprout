@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bvh/tree.hpp"
 #include "base/math/ray.hpp"
 #include <vector>
 
@@ -33,6 +34,8 @@ public:
 private:
 
 	const surrounding::Surrounding* surrounding_;
+
+	bvh::Tree bvh_;
 
 	std::vector<Prop*> props_;
 };

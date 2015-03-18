@@ -3,7 +3,7 @@
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 
-namespace camera {
+namespace scene { namespace camera {
 
 Camera::Camera(const math::float2& dimensions, rendering::film::Film* film) :
 	dimensions_(calculate_dimensions(dimensions, film)), film_(film) {
@@ -29,4 +29,4 @@ math::float2 Camera::calculate_dimensions(const math::float2& dimensions, render
 	return dimensions;
 }
 
-}
+}}

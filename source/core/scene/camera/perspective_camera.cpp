@@ -6,7 +6,7 @@
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 
-namespace camera {
+namespace scene { namespace camera {
 
 Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film, float fov) :
 	Camera(dimensions, film), fov_(fov) {}
@@ -66,4 +66,4 @@ ray.Depth = 0*/
 	ray.depth = 0;
 }
 
-}
+}}

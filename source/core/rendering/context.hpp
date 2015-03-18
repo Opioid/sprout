@@ -6,7 +6,7 @@
 namespace rendering {
 
 struct Context {
-	std::shared_ptr<camera::Camera>	camera;
+	std::shared_ptr<scene::camera::Camera> camera;
 };
 
 }

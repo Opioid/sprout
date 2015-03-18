@@ -2,7 +2,7 @@
 
 #include "camera.hpp"
 
-namespace camera {
+namespace scene { namespace camera {
 
 class Perspective : public Camera {
 public:
@@ -21,4 +21,4 @@ private:
 	math::float3 d_x_, d_y_;
 };
 
-}
+}}
