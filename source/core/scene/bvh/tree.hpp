@@ -1,10 +1,18 @@
 #pragma once
 
 #include "base/math/bounding/aabb.hpp"
+#include <vector>
 
-namespace scene { namespace bvh {
+namespace scene {
+
+class Prop;
+
+namespace bvh {
 
 struct Build_node {
+	Build_node();
+	~Build_node();
+
 	math::AABB aabb;
 
 	uint32_t axis;
@@ -26,6 +34,10 @@ private:
 
 	uint32_t infinite_props_start_;
 	uint32_t infinite_props_end_;
+
+	std::vector<Prop*> props_;
+
+	friend class Builder;
 };
 
 

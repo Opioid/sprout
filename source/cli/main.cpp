@@ -20,7 +20,7 @@ int main() {
 
 	auto loading_start = clock.now();
 
-	std::string takename = "../data/takes/imrod.take";
+	std::string takename = "../data/takes/spheres.take";
 	take::Loader take_loader;
 	auto take = take_loader.load(takename);
 	if (!take) {
@@ -32,7 +32,7 @@ int main() {
 	scene::Loader scene_loader;
 
 	if (!scene_loader.load(take->scene, scene)) {
-
+		std::cout << "Scene \"" << take->scene << "\" could not be loaded." << std::endl;
 		return 1;
 	}
 

@@ -2,6 +2,7 @@
 
 #include "scene/entity/entity.hpp"
 #include "base/math/ray.hpp"
+#include "base/math/bounding/aabb.hpp"
 #include <memory>
 
 namespace scene {
@@ -22,10 +23,17 @@ public:
 
 	bool intersect_p(const math::Oray& ray) const;
 
+	const shape::Shape* shape() const;
+
+	const math::AABB& aabb() const;
+
 private:
+
+	virtual void on_set_transformation();
 
 	std::shared_ptr<shape::Shape> shape_;
 
+	math::AABB aabb_;
 };
 
 }

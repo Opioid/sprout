@@ -12,7 +12,9 @@ public:
 
 	void set_transformation(const math::float3& position, const math::float3& scale, const math::quaternion& rotation);
 
-private:
+protected:
+
+	virtual void on_set_transformation();
 
 	Composed_transformation transformation_;
 };

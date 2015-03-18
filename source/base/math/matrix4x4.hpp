@@ -22,6 +22,10 @@ struct Matrix4x4 {
 		};
 
 		struct {
+			Vector4<T> x, y, z, w;
+		};
+
+		struct {
 			Vector4<T> rows[4];
 		};
 	};

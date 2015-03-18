@@ -6,7 +6,11 @@
 
 namespace scene { namespace shape {
 
-bool Sphere::intersect(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounding,
+Sphere::Sphere() {
+	aabb_.set_min_max(math::float3(-1.f, -1.f, -1.f), math::float3(1.f, 1.f, 1.f));
+}
+
+bool Sphere::intersect(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounds,
 					   Intersection& intersection, float& hit_t) const {
 	/*
 v := ray.Origin.Sub(transformation.Position)
@@ -97,7 +101,7 @@ return false, 0.0
 	return false;
 }
 
-bool Sphere::intersect_p(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounding) const {
+bool Sphere::intersect_p(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounds) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
 	float radius = transformation.scale.x;

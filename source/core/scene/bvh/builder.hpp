@@ -12,7 +12,14 @@ namespace bvh {
 class Builder {
 public:
 
-	void build(const std::vector<Prop*>& props, Tree& tree);
+	void build(Tree& tree, const std::vector<Prop*>& props);
+
+private:
+
+	static void split(Build_node& node, const std::vector<Prop*>& props, size_t max_shapes, std::vector<Prop*>& out_props);
+	static void assign(Build_node& node, const std::vector<Prop*>& props, std::vector<Prop*>& out_props);
+
+	static math::AABB aabb(const std::vector<Prop*>& props);
 };
 
 }}

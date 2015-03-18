@@ -35,4 +35,16 @@ bool Prop::intersect_p(const math::Oray& ray) const {
 	return shape_->intersect_p(transformation, ray, bounding);
 }
 
+const shape::Shape* Prop::shape() const {
+	return shape_.get();
+}
+
+const math::AABB& Prop::aabb() const {
+	return aabb_;
+}
+
+void Prop::on_set_transformation() {
+	shape_->aabb().transform(transformation_.object_to_world, aabb_);
+}
+
 }

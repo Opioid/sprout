@@ -43,7 +43,7 @@ bool Scene::intersect_p(const math::Oray& ray) const {
 
 void Scene::compile() {
 	bvh::Builder builder;
-	builder.build(props_, bvh_);
+	builder.build(bvh_, props_);
 }
 
 const surrounding::Surrounding* Scene::surrounding() const {

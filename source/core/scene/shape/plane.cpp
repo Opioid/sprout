@@ -5,7 +5,11 @@
 
 namespace scene { namespace shape {
 
-bool Plane::intersect(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounding,
+Plane::Plane() {
+	aabb_.set_min_max(math::float3::identity, math::float3::identity);
+}
+
+bool Plane::intersect(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounds,
 					  Intersection& intersection, float& hit_t) const {
 	/*
 normal := transformation.Rotation.Direction()
@@ -64,7 +68,7 @@ if thit > ray.MinT && thit < ray.MaxT {
 	return false;
 }
 
-bool Plane::intersect_p(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounding) const {
+bool Plane::intersect_p(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounds) const {
 	const math::float3& normal = transformation.rotation.z;
 
 	float d = -math::dot(normal, transformation.position);
