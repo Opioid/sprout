@@ -2,6 +2,7 @@
 #include "take.hpp"
 #include "rendering/film/unfiltered.hpp"
 #include "rendering/integrator/surface/ao.hpp"
+#include "rendering/sampler/scrambled_hammersley_sampler.hpp"
 #include "rendering/sampler/random_sampler.hpp"
 #include "scene/camera/perspective_camera.hpp"
 #include "base/math/math.hpp"
@@ -124,7 +125,7 @@ std::shared_ptr<rendering::sampler::Sampler> Loader::load_sampler(const rapidjso
 
 		if ("Scrambled_hammersley" == type_name) {
 			uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
-			return std::make_shared<rendering::sampler::Random>(num_samples, rng);
+			return std::make_shared<rendering::sampler::Scrambled_hammersley>(num_samples, rng);
 		} else if ("Random" == type_name) {
 			uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
 			return std::make_shared<rendering::sampler::Random>(num_samples, rng);
