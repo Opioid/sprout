@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scene/prop/prop_intersection.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include <vector>
 
@@ -12,6 +13,9 @@ namespace bvh {
 struct Build_node {
 	Build_node();
 	~Build_node();
+
+	bool intersect(math::Oray& ray, const std::vector<Prop*>& props, Intersection& intersection) const;
+	bool intersect_p(const math::Oray& ray, const std::vector<Prop*>& props) const;
 
 	math::AABB aabb;
 
@@ -26,7 +30,9 @@ struct Build_node {
 class Tree {
 public:
 
-	bool intersect_p() const;
+	bool intersect(math::Oray& ray, Intersection& intersection) const;
+
+	bool intersect_p(const math::Oray& ray) const;
 
 private:
 

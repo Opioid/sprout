@@ -13,10 +13,10 @@ bool Prop::intersect(math::Oray& ray, shape::Intersection& intersection) const {
 	Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 
-	math::float2 bounding;
+	math::float2 bounds;
 
 	float hit_t;
-	bool hit = shape_->intersect(transformation, ray, bounding, intersection, hit_t);
+	bool hit = shape_->intersect(transformation, ray, bounds, intersection, hit_t);
 
 	if (hit) {
 		ray.max_t = hit_t;
@@ -30,9 +30,9 @@ bool Prop::intersect_p(const math::Oray& ray) const {
 	Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 
-	math::float2 bounding;
+	math::float2 bounds;
 
-	return shape_->intersect_p(transformation, ray, bounding);
+	return shape_->intersect_p(transformation, ray, bounds);
 }
 
 const shape::Shape* Prop::shape() const {

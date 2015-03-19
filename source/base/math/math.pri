@@ -12,6 +12,8 @@ HEADERS += \
 	math/matrix3x3.inl \
 	math/matrix4x4.hpp \
 	math/matrix4x4.inl \
+	math/plane.hpp \
+	math/plane.inl \
 	math/quaternion.hpp \
 	math/quaternion.inl \
 	math/sampling.hpp \

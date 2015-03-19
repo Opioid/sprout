@@ -12,6 +12,14 @@ public:
 	AABB();
 	AABB(const float3& min, const float3& max);
 
+	const float3& min() const;
+	const float3& max() const;
+
+	float3 position() const;
+	float3 halfsize() const;
+
+	bool intersect_p(const math::Oray& ray) const;
+
 	void set_min_max(const float3& min, const float3& max);
 
 	void transform(const float4x4& m, AABB& other) const;
