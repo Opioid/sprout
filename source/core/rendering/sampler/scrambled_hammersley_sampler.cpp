@@ -26,7 +26,7 @@ bool Scrambled_hammersley::generate_camera_sample(const math::float2& offset, Ca
 	math::float2 s2d = math::scrambled_hammersley(current_sample_, num_samples_per_iteration_, random_bits_);
 
 	sample.coordinates = offset + s2d;
-	sample.r = s2d;
+	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
 
 	++current_sample_;
 

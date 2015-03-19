@@ -20,7 +20,7 @@ bool Random::generate_camera_sample(const math::float2& offset, Camera_sample& s
 	math::float2 s2d(rng_.random_float(), rng_.random_float());
 
 	sample.coordinates = offset + s2d;
-	sample.r = s2d;
+	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
 
 	++current_sample_;
 

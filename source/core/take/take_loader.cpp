@@ -1,5 +1,7 @@
 #include "take_loader.hpp"
 #include "take.hpp"
+#include "rendering/film/filtered.hpp"
+#include "rendering/film/filter/gaussian.hpp"
 #include "rendering/film/unfiltered.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/sampler/scrambled_hammersley_sampler.hpp"
@@ -104,18 +106,33 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
 	math::uint2 dimensions(32, 32);
 
+	rendering::film::filter::Filter* filter = nullptr;
+
 	for (auto n = film_value.MemberBegin(); n != film_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
 		if ("dimensions" == node_name) {
 			dimensions = json::read_uint2(node_value);
+		} else if ("filter" == node_name) {
+			filter = load_filter(node_value);
 		}
 	}
 
-	rendering::film::Film* film = new rendering::film::Unfiltered(dimensions);
+//	float radius = 1.5f;
+//	rendering::film::filter::Filter* filter = new rendering::film::filter::Gaussian(math::float2(radius, radius), 50.0f);
 
-	return film;
+	if (filter) {
+		return new rendering::film::Filtered(dimensions, filter);
+	}
+
+	return new rendering::film::Unfiltered(dimensions);
+}
+
+rendering::film::filter::Filter* Loader::load_filter(const rapidjson::Value& film_value) const {
+	float radius = 1.f;
+	float alpha = 0.3f;
+	return new rendering::film::filter::Gaussian(math::float2(radius, radius), alpha);
 }
 
 std::shared_ptr<rendering::sampler::Sampler> Loader::load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const {

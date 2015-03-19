@@ -22,7 +22,11 @@ namespace film {
 
 class Film;
 
-}
+namespace filter {
+
+class Filter;
+
+}}
 
 namespace sampler {
 
@@ -48,6 +52,8 @@ private:
 	std::shared_ptr<scene::camera::Camera> load_camera(const rapidjson::Value& camera_value) const;
 
 	rendering::film::Film* load_film(const rapidjson::Value& film_value) const;
+
+	rendering::film::filter::Filter* load_filter(const rapidjson::Value& film_value) const;
 
 	std::shared_ptr<rendering::sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const;
 

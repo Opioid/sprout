@@ -19,9 +19,9 @@ Scene::~Scene() {
 }
 
 bool Scene::intersect(math::Oray& ray, Intersection& intersection) const {
-//	return bvh_.intersect(ray, intersection);
+	return bvh_.intersect(ray, intersection);
 
-
+/*
 	bool hit = false;
 
 	for (auto p : props_) {
@@ -32,13 +32,13 @@ bool Scene::intersect(math::Oray& ray, Intersection& intersection) const {
 	}
 
 	return hit;
-
+*/
 }
 
 bool Scene::intersect_p(const math::Oray& ray) const {
-//	return bvh_.intersect_p(ray);
+	return bvh_.intersect_p(ray);
 
-
+/*
 	for (auto p : props_) {
 		if (p->intersect_p(ray)) {
 			return true;
@@ -46,7 +46,7 @@ bool Scene::intersect_p(const math::Oray& ray) const {
 	}
 
 	return false;
-
+*/
 }
 
 void Scene::compile() {
