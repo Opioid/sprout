@@ -1,4 +1,5 @@
 #include "gaussian.hpp"
+#include "math/vector.inl"
 #include <algorithm>
 
 namespace rendering { namespace film { namespace filter {

@@ -20,7 +20,7 @@ int main() {
 
 	auto loading_start = clock.now();
 
-	std::string takename = "../data/takes/spheres.take";
+	std::string takename = "../data/takes/imrod.take";
 	take::Loader take_loader;
 	auto take = take_loader.load(takename);
 	if (!take) {

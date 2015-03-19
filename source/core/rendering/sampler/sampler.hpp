@@ -16,6 +16,7 @@ class Sampler {
 public:
 
 	Sampler(uint32_t num_samples_per_iteration);
+	virtual ~Sampler();
 
 	virtual Sampler* clone(math::random::Generator& rng) const = 0;
 

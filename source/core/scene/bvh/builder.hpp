@@ -3,6 +3,7 @@
 #include "tree.hpp"
 #include "base/math/plane.hpp"
 #include <vector>
+#include <cstddef>
 
 namespace scene {
 

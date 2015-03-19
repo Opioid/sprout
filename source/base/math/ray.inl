@@ -18,7 +18,7 @@ Vector3<T> Ray<T>::point(T t) const {
 
 template<typename T>
 void Optimized_ray<T>::set_direction(const Vector3<T>& v) {
-	direction = v;
+	this->direction = v;
 	reciprocal_direction = math::float3(T(1) / v.x, T(1) / v.y, T(1) / v.z);
 
 	sign[0] = static_cast<uint8_t>(std::signbit(v.x));
