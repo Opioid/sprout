@@ -4,7 +4,8 @@
 
 namespace rendering { namespace film {
 
-Filtered::Filtered(const math::uint2& dimensions, filter::Filter* filter) : Film(dimensions), filter_(filter) {}
+Filtered::Filtered(const math::uint2& dimensions, float exposure, tonemapping::Tonemapper* tonemapper, filter::Filter* filter) :
+	Film(dimensions, exposure, tonemapper), filter_(filter) {}
 
 Filtered::~Filtered() {
 	delete filter_;

@@ -22,6 +22,12 @@ namespace film {
 
 class Film;
 
+namespace tonemapping {
+
+class Tonemapper;
+
+}
+
 namespace filter {
 
 class Filter;
@@ -52,6 +58,8 @@ private:
 	std::shared_ptr<scene::camera::Camera> load_camera(const rapidjson::Value& camera_value) const;
 
 	rendering::film::Film* load_film(const rapidjson::Value& film_value) const;
+
+	rendering::film::tonemapping::Tonemapper* load_tonemapper(const rapidjson::Value& tonemapper_value) const;
 
 	rendering::film::filter::Filter* load_filter(const rapidjson::Value& film_value) const;
 

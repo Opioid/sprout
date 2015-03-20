@@ -28,13 +28,19 @@ struct Vector3 {
 
 	explicit Vector3(const T* v);
 
+	Vector3 operator+(T s) const;
+
 	Vector3 operator+(const Vector3& v) const;
+
+	Vector3 operator-(T s) const;
 
 	Vector3 operator-(const Vector3& v) const;
 		
 	Vector3 operator*(const Vector3& v) const;
 		
 	Vector3 operator/(T s) const;
+
+	Vector3 operator/(const Vector3& v) const;
 
 	Vector3 operator-() const;
 

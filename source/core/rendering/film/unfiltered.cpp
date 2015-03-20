@@ -3,7 +3,8 @@
 
 namespace rendering { namespace film {
 
-Unfiltered::Unfiltered(const math::uint2& dimensions) : Film(dimensions) {}
+Unfiltered::Unfiltered(const math::uint2& dimensions, float exposure, tonemapping::Tonemapper* tonemapper) :
+	Film(dimensions, exposure, tonemapper) {}
 
 void Unfiltered::add_sample(const sampler::Camera_sample& sample, const math::float3& color) {
 	uint32_t x = static_cast<uint32_t>(sample.coordinates.x);

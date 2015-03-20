@@ -9,3 +9,4 @@ HEADERS += \
 	rendering/film/unfiltered.hpp \
 
 include(filter/filter.pri)
+include(tonemapping/tonemapping.pri)

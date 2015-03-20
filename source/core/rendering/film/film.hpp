@@ -12,10 +12,16 @@ struct Camera_sample;
 
 namespace film {
 
+namespace tonemapping {
+
+class Tonemapper;
+
+}
+
 class Film {
 public:
 
-	Film(const math::uint2& dimensions);
+	Film(const math::uint2& dimensions, float exposure, tonemapping::Tonemapper* tonemapper);
 	virtual ~Film();
 
 	const math::uint2& dimensions() const;
@@ -30,12 +36,18 @@ protected:
 
 	void add_pixel(uint32_t x, uint32_t y, const math::float3& color, float weight);
 
+	static math::float3 expose(const math::float3& color, float exposure);
+
 	struct Pixel {
 		math::float3 color;
 		float        weight_sum;
 	};
 
 	Pixel* pixels_;
+
+	float exposure_;
+
+	tonemapping::Tonemapper* tonemapper_;
 
 	image::Buffer4 image_buffer_;
 };

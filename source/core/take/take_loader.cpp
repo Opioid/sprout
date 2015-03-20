@@ -1,8 +1,10 @@
 #include "take_loader.hpp"
 #include "take.hpp"
 #include "rendering/film/filtered.hpp"
-#include "rendering/film/filter/gaussian.hpp"
 #include "rendering/film/unfiltered.hpp"
+#include "rendering/film/filter/gaussian.hpp"
+#include "rendering/film/tonemapping/filmic.hpp"
+#include "rendering/film/tonemapping/identity.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/sampler/scrambled_hammersley_sampler.hpp"
 #include "rendering/sampler/random_sampler.hpp"
@@ -105,8 +107,9 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 
 rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
 	math::uint2 dimensions(32, 32);
-
+	float exposure = 0.f;
 	rendering::film::filter::Filter* filter = nullptr;
+	rendering::film::tonemapping::Tonemapper* tonemapper = nullptr;
 
 	for (auto n = film_value.MemberBegin(); n != film_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -114,24 +117,45 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 
 		if ("dimensions" == node_name) {
 			dimensions = json::read_uint2(node_value);
+		} else if ("exposure" == node_name) {
+			exposure = json::read_float(node_value);
+		} else if ("tonemapper" == node_name) {
+			tonemapper = load_tonemapper(node_value);
 		} else if ("filter" == node_name) {
 			filter = load_filter(node_value);
 		}
 	}
 
-//	float radius = 1.5f;
-//	rendering::film::filter::Filter* filter = new rendering::film::filter::Gaussian(math::float2(radius, radius), 50.0f);
-
-	if (filter) {
-		return new rendering::film::Filtered(dimensions, filter);
+	if (!tonemapper) {
+		tonemapper = new rendering::film::tonemapping::Identity;
 	}
 
-	return new rendering::film::Unfiltered(dimensions);
+	if (filter) {
+		return new rendering::film::Filtered(dimensions, exposure, tonemapper, filter);
+	}
+
+	return new rendering::film::Unfiltered(dimensions, exposure, tonemapper);
+}
+
+rendering::film::tonemapping::Tonemapper* Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
+	for (auto n = tonemapper_value.MemberBegin(); n != tonemapper_value.MemberEnd(); ++n) {
+		const std::string type_name = n->name.GetString();
+		const rapidjson::Value& type_value = n->value;
+
+		if ("Filmic" == type_name) {
+			math::float3 linear_white = json::read_float3(type_value, "linear_white");
+			return new rendering::film::tonemapping::Filmic(linear_white);
+		} else if ("Identity" == type_name) {
+			return new rendering::film::tonemapping::Identity;
+		}
+	}
+
+	return nullptr;
 }
 
 rendering::film::filter::Filter* Loader::load_filter(const rapidjson::Value& film_value) const {
-	float radius = 1.f;
-	float alpha = 0.3f;
+	float radius = 0.8f;
+	float alpha  = 0.3f;
 	return new rendering::film::filter::Gaussian(math::float2(radius, radius), alpha);
 }
 

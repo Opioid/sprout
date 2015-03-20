@@ -19,8 +19,18 @@ template<typename T>
 inline Vector3<T>::Vector3(const T* v) : x(v[0]), y(v[1]), z(v[2]) {}
 
 template<typename T>
+inline Vector3<T> Vector3<T>::operator+(T s) const {
+	return Vector3(x + s, y + s, z + s);
+}
+
+template<typename T>
 inline Vector3<T> Vector3<T>::operator+(const Vector3& v) const {
 	return Vector3(x + v.x, y + v.y, z + v.z);
+}
+
+template<typename T>
+inline Vector3<T> Vector3<T>::operator-(T s) const {
+	return Vector3(x - s, y - s, z - s);
 }
 
 template<typename T>
@@ -37,6 +47,11 @@ template<typename T>
 inline Vector3<T> Vector3<T>::operator/(T s) const {
 	T is = T(1) / s;
 	return Vector3(is * x, is * y, is * z);
+}
+
+template<typename T>
+inline Vector3<T> Vector3<T>::operator/(const Vector3& v) const {
+	return Vector3(x / v.x, y / v.y, z / v.z);
 }
 
 template<typename T>
