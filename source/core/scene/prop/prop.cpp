@@ -5,6 +5,8 @@
 
 namespace scene {
 
+Prop::~Prop() {}
+
 void Prop::init(std::shared_ptr<shape::Shape> shape) {
 	shape_ = shape;
 }
@@ -14,6 +16,12 @@ bool Prop::intersect(math::Oray& ray, shape::Intersection& intersection) const {
 	transformation_at(ray.time, transformation);
 
 	math::float2 bounds;
+
+	if (shape_->is_complex()) {
+		if (!aabb_.intersect_p(ray)) {
+			return false;
+		}
+	}
 
 	float hit_t;
 	bool hit = shape_->intersect(transformation, ray, bounds, intersection, hit_t);
@@ -31,6 +39,12 @@ bool Prop::intersect_p(const math::Oray& ray) const {
 	transformation_at(ray.time, transformation);
 
 	math::float2 bounds;
+
+	if (shape_->is_complex()) {
+		if (!aabb_.intersect_p(ray)) {
+			return false;
+		}
+	}
 
 	return shape_->intersect_p(transformation, ray, bounds);
 }

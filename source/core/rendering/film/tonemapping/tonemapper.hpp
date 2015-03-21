@@ -7,6 +7,8 @@ namespace rendering { namespace film { namespace tonemapping {
 class Tonemapper {
 public:
 
+	virtual ~Tonemapper() {}
+
 	virtual math::float3 tonemap(const math::float3& color) const = 0;
 };
 

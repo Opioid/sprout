@@ -13,6 +13,8 @@ struct Intersection;
 class Shape {
 public:
 
+	virtual ~Shape();
+
 	const math::AABB& aabb() const;
 
 	virtual bool intersect(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounding,

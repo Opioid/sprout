@@ -2,6 +2,8 @@
 
 namespace scene { namespace shape {
 
+Shape::~Shape() {}
+
 const math::AABB& Shape::aabb() const {
 	return aabb_;
 }

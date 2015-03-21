@@ -4,6 +4,8 @@
 #include "scene/prop/prop.hpp"
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
+#include "scene/shape/triangle/triangle_mesh.hpp"
+#include "resource/resource_cache.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include <fstream>
@@ -11,9 +13,9 @@
 
 namespace scene {
 
-Loader::Loader() : plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()) {}
+Loader::Loader() : plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()), mesh_cache_(mesh_provider_) {}
 
-bool Loader::load(const std::string& filename, Scene& scene) const {
+bool Loader::load(const std::string& filename, Scene& scene) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {
 		return false;
@@ -55,7 +57,7 @@ surrounding::Surrounding* Loader::load_surrounding(const rapidjson::Value& surro
 	return nullptr;
 }
 
-void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene) const {
+void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene) {
 	if (!entities_value.IsArray()) {
 		return;
 	}
@@ -101,7 +103,7 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 	}
 }
 
-Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) const {
+Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
 
 	for (auto n = prop_value.MemberBegin(); n != prop_value.MemberEnd(); ++n) {
@@ -124,14 +126,16 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) const 
 	return prop;
 }
 
-std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) const {
+std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {
 	std::string type = json::read_string(shape_value, "type");
-
 	if (!type.empty()) {
 		return shape(type);
 	}
 
 	std::string file = json::read_string(shape_value, "file");
+	if (!file.empty()) {
+		return mesh_cache_.load(file);
+	}
 
 	return nullptr;
 }

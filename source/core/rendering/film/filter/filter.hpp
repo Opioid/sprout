@@ -7,6 +7,8 @@ namespace rendering { namespace film { namespace filter {
 class Filter {
 public:
 
+	virtual ~Filter() {}
+
 	virtual float evaluate(const math::float2& p) const = 0;
 };
 

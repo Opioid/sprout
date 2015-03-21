@@ -12,6 +12,7 @@ HEADERS +=
 
 include(image/image.pri)
 include(rendering/rendering.pri)
+include(resource/resource.pri)
 include(scene/scene.pri)
 include(take/take.pri)
 

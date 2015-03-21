@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bvh/tree.hpp"
+#include "bvh/scene_bvh_tree.hpp"
 #include "base/math/ray.hpp"
 #include <vector>
 

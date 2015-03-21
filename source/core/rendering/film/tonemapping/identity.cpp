@@ -1,5 +1,3 @@
-#pragma once
-
 #include "identity.hpp"
 
 namespace rendering { namespace film { namespace tonemapping {

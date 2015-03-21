@@ -2,7 +2,7 @@
 #include "surrounding/surrounding.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
-#include "bvh/builder.hpp"
+#include "bvh/scene_bvh_builder.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 

@@ -17,6 +17,8 @@ class Shape;
 class Prop : public Entity {
 public:
 
+	virtual ~Prop();
+
 	void init(std::shared_ptr<shape::Shape> shape);
 
 	bool intersect(math::Oray& ray, shape::Intersection& intersection) const;

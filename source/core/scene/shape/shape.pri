@@ -9,3 +9,4 @@ HEADERS += \
 	scene/shape/sphere.hpp \
 
 include(geometry/geometry.pri)
+include(triangle/triangle.pri)
