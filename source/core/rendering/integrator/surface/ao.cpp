@@ -3,6 +3,7 @@
 #include "scene/prop/prop_intersection.hpp"
 #include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
+#include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
 namespace rendering {

@@ -1,6 +1,7 @@
 #include "plane.hpp"
 #include "geometry/shape_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "base/math/vector.inl"
 #include "base/math/ray.inl"
 
 namespace scene { namespace shape {

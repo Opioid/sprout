@@ -2,6 +2,7 @@
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape.hpp"
 #include "base/math/vector.inl"
+#include "base/math/matrix.inl"
 
 namespace scene {
 
