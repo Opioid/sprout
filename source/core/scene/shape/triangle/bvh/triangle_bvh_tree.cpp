@@ -5,6 +5,22 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
+bool Node::has_children() const {
+	return has_children_flag == (start_index & has_children_flag);
+}
+
+void Node::set_has_children(bool children) {
+	if (children) {
+		start_index |= has_children_flag;
+	} else {
+		start_index &= ~has_children_flag;
+	}
+}
+
+void Node::set_right_child(uint32_t offset) {
+	end_index = offset;
+}
+
 const math::AABB& Tree::aabb() const {
 	return nodes_[0].aabb;
 }
@@ -42,6 +58,11 @@ bool Tree::intersect_p(const math::Oray& ray, const math::float2& bounds) const 
 			return true;
 		}
 	}
+
+	return false;
+}
+
+bool Tree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const {
 
 	return false;
 }

@@ -42,6 +42,7 @@ void Builder::build(Tree& tree, const std::vector<Index_triangle>& triangles, co
 
 	nodes_ = &tree.allocate_nodes(num_nodes_);
 
+	current_node_ = 0;
 	serialize(&root);
 }
 
@@ -51,6 +52,16 @@ void Builder::serialize(Build_node* node) {
 	n.start_index = node->start_index;
 	n.end_index = node->end_index;
 	n.axis = node->axis;
+
+	if (node->children[0]) {
+		serialize(node->children[0]);
+
+		n.set_right_child(current_node_index());
+
+		serialize(node->children[1]);
+
+		n.set_has_children(true);
+	}
 }
 
 Node& Builder::new_node() {

@@ -14,6 +14,13 @@ class Mesh;
 namespace bvh {
 
 struct Node {
+	static const uint32_t has_children_flag = 0xFFFFFFFF;
+
+	bool has_children() const;
+	void set_has_children(bool children);
+
+	void set_right_child(uint32_t offset);
+
 	math::AABB aabb;
 	uint32_t start_index;
 	uint32_t end_index;
@@ -31,6 +38,8 @@ public:
 	std::vector<Node>& allocate_nodes(uint32_t num_nodes);
 
 private:
+
+	bool intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const;
 
 	std::vector<Node> nodes_;
 
