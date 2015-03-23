@@ -59,6 +59,9 @@ template<typename T>
 Vector3<T> operator*(const Matrix3x3<T>& m, const Vector3<T>& v);
 
 template<typename T>
+Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v);
+
+template<typename T>
 Matrix3x3<T> normalize(const Matrix3x3<T>& m);
 
 template<typename T>

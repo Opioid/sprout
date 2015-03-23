@@ -29,13 +29,13 @@ void Builder::split(Build_node* node, const std::vector<Prop*>& props, size_t ma
 	if (props.size() <= max_shapes) {
 		assign(node, props, out_props);
 	} else {
+		math::plane sp = average_splitting_plane(node->aabb, props, node->axis);
+
 		size_t reserve_size = props.size() / 2 + 1;
 		std::vector<Prop*> props0;
 		props0.reserve(reserve_size);
 		std::vector<Prop*> props1;
 		props1.reserve(reserve_size);
-
-		math::plane sp = choose_average_splitting_plane(node->aabb, props, node->axis);
 
 		for (auto p : props) {
 			if (!p->shape()->is_finite()) {
@@ -88,7 +88,7 @@ math::AABB Builder::aabb(const std::vector<Prop*>& props) {
 	return aabb;
 }
 
-math::plane Builder::choose_average_splitting_plane(const math::AABB aabb, const std::vector<Prop*>& props, uint32_t& axis) {
+math::plane Builder::average_splitting_plane(const math::AABB aabb, const std::vector<Prop*>& props, uint8_t& axis) {
 	math::float3 average = math::float3::identity;
 
 	uint32_t num = 0;

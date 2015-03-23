@@ -18,6 +18,8 @@ struct Triangle {
 
 	bool intersect(const math::Oray& ray, Coordinates& coordinates) const;
 	bool intersect_p(const math::Oray& ray) const;
+
+	void interpolate(float u, float v, math::float3& n, math::float3& t, math::float2& uv) const;
 };
 
 }}}

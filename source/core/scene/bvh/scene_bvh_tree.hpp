@@ -19,7 +19,7 @@ struct Build_node {
 
 	math::AABB aabb;
 
-	uint32_t axis;
+	uint8_t axis;
 
 	uint32_t offset;
 	uint32_t props_end;

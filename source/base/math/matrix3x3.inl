@@ -93,6 +93,13 @@ inline Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) {
 }
 
 template<typename T>
+inline Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v) {
+	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+}
+
+template<typename T>
 inline Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m) {
 	Vector3<T> temp(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 					v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
@@ -158,20 +165,17 @@ template<typename T>
 inline void set_basis(Matrix3x3<T>& m, const Vector3<T>& v) {
 	m.rows[2] = v;
 
-	if (v.x < T(0.6) && v.x > -T(0.6))
-	{
+	if (v.x < T(0.6) && v.x > -T(0.6)) {
 		m.rows[1] = Vector3<T>(T(1), T(0), T(0));
 	}
-	else if (v.y < T(0.6) && v.y > T(0.6))
-	{
+	else if (v.y < T(0.6) && v.y > T(0.6)) {
 		m.rows[1] = Vector3<T>(T(0), T(1), T(0));
 	}
-	else
-	{
+	else {
 		m.rows[1] = Vector3<T>(T(0), T(0), T(1));
 	}
 
-	m.rows[0] = normalize(cross(v, m.rows[1]));
+	m.rows[0] = normalized(cross(v, m.rows[1]));
 	m.rows[1] = cross(m.rows[0], m.rows[2]);
 }
 

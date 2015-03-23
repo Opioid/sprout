@@ -35,7 +35,7 @@ std::shared_ptr<Mesh> Provider::load(const std::string& filename) const {
 	auto mesh = std::make_shared<Mesh>();
 
 	bvh::Builder builder;
-	builder.build(mesh->tree_, triangles, vertices);
+	builder.build(mesh->tree_, triangles, vertices, 8000);
 
 	mesh->aabb_ = mesh->tree_.aabb();
 
@@ -95,15 +95,42 @@ void Provider::load_mesh_data(const rapidjson::Value& geometry_value, std::vecto
 		vertices[i].p = json::read_float3(*p);
 	}
 
+	bool has_normals = false;
+	bool has_tangents = false;
+
 	for (auto n = geometry_value.MemberBegin(); n != geometry_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
 		if ("normals" == node_name) {
 			size_t i = 0;
-			for (auto n = positions_value.Begin(); n != positions_value.End(); ++n, ++i) {
+			for (auto n = node_value.Begin(); n != node_value.End(); ++n, ++i) {
 				vertices[i].n = json::read_float3(*n);
 			}
+
+			has_normals = true;
+		} else if ("tangents_and_bitangent_signs" == node_name) {
+			size_t i = 0;
+			for (auto n = node_value.Begin(); n != node_value.End(); ++n, ++i) {
+				math::float4 t =  json::read_float4(*n);
+				vertices[i].t = t.xyz;
+				vertices[i].bitangent_sign = t.w;
+			}
+
+			has_tangents = true;
+		}
+	}
+
+	if (has_normals && !has_tangents) {
+		// If normals but no tangents were loaded, compute the tangent space manually
+
+		for (auto& v : vertices) {
+			math::float3 t;
+			math::float3 b;
+
+			math::coordinate_system(v.n, t, b);
+
+			v.t = t;
 		}
 	}
 }

@@ -23,7 +23,7 @@ private:
 
 	static math::AABB aabb(const std::vector<Prop*>& props);
 
-	static math::plane choose_average_splitting_plane(const math::AABB aabb, const std::vector<Prop*>& props, uint32_t& axis);
+	static math::plane average_splitting_plane(const math::AABB aabb, const std::vector<Prop*>& props, uint8_t& axis);
 };
 
 }}

@@ -1,5 +1,5 @@
 #include "triangle_mesh.hpp"
-#include "triangle_primitive.hpp"
+#include "triangle_primitive.inl"
 #include "triangle_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
@@ -22,6 +22,17 @@ bool Mesh::intersect(const Composed_transformation& transformation, const math::
 		intersection.epsilon = 3e-3f * pi.c.t;
 
 		intersection.p = ray.point(pi.c.t);
+
+		math::float3 n;
+		math::float3 t;
+		math::float2 uv;
+		tree_.triangles_[pi.index].interpolate(pi.c.u, pi.c.v, n, t, uv);
+
+		intersection.n = math::transform_vector(transformation.rotation, n);
+		intersection.t = math::transform_vector(transformation.rotation, t);
+		intersection.b = math::cross(intersection.n, intersection.t);
+		intersection.uv = uv;
+
 		hit_t = pi.c.t;
 		return true;
 	}
