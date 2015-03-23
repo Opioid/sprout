@@ -134,7 +134,7 @@ void Builder::assign(Build_node* node,
 		out_triangles.push_back(Triangle{vertices[t.a], vertices[t.b], vertices[t.c], t.material_index});
 	}
 
-	node->start_index = static_cast<uint32_t>(out_triangles.size());
+	node->end_index = static_cast<uint32_t>(out_triangles.size());
 }
 
 math::float3 triangle_min(const math::float3& a, const math::float3& b, const math::float3& c, const math::float3& x) {
