@@ -6,7 +6,7 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Build_node::Build_node() {
+Build_node::Build_node() : start_index(0), end_index(0) {
 	children[0] = nullptr;
 	children[1] = nullptr;
 }

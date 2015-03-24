@@ -35,7 +35,7 @@ std::shared_ptr<Mesh> Provider::load(const std::string& filename) const {
 	auto mesh = std::make_shared<Mesh>();
 
 	bvh::Builder builder;
-	builder.build(mesh->tree_, triangles, vertices, 8000);
+	builder.build(mesh->tree_, triangles, vertices, 8);
 
 	mesh->aabb_ = mesh->tree_.aabb();
 

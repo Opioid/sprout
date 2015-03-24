@@ -16,6 +16,12 @@ namespace bvh {
 struct Node {
 	static const uint32_t has_children_flag = 0xFFFFFFFF;
 
+	struct Children {
+		uint32_t a, b;
+	};
+
+	Children children(uint8_t sign, uint32_t id) const;
+
 	bool has_children() const;
 	void set_has_children(bool children);
 
@@ -40,6 +46,7 @@ public:
 private:
 
 	bool intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const;
+	bool intersect_node_p(uint32_t n, const math::Oray& ray) const;
 
 	std::vector<Node> nodes_;
 
