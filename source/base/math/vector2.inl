@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vector2.hpp"
+#include <cmath>
 
 namespace math {
 
@@ -99,6 +100,16 @@ inline Vector2<T> reciprocal(const Vector2<T>& v) {
 template<typename T>
 inline Vector2<T> round(const Vector2<T>& v){
 	return Vector2<T>(std::floor(v.x >= T(0) ? v.x + T(0.5) : v.x - T(0.5)), std::floor(v.y >= T(0) ? v.y + T(0.5) : v.y - T(0.5)));
+}
+
+template<typename T>
+inline Vector2<T> min(const Vector2<T>& a, const Vector2<T>& b) {
+	return Vector2<T>(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y);
+}
+
+template<typename T>
+inline Vector2<T> max(const Vector2<T>& a, const Vector2<T>& b) {
+	return Vector2<T>(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y);
 }
 
 }

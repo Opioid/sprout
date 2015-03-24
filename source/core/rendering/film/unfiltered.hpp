@@ -9,7 +9,7 @@ public:
 
 	Unfiltered(const math::uint2& dimensions, float exposure, tonemapping::Tonemapper* tonemapper);
 
-	virtual void add_sample(const sampler::Camera_sample& sample, const math::float3& color);
+	virtual void add_sample(const sampler::Camera_sample& sample, const math::float3& color, const Rectui& tile);
 };
 
 }}

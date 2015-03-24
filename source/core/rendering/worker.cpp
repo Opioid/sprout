@@ -41,7 +41,7 @@ void Worker::render(const scene::Scene& scene, const scene::camera::Camera& came
 
 				math::float3 color = li(sample_id, ray);
 
-				film.add_sample(sample, color);
+				film.add_sample(sample, color, tile);
 
 				++sample_id;
 			}

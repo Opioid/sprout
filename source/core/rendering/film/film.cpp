@@ -60,6 +60,10 @@ void Film::add_pixel(uint32_t x, uint32_t y, const math::float3& color, float we
 	pixel.weight_sum += weight;
 }
 
+void Film::add_pixel_atomic(uint32_t x, uint32_t y, const math::float3& color, float weight) {
+	add_pixel(x, y, color, weight);
+}
+
 math::float3 Film::expose(const math::float3& color, float exposure) {
 	return std::exp2(exposure) * color;
 }

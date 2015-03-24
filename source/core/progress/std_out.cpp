@@ -26,7 +26,7 @@ void Std_out::tick() {
 	if (p >= threshold_) {
 		threshold_ += step_;
 
-		std::cout << static_cast<uint32_t>(p) << "%...";
+		std::cout << static_cast<uint32_t>(p) << "%... " << std::flush;
 	}
 }
 

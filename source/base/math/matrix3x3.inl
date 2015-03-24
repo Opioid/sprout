@@ -1,6 +1,7 @@
 #pragma once
 
 #include "matrix3x3.hpp"
+#include <cmath>
 
 namespace math {
 

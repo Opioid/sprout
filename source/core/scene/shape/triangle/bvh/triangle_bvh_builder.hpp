@@ -3,6 +3,7 @@
 #include "base/math/bounding/aabb.hpp"
 #include "base/math/plane.hpp"
 #include <cstdint>
+#include <cstddef>
 #include <vector>
 
 namespace scene { namespace shape {

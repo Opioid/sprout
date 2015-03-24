@@ -39,27 +39,33 @@ struct Vector2 {
 };
 
 template<typename T>
-inline Vector2<T> operator*(T s, const Vector2<T>& v);
+Vector2<T> operator*(T s, const Vector2<T>& v);
 
 template<typename T>
-inline Vector2<T> operator/(T s, const Vector2<T>& v);
+Vector2<T> operator/(T s, const Vector2<T>& v);
 
 template<typename T>
-inline T dot(const Vector2<T>& a, const Vector2<T>& b);
+T dot(const Vector2<T>& a, const Vector2<T>& b);
 
 template<typename T>
-inline T length(const Vector2<T>& v);
+T length(const Vector2<T>& v);
 
 template<typename T>
-inline T squared_length(const Vector2<T>& v);
+T squared_length(const Vector2<T>& v);
 
 template<typename T>
-inline Vector2<T> normalize(const Vector2<T>& v);
+Vector2<T> normalize(const Vector2<T>& v);
 
 template<typename T>
-inline Vector2<T> reciprocal(const Vector2<T>& v);
+Vector2<T> reciprocal(const Vector2<T>& v);
 
 template<typename T>
-inline Vector2<T> round(const Vector2<T>& v);
+Vector2<T> round(const Vector2<T>& v);
+
+template<typename T>
+Vector2<T> min(const Vector2<T>& a, const Vector2<T>& b);
+
+template<typename T>
+Vector2<T> max(const Vector2<T>& a, const Vector2<T>& b);
 
 }

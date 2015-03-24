@@ -32,14 +32,17 @@ public:
 	Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
 			 std::shared_ptr<sampler::Sampler> sampler);
 
-	void render(const scene::Scene& scene, const Context& context, progress::Sink& progressor) const;
+	void render(const scene::Scene& scene, const Context& context, size_t num_workers, progress::Sink& progressor);
 
 private:
 
-	math::uint2 tile_dimensions_;
+	bool advance_current_pixel(const math::uint2& dimensions);
 
 	std::shared_ptr<Surface_integrator_factory> surface_integrator_factory_;
 	std::shared_ptr<sampler::Sampler> sampler_;
+
+	math::uint2 tile_dimensions_;
+	math::uint2 current_pixel_;
 };
 
 }

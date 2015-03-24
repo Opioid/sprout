@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rendering/rectangle.hpp"
 #include "image/buffer/buffer4.hpp"
 
 namespace rendering {
@@ -30,11 +31,13 @@ public:
 
 	void clear();
 
-	virtual void add_sample(const sampler::Camera_sample& sample, const math::float3& color) = 0;
+	virtual void add_sample(const sampler::Camera_sample& sample, const math::float3& color, const Rectui& tile) = 0;
 
 protected:
 
 	void add_pixel(uint32_t x, uint32_t y, const math::float3& color, float weight);
+
+	void add_pixel_atomic(uint32_t x, uint32_t y, const math::float3& color, float weight);
 
 	static math::float3 expose(const math::float3& color, float exposure);
 

@@ -15,6 +15,10 @@ float duration_to_seconds(std::chrono::high_resolution_clock::duration duration)
 int main() {
 	std::cout << "Welcome to sprout!" << std::endl;
 
+	size_t num_workers = 5;
+
+	std::cout << "#Threads " << num_workers << std::endl;
+
 	std::chrono::high_resolution_clock clock;
 
 	std::cout << "Loading..." << std::endl;
@@ -48,7 +52,7 @@ int main() {
 
 	auto rendering_start = clock.now();
 
-	renderer.render(scene, take->context, progressor);
+	renderer.render(scene, take->context, num_workers, progressor);
 
 	auto rendering_duration = clock.now() - rendering_start;
 	std::cout << "(" << duration_to_seconds(rendering_duration) << "s)" << std::endl;
