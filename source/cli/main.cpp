@@ -5,6 +5,7 @@
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/image/storage/writer.hpp"
+#include "core/progress/std_out.hpp"
 #include "base/math/vector.inl"
 #include <iostream>
 #include <chrono>
@@ -41,11 +42,13 @@ int main() {
 
 	rendering::Renderer renderer(take->surface_integrator_factory, take->sampler);
 
+	progress::Std_out progressor;
+
 	std::cout << "Rendering..." << std::endl;
 
 	auto rendering_start = clock.now();
 
-	renderer.render(scene, take->context);
+	renderer.render(scene, take->context, progressor);
 
 	auto rendering_duration = clock.now() - rendering_start;
 	std::cout << "(" << duration_to_seconds(rendering_duration) << "s)" << std::endl;

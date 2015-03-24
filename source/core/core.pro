@@ -11,6 +11,7 @@ SOURCES +=
 HEADERS +=
 
 include(image/image.pri)
+include(progress/progress.pri)
 include(rendering/rendering.pri)
 include(resource/resource.pri)
 include(scene/scene.pri)

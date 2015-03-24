@@ -9,13 +9,21 @@
 
 namespace rendering {
 
-Renderer::Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory, std::shared_ptr<sampler::Sampler> sampler) :
-	surface_integrator_factory_(surface_integrator_factory), sampler_(sampler) {}
+Renderer::Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
+				   std::shared_ptr<sampler::Sampler> sampler) :
+	tile_dimensions_(math::uint2(32, 32)), surface_integrator_factory_(surface_integrator_factory), sampler_(sampler) {}
 
-void Renderer::render(const scene::Scene& scene, const Context& context) const {
+void Renderer::render(const scene::Scene& scene, const Context& context, progress::Sink& progressor) const {
 	auto& film = context.camera->film();
 
 	auto& dimensions = film.dimensions();
+
+//	int(math32.Ceil(float32(dimensions.X) / float32(r.tileSize.X))) * int(math32.Ceil(float32(dimensions.Y) / float32(r.tileSize.Y)))
+
+	size_t num_tiles = static_cast<size_t>(std::ceil(static_cast<float>(dimensions.x) / static_cast<float>(tile_dimensions_.x)))
+					 * static_cast<size_t>(std::ceil(static_cast<float>(dimensions.y) / static_cast<float>(tile_dimensions_.y)));
+
+
 
 /*	sampler::Camera_sample sample;
 
