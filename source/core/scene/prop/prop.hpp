@@ -24,9 +24,11 @@ class Shape;
 class Prop : public Entity {
 public:
 
+	typedef std::vector<std::shared_ptr<rendering::material::Material>> Materials;
+
 	virtual ~Prop();
 
-	void init(std::shared_ptr<shape::Shape> shape);
+	void init(std::shared_ptr<shape::Shape> shape, const Materials& materials);
 
 	bool intersect(math::Oray& ray, shape::Intersection& intersection) const;
 
@@ -46,7 +48,7 @@ private:
 
 	math::AABB aabb_;
 
-	std::vector<std::shared_ptr<rendering::material::Material>> materials_;
+	Materials materials_;
 };
 
 }

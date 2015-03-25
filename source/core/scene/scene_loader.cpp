@@ -107,6 +107,8 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
 
+	Prop::Materials materials;
+
 	for (auto n = prop_value.MemberBegin(); n != prop_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
@@ -122,7 +124,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 
 	Prop* prop = scene.create_prop();
 
-	prop->init(shape);
+	prop->init(shape, materials);
 
 	return prop;
 }

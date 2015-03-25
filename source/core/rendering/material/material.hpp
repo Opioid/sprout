@@ -2,15 +2,14 @@
 
 namespace rendering { namespace material {
 
-class Sample {
-public:
-
-};
+class Sample;
 
 class Material {
 public:
 
-	const Sample& sample();
+	virtual ~Material() {}
+
+	virtual const Sample& sample() = 0;
 };
 
 }}

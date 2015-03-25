@@ -8,8 +8,9 @@ namespace scene {
 
 Prop::~Prop() {}
 
-void Prop::init(std::shared_ptr<shape::Shape> shape) {
+void Prop::init(std::shared_ptr<shape::Shape> shape, const Materials& materials) {
 	shape_ = shape;
+	materials_ = materials;
 }
 
 bool Prop::intersect(math::Oray& ray, shape::Intersection& intersection) const {
