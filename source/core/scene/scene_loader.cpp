@@ -1,7 +1,6 @@
 #include "scene_loader.hpp"
 #include "scene.hpp"
 #include "scene/surrounding/uniform_surrounding.hpp"
-#include "scene/prop/prop.hpp"
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
@@ -115,6 +114,8 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 
 		if ("shape" == node_name) {
 			shape = load_shape(node_value);
+		} else if ("materials" == node_name) {
+			load_materials(node_value, materials);
 		}
 	}
 
@@ -152,5 +153,22 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type) const {
 
 	return nullptr;
 }
+
+void Loader::load_materials(const rapidjson::Value& materials_value, Prop::Materials& materials) {
+	if (!materials_value.IsArray()) {
+		return;
+	}
+
+	materials.reserve(materials_value.Size());
+
+	for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
+		auto material = material_cache_.load(m->GetString());
+
+		if (material) {
+			materials.push_back(material);
+		}
+	}
+}
+
 
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "prop/prop.hpp"
 #include "shape/triangle/triangle_mesh_provider.hpp"
 #include "material/material_provider.hpp"
 #include "resource/resource_cache.hpp"
@@ -26,7 +27,6 @@ class Mesh;
 }}
 
 class Scene;
-class Prop;
 
 class Loader {
 public:
@@ -46,6 +46,8 @@ private:
 	std::shared_ptr<shape::Shape> load_shape(const rapidjson::Value& shape_value);
 
 	std::shared_ptr<shape::Shape> shape(const std::string& type) const;
+
+	void load_materials(const rapidjson::Value& materials_value, Prop::Materials& materials);
 
 	std::shared_ptr<shape::Shape> plane_;
 	std::shared_ptr<shape::Shape> sphere_;
