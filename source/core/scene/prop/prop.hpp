@@ -4,6 +4,13 @@
 #include "base/math/ray.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include <memory>
+#include <vector>
+
+namespace rendering { namespace material {
+
+class Material;
+
+}}
 
 namespace scene {
 
@@ -29,6 +36,8 @@ public:
 
 	const math::AABB& aabb() const;
 
+	rendering::material::Material* material(uint32_t index) const;
+
 private:
 
 	virtual void on_set_transformation();
@@ -36,6 +45,8 @@ private:
 	std::shared_ptr<shape::Shape> shape_;
 
 	math::AABB aabb_;
+
+	std::vector<std::shared_ptr<rendering::material::Material>> materials_;
 };
 
 }

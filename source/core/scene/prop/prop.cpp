@@ -58,6 +58,10 @@ const math::AABB& Prop::aabb() const {
 	return aabb_;
 }
 
+rendering::material::Material* Prop::material(uint32_t index) const {
+	return materials_[index].get();
+}
+
 void Prop::on_set_transformation() {
 	shape_->aabb().transform(transformation_.object_to_world, aabb_);
 }

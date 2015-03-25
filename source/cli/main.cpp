@@ -6,16 +6,17 @@
 #include "core/scene/scene_loader.hpp"
 #include "core/image/storage/writer.hpp"
 #include "core/progress/std_out.hpp"
-#include "base/math/vector.inl"
-#include <iostream>
 #include <chrono>
+#include <thread>
+#include <algorithm>
+#include <iostream>
 
 float duration_to_seconds(std::chrono::high_resolution_clock::duration duration);
 
 int main() {
 	std::cout << "Welcome to sprout!" << std::endl;
 
-	size_t num_workers = 5;
+	size_t num_workers = std::max(std::thread::hardware_concurrency(), 1u);
 
 	std::cout << "#Threads " << num_workers << std::endl;
 

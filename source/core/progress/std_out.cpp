@@ -3,7 +3,7 @@
 
 namespace progress {
 
-void Std_out::start(uint32_t resolution) {
+void Std_out::start(size_t resolution) {
 	resolution_ = resolution;
 	progress_ = 0;
 	step_ = 10.f;
@@ -26,7 +26,7 @@ void Std_out::tick() {
 	if (p >= threshold_) {
 		threshold_ += step_;
 
-		std::cout << static_cast<uint32_t>(p) << "%... " << std::flush;
+		std::cout << static_cast<size_t>(p) << "%... " << std::flush;
 	}
 }
 

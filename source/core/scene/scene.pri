@@ -9,6 +9,7 @@ HEADERS += \
 include(bvh/bvh.pri)
 include(camera/camera.pri)
 include(entity/entity.pri)
+include(material/material.pri)
 include(prop/prop.pri)
 include(shape/shape.pri)
 include(surrounding/surrounding.pri)

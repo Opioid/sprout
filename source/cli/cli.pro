@@ -6,6 +6,7 @@ CONFIG += c++14
 unix: CONFIG += pthread
 CONFIG(debug, release|debug):DEFINES += _DEBUG
 
+
 SOURCES += \
 	main.cpp
 
