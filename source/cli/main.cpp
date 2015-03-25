@@ -16,7 +16,7 @@ float duration_to_seconds(std::chrono::high_resolution_clock::duration duration)
 int main() {
 	std::cout << "Welcome to sprout!" << std::endl;
 
-	size_t num_workers = std::max(std::thread::hardware_concurrency(), 1u);
+	size_t num_workers = std::max(std::thread::hardware_concurrency(), 1u) - 1;
 
 	std::cout << "#Threads " << num_workers << std::endl;
 

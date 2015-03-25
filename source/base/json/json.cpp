@@ -64,6 +64,15 @@ float read_float(const rapidjson::Value& value) {
 	return static_cast<float>(value.GetDouble());
 }
 
+float read_float(const rapidjson::Value& value, const std::string& name, float default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
+	if (value.MemberEnd() == node) {
+		return default_value;
+	}
+
+	return static_cast<float>(node->value.GetDouble());
+}
+
 math::float2 read_float2(const rapidjson::Value& value) {
 	return math::float2(static_cast<float>(value[0u].GetDouble()), static_cast<float>(value[1].GetDouble()));
 }

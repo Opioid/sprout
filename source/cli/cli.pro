@@ -1,11 +1,11 @@
 TEMPLATE = app
+QT -= core gui
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++14
 unix: CONFIG += pthread
 CONFIG(debug, release|debug):DEFINES += _DEBUG
-
 
 SOURCES += \
 	main.cpp

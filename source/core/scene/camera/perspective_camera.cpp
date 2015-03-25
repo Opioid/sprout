@@ -5,11 +5,12 @@
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
+#include "base/math/sampling.hpp"
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film, float fov) :
-	Camera(dimensions, film), fov_(fov) {}
+Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film, float fov, float lens_radius, float focal_distance) :
+	Camera(dimensions, film), fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance) {}
 
 void Perspective::update_view() {
 	float ratio = dimensions_.x / dimensions_.y;
@@ -26,9 +27,6 @@ void Perspective::update_view() {
 
 void Perspective::generate_ray(const rendering::sampler::Camera_sample& sample, math::Oray& ray) const {
 	/*
-direction := p.leftTop.Add(p.dx.Scale(sample.Coordinates.X)).Add(p.dy.Scale(sample.Coordinates.Y))
-
-r := math.Ray{math.MakeVector3(0.0, 0.0, 0.0), direction, 0.0, 1000.0}
 
 if p.lensRadius > 0.0 {
 	lensU, lensV := math.SampleDiskConcentric(sample.LensUv.X, sample.LensUv.Y)
@@ -40,20 +38,20 @@ if p.lensRadius > 0.0 {
 	r.Origin = lensUv
 	r.Direction = focus.Sub(r.Origin)
 }
-
-ray.Time = math32.Lerp(shutterOpen, shutterClose, sample.Time)
-
-p.entity.TransformationAt(ray.Time, transformation)
-
-ray.Origin = transformation.ObjectToWorld.TransformPoint(r.Origin)
-ray.SetDirection(transformation.ObjectToWorld.TransformVector3(r.Direction.Normalized()))
-ray.MaxT  = 1000.0
-ray.Depth = 0*/
+*/
 
 
 	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
 
 	math::Ray<float> r(math::float3::identity, direction);
+
+	if (lens_radius_ > 0.f) {
+		math::float2 lens  = math::sample_disk_concentric(sample.lens_uv);
+		math::float3 focus = r.point(focal_distance_ / r.direction.z);
+
+		r.origin = math::float3(lens.x * lens_radius_, lens.y * lens_radius_, 0.f);
+		r.direction = focus - r.origin;
+	}
 
 	ray.time = 0.f;
 

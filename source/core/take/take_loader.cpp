@@ -6,6 +6,7 @@
 #include "rendering/film/tonemapping/filmic.hpp"
 #include "rendering/film/tonemapping/identity.hpp"
 #include "rendering/integrator/surface/ao.hpp"
+#include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/sampler/scrambled_hammersley_sampler.hpp"
 #include "rendering/sampler/random_sampler.hpp"
 #include "scene/camera/perspective_camera.hpp"
@@ -51,7 +52,7 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 		take->sampler = std::make_shared<rendering::sampler::Random>(1, take->rng);
 	}
 
-	if (!take->context.camera) {
+	if (!take->context.camera || !take->surface_integrator_factory) {
 		return nullptr;
 	}
 
@@ -72,6 +73,8 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 	math::float2 dimensions = math::float2::identity;
 	rendering::film::Film* film = nullptr;
 	float fov = 60.f;
+	float lens_radius = 0.f;
+	float focal_distance = 0.f;
 
 	for (auto n = type_value->MemberBegin(); n != type_value->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -87,13 +90,17 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 			film = load_film(node_value);
 		} else if ("fov" == node_name) {
 			fov = math::degrees_to_radians(json::read_float(node_value));
+		} else if ("lens_radius" == node_name) {
+			lens_radius = json::read_float(node_value);
+		} else if ("focal_distance" == node_name) {
+			focal_distance = json::read_float(node_value);
 		}
 	}
 
 	std::shared_ptr<scene::camera::Camera> camera;
 
 	if ("Perspective" == type_name) {
-		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, fov);
+		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, fov, lens_radius, focal_distance);
 	} else if ("Orthographic" == type_name) {
 
 	}
@@ -177,7 +184,20 @@ std::shared_ptr<rendering::sampler::Sampler> Loader::load_sampler(const rapidjso
 }
 
 std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value) const {
-	return std::make_shared<rendering::Ao_factory>(16, 5.f);
+	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
+		const std::string type_name = n->name.GetString();
+		const rapidjson::Value& type_value = n->value;
+
+		if ("AO" == type_name) {
+			uint32_t num_samples = json::read_uint(type_value, "num_samples", 1);
+			float radius = json::read_float(type_value, "radius", 1.f);
+			return std::make_shared<rendering::Ao_factory>(num_samples, radius);
+		} else if ("Whitted" == type_name) {
+			return std::make_shared<rendering::Whitted_factory>();
+		}
+	}
+
+	return nullptr;
 }
 
 }

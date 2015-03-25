@@ -21,6 +21,7 @@ bool Random::generate_camera_sample(const math::float2& offset, Camera_sample& s
 
 	sample.coordinates = offset + s2d;
 	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
+	sample.lens_uv = s2d.yx();
 
 	++current_sample_;
 

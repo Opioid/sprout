@@ -19,6 +19,8 @@ struct Vector2 {
 	template<typename U>
 	explicit Vector2(const Vector2<U>& v);
 
+	Vector2 yx() const;
+
 	Vector2 operator+(const Vector2& v) const;
 
 	Vector2 operator-(const Vector2& v) const;

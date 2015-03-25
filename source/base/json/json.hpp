@@ -13,7 +13,9 @@ std::unique_ptr<rapidjson::Document> parse(std::istream& stream);
 
 std::string read_error(rapidjson::Document& document, std::istream& stream);
 
-float        read_float(const rapidjson::Value& value);
+float read_float(const rapidjson::Value& value);
+float read_float(const rapidjson::Value& value, const std::string& name, float default_value = 0.f);
+
 math::float2 read_float2(const rapidjson::Value& value);
 
 math::float3 read_float3(const rapidjson::Value& value);
@@ -23,8 +25,8 @@ math::float4 read_float4(const rapidjson::Value& value);
 
 uint32_t read_uint(const rapidjson::Value& value, const std::string& name, uint32_t default_value = 0);
 
-math::uint2  read_uint2(const rapidjson::Value& value);
-math::uint3  read_uint3(const rapidjson::Value& value);
+math::uint2 read_uint2(const rapidjson::Value& value);
+math::uint3 read_uint3(const rapidjson::Value& value);
 
 // math::quaternion read_quaternion(const rapidjson::Value& value);
 math::float3x3   read_rotation_matrix(const rapidjson::Value& value);
