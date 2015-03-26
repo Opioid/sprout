@@ -9,7 +9,7 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-std::shared_ptr<Mesh> Provider::load(const std::string& filename) const {
+std::shared_ptr<Mesh> Provider::load(const std::string& filename) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {
 		return nullptr;

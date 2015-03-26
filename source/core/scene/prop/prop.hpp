@@ -6,12 +6,6 @@
 #include <memory>
 #include <vector>
 
-namespace rendering { namespace material {
-
-class Material;
-
-}}
-
 namespace scene {
 
 namespace shape {
@@ -21,10 +15,16 @@ class Shape;
 
 }
 
+namespace material {
+
+class IMaterial;
+
+}
+
 class Prop : public Entity {
 public:
 
-	typedef std::vector<std::shared_ptr<rendering::material::Material>> Materials;
+	typedef std::vector<std::shared_ptr<material::IMaterial>> Materials;
 
 	virtual ~Prop();
 
@@ -38,7 +38,7 @@ public:
 
 	const math::AABB& aabb() const;
 
-	rendering::material::Material* material(uint32_t index) const;
+	material::IMaterial& material(uint32_t index) const;
 
 private:
 

@@ -2,7 +2,7 @@
 
 namespace rendering {
 
-Integrator::Integrator(uint32_t id, math::random::Generator& rng) : rng_(rng) {}
+Integrator::Integrator(uint32_t id, math::random::Generator& rng) : id_(id), rng_(rng) {}
 
 Surface_integrator::Surface_integrator(uint32_t id, math::random::Generator& rng) : Integrator(id, rng) {}
 

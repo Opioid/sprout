@@ -46,7 +46,7 @@ Renderer::Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrato
 	surface_integrator_factory_(surface_integrator_factory), sampler_(sampler),
 	tile_dimensions_(math::uint2(32, 32)), current_pixel_(math::uint2(0, 0)) {}
 
-void Renderer::render(const scene::Scene& scene, const Context& context, size_t num_workers, progress::Sink& progressor) {
+void Renderer::render(const scene::Scene& scene, const Context& context, uint32_t num_workers, progress::Sink& progressor) {
 	auto& film = context.camera->film();
 
 	auto& dimensions = film.dimensions();

@@ -19,7 +19,7 @@ class Mesh;
 class Provider : public resource::Provider<Mesh> {
 public:
 
-	virtual std::shared_ptr<Mesh> load(const std::string& filename) const;
+	virtual std::shared_ptr<Mesh> load(const std::string& filename);
 
 private:
 

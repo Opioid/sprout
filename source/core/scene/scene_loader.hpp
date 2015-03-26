@@ -31,7 +31,7 @@ class Scene;
 class Loader {
 public:
 
-	Loader();
+	Loader(uint32_t num_workers);
 
 	bool load(const std::string& filename, Scene& scene);
 
@@ -56,7 +56,7 @@ private:
 	resource::Cache<shape::triangle::Mesh> mesh_cache_;
 
 	material::Provider material_provider_;
-	resource::Cache<rendering::material::Material> material_cache_;
+	resource::Cache<material::IMaterial> material_cache_;
 };
 
 }

@@ -21,6 +21,8 @@ public:
 
 protected:
 
+	uint32_t id_;
+
 	math::random::Generator& rng_;
 };
 

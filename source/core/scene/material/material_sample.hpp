@@ -1,6 +1,8 @@
 #pragma once
 
-namespace rendering { namespace material {
+#include "base/math/vector.hpp"
+
+namespace scene { namespace material {
 
 class Sample {
 public:

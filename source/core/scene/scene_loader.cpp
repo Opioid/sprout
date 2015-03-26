@@ -12,8 +12,11 @@
 
 namespace scene {
 
-Loader::Loader() : plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()),
-	mesh_cache_(mesh_provider_), material_cache_(material_provider_) {}
+Loader::Loader(uint32_t num_workers) :
+	plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()),
+	mesh_cache_(mesh_provider_),
+	material_provider_(num_workers),
+	material_cache_(material_provider_) {}
 
 bool Loader::load(const std::string& filename, Scene& scene) {
 	std::ifstream stream(filename, std::ios::binary);

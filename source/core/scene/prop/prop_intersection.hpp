@@ -2,18 +2,19 @@
 
 #include "scene/shape/geometry/shape_intersection.hpp"
 
-namespace rendering { namespace material {
-
-class Material;
-
-}}
 
 namespace scene {
+
+namespace material {
+
+class IMaterial;
+
+}
 
 class Prop;
 
 struct Intersection {
-	rendering::material::Material* material() const;
+	material::IMaterial& material() const;
 
 	Prop* prop;
 	shape::Intersection geo;

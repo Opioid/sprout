@@ -11,7 +11,7 @@ public:
 
 	virtual ~Provider() {}
 
-	virtual std::shared_ptr<T> load(const std::string& filename) const = 0;
+	virtual std::shared_ptr<T> load(const std::string& filename) = 0;
 };
 
 }

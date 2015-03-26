@@ -16,7 +16,7 @@ float duration_to_seconds(std::chrono::high_resolution_clock::duration duration)
 int main() {
 	std::cout << "Welcome to sprout!" << std::endl;
 
-	size_t num_workers = std::max(std::thread::hardware_concurrency(), 1u) - 1;
+	uint32_t num_workers = static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
 
 	std::cout << "#Threads " << num_workers << std::endl;
 
@@ -35,7 +35,7 @@ int main() {
 	}
 
 	scene::Scene scene;
-	scene::Loader scene_loader;
+	scene::Loader scene_loader(num_workers);
 
 	if (!scene_loader.load(take->scene, scene)) {
 		std::cout << "Scene \"" << take->scene << "\" could not be loaded." << std::endl;

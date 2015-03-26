@@ -32,7 +32,7 @@ public:
 	Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
 			 std::shared_ptr<sampler::Sampler> sampler);
 
-	void render(const scene::Scene& scene, const Context& context, size_t num_workers, progress::Sink& progressor);
+	void render(const scene::Scene& scene, const Context& context, uint32_t num_workers, progress::Sink& progressor);
 
 private:
 
