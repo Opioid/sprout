@@ -11,7 +11,7 @@ public:
 
 	virtual void update_view();
 
-	virtual void generate_ray(const rendering::sampler::Camera_sample& sample, math::Oray& ray) const;
+	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const;
 
 private:
 

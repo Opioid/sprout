@@ -2,7 +2,7 @@
 
 #include "base/math/vector.hpp"
 
-namespace rendering { namespace sampler {
+namespace sampler {
 
 struct Camera_sample {
 	math::float2 coordinates;
@@ -10,4 +10,4 @@ struct Camera_sample {
 	math::float2 lens_uv;
 };
 
-}}
+}

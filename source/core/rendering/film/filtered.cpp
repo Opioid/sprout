@@ -1,6 +1,6 @@
 #include "filtered.hpp"
 #include "filter/filter.hpp"
-#include "rendering/sampler/camera_sample.hpp"
+#include "sampler/camera_sample.hpp"
 
 namespace rendering { namespace film {
 

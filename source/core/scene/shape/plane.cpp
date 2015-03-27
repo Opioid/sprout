@@ -12,36 +12,6 @@ Plane::Plane() {
 
 bool Plane::intersect(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounds,
 					  Intersection& intersection, float& hit_t) const {
-	/*
-normal := transformation.Rotation.Direction()
-
-d := -normal.Dot(transformation.Position)
-
-denom := normal.Dot(ray.Direction)
-
-numer := normal.Dot(ray.Origin) + d
-
-thit := -(numer / denom)
-
-if thit > ray.MinT && thit < ray.MaxT {
-	intersection.Epsilon = 5e-4 * thit
-
-	intersection.P = ray.Point(thit)
-	intersection.T = transformation.Rotation.Right()
-	intersection.B = transformation.Rotation.Up()
-	intersection.N = normal
-
-	u := transformation.ObjectToWorld.Right().Dot(intersection.P)
-	intersection.UV.X = u - math32.Floor(u)
-
-	v := transformation.ObjectToWorld.Up().Dot(intersection.P)
-	intersection.UV.Y = v - math32.Floor(v)
-
-	intersection.MaterialIndex = 0
-
-	return true, thit
-} 	*/
-
 	const math::float3& normal = transformation.rotation.z;
 
 	float d = -math::dot(normal, transformation.position);
@@ -86,6 +56,9 @@ bool Plane::intersect_p(const Composed_transformation& transformation, const mat
 
 	return false;
 }
+
+void Plane::importance_sample(const Composed_transformation& transformation, const math::float3& p, const math::float2& sample,
+							  math::float3& wi, float& t, float& pdf) const {}
 
 bool Plane::is_finite() const {
 	return false;

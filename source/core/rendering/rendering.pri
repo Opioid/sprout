@@ -10,4 +10,3 @@ HEADERS += \
 
 include(film/film.pri)
 include(integrator/integrator.pri)
-include(sampler/sampler.pri)

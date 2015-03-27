@@ -5,6 +5,12 @@
 #include "base/math/ray.hpp"
 #include "base/math/random/generator.hpp"
 
+namespace sampler {
+
+class Sampler;
+
+}
+
 namespace scene {
 
 class Scene;
@@ -20,12 +26,6 @@ namespace rendering {
 
 class Surface_integrator;
 class Surface_integrator_factory;
-
-namespace sampler {
-
-class Sampler;
-
-}
 
 class Worker {
 public:

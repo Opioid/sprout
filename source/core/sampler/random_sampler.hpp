@@ -2,7 +2,7 @@
 
 #include "sampler.hpp"
 
-namespace rendering { namespace sampler {
+namespace sampler {
 
 class Random : public Sampler {
 public:
@@ -18,4 +18,4 @@ protected:
 	math::random::Generator& rng_;
 };
 
-}}
+}

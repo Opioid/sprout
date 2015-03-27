@@ -3,7 +3,7 @@
 #include "base/math/vector.inl"
 #include "base/math/random/generator.inl"
 
-namespace rendering { namespace sampler {
+namespace sampler {
 
 Random::Random(uint32_t num_samples_per_iteration, math::random::Generator& rng) :
 	Sampler(num_samples_per_iteration), rng_(rng) {}
@@ -28,4 +28,4 @@ bool Random::generate_camera_sample(const math::float2& offset, Camera_sample& s
 	return true;
 }
 
-}}
+}

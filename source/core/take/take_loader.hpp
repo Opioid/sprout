@@ -16,6 +16,12 @@ class Camera;
 
 }}
 
+namespace sampler {
+
+class Sampler;
+
+}
+
 namespace rendering {
 
 namespace film {
@@ -33,12 +39,6 @@ namespace filter {
 class Filter;
 
 }}
-
-namespace sampler {
-
-class Sampler;
-
-}
 
 class Surface_integrator_factory;
 
@@ -63,7 +63,7 @@ private:
 
 	rendering::film::filter::Filter* load_filter(const rapidjson::Value& film_value) const;
 
-	std::shared_ptr<rendering::sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const;
+	std::shared_ptr<sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const;
 
 	std::shared_ptr<rendering::Surface_integrator_factory> load_surface_integrator_factory(const rapidjson::Value& integrator_value) const;
 };

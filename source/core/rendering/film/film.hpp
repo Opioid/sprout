@@ -3,15 +3,13 @@
 #include "rendering/rectangle.hpp"
 #include "image/buffer/buffer4.hpp"
 
-namespace rendering {
-
 namespace sampler {
 
 struct Camera_sample;
 
 }
 
-namespace film {
+namespace rendering { namespace film {
 
 namespace tonemapping {
 

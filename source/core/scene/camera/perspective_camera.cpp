@@ -1,6 +1,6 @@
 #include "perspective_camera.hpp"
 #include "rendering/film/film.hpp"
-#include "rendering/sampler/camera_sample.hpp"
+#include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -25,7 +25,7 @@ void Perspective::update_view() {
 	d_y_ = (left_bottom - left_top_) / static_cast<float>(film_->dimensions().y);
 }
 
-void Perspective::generate_ray(const rendering::sampler::Camera_sample& sample, math::Oray& ray) const {
+void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
 	/*
 
 if p.lensRadius > 0.0 {

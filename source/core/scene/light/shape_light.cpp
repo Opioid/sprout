@@ -4,7 +4,11 @@
 
 namespace scene { namespace light {
 
-void Shape_light::sample(const math::float3& p, float time, uint32_t max_samples, rendering::sampler::Sampler& sampler,
+void Shape_light::init(std::shared_ptr<shape::Shape> shape) {
+	shape_ = shape;
+}
+
+void Shape_light::sample(const math::float3& p, float time, uint32_t max_samples, sampler::Sampler& sampler,
 						 std::vector<Sample>& samples) const {
 	Composed_transformation transformation;
 	transformation_at(time, transformation);

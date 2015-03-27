@@ -76,4 +76,34 @@ bool Sphere::intersect_p(const Composed_transformation& transformation, const ma
 	return false;
 }
 
+void Sphere::importance_sample(const Composed_transformation& transformation, const math::float3& p, const math::float2& sample,
+							   math::float3& wi, float& t, float& pdf) const {
+/*
+	l.prop.TransformationAt(time, transformation)
+
+	axis := transformation.Position.Sub(p)
+	axisSquaredLength := axis.SquaredLength()
+	axisrl := math32.Rsqrt(axisSquaredLength)
+
+	z := axis.Scale(axisrl)
+	x, y := math.CoordinateSystem(z)
+
+	radiusSquare := transformation.Scale.X * transformation.Scale.X
+
+	sinThetaMax2 := radiusSquare / axisSquaredLength
+	cosThetaMax := math32.Sqrt(math32.Max(0.0, 1.0 - sinThetaMax2))
+
+	sample := sampler.GenerateSample2D(0, subsample)
+	dir := math.SampleOrientedConeUniform(sample.X, sample.Y, cosThetaMax, x, y, z)
+
+	t := dir.Dot(dir) * axis.Dot(dir)
+
+	w := dir
+
+	result := Sample{Energy: l.color.Scale(l.lumen), L: w, T: t, Pdf: math.ConePdfUniform(cosThetaMax)}
+	*/
+
+
+}
+
 }}

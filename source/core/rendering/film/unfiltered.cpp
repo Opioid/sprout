@@ -1,5 +1,5 @@
 #include "unfiltered.hpp"
-#include "rendering/sampler/camera_sample.hpp"
+#include "sampler/camera_sample.hpp"
 
 namespace rendering { namespace film {
 

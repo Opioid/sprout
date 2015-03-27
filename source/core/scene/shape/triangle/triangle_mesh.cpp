@@ -51,6 +51,9 @@ bool Mesh::intersect_p(const Composed_transformation& transformation, const math
 	return tree_.intersect_p(tray, bounds);
 }
 
+void Mesh::importance_sample(const Composed_transformation& transformation, const math::float3& p, const math::float2& sample,
+							 math::float3& wi, float& t, float& pdf) const {}
+
 bool Mesh::is_complex() const {
 	return true;
 }

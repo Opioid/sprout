@@ -3,17 +3,17 @@
 #include "scene/entity/entity.hpp"
 #include "base/math/ray.hpp"
 
+namespace sampler {
+
+struct Camera_sample;
+
+}
+
 namespace rendering {
 
 namespace film {
 
 class Film;
-
-}
-
-namespace sampler {
-
-struct Camera_sample;
 
 }}
 
@@ -29,7 +29,7 @@ public:
 
 	virtual void update_view() = 0;
 
-	virtual void generate_ray(const rendering::sampler::Camera_sample& sample, math::Oray& ray) const = 0;
+	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const = 0;
 
 protected:
 

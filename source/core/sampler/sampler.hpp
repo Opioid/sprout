@@ -8,7 +8,7 @@ class Generator;
 
 }}
 
-namespace rendering { namespace sampler {
+namespace sampler {
 
 struct Camera_sample;
 
@@ -31,4 +31,4 @@ protected:
 	uint32_t current_sample_;
 };
 
-}}
+}

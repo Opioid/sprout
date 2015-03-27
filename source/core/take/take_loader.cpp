@@ -7,8 +7,8 @@
 #include "rendering/film/tonemapping/identity.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
-#include "rendering/sampler/scrambled_hammersley_sampler.hpp"
-#include "rendering/sampler/random_sampler.hpp"
+#include "sampler/scrambled_hammersley_sampler.hpp"
+#include "sampler/random_sampler.hpp"
 #include "scene/camera/perspective_camera.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -49,7 +49,7 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 	}
 
 	if (!take->sampler) {
-		take->sampler = std::make_shared<rendering::sampler::Random>(1, take->rng);
+		take->sampler = std::make_shared<sampler::Random>(1, take->rng);
 	}
 
 	if (!take->context.camera || !take->surface_integrator_factory) {
@@ -166,17 +166,17 @@ rendering::film::filter::Filter* Loader::load_filter(const rapidjson::Value& fil
 	return new rendering::film::filter::Gaussian(math::float2(radius, radius), alpha);
 }
 
-std::shared_ptr<rendering::sampler::Sampler> Loader::load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const {
+std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const {
 	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
 		const std::string type_name = n->name.GetString();
 		const rapidjson::Value& type_value = n->value;
 
 		if ("Scrambled_hammersley" == type_name) {
 			uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
-			return std::make_shared<rendering::sampler::Scrambled_hammersley>(num_samples, rng);
+			return std::make_shared<sampler::Scrambled_hammersley>(num_samples, rng);
 		} else if ("Random" == type_name) {
 			uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
-			return std::make_shared<rendering::sampler::Random>(num_samples, rng);
+			return std::make_shared<sampler::Random>(num_samples, rng);
 		}
 	}
 

@@ -2,7 +2,7 @@
 
 #include "sampler.hpp"
 
-namespace rendering { namespace sampler {
+namespace sampler {
 
 class Scrambled_hammersley : public Sampler {
 public:
@@ -21,4 +21,4 @@ protected:
 	uint32_t random_bits_;
 };
 
-}}
+}

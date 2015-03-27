@@ -4,7 +4,7 @@
 #include "base/math/random/generator.inl"
 #include "base/math/distribution.inl"
 
-namespace rendering { namespace sampler {
+namespace sampler {
 
 Scrambled_hammersley::Scrambled_hammersley(uint32_t num_samples_per_iteration, math::random::Generator& rng) :
 	Sampler(num_samples_per_iteration), rng_(rng) {}
@@ -34,4 +34,4 @@ bool Scrambled_hammersley::generate_camera_sample(const math::float2& offset, Ca
 	return true;
 }
 
-}}
+}

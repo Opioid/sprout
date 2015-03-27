@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
-#include "rendering/sampler/random_sampler.hpp"
+#include "sampler/random_sampler.hpp"
 #include <vector>
 
 namespace scene { namespace light {
