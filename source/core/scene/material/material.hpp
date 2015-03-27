@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Material_sample_cache.hpp"
+#include "material_sample_cache.hpp"
 #include "base/math/vector.hpp"
 
 namespace scene {

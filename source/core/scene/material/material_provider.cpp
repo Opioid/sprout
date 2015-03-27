@@ -1,7 +1,8 @@
 #include "material_provider.hpp"
 #include "material_sample_cache.inl"
-#include "base/json/json.hpp"
 #include "substitute/substitute_constant.hpp"
+#include "base/json/json.hpp"
+#include "base/math/vector.inl"
 #include <fstream>
 #include <iostream>
 

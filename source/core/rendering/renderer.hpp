@@ -9,6 +9,12 @@ class Scene;
 
 }
 
+namespace sampler {
+
+class Sampler;
+
+}
+
 namespace progress {
 
 class Sink;
@@ -19,12 +25,6 @@ namespace rendering {
 
 class Surface_integrator_factory;
 struct Context;
-
-namespace sampler {
-
-class Sampler;
-
-}
 
 class Renderer {
 public:

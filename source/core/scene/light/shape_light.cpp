@@ -1,6 +1,7 @@
 #include "shape_light.hpp"
 #include "light_sample.hpp"
 #include "base/math/vector.inl"
+#include "base/math/matrix.inl"
 
 namespace scene { namespace light {
 

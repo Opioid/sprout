@@ -5,6 +5,7 @@
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
+#include "scene/material/material_sample_cache.inl"
 #include "resource/resource_cache.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -18,6 +19,8 @@ Loader::Loader(uint32_t num_workers) :
 	mesh_cache_(mesh_provider_),
 	material_provider_(num_workers),
 	material_cache_(material_provider_) {}
+
+Loader::~Loader() {}
 
 bool Loader::load(const std::string& filename, Scene& scene) {
 	std::ifstream stream(filename, std::ios::binary);
@@ -123,7 +126,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 		}
 	}
 
-	if (!shape) {
+	if (!shape || materials.empty()) {
 		return nullptr;
 	}
 

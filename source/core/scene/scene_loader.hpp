@@ -38,6 +38,7 @@ class Loader {
 public:
 
 	Loader(uint32_t num_workers);
+	~Loader();
 
 	bool load(const std::string& filename, Scene& scene);
 
