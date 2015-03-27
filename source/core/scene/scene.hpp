@@ -12,6 +12,13 @@ class Surrounding;
 
 }
 
+namespace light {
+
+class Light;
+class Shape_light;
+
+}
+
 class Prop;
 struct Intersection;
 
@@ -31,6 +38,10 @@ public:
 
 	Prop* create_prop();
 
+	const std::vector<light::Light*>& lights() const;
+
+	light::Shape_light* create_shape_light();
+
 private:
 
 	const surrounding::Surrounding* surrounding_;
@@ -38,6 +49,8 @@ private:
 	bvh::Tree bvh_;
 
 	std::vector<Prop*> props_;
+
+	std::vector<light::Light*> lights_;
 };
 
 }

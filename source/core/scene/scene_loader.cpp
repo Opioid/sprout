@@ -1,6 +1,7 @@
 #include "scene_loader.hpp"
 #include "scene.hpp"
 #include "scene/surrounding/uniform_surrounding.hpp"
+#include "scene/light/shape_light.hpp"
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
@@ -76,7 +77,7 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 		Entity* entity = nullptr;
 
 		if ("Light" == type_name) {
-
+			entity = load_light(*e, scene);
 		} else if ("Prop" == type_name) {
 			entity = load_prop(*e, scene);
 		}
@@ -131,6 +132,29 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	prop->init(shape, materials);
 
 	return prop;
+}
+
+light::Light* Loader::load_light(const rapidjson::Value& light_value, Scene& scene) {
+	math::float3 color = math::float3::identity;
+	float lumen = 0.f;
+
+	for (auto n = light_value.MemberBegin(); n != light_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("color" == node_name) {
+			color = json::read_float3(node_value);
+		} else if ("lumen" == node_name) {
+			lumen = json::read_float(node_value);
+		}
+	}
+
+	light::Shape_light* light = scene.create_shape_light();
+
+	light->set_color(color);
+	light->set_lumen(lumen);
+
+	return light;
 }
 
 std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {

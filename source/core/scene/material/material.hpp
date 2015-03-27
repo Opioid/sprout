@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Material_sample_cache.hpp"
+#include "base/math/vector.hpp"
 
 namespace scene {
 
@@ -17,7 +18,7 @@ class Sample;
 class IMaterial {
 public:
 
-	virtual const Sample& sample(const shape::Differential& dg, uint32_t worker_id) = 0;
+	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo, uint32_t worker_id) = 0;
 };
 
 template<typename T>

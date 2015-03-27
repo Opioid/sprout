@@ -42,6 +42,8 @@ public:
 
 	bool visibility(const math::Oray& ray) const;
 
+	const scene::Scene& scene() const;
+
 private:
 
 	math::random::Generator rng_;

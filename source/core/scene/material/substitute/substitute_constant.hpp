@@ -9,7 +9,7 @@ public:
 
 	Constant(Sample_cache<Sample>& cache, const math::float3& color);
 
-	virtual const Sample& sample(const shape::Differential& dg, uint32_t worker_id);
+	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo, uint32_t worker_id);
 
 private:
 

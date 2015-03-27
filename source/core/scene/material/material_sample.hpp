@@ -16,6 +16,13 @@ public:
 			v.x * t_.z + v.y * b_.z + v.z * n_.z);
 	}
 
+	void set_basis(const math::float3& t, const math::float3& b, const math::float3& n, const math::float3& wo) {
+		t_ = t;
+		b_ = b;
+		n_ = n;
+		wo_ = wo;
+	}
+
 protected:
 
 	math::float3 t_, b_, n_;

@@ -1,6 +1,14 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
+#include "rendering/sampler/random_sampler.hpp"
+#include <vector>
+
+namespace scene { namespace light {
+
+struct Sample;
+
+}}
 
 namespace rendering {
 
@@ -18,6 +26,10 @@ public:
 private:
 
 	Settings settings_;
+
+	sampler::Random sampler_;
+
+	std::vector<scene::light::Sample> light_samples_;
 };
 
 class Whitted_factory : public Surface_integrator_factory {
