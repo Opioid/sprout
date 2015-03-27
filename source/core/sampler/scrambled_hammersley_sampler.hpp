@@ -15,6 +15,8 @@ public:
 
 	virtual bool generate_camera_sample(const math::float2& offset, Camera_sample& sample);
 
+	virtual math::float2 generate_sample2d();
+
 protected:
 
 	math::random::Generator& rng_;

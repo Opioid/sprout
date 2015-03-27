@@ -34,4 +34,8 @@ bool Scrambled_hammersley::generate_camera_sample(const math::float2& offset, Ca
 	return true;
 }
 
+math::float2 Scrambled_hammersley::generate_sample2d() {
+	return math::float2(0.f, 0.f);
+}
+
 }

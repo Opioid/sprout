@@ -24,6 +24,8 @@ public:
 
 	virtual bool generate_camera_sample(const math::float2& offset, Camera_sample& sample) = 0;
 
+	virtual math::float2 generate_sample2d() = 0;
+
 protected:
 
 	uint32_t num_samples_per_iteration_;

@@ -60,6 +60,7 @@ private:
 
 	std::shared_ptr<shape::Shape> plane_;
 	std::shared_ptr<shape::Shape> sphere_;
+	std::shared_ptr<shape::Shape> celestial_disk_;
 
 	shape::triangle::Provider mesh_provider_;
 	resource::Cache<shape::triangle::Mesh> mesh_cache_;

@@ -2,6 +2,12 @@
 
 #include "base/math/bounding/aabb.hpp"
 
+namespace sampler {
+
+class Sampler;
+
+}
+
 namespace scene {
 
 struct Composed_transformation;
@@ -21,7 +27,7 @@ public:
 						   Intersection& intersection, float& hit_t) const = 0;
 	virtual bool intersect_p(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounding) const = 0;
 
-	virtual void importance_sample(const Composed_transformation& transformation, const math::float3& p, const math::float2& sample,
+	virtual void importance_sample(const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler,
 								   math::float3& wi, float& t, float& pdf) const = 0;
 
 	virtual bool is_complex() const;

@@ -28,4 +28,8 @@ bool Random::generate_camera_sample(const math::float2& offset, Camera_sample& s
 	return true;
 }
 
+math::float2 Random::generate_sample2d() {
+	return math::float2(rng_.random_float(), rng_.random_float());
+}
+
 }

@@ -4,6 +4,7 @@
 #include "scene/light/shape_light.hpp"
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
+#include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "resource/resource_cache.inl"
@@ -15,7 +16,7 @@
 namespace scene {
 
 Loader::Loader(uint32_t num_workers) :
-	plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()),
+	plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()), celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	mesh_cache_(mesh_provider_),
 	material_provider_(num_workers),
 	material_cache_(material_provider_) {}
@@ -112,7 +113,6 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 
 Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
-
 	Prop::Materials materials;
 
 	for (auto n = prop_value.MemberBegin(); n != prop_value.MemberEnd(); ++n) {
@@ -138,22 +138,30 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 }
 
 light::Light* Loader::load_light(const rapidjson::Value& light_value, Scene& scene) {
+	std::shared_ptr<shape::Shape> shape;
 	math::float3 color = math::float3::identity;
-	float lumen = 0.f;
+	float lumen = 1.f;
 
 	for (auto n = light_value.MemberBegin(); n != light_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("color" == node_name) {
+		if ("shape" == node_name) {
+			shape = load_shape(node_value);
+		} else if ("color" == node_name) {
 			color = json::read_float3(node_value);
 		} else if ("lumen" == node_name) {
 			lumen = json::read_float(node_value);
 		}
 	}
 
+	if (!shape) {
+		return nullptr;
+	}
+
 	light::Shape_light* light = scene.create_shape_light();
 
+	light->init(shape);
 	light->set_color(color);
 	light->set_lumen(lumen);
 
@@ -179,6 +187,8 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type) const {
 		return plane_;
 	} else if ("Sphere" == type) {
 		return sphere_;
+	} else if ("Celestial_disk" == type) {
+		return celestial_disk_;
 	}
 
 	return nullptr;

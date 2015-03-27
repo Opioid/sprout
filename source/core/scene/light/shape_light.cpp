@@ -1,5 +1,6 @@
 #include "shape_light.hpp"
 #include "light_sample.hpp"
+#include "scene/shape/shape.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 
@@ -18,15 +19,9 @@ void Shape_light::sample(const math::float3& p, float time, uint32_t max_samples
 
 	Sample sample;
 
-	math::float3 v = transformation.position - p;
-	float d = math::squared_length(v);
-	float i = 1.f / d;
-	float t = std::sqrt(d);
+	shape_->importance_sample(transformation, p, sampler, sample.l, sample.t, sample.pdf);
 
-	sample.l = v / t;
-	sample.energy = i * lumen_ * color_;
-	sample.t = t;
-	sample.pdf = 1.f;
+	sample.energy = lumen_ * color_;
 
 	samples.push_back(sample);
 }

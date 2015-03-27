@@ -42,7 +42,7 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename) {
 }
 
 std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {
-	math::float3 color = math::float3::identity;
+	math::float3 color(0.6f, 0.6f, 0.6f);
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();

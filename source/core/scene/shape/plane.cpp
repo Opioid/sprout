@@ -57,7 +57,7 @@ bool Plane::intersect_p(const Composed_transformation& transformation, const mat
 	return false;
 }
 
-void Plane::importance_sample(const Composed_transformation& transformation, const math::float3& p, const math::float2& sample,
+void Plane::importance_sample(const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler,
 							  math::float3& wi, float& t, float& pdf) const {}
 
 bool Plane::is_finite() const {

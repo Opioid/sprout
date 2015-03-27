@@ -4,7 +4,7 @@
 
 namespace math {
 
-float2 sample_disk_concentric(math::float2 uv) {
+float2 sample_disk_concentric(float2 uv) {
 	float sx = 2.f * uv.x - 1.f;
 	float sy = 2.f * uv.y - 1.f;
 
@@ -48,11 +48,26 @@ float2 sample_disk_concentric(math::float2 uv) {
 	return float2(cos_theta * r, sin_theta * r);
 }
 
-float3 sample_hemisphere_cosine(math::float2 uv) {
+float3 sample_hemisphere_cosine(float2 uv) {
 	float2 xy = sample_disk_concentric(uv);
 	float  z  = std::sqrt(std::max(0.f, 1.f - xy.x * xy.x - xy.y * xy.y));
 
 	return float3(xy.x, xy.y, z);
+}
+
+float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max, const float3& x, const float3& y, const float3& z) {
+	float cos_theta = (1.f - uv.x) + uv.x * cos_theta_max;
+	float sin_theta = std::sqrt(1.f - cos_theta * cos_theta);
+	float phi = uv.y * 2.f * pi;
+
+	float sin_phi = std::sin(phi);
+	float cos_phi = std::cos(phi);
+
+	return (cos_phi * sin_theta) * x + (sin_phi * sin_theta) * y + cos_theta * z;
+}
+
+float cone_pdf_uniform(float cos_theta_max) {
+	return 1.f / (2.f * pi * (1.f - cos_theta_max));
 }
 
 }

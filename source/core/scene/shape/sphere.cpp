@@ -1,6 +1,8 @@
 #include "sphere.hpp"
 #include "geometry/shape_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "sampler/sampler.hpp"
+#include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 
@@ -76,34 +78,27 @@ bool Sphere::intersect_p(const Composed_transformation& transformation, const ma
 	return false;
 }
 
-void Sphere::importance_sample(const Composed_transformation& transformation, const math::float3& p, const math::float2& sample,
+void Sphere::importance_sample(const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler,
 							   math::float3& wi, float& t, float& pdf) const {
-/*
-	l.prop.TransformationAt(time, transformation)
+	math::float3 axis = transformation.position - p;
+	float axis_squared_length = math::squared_length(axis);
+	float axis_rl = 1.f / std::sqrt(axis_squared_length);
 
-	axis := transformation.Position.Sub(p)
-	axisSquaredLength := axis.SquaredLength()
-	axisrl := math32.Rsqrt(axisSquaredLength)
+	math::float3 z = axis_rl * axis;
+	math::float3 x, y;
+	math::coordinate_system(z, x, y);
 
-	z := axis.Scale(axisrl)
-	x, y := math.CoordinateSystem(z)
+	float radius_square = transformation.scale.x * transformation.scale.x;
 
-	radiusSquare := transformation.Scale.X * transformation.Scale.X
+	float sin_theta_max2 = radius_square / axis_squared_length;
+	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 
-	sinThetaMax2 := radiusSquare / axisSquaredLength
-	cosThetaMax := math32.Sqrt(math32.Max(0.0, 1.0 - sinThetaMax2))
+	math::float2 sample = sampler.generate_sample2d();
+	math::float3 dir = math::sample_oriented_cone_uniform(sample, cos_theta_max, x, y, z);
 
-	sample := sampler.GenerateSample2D(0, subsample)
-	dir := math.SampleOrientedConeUniform(sample.X, sample.Y, cosThetaMax, x, y, z)
-
-	t := dir.Dot(dir) * axis.Dot(dir)
-
-	w := dir
-
-	result := Sample{Energy: l.color.Scale(l.lumen), L: w, T: t, Pdf: math.ConePdfUniform(cosThetaMax)}
-	*/
-
-
+	t = math::dot(dir, dir) * math::dot(axis, dir);
+	wi = dir;
+	pdf = math::cone_pdf_uniform(cos_theta_max);
 }
 
 }}
