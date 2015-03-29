@@ -11,6 +11,7 @@ extern const float pi_mul_2;
 extern const float pi_div_2;
 extern const float pi_div_180;
 extern const float _180_div_pi;
+extern const float pi_inv;
 
 inline float degrees_to_radians(float degrees) {
 	return degrees * pi_div_180;

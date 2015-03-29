@@ -30,7 +30,9 @@ void Worker::render(const scene::Scene& scene, const scene::camera::Camera& came
 
 	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
-			sampler_->restart();
+			sampler_->restart(1);
+			sampler_->start_iteration(0);
+			surface_integrator_->start_new_pixel(sampler_->num_samples_per_iteration());
 
 			uint32_t sample_id = 0;
 

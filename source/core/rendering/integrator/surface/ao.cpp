@@ -8,9 +8,16 @@
 
 namespace rendering {
 
-Ao::Ao(uint32_t id, math::random::Generator& rng, const Settings& settings) : Surface_integrator(id, rng), settings_(settings) {}
+Ao::Ao(uint32_t id, math::random::Generator& rng, const Settings& settings) :
+	Surface_integrator(id, rng), settings_(settings), sampler_(settings.num_samples, rng) {}
+
+void Ao::start_new_pixel(uint32_t num_samples) {
+	sampler_.restart(num_samples);
+}
 
 math::float3 Ao::li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
+	sampler_.start_iteration(subsample);
+
 	math::Oray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t = intersection.geo.epsilon;
@@ -19,7 +26,7 @@ math::float3 Ao::li(const Worker& worker, uint32_t subsample, math::Oray& ray, s
 	float result = 0.f;
 
 	for (uint32_t i = 0; i < settings_.num_samples; ++i) {
-		math::float2 sample(rng_.random_float(), rng_.random_float());
+		math::float2 sample = sampler_.generate_sample2d(i);
 		math::float3 hs = math::sample_hemisphere_cosine(sample);
 		math::float3 ws = intersection.geo.tangent_to_world(hs);
 

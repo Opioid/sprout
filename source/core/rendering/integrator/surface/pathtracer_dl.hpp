@@ -2,7 +2,6 @@
 
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/random_sampler.hpp"
-#include "sampler/ems_sampler.hpp"
 #include <vector>
 
 namespace scene { namespace light {
@@ -13,14 +12,15 @@ struct Sample;
 
 namespace rendering {
 
-class Whitted : public Surface_integrator {
+class Pathtracer_DL : public Surface_integrator {
 public:
 
 	struct Settings {
-
+		uint32_t min_bounces;
+		uint32_t max_bounces;
 	};
 
-	Whitted(uint32_t id,  math::random::Generator& rng, const Settings& settings);
+	Pathtracer_DL(uint32_t id,  math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
@@ -35,17 +35,18 @@ private:
 	std::vector<scene::light::Sample> light_samples_;
 };
 
-class Whitted_factory : public Surface_integrator_factory {
+class Pathtracer_DL_factory : public Surface_integrator_factory {
 public:
 
-	Whitted_factory();
+	Pathtracer_DL_factory(uint32_t min_bounces, uint32_t max_bounces);
 
 	virtual Surface_integrator* create(uint32_t id,  math::random::Generator& rng) const;
 
 private:
 
-	Whitted::Settings settings_;
+	Pathtracer_DL::Settings settings_;
 };
 
 }
+
 

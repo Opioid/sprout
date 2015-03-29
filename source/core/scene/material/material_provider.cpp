@@ -42,7 +42,9 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename) {
 }
 
 std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {
-	math::float3 color(0.6f, 0.6f, 0.6f);
+	math::float3 color(0.75f, 0.75f, 0.75f);
+	float roughness = 0.9f;
+	float metallic = 0.f;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -50,10 +52,14 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 
 		if ("color" == node_name) {
 			color = json::read_float3(node_value);
+		} else if ("roughness" == node_name) {
+			roughness = json::read_float(node_value);
+		} else if ("metallic" == node_name) {
+			metallic = json::read_float(node_value);
 		}
 	}
 
-	return std::make_shared<substitute::Constant>(substitute_cache_, color);
+	return std::make_shared<substitute::Constant>(substitute_cache_, color, roughness, metallic);
 }
 
 }}

@@ -7,8 +7,10 @@
 #include "rendering/film/tonemapping/identity.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
-#include "sampler/scrambled_hammersley_sampler.hpp"
+#include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "sampler/random_sampler.hpp"
+#include "sampler/scrambled_hammersley_sampler.hpp"
+#include "sampler/ems_sampler.hpp"
 #include "scene/camera/perspective_camera.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -171,13 +173,16 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 		const std::string type_name = n->name.GetString();
 		const rapidjson::Value& type_value = n->value;
 
-		if ("Scrambled_hammersley" == type_name) {
-			uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
-			return std::make_shared<sampler::Scrambled_hammersley>(num_samples, rng);
-		} else if ("Random" == type_name) {
+		 if ("Random" == type_name) {
 			uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
 			return std::make_shared<sampler::Random>(num_samples, rng);
-		}
+		} else if ("Scrambled_hammersley" == type_name) {
+			 uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
+			 return std::make_shared<sampler::Scrambled_hammersley>(num_samples, rng);
+		 } else if ("EMS" == type_name) {
+			 uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
+			 return std::make_shared<sampler::EMS>(num_samples, rng);
+		 }
 	}
 
 	return nullptr;
@@ -194,6 +199,10 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 			return std::make_shared<rendering::Ao_factory>(num_samples, radius);
 		} else if ("Whitted" == type_name) {
 			return std::make_shared<rendering::Whitted_factory>();
+		} else if ("PTDL" == type_name) {
+			uint32_t min_bounces = json::read_uint(type_value, "min_bounces", 2);
+			uint32_t max_bounces = json::read_uint(type_value, "max_bounces", 2);
+			return std::make_shared<rendering::Pathtracer_DL_factory>(min_bounces, max_bounces);
 		}
 	}
 

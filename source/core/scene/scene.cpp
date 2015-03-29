@@ -54,6 +54,19 @@ const std::vector<light::Light*>& Scene::lights() const {
 	return lights_;
 }
 
+light::Light* Scene::montecarlo_light(float random, float& pdf) const {
+	float num = static_cast<float>(lights_.size());
+	size_t l = static_cast<size_t>(num * random - 0.001f);
+
+	pdf = 1.f / num;
+
+	if (l >= lights_.size()) {
+		return nullptr;
+	} else {
+		return lights_[l];
+	}
+}
+
 light::Shape_light* Scene::create_shape_light() {
 	light::Shape_light* light = new light::Shape_light;
 	lights_.push_back(light);

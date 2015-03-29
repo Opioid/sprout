@@ -4,12 +4,14 @@
 
 namespace sampler {
 
-class Random : public Sampler {
+class EMS : public Sampler {
 public:
 
-	Random(uint32_t num_samples_per_iteration, math::random::Generator& rng);
+	EMS(uint32_t num_samples_per_iteration, math::random::Generator& rng);
 
 	virtual Sampler* clone(math::random::Generator& rng) const;
+
+	virtual void restart(uint32_t num_iterations);
 
 	virtual bool generate_camera_sample(const math::float2& offset, Camera_sample& sample);
 
@@ -20,6 +22,9 @@ public:
 protected:
 
 	math::random::Generator& rng_;
+	uint32_t random_bits_;
+	uint32_t random_bits2_;
 };
 
 }
+

@@ -51,8 +51,6 @@ void Renderer::render(const scene::Scene& scene, const Context& context, uint32_
 
 	auto& dimensions = film.dimensions();
 
-//	int(math32.Ceil(float32(dimensions.X) / float32(r.tileSize.X))) * int(math32.Ceil(float32(dimensions.Y) / float32(r.tileSize.Y)))
-
 	size_t num_tiles = static_cast<size_t>(std::ceil(static_cast<float>(dimensions.x) / static_cast<float>(tile_dimensions_.x)))
 					 * static_cast<size_t>(std::ceil(static_cast<float>(dimensions.y) / static_cast<float>(tile_dimensions_.y)));
 

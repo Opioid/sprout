@@ -19,6 +19,8 @@ public:
 
 	Integrator(uint32_t id, math::random::Generator& rng);
 
+	virtual void start_new_pixel(uint32_t num_samples);
+
 protected:
 
 	uint32_t id_;

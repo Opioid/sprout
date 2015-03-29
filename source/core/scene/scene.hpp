@@ -40,6 +40,8 @@ public:
 
 	const std::vector<light::Light*>& lights() const;
 
+	light::Light* montecarlo_light(float random, float& pdf) const;
+
 	light::Shape_light* create_shape_light();
 
 private:

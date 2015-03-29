@@ -19,7 +19,7 @@ void Shape_light::sample(const math::float3& p, float time, uint32_t max_samples
 
 	Sample sample;
 
-	shape_->importance_sample(transformation, p, sampler, sample.l, sample.t, sample.pdf);
+	shape_->importance_sample(transformation, p, sampler, 0, sample.l, sample.t, sample.pdf);
 
 	sample.energy = lumen_ * color_;
 

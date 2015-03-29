@@ -16,7 +16,13 @@ namespace rendering {
 Whitted::Whitted(uint32_t id, math::random::Generator& rng, const Settings& settings) :
 	Surface_integrator(id, rng), settings_(settings), sampler_(1, rng) {}
 
+void Whitted::start_new_pixel(uint32_t num_samples) {
+	sampler_.restart(num_samples);
+}
+
 math::float3 Whitted::li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
+	sampler_.start_iteration(subsample);
+
 	math::float3 result = math::float3::identity;
 
 	math::Oray shadow_ray;
