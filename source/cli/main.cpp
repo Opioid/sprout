@@ -26,7 +26,7 @@ int main() {
 
 	auto loading_start = clock.now();
 
-	std::string takename = "../data/takes/imrod.take";
+	std::string takename = "../data/takes/material_test.take";
 	take::Loader take_loader;
 	auto take = take_loader.load(takename);
 	if (!take) {

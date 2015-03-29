@@ -1,6 +1,7 @@
 #include "scene_loader.hpp"
 #include "scene.hpp"
 #include "scene/surrounding/uniform_surrounding.hpp"
+#include "scene/surrounding/sphere_surrounding.hpp"
 #include "scene/light/shape_light.hpp"
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
@@ -18,6 +19,7 @@ namespace scene {
 Loader::Loader(uint32_t num_workers) :
 	plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()), celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	mesh_cache_(mesh_provider_),
+	texture_cache_(texture_provider_),
 	material_provider_(num_workers),
 	material_cache_(material_provider_) {}
 
@@ -56,10 +58,9 @@ surrounding::Surrounding* Loader::load_surrounding(const rapidjson::Value& surro
 
 	if ("Uniform" == type_name) {
 		math::float3 energy = json::read_float3(surrounding_value, "color");
-		surrounding::Uniform* uniform = new surrounding::Uniform(energy);
-		return uniform;
+		return new surrounding::Uniform(energy);
 	} else if ("Textured" == type_name) {
-
+		return new surrounding::Sphere(nullptr);
 	}
 
 	return nullptr;
@@ -206,6 +207,8 @@ void Loader::load_materials(const rapidjson::Value& materials_value, Prop::Mater
 
 		if (material) {
 			materials.push_back(material);
+		} else {
+			materials.push_back(material_provider_.fallback_material());
 		}
 	}
 }

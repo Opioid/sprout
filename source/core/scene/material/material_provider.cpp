@@ -8,9 +8,11 @@
 
 namespace scene { namespace material {
 
-Provider::Provider(uint32_t num_workers) : substitute_cache_(num_workers) {}
+Provider::Provider(uint32_t num_workers) :
+	substitute_cache_(num_workers),
+	fallback_material_(std::make_shared<substitute::Constant>(substitute_cache_, math::float3(1.f, 0.f, 0.f), 1.f, 0.f)) {}
 
-std::shared_ptr<IMaterial> Provider::load(const std::string& filename) {
+std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t flags) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {
 		return nullptr;
@@ -39,6 +41,10 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename) {
 	}
 
 	return nullptr;
+}
+
+std::shared_ptr<IMaterial> Provider::fallback_material() const {
+	return fallback_material_;
 }
 
 std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {

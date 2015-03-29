@@ -19,13 +19,17 @@ public:
 
 	Provider(uint32_t num_workers);
 
-	virtual std::shared_ptr<IMaterial> load(const std::string& filename);
+	virtual std::shared_ptr<IMaterial> load(const std::string& filename, uint32_t flags = 0);
+
+	std::shared_ptr<IMaterial> fallback_material() const;
 
 private:
 
 	std::shared_ptr<IMaterial> load_substitute(const rapidjson::Value& substitute_value);
 
 	Sample_cache<substitute::Sample> substitute_cache_;
+
+	std::shared_ptr<material::IMaterial> fallback_material_;
 };
 
 }}
