@@ -19,7 +19,7 @@ namespace scene {
 Loader::Loader(uint32_t num_workers) :
 	plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()), celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	mesh_cache_(mesh_provider_),
-	texture_cache_(texture_provider_),
+	image_cache_(image_provider_),
 	material_provider_(num_workers),
 	material_cache_(material_provider_) {}
 
