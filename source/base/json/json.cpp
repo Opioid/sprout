@@ -5,37 +5,10 @@
 #include "math/matrix.inl"
 #include "math/quaternion.inl"
 //#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
 #include <sstream>
 
 namespace json {
-
-std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
-	Read_stream json_stream(stream);
-
-	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
-
-	document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
-
-	if (document->HasParseError()) {
-		return nullptr;
-	}
-
-	return document;
-}
-
-size_t calculate_line_number(std::istream& stream, size_t offset);
-
-std::string read_error(rapidjson::Document& document, std::istream& stream) {
-	size_t line = calculate_line_number(stream, document.GetErrorOffset());
-
-	std::stringstream sstream;
-
-	sstream << document.GetParseError();
-	// line number is 0-based, so + 1
-	sstream << " (line " << line + 1 << ")";
-
-	return sstream.str();
-}
 
 // get the 0-based line number
 size_t calculate_line_number(std::istream& stream, size_t offset) {
@@ -58,6 +31,31 @@ size_t calculate_line_number(std::istream& stream, size_t offset) {
 	}
 
 	return line;
+}
+
+std::string read_error(rapidjson::Document& document, std::istream& stream) {
+	size_t line = calculate_line_number(stream, document.GetErrorOffset());
+
+	std::stringstream sstream;
+	sstream << rapidjson::GetParseError_En(document.GetParseError());
+	// line number is 0-based, so + 1
+	sstream << " (line " << line + 1 << ")";
+
+	return sstream.str();
+}
+
+std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
+	Read_stream json_stream(stream);
+
+	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
+
+	document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
+
+	if (document->HasParseError()) {
+		throw std::runtime_error(read_error(*document.get(), stream));
+	}
+
+	return document;
 }
 
 float read_float(const rapidjson::Value& value) {

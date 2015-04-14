@@ -25,16 +25,13 @@ Loader::Loader(uint32_t num_workers) :
 
 Loader::~Loader() {}
 
-bool Loader::load(const std::string& filename, Scene& scene) {
+void Loader::load(const std::string& filename, Scene& scene) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {
-		return false;
+		throw std::runtime_error("Could not open file");
 	}
 
 	auto root = json::parse(stream);
-	if (!root) {
-		return false;
-	}
 
 	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -49,8 +46,6 @@ bool Loader::load(const std::string& filename, Scene& scene) {
 	}
 
 	scene.compile();
-
-	return true;
 }
 
 surrounding::Surrounding* Loader::load_surrounding(const rapidjson::Value& surrounding_value) const {
@@ -203,11 +198,15 @@ void Loader::load_materials(const rapidjson::Value& materials_value, Prop::Mater
 	materials.reserve(materials_value.Size());
 
 	for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
-		auto material = material_cache_.load(m->GetString());
+		try {
+			auto material = material_cache_.load(m->GetString());
 
-		if (material) {
-			materials.push_back(material);
-		} else {
+			if (material) {
+				materials.push_back(material);
+			} else {
+				materials.push_back(material_provider_.fallback_material());
+			}
+		} catch (const std::exception& e) {
 			materials.push_back(material_provider_.fallback_material());
 		}
 	}

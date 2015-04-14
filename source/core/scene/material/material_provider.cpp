@@ -19,9 +19,6 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t 
 	}
 
 	auto root = json::parse(stream);
-	if (!root) {
-		return nullptr;
-	}
 
 	// checking for positions now, but handling them later
 	const rapidjson::Value::ConstMemberIterator rendering_node = root->FindMember("rendering");

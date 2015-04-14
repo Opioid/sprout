@@ -25,13 +25,10 @@ namespace take {
 std::shared_ptr<Take> Loader::load(const std::string& filename) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {
-		return nullptr;
+		throw std::runtime_error("Could not open file");
 	}
 
 	auto root = json::parse(stream);
-	if (!root) {
-		return nullptr;
-	}
 
 	auto take = std::make_shared<Take>();
 
@@ -50,12 +47,20 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 		}
 	}
 
+	if (take->scene.empty()) {
+		throw std::runtime_error("No reference to scene included");
+	}
+
+	if (!take->context.camera) {
+		throw std::runtime_error("No camera configuration included");
+	}
+
 	if (!take->sampler) {
 		take->sampler = std::make_shared<sampler::Random>(1, take->rng);
 	}
 
-	if (!take->context.camera || !take->surface_integrator_factory) {
-		return nullptr;
+	if (!take->surface_integrator_factory) {
+		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(4, 4);
 	}
 
 	return take;
@@ -200,8 +205,8 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 		} else if ("Whitted" == type_name) {
 			return std::make_shared<rendering::Whitted_factory>();
 		} else if ("PTDL" == type_name) {
-			uint32_t min_bounces = json::read_uint(type_value, "min_bounces", 2);
-			uint32_t max_bounces = json::read_uint(type_value, "max_bounces", 2);
+			uint32_t min_bounces = json::read_uint(type_value, "min_bounces", 4);
+			uint32_t max_bounces = json::read_uint(type_value, "max_bounces", 4);
 			return std::make_shared<rendering::Pathtracer_DL_factory>(min_bounces, max_bounces);
 		}
 	}

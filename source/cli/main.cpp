@@ -27,18 +27,26 @@ int main() {
 	auto loading_start = clock.now();
 
 	std::string takename = "../data/takes/material_test.take";
-	take::Loader take_loader;
-	auto take = take_loader.load(takename);
-	if (!take) {
-		std::cout << "Take \"" << takename << "\" could not be loaded." << std::endl;
+
+	std::shared_ptr<take::Take> take;
+
+	try {
+		take::Loader take_loader;
+		take = take_loader.load(takename);
+	} catch (const std::exception& e) {
+		std::cout << "Take \"" << takename << "\" could not be loaded: " << e.what() << "." << std::endl;
 		return 1;
 	}
 
-	scene::Scene scene;
+	// The scene loader must be alive during rendering, otherwise some resources might be released prematurely.
+	// This is potentially confusing and should be adressed one way or the other.
 	scene::Loader scene_loader(num_workers);
+	scene::Scene scene;
 
-	if (!scene_loader.load(take->scene, scene)) {
-		std::cout << "Scene \"" << take->scene << "\" could not be loaded." << std::endl;
+	try {
+		scene_loader.load(take->scene, scene);
+	} catch (const std::exception& e) {
+		std::cout << "Scene \"" << take->scene << "\" could not be loaded:" << e.what() << "." << std::endl;
 		return 1;
 	}
 
