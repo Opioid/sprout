@@ -4,7 +4,7 @@
 #include "core/rendering/film/film.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
-#include "core/image/storage/writer.hpp"
+#include "core/image/encoding/image_writer.hpp"
 #include "core/progress/std_out.hpp"
 #include <chrono>
 #include <thread>

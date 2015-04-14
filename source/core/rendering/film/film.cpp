@@ -8,7 +8,7 @@ Film::Film(const math::uint2& dimensions, float exposure, tonemapping::Tonemappe
 	pixels_(new Pixel[dimensions.x * dimensions.y]),
 	exposure_(exposure),
 	tonemapper_(tonemapper),
-	image_buffer_(dimensions) {
+	image_(image::Description(dimensions)) {
 	clear();
 }
 
@@ -18,11 +18,12 @@ Film::~Film() {
 }
 
 const math::uint2& Film::dimensions() const {
-	return image_buffer_.dimensions();
+	return image_.description().dimensions;
 }
 
-const image::Buffer4& Film::resolve() {
+const image::Image& Film::resolve() {
 	auto& d = dimensions();
+	uint32_t i = 0;
 	for (uint32_t y = 0; y < d.y; ++y) {
 		for (uint32_t x = 0; x < d.x; ++x) {
 			auto& pixel = pixels_[d.x * y + x];
@@ -33,11 +34,11 @@ const image::Buffer4& Film::resolve() {
 
 			math::float3 tonemapped = tonemapper_->tonemap(exposed);
 
-			image_buffer_.set4(x, y, math::float4(tonemapped, 1.f));
+			image_.set4(i++, math::float4(tonemapped, 1.f));
 		}
 	}
 
-	return image_buffer_;
+	return image_;
 }
 
 void Film::clear() {

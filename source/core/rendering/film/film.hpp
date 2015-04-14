@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/rectangle.hpp"
-#include "image/buffer/buffer4.hpp"
+#include "image/image4.hpp"
 
 namespace sampler {
 
@@ -25,7 +25,7 @@ public:
 
 	const math::uint2& dimensions() const;
 
-	const image::Buffer4& resolve();
+	const image::Image& resolve();
 
 	void clear();
 
@@ -50,7 +50,7 @@ protected:
 
 	tonemapping::Tonemapper* tonemapper_;
 
-	image::Buffer4 image_buffer_;
+	image::Image4 image_;
 };
 
 }}
