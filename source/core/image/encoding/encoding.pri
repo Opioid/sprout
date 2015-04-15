@@ -1,5 +1,5 @@
 SOURCES += \
-	image/encoding/image_writer.cpp \
+	image/encoding/rgbe_reader.cpp \
 
 HEADERS += \
-	image/encoding/image_writer.hpp \
+	image/encoding/rgbe_reader.hpp \

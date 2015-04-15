@@ -2,6 +2,7 @@
 
 #include "surrounding.hpp"
 #include "image/texture/texture2d.hpp"
+#include "image/texture/sampler/sampler_spherical_nearest.hpp"
 #include <memory>
 
 namespace image {
@@ -22,6 +23,7 @@ public:
 private:
 
 	image::Texture2D texture_;
+	image::sampler::Spherical_nearest sampler_nearest_;
 };
 
 }}

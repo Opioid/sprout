@@ -5,6 +5,10 @@ namespace image {
 
 Texture2D::Texture2D(std::shared_ptr<Image> image) : Texture(image) {}
 
+math::uint2 Texture2D::dimensions() const {
+	return image_->description().dimensions;
+}
+
 math::float3 Texture2D::at3(uint32_t x, uint32_t y) const {
 	uint32_t i = y * image_->description().dimensions.x + x;
 	return image_->at3(i);

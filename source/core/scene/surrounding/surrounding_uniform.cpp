@@ -1,4 +1,4 @@
-#include "uniform_surrounding.hpp"
+#include "surrounding_uniform.hpp"
 
 namespace scene { namespace surrounding {
 

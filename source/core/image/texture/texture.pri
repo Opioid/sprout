@@ -5,3 +5,5 @@ SOURCES += \
 HEADERS += \
 	image/texture/texture.hpp \
 	image/texture/texture2d.hpp \
+
+include(sampler/sampler.pri)
