@@ -93,8 +93,7 @@ void Rgbe_reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width,
 		}
 
 		// read each of the four channels for the scanline into the buffer
-		uint32_t index = 0;
-		for (uint32_t i = 0; i < 4; ++i) {
+		for (uint32_t i = 0, index = 0; i < 4; ++i) {
 			uint32_t end = (i + 1) * scanline_width;
 
 			for (; index < end;) {

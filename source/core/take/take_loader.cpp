@@ -106,11 +106,10 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 
 	std::shared_ptr<scene::camera::Camera> camera;
 
-	if ("Perspective" == type_name) {
+//	if ("Perspective" == type_name) {
 		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, fov, lens_radius, focal_distance);
-	} else if ("Orthographic" == type_name) {
-
-	}
+//	} else if ("Orthographic" == type_name) {
+//	}
 
 	camera->set_transformation(position, math::float3(1.f, 1.f, 1.f), rotation);
 

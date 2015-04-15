@@ -9,8 +9,8 @@ math::float3 Spherical_nearest::sample3(const Texture2D& texture, const math::fl
 
 	const math::uint2 d = texture.dimensions();
 
-	uint32_t x = static_cast<uint32_t>(uv.x * static_cast<float>(d.x));
-	uint32_t y = static_cast<uint32_t>(uv.y * static_cast<float>(d.y));
+	uint32_t x = std::min(static_cast<uint32_t>(uv.x * static_cast<float>(d.x)), d.x - 1);
+	uint32_t y = std::min(static_cast<uint32_t>(uv.y * static_cast<float>(d.y)), d.y - 1);
 
 	return texture.at3(x, y);
 }
