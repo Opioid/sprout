@@ -8,6 +8,7 @@
 #include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
 #include "scene/material/material_sample_cache.inl"
+#include "image/image4.hpp"
 #include "resource/resource_cache.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -17,7 +18,9 @@
 namespace scene {
 
 Loader::Loader(uint32_t num_workers) :
-	plane_(std::make_shared<shape::Plane>()), sphere_(std::make_shared<shape::Sphere>()), celestial_disk_(std::make_shared<shape::Celestial_disk>()),
+	plane_(std::make_shared<shape::Plane>()),
+	sphere_(std::make_shared<shape::Sphere>()),
+	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	mesh_cache_(mesh_provider_),
 	image_cache_(image_provider_),
 	material_provider_(num_workers),
@@ -48,14 +51,21 @@ void Loader::load(const std::string& filename, Scene& scene) {
 	scene.compile();
 }
 
-surrounding::Surrounding* Loader::load_surrounding(const rapidjson::Value& surrounding_value) const {
+surrounding::Surrounding* Loader::load_surrounding(const rapidjson::Value& surrounding_value) {
 	std::string type_name = json::read_string(surrounding_value, "type");
 
 	if ("Uniform" == type_name) {
 		math::float3 energy = json::read_float3(surrounding_value, "color");
 		return new surrounding::Uniform(energy);
 	} else if ("Textured" == type_name) {
-		return new surrounding::Sphere(nullptr);
+		const rapidjson::Value::ConstMemberIterator texture_node = surrounding_value.FindMember("texture");
+		if (surrounding_value.MemberEnd() != texture_node) {
+			std::string file = json::read_string(texture_node->value, "file");
+			if (!file.empty()) {
+				auto image = image_cache_.load(file);
+				return new surrounding::Sphere(image);
+			}
+		}
 	}
 
 	return nullptr;

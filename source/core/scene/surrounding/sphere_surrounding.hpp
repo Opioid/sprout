@@ -1,25 +1,27 @@
 #pragma once
 
 #include "surrounding.hpp"
+#include "image/texture/texture2d.hpp"
 #include <memory>
 
-namespace image { namespace texture {
+namespace image {
 
-class Texture;
+class Image;
 
-}}
+}
 
 namespace scene { namespace surrounding {
 
 class Sphere : public Surrounding {
 public:
 
-	Sphere(std::shared_ptr<image::texture::Texture> texture);
+	Sphere(std::shared_ptr<image::Image> image);
 
 	virtual math::float3 sample(const math::Oray& ray) const;
 
 private:
 
+	image::Texture2D texture_;
 };
 
 }}

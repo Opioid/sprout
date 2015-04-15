@@ -1,11 +1,9 @@
 #include "texture.hpp"
 
-namespace image { namespace texture {
+namespace image {
 
-Texture::Texture(Type type) : type_(type) {}
+Texture::Texture(std::shared_ptr<Image> image) : image_(image) {}
 
-Texture::~Texture() {}
-
-}}
+}
 
 

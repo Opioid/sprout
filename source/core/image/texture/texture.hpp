@@ -1,21 +1,21 @@
 #pragma once
 
-namespace image { namespace texture {
+#include <memory>
+
+namespace image {
+
+class Image;
 
 class Texture {
 public:
 
-	enum class Type {
-		_2D,
-	};
-
-	Texture(Type type);
-	virtual ~Texture();
+	Texture(std::shared_ptr<Image> image);
 
 protected:
 
-	Type type_;
+
+	std::shared_ptr<Image> image_;
 };
 
-}}
+}
 

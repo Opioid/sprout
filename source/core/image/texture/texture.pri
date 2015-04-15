@@ -1,4 +1,5 @@
 SOURCES += \
+	image/texture/texture.cpp \
 	image/texture/texture2d.cpp \
 
 HEADERS += \
