@@ -9,7 +9,7 @@ namespace image  {
 std::shared_ptr<Image> Provider::load(const std::string& filename, uint32_t flags) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {
-		return nullptr;
+		throw std::runtime_error("File \"" + filename + "\" could not be opened");
 	}
 
 	encoding::Rgbe_reader reader;

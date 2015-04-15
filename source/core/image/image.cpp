@@ -1,4 +1,5 @@
 #include "image.hpp"
+#include "base/math/vector.inl"
 
 namespace image {
 

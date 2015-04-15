@@ -1,6 +1,7 @@
 #include "rgbe_reader.hpp"
 #include "image/image3.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector.inl"
+#include <cmath>
 #include <string>
 #include <vector>
 

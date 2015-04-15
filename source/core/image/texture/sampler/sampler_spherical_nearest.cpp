@@ -1,6 +1,7 @@
 #include "sampler_spherical_nearest.hpp"
 #include "image/texture/texture2d.hpp"
 #include "base/math/math.hpp"
+#include "base/math/vector.inl"
 
 namespace image { namespace sampler {
 

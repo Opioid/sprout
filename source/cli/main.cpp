@@ -46,7 +46,7 @@ int main() {
 	try {
 		scene_loader.load(take->scene, scene);
 	} catch (const std::exception& e) {
-		std::cout << "Scene \"" << take->scene << "\" could not be loaded:" << e.what() << "." << std::endl;
+		std::cout << "Scene \"" << take->scene << "\" could not be loaded: " << e.what() << "." << std::endl;
 		return 1;
 	}
 

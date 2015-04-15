@@ -48,6 +48,10 @@ void Loader::load(const std::string& filename, Scene& scene) {
 		}
 	}
 
+	if (!scene.surrounding()) {
+		scene.set_surrounding(new surrounding::Uniform(math::float3::identity));
+	}
+
 	scene.compile();
 }
 
