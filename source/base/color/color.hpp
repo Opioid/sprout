@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace math {
 
 template<typename T> struct Vector3;
@@ -28,5 +30,8 @@ Color3 linear_to_gamma(const Color3& c, float gamma);
 Color3 gamma_to_linear(const Color3& c, float gamma);
 
 Color3 to_float(const Color3c& c);
+
+Color4c to_byte(const Color4& c);
+uint32_t to_uint(const Color4& c);
 
 }

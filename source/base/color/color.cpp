@@ -1,5 +1,6 @@
 #include "color.hpp"
 #include "math/vector.inl"
+#include <emmintrin.h>
 
 namespace color {
 
@@ -58,6 +59,25 @@ Color3 gamma_to_linear(const Color3& c, float gamma) {
 
 Color3 to_float(const Color3c& c) {
 	return Color3(float(c.x) / 255.f, float(c.y) / 255.f, float(c.z) / 255.f);
+}
+
+Color4c to_byte(const Color4& c) {
+	return Color4c(static_cast<unsigned char>(c.x * 255.f),
+				   static_cast<unsigned char>(c.y * 255.f),
+				   static_cast<unsigned char>(c.z * 255.f),
+				   static_cast<unsigned char>(c.w * 255.f));
+}
+
+uint32_t to_uint(const Color4& c) {
+	const __m128 m4x255f = _mm_set_ps1(255.f);
+
+	__m128 m0 = _mm_set_ps(c.x, c.y, c.z, c.w);
+
+	m0 = _mm_mul_ps(m0, m4x255f);
+
+	__m128i m1 = _mm_cvtps_epi32(m0);
+
+	return (m1.m128i_i32[0] << 24) | (m1.m128i_i32[1] << 16) | (m1.m128i_i32[2] << 8) | m1.m128i_i32[3];
 }
 
 }
