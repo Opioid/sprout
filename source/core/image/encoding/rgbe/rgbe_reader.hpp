@@ -10,9 +10,9 @@ namespace image {
 class Image;
 class Image3;
 
-namespace encoding {
+namespace encoding { namespace rgbe {
 
-class Rgbe_reader {
+class Reader {
 public:
 
 	std::shared_ptr<Image> read(std::istream& stream) const;
@@ -32,4 +32,4 @@ private:
 	static math::float3 rgbe_to_float3(uint8_t rgbe[4]);
 };
 
-}}
+}}}

@@ -8,10 +8,10 @@ class Texture_2D;
 
 namespace sampler {
 
-class Spherical {
+class Sampler_2D {
 public:
 
-	virtual math::float3 sample3(const Texture_2D& texture, const math::float3& xyz) const = 0;
+	virtual math::float3 sample3(const Texture_2D& texture, math::float2 uv) const = 0;
 };
 
 }}

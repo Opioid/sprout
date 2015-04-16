@@ -3,6 +3,12 @@
 #include "material_sample_cache.hpp"
 #include "base/math/vector.hpp"
 
+namespace image { namespace sampler {
+
+class Sampler_2D;
+
+}}
+
 namespace scene {
 
 namespace shape {
@@ -18,7 +24,8 @@ class Sample;
 class IMaterial {
 public:
 
-	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo, uint32_t worker_id) = 0;
+	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
+								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id) = 0;
 };
 
 template<typename T>

@@ -5,10 +5,10 @@
 
 namespace image {
 
-class Texture2D : public Texture {
+class Texture_2D : public Texture {
 public:
 
-	Texture2D(std::shared_ptr<Image> image);
+	Texture_2D(std::shared_ptr<Image> image);
 
 	math::uint2 dimensions() const;
 

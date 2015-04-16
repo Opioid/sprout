@@ -23,7 +23,7 @@ Loader::Loader(uint32_t num_workers) :
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	mesh_cache_(mesh_provider_),
 	image_cache_(image_provider_),
-	material_provider_(num_workers),
+	material_provider_(image_cache_, num_workers),
 	material_cache_(material_provider_) {}
 
 Loader::~Loader() {}

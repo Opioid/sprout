@@ -1,7 +1,7 @@
 #pragma once
 
 #include "surrounding.hpp"
-#include "image/texture/texture2d.hpp"
+#include "image/texture/texture_2d.hpp"
 #include "image/texture/sampler/sampler_spherical_nearest.hpp"
 #include <memory>
 
@@ -22,7 +22,7 @@ public:
 
 private:
 
-	image::Texture2D texture_;
+	image::Texture_2D texture_;
 	image::sampler::Spherical_nearest sampler_nearest_;
 };
 

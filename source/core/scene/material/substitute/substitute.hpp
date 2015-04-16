@@ -65,7 +65,6 @@ class Substitute : public Material<Sample> {
 public:
 
 	Substitute(Sample_cache<Sample>& cache);
-
 };
 
 }}}

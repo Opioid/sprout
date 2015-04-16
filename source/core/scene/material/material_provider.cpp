@@ -1,5 +1,6 @@
 #include "material_provider.hpp"
 #include "material_sample_cache.inl"
+#include "substitute/substitute_colormap.hpp"
 #include "substitute/substitute_constant.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -8,7 +9,8 @@
 
 namespace scene { namespace material {
 
-Provider::Provider(uint32_t num_workers) :
+Provider::Provider(resource::Cache<image::Image>& image_cache, uint32_t num_workers) :
+	image_cache_(image_cache),
 	substitute_cache_(num_workers),
 	fallback_material_(std::make_shared<substitute::Constant>(substitute_cache_, math::float3(1.f, 0.f, 0.f), 1.f, 0.f)) {}
 
@@ -48,6 +50,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	math::float3 color(0.75f, 0.75f, 0.75f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
+	std::shared_ptr<image::Image> colormap;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -59,7 +62,24 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 			roughness = json::read_float(node_value);
 		} else if ("metallic" == node_name) {
 			metallic = json::read_float(node_value);
+		} else if ("textures" == node_name) {
+			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+				std::string filename = json::read_string(*tn, "file", "");
+				std::string usage    = json::read_string(*tn, "usage", "Color");
+
+				if (filename.empty()) {
+					continue;
+				}
+
+				if ("Color" == usage) {
+					colormap = image_cache_.load(filename);
+				}
+			}
 		}
+	}
+
+	if (colormap) {
+		return std::make_shared<substitute::Colormap>(substitute_cache_, colormap, roughness, metallic);
 	}
 
 	return std::make_shared<substitute::Constant>(substitute_cache_, color, roughness, metallic);

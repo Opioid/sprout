@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-namespace image { namespace encoding {
+namespace image { namespace encoding { namespace rgbe {
 
-std::shared_ptr<Image> Rgbe_reader::read(std::istream& stream) const {
+std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 	Header header = read_header(stream);
 
 	math::uint2 dimensions(header.width, header.height);
@@ -29,7 +29,7 @@ std::shared_ptr<Image> Rgbe_reader::read(std::istream& stream) const {
 	return image;
 }
 
-Rgbe_reader::Header Rgbe_reader::read_header(std::istream& stream) {
+Reader::Header Reader::read_header(std::istream& stream) {
 	std::string line;
 
 	std::getline(stream, line);
@@ -66,7 +66,7 @@ Rgbe_reader::Header Rgbe_reader::read_header(std::istream& stream) {
 	return header;
 }
 
-void Rgbe_reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines, Image3& image) {
+void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines, Image3& image) {
 	if (scanline_width < 8 || scanline_width > 0x7fff) {
 		return read_pixels(stream, scanline_width * num_scanlines, image, 0);
 	}
@@ -142,7 +142,7 @@ void Rgbe_reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width,
 	}
 }
 
-void Rgbe_reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image3& image, uint32_t offset) {
+void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image3& image, uint32_t offset) {
 	uint8_t rgbe[4];
 
 	for (; num_pixels > 0; --num_pixels) {
@@ -154,7 +154,7 @@ void Rgbe_reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image3&
 	}
 }
 
-math::float3 Rgbe_reader::rgbe_to_float3(uint8_t rgbe[4]) {
+math::float3 Reader::rgbe_to_float3(uint8_t rgbe[4]) {
 	if (rgbe[3] > 0) {
 		// nonzero pixel
 		float f = std::ldexp(1.f, static_cast<int>(rgbe[3]) - (128 + 8));
@@ -164,4 +164,4 @@ math::float3 Rgbe_reader::rgbe_to_float3(uint8_t rgbe[4]) {
 	}
 }
 
-}}
+}}}

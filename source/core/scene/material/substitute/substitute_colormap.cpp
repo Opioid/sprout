@@ -1,18 +1,22 @@
-#include "substitute_constant.hpp"
+#include "substitute_colormap.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
+#include "image/texture/sampler/sampler_2d.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
-Constant::Constant(Sample_cache<Sample>& cache, const math::float3& color, float roughness, float metallic) :
+Colormap::Colormap(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> color, float roughness, float metallic) :
 	Substitute(cache), color_(color), roughness_(roughness), metallic_(metallic) {}
 
-const Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
+const Sample& Colormap::sample(const shape::Differential& dg, const math::float3& wo,
 							   const image::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, wo);
-	sample.set(color_, roughness_, metallic_);
+
+	math::float3 color = sampler.sample3(color_, dg.uv);
+
+	sample.set(color, roughness_, metallic_);
 
 	return sample;
 }

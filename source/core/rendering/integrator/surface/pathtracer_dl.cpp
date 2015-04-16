@@ -34,7 +34,7 @@ math::float3 Pathtracer_DL::li(const Worker& worker, uint32_t subsample, math::O
 		// TODO: light material
 
 		math::float3 wo = -ray.direction;
-		auto& material_sample = material.sample(intersection.geo, wo, id_);
+		auto& material_sample = material.sample(intersection.geo, wo, settings_.sampler, id_);
 
 		ray.origin = intersection.geo.p;
 		ray.min_t  = intersection.geo.epsilon;
