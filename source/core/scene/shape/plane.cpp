@@ -30,6 +30,9 @@ bool Plane::intersect(const Composed_transformation& transformation, const math:
 		intersection.b = transformation.rotation.y;
 		intersection.n = normal;
 
+		intersection.uv.x = math::dot(intersection.t, intersection.p);
+		intersection.uv.y = math::dot(intersection.b, intersection.p);
+
 		intersection.material_index = 0;
 
 		hit_t = t;

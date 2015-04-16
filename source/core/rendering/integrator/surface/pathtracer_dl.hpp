@@ -3,6 +3,7 @@
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/random_sampler.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
+#include "image/texture/sampler/address_mode.hpp"
 #include <vector>
 
 namespace scene { namespace light {
@@ -20,7 +21,7 @@ public:
 		uint32_t min_bounces;
 		uint32_t max_bounces;
 
-		image::sampler::Sampler_2D_nearest sampler;
+		image::sampler::Sampler_2D_nearest<image::sampler::Address_mode_repeat> sampler;
 	};
 
 	Pathtracer_DL(uint32_t id,  math::random::Generator& rng, const Settings& settings);

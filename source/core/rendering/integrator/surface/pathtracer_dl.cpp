@@ -1,5 +1,6 @@
 #include "pathtracer_dl.hpp"
 #include "rendering/worker.hpp"
+#include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/surrounding/surrounding.hpp"
