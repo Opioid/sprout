@@ -14,13 +14,15 @@
 float duration_to_seconds(std::chrono::high_resolution_clock::duration duration);
 
 int main() {
+	std::chrono::high_resolution_clock clock;
+
+	auto total_start = clock.now();
+
 	std::cout << "Welcome to sprout!" << std::endl;
 
-	uint32_t num_workers = static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 0;
+	uint32_t num_workers = static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
 
 	std::cout << "#Threads " << num_workers << std::endl;
-
-	std::chrono::high_resolution_clock clock;
 
 	std::cout << "Loading..." << std::endl;
 
@@ -51,7 +53,7 @@ int main() {
 	}
 
 	auto loading_duration = clock.now() - loading_start;
-	std::cout << "(" << duration_to_seconds(loading_duration) << "s)" << std::endl;
+	std::cout << "(" << duration_to_seconds(loading_duration) << " s)" << std::endl;
 
 	rendering::Renderer renderer(take->surface_integrator_factory, take->sampler);
 
@@ -64,7 +66,7 @@ int main() {
 	renderer.render(scene, take->context, num_workers, progressor);
 
 	auto rendering_duration = clock.now() - rendering_start;
-	std::cout << "(" << duration_to_seconds(rendering_duration) << "s)" << std::endl;
+	std::cout << "(" << duration_to_seconds(rendering_duration) << " s)" << std::endl;
 
 	std::cout << "Exporting..." << std::endl;
 
@@ -77,7 +79,10 @@ int main() {
 	}
 
 	auto exporting_duration = clock.now() - exporting_start;
-	std::cout << "(" << duration_to_seconds(exporting_duration) << "s)" << std::endl;
+	std::cout << "(" << duration_to_seconds(exporting_duration) << " s)" << std::endl;
+
+	auto total_duration = clock.now() - total_start;
+	std::cout << "Total elapsed time " << duration_to_seconds(total_duration) << " s" << std::endl;
 
 	return 0;
 }
