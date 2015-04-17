@@ -40,7 +40,7 @@ float2 sample_disk_concentric(float2 uv) {
 		}
 	}
 
-	theta *= pi / 4.f;
+	theta *= Pi / 4.f;
 
 	float sin_theta = std::sin(theta);
 	float cos_theta = std::cos(theta);
@@ -58,7 +58,7 @@ float3 sample_hemisphere_cosine(float2 uv) {
 float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max, const float3& x, const float3& y, const float3& z) {
 	float cos_theta = (1.f - uv.x) + uv.x * cos_theta_max;
 	float sin_theta = std::sqrt(1.f - cos_theta * cos_theta);
-	float phi = uv.y * 2.f * pi;
+	float phi = uv.y * 2.f * Pi;
 
 	float sin_phi = std::sin(phi);
 	float cos_phi = std::cos(phi);
@@ -67,7 +67,7 @@ float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max, const float3
 }
 
 float cone_pdf_uniform(float cos_theta_max) {
-	return 1.f / (2.f * pi * (1.f - cos_theta_max));
+	return 1.f / (2.f * Pi * (1.f - cos_theta_max));
 }
 
 }

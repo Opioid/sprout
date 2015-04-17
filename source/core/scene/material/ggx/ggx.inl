@@ -10,7 +10,7 @@ inline math::float3 f(float wo_dot_h, const math::float3& f0) {
 
 inline float d(float n_dot_h, float a2) {
 	float d = n_dot_h * n_dot_h * (a2 - 1.f) + 1.f;
-	return a2 / (math::pi * d * d);
+	return a2 / (math::Pi * d * d);
 }
 
 inline float g(float n_dot_wi, float n_dot_wo, float a2) {

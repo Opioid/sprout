@@ -2,11 +2,10 @@
 
 namespace math {
 
-const float pi = 3.14159265f;
-const float pi_mul_2 = pi * 2.f;
-const float pi_div_2 = pi * 0.5f;
-const float pi_div_180 = pi / 180.f;
-const float _180_div_pi = 180.f / pi;
-const float pi_inv = 1.f / pi;
+const float Pi = 3.14159265358979323846f;
+const float Pi_div_2 = 1.57079632679489661923f;
+const float Pi_div_180 = Pi / 180.f;
+const float _180_div_pi = 180.f / Pi;
+const float Pi_inv = 0.318309886183790671538f;
 
 }

@@ -35,7 +35,7 @@ math::float3 GGX::importance_sample(sampler::Sampler& sampler, math::float3& wi,
 
 	float n_dot_h = std::sqrt((1.f - xi.y) / ((sample_.a2_ - 1.f) * xi.y + 1.f));
 	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-	float phi = 2.f * math::pi * xi.x;
+	float phi = 2.f * math::Pi * xi.x;
 	float sin_phi = std::sin(phi);
 	float cos_phi = std::cos(phi);
 
@@ -71,7 +71,7 @@ math::float3 Sample::evaluate(const math::float3& wi) const {
 
 	math::float3 specular = ggx::d(n_dot_h, a2_) * ggx::g(n_dot_wi, n_dot_wo, a2_) * ggx::f(wo_dot_h, f0_);
 
-	return n_dot_wi * ((math::pi_inv * diffuse_color_) + specular);
+	return n_dot_wi * ((math::Pi_inv * diffuse_color_) + specular);
 }
 
 math::float3 Sample::sample_evaluate(sampler::Sampler& sampler, math::float3& wi, float& pdf) const {

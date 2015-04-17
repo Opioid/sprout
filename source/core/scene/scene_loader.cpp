@@ -222,6 +222,8 @@ void Loader::load_materials(const rapidjson::Value& materials_value, Prop::Mater
 			}
 		} catch (const std::exception& e) {
 			materials.push_back(material_provider_.fallback_material());
+
+			std::cout << "Cannot load \"" << m->GetString() << "\". Using fallback material. " << std::endl;
 		}
 	}
 }

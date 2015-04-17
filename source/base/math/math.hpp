@@ -6,15 +6,14 @@
 
 namespace math {
 
-extern const float pi;
-extern const float pi_mul_2;
-extern const float pi_div_2;
-extern const float pi_div_180;
+extern const float Pi;
+extern const float Pi_div_2;
+extern const float Pi_div_180;
 extern const float _180_div_pi;
-extern const float pi_inv;
+extern const float Pi_inv;
 
 inline float degrees_to_radians(float degrees) {
-	return degrees * pi_div_180;
+	return degrees * Pi_div_180;
 }
 
 inline float radians_to_degrees(float radians) {
@@ -23,7 +22,7 @@ inline float radians_to_degrees(float radians) {
 
 template <typename T>
 inline T cot(T x) {
-	return tan(pi_div_2 - x);
+	return tan(Pi_div_2 - x);
 }
 
 template <typename T>

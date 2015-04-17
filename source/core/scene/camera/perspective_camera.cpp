@@ -15,7 +15,7 @@ Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* 
 void Perspective::update_view() {
 	float ratio = dimensions_.x / dimensions_.y;
 
-	float z = ratio * math::pi / fov_ * 0.5f;
+	float z = ratio * math::Pi / fov_ * 0.5f;
 
 	left_top_ = math::float3(-ratio,  1.f, z);
 	math::float3 right_top	( ratio,  1.f, z);
