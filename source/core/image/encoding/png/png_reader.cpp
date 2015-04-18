@@ -1,6 +1,7 @@
 #include "png_reader.hpp"
 #include "image/image3.hpp"
-#include "miniz/miniz.c"
+#include "base/math/vector.inl"
+#include <cstring>
 #include <iostream>
 
 namespace image { namespace encoding { namespace png {
@@ -75,7 +76,8 @@ bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 	info.width  = swap(reinterpret_cast<uint32_t*>(chunk->data)[0]);
 	info.height = swap(reinterpret_cast<uint32_t*>(chunk->data)[1]);
 
-
+	info.stream.zalloc = nullptr;
+	info.stream.zfree  = nullptr;
 	if (MZ_OK != mz_inflateInit(&info.stream)) {
 		return false;
 	}
@@ -97,6 +99,6 @@ uint32_t Reader::swap(uint32_t v) {
 	return ((v & 0xFF) << 24) | ((v & 0xFF00) << 8) | ((v & 0xFF0000) >> 8) | ((v & 0xFF000000) >> 24);
 }
 
-const std::array<uint8_t, Reader::Signature_size> Reader::Signature = { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
+const std::array<uint8_t, Reader::Signature_size> Reader::Signature = { { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A } };
 
 }}}

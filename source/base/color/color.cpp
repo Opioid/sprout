@@ -67,7 +67,7 @@ Color4c to_byte(const Color4& c) {
 				   static_cast<unsigned char>(c.z * 255.f),
 				   static_cast<unsigned char>(c.w * 255.f));
 }
-
+/*
 uint32_t to_uint(const Color4& c) {
 	const __m128 m4x255f = _mm_set_ps1(255.f);
 
@@ -78,6 +78,6 @@ uint32_t to_uint(const Color4& c) {
 	__m128i m1 = _mm_cvtps_epi32(m0);
 
 	return (m1.m128i_i32[0] << 24) | (m1.m128i_i32[1] << 16) | (m1.m128i_i32[2] << 8) | m1.m128i_i32[3];
-}
+}*/
 
 }

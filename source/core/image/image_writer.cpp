@@ -2,7 +2,7 @@
 #include "image/image.hpp"
 #include "base/color/color.hpp"
 #include "base/math/vector.inl"
-#include "miniz/miniz.c"
+#include "miniz/miniz.h"
 #include <fstream>
 
 namespace image {

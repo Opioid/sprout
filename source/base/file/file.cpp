@@ -1,9 +1,10 @@
 #include "file.hpp"
+#include <cstring>
 
 namespace file {
 
 Type query_type(std::istream& stream) {
-	const char png_header[] {137, 'P', 'N', 'G'};
+	const char png_header[] { static_cast<char>(0x89), 'P', 'N', 'G' };
 
 	char header[4];
 

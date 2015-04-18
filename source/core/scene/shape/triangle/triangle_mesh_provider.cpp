@@ -9,16 +9,13 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-std::shared_ptr<Mesh> Provider::load(const std::string& filename, uint32_t flags) {
+std::shared_ptr<Mesh> Provider::load(const std::string& filename, uint32_t /*flags*/) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {
 		return nullptr;
 	}
 
 	auto root = json::parse(stream);
-	if (!root) {
-		return nullptr;
-	}
 
 	std::vector<Index_triangle> triangles;
 	std::vector<Vertex> vertices;

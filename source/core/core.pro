@@ -6,7 +6,8 @@ CONFIG += staticlib
 CONFIG += c++14
 CONFIG(debug, release|debug):DEFINES += _DEBUG
 
-SOURCES +=
+SOURCES += \
+	$$PWD/../../thirdparty/include/miniz/miniz.cpp
 
 HEADERS +=
 
