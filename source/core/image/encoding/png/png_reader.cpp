@@ -1,5 +1,6 @@
 #include "png_reader.hpp"
 #include "image/image3.hpp"
+#include "base/color/color.hpp"
 #include "base/math/vector.inl"
 #include <cstring>
 #include <iostream>
@@ -25,6 +26,9 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 		}
 	}
 
+	mz_inflateEnd(&info.stream);
+
+	/*
 	auto image = std::make_shared<Image3>(Description(math::uint2(2, 2)));
 
 	image->set3(0, math::float3(0.1f, 0.1f, 0.1f));
@@ -33,6 +37,9 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 	image->set3(3, math::float3(0.1f, 0.1f, 0.1f));
 
 	return image;
+	*/
+
+	return info.image;
 }
 
 Reader::Chunk::~Chunk() {
@@ -69,12 +76,45 @@ bool Reader::handle_chunk(std::shared_ptr<Chunk> chunk, Info& info) {
 		return false;
 	}
 
-	return false;
+	return true;
 }
 
 bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 	info.width  = swap(reinterpret_cast<uint32_t*>(chunk->data)[0]);
 	info.height = swap(reinterpret_cast<uint32_t*>(chunk->data)[1]);
+
+	uint8_t depth = chunk->data[8];
+	if (8 != depth) {
+		return false;
+	}
+
+	uint8_t color_type = chunk->data[9];
+
+	switch (color_type) {
+	case Color_type::Truecolor:
+		info.num_channels = 3; break;
+	case Color_type::Truecolor_alpha:
+		info.num_channels = 4; break;
+	default:
+		info.num_channels = 0;
+	}
+
+	if (0 == info.num_channels) {
+		return false;
+	}
+
+	info.bytes_per_pixel = info.num_channels;
+
+	uint8_t interlace = chunk->data[12];
+	if (interlace) {
+		// currently don't support interlaced encoding
+		return false;
+	}
+
+	info.image = std::make_shared<Image3>(Description(math::uint2(info.width, info.height)));
+
+	info.current_row_data.resize(info.width * info.num_channels);
+	info.previous_row_data.resize(info.current_row_data.size());
 
 	info.stream.zalloc = nullptr;
 	info.stream.zfree  = nullptr;
@@ -85,14 +125,125 @@ bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 	return true;
 }
 
-bool Reader::parse_lte(std::shared_ptr<Chunk> chunk, Info& info) {
-	std::cout << "parse_lte" << std::endl;
+bool Reader::parse_lte(std::shared_ptr<Chunk> /*chunk*/, Info& /*info*/) {
 	return true;
 }
 
 bool Reader::parse_data(std::shared_ptr<Chunk> chunk, Info& info) {
-	std::cout << "parse_data" << std::endl;
+	const uint32_t buffer_size = 8192;
+	uint8_t buffer[buffer_size];
+
+	info.current_byte = 0;
+
+	info.stream.next_in = chunk->data;
+	info.stream.avail_in = chunk->length;
+
+	uint32_t current_pixel = 0;
+	color::Color4c color(0, 0, 0, 255);
+
+	bool filter_byte = true;
+	Filter current_filter = Filter::None;
+
+	do {
+		info.stream.next_out = buffer;
+		info.stream.avail_out = buffer_size;
+
+		int status = mz_inflate(&info.stream, MZ_NO_FLUSH);
+
+		if (status != MZ_OK && status != MZ_STREAM_END && status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
+			return false;
+		}
+
+		uint32_t decompressed = buffer_size - info.stream.avail_out;
+
+		for (uint32_t i = 0, channel = 0; i < decompressed; ++i) {
+			if (filter_byte) {
+				current_filter = static_cast<Filter>(buffer[i]);
+				filter_byte = false;
+			} else {
+				uint8_t raw = filter(buffer[i], current_filter, info);
+
+				info.current_row_data[info.current_byte] = raw;
+
+				color.v[channel] = raw;
+if (raw > 196) {
+	raw = 0;
+}
+				if (info.num_channels - 1 == channel) {
+					math::float4 linear(color::sRGB_to_linear(color));
+					info.image->set4(current_pixel++, linear);
+					channel = 0;
+				} else {
+					++channel;
+				}
+
+				if (info.current_row_data.size() - 1 == info.current_byte) {
+					info.current_byte = 0;
+					std::swap(info.current_row_data, info.previous_row_data);
+					filter_byte = true;
+				} else {
+					++info.current_byte;
+				}
+			}
+		}
+	} while (info.stream.avail_in > 0 || 0 == info.stream.avail_out);
+
 	return true;
+}
+
+uint8_t Reader::filter(uint8_t byte, Filter filter, const Info& info) {
+	switch (filter) {
+	case Filter::None:
+		return byte;
+	case Filter::Sub:
+		return byte + raw(info.current_byte - info.bytes_per_pixel, info);
+	case Filter::Up:
+		return byte + prior(info.current_byte, info);
+	case Filter::Average:
+		return 0;
+	case Filter::Paeth:
+		return byte + paethPredictor(raw(info.current_byte - info.bytes_per_pixel, info),
+									 prior(info.current_byte, info),
+									 prior(info.current_byte - info.bytes_per_pixel, info));
+	default:
+		return 0;
+	}
+}
+
+uint8_t Reader::raw(int column, const Info& info) {
+	if (column < 0) {
+		return 0;
+	}
+
+	return info.current_row_data[column];
+}
+
+uint8_t Reader::prior(int column, const Info& info) {
+	if (column < 0) {
+		return 0;
+	}
+
+	return info.previous_row_data[column];
+}
+
+uint8_t Reader::paethPredictor(uint8_t a, uint8_t b, uint8_t c) {
+	int A = static_cast<int>(a);
+	int B = static_cast<int>(b);
+	int C = static_cast<int>(c);
+	int p = A + B - C;
+	int pa = std::abs(p - A);
+	int pb = std::abs(p - B);
+	int pc = std::abs(p - C);
+
+	if (pa <= pb && pa <= pc) {
+		return a;
+	}
+
+	if (pb <= pc) {
+		return b;
+	}
+
+	return c;
 }
 
 uint32_t Reader::swap(uint32_t v) {

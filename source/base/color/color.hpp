@@ -23,6 +23,8 @@ Color3 linear_to_sRGB(const Color3& c);
 Color3 sRGB_to_linear(const Color3c& c);
 Color3 sRGB_to_linear(const Color3& c);
 
+Color4 sRGB_to_linear(const Color4c& c);
+
 // convert linear color to gamma color
 Color3 linear_to_gamma(const Color3& c, float gamma);
 

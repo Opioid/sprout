@@ -37,12 +37,21 @@ float sRGB_to_linear(float c) {
 
 // convert sRGB gamma color to sRGB linear color
 Color3 sRGB_to_linear(const Color3c& c) {
-	return Color3(sRGB_to_linear(float(c.x) / 255.f), sRGB_to_linear(float(c.y) / 255.f), sRGB_to_linear(float(c.z) / 255.f));
+	return Color3(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
+				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
+				  sRGB_to_linear(static_cast<float>(c.z) / 255.f));
 }
 
 // convert sRGB gamma color to sRGB linear color
 Color3 sRGB_to_linear(const Color3& c) {
 	return Color3(sRGB_to_linear(c.x), sRGB_to_linear(c.y), sRGB_to_linear(c.z));
+}
+
+Color4 sRGB_to_linear(const Color4c& c) {
+	return Color4(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
+				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
+				  sRGB_to_linear(static_cast<float>(c.z) / 255.f),
+				  static_cast<float>(c.w) / 255.f);
 }
 
 // convert linear color to gamma color
