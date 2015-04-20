@@ -88,7 +88,7 @@ bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 		return false;
 	}
 
-	uint8_t color_type = chunk->data[9];
+	Color_type color_type = static_cast<Color_type>(chunk->data[9]);
 
 	switch (color_type) {
 	case Color_type::Truecolor:
@@ -162,13 +162,9 @@ bool Reader::parse_data(std::shared_ptr<Chunk> chunk, Info& info) {
 				filter_byte = false;
 			} else {
 				uint8_t raw = filter(buffer[i], current_filter, info);
-
 				info.current_row_data[info.current_byte] = raw;
-
 				color.v[channel] = raw;
-if (raw > 196) {
-	raw = 0;
-}
+
 				if (info.num_channels - 1 == channel) {
 					math::float4 linear(color::sRGB_to_linear(color));
 					info.image->set4(current_pixel++, linear);
@@ -202,9 +198,9 @@ uint8_t Reader::filter(uint8_t byte, Filter filter, const Info& info) {
 	case Filter::Average:
 		return 0;
 	case Filter::Paeth:
-		return byte + paethPredictor(raw(info.current_byte - info.bytes_per_pixel, info),
-									 prior(info.current_byte, info),
-									 prior(info.current_byte - info.bytes_per_pixel, info));
+		return byte + paeth_predictor(raw(info.current_byte - info.bytes_per_pixel, info),
+									  prior(info.current_byte, info),
+									  prior(info.current_byte - info.bytes_per_pixel, info));
 	default:
 		return 0;
 	}
@@ -226,7 +222,7 @@ uint8_t Reader::prior(int column, const Info& info) {
 	return info.previous_row_data[column];
 }
 
-uint8_t Reader::paethPredictor(uint8_t a, uint8_t b, uint8_t c) {
+uint8_t Reader::paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
 	int A = static_cast<int>(a);
 	int B = static_cast<int>(b);
 	int C = static_cast<int>(c);

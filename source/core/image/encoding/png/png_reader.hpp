@@ -83,7 +83,7 @@ private:
 	static uint8_t raw(int column, const Info& info);
 	static uint8_t prior(int column, const Info& info);
 
-	static uint8_t paethPredictor(uint8_t a, uint8_t b, uint8_t c);
+	static uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c);
 
 	static uint32_t swap(uint32_t v);
 
