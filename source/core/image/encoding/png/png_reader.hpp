@@ -3,7 +3,7 @@
 // based on
 // https://github.com/jansol/LuPng
 
-#include "miniz/miniz.h"
+#include "miniz/miniz.hpp"
 #include <cstdint>
 #include <istream>
 #include <memory>
