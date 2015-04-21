@@ -32,26 +32,6 @@ private:
 		uint32_t crc;
 	};
 
-	struct Info {
-		// header
-		uint32_t width;
-		uint32_t height;
-
-		uint32_t num_channels;
-		uint32_t bytes_per_pixel;
-
-		std::shared_ptr<Image> image;
-
-		// parsing state
-		uint32_t current_byte;
-
-		std::vector<uint8_t> current_row_data;
-		std::vector<uint8_t> previous_row_data;
-
-		// miniz
-		mz_stream stream;
-	};
-
 	enum class Color_type {
 		Grayscale = 0,
 		Truecolor = 2,
@@ -66,6 +46,30 @@ private:
 		Up,
 		Average,
 		Paeth
+	};
+
+	struct Info {
+		// header
+		uint32_t width;
+		uint32_t height;
+
+		uint32_t num_channels;
+		uint32_t bytes_per_pixel;
+
+		std::shared_ptr<Image> image;
+
+		// parsing state
+		Filter current_filter;
+		bool filter_byte;
+		uint32_t current_byte;
+		uint32_t channel;
+		uint32_t current_pixel;
+
+		std::vector<uint8_t> current_row_data;
+		std::vector<uint8_t> previous_row_data;
+
+		// miniz
+		mz_stream stream;
 	};
 
 	static std::shared_ptr<Chunk> read_chunk(std::istream& stream);
@@ -83,6 +87,7 @@ private:
 	static uint8_t raw(int column, const Info& info);
 	static uint8_t prior(int column, const Info& info);
 
+	static uint8_t average(uint8_t a, uint8_t b);
 	static uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c);
 
 	static uint32_t swap(uint32_t v);

@@ -115,6 +115,11 @@ void Provider::load_mesh_data(const rapidjson::Value& geometry_value, std::vecto
 			}
 
 			has_tangents = true;
+		} else if ("texture_coordinates_0" == node_name) {
+			size_t i = 0;
+			for (auto n = node_value.Begin(); n != node_value.End(); ++n, ++i) {
+				vertices[i].uv = json::read_float2(*n);
+			}
 		}
 	}
 

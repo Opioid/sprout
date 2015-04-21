@@ -2,6 +2,7 @@
 #include "image/image3.hpp"
 #include "base/color/color.hpp"
 #include "base/math/vector.inl"
+#include "image/image_writer.hpp"
 #include <cstring>
 #include <iostream>
 
@@ -27,17 +28,6 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 	}
 
 	mz_inflateEnd(&info.stream);
-
-	/*
-	auto image = std::make_shared<Image3>(Description(math::uint2(2, 2)));
-
-	image->set3(0, math::float3(0.1f, 0.1f, 0.1f));
-	image->set3(1, math::float3(0.3f, 0.3f, 0.3f));
-	image->set3(2, math::float3(0.3f, 0.3f, 0.3f));
-	image->set3(3, math::float3(0.1f, 0.1f, 0.1f));
-
-	return image;
-	*/
 
 	return info.image;
 }
@@ -113,6 +103,12 @@ bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 
 	info.image = std::make_shared<Image3>(Description(math::uint2(info.width, info.height)));
 
+	info.current_filter = Filter::None;
+	info.filter_byte = true;
+	info.current_byte = 0;
+	info.channel = 0;
+	info.current_pixel = 0;
+
 	info.current_row_data.resize(info.width * info.num_channels);
 	info.previous_row_data.resize(info.current_row_data.size());
 
@@ -133,16 +129,10 @@ bool Reader::parse_data(std::shared_ptr<Chunk> chunk, Info& info) {
 	const uint32_t buffer_size = 8192;
 	uint8_t buffer[buffer_size];
 
-	info.current_byte = 0;
-
 	info.stream.next_in = chunk->data;
 	info.stream.avail_in = chunk->length;
 
-	uint32_t current_pixel = 0;
 	color::Color4c color(0, 0, 0, 255);
-
-	bool filter_byte = true;
-	Filter current_filter = Filter::None;
 
 	do {
 		info.stream.next_out = buffer;
@@ -156,27 +146,27 @@ bool Reader::parse_data(std::shared_ptr<Chunk> chunk, Info& info) {
 
 		uint32_t decompressed = buffer_size - info.stream.avail_out;
 
-		for (uint32_t i = 0, channel = 0; i < decompressed; ++i) {
-			if (filter_byte) {
-				current_filter = static_cast<Filter>(buffer[i]);
-				filter_byte = false;
+		for (uint32_t i = 0; i < decompressed; ++i) {
+			if (info.filter_byte) {
+				info.current_filter = static_cast<Filter>(buffer[i]);
+				info.filter_byte = false;
 			} else {
-				uint8_t raw = filter(buffer[i], current_filter, info);
+				uint8_t raw = filter(buffer[i], info.current_filter, info);
 				info.current_row_data[info.current_byte] = raw;
-				color.v[channel] = raw;
+				color.v[info.channel] = raw;
 
-				if (info.num_channels - 1 == channel) {
+				if (info.num_channels - 1 == info.channel) {
 					math::float4 linear(color::sRGB_to_linear(color));
-					info.image->set4(current_pixel++, linear);
-					channel = 0;
+					info.image->set4(info.current_pixel++, linear);
+					info.channel = 0;
 				} else {
-					++channel;
+					++info.channel;
 				}
 
 				if (info.current_row_data.size() - 1 == info.current_byte) {
 					info.current_byte = 0;
 					std::swap(info.current_row_data, info.previous_row_data);
-					filter_byte = true;
+					info.filter_byte = true;
 				} else {
 					++info.current_byte;
 				}
@@ -196,7 +186,8 @@ uint8_t Reader::filter(uint8_t byte, Filter filter, const Info& info) {
 	case Filter::Up:
 		return byte + prior(info.current_byte, info);
 	case Filter::Average:
-		return 0;
+		return byte + average(raw(info.current_byte - info.bytes_per_pixel, info),
+							  prior(info.current_byte, info));
 	case Filter::Paeth:
 		return byte + paeth_predictor(raw(info.current_byte - info.bytes_per_pixel, info),
 									  prior(info.current_byte, info),
@@ -220,6 +211,10 @@ uint8_t Reader::prior(int column, const Info& info) {
 	}
 
 	return info.previous_row_data[column];
+}
+
+uint8_t Reader::average(uint8_t a, uint8_t b) {
+	return (static_cast<uint32_t>(a) + static_cast<uint32_t>(b)) >> 1;
 }
 
 uint8_t Reader::paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
