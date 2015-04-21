@@ -8,7 +8,7 @@
 
 namespace image { namespace encoding { namespace png {
 
-std::shared_ptr<Image> Reader::read(std::istream& stream) const {
+std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal) const {
 	std::array<uint8_t, Signature_size> signature;
 
 	stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
@@ -18,6 +18,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 	}
 
 	Info info;
+	info.use_as_normal = use_as_normal;
 
 	for (;;) {
 		auto chunk = read_chunk(stream);
@@ -156,7 +157,15 @@ bool Reader::parse_data(std::shared_ptr<Chunk> chunk, Info& info) {
 				color.v[info.channel] = raw;
 
 				if (info.num_channels - 1 == info.channel) {
-					math::float4 linear(color::sRGB_to_linear(color));
+					math::float4 linear;
+					if (info.use_as_normal) {
+						linear.x = 2.f * (static_cast<float>(color.x) / 255.f - 0.5f);
+						linear.y = 2.f * (static_cast<float>(color.y) / 255.f - 0.5f);
+						linear.z = 2.f * (static_cast<float>(color.z) / 255.f - 0.5f);
+					} else {
+						linear = color::sRGB_to_linear(color);
+					}
+
 					info.image->set4(info.current_pixel++, linear);
 					info.channel = 0;
 				} else {

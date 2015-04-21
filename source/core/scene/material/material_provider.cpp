@@ -1,6 +1,8 @@
 #include "material_provider.hpp"
 #include "material_sample_cache.inl"
+#include "image/image_provider.hpp"
 #include "substitute/substitute_colormap.hpp"
+#include "substitute/substitute_colormap_normalmap.hpp"
 #include "substitute/substitute_constant.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -51,6 +53,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	std::shared_ptr<image::Image> colormap;
+	std::shared_ptr<image::Image> normalmap;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -73,13 +76,19 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 
 				if ("Color" == usage) {
 					colormap = image_cache_.load(filename);
+				} else if ("Normal" == usage) {
+					normalmap = image_cache_.load(filename, static_cast<uint32_t>(image::Provider::Flags::Use_as_normal));
 				}
 			}
 		}
 	}
 
 	if (colormap) {
-		return std::make_shared<substitute::Colormap>(substitute_cache_, colormap, roughness, metallic);
+		if (normalmap) {
+			return std::make_shared<substitute::Colormap_normalmap>(substitute_cache_, colormap, normalmap, roughness, metallic);
+		} else {
+			return std::make_shared<substitute::Colormap>(substitute_cache_, colormap, roughness, metallic);
+		}
 	}
 
 	return std::make_shared<substitute::Constant>(substitute_cache_, color, roughness, metallic);

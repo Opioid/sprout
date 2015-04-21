@@ -19,7 +19,7 @@ namespace encoding { namespace png {
 class Reader {
 public:
 
-	std::shared_ptr<Image> read(std::istream& stream) const;
+	std::shared_ptr<Image> read(std::istream& stream, bool use_as_normal) const;
 
 private:
 
@@ -57,6 +57,8 @@ private:
 		uint32_t bytes_per_pixel;
 
 		std::shared_ptr<Image> image;
+
+		bool use_as_normal;
 
 		// parsing state
 		Filter current_filter;

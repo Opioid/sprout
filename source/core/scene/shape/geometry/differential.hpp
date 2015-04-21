@@ -9,7 +9,7 @@ struct Differential {
 	math::float3 t, b, n;	// tangent frame in world space
 	math::float2 uv;		// texture coordinates
 
-	math::float3 tangent_to_world(const math::float3& v) {
+	math::float3 tangent_to_world(const math::float3& v) const{
 		return math::float3(
 			v.x * t.x + v.y * b.x + v.z * n.x,
 			v.x * t.y + v.y * b.y + v.z * n.y,

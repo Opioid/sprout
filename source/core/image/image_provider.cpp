@@ -18,7 +18,7 @@ std::shared_ptr<Image> Provider::load(const std::string& filename, uint32_t flag
 
 	if (file::Type::PNG == type) {
 		encoding::png::Reader reader;
-		return reader.read(stream);
+		return reader.read(stream, static_cast<uint32_t>(Provider::Flags::Use_as_normal) == flags);
 	} else if (file::Type::RGBE == type) {
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);

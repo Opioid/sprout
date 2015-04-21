@@ -67,7 +67,16 @@ Color3 gamma_to_linear(const Color3& c, float gamma) {
 }
 
 Color3 to_float(const Color3c& c) {
-	return Color3(float(c.x) / 255.f, float(c.y) / 255.f, float(c.z) / 255.f);
+	return Color3(static_cast<float>(c.x) / 255.f,
+				  static_cast<float>(c.y) / 255.f,
+				  static_cast<float>(c.z) / 255.f);
+}
+
+Color4 to_float(const Color4c& c) {
+	return Color4(static_cast<float>(c.x) / 255.f,
+				  static_cast<float>(c.y) / 255.f,
+				  static_cast<float>(c.z) / 255.f,
+				  static_cast<float>(c.w) / 255.f);
 }
 
 Color4c to_byte(const Color4& c) {
