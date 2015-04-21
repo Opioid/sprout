@@ -6,6 +6,7 @@
 #include "rendering/film/tonemapping/filmic.hpp"
 #include "rendering/film/tonemapping/identity.hpp"
 #include "rendering/integrator/surface/ao.hpp"
+#include "rendering/integrator/surface/normal.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "sampler/random_sampler.hpp"
@@ -207,6 +208,8 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 			uint32_t min_bounces = json::read_uint(type_value, "min_bounces", 4);
 			uint32_t max_bounces = json::read_uint(type_value, "max_bounces", 4);
 			return std::make_shared<rendering::Pathtracer_DL_factory>(min_bounces, max_bounces);
+		} else if ("Normal" == type_name) {
+			return std::make_shared<rendering::Normal_factory>();
 		}
 	}
 

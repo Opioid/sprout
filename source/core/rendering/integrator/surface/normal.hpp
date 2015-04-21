@@ -6,16 +6,14 @@
 
 namespace rendering {
 
-class Ao : public Surface_integrator {
+class Normal : public Surface_integrator {
 public:
 
 	struct Settings {
-		uint32_t num_samples;
-		float num_samples_reciprocal;
-		float radius;
+
 	};
 
-	Ao(uint32_t id, math::random::Generator& rng, const Settings& settings);
+	Normal(uint32_t id, math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
@@ -24,20 +22,18 @@ public:
 private:
 
 	Settings settings_;
-
-	sampler::EMS sampler_;
 };
 
-class Ao_factory : public Surface_integrator_factory {
+class Normal_factory : public Surface_integrator_factory {
 public:
 
-	Ao_factory(uint32_t num_samples, float radius);
+	Normal_factory();
 
 	virtual Surface_integrator* create(uint32_t id,  math::random::Generator& rng) const;
 
 private:
 
-	Ao::Settings settings_;
+	Normal::Settings settings_;
 };
 
 }
