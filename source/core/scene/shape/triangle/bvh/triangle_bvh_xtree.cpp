@@ -1,11 +1,11 @@
-#include "triangle_bvh_tree.hpp"
+#include "triangle_bvh_xtree.hpp"
 #include "scene/shape/triangle/triangle_primitive.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/vector.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Node::Children Node::children(uint8_t sign, uint32_t id) const {
+XNode::Children XNode::children(uint8_t sign, uint32_t id) const {
 	if (0 == sign) {
 		return Children{id + 1, end_index};
 	} else {
@@ -13,11 +13,11 @@ Node::Children Node::children(uint8_t sign, uint32_t id) const {
 	}
 }
 
-bool Node::has_children() const {
+bool XNode::has_children() const {
 	return has_children_flag == (start_index & has_children_flag);
 }
 
-void Node::set_has_children(bool children) {
+void XNode::set_has_children(bool children) {
 	if (children) {
 		start_index |= has_children_flag;
 	} else {
@@ -25,7 +25,7 @@ void Node::set_has_children(bool children) {
 	}
 }
 
-void Node::set_right_child(uint32_t offset) {
+void XNode::set_right_child(uint32_t offset) {
 	end_index = offset;
 }
 
@@ -33,23 +33,23 @@ const math::AABB& Tree::aabb() const {
 	return nodes_[0].aabb;
 }
 
-bool Tree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Intersection& intersection) const {
+bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Intersection& intersection) const {
 	return intersect_node(0, ray, intersection);
 }
 
-bool Tree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/) const {
+bool XTree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/) const {
 	return intersect_node_p(0, ray);
 }
 
-void Tree::interpolate_triangle(uint32_t index, float u, float v, math::float3& n, math::float3& t, math::float2& uv) const {
+void XTree::interpolate_triangle(uint32_t index, float u, float v, math::float3& n, math::float3& t, math::float2& uv) const {
 	triangles_[index].interpolate(u, v, n, t, uv);
 }
 
-uint32_t Tree::triangle_material_index(uint32_t index) const {
+uint32_t XTree::triangle_material_index(uint32_t index) const {
 	return triangles_[index].material_index;
 }
 
-bool Tree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const {
+bool XTree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const {
 	auto& node = nodes_[n];
 
 	if (!node.aabb.intersect_p(ray)) {
@@ -93,7 +93,7 @@ bool Tree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersectio
 	return hit;
 }
 
-bool Tree::intersect_node_p(uint32_t n, const math::Oray& ray) const {
+bool XTree::intersect_node_p(uint32_t n, const math::Oray& ray) const {
 	auto& node = nodes_[n];
 
 	if (!node.aabb.intersect_p(ray)) {
@@ -119,7 +119,7 @@ bool Tree::intersect_node_p(uint32_t n, const math::Oray& ray) const {
 	return false;
 }
 
-std::vector<Node>& Tree::allocate_nodes(uint32_t num_nodes) {
+std::vector<XNode>& Tree::allocate_nodes(uint32_t num_nodes) {
 	nodes_.resize(num_nodes);
 	return nodes_;
 }

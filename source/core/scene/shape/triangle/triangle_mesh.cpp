@@ -26,13 +26,13 @@ bool Mesh::intersect(const Composed_transformation& transformation, const math::
 		math::float3 n;
 		math::float3 t;
 		math::float2 uv;
-		tree_.triangles_[pi.index].interpolate(pi.c.u, pi.c.v, n, t, uv);
+		tree_.interpolate_triangle(pi.index, pi.c.u, pi.c.v, n, t, uv);
 
 		intersection.n = math::transform_vector(transformation.rotation, n);
 		intersection.t = math::transform_vector(transformation.rotation, t);
 		intersection.b = math::cross(intersection.n, intersection.t);
 		intersection.uv = uv;
-		intersection.material_index = tree_.triangles_[pi.index].material_index;
+		intersection.material_index = tree_.triangle_material_index(pi.index);
 
 		hit_t = pi.c.t;
 		return true;
