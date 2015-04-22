@@ -47,7 +47,7 @@ math::float3 GGX::importance_sample(sampler::Sampler& sampler, math::float3& wi,
 	wi = math::normalized((2.f * wo_dot_h) * h - sample_.wo_);
 
 	float n_dot_wi = std::max(math::dot(sample_.n_, wi),  0.00001f);
-	float n_dot_wo = std::max(math::dot(sample_.n_, sample_.wo_), 0.f);
+	float n_dot_wo = std::max(math::dot(sample_.n_, sample_.wo_), 0.00001f);
 
 	math::float3 f = ggx::f(wo_dot_h, sample_.f0_);
 	float g = ggx::g(n_dot_wi, n_dot_wo, sample_.a2_);

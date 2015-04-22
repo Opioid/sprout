@@ -24,7 +24,7 @@ const Sample& Colormap_normalmap::sample(const shape::Differential& dg, const ma
 
 	sample.set_basis(dg.t, dg.b, n, wo);
 
-	math::float3 color = math::float3(1.f, 1.f, 1.f);//sampler.sample3(color_, dg.uv);
+	math::float3 color = sampler.sample3(color_, dg.uv);
 
 	sample.set(color, roughness_, metallic_);
 

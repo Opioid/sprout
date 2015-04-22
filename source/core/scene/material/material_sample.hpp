@@ -32,7 +32,7 @@ public:
 	}
 
 	bool same_hemisphere(const math::float3& v) const {
-		return math::dot(n_, v) > 0.f;
+		return math::dot(n_, v) >= 0.f;
 	}
 
 protected:
