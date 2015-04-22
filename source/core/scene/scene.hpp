@@ -28,8 +28,8 @@ public:
 	Scene();
 	~Scene();
 
-	bool intersect(math::Oray& ray, Intersection& intersection) const;
-	bool intersect_p(const math::Oray& ray) const;
+	bool intersect(math::Oray& ray, uint32_t worker_id, Intersection& intersection) const;
+	bool intersect_p(const math::Oray& ray, uint32_t worker_id) const;
 
 	void compile();
 

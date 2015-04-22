@@ -20,7 +20,7 @@ public:
 
 private:
 
-	bvh::Tree tree_;
+	bvh::XTree tree_;
 
 	friend class Provider;
 };
