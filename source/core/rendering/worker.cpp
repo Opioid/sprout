@@ -14,7 +14,10 @@ namespace rendering {
 
 Worker::Worker(uint32_t id, const math::random::Generator& rng,
 			   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler) :
-	rng_(rng), surface_integrator_(surface_integrator_factory.create(id, rng_)), sampler_(sampler.clone(rng_)) {}
+	id_(id),
+	rng_(rng),
+	surface_integrator_(surface_integrator_factory.create(id, rng_)),
+	sampler_(sampler.clone(rng_)) {}
 
 Worker::~Worker() {
 	delete sampler_;
@@ -62,11 +65,11 @@ math::float3 Worker::li(uint32_t subsample, math::Oray& ray) const {
 }
 
 bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) const {
-	return scene_->intersect(ray, intersection);
+	return scene_->intersect(ray, id_, intersection);
 }
 
 bool Worker::visibility(const math::Oray& ray) const {
-	return !scene_->intersect_p(ray);
+	return !scene_->intersect_p(ray, id_);
 }
 
 const scene::Scene& Worker::scene() const {

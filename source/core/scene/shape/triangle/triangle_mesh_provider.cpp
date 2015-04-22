@@ -2,6 +2,7 @@
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
 #include "bvh/triangle_bvh_builder.hpp"
+#include "bvh/triangle_bvh_xbuilder.hpp"
 #include "base/math/vector.inl"
 #include "base/json/json.hpp"
 #include <fstream>
@@ -31,7 +32,7 @@ std::shared_ptr<Mesh> Provider::load(const std::string& filename, uint32_t /*fla
 
 	auto mesh = std::make_shared<Mesh>();
 
-	bvh::Builder builder;
+	bvh::XBuilder builder;
 	builder.build(mesh->tree_, triangles, vertices, 8);
 
 	mesh->aabb_ = mesh->tree_.aabb();

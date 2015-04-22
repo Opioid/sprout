@@ -12,7 +12,7 @@ struct Triangle;
 
 namespace bvh {
 
-struct Node {
+struct XNode {
 	static const uint32_t has_children_flag = 0xFFFFFFFF;
 
 	struct Children {
@@ -32,7 +32,7 @@ struct Node {
 	uint8_t axis;
 };
 
-class Tree  {
+class XTree  {
 public:
 
 	const math::AABB& aabb() const;
@@ -43,18 +43,18 @@ public:
 	void interpolate_triangle(uint32_t index, float u, float v, math::float3& n, math::float3& t, math::float2& uv) const;
 	uint32_t triangle_material_index(uint32_t index) const;
 
-	std::vector<Node>& allocate_nodes(uint32_t num_nodes);
+	std::vector<XNode>& allocate_nodes(uint32_t num_nodes);
 
 private:
 
 	bool intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const;
 	bool intersect_node_p(uint32_t n, const math::Oray& ray) const;
 
-	std::vector<Node> nodes_;
+	std::vector<XNode> nodes_;
 
 	std::vector<Triangle> triangles_;
 
-	friend class Builder;
+	friend class XBuilder;
 };
 
 }}}}

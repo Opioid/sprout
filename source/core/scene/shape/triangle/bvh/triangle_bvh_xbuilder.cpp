@@ -1,23 +1,24 @@
-#include "triangle_bvh_builder.hpp"
-#include "triangle_bvh_tree.hpp"
+#include "triangle_bvh_xbuilder.hpp"
+#include "triangle_bvh_xtree.hpp"
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
+#include <iostream>
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Build_node::Build_node() : start_index(0), end_index(0) {
+XBuild_node::XBuild_node() : start_index(0), end_index(0) {
 	children[0] = nullptr;
 	children[1] = nullptr;
 }
 
-Build_node::~Build_node() {
+XBuild_node::~XBuild_node() {
 	delete children[0];
 	delete children[1];
 }
 
-void Build_node::num_sub_nodes(uint32_t& count) {
+void XBuild_node::num_sub_nodes(uint32_t& count) {
 	if (children[0]) {
 		count += 2;
 
@@ -26,7 +27,7 @@ void Build_node::num_sub_nodes(uint32_t& count) {
 	}
 }
 
-void Builder::build(Tree& tree, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices, size_t max_primitives) {
+void XBuilder::build(XTree& tree, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices, size_t max_primitives) {
 	std::vector<uint32_t> primitive_indices(triangles.size());
 	for (size_t i = 0, len = primitive_indices.size(); i < len; ++i) {
 		primitive_indices[i] = static_cast<uint32_t>(i);
@@ -35,7 +36,7 @@ void Builder::build(Tree& tree, const std::vector<Index_triangle>& triangles, co
 	tree.triangles_.clear();
 	tree.triangles_.reserve(triangles.size());
 
-	Build_node root;
+	XBuild_node root;
 	split(&root, primitive_indices, triangles, vertices, max_primitives, 0, tree.triangles_);
 
 	num_nodes_ = 1;
@@ -47,7 +48,7 @@ void Builder::build(Tree& tree, const std::vector<Index_triangle>& triangles, co
 	serialize(&root);
 }
 
-void Builder::serialize(Build_node* node) {
+void XBuilder::serialize(XBuild_node* node) {
 	auto& n = new_node();
 	n.aabb = node->aabb;
 	n.start_index = node->start_index;
@@ -65,20 +66,20 @@ void Builder::serialize(Build_node* node) {
 	}
 }
 
-Node& Builder::new_node() {
+XNode& XBuilder::new_node() {
 	return (*nodes_)[current_node_++];
 }
 
-uint32_t Builder::current_node_index() const {
+uint32_t XBuilder::current_node_index() const {
 	return current_node_;
 }
 
-void Builder::split(Build_node* node,
-					const std::vector<uint32_t>& primitive_indices,
-					const std::vector<Index_triangle>& triangles,
-					const std::vector<Vertex>& vertices,
-					size_t max_primitives, uint32_t depth,
-					std::vector<Triangle>& out_triangles) {
+void XBuilder::split(XBuild_node* node,
+					 const std::vector<uint32_t>& primitive_indices,
+					 const std::vector<Index_triangle>& triangles,
+					 const std::vector<Vertex>& vertices,
+					 size_t max_primitives, uint32_t depth,
+					 std::vector<Triangle>& out_triangles) {
 	node->aabb = submesh_aabb(primitive_indices, triangles, vertices);
 
 	if (primitive_indices.size() < max_primitives || depth > 24) {
@@ -107,20 +108,20 @@ void Builder::split(Build_node* node,
 			// It means no triangle was completely on "this" side of the plane.
 			assign(node, pids1, triangles, vertices, out_triangles);
 		} else {
-			node->children[0] = new Build_node;
+			node->children[0] = new XBuild_node;
 			split(node->children[0], pids0, triangles, vertices, max_primitives, depth + 1, out_triangles);
 
-			node->children[1] = new Build_node;
+			node->children[1] = new XBuild_node;
 			split(node->children[1], pids1, triangles, vertices, max_primitives, depth + 1, out_triangles);
 		}
 	}
 }
 
-void Builder::assign(Build_node* node,
-					 const std::vector<uint32_t>& primitive_indices,
-					 const std::vector<Index_triangle>& triangles,
-					 const std::vector<Vertex>& vertices,
-					 std::vector<Triangle>& out_triangles) {
+void XBuilder::assign(XBuild_node* node,
+					  const std::vector<uint32_t>& primitive_indices,
+					  const std::vector<Index_triangle>& triangles,
+					  const std::vector<Vertex>& vertices,
+					  std::vector<Triangle>& out_triangles) {
 	node->start_index = static_cast<uint32_t>(out_triangles.size());
 
 	for (auto pi : primitive_indices) {
@@ -131,7 +132,7 @@ void Builder::assign(Build_node* node,
 	node->end_index = static_cast<uint32_t>(out_triangles.size());
 }
 
-math::AABB Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {
+math::AABB XBuilder::submesh_aabb(const std::vector<uint32_t>& primitive_indices, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {
 	float max_float = std::numeric_limits<float>::max();
 	math::float3 min(max_float, max_float, max_float);
 	math::float3 max(-max_float, -max_float, -max_float);
@@ -150,7 +151,7 @@ math::AABB Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices,
 	return math::AABB(min, max);
 }
 
-math::plane Builder::average_splitting_plane(const math::AABB aabb,
+math::plane XBuilder::average_splitting_plane(const math::AABB aabb,
 											 const std::vector<uint32_t>& primitive_indices,
 											 const std::vector<Index_triangle>& triangles,
 											 const std::vector<Vertex>& vertices, uint8_t& axis) {

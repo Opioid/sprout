@@ -23,11 +23,11 @@ Scene::~Scene() {
 	delete surrounding_;
 }
 
-bool Scene::intersect(math::Oray& ray, Intersection& intersection) const {
+bool Scene::intersect(math::Oray& ray, uint32_t worker_id, Intersection& intersection) const {
 	return bvh_.intersect(ray, intersection);
 }
 
-bool Scene::intersect_p(const math::Oray& ray) const {
+bool Scene::intersect_p(const math::Oray& ray, uint32_t worker_id) const {
 	return bvh_.intersect_p(ray);
 }
 

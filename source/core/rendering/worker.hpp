@@ -46,6 +46,7 @@ public:
 
 private:
 
+	uint32_t id_;
 	math::random::Generator rng_;
 	Surface_integrator* surface_integrator_;
 	sampler::Sampler* sampler_;

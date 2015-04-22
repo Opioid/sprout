@@ -4,40 +4,6 @@
 namespace scene { namespace shape { namespace triangle {
 
 inline bool Triangle::intersect(const math::Oray& ray, Coordinates& coordinates) const {
-	/*
-	e1 := t.B.P.Sub(t.A.P)
-	e2 := t.C.P.Sub(t.A.P)
-
-	pvec := ray.Direction.Cross(e2)
-
-	det := e1.Dot(pvec)
-	invDet := 1.0 / det
-
-	tvec := ray.Origin.Sub(t.A.P)
-
-	c := Coordinates{}
-	c.U = tvec.Dot(pvec) * invDet
-
-	if c.U < 0.0 || c.U > 1.0 {
-		return false, c
-	}
-
-	qvec := tvec.Cross(e1)
-	c.V = ray.Direction.Dot(qvec) * invDet
-
-	if c.V < 0.0 || c.U + c.V > 1.0 {
-		return false, c
-	}
-
-	c.T = e2.Dot(qvec) * invDet
-
-	if c.T > ray.MinT && c.T < ray.MaxT {
-		return true, c
-	}
-
-	return false, c
-	*/
-
 	math::float3 e1 = b.p - a.p;
 	math::float3 e2 = c.p - a.p;
 

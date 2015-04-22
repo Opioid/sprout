@@ -2,6 +2,7 @@
 
 #include "scene/shape/shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
+#include "bvh/triangle_bvh_xtree.hpp"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -19,7 +20,7 @@ public:
 
 private:
 
-	bvh::Tree tree_;
+	bvh::XTree tree_;
 
 	friend class Provider;
 };

@@ -15,7 +15,7 @@ void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
 }
 
-math::float3 Ao::li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
+math::float3 Ao::li(const Worker& worker, uint32_t subsample, math::Oray& /*ray*/, scene::Intersection& intersection) {
 	sampler_.start_iteration(subsample);
 
 	math::Oray occlusion_ray;
