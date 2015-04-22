@@ -1,5 +1,6 @@
 #include "triangle_bvh_builder.hpp"
 #include "triangle_bvh_tree.hpp"
+#include "triangle_bvh_helper.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
@@ -72,30 +73,6 @@ uint32_t Builder::current_node_index() const {
 	return current_node_;
 }
 
-uint32_t triangle_side(const math::float3& a, const math::float3& b, const math::float3& c, const math::plane& p) {
-	uint32_t behind = 0;
-
-	if (math::behind(p, a)) {
-		++behind;
-	}
-
-	if (math::behind(p, b)) {
-		++behind;
-	}
-
-	if (math::behind(p, c)) {
-		++behind;
-	}
-
-	if (3 == behind) {
-		return 0;
-	} else if (0 == behind) {
-		return 1;
-	} else {
-		return 2;
-	}
-}
-
 void Builder::split(Build_node* node,
 					const std::vector<uint32_t>& primitive_indices,
 					const std::vector<Index_triangle>& triangles,
@@ -104,7 +81,7 @@ void Builder::split(Build_node* node,
 					std::vector<Triangle>& out_triangles) {
 	node->aabb = submesh_aabb(primitive_indices, triangles, vertices);
 
-	if (primitive_indices.size() < max_primitives || depth > 18) {
+	if (primitive_indices.size() < max_primitives || depth > 24) {
 		assign(node, primitive_indices, triangles, vertices, out_triangles);
 	} else {
 		math::plane sp = average_splitting_plane(node->aabb, primitive_indices, triangles, vertices, node->axis);
@@ -125,11 +102,17 @@ void Builder::split(Build_node* node,
 			}
 		}
 
-		node->children[0] = new Build_node;
-		split(node->children[0], pids0, triangles, vertices, max_primitives, depth + 1, out_triangles);
+		if (pids0.empty()) {
+			// This can happen if we didn't find a good splitting plane.
+			// It means no triangle was completely on "this" side of the plane.
+			assign(node, pids1, triangles, vertices, out_triangles);
+		} else {
+			node->children[0] = new Build_node;
+			split(node->children[0], pids0, triangles, vertices, max_primitives, depth + 1, out_triangles);
 
-		node->children[1] = new Build_node;
-		split(node->children[1], pids1, triangles, vertices, max_primitives, depth + 1, out_triangles);
+			node->children[1] = new Build_node;
+			split(node->children[1], pids1, triangles, vertices, max_primitives, depth + 1, out_triangles);
+		}
 	}
 }
 
@@ -146,14 +129,6 @@ void Builder::assign(Build_node* node,
 	}
 
 	node->end_index = static_cast<uint32_t>(out_triangles.size());
-}
-
-math::float3 triangle_min(const math::float3& a, const math::float3& b, const math::float3& c, const math::float3& x) {
-	return math::min(a, math::min(b, math::min(c, x)));
-}
-
-math::float3 triangle_max(const math::float3& a, const math::float3& b, const math::float3& c, const math::float3& x) {
-	return math::max(a, math::max(b, math::max(c, x)));
 }
 
 math::AABB Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {

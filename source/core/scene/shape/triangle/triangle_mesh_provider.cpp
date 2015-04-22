@@ -2,6 +2,7 @@
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
 #include "bvh/triangle_bvh_builder.hpp"
+#include "bvh/triangle_bvh_xbuilder.hpp"
 #include "base/math/vector.inl"
 #include "base/json/json.hpp"
 #include <fstream>

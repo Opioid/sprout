@@ -21,8 +21,8 @@ class XTree;
 struct XNode;
 
 struct XBuild_node {
-	Build_node();
-	~Build_node();
+	XBuild_node();
+	~XBuild_node();
 
 	void num_sub_nodes(uint32_t& count);
 
@@ -33,7 +33,7 @@ struct XBuild_node {
 
 	uint8_t axis;
 
-	Build_node* children[2];
+	XBuild_node* children[2];
 };
 
 class XBuilder  {

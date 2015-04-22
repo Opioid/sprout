@@ -29,7 +29,7 @@ void XNode::set_right_child(uint32_t offset) {
 	end_index = offset;
 }
 
-const math::AABB& Tree::aabb() const {
+const math::AABB& XTree::aabb() const {
 	return nodes_[0].aabb;
 }
 
@@ -119,7 +119,7 @@ bool XTree::intersect_node_p(uint32_t n, const math::Oray& ray) const {
 	return false;
 }
 
-std::vector<XNode>& Tree::allocate_nodes(uint32_t num_nodes) {
+std::vector<XNode>& XTree::allocate_nodes(uint32_t num_nodes) {
 	nodes_.resize(num_nodes);
 	return nodes_;
 }

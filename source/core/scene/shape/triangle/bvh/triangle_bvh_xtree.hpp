@@ -54,7 +54,7 @@ private:
 
 	std::vector<Triangle> triangles_;
 
-	friend class Builder;
+	friend class XBuilder;
 };
 
 }}}}
