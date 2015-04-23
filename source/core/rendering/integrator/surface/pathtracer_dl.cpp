@@ -79,31 +79,6 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 		}
 	}
 
-	/*
-	shadow_ray.origin = intersection.geo.p;
-	shadow_ray.min_t = intersection.geo.epsilon;
-	shadow_ray.time = ray.time;
-
-	auto& material = intersection.material();
-
-	math::float3 wo = -ray.direction;
-	auto& sample = material.sample(intersection.geo, wo, id_);
-
-	for (auto l : worker.scene().lights()) {
-		l->sample(intersection.geo.p, ray.time, 1, sampler_, light_samples_);
-
-		for (auto& ls : light_samples_) {
-			if (ls.pdf > 0.f) {
-				shadow_ray.set_direction(ls.l);
-				shadow_ray.max_t = ls.t;
-
-				if (worker.visibility(shadow_ray)) {
-					result += (ls.energy * sample.evaluate(ls.l)) / ls.pdf;
-				}
-			}
-		}
-	}
-	*/
 	return result;
 }
 

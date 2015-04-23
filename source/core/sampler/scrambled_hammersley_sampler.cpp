@@ -38,7 +38,7 @@ math::float2 Scrambled_hammersley::generate_sample2d(uint32_t index) {
 	return math::scrambled_hammersley(index, num_samples_per_iteration_, random_bits_);
 }
 
-float Scrambled_hammersley::generate_sample1d(uint32_t index) {
+float Scrambled_hammersley::generate_sample1d(uint32_t /*index*/) {
 	return rng_.random_float();
 }
 

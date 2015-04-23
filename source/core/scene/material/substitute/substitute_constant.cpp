@@ -8,7 +8,7 @@ Constant::Constant(Sample_cache<Sample>& cache, const math::float3& color, float
 	Substitute(cache), color_(color), roughness_(roughness), metallic_(metallic) {}
 
 const Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
-							   const image::sampler::Sampler_2D& sampler, uint32_t worker_id) {
+							   const image::sampler::Sampler_2D& /*sampler*/, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, wo);

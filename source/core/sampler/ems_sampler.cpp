@@ -40,7 +40,7 @@ math::float2 EMS::generate_sample2d(uint32_t index) {
 	return math::ems(offset + index, random_bits_);
 }
 
-float EMS::generate_sample1d(uint32_t index) {
+float EMS::generate_sample1d(uint32_t /*index*/) {
 	return rng_.random_float();
 }
 

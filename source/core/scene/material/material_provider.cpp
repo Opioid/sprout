@@ -1,6 +1,7 @@
 #include "material_provider.hpp"
 #include "material_sample_cache.inl"
 #include "image/image_provider.hpp"
+#include "glass/glass_constant.hpp"
 #include "substitute/substitute_colormap.hpp"
 #include "substitute/substitute_colormap_normalmap.hpp"
 #include "substitute/substitute_constant.hpp"
@@ -13,10 +14,11 @@ namespace scene { namespace material {
 
 Provider::Provider(resource::Cache<image::Image>& image_cache, uint32_t num_workers) :
 	image_cache_(image_cache),
+	glass_cache_(num_workers),
 	substitute_cache_(num_workers),
 	fallback_material_(std::make_shared<substitute::Constant>(substitute_cache_, math::float3(1.f, 0.f, 0.f), 1.f, 0.f)) {}
 
-std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t flags) {
+std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t /*flags*/) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {
 		return nullptr;
@@ -36,7 +38,9 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t 
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("Substitute" == node_name) {
+		if ("Glass" == node_name) {
+			return load_glass(node_value);
+		} else if ("Substitute" == node_name) {
 			return load_substitute(node_value);
 		}
 	}
@@ -46,6 +50,11 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t 
 
 std::shared_ptr<IMaterial> Provider::fallback_material() const {
 	return fallback_material_;
+}
+
+std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& /*glass_value*/) {
+	math::float3 color(1.f, 0.5f, 0.5f);
+	return std::make_shared<glass::Constant>(glass_cache_, color);
 }
 
 std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {

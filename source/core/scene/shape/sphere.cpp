@@ -13,7 +13,7 @@ Sphere::Sphere() {
 }
 
 bool Sphere::intersect(const Composed_transformation& transformation, const math::Oray& ray,
-					   const math::float2& /*bounds*/, Node_stack& node_stack,
+					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					   Intersection& intersection, float& hit_t) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
@@ -57,7 +57,7 @@ bool Sphere::intersect(const Composed_transformation& transformation, const math
 }
 
 bool Sphere::intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
-						 const math::float2& /*bounds*/, Node_stack& node_stack) const {
+						 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
 	float radius = transformation.scale.x;

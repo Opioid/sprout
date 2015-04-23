@@ -10,4 +10,5 @@ HEADERS += \
 	scene/material/material_sample_cache.inl \
 
 include(ggx/ggx.pri)
+include(glass/glass.pri)
 include(substitute/substitute.pri)

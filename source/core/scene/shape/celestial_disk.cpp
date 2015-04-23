@@ -13,18 +13,18 @@ Celestial_disk::Celestial_disk() {
 	aabb_.set_min_max(math::float3::identity, math::float3::identity);
 }
 
-bool Celestial_disk::intersect(const Composed_transformation& transformation, const math::Oray& ray,
-							   const math::float2& /*bounds*/, Node_stack& node_stack,
-							   Intersection& intersection, float& hit_t) const {
+bool Celestial_disk::intersect(const Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
+							   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
+							   Intersection& /*intersection*/, float& /*hit_t*/) const {
 	return false;
 }
 
-bool Celestial_disk::intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
-								 const math::float2& /*bounds*/, Node_stack& node_stack) const {
+bool Celestial_disk::intersect_p(const Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
+								 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
 	return false;
 }
 
-void Celestial_disk::importance_sample(const Composed_transformation& transformation, const math::float3& p,
+void Celestial_disk::importance_sample(const Composed_transformation& transformation, const math::float3& /*p*/,
 									   sampler::Sampler& sampler, uint32_t sample_index,
 									   math::float3& wi, float& t, float& pdf) const {
 	math::float2 sample = sampler.generate_sample2d(sample_index);
