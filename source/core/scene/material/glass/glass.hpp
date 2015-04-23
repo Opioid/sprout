@@ -35,13 +35,13 @@ public:
 
 	virtual math::float3 sample_evaluate(sampler::Sampler& sampler, math::float3& wi, float& pdf) const;
 
-	void set(const math::float3& color);
+	void set(const math::float3& color, float ior);
 
 private:
 
 	math::float3 color_;
 
-	float a2_;
+	float ior_;
 
 	BRDF brdf_;
 	BTDF btdf_;

@@ -56,7 +56,7 @@ template<typename T>
 T squared_length(const Vector2<T>& v);
 
 template<typename T>
-Vector2<T> normalize(const Vector2<T>& v);
+Vector2<T> normalized(const Vector2<T>& v);
 
 template<typename T>
 Vector2<T> reciprocal(const Vector2<T>& v);

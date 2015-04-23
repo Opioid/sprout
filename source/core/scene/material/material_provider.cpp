@@ -52,9 +52,22 @@ std::shared_ptr<IMaterial> Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& /*glass_value*/) {
+std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_value) {
 	math::float3 color(1.f, 0.5f, 0.5f);
-	return std::make_shared<glass::Constant>(glass_cache_, color);
+	float ior = 1.3f;
+
+	for (auto n = glass_value.MemberBegin(); n != glass_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("color" == node_name) {
+			color = json::read_float3(node_value);
+		} else if ("ior" == node_name) {
+			ior = json::read_float(node_value);
+		}
+	}
+
+	return std::make_shared<glass::Constant>(glass_cache_, color, ior);
 }
 
 std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {

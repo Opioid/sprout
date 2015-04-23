@@ -190,11 +190,6 @@ inline Vector3<T> reciprocal(const Vector3<T>& v) {
 }
 
 template<typename T>
-inline Vector3<T> absolute(const Vector3<T>& v) {
-	return Vector3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z));
-}
-
-template<typename T>
 inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
 	return Vector3<T>(a.y * b.z - a.z * b.y,
 					  a.z * b.x - a.x * b.z,
@@ -228,7 +223,7 @@ inline Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, T t) {
 }
 
 template<typename T>
-inline Vector3<T> reflect(const Vector3<T>& v, const Vector3<T>& normal) {
+inline Vector3<T> reflect(const Vector3<T>& normal, const Vector3<T>& v) {
 	return v - T(2) * dot(v, normal) * normal;
 }
 

@@ -7,7 +7,7 @@ namespace scene { namespace material { namespace glass {
 
 BRDF::BRDF(const Sample& sample) : BXDF(sample) {}
 
-math::float3 BRDF::evaluate(const math::float3& wi) const {
+math::float3 BRDF::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
@@ -33,12 +33,12 @@ math::float3 BRDF::importance_sample(sampler::Sampler& /*sampler*/, math::float3
 
 BTDF::BTDF(const Sample& sample) : BXDF(sample) {}
 
-math::float3 BTDF::evaluate(const math::float3& wi) const {
+math::float3 BTDF::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
 math::float3 BTDF::importance_sample(sampler::Sampler& /*sampler*/, math::float3& wi, float& pdf) const {
-	float etat = 1.3f;
+	float etat = sample_.ior_;
 	float eta  = 1.f / etat;
 
 	math::float3 n = sample_.n_;
@@ -68,16 +68,17 @@ math::float3 BTDF::importance_sample(sampler::Sampler& /*sampler*/, math::float3
 	math::float3 f0(0.03f, 0.03f, 0.03f);
 	math::float3 fresnel = ggx::f(wo_dot_h, f0);
 
-	math::float3 transmittance = math::float3(1.f, 1.f, 1.f) - sample_.color_;
+	// By convention our color already is the transmittance
+//	math::float3 transmittance = math::float3(1.f, 1.f, 1.f) - sample_.color_;
 
 	pdf = 1.f;
 
-	return transmittance * fresnel;
+	return sample_.color_ * fresnel;
 }
 
 Sample::Sample() : brdf_(*this), btdf_(*this) {}
 
-math::float3 Sample::evaluate(const math::float3& wi) const {
+math::float3 Sample::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
@@ -101,8 +102,9 @@ math::float3 Sample::sample_evaluate(sampler::Sampler& sampler, math::float3& wi
 //	return r;
 }
 
-void Sample::set(const math::float3& color) {
+void Sample::set(const math::float3& color, float ior) {
 	color_ = color;
+	ior_   = ior;
 }
 
 Glass::Glass(Sample_cache<Sample>& cache) : Material(cache) {}

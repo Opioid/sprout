@@ -84,9 +84,6 @@ template<typename T>
 Vector3<T> reciprocal(const Vector3<T>& v);
 
 template<typename T>
-Vector3<T> absolute(const Vector3<T>& v);
-
-template<typename T>
 Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b);
 
 template<typename T>
@@ -105,7 +102,7 @@ template<typename T>
 Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, T t);
 
 template<typename T>
-Vector3<T> reflect(const Vector3<T>& v, const Vector3<T>& normal);
+Vector3<T> reflect(const Vector3<T>& normal, const Vector3<T>& v);
 
 template<typename T>
 void coordinate_system(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b);
