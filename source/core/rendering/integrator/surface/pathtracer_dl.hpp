@@ -24,11 +24,11 @@ public:
 		image::sampler::Sampler_2D_nearest<image::sampler::Address_mode_repeat> sampler;
 	};
 
-	Pathtracer_DL(uint32_t id,  math::random::Generator& rng, const Settings& settings);
+	Pathtracer_DL(math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
-	virtual math::float3 li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection);
+	virtual math::float3 li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection);
 
 private:
 
@@ -44,7 +44,7 @@ public:
 
 	Pathtracer_DL_factory(uint32_t min_bounces, uint32_t max_bounces);
 
-	virtual Surface_integrator* create(uint32_t id,  math::random::Generator& rng) const;
+	virtual Surface_integrator* create(math::random::Generator& rng) const;
 
 private:
 

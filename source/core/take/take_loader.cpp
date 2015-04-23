@@ -167,7 +167,7 @@ rendering::film::tonemapping::Tonemapper* Loader::load_tonemapper(const rapidjso
 	return nullptr;
 }
 
-rendering::film::filter::Filter* Loader::load_filter(const rapidjson::Value& film_value) const {
+rendering::film::filter::Filter* Loader::load_filter(const rapidjson::Value& /*film_value*/) const {
 	float radius = 0.8f;
 	float alpha  = 0.3f;
 	return new rendering::film::filter::Gaussian(math::float2(radius, radius), alpha);

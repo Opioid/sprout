@@ -2,6 +2,7 @@
 
 #include "resource/resource_provider.hpp"
 #include "resource/resource_cache.hpp"
+#include "glass/glass.hpp"
 #include "substitute/substitute.hpp"
 #include "base/json/rapidjson_types.hpp"
 
@@ -15,12 +16,6 @@ namespace scene { namespace material {
 
 class IMaterial;
 
-namespace substitute {
-
-class Sample;
-
-}
-
 class Provider : public resource::Provider<IMaterial> {
 public:
 
@@ -32,10 +27,12 @@ public:
 
 private:
 
+	std::shared_ptr<IMaterial> load_glass(const rapidjson::Value& glass_value);
 	std::shared_ptr<IMaterial> load_substitute(const rapidjson::Value& substitute_value);
 
 	resource::Cache<image::Image>& image_cache_;
 
+	Sample_cache<glass::Sample> glass_cache_;
 	Sample_cache<substitute::Sample> substitute_cache_;
 
 	std::shared_ptr<material::IMaterial> fallback_material_;

@@ -10,7 +10,8 @@ Plane::Plane() {
 	aabb_.set_min_max(math::float3::identity, math::float3::identity);
 }
 
-bool Plane::intersect(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounds,
+bool Plane::intersect(const Composed_transformation& transformation, const math::Oray& ray,
+					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					  Intersection& intersection, float& hit_t) const {
 	const math::float3& normal = transformation.rotation.z;
 
@@ -42,7 +43,8 @@ bool Plane::intersect(const Composed_transformation& transformation, const math:
 	return false;
 }
 
-bool Plane::intersect_p(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounds) const {
+bool Plane::intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
+						const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
 	const math::float3& normal = transformation.rotation.z;
 
 	float d = -math::dot(normal, transformation.position);
@@ -60,8 +62,11 @@ bool Plane::intersect_p(const Composed_transformation& transformation, const mat
 	return false;
 }
 
-void Plane::importance_sample(const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler, uint32_t sample_index,
-							  math::float3& wi, float& t, float& pdf) const {}
+void Plane::importance_sample(const Composed_transformation& /*transformation*/, const math::float3& /*p*/,
+							  sampler::Sampler& /*sampler*/, uint32_t /*sample_index*/,
+							  math::float3& /*wi*/, float& /*t*/, float& pdf) const {
+	pdf = 0.f;
+}
 
 bool Plane::is_finite() const {
 	return false;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rectangle.hpp"
+#include "scene/shape/node_stack.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/random/generator.hpp"
@@ -34,13 +35,15 @@ public:
 		   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler);
 	~Worker();
 
+	uint32_t id() const;
+
 	void render(const scene::Scene& scene, const scene::camera::Camera& camera, const Rectui& tile);
 
-	math::float3 li(uint32_t subsample, math::Oray& ray) const;
+	math::float3 li(uint32_t subsample, math::Oray& ray);
 
-	bool intersect(math::Oray& ray, scene::Intersection& intersection) const;
+	bool intersect(math::Oray& ray, scene::Intersection& intersection);
 
-	bool visibility(const math::Oray& ray) const;
+	bool visibility(const math::Oray& ray);
 
 	const scene::Scene& scene() const;
 
@@ -51,6 +54,7 @@ private:
 	Surface_integrator* surface_integrator_;
 	sampler::Sampler* sampler_;
 	const scene::Scene* scene_;
+	Node_stack node_stack_;
 };
 
 }

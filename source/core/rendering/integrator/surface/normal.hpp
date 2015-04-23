@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
-#include "sampler/ems_sampler.hpp"
-#include "sampler/random_sampler.hpp"
+#include "image/texture/sampler/sampler_2d_nearest.hpp"
+#include "image/texture/sampler/address_mode.hpp"
 
 namespace rendering {
 
@@ -10,14 +10,14 @@ class Normal : public Surface_integrator {
 public:
 
 	struct Settings {
-
+		image::sampler::Sampler_2D_nearest<image::sampler::Address_mode_repeat> sampler;
 	};
 
-	Normal(uint32_t id, math::random::Generator& rng, const Settings& settings);
+	Normal(math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
-	virtual math::float3 li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection);
+	virtual math::float3 li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection);
 
 private:
 
@@ -29,7 +29,7 @@ public:
 
 	Normal_factory();
 
-	virtual Surface_integrator* create(uint32_t id,  math::random::Generator& rng) const;
+	virtual Surface_integrator* create(math::random::Generator& rng) const;
 
 private:
 

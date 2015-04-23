@@ -7,9 +7,9 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Lambert::Lambert(const Sample& sample) : sample_(sample) {}
+Lambert::Lambert(const Sample& sample) : BXDF(sample) {}
 
-math::float3 Lambert::evaluate(const math::float3& wi) const {
+math::float3 Lambert::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
@@ -24,9 +24,9 @@ math::float3 Lambert::importance_sample(sampler::Sampler& sampler, math::float3&
 	return sample_.diffuse_color_;
 }
 
-GGX::GGX(const Sample& sample) : sample_(sample) {}
+GGX::GGX(const Sample& sample) : BXDF(sample) {}
 
-math::float3 GGX::evaluate(const math::float3& wi) const {
+math::float3 GGX::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 

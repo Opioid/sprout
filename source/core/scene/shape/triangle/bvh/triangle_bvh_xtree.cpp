@@ -33,12 +33,74 @@ const math::AABB& XTree::aabb() const {
 	return nodes_[0].aabb;
 }
 
-bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Intersection& intersection) const {
-	return intersect_node(0, ray, intersection);
+bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack, Intersection& intersection) const {
+	node_stack.clear();
+	node_stack.push_back(0);
+
+	bool hit = false;
+
+	while (!node_stack.empty()) {
+		uint32_t n = node_stack.back();
+		node_stack.pop_back();
+
+		auto& node = nodes_[n];
+
+		if (node.aabb.intersect_p(ray)) {
+			if (node.has_children()) {
+				auto children = node.children(ray.sign[node.axis], n);
+				node_stack.push_back(children.b);
+				node_stack.push_back(children.a);
+			} else {
+				Coordinates c;
+				Intersection ti;
+				ti.c.t = ray.max_t;
+
+				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
+					if (triangles_[i].intersect(ray, c)) {
+						if (c.t < ti.c.t) {
+							ti.c = c;
+							ti.index = i;
+							hit = true;
+						}
+					}
+				}
+
+				if (hit) {
+					intersection = ti;
+					ray.max_t = ti.c.t;
+				}
+			}
+		}
+	}
+
+	return hit;
 }
 
-bool XTree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/) const {
-	return intersect_node_p(0, ray);
+bool XTree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack) const {
+	node_stack.clear();
+	node_stack.push_back(0);
+
+	while (!node_stack.empty()) {
+		uint32_t n = node_stack.back();
+		node_stack.pop_back();
+		auto& node = nodes_[n];
+
+		if (node.aabb.intersect_p(ray)) {
+			if (node.has_children()) {
+				auto children = node.children(ray.sign[node.axis], n);
+				node_stack.push_back(children.b);
+				node_stack.push_back(children.a);
+			} else {
+				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
+					if (triangles_[i].intersect_p(ray)) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 void XTree::interpolate_triangle(uint32_t index, float u, float v, math::float3& n, math::float3& t, math::float2& uv) const {

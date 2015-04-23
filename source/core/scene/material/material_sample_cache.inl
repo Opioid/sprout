@@ -1,4 +1,5 @@
 #include "material_sample_cache.hpp"
+#include <iostream>
 
 namespace scene { namespace material {
 

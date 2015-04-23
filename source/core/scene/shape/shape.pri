@@ -6,6 +6,7 @@ SOURCES += \
 
 HEADERS += \
 	scene/shape/celestial_disk.hpp \
+	scene/shape/node_stack.hpp \
 	scene/shape/plane.hpp \
 	scene/shape/shape.hpp \
 	scene/shape/sphere.hpp \

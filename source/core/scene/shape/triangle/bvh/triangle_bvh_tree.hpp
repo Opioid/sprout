@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scene/shape/node_stack.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/bounding/aabb.hpp"
@@ -37,8 +38,8 @@ public:
 
 	const math::AABB& aabb() const;
 
-	bool intersect(math::Oray& ray, const math::float2& bounds, Intersection& intersection) const;
-	bool intersect_p(const math::Oray& ray, const math::float2& bounds) const;
+	bool intersect(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack, Intersection& intersection) const;
+	bool intersect_p(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack) const;
 
 	void interpolate_triangle(uint32_t index, float u, float v, math::float3& n, math::float3& t, math::float2& uv) const;
 	uint32_t triangle_material_index(uint32_t index) const;

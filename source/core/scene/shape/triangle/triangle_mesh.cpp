@@ -9,7 +9,8 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-bool Mesh::intersect(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounds,
+bool Mesh::intersect(const Composed_transformation& transformation, const math::Oray& ray,
+					 const math::float2& bounds, Node_stack& node_stack,
 					 shape::Intersection& intersection, float& hit_t) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
@@ -18,7 +19,7 @@ bool Mesh::intersect(const Composed_transformation& transformation, const math::
 	tray.max_t = ray.max_t;
 
 	Intersection pi;
-	if (tree_.intersect(tray, bounds, pi)) {
+	if (tree_.intersect(tray, bounds, node_stack, pi)) {
 		intersection.epsilon = 3e-3f * pi.c.t;
 
 		intersection.p = ray.point(pi.c.t);
@@ -41,18 +42,20 @@ bool Mesh::intersect(const Composed_transformation& transformation, const math::
 	return false;
 }
 
-bool Mesh::intersect_p(const Composed_transformation& transformation, const math::Oray& ray, const math::float2& bounds) const {
+bool Mesh::intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
+					   const math::float2& bounds, Node_stack& node_stack) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
 	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
-	return tree_.intersect_p(tray, bounds);
+	return tree_.intersect_p(tray, bounds, node_stack);
 }
 
-void Mesh::importance_sample(const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler, uint32_t sample_index,
-							 math::float3& wi, float& t, float& pdf) const {}
+void Mesh::importance_sample(const Composed_transformation& /*transformation*/, const math::float3& /*p*/,
+							 sampler::Sampler& /*sampler*/, uint32_t /*sample_index*/,
+							 math::float3& /*wi*/, float& /*t*/, float& /*pdf*/) const {}
 
 bool Mesh::is_complex() const {
 	return true;

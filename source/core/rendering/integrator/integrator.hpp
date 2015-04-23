@@ -17,13 +17,11 @@ class Worker;
 class Integrator {
 public:
 
-	Integrator(uint32_t id, math::random::Generator& rng);
+	Integrator(math::random::Generator& rng);
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
 protected:
-
-	uint32_t id_;
 
 	math::random::Generator& rng_;
 };
@@ -31,15 +29,15 @@ protected:
 class Surface_integrator : public Integrator {
 public:
 
-	Surface_integrator(uint32_t id, math::random::Generator& rng);
+	Surface_integrator(math::random::Generator& rng);
 
-	virtual math::float3 li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) = 0;
+	virtual math::float3 li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) = 0;
 };
 
 class Surface_integrator_factory {
 public:
 
-	virtual Surface_integrator* create(uint32_t id, math::random::Generator& rng) const = 0;
+	virtual Surface_integrator* create(math::random::Generator& rng) const = 0;
 };
 
 }

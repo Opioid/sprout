@@ -4,23 +4,23 @@
 #include "scene/material/material_sample.hpp"
 #include "scene/material/bxdf.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene { namespace material { namespace glass {
 
 class Sample;
 
-class Lambert : public BXDF<Sample> {
+class BRDF : public BXDF<Sample> {
 public:
 
-	Lambert(const Sample& sample);
+	BRDF(const Sample& sample);
 
 	virtual math::float3 evaluate(const math::float3& wi) const;
 	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const;
 };
 
-class GGX : public BXDF<Sample> {
+class BTDF : public BXDF<Sample> {
 public:
 
-	GGX(const Sample& sample);
+	BTDF(const Sample& sample);
 
 	virtual math::float3 evaluate(const math::float3& wi) const;
 	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const;
@@ -35,28 +35,25 @@ public:
 
 	virtual math::float3 sample_evaluate(sampler::Sampler& sampler, math::float3& wi, float& pdf) const;
 
-	void set(const math::float3& color, float roughness, float metallic);
+	void set(const math::float3& color);
 
 private:
 
-	math::float3 diffuse_color_;
-	math::float3 f0_;
+	math::float3 color_;
 
 	float a2_;
 
-	float metallic_;
+	BRDF brdf_;
+	BTDF btdf_;
 
-	Lambert lambert_;
-	GGX ggx_;
-
-	friend Lambert;
-	friend GGX;
+	friend BRDF;
+	friend BTDF;
 };
 
-class Substitute : public Material<Sample> {
+class Glass : public Material<Sample> {
 public:
 
-	Substitute(Sample_cache<Sample>& cache);
+	Glass(Sample_cache<Sample>& cache);
 };
 
 }}}

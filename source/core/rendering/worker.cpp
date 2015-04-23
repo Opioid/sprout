@@ -16,11 +16,16 @@ Worker::Worker(uint32_t id, const math::random::Generator& rng,
 			   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler) :
 	id_(id),
 	rng_(rng),
-	surface_integrator_(surface_integrator_factory.create(id, rng_)),
-	sampler_(sampler.clone(rng_)) {}
+	surface_integrator_(surface_integrator_factory.create(rng_)),
+	sampler_(sampler.clone(rng_)),
+	node_stack_(128) {}
 
 Worker::~Worker() {
 	delete sampler_;
+}
+
+uint32_t Worker::id() const {
+	return id_;
 }
 
 void Worker::render(const scene::Scene& scene, const scene::camera::Camera& camera, const Rectui& tile) {
@@ -54,7 +59,7 @@ void Worker::render(const scene::Scene& scene, const scene::camera::Camera& came
 	}
 }
 
-math::float3 Worker::li(uint32_t subsample, math::Oray& ray) const {
+math::float3 Worker::li(uint32_t subsample, math::Oray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 	if (hit) {
@@ -64,12 +69,12 @@ math::float3 Worker::li(uint32_t subsample, math::Oray& ray) const {
 	}
 }
 
-bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) const {
-	return scene_->intersect(ray, id_, intersection);
+bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) {
+	return scene_->intersect(ray, node_stack_, intersection);
 }
 
-bool Worker::visibility(const math::Oray& ray) const {
-	return !scene_->intersect_p(ray, id_);
+bool Worker::visibility(const math::Oray& ray) {
+	return !scene_->intersect_p(ray, node_stack_);
 }
 
 const scene::Scene& Worker::scene() const {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/entity/entity.hpp"
+#include "scene/shape/node_stack.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include <memory>
@@ -30,9 +31,9 @@ public:
 
 	void init(std::shared_ptr<shape::Shape> shape, const Materials& materials);
 
-	bool intersect(math::Oray& ray, shape::Intersection& intersection) const;
+	bool intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersection& intersection) const;
 
-	bool intersect_p(const math::Oray& ray) const;
+	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
 
 	const shape::Shape* shape() const;
 
