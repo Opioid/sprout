@@ -15,8 +15,8 @@
 
 namespace rendering {
 
-Pathtracer_DL::Pathtracer_DL(uint32_t id, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(id, rng), settings_(settings), sampler_(1, rng) {}
+Pathtracer_DL::Pathtracer_DL(math::random::Generator& rng, const Settings& settings) :
+	Surface_integrator(rng), settings_(settings), sampler_(1, rng) {}
 
 void Pathtracer_DL::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -35,7 +35,7 @@ math::float3 Pathtracer_DL::li(const Worker& worker, uint32_t subsample, math::O
 		// TODO: light material
 
 		math::float3 wo = -ray.direction;
-		auto& material_sample = material.sample(intersection.geo, wo, settings_.sampler, id_);
+		auto& material_sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 		ray.origin = intersection.geo.p;
 		ray.min_t  = intersection.geo.epsilon;
@@ -112,8 +112,8 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(uint32_t min_bounces, uint32_t max_
 	settings_.max_bounces = max_bounces;
 }
 
-Surface_integrator* Pathtracer_DL_factory::create(uint32_t id, math::random::Generator& rng) const {
-	return new Pathtracer_DL(id, rng, settings_);
+Surface_integrator* Pathtracer_DL_factory::create(math::random::Generator& rng) const {
+	return new Pathtracer_DL(rng, settings_);
 }
 
 }

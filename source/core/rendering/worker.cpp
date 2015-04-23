@@ -16,11 +16,15 @@ Worker::Worker(uint32_t id, const math::random::Generator& rng,
 			   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler) :
 	id_(id),
 	rng_(rng),
-	surface_integrator_(surface_integrator_factory.create(id, rng_)),
+	surface_integrator_(surface_integrator_factory.create(rng_)),
 	sampler_(sampler.clone(rng_)) {}
 
 Worker::~Worker() {
 	delete sampler_;
+}
+
+uint32_t Worker::id() const {
+	return id_;
 }
 
 void Worker::render(const scene::Scene& scene, const scene::camera::Camera& camera, const Rectui& tile) {

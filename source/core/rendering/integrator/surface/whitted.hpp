@@ -22,7 +22,7 @@ public:
 		image::sampler::Sampler_2D_nearest<image::sampler::Address_mode_repeat> sampler;
 	};
 
-	Whitted(uint32_t id,  math::random::Generator& rng, const Settings& settings);
+	Whitted(math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
@@ -42,7 +42,7 @@ public:
 
 	Whitted_factory();
 
-	virtual Surface_integrator* create(uint32_t id,  math::random::Generator& rng) const;
+	virtual Surface_integrator* create(math::random::Generator& rng) const;
 
 private:
 

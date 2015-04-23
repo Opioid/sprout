@@ -8,8 +8,8 @@
 
 namespace rendering {
 
-Ao::Ao(uint32_t id, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(id, rng), settings_(settings), sampler_(settings.num_samples, rng) {}
+Ao::Ao(math::random::Generator& rng, const Settings& settings) :
+	Surface_integrator(rng), settings_(settings), sampler_(settings.num_samples, rng) {}
 
 void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -46,8 +46,8 @@ Ao_factory::Ao_factory(uint32_t num_samples, float radius) {
 	settings_.radius = radius;
 }
 
-Surface_integrator* Ao_factory::create(uint32_t id, math::random::Generator& rng) const {
-	return new Ao(id, rng, settings_);
+Surface_integrator* Ao_factory::create(math::random::Generator& rng) const {
+	return new Ao(rng, settings_);
 }
 
 }

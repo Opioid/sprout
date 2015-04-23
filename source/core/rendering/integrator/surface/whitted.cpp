@@ -14,8 +14,8 @@
 
 namespace rendering {
 
-Whitted::Whitted(uint32_t id, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(id, rng), settings_(settings), sampler_(1, rng) {}
+Whitted::Whitted(math::random::Generator& rng, const Settings& settings) :
+	Surface_integrator(rng), settings_(settings), sampler_(1, rng) {}
 
 void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -34,7 +34,7 @@ math::float3 Whitted::li(const Worker& worker, uint32_t subsample, math::Oray& r
 	auto& material = intersection.material();
 
 	math::float3 wo = -ray.direction;
-	auto& sample = material.sample(intersection.geo, wo, settings_.sampler, id_);
+	auto& sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 	for (auto l : worker.scene().lights()) {
 		l->sample(intersection.geo.p, ray.time, 1, sampler_, light_samples_);
@@ -58,8 +58,8 @@ Whitted_factory::Whitted_factory() {
 
 }
 
-Surface_integrator* Whitted_factory::create(uint32_t id, math::random::Generator& rng) const {
-	return new Whitted(id, rng, settings_);
+Surface_integrator* Whitted_factory::create(math::random::Generator& rng) const {
+	return new Whitted(rng, settings_);
 }
 
 }

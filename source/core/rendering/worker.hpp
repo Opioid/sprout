@@ -34,6 +34,8 @@ public:
 		   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler);
 	~Worker();
 
+	uint32_t id() const;
+
 	void render(const scene::Scene& scene, const scene::camera::Camera& camera, const Rectui& tile);
 
 	math::float3 li(uint32_t subsample, math::Oray& ray) const;
