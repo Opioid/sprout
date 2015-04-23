@@ -114,4 +114,7 @@ Vector3<float> min(const Vector3<float>& a, const Vector3<float>& b);
 
 Vector3<float> max(const Vector3<float>& a, const Vector3<float>& b);
 
+template<typename T>
+Vector3<T> abs(const Vector3<T>& v);
+
 }

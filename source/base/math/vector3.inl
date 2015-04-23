@@ -274,4 +274,9 @@ inline Vector3<float> max(const Vector3<float>& a, const Vector3<float>& b) {
 	return Vector3<float>(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z);
 }
 
+template<typename T>
+inline Vector3<T> abs(const Vector3<T>& v) {
+	return Vector3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z));
+}
+
 }
