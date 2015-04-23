@@ -13,7 +13,7 @@ void Prop::init(std::shared_ptr<shape::Shape> shape, const Materials& materials)
 	materials_ = materials;
 }
 
-bool Prop::intersect(math::Oray& ray, shape::Intersection& intersection) const {
+bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersection& intersection) const {
 	Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 
@@ -26,7 +26,7 @@ bool Prop::intersect(math::Oray& ray, shape::Intersection& intersection) const {
 	}
 
 	float hit_t;
-	bool hit = shape_->intersect(transformation, ray, bounds, intersection, hit_t);
+	bool hit = shape_->intersect(transformation, ray, bounds, node_stack, intersection, hit_t);
 
 	if (hit) {
 		ray.max_t = hit_t;
@@ -36,7 +36,7 @@ bool Prop::intersect(math::Oray& ray, shape::Intersection& intersection) const {
 	return false;
 }
 
-bool Prop::intersect_p(const math::Oray& ray) const {
+bool Prop::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
 	Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 
@@ -48,7 +48,7 @@ bool Prop::intersect_p(const math::Oray& ray) const {
 		}
 	}
 
-	return shape_->intersect_p(transformation, ray, bounds);
+	return shape_->intersect_p(transformation, ray, bounds, node_stack);
 }
 
 const shape::Shape* Prop::shape() const {

@@ -15,7 +15,7 @@ Normal::Normal(math::random::Generator& rng, const Settings& settings) :
 
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
-math::float3 Normal::li(const Worker& worker, uint32_t /*subsample*/, math::Oray& ray, scene::Intersection& intersection) {
+math::float3 Normal::li(Worker& worker, uint32_t /*subsample*/, math::Oray& ray, scene::Intersection& intersection) {
 
 	auto& material = intersection.material();
 

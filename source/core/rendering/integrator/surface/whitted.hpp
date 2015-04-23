@@ -26,7 +26,7 @@ public:
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
-	virtual math::float3 li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection);
+	virtual math::float3 li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection);
 
 private:
 

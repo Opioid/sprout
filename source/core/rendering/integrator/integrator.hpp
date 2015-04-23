@@ -31,7 +31,7 @@ public:
 
 	Surface_integrator(math::random::Generator& rng);
 
-	virtual math::float3 li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) = 0;
+	virtual math::float3 li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) = 0;
 };
 
 class Surface_integrator_factory {

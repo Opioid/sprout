@@ -23,12 +23,12 @@ Scene::~Scene() {
 	delete surrounding_;
 }
 
-bool Scene::intersect(math::Oray& ray, uint32_t worker_id, Intersection& intersection) const {
-	return bvh_.intersect(ray, intersection);
+bool Scene::intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const {
+	return bvh_.intersect(ray, node_stack, intersection);
 }
 
-bool Scene::intersect_p(const math::Oray& ray, uint32_t worker_id) const {
-	return bvh_.intersect_p(ray);
+bool Scene::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
+	return bvh_.intersect_p(ray, node_stack);
 }
 
 void Scene::compile() {

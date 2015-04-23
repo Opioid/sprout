@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bvh/scene_bvh_tree.hpp"
+#include "shape/node_stack.hpp"
 #include "base/math/ray.hpp"
 #include <vector>
 
@@ -28,8 +29,8 @@ public:
 	Scene();
 	~Scene();
 
-	bool intersect(math::Oray& ray, uint32_t worker_id, Intersection& intersection) const;
-	bool intersect_p(const math::Oray& ray, uint32_t worker_id) const;
+	bool intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const;
+	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
 
 	void compile();
 
@@ -53,6 +54,7 @@ private:
 	std::vector<Prop*> props_;
 
 	std::vector<light::Light*> lights_;
+
 };
 
 }

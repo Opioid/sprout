@@ -32,7 +32,7 @@ std::shared_ptr<Mesh> Provider::load(const std::string& filename, uint32_t /*fla
 
 	auto mesh = std::make_shared<Mesh>();
 
-	bvh::XBuilder builder;
+	bvh::Builder builder;
 	builder.build(mesh->tree_, triangles, vertices, 8);
 
 	mesh->aabb_ = mesh->tree_.aabb();

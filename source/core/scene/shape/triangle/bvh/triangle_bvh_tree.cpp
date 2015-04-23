@@ -33,11 +33,11 @@ const math::AABB& Tree::aabb() const {
 	return nodes_[0].aabb;
 }
 
-bool Tree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Intersection& intersection) const {
+bool Tree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack, Intersection& intersection) const {
 	return intersect_node(0, ray, intersection);
 }
 
-bool Tree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/) const {
+bool Tree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack) const {
 	return intersect_node_p(0, ray);
 }
 

@@ -21,7 +21,7 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
 }
 
-math::float3 Whitted::li(const Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
+math::float3 Whitted::li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
 	sampler_.start_iteration(subsample);
 
 	math::float3 result = math::float3::identity;
