@@ -15,11 +15,18 @@ void Prop::init(std::shared_ptr<shape::Shape> shape, const Materials& materials)
 
 bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersection& intersection) const {
 	Composed_transformation transformation;
-	transformation_at(ray.time, transformation);
+	bool animated = transformation_at(ray.time, transformation);
 
 	math::float2 bounds;
 
 	if (shape_->is_complex()) {
+		math::AABB aabb;
+		if (animated) {
+			shape_->aabb().transform(transformation_.object_to_world, aabb);
+		} else {
+			aabb = aabb_;
+		}
+
 		if (!aabb_.intersect_p(ray)) {
 			return false;
 		}

@@ -76,8 +76,12 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 		type_value = &n->value;
 	}
 
-	math::float3 position = math::float3::identity;
-	math::quaternion rotation = math::quaternion::identity;
+	math::transformation transformation{
+		math::float3::identity,
+		math::float3(1.f, 1.f, 1.f),
+		math::quaternion::identity
+	};
+
 	math::float2 dimensions = math::float2::identity;
 	rendering::film::Film* film = nullptr;
 	float fov = 60.f;
@@ -89,9 +93,9 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 		const rapidjson::Value& node_value = n->value;
 
 		if ("position" == node_name) {
-			position = json::read_float3(node_value);
+			transformation.position = json::read_float3(node_value);
 		} else if ("rotation" == node_name) {
-			rotation = json::read_local_rotation(node_value);
+			transformation.rotation = json::read_local_rotation(node_value);
 		} else if ("dimensions" == node_name) {
 			dimensions = json::read_float2(node_value);
 		} else if ("film" == node_name) {
@@ -112,7 +116,7 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 //	} else if ("Orthographic" == type_name) {
 //	}
 
-	camera->set_transformation(position, math::float3(1.f, 1.f, 1.f), rotation);
+	camera->set_transformation(transformation);
 
 	camera->update_view();
 

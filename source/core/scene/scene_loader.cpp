@@ -100,24 +100,26 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 			continue;
 		}
 
-		math::float3 position = math::float3::identity;
-		math::float3 scale = math::float3(1.f, 1.f, 1.f);
-		math::quaternion rotation = math::quaternion::identity;
+		math::transformation transformation{
+			math::float3::identity,
+			math::float3(1.f, 1.f, 1.f),
+			math::quaternion::identity
+		};
 
 		for (auto n = e->MemberBegin(); n != e->MemberEnd(); ++n) {
 			const std::string node_name = n->name.GetString();
 			const rapidjson::Value& node_value = n->value;
 
 			if ("position" == node_name) {
-				position = json::read_float3(node_value);
+				transformation.position = json::read_float3(node_value);
 			} else if ("scale" == node_name) {
-				scale = json::read_float3(node_value);
+				transformation.scale = json::read_float3(node_value);
 			} else if ("rotation" == node_name) {
-				rotation = json::read_local_rotation(node_value);
+				transformation.rotation = json::read_local_rotation(node_value);
 			}
 		}
 
-		entity->set_transformation(position, scale, rotation);
+		entity->set_transformation(transformation);
 	}
 }
 

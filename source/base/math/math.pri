@@ -19,6 +19,7 @@ HEADERS += \
 	math/sampling.hpp \
 	math/ray.hpp \
 	math/ray.inl \
+	math/transformation.hpp \
 	math/vector.hpp \
 	math/vector.inl \
 	math/vector2.hpp \

@@ -6,6 +6,7 @@
 #include "bvh/scene_bvh_builder.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
+#include "base/math/quaternion.inl"
 
 namespace scene {
 

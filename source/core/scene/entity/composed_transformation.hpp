@@ -3,11 +3,12 @@
 #include "base/math/vector.hpp"
 #include "base/math/matrix.hpp"
 #include "base/math/quaternion.hpp"
+#include "base/math/transformation.hpp"
 
 namespace scene {
 
 struct Composed_transformation {
-	void set(const math::float3& p, const math::float3& s, const math::quaternion& r);
+	void set(const math::transformation& t);
 
 	math::float3   position;
 	math::float3   scale;

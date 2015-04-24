@@ -4,11 +4,11 @@
 
 namespace scene {
 
-void Composed_transformation::set(const math::float3& p, const math::float3& s, const math::quaternion& r) {
-	position = p;
-	scale = s;
-	rotation = math::float3x3(r);
-	math::set_basis_scale_origin(object_to_world, rotation, s, p);
+void Composed_transformation::set(const math::transformation& t) {
+	position = t.position;
+	scale = t.scale;
+	rotation = math::float3x3(t.rotation);
+	math::set_basis_scale_origin(object_to_world, rotation, t.scale, t.position);
 	world_to_object = math::inverted(object_to_world);
 }
 

@@ -3,12 +3,14 @@
 
 namespace scene {
 
-void Entity::transformation_at(float /*time*/, Composed_transformation& transformation) const {
+bool Entity::transformation_at(float /*time*/, Composed_transformation& transformation) const {
 	transformation = transformation_;
+
+	return false;
 }
 
-void Entity::set_transformation(const math::float3& position, const math::float3& scale, const math::quaternion& rotation) {
-	transformation_.set(position, scale, rotation);
+void Entity::set_transformation(const math::transformation& t) {
+	transformation_.set(t);
 
 	on_set_transformation();
 }
