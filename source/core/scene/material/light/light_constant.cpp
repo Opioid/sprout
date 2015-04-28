@@ -17,4 +17,8 @@ const Sample& Constant::sample(const shape::Differential& dg, const math::float3
 	return sample;
 }
 
+math::float3 Constant::sample_emission() const {
+	return emission_;
+}
+
 }}}

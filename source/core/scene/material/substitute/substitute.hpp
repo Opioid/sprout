@@ -59,6 +59,8 @@ class Substitute : public Material<Sample> {
 public:
 
 	Substitute(Sample_cache<Sample>& cache);
+
+	virtual math::float3 sample_emission() const;
 };
 
 }}}

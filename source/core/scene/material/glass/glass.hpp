@@ -56,6 +56,8 @@ class Glass : public Material<Sample> {
 public:
 
 	Glass(Sample_cache<Sample>& cache);
+
+	virtual math::float3 sample_emission() const;
 };
 
 }}}

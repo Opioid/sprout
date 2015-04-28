@@ -85,9 +85,8 @@ void Sphere::importance_sample(const Composed_transformation& transformation, co
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
 	float axis_length = std::sqrt(axis_squared_length);
-	float axis_rl = 1.f / axis_length;
 
-	math::float3 z = axis_rl * axis;
+	math::float3 z = axis / axis_length;
 	math::float3 x, y;
 	math::coordinate_system(z, x, y);
 
@@ -99,9 +98,8 @@ void Sphere::importance_sample(const Composed_transformation& transformation, co
 	math::float2 sample = sampler.generate_sample2d(sample_index);
 	math::float3 dir = math::sample_oriented_cone_uniform(sample, cos_theta_max, x, y, z);
 
-	t = axis_length - transformation.scale.x;
-
 	wi = dir;
+	t = axis_length - transformation.scale.x;
 	pdf = math::cone_pdf_uniform(cos_theta_max);
 }
 

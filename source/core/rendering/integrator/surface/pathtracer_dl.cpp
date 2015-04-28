@@ -31,17 +31,18 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 	math::float3 result = math::float3::identity;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		uint32_t next_depth = ray.depth + 1;
-
 		auto& material = intersection.material();
-		// TODO: light material
 
 		math::float3 wo = -ray.direction;
 		auto& material_sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
 
+		if (0 == i) {
+			result += material_sample.emission();
+		}
+
 		ray.origin = intersection.geo.p;
 		ray.min_t  = intersection.geo.epsilon;
-		ray.depth  = next_depth;
+		++ray.depth;
 
 		float light_pdf;
 		scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);

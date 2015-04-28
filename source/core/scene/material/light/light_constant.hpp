@@ -12,6 +12,8 @@ public:
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
 								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id);
 
+	virtual math::float3 sample_emission() const;
+
 private:
 
 	math::float3 emission_;

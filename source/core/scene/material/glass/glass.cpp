@@ -111,4 +111,8 @@ void Sample::set(const math::float3& color, float ior) {
 
 Glass::Glass(Sample_cache<Sample>& cache) : Material(cache) {}
 
+math::float3 Glass::sample_emission() const {
+	return math::float3::identity;
+}
+
 }}}

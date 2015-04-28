@@ -76,18 +76,16 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 
 std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {
 	math::float3 emission(10.f, 10.f, 10.f);
-/*
-	for (auto n = glass_value.MemberBegin(); n != glass_value.MemberEnd(); ++n) {
+
+	for (auto n = light_value.MemberBegin(); n != light_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("color" == node_name) {
-			color = json::read_float3(node_value);
-		} else if ("ior" == node_name) {
-			ior = json::read_float(node_value);
+		if ("emission" == node_name) {
+			emission = json::read_float3(node_value);
 		}
 	}
-*/
+
 	return std::make_shared<light::Constant>(light_cache_, emission);
 }
 

@@ -36,6 +36,8 @@ math::float3 Whitted::li(Worker& worker, uint32_t subsample, math::Oray& ray, sc
 	math::float3 wo = -ray.direction;
 	auto& sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
 
+	result += sample.emission();
+
 	for (auto l : worker.scene().lights()) {
 		l->sample(intersection.geo.p, ray.time, 1, sampler_, light_samples_);
 
