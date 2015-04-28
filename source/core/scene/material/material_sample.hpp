@@ -15,9 +15,10 @@ public:
 
 	virtual math::float3 evaluate(const math::float3& wi) const = 0;
 
+	virtual math::float3 emission() const = 0;
+
 	struct Result {
 		math::float3 reflection;
-		math::float3 emission;
 		math::float3 wi;
 		float        pdf;
 	};

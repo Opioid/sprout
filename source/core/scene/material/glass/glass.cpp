@@ -82,10 +82,12 @@ math::float3 Sample::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
+math::float3 Sample::emission() const {
+	return math::float3::identity;
+}
+
 void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
 	float p = sampler.generate_sample1d(0);
-
-	result.emission = math::float3::identity;
 
 	if (p < 0.5f) {
 		result.reflection = brdf_.importance_sample(sampler, result.wi, result.pdf);

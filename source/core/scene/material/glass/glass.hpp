@@ -33,6 +33,8 @@ public:
 
 	virtual math::float3 evaluate(const math::float3& wi) const;
 
+	virtual math::float3 emission() const;
+
 	virtual void sample_evaluate(sampler::Sampler& sampler, Result& result) const;
 
 	void set(const math::float3& color, float ior);

@@ -74,12 +74,14 @@ math::float3 Sample::evaluate(const math::float3& wi) const {
 	return n_dot_wi * ((math::Pi_inv * diffuse_color_) + specular);
 }
 
+math::float3 Sample::emission() const {
+	return math::float3::identity;
+}
+
 void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 	}
-
-	result.emission = math::float3::identity;
 
 	if (1.f == metallic_) {
 		result.reflection = ggx_.importance_sample(sampler, result.wi, result.pdf);

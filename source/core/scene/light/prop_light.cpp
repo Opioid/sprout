@@ -22,7 +22,7 @@ void Prop_light::sample(const math::float3& p, float time, uint32_t /*max_sample
 
 	prop_->shape()->importance_sample(transformation, p, sampler, 0, sample.l, sample.t, sample.pdf);
 
-	sample.energy = math::float3(100.f, 100.f, 100.f);
+	sample.energy = math::float3(30.f, 30.f, 30.f);
 
 	samples.push_back(sample);
 }

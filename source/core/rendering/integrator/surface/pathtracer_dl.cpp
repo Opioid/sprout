@@ -51,7 +51,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 			for (auto& ls : light_samples_) {
 				if (ls.pdf > 0.f) {
 					ray.set_direction(ls.l);
-					ray.max_t = ls.t - 0.01f;
+					ray.max_t = ls.t - intersection.geo.epsilon;
 
 					if (worker.visibility(ray)) {
 						result += (throughput * ls.energy * material_sample.evaluate(ls.l)) / (light_pdf * ls.pdf);

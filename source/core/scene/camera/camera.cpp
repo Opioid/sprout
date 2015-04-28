@@ -2,6 +2,7 @@
 #include "rendering/film/film.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
+#include "base/math/quaternion.inl"
 
 namespace scene { namespace camera {
 
