@@ -2,7 +2,7 @@
 #include "surrounding/surrounding.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
-#include "light/shape_light.hpp"
+#include "light/prop_light.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -68,8 +68,8 @@ light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 	}
 }
 
-light::Shape_light* Scene::create_shape_light() {
-	light::Shape_light* light = new light::Shape_light;
+light::Prop_light* Scene::create_prop_light() {
+	light::Prop_light* light = new light::Prop_light;
 	lights_.push_back(light);
 	return light;
 }

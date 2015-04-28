@@ -25,6 +25,8 @@ void Pathtracer_DL::start_new_pixel(uint32_t num_samples) {
 math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
 	sampler_.start_iteration(subsample);
 
+	scene::material::Sample::Result sample_result;
+
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
 
@@ -49,7 +51,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 			for (auto& ls : light_samples_) {
 				if (ls.pdf > 0.f) {
 					ray.set_direction(ls.l);
-					ray.max_t = ls.t;
+					ray.max_t = ls.t - 0.01f;
 
 					if (worker.visibility(ray)) {
 						result += (throughput * ls.energy * material_sample.evaluate(ls.l)) / (light_pdf * ls.pdf);
@@ -58,22 +60,19 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 			}
 		}
 
-		math::float3 wi;
-		float material_pdf;
-		math::float3 r = material_sample.sample_evaluate(sampler_, wi, material_pdf);
-
-		if (0.f == material_pdf) {
+		material_sample.sample_evaluate(sampler_, sample_result);
+		if (0.f == sample_result.pdf) {
 			break;
 		}
 
-		throughput *= r / material_pdf;
+		throughput *= sample_result.reflection / sample_result.pdf;
 
-		ray.set_direction(wi);
+		ray.set_direction(sample_result.wi);
 		ray.max_t = 1000.f;
 
 		bool hit = worker.intersect(ray, intersection);
 		if (!hit) {
-			r = worker.scene().surrounding()->sample(ray);
+			math::float3 r = worker.scene().surrounding()->sample(ray);
 			result += throughput * r;
 			break;
 		}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene/entity/entity.hpp"
+#include "base/math/vector.hpp"
 #include <vector>
 
 namespace sampler {
@@ -13,7 +13,7 @@ namespace scene { namespace light {
 
 struct Sample;
 
-class Light : public Entity {
+class Light {
 public:
 
 	virtual ~Light() {}

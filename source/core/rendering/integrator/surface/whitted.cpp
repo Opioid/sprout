@@ -42,10 +42,13 @@ math::float3 Whitted::li(Worker& worker, uint32_t subsample, math::Oray& ray, sc
 		for (auto& ls : light_samples_) {
 			if (ls.pdf > 0.f) {
 				shadow_ray.set_direction(ls.l);
-				shadow_ray.max_t = ls.t;
+				shadow_ray.max_t = ls.t - 0.01f;
 
 				if (worker.visibility(shadow_ray)) {
 					result += (ls.energy * sample.evaluate(ls.l)) / ls.pdf;
+				} else {
+					bool aha = true;
+					aha = false;
 				}
 			}
 		}

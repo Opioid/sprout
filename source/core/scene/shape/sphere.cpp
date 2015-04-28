@@ -98,7 +98,10 @@ void Sphere::importance_sample(const Composed_transformation& transformation, co
 	math::float2 sample = sampler.generate_sample2d(sample_index);
 	math::float3 dir = math::sample_oriented_cone_uniform(sample, cos_theta_max, x, y, z);
 
-	t = math::dot(dir, dir) * math::dot(axis, dir);
+//	t = math::dot(dir, dir) * math::dot(axis, dir);
+
+	t = math::length(axis);
+
 	wi = dir;
 	pdf = math::cone_pdf_uniform(cos_theta_max);
 }

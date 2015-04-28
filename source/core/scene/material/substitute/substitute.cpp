@@ -74,25 +74,24 @@ math::float3 Sample::evaluate(const math::float3& wi) const {
 	return n_dot_wi * ((math::Pi_inv * diffuse_color_) + specular);
 }
 
-math::float3 Sample::sample_evaluate(sampler::Sampler& sampler, math::float3& wi, float& pdf) const {
+void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
 	if (!same_hemisphere(wo_)) {
-		pdf = 0.f;
-		return math::float3::identity;
+		result.pdf = 0.f;
 	}
 
+	result.emission = math::float3::identity;
+
 	if (1.f == metallic_) {
-		return ggx_.importance_sample(sampler, wi, pdf);
+		result.reflection = ggx_.importance_sample(sampler, result.wi, result.pdf);
 	} else {
 		float p = sampler.generate_sample1d(0);
 
 		if (p < 0.5f) {
-			math::float3 r = lambert_.importance_sample(sampler, wi, pdf);
-			pdf *= 0.5f;
-			return r;
+			result.reflection = lambert_.importance_sample(sampler, result.wi, result.pdf);
+			result.pdf *= 0.5f;
 		} else {
-			math::float3 r = ggx_.importance_sample(sampler, wi, pdf);
-			pdf *= 0.5f;
-			return r;
+			result.reflection = ggx_.importance_sample(sampler, result.wi, result.pdf);
+			result.pdf *= 0.5f;
 		}
 	}
 }

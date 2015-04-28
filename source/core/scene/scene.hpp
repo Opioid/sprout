@@ -16,7 +16,7 @@ class Surrounding;
 namespace light {
 
 class Light;
-class Shape_light;
+class Prop_light;
 
 }
 
@@ -43,7 +43,7 @@ public:
 
 	light::Light* montecarlo_light(float random, float& pdf) const;
 
-	light::Shape_light* create_shape_light();
+	light::Prop_light* create_prop_light();
 
 private:
 

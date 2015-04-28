@@ -15,7 +15,14 @@ public:
 
 	virtual math::float3 evaluate(const math::float3& wi) const = 0;
 
-	virtual math::float3 sample_evaluate(sampler::Sampler& sampler, math::float3& wi, float& pdf) const = 0;
+	struct Result {
+		math::float3 reflection;
+		math::float3 emission;
+		math::float3 wi;
+		float        pdf;
+	};
+
+	virtual void sample_evaluate(sampler::Sampler& sampler, Result& result) const = 0;
 
 	const math::float3& normal() const {
 		return n_;

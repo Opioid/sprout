@@ -11,4 +11,5 @@ HEADERS += \
 
 include(ggx/ggx.pri)
 include(glass/glass.pri)
+include(light/light.pri)
 include(substitute/substitute.pri)

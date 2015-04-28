@@ -82,17 +82,17 @@ math::float3 Sample::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
-math::float3 Sample::sample_evaluate(sampler::Sampler& sampler, math::float3& wi, float& pdf) const {
+void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
 	float p = sampler.generate_sample1d(0);
 
+	result.emission = math::float3::identity;
+
 	if (p < 0.5f) {
-		math::float3 r = brdf_.importance_sample(sampler, wi, pdf);
-		pdf *= 0.5f;
-		return r;
+		result.reflection = brdf_.importance_sample(sampler, result.wi, result.pdf);
+		result.pdf *= 0.5f;
 	} else {
-		math::float3 r = btdf_.importance_sample(sampler, wi, pdf);
-		pdf *= 0.5f;
-		return r;
+		result.reflection = btdf_.importance_sample(sampler, result.wi, result.pdf);
+		result.pdf *= 0.5f;
 	}
 
 //	math::float3 r = brdf_.importance_sample(sampler, wi, pdf);
