@@ -23,7 +23,7 @@ Provider::Provider(resource::Cache<image::Image>& image_cache, uint32_t num_work
 std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t /*flags*/) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {
-		return nullptr;
+		throw std::runtime_error("File \"" + filename + "\" could not be opened");
 	}
 
 	auto root = json::parse(stream);
@@ -31,7 +31,7 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t 
 	// checking for positions now, but handling them later
 	const rapidjson::Value::ConstMemberIterator rendering_node = root->FindMember("rendering");
 	if (root->MemberEnd() == rendering_node) {
-		return nullptr;
+		throw std::runtime_error("Material \"" + filename + "\" has no render node");
 	}
 
 	const rapidjson::Value& rendering_value = rendering_node->value;
@@ -49,7 +49,7 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t 
 		}
 	}
 
-	return nullptr;
+	throw std::runtime_error("Material \"" + filename + "\" is of no known type");
 }
 
 std::shared_ptr<IMaterial> Provider::fallback_material() const {
