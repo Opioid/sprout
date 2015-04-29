@@ -15,7 +15,7 @@ public:
 		float radius;
 	};
 
-	Ao(math::random::Generator& rng, const Settings& settings);
+	Ao(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
@@ -31,7 +31,7 @@ private:
 class Ao_factory : public Surface_integrator_factory {
 public:
 
-	Ao_factory(uint32_t num_samples, float radius);
+	Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius);
 
 	virtual Surface_integrator* create(math::random::Generator& rng) const;
 

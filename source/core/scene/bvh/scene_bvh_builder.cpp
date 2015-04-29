@@ -38,7 +38,7 @@ void Builder::split(Build_node* node, const std::vector<Prop*>& props, size_t ma
 		props1.reserve(reserve_size);
 
 		for (auto p : props) {
-			if (!p->shape()->is_finite()) {
+			if (!p->shape()->is_finite() || p->shape()->is_delta()) {
 				continue;
 			}
 
@@ -64,7 +64,7 @@ void Builder::assign(Build_node* node, const std::vector<Prop*>& props, std::vec
 	node->offset = static_cast<uint32_t>(out_props.size());
 
 	for (auto p : props) {
-		if (!p->shape()->is_finite()) {
+		if (!p->shape()->is_finite() || p->shape()->is_delta()) {
 			continue;
 		}
 

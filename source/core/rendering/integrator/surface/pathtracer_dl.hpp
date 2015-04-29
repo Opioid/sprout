@@ -24,7 +24,7 @@ public:
 		image::sampler::Sampler_2D_nearest<image::sampler::Address_mode_repeat> sampler;
 	};
 
-	Pathtracer_DL(math::random::Generator& rng, const Settings& settings);
+	Pathtracer_DL(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
@@ -42,7 +42,7 @@ private:
 class Pathtracer_DL_factory : public Surface_integrator_factory {
 public:
 
-	Pathtracer_DL_factory(uint32_t min_bounces, uint32_t max_bounces);
+	Pathtracer_DL_factory(const take::Settings &take_settings, uint32_t min_bounces, uint32_t max_bounces);
 
 	virtual Surface_integrator* create(math::random::Generator& rng) const;
 

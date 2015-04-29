@@ -1,5 +1,6 @@
 #pragma once
 
+#include "take_settings.hpp"
 #include "rendering/context.hpp"
 #include "base/math/random/generator.hpp"
 #include <string>
@@ -22,6 +23,7 @@ namespace take {
 struct Take {
 	Take();
 
+	Settings											   settings;
 	std::string											   scene;
 	rendering::Context									   context;
 	std::shared_ptr<rendering::Surface_integrator_factory> surface_integrator_factory;

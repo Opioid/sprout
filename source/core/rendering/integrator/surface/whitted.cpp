@@ -14,8 +14,8 @@
 
 namespace rendering {
 
-Whitted::Whitted(math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(rng), settings_(settings), sampler_(1, rng) {}
+Whitted::Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(1, rng) {}
 
 void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -56,12 +56,12 @@ math::float3 Whitted::li(Worker& worker, uint32_t subsample, math::Oray& ray, sc
 	return result;
 }
 
-Whitted_factory::Whitted_factory() {
+Whitted_factory::Whitted_factory(const take::Settings& take_settings) : Surface_integrator_factory(take_settings) {
 
 }
 
 Surface_integrator* Whitted_factory::create(math::random::Generator& rng) const {
-	return new Whitted(rng, settings_);
+	return new Whitted(take_settings_, rng, settings_);
 }
 
 }

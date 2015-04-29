@@ -37,15 +37,18 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("scene" == node_name) {
-			take->scene = node_value.GetString();
-		} else if ("camera" == node_name) {
+		if ("camera" == node_name) {
 			take->context.camera = load_camera(node_value);
+		} else if ("integrator" == node_name) {
+			take->surface_integrator_factory = load_surface_integrator_factory(node_value, take->settings);
 		} else if ("sampler" == node_name) {
 			take->sampler = load_sampler(node_value, take->rng);
-		} else if ("integrator" == node_name) {
-			take->surface_integrator_factory = load_surface_integrator_factory(node_value);
+		} else if ("scene" == node_name) {
+			take->scene = node_value.GetString();
+		} else if ("settings" == node_name) {
+			load_settings(node_value, take->settings);
 		}
+
 	}
 
 	if (take->scene.empty()) {
@@ -61,7 +64,7 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 	}
 
 	if (!take->surface_integrator_factory) {
-		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(4, 4);
+		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(take->settings, 4, 4);
 	}
 
 	return take;
@@ -157,13 +160,13 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 
 rendering::film::tonemapping::Tonemapper* Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 	for (auto n = tonemapper_value.MemberBegin(); n != tonemapper_value.MemberEnd(); ++n) {
-		const std::string type_name = n->name.GetString();
-		const rapidjson::Value& type_value = n->value;
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
 
-		if ("Filmic" == type_name) {
-			math::float3 linear_white = json::read_float3(type_value, "linear_white");
+		if ("Filmic" == node_name) {
+			math::float3 linear_white = json::read_float3(node_value, "linear_white");
 			return new rendering::film::tonemapping::Filmic(linear_white);
-		} else if ("Identity" == type_name) {
+		} else if ("Identity" == node_name) {
 			return new rendering::film::tonemapping::Identity;
 		}
 	}
@@ -179,17 +182,17 @@ rendering::film::filter::Filter* Loader::load_filter(const rapidjson::Value& /*f
 
 std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const {
 	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
-		const std::string type_name = n->name.GetString();
-		const rapidjson::Value& type_value = n->value;
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
 
-		 if ("Random" == type_name) {
-			uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
+		 if ("Random" == node_name) {
+			uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
 			return std::make_shared<sampler::Random>(num_samples, rng);
-		} else if ("Scrambled_hammersley" == type_name) {
-			 uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
+		} else if ("Scrambled_hammersley" == node_name) {
+			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
 			 return std::make_shared<sampler::Scrambled_hammersley>(num_samples, rng);
-		 } else if ("EMS" == type_name) {
-			 uint32_t num_samples = json::read_uint(type_value, "samples_per_pixel");
+		 } else if ("EMS" == node_name) {
+			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
 			 return std::make_shared<sampler::EMS>(num_samples, rng);
 		 }
 	}
@@ -197,27 +200,39 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 	return nullptr;
 }
 
-std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value) const {
+std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value,
+																							   const Settings& settings) const {
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
-		const std::string type_name = n->name.GetString();
-		const rapidjson::Value& type_value = n->value;
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
 
-		if ("AO" == type_name) {
-			uint32_t num_samples = json::read_uint(type_value, "num_samples", 1);
-			float radius = json::read_float(type_value, "radius", 1.f);
-			return std::make_shared<rendering::Ao_factory>(num_samples, radius);
-		} else if ("Whitted" == type_name) {
-			return std::make_shared<rendering::Whitted_factory>();
-		} else if ("PTDL" == type_name) {
-			uint32_t min_bounces = json::read_uint(type_value, "min_bounces", 4);
-			uint32_t max_bounces = json::read_uint(type_value, "max_bounces", 4);
-			return std::make_shared<rendering::Pathtracer_DL_factory>(min_bounces, max_bounces);
-		} else if ("Normal" == type_name) {
-			return std::make_shared<rendering::Normal_factory>();
+		if ("AO" == node_name) {
+			uint32_t num_samples = json::read_uint(node_value, "num_samples", 1);
+			float radius = json::read_float(node_value, "radius", 1.f);
+			return std::make_shared<rendering::Ao_factory>(settings, num_samples, radius);
+		} else if ("Whitted" == node_name) {
+			return std::make_shared<rendering::Whitted_factory>(settings);
+		} else if ("PTDL" == node_name) {
+			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", 4);
+			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", 4);
+			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces);
+		} else if ("Normal" == node_name) {
+			return std::make_shared<rendering::Normal_factory>(settings);
 		}
 	}
 
 	return nullptr;
+}
+
+void Loader::load_settings(const rapidjson::Value& settings_value, Settings& settings) const {
+	for (auto n = settings_value.MemberBegin(); n != settings_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("ray_offset_modifier" == node_name) {
+			settings.ray_offset_modifier = json::read_float(node_value);
+		}
+	}
 }
 
 }

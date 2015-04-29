@@ -47,6 +47,7 @@ class Surface_integrator_factory;
 namespace take {
 
 struct Take;
+struct Settings;
 
 class Loader {
 public:
@@ -65,7 +66,10 @@ private:
 
 	std::shared_ptr<sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const;
 
-	std::shared_ptr<rendering::Surface_integrator_factory> load_surface_integrator_factory(const rapidjson::Value& integrator_value) const;
+	std::shared_ptr<rendering::Surface_integrator_factory> load_surface_integrator_factory(const rapidjson::Value& integrator_value,
+																						   const Settings& settings) const;
+
+	void load_settings(const rapidjson::Value& settings_value, Settings& settings) const;
 };
 
 }

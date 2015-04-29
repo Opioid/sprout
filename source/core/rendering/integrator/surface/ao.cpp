@@ -8,8 +8,8 @@
 
 namespace rendering {
 
-Ao::Ao(math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(rng), settings_(settings), sampler_(settings.num_samples, rng) {}
+Ao::Ao(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(settings.num_samples, rng) {}
 
 void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -40,14 +40,14 @@ math::float3 Ao::li(Worker& worker, uint32_t subsample, math::Oray& /*ray*/, sce
 	return math::float3(result, result, result);
 }
 
-Ao_factory::Ao_factory(uint32_t num_samples, float radius) {
+Ao_factory::Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius) : Surface_integrator_factory(settings) {
 	settings_.num_samples = num_samples;
 	settings_.num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
 	settings_.radius = radius;
 }
 
 Surface_integrator* Ao_factory::create(math::random::Generator& rng) const {
-	return new Ao(rng, settings_);
+	return new Ao(take_settings_, rng, settings_);
 }
 
 }

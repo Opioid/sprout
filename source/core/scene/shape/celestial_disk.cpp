@@ -38,7 +38,7 @@ void Celestial_disk::importance_sample(const Composed_transformation& transforma
 	pdf = 1.f;
 }
 
-bool Celestial_disk::is_finite() const {
+bool Celestial_disk::is_delta() const {
 	return true;
 }
 

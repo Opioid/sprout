@@ -36,6 +36,7 @@ public:
 
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;
+	virtual bool is_delta() const;
 
 protected:
 

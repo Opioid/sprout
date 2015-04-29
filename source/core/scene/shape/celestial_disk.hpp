@@ -18,7 +18,7 @@ public:
 	virtual void importance_sample(const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler, uint32_t sample_index,
 								   math::float3& wi, float& t, float& pdf) const;
 
-	virtual bool is_finite() const;
+	virtual bool is_delta() const;
 };
 
 }}
