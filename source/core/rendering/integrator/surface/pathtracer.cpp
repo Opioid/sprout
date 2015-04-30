@@ -50,7 +50,7 @@ math::float3 Pathtracer::li(Worker& worker, uint32_t subsample, math::Oray& ray,
 
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
-		ray.min_t  = ray_offset;
+		ray.min_t = ray_offset;
 		ray.max_t = 1000.f;
 		++ray.depth;
 
