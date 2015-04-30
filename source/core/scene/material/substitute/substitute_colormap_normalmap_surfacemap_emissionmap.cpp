@@ -11,8 +11,9 @@ Colormap_normalmap_surfacemap_emissionmap::Colormap_normalmap_surfacemap_emissio
 																					 std::shared_ptr<image::Image> normal,
 																					 std::shared_ptr<image::Image> surface,
 																					 std::shared_ptr<image::Image> emission,
-																					 float metallic) :
-	Substitute(cache), color_(color), normal_(normal), surface_(surface), emission_(emission), metallic_(metallic) {}
+																					 float emission_factor, float metallic) :
+	Substitute(cache), color_(color), normal_(normal), surface_(surface), emission_(emission),
+	emission_factor_(emission_factor), metallic_(metallic) {}
 
 const Sample& Colormap_normalmap_surfacemap_emissionmap::sample(const shape::Differential& dg, const math::float3& wo,
 																const image::sampler::Sampler_2D& sampler, uint32_t worker_id) {
@@ -29,7 +30,7 @@ const Sample& Colormap_normalmap_surfacemap_emissionmap::sample(const shape::Dif
 
 	math::float3 color    = sampler.sample3(color_, dg.uv);
 	float roughness       = sampler.sample3(surface_, dg.uv).x;
-	math::float3 emission = sampler.sample3(emission_, dg.uv);
+	math::float3 emission = emission_factor_ * sampler.sample3(emission_, dg.uv);
 
 	sample.set(color, emission, roughness, metallic_);
 

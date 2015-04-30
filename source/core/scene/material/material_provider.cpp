@@ -95,6 +95,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	math::float3 color(0.75f, 0.75f, 0.75f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
+	float emission_factor = 1.f;
 	std::shared_ptr<image::Image> colormap;
 	std::shared_ptr<image::Image> normalmap;
 	std::shared_ptr<image::Image> surfacemap;
@@ -110,6 +111,8 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 			roughness = json::read_float(node_value);
 		} else if ("metallic" == node_name) {
 			metallic = json::read_float(node_value);
+		} else if ("emission_factor" == node_name) {
+			emission_factor = json::read_float(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				std::string filename = json::read_string(*tn, "file", "");
@@ -137,7 +140,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 			if (surfacemap) {
 				if (emissionmap) {
 					return std::make_shared<substitute::Colormap_normalmap_surfacemap_emissionmap>(
-								substitute_cache_, colormap, normalmap, surfacemap, emissionmap, metallic);
+								substitute_cache_, colormap, normalmap, surfacemap, emissionmap, emission_factor, metallic);
 				} else {
 					return std::make_shared<substitute::Colormap_normalmap_surfacemap>(
 								substitute_cache_, colormap, normalmap, surfacemap, metallic);
