@@ -8,6 +8,7 @@
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/integrator/surface/normal.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
+#include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "sampler/random_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
@@ -212,6 +213,10 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 			return std::make_shared<rendering::Ao_factory>(settings, num_samples, radius);
 		} else if ("Whitted" == node_name) {
 			return std::make_shared<rendering::Whitted_factory>(settings);
+		} else if ("PT" == node_name) {
+			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", 4);
+			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", 4);
+			return std::make_shared<rendering::Pathtracer_factory>(settings, min_bounces, max_bounces);
 		} else if ("PTDL" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", 4);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", 4);

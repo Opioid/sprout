@@ -14,7 +14,7 @@ math::float3 Sample::emission() const {
 	return emission_;
 }
 
-void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
+void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, Result& result) const {
 	result.reflection = math::float3::identity;
 	result.pdf = 1.f;
 }

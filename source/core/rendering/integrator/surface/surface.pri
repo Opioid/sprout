@@ -2,7 +2,7 @@ SOURCES += \
 	rendering/integrator/surface/ao.cpp \
 	rendering/integrator/surface/normal.cpp \
 	rendering/integrator/surface/whitted.cpp \
-	rendering/integrator/surface/pathtracer_dl.hpp \
+	rendering/integrator/surface/pathtracer.cpp \
 	rendering/integrator/surface/pathtracer_dl.cpp \
 
 HEADERS += \
