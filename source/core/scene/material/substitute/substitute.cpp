@@ -75,7 +75,7 @@ math::float3 Sample::evaluate(const math::float3& wi) const {
 }
 
 math::float3 Sample::emission() const {
-	return math::float3::identity;
+	return emission_;
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
@@ -101,6 +101,18 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
 void Sample::set(const math::float3& color, float roughness, float metallic) {
 	diffuse_color_ = (1.f - metallic) * color;
 	f0_ = math::lerp(math::float3(0.03f, 0.03f, 0.03f), color, metallic);
+	emission_ = math::float3::identity;
+
+	float a = roughness * roughness;
+	a2_ = a * a;
+
+	metallic_ = metallic;
+}
+
+void Sample::set(const math::float3& color, const math::float3& emission, float roughness, float metallic) {
+	diffuse_color_ = (1.f - metallic) * color;
+	f0_ = math::lerp(math::float3(0.03f, 0.03f, 0.03f), color, metallic);
+	emission_ = emission;
 
 	float a = roughness * roughness;
 	a2_ = a * a;

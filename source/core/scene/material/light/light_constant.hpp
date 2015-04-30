@@ -10,9 +10,9 @@ public:
 	Constant(Sample_cache<Sample>& cache, const math::float3& emission);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
-								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id);
+								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
 
-	virtual math::float3 sample_emission() const;
+	virtual math::float3 sample_emission() const final override;
 
 private:
 

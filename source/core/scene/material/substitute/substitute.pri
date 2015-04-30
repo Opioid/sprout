@@ -3,6 +3,7 @@ SOURCES += \
 	scene/material/substitute/substitute_colormap.cpp \
 	scene/material/substitute/substitute_colormap_normalmap.cpp \
 	scene/material/substitute/substitute_colormap_normalmap_surfacemap.cpp \
+	scene/material/substitute/substitute_colormap_normalmap_surfacemap_emissionmap.cpp \
 	scene/material/substitute/substitute_constant.cpp \
 
 HEADERS += \
@@ -10,4 +11,5 @@ HEADERS += \
 	scene/material/substitute/substitute_colormap.hpp \
 	scene/material/substitute/substitute_colormap_normalmap.hpp \
 	scene/material/substitute/substitute_colormap_normalmap_surfacemap.hpp \
+	scene/material/substitute/substitute_colormap_normalmap_surfacemap_emissionmap.hpp \
 	scene/material/substitute/substitute_constant.hpp \

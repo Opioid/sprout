@@ -12,7 +12,7 @@ public:
 					   float roughness, float metallic);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
-								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id);
+								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
 
 private:
 

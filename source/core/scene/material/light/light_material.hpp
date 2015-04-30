@@ -11,11 +11,11 @@ public:
 
 	Sample();
 
-	virtual math::float3 evaluate(const math::float3& wi) const;
+	virtual math::float3 evaluate(const math::float3& wi) const final override;
 
-	virtual math::float3 emission() const;
+	virtual math::float3 emission() const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, Result& result) const;
+	virtual void sample_evaluate(sampler::Sampler& sampler, Result& result) const final override;
 
 	void set(const math::float3& emission);
 

@@ -13,8 +13,8 @@ public:
 
 	Lambert(const Sample& sample);
 
-	virtual math::float3 evaluate(const math::float3& wi) const;
-	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const;
+	virtual math::float3 evaluate(const math::float3& wi) const final override;
+	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const final override;
 };
 
 class GGX : public BXDF<Sample> {
@@ -22,8 +22,8 @@ public:
 
 	GGX(const Sample& sample);
 
-	virtual math::float3 evaluate(const math::float3& wi) const;
-	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const;
+	virtual math::float3 evaluate(const math::float3& wi) const final override;
+	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const final override;
 };
 
 class Sample : public material::Sample {
@@ -31,18 +31,20 @@ public:
 
 	Sample();
 
-	virtual math::float3 evaluate(const math::float3& wi) const;
+	virtual math::float3 evaluate(const math::float3& wi) const final override;
 
-	virtual math::float3 emission() const;
+	virtual math::float3 emission() const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, Result& result) const;
+	virtual void sample_evaluate(sampler::Sampler& sampler, Result& result) const final override;
 
 	void set(const math::float3& color, float roughness, float metallic);
+	void set(const math::float3& color, const math::float3& emission, float roughness, float metallic);
 
 private:
 
 	math::float3 diffuse_color_;
 	math::float3 f0_;
+	math::float3 emission_;
 
 	float a2_;
 

@@ -6,6 +6,7 @@
 #include "substitute/substitute_colormap.hpp"
 #include "substitute/substitute_colormap_normalmap.hpp"
 #include "substitute/substitute_colormap_normalmap_surfacemap.hpp"
+#include "substitute/substitute_colormap_normalmap_surfacemap_emissionmap.hpp"
 #include "substitute/substitute_constant.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -97,6 +98,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	std::shared_ptr<image::Image> colormap;
 	std::shared_ptr<image::Image> normalmap;
 	std::shared_ptr<image::Image> surfacemap;
+	std::shared_ptr<image::Image> emissionmap;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -123,6 +125,8 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 					normalmap = image_cache_.load(filename, static_cast<uint32_t>(image::Provider::Flags::Use_as_normal));
 				} else if ("Surface" == usage) {
 					surfacemap = image_cache_.load(filename);
+				} else if ("Emission" == usage) {
+					emissionmap = image_cache_.load(filename);
 				}
 			}
 		}
@@ -131,7 +135,13 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	if (colormap) {
 		if (normalmap) {
 			if (surfacemap) {
-				return std::make_shared<substitute::Colormap_normalmap_surfacemap>(substitute_cache_, colormap, normalmap, surfacemap, metallic);
+				if (emissionmap) {
+					return std::make_shared<substitute::Colormap_normalmap_surfacemap_emissionmap>(
+								substitute_cache_, colormap, normalmap, surfacemap, emissionmap, metallic);
+				} else {
+					return std::make_shared<substitute::Colormap_normalmap_surfacemap>(
+								substitute_cache_, colormap, normalmap, surfacemap, metallic);
+				}
 			} else {
 				return std::make_shared<substitute::Colormap_normalmap>(substitute_cache_, colormap, normalmap, roughness, metallic);
 			}
