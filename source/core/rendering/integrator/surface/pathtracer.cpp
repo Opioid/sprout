@@ -49,8 +49,8 @@ math::float3 Pathtracer::li(Worker& worker, uint32_t subsample, math::Oray& ray,
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 
 		ray.origin = intersection.geo.p;
-		ray.min_t  = ray_offset;
 		ray.set_direction(sample_result.wi);
+		ray.min_t  = ray_offset;
 		ray.max_t = 1000.f;
 		++ray.depth;
 
