@@ -3,9 +3,10 @@
 #include "scene/surrounding/surrounding_sphere.hpp"
 #include "scene/surrounding/surrounding_uniform.hpp"
 #include "scene/light/prop_light.hpp"
+#include "scene/shape/celestial_disk.hpp"
+#include "scene/shape/disk.hpp"
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
-#include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "image/image4.hpp"
@@ -18,9 +19,10 @@
 namespace scene {
 
 Loader::Loader(uint32_t num_workers) :
+	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
+	disk_(std::make_shared<shape::Disk>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
-	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	mesh_cache_(mesh_provider_),
 	image_cache_(image_provider_),
 	material_provider_(image_cache_, num_workers),
@@ -197,12 +199,14 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 }
 
 std::shared_ptr<shape::Shape> Loader::shape(const std::string& type) const {
-	if ("Plane" == type) {
+	if ("Celestial_disk" == type) {
+		return celestial_disk_;
+	} else if ("Disk" == type) {
+		return disk_;
+	} else if ("Plane" == type) {
 		return plane_;
 	} else if ("Sphere" == type) {
 		return sphere_;
-	} else if ("Celestial_disk" == type) {
-		return celestial_disk_;
 	}
 
 	return nullptr;

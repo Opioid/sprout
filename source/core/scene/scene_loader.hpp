@@ -55,9 +55,10 @@ private:
 
 	void load_materials(const rapidjson::Value& materials_value, Prop::Materials& materials);
 
+	std::shared_ptr<shape::Shape> celestial_disk_;
+	std::shared_ptr<shape::Shape> disk_;
 	std::shared_ptr<shape::Shape> plane_;
 	std::shared_ptr<shape::Shape> sphere_;
-	std::shared_ptr<shape::Shape> celestial_disk_;
 
 	shape::triangle::Provider mesh_provider_;
 	resource::Cache<shape::triangle::Mesh> mesh_cache_;

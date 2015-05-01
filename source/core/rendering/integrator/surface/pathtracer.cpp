@@ -37,7 +37,9 @@ math::float3 Pathtracer::li(Worker& worker, uint32_t subsample, math::Oray& ray,
 		math::float3 wo = -ray.direction;
 		auto& material_sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
 
-		result += throughput * material_sample.emission();
+		if (math::dot(intersection.geo.n, wo) > 0.f) {
+			result += throughput * material_sample.emission();
+		}
 
 		material_sample.sample_evaluate(sampler_, sample_result);
 		if (0.f == sample_result.pdf) {

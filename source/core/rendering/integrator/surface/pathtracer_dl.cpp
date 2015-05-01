@@ -38,7 +38,9 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 		auto& material_sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 		if (0 == i) {
-			result += material_sample.emission();
+			if (math::dot(intersection.geo.n, wo) > 0.f) {
+				result += material_sample.emission();
+			}
 		}
 
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;

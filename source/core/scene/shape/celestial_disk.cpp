@@ -38,6 +38,10 @@ void Celestial_disk::importance_sample(const Composed_transformation& transforma
 	pdf = 1.f;
 }
 
+float Celestial_disk::area(const math::float3& /*scale*/) const {
+	return 1.f;
+}
+
 bool Celestial_disk::is_delta() const {
 	return true;
 }

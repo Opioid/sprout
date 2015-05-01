@@ -57,6 +57,10 @@ void Mesh::importance_sample(const Composed_transformation& /*transformation*/, 
 							 sampler::Sampler& /*sampler*/, uint32_t /*sample_index*/,
 							 math::float3& /*wi*/, float& /*t*/, float& /*pdf*/) const {}
 
+float Mesh::area(const math::float3& /*scale*/) const {
+	return 1.f;
+}
+
 bool Mesh::is_complex() const {
 	return true;
 }

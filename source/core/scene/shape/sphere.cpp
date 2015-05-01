@@ -99,8 +99,12 @@ void Sphere::importance_sample(const Composed_transformation& transformation, co
 	math::float3 dir = math::sample_oriented_cone_uniform(sample, cos_theta_max, x, y, z);
 
 	wi = dir;
-	t = axis_length - transformation.scale.x;
+	t = axis_length - transformation.scale.x; // this is not accurate
 	pdf = math::cone_pdf_uniform(cos_theta_max);
+}
+
+float Sphere::area(const math::float3& /*scale*/) const {
+	return 1.f;
 }
 
 }}

@@ -14,13 +14,9 @@ bool Plane::intersect(const Composed_transformation& transformation, const math:
 					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					  Intersection& intersection, float& hit_t) const {
 	const math::float3& normal = transformation.rotation.z;
-
 	float d = -math::dot(normal, transformation.position);
-
 	float denom = math::dot(normal, ray.direction);
-
 	float numer = math::dot(normal, ray.origin) + d;
-
 	float t = -(numer / denom);
 
 	if (t > ray.min_t && t < ray.max_t) {
@@ -46,13 +42,9 @@ bool Plane::intersect(const Composed_transformation& transformation, const math:
 bool Plane::intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
 						const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
 	const math::float3& normal = transformation.rotation.z;
-
 	float d = -math::dot(normal, transformation.position);
-
 	float denom = math::dot(normal, ray.direction);
-
 	float numer = math::dot(normal, ray.origin) + d;
-
 	float t = -(numer / denom);
 
 	if (t > ray.min_t && t < ray.max_t) {
@@ -66,6 +58,10 @@ void Plane::importance_sample(const Composed_transformation& /*transformation*/,
 							  sampler::Sampler& /*sampler*/, uint32_t /*sample_index*/,
 							  math::float3& /*wi*/, float& /*t*/, float& pdf) const {
 	pdf = 0.f;
+}
+
+float Plane::area(const math::float3& /*scale*/) const {
+	return 1.f;
 }
 
 bool Plane::is_finite() const {
