@@ -61,7 +61,7 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 	}
 
 	if (!take->sampler) {
-		take->sampler = std::make_shared<sampler::Random>(1, take->rng);
+		take->sampler = std::make_shared<sampler::Random>(take->rng, 1);
 	}
 
 	if (!take->surface_integrator_factory) {
@@ -188,13 +188,13 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 
 		 if ("Random" == node_name) {
 			uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
-			return std::make_shared<sampler::Random>(num_samples, rng);
+			return std::make_shared<sampler::Random>(rng, num_samples);
 		} else if ("Scrambled_hammersley" == node_name) {
 			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
-			 return std::make_shared<sampler::Scrambled_hammersley>(num_samples, rng);
+			 return std::make_shared<sampler::Scrambled_hammersley>(rng, num_samples);
 		 } else if ("EMS" == node_name) {
 			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
-			 return std::make_shared<sampler::EMS>(num_samples, rng);
+			 return std::make_shared<sampler::EMS>(rng, num_samples);
 		 }
 	}
 

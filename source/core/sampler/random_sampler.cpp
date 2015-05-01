@@ -5,11 +5,11 @@
 
 namespace sampler {
 
-Random::Random(uint32_t num_samples_per_iteration, math::random::Generator& rng) :
-	Sampler(num_samples_per_iteration), rng_(rng) {}
+Random::Random(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
+	Sampler(rng, num_samples_per_iteration) {}
 
-Sampler* Random::clone(math::random::Generator& rng) const {
-	return new Random(num_samples_per_iteration_, rng);
+Sampler* Random::clone() const {
+	return new Random(rng_, num_samples_per_iteration_);
 }
 
 bool Random::generate_camera_sample(const math::float2& offset, Camera_sample& sample) {

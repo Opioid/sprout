@@ -91,7 +91,6 @@ void Sphere::importance_sample(const Composed_transformation& transformation, co
 	math::coordinate_system(z, x, y);
 
 	float radius_square = transformation.scale.x * transformation.scale.x;
-
 	float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 
@@ -103,8 +102,8 @@ void Sphere::importance_sample(const Composed_transformation& transformation, co
 	pdf = math::cone_pdf_uniform(cos_theta_max);
 }
 
-float Sphere::area(const math::float3& /*scale*/) const {
-	return 1.f;
+float Sphere::area(const math::float3& scale) const {
+	return 4.f * math::Pi * scale.x * scale.x;
 }
 
 }}

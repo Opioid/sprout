@@ -7,9 +7,9 @@ namespace sampler {
 class EMS : public Sampler {
 public:
 
-	EMS(uint32_t num_samples_per_iteration, math::random::Generator& rng);
+	EMS(math::random::Generator& rng, uint32_t num_samples_per_iteration);
 
-	virtual Sampler* clone(math::random::Generator& rng) const;
+	virtual Sampler* clone() const;
 
 	virtual void restart(uint32_t num_iterations);
 
@@ -21,7 +21,6 @@ public:
 
 protected:
 
-	math::random::Generator& rng_;
 	uint32_t random_bits_;
 	uint32_t random_bits2_;
 };

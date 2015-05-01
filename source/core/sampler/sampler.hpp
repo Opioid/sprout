@@ -15,10 +15,12 @@ struct Camera_sample;
 class Sampler {
 public:
 
-	Sampler(uint32_t num_samples_per_iteration);
+	Sampler(math::random::Generator& rng, uint32_t num_samples_per_iteration);
 	virtual ~Sampler();
 
-	virtual Sampler* clone(math::random::Generator& rng) const = 0;
+	virtual Sampler* clone() const = 0;
+
+	math::random::Generator& rng();
 
 	uint32_t num_samples_per_iteration() const;
 
@@ -34,6 +36,7 @@ public:
 
 protected:
 
+	math::random::Generator& rng_;
 	uint32_t num_iterations_;
 	uint32_t num_samples_per_iteration_;
 	uint32_t current_iteration_;

@@ -41,8 +41,10 @@ public:
 	bool intersect(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack) const;
 
-	void interpolate_triangle(uint32_t index, float u, float v, math::float3& n, math::float3& t, math::float2& uv) const;
+	void interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
 	uint32_t triangle_material_index(uint32_t index) const;
+
+	void importance_sample(float r, math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const;
 
 	std::vector<Node>& allocate_nodes(uint32_t num_nodes);
 

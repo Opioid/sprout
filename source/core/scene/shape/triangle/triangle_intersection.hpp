@@ -1,9 +1,12 @@
 #pragma once
 
+#include "base/math/vector.hpp"
+
 namespace scene { namespace shape { namespace triangle {
 
 struct Coordinates {
-	float t, u, v;
+	float t;
+	math::float2 uv;
 };
 
 struct Intersection {

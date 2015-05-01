@@ -30,8 +30,8 @@ inline bool Triangle::intersect(const math::Oray& ray, Coordinates& coordinates)
 
 	if (hit_t > ray.min_t && hit_t < ray.max_t) {
 		coordinates.t = hit_t;
-		coordinates.u = u;
-		coordinates.v = v;
+		coordinates.uv.x = u;
+		coordinates.uv.y = v;
 		return true;
 	}
 
@@ -70,12 +70,20 @@ inline bool Triangle::intersect_p(const math::Oray& ray) const {
 	return false;
 }
 
-inline void Triangle::interpolate(float u, float v, math::float3& n, math::float3& t, math::float2& uv) const {
-	float w = 1.f - u - v;
+inline void Triangle::interpolate(math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const {
+	float w = 1.f - uv.x - uv.y;
 
-	n  = math::normalized(w * a.n + u * b.n + v * c.n);
-	t  = math::normalized(w * a.t + u * b.t + v * c.t);
-	uv = w * a.uv + u * b.uv + v * c.uv;
+	p  = math::normalized(w * a.p + uv.x * b.p + uv.y * c.p);
+	n  = math::normalized(w * a.n + uv.x * b.n + uv.y * c.n);
+	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
+}
+
+inline void Triangle::interpolate_data(math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
+	float w = 1.f - uv.x - uv.y;
+
+	n  = math::normalized(w * a.n + uv.x * b.n + uv.y * c.n);
+	t  = math::normalized(w * a.t + uv.x * b.t + uv.y * c.t);
+	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
 }}}

@@ -6,11 +6,11 @@
 
 namespace sampler {
 
-EMS::EMS(uint32_t num_samples_per_iteration, math::random::Generator& rng) :
-	Sampler(num_samples_per_iteration), rng_(rng) {}
+EMS::EMS(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
+	Sampler(rng, num_samples_per_iteration) {}
 
-Sampler* EMS::clone(math::random::Generator& rng) const {
-	return new EMS(num_samples_per_iteration_, rng);
+Sampler* EMS::clone() const {
+	return new EMS(rng_, num_samples_per_iteration_);
 }
 
 void EMS::restart(uint32_t num_iterations) {

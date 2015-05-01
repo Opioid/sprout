@@ -89,7 +89,7 @@ void Disk::importance_sample(const Composed_transformation& transformation, cons
 
 	float c = math::dot(transformation.rotation.z, -wi);
 
-	if (c < 0.f) {
+	if (c <= 0.f) {
 		pdf = 0.f;
 	} else {
 		float sl = math::squared_length(axis);

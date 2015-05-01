@@ -6,11 +6,11 @@
 
 namespace sampler {
 
-Scrambled_hammersley::Scrambled_hammersley(uint32_t num_samples_per_iteration, math::random::Generator& rng) :
-	Sampler(num_samples_per_iteration), rng_(rng) {}
+Scrambled_hammersley::Scrambled_hammersley(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
+	Sampler(rng, num_samples_per_iteration) {}
 
-Sampler* Scrambled_hammersley::clone(math::random::Generator& rng) const {
-	return new Scrambled_hammersley(num_samples_per_iteration_, rng);
+Sampler* Scrambled_hammersley::clone() const {
+	return new Scrambled_hammersley(rng_, num_samples_per_iteration_);
 }
 
 void Scrambled_hammersley::restart(uint32_t num_iterations) {

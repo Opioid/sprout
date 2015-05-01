@@ -17,7 +17,7 @@ Worker::Worker(uint32_t id, const math::random::Generator& rng,
 	id_(id),
 	rng_(rng),
 	surface_integrator_(surface_integrator_factory.create(rng_)),
-	sampler_(sampler.clone(rng_)),
+	sampler_(sampler.clone()),
 	node_stack_(128) {}
 
 Worker::~Worker() {

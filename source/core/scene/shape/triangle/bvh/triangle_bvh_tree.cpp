@@ -41,12 +41,18 @@ bool Tree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, No
 	return intersect_node_p(0, ray);
 }
 
-void Tree::interpolate_triangle(uint32_t index, float u, float v, math::float3& n, math::float3& t, math::float2& uv) const {
-	triangles_[index].interpolate(u, v, n, t, uv);
+void Tree::interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
+	triangles_[index].interpolate(uv, n, t, tc);
 }
 
 uint32_t Tree::triangle_material_index(uint32_t index) const {
 	return triangles_[index].material_index;
+}
+
+void Tree::importance_sample(float r, math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const {
+	float num = static_cast<float>(triangles_.size());
+	size_t index = static_cast<size_t>(num * r - 0.001f);
+	triangles_[index].interpolate(uv, p, n, tc);
 }
 
 bool Tree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const {

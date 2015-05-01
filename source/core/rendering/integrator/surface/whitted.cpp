@@ -16,7 +16,7 @@
 namespace rendering {
 
 Whitted::Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(1, rng) {}
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
 void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
