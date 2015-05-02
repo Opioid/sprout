@@ -48,6 +48,11 @@ float2 sample_disk_concentric(float2 uv) {
 	return float2(cos_theta * r, sin_theta * r);
 }
 
+float2 sample_triangle_uniform(float2 uv) {
+	float su = std::sqrt(uv.x);
+	return float2(1.f - su, uv.y * su);
+}
+
 float3 sample_hemisphere_cosine(float2 uv) {
 	float2 xy = sample_disk_concentric(uv);
 	float  z  = std::sqrt(std::max(0.f, 1.f - xy.x * xy.x - xy.y * xy.y));

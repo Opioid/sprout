@@ -44,7 +44,7 @@ public:
 	void interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
 	uint32_t triangle_material_index(uint32_t index) const;
 
-	void importance_sample(float r, math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const;
+	void importance_sample(float r, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
 
 	std::vector<Node>& allocate_nodes(uint32_t num_nodes);
 

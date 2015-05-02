@@ -73,7 +73,7 @@ inline bool Triangle::intersect_p(const math::Oray& ray) const {
 inline void Triangle::interpolate(math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
-	p  = math::normalized(w * a.p + uv.x * b.p + uv.y * c.p);
+	p  = w * a.p + uv.x * b.p + uv.y * c.p;
 	n  = math::normalized(w * a.n + uv.x * b.n + uv.y * c.n);
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }

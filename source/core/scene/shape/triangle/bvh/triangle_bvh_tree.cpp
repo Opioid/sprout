@@ -1,6 +1,7 @@
 #include "triangle_bvh_tree.hpp"
 #include "scene/shape/triangle/triangle_primitive.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
+#include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
@@ -49,10 +50,10 @@ uint32_t Tree::triangle_material_index(uint32_t index) const {
 	return triangles_[index].material_index;
 }
 
-void Tree::importance_sample(float r, math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const {
+void Tree::importance_sample(float r, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const {
 	float num = static_cast<float>(triangles_.size());
 	size_t index = static_cast<size_t>(num * r - 0.001f);
-	triangles_[index].interpolate(uv, p, n, tc);
+	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, n, tc);
 }
 
 bool Tree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const {

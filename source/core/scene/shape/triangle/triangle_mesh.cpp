@@ -58,12 +58,12 @@ void Mesh::importance_sample(const Composed_transformation& transformation, cons
 							 sampler::Sampler& sampler, uint32_t sample_index,
 							 math::float3& wi, float& t, float& pdf) const {
 	float r = sampler.generate_sample1d(sample_index);
-	math::float2 sample = sampler.generate_sample2d(sample_index);
+	math::float2 r2 = sampler.generate_sample2d(sample_index);
 
 	math::float3 sv;
 	math::float3 sn;
 	math::float2 tc;
-	tree_.importance_sample(r, sample, sv, sn, tc);
+	tree_.importance_sample(r, r2, sv, sn, tc);
 
 	math::float3 v = math::transform_point(transformation.object_to_world, sv);
 	math::float3 n = math::transform_vector(transformation.rotation, sn);
