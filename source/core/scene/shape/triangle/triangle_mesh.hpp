@@ -9,6 +9,8 @@ namespace scene { namespace shape { namespace triangle {
 class Mesh : public Shape {
 public:
 
+	virtual uint32_t num_parts() const final override;
+
 	virtual bool intersect(const Composed_transformation& transformation, const math::Oray& ray,
 						   const math::float2& bounds, Node_stack& node_stack,
 						   shape::Intersection& intersection, float& hit_t) const final override;

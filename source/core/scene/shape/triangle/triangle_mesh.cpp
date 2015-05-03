@@ -10,6 +10,10 @@
 
 namespace scene { namespace shape { namespace triangle {
 
+uint32_t Mesh::num_parts() const {
+	return tree_.num_parts();
+}
+
 bool Mesh::intersect(const Composed_transformation& transformation, const math::Oray& ray,
 					 const math::float2& bounds, Node_stack& node_stack,
 					 shape::Intersection& intersection, float& hit_t) const {

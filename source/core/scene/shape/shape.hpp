@@ -24,6 +24,8 @@ public:
 
 	const math::AABB& aabb() const;
 
+	virtual uint32_t num_parts() const;
+
 	virtual bool intersect(const Composed_transformation& transformation, const math::Oray& ray,
 						   const math::float2& bounds, Node_stack& node_stack,
 						   Intersection& intersection, float& hit_t) const = 0;

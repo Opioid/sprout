@@ -6,7 +6,11 @@
 #include "base/math/bounding/aabb.hpp"
 #include <vector>
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene { namespace shape {
+
+struct Vertex;
+
+namespace triangle {
 
 struct Intersection;
 struct Triangle;
@@ -38,6 +42,9 @@ public:
 
 	const math::AABB& aabb() const;
 
+	uint32_t num_parts() const;
+	uint32_t num_triangles() const;
+
 	bool intersect(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack) const;
 
@@ -48,6 +55,10 @@ public:
 
 	std::vector<XNode>& allocate_nodes(uint32_t num_nodes);
 
+	void allocate_triangles(uint32_t num_triangles);
+
+	void add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
+
 private:
 
 	bool intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const;
@@ -56,6 +67,8 @@ private:
 	std::vector<XNode> nodes_;
 
 	std::vector<Triangle> triangles_;
+
+	uint32_t num_parts_;
 
 	friend class XBuilder;
 };

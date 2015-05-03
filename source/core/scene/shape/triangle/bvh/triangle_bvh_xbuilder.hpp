@@ -59,13 +59,13 @@ private:
 					  const std::vector<Index_triangle>& triangles,
 					  const std::vector<Vertex>& vertices,
 					  size_t max_primitives, uint32_t depth,
-					  std::vector<Triangle>& out_triangles);
+					  XTree& tree);
 
 	static void assign(XBuild_node* node,
 					   const std::vector<uint32_t>& primitive_indices,
 					   const std::vector<Index_triangle>& triangles,
 					   const std::vector<Vertex>& vertices,
-					   std::vector<Triangle>& out_triangles);
+					   XTree& tree);
 
 	static math::AABB submesh_aabb(const std::vector<uint32_t>& primitive_indices,
 								   const std::vector<Index_triangle>& triangles,

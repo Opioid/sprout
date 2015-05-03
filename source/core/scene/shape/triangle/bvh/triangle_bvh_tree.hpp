@@ -38,6 +38,8 @@ public:
 
 	const math::AABB& aabb() const;
 
+	uint32_t num_parts() const;
+
 	bool intersect(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack) const;
 
@@ -56,6 +58,8 @@ private:
 	std::vector<Node> nodes_;
 
 	std::vector<Triangle> triangles_;
+
+	uint32_t num_parts_;
 
 	friend class Builder;
 };

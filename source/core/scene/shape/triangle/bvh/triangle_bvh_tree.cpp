@@ -34,6 +34,10 @@ const math::AABB& Tree::aabb() const {
 	return nodes_[0].aabb;
 }
 
+uint32_t Tree::num_parts() const {
+	return num_parts_;
+}
+
 bool Tree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stack& /*node_stack*/, Intersection& intersection) const {
 	return intersect_node(0, ray, intersection);
 }

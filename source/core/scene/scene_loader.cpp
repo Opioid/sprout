@@ -144,8 +144,12 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 		}
 	}
 
-	if (!shape || materials.empty()) {
+	if (!shape) {
 		return nullptr;
+	}
+
+	while (materials.size() < shape->num_parts()) {
+		materials.push_back(material_provider_.fallback_material());
 	}
 
 	Prop* prop = scene.create_prop();

@@ -33,11 +33,10 @@ void XBuilder::build(XTree& tree, const std::vector<Index_triangle>& triangles, 
 		primitive_indices[i] = static_cast<uint32_t>(i);
 	}
 
-	tree.triangles_.clear();
-	tree.triangles_.reserve(triangles.size());
+	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()));
 
 	XBuild_node root;
-	split(&root, primitive_indices, triangles, vertices, max_primitives, 0, tree.triangles_);
+	split(&root, primitive_indices, triangles, vertices, max_primitives, 0, tree);
 
 	num_nodes_ = 1;
 	root.num_sub_nodes(num_nodes_);
@@ -79,11 +78,11 @@ void XBuilder::split(XBuild_node* node,
 					 const std::vector<Index_triangle>& triangles,
 					 const std::vector<Vertex>& vertices,
 					 size_t max_primitives, uint32_t depth,
-					 std::vector<Triangle>& out_triangles) {
+					 XTree& tree) {
 	node->aabb = submesh_aabb(primitive_indices, triangles, vertices);
 
 	if (primitive_indices.size() < max_primitives || depth > 24) {
-		assign(node, primitive_indices, triangles, vertices, out_triangles);
+		assign(node, primitive_indices, triangles, vertices, tree);
 	} else {
 		math::plane sp = average_splitting_plane(node->aabb, primitive_indices, triangles, vertices, node->axis);
 
@@ -106,13 +105,13 @@ void XBuilder::split(XBuild_node* node,
 		if (pids0.empty()) {
 			// This can happen if we didn't find a good splitting plane.
 			// It means no triangle was completely on "this" side of the plane.
-			assign(node, pids1, triangles, vertices, out_triangles);
+			assign(node, pids1, triangles, vertices, tree);
 		} else {
 			node->children[0] = new XBuild_node;
-			split(node->children[0], pids0, triangles, vertices, max_primitives, depth + 1, out_triangles);
+			split(node->children[0], pids0, triangles, vertices, max_primitives, depth + 1, tree);
 
 			node->children[1] = new XBuild_node;
-			split(node->children[1], pids1, triangles, vertices, max_primitives, depth + 1, out_triangles);
+			split(node->children[1], pids1, triangles, vertices, max_primitives, depth + 1, tree);
 		}
 	}
 }
@@ -121,15 +120,15 @@ void XBuilder::assign(XBuild_node* node,
 					  const std::vector<uint32_t>& primitive_indices,
 					  const std::vector<Index_triangle>& triangles,
 					  const std::vector<Vertex>& vertices,
-					  std::vector<Triangle>& out_triangles) {
-	node->start_index = static_cast<uint32_t>(out_triangles.size());
+					  XTree& tree) {
+	node->start_index = tree.num_triangles();
 
 	for (auto pi : primitive_indices) {
 		auto& t = triangles[pi];
-		out_triangles.push_back(Triangle{vertices[t.a], vertices[t.b], vertices[t.c], t.material_index});
+		tree.add_triangle(vertices[t.a], vertices[t.b], vertices[t.c], t.material_index);
 	}
 
-	node->end_index = static_cast<uint32_t>(out_triangles.size());
+	node->end_index = tree.num_triangles();
 }
 
 math::AABB XBuilder::submesh_aabb(const std::vector<uint32_t>& primitive_indices, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {

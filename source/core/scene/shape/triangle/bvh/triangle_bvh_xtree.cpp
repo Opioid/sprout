@@ -34,6 +34,14 @@ const math::AABB& XTree::aabb() const {
 	return nodes_[0].aabb;
 }
 
+uint32_t XTree::num_parts() const {
+	return num_parts_;
+}
+
+uint32_t XTree::num_triangles() const {
+	return static_cast<uint32_t>(triangles_.size());
+}
+
 bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack, Intersection& intersection) const {
 	node_stack.clear();
 	node_stack.push_back(0);
@@ -191,6 +199,17 @@ bool XTree::intersect_node_p(uint32_t n, const math::Oray& ray) const {
 std::vector<XNode>& XTree::allocate_nodes(uint32_t num_nodes) {
 	nodes_.resize(num_nodes);
 	return nodes_;
+}
+
+void XTree::allocate_triangles(uint32_t num_triangles) {
+	triangles_.clear();
+	triangles_.reserve(num_triangles);
+	num_parts_ = 0;
+}
+
+void XTree::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index) {
+	triangles_.push_back(Triangle{a, b, c, material_index});
+	num_parts_ = std::max(num_parts_, material_index + 1);
 }
 
 }}}}
