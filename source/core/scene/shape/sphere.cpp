@@ -80,7 +80,7 @@ bool Sphere::intersect_p(const Composed_transformation& transformation, const ma
 	return false;
 }
 
-void Sphere::importance_sample(const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler, uint32_t sample_index,
+void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler, uint32_t sample_index,
 							   math::float3& wi, float& t, float& pdf) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
@@ -102,7 +102,7 @@ void Sphere::importance_sample(const Composed_transformation& transformation, co
 	pdf = math::cone_pdf_uniform(cos_theta_max);
 }
 
-float Sphere::area(const math::float3& scale) const {
+float Sphere::area(uint32_t /*part*/, const math::float3& scale) const {
 	return 4.f * math::Pi * scale.x * scale.x;
 }
 

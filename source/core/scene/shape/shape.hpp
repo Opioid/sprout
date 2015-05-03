@@ -31,11 +31,11 @@ public:
 	virtual bool intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
 							 const math::float2& bounds, Node_stack& node_stack) const = 0;
 
-	virtual void importance_sample(const Composed_transformation& transformation, const math::float3& p,
+	virtual void importance_sample(uint32_t part, const Composed_transformation& transformation, const math::float3& p,
 								   sampler::Sampler& sampler, uint32_t sample_index,
 								   math::float3& wi, float& t, float& pdf) const = 0;
 
-	virtual float area(const math::float3& scale) const = 0;
+	virtual float area(uint32_t part, const math::float3& scale) const = 0;
 
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;

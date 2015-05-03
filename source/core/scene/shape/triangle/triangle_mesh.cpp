@@ -54,7 +54,7 @@ bool Mesh::intersect_p(const Composed_transformation& transformation, const math
 	return tree_.intersect_p(tray, bounds, node_stack);
 }
 
-void Mesh::importance_sample(const Composed_transformation& transformation, const math::float3& p,
+void Mesh::importance_sample(uint32_t part, const Composed_transformation& transformation, const math::float3& p,
 							 sampler::Sampler& sampler, uint32_t sample_index,
 							 math::float3& wi, float& t, float& pdf) const {
 	float r = sampler.generate_sample1d(sample_index);
@@ -79,11 +79,11 @@ void Mesh::importance_sample(const Composed_transformation& transformation, cons
 	} else {
 		float sl = math::squared_length(axis);
 		t = std::sqrt(sl);
-		pdf = sl / (c * area(transformation.scale));
+		pdf = sl / (c * area(part, transformation.scale));
 	}
 }
 
-float Mesh::area(const math::float3& /*scale*/) const {
+float Mesh::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
 	return 0.25f;
 }
 

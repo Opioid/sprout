@@ -21,7 +21,7 @@ void Prop_light::sample(const math::float3& p, float time, uint32_t /*max_sample
 
 	Sample sample;
 
-	prop_->shape()->importance_sample(transformation, p, sampler, 0, sample.l, sample.t, sample.pdf);
+	prop_->shape()->importance_sample(0, transformation, p, sampler, 0, sample.l, sample.t, sample.pdf);
 
 	sample.energy = prop_->material(0).sample_emission();
 

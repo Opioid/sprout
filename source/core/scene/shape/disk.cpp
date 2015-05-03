@@ -75,7 +75,7 @@ bool Disk::intersect_p(const Composed_transformation& transformation, const math
 	return false;
 }
 
-void Disk::importance_sample(const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler, uint32_t sample_index,
+void Disk::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler, uint32_t sample_index,
 							 math::float3& wi, float& t, float& pdf) const {
 	math::float2 sample = sampler.generate_sample2d(sample_index);
 	math::float2 xy = math::sample_disk_concentric(sample);
@@ -94,11 +94,11 @@ void Disk::importance_sample(const Composed_transformation& transformation, cons
 	} else {
 		float sl = math::squared_length(axis);
 		t = std::sqrt(sl);
-		pdf = sl / (c * area(transformation.scale));
+		pdf = sl / (c * area(0, transformation.scale));
 	}
 }
 
-float Disk::area(const math::float3& scale) const {
+float Disk::area(uint32_t /*part*/, const math::float3& scale) const {
 	return math::Pi * scale.x * scale.x;
 }
 

@@ -86,5 +86,12 @@ inline void Triangle::interpolate_data(math::float2 uv, math::float3& n, math::f
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
+inline float Triangle::area(const math::float3& scale) const {
+	math::float3 sa = scale * a.p;
+	math::float3 sb = scale * b.p;
+	math::float3 sc = scale * c.p;
+	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
+}
+
 }}}
 

@@ -54,13 +54,13 @@ bool Plane::intersect_p(const Composed_transformation& transformation, const mat
 	return false;
 }
 
-void Plane::importance_sample(const Composed_transformation& /*transformation*/, const math::float3& /*p*/,
+void Plane::importance_sample(uint32_t /*part*/, const Composed_transformation& /*transformation*/, const math::float3& /*p*/,
 							  sampler::Sampler& /*sampler*/, uint32_t /*sample_index*/,
 							  math::float3& /*wi*/, float& /*t*/, float& pdf) const {
 	pdf = 0.f;
 }
 
-float Plane::area(const math::float3& /*scale*/) const {
+float Plane::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
 	return 1.f;
 }
 
