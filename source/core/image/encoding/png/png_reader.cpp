@@ -2,10 +2,7 @@
 #include "image/image3.hpp"
 #include "base/color/color.hpp"
 #include "base/math/vector.inl"
-#include "image/image_writer.hpp"
 #include <cstring>
-#include <thread>
-#include <iostream>
 
 namespace image { namespace encoding { namespace png {
 
@@ -38,6 +35,10 @@ Reader::Chunk::~Chunk() {
 }
 
 std::shared_ptr<Image> Reader::create_image(const Info& info) const {
+	if (0 == info.num_channels) {
+		return nullptr;
+	}
+
 	auto image = std::make_shared<Image3>(Description(math::uint2(info.width, info.height)));
 
 	uint32_t num_pixels = info.width * info.height;
@@ -133,6 +134,8 @@ bool Reader::handle_chunk(std::shared_ptr<Chunk> chunk, Info& info) {
 }
 
 bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
+	info.num_channels = 0;
+
 	info.width  = swap(reinterpret_cast<uint32_t*>(chunk->data)[0]);
 	info.height = swap(reinterpret_cast<uint32_t*>(chunk->data)[1]);
 
@@ -144,12 +147,12 @@ bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 	Color_type color_type = static_cast<Color_type>(chunk->data[9]);
 
 	switch (color_type) {
+	case Color_type::Grayscale:
+		info.num_channels = 1; break;
 	case Color_type::Truecolor:
 		info.num_channels = 3; break;
 	case Color_type::Truecolor_alpha:
 		info.num_channels = 4; break;
-	default:
-		info.num_channels = 0;
 	}
 
 	if (0 == info.num_channels) {

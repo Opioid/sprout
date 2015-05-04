@@ -6,6 +6,7 @@
 #include "core/scene/scene_loader.hpp"
 #include "core/image/image_writer.hpp"
 #include "core/progress/std_out.hpp"
+#include "base/thread/thread_pool.hpp"
 #include <chrono>
 #include <thread>
 #include <algorithm>
@@ -23,6 +24,8 @@ int main() {
 	uint32_t num_workers = static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
 
 	std::cout << "#Threads " << num_workers << std::endl;
+
+	thread::Pool pool(2);
 
 	std::cout << "Loading..." << std::endl;
 

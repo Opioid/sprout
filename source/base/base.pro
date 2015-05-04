@@ -14,6 +14,7 @@ include(color/color.pri)
 include(file/file.pri)
 include(json/json.pri)
 include(math/math.pri)
+include(thread/thread.pri)
 
 unix {
 	target.path = /usr/lib
