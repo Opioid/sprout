@@ -8,7 +8,7 @@
 
 namespace image { namespace encoding { namespace png {
 
-std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal) const {
+std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal) {
 	std::array<uint8_t, Signature_size> signature;
 
 	stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
@@ -17,24 +17,51 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal) co
 		throw std::runtime_error("Bad PNG signature");
 	}
 
-	Info info;
-	info.use_as_normal = use_as_normal;
+	info_.use_as_normal = use_as_normal;
 
 	for (;;) {
 		auto chunk = read_chunk(stream);
 
-		if (!handle_chunk(chunk, info))	{
+		if (!handle_chunk(chunk, info_))	{
 			break;
 		}
 	}
 
-	mz_inflateEnd(&info.stream);
+	mz_inflateEnd(&info_.stream);
 
-	return info.image;
+	return create_image(info_);
 }
 
 Reader::Chunk::~Chunk() {
 	delete [] type;
+}
+
+std::shared_ptr<Image> Reader::create_image(const Info& info) const {
+	auto image = std::make_shared<Image3>(Description(math::uint2(info.width, info.height)));
+
+	uint32_t num_pixels = info.width * info.height;
+
+	color::Color4c color(0, 0, 0, 255);
+	math::float4   linear;
+
+	for (uint32_t i = 0; i < num_pixels; ++i) {
+		uint32_t o = i * info.num_channels;
+		for (uint32_t c = 0; c < info.num_channels; ++c) {
+			color.v[c] = info.buffer[o + c];
+		}
+
+		if (info.use_as_normal) {
+			linear.x = 2.f * (static_cast<float>(color.x) / 255.f - 0.5f);
+			linear.y = 2.f * (static_cast<float>(color.y) / 255.f - 0.5f);
+			linear.z = 2.f * (static_cast<float>(color.z) / 255.f - 0.5f);
+		} else {
+			linear = color::sRGB_to_linear(color);
+		}
+
+		image->set4(i, linear);
+	}
+
+	return image;
 }
 
 std::shared_ptr<Reader::Chunk> Reader::read_chunk(std::istream& stream) {
@@ -102,13 +129,12 @@ bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 		return false;
 	}
 
-	info.image = std::make_shared<Image3>(Description(math::uint2(info.width, info.height)));
+	info.buffer.resize(info.width * info.height * info.num_channels);
 
 	info.current_filter = Filter::None;
 	info.filter_byte = true;
 	info.current_byte = 0;
-	info.channel = 0;
-	info.current_pixel = 0;
+	info.current_byte_total = 0;
 
 	info.current_row_data.resize(info.width * info.num_channels);
 	info.previous_row_data.resize(info.current_row_data.size());
@@ -133,8 +159,6 @@ bool Reader::parse_data(std::shared_ptr<Chunk> chunk, Info& info) {
 	info.stream.next_in = chunk->data;
 	info.stream.avail_in = chunk->length;
 
-	color::Color4c color(0, 0, 0, 255);
-
 	do {
 		info.stream.next_out = buffer;
 		info.stream.avail_out = buffer_size;
@@ -154,23 +178,7 @@ bool Reader::parse_data(std::shared_ptr<Chunk> chunk, Info& info) {
 			} else {
 				uint8_t raw = filter(buffer[i], info.current_filter, info);
 				info.current_row_data[info.current_byte] = raw;
-				color.v[info.channel] = raw;
-
-				if (info.num_channels - 1 == info.channel) {
-					math::float4 linear;
-					if (info.use_as_normal) {
-						linear.x = 2.f * (static_cast<float>(color.x) / 255.f - 0.5f);
-						linear.y = 2.f * (static_cast<float>(color.y) / 255.f - 0.5f);
-						linear.z = 2.f * (static_cast<float>(color.z) / 255.f - 0.5f);
-					} else {
-						linear = color::sRGB_to_linear(color);
-					}
-
-					info.image->set4(info.current_pixel++, linear);
-					info.channel = 0;
-				} else {
-					++info.channel;
-				}
+				info.buffer[info.current_byte_total++] = raw;
 
 				if (info.current_row_data.size() - 1 == info.current_byte) {
 					info.current_byte = 0;

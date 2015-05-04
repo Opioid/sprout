@@ -1,6 +1,7 @@
 #pragma once
 
 #include "resource/resource_provider.hpp"
+#include "image/encoding/png/png_reader.hpp"
 
 namespace image {
 
@@ -17,6 +18,8 @@ public:
 	virtual std::shared_ptr<Image> load(const std::string& filename, uint32_t flags = 0);
 
 private:
+
+	encoding::png::Reader png_reader_;
 
 };
 
