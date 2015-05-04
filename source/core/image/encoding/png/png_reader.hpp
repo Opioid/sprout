@@ -13,6 +13,7 @@
 namespace image {
 
 class Image;
+class Image3;
 
 namespace encoding { namespace png {
 
@@ -74,6 +75,8 @@ private:
 	};
 
 	std::shared_ptr<Image> create_image(const Info& info) const;
+
+	static void to_linear(uint32_t start_pixel, uint32_t end_pixel, const Info& info, Image3& image);
 
 	static std::shared_ptr<Chunk> read_chunk(std::istream& stream);
 
