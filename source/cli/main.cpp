@@ -25,13 +25,13 @@ int main() {
 
 	std::cout << "#Threads " << num_workers << std::endl;
 
-	thread::Pool pool(2);
+//	thread::Pool pool(2);
 
 	std::cout << "Loading..." << std::endl;
 
 	auto loading_start = clock.now();
 
-	std::string takename = "../data/takes/cornell.take";
+	std::string takename = "../data/takes/sponza.take";
 
 	std::shared_ptr<take::Take> take;
 
