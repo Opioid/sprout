@@ -3,6 +3,12 @@
 #include "rendering/rectangle.hpp"
 #include "image/image4.hpp"
 
+namespace thread {
+
+class Pool;
+
+}
+
 namespace sampler {
 
 struct Camera_sample;
@@ -25,7 +31,7 @@ public:
 
 	const math::uint2& dimensions() const;
 
-	const image::Image& resolve();
+	const image::Image& resolve(thread::Pool& pool);
 
 	void clear();
 
@@ -37,12 +43,14 @@ protected:
 
 	void add_pixel_atomic(uint32_t x, uint32_t y, const math::float3& color, float weight);
 
-	static math::float3 expose(const math::float3& color, float exposure);
-
 	struct Pixel {
 		math::float3 color;
 		float        weight_sum;
 	};
+
+	void resolve(uint32_t begin, uint32_t end);
+
+	static math::float3 expose(const math::float3& color, float exposure);
 
 	Pixel* pixels_;
 

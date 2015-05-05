@@ -10,6 +10,8 @@ class Image;
 class Provider : public resource::Provider<Image> {
 public:
 
+	Provider(thread::Pool& pool);
+
 	enum class Flags {
 		None = 0,
 		Use_as_normal = 1

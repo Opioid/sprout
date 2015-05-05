@@ -10,6 +10,12 @@
 #include <array>
 #include <vector>
 
+namespace thread {
+
+class Pool;
+
+}
+
 namespace image {
 
 class Image;
@@ -19,6 +25,8 @@ namespace encoding { namespace png {
 
 class Reader {
 public:
+
+	Reader(thread::Pool& pool);
 
 	std::shared_ptr<Image> read(std::istream& stream, bool use_as_normal);
 
@@ -76,7 +84,7 @@ private:
 
 	std::shared_ptr<Image> create_image(const Info& info) const;
 
-	static void to_linear(uint32_t start_pixel, uint32_t end_pixel, const Info& info, Image3& image);
+	static void to_linear(const Info& info, Image3& image, uint32_t start_pixel, uint32_t end_pixel);
 
 	static std::shared_ptr<Chunk> read_chunk(std::istream& stream);
 
@@ -97,6 +105,8 @@ private:
 	static uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c);
 
 	static uint32_t swap(uint32_t v);
+
+	thread::Pool& pool_;
 
 	Info info_;
 
