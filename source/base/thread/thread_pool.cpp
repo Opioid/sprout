@@ -1,6 +1,5 @@
 #include "thread_pool.hpp"
 #include <algorithm>
-#include <iostream>
 
 namespace thread {
 
@@ -43,16 +42,20 @@ void Pool::wake_all(uint32_t begin, uint32_t end) {
 
 	uint32_t step = static_cast<uint32_t>(std::ceil(range / static_cast<float>(threads_.size())));
 
-	uint32_t b = 0;
-	uint32_t e = begin;
-	for (size_t i = 0; i < uniques_.size(); ++i) {
-		b = e;
-		e += step;
+	{
+		std::lock_guard<std::mutex> lock(shared_.mutex);
 
-		uniques_[i].begin = b;
-		uniques_[i].end   = std::min(e, end);
+		uint32_t b = 0;
+		uint32_t e = begin;
+		for (size_t i = 0; i < uniques_.size(); ++i) {
+			b = e;
+			e += step;
 
-		uniques_[i].wake = true;
+			uniques_[i].begin = b;
+			uniques_[i].end   = std::min(e, end);
+
+			uniques_[i].wake = true;
+		}
 	}
 
 	shared_.wake_signal.notify_all();
@@ -60,16 +63,16 @@ void Pool::wake_all(uint32_t begin, uint32_t end) {
 
 void Pool::wait_all() {
 	for (size_t i = 0; i < uniques_.size(); ++i) {
-		std::unique_lock<std::mutex> locker(uniques_[i].lock);
-		uniques_[i].done_signal.wait(locker, [&]{return !uniques_[i].wake;});
+		std::unique_lock<std::mutex> lock(uniques_[i].mutex);
+		uniques_[i].done_signal.wait(lock, [this, i]{return !uniques_[i].wake;});
 	}
 }
 
 void Pool::loop(Unique& unique, Shared& shared) {
 	for (;;) {
-		std::unique_lock<std::mutex> locker(unique.lock);
-
-		shared.wake_signal.wait(locker, [&]{return unique.wake;});
+		std::unique_lock<std::mutex> lock(shared.mutex);
+		shared.wake_signal.wait(lock, [&unique]{return unique.wake;});
+		lock.unlock();
 
 		if (shared.end) {
 			break;
@@ -78,7 +81,6 @@ void Pool::loop(Unique& unique, Shared& shared) {
 		shared.range_program(unique.begin, unique.end);
 
 		unique.wake = false;
-		locker.unlock();
 		unique.done_signal.notify_all();
 	}
 }

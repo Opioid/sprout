@@ -30,7 +30,7 @@ private:
 		uint32_t begin;
 		uint32_t end;
 		std::condition_variable done_signal;
-		std::mutex lock;
+		std::mutex mutex;
 		bool wake;
 	};
 
@@ -38,6 +38,7 @@ private:
 		Task_program  task_program;
 		Range_program range_program;
 		std::condition_variable wake_signal;
+		std::mutex mutex;
 		bool end;
 	};
 
