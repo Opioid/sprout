@@ -2,9 +2,12 @@
 #include "image/image3.hpp"
 #include "base/color/color.hpp"
 #include "base/math/vector.inl"
+#include "base/thread/thread_pool.hpp"
 #include <cstring>
 
 namespace image { namespace encoding { namespace png {
+
+Reader::Reader(thread::Pool& pool) : pool_(pool) {}
 
 std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal) {
 	std::array<uint8_t, Signature_size> signature;
@@ -43,42 +46,15 @@ std::shared_ptr<Image> Reader::create_image(const Info& info) const {
 
 	uint32_t num_pixels = info.width * info.height;
 
-	to_linear(0, num_pixels, info, *image);
+	pool_.run_range([&info, &image](uint32_t begin, uint32_t end){ to_linear(info, *image, begin, end); }, 0, num_pixels);
 
-	/*
-	uint32_t num_threads = 8;
-
-	std::vector<std::thread> threads;
-
-	uint32_t advance = num_pixels / num_threads;
-
-	uint32_t start = 0;
-	uint32_t end   = 0;
-
-	for (uint32_t i = 0; i < num_threads; ++i) {
-		start = end;
-		end += advance;
-
-		if (i == num_threads - 1) {
-			end = num_pixels;
-		}
-
-		threads.push_back(std::thread(
-					[info, image](uint32_t start_pixel, uint32_t end_pixel) {
-						to_linear(start_pixel, end_pixel, info, *image);
-					}, start, end));
-	}
-
-	for (size_t i = 0, len = threads.size(); i < len; ++i) {
-		threads[i].join();
-	}
-	*/
+//	to_linear(info, *image, 0, num_pixels);
 
 	return image;
 }
 
 
-void Reader::to_linear(uint32_t start_pixel, uint32_t end_pixel, const Info& info, Image3& image) {
+void Reader::to_linear(const Info& info, Image3& image, uint32_t start_pixel, uint32_t end_pixel) {
 	color::Color4c color(0, 0, 0, 255);
 	math::float4   linear;
 

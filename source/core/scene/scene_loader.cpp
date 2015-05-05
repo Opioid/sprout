@@ -18,12 +18,13 @@
 
 namespace scene {
 
-Loader::Loader(uint32_t num_workers) :
+Loader::Loader(uint32_t num_workers, thread::Pool& pool) :
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
 	mesh_cache_(mesh_provider_),
+	image_provider_(pool),
 	image_cache_(image_provider_),
 	material_provider_(image_cache_, num_workers),
 	material_cache_(material_provider_) {}

@@ -7,6 +7,8 @@
 
 namespace image  {
 
+Provider::Provider(thread::Pool& pool) : png_reader_(pool) {}
+
 std::shared_ptr<Image> Provider::load(const std::string& filename, uint32_t flags) {
 	std::ifstream stream(filename, std::ios::binary);
 	if (!stream) {

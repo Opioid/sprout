@@ -25,7 +25,7 @@ int main() {
 
 	std::cout << "#Threads " << num_workers << std::endl;
 
-//	thread::Pool pool(2);
+	thread::Pool pool(num_workers);
 
 	std::cout << "Loading..." << std::endl;
 
@@ -45,7 +45,7 @@ int main() {
 
 	// The scene loader must be alive during rendering, otherwise some resources might be released prematurely.
 	// This is potentially confusing and should be adressed one way or the other.
-	scene::Loader scene_loader(num_workers);
+	scene::Loader scene_loader(num_workers, pool);
 	scene::Scene scene;
 
 	try {
@@ -75,7 +75,7 @@ int main() {
 
 	auto exporting_start = clock.now();
 
-	bool result = image::write("output.png", take->context.camera->film().resolve());
+	bool result = image::write("output.png", take->context.camera->film().resolve(pool));
 
 	if (!result) {
 		std::cout << "Something went wrong" << std::endl;

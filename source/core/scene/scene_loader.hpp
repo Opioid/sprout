@@ -34,7 +34,7 @@ class Scene;
 class Loader {
 public:
 
-	Loader(uint32_t num_workers);
+	Loader(uint32_t num_workers, thread::Pool& pool);
 	~Loader();
 
 	void load(const std::string& filename, Scene& scene);

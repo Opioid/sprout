@@ -140,14 +140,12 @@ inline T Vector3<T>::absolute_max(uint32_t& i) const {
 	T ay = std::abs(y);
 	T az = std::abs(z);
 
-	if (ax >= ay && ax >= az)
-	{
+	if (ax >= ay && ax >= az) {
 		i = 0;
 		return ax;
 	}
 
-	if (ay >= ax && ay >= az)
-	{
+	if (ay >= ax && ay >= az) {
 		i = 1;
 		return ay;
 	}
@@ -272,6 +270,16 @@ inline Vector3<float> max(const Vector3<float>& a, const Vector3<float>& b) {
 template<typename T>
 inline Vector3<T> abs(const Vector3<T>& v) {
 	return Vector3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z));
+}
+
+template<typename T>
+bool contains_nan(const Vector3<T>& v) {
+	return std::isnan(v.x) || std::isnan(v.y) || std::isnan(v.z);
+}
+
+template<typename T>
+bool contains_inf(const Vector3<T>& v) {
+	return std::isinf(v.x) || std::isinf(v.y) || std::isinf(v.z);
 }
 
 }

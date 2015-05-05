@@ -1,5 +1,6 @@
 #include "film.hpp"
 #include "tonemapping/tonemapper.hpp"
+#include "base/thread/thread_pool.hpp"
 #include "base/math/vector.inl"
 
 namespace rendering { namespace film {
@@ -21,37 +22,22 @@ const math::uint2& Film::dimensions() const {
 	return image_.description().dimensions;
 }
 
-const image::Image& Film::resolve() {
+const image::Image& Film::resolve(thread::Pool& pool) {
 	auto& d = dimensions();
-	uint32_t i = 0;
-	for (uint32_t y = 0; y < d.y; ++y) {
-		for (uint32_t x = 0; x < d.x; ++x) {
-			auto& pixel = pixels_[d.x * y + x];
-
-			math::float3 color = pixel.color / pixel.weight_sum;
-
-			math::float3 exposed = expose(color, exposure_);
-
-			math::float3 tonemapped = tonemapper_->tonemap(exposed);
-
-			image_.set4(i++, math::float4(tonemapped, 1.f));
-		}
-	}
-
+	pool.run_range([this](uint32_t begin, uint32_t end){ resolve(begin, end); }, 0, d.x * d.y);
 	return image_;
 }
 
 void Film::clear() {
-	uint32_t len = dimensions().x * dimensions().y;
-	for (uint32_t i = 0; i < len; ++i) {
+	auto& d = dimensions();
+	for (uint32_t i = 0, len = d.x * d.y; i < len; ++i) {
 		pixels_[i].color = math::float3(0.f, 0.f, 0.f);
 		pixels_[i].weight_sum = 0.f;
 	}
 }
 
 void Film::add_pixel(uint32_t x, uint32_t y, const math::float3& color, float weight) {
-	const math::uint2& d = dimensions();
-
+	auto& d = dimensions();
 	if (x >= d.x || y >= d.y) {
 		return;
 	}
@@ -63,6 +49,20 @@ void Film::add_pixel(uint32_t x, uint32_t y, const math::float3& color, float we
 
 void Film::add_pixel_atomic(uint32_t x, uint32_t y, const math::float3& color, float weight) {
 	add_pixel(x, y, color, weight);
+}
+
+void Film::resolve(uint32_t begin, uint32_t end) {
+	for (uint32_t i = begin; i < end; ++i) {
+		auto& pixel = pixels_[i];
+
+		math::float3 color = pixel.color / pixel.weight_sum;
+
+		math::float3 exposed = expose(color, exposure_);
+
+		math::float3 tonemapped = tonemapper_->tonemap(exposed);
+
+		image_.set4(i, math::float4(tonemapped, 1.f));
+	}
 }
 
 math::float3 Film::expose(const math::float3& color, float exposure) {
