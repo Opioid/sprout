@@ -13,6 +13,7 @@
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
+//#include <iostream>
 
 namespace rendering {
 
@@ -82,7 +83,11 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 			break;
 		}
 	}
-
+/*
+	if (math::contains_nan(result) || math::contains_inf(result)) {
+		std::cout << "nan/inf" << std::endl;
+	}
+*/
 	return result;
 }
 

@@ -114,4 +114,10 @@ Vector3<float> max(const Vector3<float>& a, const Vector3<float>& b);
 template<typename T>
 Vector3<T> abs(const Vector3<T>& v);
 
+template<typename T>
+bool contains_nan(const Vector3<T>& v);
+
+template<typename T>
+bool contains_inf(const Vector3<T>& v);
+
 }

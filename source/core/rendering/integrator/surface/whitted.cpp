@@ -12,6 +12,7 @@
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
+// #include <iostream>
 
 namespace rendering {
 
@@ -55,6 +56,12 @@ math::float3 Whitted::li(Worker& worker, uint32_t subsample, math::Oray& ray, sc
 			}
 		}
 	}
+
+	/*
+	if (math::contains_nan(result)) {
+		std::cout << "nan" << std::endl;
+	}
+	*/
 
 	return result;
 }

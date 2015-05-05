@@ -46,12 +46,14 @@ bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stac
 	node_stack.clear();
 	node_stack.push_back(0);
 
+	Coordinates c;
+	Intersection ti;
+
 	bool hit = false;
 
 	while (!node_stack.empty()) {
 		uint32_t n = node_stack.back();
 		node_stack.pop_back();
-
 		auto& node = nodes_[n];
 
 		if (node.aabb.intersect_p(ray)) {
@@ -60,8 +62,6 @@ bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stac
 				node_stack.push_back(children.b);
 				node_stack.push_back(children.a);
 			} else {
-				Coordinates c;
-				Intersection ti;
 				ti.c.t = ray.max_t;
 
 				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
@@ -158,7 +158,6 @@ bool XTree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersecti
 					hit = true;
 				}
 			}
-
 		}
 
 		if (hit) {
