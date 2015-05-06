@@ -47,7 +47,7 @@ bool Tree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, No
 }
 
 void Tree::interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
-	triangles_[index].interpolate(uv, n, t, tc);
+	triangles_[index].interpolate_data(uv, n, t, tc);
 }
 
 uint32_t Tree::triangle_material_index(uint32_t index) const {

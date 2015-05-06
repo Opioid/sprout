@@ -84,7 +84,11 @@ void XBuilder::split(XBuild_node* node,
 	if (primitive_indices.size() < max_primitives || depth > 24) {
 		assign(node, primitive_indices, triangles, vertices, tree);
 	} else {
-		math::plane sp = average_splitting_plane(node->aabb, primitive_indices, triangles, vertices, node->axis);
+	//	math::plane sp = average_splitting_plane(node->aabb, primitive_indices, triangles, vertices, node->axis);
+
+		Split_candidate sp = splitting_plane(node->aabb, primitive_indices, triangles, vertices);
+
+		node->axis = sp.axis();
 
 		size_t reserve_size = primitive_indices.size() / 2 + 1;
 		std::vector<uint32_t> pids0;
@@ -93,7 +97,7 @@ void XBuilder::split(XBuild_node* node,
 		pids1.reserve(reserve_size);
 
 		for (auto pi : primitive_indices) {
-			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp);
+			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp.plane());
 
 			if (0 == side) {
 				pids0.push_back(pi);
@@ -150,10 +154,50 @@ math::AABB XBuilder::submesh_aabb(const std::vector<uint32_t>& primitive_indices
 	return math::AABB(min, max);
 }
 
-math::plane XBuilder::average_splitting_plane(const math::AABB aabb,
-											 const std::vector<uint32_t>& primitive_indices,
-											 const std::vector<Index_triangle>& triangles,
-											 const std::vector<Vertex>& vertices, uint8_t& axis) {
+Split_candidate XBuilder::splitting_plane(const math::AABB& aabb,
+										  const std::vector<uint32_t>& primitive_indices,
+										  const std::vector<Index_triangle>& triangles,
+										  const std::vector<Vertex>& vertices) {
+	split_candidates_.clear();
+
+	math::float3 average = math::float3::identity;
+
+	for (auto pi : primitive_indices) {
+		average += vertices[triangles[pi].a].p + vertices[triangles[pi].b].p + vertices[triangles[pi].c].p;
+	}
+
+	average /= static_cast<float>(primitive_indices.size() * 3);
+
+	math::float3 position = aabb.position();
+	math::float3 halfsize = aabb.halfsize();
+
+	uint8_t bb_axis;
+
+	if (halfsize.x >= halfsize.y && halfsize.x >= halfsize.z) {
+		bb_axis = 0;
+	} else if (halfsize.y >= halfsize.x && halfsize.y >= halfsize.z) {
+		bb_axis = 1;
+	} else {
+		bb_axis = 2;
+	}
+
+	split_candidates_.push_back(Split_candidate(bb_axis, 0, math::float3(average.x,  position.y, position.z),
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 1, math::float3(position.x, average.y,  position.z),
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 2, math::float3(position.x, position.y, average.z),
+								primitive_indices, triangles, vertices));
+
+	std::sort(split_candidates_.begin(), split_candidates_.end(),
+			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
+
+	return split_candidates_[0];
+}
+
+math::plane XBuilder::average_splitting_plane(const math::AABB& aabb,
+											  const std::vector<uint32_t>& primitive_indices,
+											  const std::vector<Index_triangle>& triangles,
+											  const std::vector<Vertex>& vertices, uint8_t& axis) {
 	math::float3 average = math::float3::identity;
 
 	for (auto pi : primitive_indices) {

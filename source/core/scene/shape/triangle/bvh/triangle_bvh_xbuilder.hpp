@@ -1,5 +1,6 @@
 #pragma once
 
+#include "split_candidate.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include "base/math/plane.hpp"
 #include <cstdint>
@@ -54,12 +55,14 @@ private:
 
 	std::vector<XNode>* nodes_;
 
-	static void split(XBuild_node* node,
-					  const std::vector<uint32_t>& primitive_indices,
-					  const std::vector<Index_triangle>& triangles,
-					  const std::vector<Vertex>& vertices,
-					  size_t max_primitives, uint32_t depth,
-					  XTree& tree);
+	std::vector<Split_candidate> split_candidates_;
+
+	void split(XBuild_node* node,
+			   const std::vector<uint32_t>& primitive_indices,
+			   const std::vector<Index_triangle>& triangles,
+			   const std::vector<Vertex>& vertices,
+			   size_t max_primitives, uint32_t depth,
+			   XTree& tree);
 
 	static void assign(XBuild_node* node,
 					   const std::vector<uint32_t>& primitive_indices,
@@ -71,7 +74,12 @@ private:
 								   const std::vector<Index_triangle>& triangles,
 								   const std::vector<Vertex>& vertices);
 
-	static math::plane average_splitting_plane(const math::AABB aabb,
+	Split_candidate splitting_plane(const math::AABB& aabb,
+									const std::vector<uint32_t>& primitive_indices,
+									const std::vector<Index_triangle>& triangles,
+									const std::vector<Vertex>& vertices);
+
+	static math::plane average_splitting_plane(const math::AABB& aabb,
 											   const std::vector<uint32_t>& primitive_indices,
 											   const std::vector<Index_triangle>& triangles,
 											   const std::vector<Vertex>& vertices, uint8_t& axis);
