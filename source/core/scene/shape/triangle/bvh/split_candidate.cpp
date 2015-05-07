@@ -25,16 +25,21 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 	key_ = std::abs(static_cast<int>(bb_axis) - static_cast<int>(split_axis));
 
 	uint32_t num_side_0 = 0;
+	uint32_t split = 0;
 	for (auto pi : primitive_indices) {
 		uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, plane_);
 
 		if (0 == side) {
 			++num_side_0;
+		} else if (2 == side) {
+			++split;
 		}
 	}
 
+	key_ += split;
+
 	if (0 == num_side_0) {
-		key_ += 100;
+		key_ += 1000000000;
 	}
 }
 

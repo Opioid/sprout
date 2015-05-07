@@ -81,7 +81,7 @@ void Builder::split(Build_node* node,
 					std::vector<Triangle>& out_triangles) {
 	node->aabb = submesh_aabb(primitive_indices, triangles, vertices);
 
-	if (primitive_indices.size() < max_primitives || depth > 24) {
+	if (primitive_indices.size() <= max_primitives || depth > 24) {
 		assign(node, primitive_indices, triangles, vertices, out_triangles);
 	} else {
 		math::plane sp = average_splitting_plane(node->aabb, primitive_indices, triangles, vertices, node->axis);

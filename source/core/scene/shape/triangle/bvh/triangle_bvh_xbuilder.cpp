@@ -81,7 +81,7 @@ void XBuilder::split(XBuild_node* node,
 					 XTree& tree) {
 	node->aabb = submesh_aabb(primitive_indices, triangles, vertices);
 
-	if (primitive_indices.size() < max_primitives || depth > 24) {
+	if (primitive_indices.size() <= max_primitives || depth > 24) {
 		assign(node, primitive_indices, triangles, vertices, tree);
 	} else {
 	//	math::plane sp = average_splitting_plane(node->aabb, primitive_indices, triangles, vertices, node->axis);
