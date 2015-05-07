@@ -168,7 +168,7 @@ Split_candidate XBuilder::splitting_plane(const math::AABB& aabb,
 
 	average /= static_cast<float>(primitive_indices.size() * 3);
 
-	math::float3 position = aabb.position();
+//	math::float3 position = aabb.position();
 	math::float3 halfsize = aabb.halfsize();
 
 	uint8_t bb_axis;
@@ -181,11 +181,11 @@ Split_candidate XBuilder::splitting_plane(const math::AABB& aabb,
 		bb_axis = 2;
 	}
 
-	split_candidates_.push_back(Split_candidate(bb_axis, 0, math::float3(average.x,  position.y, position.z),
+	split_candidates_.push_back(Split_candidate(bb_axis, 0, average,
 								primitive_indices, triangles, vertices));
-	split_candidates_.push_back(Split_candidate(bb_axis, 1, math::float3(position.x, average.y,  position.z),
+	split_candidates_.push_back(Split_candidate(bb_axis, 1, average,
 								primitive_indices, triangles, vertices));
-	split_candidates_.push_back(Split_candidate(bb_axis, 2, math::float3(position.x, position.y, average.z),
+	split_candidates_.push_back(Split_candidate(bb_axis, 2, average,
 								primitive_indices, triangles, vertices));
 
 	std::sort(split_candidates_.begin(), split_candidates_.end(),
