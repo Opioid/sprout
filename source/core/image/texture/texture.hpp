@@ -11,8 +11,9 @@ public:
 
 	Texture(std::shared_ptr<Image> image);
 
-protected:
+	explicit operator bool() const noexcept;
 
+protected:
 
 	std::shared_ptr<Image> image_;
 };

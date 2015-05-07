@@ -8,7 +8,7 @@ namespace scene { namespace material { namespace substitute {
 class Colormap_normalmap_surfacemap_emissionmap : public Substitute {
 public:
 
-	Colormap_normalmap_surfacemap_emissionmap(Sample_cache<Sample>& cache,
+	Colormap_normalmap_surfacemap_emissionmap(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask,
 											  std::shared_ptr<image::Image> color,
 											  std::shared_ptr<image::Image> normal,
 											  std::shared_ptr<image::Image> surface,

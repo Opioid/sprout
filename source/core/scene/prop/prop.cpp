@@ -73,8 +73,8 @@ const math::AABB& Prop::aabb() const {
 	return aabb_;
 }
 
-material::IMaterial& Prop::material(uint32_t index) const {
-	return *materials_[index].get();
+material::IMaterial* Prop::material(uint32_t index) const {
+	return materials_[index].get();
 }
 
 void Prop::on_set_transformation() {

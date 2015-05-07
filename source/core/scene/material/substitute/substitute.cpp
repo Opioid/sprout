@@ -120,7 +120,7 @@ void Sample::set(const math::float3& color, const math::float3& emission, float 
 	metallic_ = metallic;
 }
 
-Substitute::Substitute(Sample_cache<Sample>& cache) : Material(cache) {}
+Substitute::Substitute(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}
 
 math::float3 Substitute::sample_emission() const {
 	return math::float3::identity;

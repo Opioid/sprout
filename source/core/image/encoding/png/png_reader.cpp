@@ -1,5 +1,6 @@
 #include "png_reader.hpp"
-#include "image/image3.hpp"
+#include "image/image_1.hpp"
+#include "image/image_3.hpp"
 #include "base/color/color.hpp"
 #include "base/math/vector.inl"
 #include "base/thread/thread_pool.hpp"
@@ -9,7 +10,7 @@ namespace image { namespace encoding { namespace png {
 
 Reader::Reader(thread::Pool& pool) : pool_(pool) {}
 
-std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal) {
+std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal, bool use_as_mask) {
 	std::array<uint8_t, Signature_size> signature;
 
 	stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
@@ -19,6 +20,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal) {
 	}
 
 	info_.use_as_normal = use_as_normal;
+	info_.use_as_mask   = use_as_mask;
 
 	for (;;) {
 		auto chunk = read_chunk(stream);
@@ -42,11 +44,17 @@ std::shared_ptr<Image> Reader::create_image(const Info& info) const {
 		return nullptr;
 	}
 
-	auto image = std::make_shared<Image3>(Description(math::uint2(info.width, info.height)));
+	std::shared_ptr<Image> image;
+
+	if (info.use_as_mask) {
+		image = std::make_shared<Image_1>(Description(math::uint2(info.width, info.height)));
+	} else {
+		image = std::make_shared<Image_3>(Description(math::uint2(info.width, info.height)));
+	}
 
 	uint32_t num_pixels = info.width * info.height;
 
-	pool_.run_range([&info, &image](uint32_t begin, uint32_t end){ to_linear(info, *image, begin, end); }, 0, num_pixels);
+	pool_.run_range([&info, &image](uint32_t begin, uint32_t end){ to_float(info, *image, begin, end); }, 0, num_pixels);
 
 //	to_linear(info, *image, 0, num_pixels);
 
@@ -54,7 +62,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info) const {
 }
 
 
-void Reader::to_linear(const Info& info, Image3& image, uint32_t start_pixel, uint32_t end_pixel) {
+void Reader::to_float(const Info& info, Image& image, uint32_t start_pixel, uint32_t end_pixel) {
 	color::Color4c color(0, 0, 0, 255);
 	math::float4   linear;
 
@@ -68,6 +76,8 @@ void Reader::to_linear(const Info& info, Image3& image, uint32_t start_pixel, ui
 			linear.x = 2.f * (static_cast<float>(color.x) / 255.f - 0.5f);
 			linear.y = 2.f * (static_cast<float>(color.y) / 255.f - 0.5f);
 			linear.z = 2.f * (static_cast<float>(color.z) / 255.f - 0.5f);
+		} else if (info.use_as_mask) {
+			linear.x = static_cast<float>(color.x) / 255.f;
 		} else {
 			linear = color::sRGB_to_linear(color);
 		}
@@ -110,8 +120,6 @@ bool Reader::handle_chunk(std::shared_ptr<Chunk> chunk, Info& info) {
 }
 
 bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
-	info.num_channels = 0;
-
 	info.width  = swap(reinterpret_cast<uint32_t*>(chunk->data)[0]);
 	info.height = swap(reinterpret_cast<uint32_t*>(chunk->data)[1]);
 
@@ -129,6 +137,8 @@ bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 		info.num_channels = 3; break;
 	case Color_type::Truecolor_alpha:
 		info.num_channels = 4; break;
+	default:
+		info.num_channels = 0;
 	}
 
 	if (0 == info.num_channels) {

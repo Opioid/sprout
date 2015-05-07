@@ -9,7 +9,6 @@
 #include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
 #include "scene/material/material_sample_cache.inl"
-#include "image/image4.hpp"
 #include "resource/resource_cache.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"

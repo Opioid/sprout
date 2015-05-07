@@ -35,10 +35,10 @@ math::float3 Whitted::li(Worker& worker, uint32_t subsample, math::Oray& ray, sc
 	shadow_ray.min_t = ray_offset;
 	shadow_ray.time = ray.time;
 
-	auto& material = intersection.material();
+	auto material = intersection.material();
 
 	math::float3 wo = -ray.direction;
-	auto& sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
+	auto& sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 	result += sample.emission();
 

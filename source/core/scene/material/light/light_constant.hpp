@@ -7,7 +7,7 @@ namespace scene { namespace material { namespace light {
 class Constant : public Light {
 public:
 
-	Constant(Sample_cache<Sample>& cache, const math::float3& emission);
+	Constant(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask, const math::float3& emission);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
 								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;

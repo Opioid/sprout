@@ -21,7 +21,7 @@ Provider::Provider(resource::Cache<image::Image>& image_cache, uint32_t num_work
 	glass_cache_(num_workers),
 	light_cache_(num_workers),
 	substitute_cache_(num_workers),
-	fallback_material_(std::make_shared<substitute::Constant>(substitute_cache_, math::float3(1.f, 0.f, 0.f), 1.f, 0.f)) {}
+	fallback_material_(std::make_shared<substitute::Constant>(substitute_cache_, nullptr, math::float3(1.f, 0.f, 0.f), 1.f, 0.f)) {}
 
 std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t /*flags*/) {
 	std::ifstream stream(filename, std::ios::binary);
@@ -74,7 +74,7 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 		}
 	}
 
-	return std::make_shared<glass::Constant>(glass_cache_, color, ior);
+	return std::make_shared<glass::Constant>(glass_cache_, nullptr, color, ior);
 }
 
 std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {
@@ -89,7 +89,7 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 		}
 	}
 
-	return std::make_shared<light::Constant>(light_cache_, emission);
+	return std::make_shared<light::Constant>(light_cache_, nullptr, emission);
 }
 
 std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {
@@ -101,6 +101,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	std::shared_ptr<image::Image> normalmap;
 	std::shared_ptr<image::Image> surfacemap;
 	std::shared_ptr<image::Image> emissionmap;
+	std::shared_ptr<image::Image> mask;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -131,6 +132,8 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 					surfacemap = image_cache_.load(filename);
 				} else if ("Emission" == usage) {
 					emissionmap = image_cache_.load(filename);
+				} else if ("Mask" == usage) {
+					mask = image_cache_.load(filename, static_cast<uint32_t>(image::Provider::Flags::Use_as_mask));
 				}
 			}
 		}
@@ -141,24 +144,24 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 			if (surfacemap) {
 				if (emissionmap) {
 					return std::make_shared<substitute::Colormap_normalmap_surfacemap_emissionmap>(
-								substitute_cache_, colormap, normalmap, surfacemap, emissionmap, emission_factor, metallic);
+								substitute_cache_, mask, colormap, normalmap, surfacemap, emissionmap, emission_factor, metallic);
 				} else {
 					return std::make_shared<substitute::Colormap_normalmap_surfacemap>(
-								substitute_cache_, colormap, normalmap, surfacemap, metallic);
+								substitute_cache_, mask, colormap, normalmap, surfacemap, metallic);
 				}
 			} else {
-				return std::make_shared<substitute::Colormap_normalmap>(substitute_cache_, colormap, normalmap, roughness, metallic);
+				return std::make_shared<substitute::Colormap_normalmap>(substitute_cache_, mask, colormap, normalmap, roughness, metallic);
 			}
 		} else {
 			if (surfacemap) {
-				return std::make_shared<substitute::Colormap_surfacemap>(substitute_cache_, colormap, surfacemap, metallic);
+				return std::make_shared<substitute::Colormap_surfacemap>(substitute_cache_, mask, colormap, surfacemap, metallic);
 			} else {
-				return std::make_shared<substitute::Colormap>(substitute_cache_, colormap, roughness, metallic);
+				return std::make_shared<substitute::Colormap>(substitute_cache_, mask, colormap, roughness, metallic);
 			}
 		}
 	}
 
-	return std::make_shared<substitute::Constant>(substitute_cache_, color, roughness, metallic);
+	return std::make_shared<substitute::Constant>(substitute_cache_, mask, color, roughness, metallic);
 }
 
 }}

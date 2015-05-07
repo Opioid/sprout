@@ -29,14 +29,28 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 
 	scene::material::Sample::Result sample_result;
 
+	bool hit = true;
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		auto& material = intersection.material();
+		auto material = intersection.material();
+
+		if (material->opacity(intersection.geo.uv, settings_.sampler) < 1.f) {
+			float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
+			ray.origin = intersection.geo.p;
+			ray.min_t = ray_offset;
+			ray.max_t = 1000.f;
+			hit = worker.intersect(ray, intersection);
+			if (!hit) {
+				break;
+			}
+
+			material = intersection.material();
+		}
 
 		math::float3 wo = -ray.direction;
-		auto& material_sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 		if (0 == i) {
 			if (math::dot(intersection.geo.n, wo) > 0.f) {
@@ -45,7 +59,6 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 		}
 
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
-
 		ray.origin = intersection.geo.p;
 		ray.min_t  = ray_offset;
 		++ray.depth;
@@ -76,13 +89,17 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 		ray.set_direction(sample_result.wi);
 		ray.max_t = 1000.f;
 
-		bool hit = worker.intersect(ray, intersection);
+		hit = worker.intersect(ray, intersection);
 		if (!hit) {
-			math::float3 r = worker.scene().surrounding()->sample(ray);
-			result += throughput * r;
 			break;
 		}
 	}
+
+	if (!hit) {
+		math::float3 r = worker.scene().surrounding()->sample(ray);
+		result += throughput * r;
+	}
+
 /*
 	if (math::contains_nan(result) || math::contains_inf(result)) {
 		std::cout << "nan/inf" << std::endl;

@@ -4,8 +4,8 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Constant::Constant(Sample_cache<Sample>& cache, const math::float3& color, float roughness, float metallic) :
-	Substitute(cache), color_(color), roughness_(roughness), metallic_(metallic) {}
+Constant::Constant(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask, const math::float3& color, float roughness, float metallic) :
+	Substitute(cache, mask), color_(color), roughness_(roughness), metallic_(metallic) {}
 
 const Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
 							   const image::sampler::Sampler_2D& /*sampler*/, uint32_t worker_id) {

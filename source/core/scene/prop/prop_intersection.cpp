@@ -3,7 +3,7 @@
 
 namespace scene {
 
-material::IMaterial& Intersection::material() const {
+material::IMaterial* Intersection::material() const {
 	return prop->material(geo.material_index);
 }
 

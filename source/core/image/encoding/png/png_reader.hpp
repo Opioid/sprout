@@ -19,7 +19,7 @@ class Pool;
 namespace image {
 
 class Image;
-class Image3;
+class Image_3;
 
 namespace encoding { namespace png {
 
@@ -28,7 +28,7 @@ public:
 
 	Reader(thread::Pool& pool);
 
-	std::shared_ptr<Image> read(std::istream& stream, bool use_as_normal);
+	std::shared_ptr<Image> read(std::istream& stream, bool use_as_normal, bool use_as_mask);
 
 private:
 
@@ -68,6 +68,7 @@ private:
 		std::vector<uint8_t> buffer;
 
 		bool use_as_normal;
+		bool use_as_mask;
 
 		// parsing state
 		Filter current_filter;
@@ -84,7 +85,7 @@ private:
 
 	std::shared_ptr<Image> create_image(const Info& info) const;
 
-	static void to_linear(const Info& info, Image3& image, uint32_t start_pixel, uint32_t end_pixel);
+	static void to_float(const Info& info, Image& image, uint32_t start_pixel, uint32_t end_pixel);
 
 	static std::shared_ptr<Chunk> read_chunk(std::istream& stream);
 

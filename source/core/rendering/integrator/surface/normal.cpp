@@ -16,11 +16,10 @@ Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
 math::float3 Normal::li(Worker& worker, uint32_t /*subsample*/, math::Oray& ray, scene::Intersection& intersection) {
-
-	auto& material = intersection.material();
+	auto material = intersection.material();
 
 	math::float3 wo = -ray.direction;
-	auto& material_sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
+	auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 	return 0.5f * (material_sample.normal() + math::float3(1.f, 1.f, 1.f));
 }

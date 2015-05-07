@@ -6,13 +6,13 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Colormap_normalmap_surfacemap_emissionmap::Colormap_normalmap_surfacemap_emissionmap(Sample_cache<Sample>& cache,
+Colormap_normalmap_surfacemap_emissionmap::Colormap_normalmap_surfacemap_emissionmap(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask,
 																					 std::shared_ptr<image::Image> color,
 																					 std::shared_ptr<image::Image> normal,
 																					 std::shared_ptr<image::Image> surface,
 																					 std::shared_ptr<image::Image> emission,
 																					 float emission_factor, float metallic) :
-	Substitute(cache), color_(color), normal_(normal), surface_(surface), emission_(emission),
+	Substitute(cache, mask), color_(color), normal_(normal), surface_(surface), emission_(emission),
 	emission_factor_(emission_factor), metallic_(metallic) {}
 
 const Sample& Colormap_normalmap_surfacemap_emissionmap::sample(const shape::Differential& dg, const math::float3& wo,

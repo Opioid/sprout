@@ -14,7 +14,8 @@ public:
 
 	enum class Flags {
 		None = 0,
-		Use_as_normal = 1
+		Use_as_normal = 1,
+		Use_as_mask   = 2
 	};
 
 	virtual std::shared_ptr<Image> load(const std::string& filename, uint32_t flags = 0);

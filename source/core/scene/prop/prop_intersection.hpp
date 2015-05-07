@@ -14,7 +14,7 @@ class IMaterial;
 class Prop;
 
 struct Intersection {
-	material::IMaterial& material() const;
+	material::IMaterial* material() const;
 
 	Prop* prop;
 	shape::Intersection geo;

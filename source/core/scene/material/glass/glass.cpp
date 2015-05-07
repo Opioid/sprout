@@ -109,7 +109,7 @@ void Sample::set(const math::float3& color, float ior) {
 	ior_   = ior;
 }
 
-Glass::Glass(Sample_cache<Sample>& cache) : Material(cache) {}
+Glass::Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}
 
 math::float3 Glass::sample_emission() const {
 	return math::float3::identity;

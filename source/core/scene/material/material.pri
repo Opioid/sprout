@@ -1,4 +1,5 @@
 SOURCES += \
+	scene/material/material.cpp \
 	scene/material/material_provider.cpp \
 
 HEADERS += \

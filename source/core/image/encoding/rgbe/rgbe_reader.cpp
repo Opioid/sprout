@@ -1,5 +1,5 @@
 #include "rgbe_reader.hpp"
-#include "image/image3.hpp"
+#include "image/image_3.hpp"
 #include "base/math/vector.inl"
 #include <cmath>
 #include <string>
@@ -12,7 +12,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
 	math::uint2 dimensions(header.width, header.height);
 
-	auto image = std::make_shared<Image3>(Description(dimensions));
+	auto image = std::make_shared<Image_3>(Description(dimensions));
 
 	read_pixels_RLE(stream, header.width, header.height, *image);
 
@@ -66,7 +66,7 @@ Reader::Header Reader::read_header(std::istream& stream) {
 	return header;
 }
 
-void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines, Image3& image) {
+void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines, Image_3& image) {
 	if (scanline_width < 8 || scanline_width > 0x7fff) {
 		return read_pixels(stream, scanline_width * num_scanlines, image, 0);
 	}
@@ -142,7 +142,7 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
 	}
 }
 
-void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image3& image, uint32_t offset) {
+void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image_3& image, uint32_t offset) {
 	uint8_t rgbe[4];
 
 	for (; num_pixels > 0; --num_pixels) {

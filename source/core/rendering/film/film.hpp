@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/rectangle.hpp"
-#include "image/image4.hpp"
+#include "image/image_4.hpp"
 
 namespace thread {
 
@@ -58,7 +58,7 @@ protected:
 
 	tonemapping::Tonemapper* tonemapper_;
 
-	image::Image4 image_;
+	image::Image_4 image_;
 };
 
 }}

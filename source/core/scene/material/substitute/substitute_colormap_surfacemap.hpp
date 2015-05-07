@@ -8,7 +8,7 @@ namespace scene { namespace material { namespace substitute {
 class Colormap_surfacemap : public Substitute {
 public:
 
-	Colormap_surfacemap(Sample_cache<Sample>& cache,
+	Colormap_surfacemap(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask,
 								  std::shared_ptr<image::Image> color,
 								  std::shared_ptr<image::Image> surface,
 								  float metallic);

@@ -39,7 +39,7 @@ public:
 
 	const math::AABB& aabb() const;
 
-	material::IMaterial& material(uint32_t index) const;
+	material::IMaterial* material(uint32_t index) const;
 
 private:
 

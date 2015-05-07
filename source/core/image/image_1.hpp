@@ -4,11 +4,11 @@
 
 namespace image {
 
-class Image4 : public Image {
+class Image_1 : public Image {
 public:
 
-	Image4(const Description& description);
-	virtual ~Image4();
+	Image_1(const Description& description);
+	virtual ~Image_1();
 
 	virtual math::float3 at3(uint32_t index) const;
 	virtual math::float4 at4(uint32_t index) const;
@@ -18,7 +18,8 @@ public:
 
 private:
 
-	math::float4* data_;
+	float* data_;
 };
 
 }
+

@@ -4,8 +4,8 @@
 
 namespace scene { namespace material { namespace light {
 
-Constant::Constant(Sample_cache<Sample>& cache, const math::float3& emission) :
-	Light(cache), emission_(emission) {}
+Constant::Constant(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask, const math::float3& emission) :
+	Light(cache, mask), emission_(emission) {}
 
 const Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
 							   const image::sampler::Sampler_2D& /*sampler*/, uint32_t worker_id) {

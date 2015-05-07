@@ -6,11 +6,11 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Colormap_surfacemap::Colormap_surfacemap(Sample_cache<Sample>& cache,
+Colormap_surfacemap::Colormap_surfacemap(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask,
 										 std::shared_ptr<image::Image> color,
 										 std::shared_ptr<image::Image> surface,
 										 float metallic) :
-	Substitute(cache), color_(color), surface_(surface), metallic_(metallic) {}
+	Substitute(cache, mask), color_(color), surface_(surface), metallic_(metallic) {}
 
 const Sample& Colormap_surfacemap::sample(const shape::Differential& dg, const math::float3& wo,
 										  const image::sampler::Sampler_2D& sampler, uint32_t worker_id) {

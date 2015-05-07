@@ -23,6 +23,6 @@ void Sample::set(const math::float3& emission) {
 	emission_ = emission;
 }
 
-Light::Light(Sample_cache<Sample>& cache) : Material(cache) {}
+Light::Light(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}
 
 }}}

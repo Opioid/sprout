@@ -55,7 +55,7 @@ private:
 class Glass : public Material<Sample> {
 public:
 
-	Glass(Sample_cache<Sample>& cache);
+	Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask);
 
 	virtual math::float3 sample_emission() const;
 };

@@ -32,10 +32,10 @@ math::float3 Pathtracer::li(Worker& worker, uint32_t subsample, math::Oray& ray,
 	math::float3 result = math::float3::identity;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		auto& material = intersection.material();
+		auto material = intersection.material();
 
 		math::float3 wo = -ray.direction;
-		auto& material_sample = material.sample(intersection.geo, wo, settings_.sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 		if (math::dot(intersection.geo.n, wo) > 0.f) {
 			result += throughput * material_sample.emission();

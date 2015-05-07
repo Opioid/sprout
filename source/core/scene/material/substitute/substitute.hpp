@@ -60,7 +60,7 @@ private:
 class Substitute : public Material<Sample> {
 public:
 
-	Substitute(Sample_cache<Sample>& cache);
+	Substitute(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask);
 
 	virtual math::float3 sample_emission() const;
 };

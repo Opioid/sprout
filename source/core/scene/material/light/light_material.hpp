@@ -28,7 +28,7 @@ private:
 class Light : public Material<Sample> {
 public:
 
-	Light(Sample_cache<Sample>& cache);
+	Light(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask);
 };
 
 }}}
