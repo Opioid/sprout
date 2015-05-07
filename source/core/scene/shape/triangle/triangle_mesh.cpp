@@ -34,8 +34,11 @@ bool Mesh::intersect(const Composed_transformation& transformation, const math::
 		math::float2 uv;
 		tree_.interpolate_triangle_data(pi.index, pi.c.uv, n, t, uv);
 
-		intersection.n = math::transform_vector(transformation.rotation, n);
-		intersection.t = math::transform_vector(transformation.rotation, t);
+	//	intersection.n = math::transform_vector(transformation.rotation, n);
+	//	intersection.t = math::transform_vector(transformation.rotation, t);
+
+		math::transform_vectors(transformation.rotation, n, t, intersection.n, intersection.t);
+
 		intersection.b = math::cross(intersection.n, intersection.t);
 		intersection.uv = uv;
 		intersection.material_index = tree_.triangle_material_index(pi.index);
