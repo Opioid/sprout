@@ -8,7 +8,8 @@ template<typename Address_mode>
 class Sampler_2D_nearest : public Sampler_2D {
 public:
 
-	virtual math::float3 sample3(const Texture_2D& texture, math::float2 uv) const;
+	virtual float        sample1(const Texture_2D& texture, math::float2 uv) const final override;
+	virtual math::float3 sample3(const Texture_2D& texture, math::float2 uv) const final override;
 
 private:
 

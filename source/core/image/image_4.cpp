@@ -11,12 +11,20 @@ Image_4::~Image_4() {
 	delete [] data_;
 }
 
+float Image_4::at1(uint32_t index) const {
+	return data_[index].x;
+}
+
 math::float3 Image_4::at3(uint32_t index) const {
 	return data_[index].xyz;
 }
 
 math::float4 Image_4::at4(uint32_t index) const {
 	return data_[index];
+}
+
+void Image_4::set1(uint32_t index, float value) {
+	data_[index].x = value;
 }
 
 void Image_4::set3(uint32_t index, const math::float3& value) {

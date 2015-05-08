@@ -34,22 +34,13 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 	math::float3 result = math::float3::identity;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		auto material = intersection.material();
-
-		if (material->opacity(intersection.geo.uv, settings_.sampler) < 1.f) {
-			float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
-			ray.origin = intersection.geo.p;
-			ray.min_t = ray_offset;
-			ray.max_t = 1000.f;
-			hit = worker.intersect(ray, intersection);
-			if (!hit) {
-				break;
-			}
-
-			material = intersection.material();
+		if (!resolve_mask(worker, ray, intersection)) {
+			hit = false;
+			break;
 		}
 
 		math::float3 wo = -ray.direction;
+		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 		if (0 == i) {
@@ -106,6 +97,25 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 	}
 */
 	return result;
+}
+
+bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+	auto material = intersection.material();
+
+	while (material->opacity(intersection.geo.uv, settings_.sampler) < 1.f) {
+		// We never change the ray origin, but just slide along the segment.
+		// This seems to be more robust than making the last intersection the new origin.
+		// Possible indicator of imprecision issues in other parts of the code, but this seems to work well enough.
+		ray.min_t = ray.max_t;
+		ray.max_t = 1000.f;
+		if (!worker.intersect(ray, intersection)) {
+			return false;
+		}
+
+		material = intersection.material();
+	}
+
+	return true;
 }
 
 Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces) :

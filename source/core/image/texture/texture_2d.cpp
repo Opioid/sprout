@@ -9,6 +9,11 @@ math::uint2 Texture_2D::dimensions() const {
 	return image_->description().dimensions;
 }
 
+float Texture_2D::at1(uint32_t x, uint32_t y) const {
+	uint32_t i = y * image_->description().dimensions.x + x;
+	return image_->at1(i);
+}
+
 math::float3 Texture_2D::at3(uint32_t x, uint32_t y) const {
 	uint32_t i = y * image_->description().dimensions.x + x;
 	return image_->at3(i);
