@@ -32,6 +32,10 @@ bool Scene::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
 	return bvh_.intersect_p(ray, node_stack);
 }
 
+float Scene::opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
+	return bvh_.opacity(ray, node_stack, sampler);
+}
+
 void Scene::compile() {
 	bvh::Builder builder;
 	builder.build(bvh_, props_);

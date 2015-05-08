@@ -54,6 +54,25 @@ bool Plane::intersect_p(const Composed_transformation& transformation, const mat
 	return false;
 }
 
+float Plane::opacity(const Composed_transformation& transformation, const math::Oray& ray,
+					 const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
+					 const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const {
+	const math::float3& normal = transformation.rotation.z;
+	float d = -math::dot(normal, transformation.position);
+	float denom = math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) + d;
+	float t = -(numer / denom);
+
+	if (t > ray.min_t && t < ray.max_t) {
+		math::float3 p = ray.point(t);
+		math::float2 uv(math::dot(transformation.rotation.x, p), math::dot(transformation.rotation.y, p));
+
+		return materials[0]->opacity(uv, sampler);
+	}
+
+	return 0.f;
+}
+
 void Plane::importance_sample(uint32_t /*part*/, const Composed_transformation& /*transformation*/, const math::float3& /*p*/,
 							  sampler::Sampler& /*sampler*/, uint32_t /*sample_index*/,
 							  math::float3& /*wi*/, float& /*t*/, float& pdf) const {

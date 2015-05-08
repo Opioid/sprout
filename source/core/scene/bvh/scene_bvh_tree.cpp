@@ -68,6 +68,39 @@ bool Build_node::intersect_p(const math::Oray& ray, const std::vector<Prop*>& pr
 	return false;
 }
 
+float Build_node::opacity(const math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack,
+						  const image::sampler::Sampler_2D& sampler) const {
+	if (!aabb.intersect_p(ray)) {
+		return 0.f;
+	}
+
+	float opacity = 0.f;
+
+	if (children[0]) {
+		uint8_t c = ray.sign[axis];
+
+		opacity += (1.f - opacity) * children[c]->opacity(ray, props, node_stack, sampler);
+		if (opacity >= 1.f) {
+			return 1.f;
+		}
+
+		opacity += (1.f - opacity) * children[1 - c]->opacity(ray, props, node_stack, sampler);
+		if (opacity >= 1.f) {
+			return 1.f;
+		}
+	} else {
+		for (uint32_t i = offset; i < props_end; ++i) {
+			auto p = props[i];
+			opacity += (1.f - opacity) * p->opacity(ray, node_stack, sampler);
+			if (opacity >= 1.f) {
+				return 1.f;
+			}
+		}
+	}
+
+	return opacity;
+}
+
 bool Tree::intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const {
 	bool hit = false;
 
@@ -98,6 +131,22 @@ bool Tree::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
 	}
 
 	return false;
+}
+
+float Tree::opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
+	float opacity = root_.opacity(ray, props_, node_stack, sampler);
+
+	if (opacity < 1.f) {
+		for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
+			auto p = props_[i];
+			opacity += p->opacity(ray, node_stack, sampler);
+			if (opacity > 1.f) {
+				return 1.f;
+			}
+		}
+	}
+
+	return opacity;
 }
 
 }}

@@ -7,6 +7,7 @@
 #include "scene/camera/camera.hpp"
 #include "scene/surrounding/surrounding.hpp"
 #include "scene/prop/prop_intersection.hpp"
+#include "scene/material/material.hpp"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 
@@ -75,6 +76,10 @@ bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) {
 
 bool Worker::visibility(const math::Oray& ray) {
 	return !scene_->intersect_p(ray, node_stack_);
+}
+
+float Worker::masked_visibility(const math::Oray& ray, const image::sampler::Sampler_2D& sampler) {
+	return 1.f - scene_->opacity(ray, node_stack_, sampler);
 }
 
 const scene::Scene& Worker::scene() const {

@@ -8,6 +8,10 @@ Texture::operator bool() const {
 	return image_.get() != nullptr;
 }
 
+bool Texture::is_valid() const {
+	return image_.get() != nullptr;
+}
+
 }
 
 

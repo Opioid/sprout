@@ -2,6 +2,7 @@
 
 #include "scene/entity/entity.hpp"
 #include "scene/shape/node_stack.hpp"
+#include "scene/material/material.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include <memory>
@@ -16,30 +17,26 @@ class Shape;
 
 }
 
-namespace material {
-
-class IMaterial;
-
-}
-
 class Prop : public Entity {
 public:
 
-	typedef std::vector<std::shared_ptr<material::IMaterial>> Materials;
-
 	virtual ~Prop();
 
-	void init(std::shared_ptr<shape::Shape> shape, const Materials& materials);
+	void init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
 
 	bool intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersection& intersection) const;
 
 	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
+
+	float opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
 	const shape::Shape* shape() const;
 
 	const math::AABB& aabb() const;
 
 	material::IMaterial* material(uint32_t index) const;
+
+	bool has_masked_material() const;
 
 private:
 
@@ -49,7 +46,9 @@ private:
 
 	math::AABB aabb_;
 
-	Materials materials_;
+	material::Materials materials_;
+
+	bool has_masked_material_;
 };
 
 }

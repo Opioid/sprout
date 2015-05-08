@@ -64,7 +64,9 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 				ray.set_direction(ls.l);
 				ray.max_t = ls.t - ray_offset;
 
-				if (worker.visibility(ray)) {
+				float mv = worker.masked_visibility(ray, settings_.sampler);
+				if (mv > 0.f) {
+			//	if (worker.visibility(ray)) {
 					result += (throughput * ls.energy * material_sample.evaluate(ls.l)) / (light_pdf * ls.pdf);
 				}
 			}

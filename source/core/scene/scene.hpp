@@ -32,6 +32,8 @@ public:
 	bool intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
 
+	float opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
+
 	void compile();
 
 	const surrounding::Surrounding* surrounding() const;

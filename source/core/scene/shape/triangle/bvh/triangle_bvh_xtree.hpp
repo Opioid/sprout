@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/shape/node_stack.hpp"
+#include "scene/material/material.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/bounding/aabb.hpp"
@@ -48,7 +49,11 @@ public:
 	bool intersect(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack) const;
 
+	float opacity(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack,
+				  const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const;
+
 	void interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
+	math::float2 interpolate_triangle_uv(uint32_t index, math::float2 uv) const;
 	uint32_t triangle_material_index(uint32_t index) const;
 
 	void importance_sample(float r, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;

@@ -75,7 +75,35 @@ bool Disk::intersect_p(const Composed_transformation& transformation, const math
 	return false;
 }
 
-void Disk::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, const math::float3& p, sampler::Sampler& sampler, uint32_t sample_index,
+float Disk::opacity(const Composed_transformation& transformation, const math::Oray& ray,
+					const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
+					const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const {
+	const math::float3& normal = transformation.rotation.z;
+	float d = -math::dot(normal, transformation.position);
+	float denom = math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) + d;
+	float t = -(numer / denom);
+
+	if (t > ray.min_t && t < ray.max_t) {
+		math::float3 p = ray.point(t);
+		math::float3 k = p - transformation.position;
+		float l = math::dot(k, k);
+
+		float radius = transformation.scale.x;
+
+		if (l <= radius * radius) {
+			math::float3 sk = k / radius;
+			math::float2 uv((math::dot(transformation.rotation.x, sk) + 1.f) * 0.5f, (math::dot(transformation.rotation.y, sk) + 1.f) * 0.5f);
+
+			return materials[0]->opacity(uv, sampler);
+		}
+	}
+
+	return 0.f;
+}
+
+void Disk::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, const math::float3& p,
+							 sampler::Sampler& sampler, uint32_t sample_index,
 							 math::float3& wi, float& t, float& pdf) const {
 	math::float2 sample = sampler.generate_sample2d(sample_index);
 	math::float2 xy = math::sample_disk_concentric(sample);

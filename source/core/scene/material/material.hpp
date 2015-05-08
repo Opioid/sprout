@@ -3,6 +3,7 @@
 #include "material_sample_cache.hpp"
 #include "image/texture/texture_2d.hpp"
 #include "base/math/vector.hpp"
+#include <vector>
 
 namespace image { namespace sampler {
 
@@ -32,6 +33,8 @@ public:
 
 	virtual math::float3 sample_emission() const = 0;
 
+	bool is_masked() const;
+
 	float opacity(math::float2 uv, const image::sampler::Sampler_2D& sampler) const;
 
 private:
@@ -49,5 +52,7 @@ protected:
 
 	Sample_cache<T>& cache_;
 };
+
+typedef std::vector<std::shared_ptr<material::IMaterial>> Materials;
 
 }}

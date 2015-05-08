@@ -61,6 +61,18 @@ bool Mesh::intersect_p(const Composed_transformation& transformation, const math
 	return tree_.intersect_p(tray, bounds, node_stack);
 }
 
+float Mesh::opacity(const Composed_transformation& transformation, const math::Oray& ray,
+					const math::float2& bounds, Node_stack& node_stack,
+					const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const {
+	math::Oray tray;
+	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
+	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
+	tray.min_t = ray.min_t;
+	tray.max_t = ray.max_t;
+
+	return tree_.opacity(tray, bounds, node_stack, materials, sampler);
+}
+
 void Mesh::importance_sample(uint32_t part, const Composed_transformation& transformation, const math::float3& p,
 							 sampler::Sampler& sampler, uint32_t sample_index,
 							 math::float3& wi, float& t, float& pdf) const {

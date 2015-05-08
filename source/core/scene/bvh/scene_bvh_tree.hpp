@@ -5,6 +5,12 @@
 #include "base/math/bounding/aabb.hpp"
 #include <vector>
 
+namespace image { namespace sampler {
+
+class Sampler_2D;
+
+}}
+
 namespace scene {
 
 class Prop;
@@ -16,7 +22,10 @@ struct Build_node {
 	~Build_node();
 
 	bool intersect(math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack, Intersection& intersection) const;
+
 	bool intersect_p(const math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack) const;
+
+	float opacity(const math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
 	math::AABB aabb;
 
@@ -34,6 +43,8 @@ public:
 	bool intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
 	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
+
+	float opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
 private:
 

@@ -13,6 +13,8 @@ public:
 
 	explicit operator bool() const;
 
+	bool is_valid() const;
+
 protected:
 
 	std::shared_ptr<Image> image_;

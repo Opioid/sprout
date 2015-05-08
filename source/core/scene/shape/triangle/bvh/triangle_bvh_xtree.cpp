@@ -112,8 +112,49 @@ bool XTree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, N
 	return false;
 }
 
+float XTree::opacity(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack,
+					 const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const {
+	node_stack.clear();
+	node_stack.push_back(0);
+
+	float opacity = 0.f;
+
+	Coordinates c;
+	math::float2 uv;
+
+	while (!node_stack.empty()) {
+		uint32_t n = node_stack.back();
+		node_stack.pop_back();
+		auto& node = nodes_[n];
+
+		if (node.aabb.intersect_p(ray)) {
+			if (node.has_children()) {
+				auto children = node.children(ray.sign[node.axis], n);
+				node_stack.push_back(children.b);
+				node_stack.push_back(children.a);
+			} else {
+				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
+					if (triangles_[i].intersect(ray, c)) {
+						uv = triangles_[i].interpolate_uv(c.uv);
+						opacity += (1.f - opacity) * materials[triangles_[i].material_index]->opacity(uv, sampler);
+						if (opacity >= 1.f) {
+							return 1.f;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return opacity;
+}
+
 void XTree::interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
 	triangles_[index].interpolate_data(uv, n, t, tc);
+}
+
+math::float2 XTree::interpolate_triangle_uv(uint32_t index, math::float2 uv) const {
+	return triangles_[index].interpolate_uv(uv);
 }
 
 uint32_t XTree::triangle_material_index(uint32_t index) const {

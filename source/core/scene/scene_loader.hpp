@@ -53,7 +53,7 @@ private:
 
 	std::shared_ptr<shape::Shape> shape(const std::string& type) const;
 
-	void load_materials(const rapidjson::Value& materials_value, Prop::Materials& materials);
+	void load_materials(const rapidjson::Value& materials_value, material::Materials& materials);
 
 	std::shared_ptr<shape::Shape> celestial_disk_;
 	std::shared_ptr<shape::Shape> disk_;
