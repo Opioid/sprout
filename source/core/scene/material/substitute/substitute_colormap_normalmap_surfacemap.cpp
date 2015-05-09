@@ -1,6 +1,7 @@
 #include "substitute_colormap_normalmap_surfacemap.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
+#include "image/texture/texture_2d.inl"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "base/math/vector.inl"
 

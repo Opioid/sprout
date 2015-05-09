@@ -1,4 +1,5 @@
 #include "surrounding_sphere.hpp"
+#include "image/texture/texture_2d.inl"
 #include "base/math/vector.inl"
 
 namespace scene { namespace surrounding {

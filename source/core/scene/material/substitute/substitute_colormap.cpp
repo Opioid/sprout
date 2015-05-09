@@ -1,6 +1,7 @@
 #include "substitute_colormap.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
+#include "image/texture/texture_2d.inl"
 #include "image/texture/sampler/sampler_2d.hpp"
 
 namespace scene { namespace material { namespace substitute {

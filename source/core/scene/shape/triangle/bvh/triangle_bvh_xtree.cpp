@@ -112,7 +112,7 @@ bool XTree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, N
 	return false;
 }
 
-float XTree::opacity(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack,
+float XTree::opacity(const math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack,
 					 const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const {
 	node_stack.clear();
 	node_stack.push_back(0);

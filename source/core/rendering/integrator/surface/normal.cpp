@@ -1,6 +1,6 @@
 #include "normal.hpp"
 #include "rendering/worker.hpp"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/prop/prop_intersection.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "base/math/sampling.hpp"

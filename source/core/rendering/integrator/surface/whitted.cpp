@@ -2,7 +2,7 @@
 #include "rendering/worker.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/prop/prop_intersection.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/material/material.hpp"
@@ -28,6 +28,36 @@ math::float3 Whitted::li(Worker& worker, uint32_t subsample, math::Oray& ray, sc
 
 	math::float3 result = math::float3::identity;
 
+	float opacity = intersection.opacity(settings_.sampler);
+
+	while (opacity < 1.f) {
+		if (opacity > 0.f) {
+			result += opacity * shade(worker, ray, intersection);
+		}
+
+		ray.min_t = ray.max_t;
+		ray.max_t = 1000.f;
+		if (!worker.intersect(ray, intersection)) {
+			return result;
+		}
+
+		opacity = intersection.opacity(settings_.sampler);
+	}
+
+	result += shade(worker, ray, intersection);
+
+	/*
+	if (math::contains_nan(result)) {
+		std::cout << "nan" << std::endl;
+	}
+	*/
+
+	return result;
+}
+
+math::float3 Whitted::shade(Worker& worker, math::Oray& ray, const scene::Intersection& intersection) {
+	math::float3 result = math::float3::identity;
+
 	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 
 	math::Oray shadow_ray;
@@ -35,10 +65,8 @@ math::float3 Whitted::li(Worker& worker, uint32_t subsample, math::Oray& ray, sc
 	shadow_ray.min_t = ray_offset;
 	shadow_ray.time = ray.time;
 
-	auto material = intersection.material();
-
 	math::float3 wo = -ray.direction;
-	auto& sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
+	auto& sample = intersection.material()->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 	result += sample.emission();
 
@@ -50,25 +78,18 @@ math::float3 Whitted::li(Worker& worker, uint32_t subsample, math::Oray& ray, sc
 				shadow_ray.set_direction(ls.l);
 				shadow_ray.max_t = ls.t - ray_offset;
 
-				if (worker.visibility(shadow_ray)) {
-					result += (ls.energy * sample.evaluate(ls.l)) / ls.pdf;
+				float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
+				if (mv > 0.f) {
+					result += mv * (ls.energy * sample.evaluate(ls.l)) / ls.pdf;
 				}
 			}
 		}
 	}
 
-	/*
-	if (math::contains_nan(result)) {
-		std::cout << "nan" << std::endl;
-	}
-	*/
-
 	return result;
 }
 
-Whitted_factory::Whitted_factory(const take::Settings& take_settings) : Surface_integrator_factory(take_settings) {
-
-}
+Whitted_factory::Whitted_factory(const take::Settings& take_settings) : Surface_integrator_factory(take_settings) {}
 
 Surface_integrator* Whitted_factory::create(math::random::Generator& rng) const {
 	return new Whitted(take_settings_, rng, settings_);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sampler_2d_nearest.hpp"
-#include "image/texture/texture_2d.hpp"
+#include "image/texture/texture_2d.inl"
 #include <algorithm>
 
 namespace image { namespace sampler {

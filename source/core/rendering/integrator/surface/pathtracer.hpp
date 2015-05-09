@@ -26,9 +26,9 @@ public:
 
 	Pathtracer(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
 
-	virtual void start_new_pixel(uint32_t num_samples);
+	virtual void start_new_pixel(uint32_t num_samples) final override;
 
-	virtual math::float3 li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection);
+	virtual math::float3 li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) final override;
 
 private:
 
@@ -44,7 +44,7 @@ public:
 
 	Pathtracer_factory(const take::Settings &take_settings, uint32_t min_bounces, uint32_t max_bounces);
 
-	virtual Surface_integrator* create(math::random::Generator& rng) const;
+	virtual Surface_integrator* create(math::random::Generator& rng) const final override;
 
 private:
 

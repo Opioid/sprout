@@ -1,4 +1,6 @@
 #include "material.hpp"
+#include "image/texture/texture.inl"
+#include "image/texture/texture_2d.inl"
 #include "image/texture/sampler/sampler_2d.hpp"
 
 namespace scene { namespace material {

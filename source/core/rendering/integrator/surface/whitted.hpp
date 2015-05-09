@@ -30,6 +30,8 @@ public:
 
 private:
 
+	math::float3 shade(Worker& worker, math::Oray& ray, const scene::Intersection& intersection);
+
 	Settings settings_;
 
 	sampler::Random sampler_;

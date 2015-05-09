@@ -2,7 +2,7 @@
 #include "rendering/worker.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/prop/prop_intersection.inl"
 #include "scene/surrounding/surrounding.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"

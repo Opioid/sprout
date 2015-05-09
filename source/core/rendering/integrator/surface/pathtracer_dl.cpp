@@ -2,7 +2,7 @@
 #include "rendering/worker.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/prop/prop_intersection.inl"
 #include "scene/surrounding/surrounding.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
@@ -66,8 +66,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 
 				float mv = worker.masked_visibility(ray, settings_.sampler);
 				if (mv > 0.f) {
-			//	if (worker.visibility(ray)) {
-					result += (throughput * ls.energy * material_sample.evaluate(ls.l)) / (light_pdf * ls.pdf);
+					result += mv * (throughput * ls.energy * material_sample.evaluate(ls.l)) / (light_pdf * ls.pdf);
 				}
 			}
 		}
@@ -102,11 +101,15 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 }
 
 bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
-	auto material = intersection.material();
+	float opacity = intersection.opacity(settings_.sampler);
 
-	while (material->opacity(intersection.geo.uv, settings_.sampler) < 1.f) {
-		// We never change the ray origin, but just slide along the segment.
-		// This seems to be more robust than making the last intersection the new origin.
+	while (opacity < 1.f) {
+		if (opacity > 0.f && opacity > rng_.random_float()) {
+			return true;
+		}
+
+		// We never change the ray origin and just slide along the segment instead.
+		// This seems to be more robust than setting the new origin from the last intersection.
 		// Possible indicator of imprecision issues in other parts of the code, but this seems to work well enough.
 		ray.min_t = ray.max_t;
 		ray.max_t = 1000.f;
@@ -114,7 +117,7 @@ bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Interse
 			return false;
 		}
 
-		material = intersection.material();
+		opacity = intersection.opacity(settings_.sampler);
 	}
 
 	return true;

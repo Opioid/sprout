@@ -1,5 +1,5 @@
 #include "sampler_spherical_nearest.hpp"
-#include "image/texture/texture_2d.hpp"
+#include "image/texture/texture_2d.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 
