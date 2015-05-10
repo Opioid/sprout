@@ -28,13 +28,18 @@ math::float3 Pathtracer::li(Worker& worker, uint32_t subsample, math::Oray& ray,
 
 	scene::material::Sample::Result sample_result;
 
+	bool hit = true;
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		auto material = intersection.material();
+		if (!resolve_mask(worker, ray, intersection)) {
+			hit = false;
+			break;
+		}
 
 		math::float3 wo = -ray.direction;
+		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 		if (math::dot(intersection.geo.n, wo) > 0.f) {
@@ -56,15 +61,41 @@ math::float3 Pathtracer::li(Worker& worker, uint32_t subsample, math::Oray& ray,
 		ray.max_t = 1000.f;
 		++ray.depth;
 
-		bool hit = worker.intersect(ray, intersection);
+		hit = worker.intersect(ray, intersection);
 		if (!hit) {
-			math::float3 r = worker.scene().surrounding()->sample(ray);
-			result += throughput * r;
 			break;
 		}
 	}
 
+	if (!hit) {
+		math::float3 r = worker.scene().surrounding()->sample(ray);
+		result += throughput * r;
+	}
+
 	return result;
+}
+
+bool Pathtracer::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+	float opacity = intersection.opacity(settings_.sampler);
+
+	while (opacity < 1.f) {
+		if (opacity > 0.f && opacity > rng_.random_float()) {
+			return true;
+		}
+
+		// We never change the ray origin and just slide along the segment instead.
+		// This seems to be more robust than setting the new origin from the last intersection.
+		// Possible indicator of imprecision issues in other parts of the code, but this seems to work well enough.
+		ray.min_t = ray.max_t;
+		ray.max_t = 1000.f;
+		if (!worker.intersect(ray, intersection)) {
+			return false;
+		}
+
+		opacity = intersection.opacity(settings_.sampler);
+	}
+
+	return true;
 }
 
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces) :
