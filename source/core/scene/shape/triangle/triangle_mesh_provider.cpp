@@ -113,7 +113,7 @@ void Provider::load_mesh_data(const rapidjson::Value& geometry_value, std::vecto
 			for (auto n = node_value.Begin(); n != node_value.End(); ++n, ++i) {
 				math::float4 t =  json::read_float4(*n);
 				vertices[i].t = t.xyz;
-				vertices[i].bitangent_sign = t.w;
+//				vertices[i].bitangent_sign = t.w;
 			}
 
 			has_tangents = true;
@@ -127,14 +127,9 @@ void Provider::load_mesh_data(const rapidjson::Value& geometry_value, std::vecto
 
 	if (has_normals && !has_tangents) {
 		// If normals but no tangents were loaded, compute the tangent space manually
-
 		for (auto& v : vertices) {
-			math::float3 t;
 			math::float3 b;
-
-			math::coordinate_system(v.n, t, b);
-
-			v.t = t;
+			math::coordinate_system(v.n, v.t, b);
 		}
 	}
 }
