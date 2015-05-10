@@ -27,7 +27,7 @@ struct Build_node {
 
 	float opacity(const math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
-	math::AABB aabb;
+	math::aabb aabb;
 
 	uint8_t axis;
 

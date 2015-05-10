@@ -104,12 +104,15 @@ Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, T t);
 template<typename T>
 Vector3<T> reflect(const Vector3<T>& normal, const Vector3<T>& v);
 
+// Assuming n is unit length
 template<typename T>
 void coordinate_system(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b);
 
-Vector3<float> min(const Vector3<float>& a, const Vector3<float>& b);
+template<typename T>
+Vector3<T> min(const Vector3<T>& a, const Vector3<T>& b);
 
-Vector3<float> max(const Vector3<float>& a, const Vector3<float>& b);
+template<typename T>
+Vector3<T> max(const Vector3<T>& a, const Vector3<T>& b);
 
 template<typename T>
 Vector3<T> abs(const Vector3<T>& v);

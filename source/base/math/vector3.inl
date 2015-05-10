@@ -184,7 +184,7 @@ inline Vector3<T> normalized(const Vector3<T>& v) {
 
 template<typename T>
 inline Vector3<T> reciprocal(const Vector3<T>& v) {
-	return Vector3<T>(1.f / v.x, 1.f / v.y, 1.f / v.z);
+	return Vector3<T>(T(1) / v.x, T(1) / v.y, T(1) / v.z);
 }
 
 template<typename T>
@@ -237,34 +237,20 @@ void coordinate_system(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b) {
 		r1 = Vector3<T>(T(0), T(0), T(1));
 	}
 
-	Vector3<T> r0 = normalized(cross(n, r1));
+	Vector3<T> r0 = cross(n, r1);
 
 	t = r0;
 	b = cross(r0, n);
 }
 
-inline Vector3<float> min(const Vector3<float>& a, const Vector3<float>& b) {
-	/*
-	__m128 ma = _mm_set_ps(a.x, a.y, a.z, 0.f);
-	__m128 mb = _mm_set_ps(b.x, b.y, b.z, 0.f);
-
-	__m128 mm =_mm_min_ps(ma, mb);
-
-	return Vector3<float>(mm.m128_f32[3], mm.m128_f32[2], mm.m128_f32[1]);
-*/
-	return Vector3<float>(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y, a.z < b.z ? a.z : b.z);
+template<typename T>
+inline Vector3<T> min(const Vector3<T>& a, const Vector3<T>& b) {
+	return Vector3<T>(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
 }
 
-inline Vector3<float> max(const Vector3<float>& a, const Vector3<float>& b) {
-	/*
-	__m128 ma = _mm_set_ps(a.x, a.y, a.z, 0.f);
-	__m128 mb = _mm_set_ps(b.x, b.y, b.z, 0.f);
-
-	__m128 mm =_mm_max_ps(ma, mb);
-
-	return Vector3<float>(mm.m128_f32[3], mm.m128_f32[2], mm.m128_f32[1]);
-*/
-	return Vector3<float>(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z);
+template<typename T>
+inline Vector3<T> max(const Vector3<T>& a, const Vector3<T>& b) {
+	return Vector3<T>(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
 }
 
 template<typename T>

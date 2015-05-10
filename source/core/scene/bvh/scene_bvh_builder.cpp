@@ -2,6 +2,7 @@
 #include "scene/prop/prop.hpp"
 #include "scene/shape/shape.hpp"
 #include "base/math/plane.inl"
+#include "base/math/bounding/aabb.inl"
 #include <iostream>
 
 namespace scene { namespace bvh {
@@ -78,8 +79,8 @@ void Builder::assign(Build_node* node, const std::vector<Prop*>& props, std::vec
 	node->props_end = static_cast<uint32_t>(out_props.size());
 }
 
-math::AABB Builder::aabb(const std::vector<Prop*>& props) {
-	math::AABB aabb = math::AABB::empty();
+math::aabb Builder::aabb(const std::vector<Prop*>& props) {
+	math::aabb aabb = math::aabb::empty();
 
 	for (auto p : props) {
 		if (!p->shape()->is_finite() || p->shape()->is_delta()) {
@@ -92,7 +93,7 @@ math::AABB Builder::aabb(const std::vector<Prop*>& props) {
 	return aabb;
 }
 
-math::plane Builder::average_splitting_plane(const math::AABB aabb, const std::vector<Prop*>& props, uint8_t& axis) {
+math::plane Builder::average_splitting_plane(const math::aabb& aabb, const std::vector<Prop*>& props, uint8_t& axis) {
 	math::float3 average = math::float3::identity;
 
 	uint32_t num = 0;

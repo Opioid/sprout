@@ -1,28 +1,33 @@
 #pragma once
 
-#include "math/vector.hpp"
-#include "math/matrix.hpp"
+#include "math/vector3.hpp"
+#include "math/matrix4x4.hpp"
 #include "math/ray.hpp"
 
 namespace math {
 
+template<typename T>
 class AABB {
 public:
 
 	AABB();
-	AABB(const float3& min, const float3& max);
+	AABB(const Vector3<T>& min, const Vector3<T>& max);
 
-	const float3& min() const;
-	const float3& max() const;
+	const Vector3<T>& min() const;
+	const Vector3<T>& max() const;
 
-	float3 position() const;
-	float3 halfsize() const;
+	Vector3<T> position() const;
+	Vector3<T> halfsize() const;
 
-	bool intersect_p(const math::Oray& ray) const;
+	T volume() const;
 
-	void set_min_max(const float3& min, const float3& max);
+	bool intersect_p(const math::Optimized_ray<T>& ray) const;
 
-	void transform(const float4x4& m, AABB& other) const;
+	void set_min_max(const Vector3<T>& min, const Vector3<T>& max);
+
+	void insert(const Vector3<T>& p);
+
+	void transform(const Matrix4x4<T>& m, AABB& other) const;
 
 	AABB merge(const AABB& other) const;
 
@@ -30,7 +35,9 @@ public:
 
 private:
 
-	float3 bounds_[2];
+	Vector3<T> bounds_[2];
 };
+
+typedef AABB<float> aabb;
 
 }

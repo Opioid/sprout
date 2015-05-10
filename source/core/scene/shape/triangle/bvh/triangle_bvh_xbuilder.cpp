@@ -4,6 +4,7 @@
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
+#include "base/math/bounding/aabb.inl"
 #include <iostream>
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
@@ -135,9 +136,9 @@ void XBuilder::assign(XBuild_node* node,
 	node->end_index = tree.num_triangles();
 }
 
-math::AABB XBuilder::submesh_aabb(const std::vector<uint32_t>& primitive_indices, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {
+math::aabb XBuilder::submesh_aabb(const std::vector<uint32_t>& primitive_indices, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {
 	float max_float = std::numeric_limits<float>::max();
-	math::float3 min(max_float, max_float, max_float);
+	math::float3 min( max_float,  max_float,  max_float);
 	math::float3 max(-max_float, -max_float, -max_float);
 
 	for (auto pi : primitive_indices) {
@@ -151,10 +152,10 @@ math::AABB XBuilder::submesh_aabb(const std::vector<uint32_t>& primitive_indices
 	max.y += epsilon;
 	max.z += epsilon;
 
-	return math::AABB(min, max);
+	return math::aabb(min, max);
 }
 
-Split_candidate XBuilder::splitting_plane(const math::AABB& aabb,
+Split_candidate XBuilder::splitting_plane(const math::aabb& aabb,
 										  const std::vector<uint32_t>& primitive_indices,
 										  const std::vector<Index_triangle>& triangles,
 										  const std::vector<Vertex>& vertices) {
@@ -194,7 +195,7 @@ Split_candidate XBuilder::splitting_plane(const math::AABB& aabb,
 	return split_candidates_[0];
 }
 
-math::plane XBuilder::average_splitting_plane(const math::AABB& aabb,
+math::plane XBuilder::average_splitting_plane(const math::aabb& aabb,
 											  const std::vector<uint32_t>& primitive_indices,
 											  const std::vector<Index_triangle>& triangles,
 											  const std::vector<Vertex>& vertices, uint8_t& axis) {

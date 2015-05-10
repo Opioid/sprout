@@ -32,7 +32,7 @@ public:
 
 	const shape::Shape* shape() const;
 
-	const math::AABB& aabb() const;
+	const math::aabb& aabb() const;
 
 	material::IMaterial* material(uint32_t index) const;
 
@@ -44,7 +44,7 @@ private:
 
 	std::shared_ptr<shape::Shape> shape_;
 
-	math::AABB aabb_;
+	math::aabb aabb_;
 
 	material::Materials materials_;
 

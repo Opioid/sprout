@@ -26,7 +26,7 @@ struct Build_node {
 
 	void num_sub_nodes(uint32_t& count);
 
-	math::AABB aabb;
+	math::aabb aabb;
 
 	uint32_t start_index;
 	uint32_t end_index;
@@ -67,11 +67,11 @@ private:
 					   const std::vector<Vertex>& vertices,
 					   std::vector<Triangle>& out_triangles);
 
-	static math::AABB submesh_aabb(const std::vector<uint32_t>& primitive_indices,
+	static math::aabb submesh_aabb(const std::vector<uint32_t>& primitive_indices,
 								   const std::vector<Index_triangle>& triangles,
 								   const std::vector<Vertex>& vertices);
 
-	static math::plane average_splitting_plane(const math::AABB aabb,
+	static math::plane average_splitting_plane(const math::aabb& aabb,
 											   const std::vector<uint32_t>& primitive_indices,
 											   const std::vector<Index_triangle>& triangles,
 											   const std::vector<Vertex>& vertices, uint8_t& axis);

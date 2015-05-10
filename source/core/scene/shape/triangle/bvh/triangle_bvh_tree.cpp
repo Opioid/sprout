@@ -30,7 +30,7 @@ void Node::set_right_child(uint32_t offset) {
 	end_index = offset;
 }
 
-const math::AABB& Tree::aabb() const {
+const math::aabb& Tree::aabb() const {
 	return nodes_[0].aabb;
 }
 

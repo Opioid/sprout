@@ -27,7 +27,7 @@ struct Node {
 
 	void set_right_child(uint32_t offset);
 
-	math::AABB aabb;
+	math::aabb aabb;
 	uint32_t start_index;
 	uint32_t end_index;
 	uint8_t axis;
@@ -36,7 +36,7 @@ struct Node {
 class Tree  {
 public:
 
-	const math::AABB& aabb() const;
+	const math::aabb& aabb() const;
 
 	uint32_t num_parts() const;
 

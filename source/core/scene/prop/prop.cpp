@@ -3,6 +3,7 @@
 #include "scene/shape/shape.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
+#include "base/math/bounding/aabb.inl"
 
 namespace scene {
 
@@ -28,7 +29,7 @@ bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersectio
 	math::float2 bounds;
 
 	if (shape_->is_complex()) {
-		math::AABB aabb;
+		math::aabb aabb;
 		if (animated) {
 			shape_->aabb().transform(transformation_.object_to_world, aabb);
 		} else {
@@ -57,7 +58,7 @@ bool Prop::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
 	math::float2 bounds;
 
 	if (shape_->is_complex()) {
-		math::AABB aabb;
+		math::aabb aabb;
 		if (animated) {
 			shape_->aabb().transform(transformation_.object_to_world, aabb);
 		} else {
@@ -83,7 +84,7 @@ float Prop::opacity(const math::Oray& ray, Node_stack& node_stack, const image::
 	math::float2 bounds;
 
 	if (shape_->is_complex()) {
-		math::AABB aabb;
+		math::aabb aabb;
 		if (animated) {
 			shape_->aabb().transform(transformation_.object_to_world, aabb);
 		} else {
@@ -102,7 +103,7 @@ const shape::Shape* Prop::shape() const {
 	return shape_.get();
 }
 
-const math::AABB& Prop::aabb() const {
+const math::aabb& Prop::aabb() const {
 	return aabb_;
 }
 

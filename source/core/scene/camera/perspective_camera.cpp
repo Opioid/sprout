@@ -26,21 +26,6 @@ void Perspective::update_view() {
 }
 
 void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
-	/*
-
-if p.lensRadius > 0.0 {
-	lensU, lensV := math.SampleDiskConcentric(sample.LensUv.X, sample.LensUv.Y)
-	lensUv := math.MakeVector3(lensU * p.lensRadius, lensV * p.lensRadius, 0.0)
-
-	ft := p.focalDistance / r.Direction.Z
-	focus := r.Point(ft)
-
-	r.Origin = lensUv
-	r.Direction = focus.Sub(r.Origin)
-}
-*/
-
-
 	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
 
 	math::Ray<float> r(math::float3::identity, direction);
@@ -58,7 +43,7 @@ if p.lensRadius > 0.0 {
 	scene::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 	ray.origin = math::transform_point(transformation.object_to_world, r.origin);
-	ray.set_direction(math::transform_vector(transformation.object_to_world, normalized(r.direction)));
+	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(r.direction)));
 	ray.min_t = 0.f;
 	ray.max_t = 1000.f;
 	ray.depth = 0;

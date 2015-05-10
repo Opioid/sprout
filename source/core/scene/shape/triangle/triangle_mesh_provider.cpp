@@ -4,6 +4,7 @@
 #include "bvh/triangle_bvh_builder.hpp"
 #include "bvh/triangle_bvh_xbuilder.hpp"
 #include "base/math/vector.inl"
+#include "base/math/bounding/aabb.inl"
 #include "base/json/json.hpp"
 #include <fstream>
 #include <iostream>

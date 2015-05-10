@@ -25,7 +25,6 @@ struct Optimized_ray : public Ray<T> {
 	uint8_t sign[3];
 	T time;
 	uint32_t depth;
-
 };
 
 typedef Optimized_ray<float> Oray;

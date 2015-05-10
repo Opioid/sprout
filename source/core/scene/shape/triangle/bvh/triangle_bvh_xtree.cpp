@@ -3,6 +3,7 @@
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
+#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -30,7 +31,7 @@ void XNode::set_right_child(uint32_t offset) {
 	end_index = offset;
 }
 
-const math::AABB& XTree::aabb() const {
+const math::aabb& XTree::aabb() const {
 	return nodes_[0].aabb;
 }
 

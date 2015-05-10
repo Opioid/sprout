@@ -7,6 +7,7 @@
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
+#include "base/math/bounding/aabb.inl"
 
 namespace scene {
 

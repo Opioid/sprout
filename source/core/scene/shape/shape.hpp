@@ -23,7 +23,7 @@ public:
 
 	virtual ~Shape();
 
-	const math::AABB& aabb() const;
+	const math::aabb& aabb() const;
 
 	virtual uint32_t num_parts() const;
 
@@ -50,7 +50,7 @@ public:
 
 protected:
 
-	math::AABB aabb_;
+	math::aabb aabb_;
 };
 
 }}

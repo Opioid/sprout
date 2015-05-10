@@ -4,7 +4,7 @@ namespace scene { namespace shape {
 
 Shape::~Shape() {}
 
-const math::AABB& Shape::aabb() const {
+const math::aabb& Shape::aabb() const {
 	return aabb_;
 }
 
