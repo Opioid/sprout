@@ -31,6 +31,7 @@ public:
 	float opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
 	const shape::Shape* shape() const;
+	shape::Shape* shape();
 
 	const math::aabb& aabb() const;
 

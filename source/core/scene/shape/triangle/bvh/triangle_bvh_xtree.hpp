@@ -46,6 +46,8 @@ public:
 	uint32_t num_parts() const;
 	uint32_t num_triangles() const;
 
+	const std::vector<Triangle>& triangles() const;
+
 	bool intersect(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack) const;
 
@@ -56,7 +58,7 @@ public:
 	math::float2 interpolate_triangle_uv(uint32_t index, math::float2 uv) const;
 	uint32_t triangle_material_index(uint32_t index) const;
 
-	void importance_sample(float r, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
+	void sample(uint32_t triangle, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
 
 	std::vector<XNode>& allocate_nodes(uint32_t num_nodes);
 

@@ -87,7 +87,7 @@ float Sphere::opacity(const Composed_transformation& transformation, const math:
 	return intersect_p(transformation, ray, bounds, node_stack) ? 1.f : 0.f;
 }
 
-void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, const math::float3& p,
+void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/, const math::float3& p,
 							   sampler::Sampler& sampler, uint32_t sample_index,
 							   math::float3& wi, float& t, float& pdf) const {
 	math::float3 axis = transformation.position - p;

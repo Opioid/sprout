@@ -1,3 +1,5 @@
+#pragma once
+
 #include "triangle_primitive.hpp"
 #include "triangle_intersection.hpp"
 

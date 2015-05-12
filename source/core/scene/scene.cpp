@@ -40,6 +40,10 @@ float Scene::opacity(const math::Oray& ray, Node_stack& node_stack, const image:
 void Scene::compile() {
 	bvh::Builder builder;
 	builder.build(bvh_, props_);
+
+	for (auto l : lights_) {
+		l->prepare_sampling();
+	}
 }
 
 const surrounding::Surrounding* Scene::surrounding() const {

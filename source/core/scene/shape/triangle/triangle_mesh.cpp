@@ -1,6 +1,7 @@
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.inl"
 #include "triangle_intersection.hpp"
+#include "triangle_distribution.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
 #include "sampler/sampler.hpp"
@@ -9,6 +10,13 @@
 #include "base/math/matrix.inl"
 
 namespace scene { namespace shape { namespace triangle {
+
+void Mesh::init() {
+	aabb_ = tree_.aabb();
+
+	distributions_.resize(tree_.num_parts());
+
+}
 
 uint32_t Mesh::num_parts() const {
 	return tree_.num_parts();
@@ -73,16 +81,18 @@ float Mesh::opacity(const Composed_transformation& transformation, const math::O
 	return tree_.opacity(tray, bounds, node_stack, materials, sampler);
 }
 
-void Mesh::importance_sample(uint32_t part, const Composed_transformation& transformation, const math::float3& p,
+void Mesh::importance_sample(uint32_t part, const Composed_transformation& transformation, float area, const math::float3& p,
 							 sampler::Sampler& sampler, uint32_t sample_index,
 							 math::float3& wi, float& t, float& pdf) const {
 	float r = sampler.generate_sample1d(sample_index);
 	math::float2 r2 = sampler.generate_sample2d(sample_index);
 
+	uint32_t index = distributions_[part].sample(r);
+
 	math::float3 sv;
 	math::float3 sn;
 	math::float2 tc;
-	tree_.importance_sample(r, r2, sv, sn, tc);
+	tree_.sample(index, r2, sv, sn, tc);
 
 	math::float3 v = math::transform_point(transformation.object_to_world, sv);
 	math::float3 n = math::transform_vector(transformation.rotation, sn);
@@ -98,16 +108,20 @@ void Mesh::importance_sample(uint32_t part, const Composed_transformation& trans
 	} else {
 		float sl = math::squared_length(axis);
 		t = std::sqrt(sl);
-		pdf = sl / (c * area(part, transformation.scale));
+		pdf = sl / (c * area);
 	}
 }
 
-float Mesh::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
-	return 0.25f;
+float Mesh::area(uint32_t part, const math::float3& /*scale*/) const {
+	return distributions_[part].area();
 }
 
 bool Mesh::is_complex() const {
 	return true;
+}
+
+void Mesh::prepare_sampling(uint32_t part, const math::float3& scale) {
+	distributions_[part].init(part, tree_.triangles(), scale);
 }
 
 }}}

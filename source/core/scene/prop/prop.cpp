@@ -103,6 +103,10 @@ const shape::Shape* Prop::shape() const {
 	return shape_.get();
 }
 
+shape::Shape* Prop::shape() {
+	return shape_.get();
+}
+
 const math::aabb& Prop::aabb() const {
 	return aabb_;
 }

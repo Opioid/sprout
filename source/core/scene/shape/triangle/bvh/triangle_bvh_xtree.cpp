@@ -43,6 +43,10 @@ uint32_t XTree::num_triangles() const {
 	return static_cast<uint32_t>(triangles_.size());
 }
 
+const std::vector<Triangle>& XTree::triangles() const {
+	return triangles_;
+}
+
 bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack, Intersection& intersection) const {
 	node_stack.clear();
 	node_stack.push_back(0);
@@ -162,10 +166,8 @@ uint32_t XTree::triangle_material_index(uint32_t index) const {
 	return triangles_[index].material_index;
 }
 
-void XTree::importance_sample(float r, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const {
-	float num = static_cast<float>(triangles_.size());
-	size_t index = static_cast<size_t>(num * r - 0.001f);
-	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, n, tc);
+void XTree::sample(uint32_t triangle, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const {
+	triangles_[triangle].interpolate(math::sample_triangle_uniform(r2), p, n, tc);
 }
 
 bool XTree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const {

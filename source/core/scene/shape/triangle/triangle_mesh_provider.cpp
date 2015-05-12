@@ -36,7 +36,7 @@ std::shared_ptr<Mesh> Provider::load(const std::string& filename, uint32_t /*fla
 	bvh::XBuilder builder;
 	builder.build(mesh->tree_, triangles, vertices, 8);
 
-	mesh->aabb_ = mesh->tree_.aabb();
+	mesh->init();
 
 	return mesh;
 }
