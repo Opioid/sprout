@@ -27,6 +27,8 @@ public:
 	virtual void set3(uint32_t index, const math::float3& value) = 0;
 	virtual void set4(uint32_t index, const math::float4& value) = 0;
 
+	math::float4 average() const;
+
 protected:
 
 	Description description_;

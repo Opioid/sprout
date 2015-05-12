@@ -38,4 +38,8 @@ const Sample& Colormap_normalmap_surfacemap_emissionmap::sample(const shape::Dif
 	return sample;
 }
 
+math::float3 Colormap_normalmap_surfacemap_emissionmap::average_emission() const {
+	return emission_factor_ * emission_.image()->average().xyz;
+}
+
 }}}

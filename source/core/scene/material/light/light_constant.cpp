@@ -21,4 +21,8 @@ math::float3 Constant::sample_emission() const {
 	return emission_;
 }
 
+math::float3 Constant::average_emission() const {
+	return emission_;
+}
+
 }}}

@@ -15,6 +15,8 @@ public:
 
 	bool is_valid() const;
 
+	const Image* image() const;
+
 protected:
 
 	std::shared_ptr<Image> image_;

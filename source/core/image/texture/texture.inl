@@ -12,6 +12,10 @@ inline bool Texture::is_valid() const {
 	return image_.get() != nullptr;
 }
 
+const Image* Texture::image() const {
+	return image_.get();
+}
+
 }
 
 

@@ -115,4 +115,8 @@ math::float3 Glass::sample_emission() const {
 	return math::float3::identity;
 }
 
+math::float3 Glass::average_emission() const {
+	return math::float3::identity;
+}
+
 }}}

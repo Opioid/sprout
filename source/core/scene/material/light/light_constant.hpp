@@ -14,6 +14,8 @@ public:
 
 	virtual math::float3 sample_emission() const final override;
 
+	virtual math::float3 average_emission() const final override;
+
 private:
 
 	math::float3 emission_;

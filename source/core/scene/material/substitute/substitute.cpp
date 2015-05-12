@@ -126,4 +126,8 @@ math::float3 Substitute::sample_emission() const {
 	return math::float3::identity;
 }
 
+math::float3 Substitute::average_emission() const {
+	return math::float3::identity;
+}
+
 }}}

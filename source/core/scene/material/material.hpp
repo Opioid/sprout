@@ -33,6 +33,8 @@ public:
 
 	virtual math::float3 sample_emission() const = 0;
 
+	virtual math::float3 average_emission() const = 0;
+
 	bool is_masked() const;
 
 	float opacity(math::float2 uv, const image::sampler::Sampler_2D& sampler) const;

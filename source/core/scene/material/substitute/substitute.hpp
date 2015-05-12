@@ -62,7 +62,9 @@ public:
 
 	Substitute(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask);
 
-	virtual math::float3 sample_emission() const;
+	virtual math::float3 sample_emission() const override;
+
+	virtual math::float3 average_emission() const override;
 };
 
 }}}
