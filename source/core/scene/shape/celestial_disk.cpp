@@ -49,8 +49,8 @@ float Celestial_disk::area(uint32_t /*part*/, const math::float3& /*scale*/) con
 	return 1.f;
 }
 
-bool Celestial_disk::is_delta() const {
-	return true;
+bool Celestial_disk::is_finite() const {
+	return false;
 }
 
 }}

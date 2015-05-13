@@ -1,7 +1,7 @@
 #include "png_reader.hpp"
 #include "image/image_1.hpp"
 #include "image/image_3.hpp"
-#include "base/color/color.hpp"
+#include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/thread/thread_pool.hpp"
 #include <cstring>

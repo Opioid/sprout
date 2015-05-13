@@ -102,6 +102,10 @@ float Build_node::opacity(const math::Oray& ray, const std::vector<Prop*>& props
 	return opacity;
 }
 
+const math::aabb& Tree::aabb() const {
+	return root_.aabb;
+}
+
 bool Tree::intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const {
 	bool hit = false;
 

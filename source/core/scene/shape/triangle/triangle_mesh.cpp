@@ -1,13 +1,13 @@
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.inl"
 #include "triangle_intersection.hpp"
-#include "triangle_distribution.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/matrix.inl"
+#include "base/math/cdf.inl"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -15,7 +15,6 @@ void Mesh::init() {
 	aabb_ = tree_.aabb();
 
 	distributions_.resize(tree_.num_parts());
-
 }
 
 uint32_t Mesh::num_parts() const {
@@ -87,7 +86,7 @@ void Mesh::importance_sample(uint32_t part, const Composed_transformation& trans
 	float r = sampler.generate_sample1d(sample_index);
 	math::float2 r2 = sampler.generate_sample2d(sample_index);
 
-	uint32_t index = distributions_[part].sample(r);
+	uint32_t index = distributions_[part].cdf.sample(r);
 
 	math::float3 sv;
 	math::float3 sn;
@@ -113,7 +112,7 @@ void Mesh::importance_sample(uint32_t part, const Composed_transformation& trans
 }
 
 float Mesh::area(uint32_t part, const math::float3& /*scale*/) const {
-	return distributions_[part].area();
+	return distributions_[part].area;
 }
 
 bool Mesh::is_complex() const {
@@ -122,6 +121,28 @@ bool Mesh::is_complex() const {
 
 void Mesh::prepare_sampling(uint32_t part, const math::float3& scale) {
 	distributions_[part].init(part, tree_.triangles(), scale);
+}
+
+void Mesh::Distribution::init(uint32_t part, const std::vector<Triangle>& triangles, const math::float3& scale) {
+	std::vector<float> areas;
+
+	triangle_mapping.clear();
+
+	uint32_t i = 0;
+	for (auto& t : triangles) {
+		if (t.material_index == part) {
+			areas.push_back(t.area(scale));
+			triangle_mapping.push_back(i);
+		}
+
+		++i;
+	}
+
+	area = cdf.init(areas);
+}
+
+uint32_t Mesh::Distribution::sample(float r) {
+	return triangle_mapping[cdf.sample(r)];
 }
 
 }}}

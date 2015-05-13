@@ -20,10 +20,6 @@ bool Shape::is_finite() const {
 	return true;
 }
 
-bool Shape::is_delta() const {
-	return false;
-}
-
 void Shape::prepare_sampling(uint32_t /*part*/, const math::float3& /*scale*/) {}
 
 }}

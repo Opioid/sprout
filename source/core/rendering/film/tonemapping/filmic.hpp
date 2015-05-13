@@ -9,7 +9,7 @@ public:
 
 	Filmic(const math::float3& linear_white);
 
-	virtual math::float3 tonemap(const math::float3& color) const;
+	virtual math::float3 tonemap(const math::float3& color) const final override;
 
 private:
 

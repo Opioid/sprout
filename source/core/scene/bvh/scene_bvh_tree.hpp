@@ -40,6 +40,8 @@ struct Build_node {
 class Tree {
 public:
 
+	const math::aabb& aabb() const;
+
 	bool intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
 	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;

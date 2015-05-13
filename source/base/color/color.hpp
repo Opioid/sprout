@@ -37,4 +37,6 @@ Color4 to_float(const Color4c& c);
 Color4c to_byte(const Color4& c);
 uint32_t to_uint(const Color4& c);
 
+float luminance(const Color3& c);
+
 }

@@ -3,6 +3,7 @@
 #include "bvh/scene_bvh_tree.hpp"
 #include "shape/node_stack.hpp"
 #include "base/math/ray.hpp"
+#include "base/math/cdf.hpp"
 #include <vector>
 
 namespace scene {
@@ -57,6 +58,7 @@ private:
 
 	std::vector<light::Light*> lights_;
 
+	math::CDF light_cdf_;
 };
 
 }

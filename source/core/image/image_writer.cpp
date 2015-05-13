@@ -1,6 +1,6 @@
 #include "image_writer.hpp"
 #include "image/image.hpp"
-#include "base/color/color.hpp"
+#include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "miniz/miniz.hpp"
 #include <fstream>

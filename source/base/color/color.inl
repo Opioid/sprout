@@ -1,11 +1,12 @@
+#pragma once
+
 #include "color.hpp"
 #include "math/vector.inl"
-#include <emmintrin.h>
 
 namespace color {
 
 // convert sRGB linear value to sRGB gamma value
-float linear_to_sRGB(float c) {
+inline float linear_to_sRGB(float c) {
 	if (c <= 0.f) {
 		return 0.f;
 	} else if (c < 0.0031308f) {
@@ -18,12 +19,12 @@ float linear_to_sRGB(float c) {
 }
 
 // convert sRGB linear color to sRGB gamma color
-Color3 linear_to_sRGB(const Color3& c) {
+inline Color3 linear_to_sRGB(const Color3& c) {
 	return Color3(linear_to_sRGB(c.x), linear_to_sRGB(c.y), linear_to_sRGB(c.z));
 }
 
 // convert sRGB gamma value to sRGB linear value
-float sRGB_to_linear(float c) {
+inline float sRGB_to_linear(float c) {
 	if (c <= 0.f) {
 		return 0.f;
 	} else if (c < 0.04045f) {
@@ -36,18 +37,18 @@ float sRGB_to_linear(float c) {
 }
 
 // convert sRGB gamma color to sRGB linear color
-Color3 sRGB_to_linear(const Color3c& c) {
+inline Color3 sRGB_to_linear(const Color3c& c) {
 	return Color3(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.z) / 255.f));
 }
 
 // convert sRGB gamma color to sRGB linear color
-Color3 sRGB_to_linear(const Color3& c) {
+inline Color3 sRGB_to_linear(const Color3& c) {
 	return Color3(sRGB_to_linear(c.x), sRGB_to_linear(c.y), sRGB_to_linear(c.z));
 }
 
-Color4 sRGB_to_linear(const Color4c& c) {
+inline Color4 sRGB_to_linear(const Color4c& c) {
 	return Color4(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.z) / 255.f),
@@ -55,47 +56,41 @@ Color4 sRGB_to_linear(const Color4c& c) {
 }
 
 // convert linear color to gamma color
-Color3 linear_to_gamma(const Color3& c, float gamma) {
+inline Color3 linear_to_gamma(const Color3& c, float gamma) {
 	float p = 1.f / gamma;
 
 	return Color3(std::pow(c.x, p), std::pow(c.y, p), std::pow(c.z, p));
 }
 
 // convert gamma color to linear color
-Color3 gamma_to_linear(const Color3& c, float gamma) {
+inline Color3 gamma_to_linear(const Color3& c, float gamma) {
 	return Color3(std::pow(c.x, gamma), std::pow(c.y, gamma), std::pow(c.z, gamma));
 }
 
-Color3 to_float(const Color3c& c) {
+inline Color3 to_float(const Color3c& c) {
 	return Color3(static_cast<float>(c.x) / 255.f,
 				  static_cast<float>(c.y) / 255.f,
 				  static_cast<float>(c.z) / 255.f);
 }
 
-Color4 to_float(const Color4c& c) {
+inline Color4 to_float(const Color4c& c) {
 	return Color4(static_cast<float>(c.x) / 255.f,
 				  static_cast<float>(c.y) / 255.f,
 				  static_cast<float>(c.z) / 255.f,
 				  static_cast<float>(c.w) / 255.f);
 }
 
-Color4c to_byte(const Color4& c) {
+inline Color4c to_byte(const Color4& c) {
 	return Color4c(static_cast<unsigned char>(c.x * 255.f),
 				   static_cast<unsigned char>(c.y * 255.f),
 				   static_cast<unsigned char>(c.z * 255.f),
 				   static_cast<unsigned char>(c.w * 255.f));
 }
-/*
-uint32_t to_uint(const Color4& c) {
-	const __m128 m4x255f = _mm_set_ps1(255.f);
 
-	__m128 m0 = _mm_set_ps(c.x, c.y, c.z, c.w);
+const Color3 luminance_vector(0.299f, 0.587f, 0.114f);
 
-	m0 = _mm_mul_ps(m0, m4x255f);
-
-	__m128i m1 = _mm_cvtps_epi32(m0);
-
-	return (m1.m128i_i32[0] << 24) | (m1.m128i_i32[1] << 16) | (m1.m128i_i32[2] << 8) | m1.m128i_i32[3];
-}*/
+inline float luminance(const Color3& c) {
+	return dot(c, luminance_vector);
+}
 
 }

@@ -3,6 +3,8 @@ SOURCES += \
 	math/sampling.cpp \
 
 HEADERS += \
+	math/cdf.hpp \
+	math/cdf.inl \
 	math/distribution.hpp \
 	math/distribution.inl \
 	math/math.hpp \

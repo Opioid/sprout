@@ -39,7 +39,7 @@ void Builder::split(Build_node* node, const std::vector<Prop*>& props, size_t ma
 		props1.reserve(reserve_size);
 
 		for (auto p : props) {
-			if (!p->shape()->is_finite() || p->shape()->is_delta()) {
+			if (!p->shape()->is_finite()) {
 				continue;
 			}
 
@@ -69,7 +69,7 @@ void Builder::assign(Build_node* node, const std::vector<Prop*>& props, std::vec
 	node->offset = static_cast<uint32_t>(out_props.size());
 
 	for (auto p : props) {
-		if (!p->shape()->is_finite() || p->shape()->is_delta()) {
+		if (!p->shape()->is_finite()) {
 			continue;
 		}
 
@@ -83,7 +83,7 @@ math::aabb Builder::aabb(const std::vector<Prop*>& props) {
 	math::aabb aabb = math::aabb::empty();
 
 	for (auto p : props) {
-		if (!p->shape()->is_finite() || p->shape()->is_delta()) {
+		if (!p->shape()->is_finite()) {
 			continue;
 		}
 
@@ -98,7 +98,7 @@ math::plane Builder::average_splitting_plane(const math::aabb& aabb, const std::
 
 	uint32_t num = 0;
 	for (auto p : props) {
-		if (!p->shape()->is_finite() || p->shape()->is_delta()) {
+		if (!p->shape()->is_finite()) {
 			continue;
 		}
 

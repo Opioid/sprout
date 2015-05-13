@@ -26,7 +26,7 @@ public:
 
 	virtual float area(uint32_t part, const math::float3& scale) const final override;
 
-	virtual bool is_delta() const final override;
+	virtual bool is_finite() const final override;
 };
 
 }}

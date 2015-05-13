@@ -1,13 +1,14 @@
 #pragma once
 
 #include "scene/shape/shape.hpp"
-#include "triangle_distribution.hpp"
+//#include "triangle_distribution.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
 #include "bvh/triangle_bvh_xtree.hpp"
+#include "base/math/cdf.hpp"
 
 namespace scene { namespace shape { namespace triangle {
 
-class Distribution;
+struct Triangle;
 
 class Mesh : public Shape {
 public:
@@ -40,6 +41,15 @@ public:
 private:
 
 	bvh::XTree tree_;
+
+	struct Distribution {
+		void init(uint32_t part, const std::vector<Triangle>& triangles, const math::float3& scale);
+		uint32_t sample(float r);
+
+		float area;
+		math::CDF cdf;
+		std::vector<uint32_t> triangle_mapping;
+	};
 
 	std::vector<Distribution> distributions_;
 

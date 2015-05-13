@@ -5,6 +5,7 @@
 #include "scene/material/material.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
+#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace light {
 
@@ -27,6 +28,14 @@ void Prop_light::sample(const math::float3& p, float time, uint32_t /*max_sample
 	sample.energy = prop_->material(part_)->sample_emission();
 
 	samples.push_back(sample);
+}
+
+math::float3 Prop_light::energy(const math::aabb& scene_bb) const {
+	if (prop_->shape()->is_finite()) {
+		return area_ * prop_->material(part_)->average_emission();
+	} else {
+		return scene_bb.volume() * prop_->material(part_)->average_emission();
+	}
 }
 
 void Prop_light::prepare_sampling() {

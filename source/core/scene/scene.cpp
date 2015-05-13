@@ -4,9 +4,11 @@
 #include "prop/prop_intersection.hpp"
 #include "light/prop_light.hpp"
 #include "bvh/scene_bvh_builder.hpp"
+#include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
+#include "base/math/cdf.inl"
 #include "base/math/bounding/aabb.inl"
 
 namespace scene {
@@ -41,9 +43,15 @@ void Scene::compile() {
 	bvh::Builder builder;
 	builder.build(bvh_, props_);
 
+	std::vector<float> energy;
+	energy.reserve(lights_.size());
+
 	for (auto l : lights_) {
 		l->prepare_sampling();
+		energy.push_back(color::luminance(l->energy(bvh_.aabb())));
 	}
+
+	light_cdf_.init(energy);
 }
 
 const surrounding::Surrounding* Scene::surrounding() const {
@@ -65,16 +73,13 @@ const std::vector<light::Light*>& Scene::lights() const {
 }
 
 light::Light* Scene::montecarlo_light(float random, float& pdf) const {
-	float num = static_cast<float>(lights_.size());
-	size_t l = static_cast<size_t>(num * random - 0.001f);
-
-	pdf = 1.f / num;
-
-	if (l >= lights_.size()) {
+	if (lights_.empty()) {
 		return nullptr;
-	} else {
-		return lights_[l];
 	}
+
+	uint32_t l = light_cdf_.sample(random, pdf);
+
+	return lights_[l];
 }
 
 light::Prop_light* Scene::create_prop_light() {
