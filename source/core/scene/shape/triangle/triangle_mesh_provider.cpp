@@ -139,9 +139,11 @@ void Provider::load_groups(const rapidjson::Value& groups_value, std::vector<Gro
 		return;
 	}
 
+	uint32_t max_id = groups_value.Size() - 1;
+
 	for (auto g = groups_value.Begin(); g != groups_value.End(); ++g) {
 		groups.push_back(Group{
-			json::read_uint(*g, "material_index"),
+			std::min(json::read_uint(*g, "material_index"), max_id),
 			json::read_uint(*g, "start_index"),
 			json::read_uint(*g, "num_indices"),
 		});
