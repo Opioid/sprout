@@ -9,6 +9,7 @@
 #include "substitute/substitute_colormap_normalmap_surfacemap_emissionmap.hpp"
 #include "substitute/substitute_colormap_surfacemap.hpp"
 #include "substitute/substitute_constant.hpp"
+#include "substitute/substitute_normalmap.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include <fstream>
@@ -158,6 +159,10 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 			} else {
 				return std::make_shared<substitute::Colormap>(substitute_cache_, mask, colormap, roughness, metallic);
 			}
+		}
+	} else {
+		if (normalmap) {
+			return std::make_shared<substitute::Normalmap>(substitute_cache_, mask, color, normalmap, roughness, metallic);
 		}
 	}
 

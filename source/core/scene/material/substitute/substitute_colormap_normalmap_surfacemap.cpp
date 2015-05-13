@@ -21,9 +21,9 @@ const Sample& Colormap_normalmap_surfacemap::sample(const shape::Differential& d
 	math::float3 nm = sampler.sample3(normal_, dg.uv);
 	math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
-	math::float3 t;
-	math::float3 b;
-	math::coordinate_system(n, t, b);
+//	math::float3 t;
+//	math::float3 b;
+//	math::coordinate_system(n, t, b);
 
 	sample.set_basis(dg.t, dg.b, n, wo);
 
