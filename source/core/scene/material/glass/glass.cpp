@@ -11,6 +11,14 @@ math::float3 BRDF::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
+math::float3 fresnel(const math::float3& wi, const math::float3& wo) {
+	math::float3 h = math::normalized(wo + wi);
+	float wo_dot_h = math::dot(wo, h);
+
+	math::float3 f0(0.03f, 0.03f, 0.03f);
+	return ggx::f(wo_dot_h, f0);
+}
+
 math::float3 BRDF::importance_sample(sampler::Sampler& /*sampler*/, math::float3& wi, float& pdf) const {
 	math::float3 n = sample_.n_;
 
@@ -20,15 +28,9 @@ math::float3 BRDF::importance_sample(sampler::Sampler& /*sampler*/, math::float3
 
 	wi = math::normalized(math::reflect(n, -sample_.wo_));
 
-	math::float3 h = math::normalized(sample_.wo_ + wi);
-	float wo_dot_h = math::dot(sample_.wo_, h);
-
-	math::float3 f0(0.03f, 0.03f, 0.03f);
-	math::float3 fresnel = ggx::f(wo_dot_h, f0);
-
 	pdf = 1.f;
 
-	return fresnel;
+	return fresnel(wi, sample_.wo_);
 }
 
 BTDF::BTDF(const Sample& sample) : BXDF(sample) {}
@@ -62,18 +64,12 @@ math::float3 BTDF::importance_sample(sampler::Sampler& /*sampler*/, math::float3
 	math::float3 t = eta * incident + (eta * cosi - std::sqrt(cost2)) * n;
 	wi = math::normalized(t);
 
-	math::float3 h = math::normalized(sample_.wo_ + wi);
-	float wo_dot_h = math::dot(sample_.wo_, h);
-
-	math::float3 f0(0.03f, 0.03f, 0.03f);
-	math::float3 fresnel = ggx::f(wo_dot_h, f0);
-
-	// By convention our color already is the transmittance
-//	math::float3 transmittance = math::float3(1.f, 1.f, 1.f) - sample_.color_;
+	math::float3 f = fresnel(math::normalized(math::reflect(n, -sample_.wo_)), sample_.wo_);
 
 	pdf = 1.f;
 
-	return sample_.color_ * fresnel;
+	return (math::float3(1.f, 1.f, 1.f) - f) * sample_.color_;
+//	return fresnel * sample_.color_;
 }
 
 Sample::Sample() : brdf_(*this), btdf_(*this) {}
@@ -97,11 +93,9 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
 		result.pdf *= 0.5f;
 	}
 
-//	math::float3 r = brdf_.importance_sample(sampler, wi, pdf);
-//	return r;
+//	result.reflection = brdf_.importance_sample(sampler, result.wi, result.pdf);
 
-//	math::float3 r = btdf_.importance_sample(sampler, wi, pdf);
-//	return r;
+//	result.reflection = btdf_.importance_sample(sampler, result.wi, result.pdf);
 }
 
 void Sample::set(const math::float3& color, float ior) {
