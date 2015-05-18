@@ -61,8 +61,8 @@ std::shared_ptr<IMaterial> Provider::fallback_material() const {
 }
 
 std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_value) {
-	math::float3 color(1.f, 0.5f, 0.5f);
-	float ior = 1.3f;
+	math::float3 color(1.f, 1.f, 1.f);
+	float ior = 1.5f;
 
 	for (auto n = glass_value.MemberBegin(); n != glass_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();

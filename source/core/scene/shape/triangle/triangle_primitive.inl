@@ -94,6 +94,13 @@ inline math::float2 Triangle::interpolate_uv(math::float2 uv) const {
 	return w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
+inline math::float3 Triangle::normal() const {
+	math::float3 e1 = b.p - a.p;
+	math::float3 e2 = c.p - a.p;
+
+	return math::normalized(math::cross(e1, e2));
+}
+
 inline float Triangle::area(const math::float3& scale) const {
 	math::float3 sa = scale * a.p;
 	math::float3 sb = scale * b.p;

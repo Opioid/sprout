@@ -17,6 +17,8 @@ private:
 	math::float3 color_;
 
 	float ior_;
+
+	float f0_;
 };
 
 }}}

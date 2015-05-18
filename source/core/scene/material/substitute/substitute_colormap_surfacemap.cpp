@@ -17,7 +17,7 @@ const Sample& Colormap_surfacemap::sample(const shape::Differential& dg, const m
 										  const image::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
-	sample.set_basis(dg.t, dg.b, dg.n, wo);
+	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
 
 	math::float3 color = sampler.sample3(color_, dg.uv);
 	float roughness    = sampler.sample3(surface_, dg.uv).x;

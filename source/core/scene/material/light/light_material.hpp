@@ -15,7 +15,9 @@ public:
 
 	virtual math::float3 emission() const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, Result& result) const final override;
+	virtual math::float3 attenuation() const final override;
+
+	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const final override;
 
 	void set(const math::float3& emission);
 

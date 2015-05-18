@@ -58,6 +58,8 @@ public:
 	math::float2 interpolate_triangle_uv(uint32_t index, math::float2 uv) const;
 	uint32_t triangle_material_index(uint32_t index) const;
 
+	math::float3 triangle_normal(uint32_t index) const;
+
 	void sample(uint32_t triangle, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
 
 	std::vector<XNode>& allocate_nodes(uint32_t num_nodes);

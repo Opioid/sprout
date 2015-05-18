@@ -8,22 +8,22 @@ namespace scene { namespace material { namespace glass {
 
 class Sample;
 
-class BRDF : public BXDF<Sample> {
+class BRDF : public BxDF<Sample> {
 public:
 
 	BRDF(const Sample& sample);
 
 	virtual math::float3 evaluate(const math::float3& wi) const;
-	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const;
+	virtual void importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
 };
 
-class BTDF : public BXDF<Sample> {
+class BTDF : public BxDF<Sample> {
 public:
 
 	BTDF(const Sample& sample);
 
 	virtual math::float3 evaluate(const math::float3& wi) const;
-	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const;
+	virtual void importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
 };
 
 class Sample : public material::Sample {
@@ -31,19 +31,22 @@ public:
 
 	Sample();
 
-	virtual math::float3 evaluate(const math::float3& wi) const;
+	virtual math::float3 evaluate(const math::float3& wi) const final override;
 
-	virtual math::float3 emission() const;
+	virtual math::float3 emission() const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, Result& result) const;
+	virtual math::float3 attenuation() const final override;
 
-	void set(const math::float3& color, float ior);
+	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const final override;
+
+	void set(const math::float3& color, float ior, float f0);
 
 private:
 
 	math::float3 color_;
 
 	float ior_;
+	float f0_;
 
 	BRDF brdf_;
 	BTDF btdf_;

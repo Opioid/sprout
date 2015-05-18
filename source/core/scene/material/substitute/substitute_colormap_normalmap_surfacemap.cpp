@@ -25,7 +25,7 @@ const Sample& Colormap_normalmap_surfacemap::sample(const shape::Differential& d
 //	math::float3 b;
 //	math::coordinate_system(n, t, b);
 
-	sample.set_basis(dg.t, dg.b, n, wo);
+	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
 
 	math::float3 color = sampler.sample3(color_, dg.uv);
 	float roughness    = sampler.sample3(surface_, dg.uv).x;

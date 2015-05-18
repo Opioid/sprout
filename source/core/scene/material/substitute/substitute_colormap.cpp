@@ -13,7 +13,7 @@ const Sample& Colormap::sample(const shape::Differential& dg, const math::float3
 							   const image::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
-	sample.set_basis(dg.t, dg.b, dg.n, wo);
+	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
 
 	math::float3 color = sampler.sample3(color_, dg.uv);
 

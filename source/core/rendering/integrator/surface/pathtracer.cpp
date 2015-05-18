@@ -26,7 +26,7 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 math::float3 Pathtracer::li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
 	sampler_.start_iteration(subsample);
 
-	scene::material::Sample::Result sample_result;
+	scene::material::BxDF_result sample_result;
 
 	bool hit = true;
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);

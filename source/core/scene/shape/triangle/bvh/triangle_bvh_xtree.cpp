@@ -166,6 +166,10 @@ uint32_t XTree::triangle_material_index(uint32_t index) const {
 	return triangles_[index].material_index;
 }
 
+math::float3 XTree::triangle_normal(uint32_t index) const {
+	return triangles_[index].normal();
+}
+
 void XTree::sample(uint32_t triangle, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const {
 	triangles_[triangle].interpolate(math::sample_triangle_uniform(r2), p, n, tc);
 }

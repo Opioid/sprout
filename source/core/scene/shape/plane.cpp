@@ -27,7 +27,7 @@ bool Plane::intersect(const Composed_transformation& transformation, const math:
 		intersection.t = transformation.rotation.x;
 		intersection.b = transformation.rotation.y;
 		intersection.n = normal;
-
+		intersection.geo_n = normal;
 		intersection.uv.x = math::dot(intersection.t, intersection.p);
 		intersection.uv.y = math::dot(intersection.b, intersection.p);
 

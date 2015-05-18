@@ -7,30 +7,32 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Lambert::Lambert(const Sample& sample) : BXDF(sample) {}
+Lambert::Lambert(const Sample& sample) : BxDF(sample) {}
 
 math::float3 Lambert::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
-math::float3 Lambert::importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const {
+void Lambert::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
 	math::float2 s2d = sampler.generate_sample2d(0);
 
 	math::float3 is = math::sample_hemisphere_cosine(s2d);
-	wi = math::normalized(sample_.tangent_to_world(is));
+	result.wi = math::normalized(sample_.tangent_to_world(is));
 
-	pdf = 1.f;
+	result.pdf = 1.f;
 
-	return sample_.diffuse_color_;
+	result.reflection = sample_.diffuse_color_;
+
+	result.type = BxDF_type::Reflection;
 }
 
-GGX::GGX(const Sample& sample) : BXDF(sample) {}
+GGX::GGX(const Sample& sample) : BxDF(sample) {}
 
 math::float3 GGX::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
-math::float3 GGX::importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const {
+void GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
 	math::float2 xi = sampler.generate_sample2d(0);
 
 	float n_dot_h = std::sqrt((1.f - xi.y) / ((sample_.a2_ - 1.f) * xi.y + 1.f));
@@ -44,18 +46,20 @@ math::float3 GGX::importance_sample(sampler::Sampler& sampler, math::float3& wi,
 
 	float wo_dot_h = math::dot(sample_.wo_, h);
 
-	wi = math::normalized((2.f * wo_dot_h) * h - sample_.wo_);
+	result.wi = math::normalized((2.f * wo_dot_h) * h - sample_.wo_);
 
-	float n_dot_wi = std::max(math::dot(sample_.n_, wi),          0.00001f);
+	float n_dot_wi = std::max(math::dot(sample_.n_, result.wi),	  0.00001f);
 	float n_dot_wo = std::max(math::dot(sample_.n_, sample_.wo_), 0.00001f);
 
 	math::float3 f = ggx::f(wo_dot_h, sample_.f0_);
 	float g = ggx::g(n_dot_wi, n_dot_wo, sample_.a2_);
 
-	pdf = n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
+	result.pdf = n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
 
 	math::float3 specular = g * f;
-	return n_dot_wi * specular;
+	result.reflection = n_dot_wi * specular;
+
+	result.type = BxDF_type::Reflection;
 }
 
 Sample::Sample() : lambert_(*this), ggx_(*this) {}
@@ -78,21 +82,25 @@ math::float3 Sample::emission() const {
 	return emission_;
 }
 
-void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
+math::float3 Sample::attenuation() const {
+	return math::float3(1.f, 1.f, 1.f);
+}
+
+void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 	}
 
 	if (1.f == metallic_) {
-		result.reflection = ggx_.importance_sample(sampler, result.wi, result.pdf);
+		ggx_.importance_sample(sampler, result);
 	} else {
 		float p = sampler.generate_sample1d(0);
 
 		if (p < 0.5f) {
-			result.reflection = lambert_.importance_sample(sampler, result.wi, result.pdf);
+			lambert_.importance_sample(sampler, result);
 			result.pdf *= 0.5f;
 		} else {
-			result.reflection = ggx_.importance_sample(sampler, result.wi, result.pdf);
+			ggx_.importance_sample(sampler, result);
 			result.pdf *= 0.5f;
 		}
 	}

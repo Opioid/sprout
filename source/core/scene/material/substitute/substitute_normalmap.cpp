@@ -22,7 +22,7 @@ const Sample& Normalmap::sample(const shape::Differential& dg, const math::float
 //	math::float3 b;
 //	math::coordinate_system(n, t, b);
 
-	sample.set_basis(dg.t, dg.b, n, wo);
+	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
 
 	sample.set(color_, roughness_, metallic_);
 

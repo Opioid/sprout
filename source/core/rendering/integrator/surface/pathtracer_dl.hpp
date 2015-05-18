@@ -34,6 +34,8 @@ private:
 
 	bool resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection);
 
+	static math::float3 attenuation(const math::float3& c, const math::Oray& ray);
+
 	Settings settings_;
 
 	sampler::Random sampler_;

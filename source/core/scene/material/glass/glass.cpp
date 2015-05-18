@@ -5,41 +5,42 @@
 
 namespace scene { namespace material { namespace glass {
 
-BRDF::BRDF(const Sample& sample) : BXDF(sample) {}
+BRDF::BRDF(const Sample& sample) : BxDF(sample) {}
 
 math::float3 BRDF::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
-math::float3 fresnel(const math::float3& wi, const math::float3& wo) {
+math::float3 fresnel(const math::float3& wi, const math::float3& wo, float f0) {
 	math::float3 h = math::normalized(wo + wi);
 	float wo_dot_h = math::dot(wo, h);
 
-	math::float3 f0(0.03f, 0.03f, 0.03f);
-	return ggx::f(wo_dot_h, f0);
+	return ggx::f(wo_dot_h, math::float3(f0, f0, f0));
 }
 
-math::float3 BRDF::importance_sample(sampler::Sampler& /*sampler*/, math::float3& wi, float& pdf) const {
+void BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
 	math::float3 n = sample_.n_;
 
 	if (!sample_.same_hemisphere(sample_.wo_)) {
 		n *= -1.f;
 	}
 
-	wi = math::normalized(math::reflect(n, -sample_.wo_));
+	result.wi = math::normalized(math::reflect(n, -sample_.wo_));
 
-	pdf = 1.f;
+	result.pdf = 1.f;
 
-	return fresnel(wi, sample_.wo_);
+	result.reflection = fresnel(result.wi, sample_.wo_, sample_.f0_);
+
+	result.type = BxDF_type::Reflection;
 }
 
-BTDF::BTDF(const Sample& sample) : BXDF(sample) {}
+BTDF::BTDF(const Sample& sample) : BxDF(sample) {}
 
 math::float3 BTDF::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
-math::float3 BTDF::importance_sample(sampler::Sampler& /*sampler*/, math::float3& wi, float& pdf) const {
+void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
 	float etat = sample_.ior_;
 	float eta  = 1.f / etat;
 
@@ -57,19 +58,20 @@ math::float3 BTDF::importance_sample(sampler::Sampler& /*sampler*/, math::float3
 
 	float cost2 = 1.f - eta * eta * (1.f - cosi * cosi);
 	if (cost2 < 0.f) {
-		pdf = 0.f;
-		return math::float3::identity;
+		result.pdf = 0.f;
+		return;
 	}
 
 	math::float3 t = eta * incident + (eta * cosi - std::sqrt(cost2)) * n;
-	wi = math::normalized(t);
+	result.wi = math::normalized(t);
 
-	math::float3 f = fresnel(math::normalized(math::reflect(n, -sample_.wo_)), sample_.wo_);
+	math::float3 f = fresnel(math::normalized(math::reflect(n, -sample_.wo_)), sample_.wo_, sample_.f0_);
 
-	pdf = 1.f;
+	result.pdf = 1.f;
 
-	return (math::float3(1.f, 1.f, 1.f) - f) * sample_.color_;
-//	return fresnel * sample_.color_;
+	result.reflection = (math::float3(1.f, 1.f, 1.f) - f) * sample_.color_;
+
+	result.type = BxDF_type::Transmission;
 }
 
 Sample::Sample() : brdf_(*this), btdf_(*this) {}
@@ -82,25 +84,30 @@ math::float3 Sample::emission() const {
 	return math::float3::identity;
 }
 
-void Sample::sample_evaluate(sampler::Sampler& sampler, Result& result) const {
+math::float3 Sample::attenuation() const {
+	return math::float3(1.f, 1.f, 1.f) - color_;
+}
+
+void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
 	float p = sampler.generate_sample1d(0);
 
 	if (p < 0.5f) {
-		result.reflection = brdf_.importance_sample(sampler, result.wi, result.pdf);
+		brdf_.importance_sample(sampler, result);
 		result.pdf *= 0.5f;
 	} else {
-		result.reflection = btdf_.importance_sample(sampler, result.wi, result.pdf);
+		btdf_.importance_sample(sampler, result);
 		result.pdf *= 0.5f;
 	}
 
-//	result.reflection = brdf_.importance_sample(sampler, result.wi, result.pdf);
+//	brdf_.importance_sample(sampler, result);
 
-//	result.reflection = btdf_.importance_sample(sampler, result.wi, result.pdf);
+//	btdf_.importance_sample(sampler, result);
 }
 
-void Sample::set(const math::float3& color, float ior) {
+void Sample::set(const math::float3& color, float ior, float f0) {
 	color_ = color;
 	ior_   = ior;
+	f0_    = f0;
 }
 
 Glass::Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}

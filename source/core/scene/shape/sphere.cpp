@@ -31,7 +31,7 @@ bool Sphere::intersect(const Composed_transformation& transformation, const math
 			intersection.p = ray.point(t0);
 			intersection.n = (intersection.p - transformation.position) / radius;
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
-
+			intersection.geo_n = intersection.n;
 			intersection.material_index = 0;
 
 			hit_t = t0;
@@ -46,7 +46,7 @@ bool Sphere::intersect(const Composed_transformation& transformation, const math
 			intersection.p = ray.point(t1);
 			intersection.n = (intersection.p - transformation.position) / radius;
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
-
+			intersection.geo_n = intersection.n;
 			intersection.material_index = 0;
 
 			hit_t = t1;

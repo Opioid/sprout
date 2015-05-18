@@ -37,7 +37,7 @@ bool Disk::intersect(const Composed_transformation& transformation, const math::
 			intersection.t = transformation.rotation.x;
 			intersection.b = transformation.rotation.y;
 			intersection.n = normal;
-
+			intersection.geo_n = normal;
 			math::float3 sk = k / radius;
 
 			intersection.uv.x = (math::dot(intersection.t, sk) + 1.f) * 0.5f;

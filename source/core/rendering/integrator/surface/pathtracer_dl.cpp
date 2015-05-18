@@ -27,7 +27,9 @@ void Pathtracer_DL::start_new_pixel(uint32_t num_samples) {
 math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
 	sampler_.start_iteration(subsample);
 
-	scene::material::Sample::Result sample_result;
+	math::float3 sample_attenuation = math::float3(1.f, 1.f, 1.f);
+	scene::material::BxDF_type   sample_type = scene::material::BxDF_type::Reflection;
+	scene::material::BxDF_result sample_result;
 
 	bool hit = true;
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
@@ -76,7 +78,14 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 			break;
 		}
 
+		if (!material_sample.same_hemisphere(wo)) {
+			throughput *= attenuation(sample_attenuation, ray);
+		}
+
 		throughput *= sample_result.reflection / sample_result.pdf;
+
+		sample_attenuation = material_sample.attenuation();
+		sample_type = sample_result.type;
 
 		ray.set_direction(sample_result.wi);
 		ray.max_t = 1000.f;
@@ -121,6 +130,11 @@ bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Interse
 	}
 
 	return true;
+}
+
+math::float3 Pathtracer_DL::attenuation(const math::float3& c, const math::Oray& ray) {
+	float x = math::distance(ray.origin, ray.point(ray.max_t));
+	return math::float3(std::exp(-c.x * x), std::exp(-c.y * x), std::exp(-c.z * x));
 }
 
 Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces) :

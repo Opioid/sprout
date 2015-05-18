@@ -23,6 +23,8 @@ struct Triangle {
 	void interpolate_data(math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
 	math::float2 interpolate_uv(math::float2 uv) const;
 
+	math::float3 normal() const;
+
 	float area(const math::float3& scale) const;
 };
 

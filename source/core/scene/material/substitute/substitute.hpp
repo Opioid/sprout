@@ -8,22 +8,22 @@ namespace scene { namespace material { namespace substitute {
 
 class Sample;
 
-class Lambert : public BXDF<Sample> {
+class Lambert : public BxDF<Sample> {
 public:
 
 	Lambert(const Sample& sample);
 
 	virtual math::float3 evaluate(const math::float3& wi) const final override;
-	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const final override;
+	virtual void importance_sample(sampler::Sampler& sampler, BxDF_result& result) const final override;
 };
 
-class GGX : public BXDF<Sample> {
+class GGX : public BxDF<Sample> {
 public:
 
 	GGX(const Sample& sample);
 
 	virtual math::float3 evaluate(const math::float3& wi) const final override;
-	virtual math::float3 importance_sample(sampler::Sampler& sampler, math::float3& wi, float& pdf) const final override;
+	virtual void importance_sample(sampler::Sampler& sampler, BxDF_result& result) const final override;
 };
 
 class Sample : public material::Sample {
@@ -35,7 +35,9 @@ public:
 
 	virtual math::float3 emission() const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, Result& result) const final override;
+	virtual math::float3 attenuation() const final override;
+
+	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const final override;
 
 	void set(const math::float3& color, float roughness, float metallic);
 	void set(const math::float3& color, const math::float3& emission, float roughness, float metallic);

@@ -14,9 +14,15 @@ math::float3 Sample::emission() const {
 	return emission_;
 }
 
-void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, Result& result) const {
+math::float3 Sample::attenuation() const {
+	return math::float3(1.f, 1.f, 1.f);
+}
+
+void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
 	result.reflection = math::float3::identity;
 	result.pdf = 1.f;
+
+	result.type = BxDF_type::Reflection;
 }
 
 void Sample::set(const math::float3& emission) {
