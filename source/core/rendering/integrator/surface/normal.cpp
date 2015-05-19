@@ -21,7 +21,7 @@ math::float3 Normal::li(Worker& worker, uint32_t /*subsample*/, math::Oray& ray,
 	math::float3 wo = -ray.direction;
 	auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
-	return 0.5f * (material_sample.normal() + math::float3(1.f, 1.f, 1.f));
+	return 0.5f * (material_sample.geometry_normal() + math::float3(1.f, 1.f, 1.f));
 }
 
 Normal_factory::Normal_factory(const take::Settings& take_settings) : Surface_integrator_factory(take_settings) {

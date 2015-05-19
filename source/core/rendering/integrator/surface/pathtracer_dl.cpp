@@ -69,10 +69,6 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 				float mv = worker.masked_visibility(ray, settings_.sampler);
 				if (mv > 0.f) {
 					result += mv * (throughput * ls.energy * material_sample.evaluate(ls.l)) / (light_pdf * ls.pdf);
-
-					if (math::contains_nan(result) || math::contains_inf(result)) {
-						std::cout << "lighting stuff: nan/inf" << std::endl;
-					}
 				}
 			}
 		}

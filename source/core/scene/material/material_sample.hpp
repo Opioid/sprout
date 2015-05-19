@@ -28,7 +28,7 @@ public:
 		return n_;
 	}
 
-	const math::float3& geometric_normal() const {
+	const math::float3& geometry_normal() const {
 		return geo_n_;
 	}
 
