@@ -27,9 +27,9 @@ public:
 
 	virtual uint32_t num_parts() const;
 
-	virtual bool intersect(const Composed_transformation& transformation, const math::Oray& ray,
+	virtual bool intersect(const Composed_transformation& transformation, math::Oray& ray,
 						   const math::float2& bounds, Node_stack& node_stack,
-						   Intersection& intersection, float& hit_t) const = 0;
+						   Intersection& intersection) const = 0;
 
 	virtual bool intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
 							 const math::float2& bounds, Node_stack& node_stack) const = 0;

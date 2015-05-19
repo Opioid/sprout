@@ -51,7 +51,7 @@ public:
 	bool intersect(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack,
+	float opacity(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack,
 				  const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const;
 
 	void interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
@@ -69,9 +69,6 @@ public:
 	void add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
 
 private:
-
-	bool intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const;
-	bool intersect_node_p(uint32_t n, const math::Oray& ray) const;
 
 	std::vector<XNode> nodes_;
 

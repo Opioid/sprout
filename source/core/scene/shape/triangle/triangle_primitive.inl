@@ -5,7 +5,7 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-inline bool Triangle::intersect(const math::Oray& ray, Coordinates& coordinates) const {
+inline bool Triangle::intersect(math::Oray& ray, math::float2& uv) const {
 	math::float3 e1 = b.p - a.p;
 	math::float3 e2 = c.p - a.p;
 
@@ -31,9 +31,9 @@ inline bool Triangle::intersect(const math::Oray& ray, Coordinates& coordinates)
 	float hit_t = math::dot(e2, qvec) * inv_det;
 
 	if (hit_t > ray.min_t && hit_t < ray.max_t) {
-		coordinates.t = hit_t;
-		coordinates.uv.x = u;
-		coordinates.uv.y = v;
+		ray.max_t = hit_t;
+		uv.x = u;
+		uv.y = v;
 		return true;
 	}
 

@@ -41,14 +41,8 @@ bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersectio
 		}
 	}
 
-	float hit_t;
-	bool hit = shape_->intersect(transformation, ray, bounds, node_stack, intersection, hit_t);
-	if (hit) {
-		ray.max_t = hit_t;
-		return true;
-	}
 
-	return false;
+	return shape_->intersect(transformation, ray, bounds, node_stack, intersection);
 }
 
 bool Prop::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {

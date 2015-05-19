@@ -4,13 +4,8 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-struct Coordinates {
-	float t;
-	math::float2 uv;
-};
-
 struct Intersection {
-	Coordinates c;
+	math::float2 uv;
 	uint32_t index;
 };
 

@@ -21,9 +21,9 @@ uint32_t Mesh::num_parts() const {
 	return tree_.num_parts();
 }
 
-bool Mesh::intersect(const Composed_transformation& transformation, const math::Oray& ray,
+bool Mesh::intersect(const Composed_transformation& transformation, math::Oray& ray,
 					 const math::float2& bounds, Node_stack& node_stack,
-					 shape::Intersection& intersection, float& hit_t) const {
+					 shape::Intersection& intersection) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
 	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
@@ -32,14 +32,14 @@ bool Mesh::intersect(const Composed_transformation& transformation, const math::
 
 	Intersection pi;
 	if (tree_.intersect(tray, bounds, node_stack, pi)) {
-		intersection.epsilon = 3e-3f * pi.c.t;
+		intersection.epsilon = 3e-3f * tray.max_t;
 
-		intersection.p = ray.point(pi.c.t);
+		intersection.p = ray.point(tray.max_t);
 
 		math::float3 n;
 		math::float3 t;
 		math::float2 uv;
-		tree_.interpolate_triangle_data(pi.index, pi.c.uv, n, t, uv);
+		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
 
 		intersection.geo_n = math::transform_vector(transformation.rotation, tree_.triangle_normal(pi.index));
 	//	intersection.n = math::transform_vector(transformation.rotation, n);
@@ -51,7 +51,7 @@ bool Mesh::intersect(const Composed_transformation& transformation, const math::
 		intersection.uv = uv;
 		intersection.material_index = tree_.triangle_material_index(pi.index);
 
-		hit_t = pi.c.t;
+		ray.max_t = tray.max_t;
 		return true;
 	}
 

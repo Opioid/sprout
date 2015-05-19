@@ -80,24 +80,20 @@ bool Tree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersectio
 			hit = true;
 		}
 	} else {
-		Coordinates c;
+		math::float2 uv;
 		Intersection ti;
-		ti.c.t = ray.max_t;
 
 		for (uint32_t i = node.start_index; i < node.end_index; ++i) {
-			if (triangles_[i].intersect(ray, c)) {
-				if (c.t < ti.c.t) {
-					ti.c = c;
-					ti.index = i;
-					hit = true;
-				}
+			if (triangles_[i].intersect(ray, uv)) {
+				ti.uv = uv;
+				ti.index = i;
+				hit = true;
 			}
 
 		}
 
 		if (hit) {
 			intersection = ti;
-			ray.max_t = ti.c.t;
 		}
 	}
 

@@ -13,9 +13,9 @@ Sphere::Sphere() {
 	aabb_.set_min_max(math::float3(-1.f, -1.f, -1.f), math::float3(1.f, 1.f, 1.f));
 }
 
-bool Sphere::intersect(const Composed_transformation& transformation, const math::Oray& ray,
+bool Sphere::intersect(const Composed_transformation& transformation, math::Oray& ray,
 					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-					   Intersection& intersection, float& hit_t) const {
+					   Intersection& intersection) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -34,7 +34,7 @@ bool Sphere::intersect(const Composed_transformation& transformation, const math
 			intersection.geo_n = intersection.n;
 			intersection.material_index = 0;
 
-			hit_t = t0;
+			ray.max_t = t0;
 			return true;
 		}
 
@@ -49,7 +49,7 @@ bool Sphere::intersect(const Composed_transformation& transformation, const math
 			intersection.geo_n = intersection.n;
 			intersection.material_index = 0;
 
-			hit_t = t1;
+			ray.max_t = t1;
 			return true;
 		}
 	}

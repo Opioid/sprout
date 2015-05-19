@@ -11,9 +11,9 @@ Plane::Plane() {
 	aabb_.set_min_max(math::float3::identity, math::float3::identity);
 }
 
-bool Plane::intersect(const Composed_transformation& transformation, const math::Oray& ray,
+bool Plane::intersect(const Composed_transformation& transformation, math::Oray& ray,
 					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-					  Intersection& intersection, float& hit_t) const {
+					  Intersection& intersection) const {
 	const math::float3& normal = transformation.rotation.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
@@ -33,7 +33,7 @@ bool Plane::intersect(const Composed_transformation& transformation, const math:
 
 		intersection.material_index = 0;
 
-		hit_t = t;
+		ray.max_t = t;
 		return true;
 	}
 

@@ -31,7 +31,7 @@ int main() {
 
 	auto loading_start = clock.now();
 
-	std::string takename = "../data/takes/material_test.take";
+	std::string takename = "../data/takes/sponza.take";
 
 	std::shared_ptr<take::Take> take;
 

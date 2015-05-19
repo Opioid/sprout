@@ -10,13 +10,11 @@ struct Index_triangle {
 	uint32_t material_index;
 };
 
-struct Coordinates;
-
 struct Triangle {
 	Vertex a, b, c;
 	uint32_t material_index;
 
-	bool intersect(const math::Oray& ray, Coordinates& coordinates) const;
+	bool intersect(math::Oray& ray, math::float2& uv) const;
 	bool intersect_p(const math::Oray& ray) const;
 
 	void interpolate(math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const;

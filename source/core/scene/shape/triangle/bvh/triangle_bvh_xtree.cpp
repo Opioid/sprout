@@ -50,40 +50,34 @@ const std::vector<Triangle>& XTree::triangles() const {
 bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack, Intersection& intersection) const {
 	node_stack.clear();
 	node_stack.push_back(0);
+	uint32_t n = 0;
 
-	Coordinates c;
-	Intersection ti;
-
+	math::float2 uv;
 	bool hit = false;
 
 	while (!node_stack.empty()) {
-		uint32_t n = node_stack.back();
-		node_stack.pop_back();
 		auto& node = nodes_[n];
 
 		if (node.aabb.intersect_p(ray)) {
 			if (node.has_children()) {
 				auto children = node.children(ray.sign[node.axis], n);
 				node_stack.push_back(children.b);
-				node_stack.push_back(children.a);
+				n = children.a;
 			} else {
-				ti.c.t = ray.max_t;
-
 				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
-					if (triangles_[i].intersect(ray, c)) {
-						if (c.t < ti.c.t) {
-							ti.c = c;
-							ti.index = i;
-							hit = true;
-						}
+					if (triangles_[i].intersect(ray, uv)) {
+						intersection.uv = uv;
+						intersection.index = i;
+						hit = true;
 					}
 				}
 
-				if (hit) {
-					intersection = ti;
-					ray.max_t = ti.c.t;
-				}
+				n = node_stack.back();
+				node_stack.pop_back();
 			}
+		} else {
+			n = node_stack.back();
+			node_stack.pop_back();
 		}
 	}
 
@@ -93,61 +87,72 @@ bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stac
 bool XTree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack) const {
 	node_stack.clear();
 	node_stack.push_back(0);
+	uint32_t n = 0;
 
 	while (!node_stack.empty()) {
-		uint32_t n = node_stack.back();
-		node_stack.pop_back();
 		auto& node = nodes_[n];
 
 		if (node.aabb.intersect_p(ray)) {
 			if (node.has_children()) {
 				auto children = node.children(ray.sign[node.axis], n);
 				node_stack.push_back(children.b);
-				node_stack.push_back(children.a);
+				n = children.a;
 			} else {
 				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
 					if (triangles_[i].intersect_p(ray)) {
 						return true;
 					}
 				}
+
+				n = node_stack.back();
+				node_stack.pop_back();
 			}
+		} else {
+			n = node_stack.back();
+			node_stack.pop_back();
 		}
 	}
 
 	return false;
 }
 
-float XTree::opacity(const math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack,
+float XTree::opacity(math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack,
 					 const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const {
 	node_stack.clear();
 	node_stack.push_back(0);
+	uint32_t n = 0;
 
 	float opacity = 0.f;
 
-	Coordinates c;
 	math::float2 uv;
+	float max_t = ray.max_t;
 
 	while (!node_stack.empty()) {
-		uint32_t n = node_stack.back();
-		node_stack.pop_back();
 		auto& node = nodes_[n];
 
 		if (node.aabb.intersect_p(ray)) {
 			if (node.has_children()) {
 				auto children = node.children(ray.sign[node.axis], n);
 				node_stack.push_back(children.b);
-				node_stack.push_back(children.a);
+				n = children.a;
 			} else {
 				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
-					if (triangles_[i].intersect(ray, c)) {
-						uv = triangles_[i].interpolate_uv(c.uv);
+					if (triangles_[i].intersect(ray, uv)) {
+						uv = triangles_[i].interpolate_uv(uv);
 						opacity += (1.f - opacity) * materials[triangles_[i].material_index]->opacity(uv, sampler);
 						if (opacity >= 1.f) {
 							return 1.f;
 						}
+						ray.max_t = max_t;
 					}
 				}
+
+				n = node_stack.back();
+				node_stack.pop_back();
 			}
+		} else {
+			n = node_stack.back();
+			node_stack.pop_back();
 		}
 	}
 
@@ -172,75 +177,6 @@ math::float3 XTree::triangle_normal(uint32_t index) const {
 
 void XTree::sample(uint32_t triangle, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const {
 	triangles_[triangle].interpolate(math::sample_triangle_uniform(r2), p, n, tc);
-}
-
-bool XTree::intersect_node(uint32_t n, math::Oray& ray, Intersection& intersection) const {
-	auto& node = nodes_[n];
-
-	if (!node.aabb.intersect_p(ray)) {
-		return false;
-	}
-
-	bool hit = false;
-
-	if (node.has_children()) {
-		auto children = node.children(ray.sign[node.axis], n);
-
-		if (intersect_node(children.a, ray, intersection)) {
-			hit = true;
-		}
-
-		if (intersect_node(children.b, ray, intersection)) {
-			hit = true;
-		}
-	} else {
-		Coordinates c;
-		Intersection ti;
-		ti.c.t = ray.max_t;
-
-		for (uint32_t i = node.start_index; i < node.end_index; ++i) {
-			if (triangles_[i].intersect(ray, c)) {
-				if (c.t < ti.c.t) {
-					ti.c = c;
-					ti.index = i;
-					hit = true;
-				}
-			}
-		}
-
-		if (hit) {
-			intersection = ti;
-			ray.max_t = ti.c.t;
-		}
-	}
-
-	return hit;
-}
-
-bool XTree::intersect_node_p(uint32_t n, const math::Oray& ray) const {
-	auto& node = nodes_[n];
-
-	if (!node.aabb.intersect_p(ray)) {
-		return false;
-	}
-
-	if (node.has_children()) {
-		auto children = node.children(ray.sign[node.axis], n);
-
-		if (intersect_node_p(children.a, ray)) {
-			return true;
-		}
-
-		return intersect_node_p(children.b, ray);
-	}
-
-	for (uint32_t i = node.start_index; i < node.end_index; ++i) {
-		if (triangles_[i].intersect_p(ray)) {
-			return true;
-		}
-	}
-
-	return false;
 }
 
 std::vector<XNode>& XTree::allocate_nodes(uint32_t num_nodes) {
