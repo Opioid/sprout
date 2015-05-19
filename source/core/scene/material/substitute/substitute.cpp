@@ -35,7 +35,9 @@ math::float3 GGX::evaluate(const math::float3& /*wi*/) const {
 void GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
 	math::float2 xi = sampler.generate_sample2d(0);
 
-	float n_dot_h = std::sqrt((1.f - xi.y) / ((sample_.a2_ - 1.f) * xi.y + 1.f));
+	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
+	// TODO: Optimize the perfect mirror case more
+	float n_dot_h = 0.f == sample_.a2_ ? 1.f : std::sqrt((1.f - xi.y) / ((sample_.a2_ - 1.f) * xi.y + 1.f));
 	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 	float phi = 2.f * math::Pi * xi.x;
 	float sin_phi = std::sin(phi);
@@ -66,6 +68,12 @@ Sample::Sample() : lambert_(*this), ggx_(*this) {}
 
 math::float3 Sample::evaluate(const math::float3& wi) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
+
+	// Roughness zero will always have zero specular term (or worse NaN)
+	if (0.f == a2_) {
+		return n_dot_wi * math::Pi_inv * diffuse_color_;
+	}
+
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	math::float3 h = math::normalized(wo_ + wi);

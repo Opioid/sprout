@@ -28,6 +28,10 @@ public:
 		return n_;
 	}
 
+	const math::float3& geometric_normal() const {
+		return geo_n_;
+	}
+
 	math::float3 tangent_to_world(const math::float3& v) const {
 		return math::float3(
 			v.x * t_.x + v.y * b_.x + v.z * n_.x,
@@ -36,7 +40,7 @@ public:
 	}
 
 	bool same_hemisphere(const math::float3& v) const {
-		return math::dot(n_, v) >= 0.f;
+		return math::dot(geo_n_, v) > 0.f;
 	}
 
 	void set_basis(const math::float3& t, const math::float3& b, const math::float3& n, const math::float3& geo_n, const math::float3& wo) {

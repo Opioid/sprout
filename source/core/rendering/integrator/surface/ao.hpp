@@ -17,15 +17,15 @@ public:
 
 	Ao(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
 
-	virtual void start_new_pixel(uint32_t num_samples);
+	virtual void start_new_pixel(uint32_t num_samples) final override;
 
-	virtual math::float3 li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection);
+	virtual math::float3 li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) final override;
 
 private:
 
 	Settings settings_;
 
-	sampler::EMS sampler_;
+	sampler::Random sampler_;
 };
 
 class Ao_factory : public Surface_integrator_factory {

@@ -53,7 +53,6 @@ void XBuilder::serialize(XBuild_node* node) {
 	n.aabb = node->aabb;
 	n.start_index = node->start_index;
 	n.end_index = node->end_index;
-	n.axis = node->axis;
 
 	if (node->children[0]) {
 		serialize(node->children[0]);
@@ -63,6 +62,9 @@ void XBuilder::serialize(XBuild_node* node) {
 		serialize(node->children[1]);
 
 		n.set_has_children(true);
+
+		// axis and start_index share the same memory, so only set this if node contains no triangles
+		n.set_axis(node->axis);
 	}
 }
 

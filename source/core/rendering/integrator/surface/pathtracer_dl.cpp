@@ -13,7 +13,7 @@
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
-//#include <iostream>
+#include <iostream>
 
 namespace rendering {
 
@@ -69,6 +69,10 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 				float mv = worker.masked_visibility(ray, settings_.sampler);
 				if (mv > 0.f) {
 					result += mv * (throughput * ls.energy * material_sample.evaluate(ls.l)) / (light_pdf * ls.pdf);
+
+					if (math::contains_nan(result) || math::contains_inf(result)) {
+						std::cout << "lighting stuff: nan/inf" << std::endl;
+					}
 				}
 			}
 		}
@@ -101,11 +105,11 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 		result += throughput * r;
 	}
 
-/*
+
 	if (math::contains_nan(result) || math::contains_inf(result)) {
-		std::cout << "nan/inf" << std::endl;
+		std::cout << "result: nan/inf" << std::endl;
 	}
-*/
+
 	return result;
 }
 

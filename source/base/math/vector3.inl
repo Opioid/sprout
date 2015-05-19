@@ -237,7 +237,7 @@ void coordinate_system(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b) {
 		r1 = Vector3<T>(T(0), T(0), T(1));
 	}
 
-	Vector3<T> r0 = cross(n, r1);
+	Vector3<T> r0 = normalized(cross(n, r1));
 
 	t = r0;
 	b = cross(r0, n);

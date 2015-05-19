@@ -1,6 +1,7 @@
 #include "ao.hpp"
 #include "rendering/worker.hpp"
 #include "scene/prop/prop_intersection.hpp"
+#include "take/take_settings.hpp"
 #include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
@@ -20,7 +21,7 @@ math::float3 Ao::li(Worker& worker, uint32_t subsample, math::Oray& /*ray*/, sce
 
 	math::Oray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
-	occlusion_ray.min_t = intersection.geo.epsilon;
+	occlusion_ray.min_t = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 	occlusion_ray.max_t = settings_.radius;
 
 	float result = 0.f;

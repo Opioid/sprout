@@ -7,7 +7,15 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-XNode::Children XNode::children(uint8_t sign, uint32_t id) const {
+inline uint32_t XNode::axis() const {
+	return start_index & ~has_children_flag;
+}
+
+void XNode::set_axis(uint32_t axis) {
+	start_index |= axis;
+}
+
+inline XNode::Children XNode::children(uint8_t sign, uint32_t id) const {
 	if (0 == sign) {
 		return Children{id + 1, end_index};
 	} else {
@@ -15,7 +23,12 @@ XNode::Children XNode::children(uint8_t sign, uint32_t id) const {
 	}
 }
 
-bool XNode::has_children() const {
+/*
+inline uint32_t XNode::axis() const {
+	return end_index;
+}*/
+
+inline bool XNode::has_children() const {
 	return has_children_flag == (start_index & has_children_flag);
 }
 
@@ -53,22 +66,20 @@ bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stac
 	uint32_t n = 0;
 
 	math::float2 uv;
-	bool hit = false;
+	uint32_t index = 0xFFFFFFFF;
 
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
 		if (node.aabb.intersect_p(ray)) {
 			if (node.has_children()) {
-				auto children = node.children(ray.sign[node.axis], n);
+				auto children = node.children(ray.sign[node.axis()], n);
 				node_stack.push_back(children.b);
 				n = children.a;
 			} else {
 				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
 					if (triangles_[i].intersect(ray, uv)) {
-						intersection.uv = uv;
-						intersection.index = i;
-						hit = true;
+						index = i;
 					}
 				}
 
@@ -81,7 +92,10 @@ bool XTree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stac
 		}
 	}
 
-	return hit;
+	intersection.uv = uv;
+	intersection.index = index;
+
+	return index != 0xFFFFFFFF;
 }
 
 bool XTree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack) const {
@@ -94,7 +108,7 @@ bool XTree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, N
 
 		if (node.aabb.intersect_p(ray)) {
 			if (node.has_children()) {
-				auto children = node.children(ray.sign[node.axis], n);
+				auto children = node.children(ray.sign[node.axis()], n);
 				node_stack.push_back(children.b);
 				n = children.a;
 			} else {
@@ -132,7 +146,7 @@ float XTree::opacity(math::Oray& ray, const math::float2& /*bounds*/, Node_stack
 
 		if (node.aabb.intersect_p(ray)) {
 			if (node.has_children()) {
-				auto children = node.children(ray.sign[node.axis], n);
+				auto children = node.children(ray.sign[node.axis()], n);
 				node_stack.push_back(children.b);
 				n = children.a;
 			} else {

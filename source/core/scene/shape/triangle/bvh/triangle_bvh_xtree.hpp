@@ -19,11 +19,14 @@ struct Triangle;
 namespace bvh {
 
 struct XNode {
-	static const uint32_t has_children_flag = 0xFFFFFFFF;
+	static const uint32_t has_children_flag = 0xFFFFFFFC;
 
 	struct Children {
 		uint32_t a, b;
 	};
+
+	uint32_t axis() const;
+	void set_axis(uint32_t axis);
 
 	Children children(uint8_t sign, uint32_t id) const;
 
@@ -35,7 +38,6 @@ struct XNode {
 	math::aabb aabb;
 	uint32_t start_index;
 	uint32_t end_index;
-	uint8_t axis;
 };
 
 class XTree  {
