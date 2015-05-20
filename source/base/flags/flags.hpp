@@ -4,7 +4,6 @@ namespace flags {
 
 template<typename T>
 struct Flags {
-
 	using impl_type = typename std::underlying_type<T>::type;
 
 	inline Flags() : values(impl_type(0)) {}
