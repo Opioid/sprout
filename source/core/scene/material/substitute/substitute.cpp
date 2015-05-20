@@ -23,7 +23,7 @@ void Lambert::importance_sample(sampler::Sampler& sampler, BxDF_result& result) 
 
 	result.reflection = sample_.diffuse_color_;
 
-	result.type.set(BxDF_type::Reflection);
+	result.type.clear_set(BxDF_type::Diffuse_reflection);
 }
 
 GGX::GGX(const Sample& sample) : BxDF(sample) {}
@@ -61,7 +61,7 @@ void GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) cons
 	math::float3 specular = g * f;
 	result.reflection = n_dot_wi * specular;
 
-	result.type.set(BxDF_type::Reflection);
+	result.type.clear_set(0.f == sample_.a2_ ? BxDF_type::Specular_transmission : BxDF_type::Glossy_transmission);
 }
 
 Sample::Sample() : lambert_(*this), ggx_(*this) {}

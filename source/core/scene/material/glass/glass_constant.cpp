@@ -1,6 +1,7 @@
 #include "glass_constant.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
+#include "base/math/vector.inl"
 #include <algorithm>
 
 // https://seblagarde.wordpress.com/2011/08/17/feeding-a-physical-based-lighting-mode/

@@ -28,9 +28,9 @@ void Pathtracer_DL::start_new_pixel(uint32_t num_samples) {
 math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& ray, scene::Intersection& intersection) {
 	sampler_.start_iteration(subsample);
 
-	math::float3 sample_attenuation = math::float3(1.f, 1.f, 1.f);
 	scene::material::BxDF_result sample_result;
-	scene::material::BxDF_result::Type sample_type;
+	scene::material::BxDF_result::Type previous_sample_type;
+	math::float3 previous_sample_attenuation = math::float3(1.f, 1.f, 1.f);
 
 	bool hit = true;
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
@@ -47,11 +47,11 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
 		if (material_sample.same_hemisphere(wo)) {
-			if (0 == i) {
-				result += material_sample.emission();
+			if (0 == i || previous_sample_type.test(scene::material::BxDF_type::Specular)) {
+				result += throughput * material_sample.emission();
 			}
 		} else {
-			throughput *= attenuation(ray.origin, intersection.geo.p, sample_attenuation);
+			throughput *= attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
 		}
 
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
@@ -83,8 +83,8 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 
-		sample_attenuation = material_sample.attenuation();
-		sample_type = sample_result.type;
+		previous_sample_type = sample_result.type;
+		previous_sample_attenuation = material_sample.attenuation();
 
 		ray.set_direction(sample_result.wi);
 		ray.max_t = 1000.f;

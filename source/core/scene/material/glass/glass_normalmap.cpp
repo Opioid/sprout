@@ -3,6 +3,7 @@
 #include "scene/shape/geometry/differential.hpp"
 #include "image/texture/texture_2d.inl"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "base/math/vector.inl"
 #include <algorithm>
 
 // https://seblagarde.wordpress.com/2011/08/17/feeding-a-physical-based-lighting-mode/
