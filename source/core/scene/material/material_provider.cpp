@@ -2,6 +2,7 @@
 #include "material_sample_cache.inl"
 #include "image/image_provider.hpp"
 #include "glass/glass_constant.hpp"
+#include "glass/glass_normalmap.hpp"
 #include "light/light_constant.hpp"
 #include "substitute/substitute_colormap.hpp"
 #include "substitute/substitute_colormap_normalmap.hpp"
@@ -62,7 +63,9 @@ std::shared_ptr<IMaterial> Provider::fallback_material() const {
 
 std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_value) {
 	math::float3 color(1.f, 1.f, 1.f);
+	float attenuation_distance = 1.f;
 	float ior = 1.5f;
+	std::shared_ptr<image::Image> normalmap;
 
 	for (auto n = glass_value.MemberBegin(); n != glass_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -70,12 +73,31 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 
 		if ("color" == node_name) {
 			color = json::read_float3(node_value);
+		} else if ("attenuation_distance" == node_name) {
+			attenuation_distance = json::read_float(node_value);
 		} else if ("ior" == node_name) {
 			ior = json::read_float(node_value);
+		} else if ("textures" == node_name) {
+			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+				std::string filename = json::read_string(*tn, "file", "");
+				std::string usage    = json::read_string(*tn, "usage", "Color");
+
+				if (filename.empty()) {
+					continue;
+				}
+
+				if ("Normal" == usage) {
+					normalmap = image_cache_.load(filename, static_cast<uint32_t>(image::Provider::Flags::Use_as_normal));
+				}
+			}
 		}
 	}
 
-	return std::make_shared<glass::Constant>(glass_cache_, nullptr, color, ior);
+	if (normalmap) {
+		return std::make_shared<glass::Normalmap>(glass_cache_, nullptr, color, attenuation_distance, ior, normalmap);
+	}
+
+	return std::make_shared<glass::Constant>(glass_cache_, nullptr, color, attenuation_distance, ior);
 }
 
 std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {

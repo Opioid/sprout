@@ -39,12 +39,12 @@ public:
 
 	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const final override;
 
-	void set(const math::float3& color, float ior, float f0);
+	void set(const math::float3& color, const math::float3& attenuation, float ior, float f0);
 
 private:
 
 	math::float3 color_;
-
+	math::float3 attenuation_;
 	float ior_;
 	float f0_;
 

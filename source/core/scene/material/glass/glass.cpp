@@ -85,7 +85,7 @@ math::float3 Sample::emission() const {
 }
 
 math::float3 Sample::attenuation() const {
-	return math::float3(1.f, 1.f, 1.f) - color_;
+	return attenuation_;
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
@@ -104,10 +104,11 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 //	btdf_.importance_sample(sampler, result);
 }
 
-void Sample::set(const math::float3& color, float ior, float f0) {
+void Sample::set(const math::float3& color, const math::float3& attenuation, float ior, float f0) {
 	color_ = color;
-	ior_   = ior;
-	f0_    = f0;
+	attenuation_ = attenuation;
+	ior_ = ior;
+	f0_  = f0;
 }
 
 Glass::Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}

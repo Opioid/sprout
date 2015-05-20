@@ -42,7 +42,7 @@ math::float3 Pathtracer::li(Worker& worker, uint32_t subsample, math::Oray& ray,
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
-		if (math::dot(intersection.geo.n, wo) > 0.f) {
+		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.emission();
 		}
 
