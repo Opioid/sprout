@@ -1,4 +1,5 @@
 #include "pathtracer_dl.hpp"
+#include "integrator_helper.hpp"
 #include "rendering/worker.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
@@ -45,10 +46,12 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
-		if (0 == i) {
-			if (math::dot(intersection.geo.n, wo) > 0.f) {
+		if (material_sample.same_hemisphere(wo)) {
+			if (0 == i) {
 				result += material_sample.emission();
 			}
+		} else {
+			throughput *= attenuation(ray.origin, intersection.geo.p, sample_attenuation);
 		}
 
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
@@ -78,10 +81,6 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 			break;
 		}
 
-		if (!material_sample.same_hemisphere(wo)) {
-			throughput *= attenuation(sample_attenuation, ray);
-		}
-
 		throughput *= sample_result.reflection / sample_result.pdf;
 
 		sample_attenuation = material_sample.attenuation();
@@ -99,11 +98,6 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 	if (!hit) {
 		math::float3 r = worker.scene().surrounding()->sample(ray);
 		result += throughput * r;
-	}
-
-
-	if (math::contains_nan(result) || math::contains_inf(result)) {
-		std::cout << "result: nan/inf" << std::endl;
 	}
 
 	return result;
@@ -130,11 +124,6 @@ bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Interse
 	}
 
 	return true;
-}
-
-math::float3 Pathtracer_DL::attenuation(const math::float3& c, const math::Oray& ray) {
-	float x = math::distance(ray.origin, ray.point(ray.max_t));
-	return math::float3(std::exp(-c.x * x), std::exp(-c.y * x), std::exp(-c.z * x));
 }
 
 Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces) :

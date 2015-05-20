@@ -7,6 +7,7 @@ SOURCES += \
 
 HEADERS += \
 	rendering/integrator/surface/ao.hpp \
+	rendering/integrator/surface/integrator_helper.hpp \
 	rendering/integrator/surface/normal.hpp \
 	rendering/integrator/surface/whitted.hpp \
 	rendering/integrator/surface/pathtracer.hpp \
