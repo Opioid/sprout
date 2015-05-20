@@ -29,8 +29,8 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 	sampler_.start_iteration(subsample);
 
 	math::float3 sample_attenuation = math::float3(1.f, 1.f, 1.f);
-	scene::material::BxDF_type   sample_type = scene::material::BxDF_type::Reflection;
 	scene::material::BxDF_result sample_result;
+	scene::material::BxDF_result::Type sample_type;
 
 	bool hit = true;
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);

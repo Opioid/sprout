@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/math/vector.hpp"
+#include "base/flags/flags.hpp"
 
 namespace sampler {
 
@@ -19,7 +20,9 @@ struct BxDF_result {
 	math::float3 reflection;
 	math::float3 wi;
 	float        pdf;
-	BxDF_type	 type;
+
+	typedef flags::Flags<BxDF_type> Type;
+	Type type;
 };
 
 template<typename Sample>

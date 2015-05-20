@@ -31,7 +31,7 @@ void BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 
 	result.reflection = fresnel(result.wi, sample_.wo_, sample_.f0_);
 
-	result.type = BxDF_type::Reflection;
+	result.type.set(BxDF_type::Reflection);
 }
 
 BTDF::BTDF(const Sample& sample) : BxDF(sample) {}
@@ -71,7 +71,7 @@ void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 
 	result.reflection = (math::float3(1.f, 1.f, 1.f) - f) * sample_.color_;
 
-	result.type = BxDF_type::Transmission;
+	result.type.set(BxDF_type::Transmission);
 }
 
 Sample::Sample() : brdf_(*this), btdf_(*this) {}

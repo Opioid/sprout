@@ -22,7 +22,7 @@ void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	result.reflection = math::float3::identity;
 	result.pdf = 1.f;
 
-	result.type = BxDF_type::Reflection;
+	result.type.set(BxDF_type::Reflection);
 }
 
 void Sample::set(const math::float3& emission) {
