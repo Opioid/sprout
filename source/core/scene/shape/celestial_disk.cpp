@@ -14,9 +14,28 @@ Celestial_disk::Celestial_disk() {
 	aabb_.set_min_max(math::float3::identity, math::float3::identity);
 }
 
-bool Celestial_disk::intersect(const Composed_transformation& /*transformation*/, math::Oray& /*ray*/,
+bool Celestial_disk::intersect(const Composed_transformation& transformation, math::Oray& ray,
 							   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-							   Intersection& /*intersection*/) const {
+							   Intersection& intersection) const {
+	const math::float3& v = transformation.rotation.z;
+	float b = -dot(v, ray.direction);
+	float radius = transformation.scale.x;
+	float det = (b * b) - dot(v, v) + (radius * radius);
+
+	if (det > 0.f) {
+		intersection.epsilon = 5e-4f;
+
+		intersection.p = ray.point(1000.f);
+		intersection.t = transformation.rotation.x;
+		intersection.b = transformation.rotation.y;
+		intersection.n = transformation.rotation.z;
+		intersection.geo_n = transformation.rotation.z;
+		intersection.material_index = 0;
+
+		ray.max_t = 1000.f;
+		return true;
+	}
+
 	return false;
 }
 
@@ -40,7 +59,7 @@ void Celestial_disk::importance_sample(uint32_t /*part*/, const Composed_transfo
 	math::float3 ls = math::float3(xy, 0.f);
 	math::float3 ws = transformation.scale.x * math::transform_vector(transformation.rotation, ls);
 
-	wi = math::normalized(-transformation.rotation.z + ws);
+	wi = math::normalized(ws - transformation.rotation.z);
 	t = 1000.f;
 	pdf = 1.f;
 }

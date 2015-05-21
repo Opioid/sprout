@@ -41,8 +41,7 @@ math::float3 BTDF::evaluate(const math::float3& /*wi*/) const {
 }
 
 void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
-	float etat = sample_.ior_;
-	float eta  = 1.f / etat;
+	float eta  = 1.f / sample_.ior_;
 
 	math::float3 n = sample_.n_;
 
@@ -53,7 +52,7 @@ void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	if (cosi < 0.f) {
 		cosi = -cosi;
 		n *= -1.f;
-		eta = etat / 1.f;
+		eta = sample_.ior_;
 	}
 
 	float cost2 = 1.f - eta * eta * (1.f - cosi * cosi);
@@ -65,7 +64,8 @@ void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	math::float3 t = eta * incident + (eta * cosi - std::sqrt(cost2)) * n;
 	result.wi = math::normalized(t);
 
-	math::float3 f = fresnel(math::normalized(math::reflect(n, -sample_.wo_)), sample_.wo_, sample_.f0_);
+	// fresnel has to be the same value that would have been computed by BRDF
+	math::float3 f = fresnel(math::normalized(math::reflect(n, incident)), sample_.wo_, sample_.f0_);
 
 	result.pdf = 1.f;
 
