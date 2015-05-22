@@ -48,7 +48,6 @@ void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	math::float3 incident = -sample_.wo_;
 
 	float cosi = -math::dot(incident, n);
-
 	if (cosi < 0.f) {
 		cosi = -cosi;
 		n *= -1.f;
