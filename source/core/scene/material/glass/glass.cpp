@@ -11,11 +11,11 @@ math::float3 BRDF::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
-math::float3 fresnel(const math::float3& wi, const math::float3& wo, float f0) {
+float fresnel(const math::float3& wi, const math::float3& wo, float f0) {
 	math::float3 h = math::normalized(wo + wi);
 	float wo_dot_h = math::dot(wo, h);
 
-	return ggx::f(wo_dot_h, math::float3(f0, f0, f0));
+	return ggx::f(wo_dot_h, f0);
 }
 
 void BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
@@ -29,7 +29,7 @@ void BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 
 	result.pdf = 1.f;
 
-	result.reflection = fresnel(result.wi, sample_.wo_, sample_.f0_);
+	result.reflection = math::float3(fresnel(result.wi, sample_.wo_, sample_.f0_));
 
 	result.type.clear_set(BxDF_type::Specular_reflection);
 }
@@ -63,12 +63,11 @@ void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	math::float3 t = eta * incident + (eta * cosi - std::sqrt(cost2)) * n;
 	result.wi = math::normalized(t);
 
-	// fresnel has to be the same value that would have been computed by BRDF
-	math::float3 f = fresnel(math::normalized(math::reflect(n, incident)), sample_.wo_, sample_.f0_);
-
 	result.pdf = 1.f;
 
-	result.reflection = (math::float3(1.f, 1.f, 1.f) - f) * sample_.color_;
+	// fresnel has to be the same value that would have been computed by BRDF
+	float f = fresnel(math::normalized(math::reflect(n, incident)), sample_.wo_, sample_.f0_);
+	result.reflection = (1.f - f) * sample_.color_;
 
 	result.type.clear_set(BxDF_type::Specular_transmission);
 }
@@ -88,7 +87,7 @@ math::float3 Sample::attenuation() const {
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
-	float p = sampler.generate_sample1d(0);
+	float p = sampler.generate_sample_1d(0);
 
 	if (p < 0.5f) {
 		brdf_.importance_sample(sampler, result);

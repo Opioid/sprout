@@ -14,7 +14,7 @@ math::float3 Lambert::evaluate(const math::float3& /*wi*/) const {
 }
 
 void Lambert::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
-	math::float2 s2d = sampler.generate_sample2d(0);
+	math::float2 s2d = sampler.generate_sample_2d(0);
 
 	math::float3 is = math::sample_hemisphere_cosine(s2d);
 	result.wi = math::normalized(sample_.tangent_to_world(is));
@@ -33,7 +33,7 @@ math::float3 GGX::evaluate(const math::float3& /*wi*/) const {
 }
 
 void GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
-	math::float2 xi = sampler.generate_sample2d(0);
+	math::float2 xi = sampler.generate_sample_2d(0);
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
 	// TODO: Optimize the perfect mirror case more
@@ -102,7 +102,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 	if (1.f == metallic_) {
 		ggx_.importance_sample(sampler, result);
 	} else {
-		float p = sampler.generate_sample1d(0);
+		float p = sampler.generate_sample_1d(0);
 
 		if (p < 0.5f) {
 			lambert_.importance_sample(sampler, result);

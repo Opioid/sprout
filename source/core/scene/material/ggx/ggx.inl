@@ -5,7 +5,14 @@
 namespace scene { namespace material { namespace ggx {
 
 inline math::float3 f(float wo_dot_h, const math::float3& f0) {
-	return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * math::float3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
+	return f0 + std::pow(1.f - wo_dot_h, 5.f) * math::float3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
+
+	// Gaussian approximation
+	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * math::float3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
+}
+
+inline float f(float wo_dot_h, float f0) {
+	return f0 + std::pow(1.f - wo_dot_h, 5.f) * (1.f - f0);
 }
 
 inline float d(float n_dot_h, float a2) {

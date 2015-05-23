@@ -35,12 +35,12 @@ bool EMS::generate_camera_sample(const math::float2& offset, Camera_sample& samp
 	return true;
 }
 
-math::float2 EMS::generate_sample2d(uint32_t index) {
+math::float2 EMS::generate_sample_2d(uint32_t index) {
 	uint32_t offset = num_samples_per_iteration_ * current_iteration_;
 	return math::ems(offset + index, random_bits_);
 }
 
-float EMS::generate_sample1d(uint32_t /*index*/) {
+float EMS::generate_sample_1d(uint32_t /*index*/) {
 	return rng_.random_float();
 }
 

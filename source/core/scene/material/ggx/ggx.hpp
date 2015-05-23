@@ -5,6 +5,7 @@
 namespace scene { namespace material { namespace ggx {
 
 math::float3 f(float wo_dot_h, const math::float3& f0);
+float f(float wo_dot_h, float f0);
 
 float d(float n_dot_h, float a2);
 

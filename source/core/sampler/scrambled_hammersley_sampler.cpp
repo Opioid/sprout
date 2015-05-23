@@ -34,11 +34,11 @@ bool Scrambled_hammersley::generate_camera_sample(const math::float2& offset, Ca
 	return true;
 }
 
-math::float2 Scrambled_hammersley::generate_sample2d(uint32_t index) {
+math::float2 Scrambled_hammersley::generate_sample_2d(uint32_t index) {
 	return math::scrambled_hammersley(index, num_samples_per_iteration_, random_bits_);
 }
 
-float Scrambled_hammersley::generate_sample1d(uint32_t /*index*/) {
+float Scrambled_hammersley::generate_sample_1d(uint32_t /*index*/) {
 	return rng_.random_float();
 }
 

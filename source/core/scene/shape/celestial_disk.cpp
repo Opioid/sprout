@@ -53,7 +53,7 @@ float Celestial_disk::opacity(const Composed_transformation& /*transformation*/,
 void Celestial_disk::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/, const math::float3& /*p*/,
 									   sampler::Sampler& sampler, uint32_t sample_index,
 									   math::float3& wi, float& t, float& pdf) const {
-	math::float2 sample = sampler.generate_sample2d(sample_index);
+	math::float2 sample = sampler.generate_sample_2d(sample_index);
 	math::float2 xy = math::sample_disk_concentric(sample);
 
 	math::float3 ls = math::float3(xy, 0.f);

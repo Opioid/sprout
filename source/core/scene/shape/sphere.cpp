@@ -102,7 +102,7 @@ void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation&
 	float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 
-	math::float2 sample = sampler.generate_sample2d(sample_index);
+	math::float2 sample = sampler.generate_sample_2d(sample_index);
 	math::float3 dir = math::sample_oriented_cone_uniform(sample, cos_theta_max, x, y, z);
 
 	wi = dir;

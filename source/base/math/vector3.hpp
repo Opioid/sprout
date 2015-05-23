@@ -24,6 +24,8 @@ struct Vector3 {
 
 	Vector3(T x, T y, T z);
 
+	explicit Vector3(T s);
+
 	explicit Vector3(const Vector2<T>& xy, T z = T(0));
 
 	explicit Vector3(const T* v);

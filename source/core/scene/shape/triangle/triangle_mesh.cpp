@@ -84,8 +84,8 @@ float Mesh::opacity(const Composed_transformation& transformation, const math::O
 void Mesh::importance_sample(uint32_t part, const Composed_transformation& transformation, float area, const math::float3& p,
 							 sampler::Sampler& sampler, uint32_t sample_index,
 							 math::float3& wi, float& t, float& pdf) const {
-	float r = sampler.generate_sample1d(sample_index);
-	math::float2 r2 = sampler.generate_sample2d(sample_index);
+	float r = sampler.generate_sample_1d(sample_index);
+	math::float2 r2 = sampler.generate_sample_2d(sample_index);
 
 	uint32_t index = distributions_[part].cdf.sample(r);
 

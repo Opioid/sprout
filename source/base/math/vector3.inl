@@ -13,6 +13,9 @@ template<typename T>
 inline Vector3<T>::Vector3(T x, T y, T z) : x(x), y(y), z(z)  {}
 
 template<typename T>
+inline Vector3<T>::Vector3(T s) : x(s), y(s), z(s)  {}
+
+template<typename T>
 inline Vector3<T>::Vector3(const Vector2<T>& xy, T z) : xy(xy), _z(z) {}
 
 template<typename T>
