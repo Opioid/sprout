@@ -48,10 +48,11 @@ void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	math::float3 incident = -sample_.wo_;
 
 	float cosi = -math::dot(incident, n);
-	if (cosi < 0.f) {
-		cosi = -cosi;
-		n *= -1.f;
+//	if (cosi < 0.f) {
+	if (!sample_.same_hemisphere(sample_.wo_)) {
 		eta = sample_.ior_;
+		n *= -1.f;
+		cosi = -cosi;
 	}
 
 	float cost2 = 1.f - eta * eta * (1.f - cosi * cosi);
