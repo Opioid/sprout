@@ -24,11 +24,11 @@ public:
 
 	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const = 0;
 
-	const math::float3& normal() const {
+	const math::float3& shading_normal() const {
 		return n_;
 	}
 
-	const math::float3& geometry_normal() const {
+	const math::float3& geometric_normal() const {
 		return geo_n_;
 	}
 
