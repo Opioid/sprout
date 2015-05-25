@@ -6,11 +6,11 @@
 namespace scene {
 
 inline material::IMaterial* Intersection::material() const {
-	return prop->material(geo.material_index);
+	return prop->material(geo.part);
 }
 
 inline float Intersection::opacity(const image::sampler::Sampler_2D& sampler) const {
-	return prop->material(geo.material_index)->opacity(geo.uv, sampler);
+	return prop->material(geo.part)->opacity(geo.uv, sampler);
 }
 
 }

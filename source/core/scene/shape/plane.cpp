@@ -31,7 +31,7 @@ bool Plane::intersect(const Composed_transformation& transformation, math::Oray&
 		intersection.uv.x = math::dot(intersection.t, intersection.p);
 		intersection.uv.y = math::dot(intersection.b, intersection.p);
 
-		intersection.material_index = 0;
+		intersection.part = 0;
 
 		ray.max_t = t;
 		return true;
@@ -78,6 +78,11 @@ void Plane::importance_sample(uint32_t /*part*/, const Composed_transformation& 
 							  sampler::Sampler& /*sampler*/, uint32_t /*sample_index*/,
 							  math::float3& /*wi*/, float& /*t*/, float& pdf) const {
 	pdf = 0.f;
+}
+
+float Plane::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+				  const math::float3& /*p*/, const math::float3& /*wi*/) const {
+	return 0.f;
 }
 
 float Plane::area(uint32_t /*part*/, const math::float3& /*scale*/) const {

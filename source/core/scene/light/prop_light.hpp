@@ -24,6 +24,8 @@ public:
 
 	virtual void prepare_sampling() final override;
 
+	virtual bool equals(const Prop* prop, uint32_t part) const final override;
+
 private:
 
 	Prop* prop_;

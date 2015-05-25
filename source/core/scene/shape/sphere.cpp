@@ -32,7 +32,7 @@ bool Sphere::intersect(const Composed_transformation& transformation, math::Oray
 			intersection.n = (intersection.p - transformation.position) / radius;
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
-			intersection.material_index = 0;
+			intersection.part = 0;
 
 			ray.max_t = t0;
 			return true;
@@ -47,7 +47,7 @@ bool Sphere::intersect(const Composed_transformation& transformation, math::Oray
 			intersection.n = (intersection.p - transformation.position) / radius;
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
-			intersection.material_index = 0;
+			intersection.part = 0;
 
 			ray.max_t = t1;
 			return true;
@@ -108,6 +108,11 @@ void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation&
 	wi = dir;
 	t = axis_length - transformation.scale.x; // this is not accurate
 	pdf = math::cone_pdf_uniform(cos_theta_max);
+}
+
+float Sphere::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+				  const math::float3& /*p*/, const math::float3& /*wi*/) const {
+	return 1.f;
 }
 
 float Sphere::area(uint32_t /*part*/, const math::float3& scale) const {

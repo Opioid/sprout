@@ -129,7 +129,29 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 		return result;
 	}
 
+	if (!sample_result.type.test(scene::material::BxDF_type::Specular)) {
+		float ls_pdf = light->pdf(intersection.geo.p, sample_result.wi, transformation);
+		if (0.f == ls_pdf) {
+			return result;
+		}
 
+		float weight = power_heuristic(sample_result.pdf, ls_pdf);
+
+		ray.set_direction(sample_result.wi);
+		ray.max_t = 1000.f;
+
+		scene::Intersection light_intersection;
+		if (worker.intersect(ray, light_intersection)) {
+			if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
+				auto light_material = light_intersection.material();
+				auto& light_material_sample = light_material->sample(intersection.geo, -ray.direction, settings_.sampler, worker.id());
+
+				math::float3 ls_energy = light_material_sample.emission();
+
+				result += (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
+			}
+		}
+	}
 
 	return result;
 }

@@ -6,7 +6,7 @@ namespace scene { namespace shape {
 
 struct Intersection : public Differential {
 	float epsilon;
-	uint32_t material_index;
+	uint32_t part;
 };
 
 }}

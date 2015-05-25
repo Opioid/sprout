@@ -30,7 +30,7 @@ bool Celestial_disk::intersect(const Composed_transformation& transformation, ma
 		intersection.b = transformation.rotation.y;
 		intersection.n = transformation.rotation.z;
 		intersection.geo_n = transformation.rotation.z;
-		intersection.material_index = 0;
+		intersection.part = 0;
 
 		ray.max_t = 1000.f;
 		return true;
@@ -62,6 +62,11 @@ void Celestial_disk::importance_sample(uint32_t /*part*/, const Composed_transfo
 	wi = math::normalized(ws - transformation.rotation.z);
 	t = 1000.f;
 	pdf = 1.f;
+}
+
+float Celestial_disk::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+						  const math::float3& /*p*/, const math::float3& /*wi*/) const {
+	return 1.f;
 }
 
 float Celestial_disk::area(uint32_t /*part*/, const math::float3& /*scale*/) const {

@@ -43,7 +43,7 @@ bool Disk::intersect(const Composed_transformation& transformation, math::Oray& 
 			intersection.uv.x = (math::dot(intersection.t, sk) + 1.f) * 0.5f;
 			intersection.uv.y = (math::dot(intersection.b, sk) + 1.f) * 0.5f;
 
-			intersection.material_index = 0;
+			intersection.part = 0;
 
 			ray.max_t = t;
 			return true;
@@ -125,6 +125,11 @@ void Disk::importance_sample(uint32_t /*part*/, const Composed_transformation& t
 		t = std::sqrt(sl);
 		pdf = sl / (c * area);
 	}
+}
+
+float Disk::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+				const math::float3& /*p*/, const math::float3& /*wi*/) const {
+	return 1.f;
 }
 
 float Disk::area(uint32_t /*part*/, const math::float3& scale) const {

@@ -42,6 +42,9 @@ public:
 								   sampler::Sampler& sampler, uint32_t sample_index,
 								   math::float3& wi, float& t, float& pdf) const = 0;
 
+	virtual float pdf(uint32_t part, const Composed_transformation& transformation, float area,
+					  const math::float3& p, const math::float3& wi) const = 0;
+
 	virtual float area(uint32_t part, const math::float3& scale) const = 0;
 
 	virtual bool is_complex() const;

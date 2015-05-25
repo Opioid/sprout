@@ -2,7 +2,6 @@
 
 #include "scene/shape/geometry/shape_intersection.hpp"
 
-
 namespace image { namespace sampler {
 
 class Sampler_2D;

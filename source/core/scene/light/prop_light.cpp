@@ -50,4 +50,8 @@ void Prop_light::prepare_sampling() {
 	area_ = prop_->shape()->area(part_, transformation.scale);
 }
 
+bool Prop_light::equals(const Prop* prop, uint32_t part) const {
+	return prop_ == prop && part_ == part;
+}
+
 }}

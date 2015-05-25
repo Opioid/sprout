@@ -49,7 +49,7 @@ bool Mesh::intersect(const Composed_transformation& transformation, math::Oray& 
 
 		intersection.b = math::cross(intersection.n, intersection.t);
 		intersection.uv = uv;
-		intersection.material_index = tree_.triangle_material_index(pi.index);
+		intersection.part = tree_.triangle_material_index(pi.index);
 
 		ray.max_t = tray.max_t;
 		return true;
@@ -110,6 +110,11 @@ void Mesh::importance_sample(uint32_t part, const Composed_transformation& trans
 		t = std::sqrt(sl);
 		pdf = sl / (c * area);
 	}
+}
+
+float Mesh::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+				const math::float3& /*p*/, const math::float3& /*wi*/) const {
+	return 1.f;
 }
 
 float Mesh::area(uint32_t part, const math::float3& /*scale*/) const {

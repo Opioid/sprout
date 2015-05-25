@@ -12,6 +12,7 @@ class Sampler;
 
 namespace scene {
 
+class Prop;
 struct Composed_transformation;
 
 namespace light {
@@ -35,6 +36,8 @@ public:
 	virtual math::float3 energy(const math::aabb& scene_bb) const = 0;
 
 	virtual void prepare_sampling() = 0;
+
+	virtual bool equals(const Prop* prop, uint32_t part) const = 0;
 };
 
 }}
