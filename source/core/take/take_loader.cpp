@@ -10,6 +10,7 @@
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
+#include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "sampler/random_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
 #include "sampler/ems_sampler.hpp"
@@ -203,6 +204,9 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 
 std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value,
 																							   const Settings& settings) const {
+	uint32_t default_min_bounces = 4;
+	uint32_t default_max_bounces = 8;
+
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
@@ -214,13 +218,17 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 		} else if ("Whitted" == node_name) {
 			return std::make_shared<rendering::Whitted_factory>(settings);
 		} else if ("PT" == node_name) {
-			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", 4);
-			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", 4);
+			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
+			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			return std::make_shared<rendering::Pathtracer_factory>(settings, min_bounces, max_bounces);
 		} else if ("PTDL" == node_name) {
-			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", 4);
-			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", 4);
+			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
+			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces);
+		} else if ("PTMIS" == node_name) {
+			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
+			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
+			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces);
 		} else if ("Normal" == node_name) {
 			return std::make_shared<rendering::Normal_factory>(settings);
 		}

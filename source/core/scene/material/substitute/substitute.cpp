@@ -1,4 +1,5 @@
 #include "substitute.hpp"
+#include "scene/material/lambert/lambert.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling.hpp"
@@ -6,25 +7,6 @@
 #include "base/math/math.hpp"
 
 namespace scene { namespace material { namespace substitute {
-
-Lambert::Lambert(const Sample& sample) : BxDF(sample) {}
-
-math::float3 Lambert::evaluate(const math::float3& /*wi*/) const {
-	return math::float3::identity;
-}
-
-void Lambert::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
-	math::float2 s2d = sampler.generate_sample_2d(0);
-
-	math::float3 is = math::sample_hemisphere_cosine(s2d);
-	result.wi = math::normalized(sample_.tangent_to_world(is));
-
-	result.pdf = 1.f;
-
-	result.reflection = sample_.diffuse_color_;
-
-	result.type.clear_set(BxDF_type::Diffuse_reflection);
-}
 
 GGX::GGX(const Sample& sample) : BxDF(sample) {}
 
@@ -61,7 +43,7 @@ void GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) cons
 	math::float3 specular = g * f;
 	result.reflection = n_dot_wi * specular;
 
-	result.type.clear_set(0.f == sample_.a2_ ? BxDF_type::Specular_transmission : BxDF_type::Glossy_transmission);
+	result.type.clear_set(0.f == sample_.a2_ ? BxDF_type::Specular_reflection : BxDF_type::Glossy_reflection);
 }
 
 Sample::Sample() : lambert_(*this), ggx_(*this) {}
@@ -97,6 +79,7 @@ math::float3 Sample::attenuation() const {
 void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
+		return;
 	}
 
 	if (1.f == metallic_) {

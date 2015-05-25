@@ -3,19 +3,11 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/lambert/lambert.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
 class Sample;
-
-class Lambert : public BxDF<Sample> {
-public:
-
-	Lambert(const Sample& sample);
-
-	virtual math::float3 evaluate(const math::float3& wi) const final override;
-	virtual void importance_sample(sampler::Sampler& sampler, BxDF_result& result) const final override;
-};
 
 class GGX : public BxDF<Sample> {
 public:
@@ -52,10 +44,10 @@ private:
 
 	float metallic_;
 
-	Lambert lambert_;
+	lambert::Lambert<Sample> lambert_;
 	GGX ggx_;
 
-	friend Lambert;
+	friend lambert::Lambert<Sample>;
 	friend GGX;
 };
 

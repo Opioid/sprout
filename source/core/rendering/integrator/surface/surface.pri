@@ -4,6 +4,7 @@ SOURCES += \
 	rendering/integrator/surface/whitted.cpp \
 	rendering/integrator/surface/pathtracer.cpp \
 	rendering/integrator/surface/pathtracer_dl.cpp \
+	rendering/integrator/surface/pathtracer_mis.cpp \
 
 HEADERS += \
 	rendering/integrator/surface/ao.hpp \
@@ -12,3 +13,4 @@ HEADERS += \
 	rendering/integrator/surface/whitted.hpp \
 	rendering/integrator/surface/pathtracer.hpp \
 	rendering/integrator/surface/pathtracer_dl.hpp \
+	rendering/integrator/surface/pathtracer_mis.hpp \
