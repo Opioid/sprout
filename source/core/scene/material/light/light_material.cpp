@@ -6,7 +6,8 @@ namespace scene { namespace material { namespace light {
 
 Sample::Sample() {}
 
-math::float3 Sample::evaluate(const math::float3& /*wi*/) const {
+math::float3 Sample::evaluate(const math::float3& /*wi*/, float& pdf) const {
+	pdf = 0.f;
 	return math::float3::identity;
 }
 

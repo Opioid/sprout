@@ -1,4 +1,5 @@
 SOURCES += \
+	scene/light/light.cpp \
 	scene/light/prop_light.cpp \
 
 HEADERS += \

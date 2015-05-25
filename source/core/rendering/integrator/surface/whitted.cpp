@@ -68,6 +68,8 @@ math::float3 Whitted::shade(Worker& worker, math::Oray& ray, const scene::Inters
 	math::float3 wo = -ray.direction;
 	auto& sample = intersection.material()->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
+	float bxdf_pdf;
+
 	result += sample.emission();
 
 	for (auto l : worker.scene().lights()) {
@@ -80,7 +82,7 @@ math::float3 Whitted::shade(Worker& worker, math::Oray& ray, const scene::Inters
 
 				float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
 				if (mv > 0.f) {
-					result += mv * (ls.energy * sample.evaluate(ls.l)) / ls.pdf;
+					result += mv * (ls.energy * sample.evaluate(ls.l, bxdf_pdf)) / ls.pdf;
 				}
 			}
 		}

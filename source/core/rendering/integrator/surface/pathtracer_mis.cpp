@@ -12,6 +12,7 @@
 #include "take/take_settings.hpp"
 #include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
+#include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 #include <iostream>
@@ -88,26 +89,49 @@ math::float3 Pathtracer_MIS::li(Worker& worker, uint32_t subsample, math::Oray& 
 	return result;
 }
 
+float power_heuristic(float fpdf, float gpdf) {
+	float f2 = fpdf * fpdf;
+	return f2 / (f2 + gpdf * gpdf);
+}
+
 math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& ray,
 												   const scene::Intersection& intersection, const scene::material::Sample& material_sample) {
 	float light_pdf;
 	scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
-	if (light) {
-		light->sample(intersection.geo.p, ray.time, 1, sampler_, light_samples_);
+	if (!light) {
+		return 	math::float3::identity;
+	}
 
-		auto& ls = light_samples_[0];
-		if (ls.pdf > 0.f) {
-			ray.set_direction(ls.l);
-			ray.max_t = ls.t - ray.min_t;
+	math::float3 result = math::float3::identity;
 
-			float mv = worker.masked_visibility(ray, settings_.sampler);
-			if (mv > 0.f) {
-				return mv * ls.energy * material_sample.evaluate(ls.l) / (light_pdf * ls.pdf);
-			}
+	scene::Composed_transformation transformation;
+	light->transformation_at(ray.time, transformation);
+
+	light->sample(intersection.geo.p, transformation, 1, sampler_, light_samples_);
+
+	auto& ls = light_samples_[0];
+	if (ls.pdf > 0.f) {
+		ray.set_direction(ls.l);
+		ray.max_t = ls.t - ray.min_t;
+
+		float mv = worker.masked_visibility(ray, settings_.sampler);
+		if (mv > 0.f) {
+			float bxdf_pdf;
+			math::float3 f = material_sample.evaluate(ls.l, bxdf_pdf);
+			float weight = power_heuristic(ls.pdf, bxdf_pdf);
+			result = (weight / ls.pdf) * mv * ls.energy * f;
 		}
 	}
 
-	return math::float3::identity;
+	scene::material::BxDF_result sample_result;
+	material_sample.sample_evaluate(sampler_, sample_result);
+	if (0.f == sample_result.pdf) {
+		return result;
+	}
+
+
+
+	return result;
 }
 
 bool Pathtracer_MIS::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {

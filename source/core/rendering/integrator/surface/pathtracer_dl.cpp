@@ -31,6 +31,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 	scene::material::BxDF_result sample_result;
 	scene::material::BxDF_result::Type previous_sample_type;
 	math::float3 previous_sample_attenuation = math::float3(1.f, 1.f, 1.f);
+	float bxdf_pdf;
 
 	bool hit = true;
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
@@ -71,7 +72,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 
 				float mv = worker.masked_visibility(ray, settings_.sampler);
 				if (mv > 0.f) {
-					result += mv * (throughput * ls.energy * material_sample.evaluate(ls.l)) / (light_pdf * ls.pdf);
+					result += mv * (throughput * ls.energy * material_sample.evaluate(ls.l, bxdf_pdf)) / (light_pdf * ls.pdf);
 				}
 			}
 		}

@@ -48,7 +48,7 @@ void GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) cons
 
 Sample::Sample() : lambert_(*this), ggx_(*this) {}
 
-math::float3 Sample::evaluate(const math::float3& wi) const {
+math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 
 	// Roughness zero will always have zero specular term (or worse NaN)

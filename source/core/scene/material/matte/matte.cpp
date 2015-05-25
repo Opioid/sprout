@@ -9,10 +9,10 @@ namespace scene { namespace material { namespace matte {
 
 Sample::Sample() : lambert_(*this) {}
 
-math::float3 Sample::evaluate(const math::float3& wi) const {
+math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
-
-	return n_dot_wi * math::Pi_inv * diffuse_color_;
+	pdf = n_dot_wi * math::Pi_inv;
+	return pdf * diffuse_color_;
 }
 
 math::float3 Sample::emission() const {

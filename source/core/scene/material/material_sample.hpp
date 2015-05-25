@@ -16,7 +16,7 @@ struct BxDF_result;
 class Sample {
 public:
 
-	virtual math::float3 evaluate(const math::float3& wi) const = 0;
+	virtual math::float3 evaluate(const math::float3& wi, float& pdf) const = 0;
 
 	virtual math::float3 emission() const = 0;
 

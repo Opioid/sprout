@@ -10,7 +10,11 @@ class Sampler;
 
 }
 
-namespace scene { namespace light {
+namespace scene {
+
+struct Composed_transformation;
+
+namespace light {
 
 struct Sample;
 
@@ -19,8 +23,14 @@ public:
 
 	virtual ~Light() {}
 
-	virtual void sample(const math::float3& p, float time, uint32_t max_samples, sampler::Sampler& sampler,
+	virtual void transformation_at(float time, Composed_transformation& transformation) const = 0;
+
+	virtual void sample(const math::float3& p, const Composed_transformation& transformation, uint32_t max_samples, sampler::Sampler& sampler,
 						std::vector<Sample>& samples) const = 0;
+
+	void sample(const math::float3& p, float time, uint32_t max_samples, sampler::Sampler& sampler, std::vector<Sample>& samples) const;
+
+	virtual float pdf(const math::float3& p, const math::float3& wi, const Composed_transformation& transformation) const = 0;
 
 	virtual math::float3 energy(const math::aabb& scene_bb) const = 0;
 

@@ -14,11 +14,12 @@ void Prop_light::init(Prop* prop, uint32_t part) {
 	part_ = part;
 }
 
-void Prop_light::sample(const math::float3& p, float time, uint32_t /*max_samples*/, sampler::Sampler& sampler,
-						std::vector<Sample>& samples) const {
-	Composed_transformation transformation;
+void Prop_light::transformation_at(float time, Composed_transformation& transformation) const {
 	prop_->transformation_at(time, transformation);
+}
 
+void Prop_light::sample(const math::float3& p, const Composed_transformation& transformation, uint32_t /*max_samples*/, sampler::Sampler& sampler,
+						std::vector<Sample>& samples) const {
 	samples.clear();
 
 	Sample sample;
@@ -28,6 +29,10 @@ void Prop_light::sample(const math::float3& p, float time, uint32_t /*max_sample
 	sample.energy = prop_->material(part_)->sample_emission();
 
 	samples.push_back(sample);
+}
+
+float Prop_light::pdf(const math::float3& p, const math::float3& wi, const Composed_transformation& transformation) const {
+	return 1.f;
 }
 
 math::float3 Prop_light::energy(const math::aabb& scene_bb) const {

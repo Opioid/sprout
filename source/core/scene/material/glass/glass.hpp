@@ -31,7 +31,7 @@ public:
 
 	Sample();
 
-	virtual math::float3 evaluate(const math::float3& wi) const final override;
+	virtual math::float3 evaluate(const math::float3& wi, float& pdf) const final override;
 
 	virtual math::float3 emission() const final override;
 
