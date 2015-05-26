@@ -22,7 +22,7 @@ bool Celestial_disk::intersect(const Composed_transformation& transformation, ma
 	float radius = transformation.scale.x;
 	float det = (b * b) - dot(v, v) + (radius * radius);
 
-	if (det > 0.f) {
+	if (det > 0.f && ray.max_t >= 1000.f) {
 		intersection.epsilon = 5e-4f;
 
 		intersection.p = ray.point(1000.f);
@@ -41,16 +41,18 @@ bool Celestial_disk::intersect(const Composed_transformation& transformation, ma
 
 bool Celestial_disk::intersect_p(const Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
 								 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
+	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
 float Celestial_disk::opacity(const Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
 							  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 							  const material::Materials& /*materials*/, const image::sampler::Sampler_2D& /*sampler*/) const {
+	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
 
-void Celestial_disk::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/, const math::float3& /*p*/,
+void Celestial_disk::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, float area, const math::float3& /*p*/,
 									   sampler::Sampler& sampler, uint32_t sample_index,
 									   math::float3& wi, float& t, float& pdf) const {
 	math::float2 sample = sampler.generate_sample_2d(sample_index);
@@ -61,16 +63,16 @@ void Celestial_disk::importance_sample(uint32_t /*part*/, const Composed_transfo
 
 	wi = math::normalized(ws - transformation.rotation.z);
 	t = 1000.f;
-	pdf = 1.f;
+	pdf = 1.f / area;
 }
 
-float Celestial_disk::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+float Celestial_disk::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float area,
 						  const math::float3& /*p*/, const math::float3& /*wi*/) const {
-	return 1.f;
+	return 1.f / area;
 }
 
-float Celestial_disk::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
-	return 1.f;
+float Celestial_disk::area(uint32_t /*part*/, const math::float3& scale) const {
+	return math::Pi * scale.x * scale.x;
 }
 
 bool Celestial_disk::is_finite() const {

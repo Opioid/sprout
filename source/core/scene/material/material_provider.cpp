@@ -200,7 +200,9 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 			}
 		}
 	}
-/*
+
+	roughness = 0.1f;
+
 	if (colormap) {
 		if (normalmap) {
 			if (surfacemap) {
@@ -228,8 +230,8 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	}
 
 	return std::make_shared<substitute::Constant>(substitute_cache_, mask, color, roughness, metallic);
-*/
 
+/*
 	if (colormap) {
 		if (normalmap) {
 			return std::make_shared<matte::Colormap_normalmap>(matte_cache_, mask, colormap, normalmap);
@@ -239,6 +241,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	}
 
 	return std::make_shared<matte::Constant>(matte_cache_, mask, color);
+*/
 }
 
 }}

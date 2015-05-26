@@ -15,6 +15,7 @@
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
+#include "base/math/print.hpp"
 #include <iostream>
 
 namespace rendering {

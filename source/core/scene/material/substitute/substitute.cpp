@@ -53,6 +53,7 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {
+		pdf = n_dot_wi * math::Pi_inv;
 		return n_dot_wi * math::Pi_inv * diffuse_color_;
 	}
 
@@ -64,6 +65,8 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float wo_dot_h = math::dot(wo_, h);
 
 	math::float3 specular = ggx::d(n_dot_h, a2_) * ggx::g(n_dot_wi, n_dot_wo, a2_) * ggx::f(wo_dot_h, f0_);
+
+	pdf = 0.5f * ((n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f))) + (n_dot_wi * math::Pi_inv));
 
 	return n_dot_wi * ((math::Pi_inv * diffuse_color_) + specular);
 }
@@ -94,6 +97,20 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 			ggx_.importance_sample(sampler, result);
 			result.pdf *= 0.5f;
 		}
+
+
+/*		BxDF_result tmp;
+
+		if (p < 0.5f) {
+			lambert_.importance_sample(sampler, result);
+			ggx_.importance_sample(sampler, tmp);
+			result.pdf = 0.5f * (result.pdf + tmp.pdf);
+		} else {
+			ggx_.importance_sample(sampler, result);
+			lambert_.importance_sample(sampler, tmp);
+			result.pdf = 0.5f * (result.pdf + tmp.pdf);
+		}
+*/
 	}
 }
 
