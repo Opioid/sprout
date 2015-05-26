@@ -92,15 +92,15 @@ void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation&
 							   math::float3& wi, float& t, float& pdf) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
-	float axis_length = std::sqrt(axis_squared_length);
-
-	math::float3 z = axis / axis_length;
-	math::float3 x, y;
-	math::coordinate_system(z, x, y);
 
 	float radius_square = transformation.scale.x * transformation.scale.x;
 	float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+
+	float axis_length = std::sqrt(axis_squared_length);
+	math::float3 z = axis / axis_length;
+	math::float3 x, y;
+	math::coordinate_system(z, x, y);
 
 	math::float2 sample = sampler.generate_sample_2d(sample_index);
 	math::float3 dir = math::sample_oriented_cone_uniform(sample, cos_theta_max, x, y, z);
@@ -110,9 +110,16 @@ void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation&
 	pdf = math::cone_pdf_uniform(cos_theta_max);
 }
 
-float Sphere::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, const math::float3& /*wi*/) const {
-	return 1.f;
+float Sphere::pdf(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
+				  const math::float3& p, const math::float3& /*wi*/) const {
+	math::float3 axis = transformation.position - p;
+	float axis_squared_length = math::squared_length(axis);
+
+	float radius_square = transformation.scale.x * transformation.scale.x;
+	float sin_theta_max2 = radius_square / axis_squared_length;
+	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+
+	return math::cone_pdf_uniform(cos_theta_max);
 }
 
 float Sphere::area(uint32_t /*part*/, const math::float3& scale) const {

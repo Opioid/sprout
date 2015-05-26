@@ -107,7 +107,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 	scene::Composed_transformation transformation;
 	light->transformation_at(ray.time, transformation);
 
-	light->sample(intersection.geo.p, transformation, 1, sampler_, light_samples_);
+	light->sample(transformation, intersection.geo.p, 1, sampler_, light_samples_);
 
 	auto& ls = light_samples_[0];
 	if (ls.pdf > 0.f) {
@@ -130,7 +130,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 	}
 
 	if (!sample_result.type.test(scene::material::BxDF_type::Specular)) {
-		float ls_pdf = light->pdf(intersection.geo.p, sample_result.wi, transformation);
+		float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi);
 		if (0.f == ls_pdf) {
 			return result;
 		}

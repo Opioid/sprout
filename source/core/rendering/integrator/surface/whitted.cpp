@@ -73,7 +73,7 @@ math::float3 Whitted::shade(Worker& worker, math::Oray& ray, const scene::Inters
 	result += sample.emission();
 
 	for (auto l : worker.scene().lights()) {
-		l->sample(intersection.geo.p, ray.time, 1, sampler_, light_samples_);
+		l->sample(ray.time, intersection.geo.p, 1, sampler_, light_samples_);
 
 		for (auto& ls : light_samples_) {
 			if (ls.pdf > 0.f) {

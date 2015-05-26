@@ -127,9 +127,28 @@ void Disk::importance_sample(uint32_t /*part*/, const Composed_transformation& t
 	}
 }
 
-float Disk::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
-				const math::float3& /*p*/, const math::float3& /*wi*/) const {
-	return 1.f;
+float Disk::pdf(uint32_t /*part*/, const Composed_transformation& transformation, float area,
+				const math::float3& p, const math::float3& wi) const {
+	const math::float3& normal = transformation.rotation.z;
+
+	float c = math::dot(normal, -wi);
+
+	if (c <= 0.f) {
+		return 0.f;
+	}
+
+	float d = -math::dot(normal, transformation.position);
+	float denom = math::dot(normal, wi);
+	float numer = math::dot(normal, p) + d;
+	float t = -(numer / denom);
+
+	math::float3 ws = p + t * wi; // ray.point(t);
+
+	math::float3 axis = ws - p;
+
+	float sl = math::squared_length(axis);
+
+	return sl / (c * area);
 }
 
 float Disk::area(uint32_t /*part*/, const math::float3& scale) const {
