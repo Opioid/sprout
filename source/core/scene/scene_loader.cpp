@@ -3,6 +3,7 @@
 #include "scene/surrounding/surrounding_sphere.hpp"
 #include "scene/surrounding/surrounding_uniform.hpp"
 #include "scene/light/prop_light.hpp"
+#include "scene/light/uniform_light.hpp"
 #include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/disk.hpp"
 #include "scene/shape/plane.hpp"
@@ -43,8 +44,7 @@ void Loader::load(const std::string& filename, Scene& scene) {
 		const rapidjson::Value& node_value = n->value;
 
 		if ("surrounding" == node_name) {
-			surrounding::Surrounding* surrounding = load_surrounding(node_value);
-			scene.set_surrounding(surrounding);
+			load_surrounding(node_value, scene);
 		} else if ("entities" == node_name) {
 			load_entities(node_value, scene);
 		}
@@ -57,24 +57,26 @@ void Loader::load(const std::string& filename, Scene& scene) {
 	scene.compile();
 }
 
-surrounding::Surrounding* Loader::load_surrounding(const rapidjson::Value& surrounding_value) {
+void Loader::load_surrounding(const rapidjson::Value& surrounding_value, Scene& scene) {
 	std::string type_name = json::read_string(surrounding_value, "type");
 
 	if ("Uniform" == type_name) {
 		math::float3 energy = json::read_float3(surrounding_value, "color");
-		return new surrounding::Uniform(energy);
+		surrounding::Surrounding* surrounding = new surrounding::Uniform(energy);
+		scene.set_surrounding(surrounding);
+		light::Uniform_light* light = scene.create_uniform_light();
+		light->init(energy);
 	} else if ("Textured" == type_name) {
 		const rapidjson::Value::ConstMemberIterator texture_node = surrounding_value.FindMember("texture");
 		if (surrounding_value.MemberEnd() != texture_node) {
 			std::string file = json::read_string(texture_node->value, "file");
 			if (!file.empty()) {
 				auto image = image_cache_.load(file);
-				return new surrounding::Sphere(image);
+				surrounding::Surrounding* surrounding = new surrounding::Sphere(image);
+				scene.set_surrounding(surrounding);
 			}
 		}
 	}
-
-	return nullptr;
 }
 
 void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene) {

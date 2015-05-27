@@ -18,8 +18,8 @@ void Prop_light::transformation_at(float time, Composed_transformation& transfor
 	prop_->transformation_at(time, transformation);
 }
 
-void Prop_light::sample(const Composed_transformation& transformation, const math::float3& p, uint32_t /*max_samples*/, sampler::Sampler& sampler,
-						std::vector<Sample>& samples) const {
+void Prop_light::sample(const Composed_transformation& transformation, const math::float3& p, const math::float3& n,
+						sampler::Sampler& sampler, uint32_t /*max_samples*/, std::vector<Sample>& samples) const {
 	samples.clear();
 
 	Sample sample;
@@ -31,15 +31,19 @@ void Prop_light::sample(const Composed_transformation& transformation, const mat
 	samples.push_back(sample);
 }
 
+math::float3 Prop_light::evaluate(const math::float3& wi) const {
+	return math::float3::identity;
+}
+
 float Prop_light::pdf(const Composed_transformation& transformation, const math::float3& p, const math::float3& wi) const {
 	return prop_->shape()->pdf(part_, transformation, area_, p, wi);
 }
 
-math::float3 Prop_light::energy(const math::aabb& scene_bb) const {
+math::float3 Prop_light::power(const math::aabb& scene_bb) const {
 	if (prop_->shape()->is_finite()) {
 		return area_ * prop_->material(part_)->average_emission();
 	} else {
-		return scene_bb.volume() * prop_->material(part_)->average_emission();
+		return scene_bb.volume() * area_ * prop_->material(part_)->average_emission();
 	}
 }
 

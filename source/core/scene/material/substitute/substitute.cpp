@@ -66,7 +66,7 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 
 	math::float3 specular = ggx::d(n_dot_h, a2_) * ggx::g(n_dot_wi, n_dot_wo, a2_) * ggx::f(wo_dot_h, f0_);
 
-	pdf = 0.5f * ((n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f))) + (n_dot_wi * math::Pi_inv));
+	pdf = 0.5f * (n_dot_wi * (n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f))) + (n_dot_wi * math::Pi_inv));
 
 	return n_dot_wi * ((math::Pi_inv * diffuse_color_) + specular);
 }

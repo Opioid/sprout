@@ -3,6 +3,7 @@
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
 #include "light/prop_light.hpp"
+#include "light/uniform_light.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "base/color/color.inl"
 #include "base/math/vector.inl"
@@ -43,15 +44,15 @@ void Scene::compile() {
 	bvh::Builder builder;
 	builder.build(bvh_, props_);
 
-	std::vector<float> energy;
-	energy.reserve(lights_.size());
+	std::vector<float> power;
+	power.reserve(lights_.size());
 
 	for (auto l : lights_) {
 		l->prepare_sampling();
-		energy.push_back(color::luminance(l->energy(bvh_.aabb())));
+		power.push_back(color::luminance(l->power(bvh_.aabb())));
 	}
 
-	light_cdf_.init(energy);
+	light_cdf_.init(power);
 }
 
 const surrounding::Surrounding* Scene::surrounding() const {
@@ -84,6 +85,12 @@ light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 
 light::Prop_light* Scene::create_prop_light() {
 	light::Prop_light* light = new light::Prop_light;
+	lights_.push_back(light);
+	return light;
+}
+
+light::Uniform_light* Scene::create_uniform_light() {
+	light::Uniform_light* light = new light::Uniform_light;
 	lights_.push_back(light);
 	return light;
 }

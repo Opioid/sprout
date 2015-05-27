@@ -5,11 +5,12 @@
 
 namespace scene { namespace light {
 
-void Light::sample(float time, const math::float3& p, uint32_t max_samples, sampler::Sampler& sampler, std::vector<Sample>& samples) const {
+void Light::sample(float time, const math::float3& p, const math::float3& n,
+				   sampler::Sampler& sampler, uint32_t max_samples, std::vector<Sample>& samples) const {
 	Composed_transformation transformation;
 	transformation_at(time, transformation);
 
-	sample(transformation, p, max_samples, sampler, samples);
+	sample(transformation, p, n, sampler, max_samples, samples);
 };
 
 }}

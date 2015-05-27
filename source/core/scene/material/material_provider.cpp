@@ -201,8 +201,6 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 		}
 	}
 
-	roughness = 0.1f;
-
 	if (colormap) {
 		if (normalmap) {
 			if (surfacemap) {

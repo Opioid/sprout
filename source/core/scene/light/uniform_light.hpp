@@ -2,16 +2,12 @@
 
 #include "light.hpp"
 
-namespace scene {
+namespace scene { namespace light {
 
-class Prop;
-
-namespace light {
-
-class Prop_light : public Light {
+class Uniform_light : public Light {
 public:
 
-	void init(Prop* prop, uint32_t part = 0);
+	void init(const math::float3& energy);
 
 	virtual void transformation_at(float time, Composed_transformation& transformation) const final override;
 
@@ -30,11 +26,7 @@ public:
 
 private:
 
-	Prop* prop_;
-
-	uint32_t part_;
-
-	float area_;
+	math::float3 energy_;
 };
 
 }}
