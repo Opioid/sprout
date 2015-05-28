@@ -96,8 +96,8 @@ math::float3 Pathtracer_DL::li(Worker& worker, uint32_t subsample, math::Oray& r
 		}
 	}
 
-//	if (!hit) {
-	if (!hit && previous_sample_type.test(scene::material::BxDF_type::Specular)) {
+	if (!hit) {
+//	if (!hit && previous_sample_type.test(scene::material::BxDF_type::Specular)) {
 		math::float3 r = worker.scene().surrounding()->sample(ray);
 		result += throughput * r;
 	}

@@ -2,6 +2,7 @@
 #include "surrounding/surrounding.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
+#include "light/image_light.hpp"
 #include "light/prop_light.hpp"
 #include "light/uniform_light.hpp"
 #include "bvh/scene_bvh_builder.hpp"
@@ -81,6 +82,12 @@ light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 	uint32_t l = light_cdf_.sample(random, pdf);
 
 	return lights_[l];
+}
+
+light::Image_light* Scene::create_image_light() {
+	light::Image_light* light = new light::Image_light;
+	lights_.push_back(light);
+	return light;
 }
 
 light::Prop_light* Scene::create_prop_light() {

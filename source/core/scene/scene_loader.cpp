@@ -64,8 +64,8 @@ void Loader::load_surrounding(const rapidjson::Value& surrounding_value, Scene& 
 		math::float3 energy = json::read_float3(surrounding_value, "color");
 		surrounding::Surrounding* surrounding = new surrounding::Uniform(energy);
 		scene.set_surrounding(surrounding);
-		light::Uniform_light* light = scene.create_uniform_light();
-		light->init(energy);
+	//	light::Uniform_light* light = scene.create_uniform_light();
+	//	light->init(energy);
 	} else if ("Textured" == type_name) {
 		const rapidjson::Value::ConstMemberIterator texture_node = surrounding_value.FindMember("texture");
 		if (surrounding_value.MemberEnd() != texture_node) {

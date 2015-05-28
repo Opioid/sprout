@@ -7,8 +7,12 @@ namespace scene { namespace material { namespace glass {
 
 BRDF::BRDF(const Sample& sample) : BxDF(sample) {}
 
-math::float3 BRDF::evaluate(const math::float3& /*wi*/) const {
+math::float3 BRDF::evaluate(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
 	return math::float3::identity;
+}
+
+float BRDF::pdf(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+	return 1.f;
 }
 
 float fresnel(const math::float3& wi, const math::float3& wo, float f0) {
@@ -18,7 +22,7 @@ float fresnel(const math::float3& wi, const math::float3& wo, float f0) {
 	return ggx::f(wo_dot_h, f0);
 }
 
-void BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
+float BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
 	math::float3 n = sample_.n_;
 
 	if (!sample_.same_hemisphere(sample_.wo_)) {
@@ -32,15 +36,21 @@ void BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	result.reflection = math::float3(fresnel(result.wi, sample_.wo_, sample_.f0_));
 
 	result.type.clear_set(BxDF_type::Specular_reflection);
+
+	return 1.f;
 }
 
 BTDF::BTDF(const Sample& sample) : BxDF(sample) {}
 
-math::float3 BTDF::evaluate(const math::float3& /*wi*/) const {
+math::float3 BTDF::evaluate(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
 	return math::float3::identity;
 }
 
-void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
+float BTDF::pdf(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+	return 1.f;
+}
+
+float BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
 	float eta  = 1.f / sample_.ior_;
 
 	math::float3 n = sample_.n_;
@@ -58,7 +68,7 @@ void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	float cost2 = 1.f - eta * eta * (1.f - cosi * cosi);
 	if (cost2 < 0.f) {
 		result.pdf = 0.f;
-		return;
+		return 0.f;
 	}
 
 	math::float3 t = eta * incident + (eta * cosi - std::sqrt(cost2)) * n;
@@ -71,6 +81,8 @@ void BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	result.reflection = (1.f - f) * sample_.color_;
 
 	result.type.clear_set(BxDF_type::Specular_transmission);
+
+	return 1.f;
 }
 
 Sample::Sample() : brdf_(*this), btdf_(*this) {}

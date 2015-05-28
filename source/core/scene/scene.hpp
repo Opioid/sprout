@@ -17,6 +17,7 @@ class Surrounding;
 namespace light {
 
 class Light;
+class Image_light;
 class Prop_light;
 class Uniform_light;
 
@@ -47,6 +48,7 @@ public:
 
 	light::Light* montecarlo_light(float random, float& pdf) const;
 
+	light::Image_light* create_image_light();
 	light::Prop_light* create_prop_light();
 	light::Uniform_light* create_uniform_light();
 

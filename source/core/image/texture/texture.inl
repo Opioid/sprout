@@ -2,7 +2,11 @@
 
 namespace image {
 
-Texture::Texture(std::shared_ptr<Image> image) : image_(image) {}
+inline Texture::Texture(std::shared_ptr<Image> image) : image_(image) {}
+
+void Texture::init(std::shared_ptr<Image> image) {
+	image_ = image;
+}
 
 inline Texture::operator bool() const {
 	return image_.get() != nullptr;

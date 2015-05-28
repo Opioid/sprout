@@ -18,7 +18,7 @@ public:
 
 	Sphere(std::shared_ptr<image::Image> image);
 
-	virtual math::float3 sample(const math::Oray& ray) const;
+	virtual math::float3 sample(const math::Oray& ray) const final override;
 
 private:
 

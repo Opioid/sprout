@@ -29,7 +29,8 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 		return;
 	}
 
-	lambert_.importance_sample(sampler, result);
+	float n_dot_wi = lambert_.importance_sample(sampler, result);
+	result.reflection *= n_dot_wi;
 }
 
 void Sample::set(const math::float3& color) {

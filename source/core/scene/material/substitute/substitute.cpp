@@ -5,16 +5,47 @@
 #include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
 #include "base/math/math.hpp"
+#include <iostream>
 
 namespace scene { namespace material { namespace substitute {
 
 GGX::GGX(const Sample& sample) : BxDF(sample) {}
 
-math::float3 GGX::evaluate(const math::float3& /*wi*/) const {
-	return math::float3::identity;
+math::float3 GGX::evaluate(const math::float3& wi, float n_dot_wi) const {
+	// Roughness zero will always have zero specular term (or worse NaN)
+	if (0.f == sample_.a2_) {
+		return math::float3::identity;
+	}
+
+	float n_dot_wo = std::max(math::dot(sample_.n_, sample_.wo_), 0.00001f);
+
+	math::float3 h = math::normalized(sample_.wo_ + wi);
+
+	float n_dot_h  = math::dot(sample_.n_, h);
+	float wo_dot_h = math::dot(sample_.wo_, h);
+
+	math::float3 specular = ggx::d(n_dot_h, sample_.a2_) * ggx::g(n_dot_wi, n_dot_wo, sample_.a2_) * ggx::f(wo_dot_h, sample_.f0_);
+
+	return specular;
 }
 
-void GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
+float GGX::pdf(const math::float3& wi, float /*n_dot_wi*/) const {
+	// Roughness zero will always have zero specular term (or worse NaN)
+	if (0.f == sample_.a2_) {
+		return 0.f;
+	}
+
+	math::float3 h = math::normalized(sample_.wo_ + wi);
+
+	float n_dot_h  = math::dot(sample_.n_, h);
+	float wo_dot_h = math::dot(sample_.wo_, h);
+
+	float d = ggx::d(n_dot_h, sample_.a2_);
+
+	return d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
+}
+
+float GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
 	math::float2 xi = sampler.generate_sample_2d(0);
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
@@ -35,15 +66,30 @@ void GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) cons
 	float n_dot_wi = std::max(math::dot(sample_.n_, result.wi),	  0.00001f);
 	float n_dot_wo = std::max(math::dot(sample_.n_, sample_.wo_), 0.00001f);
 
-	math::float3 f = ggx::f(wo_dot_h, sample_.f0_);
+	float d = ggx::d(n_dot_h, sample_.a2_);
 	float g = ggx::g(n_dot_wi, n_dot_wo, sample_.a2_);
+	math::float3 f = ggx::f(wo_dot_h, sample_.f0_);
 
-	result.pdf = n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
+	// Hackedy hack hack
+	if (sample_.a2_ < 0.0000001f) {
+		d = 1.f;
+	}
 
-	math::float3 specular = g * f;
-	result.reflection = n_dot_wi * specular;
+	result.pdf = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
+
+	math::float3 specular = d * g * f;
+	result.reflection = specular;
 
 	result.type.clear_set(0.f == sample_.a2_ ? BxDF_type::Specular_reflection : BxDF_type::Glossy_reflection);
+
+
+//	if (math::contains_inf(specular) || math::contains_nan(specular)) {
+//		std::cout << "n_dot_h == " << n_dot_h << std::endl;
+
+//		std::cout << "a2 == " << sample_.a2_ << std::endl;
+//	}
+
+	return n_dot_wi;
 }
 
 Sample::Sample() : lambert_(*this), ggx_(*this) {}
@@ -69,6 +115,8 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	pdf = 0.5f * (n_dot_wi * (n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f))) + (n_dot_wi * math::Pi_inv));
 
 	return n_dot_wi * ((math::Pi_inv * diffuse_color_) + specular);
+
+//	return n_dot_wi * specular;
 }
 
 math::float3 Sample::emission() const {
@@ -86,31 +134,30 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 	}
 
 	if (1.f == metallic_) {
-		ggx_.importance_sample(sampler, result);
+		float n_dot_wi = ggx_.importance_sample(sampler, result);
+		result.reflection *= n_dot_wi;
 	} else {
 		float p = sampler.generate_sample_1d(0);
 
+//		if (p < 0.5f) {
+//			float n_dot_wi = lambert_.importance_sample(sampler, result);
+//			result.pdf *= 0.5f;
+//			result.reflection *= n_dot_wi;
+//		} else {
+//			float n_dot_wi = ggx_.importance_sample(sampler, result);
+//			result.pdf *= 0.5f;
+//			result.reflection *= n_dot_wi;
+//		}
+
 		if (p < 0.5f) {
-			lambert_.importance_sample(sampler, result);
-			result.pdf *= 0.5f;
+			float n_dot_wi = lambert_.importance_sample(sampler, result);
+			result.pdf = 0.5f * (result.pdf + ggx_.pdf(result.wi, n_dot_wi));
+			result.reflection = n_dot_wi * (result.reflection + ggx_.evaluate(result.wi, n_dot_wi));
 		} else {
-			ggx_.importance_sample(sampler, result);
-			result.pdf *= 0.5f;
+			float n_dot_wi = ggx_.importance_sample(sampler, result);
+			result.pdf = 0.5f * (result.pdf + lambert_.pdf(result.wi, n_dot_wi));
+			result.reflection = n_dot_wi * (result.reflection + lambert_.evaluate(result.wi, n_dot_wi));
 		}
-
-
-/*		BxDF_result tmp;
-
-		if (p < 0.5f) {
-			lambert_.importance_sample(sampler, result);
-			ggx_.importance_sample(sampler, tmp);
-			result.pdf = 0.5f * (result.pdf + tmp.pdf);
-		} else {
-			ggx_.importance_sample(sampler, result);
-			lambert_.importance_sample(sampler, tmp);
-			result.pdf = 0.5f * (result.pdf + tmp.pdf);
-		}
-*/
 	}
 }
 

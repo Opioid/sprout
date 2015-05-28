@@ -204,10 +204,10 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	if (colormap) {
 		if (normalmap) {
 			if (surfacemap) {
-				if (emissionmap) {
+			/*	if (emissionmap) {
 					return std::make_shared<substitute::Colormap_normalmap_surfacemap_emissionmap>(
 								substitute_cache_, mask, colormap, normalmap, surfacemap, emissionmap, emission_factor, metallic);
-				} else {
+				} else*/ {
 					return std::make_shared<substitute::Colormap_normalmap_surfacemap>(
 								substitute_cache_, mask, colormap, normalmap, surfacemap, metallic);
 				}
@@ -229,17 +229,17 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 
 	return std::make_shared<substitute::Constant>(substitute_cache_, mask, color, roughness, metallic);
 
-/*
-	if (colormap) {
-		if (normalmap) {
-			return std::make_shared<matte::Colormap_normalmap>(matte_cache_, mask, colormap, normalmap);
-		} else {
-			return std::make_shared<matte::Colormap>(matte_cache_, mask, colormap);
-		}
-	}
 
-	return std::make_shared<matte::Constant>(matte_cache_, mask, color);
-*/
+//	if (colormap) {
+//		if (normalmap) {
+//			return std::make_shared<matte::Colormap_normalmap>(matte_cache_, mask, colormap, normalmap);
+//		} else {
+//			return std::make_shared<matte::Colormap>(matte_cache_, mask, colormap);
+//		}
+//	}
+
+//	return std::make_shared<matte::Constant>(matte_cache_, mask, color);
+
 }
 
 }}
