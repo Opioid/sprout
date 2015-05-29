@@ -13,6 +13,7 @@ HEADERS +=
 include(color/color.pri)
 include(file/file.pri)
 include(flags/flags.pri)
+include(gzip/gzip.pri)
 include(json/json.pri)
 include(math/math.pri)
 include(thread/thread.pri)
