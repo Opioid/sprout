@@ -155,9 +155,10 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 				auto light_material = light_intersection.material();
 				auto& light_material_sample = light_material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
-				math::float3 ls_energy = light_material_sample.emission();
-
-				result += (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
+				if (light_material_sample.same_hemisphere(-ray.direction)) {
+					math::float3 ls_energy = light_material_sample.emission();
+					result += (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
+				}
 			}
 		} else {
 

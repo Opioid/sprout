@@ -15,39 +15,39 @@ public:
 	typedef char Ch;	//!< Character type (byte).
 
 	Read_stream(std::istream& stream, size_t buffer_size = 4096) :
-		stream_(&stream),  m_buffer_size(buffer_size), buffer_(new Ch[buffer_size]),
-		m_buffer_last(0), m_current(buffer_), m_count(0),  m_owns_buffer(false) {
+		stream_(&stream),  buffer_size_(buffer_size), buffer_(new Ch[buffer_size]),
+		buffer_last_(0), current_(buffer_), count_(0),  owns_buffer_(false) {
         RAPIDJSON_ASSERT(stream_ != nullptr);
         RAPIDJSON_ASSERT(buffer_size >= 4);
         Read();
     }
 
 	Read_stream(std::istream& stream, size_t buffer_size, Ch* buffer) :
-		stream_(&stream),  m_buffer_size(buffer_size), buffer_(buffer),
-		m_buffer_last(0), m_current(buffer_), m_count(0), m_owns_buffer(false) {
+		stream_(&stream),  buffer_size_(buffer_size), buffer_(buffer),
+		buffer_last_(0), current_(buffer_), count_(0), owns_buffer_(false) {
         RAPIDJSON_ASSERT(stream_ != nullptr);
         RAPIDJSON_ASSERT(buffer_size >= 4);
         Read();
     }
 
 	~Read_stream() {
-		if (m_owns_buffer) {
+		if (owns_buffer_) {
             delete [] buffer_;
         }
     }
 
 	Ch Peek() const {
-        return *m_current;
+		return *current_;
     }
 
 	Ch Take() {
-		Ch c = *m_current;
+		Ch c = *current_;
         Read();
         return c;
     }
 
 	size_t Tell() const {
-        return m_count + (m_current - buffer_);
+		return count_ + (current_ - buffer_);
     }
 
     // Not implemented
@@ -58,37 +58,37 @@ public:
 
     // For encoding detection only.
 	const Ch* Peek4() const {
-        return (m_current + 4 <= m_buffer_last) ? m_current : nullptr;
+		return (current_ + 4 <= buffer_last_) ? current_ : nullptr;
     }
 
 private:
 
 	void Read() {
-		if (m_current < m_buffer_last) {
-            ++m_current;
+		if (current_ < buffer_last_) {
+			++current_;
 		} else if (*stream_) {
-            m_count += stream_->gcount();
+			count_ += stream_->gcount();
 
-            stream_->read(buffer_, m_buffer_size);
+			stream_->read(buffer_, buffer_size_);
 
-            m_buffer_last = buffer_ + stream_->gcount() - 1;
-            m_current = buffer_;
+			buffer_last_ = buffer_ + stream_->gcount() - 1;
+			current_ = buffer_;
 
-			if (static_cast<size_t>(stream_->gcount()) < m_buffer_size) {
+			if (static_cast<size_t>(stream_->gcount()) < buffer_size_) {
                 buffer_[stream_->gcount()] = '\0';
-                ++m_buffer_last;
+				++buffer_last_;
             }
         }
     }
 
     std::istream* stream_;
-    size_t m_buffer_size;
+	size_t buffer_size_;
 	Ch* buffer_;
-	Ch* m_buffer_last;
-	Ch* m_current;
-    size_t m_count;	//!< Number of characters read
+	Ch* buffer_last_;
+	Ch* current_;
+	size_t count_;	//!< Number of characters read
 
-    bool m_owns_buffer;
+	bool owns_buffer_;
 };
 
 }
