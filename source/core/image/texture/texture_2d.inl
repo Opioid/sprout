@@ -1,6 +1,7 @@
 #pragma once
 
 #include "texture_2d.hpp"
+#include "texture.inl"
 #include "image/image.hpp"
 
 namespace image {

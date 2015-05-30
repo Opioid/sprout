@@ -2,9 +2,11 @@
 #include "light_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "image/image.hpp"
+#include "image/texture/texture_2d.inl"
 #include "base/math/math.hpp"
 #include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
+#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace light {
 
