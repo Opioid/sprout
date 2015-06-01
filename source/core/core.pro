@@ -11,6 +11,8 @@ SOURCES += \
 
 HEADERS +=
 
+include(file/file.pri)
+include(gzip/gzip.pri)
 include(image/image.pri)
 include(progress/progress.pri)
 include(rendering/rendering.pri)

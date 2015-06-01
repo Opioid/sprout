@@ -18,7 +18,7 @@ public:
 		Use_as_mask   = 2
 	};
 
-	virtual std::shared_ptr<Image> load(const std::string& filename, uint32_t flags = 0);
+	virtual std::shared_ptr<Image> load(std::istream& stream, uint32_t flags = 0);
 
 private:
 

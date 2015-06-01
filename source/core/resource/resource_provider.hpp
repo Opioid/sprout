@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <istream>
 #include <memory>
 
 namespace resource {
@@ -11,7 +11,7 @@ public:
 
 	virtual ~Provider() {}
 
-	virtual std::shared_ptr<T> load(const std::string& filename, uint32_t flags) = 0;
+	virtual std::shared_ptr<T> load(std::istream& stream, uint32_t flags) = 0;
 };
 
 }

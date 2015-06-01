@@ -188,7 +188,6 @@ bool Reader::parse_data(std::shared_ptr<Chunk> chunk, Info& info) {
 		info.stream.avail_out = buffer_size;
 
 		int status = mz_inflate(&info.stream, MZ_NO_FLUSH);
-
 		if (status != MZ_OK && status != MZ_STREAM_END && status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
 			return false;
 		}

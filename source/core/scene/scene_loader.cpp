@@ -198,7 +198,11 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 
 	std::string file = json::read_string(shape_value, "file");
 	if (!file.empty()) {
-		return mesh_cache_.load(file);
+		try {
+			return mesh_cache_.load(file);
+		} catch (const std::exception& e) {
+			std::cout << "Cannot load " << file << ": " << e.what() << std::endl;
+		}
 	}
 
 	return nullptr;

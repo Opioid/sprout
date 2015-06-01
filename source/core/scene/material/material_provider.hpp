@@ -23,7 +23,7 @@ public:
 
 	Provider(resource::Cache<image::Image>& image_cache, uint32_t num_workers);
 
-	virtual std::shared_ptr<IMaterial> load(const std::string& filename, uint32_t flags = 0);
+	virtual std::shared_ptr<IMaterial> load(std::istream& stream, uint32_t flags = 0);
 
 	std::shared_ptr<IMaterial> fallback_material() const;
 

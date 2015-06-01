@@ -6,17 +6,11 @@
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
 #include "base/json/json.hpp"
-#include <fstream>
 #include <iostream>
 
 namespace scene { namespace shape { namespace triangle {
 
-std::shared_ptr<Mesh> Provider::load(const std::string& filename, uint32_t /*flags*/) {
-	std::ifstream stream(filename, std::ios::binary);
-	if (!stream) {
-		return nullptr;
-	}
-
+std::shared_ptr<Mesh> Provider::load(std::istream& stream, uint32_t /*flags*/) {
 	auto root = json::parse(stream);
 
 	std::vector<Index_triangle> triangles;
