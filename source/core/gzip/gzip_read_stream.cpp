@@ -166,27 +166,37 @@ Filebuffer::int_type Filebuffer::underflow() {
 	if (0 == z_stream_.avail_in) {
 
 		stream_->read(read_buffer_.data(), read_buffer_.size());
+
+		size_t read_bytes = stream_ ? read_buffer_.size() : stream_->gcount();
+
+		z_stream_.next_in  = reinterpret_cast<unsigned char*>(read_buffer_.data());
+		z_stream_.avail_in  = static_cast<uint32_t>(read_bytes);
+
 	}
 
-	size_t read_bytes = stream_ ? read_buffer_.size() : stream_->gcount();
 
-	z_stream_.avail_in  = static_cast<uint32_t>(read_bytes);
 	z_stream_.avail_out = static_cast<uint32_t>(buffer_.size());
 	z_stream_.next_out  = reinterpret_cast<unsigned char*>(buffer_.data());
 
-	int status = mz_inflate(&z_stream_, MZ_SYNC_FLUSH);
+	int status = mz_inflate(&z_stream_, MZ_NO_FLUSH);
 	if (status != MZ_OK && status != MZ_STREAM_END && status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
 		return traits_type::eof();
 	}
 
 	size_t uncompressed_bytes = buffer_.size() - z_stream_.avail_out;
 
-	setg(&*buffer_.begin(), &*buffer_.begin(), &*buffer_.begin() + uncompressed_bytes);
+	if (0 == uncompressed_bytes && MZ_STREAM_END == status) {
+		return traits_type::eof();
+	}
+
+	setg(buffer_.begin(), buffer_.begin(), buffer_.begin() + uncompressed_bytes);
 
 	return traits_type::to_int_type(buffer_.front());
 }
 
 Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) {
+	std::cout << "seekpos" << std::endl;
+
 	if (!is_open() /*|| m_is_write_stream*/) {
 		return pos_type(off_type(-1));
 	}
@@ -202,6 +212,8 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
 }
 
 Filebuffer::pos_type Filebuffer::seekoff(off_type off, std::ios_base::seekdir dir, std::ios_base::openmode mode) {
+	std::cout << "seekoff" << std::endl;
+
 	if (!is_open() /*|| m_is_write_stream*/) {
 		return pos_type(off_type(-1));
 	}

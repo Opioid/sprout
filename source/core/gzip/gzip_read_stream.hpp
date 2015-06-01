@@ -54,7 +54,7 @@ private:
 
 //	PHYSFS_File* m_file;
 //	bool m_is_write_stream;
-	std::array<char_type, 64> read_buffer_;
+	std::array<char_type, 8192> read_buffer_;
 
 	std::array<char_type, 8192> buffer_;
 };
