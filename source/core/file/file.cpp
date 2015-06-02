@@ -26,6 +26,9 @@ Type query_type(std::istream& stream) {
 
 std::unique_ptr<std::istream> open_read_stream(const std::string& name) {
 	auto stream = std::unique_ptr<std::istream>(new std::ifstream(name.c_str(), std::ios::binary));
+	if (!*stream) {
+		return stream;
+	}
 
 	Type type = query_type(*stream);
 

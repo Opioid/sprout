@@ -15,23 +15,6 @@ std::shared_ptr<T> Cache<T>::load(const std::string& filename, uint32_t flags) {
 		return cached->second;
 	}
 
-/*
-		std::ifstream stream(filename, std::ios::binary);
-		if (!stream) {
-		//	throw std::runtime_error("File \"" + filename + "\" could not be opened");
-			return nullptr;
-		}
-
-/*		file::Type type = file::query_type(stream);
-
-		switch (type) {
-		case file::Type::GZIP: std::cout << "GZIP" << std::endl; break;
-		case file::Type::PNG: std::cout << "PNG" << std::endl; break;
-		case file::Type::RGBE: std::cout << "RGBE" << std::endl; break;
-		default: std::cout << "Unknown" << std::endl;
-		}
-*/
-
 	auto stream = file::open_read_stream(filename);
 	if (!*stream) {
 		throw std::runtime_error("File \"" + filename + "\" could not be opened");
