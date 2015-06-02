@@ -33,6 +33,9 @@ std::shared_ptr<T> Cache<T>::load(const std::string& filename, uint32_t flags) {
 */
 
 	auto stream = file::open_read_stream(filename);
+	if (!*stream) {
+		throw std::runtime_error("File \"" + filename + "\" could not be opened");
+	}
 
 	auto resource = provider_.load(*stream, flags);
 	if (!resource) {
