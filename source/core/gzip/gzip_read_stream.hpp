@@ -11,7 +11,7 @@ namespace gzip {
 class Filebuffer : public std::basic_streambuf<char, std::char_traits<char>> {
 
 public:
-	// Types:
+
 	typedef char                   char_type;
 	typedef std::char_traits<char> traits_type;
 	typedef traits_type::int_type  int_type;
@@ -33,7 +33,7 @@ public:
 	Filebuffer* close();
 
 protected:
-	// Read stuff:
+
 	virtual int_type underflow();
 
 	virtual pos_type seekpos(pos_type pos, std::ios_base::openmode);
@@ -48,12 +48,14 @@ protected:
 
 private:
 
+	bool init_z_stream();
+
+	pos_type data_start_;
+
 	std::unique_ptr<std::istream> stream_;
 
 	mz_stream z_stream_;
 
-//	PHYSFS_File* m_file;
-//	bool m_is_write_stream;
 	std::array<char_type, 8192> read_buffer_;
 
 	std::array<char_type, 8192> buffer_;

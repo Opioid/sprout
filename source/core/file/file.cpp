@@ -19,7 +19,7 @@ Type query_type(std::istream& stream) {
 		type = Type::RGBE;
 	}
 
-	stream.seekg(0, std::ios_base::beg);
+	stream.seekg(0);
 
 	return type;
 }

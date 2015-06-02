@@ -1,7 +1,8 @@
 #include "gzip_read_stream.hpp"
 #include <fstream>
-#include <iostream>
+#include <limits>
 #include <string>
+#include <iostream>
 
 namespace gzip {
 
@@ -24,41 +25,7 @@ Filebuffer* Filebuffer::open(const char* filename, std::ios_base::openmode mode)
 	auto stream = std::unique_ptr<std::istream>(new std::ifstream(filename, mode));
 
 	open(std::move(stream));
-/*
-	// Return failure if we are requested to open a file in an unsupported mode
-	if (!(mode & std::ios_base::binary)
-	||   ((mode & std::ios_base::in) && (mode & std::ios_base::out))) {
-		return nullptr;
-	}
 
-	// Open the file
-	if ((mode & std::ios_base::out) && (mode & std::ios_base::app)) {
-		m_file = PHYSFS_openAppend(name);
-		m_is_write_stream = true;
-	}
-	else if (mode & std::ios_base::out) {
-		m_file = PHYSFS_openWrite(name);
-		m_is_write_stream = true;
-	}
-	else if (mode & std::ios_base::in) {
-		m_file = PHYSFS_openRead(name);
-		m_is_write_stream = false;
-	}
-	else {
-		return nullptr;
-	}
-
-	if (!m_file) {
-		return nullptr;
-	}
-
-	if ((mode & std::ios_base::ate) && (mode & std::ios_base::in)) {
-		if (!PHYSFS_seek(m_file, PHYSFS_fileLength(m_file))) {
-			close();
-			return nullptr;
-		}
-	}
-*/
 	return this;
 }
 
@@ -66,7 +33,6 @@ Filebuffer* Filebuffer::open(std::unique_ptr<std::istream> stream) {
 	stream_ = std::move(stream);
 
 	uint8_t header[10];
-
 	stream_->read(reinterpret_cast<char*>(header), sizeof(header));
 
 	if (header[0] != 0x1F || header[1] != 0x8B) {
@@ -80,43 +46,32 @@ Filebuffer* Filebuffer::open(std::unique_ptr<std::istream> stream) {
 
 	if (header[3] & 1 << 2) {
 		// FEXTRA
-
-		std::cout << "fextra stuff" << std::endl;
+		uint8_t n[2];
+		stream_->read(reinterpret_cast<char*>(n), sizeof(n));
+		size_t len = n[0] << 0 | n[1] << 8;
+		stream_->ignore(len);
 	}
 
 	if (header[3] & 1 << 3) {
 		// FNAME
-
-		std::cout << "fname stuff" << std::endl;
-
-		std::string name;
-
-		std::getline(*stream_, name, char(0));
-
-		std::cout << name << std::endl;
+		stream_->ignore(std::numeric_limits<std::streamsize>::max(), char(0));
 	}
 
 	if (header[3] & 1 << 4) {
 		// FCOMMENT
-
-		std::cout << "fcomment stuff" << std::endl;
+		stream_->ignore(std::numeric_limits<std::streamsize>::max(), char(0));
 	}
 
 	if (header[3] & 1 << 1) {
 		// FCRC
-
-		std::cout << "fcrc stuff" << std::endl;
+		stream_->ignore(2);
 	}
 
-	z_stream_.zalloc = nullptr;
-	z_stream_.zfree  = nullptr;
+	data_start_ = stream_->tellg();
 
-	if (MZ_OK != mz_inflateInit2(&z_stream_, -MZ_DEFAULT_WINDOW_BITS)) {
+	if (!init_z_stream()) {
 		return nullptr;
 	}
-
-	z_stream_.next_in  = reinterpret_cast<unsigned char*>(read_buffer_.data());
-	z_stream_.avail_in = 0;
 
 	return this;
 }
@@ -128,92 +83,87 @@ Filebuffer* Filebuffer::close() {
 	}
 
 	sync();
-/*
-	if (!PHYSFS_close(m_file)) {
-		return nullptr;
-	}
 
-	m_file = nullptr;
-*/
+	mz_inflateEnd(&z_stream_);
 
 	stream_.release();
 
 	return this;
 }
 
-// Read stuff:
 Filebuffer::int_type Filebuffer::underflow() {
 	if (!is_open()) {
 		return traits_type::eof();
 	}
-/*
-	if (PHYSFS_eof(m_file)) {
-		return traits_type::eof();
+
+	char_type* current = gptr();
+
+	size_t uncompressed_bytes = 0;
+
+	while (0 == uncompressed_bytes) {
+		if (0 == z_stream_.avail_in) {
+			stream_->read(read_buffer_.data(), read_buffer_.size());
+
+			size_t read_bytes = stream_ ? read_buffer_.size() : stream_->gcount();
+
+			z_stream_.avail_in = static_cast<uint32_t>(read_bytes);
+			z_stream_.next_in  = reinterpret_cast<unsigned char*>(read_buffer_.data());
+		}
+
+		if (0 == z_stream_.avail_out) {
+			z_stream_.avail_out = static_cast<uint32_t>(buffer_.size());
+			z_stream_.next_out  = reinterpret_cast<unsigned char*>(buffer_.data());
+
+			current = &*buffer_.begin();
+		}
+
+		uint32_t avail_out = z_stream_.avail_out;
+
+		int status = mz_inflate(&z_stream_, MZ_NO_FLUSH);
+		if (status != MZ_OK && status != MZ_STREAM_END && status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
+			return traits_type::eof();
+		}
+
+		uncompressed_bytes = avail_out - z_stream_.avail_out;
+
+		if (0 == uncompressed_bytes && MZ_STREAM_END == status) {
+			return traits_type::eof();
+		}
 	}
 
-	PHYSFS_sint64 objects_read = PHYSFS_read(m_file, &*buffer_.begin(), PHYSFS_uint32(sizeof(char_type)), buffer_.size());
+	setg(&*buffer_.begin(), current, current + uncompressed_bytes);
 
-	if (objects_read <= 0) {
-		return traits_type::eof();
-	}
-
-	char_type* xend = (static_cast<size_t>(objects_read) == buffer_.size()) ? &(buffer_.back()) + 1 : &buffer_[objects_read];
-	setg(&*buffer_.begin(), &*buffer_.begin(), xend);
-
-	return traits_type::to_int_type(buffer_.front());
-	*/
-
-	if (0 == z_stream_.avail_in) {
-
-		stream_->read(read_buffer_.data(), read_buffer_.size());
-
-		size_t read_bytes = stream_ ? read_buffer_.size() : stream_->gcount();
-
-		z_stream_.next_in  = reinterpret_cast<unsigned char*>(read_buffer_.data());
-		z_stream_.avail_in  = static_cast<uint32_t>(read_bytes);
-
-	}
-
-
-	z_stream_.avail_out = static_cast<uint32_t>(buffer_.size());
-	z_stream_.next_out  = reinterpret_cast<unsigned char*>(buffer_.data());
-
-	int status = mz_inflate(&z_stream_, MZ_NO_FLUSH);
-	if (status != MZ_OK && status != MZ_STREAM_END && status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
-		return traits_type::eof();
-	}
-
-	size_t uncompressed_bytes = buffer_.size() - z_stream_.avail_out;
-
-	if (0 == uncompressed_bytes && MZ_STREAM_END == status) {
-		return traits_type::eof();
-	}
-
-	setg(buffer_.begin(), buffer_.begin(), buffer_.begin() + uncompressed_bytes);
-
-	return traits_type::to_int_type(buffer_.front());
+	return traits_type::to_int_type(*current);
 }
 
 Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) {
-	std::cout << "seekpos" << std::endl;
-
 	if (!is_open() /*|| m_is_write_stream*/) {
 		return pos_type(off_type(-1));
 	}
-/*
-	if (PHYSFS_seek(m_file, static_cast<PHYSFS_uint64>(pos)) == 0) {
-		return pos_type(off_type(-1));
+
+	off_type buffer_range = egptr() - eback();
+	pos_type buffer_start = z_stream_.total_out - buffer_range;
+	off_type buffer_offset = pos - buffer_start;
+
+	if (buffer_offset >= 0 && buffer_offset < buffer_range) {
+		// the new position is still in our current buffer
+		setg(eback(), eback() + buffer_offset, egptr());
+	} else if (buffer_offset < 0) {
+		// start everything from scratch
+
+		stream_->seekg(data_start_);
+
+		mz_inflateEnd(&z_stream_);
+
+		init_z_stream();
+
+		setg(&*buffer_.begin(), &*buffer_.begin(), &*buffer_.begin());
 	}
-*/
-	// the seek invalidated the buffer
-	setg(&*buffer_.begin(), &*buffer_.begin(), &*buffer_.begin());
 
 	return pos;
 }
 
 Filebuffer::pos_type Filebuffer::seekoff(off_type off, std::ios_base::seekdir dir, std::ios_base::openmode mode) {
-	std::cout << "seekoff" << std::endl;
-
 	if (!is_open() /*|| m_is_write_stream*/) {
 		return pos_type(off_type(-1));
 	}
@@ -249,7 +199,7 @@ Filebuffer::pos_type Filebuffer::seekoff(off_type off, std::ios_base::seekdir di
 }
 
 // Write stuff:
-Filebuffer::int_type Filebuffer::overflow(int_type c) {
+Filebuffer::int_type Filebuffer::overflow(int_type /*c*/) {
 //	if (!is_open() || /*!m_is_write_stream*/)
 //	{
 //		return traits_type::eof();
@@ -303,6 +253,20 @@ std::streamsize Filebuffer::showmanyc() {
 //	return static_cast<int>(fileSize);
 
 	return -1;
+}
+
+bool Filebuffer::init_z_stream() {
+	z_stream_.zalloc = nullptr;
+	z_stream_.zfree  = nullptr;
+
+	if (MZ_OK != mz_inflateInit2(&z_stream_, -MZ_DEFAULT_WINDOW_BITS)) {
+		return false;
+	}
+
+	z_stream_.avail_in  = 0;
+	z_stream_.avail_out = 0;
+
+	return true;
 }
 
 Read_stream::Read_stream() : __istream_type(&stream_buffer_) {}

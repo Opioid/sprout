@@ -31,9 +31,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
 Reader::Header Reader::read_header(std::istream& stream) {
 	std::string line;
-
 	std::getline(stream, line);
-
 	if ("#?RADIANCE" != line) {
 		throw std::runtime_error("Bad initial token");
 	}
