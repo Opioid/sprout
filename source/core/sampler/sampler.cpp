@@ -16,11 +16,7 @@ uint32_t Sampler::num_samples_per_iteration() const {
 
 void Sampler::restart(uint32_t num_iterations) {
 	num_iterations_ = num_iterations;
-}
-
-void Sampler::start_iteration(uint32_t iteration) {
-	current_iteration_ = iteration;
-	current_sample_    = 0;
+	current_sample_ = 0;
 }
 
 }

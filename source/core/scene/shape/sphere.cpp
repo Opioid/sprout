@@ -88,8 +88,7 @@ float Sphere::opacity(const Composed_transformation& transformation, const math:
 }
 
 void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/, const math::float3& p,
-							   sampler::Sampler& sampler, uint32_t sample_index,
-							   math::float3& wi, float& t, float& pdf) const {
+							   sampler::Sampler& sampler, math::float3& wi, float& t, float& pdf) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
 
@@ -102,7 +101,7 @@ void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation&
 	math::float3 x, y;
 	math::coordinate_system(z, x, y);
 
-	math::float2 sample = sampler.generate_sample_2d(sample_index);
+	math::float2 sample = sampler.generate_sample_2d();
 	math::float3 dir = math::sample_oriented_cone_uniform(sample, cos_theta_max, x, y, z);
 
 	wi = dir;

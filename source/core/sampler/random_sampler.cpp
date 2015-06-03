@@ -28,11 +28,11 @@ bool Random::generate_camera_sample(const math::float2& offset, Camera_sample& s
 	return true;
 }
 
-math::float2 Random::generate_sample_2d(uint32_t /*index*/) {
+math::float2 Random::generate_sample_2d() {
 	return math::float2(rng_.random_float(), rng_.random_float());
 }
 
-float Random::generate_sample_1d(uint32_t /*index*/) {
+float Random::generate_sample_1d() {
 	return rng_.random_float();
 }
 

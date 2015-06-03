@@ -46,7 +46,7 @@ float GGX::pdf(const math::float3& wi, float /*n_dot_wi*/) const {
 }
 
 float GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
-	math::float2 xi = sampler.generate_sample_2d(0);
+	math::float2 xi = sampler.generate_sample_2d();
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
 	// TODO: Optimize the perfect mirror case more
@@ -137,7 +137,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 		float n_dot_wi = ggx_.importance_sample(sampler, result);
 		result.reflection *= n_dot_wi;
 	} else {
-		float p = sampler.generate_sample_1d(0);
+		float p = sampler.generate_sample_1d();
 
 //		if (p < 0.5f) {
 //			float n_dot_wi = lambert_.importance_sample(sampler, result);

@@ -29,8 +29,7 @@ public:
 						  const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const final override;
 
 	virtual void importance_sample(uint32_t part, const Composed_transformation& transformation, float area, const math::float3& p,
-								   sampler::Sampler& sampler, uint32_t sample_index,
-								   math::float3& wi, float& t, float& pdf) const final override;
+								   sampler::Sampler& sampler, math::float3& wi, float& t, float& pdf) const final override;
 
 	virtual float pdf(uint32_t part, const Composed_transformation& transformation, float area,
 					  const math::float3& p, const math::float3& wi) const final override;

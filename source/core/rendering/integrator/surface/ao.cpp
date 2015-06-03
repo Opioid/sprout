@@ -16,9 +16,7 @@ void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
 }
 
-math::float3 Ao::li(Worker& worker, uint32_t subsample, math::Oray& /*ray*/, scene::Intersection& intersection) {
-	sampler_.start_iteration(subsample);
-
+math::float3 Ao::li(Worker& worker, math::Oray& /*ray*/, scene::Intersection& intersection) {
 	math::Oray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
@@ -27,7 +25,7 @@ math::float3 Ao::li(Worker& worker, uint32_t subsample, math::Oray& /*ray*/, sce
 	float result = 0.f;
 
 	for (uint32_t i = 0; i < settings_.num_samples; ++i) {
-		math::float2 sample = sampler_.generate_sample_2d(i);
+		math::float2 sample = sampler_.generate_sample_2d();
 		math::float3 hs = math::sample_hemisphere_cosine(sample);
 		math::float3 ws = intersection.geo.tangent_to_world(hs);
 

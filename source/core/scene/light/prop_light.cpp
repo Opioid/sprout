@@ -24,7 +24,7 @@ void Prop_light::sample(const Composed_transformation& transformation, const mat
 
 	Sample sample;
 
-	prop_->shape()->importance_sample(part_, transformation, area_, p, sampler, 0, sample.l, sample.t, sample.pdf);
+	prop_->shape()->importance_sample(part_, transformation, area_, p, sampler, sample.l, sample.t, sample.pdf);
 
 	sample.energy = prop_->material(part_)->sample_emission();
 

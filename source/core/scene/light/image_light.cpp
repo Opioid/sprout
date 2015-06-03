@@ -28,7 +28,7 @@ void Image_light::sample(const Composed_transformation& /*transformation*/, cons
 	math::float3 x, y;
 	math::coordinate_system(n, x, y);
 
-	math::float2 uv = sampler.generate_sample_2d(0);
+	math::float2 uv = sampler.generate_sample_2d();
 	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
 	sample.l = dir;

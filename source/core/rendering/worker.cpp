@@ -40,31 +40,26 @@ void Worker::render(const scene::Scene& scene, const scene::camera::Camera& came
 	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
 			sampler_->restart(1);
-			sampler_->start_iteration(0);
 			surface_integrator_->start_new_pixel(sampler_->num_samples_per_iteration());
-
-			uint32_t sample_id = 0;
 
 			math::float2 offset(static_cast<float>(x), static_cast<float>(y));
 
 			while (sampler_->generate_camera_sample(offset, sample)) {
 				camera.generate_ray(sample, ray);
 
-				math::float3 color = li(sample_id, ray);
+				math::float3 color = li(ray);
 
 				film.add_sample(sample, color, tile);
-
-				++sample_id;
 			}
 		}
 	}
 }
 
-math::float3 Worker::li(uint32_t subsample, math::Oray& ray) {
+math::float3 Worker::li(math::Oray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 	if (hit) {
-		return surface_integrator_->li(*this, subsample, ray, intersection);
+		return surface_integrator_->li(*this, ray, intersection);
 	} else {
 		return scene_->surrounding()->sample(ray);
 	}

@@ -15,7 +15,7 @@ Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng
 
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
-math::float3 Normal::li(Worker& worker, uint32_t /*subsample*/, math::Oray& ray, scene::Intersection& intersection) {
+math::float3 Normal::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	auto material = intersection.material();
 
 	math::float3 wo = -ray.direction;

@@ -75,8 +75,7 @@ float Plane::opacity(const Composed_transformation& transformation, const math::
 }
 
 void Plane::importance_sample(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/, const math::float3& /*p*/,
-							  sampler::Sampler& /*sampler*/, uint32_t /*sample_index*/,
-							  math::float3& /*wi*/, float& /*t*/, float& pdf) const {
+							  sampler::Sampler& /*sampler*/, math::float3& /*wi*/, float& /*t*/, float& pdf) const {
 	pdf = 0.f;
 }
 
