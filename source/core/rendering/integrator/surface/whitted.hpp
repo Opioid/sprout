@@ -34,7 +34,7 @@ private:
 
 	Settings settings_;
 
-	sampler::Random sampler_;
+	sampler::EMS sampler_;
 
 	std::vector<scene::light::Sample> light_samples_;
 };

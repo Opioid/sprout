@@ -15,8 +15,7 @@ Sampler* EMS::clone() const {
 
 void EMS::restart(uint32_t num_iterations) {
 	num_iterations_ = num_iterations;
-	random_bits_ = rng_.random_uint();
-	random_bits2_ = rng_.random_uint();
+	random_bits_  = rng_.random_uint();
 }
 
 bool EMS::generate_camera_sample(const math::float2& offset, Camera_sample& sample) {
@@ -36,7 +35,7 @@ bool EMS::generate_camera_sample(const math::float2& offset, Camera_sample& samp
 }
 
 math::float2 EMS::generate_sample_2d(uint32_t index) {
-	uint32_t offset = num_samples_per_iteration_ * current_iteration_;
+	uint32_t offset = current_iteration_ * num_samples_per_iteration_;
 	return math::ems(offset + index, random_bits_);
 }
 

@@ -35,7 +35,8 @@ bool Scrambled_hammersley::generate_camera_sample(const math::float2& offset, Ca
 }
 
 math::float2 Scrambled_hammersley::generate_sample_2d(uint32_t index) {
-	return math::scrambled_hammersley(index, num_samples_per_iteration_, random_bits_);
+	uint32_t offset = current_iteration_ * num_samples_per_iteration_;
+	return math::scrambled_hammersley(offset + index, num_iterations_ * num_samples_per_iteration_, random_bits_);
 }
 
 float Scrambled_hammersley::generate_sample_1d(uint32_t /*index*/) {

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
+#include "sampler/ems_sampler.hpp"
 #include "sampler/random_sampler.hpp"
+#include "sampler/scrambled_hammersley_sampler.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
 #include "image/texture/sampler/address_mode.hpp"
 #include <vector>
@@ -36,7 +38,7 @@ private:
 
 	Settings settings_;
 
-	sampler::Random sampler_;
+	sampler::Scrambled_hammersley sampler_;
 
 	std::vector<scene::light::Sample> light_samples_;
 };

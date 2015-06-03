@@ -22,7 +22,6 @@ public:
 protected:
 
 	uint32_t random_bits_;
-	uint32_t random_bits2_;
 };
 
 }

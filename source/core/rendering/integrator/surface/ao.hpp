@@ -2,6 +2,7 @@
 
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/ems_sampler.hpp"
+#include "sampler/scrambled_hammersley_sampler.hpp"
 #include "sampler/random_sampler.hpp"
 
 namespace rendering {
@@ -25,7 +26,7 @@ private:
 
 	Settings settings_;
 
-	sampler::Random sampler_;
+	sampler::EMS sampler_;
 };
 
 class Ao_factory : public Surface_integrator_factory {
