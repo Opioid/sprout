@@ -81,7 +81,7 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 	}
 
 	//	if (!hit) {
-		if (!hit && previous_sample_type.test(scene::material::BxDF_type::Specular)) {
+	if (!hit && previous_sample_type.test(scene::material::BxDF_type::Specular)) {
 		math::float3 r = worker.scene().surrounding()->sample(ray);
 		result += throughput * r;
 	}
@@ -118,9 +118,10 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 		if (mv > 0.f) {
 			float bxdf_pdf;
 			math::float3 f = material_sample.evaluate(ls.l, bxdf_pdf);
-			float weight = power_heuristic(ls.pdf, bxdf_pdf);
 
-			ls.pdf *= light_pdf;
+		//	ls.pdf *= light_pdf;
+
+			float weight = power_heuristic(ls.pdf, bxdf_pdf);
 
 			result = (weight / ls.pdf) * mv * ls.energy * f;
 		}
@@ -138,11 +139,11 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 			return result;
 		}
 
-		ls_pdf *= light_pdf;
+	//	sample_result.pdf *= light_pdf;
 
 		float weight = power_heuristic(sample_result.pdf, ls_pdf);
 
-		math::float3 wo = -ray.direction;
+		math::float3 wo = -sample_result.wi;
 
 		ray.set_direction(sample_result.wi);
 		ray.max_t = 1000.f;
@@ -151,9 +152,9 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 		if (worker.intersect(ray, light_intersection)) {
 			if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
 				auto light_material = light_intersection.material();
-				auto& light_material_sample = light_material->sample(intersection.geo, wo, settings_.sampler, worker.id());
+				auto& light_material_sample = light_material->sample(light_intersection.geo, wo, settings_.sampler, worker.id());
 
-				if (light_material_sample.same_hemisphere(-ray.direction)) {
+				if (light_material_sample.same_hemisphere(wo)) {
 					math::float3 ls_energy = light_material_sample.emission();
 					result += (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
 				}
@@ -166,7 +167,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 		}
 	}
 
-	return result;
+	return result / light_pdf;
 }
 
 bool Pathtracer_MIS::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
