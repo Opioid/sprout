@@ -31,7 +31,7 @@ int main() {
 
 	auto loading_start = clock.now();
 
-	std::string takename = "../data/takes/cornell.take";
+	std::string takename = "../data/takes/lighting_test.take";
 
 	std::shared_ptr<take::Take> take;
 
@@ -44,7 +44,7 @@ int main() {
 	}
 
 	// The scene loader must be alive during rendering, otherwise some resources might be released prematurely.
-	// This is potentially confusing and should be adressed one way or the other.
+	// This is confusing and should be adressed.
 	scene::Loader scene_loader(num_workers, pool);
 	scene::Scene scene;
 

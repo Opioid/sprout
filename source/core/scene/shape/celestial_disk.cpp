@@ -25,14 +25,14 @@ bool Celestial_disk::intersect(const Composed_transformation& transformation, ma
 	if (det > 0.f && ray.max_t >= 1000.f) {
 		intersection.epsilon = 5e-4f;
 
-		intersection.p = ray.point(1000.f);
+		intersection.p = ray.point(999.9f);
 		intersection.t = transformation.rotation.x;
 		intersection.b = transformation.rotation.y;
 		intersection.n = transformation.rotation.z;
 		intersection.geo_n = transformation.rotation.z;
 		intersection.part = 0;
 
-		ray.max_t = 1000.f;
+		ray.max_t = 999.9f;
 		return true;
 	}
 
@@ -52,8 +52,8 @@ float Celestial_disk::opacity(const Composed_transformation& /*transformation*/,
 	return 0.f;
 }
 
-void Celestial_disk::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, float area, const math::float3& /*p*/,
-									   sampler::Sampler& sampler, math::float3& wi, float& t, float& pdf) const {
+void Celestial_disk::sample(uint32_t /*part*/, const Composed_transformation& transformation, float area, const math::float3& /*p*/,
+							sampler::Sampler& sampler, math::float3& wi, float& t, float& pdf) const {
 	math::float2 sample = sampler.generate_sample_2d();
 	math::float2 xy = math::sample_disk_concentric(sample);
 

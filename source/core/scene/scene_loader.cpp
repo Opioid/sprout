@@ -4,6 +4,7 @@
 #include "scene/surrounding/surrounding_uniform.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/uniform_light.hpp"
+#include "scene/shape/canopy.hpp"
 #include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/disk.hpp"
 #include "scene/shape/plane.hpp"
@@ -19,6 +20,7 @@
 namespace scene {
 
 Loader::Loader(uint32_t num_workers, thread::Pool& pool) :
+	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
 	plane_(std::make_shared<shape::Plane>()),
@@ -209,7 +211,9 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 }
 
 std::shared_ptr<shape::Shape> Loader::shape(const std::string& type) const {
-	if ("Celestial_disk" == type) {
+	if ("Canopy" == type) {
+		return canopy_;
+	} else if ("Celestial_disk" == type) {
 		return celestial_disk_;
 	} else if ("Disk" == type) {
 		return disk_;
