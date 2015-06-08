@@ -2,6 +2,7 @@
 #include "light_sample.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/shape/shape.hpp"
+#include "scene/shape/shape_sample.hpp"
 #include "scene/material/material.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -22,13 +23,16 @@ void Prop_light::sample(const Composed_transformation& transformation, const mat
 						sampler::Sampler& sampler, uint32_t /*max_samples*/, std::vector<Sample>& samples) const {
 	samples.clear();
 
-	Sample sample;
+	shape::Sample shape_sample;
+	prop_->shape()->sample(part_, transformation, area_, p, n, sampler, shape_sample);
 
-	prop_->shape()->sample(part_, transformation, area_, p, sampler, sample.l, sample.t, sample.pdf);
+	Sample light_sample;
+	light_sample.energy = prop_->material(part_)->sample_emission();
+	light_sample.l = shape_sample.wi;
+	light_sample.t = shape_sample.t;
+	light_sample.pdf = shape_sample.pdf;
 
-	sample.energy = prop_->material(part_)->sample_emission();
-
-	samples.push_back(sample);
+	samples.push_back(light_sample);
 }
 
 math::float3 Prop_light::evaluate(const math::float3& wi) const {

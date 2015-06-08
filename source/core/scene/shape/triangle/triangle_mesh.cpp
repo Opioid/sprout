@@ -2,6 +2,7 @@
 #include "triangle_primitive.inl"
 #include "triangle_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
@@ -81,8 +82,8 @@ float Mesh::opacity(const Composed_transformation& transformation, const math::O
 	return tree_.opacity(tray, bounds, node_stack, materials, sampler);
 }
 
-void Mesh::sample(uint32_t part, const Composed_transformation& transformation, float area, const math::float3& p,
-				  sampler::Sampler& sampler, math::float3& wi, float& t, float& pdf) const {
+void Mesh::sample(uint32_t part, const Composed_transformation& transformation, float area, const math::float3& p, const math::float3& n,
+				  sampler::Sampler& sampler, Sample& sample) const {
 	float r = sampler.generate_sample_1d();
 	math::float2 r2 = sampler.generate_sample_2d();
 
@@ -94,20 +95,20 @@ void Mesh::sample(uint32_t part, const Composed_transformation& transformation, 
 	tree_.sample(index, r2, sv, sn, tc);
 
 	math::float3 v = math::transform_point(transformation.object_to_world, sv);
-	math::float3 n = math::transform_vector(transformation.rotation, sn);
+	math::float3 wn = math::transform_vector(transformation.rotation, sn);
 
 	math::float3 axis = v - p;
 
-	wi = math::normalized(axis);
+	sample.wi = math::normalized(axis);
 
-	float c = math::dot(n, -wi);
+	float c = math::dot(wn, -sample.wi);
 
 	if (c <= 0.f) {
-		pdf = 0.f;
+		sample.pdf = 0.f;
 	} else {
 		float sl = math::squared_length(axis);
-		t = std::sqrt(sl);
-		pdf = sl / (c * area);
+		sample.t = std::sqrt(sl);
+		sample.pdf = sl / (c * area);
 	}
 }
 

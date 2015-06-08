@@ -4,10 +4,10 @@
 
 namespace scene { namespace shape {
 
-class Sphere : public Shape {
+class Canopy : public Shape {
 public:
 
-	Sphere();
+	Canopy();
 
 	virtual bool intersect(const Composed_transformation& transformation, math::Oray& ray,
 						   const math::float2& bounds, Node_stack& node_stack,
@@ -27,6 +27,9 @@ public:
 					  const math::float3& p, const math::float3& wi) const final override;
 
 	virtual float area(uint32_t part, const math::float3& scale) const final override;
+
+	virtual bool is_finite() const final override;
 };
 
 }}
+
