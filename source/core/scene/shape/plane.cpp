@@ -1,4 +1,5 @@
 #include "plane.hpp"
+#include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "base/math/vector.inl"
@@ -75,8 +76,8 @@ float Plane::opacity(const Composed_transformation& transformation, const math::
 }
 
 void Plane::importance_sample(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/, const math::float3& /*p*/,
-							  sampler::Sampler& /*sampler*/, math::float3& /*wi*/, float& /*t*/, float& pdf) const {
-	pdf = 0.f;
+							  sampler::Sampler& /*sampler*/, Sample& sample) const {
+	sample.pdf = 0.f;
 }
 
 float Plane::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,

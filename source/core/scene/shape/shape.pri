@@ -11,6 +11,7 @@ HEADERS += \
 	scene/shape/node_stack.hpp \
 	scene/shape/plane.hpp \
 	scene/shape/shape.hpp \
+	scene/shape/shape_sample.hpp \
 	scene/shape/sphere.hpp \
 
 include(geometry/geometry.pri)

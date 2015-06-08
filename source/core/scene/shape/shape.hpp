@@ -17,6 +17,7 @@ struct Composed_transformation;
 namespace shape {
 
 struct Intersection;
+struct Sample;
 
 class Shape {
 public:
@@ -39,7 +40,7 @@ public:
 						  const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const = 0;
 
 	virtual void importance_sample(uint32_t part, const Composed_transformation& transformation, float area, const math::float3& p,
-								   sampler::Sampler& sampler, math::float3& wi, float& t, float& pdf) const = 0;
+								   sampler::Sampler& sampler, Sample& sample) const = 0;
 
 	virtual float pdf(uint32_t part, const Composed_transformation& transformation, float area,
 					  const math::float3& p, const math::float3& wi) const = 0;

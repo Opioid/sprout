@@ -1,4 +1,5 @@
 #include "celestial_disk.hpp"
+#include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
@@ -53,16 +54,16 @@ float Celestial_disk::opacity(const Composed_transformation& /*transformation*/,
 }
 
 void Celestial_disk::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, float area, const math::float3& /*p*/,
-									   sampler::Sampler& sampler, math::float3& wi, float& t, float& pdf) const {
-	math::float2 sample = sampler.generate_sample_2d();
-	math::float2 xy = math::sample_disk_concentric(sample);
+									   sampler::Sampler& sampler, Sample& sample) const {
+	math::float2 r2 = sampler.generate_sample_2d();
+	math::float2 xy = math::sample_disk_concentric(r2);
 
 	math::float3 ls = math::float3(xy, 0.f);
 	math::float3 ws = transformation.scale.x * math::transform_vector(transformation.rotation, ls);
 
-	wi = math::normalized(ws - transformation.rotation.z);
-	t = 1000.f;
-	pdf = 1.f / area;
+	sample.wi = math::normalized(ws - transformation.rotation.z);
+	sample.t = 1000.f;
+	sample.pdf = 1.f / area;
 }
 
 float Celestial_disk::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float area,

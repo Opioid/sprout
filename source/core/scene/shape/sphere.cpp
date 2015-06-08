@@ -1,4 +1,5 @@
 #include "sphere.hpp"
+#include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
@@ -88,7 +89,7 @@ float Sphere::opacity(const Composed_transformation& transformation, const math:
 }
 
 void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/, const math::float3& p,
-							   sampler::Sampler& sampler, math::float3& wi, float& t, float& pdf) const {
+							   sampler::Sampler& sampler, Sample& sample) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
 
@@ -101,12 +102,12 @@ void Sphere::importance_sample(uint32_t /*part*/, const Composed_transformation&
 	math::float3 x, y;
 	math::coordinate_system(z, x, y);
 
-	math::float2 sample = sampler.generate_sample_2d();
-	math::float3 dir = math::sample_oriented_cone_uniform(sample, cos_theta_max, x, y, z);
+	math::float2 r2 = sampler.generate_sample_2d();
+	math::float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
-	wi = dir;
-	t = axis_length - transformation.scale.x; // this is not accurate
-	pdf = math::cone_pdf_uniform(cos_theta_max);
+	sample.wi = dir;
+	sample.t = axis_length - transformation.scale.x; // this is not accurate
+	sample.pdf = math::cone_pdf_uniform(cos_theta_max);
 }
 
 float Sphere::pdf(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,

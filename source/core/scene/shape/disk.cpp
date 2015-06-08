@@ -1,4 +1,5 @@
 #include "disk.hpp"
+#include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
@@ -104,25 +105,25 @@ float Disk::opacity(const Composed_transformation& transformation, const math::O
 }
 
 void Disk::importance_sample(uint32_t /*part*/, const Composed_transformation& transformation, float area, const math::float3& p,
-							 sampler::Sampler& sampler, math::float3& wi, float& t, float& pdf) const {
-	math::float2 sample = sampler.generate_sample_2d();
-	math::float2 xy = math::sample_disk_concentric(sample);
+							 sampler::Sampler& sampler, Sample& sample) const {
+	math::float2 r2 = sampler.generate_sample_2d();
+	math::float2 xy = math::sample_disk_concentric(r2);
 
 	math::float3 ls = math::float3(xy, 0.f);
 	math::float3 ws = transformation.position + transformation.scale.x * math::transform_vector(transformation.rotation, ls);
 
 	math::float3 axis = ws - p;
 
-	wi = math::normalized(axis);
+	sample.wi = math::normalized(axis);
 
-	float c = math::dot(transformation.rotation.z, -wi);
+	float c = math::dot(transformation.rotation.z, -sample.wi);
 
 	if (c <= 0.f) {
-		pdf = 0.f;
+		sample.pdf = 0.f;
 	} else {
 		float sl = math::squared_length(axis);
-		t = std::sqrt(sl);
-		pdf = sl / (c * area);
+		sample.t = std::sqrt(sl);
+		sample.pdf = sl / (c * area);
 	}
 }
 
