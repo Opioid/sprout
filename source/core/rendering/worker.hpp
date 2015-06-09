@@ -57,6 +57,8 @@ public:
 
 	const scene::Scene& scene() const;
 
+	math::float3 evaluate_image_light(math::Oray& ray) const;
+
 private:
 
 	uint32_t id_;

@@ -15,11 +15,15 @@
 
 namespace scene {
 
-Scene::Scene() : surrounding_(nullptr) {}
+Scene::Scene() : surrounding_(nullptr), image_light_(nullptr) {}
 
 Scene::~Scene() {
 	for (auto l : lights_) {
 		delete l;
+	}
+
+	for (auto p : lose_props_) {
+		delete p;
 	}
 
 	for (auto p : props_) {
@@ -64,9 +68,15 @@ void Scene::set_surrounding(const surrounding::Surrounding* surrounding) {
 	surrounding_ = surrounding;
 }
 
-Prop* Scene::create_prop() {
+Prop* Scene::create_prop(bool add_to_bvh) {
 	Prop* prop = new Prop;
-	props_.push_back(prop);
+
+	if (add_to_bvh) {
+		props_.push_back(prop);
+	} else {
+		lose_props_.push_back(prop);
+	}
+
 	return prop;
 }
 
@@ -74,7 +84,7 @@ const std::vector<light::Light*>& Scene::lights() const {
 	return lights_;
 }
 
-light::Light* Scene::montecarlo_light(float random, float& pdf) const {
+const light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 	if (lights_.empty()) {
 		return nullptr;
 	}
@@ -84,15 +94,33 @@ light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 	return lights_[l];
 }
 
+const light::Light* Scene::image_light() const {
+	return image_light_;
+}
+
 light::Image_light* Scene::create_image_light() {
 	light::Image_light* light = new light::Image_light;
 	lights_.push_back(light);
 	return light;
 }
 
-light::Prop_light* Scene::create_prop_light() {
+light::Prop_light* Scene::create_prop_light(bool image_light) {
 	light::Prop_light* light = new light::Prop_light;
-	lights_.push_back(light);
+
+	if (image_light) {
+		if (image_light_) {
+			for (size_t i = 0, len = lights_.size(); i < len; ++i) {
+				if (lights_[i] == image_light_) {
+					delete image_light_;
+					image_light_ = light;
+					lights_[i] = light;
+				}
+			}
+		}
+	} else {
+		lights_.push_back(light);
+	}
+
 	return light;
 }
 

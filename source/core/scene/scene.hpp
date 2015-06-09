@@ -42,14 +42,16 @@ public:
 	const surrounding::Surrounding* surrounding() const;
 	void set_surrounding(const surrounding::Surrounding* surrounding);
 
-	Prop* create_prop();
+	Prop* create_prop(bool add_to_bvh = true);
 
 	const std::vector<light::Light*>& lights() const;
 
-	light::Light* montecarlo_light(float random, float& pdf) const;
+	const light::Light* montecarlo_light(float random, float& pdf) const;
+
+	const light::Light* image_light() const;
 
 	light::Image_light* create_image_light();
-	light::Prop_light* create_prop_light();
+	light::Prop_light* create_prop_light(bool image_light = false);
 	light::Uniform_light* create_uniform_light();
 
 private:
@@ -59,8 +61,10 @@ private:
 	bvh::Tree bvh_;
 
 	std::vector<Prop*> props_;
+	std::vector<Prop*> lose_props_;
 
 	std::vector<light::Light*> lights_;
+	light::Light* image_light_;
 
 	math::CDF light_cdf_;
 };

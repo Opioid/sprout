@@ -75,5 +75,9 @@ bool Canopy::is_finite() const {
 	return false;
 }
 
+bool Canopy::is_reserved_for_image_light() const {
+	return true;
+}
+
 }}
 

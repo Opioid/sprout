@@ -97,7 +97,7 @@ float power_heuristic(float fpdf, float gpdf) {
 math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& ray,
 												   const scene::Intersection& intersection, const scene::material::Sample& material_sample) {
 	float light_pdf;
-	scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
+	const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
 	if (!light) {
 		return 	math::float3::identity;
 	}

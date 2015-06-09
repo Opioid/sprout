@@ -59,7 +59,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		++ray.depth;
 
 		float light_pdf;
-		scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
+		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
 		if (light) {
 			light->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, sampler_, 1, light_samples_);
 

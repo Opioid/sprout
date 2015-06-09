@@ -156,7 +156,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 		materials.push_back(material_provider_.fallback_material());
 	}
 
-	Prop* prop = scene.create_prop();
+	Prop* prop = scene.create_prop(!shape->is_reserved_for_image_light());
 
 	prop->init(shape, materials);
 
@@ -185,7 +185,7 @@ light::Light* Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* 
 		return nullptr;
 	}
 */
-	light::Prop_light* light = scene.create_prop_light();
+	light::Prop_light* light = scene.create_prop_light(prop->shape()->is_reserved_for_image_light());
 
 	light->init(prop);
 
