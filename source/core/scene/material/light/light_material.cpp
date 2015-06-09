@@ -21,7 +21,7 @@ math::float3 Sample::attenuation() const {
 
 void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
 	result.reflection = math::float3::identity;
-	result.pdf = 1.f;
+	result.pdf = 0.f;
 
 	result.type.clear_set(BxDF_type::Diffuse_reflection);
 }

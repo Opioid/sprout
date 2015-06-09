@@ -62,7 +62,7 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		result += throughput * estimate_direct_light(worker, ray, intersection, material_sample);
 
 		material_sample.sample_evaluate(sampler_, sample_result);
-		if (0.f == sample_result.pdf) {
+		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
 			break;
 		}
 
@@ -129,7 +129,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 
 	scene::material::BxDF_result sample_result;
 	material_sample.sample_evaluate(sampler_, sample_result);
-	if (0.f == sample_result.pdf) {
+	if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
 		return result;
 	}
 

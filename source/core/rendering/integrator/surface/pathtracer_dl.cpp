@@ -76,7 +76,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		}
 
 		material_sample.sample_evaluate(sampler_, sample_result);
-		if (0.f == sample_result.pdf) {
+		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
 			break;
 		}
 
@@ -94,12 +94,13 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		}
 	}
 
-	if (!hit) {
-//	if (!hit && previous_sample_type.test(scene::material::BxDF_type::Specular)) {
+	/*
+//	if (!hit) {
+	if (!hit && previous_sample_type.test(scene::material::BxDF_type::Specular)) {
 		math::float3 r = worker.scene().surrounding()->sample(ray);
 		result += throughput * r;
 	}
-
+*/
 	return result;
 }
 

@@ -75,13 +75,14 @@ float Plane::opacity(const Composed_transformation& transformation, const math::
 	return 0.f;
 }
 
-void Plane::sample(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/, const math::float3& /*p*/, const math::float3& /*n*/,
+void Plane::sample(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+				   const math::float3& /*p*/, const math::float3& /*n*/,
 				   sampler::Sampler& /*sampler*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
 float Plane::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, const math::float3& /*wi*/) const {
+				 const math::float3& /*p*/, const math::float3& /*wi*/) const {
 	return 0.f;
 }
 

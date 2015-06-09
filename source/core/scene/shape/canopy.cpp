@@ -45,20 +45,29 @@ float Canopy::opacity(const Composed_transformation& /*transformation*/, const m
 					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					  const material::Materials& /*materials*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	// Implementation for this is not really needed, so just skip it
-	return 0.f;
+	return 1.f;
 }
 
-void Canopy::sample(uint32_t /*part*/, const Composed_transformation& transformation, float area, const math::float3& /*p*/, const math::float3& n,
-					sampler::Sampler& sampler, Sample& samplef) const {
+void Canopy::sample(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+					const math::float3& /*p*/, const math::float3& n,
+					sampler::Sampler& sampler, Sample& sample) const {
+	math::float3 x, y;
+	math::coordinate_system(n, x, y);
 
+	math::float2 uv = sampler.generate_sample_2d();
+	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
+
+	sample.wi  = dir;
+	sample.t   = 1000.f;
+	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
-float Canopy::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float area,
+float Canopy::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
 				  const math::float3& /*p*/, const math::float3& /*wi*/) const {
-	return 1.f / area;
+	return 1.f / (2.f * math::Pi);
 }
 
-float Canopy::area(uint32_t /*part*/, const math::float3& scale) const {
+float Canopy::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
 	return 4.f * math::Pi;
 }
 

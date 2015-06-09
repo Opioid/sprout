@@ -61,7 +61,7 @@ math::float3 Worker::li(math::Oray& ray) {
 	if (hit) {
 		return surface_integrator_->li(*this, ray, intersection);
 	} else {
-		return scene_->surrounding()->sample(ray);
+		return math::float3::identity;//scene_->surrounding()->sample(ray);
 	}
 }
 

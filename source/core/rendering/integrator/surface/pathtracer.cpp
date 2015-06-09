@@ -49,7 +49,7 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 		}
 
 		material_sample.sample_evaluate(sampler_, sample_result);
-		if (0.f == sample_result.pdf) {
+		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
 			break;
 		}
 

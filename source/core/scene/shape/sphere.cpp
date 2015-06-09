@@ -88,8 +88,9 @@ float Sphere::opacity(const Composed_transformation& transformation, const math:
 	return intersect_p(transformation, ray, bounds, node_stack) ? 1.f : 0.f;
 }
 
-void Sphere::sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/, const math::float3& p, const math::float3& n,
-							   sampler::Sampler& sampler, Sample& sample) const {
+void Sphere::sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
+					const math::float3& p, const math::float3& /*n*/,
+					sampler::Sampler& sampler, Sample& sample) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
 

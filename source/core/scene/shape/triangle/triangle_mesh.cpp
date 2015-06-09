@@ -82,7 +82,8 @@ float Mesh::opacity(const Composed_transformation& transformation, const math::O
 	return tree_.opacity(tray, bounds, node_stack, materials, sampler);
 }
 
-void Mesh::sample(uint32_t part, const Composed_transformation& transformation, float area, const math::float3& p, const math::float3& n,
+void Mesh::sample(uint32_t part, const Composed_transformation& transformation, float area,
+				  const math::float3& p, const math::float3& n,
 				  sampler::Sampler& sampler, Sample& sample) const {
 	float r = sampler.generate_sample_1d();
 	math::float2 r2 = sampler.generate_sample_2d();
