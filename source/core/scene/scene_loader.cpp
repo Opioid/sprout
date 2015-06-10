@@ -5,6 +5,7 @@
 #include "scene/shape/canopy.hpp"
 #include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/disk.hpp"
+#include "scene/shape/inverse_sphere.hpp"
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
@@ -21,6 +22,7 @@ Loader::Loader(uint32_t num_workers, thread::Pool& pool) :
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
+	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
 	mesh_cache_(mesh_provider_),
@@ -187,6 +189,8 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type) const {
 		return celestial_disk_;
 	} else if ("Disk" == type) {
 		return disk_;
+	} else if ("Inverse_sphere" == type) {
+		return inverse_sphere_;
 	} else if ("Plane" == type) {
 		return plane_;
 	} else if ("Sphere" == type) {
