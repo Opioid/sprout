@@ -118,7 +118,6 @@ void Disk::sample(uint32_t /*part*/, const Composed_transformation& transformati
 	sample.wi = math::normalized(axis);
 
 	float c = math::dot(transformation.rotation.z, -sample.wi);
-
 	if (c <= 0.f) {
 		sample.pdf = 0.f;
 	} else {
@@ -133,7 +132,6 @@ float Disk::pdf(uint32_t /*part*/, const Composed_transformation& transformation
 	const math::float3& normal = transformation.rotation.z;
 
 	float c = math::dot(normal, -wi);
-
 	if (c <= 0.f) {
 		return 0.f;
 	}
