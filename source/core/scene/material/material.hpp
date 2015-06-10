@@ -31,7 +31,7 @@ public:
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
 								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id) = 0;
 
-	virtual math::float3 sample_emission() const = 0;
+	virtual math::float3 sample_emission(math::float2 uv, const image::sampler::Sampler_2D& sampler) const = 0;
 
 	virtual math::float3 average_emission() const = 0;
 

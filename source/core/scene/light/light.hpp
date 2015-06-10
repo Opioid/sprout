@@ -4,6 +4,12 @@
 #include "base/math/bounding/aabb.hpp"
 #include <vector>
 
+namespace image { namespace sampler {
+
+class Sampler_2D;
+
+}}
+
 namespace sampler {
 
 class Sampler;
@@ -27,10 +33,12 @@ public:
 	virtual void transformation_at(float time, Composed_transformation& transformation) const = 0;
 
 	virtual void sample(const Composed_transformation& transformation, const math::float3& p, const math::float3& n,
-						sampler::Sampler& sampler, uint32_t max_samples, std::vector<Sample>& samples) const = 0;
+						const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
+						uint32_t max_samples, std::vector<Sample>& samples) const = 0;
 
 	void sample(float time, const math::float3& p, const math::float3& n,
-				sampler::Sampler& sampler, uint32_t max_samples, std::vector<Sample>& samples) const;
+				const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
+				uint32_t max_samples, std::vector<Sample>& samples) const;
 
 	virtual math::float3 evaluate(const math::float3& wi) const = 0;
 

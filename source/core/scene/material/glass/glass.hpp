@@ -45,6 +45,8 @@ public:
 
 	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const final override;
 
+	virtual bool is_pure_emissive() const final override;
+
 	void set(const math::float3& color, const math::float3& attenuation, float ior, float f0);
 
 private:
@@ -66,9 +68,10 @@ public:
 
 	Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask);
 
-	virtual math::float3 sample_emission() const final override;
+	virtual math::float3 sample_emission(math::float2 uv, const image::sampler::Sampler_2D& sampler) const final override;
 
 	virtual math::float3 average_emission() const final override;
+
 };
 
 }}}

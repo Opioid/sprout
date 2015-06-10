@@ -116,6 +116,10 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 //	btdf_.importance_sample(sampler, result);
 }
 
+bool Sample::is_pure_emissive() const {
+	return false;
+}
+
 void Sample::set(const math::float3& color, const math::float3& attenuation, float ior, float f0) {
 	color_ = color;
 	attenuation_ = attenuation;
@@ -125,7 +129,7 @@ void Sample::set(const math::float3& color, const math::float3& attenuation, flo
 
 Glass::Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}
 
-math::float3 Glass::sample_emission() const {
+math::float3 Glass::sample_emission(math::float2 /*uv*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	return math::float3::identity;
 }
 

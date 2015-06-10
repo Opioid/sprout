@@ -101,6 +101,13 @@ inline Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v) {
 }
 
 template<typename T>
+Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, const Vector3<T>& v) {
+	return Vector3<T>(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
+					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
+					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
+}
+
+template<typename T>
 void transform_vectors(const Matrix3x3<T>& m, const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob) {
 	oa.x = a.x * m.m00 + a.y * m.m10 + a.z * m.m20;
 	oa.y = a.x * m.m01 + a.y * m.m11 + a.z * m.m21;

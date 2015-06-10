@@ -54,6 +54,10 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			throughput *= attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
 		}
 
+		if (material_sample.is_pure_emissive()) {
+			break;
+		}
+
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.min_t  = ray_offset;
@@ -80,12 +84,6 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 	}
 
-	//	if (!hit) {
-	if (!hit && previous_sample_type.test(scene::material::BxDF_type::Specular)) {
-		math::float3 r = worker.scene().surrounding()->sample(ray);
-		result += throughput * r;
-	}
-
 	return result;
 }
 
@@ -107,7 +105,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 	scene::Composed_transformation transformation;
 	light->transformation_at(ray.time, transformation);
 
-	light->sample(transformation, intersection.geo.p, intersection.geo.geo_n, sampler_, 1, light_samples_);
+	light->sample(transformation, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);
 
 	auto& ls = light_samples_[0];
 	if (ls.pdf > 0.f) {
@@ -129,7 +127,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 
 	scene::material::BxDF_result sample_result;
 	material_sample.sample_evaluate(sampler_, sample_result);
-	if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
+	if (0.f == sample_result.pdf) {
 		return result;
 	}
 

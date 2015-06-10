@@ -56,13 +56,6 @@ math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& i
 math::float3 Whitted::shade(Worker& worker, math::Oray& ray, const scene::Intersection& intersection) {
 	math::float3 result = math::float3::identity;
 
-	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
-
-	math::Oray shadow_ray;
-	shadow_ray.origin = intersection.geo.p;
-	shadow_ray.min_t = ray_offset;
-	shadow_ray.time = ray.time;
-
 	math::float3 wo = -ray.direction;
 	auto& sample = intersection.material()->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
@@ -70,17 +63,25 @@ math::float3 Whitted::shade(Worker& worker, math::Oray& ray, const scene::Inters
 
 	result += sample.emission();
 
+	if (sample.is_pure_emissive()) {
+		return result;
+	}
+
+	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
+	ray.origin = intersection.geo.p;
+	ray.min_t  = ray_offset;
+
 	for (auto l : worker.scene().lights()) {
-		l->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, sampler_, 1, light_samples_);
+		l->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);
 
 		for (auto& ls : light_samples_) {
 			if (ls.pdf > 0.f) {
-				shadow_ray.set_direction(ls.l);
-				shadow_ray.max_t = ls.t - ray_offset;
+				ray.set_direction(ls.l);
+				ray.max_t = ls.t - ray_offset;
 
-				float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
+				float mv = worker.masked_visibility(ray, settings_.sampler);
 				if (mv > 0.f) {
-					result += mv * (ls.energy * sample.evaluate(ls.l, bxdf_pdf)) / ls.pdf;
+					result += (ls.energy * sample.evaluate(ls.l, bxdf_pdf)) / ls.pdf;
 				}
 			}
 		}

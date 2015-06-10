@@ -161,6 +161,10 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 	}
 }
 
+bool Sample::is_pure_emissive() const {
+	return false;
+}
+
 void Sample::set(const math::float3& color, float roughness, float metallic) {
 	diffuse_color_ = (1.f - metallic) * color;
 	f0_ = math::lerp(math::float3(0.03f, 0.03f, 0.03f), color, metallic);
@@ -185,7 +189,7 @@ void Sample::set(const math::float3& color, const math::float3& emission, float 
 
 Substitute::Substitute(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}
 
-math::float3 Substitute::sample_emission() const {
+math::float3 Substitute::sample_emission(math::float2 /*uv*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	return math::float3::identity;
 }
 

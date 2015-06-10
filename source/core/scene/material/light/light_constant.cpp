@@ -17,7 +17,7 @@ const Sample& Constant::sample(const shape::Differential& dg, const math::float3
 	return sample;
 }
 
-math::float3 Constant::sample_emission() const {
+math::float3 Constant::sample_emission(math::float2 /*uv*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	return emission_;
 }
 

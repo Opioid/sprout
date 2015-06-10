@@ -20,7 +20,8 @@ void Image_light::transformation_at(float /*time*/, Composed_transformation& /*t
 }
 
 void Image_light::sample(const Composed_transformation& /*transformation*/, const math::float3& /*p*/, const math::float3& n,
-						 sampler::Sampler& sampler, uint32_t /*max_samples*/, std::vector<Sample>& samples) const {
+						 const image::sampler::Sampler_2D& /*image_sampler*/, sampler::Sampler& sampler,
+						 uint32_t /*max_samples*/, std::vector<Sample>& samples) const {
 	samples.clear();
 
 	Sample sample;

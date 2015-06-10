@@ -28,6 +28,9 @@ bool Canopy::intersect(const Composed_transformation& transformation, math::Oray
 		intersection.geo_n = intersection.n;
 		intersection.part = 0;
 
+		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
+		intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+
 		ray.max_t = 1000.f;
 		return true;
 	}
@@ -45,10 +48,10 @@ float Canopy::opacity(const Composed_transformation& /*transformation*/, const m
 					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					  const material::Materials& /*materials*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	// Implementation for this is not really needed, so just skip it
-	return 1.f;
+	return 0.f;
 }
 
-void Canopy::sample(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+void Canopy::sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
 					const math::float3& /*p*/, const math::float3& n,
 					sampler::Sampler& sampler, Sample& sample) const {
 	math::float3 x, y;
@@ -58,6 +61,10 @@ void Canopy::sample(uint32_t /*part*/, const Composed_transformation& /*transfor
 	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
 	sample.wi  = dir;
+
+	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
+	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+
 	sample.t   = 1000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
@@ -73,10 +80,6 @@ float Canopy::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
 
 bool Canopy::is_finite() const {
 	return false;
-}
-
-bool Canopy::is_reserved_for_image_light() const {
-	return true;
 }
 
 }}

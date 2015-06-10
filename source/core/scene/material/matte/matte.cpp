@@ -33,13 +33,17 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 	result.reflection *= n_dot_wi;
 }
 
+bool Sample::is_pure_emissive() const {
+	return false;
+}
+
 void Sample::set(const math::float3& color) {
 	diffuse_color_ = color;
 }
 
 Matte::Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}
 
-math::float3 Matte::sample_emission() const {
+math::float3 Matte::sample_emission(math::float2 uv, const image::sampler::Sampler_2D& /*sampler*/) const {
 	return math::float3::identity;
 }
 

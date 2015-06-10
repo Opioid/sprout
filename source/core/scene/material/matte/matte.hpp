@@ -19,6 +19,8 @@ public:
 
 	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const final override;
 
+	virtual bool is_pure_emissive() const final override;
+
 	void set(const math::float3& color);
 
 private:
@@ -35,7 +37,7 @@ public:
 
 	Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask);
 
-	virtual math::float3 sample_emission() const override;
+	virtual math::float3 sample_emission(math::float2 uv, const image::sampler::Sampler_2D& sampler) const override;
 
 	virtual math::float3 average_emission() const override;
 };

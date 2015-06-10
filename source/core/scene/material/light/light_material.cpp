@@ -26,6 +26,10 @@ void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, BxDF_result& result)
 	result.type.clear_set(BxDF_type::Diffuse_reflection);
 }
 
+bool Sample::is_pure_emissive() const {
+	return true;
+}
+
 void Sample::set(const math::float3& emission) {
 	emission_ = emission;
 }

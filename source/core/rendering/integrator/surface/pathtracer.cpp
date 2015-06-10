@@ -48,8 +48,12 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 			throughput *= attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
 		}
 
+		if (material_sample.is_pure_emissive()) {
+			break;
+		}
+
 		material_sample.sample_evaluate(sampler_, sample_result);
-		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
+		if (0.f == sample_result.pdf) {
 			break;
 		}
 

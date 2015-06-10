@@ -19,6 +19,8 @@ public:
 
 	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const final override;
 
+	virtual bool is_pure_emissive() const final override;
+
 	void set(const math::float3& emission);
 
 private:

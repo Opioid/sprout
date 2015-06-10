@@ -24,6 +24,8 @@ public:
 
 	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const = 0;
 
+	virtual bool is_pure_emissive() const = 0;
+
 	const math::float3& shading_normal() const {
 		return n_;
 	}

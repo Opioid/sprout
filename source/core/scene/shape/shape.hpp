@@ -50,7 +50,6 @@ public:
 
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;
-	virtual bool is_reserved_for_image_light() const;
 
 	virtual void prepare_sampling(uint32_t part, const math::float3& scale);
 

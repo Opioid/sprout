@@ -4,6 +4,7 @@
 #include "glass/glass_constant.hpp"
 #include "glass/glass_normalmap.hpp"
 #include "light/light_constant.hpp"
+#include "light/light_emissionmap.hpp"
 #include "matte/matte_colormap.hpp"
 #include "matte/matte_colormap_normalmap.hpp"
 #include "matte/matte_constant.hpp"
@@ -103,13 +104,32 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {
 	math::float3 emission(10.f, 10.f, 10.f);
 
+	std::shared_ptr<image::Image> emissionmap;
+
 	for (auto n = light_value.MemberBegin(); n != light_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
 		if ("emission" == node_name) {
 			emission = json::read_float3(node_value);
+		} else if ("textures" == node_name) {
+			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+				std::string filename = json::read_string(*tn, "file", "");
+				std::string usage    = json::read_string(*tn, "usage", "Color");
+
+				if (filename.empty()) {
+					continue;
+				}
+
+				if ("Emission" == usage) {
+					emissionmap = image_cache_.load(filename);
+				}
+			}
 		}
+	}
+
+	if (emissionmap) {
+		return std::make_shared<light::Emissionmap>(light_cache_, nullptr, emissionmap);
 	}
 
 	return std::make_shared<light::Constant>(light_cache_, nullptr, emission);

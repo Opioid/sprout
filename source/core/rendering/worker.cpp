@@ -81,15 +81,4 @@ const scene::Scene& Worker::scene() const {
 	return *scene_;
 }
 
-math::float3 Worker::evaluate_image_light(math::Oray& ray) const {
-	const scene::light::Light* light = scene_->image_light();
-	if (!light) {
-		return math::float3::identity;
-	}
-
-//	light->
-
-	return math::float3::identity;
-}
-
 }

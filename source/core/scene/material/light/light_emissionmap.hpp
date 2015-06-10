@@ -1,13 +1,14 @@
 #pragma once
 
 #include "light_material.hpp"
+#include "image/texture/texture_2d.hpp"
 
 namespace scene { namespace material { namespace light {
 
-class Constant : public Light {
+class Emissionmap : public Light {
 public:
 
-	Constant(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask, const math::float3& emission);
+	Emissionmap(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask, std::shared_ptr<image::Image> emission);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
 								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
@@ -18,7 +19,7 @@ public:
 
 private:
 
-	math::float3 emission_;
+	image::Texture_2D emission_;
 };
 
 }}}

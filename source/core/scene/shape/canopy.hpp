@@ -30,8 +30,6 @@ public:
 	virtual float area(uint32_t part, const math::float3& scale) const final override;
 
 	virtual bool is_finite() const final override;
-
-	virtual bool is_reserved_for_image_light() const final override;
 };
 
 }}
