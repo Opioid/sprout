@@ -4,7 +4,6 @@
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/prop/prop_intersection.inl"
-#include "scene/surrounding/surrounding.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/material/material.hpp"
@@ -73,11 +72,6 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 		if (!hit) {
 			break;
 		}
-	}
-
-	if (!hit) {
-		math::float3 r = worker.scene().surrounding()->sample(ray);
-		result += throughput * r;
 	}
 
 	return result;

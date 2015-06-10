@@ -1,6 +1,7 @@
 #include "material_provider.hpp"
 #include "material_sample_cache.inl"
 #include "image/image_provider.hpp"
+#include "resource/resource_cache.inl"
 #include "glass/glass_constant.hpp"
 #include "glass/glass_normalmap.hpp"
 #include "light/light_constant.hpp"

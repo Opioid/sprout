@@ -5,7 +5,6 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "scene/camera/camera.hpp"
-#include "scene/surrounding/surrounding.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/material/material.hpp"
 #include "base/math/vector.inl"
@@ -61,7 +60,7 @@ math::float3 Worker::li(math::Oray& ray) {
 	if (hit) {
 		return surface_integrator_->li(*this, ray, intersection);
 	} else {
-		return math::float3::identity;//scene_->surrounding()->sample(ray);
+		return math::float3::identity;
 	}
 }
 

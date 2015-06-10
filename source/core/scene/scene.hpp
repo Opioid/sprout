@@ -8,12 +8,6 @@
 
 namespace scene {
 
-namespace surrounding {
-
-class Surrounding;
-
-}
-
 namespace light {
 
 class Light;
@@ -39,9 +33,6 @@ public:
 
 	void compile();
 
-	const surrounding::Surrounding* surrounding() const;
-	void set_surrounding(const surrounding::Surrounding* surrounding);
-
 	Prop* create_prop();
 
 	const std::vector<light::Light*>& lights() const;
@@ -53,8 +44,6 @@ public:
 	light::Uniform_light* create_uniform_light();
 
 private:
-
-	const surrounding::Surrounding* surrounding_;
 
 	bvh::Tree bvh_;
 

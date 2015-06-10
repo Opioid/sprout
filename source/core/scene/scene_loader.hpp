@@ -41,8 +41,6 @@ public:
 
 private:
 
-	void load_surrounding(const rapidjson::Value& surrounding_value, Scene& scene);
-
 	void load_entities(const rapidjson::Value& entities_value, Scene& scene);
 
 	Prop* load_prop(const rapidjson::Value& prop_value, Scene& scene);

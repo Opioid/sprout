@@ -1,5 +1,4 @@
 #include "scene.hpp"
-#include "surrounding/surrounding.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
 #include "light/image_light.hpp"
@@ -15,7 +14,7 @@
 
 namespace scene {
 
-Scene::Scene() : surrounding_(nullptr) {}
+Scene::Scene() {}
 
 Scene::~Scene() {
 	for (auto l : lights_) {
@@ -25,8 +24,6 @@ Scene::~Scene() {
 	for (auto p : props_) {
 		delete p;
 	}
-
-	delete surrounding_;
 }
 
 bool Scene::intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const {
@@ -54,14 +51,6 @@ void Scene::compile() {
 	}
 
 	light_cdf_.init(power);
-}
-
-const surrounding::Surrounding* Scene::surrounding() const {
-	return surrounding_;
-}
-
-void Scene::set_surrounding(const surrounding::Surrounding* surrounding) {
-	surrounding_ = surrounding;
 }
 
 Prop* Scene::create_prop() {

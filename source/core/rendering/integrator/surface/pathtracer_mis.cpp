@@ -4,7 +4,6 @@
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/prop/prop_intersection.inl"
-#include "scene/surrounding/surrounding.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/material/material.hpp"
@@ -157,11 +156,6 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 					result += (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
 				}
 			}
-		} else {
-
-			math::float3 ls_energy = light->evaluate(sample_result.wi);
-
-			result += (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
 		}
 	}
 
