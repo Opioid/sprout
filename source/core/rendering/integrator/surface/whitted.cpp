@@ -12,7 +12,7 @@
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
-// #include <iostream>
+#include <iostream>
 
 namespace rendering {
 
@@ -24,13 +24,15 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 }
 
 math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+	float throughput = 1.f;
 	math::float3 result = math::float3::identity;
 
 	float opacity = intersection.opacity(settings_.sampler);
 
 	while (opacity < 1.f) {
 		if (opacity > 0.f) {
-			result += opacity * shade(worker, ray, intersection);
+			throughput *= opacity;
+			result += throughput * shade(worker, ray, intersection);
 		}
 
 		ray.min_t = ray.max_t;
@@ -42,18 +44,17 @@ math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& i
 		opacity = intersection.opacity(settings_.sampler);
 	}
 
-	result += shade(worker, ray, intersection);
+	throughput *= opacity;
+	result += throughput * shade(worker, ray, intersection);
 
-	/*
-	if (math::contains_nan(result)) {
-		std::cout << "nan" << std::endl;
-	}
-	*/
+//	if (math::contains_nan(result) || math::contains_inf(result)) {
+//		std::cout << "nan" << std::endl;
+//	}
 
 	return result;
 }
 
-math::float3 Whitted::shade(Worker& worker, math::Oray& ray, const scene::Intersection& intersection) {
+math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::Intersection& intersection) {
 	math::float3 result = math::float3::identity;
 
 	math::float3 wo = -ray.direction;
@@ -68,20 +69,25 @@ math::float3 Whitted::shade(Worker& worker, math::Oray& ray, const scene::Inters
 	}
 
 	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
-	ray.origin = intersection.geo.p;
-	ray.min_t  = ray_offset;
+	math::Oray shadow_ray;
+	shadow_ray.origin = intersection.geo.p;
+	shadow_ray.min_t  = ray_offset;
 
 	for (auto l : worker.scene().lights()) {
 		l->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);
 
 		for (auto& ls : light_samples_) {
 			if (ls.pdf > 0.f) {
-				ray.set_direction(ls.l);
-				ray.max_t = ls.t - ray_offset;
+				shadow_ray.set_direction(ls.l);
+				shadow_ray.max_t = ls.t - ray_offset;
 
-				float mv = worker.masked_visibility(ray, settings_.sampler);
+				float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
 				if (mv > 0.f) {
-					result += (ls.energy * sample.evaluate(ls.l, bxdf_pdf)) / ls.pdf;
+					result += mv * (ls.energy * sample.evaluate(ls.l, bxdf_pdf)) / ls.pdf;
+				}
+
+				if (math::contains_nan(result) || math::contains_inf(result)) {
+					std::cout << "ls.pdf " <<  ls.pdf << std::endl;
 				}
 			}
 		}

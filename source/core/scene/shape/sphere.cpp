@@ -97,6 +97,7 @@ void Sphere::sample(uint32_t /*part*/, const Composed_transformation& transforma
 	float radius_square = transformation.scale.x * transformation.scale.x;
 	float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+	cos_theta_max = std::min(0.99999995f, cos_theta_max);
 
 	float axis_length = std::sqrt(axis_squared_length);
 	math::float3 z = axis / axis_length;
@@ -109,6 +110,10 @@ void Sphere::sample(uint32_t /*part*/, const Composed_transformation& transforma
 	sample.wi = dir;
 	sample.t = axis_length - transformation.scale.x; // this is not accurate
 	sample.pdf = math::cone_pdf_uniform(cos_theta_max);
+
+//	if (std::isinf(sample.pdf)) {
+//		sample.pdf = 1.f;
+//	}
 }
 
 float Sphere::pdf(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,

@@ -33,7 +33,7 @@ public:
 
 private:
 
-	math::float3 estimate_direct_light(Worker& worker, math::Oray& ray,
+	math::float3 estimate_direct_light(Worker& worker, const math::Oray& ray,
 									   const scene::Intersection& intersection, const scene::material::Sample& material_sample);
 
 	bool resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection);

@@ -30,7 +30,7 @@ public:
 
 private:
 
-	math::float3 shade(Worker& worker, math::Oray& ray, const scene::Intersection& intersection);
+	math::float3 shade(Worker& worker, const math::Oray& ray, const scene::Intersection& intersection);
 
 	Settings settings_;
 

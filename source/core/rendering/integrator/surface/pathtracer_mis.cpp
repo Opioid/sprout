@@ -57,11 +57,6 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			break;
 		}
 
-		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
-		ray.origin = intersection.geo.p;
-		ray.min_t  = ray_offset;
-		++ray.depth;
-
 		result += throughput * estimate_direct_light(worker, ray, intersection, material_sample);
 
 		material_sample.sample_evaluate(sampler_, sample_result);
@@ -74,8 +69,12 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		previous_sample_type = sample_result.type;
 		previous_sample_attenuation = material_sample.attenuation();
 
+		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
+		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
+		ray.min_t = ray_offset;
 		ray.max_t = 1000.f;
+		++ray.depth;
 
 		hit = worker.intersect(ray, intersection);
 		if (!hit) {
@@ -91,7 +90,7 @@ float power_heuristic(float fpdf, float gpdf) {
 	return f2 / (f2 + gpdf * gpdf);
 }
 
-math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& ray,
+math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::Oray& ray,
 												   const scene::Intersection& intersection, const scene::material::Sample& material_sample) {
 	float light_pdf;
 	const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
@@ -101,6 +100,11 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 
 	math::float3 result = math::float3::identity;
 
+	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
+	math::Oray shadow_ray = ray;
+	shadow_ray.origin = intersection.geo.p;
+	shadow_ray.min_t  = ray_offset;
+
 	scene::Composed_transformation transformation;
 	light->transformation_at(ray.time, transformation);
 
@@ -108,10 +112,10 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 
 	auto& ls = light_samples_[0];
 	if (ls.pdf > 0.f) {
-		ray.set_direction(ls.l);
-		ray.max_t = ls.t - ray.min_t;
+		shadow_ray.set_direction(ls.l);
+		shadow_ray.max_t = ls.t - ray_offset;
 
-		float mv = worker.masked_visibility(ray, settings_.sampler);
+		float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
 		if (mv > 0.f) {
 			float bxdf_pdf;
 			math::float3 f = material_sample.evaluate(ls.l, bxdf_pdf);
@@ -142,11 +146,11 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, math::Oray& r
 
 		math::float3 wo = -sample_result.wi;
 
-		ray.set_direction(sample_result.wi);
-		ray.max_t = 1000.f;
+		shadow_ray.set_direction(sample_result.wi);
+		shadow_ray.max_t = 1000.f;
 
 		scene::Intersection light_intersection;
-		if (worker.intersect(ray, light_intersection)) {
+		if (worker.intersect(shadow_ray, light_intersection)) {
 			if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
 				auto light_material = light_intersection.material();
 				auto& light_material_sample = light_material->sample(light_intersection.geo, wo, settings_.sampler, worker.id());
