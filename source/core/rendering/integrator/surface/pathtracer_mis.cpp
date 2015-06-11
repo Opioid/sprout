@@ -150,7 +150,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 		shadow_ray.max_t = 1000.f;
 
 		scene::Intersection light_intersection;
-		if (worker.intersect(shadow_ray, light_intersection)) {
+		if (worker.intersect(shadow_ray, light_intersection) && resolve_mask(worker, shadow_ray, light_intersection)) {
 			if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
 				auto light_material = light_intersection.material();
 				auto& light_material_sample = light_material->sample(light_intersection.geo, wo, settings_.sampler, worker.id());
