@@ -24,15 +24,13 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 }
 
 math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
-	float throughput = 1.f;
 	math::float3 result = math::float3::identity;
 
 	float opacity = intersection.opacity(settings_.sampler);
 
 	while (opacity < 1.f) {
 		if (opacity > 0.f) {
-			throughput *= opacity;
-			result += throughput * shade(worker, ray, intersection);
+			result += opacity * shade(worker, ray, intersection);
 		}
 
 		ray.min_t = ray.max_t;
@@ -41,15 +39,10 @@ math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& i
 			return result;
 		}
 
-		opacity = intersection.opacity(settings_.sampler);
+		opacity = (1.f - opacity) * intersection.opacity(settings_.sampler);
 	}
 
-	throughput *= opacity;
-	result += throughput * shade(worker, ray, intersection);
-
-//	if (math::contains_nan(result) || math::contains_inf(result)) {
-//		std::cout << "nan" << std::endl;
-//	}
+	result += opacity * shade(worker, ray, intersection);
 
 	return result;
 }
