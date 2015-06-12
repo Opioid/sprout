@@ -124,6 +124,7 @@ float Sphere::pdf(uint32_t /*part*/, const Composed_transformation& transformati
 	float radius_square = transformation.scale.x * transformation.scale.x;
 	float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+	cos_theta_max = std::min(0.99999995f, cos_theta_max);
 
 	return math::cone_pdf_uniform(cos_theta_max);
 }
