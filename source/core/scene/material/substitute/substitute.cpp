@@ -110,13 +110,13 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_h  = math::dot(n_, h);
 	float wo_dot_h = math::dot(wo_, h);
 
-	math::float3 specular = ggx::d(n_dot_h, a2_) * ggx::g(n_dot_wi, n_dot_wo, a2_) * ggx::f(wo_dot_h, f0_);
+	float d = ggx::d(n_dot_h, a2_);
 
-	pdf = 0.5f * (ggx::d(n_dot_h, a2_) * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f)) + (n_dot_wi * math::Pi_inv));
+	math::float3 specular = d * ggx::g(n_dot_wi, n_dot_wo, a2_) * ggx::f(wo_dot_h, f0_);
+
+	pdf = 0.5f * (d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f)) + (n_dot_wi * math::Pi_inv));
 
 	return n_dot_wi * ((math::Pi_inv * diffuse_color_) + specular);
-
-//	return n_dot_wi * specular;
 }
 
 math::float3 Sample::emission() const {
