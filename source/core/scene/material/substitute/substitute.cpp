@@ -124,7 +124,7 @@ math::float3 Sample::emission() const {
 }
 
 math::float3 Sample::attenuation() const {
-	return math::float3(1.f, 1.f, 1.f);
+	return math::float3(100.f, 100.f, 100.f);
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
