@@ -68,13 +68,14 @@ bool Sphere::intersect_p(const Composed_transformation& transformation, const ma
 	if (det > 0.f) {
 		float dist = std::sqrt(det);
 		float t0 = b - dist;
-		float t1 = b + dist;
 
-		if (t1 > ray.min_t && t0 < ray.max_t) {
+		if (t0 > ray.min_t && t0 < ray.max_t) {
 			return true;
 		}
 
-		if (t0 > ray.min_t && t1 < ray.max_t) {
+		float t1 = b + dist;
+
+		if (t1 > ray.min_t && t1 < ray.max_t) {
 			return true;
 		}
 	}

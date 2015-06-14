@@ -41,7 +41,6 @@ bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersectio
 		}
 	}
 
-
 	return shape_->intersect(transformation, ray, bounds, node_stack, intersection);
 }
 

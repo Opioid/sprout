@@ -78,10 +78,6 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 				if (mv > 0.f) {
 					result += mv * (ls.energy * sample.evaluate(ls.l, bxdf_pdf)) / ls.pdf;
 				}
-
-				if (math::contains_nan(result) || math::contains_inf(result)) {
-					std::cout << "ls.pdf " <<  ls.pdf << std::endl;
-				}
 			}
 		}
 	}

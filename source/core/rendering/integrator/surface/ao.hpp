@@ -26,7 +26,7 @@ private:
 
 	Settings settings_;
 
-	sampler::Scrambled_hammersley sampler_;
+	sampler::EMS sampler_;
 };
 
 class Ao_factory : public Surface_integrator_factory {
