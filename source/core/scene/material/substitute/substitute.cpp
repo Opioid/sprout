@@ -117,8 +117,6 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	pdf = 0.5f * (d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f)) + (n_dot_wi * math::Pi_inv));
 
 	return n_dot_wi * ((math::Pi_inv * diffuse_color_) + specular);
-	float g = ggx::g(n_dot_wi, n_dot_wo, a2_);
-	return math::float3(g, g, g);
 }
 
 math::float3 Sample::emission() const {
