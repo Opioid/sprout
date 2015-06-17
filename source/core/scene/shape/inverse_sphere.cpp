@@ -110,6 +110,8 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Composed_transformation& tr
 	math::float2 uv = sampler.generate_sample_2d();
 	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
+	dir = n;
+
 	math::Oray ray;
 	ray.origin = p;
 	ray.set_direction(dir);
@@ -125,41 +127,22 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Composed_transformation& tr
 
 	if (det > 0.f) {
 		float dist = std::sqrt(det);
-//		float t0 = b - dist;
-
-//		if (t0 > ray.min_t && t0 < ray.max_t) {
-//			intersection.epsilon = 5e-4f * t0;
-
-//			intersection.p = ray.point(t0);
-//			intersection.n = (transformation.position - intersection.p) / radius;
-//			math::coordinate_system(intersection.n, intersection.t, intersection.b);
-//			intersection.geo_n = intersection.n;
-
-//			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, -intersection.n);
-//			intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
-
-//			intersection.part = 0;
-
-//			ray.max_t = t0;
-//		}
-
 		float t1 = b + dist;
 
 		if (t1 > ray.min_t && t1 < ray.max_t) {
-			intersection.epsilon = 5e-4f * t1;
 
 			intersection.p = ray.point(t1);
-			intersection.n = (transformation.position - intersection.p) / radius;
-			math::coordinate_system(intersection.n, intersection.t, intersection.b);
-			intersection.geo_n = intersection.n;
+//			intersection.n = (transformation.position - intersection.p) / radius;
+			intersection.n = math::normalized(p - intersection.p);
 
 			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, -intersection.n);
 			intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
-			intersection.part = 0;
-
-			ray.max_t = t1;
+		} else {
+			std::cout << "oh no" << std::endl;
 		}
+	} else {
+		std::cout << "oh no" << std::endl;
 	}
 
 	sample.wi = -intersection.n;
@@ -167,41 +150,22 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Composed_transformation& tr
 	sample.t   = 2.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
 
-	/*
+/*
 	math::float3 x, y;
 	math::coordinate_system(n, x, y);
 
 	math::float2 uv = sampler.generate_sample_2d();
 	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
-//	math::float3 sp = transformation.position + transformation.scale.x * dir;
+	sample.wi  = dir;
 
-
-
-	math::float3 v = p - transformation.position;
-	float b = -dot(v, dir);
-	float radius = transformation.scale.x;
-	float det = (b * b) - dot(v, v) + (radius * radius);
-
-//	if (det < 0) {
-//		sample.pdf = 0.f;
-//		return;
-//	}
-
-	float dist = std::sqrt(det);
-	float t = b + dist;
-
-
-	math::float3 hit = p + t * dir;
-
-	sample.wi = (hit - transformation.position) / radius;
-
-	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, sample.wi);
+	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
 	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 	sample.t   = 2.f;
-	sample.pdf = 0.1f;//1.f / (2.f * math::Pi);
-	*/
+	sample.pdf = 1.f / (2.f * math::Pi);
+*/
+//	std::cout << sample.uv << std::endl;
 }
 
 float Inverse_sphere::pdf(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
