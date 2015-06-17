@@ -110,13 +110,11 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Composed_transformation& tr
 	math::float2 uv = sampler.generate_sample_2d();
 	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
-	dir = n;
-
 	math::Oray ray;
 	ray.origin = p;
 	ray.set_direction(dir);
 	ray.min_t  = 0.1f;
-	ray.min_t  = 1000.f;
+	ray.max_t  = 1000.f;
 
 	Intersection intersection;
 
@@ -164,10 +162,10 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Composed_transformation& tr
 		}
 	}
 
-	sample.wi = dir;//-intersection.n;
+	sample.wi = -intersection.n;
 	sample.uv = intersection.uv;
 	sample.t   = 2.f;
-	sample.pdf = 0.1f;
+	sample.pdf = 1.f / (2.f * math::Pi);
 
 	/*
 	math::float3 x, y;
