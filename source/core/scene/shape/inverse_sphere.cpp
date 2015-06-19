@@ -103,14 +103,38 @@ float Inverse_sphere::opacity(const Composed_transformation& transformation, con
 void Inverse_sphere::sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
 							const math::float3& p, const math::float3& n,
 							sampler::Sampler& sampler, Sample& sample) const {
+/*
+	math::float3 axis = transformation.position - p;
+	float axis_squared_length = math::squared_length(axis);
 
+	float radius_square = transformation.scale.x * transformation.scale.x;
+	float sin_theta_max2 = radius_square / axis_squared_length;
+	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+	cos_theta_max = std::min(0.99999995f, cos_theta_max);
+
+	float axis_length = std::sqrt(axis_squared_length);
+	math::float3 z = axis / axis_length;
+	math::float3 x, y;
+	math::coordinate_system(z, x, y);
+
+	math::float2 r2 = sampler.generate_sample_2d();
+	math::float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
+
+	sample.wi = dir;
+	sample.t = axis_length - transformation.scale.x; // this is not accurate
+	sample.pdf = math::cone_pdf_uniform(cos_theta_max);
+
+	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
+	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+*/
+/*
 	math::float3 x, y;
 	math::coordinate_system(n, x, y);
 
 	math::float2 uv = sampler.generate_sample_2d();
 	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
-
-	dir = n;
+*/
+	math::float3 dir = n;
 
 	math::Oray ray;
 	ray.origin = p;
@@ -145,10 +169,37 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Composed_transformation& tr
 		std::cout << "oh no" << std::endl;
 	}
 
+
+	math::float3 axis = p - intersection.p;
+	float axis_squared_length = math::squared_length(axis);
+
+	float radius_square = transformation.scale.x * transformation.scale.x;
+	float sin_theta_max2 = radius_square / axis_squared_length;
+	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+	cos_theta_max = std::min(0.99999995f, cos_theta_max);
+
+	float axis_length = std::sqrt(axis_squared_length);
+	math::float3 z = axis / axis_length;
+	math::float3 x, y;
+	math::coordinate_system(z, x, y);
+
+	math::float2 r2 = sampler.generate_sample_2d();
+	math::float3 tdir = -math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
+
+	sample.wi = tdir;
+	sample.t = axis_length - transformation.scale.x; // this is not accurate
+	sample.pdf = math::cone_pdf_uniform(cos_theta_max);
+
+	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, tdir);
+	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+
+	/*
 	sample.wi = -intersection.n;
 	sample.uv = intersection.uv;
 	sample.t   = 2.f;
-	sample.pdf = 1.f / (2.f * math::Pi);
+	sample.pdf = 1.f / (1.f * math::Pi);
+	*/
+
 
 /*
 	math::float3 x, y;
