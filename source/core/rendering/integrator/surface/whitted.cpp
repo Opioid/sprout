@@ -27,10 +27,11 @@ math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& i
 	math::float3 result = math::float3::identity;
 
 	float opacity = intersection.opacity(settings_.sampler);
+	float throughput = opacity;
 
 	while (opacity < 1.f) {
 		if (opacity > 0.f) {
-			result += opacity * shade(worker, ray, intersection);
+			result += throughput * shade(worker, ray, intersection);
 		}
 
 		ray.min_t = ray.max_t;
@@ -39,10 +40,11 @@ math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& i
 			return result;
 		}
 
-		opacity = (1.f - opacity) * intersection.opacity(settings_.sampler);
+		throughput = (1.f - opacity) * intersection.opacity(settings_.sampler);
+		opacity   += throughput;
 	}
 
-	result += opacity * shade(worker, ray, intersection);
+	result += throughput * shade(worker, ray, intersection);
 
 	return result;
 }
