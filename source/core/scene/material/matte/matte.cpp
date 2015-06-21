@@ -43,7 +43,7 @@ void Sample::set(const math::float3& color) {
 
 Matte::Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}
 
-math::float3 Matte::sample_emission(math::float2 uv, const image::sampler::Sampler_2D& /*sampler*/) const {
+math::float3 Matte::sample_emission(math::float2 /*uv*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	return math::float3::identity;
 }
 

@@ -16,7 +16,7 @@ void Uniform_light::transformation_at(float /*time*/, Composed_transformation& /
 }
 
 void Uniform_light::sample(const Composed_transformation& /*transformation*/, const math::float3& /*p*/, const math::float3& n,
-						   const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
+                           const image::sampler::Sampler_2D& /*image_sampler*/, sampler::Sampler& sampler,
 						   uint32_t /*max_samples*/, std::vector<Sample>& samples) const {
 	samples.clear();
 
