@@ -21,7 +21,7 @@ int main() {
 
 	std::cout << "Welcome to sprout!" << std::endl;
 
-	uint32_t num_workers = /*1;//*/static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
+    uint32_t num_workers = /*1;//*/static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
 
 	std::cout << "#Threads " << num_workers << std::endl;
 
@@ -31,7 +31,7 @@ int main() {
 
 	auto loading_start = clock.now();
 
-	std::string takename = "../data/takes/mask.take";
+    std::string takename = "../data/takes/sponza.take";
 
 	std::shared_ptr<take::Take> take;
 
