@@ -15,11 +15,11 @@ void Prop_light::init(Prop* prop, uint32_t part) {
 	part_ = part;
 }
 
-void Prop_light::transformation_at(float time, Composed_transformation& transformation) const {
+void Prop_light::transformation_at(float time, entity::Composed_transformation& transformation) const {
 	prop_->transformation_at(time, transformation);
 }
 
-void Prop_light::sample(const Composed_transformation& transformation, const math::float3& p, const math::float3& n,
+void Prop_light::sample(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& n,
 						const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 						uint32_t /*max_samples*/, std::vector<Sample>& samples) const {
 	samples.clear();
@@ -40,7 +40,7 @@ math::float3 Prop_light::evaluate(const math::float3& wi) const {
 	return math::float3::identity;
 }
 
-float Prop_light::pdf(const Composed_transformation& transformation, const math::float3& p, const math::float3& wi) const {
+float Prop_light::pdf(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& wi) const {
 	return prop_->shape()->pdf(part_, transformation, area_, p, wi);
 }
 
@@ -53,7 +53,7 @@ math::float3 Prop_light::power(const math::aabb& scene_bb) const {
 }
 
 void Prop_light::prepare_sampling() {
-	Composed_transformation transformation;
+	entity::Composed_transformation transformation;
 	prop_->transformation_at(0.f, transformation);
 	prop_->shape()->prepare_sampling(part_, transformation.scale);
 	area_ = prop_->shape()->area(part_, transformation.scale);

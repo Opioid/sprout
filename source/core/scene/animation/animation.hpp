@@ -5,18 +5,24 @@
 
 namespace scene {
 
+namespace entity {
+
 struct Keyframe;
+
+}
+
+namespace animation {
 
 class Animation {
 public:
 
 	void reserve(size_t count);
 
-	void push_back(const Keyframe& keyframe);
+	void push_back(const entity::Keyframe& keyframe);
 
 private:
 
-	std::vector<Keyframe> keyframes_;
+	std::vector<entity::Keyframe> keyframes_;
 };
 
-}
+}}

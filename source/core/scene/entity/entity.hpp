@@ -1,11 +1,11 @@
 #pragma once
 
-#include "keyframe.hpp"
 #include "composed_transformation.hpp"
+#include "keyframe.hpp"
 #include "base/math/quaternion.hpp"
 #include "base/math/transformation.hpp"
 
-namespace scene {
+namespace scene { namespace entity {
 
 class Entity {
 public:
@@ -24,4 +24,4 @@ protected:
 	Keyframe keyframe_b_;
 };
 
-}
+}}

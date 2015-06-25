@@ -15,7 +15,7 @@ Canopy::Canopy() {
 	aabb_.set_min_max(math::float3::identity, math::float3::identity);
 }
 
-bool Canopy::intersect(const Composed_transformation& transformation, math::Oray& ray,
+bool Canopy::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					   Intersection& intersection) const {
 	if (ray.max_t >= 1000.f) {
@@ -38,20 +38,20 @@ bool Canopy::intersect(const Composed_transformation& transformation, math::Oray
 	return false;
 }
 
-bool Canopy::intersect_p(const Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
+bool Canopy::intersect_p(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
 						 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
-float Canopy::opacity(const Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
+float Canopy::opacity(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
 					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					  const material::Materials& /*materials*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
 
-void Canopy::sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
+void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 					const math::float3& /*p*/, const math::float3& n,
 					sampler::Sampler& sampler, Sample& sample) const {
 	math::float3 x, y;
@@ -69,7 +69,7 @@ void Canopy::sample(uint32_t /*part*/, const Composed_transformation& transforma
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
-float Canopy::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+float Canopy::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
 				  const math::float3& /*p*/, const math::float3& /*wi*/) const {
 	return 1.f / (2.f * math::Pi);
 }

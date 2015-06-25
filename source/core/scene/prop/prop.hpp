@@ -17,7 +17,7 @@ class Shape;
 
 }
 
-class Prop : public Entity {
+class Prop : public entity::Entity {
 public:
 
 	virtual ~Prop();

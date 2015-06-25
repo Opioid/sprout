@@ -2,6 +2,7 @@
 #include "scene.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/uniform_light.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/shape/canopy.hpp"
 #include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/disk.hpp"
@@ -66,7 +67,7 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 
 		std::string type_name = type_node->value.GetString();
 
-		Entity* entity = nullptr;
+		entity::Entity* entity = nullptr;
 
 		if ("Light" == type_name) {
 			Prop* prop = load_prop(*e, scene);
@@ -98,6 +99,8 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 				transformation.scale = json::read_float3(node_value);
 			} else if ("rotation" == node_name) {
 				transformation.rotation = json::read_local_rotation(node_value);
+			} else if ("animation" == node_name) {
+				load_animation(node_value, scene);
 			}
 		}
 
@@ -162,6 +165,42 @@ light::Light* Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* 
 	light->init(prop);
 
 	return light;
+}
+
+Animation* Loader::load_animation(const rapidjson::Value& animation_value, Scene& scene) {
+	const rapidjson::Value::ConstMemberIterator keyframes_node = animation_value.FindMember("keyframes");
+	if (animation_value.MemberEnd() == keyframes_node) {
+		return nullptr;
+	}
+
+	const rapidjson::Value& keyframes_value = keyframes_node->value;
+
+	if (!keyframes_value.IsArray()) {
+		return nullptr;
+	}
+
+
+
+	for (auto k = keyframes_value.Begin(); k != keyframes_value.End(); ++k) {
+		entity::Keyframe keyframe;
+
+		for (auto n = k->MemberBegin(); n != k->MemberEnd(); ++n) {
+			const std::string node_name = n->name.GetString();
+			const rapidjson::Value& node_value = n->value;
+
+			if ("time" == node_name) {
+				keyframe.time = json::read_float(node_value);
+			} else if ("position" == node_name) {
+				keyframe.transformation.position = json::read_float3(node_value);
+			} else if ("scale" == node_name) {
+				keyframe.transformation.scale = json::read_float3(node_value);
+			} else if ("rotation" == node_name) {
+				keyframe.transformation.rotation = json::read_local_rotation(node_value);
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {

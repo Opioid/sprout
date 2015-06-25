@@ -1,17 +1,17 @@
 #include "animation.hpp"
-#include "keyframe.hpp"
+#include "scene/entity/keyframe.hpp"
 #include "base/math/vector.inl"
 #include "base/math/quaternion.inl"
 
-namespace scene {
+namespace scene { namespace animation {
 
 void Animation::reserve(size_t count) {
 	keyframes_.clear();
 	keyframes_.reserve(count);
 }
 
-void Animation::push_back(const Keyframe& keyframe) {
+void Animation::push_back(const entity::Keyframe& keyframe) {
 	keyframes_.push_back(keyframe);
 }
 
-}
+}}

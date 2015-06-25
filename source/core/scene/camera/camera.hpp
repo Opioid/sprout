@@ -19,7 +19,7 @@ class Film;
 
 namespace scene { namespace camera {
 
-class Camera : public scene::Entity {
+class Camera : public entity::Entity {
 public:
 
 	Camera(const math::float2& dimensions, rendering::film::Film* film);

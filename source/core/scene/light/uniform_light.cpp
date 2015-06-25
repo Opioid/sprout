@@ -12,10 +12,11 @@ void Uniform_light::init(const math::float3& energy) {
 	energy_ = energy;
 }
 
-void Uniform_light::transformation_at(float /*time*/, Composed_transformation& /*transformation*/) const {
+void Uniform_light::transformation_at(float /*time*/, entity::Composed_transformation& /*transformation*/) const {
 }
 
-void Uniform_light::sample(const Composed_transformation& /*transformation*/, const math::float3& /*p*/, const math::float3& n,
+void Uniform_light::sample(const entity::Composed_transformation& /*transformation*/,
+						   const math::float3& /*p*/, const math::float3& n,
                            const image::sampler::Sampler_2D& /*image_sampler*/, sampler::Sampler& sampler,
 						   uint32_t /*max_samples*/, std::vector<Sample>& samples) const {
 	samples.clear();
@@ -40,7 +41,8 @@ math::float3 Uniform_light::evaluate(const math::float3& /*wi*/) const {
 	return energy_;
 }
 
-float Uniform_light::pdf(const Composed_transformation& /*transformation*/, const math::float3& /*p*/, const math::float3& /*wi*/) const {
+float Uniform_light::pdf(const entity::Composed_transformation& /*transformation*/,
+						 const math::float3& /*p*/, const math::float3& /*wi*/) const {
 	return 1.f / (2.f * math::Pi);
 }
 

@@ -16,10 +16,11 @@ void Image_light::init(std::shared_ptr<image::Image> image) {
 	texture_.init(image);
 }
 
-void Image_light::transformation_at(float /*time*/, Composed_transformation& /*transformation*/) const {
+void Image_light::transformation_at(float /*time*/, entity::Composed_transformation& /*transformation*/) const {
 }
 
-void Image_light::sample(const Composed_transformation& /*transformation*/, const math::float3& /*p*/, const math::float3& n,
+void Image_light::sample(const entity::Composed_transformation& /*transformation*/,
+						 const math::float3& /*p*/, const math::float3& n,
 						 const image::sampler::Sampler_2D& /*image_sampler*/, sampler::Sampler& sampler,
 						 uint32_t /*max_samples*/, std::vector<Sample>& samples) const {
 	samples.clear();
@@ -44,7 +45,8 @@ math::float3 Image_light::evaluate(const math::float3& wi) const {
 	return sampler_nearest_.sample3(texture_, wi);
 }
 
-float Image_light::pdf(const Composed_transformation& /*transformation*/, const math::float3& /*p*/, const math::float3& /*wi*/) const {
+float Image_light::pdf(const entity::Composed_transformation& /*transformation*/,
+					   const math::float3& /*p*/, const math::float3& /*wi*/) const {
 	return 1.f / (2.f * math::Pi);
 }
 

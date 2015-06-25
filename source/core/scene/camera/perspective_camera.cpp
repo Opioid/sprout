@@ -40,7 +40,7 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray&
 
 	ray.time = 0.f;
 
-	scene::Composed_transformation transformation;
+	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 	ray.origin = math::transform_point(transformation.object_to_world, r.origin);
 	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(r.direction)));

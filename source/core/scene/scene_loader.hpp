@@ -1,6 +1,5 @@
 #pragma once
 
-#include "prop/prop.hpp"
 #include "shape/triangle/triangle_mesh_provider.hpp"
 #include "material/material_provider.hpp"
 #include "image/image_provider.hpp"
@@ -30,6 +29,8 @@ class Shape;
 }
 
 class Scene;
+class Prop;
+class Animation;
 
 class Loader {
 public:
@@ -46,6 +47,8 @@ private:
 	Prop* load_prop(const rapidjson::Value& prop_value, Scene& scene);
 
 	light::Light* load_light(const rapidjson::Value& light_value, Prop* prop, Scene& scene);
+
+	Animation* load_animation(const rapidjson::Value& animation_value, Scene& scene);
 
 	std::shared_ptr<shape::Shape> load_shape(const rapidjson::Value& shape_value);
 

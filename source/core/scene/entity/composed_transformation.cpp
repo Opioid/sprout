@@ -2,7 +2,7 @@
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
 
-namespace scene {
+namespace scene { namespace entity {
 
 void Composed_transformation::set(const math::transformation& t) {
 	position = t.position;
@@ -12,4 +12,4 @@ void Composed_transformation::set(const math::transformation& t) {
 	world_to_object = math::inverted(object_to_world);
 }
 
-}
+}}

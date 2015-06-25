@@ -6,6 +6,7 @@ HEADERS += \
 	scene/scene.hpp \
 	scene/scene_loader.hpp \
 
+include(animation/animation.pri)
 include(bvh/bvh.pri)
 include(camera/camera.pri)
 include(entity/entity.pri)

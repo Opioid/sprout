@@ -23,7 +23,7 @@ void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& 
 }
 
 bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersection& intersection) const {
-	Composed_transformation transformation;
+	entity::Composed_transformation transformation;
 	bool animated = transformation_at(ray.time, transformation);
 
 	math::float2 bounds;
@@ -45,7 +45,7 @@ bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersectio
 }
 
 bool Prop::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
-	Composed_transformation transformation;
+	entity::Composed_transformation transformation;
 	bool animated = transformation_at(ray.time, transformation);
 
 	math::float2 bounds;
@@ -71,7 +71,7 @@ float Prop::opacity(const math::Oray& ray, Node_stack& node_stack, const image::
 		return intersect_p(ray, node_stack) ? 1.f : 0.f;
 	}
 
-	Composed_transformation transformation;
+	entity::Composed_transformation transformation;
 	bool animated = transformation_at(ray.time, transformation);
 
 	math::float2 bounds;

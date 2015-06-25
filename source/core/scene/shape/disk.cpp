@@ -15,7 +15,7 @@ Disk::Disk() {
 	aabb_.set_min_max(math::float3(-1.f, -1.f, -1.f), math::float3(1.f, 1.f, 1.f));
 }
 
-bool Disk::intersect(const Composed_transformation& transformation, math::Oray& ray,
+bool Disk::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					 const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					 Intersection& intersection) const {
 	const math::float3& normal = transformation.rotation.z;
@@ -54,7 +54,7 @@ bool Disk::intersect(const Composed_transformation& transformation, math::Oray& 
 	return false;
 }
 
-bool Disk::intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
+bool Disk::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
 	const math::float3& normal = transformation.rotation.z;
 	float d = -math::dot(normal, transformation.position);
@@ -77,7 +77,7 @@ bool Disk::intersect_p(const Composed_transformation& transformation, const math
 	return false;
 }
 
-float Disk::opacity(const Composed_transformation& transformation, const math::Oray& ray,
+float Disk::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
 					const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const {
 	const math::float3& normal = transformation.rotation.z;
@@ -104,7 +104,7 @@ float Disk::opacity(const Composed_transformation& transformation, const math::O
 	return 0.f;
 }
 
-void Disk::sample(uint32_t /*part*/, const Composed_transformation& transformation, float area,
+void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
 				  const math::float3& p, const math::float3& /*n*/,
 				  sampler::Sampler& sampler, Sample& sample) const {
 	math::float2 r2 = sampler.generate_sample_2d();
@@ -127,7 +127,7 @@ void Disk::sample(uint32_t /*part*/, const Composed_transformation& transformati
 	}
 }
 
-float Disk::pdf(uint32_t /*part*/, const Composed_transformation& transformation, float area,
+float Disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
 				const math::float3& p, const math::float3& wi) const {
 	const math::float3& normal = transformation.rotation.z;
 

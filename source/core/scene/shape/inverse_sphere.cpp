@@ -17,7 +17,7 @@ Inverse_sphere::Inverse_sphere() {
 	aabb_.set_min_max(math::float3(-1.f, -1.f, -1.f), math::float3(1.f, 1.f, 1.f));
 }
 
-bool Inverse_sphere::intersect(const Composed_transformation& transformation, math::Oray& ray,
+bool Inverse_sphere::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 							   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 							   Intersection& intersection) const {
 	math::float3 v = ray.origin - transformation.position;
@@ -69,7 +69,7 @@ bool Inverse_sphere::intersect(const Composed_transformation& transformation, ma
 	return false;
 }
 
-bool Inverse_sphere::intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
+bool Inverse_sphere::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 								 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
@@ -94,13 +94,13 @@ bool Inverse_sphere::intersect_p(const Composed_transformation& transformation, 
 	return false;
 }
 
-float Inverse_sphere::opacity(const Composed_transformation& transformation, const math::Oray& ray,
+float Inverse_sphere::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
 							  const math::float2& bounds, Node_stack& node_stack,
 							  const material::Materials& /*materials*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	return intersect_p(transformation, ray, bounds, node_stack) ? 1.f : 0.f;
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
+void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 							const math::float3& p, const math::float3& n,
 							sampler::Sampler& sampler, Sample& sample) const {
 /*
@@ -219,7 +219,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Composed_transformation& tr
 //	std::cout << sample.uv << std::endl;
 }
 
-float Inverse_sphere::pdf(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
+float Inverse_sphere::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 						  const math::float3& p, const math::float3& /*wi*/) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);

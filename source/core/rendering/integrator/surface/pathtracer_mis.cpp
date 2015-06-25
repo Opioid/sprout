@@ -105,7 +105,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 
-	scene::Composed_transformation transformation;
+	scene::entity::Composed_transformation transformation;
 	light->transformation_at(ray.time, transformation);
 
 	light->sample(transformation, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);

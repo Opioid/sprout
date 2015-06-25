@@ -15,7 +15,7 @@ Celestial_disk::Celestial_disk() {
 	aabb_.set_min_max(math::float3::identity, math::float3::identity);
 }
 
-bool Celestial_disk::intersect(const Composed_transformation& transformation, math::Oray& ray,
+bool Celestial_disk::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 							   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 							   Intersection& intersection) const {
 	const math::float3& v = transformation.rotation.z;
@@ -40,20 +40,21 @@ bool Celestial_disk::intersect(const Composed_transformation& transformation, ma
 	return false;
 }
 
-bool Celestial_disk::intersect_p(const Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
+bool Celestial_disk::intersect_p(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
 								 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
-float Celestial_disk::opacity(const Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
+float Celestial_disk::opacity(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
 							  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 							  const material::Materials& /*materials*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
 
-void Celestial_disk::sample(uint32_t /*part*/, const Composed_transformation& transformation, float area, const math::float3& /*p*/, const math::float3& /*n*/,
+void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
+							const math::float3& /*p*/, const math::float3& /*n*/,
 							sampler::Sampler& sampler, Sample& sample) const {
 	math::float2 r2 = sampler.generate_sample_2d();
 	math::float2 xy = math::sample_disk_concentric(r2);
@@ -66,7 +67,7 @@ void Celestial_disk::sample(uint32_t /*part*/, const Composed_transformation& tr
 	sample.pdf = 1.f / area;
 }
 
-float Celestial_disk::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float area,
+float Celestial_disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float area,
 						  const math::float3& /*p*/, const math::float3& /*wi*/) const {
 	return 1.f / area;
 }

@@ -5,7 +5,7 @@
 #include "base/math/quaternion.hpp"
 #include "base/math/transformation.hpp"
 
-namespace scene {
+namespace scene { namespace entity {
 
 struct Composed_transformation {
 	void set(const math::transformation& t);
@@ -17,4 +17,4 @@ struct Composed_transformation {
 	math::float4x4 world_to_object;
 };
 
-}
+}}

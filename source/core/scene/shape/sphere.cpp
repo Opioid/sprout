@@ -14,7 +14,7 @@ Sphere::Sphere() {
 	aabb_.set_min_max(math::float3(-1.f, -1.f, -1.f), math::float3(1.f, 1.f, 1.f));
 }
 
-bool Sphere::intersect(const Composed_transformation& transformation, math::Oray& ray,
+bool Sphere::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					   Intersection& intersection) const {
 	math::float3 v = ray.origin - transformation.position;
@@ -58,7 +58,7 @@ bool Sphere::intersect(const Composed_transformation& transformation, math::Oray
 	return false;
 }
 
-bool Sphere::intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
+bool Sphere::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 						 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
@@ -83,13 +83,13 @@ bool Sphere::intersect_p(const Composed_transformation& transformation, const ma
 	return false;
 }
 
-float Sphere::opacity(const Composed_transformation& transformation, const math::Oray& ray,
+float Sphere::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
 					  const math::float2& bounds, Node_stack& node_stack,
 					  const material::Materials& /*materials*/, const image::sampler::Sampler_2D& /*sampler*/) const {
 	return intersect_p(transformation, ray, bounds, node_stack) ? 1.f : 0.f;
 }
 
-void Sphere::sample(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
+void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 					const math::float3& p, const math::float3& /*n*/,
 					sampler::Sampler& sampler, Sample& sample) const {
 	math::float3 axis = transformation.position - p;
@@ -117,7 +117,7 @@ void Sphere::sample(uint32_t /*part*/, const Composed_transformation& transforma
 //	}
 }
 
-float Sphere::pdf(uint32_t /*part*/, const Composed_transformation& transformation, float /*area*/,
+float Sphere::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 				  const math::float3& p, const math::float3& /*wi*/) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);

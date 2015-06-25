@@ -22,7 +22,7 @@ uint32_t Mesh::num_parts() const {
 	return tree_.num_parts();
 }
 
-bool Mesh::intersect(const Composed_transformation& transformation, math::Oray& ray,
+bool Mesh::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					 const math::float2& bounds, Node_stack& node_stack,
 					 shape::Intersection& intersection) const {
 	math::Oray tray;
@@ -59,7 +59,7 @@ bool Mesh::intersect(const Composed_transformation& transformation, math::Oray& 
 	return false;
 }
 
-bool Mesh::intersect_p(const Composed_transformation& transformation, const math::Oray& ray,
+bool Mesh::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 					   const math::float2& bounds, Node_stack& node_stack) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
@@ -70,7 +70,7 @@ bool Mesh::intersect_p(const Composed_transformation& transformation, const math
 	return tree_.intersect_p(tray, bounds, node_stack);
 }
 
-float Mesh::opacity(const Composed_transformation& transformation, const math::Oray& ray,
+float Mesh::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
 					const math::float2& bounds, Node_stack& node_stack,
 					const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const {
 	math::Oray tray;
@@ -82,7 +82,7 @@ float Mesh::opacity(const Composed_transformation& transformation, const math::O
 	return tree_.opacity(tray, bounds, node_stack, materials, sampler);
 }
 
-void Mesh::sample(uint32_t part, const Composed_transformation& transformation, float area,
+void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 				  const math::float3& p, const math::float3& n,
 				  sampler::Sampler& sampler, Sample& sample) const {
 	float r = sampler.generate_sample_1d();
@@ -113,7 +113,7 @@ void Mesh::sample(uint32_t part, const Composed_transformation& transformation, 
 	}
 }
 
-float Mesh::pdf(uint32_t /*part*/, const Composed_transformation& /*transformation*/, float /*area*/,
+float Mesh::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
 				const math::float3& /*p*/, const math::float3& /*wi*/) const {
 	return 1.f;
 }
