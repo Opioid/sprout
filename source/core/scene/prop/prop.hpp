@@ -41,10 +41,12 @@ public:
 
 private:
 
-	virtual void on_set_transformation();
+	virtual void on_set_transformation() final override;
 
 	std::shared_ptr<shape::Shape> shape_;
 
+	// Pre-transformed AABB in world space.
+	// For moving objects it must cover the entire area occupied by the object during the tick.
 	math::aabb aabb_;
 
 	material::Materials materials_;

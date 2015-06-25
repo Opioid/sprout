@@ -10,18 +10,24 @@ namespace scene { namespace entity {
 class Entity {
 public:
 
-	bool transformation_at(float time, Composed_transformation& transformation) const;
+	bool transformation_at(float tick_delta, Composed_transformation& transformation) const;
 
 	void set_transformation(const math::transformation& t);
 
+	void set_tick_transformation(const math::transformation& a, const math::transformation& b);
+
 protected:
 
-	virtual void on_set_transformation();
+	virtual void on_set_transformation() = 0;
 
-	Composed_transformation transformation_;
+	math::transformation local_transformation_;
 
-	Keyframe keyframe_a_;
-	Keyframe keyframe_b_;
+	math::transformation world_transformation_b_;
+	math::transformation world_transformation_a_;
+
+	Composed_transformation world_transformation_;
+
+	bool animated_;
 };
 
 }}

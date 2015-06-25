@@ -12,6 +12,9 @@ struct Transformation {
 	Quaternion<T> rotation;
 };
 
+template<typename T>
+Transformation<T> lerp(const Transformation<T>& a, const Transformation<T>& b, T t);
+
 typedef Transformation<float> transformation;
 
 }

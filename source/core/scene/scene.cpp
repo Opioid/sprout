@@ -4,7 +4,6 @@
 #include "light/image_light.hpp"
 #include "light/prop_light.hpp"
 #include "light/uniform_light.hpp"
-#include "bvh/scene_bvh_builder.hpp"
 #include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -38,9 +37,12 @@ float Scene::opacity(const math::Oray& ray, Node_stack& node_stack, const image:
 	return bvh_.opacity(ray, node_stack, sampler);
 }
 
+void Scene::tick(float time_slice) {
+
+}
+
 void Scene::compile() {
-	bvh::Builder builder;
-	builder.build(bvh_, props_);
+    builder_.build(bvh_, props_);
 
 	std::vector<float> power;
 	power.reserve(lights_.size());
@@ -89,6 +91,14 @@ light::Uniform_light* Scene::create_uniform_light() {
 	light::Uniform_light* light = new light::Uniform_light;
 	lights_.push_back(light);
 	return light;
+}
+
+void Scene::add_animation(std::shared_ptr<animation::Animation> animation) {
+    animations_.push_back(animation);
+}
+
+void Scene::create_animation_stage(entity::Entity* entity, animation::Animation* animation) {
+    animation_stages_.push_back(animation::Stage(entity, animation));
 }
 
 }

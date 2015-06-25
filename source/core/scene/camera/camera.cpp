@@ -18,6 +18,8 @@ rendering::film::Film& Camera::film() const {
 	return *film_;
 }
 
+void Camera::on_set_transformation() {}
+
 math::float2 Camera::calculate_dimensions(const math::float2& dimensions, rendering::film::Film* film) {
 	if (0.f == dimensions.x && 0.f == dimensions.y) {
 		return math::float2(static_cast<float>(film->dimensions().x), static_cast<float>(film->dimensions().y));

@@ -33,10 +33,13 @@ public:
 
 protected:
 
+	virtual void on_set_transformation() final override;
+
 	static math::float2 calculate_dimensions(const math::float2& dimensions, rendering::film::Film* film);
 
 	math::float2 dimensions_;
 	rendering::film::Film* film_;
+	float shutter_speed_;
 };
 
 }}

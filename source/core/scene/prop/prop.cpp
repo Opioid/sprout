@@ -31,7 +31,7 @@ bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersectio
 	if (shape_->is_complex()) {
 		math::aabb aabb;
 		if (animated) {
-			shape_->aabb().transform(transformation_.object_to_world, aabb);
+			shape_->aabb().transform(transformation.object_to_world, aabb);
 		} else {
 			aabb = aabb_;
 		}
@@ -53,7 +53,7 @@ bool Prop::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
 	if (shape_->is_complex()) {
 		math::aabb aabb;
 		if (animated) {
-			shape_->aabb().transform(transformation_.object_to_world, aabb);
+			shape_->aabb().transform(transformation.object_to_world, aabb);
 		} else {
 			aabb = aabb_;
 		}
@@ -79,7 +79,7 @@ float Prop::opacity(const math::Oray& ray, Node_stack& node_stack, const image::
 	if (shape_->is_complex()) {
 		math::aabb aabb;
 		if (animated) {
-			shape_->aabb().transform(transformation_.object_to_world, aabb);
+			shape_->aabb().transform(transformation.object_to_world, aabb);
 		} else {
 			aabb = aabb_;
 		}
@@ -113,7 +113,7 @@ bool Prop::has_masked_material() const {
 }
 
 void Prop::on_set_transformation() {
-	shape_->aabb().transform(transformation_.object_to_world, aabb_);
+	shape_->aabb().transform(world_transformation_.object_to_world, aabb_);
 }
 
 }

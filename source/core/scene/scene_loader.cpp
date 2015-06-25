@@ -1,5 +1,6 @@
 #include "scene_loader.hpp"
 #include "scene.hpp"
+#include "scene/animation/animation.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/uniform_light.hpp"
 #include "scene/prop/prop.hpp"
@@ -14,6 +15,7 @@
 #include "resource/resource_cache.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
+#include "base/math/quaternion.inl"
 #include <fstream>
 #include <iostream>
 
@@ -167,7 +169,7 @@ light::Light* Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* 
 	return light;
 }
 
-Animation* Loader::load_animation(const rapidjson::Value& animation_value, Scene& scene) {
+std::shared_ptr<animation::Animation> Loader::load_animation(const rapidjson::Value& animation_value, Scene& scene) {
 	const rapidjson::Value::ConstMemberIterator keyframes_node = animation_value.FindMember("keyframes");
 	if (animation_value.MemberEnd() == keyframes_node) {
 		return nullptr;
@@ -179,7 +181,9 @@ Animation* Loader::load_animation(const rapidjson::Value& animation_value, Scene
 		return nullptr;
 	}
 
+    auto animation = std::make_shared<animation::Animation>();
 
+    animation->init(keyframes_value.Size());
 
 	for (auto k = keyframes_value.Begin(); k != keyframes_value.End(); ++k) {
 		entity::Keyframe keyframe;
@@ -198,9 +202,13 @@ Animation* Loader::load_animation(const rapidjson::Value& animation_value, Scene
 				keyframe.transformation.rotation = json::read_local_rotation(node_value);
 			}
 		}
+
+        animation->push_back(keyframe);
 	}
 
-	return nullptr;
+    scene.add_animation(animation);
+
+    return animation;
 }
 
 std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {

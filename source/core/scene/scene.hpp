@@ -1,12 +1,21 @@
 #pragma once
 
-#include "bvh/scene_bvh_tree.hpp"
-#include "shape/node_stack.hpp"
+#include "scene/animation/animation_stage.hpp"
+#include "scene/bvh/scene_bvh_builder.hpp"
+#include "scene/bvh/scene_bvh_tree.hpp"
+#include "scene/shape/node_stack.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/cdf.hpp"
 #include <vector>
+#include <memory>
 
 namespace scene {
+
+namespace entity {
+
+class Entity;
+
+}
 
 namespace light {
 
@@ -14,6 +23,12 @@ class Light;
 class Image_light;
 class Prop_light;
 class Uniform_light;
+
+}
+
+namespace animation {
+
+class Animation;
 
 }
 
@@ -31,6 +46,8 @@ public:
 
 	float opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
+    void tick(float time_slice);
+
 	void compile();
 
 	Prop* create_prop();
@@ -43,8 +60,13 @@ public:
 	light::Prop_light* create_prop_light();
 	light::Uniform_light* create_uniform_light();
 
+    void add_animation(std::shared_ptr<animation::Animation> animation);
+
+    void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
+
 private:
 
+    bvh::Builder builder_;
 	bvh::Tree bvh_;
 
 	std::vector<Prop*> props_;
@@ -52,6 +74,10 @@ private:
 	std::vector<light::Light*> lights_;
 
 	math::CDF light_cdf_;
+
+    std::vector<std::shared_ptr<animation::Animation>> animations_;
+
+    std::vector<animation::Stage> animation_stages_;
 };
 
 }

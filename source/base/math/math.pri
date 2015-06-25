@@ -23,6 +23,7 @@ HEADERS += \
 	math/ray.hpp \
 	math/ray.inl \
 	math/transformation.hpp \
+	math/transformation.inl \
 	math/vector.hpp \
 	math/vector.inl \
 	math/vector2.hpp \
