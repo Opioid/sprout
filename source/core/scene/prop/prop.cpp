@@ -113,7 +113,21 @@ bool Prop::has_masked_material() const {
 }
 
 void Prop::on_set_transformation() {
-	shape_->aabb().transform(world_transformation_.object_to_world, aabb_);
+	if (animated_) {
+		entity::Composed_transformation t;
+
+		math::aabb a;
+		t.set(world_transformation_a_);
+		shape_->aabb().transform(t.object_to_world, a);
+
+		math::aabb b;
+		t.set(world_transformation_b_);
+		shape_->aabb().transform(t.object_to_world, b);
+
+		aabb_ = a.merge(b);
+	} else {
+		shape_->aabb().transform(world_transformation_.object_to_world, aabb_);
+	}
 }
 
 }

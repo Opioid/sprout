@@ -1,9 +1,10 @@
 #include "scene.hpp"
-#include "prop/prop.hpp"
-#include "prop/prop_intersection.hpp"
-#include "light/image_light.hpp"
-#include "light/prop_light.hpp"
-#include "light/uniform_light.hpp"
+#include "scene/animation/animation.hpp"
+#include "scene/prop/prop.hpp"
+#include "scene/prop/prop_intersection.hpp"
+#include "scene/light/image_light.hpp"
+#include "scene/light/prop_light.hpp"
+#include "scene/light/uniform_light.hpp"
 #include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -38,7 +39,13 @@ float Scene::opacity(const math::Oray& ray, Node_stack& node_stack, const image:
 }
 
 void Scene::tick(float time_slice) {
+	for (auto a : animations_) {
+		a->tick(time_slice);
+	}
 
+	for (auto& s : animation_stages_) {
+		s.update();
+	}
 }
 
 void Scene::compile() {

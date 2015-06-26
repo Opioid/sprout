@@ -14,7 +14,9 @@ public:
 
 	void set_transformation(const math::transformation& t);
 
-	void set_tick_transformation(const math::transformation& a, const math::transformation& b);
+	void set_beginning(const math::transformation& t);
+
+	void tick(const math::transformation& t);
 
 protected:
 

@@ -17,6 +17,8 @@ public:
 
     Stage(entity::Entity* entity, Animation* animation);
 
+	void update();
+
 private:
 
     entity::Entity* entity_;

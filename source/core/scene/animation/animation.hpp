@@ -1,15 +1,10 @@
 #pragma once
 
+#include "scene/entity/keyframe.hpp"
 #include <vector>
 #include <cstddef>
 
 namespace scene {
-
-namespace entity {
-
-struct Keyframe;
-
-}
 
 namespace animation {
 
@@ -20,9 +15,11 @@ public:
 
 	void push_back(const entity::Keyframe& keyframe);
 
-    void beginning(entity::Keyframe& keyframe) const;
+	void tick(float time_slice);
 
-    void tick(float time_slice, entity::Keyframe& keyframe);
+	void beginning(math::transformation& t) const;
+
+	void current_frame(math::transformation& t) const;
 
 private:
 
@@ -31,6 +28,8 @@ private:
     size_t current_frame_;
 
 	std::vector<entity::Keyframe> keyframes_;
+
+	math::transformation interpolated_frame_;
 };
 
 }}

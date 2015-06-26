@@ -8,7 +8,7 @@ bool Entity::transformation_at(float tick_delta, Composed_transformation& transf
 	if (!animated_) {
 		transformation = world_transformation_;
 	} else {
-		math::lerp(world_transformation_a_, world_transformation_b_, tick_delta);
+		transformation.set(math::lerp(world_transformation_a_, world_transformation_b_, tick_delta));
 	}
 
 	return animated_;
@@ -24,9 +24,13 @@ void Entity::set_transformation(const math::transformation& t) {
 	on_set_transformation();
 }
 
-void Entity::set_tick_transformation(const math::transformation& a, const math::transformation& b) {
-	world_transformation_b_ = a;
-	world_transformation_a_ = b;
+void Entity::set_beginning(const math::transformation& t) {
+	world_transformation_b_ = t;
+}
+
+void Entity::tick(const math::transformation& t) {
+	world_transformation_a_ = world_transformation_b_;
+	world_transformation_b_ = t;
 
 	animated_ = true;
 

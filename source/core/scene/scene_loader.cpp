@@ -53,6 +53,7 @@ void Loader::load(const std::string& filename, Scene& scene) {
 		}
 	}
 
+	scene.tick(1.f / 60.f);
 	scene.compile();
 }
 
@@ -91,6 +92,8 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 			math::quaternion::identity
 		};
 
+		std::shared_ptr<animation::Animation> animation;
+
 		for (auto n = e->MemberBegin(); n != e->MemberEnd(); ++n) {
 			const std::string node_name = n->name.GetString();
 			const rapidjson::Value& node_value = n->value;
@@ -102,11 +105,15 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 			} else if ("rotation" == node_name) {
 				transformation.rotation = json::read_local_rotation(node_value);
 			} else if ("animation" == node_name) {
-				load_animation(node_value, scene);
+				animation = load_animation(node_value, scene);
 			}
 		}
 
 		entity->set_transformation(transformation);
+
+		if (animation) {
+			scene.create_animation_stage(entity, animation.get());
+		}
 	}
 }
 

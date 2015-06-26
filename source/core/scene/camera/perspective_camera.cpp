@@ -38,7 +38,7 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray&
 		r.direction = focus - r.origin;
 	}
 
-	ray.time = 0.f;
+	ray.time = sample.time;
 
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);

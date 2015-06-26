@@ -8,6 +8,7 @@ struct Camera_sample {
 	math::float2 coordinates;
 	math::float2 relative_offset;
 	math::float2 lens_uv;
+	float        time;
 };
 
 }
