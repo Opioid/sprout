@@ -7,11 +7,12 @@ namespace scene { namespace camera {
 class Perspective : public Camera {
 public:
 
-	Perspective(const math::float2& dimensions, rendering::film::Film* film, float fov, float lens_radius, float focal_distance);
+	Perspective(const math::float2& dimensions, rendering::film::Film* film,
+				float shutter_speed, float fov, float lens_radius, float focal_distance);
 
 	virtual void update_view();
 
-	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const;
+	virtual void generate_ray(const sampler::Camera_sample& sample, float tick_length, math::Oray& ray) const;
 
 private:
 

@@ -53,7 +53,7 @@ void Loader::load(const std::string& filename, Scene& scene) {
 		}
 	}
 
-	scene.tick(1.f / 60.f);
+	scene.tick();
 	scene.compile();
 }
 

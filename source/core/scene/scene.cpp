@@ -14,7 +14,7 @@
 
 namespace scene {
 
-Scene::Scene() {}
+Scene::Scene() : tick_length_(1.f / 60.f) {}
 
 Scene::~Scene() {
 	for (auto l : lights_) {
@@ -38,9 +38,13 @@ float Scene::opacity(const math::Oray& ray, Node_stack& node_stack, const image:
 	return bvh_.opacity(ray, node_stack, sampler);
 }
 
-void Scene::tick(float time_slice) {
+float Scene::tick_length() const {
+	return tick_length_;
+}
+
+void Scene::tick() {
 	for (auto a : animations_) {
-		a->tick(time_slice);
+		a->tick(tick_length_);
 	}
 
 	for (auto& s : animation_stages_) {

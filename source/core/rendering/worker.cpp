@@ -44,7 +44,7 @@ void Worker::render(const scene::Scene& scene, const scene::camera::Camera& came
 			math::float2 offset(static_cast<float>(x), static_cast<float>(y));
 
 			while (sampler_->generate_camera_sample(offset, sample)) {
-				camera.generate_ray(sample, ray);
+				camera.generate_ray(sample, scene.tick_length(), ray);
 
 				math::float3 color = li(ray);
 

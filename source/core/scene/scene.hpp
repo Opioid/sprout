@@ -46,7 +46,9 @@ public:
 
 	float opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
-    void tick(float time_slice);
+	float tick_length() const;
+
+	void tick();
 
 	void compile();
 
@@ -65,6 +67,8 @@ public:
     void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
 
 private:
+
+	float tick_length_;
 
     bvh::Builder builder_;
 	bvh::Tree bvh_;

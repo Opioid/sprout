@@ -9,8 +9,9 @@
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film, float fov, float lens_radius, float focal_distance) :
-	Camera(dimensions, film), fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance) {}
+Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film,
+						 float shutter_speed, float fov, float lens_radius, float focal_distance) :
+	Camera(dimensions, film, shutter_speed), fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance) {}
 
 void Perspective::update_view() {
 	float ratio = dimensions_.x / dimensions_.y;
@@ -25,7 +26,7 @@ void Perspective::update_view() {
 	d_y_ = (left_bottom - left_top_) / static_cast<float>(film_->dimensions().y);
 }
 
-void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
+void Perspective::generate_ray(const sampler::Camera_sample& sample, float tick_length, math::Oray& ray) const {
 	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
 
 	math::Ray<float> r(math::float3::identity, direction);
@@ -38,7 +39,11 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray&
 		r.direction = focus - r.origin;
 	}
 
-	ray.time = sample.time;
+	if (shutter_speed_ > 0.f) {
+		ray.time = sample.time * (shutter_speed_ / tick_length);
+	} else {
+		ray.time = 0.f;
+	}
 
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);

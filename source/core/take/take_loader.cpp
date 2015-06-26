@@ -89,6 +89,7 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 
 	math::float2 dimensions = math::float2::identity;
 	rendering::film::Film* film = nullptr;
+	float shutter_speed = 0.f;
 	float fov = 60.f;
 	float lens_radius = 0.f;
 	float focal_distance = 0.f;
@@ -105,6 +106,10 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 			dimensions = json::read_float2(node_value);
 		} else if ("film" == node_name) {
 			film = load_film(node_value);
+		} else if ("shutter_speed" == node_name) {
+			shutter_speed = json::read_float(node_value);
+		} else if ("frames_per_second" == node_name) {
+			shutter_speed = 1.f / json::read_float(node_value);
 		} else if ("fov" == node_name) {
 			fov = math::degrees_to_radians(json::read_float(node_value));
 		} else if ("lens_radius" == node_name) {
@@ -117,7 +122,7 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 	std::shared_ptr<scene::camera::Camera> camera;
 
 //	if ("Perspective" == type_name) {
-		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, fov, lens_radius, focal_distance);
+		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, shutter_speed, fov, lens_radius, focal_distance);
 //	} else if ("Orthographic" == type_name) {
 //	}
 

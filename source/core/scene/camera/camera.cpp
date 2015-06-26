@@ -6,9 +6,8 @@
 
 namespace scene { namespace camera {
 
-Camera::Camera(const math::float2& dimensions, rendering::film::Film* film) :
-	dimensions_(calculate_dimensions(dimensions, film)), film_(film) {
-}
+Camera::Camera(const math::float2& dimensions, rendering::film::Film* film, float shutter_speed) :
+	dimensions_(calculate_dimensions(dimensions, film)), film_(film), shutter_speed_(shutter_speed) {}
 
 Camera::~Camera() {
 	delete film_;
