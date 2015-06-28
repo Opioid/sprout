@@ -5,7 +5,7 @@
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
-#include "progress/sink.hpp"
+#include "progress/progress_sink.hpp"
 #include "base/math/vector.inl"
 #include "base/math/random/generator.inl"
 #include <thread>

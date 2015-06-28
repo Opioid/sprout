@@ -1,6 +1,8 @@
 SOURCES += \
-	progress/std_out.cpp \
+	progress/progress_sink_null.cpp \
+	progress/progress_sink_stdout.cpp \
 
 HEADERS += \
-	progress/sink.hpp \
-	progress/std_out.hpp \
+	progress/progress_sink.hpp \
+	progress/progress_sink_null.hpp \
+	progress/progress_sink_stdout.hpp \

@@ -5,7 +5,7 @@
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/image/image_writer.hpp"
-#include "core/progress/std_out.hpp"
+#include "core/progress/progress_sink_stdout.hpp"
 #include "base/thread/thread_pool.hpp"
 #include <chrono>
 #include <thread>
@@ -60,7 +60,7 @@ int main() {
 
 	rendering::Renderer renderer(take->surface_integrator_factory, take->sampler);
 
-	progress::Std_out progressor;
+	progress::Stdout progressor;
 
 	std::cout << "Rendering..." << std::endl;
 
