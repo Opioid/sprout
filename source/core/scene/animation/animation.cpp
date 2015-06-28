@@ -20,11 +20,14 @@ void Animation::push_back(const entity::Keyframe& keyframe) {
 void Animation::tick(float time_slice) {
 	current_time_ += time_slice;
 
-	auto& current_frame = keyframes_[current_frame_];
-	auto& next_frame = keyframes_[current_frame_ + 1];
-//	if (current_time_ <= next_frame.time) {
+	float next_frame_time = keyframes_[current_frame_ + 1].time;
 
-//	}
+	if (current_time_ > next_frame_time) {
+		++current_frame_;
+	}
+
+	auto& current_frame = keyframes_[current_frame_];
+	auto& next_frame	= keyframes_[current_frame_ + 1];
 
 	float range = next_frame.time - current_frame.time;
 

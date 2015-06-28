@@ -47,7 +47,7 @@ void Pool::wake_all(uint32_t begin, uint32_t end) {
 
 		uint32_t b = 0;
 		uint32_t e = begin;
-		for (size_t i = 0; i < uniques_.size(); ++i) {
+		for (size_t i = 0, len = uniques_.size(); i < len; ++i) {
 			b = e;
 			e += step;
 

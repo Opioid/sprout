@@ -6,7 +6,9 @@
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/image/image_writer.hpp"
+#include "core/exporting/exporting_sink_ffmpeg.hpp"
 #include "core/exporting/exporting_sink_image_sequence.hpp"
+#include "core/progress/progress_sink_null.hpp"
 #include "core/progress/progress_sink_stdout.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/string/string.inl"
@@ -60,7 +62,8 @@ int main() {
 
 	rendering::Renderer renderer(take->surface_integrator_factory, take->sampler);
 
-	exporting::Image_sequence exporter("output_", take->context.camera->film().dimensions());
+//	exporting::Image_sequence exporter("output_", take->context.camera->film().dimensions());
+	exporting::Ffmpeg exporter("output_", take->context.camera->film().dimensions());
 
 	progress::Stdout progressor;
 
