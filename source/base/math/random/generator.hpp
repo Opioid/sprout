@@ -7,6 +7,7 @@ namespace math { namespace random {
 class Generator {
 public:
 
+	Generator();
 	Generator(uint32_t seed0, uint32_t seed1, uint32_t seed2, uint32_t seed3);
 
 	void seed(uint32_t seed0, uint32_t seed1, uint32_t seed2, uint32_t seed3);

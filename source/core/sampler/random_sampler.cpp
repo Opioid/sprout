@@ -12,21 +12,13 @@ Sampler* Random::clone() const {
 	return new Random(rng_, num_samples_per_iteration_);
 }
 
-bool Random::generate_camera_sample(const math::float2& offset, Camera_sample& sample) {
-	if (current_sample_ >= num_samples_per_iteration_) {
-		return false;
-	}
-
+void Random::generate_camera_sample(const math::float2& offset, uint32_t /*index*/, Camera_sample& sample) {
 	math::float2 s2d(rng_.random_float(), rng_.random_float());
 
 	sample.coordinates = offset + s2d;
 	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
 	sample.lens_uv = s2d.yx();
 	sample.time = rng_.random_float();
-
-	++current_sample_;
-
-	return true;
 }
 
 math::float2 Random::generate_sample_2d() {
@@ -35,6 +27,10 @@ math::float2 Random::generate_sample_2d() {
 
 float Random::generate_sample_1d() {
 	return rng_.random_float();
+}
+
+uint32_t Random::seed() const {
+	return 0;
 }
 
 }

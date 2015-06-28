@@ -3,6 +3,7 @@
 #include "worker.hpp"
 #include "rendering/film/film.hpp"
 #include "rendering/integrator/integrator.hpp"
+#include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "progress/sink.hpp"
 #include "base/math/vector.inl"
@@ -16,6 +17,11 @@ class Tile_queue {
 public:
 
 	Tile_queue(size_t num_tiles) : tiles_(num_tiles), current_produce_(0), current_consume_(0) {}
+
+	void restart() {
+		current_produce_ = tiles_.size();
+		current_consume_ = 0;
+	}
 
 	bool pop(Rectui& tile) {
 		std::lock_guard<std::mutex> lock(mutex_);
@@ -66,14 +72,21 @@ void Renderer::render(const scene::Scene& scene, const Context& context, uint32_
 
 	progressor.start(num_tiles);
 
+	std::vector<Worker> workers(num_workers);
+	for (size_t i = 0; i < num_workers; ++i) {
+		math::random::Generator rng(i + 0, i + 1, i + 2, i + 3);
+		workers[i].init(i, rng, *surface_integrator_factory_, *sampler_, scene);
+	}
+
+	uint32_t sample_start = 0;
+	uint32_t sample_end = sampler_->num_samples_per_iteration();
+
 	std::vector<std::thread> threads;
 
 	for (size_t i = 0; i < num_workers; ++i) {
 		threads.push_back(std::thread(
-			[this, &scene, &context, &tiles, &progressor](uint32_t index) {
-				math::random::Generator rng(index + 0, index + 1, index + 2, index + 3);
-
-				Worker worker(index, rng, *surface_integrator_factory_, *sampler_);
+			[&workers, &context, &tiles, &progressor, sample_start, sample_end](size_t index) {
+				auto& worker = workers[index];
 
 				for (;;) {
 					Rectui tile;
@@ -81,11 +94,11 @@ void Renderer::render(const scene::Scene& scene, const Context& context, uint32_
 						break;
 					}
 
-					worker.render(scene, *context.camera, tile);
+					worker.render(*context.camera, tile, sample_start, sample_end);
 					progressor.tick();
 				}
 			},
-		static_cast<uint32_t>(i)));
+		i));
 	}
 
 	for (size_t i = 0, len = threads.size(); i < len; ++i) {

@@ -37,13 +37,15 @@ class Surface_integrator_factory;
 class Worker {
 public:
 
-	Worker(uint32_t id, const math::random::Generator& rng,
-		   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler);
+	Worker();
 	~Worker();
+
+	void init(uint32_t id, const math::random::Generator& rng, Surface_integrator_factory& surface_integrator_factory,
+			  sampler::Sampler& sampler, const scene::Scene& scene);
 
 	uint32_t id() const;
 
-	void render(const scene::Scene& scene, const scene::camera::Camera& camera, const Rectui& tile);
+	void render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_start, uint32_t sample_end);
 
 	math::float3 li(math::Oray& ray);
 

@@ -13,35 +13,25 @@ Sampler* EMS::clone() const {
 	return new EMS(rng_, num_samples_per_iteration_);
 }
 
-void EMS::restart(uint32_t num_iterations) {
-	num_iterations_ = num_iterations;
-	random_bits_  = rng_.random_uint();
-	current_sample_ = 0;
-}
-
-bool EMS::generate_camera_sample(const math::float2& offset, Camera_sample& sample) {
-	if (current_sample_ >= num_samples_per_iteration_) {
-		return false;
-	}
-
-	math::float2 s2d = math::ems(current_sample_, random_bits_);
+void EMS::generate_camera_sample(const math::float2& offset, uint32_t index, Camera_sample& sample) {
+	math::float2 s2d = math::ems(index, seed_);
 
 	sample.coordinates = offset + s2d;
 	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
 	sample.lens_uv = s2d.yx();
 	sample.time = rng_.random_float();
-
-	++current_sample_;
-
-	return true;
 }
 
 math::float2 EMS::generate_sample_2d() {
-	return math::ems(current_sample_++, random_bits_);
+	return math::ems(current_sample_++, seed_);
 }
 
 float EMS::generate_sample_1d() {
 	return rng_.random_float();
+}
+
+uint32_t EMS::seed() const {
+	return rng_.random_uint();
 }
 
 }

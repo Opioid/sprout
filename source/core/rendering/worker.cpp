@@ -9,42 +9,53 @@
 #include "scene/material/material.hpp"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
+#include "base/math/distribution.inl"
+#include "base/math/random/generator.inl"
+#include <iostream>
 
 namespace rendering {
 
-Worker::Worker(uint32_t id, const math::random::Generator& rng,
-			   Surface_integrator_factory& surface_integrator_factory, sampler::Sampler& sampler) :
-	id_(id),
-	rng_(rng),
-	surface_integrator_(surface_integrator_factory.create(rng_)),
-	sampler_(sampler.clone()),
-	node_stack_(128) {}
+Worker::Worker() : sampler_(nullptr), node_stack_(128) {}
 
 Worker::~Worker() {
 	delete sampler_;
+}
+
+void Worker::init(uint32_t id, const math::random::Generator& rng, Surface_integrator_factory& surface_integrator_factory,
+				  sampler::Sampler& sampler, const scene::Scene& scene) {
+	id_ = id;
+	rng_ = rng;
+	surface_integrator_ = surface_integrator_factory.create(rng_);
+	sampler_ = sampler.clone();
+	scene_ = &scene;
 }
 
 uint32_t Worker::id() const {
 	return id_;
 }
 
-void Worker::render(const scene::Scene& scene, const scene::camera::Camera& camera, const Rectui& tile) {
-	scene_ = &scene;
-
+void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_start, uint32_t sample_end) {
 	auto& film = camera.film();
+
+	uint32_t num_samples = sample_end - sample_start;
 
 	sampler::Camera_sample sample;
 	math::Oray ray;
 
 	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
+
 			sampler_->restart(1);
-			surface_integrator_->start_new_pixel(sampler_->num_samples_per_iteration());
+			surface_integrator_->start_new_pixel(/*sampler_->num_samples_per_iteration()*/
+												 num_samples);
 
 			math::float2 offset(static_cast<float>(x), static_cast<float>(y));
 
-			while (sampler_->generate_camera_sample(offset, sample)) {
-				camera.generate_ray(sample, scene.tick_length(), ray);
+		//	while (sampler_->generate_camera_sample(offset, sample)) {
+			for (uint32_t i = sample_start; i < sample_end; ++i) {
+				sampler_->generate_camera_sample(offset, i, sample);
+
+				camera.generate_ray(sample, scene_->tick_length(), ray);
 
 				math::float3 color = li(ray);
 

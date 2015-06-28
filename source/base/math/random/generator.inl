@@ -4,6 +4,8 @@
 
 namespace math { namespace random {
 
+inline Generator::Generator() {}
+
 inline Generator::Generator(uint32_t seed0, uint32_t seed1, uint32_t seed2, uint32_t seed3) {
 	seed(seed0, seed1, seed2, seed3);
 }

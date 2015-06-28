@@ -9,11 +9,13 @@ Film::Film(const math::uint2& dimensions, float exposure, tonemapping::Tonemappe
 	pixels_(new Pixel[dimensions.x * dimensions.y]),
 	exposure_(exposure),
 	tonemapper_(tonemapper),
-	image_(image::Description(dimensions)) {
+	image_(image::Description(dimensions)),
+	seeds_(new float[dimensions.x * dimensions.y])	{
 	clear();
 }
 
 Film::~Film() {
+	delete seeds_;
 	delete tonemapper_;
 	delete [] pixels_;
 }
@@ -34,6 +36,16 @@ void Film::clear() {
 		pixels_[i].color = math::float3(0.f, 0.f, 0.f);
 		pixels_[i].weight_sum = 0.f;
 	}
+}
+
+float Film::seed(uint32_t x, uint32_t y) const {
+	auto& d = dimensions();
+	return seeds_[d.x * y + x];
+}
+
+void Film::set_seed(uint32_t x, uint32_t y, float seed) {
+	auto& d = dimensions();
+	seeds_[d.x * y + x] = seed;
 }
 
 void Film::add_pixel(uint32_t x, uint32_t y, const math::float3& color, float weight) {
