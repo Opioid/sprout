@@ -94,6 +94,10 @@ math::float4 read_float4(const rapidjson::Value& value) {
 						static_cast<float>(value[2].GetDouble()), static_cast<float>(value[3].GetDouble()));
 }
 
+uint32_t read_uint(const rapidjson::Value& value) {
+	return value.GetUint();
+}
+
 uint32_t read_uint(const rapidjson::Value& value, const std::string& name, uint32_t default_value) {
 	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
 	if (value.MemberEnd() == node) {

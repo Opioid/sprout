@@ -4,30 +4,30 @@
 namespace progress {
 
 void Stdout::start(size_t resolution) {
-    resolution_ = resolution;
-    progress_ = 0;
-    step_ = 10.f;
-    threshold_ = step_;
+	resolution_ = resolution;
+	progress_ = 0;
+	step_ = 10.f;
+	threshold_ = step_;
 }
 
 void Stdout::end() {
-    std::cout << std::endl;
+	std::cout << std::endl;
 }
 
 void Stdout::tick() {
-    if (progress_ >= resolution_) {
-        return;
-    }
+	if (progress_ >= resolution_) {
+		return;
+	}
 
-    ++progress_;
+	++progress_;
 
-    float p = static_cast<float>(progress_) / static_cast<float>(resolution_) * 100.f;
+	float p = static_cast<float>(progress_) / static_cast<float>(resolution_) * 100.f;
 
-    if (p >= threshold_) {
-        threshold_ += step_;
+	if (p >= threshold_) {
+		threshold_ += step_;
 
-        std::cout << static_cast<size_t>(p) << "%... " << std::flush;
-    }
+		std::cout << static_cast<size_t>(p) << "%... " << std::flush;
+	}
 }
 
 }

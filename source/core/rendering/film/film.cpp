@@ -10,9 +10,7 @@ Film::Film(const math::uint2& dimensions, float exposure, tonemapping::Tonemappe
 	exposure_(exposure),
 	tonemapper_(tonemapper),
 	image_(image::Description(dimensions)),
-	seeds_(new float[dimensions.x * dimensions.y])	{
-	clear();
-}
+	seeds_(new float[dimensions.x * dimensions.y]) {}
 
 Film::~Film() {
 	delete seeds_;
@@ -25,13 +23,13 @@ const math::uint2& Film::dimensions() const {
 }
 
 const image::Image& Film::resolve(thread::Pool& pool) {
-	auto& d = dimensions();
+	auto d = dimensions();
 	pool.run_range([this](uint32_t begin, uint32_t end){ resolve(begin, end); }, 0, d.x * d.y);
 	return image_;
 }
 
 void Film::clear() {
-	auto& d = dimensions();
+	auto d = dimensions();
 	for (uint32_t i = 0, len = d.x * d.y; i < len; ++i) {
 		pixels_[i].color = math::float3(0.f, 0.f, 0.f);
 		pixels_[i].weight_sum = 0.f;
@@ -39,17 +37,17 @@ void Film::clear() {
 }
 
 float Film::seed(uint32_t x, uint32_t y) const {
-	auto& d = dimensions();
+	auto d = dimensions();
 	return seeds_[d.x * y + x];
 }
 
 void Film::set_seed(uint32_t x, uint32_t y, float seed) {
-	auto& d = dimensions();
+	auto d = dimensions();
 	seeds_[d.x * y + x] = seed;
 }
 
 void Film::add_pixel(uint32_t x, uint32_t y, const math::float3& color, float weight) {
-	auto& d = dimensions();
+	auto d = dimensions();
 	if (x >= d.x || y >= d.y) {
 		return;
 	}

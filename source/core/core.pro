@@ -11,9 +11,11 @@ SOURCES += \
 
 HEADERS +=
 
+include(exporting/exporting.pri)
 include(file/file.pri)
 include(gzip/gzip.pri)
 include(image/image.pri)
+include(logging/logging.pri)
 include(progress/progress.pri)
 include(rendering/rendering.pri)
 include(resource/resource.pri)

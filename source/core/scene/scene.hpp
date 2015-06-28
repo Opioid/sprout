@@ -50,8 +50,6 @@ public:
 
 	void tick();
 
-	void compile();
-
 	Prop* create_prop();
 
 	const std::vector<light::Light*>& lights() const;
@@ -67,6 +65,8 @@ public:
     void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
 
 private:
+
+	void compile();
 
 	float tick_length_;
 

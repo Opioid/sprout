@@ -50,20 +50,8 @@ void Scene::tick() {
 	for (auto& s : animation_stages_) {
 		s.update();
 	}
-}
 
-void Scene::compile() {
-    builder_.build(bvh_, props_);
-
-	std::vector<float> power;
-	power.reserve(lights_.size());
-
-	for (auto l : lights_) {
-		l->prepare_sampling();
-		power.push_back(color::luminance(l->power(bvh_.aabb())));
-	}
-
-	light_cdf_.init(power);
+	compile();
 }
 
 Prop* Scene::create_prop() {
@@ -110,6 +98,20 @@ void Scene::add_animation(std::shared_ptr<animation::Animation> animation) {
 
 void Scene::create_animation_stage(entity::Entity* entity, animation::Animation* animation) {
     animation_stages_.push_back(animation::Stage(entity, animation));
+}
+
+void Scene::compile() {
+	builder_.build(bvh_, props_);
+
+	std::vector<float> power;
+	power.reserve(lights_.size());
+
+	for (auto l : lights_) {
+		l->prepare_sampling();
+		power.push_back(color::luminance(l->power(bvh_.aabb())));
+	}
+
+	light_cdf_.init(power);
 }
 
 }

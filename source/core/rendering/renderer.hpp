@@ -1,9 +1,16 @@
 #pragma once
 
 #include "base/math/vector.hpp"
+#include <vector>
 #include <memory>
 
 namespace scene {
+
+namespace camera {
+
+class Camera;
+
+}
 
 class Scene;
 
@@ -15,6 +22,18 @@ class Sampler;
 
 }
 
+namespace thread {
+
+class Pool;
+
+}
+
+namespace exporting {
+
+class Sink;
+
+}
+
 namespace progress {
 
 class Sink;
@@ -23,6 +42,8 @@ class Sink;
 
 namespace rendering {
 
+class Tile_queue;
+class Worker;
 class Surface_integrator_factory;
 struct Context;
 
@@ -32,9 +53,11 @@ public:
 	Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
 			 std::shared_ptr<sampler::Sampler> sampler);
 
-	void render(const scene::Scene& scene, const Context& context, uint32_t num_workers, progress::Sink& progressor);
+	void render(scene::Scene& scene, const Context& context, thread::Pool& pool, exporting::Sink& exporter, progress::Sink& progressor);
 
 private:
+
+	void render_frame(const scene::camera::Camera& camera, Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool, progress::Sink& progressor);
 
 	bool advance_current_pixel(const math::uint2& dimensions);
 

@@ -17,7 +17,6 @@ void Animation::push_back(const entity::Keyframe& keyframe) {
 	keyframes_.push_back(keyframe);
 }
 
-
 void Animation::tick(float time_slice) {
 	current_time_ += time_slice;
 

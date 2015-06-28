@@ -52,9 +52,6 @@ void Loader::load(const std::string& filename, Scene& scene) {
 			load_entities(node_value, scene);
 		}
 	}
-
-	scene.tick();
-	scene.compile();
 }
 
 void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene) {

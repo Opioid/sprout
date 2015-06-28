@@ -10,10 +10,12 @@ SOURCES +=
 
 HEADERS +=
 
+include(chrono/chrono.pri)
 include(color/color.pri)
 include(flags/flags.pri)
 include(json/json.pri)
 include(math/math.pri)
+include(string/string.pri)
 include(thread/thread.pri)
 
 unix {

@@ -3,7 +3,7 @@
 
 namespace thread {
 
-Pool::Pool(uint32_t num_threads) : uniques_(num_threads), threads_(num_threads) {
+Pool::Pool(uint32_t num_threads) : num_threads_(num_threads), uniques_(num_threads), threads_(num_threads) {
 	shared_.end  = false;
 
 	for (uint32_t i = 0; i < num_threads; ++i) {
