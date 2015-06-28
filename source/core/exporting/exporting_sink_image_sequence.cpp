@@ -1,20 +1,17 @@
 #include "exporting_sink_image_sequence.hpp"
 #include "image/image.hpp"
 #include "base/color/color.inl"
-#include "base/math/vector.inl"
-#include "base/thread/thread_pool.hpp"
 #include "base/string/string.inl"
+#include "base/thread/thread_pool.hpp"
 #include "miniz/miniz.hpp"
 #include <fstream>
 
 namespace exporting {
 
 Image_sequence::Image_sequence(const std::string& filename, const math::uint2& dimensions) :
-	filename_(filename), current_frame_(0), rgba_(new color::Color4c[dimensions.x * dimensions.y]) {}
+	Srgb(dimensions), filename_(filename), current_frame_(0) {}
 
-Image_sequence::~Image_sequence() {
-	delete [] rgba_;
-}
+Image_sequence::~Image_sequence() {}
 
 void Image_sequence::write(const image::Image& image, thread::Pool& pool) {
 	std::ofstream stream(filename_ + string::to_string(current_frame_, 2) + ".png", std::ios::binary);
@@ -37,14 +34,6 @@ void Image_sequence::write(const image::Image& image, thread::Pool& pool) {
 	mz_free(png_buffer);
 
 	++current_frame_;
-}
-
-void Image_sequence::to_sRGB(const image::Image& image, uint32_t begin, uint32_t end) {
-	for (uint32_t i = begin; i < end; ++i) {
-		math::float4 color = image.at4(i);
-		color.xyz = color::linear_to_sRGB(color.xyz);
-		rgba_[i] = color::to_byte(color);
-	}
 }
 
 }

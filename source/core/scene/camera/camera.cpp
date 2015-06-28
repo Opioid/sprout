@@ -17,6 +17,10 @@ rendering::film::Film& Camera::film() const {
 	return *film_;
 }
 
+float Camera::shutter_speed() const {
+	return shutter_speed_;
+}
+
 void Camera::on_set_transformation() {}
 
 math::float2 Camera::calculate_dimensions(const math::float2& dimensions, rendering::film::Film* film) {

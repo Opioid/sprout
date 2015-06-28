@@ -43,6 +43,8 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 			take->context.camera = load_camera(node_value);
 		} else if ("frames" == node_name) {
 			take->context.num_frames = json::read_uint(node_value);
+		} else if ("framerate" == node_name) {
+			take->context.framerate = json::read_uint(node_value);
 		} else if ("integrator" == node_name) {
 			take->surface_integrator_factory = load_surface_integrator_factory(node_value, take->settings);
 		} else if ("sampler" == node_name) {
@@ -60,6 +62,10 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 
 	if (!take->context.camera) {
 		throw std::runtime_error("No camera configuration included");
+	}
+
+	if (!take->context.framerate) {
+		take->context.framerate = static_cast<uint32_t>(1.f / take->context.camera->shutter_speed() + 0.5f);
 	}
 
 	if (!take->sampler) {

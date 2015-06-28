@@ -33,7 +33,7 @@ int main() {
 
 	auto loading_start = clock.now();
 
-	std::string takename = "../data/takes/animation.take";
+	std::string takename = "../data/takes/cornell.take";
 
 	std::shared_ptr<take::Take> take;
 
@@ -63,7 +63,7 @@ int main() {
 	rendering::Renderer renderer(take->surface_integrator_factory, take->sampler);
 
 //	exporting::Image_sequence exporter("output_", take->context.camera->film().dimensions());
-	exporting::Ffmpeg exporter("output_", take->context.camera->film().dimensions());
+	exporting::Ffmpeg exporter("output_", take->context.camera->film().dimensions(), take->context.framerate);
 
 	progress::Stdout progressor;
 

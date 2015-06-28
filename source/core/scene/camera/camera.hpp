@@ -27,6 +27,8 @@ public:
 
 	rendering::film::Film& film() const;
 
+	float shutter_speed() const;
+
 	virtual void update_view() = 0;
 
 	virtual void generate_ray(const sampler::Camera_sample& sample, float tick_length, math::Oray& ray) const = 0;
