@@ -65,10 +65,12 @@ void Pool::wake_all(uint32_t begin, uint32_t end) {
 			uniques_[i].end   = std::min(e, end);
 
 			uniques_[i].wake = true;
+
+			uniques_[i].wake_signal.notify_one();
 		}
 	}
 
-	shared_.wake_signal.notify_all();
+//	shared_.wake_signal.notify_all();
 }
 
 void Pool::wait_all() {
@@ -85,7 +87,7 @@ void Pool::loop(uint32_t id, Unique& unique, Shared& shared) {
 //		lock.unlock();
 
 		std::unique_lock<std::mutex> lock(unique.mutex);
-		shared.wake_signal.wait(lock, [&unique]{return unique.wake;});
+		unique.wake_signal.wait(lock, [&unique]{return unique.wake;});
 	//	lock.unlock();
 
 		if (shared.end) {

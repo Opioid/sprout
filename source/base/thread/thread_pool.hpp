@@ -29,6 +29,7 @@ private:
 	struct Unique {
 		uint32_t begin;
 		uint32_t end;
+		std::condition_variable wake_signal;
 		std::condition_variable done_signal;
 		std::mutex mutex;
 		bool wake;
