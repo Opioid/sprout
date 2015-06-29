@@ -83,7 +83,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	uint32_t num_workers = pool.num_threads();
 
 	std::vector<Worker> workers(num_workers);
-	for (size_t i = 0; i < num_workers; ++i) {
+	for (uint32_t i = 0; i < num_workers; ++i) {
 		math::random::Generator rng(i + 0, i + 1, i + 2, i + 3);
 		workers[i].init(i, rng, *surface_integrator_factory_, *sampler_, scene);
 	}

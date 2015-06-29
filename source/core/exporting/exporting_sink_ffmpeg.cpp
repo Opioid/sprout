@@ -20,12 +20,20 @@ Ffmpeg::Ffmpeg(const std::string& filename, const math::uint2& dimensions, uint3
 	cmd << " -i - -threads 0 -preset slower -y -pix_fmt yuv420p -crf 20 ";
 	cmd << filename << ".mp4";
 
+#ifdef WIN32
+	stream_ = _popen(cmd.str().c_str(), "wb");
+#else
 	stream_ = popen(cmd.str().c_str(), "w");
+#endif
 }
 
 Ffmpeg::~Ffmpeg() {
 	if (stream_) {
+#ifdef WIN32
+		_pclose(stream_);
+#else
 		pclose(stream_);
+#endif
 	}
 }
 
