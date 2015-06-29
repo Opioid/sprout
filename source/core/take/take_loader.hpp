@@ -4,6 +4,12 @@
 #include <string>
 #include <memory>
 
+namespace exporting {
+
+class Sink;
+
+}
+
 namespace math { namespace random {
 
 class Generator;
@@ -68,6 +74,8 @@ private:
 
 	std::shared_ptr<rendering::Surface_integrator_factory> load_surface_integrator_factory(const rapidjson::Value& integrator_value,
 																						   const Settings& settings) const;
+
+	std::shared_ptr<exporting::Sink> load_exporter(const rapidjson::Value& exporter_value, scene::camera::Camera& camera) const;
 
 	void load_settings(const rapidjson::Value& settings_value, Settings& settings) const;
 };

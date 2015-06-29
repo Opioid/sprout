@@ -1,5 +1,7 @@
 #include "take_loader.hpp"
 #include "take.hpp"
+#include "exporting/exporting_sink_ffmpeg.hpp"
+#include "exporting/exporting_sink_image_sequence.hpp"
 #include "rendering/film/filtered.hpp"
 #include "rendering/film/unfiltered.hpp"
 #include "rendering/film/filter/gaussian.hpp"
@@ -35,16 +37,18 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 
 	auto take = std::make_shared<Take>();
 
+	const rapidjson::Value* exporter_value = nullptr;
+
 	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
 		if ("camera" == node_name) {
 			take->context.camera = load_camera(node_value);
+		} else if ("export" == node_name) {
+			exporter_value = &node_value;
 		} else if ("frames" == node_name) {
 			take->context.num_frames = json::read_uint(node_value);
-		} else if ("framerate" == node_name) {
-			take->context.framerate = json::read_uint(node_value);
 		} else if ("integrator" == node_name) {
 			take->surface_integrator_factory = load_surface_integrator_factory(node_value, take->settings);
 		} else if ("sampler" == node_name) {
@@ -64,8 +68,12 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 		throw std::runtime_error("No camera configuration included");
 	}
 
-	if (!take->context.framerate) {
-		take->context.framerate = static_cast<uint32_t>(1.f / take->context.camera->shutter_speed() + 0.5f);
+	if (exporter_value) {
+		take->exporter = load_exporter(*exporter_value, *take->context.camera);
+	}
+
+	if (!take->exporter) {
+		take->exporter = std::make_shared<exporting::Image_sequence>("output_", take->context.camera->film().dimensions());
 	}
 
 	if (!take->sampler) {
@@ -243,6 +251,27 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces);
 		} else if ("Normal" == node_name) {
 			return std::make_shared<rendering::Normal_factory>(settings);
+		}
+	}
+
+	return nullptr;
+}
+
+std::shared_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& exporter_value, scene::camera::Camera& camera) const {
+	for (auto n = exporter_value.MemberBegin(); n != exporter_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("Image" == node_name) {
+			return std::make_shared<exporting::Image_sequence>("output_", camera.film().dimensions());
+		} else if ("Movie" == node_name) {
+			uint32_t framerate = json::read_uint(node_value, "framerate");
+
+			if (!framerate) {
+				framerate = static_cast<uint32_t>(1.f /camera.shutter_speed() + 0.5f);
+			}
+
+			return std::make_shared<exporting::Ffmpeg>("output", camera.film().dimensions(), framerate);
 		}
 	}
 

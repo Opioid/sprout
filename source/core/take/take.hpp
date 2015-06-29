@@ -6,15 +6,21 @@
 #include <string>
 #include <memory>
 
-namespace sampler {
+namespace exporting {
 
-class Sampler;
+class Sink;
 
 }
 
 namespace rendering {
 
 class Surface_integrator_factory;
+
+}
+
+namespace sampler {
+
+class Sampler;
 
 }
 
@@ -28,7 +34,7 @@ struct Take {
 	rendering::Context									   context;
 	std::shared_ptr<rendering::Surface_integrator_factory> surface_integrator_factory;
 	std::shared_ptr<sampler::Sampler>					   sampler;
-
+	std::shared_ptr<exporting::Sink>					   exporter;
 	math::random::Generator rng;
 };
 

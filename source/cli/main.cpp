@@ -2,12 +2,8 @@
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
 #include "core/rendering/renderer.hpp"
-#include "core/rendering/film/film.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
-#include "core/image/image_writer.hpp"
-#include "core/exporting/exporting_sink_ffmpeg.hpp"
-#include "core/exporting/exporting_sink_image_sequence.hpp"
 #include "core/progress/progress_sink_null.hpp"
 #include "core/progress/progress_sink_stdout.hpp"
 #include "base/chrono/chrono.hpp"
@@ -62,33 +58,16 @@ int main() {
 
 	rendering::Renderer renderer(take->surface_integrator_factory, take->sampler);
 
-//	exporting::Image_sequence exporter("output_", take->context.camera->film().dimensions());
-	exporting::Ffmpeg exporter("output_", take->context.camera->film().dimensions(), take->context.framerate);
-
 	progress::Stdout progressor;
 
 	logging::info("Rendering...");
 
 	auto rendering_start = clock.now();
 
-	renderer.render(scene, take->context, pool, exporter, progressor);
+	renderer.render(scene, take->context, pool, *take->exporter, progressor);
 
 	auto rendering_duration = clock.now() - rendering_start;
 	logging::info("Total render time " + string::to_string(chrono::duration_to_seconds(rendering_duration)) + " s");
-
-	/*
-	logging::info("Exporting...");
-
-	auto exporting_start = clock.now();
-
-	bool result = image::write("output.png", take->context.camera->film().resolve(pool));
-	if (!result) {
-		std::cout << "Something went wrong" << std::endl;
-	}
-
-	auto exporting_duration = clock.now() - exporting_start;
-	logging::info("(" + string::to_string(duration_to_seconds(exporting_duration)) + " s)");
-*/
 
 	auto total_duration = clock.now() - total_start;
 	logging::info("Total elapsed time " + string::to_string(chrono::duration_to_seconds(total_duration)) + " s");
