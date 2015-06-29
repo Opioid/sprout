@@ -2,6 +2,7 @@
 #include "take.hpp"
 #include "exporting/exporting_sink_ffmpeg.hpp"
 #include "exporting/exporting_sink_image_sequence.hpp"
+#include "exporting/exporting_sink_null.hpp"
 #include "rendering/film/filtered.hpp"
 #include "rendering/film/unfiltered.hpp"
 #include "rendering/film/filter/gaussian.hpp"
@@ -272,6 +273,8 @@ std::shared_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& e
 			}
 
 			return std::make_shared<exporting::Ffmpeg>("output", camera.film().dimensions(), framerate);
+		} else if ("Null" == node_name) {
+			return std::make_shared<exporting::Null>();
 		}
 	}
 

@@ -10,7 +10,7 @@ namespace thread {
 class Pool {
 public:
 
-	typedef std::function<void(uint32_t)> Task_program;
+	typedef std::function<void(uint32_t)> Parallel_program;
 	typedef std::function<void(uint32_t, uint32_t)> Range_program;
 
 	Pool(uint32_t num_threads);
@@ -18,7 +18,7 @@ public:
 
 	uint32_t num_threads() const;
 
-	void run(Task_program program, uint32_t begin, uint32_t end);
+	void run(Parallel_program program);
 	void run_range(Range_program program, uint32_t begin, uint32_t end);
 
 private:
@@ -35,8 +35,8 @@ private:
 	};
 
 	struct Shared {
-		Task_program  task_program;
-		Range_program range_program;
+		Parallel_program parallel_program;
+		Range_program    range_program;
 		std::condition_variable wake_signal;
 		std::mutex mutex;
 		bool end;
@@ -49,7 +49,7 @@ private:
 	std::vector<Unique> uniques_;
 	std::vector<std::thread> threads_;
 
-	static void loop(Unique& unique, Shared& shared);
+	static void loop(uint32_t id, Unique& unique, Shared& shared);
 };
 
 }

@@ -115,6 +115,7 @@ void Renderer::render_frame(const scene::camera::Camera& camera, Tile_queue& til
 	uint32_t sample_start = 0;
 	uint32_t sample_end = sampler_->num_samples_per_iteration();
 
+/*
 	std::vector<std::thread> threads;
 
 	for (size_t i = 0, len = workers.size(); i < len; ++i) {
@@ -138,6 +139,23 @@ void Renderer::render_frame(const scene::camera::Camera& camera, Tile_queue& til
 	for (size_t i = 0, len = threads.size(); i < len; ++i) {
 		threads[i].join();
 	}
+*/
+
+	pool.run(
+		[&workers, &camera, &tiles, &progressor, sample_start, sample_end](uint32_t index) {
+			auto& worker = workers[index];
+
+			for (;;) {
+				Rectui tile;
+				if (!tiles.pop(tile)) {
+					break;
+				}
+
+				worker.render(camera, tile, sample_start, sample_end);
+				progressor.tick();
+			}
+		}
+	);
 
 	progressor.end();
 }
