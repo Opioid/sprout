@@ -1,9 +1,9 @@
 #pragma once
 
-#include <functional>
-#include <vector>
 #include <condition_variable>
+#include <functional>
 #include <thread>
+#include <vector>
 
 namespace thread {
 
@@ -23,7 +23,9 @@ public:
 
 private:
 
+	void wake_all();
 	void wake_all(uint32_t begin, uint32_t end);
+
 	void wait_all();
 
 	struct Unique {
@@ -38,8 +40,6 @@ private:
 	struct Shared {
 		Parallel_program parallel_program;
 		Range_program    range_program;
-		std::condition_variable wake_signal;
-		std::mutex mutex;
 		bool end;
 	};
 
@@ -50,7 +50,7 @@ private:
 	std::vector<Unique> uniques_;
 	std::vector<std::thread> threads_;
 
-	static void loop(uint32_t id, Unique& unique, Shared& shared);
+	static void loop(uint32_t id, Unique& unique, const Shared& shared);
 };
 
 }

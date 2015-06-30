@@ -18,7 +18,7 @@ Pool::Pool(uint32_t num_threads) : num_threads_(num_threads), uniques_(num_threa
 Pool::~Pool() {
 	shared_.end = true;
 
-	wake_all(0, 0);
+	wake_all();
 
 	for (auto& t : threads_) {
 		t.join();
@@ -33,7 +33,7 @@ void Pool::run(Parallel_program program) {
 	shared_.parallel_program = program;
 	shared_.range_program = nullptr;
 
-	wake_all(0, 0);
+	wake_all();
 
 	wait_all();
 }
@@ -47,48 +47,43 @@ void Pool::run_range(Range_program program, uint32_t begin, uint32_t end) {
 	wait_all();
 }
 
+void Pool::wake_all() {
+	for (auto& u : uniques_) {
+		u.wake  = true;
+		u.wake_signal.notify_one();
+	}
+}
+
 void Pool::wake_all(uint32_t begin, uint32_t end) {
 	float range = static_cast<float>(end - begin);
 
 	uint32_t step = static_cast<uint32_t>(std::ceil(range / static_cast<float>(threads_.size())));
 
-	{
-	//	std::lock_guard<std::mutex> lock(shared_.mutex);
+	uint32_t b = 0;
+	uint32_t e = begin;
 
-		uint32_t b = 0;
-		uint32_t e = begin;
-		for (size_t i = 0, len = uniques_.size(); i < len; ++i) {
-			b = e;
-			e += step;
+	for (auto& u : uniques_) {
+		b = e;
+		e += step;
 
-			uniques_[i].begin = b;
-			uniques_[i].end   = std::min(e, end);
-
-			uniques_[i].wake = true;
-
-			uniques_[i].wake_signal.notify_one();
-		}
+		u.begin = b;
+		u.end   = std::min(e, end);
+		u.wake  = true;
+		u.wake_signal.notify_one();
 	}
-
-//	shared_.wake_signal.notify_all();
 }
 
 void Pool::wait_all() {
-	for (size_t i = 0, len = uniques_.size(); i < len; ++i) {
-		std::unique_lock<std::mutex> lock(uniques_[i].mutex);
-		uniques_[i].done_signal.wait(lock, [this, i]{return !uniques_[i].wake;});
+	for (auto& u : uniques_) {
+		std::unique_lock<std::mutex> lock(u.mutex);
+		u.done_signal.wait(lock, [&u]{return !u.wake;});
 	}
 }
 
-void Pool::loop(uint32_t id, Unique& unique, Shared& shared) {
+void Pool::loop(uint32_t id, Unique& unique, const Shared& shared) {
 	for (;;) {
-//		std::unique_lock<std::mutex> lock(shared.mutex);
-//		shared.wake_signal.wait(lock, [&unique]{return unique.wake;});
-//		lock.unlock();
-
 		std::unique_lock<std::mutex> lock(unique.mutex);
 		unique.wake_signal.wait(lock, [&unique]{return unique.wake;});
-	//	lock.unlock();
 
 		if (shared.end) {
 			break;
@@ -102,7 +97,7 @@ void Pool::loop(uint32_t id, Unique& unique, Shared& shared) {
 
 		unique.wake = false;
 		lock.unlock();
-		unique.done_signal.notify_all();
+		unique.done_signal.notify_one();
 	}
 }
 
