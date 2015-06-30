@@ -45,7 +45,8 @@ public:
 
 	uint32_t id() const;
 
-	void render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_start, uint32_t sample_end);
+	void render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end,
+				float frame_begin, float slice_begin, float slice_end);
 
 	math::float3 li(math::Oray& ray);
 

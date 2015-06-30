@@ -6,8 +6,8 @@
 
 namespace scene { namespace camera {
 
-Camera::Camera(const math::float2& dimensions, rendering::film::Film* film, float shutter_speed) :
-	dimensions_(calculate_dimensions(dimensions, film)), film_(film), shutter_speed_(shutter_speed) {}
+Camera::Camera(const math::float2& dimensions, rendering::film::Film* film, float shutter_time) :
+	dimensions_(calculate_dimensions(dimensions, film)), film_(film), shutter_time_(shutter_time) {}
 
 Camera::~Camera() {
 	delete film_;
@@ -17,8 +17,8 @@ rendering::film::Film& Camera::film() const {
 	return *film_;
 }
 
-float Camera::shutter_speed() const {
-	return shutter_speed_;
+float Camera::shutter_time() const {
+	return shutter_time_;
 }
 
 void Camera::on_set_transformation() {}

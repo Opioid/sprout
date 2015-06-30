@@ -34,10 +34,10 @@ uint32_t Worker::id() const {
 	return id_;
 }
 
-void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_start, uint32_t sample_end) {
+void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end, float frame_begin, float slice_begin, float slice_end) {
 	auto& film = camera.film();
 
-	uint32_t num_samples = sample_end - sample_start;
+	uint32_t num_samples = sample_end - sample_begin;
 
 	sampler::Camera_sample sample;
 	math::Oray ray;
@@ -46,16 +46,14 @@ void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uin
 		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
 
 			sampler_->restart(1);
-			surface_integrator_->start_new_pixel(/*sampler_->num_samples_per_iteration()*/
-												 num_samples);
+			surface_integrator_->start_new_pixel(num_samples);
 
 			math::float2 offset(static_cast<float>(x), static_cast<float>(y));
 
-		//	while (sampler_->generate_camera_sample(offset, sample)) {
-			for (uint32_t i = sample_start; i < sample_end; ++i) {
+			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(offset, i, sample);
 
-				camera.generate_ray(sample, scene_->tick_length(), ray);
+				camera.generate_ray(sample, frame_begin, slice_begin, slice_end, ray);
 
 				math::float3 color = li(ray);
 

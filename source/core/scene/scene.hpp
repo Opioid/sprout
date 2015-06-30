@@ -47,6 +47,7 @@ public:
 	float opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
 	float tick_length() const;
+	float simulation_time() const;
 
 	void tick();
 
@@ -69,6 +70,7 @@ private:
 	void compile();
 
 	float tick_length_;
+	float simulation_time_;
 
     bvh::Builder builder_;
 	bvh::Tree bvh_;

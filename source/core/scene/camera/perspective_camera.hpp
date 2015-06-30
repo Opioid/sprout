@@ -8,11 +8,12 @@ class Perspective : public Camera {
 public:
 
 	Perspective(const math::float2& dimensions, rendering::film::Film* film,
-				float shutter_speed, float fov, float lens_radius, float focal_distance);
+				float shutter_time, float fov, float lens_radius, float focal_distance);
 
-	virtual void update_view();
+	virtual void update_view() final override;
 
-	virtual void generate_ray(const sampler::Camera_sample& sample, float tick_length, math::Oray& ray) const;
+	virtual void generate_ray(const sampler::Camera_sample& sample, float frame_begin, float slice_begin, float slice_end,
+							  math::Oray& ray) const final override;
 
 private:
 

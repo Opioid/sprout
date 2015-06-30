@@ -10,8 +10,8 @@
 namespace scene { namespace camera {
 
 Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film,
-						 float shutter_speed, float fov, float lens_radius, float focal_distance) :
-	Camera(dimensions, film, shutter_speed), fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance) {}
+						 float shutter_time, float fov, float lens_radius, float focal_distance) :
+	Camera(dimensions, film, shutter_time), fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance) {}
 
 void Perspective::update_view() {
 	float ratio = dimensions_.x / dimensions_.y;
@@ -26,7 +26,8 @@ void Perspective::update_view() {
 	d_y_ = (left_bottom - left_top_) / static_cast<float>(film_->dimensions().y);
 }
 
-void Perspective::generate_ray(const sampler::Camera_sample& sample, float tick_length, math::Oray& ray) const {
+void Perspective::generate_ray(const sampler::Camera_sample& sample, float frame_begin, float slice_begin, float slice_end,
+							   math::Oray& ray) const {
 	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
 
 	math::Ray<float> r(math::float3::identity, direction);
@@ -39,8 +40,10 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, float tick_
 		r.direction = focus - r.origin;
 	}
 
-	if (shutter_speed_ > 0.f) {
-		ray.time = sample.time * (shutter_speed_ / tick_length);
+	if (shutter_time_ > 0.f) {
+		float slice_length = slice_end - slice_begin;
+
+		ray.time = sample.time * (slice_length / shutter_time_);
 	} else {
 		ray.time = 0.f;
 	}

@@ -14,7 +14,7 @@
 
 namespace scene {
 
-Scene::Scene() : tick_length_(1.f / 60.f) {}
+Scene::Scene() : tick_length_(1.f / 60.f), simulation_time_(0.f) {}
 
 Scene::~Scene() {
 	for (auto l : lights_) {
@@ -42,6 +42,10 @@ float Scene::tick_length() const {
 	return tick_length_;
 }
 
+float Scene::simulation_time() const {
+	return simulation_time_;
+}
+
 void Scene::tick() {
 	for (auto a : animations_) {
 		a->tick(tick_length_);
@@ -52,6 +56,8 @@ void Scene::tick() {
 	}
 
 	compile();
+
+	simulation_time_ += tick_length_;
 }
 
 Prop* Scene::create_prop() {

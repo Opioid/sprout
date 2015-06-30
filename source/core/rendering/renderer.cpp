@@ -63,7 +63,8 @@ Renderer::Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrato
 	tile_dimensions_(math::uint2(32, 32)), current_pixel_(math::uint2(0, 0)) {}
 
 void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool& pool, exporting::Sink& exporter, progress::Sink& progressor) {
-	auto& film = context.camera->film();
+	auto& camera = *context.camera;
+	auto& film   = camera.film();
 
 	auto& dimensions = film.dimensions();
 
@@ -81,7 +82,6 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	}
 
 	uint32_t num_workers = pool.num_threads();
-
 	std::vector<Worker> workers(num_workers);
 	for (uint32_t i = 0; i < num_workers; ++i) {
 		math::random::Generator rng(i + 0, i + 1, i + 2, i + 3);
@@ -90,16 +90,45 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 	std::chrono::high_resolution_clock clock;
 
-	for (uint32_t i = 0; i < context.num_frames; ++i) {
-		logging::info("Frame " + string::to_string(i));
+	float frame_begin = scene.simulation_time();
+	float tick_begin  = frame_begin;
+	float tick_end    = frame_begin;
 
-		auto tick_start = clock.now();
+	float slice_begin  = frame_begin;
+	float slice_end    = frame_begin;
+
+	for (uint32_t f = 0; f < context.num_frames; ++f) {
+		logging::info("Frame " + string::to_string(f));
+
+		film.clear();
+
+		float frame_begin = scene.simulation_time();
+
+
+
+		float tick_begin = frame_begin;
+
+		if (slice_begin >= scene.simulation_time()) {
+			scene.tick();
+
+			frame_begin = scene.simulation_time();
+			slice_begin = frame_begin;
+		}
+
+
+//		auto tick_start = clock.now();
 		scene.tick();
-		logging::info("Tick time " + string::to_string(chrono::duration_to_seconds(clock.now() - tick_start)) + " s");
+//		logging::info("Tick time " + string::to_string(chrono::duration_to_seconds(clock.now() - tick_start)) + " s");
+
+		float tick_end = scene.simulation_time();
 
 		auto render_start = clock.now();
-		film.clear();
-		render_frame(*context.camera, tiles, workers, pool, progressor);
+
+
+		render_subframe(camera, frame_begin, tick_begin, tick_end, tiles, workers, pool, progressor);
+
+		slice_begin += camera.shutter_time();
+
 		logging::info("Render time " + string::to_string(chrono::duration_to_seconds(clock.now() - render_start)) + " s");
 
 		auto export_start = clock.now();
@@ -108,41 +137,16 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	}
 }
 
-void Renderer::render_frame(const scene::camera::Camera& camera, Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool, progress::Sink& progressor) {
+void Renderer::render_subframe(const scene::camera::Camera& camera, float frame_begin, float slice_begin, float slice_end,
+							   Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool, progress::Sink& progressor) {
 	tiles.restart();
 	progressor.start(tiles.size());
 
 	uint32_t sample_start = 0;
 	uint32_t sample_end = sampler_->num_samples_per_iteration();
 
-/*
-	std::vector<std::thread> threads;
-
-	for (size_t i = 0, len = workers.size(); i < len; ++i) {
-		threads.push_back(std::thread(
-			[&workers, &camera, &tiles, &progressor, sample_start, sample_end](size_t index) {
-				auto& worker = workers[index];
-
-				for (;;) {
-					Rectui tile;
-					if (!tiles.pop(tile)) {
-						break;
-					}
-
-					worker.render(camera, tile, sample_start, sample_end);
-					progressor.tick();
-				}
-			},
-		i));
-	}
-
-	for (size_t i = 0, len = threads.size(); i < len; ++i) {
-		threads[i].join();
-	}
-*/
-
 	pool.run(
-		[&workers, &camera, &tiles, &progressor, sample_start, sample_end](uint32_t index) {
+		[&workers, &camera, &tiles, &progressor, sample_start, sample_end, frame_begin, slice_begin, slice_end](uint32_t index) {
 			auto& worker = workers[index];
 
 			for (;;) {
@@ -151,7 +155,7 @@ void Renderer::render_frame(const scene::camera::Camera& camera, Tile_queue& til
 					break;
 				}
 
-				worker.render(camera, tile, sample_start, sample_end);
+				worker.render(camera, tile, sample_start, sample_end, frame_begin, slice_begin, slice_end);
 				progressor.tick();
 			}
 		}
