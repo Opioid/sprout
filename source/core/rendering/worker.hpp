@@ -46,7 +46,7 @@ public:
 	uint32_t id() const;
 
 	void render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end,
-				float delta_offset, float delta_scale);
+				float normalized_tick_offset, float normalized_tick_slice);
 
 	math::float3 li(math::Oray& ray);
 

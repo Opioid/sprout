@@ -57,7 +57,9 @@ public:
 
 private:
 
-	void render_subframe(const scene::camera::Camera& camera, float subframe_begin, float subframe_end,
+	void render_subframe(const scene::camera::Camera& camera,
+						 float normalized_tick_offset, float normalized_tick_slice,
+						 float normalized_frame_offset, float normalized_frame_slice,
 						 Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool, progress::Sink& progressor);
 
 	bool advance_current_pixel(const math::uint2& dimensions);

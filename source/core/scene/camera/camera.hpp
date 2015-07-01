@@ -31,7 +31,7 @@ public:
 
 	virtual void update_view() = 0;
 
-	virtual void generate_ray(const sampler::Camera_sample& sample, float delta_offset, float delta_scale,
+	virtual void generate_ray(const sampler::Camera_sample& sample, float normalized_tick_offset, float normalized_tick_slice,
 							  math::Oray& ray) const = 0;
 
 protected:
