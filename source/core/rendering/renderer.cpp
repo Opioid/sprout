@@ -100,39 +100,33 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	float render_begin  = frame_begin;
 	float render_end    = frame_begin;
 
+
+	float tick_offset = 0.f;
 	float tick_rest = 0.f;
+	float frame_offset = 0.f;
+	float frame_rest = 0.f;
 
 	for (uint32_t f = 0; f < context.num_frames; ++f) {
 		logging::info("Frame " + string::to_string(f));
 
 		film.clear();
 
-		frame_begin = frame_end;
-		frame_end   = frame_begin + camera.shutter_duration();
-
-		float subframe_begin = 0.f;
-	//	float subframe_end   = (render_end - frame_begin) / (frame_end - frame_begin);
+		frame_offset = 0.f;
+		frame_rest = camera.shutter_duration();
 
 		auto render_start = clock.now();
 
-		while (render_begin < frame_end) {
+		while (frame_rest > 0.f) {
 
 			if (tick_rest <= 0.f) {
 				tick_begin = tick_end;
 				scene.tick();
+				tick_offset = 0.f;
 				tick_rest = scene.tick_duration();
-			//	render_end = render_begin + camera.shutter_time();
 			}
 
-			render_end = std::min(render_begin + camera.shutter_duration(), tick_end);
+		//	render_subframe(camera, subframe_begin, subframe_end, tiles, workers, pool, progressor);
 
-		//	float subframe_begin = (render_begin - frame_begin) / (frame_end - frame_begin);
-			float subframe_end   = (render_end - frame_begin) / (frame_end - frame_begin);
-
-			render_subframe(camera, subframe_begin, subframe_end, tiles, workers, pool, progressor);
-
-			render_begin = render_end;
-			subframe_begin = subframe_end;
 		}
 
 		logging::info("Render time " + string::to_string(chrono::duration_to_seconds(clock.now() - render_start)) + " s");
