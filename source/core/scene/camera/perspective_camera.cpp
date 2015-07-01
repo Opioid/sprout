@@ -26,7 +26,7 @@ void Perspective::update_view() {
 	d_y_ = (left_bottom - left_top_) / static_cast<float>(film_->dimensions().y);
 }
 
-void Perspective::generate_ray(const sampler::Camera_sample& sample, float frame_begin, float slice_begin, float slice_end,
+void Perspective::generate_ray(const sampler::Camera_sample& sample, float delta_offset, float delta_scale,
 							   math::Oray& ray) const {
 	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
 
@@ -40,10 +40,8 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, float frame
 		r.direction = focus - r.origin;
 	}
 
-	if (shutter_time_ > 0.f) {
-		float slice_length = slice_end - slice_begin;
-
-		ray.time = sample.time * (slice_length / shutter_time_);
+	if (shutter_duration_ > 0.f) {
+		ray.time = delta_offset + sample.time * delta_scale;
 	} else {
 		ray.time = 0.f;
 	}

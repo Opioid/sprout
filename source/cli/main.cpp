@@ -19,7 +19,7 @@ int main() {
 
 	logging::info("Welcome to sprout!");
 
-	uint32_t num_workers = /*1;//*/static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
+	uint32_t num_workers = 1;//*/static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
 
 	logging::info("#Threads " + string::to_string(num_workers));
 

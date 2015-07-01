@@ -14,7 +14,7 @@
 
 namespace scene {
 
-Scene::Scene() : tick_length_(1.f / 60.f), simulation_time_(0.f) {}
+Scene::Scene() : tick_duration_(1.f / 60.f), simulation_time_(0.f) {}
 
 Scene::~Scene() {
 	for (auto l : lights_) {
@@ -38,8 +38,8 @@ float Scene::opacity(const math::Oray& ray, Node_stack& node_stack, const image:
 	return bvh_.opacity(ray, node_stack, sampler);
 }
 
-float Scene::tick_length() const {
-	return tick_length_;
+float Scene::tick_duration() const {
+	return tick_duration_;
 }
 
 float Scene::simulation_time() const {
@@ -48,7 +48,7 @@ float Scene::simulation_time() const {
 
 void Scene::tick() {
 	for (auto a : animations_) {
-		a->tick(tick_length_);
+		a->tick(tick_duration_);
 	}
 
 	for (auto& s : animation_stages_) {
@@ -57,7 +57,7 @@ void Scene::tick() {
 
 	compile();
 
-	simulation_time_ += tick_length_;
+	simulation_time_ += tick_duration_;
 }
 
 Prop* Scene::create_prop() {

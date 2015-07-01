@@ -34,7 +34,8 @@ uint32_t Worker::id() const {
 	return id_;
 }
 
-void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end, float frame_begin, float slice_begin, float slice_end) {
+void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end,
+					float delta_offset, float delta_scale) {
 	auto& film = camera.film();
 
 	uint32_t num_samples = sample_end - sample_begin;
@@ -53,7 +54,7 @@ void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uin
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(offset, i, sample);
 
-				camera.generate_ray(sample, frame_begin, slice_begin, slice_end, ray);
+				camera.generate_ray(sample, delta_offset, delta_scale, ray);
 
 				math::float3 color = li(ray);
 

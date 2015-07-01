@@ -90,63 +90,130 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 	std::chrono::high_resolution_clock clock;
 
+
 	float frame_begin = scene.simulation_time();
+	float frame_end   = frame_begin;
+
 	float tick_begin  = frame_begin;
 	float tick_end    = frame_begin;
 
-	float slice_begin  = frame_begin;
-	float slice_end    = frame_begin;
+	float render_begin  = frame_begin;
+	float render_end    = frame_begin;
+
+	float tick_rest = 0.f;
 
 	for (uint32_t f = 0; f < context.num_frames; ++f) {
 		logging::info("Frame " + string::to_string(f));
 
 		film.clear();
 
-		float frame_begin = scene.simulation_time();
+		frame_begin = frame_end;
+		frame_end   = frame_begin + camera.shutter_duration();
 
-
-
-		float tick_begin = frame_begin;
-
-		if (slice_begin >= scene.simulation_time()) {
-			scene.tick();
-
-			frame_begin = scene.simulation_time();
-			slice_begin = frame_begin;
-		}
-
-
-//		auto tick_start = clock.now();
-		scene.tick();
-//		logging::info("Tick time " + string::to_string(chrono::duration_to_seconds(clock.now() - tick_start)) + " s");
-
-		float tick_end = scene.simulation_time();
+		float subframe_begin = 0.f;
+	//	float subframe_end   = (render_end - frame_begin) / (frame_end - frame_begin);
 
 		auto render_start = clock.now();
 
+		while (render_begin < frame_end) {
 
-		render_subframe(camera, frame_begin, tick_begin, tick_end, tiles, workers, pool, progressor);
+			if (tick_rest <= 0.f) {
+				tick_begin = tick_end;
+				scene.tick();
+				tick_rest = scene.tick_duration();
+			//	render_end = render_begin + camera.shutter_time();
+			}
 
-		slice_begin += camera.shutter_time();
+			render_end = std::min(render_begin + camera.shutter_duration(), tick_end);
+
+		//	float subframe_begin = (render_begin - frame_begin) / (frame_end - frame_begin);
+			float subframe_end   = (render_end - frame_begin) / (frame_end - frame_begin);
+
+			render_subframe(camera, subframe_begin, subframe_end, tiles, workers, pool, progressor);
+
+			render_begin = render_end;
+			subframe_begin = subframe_end;
+		}
 
 		logging::info("Render time " + string::to_string(chrono::duration_to_seconds(clock.now() - render_start)) + " s");
+
+
+
 
 		auto export_start = clock.now();
 		exporter.write(film.resolve(pool), pool);
 		logging::info("Export time " + string::to_string(chrono::duration_to_seconds(clock.now() - export_start)) + " s");
 	}
+
+
+	/*
+
+	float frame_begin = scene.simulation_time();
+	float frame_end   = frame_begin;
+
+	float tick_begin  = frame_begin;
+	float tick_end    = frame_begin;
+
+	float render_begin  = frame_begin;
+	float render_end    = frame_begin;
+
+	for (uint32_t f = 0; f < context.num_frames; ++f) {
+		logging::info("Frame " + string::to_string(f));
+
+		film.clear();
+
+		frame_begin = frame_end;
+		frame_end   = frame_begin + camera.shutter_time();
+
+		float subframe_begin = 0.f;
+	//	float subframe_end   = (render_end - frame_begin) / (frame_end - frame_begin);
+
+		auto render_start = clock.now();
+
+		while (render_begin < frame_end) {
+
+			if (render_begin >= tick_end) {
+				tick_begin = tick_end;
+				scene.tick();
+				tick_end = scene.simulation_time();
+			//	render_end = render_begin + camera.shutter_time();
+			}
+
+			render_end = std::min(render_begin + camera.shutter_time(), tick_end);
+
+		//	float subframe_begin = (render_begin - frame_begin) / (frame_end - frame_begin);
+			float subframe_end   = (render_end - frame_begin) / (frame_end - frame_begin);
+
+			render_subframe(camera, subframe_begin, subframe_end, tiles, workers, pool, progressor);
+
+			render_begin = render_end;
+			subframe_begin = subframe_end;
+		}
+
+		logging::info("Render time " + string::to_string(chrono::duration_to_seconds(clock.now() - render_start)) + " s");
+
+
+		auto export_start = clock.now();
+		exporter.write(film.resolve(pool), pool);
+		logging::info("Export time " + string::to_string(chrono::duration_to_seconds(clock.now() - export_start)) + " s");
+	}
+	*/
 }
 
-void Renderer::render_subframe(const scene::camera::Camera& camera, float frame_begin, float slice_begin, float slice_end,
+void Renderer::render_subframe(const scene::camera::Camera& camera, float subframe_begin, float subframe_end,
 							   Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool, progress::Sink& progressor) {
 	tiles.restart();
 	progressor.start(tiles.size());
 
-	uint32_t sample_start = 0;
-	uint32_t sample_end = sampler_->num_samples_per_iteration();
+	float num_samples = static_cast<float>(sampler_->num_samples_per_iteration());
+
+	uint32_t sample_begin = static_cast<uint32_t>(subframe_begin * num_samples + 0.5f);
+	uint32_t sample_end   = static_cast<uint32_t>(subframe_end   * num_samples + 0.5f);
+
+	uint32_t nu_samples = sample_end - sample_begin;
 
 	pool.run(
-		[&workers, &camera, &tiles, &progressor, sample_start, sample_end, frame_begin, slice_begin, slice_end](uint32_t index) {
+		[&workers, &camera, &tiles, &progressor, sample_begin, sample_end](uint32_t index) {
 			auto& worker = workers[index];
 
 			for (;;) {
@@ -155,7 +222,7 @@ void Renderer::render_subframe(const scene::camera::Camera& camera, float frame_
 					break;
 				}
 
-				worker.render(camera, tile, sample_start, sample_end, frame_begin, slice_begin, slice_end);
+				worker.render(camera, tile, sample_begin, sample_end, 0.f, 1.f);
 				progressor.tick();
 			}
 		}

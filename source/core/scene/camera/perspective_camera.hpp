@@ -12,7 +12,7 @@ public:
 
 	virtual void update_view() final override;
 
-	virtual void generate_ray(const sampler::Camera_sample& sample, float frame_begin, float slice_begin, float slice_end,
+	virtual void generate_ray(const sampler::Camera_sample& sample, float delta_offset, float delta_scale,
 							  math::Oray& ray) const final override;
 
 private:
