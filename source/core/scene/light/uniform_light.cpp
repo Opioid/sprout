@@ -29,10 +29,10 @@ void Uniform_light::sample(const entity::Composed_transformation& /*transformati
 	math::float2 uv = sampler.generate_sample_2d();
 	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
-	sample.l = dir;
+	sample.shape.wi = dir;
+	sample.shape.pdf = 1.f / (2.f * math::Pi);
+	sample.shape.t = 1000.f;
 	sample.energy = energy_;
-	sample.pdf = 1.f / (2.f * math::Pi);
-	sample.t = 1000.f;
 
 	samples.push_back(sample);
 }

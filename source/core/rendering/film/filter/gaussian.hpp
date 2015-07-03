@@ -7,9 +7,9 @@ namespace rendering { namespace film { namespace filter {
 class Gaussian : public Filter {
 public:
 
-	Gaussian(const math::float2& width, float alpha);
+	Gaussian(math::float2 width, float alpha);
 
-	virtual float evaluate(const math::float2& p) const;
+	virtual float evaluate(math::float2 p) const final override;
 
 private:
 

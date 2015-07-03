@@ -29,6 +29,7 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 //	math::AABB bb1 = math::AABB::empty();
 
 	uint32_t num_side_0 = 0;
+//	uint32_t num_side_1 = 0;
 	uint32_t split = 0;
 	for (auto pi : primitive_indices) {
 		auto& a = vertices[triangles[pi].a].p;
@@ -41,6 +42,8 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 //			bb0.insert(a);
 //			bb0.insert(b);
 //			bb0.insert(c);
+//		} else if (1 == side) {
+//			++num_side_1;
 		} else {
 			if (2 == side) {
 				++split;
@@ -57,7 +60,9 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 
 	key_ += split;
 
-	if (0 == num_side_0) {
+//	key_ += std::abs(static_cast<int>(num_side_0) - static_cast<int>(num_side_1));
+
+	if (0 == num_side_0) {	
 		key_ += 0x1000000000000000;
 	}
 }

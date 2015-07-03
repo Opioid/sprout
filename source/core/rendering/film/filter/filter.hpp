@@ -9,7 +9,7 @@ public:
 
 	virtual ~Filter() {}
 
-	virtual float evaluate(const math::float2& p) const = 0;
+	virtual float evaluate(math::float2 p) const = 0;
 };
 
 }}}

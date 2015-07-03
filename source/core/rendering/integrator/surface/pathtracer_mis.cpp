@@ -111,20 +111,20 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 	light->sample(transformation, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);
 
 	auto& ls = light_samples_[0];
-	if (ls.pdf > 0.f) {
-		shadow_ray.set_direction(ls.l);
-		shadow_ray.max_t = ls.t - ray_offset;
+	if (ls.shape.pdf > 0.f) {
+		shadow_ray.set_direction(ls.shape.wi);
+		shadow_ray.max_t = ls.shape.t - ray_offset;
 
 		float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
 		if (mv > 0.f) {
 			float bxdf_pdf;
-			math::float3 f = material_sample.evaluate(ls.l, bxdf_pdf);
+			math::float3 f = material_sample.evaluate(ls.shape.wi, bxdf_pdf);
 
 		//	ls.pdf *= light_pdf;
 
-			float weight = power_heuristic(ls.pdf, bxdf_pdf);
+			float weight = power_heuristic(ls.shape.pdf, bxdf_pdf);
 
-			result = (weight / ls.pdf) * mv * ls.energy * f;
+			result = (weight / ls.shape.pdf) * mv * ls.energy * f;
 		}
 	}
 

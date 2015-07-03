@@ -72,13 +72,13 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 		l->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);
 
 		for (auto& ls : light_samples_) {
-			if (ls.pdf > 0.f) {
-				shadow_ray.set_direction(ls.l);
-				shadow_ray.max_t = ls.t - ray_offset;
+			if (ls.shape.pdf > 0.f) {
+				shadow_ray.set_direction(ls.shape.wi);
+				shadow_ray.max_t = ls.shape.t - ray_offset;
 
 				float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
 				if (mv > 0.f) {
-					result += mv * (ls.energy * sample.evaluate(ls.l, bxdf_pdf)) / ls.pdf;
+					result += mv * (ls.energy * sample.evaluate(ls.shape.wi, bxdf_pdf)) / ls.shape.pdf;
 				}
 			}
 		}

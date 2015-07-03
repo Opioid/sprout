@@ -67,13 +67,13 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 			light->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);
 
 			auto& ls = light_samples_[0];
-			if (ls.pdf > 0.f) {
-				ray.set_direction(ls.l);
-				ray.max_t = ls.t - ray_offset;
+			if (ls.shape.pdf > 0.f) {
+				ray.set_direction(ls.shape.wi);
+				ray.max_t = ls.shape.t - ray_offset;
 
 				float mv = worker.masked_visibility(ray, settings_.sampler);
 				if (mv > 0.f) {
-					result += mv * (throughput * ls.energy * material_sample.evaluate(ls.l, bxdf_pdf)) / (light_pdf * ls.pdf);
+					result += mv * (throughput * ls.energy * material_sample.evaluate(ls.shape.wi, bxdf_pdf)) / (light_pdf * ls.shape.pdf);
 				}
 			}
 		}
