@@ -20,7 +20,9 @@
 namespace rendering {
 
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {
+	light_samples_.reserve(settings.max_light_samples);
+}
 
 void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -108,56 +110,57 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 	scene::entity::Composed_transformation transformation;
 	light->transformation_at(ray.time, transformation);
 
-	light->sample(transformation, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);
+	light->sample(transformation, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, settings_.max_light_samples, light_samples_);
 
-	auto& ls = light_samples_[0];
-	if (ls.shape.pdf > 0.f) {
-		shadow_ray.set_direction(ls.shape.wi);
-		shadow_ray.max_t = ls.shape.t - ray_offset;
+	float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 
-		float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
-		if (mv > 0.f) {
-			float bxdf_pdf;
-			math::float3 f = material_sample.evaluate(ls.shape.wi, bxdf_pdf);
+	for (auto& ls : light_samples_) {
+		if (ls.shape.pdf > 0.f) {
+			shadow_ray.set_direction(ls.shape.wi);
+			shadow_ray.max_t = ls.shape.t - ray_offset;
 
-		//	ls.pdf *= light_pdf;
+			float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
+			if (mv > 0.f) {
+				float bxdf_pdf;
+				math::float3 f = material_sample.evaluate(ls.shape.wi, bxdf_pdf);
 
-			float weight = power_heuristic(ls.shape.pdf, bxdf_pdf);
+				float weight = power_heuristic(ls.shape.pdf, bxdf_pdf);
 
-			result = (weight / ls.shape.pdf) * mv * ls.energy * f;
+				result += num_samples_reciprocal * (weight / ls.shape.pdf) * mv * ls.energy * f;
+			}
 		}
 	}
 
-	scene::material::BxDF_result sample_result;
-	material_sample.sample_evaluate(sampler_, sample_result);
-	if (0.f == sample_result.pdf) {
-		return result;
-	}
-
-	if (!sample_result.type.test(scene::material::BxDF_type::Specular)) {
-		float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi);
-		if (0.f == ls_pdf) {
-			return result;
+	for (size_t i = 0, len = light_samples_.size(); i < len; ++i) {
+		scene::material::BxDF_result sample_result;
+		material_sample.sample_evaluate(sampler_, sample_result);
+		if (0.f == sample_result.pdf) {
+			continue;
 		}
 
-	//	sample_result.pdf *= light_pdf;
+		if (!sample_result.type.test(scene::material::BxDF_type::Specular)) {
+			float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi);
+			if (0.f == ls_pdf) {
+				continue;
+			}
 
-		float weight = power_heuristic(sample_result.pdf, ls_pdf);
+			float weight = power_heuristic(sample_result.pdf, ls_pdf);
 
-		math::float3 wo = -sample_result.wi;
+			math::float3 wo = -sample_result.wi;
 
-		shadow_ray.set_direction(sample_result.wi);
-		shadow_ray.max_t = 1000.f;
+			shadow_ray.set_direction(sample_result.wi);
+			shadow_ray.max_t = 1000.f;
 
-		scene::Intersection light_intersection;
-		if (worker.intersect(shadow_ray, light_intersection) && resolve_mask(worker, shadow_ray, light_intersection)) {
-			if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
-				auto light_material = light_intersection.material();
-				auto& light_material_sample = light_material->sample(light_intersection.geo, wo, settings_.sampler, worker.id());
+			scene::Intersection light_intersection;
+			if (worker.intersect(shadow_ray, light_intersection) && resolve_mask(worker, shadow_ray, light_intersection)) {
+				if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
+					auto light_material = light_intersection.material();
+					auto& light_material_sample = light_material->sample(light_intersection.geo, wo, settings_.sampler, worker.id());
 
-				if (light_material_sample.same_hemisphere(wo)) {
-					math::float3 ls_energy = light_material_sample.emission();
-					result += (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
+					if (light_material_sample.same_hemisphere(wo)) {
+						math::float3 ls_energy = light_material_sample.emission();
+						result += num_samples_reciprocal * (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
+					}
 				}
 			}
 		}
@@ -189,10 +192,11 @@ bool Pathtracer_MIS::resolve_mask(Worker& worker, math::Oray& ray, scene::Inters
 	return true;
 }
 
-Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces) :
+Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces, uint32_t max_light_samples) :
 	Surface_integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
+	settings_.max_light_samples = max_light_samples;
 }
 
 Surface_integrator* Pathtracer_MIS_factory::create(math::random::Generator& rng) const {

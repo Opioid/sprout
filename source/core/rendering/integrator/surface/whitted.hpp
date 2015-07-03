@@ -19,6 +19,8 @@ class Whitted : public Surface_integrator {
 public:
 
 	struct Settings {
+		uint32_t max_light_samples;
+
 		image::sampler::Sampler_2D_nearest<image::sampler::Address_mode_repeat> sampler;
 	};
 
@@ -42,7 +44,7 @@ private:
 class Whitted_factory : public Surface_integrator_factory {
 public:
 
-	Whitted_factory(const take::Settings& take_settings);
+	Whitted_factory(const take::Settings& take_settings, uint32_t max_light_samples);
 
 	virtual Surface_integrator* create(math::random::Generator& rng) const;
 

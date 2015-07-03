@@ -82,7 +82,7 @@ std::shared_ptr<Take> Loader::load(const std::string& filename) {
 	}
 
 	if (!take->surface_integrator_factory) {
-		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(take->settings, 4, 4);
+		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(take->settings, 4, 8, 1);
 	}
 
 	return take;
@@ -232,6 +232,7 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 																							   const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
+	uint32_t default_max_light_samples = 1;
 
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -242,7 +243,8 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 			float radius = json::read_float(node_value, "radius", 1.f);
 			return std::make_shared<rendering::Ao_factory>(settings, num_samples, radius);
 		} else if ("Whitted" == node_name) {
-			return std::make_shared<rendering::Whitted_factory>(settings);
+			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
+			return std::make_shared<rendering::Whitted_factory>(settings, max_light_samples);
 		} else if ("PT" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
@@ -250,11 +252,13 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 		} else if ("PTDL" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
-			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces);
+			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
+			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces, max_light_samples);
 		} else if ("PTMIS" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
-			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces);
+			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
+			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces, max_light_samples);
 		} else if ("Normal" == node_name) {
 			return std::make_shared<rendering::Normal_factory>(settings);
 		}

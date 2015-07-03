@@ -17,7 +17,9 @@
 namespace rendering {
 
 Whitted::Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {
+	light_samples_.reserve(settings.max_light_samples);
+}
 
 void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -69,7 +71,9 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	shadow_ray.min_t  = ray_offset;
 
 	for (auto l : worker.scene().lights()) {
-		l->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);
+		l->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, settings_.max_light_samples, light_samples_);
+
+		float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 
 		for (auto& ls : light_samples_) {
 			if (ls.shape.pdf > 0.f) {
@@ -78,7 +82,7 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 
 				float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
 				if (mv > 0.f) {
-					result += mv * (ls.energy * sample.evaluate(ls.shape.wi, bxdf_pdf)) / ls.shape.pdf;
+					result += num_samples_reciprocal * mv * (ls.energy * sample.evaluate(ls.shape.wi, bxdf_pdf)) / ls.shape.pdf;
 				}
 			}
 		}
@@ -87,7 +91,10 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	return result;
 }
 
-Whitted_factory::Whitted_factory(const take::Settings& take_settings) : Surface_integrator_factory(take_settings) {}
+Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t max_light_samples) :
+	Surface_integrator_factory(take_settings) {
+	settings_.max_light_samples = max_light_samples;
+}
 
 Surface_integrator* Whitted_factory::create(math::random::Generator& rng) const {
 	return new Whitted(take_settings_, rng, settings_);

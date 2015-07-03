@@ -18,7 +18,9 @@
 namespace rendering {
 
 Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {
+	light_samples_.reserve(settings.max_light_samples);
+}
 
 void Pathtracer_DL::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -64,16 +66,19 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		float light_pdf;
 		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
 		if (light) {
-			light->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, 1, light_samples_);
+			light->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, settings_.max_light_samples, light_samples_);
 
-			auto& ls = light_samples_[0];
-			if (ls.shape.pdf > 0.f) {
-				ray.set_direction(ls.shape.wi);
-				ray.max_t = ls.shape.t - ray_offset;
+			float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 
-				float mv = worker.masked_visibility(ray, settings_.sampler);
-				if (mv > 0.f) {
-					result += mv * (throughput * ls.energy * material_sample.evaluate(ls.shape.wi, bxdf_pdf)) / (light_pdf * ls.shape.pdf);
+			for (auto& ls : light_samples_) {
+				if (ls.shape.pdf > 0.f) {
+					ray.set_direction(ls.shape.wi);
+					ray.max_t = ls.shape.t - ray_offset;
+
+					float mv = worker.masked_visibility(ray, settings_.sampler);
+					if (mv > 0.f) {
+						result += num_samples_reciprocal * mv * (throughput * ls.energy * material_sample.evaluate(ls.shape.wi, bxdf_pdf)) / (light_pdf * ls.shape.pdf);
+					}
 				}
 			}
 		}
@@ -123,10 +128,11 @@ bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Interse
 	return true;
 }
 
-Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces) :
+Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces, uint32_t max_light_samples) :
 	Surface_integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
+	settings_.max_light_samples = max_light_samples;
 }
 
 Surface_integrator* Pathtracer_DL_factory::create(math::random::Generator& rng) const {
