@@ -19,10 +19,10 @@ const Sample& Colormap_surfacemap::sample(const shape::Differential& dg, const m
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
 
-	math::float3 color = sampler.sample3(color_, dg.uv);
-	float roughness    = sampler.sample3(surface_, dg.uv).x;
+	math::float3 color   = sampler.sample3(color_, dg.uv);
+	math::float2 surface = sampler.sample2(surface_, dg.uv);
 
-	sample.set(color, roughness, metallic_);
+	sample.set(color, surface.x, surface.y);
 
 	return sample;
 }

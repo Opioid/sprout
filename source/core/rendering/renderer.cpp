@@ -101,6 +101,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 		film.clear();
 
 		if (0.f == camera.shutter_duration()) {
+			scene.tick();
 			progressor.start(tiles.size());
 			render_subframe(camera, 0.f, 0.f, 0.f, 1.f, tiles, workers, pool, progressor);
 		} else {
