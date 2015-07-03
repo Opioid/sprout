@@ -11,6 +11,7 @@ public:
 	virtual ~Image_4();
 
 	virtual float        at1(uint32_t index) const final override;
+	virtual math::float2 at2(uint32_t index) const final override;
 	virtual math::float3 at3(uint32_t index) const final override;
 	virtual math::float4 at4(uint32_t index) const final override;
 

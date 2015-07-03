@@ -15,6 +15,10 @@ float Image_3::at1(uint32_t index) const {
 	return data_[index].x;
 }
 
+math::float2 Image_3::at2(uint32_t index) const {
+	return data_[index].xy;
+}
+
 math::float3 Image_3::at3(uint32_t index) const {
 	return data_[index];
 }

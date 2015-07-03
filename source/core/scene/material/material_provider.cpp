@@ -219,10 +219,10 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	if (colormap) {
 		if (normalmap) {
 			if (surfacemap) {
-			/*	if (emissionmap) {
+				if (emissionmap) {
 					return std::make_shared<substitute::Colormap_normalmap_surfacemap_emissionmap>(
 								substitute_cache_, mask, colormap, normalmap, surfacemap, emissionmap, emission_factor, metallic);
-				} else*/ {
+				} else {
 					return std::make_shared<substitute::Colormap_normalmap_surfacemap>(
 								substitute_cache_, mask, colormap, normalmap, surfacemap, metallic);
 				}

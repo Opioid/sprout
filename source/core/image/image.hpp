@@ -20,6 +20,7 @@ public:
 	const Description& description() const;
 
 	virtual float        at1(uint32_t index) const = 0;
+	virtual math::float2 at2(uint32_t index) const = 0;
 	virtual math::float3 at3(uint32_t index) const = 0;
 	virtual math::float4 at4(uint32_t index) const = 0;
 

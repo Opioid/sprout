@@ -30,10 +30,10 @@ const Sample& Colormap_normalmap_surfacemap_emissionmap::sample(const shape::Dif
 	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
 
 	math::float3 color    = sampler.sample3(color_, dg.uv);
-	float roughness       = sampler.sample3(surface_, dg.uv).x;
+	math::float2 surface  = sampler.sample2(surface_, dg.uv);
 	math::float3 emission = emission_factor_ * sampler.sample3(emission_, dg.uv);
 
-	sample.set(color, emission, roughness, metallic_);
+	sample.set(color, emission, surface.x, surface.y);
 
 	return sample;
 }
