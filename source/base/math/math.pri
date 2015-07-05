@@ -3,10 +3,12 @@ SOURCES += \
 	math/sampling.cpp \
 
 HEADERS += \
-	math/cdf.hpp \
-	math/cdf.inl \
 	math/distribution.hpp \
 	math/distribution.inl \
+	math/distribution_1d.hpp \
+	math/distribution_1d.inl \	
+	math/distribution_2d.hpp \
+	math/distribution_2d.inl \	
 	math/math.hpp \
 	math/matrix.hpp \
 	math/matrix.inl \

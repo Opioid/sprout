@@ -52,6 +52,8 @@ public:
 
 	virtual float area(uint32_t part, const math::float3& scale) const = 0;
 
+	virtual void normal(uint32_t part, const math::float2& uv, math::float3& n) const;
+
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;
 

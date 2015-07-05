@@ -64,6 +64,8 @@ public:
 	virtual math::float3 sample_emission(math::float2 uv, const image::sampler::Sampler_2D& sampler) const override;
 
 	virtual math::float3 average_emission() const override;
+
+	virtual const image::Texture_2D* emission_map() const override;
 };
 
 }}}

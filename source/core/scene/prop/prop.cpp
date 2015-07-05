@@ -112,6 +112,16 @@ bool Prop::has_masked_material() const {
 	return has_masked_material_;
 }
 
+bool Prop::has_emission_mapped_material() const {
+	for (auto m : materials_) {
+		if (m->emission_map()) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void Prop::on_set_transformation() {
 	if (animated_) {
 		entity::Composed_transformation t;

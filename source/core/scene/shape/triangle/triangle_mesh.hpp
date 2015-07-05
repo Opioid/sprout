@@ -4,7 +4,7 @@
 //#include "triangle_distribution.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
 #include "bvh/triangle_bvh_xtree.hpp"
-#include "base/math/cdf.hpp"
+#include "base/math/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -49,8 +49,7 @@ private:
 		void init(uint32_t part, const std::vector<Triangle>& triangles, const math::float3& scale);
 		uint32_t sample(float r);
 
-		float area;
-		math::CDF cdf;
+		math::Distribution_1D distribution;
 		std::vector<uint32_t> triangle_mapping;
 	};
 

@@ -5,7 +5,7 @@
 #include "scene/bvh/scene_bvh_tree.hpp"
 #include "scene/shape/node_stack.hpp"
 #include "base/math/ray.hpp"
-#include "base/math/cdf.hpp"
+#include "base/math/distribution_1d.hpp"
 #include <vector>
 #include <memory>
 
@@ -20,9 +20,8 @@ class Entity;
 namespace light {
 
 class Light;
-class Image_light;
 class Prop_light;
-class Uniform_light;
+class Prop_image_light;
 
 }
 
@@ -57,9 +56,8 @@ public:
 
 	const light::Light* montecarlo_light(float random, float& pdf) const;
 
-	light::Image_light* create_image_light();
 	light::Prop_light* create_prop_light();
-	light::Uniform_light* create_uniform_light();
+	light::Prop_image_light* create_prop_image_light();
 
     void add_animation(std::shared_ptr<animation::Animation> animation);
 
@@ -79,7 +77,7 @@ private:
 
 	std::vector<light::Light*> lights_;
 
-	math::CDF light_cdf_;
+	math::Distribution_1D light_distribution_;
 
     std::vector<std::shared_ptr<animation::Animation>> animations_;
 

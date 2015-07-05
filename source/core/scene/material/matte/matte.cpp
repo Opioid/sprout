@@ -51,5 +51,9 @@ math::float3 Matte::average_emission() const {
 	return math::float3::identity;
 }
 
+const image::Texture_2D* Matte::emission_map() const {
+	return nullptr;
+}
+
 }}}
 

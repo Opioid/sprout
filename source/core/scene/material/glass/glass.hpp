@@ -72,6 +72,8 @@ public:
 
 	virtual math::float3 average_emission() const final override;
 
+	virtual const image::Texture_2D* emission_map() const final override;
+
 };
 
 }}}

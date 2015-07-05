@@ -2,7 +2,7 @@
 #include "scene.hpp"
 #include "scene/animation/animation.hpp"
 #include "scene/light/prop_light.hpp"
-#include "scene/light/uniform_light.hpp"
+#include "scene/light/prop_image_light.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/shape/canopy.hpp"
 #include "scene/shape/celestial_disk.hpp"
@@ -145,28 +145,13 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 }
 
 light::Light* Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Scene& scene) {
-/*	std::shared_ptr<shape::Shape> shape;
-	math::float3 color = math::float3::identity;
-	float lumen = 1.f;
+	light::Prop_light* light = nullptr;
 
-	for (auto n = light_value.MemberBegin(); n != light_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
-
-		if ("shape" == node_name) {
-			shape = load_shape(node_value);
-		} else if ("color" == node_name) {
-			color = json::read_float3(node_value);
-		} else if ("lumen" == node_name) {
-			lumen = json::read_float(node_value);
-		}
+	if (prop->has_emission_mapped_material()) {
+		light = scene.create_prop_image_light();
+	} else {
+		light = scene.create_prop_light();
 	}
-
-	if (!shape) {
-		return nullptr;
-	}
-*/
-	light::Prop_light* light = scene.create_prop_light();
 
 	light->init(prop);
 

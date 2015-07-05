@@ -1,6 +1,7 @@
 #include "light_constant.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
+#include "base/color/color.inl"
 
 namespace scene { namespace material { namespace light {
 
@@ -23,6 +24,10 @@ math::float3 Constant::sample_emission(math::float2 /*uv*/, const image::sampler
 
 math::float3 Constant::average_emission() const {
 	return emission_;
+}
+
+const image::Texture_2D* Constant::emission_map() const {
+	return nullptr;
 }
 
 }}}

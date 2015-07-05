@@ -27,4 +27,8 @@ math::float3 Emissionmap::average_emission() const {
 	return emission_.image()->average().xyz;
 }
 
+const image::Texture_2D* Emissionmap::emission_map() const {
+	return &emission_;
+}
+
 }}}

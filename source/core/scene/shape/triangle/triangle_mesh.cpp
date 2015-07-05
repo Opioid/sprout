@@ -5,10 +5,10 @@
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
 #include "sampler/sampler.hpp"
+#include "base/math/distribution_1d.inl"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/matrix.inl"
-#include "base/math/cdf.inl"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -88,7 +88,7 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	float r = sampler.generate_sample_1d();
 	math::float2 r2 = sampler.generate_sample_2d();
 
-	uint32_t index = distributions_[part].cdf.sample(r);
+	uint32_t index = distributions_[part].distribution.sample_discrete(r);
 
 	math::float3 sv;
 	math::float3 sn;
@@ -119,7 +119,7 @@ float Mesh::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*tran
 }
 
 float Mesh::area(uint32_t part, const math::float3& /*scale*/) const {
-	return distributions_[part].area;
+	return distributions_[part].distribution.integral();
 }
 
 bool Mesh::is_complex() const {
@@ -145,11 +145,11 @@ void Mesh::Distribution::init(uint32_t part, const std::vector<Triangle>& triang
 		++i;
 	}
 
-	area = cdf.init(areas);
+	distribution.init(areas.data(), areas.size());
 }
 
 uint32_t Mesh::Distribution::sample(float r) {
-	return triangle_mapping[cdf.sample(r)];
+	return triangle_mapping[distribution.sample_discrete(r)];
 }
 
 }}}

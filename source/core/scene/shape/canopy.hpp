@@ -29,6 +29,8 @@ public:
 
 	virtual float area(uint32_t part, const math::float3& scale) const final override;
 
+	virtual void normal(uint32_t part, const math::float2& uv, math::float3& n) const final override;
+
 	virtual bool is_finite() const final override;
 };
 

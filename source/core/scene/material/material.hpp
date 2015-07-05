@@ -35,6 +35,8 @@ public:
 
 	virtual math::float3 average_emission() const = 0;
 
+	virtual const image::Texture_2D* emission_map() const = 0;
+
 	bool is_masked() const;
 
 	float opacity(math::float2 uv, const image::sampler::Sampler_2D& sampler) const;

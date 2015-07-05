@@ -2,14 +2,13 @@
 #include "scene/animation/animation.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
-#include "scene/light/image_light.hpp"
 #include "scene/light/prop_light.hpp"
-#include "scene/light/uniform_light.hpp"
+#include "scene/light/prop_image_light.hpp"
 #include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
-#include "base/math/cdf.inl"
+#include "base/math/distribution_1d.inl"
 #include "base/math/bounding/aabb.inl"
 
 namespace scene {
@@ -75,15 +74,9 @@ const light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 		return nullptr;
 	}
 
-	uint32_t l = light_cdf_.sample(random, pdf);
+	uint32_t l = light_distribution_.sample_discrete(random, pdf);
 
 	return lights_[l];
-}
-
-light::Image_light* Scene::create_image_light() {
-	light::Image_light* light = new light::Image_light;
-	lights_.push_back(light);
-	return light;
 }
 
 light::Prop_light* Scene::create_prop_light() {
@@ -92,8 +85,8 @@ light::Prop_light* Scene::create_prop_light() {
 	return light;
 }
 
-light::Uniform_light* Scene::create_uniform_light() {
-	light::Uniform_light* light = new light::Uniform_light;
+light::Prop_image_light* Scene::create_prop_image_light() {
+	light::Prop_image_light* light = new light::Prop_image_light;
 	lights_.push_back(light);
 	return light;
 }
@@ -117,7 +110,7 @@ void Scene::compile() {
 		power.push_back(color::luminance(l->power(bvh_.aabb())));
 	}
 
-	light_cdf_.init(power);
+	light_distribution_.init(power.data(), power.size());
 }
 
 }

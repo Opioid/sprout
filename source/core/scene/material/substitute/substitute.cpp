@@ -197,4 +197,8 @@ math::float3 Substitute::average_emission() const {
 	return math::float3::identity;
 }
 
+const image::Texture_2D* Substitute::emission_map() const {
+	return nullptr;
+}
+
 }}}

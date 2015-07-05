@@ -12,6 +12,8 @@ uint32_t Shape::num_parts() const {
 	return 1;
 }
 
+void Shape::normal(uint32_t part, const math::float2& uv, math::float3& n) const {}
+
 bool Shape::is_complex() const {
 	return false;
 }

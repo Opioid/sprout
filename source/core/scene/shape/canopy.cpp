@@ -78,6 +78,10 @@ float Canopy::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
 	return 4.f * math::Pi;
 }
 
+void Canopy::normal(uint32_t /*part*/, const math::float2& uv, math::float3& n) const {
+
+}
+
 bool Canopy::is_finite() const {
 	return false;
 }

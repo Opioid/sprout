@@ -137,4 +137,8 @@ math::float3 Glass::average_emission() const {
 	return math::float3::identity;
 }
 
+const image::Texture_2D* Glass::emission_map() const {
+	return nullptr;
+}
+
 }}}
