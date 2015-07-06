@@ -30,20 +30,7 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 	light_sample.shape.t = 1000.f;
 	light_sample.shape.pdf = 200000.f * pdf;//1.f / (pdf * 4.f * math::Pi);
 
-//	uv.x -= 0.5f;
-
-
-
-	float z = 0.5f;//1.f - 2.f * uv.x;
-	float r = std::sqrt(std::max(0.f, 1.f - z * z));
-	float phi = (uv.y) * 2.f * math::Pi;
-	float x = r * std::cos(phi);
-	float y = r * std::sin(phi);
-	light_sample.shape.wi =  math::float3(x, y, z);
-
-
-
-//	light_sample.shape.wi = math::sample_sphere_uniform(uv);
+	light_sample.shape.wi = math::sample_sphere_uniform(uv);
 
 	light_sample.energy = prop_->material(part_)->sample_emission(uv, image_sampler);
 

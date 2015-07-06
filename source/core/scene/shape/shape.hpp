@@ -47,12 +47,13 @@ public:
 						const math::float3& p, const math::float3& n,
 						sampler::Sampler& sampler, Sample& sample) const = 0;
 
+	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
+						const math::float3& p, const math::float2& uv, Sample& sample) const = 0;
+
 	virtual float pdf(uint32_t part, const entity::Composed_transformation& transformation, float area,
 					  const math::float3& p, const math::float3& wi) const = 0;
 
 	virtual float area(uint32_t part, const math::float3& scale) const = 0;
-
-	virtual void normal(uint32_t part, const math::float2& uv, math::float3& n) const;
 
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;

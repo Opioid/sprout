@@ -40,7 +40,6 @@ math::float3 Sampler_2D_nearest<Address_mode>::sample3(const Texture_2D& texture
 	uint32_t y = std::min(static_cast<uint32_t>(uv.y * static_cast<float>(d.y)), d.y - 1);
 
 	return texture.at3(x, y);
-	return math::float3(uv.x, uv.y, 0.f);
 }
 
 }}

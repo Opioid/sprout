@@ -8,6 +8,8 @@
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
+#include "base/math/print.hpp"
+#include <iostream>
 
 namespace scene { namespace shape {
 
@@ -29,7 +31,9 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.part = 0;
 
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
-		intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+//		intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+
+		intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 		ray.max_t = 1000.f;
 		return true;
@@ -63,10 +67,33 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	sample.wi  = dir;
 
 	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
-	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+//	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+
+	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 	sample.t   = 1000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
+
+/*
+	math::float3 thing = math::sample_sphere_uniform(sample.uv);
+
+//	thing.x = std::cos(sample.uv.y * math::Pi);
+//	thing.z = std::sin(sample.uv.y * math::Pi);
+//	thing.y = std::cos(sample.uv.y * math::Pi);
+
+
+	std::cout << xyz << std::endl;
+	std::cout << sample.uv << std::endl;
+	std::cout << thing << std::endl;
+
+	int t = 0;
+	++t;
+*/
+}
+
+void Canopy::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
+					const math::float3& p, const math::float2& uv, Sample& sample) const {
+
 }
 
 float Canopy::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
@@ -76,10 +103,6 @@ float Canopy::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*tr
 
 float Canopy::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
 	return 4.f * math::Pi;
-}
-
-void Canopy::normal(uint32_t /*part*/, const math::float2& uv, math::float3& n) const {
-
 }
 
 bool Canopy::is_finite() const {
