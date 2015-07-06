@@ -91,9 +91,12 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 */
 }
 
-void Canopy::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-					const math::float3& p, const math::float2& uv, Sample& sample) const {
+void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
+					const math::float3& /*p*/, const math::float2& uv, Sample& sample) const {
 
+	math::float3 dir = math::sample_sphere_uniform(uv);
+	sample.wi = math::transform_vector_transposed(transformation.rotation, dir);
+	sample.t  = 1000.f;
 }
 
 float Canopy::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,

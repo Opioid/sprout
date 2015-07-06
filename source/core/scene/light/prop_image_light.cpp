@@ -27,12 +27,15 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 
 	Sample light_sample;
 
-	light_sample.shape.t = 1000.f;
-	light_sample.shape.pdf = 200000.f * pdf;//1.f / (pdf * 4.f * math::Pi);
+	prop_->shape()->sample(part_, transformation, area_, p, uv, light_sample.shape);
 
-	light_sample.shape.wi = math::sample_sphere_uniform(uv);
+	light_sample.shape.pdf = /*200000.f * */pdf / (4.f * math::Pi);
 
-	light_sample.energy = prop_->material(part_)->sample_emission(uv, image_sampler);
+	if (math::dot(light_sample.shape.wi, n) < 0.f) {
+		light_sample.shape.pdf = 0.f;
+	} else {
+		light_sample.energy = prop_->material(part_)->sample_emission(uv, image_sampler);
+	}
 
 	samples.push_back(light_sample);
 

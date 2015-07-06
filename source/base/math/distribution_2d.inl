@@ -22,18 +22,22 @@ void Distribution_2D::init(const float* data, const math::uint2& dimensions) {
 }
 
 math::float2 Distribution_2D::sample_continuous(float u, float v, float& pdf) const {
-	math::float2 uv;
+/*	math::float2 uv;
 
 	float v_pdf;
 	uv.y = marginal_.sample_continuous(v, v_pdf);
 
-	size_t c = static_cast<size_t>(uv.y * static_cast<float>(conditional_.size()));
+	size_t c = static_cast<size_t>(uv.y * static_cast<float>(conditional_.size() - 1));
 	float u_pdf;
 	uv.x = conditional_[c].sample_continuous(u, u_pdf);
 
-	pdf = u_pdf * v_pdf;// * area_;
+	pdf = u_pdf * v_pdf * area_;
 
 	return uv;
+	*/
+
+	pdf = 1.f;
+	return math::float2(u, v);
 }
 
 }
