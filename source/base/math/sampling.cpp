@@ -8,11 +8,12 @@ float2 sample_disk_concentric(float2 uv) {
 	float sx = 2.f * uv.x - 1.f;
 	float sy = 2.f * uv.y - 1.f;
 
-	float r, theta;
-
 	if (sx == 0.f && sy == 0.f) {
 		return float2(0.f, 0.f);
 	}
+
+	float r;
+	float theta;
 
 	if (sx >= -sy) {
 		if (sx > sy) {

@@ -20,12 +20,22 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 							  const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 							  uint32_t max_samples, std::vector<Sample>& samples) const {
 
-	float pdf;
-	math::float2 uv = distribution_.sample_continuous(sampler.generate_sample_1D(), sampler.generate_sample_1D(), pdf);
+	float pdf = 1.f;
+	math::float2 uv = /*sampler.generate_sample_2D();//*/distribution_.sample_continuous(sampler.generate_sample_2D(), pdf);
 
 	samples.clear();
 
 	Sample light_sample;
+
+//	math::float3 x, y;
+//	math::coordinate_system(n, x, y);
+
+//	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
+
+//	math::float3 dir = math::sample_sphere_uniform(uv);
+
+	//light_sample.shape.wi = dir;//math::transform_vector(transformation.rotation, dir);
+//	light_sample.shape.t  = 1000.f;
 
 	prop_->shape()->sample(part_, transformation, area_, p, uv, light_sample.shape);
 
@@ -34,7 +44,7 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 	if (math::dot(light_sample.shape.wi, n) < 0.f) {
 		light_sample.shape.pdf = 0.f;
 	} else {
-		light_sample.energy = prop_->material(part_)->sample_emission(uv, image_sampler);
+		light_sample.energy = prop_->material(part_)->sample_emission(light_sample.shape.uv, image_sampler);
 	}
 
 	samples.push_back(light_sample);

@@ -31,9 +31,12 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.part = 0;
 
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
-//		intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
-		intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+		intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv ) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+
+//		if (intersection.uv.x < 0.f) {
+//			intersection.uv.x += 1.f;
+//		}
 
 		ray.max_t = 1000.f;
 		return true;
@@ -67,35 +70,44 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	sample.wi  = dir;
 
 	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
-//	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
-
-	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+	sample.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 0.5f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 	sample.t   = 1000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
-
-/*
-	math::float3 thing = math::sample_sphere_uniform(sample.uv);
-
-//	thing.x = std::cos(sample.uv.y * math::Pi);
-//	thing.z = std::sin(sample.uv.y * math::Pi);
-//	thing.y = std::cos(sample.uv.y * math::Pi);
-
-
-	std::cout << xyz << std::endl;
-	std::cout << sample.uv << std::endl;
-	std::cout << thing << std::endl;
-
-	int t = 0;
-	++t;
-*/
 }
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 					const math::float3& /*p*/, const math::float2& uv, Sample& sample) const {
 
-	math::float3 dir = math::sample_sphere_uniform(uv);
-	sample.wi = math::transform_vector_transposed(transformation.rotation, dir);
+	math::float2 tuv = uv;
+	tuv.x += 0.25f;
+//	tuv.y -= 0.25f;
+	tuv.x = math::frac(tuv.x);
+//	tuv.y = math::frac(tuv.y);
+//	math::float3 dir = math::sample_sphere_uniform(tuv);
+
+
+//	float theta = uv.x * 2.f * math::Pi;
+//	float phi   = uv.y * math::Pi;
+
+	float phi   = tuv.y * 2.f * math::Pi;
+	float theta = tuv.x * math::Pi;
+
+	float sin_theta = std::sin(theta);
+	float cos_theta = std::cos(theta);
+	float sin_phi   = std::sin(phi);
+	float cos_phi   = std::cos(phi);
+
+	math::float3 dir = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, cos_theta);
+	//math::float3 dir = math::float3(sin_theta * sin_phi, sin_theta * cos_phi, cos_theta);
+
+	sample.wi = math::transform_vector(transformation.rotation, math::normalized(dir));
+
+	sample.wi.x *= -1.f;
+//	sample.wi.z *= -1.f;w
+
+	sample.uv = uv;
+
 	sample.t  = 1000.f;
 }
 
