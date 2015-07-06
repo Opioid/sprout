@@ -85,8 +85,8 @@ float Mesh::opacity(const entity::Composed_transformation& transformation, const
 void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 				  const math::float3& p, const math::float3& n,
 				  sampler::Sampler& sampler, Sample& sample) const {
-	float r = sampler.generate_sample_1d();
-	math::float2 r2 = sampler.generate_sample_2d();
+	float r = sampler.generate_sample_1D();
+	math::float2 r2 = sampler.generate_sample_2D();
 
 	uint32_t index = distributions_[part].distribution.sample_discrete(r);
 

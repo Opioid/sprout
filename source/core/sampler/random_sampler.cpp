@@ -21,11 +21,11 @@ void Random::generate_camera_sample(const math::float2& offset, uint32_t /*index
 	sample.time = rng_.random_float();
 }
 
-math::float2 Random::generate_sample_2d() {
+math::float2 Random::generate_sample_2D() {
 	return math::float2(rng_.random_float(), rng_.random_float());
 }
 
-float Random::generate_sample_1d() {
+float Random::generate_sample_1D() {
 	return rng_.random_float();
 }
 

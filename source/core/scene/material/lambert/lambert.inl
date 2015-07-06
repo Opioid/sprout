@@ -21,7 +21,7 @@ inline float Lambert<Sample>::pdf(const math::float3& /*wi*/, float n_dot_wi) co
 
 template<typename Sample>
 inline float Lambert<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
-	math::float2 s2d = sampler.generate_sample_2d();
+	math::float2 s2d = sampler.generate_sample_2D();
 
 	math::float3 is = math::sample_hemisphere_cosine(s2d);
 	result.wi = math::normalized(BxDF<Sample>::sample_.tangent_to_world(is));

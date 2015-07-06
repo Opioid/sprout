@@ -57,7 +57,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	math::float3 x, y;
 	math::coordinate_system(n, x, y);
 
-	math::float2 uv = sampler.generate_sample_2d();
+	math::float2 uv = sampler.generate_sample_2D();
 	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
 	sample.wi  = dir;

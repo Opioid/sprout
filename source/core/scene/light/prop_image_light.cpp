@@ -1,11 +1,14 @@
 #include "prop_image_light.hpp"
 #include "light_sample.hpp"
 #include "image/texture/texture_2d.inl"
+#include "sampler/sampler.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/material/material.hpp"
 #include "base/color/color.inl"
+#include "base/math/math.hpp"
+#include "base/math/sampling.hpp"
 #include "base/math/distribution_2d.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -14,8 +17,39 @@
 namespace scene { namespace light {
 
 void Prop_image_light::sample(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& n,
-						const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
-						uint32_t max_samples, std::vector<Sample>& samples) const {
+							  const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
+							  uint32_t max_samples, std::vector<Sample>& samples) const {
+
+	float pdf;
+	math::float2 uv = distribution_.sample_continuous(sampler.generate_sample_1D(), sampler.generate_sample_1D(), pdf);
+
+	samples.clear();
+
+	Sample light_sample;
+
+	light_sample.shape.t = 1000.f;
+	light_sample.shape.pdf = 200000.f * pdf;//1.f / (pdf * 4.f * math::Pi);
+
+//	uv.x -= 0.5f;
+
+
+
+	float z = 0.5f;//1.f - 2.f * uv.x;
+	float r = std::sqrt(std::max(0.f, 1.f - z * z));
+	float phi = (uv.y) * 2.f * math::Pi;
+	float x = r * std::cos(phi);
+	float y = r * std::sin(phi);
+	light_sample.shape.wi =  math::float3(x, y, z);
+
+
+
+//	light_sample.shape.wi = math::sample_sphere_uniform(uv);
+
+	light_sample.energy = prop_->material(part_)->sample_emission(uv, image_sampler);
+
+	samples.push_back(light_sample);
+
+/*
 	samples.clear();
 
 	Sample light_sample;
@@ -27,6 +61,7 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 
 		samples.push_back(light_sample);
 	}
+*/
 }
 
 float Prop_image_light::pdf(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& wi) const {

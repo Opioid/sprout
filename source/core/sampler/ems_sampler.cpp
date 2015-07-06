@@ -22,11 +22,11 @@ void EMS::generate_camera_sample(const math::float2& offset, uint32_t index, Cam
 	sample.time = rng_.random_float();
 }
 
-math::float2 EMS::generate_sample_2d() {
+math::float2 EMS::generate_sample_2D() {
 	return math::ems(current_sample_++, seed_);
 }
 
-float EMS::generate_sample_1d() {
+float EMS::generate_sample_1D() {
 	return rng_.random_float();
 }
 

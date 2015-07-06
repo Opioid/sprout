@@ -101,7 +101,7 @@ math::float3 Sample::attenuation() const {
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
-	float p = sampler.generate_sample_1d();
+	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
 		brdf_.importance_sample(sampler, result);

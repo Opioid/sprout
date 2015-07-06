@@ -25,7 +25,7 @@ math::float3 Ao::li(Worker& worker, math::Oray& /*ray*/, scene::Intersection& in
 	float result = 0.f;
 
 	for (uint32_t i = 0; i < settings_.num_samples; ++i) {
-		math::float2 sample = sampler_.generate_sample_2d();
+		math::float2 sample = sampler_.generate_sample_2D();
 		math::float3 hs = math::sample_hemisphere_cosine(sample);
 		math::float3 ws = intersection.geo.tangent_to_world(hs);
 

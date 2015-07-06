@@ -105,7 +105,7 @@ void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	math::float3 x, y;
 	math::coordinate_system(z, x, y);
 
-	math::float2 r2 = sampler.generate_sample_2d();
+	math::float2 r2 = sampler.generate_sample_2D();
 	math::float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
 	sample.wi = dir;

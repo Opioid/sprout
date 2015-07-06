@@ -30,9 +30,9 @@ public:
 
 	virtual void generate_camera_sample(const math::float2& offset, uint32_t index, Camera_sample& sample) = 0;
 
-	virtual math::float2 generate_sample_2d() = 0;
+	virtual math::float2 generate_sample_2D() = 0;
 
-	virtual float generate_sample_1d() = 0;
+	virtual float generate_sample_1D() = 0;
 
 protected:
 

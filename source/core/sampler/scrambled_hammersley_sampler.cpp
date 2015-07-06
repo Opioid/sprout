@@ -22,11 +22,11 @@ void Scrambled_hammersley::generate_camera_sample(const math::float2& offset, ui
 	sample.time = rng_.random_float();
 }
 
-math::float2 Scrambled_hammersley::generate_sample_2d() {
+math::float2 Scrambled_hammersley::generate_sample_2D() {
 	return math::scrambled_hammersley(current_sample_++, num_iterations_ * num_samples_per_iteration_, seed_);
 }
 
-float Scrambled_hammersley::generate_sample_1d() {
+float Scrambled_hammersley::generate_sample_1D() {
 	return rng_.random_float();
 }
 
