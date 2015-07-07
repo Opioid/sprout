@@ -1,10 +1,12 @@
+#pragma once
+
 #include "sampling.hpp"
 #include "vector.inl"
 #include "math.hpp"
 
 namespace math {
 
-float2 sample_disk_concentric(float2 uv) {
+inline float2 sample_disk_concentric(float2 uv) {
 	float sx = 2.f * uv.x - 1.f;
 	float sy = 2.f * uv.y - 1.f;
 
@@ -49,12 +51,12 @@ float2 sample_disk_concentric(float2 uv) {
 	return float2(cos_theta * r, sin_theta * r);
 }
 
-float2 sample_triangle_uniform(float2 uv) {
+inline float2 sample_triangle_uniform(float2 uv) {
 	float su = std::sqrt(uv.x);
 	return float2(1.f - su, uv.y * su);
 }
 
-float3 sample_hemisphere_uniform(float2 uv) {
+inline float3 sample_hemisphere_uniform(float2 uv) {
 	float z = 1.f - uv.x;
 	float r = std::sqrt(1.f - z * z);
 	float phi = uv.y * 2.f * Pi;
@@ -65,7 +67,7 @@ float3 sample_hemisphere_uniform(float2 uv) {
 	return float3(cos_phi * r, sin_phi * r, z);
 }
 
-float3 sample_oriented_hemisphere_uniform(float2 uv, const float3& x, const float3& y, const float3& z) {
+inline float3 sample_oriented_hemisphere_uniform(float2 uv, const float3& x, const float3& y, const float3& z) {
 	float za = 1.f - uv.x;
 	float r = std::sqrt(1.f - za * za);
 	float phi = uv.y * 2.f * Pi;
@@ -76,14 +78,14 @@ float3 sample_oriented_hemisphere_uniform(float2 uv, const float3& x, const floa
 	return (cos_phi * r) * x + (sin_phi * r) * y + za * z;
 }
 
-float3 sample_hemisphere_cosine(float2 uv) {
+inline float3 sample_hemisphere_cosine(float2 uv) {
 	float2 xy = sample_disk_concentric(uv);
 	float  z  = std::sqrt(std::max(0.f, 1.f - xy.x * xy.x - xy.y * xy.y));
 
 	return float3(xy.x, xy.y, z);
 }
 
-float3 sample_sphere_uniform(float2 uv) {
+inline float3 sample_sphere_uniform(float2 uv) {
 	float z = 1.f - 2.f * uv.x;
 	float r = std::sqrt(std::max(0.f, 1.f - z * z));
 	float phi = uv.y * 2.f * Pi;
@@ -94,7 +96,7 @@ float3 sample_sphere_uniform(float2 uv) {
 	return float3(cos_phi * r, sin_phi * r, z);
 }
 
-float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max, const float3& x, const float3& y, const float3& z) {
+inline float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max, const float3& x, const float3& y, const float3& z) {
 	float cos_theta = (1.f - uv.x) + uv.x * cos_theta_max;
 	float sin_theta = std::sqrt(1.f - cos_theta * cos_theta);
 	float phi = uv.y * 2.f * Pi;
@@ -105,7 +107,7 @@ float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max, const float3
 	return (cos_phi * sin_theta) * x + (sin_phi * sin_theta) * y + cos_theta * z;
 }
 
-float cone_pdf_uniform(float cos_theta_max) {
+inline float cone_pdf_uniform(float cos_theta_max) {
 	return 1.f / (2.f * Pi * (1.f - cos_theta_max));
 }
 

@@ -3,7 +3,7 @@
 #include "geometry/shape_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
-#include "base/math/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"

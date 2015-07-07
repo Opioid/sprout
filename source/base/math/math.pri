@@ -1,6 +1,5 @@
 SOURCES += \
 	math/math.cpp \
-	math/sampling.cpp \
 
 HEADERS += \
 	math/distribution.hpp \
@@ -22,6 +21,7 @@ HEADERS += \
 	math/quaternion.hpp \
 	math/quaternion.inl \
 	math/sampling.hpp \
+	math/sampling.inl \	
 	math/ray.hpp \
 	math/ray.inl \
 	math/transformation.hpp \

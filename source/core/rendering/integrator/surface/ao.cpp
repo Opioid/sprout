@@ -2,7 +2,7 @@
 #include "rendering/worker.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "take/take_settings.hpp"
-#include "base/math/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"

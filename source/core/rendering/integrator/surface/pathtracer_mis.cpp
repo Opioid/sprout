@@ -134,33 +134,31 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 	for (size_t i = 0, len = light_samples_.size(); i < len; ++i) {
 		scene::material::BxDF_result sample_result;
 		material_sample.sample_evaluate(sampler_, sample_result);
-		if (0.f == sample_result.pdf) {
+		if (0.f == sample_result.pdf
+		||  sample_result.type.test(scene::material::BxDF_type::Specular)) {
 			continue;
 		}
 
-		if (!sample_result.type.test(scene::material::BxDF_type::Specular)) {
-			float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi);
-			if (0.f == ls_pdf) {
-				continue;
-			}
+		float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi);
+		if (0.f == ls_pdf) {
+			continue;
+		}
 
-			float weight = power_heuristic(sample_result.pdf, ls_pdf);
+		float weight = power_heuristic(sample_result.pdf, ls_pdf);
 
-			math::float3 wo = -sample_result.wi;
+		math::float3 wo = -sample_result.wi;
+		shadow_ray.set_direction(sample_result.wi);
+		shadow_ray.max_t = 1000.f;
 
-			shadow_ray.set_direction(sample_result.wi);
-			shadow_ray.max_t = 1000.f;
+		scene::Intersection light_intersection;
+		if (worker.intersect(shadow_ray, light_intersection) && resolve_mask(worker, shadow_ray, light_intersection)) {
+			if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
+				auto light_material = light_intersection.material();
+				auto& light_material_sample = light_material->sample(light_intersection.geo, wo, settings_.sampler, worker.id());
 
-			scene::Intersection light_intersection;
-			if (worker.intersect(shadow_ray, light_intersection) && resolve_mask(worker, shadow_ray, light_intersection)) {
-				if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
-					auto light_material = light_intersection.material();
-					auto& light_material_sample = light_material->sample(light_intersection.geo, wo, settings_.sampler, worker.id());
-
-					if (light_material_sample.same_hemisphere(wo)) {
-						math::float3 ls_energy = light_material_sample.emission();
-						result += num_samples_reciprocal * (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
-					}
+				if (light_material_sample.same_hemisphere(wo)) {
+					math::float3 ls_energy = light_material_sample.emission();
+					result += num_samples_reciprocal * (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
 				}
 			}
 		}

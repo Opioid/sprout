@@ -2,6 +2,7 @@
 
 #include "light_material.hpp"
 #include "image/texture/texture_2d.hpp"
+#include "base/math/distribution_2d.hpp"
 
 namespace scene { namespace material { namespace light {
 
@@ -19,9 +20,17 @@ public:
 
 	virtual const image::Texture_2D* emission_map() const final override;
 
+	virtual math::float2 emission_importance_sample(math::float2 r2, float& pdf) const final override;
+
+	virtual void prepare_sampling() final override;
+
 private:
 
 	image::Texture_2D emission_;
+
+	math::Distribution_2D distribution_;
+
+	float num_pixels_;
 };
 
 }}}

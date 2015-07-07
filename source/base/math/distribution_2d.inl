@@ -17,8 +17,6 @@ void Distribution_2D::init(const float* data, const math::uint2& dimensions) {
 	}
 
 	marginal_.init(integrals.data(), dimensions.y);
-
-	area_ = static_cast<float>(dimensions.x * dimensions.y);
 }
 
 math::float2 Distribution_2D::sample_continuous(math::float2 uv, float& pdf) const {
@@ -31,13 +29,9 @@ math::float2 Distribution_2D::sample_continuous(math::float2 uv, float& pdf) con
 	float u_pdf;
 	result.x = conditional_[c].sample_continuous(uv.x, u_pdf);
 
-	pdf = u_pdf * v_pdf * area_;
+	pdf = u_pdf * v_pdf;
 
 	return result;
-
-
-//	pdf = 1.f;
-//	return uv;
 }
 
 }

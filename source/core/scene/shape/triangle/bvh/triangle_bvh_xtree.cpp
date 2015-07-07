@@ -1,7 +1,7 @@
 #include "triangle_bvh_xtree.hpp"
 #include "scene/shape/triangle/triangle_primitive.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
-#include "base/math/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
 

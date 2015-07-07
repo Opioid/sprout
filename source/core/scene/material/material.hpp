@@ -37,6 +37,10 @@ public:
 
 	virtual const image::Texture_2D* emission_map() const = 0;
 
+	virtual math::float2 emission_importance_sample(math::float2 r2, float& pdf) const;
+
+	virtual void prepare_sampling();
+
 	bool is_masked() const;
 
 	float opacity(math::float2 uv, const image::sampler::Sampler_2D& sampler) const;

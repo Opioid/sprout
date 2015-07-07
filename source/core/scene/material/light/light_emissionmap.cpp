@@ -3,6 +3,7 @@
 #include "scene/shape/geometry/differential.hpp"
 #include "image/texture/texture_2d.inl"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "base/color/color.inl"
 
 namespace scene { namespace material { namespace light {
 
@@ -29,6 +30,27 @@ math::float3 Emissionmap::average_emission() const {
 
 const image::Texture_2D* Emissionmap::emission_map() const {
 	return &emission_;
+}
+
+math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf) const {
+	math::float2 uv = distribution_.sample_continuous(r2, pdf);
+	pdf *= num_pixels_;
+	return uv;
+}
+
+void Emissionmap::prepare_sampling() {
+	std::vector<float> luminance;
+	auto d = emission_.dimensions();
+	luminance.resize(d.x * d.y);
+
+	auto image = emission_.image();
+	for (uint32_t i = 0, len = static_cast<uint32_t>(luminance.size()); i < len; ++i) {
+		luminance[i] = color::luminance(image->at3(i));
+	}
+
+	distribution_.init(luminance.data(), d);
+
+	num_pixels_ = static_cast<float>(d.x * d.y);
 }
 
 }}}

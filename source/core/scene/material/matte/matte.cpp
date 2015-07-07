@@ -1,7 +1,7 @@
 #include "matte.hpp"
 #include "scene/material/lambert/lambert.inl"
 #include "sampler/sampler.hpp"
-#include "base/math/sampling.hpp"
+#include "base/math/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/math.hpp"
 

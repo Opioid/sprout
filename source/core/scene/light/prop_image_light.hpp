@@ -1,7 +1,6 @@
 #pragma once
 
 #include "prop_light.hpp"
-#include "base/math/distribution_2d.hpp"
 
 namespace scene { namespace light {
 
@@ -15,10 +14,6 @@ public:
 	virtual float pdf(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& wi) const final override;
 
 	virtual void prepare_sampling() final override;
-
-private:
-
-	math::Distribution_2D distribution_;
 };
 
 }}

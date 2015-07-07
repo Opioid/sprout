@@ -17,8 +17,6 @@ private:
 	std::vector<Distribution_1D> conditional_;
 
 	Distribution_1D marginal_;
-
-	float area_;
 };
 
 }
