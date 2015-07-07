@@ -10,7 +10,9 @@ public:
 
 	void init(const float* data, const math::uint2& dimensions);
 
-	math::float2 sample_continuous(math::float2 uv, float& pdf) const;
+	math::float2 sample_continuous(math::float2 r2, float& pdf) const;
+
+	float pdf(math::float2 uv) const;
 
 private:
 

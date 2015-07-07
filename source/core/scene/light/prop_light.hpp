@@ -21,7 +21,9 @@ public:
 
 	virtual math::float3 evaluate(const math::float3& wi) const final override;
 
-	virtual float pdf(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& wi) const override;
+	virtual float pdf(const entity::Composed_transformation& transformation,
+					  const math::float3& p, const math::float3& wi,
+					  const image::sampler::Sampler_2D& image_sampler) const override;
 
 	virtual math::float3 power(const math::aabb& scene_bb) const final override;
 

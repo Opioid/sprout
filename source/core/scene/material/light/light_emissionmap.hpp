@@ -22,6 +22,8 @@ public:
 
 	virtual math::float2 emission_importance_sample(math::float2 r2, float& pdf) const final override;
 
+	virtual float emission_pdf(math::float2 uv, const image::sampler::Sampler_2D& sampler) const final override;
+
 	virtual void prepare_sampling() final override;
 
 private:

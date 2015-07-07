@@ -139,7 +139,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 			continue;
 		}
 
-		float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi);
+		float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi, settings_.sampler);
 		if (0.f == ls_pdf) {
 			continue;
 		}

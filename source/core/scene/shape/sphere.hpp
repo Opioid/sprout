@@ -25,7 +25,10 @@ public:
 						sampler::Sampler& sampler, Sample& sample) const final override;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-						const math::float3& p, const math::float2& uv, Sample& sample) const final override;
+						const math::float3& p, math::float2 uv, Sample& sample) const final override;
+
+	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
+						const math::float3& p, const math::float3& wi, Sample& sample) const final override;
 
 	virtual float pdf(uint32_t part, const entity::Composed_transformation& transformation, float area,
 					  const math::float3& p, const math::float3& wi) const final override;

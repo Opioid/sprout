@@ -219,8 +219,11 @@ void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transforma
 //	std::cout << sample.uv << std::endl;
 }
 
-void Inverse_sphere::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-							const math::float3& p, const math::float2& uv, Sample& sample) const {}
+void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
+							const math::float3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
+
+void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
+							const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Inverse_sphere::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 						  const math::float3& p, const math::float3& /*wi*/) const {

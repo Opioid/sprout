@@ -105,7 +105,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 			progressor.start(tiles.size());
 			render_subframe(camera, 0.f, 0.f, 0.f, 1.f, tiles, workers, pool, progressor);
 		} else {
-			progressor.start(tiles.size() * camera.shutter_duration() / scene.tick_duration());
+			progressor.start(static_cast<size_t>(static_cast<float>(tiles.size()) * (camera.shutter_duration() / scene.tick_duration())));
 			float frame_offset = 0.f;
 			float frame_rest = camera.shutter_duration();
 

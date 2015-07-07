@@ -67,8 +67,11 @@ void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transforma
 	sample.pdf = 1.f / area;
 }
 
-void Celestial_disk::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-							const math::float3& p, const math::float2& uv, Sample& sample) const {}
+void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
+							const math::float3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
+
+void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
+							const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Celestial_disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float area,
 						  const math::float3& /*p*/, const math::float3& /*wi*/) const {

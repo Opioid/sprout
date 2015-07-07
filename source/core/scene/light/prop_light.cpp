@@ -19,7 +19,8 @@ void Prop_light::transformation_at(float time, entity::Composed_transformation& 
 	prop_->transformation_at(time, transformation);
 }
 
-void Prop_light::sample(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& n,
+void Prop_light::sample(const entity::Composed_transformation& transformation,
+						const math::float3& p, const math::float3& n,
 						const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 						uint32_t max_samples, std::vector<Sample>& samples) const {
 	samples.clear();
@@ -39,7 +40,9 @@ math::float3 Prop_light::evaluate(const math::float3& wi) const {
 	return math::float3::identity;
 }
 
-float Prop_light::pdf(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& wi) const {
+float Prop_light::pdf(const entity::Composed_transformation& transformation,
+					  const math::float3& p, const math::float3& wi,
+					  const image::sampler::Sampler_2D& /*image_sampler*/) const {
 	return prop_->shape()->pdf(part_, transformation, area_, p, wi);
 }
 

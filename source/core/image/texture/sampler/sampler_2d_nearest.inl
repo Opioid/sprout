@@ -42,4 +42,9 @@ math::float3 Sampler_2D_nearest<Address_mode>::sample3(const Texture_2D& texture
 	return texture.at3(x, y);
 }
 
+template<typename Address_mode>
+math::float2 Sampler_2D_nearest<Address_mode>::address(math::float2 uv) const {
+	return address_mode_.f(uv);
+}
+
 }}

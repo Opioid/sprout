@@ -49,7 +49,8 @@ public:
 	virtual math::float3 evaluate(const math::float3& wi) const = 0;
 
 	virtual float pdf(const entity::Composed_transformation& transformation,
-					  const math::float3& p, const math::float3& wi) const = 0;
+					  const math::float3& p, const math::float3& wi,
+					  const image::sampler::Sampler_2D& image_sampler) const = 0;
 
 	virtual math::float3 power(const math::aabb& scene_bb) const = 0;
 

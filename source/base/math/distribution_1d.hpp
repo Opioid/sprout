@@ -17,6 +17,8 @@ public:
 	uint32_t sample_discrete(float r) const;
 	uint32_t sample_discrete(float r, float& pdf) const;
 
+	float pdf(float u) const;
+
 private:
 
 	void precompute_1D_pdf_cdf(const float* data, size_t len);

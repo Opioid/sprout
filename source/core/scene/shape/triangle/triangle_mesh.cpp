@@ -113,8 +113,11 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	}
 }
 
-void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-				  const math::float3& p, const math::float2& uv, Sample& sample) const {}
+void Mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
+				  const math::float3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
+
+void Mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
+				  const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Mesh::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
 				const math::float3& /*p*/, const math::float3& /*wi*/) const {

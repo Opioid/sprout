@@ -15,10 +15,10 @@
 
 namespace scene { namespace light {
 
-void Prop_image_light::sample(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& n,
+void Prop_image_light::sample(const entity::Composed_transformation& transformation,
+							  const math::float3& p, const math::float3& n,
 							  const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 							  uint32_t max_samples, std::vector<Sample>& samples) const {
-
 	samples.clear();
 
 	Sample light_sample;
@@ -43,8 +43,18 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 	}
 }
 
-float Prop_image_light::pdf(const entity::Composed_transformation& transformation, const math::float3& p, const math::float3& wi) const {
-	return prop_->shape()->pdf(part_, transformation, area_, p, wi);
+float Prop_image_light::pdf(const entity::Composed_transformation& transformation,
+							const math::float3& p, const math::float3& wi,
+							const image::sampler::Sampler_2D& image_sampler) const {
+//	return prop_->shape()->pdf(part_, transformation, area_, p, wi);
+
+	shape::Sample sample;
+	prop_->shape()->sample(part_, transformation, area_, p, wi, sample);
+
+	float pdf = prop_->material(part_)->emission_pdf(sample.uv, image_sampler);
+
+	return sample.pdf * pdf;
+
 }
 
 void Prop_image_light::prepare_sampling() {

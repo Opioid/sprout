@@ -38,6 +38,10 @@ math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf
 	return uv;
 }
 
+float Emissionmap::emission_pdf(math::float2 uv, const image::sampler::Sampler_2D& sampler) const {
+	return distribution_.pdf(sampler.address(uv)) * num_pixels_;
+}
+
 void Emissionmap::prepare_sampling() {
 	std::vector<float> luminance;
 	auto d = emission_.dimensions();
