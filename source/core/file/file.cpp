@@ -1,6 +1,4 @@
 #include "file.hpp"
-#include "gzip/gzip_read_stream.hpp"
-#include <fstream>
 #include <cstring>
 
 namespace file {
@@ -22,21 +20,6 @@ Type query_type(std::istream& stream) {
 	stream.seekg(0);
 
 	return type;
-}
-
-std::unique_ptr<std::istream> open_read_stream(const std::string& name) {
-	auto stream = std::unique_ptr<std::istream>(new std::ifstream(name.c_str(), std::ios::binary));
-	if (!*stream) {
-		return stream;
-	}
-
-	Type type = query_type(*stream);
-
-	if (Type::GZIP == type) {
-		return std::unique_ptr<std::istream>(new gzip::Read_stream(std::move(stream)));
-	}
-
-	return stream;
 }
 
 }

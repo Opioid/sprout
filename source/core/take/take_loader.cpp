@@ -23,17 +23,11 @@
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
 #include "base/json/json.hpp"
-#include <fstream>
 #include <iostream>
 
 namespace take {
 
-std::shared_ptr<Take> Loader::load(const std::string& filename) {
-	std::ifstream stream(filename, std::ios::binary);
-	if (!stream) {
-		throw std::runtime_error("Could not open file");
-	}
-
+std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	auto root = json::parse(stream);
 
 	auto take = std::make_shared<Take>();

@@ -5,8 +5,15 @@
 #include "image/image_provider.hpp"
 #include "resource/resource_cache.hpp"
 #include "base/json/rapidjson_types.hpp"
+#include <istream>
 #include <string>
 #include <memory>
+
+namespace file {
+
+class System;
+
+}
 
 namespace scene {
 
@@ -40,10 +47,10 @@ class Prop;
 class Loader {
 public:
 
-	Loader(uint32_t num_workers, thread::Pool& pool);
+	Loader(file::System& file_system, uint32_t num_workers, thread::Pool& pool);
 	~Loader();
 
-	void load(const std::string& filename, Scene& scene);
+	void load(std::istream& stream, Scene& scene);
 
 private:
 

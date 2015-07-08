@@ -1,3 +1,4 @@
+#include "core/file/file_system.hpp"
 #include "core/logging/logging.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
@@ -12,6 +13,9 @@
 
 int main() {
 	logging::init(logging::Type::Stdout);
+
+	file::System file_system;
+	file_system.push_mount("../data");
 
 	std::chrono::high_resolution_clock clock;
 
@@ -29,13 +33,13 @@ int main() {
 
 	auto loading_start = clock.now();
 
-	std::string takename = "../data/takes/model_test.take";
+	std::string takename = "takes/model_test.take";
 
 	std::shared_ptr<take::Take> take;
 
 	try {
 		take::Loader take_loader;
-		take = take_loader.load(takename);
+		take = take_loader.load(*file_system.read_stream(takename));
 	} catch (const std::exception& e) {
 		logging::error("Take \"" + takename + "\" could not be loaded: " + e.what() + ".");
 		return 1;
@@ -43,11 +47,11 @@ int main() {
 
 	// The scene loader must be alive during rendering, otherwise some resources might be released prematurely.
 	// This is confusing and should be adressed.
-	scene::Loader scene_loader(num_workers, pool);
+	scene::Loader scene_loader(file_system, num_workers, pool);
 	scene::Scene scene;
 
 	try {
-		scene_loader.load(take->scene, scene);
+		scene_loader.load(*file_system.read_stream(take->scene), scene);
 	} catch (const std::exception& e) {
 		logging::error("Scene \"" + take->scene + "\" could not be loaded: " + e.what() + ".");
 		return 1;

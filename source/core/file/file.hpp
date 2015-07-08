@@ -15,8 +15,4 @@ enum class Type {
 
 Type query_type(std::istream& stream);
 
-std::unique_ptr<std::istream> open_read_stream(const std::string& name);
-
-//std::istream open_read_stream(const std::string& name);
-
 }

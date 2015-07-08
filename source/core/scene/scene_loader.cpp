@@ -16,32 +16,26 @@
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/math/quaternion.inl"
-#include <fstream>
 #include <iostream>
 
 namespace scene {
 
-Loader::Loader(uint32_t num_workers, thread::Pool& pool) :
+Loader::Loader(file::System& file_system, uint32_t num_workers, thread::Pool& pool) :
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
 	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
-	mesh_cache_(mesh_provider_),
+	mesh_cache_(file_system, mesh_provider_),
 	image_provider_(pool),
-	image_cache_(image_provider_),
+	image_cache_(file_system, image_provider_),
 	material_provider_(image_cache_, num_workers),
-	material_cache_(material_provider_) {}
+	material_cache_(file_system, material_provider_) {}
 
 Loader::~Loader() {}
 
-void Loader::load(const std::string& filename, Scene& scene) {
-	std::ifstream stream(filename, std::ios::binary);
-	if (!stream) {
-		throw std::runtime_error("Could not open file");
-	}
-
+void Loader::load(std::istream& stream, Scene& scene) {
 	auto root = json::parse(stream);
 
 	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {

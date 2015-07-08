@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/json/rapidjson_types.hpp"
+#include <istream>
 #include <string>
 #include <memory>
 
@@ -58,7 +59,7 @@ struct Settings;
 class Loader {
 public:
 
-	std::shared_ptr<Take> load(const std::string& filename);
+	std::shared_ptr<Take> load(std::istream& stream);
 
 private:
 
