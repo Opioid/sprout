@@ -9,7 +9,7 @@ namespace file {
 std::unique_ptr<std::istream> System::read_stream(const std::string& name) const {
 	auto stream = open_read_stream(name);
 	if (!stream) {
-		throw std::exception("Stream could not be opened");
+		throw std::runtime_error("Stream could not be opened");
 	}
 
 	Type type = query_type(*stream);

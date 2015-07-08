@@ -18,7 +18,6 @@
 #include "substitute/substitute_normalmap.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
-#include <iostream>
 
 namespace scene { namespace material {
 
