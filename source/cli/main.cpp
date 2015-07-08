@@ -1,3 +1,4 @@
+#include "options/options.hpp"
 #include "core/file/file_system.hpp"
 #include "core/logging/logging.hpp"
 #include "core/take/take_loader.hpp"
@@ -11,11 +12,22 @@
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 
-int main() {
+int main(int argc, char* argv[]) {
 	logging::init(logging::Type::Stdout);
 
+	options::init(argc, argv);
+
+	auto& args = options::options();
+
 	file::System file_system;
-	file_system.push_mount("../data");
+
+	if (args.mounts.empty()) {
+		file_system.push_mount("../data/");
+	} else {
+		for (auto& m : args.mounts) {
+			file_system.push_mount(m);
+		}
+	}
 
 	std::chrono::high_resolution_clock clock;
 
@@ -23,7 +35,15 @@ int main() {
 
 	logging::info("Welcome to sprout!");
 
-	uint32_t num_workers = /*1;//*/static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
+	uint32_t available_threads = static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u));
+	uint32_t num_workers;
+	if (args.threads <= 0) {
+		num_workers = std::max(available_threads - static_cast<uint32_t>(-args.threads), 1u);
+	} else {
+		num_workers = std::min(available_threads, static_cast<uint32_t>(args.threads));
+	}
+
+//	uint32_t num_workers = /*1;//*/static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
 
 	logging::info("#Threads " + string::to_string(num_workers));
 
@@ -33,7 +53,10 @@ int main() {
 
 	auto loading_start = clock.now();
 
-	std::string takename = "takes/model_test.take";
+	std::string takename = args.take;
+	if (takename.empty()) {
+		takename = "takes/model_test.take";
+	}
 
 	std::shared_ptr<take::Take> take;
 

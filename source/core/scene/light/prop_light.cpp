@@ -36,7 +36,7 @@ void Prop_light::sample(const entity::Composed_transformation& transformation,
 	}
 }
 
-math::float3 Prop_light::evaluate(const math::float3& wi) const {
+math::float3 Prop_light::evaluate(const math::float3& /*wi*/) const {
 	return math::float3::identity;
 }
 
