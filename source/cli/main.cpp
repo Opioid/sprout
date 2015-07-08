@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
 	if (args.threads <= 0) {
 		num_workers = std::max(available_threads - static_cast<uint32_t>(-args.threads), 1u);
 	} else {
-		num_workers = std::min(available_threads, static_cast<uint32_t>(args.threads));
+		num_workers = std::min(available_threads, static_cast<uint32_t>(std::max(args.threads, 1)));
 	}
 
 //	uint32_t num_workers = /*1;//*/static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
