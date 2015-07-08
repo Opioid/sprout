@@ -1,3 +1,4 @@
+TARGET = sprout
 TEMPLATE = app
 QT -= core gui
 CONFIG += console

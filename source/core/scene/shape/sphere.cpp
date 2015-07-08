@@ -120,8 +120,8 @@ void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
 					const math::float3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
 
-void Sphere::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-					const math::float3& p, const math::float3& wi, Sample& sample) const {}
+void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
+					const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Sphere::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 				  const math::float3& p, const math::float3& /*wi*/) const {
