@@ -14,7 +14,7 @@ void init(int argc, char* argv[]) {
 		TCLAP::UnlabeledValueArg<std::string> take_arg("take", "The take file to render.", true, "", "file path");
 		cmd.add(take_arg);
 
-		TCLAP::MultiArg<std::string> mount_args("m", "mount", "Sets the mount point of the data directory. "
+		TCLAP::MultiArg<std::string> mount_args("m", "mount", "Sets a mount point for the data directory. "
 															  "The default value is \"../data/\"", false, "directory path");
 		cmd.add(mount_args);
 
