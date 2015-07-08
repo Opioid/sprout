@@ -12,6 +12,10 @@ math::float3 triangle_max(const math::float3& a, const math::float3& b, const ma
 	return math::max(a, math::max(b, math::max(c, x)));
 }
 
+float triangle_area(const math::float3& a, const math::float3& b, const math::float3& c) {
+	return 0.5f * math::length(math::cross(b - a, c - a));
+}
+
 uint32_t triangle_side(const math::float3& a, const math::float3& b, const math::float3& c, const math::plane& p) {
 	uint32_t behind = 0;
 

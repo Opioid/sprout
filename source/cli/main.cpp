@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 
 	std::string takename = args.take;
 	if (takename.empty()) {
-		takename = "takes/sponza.take";
+		takename = "takes/test.take";
 	}
 
 	std::shared_ptr<take::Take> take;

@@ -28,6 +28,9 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 //	math::aabb bb0 = math::aabb::empty();
 //	math::aabb bb1 = math::aabb::empty();
 
+//	float area_0 = 0.f;
+//	float area_1 = 0.f;
+
 	uint32_t num_side_0 = 0;
 //	uint32_t num_side_1 = 0;
 	uint32_t split = 0;
@@ -42,6 +45,9 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 //			bb0.insert(a);
 //			bb0.insert(b);
 //			bb0.insert(c);
+
+//			area_0 += triangle_area(a, b, c);
+
 //		} else if (1 == side) {
 //			++num_side_1;
 		} else {
@@ -52,10 +58,19 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 //			bb1.insert(a);
 //			bb1.insert(b);
 //			bb1.insert(c);
+
+//			area_1 += triangle_area(a, b, c);
 		}
 	}
 
-//	key_ += static_cast<uint32_t>(1000.f * (bb0.volume() + bb1.volume()));
+//	float ratio_0 = bb0.volume() / area_0;
+//	float ratio_1 = bb1.volume() / area_1;
+
+//	uint32_t volume = static_cast<uint32_t>(1000.f * (bb0.volume() + bb1.volume()));
+
+//	uint32_t ratio = static_cast<uint32_t>(1000.f * (ratio_0 + ratio_1));
+
+//	key_ += ratio;
 
 	key_ += split;
 
