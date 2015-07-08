@@ -11,7 +11,7 @@ void init(int argc, char* argv[]) {
 	try {
 		TCLAP::CmdLine cmd("sprout is a global illumination renderer experiment", ' ', "0.1");
 
-		TCLAP::UnlabeledValueArg<std::string> take_arg("take", "The take file to render.", false, "", "file path");
+		TCLAP::UnlabeledValueArg<std::string> take_arg("take", "The take file to render.", true, "", "file path");
 		cmd.add(take_arg);
 
 		TCLAP::MultiArg<std::string> mount_args("m", "mount", "Sets the mount point of the data directory. "

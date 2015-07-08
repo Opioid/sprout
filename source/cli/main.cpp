@@ -14,6 +14,7 @@
 
 int main(int argc, char* argv[]) {
 	logging::init(logging::Type::Stdout);
+	logging::info("Welcome to sprout!");
 
 	options::init(argc, argv);
 
@@ -33,8 +34,6 @@ int main(int argc, char* argv[]) {
 
 	auto total_start = clock.now();
 
-	logging::info("Welcome to sprout!");
-
 	uint32_t available_threads = static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u));
 	uint32_t num_workers;
 	if (args.threads <= 0) {
@@ -42,8 +41,6 @@ int main(int argc, char* argv[]) {
 	} else {
 		num_workers = std::min(available_threads, static_cast<uint32_t>(std::max(args.threads, 1)));
 	}
-
-//	uint32_t num_workers = /*1;//*/static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u)) - 1;
 
 	logging::info("#Threads " + string::to_string(num_workers));
 
@@ -53,18 +50,13 @@ int main(int argc, char* argv[]) {
 
 	auto loading_start = clock.now();
 
-	std::string takename = args.take;
-	if (takename.empty()) {
-		takename = "takes/test.take";
-	}
-
 	std::shared_ptr<take::Take> take;
 
 	try {
 		take::Loader take_loader;
-		take = take_loader.load(*file_system.read_stream(takename));
+		take = take_loader.load(*file_system.read_stream(args.take));
 	} catch (const std::exception& e) {
-		logging::error("Take \"" + takename + "\" could not be loaded: " + e.what() + ".");
+		logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
 		return 1;
 	}
 
