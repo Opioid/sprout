@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 
 	std::string takename = args.take;
 	if (takename.empty()) {
-		takename = "takes/model_test.take";
+		takename = "takes/sponza.take";
 	}
 
 	std::shared_ptr<take::Take> take;

@@ -191,6 +191,25 @@ Split_candidate XBuilder::splitting_plane(const math::aabb& aabb,
 	split_candidates_.push_back(Split_candidate(bb_axis, 2, average,
 								primitive_indices, triangles, vertices));
 
+/*
+	math::float3 v = average - position;
+
+	float modifier = 0.f;
+
+	split_candidates_.push_back(Split_candidate(bb_axis, 0, average + modifier * math::float3(v.x, 0.f, 0.f),
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 1, average + modifier * math::float3(0.f, v.y, 0.f),
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 2, average + modifier * math::float3(0.f, 0.f, v.z),
+								primitive_indices, triangles, vertices));
+/*
+	split_candidates_.push_back(Split_candidate(bb_axis, 0, position - modifier * math::float3(v.x, 0.f, 0.f),
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 1, position - modifier * math::float3(0.f, v.y, 0.f),
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 2, position - modifier * math::float3(0.f, 0.f, v.z),
+								primitive_indices, triangles, vertices));
+*/
 	std::sort(split_candidates_.begin(), split_candidates_.end(),
 			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 

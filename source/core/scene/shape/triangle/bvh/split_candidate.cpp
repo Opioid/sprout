@@ -1,7 +1,7 @@
 #include "split_candidate.hpp"
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
-#include "base/math/bounding/aabb.hpp"
+#include "base/math/bounding/aabb.inl"
 #include "base/math/plane.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
@@ -25,8 +25,8 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 
 	key_ = std::abs(static_cast<int>(bb_axis) - static_cast<int>(split_axis));
 
-//	math::AABB bb0 = math::AABB::empty();
-//	math::AABB bb1 = math::AABB::empty();
+//	math::aabb bb0 = math::aabb::empty();
+//	math::aabb bb1 = math::aabb::empty();
 
 	uint32_t num_side_0 = 0;
 //	uint32_t num_side_1 = 0;
@@ -55,12 +55,9 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 		}
 	}
 
-//	float volume = bb0.volume() + bb1.volume();
-//	uint32_t volume_bits = *reinterpret_cast<uint32_t*>(&volume);
+//	key_ += static_cast<uint32_t>(1000.f * (bb0.volume() + bb1.volume()));
 
 	key_ += split;
-
-//	key_ += std::abs(static_cast<int>(num_side_0) - static_cast<int>(num_side_1));
 
 	if (0 == num_side_0) {	
 		key_ += 0x1000000000000000;

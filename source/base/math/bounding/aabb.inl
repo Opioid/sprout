@@ -38,7 +38,7 @@ Vector3<T> AABB<T>::halfsize() const {
 template<typename T>
 T AABB<T>::volume() const {
 	Vector3<T> d = bounds_[1] - bounds_[0];
-	return dot(d, d);
+	return d.x * d.y * d.z;
 }
 
 template<typename T>
