@@ -178,7 +178,7 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 		//return new rendering::film::Filtered(dimensions, exposure, tonemapper, filter);
 		float radius = 0.8f;
 		float alpha  = 0.3f;
-		rendering::film::filter::Gaussian gaussian(math::float2(radius, radius), alpha);
+		rendering::film::filter::Gaussian gaussian(radius, alpha);
 		return new rendering::film::Filtered<rendering::film::filter::Gaussian>(dimensions, exposure, tonemapper, gaussian);
 	}
 

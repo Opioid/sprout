@@ -7,17 +7,17 @@ namespace rendering { namespace film { namespace filter {
 class Gaussian {
 public:
 
-	Gaussian(math::float2 width, float alpha);
+	Gaussian(float radius, float alpha);
 
 	float evaluate(math::float2 p) const;
 
 private:
 
-	float gaussian(float d, float exp) const;
+	float gaussian(float d) const;
+
+	float exp_;
 
 	float alpha_;
-
-	math::float2 exp_;
 };
 
 }}}
