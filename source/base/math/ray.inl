@@ -4,20 +4,20 @@
 namespace math {
 
 template<typename T>
-inline Ray<T>::Ray() {}
+Ray<T>::Ray() {}
 
 template<typename T>
-inline Ray<T>::Ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t, T max_t) :
+Ray<T>::Ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t, T max_t) :
 	origin(origin), direction(direction), min_t(min_t), max_t(max_t)
 {}
 
 template<typename T>
-inline Vector3<T> Ray<T>::point(T t) const {
+Vector3<T> Ray<T>::point(T t) const {
 	return origin + t * direction;
 }
 
 template<typename T>
-inline void Optimized_ray<T>::set_direction(const Vector3<T>& v) {
+void Optimized_ray<T>::set_direction(const Vector3<T>& v) {
 	this->direction = v;
 	reciprocal_direction = Vector3<T>(T(1) / v.x, T(1) / v.y, T(1) / v.z);
 
