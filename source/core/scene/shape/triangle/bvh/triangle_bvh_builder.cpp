@@ -1,9 +1,11 @@
-#include "triangle_bvh_builder.hpp"
+#include "triangle_bvh_Builder.hpp"
 #include "triangle_bvh_tree.hpp"
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
+#include "base/math/bounding/aabb.inl"
+#include <iostream>
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -32,11 +34,10 @@ void Builder::build(Tree& tree, const std::vector<Index_triangle>& triangles, co
 		primitive_indices[i] = static_cast<uint32_t>(i);
 	}
 
-	tree.triangles_.clear();
-	tree.triangles_.reserve(triangles.size());
+	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()));
 
 	Build_node root;
-	split(&root, primitive_indices, triangles, vertices, max_primitives, 0, tree.triangles_);
+	split(&root, primitive_indices, triangles, vertices, max_primitives, 0, tree);
 
 	num_nodes_ = 1;
 	root.num_sub_nodes(num_nodes_);
@@ -52,7 +53,6 @@ void Builder::serialize(Build_node* node) {
 	n.aabb = node->aabb;
 	n.start_index = node->start_index;
 	n.end_index = node->end_index;
-	n.axis = node->axis;
 
 	if (node->children[0]) {
 		serialize(node->children[0]);
@@ -62,6 +62,9 @@ void Builder::serialize(Build_node* node) {
 		serialize(node->children[1]);
 
 		n.set_has_children(true);
+
+		// axis and start_index share the same memory, so only set this if node contains no triangles
+		n.set_axis(node->axis);
 	}
 }
 
@@ -74,17 +77,21 @@ uint32_t Builder::current_node_index() const {
 }
 
 void Builder::split(Build_node* node,
-					const std::vector<uint32_t>& primitive_indices,
-					const std::vector<Index_triangle>& triangles,
-					const std::vector<Vertex>& vertices,
-					size_t max_primitives, uint32_t depth,
-					std::vector<Triangle>& out_triangles) {
+					 const std::vector<uint32_t>& primitive_indices,
+					 const std::vector<Index_triangle>& triangles,
+					 const std::vector<Vertex>& vertices,
+					 size_t max_primitives, uint32_t depth,
+					 Tree& tree) {
 	node->aabb = submesh_aabb(primitive_indices, triangles, vertices);
 
-	if (primitive_indices.size() <= max_primitives || depth > 24) {
-		assign(node, primitive_indices, triangles, vertices, out_triangles);
+	if (primitive_indices.size() <= max_primitives || depth > 16) {
+		assign(node, primitive_indices, triangles, vertices, tree);
 	} else {
-		math::plane sp = average_splitting_plane(node->aabb, primitive_indices, triangles, vertices, node->axis);
+	//	math::plane sp = average_splitting_plane(node->aabb, primitive_indices, triangles, vertices, node->axis);
+
+		Split_candidate sp = splitting_plane(node->aabb, primitive_indices, triangles, vertices);
+
+		node->axis = sp.axis();
 
 		size_t reserve_size = primitive_indices.size() / 2 + 1;
 		std::vector<uint32_t> pids0;
@@ -93,7 +100,7 @@ void Builder::split(Build_node* node,
 		pids1.reserve(reserve_size);
 
 		for (auto pi : primitive_indices) {
-			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp);
+			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp.plane());
 
 			if (0 == side) {
 				pids0.push_back(pi);
@@ -105,35 +112,35 @@ void Builder::split(Build_node* node,
 		if (pids0.empty()) {
 			// This can happen if we didn't find a good splitting plane.
 			// It means no triangle was completely on "this" side of the plane.
-			assign(node, pids1, triangles, vertices, out_triangles);
+			assign(node, pids1, triangles, vertices, tree);
 		} else {
 			node->children[0] = new Build_node;
-			split(node->children[0], pids0, triangles, vertices, max_primitives, depth + 1, out_triangles);
+			split(node->children[0], pids0, triangles, vertices, max_primitives, depth + 1, tree);
 
 			node->children[1] = new Build_node;
-			split(node->children[1], pids1, triangles, vertices, max_primitives, depth + 1, out_triangles);
+			split(node->children[1], pids1, triangles, vertices, max_primitives, depth + 1, tree);
 		}
 	}
 }
 
 void Builder::assign(Build_node* node,
-					 const std::vector<uint32_t>& primitive_indices,
-					 const std::vector<Index_triangle>& triangles,
-					 const std::vector<Vertex>& vertices,
-					 std::vector<Triangle>& out_triangles) {
-	node->start_index = static_cast<uint32_t>(out_triangles.size());
+					  const std::vector<uint32_t>& primitive_indices,
+					  const std::vector<Index_triangle>& triangles,
+					  const std::vector<Vertex>& vertices,
+					  Tree& tree) {
+	node->start_index = tree.num_triangles();
 
 	for (auto pi : primitive_indices) {
 		auto& t = triangles[pi];
-		out_triangles.push_back(Triangle{vertices[t.a], vertices[t.b], vertices[t.c], t.material_index});
+		tree.add_triangle(vertices[t.a], vertices[t.b], vertices[t.c], t.material_index);
 	}
 
-	node->end_index = static_cast<uint32_t>(out_triangles.size());
+	node->end_index = tree.num_triangles();
 }
 
 math::aabb Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {
 	float max_float = std::numeric_limits<float>::max();
-	math::float3 min(max_float, max_float, max_float);
+	math::float3 min( max_float,  max_float,  max_float);
 	math::float3 max(-max_float, -max_float, -max_float);
 
 	for (auto pi : primitive_indices) {
@@ -150,10 +157,69 @@ math::aabb Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices,
 	return math::aabb(min, max);
 }
 
+Split_candidate Builder::splitting_plane(const math::aabb& aabb,
+										  const std::vector<uint32_t>& primitive_indices,
+										  const std::vector<Index_triangle>& triangles,
+										  const std::vector<Vertex>& vertices) {
+	split_candidates_.clear();
+
+	math::float3 average = math::float3::identity;
+
+	for (auto pi : primitive_indices) {
+		average += vertices[triangles[pi].a].p + vertices[triangles[pi].b].p + vertices[triangles[pi].c].p;
+	}
+
+	average /= static_cast<float>(primitive_indices.size() * 3);
+
+	math::float3 position = aabb.position();
+	math::float3 halfsize = aabb.halfsize();
+
+	uint8_t bb_axis;
+
+	if (halfsize.x >= halfsize.y && halfsize.x >= halfsize.z) {
+		bb_axis = 0;
+	} else if (halfsize.y >= halfsize.x && halfsize.y >= halfsize.z) {
+		bb_axis = 1;
+	} else {
+		bb_axis = 2;
+	}
+
+	split_candidates_.push_back(Split_candidate(bb_axis, 0, average,
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 1, average,
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 2, average,
+								primitive_indices, triangles, vertices));
+
+/*
+	math::float3 v = average - position;
+
+	float modifier = 0.95f;
+
+	split_candidates_.push_back(Split_candidate(bb_axis, 0, position + modifier * v,
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 1, position + modifier * v,
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 2, position + modifier * v,
+								primitive_indices, triangles, vertices));
+
+	split_candidates_.push_back(Split_candidate(bb_axis, 0, position - modifier * v,
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 1, position - modifier * v,
+								primitive_indices, triangles, vertices));
+	split_candidates_.push_back(Split_candidate(bb_axis, 2, position - modifier * v,
+								primitive_indices, triangles, vertices));
+*/
+	std::sort(split_candidates_.begin(), split_candidates_.end(),
+			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
+
+	return split_candidates_[0];
+}
+
 math::plane Builder::average_splitting_plane(const math::aabb& aabb,
-											 const std::vector<uint32_t>& primitive_indices,
-											 const std::vector<Index_triangle>& triangles,
-											 const std::vector<Vertex>& vertices, uint8_t& axis) {
+											  const std::vector<uint32_t>& primitive_indices,
+											  const std::vector<Index_triangle>& triangles,
+											  const std::vector<Vertex>& vertices, uint8_t& axis) {
 	math::float3 average = math::float3::identity;
 
 	for (auto pi : primitive_indices) {

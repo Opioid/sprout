@@ -1,9 +1,7 @@
 #pragma once
 
 #include "scene/shape/shape.hpp"
-//#include "triangle_distribution.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
-#include "bvh/triangle_bvh_xtree.hpp"
 #include "base/math/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {
@@ -49,7 +47,7 @@ public:
 
 private:
 
-	bvh::XTree tree_;
+	bvh::Tree tree_;
 
 	struct Distribution {
 		void init(uint32_t part, const std::vector<Triangle>& triangles, const math::float3& scale);
