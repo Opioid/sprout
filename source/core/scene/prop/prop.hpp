@@ -24,11 +24,11 @@ public:
 
 	void init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
 
-	bool intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersection& intersection) const;
+	bool intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const;
 
-	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
+	bool intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
+	float opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
 	const shape::Shape* shape() const;
 	shape::Shape* shape();

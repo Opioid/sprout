@@ -67,7 +67,7 @@ private:
 	Surface_integrator* surface_integrator_;
 	sampler::Sampler* sampler_;
 	const scene::Scene* scene_;
-	Node_stack node_stack_;
+	scene::shape::Node_stack node_stack_;
 };
 
 }

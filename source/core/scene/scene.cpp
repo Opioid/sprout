@@ -25,15 +25,15 @@ Scene::~Scene() {
 	}
 }
 
-bool Scene::intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const {
+bool Scene::intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersection& intersection) const {
 	return bvh_.intersect(ray, node_stack, intersection);
 }
 
-bool Scene::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
+bool Scene::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const {
 	return bvh_.intersect_p(ray, node_stack);
 }
 
-float Scene::opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
+float Scene::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
 	return bvh_.opacity(ray, node_stack, sampler);
 }
 

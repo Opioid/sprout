@@ -15,7 +15,7 @@ Build_node::~Build_node() {
 	delete children[1];
 }
 
-bool Build_node::intersect(math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack, Intersection& intersection) const {
+bool Build_node::intersect(math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack, Intersection& intersection) const {
 	if (!aabb.intersect_p(ray)) {
 		return false;
 	}
@@ -45,7 +45,7 @@ bool Build_node::intersect(math::Oray& ray, const std::vector<Prop*>& props, Nod
 	return hit;
 }
 
-bool Build_node::intersect_p(const math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack) const {
+bool Build_node::intersect_p(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack) const {
 	if (!aabb.intersect_p(ray)) {
 		return false;
 	}
@@ -69,7 +69,7 @@ bool Build_node::intersect_p(const math::Oray& ray, const std::vector<Prop*>& pr
 	return false;
 }
 
-float Build_node::opacity(const math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack,
+float Build_node::opacity(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
 						  const image::sampler::Sampler_2D& sampler) const {
 	if (!aabb.intersect_p(ray)) {
 		return 0.f;
@@ -106,7 +106,7 @@ const math::aabb& Tree::aabb() const {
 	return root_.aabb;
 }
 
-bool Tree::intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const {
+bool Tree::intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersection& intersection) const {
 	bool hit = false;
 
 	if (root_.intersect(ray, props_, node_stack, intersection)) {
@@ -124,7 +124,7 @@ bool Tree::intersect(math::Oray& ray, Node_stack& node_stack, Intersection& inte
 	return hit;
 }
 
-bool Tree::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
+bool Tree::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const {
 	if (root_.intersect_p(ray, props_, node_stack)) {
 		return true;
 	}
@@ -138,7 +138,7 @@ bool Tree::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
 	return false;
 }
 
-float Tree::opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
+float Tree::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
 	float opacity = root_.opacity(ray, props_, node_stack, sampler);
 
 	if (opacity < 1.f) {

@@ -13,6 +13,7 @@ HEADERS += \
 	scene/shape/disk.hpp \
 	scene/shape/inverse_sphere.hpp \
 	scene/shape/node_stack.hpp \
+	scene/shape/node_stack.inl \
 	scene/shape/plane.hpp \
 	scene/shape/shape.hpp \
 	scene/shape/shape_sample.hpp \

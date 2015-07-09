@@ -1,6 +1,7 @@
 #include "triangle_bvh_Builder.hpp"
 #include "triangle_bvh_tree.hpp"
 #include "triangle_bvh_helper.hpp"
+#include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"

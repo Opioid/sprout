@@ -22,7 +22,7 @@ void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& 
 	}
 }
 
-bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersection& intersection) const {
+bool Prop::intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const {
 	entity::Composed_transformation transformation;
 	bool animated = transformation_at(ray.time, transformation);
 
@@ -44,7 +44,7 @@ bool Prop::intersect(math::Oray& ray, Node_stack& node_stack, shape::Intersectio
 	return shape_->intersect(transformation, ray, bounds, node_stack, intersection);
 }
 
-bool Prop::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
+bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const {
 	entity::Composed_transformation transformation;
 	bool animated = transformation_at(ray.time, transformation);
 
@@ -66,7 +66,7 @@ bool Prop::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
 	return shape_->intersect_p(transformation, ray, bounds, node_stack);
 }
 
-float Prop::opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
+float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
 	if (!has_masked_material()) {
 		return intersect_p(ray, node_stack) ? 1.f : 0.f;
 	}

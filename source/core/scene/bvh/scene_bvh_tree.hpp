@@ -21,11 +21,11 @@ struct Build_node {
 	Build_node();
 	~Build_node();
 
-	bool intersect(math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack, Intersection& intersection) const;
+	bool intersect(math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect_p(const math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack) const;
+	bool intersect_p(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, const std::vector<Prop*>& props, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
+	float opacity(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
 	math::aabb aabb;
 
@@ -42,11 +42,11 @@ public:
 
 	const math::aabb& aabb() const;
 
-	bool intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const;
+	bool intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
+	bool intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
+	float opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
 
 private:
 
