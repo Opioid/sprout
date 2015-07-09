@@ -3,9 +3,9 @@
 #include "exporting/exporting_sink_ffmpeg.hpp"
 #include "exporting/exporting_sink_image_sequence.hpp"
 #include "exporting/exporting_sink_null.hpp"
-#include "rendering/film/filtered.hpp"
+#include "rendering/film/filtered.inl"
 #include "rendering/film/unfiltered.hpp"
-#include "rendering/film/filter/gaussian.hpp"
+#include "rendering/film/filter/gaussian.inl"
 #include "rendering/film/tonemapping/filmic.hpp"
 #include "rendering/film/tonemapping/identity.hpp"
 #include "rendering/integrator/surface/ao.hpp"
@@ -151,8 +151,8 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
 	math::uint2 dimensions(32, 32);
 	float exposure = 0.f;
-	rendering::film::filter::Filter* filter = nullptr;
 	rendering::film::tonemapping::Tonemapper* tonemapper = nullptr;
+	bool filter = false;
 
 	for (auto n = film_value.MemberBegin(); n != film_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -165,7 +165,8 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 		} else if ("tonemapper" == node_name) {
 			tonemapper = load_tonemapper(node_value);
 		} else if ("filter" == node_name) {
-			filter = load_filter(node_value);
+			//filter = load_filter(node_value);
+			filter = true;
 		}
 	}
 
@@ -174,7 +175,11 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 	}
 
 	if (filter) {
-		return new rendering::film::Filtered(dimensions, exposure, tonemapper, filter);
+		//return new rendering::film::Filtered(dimensions, exposure, tonemapper, filter);
+		float radius = 0.8f;
+		float alpha  = 0.3f;
+		rendering::film::filter::Gaussian gaussian(math::float2(radius, radius), alpha);
+		return new rendering::film::Filtered<rendering::film::filter::Gaussian>(dimensions, exposure, tonemapper, gaussian);
 	}
 
 	return new rendering::film::Unfiltered(dimensions, exposure, tonemapper);
@@ -194,12 +199,6 @@ rendering::film::tonemapping::Tonemapper* Loader::load_tonemapper(const rapidjso
 	}
 
 	return nullptr;
-}
-
-rendering::film::filter::Filter* Loader::load_filter(const rapidjson::Value& /*film_value*/) const {
-	float radius = 0.8f;
-	float alpha  = 0.3f;
-	return new rendering::film::filter::Gaussian(math::float2(radius, radius), alpha);
 }
 
 std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const {

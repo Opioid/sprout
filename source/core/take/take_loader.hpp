@@ -69,8 +69,6 @@ private:
 
 	rendering::film::tonemapping::Tonemapper* load_tonemapper(const rapidjson::Value& tonemapper_value) const;
 
-	rendering::film::filter::Filter* load_filter(const rapidjson::Value& film_value) const;
-
 	std::shared_ptr<sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const;
 
 	std::shared_ptr<rendering::Surface_integrator_factory> load_surface_integrator_factory(const rapidjson::Value& integrator_value,

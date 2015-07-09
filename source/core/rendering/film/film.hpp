@@ -29,7 +29,7 @@ public:
 	Film(const math::uint2& dimensions, float exposure, tonemapping::Tonemapper* tonemapper);
 	virtual ~Film();
 
-	const math::uint2& dimensions() const;
+	math::uint2 dimensions() const;
 
 	const image::Image& resolve(thread::Pool& pool);
 

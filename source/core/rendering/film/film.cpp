@@ -18,7 +18,7 @@ Film::~Film() {
 	delete [] pixels_;
 }
 
-const math::uint2& Film::dimensions() const {
+math::uint2 Film::dimensions() const {
 	return image_.description().dimensions;
 }
 
