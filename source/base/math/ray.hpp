@@ -22,7 +22,7 @@ struct Optimized_ray : public Ray<T> {
 	void set_direction(const Vector3<T>& v);
 
 	Vector3<T> reciprocal_direction;
-	uint8_t sign[3];
+	int sign[3];
 	T time;
 	uint32_t depth;
 };

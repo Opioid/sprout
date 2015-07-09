@@ -43,11 +43,13 @@ T AABB<T>::volume() const {
 
 template<typename T>
 bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray) const {
-	T min_t = (bounds_[    ray.sign[0]].x - ray.origin.x) * ray.reciprocal_direction.x;
-	T max_t = (bounds_[1 - ray.sign[0]].x - ray.origin.x) * ray.reciprocal_direction.x;
+	int sign_0 = ray.sign[0];
+	T min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.reciprocal_direction.x;
+	T max_t = (bounds_[1 - sign_0].x - ray.origin.x) * ray.reciprocal_direction.x;
 
-	T min_ty = (bounds_[    ray.sign[1]].y - ray.origin.y) * ray.reciprocal_direction.y;
-	T max_ty = (bounds_[1 - ray.sign[1]].y - ray.origin.y) * ray.reciprocal_direction.y;
+	int sign_1 = ray.sign[1];
+	T min_ty = (bounds_[    sign_1].y - ray.origin.y) * ray.reciprocal_direction.y;
+	T max_ty = (bounds_[1 - sign_1].y - ray.origin.y) * ray.reciprocal_direction.y;
 
 	if (min_t > max_ty || min_ty > max_t) {
 		return false;
@@ -61,8 +63,9 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray) const {
 		max_t = max_ty;
 	}
 
-	T min_tz = (bounds_[    ray.sign[2]].z - ray.origin.z) * ray.reciprocal_direction.z;
-	T max_tz = (bounds_[1 - ray.sign[2]].z - ray.origin.z) * ray.reciprocal_direction.z;
+	int sign_2 = ray.sign[2];
+	T min_tz = (bounds_[    sign_2].z - ray.origin.z) * ray.reciprocal_direction.z;
+	T max_tz = (bounds_[1 - sign_2].z - ray.origin.z) * ray.reciprocal_direction.z;
 
 	if (min_t > max_tz || min_tz > max_t) {
 		return false;

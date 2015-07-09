@@ -1,4 +1,5 @@
 #include "triangle_bvh_Tree.hpp"
+#include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_primitive.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/sampling.inl"
@@ -15,18 +16,13 @@ void Node::set_axis(uint32_t axis) {
 	start_index |= axis;
 }
 
-inline Node::Children Node::children(uint8_t sign, uint32_t id) const {
+inline Node::Children Node::children(int sign, uint32_t id) const {
 	if (0 == sign) {
 		return Children{id + 1, end_index};
 	} else {
 		return Children{end_index, id + 1};
 	}
 }
-
-/*
-inline uint32_t Node::axis() const {
-	return end_index;
-}*/
 
 inline bool Node::has_children() const {
 	return has_children_flag == (start_index & has_children_flag);
