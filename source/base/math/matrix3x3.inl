@@ -6,10 +6,10 @@
 namespace math {
 
 template<typename T>
-inline Matrix3x3<T>::Matrix3x3() {}
+Matrix3x3<T>::Matrix3x3() {}
 
 template<typename T>
-inline Matrix3x3<T>::Matrix3x3(T m00, T m01, T m02,
+Matrix3x3<T>::Matrix3x3(T m00, T m01, T m02,
 							   T m10, T m11, T m12,
 							   T m20, T m21, T m22):
 	m00(m00), m01(m01), m02(m02),
@@ -17,7 +17,7 @@ inline Matrix3x3<T>::Matrix3x3(T m00, T m01, T m02,
 	m20(m20), m21(m21), m22(m22) {}
 
 template<typename T>
-inline Matrix3x3<T>::Matrix3x3(const Vector3<T>& x, const Vector3<T>& y, const Vector3<T>& z) : x(x), y(y), z(z) {}
+Matrix3x3<T>::Matrix3x3(const Vector3<T>& x, const Vector3<T>& y, const Vector3<T>& z) : x(x), y(y), z(z) {}
 
 template<typename T>
 Matrix3x3<T>::Matrix3x3(const Matrix4x4<T>& m) :
@@ -26,7 +26,7 @@ Matrix3x3<T>::Matrix3x3(const Matrix4x4<T>& m) :
 	m20(m.m20), m21(m.m21), m22(m.m22) {}
 
 template<typename T>
-inline Matrix3x3<T>::Matrix3x3(const Quaternion<T>& q) {
+Matrix3x3<T>::Matrix3x3(const Quaternion<T>& q) {
 	T d = dot(q, q);
 
 	T s = T(2) / d;
@@ -42,7 +42,7 @@ inline Matrix3x3<T>::Matrix3x3(const Quaternion<T>& q) {
 }
 
 template<typename T>
-inline Matrix3x3<T> Matrix3x3<T>::operator*(const Matrix3x3& m) const {
+Matrix3x3<T> Matrix3x3<T>::operator*(const Matrix3x3& m) const {
 	return Matrix3x3(m00 * m.m00 + m01 * m.m10 + m02 * m.m20,
 					 m00 * m.m01 + m01 * m.m11 + m02 * m.m21,
 					 m00 * m.m02 + m01 * m.m12 + m02 * m.m22,
@@ -57,7 +57,7 @@ inline Matrix3x3<T> Matrix3x3<T>::operator*(const Matrix3x3& m) const {
 }
 
 template<typename T>
-inline Matrix3x3<T> Matrix3x3<T>::operator/(T s) const {
+Matrix3x3<T> Matrix3x3<T>::operator/(T s) const {
 	T is = T(1) / s;
 	return Matrix3x3<T>(is * m00, is * m01, is * m02,
 						is * m10, is * m11, is * m12,
@@ -65,7 +65,7 @@ inline Matrix3x3<T> Matrix3x3<T>::operator/(T s) const {
 }
 
 template<typename T>
-inline Matrix3x3<T>& Matrix3x3<T>::operator*=(const Matrix3x3& m) {
+Matrix3x3<T>& Matrix3x3<T>::operator*=(const Matrix3x3& m) {
 	Matrix3x3 temp(m00 * m.m00 + m01 * m.m10 + m02 * m.m20,
 				   m00 * m.m01 + m01 * m.m11 + m02 * m.m21,
 				   m00 * m.m02 + m01 * m.m12 + m02 * m.m22,
@@ -87,14 +87,14 @@ const Matrix3x3<T> Matrix3x3<T>::identity = Matrix3x3<T>(T(1), T(0), T(0),
 														 T(0), T(0), T(1));
 
 template<typename T>
-inline Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) {
+Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
 template<typename T>
-inline Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v) {
+Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
@@ -119,7 +119,7 @@ void transform_vectors(const Matrix3x3<T>& m, const Vector3<T>& a, const Vector3
 }
 
 template<typename T>
-inline Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m) {
+Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m) {
 	Vector3<T> temp(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 					v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
 					v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
@@ -128,14 +128,14 @@ inline Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m) {
 }
 
 template<typename T>
-inline Vector3<T> operator*(const Matrix3x3<T>& m, const Vector3<T>& v) {
+Vector3<T> operator*(const Matrix3x3<T>& m, const Vector3<T>& v) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
 					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
 					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
 }
 
 template<typename T>
-inline Matrix3x3<T> normalize(const Matrix3x3<T>& m) {
+Matrix3x3<T> normalize(const Matrix3x3<T>& m) {
 	T s0 = T(1) / length(Vector3<T>(m.m00, m.m01, m.m02));
 	T s1 = T(1) / length(Vector3<T>(m.m10, m.m11, m.m12));
 	T s2 = T(1) / length(Vector3<T>(m.m20, m.m21, m.m22));
@@ -146,7 +146,7 @@ inline Matrix3x3<T> normalize(const Matrix3x3<T>& m) {
 }
 
 template<typename T>
-inline T det(const Matrix3x3<T>& m) {
+T det(const Matrix3x3<T>& m) {
 	return m.m00 * m.m11 * m.m22
 		 + m.m10 * m.m21 * m.m02
 		 + m.m20 * m.m01 * m.m12
@@ -156,14 +156,14 @@ inline T det(const Matrix3x3<T>& m) {
 }
 
 template<typename T>
-inline Matrix3x3<T> invert(const Matrix3x3<T>& m) {
+Matrix3x3<T> invert(const Matrix3x3<T>& m) {
 	return Matrix3x3<T>(m.m11 * m.m22 - m.m12 * m.m21, m.m02 * m.m21 - m.m01 * m.m22, m.m01 * m.m12 - m.m02 * m.m11,
 						m.m12 * m.m20 - m.m10 * m.m22, m.m00 * m.m22 - m.m02 * m.m20, m.m02 * m.m10 - m.m00 * m.m12,
 						m.m10 * m.m21 - m.m11 * m.m20, m.m01 * m.m20 - m.m00 * m.m21, m.m00 * m.m11 - m.m01 * m.m10) / det(m);
 }
 
 template<typename T>
-inline void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>& up) {
+void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>& up) {
 	Vector3<T> z = normalize(dir);
 	Vector3<T> x = normalize(cross(up, z));
 	Vector3<T> y = cross(z, x);
@@ -181,7 +181,7 @@ inline void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>
 }
 
 template<typename T>
-inline void set_basis(Matrix3x3<T>& m, const Vector3<T>& v) {
+void set_basis(Matrix3x3<T>& m, const Vector3<T>& v) {
 	m.rows[2] = v;
 
 	if (v.x < T(0.6) && v.x > -T(0.6)) {
@@ -199,28 +199,28 @@ inline void set_basis(Matrix3x3<T>& m, const Vector3<T>& v) {
 }
 
 template<typename T>
-inline void set_scale(Matrix3x3<T>& m, T x, T y, T z) {
+void set_scale(Matrix3x3<T>& m, T x, T y, T z) {
 	m.m00 = x;    m.m01 = T(0); m.m02 = T(0);
 	m.m10 = T(0); m.m11 = y;    m.m12 = T(0);
 	m.m20 = T(0); m.m21 = T(0); m.m22 = z;
 }
 
 template<typename T>
-inline void set_scale(Matrix3x3<T>& m, const Vector3<T>& v) {
+void set_scale(Matrix3x3<T>& m, const Vector3<T>& v) {
 	m.m00 = v.x;  m.m01 = T(0); m.m02 = T(0);
 	m.m10 = T(0); m.m11 = v.y;  m.m12 = T(0);
 	m.m20 = T(0); m.m21 = T(0); m.m22 = v.z;
 }
 
 template<typename T>
-inline void scale(Matrix3x3<T>& m, const Vector3<T>& v) {
+void scale(Matrix3x3<T>& m, const Vector3<T>& v) {
 	m.m00 *= v.x; m.m01 *= v.x; m.m02 *= v.x;
 	m.m10 *= v.y; m.m11 *= v.y; m.m12 *= v.y;
 	m.m20 *= v.z; m.m21 *= v.z; m.m22 *= v.z;
 }
 
 template<typename T>
-inline void set_rotation_x(Matrix3x3<T>& m, T a) {
+void set_rotation_x(Matrix3x3<T>& m, T a) {
 	T c = std::cos(a);
 	T s = std::sin(a);
 
@@ -230,7 +230,7 @@ inline void set_rotation_x(Matrix3x3<T>& m, T a) {
 }
 
 template<typename T>
-inline void set_rotation_y(Matrix3x3<T>& m, T a)
+void set_rotation_y(Matrix3x3<T>& m, T a)
 {
 	T c = std::cos(a);
 	T s = std::sin(a);
@@ -241,7 +241,7 @@ inline void set_rotation_y(Matrix3x3<T>& m, T a)
 }
 
 template<typename T>
-inline void set_rotation_z(Matrix3x3<T>& m, T a) {
+void set_rotation_z(Matrix3x3<T>& m, T a) {
 	T c = std::cos(a);
 	T s = std::sin(a);
 
@@ -251,7 +251,7 @@ inline void set_rotation_z(Matrix3x3<T>& m, T a) {
 }
 
 template<typename T>
-inline void set_rotation(Matrix3x3<T>& m, const Vector3<T>& v, T a) {
+void set_rotation(Matrix3x3<T>& m, const Vector3<T>& v, T a) {
 	T c = std::cos(a);
 	T s = std::sin(a);
 	T t = T(1) - c;
@@ -280,7 +280,7 @@ inline void set_rotation(Matrix3x3<T>& m, const Vector3<T>& v, T a) {
 }
 
 template<typename T>
-inline Matrix3x3<T> transposed(const Matrix3x3<T>& m) {
+Matrix3x3<T> transposed(const Matrix3x3<T>& m) {
 	return Matrix3x3<T>(m.m00, m.m10, m.m20,
 						m.m01, m.m11, m.m21,
 						m.m02, m.m12, m.m22);

@@ -4,6 +4,7 @@
 #include "image/texture/texture_2d.inl"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "base/color/color.inl"
+#include "base/math/distribution_2d.inl"
 
 namespace scene { namespace material { namespace light {
 

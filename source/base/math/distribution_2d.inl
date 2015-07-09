@@ -5,7 +5,7 @@
 
 namespace math {
 
-void Distribution_2D::init(const float* data, const math::uint2& dimensions) {
+inline void Distribution_2D::init(const float* data, const math::uint2& dimensions) {
 	conditional_.resize(dimensions.y);
 
 	std::vector<float> integrals(dimensions.y);
@@ -19,7 +19,7 @@ void Distribution_2D::init(const float* data, const math::uint2& dimensions) {
 	marginal_.init(integrals.data(), dimensions.y);
 }
 
-math::float2 Distribution_2D::sample_continuous(math::float2 r2, float& pdf) const {
+inline math::float2 Distribution_2D::sample_continuous(math::float2 r2, float& pdf) const {
 	math::float2 result;
 
 	float v_pdf;
@@ -34,7 +34,7 @@ math::float2 Distribution_2D::sample_continuous(math::float2 r2, float& pdf) con
 	return result;
 }
 
-float Distribution_2D::pdf(math::float2 uv) const {
+inline float Distribution_2D::pdf(math::float2 uv) const {
 	float v_pdf = marginal_.pdf(uv.y);
 
 	size_t c = static_cast<size_t>(uv.y * static_cast<float>(conditional_.size() - 1));

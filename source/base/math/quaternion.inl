@@ -5,15 +5,15 @@
 namespace math {
 
 template<typename T>
-inline Quaternion<T>::Quaternion()
+Quaternion<T>::Quaternion()
 {}
 
 template<typename T>
-inline Quaternion<T>::Quaternion(T x, T y, T z, T w) : x(x), y(y), z(z), w(w)
+Quaternion<T>::Quaternion(T x, T y, T z, T w) : x(x), y(y), z(z), w(w)
 {}
 
 template<typename T>
-inline Quaternion<T>::Quaternion(const Matrix3x3<T>& m)
+Quaternion<T>::Quaternion(const Matrix3x3<T>& m)
 {
 	T trace = m.m00 + m.m11 + m.m22;
 	T temp[4];
@@ -50,7 +50,7 @@ inline Quaternion<T>::Quaternion(const Matrix3x3<T>& m)
 }
 
 template<typename T>
-inline Quaternion<T> Quaternion<T>::operator*(const Quaternion<T>& q) const
+Quaternion<T> Quaternion<T>::operator*(const Quaternion<T>& q) const
 {
 	return Quaternion<T>(w * q.x + x * q.w + y * q.z - z * q.y,
 						 w * q.y + y * q.w + z * q.x - x * q.z,
@@ -59,7 +59,7 @@ inline Quaternion<T> Quaternion<T>::operator*(const Quaternion<T>& q) const
 }
 
 template<typename T>
-inline Quaternion<T>& Quaternion<T>::operator*=(const Quaternion<T>& q)
+Quaternion<T>& Quaternion<T>::operator*=(const Quaternion<T>& q)
 {
 	Quaternion<T> temp(w * q.x + x * q.w + y * q.z - z * q.y,
 					   w * q.y + y * q.w + z * q.x - x * q.z,
@@ -73,26 +73,26 @@ template<typename T>
 const Quaternion<T> Quaternion<T>::identity(T(0), T(0), T(0), T(1));
 
 template<typename T>
-inline T dot(const Quaternion<T>& a, const Quaternion<T>& b)
+T dot(const Quaternion<T>& a, const Quaternion<T>& b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 }
 
 template<typename T>
-inline T length(const Quaternion<T>& q)
+T length(const Quaternion<T>& q)
 {
 	return sqrt(dot(q, q));
 }
 
 template<typename T>
-inline T angle(const Quaternion<T>& a, const Quaternion<T>& b)
+T angle(const Quaternion<T>& a, const Quaternion<T>& b)
 {
 	T s = sqrt(dot(a, a) * dot(b, b));
 	return acos(dot(a, b) / s);
 }
 
 template<typename T>
-inline void set_rotation_x(Quaternion<T>& q, T a)
+void set_rotation_x(Quaternion<T>& q, T a)
 {
 	q.x = sin(a * T(0.5));
 	q.y = T(0);
@@ -101,7 +101,7 @@ inline void set_rotation_x(Quaternion<T>& q, T a)
 }
 
 template<typename T>
-inline void set_rotation_y(Quaternion<T>& q, T a)
+void set_rotation_y(Quaternion<T>& q, T a)
 {
 	q.x = T(0);
 	q.y = sin(a * T(0.5));
@@ -110,7 +110,7 @@ inline void set_rotation_y(Quaternion<T>& q, T a)
 }
 
 template<typename T>
-inline void set_rotation_z(Quaternion<T>& q, T a)
+void set_rotation_z(Quaternion<T>& q, T a)
 {
 	q.x = T(0);
 	q.y = T(0);
@@ -119,7 +119,7 @@ inline void set_rotation_z(Quaternion<T>& q, T a)
 }
 
 template<typename T>
-inline void set_rotation(Quaternion<T>& q, const Vector3<T>& v, T a)
+void set_rotation(Quaternion<T>& q, const Vector3<T>& v, T a)
 {
 	const T d = length(v);
 
@@ -132,7 +132,7 @@ inline void set_rotation(Quaternion<T>& q, const Vector3<T>& v, T a)
 }
 
 template<typename T>
-inline void set_rotation(Quaternion<T>& q, T yaw, T pitch, T roll)
+void set_rotation(Quaternion<T>& q, T yaw, T pitch, T roll)
 {
 	const T half_yaw   = yaw   * T(0.5);
 	const T half_pitch = pitch * T(0.5);
@@ -152,7 +152,7 @@ inline void set_rotation(Quaternion<T>& q, T yaw, T pitch, T roll)
 }
 
 template<typename T>
-inline Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t)
+Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t)
 {
 	// calc cosine theta
 	float cosom = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
