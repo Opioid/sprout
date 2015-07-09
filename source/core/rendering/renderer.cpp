@@ -66,7 +66,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	auto& camera = *context.camera;
 	auto& film   = camera.film();
 
-	auto& dimensions = film.dimensions();
+	auto dimensions = film.dimensions();
 
 	size_t num_tiles = static_cast<size_t>(std::ceil(static_cast<float>(dimensions.x) / static_cast<float>(tile_dimensions_.x)))
 					 * static_cast<size_t>(std::ceil(static_cast<float>(dimensions.y) / static_cast<float>(tile_dimensions_.y)));

@@ -1,4 +1,4 @@
-#include "triangle_bvh_Tree.hpp"
+#include "triangle_bvh_tree.hpp"
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_primitive.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"

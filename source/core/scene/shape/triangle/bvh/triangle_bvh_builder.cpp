@@ -1,4 +1,4 @@
-#include "triangle_bvh_Builder.hpp"
+#include "triangle_bvh_builder.hpp"
 #include "triangle_bvh_tree.hpp"
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/node_stack.inl"
