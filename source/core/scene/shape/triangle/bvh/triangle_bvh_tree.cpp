@@ -8,7 +8,7 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-inline uint32_t Node::axis() const {
+uint32_t Node::axis() const {
 	return start_index & ~has_children_flag;
 }
 
@@ -16,7 +16,7 @@ void Node::set_axis(uint32_t axis) {
 	start_index |= axis;
 }
 
-inline Node::Children Node::children(int sign, uint32_t id) const {
+Node::Children Node::children(int sign, uint32_t id) const {
 	if (0 == sign) {
 		return Children{id + 1, end_index};
 	} else {
@@ -24,7 +24,7 @@ inline Node::Children Node::children(int sign, uint32_t id) const {
 	}
 }
 
-inline bool Node::has_children() const {
+bool Node::has_children() const {
 	return has_children_flag == (start_index & has_children_flag);
 }
 

@@ -139,16 +139,6 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 	} else {
 		float p = sampler.generate_sample_1D();
 
-//		if (p < 0.5f) {
-//			float n_dot_wi = lambert_.importance_sample(sampler, result);
-//			result.pdf *= 0.5f;
-//			result.reflection *= n_dot_wi;
-//		} else {
-//			float n_dot_wi = ggx_.importance_sample(sampler, result);
-//			result.pdf *= 0.5f;
-//			result.reflection *= n_dot_wi;
-//		}
-
 		if (p < 0.5f) {
 			float n_dot_wi = lambert_.importance_sample(sampler, result);
 			result.pdf = 0.5f * (result.pdf + ggx_.pdf(result.wi, n_dot_wi));

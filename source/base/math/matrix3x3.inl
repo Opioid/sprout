@@ -135,7 +135,7 @@ Vector3<T> operator*(const Matrix3x3<T>& m, const Vector3<T>& v) {
 }
 
 template<typename T>
-Matrix3x3<T> normalize(const Matrix3x3<T>& m) {
+Matrix3x3<T> normalized(const Matrix3x3<T>& m) {
 	T s0 = T(1) / length(Vector3<T>(m.m00, m.m01, m.m02));
 	T s1 = T(1) / length(Vector3<T>(m.m10, m.m11, m.m12));
 	T s2 = T(1) / length(Vector3<T>(m.m20, m.m21, m.m22));
@@ -225,8 +225,8 @@ void set_rotation_x(Matrix3x3<T>& m, T a) {
 	T s = std::sin(a);
 
 	m.m00 = T(1); m.m01 = T(0); m.m02 = T(0);
-	m.m10 = T(0); m.m11 = c;   m.m12 = -s;
-	m.m20 = T(0); m.m21 = s;   m.m22 =  c;
+	m.m10 = T(0); m.m11 = c;    m.m12 = -s;
+	m.m20 = T(0); m.m21 = s;    m.m22 =  c;
 }
 
 template<typename T>

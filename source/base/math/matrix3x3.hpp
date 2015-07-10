@@ -68,7 +68,7 @@ template<typename T>
 void transform_vectors(const Matrix3x3<T>& m, const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob);
 
 template<typename T>
-Matrix3x3<T> normalize(const Matrix3x3<T>& m);
+Matrix3x3<T> normalized(const Matrix3x3<T>& m);
 
 template<typename T>
 T det(const Matrix3x3<T>& m);
