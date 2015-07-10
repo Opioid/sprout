@@ -8,11 +8,11 @@
 #include "substitute/substitute.hpp"
 #include "base/json/rapidjson_types.hpp"
 
-namespace image {
+namespace image { namespace texture {
 
-class Image;
+class Texture_2D;
 
-}
+}}
 
 namespace scene { namespace material {
 
@@ -21,7 +21,7 @@ class IMaterial;
 class Provider : public resource::Provider<IMaterial> {
 public:
 
-	Provider(file::System& file_system, resource::Cache<image::Image>& image_cache, uint32_t num_workers);
+	Provider(file::System& file_system, resource::Cache<image::texture::Texture_2D>& texture_cache, uint32_t num_workers);
 
 	virtual std::shared_ptr<IMaterial> load(const std::string& filename, uint32_t flags = 0);
 
@@ -34,7 +34,7 @@ private:
 	std::shared_ptr<IMaterial> load_matte(const rapidjson::Value& matte_value);
 	std::shared_ptr<IMaterial> load_substitute(const rapidjson::Value& substitute_value);
 
-	resource::Cache<image::Image>& image_cache_;
+	resource::Cache<image::texture::Texture_2D>& texture_cache_;
 
 	Sample_cache<glass::Sample> glass_cache_;
 	Sample_cache<light::Sample> light_cache_;

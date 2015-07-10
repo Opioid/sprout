@@ -1,6 +1,5 @@
 #include "prop_image_light.hpp"
 #include "light_sample.hpp"
-#include "image/texture/texture_2d.inl"
 #include "sampler/sampler.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/shape/shape.hpp"
@@ -17,7 +16,7 @@ namespace scene { namespace light {
 
 void Prop_image_light::sample(const entity::Composed_transformation& transformation,
 							  const math::float3& p, const math::float3& n,
-							  const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
+							  const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 							  uint32_t max_samples, std::vector<Sample>& samples) const {
 	samples.clear();
 
@@ -45,7 +44,7 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 
 float Prop_image_light::pdf(const entity::Composed_transformation& transformation,
 							const math::float3& p, const math::float3& wi,
-							const image::sampler::Sampler_2D& image_sampler) const {
+							const image::texture::sampler::Sampler_2D& image_sampler) const {
 	shape::Sample sample;
 	prop_->shape()->sample(part_, transformation, area_, p, wi, sample);
 

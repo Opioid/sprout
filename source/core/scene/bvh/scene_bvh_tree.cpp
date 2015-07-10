@@ -70,7 +70,7 @@ bool Build_node::intersect_p(const math::Oray& ray, const std::vector<Prop*>& pr
 }
 
 float Build_node::opacity(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
-						  const image::sampler::Sampler_2D& sampler) const {
+						  const image::texture::sampler::Sampler_2D& sampler) const {
 	if (!aabb.intersect_p(ray)) {
 		return 0.f;
 	}
@@ -138,7 +138,8 @@ bool Tree::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) con
 	return false;
 }
 
-float Tree::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
+float Tree::opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+					const image::texture::sampler::Sampler_2D& sampler) const {
 	float opacity = root_.opacity(ray, props_, node_stack, sampler);
 
 	if (opacity < 1.f) {

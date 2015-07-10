@@ -8,11 +8,11 @@ namespace scene { namespace material { namespace glass {
 class Normalmap : public Glass {
 public:
 
-	Normalmap(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask,
-			  const math::float3& color, float attenuation_distance, float ior, std::shared_ptr<image::Image> normal);
+	Normalmap(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+			  const math::float3& color, float attenuation_distance, float ior, std::shared_ptr<image::texture::Texture_2D> normal);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
-								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
+								 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
 
 private:
 
@@ -20,7 +20,7 @@ private:
 	math::float3 attenuation_;
 	float ior_;
 	float f0_;
-	image::Texture_2D normal_;
+	std::shared_ptr<image::texture::Texture_2D> normal_;
 };
 
 }}}

@@ -10,7 +10,7 @@ class Normal : public Surface_integrator {
 public:
 
 	struct Settings {
-		image::sampler::Sampler_2D_nearest<image::sampler::Address_mode_repeat> sampler;
+		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler;
 	};
 
 	Normal(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);

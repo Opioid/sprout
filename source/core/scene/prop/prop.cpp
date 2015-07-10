@@ -66,7 +66,7 @@ bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) con
 	return shape_->intersect_p(transformation, ray, bounds, node_stack);
 }
 
-float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
+float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::texture::sampler::Sampler_2D& sampler) const {
 	if (!has_masked_material()) {
 		return intersect_p(ray, node_stack) ? 1.f : 0.f;
 	}

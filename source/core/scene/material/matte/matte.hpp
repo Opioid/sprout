@@ -35,13 +35,13 @@ private:
 class Matte : public Material<Sample> {
 public:
 
-	Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask);
+	Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
 
-	virtual math::float3 sample_emission(math::float2 uv, const image::sampler::Sampler_2D& sampler) const override;
+	virtual math::float3 sample_emission(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const override;
 
 	virtual math::float3 average_emission() const override;
 
-	virtual const image::Texture_2D* emission_map() const final override;
+	virtual const image::texture::Texture_2D* emission_map() const final override;
 };
 
 }}}

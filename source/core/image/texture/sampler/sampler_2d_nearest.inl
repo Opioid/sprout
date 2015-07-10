@@ -1,10 +1,10 @@
 #pragma once
 
 #include "sampler_2d_nearest.hpp"
-#include "image/texture/texture_2d.inl"
+#include "image/texture/texture_2d.hpp"
 #include <algorithm>
 
-namespace image { namespace sampler {
+namespace image { namespace texture { namespace sampler {
 
 template<typename Address_mode>
 float Sampler_2D_nearest<Address_mode>::sample1(const Texture_2D& texture, math::float2 uv) const {
@@ -47,4 +47,4 @@ math::float2 Sampler_2D_nearest<Address_mode>::address(math::float2 uv) const {
 	return address_mode_.f(uv);
 }
 
-}}
+}}}

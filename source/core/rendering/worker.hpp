@@ -6,11 +6,11 @@
 #include "base/math/ray.hpp"
 #include "base/math/random/generator.hpp"
 
-namespace image { namespace sampler {
+namespace image { namespace texture { namespace sampler {
 
 class Sampler_2D;
 
-}}
+}}}
 
 namespace sampler {
 
@@ -56,7 +56,7 @@ public:
 
 	bool intersect_m(math::Oray& ray, scene::Intersection& intersection);
 
-	float masked_visibility(const math::Oray& ray, const image::sampler::Sampler_2D& sampler);
+	float masked_visibility(const math::Oray& ray, const image::texture::sampler::Sampler_2D& sampler);
 
 	const scene::Scene& scene() const;
 

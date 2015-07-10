@@ -33,7 +33,7 @@ bool Scene::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) co
 	return bvh_.intersect_p(ray, node_stack);
 }
 
-float Scene::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const {
+float Scene::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::texture::sampler::Sampler_2D& sampler) const {
 	return bvh_.opacity(ray, node_stack, sampler);
 }
 

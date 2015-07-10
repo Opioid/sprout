@@ -5,11 +5,11 @@
 #include "base/math/bounding/aabb.hpp"
 #include <vector>
 
-namespace image { namespace sampler {
+namespace image { namespace texture { namespace sampler {
 
 class Sampler_2D;
 
-}}
+}}}
 
 namespace scene {
 
@@ -25,7 +25,8 @@ struct Build_node {
 
 	bool intersect_p(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
+	float opacity(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
+				  const image::texture::sampler::Sampler_2D& sampler) const;
 
 	math::aabb aabb;
 
@@ -46,7 +47,8 @@ public:
 
 	bool intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
+	float opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+				  const image::texture::sampler::Sampler_2D& sampler) const;
 
 private:
 

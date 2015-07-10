@@ -6,7 +6,7 @@
 namespace scene { namespace light {
 
 void Light::sample(float time, const math::float3& p, const math::float3& n,
-				   const image::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
+				   const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 				   uint32_t max_samples, std::vector<Sample>& samples) const {
 	entity::Composed_transformation transformation;
 	transformation_at(time, transformation);

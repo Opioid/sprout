@@ -13,6 +13,7 @@
 #include "scene/shape/triangle/triangle_mesh.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "resource/resource_cache.inl"
+#include "resource/resource_provider.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/math/quaternion.inl"
@@ -29,9 +30,9 @@ Loader::Loader(file::System& file_system, uint32_t num_workers, thread::Pool& po
 	sphere_(std::make_shared<shape::Sphere>()),
 	mesh_provider_(file_system),
 	mesh_cache_(mesh_provider_),
-	image_provider_(file_system, pool),
-	image_cache_(image_provider_),
-	material_provider_(file_system, image_cache_, num_workers),
+	texture_provider_(file_system, pool),
+	texture_cache_(texture_provider_),
+	material_provider_(file_system, texture_cache_, num_workers),
 	material_cache_(material_provider_) {}
 
 Loader::~Loader() {}

@@ -2,7 +2,7 @@
 
 #include "base/math/vector.hpp"
 
-namespace image {
+namespace image { namespace texture {
 
 class Texture_2D;
 
@@ -18,4 +18,4 @@ public:
 	virtual math::float2 address(math::float2 uv) const = 0;
 };
 
-}}
+}}}

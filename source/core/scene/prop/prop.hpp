@@ -28,7 +28,7 @@ public:
 
 	bool intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
+	float opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::texture::sampler::Sampler_2D& sampler) const;
 
 	const shape::Shape* shape() const;
 	shape::Shape* shape();

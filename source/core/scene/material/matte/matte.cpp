@@ -41,9 +41,9 @@ void Sample::set(const math::float3& color) {
 	diffuse_color_ = color;
 }
 
-Matte::Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask) : Material(cache, mask) {}
+Matte::Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) : Material(cache, mask) {}
 
-math::float3 Matte::sample_emission(math::float2 /*uv*/, const image::sampler::Sampler_2D& /*sampler*/) const {
+math::float3 Matte::sample_emission(math::float2 /*uv*/, const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	return math::float3::identity;
 }
 
@@ -51,7 +51,7 @@ math::float3 Matte::average_emission() const {
 	return math::float3::identity;
 }
 
-const image::Texture_2D* Matte::emission_map() const {
+const image::texture::Texture_2D* Matte::emission_map() const {
 	return nullptr;
 }
 

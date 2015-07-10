@@ -8,7 +8,7 @@
 
 namespace scene { namespace material { namespace glass {
 
-Constant::Constant(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask,
+Constant::Constant(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
 				   const math::float3& color, float attenuation_distance, float ior) :
 	Glass(cache, mask), color_(color),
 	attenuation_(1.f / (color.x * attenuation_distance), 1.f / (color.y * attenuation_distance), 1.f / (color.z * attenuation_distance)),
@@ -19,7 +19,7 @@ Constant::Constant(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> ma
 }
 
 const Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
-							   const image::sampler::Sampler_2D& /*sampler*/, uint32_t worker_id) {
+							   const image::texture::sampler::Sampler_2D& /*sampler*/, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);

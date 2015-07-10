@@ -41,7 +41,7 @@ public:
 
 	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
 						  const math::float2& bounds, Node_stack& node_stack,
-						  const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const = 0;
+						  const material::Materials& materials, const image::texture::sampler::Sampler_2D& sampler) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 						const math::float3& p, const math::float3& n,

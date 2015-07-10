@@ -9,7 +9,7 @@ inline material::IMaterial* Intersection::material() const {
 	return prop->material(geo.part);
 }
 
-inline float Intersection::opacity(const image::sampler::Sampler_2D& sampler) const {
+inline float Intersection::opacity(const image::texture::sampler::Sampler_2D& sampler) const {
 	return prop->material(geo.part)->opacity(geo.uv, sampler);
 }
 

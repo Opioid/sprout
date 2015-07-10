@@ -2,7 +2,7 @@
 
 #include "shape/triangle/triangle_mesh_provider.hpp"
 #include "material/material_provider.hpp"
-#include "image/image_provider.hpp"
+#include "image/texture/texture_2d_provider.hpp"
 #include "resource/resource_cache.hpp"
 #include "base/json/rapidjson_types.hpp"
 #include <istream>
@@ -78,8 +78,8 @@ private:
 	shape::triangle::Provider mesh_provider_;
 	resource::Cache<shape::triangle::Mesh> mesh_cache_;
 
-	image::Provider image_provider_;
-	resource::Cache<image::Image> image_cache_;
+	image::texture::Provider texture_provider_;
+	resource::Cache<image::texture::Texture_2D> texture_cache_;
 
 	material::Provider material_provider_;
 	resource::Cache<material::IMaterial> material_cache_;

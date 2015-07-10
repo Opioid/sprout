@@ -43,7 +43,7 @@ public:
 	bool intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::sampler::Sampler_2D& sampler) const;
+	float opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::texture::sampler::Sampler_2D& sampler) const;
 
 	float tick_duration() const;
 	float simulation_time() const;

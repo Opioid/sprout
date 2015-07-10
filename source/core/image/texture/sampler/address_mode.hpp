@@ -4,7 +4,7 @@
 #include "base/math/math.hpp"
 #include "base/math/vector.hpp"
 
-namespace image { namespace sampler {
+namespace image { namespace texture { namespace sampler {
 
 struct Address_mode_repeat {
 	math::float2 f(math::float2 uv) const {
@@ -12,4 +12,4 @@ struct Address_mode_repeat {
 	}
 };
 
-}}
+}}}

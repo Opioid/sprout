@@ -8,26 +8,26 @@ namespace scene { namespace material { namespace substitute {
 class Colormap_normalmap_surfacemap_emissionmap : public Substitute {
 public:
 
-	Colormap_normalmap_surfacemap_emissionmap(Sample_cache<Sample>& cache, std::shared_ptr<image::Image> mask,
-											  std::shared_ptr<image::Image> color,
-											  std::shared_ptr<image::Image> normal,
-											  std::shared_ptr<image::Image> surface,
-											  std::shared_ptr<image::Image> emission,
-											  float emission_factor, float metallic);
+	Colormap_normalmap_surfacemap_emissionmap(Sample_cache<Sample>& cache,
+											  std::shared_ptr<image::texture::Texture_2D> mask,
+											  std::shared_ptr<image::texture::Texture_2D> color,
+											  std::shared_ptr<image::texture::Texture_2D> normal,
+											  std::shared_ptr<image::texture::Texture_2D> surface,
+											  std::shared_ptr<image::texture::Texture_2D> emission,
+											  float emission_factor);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
-								 const image::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
+								 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
 
 	virtual math::float3 average_emission() const final override;
 
 private:
 
-	image::Texture_2D color_;
-	image::Texture_2D normal_;
-	image::Texture_2D surface_;
-	image::Texture_2D emission_;
+	std::shared_ptr<image::texture::Texture_2D> color_;
+	std::shared_ptr<image::texture::Texture_2D> normal_;
+	std::shared_ptr<image::texture::Texture_2D> surface_;
+	std::shared_ptr<image::texture::Texture_2D> emission_;
 	float emission_factor_;
-	float metallic_;
 };
 
 }}}

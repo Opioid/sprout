@@ -54,7 +54,7 @@ public:
 	bool intersect_p(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack) const;
 
 	float opacity(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack,
-				  const material::Materials& materials, const image::sampler::Sampler_2D& sampler) const;
+				  const material::Materials& materials, const image::texture::sampler::Sampler_2D& sampler) const;
 
 	void interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
 	math::float2 interpolate_triangle_uv(uint32_t index, math::float2 uv) const;

@@ -21,7 +21,7 @@ public:
 	struct Settings {
 		uint32_t max_light_samples;
 
-		image::sampler::Sampler_2D_nearest<image::sampler::Address_mode_repeat> sampler;
+		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler;
 	};
 
 	Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
