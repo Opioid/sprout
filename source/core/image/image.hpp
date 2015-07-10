@@ -4,15 +4,15 @@
 
 namespace image {
 
-struct Description {
-	Description();
-	Description(const math::uint2& dimensions);
-
-	math::uint2 dimensions;
-};
-
 class Image {
 public:
+
+	struct Description {
+		Description();
+		Description(const math::uint2& dimensions);
+
+		math::uint2 dimensions;
+	};
 
 	Image(const Description& description);
 	virtual ~Image();

@@ -9,7 +9,7 @@ Film::Film(const math::uint2& dimensions, float exposure, tonemapping::Tonemappe
 	pixels_(new Pixel[dimensions.x * dimensions.y]),
 	exposure_(exposure),
 	tonemapper_(tonemapper),
-	image_(image::Description(dimensions)),
+	image_(image::Image::Description(dimensions)),
 	seeds_(new float[dimensions.x * dimensions.y]) {}
 
 Film::~Film() {

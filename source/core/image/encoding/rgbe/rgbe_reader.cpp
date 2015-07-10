@@ -12,7 +12,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
 	math::uint2 dimensions(header.width, header.height);
 
-	auto image = std::make_shared<Image_3>(Description(dimensions));
+	auto image = std::make_shared<Image_3>(Image::Description(dimensions));
 
 	read_pixels_RLE(stream, header.width, header.height, *image);
 

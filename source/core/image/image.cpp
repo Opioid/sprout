@@ -3,15 +3,15 @@
 
 namespace image {
 
-Description::Description() {}
+Image::Description::Description() {}
 
-Description::Description(const math::uint2& dimensions) : dimensions(dimensions) {}
+Image::Description::Description(const math::uint2& dimensions) : dimensions(dimensions) {}
 
 Image::Image(const Description& description) : description_(description) {}
 
 Image::~Image() {}
 
-const Description& Image::description() const {
+const Image::Description& Image::description() const {
 	return description_;
 }
 

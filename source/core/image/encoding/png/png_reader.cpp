@@ -47,9 +47,9 @@ std::shared_ptr<Image> Reader::create_image(const Info& info) const {
 	std::shared_ptr<Image> image;
 
 	if (info.use_as_mask) {
-		image = std::make_shared<Image_1>(Description(math::uint2(info.width, info.height)));
+		image = std::make_shared<Image_1>(Image::Description(math::uint2(info.width, info.height)));
 	} else {
-		image = std::make_shared<Image_3>(Description(math::uint2(info.width, info.height)));
+		image = std::make_shared<Image_3>(Image::Description(math::uint2(info.width, info.height)));
 	}
 
 	uint32_t num_pixels = info.width * info.height;
