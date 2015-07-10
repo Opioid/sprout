@@ -27,11 +27,12 @@ Loader::Loader(file::System& file_system, uint32_t num_workers, thread::Pool& po
 	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
-	mesh_cache_(file_system, mesh_provider_),
-	image_provider_(pool),
-	image_cache_(file_system, image_provider_),
-	material_provider_(image_cache_, num_workers),
-	material_cache_(file_system, material_provider_) {}
+	mesh_provider_(file_system),
+	mesh_cache_(mesh_provider_),
+	image_provider_(file_system, pool),
+	image_cache_(image_provider_),
+	material_provider_(file_system, image_cache_, num_workers),
+	material_cache_(material_provider_) {}
 
 Loader::~Loader() {}
 

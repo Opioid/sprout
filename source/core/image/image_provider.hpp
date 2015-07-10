@@ -10,7 +10,7 @@ class Image;
 class Provider : public resource::Provider<Image> {
 public:
 
-	Provider(thread::Pool& pool);
+	Provider(file::System& file_system, thread::Pool& pool);
 
 	enum class Flags {
 		None = 0,
@@ -18,12 +18,11 @@ public:
 		Use_as_mask   = 2
 	};
 
-	virtual std::shared_ptr<Image> load(std::istream& stream, uint32_t flags = 0);
+	virtual std::shared_ptr<Image> load(const std::string& filename, uint32_t flags = 0) final override;
 
 private:
 
 	encoding::png::Reader png_reader_;
-
 };
 
 }

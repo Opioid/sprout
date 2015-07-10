@@ -1,4 +1,5 @@
 #include "material_provider.hpp"
+#include "resource/resource_provider.inl"
 #include "material_sample_cache.inl"
 #include "image/image_provider.hpp"
 #include "resource/resource_cache.inl"
@@ -21,7 +22,8 @@
 
 namespace scene { namespace material {
 
-Provider::Provider(resource::Cache<image::Image>& image_cache, uint32_t num_workers) :
+Provider::Provider(file::System& file_system, resource::Cache<image::Image>& image_cache, uint32_t num_workers) :
+	resource::Provider<IMaterial>(file_system),
 	image_cache_(image_cache),
 	glass_cache_(num_workers),
 	light_cache_(num_workers),
@@ -29,7 +31,14 @@ Provider::Provider(resource::Cache<image::Image>& image_cache, uint32_t num_work
 	substitute_cache_(num_workers),
 	fallback_material_(std::make_shared<substitute::Constant>(substitute_cache_, nullptr, math::float3(1.f, 0.f, 0.f), 1.f, 0.f)) {}
 
-std::shared_ptr<IMaterial> Provider::load(std::istream& stream, uint32_t /*flags*/) {
+std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t /*flags*/) {
+	auto stream_pointer = file_system_.read_stream(filename);
+	if (!*stream_pointer) {
+		throw std::runtime_error("File \"" + filename + "\" could not be opened");
+	}
+
+	auto& stream = *stream_pointer;
+
 	auto root = json::parse(stream);
 
 	// checking for positions now, but handling them later

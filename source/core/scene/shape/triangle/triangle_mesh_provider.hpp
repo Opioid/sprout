@@ -19,7 +19,9 @@ class Mesh;
 class Provider : public resource::Provider<Mesh> {
 public:
 
-	virtual std::shared_ptr<Mesh> load(std::istream& stream, uint32_t flags = 0);
+	Provider(file::System& file_system);
+
+	virtual std::shared_ptr<Mesh> load(const std::string& filename, uint32_t flags = 0);
 
 private:
 

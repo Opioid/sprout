@@ -1,7 +1,9 @@
 #include "triangle_mesh_provider.hpp"
+#include "resource/resource_provider.inl"
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
 #include "bvh/triangle_bvh_builder.hpp"
+#include "file/file_system.hpp"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
 #include "base/json/json.hpp"
@@ -9,7 +11,16 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-std::shared_ptr<Mesh> Provider::load(std::istream& stream, uint32_t /*flags*/) {
+Provider::Provider(file::System& file_system) : resource::Provider<Mesh>(file_system) {}
+
+std::shared_ptr<Mesh> Provider::load(const std::string& filename, uint32_t /*flags*/) {
+	auto stream_pointer = file_system_.read_stream(filename);
+	if (!*stream_pointer) {
+		throw std::runtime_error("File \"" + filename + "\" could not be opened");
+	}
+
+	auto& stream = *stream_pointer;
+
 	auto root = json::parse(stream);
 
 	std::vector<Index_triangle> triangles;

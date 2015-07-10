@@ -56,11 +56,8 @@ std::shared_ptr<Image> Reader::create_image(const Info& info) const {
 
 	pool_.run_range([&info, &image](uint32_t begin, uint32_t end){ to_float(info, *image, begin, end); }, 0, num_pixels);
 
-//	to_linear(info, *image, 0, num_pixels);
-
 	return image;
 }
-
 
 void Reader::to_float(const Info& info, Image& image, uint32_t start_pixel, uint32_t end_pixel) {
 	color::Color4c color(0, 0, 0, 255);
