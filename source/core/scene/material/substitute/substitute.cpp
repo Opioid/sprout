@@ -70,11 +70,6 @@ float GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) con
 	float g = ggx::g(n_dot_wi, n_dot_wo, sample_.a2_);
 	math::float3 f = ggx::f(wo_dot_h, sample_.f0_);
 
-	// Hackedy hack hack
-//	if (sample_.a2_ < 0.0000001f) {
-//		d = 1.f;
-//	}
-
 	result.pdf = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
 
 	math::float3 specular = d * g * f;
