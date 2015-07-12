@@ -21,11 +21,6 @@ Provider::Provider(file::System& file_system) :
 }
 
 std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, uint32_t flags) {
-	auto stream_pointer = file_system_.read_stream(filename);
-	if (!*stream_pointer) {
-		throw std::runtime_error("File \"" + filename + "\" could not be opened");
-	}
-
 	uint32_t num_channels = 3;
 
 	if (static_cast<uint32_t>(Provider::Flags::Use_as_mask) == flags) {
