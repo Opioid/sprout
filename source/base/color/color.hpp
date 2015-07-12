@@ -4,6 +4,7 @@
 
 namespace math {
 
+template<typename T> struct Vector2;
 template<typename T> struct Vector3;
 template<typename T> struct Vector4;
 
@@ -11,6 +12,7 @@ template<typename T> struct Vector4;
 
 namespace color {
 
+typedef math::Vector2<unsigned char> Color2c;
 typedef math::Vector3<unsigned char> Color3c;
 typedef math::Vector3<float> Color3;
 typedef math::Vector4<unsigned char> Color4c;
@@ -20,6 +22,8 @@ typedef math::Vector4<float> Color4;
 Color3 linear_to_sRGB(const Color3& c);
 
 // convert sRGB gamma color to sRGB linear color
+float sRGB_to_linear(float c);
+
 Color3 sRGB_to_linear(const Color3c& c);
 Color3 sRGB_to_linear(const Color3& c);
 
@@ -36,6 +40,9 @@ Color4 to_float(const Color4c& c);
 
 Color4c to_byte(const Color4& c);
 uint32_t to_uint(const Color4& c);
+
+float snorm_to_float(unsigned char byte);
+float unorm_to_float(unsigned char byte);
 
 float luminance(const Color3& c);
 

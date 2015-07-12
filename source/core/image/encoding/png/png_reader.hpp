@@ -19,16 +19,15 @@ class Pool;
 namespace image {
 
 class Image;
-class Image_3;
 
 namespace encoding { namespace png {
 
 class Reader {
 public:
 
-	Reader(thread::Pool& pool);
+	Reader();
 
-	std::shared_ptr<Image> read(std::istream& stream, bool use_as_normal, bool use_as_mask);
+	std::shared_ptr<Image> read(std::istream& stream, uint32_t num_channels);
 
 private:
 
@@ -67,9 +66,6 @@ private:
 
 		std::vector<uint8_t> buffer;
 
-		bool use_as_normal;
-		bool use_as_mask;
-
 		// parsing state
 		Filter current_filter;
 		bool filter_byte;
@@ -83,9 +79,7 @@ private:
 		mz_stream stream;
 	};
 
-	std::shared_ptr<Image> create_image(const Info& info) const;
-
-	static void to_float(const Info& info, Image& image, uint32_t start_pixel, uint32_t end_pixel);
+	std::shared_ptr<Image> create_image(const Info& info, uint32_t num_channels) const;
 
 	static std::shared_ptr<Chunk> read_chunk(std::istream& stream);
 
@@ -106,8 +100,6 @@ private:
 	static uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c);
 
 	static uint32_t swap(uint32_t v);
-
-	thread::Pool& pool_;
 
 	Info info_;
 

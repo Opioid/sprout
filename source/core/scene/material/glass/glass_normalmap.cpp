@@ -24,7 +24,7 @@ const Sample& Normalmap::sample(const shape::Differential& dg, const math::float
 								const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
-	math::float3 nm = sampler.sample3(*normal_, dg.uv);
+	math::float3 nm = sampler.sample_3(*normal_, dg.uv);
 	math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
 //	math::float3 t;

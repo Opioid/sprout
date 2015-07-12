@@ -12,7 +12,7 @@ public:
 	Image_sequence(const std::string& filename, const math::uint2& dimensions);
 	~Image_sequence();
 
-	virtual void write(const image::Image& image, thread::Pool& pool) final override;
+	virtual void write(const image::Image_float_4& image, thread::Pool& pool) final override;
 
 private:
 

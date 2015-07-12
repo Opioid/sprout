@@ -15,13 +15,13 @@ const Sample& Emissionmap::sample(const shape::Differential& dg, const math::flo
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
-	sample.set(sampler.sample3(*emission_, dg.uv));
+	sample.set(sampler.sample_3(*emission_, dg.uv));
 
 	return sample;
 }
 
 math::float3 Emissionmap::sample_emission(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
-	return sampler.sample3(*emission_, uv);
+	return sampler.sample_3(*emission_, uv);
 }
 
 math::float3 Emissionmap::average_emission() const {
@@ -50,7 +50,7 @@ void Emissionmap::prepare_sampling() {
 	size_t l = 0;
 	for (uint32_t y = 0; y < d.y; ++y) {
 		for (uint32_t x = 0; x < d.x; ++x, ++l) {
-			luminance[l] = color::luminance(emission_->at3(x, y));
+			luminance[l] = color::luminance(emission_->at_3(x, y));
 		}
 	}
 

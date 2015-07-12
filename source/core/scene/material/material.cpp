@@ -21,7 +21,7 @@ bool IMaterial::is_masked() const {
 
 float IMaterial::opacity(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
 	if (mask_) {
-		return sampler.sample1(*mask_, uv);
+		return sampler.sample_1(*mask_, uv);
 	} else {
 		return 1.f;
 	}

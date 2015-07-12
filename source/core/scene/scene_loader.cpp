@@ -21,7 +21,7 @@
 
 namespace scene {
 
-Loader::Loader(file::System& file_system, uint32_t num_workers, thread::Pool& pool) :
+Loader::Loader(file::System& file_system, uint32_t num_workers) :
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
@@ -30,7 +30,7 @@ Loader::Loader(file::System& file_system, uint32_t num_workers, thread::Pool& po
 	sphere_(std::make_shared<shape::Sphere>()),
 	mesh_provider_(file_system),
 	mesh_cache_(mesh_provider_),
-	texture_provider_(file_system, pool),
+	texture_provider_(file_system),
 	texture_cache_(texture_provider_),
 	material_provider_(file_system, texture_cache_, num_workers),
 	material_cache_(material_provider_) {}

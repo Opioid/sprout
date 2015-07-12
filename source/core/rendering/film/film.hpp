@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/rectangle.hpp"
-#include "image/image_4.hpp"
+#include "image/typed_image.hpp"
 
 namespace thread {
 
@@ -26,12 +26,12 @@ class Tonemapper;
 class Film {
 public:
 
-	Film(const math::uint2& dimensions, float exposure, tonemapping::Tonemapper* tonemapper);
+	Film(math::uint2 dimensions, float exposure, tonemapping::Tonemapper* tonemapper);
 	virtual ~Film();
 
 	math::uint2 dimensions() const;
 
-	const image::Image& resolve(thread::Pool& pool);
+	const image::Image_float_4& resolve(thread::Pool& pool);
 
 	void clear();
 
@@ -61,7 +61,7 @@ protected:
 
 	tonemapping::Tonemapper* tonemapper_;
 
-	image::Image_4 image_;
+	image::Image_float_4 image_;
 
 	float* seeds_;
 };

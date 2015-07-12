@@ -1,5 +1,5 @@
 #include "rgbe_reader.hpp"
-#include "image/image_3.hpp"
+#include "image/typed_image.inl"
 #include "base/math/vector.inl"
 #include <cmath>
 #include <string>
@@ -12,19 +12,9 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
 	math::uint2 dimensions(header.width, header.height);
 
-	auto image = std::make_shared<Image_3>(Image::Description(dimensions));
+	auto image = std::make_shared<Image_float_3>(Image::Description(Image::Type::Float_3, dimensions));
 
 	read_pixels_RLE(stream, header.width, header.height, *image);
-
-	/*
-	for (uint32_t y = 0, i = 0; y < dimensions.y; ++y) {
-		for (uint32_t x = 0; x < dimensions.x; ++x, ++i) {
-			math::float3 color(static_cast<float>(x) / static_cast<float>(dimensions.x),
-							   static_cast<float>(y) / static_cast<float>(dimensions.y),
-							   0.5);
-			image->set3(i, color);
-		}
-	}*/
 
 	return image;
 }
@@ -64,7 +54,7 @@ Reader::Header Reader::read_header(std::istream& stream) {
 	return header;
 }
 
-void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines, Image_3& image) {
+void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines, Image_float_3& image) {
 	if (scanline_width < 8 || scanline_width > 0x7fff) {
 		return read_pixels(stream, scanline_width * num_scanlines, image, 0);
 	}
@@ -81,7 +71,7 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
 			// this file is not run length encoded
 			math::float3 color = rgbe_to_float3(rgbe);
 
-			image.set3(0, color);
+			image.set(0, color);
 
 			read_pixels(stream, scanline_width * num_scanlines - 1, image, 1);
 			return;
@@ -135,12 +125,12 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
 			rgbe[2] = scanline_buffer[i + 2 * scanline_width];
 			rgbe[3] = scanline_buffer[i + 3 * scanline_width];
 
-			image.set3(offset++, rgbe_to_float3(rgbe));
+			image.set(offset++, rgbe_to_float3(rgbe));
 		}
 	}
 }
 
-void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image_3& image, uint32_t offset) {
+void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image_float_3& image, uint32_t offset) {
 	uint8_t rgbe[4];
 
 	for (; num_pixels > 0; --num_pixels) {
@@ -148,7 +138,7 @@ void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image_3& ima
 
 		math::float3 color = rgbe_to_float3(rgbe);
 
-		image.set3(offset++, color);
+		image.set(offset++, color);
 	}
 }
 

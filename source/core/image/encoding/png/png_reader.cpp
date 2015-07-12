@@ -1,6 +1,5 @@
 #include "png_reader.hpp"
-#include "image/image_1.hpp"
-#include "image/image_3.hpp"
+#include "image/typed_image.inl"
 #include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/thread/thread_pool.hpp"
@@ -8,9 +7,9 @@
 
 namespace image { namespace encoding { namespace png {
 
-Reader::Reader(thread::Pool& pool) : pool_(pool) {}
+Reader::Reader() {}
 
-std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal, bool use_as_mask) {
+std::shared_ptr<Image> Reader::read(std::istream& stream, uint32_t num_channels) {
 	std::array<uint8_t, Signature_size> signature;
 
 	stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
@@ -18,9 +17,6 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal, bo
 	if (Signature != signature) {
 		throw std::runtime_error("Bad PNG signature");
 	}
-
-	info_.use_as_normal = use_as_normal;
-	info_.use_as_mask   = use_as_mask;
 
 	for (;;) {
 		auto chunk = read_chunk(stream);
@@ -32,55 +28,66 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, bool use_as_normal, bo
 
 	mz_inflateEnd(&info_.stream);
 
-	return create_image(info_);
+	return create_image(info_, num_channels);
 }
 
 Reader::Chunk::~Chunk() {
 	delete [] type;
 }
 
-std::shared_ptr<Image> Reader::create_image(const Info& info) const {
+std::shared_ptr<Image> Reader::create_image(const Info& info, uint32_t num_channels) const {
 	if (0 == info.num_channels) {
 		return nullptr;
 	}
 
-	std::shared_ptr<Image> image;
+	if (1 == num_channels) {
+		std::shared_ptr<Image_byte_1> image = std::make_shared<Image_byte_1>(Image::Description(Image::Type::Byte_1, math::uint2(info.width, info.height)));
 
-	if (info.use_as_mask) {
-		image = std::make_shared<Image_1>(Image::Description(math::uint2(info.width, info.height)));
-	} else {
-		image = std::make_shared<Image_3>(Image::Description(math::uint2(info.width, info.height)));
-	}
+		for (uint32_t i = 0, len = info.width * info.height; i < len; ++i) {
+			uint32_t o = i * info.num_channels;
 
-	uint32_t num_pixels = info.width * info.height;
-
-	pool_.run_range([&info, &image](uint32_t begin, uint32_t end){ to_float(info, *image, begin, end); }, 0, num_pixels);
-
-	return image;
-}
-
-void Reader::to_float(const Info& info, Image& image, uint32_t start_pixel, uint32_t end_pixel) {
-	color::Color4c color(0, 0, 0, 255);
-	math::float4   linear;
-
-	for (uint32_t i = start_pixel; i < end_pixel; ++i) {
-		uint32_t o = i * info.num_channels;
-		for (uint32_t c = 0; c < info.num_channels; ++c) {
-			color.v[c] = info.buffer[o + c];
+			image->set(i, info.buffer[o]);
 		}
 
-		if (info.use_as_normal) {
-			linear.x = 2.f * (static_cast<float>(color.x) / 255.f - 0.5f);
-			linear.y = 2.f * (static_cast<float>(color.y) / 255.f - 0.5f);
-			linear.z = 2.f * (static_cast<float>(color.z) / 255.f - 0.5f);
-		} else if (info.use_as_mask) {
-			linear.x = static_cast<float>(color.x) / 255.f;
-		} else {
-			linear = color::sRGB_to_linear(color);
+		return image;
+	} else if (2 == num_channels) {
+		std::shared_ptr<Image_byte_2> image = std::make_shared<Image_byte_2>(Image::Description(Image::Type::Byte_2, math::uint2(info.width, info.height)));
+
+		color::Color2c color(0, 0);
+
+		uint32_t max_channels = std::min(2u, info.num_channels);
+
+		for (uint32_t i = 0, len = info.width * info.height; i < len; ++i) {
+			uint32_t o = i * info.num_channels;
+			for (uint32_t c = 0; c < max_channels; ++c) {
+				color.v[c] = info.buffer[o + c];
+			}
+
+			image->set(i, color);
 		}
 
-		image.set4(i, linear);
+		return image;
+	} else if (3 == num_channels) {
+		std::shared_ptr<Image_byte_3> image = std::make_shared<Image_byte_3>(Image::Description(Image::Type::Byte_3, math::uint2(info.width, info.height)));
+
+		color::Color3c color(0, 0, 0);
+
+		uint32_t max_channels = std::min(3u, info.num_channels);
+
+		for (uint32_t i = 0, len = info.width * info.height; i < len; ++i) {
+			uint32_t o = i * info.num_channels;
+			for (uint32_t c = 0; c < max_channels; ++c) {
+				color.v[c] = info.buffer[o + c];
+			}
+
+			image->set(i, color);
+		}
+
+		return image;
 	}
+
+
+	return nullptr;
 }
 
 std::shared_ptr<Reader::Chunk> Reader::read_chunk(std::istream& stream) {

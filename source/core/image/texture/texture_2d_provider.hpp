@@ -15,12 +15,13 @@ class Texture_2D;
 class Provider : public resource::Provider<Texture_2D> {
 public:
 
-	Provider(file::System& file_system, thread::Pool& pool);
+	Provider(file::System& file_system);
 
 	enum class Flags {
 		None = 0,
-		Use_as_normal = 1,
-		Use_as_mask   = 2
+		Use_as_normal  = 1,
+		Use_as_surface = 2,
+		Use_as_mask    = 3
 	};
 
 	virtual std::shared_ptr<Texture_2D> load(const std::string& filename, uint32_t flags = 0) final override;

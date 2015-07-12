@@ -13,7 +13,7 @@ Image_sequence::Image_sequence(const std::string& filename, const math::uint2& d
 
 Image_sequence::~Image_sequence() {}
 
-void Image_sequence::write(const image::Image& image, thread::Pool& pool) {
+void Image_sequence::write(const image::Image_float_4& image, thread::Pool& pool) {
 	std::ofstream stream(filename_ + string::to_string(current_frame_, 2) + ".png", std::ios::binary);
 	if (!stream) {
 		return;

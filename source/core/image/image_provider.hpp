@@ -10,13 +10,7 @@ class Image;
 class Provider : public resource::Provider<Image> {
 public:
 
-	Provider(file::System& file_system, thread::Pool& pool);
-
-	enum class Flags {
-		None = 0,
-		Use_as_normal = 1,
-		Use_as_mask   = 2
-	};
+	Provider(file::System& file_system);
 
 	virtual std::shared_ptr<Image> load(const std::string& filename, uint32_t flags = 0) final override;
 

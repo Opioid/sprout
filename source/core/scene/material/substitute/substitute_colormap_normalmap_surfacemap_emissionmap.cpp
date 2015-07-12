@@ -20,7 +20,7 @@ const Sample& Colormap_normalmap_surfacemap_emissionmap::sample(const shape::Dif
 																const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
-	math::float3 nm = sampler.sample3(*normal_, dg.uv);
+	math::float3 nm = sampler.sample_3(*normal_, dg.uv);
 	math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
 //	math::float3 t;
@@ -29,9 +29,9 @@ const Sample& Colormap_normalmap_surfacemap_emissionmap::sample(const shape::Dif
 
 	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
 
-	math::float3 color    = sampler.sample3(*color_, dg.uv);
-	math::float2 surface  = sampler.sample2(*surface_, dg.uv);
-	math::float3 emission = emission_factor_ * sampler.sample3(*emission_, dg.uv);
+	math::float3 color    = sampler.sample_3(*color_, dg.uv);
+	math::float2 surface  = sampler.sample_2(*surface_, dg.uv);
+	math::float3 emission = emission_factor_ * sampler.sample_3(*emission_, dg.uv);
 
 	sample.set(color, emission, surface.x, surface.y);
 

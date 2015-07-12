@@ -7,7 +7,7 @@
 
 namespace image {
 
-bool write(const std::string& filename, const Image& image) {
+bool write(const std::string& filename, const Image_float_4& image) {
 	std::ofstream stream(filename, std::ios::binary);
 	if (!stream) {
 		return false;
@@ -20,7 +20,7 @@ bool write(const std::string& filename, const Image& image) {
 
 	for (uint32_t y = 0, index = 0; y < dimensions.y; ++y) {
 		for (uint32_t x = 0; x < dimensions.x; ++x, ++index) {
-			math::float4 color = image.at4(index);
+			math::float4 color = image.at(index);
 			color.xyz = color::linear_to_sRGB(color.xyz);
 			rgba[index] = color::to_byte(color);
 		//	rgba[index] = color::to_uint(color);

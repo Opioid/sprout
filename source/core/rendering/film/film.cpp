@@ -1,15 +1,16 @@
 #include "film.hpp"
+#include "image/typed_image.inl"
 #include "tonemapping/tonemapper.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "base/math/vector.inl"
 
 namespace rendering { namespace film {
 
-Film::Film(const math::uint2& dimensions, float exposure, tonemapping::Tonemapper* tonemapper) :
+Film::Film(math::uint2 dimensions, float exposure, tonemapping::Tonemapper* tonemapper) :
 	pixels_(new Pixel[dimensions.x * dimensions.y]),
 	exposure_(exposure),
 	tonemapper_(tonemapper),
-	image_(image::Image::Description(dimensions)),
+	image_(image::Image::Description(image::Image::Type::Float_4, dimensions)),
 	seeds_(new float[dimensions.x * dimensions.y]) {}
 
 Film::~Film() {
@@ -22,7 +23,7 @@ math::uint2 Film::dimensions() const {
 	return image_.description().dimensions;
 }
 
-const image::Image& Film::resolve(thread::Pool& pool) {
+const image::Image_float_4& Film::resolve(thread::Pool& pool) {
 	auto d = dimensions();
 	pool.run_range([this](uint32_t begin, uint32_t end){ resolve(begin, end); }, 0, d.x * d.y);
 	return image_;
@@ -71,7 +72,7 @@ void Film::resolve(uint32_t begin, uint32_t end) {
 
 		math::float3 tonemapped = tonemapper_->tonemap(exposed);
 
-		image_.set4(i, math::float4(tonemapped, 1.f));
+		image_.set(i, math::float4(tonemapped, 1.f));
 	}
 }
 

@@ -14,7 +14,7 @@ const Sample& Colormap::sample(const shape::Differential& dg, const math::float3
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
 
-	math::float3 color = sampler.sample3(*color_, dg.uv);
+	math::float3 color = sampler.sample_3(*color_, dg.uv);
 	sample.set(color);
 
 	return sample;

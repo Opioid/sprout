@@ -7,7 +7,7 @@
 
 namespace image  {
 
-Provider::Provider(file::System& file_system, thread::Pool& pool) : resource::Provider<Image>(file_system), png_reader_(pool) {}
+Provider::Provider(file::System& file_system) : resource::Provider<Image>(file_system) {}
 
 std::shared_ptr<Image> Provider::load(const std::string& filename, uint32_t flags) {
 	auto stream_pointer = file_system_.read_stream(filename);
@@ -20,8 +20,7 @@ std::shared_ptr<Image> Provider::load(const std::string& filename, uint32_t flag
 	file::Type type = file::query_type(stream);
 
 	if (file::Type::PNG == type) {
-		return png_reader_.read(stream, static_cast<uint32_t>(Provider::Flags::Use_as_normal) == flags,
-										static_cast<uint32_t>(Provider::Flags::Use_as_mask) == flags);
+		return png_reader_.read(stream, flags);
 	} else if (file::Type::RGBE == type) {
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);

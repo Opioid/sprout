@@ -1,10 +1,6 @@
 #pragma once
 
-namespace image {
-
-class Image;
-
-}
+#include "image/typed_image.hpp"
 
 namespace thread {
 
@@ -19,7 +15,7 @@ public:
 
 	virtual ~Sink() {}
 
-	virtual void write(const image::Image& image, thread::Pool& pool) = 0;
+	virtual void write(const image::Image_float_4& image, thread::Pool& pool) = 0;
 };
 
 }

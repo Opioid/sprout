@@ -11,7 +11,7 @@ namespace sampler {
 class Spherical {
 public:
 
-	virtual math::float3 sample3(const Texture_2D& texture, const math::float3& xyz) const = 0;
+	virtual math::float3 sample_3(const Texture_2D& texture, const math::float3& xyz) const = 0;
 };
 
 }}}
