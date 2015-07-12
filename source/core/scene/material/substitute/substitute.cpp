@@ -24,7 +24,7 @@ math::float3 GGX::evaluate(const math::float3& wi, float n_dot_wi) const {
 	float n_dot_h  = math::dot(sample_.n_, h);
 	float wo_dot_h = math::dot(sample_.wo_, h);
 
-	math::float3 specular = ggx::d(n_dot_h, sample_.a2_) * ggx::g(n_dot_wi, n_dot_wo, sample_.a2_) * ggx::f(wo_dot_h, sample_.f0_);
+	math::float3 specular = ggx::d(n_dot_h, std::max(sample_.a2_, 0.0000001f)) * ggx::g(n_dot_wi, n_dot_wo, sample_.a2_) * ggx::f(wo_dot_h, sample_.f0_);
 
 	return specular;
 }
@@ -40,7 +40,7 @@ float GGX::pdf(const math::float3& wi, float /*n_dot_wi*/) const {
 	float n_dot_h  = math::dot(sample_.n_, h);
 	float wo_dot_h = math::dot(sample_.wo_, h);
 
-	float d = ggx::d(n_dot_h, sample_.a2_);
+	float d = ggx::d(n_dot_h, std::max(sample_.a2_, 0.0000001f));
 
 	return d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
 }
@@ -66,14 +66,14 @@ float GGX::importance_sample(sampler::Sampler& sampler, BxDF_result& result) con
 	float n_dot_wi = std::max(math::dot(sample_.n_, result.wi),	  0.00001f);
 	float n_dot_wo = std::max(math::dot(sample_.n_, sample_.wo_), 0.00001f);
 
-	float d = ggx::d(n_dot_h, sample_.a2_);
+	float d = ggx::d(n_dot_h, std::max(sample_.a2_, 0.0000001f));
 	float g = ggx::g(n_dot_wi, n_dot_wo, sample_.a2_);
 	math::float3 f = ggx::f(wo_dot_h, sample_.f0_);
 
 	// Hackedy hack hack
-	if (sample_.a2_ < 0.0000001f) {
-		d = 1.f;
-	}
+//	if (sample_.a2_ < 0.0000001f) {
+//		d = 1.f;
+//	}
 
 	result.pdf = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
 
@@ -110,7 +110,7 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_h  = math::dot(n_, h);
 	float wo_dot_h = math::dot(wo_, h);
 
-	float d = ggx::d(n_dot_h, a2_);
+	float d = ggx::d(n_dot_h, std::max(a2_, 0.0000001f));
 
 	math::float3 specular = d * ggx::g(n_dot_wi, n_dot_wo, a2_) * ggx::f(wo_dot_h, f0_);
 

@@ -16,6 +16,7 @@ public:
 	virtual ~Texture_2D();
 
 	math::uint2 dimensions() const;
+	math::float2 dimensions_float() const;
 
 	virtual float        at_1(uint32_t x, uint32_t y) const = 0;
 	virtual math::float2 at_2(uint32_t x, uint32_t y) const = 0;
@@ -27,6 +28,8 @@ public:
 protected:
 
 	std::shared_ptr<Image> image_;
+
+	math::float2 dimensions_float_;
 };
 
 }}

@@ -4,12 +4,19 @@
 
 namespace image { namespace texture {
 
-Texture_2D::Texture_2D(std::shared_ptr<Image> image) : image_(image) {}
+Texture_2D::Texture_2D(std::shared_ptr<Image> image) :
+	image_(image),
+	dimensions_float_(static_cast<float>(image_->description().dimensions.x),
+					  static_cast<float>(image_->description().dimensions.y)) {}
 
 Texture_2D::~Texture_2D() {}
 
 math::uint2 Texture_2D::dimensions() const {
 	return image_->description().dimensions;
+}
+
+math::float2 Texture_2D::dimensions_float() const {
+	return dimensions_float_;
 }
 
 math::float4 Texture_2D::average() const {
@@ -23,7 +30,8 @@ math::float4 Texture_2D::average() const {
 		}
 	}
 
-	return average;
+	auto df = dimensions_float();
+	return average / (df.x * df.y);
 }
 
 }}
