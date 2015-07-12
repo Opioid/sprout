@@ -47,6 +47,8 @@ void Builder::build(Tree& tree, const std::vector<Index_triangle>& triangles, co
 
 	current_node_ = 0;
 	serialize(&root);
+
+//	tree.vertices_ = vertices;
 }
 
 void Builder::serialize(Build_node* node) {
@@ -78,11 +80,11 @@ uint32_t Builder::current_node_index() const {
 }
 
 void Builder::split(Build_node* node,
-					 const std::vector<uint32_t>& primitive_indices,
-					 const std::vector<Index_triangle>& triangles,
-					 const std::vector<Vertex>& vertices,
-					 size_t max_primitives, uint32_t depth,
-					 Tree& tree) {
+					const std::vector<uint32_t>& primitive_indices,
+					const std::vector<Index_triangle>& triangles,
+					const std::vector<Vertex>& vertices,
+					size_t max_primitives, uint32_t depth,
+					Tree& tree) {
 	node->aabb = submesh_aabb(primitive_indices, triangles, vertices);
 
 	if (primitive_indices.size() <= max_primitives || depth > 16) {
@@ -134,6 +136,7 @@ void Builder::assign(Build_node* node,
 	for (auto pi : primitive_indices) {
 		auto& t = triangles[pi];
 		tree.add_triangle(vertices[t.a], vertices[t.b], vertices[t.c], t.material_index);
+	//	tree.add_triangle(t);
 	}
 
 	node->end_index = tree.num_triangles();
@@ -159,9 +162,9 @@ math::aabb Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices,
 }
 
 Split_candidate Builder::splitting_plane(const math::aabb& aabb,
-										  const std::vector<uint32_t>& primitive_indices,
-										  const std::vector<Index_triangle>& triangles,
-										  const std::vector<Vertex>& vertices) {
+										 const std::vector<uint32_t>& primitive_indices,
+										 const std::vector<Index_triangle>& triangles,
+										 const std::vector<Vertex>& vertices) {
 	split_candidates_.clear();
 
 	math::float3 average = math::float3::identity;

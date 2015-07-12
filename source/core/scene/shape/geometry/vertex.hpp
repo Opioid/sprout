@@ -10,4 +10,9 @@ struct Vertex {
 	math::float2 uv;
 };
 
+struct Data_vertex {
+	math::float3 n, t;
+	math::float2 uv;
+};
+
 }}

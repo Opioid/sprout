@@ -14,7 +14,10 @@ struct Vertex;
 namespace triangle {
 
 struct Intersection;
+struct Index_triangle;
 struct Triangle;
+struct Position_triangle;
+struct Data_triangle;
 
 namespace bvh {
 
@@ -69,6 +72,7 @@ public:
 	void allocate_triangles(uint32_t num_triangles);
 
 	void add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
+//	void add_triangle(const Index_triangle& t);
 
 private:
 
@@ -76,9 +80,16 @@ private:
 
 	std::vector<Triangle> triangles_;
 
+//	std::vector<Position_triangle> ptriangles_;
+//	std::vector<Data_triangle> dtriangles_;
+
+//	std::vector<Index_triangle> itriangles_;
+
+//	std::vector<Vertex> vertices_;
+
 	uint32_t num_parts_;
 
-	friend class XBuilder;
+	friend class Builder;
 };
 
 }}}}

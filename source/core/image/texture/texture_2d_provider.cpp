@@ -55,7 +55,7 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, uint32_t
 		return std::make_shared<Texture_2D_float_3>(image);
 	}
 
-	return nullptr;//std::make_shared<Texture_2D>(image);
+	return nullptr;
 }
 
 }}

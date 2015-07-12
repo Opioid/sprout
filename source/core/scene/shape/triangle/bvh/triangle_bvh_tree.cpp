@@ -50,6 +50,10 @@ uint32_t Tree::num_parts() const {
 
 uint32_t Tree::num_triangles() const {
 	return static_cast<uint32_t>(triangles_.size());
+
+//	return static_cast<uint32_t>(itriangles_.size());
+
+//	return static_cast<uint32_t>(ptriangles_.size());
 }
 
 const std::vector<Triangle>& Tree::triangles() const {
@@ -77,6 +81,17 @@ bool Tree::intersect(math::Oray& ray, const math::float2& /*bounds*/, Node_stack
 					if (triangles_[i].intersect(ray, uv)) {
 						index = i;
 					}
+
+//					if (triangle::intersect(vertices_[itriangles_[i].a].p,
+//											vertices_[itriangles_[i].b].p,
+//											vertices_[itriangles_[i].c].p,
+//											ray, uv)) {
+//						index = i;
+//					}
+
+//					if (ptriangles_[i].intersect(ray, uv)) {
+//						index = i;
+//					}
 				}
 
 				n = node_stack.pop();
@@ -110,6 +125,17 @@ bool Tree::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/, No
 					if (triangles_[i].intersect_p(ray)) {
 						return true;
 					}
+
+//					if (triangle::intersect_p(vertices_[itriangles_[i].a].p,
+//											  vertices_[itriangles_[i].b].p,
+//											  vertices_[itriangles_[i].c].p,
+//											  ray)) {
+//						return true;
+//					}
+
+//					if (ptriangles_[i].intersect_p(ray)) {
+//						return true;
+//					}
 				}
 
 				n = node_stack.pop();
@@ -165,18 +191,42 @@ float Tree::opacity(math::Oray& ray, const math::float2& /*bounds*/, Node_stack&
 
 void Tree::interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
 	triangles_[index].interpolate_data(uv, n, t, tc);
+
+//	triangle::interpolate_data(vertices_[itriangles_[index].a],
+//							   vertices_[itriangles_[index].b],
+//							   vertices_[itriangles_[index].c],
+//							   uv, n, t, tc);
+
+//	dtriangles_[index].interpolate_data(uv, n, t, tc);
 }
 
 math::float2 Tree::interpolate_triangle_uv(uint32_t index, math::float2 uv) const {
 	return triangles_[index].interpolate_uv(uv);
+
+//	return triangle::interpolate_uv(vertices_[itriangles_[index].a].uv,
+//									vertices_[itriangles_[index].b].uv,
+//									vertices_[itriangles_[index].c].uv,
+//									uv);
+
+//	return triangles_[index].interpolate_uv(uv);
 }
 
 uint32_t Tree::triangle_material_index(uint32_t index) const {
 	return triangles_[index].material_index;
+
+//	return itriangles_[index].material_index;
+
+//	return dtriangles_[index].material_index;
 }
 
 math::float3 Tree::triangle_normal(uint32_t index) const {
 	return triangles_[index].normal();
+
+//	return triangle::normal(vertices_[itriangles_[index].a].p,
+//							vertices_[itriangles_[index].b].p,
+//							vertices_[itriangles_[index].c].p);
+
+//	return ptriangles_[index].normal();
 }
 
 void Tree::sample(uint32_t triangle, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const {
@@ -192,12 +242,41 @@ void Tree::allocate_triangles(uint32_t num_triangles) {
 	triangles_.clear();
 	triangles_.reserve(num_triangles);
 	num_parts_ = 0;
+
+//	itriangles_.clear();
+//	triangles_.reserve(num_triangles);
+
+//	ptriangles_.clear();
+//	ptriangles_.reserve(num_triangles);
+
+//	dtriangles_.clear();
+//	dtriangles_.reserve(num_triangles);
 }
 
 void Tree::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index) {
 	triangles_.push_back(Triangle{a, b, c, material_index});
 	num_parts_ = std::max(num_parts_, material_index + 1);
+
+//	ptriangles_.push_back(Position_triangle{a.p, b.p, c.p});
+
+//	Data_triangle t;
+//	t.a.n = a.n;
+//	t.a.t = a.t;
+//	t.a.uv = a.uv;
+//	t.b.n = b.n;
+//	t.b.t = b.t;
+//	t.b.uv = b.uv;
+//	t.c.n = c.n;
+//	t.c.t = c.t;
+//	t.c.uv = c.uv;
+//	t.material_index = material_index;
+//	dtriangles_.push_back(t);
 }
+
+//void Tree::add_triangle(const Index_triangle& t) {
+//	itriangles_.push_back(t);
+//	num_parts_ = std::max(num_parts_, t.material_index + 1);
+//}
 
 }}}}
 
