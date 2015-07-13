@@ -12,25 +12,29 @@ Texture_2D_byte_3_sRGB::Texture_2D_byte_3_sRGB(std::shared_ptr<Image> image) :
 float Texture_2D_byte_3_sRGB::at_1(uint32_t x, uint32_t y) const {
 	uint32_t i = y * dimensions().x + x;
 
-	return 0.f;
+	auto& value = data_[i];
+	return encoding::srgb_to_float(value.x);
 }
 
 math::float2 Texture_2D_byte_3_sRGB::at_2(uint32_t x, uint32_t y) const {
 	uint32_t i = y * dimensions().x + x;
 
-	return math::float2::identity;
+	auto& value = data_[i];
+	return math::float2(encoding::srgb_to_float(value.x), encoding::srgb_to_float(value.y));
 }
 
 math::float3 Texture_2D_byte_3_sRGB::at_3(uint32_t x, uint32_t y) const {
 	uint32_t i = y * dimensions().x + x;
 
-	return math::float3(encoding::srgb_to_float(data_[i].x), encoding::srgb_to_float(data_[i].y), encoding::srgb_to_float(data_[i].z));
+	auto& value = data_[i];
+	return math::float3(encoding::srgb_to_float(value.x), encoding::srgb_to_float(value.y), encoding::srgb_to_float(value.z));
 }
 
 math::float4 Texture_2D_byte_3_sRGB::at_4(uint32_t x, uint32_t y) const {
 	uint32_t i = y * dimensions().x + x;
 
-	return math::float4::identity;
+	auto& value = data_[i];
+	return math::float4(encoding::srgb_to_float(value.x), encoding::srgb_to_float(value.y), encoding::srgb_to_float(value.z), 1.f);
 }
 
 }}
