@@ -54,7 +54,7 @@ inline uint32_t Distribution_1D::sample_discrete(float r, float& pdf) const {
 }
 
 inline float Distribution_1D::pdf(float u) const {
-	uint32_t offset = static_cast<uint32_t>(u * static_cast<float>(cdf_.size()));
+	uint32_t offset = static_cast<uint32_t>(u * size_);
 
 	return pdf_[offset];
 }

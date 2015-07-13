@@ -21,9 +21,9 @@ inline float d(float n_dot_h, float a2) {
 }
 
 inline float g(float n_dot_wi, float n_dot_wo, float a2) {
-	float gwo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
-	float gwi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
-	return 1.f / std::sqrt(gwo * gwi);
+	float g_wo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
+	float g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
+	return 1.f / (g_wo * g_wi);
 }
 
 }}}
