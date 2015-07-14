@@ -7,20 +7,20 @@
 namespace scene { namespace material { namespace lambert {
 
 template<typename Sample>
-inline Lambert<Sample>::Lambert(const Sample& sample) : BxDF<Sample>(sample) {}
+Lambert<Sample>::Lambert(const Sample& sample) : BxDF<Sample>(sample) {}
 
 template<typename Sample>
-inline math::float3 Lambert<Sample>::evaluate(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+math::float3 Lambert<Sample>::evaluate(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
 	return math::Pi_inv * BxDF<Sample>::sample_.diffuse_color_;
 }
 
 template<typename Sample>
-inline float Lambert<Sample>::pdf(const math::float3& /*wi*/, float n_dot_wi) const {
+float Lambert<Sample>::pdf(const math::float3& /*wi*/, float n_dot_wi) const {
 	return n_dot_wi * math::Pi_inv;
 }
 
 template<typename Sample>
-inline float Lambert<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
+float Lambert<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
 	math::float2 s2d = sampler.generate_sample_2D();
 
 	math::float3 is = math::sample_hemisphere_cosine(s2d);
