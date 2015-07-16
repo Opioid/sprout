@@ -5,8 +5,11 @@
 
 namespace scene { namespace material { namespace matte {
 
-Colormap::Colormap(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, std::shared_ptr<image::texture::Texture_2D> color) :
-	Matte(cache, mask), color_(color) {}
+Colormap::Colormap(Sample_cache<Sample>& cache,
+				   std::shared_ptr<image::texture::Texture_2D> mask,
+				   std::shared_ptr<image::texture::Texture_2D> color,
+				   float sqrt_roughness) :
+	Matte(cache, mask), color_(color), sqrt_roughness_(sqrt_roughness) {}
 
 const Sample& Colormap::sample(const shape::Differential& dg, const math::float3& wo,
 							   const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
@@ -15,7 +18,7 @@ const Sample& Colormap::sample(const shape::Differential& dg, const math::float3
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
 
 	math::float3 color = sampler.sample_3(*color_, dg.uv);
-	sample.set(color);
+	sample.set(color, sqrt_roughness_);
 
 	return sample;
 }

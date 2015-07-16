@@ -175,7 +175,7 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 
 	average /= static_cast<float>(primitive_indices.size() * 3);
 
-	math::float3 position = aabb.position();
+//	math::float3 position = aabb.position();
 	math::float3 halfsize = aabb.halfsize();
 
 	uint8_t bb_axis;

@@ -39,13 +39,16 @@ class BxDF {
 public:
 
 	BxDF(const Sample& sample) : sample_(sample) {}
-	virtual ~BxDF() {}
 
-	virtual math::float3 evaluate(const math::float3& wi, float n_dot_wi) const = 0;
+	/*
+	~BxDF() {}
 
-	virtual float pdf(const math::float3& wi, float n_dot_wi) const = 0;
+	math::float3 evaluate(const math::float3& wi, float n_dot_wi) const;
 
-	virtual float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const = 0;
+	float pdf(const math::float3& wi, float n_dot_wi) const;
+
+	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
+	*/
 
 protected:
 

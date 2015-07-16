@@ -10,11 +10,11 @@ public:
 
 	Lambert(const Sample& sample);
 
-	virtual math::float3 evaluate(const math::float3& wi, float n_dot_wi) const final override;
+	math::float3 evaluate(const math::float3& wi, float n_dot_wi) const;
 
-	virtual float pdf(const math::float3& wi, float n_dot_wi) const final override;
+	float pdf(const math::float3& wi, float n_dot_wi) const;
 
-	virtual float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const final override;
+	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
 };
 
 

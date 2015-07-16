@@ -10,6 +10,7 @@
 #include "matte/matte_colormap.hpp"
 #include "matte/matte_colormap_normalmap.hpp"
 #include "matte/matte_constant.hpp"
+#include "matte/matte_normalmap.hpp"
 #include "substitute/substitute_colormap.hpp"
 #include "substitute/substitute_colormap_normalmap.hpp"
 #include "substitute/substitute_colormap_normalmap_surfacemap.hpp"
@@ -146,8 +147,10 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 
 std::shared_ptr<IMaterial> Provider::load_matte(const rapidjson::Value& matte_value) {
 	math::float3 color(0.75f, 0.75f, 0.75f);
+	float roughness = 1.f;
 
 	std::shared_ptr<image::texture::Texture_2D> colormap;
+	std::shared_ptr<image::texture::Texture_2D> normalmap;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 
 	for (auto n = matte_value.MemberBegin(); n != matte_value.MemberEnd(); ++n) {
@@ -167,6 +170,8 @@ std::shared_ptr<IMaterial> Provider::load_matte(const rapidjson::Value& matte_va
 
 				if ("Color" == usage) {
 					colormap = texture_cache_.load(filename);
+				} else if ("Normal" == usage) {
+					normalmap = texture_cache_.load(filename, static_cast<uint32_t>(image::texture::Provider::Flags::Use_as_normal));
 				} else if ("Mask" == usage) {
 					mask = texture_cache_.load(filename, static_cast<uint32_t>(image::texture::Provider::Flags::Use_as_mask));
 				}
@@ -174,7 +179,11 @@ std::shared_ptr<IMaterial> Provider::load_matte(const rapidjson::Value& matte_va
 		}
 	}
 
-	return std::make_shared<matte::Constant>(matte_cache_, mask, color);
+	if (normalmap) {
+		return std::make_shared<matte::Normalmap>(matte_cache_, mask, color, normalmap, roughness);
+	}
+
+	return std::make_shared<matte::Constant>(matte_cache_, mask, color, roughness);
 }
 
 std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {

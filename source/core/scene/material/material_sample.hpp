@@ -26,6 +26,10 @@ public:
 
 	virtual bool is_pure_emissive() const = 0;
 
+	float clamped_n_dot_wo() const {
+		return std::max(math::dot(n_, wo_), 0.00001f);
+	}
+
 	const math::float3& shading_normal() const {
 		return n_;
 	}

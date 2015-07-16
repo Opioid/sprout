@@ -3,7 +3,8 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/material/ggx/ggx.hpp"
-#include "scene/material/lambert/lambert.hpp"
+//#include "scene/material/lambert/lambert.hpp"
+#include "scene/material/oren_nayar/oren_nayar.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
@@ -22,8 +23,8 @@ public:
 
 	virtual bool is_pure_emissive() const final override;
 
-	void set(const math::float3& color, float roughness, float metallic);
-	void set(const math::float3& color, const math::float3& emission, float roughness, float metallic);
+	void set(const math::float3& color, float sqrt_roughness, float metallic);
+	void set(const math::float3& color, const math::float3& emission, float sqrt_roughness, float metallic);
 
 private:
 
@@ -35,10 +36,12 @@ private:
 
 	float metallic_;
 
-	lambert::Lambert<Sample> lambert_;
+	oren_nayar::Oren_nayar<Sample> oren_nayar_;
+//	lambert::Lambert<Sample> lambert_;
 	ggx::GGX<Sample> ggx_;
 
-	friend lambert::Lambert<Sample>;
+//	friend lambert::Lambert<Sample>;
+	friend oren_nayar::Oren_nayar<Sample>;
 	friend ggx::GGX<Sample>;
 };
 

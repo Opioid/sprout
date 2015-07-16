@@ -6,8 +6,10 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Colormap_normalmap::Colormap_normalmap(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
-									   std::shared_ptr<image::texture::Texture_2D> color, std::shared_ptr<image::texture::Texture_2D> normal,
+Colormap_normalmap::Colormap_normalmap(Sample_cache<Sample>& cache,
+									   std::shared_ptr<image::texture::Texture_2D> mask,
+									   std::shared_ptr<image::texture::Texture_2D> color,
+									   std::shared_ptr<image::texture::Texture_2D> normal,
 									   float roughness, float metallic) :
 	Substitute(cache, mask), color_(color), normal_(normal), roughness_(roughness), metallic_(metallic) {}
 

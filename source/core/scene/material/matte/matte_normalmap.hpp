@@ -5,22 +5,24 @@
 
 namespace scene { namespace material { namespace matte {
 
-class Colormap_normalmap : public Matte {
+class Normalmap : public Matte {
 public:
 
-	Colormap_normalmap(Sample_cache<Sample>& cache,
-					   std::shared_ptr<image::texture::Texture_2D> mask,
-					   std::shared_ptr<image::texture::Texture_2D> color,
-					   std::shared_ptr<image::texture::Texture_2D> normal,
-					   float sqrt_roughness);
+	Normalmap(Sample_cache<Sample>& cache,
+			  std::shared_ptr<image::texture::Texture_2D> mask,
+			  const math::float3& color,
+			  std::shared_ptr<image::texture::Texture_2D> normal,
+			  float sqrt_roughness);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
 								 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
 
 private:
 
-	std::shared_ptr<image::texture::Texture_2D> color_;
+	math::float3 color_;
+
 	std::shared_ptr<image::texture::Texture_2D> normal_;
+
 	float sqrt_roughness_;
 };
 

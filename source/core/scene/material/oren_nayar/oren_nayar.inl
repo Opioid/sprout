@@ -1,0 +1,139 @@
+#include "oren_nayar.hpp"
+#include "sampler/sampler.hpp"
+#include "base/math/sampling.hpp"
+#include "base/math/vector.inl"
+#include "base/math/math.hpp"
+
+namespace scene { namespace material { namespace oren_nayar {
+
+template<typename Sample>
+Oren_nayar<Sample>::Oren_nayar(const Sample& sample) : BxDF<Sample>(sample) {}
+
+template<typename Sample>
+math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo) const {
+	/*
+	float alpha = std::max(std::acos(n_dot_wo), std::acos(n_dot_wi));
+	float beta  = std::min(std::acos(n_dot_wo), std::acos(n_dot_wi));
+	float gamma = math::dot( BxDF<Sample>::sample_.wo_ - n_dot_wo *  BxDF<Sample>::sample_.n_, wi - n_dot_wi *  BxDF<Sample>::sample_.n_);
+
+	float c1 = 1.f - 0.5f * (roughness_square / (roughness_square + 0.33f));
+	float c2 = 0.45f * (roughness_square / (roughness_square + 0.09));
+
+
+
+	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
+
+	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
+
+	float t;
+	if (s > 0.f) {
+		t = std::min(1.f, n_dot_wi / n_dot_wo);
+	} else {
+		t = n_dot_wi;
+	}
+
+
+	float sin_alpha = std::sin(alpha);
+
+	if (gamma > 0.f) {
+		c2 *= sin_alpha;
+	} else {
+		c2 *= sin_alpha - std::pow((2.f * beta) / math::Pi, 3.f);
+	}
+
+	float c3 = 1.f / 8.f;
+	c3 *= roughness_square / (roughness_square + 0.09f);
+	c3 *= std::pow((4.f * alpha * beta) / (math::Pi * math::Pi), 2.f);
+
+	float tan_beta = std::tan(beta);
+	float tan_alpha_beta_2 = std::tan((alpha + beta) / 2.f);
+
+	float a  = gamma * c2 * tan_beta;
+	float b = (1.f - std::abs(gamma)) * c3 * tan_alpha_beta_2;
+
+	pdf = n_dot_wi * math::Pi_inv;
+
+	return pdf * (c1 + a + b) *  BxDF<Sample>::sample_.diffuse_color_;
+*/
+
+	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
+
+	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
+
+	float t;
+	if (s >= 0.f) {
+		t = std::min(1.f, n_dot_wi / n_dot_wo);
+	} else {
+		t = n_dot_wi;
+	}
+
+	float a = 1.f - 0.5f * (BxDF<Sample>::sample_.a2_ / (BxDF<Sample>::sample_.a2_ + 0.33f));
+	float b = 0.45f * (BxDF<Sample>::sample_.a2_ / (BxDF<Sample>::sample_.a2_ + 0.09));
+
+	return (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
+
+
+/*
+	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
+
+	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
+
+	float t;
+	if (s < 0.f) {
+		t = 1.f;
+	} else {
+		t = std::max(n_dot_wi, n_dot_wo);
+	}
+
+
+//	float a = 1.f - 0.5f * (roughness_square / (roughness_square + 0.33f));
+//	float b = 0.45f * (roughness_square / (roughness_square + 0.09));
+
+	float sigma = 1.f;
+	float a = 1.f / (math::Pi + (math::Pi / 2.f - 2.f / 3.f) * sigma);
+	float b = sigma / (math::Pi + (math::Pi / 2.f - 2.f / 3.f) * sigma);
+
+	pdf = n_dot_wi * math::Pi_inv;
+
+	return pdf * math::Pi * (a + b * (s / t)) * BxDF<Sample>::sample_.diffuse_color_;
+*/
+}
+
+template<typename Sample>
+float Oren_nayar<Sample>::pdf(const math::float3& /*wi*/, float n_dot_wi) const {
+	return n_dot_wi * math::Pi_inv;
+}
+
+template<typename Sample>
+float Oren_nayar<Sample>::importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const {
+	math::float2 s2d = sampler.generate_sample_2D();
+
+	math::float3 is = math::sample_hemisphere_cosine(s2d);
+	math::float3 wi = math::normalized(BxDF<Sample>::sample_.tangent_to_world(is));
+
+	float n_dot_wi = std::max(math::dot(BxDF<Sample>::sample_.n_, wi), 0.00001f);
+	result.pdf = n_dot_wi * math::Pi_inv;
+
+	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
+
+	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
+
+	float t;
+	if (s >= 0.f) {
+		t = std::min(1.f, n_dot_wi / n_dot_wo);
+	} else {
+		t = n_dot_wi;
+	}
+
+	float a = 1.f - 0.5f * (BxDF<Sample>::sample_.a2_ / (BxDF<Sample>::sample_.a2_ + 0.33f));
+	float b = 0.45f * (BxDF<Sample>::sample_.a2_ / (BxDF<Sample>::sample_.a2_ + 0.09));
+
+	result.reflection = math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
+	result.wi = wi;
+	result.type.clear_set(BxDF_type::Diffuse_reflection);
+
+	return n_dot_wi;
+}
+
+}}}
+

@@ -2,7 +2,8 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
-#include "scene/material/lambert/lambert.hpp"
+//#include "scene/material/lambert/lambert.hpp"
+#include "scene/material/oren_nayar/oren_nayar.hpp"
 
 namespace scene { namespace material { namespace matte {
 
@@ -21,15 +22,19 @@ public:
 
 	virtual bool is_pure_emissive() const final override;
 
-	void set(const math::float3& color);
+	void set(const math::float3& color, float sqrt_roughness);
 
 private:
 
 	math::float3 diffuse_color_;
 
-	lambert::Lambert<Sample> lambert_;
+	float a2_;
 
-	friend lambert::Lambert<Sample>;
+//	lambert::Lambert<Sample> lambert_;
+	oren_nayar::Oren_nayar<Sample> oren_nayar_;
+
+//	friend lambert::Lambert<Sample>;
+	friend oren_nayar::Oren_nayar<Sample>;
 };
 
 class Matte : public Material<Sample> {

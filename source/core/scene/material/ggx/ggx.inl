@@ -8,13 +8,11 @@ template<typename Sample>
 GGX<Sample>::GGX(const Sample& sample) : BxDF<Sample>(sample) {}
 
 template<typename Sample>
-math::float3 GGX<Sample>::evaluate(const math::float3& wi, float n_dot_wi) const {
+math::float3 GGX<Sample>::evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == BxDF<Sample>::sample_.a2_) {
 		return math::float3::identity;
 	}
-
-	float n_dot_wo = std::max(math::dot(BxDF<Sample>::sample_.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
 	math::float3 h = math::normalized(BxDF<Sample>::sample_.wo_ + wi);
 
@@ -64,9 +62,9 @@ float GGX<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_result& res
 
 	float wo_dot_h = math::dot(BxDF<Sample>::sample_.wo_, h);
 
-	result.wi = math::normalized((2.f * wo_dot_h) * h - BxDF<Sample>::sample_.wo_);
+	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - BxDF<Sample>::sample_.wo_);
 
-	float n_dot_wi = std::max(math::dot(BxDF<Sample>::sample_.n_, result.wi),	  0.00001f);
+	float n_dot_wi = std::max(math::dot(BxDF<Sample>::sample_.n_, wi),	  0.00001f);
 	float n_dot_wo = std::max(math::dot(BxDF<Sample>::sample_.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
 	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
@@ -77,7 +75,7 @@ float GGX<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_result& res
 
 	math::float3 specular = d * g * f;
 	result.reflection = specular;
-
+	result.wi = wi;
 	result.type.clear_set(0.f == BxDF<Sample>::sample_.a2_ ? BxDF_type::Specular_reflection : BxDF_type::Glossy_reflection);
 
 
