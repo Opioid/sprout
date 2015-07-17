@@ -1,13 +1,11 @@
 sprout
 ======
 
-:plusplus: ++ 
-
 == Brief
 
 sprout is a simple raytracer written in C++. I work on it in my spare time with the goal to learn about physically based rendering and global illumination and, first of all, to have fun.
 
-The overall architecture is heavily inspired by PBRT while the implementation details differ more or less strongly in different places.
+The overall architecture is heavily inspired by http://www.pbrt.org/[PBRT] while the implementation details differ more or less strongly in different places.
 
 At the moment the most advanced integrator is a uni-directional path tracer with forward prediction and multiple importance sampling. Area lights and HDRI lights are supported. The default material is a combination of qualitative Oren-Nayar and GGX. There is supprt for a few built in shapes (sphere, disk, place) as well as triangle meshes.
 
@@ -17,7 +15,7 @@ A render is configurable by various json files that describe the various parts o
 
 All files needed to build the project are included in the repository. In order to build the source Qt Creator is needed. Unfortunately there doesn't exist a cmake project yet.
 
-On Linux it might be be neccessary to persuade Qt Creator to use the c+\+14 flag for the compiler. I've had trouble with this in the past. Then it should work with Clang 3.5 and libstdc++ 4.9. I haven't tried building with GCC in a while but it should work with version 4.9 or higher.
+On Linux it might be be neccessary to persuade Qt Creator to use the c+\+14 flag for the compiler. I've had trouble with this in the https://forum.qt.io/topic/52334/qmake-substituting-c-14-with-c-1[past]. Then it should work with Clang 3.5 and libstdc++ 4.9. I haven't tried building with GCC in a while but it should work with version 4.9 or higher.
 
 On Windows it should work out of the box with the Visual Studio 2013 compiler.
 
@@ -26,7 +24,7 @@ On Windows it should work out of the box with the Visual Studio 2013 compiler.
 I try to keep the dependencies reasonably low in this project. At the moment there are three of them. They are all included in the repository and should not give any trouble.
 
 .Dependencies
-. Miniz for encoding/decoding PNG images and readin gz archives
+. https://code.google.com/p/miniz/[Miniz] for encoding/decoding PNG images and readin gz archives
 . https://github.com/miloyip/rapidjson[RapidJSON] for parsing json files
-. TCLAP for parsing command line arguments
+. http://tclap.sourceforge.net/[TCLAP] for parsing command line arguments
 
