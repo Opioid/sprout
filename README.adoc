@@ -1,1 +1,7 @@
 = sprout
+
+== Brief
+
+sprout is a simple raytracer written in C++. I work on it in my spare time with the goal to learn about physically based rendering and global illumination and, first of all, to have fun.
+
+== Installation
