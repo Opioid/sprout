@@ -16,8 +16,10 @@ A render is configurable by various json files that describe the various parts o
 
 == Dependencies
 
-I try to keep the dependencies fairly low in this project. At the moment there are three of them.
-- Miniz for encoding/decoding PNG images and readin gz archives
-- RapidJSON for parsin json files
-- TCLAP for parsing command line arguments
+I try to keep the dependencies reasonably low in this project. At the moment there are three of them. They are all included in the repository and should not give any trouble.
+
+.Dependencies
+. Miniz for encoding/decoding PNG images and readin gz archives
+. RapidJSON for parsin json files
+. TCLAP for parsing command line arguments
 
