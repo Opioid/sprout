@@ -67,10 +67,11 @@ math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi
 		t = n_dot_wi;
 	}
 
-	float a = 1.f - 0.5f * (BxDF<Sample>::sample_.a2_ / (BxDF<Sample>::sample_.a2_ + 0.33f));
-	float b = 0.45f * (BxDF<Sample>::sample_.a2_ / (BxDF<Sample>::sample_.a2_ + 0.09));
+	float a2 = BxDF<Sample>::sample_.a2_;
+	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
+	float b = 0.45f * (a2 / (a2 + 0.09f));
 
-	return (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
+	return math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
 
 
 /*
@@ -125,8 +126,9 @@ float Oren_nayar<Sample>::importance_sample(sampler::Sampler& sampler, float n_d
 		t = n_dot_wi;
 	}
 
-	float a = 1.f - 0.5f * (BxDF<Sample>::sample_.a2_ / (BxDF<Sample>::sample_.a2_ + 0.33f));
-	float b = 0.45f * (BxDF<Sample>::sample_.a2_ / (BxDF<Sample>::sample_.a2_ + 0.09));
+	float a2 = BxDF<Sample>::sample_.a2_;
+	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
+	float b = 0.45f * (a2 / (a2 + 0.09f));
 
 	result.reflection = math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
 	result.wi = wi;

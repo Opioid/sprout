@@ -18,7 +18,8 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_wo = clamped_n_dot_wo();
 	pdf = n_dot_wi * math::Pi_inv;
 	math::float3 result = oren_nayar_.evaluate(wi, n_dot_wi, n_dot_wo);
-	return pdf * result;
+	// Pi_inv is already in the result
+	return n_dot_wi * result;
 }
 
 math::float3 Sample::emission() const {

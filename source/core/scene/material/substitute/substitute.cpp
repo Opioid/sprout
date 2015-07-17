@@ -30,17 +30,18 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 		t = n_dot_wi;
 	}
 
-	float a = 1.f - 0.5f * (a2_ / (a2_ + 0.33f));
-	float b = 0.45f * (a2_ / (a2_ + 0.09));
+	float a2 = a2_;
+	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
+	float b = 0.45f * (a2 / (a2 + 0.09f));
 
-	math::float3 diffuse = (a + b * s * t) * diffuse_color_;
+	math::float3 diffuse = math::Pi_inv * (a + b * s * t) * diffuse_color_;
 
 	// ----
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {
 		pdf = n_dot_wi * math::Pi_inv;
-		return n_dot_wi * math::Pi_inv * diffuse;
+		return n_dot_wi * diffuse;
 	}
 
 	math::float3 h = math::normalized(wo_ + wi);
@@ -55,9 +56,9 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float diffuse_pdf = n_dot_wi * math::Pi_inv;
 	float ggx_pdf     = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
 
-	pdf = 0.5f * (diffuse_pdf * ggx_pdf);
+	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
 
-	return n_dot_wi * ((math::Pi_inv * diffuse) + specular);
+	return n_dot_wi * (diffuse + specular);
 }
 
 math::float3 Sample::emission() const {

@@ -2,6 +2,7 @@
 
 #include "bxdf.hpp"
 #include "base/math/vector.hpp"
+#include <algorithm>
 
 namespace sampler {
 
