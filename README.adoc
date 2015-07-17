@@ -27,6 +27,6 @@ I try to keep the dependencies reasonably low in this project. At the moment the
 
 .Dependencies
 . Miniz for encoding/decoding PNG images and readin gz archives
-. RapidJSON for parsin json files
+. https://github.com/miloyip/rapidjson[RapidJSON] for parsing json files
 . TCLAP for parsing command line arguments
 
