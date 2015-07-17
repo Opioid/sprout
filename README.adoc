@@ -15,7 +15,7 @@ A render is configurable by various json files that describe the various parts o
 
 All files needed to build the project are included in the repository. In order to build the source Qt Creator is needed. Unfortunately there doesn't exist a cmake project yet.
 
-On Linux it might be be neccessary to persuade Qt Creator to use the c++14 flag for the compiler. I've had trouble with this in the past. Then it should work with Clang 3.5 and libstdc++ 4.9. I haven't tried building with GCC in a while but it should work with version 4.9 or higher.
+On Linux it might be be neccessary to persuade Qt Creator to use the c\+\+14 flag for the compiler. I've had trouble with this in the past. Then it should work with Clang 3.5 and libstdc\+\+ 4.9. I haven't tried building with GCC in a while but it should work with version 4.9 or higher.
 
 On Windows it should work out of the box with the Visual Studio 2013 compiler.
 
