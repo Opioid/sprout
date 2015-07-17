@@ -5,7 +5,7 @@ image::doc/images/dragon_720.jpg[]
 
 == Brief
 
-sprout is a simple raytracer written in C++. I work on it mainly for fun and to learn about physically based rendering and global illumination.
+sprout is a small raytracing renderer written in C++. I work on it mainly for fun and to learn about physically based rendering and global illumination.
 
 The overall architecture is heavily inspired by http://www.pbrt.org/[PBRT] while the implementation details differ more or less strongly in different places.
 
