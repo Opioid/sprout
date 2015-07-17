@@ -7,7 +7,7 @@ sprout is a simple raytracer written in C++. I work on it in my spare time with 
 
 The overall architecture is heavily inspired by http://www.pbrt.org/[PBRT] while the implementation details differ more or less strongly in different places.
 
-At the moment the most advanced integrator is a uni-directional path tracer with forward prediction and multiple importance sampling. Area lights and HDRI lights are supported. The default material is a combination of qualitative Oren-Nayar and GGX. There is supprt for a few built in shapes (sphere, disk, place) as well as triangle meshes.
+At the moment the most advanced integrator is a uni-directional path tracer with forward prediction and multiple importance sampling. Area lights and HDRI lights are supported. The default material is a combination of qualitative Oren-Nayar and GGX. There is support for a few built in shapes (sphere, disk, place) as well as triangle meshes.
 
 A render is configurable by various json files that describe the various parts of the scene (shapes, lights, materials etc.).
 
@@ -24,7 +24,7 @@ On Windows it should work out of the box with the Visual Studio 2013 compiler.
 I try to keep the dependencies reasonably low in this project. At the moment there are three of them. They are all included in the repository and should not give any trouble.
 
 .Dependencies
-. https://code.google.com/p/miniz/[Miniz] for encoding/decoding PNG images and readin gz archives
+. https://code.google.com/p/miniz/[Miniz] for encoding/decoding PNG images and decompressing gz archives
 . https://github.com/miloyip/rapidjson[RapidJSON] for parsing json files
 . http://tclap.sourceforge.net/[TCLAP] for parsing command line arguments
 
