@@ -159,6 +159,8 @@ std::shared_ptr<IMaterial> Provider::load_matte(const rapidjson::Value& matte_va
 
 		if ("color" == node_name) {
 			color = json::read_float3(node_value);
+		} else if ("roughness" == node_name) {
+			roughness = json::read_float(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				std::string filename = json::read_string(*tn, "file", "");

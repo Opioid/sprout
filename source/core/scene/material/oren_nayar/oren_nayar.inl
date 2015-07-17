@@ -11,7 +11,10 @@ Oren_nayar<Sample>::Oren_nayar(const Sample& sample) : BxDF<Sample>(sample) {}
 
 template<typename Sample>
 math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo) const {
-	/*
+/*
+	float roughness = 1.f;
+	float roughness_square = roughness * roughness;
+
 	float alpha = std::max(std::acos(n_dot_wo), std::acos(n_dot_wi));
 	float beta  = std::min(std::acos(n_dot_wo), std::acos(n_dot_wi));
 	float gamma = math::dot( BxDF<Sample>::sample_.wo_ - n_dot_wo *  BxDF<Sample>::sample_.n_, wi - n_dot_wi *  BxDF<Sample>::sample_.n_);
@@ -51,11 +54,8 @@ math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi
 	float a  = gamma * c2 * tan_beta;
 	float b = (1.f - std::abs(gamma)) * c3 * tan_alpha_beta_2;
 
-	pdf = n_dot_wi * math::Pi_inv;
-
-	return pdf * (c1 + a + b) *  BxDF<Sample>::sample_.diffuse_color_;
+	return math::Pi_inv * (c1 + a + b) *  BxDF<Sample>::sample_.diffuse_color_;
 */
-
 	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
@@ -73,30 +73,32 @@ math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi
 
 	return math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
 
-
+	// http://mimosa-pudica.net/improved-oren-nayar.html
 /*
 	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
 
+//	float t;
+//	if (s <= 0.f) {
+//		t = 1.f;
+//	} else {
+//		t = std::max(n_dot_wi, n_dot_wo);
+//	}
+
 	float t;
-	if (s < 0.f) {
-		t = 1.f;
+	if (s >= 0.f) {
+		t = std::min(1.f, n_dot_wi / n_dot_wo);
 	} else {
-		t = std::max(n_dot_wi, n_dot_wo);
+		t = n_dot_wi;
 	}
 
-
-//	float a = 1.f - 0.5f * (roughness_square / (roughness_square + 0.33f));
-//	float b = 0.45f * (roughness_square / (roughness_square + 0.09));
-
 	float sigma = 1.f;
-	float a = 1.f / (math::Pi + (math::Pi / 2.f - 2.f / 3.f) * sigma);
-	float b = sigma / (math::Pi + (math::Pi / 2.f - 2.f / 3.f) * sigma);
+	float a = 1.f / (math::Pi + (math::Pi_div_2 - 2.f / 3.f) * sigma);
+	float b = sigma * a;
 
-	pdf = n_dot_wi * math::Pi_inv;
-
-	return pdf * math::Pi * (a + b * (s / t)) * BxDF<Sample>::sample_.diffuse_color_;
+//	return (a + b * (s / t)) * BxDF<Sample>::sample_.diffuse_color_;
+	return (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
 */
 }
 
