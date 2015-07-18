@@ -1,6 +1,7 @@
 #include "scene_loader.hpp"
 #include "scene.hpp"
 #include "scene/animation/animation.hpp"
+#include "scene/animation/animation_loader.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
 #include "scene/prop/prop.hpp"
@@ -98,13 +99,14 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 			} else if ("rotation" == node_name) {
 				transformation.rotation = json::read_local_rotation(node_value);
 			} else if ("animation" == node_name) {
-				animation = load_animation(node_value, scene);
+				animation = animation::load(node_value);
 			}
 		}
 
 		entity->set_transformation(transformation);
 
 		if (animation) {
+			scene.add_animation(animation);
 			scene.create_animation_stage(entity, animation.get());
 		}
 	}
@@ -152,48 +154,6 @@ light::Light* Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* 
 	light->init(prop);
 
 	return light;
-}
-
-std::shared_ptr<animation::Animation> Loader::load_animation(const rapidjson::Value& animation_value, Scene& scene) {
-	const rapidjson::Value::ConstMemberIterator keyframes_node = animation_value.FindMember("keyframes");
-	if (animation_value.MemberEnd() == keyframes_node) {
-		return nullptr;
-	}
-
-	const rapidjson::Value& keyframes_value = keyframes_node->value;
-
-	if (!keyframes_value.IsArray()) {
-		return nullptr;
-	}
-
-    auto animation = std::make_shared<animation::Animation>();
-
-    animation->init(keyframes_value.Size());
-
-	for (auto k = keyframes_value.Begin(); k != keyframes_value.End(); ++k) {
-		entity::Keyframe keyframe;
-
-		for (auto n = k->MemberBegin(); n != k->MemberEnd(); ++n) {
-			const std::string node_name = n->name.GetString();
-			const rapidjson::Value& node_value = n->value;
-
-			if ("time" == node_name) {
-				keyframe.time = json::read_float(node_value);
-			} else if ("position" == node_name) {
-				keyframe.transformation.position = json::read_float3(node_value);
-			} else if ("scale" == node_name) {
-				keyframe.transformation.scale = json::read_float3(node_value);
-			} else if ("rotation" == node_name) {
-				keyframe.transformation.rotation = json::read_local_rotation(node_value);
-			}
-		}
-
-        animation->push_back(keyframe);
-	}
-
-    scene.add_animation(animation);
-
-    return animation;
 }
 
 std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {

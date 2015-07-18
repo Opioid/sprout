@@ -30,3 +30,5 @@ I try to keep the dependencies reasonably low in this project. At the moment the
 . https://github.com/miloyip/rapidjson[RapidJSON] for parsing json files
 . http://tclap.sourceforge.net/[TCLAP] for parsing command line arguments
 
+If you have https://www.ffmpeg.org/[FFmpeg] installed you can export animations to mp4, but it is neither required to build nor to run.
+

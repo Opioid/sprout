@@ -35,12 +35,6 @@ class Shape;
 
 }
 
-namespace animation {
-
-class Animation;
-
-}
-
 class Scene;
 class Prop;
 
@@ -59,8 +53,6 @@ private:
 	Prop* load_prop(const rapidjson::Value& prop_value, Scene& scene);
 
 	light::Light* load_light(const rapidjson::Value& light_value, Prop* prop, Scene& scene);
-
-    std::shared_ptr<animation::Animation> load_animation(const rapidjson::Value& animation_value, Scene& scene);
 
 	std::shared_ptr<shape::Shape> load_shape(const rapidjson::Value& shape_value);
 
