@@ -63,7 +63,7 @@ public:
 
 private:
 
-	std::shared_ptr<scene::camera::Camera> load_camera(const rapidjson::Value& camera_value) const;
+	void load_camera(const rapidjson::Value& camera_value, Take& take) const;
 
 	rendering::film::Film* load_film(const rapidjson::Value& film_value) const;
 

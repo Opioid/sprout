@@ -67,6 +67,12 @@ int main(int argc, char* argv[]) {
 
 	try {
 		scene_loader.load(*file_system.read_stream(take->scene), scene);
+
+		if (take->camera_animation) {
+			scene.add_animation(take->camera_animation);
+			scene.create_animation_stage(take->context.camera.get(), take->camera_animation.get());
+		}
+
 	} catch (const std::exception& e) {
 		logging::error("Scene \"" + take->scene + "\" could not be loaded: " + e.what() + ".");
 		return 1;

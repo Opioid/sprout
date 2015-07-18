@@ -24,6 +24,9 @@ std::shared_ptr<animation::Animation> load(const rapidjson::Value& animation_val
 
 	for (auto k = keyframes_value.Begin(); k != keyframes_value.End(); ++k) {
 		entity::Keyframe keyframe;
+		keyframe.transformation.position = math::float3::identity;
+		keyframe.transformation.scale = math::float3(1.f, 1.f, 1.f);
+		keyframe.transformation.rotation = math::quaternion::identity;
 
 		for (auto n = k->MemberBegin(); n != k->MemberEnd(); ++n) {
 			const std::string node_name = n->name.GetString();

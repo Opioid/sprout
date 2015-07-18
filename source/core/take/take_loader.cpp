@@ -17,6 +17,7 @@
 #include "sampler/random_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
 #include "sampler/ems_sampler.hpp"
+#include "scene/animation/animation_loader.hpp"
 #include "scene/camera/perspective_camera.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -39,7 +40,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		const rapidjson::Value& node_value = n->value;
 
 		if ("camera" == node_name) {
-			take->context.camera = load_camera(node_value);
+			load_camera(node_value, *take);
 		} else if ("export" == node_name) {
 			exporter_value = &node_value;
 		} else if ("frames" == node_name) {
@@ -82,7 +83,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	return take;
 }
 
-std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Value& camera_value) const {
+void Loader::load_camera(const rapidjson::Value& camera_value, Take& take) const {
 	std::string type_name = "Perspective";
 	const rapidjson::Value* type_value = nullptr;
 
@@ -112,6 +113,8 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 			transformation.position = json::read_float3(node_value);
 		} else if ("rotation" == node_name) {
 			transformation.rotation = json::read_local_rotation(node_value);
+		} else if ("animation" == node_name) {
+			take.camera_animation = scene::animation::load(node_value);
 		} else if ("dimensions" == node_name) {
 			dimensions = json::read_float2(node_value);
 		} else if ("film" == node_name) {
@@ -145,7 +148,7 @@ std::shared_ptr<scene::camera::Camera> Loader::load_camera(const rapidjson::Valu
 
 	camera->update_view();
 
-	return camera;
+	take.context.camera = camera;
 }
 
 rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
