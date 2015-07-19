@@ -26,8 +26,9 @@ void Animation::tick(float time_slice) {
 		++current_frame_;
 	}
 
-	auto& current_frame = keyframes_[current_frame_];
-	auto& next_frame	= keyframes_[current_frame_ + 1];
+	size_t max_frame = keyframes_.size() - 1;
+	auto& current_frame = keyframes_[std::min(current_frame_,     max_frame)];
+	auto& next_frame	= keyframes_[std::min(current_frame_ + 1, max_frame)];
 
 	float range = next_frame.time - current_frame.time;
 
