@@ -1,6 +1,7 @@
 #include "pathtracer_dl.hpp"
 #include "integrator_helper.hpp"
 #include "rendering/worker.hpp"
+#include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/prop/prop_intersection.inl"
@@ -37,17 +38,27 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 	math::float3 result = math::float3::identity;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		if (!resolve_mask(worker, ray, intersection)) {
+		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::BxDF_type::Specular);
+
+		const image::texture::sampler::Sampler_2D* texture_sampler;
+
+		if (primary_ray) {
+			texture_sampler = &settings_.sampler_linear;
+		} else {
+			texture_sampler = &settings_.sampler_nearest;
+		}
+
+		if (!resolve_mask(worker, ray, intersection, *texture_sampler)) {
 			hit = false;
 			break;
 		}
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, *texture_sampler, worker.id());
 
 		if (material_sample.same_hemisphere(wo)) {
-			if (0 == i || previous_sample_type.test(scene::material::BxDF_type::Specular)) {
+			if (primary_ray) {
 				result += throughput * material_sample.emission();
 			}
 		} else {
@@ -66,7 +77,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		float light_pdf;
 		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
 		if (light) {
-			light->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, settings_.max_light_samples, light_samples_);
+			light->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
 
 			float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 
@@ -75,7 +86,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 					ray.set_direction(ls.shape.wi);
 					ray.max_t = ls.shape.t - ray_offset;
 
-					float mv = worker.masked_visibility(ray, settings_.sampler);
+					float mv = worker.masked_visibility(ray, *texture_sampler);
 					if (mv > 0.f) {
 						result += num_samples_reciprocal * mv * (throughput * ls.energy * material_sample.evaluate(ls.shape.wi, bxdf_pdf)) / (light_pdf * ls.shape.pdf);
 					}
@@ -105,8 +116,9 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 	return result;
 }
 
-bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
-	float opacity = intersection.opacity(settings_.sampler);
+bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
+								 const image::texture::sampler::Sampler_2D& texture_sampler) {
+	float opacity = intersection.opacity(texture_sampler);
 
 	while (opacity < 1.f) {
 		if (opacity > 0.f && opacity > rng_.random_float()) {
@@ -122,7 +134,7 @@ bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Interse
 			return false;
 		}
 
-		opacity = intersection.opacity(settings_.sampler);
+		opacity = intersection.opacity(texture_sampler);
 	}
 
 	return true;

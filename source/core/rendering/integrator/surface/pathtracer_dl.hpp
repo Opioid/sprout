@@ -4,6 +4,7 @@
 #include "sampler/ems_sampler.hpp"
 #include "sampler/random_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
+#include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
 #include "image/texture/sampler/address_mode.hpp"
 #include <vector>
@@ -24,7 +25,8 @@ public:
 		uint32_t max_bounces;
 		uint32_t max_light_samples;
 
-		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler;
+		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
+		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
 	};
 
 	Pathtracer_DL(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
@@ -35,7 +37,8 @@ public:
 
 private:
 
-	bool resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection);
+	bool resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
+					  const image::texture::sampler::Sampler_2D& texture_sampler);
 
 	Settings settings_;
 

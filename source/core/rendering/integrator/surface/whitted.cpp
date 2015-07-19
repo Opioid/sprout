@@ -1,5 +1,6 @@
 #include "whitted.hpp"
 #include "rendering/worker.hpp"
+#include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/prop/prop_intersection.inl"
@@ -28,7 +29,7 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	math::float3 result = math::float3::identity;
 
-	float opacity = intersection.opacity(settings_.sampler);
+	float opacity = intersection.opacity(settings_.sampler_linear);
 	float throughput = opacity;
 
 	while (opacity < 1.f) {
@@ -42,7 +43,7 @@ math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& i
 			return result;
 		}
 
-		throughput = (1.f - opacity) * intersection.opacity(settings_.sampler);
+		throughput = (1.f - opacity) * intersection.opacity(settings_.sampler_linear);
 		opacity   += throughput;
 	}
 
@@ -55,7 +56,7 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	math::float3 result = math::float3::identity;
 
 	math::float3 wo = -ray.direction;
-	auto& sample = intersection.material()->sample(intersection.geo, wo, settings_.sampler, worker.id());
+	auto& sample = intersection.material()->sample(intersection.geo, wo, settings_.sampler_linear, worker.id());
 
 	float bxdf_pdf;
 
@@ -71,7 +72,7 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	shadow_ray.min_t  = ray_offset;
 
 	for (auto l : worker.scene().lights()) {
-		l->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler, sampler_, settings_.max_light_samples, light_samples_);
+		l->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
 
 		float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 
@@ -80,7 +81,7 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 				shadow_ray.set_direction(ls.shape.wi);
 				shadow_ray.max_t = ls.shape.t - ray_offset;
 
-				float mv = worker.masked_visibility(shadow_ray, settings_.sampler);
+				float mv = worker.masked_visibility(shadow_ray, settings_.sampler_linear);
 				if (mv > 0.f) {
 					result += num_samples_reciprocal * mv * (ls.energy * sample.evaluate(ls.shape.wi, bxdf_pdf)) / ls.shape.pdf;
 				}

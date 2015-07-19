@@ -1,6 +1,7 @@
 #include "pathtracer.hpp"
 #include "integrator_helper.hpp"
 #include "rendering/worker.hpp"
+#include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/prop/prop_intersection.inl"
@@ -25,6 +26,7 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 
 math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	scene::material::BxDF_result sample_result;
+	scene::material::BxDF_result::Type previous_sample_type;
 	math::float3 previous_sample_attenuation = math::float3(1.f, 1.f, 1.f);
 
 	bool hit = true;
@@ -32,14 +34,24 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 	math::float3 result = math::float3::identity;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		if (!resolve_mask(worker, ray, intersection)) {
+		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::BxDF_type::Specular);
+
+		const image::texture::sampler::Sampler_2D* texture_sampler;
+
+		if (primary_ray) {
+			texture_sampler = &settings_.sampler_linear;
+		} else {
+			texture_sampler = &settings_.sampler_nearest;
+		}
+
+		if (!resolve_mask(worker, ray, intersection, *texture_sampler)) {
 			hit = false;
 			break;
 		}
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, *texture_sampler, worker.id());
 
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.emission();
@@ -58,6 +70,7 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 
 		throughput *= sample_result.reflection / sample_result.pdf;
 
+		previous_sample_type = sample_result.type;
 		previous_sample_attenuation = material_sample.attenuation();
 
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
@@ -77,8 +90,9 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 	return result;
 }
 
-bool Pathtracer::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
-	float opacity = intersection.opacity(settings_.sampler);
+bool Pathtracer::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
+							  const image::texture::sampler::Sampler_2D& texture_sampler) {
+	float opacity = intersection.opacity(texture_sampler);
 
 	while (opacity < 1.f) {
 		if (opacity > 0.f && opacity > rng_.random_float()) {
@@ -94,7 +108,7 @@ bool Pathtracer::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersecti
 			return false;
 		}
 
-		opacity = intersection.opacity(settings_.sampler);
+		opacity = intersection.opacity(texture_sampler);
 	}
 
 	return true;

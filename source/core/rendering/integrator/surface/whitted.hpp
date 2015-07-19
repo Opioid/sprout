@@ -3,6 +3,7 @@
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/random_sampler.hpp"
 #include "sampler/ems_sampler.hpp"
+#include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
 #include "image/texture/sampler/address_mode.hpp"
 #include <vector>
@@ -21,7 +22,8 @@ public:
 	struct Settings {
 		uint32_t max_light_samples;
 
-		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler;
+		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
+		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
 	};
 
 	Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
