@@ -11,7 +11,7 @@ The overall architecture is heavily inspired by http://www.pbrt.org/[PBRT] while
 
 At the moment the most advanced integrator is a uni-directional path tracer with forward prediction and multiple importance sampling. Area lights and HDRI lights are supported. The default material is a combination of qualitative Oren-Nayar and GGX with roughness and metallic parameters similar to the http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf[Unreal 4 presentation]. There is support for a few built in shapes (sphere, disk, plane...) as well as triangle meshes.
 
-A render is configurable by various json files that describe the different parts of the scene (shapes, lights, materials etc.) as well as camera settings.
+A render is configurable by various json files that describe the different parts of the scene (shapes, lights, materials etc.) as well as the camera settings.
 
 == Installation
 

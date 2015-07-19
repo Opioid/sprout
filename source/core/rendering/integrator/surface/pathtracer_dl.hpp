@@ -37,9 +37,6 @@ public:
 
 private:
 
-	bool resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
-					  const image::texture::sampler::Sampler_2D& texture_sampler);
-
 	Settings settings_;
 
 	sampler::Random sampler_;

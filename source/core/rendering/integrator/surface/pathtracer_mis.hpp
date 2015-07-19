@@ -41,9 +41,6 @@ private:
 									   const scene::material::Sample& material_sample,
 									   const image::texture::sampler::Sampler_2D& texture_sampler);
 
-	bool resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
-					  const image::texture::sampler::Sampler_2D& texture_sampler);
-
 	Settings settings_;
 
 	sampler::Random sampler_;

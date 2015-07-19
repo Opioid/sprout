@@ -4,6 +4,12 @@
 #include "base/math/ray.hpp"
 #include "base/math/random/generator.hpp"
 
+namespace image { namespace texture { namespace sampler {
+
+class Sampler_2D;
+
+}}}
+
 namespace take {
 
 struct Settings;
@@ -39,6 +45,11 @@ public:
 	Surface_integrator(const take::Settings& settings, math::random::Generator& rng);
 
 	virtual math::float3 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) = 0;
+
+protected:
+
+	bool resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
+					  const image::texture::sampler::Sampler_2D& texture_sampler);
 };
 
 class Surface_integrator_factory {

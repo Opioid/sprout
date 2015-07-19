@@ -116,30 +116,6 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 	return result;
 }
 
-bool Pathtracer_DL::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
-								 const image::texture::sampler::Sampler_2D& texture_sampler) {
-	float opacity = intersection.opacity(texture_sampler);
-
-	while (opacity < 1.f) {
-		if (opacity > 0.f && opacity > rng_.random_float()) {
-			return true;
-		}
-
-		// We never change the ray origin and just slide along the segment instead.
-		// This seems to be more robust than setting the new origin from the last intersection.
-		// Possible indicator of imprecision issues in other parts of the code, but this seems to work well enough.
-		ray.min_t = ray.max_t;
-		ray.max_t = 1000.f;
-		if (!worker.intersect(ray, intersection)) {
-			return false;
-		}
-
-		opacity = intersection.opacity(texture_sampler);
-	}
-
-	return true;
-}
-
 Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces, uint32_t max_light_samples) :
 	Surface_integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
