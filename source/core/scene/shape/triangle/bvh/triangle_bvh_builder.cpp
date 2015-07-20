@@ -37,8 +37,11 @@ void Builder::build(Tree& tree, const std::vector<Index_triangle>& triangles, co
 
 	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()));
 
+	std::vector<uint32_t> swap_primitive_indices;
+	swap_primitive_indices.reserve(triangles.size() / 2 + 1);
+
 	Build_node root;
-	split(&root, primitive_indices, triangles, vertices, max_primitives, 0, tree);
+	split(&root, primitive_indices, swap_primitive_indices, triangles, vertices, max_primitives, 0, tree);
 
 	num_nodes_ = 1;
 	root.num_sub_nodes(num_nodes_);
@@ -81,6 +84,7 @@ uint32_t Builder::current_node_index() const {
 
 void Builder::split(Build_node* node,
 					std::vector<uint32_t>& primitive_indices,
+					std::vector<uint32_t>& swap_primitive_indices,
 					const std::vector<Index_triangle>& triangles,
 					const std::vector<Vertex>& vertices,
 					size_t max_primitives, uint32_t depth,
@@ -96,7 +100,9 @@ void Builder::split(Build_node* node,
 
 		size_t reserve_size = primitive_indices.size() / 2 + 1;
 		std::vector<uint32_t> pids0;
-		pids0.reserve(reserve_size);
+	//	pids0.reserve(reserve_size);
+		pids0.swap(swap_primitive_indices);
+		pids0.clear();
 		std::vector<uint32_t> pids1;
 		pids1.reserve(reserve_size);
 
@@ -120,13 +126,13 @@ void Builder::split(Build_node* node,
 			assign(node, pids1, triangles, vertices, tree);
 		} else {
 			node->children[0] = new Build_node;
-			split(node->children[0], pids0, triangles, vertices, max_primitives, depth + 1, tree);
+			split(node->children[0], pids0, primitive_indices, triangles, vertices, max_primitives, depth + 1, tree);
 
 			node->children[1] = new Build_node;
-			split(node->children[1], pids1, triangles, vertices, max_primitives, depth + 1, tree);
+			split(node->children[1], pids1, primitive_indices, triangles, vertices, max_primitives, depth + 1, tree);
 		}
 
-		/*
+/*
 		size_t reserve_size = primitive_indices.size() / 2 + 1;
 		std::vector<uint32_t> pids;
 		pids.reserve(reserve_size);
@@ -164,7 +170,7 @@ void Builder::split(Build_node* node,
 
 		node->children[1] = new Build_node;
 		split(node->children[1], pids, triangles, vertices, max_primitives, depth + 1, tree);
-		*/
+*/
 	}
 }
 
@@ -224,7 +230,7 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 
 	average /= static_cast<float>(primitive_indices.size() * 3);
 
-//	math::float3 position = aabb.position();
+	math::float3 position = aabb.position();
 	math::float3 halfsize = aabb.halfsize();
 
 	uint8_t bb_axis;
@@ -283,7 +289,7 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 	std::sort(split_candidates_.begin(), split_candidates_.end(),
 			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
-/*
+
 	if (split_candidates_[0].key() >= 0x1000000000000000) {
 
 			std::vector<math::float3> positions;
@@ -329,10 +335,32 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 				split_candidates_.push_back(Split_candidate(bb_axis, 2, y_median,
 											primitive_indices, triangles, vertices));
 
+
+/*
+				math::float3 v = average - position;
+
+				float modifier = 0.f;
+
+				split_candidates_.push_back(Split_candidate(bb_axis, 0, average + modifier * (average - x_median),
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 1, average + modifier * (average - y_median),
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 2, average + modifier * (average - z_median),
+											primitive_indices, triangles, vertices));
+
+				split_candidates_.push_back(Split_candidate(bb_axis, 0, average - modifier * (average - x_median),
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 1, average - modifier * (average - y_median),
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 2, average - modifier * (average - z_median),
+											primitive_indices, triangles, vertices));
+*/
+
+
 				std::sort(split_candidates_.begin(), split_candidates_.end(),
 						[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 	}
-*/
+
 
 	return split_candidates_[0];
 }

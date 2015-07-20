@@ -31,8 +31,8 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 //	float area_0 = 0.f;
 //	float area_1 = 0.f;
 
-	uint32_t num_side_0 = 0;
-//	uint32_t num_side_1 = 0;
+	int num_side_0 = 0;
+	int num_side_1 = 0;
 	uint32_t split = 0;
 	for (auto pi : primitive_indices) {
 		auto& a = vertices[triangles[pi].a].p;
@@ -47,10 +47,9 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 //			bb0.insert(c);
 
 //			area_0 += triangle_area(a, b, c);
-
-//		} else if (1 == side) {
-//			++num_side_1;
 		} else {
+			++num_side_1;
+
 			if (2 == side) {
 				++split;
 			}
@@ -73,6 +72,8 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 //	key_ += ratio;
 
 	key_ += split;
+
+//	key_ += split + static_cast<uint64_t>(std::abs(num_side_0 - num_side_1));
 
 	if (0 == num_side_0) {	
 		key_ += 0x1000000000000000;

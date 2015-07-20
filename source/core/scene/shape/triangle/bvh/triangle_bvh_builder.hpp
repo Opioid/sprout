@@ -59,6 +59,7 @@ private:
 
 	void split(Build_node* node,
 			   std::vector<uint32_t>& primitive_indices,
+			   std::vector<uint32_t>& swap_primitive_indices,
 			   const std::vector<Index_triangle>& triangles,
 			   const std::vector<Vertex>& vertices,
 			   size_t max_primitives, uint32_t depth,
