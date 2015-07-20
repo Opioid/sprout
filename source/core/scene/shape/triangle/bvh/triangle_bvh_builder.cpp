@@ -127,10 +127,10 @@ void Builder::split(Build_node* node,
 }
 
 void Builder::assign(Build_node* node,
-					  const std::vector<uint32_t>& primitive_indices,
-					  const std::vector<Index_triangle>& triangles,
-					  const std::vector<Vertex>& vertices,
-					  Tree& tree) {
+					 const std::vector<uint32_t>& primitive_indices,
+					 const std::vector<Index_triangle>& triangles,
+					 const std::vector<Vertex>& vertices,
+					 Tree& tree) {
 	node->start_index = tree.num_triangles();
 
 	for (auto pi : primitive_indices) {
