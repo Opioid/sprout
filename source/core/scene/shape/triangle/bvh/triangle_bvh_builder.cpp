@@ -80,7 +80,7 @@ uint32_t Builder::current_node_index() const {
 }
 
 void Builder::split(Build_node* node,
-					const std::vector<uint32_t>& primitive_indices,
+					std::vector<uint32_t>& primitive_indices,
 					const std::vector<Index_triangle>& triangles,
 					const std::vector<Vertex>& vertices,
 					size_t max_primitives, uint32_t depth,
@@ -90,8 +90,6 @@ void Builder::split(Build_node* node,
 	if (primitive_indices.size() <= max_primitives || depth > 16) {
 		assign(node, primitive_indices, triangles, vertices, tree);
 	} else {
-	//	math::plane sp = average_splitting_plane(node->aabb, primitive_indices, triangles, vertices, node->axis);
-
 		Split_candidate sp = splitting_plane(node->aabb, primitive_indices, triangles, vertices);
 
 		node->axis = sp.axis();
@@ -112,6 +110,10 @@ void Builder::split(Build_node* node,
 			}
 		}
 
+	//	primitive_indices.clear();
+	//	primitive_indices.shrink_to_fit();
+	//	std::vector<uint32_t>().swap(primitive_indices);
+
 		if (pids0.empty()) {
 			// This can happen if we didn't find a good splitting plane.
 			// It means no triangle was completely on "this" side of the plane.
@@ -123,6 +125,46 @@ void Builder::split(Build_node* node,
 			node->children[1] = new Build_node;
 			split(node->children[1], pids1, triangles, vertices, max_primitives, depth + 1, tree);
 		}
+
+		/*
+		size_t reserve_size = primitive_indices.size() / 2 + 1;
+		std::vector<uint32_t> pids;
+		pids.reserve(reserve_size);
+
+		for (auto pi : primitive_indices) {
+			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp.plane());
+
+			if (0 == side) {
+				pids.push_back(pi);
+			}
+		}
+
+		if (pids.empty()) {
+			// This can happen if we didn't find a good splitting plane.
+			// It means no triangle was completely on "this" side of the plane.
+			assign(node, primitive_indices, triangles, vertices, tree);
+			return;
+		} else {
+			node->children[0] = new Build_node;
+			split(node->children[0], pids, triangles, vertices, max_primitives, depth + 1, tree);
+		}
+
+		pids.clear();
+
+		for (auto pi : primitive_indices) {
+			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp.plane());
+
+			if (0 != side) {
+				pids.push_back(pi);
+			}
+		}
+
+		primitive_indices.clear();
+		primitive_indices.shrink_to_fit();
+
+		node->children[1] = new Build_node;
+		split(node->children[1], pids, triangles, vertices, max_primitives, depth + 1, tree);
+		*/
 	}
 }
 
@@ -169,8 +211,15 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 
 	math::float3 average = math::float3::identity;
 
+//	std::vector<math::float3> positions;
+//	positions.reserve(primitive_indices.size());
+
 	for (auto pi : primitive_indices) {
 		average += vertices[triangles[pi].a].p + vertices[triangles[pi].b].p + vertices[triangles[pi].c].p;
+
+//		positions.push_back(vertices[triangles[pi].a].p);
+//		positions.push_back(vertices[triangles[pi].b].p);
+//		positions.push_back(vertices[triangles[pi].c].p);
 	}
 
 	average /= static_cast<float>(primitive_indices.size() * 3);
@@ -179,6 +228,15 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 	math::float3 halfsize = aabb.halfsize();
 
 	uint8_t bb_axis;
+
+//	std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.x < b.x; } );
+//	math::float3 x_median = positions[positions.size() / 2];
+
+//	std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.y < b.y; } );
+//	math::float3 y_median = positions[positions.size() / 2];
+
+//	std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.z < b.z; } );
+//	math::float3 z_median = positions[positions.size() / 2];
 
 	if (halfsize.x >= halfsize.y && halfsize.x >= halfsize.z) {
 		bb_axis = 0;
@@ -190,10 +248,18 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 
 	split_candidates_.push_back(Split_candidate(bb_axis, 0, average,
 								primitive_indices, triangles, vertices));
+//	split_candidates_.push_back(Split_candidate(bb_axis, 0, x_median,
+//								primitive_indices, triangles, vertices));
+
 	split_candidates_.push_back(Split_candidate(bb_axis, 1, average,
 								primitive_indices, triangles, vertices));
+//	split_candidates_.push_back(Split_candidate(bb_axis, 1, y_median,
+//								primitive_indices, triangles, vertices));
+
 	split_candidates_.push_back(Split_candidate(bb_axis, 2, average,
 								primitive_indices, triangles, vertices));
+//	split_candidates_.push_back(Split_candidate(bb_axis, 2, z_median,
+//								primitive_indices, triangles, vertices));
 
 /*
 	math::float3 v = average - position;
@@ -217,13 +283,64 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 	std::sort(split_candidates_.begin(), split_candidates_.end(),
 			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
+/*
+	if (split_candidates_[0].key() >= 0x1000000000000000) {
+
+			std::vector<math::float3> positions;
+			positions.reserve(primitive_indices.size());
+
+			for (auto pi : primitive_indices) {
+				average += vertices[triangles[pi].a].p + vertices[triangles[pi].b].p + vertices[triangles[pi].c].p;
+
+				positions.push_back(vertices[triangles[pi].a].p);
+				positions.push_back(vertices[triangles[pi].b].p);
+				positions.push_back(vertices[triangles[pi].c].p);
+			}
+
+				std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.x < b.x; } );
+				math::float3 x_median = positions[positions.size() / 2];
+
+				std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.y < b.y; } );
+				math::float3 y_median = positions[positions.size() / 2];
+
+				std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.z < b.z; } );
+				math::float3 z_median = positions[positions.size() / 2];
+
+				split_candidates_.clear();
+
+				split_candidates_.push_back(Split_candidate(bb_axis, 0, x_median,
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 0, y_median,
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 0, z_median,
+											primitive_indices, triangles, vertices));
+
+				split_candidates_.push_back(Split_candidate(bb_axis, 1, y_median,
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 1, x_median,
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 1, z_median,
+											primitive_indices, triangles, vertices));
+
+				split_candidates_.push_back(Split_candidate(bb_axis, 2, z_median,
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 2, x_median,
+											primitive_indices, triangles, vertices));
+				split_candidates_.push_back(Split_candidate(bb_axis, 2, y_median,
+											primitive_indices, triangles, vertices));
+
+				std::sort(split_candidates_.begin(), split_candidates_.end(),
+						[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
+	}
+*/
+
 	return split_candidates_[0];
 }
 
 math::plane Builder::average_splitting_plane(const math::aabb& aabb,
-											  const std::vector<uint32_t>& primitive_indices,
-											  const std::vector<Index_triangle>& triangles,
-											  const std::vector<Vertex>& vertices, uint8_t& axis) {
+											 const std::vector<uint32_t>& primitive_indices,
+											 const std::vector<Index_triangle>& triangles,
+											 const std::vector<Vertex>& vertices, uint8_t& axis) {
 	math::float3 average = math::float3::identity;
 
 	for (auto pi : primitive_indices) {

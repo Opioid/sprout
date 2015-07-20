@@ -58,7 +58,7 @@ private:
 	std::vector<Split_candidate> split_candidates_;
 
 	void split(Build_node* node,
-			   const std::vector<uint32_t>& primitive_indices,
+			   std::vector<uint32_t>& primitive_indices,
 			   const std::vector<Index_triangle>& triangles,
 			   const std::vector<Vertex>& vertices,
 			   size_t max_primitives, uint32_t depth,
