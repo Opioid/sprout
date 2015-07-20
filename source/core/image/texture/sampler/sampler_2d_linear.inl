@@ -86,8 +86,6 @@ math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture
 
 	uv = address_mode_.f(uv);
 
-	uv = math::float2::identity;
-
 	float u = uv.x * df.x - 0.5f;
 	float v = uv.y * df.y - 0.5f;
 
