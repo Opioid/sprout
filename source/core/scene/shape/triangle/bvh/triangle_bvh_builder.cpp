@@ -98,13 +98,12 @@ void Builder::split(Build_node* node,
 
 		node->axis = sp.axis();
 
-		size_t reserve_size = primitive_indices.size() / 2 + 1;
 		std::vector<uint32_t> pids0;
-	//	pids0.reserve(reserve_size);
 		pids0.swap(swap_primitive_indices);
 		pids0.clear();
+
 		std::vector<uint32_t> pids1;
-		pids1.reserve(reserve_size);
+		pids1.reserve(primitive_indices.size() / 2 + 1);
 
 		for (auto pi : primitive_indices) {
 			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp.plane());
@@ -115,10 +114,6 @@ void Builder::split(Build_node* node,
 				pids1.push_back(pi);
 			}
 		}
-
-	//	primitive_indices.clear();
-	//	primitive_indices.shrink_to_fit();
-	//	std::vector<uint32_t>().swap(primitive_indices);
 
 		if (pids0.empty()) {
 			// This can happen if we didn't find a good splitting plane.
@@ -131,46 +126,6 @@ void Builder::split(Build_node* node,
 			node->children[1] = new Build_node;
 			split(node->children[1], pids1, primitive_indices, triangles, vertices, max_primitives, depth + 1, tree);
 		}
-
-/*
-		size_t reserve_size = primitive_indices.size() / 2 + 1;
-		std::vector<uint32_t> pids;
-		pids.reserve(reserve_size);
-
-		for (auto pi : primitive_indices) {
-			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp.plane());
-
-			if (0 == side) {
-				pids.push_back(pi);
-			}
-		}
-
-		if (pids.empty()) {
-			// This can happen if we didn't find a good splitting plane.
-			// It means no triangle was completely on "this" side of the plane.
-			assign(node, primitive_indices, triangles, vertices, tree);
-			return;
-		} else {
-			node->children[0] = new Build_node;
-			split(node->children[0], pids, triangles, vertices, max_primitives, depth + 1, tree);
-		}
-
-		pids.clear();
-
-		for (auto pi : primitive_indices) {
-			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp.plane());
-
-			if (0 != side) {
-				pids.push_back(pi);
-			}
-		}
-
-		primitive_indices.clear();
-		primitive_indices.shrink_to_fit();
-
-		node->children[1] = new Build_node;
-		split(node->children[1], pids, triangles, vertices, max_primitives, depth + 1, tree);
-*/
 	}
 }
 
