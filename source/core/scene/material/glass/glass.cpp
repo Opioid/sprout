@@ -15,12 +15,6 @@ float BRDF::pdf(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
 	return 0.f;
 }
 
-float fresnel(const math::float3& wo, const math::float3& h, float f0) {
-	float wo_dot_h = math::dot(wo, h);
-
-	return ggx::f(wo_dot_h, f0);
-}
-
 float BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
 	math::float3 n = sample_.n_;
 
@@ -28,11 +22,13 @@ float BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result
 		n *= -1.f;
 	}
 
-	result.wi = math::normalized(math::reflect(n, sample_.wo_));
+	float wo_dot_h = math::dot(sample_.wo_, n);
+
+	result.wi = math::normalized(2.f * wo_dot_h * n - sample_.wo_);
 
 	result.pdf = 1.f;
 
-	result.reflection = math::float3(fresnel(sample_.wo_, n, sample_.f0_));
+	result.reflection = math::float3(ggx::f(wo_dot_h, sample_.f0_));
 
 	result.type.clear_set(BxDF_type::Specular_reflection);
 
@@ -76,7 +72,8 @@ float BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result
 	result.pdf = 1.f;
 
 	// fresnel has to be the same value that would have been computed by BRDF
-	float f = fresnel(sample_.wo_, n, sample_.f0_);
+	float wo_dot_h = math::dot(sample_.wo_, n);
+	float f = ggx::f(wo_dot_h, sample_.f0_);
 	result.reflection = (1.f - f) * sample_.color_;
 
 	result.type.clear_set(BxDF_type::Specular_transmission);
