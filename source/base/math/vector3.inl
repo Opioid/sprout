@@ -225,7 +225,7 @@ Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, T t) {
 
 template<typename T>
 Vector3<T> reflect(const Vector3<T>& normal, const Vector3<T>& v) {
-	return v - T(2) * dot(v, normal) * normal;
+	return T(2) * dot(v, normal) * normal - v;
 }
 
 template<typename T>
