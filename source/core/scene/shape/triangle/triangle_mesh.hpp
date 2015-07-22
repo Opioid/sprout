@@ -43,6 +43,8 @@ public:
 
 	virtual bool is_complex() const final override;
 
+	virtual bool is_analytical() const final override;
+
 	virtual void prepare_sampling(uint32_t part, const math::float3& scale) final override;
 
 private:

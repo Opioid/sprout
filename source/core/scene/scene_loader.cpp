@@ -145,7 +145,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 light::Light* Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Scene& scene) {
 	light::Prop_light* light = nullptr;
 
-	if (prop->has_emission_mapped_material()) {
+	if (prop->shape()->is_analytical() && prop->has_emission_mapped_material()) {
 		light = scene.create_prop_image_light();
 	} else {
 		light = scene.create_prop_light();

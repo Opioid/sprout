@@ -132,6 +132,10 @@ bool Mesh::is_complex() const {
 	return true;
 }
 
+bool Mesh::is_analytical() const {
+	return false;
+}
+
 void Mesh::prepare_sampling(uint32_t part, const math::float3& scale) {
 	distributions_[part].init(part, tree_.triangles(), scale);
 }

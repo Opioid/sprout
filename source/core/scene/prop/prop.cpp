@@ -112,6 +112,21 @@ bool Prop::has_masked_material() const {
 	return has_masked_material_;
 }
 
+bool Prop::has_emissive_material() const {
+	for (auto m : materials_) {
+		if (m->emission_map()) {
+			return true;
+		}
+
+		math::float3 e = m->average_emission();
+		if (e.x > 0.f || e.y > 0.f || e.z > 0.f) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool Prop::has_emission_mapped_material() const {
 	for (auto m : materials_) {
 		if (m->emission_map()) {
