@@ -5,6 +5,17 @@
 
 namespace scene { namespace material { namespace glass {
 
+// Adapted from https://seblagarde.wordpress.com/2013/04/29/memo-on-fresnel-equations/#more-1921
+float fresnel_dielectric(float n_dot_wi, float n_dot_wo, float eta) {
+	float t1 = eta * n_dot_wo;
+	float t2 = eta * n_dot_wi;
+
+	float rs = (n_dot_wi + t1) / (n_dot_wi - t1);
+	float rp = (n_dot_wo + t2) / (n_dot_wo - t2);
+
+	return 0.5f * (rs * rs + rp * rp);
+}
+
 BRDF::BRDF(const Sample& sample) : BxDF(sample) {}
 
 math::float3 BRDF::evaluate(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
@@ -17,19 +28,33 @@ float BRDF::pdf(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
 
 float BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
 	math::float3 n = sample_.n_;
+	float eta = 1.f / sample_.ior_;
 
 	if (!sample_.same_hemisphere(sample_.wo_)) {
 		n *= -1.f;
+		eta = sample_.ior_;
 	}
 
 	float wo_dot_h = math::dot(sample_.wo_, n);
 
 	result.wi = math::normalized(2.f * wo_dot_h * n - sample_.wo_);
 
+	float n_dot_wo = math::dot(n, sample_.wo_);
+
+	float sint2 = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
+
+	float f;
+	if (sint2 > 1.f) {
+		f = 1.f;
+	} else {
+		float n_dot_wi = -std::sqrt(1.f - sint2);
+
+		// fresnel has to be the same value that would have been computed by BRDF
+		f = fresnel_dielectric(n_dot_wi, n_dot_wo, eta);
+	}
+
+	result.reflection = math::float3(f);//math::float3(ggx::f(wo_dot_h, sample_.f0_));
 	result.pdf = 1.f;
-
-	result.reflection = math::float3(ggx::f(wo_dot_h, sample_.f0_));
-
 	result.type.clear_set(BxDF_type::Specular_reflection);
 
 	return 1.f;
@@ -46,36 +71,32 @@ float BTDF::pdf(const math::float3& /*wi*/, float /*n_dot_wi*/) const {
 }
 
 float BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
-	float eta  = 1.f / sample_.ior_;
-
 	math::float3 n = sample_.n_;
-
-	math::float3 incident = -sample_.wo_;
-
-	float cosi = -math::dot(incident, n);
+	float eta = 1.f / sample_.ior_;
 
 	if (!sample_.same_hemisphere(sample_.wo_)) {
-		eta = sample_.ior_;
 		n *= -1.f;
-		cosi = -cosi;
+		eta = sample_.ior_;
 	}
 
-	float cost2 = 1.f - eta * eta * (1.f - cosi * cosi);
-	if (cost2 < 0.f) {
+	float n_dot_wo = math::dot(n, sample_.wo_);
+
+	float sint2 = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
+
+	if (sint2 > 1.f) {
 		result.pdf = 0.f;
 		return 0.f;
 	}
 
-	math::float3 t = eta * incident + (eta * cosi - std::sqrt(cost2)) * n;
-	result.wi = math::normalized(t);
-
-	result.pdf = 1.f;
+	float n_dot_wi = -std::sqrt(1.f - sint2);
+	math::float3 t = (eta * n_dot_wo + n_dot_wi) * n - eta * sample_.wo_;
+	result.wi = t;
 
 	// fresnel has to be the same value that would have been computed by BRDF
-	float wo_dot_h = math::dot(sample_.wo_, n);
-	float f = ggx::f(wo_dot_h, sample_.f0_);
-	result.reflection = (1.f - f) * sample_.color_;
+	float f = fresnel_dielectric(n_dot_wi, n_dot_wo, eta);
 
+	result.reflection = (1.f - f) * sample_.color_;
+	result.pdf = 1.f;
 	result.type.clear_set(BxDF_type::Specular_transmission);
 
 	return 1.f;
