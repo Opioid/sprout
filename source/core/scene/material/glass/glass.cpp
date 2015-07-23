@@ -89,8 +89,7 @@ float BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result
 	}
 
 	float n_dot_wi = -std::sqrt(1.f - sint2);
-	math::float3 t = (eta * n_dot_wo + n_dot_wi) * n - eta * sample_.wo_;
-	result.wi = t;
+	result.wi = (eta * n_dot_wo + n_dot_wi) * n - eta * sample_.wo_;
 
 	// fresnel has to be the same value that would have been computed by BRDF
 	float f = fresnel_dielectric(n_dot_wi, n_dot_wo, eta);
