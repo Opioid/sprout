@@ -58,9 +58,9 @@ float BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result
 
 		// fresnel has to be the same value that would have been computed by BRDF
 
-		f = fresnel_dielectric(n_dot_t, n_dot_wo, eta);
+	//	f = fresnel_dielectric(n_dot_t, n_dot_wo, eta);
 
-	//	f = fresnel_dielectric_holgerusan(eta, 1.f / eta, n_dot_wo, n_dot_t);
+		f = fresnel_dielectric_holgerusan(eta, 1.f / eta, n_dot_wo, n_dot_t);
 	}
 
 	result.reflection = math::float3(f);
@@ -102,9 +102,9 @@ float BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result
 	result.wi = (eta * n_dot_wo + n_dot_t) * n - eta * sample_.wo_;
 
 	// fresnel has to be the same value that would have been computed by BRDF
-	float f = fresnel_dielectric(n_dot_t, n_dot_wo, eta);
+//	float f = fresnel_dielectric(n_dot_t, n_dot_wo, eta);
 
-//	float f = fresnel_dielectric_holgerusan(eta, 1.f / eta, n_dot_wo, n_dot_t);
+	float f = fresnel_dielectric_holgerusan(eta, 1.f / eta, n_dot_wo, n_dot_t);
 
 	result.reflection = (1.f - f) * sample_.color_;
 	result.pdf = 1.f;
