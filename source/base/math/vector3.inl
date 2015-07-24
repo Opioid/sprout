@@ -262,6 +262,11 @@ Vector3<T> abs(const Vector3<T>& v) {
 }
 
 template<typename T>
+bool contains_negative(const Vector3<T>& v) {
+	return v.x < T(0) || v.y < T(0) || v.z < T(0);
+}
+
+template<typename T>
 bool contains_nan(const Vector3<T>& v) {
 	return std::isnan(v.x) || std::isnan(v.y) || std::isnan(v.z);
 }
