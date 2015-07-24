@@ -30,11 +30,7 @@ void test() {
 
 	float ior = 1.5f;
 
-	float no = ior - 1.f;
-	float de = ior + 1.f;
-	float f0 = (no * no) / (de * de);
-
-	sample.set(color, attenuation, ior, f0);
+	sample.set(color, attenuation, ior);
 
 	math::float3 t(1.f, 0.f, 0.f);
 	math::float3 b(0.f, 1.f, 0.f);

@@ -47,14 +47,13 @@ public:
 
 	virtual bool is_pure_emissive() const final override;
 
-	void set(const math::float3& color, const math::float3& attenuation, float ior, float f0);
+	void set(const math::float3& color, const math::float3& attenuation, float ior);
 
 private:
 
 	math::float3 color_;
 	math::float3 attenuation_;
 	float ior_;
-	float f0_;
 
 	BRDF brdf_;
 	BTDF btdf_;

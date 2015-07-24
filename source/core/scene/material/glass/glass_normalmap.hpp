@@ -19,7 +19,6 @@ private:
 	math::float3 color_;
 	math::float3 attenuation_;
 	float ior_;
-	float f0_;
 	std::shared_ptr<image::texture::Texture_2D> normal_;
 };
 

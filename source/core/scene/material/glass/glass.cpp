@@ -136,11 +136,10 @@ bool Sample::is_pure_emissive() const {
 	return false;
 }
 
-void Sample::set(const math::float3& color, const math::float3& attenuation, float ior, float f0) {
+void Sample::set(const math::float3& color, const math::float3& attenuation, float ior) {
 	color_ = color;
 	attenuation_ = attenuation;
 	ior_ = ior;
-	f0_  = f0;
 }
 
 Glass::Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) : Material(cache, mask) {}

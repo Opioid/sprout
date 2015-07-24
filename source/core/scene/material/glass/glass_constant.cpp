@@ -12,18 +12,14 @@ Constant::Constant(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::
 				   const math::float3& color, float attenuation_distance, float ior) :
 	Glass(cache, mask), color_(color),
 	attenuation_(1.f / (color.x * attenuation_distance), 1.f / (color.y * attenuation_distance), 1.f / (color.z * attenuation_distance)),
-	ior_(std::max(ior, 1.0001f)) {
-	float n = ior - 1.f;
-	float d = ior + 1.f;
-	f0_ = (n * n) / (d * d);
-}
+	ior_(std::max(ior, 1.0001f)) {}
 
 const Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
 							   const image::texture::sampler::Sampler_2D& /*sampler*/, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
-	sample.set(color_, attenuation_, ior_, f0_);
+	sample.set(color_, attenuation_, ior_);
 
 	return sample;
 }
