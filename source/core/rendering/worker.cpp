@@ -5,6 +5,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "scene/camera/camera.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/node_stack.inl"
 #include "scene/material/material.hpp"
@@ -77,6 +78,11 @@ math::float3 Worker::li(math::Oray& ray) {
 
 bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) {
 	return scene_->intersect(ray, node_stack_, intersection);
+}
+
+bool Worker::intersect(const scene::Prop* prop, math::Oray& ray, scene::Intersection& intersection) {
+	intersection.prop = prop;
+	return prop->intersect(ray, node_stack_, intersection.geo);
 }
 
 bool Worker::visibility(const math::Oray& ray) {

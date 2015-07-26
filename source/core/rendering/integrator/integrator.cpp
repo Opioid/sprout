@@ -8,9 +8,13 @@ namespace rendering {
 
 Integrator::Integrator(const take::Settings& settings, math::random::Generator& rng) : take_settings_(settings), rng_(rng) {}
 
+Integrator::~Integrator() {}
+
 void Integrator::start_new_pixel(uint32_t /*num_samples*/) {}
 
 Surface_integrator::Surface_integrator(const take::Settings& settings, math::random::Generator& rng) : Integrator(settings, rng) {}
+
+Surface_integrator::~Surface_integrator() {}
 
 bool Surface_integrator::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
 									  const image::texture::sampler::Sampler_2D& texture_sampler) {

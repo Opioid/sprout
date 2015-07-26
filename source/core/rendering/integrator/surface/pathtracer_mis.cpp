@@ -4,11 +4,11 @@
 #include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
-#include "scene/prop/prop_intersection.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
+#include "scene/prop/prop_intersection.inl"
 #include "take/take_settings.hpp"
 #include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
@@ -20,7 +20,7 @@
 namespace rendering {
 
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {
 	light_samples_.reserve(settings.max_light_samples);
 }
 
@@ -62,7 +62,7 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 				result += throughput * material_sample.emission();
 			}
 		} else {
-			throughput *= attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
+		//	throughput *= attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
 		}
 
 		if (material_sample.is_pure_emissive()) {
@@ -76,7 +76,11 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			break;
 		}
 
-		throughput *= sample_result.reflection / sample_result.pdf;
+		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
+			throughput *= transmission_.resolve(worker, ray, intersection, material_sample.attenuation(), sampler_, settings_.sampler_nearest, sample_result);
+		} else {
+			throughput *= sample_result.reflection / sample_result.pdf;
+		}
 
 		previous_sample_type = sample_result.type;
 		previous_sample_attenuation = material_sample.attenuation();

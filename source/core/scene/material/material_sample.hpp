@@ -12,8 +12,6 @@ class Sampler;
 
 namespace scene { namespace material {
 
-struct BxDF_result;
-
 class Sample {
 public:
 

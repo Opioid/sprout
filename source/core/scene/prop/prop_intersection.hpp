@@ -23,7 +23,7 @@ struct Intersection {
 
 	float opacity(const image::texture::sampler::Sampler_2D& sampler) const;
 
-	Prop* prop;
+	const Prop* prop;
 	shape::Intersection geo;
 };
 

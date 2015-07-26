@@ -20,6 +20,7 @@ class Sampler;
 
 namespace scene {
 
+class Prop;
 class Scene;
 struct Intersection;
 
@@ -51,6 +52,7 @@ public:
 	math::float3 li(math::Oray& ray);
 
 	bool intersect(math::Oray& ray, scene::Intersection& intersection);
+	bool intersect(const scene::Prop* prop, math::Oray& ray, scene::Intersection& intersection);
 
 	bool visibility(const math::Oray& ray);
 

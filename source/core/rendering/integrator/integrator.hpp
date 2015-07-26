@@ -30,6 +30,7 @@ class Integrator {
 public:
 
 	Integrator(const take::Settings& settings, math::random::Generator& rng);
+	virtual ~Integrator();
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
@@ -43,6 +44,7 @@ class Surface_integrator : public Integrator {
 public:
 
 	Surface_integrator(const take::Settings& settings, math::random::Generator& rng);
+	virtual ~Surface_integrator();
 
 	virtual math::float3 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) = 0;
 
