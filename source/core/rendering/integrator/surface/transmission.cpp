@@ -33,11 +33,12 @@ math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Inter
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
 		ray.max_t = 1000.f;
-	//	++ray.depth;
+		//++ray.depth;
+
 
 		hit = worker.intersect(intersection.prop, ray, intersection);
 		if (!hit) {
-			std::cout << "stuff" << std::endl;
+			sample_result.pdf = 0.f;
 			break;
 		}
 
@@ -52,8 +53,8 @@ math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Inter
 		previous_sample_attenuation = material_sample.attenuation();
 
 		material_sample.sample_evaluate(sampler, sample_result);
-		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection
-		/*||  sample_result.type.test(scene::material::BxDF_type::Transmission)*/) {
+		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
+		//	std::cout << "aha" << std::endl;
 			break;
 		}
 
@@ -62,6 +63,7 @@ math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Inter
 		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
 			break;
 		}
+
 	}
 
 	return throughput;

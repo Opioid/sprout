@@ -77,7 +77,13 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 
 		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
-			throughput *= transmission_.resolve(worker, ray, intersection, material_sample.attenuation(), sampler_, settings_.sampler_nearest, sample_result);
+			throughput *= transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
+												sampler_, settings_.sampler_nearest, sample_result);
+
+			if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
+				break;
+			}
+
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 		}

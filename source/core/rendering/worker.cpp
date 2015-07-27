@@ -81,8 +81,12 @@ bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) {
 }
 
 bool Worker::intersect(const scene::Prop* prop, math::Oray& ray, scene::Intersection& intersection) {
-	intersection.prop = prop;
-	return prop->intersect(ray, node_stack_, intersection.geo);
+	bool hit = prop->intersect(ray, node_stack_, intersection.geo);
+	if (hit) {
+		intersection.prop = prop;
+	}
+
+	return hit;
 }
 
 bool Worker::visibility(const math::Oray& ray) {

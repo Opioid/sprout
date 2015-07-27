@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
+#include "transmission.hpp"
 #include "sampler/random_sampler.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
@@ -39,6 +40,8 @@ private:
 	sampler::Random sampler_;
 
 	std::vector<scene::light::Sample> light_samples_;
+
+	Transmission transmission_;
 };
 
 class Pathtracer_factory : public Surface_integrator_factory {

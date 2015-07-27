@@ -18,7 +18,7 @@
 namespace rendering {
 
 Pathtracer::Pathtracer(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {}
 
 void Pathtracer::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -56,7 +56,7 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.emission();
 		} else {
-			throughput *= attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
+		//	throughput *= attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
 		}
 
 		if (material_sample.is_pure_emissive()) {
@@ -68,13 +68,22 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 			break;
 		}
 
-		throughput *= sample_result.reflection / sample_result.pdf;
+		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
+			throughput *= transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
+												sampler_, settings_.sampler_nearest, sample_result);
+
+			if (0.f == sample_result.pdf) {
+				break;
+			}
+
+		} else {
+			throughput *= sample_result.reflection / sample_result.pdf;
+		}
 
 		previous_sample_type = sample_result.type;
 		previous_sample_attenuation = material_sample.attenuation();
 
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
-
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
