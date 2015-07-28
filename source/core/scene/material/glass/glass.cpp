@@ -44,7 +44,7 @@ float BRDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result
 		eta = sample_.ior_;
 	}
 
-	float n_dot_wo = std::max(math::dot(n, sample_.wo_), 0.00001f);
+	float n_dot_wo = math::saturate(math::dot(n, sample_.wo_));
 
 	result.wi = math::normalized(2.f * n_dot_wo * n - sample_.wo_);
 
@@ -89,7 +89,7 @@ float BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result
 		eta = sample_.ior_;
 	}
 
-	float n_dot_wo = std::max(math::dot(n, sample_.wo_), 0.00001f);
+	float n_dot_wo = math::saturate(math::dot(n, sample_.wo_));
 
 	float sint2 = (eta * eta) * (1.f - n_dot_wo * n_dot_wo);
 
