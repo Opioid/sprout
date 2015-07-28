@@ -4,6 +4,8 @@
 #include "base/math/vector.inl"
 #include "base/math/math.hpp"
 
+// #include <iostream>
+
 namespace scene { namespace material { namespace oren_nayar {
 
 template<typename Sample>
@@ -73,6 +75,10 @@ math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi
 
 	return math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
 
+//	if (math::contains_negative(math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_)) {
+//		std::cout << "Oren_nayar<Sample>::evaluate()" << std::endl;
+//	}
+
 	// http://mimosa-pudica.net/improved-oren-nayar.html
 /*
 	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
@@ -135,6 +141,10 @@ float Oren_nayar<Sample>::importance_sample(sampler::Sampler& sampler, float n_d
 	result.reflection = math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
 	result.wi = wi;
 	result.type.clear_set(BxDF_type::Diffuse_reflection);
+
+//	if (math::contains_negative(result.reflection)) {
+//		std::cout << "Oren_nayar<Sample>::importance_sample()" << std::endl;
+//	}
 
 	return n_dot_wi;
 }

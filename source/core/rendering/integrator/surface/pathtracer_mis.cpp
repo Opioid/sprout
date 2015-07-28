@@ -17,6 +17,8 @@
 #include "base/math/random/generator.inl"
 #include "base/math/print.hpp"
 
+// #include <iostream>
+
 namespace rendering {
 
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :

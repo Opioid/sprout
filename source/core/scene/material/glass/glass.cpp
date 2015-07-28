@@ -3,7 +3,7 @@
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
 
-#include <iostream>
+// #include <iostream>
 
 namespace scene { namespace material { namespace glass {
 

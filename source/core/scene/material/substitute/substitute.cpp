@@ -6,7 +6,8 @@
 #include "base/math/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/math.hpp"
-#include <iostream>
+
+// #include <iostream>
 
 namespace scene { namespace material { namespace substitute {
 
@@ -58,6 +59,10 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 
 	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
 
+//	if (math::contains_negative(diffuse) || math::contains_negative(specular)) {
+//		std::cout << "substitute::Sample::evaluate()" << std::endl;
+//	}
+
 	return n_dot_wi * (diffuse + specular);
 }
 
@@ -96,6 +101,16 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 			result.reflection = n_dot_wi * (result.reflection + oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo));
 		}
 	}
+
+
+//	if (math::contains_negative(result.reflection)) {
+//		std::cout << "substitute::Sample::sample_evaluate()" << std::endl;
+//	}
+
+//	if (result.pdf < 0.f) {
+//		std::cout << "substitute::Sample::sample_evaluate()" << std::endl;
+//	}
+
 }
 
 bool Sample::is_pure_emissive() const {
