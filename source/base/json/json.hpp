@@ -11,6 +11,8 @@ namespace json {
 
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream);
 
+bool read_bool(const rapidjson::Value& value, const std::string& name, bool default_value = false);
+
 float read_float(const rapidjson::Value& value);
 float read_float(const rapidjson::Value& value, const std::string& name, float default_value = 0.f);
 

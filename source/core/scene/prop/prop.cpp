@@ -9,20 +9,28 @@ namespace scene {
 
 Prop::~Prop() {}
 
-void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials) {
+void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials, bool primary_visibility, bool secondary_visibility) {
+	properties_.clear();
+
 	shape_ = shape;
 	materials_ = materials;
 
-	has_masked_material_ = false;
 	for (auto m : materials_) {
 		if (m->is_masked()) {
-			has_masked_material_ = true;
+			properties_.set(Properties::Has_masked_material);
 			break;
 		}
 	}
+
+	properties_.set(Properties::Primary_visibility,   primary_visibility);
+	properties_.set(Properties::Secondary_visibility, secondary_visibility);
 }
 
 bool Prop::intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const {
+	if (!visible(ray.depth)) {
+		return false;
+	}
+
 	entity::Composed_transformation transformation;
 	bool animated = transformation_at(ray.time, transformation);
 
@@ -45,6 +53,10 @@ bool Prop::intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Inte
 }
 
 bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const {
+	if (!visible(ray.depth)) {
+		return false;
+	}
+
 	entity::Composed_transformation transformation;
 	bool animated = transformation_at(ray.time, transformation);
 
@@ -109,7 +121,7 @@ material::IMaterial* Prop::material(uint32_t index) const {
 }
 
 bool Prop::has_masked_material() const {
-	return has_masked_material_;
+	return properties_.test(Properties::Has_masked_material);
 }
 
 bool Prop::has_emissive_material() const {
@@ -135,6 +147,28 @@ bool Prop::has_emission_mapped_material() const {
 	}
 
 	return false;
+}
+
+bool Prop::primary_visibility() const {
+	return properties_.test(Properties::Primary_visibility);
+}
+
+bool Prop::secondary_visibility() const {
+	return properties_.test(Properties::Secondary_visibility);
+}
+
+bool Prop::visible(uint32_t ray_depth) const {
+	if (ray_depth < 1) {
+		if (!properties_.test(Properties::Primary_visibility)) {
+			return false;
+		}
+	} else {
+		if (!properties_.test(Properties::Secondary_visibility)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void Prop::on_set_transformation() {

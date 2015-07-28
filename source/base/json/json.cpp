@@ -58,6 +58,15 @@ std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
 	return document;
 }
 
+bool read_bool(const rapidjson::Value& value, const std::string& name, bool default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
+	if (value.MemberEnd() == node) {
+		return default_value;
+	}
+
+	return node->value.GetBool();
+}
+
 float read_float(const rapidjson::Value& value) {
 	return static_cast<float>(value.GetDouble());
 }
