@@ -91,6 +91,10 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 			break;
 		}
 
+		if (ray.depth > 0 && settings_.disable_caustics && sample_result.type.test(scene::material::BxDF_type::Specular)) {
+			break;
+		}
+
 		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
 			throughput *= transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
 												sampler_, settings_.sampler_nearest, sample_result);
@@ -119,11 +123,12 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 	return result;
 }
 
-Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces, uint32_t max_light_samples) :
+Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces, uint32_t max_light_samples, bool disable_caustics) :
 	Surface_integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
 	settings_.max_light_samples = max_light_samples;
+//	settings_.disable_caustics = disable_caustics;
 }
 
 Surface_integrator* Pathtracer_DL_factory::create(math::random::Generator& rng) const {

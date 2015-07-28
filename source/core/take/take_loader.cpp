@@ -77,7 +77,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	}
 
 	if (!take->surface_integrator_factory) {
-		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(take->settings, 4, 8, 1);
+		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(take->settings, 4, 8, 1, false);
 	}
 
 	return take;
@@ -244,17 +244,20 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 		} else if ("PT" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
-			return std::make_shared<rendering::Pathtracer_factory>(settings, min_bounces, max_bounces);
+			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
+			return std::make_shared<rendering::Pathtracer_factory>(settings, min_bounces, max_bounces, disable_caustics);
 		} else if ("PTDL" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
-			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces, max_light_samples);
+			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
+			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces, max_light_samples, disable_caustics);
 		} else if ("PTMIS" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
-			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces, max_light_samples);
+			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
+			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces, max_light_samples, disable_caustics);
 		} else if ("Normal" == node_name) {
 			return std::make_shared<rendering::Normal_factory>(settings);
 		}

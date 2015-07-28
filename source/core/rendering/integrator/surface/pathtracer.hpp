@@ -22,6 +22,7 @@ public:
 	struct Settings {
 		uint32_t min_bounces;
 		uint32_t max_bounces;
+		bool disable_caustics;
 
 		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
 		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
@@ -47,7 +48,7 @@ private:
 class Pathtracer_factory : public Surface_integrator_factory {
 public:
 
-	Pathtracer_factory(const take::Settings &take_settings, uint32_t min_bounces, uint32_t max_bounces);
+	Pathtracer_factory(const take::Settings &take_settings, uint32_t min_bounces, uint32_t max_bounces, bool disable_caustics);
 
 	virtual Surface_integrator* create(math::random::Generator& rng) const final override;
 
