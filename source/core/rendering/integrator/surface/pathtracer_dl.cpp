@@ -19,7 +19,7 @@
 namespace rendering {
 
 Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {
 	light_samples_.reserve(settings.max_light_samples);
 }
 
@@ -30,10 +30,8 @@ void Pathtracer_DL::start_new_pixel(uint32_t num_samples) {
 math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	scene::material::BxDF_result sample_result;
 	scene::material::BxDF_result::Type previous_sample_type;
-	math::float3 previous_sample_attenuation = math::float3(1.f, 1.f, 1.f);
 	float bxdf_pdf;
 
-	bool hit = true;
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
 
@@ -49,7 +47,6 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		}
 
 		if (!resolve_mask(worker, ray, intersection, *texture_sampler)) {
-			hit = false;
 			break;
 		}
 
@@ -57,12 +54,8 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, *texture_sampler, worker.id());
 
-		if (material_sample.same_hemisphere(wo)) {
-			if (primary_ray) {
-				result += throughput * material_sample.emission();
-			}
-		} else {
-			throughput *= attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
+		if (material_sample.same_hemisphere(wo) && primary_ray) {
+			result += throughput * material_sample.emission();
 		}
 
 		if (material_sample.is_pure_emissive()) {
@@ -72,7 +65,6 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.min_t  = ray_offset;
-		++ray.depth;
 
 		float light_pdf;
 		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
@@ -99,16 +91,27 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 			break;
 		}
 
-		throughput *= sample_result.reflection / sample_result.pdf;
+		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
+			throughput *= transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
+												sampler_, settings_.sampler_nearest, sample_result);
+
+			if (0.f == sample_result.pdf) {
+				break;
+			}
+		} else {
+			throughput *= sample_result.reflection / sample_result.pdf;
+		}
 
 		previous_sample_type = sample_result.type;
-		previous_sample_attenuation = material_sample.attenuation();
 
+		ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
+		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
+		ray.min_t = ray_offset;
 		ray.max_t = 1000.f;
+		++ray.depth;
 
-		hit = worker.intersect(ray, intersection);
-		if (!hit) {
+		if (!worker.intersect(ray, intersection)) {
 			break;
 		}
 	}

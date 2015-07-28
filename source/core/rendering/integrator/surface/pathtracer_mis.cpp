@@ -31,9 +31,7 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	scene::material::BxDF_result sample_result;
 	scene::material::BxDF_result::Type previous_sample_type;
-	math::float3 previous_sample_attenuation = math::float3(1.f, 1.f, 1.f);
 
-	bool hit = true;
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
 
@@ -49,7 +47,6 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 
 		if (!resolve_mask(worker, ray, intersection, *texture_sampler)) {
-			hit = false;
 			break;
 		}
 
@@ -57,12 +54,8 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, *texture_sampler, worker.id());
 
-		if (material_sample.same_hemisphere(wo)) {
-			if (primary_ray) {
-				result += throughput * material_sample.emission();
-			}
-		} else {
-		//	throughput *= attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
+		if (material_sample.same_hemisphere(wo) && primary_ray) {
+			result += throughput * material_sample.emission();
 		}
 
 		if (material_sample.is_pure_emissive()) {
@@ -80,16 +73,14 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			throughput *= transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
 												sampler_, settings_.sampler_nearest, sample_result);
 
-			if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
+			if (0.f == sample_result.pdf) {
 				break;
 			}
-
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 		}
 
 		previous_sample_type = sample_result.type;
-		previous_sample_attenuation = material_sample.attenuation();
 
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
@@ -98,8 +89,7 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		ray.max_t = 1000.f;
 		++ray.depth;
 
-		hit = worker.intersect(ray, intersection);
-		if (!hit) {
+		if (!worker.intersect(ray, intersection)) {
 			break;
 		}
 	}

@@ -129,19 +129,19 @@ math::float3 Sample::attenuation() const {
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
-//	float p = sampler.generate_sample_1D();
+	float p = sampler.generate_sample_1D();
 
-//	if (p < 0.5f) {
-//		brdf_.importance_sample(sampler, result);
-//		result.pdf *= 0.5f;
-//	} else {
-//		btdf_.importance_sample(sampler, result);
-//		result.pdf *= 0.5f;
-//	}
+	if (p < 0.5f) {
+		brdf_.importance_sample(sampler, result);
+		result.pdf *= 0.5f;
+	} else {
+		btdf_.importance_sample(sampler, result);
+		result.pdf *= 0.5f;
+	}
 
 //	brdf_.importance_sample(sampler, result);
 
-	btdf_.importance_sample(sampler, result);
+//	btdf_.importance_sample(sampler, result);
 }
 
 bool Sample::is_pure_emissive() const {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
+#include "transmission.hpp"
 #include "sampler/ems_sampler.hpp"
 #include "sampler/random_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
@@ -42,6 +43,8 @@ private:
 	sampler::Random sampler_;
 
 	std::vector<scene::light::Sample> light_samples_;
+
+	Transmission transmission_;
 };
 
 class Pathtracer_DL_factory : public Surface_integrator_factory {
