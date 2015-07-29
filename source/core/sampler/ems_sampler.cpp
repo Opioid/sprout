@@ -14,7 +14,7 @@ Sampler* EMS::clone() const {
 }
 
 void EMS::generate_camera_sample(const math::float2& offset, uint32_t index, Camera_sample& sample) {
-	math::float2 s2d = math::ems(index, seed_);
+	math::float2 s2d = math::ems(index, seed_.x, seed_.y);
 
 	sample.coordinates = offset + s2d;
 	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
@@ -23,15 +23,15 @@ void EMS::generate_camera_sample(const math::float2& offset, uint32_t index, Cam
 }
 
 math::float2 EMS::generate_sample_2D() {
-	return math::ems(current_sample_++, seed_);
+	return math::ems(current_sample_++, seed_.x, seed_.y);
 }
 
 float EMS::generate_sample_1D() {
 	return rng_.random_float();
 }
 
-uint32_t EMS::seed() const {
-	return rng_.random_uint();
+math::uint2 EMS::seed() const {
+	return math::uint2(rng_.random_uint(), rng_.random_uint());
 }
 
 }

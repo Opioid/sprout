@@ -2,6 +2,7 @@
 
 #include "rendering/integrator/integrator.hpp"
 #include "transmission.hpp"
+#include "sampler/ems_sampler.hpp"
 #include "sampler/random_sampler.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"

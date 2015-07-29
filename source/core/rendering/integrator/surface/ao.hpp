@@ -2,6 +2,7 @@
 
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/ems_sampler.hpp"
+#include "sampler/ld_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
 #include "sampler/random_sampler.hpp"
 

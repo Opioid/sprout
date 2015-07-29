@@ -4,10 +4,10 @@
 
 namespace sampler {
 
-class EMS : public Sampler {
+class LD : public Sampler {
 public:
 
-	EMS(math::random::Generator& rng, uint32_t num_samples_per_iteration);
+	LD(math::random::Generator& rng, uint32_t num_samples_per_iteration);
 
 	virtual Sampler* clone() const final override;
 

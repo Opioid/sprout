@@ -19,7 +19,7 @@ public:
 
 private:
 
-	virtual uint32_t seed() const final override;
+	virtual math::uint2 seed() const final override;
 };
 
 }

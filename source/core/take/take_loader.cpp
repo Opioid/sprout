@@ -14,9 +14,10 @@
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
+#include "sampler/ems_sampler.hpp"
+#include "sampler/ld_sampler.hpp"
 #include "sampler/random_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
-#include "sampler/ems_sampler.hpp"
 #include "scene/animation/animation_loader.hpp"
 #include "scene/camera/perspective_camera.hpp"
 #include "base/math/math.hpp"
@@ -218,6 +219,9 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 		 } else if ("EMS" == node_name) {
 			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
 			 return std::make_shared<sampler::EMS>(rng, num_samples);
+		 } else if ("LD" == node_name) {
+			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
+			 return std::make_shared<sampler::LD>(rng, num_samples);
 		 }
 	}
 

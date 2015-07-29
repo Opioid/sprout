@@ -1,5 +1,6 @@
 SOURCES += \
 	sampler/ems_sampler.cpp \
+	sampler/ld_sampler.cpp \
 	sampler/random_sampler.cpp \
 	sampler/sampler.cpp \
 	sampler/scrambled_hammersley_sampler.cpp \
@@ -7,6 +8,7 @@ SOURCES += \
 HEADERS += \
 	sampler/camera_sample.hpp \
 	sampler/ems_sampler.hpp \
+	sampler/ld_sampler.hpp \
 	sampler/random_sampler.hpp \
 	sampler/sampler.hpp \
 	sampler/scrambled_hammersley_sampler.hpp \

@@ -29,8 +29,8 @@ float Random::generate_sample_1D() {
 	return rng_.random_float();
 }
 
-uint32_t Random::seed() const {
-	return 0;
+math::uint2 Random::seed() const {
+	return math::uint2::identity;
 }
 
 }

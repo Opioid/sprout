@@ -24,9 +24,9 @@ public:
 
 	uint32_t num_samples_per_iteration() const;
 
-	uint32_t restart(uint32_t num_iterations);
+	math::uint2 restart(uint32_t num_iterations);
 
-	void set_seed(uint32_t seed);
+	void set_seed(math::uint2 seed);
 
 	virtual void generate_camera_sample(const math::float2& offset, uint32_t index, Camera_sample& sample) = 0;
 
@@ -36,10 +36,10 @@ public:
 
 protected:
 
-	virtual uint32_t seed() const = 0;
+	virtual math::uint2 seed() const = 0;
 
 	math::random::Generator& rng_;
-	uint32_t seed_;
+	math::uint2 seed_;
 	uint32_t num_iterations_;
 	uint32_t num_samples_per_iteration_;
 	uint32_t current_sample_;

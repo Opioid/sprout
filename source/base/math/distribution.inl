@@ -40,8 +40,8 @@ inline float2 scrambled_hammersley(uint32_t i, uint32_t num_samples, uint32_t r)
 	return float2(static_cast<float>(i) / static_cast<float>(num_samples), scrambled_radical_inverse_vdC(i, r));
 }
 
-inline float2 ems(uint32_t i, uint32_t r) {
-	return float2(scrambled_radical_inverse_vdC(i, r), scrambled_radical_inverse_S(5 + i, r));
+inline float2 ems(uint32_t i, uint32_t r_0, uint32_t r_1) {
+	return float2(scrambled_radical_inverse_vdC(i, r_0), scrambled_radical_inverse_S(i, r_1));
 }
 
 }
