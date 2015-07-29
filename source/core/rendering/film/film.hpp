@@ -35,8 +35,8 @@ public:
 
 	void clear();
 
-//	float seed(uint32_t x, uint32_t y) const;
-//	void set_seed(uint32_t x, uint32_t y, float seed);
+	math::uint2 seed(uint32_t x, uint32_t y) const;
+	void set_seed(uint32_t x, uint32_t y, math::uint2 seed);
 
 	virtual void add_sample(const sampler::Camera_sample& sample, const math::float3& color, const Rectui& tile) = 0;
 
@@ -63,7 +63,7 @@ protected:
 
 	image::Image_float_4 image_;
 
-	float* seeds_;
+	math::uint2* seeds_;
 };
 
 }}

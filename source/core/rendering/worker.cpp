@@ -47,8 +47,12 @@ void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uin
 
 	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
+			if (0 == sample_begin) {
+				film.set_seed(x, y, sampler_->restart(1));
+			} else {
+				sampler_->set_seed(film.seed(x, y));
+			}
 
-			sampler_->restart(1);
 			surface_integrator_->start_new_pixel(num_samples);
 
 			math::float2 offset(static_cast<float>(x), static_cast<float>(y));
