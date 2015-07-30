@@ -36,5 +36,8 @@ HEADERS += \
 	math/vector4.inl \
 
 include(bounding/bounding.pri)
+include(distribution/distribution.pri)
+include(function/function.pri)
 include(random/random.pri)
+include(sampling/sampling.pri)
 

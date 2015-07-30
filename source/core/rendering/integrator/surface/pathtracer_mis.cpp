@@ -10,7 +10,6 @@
 #include "scene/material/material_sample.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "take/take_settings.hpp"
-#include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
@@ -21,7 +20,9 @@
 
 namespace rendering {
 
-Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
+Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings,
+							   math::random::Generator& rng,
+							   const Settings& settings) :
 	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {
 	light_samples_.reserve(settings.max_light_samples);
 }
@@ -71,7 +72,8 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			break;
 		}
 
-		if (ray.depth > 0 && settings_.disable_caustics && sample_result.type.test(scene::material::BxDF_type::Specular)) {
+		if (ray.depth > 0 && settings_.disable_caustics
+		&&  sample_result.type.test(scene::material::BxDF_type::Specular)) {
 			break;
 		}
 
@@ -128,7 +130,8 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 	scene::entity::Composed_transformation transformation;
 	light->transformation_at(ray.time, transformation);
 
-	light->sample(transformation, intersection.geo.p, intersection.geo.geo_n, settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
+	light->sample(transformation, intersection.geo.p, intersection.geo.geo_n, settings_.sampler_nearest,
+				  sampler_, settings_.max_light_samples, light_samples_);
 
 	float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 
@@ -169,14 +172,17 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 		shadow_ray.max_t = 1000.f;
 
 		scene::Intersection light_intersection;
-		if (worker.intersect(shadow_ray, light_intersection) && resolve_mask(worker, shadow_ray, light_intersection, texture_sampler)) {
+		if (worker.intersect(shadow_ray, light_intersection)
+		&&  resolve_mask(worker, shadow_ray, light_intersection, texture_sampler)) {
 			if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
 				auto light_material = light_intersection.material();
-				auto& light_material_sample = light_material->sample(light_intersection.geo, wo, settings_.sampler_nearest, worker.id());
+				auto& light_material_sample = light_material->sample(light_intersection.geo, wo,
+																	 settings_.sampler_nearest, worker.id());
 
 				if (light_material_sample.same_hemisphere(wo)) {
 					math::float3 ls_energy = light_material_sample.emission();
-					result += num_samples_reciprocal * (weight / sample_result.pdf) * ls_energy * sample_result.reflection;
+					result += num_samples_reciprocal * (weight / sample_result.pdf)
+						   * ls_energy * sample_result.reflection;
 				}
 			}
 		}
@@ -185,7 +191,9 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 	return result / light_pdf;
 }
 
-Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces, uint32_t max_light_samples, bool disable_caustics) :
+Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,
+											   uint32_t min_bounces, uint32_t max_bounces,
+											   uint32_t max_light_samples, bool disable_caustics) :
 	Surface_integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;

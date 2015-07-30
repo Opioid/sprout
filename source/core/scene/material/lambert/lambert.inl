@@ -1,6 +1,6 @@
 #include "lambert.hpp"
 #include "sampler/sampler.hpp"
-#include "base/math/sampling.hpp"
+#include "base/math/sampling/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/math.hpp"
 

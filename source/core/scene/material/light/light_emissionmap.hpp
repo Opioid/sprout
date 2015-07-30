@@ -2,7 +2,7 @@
 
 #include "light_material.hpp"
 #include "image/texture/texture_2d.hpp"
-#include "base/math/distribution_2d.hpp"
+#include "base/math/distribution/distribution_2d.hpp"
 
 namespace scene { namespace material { namespace light {
 

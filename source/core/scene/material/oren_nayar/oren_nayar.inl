@@ -1,8 +1,8 @@
 #include "oren_nayar.hpp"
 #include "sampler/sampler.hpp"
-#include "base/math/sampling.hpp"
-#include "base/math/vector.inl"
 #include "base/math/math.hpp"
+#include "base/math/vector.inl"
+#include "base/math/sampling/sampling.inl"
 
 // #include <iostream>
 

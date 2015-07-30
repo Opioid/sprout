@@ -5,10 +5,10 @@
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
 #include "sampler/sampler.hpp"
-#include "base/math/distribution_1d.inl"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/matrix.inl"
+#include "base/math/distribution/distribution_1d.inl"
 
 namespace scene { namespace shape { namespace triangle {
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/math/vector.hpp"
+#include "base/math/function/interpolated_function.hpp"
 
 namespace rendering { namespace film { namespace filter {
 
@@ -18,6 +19,8 @@ private:
 	float exp_;
 
 	float alpha_;
+
+	math::Interpolated_function<float> gaussian_;
 };
 
 }}}

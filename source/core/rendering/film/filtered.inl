@@ -4,8 +4,9 @@
 namespace rendering { namespace film {
 
 template<typename Filter>
-Filtered<Filter>::Filtered(const math::uint2& dimensions, float exposure, tonemapping::Tonemapper* tonemapper, const Filter& filter) :
-	Film(dimensions, exposure, tonemapper), filter_(filter) {}
+Filtered<Filter>::Filtered(const math::uint2& dimensions, float exposure,
+						   tonemapping::Tonemapper* tonemapper, std::unique_ptr<Filter> filter) :
+	Film(dimensions, exposure, tonemapper), filter_(std::move(filter)) {}
 
 template<typename Filter>
 Filtered<Filter>::~Filtered() {}
@@ -56,8 +57,9 @@ void Filtered<Filter>::add_sample(const sampler::Camera_sample& sample, const ma
 }
 
 template<typename Filter>
-void Filtered<Filter>::add_pixel(uint32_t x, uint32_t y, math::float2 relative_offset, const math::float3& color, const Rectui& tile) {
-	float weight = filter_.evaluate(relative_offset);
+void Filtered<Filter>::add_pixel(uint32_t x, uint32_t y, math::float2 relative_offset,
+								 const math::float3& color, const Rectui& tile) {
+	float weight = filter_->evaluate(relative_offset);
 
 	if ((tile.start.x == x && 0 != x)
 	||  (tile.end.x - 1 == x && x < dimensions().x - 1)

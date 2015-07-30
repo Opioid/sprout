@@ -8,8 +8,8 @@
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
-#include "base/math/distribution_1d.inl"
 #include "base/math/bounding/aabb.inl"
+#include "base/math/distribution/distribution_1d.inl"
 
 namespace scene {
 

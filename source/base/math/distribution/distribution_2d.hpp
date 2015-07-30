@@ -1,7 +1,7 @@
 #pragma once
 
 #include "distribution_1d.hpp"
-#include "vector.hpp"
+#include "math/vector.hpp"
 
 namespace math {
 

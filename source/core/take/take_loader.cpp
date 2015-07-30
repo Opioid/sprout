@@ -70,7 +70,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	}
 
 	if (!take->exporter) {
-		take->exporter = std::make_shared<exporting::Image_sequence>("output_", take->context.camera->film().dimensions());
+		take->exporter = std::make_unique<exporting::Image_sequence>(
+							"output_", take->context.camera->film().dimensions());
 	}
 
 	if (!take->sampler) {
@@ -78,7 +79,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	}
 
 	if (!take->surface_integrator_factory) {
-		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(take->settings, 4, 8, 1, false);
+		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(
+					take->settings, 4, 8, 1, false);
 	}
 
 	return take;
@@ -141,7 +143,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, Take& take) const
 	std::shared_ptr<scene::camera::Camera> camera;
 
 //	if ("Perspective" == type_name) {
-		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, shutter_duration, fov, lens_radius, focal_distance);
+		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, shutter_duration,
+															  fov, lens_radius, focal_distance);
 //	} else if ("Orthographic" == type_name) {
 //	}
 
@@ -182,8 +185,9 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 		//return new rendering::film::Filtered(dimensions, exposure, tonemapper, filter);
 		float radius = 0.8f;
 		float alpha  = 0.3f;
-		rendering::film::filter::Gaussian gaussian(radius, alpha);
-		return new rendering::film::Filtered<rendering::film::filter::Gaussian>(dimensions, exposure, tonemapper, gaussian);
+		auto gaussian = std::make_unique<rendering::film::filter::Gaussian>(radius, alpha);
+		return new rendering::film::Filtered<rendering::film::filter::Gaussian>(
+					dimensions, exposure, tonemapper, std::move(gaussian));
 	}
 
 	return new rendering::film::Unfiltered(dimensions, exposure, tonemapper);
@@ -205,7 +209,8 @@ rendering::film::tonemapping::Tonemapper* Loader::load_tonemapper(const rapidjso
 	return nullptr;
 }
 
-std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& sampler_value, math::random::Generator& rng) const {
+std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& sampler_value,
+													   math::random::Generator& rng) const {
 	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
@@ -249,19 +254,22 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
-			return std::make_shared<rendering::Pathtracer_factory>(settings, min_bounces, max_bounces, disable_caustics);
+			return std::make_shared<rendering::Pathtracer_factory>(settings, min_bounces, max_bounces,
+																   disable_caustics);
 		} else if ("PTDL" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
 			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
-			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces, max_light_samples, disable_caustics);
+			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces,
+																	  max_light_samples, disable_caustics);
 		} else if ("PTMIS" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
 			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
-			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces, max_light_samples, disable_caustics);
+			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces,
+																	   max_light_samples, disable_caustics);
 		} else if ("Normal" == node_name) {
 			return std::make_shared<rendering::Normal_factory>(settings);
 		}
@@ -270,13 +278,14 @@ std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_inte
 	return nullptr;
 }
 
-std::shared_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& exporter_value, scene::camera::Camera& camera) const {
+std::unique_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& exporter_value,
+													   scene::camera::Camera& camera) const {
 	for (auto n = exporter_value.MemberBegin(); n != exporter_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
 		if ("Image" == node_name) {
-			return std::make_shared<exporting::Image_sequence>("output_", camera.film().dimensions());
+			return std::make_unique<exporting::Image_sequence>("output_", camera.film().dimensions());
 		} else if ("Movie" == node_name) {
 			uint32_t framerate = json::read_uint(node_value, "framerate");
 
@@ -284,9 +293,9 @@ std::shared_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& e
 				framerate = static_cast<uint32_t>(1.f /camera.shutter_duration() + 0.5f);
 			}
 
-			return std::make_shared<exporting::Ffmpeg>("output", camera.film().dimensions(), framerate);
+			return std::make_unique<exporting::Ffmpeg>("output", camera.film().dimensions(), framerate);
 		} else if ("Null" == node_name) {
-			return std::make_shared<exporting::Null>();
+			return std::make_unique<exporting::Null>();
 		}
 	}
 

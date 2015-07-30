@@ -2,7 +2,7 @@
 
 #include "scene/shape/shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
-#include "base/math/distribution_1d.hpp"
+#include "base/math/distribution/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {
 

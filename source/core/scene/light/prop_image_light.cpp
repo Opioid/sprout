@@ -6,8 +6,6 @@
 #include "scene/shape/shape_sample.hpp"
 #include "scene/material/material.hpp"
 #include "base/math/math.hpp"
-#include "base/math/sampling.hpp"
-#include "base/math/distribution_2d.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"

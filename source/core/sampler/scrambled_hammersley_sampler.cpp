@@ -2,7 +2,7 @@
 #include "camera_sample.hpp"
 #include "base/math/vector.inl"
 #include "base/math/random/generator.inl"
-#include "base/math/distribution.inl"
+#include "base/math/sampling/sample_distribution.inl"
 
 namespace sampler {
 

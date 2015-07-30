@@ -10,7 +10,6 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "take/take_settings.hpp"
-#include "base/math/sampling.hpp"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
@@ -18,7 +17,9 @@
 
 namespace rendering {
 
-Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
+Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings,
+							 math::random::Generator& rng,
+							 const Settings& settings) :
 	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {
 	light_samples_.reserve(settings.max_light_samples);
 }
@@ -69,7 +70,8 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		float light_pdf;
 		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
 		if (light) {
-			light->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
+			light->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler_nearest,
+						  sampler_, settings_.max_light_samples, light_samples_);
 
 			float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 
@@ -80,7 +82,9 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 
 					float mv = worker.masked_visibility(ray, *texture_sampler);
 					if (mv > 0.f) {
-						result += num_samples_reciprocal * mv * (throughput * ls.energy * material_sample.evaluate(ls.shape.wi, bxdf_pdf)) / (light_pdf * ls.shape.pdf);
+						result += num_samples_reciprocal * mv
+							   * (throughput * ls.energy * material_sample.evaluate(ls.shape.wi, bxdf_pdf))
+							   / (light_pdf * ls.shape.pdf);
 					}
 				}
 			}
@@ -91,7 +95,8 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 			break;
 		}
 
-		if (ray.depth > 0 && settings_.disable_caustics && sample_result.type.test(scene::material::BxDF_type::Specular)) {
+		if (ray.depth > 0 && settings_.disable_caustics
+		&&  sample_result.type.test(scene::material::BxDF_type::Specular)) {
 			break;
 		}
 
@@ -123,12 +128,14 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 	return result;
 }
 
-Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces, uint32_t max_light_samples, bool disable_caustics) :
+Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings,
+											 uint32_t min_bounces, uint32_t max_bounces,
+											 uint32_t max_light_samples, bool disable_caustics) :
 	Surface_integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
 	settings_.max_light_samples = max_light_samples;
-//	settings_.disable_caustics = disable_caustics;
+	settings_.disable_caustics = disable_caustics;
 }
 
 Surface_integrator* Pathtracer_DL_factory::create(math::random::Generator& rng) const {

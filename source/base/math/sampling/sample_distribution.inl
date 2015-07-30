@@ -1,6 +1,6 @@
 #pragma once
 
-#include "distribution.hpp"
+#include "sample_distribution.hpp"
 
 namespace math {
 

@@ -41,7 +41,7 @@ struct Take {
 	std::shared_ptr<scene::animation::Animation>           camera_animation;
 	std::shared_ptr<rendering::Surface_integrator_factory> surface_integrator_factory;
 	std::shared_ptr<sampler::Sampler>					   sampler;
-	std::shared_ptr<exporting::Sink>					   exporter;
+	std::unique_ptr<exporting::Sink>					   exporter;
 	math::random::Generator rng;
 };
 

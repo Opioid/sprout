@@ -2,9 +2,9 @@
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_primitive.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
-#include "base/math/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
+#include "base/math/sampling/sampling.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 

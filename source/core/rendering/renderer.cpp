@@ -62,14 +62,17 @@ Renderer::Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrato
 	surface_integrator_factory_(surface_integrator_factory), sampler_(sampler),
 	tile_dimensions_(math::uint2(32, 32)), current_pixel_(math::uint2(0, 0)) {}
 
-void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool& pool, exporting::Sink& exporter, progress::Sink& progressor) {
+void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool& pool,
+					  exporting::Sink& exporter, progress::Sink& progressor) {
 	auto& camera = *context.camera;
 	auto& film   = camera.film();
 
 	auto dimensions = film.dimensions();
 
-	size_t num_tiles = static_cast<size_t>(std::ceil(static_cast<float>(dimensions.x) / static_cast<float>(tile_dimensions_.x)))
-					 * static_cast<size_t>(std::ceil(static_cast<float>(dimensions.y) / static_cast<float>(tile_dimensions_.y)));
+	size_t num_tiles = static_cast<size_t>(std::ceil(static_cast<float>(dimensions.x)
+												   / static_cast<float>(tile_dimensions_.x)))
+					 * static_cast<size_t>(std::ceil(static_cast<float>(dimensions.y)
+												   / static_cast<float>(tile_dimensions_.y)));
 
 	Tile_queue tiles(num_tiles);
 

@@ -3,9 +3,9 @@
 //#include "scene/material/lambert/lambert.inl"
 #include "scene/material/oren_nayar/oren_nayar.inl"
 #include "sampler/sampler.hpp"
-#include "base/math/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/math.hpp"
+#include "base/math/sampling/sampling.inl"
 
 // #include <iostream>
 

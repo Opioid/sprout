@@ -5,7 +5,7 @@
 #include "scene/bvh/scene_bvh_tree.hpp"
 #include "scene/shape/node_stack.hpp"
 #include "base/math/ray.hpp"
-#include "base/math/distribution_1d.hpp"
+#include "base/math/distribution/distribution_1d.hpp"
 #include <vector>
 #include <memory>
 
