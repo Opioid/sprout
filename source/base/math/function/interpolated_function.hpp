@@ -15,6 +15,10 @@ public:
 
 private:
 
+	float range_end_;
+
+	float inverse_range_;
+
 	T* samples_;
 };
 

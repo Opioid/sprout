@@ -233,8 +233,9 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 	return nullptr;
 }
 
-std::shared_ptr<rendering::Surface_integrator_factory> Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value,
-																							   const Settings& settings) const {
+std::shared_ptr<rendering::Surface_integrator_factory>
+Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value,
+										const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
 	uint32_t default_max_light_samples = 1;
