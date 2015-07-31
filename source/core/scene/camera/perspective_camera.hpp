@@ -8,7 +8,8 @@ class Perspective : public Camera {
 public:
 
 	Perspective(const math::float2& dimensions, rendering::film::Film* film,
-				float shutter_time, float fov, float lens_radius, float focal_distance);
+				float frame_duration, bool motion_blur,
+				float fov, float lens_radius, float focal_distance);
 
 	virtual void update_view() final override;
 

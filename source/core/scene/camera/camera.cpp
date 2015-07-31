@@ -6,8 +6,10 @@
 
 namespace scene { namespace camera {
 
-Camera::Camera(const math::float2& dimensions, rendering::film::Film* film, float frame_duration) :
-	dimensions_(calculate_dimensions(dimensions, film)), film_(film), frame_duration_(frame_duration) {}
+Camera::Camera(const math::float2& dimensions, rendering::film::Film* film,
+			   float frame_duration, bool motion_blur) :
+	dimensions_(calculate_dimensions(dimensions, film)), film_(film),
+	frame_duration_(frame_duration), motion_blur_(motion_blur) {}
 
 Camera::~Camera() {
 	delete film_;
@@ -19,6 +21,10 @@ rendering::film::Film& Camera::film() const {
 
 float Camera::frame_duration() const {
 	return frame_duration_;
+}
+
+bool Camera::motion_blur() const {
+	return motion_blur_;
 }
 
 void Camera::on_set_transformation() {}

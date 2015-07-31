@@ -96,6 +96,9 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	float tick_offset = 0.f;
 	float tick_rest = 0.f;
 
+	const float num_subframes = camera.frame_duration() / scene.tick_duration();
+	const size_t progress_range = static_cast<size_t>(static_cast<float>(tiles.size()) * num_subframes);
+
 	for (uint32_t f = 0; f < context.num_frames; ++f) {
 		logging::info("Frame " + string::to_string(f));
 
@@ -108,7 +111,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 			progressor.start(tiles.size());
 			render_subframe(camera, 0.f, 0.f, 0.f, 1.f, tiles, workers, pool, progressor);
 		} else {
-			progressor.start(static_cast<size_t>(static_cast<float>(tiles.size()) * (camera.frame_duration() / scene.tick_duration())));
+			progressor.start(progress_range);
 			float frame_offset = 0.f;
 			float frame_rest = camera.frame_duration();
 

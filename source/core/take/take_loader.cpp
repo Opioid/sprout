@@ -104,6 +104,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, Take& take) const
 	math::float2 dimensions = math::float2::identity;
 	rendering::film::Film* film = nullptr;
 	float frame_duration = 0.f;
+	bool  motion_blur = true;
 	float fov = 60.f;
 	float lens_radius = 0.f;
 	float focal_distance = 0.f;
@@ -131,6 +132,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, Take& take) const
 			} else {
 				frame_duration = 1.f / fps;
 			}
+		} else if ("motion_blur" == node_name) {
+			motion_blur = json::read_bool(node_value);
 		} else if ("fov" == node_name) {
 			fov = math::degrees_to_radians(json::read_float(node_value));
 		} else if ("lens_radius" == node_name) {
@@ -143,7 +146,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, Take& take) const
 	std::shared_ptr<scene::camera::Camera> camera;
 
 //	if ("Perspective" == type_name) {
-		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, frame_duration,
+		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, frame_duration, motion_blur,
 															  fov, lens_radius, focal_distance);
 //	} else if ("Orthographic" == type_name) {
 //	}
@@ -182,7 +185,6 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 	}
 
 	if (filter) {
-		//return new rendering::film::Filtered(dimensions, exposure, tonemapper, filter);
 		float radius = 0.8f;
 		float alpha  = 0.3f;
 		auto gaussian = std::make_unique<rendering::film::filter::Gaussian>(radius, alpha);

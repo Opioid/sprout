@@ -10,8 +10,10 @@
 namespace scene { namespace camera {
 
 Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film,
-						 float shutter_time, float fov, float lens_radius, float focal_distance) :
-	Camera(dimensions, film, shutter_time), fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance) {}
+						 float frame_duration, bool motion_blur,
+						 float fov, float lens_radius, float focal_distance) :
+	Camera(dimensions, film, frame_duration, motion_blur),
+	fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance) {}
 
 void Perspective::update_view() {
 	float ratio = dimensions_.x / dimensions_.y;

@@ -22,12 +22,16 @@ namespace scene { namespace camera {
 class Camera : public entity::Entity {
 public:
 
-	Camera(const math::float2& dimensions, rendering::film::Film* film, float frame_duration);
+	Camera(const math::float2& dimensions, rendering::film::Film* film,
+		   float frame_duration, bool motion_blur);
+
 	virtual ~Camera();
 
 	rendering::film::Film& film() const;
 
 	float frame_duration() const;
+
+	bool motion_blur() const;
 
 	virtual void update_view() = 0;
 
@@ -44,6 +48,7 @@ protected:
 	math::float2 dimensions_;
 	rendering::film::Film* film_;
 	float frame_duration_;
+	bool motion_blur_;
 };
 
 }}
