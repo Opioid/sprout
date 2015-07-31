@@ -19,7 +19,7 @@ void EMS::generate_camera_sample(const math::float2& offset, uint32_t index, Cam
 	sample.coordinates = offset + s2d;
 	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
 	sample.lens_uv = s2d.yx();
-	sample.time = rng_.random_float();
+	sample.time = math::scrambled_radical_inverse_vdC(index, seed_.y);
 }
 
 math::float2 EMS::generate_sample_2D() {

@@ -93,11 +93,12 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 	std::chrono::high_resolution_clock clock;
 
-	float tick_offset = 0.f;
-	float tick_rest = 0.f;
-
-	const float num_subframes = camera.frame_duration() / scene.tick_duration();
+	const float num_subframes = 0.f == camera.frame_duration() || !camera.motion_blur()
+							  ? 1 : camera.frame_duration() / scene.tick_duration();
 	const size_t progress_range = static_cast<size_t>(static_cast<float>(tiles.size()) * num_subframes);
+
+	float tick_offset = 0.f;
+	float tick_rest   = 0.f;
 
 	for (uint32_t f = 0; f < context.num_frames; ++f) {
 		logging::info("Frame " + string::to_string(f));
@@ -106,12 +107,44 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 		film.clear();
 
+		progressor.start(progress_range);
+
 		if (0.f == camera.frame_duration()) {
 			scene.tick();
-			progressor.start(tiles.size());
 			render_subframe(camera, 0.f, 0.f, 0.f, 1.f, tiles, workers, pool, progressor);
+		} else if (!camera.motion_blur()) {
+			float frame_offset = 0.f;
+			float frame_rest = camera.frame_duration();
+
+			bool rendered = false;
+
+			while (frame_rest > 0.f) {
+				if (tick_rest <= 0.f) {
+					scene.tick();
+					tick_offset = 0.f;
+					tick_rest = scene.tick_duration();
+				}
+
+				float subframe_slice = std::min(tick_rest, frame_rest);
+
+				if (!rendered) {
+					float normalized_tick_offset = tick_offset / scene.tick_duration();
+
+					render_subframe(camera,
+									normalized_tick_offset, 0.f,
+									0.f, 1.f,
+									tiles, workers, pool, progressor);
+
+					rendered = true;
+				}
+
+				tick_offset += subframe_slice;
+				tick_rest   -= subframe_slice;
+
+				frame_offset += subframe_slice;
+				frame_rest   -= subframe_slice;
+			}
 		} else {
-			progressor.start(progress_range);
 			float frame_offset = 0.f;
 			float frame_rest = camera.frame_duration();
 

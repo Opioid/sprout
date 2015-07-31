@@ -159,7 +159,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, Take& take) const
 }
 
 rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
-	math::uint2 dimensions(32, 32);
+	math::uint2 dimensions(1280, 720);
 	float exposure = 0.f;
 	rendering::film::tonemapping::Tonemapper* tonemapper = nullptr;
 	bool filter = false;
