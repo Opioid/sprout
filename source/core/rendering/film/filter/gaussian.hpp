@@ -16,11 +16,11 @@ private:
 
 	float gaussian(float d) const;
 
+	math::Interpolated_function<float> gaussian_;
+
 	float exp_;
 
 	float alpha_;
-
-	math::Interpolated_function<float> gaussian_;
 };
 
 }}}
