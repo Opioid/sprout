@@ -103,14 +103,14 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 		film.clear();
 
-		if (0.f == camera.shutter_duration()) {
+		if (0.f == camera.frame_duration()) {
 			scene.tick();
 			progressor.start(tiles.size());
 			render_subframe(camera, 0.f, 0.f, 0.f, 1.f, tiles, workers, pool, progressor);
 		} else {
-			progressor.start(static_cast<size_t>(static_cast<float>(tiles.size()) * (camera.shutter_duration() / scene.tick_duration())));
+			progressor.start(static_cast<size_t>(static_cast<float>(tiles.size()) * (camera.frame_duration() / scene.tick_duration())));
 			float frame_offset = 0.f;
-			float frame_rest = camera.shutter_duration();
+			float frame_rest = camera.frame_duration();
 
 			while (frame_rest > 0.f) {
 				if (tick_rest <= 0.f) {
@@ -124,8 +124,8 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 				float normalized_tick_offset = tick_offset / scene.tick_duration();
 				float normalized_tick_slice  = subframe_slice / scene.tick_duration();
 
-				float normalized_frame_offset = frame_offset / camera.shutter_duration();
-				float normalized_frame_slice  = subframe_slice / camera.shutter_duration();
+				float normalized_frame_offset = frame_offset / camera.frame_duration();
+				float normalized_frame_slice  = subframe_slice / camera.frame_duration();
 
 				render_subframe(camera,
 								normalized_tick_offset, normalized_tick_slice,
