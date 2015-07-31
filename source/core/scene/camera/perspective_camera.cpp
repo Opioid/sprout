@@ -26,7 +26,8 @@ void Perspective::update_view() {
 	d_y_ = (left_bottom - left_top_) / static_cast<float>(film_->dimensions().y);
 }
 
-void Perspective::generate_ray(const sampler::Camera_sample& sample, float normalized_tick_offset, float normalized_tick_slice,
+void Perspective::generate_ray(const sampler::Camera_sample& sample,
+							   float normalized_tick_offset, float normalized_tick_slice,
 							   math::Oray& ray) const {
 	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
 

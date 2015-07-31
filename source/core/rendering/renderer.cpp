@@ -127,7 +127,10 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 				float normalized_frame_offset = frame_offset / camera.shutter_duration();
 				float normalized_frame_slice  = subframe_slice / camera.shutter_duration();
 
-				render_subframe(camera, normalized_tick_offset, normalized_tick_slice, normalized_frame_offset, normalized_frame_slice, tiles, workers, pool, progressor);
+				render_subframe(camera,
+								normalized_tick_offset, normalized_tick_slice,
+								normalized_frame_offset, normalized_frame_slice,
+								tiles, workers, pool, progressor);
 
 				tick_offset += subframe_slice;
 				tick_rest   -= subframe_slice;
@@ -139,11 +142,13 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 		progressor.end();
 
-		logging::info("Render time " + string::to_string(chrono::duration_to_seconds(clock.now() - render_start)) + " s");
+		auto render_duration = chrono::duration_to_seconds(clock.now() - render_start);
+		logging::info("Render time " + string::to_string(render_duration) + " s");
 
 		auto export_start = clock.now();
 		exporter.write(film.resolve(pool), pool);
-		logging::info("Export time " + string::to_string(chrono::duration_to_seconds(clock.now() - export_start)) + " s");
+		auto export_duration = chrono::duration_to_seconds(clock.now() - export_start);
+		logging::info("Export time " + string::to_string(export_duration) + " s");
 	}
 }
 
@@ -160,7 +165,8 @@ void Renderer::render_subframe(const scene::camera::Camera& camera,
 	uint32_t sample_end   = std::min(sample_begin + static_cast<uint32_t>(normalized_frame_slice * num_samples + 0.5f),
 									 sampler_->num_samples_per_iteration());
 	pool.run(
-		[&workers, &camera, &tiles, &progressor, sample_begin, sample_end, normalized_tick_offset, normalized_tick_slice](uint32_t index) {
+		[&workers, &camera, &tiles, &progressor,
+		 sample_begin, sample_end, normalized_tick_offset, normalized_tick_slice](uint32_t index) {
 			auto& worker = workers[index];
 
 			for (;;) {

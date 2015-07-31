@@ -18,7 +18,7 @@ Interpolated_function<T>::Interpolated_function(float range_begin, float range_e
 		samples_[i] = f(s);
 	}
 
-	samples_[num_samples] = f(range_end);//samples_[num_samples - 1];
+	samples_[num_samples] = f(range_end);
 }
 
 template<typename T>

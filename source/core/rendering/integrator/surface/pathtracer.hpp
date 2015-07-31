@@ -48,7 +48,9 @@ private:
 class Pathtracer_factory : public Surface_integrator_factory {
 public:
 
-	Pathtracer_factory(const take::Settings &take_settings, uint32_t min_bounces, uint32_t max_bounces, bool disable_caustics);
+	Pathtracer_factory(const take::Settings &take_settings,
+					   uint32_t min_bounces, uint32_t max_bounces,
+					   bool disable_caustics);
 
 	virtual Surface_integrator* create(math::random::Generator& rng) const final override;
 

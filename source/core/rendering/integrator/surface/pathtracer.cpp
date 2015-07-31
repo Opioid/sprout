@@ -62,7 +62,8 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 			break;
 		}
 
-		if (ray.depth > 0 && settings_.disable_caustics && sample_result.type.test(scene::material::BxDF_type::Specular)) {
+		if (ray.depth > 0 && settings_.disable_caustics
+		&&  sample_result.type.test(scene::material::BxDF_type::Specular)) {
 			break;
 		}
 
@@ -94,7 +95,9 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 	return result;
 }
 
-Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces, bool disable_caustics) :
+Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
+									   uint32_t min_bounces, uint32_t max_bounces,
+									   bool disable_caustics) :
 	Surface_integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;

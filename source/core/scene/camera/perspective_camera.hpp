@@ -12,7 +12,8 @@ public:
 
 	virtual void update_view() final override;
 
-	virtual void generate_ray(const sampler::Camera_sample& sample, float normalized_tick_offset, float normalized_tick_slice,
+	virtual void generate_ray(const sampler::Camera_sample& sample,
+							  float normalized_tick_offset, float normalized_tick_slice,
 							  math::Oray& ray) const final override;
 
 private:
