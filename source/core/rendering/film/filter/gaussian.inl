@@ -3,8 +3,6 @@
 #include "base/math/function/interpolated_function.inl"
 #include <algorithm>
 
-#include <iostream>
-
 namespace rendering { namespace film { namespace filter {
 
 class Gaussian_functor {
