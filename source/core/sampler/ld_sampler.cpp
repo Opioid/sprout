@@ -17,7 +17,7 @@ Sampler* LD::clone() const {
 	return new LD(rng_, num_samples_per_iteration_);
 }
 
-void LD::generate_camera_sample(const math::float2& offset, uint32_t index, Camera_sample& sample) {
+void LD::generate_camera_sample(math::float2 offset, uint32_t index, Camera_sample& sample) {
 	math::float2 s2d = ld(index, seed_.x, seed_.y);
 
 	sample.coordinates = offset + s2d;

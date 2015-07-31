@@ -13,7 +13,7 @@ Sampler* EMS::clone() const {
 	return new EMS(rng_, num_samples_per_iteration_);
 }
 
-void EMS::generate_camera_sample(const math::float2& offset, uint32_t index, Camera_sample& sample) {
+void EMS::generate_camera_sample(math::float2 offset, uint32_t index, Camera_sample& sample) {
 	math::float2 s2d = math::ems(index, seed_.x, seed_.y);
 
 	sample.coordinates = offset + s2d;

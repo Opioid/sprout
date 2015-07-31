@@ -12,7 +12,7 @@ Sampler* Random::clone() const {
 	return new Random(rng_, num_samples_per_iteration_);
 }
 
-void Random::generate_camera_sample(const math::float2& offset, uint32_t /*index*/, Camera_sample& sample) {
+void Random::generate_camera_sample(math::float2 offset, uint32_t /*index*/, Camera_sample& sample) {
 	math::float2 s2d(rng_.random_float(), rng_.random_float());
 
 	sample.coordinates = offset + s2d;

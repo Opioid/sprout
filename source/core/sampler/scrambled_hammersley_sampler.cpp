@@ -13,7 +13,7 @@ Sampler* Scrambled_hammersley::clone() const {
 	return new Scrambled_hammersley(rng_, num_samples_per_iteration_);
 }
 
-void Scrambled_hammersley::generate_camera_sample(const math::float2& offset, uint32_t index, Camera_sample& sample) {
+void Scrambled_hammersley::generate_camera_sample(math::float2 offset, uint32_t index, Camera_sample& sample) {
 	math::float2 s2d = math::scrambled_hammersley(index, num_samples_per_iteration_, seed_.x);
 
 	sample.coordinates = offset + s2d;
