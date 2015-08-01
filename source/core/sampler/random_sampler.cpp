@@ -12,10 +12,11 @@ Sampler* Random::clone() const {
 	return new Random(rng_, num_samples_per_iteration_);
 }
 
-void Random::generate_camera_sample(math::float2 offset, uint32_t /*index*/, Camera_sample& sample) {
+void Random::generate_camera_sample(math::uint2 pixel, uint32_t /*index*/, Camera_sample& sample) {
 	math::float2 s2d(rng_.random_float(), rng_.random_float());
 
-	sample.coordinates = offset + s2d;
+	sample.pixel = pixel;
+	sample.coordinates = math::float2(pixel) + s2d;
 	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
 	sample.lens_uv = s2d.yx();
 	sample.time = rng_.random_float();

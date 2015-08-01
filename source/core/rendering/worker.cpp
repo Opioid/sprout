@@ -55,10 +55,10 @@ void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uin
 
 			surface_integrator_->start_new_pixel(num_samples);
 
-			math::float2 offset(static_cast<float>(x), static_cast<float>(y));
+			math::uint2 pixel(x, y);
 
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
-				sampler_->generate_camera_sample(offset, i, sample);
+				sampler_->generate_camera_sample(pixel, i, sample);
 
 				camera.generate_ray(sample, normalized_tick_offset, normalized_tick_slice, ray);
 

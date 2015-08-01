@@ -13,8 +13,8 @@ Filtered<Filter>::~Filtered() {}
 
 template<typename Filter>
 void Filtered<Filter>::add_sample(const sampler::Camera_sample& sample, const math::float3& color, const Rectui& tile) {
-	uint32_t x = static_cast<uint32_t>(sample.coordinates.x);
-	uint32_t y = static_cast<uint32_t>(sample.coordinates.y);
+	uint32_t x = sample.pixel.x;
+	uint32_t y = sample.pixel.y;
 
 	math::float2 o = sample.relative_offset;
 	o.x += 1.f;

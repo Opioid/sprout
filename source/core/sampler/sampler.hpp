@@ -28,7 +28,7 @@ public:
 
 	void set_seed(math::uint2 seed);
 
-	virtual void generate_camera_sample(math::float2 offset, uint32_t index, Camera_sample& sample) = 0;
+	virtual void generate_camera_sample(math::uint2 pixel, uint32_t index, Camera_sample& sample) = 0;
 
 	virtual math::float2 generate_sample_2D() = 0;
 

@@ -13,10 +13,11 @@ Sampler* EMS::clone() const {
 	return new EMS(rng_, num_samples_per_iteration_);
 }
 
-void EMS::generate_camera_sample(math::float2 offset, uint32_t index, Camera_sample& sample) {
+void EMS::generate_camera_sample(math::uint2 pixel, uint32_t index, Camera_sample& sample) {
 	math::float2 s2d = math::ems(index, seed_.x, seed_.y);
 
-	sample.coordinates = offset + s2d;
+	sample.pixel = pixel;
+	sample.coordinates = math::float2(pixel) + s2d;
 	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
 	sample.lens_uv = s2d.yx();
 	sample.time = math::scrambled_radical_inverse_vdC(index, seed_.y);
@@ -35,4 +36,3 @@ math::uint2 EMS::seed() const {
 }
 
 }
-

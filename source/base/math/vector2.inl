@@ -13,7 +13,7 @@ Vector2<T>::Vector2(T x, T y) : x(x), y(y) {}
 
 template<typename T>
 template<typename U>
-Vector2<T>::Vector2(const Vector2<U>& v) : x(T(v.x)), y(T(v.y)) {}
+Vector2<T>::Vector2(Vector2<U> v) : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)) {}
 
 template<typename T>
 Vector2<T> Vector2<T>::yx() const {
@@ -21,17 +21,17 @@ Vector2<T> Vector2<T>::yx() const {
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator+(const Vector2& v) const {
+Vector2<T> Vector2<T>::operator+(Vector2 v) const {
 	return Vector2(x + v.x, y + v.y);
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator-(const Vector2& v) const {
+Vector2<T> Vector2<T>::operator-(Vector2 v) const {
 	return Vector2(x - v.x, y - v.y);
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator*(const Vector2& v) const {
+Vector2<T> Vector2<T>::operator*(Vector2 v) const {
 	return Vector2(x * v.x, y * v.y);
 }
 
@@ -41,7 +41,7 @@ Vector2<T> Vector2<T>::operator/(T s) const {
 }
 
 template<typename T>
-Vector2<T>& Vector2<T>::operator+=(const Vector2& v) {
+Vector2<T>& Vector2<T>::operator+=(Vector2 v) {
 	x += v.x;
 	y += v.y;
 	return *this;
@@ -55,12 +55,12 @@ Vector2<T>& Vector2<T>::operator/=(T s) {
 }
 
 template<typename T>
-bool Vector2<T>::operator==(const Vector2& v) const {
+bool Vector2<T>::operator==(Vector2 v) const {
 	return x == v.x && y == v.y;
 }
 
 template<typename T>
-bool Vector2<T>::operator!=(const Vector2& v) const {
+bool Vector2<T>::operator!=( Vector2 v) const {
 	return x != v.x || y != v.y;
 }
 
@@ -68,52 +68,53 @@ template<typename T>
 const Vector2<T> Vector2<T>::identity(T(0), T(0));
 
 template<typename T>
-Vector2<T> operator*(T s, const Vector2<T>& v) {
+Vector2<T> operator*(T s, Vector2<T> v) {
 	return Vector2<T>(s * v.x, s * v.y);
 }
 
 template<typename T>
-Vector2<T> operator/(T s, const Vector2<T>& v) {
+Vector2<T> operator/(T s, Vector2<T> v) {
 	return Vector2<T>(s / v.x, s / v.y);
 }
 
 template<typename T>
-T dot(const Vector2<T>& a, const Vector2<T>& b) {
+T dot(Vector2<T> a, Vector2<T> b) {
 	return a.x * b.x + a.y * b.y;
 }
 
 template<typename T>
-T length(const Vector2<T>& v)  {
+T length(Vector2<T> v)  {
 	return std::sqrt(dot(v, v));
 }
 
 template<typename T>
-T squared_length(const Vector2<T>& v) {
+T squared_length(Vector2<T> v) {
 	return dot(v, v);
 }
 
 template<typename T>
-Vector2<T> normalized(const Vector2<T>& v) {
+Vector2<T> normalized(Vector2<T> v) {
 	return v / length(v);
 }
 
 template<typename T>
-Vector2<T> reciprocal(const Vector2<T>& v) {
+Vector2<T> reciprocal(Vector2<T> v) {
 	return Vector2<T>(T(1) / v.x, T(1) / v.y);
 }
 
 template<typename T>
-Vector2<T> round(const Vector2<T>& v){
-	return Vector2<T>(std::floor(v.x >= T(0) ? v.x + T(0.5) : v.x - T(0.5)), std::floor(v.y >= T(0) ? v.y + T(0.5) : v.y - T(0.5)));
+Vector2<T> round(Vector2<T> v){
+	return Vector2<T>(std::floor(v.x >= T(0) ? v.x + T(0.5) : v.x - T(0.5)),
+					  std::floor(v.y >= T(0) ? v.y + T(0.5) : v.y - T(0.5)));
 }
 
 template<typename T>
-Vector2<T> min(const Vector2<T>& a, const Vector2<T>& b) {
+Vector2<T> min(Vector2<T> a, Vector2<T> b) {
 	return Vector2<T>(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y);
 }
 
 template<typename T>
-Vector2<T> max(const Vector2<T>& a, const Vector2<T>& b) {
+Vector2<T> max(Vector2<T> a, Vector2<T> b) {
 	return Vector2<T>(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y);
 }
 
