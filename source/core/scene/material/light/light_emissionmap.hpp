@@ -30,6 +30,8 @@ private:
 
 	std::shared_ptr<image::texture::Texture_2D> emission_;
 
+	math::float3 average_emission_;
+
 	math::Distribution_2D distribution_;
 
 	float num_pixels_;
