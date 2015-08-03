@@ -37,9 +37,9 @@ private:
 
 	math::float3 average_emission_;
 
-	math::Distribution_2D distribution_;
-
 	float total_weight_;
+
+	math::Distribution_2D distribution_;
 };
 
 }}}
