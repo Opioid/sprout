@@ -66,9 +66,9 @@ void Emissionmap::prepare_sampling() {
 		for (uint32_t x = 0; x < d.x; ++x, ++l) {
 			math::float3 emission = emission_->at_3(x, y);
 
-			average_emission_ += emission;
-
 			luminance[l] = color::luminance(emission);
+
+			average_emission_ += sin_theta * emission;
 
 			total_weight_ += sin_theta;
 		}
