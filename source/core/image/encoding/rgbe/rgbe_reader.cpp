@@ -54,7 +54,8 @@ Reader::Header Reader::read_header(std::istream& stream) {
 	return header;
 }
 
-void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines, Image_float_3& image) {
+void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
+							 Image_float_3& image) {
 	if (scanline_width < 8 || scanline_width > 0x7fff) {
 		return read_pixels(stream, scanline_width * num_scanlines, image, 0);
 	}
@@ -146,7 +147,9 @@ math::float3 Reader::rgbe_to_float3(uint8_t rgbe[4]) {
 	if (rgbe[3] > 0) {
 		// nonzero pixel
 		float f = std::ldexp(1.f, static_cast<int>(rgbe[3]) - (128 + 8));
-		return math::float3(static_cast<float>(rgbe[0]) * f, static_cast<float>(rgbe[1]) * f, static_cast<float>(rgbe[2]) * f);
+		return math::float3(static_cast<float>(rgbe[0]) * f,
+							static_cast<float>(rgbe[1]) * f,
+							static_cast<float>(rgbe[2]) * f);
 	} else {
 		return math::float3::identity;
 	}

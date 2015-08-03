@@ -8,7 +8,9 @@
 
 namespace scene { namespace material { namespace light {
 
-Emissionmap::Emissionmap(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, std::shared_ptr<image::texture::Texture_2D> emission) :
+Emissionmap::Emissionmap(Sample_cache<Sample>& cache,
+						 std::shared_ptr<image::texture::Texture_2D> mask,
+						 std::shared_ptr<image::texture::Texture_2D> emission) :
 	Light(cache, mask), emission_(emission) {}
 
 const Sample& Emissionmap::sample(const shape::Differential& dg, const math::float3& wo,
@@ -21,12 +23,12 @@ const Sample& Emissionmap::sample(const shape::Differential& dg, const math::flo
 	return sample;
 }
 
-math::float3 Emissionmap::sample_emission(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
+math::float3 Emissionmap::sample_emission(math::float2 uv,
+										  const image::texture::sampler::Sampler_2D& sampler) const {
 	return sampler.sample_3(*emission_, uv);
 }
 
 math::float3 Emissionmap::average_emission() const {
-//	return emission_->average().xyz;
 	return average_emission_;
 }
 
@@ -36,12 +38,18 @@ const image::texture::Texture_2D* Emissionmap::emission_map() const {
 
 math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf) const {
 	math::float2 uv = distribution_.sample_continuous(r2, pdf);
-	pdf *= num_pixels_;
+
+	float sin_theta = std::sin(uv.y * math::Pi);
+
+	pdf *= total_weight_ / sin_theta;
+
 	return uv;
 }
 
 float Emissionmap::emission_pdf(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
-	return distribution_.pdf(sampler.address(uv)) * num_pixels_;
+	float sin_theta = std::sin(uv.y * math::Pi);
+
+	return distribution_.pdf(sampler.address(uv)) * (total_weight_ / sin_theta);
 }
 
 void Emissionmap::prepare_sampling() {
@@ -49,25 +57,26 @@ void Emissionmap::prepare_sampling() {
 	auto d = emission_->dimensions();
 	luminance.resize(d.x * d.y);
 
+	total_weight_ = 0.f;
+
 	size_t l = 0;
 	for (uint32_t y = 0; y < d.y; ++y) {
-		float sin_theta = 1.f;//std::sin((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y) * math::Pi);
+		float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
 
 		for (uint32_t x = 0; x < d.x; ++x, ++l) {
-
-			math::float3 emission = sin_theta * emission_->at_3(x, y);
+			math::float3 emission = emission_->at_3(x, y);
 
 			average_emission_ += emission;
 
 			luminance[l] = color::luminance(emission);
+
+			total_weight_ += sin_theta;
 		}
 	}
 
-	average_emission_ /= static_cast<float>(luminance.size());
+	average_emission_ /= total_weight_;
 
 	distribution_.init(luminance.data(), d);
-
-	num_pixels_ = static_cast<float>(d.x * d.y);
 }
 
 }}}

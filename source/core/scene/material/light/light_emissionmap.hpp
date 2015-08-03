@@ -9,12 +9,16 @@ namespace scene { namespace material { namespace light {
 class Emissionmap : public Light {
 public:
 
-	Emissionmap(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, std::shared_ptr<image::texture::Texture_2D> emission);
+	Emissionmap(Sample_cache<Sample>& cache,
+				std::shared_ptr<image::texture::Texture_2D> mask,
+				std::shared_ptr<image::texture::Texture_2D> emission);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
-								 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
+								 const image::texture::sampler::Sampler_2D& sampler,
+								 uint32_t worker_id) final override;
 
-	virtual math::float3 sample_emission(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const final override;
+	virtual math::float3 sample_emission(math::float2 uv,
+										 const image::texture::sampler::Sampler_2D& sampler) const final override;
 
 	virtual math::float3 average_emission() const final override;
 
@@ -22,7 +26,8 @@ public:
 
 	virtual math::float2 emission_importance_sample(math::float2 r2, float& pdf) const final override;
 
-	virtual float emission_pdf(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const final override;
+	virtual float emission_pdf(math::float2 uv,
+							   const image::texture::sampler::Sampler_2D& sampler) const final override;
 
 	virtual void prepare_sampling() final override;
 
@@ -34,7 +39,7 @@ private:
 
 	math::Distribution_2D distribution_;
 
-	float num_pixels_;
+	float total_weight_;
 };
 
 }}}
