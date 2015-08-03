@@ -2,8 +2,8 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
-//#include "scene/material/lambert/lambert.hpp"
-#include "scene/material/oren_nayar/oren_nayar.hpp"
+#include "scene/material/lambert/lambert.hpp"
+//#include "scene/material/oren_nayar/oren_nayar.hpp"
 
 namespace scene { namespace material { namespace matte {
 
@@ -30,11 +30,11 @@ private:
 
 	float a2_;
 
-//	lambert::Lambert<Sample> lambert_;
-	oren_nayar::Oren_nayar<Sample> oren_nayar_;
+	lambert::Lambert<Sample> lambert_;
+//	oren_nayar::Oren_nayar<Sample> oren_nayar_;
 
-//	friend lambert::Lambert<Sample>;
-	friend oren_nayar::Oren_nayar<Sample>;
+	friend lambert::Lambert<Sample>;
+//	friend oren_nayar::Oren_nayar<Sample>;
 };
 
 class Matte : public Material<Sample> {
