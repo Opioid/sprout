@@ -65,6 +65,7 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			break;
 		}
 
+		++ray.depth;
 		result += throughput * estimate_direct_light(worker, ray, intersection, material_sample, *texture_sampler);
 
 		material_sample.sample_evaluate(sampler_, sample_result);
@@ -95,7 +96,6 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
 		ray.max_t = 1000.f;
-		++ray.depth;
 
 		if (!worker.intersect(ray, intersection)) {
 			break;
