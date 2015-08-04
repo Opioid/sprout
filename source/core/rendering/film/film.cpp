@@ -1,8 +1,11 @@
 #include "film.hpp"
 #include "image/typed_image.inl"
 #include "tonemapping/tonemapper.hpp"
+#include "base/atomic/atomic.hpp"
 #include "base/thread/thread_pool.hpp"
 #include "base/math/vector.inl"
+
+#include <iostream>
 
 namespace rendering { namespace film {
 
@@ -59,7 +62,20 @@ void Film::add_pixel(uint32_t x, uint32_t y, const math::float3& color, float we
 }
 
 void Film::add_pixel_atomic(uint32_t x, uint32_t y, const math::float3& color, float weight) {
-	add_pixel(x, y, color, weight);
+//	add_pixel(x, y, color, weight);
+
+	auto d = dimensions();
+	if (x >= d.x || y >= d.y) {
+		return;
+	}
+
+	auto& pixel = pixels_[d.x * y + x];
+
+	pixel.color += weight * color;
+	atomic::add(pixel.color.x, weight * color.x);
+	atomic::add(pixel.color.y, weight * color.y);
+	atomic::add(pixel.color.z, weight * color.z);
+	atomic::add(pixel.weight_sum, weight);
 }
 
 void Film::resolve(uint32_t begin, uint32_t end) {
@@ -73,6 +89,10 @@ void Film::resolve(uint32_t begin, uint32_t end) {
 		math::float3 tonemapped = tonemapper_->tonemap(exposed);
 
 		image_.set(i, math::float4(tonemapped, 1.f));
+
+		if (pixel.weight_sum <= 0.f) {
+			std::cout << "alarm" << std::endl;
+		}
 	}
 }
 

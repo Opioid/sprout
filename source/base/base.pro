@@ -10,6 +10,7 @@ SOURCES +=
 
 HEADERS +=
 
+include(atomic/atomic.pri)
 include(chrono/chrono.pri)
 include(color/color.pri)
 include(flags/flags.pri)
