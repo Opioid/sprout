@@ -16,7 +16,7 @@
 #include "base/math/random/generator.inl"
 #include "base/math/print.hpp"
 
-// #include <iostream>
+#include <iostream>
 
 namespace rendering {
 
@@ -100,6 +100,10 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		if (!worker.intersect(ray, intersection)) {
 			break;
 		}
+	}
+
+	if (math::contains_inf(result) || math::contains_nan(result)) {
+		std::cout << "alarm" << std::endl;
 	}
 
 	return result;
