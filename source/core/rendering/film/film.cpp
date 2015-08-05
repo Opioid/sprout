@@ -5,8 +5,6 @@
 #include "base/thread/thread_pool.hpp"
 #include "base/math/vector.inl"
 
-#include <iostream>
-
 namespace rendering { namespace film {
 
 Film::Film(math::uint2 dimensions, float exposure, tonemapping::Tonemapper* tonemapper) :
@@ -85,10 +83,6 @@ void Film::resolve(uint32_t begin, uint32_t end) {
 		math::float3 tonemapped = tonemapper_->tonemap(exposed);
 
 		image_.set(i, math::float4(tonemapped, 1.f));
-
-		if (pixel.weight_sum <= 0.f) {
-			std::cout << "alarm" << std::endl;
-		}
 	}
 }
 
