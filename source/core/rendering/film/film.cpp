@@ -62,22 +62,16 @@ void Film::add_pixel(uint32_t x, uint32_t y, const math::float3& color, float we
 }
 
 void Film::add_pixel_atomic(uint32_t x, uint32_t y, const math::float3& color, float weight) {
-	std::lock_guard<std::mutex> lock(mutex_);
-	add_pixel(x, y, color, weight);
-
-	/*
 	auto d = dimensions();
 	if (x >= d.x || y >= d.y) {
 		return;
 	}
 
 	auto& pixel = pixels_[d.x * y + x];
-
-	pixel.color += weight * color;
 	atomic::add(pixel.color.x, weight * color.x);
 	atomic::add(pixel.color.y, weight * color.y);
 	atomic::add(pixel.color.z, weight * color.z);
-	atomic::add(pixel.weight_sum, weight);*/
+	atomic::add(pixel.weight_sum, weight);
 }
 
 void Film::resolve(uint32_t begin, uint32_t end) {

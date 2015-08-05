@@ -1,27 +1,38 @@
 #pragma once
 
-#include <atomic>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef min
+#undef max
+#endif
 
 namespace atomic {
 
-inline void add(float& a, float b) {
-/*	std::atomic<float> aa(a);
-	auto current = aa.load();
+inline void add(volatile float& a, float b) {
+#ifdef _WIN32
 
-	while (!aa.compare_exchange_weak(current, current + b));
+	union bits { float f; int32_t i; };
+	bits old_value;
+	bits new_value;
 
-	a = aa.load();
-	*/
-
-	std::atomic<float> aa(a);
-	auto current = aa.load(std::memory_order_relaxed);
 	do {
-		a = current;
-	} while (!aa.compare_exchange_weak(current, current + b,
-									   std::memory_order_release,
-									   std::memory_order_relaxed));
+		old_value.f = a;
+		new_value.f = old_value.f + b;
+	} while (InterlockedCompareExchange(reinterpret_cast<volatile uint32_t*>(&a),
+										new_value.i, old_value.i) != old_value.i);
 
-	a = aa.load();
+#else
+
+	float old_value;
+	float new_value;
+
+	do {
+		old_value = a;
+		new_value = old_value + b;
+	} while (__sync_val_compare_and_swap(&a, new_value, old_value) != old_value);
+
+#endif
 }
 
 }

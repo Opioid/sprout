@@ -61,10 +61,11 @@ void Filtered<Filter>::add_pixel(uint32_t x, uint32_t y, math::float2 relative_o
 								 const math::float3& color, const Rectui& tile) {
 	float weight = filter_->evaluate(relative_offset);
 
-	if ((tile.start.x == x && 0 != x)
-	||  (tile.end.x - 1 == x && x < dimensions().x - 1)
-	||  (tile.start.y == y && 0 != y)
-	||  (tile.end.y - 1 == y && y < dimensions().y - 1)) {
+	auto d = dimensions();
+	if ((x < d.x - 1 && x >= tile.end.x - 1)
+	||  (y < d.y - 1 && y >= tile.end.y - 1)
+	||  (x <= tile.start.x && 0 != x)
+	||  (y <= tile.start.y && 0 != y)) {
 		add_pixel_atomic(x, y, color, weight);
 	} else {
 		Film::add_pixel(x, y, color, weight);
