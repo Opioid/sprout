@@ -8,7 +8,9 @@ namespace image { namespace texture { namespace sampler {
 
 inline float bilinear_1(float c00, float c01, float c10, float c11, float s, float t);
 
-inline math::float2 bilinear_2(math::float2 c00, math::float2 c01, math::float2 c10, math::float2 c11, float s, float t);
+inline math::float2 bilinear_2(math::float2 c00, math::float2 c01,
+							   math::float2 c10, math::float2 c11,
+							   float s, float t);
 
 template<typename T>
 T bilinear(const T& c00, const T& c01, const T& c10, const T& c11, float s, float t);
@@ -124,7 +126,9 @@ inline float bilinear_1(float c00, float c01, float c10, float c11, float s, flo
 	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
 }
 
-inline math::float2 bilinear_2(math::float2 c00, math::float2 c01, math::float2 c10, math::float2 c11, float s, float t) {
+inline math::float2 bilinear_2(math::float2 c00, math::float2 c01,
+							   math::float2 c10, math::float2 c11,
+							   float s, float t) {
 	float _s = 1.f - s;
 	float _t = 1.f - t;
 
