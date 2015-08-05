@@ -113,8 +113,10 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 
 std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {
 	math::float3 emission(10.f, 10.f, 10.f);
+	float emission_factor = 1.f;
 
 	std::shared_ptr<image::texture::Texture_2D> emissionmap;
+	std::shared_ptr<image::texture::Texture_2D> mask;
 
 	for (auto n = light_value.MemberBegin(); n != light_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -122,6 +124,8 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 
 		if ("emission" == node_name) {
 			emission = json::read_float3(node_value);
+		} else if ("emission_factor" == node_name) {
+			emission_factor = json::read_float(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				std::string filename = json::read_string(*tn, "file", "");
@@ -133,16 +137,20 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 
 				if ("Emission" == usage) {
 					emissionmap = texture_cache_.load(filename);
+				} else if ("Mask" == usage) {
+					mask = texture_cache_.load(filename,
+											   static_cast<uint32_t>(
+												   image::texture::Provider::Flags::Use_as_mask));
 				}
 			}
 		}
 	}
 
 	if (emissionmap) {
-		return std::make_shared<light::Emissionmap>(light_cache_, nullptr, emissionmap);
+		return std::make_shared<light::Emissionmap>(light_cache_, mask, emissionmap, emission_factor);
 	}
 
-	return std::make_shared<light::Constant>(light_cache_, nullptr, emission);
+	return std::make_shared<light::Constant>(light_cache_, mask, emission);
 }
 
 std::shared_ptr<IMaterial> Provider::load_matte(const rapidjson::Value& matte_value) {
@@ -173,9 +181,13 @@ std::shared_ptr<IMaterial> Provider::load_matte(const rapidjson::Value& matte_va
 				if ("Color" == usage) {
 					colormap = texture_cache_.load(filename);
 				} else if ("Normal" == usage) {
-					normalmap = texture_cache_.load(filename, static_cast<uint32_t>(image::texture::Provider::Flags::Use_as_normal));
+					normalmap = texture_cache_.load(filename,
+													static_cast<uint32_t>(
+														image::texture::Provider::Flags::Use_as_normal));
 				} else if ("Mask" == usage) {
-					mask = texture_cache_.load(filename, static_cast<uint32_t>(image::texture::Provider::Flags::Use_as_mask));
+					mask = texture_cache_.load(filename,
+											   static_cast<uint32_t>(
+												   image::texture::Provider::Flags::Use_as_mask));
 				}
 			}
 		}

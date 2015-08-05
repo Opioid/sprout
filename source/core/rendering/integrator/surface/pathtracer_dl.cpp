@@ -13,7 +13,6 @@
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
-#include <iostream>
 
 namespace rendering {
 
@@ -66,6 +65,7 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.min_t  = ray_offset;
+		++ray.depth;
 
 		float light_pdf;
 		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
@@ -118,7 +118,6 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
 		ray.max_t = 1000.f;
-		++ray.depth;
 
 		if (!worker.intersect(ray, intersection)) {
 			break;

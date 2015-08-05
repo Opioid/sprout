@@ -107,6 +107,7 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	if (c <= 0.f) {
 		sample.pdf = 0.f;
 	} else {
+		sample.uv = tc;
 		float sl = math::squared_length(axis);
 		sample.t = std::sqrt(sl);
 		sample.pdf = sl / (c * area);

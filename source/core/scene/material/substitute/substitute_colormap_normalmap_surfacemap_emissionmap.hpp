@@ -17,7 +17,8 @@ public:
 											  float emission_factor);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
-								 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
+								 const image::texture::sampler::Sampler_2D& sampler,
+								 uint32_t worker_id) final override;
 
 	virtual math::float3 average_emission() const final override;
 

@@ -52,7 +52,7 @@ float Prop_image_light::pdf(const entity::Composed_transformation& transformatio
 }
 
 void Prop_image_light::prepare_sampling() {
-	prop_->material(part_)->prepare_sampling();
+	prop_->material(part_)->prepare_sampling(true);
 
 	entity::Composed_transformation transformation;
 	prop_->transformation_at(0.f, transformation);

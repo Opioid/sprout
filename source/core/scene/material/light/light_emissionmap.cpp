@@ -10,22 +10,23 @@ namespace scene { namespace material { namespace light {
 
 Emissionmap::Emissionmap(Sample_cache<Sample>& cache,
 						 std::shared_ptr<image::texture::Texture_2D> mask,
-						 std::shared_ptr<image::texture::Texture_2D> emission) :
-	Light(cache, mask), emission_(emission) {}
+						 std::shared_ptr<image::texture::Texture_2D> emission,
+						 float emission_factor) :
+	Light(cache, mask), emission_(emission), emission_factor_(emission_factor) {}
 
 const Sample& Emissionmap::sample(const shape::Differential& dg, const math::float3& wo,
 								  const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
-	sample.set(sampler.sample_3(*emission_, dg.uv));
+	sample.set(emission_factor_ * sampler.sample_3(*emission_, dg.uv));
 
 	return sample;
 }
 
 math::float3 Emissionmap::sample_emission(math::float2 uv,
 										  const image::texture::sampler::Sampler_2D& sampler) const {
-	return sampler.sample_3(*emission_, uv);
+	return emission_factor_ * sampler.sample_3(*emission_, uv);
 }
 
 math::float3 Emissionmap::average_emission() const {
@@ -52,31 +53,35 @@ float Emissionmap::emission_pdf(math::float2 uv, const image::texture::sampler::
 	return distribution_.pdf(sampler.address(uv)) * (total_weight_ / sin_theta);
 }
 
-void Emissionmap::prepare_sampling() {
-	std::vector<float> luminance;
-	auto d = emission_->dimensions();
-	luminance.resize(d.x * d.y);
+void Emissionmap::prepare_sampling(bool spherical) {
+	if (spherical) {
+		std::vector<float> luminance;
+		auto d = emission_->dimensions();
+		luminance.resize(d.x * d.y);
 
-	total_weight_ = 0.f;
+		total_weight_ = 0.f;
 
-	size_t l = 0;
-	for (uint32_t y = 0; y < d.y; ++y) {
-		float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
+		size_t l = 0;
+		for (uint32_t y = 0; y < d.y; ++y) {
+			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
 
-		for (uint32_t x = 0; x < d.x; ++x, ++l) {
-			math::float3 emission = emission_->at_3(x, y);
+			for (uint32_t x = 0; x < d.x; ++x, ++l) {
+				math::float3 emission = emission_factor_ * emission_->at_3(x, y);
 
-			luminance[l] = color::luminance(emission);
+				luminance[l] = color::luminance(emission);
 
-			average_emission_ += sin_theta * emission;
+				average_emission_ += sin_theta * emission;
 
-			total_weight_ += sin_theta;
+				total_weight_ += sin_theta;
+			}
 		}
+
+		average_emission_ /= total_weight_;
+
+		distribution_.init(luminance.data(), d);
+	} else {
+		average_emission_ = emission_factor_ * emission_->average().xyz;
 	}
-
-	average_emission_ /= total_weight_;
-
-	distribution_.init(luminance.data(), d);
 }
 
 }}}

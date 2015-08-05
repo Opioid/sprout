@@ -11,7 +11,8 @@ public:
 
 	Emissionmap(Sample_cache<Sample>& cache,
 				std::shared_ptr<image::texture::Texture_2D> mask,
-				std::shared_ptr<image::texture::Texture_2D> emission);
+				std::shared_ptr<image::texture::Texture_2D> emission,
+				float emission_factor);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
 								 const image::texture::sampler::Sampler_2D& sampler,
@@ -29,11 +30,13 @@ public:
 	virtual float emission_pdf(math::float2 uv,
 							   const image::texture::sampler::Sampler_2D& sampler) const final override;
 
-	virtual void prepare_sampling() final override;
+	virtual void prepare_sampling(bool spherical) final override;
 
 private:
 
 	std::shared_ptr<image::texture::Texture_2D> emission_;
+
+	float emission_factor_;
 
 	math::float3 average_emission_;
 
