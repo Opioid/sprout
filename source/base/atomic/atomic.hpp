@@ -11,12 +11,12 @@ namespace atomic {
 
 inline void add(volatile float& a, float b) {
 
-	union bits { float f; int32_t i; };
+	union bits { float f; uint32_t i; };
 
 	bits old_value;
 	bits new_value;
 
-	volatile int32_t* target = reinterpret_cast<volatile int32_t*>(&a);
+	volatile uint32_t* target = reinterpret_cast<volatile uint32_t*>(&a);
 
 #ifdef _WIN32
 
