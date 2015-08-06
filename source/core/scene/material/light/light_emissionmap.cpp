@@ -55,14 +55,12 @@ float Emissionmap::emission_pdf(math::float2 uv, const image::texture::sampler::
 
 void Emissionmap::prepare_sampling(bool spherical) {
 	if (spherical) {
-		std::vector<float> luminance;
 		auto d = emission_->dimensions();
-		luminance.resize(d.x * d.y);
+		std::vector<float> luminance(d.x * d.y);
 
 		total_weight_ = 0.f;
 
-		size_t l = 0;
-		for (uint32_t y = 0; y < d.y; ++y) {
+		for (uint32_t y = 0, l = 0; y < d.y; ++y) {
 			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
 
 			for (uint32_t x = 0; x < d.x; ++x, ++l) {
