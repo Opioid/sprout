@@ -40,15 +40,23 @@ const image::texture::Texture_2D* Emissionmap::emission_map() const {
 math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf) const {
 	math::float2 uv = distribution_.sample_continuous(r2, pdf);
 
-	float sin_theta = std::max(std::sin(uv.y * math::Pi), 0.0000001f);
+	if (uv.y == 0.f) {
+		pdf = 0.f;
+	} else {
+		float sin_theta = std::sin(uv.y * math::Pi);
 
-	pdf *= total_weight_ / sin_theta;
+		pdf *= total_weight_ / sin_theta;
+	}
 
 	return uv;
 }
 
 float Emissionmap::emission_pdf(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
-	float sin_theta = std::max(std::sin(uv.y * math::Pi), 0.0000001f);
+	if (uv.y == 0.f) {
+		return 0.f;
+	}
+
+	float sin_theta = std::sin(uv.y * math::Pi);
 
 	return distribution_.pdf(sampler.address(uv)) * (total_weight_ / sin_theta);
 }
