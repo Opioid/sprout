@@ -49,8 +49,7 @@ class Substitute : public Material<Sample> {
 public:
 
 	Substitute(Sample_cache<Sample>& cache,
-			   std::shared_ptr<image::texture::Texture_2D> mask,
-			   bool two_sided);
+			   std::shared_ptr<image::texture::Texture_2D> mask);
 
 	virtual math::float3 sample_emission(math::float2 uv,
 										 const image::texture::sampler::Sampler_2D& sampler) const override;

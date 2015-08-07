@@ -26,7 +26,7 @@ class Sample;
 class IMaterial {
 public:
 
-	IMaterial(std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
+	IMaterial(std::shared_ptr<image::texture::Texture_2D> mask);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
 								 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) = 0;
@@ -51,16 +51,14 @@ public:
 protected:
 
 	std::shared_ptr<image::texture::Texture_2D> mask_;
-
-	bool two_sided_;
 };
 
 template<typename T>
 class Material : public IMaterial {
 public:
 
-	Material(Sample_cache<T>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
-		IMaterial(mask, two_sided), cache_(cache) {}
+	Material(Sample_cache<T>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
+		IMaterial(mask), cache_(cache) {}
 
 protected:
 

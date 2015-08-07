@@ -140,8 +140,7 @@ void Sample::set(const math::float3& color, const math::float3& emission, float 
 }
 
 Substitute::Substitute(Sample_cache<Sample>& cache,
-					   std::shared_ptr<image::texture::Texture_2D> mask,
-					   bool two_sided) : Material(cache, mask, two_sided) {}
+					   std::shared_ptr<image::texture::Texture_2D> mask) : Material(cache, mask) {}
 
 math::float3 Substitute::sample_emission(math::float2 /*uv*/,
 										 const image::texture::sampler::Sampler_2D& /*sampler*/) const {

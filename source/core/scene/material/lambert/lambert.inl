@@ -1,3 +1,5 @@
+#pragma once
+
 #include "lambert.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"

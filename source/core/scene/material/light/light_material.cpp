@@ -35,6 +35,6 @@ void Sample::set(const math::float3& emission) {
 }
 
 Light::Light(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
-	Material(cache, mask, false) {}
+	Material(cache, mask) {}
 
 }}}

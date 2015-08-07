@@ -5,12 +5,12 @@
 
 namespace scene { namespace material { namespace matte {
 
+template<bool Two_sided>
 class Colormap_normalmap : public Matte {
 public:
 
 	Colormap_normalmap(Sample_cache<Sample>& cache,
 					   std::shared_ptr<image::texture::Texture_2D> mask,
-					   bool two_sided,
 					   std::shared_ptr<image::texture::Texture_2D> color,
 					   std::shared_ptr<image::texture::Texture_2D> normal,
 					   float sqrt_roughness);

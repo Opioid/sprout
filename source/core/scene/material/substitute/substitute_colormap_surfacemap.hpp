@@ -5,12 +5,12 @@
 
 namespace scene { namespace material { namespace substitute {
 
+template<bool Two_sided>
 class Colormap_surfacemap : public Substitute {
 public:
 
 	Colormap_surfacemap(Sample_cache<Sample>& cache,
 						std::shared_ptr<image::texture::Texture_2D> mask,
-						bool two_sided,
 						std::shared_ptr<image::texture::Texture_2D> color,
 						std::shared_ptr<image::texture::Texture_2D>surface);
 

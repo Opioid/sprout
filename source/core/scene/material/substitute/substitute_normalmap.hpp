@@ -5,19 +5,20 @@
 
 namespace scene { namespace material { namespace substitute {
 
+template<bool Two_sided>
 class Normalmap : public Substitute {
 public:
 
 	Normalmap(Sample_cache<Sample>& cache,
 			  std::shared_ptr<image::texture::Texture_2D> mask,
-			  bool two_sided,
 			  const math::float3& color,
 			  std::shared_ptr<image::texture::Texture_2D> normal,
 			  float roughness,
 			  float metallic);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
-								 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id);
+								 const image::texture::sampler::Sampler_2D& sampler,
+								 uint32_t worker_id) final override;
 
 private:
 
