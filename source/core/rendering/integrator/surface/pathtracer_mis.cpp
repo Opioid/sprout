@@ -102,10 +102,6 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 	}
 
-	if (math::contains_inf(result) || math::contains_nan(result)) {
-		std::cout << "alarm" << std::endl;
-	}
-
 	return result;
 }
 

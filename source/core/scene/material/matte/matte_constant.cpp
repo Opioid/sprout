@@ -1,6 +1,7 @@
 #include "matte_constant.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
+#include "base/math/vector.inl"
 
 namespace scene { namespace material { namespace matte {
 
