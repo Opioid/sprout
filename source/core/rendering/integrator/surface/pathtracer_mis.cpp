@@ -135,8 +135,8 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 	scene::entity::Composed_transformation transformation;
 	light->transformation_at(ray.time, transformation);
 
-	light->sample(transformation, intersection.geo.p, intersection.geo.geo_n, settings_.sampler_nearest,
-				  sampler_, settings_.max_light_samples, light_samples_);
+	light->sample(transformation, intersection.geo.p, material_sample.geometric_normal(),
+				  settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
 
 	float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 

@@ -10,6 +10,7 @@ public:
 
 	Colormap_normalmap_surfacemap_emissionmap(Sample_cache<Sample>& cache,
 											  std::shared_ptr<image::texture::Texture_2D> mask,
+											  bool two_sided,
 											  std::shared_ptr<image::texture::Texture_2D> color,
 											  std::shared_ptr<image::texture::Texture_2D> normal,
 											  std::shared_ptr<image::texture::Texture_2D> surface,

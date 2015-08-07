@@ -3,7 +3,7 @@
 #include "bxdf.hpp"
 #include "base/math/vector.hpp"
 #include <algorithm>
-
+#include <iostream>
 namespace sampler {
 
 class Sampler;
@@ -48,11 +48,19 @@ public:
 		return math::dot(geo_n_, v) > 0.f;
 	}
 
-	void set_basis(const math::float3& t, const math::float3& b, const math::float3& n, const math::float3& geo_n, const math::float3& wo) {
+	void set_basis(const math::float3& t, const math::float3& b, const math::float3& n,
+				   const math::float3& geo_n, const math::float3& wo, bool two_sided = false) {
 		t_ = t;
 		b_ = b;
-		n_ = n;
-		geo_n_ = geo_n;
+
+		if (two_sided && math::dot(geo_n, wo) < 0.f) {
+			n_ = -n;
+			geo_n_ = -geo_n;
+		} else {
+			n_ = n;
+			geo_n_ = geo_n;
+		}
+
 		wo_ = wo;
 	}
 

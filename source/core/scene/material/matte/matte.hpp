@@ -40,7 +40,7 @@ private:
 class Matte : public Material<Sample> {
 public:
 
-	Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
+	Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
 	virtual math::float3 sample_emission(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const override;
 

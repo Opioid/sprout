@@ -8,10 +8,11 @@ namespace scene { namespace material { namespace substitute {
 
 Colormap_normalmap::Colormap_normalmap(Sample_cache<Sample>& cache,
 									   std::shared_ptr<image::texture::Texture_2D> mask,
+									   bool two_sided,
 									   std::shared_ptr<image::texture::Texture_2D> color,
 									   std::shared_ptr<image::texture::Texture_2D> normal,
 									   float roughness, float metallic) :
-	Substitute(cache, mask), color_(color), normal_(normal), roughness_(roughness), metallic_(metallic) {}
+	Substitute(cache, mask, two_sided), color_(color), normal_(normal), roughness_(roughness), metallic_(metallic) {}
 
 const Sample& Colormap_normalmap::sample(const shape::Differential& dg, const math::float3& wo,
 										 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
@@ -20,11 +21,7 @@ const Sample& Colormap_normalmap::sample(const shape::Differential& dg, const ma
 	math::float3 nm = sampler.sample_3(*normal_, dg.uv);
 	math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
-//	math::float3 t;
-//	math::float3 b;
-//	math::coordinate_system(n, t, b);
-
-	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
+	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo, two_sided_);
 
 	math::float3 color = sampler.sample_3(*color_, dg.uv);
 

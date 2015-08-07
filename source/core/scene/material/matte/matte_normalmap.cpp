@@ -8,13 +8,15 @@ namespace scene { namespace material { namespace matte {
 
 Normalmap::Normalmap(Sample_cache<Sample>& cache,
 					 std::shared_ptr<image::texture::Texture_2D> mask,
+					 bool two_sided,
 					 const math::float3& color,
 					 std::shared_ptr<image::texture::Texture_2D> normal,
 					 float sqrt_roughness) :
-	Matte(cache, mask), color_(color), normal_(normal), sqrt_roughness_(sqrt_roughness) {}
+	Matte(cache, mask, two_sided), color_(color), normal_(normal), sqrt_roughness_(sqrt_roughness) {}
 
 const Sample& Normalmap::sample(const shape::Differential& dg, const math::float3& wo,
-								const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
+								const image::texture::sampler::Sampler_2D& sampler,
+								uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	math::float3 nm = sampler.sample_3(*normal_, dg.uv);

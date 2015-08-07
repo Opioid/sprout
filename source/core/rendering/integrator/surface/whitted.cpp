@@ -55,15 +55,16 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	math::float3 result = math::float3::identity;
 
 	math::float3 wo = -ray.direction;
-	auto& sample = intersection.material()->sample(intersection.geo, wo, settings_.sampler_linear, worker.id());
+	auto& material_sample = intersection.material()->sample(intersection.geo, wo, settings_.sampler_linear,
+															worker.id());
 
-	float bxdf_pdf;
+	result += material_sample.emission();
 
-	result += sample.emission();
-
-	if (sample.is_pure_emissive()) {
+	if (material_sample.is_pure_emissive()) {
 		return result;
 	}
+
+	float bxdf_pdf;
 
 	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 	math::Oray shadow_ray;
@@ -72,7 +73,8 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	shadow_ray.depth  = ray.depth + 1;
 
 	for (auto l : worker.scene().lights()) {
-		l->sample(ray.time, intersection.geo.p, intersection.geo.geo_n, settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
+		l->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
+				  settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
 
 		float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 
@@ -83,7 +85,8 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 
 				float mv = worker.masked_visibility(shadow_ray, settings_.sampler_linear);
 				if (mv > 0.f) {
-					result += num_samples_reciprocal * mv * (ls.energy * sample.evaluate(ls.shape.wi, bxdf_pdf)) / ls.shape.pdf;
+					result += num_samples_reciprocal * mv
+							* (ls.energy * material_sample.evaluate(ls.shape.wi, bxdf_pdf)) / ls.shape.pdf;
 				}
 			}
 		}

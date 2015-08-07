@@ -8,13 +8,16 @@ namespace scene { namespace material { namespace substitute {
 class Colormap_normalmap_surfacemap : public Substitute {
 public:
 
-	Colormap_normalmap_surfacemap(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+	Colormap_normalmap_surfacemap(Sample_cache<Sample>& cache,
+								  std::shared_ptr<image::texture::Texture_2D> mask,
+								  bool two_sided,
 								  std::shared_ptr<image::texture::Texture_2D> color,
 								  std::shared_ptr<image::texture::Texture_2D> normal,
 								  std::shared_ptr<image::texture::Texture_2D> surface);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
-								 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) final override;
+								 const image::texture::sampler::Sampler_2D& sampler,
+								 uint32_t worker_id) final override;
 
 private:
 

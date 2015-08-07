@@ -6,24 +6,23 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Colormap_normalmap_surfacemap::Colormap_normalmap_surfacemap(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D>mask,
+Colormap_normalmap_surfacemap::Colormap_normalmap_surfacemap(Sample_cache<Sample>& cache,
+															 std::shared_ptr<image::texture::Texture_2D>mask,
+															 bool two_sided,
 															 std::shared_ptr<image::texture::Texture_2D> color,
 															 std::shared_ptr<image::texture::Texture_2D> normal,
 															 std::shared_ptr<image::texture::Texture_2D> surface) :
-	Substitute(cache, mask), color_(color), normal_(normal), surface_(surface) {}
+	Substitute(cache, mask, two_sided), color_(color), normal_(normal), surface_(surface) {}
 
 const Sample& Colormap_normalmap_surfacemap::sample(const shape::Differential& dg, const math::float3& wo,
-													const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
+													const image::texture::sampler::Sampler_2D& sampler,
+													uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	math::float3 nm = sampler.sample_3(*normal_, dg.uv);
 	math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
-//	math::float3 t;
-//	math::float3 b;
-//	math::coordinate_system(n, t, b);
-
-	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
+	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo, two_sided_);
 
 	math::float3 color   = sampler.sample_3(*color_, dg.uv);
 	math::float2 surface = sampler.sample_2(*surface_, dg.uv);

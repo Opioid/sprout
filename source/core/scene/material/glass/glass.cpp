@@ -154,7 +154,8 @@ void Sample::set(const math::float3& color, const math::float3& attenuation, flo
 	ior_ = ior;
 }
 
-Glass::Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) : Material(cache, mask) {}
+Glass::Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
+	Material(cache, mask, false) {}
 
 math::float3 Glass::sample_emission(math::float2 /*uv*/, const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	return math::float3::identity;
