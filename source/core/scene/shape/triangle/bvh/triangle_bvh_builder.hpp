@@ -18,7 +18,7 @@ struct Triangle;
 
 namespace bvh {
 
-class Tree;
+template<typename Data> class Tree;
 struct Node;
 
 struct Build_node {
@@ -40,7 +40,9 @@ struct Build_node {
 class Builder  {
 public:
 
-	void build(Tree& tree, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices, size_t max_primitives);
+    template<typename Data>
+    void build(Tree<Data>& tree, const std::vector<Index_triangle>& triangles,
+               const std::vector<Vertex>& vertices, size_t max_primitives);
 
 private:
 
@@ -57,19 +59,21 @@ private:
 
 	std::vector<Split_candidate> split_candidates_;
 
+    template<typename Data>
 	void split(Build_node* node,
 			   std::vector<uint32_t>& primitive_indices,
 			   std::vector<uint32_t>& swap_primitive_indices,
 			   const std::vector<Index_triangle>& triangles,
 			   const std::vector<Vertex>& vertices,
 			   size_t max_primitives, uint32_t depth,
-			   Tree& tree);
+               Tree<Data>& tree);
 
+    template<typename Data>
 	static void assign(Build_node* node,
 					   const std::vector<uint32_t>& primitive_indices,
 					   const std::vector<Index_triangle>& triangles,
 					   const std::vector<Vertex>& vertices,
-					   Tree& tree);
+                       Tree<Data>& tree);
 
 	static math::aabb submesh_aabb(const std::vector<uint32_t>& primitive_indices,
 								   const std::vector<Index_triangle>& triangles,

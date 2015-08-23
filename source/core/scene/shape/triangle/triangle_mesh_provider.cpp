@@ -2,7 +2,8 @@
 #include "resource/resource_provider.inl"
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
-#include "bvh/triangle_bvh_builder.hpp"
+#include "bvh/triangle_bvh_builder.inl"
+#include "bvh/triangle_bvh_data_mt.inl"
 #include "file/file_system.hpp"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
@@ -152,7 +153,7 @@ std::shared_ptr<Mesh> Provider::load(const std::string& filename, uint32_t /*fla
 	auto mesh = std::make_shared<Mesh>();
 
 	bvh::Builder builder;
-	builder.build(mesh->tree_, triangles, vertices, 8);
+    builder.build<bvh::Data_MT>(mesh->tree_, triangles, vertices, 8);
 
 	mesh->init();
 

@@ -2,6 +2,7 @@
 
 #include "scene/shape/shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
+#include "bvh/triangle_bvh_data_mt.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {
@@ -49,10 +50,12 @@ public:
 
 private:
 
-	bvh::Tree tree_;
+    typedef bvh::Tree<bvh::Data_MT> Tree;
+
+    Tree tree_;
 
 	struct Distribution {
-		void init(uint32_t part, const std::vector<Triangle>& triangles, const math::float3& scale);
+        void init(uint32_t part, const Tree& tree, const math::float3& scale);
 		uint32_t sample(float r);
 
 		math::Distribution_1D distribution;

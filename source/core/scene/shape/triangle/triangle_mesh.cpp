@@ -1,6 +1,7 @@
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.inl"
 #include "triangle_intersection.hpp"
+#include "bvh/triangle_bvh_tree.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
@@ -138,18 +139,18 @@ bool Mesh::is_analytical() const {
 }
 
 void Mesh::prepare_sampling(uint32_t part, const math::float3& scale) {
-	distributions_[part].init(part, tree_.triangles(), scale);
+    distributions_[part].init(part, tree_, scale);
 }
 
-void Mesh::Distribution::init(uint32_t part, const std::vector<Triangle>& triangles, const math::float3& scale) {
+void Mesh::Distribution::init(uint32_t part, const Tree& tree, const math::float3& scale) {
 	std::vector<float> areas;
 
 	triangle_mapping.clear();
 
 	uint32_t i = 0;
-	for (auto& t : triangles) {
-		if (t.material_index == part) {
-			areas.push_back(t.area(scale));
+    for (uint32_t t = 0, len = tree.num_triangles(); t < len; ++t) {
+        if (tree.triangle_material_index(t) == part) {
+            areas.push_back(tree.triangle_area(t, scale));
 			triangle_mapping.push_back(i);
 		}
 

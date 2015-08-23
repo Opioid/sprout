@@ -43,15 +43,17 @@ struct Node {
 	uint32_t end_index;
 };
 
+template<typename Data>
 class Tree  {
 public:
+
+    std::vector<Node>& allocate_nodes(uint32_t num_nodes);
 
 	const math::aabb& aabb() const;
 
 	uint32_t num_parts() const;
-	uint32_t num_triangles() const;
 
-	const std::vector<Triangle>& triangles() const;
+	uint32_t num_triangles() const;
 
 	bool intersect(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, const math::float2& bounds, Node_stack& node_stack) const;
@@ -60,32 +62,26 @@ public:
 				  const material::Materials& materials, const image::texture::sampler::Sampler_2D& sampler) const;
 
 	void interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
-	math::float2 interpolate_triangle_uv(uint32_t index, math::float2 uv) const;
-	uint32_t triangle_material_index(uint32_t index) const;
+
+    math::float2 interpolate_triangle_uv(uint32_t index, math::float2 uv) const;
+
+    uint32_t triangle_material_index(uint32_t index) const;
 
 	math::float3 triangle_normal(uint32_t index) const;
 
-	void sample(uint32_t triangle, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
+    float triangle_area(uint32_t index, const math::float3& scale) const;
 
-	std::vector<Node>& allocate_nodes(uint32_t num_nodes);
+	void sample(uint32_t triangle, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
 
 	void allocate_triangles(uint32_t num_triangles);
 
 	void add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
-//	void add_triangle(const Index_triangle& t);
 
 private:
 
 	std::vector<Node> nodes_;
 
-	std::vector<Triangle> triangles_;
-
-//	std::vector<Position_triangle> ptriangles_;
-//	std::vector<Data_triangle> dtriangles_;
-
-//	std::vector<Index_triangle> itriangles_;
-
-//	std::vector<Vertex> vertices_;
+    Data data_;
 
 	uint32_t num_parts_;
 
