@@ -9,11 +9,11 @@ struct Vertex;
 
 namespace triangle {
 
-struct Triangle_MT;
+struct Triangle_YF;
 
 namespace bvh {
 
-class Data_MT {
+class Data_YF {
 public:
 
     uint32_t num_triangles() const;
@@ -22,8 +22,7 @@ public:
 
     bool intersect_p(uint32_t index, const math::Oray& ray) const;
 
-	void interpolate_data(uint32_t index, math::float2 uv,
-						  math::float3& n, math::float3& t, math::float2& tc) const;
+    void interpolate_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
 
     math::float2 interpolate_uv(uint32_t index, math::float2 uv) const;
 
@@ -41,7 +40,7 @@ public:
 
 private:
 
-	std::vector<Triangle_MT> triangles_;
+	std::vector<Triangle_YF> triangles_;
 };
 
 }}}}

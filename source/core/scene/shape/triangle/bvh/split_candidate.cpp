@@ -1,6 +1,7 @@
 #include "split_candidate.hpp"
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
+#include "scene/shape/geometry/vertex.hpp"
 #include "base/math/bounding/aabb.inl"
 #include "base/math/plane.inl"
 

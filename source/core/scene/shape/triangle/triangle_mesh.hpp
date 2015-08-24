@@ -3,6 +3,7 @@
 #include "scene/shape/shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
 #include "bvh/triangle_bvh_data_mt.hpp"
+#include "bvh/triangle_bvh_data_yf.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {
@@ -25,7 +26,8 @@ public:
 
 	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
 						  const math::float2& bounds, Node_stack& node_stack,
-						  const material::Materials& materials, const image::texture::sampler::Sampler_2D& sampler) const final override;
+						  const material::Materials& materials,
+						  const image::texture::sampler::Sampler_2D& sampler) const final override;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 						const math::float3& p, const math::float3& n,
@@ -50,7 +52,7 @@ public:
 
 private:
 
-    typedef bvh::Tree<bvh::Data_MT> Tree;
+	typedef bvh::Tree<bvh::Data_MT> Tree;
 
     Tree tree_;
 

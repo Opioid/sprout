@@ -3,6 +3,7 @@
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_primitive.hpp"
+#include "scene/shape/geometry/vertex.hpp"
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
@@ -57,7 +58,9 @@ uint32_t Builder::current_node_index() const {
 	return current_node_;
 }
 
-math::aabb Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {
+math::aabb Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices,
+								 const std::vector<Index_triangle>& triangles,
+								 const std::vector<Vertex>& vertices) {
 	float max_float = std::numeric_limits<float>::max();
 	math::float3 min( max_float,  max_float,  max_float);
 	math::float3 max(-max_float, -max_float, -max_float);

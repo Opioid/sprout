@@ -1,7 +1,7 @@
 #pragma once
 
 #include "triangle_bvh_data_mt.hpp"
-#include "scene/shape/triangle/triangle_primitive.inl"
+#include "scene/shape/triangle/triangle_primitive_mt.inl"
 #include "base/math/sampling/sampling.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
@@ -18,7 +18,8 @@ bool Data_MT::intersect_p(uint32_t index, const math::Oray& ray) const {
     return triangles_[index].intersect_p(ray);
 }
 
-void Data_MT::interpolate_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
+void Data_MT::interpolate_data(uint32_t index, math::float2 uv,
+							   math::float3& n, math::float3& t, math::float2& tc) const {
     triangles_[index].interpolate_data(uv, n, t, tc);
 }
 
@@ -48,7 +49,7 @@ void Data_MT::allocate_triangles(uint32_t num_triangles) {
 }
 
 void Data_MT::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index) {
-    triangles_.push_back(Triangle{a, b, c, material_index});
+	triangles_.push_back(Triangle_MT{a, b, c, material_index});
 }
 
 }}}}

@@ -1,5 +1,4 @@
 #include "triangle_mesh.hpp"
-#include "triangle_primitive.inl"
 #include "triangle_intersection.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "scene/entity/composed_transformation.hpp"
