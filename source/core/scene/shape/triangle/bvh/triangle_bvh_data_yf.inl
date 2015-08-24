@@ -6,6 +6,8 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
+Data_YF::~Data_YF() {}
+
 uint32_t Data_YF::num_triangles() const {
     return static_cast<uint32_t>(triangles_.size());
 }

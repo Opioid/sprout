@@ -16,6 +16,8 @@ namespace bvh {
 class Data_YF {
 public:
 
+    ~Data_YF();
+
     uint32_t num_triangles() const;
 
     bool intersect(uint32_t index, math::Oray& ray, math::float2& uv) const;

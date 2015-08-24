@@ -52,7 +52,7 @@ public:
 
 private:
 
-	typedef bvh::Tree<bvh::Data_MT> Tree;
+    typedef bvh::Tree<bvh::Data_MT> Tree;
 
     Tree tree_;
 

@@ -16,6 +16,8 @@ namespace bvh {
 class Data_MT {
 public:
 
+    ~Data_MT();
+
     uint32_t num_triangles() const;
 
     bool intersect(uint32_t index, math::Oray& ray, math::float2& uv) const;
