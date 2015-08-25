@@ -5,11 +5,11 @@
 
 namespace scene { namespace material { namespace substitute {
 
-template<bool Two_sided>
+template<bool Two_sided, bool Thin>
 class Colormap_normalmap_surfacemap_emissionmap : public Substitute {
 public:
 
-	Colormap_normalmap_surfacemap_emissionmap(Generic_sample_cache<Sample>& cache,
+	Colormap_normalmap_surfacemap_emissionmap(Sample_cache& cache,
 											  std::shared_ptr<image::texture::Texture_2D> mask,
 											  std::shared_ptr<image::texture::Texture_2D> color,
 											  std::shared_ptr<image::texture::Texture_2D> normal,
@@ -17,9 +17,9 @@ public:
 											  std::shared_ptr<image::texture::Texture_2D> emission,
 											  float emission_factor);
 
-	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,
-								 const image::texture::sampler::Sampler_2D& sampler,
-								 uint32_t worker_id) final override;
+	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
+										   const image::texture::sampler::Sampler_2D& sampler,
+										   uint32_t worker_id) final override;
 
 	virtual math::float3 average_emission() const final override;
 
