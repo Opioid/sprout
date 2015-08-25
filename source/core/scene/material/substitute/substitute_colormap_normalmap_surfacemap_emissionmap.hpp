@@ -9,7 +9,7 @@ template<bool Two_sided>
 class Colormap_normalmap_surfacemap_emissionmap : public Substitute {
 public:
 
-	Colormap_normalmap_surfacemap_emissionmap(Sample_cache<Sample>& cache,
+	Colormap_normalmap_surfacemap_emissionmap(Generic_sample_cache<Sample>& cache,
 											  std::shared_ptr<image::texture::Texture_2D> mask,
 											  std::shared_ptr<image::texture::Texture_2D> color,
 											  std::shared_ptr<image::texture::Texture_2D> normal,

@@ -10,7 +10,7 @@
 namespace scene { namespace material { namespace substitute {
 
 template<bool Two_sided>
-Colormap_surfacemap<Two_sided>::Colormap_surfacemap(Sample_cache<Sample>& cache,
+Colormap_surfacemap<Two_sided>::Colormap_surfacemap(Generic_sample_cache<Sample>& cache,
 													std::shared_ptr<image::texture::Texture_2D> mask,
 													std::shared_ptr<image::texture::Texture_2D> color,
 													std::shared_ptr<image::texture::Texture_2D> surface) :

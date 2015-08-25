@@ -10,7 +10,7 @@
 namespace scene { namespace material { namespace substitute {
 
 template<bool Two_sided>
-Normalmap<Two_sided>::Normalmap(Sample_cache<Sample>& cache,
+Normalmap<Two_sided>::Normalmap(Generic_sample_cache<Sample>& cache,
 								std::shared_ptr<image::texture::Texture_2D> mask,
 								const math::float3& color,
 								std::shared_ptr<image::texture::Texture_2D> normal,

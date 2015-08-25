@@ -9,7 +9,7 @@ namespace scene { namespace material { namespace light {
 class Emissionmap : public Light {
 public:
 
-	Emissionmap(Sample_cache<Sample>& cache,
+	Emissionmap(Generic_sample_cache<Sample>& cache,
 				std::shared_ptr<image::texture::Texture_2D> mask,
 				std::shared_ptr<image::texture::Texture_2D> emission,
 				float emission_factor);

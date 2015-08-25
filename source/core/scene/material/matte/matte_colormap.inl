@@ -8,7 +8,7 @@
 namespace scene { namespace material { namespace matte {
 
 template<bool Two_sided>
-Colormap<Two_sided>::Colormap(Sample_cache<Sample>& cache,
+Colormap<Two_sided>::Colormap(Generic_sample_cache<Sample>& cache,
 							  std::shared_ptr<image::texture::Texture_2D> mask,
 							  std::shared_ptr<image::texture::Texture_2D> color,
 							  float sqrt_roughness) :

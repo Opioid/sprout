@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/material/material.hpp"
+#include "scene/material/material_sample_cache.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/material/bxdf.hpp"
 
@@ -29,10 +30,10 @@ private:
 
 };
 
-class Light : public Material<Sample> {
+class Light : public Material<Generic_sample_cache<Sample>> {
 public:
 
-	Light(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
+	Light(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
 };
 
 }}}

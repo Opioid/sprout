@@ -54,7 +54,7 @@ void Sample::set(const math::float3& color, float sqrt_roughness) {
 	a2_ = roughness * roughness;
 }
 
-Matte::Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
+Matte::Matte(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
 	Material(cache, mask) {}
 
 math::float3 Matte::sample_emission(math::float2 /*uv*/,

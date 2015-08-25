@@ -11,7 +11,7 @@ namespace scene { namespace material { namespace substitute {
 
 template<bool Two_sided>
 Colormap_normalmap_surfacemap_emissionmap<Two_sided>::Colormap_normalmap_surfacemap_emissionmap(
-		Sample_cache<Sample>& cache,
+		Generic_sample_cache<Sample>& cache,
 		std::shared_ptr<image::texture::Texture_2D> mask,
 		std::shared_ptr<image::texture::Texture_2D> color,
 		std::shared_ptr<image::texture::Texture_2D> normal,

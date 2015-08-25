@@ -6,6 +6,7 @@
 #include "light/light_material.hpp"
 #include "matte/matte.hpp"
 #include "substitute/substitute.hpp"
+#include "material_sample_cache.hpp"
 #include "base/json/rapidjson_types.hpp"
 
 namespace image { namespace texture {
@@ -38,10 +39,10 @@ private:
 
 	resource::Cache<image::texture::Texture_2D>& texture_cache_;
 
-	Sample_cache<glass::Sample> glass_cache_;
-	Sample_cache<light::Sample> light_cache_;
-	Sample_cache<matte::Sample> matte_cache_;
-	Sample_cache<substitute::Sample> substitute_cache_;
+	Generic_sample_cache<glass::Sample> glass_cache_;
+	Generic_sample_cache<light::Sample> light_cache_;
+	Generic_sample_cache<matte::Sample> matte_cache_;
+	Generic_sample_cache<substitute::Sample> substitute_cache_;
 
 	std::shared_ptr<material::IMaterial> fallback_material_;
 };

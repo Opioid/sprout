@@ -8,7 +8,7 @@ template<bool Two_sided>
 class Constant : public Substitute {
 public:
 
-	Constant(Sample_cache<Sample>& cache,
+	Constant(Generic_sample_cache<Sample>& cache,
 			 std::shared_ptr<image::texture::Texture_2D> mask,
 			 const math::float3& color,
 			 float roughness,

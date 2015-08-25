@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/material/material.hpp"
+#include "scene/material/material_sample_cache.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/material/lambert/lambert.hpp"
 //#include "scene/material/oren_nayar/oren_nayar.hpp"
@@ -37,12 +38,13 @@ private:
 //	friend oren_nayar::Oren_nayar<Sample>;
 };
 
-class Matte : public Material<Sample> {
+class Matte : public Material<Generic_sample_cache<Sample>> {
 public:
 
-	Matte(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
+	Matte(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
 
-	virtual math::float3 sample_emission(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const override;
+	virtual math::float3 sample_emission(math::float2 uv,
+										 const image::texture::sampler::Sampler_2D& sampler) const override;
 
 	virtual math::float3 average_emission() const override;
 

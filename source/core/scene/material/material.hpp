@@ -1,6 +1,6 @@
 #pragma once
 
-#include "material_sample_cache.hpp"
+//#include "material_sample_cache.hpp"
 #include "image/texture/texture_2d.hpp"
 #include "base/math/vector.hpp"
 #include <vector>
@@ -53,16 +53,16 @@ protected:
 	std::shared_ptr<image::texture::Texture_2D> mask_;
 };
 
-template<typename T>
+template<typename Sample_cache>
 class Material : public IMaterial {
 public:
 
-	Material(Sample_cache<T>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
+	Material(Sample_cache& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
 		IMaterial(mask), cache_(cache) {}
 
 protected:
 
-	Sample_cache<T>& cache_;
+	Sample_cache& cache_;
 };
 
 typedef std::vector<std::shared_ptr<material::IMaterial>> Materials;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/material/material.hpp"
+#include "scene/material/material_sample_cache.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/material/ggx/ggx.hpp"
 //#include "scene/material/lambert/lambert.hpp"
@@ -45,10 +46,10 @@ private:
 	friend ggx::GGX<Sample>;
 };
 
-class Substitute : public Material<Sample> {
+class Substitute : public Material<Generic_sample_cache<Sample>> {
 public:
 
-	Substitute(Sample_cache<Sample>& cache,
+	Substitute(Generic_sample_cache<Sample>& cache,
 			   std::shared_ptr<image::texture::Texture_2D> mask);
 
 	virtual math::float3 sample_emission(math::float2 uv,

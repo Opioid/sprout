@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/material/material.hpp"
+#include "scene/material/material_sample_cache.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/material/bxdf.hpp"
 
@@ -62,10 +63,10 @@ private:
 	friend BTDF;
 };
 
-class Glass : public Material<Sample> {
+class Glass : public Material<Generic_sample_cache<Sample>> {
 public:
 
-	Glass(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
+	Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
 
 	virtual math::float3 sample_emission(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const final override;
 

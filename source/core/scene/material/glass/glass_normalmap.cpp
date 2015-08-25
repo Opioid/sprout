@@ -9,15 +9,17 @@
 
 namespace scene { namespace material { namespace glass {
 
-Normalmap::Normalmap(Sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
-					 const math::float3& color, float attenuation_distance, float ior, std::shared_ptr<image::texture::Texture_2D> normal) :
+Normalmap::Normalmap(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+					 const math::float3& color, float attenuation_distance, float ior,
+					 std::shared_ptr<image::texture::Texture_2D> normal) :
 	Glass(cache, mask), color_(color),
 	attenuation_(1.f / (color.x * attenuation_distance), 1.f / (color.y * attenuation_distance), 1.f / (color.z * attenuation_distance)),
 	ior_(std::max(ior, 1.0001f)),
 	normal_(normal) {}
 
 const Sample& Normalmap::sample(const shape::Differential& dg, const math::float3& wo,
-								const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
+								const image::texture::sampler::Sampler_2D& sampler,
+								uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	math::float3 nm = sampler.sample_3(*normal_, dg.uv);

@@ -61,7 +61,9 @@ void Builder::split(Build_node* node,
 		pids1.reserve(primitive_indices.size() / 2 + 1);
 
 		for (auto pi : primitive_indices) {
-			uint32_t side = triangle_side(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, sp.plane());
+			uint32_t side = triangle_side(vertices[triangles[pi].a].p,
+										  vertices[triangles[pi].b].p,
+										  vertices[triangles[pi].c].p, sp.plane());
 
 			if (0 == side) {
 				pids0.push_back(pi);

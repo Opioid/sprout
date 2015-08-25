@@ -9,7 +9,7 @@
 namespace scene { namespace material { namespace matte {
 
 template<bool Two_sided>
-Constant<Two_sided>::Constant(Sample_cache<Sample>& cache,
+Constant<Two_sided>::Constant(Generic_sample_cache<Sample>& cache,
 							  std::shared_ptr<image::texture::Texture_2D> mask,
 							  const math::float3& color,
 							  float sqrt_roughness) :
