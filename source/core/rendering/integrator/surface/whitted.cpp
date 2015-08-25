@@ -71,6 +71,7 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;
+	shadow_ray.time   = ray.time;
 
 	for (auto l : worker.scene().lights()) {
 		l->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
