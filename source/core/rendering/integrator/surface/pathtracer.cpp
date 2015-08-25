@@ -30,7 +30,8 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
 
-	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
+	// pathtracer needs as many iterations as bounces, because it has no forward prediction
+	for (uint32_t i = 0; i <= settings_.max_bounces; ++i) {
 		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::BxDF_type::Specular);
 
 		const image::texture::sampler::Sampler_2D* texture_sampler;
@@ -51,6 +52,10 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.emission();
+		}
+
+		if (i == settings_.max_bounces) {
+			break;
 		}
 
 		if (material_sample.is_pure_emissive()) {

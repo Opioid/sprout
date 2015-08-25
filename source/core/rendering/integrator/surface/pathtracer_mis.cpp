@@ -67,6 +67,10 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 
 		result += throughput * estimate_direct_light(worker, ray, intersection, material_sample, *texture_sampler);
 
+		if (i == settings_.max_bounces - 1) {
+			break;
+		}
+
 		material_sample.sample_evaluate(sampler_, sample_result);
 		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
 			break;
