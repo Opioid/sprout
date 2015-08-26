@@ -15,6 +15,8 @@ HEADERS += \
 	scene/material/substitute/substitute_colormap_surfacemap.inl \
 	scene/material/substitute/substitute_constant.hpp \
 	scene/material/substitute/substitute_constant.inl \
+	scene/material/substitute/substitute_material.hpp \
+	scene/material/substitute/substitute_material.inl \
 	scene/material/substitute/substitute_normalmap.hpp \
 	scene/material/substitute/substitute_normalmap.inl \
 	scene/material/substitute/substitute_sample.hpp \

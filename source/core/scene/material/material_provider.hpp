@@ -37,11 +37,11 @@ private:
 	std::shared_ptr<IMaterial> load_matte(const rapidjson::Value& matte_value);
 	std::shared_ptr<IMaterial> load_substitute(const rapidjson::Value& substitute_value);
 
-	std::shared_ptr<IMaterial> create(bool two_sided, bool thin,
-									  std::shared_ptr<image::texture::Texture_2D> mask,
-									  const math::float3& color,
-									  float roughness,
-									  float metallic);
+//	std::shared_ptr<IMaterial> create(bool two_sided, bool thin,
+//									  std::shared_ptr<image::texture::Texture_2D> mask,
+//									  const math::float3& color,
+//									  float roughness,
+//									  float metallic);
 
 	resource::Cache<image::texture::Texture_2D>& texture_cache_;
 

@@ -12,15 +12,16 @@
 #include "matte/matte_colormap_normalmap.inl"
 #include "matte/matte_constant.inl"
 #include "matte/matte_normalmap.inl"
+#include "substitute/substitute_material.inl"
 #include "substitute/substitute_sample.inl"
 #include "substitute/substitute_sample_cache.inl"
-#include "substitute/substitute_colormap.inl"
-#include "substitute/substitute_colormap_normalmap.inl"
-#include "substitute/substitute_colormap_normalmap_surfacemap.inl"
-#include "substitute/substitute_colormap_normalmap_surfacemap_emissionmap.inl"
-#include "substitute/substitute_colormap_surfacemap.inl"
-#include "substitute/substitute_constant.inl"
-#include "substitute/substitute_normalmap.inl"
+//#include "substitute/substitute_colormap.inl"
+//#include "substitute/substitute_colormap_normalmap.inl"
+//#include "substitute/substitute_colormap_normalmap_surfacemap.inl"
+//#include "substitute/substitute_colormap_normalmap_surfacemap_emissionmap.inl"
+//#include "substitute/substitute_colormap_surfacemap.inl"
+//#include "substitute/substitute_constant.inl"
+//#include "substitute/substitute_normalmap.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 
@@ -34,11 +35,11 @@ Provider::Provider(file::System& file_system,
 	glass_cache_(num_workers),
 	light_cache_(num_workers),
 	matte_cache_(num_workers),
-	substitute_cache_(num_workers),
+	substitute_cache_(num_workers)/*,
 	fallback_material_(std::make_shared<substitute::Constant<false, false>>(
 			substitute_cache_,
 			nullptr,
-			math::float3(1.f, 0.f, 0.f), 1.f, 0.f)) {}
+			math::float3(1.f, 0.f, 0.f), 1.f, 0.f))*/ {}
 
 std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t /*flags*/) {
 	auto stream_pointer = file_system_.read_stream(filename);
@@ -223,9 +224,9 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float emission_factor = 1.f;
-	std::shared_ptr<image::texture::Texture_2D> colormap;
-	std::shared_ptr<image::texture::Texture_2D> normalmap;
-	std::shared_ptr<image::texture::Texture_2D> surfacemap;
+	std::shared_ptr<image::texture::Texture_2D> color_map;
+	std::shared_ptr<image::texture::Texture_2D> normal_map;
+	std::shared_ptr<image::texture::Texture_2D> surface_map;
 	std::shared_ptr<image::texture::Texture_2D> emissionmap;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
@@ -254,13 +255,13 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 				}
 
 				if ("Color" == usage) {
-					colormap = texture_cache_.load(filename);
+					color_map = texture_cache_.load(filename);
 				} else if ("Normal" == usage) {
-					normalmap = texture_cache_.load(filename,
+					normal_map = texture_cache_.load(filename,
 													static_cast<uint32_t>(
 														image::texture::Provider::Flags::Use_as_normal));
 				} else if ("Surface" == usage) {
-					surfacemap = texture_cache_.load(filename,
+					surface_map = texture_cache_.load(filename,
 													 static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));
 				} else if ("Emission" == usage) {
@@ -274,6 +275,50 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 		}
 	}
 
+//	template<bool Two_sided, bool Color_map, bool Normal_map, bool Surface_map, bool Emission_map>
+
+	std::shared_ptr<IMaterial> material;
+	substitute::Base* base;
+
+	if (color_map) {
+		if (normal_map) {
+			if (surface_map) {
+				auto typed_material = std::make_shared<substitute::Substitute<false, true, true, true, false>>(substitute_cache_, mask);
+				base = typed_material.get();
+				material = typed_material;
+			} else {
+				auto typed_material = std::make_shared<substitute::Substitute<false, true, true, false, false>>(substitute_cache_, mask);
+				base = typed_material.get();
+				material = typed_material;
+			}
+		} else {
+			if (surface_map) {
+				auto typed_material = std::make_shared<substitute::Substitute<false, true, false, true, false>>(substitute_cache_, mask);
+				base = typed_material.get();
+				material = typed_material;
+			} else {
+				auto typed_material = std::make_shared<substitute::Substitute<false, true, false, false, false>>(substitute_cache_, mask);
+				base = typed_material.get();
+				material = typed_material;
+			}
+		}
+	} else {
+		auto typed_material = std::make_shared<substitute::Substitute<false, false, false, false, false>>(substitute_cache_, mask);
+		base = typed_material.get();
+		material = typed_material;
+	}
+
+	base->set_color(color);
+	base->set_color(color_map);
+	base->set_normal(normal_map);
+	base->set_roughness(roughness);
+	base->set_metallic(metallic);
+	base->set_surface(surface_map);
+
+	return material;
+
+
+	/*
 	if (colormap) {
 		if (normalmap) {
 			if (surfacemap) {
@@ -337,8 +382,10 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	}
 
 	return create(two_sided, false, mask, color, roughness, metallic);
+	*/
 }
 
+/*
 std::shared_ptr<IMaterial> Provider::create(
 		bool two_sided, bool thin,
 		std::shared_ptr<image::texture::Texture_2D> mask,
@@ -363,5 +410,6 @@ std::shared_ptr<IMaterial> Provider::create(
 		}
 	}
 }
+*/
 
 }}
