@@ -39,7 +39,7 @@ void test() {
 	math::float3 wo;
 
 	wo = t;
-	sample.set_basis(t, b, n, n, wo);
+	sample.set_basis<false>(t, b, n, n, wo);
 	result.wi = math::float3::identity;
 	result.reflection = math::float3::identity;
 	brdf.importance_sample(sampler, result);
@@ -49,7 +49,7 @@ void test() {
 	print(result);
 
 	wo = b;
-	sample.set_basis(t, b, n, n, wo);
+	sample.set_basis<false>(t, b, n, n, wo);
 	result.reflection = math::float3::identity;
 	brdf.importance_sample(sampler, result);
 	print(result);
@@ -58,7 +58,7 @@ void test() {
 	print(result);
 
 	wo = n;
-	sample.set_basis(t, b, n, n, wo);
+	sample.set_basis<false>(t, b, n, n, wo);
 	result.reflection = math::float3::identity;
 	brdf.importance_sample(sampler, result);
 	print(result);

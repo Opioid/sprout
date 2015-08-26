@@ -48,21 +48,9 @@ public:
 		return math::dot(geo_n_, v) > 0.f;
 	}
 
+	template<bool Two_sided>
 	void set_basis(const math::float3& t, const math::float3& b, const math::float3& n,
-				   const math::float3& geo_n, const math::float3& wo, bool two_sided = false) {
-		t_ = t;
-		b_ = b;
-
-		if (two_sided && math::dot(geo_n, wo) < 0.f) {
-			n_ = -n;
-			geo_n_ = -geo_n;
-		} else {
-			n_ = n;
-			geo_n_ = geo_n;
-		}
-
-		wo_ = wo;
-	}
+				   const math::float3& geo_n, const math::float3& wo);
 
 protected:
 

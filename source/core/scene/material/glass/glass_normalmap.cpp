@@ -25,7 +25,7 @@ const Sample& Normalmap::sample(const shape::Differential& dg, const math::float
 	math::float3 nm = sampler.sample_3(*normal_, dg.uv);
 	math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
-	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
+	sample.set_basis<false>(dg.t, dg.b, n, dg.geo_n, wo);
 
 	sample.set(color_, attenuation_, ior_);
 

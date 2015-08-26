@@ -18,7 +18,7 @@ const Sample& Emissionmap::sample(const shape::Differential& dg, const math::flo
 								  const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
-	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
+	sample.set_basis<false>(dg.t, dg.b, dg.n, dg.geo_n, wo);
 	sample.set(emission_factor_ * sampler.sample_3(*emission_, dg.uv));
 
 	return sample;

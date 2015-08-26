@@ -1,7 +1,5 @@
 SOURCES += \
 	scene/material/substitute/substitute.cpp \
-	scene/material/substitute/substitute_material.cpp \
-	scene/material/substitute/substitute_sample.cpp \
 
 HEADERS += \
 	scene/material/substitute/substitute.hpp \
@@ -18,6 +16,10 @@ HEADERS += \
 	scene/material/substitute/substitute_constant.hpp \
 	scene/material/substitute/substitute_constant.inl \
 	scene/material/substitute/substitute_material.hpp \
+	scene/material/substitute/substitute_material.inl \
 	scene/material/substitute/substitute_normalmap.hpp \
 	scene/material/substitute/substitute_normalmap.inl \
 	scene/material/substitute/substitute_sample.hpp \
+	scene/material/substitute/substitute_sample.inl \
+	scene/material/substitute/substitute_sample_cache.hpp \
+	scene/material/substitute/substitute_sample_cache.inl \

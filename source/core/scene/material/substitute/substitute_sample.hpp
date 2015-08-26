@@ -7,6 +7,7 @@
 
 namespace scene { namespace material { namespace substitute {
 
+template<bool Thin>
 class Sample : public material::Sample {
 public:
 
