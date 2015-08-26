@@ -12,9 +12,7 @@
 #include "matte/matte_colormap_normalmap.inl"
 #include "matte/matte_constant.inl"
 #include "matte/matte_normalmap.inl"
-#include "substitute/substitute_material.inl"
-#include "substitute/substitute_sample.inl"
-#include "substitute/substitute_sample_cache.inl"
+#include "substitute/substitute_material.hpp"
 //#include "substitute/substitute_colormap.inl"
 //#include "substitute/substitute_colormap_normalmap.inl"
 //#include "substitute/substitute_colormap_normalmap_surfacemap.inl"
@@ -220,16 +218,16 @@ std::shared_ptr<IMaterial> Provider::load_matte(const rapidjson::Value& matte_va
 }
 
 std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {
+	std::shared_ptr<image::texture::Texture_2D> color_map;
+	std::shared_ptr<image::texture::Texture_2D> normal_map;
+	std::shared_ptr<image::texture::Texture_2D> surface_map;
+	std::shared_ptr<image::texture::Texture_2D> emission_map;
+	std::shared_ptr<image::texture::Texture_2D> mask;
+	bool two_sided = false;
 	math::float3 color(0.75f, 0.75f, 0.75f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float emission_factor = 1.f;
-	std::shared_ptr<image::texture::Texture_2D> color_map;
-	std::shared_ptr<image::texture::Texture_2D> normal_map;
-	std::shared_ptr<image::texture::Texture_2D> surface_map;
-	std::shared_ptr<image::texture::Texture_2D> emissionmap;
-	std::shared_ptr<image::texture::Texture_2D> mask;
-	bool two_sided = false;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -265,7 +263,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 													 static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));
 				} else if ("Emission" == usage) {
-					emissionmap = texture_cache_.load(filename);
+					emission_map = texture_cache_.load(filename);
 				} else if ("Mask" == usage) {
 					mask = texture_cache_.load(filename,
 											   static_cast<uint32_t>(
@@ -277,43 +275,49 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 
 //	template<bool Two_sided, bool Color_map, bool Normal_map, bool Surface_map, bool Emission_map>
 
-	std::shared_ptr<IMaterial> material;
-	substitute::Base* base;
+//	std::shared_ptr<IMaterial> material;
+//	substitute::Base* base;
 
-	if (color_map) {
-		if (normal_map) {
-			if (surface_map) {
-				auto typed_material = std::make_shared<substitute::Substitute<false, true, true, true, false>>(substitute_cache_, mask);
-				base = typed_material.get();
-				material = typed_material;
-			} else {
-				auto typed_material = std::make_shared<substitute::Substitute<false, true, true, false, false>>(substitute_cache_, mask);
-				base = typed_material.get();
-				material = typed_material;
-			}
-		} else {
-			if (surface_map) {
-				auto typed_material = std::make_shared<substitute::Substitute<false, true, false, true, false>>(substitute_cache_, mask);
-				base = typed_material.get();
-				material = typed_material;
-			} else {
-				auto typed_material = std::make_shared<substitute::Substitute<false, true, false, false, false>>(substitute_cache_, mask);
-				base = typed_material.get();
-				material = typed_material;
-			}
-		}
-	} else {
-		auto typed_material = std::make_shared<substitute::Substitute<false, false, false, false, false>>(substitute_cache_, mask);
-		base = typed_material.get();
-		material = typed_material;
-	}
+//	if (color_map) {
+//		if (normal_map) {
+//			if (surface_map) {
+//				auto typed_material = std::make_shared<substitute::Substitute<false, true, true, true, false>>(substitute_cache_, mask);
+//				base = typed_material.get();
+//				material = typed_material;
+//			} else {
+//				auto typed_material = std::make_shared<substitute::Substitute<false, true, true, false, false>>(substitute_cache_, mask);
+//				base = typed_material.get();
+//				material = typed_material;
+//			}
+//		} else {
+//			if (surface_map) {
+//				auto typed_material = std::make_shared<substitute::Substitute<false, true, false, true, false>>(substitute_cache_, mask);
+//				base = typed_material.get();
+//				material = typed_material;
+//			} else {
+//				auto typed_material = std::make_shared<substitute::Substitute<false, true, false, false, false>>(substitute_cache_, mask);
+//				base = typed_material.get();
+//				material = typed_material;
+//			}
+//		}
+//	} else {
+//		auto typed_material = std::make_shared<substitute::Substitute<false, false, false, false, false>>(substitute_cache_, mask);
+//		base = typed_material.get();
+//		material = typed_material;
+//	}
 
-	base->set_color(color);
-	base->set_color(color_map);
-	base->set_normal(normal_map);
-	base->set_roughness(roughness);
-	base->set_metallic(metallic);
-	base->set_surface(surface_map);
+	auto material = std::make_shared<substitute::Substitute>(substitute_cache_, mask);
+
+	material->set_color_map(color_map);
+	material->set_normal_map(normal_map);
+	material->set_surface_map(surface_map);
+	material->set_emission_map(emission_map);
+
+	material->set_color(color);
+	material->set_roughness(roughness);
+	material->set_metallic(metallic);
+	material->set_emission_factor(emission_factor);
+	material->set_two_sided(two_sided);
 
 	return material;
 
@@ -384,32 +388,5 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	return create(two_sided, false, mask, color, roughness, metallic);
 	*/
 }
-
-/*
-std::shared_ptr<IMaterial> Provider::create(
-		bool two_sided, bool thin,
-		std::shared_ptr<image::texture::Texture_2D> mask,
-		const math::float3& color,
-		float roughness,
-		float metallic) {
-	if (two_sided) {
-		if (thin) {
-			return std::make_shared<substitute::Constant<true, true>>(
-						substitute_cache_, mask, color, roughness, metallic);
-		} else {
-			return std::make_shared<substitute::Constant<true, false>>(
-						substitute_cache_, mask, color, roughness, metallic);
-		}
-	} else {
-		if (thin) {
-			return std::make_shared<substitute::Constant<false, true>>(
-						substitute_cache_, mask, color, roughness, metallic);
-		} else {
-			return std::make_shared<substitute::Constant<false, false>>(
-						substitute_cache_, mask, color, roughness, metallic);
-		}
-	}
-}
-*/
 
 }}
