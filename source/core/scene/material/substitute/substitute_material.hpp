@@ -17,11 +17,11 @@ public:
 										   uint32_t worker_id) final override;
 
 	virtual math::float3 sample_emission(math::float2 uv,
-										 const image::texture::sampler::Sampler_2D& sampler) const override;
+										 const image::texture::sampler::Sampler_2D& sampler) const final override;
 
-	virtual math::float3 average_emission() const override;
+	virtual math::float3 average_emission() const final override;
 
-	virtual const image::texture::Texture_2D* emission_map() const override;
+	virtual const image::texture::Texture_2D* emission_map() const final override;
 
 	void set_color_map(std::shared_ptr<image::texture::Texture_2D> color_map);
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
