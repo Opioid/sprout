@@ -26,7 +26,7 @@ const Sample& Normalmap<Two_sided>::sample(const shape::Differential& dg, const 
 	math::float3 nm = sampler.sample_3(*normal_, dg.uv);
 	math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
-	sample.template set_basis<Two_sided>(dg.t, dg.b, n, dg.geo_n, wo);
+	sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
 
 	sample.set(color_, sqrt_roughness_);
 

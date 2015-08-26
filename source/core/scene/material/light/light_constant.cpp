@@ -14,7 +14,7 @@ const Sample& Constant::sample(const shape::Differential& dg, const math::float3
 							   uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
-	sample.set_basis<false>(dg.t, dg.b, dg.n, dg.geo_n, wo);
+	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
 	sample.set(emission_);
 
 	return sample;
