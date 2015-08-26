@@ -1,7 +1,6 @@
 #pragma once
 
 #include "matte_normalmap.hpp"
-#include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"

@@ -63,7 +63,9 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 //		std::cout << "substitute::Sample::evaluate()" << std::endl;
 //	}
 
-	return n_dot_wi * (diffuse + specular);
+	math::float3 rub = std::max(math::dot(-n_, wi),  0.00001f) * diffuse_color_;
+
+	return n_dot_wi * (diffuse + specular);// +*/ 1.f * std::max(math::dot(-n_, wi),  0.00001f) * diffuse_color_;
 }
 
 math::float3 Sample::emission() const {
