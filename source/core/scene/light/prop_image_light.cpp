@@ -13,7 +13,7 @@
 namespace scene { namespace light {
 
 void Prop_image_light::sample(const entity::Composed_transformation& transformation,
-							  const math::float3& p, const math::float3& n,
+							  const math::float3& p, const math::float3& n, bool ignore_transmission,
 							  const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 							  uint32_t max_samples, std::vector<Sample>& samples) const {
 	samples.clear();
@@ -28,7 +28,7 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 
 		prop_->shape()->sample(part_, transformation, area_, p, uv, light_sample.shape);
 
-		if (math::dot(light_sample.shape.wi, n) < 0.f) {
+		if (ignore_transmission && math::dot(light_sample.shape.wi, n) <= 0.f) {
 			// maybe don't push this sample at all instead?
 			light_sample.shape.pdf = 0.f;
 		} else {

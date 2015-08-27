@@ -21,7 +21,7 @@ public:
 						  const material::Materials& materials, const image::texture::sampler::Sampler_2D& sampler) const final override;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-						const math::float3& p, const math::float3& n,
+						const math::float3& p, const math::float3& n, bool ignore_transmission,
 						sampler::Sampler& sampler, Sample& sample) const final override;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,

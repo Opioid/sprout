@@ -30,6 +30,10 @@ bool Sample::is_pure_emissive() const {
 	return true;
 }
 
+bool Sample::is_translucent() const {
+	return false;
+}
+
 void Sample::set(const math::float3& emission) {
 	emission_ = emission;
 }

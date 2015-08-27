@@ -76,7 +76,7 @@ float Plane::opacity(const entity::Composed_transformation& transformation, cons
 }
 
 void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, const math::float3& /*n*/,
+				   const math::float3& /*p*/, const math::float3& /*n*/, bool /*ignore_transmission*/,
 				   sampler::Sampler& /*sampler*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }

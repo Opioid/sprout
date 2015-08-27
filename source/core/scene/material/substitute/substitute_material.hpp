@@ -32,6 +32,8 @@ public:
 	void set_roughness(float roughness);
 	void set_metallic(float metallic);
 	void set_emission_factor(float emission_factor);
+	void set_thickness(float thickness);
+	void set_attenuation_distance(float attenuation_distance);
 	void set_two_sided(bool two_sided);
 
 private:
@@ -44,9 +46,9 @@ private:
 	math::float3 color_;
 	float roughness_;
 	float metallic_;
-
 	float emission_factor_;
-
+	float thickness_;
+	float attenuation_distance_;
 	bool two_sided_;
 };
 

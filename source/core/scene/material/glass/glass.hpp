@@ -48,6 +48,8 @@ public:
 
 	virtual bool is_pure_emissive() const final override;
 
+	virtual bool is_translucent() const final override;
+
 	void set(const math::float3& color, const math::float3& attenuation, float ior);
 
 private:

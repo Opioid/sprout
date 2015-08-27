@@ -41,11 +41,15 @@ const material::Sample& Substitute::sample(const shape::Differential& dg, const 
 		surface.y = metallic_;
 	}
 
+	float thickness;
+
+	thickness = thickness_;
+
 	if (emission_map_) {
 		math::float3 emission = emission_factor_ * sampler.sample_3(*emission_map_, dg.uv);
-		sample.set(color, emission, surface.x, surface.y);
+		sample.set(color, emission, surface.x, surface.y, thickness, attenuation_distance_);
 	} else {
-		sample.set(color, surface.x, surface.y);
+		sample.set(color, math::float3::identity, surface.x, surface.y, thickness, attenuation_distance_);
 	}
 
 	return sample;
@@ -101,6 +105,14 @@ void Substitute::set_metallic(float metallic) {
 
 void Substitute::set_emission_factor(float emission_factor) {
 	emission_factor = emission_factor;
+}
+
+void Substitute::set_thickness(float thickness) {
+	thickness_ = thickness;
+}
+
+void Substitute::set_attenuation_distance(float attenuation_distance) {
+	attenuation_distance_ = attenuation_distance;
 }
 
 void Substitute::set_two_sided(bool two_sided) {

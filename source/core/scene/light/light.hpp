@@ -38,11 +38,11 @@ public:
 	virtual void transformation_at(float time, entity::Composed_transformation& transformation) const = 0;
 
 	virtual void sample(const entity::Composed_transformation& transformation,
-						const math::float3& p, const math::float3& n,
+						const math::float3& p, const math::float3& n, bool ignore_transmission,
 						const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 						uint32_t max_samples, std::vector<Sample>& samples) const = 0;
 
-	void sample(float time, const math::float3& p, const math::float3& n,
+	void sample(float time, const math::float3& p, const math::float3& n, bool ignore_transmission,
 				const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 				uint32_t max_samples, std::vector<Sample>& samples) const;
 

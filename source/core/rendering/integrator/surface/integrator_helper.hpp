@@ -5,11 +5,14 @@
 
 namespace rendering {
 
-inline math::float3 attenuation(const math::float3& start, const math::float3& end, const math::float3& c) {
+inline math::float3 attenuation(float distance, const math::float3& c) {
 	const float e = 2.f;
 
-	float x = math::distance(start, end);
-	return math::float3(std::pow(e, -c.x * x), std::pow(e, -c.y * x), std::pow(e, -c.z * x));
+	return math::float3(std::pow(e, -c.x * distance), std::pow(e, -c.y * distance), std::pow(e, -c.z * distance));
+}
+
+inline math::float3 attenuation(const math::float3& start, const math::float3& end, const math::float3& c) {
+	return attenuation(math::distance(start, end), c);
 }
 
 }

@@ -47,6 +47,10 @@ bool Sample::is_pure_emissive() const {
 	return false;
 }
 
+bool Sample::is_translucent() const {
+	return false;
+}
+
 void Sample::set(const math::float3& color, float sqrt_roughness) {
 	diffuse_color_ = color;
 

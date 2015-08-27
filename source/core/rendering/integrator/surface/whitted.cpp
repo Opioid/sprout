@@ -74,7 +74,8 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	shadow_ray.time   = ray.time;
 
 	for (auto l : worker.scene().lights()) {
-		l->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
+		l->sample(ray.time,
+				  intersection.geo.p, material_sample.geometric_normal(), !material_sample.is_translucent(),
 				  settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
 
 		float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());

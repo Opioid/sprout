@@ -104,7 +104,7 @@ float Inverse_sphere::opacity(const entity::Composed_transformation& transformat
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-							const math::float3& p, const math::float3& n,
+							const math::float3& p, const math::float3& n, bool ignore_transmission,
 							sampler::Sampler& sampler, Sample& sample) const {
 	math::float3 dir = n;
 

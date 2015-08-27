@@ -70,7 +70,8 @@ math::float3 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		float light_pdf;
 		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
 		if (light) {
-			light->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
+			light->sample(ray.time,
+						  intersection.geo.p, material_sample.geometric_normal(), !material_sample.is_translucent(),
 						  settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
 
 			float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());

@@ -222,6 +222,8 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float emission_factor = 1.f;
+	float thickness = 0.f;
+	float attenuation_distance = 0.f;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -235,6 +237,10 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 			metallic = json::read_float(node_value);
 		} else if ("emission_factor" == node_name) {
 			emission_factor = json::read_float(node_value);
+		} else if ("thickness" == node_name) {
+			thickness = json::read_float(node_value);
+		} else if ("attenuation_distance" == node_name) {
+			attenuation_distance = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
 		} else if ("textures" == node_name) {
@@ -278,6 +284,8 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	material->set_roughness(roughness);
 	material->set_metallic(metallic);
 	material->set_emission_factor(emission_factor);
+	material->set_thickness(thickness);
+	material->set_attenuation_distance(attenuation_distance);
 	material->set_two_sided(two_sided);
 
 	return material;
