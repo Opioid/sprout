@@ -23,8 +23,8 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	if (thickness_ > 0.f && math::dot(wi, geo_n_) < 0.f) {
 		float n_dot_wi = std::max(-math::dot(n_, wi),  0.00001f);
 		math::float3 attenuation = rendering::attenuation(thickness_, attenuation_);
-		pdf = n_dot_wi * math::Pi_inv;
-		return n_dot_wi * (attenuation * diffuse_color_);
+		pdf = 0.5f * n_dot_wi * math::Pi_inv;
+		return n_dot_wi * (math::Pi_inv * attenuation * diffuse_color_);
 	}
 
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
@@ -72,6 +72,10 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 
 	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
 
+	if (thickness_ > 0.f) {
+		pdf *= 0.5f;
+	}
+
 //	if (math::contains_negative(diffuse) || math::contains_negative(specular)) {
 //		std::cout << "substitute::Sample::evaluate()" << std::endl;
 //	}
@@ -94,11 +98,33 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 	}
 
 	if (thickness_ > 0.f) {
-		float n_dot_wi = lambert_.importance_sample(sampler, result);
-		result.wi *= -1.f;
 
-		math::float3 attenuation = rendering::attenuation(thickness_, attenuation_);
-		result.reflection *= n_dot_wi * attenuation;
+		float p = sampler.generate_sample_1D();
+
+		if (p < 0.5f) {
+
+			float n_dot_wi = lambert_.importance_sample(sampler, result);
+			result.wi *= -1.f;
+
+			math::float3 attenuation = rendering::attenuation(thickness_, attenuation_);
+			result.pdf *= 0.5f;
+			result.reflection *= n_dot_wi * attenuation;
+
+		} else {
+
+			float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
+
+			if (p < 0.75f) {
+				float n_dot_wi = oren_nayar_.importance_sample(sampler, n_dot_wo, result);
+				result.pdf = 0.25f * (result.pdf + ggx_.pdf(result.wi, n_dot_wi));
+				result.reflection = n_dot_wi * (result.reflection + ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo));
+			} else {
+				float n_dot_wi = ggx_.importance_sample(sampler, result);
+				result.pdf = 0.25f * (result.pdf + oren_nayar_.pdf(result.wi, n_dot_wi));
+				result.reflection = n_dot_wi * (result.reflection + oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo));
+			}
+
+		}
 
 		return;
 	}
@@ -124,15 +150,6 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 			result.reflection = n_dot_wi * (result.reflection + oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo));
 		}
 	}
-
-
-//	if (math::contains_negative(result.reflection)) {
-//		std::cout << "substitute::Sample::sample_evaluate()" << std::endl;
-//	}
-
-//	if (result.pdf < 0.f) {
-//		std::cout << "substitute::Sample::sample_evaluate()" << std::endl;
-//	}
 
 }
 

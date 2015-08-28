@@ -58,7 +58,8 @@ bool Plane::intersect_p(const entity::Composed_transformation& transformation, c
 
 float Plane::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
 					 const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-					 const material::Materials& materials, const image::texture::sampler::Sampler_2D& sampler) const {
+					 const material::Materials& materials,
+					 const image::texture::sampler::Sampler_2D& sampler) const {
 	const math::float3& normal = transformation.rotation.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
@@ -76,7 +77,7 @@ float Plane::opacity(const entity::Composed_transformation& transformation, cons
 }
 
 void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, const math::float3& /*n*/, bool /*ignore_transmission*/,
+				   const math::float3& /*p*/, const math::float3& /*n*/,
 				   sampler::Sampler& /*sampler*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }

@@ -48,13 +48,14 @@ bool Celestial_disk::intersect_p(const entity::Composed_transformation& /*transf
 
 float Celestial_disk::opacity(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
 							  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-							  const material::Materials& /*materials*/, const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+							  const material::Materials& /*materials*/,
+							  const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
 
 void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
-							const math::float3& /*p*/, const math::float3& /*n*/, bool /*ignore_transmission*/,
+							const math::float3& /*p*/, const math::float3& /*n*/,
 							sampler::Sampler& sampler, Sample& sample) const {
 	math::float2 r2 = sampler.generate_sample_2D();
 	math::float2 xy = math::sample_disk_concentric(r2);

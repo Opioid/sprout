@@ -28,7 +28,7 @@ void Prop_light::sample(const entity::Composed_transformation& transformation,
 	Sample light_sample;
 
 	for (uint32_t i = 0; i < max_samples; ++i) {
-		prop_->shape()->sample(part_, transformation, area_, p, n, ignore_transmission, sampler, light_sample.shape);
+		prop_->shape()->sample(part_, transformation, area_, p, n, sampler, light_sample.shape);
 
 		if (ignore_transmission && math::dot(light_sample.shape.wi, n) <= 0.f) {
 			// maybe don't push this sample at all instead?
