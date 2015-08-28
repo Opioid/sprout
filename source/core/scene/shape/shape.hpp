@@ -45,7 +45,7 @@ public:
 						  const image::texture::sampler::Sampler_2D& sampler) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-						const math::float3& p, const math::float3& n,
+						const math::float3& p, const math::float3& n, bool restrict_to_hemisphere,
 						sampler::Sampler& sampler, Sample& sample) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
@@ -55,7 +55,7 @@ public:
 						const math::float3& p, const math::float3& wi, Sample& sample) const = 0;
 
 	virtual float pdf(uint32_t part, const entity::Composed_transformation& transformation, float area,
-					  const math::float3& p, const math::float3& wi) const = 0;
+					  const math::float3& p, const math::float3& wi, bool restrict_to_hemisphere) const = 0;
 
 	virtual float area(uint32_t part, const math::float3& scale) const = 0;
 

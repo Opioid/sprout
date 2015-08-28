@@ -38,7 +38,7 @@ public:
 	virtual void transformation_at(float time, entity::Composed_transformation& transformation) const = 0;
 
 	virtual void sample(const entity::Composed_transformation& transformation,
-						const math::float3& p, const math::float3& n, bool ignore_transmission,
+						const math::float3& p, const math::float3& n, bool restrict_to_hemisphere,
 						const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 						uint32_t max_samples, std::vector<Sample>& samples) const = 0;
 
@@ -49,7 +49,7 @@ public:
 	virtual math::float3 evaluate(const math::float3& wi) const = 0;
 
 	virtual float pdf(const entity::Composed_transformation& transformation,
-					  const math::float3& p, const math::float3& wi,
+					  const math::float3& p, const math::float3& wi, bool restrict_to_hemisphere,
 					  const image::texture::sampler::Sampler_2D& image_sampler) const = 0;
 
 	virtual math::float3 power(const math::aabb& scene_bb) const = 0;

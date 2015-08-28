@@ -107,7 +107,7 @@ float Disk::opacity(const entity::Composed_transformation& transformation, const
 }
 
 void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
-				  const math::float3& p, const math::float3& /*n*/,
+				  const math::float3& p, const math::float3& /*n*/, bool restrict_to_hemisphere,
 				  sampler::Sampler& sampler, Sample& sample) const {
 	math::float2 r2 = sampler.generate_sample_2D();
 	math::float2 xy = math::sample_disk_concentric(r2);
@@ -136,7 +136,7 @@ void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& /*tr
 				  const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
-				const math::float3& p, const math::float3& wi) const {
+				const math::float3& p, const math::float3& wi, bool /*restrict_to_hemisphere*/) const {
 	const math::float3& normal = transformation.rotation.z;
 
 	float c = math::dot(normal, -wi);

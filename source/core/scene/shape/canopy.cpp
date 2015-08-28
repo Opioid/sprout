@@ -54,21 +54,34 @@ float Canopy::opacity(const entity::Composed_transformation& /*transformation*/,
 }
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-					const math::float3& /*p*/, const math::float3& n,
+					const math::float3& /*p*/, const math::float3& n, bool restrict_to_hemisphere,
 					sampler::Sampler& sampler, Sample& sample) const {
-	math::float3 x, y;
-	math::coordinate_system(n, x, y);
+	if (restrict_to_hemisphere) {
+		math::float3 x, y;
+		math::coordinate_system(n, x, y);
 
-	math::float2 uv = sampler.generate_sample_2D();
-	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
+		math::float2 uv = sampler.generate_sample_2D();
+		math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
-	sample.wi  = dir;
+		sample.wi  = dir;
 
-	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
-	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
+		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
-	sample.t   = 1000.f;
-	sample.pdf = 1.f / (2.f * math::Pi);
+		sample.t   = 1000.f;
+		sample.pdf = 1.f / (2.f * math::Pi);
+	} else {
+		math::float2 uv = sampler.generate_sample_2D();
+		math::float3 dir = math::sample_sphere_uniform(uv);
+
+		sample.wi  = dir;
+
+		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
+		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+
+		sample.t   = 1000.f;
+		sample.pdf = 1.f / (4.f * math::Pi);
+	}
 }
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
@@ -98,8 +111,12 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 }
 
 float Canopy::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, const math::float3& /*wi*/) const {
+				  const math::float3& /*p*/, const math::float3& /*wi*/, bool restrict_to_hemisphere) const {
+	if (restrict_to_hemisphere) {
 		return 1.f / (2.f * math::Pi);
+	} else {
+		return 1.f / (4.f * math::Pi);
+	}
 }
 
 float Canopy::area(uint32_t /*part*/, const math::float3& /*scale*/) const {

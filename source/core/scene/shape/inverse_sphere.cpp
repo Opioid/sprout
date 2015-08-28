@@ -104,7 +104,7 @@ float Inverse_sphere::opacity(const entity::Composed_transformation& transformat
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-							const math::float3& p, const math::float3& n,
+							const math::float3& p, const math::float3& n, bool restrict_to_hemisphere,
 							sampler::Sampler& sampler, Sample& sample) const {
 	math::float3 dir = n;
 
@@ -208,7 +208,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transforma
 }
 
 float Inverse_sphere::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-						  const math::float3& p, const math::float3& /*wi*/) const {
+						  const math::float3& p, const math::float3& /*wi*/, bool restrict_to_hemisphere) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
 
