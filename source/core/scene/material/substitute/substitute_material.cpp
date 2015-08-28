@@ -104,7 +104,7 @@ void Substitute::set_metallic(float metallic) {
 }
 
 void Substitute::set_emission_factor(float emission_factor) {
-	emission_factor = emission_factor;
+	emission_factor_ = emission_factor;
 }
 
 void Substitute::set_thickness(float thickness) {

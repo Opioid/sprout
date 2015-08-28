@@ -40,8 +40,8 @@ private:
 
 	float thickness_;
 
+    lambert::Lambert<Sample> lambert_;
 	oren_nayar::Oren_nayar<Sample> oren_nayar_;
-	lambert::Lambert<Sample> lambert_;
 	ggx::GGX<Sample> ggx_;
 
 	friend lambert::Lambert<Sample>;
