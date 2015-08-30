@@ -103,56 +103,49 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 		if (p < 0.5f) {
 			float n_dot_wi = lambert_.importance_sample(sampler, result);
 			result.wi *= -1.f;
-
+			result.pdf *= 0.5f;
 			math::float3 attenuation = rendering::attenuation(thickness_, attenuation_);
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
 			if (1.f == metallic_) {
 				float n_dot_wi = ggx_.importance_sample(sampler, result);
+				result.pdf *= 0.5f;
 				result.reflection *= n_dot_wi;
 			} else {
 				float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 				if (p < 0.75f) {
 					float n_dot_wi = oren_nayar_.importance_sample(sampler, n_dot_wo, result);
-					result.pdf = 0.5f * (result.pdf + ggx_.pdf(result.wi, n_dot_wi));
+					result.pdf = 0.25f * (result.pdf + ggx_.pdf(result.wi, n_dot_wi));
 					result.reflection = n_dot_wi * (result.reflection + ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo));
 				} else {
 					float n_dot_wi = ggx_.importance_sample(sampler, result);
-					result.pdf = 0.5f * (result.pdf + oren_nayar_.pdf(result.wi, n_dot_wi));
+					result.pdf = 0.25f * (result.pdf + oren_nayar_.pdf(result.wi, n_dot_wi));
 					result.reflection = n_dot_wi * (result.reflection +
 													oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo));
 				}
 			}
 		}
-
-		result.pdf *= 0.5f;
-
-		return;
-	}
-
-	if (1.f == metallic_) {
-		float n_dot_wi = ggx_.importance_sample(sampler, result);
-		result.reflection *= n_dot_wi;
 	} else {
-		float p = sampler.generate_sample_1D();
-
-		float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
-
-		if (p < 0.5f) {
-		//	float n_dot_wi = lambert_.importance_sample(sampler, result);
-			float n_dot_wi = oren_nayar_.importance_sample(sampler, n_dot_wo, result);
-			result.pdf = 0.5f * (result.pdf + ggx_.pdf(result.wi, n_dot_wi));
-			result.reflection = n_dot_wi * (result.reflection + ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo));
-		} else {
+		if (1.f == metallic_) {
 			float n_dot_wi = ggx_.importance_sample(sampler, result);
-	//		result.pdf = 0.5f * (result.pdf + lambert_.pdf(result.wi, n_dot_wi));
-			result.pdf = 0.5f * (result.pdf + oren_nayar_.pdf(result.wi, n_dot_wi));
-	//		result.reflection = n_dot_wi * (result.reflection + lambert_.evaluate(result.wi, n_dot_wi));
-			result.reflection = n_dot_wi * (result.reflection + oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo));
+			result.reflection *= n_dot_wi;
+		} else {
+			float p = sampler.generate_sample_1D();
+
+			float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
+
+			if (p < 0.5f) {
+				float n_dot_wi = oren_nayar_.importance_sample(sampler, n_dot_wo, result);
+				result.pdf = 0.5f * (result.pdf + ggx_.pdf(result.wi, n_dot_wi));
+				result.reflection = n_dot_wi * (result.reflection + ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo));
+			} else {
+				float n_dot_wi = ggx_.importance_sample(sampler, result);
+				result.pdf = 0.5f * (result.pdf + oren_nayar_.pdf(result.wi, n_dot_wi));
+				result.reflection = n_dot_wi * (result.reflection + oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo));
+			}
 		}
 	}
-
 }
 
 bool Sample::is_pure_emissive() const {
