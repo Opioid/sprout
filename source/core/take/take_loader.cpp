@@ -6,7 +6,7 @@
 #include "rendering/film/opaque.hpp"
 #include "rendering/film/transparent.hpp"
 #include "rendering/film/filtered.inl"
-#include "rendering/film/unfiltered.hpp"
+#include "rendering/film/unfiltered.inl"
 #include "rendering/film/filter/gaussian.inl"
 #include "rendering/film/tonemapping/filmic.hpp"
 #include "rendering/film/tonemapping/identity.hpp"
@@ -37,13 +37,14 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	auto take = std::make_shared<Take>();
 
 	const rapidjson::Value* exporter_value = nullptr;
+	bool alpha_transparency = peek_alpha_transparency(*root);
 
 	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
 		if ("camera" == node_name) {
-			load_camera(node_value, *take);
+			load_camera(node_value, alpha_transparency, *take);
 		} else if ("export" == node_name) {
 			exporter_value = &node_value;
 		} else if ("frames" == node_name) {
@@ -88,7 +89,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	return take;
 }
 
-void Loader::load_camera(const rapidjson::Value& camera_value, Take& take) const {
+void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const {
 	std::string type_name = "Perspective";
 	const rapidjson::Value* type_value = nullptr;
 
@@ -124,7 +125,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, Take& take) const
 		} else if ("dimensions" == node_name) {
 			dimensions = json::read_float2(node_value);
 		} else if ("film" == node_name) {
-			film = load_film(node_value);
+			film = load_film(node_value, alpha_transparency);
 		} else if ("frame_duration" == node_name) {
 			frame_duration = json::read_float(node_value);
 		} else if ("frames_per_second" == node_name) {
@@ -160,7 +161,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, Take& take) const
 	take.context.camera = camera;
 }
 
-rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) const {
+rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value, bool alpha_transparency) const {
 	math::uint2 dimensions(1280, 720);
 	float exposure = 0.f;
 	rendering::film::tonemapping::Tonemapper* tonemapper = nullptr;
@@ -190,11 +191,21 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 		float radius = 0.8f;
 		float alpha  = 0.3f;
 		auto gaussian = std::make_unique<rendering::film::filter::Gaussian>(radius, alpha);
-		return new rendering::film::Filtered<rendering::film::Transparent, rendering::film::filter::Gaussian>(
+
+		if (alpha_transparency) {
+			return new rendering::film::Filtered<rendering::film::Transparent, rendering::film::filter::Gaussian>(
+						dimensions, exposure, tonemapper, std::move(gaussian));
+		}
+
+		return new rendering::film::Filtered<rendering::film::Opaque, rendering::film::filter::Gaussian>(
 					dimensions, exposure, tonemapper, std::move(gaussian));
 	}
 
-	return new rendering::film::Unfiltered(dimensions, exposure, tonemapper);
+	if (alpha_transparency) {
+		return new rendering::film::Unfiltered<rendering::film::Transparent>(dimensions, exposure, tonemapper);
+	}
+
+	return new rendering::film::Unfiltered<rendering::film::Opaque>(dimensions, exposure, tonemapper);
 }
 
 rendering::film::tonemapping::Tonemapper* Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
@@ -281,6 +292,20 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 	}
 
 	return nullptr;
+}
+
+bool Loader::peek_alpha_transparency(const rapidjson::Value& take_value) const {
+	const rapidjson::Value::ConstMemberIterator export_node = take_value.FindMember("export");
+	if (take_value.MemberEnd() == export_node) {
+		return false;
+	}
+
+	const rapidjson::Value::ConstMemberIterator node = export_node->value.FindMember("Image");
+	if (export_node->value.MemberEnd() == node) {
+		return false;
+	}
+
+	return json::read_bool(node->value, "alpha_transparency");
 }
 
 std::unique_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& exporter_value,

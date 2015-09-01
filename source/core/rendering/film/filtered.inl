@@ -1,3 +1,5 @@
+#pragma once
+
 #include "filtered.hpp"
 #include "sampler/camera_sample.hpp"
 

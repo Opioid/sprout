@@ -2,7 +2,6 @@ SOURCES += \
 	rendering/film/film.cpp \
 	rendering/film/opaque.cpp \
 	rendering/film/transparent.cpp \
-	rendering/film/unfiltered.cpp \
 	
 HEADERS += \
 	rendering/film/film.hpp \
@@ -11,6 +10,7 @@ HEADERS += \
 	rendering/film/opaque.hpp \
 	rendering/film/transparent.hpp \
 	rendering/film/unfiltered.hpp \
+	rendering/film/unfiltered.inl \
 
 include(filter/filter.pri)
 include(tonemapping/tonemapping.pri)

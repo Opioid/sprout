@@ -1,6 +1,5 @@
 #pragma once
 
-#include "opaque.hpp"
 #include <memory>
 
 namespace rendering { namespace film {
