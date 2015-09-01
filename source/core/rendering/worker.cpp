@@ -64,7 +64,7 @@ void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uin
 
 				math::float3 color = li(ray);
 
-				film.add_sample(sample, color, tile);
+				film.add_sample(sample, math::float4(color), tile);
 			}
 		}
 	}

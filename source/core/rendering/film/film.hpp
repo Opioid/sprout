@@ -2,7 +2,6 @@
 
 #include "rendering/rectangle.hpp"
 #include "image/typed_image.hpp"
-#include <mutex>
 
 namespace thread {
 
@@ -34,29 +33,22 @@ public:
 
 	const image::Image_float_4& resolve(thread::Pool& pool);
 
-	void clear();
-
 	math::uint2 seed(uint32_t x, uint32_t y) const;
 	void set_seed(uint32_t x, uint32_t y, math::uint2 seed);
 
-	virtual void add_sample(const sampler::Camera_sample& sample, const math::float3& color, const Rectui& tile) = 0;
+	virtual void clear() = 0;
+
+	virtual void add_sample(const sampler::Camera_sample& sample, const math::float4& color, const Rectui& tile) = 0;
 
 protected:
 
-	void add_pixel(uint32_t x, uint32_t y, const math::float3& color, float weight);
+	virtual void add_pixel(uint32_t x, uint32_t y, const math::float4& color, float weight) = 0;
 
-	void add_pixel_atomic(uint32_t x, uint32_t y, const math::float3& color, float weight);
+	virtual void add_pixel_atomic(uint32_t x, uint32_t y, const math::float4& color, float weight) = 0;
 
-	struct Pixel {
-		math::float3 color;
-		float        weight_sum;
-	};
-
-	void resolve(uint32_t begin, uint32_t end);
+	virtual void resolve(uint32_t begin, uint32_t end) = 0;
 
 	static math::float3 expose(const math::float3& color, float exposure);
-
-	Pixel* pixels_;
 
 	float exposure_;
 

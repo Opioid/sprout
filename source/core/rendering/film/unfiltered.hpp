@@ -1,15 +1,15 @@
 #pragma once
 
-#include "film.hpp"
+#include "opaque.hpp"
 
 namespace rendering { namespace film {
 
-class Unfiltered : public Film {
+class Unfiltered : public Opaque {
 public:
 
 	Unfiltered(const math::uint2& dimensions, float exposure, tonemapping::Tonemapper* tonemapper);
 
-	virtual void add_sample(const sampler::Camera_sample& sample, const math::float3& color, const Rectui& tile);
+	virtual void add_sample(const sampler::Camera_sample& sample, const math::float4& color, const Rectui& tile);
 };
 
 }}

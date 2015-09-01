@@ -6,13 +6,13 @@ namespace rendering { namespace film {
 template<typename Filter>
 Filtered<Filter>::Filtered(const math::uint2& dimensions, float exposure,
 						   tonemapping::Tonemapper* tonemapper, std::unique_ptr<Filter> filter) :
-	Film(dimensions, exposure, tonemapper), filter_(std::move(filter)) {}
+	Opaque(dimensions, exposure, tonemapper), filter_(std::move(filter)) {}
 
 template<typename Filter>
 Filtered<Filter>::~Filtered() {}
 
 template<typename Filter>
-void Filtered<Filter>::add_sample(const sampler::Camera_sample& sample, const math::float3& color, const Rectui& tile) {
+void Filtered<Filter>::add_sample(const sampler::Camera_sample& sample, const math::float4& color, const Rectui& tile) {
 	uint32_t x = sample.pixel.x;
 	uint32_t y = sample.pixel.y;
 
@@ -58,7 +58,7 @@ void Filtered<Filter>::add_sample(const sampler::Camera_sample& sample, const ma
 
 template<typename Filter>
 void Filtered<Filter>::add_pixel(uint32_t x, uint32_t y, math::float2 relative_offset,
-								 const math::float3& color, const Rectui& tile) {
+								 const math::float4& color, const Rectui& tile) {
 	float weight = filter_->evaluate(relative_offset);
 
 	auto d = dimensions();
@@ -68,7 +68,7 @@ void Filtered<Filter>::add_pixel(uint32_t x, uint32_t y, math::float2 relative_o
 	||  (y <= tile.start.y && 0 != y)) {
 		add_pixel_atomic(x, y, color, weight);
 	} else {
-		Film::add_pixel(x, y, color, weight);
+		Opaque::add_pixel(x, y, color, weight);
 	}
 }
 
