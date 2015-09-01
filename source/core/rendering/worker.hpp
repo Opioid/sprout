@@ -49,7 +49,7 @@ public:
 	void render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end,
 				float normalized_tick_offset, float normalized_tick_slice);
 
-	math::float3 li(math::Oray& ray);
+	math::float4 li(math::Oray& ray);
 
 	bool intersect(math::Oray& ray, scene::Intersection& intersection);
 	bool intersect(const scene::Prop* prop, math::Oray& ray, scene::Intersection& intersection);

@@ -62,21 +62,21 @@ void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uin
 
 				camera.generate_ray(sample, normalized_tick_offset, normalized_tick_slice, ray);
 
-				math::float3 color = li(ray);
+				math::float4 color = li(ray);
 
-				film.add_sample(sample, math::float4(color), tile);
+				film.add_sample(sample, color, tile);
 			}
 		}
 	}
 }
 
-math::float3 Worker::li(math::Oray& ray) {
+math::float4 Worker::li(math::Oray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 	if (hit) {
-		return surface_integrator_->li(*this, ray, intersection);
+		return math::float4(surface_integrator_->li(*this, ray, intersection), 1.f);
 	} else {
-		return math::float3::identity;
+		return math::float4::identity;
 	}
 }
 

@@ -1,6 +1,7 @@
 SOURCES += \
 	rendering/film/film.cpp \
 	rendering/film/opaque.cpp \
+	rendering/film/transparent.cpp \
 	rendering/film/unfiltered.cpp \
 	
 HEADERS += \
@@ -8,6 +9,7 @@ HEADERS += \
 	rendering/film/filtered.hpp \
 	rendering/film/filtered.inl \
 	rendering/film/opaque.hpp \
+	rendering/film/transparent.hpp \
 	rendering/film/unfiltered.hpp \
 
 include(filter/filter.pri)

@@ -3,6 +3,8 @@
 #include "exporting/exporting_sink_ffmpeg.hpp"
 #include "exporting/exporting_sink_image_sequence.hpp"
 #include "exporting/exporting_sink_null.hpp"
+#include "rendering/film/opaque.hpp"
+#include "rendering/film/transparent.hpp"
 #include "rendering/film/filtered.inl"
 #include "rendering/film/unfiltered.hpp"
 #include "rendering/film/filter/gaussian.inl"
@@ -188,7 +190,7 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value) con
 		float radius = 0.8f;
 		float alpha  = 0.3f;
 		auto gaussian = std::make_unique<rendering::film::filter::Gaussian>(radius, alpha);
-		return new rendering::film::Filtered<rendering::film::filter::Gaussian>(
+		return new rendering::film::Filtered<rendering::film::Transparent, rendering::film::filter::Gaussian>(
 					dimensions, exposure, tonemapper, std::move(gaussian));
 	}
 
@@ -293,7 +295,7 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& e
 			uint32_t framerate = json::read_uint(node_value, "framerate");
 
 			if (!framerate) {
-				framerate = static_cast<uint32_t>(1.f /camera.frame_duration() + 0.5f);
+				framerate = static_cast<uint32_t>(1.f / camera.frame_duration() + 0.5f);
 			}
 
 			return std::make_unique<exporting::Ffmpeg>("output", camera.film().dimensions(), framerate);
