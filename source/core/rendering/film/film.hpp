@@ -65,8 +65,6 @@ protected:
 	image::Image_float_4 image_;
 
 	math::uint2* seeds_;
-
-	std::mutex mutex_;
 };
 
 }}
