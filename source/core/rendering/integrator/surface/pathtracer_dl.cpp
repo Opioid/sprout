@@ -150,5 +150,3 @@ Surface_integrator* Pathtracer_DL_factory::create(math::random::Generator& rng) 
 }
 
 }
-
-
