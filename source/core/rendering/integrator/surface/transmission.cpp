@@ -8,14 +8,16 @@
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
-#include <iostream>
 
 namespace rendering {
 
-Transmission::Transmission(const take::Settings &take_settings, math::random::Generator &rng) : Integrator(take_settings, rng) {}
+Transmission::Transmission(const take::Settings &take_settings, math::random::Generator &rng) :
+	Integrator(take_settings, rng) {}
 
-math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Intersection& intersection, const math::float3& attenuation,
-								   sampler::Sampler& sampler, const image::texture::sampler::Sampler_2D& texture_sampler,
+math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
+								   const math::float3& attenuation,
+								   sampler::Sampler& sampler,
+								   const image::texture::sampler::Sampler_2D& texture_sampler,
 								   scene::material::BxDF_result& sample_result) {
 	math::float3 throughput = sample_result.reflection / sample_result.pdf;
 	math::float3 previous_sample_attenuation = attenuation;

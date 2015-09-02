@@ -21,7 +21,7 @@ public:
 
 	virtual void start_new_pixel(uint32_t num_samples) final override;
 
-	virtual math::float3 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) final override;
+	virtual math::float4 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) final override;
 
 private:
 

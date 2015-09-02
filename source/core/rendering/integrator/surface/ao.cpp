@@ -16,7 +16,7 @@ void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
 }
 
-math::float3 Ao::li(Worker& worker, math::Oray& /*ray*/, scene::Intersection& intersection) {
+math::float4 Ao::li(Worker& worker, math::Oray& /*ray*/, scene::Intersection& intersection) {
 	math::Oray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
@@ -36,7 +36,7 @@ math::float3 Ao::li(Worker& worker, math::Oray& /*ray*/, scene::Intersection& in
 		}
 	}
 
-	return math::float3(result, result, result);
+	return math::float4(result, result, result, 1.f);
 }
 
 Ao_factory::Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius) : Surface_integrator_factory(settings) {

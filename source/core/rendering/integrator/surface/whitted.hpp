@@ -30,7 +30,7 @@ public:
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
-	virtual math::float3 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection);
+	virtual math::float4 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection);
 
 private:
 

@@ -10,12 +10,13 @@
 #include "scene/material/material_sample.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "take/take_settings.hpp"
+#include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
-#include "base/math/print.hpp"
 
+#include "base/math/print.hpp"
 #include <iostream>
 
 namespace rendering {
@@ -31,12 +32,13 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
 }
 
-math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	scene::material::BxDF_result sample_result;
 	scene::material::BxDF_result::Type previous_sample_type;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
+	float opacity = 0.f;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
 		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::BxDF_type::Specular);
@@ -82,14 +84,18 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 
 		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
-			throughput *= transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
-												sampler_, settings_.sampler_nearest, sample_result);
-
+			math::float3 transmitted = transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
+															 sampler_, settings_.sampler_nearest, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
 			}
+
+			throughput *= transmitted;
+
+			opacity += 1.f - sample_result.pdf * color::luminance(transmitted);
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
+			opacity = 1.f;
 		}
 
 		previous_sample_type = sample_result.type;
@@ -106,7 +112,7 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 	}
 
-	return result;
+	return math::float4(result, opacity);
 }
 
 float power_heuristic(float fpdf, float gpdf) {
