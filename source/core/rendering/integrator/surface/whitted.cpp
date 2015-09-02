@@ -25,7 +25,7 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
 }
 
-math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+math::float4 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	math::float3 result = math::float3::identity;
 
 	float opacity = intersection.opacity(settings_.sampler_linear);
@@ -39,7 +39,7 @@ math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& i
 		ray.min_t = ray.max_t;
 		ray.max_t = 1000.f;
 		if (!worker.intersect(ray, intersection)) {
-			return result;
+			return math::float4(result, opacity);
 		}
 
 		throughput = (1.f - opacity) * intersection.opacity(settings_.sampler_linear);
@@ -48,7 +48,7 @@ math::float3 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& i
 
 	result += throughput * shade(worker, ray, intersection);
 
-	return result;
+	return math::float4(result, opacity);
 }
 
 math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::Intersection& intersection) {

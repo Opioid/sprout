@@ -31,12 +31,13 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
 }
 
-math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	scene::material::BxDF_result sample_result;
 	scene::material::BxDF_result::Type previous_sample_type;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
+	float opacity = 0.f;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
 		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::BxDF_type::Specular);
@@ -52,6 +53,8 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		if (!resolve_mask(worker, ray, intersection, *texture_sampler)) {
 			break;
 		}
+
+		opacity = 1.f;
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
@@ -106,7 +109,7 @@ math::float3 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 	}
 
-	return result;
+	return math::float4(result, opacity);
 }
 
 float power_heuristic(float fpdf, float gpdf) {

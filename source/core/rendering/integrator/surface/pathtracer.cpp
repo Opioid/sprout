@@ -23,12 +23,13 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
 }
 
-math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	scene::material::BxDF_result sample_result;
 	scene::material::BxDF_result::Type previous_sample_type;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
+	float opacity = 0.f;
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = 0; i <= settings_.max_bounces; ++i) {
@@ -45,6 +46,8 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 		if (!resolve_mask(worker, ray, intersection, *texture_sampler)) {
 			break;
 		}
+
+		opacity = 1.f;
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
@@ -97,7 +100,7 @@ math::float3 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 		}
 	}
 
-	return result;
+	return math::float4(result, opacity);
 }
 
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,

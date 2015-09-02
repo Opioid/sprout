@@ -46,7 +46,7 @@ public:
 	Surface_integrator(const take::Settings& settings, math::random::Generator& rng);
 	virtual ~Surface_integrator();
 
-	virtual math::float3 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) = 0;
+	virtual math::float4 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) = 0;
 
 protected:
 

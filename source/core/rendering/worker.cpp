@@ -74,7 +74,7 @@ math::float4 Worker::li(math::Oray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 	if (hit) {
-		return math::float4(surface_integrator_->li(*this, ray, intersection), 1.f);
+		return surface_integrator_->li(*this, ray, intersection);
 	} else {
 		return math::float4::identity;
 	}
