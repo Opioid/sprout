@@ -57,7 +57,7 @@ void Transparent::resolve(uint32_t begin, uint32_t end) {
 
 		math::float3 tonemapped = tonemapper_->tonemap(exposed);
 
-		image_.set(i, math::float4(tonemapped, color.w));
+		image_.set(i, math::float4(tonemapped, std::min(color.w, 1.f)));
 	}
 }
 

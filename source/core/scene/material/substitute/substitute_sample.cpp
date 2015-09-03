@@ -22,7 +22,8 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	// to calculate the reflection. In the other case, transmission won't be visible and we only need reflection.
 	if (thickness_ > 0.f && math::dot(wi, geo_n_) < 0.f) {
 		float n_dot_wi = std::max(-math::dot(n_, wi),  0.00001f);
-		math::float3 attenuation = rendering::attenuation(thickness_, attenuation_);
+		float approximated_distance = thickness_ / n_dot_wi;
+		math::float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 		pdf = 0.5f * n_dot_wi * math::Pi_inv;
 		return n_dot_wi * (math::Pi_inv * attenuation * diffuse_color_);
 	}
@@ -104,7 +105,8 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 			float n_dot_wi = lambert_.importance_sample(sampler, result);
 			result.wi *= -1.f;
 			result.pdf *= 0.5f;
-			math::float3 attenuation = rendering::attenuation(thickness_, attenuation_);
+			float approximated_distance = thickness_ / n_dot_wi;
+			math::float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
 			if (1.f == metallic_) {
