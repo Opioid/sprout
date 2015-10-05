@@ -41,8 +41,10 @@ class Builder  {
 public:
 
     template<typename Data>
-    void build(Tree<Data>& tree, const std::vector<Index_triangle>& triangles,
-               const std::vector<Vertex>& vertices, size_t max_primitives);
+	void build(Tree<Data>& tree,
+			   const std::vector<Index_triangle>& triangles,
+			   const std::vector<Vertex>& vertices,
+			   size_t max_primitives);
 
 private:
 

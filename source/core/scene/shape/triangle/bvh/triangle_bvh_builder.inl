@@ -13,7 +13,9 @@
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
-void Builder::build(Tree<Data>& tree, const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices, size_t max_primitives) {
+void Builder::build(Tree<Data>& tree,
+					const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices,
+					size_t max_primitives) {
 	std::vector<uint32_t> primitive_indices(triangles.size());
 	for (size_t i = 0, len = primitive_indices.size(); i < len; ++i) {
 		primitive_indices[i] = static_cast<uint32_t>(i);
