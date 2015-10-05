@@ -214,7 +214,9 @@ T squared_distance(const Vector3<T>& a, const Vector3<T>& b) {
 
 template<typename T>
 Vector3<T> saturate(const Vector3<T>& v) {
-	return Vector3<T>(std::min(std::max(v.x, T(0)), T(1)), std::min(std::max(v.y, T(0)), T(1)), std::min(std::max(v.z, T(0)), T(1)));
+	return Vector3<T>(std::min(std::max(v.x, T(0)), T(1)),
+					  std::min(std::max(v.y, T(0)), T(1)),
+					  std::min(std::max(v.z, T(0)), T(1)));
 }
 
 template<typename T>
