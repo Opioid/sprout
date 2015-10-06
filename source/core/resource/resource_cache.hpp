@@ -6,12 +6,6 @@
 #include <map>
 #include <utility>
 
-namespace file {
-
-class System;
-
-}
-
 namespace resource {
 
 template<typename T>

@@ -1,27 +1,27 @@
 #pragma once
 
 #include "resource/resource_provider.hpp"
-#include "scene/shape/geometry/vertex.hpp"
-#include "base/json/rapidjson_types.hpp"
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace scene { namespace shape {
 
-struct Vertex;
+class Shape;
 
 namespace triangle {
 
-struct Index_triangle;
-class Mesh;
-
-class Provider : public resource::Provider<Mesh> {
+class Provider : public resource::Provider<Shape> {
 public:
 
 	Provider(file::System& file_system);
 
-	virtual std::shared_ptr<Mesh> load(const std::string& filename, uint32_t flags = 0);
+	virtual std::shared_ptr<Shape> load(const std::string& filename, uint32_t flags = 0) final override;
+
+private:
+
+	std::shared_ptr<Shape> load_morphable_mesh(const std::string& filename,
+											   const std::vector<std::string>& morph_targets);
 };
 
 }}}

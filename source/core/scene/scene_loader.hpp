@@ -68,7 +68,7 @@ private:
 	std::shared_ptr<shape::Shape> sphere_;
 
 	shape::triangle::Provider mesh_provider_;
-	resource::Cache<shape::triangle::Mesh> mesh_cache_;
+	resource::Cache<shape::Shape> mesh_cache_;
 
 	image::texture::Provider texture_provider_;
 	resource::Cache<image::texture::Texture_2D> texture_cache_;

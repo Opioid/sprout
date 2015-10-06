@@ -2,6 +2,7 @@
 
 #include "scene/shape/geometry/vertex.hpp"
 #include <vector>
+#include <string>
 #include <cstdint>
 
 namespace scene { namespace shape { namespace triangle {
@@ -16,6 +17,8 @@ public:
 	};
 
 	Json_handler();
+
+	void clear();
 
 	bool Null();
 	bool Bool(bool b);
@@ -42,6 +45,8 @@ public:
 	const std::vector<Vertex>& vertices() const;
 	std::vector<Vertex>& vertices();
 
+	const std::vector<std::string>& morph_targets() const;
+
 private:
 
 	void handle_vertex(float v);
@@ -63,13 +68,20 @@ private:
 		Tangent
 	};
 
-	enum class Object {
+	enum class String {
 		Unknown,
-		Group
+		Morph_target
 	};
 
-	size_t object_level_;
-	bool inside_geometry_object_;
+	enum class Object {
+		Unknown,
+		Geometry,
+		Group,
+		Morph_targets
+	};
+
+	uint32_t object_level_;
+	Object top_object_;
 
 	std::vector<Group> groups_;
 
@@ -86,6 +98,8 @@ private:
 	bool has_positions_;
 	bool has_normals_;
 	bool has_tangents_;
+
+	std::vector<std::string> morph_targets_;
 };
 
 }}}

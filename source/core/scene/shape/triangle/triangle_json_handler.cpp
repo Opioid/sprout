@@ -4,7 +4,7 @@ namespace scene { namespace shape { namespace triangle {
 
 Json_handler::Json_handler () :
 	object_level_(0),
-	inside_geometry_object_(false),
+	top_object_(Object::Unknown),
 	expected_number_(Number::Unknown),
 	expected_object_(Object::Unknown),
 	current_vertex_(0),
@@ -13,6 +13,21 @@ Json_handler::Json_handler () :
 	has_normals_(false),
 	has_tangents_(false)
 {}
+
+void Json_handler::clear() {
+	object_level_ = 0;
+	top_object_ = Object::Unknown;
+	groups_.clear();
+	vertices_.clear();
+	indices_.clear();
+	expected_number_ = Number::Unknown;
+	expected_object_ = Object::Unknown;
+	current_vertex_ = 0;
+	current_array_index_ = 0;
+	has_positions_ = false;
+	has_normals_ = false;
+	has_tangents_ = false;
+}
 
 bool Json_handler::Null() {
 	return true;
@@ -64,7 +79,9 @@ bool Json_handler::Double(double d) {
 	return true;
 }
 
-bool Json_handler::String(const char* /*str*/, size_t /*length*/, bool /*copy*/) {
+bool Json_handler::String(const char* str, size_t /*length*/, bool /*copy*/) {
+	morph_targets_.push_back(str);
+
 	return true;
 }
 
@@ -85,48 +102,51 @@ bool Json_handler::StartObject() {
 bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
 	std::string name(str);
 
-	if (1 == object_level_ && "geometry" == name) {
-		inside_geometry_object_ = true;
-		return true;
+	if (1 == object_level_) {
+		if ("geometry" == name) {
+			top_object_ = Object::Geometry;
+			return true;
+		} else if ("morph_targets" == name) {
+			top_object_ = Object::Morph_targets;
+			return true;
+		}
 	}
 
-	if (!inside_geometry_object_) {
-		return true;
-	}
-
-	if ("groups" == name) {
-		expected_object_ = Object::Group;
-	} else if ("material_index" == name) {
-		expected_number_ = Number::Material_index;
-	} else if ("start_index" == name) {
-		expected_number_ = Number::Start_index;
-	} else if ("num_indices" == name) {
-		expected_number_ = Number::Num_indices;
-	} else if ("indices" == name) {
-		expected_number_ = Number::Index;
-	} else if ("positions" == name) {
-		expected_number_ = Number::Position;
-		current_vertex_ = 0;
-		has_positions_ = true;
-	} else if ("texture_coordinates_0" == name) {
-		expected_number_ = Number::Texture_coordinate_0;
-		current_vertex_ = 0;
-	} else if ("normals" == name) {
-		expected_number_ = Number::Normal;
-		current_vertex_ = 0;
-		has_normals_ = true;
-	} else if ("tangents_and_bitangent_signs" == name) {
-		expected_number_ = Number::Tangent;
-		current_vertex_ = 0;
-		has_tangents_ = true;
+	if (Object::Geometry == top_object_) {
+		if ("groups" == name) {
+			expected_object_ = Object::Group;
+		} else if ("material_index" == name) {
+			expected_number_ = Number::Material_index;
+		} else if ("start_index" == name) {
+			expected_number_ = Number::Start_index;
+		} else if ("num_indices" == name) {
+			expected_number_ = Number::Num_indices;
+		} else if ("indices" == name) {
+			expected_number_ = Number::Index;
+		} else if ("positions" == name) {
+			expected_number_ = Number::Position;
+			current_vertex_ = 0;
+			has_positions_ = true;
+		} else if ("texture_coordinates_0" == name) {
+			expected_number_ = Number::Texture_coordinate_0;
+			current_vertex_ = 0;
+		} else if ("normals" == name) {
+			expected_number_ = Number::Normal;
+			current_vertex_ = 0;
+			has_normals_ = true;
+		} else if ("tangents_and_bitangent_signs" == name) {
+			expected_number_ = Number::Tangent;
+			current_vertex_ = 0;
+			has_tangents_ = true;
+		}
 	}
 
 	return true;
 }
 
 bool Json_handler::EndObject(size_t /*memberCount*/) {
-	if (2 == object_level_ && inside_geometry_object_) {
-		inside_geometry_object_ = false;
+	if (2 == object_level_) {
+		top_object_ = Object::Unknown;
 	}
 
 	--object_level_;
@@ -172,6 +192,10 @@ const std::vector<Vertex>& Json_handler::vertices() const {
 
 std::vector<Vertex>& Json_handler::vertices() {
 	return vertices_;
+}
+
+const std::vector<std::string>& Json_handler::morph_targets() const {
+	return morph_targets_;
 }
 
 void Json_handler::handle_vertex(float v) {

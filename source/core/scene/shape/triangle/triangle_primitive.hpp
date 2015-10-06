@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace scene { namespace shape { namespace triangle {
 
 struct Index_triangle {

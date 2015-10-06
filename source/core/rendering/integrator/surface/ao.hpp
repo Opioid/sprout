@@ -5,6 +5,8 @@
 #include "sampler/ld_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
 #include "sampler/random_sampler.hpp"
+#include "image/texture/sampler/sampler_2d_linear.hpp"
+#include "image/texture/sampler/address_mode.hpp"
 
 namespace rendering {
 
@@ -15,6 +17,8 @@ public:
 		uint32_t num_samples;
 		float num_samples_reciprocal;
 		float radius;
+
+		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
 	};
 
 	Ao(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
