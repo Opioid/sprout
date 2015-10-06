@@ -172,7 +172,7 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 		try {
 			return mesh_cache_.load(file);
 		} catch (const std::exception& e) {
-			std::cout << "Cannot load " << file << ": " << e.what() << std::endl;
+			std::cout << "Cannot load \"" << file << "\": " << e.what() << std::endl;
 		}
 	}
 

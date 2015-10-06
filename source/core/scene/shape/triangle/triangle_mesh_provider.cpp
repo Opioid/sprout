@@ -19,9 +19,6 @@ Provider::Provider(file::System& file_system) : resource::Provider<Mesh>(file_sy
 
 std::shared_ptr<Mesh> Provider::load(const std::string& filename, uint32_t /*flags*/) {
 	auto stream_pointer = file_system_.read_stream(filename);
-	if (!*stream_pointer) {
-		throw std::runtime_error("Stream could not be opened");
-	}
 
 	std::vector<Index_triangle> triangles;
 	std::vector<Vertex> vertices;

@@ -3,6 +3,8 @@
 namespace scene { namespace shape { namespace triangle {
 
 Json_handler::Json_handler () :
+	object_level_(0),
+	inside_geometry_object_(false),
 	expected_number_(Number::Unknown),
 	expected_object_(Object::Unknown),
 	current_vertex_(0),
@@ -67,6 +69,8 @@ bool Json_handler::String(const char* /*str*/, size_t /*length*/, bool /*copy*/)
 }
 
 bool Json_handler::StartObject() {
+	++object_level_;
+
 	switch (expected_object_) {
 	case Object::Group:
 		groups_.push_back(Group());
@@ -80,6 +84,15 @@ bool Json_handler::StartObject() {
 
 bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
 	std::string name(str);
+
+	if (1 == object_level_ && "geometry" == name) {
+		inside_geometry_object_ = true;
+		return true;
+	}
+
+	if (!inside_geometry_object_) {
+		return true;
+	}
 
 	if ("groups" == name) {
 		expected_object_ = Object::Group;
@@ -112,6 +125,11 @@ bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
 }
 
 bool Json_handler::EndObject(size_t /*memberCount*/) {
+	if (2 == object_level_ && inside_geometry_object_) {
+		inside_geometry_object_ = false;
+	}
+
+	--object_level_;
 	return true;
 }
 
@@ -121,7 +139,8 @@ bool Json_handler::StartArray() {
 }
 
 bool Json_handler::EndArray(size_t /*elementCount*/) {
-	// Of course not all arrays describe a vertex, so this value is only to be trusted while processing the array of vertices.
+	// Of course not all arrays describe a vertex,
+	// so this value is only to be trusted while processing the array of vertices.
 	// It works because current_vertex_ is set to 0 before the array of vertices starts
 	++current_vertex_;
 	return true;

@@ -68,6 +68,9 @@ private:
 		Group
 	};
 
+	size_t object_level_;
+	bool inside_geometry_object_;
+
 	std::vector<Group> groups_;
 
 	std::vector<uint32_t> indices_;

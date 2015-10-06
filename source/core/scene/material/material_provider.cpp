@@ -35,13 +35,8 @@ Provider::Provider(file::System& file_system,
 
 std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t /*flags*/) {
 	auto stream_pointer = file_system_.read_stream(filename);
-	if (!*stream_pointer) {
-		throw std::runtime_error("File \"" + filename + "\" could not be opened");
-	}
 
-	auto& stream = *stream_pointer;
-
-	auto root = json::parse(stream);
+	auto root = json::parse(*stream_pointer);
 
 	// checking for positions now, but handling them later
 	const rapidjson::Value::ConstMemberIterator rendering_node = root->FindMember("rendering");
