@@ -14,9 +14,9 @@ public:
 
 	void set_transformation(const math::transformation& t);
 
-	void set_beginning(const math::transformation& t);
+	void set_beginning(const Keyframe& frame);
 
-	void tick(const math::transformation& t);
+	void tick(const Keyframe& frame);
 
 protected:
 

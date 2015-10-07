@@ -20,6 +20,7 @@ void Ao::start_new_pixel(uint32_t num_samples) {
 
 math::float4 Ao::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	math::Oray occlusion_ray;
+	occlusion_ray.time = ray.time;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 	occlusion_ray.max_t = settings_.radius;

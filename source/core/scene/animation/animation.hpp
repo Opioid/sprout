@@ -17,9 +17,9 @@ public:
 
 	void tick(float time_slice);
 
-	void beginning(math::transformation& t) const;
+	void beginning(entity::Keyframe& frame) const;
 
-	void current_frame(math::transformation& t) const;
+	void current_frame(entity::Keyframe& frame) const;
 
 private:
 
@@ -29,7 +29,7 @@ private:
 
 	std::vector<entity::Keyframe> keyframes_;
 
-	math::transformation interpolated_frame_;
+	entity::Keyframe interpolated_frame_;
 };
 
 }}

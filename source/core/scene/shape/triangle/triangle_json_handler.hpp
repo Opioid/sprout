@@ -68,7 +68,7 @@ private:
 		Tangent
 	};
 
-	enum class String {
+	enum class String_type {
 		Unknown,
 		Morph_target
 	};
@@ -90,6 +90,7 @@ private:
 	std::vector<Vertex> vertices_;
 
 	Number expected_number_;
+	String_type expected_string_;
 	Object expected_object_;
 
 	size_t current_vertex_;

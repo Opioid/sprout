@@ -7,15 +7,15 @@
 namespace scene { namespace animation {
 
 Stage::Stage(entity::Entity* entity, Animation* animation) : entity_(entity), animation_(animation) {
-	math::transformation t;
-	animation->beginning(t);
-	entity_->set_beginning(t);
+	entity::Keyframe frame;
+	animation->beginning(frame);
+	entity_->set_beginning(frame);
 }
 
 void Stage::update() {
-	math::transformation t;
-	animation_->current_frame(t);
-	entity_->tick(t);
+	entity::Keyframe frame;
+	animation_->current_frame(frame);
+	entity_->tick(frame);
 }
 
 }}

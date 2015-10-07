@@ -9,9 +9,12 @@
 namespace scene { namespace shape { namespace triangle {
 
 struct Triangle;
+class  Morph_target_collection;
 
 class Morphable_mesh : public Shape {
 public:
+
+	Morphable_mesh(std::shared_ptr<Morph_target_collection> collection);
 
 	void init();
 
@@ -55,6 +58,8 @@ private:
 	typedef bvh::Tree<bvh::Data_MT> Tree;
 
 	Tree tree_;
+
+	std::shared_ptr<Morph_target_collection> collection_;
 
 	friend class Provider;
 };

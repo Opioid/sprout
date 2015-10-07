@@ -36,15 +36,15 @@ void Animation::tick(float time_slice) {
 
 	float t = delta / range;
 
-	interpolated_frame_ = math::lerp(current_frame.transformation, next_frame.transformation, t);
+	current_frame.interpolate(next_frame, t, interpolated_frame_);
 }
 
-void Animation::beginning(math::transformation& t) const {
-	t = keyframes_[0].transformation;
+void Animation::beginning(entity::Keyframe& frame) const {
+	frame = keyframes_[0];
 }
 
-void Animation::current_frame(math::transformation& t) const {
-	t = interpolated_frame_;
+void Animation::current_frame(entity::Keyframe& frame) const {
+	frame = interpolated_frame_;
 }
 
 }}

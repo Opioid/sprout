@@ -24,13 +24,13 @@ void Entity::set_transformation(const math::transformation& t) {
 	on_set_transformation();
 }
 
-void Entity::set_beginning(const math::transformation& t) {
-	world_transformation_b_ = t;
+void Entity::set_beginning(const Keyframe& frame) {
+	world_transformation_b_ = frame.transformation;
 }
 
-void Entity::tick(const math::transformation& t) {
+void Entity::tick(const Keyframe& frame) {
 	world_transformation_a_ = world_transformation_b_;
-	world_transformation_b_ = t;
+	world_transformation_b_ = frame.transformation;
 
 	animated_ = true;
 

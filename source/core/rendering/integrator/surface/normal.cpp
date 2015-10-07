@@ -15,12 +15,14 @@ Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
 math::float4 Normal::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+//	return math::float4(0.5f * (intersection.geo.geo_n + math::float3(1.f, 1.f, 1.f)), 1.f);
+
 	auto material = intersection.material();
 
 	math::float3 wo = -ray.direction;
 	auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
-	return math::float4(0.5f * (material_sample.geometric_normal() + math::float3(1.f, 1.f, 1.f)), 1.f);
+	return math::float4(0.5f * (material_sample.shading_normal() + math::float3(1.f, 1.f, 1.f)), 1.f);
 }
 
 Normal_factory::Normal_factory(const take::Settings& take_settings) : Surface_integrator_factory(take_settings) {

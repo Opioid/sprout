@@ -6,6 +6,7 @@ Json_handler::Json_handler () :
 	object_level_(0),
 	top_object_(Object::Unknown),
 	expected_number_(Number::Unknown),
+	expected_string_(String_type::Unknown),
 	expected_object_(Object::Unknown),
 	current_vertex_(0),
 	current_array_index_(0),
@@ -21,6 +22,7 @@ void Json_handler::clear() {
 	vertices_.clear();
 	indices_.clear();
 	expected_number_ = Number::Unknown;
+	expected_string_ = String_type::Unknown;
 	expected_object_ = Object::Unknown;
 	current_vertex_ = 0;
 	current_array_index_ = 0;
@@ -80,7 +82,9 @@ bool Json_handler::Double(double d) {
 }
 
 bool Json_handler::String(const char* str, size_t /*length*/, bool /*copy*/) {
-	morph_targets_.push_back(str);
+	if (String_type::Morph_target == expected_string_) {
+		morph_targets_.push_back(str);
+	}
 
 	return true;
 }
@@ -108,6 +112,7 @@ bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
 			return true;
 		} else if ("morph_targets" == name) {
 			top_object_ = Object::Morph_targets;
+			expected_string_ = String_type::Morph_target;
 			return true;
 		}
 	}

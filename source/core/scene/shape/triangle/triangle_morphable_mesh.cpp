@@ -1,5 +1,7 @@
 #include "triangle_morphable_mesh.hpp"
 #include "triangle_intersection.hpp"
+#include "triangle_morph_target_collection.hpp"
+#include "triangle_primitive_mt.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
@@ -11,6 +13,8 @@
 #include "base/math/distribution/distribution_1d.inl"
 
 namespace scene { namespace shape { namespace triangle {
+
+Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection) : collection_(collection) {}
 
 void Morphable_mesh::init() {
 	aabb_ = tree_.aabb();

@@ -1,6 +1,7 @@
 #include "triangle_mesh_provider.hpp"
 #include "resource/resource_provider.inl"
 #include "triangle_json_handler.hpp"
+#include "triangle_morphable_mesh.hpp"
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
@@ -87,11 +88,9 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*fl
 
 std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename,
 													 const std::vector<std::string>& morph_targets) {
-	Morph_target_collection collection;
+	auto collection = std::make_shared<Morph_target_collection>();
 
 	Json_handler handler;
-
-	std::vector<Vertex> vertices;
 
 	for (auto& targets : morph_targets) {
 		auto stream_pointer = file_system_.read_stream(targets);
@@ -105,7 +104,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 		reader.Parse(json_stream, handler);
 
 		if (!handler.has_positions()) {
-			throw std::runtime_error("Mesh does not contain vertex positions");
+			continue;
 		}
 
 		if (!handler.has_normals()) {
@@ -124,7 +123,8 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 			}
 		}
 
-		if (collection.triangles().empty()) {
+		// The idea is to have one identical set of indices for all morph targets
+		if (collection->triangles().empty()) {
 			auto& indices = handler.indices();
 
 			for (auto& p : handler.groups()) {
@@ -136,20 +136,22 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 					uint32_t b = indices[i * 3 + 1];
 					uint32_t c = indices[i * 3 + 2];
 
-					collection.triangles().push_back(Index_triangle{a, b, c, p.material_index});
+					collection->triangles().push_back(Index_triangle{a, b, c, p.material_index});
 				}
 			}
 		}
 
-		vertices.swap(handler.vertices());
-
-		break;
+		collection->add_swap_vertices(handler.vertices());
 	}
 
-	auto mesh = std::make_shared<Mesh>();
+	auto mesh = std::make_shared<Morphable_mesh>(collection);
+
+	std::vector<Vertex> vertices(collection->vertices(0).size());
+
+	collection->morph(0, 3, 0.5f, vertices);
 
 	bvh::Builder builder;
-	builder.build<bvh::Data_MT>(mesh->tree_, collection.triangles(), vertices, 8);
+	builder.build<bvh::Data_MT>(mesh->tree_, collection->triangles(), vertices, 8);
 
 	mesh->init();
 
