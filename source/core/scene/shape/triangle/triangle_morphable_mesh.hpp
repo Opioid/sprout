@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/shape/shape.hpp"
+#include "scene/shape/morphable_shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
 #include "bvh/triangle_bvh_data_mt.hpp"
 #include "bvh/triangle_bvh_data_yf.hpp"
@@ -11,7 +12,7 @@ namespace scene { namespace shape { namespace triangle {
 struct Triangle;
 class  Morph_target_collection;
 
-class Morphable_mesh : public Shape {
+class Morphable_mesh : public Shape, public Morphable_shape {
 public:
 
 	Morphable_mesh(std::shared_ptr<Morph_target_collection> collection);
@@ -53,6 +54,10 @@ public:
 
 	virtual void prepare_sampling(uint32_t part, const math::float3& scale) final override;
 
+	virtual Morphable_shape* morphable_shape() final override;
+
+	virtual void morph(uint32_t a, uint32_t b, float weight) final override;
+
 private:
 
 	typedef bvh::Tree<bvh::Data_MT> Tree;
@@ -60,6 +65,8 @@ private:
 	Tree tree_;
 
 	std::shared_ptr<Morph_target_collection> collection_;
+
+	std::vector<Vertex> vertices_;
 
 	friend class Provider;
 };

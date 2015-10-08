@@ -24,8 +24,8 @@ protected:
 
 	math::transformation local_transformation_;
 
-	math::transformation world_transformation_b_;
-	math::transformation world_transformation_a_;
+	Keyframe frame_b_;
+	Keyframe frame_a_;
 
 	Composed_transformation world_transformation_;
 

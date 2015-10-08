@@ -146,15 +146,6 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 
 	auto mesh = std::make_shared<Morphable_mesh>(collection);
 
-	std::vector<Vertex> vertices(collection->vertices(0).size());
-
-	collection->morph(0, 3, 0.5f, vertices);
-
-	bvh::Builder builder;
-	builder.build<bvh::Data_MT>(mesh->tree_, collection->triangles(), vertices, 8);
-
-	mesh->init();
-
 	return mesh;
 }
 

@@ -1,6 +1,7 @@
 #include "prop.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape.hpp"
+#include "scene/shape/morphable_shape.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
@@ -177,14 +178,19 @@ bool Prop::visible(uint32_t ray_depth) const {
 
 void Prop::on_set_transformation() {
 	if (animated_) {
+		shape::Morphable_shape* morphable = shape_->morphable_shape();
+		if (morphable) {
+			morphable->morph(frame_a_.morphing.targets[0], frame_a_.morphing.targets[1], frame_a_.morphing.weight);
+		}
+
 		entity::Composed_transformation t;
 
 		math::aabb a;
-		t.set(world_transformation_a_);
+		t.set(frame_a_.transformation);
 		shape_->aabb().transform(t.object_to_world, a);
 
 		math::aabb b;
-		t.set(world_transformation_b_);
+		t.set(frame_b_.transformation);
 		shape_->aabb().transform(t.object_to_world, b);
 
 		aabb_ = a.merge(b);

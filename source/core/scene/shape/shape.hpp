@@ -22,6 +22,7 @@ namespace shape {
 
 struct Intersection;
 struct Sample;
+class Morphable_shape;
 
 class Shape {
 public:
@@ -64,6 +65,8 @@ public:
 	virtual bool is_analytical() const;
 
 	virtual void prepare_sampling(uint32_t part, const math::float3& scale);
+
+	virtual Morphable_shape* morphable_shape();
 
 protected:
 

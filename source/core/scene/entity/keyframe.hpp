@@ -12,8 +12,12 @@ struct Keyframe {
 	float time;
 	math::transformation transformation;
 
-	uint32_t morph_targets[2];
-	float    morph_delta;
+	struct Morphing {
+		uint32_t targets[2];
+		float    weight;
+	};
+
+	Morphing morphing;
 };
 
 }}

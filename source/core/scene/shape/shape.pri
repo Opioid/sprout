@@ -12,6 +12,7 @@ HEADERS += \
 	scene/shape/celestial_disk.hpp \
 	scene/shape/disk.hpp \
 	scene/shape/inverse_sphere.hpp \
+	scene/shape/morphable_shape.hpp \
 	scene/shape/node_stack.hpp \
 	scene/shape/node_stack.inl \
 	scene/shape/plane.hpp \

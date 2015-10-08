@@ -103,6 +103,12 @@ Vector2<T> reciprocal(Vector2<T> v) {
 }
 
 template<typename T>
+Vector2<T> lerp(Vector2<T> a, Vector2<T> b, T t) {
+	T u = T(1) - t;
+	return u * a + t * b;
+}
+
+template<typename T>
 Vector2<T> round(Vector2<T> v){
 	return Vector2<T>(std::floor(v.x >= T(0) ? v.x + T(0.5) : v.x - T(0.5)),
 					  std::floor(v.y >= T(0) ? v.y + T(0.5) : v.y - T(0.5)));

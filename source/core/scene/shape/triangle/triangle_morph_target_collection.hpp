@@ -21,7 +21,7 @@ public:
 
 	void add_swap_vertices(std::vector<Vertex>& vertices);
 
-	void morph(uint32_t a, uint32_t b, float delta, std::vector<Vertex>& vertices);
+	void morph(uint32_t a, uint32_t b, float weight, std::vector<Vertex>& vertices);
 
 private:
 

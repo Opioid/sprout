@@ -3,6 +3,8 @@
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_primitive_mt.hpp"
 #include "bvh/triangle_bvh_tree.inl"
+#include "bvh/triangle_bvh_builder.inl"
+#include "bvh/triangle_bvh_data_mt.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
@@ -12,9 +14,13 @@
 #include "base/math/matrix.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
+#include <iostream>
+
 namespace scene { namespace shape { namespace triangle {
 
-Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection) : collection_(collection) {}
+Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection) : collection_(collection) {
+	vertices_.resize(collection_->vertices(0).size());
+}
 
 void Morphable_mesh::init() {
 	aabb_ = tree_.aabb();
@@ -146,6 +152,21 @@ bool Morphable_mesh::is_analytical() const {
 }
 
 void Morphable_mesh::prepare_sampling(uint32_t /*part*/, const math::float3& /*scale*/) {}
+
+Morphable_shape* Morphable_mesh::morphable_shape() {
+	return this;
+}
+
+void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight) {
+//	std::cout << "morph " << a << " " << b << " " << weight << std::endl;
+
+	collection_->morph(a, b, weight, vertices_);
+
+	bvh::Builder builder;
+	builder.build<bvh::Data_MT>(tree_, collection_->triangles(), vertices_, 8);
+
+	init();
+}
 
 }}}
 

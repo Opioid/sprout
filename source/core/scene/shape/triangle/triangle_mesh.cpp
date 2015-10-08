@@ -1,6 +1,7 @@
 #include "triangle_mesh.hpp"
 #include "triangle_intersection.hpp"
 #include "bvh/triangle_bvh_tree.inl"
+#include "bvh/triangle_bvh_data_mt.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
