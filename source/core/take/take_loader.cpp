@@ -31,7 +31,7 @@
 
 namespace take {
 
-std::shared_ptr<Take> Loader::load(std::istream& stream) {
+std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& pool) {
 	auto root = json::parse(stream);
 
 	auto take = std::make_shared<Take>();
@@ -44,7 +44,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		const rapidjson::Value& node_value = n->value;
 
 		if ("camera" == node_name) {
-			load_camera(node_value, alpha_transparency, *take);
+			load_camera(node_value, alpha_transparency, pool, *take);
 		} else if ("export" == node_name) {
 			exporter_value = &node_value;
 		} else if ("frames" == node_name) {
@@ -89,7 +89,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	return take;
 }
 
-void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const {
+void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, thread::Pool& pool,
+						 Take& take) const {
 	std::string type_name = "Perspective";
 	const rapidjson::Value* type_value = nullptr;
 
@@ -152,7 +153,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 //	} else if ("Orthographic" == type_name) {
 //	}
 
-	camera->set_transformation(transformation);
+	camera->set_transformation(transformation, pool);
 
 	camera->update_view();
 

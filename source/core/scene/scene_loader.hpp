@@ -44,11 +44,11 @@ public:
 	Loader(file::System& file_system, uint32_t num_workers);
 	~Loader();
 
-	void load(std::istream& stream, Scene& scene);
+	void load(std::istream& stream, thread::Pool& pool, Scene& scene);
 
 private:
 
-	void load_entities(const rapidjson::Value& entities_value, Scene& scene);
+	void load_entities(const rapidjson::Value& entities_value, thread::Pool& pool, Scene& scene);
 
 	Prop* load_prop(const rapidjson::Value& prop_value, Scene& scene);
 

@@ -109,7 +109,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 		progressor.start(progress_range);
 
 		if (0.f == camera.frame_duration()) {
-			scene.tick();
+			scene.tick(pool);
 			render_subframe(camera, 0.f, 0.f, 0.f, 1.f, tiles, workers, pool, progressor);
 		} else if (!camera.motion_blur()) {
 			float frame_offset = 0.f;
@@ -119,7 +119,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 			while (frame_rest > 0.f) {
 				if (tick_rest <= 0.f) {
-					scene.tick();
+					scene.tick(pool);
 					tick_offset = 0.f;
 					tick_rest = scene.tick_duration();
 				}
@@ -149,7 +149,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 			while (frame_rest > 0.f) {
 				if (tick_rest <= 0.f) {
-					scene.tick();
+					scene.tick(pool);
 					tick_offset = 0.f;
 					tick_rest = scene.tick_duration();
 				}

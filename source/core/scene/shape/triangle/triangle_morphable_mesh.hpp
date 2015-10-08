@@ -56,7 +56,7 @@ public:
 
 	virtual Morphable_shape* morphable_shape() final override;
 
-	virtual void morph(uint32_t a, uint32_t b, float weight) final override;
+	virtual void morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) final override;
 
 private:
 

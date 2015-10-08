@@ -27,7 +27,7 @@ bool Camera::motion_blur() const {
 	return motion_blur_;
 }
 
-void Camera::on_set_transformation() {}
+void Camera::on_set_transformation(thread::Pool& /*pool*/) {}
 
 math::float2 Camera::calculate_dimensions(const math::float2& dimensions, rendering::film::Film* film) {
 	if (0.f == dimensions.x && 0.f == dimensions.y) {

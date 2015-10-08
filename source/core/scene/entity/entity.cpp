@@ -14,27 +14,25 @@ bool Entity::transformation_at(float tick_delta, Composed_transformation& transf
 	return animated_;
 }
 
-void Entity::set_transformation(const math::transformation& t) {
-	local_transformation_ = t;
-
+void Entity::set_transformation(const math::transformation& t, thread::Pool& pool) {
 	world_transformation_.set(t);
 
 	animated_ = false;
 
-	on_set_transformation();
+	on_set_transformation(pool);
 }
 
 void Entity::set_beginning(const Keyframe& frame) {
 	frame_b_ = frame;
 }
 
-void Entity::tick(const Keyframe& frame) {
+void Entity::tick(const Keyframe& frame, thread::Pool& pool) {
 	frame_a_ = frame_b_;
 	frame_b_ = frame;
 
 	animated_ = true;
 
-	on_set_transformation();
+	on_set_transformation(pool);
 }
 
 }}

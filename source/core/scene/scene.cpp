@@ -45,13 +45,13 @@ float Scene::simulation_time() const {
 	return simulation_time_;
 }
 
-void Scene::tick() {
+void Scene::tick(thread::Pool& pool) {
 	for (auto a : animations_) {
 		a->tick(tick_duration_);
 	}
 
 	for (auto& s : animation_stages_) {
-		s.update();
+		s.update(pool);
 	}
 
 	compile();

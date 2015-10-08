@@ -2,6 +2,7 @@
 #include "triangle_primitive.hpp"
 #include "scene/shape/geometry/vertex.hpp"
 #include "base/math/vector.inl"
+#include "base/thread/thread_pool.hpp"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -22,16 +23,19 @@ void Morph_target_collection::add_swap_vertices(std::vector<Vertex>& vertices) {
 	morph_targets_.back().swap(vertices);
 }
 
-void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, std::vector<Vertex>& vertices) {
-	auto& va = morph_targets_[a];
-	auto& vb = morph_targets_[b];
+void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool,
+									std::vector<Vertex>& vertices) {
+	const auto& va = morph_targets_[a];
+	const auto& vb = morph_targets_[b];
 
-	for (size_t i = 0, len = va.size(); i < len; ++i) {
-		vertices[i].p = math::lerp(va[i].p, vb[i].p, weight);
-		vertices[i].n = math::normalized(math::lerp(va[i].n, vb[i].n, weight));
-		vertices[i].t = math::normalized(math::lerp(va[i].t, vb[i].t, weight));
-		vertices[i].uv = math::lerp(va[i].uv, vb[i].uv, weight);
-	}
+	pool.run_range([&va, &vb, weight, &vertices](uint32_t begin, uint32_t end) {
+		for (uint32_t i = begin; i < end; ++i) {
+			vertices[i].p = math::lerp(va[i].p, vb[i].p, weight);
+			vertices[i].n = math::normalized(math::lerp(va[i].n, vb[i].n, weight));
+			vertices[i].t = math::normalized(math::lerp(va[i].t, vb[i].t, weight));
+			vertices[i].uv = math::lerp(va[i].uv, vb[i].uv, weight);
+		}
+	}, 0, static_cast<uint32_t>(va.size()));
 }
 
 }}}

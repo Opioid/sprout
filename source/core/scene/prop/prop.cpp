@@ -176,11 +176,12 @@ bool Prop::visible(uint32_t ray_depth) const {
 	return true;
 }
 
-void Prop::on_set_transformation() {
+void Prop::on_set_transformation(thread::Pool& pool) {
 	if (animated_) {
 		shape::Morphable_shape* morphable = shape_->morphable_shape();
 		if (morphable) {
-			morphable->morph(frame_a_.morphing.targets[0], frame_a_.morphing.targets[1], frame_a_.morphing.weight);
+			morphable->morph(frame_a_.morphing.targets[0], frame_a_.morphing.targets[1], frame_a_.morphing.weight,
+							 pool);
 		}
 
 		entity::Composed_transformation t;

@@ -38,7 +38,7 @@ Loader::Loader(file::System& file_system, uint32_t num_workers) :
 
 Loader::~Loader() {}
 
-void Loader::load(std::istream& stream, Scene& scene) {
+void Loader::load(std::istream& stream, thread::Pool& pool, Scene& scene) {
 	auto root = json::parse(stream);
 
 	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
@@ -46,12 +46,12 @@ void Loader::load(std::istream& stream, Scene& scene) {
 		const rapidjson::Value& node_value = n->value;
 
 		if ("entities" == node_name) {
-			load_entities(node_value, scene);
+			load_entities(node_value, pool, scene);
 		}
 	}
 }
 
-void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene) {
+void Loader::load_entities(const rapidjson::Value& entities_value, thread::Pool& pool, Scene& scene) {
 	if (!entities_value.IsArray()) {
 		return;
 	}
@@ -99,11 +99,11 @@ void Loader::load_entities(const rapidjson::Value& entities_value, Scene& scene)
 			}
 		}
 
-		entity->set_transformation(transformation);
-
 		if (animation) {
 			scene.add_animation(animation);
 			scene.create_animation_stage(entity, animation.get());
+		} else {
+			entity->set_transformation(transformation, pool);
 		}
 	}
 }

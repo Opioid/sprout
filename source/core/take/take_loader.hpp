@@ -5,11 +5,9 @@
 #include <string>
 #include <memory>
 
-namespace exporting {
+namespace thread { class Pool; }
 
-class Sink;
-
-}
+namespace exporting { class Sink; }
 
 namespace math { namespace random {
 
@@ -23,11 +21,7 @@ class Camera;
 
 }}
 
-namespace sampler {
-
-class Sampler;
-
-}
+namespace sampler { class Sampler; }
 
 namespace rendering {
 
@@ -35,11 +29,7 @@ namespace film {
 
 class Film;
 
-namespace tonemapping {
-
-class Tonemapper;
-
-}
+namespace tonemapping { class Tonemapper; }
 
 namespace filter {
 
@@ -59,11 +49,12 @@ struct Settings;
 class Loader {
 public:
 
-	std::shared_ptr<Take> load(std::istream& stream);
+	std::shared_ptr<Take> load(std::istream& stream, thread::Pool& pool);
 
 private:
 
-	void load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const;
+	void load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, thread::Pool& pool,
+					 Take& take) const;
 
 	rendering::film::Film* load_film(const rapidjson::Value& film_value, bool alpha_transparency) const;
 

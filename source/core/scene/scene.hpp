@@ -48,7 +48,7 @@ public:
 	float tick_duration() const;
 	float simulation_time() const;
 
-	void tick();
+	void tick(thread::Pool& pool);
 
 	Prop* create_prop();
 

@@ -49,7 +49,7 @@ private:
 
 	bool visible(uint32_t ray_depth) const;
 
-	virtual void on_set_transformation() final override;
+	virtual void on_set_transformation(thread::Pool& pool) final override;
 
 	std::shared_ptr<shape::Shape> shape_;
 

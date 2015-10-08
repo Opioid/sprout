@@ -3,6 +3,8 @@
 #include <vector>
 #include <cstdint>
 
+namespace thread { class Pool; }
+
 namespace scene { namespace shape {
 
 struct Vertex;
@@ -21,7 +23,8 @@ public:
 
 	void add_swap_vertices(std::vector<Vertex>& vertices);
 
-	void morph(uint32_t a, uint32_t b, float weight, std::vector<Vertex>& vertices);
+	void morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool,
+			   std::vector<Vertex>& vertices);
 
 private:
 

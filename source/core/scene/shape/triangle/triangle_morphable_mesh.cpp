@@ -157,10 +157,10 @@ Morphable_shape* Morphable_mesh::morphable_shape() {
 	return this;
 }
 
-void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight) {
+void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) {
 //	std::cout << "morph " << a << " " << b << " " << weight << std::endl;
 
-	collection_->morph(a, b, weight, vertices_);
+	collection_->morph(a, b, weight, pool, vertices_);
 
 	bvh::Builder builder;
 	builder.build<bvh::Data_MT>(tree_, collection_->triangles(), vertices_, 8);

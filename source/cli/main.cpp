@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
 
 	try {
 		take::Loader take_loader;
-		take = take_loader.load(*file_system.read_stream(args.take));
+		take = take_loader.load(*file_system.read_stream(args.take), pool);
 	} catch (const std::exception& e) {
 		logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
 		return 1;
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 	scene::Scene scene;
 
 	try {
-		scene_loader.load(*file_system.read_stream(take->scene), scene);
+		scene_loader.load(*file_system.read_stream(take->scene), pool, scene);
 
 		if (take->camera_animation) {
 			scene.add_animation(take->camera_animation);
