@@ -171,4 +171,19 @@ std::string read_string(const rapidjson::Value& value, const std::string& name, 
 	return node->value.GetString();
 }
 
+void read_transformation(const rapidjson::Value& value, math::transformation& transformation) {
+	for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("position" == node_name) {
+			transformation.position = json::read_float3(node_value);
+		} else if ("scale" == node_name) {
+			transformation.scale = json::read_float3(node_value);
+		} else if ("rotation" == node_name) {
+			transformation.rotation = json::read_local_rotation(node_value);
+		}
+	}
+}
+
 }

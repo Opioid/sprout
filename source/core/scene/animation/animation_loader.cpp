@@ -34,12 +34,8 @@ std::shared_ptr<animation::Animation> load(const rapidjson::Value& animation_val
 
 			if ("time" == node_name) {
 				keyframe.time = json::read_float(node_value);
-			} else if ("position" == node_name) {
-				keyframe.transformation.position = json::read_float3(node_value);
-			} else if ("scale" == node_name) {
-				keyframe.transformation.scale = json::read_float3(node_value);
-			} else if ("rotation" == node_name) {
-				keyframe.transformation.rotation = json::read_local_rotation(node_value);
+			} else if ("transformation" == node_name) {
+				json::read_transformation(node_value, keyframe.transformation);
 			}
 		}
 

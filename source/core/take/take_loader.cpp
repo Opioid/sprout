@@ -116,10 +116,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("position" == node_name) {
-			transformation.position = json::read_float3(node_value);
-		} else if ("rotation" == node_name) {
-			transformation.rotation = json::read_local_rotation(node_value);
+		if ("transformation" == node_name) {
+			json::read_transformation(node_value, transformation);
 		} else if ("animation" == node_name) {
 			take.camera_animation = scene::animation::load(node_value);
 		} else if ("dimensions" == node_name) {
