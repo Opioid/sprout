@@ -17,23 +17,13 @@ class System;
 
 namespace scene {
 
-namespace surrounding {
+namespace entity { class Entity; }
 
-class Surrounding;
+namespace surrounding { class Surrounding; }
 
-}
+namespace light { class Light; }
 
-namespace light {
-
-class Light;
-
-}
-
-namespace shape {
-
-class Shape;
-
-}
+namespace shape { class Shape; }
 
 class Scene;
 class Prop;
@@ -48,7 +38,8 @@ public:
 
 private:
 
-	void load_entities(const rapidjson::Value& entities_value, thread::Pool& pool, Scene& scene);
+	void load_entities(const rapidjson::Value& entities_value, entity::Entity* parent,
+					   thread::Pool& pool, Scene& scene);
 
 	Prop* load_prop(const rapidjson::Value& prop_value, Scene& scene);
 

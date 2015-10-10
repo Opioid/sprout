@@ -46,12 +46,13 @@ void Loader::load(std::istream& stream, thread::Pool& pool, Scene& scene) {
 		const rapidjson::Value& node_value = n->value;
 
 		if ("entities" == node_name) {
-			load_entities(node_value, pool, scene);
+			load_entities(node_value, nullptr, pool, scene);
 		}
 	}
 }
 
-void Loader::load_entities(const rapidjson::Value& entities_value, thread::Pool& pool, Scene& scene) {
+void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entity* parent,
+						   thread::Pool& pool, Scene& scene) {
 	if (!entities_value.IsArray()) {
 		return;
 	}
@@ -88,6 +89,8 @@ void Loader::load_entities(const rapidjson::Value& entities_value, thread::Pool&
 
 		std::shared_ptr<animation::Animation> animation;
 
+		const rapidjson::Value* children = nullptr;
+
 		for (auto n = e->MemberBegin(); n != e->MemberEnd(); ++n) {
 			const std::string node_name = n->name.GetString();
 			const rapidjson::Value& node_value = n->value;
@@ -96,6 +99,8 @@ void Loader::load_entities(const rapidjson::Value& entities_value, thread::Pool&
 				json::read_transformation(node_value, transformation);
 			} else if ("animation" == node_name) {
 				animation = animation::load(node_value);
+			} else if ("entities" == node_name) {
+				children = &node_value;
 			}
 		}
 
@@ -104,6 +109,14 @@ void Loader::load_entities(const rapidjson::Value& entities_value, thread::Pool&
 			scene.create_animation_stage(entity, animation.get());
 		} else {
 			entity->set_transformation(transformation, pool);
+		}
+
+		if (children) {
+			load_entities(*children, entity, pool, scene);
+		}
+
+		if (parent) {
+			parent->attach(entity);
 		}
 	}
 }
