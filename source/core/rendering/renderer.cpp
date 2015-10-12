@@ -14,6 +14,7 @@
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 #include <mutex>
+#include "base/math/print.hpp"
 #include <iostream>
 
 namespace rendering {
@@ -150,6 +151,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 			while (frame_rest > 0.f) {
 				if (tick_rest <= 0.f) {
 					scene.tick(pool);
+					std::cout << scene.bvh_.aabb().halfsize() << std::endl;
 					tick_offset = 0.f;
 					tick_rest = scene.tick_duration();
 				}

@@ -24,7 +24,12 @@ void Entity::set_transformation(const math::transformation& t, thread::Pool& poo
 	local_frame_a_.transformation = t;
 	local_frame_b_.transformation = t;
 
+	world_frame_a_ = t;
+	world_frame_b_ = t;
+
 	animated_ = false;
+
+	propagate_transformation(pool);
 
 	on_set_transformation(pool);
 }

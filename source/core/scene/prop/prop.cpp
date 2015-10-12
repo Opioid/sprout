@@ -186,12 +186,12 @@ void Prop::on_set_transformation(thread::Pool& pool) {
 
 		entity::Composed_transformation t;
 
-		math::aabb a;
 		t.set(world_frame_a_);
+		math::aabb a;
 		shape_->aabb().transform(t.object_to_world, a);
 
-		math::aabb b;
 		t.set(world_frame_b_);
+		math::aabb b;
 		shape_->aabb().transform(t.object_to_world, b);
 
 		aabb_ = a.merge(b);

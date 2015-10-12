@@ -15,7 +15,8 @@ Build_node::~Build_node() {
 	delete children[1];
 }
 
-bool Build_node::intersect(math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack, Intersection& intersection) const {
+bool Build_node::intersect(math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
+						   Intersection& intersection) const {
 	if (!aabb.intersect_p(ray)) {
 		return false;
 	}
@@ -45,7 +46,8 @@ bool Build_node::intersect(math::Oray& ray, const std::vector<Prop*>& props, sha
 	return hit;
 }
 
-bool Build_node::intersect_p(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack) const {
+bool Build_node::intersect_p(const math::Oray& ray, const std::vector<Prop*>& props,
+							 shape::Node_stack& node_stack) const {
 	if (!aabb.intersect_p(ray)) {
 		return false;
 	}

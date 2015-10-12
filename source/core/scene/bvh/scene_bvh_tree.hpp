@@ -21,7 +21,8 @@ struct Build_node {
 	Build_node();
 	~Build_node();
 
-	bool intersect(math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack, Intersection& intersection) const;
+	bool intersect(math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
+				   Intersection& intersection) const;
 
 	bool intersect_p(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack) const;
 

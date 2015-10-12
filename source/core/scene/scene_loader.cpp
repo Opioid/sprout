@@ -103,6 +103,14 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 			}
 		}
 
+		if (children) {
+			load_entities(*children, entity, pool, scene);
+		}
+
+		if (parent) {
+			parent->attach(entity);
+		}
+
 		if (animation_value) {
 			auto animation = animation::load(*animation_value, transformation);
 			if (animation) {
@@ -111,14 +119,6 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 			}
 		} else {
 			entity->set_transformation(transformation, pool);
-		}
-
-		if (children) {
-			load_entities(*children, entity, pool, scene);
-		}
-
-		if (parent) {
-			parent->attach(entity);
 		}
 	}
 }

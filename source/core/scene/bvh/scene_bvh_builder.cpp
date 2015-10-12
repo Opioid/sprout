@@ -24,7 +24,8 @@ void Builder::build(Tree& tree, const std::vector<Prop*>& props) {
 	tree.infinite_props_end_ = static_cast<uint32_t>(tree.props_.size());
 }
 
-void Builder::split(Build_node* node, const std::vector<Prop*>& props, size_t max_shapes, std::vector<Prop*>& out_props) {
+void Builder::split(Build_node* node, const std::vector<Prop*>& props, size_t max_shapes,
+					std::vector<Prop*>& out_props) {
 	node->aabb = aabb(props);
 
 	if (props.size() <= max_shapes) {

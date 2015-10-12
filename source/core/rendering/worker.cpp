@@ -23,7 +23,8 @@ Worker::~Worker() {
 	delete sampler_;
 }
 
-void Worker::init(uint32_t id, const math::random::Generator& rng, Surface_integrator_factory& surface_integrator_factory,
+void Worker::init(uint32_t id, const math::random::Generator& rng,
+				  Surface_integrator_factory& surface_integrator_factory,
 				  sampler::Sampler& sampler, const scene::Scene& scene) {
 	id_ = id;
 	rng_ = rng;
