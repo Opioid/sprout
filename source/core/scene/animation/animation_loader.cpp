@@ -8,7 +8,8 @@ namespace scene { namespace animation {
 
 void read_morphing(const rapidjson::Value& value, entity::Keyframe::Morphing& morphing);
 
-std::shared_ptr<animation::Animation> load(const rapidjson::Value& animation_value) {
+std::shared_ptr<animation::Animation> load(const rapidjson::Value& animation_value,
+										   const math::transformation& default_transformation) {
 	const rapidjson::Value::ConstMemberIterator keyframes_node = animation_value.FindMember("keyframes");
 	if (animation_value.MemberEnd() == keyframes_node) {
 		return nullptr;
@@ -26,9 +27,7 @@ std::shared_ptr<animation::Animation> load(const rapidjson::Value& animation_val
 
 	for (auto k = keyframes_value.Begin(); k != keyframes_value.End(); ++k) {
 		entity::Keyframe keyframe;
-		keyframe.transformation.position = math::float3::identity;
-		keyframe.transformation.scale = math::float3(1.f, 1.f, 1.f);
-		keyframe.transformation.rotation = math::quaternion::identity;
+		keyframe.transformation = default_transformation;
 
 		keyframe.morphing.targets[0] = 0;
 		keyframe.morphing.targets[1] = 0;

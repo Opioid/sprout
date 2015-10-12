@@ -87,8 +87,7 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 			math::quaternion::identity
 		};
 
-		std::shared_ptr<animation::Animation> animation;
-
+		const rapidjson::Value* animation_value = nullptr;
 		const rapidjson::Value* children = nullptr;
 
 		for (auto n = e->MemberBegin(); n != e->MemberEnd(); ++n) {
@@ -98,15 +97,18 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 			if ("transformation" == node_name) {
 				json::read_transformation(node_value, transformation);
 			} else if ("animation" == node_name) {
-				animation = animation::load(node_value);
+				animation_value = &node_value;
 			} else if ("entities" == node_name) {
 				children = &node_value;
 			}
 		}
 
-		if (animation) {
-			scene.add_animation(animation);
-			scene.create_animation_stage(entity, animation.get());
+		if (animation_value) {
+			auto animation = animation::load(*animation_value, transformation);
+			if (animation) {
+				scene.add_animation(animation);
+				scene.create_animation_stage(entity, animation.get());
+			}
 		} else {
 			entity->set_transformation(transformation, pool);
 		}
@@ -160,12 +162,10 @@ light::Light* Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* 
 	light::Prop_light* light = nullptr;
 
 	if (prop->shape()->is_analytical() && prop->has_emission_mapped_material()) {
-		light = scene.create_prop_image_light();
+		light = scene.create_prop_image_light(prop);
 	} else {
-		light = scene.create_prop_light();
+		light = scene.create_prop_light(prop);
 	}
-
-	light->init(prop);
 
 	return light;
 }

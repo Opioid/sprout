@@ -19,7 +19,7 @@ public:
 
 	void beginning(entity::Keyframe& frame) const;
 
-	void current_frame(entity::Keyframe& frame) const;
+	void interpolated_frame(entity::Keyframe& frame) const;
 
 private:
 

@@ -1,8 +1,5 @@
 #pragma once
 
-
-namespace thread { class Pool; }
-
 namespace scene {
 
 namespace entity {
@@ -20,7 +17,7 @@ public:
 
     Stage(entity::Entity* entity, Animation* animation);
 
-	void update(thread::Pool& pool);
+	void update();
 
 private:
 

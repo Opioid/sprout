@@ -12,10 +12,10 @@ Stage::Stage(entity::Entity* entity, Animation* animation) : entity_(entity), an
 	entity_->set_beginning(frame);
 }
 
-void Stage::update(thread::Pool& pool) {
+void Stage::update() {
 	entity::Keyframe frame;
-	animation_->current_frame(frame);
-	entity_->tick(frame, pool);
+	animation_->interpolated_frame(frame);
+	entity_->tick(frame);
 }
 
 }}

@@ -105,6 +105,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 		math::quaternion::identity
 	};
 
+	const rapidjson::Value* animation_value = nullptr;
 	math::float2 dimensions = math::float2::identity;
 	rendering::film::Film* film = nullptr;
 	float frame_duration = 0.f;
@@ -120,7 +121,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 		if ("transformation" == node_name) {
 			json::read_transformation(node_value, transformation);
 		} else if ("animation" == node_name) {
-			take.camera_animation = scene::animation::load(node_value);
+			animation_value = &node_value;
 		} else if ("dimensions" == node_name) {
 			dimensions = json::read_float2(node_value);
 		} else if ("film" == node_name) {
@@ -143,6 +144,10 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 		} else if ("focal_distance" == node_name) {
 			focal_distance = json::read_float(node_value);
 		}
+	}
+
+	if (animation_value) {
+		take.camera_animation = scene::animation::load(*animation_value, transformation);
 	}
 
 	std::shared_ptr<scene::camera::Camera> camera;

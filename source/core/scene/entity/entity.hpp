@@ -21,7 +21,9 @@ public:
 
 	void set_beginning(const Keyframe& frame);
 
-	void tick(const Keyframe& frame, thread::Pool& pool);
+	void tick(const Keyframe& frame);
+
+	void calculate_world_transformation(thread::Pool& pool);
 
 	void attach(Entity* node);
 	void detach();
@@ -30,14 +32,20 @@ public:
 
 protected:
 
+	void propagate_transformation(thread::Pool& pool) const;
+	void inherit_transformation(const math::transformation& a, const math::transformation& b, thread::Pool& pool);
+
 	void add_sibling(Entity* node);
 	void detach(Entity* node);
 	void remove_sibling(Entity* node);
 
 	virtual void on_set_transformation(thread::Pool& pool) = 0;
 
-	Keyframe frame_b_;
-	Keyframe frame_a_;
+	Keyframe local_frame_a_;
+	Keyframe local_frame_b_;
+
+	math::transformation world_frame_a_;
+	math::transformation world_frame_b_;
 
 	Composed_transformation world_transformation_;
 

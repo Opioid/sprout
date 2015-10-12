@@ -43,7 +43,7 @@ void Animation::beginning(entity::Keyframe& frame) const {
 	frame = keyframes_[0];
 }
 
-void Animation::current_frame(entity::Keyframe& frame) const {
+void Animation::interpolated_frame(entity::Keyframe& frame) const {
 	frame = interpolated_frame_;
 }
 

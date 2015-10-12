@@ -33,7 +33,8 @@ bool Scene::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) co
 	return bvh_.intersect_p(ray, node_stack);
 }
 
-float Scene::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::texture::sampler::Sampler_2D& sampler) const {
+float Scene::opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+					 const image::texture::sampler::Sampler_2D& sampler) const {
 	return bvh_.opacity(ray, node_stack, sampler);
 }
 
@@ -51,7 +52,11 @@ void Scene::tick(thread::Pool& pool) {
 	}
 
 	for (auto& s : animation_stages_) {
-		s.update(pool);
+		s.update();
+	}
+
+	for (auto p : props_) {
+		p->calculate_world_transformation(pool);
 	}
 
 	compile();
@@ -79,15 +84,17 @@ const light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 	return lights_[l];
 }
 
-light::Prop_light* Scene::create_prop_light() {
+light::Prop_light* Scene::create_prop_light(Prop* prop) {
 	light::Prop_light* light = new light::Prop_light;
 	lights_.push_back(light);
+	light->init(prop);
 	return light;
 }
 
-light::Prop_image_light* Scene::create_prop_image_light() {
+light::Prop_image_light* Scene::create_prop_image_light(Prop* prop) {
 	light::Prop_image_light* light = new light::Prop_image_light;
 	lights_.push_back(light);
+	light->init(prop);
 	return light;
 }
 

@@ -180,18 +180,18 @@ void Prop::on_set_transformation(thread::Pool& pool) {
 	if (animated_) {
 		shape::Morphable_shape* morphable = shape_->morphable_shape();
 		if (morphable) {
-			morphable->morph(frame_a_.morphing.targets[0], frame_a_.morphing.targets[1], frame_a_.morphing.weight,
-							 pool);
+			morphable->morph(local_frame_a_.morphing.targets[0], local_frame_a_.morphing.targets[1],
+							 local_frame_a_.morphing.weight, pool);
 		}
 
 		entity::Composed_transformation t;
 
 		math::aabb a;
-		t.set(frame_a_.transformation);
+		t.set(world_frame_a_);
 		shape_->aabb().transform(t.object_to_world, a);
 
 		math::aabb b;
-		t.set(frame_b_.transformation);
+		t.set(world_frame_b_);
 		shape_->aabb().transform(t.object_to_world, b);
 
 		aabb_ = a.merge(b);
