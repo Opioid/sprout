@@ -1,5 +1,6 @@
 #include "scene.hpp"
 #include "scene/animation/animation.hpp"
+#include "scene/entity/dummy.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/light/prop_light.hpp"
@@ -22,6 +23,10 @@ Scene::~Scene() {
 
 	for (auto p : props_) {
 		delete p;
+	}
+
+	for (auto d : dummies_) {
+		delete d;
 	}
 }
 
@@ -55,6 +60,10 @@ void Scene::tick(thread::Pool& pool) {
 		s.update();
 	}
 
+	for (auto d : dummies_) {
+		d->calculate_world_transformation(pool);
+	}
+
 	for (auto p : props_) {
 		p->calculate_world_transformation(pool);
 	}
@@ -62,6 +71,12 @@ void Scene::tick(thread::Pool& pool) {
 	compile();
 
 	simulation_time_ += tick_duration_;
+}
+
+entity::Dummy* Scene::create_dummy() {
+	entity::Dummy* dummy = new entity::Dummy;
+	dummies_.push_back(dummy);
+	return dummy;
 }
 
 Prop* Scene::create_prop() {

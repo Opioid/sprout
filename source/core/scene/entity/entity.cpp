@@ -46,7 +46,7 @@ void Entity::tick(const Keyframe& frame) {
 }
 
 void Entity::calculate_world_transformation(thread::Pool& pool) {
-	if (animated_ && !parent_) {
+	if (!parent_) {
 		world_frame_a_ = local_frame_a_.transformation;
 		world_frame_b_ = local_frame_b_.transformation;
 

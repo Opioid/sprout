@@ -2,6 +2,7 @@
 #include "scene.hpp"
 #include "scene/animation/animation.hpp"
 #include "scene/animation/animation_loader.hpp"
+#include "scene/entity/dummy.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
 #include "scene/prop/prop.hpp"
@@ -75,6 +76,8 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 			}
 		} else if ("Prop" == type_name) {
 			entity = load_prop(*e, scene);
+		} else if ("Dummy" == type_name) {
+			entity = scene.create_dummy();
 		}
 
 		if (!entity) {

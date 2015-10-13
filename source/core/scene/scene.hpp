@@ -16,6 +16,7 @@ namespace scene {
 namespace entity {
 
 class Entity;
+class Dummy;
 
 }
 
@@ -52,6 +53,8 @@ public:
 
 	void tick(thread::Pool& pool);
 
+	entity::Dummy* create_dummy();
+
 	Prop* create_prop();
 
 	const std::vector<light::Light*>& lights() const;
@@ -74,6 +77,8 @@ public:
 
     bvh::Builder builder_;
 	bvh::Tree bvh_;
+
+	std::vector<entity::Dummy*> dummies_;
 
 	std::vector<Prop*> props_;
 
