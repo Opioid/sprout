@@ -109,15 +109,14 @@ void Scene::create_animation_stage(entity::Entity* entity, animation::Animation*
 void Scene::compile() {
 	builder_.build(bvh_, props_);
 
-	std::vector<float> power;
-	power.reserve(lights_.size());
+	light_powers_.clear();
 
 	for (auto l : lights_) {
 		l->prepare_sampling();
-		power.push_back(color::luminance(l->power(bvh_.aabb())));
+		light_powers_.push_back(color::luminance(l->power(bvh_.aabb())));
 	}
 
-	light_distribution_.init(power.data(), power.size());
+	light_distribution_.init(light_powers_.data(), light_powers_.size());
 }
 
 }

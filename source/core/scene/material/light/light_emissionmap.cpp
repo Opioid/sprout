@@ -12,7 +12,8 @@ Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
 						 std::shared_ptr<image::texture::Texture_2D> mask,
 						 std::shared_ptr<image::texture::Texture_2D> emission,
 						 float emission_factor) :
-	Light(cache, mask), emission_(emission), emission_factor_(emission_factor) {}
+	Light(cache, mask), emission_(emission), emission_factor_(emission_factor),
+	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
 const Sample& Emissionmap::sample(const shape::Differential& dg, const math::float3& wo,
 								  const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
@@ -62,7 +63,15 @@ float Emissionmap::emission_pdf(math::float2 uv, const image::texture::sampler::
 }
 
 void Emissionmap::prepare_sampling(bool spherical) {
+	if (average_emission_.x >= 0.f) {
+		// Hacky way to check whether prepare_sampling has been called before
+		// average_emission_ is initialized with negative values...
+		return;
+	}
+
 	if (spherical) {
+		average_emission_ = math::float3::identity;
+
 		auto d = emission_->dimensions();
 		std::vector<float> luminance(d.x * d.y);
 

@@ -79,6 +79,8 @@ public:
 
 	std::vector<light::Light*> lights_;
 
+	std::vector<float> light_powers_;
+
 	math::Distribution_1D light_distribution_;
 
     std::vector<std::shared_ptr<animation::Animation>> animations_;
