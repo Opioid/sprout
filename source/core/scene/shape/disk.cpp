@@ -12,7 +12,7 @@
 namespace scene { namespace shape {
 
 Disk::Disk() {
-	aabb_.set_min_max(math::float3(-1.f, -1.f, 0.f), math::float3(1.f, 1.f, 0.f));
+	aabb_.set_min_max(math::float3(-1.f, -1.f, -0.1f), math::float3(1.f, 1.f, 0.1f));
 }
 
 bool Disk::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,

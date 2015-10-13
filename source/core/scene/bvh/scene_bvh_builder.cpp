@@ -3,12 +3,12 @@
 #include "scene/shape/shape.hpp"
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
-#include <iostream>
 
 namespace scene { namespace bvh {
 
 void Builder::build(Tree& tree, const std::vector<Prop*>& props) {
-	tree.props_.clear();
+	tree.clear();
+
 	tree.props_.reserve(props.size());
 
 	split(&tree.root_, props, 4, tree.props_);

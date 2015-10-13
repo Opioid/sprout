@@ -104,6 +104,16 @@ float Build_node::opacity(const math::Oray& ray, const std::vector<Prop*>& props
 	return opacity;
 }
 
+void Tree::clear() {
+	delete root_.children[0];
+	root_.children[0] = nullptr;
+
+	delete root_.children[1];
+	root_.children[1] = nullptr;
+
+	props_.clear();
+}
+
 const math::aabb& Tree::aabb() const {
 	return root_.aabb;
 }
