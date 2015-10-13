@@ -119,16 +119,17 @@ void Entity::add_sibling(Entity* node) {
 
 void Entity::detach(Entity* node) {
 	// we can assume this to be true because of detach()
-//	if (node->parent_ == this) {
-		node->parent_ = nullptr;
+	// assert(node->parent_ == this);
 
-		if (child_ == node) {
-			child_ = node->next_;
-			node->next_ = nullptr;
-		} else {
-			child_->remove_sibling(node);
-		}
-//	}
+	node->parent_ = nullptr;
+
+	if (child_ == node) {
+		child_ = node->next_;
+		node->next_ = nullptr;
+	} else {
+		child_->remove_sibling(node);
+	}
+
 }
 
 void Entity::remove_sibling(Entity* node) {
