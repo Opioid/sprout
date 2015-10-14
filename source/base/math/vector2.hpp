@@ -73,4 +73,10 @@ Vector2<T> min(Vector2<T> a, Vector2<T> b);
 template<typename T>
 Vector2<T> max(Vector2<T> a, Vector2<T> b);
 
+template<typename T>
+bool contains_nan(const Vector2<T>& v);
+
+template<typename T>
+bool contains_inf(const Vector2<T>& v);
+
 }

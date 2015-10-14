@@ -8,8 +8,6 @@
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
-#include "base/math/print.hpp"
-#include <iostream>
 
 namespace scene { namespace shape {
 
@@ -33,7 +31,7 @@ bool Inverse_sphere::intersect(const entity::Composed_transformation& transforma
 			intersection.epsilon = 5e-4f * t0;
 
 			intersection.p = ray.point(t0);
-			intersection.n = (transformation.position - intersection.p) / radius;
+			intersection.n = math::normalized(transformation.position - intersection.p);
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
 
@@ -53,7 +51,7 @@ bool Inverse_sphere::intersect(const entity::Composed_transformation& transforma
 			intersection.epsilon = 5e-4f * t1;
 
 			intersection.p = ray.point(t1);
-			intersection.n = (transformation.position - intersection.p) / radius;
+			intersection.n = math::normalized(transformation.position - intersection.p);
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
 

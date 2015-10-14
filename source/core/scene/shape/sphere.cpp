@@ -30,9 +30,14 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 			intersection.epsilon = 5e-4f * t0;
 
 			intersection.p = ray.point(t0);
-			intersection.n = (intersection.p - transformation.position) / radius;
+			intersection.n = math::normalized(intersection.p - transformation.position);
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
+
+			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, intersection.n);
+			intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f,
+										   std::acos(xyz.y) * math::Pi_inv);
+
 			intersection.part = 0;
 
 			ray.max_t = t0;
@@ -45,9 +50,14 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 			intersection.epsilon = 5e-4f * t1;
 
 			intersection.p = ray.point(t1);
-			intersection.n = (intersection.p - transformation.position) / radius;
+			intersection.n = math::normalized(intersection.p - transformation.position);
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
+
+			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, intersection.n);
+			intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f,
+										   std::acos(xyz.y) * math::Pi_inv);
+
 			intersection.part = 0;
 
 			ray.max_t = t1;

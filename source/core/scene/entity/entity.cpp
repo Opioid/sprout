@@ -129,7 +129,6 @@ void Entity::detach(Entity* node) {
 	} else {
 		child_->remove_sibling(node);
 	}
-
 }
 
 void Entity::remove_sibling(Entity* node) {
