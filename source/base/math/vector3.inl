@@ -269,6 +269,11 @@ bool contains_negative(const Vector3<T>& v) {
 }
 
 template<typename T>
+bool contains_greater_one(const Vector3<T>& v) {
+	return v.x > T(1) || v.y > T(1) || v.z > T(1);
+}
+
+template<typename T>
 bool contains_nan(const Vector3<T>& v) {
 	return std::isnan(v.x) || std::isnan(v.y) || std::isnan(v.z);
 }

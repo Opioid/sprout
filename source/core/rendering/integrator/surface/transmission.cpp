@@ -45,7 +45,7 @@ math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Inter
 		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
 		throughput *= sample_result.reflection / sample_result.pdf;
 
-		// Only inner reflections hare handled here (transmission path viewed from the outside)
+		// Only inner reflections are handled here (transmission path viewed from the outside)
 		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
 			break;
 		}

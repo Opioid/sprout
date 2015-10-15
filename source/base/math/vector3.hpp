@@ -123,6 +123,9 @@ template<typename T>
 bool contains_negative(const Vector3<T>& v);
 
 template<typename T>
+bool contains_greater_one(const Vector3<T>& v);
+
+template<typename T>
 bool contains_nan(const Vector3<T>& v);
 
 template<typename T>
