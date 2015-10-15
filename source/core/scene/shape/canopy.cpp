@@ -29,7 +29,6 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.part = 0;
 
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
-
 		intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 		ray.max_t = 1000.f;

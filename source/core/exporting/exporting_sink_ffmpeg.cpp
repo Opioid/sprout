@@ -4,6 +4,8 @@
 #include "base/thread/thread_pool.hpp"
 #include <sstream>
 
+#include <iostream>
+
 // http://blog.mmacklin.com/2013/06/11/real-time-video-capture-with-ffmpeg/
 
 namespace exporting {
@@ -42,10 +44,16 @@ void Ffmpeg::write(const image::Image_float_4& image, thread::Pool& pool) {
 		return;
 	}
 
+	std::cout << "Ffmpeg before pool" << std::endl;
+
 	auto d = image.description().dimensions;
 	pool.run_range([this, &image](uint32_t begin, uint32_t end){ to_sRGB(image, begin, end); }, 0, d.x * d.y);
 
+	std::cout << "Ffmpeg after pool" << std::endl;
+
 	fwrite(rgba_, sizeof(color::Color4c) * d.x * d.y, 1, stream_);
+
+	std::cout << "Ffmpeg after write" << std::endl;
 }
 
 }

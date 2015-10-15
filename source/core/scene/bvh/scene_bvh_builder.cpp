@@ -4,6 +4,8 @@
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
 
+#include <iostream>
+
 namespace scene { namespace bvh {
 
 void Builder::build(Tree& tree, const std::vector<Prop*>& props) {
@@ -55,6 +57,8 @@ void Builder::split(Build_node* node, const std::vector<Prop*>& props, size_t ma
 		}
 
 		if (props0.empty()) {
+			std::cout << "not splitting because of stuff: " << props1.size() << std::endl;
+
 			assign(node, props1, out_props);
 		} else {
 			node->children[0] = new Build_node;

@@ -16,9 +16,6 @@
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
-#include "base/math/print.hpp"
-#include <iostream>
-
 namespace rendering {
 
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings,
@@ -91,7 +88,6 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			}
 
 			throughput *= transmitted;
-
 			opacity += 1.f - sample_result.pdf * color::luminance(transmitted);
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;

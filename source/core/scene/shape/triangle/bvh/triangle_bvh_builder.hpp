@@ -1,6 +1,6 @@
 #pragma once
 
-#include "split_candidate.hpp"
+#include "triangle_bvh_split_candidate.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include "base/math/plane.hpp"
 #include <cstdint>

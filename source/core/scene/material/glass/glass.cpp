@@ -3,8 +3,6 @@
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
 
-// #include <iostream>
-
 namespace scene { namespace material { namespace glass {
 
 // Adapted from https://seblagarde.wordpress.com/2013/04/29/memo-on-fresnel-equations/#more-1921
@@ -99,7 +97,7 @@ float BTDF::importance_sample(sampler::Sampler& /*sampler*/, BxDF_result& result
 	}
 
 	float n_dot_t = -std::sqrt(1.f - sint2);
-	result.wi = (eta * n_dot_wo + n_dot_t) * n - eta * sample_.wo_;
+	result.wi = math::normalized((eta * n_dot_wo + n_dot_t) * n - eta * sample_.wo_);
 
 	// fresnel has to be the same value that would have been computed by BRDF
 //	float f = fresnel_dielectric(n_dot_t, n_dot_wo, eta);
@@ -142,6 +140,8 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 //	brdf_.importance_sample(sampler, result);
 
 //	btdf_.importance_sample(sampler, result);
+
+//	result.pdf *= 0.5f;
 }
 
 bool Sample::is_pure_emissive() const {

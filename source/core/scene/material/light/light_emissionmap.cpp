@@ -20,7 +20,9 @@ const Sample& Emissionmap::sample(const shape::Differential& dg, const math::flo
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
-	sample.set(emission_factor_ * sampler.sample_3(*emission_, dg.uv));
+
+	math::float3 emission = sampler.sample_3(*emission_, dg.uv);
+	sample.set(emission_factor_ * emission);
 
 	return sample;
 }
