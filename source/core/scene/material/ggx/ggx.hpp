@@ -5,14 +5,12 @@
 namespace scene { namespace material { namespace ggx {
 
 template<typename Sample>
-class GGX : public BxDF<Sample> {
+class GGX_Schlick : public BxDF<Sample> {
 public:
 
-	GGX(const Sample& sample);
+	GGX_Schlick(const Sample& sample);
 
-	math::float3 evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo) const;
-
-	float pdf(const math::float3& wi, float n_dot_wi) const;
+	math::float3 evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float& pdf) const;
 
 	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
 };

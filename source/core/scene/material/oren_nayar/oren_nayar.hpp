@@ -10,9 +10,7 @@ public:
 
 	Oren_nayar(const Sample& sample);
 
-	math::float3 evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo) const;
-
-	float pdf(const math::float3& wi, float n_dot_wi) const;
+	math::float3 evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float& pdf) const;
 
 	float importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const;
 };

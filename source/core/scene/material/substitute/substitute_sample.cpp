@@ -111,20 +111,29 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 		} else {
 			if (1.f == metallic_) {
 				float n_dot_wi = ggx_.importance_sample(sampler, result);
-				result.pdf *= 0.5f;
 				result.reflection *= n_dot_wi;
+				result.pdf *= 0.5f;
 			} else {
-				float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
+				float n_dot_wo = clamped_n_dot_wo();
 
 				if (p < 0.75f) {
 					float n_dot_wi = oren_nayar_.importance_sample(sampler, n_dot_wo, result);
-					result.pdf = 0.25f * (result.pdf + ggx_.pdf(result.wi, n_dot_wi));
-					result.reflection = n_dot_wi * (result.reflection + ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo));
+
+					float ggx_pdf;
+					math::float3 ggx_reflection = ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
+
+					result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
+					result.pdf = 0.25f * (result.pdf + ggx_pdf);
+
 				} else {
 					float n_dot_wi = ggx_.importance_sample(sampler, result);
-					result.pdf = 0.25f * (result.pdf + oren_nayar_.pdf(result.wi, n_dot_wi));
-					result.reflection = n_dot_wi * (result.reflection +
-													oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo));
+
+					float oren_nayar_pdf;
+					math::float3 oren_nayar_reflection = oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo,
+																			  oren_nayar_pdf);
+
+					result.reflection = n_dot_wi * (result.reflection + oren_nayar_reflection);
+					result.pdf = 0.25f * (result.pdf + oren_nayar_pdf);
 				}
 			}
 		}
@@ -135,16 +144,25 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 		} else {
 			float p = sampler.generate_sample_1D();
 
-			float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
+			float n_dot_wo = clamped_n_dot_wo();
 
 			if (p < 0.5f) {
 				float n_dot_wi = oren_nayar_.importance_sample(sampler, n_dot_wo, result);
-				result.pdf = 0.5f * (result.pdf + ggx_.pdf(result.wi, n_dot_wi));
-				result.reflection = n_dot_wi * (result.reflection + ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo));
+
+				float ggx_pdf;
+				math::float3 ggx_reflection = ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
+
+				result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
+				result.pdf = 0.5f * (result.pdf + ggx_pdf);
 			} else {
 				float n_dot_wi = ggx_.importance_sample(sampler, result);
-				result.pdf = 0.5f * (result.pdf + oren_nayar_.pdf(result.wi, n_dot_wi));
-				result.reflection = n_dot_wi * (result.reflection + oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo));
+
+				float oren_nayar_pdf;
+				math::float3 oren_nayar_reflection = oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo,
+																		  oren_nayar_pdf);
+
+				result.reflection = n_dot_wi * (result.reflection + oren_nayar_reflection);
+				result.pdf = 0.5f * (result.pdf + oren_nayar_pdf);
 			}
 		}
 	}

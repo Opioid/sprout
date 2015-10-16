@@ -12,7 +12,7 @@ template<typename Sample>
 Oren_nayar<Sample>::Oren_nayar(const Sample& sample) : BxDF<Sample>(sample) {}
 
 template<typename Sample>
-math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo) const {
+math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float& pdf) const {
 /*
 	float roughness = 1.f;
 	float roughness_square = roughness * roughness;
@@ -73,6 +73,7 @@ math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi
 	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
 	float b = 0.45f * (a2 / (a2 + 0.09f));
 
+	pdf = n_dot_wi * math::Pi_inv;
 	return math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
 
 //	if (math::contains_negative(math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_)) {
@@ -106,11 +107,6 @@ math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi
 //	return (a + b * (s / t)) * BxDF<Sample>::sample_.diffuse_color_;
 	return (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
 */
-}
-
-template<typename Sample>
-float Oren_nayar<Sample>::pdf(const math::float3& /*wi*/, float n_dot_wi) const {
-	return n_dot_wi * math::Pi_inv;
 }
 
 template<typename Sample>

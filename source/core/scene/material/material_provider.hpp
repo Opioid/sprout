@@ -5,6 +5,7 @@
 #include "glass/glass_sample.hpp"
 #include "light/light_material.hpp"
 #include "matte/matte.hpp"
+#include "metal/metal_sample.hpp"
 #include "substitute/substitute_sample.hpp"
 #include "material_sample_cache.hpp"
 #include "base/json/rapidjson_types.hpp"
@@ -35,6 +36,7 @@ private:
 	std::shared_ptr<IMaterial> load_glass(const rapidjson::Value& glass_value);
 	std::shared_ptr<IMaterial> load_light(const rapidjson::Value& light_value);
 	std::shared_ptr<IMaterial> load_matte(const rapidjson::Value& matte_value);
+	std::shared_ptr<IMaterial> load_metal(const rapidjson::Value& metal_value);
 	std::shared_ptr<IMaterial> load_substitute(const rapidjson::Value& substitute_value);
 
 	resource::Cache<image::texture::Texture_2D>& texture_cache_;
@@ -42,6 +44,7 @@ private:
 	Generic_sample_cache<glass::Sample> glass_cache_;
 	Generic_sample_cache<light::Sample> light_cache_;
 	Generic_sample_cache<matte::Sample> matte_cache_;
+	Generic_sample_cache<metal::Sample> metal_cache_;
 	Generic_sample_cache<substitute::Sample> substitute_cache_;
 
 	std::shared_ptr<material::IMaterial> fallback_material_;

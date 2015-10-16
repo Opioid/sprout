@@ -10,6 +10,7 @@
 #include "matte/matte_colormap_normalmap.inl"
 #include "matte/matte_constant.inl"
 #include "matte/matte_normalmap.inl"
+#include "metal/metal_material.hpp"
 #include "substitute/substitute_material.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -24,6 +25,7 @@ Provider::Provider(file::System& file_system,
 	glass_cache_(num_workers),
 	light_cache_(num_workers),
 	matte_cache_(num_workers),
+	metal_cache_(num_workers),
 	substitute_cache_(num_workers) {
 	auto material = std::make_shared<substitute::Substitute>(substitute_cache_, nullptr);
 	material->set_color(math::float3(1.f, 0.f, 0.f)),
