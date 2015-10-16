@@ -1,7 +1,5 @@
 #pragma once
 
-#include "scene/material/material.hpp"
-#include "scene/material/material_sample_cache.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/material/bxdf.hpp"
 
@@ -50,7 +48,7 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& color, const math::float3& attenuation, float ior);
+	void set(const math::float3& color, float attenuation_distance, float ior);
 
 private:
 
@@ -63,19 +61,6 @@ private:
 
 	friend BRDF;
 	friend BTDF;
-};
-
-class Glass : public Material<Generic_sample_cache<Sample>> {
-public:
-
-	Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
-
-	virtual math::float3 sample_emission(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const final override;
-
-	virtual math::float3 average_emission() const final override;
-
-	virtual const image::texture::Texture_2D* emission_map() const final override;
-
 };
 
 }}}

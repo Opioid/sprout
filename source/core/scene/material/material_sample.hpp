@@ -66,6 +66,13 @@ public:
 		wo_ = wo;
 	}
 
+	static math::float3 attenuation(const math::float3& color, float distance) {
+		return math::float3(
+			color.x > 0.f ? 1.f / (color.x * distance) : 0.f,
+			color.y > 0.f ? 1.f / (color.y * distance) : 0.f,
+			color.z > 0.f ? 1.f / (color.z * distance) : 0.f);
+	}
+
 protected:
 
 	math::float3 t_, b_, n_;

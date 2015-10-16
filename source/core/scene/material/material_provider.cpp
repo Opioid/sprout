@@ -3,8 +3,7 @@
 #include "resource/resource_cache.inl"
 #include "material_sample_cache.inl"
 #include "image/texture/texture_2d_provider.hpp"
-#include "glass/glass_constant.hpp"
-#include "glass/glass_normalmap.hpp"
+#include "glass/glass_material.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
 #include "matte/matte_colormap.inl"
@@ -69,10 +68,10 @@ std::shared_ptr<IMaterial> Provider::fallback_material() const {
 }
 
 std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_value) {
+	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	math::float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
-	std::shared_ptr<image::texture::Texture_2D> normalmap;
 
 	for (auto n = glass_value.MemberBegin(); n != glass_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -94,17 +93,22 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 				}
 
 				if ("Normal" == usage) {
-					normalmap = texture_cache_.load(filename, static_cast<uint32_t>(image::texture::Provider::Flags::Use_as_normal));
+					normal_map = texture_cache_.load(filename, static_cast<uint32_t>(
+														 image::texture::Provider::Flags::Use_as_normal));
 				}
 			}
 		}
 	}
 
-	if (normalmap) {
-		return std::make_shared<glass::Normalmap>(glass_cache_, nullptr, color, attenuation_distance, ior, normalmap);
-	}
+	auto material = std::make_shared<glass::Glass>(glass_cache_, nullptr);
 
-	return std::make_shared<glass::Constant>(glass_cache_, nullptr, color, attenuation_distance, ior);
+	material->set_normal_map(normal_map);
+
+	material->set_color(color);
+	material->set_attenuation_distance(attenuation_distance);
+	material->set_ior(ior);
+
+	return material;
 }
 
 std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {
@@ -251,17 +255,17 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 					color_map = texture_cache_.load(filename);
 				} else if ("Normal" == usage) {
 					normal_map = texture_cache_.load(filename,
-													static_cast<uint32_t>(
+													 static_cast<uint32_t>(
 														image::texture::Provider::Flags::Use_as_normal));
 				} else if ("Surface" == usage) {
 					surface_map = texture_cache_.load(filename,
-													 static_cast<uint32_t>(
+													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));
 				} else if ("Emission" == usage) {
 					emission_map = texture_cache_.load(filename);
 				} else if ("Mask" == usage) {
 					mask = texture_cache_.load(filename,
-											   static_cast<uint32_t>(
+												static_cast<uint32_t>(
 												   image::texture::Provider::Flags::Use_as_mask));
 				}
 			}

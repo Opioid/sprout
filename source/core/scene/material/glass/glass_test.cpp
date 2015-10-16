@@ -1,5 +1,5 @@
 #include "glass_test.hpp"
-#include "glass.hpp"
+#include "glass_sample.hpp"
 #include "sampler/random_sampler.hpp"
 #include "base/math/random/generator.hpp"
 #include "base/math/print.hpp"
@@ -22,15 +22,10 @@ void test() {
 	BTDF btdf(sample);
 
 	math::float3 color(1.f, 1.f, 1.f);
-
 	float attenuation_distance = 1.f;
-	math::float3 attenuation(1.f / (color.x * attenuation_distance),
-							 1.f / (color.y * attenuation_distance),
-							 1.f / (color.z * attenuation_distance));
-
 	float ior = 1.5f;
 
-	sample.set(color, attenuation, ior);
+	sample.set(color, attenuation_distance, ior);
 
 	math::float3 t(1.f, 0.f, 0.f);
 	math::float3 b(0.f, 1.f, 0.f);

@@ -171,9 +171,7 @@ void Sample::set(const math::float3& color, const math::float3& emission,
 	thickness_ = thickness;
 
 	if (thickness > 0.f) {
-		attenuation_ = math::float3(1.f / (diffuse_color_.x * attenuation_distance),
-									1.f / (diffuse_color_.y * attenuation_distance),
-									1.f / (diffuse_color_.z * attenuation_distance));
+		attenuation_ = material::Sample::attenuation(diffuse_color_, attenuation_distance);
 	}
 }
 

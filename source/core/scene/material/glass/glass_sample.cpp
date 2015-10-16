@@ -1,6 +1,6 @@
-#include "glass.hpp"
-#include "scene/material/ggx/ggx.inl"
+#include "glass_sample.hpp"
 #include "sampler/sampler.hpp"
+#include "base/math/math.hpp"
 #include "base/math/vector.inl"
 
 namespace scene { namespace material { namespace glass {
@@ -152,25 +152,10 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(const math::float3& color, const math::float3& attenuation, float ior) {
+void Sample::set(const math::float3& color, float attenuation_distance, float ior) {
 	color_ = color;
-	attenuation_ = attenuation;
+	attenuation_ = material::Sample::attenuation(color, attenuation_distance);
 	ior_ = ior;
-}
-
-Glass::Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
-	Material(cache, mask) {}
-
-math::float3 Glass::sample_emission(math::float2 /*uv*/, const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return math::float3::identity;
-}
-
-math::float3 Glass::average_emission() const {
-	return math::float3::identity;
-}
-
-const image::texture::Texture_2D* Glass::emission_map() const {
-	return nullptr;
 }
 
 }}}

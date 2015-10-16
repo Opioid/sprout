@@ -5,6 +5,7 @@
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"
 #include "base/math/vector.inl"
+#include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 

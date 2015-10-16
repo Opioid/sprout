@@ -2,7 +2,7 @@
 
 #include "resource/resource_provider.hpp"
 #include "resource/resource_cache.hpp"
-#include "glass/glass.hpp"
+#include "glass/glass_sample.hpp"
 #include "light/light_material.hpp"
 #include "matte/matte.hpp"
 #include "substitute/substitute_sample.hpp"
