@@ -31,15 +31,13 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 
 math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
 	scene::material::BxDF_result sample_result;
-	scene::material::BxDF_result::Type previous_sample_type;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
 	float opacity = 0.f;
+	bool primary_ray = true;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::BxDF_type::Specular);
-
 		const image::texture::sampler::Sampler_2D* texture_sampler;
 
 		if (primary_ray) {
@@ -75,8 +73,8 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			break;
 		}
 
-		if (ray.depth > 0 && settings_.disable_caustics
-		&&  sample_result.type.test(scene::material::BxDF_type::Specular)) {
+		if (settings_.disable_caustics && !primary_ray
+		&& sample_result.type.test(scene::material::BxDF_type::Specular)) {
 			break;
 		}
 
@@ -94,7 +92,9 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			opacity = 1.f;
 		}
 
-		previous_sample_type = sample_result.type;
+		if (!sample_result.type.test(scene::material::BxDF_type::Specular)) {
+			primary_ray = false;
+		}
 
 		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;

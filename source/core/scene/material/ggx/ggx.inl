@@ -60,7 +60,10 @@ float GGX<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_result& res
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
 	// TODO: Optimize the perfect mirror case more
-	float n_dot_h = 0.f == BxDF<Sample>::sample_.a2_ ? 1.f : std::sqrt((1.f - xi.y) / ((BxDF<Sample>::sample_.a2_ - 1.f) * xi.y + 1.f));
+	float n_dot_h = 0.f == BxDF<Sample>::sample_.a2_ ? 1.f
+													 : std::sqrt((1.f - xi.y)
+																 / ((BxDF<Sample>::sample_.a2_ - 1.f) * xi.y + 1.f));
+
 	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 	float phi = 2.f * math::Pi * xi.x;
 	float sin_phi = std::sin(phi);
@@ -85,7 +88,8 @@ float GGX<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_result& res
 	math::float3 specular = d * g * f;
 	result.reflection = specular;
 	result.wi = wi;
-	result.type.clear_set(0.f == BxDF<Sample>::sample_.a2_ ? BxDF_type::Specular_reflection : BxDF_type::Glossy_reflection);
+	result.type.clear_set(0.f == BxDF<Sample>::sample_.a2_ ? BxDF_type::Specular_reflection
+														   : BxDF_type::Glossy_reflection);
 
 //	if (math::contains_negative(result.reflection)) {
 //		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
