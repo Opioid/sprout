@@ -94,10 +94,40 @@ bool Sphere::intersect_p(const entity::Composed_transformation& transformation, 
 }
 
 float Sphere::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-					  const math::float2& bounds, Node_stack& node_stack,
-					  const material::Materials& /*materials*/,
-					  const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return intersect_p(transformation, ray, bounds, node_stack) ? 1.f : 0.f;
+					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
+					  const material::Materials& materials,
+					  const image::texture::sampler::Sampler_2D& sampler) const {
+	math::float3 v = ray.origin - transformation.position;
+	float b = -dot(v, ray.direction);
+	float radius = transformation.scale.x;
+	float det = (b * b) - dot(v, v) + (radius * radius);
+
+	if (det > 0.f) {
+		float dist = std::sqrt(det);
+		float t0 = b - dist;
+
+		if (t0 > ray.min_t && t0 < ray.max_t) {
+			math::float3 n = math::normalized(ray.point(t0) - transformation.position);
+			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
+			math::float2 uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f,
+										   std::acos(xyz.y) * math::Pi_inv);
+
+			return materials[0]->opacity(uv, sampler);
+		}
+
+		float t1 = b + dist;
+
+		if (t1 > ray.min_t && t1 < ray.max_t) {
+			math::float3 n = math::normalized(ray.point(t1) - transformation.position);
+			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
+			math::float2 uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f,
+										   std::acos(xyz.y) * math::Pi_inv);
+
+			return materials[0]->opacity(uv, sampler);
+		}
+	}
+
+	return 0.f;
 }
 
 void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
