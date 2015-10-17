@@ -4,10 +4,10 @@
 
 namespace scene { namespace material { namespace light {
 
-class Constant : public Light {
+class Constant : public Material {
 public:
 
-	Constant(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+	Constant(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided,
 			 const math::float3& emission);
 
 	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo,

@@ -9,17 +9,17 @@
 namespace scene { namespace material { namespace light {
 
 Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
-						 std::shared_ptr<image::texture::Texture_2D> mask,
+						 std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided,
 						 std::shared_ptr<image::texture::Texture_2D> emission,
 						 float emission_factor) :
-	Light(cache, mask), emission_(emission), emission_factor_(emission_factor),
+	Material(cache, mask, two_sided), emission_(emission), emission_factor_(emission_factor),
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
 const Sample& Emissionmap::sample(const shape::Differential& dg, const math::float3& wo,
 								  const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
-	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
+	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 
 	math::float3 emission = sampler.sample_3(*emission_, dg.uv);
 	sample.set(emission_factor_ * emission);

@@ -38,7 +38,8 @@ void Sample::set(const math::float3& emission) {
 	emission_ = emission;
 }
 
-Light::Light(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
-	Material(cache, mask) {}
+Material::Material(Generic_sample_cache<Sample>& cache,
+				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
+	material::Material<Generic_sample_cache<Sample>>(cache, mask, two_sided) {}
 
 }}}

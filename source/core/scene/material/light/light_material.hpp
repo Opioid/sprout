@@ -32,10 +32,10 @@ private:
 
 };
 
-class Light : public Material<Generic_sample_cache<Sample>> {
+class Material : public material::Material<Generic_sample_cache<Sample>> {
 public:
 
-	Light(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
+	Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 };
 
 }}}

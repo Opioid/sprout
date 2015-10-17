@@ -7,10 +7,10 @@ namespace scene { namespace material { namespace substitute {
 
 class Sample;
 
-class Substitute : public Material<Generic_sample_cache<Sample>> {
+class Material : public material::Material<Generic_sample_cache<Sample>> {
 public:
 
-	Substitute(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
+	Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   const image::texture::sampler::Sampler_2D& sampler,
@@ -34,7 +34,6 @@ public:
 	void set_emission_factor(float emission_factor);
 	void set_thickness(float thickness);
 	void set_attenuation_distance(float attenuation_distance);
-	void set_two_sided(bool two_sided);
 
 private:
 
@@ -49,7 +48,6 @@ private:
 	float emission_factor_;
 	float thickness_;
 	float attenuation_distance_;
-	bool two_sided_;
 };
 
 }}}

@@ -8,10 +8,10 @@ namespace scene { namespace material { namespace metal {
 
 class Sample;
 
-class Metal : public Material<Generic_sample_cache<Sample>> {
+class Material : public material::Material<Generic_sample_cache<Sample>> {
 public:
 
-	Metal(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
+	Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   const image::texture::sampler::Sampler_2D& sampler,

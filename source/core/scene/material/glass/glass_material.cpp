@@ -8,7 +8,7 @@
 namespace scene { namespace material { namespace glass {
 
 Glass::Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
-	Material(cache, mask) {}
+	Material(cache, mask, false) {}
 
 const material::Sample& Glass::sample(const shape::Differential& dg, const math::float3& wo,
 									  const image::texture::sampler::Sampler_2D& sampler,

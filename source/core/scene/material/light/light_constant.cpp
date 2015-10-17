@@ -5,22 +5,24 @@
 
 namespace scene { namespace material { namespace light {
 
-Constant::Constant(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+Constant::Constant(Generic_sample_cache<Sample>& cache,
+				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided,
 				   const math::float3& emission) :
-	Light(cache, mask), emission_(emission) {}
+	Material(cache, mask, two_sided), emission_(emission) {}
 
 const Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
 							   const image::texture::sampler::Sampler_2D& /*sampler*/,
 							   uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
-	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
+	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 	sample.set(emission_);
 
 	return sample;
 }
 
-math::float3 Constant::sample_emission(math::float2 /*uv*/, const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+math::float3 Constant::sample_emission(math::float2 /*uv*/,
+									   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	return emission_;
 }
 

@@ -3,8 +3,8 @@
 
 namespace scene { namespace material {
 
-IMaterial::IMaterial(std::shared_ptr<image::texture::Texture_2D> mask) :
-	mask_(mask) {}
+IMaterial::IMaterial(std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
+	mask_(mask), two_sided_(two_sided) {}
 
 math::float2 IMaterial::emission_importance_sample(math::float2 /*r2*/, float& /*pdf*/) const {
 	return math::float2::identity;
