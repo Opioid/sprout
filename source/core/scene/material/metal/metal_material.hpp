@@ -26,17 +26,18 @@ public:
 
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 
-	void set_color(const math::float3& color);
-	void set_roughness(float rougness);
-	void set_ior(float ior);
+	void set_ior(const math::float3& ior);
+	void set_absorption(const math::float3& absorption);
+	void set_roughness(float roughness);
 
 protected:
 
 	std::shared_ptr<image::texture::Texture_2D> normal_map_;
 
-	math::float3 color_;
+	math::float3 ior_;
+	math::float3 absorption_;
+
 	float roughness_;
-	float ior_;
 };
 
 }}}

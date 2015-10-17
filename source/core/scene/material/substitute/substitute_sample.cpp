@@ -29,7 +29,6 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	}
 
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
-
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	// oren nayar

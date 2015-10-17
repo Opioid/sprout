@@ -159,15 +159,18 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 //	std::shared_ptr<image::texture::Texture_2D> surface_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
-	math::float3 color(0.75f, 0.75f, 0.75f);
+	math::float3 ior(1.f, 1.f, 1.f);
+	math::float3 absorption(0.75f, 0.75f, 0.75f);
 	float roughness = 0.9f;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("color" == node_name) {
-			color = json::read_float3(node_value);
+		if ("ior" == node_name) {
+			ior = json::read_float3(node_value);
+		} else if ("absorption" == node_name) {
+			absorption = json::read_float3(node_value);
 		} else if ("roughness" == node_name) {
 			roughness = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
@@ -206,7 +209,8 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 	material->set_normal_map(normal_map);
 //	material->set_surface_map(surface_map);
 
-	material->set_color(color);
+	material->set_ior(ior);
+	material->set_absorption(absorption);
 	material->set_roughness(roughness);
 
 	return material;

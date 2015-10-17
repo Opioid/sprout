@@ -25,19 +25,18 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& color, float roughness, float ior);
+	void set(const math::float3& ior, const math::float3& absorption, float sqrt_roughness);
 
 private:
 
-	math::float3 color_;
-	float roughness_;
-	float ior_;
+	math::float3 ior_;
+	math::float3 absorption_;
 
 	float a2_;
 
-	ggx::GGX_Schlick<Sample> ggx_;
+	ggx::GGX_Conductor<Sample> ggx_;
 
-	friend ggx::GGX_Schlick<Sample>;
+	friend ggx::GGX_Conductor<Sample>;
 };
 
 }}}

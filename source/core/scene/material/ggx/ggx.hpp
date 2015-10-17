@@ -15,6 +15,17 @@ public:
 	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
 };
 
+template<typename Sample>
+class GGX_Conductor : public BxDF<Sample> {
+public:
+
+	GGX_Conductor(const Sample& sample);
+
+	math::float3 evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float& pdf) const;
+
+	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
+};
+
 math::float3 f(float wo_dot_h, const math::float3& f0);
 float f(float wo_dot_h, float f0);
 
