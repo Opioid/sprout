@@ -16,8 +16,9 @@ Sample::Sample() : lambert_(*this), oren_nayar_(*this), ggx_(*this) {}
 
 math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	// This is a bit complicated to understand:
-	// If the material does not have transmission, we will never get a wi that is in the wrong hemisphere,
-	// because that case is handled before coming here, so the check is only neccessary in that case.
+	// If the material does not have transmission, we will never get a wi which is in the wrong hemisphere,
+	// because that case is handled before coming here,
+	// so the check is only neccessary transmissive materials (codified by thickness > 0).
 	// On the other hand, if the there is transmission and wi is actullay coming from "behind", then we don't need
 	// to calculate the reflection. In the other case, transmission won't be visible and we only need reflection.
 	if (thickness_ > 0.f && math::dot(wi, geo_n_) < 0.f) {
@@ -68,7 +69,10 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	math::float3 specular = d * ggx::g(n_dot_wi, n_dot_wo, a2_) * ggx::f(wo_dot_h, f0_);
 
 	float diffuse_pdf = n_dot_wi * math::Pi_inv;
-	float ggx_pdf     = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
+
+	// this helped in the past, but problem maybe caused by faulty sphere normals
+//	float ggx_pdf     = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
+	float ggx_pdf     = d * n_dot_h / (4.f * wo_dot_h);
 
 	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
 

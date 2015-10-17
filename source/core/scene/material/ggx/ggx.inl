@@ -18,8 +18,10 @@ math::float3 GGX_Schlick<Sample>::evaluate(const math::float3& wi, float n_dot_w
 
 	math::float3 h = math::normalized(BxDF<Sample>::sample_.wo_ + wi);
 
-	float n_dot_h  = std::max(math::dot(BxDF<Sample>::sample_.n_, h), 0.f);
-	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+//	float n_dot_h  = std::max(math::dot(BxDF<Sample>::sample_.n_, h), 0.f);
+//	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+	float n_dot_h  = math::dot(BxDF<Sample>::sample_.n_, h);
+	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
 
 	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
 	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);
@@ -53,7 +55,8 @@ float GGX_Schlick<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_res
 	math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	math::float3 h = BxDF<Sample>::sample_.tangent_to_world(is);
 
-	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+//	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
 
 	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - BxDF<Sample>::sample_.wo_);
 
@@ -98,8 +101,10 @@ math::float3 GGX_Conductor<Sample>::evaluate(const math::float3& wi, float n_dot
 
 	math::float3 h = math::normalized(BxDF<Sample>::sample_.wo_ + wi);
 
-	float n_dot_h  = std::max(math::dot(BxDF<Sample>::sample_.n_, h), 0.f);
-	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+//	float n_dot_h  = std::max(math::dot(BxDF<Sample>::sample_.n_, h), 0.f);
+//	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+	float n_dot_h  = math::dot(BxDF<Sample>::sample_.n_, h);
+	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
 
 	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
 	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);
@@ -133,7 +138,8 @@ float GGX_Conductor<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_r
 	math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	math::float3 h = BxDF<Sample>::sample_.tangent_to_world(is);
 
-	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+//	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
 
 	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - BxDF<Sample>::sample_.wo_);
 
