@@ -1,21 +1,15 @@
 #include "animation_stage.hpp"
 #include "animation.hpp"
 #include "scene/entity/entity.hpp"
-#include "base/math/vector.inl"
-#include "base/math/quaternion.inl"
 
 namespace scene { namespace animation {
 
 Stage::Stage(entity::Entity* entity, Animation* animation) : entity_(entity), animation_(animation) {
-	entity::Keyframe frame;
-	animation->beginning(frame);
-	entity_->set_beginning(frame);
+	entity_->set_beginning(animation->beginning());
 }
 
 void Stage::update() {
-	entity::Keyframe frame;
-	animation_->interpolated_frame(frame);
-	entity_->tick(frame);
+	entity_->tick(animation_->interpolated_frame());
 }
 
 }}
