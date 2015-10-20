@@ -6,39 +6,19 @@
 
 namespace scene {
 
-namespace camera {
-
-class Camera;
-
-}
+namespace camera { class Camera; }
 
 class Scene;
 
 }
 
-namespace sampler {
+namespace sampler { class Sampler; }
 
-class Sampler;
+namespace thread { class Pool; }
 
-}
+namespace exporting { class Sink; }
 
-namespace thread {
-
-class Pool;
-
-}
-
-namespace exporting {
-
-class Sink;
-
-}
-
-namespace progress {
-
-class Sink;
-
-}
+namespace progress { class Sink; }
 
 namespace rendering {
 
@@ -53,22 +33,26 @@ public:
 	Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
 			 std::shared_ptr<sampler::Sampler> sampler);
 
-	void render(scene::Scene& scene, const Context& context, thread::Pool& pool, exporting::Sink& exporter, progress::Sink& progressor);
+	void render(scene::Scene& scene, const Context& context, thread::Pool& pool,
+				exporting::Sink& exporter, progress::Sink& progressor);
 
 private:
 
 	void render_subframe(const scene::camera::Camera& camera,
-						 float normalized_tick_offset, float normalized_tick_slice,
-						 float normalized_frame_offset, float normalized_frame_slice,
-						 Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool, progress::Sink& progressor);
+						 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
+						 Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool,
+						 progress::Sink& progressor);
 
-	bool advance_current_pixel(const math::uint2& dimensions);
+	bool advance_current_pixel(math::uint2 dimensions);
+
+	size_t calculate_progress_range(scene::Scene& scene, const scene::camera::Camera& camera, size_t num_tiles) const;
 
 	std::shared_ptr<Surface_integrator_factory> surface_integrator_factory_;
 	std::shared_ptr<sampler::Sampler> sampler_;
 
 	math::uint2 tile_dimensions_;
 	math::uint2 current_pixel_;
+	uint32_t    current_sample_;
 };
 
 }

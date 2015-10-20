@@ -13,7 +13,6 @@
 #include "base/math/ray.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/math/random/generator.inl"
-#include <iostream>
 
 namespace rendering {
 
@@ -37,7 +36,8 @@ uint32_t Worker::id() const {
 	return id_;
 }
 
-void Worker::render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end,
+void Worker::render(const scene::camera::Camera& camera, const Rectui& tile,
+					uint32_t sample_begin, uint32_t sample_end,
 					float normalized_tick_offset, float normalized_tick_slice) {
 	auto& film = camera.film();
 

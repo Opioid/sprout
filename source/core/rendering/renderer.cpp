@@ -90,10 +90,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	}
 
 	std::chrono::high_resolution_clock clock;
-
-	const float num_subframes = 0.f == camera.frame_duration() || !camera.motion_blur()
-							  ? 1 : camera.frame_duration() / scene.tick_duration();
-	const size_t progress_range = static_cast<size_t>(static_cast<float>(tiles.size()) * num_subframes);
+	const size_t progress_range = calculate_progress_range(scene, camera, tiles.size());
 
 	float tick_offset = 0.f;
 	float tick_rest   = 0.f;
@@ -104,12 +101,13 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 		auto render_start = clock.now();
 
 		film.clear();
+		current_sample_ = 0;
 
 		progressor.start(progress_range);
 
 		if (0.f == camera.frame_duration()) {
 			scene.tick(pool);
-			render_subframe(camera, 0.f, 0.f, 0.f, 1.f, tiles, workers, pool, progressor);
+			render_subframe(camera, 0.f, 0.f, 1.f, tiles, workers, pool, progressor);
 		} else if (!camera.motion_blur()) {
 			float frame_offset = 0.f;
 			float frame_rest = camera.frame_duration();
@@ -129,8 +127,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 					float normalized_tick_offset = tick_offset / scene.tick_duration();
 
 					render_subframe(camera,
-									normalized_tick_offset, 0.f,
-									0.f, 1.f,
+									normalized_tick_offset, 0.f, 1.f,
 									tiles, workers, pool, progressor);
 
 					rendered = true;
@@ -157,13 +154,10 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 				float normalized_tick_offset = tick_offset / scene.tick_duration();
 				float normalized_tick_slice  = subframe_slice / scene.tick_duration();
-
-				float normalized_frame_offset = frame_offset / camera.frame_duration();
-				float normalized_frame_slice  = subframe_slice / camera.frame_duration();
+				float normalized_frame_slice = subframe_slice / camera.frame_duration();
 
 				render_subframe(camera,
-								normalized_tick_offset, normalized_tick_slice,
-								normalized_frame_offset, normalized_frame_slice,
+								normalized_tick_offset, normalized_tick_slice, normalized_frame_slice,
 								tiles, workers, pool, progressor);
 
 				tick_offset += subframe_slice;
@@ -187,17 +181,21 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 }
 
 void Renderer::render_subframe(const scene::camera::Camera& camera,
-							   float normalized_tick_offset, float normalized_tick_slice,
-							   float normalized_frame_offset, float normalized_frame_slice,
+							   float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
 							   Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool,
 							   progress::Sink& progressor) {
 	tiles.restart();
 
 	float num_samples = static_cast<float>(sampler_->num_samples_per_iteration());
 
-	uint32_t sample_begin = static_cast<uint32_t>(normalized_frame_offset * num_samples + 0.5f);
-	uint32_t sample_end   = std::min(sample_begin + static_cast<uint32_t>(normalized_frame_slice * num_samples + 0.5f),
-									 sampler_->num_samples_per_iteration());
+	uint32_t sample_begin = current_sample_;
+	uint32_t sample_range = std::max(static_cast<uint32_t>(normalized_frame_slice * num_samples + 0.5f), 1u);
+	uint32_t sample_end   = std::min(sample_begin + sample_range, sampler_->num_samples_per_iteration());
+
+	if (sample_begin == sample_end) {
+		return;
+	}
+
 	pool.run(
 		[&workers, &camera, &tiles, &progressor,
 		 sample_begin, sample_end, normalized_tick_offset, normalized_tick_slice](uint32_t index) {
@@ -214,9 +212,11 @@ void Renderer::render_subframe(const scene::camera::Camera& camera,
 			}
 		}
 	);
+
+	current_sample_ = sample_end;
 }
 
-bool Renderer::advance_current_pixel(const math::uint2& dimensions) {
+bool Renderer::advance_current_pixel(math::uint2 dimensions) {
 	current_pixel_.x += tile_dimensions_.x;
 
 	if (current_pixel_.x >= dimensions.x) {
@@ -229,6 +229,15 @@ bool Renderer::advance_current_pixel(const math::uint2& dimensions) {
 	}
 
 	return true;
+}
+
+size_t Renderer::calculate_progress_range(scene::Scene& scene, const scene::camera::Camera& camera,
+										  size_t num_tiles) const {
+	const float num_subframes = 0.f == camera.frame_duration() || !camera.motion_blur()
+							  ? 1.f : std::min(camera.frame_duration() / scene.tick_duration(),
+											   static_cast<float>(sampler_->num_samples_per_iteration()));
+
+	return static_cast<size_t>(static_cast<float>(num_tiles) * num_subframes);
 }
 
 }
