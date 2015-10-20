@@ -20,21 +20,25 @@ math::float2 Texture_2D_byte_3_unorm::at_2(uint32_t x, uint32_t y) const {
 	uint32_t i = y * dimensions().x + x;
 
 	auto& value = data_[i];
-	return math::float2(color::unorm_to_float(value.x), color::unorm_to_float(value.y));
+	return math::float2(color::unorm_to_float(value.x),
+						color::unorm_to_float(value.y));
 }
 
 math::float3 Texture_2D_byte_3_unorm::at_3(uint32_t x, uint32_t y) const {
 	uint32_t i = y * dimensions().x + x;
 
 	auto& value = data_[i];
-	return math::float3(color::unorm_to_float(value.x), color::unorm_to_float(value.y), color::unorm_to_float(value.z));
+	return math::float3(color::unorm_to_float(value.x),
+						color::unorm_to_float(value.y), color::unorm_to_float(value.z));
 }
 
 math::float4 Texture_2D_byte_3_unorm::at_4(uint32_t x, uint32_t y) const {
 	uint32_t i = y * dimensions().x + x;
 
 	auto& value = data_[i];
-	return math::float4(color::unorm_to_float(value.x), color::unorm_to_float(value.y), color::unorm_to_float(value.z), 1.f);
+	return math::float4(color::unorm_to_float(value.x),
+						color::unorm_to_float(value.y),
+						color::unorm_to_float(value.z), 1.f);
 }
 
 }}
