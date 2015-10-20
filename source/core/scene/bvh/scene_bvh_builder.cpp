@@ -87,7 +87,7 @@ math::aabb Builder::aabb(const std::vector<Prop*>& props) {
 	return aabb;
 }
 
-Split_candidate Builder::splitting_plane(const math::aabb& aabb, const std::vector<Prop*>& props) {
+Split_candidate Builder::splitting_plane(const math::aabb& /*aabb*/, const std::vector<Prop*>& props) {
 	split_candidates_.clear();
 
 	math::float3 average = math::float3::identity;
