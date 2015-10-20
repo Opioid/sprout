@@ -3,7 +3,7 @@
 #include "scene/animation/animation_stage.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/bvh/scene_bvh_tree.hpp"
-#include "scene/shape/node_stack.hpp"
+#include "scene/material/material.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 #include <vector>
@@ -12,6 +12,12 @@
 namespace thread { class Pool; }
 
 namespace scene {
+
+namespace shape
+{
+	class Shape;
+	class Node_stack;
+}
 
 namespace entity {
 
@@ -46,7 +52,8 @@ public:
 	bool intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::texture::sampler::Sampler_2D& sampler) const;
+	float opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+				  const image::texture::sampler::Sampler_2D& sampler) const;
 
 	float tick_duration() const;
 	float simulation_time() const;
@@ -55,7 +62,7 @@ public:
 
 	entity::Dummy* create_dummy();
 
-	Prop* create_prop();
+	Prop* create_prop(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
 
 	const std::vector<light::Light*>& lights() const;
 
@@ -80,7 +87,8 @@ public:
 
 	std::vector<entity::Dummy*> dummies_;
 
-	std::vector<Prop*> props_;
+	std::vector<Prop*> finite_props_;
+	std::vector<Prop*> infinite_props_;
 
 	std::vector<light::Light*> lights_;
 

@@ -1,6 +1,6 @@
 #include "scene_bvh_builder.hpp"
 #include "scene/prop/prop.hpp"
-#include "scene/shape/shape.hpp"
+//#include "scene/shape/shape.hpp"
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
 
@@ -8,19 +8,17 @@
 
 namespace scene { namespace bvh {
 
-void Builder::build(Tree& tree, const std::vector<Prop*>& props) {
+void Builder::build(Tree& tree, const std::vector<Prop*>& finite_props, const std::vector<Prop*>& infite_props) {
 	tree.clear();
 
-	tree.props_.reserve(props.size());
+	tree.props_.reserve(finite_props.size() + infite_props.size());
 
-	split(&tree.root_, props, 4, tree.props_);
+	split(&tree.root_, finite_props, 4, tree.props_);
 
 	tree.infinite_props_start_ = static_cast<uint32_t>(tree.props_.size());
 
-	for (auto p : props) {
-		if (!p->shape()->is_finite()) {
-			tree.props_.push_back(p);
-		}
+	for (auto p : infite_props) {
+		tree.props_.push_back(p);
 	}
 
 	tree.infinite_props_end_ = static_cast<uint32_t>(tree.props_.size());
@@ -33,7 +31,10 @@ void Builder::split(Build_node* node, const std::vector<Prop*>& props, size_t ma
 	if (props.size() <= max_shapes) {
 		assign(node, props, out_props);
 	} else {
-		math::plane sp = average_splitting_plane(node->aabb, props, node->axis);
+	//	math::plane sp = average_splitting_plane(node->aabb, props, node->axis);
+
+		Split_candidate sp = splitting_plane(node->aabb, props);
+		node->axis = sp.axis();
 
 		size_t reserve_size = props.size() / 2 + 1;
 		std::vector<Prop*> props0;
@@ -42,12 +43,8 @@ void Builder::split(Build_node* node, const std::vector<Prop*>& props, size_t ma
 		props1.reserve(reserve_size);
 
 		for (auto p : props) {
-			if (!p->shape()->is_finite()) {
-				continue;
-			}
-
-			bool mib = math::behind(sp, p->aabb().min());
-			bool mab = math::behind(sp, p->aabb().max());
+			bool mib = math::behind(sp.plane(), p->aabb().min());
+			bool mab = math::behind(sp.plane(), p->aabb().max());
 
 			if (mib && mab) {
 				props0.push_back(p);
@@ -57,7 +54,7 @@ void Builder::split(Build_node* node, const std::vector<Prop*>& props, size_t ma
 		}
 
 		if (props0.empty()) {
-			std::cout << "not splitting because of stuff: " << props1.size() << std::endl;
+			//std::cout << "not splitting because of stuff: " << props1.size() << std::endl;
 
 			assign(node, props1, out_props);
 		} else {
@@ -74,10 +71,6 @@ void Builder::assign(Build_node* node, const std::vector<Prop*>& props, std::vec
 	node->offset = static_cast<uint32_t>(out_props.size());
 
 	for (auto p : props) {
-		if (!p->shape()->is_finite()) {
-			continue;
-		}
-
 		out_props.push_back(p);
 	}
 
@@ -88,30 +81,43 @@ math::aabb Builder::aabb(const std::vector<Prop*>& props) {
 	math::aabb aabb = math::aabb::empty();
 
 	for (auto p : props) {
-		if (!p->shape()->is_finite()) {
-			continue;
-		}
-
 		aabb = aabb.merge(p->aabb());
 	}
 
 	return aabb;
 }
 
+Split_candidate Builder::splitting_plane(const math::aabb& aabb, const std::vector<Prop*>& props) {
+	split_candidates_.clear();
+
+	math::float3 average = math::float3::identity;
+
+	for (auto p : props) {
+		average += p->aabb().position();
+	}
+
+	average /= static_cast<float>(props.size());
+
+	split_candidates_.push_back(Split_candidate(0, average, props));
+
+	split_candidates_.push_back(Split_candidate(1, average, props));
+
+	split_candidates_.push_back(Split_candidate(2, average, props));
+
+	std::sort(split_candidates_.begin(), split_candidates_.end(),
+			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
+
+	return split_candidates_[0];
+}
+
 math::plane Builder::average_splitting_plane(const math::aabb& aabb, const std::vector<Prop*>& props, uint8_t& axis) {
 	math::float3 average = math::float3::identity;
 
-	uint32_t num = 0;
 	for (auto p : props) {
-		if (!p->shape()->is_finite()) {
-			continue;
-		}
-
 		average += p->aabb().position();
-		++num;
 	}
 
-	average /= static_cast<float>(num);
+	average /= static_cast<float>(props.size());
 
 	math::float3 position = aabb.position();
 	math::float3 halfsize = aabb.halfsize();

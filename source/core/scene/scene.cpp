@@ -3,6 +3,7 @@
 #include "scene/entity/dummy.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
+#include "scene/shape/shape.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
 #include "base/color/color.inl"
@@ -21,7 +22,11 @@ Scene::~Scene() {
 		delete l;
 	}
 
-	for (auto p : props_) {
+	for (auto p : finite_props_) {
+		delete p;
+	}
+
+	for (auto p : infinite_props_) {
 		delete p;
 	}
 
@@ -64,7 +69,11 @@ void Scene::tick(thread::Pool& pool) {
 		d->calculate_world_transformation(pool);
 	}
 
-	for (auto p : props_) {
+	for (auto p : finite_props_) {
+		p->calculate_world_transformation(pool);
+	}
+
+	for (auto p : infinite_props_) {
 		p->calculate_world_transformation(pool);
 	}
 
@@ -79,9 +88,17 @@ entity::Dummy* Scene::create_dummy() {
 	return dummy;
 }
 
-Prop* Scene::create_prop() {
+Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape, const material::Materials& materials) {
 	Prop* prop = new Prop;
-	props_.push_back(prop);
+
+	prop->init(shape, materials);
+
+	if (shape->is_finite()) {
+		finite_props_.push_back(prop);
+	} else {
+		infinite_props_.push_back(prop);
+	}
+
 	return prop;
 }
 
@@ -122,7 +139,7 @@ void Scene::create_animation_stage(entity::Entity* entity, animation::Animation*
 }
 
 void Scene::compile() {
-	builder_.build(bvh_, props_);
+	builder_.build(bvh_, finite_props_, infinite_props_);
 
 	light_powers_.clear();
 

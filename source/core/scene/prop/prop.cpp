@@ -10,7 +10,7 @@ namespace scene {
 
 Prop::~Prop() {}
 
-void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials, bool primary_visibility, bool secondary_visibility) {
+void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials) {
 	properties_.clear();
 
 	shape_ = shape;
@@ -22,9 +22,11 @@ void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& 
 			break;
 		}
 	}
+}
 
-	properties_.set(Properties::Primary_visibility,   primary_visibility);
-	properties_.set(Properties::Secondary_visibility, secondary_visibility);
+void Prop::set_visibility(bool primary, bool secondary) {
+	properties_.set(Properties::Primary_visibility,   primary);
+	properties_.set(Properties::Secondary_visibility, secondary);
 }
 
 bool Prop::intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const {

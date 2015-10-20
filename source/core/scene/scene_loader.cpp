@@ -154,9 +154,9 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 		materials.push_back(material_provider_.fallback_material());
 	}
 
-	Prop* prop = scene.create_prop();
+	Prop* prop = scene.create_prop(shape, materials);
 
-	prop->init(shape, materials, primary_visibility, secondary_visibility);
+	prop->set_visibility(primary_visibility, secondary_visibility);
 
 	return prop;
 }
