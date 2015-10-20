@@ -17,9 +17,9 @@ public:
 
 	void tick(float time_slice);
 
-	void beginning(entity::Keyframe& frame) const;
+	const entity::Keyframe& beginning() const;
 
-	void interpolated_frame(entity::Keyframe& frame) const;
+	const entity::Keyframe& interpolated_frame() const;
 
 private:
 

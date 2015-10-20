@@ -2,11 +2,7 @@
 
 namespace scene {
 
-namespace entity {
-
-class Entity;
-
-}
+namespace entity { class Entity; }
 
 namespace animation {
 
