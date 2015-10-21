@@ -52,10 +52,12 @@ float Prop_light::pdf(const entity::Composed_transformation& transformation,
 }
 
 math::float3 Prop_light::power(const math::aabb& scene_bb) const {
+	math::float3 emission = prop_->material(part_)->average_emission();
+
 	if (prop_->shape()->is_finite()) {
-		return area_ * prop_->material(part_)->average_emission();
+		return area_ * emission;
 	} else {
-		return scene_bb.volume() * area_ * prop_->material(part_)->average_emission();
+		return math::squared_length(scene_bb.halfsize()) * area_ * emission;
 	}
 }
 
