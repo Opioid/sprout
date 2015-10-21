@@ -4,6 +4,8 @@ SOURCES += \
 	rendering/film/transparent.cpp \
 	
 HEADERS += \
+	rendering/film/clamp.hpp \
+	rendering/film/clamp.inl \
 	rendering/film/film.hpp \
 	rendering/film/filtered.hpp \
 	rendering/film/filtered.inl \

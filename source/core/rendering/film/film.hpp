@@ -2,31 +2,20 @@
 
 #include "rendering/rectangle.hpp"
 #include "image/typed_image.hpp"
+#include <memory>
 
-namespace thread {
+namespace thread { class Pool; }
 
-class Pool;
-
-}
-
-namespace sampler {
-
-struct Camera_sample;
-
-}
+namespace sampler { struct Camera_sample; }
 
 namespace rendering { namespace film {
 
-namespace tonemapping {
-
-class Tonemapper;
-
-}
+namespace tonemapping { class Tonemapper; }
 
 class Film {
 public:
 
-	Film(math::uint2 dimensions, float exposure, tonemapping::Tonemapper* tonemapper);
+	Film(math::uint2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper);
 	virtual ~Film();
 
 	math::uint2 dimensions() const;
@@ -52,7 +41,7 @@ protected:
 
 	float exposure_;
 
-	tonemapping::Tonemapper* tonemapper_;
+	std::unique_ptr<tonemapping::Tonemapper> tonemapper_;
 
 	image::Image_float_4 image_;
 

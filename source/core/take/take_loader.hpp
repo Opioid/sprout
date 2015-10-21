@@ -58,7 +58,8 @@ private:
 
 	rendering::film::Film* load_film(const rapidjson::Value& film_value, bool alpha_transparency) const;
 
-	rendering::film::tonemapping::Tonemapper* load_tonemapper(const rapidjson::Value& tonemapper_value) const;
+	std::unique_ptr<rendering::film::tonemapping::Tonemapper>
+	load_tonemapper(const rapidjson::Value& tonemapper_value) const;
 
 	std::shared_ptr<sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value,
 												   math::random::Generator& rng) const;

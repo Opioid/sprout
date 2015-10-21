@@ -6,8 +6,8 @@
 
 namespace rendering { namespace film {
 
-Transparent::Transparent(math::uint2 dimensions, float exposure, tonemapping::Tonemapper* tonemapper) :
-	Film(dimensions, exposure, tonemapper),
+Transparent::Transparent(math::uint2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper) :
+	Film(dimensions, exposure, std::move(tonemapper)),
 	pixels_(new Pixel[dimensions.x * dimensions.y]) {}
 
 Transparent::~Transparent() {

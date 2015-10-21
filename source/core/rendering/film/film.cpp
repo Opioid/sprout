@@ -6,15 +6,14 @@
 
 namespace rendering { namespace film {
 
-Film::Film(math::uint2 dimensions, float exposure, tonemapping::Tonemapper* tonemapper) :
+Film::Film(math::uint2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper) :
 	exposure_(exposure),
-	tonemapper_(tonemapper),
+	tonemapper_(std::move(tonemapper)),
 	image_(image::Image::Description(image::Image::Type::Float_4, dimensions)),
 	seeds_(new math::uint2[dimensions.x * dimensions.y]) {}
 
 Film::~Film() {
 	delete [] seeds_;
-	delete tonemapper_;
 }
 
 math::uint2 Film::dimensions() const {

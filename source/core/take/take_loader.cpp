@@ -5,6 +5,7 @@
 #include "exporting/exporting_sink_null.hpp"
 #include "rendering/film/opaque.hpp"
 #include "rendering/film/transparent.hpp"
+#include "rendering/film/clamp.inl"
 #include "rendering/film/filtered.inl"
 #include "rendering/film/unfiltered.inl"
 #include "rendering/film/filter/gaussian.inl"
@@ -168,7 +169,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value, bool alpha_transparency) const {
 	math::uint2 dimensions(1280, 720);
 	float exposure = 0.f;
-	rendering::film::tonemapping::Tonemapper* tonemapper = nullptr;
+	math::float3 clamp_max(-1.f, -1.f, -1.f);
+	std::unique_ptr<rendering::film::tonemapping::Tonemapper> tonemapper;
 	bool filter = false;
 
 	for (auto n = film_value.MemberBegin(); n != film_value.MemberEnd(); ++n) {
@@ -179,6 +181,8 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value, boo
 			dimensions = json::read_uint2(node_value);
 		} else if ("exposure" == node_name) {
 			exposure = json::read_float(node_value);
+		} else if ("clamp" == node_name) {
+			clamp_max = json::read_float3(node_value);
 		} else if ("tonemapper" == node_name) {
 			tonemapper = load_tonemapper(node_value);
 		} else if ("filter" == node_name) {
@@ -188,8 +192,10 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value, boo
 	}
 
 	if (!tonemapper) {
-		tonemapper = new rendering::film::tonemapping::Identity;
+		tonemapper = std::make_unique<rendering::film::tonemapping::Identity>();
 	}
+
+	bool clamp = !math::contains_negative(clamp_max);
 
 	if (filter) {
 		float radius = 0.8f;
@@ -197,31 +203,79 @@ rendering::film::Film* Loader::load_film(const rapidjson::Value& film_value, boo
 		auto gaussian = std::make_unique<rendering::film::filter::Gaussian>(radius, alpha);
 
 		if (alpha_transparency) {
-			return new rendering::film::Filtered<rendering::film::Transparent, rendering::film::filter::Gaussian>(
-						dimensions, exposure, tonemapper, std::move(gaussian));
+			if (clamp) {
+				return new rendering::film::Filtered<
+						rendering::film::Transparent,
+						rendering::film::clamp::Clamp,
+						rendering::film::filter::Gaussian>(
+							dimensions, exposure, std::move(tonemapper),
+							rendering::film::clamp::Clamp(clamp_max), std::move(gaussian));
+			} else {
+				return new rendering::film::Filtered<
+						rendering::film::Transparent,
+						rendering::film::clamp::Identity,
+						rendering::film::filter::Gaussian>(
+							dimensions, exposure, std::move(tonemapper),
+							rendering::film::clamp::Identity(), std::move(gaussian));
+			}
+
 		}
 
-		return new rendering::film::Filtered<rendering::film::Opaque, rendering::film::filter::Gaussian>(
-					dimensions, exposure, tonemapper, std::move(gaussian));
+		if (clamp) {
+			return new rendering::film::Filtered<
+					rendering::film::Opaque,
+					rendering::film::clamp::Clamp,
+					rendering::film::filter::Gaussian>(
+						dimensions, exposure, std::move(tonemapper),
+						rendering::film::clamp::Clamp(clamp_max), std::move(gaussian));
+		} else {
+			return new rendering::film::Filtered<
+					rendering::film::Opaque,
+					rendering::film::clamp::Identity,
+					rendering::film::filter::Gaussian>(
+						dimensions, exposure, std::move(tonemapper),
+						rendering::film::clamp::Identity(), std::move(gaussian));
+		}
 	}
 
 	if (alpha_transparency) {
-		return new rendering::film::Unfiltered<rendering::film::Transparent>(dimensions, exposure, tonemapper);
+		if (clamp) {
+			return new rendering::film::Unfiltered<
+					rendering::film::Transparent,
+					rendering::film::clamp::Clamp>
+					(dimensions, exposure, std::move(tonemapper), rendering::film::clamp::Clamp(clamp_max));
+		} else {
+			return new rendering::film::Unfiltered<
+					rendering::film::Transparent,
+					rendering::film::clamp::Identity>
+					(dimensions, exposure, std::move(tonemapper), rendering::film::clamp::Identity());
+		}
 	}
 
-	return new rendering::film::Unfiltered<rendering::film::Opaque>(dimensions, exposure, tonemapper);
+	if (clamp) {
+		return new rendering::film::Unfiltered<
+				rendering::film::Opaque,
+				rendering::film::clamp::Clamp>
+				(dimensions, exposure, std::move(tonemapper), rendering::film::clamp::Clamp(clamp_max));
+	}
+
+	return new rendering::film::Unfiltered<
+			rendering::film::Opaque,
+			rendering::film::clamp::Identity>
+			(dimensions, exposure, std::move(tonemapper), rendering::film::clamp::Identity());
 }
 
-rendering::film::tonemapping::Tonemapper* Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
+std::unique_ptr<rendering::film::tonemapping::Tonemapper>
+Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 	for (auto n = tonemapper_value.MemberBegin(); n != tonemapper_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
 		if ("Filmic" == node_name) {
 			math::float3 linear_white = json::read_float3(node_value, "linear_white");
-			return new rendering::film::tonemapping::Filmic(linear_white);
+			return std::make_unique<rendering::film::tonemapping::Filmic>(linear_white);
 		} else if ("Identity" == node_name) {
-			return new rendering::film::tonemapping::Identity;
+			return std::make_unique<rendering::film::tonemapping::Identity>();
 		}
 	}
 

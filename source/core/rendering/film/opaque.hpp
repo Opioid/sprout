@@ -7,7 +7,7 @@ namespace rendering { namespace film {
 class Opaque : public Film {
 public:
 
-	Opaque(math::uint2 dimensions, float exposure, tonemapping::Tonemapper* tonemapper);
+	Opaque(math::uint2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper);
 	virtual ~Opaque();
 
 	virtual void clear() final override;

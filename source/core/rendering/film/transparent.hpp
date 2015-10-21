@@ -7,7 +7,7 @@ namespace rendering { namespace film {
 class Transparent : public Film {
 public:
 
-	Transparent(math::uint2 dimensions, float exposure, tonemapping::Tonemapper* tonemapper);
+	Transparent(math::uint2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper);
 	virtual ~Transparent();
 
 	virtual void clear() final override;
