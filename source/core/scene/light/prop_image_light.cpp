@@ -13,7 +13,7 @@
 namespace scene { namespace light {
 
 void Prop_image_light::sample(const entity::Composed_transformation& transformation,
-							  const math::float3& p, const math::float3& n, bool total_sphere,
+							  const math::float3& p, const math::float3& n, bool restrict_to_hemisphere,
 							  const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 							  uint32_t max_samples, std::vector<Sample>& samples) const {
 	samples.clear();
@@ -28,11 +28,12 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 
 		prop_->shape()->sample(part_, transformation, area_, p, uv, light_sample.shape);
 
-		if (math::dot(light_sample.shape.wi, n) > 0.f || total_sphere) {
+		if (restrict_to_hemisphere && math::dot(light_sample.shape.wi, n) <= 0.f) {
+			// maybe don't push this sample at all instead?
+			light_sample.shape.pdf = 0.f;
+		} else {
 			light_sample.shape.pdf *= pdf;
 			light_sample.energy = material->sample_emission(light_sample.shape.uv, image_sampler);
-		} else {
-			light_sample.shape.pdf = 0.f;
 		}
 
 		samples.push_back(light_sample);
@@ -40,7 +41,7 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 }
 
 float Prop_image_light::pdf(const entity::Composed_transformation& transformation,
-							const math::float3& p, const math::float3& wi, bool /*total_sphere*/,
+							const math::float3& p, const math::float3& wi, bool /*restrict_to_hemisphere*/,
 							const image::texture::sampler::Sampler_2D& image_sampler) const {
 	shape::Sample sample;
 	prop_->shape()->sample(part_, transformation, area_, p, wi, sample);

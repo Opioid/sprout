@@ -129,18 +129,19 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 	math::float3 result = math::float3::identity;
 
 	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
-	math::Oray shadow_ray;
+	math::Oray shadow_ray = ray;
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
-	shadow_ray.depth  = ray.depth + 1;
-	shadow_ray.time   = ray.time;
+	++shadow_ray.depth;
 
 	scene::entity::Composed_transformation transformation;
 	light->transformation_at(ray.time, transformation);
 
 	light->sample(transformation,
-				  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
+				  intersection.geo.p, material_sample.geometric_normal(), !material_sample.is_translucent(),
 				  settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
+
+	float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
 
 	for (auto& ls : light_samples_) {
 		if (ls.shape.pdf > 0.f) {
@@ -154,7 +155,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 
 				float weight = power_heuristic(ls.shape.pdf, bxdf_pdf);
 
-				result += (weight / ls.shape.pdf) * mv * ls.energy * f;
+				result += num_samples_reciprocal * (weight / ls.shape.pdf) * mv * ls.energy * f;
 			}
 		}
 	}
@@ -168,7 +169,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 		}
 
 		float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi,
-								  material_sample.is_translucent(), settings_.sampler_nearest);
+								  !material_sample.is_translucent(), settings_.sampler_nearest);
 		if (0.f == ls_pdf) {
 			continue;
 		}
@@ -189,14 +190,14 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 
 				if (light_material_sample.same_hemisphere(wo)) {
 					math::float3 ls_energy = light_material_sample.emission();
-					result += (weight / sample_result.pdf)
+					result += num_samples_reciprocal * (weight / sample_result.pdf)
 						   * ls_energy * sample_result.reflection;
 				}
 			}
 		}
 	}
 
-	return result / light_pdf / static_cast<float>(light_samples_.size());
+	return result / light_pdf;
 }
 
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,

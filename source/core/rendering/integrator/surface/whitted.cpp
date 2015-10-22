@@ -107,3 +107,4 @@ Surface_integrator* Whitted_factory::create(math::random::Generator& rng) const 
 }
 
 }
+

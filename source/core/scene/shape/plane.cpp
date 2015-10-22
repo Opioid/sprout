@@ -77,7 +77,7 @@ float Plane::opacity(const entity::Composed_transformation& transformation, cons
 }
 
 void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, const math::float3& /*n*/, bool /*total_sphere*/,
+				   const math::float3& /*p*/, const math::float3& /*n*/, bool /*restrict_to_hemisphere*/,
 				   sampler::Sampler& /*sampler*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
@@ -89,7 +89,7 @@ void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*t
 				   const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Plane::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				 const math::float3& /*p*/, const math::float3& /*wi*/, bool /*total_sphere*/) const {
+				 const math::float3& /*p*/, const math::float3& /*wi*/, bool /*restrict_to_hemisphere*/) const {
 	return 0.f;
 }
 
