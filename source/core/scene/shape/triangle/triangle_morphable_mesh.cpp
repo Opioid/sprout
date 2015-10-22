@@ -92,7 +92,7 @@ float Morphable_mesh::opacity(const entity::Composed_transformation& transformat
 }
 
 void Morphable_mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-							const math::float3& p, const math::float3& /*n*/, bool /*restrict_to_hemisphere*/,
+							const math::float3& p, const math::float3& /*n*/, bool /*total_sphere*/,
 							sampler::Sampler& sampler, Sample& sample) const {
 /*
 	float r = sampler.generate_sample_1D();
@@ -135,7 +135,7 @@ void Morphable_mesh::sample(uint32_t /*part*/,
 
 float Morphable_mesh::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
 						  const math::float3& /*p*/, const math::float3& /*wi*/,
-						  bool /*restrict_to_hemisphere*/) const {
+						  bool /*total_sphere*/) const {
 	return 1.f;
 }
 

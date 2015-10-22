@@ -84,7 +84,7 @@ float Mesh::opacity(const entity::Composed_transformation& transformation, const
 }
 
 void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-				  const math::float3& p, const math::float3& /*n*/, bool /*restrict_to_hemisphere*/,
+				  const math::float3& p, const math::float3& /*n*/, bool /*total_sphere*/,
 				  sampler::Sampler& sampler, Sample& sample) const {
 	float r = sampler.generate_sample_1D();
 	math::float2 r2 = sampler.generate_sample_2D();
@@ -122,7 +122,7 @@ void Mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*tr
 				  const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Mesh::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				const math::float3& /*p*/, const math::float3& /*wi*/, bool /*restrict_to_hemisphere*/) const {
+				const math::float3& /*p*/, const math::float3& /*wi*/, bool /*total_sphere*/) const {
 	return 1.f;
 }
 
