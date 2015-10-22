@@ -145,7 +145,7 @@ void Scene::compile() {
 
 	for (auto l : lights_) {
 		l->prepare_sampling();
-		light_powers_.push_back(color::luminance(l->power(bvh_.aabb())));
+		light_powers_.push_back(std::sqrt(color::luminance(l->power(bvh_.aabb()))));
 	}
 
 	light_distribution_.init(light_powers_.data(), light_powers_.size());

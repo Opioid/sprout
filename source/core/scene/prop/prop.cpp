@@ -81,7 +81,8 @@ bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) con
 	return shape_->intersect_p(transformation, ray, bounds, node_stack);
 }
 
-float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack, const image::texture::sampler::Sampler_2D& sampler) const {
+float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+					const image::texture::sampler::Sampler_2D& sampler) const {
 	if (!visible(ray.depth)) {
 		return 0.f;
 	}
