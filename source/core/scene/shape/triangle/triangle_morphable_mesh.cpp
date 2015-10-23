@@ -18,7 +18,8 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection) : collection_(collection) {
+Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection, uint32_t num_parts) :
+	collection_(collection), num_parts_(num_parts) {
 	vertices_.resize(collection_->vertices(0).size());
 }
 
@@ -27,7 +28,7 @@ void Morphable_mesh::init() {
 }
 
 uint32_t Morphable_mesh::num_parts() const {
-	return tree_.num_parts();
+	return num_parts_;
 }
 
 bool Morphable_mesh::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,

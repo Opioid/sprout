@@ -15,7 +15,7 @@ class  Morph_target_collection;
 class Morphable_mesh : public Shape, public Morphable_shape {
 public:
 
-	Morphable_mesh(std::shared_ptr<Morph_target_collection> collection);
+	Morphable_mesh(std::shared_ptr<Morph_target_collection> collection, uint32_t num_parts);
 
 	void init();
 
@@ -63,6 +63,8 @@ private:
 	typedef bvh::Tree<bvh::Data_MT> Tree;
 
 	Tree tree_;
+
+	uint32_t num_parts_;
 
 	std::shared_ptr<Morph_target_collection> collection_;
 

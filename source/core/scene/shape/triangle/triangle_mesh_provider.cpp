@@ -144,7 +144,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 		collection->add_swap_vertices(handler.vertices());
 	}
 
-	auto mesh = std::make_shared<Morphable_mesh>(collection);
+	auto mesh = std::make_shared<Morphable_mesh>(collection, static_cast<uint32_t>(handler.groups().size()));
 
 	return mesh;
 }
