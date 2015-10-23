@@ -322,8 +322,8 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 			float radius = json::read_float(node_value, "radius", 1.f);
 			return std::make_shared<rendering::Ao_factory>(settings, num_samples, radius);
 		} else if ("Whitted" == node_name) {
-			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
-			return std::make_shared<rendering::Whitted_factory>(settings, max_light_samples);
+			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
+			return std::make_shared<rendering::Whitted_factory>(settings, num_light_samples);
 		} else if ("PT" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
@@ -333,17 +333,17 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 		} else if ("PTDL" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
-			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
+			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
 			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
 			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces,
-																	  max_light_samples, disable_caustics);
+																	  num_light_samples, disable_caustics);
 		} else if ("PTMIS" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
-			uint32_t max_light_samples = json::read_uint(node_value, "max_light_samples", default_max_light_samples);
+			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
 			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
 			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces,
-																	   max_light_samples, disable_caustics);
+																	   num_light_samples, disable_caustics);
 		} else if ("Normal" == node_name) {
 			return std::make_shared<rendering::Normal_factory>(settings);
 		}

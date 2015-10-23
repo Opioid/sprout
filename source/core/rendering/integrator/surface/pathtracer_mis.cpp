@@ -21,9 +21,7 @@ namespace rendering {
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings,
 							   math::random::Generator& rng,
 							   const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {
-	light_samples_.reserve(settings.max_light_samples);
-}
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {}
 
 void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -120,12 +118,6 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 												   const scene::Intersection& intersection,
 												   const scene::material::Sample& material_sample,
 												   const image::texture::sampler::Sampler_2D& texture_sampler) {
-	float light_pdf;
-	const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
-	if (!light) {
-		return 	math::float3::identity;
-	}
-
 	math::float3 result = math::float3::identity;
 
 	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
@@ -135,31 +127,41 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 	shadow_ray.depth  = ray.depth + 1;
 	shadow_ray.time   = ray.time;
 
-	scene::entity::Composed_transformation transformation;
-	light->transformation_at(ray.time, transformation);
+	for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
+		float light_pdf;
+		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
+		if (!light) {
+			continue;
+		}
 
-	light->sample(transformation,
-				  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
-				  settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
+		float light_pdf_reciprocal = 1.f / light_pdf;
 
-	for (auto& ls : light_samples_) {
-		if (ls.shape.pdf > 0.f) {
-			shadow_ray.set_direction(ls.shape.wi);
-			shadow_ray.max_t = ls.shape.t - ray_offset;
+		scene::entity::Composed_transformation transformation;
+		light->transformation_at(ray.time, transformation);
+
+		// Light source importance sample
+		scene::light::Sample light_sample;
+		light->sample(transformation,
+					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
+					  settings_.sampler_nearest, sampler_, light_sample);
+
+		if (light_sample.shape.pdf > 0.f) {
+			shadow_ray.set_direction(light_sample.shape.wi);
+			shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
 			float mv = worker.masked_visibility(shadow_ray, texture_sampler);
 			if (mv > 0.f) {
 				float bxdf_pdf;
-				math::float3 f = material_sample.evaluate(ls.shape.wi, bxdf_pdf);
+				math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-				float weight = power_heuristic(ls.shape.pdf, bxdf_pdf);
+				float weight = power_heuristic(light_sample.shape.pdf, bxdf_pdf);
 
-				result += (weight / ls.shape.pdf) * mv * ls.energy * f;
+				result += (weight / light_sample.shape.pdf * light_pdf_reciprocal)
+					   * mv * light_sample.energy * f;
 			}
 		}
-	}
 
-	for (size_t i = 0, len = light_samples_.size(); i < len; ++i) {
+		// Material BSDF importance sample
 		scene::material::BxDF_result sample_result;
 		material_sample.sample_evaluate(sampler_, sample_result);
 		if (0.f == sample_result.pdf
@@ -189,23 +191,24 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 
 				if (light_material_sample.same_hemisphere(wo)) {
 					math::float3 ls_energy = light_material_sample.emission();
-					result += (weight / sample_result.pdf)
+					result += (weight / sample_result.pdf * light_pdf_reciprocal)
 						   * ls_energy * sample_result.reflection;
 				}
 			}
 		}
 	}
 
-	return result / light_pdf / static_cast<float>(light_samples_.size());
+	return settings_.num_light_samples_reciprocal * result;
 }
 
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,
 											   uint32_t min_bounces, uint32_t max_bounces,
-											   uint32_t max_light_samples, bool disable_caustics) :
+											   uint32_t num_light_samples, bool disable_caustics) :
 	Surface_integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
-	settings_.max_light_samples = max_light_samples;
+	settings_.num_light_samples = num_light_samples;
+	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
 	settings_.disable_caustics = disable_caustics;
 }
 

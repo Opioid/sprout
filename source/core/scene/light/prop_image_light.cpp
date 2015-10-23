@@ -15,27 +15,19 @@ namespace scene { namespace light {
 void Prop_image_light::sample(const entity::Composed_transformation& transformation,
 							  const math::float3& p, const math::float3& n, bool total_sphere,
 							  const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
-							  uint32_t max_samples, std::vector<Sample>& samples) const {
-	samples.clear();
-
-	Sample light_sample;
-
+							  Sample& result) const {
 	auto material = prop_->material(part_);
 
-	for (uint32_t i = 0; i < max_samples; ++i) {
-		float pdf;
-		math::float2 uv = material->emission_importance_sample(sampler.generate_sample_2D(), pdf);
+	float pdf;
+	math::float2 uv = material->emission_importance_sample(sampler.generate_sample_2D(), pdf);
 
-		prop_->shape()->sample(part_, transformation, area_, p, uv, light_sample.shape);
+	prop_->shape()->sample(part_, transformation, area_, p, uv, result.shape);
 
-		if (math::dot(light_sample.shape.wi, n) > 0.f || total_sphere) {
-			light_sample.shape.pdf *= pdf;
-			light_sample.energy = material->sample_emission(light_sample.shape.uv, image_sampler);
-		} else {
-			light_sample.shape.pdf = 0.f;
-		}
-
-		samples.push_back(light_sample);
+	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
+		result.shape.pdf *= pdf;
+		result.energy = material->sample_emission(result.shape.uv, image_sampler);
+	} else {
+		result.shape.pdf = 0.f;
 	}
 }
 

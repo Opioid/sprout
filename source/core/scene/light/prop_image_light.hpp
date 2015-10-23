@@ -10,7 +10,7 @@ public:
 	virtual void sample(const entity::Composed_transformation& transformation,
 						const math::float3& p, const math::float3& n, bool total_sphere,
 						const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
-						uint32_t max_samples, std::vector<Sample>& samples) const final override;
+						Sample& result) const final override;
 
 	virtual float pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,

@@ -17,9 +17,7 @@
 namespace rendering {
 
 Whitted::Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {
-	light_samples_.reserve(settings.max_light_samples);
-}
+	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
 void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart(num_samples);
@@ -64,7 +62,16 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 		return result;
 	}
 
-	float bxdf_pdf;
+	result += estimate_direct_light(worker, ray, intersection, material_sample, settings_.sampler_linear);
+
+	return result;
+}
+
+math::float3 Whitted::estimate_direct_light(Worker& worker, const math::Oray& ray,
+											const scene::Intersection& intersection,
+											const scene::material::Sample& material_sample,
+											const image::texture::sampler::Sampler_2D& texture_sampler) {
+	math::float3 result = math::float3::identity;
 
 	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
 	math::Oray shadow_ray;
@@ -74,32 +81,34 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	shadow_ray.time   = ray.time;
 
 	for (auto l : worker.scene().lights()) {
-		l->sample(ray.time,
-				  intersection.geo.p, material_sample.geometric_normal(), !material_sample.is_translucent(),
-				  settings_.sampler_nearest, sampler_, settings_.max_light_samples, light_samples_);
+		for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
+			scene::light::Sample light_sample;
+			l->sample(ray.time,
+					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
+					  settings_.sampler_nearest, sampler_, light_sample);
 
-		float num_samples_reciprocal = 1.f / static_cast<float>(light_samples_.size());
+			if (light_sample.shape.pdf > 0.f) {
+				shadow_ray.set_direction(light_sample.shape.wi);
+				shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
-		for (auto& ls : light_samples_) {
-			if (ls.shape.pdf > 0.f) {
-				shadow_ray.set_direction(ls.shape.wi);
-				shadow_ray.max_t = ls.shape.t - ray_offset;
-
-				float mv = worker.masked_visibility(shadow_ray, settings_.sampler_linear);
+				float mv = worker.masked_visibility(shadow_ray, texture_sampler);
 				if (mv > 0.f) {
-					result += num_samples_reciprocal * mv
-							* (ls.energy * material_sample.evaluate(ls.shape.wi, bxdf_pdf)) / ls.shape.pdf;
+					float bxdf_pdf;
+					result += mv
+						   * (light_sample.energy * material_sample.evaluate(light_sample.shape.wi, bxdf_pdf))
+						   / light_sample.shape.pdf;
 				}
 			}
 		}
 	}
 
-	return result;
+	return settings_.num_light_samples_reciprocal * result;
 }
 
-Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t max_light_samples) :
+Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t num_light_samples) :
 	Surface_integrator_factory(take_settings) {
-	settings_.max_light_samples = max_light_samples;
+	settings_.num_light_samples = num_light_samples;
+	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
 }
 
 Surface_integrator* Whitted_factory::create(math::random::Generator& rng) const {
