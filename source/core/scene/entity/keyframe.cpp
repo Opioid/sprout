@@ -23,8 +23,6 @@ void Keyframe::interpolate(const Keyframe& other, float t, Keyframe& result) con
 		result.morphing.targets[0] = other.morphing.targets[0];
 		result.morphing.targets[1] = other.morphing.targets[1];
 	}
-
-
 }
 
 }}
