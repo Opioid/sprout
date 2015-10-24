@@ -175,13 +175,19 @@ float Tree<Data>::opacity(math::Oray& ray, const math::float2& /*bounds*/, Node_
 }
 
 template<typename Data>
-void Tree<Data>::interpolate_triangle_data(uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
-    data_.interpolate_data(index, uv, n, t, tc);
+void Tree<Data>::interpolate_triangle_data(uint32_t index, math::float2 uv,
+										   math::float3& n, math::float3& t, math::float2& tc) const {
+	data_.interpolate_data(index, uv, n, t, tc);
 }
 
 template<typename Data>
 math::float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, math::float2 uv) const {
     return data_.interpolate_uv(index, uv);
+}
+
+template<typename Data>
+float Tree<Data>::triangle_bitangent_sign(uint32_t index) const {
+	return data_.bitangent_sign(index);
 }
 
 template<typename Data>

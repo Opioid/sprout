@@ -1,6 +1,8 @@
 #include "triangle_json_handler.hpp"
 #include "base/math/vector.inl"
 
+#include <iostream>
+
 namespace scene { namespace shape { namespace triangle {
 
 Json_handler::Json_handler () :
@@ -250,6 +252,8 @@ void Json_handler::add_tangent(float v) {
 
 	if (current_array_index_ < 3) {
 		vertices_[current_vertex_].t.v[current_array_index_] = v;
+	} else if (current_array_index_ == 3) {
+		vertices_[current_vertex_].bitangent_sign = v;
 	}
 
 	++current_array_index_;

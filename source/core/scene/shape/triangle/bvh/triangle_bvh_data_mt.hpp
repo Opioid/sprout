@@ -29,6 +29,7 @@ public:
 
 	inline math::float2 interpolate_uv(uint32_t index, math::float2 uv) const;
 
+	inline float    bitangent_sign(uint32_t index) const;
 	inline uint32_t material_index(uint32_t index) const;
 
 	inline math::float3 normal(uint32_t index) const;

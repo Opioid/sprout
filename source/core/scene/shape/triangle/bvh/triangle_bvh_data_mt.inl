@@ -22,11 +22,15 @@ inline bool Data_MT::intersect_p(uint32_t index, const math::Oray& ray) const {
 
 inline void Data_MT::interpolate_data(uint32_t index, math::float2 uv,
 							   math::float3& n, math::float3& t, math::float2& tc) const {
-    triangles_[index].interpolate_data(uv, n, t, tc);
+	triangles_[index].interpolate_data(uv, n, t, tc);
 }
 
 inline math::float2 Data_MT::interpolate_uv(uint32_t index, math::float2 uv) const {
     return triangles_[index].interpolate_uv(uv);
+}
+
+inline float Data_MT::bitangent_sign(uint32_t index) const {
+	return triangles_[index].bitangent_sign;
 }
 
 inline uint32_t Data_MT::material_index(uint32_t index) const {
@@ -51,7 +55,11 @@ inline void Data_MT::allocate_triangles(uint32_t num_triangles) {
 }
 
 inline void Data_MT::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index) {
-	triangles_.push_back(Triangle_MT{a, b, c, material_index});
+	triangles_.push_back(Triangle_MT{
+							 Triangle_MT::Vertex(a),
+							 Triangle_MT::Vertex(b),
+							 Triangle_MT::Vertex(c),
+							 a.bitangent_sign, material_index});
 }
 
 }}}}

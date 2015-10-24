@@ -70,6 +70,7 @@ public:
 
     math::float2 interpolate_triangle_uv(uint32_t index, math::float2 uv) const;
 
+	float    triangle_bitangent_sign(uint32_t index) const;
     uint32_t triangle_material_index(uint32_t index) const;
 
 	math::float3 triangle_normal(uint32_t index) const;

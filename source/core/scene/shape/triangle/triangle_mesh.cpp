@@ -49,7 +49,8 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 
 		math::transform_vectors(transformation.rotation, n, t, intersection.n, intersection.t);
 
-		intersection.b = math::cross(intersection.n, intersection.t);
+		float bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
+		intersection.b = bitangent_sign * math::cross(intersection.n, intersection.t);
 		intersection.uv = uv;
 		intersection.part = tree_.triangle_material_index(pi.index);
 

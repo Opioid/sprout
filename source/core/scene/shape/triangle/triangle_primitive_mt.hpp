@@ -6,7 +6,15 @@
 namespace scene { namespace shape { namespace triangle {
 
 struct Triangle_MT {
+	struct Vertex {
+		Vertex(const shape::Vertex& v);
+
+		math::float3 p, n, t;
+		math::float2 uv;
+	};
+
 	Vertex a, b, c;
+	float bitangent_sign;
 	uint32_t material_index;
 
 	bool intersect(math::Oray& ray, math::float2& uv) const;

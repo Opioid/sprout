@@ -4,6 +4,8 @@
 
 namespace scene { namespace shape { namespace triangle {
 
+inline Triangle_MT::Vertex::Vertex(const shape::Vertex& v) : p(v.p), n(v.n), t(v.t), uv(v.uv) {}
+
 inline bool Triangle_MT::intersect(math::Oray& ray, math::float2& uv) const {
 	math::float3 e1 = b.p - a.p;
 	math::float3 e2 = c.p - a.p;
@@ -79,7 +81,8 @@ inline void Triangle_MT::interpolate(math::float2 uv, math::float3& p, math::flo
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline void Triangle_MT::interpolate_data(math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
+inline void Triangle_MT::interpolate_data(math::float2 uv,
+										  math::float3& n, math::float3& t, math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	n  = math::normalized(w * a.n + uv.x * b.n + uv.y * c.n);
