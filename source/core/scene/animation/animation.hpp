@@ -16,6 +16,7 @@ public:
 	void push_back(const entity::Keyframe& keyframe);
 
 	void tick(float time_slice);
+	void seek(float time);
 
 	const entity::Keyframe& beginning() const;
 

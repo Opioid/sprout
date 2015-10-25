@@ -9,7 +9,7 @@ public:
 
 private:
 
-	virtual void on_set_transformation(thread::Pool& pool) final override;
+	virtual void on_set_transformation() final override;
 };
 
 }}

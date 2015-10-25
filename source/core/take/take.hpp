@@ -6,11 +6,7 @@
 #include <string>
 #include <memory>
 
-namespace exporting {
-
-class Sink;
-
-}
+namespace exporting { class Sink; }
 
 namespace scene { namespace animation {
 
@@ -18,11 +14,7 @@ class Animation;
 
 }}
 
-namespace rendering {
-
-class Surface_integrator_factory;
-
-}
+namespace rendering { class Surface_integrator_factory; }
 
 namespace sampler {
 

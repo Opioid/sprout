@@ -2,6 +2,6 @@
 
 namespace scene { namespace entity {
 
-void Dummy::on_set_transformation(thread::Pool& /*pool*/) {}
+void Dummy::on_set_transformation() {}
 
 }}

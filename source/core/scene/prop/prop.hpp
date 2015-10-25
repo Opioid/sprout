@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+namespace thread { class Pool; }
+
 namespace scene {
 
 namespace shape {
@@ -37,6 +39,8 @@ public:
 	const shape::Shape* shape() const;
 	shape::Shape* shape();
 
+	void morph(thread::Pool& pool);
+
 	const math::aabb& aabb() const;
 
 	material::IMaterial* material(uint32_t index) const;
@@ -52,7 +56,7 @@ private:
 
 	bool visible(uint32_t ray_depth) const;
 
-	virtual void on_set_transformation(thread::Pool& pool) final override;
+	virtual void on_set_transformation() final override;
 
 	std::shared_ptr<shape::Shape> shape_;
 

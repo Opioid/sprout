@@ -4,9 +4,7 @@
 
 namespace scene { namespace animation {
 
-Stage::Stage(entity::Entity* entity, Animation* animation) : entity_(entity), animation_(animation) {
-	entity_->set_beginning(animation->beginning());
-}
+Stage::Stage(entity::Entity* entity, Animation* animation) : entity_(entity), animation_(animation) {}
 
 void Stage::update() {
 	entity_->tick(animation_->interpolated_frame());

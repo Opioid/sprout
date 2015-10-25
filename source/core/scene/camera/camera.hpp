@@ -3,11 +3,7 @@
 #include "scene/entity/entity.hpp"
 #include "base/math/ray.hpp"
 
-namespace sampler {
-
-struct Camera_sample;
-
-}
+namespace sampler { struct Camera_sample; }
 
 namespace rendering {
 
@@ -41,7 +37,7 @@ public:
 
 protected:
 
-	virtual void on_set_transformation(thread::Pool& pool) final override;
+	virtual void on_set_transformation() final override;
 
 	static math::float2 calculate_dimensions(const math::float2& dimensions, rendering::film::Film* film);
 

@@ -65,21 +65,44 @@ void Scene::tick(thread::Pool& pool) {
 		s.update();
 	}
 
+	for (auto p : finite_props_) {
+		p->morph(pool);
+	}
+
 	for (auto d : dummies_) {
-		d->calculate_world_transformation(pool);
+		d->calculate_world_transformation();
 	}
 
 	for (auto p : finite_props_) {
-		p->calculate_world_transformation(pool);
+		p->calculate_world_transformation();
 	}
 
 	for (auto p : infinite_props_) {
-		p->calculate_world_transformation(pool);
+		p->calculate_world_transformation();
 	}
 
 	compile();
 
 	simulation_time_ += tick_duration_;
+}
+
+float Scene::seek(float time, thread::Pool& pool) {
+	float tick_offset = std::fmod(time, tick_duration_);
+	float first_tick = time - tick_offset;
+
+	for (auto a : animations_) {
+		a->seek(first_tick);
+	}
+
+	for (auto& s : animation_stages_) {
+		s.update();
+	}
+
+	simulation_time_ = first_tick;
+
+	tick(pool);
+
+	return tick_offset;
 }
 
 entity::Dummy* Scene::create_dummy() {

@@ -4,6 +4,8 @@
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
 
+#include <iostream>
+
 namespace scene { namespace animation {
 
 void Animation::init(size_t count) {
@@ -37,6 +39,21 @@ void Animation::tick(float time_slice) {
 	float t = delta / range;
 
 	current_frame.interpolate(next_frame, t, interpolated_frame_);
+}
+
+void Animation::seek(float time) {
+	current_time_ = time;
+
+	current_frame_ = 0;
+	for (auto& f : keyframes_) {
+		if (current_time_ <= f.time) {
+			break;
+		}
+
+		++current_frame_;
+	}
+
+	tick(0.f);
 }
 
 const entity::Keyframe& Animation::beginning() const {

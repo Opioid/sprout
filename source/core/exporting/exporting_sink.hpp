@@ -2,11 +2,7 @@
 
 #include "image/typed_image.hpp"
 
-namespace thread {
-
-class Pool;
-
-}
+namespace thread { class Pool; }
 
 namespace exporting {
 
@@ -15,7 +11,7 @@ public:
 
 	virtual ~Sink() {}
 
-	virtual void write(const image::Image_float_4& image, thread::Pool& pool) = 0;
+	virtual void write(const image::Image_float_4& image, uint32_t frame, thread::Pool& pool) = 0;
 };
 
 }

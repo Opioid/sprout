@@ -5,8 +5,6 @@
 #include <string>
 #include <memory>
 
-namespace thread { class Pool; }
-
 namespace exporting { class Sink; }
 
 namespace math { namespace random {
@@ -49,12 +47,11 @@ struct Settings;
 class Loader {
 public:
 
-	std::shared_ptr<Take> load(std::istream& stream, thread::Pool& pool);
+	std::shared_ptr<Take> load(std::istream& stream);
 
 private:
 
-	void load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, thread::Pool& pool,
-					 Take& take) const;
+	void load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const;
 
 	rendering::film::Film* load_film(const rapidjson::Value& film_value, bool alpha_transparency) const;
 

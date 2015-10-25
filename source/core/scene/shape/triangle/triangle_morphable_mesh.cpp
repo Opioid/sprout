@@ -14,8 +14,6 @@
 #include "base/math/matrix.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
-#include <iostream>
-
 namespace scene { namespace shape { namespace triangle {
 
 Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection, uint32_t num_parts) :
@@ -160,8 +158,6 @@ Morphable_shape* Morphable_mesh::morphable_shape() {
 }
 
 void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) {
-//	std::cout << "morph " << a << " " << b << " " << weight << std::endl;
-
 	collection_->morph(a, b, weight, pool, vertices_);
 
 	bvh::Builder builder;

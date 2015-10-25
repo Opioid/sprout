@@ -32,7 +32,7 @@
 
 namespace take {
 
-std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& pool) {
+std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	auto root = json::parse(stream);
 
 	auto take = std::make_shared<Take>();
@@ -45,10 +45,12 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& pool) {
 		const rapidjson::Value& node_value = n->value;
 
 		if ("camera" == node_name) {
-			load_camera(node_value, alpha_transparency, pool, *take);
+			load_camera(node_value, alpha_transparency, *take);
 		} else if ("export" == node_name) {
 			exporter_value = &node_value;
-		} else if ("frames" == node_name) {
+		} else if ("start_frame" == node_name) {
+			take->context.start_frame = json::read_uint(node_value);
+		} else if ("num_frames" == node_name) {
 			take->context.num_frames = json::read_uint(node_value);
 		} else if ("integrator" == node_name) {
 			take->surface_integrator_factory = load_surface_integrator_factory(node_value, take->settings);
@@ -90,8 +92,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& pool) {
 	return take;
 }
 
-void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, thread::Pool& pool,
-						 Take& take) const {
+void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const {
 	std::string type_name = "Perspective";
 	const rapidjson::Value* type_value = nullptr;
 
@@ -159,7 +160,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 //	} else if ("Orthographic" == type_name) {
 //	}
 
-	camera->set_transformation(transformation, pool);
+	camera->set_transformation(transformation);
 
 	camera->update_view();
 

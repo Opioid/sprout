@@ -92,11 +92,12 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	std::chrono::high_resolution_clock clock;
 	const size_t progress_range = calculate_progress_range(scene, camera, tiles.size());
 
-	float tick_offset = 0.f;
-	float tick_rest   = 0.f;
+	float tick_offset = scene.seek(context.start_frame * camera.frame_duration(), pool);
+	float tick_rest   = scene.tick_duration() - tick_offset;
 
 	for (uint32_t f = 0; f < context.num_frames; ++f) {
-		logging::info("Frame " + string::to_string(f));
+		uint32_t current_frame = context.start_frame + f;
+		logging::info("Frame " + string::to_string(current_frame));
 
 		auto render_start = clock.now();
 
@@ -174,7 +175,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 		logging::info("Render time " + string::to_string(render_duration) + " s");
 
 		auto export_start = clock.now();
-		exporter.write(film.resolve(pool), pool);
+		exporter.write(film.resolve(pool), current_frame, pool);
 		auto export_duration = chrono::duration_to_seconds(clock.now() - export_start);
 		logging::info("Export time " + string::to_string(export_duration) + " s");
 	}

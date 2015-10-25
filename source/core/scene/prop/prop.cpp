@@ -120,6 +120,16 @@ shape::Shape* Prop::shape() {
 	return shape_.get();
 }
 
+void Prop::morph(thread::Pool& pool) {
+	if (animated_) {
+		shape::Morphable_shape* morphable = shape_->morphable_shape();
+		if (morphable) {
+			morphable->morph(local_frame_a_.morphing.targets[0], local_frame_a_.morphing.targets[1],
+							 local_frame_a_.morphing.weight, pool);
+		}
+	}
+}
+
 const math::aabb& Prop::aabb() const {
 	return aabb_;
 }
@@ -179,14 +189,8 @@ bool Prop::visible(uint32_t ray_depth) const {
 	return true;
 }
 
-void Prop::on_set_transformation(thread::Pool& pool) {
+void Prop::on_set_transformation() {
 	if (animated_) {
-		shape::Morphable_shape* morphable = shape_->morphable_shape();
-		if (morphable) {
-			morphable->morph(local_frame_a_.morphing.targets[0], local_frame_a_.morphing.targets[1],
-							 local_frame_a_.morphing.weight, pool);
-		}
-
 		entity::Composed_transformation t;
 
 		t.set(world_frame_a_);

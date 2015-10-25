@@ -12,13 +12,11 @@ public:
 	Image_sequence(const std::string& filename, const math::uint2& dimensions);
 	~Image_sequence();
 
-	virtual void write(const image::Image_float_4& image, thread::Pool& pool) final override;
+	virtual void write(const image::Image_float_4& image, uint32_t frame, thread::Pool& pool) final override;
 
 private:
 
 	std::string filename_;
-
-	uint32_t current_frame_;
 };
 
 }

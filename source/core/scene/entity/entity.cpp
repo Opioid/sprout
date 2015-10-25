@@ -18,7 +18,7 @@ bool Entity::transformation_at(float tick_delta, Composed_transformation& transf
 	return animated_;
 }
 
-void Entity::set_transformation(const math::transformation& t, thread::Pool& pool) {
+void Entity::set_transformation(const math::transformation& t) {
 	world_transformation_.set(t);
 
 	local_frame_a_.transformation = t;
@@ -29,13 +29,9 @@ void Entity::set_transformation(const math::transformation& t, thread::Pool& poo
 
 	animated_ = false;
 
-	propagate_transformation(pool);
+	propagate_transformation();
 
-	on_set_transformation(pool);
-}
-
-void Entity::set_beginning(const Keyframe& frame) {
-	local_frame_b_ = frame;
+	on_set_transformation();
 }
 
 void Entity::tick(const Keyframe& frame) {
@@ -45,14 +41,14 @@ void Entity::tick(const Keyframe& frame) {
 	animated_ = true;
 }
 
-void Entity::calculate_world_transformation(thread::Pool& pool) {
+void Entity::calculate_world_transformation() {
 	if (!parent_) {
 		world_frame_a_ = local_frame_a_.transformation;
 		world_frame_b_ = local_frame_b_.transformation;
 
-		propagate_transformation(pool);
+		propagate_transformation();
 
-		on_set_transformation(pool);
+		on_set_transformation();
 	}
 }
 
@@ -78,15 +74,15 @@ const Entity* Entity::parent() const {
 	return parent_;
 }
 
-void Entity::propagate_transformation(thread::Pool& pool) const {
+void Entity::propagate_transformation() const {
 	if (child_) {
-		child_->inherit_transformation(world_frame_a_, world_frame_b_, pool);
+		child_->inherit_transformation(world_frame_a_, world_frame_b_);
 	}
 }
 
-void Entity::inherit_transformation(const math::transformation& a, const math::transformation& b, thread::Pool& pool) {
+void Entity::inherit_transformation(const math::transformation& a, const math::transformation& b) {
 	if (next_) {
-		next_->inherit_transformation(a, b, pool);
+		next_->inherit_transformation(a, b);
 	}
 
 	animated_ = true;
@@ -104,9 +100,9 @@ void Entity::inherit_transformation(const math::transformation& a, const math::t
 	world_frame_b_.rotation = local_frame_b_.transformation.rotation * b.rotation;
 	world_frame_b_.scale    = local_frame_b_.transformation.scale;
 
-	on_set_transformation(pool);
+	on_set_transformation();
 
-	propagate_transformation(pool);
+	propagate_transformation();
 }
 
 void Entity::add_sibling(Entity* node) {
