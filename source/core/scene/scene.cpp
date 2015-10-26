@@ -87,7 +87,12 @@ void Scene::tick(thread::Pool& pool) {
 }
 
 float Scene::seek(float time, thread::Pool& pool) {
-	float tick_offset = std::fmod(time, tick_duration_);
+//	float tick_offset = std::fmod(time, tick_duration_);
+
+	// see http://stackoverflow.com/questions/4218961/why-fmod1-0-0-1-1
+	// for explanation why std::floor() variant seems to give results more in line with my expectations
+	float tick_offset = time - std::floor(time / tick_duration_) * tick_duration_;
+
 	float first_tick = time - tick_offset;
 
 	for (auto a : animations_) {

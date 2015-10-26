@@ -13,7 +13,6 @@
 #include "base/math/random/generator.inl"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
-#include <mutex>
 
 namespace rendering {
 
@@ -92,7 +91,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	std::chrono::high_resolution_clock clock;
 	const size_t progress_range = calculate_progress_range(scene, camera, tiles.size());
 
-	float tick_offset = scene.seek(context.start_frame * camera.frame_duration(), pool);
+	float tick_offset = scene.seek(static_cast<float>(context.start_frame) * camera.frame_duration(), pool);
 	float tick_rest   = scene.tick_duration() - tick_offset;
 
 	for (uint32_t f = 0; f < context.num_frames; ++f) {
