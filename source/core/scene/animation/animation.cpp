@@ -45,8 +45,11 @@ void Animation::seek(float time) {
 	current_time_ = time;
 
 	current_frame_ = 0;
-	for (auto& f : keyframes_) {
-		if (current_time_ <= f.time) {
+
+	for (size_t i = 0, len = keyframes_.size() - 1; i < len; ++i) {
+		float next_frame_time = keyframes_[current_frame_ + 1].time;
+
+		if (current_time_ <= next_frame_time) {
 			break;
 		}
 
