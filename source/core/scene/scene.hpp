@@ -69,8 +69,8 @@ public:
 
 	const light::Light* montecarlo_light(float random, float& pdf) const;
 
-	light::Prop_light* create_prop_light(Prop* prop);
-	light::Prop_image_light* create_prop_image_light(Prop* prop);
+	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
+	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
 
     void add_animation(std::shared_ptr<animation::Animation> animation);
 

@@ -160,16 +160,17 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	return prop;
 }
 
-light::Light* Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Scene& scene) {
-	light::Prop_light* light = nullptr;
-
-	if (prop->shape()->is_analytical() && prop->has_emission_mapped_material()) {
-		light = scene.create_prop_image_light(prop);
-	} else {
-		light = scene.create_prop_light(prop);
+void Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Scene& scene) {
+	auto& materials = prop->materials();
+	for (size_t i = 0, len = materials.size(); i < len; ++i) {
+		if (materials[i]->is_emissive()) {
+			if (prop->shape()->is_analytical() && materials[i]->emission_map()) {
+				scene.create_prop_image_light(prop, static_cast<uint32_t>(i));
+			} else {
+				scene.create_prop_light(prop, static_cast<uint32_t>(i));
+			}
+		}
 	}
-
-	return light;
 }
 
 std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {

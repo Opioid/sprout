@@ -11,7 +11,7 @@ namespace light {
 class Prop_light : public Light {
 public:
 
-	void init(Prop* prop, uint32_t part = 0);
+	void init(Prop* prop, uint32_t part);
 
 	virtual void transformation_at(float time, entity::Composed_transformation& transformation) const final override;
 

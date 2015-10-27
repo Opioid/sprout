@@ -144,17 +144,17 @@ const light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 	return lights_[l];
 }
 
-light::Prop_light* Scene::create_prop_light(Prop* prop) {
+light::Prop_light* Scene::create_prop_light(Prop* prop, uint32_t part) {
 	light::Prop_light* light = new light::Prop_light;
 	lights_.push_back(light);
-	light->init(prop);
+	light->init(prop, part);
 	return light;
 }
 
-light::Prop_image_light* Scene::create_prop_image_light(Prop* prop) {
+light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t part) {
 	light::Prop_image_light* light = new light::Prop_image_light;
 	lights_.push_back(light);
-	light->init(prop);
+	light->init(prop, part);
 	return light;
 }
 

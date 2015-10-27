@@ -45,6 +45,7 @@ public:
 	virtual void prepare_sampling(bool spherical);
 
 	bool is_masked() const;
+	bool is_emissive() const;
 
 	float opacity(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const;
 

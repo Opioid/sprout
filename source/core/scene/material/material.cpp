@@ -21,6 +21,19 @@ bool IMaterial::is_masked() const {
 	return !mask_ == false;
 }
 
+bool IMaterial::is_emissive() const {
+	if (emission_map()) {
+		return true;
+	}
+
+	math::float3 e = average_emission();
+	if (e.x > 0.f || e.y > 0.f || e.z > 0.f) {
+		return true;
+	}
+
+	return false;
+}
+
 float IMaterial::opacity(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
 	if (mask_) {
 		return sampler.sample_1(*mask_, uv);

@@ -134,37 +134,16 @@ const math::aabb& Prop::aabb() const {
 	return aabb_;
 }
 
+const material::Materials& Prop::materials() const {
+	return materials_;
+}
+
 material::IMaterial* Prop::material(uint32_t index) const {
 	return materials_[index].get();
 }
 
 bool Prop::has_masked_material() const {
 	return properties_.test(Properties::Has_masked_material);
-}
-
-bool Prop::has_emissive_material() const {
-	for (auto m : materials_) {
-		if (m->emission_map()) {
-			return true;
-		}
-
-		math::float3 e = m->average_emission();
-		if (e.x > 0.f || e.y > 0.f || e.z > 0.f) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool Prop::has_emission_mapped_material() const {
-	for (auto m : materials_) {
-		if (m->emission_map()) {
-			return true;
-		}
-	}
-
-	return false;
 }
 
 bool Prop::primary_visibility() const {

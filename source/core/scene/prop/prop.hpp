@@ -43,11 +43,10 @@ public:
 
 	const math::aabb& aabb() const;
 
+	const material::Materials& materials() const;
 	material::IMaterial* material(uint32_t index) const;
 
 	bool has_masked_material() const;
-	bool has_emissive_material() const;
-	bool has_emission_mapped_material() const;
 
 	bool primary_visibility() const;
 	bool secondary_visibility() const;
