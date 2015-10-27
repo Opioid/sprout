@@ -1,7 +1,7 @@
 sprout
 ======
 
-.XYZ RGB Dragon
+.http://graphics.stanford.edu/data/3Dscanrep/[Asian Dragon]
 image::doc/images/dragon_720.jpg[]
 
 == Brief
@@ -34,4 +34,7 @@ I try to keep the dependencies reasonably low in this project. At the moment the
 . http://tclap.sourceforge.net/[TCLAP] for parsing command line arguments
 
 If you have https://www.ffmpeg.org/[FFmpeg] installed you can export animations to mp4, but it is neither required to build nor to run.
+
+== References
+
 
