@@ -18,10 +18,10 @@ Canopy::Canopy() {
 bool Canopy::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					   Intersection& intersection) const {
-	if (ray.max_t >= 1000.f) {
+	if (ray.max_t >= 10000.f) {
 		intersection.epsilon = 5e-4f;
 
-		intersection.p = ray.point(1000.f);
+		intersection.p = ray.point(10000.f);
 		intersection.t = transformation.rotation.x;
 		intersection.b = transformation.rotation.y;
 		intersection.n = -ray.direction;
@@ -31,7 +31,7 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
 		intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
-		ray.max_t = 1000.f;
+		ray.max_t = 10000.f;
 		return true;
 	}
 
@@ -64,7 +64,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
 		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
-		sample.t   = 1000.f;
+		sample.t   = 10000.f;
 		sample.pdf = 1.f / (4.f * math::Pi);
 	} else {
 		math::float3 x, y;
@@ -78,7 +78,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
 		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
-		sample.t   = 1000.f;
+		sample.t   = 10000.f;
 		sample.pdf = 1.f / (2.f * math::Pi);
 	}
 }
@@ -97,7 +97,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 
 	sample.wi = math::transform_vector(transformation.rotation, dir);
 	sample.uv = uv;
-	sample.t  = 1000.f;
+	sample.t  = 10000.f;
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 

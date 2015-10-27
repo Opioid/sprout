@@ -97,7 +97,7 @@ math::float4 Pathtracer_DL::li(Worker& worker, math::Oray& ray, scene::Intersect
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
-		ray.max_t = 1000.f;
+		ray.max_t = take_settings_.ray_max_t;
 		++ray.depth;
 
 		if (!worker.intersect(ray, intersection)) {

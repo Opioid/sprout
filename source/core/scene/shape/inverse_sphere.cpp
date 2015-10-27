@@ -110,7 +110,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transforma
 	ray.origin = p;
 	ray.set_direction(dir);
 	ray.min_t  = 0.1f;
-	ray.max_t  = 1000.f;
+	ray.max_t  = 10000.f;
 
 	Intersection intersection;
 

@@ -12,11 +12,7 @@ class Sampler_2D;
 
 }}}
 
-namespace sampler {
-
-class Sampler;
-
-}
+namespace sampler { class Sampler; }
 
 namespace scene {
 

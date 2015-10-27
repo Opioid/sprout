@@ -156,7 +156,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 
 //	if ("Perspective" == type_name) {
 		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, frame_duration, motion_blur,
-															  fov, lens_radius, focal_distance);
+															  fov, lens_radius, focal_distance,
+															  take.settings.ray_max_t);
 //	} else if ("Orthographic" == type_name) {
 //	}
 

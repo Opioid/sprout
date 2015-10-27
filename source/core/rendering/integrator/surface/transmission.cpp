@@ -27,7 +27,7 @@ math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Inter
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
-		ray.max_t = 1000.f;
+		ray.max_t = take_settings_.ray_max_t;
 
 		if (!worker.intersect(intersection.prop, ray, intersection)) {
 			break;

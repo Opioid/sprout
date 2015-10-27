@@ -11,9 +11,10 @@ namespace scene { namespace camera {
 
 Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film,
 						 float frame_duration, bool motion_blur,
-						 float fov, float lens_radius, float focal_distance) :
+						 float fov, float lens_radius, float focal_distance,
+						 float ray_max_t) :
 	Camera(dimensions, film, frame_duration, motion_blur),
-	fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance) {}
+	fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance), ray_max_t_(ray_max_t) {}
 
 void Perspective::update_view() {
 	float ratio = dimensions_.x / dimensions_.y;
@@ -50,7 +51,7 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample,
 	ray.origin = math::transform_point(transformation.object_to_world, r.origin);
 	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(r.direction)));
 	ray.min_t = 0.f;
-	ray.max_t = 1000.f;
+	ray.max_t = ray_max_t_;
 	ray.depth = 0;
 }
 

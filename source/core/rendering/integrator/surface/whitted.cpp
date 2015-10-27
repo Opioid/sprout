@@ -12,7 +12,6 @@
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
-#include <iostream>
 
 namespace rendering {
 
@@ -35,7 +34,7 @@ math::float4 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& i
 		}
 
 		ray.min_t = ray.max_t;
-		ray.max_t = 1000.f;
+		ray.max_t = take_settings_.ray_max_t;
 		if (!worker.intersect(ray, intersection)) {
 			return math::float4(result, opacity);
 		}

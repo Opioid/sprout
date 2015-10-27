@@ -10,17 +10,9 @@ class Sampler_2D;
 
 }}}
 
-namespace take {
+namespace take { struct Settings; }
 
-struct Settings;
-
-}
-
-namespace scene {
-
-struct Intersection;
-
-}
+namespace scene { struct Intersection; }
 
 namespace rendering {
 
@@ -33,6 +25,8 @@ public:
 	virtual ~Integrator();
 
 	virtual void start_new_pixel(uint32_t num_samples);
+
+	const take::Settings& take_settings() const;
 
 protected:
 

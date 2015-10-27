@@ -92,7 +92,7 @@ math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
-		ray.max_t = 1000.f;
+		ray.max_t = take_settings_.ray_max_t;
 		++ray.depth;
 
 		if (!worker.intersect(ray, intersection)) {

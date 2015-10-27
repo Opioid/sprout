@@ -98,7 +98,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
-		ray.max_t = 1000.f;
+		ray.max_t = take_settings_.ray_max_t;
 		++ray.depth;
 
 		if (!worker.intersect(ray, intersection)) {
@@ -179,7 +179,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 
 		math::float3 wo = -sample_result.wi;
 		shadow_ray.set_direction(sample_result.wi);
-		shadow_ray.max_t = 1000.f;
+		shadow_ray.max_t = take_settings_.ray_max_t;
 
 		scene::Intersection light_intersection;
 		if (worker.intersect(shadow_ray, light_intersection)
