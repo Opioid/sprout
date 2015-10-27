@@ -1,7 +1,7 @@
 sprout
 ======
 
-image::doc/images/dragon_720.jpg["XYZ RGB Dragon"]
+image::doc/images/dragon_720.jpg[XYZ RGB Dragon]
 
 == Brief
 
