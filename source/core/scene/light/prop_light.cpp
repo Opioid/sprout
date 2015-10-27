@@ -38,8 +38,9 @@ math::float3 Prop_light::evaluate(const math::float3& /*wi*/) const {
 
 float Prop_light::pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
-					  const image::texture::sampler::Sampler_2D& /*image_sampler*/) const {
-	return prop_->shape()->pdf(part_, transformation, area_, p, wi, total_sphere);
+					  const image::texture::sampler::Sampler_2D& /*image_sampler*/,
+					  shape::Node_stack& node_stack) const {
+	return prop_->shape()->pdf(part_, transformation, area_, p, wi, total_sphere, node_stack);
 }
 
 math::float3 Prop_light::power(const math::aabb& scene_bb) const {

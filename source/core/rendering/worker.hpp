@@ -58,6 +58,8 @@ public:
 
 	const scene::Scene& scene() const;
 
+	scene::shape::Node_stack& node_stack();
+
 private:
 
 	uint32_t id_;

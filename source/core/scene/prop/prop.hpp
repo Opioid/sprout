@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene/entity/entity.hpp"
-#include "scene/shape/node_stack.hpp"
 #include "scene/material/material.hpp"
 #include "base/flags/flags.hpp"
 #include "base/math/ray.hpp"
@@ -17,6 +16,7 @@ namespace shape {
 
 struct Intersection;
 class Shape;
+class Node_stack;
 
 }
 

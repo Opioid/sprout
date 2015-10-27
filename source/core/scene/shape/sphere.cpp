@@ -166,7 +166,8 @@ void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& /*
 					const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Sphere::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-				  const math::float3& p, const math::float3& /*wi*/, bool /*total_sphere*/) const {
+				  const math::float3& p, const math::float3& /*wi*/, bool /*total_sphere*/,
+				  Node_stack& /*node_stack*/) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
 

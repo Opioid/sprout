@@ -14,7 +14,8 @@ public:
 
 	virtual float pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
-					  const image::texture::sampler::Sampler_2D& image_sampler) const final override;
+					  const image::texture::sampler::Sampler_2D& image_sampler,
+					  shape::Node_stack& node_stack) const final override;
 
 	virtual void prepare_sampling() final override;
 };

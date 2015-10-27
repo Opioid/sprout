@@ -32,7 +32,8 @@ public:
 						const math::float3& p, const math::float3& wi, Sample& sample) const final override;
 
 	virtual float pdf(uint32_t part, const entity::Composed_transformation& transformation, float area,
-					  const math::float3& p, const math::float3& wi, bool total_sphere) const final override;
+					  const math::float3& p, const math::float3& wi, bool total_sphere,
+					  Node_stack& node_stack) const final override;
 
 	virtual float area(uint32_t part, const math::float3& scale) const final override;
 

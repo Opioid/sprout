@@ -134,8 +134,8 @@ void Morphable_mesh::sample(uint32_t /*part*/,
 							const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Morphable_mesh::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-						  const math::float3& /*p*/, const math::float3& /*wi*/,
-						  bool /*total_sphere*/) const {
+						  const math::float3& /*p*/, const math::float3& /*wi*/, bool /*total_sphere*/,
+						  shape::Node_stack& /*node_stack*/) const {
 	return 1.f;
 }
 

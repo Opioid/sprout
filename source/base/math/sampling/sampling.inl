@@ -96,7 +96,8 @@ inline float3 sample_sphere_uniform(float2 uv) {
 	return float3(cos_phi * r, sin_phi * r, z);
 }
 
-inline float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max, const float3& x, const float3& y, const float3& z) {
+inline float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max,
+										   const float3& x, const float3& y, const float3& z) {
 	float cos_theta = (1.f - uv.x) + uv.x * cos_theta_max;
 	float sin_theta = std::sqrt(1.f - cos_theta * cos_theta);
 	float phi = uv.y * 2.f * Pi;

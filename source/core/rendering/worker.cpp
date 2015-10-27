@@ -106,4 +106,8 @@ const scene::Scene& Worker::scene() const {
 	return *scene_;
 }
 
+scene::shape::Node_stack& Worker::node_stack() {
+	return node_stack_;
+}
+
 }

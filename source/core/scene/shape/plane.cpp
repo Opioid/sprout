@@ -89,7 +89,8 @@ void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*t
 				   const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Plane::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				 const math::float3& /*p*/, const math::float3& /*wi*/, bool /*total_sphere*/) const {
+				 const math::float3& /*p*/, const math::float3& /*wi*/, bool /*total_sphere*/,
+				 Node_stack& /*node_stack*/) const {
 	return 0.f;
 }
 

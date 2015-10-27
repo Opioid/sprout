@@ -170,12 +170,10 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 		}
 
 		float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi,
-								  material_sample.is_translucent(), settings_.sampler_nearest);
+								  material_sample.is_translucent(), settings_.sampler_nearest, worker.node_stack());
 		if (0.f == ls_pdf) {
 			continue;
 		}
-
-		float weight = power_heuristic(sample_result.pdf, ls_pdf);
 
 		math::float3 wo = -sample_result.wi;
 		shadow_ray.set_direction(sample_result.wi);
@@ -191,6 +189,9 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 
 				if (light_material_sample.same_hemisphere(wo)) {
 					math::float3 ls_energy = light_material_sample.emission();
+
+					float weight = power_heuristic(sample_result.pdf, ls_pdf);
+
 					result += (weight / sample_result.pdf * light_pdf_reciprocal)
 						   * ls_energy * sample_result.reflection;
 				}
