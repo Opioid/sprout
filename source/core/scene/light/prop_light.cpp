@@ -40,6 +40,18 @@ float Prop_light::pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
 					  const image::texture::sampler::Sampler_2D& /*image_sampler*/,
 					  shape::Node_stack& node_stack) const {
+/*
+	if (prop_->shape()->is_complex()) {
+		math::Oray ray;
+		ray.origin = p;
+		ray.set_direction(wi);
+		ray.min_t = 0.f;
+		ray.max_t = 10000.f;
+		if (!prop_->aabb().intersect_p(ray)) {
+			return 0.f;
+		}
+	}
+*/
 	return prop_->shape()->pdf(part_, transformation, area_, p, wi, total_sphere, node_stack);
 }
 

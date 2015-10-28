@@ -34,23 +34,14 @@ bool Prop::intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Inte
 		return false;
 	}
 
-	entity::Composed_transformation transformation;
-	bool animated = transformation_at(ray.time, transformation);
-
 	math::float2 bounds;
 
-	if (shape_->is_complex()) {
-		math::aabb aabb;
-		if (animated) {
-			shape_->aabb().transform(transformation.object_to_world, aabb);
-		} else {
-			aabb = aabb_;
-		}
-
-		if (!aabb_.intersect_p(ray)) {
-			return false;
-		}
+	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+		return false;
 	}
+
+	entity::Composed_transformation transformation;
+	transformation_at(ray.time, transformation);
 
 	return shape_->intersect(transformation, ray, bounds, node_stack, intersection);
 }
@@ -60,23 +51,14 @@ bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) con
 		return false;
 	}
 
-	entity::Composed_transformation transformation;
-	bool animated = transformation_at(ray.time, transformation);
-
 	math::float2 bounds;
 
-	if (shape_->is_complex()) {
-		math::aabb aabb;
-		if (animated) {
-			shape_->aabb().transform(transformation.object_to_world, aabb);
-		} else {
-			aabb = aabb_;
-		}
-
-		if (!aabb_.intersect_p(ray)) {
-			return false;
-		}
+	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+		return false;
 	}
+
+	entity::Composed_transformation transformation;
+	transformation_at(ray.time, transformation);
 
 	return shape_->intersect_p(transformation, ray, bounds, node_stack);
 }
@@ -91,23 +73,14 @@ float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack,
 		return intersect_p(ray, node_stack) ? 1.f : 0.f;
 	}
 
-	entity::Composed_transformation transformation;
-	bool animated = transformation_at(ray.time, transformation);
-
 	math::float2 bounds;
 
-	if (shape_->is_complex()) {
-		math::aabb aabb;
-		if (animated) {
-			shape_->aabb().transform(transformation.object_to_world, aabb);
-		} else {
-			aabb = aabb_;
-		}
-
-		if (!aabb_.intersect_p(ray)) {
-			return 0.f;
-		}
+	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+		return false;
 	}
+
+	entity::Composed_transformation transformation;
+	transformation_at(ray.time, transformation);
 
 	return shape_->opacity(transformation, ray, bounds, node_stack, materials_, sampler);
 }
