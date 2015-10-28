@@ -27,9 +27,10 @@ public:
 
 	void insert(const Vector3<T>& p);
 
-	void transform(const Matrix4x4<T>& m, AABB& other) const;
+	AABB transform(const Matrix4x4<T>& m) const;
 
 	AABB merge(const AABB& other) const;
+	void merge_assign(const AABB& other);
 
 	static AABB empty();
 

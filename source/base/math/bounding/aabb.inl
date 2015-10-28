@@ -95,7 +95,7 @@ void AABB<T>::insert(const Vector3<T>& p) {
 }
 
 template<typename T>
-void AABB<T>::transform(const Matrix4x4<T>& m, AABB<T>& other) const {
+AABB<T> AABB<T>::transform(const Matrix4x4<T>& m) const {
 	Vector3<T> xa = bounds_[0].x * m.x.xyz;
 	Vector3<T> xb = bounds_[1].x * m.x.xyz;
 
@@ -105,13 +105,19 @@ void AABB<T>::transform(const Matrix4x4<T>& m, AABB<T>& other) const {
 	Vector3<T> za = bounds_[0].z * m.z.xyz;
 	Vector3<T> zb = bounds_[1].z * m.z.xyz;
 
-	other.bounds_[0] = math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb) + m.w.xyz;
-	other.bounds_[1] = math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb) + m.w.xyz;
+	return AABB<T>(math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb) + m.w.xyz,
+				   math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb) + m.w.xyz);
 }
 
 template<typename T>
 AABB<T> AABB<T>::merge(const AABB<T>& other) const {
 	return AABB<T>(math::min(bounds_[0], other.bounds_[0]), math::max(bounds_[1], other.bounds_[1]));
+}
+
+template<typename T>
+void AABB<T>::merge_assign(const AABB& other) {
+	bounds_[0] = math::min(bounds_[0], other.bounds_[0]);
+	bounds_[1] = math::max(bounds_[1], other.bounds_[1]);
 }
 
 template<typename T>

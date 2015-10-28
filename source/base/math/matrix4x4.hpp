@@ -6,6 +6,7 @@ template<typename T> struct Vector2;
 template<typename T> struct Vector3;
 template<typename T> struct Vector4;
 template<typename T> struct Matrix3x3;
+template<typename T> struct Transformation;
 
 template<typename T>
 struct Matrix4x4 {
@@ -40,6 +41,8 @@ struct Matrix4x4 {
 	Matrix4x4(const T m[16]);
 
 	explicit Matrix4x4(const Matrix3x3<T>& m);
+
+	explicit Matrix4x4(const Transformation<T>& t);
 
 	Matrix4x4 operator*(const Matrix4x4& m) const;
 
@@ -124,7 +127,8 @@ template<typename T>
 Matrix4x4<T> inverted(const Matrix4x4<T>& m);
 
 template<typename T>
-void set_basis_scale_origin(Matrix4x4<T>& m, const Matrix3x3<T>& basis, const Vector3<T>& scale, const Vector3<T>& origin);
+void set_basis_scale_origin(Matrix4x4<T>& m,
+							const Matrix3x3<T>& basis, const Vector3<T>& scale, const Vector3<T>& origin);
 
 template<typename T>
 void set_look_at(Matrix4x4<T>& m, const Vector3<T>& eye, const Vector3<T>& at, const Vector3<T>& up);

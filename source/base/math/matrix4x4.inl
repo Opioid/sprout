@@ -33,6 +33,11 @@ Matrix4x4<T>::Matrix4x4(const Matrix3x3<T>& m) :
 	m30(T(0)),  m31(T(0)),  m32(T(0)),  m33(T(1)) {}
 
 template<typename T>
+Matrix4x4<T>::Matrix4x4(const Transformation<T>& t) {
+	set_basis_scale_origin(*this, math::float3x3(t.rotation), t.scale, t.position);
+}
+
+template<typename T>
 Matrix4x4<T> Matrix4x4<T>::operator*(const Matrix4x4& m) const {
 	return Matrix4x4(m00 * m.m00 + m01 * m.m10 + m02 * m.m20 + m03 * m.m30,
 					 m00 * m.m01 + m01 * m.m11 + m02 * m.m21 + m03 * m.m31,
@@ -330,7 +335,8 @@ Matrix4x4<T> inverted(const Matrix4x4<T>& m) {
 }
 
 template<typename T>
-void set_basis_scale_origin(Matrix4x4<T>& m, const Matrix3x3<T>& basis, const Vector3<T>& scale, const Vector3<T>& origin) {
+void set_basis_scale_origin(Matrix4x4<T>& m,
+							const Matrix3x3<T>& basis, const Vector3<T>& scale, const Vector3<T>& origin) {
 	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = T(0);
 	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = T(0);
 	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = T(0);
