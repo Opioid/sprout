@@ -1,15 +1,12 @@
 #include "glass_test.hpp"
 #include "glass_sample.hpp"
+#include "scene/material/material_print.hpp"
 #include "sampler/random_sampler.hpp"
 #include "base/math/random/generator.hpp"
-#include "base/math/print.hpp"
-#include <iostream>
 
 namespace scene { namespace material { namespace glass {
 
 namespace test {
-
-void print(const BxDF_result& result);
 
 void test() {
 	math::random::Generator rng;
@@ -61,12 +58,6 @@ void test() {
 	btdf.importance_sample(sampler, result);
 	print(result);
 }
-
-void print(const BxDF_result& result) {
-	std::cout << "wi " << result.wi << std::endl;
-	std::cout << "reflection " << result.reflection << std::endl;
-}
-
 
 }
 

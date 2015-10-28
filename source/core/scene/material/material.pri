@@ -5,6 +5,7 @@ SOURCES += \
 HEADERS += \
 	scene/material/bxdf.hpp \
 	scene/material/material.hpp \
+	scene/material/material_print.hpp \
 	scene/material/material_provider.hpp \
 	scene/material/material_sample.hpp \
 	scene/material/material_sample_cache.hpp \

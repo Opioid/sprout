@@ -59,7 +59,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 		math::float2 uv = sampler.generate_sample_2D();
 		math::float3 dir = math::sample_sphere_uniform(uv);
 
-		sample.wi  = dir;
+		sample.wi = dir;
 
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
 		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
@@ -73,7 +73,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 		math::float2 uv = sampler.generate_sample_2D();
 		math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
-		sample.wi  = dir;
+		sample.wi = dir;
 
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
 		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);

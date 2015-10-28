@@ -20,8 +20,6 @@ public:
 						const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
 						Sample& result) const override;
 
-	virtual math::float3 evaluate(const math::float3& wi) const final override;
-
 	virtual float pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
 					  const image::texture::sampler::Sampler_2D& image_sampler,

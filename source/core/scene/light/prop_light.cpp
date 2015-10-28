@@ -32,10 +32,6 @@ void Prop_light::sample(const entity::Composed_transformation& transformation,
 	}
 }
 
-math::float3 Prop_light::evaluate(const math::float3& /*wi*/) const {
-	return math::float3::identity;
-}
-
 float Prop_light::pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
 					  const image::texture::sampler::Sampler_2D& /*image_sampler*/,
