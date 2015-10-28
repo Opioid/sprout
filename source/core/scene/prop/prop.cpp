@@ -4,10 +4,8 @@
 #include "scene/shape/morphable_shape.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
+#include "base/math/quaternion.inl"
 #include "base/math/bounding/aabb.inl"
-
-#include <iostream>
-#include "base/math/print.hpp"
 
 namespace scene {
 

@@ -65,9 +65,9 @@ private:
 
 	Tree tree_;
 
-	uint32_t num_parts_;
-
 	std::shared_ptr<Morph_target_collection> collection_;
+
+	uint32_t num_parts_;
 
 	std::vector<Vertex> vertices_;
 
