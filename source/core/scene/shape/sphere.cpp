@@ -35,7 +35,8 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
 
-			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, intersection.n);
+			math::float3 xyz = math::normalized(
+						math::transform_vector_transposed(transformation.rotation, intersection.n));
 			intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
@@ -55,7 +56,8 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
 
-			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, intersection.n);
+			math::float3 xyz = math::normalized(
+						math::transform_vector_transposed(transformation.rotation, intersection.n));
 			intersection.uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
@@ -109,7 +111,8 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 
 		if (t0 > ray.min_t && t0 < ray.max_t) {
 			math::float3 n = math::normalized(ray.point(t0) - transformation.position);
-			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
+			math::float3 xyz = math::normalized(
+						math::transform_vector_transposed(transformation.rotation, n));
 			math::float2 uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
@@ -120,7 +123,8 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 
 		if (t1 > ray.min_t && t1 < ray.max_t) {
 			math::float3 n = math::normalized(ray.point(t1) - transformation.position);
-			math::float3 xyz = math::transform_vector_transposed(transformation.rotation, n);
+			math::float3 xyz = math::normalized(
+						math::transform_vector_transposed(transformation.rotation, n));
 			math::float2 uv = math::float2((std::atan2(xyz.x, xyz.z) * math::Pi_inv) * 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
