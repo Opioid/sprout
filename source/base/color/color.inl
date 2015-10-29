@@ -88,7 +88,7 @@ inline Color4c to_byte(const Color4& c) {
 }
 
 inline float snorm_to_float(unsigned char byte) {
-	return 2.f * (static_cast<float>(byte) / 255.f - 0.5f);
+	return static_cast<float>(byte) / 128.f - 1.f;
 }
 
 inline float unorm_to_float(unsigned char byte) {
