@@ -55,6 +55,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*fl
 			for (auto& v : handler.vertices()) {
 				math::float3 b;
 				math::coordinate_system(v.n, v.t, b);
+				v.bitangent_sign = 1.f;
 			}
 		}
 
@@ -120,6 +121,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 			for (auto& v : handler.vertices()) {
 				math::float3 b;
 				math::coordinate_system(v.n, v.t, b);
+				v.bitangent_sign = 1.f;
 			}
 		}
 
