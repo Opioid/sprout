@@ -211,6 +211,16 @@ void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p, math::
 }
 
 template<typename Data>
+void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const {
+	data_.sample(index, r2, p, tc);
+}
+
+template<typename Data>
+void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p) const {
+	data_.sample(index, r2, p);
+}
+
+template<typename Data>
 void Tree<Data>::allocate_triangles(uint32_t num_triangles) {
     data_.allocate_triangles(num_triangles);
 	num_parts_ = 0;

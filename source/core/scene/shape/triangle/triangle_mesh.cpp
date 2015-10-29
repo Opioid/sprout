@@ -93,11 +93,11 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	uint32_t index = distributions_[part].distribution.sample_discrete(r);
 
 	math::float3 sv;
-	math::float3 sn;
 	math::float2 tc;
-	tree_.sample(index, r2, sv, sn, tc);
-
+	tree_.sample(index, r2, sv, tc);
 	math::float3 v = math::transform_point(transformation.object_to_world, sv);
+
+	math::float3 sn = tree_.triangle_normal(index);
 	math::float3 wn = math::transform_vector(transformation.rotation, sn);
 
 	math::float3 axis = v - p;

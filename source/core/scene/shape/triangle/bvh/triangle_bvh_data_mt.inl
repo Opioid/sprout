@@ -49,6 +49,10 @@ inline void Data_MT::sample(uint32_t index, math::float2 r2, math::float3& p, ma
     triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, n, tc);
 }
 
+inline void Data_MT::sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const {
+	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, tc);
+}
+
 inline void Data_MT::allocate_triangles(uint32_t num_triangles) {
     triangles_.clear();
     triangles_.reserve(num_triangles);

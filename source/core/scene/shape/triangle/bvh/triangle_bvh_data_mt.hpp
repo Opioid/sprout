@@ -37,6 +37,7 @@ public:
 	inline float area(uint32_t index, const math::float3& scale) const;
 
 	inline void sample(uint32_t index, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
+	inline void sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const;
 
 	inline void allocate_triangles(uint32_t num_triangles);
 
