@@ -8,8 +8,6 @@
 #include "base/math/math.hpp"
 #include "base/math/sampling/sampling.inl"
 
-// #include <iostream>
-
 namespace scene { namespace material { namespace substitute {
 
 Sample::Sample() : lambert_(*this), oren_nayar_(*this), ggx_(*this) {}
@@ -113,7 +111,8 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
 			if (1.f == metallic_) {
-				float n_dot_wi = ggx_.importance_sample(sampler, result);
+				float n_dot_wo = clamped_n_dot_wo();
+				float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
 				result.reflection *= n_dot_wi;
 				result.pdf *= 0.5f;
 			} else {
@@ -129,7 +128,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 					result.pdf = 0.25f * (result.pdf + ggx_pdf);
 
 				} else {
-					float n_dot_wi = ggx_.importance_sample(sampler, result);
+					float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
 
 					float oren_nayar_pdf;
 					math::float3 oren_nayar_reflection = oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo,
@@ -142,7 +141,8 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 		}
 	} else {
 		if (1.f == metallic_) {
-			float n_dot_wi = ggx_.importance_sample(sampler, result);
+			float n_dot_wo = clamped_n_dot_wo();
+			float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
 			result.reflection *= n_dot_wi;
 		} else {
 			float p = sampler.generate_sample_1D();
@@ -158,7 +158,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 				result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 				result.pdf = 0.5f * (result.pdf + ggx_pdf);
 			} else {
-				float n_dot_wi = ggx_.importance_sample(sampler, result);
+				float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
 
 				float oren_nayar_pdf;
 				math::float3 oren_nayar_reflection = oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo,

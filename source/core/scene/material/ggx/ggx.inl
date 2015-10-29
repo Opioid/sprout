@@ -1,7 +1,6 @@
 #include "ggx.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
-#include "base/math/print.hpp"
 
 namespace scene { namespace material { namespace ggx {
 
@@ -18,10 +17,8 @@ math::float3 GGX_Schlick<Sample>::evaluate(const math::float3& wi, float n_dot_w
 
 	math::float3 h = math::normalized(BxDF<Sample>::sample_.wo_ + wi);
 
-//	float n_dot_h  = std::max(math::dot(BxDF<Sample>::sample_.n_, h), 0.f);
-//	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
-	float n_dot_h  = math::dot(BxDF<Sample>::sample_.n_, h);
-	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
+	float n_dot_h  = math::saturate(math::dot(BxDF<Sample>::sample_.n_, h));
+	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
 
 	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
 	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);
@@ -33,12 +30,16 @@ math::float3 GGX_Schlick<Sample>::evaluate(const math::float3& wi, float n_dot_w
 //		std::cout << "GGX<Sample>::evaluate()" << std::endl;
 //	}
 
+//	if (math::contains_inf(specular) || math::contains_nan(specular)) {
+//		std::cout << "GGX<Sample>::evaluate()" << std::endl;
+//	}
+
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	return specular;
 }
 
 template<typename Sample>
-float GGX_Schlick<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
+float GGX_Schlick<Sample>::importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const {
 	math::float2 xi = sampler.generate_sample_2D();
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
@@ -55,13 +56,13 @@ float GGX_Schlick<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_res
 	math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	math::float3 h = BxDF<Sample>::sample_.tangent_to_world(is);
 
-//	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
-	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
+	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+//	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
 
 	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - BxDF<Sample>::sample_.wo_);
 
 	float n_dot_wi = std::max(math::dot(BxDF<Sample>::sample_.n_, wi),	  0.00001f);
-	float n_dot_wo = std::max(math::dot(BxDF<Sample>::sample_.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
+//	float n_dot_wo = std::max(math::dot(BxDF<Sample>::sample_.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
 	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
 	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);
@@ -74,6 +75,10 @@ float GGX_Schlick<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_res
 	result.wi = wi;
 	result.type.clear_set(0.f == BxDF<Sample>::sample_.a2_ ? BxDF_type::Specular_reflection
 														   : BxDF_type::Glossy_reflection);
+
+//	if (wo_dot_h > 1.f) {
+//		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
+//	}
 
 //	if (math::contains_negative(result.reflection)) {
 //		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
@@ -101,10 +106,8 @@ math::float3 GGX_Conductor<Sample>::evaluate(const math::float3& wi, float n_dot
 
 	math::float3 h = math::normalized(BxDF<Sample>::sample_.wo_ + wi);
 
-//	float n_dot_h  = std::max(math::dot(BxDF<Sample>::sample_.n_, h), 0.f);
-//	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
-	float n_dot_h  = math::dot(BxDF<Sample>::sample_.n_, h);
-	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
+	float n_dot_h  = math::saturate(math::dot(BxDF<Sample>::sample_.n_, h));
+	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
 
 	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
 	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);
@@ -121,7 +124,7 @@ math::float3 GGX_Conductor<Sample>::evaluate(const math::float3& wi, float n_dot
 }
 
 template<typename Sample>
-float GGX_Conductor<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_result& result) const {
+float GGX_Conductor<Sample>::importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const {
 	math::float2 xi = sampler.generate_sample_2D();
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
@@ -144,7 +147,7 @@ float GGX_Conductor<Sample>::importance_sample(sampler::Sampler& sampler, BxDF_r
 	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - BxDF<Sample>::sample_.wo_);
 
 	float n_dot_wi = std::max(math::dot(BxDF<Sample>::sample_.n_, wi),	  0.00001f);
-	float n_dot_wo = std::max(math::dot(BxDF<Sample>::sample_.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
+//	float n_dot_wo = std::max(math::dot(BxDF<Sample>::sample_.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
 	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
 	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);

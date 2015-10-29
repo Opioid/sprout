@@ -24,7 +24,8 @@ math::float3 Sample::attenuation() const {
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
-	float n_dot_wi = ggx_.importance_sample(sampler, result);
+	float n_dot_wo = clamped_n_dot_wo();
+	float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
 	result.reflection *= n_dot_wi;
 }
 

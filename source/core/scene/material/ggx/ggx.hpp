@@ -12,7 +12,7 @@ public:
 
 	math::float3 evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float& pdf) const;
 
-	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
+	float importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const;
 };
 
 template<typename Sample>
@@ -23,7 +23,7 @@ public:
 
 	math::float3 evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float& pdf) const;
 
-	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
+	float importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const;
 };
 
 math::float3 f(float wo_dot_h, const math::float3& f0);
