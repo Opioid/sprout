@@ -9,6 +9,8 @@
 #include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 
+#include <iostream>
+
 namespace scene { namespace shape {
 
 Canopy::Canopy() {
@@ -28,7 +30,8 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.geo_n = intersection.n;
 		intersection.part = 0;
 
-		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, ray.direction);
+		math::float3 xyz = math::normalized(
+					math::transform_vector_transposed(transformation.rotation, ray.direction));
 		intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 		ray.max_t = 10000.f;
@@ -103,7 +106,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 					const math::float3& /*p*/, const math::float3& wi, Sample& sample) const {
-	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, wi);
+	math::float3 xyz = math::normalized(math::transform_vector_transposed(transformation.rotation, wi));
 	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 	sample.pdf = 1.f / (4.f * math::Pi);
