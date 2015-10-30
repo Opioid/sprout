@@ -4,6 +4,8 @@
 
 namespace scene {
 
+namespace shape { class Node_stack; }
+
 class Prop;
 
 namespace light {
@@ -17,8 +19,8 @@ public:
 
 	virtual void sample(const entity::Composed_transformation& transformation,
 						const math::float3& p, const math::float3& n, bool total_sphere,
-						const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
-						Sample& result) const override;
+						const image::texture::sampler::Sampler_2D& image_sampler,
+						sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const override;
 
 	virtual float pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,

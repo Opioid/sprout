@@ -57,7 +57,7 @@ float Canopy::opacity(const entity::Composed_transformation& /*transformation*/,
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 					const math::float3& /*p*/, const math::float3& n, bool total_sphere,
-					sampler::Sampler& sampler, Sample& sample) const {
+					sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	if (total_sphere) {
 		math::float2 uv = sampler.generate_sample_2D();
 		math::float3 dir = math::sample_sphere_uniform(uv);

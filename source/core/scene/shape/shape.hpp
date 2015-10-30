@@ -1,14 +1,9 @@
 #pragma once
 
-#include "node_stack.hpp"
 #include "scene/material/material.hpp"
 #include "base/math/bounding/aabb.hpp"
 
-namespace sampler {
-
-class Sampler;
-
-}
+namespace sampler { class Sampler; }
 
 namespace scene {
 
@@ -22,6 +17,7 @@ namespace shape {
 
 struct Intersection;
 struct Sample;
+class Node_stack;
 class Morphable_shape;
 
 class Shape {
@@ -47,7 +43,7 @@ public:
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 						const math::float3& p, const math::float3& n, bool total_sphere,
-						sampler::Sampler& sampler, Sample& sample) const = 0;
+						sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 						const math::float3& p, math::float2 uv, Sample& sample) const = 0;

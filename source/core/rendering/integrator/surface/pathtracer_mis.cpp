@@ -143,7 +143,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 		scene::light::Sample light_sample;
 		light->sample(transformation,
 					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
-					  settings_.sampler_nearest, sampler_, light_sample);
+					  settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
 			shadow_ray.set_direction(light_sample.shape.wi);

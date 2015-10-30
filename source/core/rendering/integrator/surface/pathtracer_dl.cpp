@@ -15,6 +15,9 @@
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace rendering {
 
 Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings,
@@ -131,7 +134,7 @@ math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const math::Or
 		scene::light::Sample light_sample;
 		light->sample(ray.time,
 					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
-					  settings_.sampler_nearest, sampler_, light_sample);
+					  settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
 			shadow_ray.set_direction(light_sample.shape.wi);
@@ -144,6 +147,11 @@ math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const math::Or
 
 				result += mv * light_sample.energy * f
 					   / (light_pdf * light_sample.shape.pdf);
+
+				if (math::contains_nan(result) || math::contains_inf(result)) {
+					std::cout << "light_sample.shape.pdf: " << light_sample.shape.pdf << std::endl;
+					std::cout << "light_pdf: " << light_pdf << std::endl;
+				}
 			}
 		}
 	}

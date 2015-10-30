@@ -11,6 +11,9 @@
 #include "base/math/matrix.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene { namespace shape { namespace triangle {
 
 void Mesh::init() {
@@ -37,6 +40,18 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 		intersection.epsilon = 3e-3f * tray.max_t;
 
 		intersection.p = ray.point(tray.max_t);
+
+	//	math::float3 a = ray.point(tray.max_t);
+
+	//	math::float3 sv;
+	//	math::float2 tc;
+	//	tree_.sample(pi.index, pi.uv, sv, tc);
+	//	intersection.p = math::transform_point(transformation.object_to_world, tray.point(tray.max_t));
+
+	//	if (std::abs(math::distance(a, intersection.p)) > 0.0001f) {
+	//	if (std::abs(tray.max_t - math::distance(intersection.p, ray.origin)) > 0.0001f) {
+	//		std::cout << "alarm" << std::endl;
+	//	}
 
 		math::float3 n;
 		math::float3 t;
@@ -86,7 +101,8 @@ float Mesh::opacity(const entity::Composed_transformation& transformation, const
 
 void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 				  const math::float3& p, const math::float3& /*n*/, bool /*total_sphere*/,
-				  sampler::Sampler& sampler, Sample& sample) const {
+				  sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
+
 	float r = sampler.generate_sample_1D();
 	math::float2 r2 = sampler.generate_sample_2D();
 
@@ -101,14 +117,93 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	math::float3 wn = math::transform_vector(transformation.rotation, sn);
 
 	math::float3 axis = v - p;
+	math::float3 dir = math::normalized(axis);
 
-	sample.wi = math::normalized(axis);
-
-	float c = math::dot(wn, -sample.wi);
-
+	float c = math::dot(wn, -dir);
 	if (c <= 0.f) {
-		sample.pdf = 0.f;
+
+		math::float3 ori(0.f, 1.f, -2.f);
+		math::float3 diri(0.f, 0.f, 1.f);
+
+		math::Oray tray;
+		tray.origin = math::transform_point(transformation.world_to_object, p);
+		tray.set_direction(math::transform_vector(transformation.world_to_object, dir));
+
+	//	tray.origin = math::transform_point(transformation.world_to_object, ori);
+	//	tray.set_direction(math::transform_vector(transformation.world_to_object, diri));
+
+		tray.min_t = 0.01f;
+		tray.max_t = 10000.f;
+
+	//	std::cout << tray.origin << std::endl;
+	//	std::cout << tray.direction << std::endl;
+
+		math::float2 bounds;
+		Intersection pi;
+		if (tree_.intersect(tray, bounds, node_stack, pi)) {
+			uint32_t shape_part = tree_.triangle_material_index(pi.index);
+			if (part != shape_part) {
+				sample.pdf = 0.f;
+				return;
+			}
+
+			math::float3 sv;
+			math::float2 tc;
+			tree_.sample(pi.index, pi.uv, sv, tc);
+			math::float3 v = math::transform_point(transformation.object_to_world, sv);
+
+		//	std::cout << "sv: " << sv << std::endl;
+		//	std::cout << "v: " << v << std::endl;
+
+		//	std::cout << "pi.uv: " << pi.uv << std::endl;
+
+			math::float3 iv = ori + tray.max_t * diri;
+		//	math::float3 iv = math::transform_point(transformation.object_to_world, tray.point(tray.max_t));
+
+		//	std::cout << std::abs(math::distance(v, iv)) << std::endl;
+
+		//	std::cout << std::abs(tray.max_t - math::distance(p, sv)) << std::endl;
+
+		//	std::cout << "v: " << v << std::endl;
+		//	std::cout << "iv: " << iv << std::endl;
+
+		//	v = iv;
+
+		//	std::cout << tray.max_t << std::endl;
+
+		//	std::cout << transformation.object_to_world.
+
+			{
+				math::float3 sn = tree_.triangle_normal(pi.index);
+				math::float3 wn = math::transform_vector(transformation.rotation, sn);
+
+			//	std::cout << "index: " << pi.index << std::endl;
+			//	std::cout << "sn: " << sn << std::endl;
+			//	std::cout << "wn: " << wn << std::endl;
+
+				math::float3 axis = v - p;
+				math::float3 dir = math::normalized(axis);
+
+				c = math::dot(wn, -dir);
+				if (c <= 0.f) {
+					sample.pdf = 0.f;
+					return;
+				}
+
+				sample.wi = dir;
+				sample.uv = tc;
+			//	float sl = tray.max_t * tray.max_t;
+			//	sample.t = tray.max_t;
+
+				float sl = math::squared_length(axis);
+				sample.t = std::sqrt(sl);
+				sample.pdf = sl / (c * area);
+			}
+		} else {
+			sample.pdf = 0.f;
+		}
 	} else {
+		sample.wi = dir;
 		sample.uv = tc;
 		float sl = math::squared_length(axis);
 		sample.t = std::sqrt(sl);
@@ -139,21 +234,15 @@ float Mesh::pdf(uint32_t part, const entity::Composed_transformation& transforma
 			return 0.f;
 		}
 
-		math::float3 sn;
-		math::float3 t;
-		math::float2 uv;
-		tree_.interpolate_triangle_data(pi.index, pi.uv, sn, t, uv);
-
+		math::float3 sn = tree_.triangle_normal(pi.index);
 		math::float3 wn = math::transform_vector(transformation.rotation, sn);
 
 		float c = math::dot(wn, -wi);
-
 		if (c <= 0.f) {
 			return 0.f;
 		}
 
 		float sl = tray.max_t * tray.max_t;
-
 		return sl / (c * area);
 	}
 

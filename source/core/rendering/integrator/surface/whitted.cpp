@@ -84,7 +84,7 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const math::Oray& ra
 			scene::light::Sample light_sample;
 			l->sample(ray.time,
 					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
-					  settings_.sampler_nearest, sampler_, light_sample);
+					  settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 
 			if (light_sample.shape.pdf > 0.f) {
 				shadow_ray.set_direction(light_sample.shape.wi);
@@ -93,9 +93,9 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const math::Oray& ra
 				float mv = worker.masked_visibility(shadow_ray, texture_sampler);
 				if (mv > 0.f) {
 					float bxdf_pdf;
-					result += mv
-						   * (light_sample.energy * material_sample.evaluate(light_sample.shape.wi, bxdf_pdf))
-						   / light_sample.shape.pdf;
+					math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+
+					result += mv * light_sample.energy * f / light_sample.shape.pdf;
 				}
 			}
 		}

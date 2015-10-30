@@ -14,8 +14,8 @@ namespace scene { namespace light {
 
 void Prop_image_light::sample(const entity::Composed_transformation& transformation,
 							  const math::float3& p, const math::float3& n, bool total_sphere,
-							  const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
-							  Sample& result) const {
+							  const image::texture::sampler::Sampler_2D& image_sampler,
+							  sampler::Sampler& sampler, shape::Node_stack& /*node_stack*/, Sample& result) const {
 	auto material = prop_->material(part_);
 
 	float pdf;

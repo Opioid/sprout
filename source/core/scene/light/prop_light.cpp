@@ -21,9 +21,9 @@ void Prop_light::transformation_at(float time, entity::Composed_transformation& 
 
 void Prop_light::sample(const entity::Composed_transformation& transformation,
 						const math::float3& p, const math::float3& n, bool total_sphere,
-						const image::texture::sampler::Sampler_2D& image_sampler, sampler::Sampler& sampler,
-						Sample& result) const {
-	prop_->shape()->sample(part_, transformation, area_, p, n, total_sphere, sampler, result.shape);
+						const image::texture::sampler::Sampler_2D& image_sampler,
+						sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const {
+	prop_->shape()->sample(part_, transformation, area_, p, n, total_sphere, sampler, node_stack, result.shape);
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
 		result.energy = prop_->material(part_)->sample_emission(result.shape.uv, image_sampler);
