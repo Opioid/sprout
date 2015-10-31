@@ -18,8 +18,8 @@ Sphere::Sphere() {
 bool Sphere::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					   Intersection& intersection) const {
-	math::float3 v = ray.origin - transformation.position;
-	float b = -dot(v, ray.direction);
+	math::float3 v = transformation.position - ray.origin;
+	float b = dot(v, ray.direction);
 	float radius = transformation.scale.x;
 	float det = (b * b) - dot(v, v) + (radius * radius);
 
@@ -73,8 +73,8 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 
 bool Sphere::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 						 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
-	math::float3 v = ray.origin - transformation.position;
-	float b = -dot(v, ray.direction);
+	math::float3 v = transformation.position - ray.origin;
+	float b = dot(v, ray.direction);
 	float radius = transformation.scale.x;
 	float det = (b * b) - dot(v, v) + (radius * radius);
 
@@ -100,8 +100,8 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
 					  const material::Materials& materials,
 					  const image::texture::sampler::Sampler_2D& sampler) const {
-	math::float3 v = ray.origin - transformation.position;
-	float b = -dot(v, ray.direction);
+	math::float3 v = transformation.position - ray.origin;
+	float b = dot(v, ray.direction);
 	float radius = transformation.scale.x;
 	float det = (b * b) - dot(v, v) + (radius * radius);
 
@@ -170,12 +170,19 @@ void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& /*
 					const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Sphere::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-				  const math::float3& p, const math::float3& /*wi*/, bool /*total_sphere*/,
+				  const math::float3& p, const math::float3& wi, bool /*total_sphere*/,
 				  Node_stack& /*node_stack*/) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
-
 	float radius_square = transformation.scale.x * transformation.scale.x;
+
+	float b = math::dot(axis, wi);
+	float det = (b * b) - axis_squared_length + radius_square;
+
+	if (det <= 0.f) {
+		return 0.f;
+	}
+
 	float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 	cos_theta_max = std::min(0.99999995f, cos_theta_max);

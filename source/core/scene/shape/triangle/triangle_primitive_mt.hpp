@@ -22,6 +22,7 @@ struct Triangle_MT {
 
 	void interpolate(math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const;
 	void interpolate(math::float2 uv, math::float3& p, math::float2& tc) const;
+	void interpolate(math::float2 uv, math::float3& p) const;
 	void interpolate_data(math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
 	math::float2 interpolate_uv(math::float2 uv) const;
 

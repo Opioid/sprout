@@ -21,7 +21,7 @@ inline bool Data_MT::intersect_p(uint32_t index, const math::Oray& ray) const {
 }
 
 inline void Data_MT::interpolate_data(uint32_t index, math::float2 uv,
-							   math::float3& n, math::float3& t, math::float2& tc) const {
+									  math::float3& n, math::float3& t, math::float2& tc) const {
 	triangles_[index].interpolate_data(uv, n, t, tc);
 }
 
@@ -51,6 +51,10 @@ inline void Data_MT::sample(uint32_t index, math::float2 r2, math::float3& p, ma
 
 inline void Data_MT::sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const {
 	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, tc);
+}
+
+inline void Data_MT::sample(uint32_t index, math::float2 r2, math::float3& p) const {
+	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p);
 }
 
 inline void Data_MT::allocate_triangles(uint32_t num_triangles) {

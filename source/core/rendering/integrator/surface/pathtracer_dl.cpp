@@ -15,9 +15,6 @@
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace rendering {
 
 Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings,
@@ -147,11 +144,6 @@ math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const math::Or
 
 				result += mv * light_sample.energy * f
 					   / (light_pdf * light_sample.shape.pdf);
-
-				if (math::contains_nan(result) || math::contains_inf(result)) {
-					std::cout << "light_sample.shape.pdf: " << light_sample.shape.pdf << std::endl;
-					std::cout << "light_pdf: " << light_pdf << std::endl;
-				}
 			}
 		}
 	}

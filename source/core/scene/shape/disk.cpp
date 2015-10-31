@@ -117,12 +117,13 @@ void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& tran
 
 	math::float3 axis = ws - p;
 
-	sample.wi = math::normalized(axis);
+	math::float3 wi = math::normalized(axis);
 
-	float c = math::dot(transformation.rotation.z, -sample.wi);
+	float c = math::dot(transformation.rotation.z, -wi);
 	if (c <= 0.f) {
 		sample.pdf = 0.f;
 	} else {
+		sample.wi = wi;
 		float sl = math::squared_length(axis);
 		sample.t = std::sqrt(sl);
 		sample.pdf = sl / (c * area);
@@ -151,12 +152,19 @@ float Disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& transf
 	float t = -(numer / denom);
 
 	math::float3 ws = p + t * wi; // ray.point(t);
+	math::float3 k = ws - transformation.position;
+	float l = math::dot(k, k);
 
-	math::float3 axis = ws - p;
+	float radius = transformation.scale.x;
 
-	float sl = math::squared_length(axis);
+	if (l <= radius * radius) {
+	//	math::float3 axis = ws - p;
+	//	float sl = math::squared_length(axis);
+		float sl = t * t;
+		return sl / (c * area);
+	}
 
-	return sl / (c * area);
+	return 0.f;
 }
 
 float Disk::area(uint32_t /*part*/, const math::float3& scale) const {

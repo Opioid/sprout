@@ -88,6 +88,12 @@ inline void Triangle_MT::interpolate(math::float2 uv, math::float3& p, math::flo
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
+inline void Triangle_MT::interpolate(math::float2 uv, math::float3& p) const {
+	float w = 1.f - uv.x - uv.y;
+
+	p = w * a.p + uv.x * b.p + uv.y * c.p;
+}
+
 inline void Triangle_MT::interpolate_data(math::float2 uv,
 										  math::float3& n, math::float3& t, math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
