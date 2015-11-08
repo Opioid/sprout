@@ -16,8 +16,7 @@ Sphere::Sphere() {
 }
 
 bool Sphere::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
-					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-					   Intersection& intersection) const {
+					   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	math::float3 v = transformation.position - ray.origin;
 	float b = dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -72,7 +71,7 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 }
 
 bool Sphere::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
-						 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
+						 Node_stack& /*node_stack*/) const {
 	math::float3 v = transformation.position - ray.origin;
 	float b = dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -97,8 +96,7 @@ bool Sphere::intersect_p(const entity::Composed_transformation& transformation, 
 }
 
 float Sphere::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-					  const material::Materials& materials,
+					  Node_stack& /*node_stack*/, const material::Materials& materials,
 					  const image::texture::sampler::Sampler_2D& sampler) const {
 	math::float3 v = transformation.position - ray.origin;
 	float b = dot(v, ray.direction);

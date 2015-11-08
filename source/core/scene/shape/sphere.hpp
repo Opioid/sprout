@@ -10,15 +10,13 @@ public:
 	Sphere();
 
 	virtual bool intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
-						   const math::float2& bounds, Node_stack& node_stack,
-						   Intersection& intersection) const final override;
+						   Node_stack& node_stack, Intersection& intersection) const final override;
 
 	virtual bool intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
-							 const math::float2& bounds, Node_stack& node_stack) const final override;
+							 Node_stack& node_stack) const final override;
 
 	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-						  const math::float2& bounds, Node_stack& node_stack,
-						  const material::Materials& materials,
+						  Node_stack& node_stack, const material::Materials& materials,
 						  const image::texture::sampler::Sampler_2D& sampler) const final override;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,

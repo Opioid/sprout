@@ -36,8 +36,6 @@ bool Prop::intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Inte
 		return false;
 	}
 
-	math::float2 bounds;
-
 	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
 		return false;
 	}
@@ -45,7 +43,7 @@ bool Prop::intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Inte
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 
-	return shape_->intersect(transformation, ray, bounds, node_stack, intersection);
+	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
 
 bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const {
@@ -53,8 +51,6 @@ bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) con
 		return false;
 	}
 
-	math::float2 bounds;
-
 	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
 		return false;
 	}
@@ -62,7 +58,7 @@ bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) con
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 
-	return shape_->intersect_p(transformation, ray, bounds, node_stack);
+	return shape_->intersect_p(transformation, ray, node_stack);
 }
 
 float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack,
@@ -75,8 +71,6 @@ float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack,
 		return intersect_p(ray, node_stack) ? 1.f : 0.f;
 	}
 
-	math::float2 bounds;
-
 	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
 		return false;
 	}
@@ -84,7 +78,7 @@ float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack,
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 
-	return shape_->opacity(transformation, ray, bounds, node_stack, materials_, sampler);
+	return shape_->opacity(transformation, ray, node_stack, materials_, sampler);
 }
 
 const shape::Shape* Prop::shape() const {

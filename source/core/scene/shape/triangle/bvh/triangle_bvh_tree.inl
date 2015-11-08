@@ -62,8 +62,7 @@ uint32_t Tree<Data>::num_triangles() const {
 }
 
 template<typename Data>
-bool Tree<Data>::intersect(math::Oray& ray, const math::float2& /*bounds*/,
-						   Node_stack& node_stack, Intersection& intersection) const {
+bool Tree<Data>::intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const {
 	node_stack.clear();
 	node_stack.push(0);
 	uint32_t n = 0;
@@ -100,8 +99,7 @@ bool Tree<Data>::intersect(math::Oray& ray, const math::float2& /*bounds*/,
 }
 
 template<typename Data>
-bool Tree<Data>::intersect_p(const math::Oray& ray, const math::float2& /*bounds*/,
-							 Node_stack& node_stack) const {
+bool Tree<Data>::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
 	node_stack.clear();
 	node_stack.push(0);
 	uint32_t n = 0;
@@ -132,7 +130,7 @@ bool Tree<Data>::intersect_p(const math::Oray& ray, const math::float2& /*bounds
 }
 
 template<typename Data>
-float Tree<Data>::opacity(math::Oray& ray, const math::float2& /*bounds*/, Node_stack& node_stack,
+float Tree<Data>::opacity(math::Oray& ray, Node_stack& node_stack,
 						  const material::Materials& materials,
 						  const image::texture::sampler::Sampler_2D& sampler) const {
 	node_stack.clear();

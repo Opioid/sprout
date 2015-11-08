@@ -30,8 +30,7 @@ uint32_t Morphable_mesh::num_parts() const {
 }
 
 bool Morphable_mesh::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
-							   const math::float2& bounds, Node_stack& node_stack,
-							   shape::Intersection& intersection) const {
+							   Node_stack& node_stack, shape::Intersection& intersection) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
 	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
@@ -39,7 +38,7 @@ bool Morphable_mesh::intersect(const entity::Composed_transformation& transforma
 	tray.max_t = ray.max_t;
 
 	Intersection pi;
-	if (tree_.intersect(tray, bounds, node_stack, pi)) {
+	if (tree_.intersect(tray, node_stack, pi)) {
 		intersection.epsilon = 3e-3f * tray.max_t;
 
 		intersection.p = ray.point(tray.max_t);
@@ -68,19 +67,18 @@ bool Morphable_mesh::intersect(const entity::Composed_transformation& transforma
 }
 
 bool Morphable_mesh::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
-								 const math::float2& bounds, Node_stack& node_stack) const {
+								 Node_stack& node_stack) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
 	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
-	return tree_.intersect_p(tray, bounds, node_stack);
+	return tree_.intersect_p(tray, node_stack);
 }
 
 float Morphable_mesh::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-							  const math::float2& bounds, Node_stack& node_stack,
-							  const material::Materials& materials,
+							  Node_stack& node_stack, const material::Materials& materials,
 							  const image::texture::sampler::Sampler_2D& sampler) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
@@ -88,7 +86,7 @@ float Morphable_mesh::opacity(const entity::Composed_transformation& transformat
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
-	return tree_.opacity(tray, bounds, node_stack, materials, sampler);
+	return tree_.opacity(tray, node_stack, materials, sampler);
 }
 
 void Morphable_mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,

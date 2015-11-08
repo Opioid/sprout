@@ -18,8 +18,7 @@ Canopy::Canopy() {
 }
 
 bool Canopy::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
-					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-					   Intersection& intersection) const {
+					   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	if (ray.max_t >= 10000.f) {
 		intersection.epsilon = 5e-4f;
 
@@ -42,14 +41,13 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 }
 
 bool Canopy::intersect_p(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
-						 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
+						 Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
 float Canopy::opacity(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
-					  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-					  const material::Materials& /*materials*/,
+					  Node_stack& /*node_stack*/, const material::Materials& /*materials*/,
 					  const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;

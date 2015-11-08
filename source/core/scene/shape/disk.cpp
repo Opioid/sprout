@@ -16,8 +16,7 @@ Disk::Disk() {
 }
 
 bool Disk::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
-					 const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-					 Intersection& intersection) const {
+					 Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const math::float3& normal = transformation.rotation.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
@@ -55,7 +54,7 @@ bool Disk::intersect(const entity::Composed_transformation& transformation, math
 }
 
 bool Disk::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
-					   const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
+					   Node_stack& /*node_stack*/) const {
 	const math::float3& normal = transformation.rotation.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
@@ -78,8 +77,7 @@ bool Disk::intersect_p(const entity::Composed_transformation& transformation, co
 }
 
 float Disk::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-					const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-					const material::Materials& materials,
+					Node_stack& /*node_stack*/, const material::Materials& materials,
 					const image::texture::sampler::Sampler_2D& sampler) const {
 	const math::float3& normal = transformation.rotation.z;
 	float d = -math::dot(normal, transformation.position);

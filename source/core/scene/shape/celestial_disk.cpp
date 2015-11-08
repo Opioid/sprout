@@ -16,8 +16,7 @@ Celestial_disk::Celestial_disk() {
 }
 
 bool Celestial_disk::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
-							   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-							   Intersection& intersection) const {
+							   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const math::float3& v = transformation.rotation.z;
 	float b = -dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -41,14 +40,13 @@ bool Celestial_disk::intersect(const entity::Composed_transformation& transforma
 }
 
 bool Celestial_disk::intersect_p(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
-								 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
+								 Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
 float Celestial_disk::opacity(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
-							  const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-							  const material::Materials& /*materials*/,
+							  Node_stack& /*node_stack*/, const material::Materials& /*materials*/,
 							  const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;

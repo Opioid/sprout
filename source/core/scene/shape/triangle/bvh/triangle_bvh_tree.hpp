@@ -55,13 +55,11 @@ public:
 
 	uint32_t num_triangles() const;
 
-	bool intersect(math::Oray& ray, const math::float2& bounds,
-				   Node_stack& node_stack, Intersection& intersection) const;
+	bool intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect_p(const math::Oray& ray, const math::float2& bounds,
-					 Node_stack& node_stack) const;
+	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
 
-	float opacity(math::Oray& ray, const math::float2& bounds, Node_stack& node_stack,
+	float opacity(math::Oray& ray, Node_stack& node_stack,
 				  const material::Materials& materials,
 				  const image::texture::sampler::Sampler_2D& sampler) const;
 

@@ -16,8 +16,7 @@ Inverse_sphere::Inverse_sphere() {
 }
 
 bool Inverse_sphere::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
-							   const math::float2& /*bounds*/, Node_stack& /*node_stack*/,
-							   Intersection& intersection) const {
+							   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -70,7 +69,7 @@ bool Inverse_sphere::intersect(const entity::Composed_transformation& transforma
 }
 
 bool Inverse_sphere::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
-								 const math::float2& /*bounds*/, Node_stack& /*node_stack*/) const {
+								 Node_stack& /*node_stack*/) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -95,10 +94,9 @@ bool Inverse_sphere::intersect_p(const entity::Composed_transformation& transfor
 }
 
 float Inverse_sphere::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-							  const math::float2& bounds, Node_stack& node_stack,
-							  const material::Materials& /*materials*/,
+							  Node_stack& node_stack, const material::Materials& /*materials*/,
 							  const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return intersect_p(transformation, ray, bounds, node_stack) ? 1.f : 0.f;
+	return intersect_p(transformation, ray, node_stack) ? 1.f : 0.f;
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,

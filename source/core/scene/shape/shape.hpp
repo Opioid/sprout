@@ -30,15 +30,13 @@ public:
 	virtual uint32_t num_parts() const;
 
 	virtual bool intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
-						   const math::float2& bounds, Node_stack& node_stack,
-						   Intersection& intersection) const = 0;
+						   Node_stack& node_stack, Intersection& intersection) const = 0;
 
 	virtual bool intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
-							 const math::float2& bounds, Node_stack& node_stack) const = 0;
+							 Node_stack& node_stack) const = 0;
 
 	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-						  const math::float2& bounds, Node_stack& node_stack,
-						  const material::Materials& materials,
+						  Node_stack& node_stack, const material::Materials& materials,
 						  const image::texture::sampler::Sampler_2D& sampler) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
