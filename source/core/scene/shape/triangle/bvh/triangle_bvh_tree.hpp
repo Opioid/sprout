@@ -73,6 +73,7 @@ public:
 
 	math::float3 triangle_normal(uint32_t index) const;
 
+	float triangle_area(uint32_t index) const;
     float triangle_area(uint32_t index, const math::float3& scale) const;
 
 	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;

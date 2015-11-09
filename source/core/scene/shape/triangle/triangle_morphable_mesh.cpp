@@ -149,7 +149,7 @@ bool Morphable_mesh::is_analytical() const {
 	return false;
 }
 
-void Morphable_mesh::prepare_sampling(uint32_t /*part*/, const math::float3& /*scale*/) {}
+void Morphable_mesh::prepare_sampling(uint32_t /*part*/) {}
 
 Morphable_shape* Morphable_mesh::morphable_shape() {
 	return this;

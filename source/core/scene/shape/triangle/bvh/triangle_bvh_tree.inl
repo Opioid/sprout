@@ -199,6 +199,11 @@ math::float3 Tree<Data>::triangle_normal(uint32_t index) const {
 }
 
 template<typename Data>
+float Tree<Data>::triangle_area(uint32_t index) const {
+	return data_.area(index);
+}
+
+template<typename Data>
 float Tree<Data>::triangle_area(uint32_t index, const math::float3& scale) const {
     return data_.area(index, scale);
 }

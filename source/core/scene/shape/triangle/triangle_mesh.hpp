@@ -47,7 +47,7 @@ public:
 
 	virtual bool is_analytical() const final override;
 
-	virtual void prepare_sampling(uint32_t part, const math::float3& scale) final override;
+	virtual void prepare_sampling(uint32_t part) final override;
 
 private:
 
@@ -56,7 +56,9 @@ private:
     Tree tree_;
 
 	struct Distribution {
-        void init(uint32_t part, const Tree& tree, const math::float3& scale);
+		void init(uint32_t part, const Tree& tree);
+		bool empty() const;
+
 		uint32_t sample(float r) const;
 
 		math::Distribution_1D distribution;

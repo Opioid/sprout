@@ -104,7 +104,7 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 /*	float r = sampler.generate_sample_1D();
 	math::float2 r2 = sampler.generate_sample_2D();
 
-	uint32_t index = distributions_[part].distribution.sample_discrete(r);
+	uint32_t index = distributions_[part].sample(r);
 
 	math::float3 sv;
 	tree_.sample(index, r2, sv);
@@ -120,6 +120,62 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	ray.max_t = 10000.f;
 
 	Intersection pi;
+/*
+	float pdf = 0.f;
+
+	if (tree_.intersect(ray, node_stack, pi)) {
+		sample.wi = dir;
+		sample.uv = tree_.interpolate_triangle_uv(pi.index, pi.uv);
+		sample.t = ray.max_t;
+
+		math::float3 sn = tree_.triangle_normal(pi.index);
+		math::float3 wn = math::transform_vector(transformation.rotation, sn);
+
+		float c = math::dot(wn, -dir);
+		if (c <= 0.f) {
+			sample.pdf = 0.f;
+			return;
+		}
+//		float c = std::abs(math::dot(wn, -dir));
+		float sl = ray.max_t * ray.max_t;
+
+		ray.min_t = ray.max_t;
+		ray.max_t = 10000.f;
+
+		pdf += sl / (c);
+
+		while (tree_.intersect(ray, node_stack, pi)) {
+			uint32_t shape_part = tree_.triangle_material_index(pi.index);
+			if (part != shape_part) {
+				continue;
+			}
+
+			math::float3 sn = tree_.triangle_normal(pi.index);
+			math::float3 wn = math::transform_vector(transformation.rotation, sn);
+
+//			float c = math::dot(wn, -dir);
+//			if (c <= 0.f) {
+//				sample.pdf = 0.f;
+//				return;
+//			}
+			float c = std::abs(math::dot(wn, -dir));
+			float sl = ray.max_t * ray.max_t;
+
+			pdf += sl / (c);
+
+			ray.min_t = ray.max_t;
+			ray.max_t = 10000.f;
+		}
+
+		sample.pdf /= area;
+
+	} else {
+		sample.pdf = 0.f;
+	}
+*/
+
+
+/*
 	if (tree_.intersect(ray, node_stack, pi)) {
 		uint32_t shape_part = tree_.triangle_material_index(pi.index);
 		if (part != shape_part) {
@@ -142,21 +198,10 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 		float sl = ray.max_t * ray.max_t;
 		sample.pdf = sl / (c * area);
 
-		// kubitza
-		{
-			math::float3 sn = tree_.triangle_normal(index);
-			math::float3 wn = math::transform_vector(transformation.rotation, sn);
-
-			float c = math::dot(wn, -dir);
-			if (c <= 0.f) {
-				sample.pdf = 0.f;
-			}
-		}
-
-		return;
 	} else {
 		sample.pdf = 0.f;
 	}
+
 */
 
 
@@ -230,8 +275,8 @@ float Mesh::pdf(uint32_t part, const entity::Composed_transformation& transforma
 	return 0.f;
 }
 
-float Mesh::area(uint32_t part, const math::float3& /*scale*/) const {
-	return distributions_[part].distribution.integral();
+float Mesh::area(uint32_t part, const math::float3& scale) const {
+	return distributions_[part].distribution.integral() * scale.x * scale.x;
 }
 
 bool Mesh::is_complex() const {
@@ -242,23 +287,29 @@ bool Mesh::is_analytical() const {
 	return false;
 }
 
-void Mesh::prepare_sampling(uint32_t part, const math::float3& scale) {
-    distributions_[part].init(part, tree_, scale);
+void Mesh::prepare_sampling(uint32_t part) {
+   if (distributions_[part].empty()) {
+	   distributions_[part].init(part, tree_);
+   }
 }
 
-void Mesh::Distribution::init(uint32_t part, const Tree& tree, const math::float3& scale) {
+void Mesh::Distribution::init(uint32_t part, const Tree& tree) {
 	std::vector<float> areas;
 
 	triangle_mapping.clear();
 
     for (uint32_t t = 0, len = tree.num_triangles(); t < len; ++t) {
         if (tree.triangle_material_index(t) == part) {
-            areas.push_back(tree.triangle_area(t, scale));
+			areas.push_back(tree.triangle_area(t));
 			triangle_mapping.push_back(t);
 		}
 	}
 
 	distribution.init(areas.data(), areas.size());
+}
+
+bool Mesh::Distribution::empty() const {
+	return triangle_mapping.empty();
 }
 
 uint32_t Mesh::Distribution::sample(float r) const {

@@ -41,6 +41,10 @@ inline math::float3 Data_MT::normal(uint32_t index) const {
     return triangles_[index].normal();
 }
 
+inline float Data_MT::area(uint32_t index) const {
+	return triangles_[index].area();
+}
+
 inline float Data_MT::area(uint32_t index, const math::float3& scale) const {
     return triangles_[index].area(scale);
 }

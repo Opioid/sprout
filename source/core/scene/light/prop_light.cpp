@@ -66,7 +66,7 @@ void Prop_light::prepare_sampling() {
 
 	entity::Composed_transformation transformation;
 	prop_->transformation_at(0.f, transformation);
-	prop_->shape()->prepare_sampling(part_, transformation.scale);
+	prop_->shape()->prepare_sampling(part_);
 	area_ = prop_->shape()->area(part_, transformation.scale);
 }
 

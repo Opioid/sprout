@@ -116,6 +116,10 @@ inline math::float3 Triangle_MT::normal() const {
 	return math::normalized(math::cross(e1, e2));
 }
 
+inline float Triangle_MT::area() const {
+	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
+}
+
 inline float Triangle_MT::area(const math::float3& scale) const {
 	math::float3 sa = scale * a.p;
 	math::float3 sb = scale * b.p;

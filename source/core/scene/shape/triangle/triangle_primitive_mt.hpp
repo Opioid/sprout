@@ -28,6 +28,7 @@ struct Triangle_MT {
 
 	math::float3 normal() const;
 
+	float area() const;
 	float area(const math::float3& scale) const;
 };
 
