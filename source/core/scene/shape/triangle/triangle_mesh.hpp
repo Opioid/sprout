@@ -57,7 +57,7 @@ private:
 
 	struct Distribution {
         void init(uint32_t part, const Tree& tree, const math::float3& scale);
-		uint32_t sample(float r);
+		uint32_t sample(float r) const;
 
 		math::Distribution_1D distribution;
 		std::vector<uint32_t> triangle_mapping;

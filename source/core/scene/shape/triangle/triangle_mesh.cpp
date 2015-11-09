@@ -101,7 +101,7 @@ float Mesh::opacity(const entity::Composed_transformation& transformation, const
 void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 				  const math::float3& p, const math::float3& /*n*/, bool /*total_sphere*/,
 				  sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
-	float r = sampler.generate_sample_1D();
+/*	float r = sampler.generate_sample_1D();
 	math::float2 r2 = sampler.generate_sample_2D();
 
 	uint32_t index = distributions_[part].distribution.sample_discrete(r);
@@ -157,13 +157,13 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	} else {
 		sample.pdf = 0.f;
 	}
+*/
 
 
-/*
 	float r = sampler.generate_sample_1D();
 	math::float2 r2 = sampler.generate_sample_2D();
 
-	uint32_t index = distributions_[part].distribution.sample_discrete(r);
+	uint32_t index = distributions_[part].sample(r);
 
 	math::float3 sv;
 	math::float2 tc;
@@ -190,7 +190,7 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 		sample.t = std::sqrt(sl);
 		sample.pdf = sl / (c * area);
 	}
-*/
+
 }
 
 void Mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
@@ -251,20 +251,17 @@ void Mesh::Distribution::init(uint32_t part, const Tree& tree, const math::float
 
 	triangle_mapping.clear();
 
-	uint32_t i = 0;
     for (uint32_t t = 0, len = tree.num_triangles(); t < len; ++t) {
         if (tree.triangle_material_index(t) == part) {
             areas.push_back(tree.triangle_area(t, scale));
-			triangle_mapping.push_back(i);
+			triangle_mapping.push_back(t);
 		}
-
-		++i;
 	}
 
 	distribution.init(areas.data(), areas.size());
 }
 
-uint32_t Mesh::Distribution::sample(float r) {
+uint32_t Mesh::Distribution::sample(float r) const {
 	return triangle_mapping[distribution.sample_discrete(r)];
 }
 
