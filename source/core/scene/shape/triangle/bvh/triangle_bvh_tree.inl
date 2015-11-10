@@ -236,7 +236,3 @@ void Tree<Data>::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c,
 }
 
 }}}}
-
-
-
-
