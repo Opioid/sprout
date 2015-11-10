@@ -85,11 +85,6 @@ private:
 									const std::vector<uint32_t>& primitive_indices,
 									const std::vector<Index_triangle>& triangles,
 									const std::vector<Vertex>& vertices);
-
-	static math::plane average_splitting_plane(const math::aabb& aabb,
-											   const std::vector<uint32_t>& primitive_indices,
-											   const std::vector<Index_triangle>& triangles,
-											   const std::vector<Vertex>& vertices, uint8_t& axis);
 };
 
 }}}}

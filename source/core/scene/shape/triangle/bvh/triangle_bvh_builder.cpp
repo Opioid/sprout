@@ -87,32 +87,15 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 
 	math::float3 average = math::float3::identity;
 
-//	std::vector<math::float3> positions;
-//	positions.reserve(primitive_indices.size());
-
 	for (auto pi : primitive_indices) {
 		average += vertices[triangles[pi].a].p + vertices[triangles[pi].b].p + vertices[triangles[pi].c].p;
-
-//		positions.push_back(vertices[triangles[pi].a].p);
-//		positions.push_back(vertices[triangles[pi].b].p);
-//		positions.push_back(vertices[triangles[pi].c].p);
 	}
 
 	average /= static_cast<float>(primitive_indices.size() * 3);
 
-	math::float3 position = aabb.position();
 	math::float3 halfsize = aabb.halfsize();
 
 	uint8_t bb_axis;
-
-//	std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.x < b.x; } );
-//	math::float3 x_median = positions[positions.size() / 2];
-
-//	std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.y < b.y; } );
-//	math::float3 y_median = positions[positions.size() / 2];
-
-//	std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.z < b.z; } );
-//	math::float3 z_median = positions[positions.size() / 2];
 
 	if (halfsize.x >= halfsize.y && halfsize.x >= halfsize.z) {
 		bb_axis = 0;
@@ -124,38 +107,13 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 
 	split_candidates_.push_back(Split_candidate(bb_axis, 0, average,
 								primitive_indices, triangles, vertices));
-//	split_candidates_.push_back(Split_candidate(bb_axis, 0, x_median,
-//								primitive_indices, triangles, vertices));
 
 	split_candidates_.push_back(Split_candidate(bb_axis, 1, average,
 								primitive_indices, triangles, vertices));
-//	split_candidates_.push_back(Split_candidate(bb_axis, 1, y_median,
-//								primitive_indices, triangles, vertices));
 
 	split_candidates_.push_back(Split_candidate(bb_axis, 2, average,
 								primitive_indices, triangles, vertices));
-//	split_candidates_.push_back(Split_candidate(bb_axis, 2, z_median,
-//								primitive_indices, triangles, vertices));
 
-/*
-	math::float3 v = average - position;
-
-	float modifier = 0.95f;
-
-	split_candidates_.push_back(Split_candidate(bb_axis, 0, position + modifier * v,
-								primitive_indices, triangles, vertices));
-	split_candidates_.push_back(Split_candidate(bb_axis, 1, position + modifier * v,
-								primitive_indices, triangles, vertices));
-	split_candidates_.push_back(Split_candidate(bb_axis, 2, position + modifier * v,
-								primitive_indices, triangles, vertices));
-
-	split_candidates_.push_back(Split_candidate(bb_axis, 0, position - modifier * v,
-								primitive_indices, triangles, vertices));
-	split_candidates_.push_back(Split_candidate(bb_axis, 1, position - modifier * v,
-								primitive_indices, triangles, vertices));
-	split_candidates_.push_back(Split_candidate(bb_axis, 2, position - modifier * v,
-								primitive_indices, triangles, vertices));
-*/
 	std::sort(split_candidates_.begin(), split_candidates_.end(),
 			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
@@ -209,33 +167,6 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 	}
 
 	return split_candidates_[0];
-}
-
-math::plane Builder::average_splitting_plane(const math::aabb& aabb,
-											 const std::vector<uint32_t>& primitive_indices,
-											 const std::vector<Index_triangle>& triangles,
-											 const std::vector<Vertex>& vertices, uint8_t& axis) {
-	math::float3 average = math::float3::identity;
-
-	for (auto pi : primitive_indices) {
-		average += vertices[triangles[pi].a].p + vertices[triangles[pi].b].p + vertices[triangles[pi].c].p;
-	}
-
-	average /= static_cast<float>(primitive_indices.size() * 3);
-
-	math::float3 position = aabb.position();
-	math::float3 halfsize = aabb.halfsize();
-
-	if (halfsize.x >= halfsize.y && halfsize.x >= halfsize.z) {
-		axis = 0;
-		return math::plane(math::float3(1.f, 0.f, 0.f), math::float3(average.x, position.y, position.z));
-	} else if (halfsize.y >= halfsize.x && halfsize.y >= halfsize.z) {
-		axis = 1;
-		return math::plane(math::float3(0.f, 1.f, 0.f), math::float3(position.x, average.y, position.z));
-	} else {
-		axis = 2;
-		return math::plane(math::float3(0.f, 0.f, 1.f), math::float3(position.x, position.y, average.z));
-	}
 }
 
 }}}}
