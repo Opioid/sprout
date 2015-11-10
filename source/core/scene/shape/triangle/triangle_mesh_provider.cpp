@@ -80,7 +80,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*fl
 	auto mesh = std::make_shared<Mesh>();
 
 	bvh::Builder builder;
-    builder.build<bvh::Data_MT>(mesh->tree_, triangles, vertices, 8);
+	builder.build<bvh::Data_MT>(mesh->tree_, triangles, vertices, 8);
 
 	mesh->init();
 

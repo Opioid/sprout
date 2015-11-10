@@ -46,7 +46,7 @@ void Builder::split(Build_node* node,
 					Tree<Data>& tree) {
 	node->aabb = submesh_aabb(begin, end, triangles, vertices);
 
-	if (static_cast<uint32_t>(std::distance(begin, end)) <= max_primitives || depth > 16) {
+	if (static_cast<uint32_t>(std::distance(begin, end)) <= max_primitives || depth > 20) {
 		assign(node, begin, end, triangles, vertices, tree);
 	} else {
 		Split_candidate sp = splitting_plane(node->aabb, begin, end, triangles, vertices);
