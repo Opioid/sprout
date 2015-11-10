@@ -53,17 +53,16 @@ void Builder::split(Build_node* node,
 
 		node->axis = sp.axis();
 
-		index pids1_begin = std::partition(begin, end, [&sp, &triangles, &vertices](uint32_t pi) {
-			uint32_t side = triangle_side(vertices[triangles[pi].a].p,
-										  vertices[triangles[pi].b].p,
-										  vertices[triangles[pi].c].p, sp.plane());
+		index pids1_begin = std::partition(begin, end,
+			[&sp, &triangles, &vertices](uint32_t pi) {
+				auto& t = triangles[pi];
 
-			if (0 == side) {
-				return true;
-			} else {
-				return false;
-			}
-		});
+				if (0 == triangle_side(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, sp.plane())) {
+					return true;
+				} else {
+					return false;
+				}
+			});
 
 		if (begin == pids1_begin) {
 			// This can happen if we didn't find a good splitting plane.

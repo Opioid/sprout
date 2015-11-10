@@ -7,7 +7,6 @@
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
-#include <iostream>
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -67,12 +66,12 @@ math::aabb Builder::submesh_aabb(index begin, index end,
 	math::float3 max(-max_float, -max_float, -max_float);
 
 	for (index i = begin; i != end; ++i) {
-		auto pi = *i;
-		min = triangle_min(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, min);
-		max = triangle_max(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, max);
+		auto& t = triangles[*i];
+		min = triangle_min(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, min);
+		max = triangle_max(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, max);
 	}
 
-	const static float epsilon = 0.000000001f;
+	constexpr float epsilon = 0.000000001f;
 
 	max.x += epsilon;
 	max.y += epsilon;
@@ -90,8 +89,8 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 	math::float3 average = math::float3::identity;
 
 	for (index i = begin; i != end; ++i) {
-		auto pi = *i;
-		average += vertices[triangles[pi].a].p + vertices[triangles[pi].b].p + vertices[triangles[pi].c].p;
+		auto& t = triangles[*i];
+		average += vertices[t.a].p + vertices[t.b].p + vertices[t.c].p;
 	}
 
 	average /= static_cast<float>(std::distance(begin, end) * 3);
@@ -125,10 +124,10 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 		positions.reserve(std::distance(begin, end));
 
 		for (index i = begin; i != end; ++i) {
-			auto pi = *i;
-			positions.push_back(vertices[triangles[pi].a].p);
-			positions.push_back(vertices[triangles[pi].b].p);
-			positions.push_back(vertices[triangles[pi].c].p);
+			auto& t = triangles[*i];
+			positions.push_back(vertices[t.a].p);
+			positions.push_back(vertices[t.b].p);
+			positions.push_back(vertices[t.c].p);
 		}
 
 		auto compare = [](const math::float3& a, const math::float3& b) { return a.x < b.x; };
@@ -174,6 +173,3 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 }
 
 }}}}
-
-
-
