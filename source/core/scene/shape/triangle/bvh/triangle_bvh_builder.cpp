@@ -159,78 +159,54 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 	std::sort(split_candidates_.begin(), split_candidates_.end(),
 			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
-
 	if (split_candidates_[0].key() >= 0x1000000000000000) {
+		std::vector<math::float3> positions;
+		positions.reserve(primitive_indices.size());
 
-			std::vector<math::float3> positions;
-			positions.reserve(primitive_indices.size());
+		for (auto pi : primitive_indices) {
+			positions.push_back(vertices[triangles[pi].a].p);
+			positions.push_back(vertices[triangles[pi].b].p);
+			positions.push_back(vertices[triangles[pi].c].p);
+		}
 
-			for (auto pi : primitive_indices) {
-				average += vertices[triangles[pi].a].p + vertices[triangles[pi].b].p + vertices[triangles[pi].c].p;
+		auto compare = [](const math::float3& a, const math::float3& b) { return a.x < b.x; };
 
-				positions.push_back(vertices[triangles[pi].a].p);
-				positions.push_back(vertices[triangles[pi].b].p);
-				positions.push_back(vertices[triangles[pi].c].p);
-			}
+		size_t middle = positions.size() / 2;
+		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(), compare);
+		math::float3 x_median = positions[middle];
 
-				std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.x < b.x; } );
-				math::float3 x_median = positions[positions.size() / 2];
+		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(), compare);
+		math::float3 y_median = positions[middle];
 
-				std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.y < b.y; } );
-				math::float3 y_median = positions[positions.size() / 2];
+		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(), compare);
+		math::float3 z_median = positions[middle];
 
-				std::sort(positions.begin(), positions.end(), [](const math::float3& a, const math::float3& b) { return a.z < b.z; } );
-				math::float3 z_median = positions[positions.size() / 2];
+		split_candidates_.clear();
 
-				split_candidates_.clear();
+		split_candidates_.push_back(Split_candidate(bb_axis, 0, x_median,
+									primitive_indices, triangles, vertices));
+		split_candidates_.push_back(Split_candidate(bb_axis, 0, y_median,
+									primitive_indices, triangles, vertices));
+		split_candidates_.push_back(Split_candidate(bb_axis, 0, z_median,
+									primitive_indices, triangles, vertices));
 
-				split_candidates_.push_back(Split_candidate(bb_axis, 0, x_median,
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 0, y_median,
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 0, z_median,
-											primitive_indices, triangles, vertices));
+		split_candidates_.push_back(Split_candidate(bb_axis, 1, y_median,
+									primitive_indices, triangles, vertices));
+		split_candidates_.push_back(Split_candidate(bb_axis, 1, x_median,
+									primitive_indices, triangles, vertices));
+		split_candidates_.push_back(Split_candidate(bb_axis, 1, z_median,
+									primitive_indices, triangles, vertices));
 
-				split_candidates_.push_back(Split_candidate(bb_axis, 1, y_median,
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 1, x_median,
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 1, z_median,
-											primitive_indices, triangles, vertices));
+		split_candidates_.push_back(Split_candidate(bb_axis, 2, z_median,
+									primitive_indices, triangles, vertices));
+		split_candidates_.push_back(Split_candidate(bb_axis, 2, x_median,
+									primitive_indices, triangles, vertices));
+		split_candidates_.push_back(Split_candidate(bb_axis, 2, y_median,
+									primitive_indices, triangles, vertices));
 
-				split_candidates_.push_back(Split_candidate(bb_axis, 2, z_median,
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 2, x_median,
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 2, y_median,
-											primitive_indices, triangles, vertices));
-
-
-/*
-				math::float3 v = average - position;
-
-				float modifier = 0.f;
-
-				split_candidates_.push_back(Split_candidate(bb_axis, 0, average + modifier * (average - x_median),
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 1, average + modifier * (average - y_median),
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 2, average + modifier * (average - z_median),
-											primitive_indices, triangles, vertices));
-
-				split_candidates_.push_back(Split_candidate(bb_axis, 0, average - modifier * (average - x_median),
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 1, average - modifier * (average - y_median),
-											primitive_indices, triangles, vertices));
-				split_candidates_.push_back(Split_candidate(bb_axis, 2, average - modifier * (average - z_median),
-											primitive_indices, triangles, vertices));
-*/
-
-
-				std::sort(split_candidates_.begin(), split_candidates_.end(),
-						[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
+		std::sort(split_candidates_.begin(), split_candidates_.end(),
+				  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 	}
-
 
 	return split_candidates_[0];
 }
