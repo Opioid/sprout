@@ -58,14 +58,16 @@ uint32_t Builder::current_node_index() const {
 	return current_node_;
 }
 
-math::aabb Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices,
+math::aabb Builder::submesh_aabb(index begin, index end,
 								 const std::vector<Index_triangle>& triangles,
 								 const std::vector<Vertex>& vertices) {
+
 	float max_float = std::numeric_limits<float>::max();
 	math::float3 min( max_float,  max_float,  max_float);
 	math::float3 max(-max_float, -max_float, -max_float);
 
-	for (auto pi : primitive_indices) {
+	for (index i = begin; i != end; ++i) {
+		auto pi = *i;
 		min = triangle_min(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, min);
 		max = triangle_max(vertices[triangles[pi].a].p, vertices[triangles[pi].b].p, vertices[triangles[pi].c].p, max);
 	}
@@ -80,18 +82,19 @@ math::aabb Builder::submesh_aabb(const std::vector<uint32_t>& primitive_indices,
 }
 
 Split_candidate Builder::splitting_plane(const math::aabb& aabb,
-										 const std::vector<uint32_t>& primitive_indices,
+										 index begin, index end,
 										 const std::vector<Index_triangle>& triangles,
 										 const std::vector<Vertex>& vertices) {
 	split_candidates_.clear();
 
 	math::float3 average = math::float3::identity;
 
-	for (auto pi : primitive_indices) {
+	for (index i = begin; i != end; ++i) {
+		auto pi = *i;
 		average += vertices[triangles[pi].a].p + vertices[triangles[pi].b].p + vertices[triangles[pi].c].p;
 	}
 
-	average /= static_cast<float>(primitive_indices.size() * 3);
+	average /= static_cast<float>(std::distance(begin, end) * 3);
 
 	math::float3 halfsize = aabb.halfsize();
 
@@ -106,22 +109,23 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 	}
 
 	split_candidates_.push_back(Split_candidate(bb_axis, 0, average,
-								primitive_indices, triangles, vertices));
+								begin, end, triangles, vertices));
 
 	split_candidates_.push_back(Split_candidate(bb_axis, 1, average,
-								primitive_indices, triangles, vertices));
+								begin, end, triangles, vertices));
 
 	split_candidates_.push_back(Split_candidate(bb_axis, 2, average,
-								primitive_indices, triangles, vertices));
+								begin, end, triangles, vertices));
 
 	std::sort(split_candidates_.begin(), split_candidates_.end(),
 			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
 	if (split_candidates_[0].key() >= 0x1000000000000000) {
 		std::vector<math::float3> positions;
-		positions.reserve(primitive_indices.size());
+		positions.reserve(std::distance(begin, end));
 
-		for (auto pi : primitive_indices) {
+		for (index i = begin; i != end; ++i) {
+			auto pi = *i;
 			positions.push_back(vertices[triangles[pi].a].p);
 			positions.push_back(vertices[triangles[pi].b].p);
 			positions.push_back(vertices[triangles[pi].c].p);
@@ -142,25 +146,25 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 		split_candidates_.clear();
 
 		split_candidates_.push_back(Split_candidate(bb_axis, 0, x_median,
-									primitive_indices, triangles, vertices));
+									begin, end, triangles, vertices));
 		split_candidates_.push_back(Split_candidate(bb_axis, 0, y_median,
-									primitive_indices, triangles, vertices));
+									begin, end, triangles, vertices));
 		split_candidates_.push_back(Split_candidate(bb_axis, 0, z_median,
-									primitive_indices, triangles, vertices));
+									begin, end, triangles, vertices));
 
 		split_candidates_.push_back(Split_candidate(bb_axis, 1, y_median,
-									primitive_indices, triangles, vertices));
+									begin, end, triangles, vertices));
 		split_candidates_.push_back(Split_candidate(bb_axis, 1, x_median,
-									primitive_indices, triangles, vertices));
+									begin, end, triangles, vertices));
 		split_candidates_.push_back(Split_candidate(bb_axis, 1, z_median,
-									primitive_indices, triangles, vertices));
+									begin, end, triangles, vertices));
 
 		split_candidates_.push_back(Split_candidate(bb_axis, 2, z_median,
-									primitive_indices, triangles, vertices));
+									begin, end, triangles, vertices));
 		split_candidates_.push_back(Split_candidate(bb_axis, 2, x_median,
-									primitive_indices, triangles, vertices));
+									begin, end, triangles, vertices));
 		split_candidates_.push_back(Split_candidate(bb_axis, 2, y_median,
-									primitive_indices, triangles, vertices));
+									begin, end, triangles, vertices));
 
 		std::sort(split_candidates_.begin(), split_candidates_.end(),
 				  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });

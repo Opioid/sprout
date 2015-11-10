@@ -10,9 +10,9 @@ namespace scene { namespace shape { namespace triangle { namespace bvh {
 Split_candidate::Split_candidate(const math::plane& plane, uint8_t axis) : plane_(plane), axis_(axis) {}
 
 Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::float3& p,
-								 const std::vector<uint32_t>& primitive_indices,
+								 index begin, index end,
 								 const std::vector<Index_triangle>& triangles,
-								 const std::vector<Vertex>& vertices) : axis_(split_axis) {
+								 const std::vector<Vertex>& vertices) : axis_(split_axis)  {
 	math::float3 n;
 
 	switch (split_axis) {
@@ -26,16 +26,11 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 
 	key_ = std::abs(static_cast<int>(bb_axis) - static_cast<int>(split_axis));
 
-//	math::aabb bb0 = math::aabb::empty();
-//	math::aabb bb1 = math::aabb::empty();
-
-//	float area_0 = 0.f;
-//	float area_1 = 0.f;
-
 	int num_side_0 = 0;
 	int num_side_1 = 0;
 	uint32_t split = 0;
-	for (auto pi : primitive_indices) {
+	for (index i = begin; i != end; ++i) {
+		auto pi = *i;
 		auto& a = vertices[triangles[pi].a].p;
 		auto& b = vertices[triangles[pi].b].p;
 		auto& c = vertices[triangles[pi].c].p;
@@ -43,40 +38,18 @@ Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math
 
 		if (0 == side) {
 			++num_side_0;
-//			bb0.insert(a);
-//			bb0.insert(b);
-//			bb0.insert(c);
-
-//			area_0 += triangle_area(a, b, c);
 		} else {
 			++num_side_1;
 
 			if (2 == side) {
 				++split;
 			}
-
-//			bb1.insert(a);
-//			bb1.insert(b);
-//			bb1.insert(c);
-
-//			area_1 += triangle_area(a, b, c);
 		}
 	}
 
-//	float ratio_0 = bb0.volume() / area_0;
-//	float ratio_1 = bb1.volume() / area_1;
-
-//	uint32_t volume = static_cast<uint32_t>(1000.f * (bb0.volume() + bb1.volume()));
-
-//	uint32_t ratio = static_cast<uint32_t>(1000.f * (ratio_0 + ratio_1));
-
-//	key_ += ratio;
-
 	key_ += split;
 
-//	key_ += split + static_cast<uint64_t>(std::abs(num_side_0 - num_side_1));
-
-	if (0 == num_side_0) {	
+	if (0 == num_side_0) {
 		key_ += 0x1000000000000000;
 	}
 }

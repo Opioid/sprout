@@ -8,26 +8,25 @@
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
-#include <iostream>
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
 void Builder::build(Tree<Data>& tree,
-					const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices,
-					size_t max_primitives) {
+					const std::vector<Index_triangle>& triangles,
+					const std::vector<Vertex>& vertices,
+					uint32_t max_primitives) {
 	std::vector<uint32_t> primitive_indices(triangles.size());
-	for (size_t i = 0, len = primitive_indices.size(); i < len; ++i) {
-		primitive_indices[i] = static_cast<uint32_t>(i);
+	for (uint32_t i = 0, len = static_cast<uint32_t>(primitive_indices.size()); i < len; ++i) {
+		primitive_indices[i] = i;
 	}
 
 	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()));
 
-	std::vector<uint32_t> swap_primitive_indices;
-	swap_primitive_indices.reserve(triangles.size() / 2 + 1);
-
 	Build_node root;
-	split(&root, primitive_indices, swap_primitive_indices, triangles, vertices, max_primitives, 0, tree);
+	split(&root,
+		  primitive_indices.begin(), primitive_indices.end(),
+		  triangles, vertices, max_primitives, 0, tree);
 
 	num_nodes_ = 1;
 	root.num_sub_nodes(num_nodes_);
@@ -40,64 +39,56 @@ void Builder::build(Tree<Data>& tree,
 
 template<typename Data>
 void Builder::split(Build_node* node,
-					std::vector<uint32_t>& primitive_indices,
-					std::vector<uint32_t>& swap_primitive_indices,
+					index begin, index end,
 					const std::vector<Index_triangle>& triangles,
 					const std::vector<Vertex>& vertices,
-					size_t max_primitives, uint32_t depth,
-                    Tree<Data>& tree) {
-	node->aabb = submesh_aabb(primitive_indices, triangles, vertices);
+					uint32_t max_primitives, uint32_t depth,
+					Tree<Data>& tree) {
+	node->aabb = submesh_aabb(begin, end, triangles, vertices);
 
-	if (primitive_indices.size() <= max_primitives || depth > 16) {
-		assign(node, primitive_indices, triangles, vertices, tree);
+	if (static_cast<uint32_t>(std::distance(begin, end)) <= max_primitives || depth > 16) {
+		assign(node, begin, end, triangles, vertices, tree);
 	} else {
-		Split_candidate sp = splitting_plane(node->aabb, primitive_indices, triangles, vertices);
+		Split_candidate sp = splitting_plane(node->aabb, begin, end, triangles, vertices);
 
 		node->axis = sp.axis();
 
-		std::vector<uint32_t> pids0;
-		pids0.swap(swap_primitive_indices);
-		pids0.clear();
-
-		std::vector<uint32_t> pids1;
-		pids1.reserve(primitive_indices.size() / 2 + 1);
-
-		for (auto pi : primitive_indices) {
+		index pids1_begin = std::partition(begin, end, [&sp, &triangles, &vertices](uint32_t pi) {
 			uint32_t side = triangle_side(vertices[triangles[pi].a].p,
 										  vertices[triangles[pi].b].p,
 										  vertices[triangles[pi].c].p, sp.plane());
 
 			if (0 == side) {
-				pids0.push_back(pi);
+				return true;
 			} else {
-				pids1.push_back(pi);
+				return false;
 			}
-		}
+		});
 
-		if (pids0.empty()) {
+		if (begin == pids1_begin) {
 			// This can happen if we didn't find a good splitting plane.
 			// It means no triangle was completely on "this" side of the plane.
-			assign(node, pids1, triangles, vertices, tree);
+			assign(node, pids1_begin, end, triangles, vertices, tree);
 		} else {
 			node->children[0] = new Build_node;
-			split(node->children[0], pids0, primitive_indices, triangles, vertices, max_primitives, depth + 1, tree);
+			split(node->children[0], begin, pids1_begin, triangles, vertices, max_primitives, depth + 1, tree);
 
 			node->children[1] = new Build_node;
-			split(node->children[1], pids1, primitive_indices, triangles, vertices, max_primitives, depth + 1, tree);
+			split(node->children[1], pids1_begin, end, triangles, vertices, max_primitives, depth + 1, tree);
 		}
 	}
 }
 
 template<typename Data>
 void Builder::assign(Build_node* node,
-					 const std::vector<uint32_t>& primitive_indices,
+					 index begin, index end,
 					 const std::vector<Index_triangle>& triangles,
 					 const std::vector<Vertex>& vertices,
-                     Tree<Data>& tree) {
+					 Tree<Data>& tree) {
 	node->start_index = tree.num_triangles();
 
-	for (auto pi : primitive_indices) {
-		auto& t = triangles[pi];
+	for (index i = begin; i != end; ++i) {
+		auto& t = triangles[*i];
 		tree.add_triangle(vertices[t.a], vertices[t.b], vertices[t.c], t.material_index);
 	}
 

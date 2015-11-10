@@ -20,8 +20,11 @@ class Split_candidate {
 public:
 
 	Split_candidate(const math::plane& plane, uint8_t axis);
+
+	typedef std::vector<uint32_t>::iterator index;
+
 	Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::float3& p,
-					const std::vector<uint32_t>& primitive_indices,
+					index begin, index end,
 					const std::vector<Index_triangle>& triangles,
 					const std::vector<Vertex>& vertices);
 

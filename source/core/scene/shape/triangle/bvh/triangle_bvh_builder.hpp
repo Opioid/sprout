@@ -44,7 +44,7 @@ public:
 	void build(Tree<Data>& tree,
 			   const std::vector<Index_triangle>& triangles,
 			   const std::vector<Vertex>& vertices,
-			   size_t max_primitives);
+			   uint32_t max_primitives);
 
 private:
 
@@ -61,28 +61,29 @@ private:
 
 	std::vector<Split_candidate> split_candidates_;
 
-    template<typename Data>
+	typedef std::vector<uint32_t>::iterator index;
+
+	template<typename Data>
 	void split(Build_node* node,
-			   std::vector<uint32_t>& primitive_indices,
-			   std::vector<uint32_t>& swap_primitive_indices,
+			   index begin, index end,
 			   const std::vector<Index_triangle>& triangles,
 			   const std::vector<Vertex>& vertices,
-			   size_t max_primitives, uint32_t depth,
-               Tree<Data>& tree);
+			   uint32_t max_primitives, uint32_t depth,
+			   Tree<Data>& tree);
 
-    template<typename Data>
+	template<typename Data>
 	static void assign(Build_node* node,
-					   const std::vector<uint32_t>& primitive_indices,
+					   index begin, index end,
 					   const std::vector<Index_triangle>& triangles,
 					   const std::vector<Vertex>& vertices,
-                       Tree<Data>& tree);
+					   Tree<Data>& tree);
 
-	static math::aabb submesh_aabb(const std::vector<uint32_t>& primitive_indices,
+	static math::aabb submesh_aabb(index begin, index end,
 								   const std::vector<Index_triangle>& triangles,
 								   const std::vector<Vertex>& vertices);
 
 	Split_candidate splitting_plane(const math::aabb& aabb,
-									const std::vector<uint32_t>& primitive_indices,
+									index begin, index end,
 									const std::vector<Index_triangle>& triangles,
 									const std::vector<Vertex>& vertices);
 };
