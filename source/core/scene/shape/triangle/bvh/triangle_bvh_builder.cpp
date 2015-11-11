@@ -71,11 +71,11 @@ math::aabb Builder::submesh_aabb(index begin, index end,
 		max = triangle_max(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, max);
 	}
 
-	constexpr float epsilon = 0.000000001f;
+//	constexpr float epsilon = 0.000000001f;
 
-	max.x += epsilon;
-	max.y += epsilon;
-	max.z += epsilon;
+//	max.x += epsilon;
+//	max.y += epsilon;
+//	max.z += epsilon;
 
 	return math::aabb(min, max);
 }
