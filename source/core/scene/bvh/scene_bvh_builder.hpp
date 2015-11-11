@@ -15,19 +15,19 @@ namespace bvh {
 class Builder {
 public:
 
-	void build(Tree& tree, const std::vector<Prop*>& finite_props, const std::vector<Prop*>& infite_props);
+	void build(Tree& tree, std::vector<Prop*>& finite_props, const std::vector<Prop*>& infite_props);
 
 private:
 
-	void split(Build_node* node, const std::vector<Prop*>& props, size_t max_shapes, std::vector<Prop*>& out_props);
+	typedef std::vector<Prop*>::iterator index;
 
-	static void assign(Build_node* node, const std::vector<Prop*>& props, std::vector<Prop*>& out_props);
+	void split(Build_node* node, index begin, index end, uint32_t max_shapes, std::vector<Prop*>& out_props);
 
-	static math::aabb aabb(const std::vector<Prop*>& props);
+	static void assign(Build_node* node, index begin, index end, std::vector<Prop*>& out_props);
 
-	Split_candidate splitting_plane(const math::aabb& aabb, const std::vector<Prop*>& props);
+	static math::aabb aabb(index begin, index end);
 
-	static math::plane average_splitting_plane(const math::aabb& aabb, const std::vector<Prop*>& props, uint8_t& axis);
+	Split_candidate splitting_plane(const math::aabb& aabb, index begin, index end);
 
 	std::vector<Split_candidate> split_candidates_;
 };

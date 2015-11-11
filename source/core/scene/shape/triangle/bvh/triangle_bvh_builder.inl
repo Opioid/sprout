@@ -57,11 +57,7 @@ void Builder::split(Build_node* node,
 			[&sp, &triangles, &vertices](uint32_t pi) {
 				auto& t = triangles[pi];
 
-				if (0 == triangle_side(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, sp.plane())) {
-					return true;
-				} else {
-					return false;
-				}
+				return 0 == triangle_side(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, sp.plane());
 			});
 
 		if (begin == pids1_begin) {
