@@ -117,7 +117,7 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 								begin, end, triangles, vertices));
 
 	std::sort(split_candidates_.begin(), split_candidates_.end(),
-			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
+		[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
 	if (split_candidates_[0].key() >= 0x1000000000000000) {
 		std::vector<math::float3> positions;
@@ -166,7 +166,7 @@ Split_candidate Builder::splitting_plane(const math::aabb& aabb,
 									begin, end, triangles, vertices));
 
 		std::sort(split_candidates_.begin(), split_candidates_.end(),
-				  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
+			[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 	}
 
 	return split_candidates_[0];

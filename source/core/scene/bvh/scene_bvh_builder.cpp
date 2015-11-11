@@ -88,7 +88,7 @@ Split_candidate Builder::splitting_plane(const math::aabb& /*aabb*/, index begin
 	split_candidates_.push_back(Split_candidate(2, average, begin, end));
 
 	std::sort(split_candidates_.begin(), split_candidates_.end(),
-			  [](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
+		[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
 	return split_candidates_[0];
 }

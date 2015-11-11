@@ -40,26 +40,12 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 
 		intersection.p = ray.point(tray.max_t);
 
-	//	math::float3 a = ray.point(tray.max_t);
-
-	//	math::float3 sv;
-	//	math::float2 tc;
-	//	tree_.sample(pi.index, pi.uv, sv, tc);
-	//	intersection.p = math::transform_point(transformation.object_to_world, tray.point(tray.max_t));
-
-	//	if (std::abs(math::distance(a, intersection.p)) > 0.0001f) {
-	//	if (std::abs(tray.max_t - math::distance(intersection.p, ray.origin)) > 0.0001f) {
-	//		std::cout << "alarm" << std::endl;
-	//	}
-
 		math::float3 n;
 		math::float3 t;
 		math::float2 uv;
 		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
 
 		intersection.geo_n = math::transform_vector(transformation.rotation, tree_.triangle_normal(pi.index));
-	//	intersection.n = math::transform_vector(transformation.rotation, n);
-	//	intersection.t = math::transform_vector(transformation.rotation, t);
 
 		math::transform_vectors(transformation.rotation, n, t, intersection.n, intersection.t);
 
@@ -100,111 +86,7 @@ float Mesh::opacity(const entity::Composed_transformation& transformation, const
 
 void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 				  const math::float3& p, const math::float3& /*n*/, bool /*total_sphere*/,
-				  sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
-/*	float r = sampler.generate_sample_1D();
-	math::float2 r2 = sampler.generate_sample_2D();
-
-	uint32_t index = distributions_[part].sample(r);
-
-	math::float3 sv;
-	tree_.sample(index, r2, sv);
-	math::float3 v = math::transform_point(transformation.object_to_world, sv);
-
-	math::float3 axis = v - p;
-	math::float3 dir = math::normalized(axis);
-
-	math::Oray ray;
-	ray.origin = math::transform_point(transformation.world_to_object, p);
-	ray.set_direction(math::transform_vector(transformation.world_to_object, dir));
-	ray.min_t = 0.f;
-	ray.max_t = 10000.f;
-
-	Intersection pi;
-/*
-	float pdf = 0.f;
-
-	if (tree_.intersect(ray, node_stack, pi)) {
-		sample.wi = dir;
-		sample.uv = tree_.interpolate_triangle_uv(pi.index, pi.uv);
-		sample.t = ray.max_t;
-
-		math::float3 sn = tree_.triangle_normal(pi.index);
-		math::float3 wn = math::transform_vector(transformation.rotation, sn);
-
-		float c = math::dot(wn, -dir);
-		if (c <= 0.f) {
-			sample.pdf = 0.f;
-			return;
-		}
-//		float c = std::abs(math::dot(wn, -dir));
-		float sl = ray.max_t * ray.max_t;
-
-		ray.min_t = ray.max_t;
-		ray.max_t = 10000.f;
-
-		pdf += sl / (c);
-
-		while (tree_.intersect(ray, node_stack, pi)) {
-			uint32_t shape_part = tree_.triangle_material_index(pi.index);
-			if (part != shape_part) {
-				continue;
-			}
-
-			math::float3 sn = tree_.triangle_normal(pi.index);
-			math::float3 wn = math::transform_vector(transformation.rotation, sn);
-
-//			float c = math::dot(wn, -dir);
-//			if (c <= 0.f) {
-//				sample.pdf = 0.f;
-//				return;
-//			}
-			float c = std::abs(math::dot(wn, -dir));
-			float sl = ray.max_t * ray.max_t;
-
-			pdf += sl / (c);
-
-			ray.min_t = ray.max_t;
-			ray.max_t = 10000.f;
-		}
-
-		sample.pdf /= area;
-
-	} else {
-		sample.pdf = 0.f;
-	}
-*/
-
-
-/*
-	if (tree_.intersect(ray, node_stack, pi)) {
-		uint32_t shape_part = tree_.triangle_material_index(pi.index);
-		if (part != shape_part) {
-			sample.pdf = 0.f;
-			return;
-		}
-
-		math::float3 sn = tree_.triangle_normal(pi.index);
-		math::float3 wn = math::transform_vector(transformation.rotation, sn);
-
-		float c = math::dot(wn, -dir);
-		if (c <= 0.f) {
-			sample.pdf = 0.f;
-			return;
-		}
-
-		sample.wi = dir;
-		sample.uv = tree_.interpolate_triangle_uv(pi.index, pi.uv);
-		sample.t = ray.max_t;
-		float sl = ray.max_t * ray.max_t;
-		sample.pdf = sl / (c * area);
-
-	} else {
-		sample.pdf = 0.f;
-	}
-
-*/
-
-
+				  sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	float r = sampler.generate_sample_1D();
 	math::float2 r2 = sampler.generate_sample_2D();
 
@@ -215,12 +97,8 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	tree_.sample(index, r2, sv, tc);
 	math::float3 v = math::transform_point(transformation.object_to_world, sv);
 
-
-
 	math::float3 sn = tree_.triangle_normal(index);
 	math::float3 wn = math::transform_vector(transformation.rotation, sn);
-
-//	std::cout << v  << " " << wn << std::endl;
 
 	math::float3 axis = v - p;
 	math::float3 dir = math::normalized(axis);
