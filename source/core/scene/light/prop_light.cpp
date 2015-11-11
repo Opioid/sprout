@@ -23,10 +23,15 @@ void Prop_light::sample(const entity::Composed_transformation& transformation,
 						const math::float3& p, const math::float3& n, bool total_sphere,
 						const image::texture::sampler::Sampler_2D& image_sampler,
 						sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const {
-	prop_->shape()->sample(part_, transformation, area_, p, n, total_sphere, sampler, node_stack, result.shape);
+	auto material = prop_->material(part_);
+
+	bool two_sided = material->is_two_sided();
+
+	prop_->shape()->sample(part_, transformation, area_, p, n, two_sided, total_sphere,
+						   sampler, node_stack, result.shape);
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
-		result.energy = prop_->material(part_)->sample_emission(result.shape.uv, image_sampler);
+		result.energy = material->sample_emission(result.shape.uv, image_sampler);
 	} else {
 		result.shape.pdf = 0.f;
 	}
@@ -36,19 +41,9 @@ float Prop_light::pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
 					  const image::texture::sampler::Sampler_2D& /*image_sampler*/,
 					  shape::Node_stack& node_stack) const {
-/*
-	if (prop_->shape()->is_complex()) {
-		math::Oray ray;
-		ray.origin = p;
-		ray.set_direction(wi);
-		ray.min_t = 0.f;
-		ray.max_t = 10000.f;
-		if (!prop_->aabb().intersect_p(ray)) {
-			return 0.f;
-		}
-	}
-*/
-	return prop_->shape()->pdf(part_, transformation, area_, p, wi, total_sphere, node_stack);
+	bool two_sided = prop_->material(part_)->is_two_sided();
+
+	return prop_->shape()->pdf(part_, transformation, area_, p, wi, two_sided, total_sphere, node_stack);
 }
 
 math::float3 Prop_light::power(const math::aabb& scene_bb) const {

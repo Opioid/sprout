@@ -134,7 +134,7 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 }
 
 void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-					const math::float3& p, const math::float3& /*n*/, bool /*total_sphere*/,
+					const math::float3& p, const math::float3& /*n*/, bool /*two_sided*/, bool /*total_sphere*/,
 					sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
@@ -168,7 +168,7 @@ void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& /*
 					const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Sphere::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-				  const math::float3& p, const math::float3& wi, bool /*total_sphere*/,
+				  const math::float3& p, const math::float3& wi, bool /*two_sided*/, bool /*total_sphere*/,
 				  Node_stack& /*node_stack*/) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);

@@ -34,6 +34,10 @@ bool IMaterial::is_emissive() const {
 	return false;
 }
 
+bool IMaterial::is_two_sided() const {
+	return two_sided_;
+}
+
 float IMaterial::opacity(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
 	if (mask_) {
 		return sampler.sample_1(*mask_, uv);

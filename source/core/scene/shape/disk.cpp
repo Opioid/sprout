@@ -105,7 +105,7 @@ float Disk::opacity(const entity::Composed_transformation& transformation, const
 }
 
 void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
-				  const math::float3& p, const math::float3& /*n*/, bool /*total_sphere*/,
+				  const math::float3& p, const math::float3& /*n*/, bool two_sided, bool /*total_sphere*/,
 				  sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	math::float2 r2 = sampler.generate_sample_2D();
 	math::float2 xy = math::sample_disk_concentric(r2);
@@ -118,6 +118,11 @@ void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& tran
 	math::float3 wi = math::normalized(axis);
 
 	float c = math::dot(transformation.rotation.z, -wi);
+
+	if (two_sided) {
+		c = std::abs(c);
+	}
+
 	if (c <= 0.f) {
 		sample.pdf = 0.f;
 	} else {
@@ -135,11 +140,16 @@ void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& /*tr
 				  const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
-				const math::float3& p, const math::float3& wi, bool /*total_sphere*/,
+				const math::float3& p, const math::float3& wi, bool two_sided, bool /*total_sphere*/,
 				Node_stack& /*node_stack*/) const {
-	const math::float3& normal = transformation.rotation.z;
+	math::float3 normal = transformation.rotation.z;
 
 	float c = math::dot(normal, -wi);
+
+	if (two_sided) {
+		c = std::abs(c);
+	}
+
 	if (c <= 0.f) {
 		return 0.f;
 	}
@@ -156,8 +166,6 @@ float Disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& transf
 	float radius = transformation.scale.x;
 
 	if (l <= radius * radius) {
-	//	math::float3 axis = ws - p;
-	//	float sl = math::squared_length(axis);
 		float sl = t * t;
 		return sl / (c * area);
 	}
@@ -170,4 +178,3 @@ float Disk::area(uint32_t /*part*/, const math::float3& scale) const {
 }
 
 }}
-

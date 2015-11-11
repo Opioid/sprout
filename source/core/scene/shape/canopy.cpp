@@ -54,7 +54,7 @@ float Canopy::opacity(const entity::Composed_transformation& /*transformation*/,
 }
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-					const math::float3& /*p*/, const math::float3& n, bool total_sphere,
+					const math::float3& /*p*/, const math::float3& n, bool /*two_sided*/, bool total_sphere,
 					sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	if (total_sphere) {
 		math::float2 uv = sampler.generate_sample_2D();
@@ -111,7 +111,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 }
 
 float Canopy::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, const math::float3& /*wi*/, bool total_sphere,
+				  const math::float3& /*p*/, const math::float3& /*wi*/, bool /*two_sided*/, bool total_sphere,
 				  Node_stack& /*node_stack*/) const {
 	if (total_sphere) {
 		return 1.f / (4.f * math::Pi);
