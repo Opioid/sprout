@@ -67,11 +67,11 @@ inline void Data_MT::allocate_triangles(uint32_t num_triangles) {
 }
 
 inline void Data_MT::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index) {
-	triangles_.push_back(Triangle_MT{
-							 Triangle_MT::Vertex(a),
-							 Triangle_MT::Vertex(b),
-							 Triangle_MT::Vertex(c),
-							 a.bitangent_sign, material_index});
+	triangles_.push_back(Triangle_MT(a, b, c, material_index));
+
+//	if (a.bitangent_sign == b.bitangent_sign && a.bitangent_sign && c.bitangent_sign) {
+//		std::cout << "alarm" << std::endl;
+//	}
 }
 
 }}}}
