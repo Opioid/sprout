@@ -31,8 +31,6 @@ struct Node {
 	uint32_t axis() const;
 	void set_axis(uint32_t axis);
 
-	Children children(int sign, uint32_t id) const;
-
 	bool has_children() const;
 	void set_has_children(bool children);
 

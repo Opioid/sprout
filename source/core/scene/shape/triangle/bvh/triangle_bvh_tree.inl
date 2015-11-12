@@ -16,14 +16,6 @@ inline void Node::set_axis(uint32_t axis) {
 	start_index |= axis;
 }
 
-inline Node::Children Node::children(int sign, uint32_t id) const {
-	if (0 == sign) {
-		return Children{id + 1, end_index};
-	} else {
-		return Children{end_index, id + 1};
-	}
-}
-
 inline bool Node::has_children() const {
 	return has_children_flag == (start_index & has_children_flag);
 }
@@ -75,9 +67,13 @@ bool Tree<Data>::intersect(math::Oray& ray, Node_stack& node_stack, Intersection
 
 		if (node.aabb.intersect_p(ray)) {
 			if (node.has_children()) {
-				auto children = node.children(ray.sign[node.axis()], n);
-				node_stack.push(children.b);
-				n = children.a;
+				if (0 == ray.sign[node.axis()]) {
+					node_stack.push(node.end_index);
+					n = n + 1;
+				} else {
+					node_stack.push(n + 1);
+					n = node.end_index;
+				}
 			} else {
 				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
                     if (data_.intersect(i, ray, uv)) {
@@ -109,9 +105,13 @@ bool Tree<Data>::intersect_p(const math::Oray& ray, Node_stack& node_stack) cons
 
 		if (node.aabb.intersect_p(ray)) {
 			if (node.has_children()) {
-				auto children = node.children(ray.sign[node.axis()], n);
-				node_stack.push(children.b);
-				n = children.a;
+				if (0 == ray.sign[node.axis()]) {
+					node_stack.push(node.end_index);
+					n = n + 1;
+				} else {
+					node_stack.push(n + 1);
+					n = node.end_index;
+				}
 			} else {
 				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
                     if (data_.intersect_p(i, ray)) {
@@ -147,9 +147,13 @@ float Tree<Data>::opacity(math::Oray& ray, Node_stack& node_stack,
 
 		if (node.aabb.intersect_p(ray)) {
 			if (node.has_children()) {
-				auto children = node.children(ray.sign[node.axis()], n);
-				node_stack.push(children.b);
-				n = children.a;
+				if (0 == ray.sign[node.axis()]) {
+					node_stack.push(node.end_index);
+					n = n + 1;
+				} else {
+					node_stack.push(n + 1);
+					n = node.end_index;
+				}
 			} else {
 				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
                     if (data_.intersect(i, ray, uv)) {
