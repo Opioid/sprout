@@ -204,5 +204,3 @@ uint32_t Mesh::Distribution::sample(float r) const {
 }
 
 }}}
-
-
