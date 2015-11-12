@@ -8,6 +8,9 @@ CONFIG += c++14
 unix: CONFIG += pthread
 CONFIG(debug, release|debug):DEFINES += _DEBUG
 
+#QMAKE_CXXFLAGS_RELEASE += /Zi
+#QMAKE_LFLAGS_RELEASE += /DEBUG
+
 SOURCES += \
 	main.cpp
 

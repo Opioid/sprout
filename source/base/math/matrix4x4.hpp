@@ -127,6 +127,9 @@ template<typename T>
 Matrix4x4<T> inverted(const Matrix4x4<T>& m);
 
 template<typename T>
+Matrix4x4<T> affine_inverted(const Matrix4x4<T>& m);
+
+template<typename T>
 void set_basis_scale_origin(Matrix4x4<T>& m,
 							const Matrix3x3<T>& basis, const Vector3<T>& scale, const Vector3<T>& origin);
 

@@ -335,6 +335,53 @@ Matrix4x4<T> inverted(const Matrix4x4<T>& m) {
 }
 
 template<typename T>
+Matrix4x4<T> affine_inverted(const Matrix4x4<T>& m) {
+	float m00_11 = m.m00 * m.m11;
+	float m01_12 = m.m01 * m.m12;
+	float m02_10 = m.m02 * m.m10;
+	float m00_12 = m.m00 * m.m12;
+	float m01_10 = m.m01 * m.m10;
+	float m02_11 = m.m02 * m.m11;
+
+	float id = 1.f / (m00_11 * m.m22 + m01_12 * m.m20 + m02_10 * m.m21
+					- m00_12 * m.m21 - m01_10 * m.m22 - m02_11 * m.m20);
+
+	float m11_22 = m.m11 * m.m22;
+	float m12_21 = m.m12 * m.m21;
+	float m02_21 = m.m02 * m.m21;
+	float m01_22 = m.m01 * m.m22;
+	float m12_20 = m.m12 * m.m20;
+	float m10_22 = m.m10 * m.m22;
+	float m00_22 = m.m00 * m.m22;
+	float m02_20 = m.m02 * m.m20;
+	float m10_21 = m.m10 * m.m21;
+	float m11_20 = m.m11 * m.m20;
+	float m01_20 = m.m01 * m.m20;
+	float m00_21 = m.m00 * m.m21;
+
+	return Matrix4x4<T>(
+		(m11_22 - m12_21) * id,
+		(m02_21 - m01_22) * id,
+		(m01_12 - m02_11) * id,
+		0.f,
+
+		(m12_20 - m10_22) * id,
+		(m00_22 - m02_20) * id,
+		(m02_10 - m00_12) * id,
+		0.f,
+
+		(m10_21 - m11_20) * id,
+		(m01_20 - m00_21) * id,
+		(m00_11 - m01_10) * id,
+		0.f,
+
+		(m10_22 * m.m31 + m11_20 * m.m32 + m12_21 * m.m30 - m10_21 * m.m32 - m11_22 * m.m30 - m12_20 * m.m31) * id,
+		(m00_21 * m.m32 + m01_22 * m.m30 + m02_20 * m.m31 - m00_22 * m.m31 - m01_20 * m.m32 - m02_21 * m.m30) * id,
+		(m00_12 * m.m31 + m01_10 * m.m32 + m02_11 * m.m30 - m00_11 * m.m32 - m01_12 * m.m30 - m02_10 * m.m31) * id,
+		1.f);
+}
+
+template<typename T>
 void set_basis_scale_origin(Matrix4x4<T>& m,
 							const Matrix3x3<T>& basis, const Vector3<T>& scale, const Vector3<T>& origin) {
 	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = T(0);
