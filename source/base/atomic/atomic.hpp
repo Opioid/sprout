@@ -9,7 +9,7 @@
 
 namespace atomic {
 
-inline void add(volatile float& a, float b) {
+inline void add_assign(volatile float& a, float b) {
 
 	union bits { float f; uint32_t i; };
 

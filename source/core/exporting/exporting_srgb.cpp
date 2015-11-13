@@ -21,5 +21,3 @@ void Srgb::to_sRGB(const image::Image_float_4& image, uint32_t begin, uint32_t e
 }
 
 }
-
-

@@ -40,10 +40,10 @@ void Opaque::add_pixel_atomic(uint32_t x, uint32_t y, const math::float4& color,
 	}
 
 	auto& pixel = pixels_[d.x * y + x];
-	atomic::add(pixel.color.x, weight * color.x);
-	atomic::add(pixel.color.y, weight * color.y);
-	atomic::add(pixel.color.z, weight * color.z);
-	atomic::add(pixel.weight_sum, weight);
+	atomic::add_assign(pixel.color.x, weight * color.x);
+	atomic::add_assign(pixel.color.y, weight * color.y);
+	atomic::add_assign(pixel.color.z, weight * color.z);
+	atomic::add_assign(pixel.weight_sum, weight);
 }
 
 void Opaque::resolve(uint32_t begin, uint32_t end) {

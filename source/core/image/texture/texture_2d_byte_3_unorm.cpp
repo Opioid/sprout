@@ -29,7 +29,8 @@ math::float3 Texture_2D_byte_3_unorm::at_3(uint32_t x, uint32_t y) const {
 
 	auto& value = data_[i];
 	return math::float3(color::unorm_to_float(value.x),
-						color::unorm_to_float(value.y), color::unorm_to_float(value.z));
+						color::unorm_to_float(value.y),
+						color::unorm_to_float(value.z));
 }
 
 math::float4 Texture_2D_byte_3_unorm::at_4(uint32_t x, uint32_t y) const {
