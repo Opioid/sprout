@@ -1,6 +1,7 @@
 #pragma once
 
 #include "film.hpp"
+#include "base/memory/tiled_array.hpp"
 
 namespace rendering { namespace film {
 
