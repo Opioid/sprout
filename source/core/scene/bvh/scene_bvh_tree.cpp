@@ -111,6 +111,9 @@ void Tree::clear() {
 	delete root_.children[1];
 	root_.children[1] = nullptr;
 
+	root_.offset = 0;
+	root_.props_end = 0;
+
 	props_.clear();
 }
 

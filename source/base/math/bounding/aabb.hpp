@@ -33,6 +33,7 @@ public:
 	void merge_assign(const AABB& other);
 
 	static AABB empty();
+	static AABB infinite();
 
 private:
 

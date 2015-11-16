@@ -10,7 +10,11 @@ void Builder::build(Tree& tree, std::vector<Prop*>& finite_props, const std::vec
 
 	tree.props_.reserve(finite_props.size() + infite_props.size());
 
-	split(&tree.root_, finite_props.begin(), finite_props.end(), 4, tree.props_);
+	if (finite_props.empty()) {
+		tree.root_.aabb = math::aabb::infinite();
+	} else {
+		split(&tree.root_, finite_props.begin(), finite_props.end(), 4, tree.props_);
+	}
 
 	tree.infinite_props_start_ = static_cast<uint32_t>(tree.props_.size());
 

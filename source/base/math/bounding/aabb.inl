@@ -126,4 +126,10 @@ AABB<T> AABB<T>::empty() {
 	return AABB<T>(Vector3<T>(max, max, max), Vector3<T>(-max, -max, -max));
 }
 
+template<typename T>
+AABB<T> AABB<T>::infinite() {
+	T max = T(1000000);
+	return AABB<T>(Vector3<T>(-max, -max, -max), Vector3<T>(max, max, max));
+}
+
 }
