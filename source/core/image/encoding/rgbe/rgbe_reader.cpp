@@ -72,7 +72,7 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
 			// this file is not run length encoded
 			math::float3 color = rgbe_to_float3(rgbe);
 
-			image.set(0, color);
+			image.at(0) = color;
 
 			read_pixels(stream, scanline_width * num_scanlines - 1, image, 1);
 			return;
@@ -126,7 +126,7 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
 			rgbe[2] = scanline_buffer[i + 2 * scanline_width];
 			rgbe[3] = scanline_buffer[i + 3 * scanline_width];
 
-			image.set(offset++, rgbe_to_float3(rgbe));
+			image.at(offset++) = rgbe_to_float3(rgbe);
 		}
 	}
 }
@@ -139,7 +139,7 @@ void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image_float_
 
 		math::float3 color = rgbe_to_float3(rgbe);
 
-		image.set(offset++, color);
+		image.at(offset++) = color;
 	}
 }
 

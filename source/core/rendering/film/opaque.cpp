@@ -57,7 +57,7 @@ void Opaque::resolve(uint32_t begin, uint32_t end) {
 
 		math::float3 tonemapped = tonemapper_->tonemap(exposed);
 
-		image_.set(i, math::float4(tonemapped, 1.f));
+		image_.at(i) = math::float4(tonemapped, 1.f);
 	}
 }
 

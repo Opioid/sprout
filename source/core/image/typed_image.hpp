@@ -13,9 +13,10 @@ public:
 	~Typed_image();
 
 	const T& at(uint32_t index) const;
-	void set(uint32_t index, const T& value);
+	T& at(uint32_t index);
 
-	virtual const void* data() const final override;
+	const T& at(uint32_t x, uint32_t y) const;
+	T& at(uint32_t x, uint32_t y);
 
 private:
 

@@ -28,8 +28,6 @@ public:
 
 	const Description& description() const;
 
-	virtual const void* data() const = 0;
-
 protected:
 
 	Description description_;

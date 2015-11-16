@@ -1,7 +1,7 @@
 #pragma once
 
 #include "texture_2d.hpp"
-#include "base/color/color.hpp"
+#include "image/typed_image.hpp"
 
 namespace image { namespace texture {
 
@@ -17,7 +17,7 @@ public:
 
 private:
 
-	const color::Color2c* data_;
+	const Image_byte_2& image_;
 };
 
 }}

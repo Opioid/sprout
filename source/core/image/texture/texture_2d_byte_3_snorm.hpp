@@ -1,9 +1,12 @@
 #pragma once
 
 #include "texture_2d.hpp"
+#include "image/typed_image.hpp"
 #include "base/color/color.hpp"
 
-namespace image { namespace texture {
+namespace image {
+
+namespace texture {
 
 class Texture_2D_byte_3_snorm : public Texture_2D {
 public:
@@ -17,7 +20,7 @@ public:
 
 private:
 
-	const color::Color3c* data_;
+	const Image_byte_3& image_;
 };
 
 }}

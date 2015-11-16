@@ -1,5 +1,6 @@
 #include "png_reader.hpp"
 #include "image/typed_image.inl"
+#include "image/tiled_image.inl"
 #include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/thread/thread_pool.hpp"
@@ -47,7 +48,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, uint32_t num_chann
 		for (uint32_t i = 0, len = info.width * info.height; i < len; ++i) {
 			uint32_t o = i * info.num_channels;
 
-			image->set(i, info.buffer[o]);
+			image->at(i) = info.buffer[o];
 		}
 
 		return image;
@@ -65,7 +66,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, uint32_t num_chann
 				color.v[c] = info.buffer[o + c];
 			}
 
-			image->set(i, color);
+			image->at(i) = color;
 		}
 
 		return image;
@@ -83,8 +84,19 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, uint32_t num_chann
 				color.v[c] = info.buffer[o + c];
 			}
 
-			image->set(i, color);
+			image->at(i) = color;
 		}
+
+//		for (uint32_t y = 0; y < info.height; ++y) {
+//			for (uint32_t x = 0; x < info.width; ++x) {
+//				uint32_t o = (y * info.width + x) * info.num_channels;
+//				for (uint32_t c = 0; c < max_channels; ++c) {
+//					color.v[c] = info.buffer[o + c];
+//				}
+
+//				image->at(x, y) = color;
+//			}
+//		}
 
 		return image;
 	}

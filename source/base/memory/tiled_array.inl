@@ -22,6 +22,19 @@ T& Tiled_array<T, Log_tile_size>::serialized_at(uint32_t i) {
 }
 
 template<typename T, uint32_t Log_tile_size>
+const T& Tiled_array<T, Log_tile_size>::at(uint32_t x, uint32_t y) const {
+	uint32_t bx = block(x);
+	uint32_t by = block(y);
+	uint32_t ox = offset(x);
+	uint32_t oy = offset(y);
+
+	uint32_t index = (tile_size() * tile_size() * (num_tiles_x_ * by + bx)) + tile_size() * oy + ox;
+
+	return data_[index];
+}
+
+
+template<typename T, uint32_t Log_tile_size>
 T& Tiled_array<T, Log_tile_size>::at(uint32_t x, uint32_t y) {
 	uint32_t bx = block(x);
 	uint32_t by = block(y);
@@ -31,6 +44,11 @@ T& Tiled_array<T, Log_tile_size>::at(uint32_t x, uint32_t y) {
 	uint32_t index = (tile_size() * tile_size() * (num_tiles_x_ * by + bx)) + tile_size() * oy + ox;
 
 	return data_[index];
+}
+
+template<typename T, uint32_t Log_tile_size>
+const void* Tiled_array<T, Log_tile_size>::data() const {
+	return static_cast<void*>(data_);
 }
 
 template<typename T, uint32_t Log_tile_size>

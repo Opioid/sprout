@@ -20,13 +20,20 @@ const T& Typed_image<T>::at(uint32_t index) const {
 }
 
 template<typename T>
-void Typed_image<T>::set(uint32_t index, const T& value) {
-	data_[index] = value;
+T& Typed_image<T>::at(uint32_t index) {
+	return data_[index];
 }
 
 template<typename T>
-const void* Typed_image<T>::data() const {
-	return static_cast<const void*>(data_);
+const T& Typed_image<T>::at(uint32_t x, uint32_t y) const {
+	uint32_t i = y * description_.dimensions.x + x;
+	return data_[i];
+}
+
+template<typename T>
+T& Typed_image<T>::at(uint32_t x, uint32_t y) {
+	uint32_t i = y * description_.dimensions.x + x;
+	return data_[i];
 }
 
 }

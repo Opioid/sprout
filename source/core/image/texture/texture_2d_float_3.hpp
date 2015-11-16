@@ -1,6 +1,7 @@
 #pragma once
 
 #include "texture_2d.hpp"
+#include "image/typed_image.hpp"
 
 namespace image { namespace texture {
 
@@ -16,7 +17,7 @@ public:
 
 private:
 
-	const math::float3* data_;
+	const Image_float_3& image_;
 };
 
 }}
