@@ -1,5 +1,7 @@
 #include "perspective_camera.hpp"
 #include "rendering/film/film.hpp"
+#include "rendering/worker.hpp"
+#include "scene/prop/prop_intersection.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -10,13 +12,11 @@
 namespace scene { namespace camera {
 
 Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film,
-						 float frame_duration, bool motion_blur,
-						 float fov, float lens_radius, float focal_distance,
-						 float ray_max_t) :
-	Camera(dimensions, film, frame_duration, motion_blur),
-	fov_(fov), lens_radius_(lens_radius), focal_distance_(focal_distance), ray_max_t_(ray_max_t) {}
-
-void Perspective::update_view() {
+						 float frame_duration, bool motion_blur, const Focus& focus,
+						 float fov, float lens_radius, float ray_max_t) :
+	Camera(dimensions, film, frame_duration, motion_blur), focus_(focus),
+	fov_(fov), lens_radius_(lens_radius), ray_max_t_(ray_max_t),
+	focal_distance_(focus_.distance) {
 	float ratio = dimensions_.x / dimensions_.y;
 
 	float z = ratio * math::Pi / fov_ * 0.5f;
@@ -27,6 +27,32 @@ void Perspective::update_view() {
 
 	d_x_ = (right_top - left_top_)   / static_cast<float>(film_->dimensions().x);
 	d_y_ = (left_bottom - left_top_) / static_cast<float>(film_->dimensions().y);
+
+	focus_.point.x *= static_cast<float>(film_->dimensions().x);
+	focus_.point.y *= static_cast<float>(film_->dimensions().y);
+}
+
+void Perspective::update_focus(rendering::Worker& worker) {
+	if (focus_.use_point) {
+		math::float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
+
+		entity::Composed_transformation transformation;
+		transformation_at(0.f, transformation);
+
+		math::Oray ray;
+		ray.origin = transformation.position;
+		ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(direction)));
+		ray.min_t = 0.f;
+		ray.max_t = ray_max_t_;
+		ray.depth = 0;
+
+		Intersection intersection;
+		if (worker.intersect(ray, intersection)) {
+			focal_distance_ = ray.max_t + focus_.point.z;
+		} else {
+			focal_distance_ = focus_.distance;
+		}
+	}
 }
 
 void Perspective::generate_ray(const sampler::Camera_sample& sample,

@@ -32,6 +32,8 @@
 
 namespace take {
 
+void load_focus(const rapidjson::Value& focus_value, scene::camera::Perspective::Focus& focus);
+
 std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	auto root = json::parse(stream);
 
@@ -112,9 +114,9 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 	rendering::film::Film* film = nullptr;
 	float frame_duration = 0.f;
 	bool  motion_blur = true;
+	scene::camera::Perspective::Focus focus;
 	float fov = 60.f;
 	float lens_radius = 0.f;
-	float focal_distance = 0.f;
 
 	for (auto n = type_value->MemberBegin(); n != type_value->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -139,13 +141,14 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 			}
 		} else if ("motion_blur" == node_name) {
 			motion_blur = json::read_bool(node_value);
+		} else if ("focus" == node_name) {
+			load_focus(node_value, focus);
 		} else if ("fov" == node_name) {
 			fov = math::degrees_to_radians(json::read_float(node_value));
 		} else if ("lens_radius" == node_name) {
 			lens_radius = json::read_float(node_value);
-		} else if ("focal_distance" == node_name) {
-			focal_distance = json::read_float(node_value);
 		}
+
 	}
 
 	if (animation_value) {
@@ -155,15 +158,12 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 	std::shared_ptr<scene::camera::Camera> camera;
 
 //	if ("Perspective" == type_name) {
-		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, frame_duration, motion_blur,
-															  fov, lens_radius, focal_distance,
-															  take.settings.ray_max_t);
+		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, frame_duration, motion_blur, focus,
+															  fov, lens_radius, take.settings.ray_max_t);
 //	} else if ("Orthographic" == type_name) {
 //	}
 
 	camera->set_transformation(transformation);
-
-	camera->update_view();
 
 	take.context.camera = camera;
 }
@@ -399,6 +399,20 @@ void Loader::load_settings(const rapidjson::Value& settings_value, Settings& set
 
 		if ("ray_offset_modifier" == node_name) {
 			settings.ray_offset_modifier = json::read_float(node_value);
+		}
+	}
+}
+
+void load_focus(const rapidjson::Value& focus_value, scene::camera::Perspective::Focus& focus) {
+	for (auto n = focus_value.MemberBegin(); n != focus_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("point" == node_name) {
+			focus.point = json::read_float3(node_value);
+			focus.use_point = true;
+		} else if ("distance" == node_name) {
+			focus.distance = json::read_float(node_value);
 		}
 	}
 }

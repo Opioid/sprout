@@ -64,6 +64,10 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	auto& camera = *context.camera;
 	auto& film   = camera.film();
 
+//	if (!context.focus.use_point) {
+//		camera.set_focal_distance(context.focus.distance);
+//	}
+
 	auto dimensions = film.dimensions();
 
 	size_t num_tiles = static_cast<size_t>(std::ceil(static_cast<float>(dimensions.x)
@@ -107,6 +111,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 
 		if (0.f == camera.frame_duration()) {
 			scene.tick(pool);
+			camera.update_focus(workers[0]);
 			render_subframe(camera, 0.f, 0.f, 1.f, tiles, workers, pool, progressor);
 		} else if (!camera.motion_blur()) {
 			float frame_offset = 0.f;
@@ -117,6 +122,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 			while (frame_rest > 0.f) {
 				if (tick_rest <= 0.f) {
 					scene.tick(pool);
+					camera.update_focus(workers[0]);
 					tick_offset = 0.f;
 					tick_rest = scene.tick_duration();
 				}
@@ -146,6 +152,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 			while (frame_rest > 0.f) {
 				if (tick_rest <= 0.f) {
 					scene.tick(pool);
+					camera.update_focus(workers[0]);
 					tick_offset = 0.f;
 					tick_rest = scene.tick_duration();
 				}

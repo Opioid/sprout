@@ -7,6 +7,8 @@ namespace sampler { struct Camera_sample; }
 
 namespace rendering {
 
+class Worker;
+
 namespace film {
 
 class Film;
@@ -29,7 +31,7 @@ public:
 
 	bool motion_blur() const;
 
-	virtual void update_view() = 0;
+	virtual void update_focus(rendering::Worker& worker) = 0;
 
 	virtual void generate_ray(const sampler::Camera_sample& sample,
 							  float normalized_tick_offset, float normalized_tick_slice,

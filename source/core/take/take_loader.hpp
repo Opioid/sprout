@@ -23,6 +23,8 @@ namespace sampler { class Sampler; }
 
 namespace rendering {
 
+struct Focus;
+
 namespace film {
 
 class Film;

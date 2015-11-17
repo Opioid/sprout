@@ -114,6 +114,9 @@ void Tree::clear() {
 	root_.offset = 0;
 	root_.props_end = 0;
 
+	infinite_props_start_ = 0;
+	infinite_props_end_ = 0;
+
 	props_.clear();
 }
 

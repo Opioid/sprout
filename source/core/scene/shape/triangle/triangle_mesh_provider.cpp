@@ -13,7 +13,6 @@
 #include "base/math/bounding/aabb.inl"
 #include "base/json/json.hpp"
 #include "base/json/json_read_stream.hpp"
-#include <iostream>
 
 namespace scene { namespace shape { namespace triangle {
 
