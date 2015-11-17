@@ -3,7 +3,6 @@
 #include "tonemapping/tonemapper.hpp"
 #include "base/atomic/atomic.hpp"
 #include "base/math/vector.inl"
-#include "base/memory/tiled_array.inl"
 
 namespace rendering { namespace film {
 
