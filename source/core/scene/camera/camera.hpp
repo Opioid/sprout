@@ -20,7 +20,7 @@ namespace scene { namespace camera {
 class Camera : public entity::Entity {
 public:
 
-	Camera(const math::float2& dimensions, rendering::film::Film* film,
+	Camera(math::float2 dimensions, rendering::film::Film* film, float ray_max_t,
 		   float frame_duration, bool motion_blur);
 
 	virtual ~Camera();
@@ -33,9 +33,7 @@ public:
 
 	virtual void update_focus(rendering::Worker& worker) = 0;
 
-	virtual void generate_ray(const sampler::Camera_sample& sample,
-							  float normalized_tick_offset, float normalized_tick_slice,
-							  math::Oray& ray) const = 0;
+	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const = 0;
 
 protected:
 
@@ -45,6 +43,7 @@ protected:
 
 	math::float2 dimensions_;
 	rendering::film::Film* film_;
+	float ray_max_t_;
 	float frame_duration_;
 	bool motion_blur_;
 };

@@ -23,6 +23,7 @@
 #include "sampler/scrambled_hammersley_sampler.hpp"
 #include "scene/animation/animation_loader.hpp"
 #include "scene/camera/perspective_camera.hpp"
+#include "scene/camera/spherical_camera.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -157,11 +158,13 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 
 	std::shared_ptr<scene::camera::Camera> camera;
 
-//	if ("Perspective" == type_name) {
-		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, frame_duration, motion_blur, focus,
-															  fov, lens_radius, take.settings.ray_max_t);
-//	} else if ("Orthographic" == type_name) {
-//	}
+	if ("Perspective" == type_name) {
+		camera = std::make_shared<scene::camera::Perspective>(dimensions, film, take.settings.ray_max_t,
+															  frame_duration, motion_blur, focus, fov, lens_radius);
+	} else if ("Spherical" == type_name) {
+		camera = std::make_shared<scene::camera::Spherical>(dimensions, film, take.settings.ray_max_t,
+															frame_duration, motion_blur);
+	}
 
 	camera->set_transformation(transformation);
 
@@ -397,8 +400,8 @@ void Loader::load_settings(const rapidjson::Value& settings_value, Settings& set
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("ray_offset_modifier" == node_name) {
-			settings.ray_offset_modifier = json::read_float(node_value);
+		if ("ray_offset_factor" == node_name) {
+			settings.ray_offset_factor = json::read_float(node_value);
 		}
 	}
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "material_sample_cache.hpp"
 #include "image/texture/texture_2d.hpp"
 #include "base/math/vector.hpp"
 #include <vector>

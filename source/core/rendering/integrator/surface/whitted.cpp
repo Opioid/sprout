@@ -72,7 +72,7 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const math::Oray& ra
 											const image::texture::sampler::Sampler_2D& texture_sampler) {
 	math::float3 result = math::float3::identity;
 
-	float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
+	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	math::Oray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;

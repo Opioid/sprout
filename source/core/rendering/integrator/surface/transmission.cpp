@@ -23,7 +23,7 @@ math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Inter
 	math::float3 previous_sample_attenuation = attenuation;
 
 	for (;;) {
-		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
+		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;

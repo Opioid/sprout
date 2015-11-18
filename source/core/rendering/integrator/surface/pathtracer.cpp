@@ -88,7 +88,7 @@ math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 
 		previous_sample_type = sample_result.type;
 
-		float ray_offset = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
+		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;

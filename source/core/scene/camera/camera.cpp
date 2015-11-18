@@ -6,9 +6,9 @@
 
 namespace scene { namespace camera {
 
-Camera::Camera(const math::float2& dimensions, rendering::film::Film* film,
+Camera::Camera(math::float2 dimensions, rendering::film::Film* film, float ray_max_t,
 			   float frame_duration, bool motion_blur) :
-	dimensions_(calculate_dimensions(dimensions, film)), film_(film),
+	dimensions_(calculate_dimensions(dimensions, film)), film_(film), ray_max_t_(ray_max_t),
 	frame_duration_(frame_duration), motion_blur_(motion_blur) {}
 
 Camera::~Camera() {

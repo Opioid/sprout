@@ -40,16 +40,6 @@ public:
 
 	BxDF(const Sample& sample) : sample_(sample) {}
 
-	/*
-	~BxDF() {}
-
-	math::float3 evaluate(const math::float3& wi, float n_dot_wi) const;
-
-	float pdf(const math::float3& wi, float n_dot_wi) const;
-
-	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
-	*/
-
 protected:
 
 	const Sample& sample_;

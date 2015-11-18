@@ -100,7 +100,9 @@ void Camera_worker::render(const scene::camera::Camera& camera, const Rectui& ti
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);
 
-				camera.generate_ray(sample, normalized_tick_offset, normalized_tick_slice, ray);
+				camera.generate_ray(sample, ray);
+
+				ray.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
 				math::float4 color = li(ray);
 

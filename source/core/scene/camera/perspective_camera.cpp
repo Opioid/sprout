@@ -11,12 +11,10 @@
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(const math::float2& dimensions, rendering::film::Film* film,
-						 float frame_duration, bool motion_blur, const Focus& focus,
-						 float fov, float lens_radius, float ray_max_t) :
-	Camera(dimensions, film, frame_duration, motion_blur), focus_(focus),
-	fov_(fov), lens_radius_(lens_radius), ray_max_t_(ray_max_t),
-	focal_distance_(focus_.distance) {
+Perspective::Perspective(math::float2 dimensions, rendering::film::Film* film, float ray_max_t,
+						 float frame_duration, bool motion_blur, const Focus& focus, float fov, float lens_radius) :
+	Camera(dimensions, film, ray_max_t, frame_duration, motion_blur), focus_(focus),
+	fov_(fov), lens_radius_(lens_radius), focal_distance_(focus_.distance) {
 	float ratio = dimensions_.x / dimensions_.y;
 
 	float z = ratio * math::Pi / fov_ * 0.5f;
@@ -55,9 +53,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 	}
 }
 
-void Perspective::generate_ray(const sampler::Camera_sample& sample,
-							   float normalized_tick_offset, float normalized_tick_slice,
-							   math::Oray& ray) const {
+void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
 	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
 
 	math::Ray<float> r(math::float3::identity, direction);
@@ -69,8 +65,6 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample,
 		r.origin = math::float3(lens.x * lens_radius_, lens.y * lens_radius_, 0.f);
 		r.direction = focus - r.origin;
 	}
-
-	ray.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);

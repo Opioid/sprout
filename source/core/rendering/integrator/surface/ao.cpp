@@ -22,7 +22,7 @@ math::float4 Ao::li(Worker& worker, math::Oray& ray, scene::Intersection& inters
 	math::Oray occlusion_ray;
 	occlusion_ray.time = ray.time;
 	occlusion_ray.origin = intersection.geo.p;
-	occlusion_ray.min_t = take_settings_.ray_offset_modifier * intersection.geo.epsilon;
+	occlusion_ray.min_t = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	occlusion_ray.max_t = settings_.radius;
 
 	float result = 0.f;

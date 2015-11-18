@@ -14,6 +14,7 @@ SOURCES += \
 
 HEADERS +=
 
+include(baking/baking.pri)
 include(exporting/exporting.pri)
 include(file/file.pri)
 include(gzip/gzip.pri)
