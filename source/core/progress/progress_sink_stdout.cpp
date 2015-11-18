@@ -23,11 +23,10 @@ void Stdout::tick() {
 	++progress_;
 
 	float p = static_cast<float>(progress_) / static_cast<float>(resolution_) * 100.f;
-
 	if (p >= threshold_) {
 		threshold_ += step_;
 
-		std::cout << static_cast<size_t>(p) << "% \r" << std::flush;
+		std::cout << static_cast<size_t>(p) << "%\r" << std::flush;
 	}
 }
 
