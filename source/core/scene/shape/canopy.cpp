@@ -9,8 +9,6 @@
 #include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 
-#include <iostream>
-
 namespace scene { namespace shape {
 
 Canopy::Canopy() {
@@ -129,4 +127,3 @@ bool Canopy::is_finite() const {
 }
 
 }}
-
