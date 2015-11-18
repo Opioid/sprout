@@ -1,6 +1,6 @@
 #include "pathtracer_dl.hpp"
 #include "integrator_helper.hpp"
-#include "rendering/worker.hpp"
+#include "rendering/rendering_worker.hpp"
 #include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"

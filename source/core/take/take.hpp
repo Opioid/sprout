@@ -1,7 +1,7 @@
 #pragma once
 
 #include "take_settings.hpp"
-#include "rendering/context.hpp"
+#include "rendering/rendering_context.hpp"
 #include "base/math/random/generator.hpp"
 #include <string>
 #include <memory>

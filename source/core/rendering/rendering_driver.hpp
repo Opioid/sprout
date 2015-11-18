@@ -23,15 +23,15 @@ namespace progress { class Sink; }
 namespace rendering {
 
 class Tile_queue;
-class Worker;
+class Camera_worker;
 class Surface_integrator_factory;
 struct Context;
 
-class Renderer {
+class Driver {
 public:
 
-	Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
-			 std::shared_ptr<sampler::Sampler> sampler);
+	Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
+		   std::shared_ptr<sampler::Sampler> sampler);
 
 	void render(scene::Scene& scene, const Context& context, thread::Pool& pool,
 				exporting::Sink& exporter, progress::Sink& progressor);
@@ -40,7 +40,7 @@ private:
 
 	void render_subframe(const scene::camera::Camera& camera,
 						 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
-						 Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool,
+						 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& pool,
 						 progress::Sink& progressor);
 
 	bool advance_current_pixel(math::uint2 dimensions);

@@ -1,6 +1,6 @@
 #include "perspective_camera.hpp"
 #include "rendering/film/film.hpp"
-#include "rendering/worker.hpp"
+#include "rendering/rendering_worker.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"

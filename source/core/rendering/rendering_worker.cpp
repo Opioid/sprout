@@ -1,4 +1,4 @@
-#include "worker.hpp"
+#include "rendering_worker.hpp"
 #include "rendering/film/film.hpp"
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/camera_sample.hpp"
@@ -34,41 +34,6 @@ void Worker::init(uint32_t id, const math::random::Generator& rng,
 
 uint32_t Worker::id() const {
 	return id_;
-}
-
-void Worker::render(const scene::camera::Camera& camera, const Rectui& tile,
-					uint32_t sample_begin, uint32_t sample_end,
-					float normalized_tick_offset, float normalized_tick_slice) {
-	auto& film = camera.film();
-
-	uint32_t num_samples = sample_end - sample_begin;
-
-	sampler::Camera_sample sample;
-	math::Oray ray;
-
-	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
-		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
-			if (0 == sample_begin) {
-				film.set_seed(x, y, sampler_->restart(1));
-			} else {
-				sampler_->set_seed(film.seed(x, y));
-			}
-
-			surface_integrator_->start_new_pixel(num_samples);
-
-			math::uint2 pixel(x, y);
-
-			for (uint32_t i = sample_begin; i < sample_end; ++i) {
-				sampler_->generate_camera_sample(pixel, i, sample);
-
-				camera.generate_ray(sample, normalized_tick_offset, normalized_tick_slice, ray);
-
-				math::float4 color = li(ray);
-
-				film.add_sample(sample, color, tile);
-			}
-		}
-	}
 }
 
 math::float4 Worker::li(math::Oray& ray) {
@@ -108,6 +73,41 @@ const scene::Scene& Worker::scene() const {
 
 scene::shape::Node_stack& Worker::node_stack() {
 	return node_stack_;
+}
+
+void Camera_worker::render(const scene::camera::Camera& camera, const Rectui& tile,
+						   uint32_t sample_begin, uint32_t sample_end,
+						   float normalized_tick_offset, float normalized_tick_slice) {
+	auto& film = camera.film();
+
+	uint32_t num_samples = sample_end - sample_begin;
+
+	sampler::Camera_sample sample;
+	math::Oray ray;
+
+	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
+		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
+			if (0 == sample_begin) {
+				film.set_seed(x, y, sampler_->restart(1));
+			} else {
+				sampler_->set_seed(film.seed(x, y));
+			}
+
+			surface_integrator_->start_new_pixel(num_samples);
+
+			math::uint2 pixel(x, y);
+
+			for (uint32_t i = sample_begin; i < sample_end; ++i) {
+				sampler_->generate_camera_sample(pixel, i, sample);
+
+				camera.generate_ray(sample, normalized_tick_offset, normalized_tick_slice, ray);
+
+				math::float4 color = li(ray);
+
+				film.add_sample(sample, color, tile);
+			}
+		}
+	}
 }
 
 }

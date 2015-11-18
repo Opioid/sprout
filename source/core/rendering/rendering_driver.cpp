@@ -1,6 +1,6 @@
-#include "renderer.hpp"
-#include "context.hpp"
-#include "worker.hpp"
+#include "rendering_driver.hpp"
+#include "rendering_context.hpp"
+#include "rendering_worker.hpp"
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"
 #include "rendering/film/film.hpp"
@@ -54,19 +54,15 @@ private:
 	std::mutex mutex_;
 };
 
-Renderer::Renderer(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
+Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
 				   std::shared_ptr<sampler::Sampler> sampler) :
 	surface_integrator_factory_(surface_integrator_factory), sampler_(sampler),
 	tile_dimensions_(math::uint2(32, 32)), current_pixel_(math::uint2(0, 0)) {}
 
-void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool& pool,
-					  exporting::Sink& exporter, progress::Sink& progressor) {
+void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& pool,
+					exporting::Sink& exporter, progress::Sink& progressor) {
 	auto& camera = *context.camera;
 	auto& film   = camera.film();
-
-//	if (!context.focus.use_point) {
-//		camera.set_focal_distance(context.focus.distance);
-//	}
 
 	auto dimensions = film.dimensions();
 
@@ -86,7 +82,7 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	}
 
 	uint32_t num_workers = pool.num_threads();
-	std::vector<Worker> workers(num_workers);
+	std::vector<Camera_worker> workers(num_workers);
 	for (uint32_t i = 0; i < num_workers; ++i) {
 		math::random::Generator rng(i + 0, i + 1, i + 2, i + 3);
 		workers[i].init(i, rng, *surface_integrator_factory_, *sampler_, scene);
@@ -187,10 +183,10 @@ void Renderer::render(scene::Scene& scene, const Context& context, thread::Pool&
 	}
 }
 
-void Renderer::render_subframe(const scene::camera::Camera& camera,
-							   float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
-							   Tile_queue& tiles, std::vector<Worker>& workers, thread::Pool& pool,
-							   progress::Sink& progressor) {
+void Driver::render_subframe(const scene::camera::Camera& camera,
+							 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
+							 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& pool,
+							 progress::Sink& progressor) {
 	tiles.restart();
 
 	float num_samples = static_cast<float>(sampler_->num_samples_per_iteration());
@@ -223,7 +219,7 @@ void Renderer::render_subframe(const scene::camera::Camera& camera,
 	current_sample_ = sample_end;
 }
 
-bool Renderer::advance_current_pixel(math::uint2 dimensions) {
+bool Driver::advance_current_pixel(math::uint2 dimensions) {
 	current_pixel_.x += tile_dimensions_.x;
 
 	if (current_pixel_.x >= dimensions.x) {
@@ -238,7 +234,7 @@ bool Renderer::advance_current_pixel(math::uint2 dimensions) {
 	return true;
 }
 
-size_t Renderer::calculate_progress_range(scene::Scene& scene, const scene::camera::Camera& camera,
+size_t Driver::calculate_progress_range(scene::Scene& scene, const scene::camera::Camera& camera,
 										  size_t num_tiles) const {
 	const float num_subframes = 0.f == camera.frame_duration() || !camera.motion_blur()
 							  ? 1.f : std::min(camera.frame_duration() / scene.tick_duration(),

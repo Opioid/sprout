@@ -42,9 +42,6 @@ public:
 
 	uint32_t id() const;
 
-	void render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end,
-				float normalized_tick_offset, float normalized_tick_slice);
-
 	math::float4 li(math::Oray& ray);
 
 	bool intersect(math::Oray& ray, scene::Intersection& intersection);
@@ -64,10 +61,23 @@ private:
 
 	uint32_t id_;
 	math::random::Generator rng_;
+
+protected:
+
 	Surface_integrator* surface_integrator_;
 	sampler::Sampler* sampler_;
+
+private:
+
 	const scene::Scene* scene_;
 	scene::shape::Node_stack node_stack_;
+};
+
+class Camera_worker : public Worker {
+public:
+
+	void render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end,
+				float normalized_tick_offset, float normalized_tick_slice);
 };
 
 }

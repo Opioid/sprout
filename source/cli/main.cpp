@@ -3,7 +3,7 @@
 #include "core/logging/logging.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
-#include "core/rendering/renderer.hpp"
+#include "core/rendering/rendering_driver.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/progress/progress_sink_null.hpp"
@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
 	auto loading_duration = clock.now() - loading_start;
 	logging::info("Loading time " + string::to_string(chrono::duration_to_seconds(loading_duration)) + " s");
 
-	rendering::Renderer renderer(take->surface_integrator_factory, take->sampler);
+	rendering::Driver driver(take->surface_integrator_factory, take->sampler);
 
 	progress::Stdout progressor;
 
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 
 	auto rendering_start = clock.now();
 
-	renderer.render(scene, take->context, pool, *take->exporter, progressor);
+	driver.render(scene, take->context, pool, *take->exporter, progressor);
 
 	auto rendering_duration = clock.now() - rendering_start;
 	logging::info("Total render time " + string::to_string(chrono::duration_to_seconds(rendering_duration)) + " s");

@@ -1,6 +1,6 @@
 #include "transmission.hpp"
 #include "integrator_helper.hpp"
-#include "rendering/worker.hpp"
+#include "rendering/rendering_worker.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/prop/prop_intersection.inl"

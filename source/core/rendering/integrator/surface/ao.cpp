@@ -1,5 +1,5 @@
 #include "ao.hpp"
-#include "rendering/worker.hpp"
+#include "rendering/rendering_worker.hpp"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
