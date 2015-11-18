@@ -22,7 +22,7 @@ void Spherical::generate_ray(const sampler::Camera_sample& sample, math::Oray& r
 	float x = d_x_ * sample.coordinates.x;
 	float y = d_y_ * sample.coordinates.y;
 
-	float phi   = (-x + 0.25f) * 2.f * math::Pi;
+	float phi   = (-x + 0.5f) * 2.f * math::Pi;
 	float theta = y * math::Pi;
 
 	float sin_theta = std::sin(theta);
