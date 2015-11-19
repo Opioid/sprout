@@ -29,7 +29,8 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 
 		math::float3 xyz = math::normalized(
 					math::transform_vector_transposed(transformation.rotation, ray.direction));
-		intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+		intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+									   std::acos(xyz.y) * math::Pi_inv);
 
 		ray.max_t = 10000.f;
 		return true;
@@ -61,7 +62,8 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 		sample.wi = dir;
 
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
-		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+								 std::acos(xyz.y) * math::Pi_inv);
 
 		sample.t   = 10000.f;
 		sample.pdf = 1.f / (4.f * math::Pi);
@@ -75,7 +77,8 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 		sample.wi = dir;
 
 		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
-		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+		sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+								 std::acos(xyz.y) * math::Pi_inv);
 
 		sample.t   = 10000.f;
 		sample.pdf = 1.f / (2.f * math::Pi);
@@ -84,7 +87,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 					const math::float3& /*p*/, math::float2 uv, Sample& sample) const {
-	float phi   = (-uv.x + 0.25f) * 2.f * math::Pi;
+	float phi   = (-uv.x + 0.75f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
 	float sin_theta = std::sin(theta);
@@ -103,7 +106,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 					const math::float3& /*p*/, const math::float3& wi, Sample& sample) const {
 	math::float3 xyz = math::normalized(math::transform_vector_transposed(transformation.rotation, wi));
-	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f, std::acos(xyz.y) * math::Pi_inv);
+	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 	sample.pdf = 1.f / (4.f * math::Pi);
 }

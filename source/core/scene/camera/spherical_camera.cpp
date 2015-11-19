@@ -22,7 +22,7 @@ void Spherical::generate_ray(const sampler::Camera_sample& sample, math::Oray& r
 	float x = d_x_ * sample.coordinates.x;
 	float y = d_y_ * sample.coordinates.y;
 
-	float phi   = (-x + 0.5f) * 2.f * math::Pi;
+	float phi   = (-x + 0.75f) * 2.f * math::Pi;
 	float theta = y * math::Pi;
 
 	float sin_theta = std::sin(theta);
@@ -35,8 +35,7 @@ void Spherical::generate_ray(const sampler::Camera_sample& sample, math::Oray& r
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 	ray.origin = transformation.position;
-//	ray.set_direction(math::transform_vector(transformation.rotation, dir));
-	ray.set_direction(dir);
+	ray.set_direction(math::transform_vector(transformation.rotation, dir));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
 	ray.depth = 0;
