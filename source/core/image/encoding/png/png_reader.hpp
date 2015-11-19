@@ -32,10 +32,8 @@ public:
 private:
 
 	struct Chunk {
-		~Chunk();
-
 		uint32_t length;
-		uint8_t* type;
+		std::vector<uint8_t> type;
 		uint8_t* data;
 		uint32_t crc;
 	};
@@ -81,15 +79,15 @@ private:
 
 	std::shared_ptr<Image> create_image(const Info& info, uint32_t num_channels) const;
 
-	static std::shared_ptr<Chunk> read_chunk(std::istream& stream);
+	static void read_chunk(std::istream& stream, Chunk& chunk);
 
-	static bool handle_chunk(std::shared_ptr<Chunk> chunk, Info& info);
+	static bool handle_chunk(const Chunk& chunk, Info& info);
 
-	static bool parse_header(std::shared_ptr<Chunk> chunk, Info& info);
+	static bool parse_header(const Chunk& chunk, Info& info);
 
-	static bool parse_lte(std::shared_ptr<Chunk> chunk, Info& info);
+	static bool parse_lte(const Chunk& chunk, Info& info);
 
-	static bool parse_data(std::shared_ptr<Chunk> chunk, Info& info);
+	static bool parse_data(const Chunk& chunk, Info& info);
 
 	static uint8_t filter(uint8_t byte, Filter filter, const Info& info);
 
@@ -99,9 +97,7 @@ private:
 	static uint8_t average(uint8_t a, uint8_t b);
 	static uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c);
 
-	static uint32_t swap(uint32_t v);
-
-	Info info_;
+	static uint32_t byteswap(uint32_t v);
 
 	static const uint32_t Signature_size = 8;
 

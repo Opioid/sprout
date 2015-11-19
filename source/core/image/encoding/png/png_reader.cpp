@@ -3,7 +3,6 @@
 #include "image/tiled_image.inl"
 #include "base/color/color.inl"
 #include "base/math/vector.inl"
-#include "base/thread/thread_pool.hpp"
 #include <cstring>
 
 namespace image { namespace encoding { namespace png {
@@ -19,21 +18,20 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, uint32_t num_channels)
 		throw std::runtime_error("Bad PNG signature");
 	}
 
-	for (;;) {
-		auto chunk = read_chunk(stream);
+	Chunk chunk;
+	Info info;
 
-		if (!handle_chunk(chunk, info_))	{
+	for (;;) {
+		read_chunk(stream, chunk);
+
+		if (!handle_chunk(chunk, info))	{
 			break;
 		}
 	}
 
-	mz_inflateEnd(&info_.stream);
+	mz_inflateEnd(&info.stream);
 
-	return create_image(info_, num_channels);
-}
-
-Reader::Chunk::~Chunk() {
-	delete [] type;
+	return create_image(info, num_channels);
 }
 
 std::shared_ptr<Image> Reader::create_image(const Info& info, uint32_t num_channels) const {
@@ -104,25 +102,23 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, uint32_t num_chann
 	return nullptr;
 }
 
-std::shared_ptr<Reader::Chunk> Reader::read_chunk(std::istream& stream) {
-	auto chunk = std::make_shared<Chunk>();
+void Reader::read_chunk(std::istream& stream, Chunk& chunk) {
+	uint32_t length;
+	stream.read(reinterpret_cast<char*>(&length), sizeof(uint32_t));
+	chunk.length = byteswap(length);
 
-	stream.read(reinterpret_cast<char*>(&chunk->length), sizeof(uint32_t));
-	chunk->length = swap(chunk->length);
+	chunk.type.resize(chunk.length + 4);
+	chunk.data = chunk.type.data() + 4;
 
-	chunk->type = new uint8_t[chunk->length + 4];
-	chunk->data = chunk->type + 4;
+	stream.read(reinterpret_cast<char*>(chunk.type.data()), chunk.length + 4);
 
-	stream.read(reinterpret_cast<char*>(chunk->type), chunk->length + 4);
-
-	stream.read(reinterpret_cast<char*>(&chunk->crc), sizeof(uint32_t));
-	chunk->crc = swap(chunk->crc);
-
-	return chunk;
+	uint32_t crc;
+	stream.read(reinterpret_cast<char*>(&crc), sizeof(uint32_t));
+	chunk.crc = byteswap(crc);
 }
 
-bool Reader::handle_chunk(std::shared_ptr<Chunk> chunk, Info& info) {
-	const char* type = reinterpret_cast<char*>(chunk->type);
+bool Reader::handle_chunk(const Chunk& chunk, Info& info) {
+	const char* type = reinterpret_cast<const char*>(chunk.type.data());
 
 	if (!strncmp("IHDR", type, 4)) {
 		return parse_header(chunk, info);
@@ -137,16 +133,16 @@ bool Reader::handle_chunk(std::shared_ptr<Chunk> chunk, Info& info) {
 	return true;
 }
 
-bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
-	info.width  = swap(reinterpret_cast<uint32_t*>(chunk->data)[0]);
-	info.height = swap(reinterpret_cast<uint32_t*>(chunk->data)[1]);
+bool Reader::parse_header(const Chunk& chunk, Info& info) {
+	info.width  = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]);
+	info.height = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]);
 
-	uint8_t depth = chunk->data[8];
+	uint8_t depth = chunk.data[8];
 	if (8 != depth) {
 		return false;
 	}
 
-	Color_type color_type = static_cast<Color_type>(chunk->data[9]);
+	Color_type color_type = static_cast<Color_type>(chunk.data[9]);
 
 	switch (color_type) {
 	case Color_type::Grayscale:
@@ -165,7 +161,7 @@ bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 
 	info.bytes_per_pixel = info.num_channels;
 
-	uint8_t interlace = chunk->data[12];
+	uint8_t interlace = chunk.data[12];
 	if (interlace) {
 		// currently don't support interlaced encoding
 		return false;
@@ -190,16 +186,16 @@ bool Reader::parse_header(std::shared_ptr<Chunk> chunk, Info& info) {
 	return true;
 }
 
-bool Reader::parse_lte(std::shared_ptr<Chunk> /*chunk*/, Info& /*info*/) {
+bool Reader::parse_lte(const Chunk& /*chunk*/, Info& /*info*/) {
 	return true;
 }
 
-bool Reader::parse_data(std::shared_ptr<Chunk> chunk, Info& info) {
+bool Reader::parse_data(const Chunk& chunk, Info& info) {
 	const uint32_t buffer_size = 8192;
 	uint8_t buffer[buffer_size];
 
-	info.stream.next_in = chunk->data;
-	info.stream.avail_in = chunk->length;
+	info.stream.next_in = chunk.data;
+	info.stream.avail_in = chunk.length;
 
 	do {
 		info.stream.next_out = buffer;
@@ -295,7 +291,7 @@ uint8_t Reader::paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
 	return c;
 }
 
-uint32_t Reader::swap(uint32_t v) {
+uint32_t Reader::byteswap(uint32_t v) {
 	return ((v & 0xFF) << 24) | ((v & 0xFF00) << 8) | ((v & 0xFF0000) >> 8) | ((v & 0xFF000000) >> 24);
 }
 
