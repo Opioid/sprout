@@ -101,7 +101,9 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	math::float3 wn = math::transform_vector(transformation.rotation, sn);
 
 	math::float3 axis = v - p;
-	math::float3 dir = math::normalized(axis);
+	float sl = math::squared_length(axis);
+	float d  = std::sqrt(sl);
+	math::float3 dir = axis / d;
 
 	float c = math::dot(wn, -dir);
 
@@ -114,8 +116,7 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	} else {
 		sample.wi = dir;
 		sample.uv = tc;
-		float sl = math::squared_length(axis);
-		sample.t = std::sqrt(sl);
+		sample.t = d;
 		sample.pdf = sl / (c * area);
 	}
 }
