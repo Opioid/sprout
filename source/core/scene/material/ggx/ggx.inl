@@ -5,24 +5,23 @@
 namespace scene { namespace material { namespace ggx {
 
 template<typename Sample>
-GGX_Schlick<Sample>::GGX_Schlick(const Sample& sample) : BxDF<Sample>(sample) {}
-
-template<typename Sample>
-math::float3 GGX_Schlick<Sample>::evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float &pdf) const {
+math::float3 GGX_Schlick<Sample>::evaluate(const Sample& sample,
+										   const math::float3& wi, float n_dot_wi, float n_dot_wo,
+										   float &pdf) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == BxDF<Sample>::sample_.a2_) {
+	if (0.f == sample.a2_) {
 		pdf = 0.f;
 		return math::float3::identity;
 	}
 
-	math::float3 h = math::normalized(BxDF<Sample>::sample_.wo_ + wi);
+	math::float3 h = math::normalized(sample.wo_ + wi);
 
-	float n_dot_h  = math::saturate(math::dot(BxDF<Sample>::sample_.n_, h));
-	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+	float n_dot_h  = math::saturate(math::dot(sample.n_, h));
+	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 
-	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
-	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);
-	math::float3 f = ggx::f(wo_dot_h, BxDF<Sample>::sample_.f0_);
+	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
+	float g = ggx::g(n_dot_wi, n_dot_wo, sample.a2_);
+	math::float3 f = ggx::f(wo_dot_h, sample.f0_);
 
 	math::float3 specular = d * g * f;
 
@@ -39,14 +38,14 @@ math::float3 GGX_Schlick<Sample>::evaluate(const math::float3& wi, float n_dot_w
 }
 
 template<typename Sample>
-float GGX_Schlick<Sample>::importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const {
+float GGX_Schlick<Sample>::importance_sample(const Sample& sample,
+											 sampler::Sampler& sampler, float n_dot_wo,
+											 BxDF_result& result) const {
 	math::float2 xi = sampler.generate_sample_2D();
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
 	// TODO: Optimize the perfect mirror case more
-	float n_dot_h = 0.f == BxDF<Sample>::sample_.a2_ ? 1.f
-													 : std::sqrt((1.f - xi.y)
-																 / ((BxDF<Sample>::sample_.a2_ - 1.f) * xi.y + 1.f));
+	float n_dot_h = 0.f == sample.a2_ ? 1.f : std::sqrt((1.f - xi.y) / ((sample.a2_ - 1.f) * xi.y + 1.f));
 
 	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 	float phi = 2.f * math::Pi * xi.x;
@@ -54,27 +53,27 @@ float GGX_Schlick<Sample>::importance_sample(sampler::Sampler& sampler, float n_
 	float cos_phi = std::cos(phi);
 
 	math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	math::float3 h = BxDF<Sample>::sample_.tangent_to_world(is);
+	math::float3 h = sample.tangent_to_world(is);
 
-	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
-//	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
+	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+//	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
 
-	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - BxDF<Sample>::sample_.wo_);
+	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
 
-	float n_dot_wi = std::max(math::dot(BxDF<Sample>::sample_.n_, wi),	  0.00001f);
-//	float n_dot_wo = std::max(math::dot(BxDF<Sample>::sample_.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
+	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
+//	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
-	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
-	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);
-	math::float3 f = ggx::f(wo_dot_h, BxDF<Sample>::sample_.f0_);
+	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
+	float g = ggx::g(n_dot_wi, n_dot_wo, sample.a2_);
+	math::float3 f = ggx::f(wo_dot_h, sample.f0_);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 
 	math::float3 specular = d * g * f;
 	result.reflection = specular;
 	result.wi = wi;
-	result.type.clear_set(0.f == BxDF<Sample>::sample_.a2_ ? BxDF_type::Specular_reflection
-														   : BxDF_type::Glossy_reflection);
+	result.type.clear_set(0.f == sample.a2_ ? BxDF_type::Specular_reflection
+											: BxDF_type::Glossy_reflection);
 
 //	if (wo_dot_h > 1.f) {
 //		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
@@ -91,27 +90,26 @@ float GGX_Schlick<Sample>::importance_sample(sampler::Sampler& sampler, float n_
 	return n_dot_wi;
 }
 
-template<typename Sample>
-GGX_Conductor<Sample>::GGX_Conductor(const Sample& sample) : BxDF<Sample>(sample) {}
-
 math::float3 fresnel_conductor(float cos_theta_i, const math::float3& eta, const math::float3& k);
 
 template<typename Sample>
-math::float3 GGX_Conductor<Sample>::evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float &pdf) const {
+math::float3 GGX_Conductor<Sample>::evaluate(const Sample& sample,
+											 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+											 float &pdf) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == BxDF<Sample>::sample_.a2_) {
+	if (0.f == sample.a2_) {
 		pdf = 0.f;
 		return math::float3::identity;
 	}
 
-	math::float3 h = math::normalized(BxDF<Sample>::sample_.wo_ + wi);
+	math::float3 h = math::normalized(sample.wo_ + wi);
 
-	float n_dot_h  = math::saturate(math::dot(BxDF<Sample>::sample_.n_, h));
-	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
+	float n_dot_h  = math::saturate(math::dot(sample.n_, h));
+	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 
-	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
-	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);
-	math::float3 f = fresnel_conductor(wo_dot_h, BxDF<Sample>::sample_.ior_, BxDF<Sample>::sample_.absorption_);
+	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
+	float g = ggx::g(n_dot_wi, n_dot_wo, sample.a2_);
+	math::float3 f = fresnel_conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
 	math::float3 specular = d * g * f;
 
@@ -124,14 +122,14 @@ math::float3 GGX_Conductor<Sample>::evaluate(const math::float3& wi, float n_dot
 }
 
 template<typename Sample>
-float GGX_Conductor<Sample>::importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const {
+float GGX_Conductor<Sample>::importance_sample(const Sample& sample,
+											   sampler::Sampler& sampler, float n_dot_wo,
+											   BxDF_result& result) const {
 	math::float2 xi = sampler.generate_sample_2D();
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
 	// TODO: Optimize the perfect mirror case more
-	float n_dot_h = 0.f == BxDF<Sample>::sample_.a2_ ? 1.f
-													 : std::sqrt((1.f - xi.y)
-																 / ((BxDF<Sample>::sample_.a2_ - 1.f) * xi.y + 1.f));
+	float n_dot_h = 0.f == sample.a2_ ? 1.f : std::sqrt((1.f - xi.y) / ((sample.a2_ - 1.f) * xi.y + 1.f));
 
 	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 	float phi = 2.f * math::Pi * xi.x;
@@ -139,27 +137,27 @@ float GGX_Conductor<Sample>::importance_sample(sampler::Sampler& sampler, float 
 	float cos_phi = std::cos(phi);
 
 	math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	math::float3 h = BxDF<Sample>::sample_.tangent_to_world(is);
+	math::float3 h = sample.tangent_to_world(is);
 
-//	float wo_dot_h = math::clamp(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f, 1.f);
-	float wo_dot_h = std::max(math::dot(BxDF<Sample>::sample_.wo_, h), 0.00001f);
+//	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
 
-	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - BxDF<Sample>::sample_.wo_);
+	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
 
-	float n_dot_wi = std::max(math::dot(BxDF<Sample>::sample_.n_, wi),	  0.00001f);
-//	float n_dot_wo = std::max(math::dot(BxDF<Sample>::sample_.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
+	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
+//	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
-	float d = ggx::d(n_dot_h, std::max(BxDF<Sample>::sample_.a2_, 0.0000001f));
-	float g = ggx::g(n_dot_wi, n_dot_wo, BxDF<Sample>::sample_.a2_);
-	math::float3 f = fresnel_conductor(wo_dot_h, BxDF<Sample>::sample_.ior_, BxDF<Sample>::sample_.absorption_);
+	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
+	float g = ggx::g(n_dot_wi, n_dot_wo, sample.a2_);
+	math::float3 f = fresnel_conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 
 	math::float3 specular = d * g * f;
 	result.reflection = specular;
 	result.wi = wi;
-	result.type.clear_set(0.f == BxDF<Sample>::sample_.a2_ ? BxDF_type::Specular_reflection
-														   : BxDF_type::Glossy_reflection);
+	result.type.clear_set(0.f == sample.a2_ ? BxDF_type::Specular_reflection
+											: BxDF_type::Glossy_reflection);
 
 //	if (math::contains_negative(result.reflection)) {
 //		std::cout << "GGX<Sample>::importance_sample()" << std::endl;

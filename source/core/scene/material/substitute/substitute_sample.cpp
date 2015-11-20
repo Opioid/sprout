@@ -10,8 +10,6 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Sample::Sample() : lambert_(*this), oren_nayar_(*this), ggx_(*this) {}
-
 math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	// This is a bit complicated to understand:
 	// If the material does not have transmission, we will never get a wi which is in the wrong hemisphere,
@@ -103,7 +101,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 		float p = sampler.generate_sample_1D();
 
 		if (p < 0.5f) {
-			float n_dot_wi = lambert_.importance_sample(sampler, result);
+			float n_dot_wi = lambert_.importance_sample(*this, sampler, result);
 			result.wi *= -1.f;
 			result.pdf *= 0.5f;
 			float approximated_distance = thickness_ / n_dot_wi;
@@ -112,26 +110,26 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 		} else {
 			if (1.f == metallic_) {
 				float n_dot_wo = clamped_n_dot_wo();
-				float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
+				float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 				result.reflection *= n_dot_wi;
 				result.pdf *= 0.5f;
 			} else {
 				float n_dot_wo = clamped_n_dot_wo();
 
 				if (p < 0.75f) {
-					float n_dot_wi = oren_nayar_.importance_sample(sampler, n_dot_wo, result);
+					float n_dot_wi = oren_nayar_.importance_sample(*this, sampler, n_dot_wo, result);
 
 					float ggx_pdf;
-					math::float3 ggx_reflection = ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
+					math::float3 ggx_reflection = ggx_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
 
 					result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 					result.pdf = 0.25f * (result.pdf + ggx_pdf);
 
 				} else {
-					float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
+					float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 
 					float oren_nayar_pdf;
-					math::float3 oren_nayar_reflection = oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo,
+					math::float3 oren_nayar_reflection = oren_nayar_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo,
 																			  oren_nayar_pdf);
 
 					result.reflection = n_dot_wi * (result.reflection + oren_nayar_reflection);
@@ -142,7 +140,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 	} else {
 		if (1.f == metallic_) {
 			float n_dot_wo = clamped_n_dot_wo();
-			float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
+			float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 			result.reflection *= n_dot_wi;
 		} else {
 			float p = sampler.generate_sample_1D();
@@ -150,18 +148,18 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) con
 			float n_dot_wo = clamped_n_dot_wo();
 
 			if (p < 0.5f) {
-				float n_dot_wi = oren_nayar_.importance_sample(sampler, n_dot_wo, result);
+				float n_dot_wi = oren_nayar_.importance_sample(*this, sampler, n_dot_wo, result);
 
 				float ggx_pdf;
-				math::float3 ggx_reflection = ggx_.evaluate(result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
+				math::float3 ggx_reflection = ggx_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
 
 				result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 				result.pdf = 0.5f * (result.pdf + ggx_pdf);
 			} else {
-				float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
+				float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 
 				float oren_nayar_pdf;
-				math::float3 oren_nayar_reflection = oren_nayar_.evaluate(result.wi, n_dot_wi, n_dot_wo,
+				math::float3 oren_nayar_reflection = oren_nayar_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo,
 																		  oren_nayar_pdf);
 
 				result.reflection = n_dot_wi * (result.reflection + oren_nayar_reflection);

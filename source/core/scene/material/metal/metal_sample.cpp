@@ -6,13 +6,13 @@
 
 namespace scene { namespace material { namespace metal {
 
-Sample::Sample() : ggx_(*this) {}
+Sample::Sample() {}
 
 math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
-	return n_dot_wi * ggx_.evaluate(wi, n_dot_wi, n_dot_wo, pdf);
+	return n_dot_wi * ggx_.evaluate(*this, wi, n_dot_wi, n_dot_wo, pdf);
 }
 
 math::float3 Sample::emission() const {
@@ -25,7 +25,7 @@ math::float3 Sample::attenuation() const {
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
-	float n_dot_wi = ggx_.importance_sample(sampler, n_dot_wo, result);
+	float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 	result.reflection *= n_dot_wi;
 }
 

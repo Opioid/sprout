@@ -4,15 +4,12 @@
 #include "base/math/vector.inl"
 #include "base/math/sampling/sampling.inl"
 
-// #include <iostream>
-
 namespace scene { namespace material { namespace oren_nayar {
 
 template<typename Sample>
-Oren_nayar<Sample>::Oren_nayar(const Sample& sample) : BxDF<Sample>(sample) {}
-
-template<typename Sample>
-math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float& pdf) const {
+math::float3 Oren_nayar<Sample>::evaluate(const Sample& sample,
+										  const math::float3& wi, float n_dot_wi, float n_dot_wo,
+										  float& pdf) const {
 /*
 	float roughness = 1.f;
 	float roughness_square = roughness * roughness;
@@ -58,7 +55,7 @@ math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi
 
 	return math::Pi_inv * (c1 + a + b) *  BxDF<Sample>::sample_.diffuse_color_;
 */
-	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
+	float wi_dot_wo = math::dot(wi, sample.wo_);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
 
@@ -69,12 +66,12 @@ math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi
 		t = n_dot_wi;
 	}
 
-	float a2 = BxDF<Sample>::sample_.a2_;
+	float a2 = sample.a2_;
 	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
 	float b = 0.45f * (a2 / (a2 + 0.09f));
 
 	pdf = n_dot_wi * math::Pi_inv;
-	return math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
+	return math::Pi_inv * (a + b * s * t) * sample.diffuse_color_;
 
 //	if (math::contains_negative(math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_)) {
 //		std::cout << "Oren_nayar<Sample>::evaluate()" << std::endl;
@@ -110,16 +107,18 @@ math::float3 Oren_nayar<Sample>::evaluate(const math::float3& wi, float n_dot_wi
 }
 
 template<typename Sample>
-float Oren_nayar<Sample>::importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const {
+float Oren_nayar<Sample>::importance_sample(const Sample& sample,
+											sampler::Sampler& sampler, float n_dot_wo,
+											BxDF_result& result) const {
 	math::float2 s2d = sampler.generate_sample_2D();
 
 	math::float3 is = math::sample_hemisphere_cosine(s2d);
-	math::float3 wi = math::normalized(BxDF<Sample>::sample_.tangent_to_world(is));
+	math::float3 wi = math::normalized(sample.tangent_to_world(is));
 
-	float n_dot_wi = std::max(math::dot(BxDF<Sample>::sample_.n_, wi), 0.00001f);
+	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
 	result.pdf = n_dot_wi * math::Pi_inv;
 
-	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
+	float wi_dot_wo = math::dot(wi, sample.wo_);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
 
@@ -130,11 +129,11 @@ float Oren_nayar<Sample>::importance_sample(sampler::Sampler& sampler, float n_d
 		t = n_dot_wi;
 	}
 
-	float a2 = BxDF<Sample>::sample_.a2_;
+	float a2 = sample.a2_;
 	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
 	float b = 0.45f * (a2 / (a2 + 0.09f));
 
-	result.reflection = math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
+	result.reflection = math::Pi_inv * (a + b * s * t) * sample.diffuse_color_;
 	result.wi = wi;
 	result.type.clear_set(BxDF_type::Diffuse_reflection);
 

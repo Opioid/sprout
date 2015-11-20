@@ -5,25 +5,29 @@
 namespace scene { namespace material { namespace ggx {
 
 template<typename Sample>
-class GGX_Schlick : public BxDF<Sample> {
+class GGX_Schlick {
 public:
 
-	GGX_Schlick(const Sample& sample);
+	math::float3 evaluate(const Sample& sample,
+						  const math::float3& wi, float n_dot_wi, float n_dot_wo,
+						  float& pdf) const;
 
-	math::float3 evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float& pdf) const;
-
-	float importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const;
+	float importance_sample(const Sample& sample,
+							sampler::Sampler& sampler, float n_dot_wo,
+							BxDF_result& result) const;
 };
 
 template<typename Sample>
-class GGX_Conductor : public BxDF<Sample> {
+class GGX_Conductor {
 public:
 
-	GGX_Conductor(const Sample& sample);
+	math::float3 evaluate(const Sample& sample,
+						  const math::float3& wi, float n_dot_wi, float n_dot_wo,
+						  float& pdf) const;
 
-	math::float3 evaluate(const math::float3& wi, float n_dot_wi, float n_dot_wo, float& pdf) const;
-
-	float importance_sample(sampler::Sampler& sampler, float n_dot_wo, BxDF_result& result) const;
+	float importance_sample(const Sample& sample,
+							sampler::Sampler& sampler, float n_dot_wo,
+							BxDF_result& result) const;
 };
 
 math::float3 f(float wo_dot_h, const math::float3& f0);
