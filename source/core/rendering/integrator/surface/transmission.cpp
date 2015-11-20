@@ -1,6 +1,7 @@
 #include "transmission.hpp"
 #include "integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/prop/prop_intersection.inl"
@@ -18,7 +19,7 @@ math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Inter
 								   const math::float3& attenuation,
 								   sampler::Sampler& sampler,
 								   const image::texture::sampler::Sampler_2D& texture_sampler,
-								   scene::material::BxDF_result& sample_result) {
+								   scene::material::bxdf::Result& sample_result) {
 	math::float3 throughput = sample_result.reflection / sample_result.pdf;
 	math::float3 previous_sample_attenuation = attenuation;
 
@@ -46,7 +47,7 @@ math::float3 Transmission::resolve(Worker& worker, math::Oray& ray, scene::Inter
 		throughput *= sample_result.reflection / sample_result.pdf;
 
 		// Only inner reflections are handled here
-		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
+		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			break;
 		}
 

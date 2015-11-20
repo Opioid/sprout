@@ -1,4 +1,5 @@
 #include "oren_nayar.hpp"
+#include "scene/material/bxdf.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -109,7 +110,7 @@ math::float3 Oren_nayar<Sample>::evaluate(const Sample& sample,
 template<typename Sample>
 float Oren_nayar<Sample>::importance_sample(const Sample& sample,
 											sampler::Sampler& sampler, float n_dot_wo,
-											BxDF_result& result) const {
+											bxdf::Result& result) const {
 	math::float2 s2d = sampler.generate_sample_2D();
 
 	math::float3 is = math::sample_hemisphere_cosine(s2d);
@@ -135,7 +136,7 @@ float Oren_nayar<Sample>::importance_sample(const Sample& sample,
 
 	result.reflection = math::Pi_inv * (a + b * s * t) * sample.diffuse_color_;
 	result.wi = wi;
-	result.type.clear_set(BxDF_type::Diffuse_reflection);
+	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
 //	if (math::contains_negative(result.reflection)) {
 //		std::cout << "Oren_nayar<Sample>::importance_sample()" << std::endl;

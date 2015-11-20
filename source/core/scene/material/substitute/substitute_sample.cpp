@@ -91,7 +91,7 @@ math::float3 Sample::attenuation() const {
 	return math::float3(100.f, 100.f, 100.f);
 }
 
-void Sample::sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const {
+void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 		return;

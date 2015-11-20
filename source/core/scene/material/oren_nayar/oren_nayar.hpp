@@ -1,8 +1,14 @@
 #pragma once
 
-#include "scene/material/bxdf.hpp"
+#include "base/math/vector.hpp"
 
-namespace scene { namespace material { namespace oren_nayar {
+namespace sampler { class Sampler; }
+
+namespace scene { namespace material {
+
+namespace bxdf { struct Result; }
+
+namespace oren_nayar {
 
 template<typename Sample>
 class Oren_nayar {
@@ -14,7 +20,7 @@ public:
 
 	float importance_sample(const Sample& sample,
 							sampler::Sampler& sampler, float n_dot_wo,
-							BxDF_result& result) const;
+							bxdf::Result& result) const;
 };
 
 }}}

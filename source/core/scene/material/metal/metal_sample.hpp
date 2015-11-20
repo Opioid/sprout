@@ -19,7 +19,7 @@ public:
 
 	virtual math::float3 attenuation() const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const final override;
+	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
 	virtual bool is_pure_emissive() const final override;
 

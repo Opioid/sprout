@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scene/material/bxdf.hpp"
 #include "base/math/print.hpp"
 #include <iostream>
 
@@ -10,7 +11,7 @@ inline void print(const math::float3& reflection, float pdf) {
 	std::cout << "pdf " << pdf << std::endl;
 }
 
-inline void print(const BxDF_result& result) {
+inline void print(const bxdf::Result& result) {
 	std::cout << "wi " << result.wi << std::endl;
 	std::cout << "reflection " << result.reflection << std::endl;
 }

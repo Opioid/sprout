@@ -19,11 +19,11 @@ math::float3 Sample::attenuation() const {
 	return math::float3(100.f, 100.f, 100.f);
 }
 
-void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, BxDF_result& result) const {
+void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
 	result.reflection = math::float3::identity;
 	result.pdf = 0.f;
 
-	result.type.clear_set(BxDF_type::Diffuse_reflection);
+	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 }
 
 bool Sample::is_pure_emissive() const {

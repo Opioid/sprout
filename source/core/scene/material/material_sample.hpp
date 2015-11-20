@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bxdf.hpp"
 #include "base/math/vector.hpp"
 #include <algorithm>
 
@@ -12,6 +11,8 @@ class Sampler;
 
 namespace scene { namespace material {
 
+namespace bxdf { struct Result; }
+
 class Sample {
 public:
 
@@ -21,7 +22,7 @@ public:
 
 	virtual math::float3 attenuation() const = 0;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const = 0;
+	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
 
 	virtual bool is_pure_emissive() const = 0;
 

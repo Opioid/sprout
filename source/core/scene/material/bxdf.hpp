@@ -9,9 +9,9 @@ class Sampler;
 
 }
 
-namespace scene { namespace material {
+namespace scene { namespace material { namespace bxdf {
 
-enum class BxDF_type {
+enum class Type {
 	Reflection				= 1 << 0,
 	Transmission			= 1 << 1,
 	Diffuse					= 1 << 2,
@@ -25,24 +25,13 @@ enum class BxDF_type {
 	Specular_transmission	= Transmission | Specular
 };
 
-struct BxDF_result {
+struct Result {
 	math::float3 reflection;
 	math::float3 wi;
 	float        pdf;
 
-	typedef flags::Flags<BxDF_type> Type;
+	typedef flags::Flags<Type> Type;
 	Type type;
 };
 
-template<typename Sample>
-class BxDF {
-public:
-
-	BxDF(const Sample& sample) : sample_(sample) {}
-
-protected:
-
-	const Sample& sample_;
-};
-
-}}
+}}}

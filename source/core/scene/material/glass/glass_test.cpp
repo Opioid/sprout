@@ -12,11 +12,11 @@ void test() {
 	math::random::Generator rng;
 	sampler::Random sampler(rng, 0);
 
-	BxDF_result result;
+	bxdf::Result result;
 
 	Sample sample;
-	BRDF brdf(sample);
-	BTDF btdf(sample);
+	BRDF brdf;
+	BTDF btdf;
 
 	math::float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
@@ -34,28 +34,28 @@ void test() {
 	sample.set_basis(t, b, n, n, wo);
 	result.wi = math::float3::identity;
 	result.reflection = math::float3::identity;
-	brdf.importance_sample(sampler, result);
+	brdf.importance_sample(sample, sampler, result);
 	print(result);
 	result.reflection = math::float3::identity;
-	btdf.importance_sample(sampler, result);
+	btdf.importance_sample(sample, sampler, result);
 	print(result);
 
 	wo = b;
 	sample.set_basis(t, b, n, n, wo);
 	result.reflection = math::float3::identity;
-	brdf.importance_sample(sampler, result);
+	brdf.importance_sample(sample, sampler, result);
 	print(result);
 	result.reflection = math::float3::identity;
-	btdf.importance_sample(sampler, result);
+	btdf.importance_sample(sample, sampler, result);
 	print(result);
 
 	wo = n;
 	sample.set_basis(t, b, n, n, wo);
 	result.reflection = math::float3::identity;
-	brdf.importance_sample(sampler, result);
+	brdf.importance_sample(sample, sampler, result);
 	print(result);
 	result.reflection = math::float3::identity;
-	btdf.importance_sample(sampler, result);
+	btdf.importance_sample(sample, sampler, result);
 	print(result);
 }
 

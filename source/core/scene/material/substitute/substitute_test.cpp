@@ -36,7 +36,7 @@ void test() {
 	print(reflection, pdf);
 
 
-	BxDF_result result;
+	bxdf::Result result;
 	sample.sample_evaluate(sampler, result);
 
 	print(result);

@@ -7,6 +7,7 @@
 #include "scene/prop/prop_intersection.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
+#include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "take/take_settings.hpp"
@@ -24,8 +25,8 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 }
 
 math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
-	scene::material::BxDF_result sample_result;
-	scene::material::BxDF_result::Type previous_sample_type;
+	scene::material::bxdf::Result sample_result;
+	scene::material::bxdf::Result::Type previous_sample_type;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
@@ -33,7 +34,7 @@ math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = 0; i <= settings_.max_bounces; ++i) {
-		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::BxDF_type::Specular);
+		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::bxdf::Type::Specular);
 
 		const image::texture::sampler::Sampler_2D* texture_sampler;
 
@@ -71,11 +72,11 @@ math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 		}
 
 		if (ray.depth > 0 && settings_.disable_caustics
-		&&  sample_result.type.test(scene::material::BxDF_type::Specular)) {
+		&&  sample_result.type.test(scene::material::bxdf::Type::Specular)) {
 			break;
 		}
 
-		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
+		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			throughput *= transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
 												sampler_, settings_.sampler_nearest, sample_result);
 

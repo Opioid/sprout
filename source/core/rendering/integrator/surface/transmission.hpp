@@ -2,17 +2,9 @@
 
 #include "rendering/integrator/integrator.hpp"
 
-namespace sampler {
+namespace sampler { class Sampler; }
 
-class Sampler;
-
-}
-
-namespace scene {
-
-namespace material { struct BxDF_result; }
-
-}
+namespace scene { namespace material { namespace bxdf { struct Result; } } }
 
 namespace rendering {
 
@@ -25,7 +17,7 @@ public:
 						 const math::float3& attenuation,
 						 sampler::Sampler& sampler,
 						 const image::texture::sampler::Sampler_2D& texture_sampler,
-						 scene::material::BxDF_result& sample_result);
+						 scene::material::bxdf::Result& sample_result);
 };
 
 }

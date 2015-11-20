@@ -1,4 +1,5 @@
 #include "ggx.hpp"
+#include "scene/material/bxdf.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
 
@@ -40,7 +41,7 @@ math::float3 GGX_Schlick<Sample>::evaluate(const Sample& sample,
 template<typename Sample>
 float GGX_Schlick<Sample>::importance_sample(const Sample& sample,
 											 sampler::Sampler& sampler, float n_dot_wo,
-											 BxDF_result& result) const {
+											 bxdf::Result& result) const {
 	math::float2 xi = sampler.generate_sample_2D();
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
@@ -72,8 +73,8 @@ float GGX_Schlick<Sample>::importance_sample(const Sample& sample,
 	math::float3 specular = d * g * f;
 	result.reflection = specular;
 	result.wi = wi;
-	result.type.clear_set(0.f == sample.a2_ ? BxDF_type::Specular_reflection
-											: BxDF_type::Glossy_reflection);
+	result.type.clear_set(0.f == sample.a2_ ? bxdf::Type::Specular_reflection
+											: bxdf::Type::Glossy_reflection);
 
 //	if (wo_dot_h > 1.f) {
 //		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
@@ -124,7 +125,7 @@ math::float3 GGX_Conductor<Sample>::evaluate(const Sample& sample,
 template<typename Sample>
 float GGX_Conductor<Sample>::importance_sample(const Sample& sample,
 											   sampler::Sampler& sampler, float n_dot_wo,
-											   BxDF_result& result) const {
+											   bxdf::Result& result) const {
 	math::float2 xi = sampler.generate_sample_2D();
 
 	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
@@ -156,8 +157,8 @@ float GGX_Conductor<Sample>::importance_sample(const Sample& sample,
 	math::float3 specular = d * g * f;
 	result.reflection = specular;
 	result.wi = wi;
-	result.type.clear_set(0.f == sample.a2_ ? BxDF_type::Specular_reflection
-											: BxDF_type::Glossy_reflection);
+	result.type.clear_set(0.f == sample.a2_ ? bxdf::Type::Specular_reflection
+											: bxdf::Type::Glossy_reflection);
 
 //	if (math::contains_negative(result.reflection)) {
 //		std::cout << "GGX<Sample>::importance_sample()" << std::endl;

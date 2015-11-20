@@ -6,6 +6,7 @@
 #include "scene/scene.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
+#include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/prop/prop_intersection.inl"
@@ -28,7 +29,7 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 }
 
 math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
-	scene::material::BxDF_result sample_result;
+	scene::material::bxdf::Result sample_result;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
@@ -72,11 +73,11 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 
 		if (settings_.disable_caustics && !primary_ray
-		&& sample_result.type.test(scene::material::BxDF_type::Specular)) {
+		&& sample_result.type.test(scene::material::bxdf::Type::Specular)) {
 			break;
 		}
 
-		if (sample_result.type.test(scene::material::BxDF_type::Transmission)) {
+		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			math::float3 transmitted = transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
 															 sampler_, settings_.sampler_nearest, sample_result);
 			if (0.f == sample_result.pdf) {
@@ -90,7 +91,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			opacity = 1.f;
 		}
 
-		if (!sample_result.type.test(scene::material::BxDF_type::Specular)) {
+		if (!sample_result.type.test(scene::material::bxdf::Type::Specular)) {
 			primary_ray = false;
 		}
 
@@ -162,10 +163,10 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 		}
 
 		// Material BSDF importance sample
-		scene::material::BxDF_result sample_result;
+		scene::material::bxdf::Result sample_result;
 		material_sample.sample_evaluate(sampler_, sample_result);
 		if (0.f == sample_result.pdf
-		||  sample_result.type.test(scene::material::BxDF_type::Specular)) {
+		||  sample_result.type.test(scene::material::bxdf::Type::Specular)) {
 			continue;
 		}
 

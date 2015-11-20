@@ -1,40 +1,37 @@
 #pragma once
 
 #include "scene/material/material_sample.hpp"
-#include "scene/material/bxdf.hpp"
 
-namespace scene { namespace material { namespace glass {
+namespace scene { namespace material {
+
+namespace bxdf { struct Result; }
+
+namespace glass {
 
 class Sample;
 
-class BRDF : public BxDF<Sample> {
+class BRDF {
 public:
 
-	BRDF(const Sample& sample);
+	math::float3 evaluate(const Sample& sample, const math::float3& wi, float n_dot_wi) const;
 
-	math::float3 evaluate(const math::float3& wi, float n_dot_wi) const;
+	float pdf(const Sample& sample, const math::float3& wi, float n_dot_wi) const;
 
-	float pdf(const math::float3& wi, float n_dot_wi) const;
-
-	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
+	float importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
 };
 
-class BTDF : public BxDF<Sample> {
+class BTDF {
 public:
 
-	BTDF(const Sample& sample);
+	math::float3 evaluate(const Sample& sample, const math::float3& wi, float n_dot_wi) const;
 
-	math::float3 evaluate(const math::float3& wi, float n_dot_wi) const;
+	float pdf(const Sample& sample, const math::float3& wi, float n_dot_wi) const;
 
-	float pdf(const math::float3& wi, float n_dot_wi) const;
-
-	float importance_sample(sampler::Sampler& sampler, BxDF_result& result) const;
+	float importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
 };
 
 class Sample : public material::Sample {
 public:
-
-	Sample();
 
 	virtual math::float3 evaluate(const math::float3& wi, float& pdf) const final override;
 
@@ -42,7 +39,7 @@ public:
 
 	virtual math::float3 attenuation() const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, BxDF_result& result) const final override;
+	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
 	virtual bool is_pure_emissive() const final override;
 

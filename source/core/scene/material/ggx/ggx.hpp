@@ -1,8 +1,14 @@
 #pragma once
 
-#include "scene/material/bxdf.hpp"
+#include "base/math/vector.hpp"
 
-namespace scene { namespace material { namespace ggx {
+namespace sampler { class Sampler; }
+
+namespace scene { namespace material {
+
+namespace bxdf { struct Result; }
+
+namespace ggx {
 
 template<typename Sample>
 class GGX_Schlick {
@@ -14,7 +20,7 @@ public:
 
 	float importance_sample(const Sample& sample,
 							sampler::Sampler& sampler, float n_dot_wo,
-							BxDF_result& result) const;
+							bxdf::Result& result) const;
 };
 
 template<typename Sample>
@@ -27,7 +33,7 @@ public:
 
 	float importance_sample(const Sample& sample,
 							sampler::Sampler& sampler, float n_dot_wo,
-							BxDF_result& result) const;
+							bxdf::Result& result) const;
 };
 
 math::float3 f(float wo_dot_h, const math::float3& f0);
