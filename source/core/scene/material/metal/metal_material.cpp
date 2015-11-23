@@ -30,13 +30,13 @@
 
 namespace scene { namespace material { namespace metal {
 
-Material::Material(Generic_sample_cache<Sample>& cache,
-				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
-	material::Material<Generic_sample_cache<Sample>>(cache, mask, two_sided) {}
+Material_iso::Material_iso(Generic_sample_cache<Sample_iso>& cache,
+						   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
+	material::Material<Generic_sample_cache<Sample_iso>>(cache, mask, two_sided) {}
 
-const material::Sample& Material::sample(const shape::Differential& dg, const math::float3& wo,
-										 const image::texture::sampler::Sampler_2D& sampler,
-										 uint32_t worker_id) {
+const material::Sample& Material_iso::sample(const shape::Differential& dg, const math::float3& wo,
+											 const image::texture::sampler::Sampler_2D& sampler,
+											 uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	if (normal_map_) {
@@ -53,32 +53,96 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 	return sample;
 }
 
-math::float3 Material::sample_emission(math::float2 /*uv*/,
-									   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+math::float3 Material_iso::sample_emission(math::float2 /*uv*/,
+										   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	return math::float3::identity;
 }
 
-math::float3 Material::average_emission() const {
+math::float3 Material_iso::average_emission() const {
 	return math::float3::identity;
 }
 
-const image::texture::Texture_2D* Material::emission_map() const {
+const image::texture::Texture_2D* Material_iso::emission_map() const {
 	return nullptr;
 }
 
-void Material::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
+void Material_iso::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material::set_ior(const math::float3& ior) {
+void Material_iso::set_ior(const math::float3& ior) {
 	ior_ = ior;
 }
 
-void Material::set_absorption(const math::float3& absorption) {
+void Material_iso::set_absorption(const math::float3& absorption) {
 	absorption_ = absorption;
 }
 
-void Material::set_roughness(float roughness) {
+void Material_iso::set_roughness(float roughness) {
+	roughness_ = roughness;
+}
+
+Material_aniso::Material_aniso(Generic_sample_cache<Sample_aniso>& cache,
+							   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
+	material::Material<Generic_sample_cache<Sample_aniso>>(cache, mask, two_sided) {}
+
+const material::Sample& Material_aniso::sample(const shape::Differential& dg, const math::float3& wo,
+											   const image::texture::sampler::Sampler_2D& sampler,
+											   uint32_t worker_id) {
+	auto& sample = cache_.get(worker_id);
+
+	if (normal_map_) {
+		math::float3 nm = sampler.sample_3(*normal_map_, dg.uv);
+		math::float3 n = math::normalized(dg.tangent_to_world(nm));
+
+		sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
+	} else {
+		sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
+	}
+
+	math::float2 direction;
+
+	if (direction_map_) {
+		direction = sampler.sample_2(*direction_map_, dg.uv);
+	} else {
+		direction = math::float2(0.f, 0.f);
+	}
+
+	sample.set(ior_, absorption_, direction, roughness_);
+
+	return sample;
+}
+
+math::float3 Material_aniso::sample_emission(math::float2 /*uv*/,
+											 const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+	return math::float3::identity;
+}
+
+math::float3 Material_aniso::average_emission() const {
+	return math::float3::identity;
+}
+
+const image::texture::Texture_2D* Material_aniso::emission_map() const {
+	return nullptr;
+}
+
+void Material_aniso::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
+	normal_map_ = normal_map;
+}
+
+void Material_aniso::set_direction_map(std::shared_ptr<image::texture::Texture_2D> direction_map) {
+	direction_map_ = direction_map;
+}
+
+void Material_aniso::set_ior(const math::float3& ior) {
+	ior_ = ior;
+}
+
+void Material_aniso::set_absorption(const math::float3& absorption) {
+	absorption_ = absorption;
+}
+
+void Material_aniso::set_roughness(math::float2 roughness) {
 	roughness_ = roughness;
 }
 

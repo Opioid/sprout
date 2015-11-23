@@ -1,6 +1,7 @@
 #include "texture_2d_provider.hpp"
 #include "texture_2d_byte_1_unorm.hpp"
 #include "texture_2d_byte_2_unorm.hpp"
+#include "texture_2d_byte_2_snorm.hpp"
 #include "texture_2d_byte_3_snorm.hpp"
 #include "texture_2d_byte_3_srgb.hpp"
 #include "texture_2d_byte_3_unorm.hpp"
@@ -25,6 +26,8 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, uint32_t
 
 	if (static_cast<uint32_t>(Provider::Flags::Use_as_mask) == flags) {
 		num_channels = 1;
+	} else if (static_cast<uint32_t>(Provider::Flags::Use_as_direction) == flags) {
+		num_channels = 2;
 	} else if (static_cast<uint32_t>(Provider::Flags::Use_as_surface) == flags) {
 		num_channels = 2;
 	}
@@ -37,7 +40,11 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, uint32_t
 	if (Image::Type::Byte_1 == image->description().type) {
 		return std::make_shared<Texture_2D_byte_1_unorm>(image);
 	} else if (Image::Type::Byte_2 == image->description().type) {
-		return std::make_shared<Texture_2D_byte_2_unorm>(image);
+		if (static_cast<uint32_t>(Provider::Flags::Use_as_direction) == flags) {
+			return std::make_shared<Texture_2D_byte_2_snorm>(image);
+		} else {
+			return std::make_shared<Texture_2D_byte_2_unorm>(image);
+		}
 	} else if (Image::Type::Byte_3 == image->description().type) {
 		if (static_cast<uint32_t>(Provider::Flags::Use_as_normal) == flags) {
 			return std::make_shared<Texture_2D_byte_3_snorm>(image);

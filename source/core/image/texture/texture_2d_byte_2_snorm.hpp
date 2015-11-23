@@ -5,10 +5,10 @@
 
 namespace image { namespace texture {
 
-class Texture_2D_byte_2_unorm : public Texture_2D {
+class Texture_2D_byte_2_snorm : public Texture_2D {
 public:
 
-	Texture_2D_byte_2_unorm(std::shared_ptr<Image> image);
+	Texture_2D_byte_2_snorm(std::shared_ptr<Image> image);
 
 	virtual float        at_1(uint32_t x, uint32_t y) const final override;
 	virtual math::float2 at_2(uint32_t x, uint32_t y) const final override;

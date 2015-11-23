@@ -39,10 +39,11 @@ private:
 
 	resource::Cache<image::texture::Texture_2D>& texture_cache_;
 
-	Generic_sample_cache<glass::Sample> glass_cache_;
-	Generic_sample_cache<light::Sample> light_cache_;
-	Generic_sample_cache<metal::Sample> metal_cache_;
-	Generic_sample_cache<substitute::Sample> substitute_cache_;
+	Generic_sample_cache<glass::Sample>		  glass_cache_;
+	Generic_sample_cache<light::Sample>		  light_cache_;
+	Generic_sample_cache<metal::Sample_iso>   metal_iso_cache_;
+	Generic_sample_cache<metal::Sample_aniso> metal_aniso_cache_;
+	Generic_sample_cache<substitute::Sample>  substitute_cache_;
 
 	std::shared_ptr<material::IMaterial> fallback_material_;
 };

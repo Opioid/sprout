@@ -21,7 +21,8 @@ Provider::Provider(file::System& file_system,
 	texture_cache_(texture_cache),
 	glass_cache_(num_workers),
 	light_cache_(num_workers),
-	metal_cache_(num_workers),
+	metal_iso_cache_(num_workers),
+	metal_aniso_cache_(num_workers),
 	substitute_cache_(num_workers) {
 	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr, false);
 	material->set_color(math::float3(1.f, 0.f, 0.f)),
@@ -155,14 +156,16 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 }
 
 std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitute_value) {
-//	std::shared_ptr<image::texture::Texture_2D> color_map;
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 //	std::shared_ptr<image::texture::Texture_2D> surface_map;
+	std::shared_ptr<image::texture::Texture_2D> direction_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
 	math::float3 ior(1.f, 1.f, 1.f);
 	math::float3 absorption(0.75f, 0.75f, 0.75f);
+	math::float2 anisotropy(0.f, 0.f);
 	float roughness = 0.9f;
+	math::float2 roughness_aniso(0.f, 0.f);
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -185,9 +188,7 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 					continue;
 				}
 
-			/*	if ("Color" == usage) {
-					color_map = texture_cache_.load(filename);
-				} else*/ if ("Normal" == usage) {
+				if ("Normal" == usage) {
 					normal_map = texture_cache_.load(filename,
 													 static_cast<uint32_t>(
 														image::texture::Provider::Flags::Use_as_normal));
@@ -195,26 +196,43 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 					surface_map = texture_cache_.load(filename,
 													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));*/
+				} else if ("Direction" == usage) {
+					direction_map = texture_cache_.load(filename,
+														static_cast<uint32_t>(
+														image::texture::Provider::Flags::Use_as_direction));
 				} else if ("Mask" == usage) {
 					mask = texture_cache_.load(filename,
-												static_cast<uint32_t>(
+											   static_cast<uint32_t>(
 												   image::texture::Provider::Flags::Use_as_mask));
 				}
 			}
 		}
 	}
 
-	auto material = std::make_shared<metal::Material>(metal_cache_, mask, two_sided);
+	if (roughness_aniso.x > 0.f || roughness_aniso.y > 0.f || direction_map) {
+		auto material = std::make_shared<metal::Material_aniso>(metal_aniso_cache_, mask, two_sided);
 
-//	material->set_color_map(color_map);
-	material->set_normal_map(normal_map);
-//	material->set_surface_map(surface_map);
+		material->set_normal_map(normal_map);
+	//	material->set_surface_map(surface_map);
+		material->set_direction_map(direction_map);
 
-	material->set_ior(ior);
-	material->set_absorption(absorption);
-	material->set_roughness(roughness);
+		material->set_ior(ior);
+		material->set_absorption(absorption);
+		material->set_roughness(roughness_aniso);
 
-	return material;
+		return material;
+	} else {
+		auto material = std::make_shared<metal::Material_iso>(metal_iso_cache_, mask, two_sided);
+
+		material->set_normal_map(normal_map);
+	//	material->set_surface_map(surface_map);
+
+		material->set_ior(ior);
+		material->set_absorption(absorption);
+		material->set_roughness(roughness);
+
+		return material;
+	}
 }
 
 std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {

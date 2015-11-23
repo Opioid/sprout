@@ -5,13 +5,8 @@
 
 namespace scene { namespace material { namespace metal {
 
-class Sample;
-
-
-class Sample : public material::Sample {
+class Sample_iso : public material::Sample {
 public:
-
-	Sample();
 
 	virtual math::float3 evaluate(const math::float3& wi, float& pdf) const final override;
 
@@ -34,9 +29,41 @@ private:
 
 	float a2_;
 
-	ggx::GGX_Conductor<Sample> ggx_;
+	ggx::Isotropic_Conductor<Sample_iso> ggx_;
 
-	friend ggx::GGX_Conductor<Sample>;
+	friend ggx::Isotropic_Conductor<Sample_iso>;
+};
+
+class Sample_aniso : public material::Sample {
+public:
+
+	virtual math::float3 evaluate(const math::float3& wi, float& pdf) const final override;
+
+	virtual math::float3 emission() const final override;
+
+	virtual math::float3 attenuation() const final override;
+
+	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const final override;
+
+	virtual bool is_pure_emissive() const final override;
+
+	virtual bool is_translucent() const final override;
+
+	void set(const math::float3& ior, const math::float3& absorption,
+			 math::float2 direction, math::float2 sqrt_roughness);
+
+private:
+
+	math::float3 ior_;
+	math::float3 absorption_;
+	math::float2 direction_;
+	math::float2  a_;
+
+	float a2_;
+
+	ggx::Anisotropic_Conductor<Sample_aniso> ggx_;
+
+	friend ggx::Anisotropic_Conductor<Sample_aniso>;
 };
 
 }}}
