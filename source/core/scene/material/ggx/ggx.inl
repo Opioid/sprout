@@ -3,6 +3,8 @@
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
 
+#include <iostream>
+
 namespace scene { namespace material { namespace ggx {
 
 template<typename Sample>
@@ -185,27 +187,15 @@ math::float3 Anisotropic_Conductor<Sample>::evaluate(const Sample& sample,
 
 	float n_dot_h  = math::saturate(math::dot(sample.n_, h));
 
+//	float x_dot_h  = math::saturate(math::dot(sample.t_, h));
+//	float y_dot_h  = math::saturate(math::dot(sample.b_, h));
 
-	math::float3 dir(/*sample.anisotropy_*/math::float2(0.f, 0.f), 1.f);
-	dir = math::normalized(sample.tangent_to_world(dir));
-
-
-//	float x_dot_h  = math::saturate(math::dot(dir, h));
-
-//	math::float3 b_dir = math::cross(dir, sample.n_);
-
-//	float y_dot_h  = math::saturate(math::dot(b_dir, h));
-
-	float x_dot_h  = math::saturate(math::dot(sample.t_, h));
-	float y_dot_h  = math::saturate(math::dot(sample.b_, h));
+	float x_dot_h  = math::dot(sample.t_, h);
+	float y_dot_h  = math::dot(sample.b_, h);
 
 	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 
-//	float d_0 = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
-
-	float r = 1;
-	float a = r * r;
-
+//	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
 	float d = ggx::d_aniso(n_dot_h, x_dot_h, y_dot_h, sample.a_);
 
 	float g = ggx::g(n_dot_wi, n_dot_wo, sample.a2_);
@@ -296,6 +286,21 @@ inline float d_aniso(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a
 	float t2 = 1.f / (d * d);
 
 	return t0 * t1 * t2;
+
+//	float a2 = a.x * a.y;
+
+//	float d = n_dot_h * n_dot_h * (a2 - 1.f) + 1.f;
+//	return a2 / (math::Pi * d * d);
+
+/*	float HdotX_2 = x_dot_h * x_dot_h;
+	float HdotY_2 = y_dot_h * y_dot_h;
+	float NdotH_2 = n_dot_h * n_dot_h;
+
+	float ax_2 = a.x * a.x;
+	float ay_2 = a.y * a.y;
+
+	return a.x * a.y * std::pow(HdotX_2 / ax_2 + HdotY_2 / ay_2 + NdotH_2, 2.0);
+	*/
 }
 
 inline float g(float n_dot_wi, float n_dot_wo, float a2) {

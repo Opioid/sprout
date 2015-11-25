@@ -41,6 +41,44 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 			intersection.uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
+
+			/*
+			math::float3 n = intersection.n;
+			math::float2 uv = math::float2(-std::atan2(n.x, n.z) * math::Pi_inv * 0.5f + 0.5f, std::acos(n.y) * math::Pi_inv);
+
+			float phi   = (uv.x + 0.5f) * 2.f * math::Pi;
+			float theta = uv.y * math::Pi;
+
+			float sin_theta = std::sin(theta);
+			float sin_phi   = std::sin(phi);
+			float cos_phi   = std::cos(phi);
+
+			math::float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
+
+			intersection.t = math::normalized(-t);
+			intersection.b = math::normalized(math::cross(t, n));
+			*/
+
+			math::float3 n = intersection.n;
+			math::float2 uv = math::float2(-std::atan2(n.x, n.z) + math::Pi, std::acos(n.y));
+
+			float phi   = uv.x;
+			float theta = uv.y;
+
+			float sin_theta = std::sin(theta);
+			float cos_theta = std::cos(theta);
+			float sin_phi   = std::sin(phi);
+			float cos_phi   = std::cos(phi);
+
+
+
+			math::float3 t(sin_theta * cos_phi, /*cos_theta*/0.f, sin_theta * sin_phi);
+
+			t = math::transform_vector(transformation.rotation, t);
+
+			intersection.t = math::normalized(t);
+			intersection.b = math::normalized(math::cross(t, n));
+
 			intersection.part = 0;
 
 			ray.max_t = t0;

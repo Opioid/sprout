@@ -218,7 +218,7 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 
 		material->set_ior(ior);
 		material->set_absorption(absorption);
-		material->set_roughness(roughness_aniso);
+		material->set_roughness(/*roughness_aniso*/math::float2(0.1, 0.1));
 
 		return material;
 	} else {
