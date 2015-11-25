@@ -176,7 +176,11 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 		} else if ("absorption" == node_name) {
 			absorption = json::read_float3(node_value);
 		} else if ("roughness" == node_name) {
-			roughness = json::read_float(node_value);
+			if (node_value.IsArray()) {
+				roughness_aniso = json::read_float2(node_value);
+			} else {
+				roughness = json::read_float(node_value);
+			}
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
 		} else if ("textures" == node_name) {
@@ -209,7 +213,7 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 		}
 	}
 
-	if (roughness_aniso.x > 0.f || roughness_aniso.y > 0.f || direction_map) {
+	if (roughness_aniso.x > 0.f && roughness_aniso.y > 0.f) {
 		auto material = std::make_shared<metal::Material_aniso>(metal_aniso_cache_, mask, two_sided);
 
 		material->set_normal_map(normal_map);
@@ -218,7 +222,7 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 
 		material->set_ior(ior);
 		material->set_absorption(absorption);
-		material->set_roughness(/*roughness_aniso*/math::float2(0.1, 0.1));
+		material->set_roughness(roughness_aniso);
 
 		return material;
 	} else {

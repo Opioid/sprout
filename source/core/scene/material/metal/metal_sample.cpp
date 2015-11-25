@@ -72,15 +72,13 @@ bool Sample_aniso::is_translucent() const {
 	return false;
 }
 
-void Sample_aniso::set(const math::float3& ior, const math::float3& absorption,
-					   math::float2 direction, math::float2 sqrt_roughness) {
+void Sample_aniso::set(const math::float3& ior, const math::float3& absorption, math::float2 sqrt_roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
-	direction_  = direction;
 
 	a_ = sqrt_roughness * sqrt_roughness;
 
-	a2_ = a_.x * a_.x;
+	a2_ = a_.x * a_.y;
 }
 
 }}}

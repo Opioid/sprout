@@ -96,30 +96,18 @@ const material::Sample& Material_aniso::sample(const shape::Differential& dg, co
 		math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
 		sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
-	} else {
-		sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
-	}
-
-	math::float2 direction;
-
-	if (direction_map_) {
-		// direction = sampler.sample_2(*direction_map_, dg.uv);
-
-
-		math::float3 tm = sampler.sample_3(*direction_map_, dg.uv);
+	} else if (direction_map_) {
+		math::float2 tm = sampler.sample_2(*direction_map_, dg.uv);
 		math::float3 t = math::normalized(dg.tangent_to_world_zyx(tm));
 
 		math::float3 b = math::cross(dg.n, t);
 
 		sample.set_basis(t, b, dg.n, dg.geo_n, wo);
-
-
-
 	} else {
-		direction = math::float2(0.f, 0.f);
+		sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
 	}
 
-	sample.set(ior_, absorption_, direction, roughness_);
+	sample.set(ior_, absorption_, roughness_);
 
 	return sample;
 }

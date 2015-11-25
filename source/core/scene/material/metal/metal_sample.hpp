@@ -49,15 +49,13 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& ior, const math::float3& absorption,
-			 math::float2 direction, math::float2 sqrt_roughness);
+	void set(const math::float3& ior, const math::float3& absorption, math::float2 sqrt_roughness);
 
 private:
 
 	math::float3 ior_;
 	math::float3 absorption_;
-	math::float2 direction_;
-	math::float2  a_;
+	math::float2 a_;
 
 	float a2_;
 

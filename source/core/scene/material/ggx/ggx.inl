@@ -217,17 +217,18 @@ float Anisotropic_Conductor<Sample>::importance_sample(const Sample& sample,
 													   bxdf::Result& result) const {
 	math::float2 xi = sampler.generate_sample_2D();
 
-	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
-	// TODO: Optimize the perfect mirror case more
-	float n_dot_h = 0.f == sample.a2_ ? 1.f : std::sqrt((1.f - xi.y) / ((sample.a2_ - 1.f) * xi.y + 1.f));
-
-	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 	float phi = 2.f * math::Pi * xi.x;
 	float sin_phi = std::sin(phi);
 	float cos_phi = std::cos(phi);
 
-	math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	math::float3 h = sample.tangent_to_world(is);
+	float t0 = std::sqrt(xi.y / (1.f - xi.y));
+	math::float3 t1 = (sample.a_.x * cos_phi * sample.t_ + sample.a_.y * sin_phi * sample.b_);
+
+	math::float3 h = math::normalized(t0 * t1 + sample.n_);
+
+	float x_dot_h = math::dot(sample.t_, h);
+	float y_dot_h = math::dot(sample.b_, h);
+	float n_dot_h = math::dot(sample.n_, h);
 
 //	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
@@ -237,7 +238,8 @@ float Anisotropic_Conductor<Sample>::importance_sample(const Sample& sample,
 	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
 //	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
-	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
+//	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
+	float d = ggx::d_aniso(n_dot_h, x_dot_h, y_dot_h, sample.a_);
 	float g = ggx::g(n_dot_wi, n_dot_wo, sample.a2_);
 	math::float3 f = fresnel_conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
@@ -246,8 +248,7 @@ float Anisotropic_Conductor<Sample>::importance_sample(const Sample& sample,
 	math::float3 specular = d * g * f;
 	result.reflection = specular;
 	result.wi = wi;
-	result.type.clear_set(0.f == sample.a2_ ? bxdf::Type::Specular_reflection
-											: bxdf::Type::Glossy_reflection);
+	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
 //	if (math::contains_negative(result.reflection)) {
 //		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
