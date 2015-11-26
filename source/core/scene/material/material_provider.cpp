@@ -200,10 +200,10 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 					surface_map = texture_cache_.load(filename,
 													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));*/
-				} else if ("Direction" == usage) {
+				} else if ("Anisotropy" == usage) {
 					direction_map = texture_cache_.load(filename,
 														static_cast<uint32_t>(
-														image::texture::Provider::Flags::Use_as_direction));
+														image::texture::Provider::Flags::Use_as_anisotropy));
 				} else if ("Mask" == usage) {
 					mask = texture_cache_.load(filename,
 											   static_cast<uint32_t>(

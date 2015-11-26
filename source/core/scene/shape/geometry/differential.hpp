@@ -17,11 +17,11 @@ struct Differential {
 			v.x * t.z + v.y * b.z + v.z * n.z);
 	}
 
-	math::float3 tangent_to_world_zyx(math::float2 v) const{
+	math::float3 tangent_to_world(math::float2 v) const{
 		return math::float3(
-			v.x * n.x + v.y * b.x + t.x,
-			v.x * n.y + v.y * b.y + t.y,
-			v.x * n.z + v.y * b.z + t.z);
+			v.x * t.x + v.y * b.x,
+			v.x * t.y + v.y * b.y,
+			v.x * t.z + v.y * b.z);
 	}
 };
 

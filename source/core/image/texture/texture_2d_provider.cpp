@@ -26,7 +26,7 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, uint32_t
 
 	if (static_cast<uint32_t>(Provider::Flags::Use_as_mask) == flags) {
 		num_channels = 1;
-	} else if (static_cast<uint32_t>(Provider::Flags::Use_as_direction) == flags) {
+	} else if (static_cast<uint32_t>(Provider::Flags::Use_as_anisotropy) == flags) {
 		num_channels = 2;
 	} else if (static_cast<uint32_t>(Provider::Flags::Use_as_surface) == flags) {
 		num_channels = 2;
@@ -40,7 +40,7 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, uint32_t
 	if (Image::Type::Byte_1 == image->description().type) {
 		return std::make_shared<Texture_2D_byte_1_unorm>(image);
 	} else if (Image::Type::Byte_2 == image->description().type) {
-		if (static_cast<uint32_t>(Provider::Flags::Use_as_direction) == flags) {
+		if (static_cast<uint32_t>(Provider::Flags::Use_as_anisotropy) == flags) {
 			return std::make_shared<Texture_2D_byte_2_snorm>(image);
 		} else {
 			return std::make_shared<Texture_2D_byte_2_unorm>(image);

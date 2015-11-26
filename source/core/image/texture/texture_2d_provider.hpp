@@ -18,11 +18,11 @@ public:
 	Provider(file::System& file_system);
 
 	enum class Flags {
-		None             = 0,
-		Use_as_normal    = 1,
-		Use_as_direction = 2,
-		Use_as_surface   = 3,
-		Use_as_mask      = 4
+		None              = 0,
+		Use_as_normal     = 1,
+		Use_as_anisotropy = 2,
+		Use_as_surface    = 3,
+		Use_as_mask       = 4
 	};
 
 	virtual std::shared_ptr<Texture_2D> load(const std::string& filename, uint32_t flags = 0) final override;

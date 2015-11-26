@@ -54,7 +54,7 @@ float f(float wo_dot_h, float f0);
 
 float d(float n_dot_h, float a2);
 
-float d_aniso(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a);
+float d_aniso(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a2, float axy);
 
 float g(float n_dot_wi, float n_dot_wo, float a2);
 

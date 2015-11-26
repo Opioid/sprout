@@ -177,12 +177,6 @@ template<typename Sample>
 math::float3 Anisotropic_Conductor<Sample>::evaluate(const Sample& sample,
 													 const math::float3& wi, float n_dot_wi, float n_dot_wo,
 													 float &pdf) const {
-	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == sample.a_.x || 0.f == sample.a_.y) {
-		pdf = 0.f;
-		return math::float3::identity;
-	}
-
 	math::float3 h = math::normalized(sample.wo_ + wi);
 
 	float n_dot_h  = math::saturate(math::dot(sample.n_, h));
@@ -196,9 +190,9 @@ math::float3 Anisotropic_Conductor<Sample>::evaluate(const Sample& sample,
 	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 
 //	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
-	float d = ggx::d_aniso(n_dot_h, x_dot_h, y_dot_h, sample.a_);
+	float d = ggx::d_aniso(n_dot_h, x_dot_h, y_dot_h, sample.a2_, sample.axy_);
 
-	float g = ggx::g(n_dot_wi, n_dot_wo, sample.a2_);
+	float g = ggx::g(n_dot_wi, n_dot_wo, sample.axy_);
 	math::float3 f = fresnel_conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
 	math::float3 specular = d * g * f;
@@ -239,8 +233,8 @@ float Anisotropic_Conductor<Sample>::importance_sample(const Sample& sample,
 //	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
 //	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
-	float d = ggx::d_aniso(n_dot_h, x_dot_h, y_dot_h, sample.a_);
-	float g = ggx::g(n_dot_wi, n_dot_wo, sample.a2_);
+	float d = ggx::d_aniso(n_dot_h, x_dot_h, y_dot_h, sample.a2_, sample.axy_);
+	float g = ggx::g(n_dot_wi, n_dot_wo, sample.axy_);
 	math::float3 f = fresnel_conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -277,12 +271,12 @@ inline float d(float n_dot_h, float a2) {
 	return a2 / (math::Pi * d * d);
 }
 
-inline float d_aniso(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a) {
+inline float d_aniso(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a2, float axy) {
 	float t0 = 1.f / math::Pi;
-	float t1 = 1.f / (a.x * a.y);
+	float t1 = 1.f / axy;
 
-	float x = (x_dot_h * x_dot_h) / (a.x * a.x);
-	float y = (y_dot_h * y_dot_h) / (a.y * a.y);
+	float x = (x_dot_h * x_dot_h) / a2.x;
+	float y = (y_dot_h * y_dot_h) / a2.y;
 	float d = (x + y + n_dot_h * n_dot_h);
 	float t2 = 1.f / (d * d);
 

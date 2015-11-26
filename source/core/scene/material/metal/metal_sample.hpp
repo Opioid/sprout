@@ -20,7 +20,7 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& ior, const math::float3& absorption, float sqrt_roughness);
+	void set(const math::float3& ior, const math::float3& absorption, float roughness);
 
 private:
 
@@ -49,15 +49,15 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& ior, const math::float3& absorption, math::float2 sqrt_roughness);
+	void set(const math::float3& ior, const math::float3& absorption, math::float2 roughness);
 
 private:
 
 	math::float3 ior_;
 	math::float3 absorption_;
 	math::float2 a_;
-
-	float a2_;
+	math::float2 a2_;
+	float axy_;
 
 	ggx::Anisotropic_Conductor<Sample_aniso> ggx_;
 

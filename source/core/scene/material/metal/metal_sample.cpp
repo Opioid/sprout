@@ -35,12 +35,12 @@ bool Sample_iso::is_translucent() const {
 	return false;
 }
 
-void Sample_iso::set(const math::float3& ior, const math::float3& absorption, float sqrt_roughness) {
+void Sample_iso::set(const math::float3& ior, const math::float3& absorption, float roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 
-	float roughness = sqrt_roughness * sqrt_roughness;
-	a2_ = roughness * roughness;
+	float a = roughness * roughness;
+	a2_ = a * a;
 }
 
 math::float3 Sample_aniso::evaluate(const math::float3& wi, float& pdf) const {
@@ -55,7 +55,7 @@ math::float3 Sample_aniso::emission() const {
 }
 
 math::float3 Sample_aniso::attenuation() const {
-	return math::float3(100.f, 100.f, 100.f);;
+	return math::float3(100.f, 100.f, 100.f);
 }
 
 void Sample_aniso::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
@@ -72,14 +72,14 @@ bool Sample_aniso::is_translucent() const {
 	return false;
 }
 
-void Sample_aniso::set(const math::float3& ior, const math::float3& absorption, math::float2 sqrt_roughness) {
+void Sample_aniso::set(const math::float3& ior, const math::float3& absorption, math::float2 roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 
-	a_ = sqrt_roughness * sqrt_roughness;
+	a_ = roughness * roughness;
+	a2_ = a_ * a_;
 
-	a2_ = a_.x * a_.y;
+	axy_ = a_.x * a_.y;
 }
 
 }}}
-

@@ -98,7 +98,7 @@ const material::Sample& Material_aniso::sample(const shape::Differential& dg, co
 		sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
 	} else if (direction_map_) {
 		math::float2 tm = sampler.sample_2(*direction_map_, dg.uv);
-		math::float3 t = math::normalized(dg.tangent_to_world_zyx(tm));
+		math::float3 t = math::normalized(dg.tangent_to_world(tm));
 
 		math::float3 b = math::cross(dg.n, t);
 
