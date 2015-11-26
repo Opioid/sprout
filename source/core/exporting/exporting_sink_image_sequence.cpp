@@ -35,4 +35,3 @@ void Image_sequence::write(const image::Image_float_4& image, uint32_t frame, th
 }
 
 }
-

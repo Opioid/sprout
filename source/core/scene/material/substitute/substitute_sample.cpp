@@ -60,9 +60,11 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_h  = math::dot(n_, h);
 	float wo_dot_h = math::dot(wo_, h);
 
-	float d = ggx::d(n_dot_h, std::max(a2_, 0.0000001f));
+	float d = ggx::distribution_isotropic(n_dot_h, std::max(a2_, 0.0000001f));
+	float g = ggx::geometric_shadowing(n_dot_wi, n_dot_wo, a2_);
+	math::float3 f = ggx::fresnel_schlick(wo_dot_h, f0_);
 
-	math::float3 specular = d * ggx::g(n_dot_wi, n_dot_wo, a2_) * ggx::f(wo_dot_h, f0_);
+	math::float3 specular = d * g * f;
 
 	float diffuse_pdf = n_dot_wi * math::Pi_inv;
 

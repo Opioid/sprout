@@ -11,7 +11,7 @@ namespace bxdf { struct Result; }
 namespace ggx {
 
 template<typename Sample>
-class Isotropic_Schlick {
+class Isotropic_schlick {
 public:
 
 	math::float3 evaluate(const Sample& sample,
@@ -24,7 +24,7 @@ public:
 };
 
 template<typename Sample>
-class Isotropic_Conductor {
+class Isotropic_conductor {
 public:
 
 	math::float3 evaluate(const Sample& sample,
@@ -37,7 +37,7 @@ public:
 };
 
 template<typename Sample>
-class Anisotropic_Conductor {
+class Anisotropic_conductor {
 public:
 
 	math::float3 evaluate(const Sample& sample,
@@ -49,13 +49,13 @@ public:
 							bxdf::Result& result) const;
 };
 
-math::float3 f(float wo_dot_h, const math::float3& f0);
-float f(float wo_dot_h, float f0);
+float distribution_isotropic(float n_dot_h, float a2);
 
-float d(float n_dot_h, float a2);
+float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a2, float axy);
 
-float d_aniso(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a2, float axy);
+float geometric_shadowing(float n_dot_wi, float n_dot_wo, float a2);
 
-float g(float n_dot_wi, float n_dot_wo, float a2);
+math::float3 fresnel_schlick(float wo_dot_h, const math::float3& f0);
+float fresnel_schlick(float wo_dot_h, float f0);
 
 }}}

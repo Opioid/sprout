@@ -29,9 +29,9 @@ private:
 
 	float a2_;
 
-	ggx::Isotropic_Conductor<Sample_iso> ggx_;
+	ggx::Isotropic_conductor<Sample_iso> ggx_;
 
-	friend ggx::Isotropic_Conductor<Sample_iso>;
+	friend ggx::Isotropic_conductor<Sample_iso>;
 };
 
 class Sample_aniso : public material::Sample {
@@ -59,9 +59,9 @@ private:
 	math::float2 a2_;
 	float axy_;
 
-	ggx::Anisotropic_Conductor<Sample_aniso> ggx_;
+	ggx::Anisotropic_conductor<Sample_aniso> ggx_;
 
-	friend ggx::Anisotropic_Conductor<Sample_aniso>;
+	friend ggx::Anisotropic_conductor<Sample_aniso>;
 };
 
 }}}
