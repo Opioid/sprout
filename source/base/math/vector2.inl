@@ -125,12 +125,12 @@ Vector2<T> max(Vector2<T> a, Vector2<T> b) {
 }
 
 template<typename T>
-bool contains_nan(const Vector2<T>& v) {
+bool contains_nan(const Vector2<T> v) {
 	return std::isnan(v.x) || std::isnan(v.y);
 }
 
 template<typename T>
-bool contains_inf(const Vector2<T>& v) {
+bool contains_inf(const Vector2<T> v) {
 	return std::isinf(v.x) || std::isinf(v.y);
 }
 

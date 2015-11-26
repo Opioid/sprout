@@ -95,6 +95,10 @@ inline float unorm_to_float(unsigned char byte) {
 	return static_cast<float>(byte) / 255.f;
 }
 
+inline unsigned char float_to_snorm(float x) {
+	return static_cast<unsigned char>((x + 1.f) * 0.5f * 255.f);
+}
+
 const Color3 luminance_vector(0.299f, 0.587f, 0.114f);
 
 inline float luminance(const Color3& c) {

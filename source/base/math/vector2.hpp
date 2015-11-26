@@ -47,10 +47,10 @@ template<typename T>
 Vector2<T> operator/(T s, Vector2<T> v);
 
 template<typename T>
-T dot(const Vector2<T>& a, Vector2<T> b);
+T dot(const Vector2<T> a, Vector2<T> b);
 
 template<typename T>
-T length(const Vector2<T>& v);
+T length(const Vector2<T> v);
 
 template<typename T>
 T squared_length(Vector2<T> v);
@@ -74,9 +74,9 @@ template<typename T>
 Vector2<T> max(Vector2<T> a, Vector2<T> b);
 
 template<typename T>
-bool contains_nan(const Vector2<T>& v);
+bool contains_nan(const Vector2<T> v);
 
 template<typename T>
-bool contains_inf(const Vector2<T>& v);
+bool contains_inf(const Vector2<T> v);
 
 }

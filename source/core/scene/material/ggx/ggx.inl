@@ -216,7 +216,7 @@ float Anisotropic_Conductor<Sample>::importance_sample(const Sample& sample,
 	float cos_phi = std::cos(phi);
 
 	float t0 = std::sqrt(xi.y / (1.f - xi.y));
-	math::float3 t1 = (sample.a_.x * cos_phi * sample.t_ + sample.a_.y * sin_phi * sample.b_);
+	math::float3 t1 = sample.a_.x * cos_phi * sample.t_ + sample.a_.y * sin_phi * sample.b_;
 
 	math::float3 h = math::normalized(t0 * t1 + sample.n_);
 
@@ -272,30 +272,11 @@ inline float d(float n_dot_h, float a2) {
 }
 
 inline float d_aniso(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a2, float axy) {
-	float t0 = 1.f / math::Pi;
-	float t1 = 1.f / axy;
-
 	float x = (x_dot_h * x_dot_h) / a2.x;
 	float y = (y_dot_h * y_dot_h) / a2.y;
 	float d = (x + y + n_dot_h * n_dot_h);
-	float t2 = 1.f / (d * d);
 
-	return t0 * t1 * t2;
-
-//	float a2 = a.x * a.y;
-
-//	float d = n_dot_h * n_dot_h * (a2 - 1.f) + 1.f;
-//	return a2 / (math::Pi * d * d);
-
-/*	float HdotX_2 = x_dot_h * x_dot_h;
-	float HdotY_2 = y_dot_h * y_dot_h;
-	float NdotH_2 = n_dot_h * n_dot_h;
-
-	float ax_2 = a.x * a.x;
-	float ay_2 = a.y * a.y;
-
-	return a.x * a.y * std::pow(HdotX_2 / ax_2 + HdotY_2 / ay_2 + NdotH_2, 2.0);
-	*/
+	return 1.f / (math::Pi * axy * d * d);
 }
 
 inline float g(float n_dot_wi, float n_dot_wo, float a2) {

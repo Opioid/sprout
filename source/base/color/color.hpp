@@ -44,6 +44,8 @@ uint32_t to_uint(const Color4& c);
 float snorm_to_float(unsigned char byte);
 float unorm_to_float(unsigned char byte);
 
+unsigned char float_to_snorm(float x);
+
 float luminance(const Color3& c);
 
 }
