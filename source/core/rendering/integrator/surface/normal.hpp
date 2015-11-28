@@ -10,6 +10,15 @@ class Normal : public Surface_integrator {
 public:
 
 	struct Settings {
+		enum class Vector {
+			Tangent,
+			Bitangent,
+			Geometric_normal,
+			Shading_normal
+		};
+
+		Vector vector;
+
 		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler;
 	};
 
@@ -27,7 +36,7 @@ private:
 class Normal_factory : public Surface_integrator_factory {
 public:
 
-	Normal_factory(const take::Settings& take_settings);
+	Normal_factory(const take::Settings& take_settings, Normal::Settings::Vector vector);
 
 	virtual Surface_integrator* create(math::random::Generator& rng) const final override;
 

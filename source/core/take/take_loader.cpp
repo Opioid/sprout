@@ -350,7 +350,21 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces,
 																	   num_light_samples, disable_caustics);
 		} else if ("Normal" == node_name) {
-			return std::make_shared<rendering::Normal_factory>(settings);
+			rendering::Normal::Settings::Vector vector = rendering::Normal::Settings::Vector::Shading_normal;
+
+			std::string vector_type = json::read_string(node_value, "vector");
+
+			if ("Tangent" == vector_type) {
+				vector = rendering::Normal::Settings::Vector::Tangent;
+			} else if ("Bitangent" == vector_type) {
+				vector = rendering::Normal::Settings::Vector::Bitangent;
+			} else if ("Geometric_normal" == vector_type) {
+				vector = rendering::Normal::Settings::Vector::Geometric_normal;
+			} else if ("Shading_normal" == vector_type) {
+				vector = rendering::Normal::Settings::Vector::Shading_normal;
+			}
+
+			return std::make_shared<rendering::Normal_factory>(settings, vector);
 		}
 	}
 

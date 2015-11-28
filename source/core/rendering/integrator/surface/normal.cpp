@@ -15,17 +15,29 @@ Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
 math::float4 Normal::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
-	return math::float4(0.5f * (intersection.geo.b + math::float3(1.f, 1.f, 1.f)), 1.f);
+	math::float3 vector;
 
-	auto material = intersection.material();
+	if (Settings::Vector::Tangent == settings_.vector) {
+		vector = intersection.geo.t;
+	} else if (Settings::Vector::Bitangent == settings_.vector) {
+		vector = intersection.geo.b;
+	} else if (Settings::Vector::Geometric_normal == settings_.vector) {
+		vector = intersection.geo.geo_n;
+	} else if (Settings::Vector::Shading_normal == settings_.vector) {
+		auto material = intersection.material();
 
-	math::float3 wo = -ray.direction;
-	auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
+		math::float3 wo = -ray.direction;
+		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
 
-	return math::float4(0.5f * (material_sample.shading_normal() + math::float3(1.f, 1.f, 1.f)), 1.f);
+		vector = material_sample.shading_normal();
+	}
+
+	return math::float4(0.5f * (vector + math::float3(1.f, 1.f, 1.f)), 1.f);
 }
 
-Normal_factory::Normal_factory(const take::Settings& take_settings) : Surface_integrator_factory(take_settings) {
+Normal_factory::Normal_factory(const take::Settings& take_settings, Normal::Settings::Vector vector) :
+	Surface_integrator_factory(take_settings) {
+	settings_.vector = vector;
 }
 
 Surface_integrator* Normal_factory::create(math::random::Generator& rng) const {
