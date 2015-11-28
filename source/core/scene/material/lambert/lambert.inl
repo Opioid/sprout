@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lambert.hpp"
+#include "scene/material/bxdf.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"
 #include "base/math/vector.inl"

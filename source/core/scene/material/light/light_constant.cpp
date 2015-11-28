@@ -1,4 +1,5 @@
 #include "light_constant.hpp"
+#include "light_material_sample.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
 #include "base/color/color.inl"
@@ -10,9 +11,9 @@ Constant::Constant(Generic_sample_cache<Sample>& cache,
 				   const math::float3& emission) :
 	Material(cache, mask, two_sided), emission_(emission) {}
 
-const Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
-							   const image::texture::sampler::Sampler_2D& /*sampler*/,
-							   uint32_t worker_id) {
+const material::Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
+										 const image::texture::sampler::Sampler_2D& /*sampler*/,
+										 uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);

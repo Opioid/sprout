@@ -2,12 +2,9 @@
 
 #include "resource/resource_provider.hpp"
 #include "resource/resource_cache.hpp"
-#include "glass/glass_sample.hpp"
-#include "light/light_material.hpp"
-#include "metal/metal_sample.hpp"
-#include "substitute/substitute_sample.hpp"
 #include "material_sample_cache.hpp"
 #include "base/json/rapidjson_types.hpp"
+#include <vector>
 
 namespace image { namespace texture {
 
@@ -17,7 +14,15 @@ class Texture_2D;
 
 namespace scene { namespace material {
 
+namespace cloth { class Sample; }
+namespace glass { class Sample; }
+namespace light { class Sample; }
+namespace metal { class Sample_iso; class Sample_aniso; }
+namespace substitute { class Sample; }
+
 class IMaterial;
+
+typedef std::vector<std::shared_ptr<IMaterial>> Materials;
 
 class Provider : public resource::Provider<IMaterial> {
 public:
@@ -32,6 +37,7 @@ public:
 
 private:
 
+	std::shared_ptr<IMaterial> load_cloth(const rapidjson::Value& cloth_value);
 	std::shared_ptr<IMaterial> load_glass(const rapidjson::Value& glass_value);
 	std::shared_ptr<IMaterial> load_light(const rapidjson::Value& light_value);
 	std::shared_ptr<IMaterial> load_metal(const rapidjson::Value& metal_value);
@@ -39,6 +45,7 @@ private:
 
 	resource::Cache<image::texture::Texture_2D>& texture_cache_;
 
+	Generic_sample_cache<cloth::Sample>		  cloth_cache_;
 	Generic_sample_cache<glass::Sample>		  glass_cache_;
 	Generic_sample_cache<light::Sample>		  light_cache_;
 	Generic_sample_cache<metal::Sample_iso>   metal_iso_cache_;

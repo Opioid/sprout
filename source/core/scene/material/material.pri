@@ -11,6 +11,7 @@ HEADERS += \
 	scene/material/material_sample_cache.hpp \
 	scene/material/material_sample_cache.inl \
 
+include(cloth/cloth.pri)
 include(ggx/ggx.pri)
 include(glass/glass.pri)
 include(lambert/lambert.pri)

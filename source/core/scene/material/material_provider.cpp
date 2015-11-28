@@ -3,11 +3,17 @@
 #include "resource/resource_cache.inl"
 #include "material_sample_cache.inl"
 #include "image/texture/texture_2d_provider.hpp"
+#include "cloth/cloth_material.hpp"
+#include "cloth/cloth_sample.hpp"
 #include "glass/glass_material.hpp"
+#include "glass/glass_sample.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
+#include "light/light_material_sample.hpp"
 #include "metal/metal_material.hpp"
+#include "metal/metal_sample.hpp"
 #include "substitute/substitute_material.hpp"
+#include "substitute/substitute_sample.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include <iostream>
@@ -19,6 +25,7 @@ Provider::Provider(file::System& file_system,
 				   uint32_t num_workers) :
 	resource::Provider<IMaterial>(file_system),
 	texture_cache_(texture_cache),
+	cloth_cache_(num_workers),
 	glass_cache_(num_workers),
 	light_cache_(num_workers),
 	metal_iso_cache_(num_workers),
@@ -48,7 +55,9 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t 
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("Glass" == node_name) {
+		if ("Cloth" == node_name) {
+			return load_cloth(node_value);
+		} else if ("Glass" == node_name) {
 			return load_glass(node_value);
 		} else if ("Light" == node_name) {
 			return load_light(node_value);
@@ -64,6 +73,10 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t 
 
 std::shared_ptr<IMaterial> Provider::fallback_material() const {
 	return fallback_material_;
+}
+
+std::shared_ptr<IMaterial> Provider::load_cloth(const rapidjson::Value& cloth_value) {
+	return nullptr;
 }
 
 std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_value) {
