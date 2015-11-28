@@ -76,7 +76,52 @@ std::shared_ptr<IMaterial> Provider::fallback_material() const {
 }
 
 std::shared_ptr<IMaterial> Provider::load_cloth(const rapidjson::Value& cloth_value) {
-	return nullptr;
+	std::shared_ptr<image::texture::Texture_2D> color_map;
+	std::shared_ptr<image::texture::Texture_2D> normal_map;
+	std::shared_ptr<image::texture::Texture_2D> mask;
+	bool two_sided = false;
+	math::float3 color(0.75f, 0.75f, 0.75f);
+
+	for (auto n = cloth_value.MemberBegin(); n != cloth_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("color" == node_name) {
+			color = json::read_float3(node_value);
+		} else if ("two_sided" == node_name) {
+			two_sided = json::read_bool(node_value);
+		} else if ("textures" == node_name) {
+			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+				std::string filename = json::read_string(*tn, "file", "");
+				std::string usage    = json::read_string(*tn, "usage", "Color");
+
+				if (filename.empty()) {
+					continue;
+				}
+
+				if ("Color" == usage) {
+					color_map = texture_cache_.load(filename);
+				} else if ("Normal" == usage) {
+					normal_map = texture_cache_.load(filename,
+													 static_cast<uint32_t>(
+														image::texture::Provider::Flags::Use_as_normal));
+				} else if ("Mask" == usage) {
+					mask = texture_cache_.load(filename,
+												static_cast<uint32_t>(
+												   image::texture::Provider::Flags::Use_as_mask));
+				}
+			}
+		}
+	}
+
+	auto material = std::make_shared<cloth::Material>(cloth_cache_, mask, two_sided);
+
+	material->set_color_map(color_map);
+	material->set_normal_map(normal_map);
+
+	material->set_color(color);
+
+	return material;
 }
 
 std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_value) {
