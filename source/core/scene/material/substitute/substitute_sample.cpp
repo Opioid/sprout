@@ -182,7 +182,7 @@ bool Sample::is_translucent() const {
 void Sample::set(const math::float3& color, const math::float3& emission,
 				 float roughness, float metallic, float thickness, float attenuation_distance) {
 	diffuse_color_ = (1.f - metallic) * color;
-	f0_ = math::lerp(math::float3(0.03f, 0.03f, 0.03f), color, metallic);
+	f0_ = math::lerp(math::float3(0.03f), color, metallic);
 	emission_ = emission;
 
 	float a = roughness * roughness;

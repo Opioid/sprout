@@ -38,11 +38,11 @@ private:
 
 	lambert::Lambert<Sample> lambert_;
 	oren_nayar::Oren_nayar<Sample> oren_nayar_;
-	ggx::Isotropic_schlick<Sample> ggx_;
+	ggx::Schlick_isotropic<Sample> ggx_;
 
 	friend lambert::Lambert<Sample>;
 	friend oren_nayar::Oren_nayar<Sample>;
-	friend ggx::Isotropic_schlick<Sample>;
+	friend ggx::Schlick_isotropic<Sample>;
 };
 
 }}}

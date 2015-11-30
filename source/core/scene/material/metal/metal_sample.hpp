@@ -5,7 +5,7 @@
 
 namespace scene { namespace material { namespace metal {
 
-class Sample_iso : public material::Sample {
+class Sample_isotropic : public material::Sample {
 public:
 
 	virtual math::float3 evaluate(const math::float3& wi, float& pdf) const final override;
@@ -29,12 +29,12 @@ private:
 
 	float a2_;
 
-	ggx::Isotropic_conductor<Sample_iso> ggx_;
+	ggx::Conductor_isotropic<Sample_isotropic> ggx_;
 
-	friend ggx::Isotropic_conductor<Sample_iso>;
+	friend ggx::Conductor_isotropic<Sample_isotropic>;
 };
 
-class Sample_aniso : public material::Sample {
+class Sample_anisotropic : public material::Sample {
 public:
 
 	virtual math::float3 evaluate(const math::float3& wi, float& pdf) const final override;
@@ -59,9 +59,9 @@ private:
 	math::float2 a2_;
 	float axy_;
 
-	ggx::Anisotropic_conductor<Sample_aniso> ggx_;
+	ggx::Conductor_anisotropic<Sample_anisotropic> ggx_;
 
-	friend ggx::Anisotropic_conductor<Sample_aniso>;
+	friend ggx::Conductor_anisotropic<Sample_anisotropic>;
 };
 
 }}}

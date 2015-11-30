@@ -6,36 +6,36 @@
 
 namespace scene { namespace material { namespace metal {
 
-math::float3 Sample_iso::evaluate(const math::float3& wi, float& pdf) const {
+math::float3 Sample_isotropic::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	return n_dot_wi * ggx_.evaluate(*this, wi, n_dot_wi, n_dot_wo, pdf);
 }
 
-math::float3 Sample_iso::emission() const {
+math::float3 Sample_isotropic::emission() const {
 	return math::float3::identity;
 }
 
-math::float3 Sample_iso::attenuation() const {
+math::float3 Sample_isotropic::attenuation() const {
 	return math::float3(100.f, 100.f, 100.f);;
 }
 
-void Sample_iso::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_isotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
 	float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 	result.reflection *= n_dot_wi;
 }
 
-bool Sample_iso::is_pure_emissive() const {
+bool Sample_isotropic::is_pure_emissive() const {
 	return false;
 }
 
-bool Sample_iso::is_translucent() const {
+bool Sample_isotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_iso::set(const math::float3& ior, const math::float3& absorption, float roughness) {
+void Sample_isotropic::set(const math::float3& ior, const math::float3& absorption, float roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 
@@ -43,36 +43,36 @@ void Sample_iso::set(const math::float3& ior, const math::float3& absorption, fl
 	a2_ = a * a;
 }
 
-math::float3 Sample_aniso::evaluate(const math::float3& wi, float& pdf) const {
+math::float3 Sample_anisotropic::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	return n_dot_wi * ggx_.evaluate(*this, wi, n_dot_wi, n_dot_wo, pdf);
 }
 
-math::float3 Sample_aniso::emission() const {
+math::float3 Sample_anisotropic::emission() const {
 	return math::float3::identity;
 }
 
-math::float3 Sample_aniso::attenuation() const {
+math::float3 Sample_anisotropic::attenuation() const {
 	return math::float3(100.f, 100.f, 100.f);
 }
 
-void Sample_aniso::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
 	float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 	result.reflection *= n_dot_wi;
 }
 
-bool Sample_aniso::is_pure_emissive() const {
+bool Sample_anisotropic::is_pure_emissive() const {
 	return false;
 }
 
-bool Sample_aniso::is_translucent() const {
+bool Sample_anisotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_aniso::set(const math::float3& ior, const math::float3& absorption, math::float2 roughness) {
+void Sample_anisotropic::set(const math::float3& ior, const math::float3& absorption, math::float2 roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 

@@ -11,7 +11,7 @@ namespace bxdf { struct Result; }
 namespace ggx {
 
 template<typename Sample>
-class Isotropic_schlick {
+class Schlick_isotropic {
 public:
 
 	math::float3 evaluate(const Sample& sample,
@@ -24,7 +24,7 @@ public:
 };
 
 template<typename Sample>
-class Isotropic_conductor {
+class Conductor_isotropic {
 public:
 
 	math::float3 evaluate(const Sample& sample,
@@ -37,7 +37,7 @@ public:
 };
 
 template<typename Sample>
-class Anisotropic_conductor {
+class Conductor_anisotropic {
 public:
 
 	math::float3 evaluate(const Sample& sample,

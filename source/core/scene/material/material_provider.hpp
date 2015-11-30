@@ -17,7 +17,7 @@ namespace scene { namespace material {
 namespace cloth { class Sample; }
 namespace glass { class Sample; }
 namespace light { class Sample; }
-namespace metal { class Sample_iso; class Sample_aniso; }
+namespace metal { class Sample_isotropic; class Sample_anisotropic; }
 namespace substitute { class Sample; }
 
 class IMaterial;
@@ -45,12 +45,12 @@ private:
 
 	resource::Cache<image::texture::Texture_2D>& texture_cache_;
 
-	Generic_sample_cache<cloth::Sample>		  cloth_cache_;
-	Generic_sample_cache<glass::Sample>		  glass_cache_;
-	Generic_sample_cache<light::Sample>		  light_cache_;
-	Generic_sample_cache<metal::Sample_iso>   metal_iso_cache_;
-	Generic_sample_cache<metal::Sample_aniso> metal_aniso_cache_;
-	Generic_sample_cache<substitute::Sample>  substitute_cache_;
+	Generic_sample_cache<cloth::Sample>				cloth_cache_;
+	Generic_sample_cache<glass::Sample>				glass_cache_;
+	Generic_sample_cache<light::Sample>				light_cache_;
+	Generic_sample_cache<metal::Sample_isotropic>   metal_iso_cache_;
+	Generic_sample_cache<metal::Sample_anisotropic> metal_aniso_cache_;
+	Generic_sample_cache<substitute::Sample>		substitute_cache_;
 
 	std::shared_ptr<material::IMaterial> fallback_material_;
 };

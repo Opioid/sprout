@@ -6,13 +6,13 @@
 
 namespace scene { namespace material { namespace metal {
 
-class Sample_iso;
+class Sample_isotropic;
 
-class Material_iso : public material::Material<Generic_sample_cache<Sample_iso>> {
+class Material_isotropic : public material::Material<Generic_sample_cache<Sample_isotropic>> {
 public:
 
-	Material_iso(Generic_sample_cache<Sample_iso>& cache,
-				 std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
+	Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
+					   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   const image::texture::sampler::Sampler_2D& sampler,
@@ -41,13 +41,13 @@ protected:
 	float roughness_;
 };
 
-class Sample_aniso;
+class Sample_anisotropic;
 
-class Material_aniso : public material::Material<Generic_sample_cache<Sample_aniso>> {
+class Material_anisotropic : public material::Material<Generic_sample_cache<Sample_anisotropic>> {
 public:
 
-	Material_aniso(Generic_sample_cache<Sample_aniso>& cache,
-				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
+	Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
+						 std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   const image::texture::sampler::Sampler_2D& sampler,

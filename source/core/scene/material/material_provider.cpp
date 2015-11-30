@@ -272,7 +272,7 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 	}
 
 	if (roughness_aniso.x > 0.f && roughness_aniso.y > 0.f) {
-		auto material = std::make_shared<metal::Material_aniso>(metal_aniso_cache_, mask, two_sided);
+		auto material = std::make_shared<metal::Material_anisotropic>(metal_aniso_cache_, mask, two_sided);
 
 		material->set_normal_map(normal_map);
 	//	material->set_surface_map(surface_map);
@@ -284,7 +284,7 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 
 		return material;
 	} else {
-		auto material = std::make_shared<metal::Material_iso>(metal_iso_cache_, mask, two_sided);
+		auto material = std::make_shared<metal::Material_isotropic>(metal_iso_cache_, mask, two_sided);
 
 		material->set_normal_map(normal_map);
 	//	material->set_surface_map(surface_map);
