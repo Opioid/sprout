@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+// http://www.graphics.cornell.edu/~bjw/rgbe
+
 namespace image { namespace encoding { namespace rgbe {
 
 std::shared_ptr<Image> Reader::read(std::istream& stream) const {

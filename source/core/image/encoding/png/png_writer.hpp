@@ -3,8 +3,6 @@
 #include "image/image_writer.hpp"
 #include "image/encoding/encoding_srgb.hpp"
 
-namespace thread { class Pool; }
-
 namespace image { namespace encoding { namespace png {
 
 class Writer : public image::Writer, Srgb {
@@ -12,7 +10,9 @@ public:
 
 	Writer(math::uint2 dimensions);
 
-	virtual bool write(std::ostream& stream, const image::Image_float_4& image, thread::Pool& pool) final override;
+	virtual std::string file_extension() const final override;
+
+	virtual bool write(std::ostream& stream, const Image_float_4& image, thread::Pool& pool) final override;
 };
 
 }}}
