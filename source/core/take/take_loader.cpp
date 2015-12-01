@@ -3,6 +3,7 @@
 #include "exporting/exporting_sink_ffmpeg.hpp"
 #include "exporting/exporting_sink_image_sequence.hpp"
 #include "exporting/exporting_sink_null.hpp"
+#include "image/encoding/png/png_writer.hpp"
 #include "rendering/film/opaque.hpp"
 #include "rendering/film/transparent.hpp"
 #include "rendering/film/clamp.inl"
@@ -79,8 +80,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	}
 
 	if (!take->exporter) {
-		take->exporter = std::make_unique<exporting::Image_sequence>(
-							"output_", take->context.camera->film().dimensions());
+		image::Writer* writer = new image::encoding::png::Writer(take->context.camera->film().dimensions());
+		take->exporter = std::make_unique<exporting::Image_sequence>("output_", writer);
 	}
 
 	if (!take->sampler) {
@@ -392,7 +393,8 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& e
 		const rapidjson::Value& node_value = n->value;
 
 		if ("Image" == node_name) {
-			return std::make_unique<exporting::Image_sequence>("output_", camera.film().dimensions());
+			image::Writer* writer = new image::encoding::png::Writer(camera.film().dimensions());
+			return std::make_unique<exporting::Image_sequence>("output_", writer);
 		} else if ("Movie" == node_name) {
 			uint32_t framerate = json::read_uint(node_value, "framerate");
 

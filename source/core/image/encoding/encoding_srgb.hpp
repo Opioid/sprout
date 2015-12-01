@@ -4,12 +4,12 @@
 #include "base/color/color.hpp"
 #include "base/math/vector.hpp"
 
-namespace exporting {
+namespace image { namespace encoding {
 
 class Srgb {
 public:
 
-	Srgb(const math::uint2& dimensions);
+	Srgb(math::uint2 dimensions);
 	virtual ~Srgb();
 
 protected:
@@ -19,5 +19,4 @@ protected:
 	color::Color4c* rgba_;
 };
 
-}
-
+}}

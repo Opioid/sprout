@@ -1,12 +1,17 @@
 #pragma once
 
 #include "typed_image.hpp"
-#include <string>
+#include <ostream>
+
+namespace thread { class Pool; }
 
 namespace image {
 
-class Image;
+class Writer {
+public:
 
-bool write(const std::string& filename, const Image_float_4& buffer);
+	virtual bool write(std::ostream& stream, const image::Image_float_4& image, thread::Pool& pool) = 0;
+
+};
 
 }

@@ -1,12 +1,11 @@
-#include "exporting_srgb.hpp"
+#include "encoding_srgb.hpp"
 #include "image/typed_image.inl"
 #include "base/color/color.inl"
 #include "base/math/vector.inl"
-#include "base/thread/thread_pool.hpp"
 
-namespace exporting {
+namespace image { namespace encoding {
 
-Srgb::Srgb(const math::uint2& dimensions) :rgba_(new color::Color4c[dimensions.x * dimensions.y]) {}
+Srgb::Srgb(math::uint2 dimensions) :rgba_(new color::Color4c[dimensions.x * dimensions.y]) {}
 
 Srgb::~Srgb() {
 	delete [] rgba_;
@@ -20,4 +19,4 @@ void Srgb::to_sRGB(const image::Image_float_4& image, uint32_t begin, uint32_t e
 	}
 }
 
-}
+}}

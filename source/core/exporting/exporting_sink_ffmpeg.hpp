@@ -1,13 +1,13 @@
 #pragma once
 
 #include "exporting_sink.hpp"
-#include "exporting_srgb.hpp"
+#include "image/encoding/encoding_srgb.hpp"
 #include <string>
 #include <cstdio>
 
 namespace exporting {
 
-class Ffmpeg : public Sink, public Srgb {
+class Ffmpeg : public Sink, public image::encoding::Srgb {
 public:
 
 	Ffmpeg(const std::string& filename, const math::uint2& dimensions, uint32_t framerate);
@@ -21,4 +21,3 @@ private:
 };
 
 }
-

@@ -10,12 +10,6 @@
 #include <array>
 #include <vector>
 
-namespace thread {
-
-class Pool;
-
-}
-
 namespace image {
 
 class Image;
