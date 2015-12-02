@@ -12,11 +12,6 @@ struct Vector3 {
 			T x, y, z;
 		};
 
-		struct {
-			Vector2<T> xy;
-			T _z;
-		};
-
 		T v[3];
 	};
 
@@ -26,9 +21,11 @@ struct Vector3 {
 
 	explicit Vector3(T s);
 
-	explicit Vector3(const Vector2<T>& xy, T z = T(0));
+	explicit Vector3(Vector2<T> xy, T z = T(0));
 
 	explicit Vector3(const T* v);
+
+	Vector2<T> xy() const;
 
 	Vector3 operator+(T s) const;
 

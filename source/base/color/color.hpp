@@ -12,22 +12,23 @@ template<typename T> struct Vector4;
 
 namespace color {
 
-typedef math::Vector2<unsigned char> Color2c;
-typedef math::Vector3<unsigned char> Color3c;
-typedef math::Vector3<float> Color3;
-typedef math::Vector4<unsigned char> Color4c;
-typedef math::Vector4<float> Color4;
+typedef math::Vector2<uint8_t> Color2c;
+typedef math::Vector3<uint8_t> Color3c;
+typedef math::Vector3<float>   Color3;
+typedef math::Vector4<uint8_t> Color4c;
+typedef math::Vector4<float>   Color4;
 
 // convert sRGB linear color to sRGB gamma color
 Color3 linear_to_sRGB(const Color3& c);
+Color4 linear_to_sRGB(const Color4& c);
 
 // convert sRGB gamma color to sRGB linear color
 float sRGB_to_linear(float c);
 
-Color3 sRGB_to_linear(const Color3c& c);
+Color3 sRGB_to_linear(Color3c c);
 Color3 sRGB_to_linear(const Color3& c);
 
-Color4 sRGB_to_linear(const Color4c& c);
+Color4 sRGB_to_linear(Color4c c);
 
 // convert linear color to gamma color
 Color3 linear_to_gamma(const Color3& c, float gamma);
@@ -35,16 +36,16 @@ Color3 linear_to_gamma(const Color3& c, float gamma);
 // convert gamma color to linear color
 Color3 gamma_to_linear(const Color3& c, float gamma);
 
-Color3 to_float(const Color3c& c);
-Color4 to_float(const Color4c& c);
+Color3 to_float(Color3c c);
+Color4 to_float(Color4c c);
 
 Color4c to_byte(const Color4& c);
 uint32_t to_uint(const Color4& c);
 
-float snorm_to_float(unsigned char byte);
-float unorm_to_float(unsigned char byte);
+float snorm_to_float(uint8_t byte);
+float unorm_to_float(uint8_t byte);
 
-unsigned char float_to_snorm(float x);
+uint8_t float_to_snorm(float x);
 
 float luminance(const Color3& c);
 

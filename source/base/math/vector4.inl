@@ -11,13 +11,18 @@ template<typename T>
 Vector4<T>::Vector4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
 
 template<typename T>
-Vector4<T>::Vector4(const Vector2<T>& xy, T z, T w) : xy(xy), zw(z, w) {}
+Vector4<T>::Vector4(Vector2<T> xy, T z, T w) : xy(xy), zw(z, w) {}
 
 template<typename T>
-Vector4<T>::Vector4(const Vector2<T>& xy, const Vector2<T>& zw) : xy(xy), zw(zw) {}
+Vector4<T>::Vector4(Vector2<T> xy, Vector2<T> zw) : xy(xy), zw(zw) {}
 
 template<typename T>
-Vector4<T>::Vector4(const Vector3<T>& xyz, T w) : xyz(xyz), _w(w) {}
+Vector4<T>::Vector4(const Vector3<T>& xyz, T w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+
+template<typename T>
+Vector3<T> Vector4<T>::xyz() const {
+	return Vector3<T>(x, y, z);
+}
 
 template<typename T>
 Vector4<T> Vector4<T>::operator*(const Vector4<T>& v) const {

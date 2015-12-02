@@ -23,7 +23,7 @@ private:
 	T* data_;
 };
 
-typedef Typed_image<unsigned char>  Image_byte_1;
+typedef Typed_image<uint8_t>  Image_byte_1;
 typedef Typed_image<color::Color2c> Image_byte_2;
 typedef Typed_image<color::Color3c> Image_byte_3;
 typedef Typed_image<math::float3>   Image_float_3;

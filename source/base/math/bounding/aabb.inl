@@ -96,17 +96,17 @@ void AABB<T>::insert(const Vector3<T>& p) {
 
 template<typename T>
 AABB<T> AABB<T>::transform(const Matrix4x4<T>& m) const {
-	Vector3<T> xa = bounds_[0].x * m.x.xyz;
-	Vector3<T> xb = bounds_[1].x * m.x.xyz;
+	Vector3<T> xa = bounds_[0].x * m.x.xyz();
+	Vector3<T> xb = bounds_[1].x * m.x.xyz();
 
-	Vector3<T> ya = bounds_[0].y * m.y.xyz;
-	Vector3<T> yb = bounds_[1].y * m.y.xyz;
+	Vector3<T> ya = bounds_[0].y * m.y.xyz();
+	Vector3<T> yb = bounds_[1].y * m.y.xyz();
 
-	Vector3<T> za = bounds_[0].z * m.z.xyz;
-	Vector3<T> zb = bounds_[1].z * m.z.xyz;
+	Vector3<T> za = bounds_[0].z * m.z.xyz();
+	Vector3<T> zb = bounds_[1].z * m.z.xyz();
 
-	return AABB<T>(math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb) + m.w.xyz,
-				   math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb) + m.w.xyz);
+	return AABB<T>(math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb) + m.w.xyz(),
+				   math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb) + m.w.xyz());
 }
 
 template<typename T>

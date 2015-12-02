@@ -16,10 +16,15 @@ template<typename T>
 Vector3<T>::Vector3(T s) : x(s), y(s), z(s)  {}
 
 template<typename T>
-Vector3<T>::Vector3(const Vector2<T>& xy, T z) : xy(xy), _z(z) {}
+Vector3<T>::Vector3(Vector2<T> xy, T z) : x(xy.x), y(xy.y), z(z) {}
 
 template<typename T>
 Vector3<T>::Vector3(const T* v) : x(v[0]), y(v[1]), z(v[2]) {}
+
+template<typename T>
+Vector2<T> Vector3<T>::xy() const {
+	return Vector2<T>(x, y);
+}
 
 template<typename T>
 Vector3<T> Vector3<T>::operator+(T s) const {

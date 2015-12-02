@@ -107,12 +107,12 @@ Filebuffer::int_type Filebuffer::underflow() {
 			size_t read_bytes = stream_ ? read_buffer_.size() : stream_->gcount();
 
 			z_stream_.avail_in = static_cast<uint32_t>(read_bytes);
-			z_stream_.next_in  = reinterpret_cast<unsigned char*>(read_buffer_.data());
+			z_stream_.next_in  = reinterpret_cast<uint8_t*>(read_buffer_.data());
 		}
 
 		if (0 == z_stream_.avail_out) {
 			z_stream_.avail_out = static_cast<uint32_t>(buffer_.size());
-			z_stream_.next_out  = reinterpret_cast<unsigned char*>(buffer_.data());
+			z_stream_.next_out  = reinterpret_cast<uint8_t*>(buffer_.data());
 
 			current = &*buffer_.begin();
 		}

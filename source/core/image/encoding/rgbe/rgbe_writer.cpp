@@ -25,7 +25,7 @@ void Writer::write_header(std::ostream& stream, math::uint2 dimensions) {
 void Writer::write_pixels(std::ostream& stream, const Image_float_4& image) {
 	const auto& d = image.description().dimensions;
 	for (uint32_t i = 0, len = d.x * d.y; i < len; ++i) {
-		color::Color4c rgbe = float_to_rgbe(image.at(i).xyz);
+		color::Color4c rgbe = float_to_rgbe(image.at(i).xyz());
 
 		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(color::Color4c));
 	}
@@ -40,7 +40,7 @@ void Writer::write_pixels_rle(std::ostream& stream, const Image_float_4& image) 
 		return write_pixels(stream, image);
 	}
 
-	unsigned char* buffer = new unsigned char[scanline_width * 4];
+	uint8_t* buffer = new uint8_t[scanline_width * 4];
 
 	uint32_t current_pixel = 0;
 
@@ -56,7 +56,7 @@ void Writer::write_pixels_rle(std::ostream& stream, const Image_float_4& image) 
 		for (uint32_t i = 0; i < scanline_width; ++i, ++current_pixel) {
 			const auto& pixel = image.at(current_pixel);
 
-			rgbe = float_to_rgbe(pixel.xyz);
+			rgbe = float_to_rgbe(pixel.xyz());
 
 			buffer[i]					   = rgbe.x;
 			buffer[i + scanline_width]     = rgbe.y;
@@ -160,10 +160,10 @@ color::Color4c Writer::float_to_rgbe(const color::Color3& c) {
 
 		v = f * 256.f / v;
 
-		return color::Color4c(static_cast<unsigned char>(c.x * v),
-							  static_cast<unsigned char>(c.y * v),
-							  static_cast<unsigned char>(c.z * v),
-							  static_cast<unsigned char>(e + 128));
+		return color::Color4c(static_cast<uint8_t>(c.x * v),
+							  static_cast<uint8_t>(c.y * v),
+							  static_cast<uint8_t>(c.z * v),
+							  static_cast<uint8_t>(e + 128));
 	}
 }
 

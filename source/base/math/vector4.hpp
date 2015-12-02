@@ -20,12 +20,6 @@ struct Vector4
 			Vector2<T> xy, zw;
 		};
 
-		struct
-		{
-			Vector3<T> xyz;
-			T _w;
-		};
-
 		T v[4];
 	};
 
@@ -33,11 +27,13 @@ struct Vector4
 
 	Vector4(T x, T y, T z, T w = T(1));
 
-	explicit Vector4(const Vector2<T>& xy, T z, T w = T(1));
+	explicit Vector4(Vector2<T> xy, T z, T w = T(1));
 
-	Vector4(const Vector2<T>& xy, const Vector2<T>& zw);
+	explicit Vector4(Vector2<T> xy, Vector2<T> zw);
 
 	explicit Vector4(const Vector3<T>& xyz, T w = T(1));
+
+	Vector3<T> xyz() const;
 
 	Vector4 operator*(const Vector4<T>& v) const;
 

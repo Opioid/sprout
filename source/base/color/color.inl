@@ -23,6 +23,11 @@ inline Color3 linear_to_sRGB(const Color3& c) {
 	return Color3(linear_to_sRGB(c.x), linear_to_sRGB(c.y), linear_to_sRGB(c.z));
 }
 
+// convert sRGB linear color to sRGB gamma color
+inline Color4 linear_to_sRGB(const Color4& c) {
+	return Color4(linear_to_sRGB(c.x), linear_to_sRGB(c.y), linear_to_sRGB(c.z), c.w);
+}
+
 // convert sRGB gamma value to sRGB linear value
 inline float sRGB_to_linear(float c) {
 	if (c <= 0.f) {
@@ -37,7 +42,7 @@ inline float sRGB_to_linear(float c) {
 }
 
 // convert sRGB gamma color to sRGB linear color
-inline Color3 sRGB_to_linear(const Color3c& c) {
+inline Color3 sRGB_to_linear(Color3c c) {
 	return Color3(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.z) / 255.f));
@@ -48,7 +53,7 @@ inline Color3 sRGB_to_linear(const Color3& c) {
 	return Color3(sRGB_to_linear(c.x), sRGB_to_linear(c.y), sRGB_to_linear(c.z));
 }
 
-inline Color4 sRGB_to_linear(const Color4c& c) {
+inline Color4 sRGB_to_linear(Color4c c) {
 	return Color4(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.z) / 255.f),
@@ -67,13 +72,13 @@ inline Color3 gamma_to_linear(const Color3& c, float gamma) {
 	return Color3(std::pow(c.x, gamma), std::pow(c.y, gamma), std::pow(c.z, gamma));
 }
 
-inline Color3 to_float(const Color3c& c) {
+inline Color3 to_float(Color3c c) {
 	return Color3(static_cast<float>(c.x) / 255.f,
 				  static_cast<float>(c.y) / 255.f,
 				  static_cast<float>(c.z) / 255.f);
 }
 
-inline Color4 to_float(const Color4c& c) {
+inline Color4 to_float(Color4c c) {
 	return Color4(static_cast<float>(c.x) / 255.f,
 				  static_cast<float>(c.y) / 255.f,
 				  static_cast<float>(c.z) / 255.f,
@@ -81,22 +86,22 @@ inline Color4 to_float(const Color4c& c) {
 }
 
 inline Color4c to_byte(const Color4& c) {
-	return Color4c(static_cast<unsigned char>(c.x * 255.f),
-				   static_cast<unsigned char>(c.y * 255.f),
-				   static_cast<unsigned char>(c.z * 255.f),
-				   static_cast<unsigned char>(c.w * 255.f));
+	return Color4c(static_cast<uint8_t>(c.x * 255.f),
+				   static_cast<uint8_t>(c.y * 255.f),
+				   static_cast<uint8_t>(c.z * 255.f),
+				   static_cast<uint8_t>(c.w * 255.f));
 }
 
-inline float snorm_to_float(unsigned char byte) {
+inline float snorm_to_float(uint8_t byte) {
 	return static_cast<float>(byte) / 128.f - 1.f;
 }
 
-inline float unorm_to_float(unsigned char byte) {
+inline float unorm_to_float(uint8_t byte) {
 	return static_cast<float>(byte) / 255.f;
 }
 
-inline unsigned char float_to_snorm(float x) {
-	return static_cast<unsigned char>((x + 1.f) * 0.5f * 255.f);
+inline uint8_t float_to_snorm(float x) {
+	return static_cast<uint8_t>((x + 1.f) * 0.5f * 255.f);
 }
 
 const Color3 luminance_vector(0.299f, 0.587f, 0.114f);

@@ -13,7 +13,7 @@ float Texture_2D_float_3::at_1(uint32_t x, uint32_t y) const {
 }
 
 math::float2 Texture_2D_float_3::at_2(uint32_t x, uint32_t y) const {
-	return image_.at(x, y).xy;
+	return image_.at(x, y).xy();
 }
 
 math::float3 Texture_2D_float_3::at_3(uint32_t x, uint32_t y) const {

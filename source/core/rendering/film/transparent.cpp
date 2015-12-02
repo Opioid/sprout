@@ -53,7 +53,7 @@ void Transparent::resolve(uint32_t begin, uint32_t end) {
 
 		math::float4 color = pixel.color / pixel.weight_sum;
 
-		math::float3 exposed = expose(color.xyz, exposure_);
+		math::float3 exposed = expose(color.xyz(), exposure_);
 
 		math::float3 tonemapped = tonemapper_->tonemap(exposed);
 
