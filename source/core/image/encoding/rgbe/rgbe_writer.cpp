@@ -1,4 +1,7 @@
 #include "rgbe_writer.hpp"
+#include "image/typed_image.inl"
+#include "base/math/vector.inl"
+#include <cmath>
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
 
