@@ -2,6 +2,7 @@
 
 #include "triangle_bvh_Data_generic.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
+#include "scene/shape/triangle/triangle_primitive_mte.inl"
 #include "base/math/sampling/sampling.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {

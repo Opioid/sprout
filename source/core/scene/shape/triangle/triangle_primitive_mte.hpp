@@ -5,17 +5,13 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-struct Triangle_MT {
-	Triangle_MT(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c, uint32_t material_index);
+struct Triangle_MTE {
+	Triangle_MTE(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c, uint32_t material_index);
 
-	struct Vertex {
-		Vertex(const shape::Vertex& v);
-
-		math::float3 p, n, t;
-		math::float2 uv;
-	};
-
-	Vertex a, b, c;
+	math::float3 ap, e1, e2;
+	math::float3 an, bn, cn;
+	math::float3 at, bt, ct;
+	math::float2 auv, buv, cuv;
 	float bitangent_sign;
 	uint32_t material_index;
 

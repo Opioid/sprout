@@ -1,13 +1,12 @@
 #pragma once
 
+#include "triangle_type.hpp"
 #include "scene/shape/shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
 #include "bvh/triangle_bvh_data_generic.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {
-
-struct Triangle_MT;
 
 class Mesh : public Shape {
 public:
@@ -50,7 +49,7 @@ public:
 
 private:
 
-	typedef bvh::Tree<bvh::Data_generic<Triangle_MT>> Tree;
+	typedef bvh::Tree<bvh::Data_generic<Triangle_type>> Tree;
 
     Tree tree_;
 

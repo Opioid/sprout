@@ -19,6 +19,6 @@ HEADERS += \
 	scene/shape/triangle/triangle_primitive_mte.inl \	
 	scene/shape/triangle/triangle_primitive_yf.hpp \
 	scene/shape/triangle/triangle_primitive_yf.inl \
+	scene/shape/triangle/triangle_type.hpp \
 
 include(bvh/bvh.pri)
-
