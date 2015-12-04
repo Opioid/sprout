@@ -6,10 +6,8 @@ SOURCES += \
 HEADERS += \
 	scene/shape/triangle/bvh/triangle_bvh_builder.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_builder.inl \
-	scene/shape/triangle/bvh/triangle_bvh_data_mt.hpp \
-	scene/shape/triangle/bvh/triangle_bvh_data_mt.inl \
-	scene/shape/triangle/bvh/triangle_bvh_data_yf.hpp \
-	scene/shape/triangle/bvh/triangle_bvh_data_yf.inl \
+	scene/shape/triangle/bvh/triangle_bvh_data_generic.hpp \
+	scene/shape/triangle/bvh/triangle_bvh_data_generic.inl \
 	scene/shape/triangle/bvh/triangle_bvh_helper.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_split_candidate.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_tree.hpp \

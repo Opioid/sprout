@@ -7,16 +7,13 @@ namespace scene { namespace shape {
 
 struct Vertex;
 
-namespace triangle {
+namespace triangle { namespace bvh {
 
-struct Triangle_MT;
-
-namespace bvh {
-
-class Data_MT {
+template<typename Triangle>
+class Data_generic {
 public:
 
-	~Data_MT();
+	~Data_generic();
 
 	uint32_t num_triangles() const;
 
@@ -47,7 +44,7 @@ public:
 
 private:
 
-	std::vector<Triangle_MT> triangles_;
+	std::vector<Triangle> triangles_;
 };
 
 }}}}

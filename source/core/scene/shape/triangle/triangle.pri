@@ -15,6 +15,8 @@ HEADERS += \
 	scene/shape/triangle/triangle_primitive.hpp \
 	scene/shape/triangle/triangle_primitive_mt.hpp \
 	scene/shape/triangle/triangle_primitive_mt.inl \
+	scene/shape/triangle/triangle_primitive_mte.hpp \
+	scene/shape/triangle/triangle_primitive_mte.inl \	
 	scene/shape/triangle/triangle_primitive_yf.hpp \
 	scene/shape/triangle/triangle_primitive_yf.inl \
 
