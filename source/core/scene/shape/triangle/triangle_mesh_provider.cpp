@@ -33,6 +33,8 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*fl
 
 		reader.Parse(json_stream, handler);
 
+	//	handler.write();
+
 		if (!handler.morph_targets().empty()) {
 			return load_morphable_mesh(filename, handler.morph_targets());
 		}
@@ -60,7 +62,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*fl
 
 		auto& indices = handler.indices();
 
-		for (auto& p : handler.groups()) {
+		for (auto& p : handler.parts()) {
 			uint32_t triangles_start = p.start_index / 3;
 			uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
 
@@ -128,7 +130,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 		if (collection->triangles().empty()) {
 			auto& indices = handler.indices();
 
-			for (auto& p : handler.groups()) {
+			for (auto& p : handler.parts()) {
 				uint32_t triangles_start = p.start_index / 3;
 				uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
 
@@ -145,7 +147,11 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 		collection->add_swap_vertices(handler.vertices());
 	}
 
-	auto mesh = std::make_shared<Morphable_mesh>(collection, static_cast<uint32_t>(handler.groups().size()));
+	if (collection->triangles().empty()) {
+		return nullptr;
+	}
+
+	auto mesh = std::make_shared<Morphable_mesh>(collection, static_cast<uint32_t>(handler.parts().size()));
 
 	return mesh;
 }

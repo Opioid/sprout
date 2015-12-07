@@ -2,6 +2,7 @@
 #include "base/math/vector.inl"
 
 #include <iostream>
+#include <fstream>
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -12,23 +13,24 @@ Json_handler::Json_handler () :
 	expected_string_(String_type::Unknown),
 	expected_object_(Object::Unknown),
 	current_vertex_(0),
-	current_array_index_(0),
+	current_vertex_component_(0),
 	has_positions_(false),
 	has_normals_(false),
-	has_tangents_(false)
+	has_tangents_(false),
+	has_texture_coordinates_(false)
 {}
 
 void Json_handler::clear() {
 	object_level_ = 0;
 	top_object_ = Object::Unknown;
-	groups_.clear();
+	parts_.clear();
 	vertices_.clear();
 	indices_.clear();
 	expected_number_ = Number::Unknown;
 	expected_string_ = String_type::Unknown;
 	expected_object_ = Object::Unknown;
 	current_vertex_ = 0;
-	current_array_index_ = 0;
+	current_vertex_component_ = 0;
 	has_positions_ = false;
 	has_normals_ = false;
 	has_tangents_ = false;
@@ -51,13 +53,13 @@ bool Json_handler::Int(int i) {
 bool Json_handler::Uint(unsigned i) {
 	switch (expected_number_) {
 	case Number::Material_index:
-		groups_.back().material_index = i;
+		parts_.back().material_index = i;
 		break;
 	case Number::Start_index:
-		groups_.back().start_index = i;
+		parts_.back().start_index = i;
 		break;
 	case Number::Num_indices:
-		groups_.back().num_indices = i;
+		parts_.back().num_indices = i;
 		break;
 	case Number::Index:
 		indices_.push_back(i);
@@ -96,8 +98,8 @@ bool Json_handler::StartObject() {
 	++object_level_;
 
 	switch (expected_object_) {
-	case Object::Group:
-		groups_.push_back(Group());
+	case Object::Part:
+		parts_.push_back(Part());
 		break;
 	default:
 		break;
@@ -121,40 +123,53 @@ bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
 	}
 
 	if (Object::Geometry == top_object_) {
-		if ("groups" == name) {
-			expected_object_ = Object::Group;
-		} else if ("material_index" == name) {
+		if ("parts" == name) {
+			expected_object_ = Object::Part;
+		} else if ("vertices" == name) {
+			top_object_ = Object::Vertices;
+		} else if ("material_index" == name && Object::Part == expected_object_) {
 			expected_number_ = Number::Material_index;
-		} else if ("start_index" == name) {
+		} else if ("start_index" == name && Object::Part == expected_object_) {
 			expected_number_ = Number::Start_index;
-		} else if ("num_indices" == name) {
+		} else if ("num_indices" == name && Object::Part == expected_object_) {
 			expected_number_ = Number::Num_indices;
 		} else if ("indices" == name) {
 			expected_number_ = Number::Index;
-		} else if ("positions" == name) {
+		}
+
+		return true;
+	} else if (Object::Vertices == top_object_) {
+		if ("positions" == name) {
 			expected_number_ = Number::Position;
 			current_vertex_ = 0;
+			current_vertex_component_ = 0;
 			has_positions_ = true;
 		} else if ("texture_coordinates_0" == name) {
 			expected_number_ = Number::Texture_coordinate_0;
 			current_vertex_ = 0;
+			current_vertex_component_ = 0;
+			has_texture_coordinates_ = true;
 		} else if ("normals" == name) {
 			expected_number_ = Number::Normal;
 			current_vertex_ = 0;
+			current_vertex_component_ = 0;
 			has_normals_ = true;
 		} else if ("tangents_and_bitangent_signs" == name) {
 			expected_number_ = Number::Tangent;
 			current_vertex_ = 0;
+			current_vertex_component_ = 0;
 			has_tangents_ = true;
 		}
+
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 bool Json_handler::EndObject(size_t /*memberCount*/) {
-	if (2 == object_level_) {
-		top_object_ = Object::Unknown;
+	if (Object::Vertices == top_object_) {
+		top_object_ = Object::Geometry;
 	}
 
 	--object_level_;
@@ -162,15 +177,10 @@ bool Json_handler::EndObject(size_t /*memberCount*/) {
 }
 
 bool Json_handler::StartArray() {
-	current_array_index_ = 0;
 	return true;
 }
 
 bool Json_handler::EndArray(size_t /*elementCount*/) {
-	// Of course not all arrays describe a vertex,
-	// so this value is only to be trusted while processing the array of vertices.
-	// It works because current_vertex_ is set to 0 before the array of vertices starts
-	++current_vertex_;
 	return true;
 }
 
@@ -186,8 +196,12 @@ bool Json_handler::has_tangents() const {
 	return has_tangents_;
 }
 
-const std::vector<Json_handler::Group>& Json_handler::groups() const {
-	return groups_;
+bool Json_handler::has_texture_coordinates() const {
+	return has_texture_coordinates_;
+}
+
+const std::vector<Json_handler::Part>& Json_handler::parts() const {
+	return parts_;
 }
 
 const std::vector<uint32_t>& Json_handler::indices() const {
@@ -230,9 +244,13 @@ void Json_handler::add_position(float v) {
 		vertices_.push_back(Vertex());
 	}
 
-	vertices_[current_vertex_].p.v[current_array_index_] = v;
+	vertices_[current_vertex_].p.v[current_vertex_component_] = v;
 
-	++current_array_index_;
+	++current_vertex_component_;
+	if (current_vertex_component_ >= 3) {
+		current_vertex_component_ = 0;
+		++current_vertex_;
+	}
 }
 
 void Json_handler::add_normal(float v) {
@@ -240,9 +258,13 @@ void Json_handler::add_normal(float v) {
 		vertices_.push_back(Vertex());
 	}
 
-	vertices_[current_vertex_].n.v[current_array_index_] = v;
+	vertices_[current_vertex_].n.v[current_vertex_component_] = v;
 
-	++current_array_index_;
+	++current_vertex_component_;
+	if (current_vertex_component_ >= 3) {
+		current_vertex_component_ = 0;
+		++current_vertex_;
+	}
 }
 
 void Json_handler::add_tangent(float v) {
@@ -250,13 +272,17 @@ void Json_handler::add_tangent(float v) {
 		vertices_.push_back(Vertex());
 	}
 
-	if (current_array_index_ < 3) {
-		vertices_[current_vertex_].t.v[current_array_index_] = v;
-	} else if (current_array_index_ == 3) {
+	if (current_vertex_component_ < 3) {
+		vertices_[current_vertex_].t.v[current_vertex_component_] = v;
+	} else if (current_vertex_component_ == 3) {
 		vertices_[current_vertex_].bitangent_sign = v;
 	}
 
-	++current_array_index_;
+	++current_vertex_component_;
+	if (current_vertex_component_ >= 4) {
+		current_vertex_component_ = 0;
+		++current_vertex_;
+	}
 }
 
 void Json_handler::add_texture_coordinate(float v) {
@@ -264,9 +290,13 @@ void Json_handler::add_texture_coordinate(float v) {
 		vertices_.push_back(Vertex());
 	}
 
-	vertices_[current_vertex_].uv.v[current_array_index_] = v;
+	vertices_[current_vertex_].uv.v[current_vertex_component_] = v;
 
-	++current_array_index_;
+	++current_vertex_component_;
+	if (current_vertex_component_ >= 2) {
+		current_vertex_component_ = 0;
+		++current_vertex_;
+	}
 }
 
 }}}

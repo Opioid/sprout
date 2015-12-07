@@ -10,7 +10,7 @@ namespace scene { namespace shape { namespace triangle {
 class Json_handler {
 public:
 
-	struct Group {
+	struct Part {
 		uint32_t material_index;
 		uint32_t start_index;
 		uint32_t num_indices;
@@ -37,8 +37,9 @@ public:
 	bool has_positions() const;
 	bool has_normals() const;
 	bool has_tangents() const;
+	bool has_texture_coordinates() const;
 
-	const std::vector<Group>& groups() const;
+	const std::vector<Part>& parts() const;
 
 	const std::vector<uint32_t>& indices() const;
 
@@ -76,14 +77,15 @@ private:
 	enum class Object {
 		Unknown,
 		Geometry,
-		Group,
-		Morph_targets
+		Morph_targets,
+		Part,
+		Vertices
 	};
 
 	uint32_t object_level_;
 	Object top_object_;
 
-	std::vector<Group> groups_;
+	std::vector<Part> parts_;
 
 	std::vector<uint32_t> indices_;
 
@@ -93,12 +95,13 @@ private:
 	String_type expected_string_;
 	Object expected_object_;
 
-	size_t current_vertex_;
-	size_t current_array_index_;
+	uint32_t current_vertex_;
+	uint32_t current_vertex_component_;
 
 	bool has_positions_;
 	bool has_normals_;
 	bool has_tangents_;
+	bool has_texture_coordinates_;
 
 	std::vector<std::string> morph_targets_;
 };
