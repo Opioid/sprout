@@ -8,8 +8,8 @@ class Perspective : public Camera {
 public:
 
 	struct Focus {
-		math::float3 point;
-		bool use_point = false;
+		math::float3 point = math::float3(0.5f, 0.5f, 0.f);
+		bool use_point = true;
 
 		float distance;
 	};
