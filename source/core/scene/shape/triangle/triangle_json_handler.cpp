@@ -36,6 +36,10 @@ void Json_handler::clear() {
 	has_tangents_ = false;
 }
 
+void Json_handler::create_part() {
+	parts_.push_back(Part{0, 0, static_cast<uint32_t>(indices_.size())});
+}
+
 bool Json_handler::Null() {
 	return true;
 }

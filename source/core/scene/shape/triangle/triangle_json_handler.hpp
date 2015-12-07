@@ -19,6 +19,7 @@ public:
 	Json_handler();
 
 	void clear();
+	void create_part();
 
 	bool Null();
 	bool Bool(bool b);

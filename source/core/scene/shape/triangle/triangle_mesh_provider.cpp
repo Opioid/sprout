@@ -33,7 +33,9 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*fl
 
 		reader.Parse(json_stream, handler);
 
-	//	handler.write();
+		if (handler.parts().empty()) {
+			handler.create_part();
+		}
 
 		if (!handler.morph_targets().empty()) {
 			return load_morphable_mesh(filename, handler.morph_targets());
