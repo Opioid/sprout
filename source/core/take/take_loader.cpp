@@ -24,14 +24,13 @@
 #include "sampler/random_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
 #include "scene/animation/animation_loader.hpp"
-#include "scene/camera/perspective_camera.hpp"
-#include "scene/camera/spherical_camera.hpp"
+#include "scene/camera/camera_perspective.hpp"
+#include "scene/camera/camera_spherical.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
 #include "base/json/json.hpp"
-#include <iostream>
 
 namespace take {
 

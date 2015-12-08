@@ -9,11 +9,9 @@ namespace rendering {
 
 class Worker;
 
-namespace sensor {
+namespace sensor { class Sensor; }
 
-class Sensor;
-
-}}
+}
 
 namespace scene { namespace camera {
 

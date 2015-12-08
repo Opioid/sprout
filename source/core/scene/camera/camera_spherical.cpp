@@ -1,4 +1,4 @@
-#include "spherical_camera.hpp"
+#include "camera_spherical.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"
