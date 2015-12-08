@@ -8,17 +8,19 @@ namespace thread { class Pool; }
 
 namespace sampler { struct Camera_sample; }
 
-namespace rendering { namespace film {
+namespace rendering { namespace sensor {
 
 namespace tonemapping { class Tonemapper; }
 
-class Film {
+class Sensor {
 public:
 
-	Film(math::uint2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper);
-	virtual ~Film();
+	Sensor(math::uint2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper);
+	virtual ~Sensor();
 
 	math::uint2 dimensions() const;
+
+	void resize(math::uint2 dimensions);
 
 	const image::Image_float_4& resolve(thread::Pool& pool);
 
@@ -30,6 +32,8 @@ public:
 	virtual void add_sample(const sampler::Camera_sample& sample, const math::float4& color, const Rectui& tile) = 0;
 
 protected:
+
+	virtual void on_resize(math::uint2 dimensions) = 0;
 
 	virtual void add_pixel(uint32_t x, uint32_t y, const math::float4& color, float weight) = 0;
 

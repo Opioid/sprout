@@ -3,7 +3,7 @@
 #include "base/math/function/interpolated_function.inl"
 #include <algorithm>
 
-namespace rendering { namespace film { namespace filter {
+namespace rendering { namespace sensor { namespace filter {
 
 class Gaussian_functor {
 public:

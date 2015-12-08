@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace rendering { namespace film {
+namespace rendering { namespace sensor {
 
 template<class Base, class Clamp, class Filter>
 class Filtered : public Base {

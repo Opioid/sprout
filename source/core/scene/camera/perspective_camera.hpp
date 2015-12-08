@@ -14,7 +14,7 @@ public:
 		float distance;
 	};
 
-	Perspective(math::float2 dimensions, rendering::film::Film* film, float ray_max_t,
+	Perspective(math::float2 dimensions, rendering::sensor::Sensor* sensor, float ray_max_t,
 				float frame_duration, bool motion_blur, const Focus& focus, float fov, float lens_radius);
 
 	virtual void update_focus(rendering::Worker& worker) final override;

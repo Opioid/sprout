@@ -3,7 +3,7 @@
 #include "rendering_worker.hpp"
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"
-#include "rendering/film/film.hpp"
+#include "rendering/sensor/sensor.hpp"
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
@@ -62,9 +62,9 @@ Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_fa
 void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& pool,
 					exporting::Sink& exporter, progress::Sink& progressor) {
 	auto& camera = *context.camera;
-	auto& film   = camera.film();
+	auto& sensor   = camera.sensor();
 
-	auto dimensions = film.dimensions();
+	auto dimensions = sensor.dimensions();
 
 	size_t num_tiles = static_cast<size_t>(std::ceil(static_cast<float>(dimensions.x)
 												   / static_cast<float>(tile_dimensions_.x)))
@@ -100,7 +100,7 @@ void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& p
 
 		auto render_start = clock.now();
 
-		film.clear();
+		sensor.clear();
 		current_sample_ = 0;
 
 		progressor.start(progress_range);
@@ -177,7 +177,7 @@ void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& p
 		logging::info("Render time " + string::to_string(render_duration) + " s");
 
 		auto export_start = clock.now();
-		exporter.write(film.resolve(pool), current_frame, pool);
+		exporter.write(sensor.resolve(pool), current_frame, pool);
 		auto export_duration = chrono::duration_to_seconds(clock.now() - export_start);
 		logging::info("Export time " + string::to_string(export_duration) + " s");
 	}

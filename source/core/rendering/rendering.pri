@@ -8,5 +8,5 @@ HEADERS += \
 	rendering/rendering_driver.hpp \
 	rendering/rendering_worker.hpp \
 
-include(film/film.pri)
 include(integrator/integrator.pri)
+include(sensor/sensor.pri)

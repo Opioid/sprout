@@ -1,5 +1,5 @@
 #include "perspective_camera.hpp"
-#include "rendering/film/film.hpp"
+#include "rendering/sensor/sensor.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "sampler/camera_sample.hpp"
@@ -11,9 +11,9 @@
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(math::float2 dimensions, rendering::film::Film* film, float ray_max_t,
+Perspective::Perspective(math::float2 dimensions, rendering::sensor::Sensor* sensor, float ray_max_t,
 						 float frame_duration, bool motion_blur, const Focus& focus, float fov, float lens_radius) :
-	Camera(dimensions, film, ray_max_t, frame_duration, motion_blur), focus_(focus),
+	Camera(dimensions, sensor, ray_max_t, frame_duration, motion_blur), focus_(focus),
 	fov_(fov), lens_radius_(lens_radius), focal_distance_(focus_.distance) {
 	float ratio = dimensions_.x / dimensions_.y;
 
@@ -23,11 +23,12 @@ Perspective::Perspective(math::float2 dimensions, rendering::film::Film* film, f
 	math::float3 right_top	( ratio,  1.f, z);
 	math::float3 left_bottom(-ratio, -1.f, z);
 
-	d_x_ = (right_top - left_top_)   / static_cast<float>(film_->dimensions().x);
-	d_y_ = (left_bottom - left_top_) / static_cast<float>(film_->dimensions().y);
+	math::float2 fd(film_->dimensions());
+	d_x_ = (right_top - left_top_)   / fd.x;
+	d_y_ = (left_bottom - left_top_) / fd.y;
 
-	focus_.point.x *= static_cast<float>(film_->dimensions().x);
-	focus_.point.y *= static_cast<float>(film_->dimensions().y);
+	focus_.point.x *= fd.x;
+	focus_.point.y *= fd.y;
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {

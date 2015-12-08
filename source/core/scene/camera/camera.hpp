@@ -9,9 +9,9 @@ namespace rendering {
 
 class Worker;
 
-namespace film {
+namespace sensor {
 
-class Film;
+class Sensor;
 
 }}
 
@@ -20,12 +20,12 @@ namespace scene { namespace camera {
 class Camera : public entity::Entity {
 public:
 
-	Camera(math::float2 dimensions, rendering::film::Film* film, float ray_max_t,
+	Camera(math::float2 dimensions, rendering::sensor::Sensor* sensor, float ray_max_t,
 		   float frame_duration, bool motion_blur);
 
 	virtual ~Camera();
 
-	rendering::film::Film& film() const;
+	rendering::sensor::Sensor& sensor() const;
 
 	float frame_duration() const;
 
@@ -39,10 +39,10 @@ protected:
 
 	virtual void on_set_transformation() final override;
 
-	static math::float2 calculate_dimensions(const math::float2& dimensions, rendering::film::Film* film);
+	static math::float2 calculate_dimensions(math::float2 dimensions, rendering::sensor::Sensor* sensor);
 
 	math::float2 dimensions_;
-	rendering::film::Film* film_;
+	rendering::sensor::Sensor* film_;
 	float ray_max_t_;
 	float frame_duration_;
 	bool motion_blur_;

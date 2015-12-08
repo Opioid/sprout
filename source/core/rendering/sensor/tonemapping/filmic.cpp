@@ -1,7 +1,7 @@
 #include "filmic.hpp"
 #include "base/math/vector.inl"
 
-namespace rendering { namespace film { namespace tonemapping {
+namespace rendering { namespace sensor { namespace tonemapping {
 
 Filmic::Filmic(const math::float3& linear_white) : linear_white_(linear_white) {}
 

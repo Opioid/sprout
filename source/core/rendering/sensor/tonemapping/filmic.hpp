@@ -2,7 +2,7 @@
 
 #include "tonemapper.hpp"
 
-namespace rendering { namespace film { namespace tonemapping {
+namespace rendering { namespace sensor { namespace tonemapping {
 
 class Filmic : public Tonemapper {
 public:

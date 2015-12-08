@@ -28,6 +28,8 @@ public:
 
 	const Description& description() const;
 
+	virtual void resize(math::uint2 dimensions) = 0;
+
 protected:
 
 	Description description_;

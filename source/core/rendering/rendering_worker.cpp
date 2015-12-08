@@ -1,5 +1,5 @@
 #include "rendering_worker.hpp"
-#include "rendering/film/film.hpp"
+#include "rendering/sensor/sensor.hpp"
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
@@ -78,7 +78,7 @@ scene::shape::Node_stack& Worker::node_stack() {
 void Camera_worker::render(const scene::camera::Camera& camera, const Rectui& tile,
 						   uint32_t sample_begin, uint32_t sample_end,
 						   float normalized_tick_offset, float normalized_tick_slice) {
-	auto& film = camera.film();
+	auto& sensor = camera.sensor();
 
 	uint32_t num_samples = sample_end - sample_begin;
 
@@ -88,9 +88,9 @@ void Camera_worker::render(const scene::camera::Camera& camera, const Rectui& ti
 	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
 			if (0 == sample_begin) {
-				film.set_seed(x, y, sampler_->restart(1));
+				sensor.set_seed(x, y, sampler_->restart(1));
 			} else {
-				sampler_->set_seed(film.seed(x, y));
+				sampler_->set_seed(sensor.seed(x, y));
 			}
 
 			surface_integrator_->start_new_pixel(num_samples);
@@ -106,7 +106,7 @@ void Camera_worker::render(const scene::camera::Camera& camera, const Rectui& ti
 
 				math::float4 color = li(ray);
 
-				film.add_sample(sample, color, tile);
+				sensor.add_sample(sample, color, tile);
 			}
 		}
 	}

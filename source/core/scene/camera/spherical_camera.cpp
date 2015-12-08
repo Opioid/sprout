@@ -1,5 +1,5 @@
 #include "spherical_camera.hpp"
-#include "rendering/film/film.hpp"
+#include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -9,9 +9,9 @@
 
 namespace scene { namespace camera {
 
-Spherical::Spherical(math::float2 dimensions, rendering::film::Film* film, float ray_max_t,
+Spherical::Spherical(rendering::sensor::Sensor* sensor, float ray_max_t,
 					 float frame_duration, bool motion_blur) :
-	Camera(dimensions, film, ray_max_t, frame_duration, motion_blur) {
+	Camera(math::float2(2.f, 1.f), sensor, ray_max_t, frame_duration, motion_blur) {
 	d_x_ = 1.f / static_cast<float>(film_->dimensions().x);
 	d_y_ = 1.f / static_cast<float>(film_->dimensions().y);
 }

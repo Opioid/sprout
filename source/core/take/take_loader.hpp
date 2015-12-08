@@ -7,17 +7,9 @@
 
 namespace exporting { class Sink; }
 
-namespace math { namespace random {
+namespace math { namespace random { class Generator; }}
 
-class Generator;
-
-}}
-
-namespace scene { namespace camera {
-
-class Camera;
-
-}}
+namespace scene { namespace camera { class Camera; } }
 
 namespace sampler { class Sampler; }
 
@@ -25,17 +17,15 @@ namespace rendering {
 
 struct Focus;
 
-namespace film {
+namespace sensor {
 
-class Film;
+class Sensor;
 
 namespace tonemapping { class Tonemapper; }
 
-namespace filter {
+namespace filter { class Filter; }
 
-class Filter;
-
-}}
+}
 
 class Surface_integrator_factory;
 
@@ -55,9 +45,9 @@ private:
 
 	void load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const;
 
-	rendering::film::Film* load_film(const rapidjson::Value& film_value, bool alpha_transparency) const;
+	rendering::sensor::Sensor* load_sensor(const rapidjson::Value& sensor_value, bool alpha_transparency) const;
 
-	std::unique_ptr<rendering::film::tonemapping::Tonemapper>
+	std::unique_ptr<rendering::sensor::tonemapping::Tonemapper>
 	load_tonemapper(const rapidjson::Value& tonemapper_value) const;
 
 	std::shared_ptr<sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value,

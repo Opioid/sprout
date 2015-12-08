@@ -2,7 +2,7 @@
 
 #include "base/math/vector.hpp"
 
-namespace rendering { namespace film { namespace tonemapping {
+namespace rendering { namespace sensor { namespace tonemapping {
 
 class Tonemapper {
 public:

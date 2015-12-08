@@ -3,7 +3,7 @@
 #include "filtered.hpp"
 #include "sampler/camera_sample.hpp"
 
-namespace rendering { namespace film {
+namespace rendering { namespace sensor {
 
 template<class Base, class Clamp, class Filter>
 Filtered<Base, Clamp, Filter>::Filtered(const math::uint2& dimensions, float exposure,

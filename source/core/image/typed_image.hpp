@@ -12,6 +12,8 @@ public:
 	Typed_image(const Image::Description& description);
 	~Typed_image();
 
+	virtual void resize(math::uint2 dimensions) final override;
+
 	const T& at(uint32_t index) const;
 	T& at(uint32_t index);
 

@@ -2,7 +2,7 @@
 
 #include "base/math/vector.hpp"
 
-namespace rendering { namespace film { namespace clamp {
+namespace rendering { namespace sensor { namespace clamp {
 
 class Identity {
 public:

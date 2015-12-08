@@ -1,6 +1,6 @@
 #pragma once
 
-namespace rendering { namespace film {
+namespace rendering { namespace sensor {
 
 template<class Base, class Clamp>
 class Unfiltered : public Base {

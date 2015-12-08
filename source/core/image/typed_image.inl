@@ -15,6 +15,13 @@ Typed_image<T>::~Typed_image() {
 }
 
 template<typename T>
+void Typed_image<T>::resize(math::uint2 dimensions) {
+	delete [] data_;
+
+	description_.dimensions = dimensions;
+}
+
+template<typename T>
 const T& Typed_image<T>::at(uint32_t index) const {
 	return data_[index];
 }
