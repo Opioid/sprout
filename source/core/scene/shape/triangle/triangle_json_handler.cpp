@@ -1,24 +1,11 @@
 #include "triangle_json_handler.hpp"
 #include "base/math/vector.inl"
 
-#include <iostream>
-#include <fstream>
-
 namespace scene { namespace shape { namespace triangle {
 
-Json_handler::Json_handler () :
-	object_level_(0),
-	top_object_(Object::Unknown),
-	expected_number_(Number::Unknown),
-	expected_string_(String_type::Unknown),
-	expected_object_(Object::Unknown),
-	current_vertex_(0),
-	current_vertex_component_(0),
-	has_positions_(false),
-	has_normals_(false),
-	has_tangents_(false),
-	has_texture_coordinates_(false)
-{}
+Json_handler::Json_handler () {
+	clear();
+}
 
 void Json_handler::clear() {
 	object_level_ = 0;
@@ -30,7 +17,7 @@ void Json_handler::clear() {
 	expected_string_ = String_type::Unknown;
 	expected_object_ = Object::Unknown;
 	current_vertex_ = 0;
-	current_vertex_component_ = 0;
+	current_vertex_element_ = 0;
 	has_positions_ = false;
 	has_normals_ = false;
 	has_tangents_ = false;
@@ -146,22 +133,22 @@ bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
 		if ("positions" == name) {
 			expected_number_ = Number::Position;
 			current_vertex_ = 0;
-			current_vertex_component_ = 0;
+			current_vertex_element_ = 0;
 			has_positions_ = true;
 		} else if ("texture_coordinates_0" == name) {
 			expected_number_ = Number::Texture_coordinate_0;
 			current_vertex_ = 0;
-			current_vertex_component_ = 0;
+			current_vertex_element_ = 0;
 			has_texture_coordinates_ = true;
 		} else if ("normals" == name) {
 			expected_number_ = Number::Normal;
 			current_vertex_ = 0;
-			current_vertex_component_ = 0;
+			current_vertex_element_ = 0;
 			has_normals_ = true;
 		} else if ("tangents_and_bitangent_signs" == name) {
 			expected_number_ = Number::Tangent;
 			current_vertex_ = 0;
-			current_vertex_component_ = 0;
+			current_vertex_element_ = 0;
 			has_tangents_ = true;
 		}
 
@@ -248,13 +235,9 @@ void Json_handler::add_position(float v) {
 		vertices_.push_back(Vertex());
 	}
 
-	vertices_[current_vertex_].p.v[current_vertex_component_] = v;
+	vertices_[current_vertex_].p.v[current_vertex_element_] = v;
 
-	++current_vertex_component_;
-	if (current_vertex_component_ >= 3) {
-		current_vertex_component_ = 0;
-		++current_vertex_;
-	}
+	increment_vertex_element(3);
 }
 
 void Json_handler::add_normal(float v) {
@@ -262,13 +245,9 @@ void Json_handler::add_normal(float v) {
 		vertices_.push_back(Vertex());
 	}
 
-	vertices_[current_vertex_].n.v[current_vertex_component_] = v;
+	vertices_[current_vertex_].n.v[current_vertex_element_] = v;
 
-	++current_vertex_component_;
-	if (current_vertex_component_ >= 3) {
-		current_vertex_component_ = 0;
-		++current_vertex_;
-	}
+	increment_vertex_element(3);
 }
 
 void Json_handler::add_tangent(float v) {
@@ -276,17 +255,13 @@ void Json_handler::add_tangent(float v) {
 		vertices_.push_back(Vertex());
 	}
 
-	if (current_vertex_component_ < 3) {
-		vertices_[current_vertex_].t.v[current_vertex_component_] = v;
-	} else if (current_vertex_component_ == 3) {
+	if (current_vertex_element_ < 3) {
+		vertices_[current_vertex_].t.v[current_vertex_element_] = v;
+	} else if (current_vertex_element_ == 3) {
 		vertices_[current_vertex_].bitangent_sign = v;
 	}
 
-	++current_vertex_component_;
-	if (current_vertex_component_ >= 4) {
-		current_vertex_component_ = 0;
-		++current_vertex_;
-	}
+	increment_vertex_element(4);
 }
 
 void Json_handler::add_texture_coordinate(float v) {
@@ -294,11 +269,15 @@ void Json_handler::add_texture_coordinate(float v) {
 		vertices_.push_back(Vertex());
 	}
 
-	vertices_[current_vertex_].uv.v[current_vertex_component_] = v;
+	vertices_[current_vertex_].uv.v[current_vertex_element_] = v;
 
-	++current_vertex_component_;
-	if (current_vertex_component_ >= 2) {
-		current_vertex_component_ = 0;
+	increment_vertex_element(2);
+}
+
+void Json_handler::increment_vertex_element(uint32_t num_elements) {
+	++current_vertex_element_;
+	if (current_vertex_element_ >= num_elements) {
+		current_vertex_element_ = 0;
 		++current_vertex_;
 	}
 }

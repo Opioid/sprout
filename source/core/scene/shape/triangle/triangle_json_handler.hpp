@@ -58,6 +58,8 @@ private:
 	void add_tangent(float v);
 	void add_texture_coordinate(float v);
 
+	void increment_vertex_element(uint32_t num_elements);
+
 	enum class Number {
 		Unknown,
 		Material_index,
@@ -97,7 +99,7 @@ private:
 	Object expected_object_;
 
 	uint32_t current_vertex_;
-	uint32_t current_vertex_component_;
+	uint32_t current_vertex_element_;
 
 	bool has_positions_;
 	bool has_normals_;
