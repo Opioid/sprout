@@ -76,7 +76,7 @@ private:
 class Camera_worker : public Worker {
 public:
 
-	void render(const scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end,
+	void render(scene::camera::Camera& camera, const Rectui& tile, uint32_t sample_begin, uint32_t sample_end,
 				float normalized_tick_offset, float normalized_tick_slice);
 };
 

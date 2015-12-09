@@ -38,14 +38,15 @@ public:
 
 private:
 
-	void render_subframe(const scene::camera::Camera& camera,
+	void render_subframe(scene::camera::Camera& camera,
 						 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
 						 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& pool,
 						 progress::Sink& progressor);
 
 	bool advance_current_pixel(math::uint2 dimensions);
 
-	size_t calculate_progress_range(scene::Scene& scene, const scene::camera::Camera& camera, size_t num_tiles) const;
+	size_t calculate_progress_range(const scene::Scene& scene,
+									const scene::camera::Camera& camera, size_t num_tiles) const;
 
 	std::shared_ptr<Surface_integrator_factory> surface_integrator_factory_;
 	std::shared_ptr<sampler::Sampler> sampler_;

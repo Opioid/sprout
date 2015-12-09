@@ -14,8 +14,6 @@ public:
 
 protected:
 
-	virtual void on_resize(math::uint2 dimensions) final override;
-
 	virtual void add_pixel(uint32_t x, uint32_t y, const math::float4& color, float weight) final override;
 
 	virtual void add_pixel_atomic(uint32_t x, uint32_t y, const math::float4& color, float weight) final override;

@@ -124,6 +124,15 @@ math::uint2 read_uint2(const rapidjson::Value& value) {
 	return math::uint2(value[0u].GetUint(), value[1].GetUint());
 }
 
+math::uint2 read_uint2(const rapidjson::Value& value, const std::string& name, math::uint2 default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
+	if (value.MemberEnd() == node) {
+		return default_value;
+	}
+
+	return read_uint2(node->value);
+}
+
 math::uint3 read_uint3(const rapidjson::Value& value) {
 	return math::uint3(value[0u].GetUint(), value[1].GetUint(), value[2].GetUint());
 }

@@ -22,11 +22,6 @@ void Opaque::clear() {
 	}
 }
 
-void Opaque::on_resize(math::uint2 dimensions) {
-	delete [] pixels_;
-	pixels_ = new Pixel[dimensions.x * dimensions.y];
-}
-
 void Opaque::add_pixel(uint32_t x, uint32_t y, const math::float4& color, float weight) {
 	auto d = dimensions();
 	if (x >= d.x || y >= d.y) {

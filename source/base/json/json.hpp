@@ -30,6 +30,9 @@ uint32_t read_uint(const rapidjson::Value& value);
 uint32_t read_uint(const rapidjson::Value& value, const std::string& name, uint32_t default_value = 0);
 
 math::uint2 read_uint2(const rapidjson::Value& value);
+math::uint2 read_uint2(const rapidjson::Value& value, const std::string& name,
+					   math::uint2 default_value = math::uint2::identity);
+
 math::uint3 read_uint3(const rapidjson::Value& value);
 
 // math::quaternion read_quaternion(const rapidjson::Value& value);

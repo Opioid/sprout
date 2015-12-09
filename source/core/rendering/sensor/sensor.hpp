@@ -20,20 +20,13 @@ public:
 
 	math::uint2 dimensions() const;
 
-	void resize(math::uint2 dimensions);
-
 	const image::Image_float_4& resolve(thread::Pool& pool);
-
-	math::uint2 seed(uint32_t x, uint32_t y) const;
-	void set_seed(uint32_t x, uint32_t y, math::uint2 seed);
 
 	virtual void clear() = 0;
 
 	virtual void add_sample(const sampler::Camera_sample& sample, const math::float4& color, const Rectui& tile) = 0;
 
 protected:
-
-	virtual void on_resize(math::uint2 dimensions) = 0;
 
 	virtual void add_pixel(uint32_t x, uint32_t y, const math::float4& color, float weight) = 0;
 
@@ -48,8 +41,6 @@ protected:
 	std::unique_ptr<tonemapping::Tonemapper> tonemapper_;
 
 	image::Image_float_4 image_;
-
-	math::uint2* seeds_;
 };
 
 }}

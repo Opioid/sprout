@@ -56,8 +56,10 @@ private:
 
 Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
 				   std::shared_ptr<sampler::Sampler> sampler) :
-	surface_integrator_factory_(surface_integrator_factory), sampler_(sampler),
-	tile_dimensions_(math::uint2(32, 32)), current_pixel_(math::uint2(0, 0)) {}
+	surface_integrator_factory_(surface_integrator_factory),
+	sampler_(sampler),
+	tile_dimensions_(math::uint2(32, 32)),
+	current_pixel_(math::uint2(0, 0)) {}
 
 void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& pool,
 					exporting::Sink& exporter, progress::Sink& progressor) {
@@ -183,7 +185,7 @@ void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& p
 	}
 }
 
-void Driver::render_subframe(const scene::camera::Camera& camera,
+void Driver::render_subframe(scene::camera::Camera& camera,
 							 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
 							 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& pool,
 							 progress::Sink& progressor) {
@@ -234,8 +236,8 @@ bool Driver::advance_current_pixel(math::uint2 dimensions) {
 	return true;
 }
 
-size_t Driver::calculate_progress_range(scene::Scene& scene, const scene::camera::Camera& camera,
-										  size_t num_tiles) const {
+size_t Driver::calculate_progress_range(const scene::Scene& scene, const scene::camera::Camera& camera,
+										size_t num_tiles) const {
 	const float num_subframes = 0.f == camera.frame_duration() || !camera.motion_blur()
 							  ? 1.f : std::min(camera.frame_duration() / scene.tick_duration(),
 											   static_cast<float>(sampler_->num_samples_per_iteration()));

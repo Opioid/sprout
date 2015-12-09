@@ -24,6 +24,10 @@ public:
 	virtual ~Camera();
 
 	rendering::sensor::Sensor& sensor() const;
+	void set_sensor(rendering::sensor::Sensor* sensor);
+
+	math::uint2 seed(uint32_t x, uint32_t y) const;
+	void set_seed(uint32_t x, uint32_t y, math::uint2 seed);
 
 	float frame_duration() const;
 
@@ -41,6 +45,9 @@ protected:
 
 	math::float2 dimensions_;
 	rendering::sensor::Sensor* film_;
+
+	math::uint2* seeds_;
+
 	float ray_max_t_;
 	float frame_duration_;
 	bool motion_blur_;

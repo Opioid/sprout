@@ -75,7 +75,7 @@ scene::shape::Node_stack& Worker::node_stack() {
 	return node_stack_;
 }
 
-void Camera_worker::render(const scene::camera::Camera& camera, const Rectui& tile,
+void Camera_worker::render(scene::camera::Camera& camera, const Rectui& tile,
 						   uint32_t sample_begin, uint32_t sample_end,
 						   float normalized_tick_offset, float normalized_tick_slice) {
 	auto& sensor = camera.sensor();
@@ -88,9 +88,9 @@ void Camera_worker::render(const scene::camera::Camera& camera, const Rectui& ti
 	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
 			if (0 == sample_begin) {
-				sensor.set_seed(x, y, sampler_->restart(1));
+				camera.set_seed(x, y, sampler_->restart(1));
 			} else {
-				sampler_->set_seed(sensor.seed(x, y));
+				sampler_->set_seed(camera.seed(x, y));
 			}
 
 			surface_integrator_->start_new_pixel(num_samples);
