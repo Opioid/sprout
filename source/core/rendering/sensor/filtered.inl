@@ -22,41 +22,43 @@ void Filtered<Base, Clamp, Filter>::add_sample(const sampler::Camera_sample& sam
 	uint32_t x = sample.pixel.x;
 	uint32_t y = sample.pixel.y;
 
-	math::float2 o = sample.relative_offset;
+	math::float2 relative_offset = sample.pixel_uv - math::float2(0.5f, 0.5f);
+
+	math::float2 o = relative_offset;
 	o.x += 1.f;
 	o.y += 1.f;
 	weight_and_add_pixel(x - 1, y - 1, o, clamped_color, tile);
 
-	o = sample.relative_offset;
+	o = relative_offset;
 	o.y += 1.f;
 	weight_and_add_pixel(x, y - 1, o, clamped_color, tile);
 
-	o = sample.relative_offset;
+	o = relative_offset;
 	o.x -= 1.f;
 	o.y += 1.f;
 	weight_and_add_pixel(x + 1, y - 1, o, clamped_color, tile);
 
-	o = sample.relative_offset;
+	o = relative_offset;
 	o.x += 1.f;
 	weight_and_add_pixel(x - 1, y, o, clamped_color, tile);
 
 	// center
-	weight_and_add_pixel(x, y, sample.relative_offset, clamped_color, tile);
+	weight_and_add_pixel(x, y, relative_offset, clamped_color, tile);
 
-	o = sample.relative_offset;
+	o = relative_offset;
 	o.x -= 1.f;
 	weight_and_add_pixel(x + 1, y, o, clamped_color, tile);
 
-	o = sample.relative_offset;
+	o = relative_offset;
 	o.x += 1.f;
 	o.y -= 1.f;
 	weight_and_add_pixel(x - 1, y + 1, o, clamped_color, tile);
 
-	o = sample.relative_offset;
+	o = relative_offset;
 	o.y -= 1.f;
 	weight_and_add_pixel(x, y + 1, o, clamped_color, tile);
 
-	o = sample.relative_offset;
+	o = relative_offset;
 	o.x -= 1.f;
 	o.y -= 1.f;
 	weight_and_add_pixel(x + 1, y + 1, o, clamped_color, tile);

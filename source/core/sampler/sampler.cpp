@@ -16,11 +16,15 @@ uint32_t Sampler::num_samples_per_iteration() const {
 	return num_samples_per_iteration_;
 }
 
-math::uint2 Sampler::restart(uint32_t num_iterations) {
-	set_seed(seed());
+void Sampler::restart(uint32_t num_iterations) {
 	num_iterations_ = num_iterations;
 	current_sample_ = 0;
-	return seed_;
+}
+
+void Sampler::restart_and_seed(uint32_t num_iterations) {
+	num_iterations_ = num_iterations;
+	current_sample_ = 0;
+	seed_ = seed();
 }
 
 void Sampler::set_seed(math::uint2 seed) {

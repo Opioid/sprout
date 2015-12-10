@@ -136,8 +136,6 @@ void Driver::render_subframe(scene::camera::Camera& camera,
 							 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
 							 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& pool,
 							 progress::Sink& progressor) {
-	tiles.restart();
-
 	float num_samples = static_cast<float>(sampler_->num_samples_per_iteration());
 
 	uint32_t sample_begin = current_sample_;
@@ -148,33 +146,40 @@ void Driver::render_subframe(scene::camera::Camera& camera,
 		return;
 	}
 
-	pool.run(
-		[&workers, &camera, &tiles, &progressor,
-		 sample_begin, sample_end, normalized_tick_offset, normalized_tick_slice](uint32_t index) {
-			auto& worker = workers[index];
+	for (uint32_t v = 0, len = camera.num_views(); v < len; ++v) {
+		tiles.restart();
 
-			for (;;) {
-				Rectui tile;
-				if (!tiles.pop(tile)) {
-					break;
+		pool.run(
+			[&workers, &camera, v, &tiles, &progressor,
+			 sample_begin, sample_end, normalized_tick_offset, normalized_tick_slice](uint32_t index) {
+				auto& worker = workers[index];
+
+				for (;;) {
+					Rectui tile;
+					if (!tiles.pop(tile)) {
+						break;
+					}
+
+					worker.render(camera, v, tile,
+								  sample_begin, sample_end,
+								  normalized_tick_offset, normalized_tick_slice);
+
+					progressor.tick();
 				}
-
-				worker.render(camera, tile, sample_begin, sample_end, normalized_tick_offset, normalized_tick_slice);
-				progressor.tick();
 			}
-		}
-	);
+		);
+	}
 
 	current_sample_ = sample_end;
 }
 
 size_t Driver::calculate_progress_range(const scene::Scene& scene, const scene::camera::Camera& camera,
-										size_t num_tiles) const {
+										uint32_t num_tiles) const {
 	const float num_subframes = 0.f == camera.frame_duration() || !camera.motion_blur()
 							  ? 1.f : std::min(camera.frame_duration() / scene.tick_duration(),
 											   static_cast<float>(sampler_->num_samples_per_iteration()));
 
-	return static_cast<size_t>(static_cast<float>(num_tiles) * num_subframes);
+	return static_cast<size_t>(static_cast<float>(num_tiles * camera.num_views()) * num_subframes);
 }
 
 }

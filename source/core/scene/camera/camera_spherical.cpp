@@ -16,19 +16,25 @@ Spherical::Spherical(math::uint2 resolution, float ray_max_t, float frame_durati
 	d_y_ = 1.f / fr.y;
 }
 
+uint32_t Spherical::num_views() const {
+	return 1;
+}
+
 math::uint2 Spherical::sensor_dimensions() const {
 	return resolution_;
 }
 
-uint32_t Spherical::num_views() const {
-	return 1;
+math::uint2 Spherical::sensor_pixel(math::uint2 pixel, uint32_t /*view*/) const {
+	return pixel;
 }
 
 void Spherical::update_focus(rendering::Worker& /*worker*/) {}
 
 void Spherical::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
-	float x = d_x_ * sample.coordinates.x;
-	float y = d_y_ * sample.coordinates.y;
+	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
+
+	float x = d_x_ * coordinates.x;
+	float y = d_y_ * coordinates.y;
 
 	float phi   = (-x + 0.75f) * 2.f * math::Pi;
 	float theta = y * math::Pi;

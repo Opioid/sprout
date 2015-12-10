@@ -19,7 +19,7 @@ Whitted::Whitted(const take::Settings& take_settings, math::random::Generator& r
 	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
 void Whitted::start_new_pixel(uint32_t num_samples) {
-	sampler_.restart(num_samples);
+	sampler_.restart_and_seed(num_samples);
 }
 
 math::float4 Whitted::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {

@@ -2,7 +2,7 @@
 
 namespace progress {
 
-void Null::start(size_t /*resolution*/) {}
+void Null::start(uint32_t /*resolution*/) {}
 
 void Null::end() {}
 

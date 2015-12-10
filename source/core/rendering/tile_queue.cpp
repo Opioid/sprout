@@ -24,8 +24,8 @@ Tile_queue::Tile_queue(math::uint2 resolution, math::uint2 tile_dimensions) :
 	}
 }
 
-size_t Tile_queue::size() const {
-	return tiles_.size();
+uint32_t Tile_queue::size() const {
+	return static_cast<uint32_t>(tiles_.size());
 }
 
 void Tile_queue::restart() {

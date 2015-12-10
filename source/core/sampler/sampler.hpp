@@ -24,7 +24,10 @@ public:
 
 	uint32_t num_samples_per_iteration() const;
 
-	math::uint2 restart(uint32_t num_iterations);
+	void restart(uint32_t num_iterations);
+	void restart_and_seed(uint32_t num_iterations);
+
+	virtual math::uint2 seed() const = 0;
 
 	void set_seed(math::uint2 seed);
 
@@ -35,8 +38,6 @@ public:
 	virtual float generate_sample_1D() = 0;
 
 protected:
-
-	virtual math::uint2 seed() const = 0;
 
 	math::random::Generator& rng_;
 	math::uint2 seed_;

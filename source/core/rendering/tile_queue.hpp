@@ -12,7 +12,7 @@ public:
 
 	Tile_queue(math::uint2 resolution, math::uint2 tile_dimensions);
 
-	size_t size() const;
+	uint32_t size() const;
 
 	void restart();
 

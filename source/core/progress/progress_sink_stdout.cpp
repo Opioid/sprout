@@ -5,7 +5,7 @@ namespace progress {
 
 Stdout::Stdout() : step_(1.f) {}
 
-void Stdout::start(size_t resolution) {
+void Stdout::start(uint32_t resolution) {
 	resolution_ = resolution;
 	progress_ = 0;
 	threshold_ = step_;
@@ -26,7 +26,7 @@ void Stdout::tick() {
 	if (p >= threshold_) {
 		threshold_ += step_;
 
-		std::cout << static_cast<size_t>(p) << "%\r" << std::flush;
+		std::cout << static_cast<uint32_t>(p) << "%\r" << std::flush;
 	}
 }
 

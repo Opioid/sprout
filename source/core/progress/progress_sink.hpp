@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstddef>
+#include <cstdint>
 
 namespace progress {
 
@@ -9,7 +9,7 @@ public:
 
 	virtual ~Sink() {}
 
-	virtual void start(size_t resolution) = 0;
+	virtual void start(uint32_t resolution) = 0;
 	virtual void end() = 0;
 	virtual void tick() = 0;
 };

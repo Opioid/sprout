@@ -7,7 +7,7 @@ namespace progress {
 class Null : public Sink {
 public:
 
-	virtual void start(size_t resolution) final override;
+	virtual void start(uint32_t resolution) final override;
 	virtual void end() final override;
 	virtual void tick() final override;
 };

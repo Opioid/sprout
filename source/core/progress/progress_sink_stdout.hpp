@@ -9,14 +9,14 @@ public:
 
 	Stdout();
 
-	virtual void start(size_t resolution) final override;
+	virtual void start(uint32_t resolution) final override;
 	virtual void end() final override;
 	virtual void tick() final override;
 
 private:
 
-	size_t resolution_;
-	size_t progress_;
+	uint32_t resolution_;
+	uint32_t progress_;
 
 	float threshold_;
 

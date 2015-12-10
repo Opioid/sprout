@@ -22,14 +22,20 @@ public:
 
 	virtual ~Camera();
 
-	math::uint2 resolution() const;
+	virtual uint32_t num_views() const = 0;
 
 	virtual math::uint2 sensor_dimensions() const = 0;
 
+	virtual math::uint2 sensor_pixel(math::uint2 pixel, uint32_t view) const = 0;
+
+	virtual void update_focus(rendering::Worker& worker) = 0;
+
+	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const = 0;
+
+	math::uint2 resolution() const;
+
 	rendering::sensor::Sensor& sensor() const;
 	void set_sensor(rendering::sensor::Sensor* sensor);
-
-	virtual uint32_t num_views() const = 0;
 
 	math::uint2 seed(uint32_t x, uint32_t y) const;
 	void set_seed(uint32_t x, uint32_t y, math::uint2 seed);
@@ -37,10 +43,6 @@ public:
 	float frame_duration() const;
 
 	bool motion_blur() const;
-
-	virtual void update_focus(rendering::Worker& worker) = 0;
-
-	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const = 0;
 
 protected:
 

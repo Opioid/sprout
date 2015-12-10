@@ -31,12 +31,16 @@ Perspective::Perspective(math::uint2 resolution, float ray_max_t, float frame_du
 	focus_.point.y *= fr.y;
 }
 
+uint32_t Perspective::num_views() const {
+	return 1;
+}
+
 math::uint2 Perspective::sensor_dimensions() const {
 	return resolution_;
 }
 
-uint32_t Perspective::num_views() const {
-	return 1;
+math::uint2 Perspective::sensor_pixel(math::uint2 pixel, uint32_t /*view*/) const {
+	return pixel;
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {
@@ -63,7 +67,9 @@ void Perspective::update_focus(rendering::Worker& worker) {
 }
 
 void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
-	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
+	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
+
+	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
 	math::Ray<float> r(math::float3::identity, direction);
 

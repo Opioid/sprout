@@ -13,12 +13,15 @@ Sampler* Scrambled_hammersley::clone() const {
 	return new Scrambled_hammersley(rng_, num_samples_per_iteration_);
 }
 
+math::uint2 Scrambled_hammersley::seed() const {
+	return math::uint2(rng_.random_uint(), 0);
+}
+
 void Scrambled_hammersley::generate_camera_sample(math::uint2 pixel, uint32_t index, Camera_sample& sample) {
 	math::float2 s2d = math::scrambled_hammersley(index, num_samples_per_iteration_, seed_.x);
 
 	sample.pixel = pixel;
-	sample.coordinates = math::float2(pixel) + s2d;
-	sample.relative_offset = s2d - math::float2(0.5f, 0.5f);
+	sample.pixel_uv = s2d;
 	sample.lens_uv = s2d.yx();
 	sample.time = rng_.random_float();
 }
@@ -29,10 +32,6 @@ math::float2 Scrambled_hammersley::generate_sample_2D() {
 
 float Scrambled_hammersley::generate_sample_1D() {
 	return rng_.random_float();
-}
-
-math::uint2 Scrambled_hammersley::seed() const {
-	return math::uint2(rng_.random_uint(), 0);
 }
 
 }

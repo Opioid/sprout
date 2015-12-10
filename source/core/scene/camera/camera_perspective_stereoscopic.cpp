@@ -14,7 +14,8 @@ namespace scene { namespace camera {
 Perspective_stereoscopic::Perspective_stereoscopic(float interpupillary_distance,
 												   math::uint2 resolution, float ray_max_t,
 												   float frame_duration, bool motion_blur, float fov) :
-	Stereoscopic(interpupillary_distance, resolution, ray_max_t, frame_duration, motion_blur), fov_(fov) {
+	Stereoscopic(interpupillary_distance, resolution, ray_max_t, frame_duration, motion_blur),
+	fov_(fov) {
 	math::float2 fr(resolution);
 	float ratio = fr.x / fr.y;
 
@@ -26,20 +27,29 @@ Perspective_stereoscopic::Perspective_stereoscopic(float interpupillary_distance
 
 	d_x_ = (right_top - left_top_)   / fr.x;
 	d_y_ = (left_bottom - left_top_) / fr.y;
-}
 
-math::uint2 Perspective_stereoscopic::sensor_dimensions() const {
-	return math::uint2(resolution_.x * 2, resolution_.y);
+	view_offsets_[0] = math::uint2(0, 0);
+	view_offsets_[1] = math::uint2(resolution.x, 0);
 }
 
 uint32_t Perspective_stereoscopic::num_views() const {
 	return 2;
 }
 
+math::uint2 Perspective_stereoscopic::sensor_dimensions() const {
+	return math::uint2(resolution_.x * 2, resolution_.y);
+}
+
+math::uint2 Perspective_stereoscopic::sensor_pixel(math::uint2 pixel, uint32_t view) const {
+	return view_offsets_[view] + pixel;
+}
+
 void Perspective_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
 void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
-	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
+	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
+
+	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
 	math::Ray<float> r(math::float3::identity, direction);
 
