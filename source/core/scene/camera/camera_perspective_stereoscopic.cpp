@@ -46,7 +46,8 @@ math::uint2 Perspective_stereoscopic::sensor_pixel(math::uint2 pixel, uint32_t v
 
 void Perspective_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
-void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
+void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+											math::Oray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
@@ -55,7 +56,7 @@ void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
-	ray.origin = math::transform_point(transformation.object_to_world, r.origin);
+	ray.origin = math::transform_point(transformation.object_to_world, r.origin + eye_offsets_[view]);
 	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(r.direction)));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;

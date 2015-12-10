@@ -30,7 +30,7 @@ math::uint2 Spherical::sensor_pixel(math::uint2 pixel, uint32_t /*view*/) const 
 
 void Spherical::update_focus(rendering::Worker& /*worker*/) {}
 
-void Spherical::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
+void Spherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, math::Oray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	float x = d_x_ * coordinates.x;

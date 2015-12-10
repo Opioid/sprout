@@ -30,7 +30,7 @@ public:
 
 	virtual void update_focus(rendering::Worker& worker) = 0;
 
-	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const = 0;
+	virtual void generate_ray(const sampler::Camera_sample& sample, uint32_t view, math::Oray& ray) const = 0;
 
 	math::uint2 resolution() const;
 

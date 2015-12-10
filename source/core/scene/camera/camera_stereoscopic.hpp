@@ -12,9 +12,9 @@ public:
 
 	virtual ~Stereoscopic();
 
-private:
+protected:
 
-
+	math::float3 eye_offsets_[2];
 };
 
 }}

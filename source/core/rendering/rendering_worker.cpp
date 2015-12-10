@@ -106,7 +106,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const R
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);
 
-				camera.generate_ray(sample, ray);
+				camera.generate_ray(sample, view, ray);
 
 				ray.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 

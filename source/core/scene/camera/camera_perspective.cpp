@@ -66,7 +66,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 	}
 }
 
-void Perspective::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
+void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, math::Oray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
