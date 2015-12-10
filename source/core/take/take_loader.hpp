@@ -44,7 +44,13 @@ public:
 
 private:
 
+	struct Stereoscopic {
+		float interpupillary_distance = 0.f;
+	};
+
 	void load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const;
+
+	void load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopic& stereo) const;
 
 	rendering::sensor::Sensor* load_sensor(const rapidjson::Value& sensor_value,
 										   math::uint2 dimensions, bool alpha_transparency) const;

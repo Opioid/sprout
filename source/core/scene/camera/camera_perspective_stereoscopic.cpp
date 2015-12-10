@@ -1,0 +1,55 @@
+#include "camera_perspective_stereoscopic.hpp"
+#include "rendering/sensor/sensor.hpp"
+#include "rendering/rendering_worker.hpp"
+#include "scene/prop/prop_intersection.hpp"
+#include "sampler/camera_sample.hpp"
+#include "base/math/math.hpp"
+#include "base/math/vector.inl"
+#include "base/math/matrix.inl"
+#include "base/math/ray.inl"
+#include "base/math/sampling/sampling.inl"
+
+namespace scene { namespace camera {
+
+Perspective_stereoscopic::Perspective_stereoscopic(float interpupillary_distance,
+												   math::uint2 resolution, float ray_max_t,
+												   float frame_duration, bool motion_blur, float fov) :
+	Stereoscopic(interpupillary_distance, resolution, ray_max_t, frame_duration, motion_blur), fov_(fov) {
+	math::float2 fr(resolution);
+	float ratio = fr.x / fr.y;
+
+	float z = ratio * math::Pi / fov_ * 0.5f;
+
+	left_top_ = math::float3(-ratio,  1.f, z);
+	math::float3 right_top	( ratio,  1.f, z);
+	math::float3 left_bottom(-ratio, -1.f, z);
+
+	d_x_ = (right_top - left_top_)   / fr.x;
+	d_y_ = (left_bottom - left_top_) / fr.y;
+}
+
+math::uint2 Perspective_stereoscopic::sensor_dimensions() const {
+	return math::uint2(resolution_.x * 2, resolution_.y);
+}
+
+uint32_t Perspective_stereoscopic::num_views() const {
+	return 2;
+}
+
+void Perspective_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
+
+void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {
+	math::float3 direction = left_top_ + sample.coordinates.x * d_x_ + sample.coordinates.y * d_y_;
+
+	math::Ray<float> r(math::float3::identity, direction);
+
+	entity::Composed_transformation transformation;
+	transformation_at(ray.time, transformation);
+	ray.origin = math::transform_point(transformation.object_to_world, r.origin);
+	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(r.direction)));
+	ray.min_t = 0.f;
+	ray.max_t = ray_max_t_;
+	ray.depth = 0;
+}
+
+}}

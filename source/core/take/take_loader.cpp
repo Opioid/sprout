@@ -25,6 +25,7 @@
 #include "sampler/scrambled_hammersley_sampler.hpp"
 #include "scene/animation/animation_loader.hpp"
 #include "scene/camera/camera_perspective.hpp"
+#include "scene/camera/camera_perspective_stereoscopic.hpp"
 #include "scene/camera/camera_spherical.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -113,6 +114,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 
 	const rapidjson::Value* animation_value = nullptr;
 	const rapidjson::Value* sensor_value = nullptr;
+	Stereoscopic stereo;
 	float frame_duration = 0.f;
 	bool  motion_blur = true;
 	scene::camera::Perspective::Focus focus;
@@ -146,6 +148,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 			fov = math::degrees_to_radians(json::read_float(node_value));
 		} else if ("lens_radius" == node_name) {
 			lens_radius = json::read_float(node_value);
+		} else if ("stereoscopic" == node_name) {
+			load_stereoscopic(node_value, stereo);
 		}
 	}
 
@@ -166,8 +170,14 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 	std::shared_ptr<scene::camera::Camera> camera;
 
 	if ("Perspective" == type_name) {
-		camera = std::make_shared<scene::camera::Perspective>(resolution, take.settings.ray_max_t,
-															  frame_duration, motion_blur, focus, fov, lens_radius);
+		if (stereo.interpupillary_distance > 0.f) {
+			camera = std::make_shared<scene::camera::Perspective_stereoscopic>(
+						stereo.interpupillary_distance, resolution, take.settings.ray_max_t,
+						frame_duration, motion_blur, fov);
+		} else {
+			camera = std::make_shared<scene::camera::Perspective>(
+						resolution, take.settings.ray_max_t, frame_duration, motion_blur, focus, fov, lens_radius);
+		}
 	} else if ("Spherical" == type_name) {
 		camera = std::make_shared<scene::camera::Spherical>(resolution, take.settings.ray_max_t,
 															frame_duration, motion_blur);
@@ -179,6 +189,17 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 	camera->set_transformation(transformation);
 
 	take.context.camera = camera;
+}
+
+void Loader::load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopic& stereo) const {
+	for (auto n = stereo_value.MemberBegin(); n != stereo_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("interpupillary_distance" == node_name) {
+			stereo.interpupillary_distance = json::read_float(node_value);
+		}
+	}
 }
 
 rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_value,
