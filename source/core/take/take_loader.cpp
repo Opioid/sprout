@@ -27,6 +27,7 @@
 #include "scene/camera/camera_perspective.hpp"
 #include "scene/camera/camera_perspective_stereoscopic.hpp"
 #include "scene/camera/camera_spherical.hpp"
+#include "scene/camera/camera_spherical_stereoscopic.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -179,8 +180,14 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 						resolution, take.settings.ray_max_t, frame_duration, motion_blur, focus, fov, lens_radius);
 		}
 	} else if ("Spherical" == type_name) {
-		camera = std::make_shared<scene::camera::Spherical>(resolution, take.settings.ray_max_t,
-															frame_duration, motion_blur);
+		if (stereo.interpupillary_distance > 0.f) {
+			camera = std::make_shared<scene::camera::Spherical_stereoscopic>(
+						stereo.interpupillary_distance, resolution, take.settings.ray_max_t,
+						frame_duration, motion_blur);
+		} else {
+			camera = std::make_shared<scene::camera::Spherical>(resolution, take.settings.ray_max_t,
+																frame_duration, motion_blur);
+		}
 	}
 
 	rendering::sensor::Sensor* sensor = load_sensor(*sensor_value, camera->sensor_dimensions(), alpha_transparency);
