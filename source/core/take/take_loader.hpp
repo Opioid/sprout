@@ -46,9 +46,7 @@ private:
 
 	void load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const;
 
-	rendering::sensor::Sensor* load_sensor(const rapidjson::Value& sensor_value, bool alpha_transparency) const;
-
-	rendering::sensor::Sensor* load_target(const rapidjson::Value& sensor_value,
+	rendering::sensor::Sensor* load_sensor(const rapidjson::Value& sensor_value,
 										   math::uint2 dimensions, bool alpha_transparency) const;
 
 	std::unique_ptr<rendering::sensor::tonemapping::Tonemapper>

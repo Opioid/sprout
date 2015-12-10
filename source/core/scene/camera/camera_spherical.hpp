@@ -7,8 +7,9 @@ namespace scene { namespace camera {
 class Spherical : public Camera {
 public:
 
-	Spherical(rendering::sensor::Sensor* sensor, float ray_max_t,
-			  float frame_duration, bool motion_blur);
+	Spherical(math::uint2 resolution, float ray_max_t, float frame_duration, bool motion_blur);
+
+	virtual math::uint2 sensor_dimensions() const final override;
 
 	virtual void update_focus(rendering::Worker& worker) final override;
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "base/math/vector.hpp"
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace scene {
 
@@ -43,8 +43,6 @@ private:
 						 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& pool,
 						 progress::Sink& progressor);
 
-	bool advance_current_pixel(math::uint2 dimensions);
-
 	size_t calculate_progress_range(const scene::Scene& scene,
 									const scene::camera::Camera& camera, size_t num_tiles) const;
 
@@ -52,7 +50,6 @@ private:
 	std::shared_ptr<sampler::Sampler> sampler_;
 
 	math::uint2 tile_dimensions_;
-	math::uint2 current_pixel_;
 	uint32_t    current_sample_;
 };
 

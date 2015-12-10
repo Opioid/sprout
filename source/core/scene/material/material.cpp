@@ -1,5 +1,6 @@
 #include "material.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "base/math/vector.inl"
 
 namespace scene { namespace material {
 

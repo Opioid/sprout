@@ -11,11 +11,12 @@
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(math::float2 dimensions, rendering::sensor::Sensor* sensor, float ray_max_t,
-						 float frame_duration, bool motion_blur, const Focus& focus, float fov, float lens_radius) :
-	Camera(dimensions, sensor, ray_max_t, frame_duration, motion_blur), focus_(focus),
+Perspective::Perspective(math::uint2 resolution, float ray_max_t, float frame_duration, bool motion_blur,
+						 const Focus& focus, float fov, float lens_radius) :
+	Camera(resolution, ray_max_t, frame_duration, motion_blur), focus_(focus),
 	fov_(fov), lens_radius_(lens_radius), focal_distance_(focus_.distance) {
-	float ratio = dimensions_.x / dimensions_.y;
+	math::float2 fr(resolution);
+	float ratio = fr.x / fr.y;
 
 	float z = ratio * math::Pi / fov_ * 0.5f;
 
@@ -23,12 +24,15 @@ Perspective::Perspective(math::float2 dimensions, rendering::sensor::Sensor* sen
 	math::float3 right_top	( ratio,  1.f, z);
 	math::float3 left_bottom(-ratio, -1.f, z);
 
-	math::float2 fd(film_->dimensions());
-	d_x_ = (right_top - left_top_)   / fd.x;
-	d_y_ = (left_bottom - left_top_) / fd.y;
+	d_x_ = (right_top - left_top_)   / fr.x;
+	d_y_ = (left_bottom - left_top_) / fr.y;
 
-	focus_.point.x *= fd.x;
-	focus_.point.y *= fd.y;
+	focus_.point.x *= fr.x;
+	focus_.point.y *= fr.y;
+}
+
+math::uint2 Perspective::sensor_dimensions() const {
+	return resolution_;
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {

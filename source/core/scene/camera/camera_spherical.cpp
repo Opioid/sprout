@@ -9,11 +9,15 @@
 
 namespace scene { namespace camera {
 
-Spherical::Spherical(rendering::sensor::Sensor* sensor, float ray_max_t,
-					 float frame_duration, bool motion_blur) :
-	Camera(math::float2(2.f, 1.f), sensor, ray_max_t, frame_duration, motion_blur) {
-	d_x_ = 1.f / static_cast<float>(film_->dimensions().x);
-	d_y_ = 1.f / static_cast<float>(film_->dimensions().y);
+Spherical::Spherical(math::uint2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
+	Camera(resolution, ray_max_t, frame_duration, motion_blur) {
+	math::float2 fr(resolution);
+	d_x_ = 1.f / fr.x;
+	d_y_ = 1.f / fr.y;
+}
+
+math::uint2 Spherical::sensor_dimensions() const {
+	return resolution_;
 }
 
 void Spherical::update_focus(rendering::Worker& /*worker*/) {}

@@ -112,8 +112,6 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 	};
 
 	const rapidjson::Value* animation_value = nullptr;
-	math::float2 dimensions = math::float2::identity;
-	rendering::sensor::Sensor* sensor = nullptr;
 	const rapidjson::Value* sensor_value = nullptr;
 	float frame_duration = 0.f;
 	bool  motion_blur = true;
@@ -129,11 +127,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 			json::read_transformation(node_value, transformation);
 		} else if ("animation" == node_name) {
 			animation_value = &node_value;
-		} else if ("dimensions" == node_name) {
-			dimensions = json::read_float2(node_value);
 		} else if ("sensor" == node_name) {
 			sensor_value = &node_value;
-			sensor = load_sensor(node_value, alpha_transparency);
 		} else if ("frame_duration" == node_name) {
 			frame_duration = json::read_float(node_value);
 		} else if ("frames_per_second" == node_name) {
@@ -154,9 +149,12 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 		}
 	}
 
-	math::uint2 sensor_dimensions;
+	math::uint2 resolution;
 	if (sensor_value) {
-		sensor_dimensions = json::read_uint2(*sensor_value, "dimensions");
+		resolution = json::read_uint2(*sensor_value, "resolution");
+		if (math::uint2::identity == resolution) {
+			throw std::runtime_error("Sensor resolution is [0, 0]");
+		}
 	} else {
 		throw std::runtime_error("No sensor configuration included");
 	}
@@ -168,117 +166,22 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 	std::shared_ptr<scene::camera::Camera> camera;
 
 	if ("Perspective" == type_name) {
-		camera = std::make_shared<scene::camera::Perspective>(dimensions, sensor, take.settings.ray_max_t,
+		camera = std::make_shared<scene::camera::Perspective>(resolution, take.settings.ray_max_t,
 															  frame_duration, motion_blur, focus, fov, lens_radius);
 	} else if ("Spherical" == type_name) {
-		camera = std::make_shared<scene::camera::Spherical>(sensor, take.settings.ray_max_t,
+		camera = std::make_shared<scene::camera::Spherical>(resolution, take.settings.ray_max_t,
 															frame_duration, motion_blur);
 	}
 
+	rendering::sensor::Sensor* sensor = load_sensor(*sensor_value, camera->sensor_dimensions(), alpha_transparency);
+
+	camera->set_sensor(sensor);
 	camera->set_transformation(transformation);
 
 	take.context.camera = camera;
 }
 
-rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_value, bool alpha_transparency) const {
-	math::uint2 dimensions(1280, 720);
-	float exposure = 0.f;
-	math::float3 clamp_max(-1.f, -1.f, -1.f);
-	std::unique_ptr<rendering::sensor::tonemapping::Tonemapper> tonemapper;
-	bool filter = false;
-
-	for (auto n = sensor_value.MemberBegin(); n != sensor_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
-
-		if ("dimensions" == node_name) {
-			dimensions = json::read_uint2(node_value);
-		} else if ("exposure" == node_name) {
-			exposure = json::read_float(node_value);
-		} else if ("clamp" == node_name) {
-			clamp_max = json::read_float3(node_value);
-		} else if ("tonemapper" == node_name) {
-			tonemapper = load_tonemapper(node_value);
-		} else if ("filter" == node_name) {
-			//filter = load_filter(node_value);
-			filter = true;
-		}
-	}
-
-	if (!tonemapper) {
-		tonemapper = std::make_unique<rendering::sensor::tonemapping::Identity>();
-	}
-
-	bool clamp = !math::contains_negative(clamp_max);
-
-	if (filter) {
-		float radius = 0.8f;
-		float alpha  = 0.3f;
-		auto gaussian = std::make_unique<rendering::sensor::filter::Gaussian>(radius, alpha);
-
-		if (alpha_transparency) {
-			if (clamp) {
-				return new rendering::sensor::Filtered<
-						rendering::sensor::Transparent,
-						rendering::sensor::clamp::Clamp,
-						rendering::sensor::filter::Gaussian>(
-							dimensions, exposure, std::move(tonemapper),
-							rendering::sensor::clamp::Clamp(clamp_max), std::move(gaussian));
-			} else {
-				return new rendering::sensor::Filtered<
-						rendering::sensor::Transparent,
-						rendering::sensor::clamp::Identity,
-						rendering::sensor::filter::Gaussian>(
-							dimensions, exposure, std::move(tonemapper),
-							rendering::sensor::clamp::Identity(), std::move(gaussian));
-			}
-		}
-
-		if (clamp) {
-			return new rendering::sensor::Filtered<
-					rendering::sensor::Opaque,
-					rendering::sensor::clamp::Clamp,
-					rendering::sensor::filter::Gaussian>(
-						dimensions, exposure, std::move(tonemapper),
-						rendering::sensor::clamp::Clamp(clamp_max), std::move(gaussian));
-		} else {
-			return new rendering::sensor::Filtered<
-					rendering::sensor::Opaque,
-					rendering::sensor::clamp::Identity,
-					rendering::sensor::filter::Gaussian>(
-						dimensions, exposure, std::move(tonemapper),
-						rendering::sensor::clamp::Identity(), std::move(gaussian));
-		}
-	}
-
-	if (alpha_transparency) {
-		if (clamp) {
-			return new rendering::sensor::Unfiltered<
-					rendering::sensor::Transparent,
-					rendering::sensor::clamp::Clamp>
-					(dimensions, exposure, std::move(tonemapper), rendering::sensor::clamp::Clamp(clamp_max));
-		} else {
-			return new rendering::sensor::Unfiltered<
-					rendering::sensor::Transparent,
-					rendering::sensor::clamp::Identity>
-					(dimensions, exposure, std::move(tonemapper), rendering::sensor::clamp::Identity());
-		}
-	}
-
-	if (clamp) {
-		return new rendering::sensor::Unfiltered<
-				rendering::sensor::Opaque,
-				rendering::sensor::clamp::Clamp>
-				(dimensions, exposure, std::move(tonemapper), rendering::sensor::clamp::Clamp(clamp_max));
-	}
-
-	return new rendering::sensor::Unfiltered<
-			rendering::sensor::Opaque,
-			rendering::sensor::clamp::Identity>
-			(dimensions, exposure, std::move(tonemapper), rendering::sensor::clamp::Identity());
-}
-
-rendering::sensor::Sensor* Loader::load_target(const rapidjson::Value& sensor_value,
+rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_value,
 											   math::uint2 dimensions, bool alpha_transparency) const {
 	float exposure = 0.f;
 	math::float3 clamp_max(-1.f, -1.f, -1.f);

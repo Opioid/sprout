@@ -14,8 +14,10 @@ public:
 		float distance;
 	};
 
-	Perspective(math::float2 dimensions, rendering::sensor::Sensor* sensor, float ray_max_t,
-				float frame_duration, bool motion_blur, const Focus& focus, float fov, float lens_radius);
+	Perspective(math::uint2 resolution, float ray_max_t, float frame_duration, bool motion_blur,
+				const Focus& focus, float fov, float lens_radius);
+
+	virtual math::uint2 sensor_dimensions() const final override;
 
 	virtual void update_focus(rendering::Worker& worker) final override;
 

@@ -18,10 +18,13 @@ namespace scene { namespace camera {
 class Camera : public entity::Entity {
 public:
 
-	Camera(math::float2 dimensions, rendering::sensor::Sensor* sensor, float ray_max_t,
-		   float frame_duration, bool motion_blur);
+	Camera(math::uint2 resolution, float ray_max_t, float frame_duration, bool motion_blur);
 
 	virtual ~Camera();
+
+	math::uint2 resolution() const;
+
+	virtual math::uint2 sensor_dimensions() const = 0;
 
 	rendering::sensor::Sensor& sensor() const;
 	void set_sensor(rendering::sensor::Sensor* sensor);
@@ -41,9 +44,7 @@ protected:
 
 	virtual void on_set_transformation() final override;
 
-	static math::float2 calculate_dimensions(math::float2 dimensions, rendering::sensor::Sensor* sensor);
-
-	math::float2 dimensions_;
+	math::uint2 resolution_;
 	rendering::sensor::Sensor* film_;
 
 	math::uint2* seeds_;

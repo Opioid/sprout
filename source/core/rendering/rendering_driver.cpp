@@ -1,6 +1,7 @@
 #include "rendering_driver.hpp"
 #include "rendering_context.hpp"
 #include "rendering_worker.hpp"
+#include "tile_queue.hpp"
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"
 #include "rendering/sensor/sensor.hpp"
@@ -16,72 +17,18 @@
 
 namespace rendering {
 
-class Tile_queue {
-public:
-
-	Tile_queue(size_t num_tiles) : tiles_(num_tiles), current_produce_(0), current_consume_(0) {}
-
-	size_t size() {
-		return tiles_.size();
-	}
-
-	void restart() {
-		current_produce_ = tiles_.size();
-		current_consume_ = 0;
-	}
-
-	bool pop(Rectui& tile) {
-		std::lock_guard<std::mutex> lock(mutex_);
-
-		if (current_consume_ < tiles_.size()) {
-			tile = tiles_[current_consume_++];
-			return true;
-		}
-
-		return false;
-	}
-
-	void push(const Rectui& tile) {
-		tiles_[current_produce_++] = tile;
-	}
-
-private:
-
-	std::vector<Rectui> tiles_;
-	size_t current_produce_;
-	size_t current_consume_;
-
-	std::mutex mutex_;
-};
-
 Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
-				   std::shared_ptr<sampler::Sampler> sampler) :
+			   std::shared_ptr<sampler::Sampler> sampler) :
 	surface_integrator_factory_(surface_integrator_factory),
 	sampler_(sampler),
-	tile_dimensions_(math::uint2(32, 32)),
-	current_pixel_(math::uint2(0, 0)) {}
+	tile_dimensions_(math::uint2(32, 32)) {}
 
 void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& pool,
 					exporting::Sink& exporter, progress::Sink& progressor) {
 	auto& camera = *context.camera;
-	auto& sensor   = camera.sensor();
+	auto& sensor = camera.sensor();
 
-	auto dimensions = sensor.dimensions();
-
-	size_t num_tiles = static_cast<size_t>(std::ceil(static_cast<float>(dimensions.x)
-												   / static_cast<float>(tile_dimensions_.x)))
-					 * static_cast<size_t>(std::ceil(static_cast<float>(dimensions.y)
-												   / static_cast<float>(tile_dimensions_.y)));
-
-	Tile_queue tiles(num_tiles);
-
-	for (;;) {
-		tiles.push(Rectui{current_pixel_, math::min(current_pixel_ + tile_dimensions_, dimensions)});
-
-		if (!advance_current_pixel(dimensions)) {
-			break;
-		}
-	}
+	Tile_queue tiles(camera.resolution(), tile_dimensions_);
 
 	uint32_t num_workers = pool.num_threads();
 	std::vector<Camera_worker> workers(num_workers);
@@ -219,21 +166,6 @@ void Driver::render_subframe(scene::camera::Camera& camera,
 	);
 
 	current_sample_ = sample_end;
-}
-
-bool Driver::advance_current_pixel(math::uint2 dimensions) {
-	current_pixel_.x += tile_dimensions_.x;
-
-	if (current_pixel_.x >= dimensions.x) {
-		current_pixel_.x = 0;
-		current_pixel_.y += tile_dimensions_.y;
-	}
-
-	if (current_pixel_.y >= dimensions.y) {
-		return false;
-	}
-
-	return true;
 }
 
 size_t Driver::calculate_progress_range(const scene::Scene& scene, const scene::camera::Camera& camera,
