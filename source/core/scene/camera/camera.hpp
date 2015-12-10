@@ -29,6 +29,8 @@ public:
 	rendering::sensor::Sensor& sensor() const;
 	void set_sensor(rendering::sensor::Sensor* sensor);
 
+	virtual uint32_t num_views() const = 0;
+
 	math::uint2 seed(uint32_t x, uint32_t y) const;
 	void set_seed(uint32_t x, uint32_t y, math::uint2 seed);
 
@@ -45,7 +47,7 @@ protected:
 	virtual void on_set_transformation() final override;
 
 	math::uint2 resolution_;
-	rendering::sensor::Sensor* film_;
+	rendering::sensor::Sensor* sensor_;
 
 	math::uint2* seeds_;
 

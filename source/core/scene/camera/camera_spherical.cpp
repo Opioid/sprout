@@ -20,6 +20,10 @@ math::uint2 Spherical::sensor_dimensions() const {
 	return resolution_;
 }
 
+uint32_t Spherical::num_views() const {
+	return 1;
+}
+
 void Spherical::update_focus(rendering::Worker& /*worker*/) {}
 
 void Spherical::generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const {

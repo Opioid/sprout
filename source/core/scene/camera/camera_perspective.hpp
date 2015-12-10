@@ -19,6 +19,8 @@ public:
 
 	virtual math::uint2 sensor_dimensions() const final override;
 
+	virtual uint32_t num_views() const final override;
+
 	virtual void update_focus(rendering::Worker& worker) final override;
 
 	virtual void generate_ray(const sampler::Camera_sample& sample, math::Oray& ray) const final override;

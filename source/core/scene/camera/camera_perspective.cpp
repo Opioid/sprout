@@ -35,6 +35,10 @@ math::uint2 Perspective::sensor_dimensions() const {
 	return resolution_;
 }
 
+uint32_t Perspective::num_views() const {
+	return 1;
+}
+
 void Perspective::update_focus(rendering::Worker& worker) {
 	if (focus_.use_point) {
 		math::float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
