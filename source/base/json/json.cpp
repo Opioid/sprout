@@ -160,17 +160,10 @@ math::quaternion read_local_rotation(const rapidjson::Value& value) {
 	return math::quaternion(read_rotation_matrix(value));
 }
 
-/*
-bool read_bool(const rapidjson::Value& value, const std::string& name, bool default_value) {
-	rapidjson::Value::Member* node = value.FindMember(name.c_str());
-
-	if (!node) {
-		return default_value;
-	}
-
-	return node->value.GetBool();
+std::string read_string(const rapidjson::Value& value) {
+	return value.GetString();
 }
-*/
+
 std::string read_string(const rapidjson::Value& value, const std::string& name, const std::string& default_value) {
 	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
 	if (value.MemberEnd() == node) {

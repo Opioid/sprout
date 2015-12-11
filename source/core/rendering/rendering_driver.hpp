@@ -43,8 +43,8 @@ private:
 						 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& pool,
 						 progress::Sink& progressor);
 
-	size_t calculate_progress_range(const scene::Scene& scene,
-									const scene::camera::Camera& camera, uint32_t num_tiles) const;
+	uint32_t calculate_progress_range(const scene::Scene& scene,
+									  const scene::camera::Camera& camera, uint32_t num_tiles) const;
 
 	std::shared_ptr<Surface_integrator_factory> surface_integrator_factory_;
 	std::shared_ptr<sampler::Sampler> sampler_;

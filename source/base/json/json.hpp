@@ -39,7 +39,7 @@ math::uint3 read_uint3(const rapidjson::Value& value);
 math::float3x3   read_rotation_matrix(const rapidjson::Value& value);
 math::quaternion read_local_rotation(const rapidjson::Value& value);
 
-// bool read_bool(const rapidjson::Value& value, const std::string& name, bool default_value);
+std::string read_string(const rapidjson::Value& value);
 std::string read_string(const rapidjson::Value& value, const std::string& name, const std::string& default_value = "");
 
 void read_transformation(const rapidjson::Value& value, math::transformation& transformation);

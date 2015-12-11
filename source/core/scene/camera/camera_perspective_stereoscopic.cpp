@@ -1,7 +1,5 @@
 #include "camera_perspective_stereoscopic.hpp"
 #include "rendering/sensor/sensor.hpp"
-#include "rendering/rendering_worker.hpp"
-#include "scene/prop/prop_intersection.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -52,12 +50,10 @@ void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-	math::Ray<float> r(math::float3::identity, direction);
-
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
-	ray.origin = math::transform_point(transformation.object_to_world, r.origin + eye_offsets_[view]);
-	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(r.direction)));
+	ray.origin = math::transform_point(transformation.object_to_world, eye_offsets_[view]);
+	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(direction)));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
 	ray.depth = 0;

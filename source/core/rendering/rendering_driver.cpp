@@ -38,7 +38,7 @@ void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& p
 	}
 
 	std::chrono::high_resolution_clock clock;
-	const size_t progress_range = calculate_progress_range(scene, camera, tiles.size());
+	const uint32_t progress_range = calculate_progress_range(scene, camera, tiles.size());
 
 	float tick_offset = scene.seek(static_cast<float>(context.start_frame) * camera.frame_duration(), pool);
 	float tick_rest   = scene.tick_duration() - tick_offset;
@@ -173,13 +173,13 @@ void Driver::render_subframe(scene::camera::Camera& camera,
 	current_sample_ = sample_end;
 }
 
-size_t Driver::calculate_progress_range(const scene::Scene& scene, const scene::camera::Camera& camera,
-										uint32_t num_tiles) const {
+uint32_t Driver::calculate_progress_range(const scene::Scene& scene, const scene::camera::Camera& camera,
+										  uint32_t num_tiles) const {
 	const float num_subframes = 0.f == camera.frame_duration() || !camera.motion_blur()
 							  ? 1.f : std::min(camera.frame_duration() / scene.tick_duration(),
 											   static_cast<float>(sampler_->num_samples_per_iteration()));
 
-	return static_cast<size_t>(static_cast<float>(num_tiles * camera.num_views()) * num_subframes);
+	return static_cast<uint32_t>(static_cast<float>(num_tiles * camera.num_views()) * num_subframes);
 }
 
 }

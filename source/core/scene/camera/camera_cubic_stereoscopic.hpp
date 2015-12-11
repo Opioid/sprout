@@ -1,21 +1,22 @@
 #pragma once
 
-#include "camera.hpp"
+#include "camera_stereoscopic.hpp"
+#include "base/math/matrix.hpp"
 
 namespace scene { namespace camera {
 
-class Perspective : public Camera {
+class Cubic_stereoscopic : public Stereoscopic {
 public:
 
-	struct Focus {
-		math::float3 point = math::float3(0.5f, 0.5f, 0.f);
-		bool use_point = true;
-
-		float distance;
+	enum class Layout {
+		xmxymyzmz,
+		xmxy_myzmz
 	};
 
-	Perspective(math::uint2 resolution, float ray_max_t, float frame_duration, bool motion_blur,
-				const Focus& focus, float fov, float lens_radius);
+	Cubic_stereoscopic(Layout layout,
+					   float interpupillary_distance,
+					   math::uint2 resolution, float ray_max_t,
+					   float frame_duration, bool motion_blur);
 
 	virtual uint32_t num_views() const final override;
 
@@ -30,14 +31,15 @@ public:
 
 private:
 
-	Focus focus_;
-	float lens_radius_;
-
 	math::float3 left_top_;
 	math::float3 d_x_;
 	math::float3 d_y_;
 
-	float focal_distance_;
+	math::uint2 sensor_dimensions_;
+
+	math::uint2 view_offsets_[12];
+
+	math::float3x3 view_rotations_[12];
 };
 
 }}
