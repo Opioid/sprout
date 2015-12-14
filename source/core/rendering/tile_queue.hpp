@@ -10,7 +10,7 @@ namespace rendering {
 class Tile_queue {
 public:
 
-	Tile_queue(math::int2 resolution, math::int2 tile_dimensions);
+	Tile_queue(math::int2 resolution, math::int2 tile_dimensions, int32_t filter_radius);
 
 	uint32_t size() const;
 

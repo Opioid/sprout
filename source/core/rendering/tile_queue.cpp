@@ -3,13 +3,28 @@
 
 namespace rendering {
 
-Tile_queue::Tile_queue(math::int2 resolution, math::int2 tile_dimensions) :
+Tile_queue::Tile_queue(math::int2 resolution, math::int2 tile_dimensions, int32_t filter_radius) :
 	tiles_(static_cast<size_t>(std::ceil(static_cast<float>(resolution.x) / static_cast<float>(tile_dimensions.x)))
 		 * static_cast<size_t>(std::ceil(static_cast<float>(resolution.y) / static_cast<float>(tile_dimensions.y)))),
 	current_produce_(0), current_consume_(0) {
 	math::int2 current_pixel(0, 0);
 	for (;;) {
-		push(math::Recti{current_pixel, math::min(current_pixel + tile_dimensions, resolution)});
+		math::int2 start = current_pixel;
+		math::int2 end   = math::min(current_pixel + tile_dimensions, resolution);
+
+		if (0 == start.y) {
+			start.y -= filter_radius;
+		} else if (resolution.y == end.y) {
+			end.y += filter_radius;
+		}
+
+		if (0 == start.x) {
+			start.x -= filter_radius;
+		} else if (resolution.x == end.x) {
+			end.x += filter_radius;
+		}
+
+		push(math::Recti{start, end});
 
 		current_pixel.x += tile_dimensions.x;
 

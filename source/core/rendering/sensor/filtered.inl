@@ -15,6 +15,11 @@ template<class Base, class Clamp, class Filter>
 Filtered<Base, Clamp, Filter>::~Filtered() {}
 
 template<class Base, class Clamp, class Filter>
+int32_t Filtered<Base, Clamp, Filter>::filter_radius_int() const {
+	return static_cast<int32_t>(filter_->radius() + 0.5f);
+}
+
+template<class Base, class Clamp, class Filter>
 void Filtered<Base, Clamp, Filter>::add_sample(const sampler::Camera_sample& sample, const math::float4& color,
 											   const math::Recti& tile, const math::Recti& view_bounds) {
 	math::Recti view_tile{view_bounds.start + tile.start, view_bounds.start + tile.end};

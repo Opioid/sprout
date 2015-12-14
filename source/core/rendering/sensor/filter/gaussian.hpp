@@ -10,11 +10,15 @@ public:
 
 	Gaussian(float radius, float alpha);
 
+	float radius() const;
+
 	float evaluate(math::float2 p) const;
 
 private:
 
 	float gaussian(float d) const;
+
+	float radius_;
 
 	math::Interpolated_function<float> gaussian_;
 

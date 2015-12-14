@@ -22,9 +22,12 @@ public:
 
 	const image::Image_float_4& resolve(thread::Pool& pool);
 
+	virtual int32_t filter_radius_int() const = 0;
+
 	virtual void clear() = 0;
 
-	virtual void add_sample(const sampler::Camera_sample& sample, const math::float4& color, const math::Recti& tile, const math::Recti& bounds) = 0;
+	virtual void add_sample(const sampler::Camera_sample& sample, const math::float4& color,
+							const math::Recti& tile, const math::Recti& view_bounds) = 0;
 
 protected:
 

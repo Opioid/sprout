@@ -52,7 +52,9 @@ protected:
 	math::int2 resolution_;
 	rendering::sensor::Sensor* sensor_;
 
+	math::int2 seed_dimensions_;
 	math::uint2* seeds_;
+	int32_t filter_radius_;
 
 	float ray_max_t_;
 	float frame_duration_;

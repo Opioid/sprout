@@ -28,7 +28,7 @@ void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& p
 	auto& camera = *context.camera;
 	auto& sensor = camera.sensor();
 
-	Tile_queue tiles(camera.resolution(), tile_dimensions_);
+	Tile_queue tiles(camera.resolution(), tile_dimensions_, sensor.filter_radius_int());
 
 	uint32_t num_workers = pool.num_threads();
 	std::vector<Camera_worker> workers(num_workers);
