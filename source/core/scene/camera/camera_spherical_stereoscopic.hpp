@@ -14,7 +14,7 @@ public:
 
 	virtual math::int2 sensor_dimensions() const final override;
 
-	virtual math::Recti sensor_bounds(uint32_t view) const final override;
+	virtual math::Recti view_bounds(uint32_t view) const final override;
 
 	virtual void update_focus(rendering::Worker& worker) final override;
 

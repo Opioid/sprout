@@ -27,7 +27,7 @@ public:
 
 	virtual math::int2 sensor_dimensions() const = 0;
 
-	virtual math::Recti sensor_bounds(uint32_t view) const = 0;
+	virtual math::Recti view_bounds(uint32_t view) const = 0;
 
 	virtual void update_focus(rendering::Worker& worker) = 0;
 

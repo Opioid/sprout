@@ -66,7 +66,7 @@ math::int2 Cubic::sensor_dimensions() const {
 	return sensor_dimensions_;
 }
 
-math::Recti Cubic::sensor_bounds(uint32_t view) const {
+math::Recti Cubic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 

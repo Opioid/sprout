@@ -67,18 +67,19 @@ void Filtered<Base, Clamp, Filter>::add_sample(const sampler::Camera_sample& sam
 template<class Base, class Clamp, class Filter>
 void Filtered<Base, Clamp, Filter>::weight_and_add_pixel(int32_t x, int32_t y, math::float2 relative_offset,
 														 const math::float4& color,
-														 const math::Recti& tile, const math::Recti& bounds) {
-	if (x < bounds.start.x || x >= bounds.end.x || y < bounds.start.y || y >= bounds.end.y) {
+														 const math::Recti& tile, const math::Recti& view_bounds) {
+	if (x < view_bounds.start.x || x >= view_bounds.end.x || y < view_bounds.start.y || y >= view_bounds.end.y) {
 		return;
 	}
 
 	float weight = filter_->evaluate(relative_offset);
 
-	auto d = Base::dimensions();
-	if ((x < d.x - 1 && x >= tile.end.x - 1)
-	||  (y < d.y - 1 && y >= tile.end.y - 1)
-	||  (x <= tile.start.x && 0 != x)
-	||  (y <= tile.start.y && 0 != y)) {
+	math::Recti view_tile{view_bounds.start + tile.start, view_bounds.start + tile.end};
+
+	if ((x >= view_tile.end.x - 1 && x < view_bounds.end.x - 1)
+	||  (y >= view_tile.end.y - 1 && y < view_bounds.end.y - 1)
+	||  (x <= view_tile.start.x   && x > view_bounds.start.x)
+	||  (y <= view_tile.start.y   && y > view_bounds.start.y)) {
 		Base::add_pixel_atomic(x, y, color, weight);
 	} else {
 		Base::add_pixel(x, y, color, weight);

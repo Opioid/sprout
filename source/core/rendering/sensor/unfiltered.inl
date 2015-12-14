@@ -12,7 +12,7 @@ Unfiltered<Base, Clamp>::Unfiltered(math::int2 dimensions, float exposure,
 
 template<class Base, class Clamp>
 void Unfiltered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, const math::float4& color,
-										 const math::Recti& /*tile*/, const math::Recti& /*bounds*/) {
+										 const math::Recti& /*tile*/, const math::Recti& /*view_bounds*/) {
 	Base::add_pixel(sample.pixel.x, sample.pixel.y, clamp_.clamp(color), 1.f);
 }
 

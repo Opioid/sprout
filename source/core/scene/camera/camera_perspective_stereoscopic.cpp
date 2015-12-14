@@ -38,7 +38,7 @@ math::int2 Perspective_stereoscopic::sensor_dimensions() const {
 	return math::int2(resolution_.x * 2, resolution_.y);
 }
 
-math::Recti Perspective_stereoscopic::sensor_bounds(uint32_t view) const {
+math::Recti Perspective_stereoscopic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 

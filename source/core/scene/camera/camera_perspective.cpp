@@ -39,7 +39,7 @@ math::int2 Perspective::sensor_dimensions() const {
 	return resolution_;
 }
 
-math::Recti Perspective::sensor_bounds(uint32_t /*view*/) const {
+math::Recti Perspective::view_bounds(uint32_t /*view*/) const {
 	return math::Recti{math::int2(0, 0), resolution_};
 }
 

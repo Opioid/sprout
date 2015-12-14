@@ -14,13 +14,13 @@ public:
 
 	~Filtered();
 
-	virtual void add_sample(const sampler::Camera_sample& sample,
-							const math::float4& color, const math::Recti& tile, const math::Recti& bounds) final override;
+	virtual void add_sample(const sampler::Camera_sample& sample, const math::float4& color,
+							const math::Recti& tile, const math::Recti& view_bounds) final override;
 
 private:
 
 	void weight_and_add_pixel(int32_t x, int32_t y, math::float2 relative_offset,
-							  const math::float4& color, const math::Recti& tile, const math::Recti& bounds);
+							  const math::float4& color, const math::Recti& tile, const math::Recti& view_bounds);
 
 	Clamp clamp_;
 

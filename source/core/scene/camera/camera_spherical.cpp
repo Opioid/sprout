@@ -24,7 +24,7 @@ math::int2 Spherical::sensor_dimensions() const {
 	return resolution_;
 }
 
-math::Recti Spherical::sensor_bounds(uint32_t /*view*/) const {
+math::Recti Spherical::view_bounds(uint32_t /*view*/) const {
 	return math::Recti{math::int2(0, 0), resolution_};
 }
 

@@ -71,7 +71,7 @@ math::int2 Cubic_stereoscopic::sensor_dimensions() const {
 	return sensor_dimensions_;
 }
 
-math::Recti Cubic_stereoscopic::sensor_bounds(uint32_t view) const {
+math::Recti Cubic_stereoscopic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 

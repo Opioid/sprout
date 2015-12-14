@@ -80,7 +80,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 						   float normalized_tick_offset, float normalized_tick_slice) {
 	auto& sensor = camera.sensor();
 
-	math::Recti bounds = camera.sensor_bounds(view);
+	math::Recti bounds = camera.view_bounds(view);
 
 	uint32_t num_samples = sample_end - sample_begin;
 
@@ -94,6 +94,8 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 					math::uint2 seed = sampler_->seed();
 					sampler_->set_seed(seed);
 					camera.set_seed(x, y, seed);
+				} else {
+					sampler_->set_seed(camera.seed(x, y));
 				}
 
 				sampler_->restart(1);
