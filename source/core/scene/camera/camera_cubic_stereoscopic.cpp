@@ -28,7 +28,7 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout,
 		for (uint32_t i = 0; i < 12; ++i) {
 			math::int2 offset = math::int2(resolution.x * i, 0);
 
-			view_bounds_[i] = math::Recti{offset, offset + resolution};
+			view_bounds_[i] = math::Recti{offset, offset + resolution_};
 		}
 
 		sensor_dimensions_ = math::int2(resolution_.x * 12, resolution_.x);
@@ -36,13 +36,13 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout,
 		for (uint32_t i = 0; i < 6; ++i) {
 			math::int2 offset = math::int2(resolution.x * (i + 6), 0);
 
-			view_bounds_[i] = math::Recti{offset, offset + resolution};
+			view_bounds_[i] = math::Recti{offset, offset + resolution_};
 		}
 
 		for (uint32_t i = 6; i < 12; ++i) {
 			math::int2 offset = math::int2(resolution.x * (i - 6), 0);
 
-			view_bounds_[i] = math::Recti{offset, offset + resolution};
+			view_bounds_[i] = math::Recti{offset, offset + resolution_};
 		}
 
 		sensor_dimensions_ = math::int2(resolution_.x * 12, resolution_.x);
@@ -82,10 +82,23 @@ void Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-	direction *= view_rotations_[view];
+//	direction *= view_rotations_[view];
+//	view = 4;
+
+	direction = math::normalized(direction * view_rotations_[view]);
 
 	uint32_t eye = view < 6 ? 0 : 1;
-	math::float3 eye_offset = eye_offsets_[eye] * view_rotations_[view];
+
+//	float a = (direction.x - 0.5f) * 2.f * math::Pi;
+
+//	float a = math::dot(math::float2(direction.x, direction.z), math::float2(0.f, 1.f));
+
+	float a = std::atan2(direction.x, direction.z);
+
+	math::float3x3 rotation;
+	math::set_rotation_y(rotation, a);
+	math::float3 eye_offset = eye_offsets_[eye] * rotation;
+//	math::float3 eye_offset = eye_offsets_[eye] * view_rotations_[view];
 
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
