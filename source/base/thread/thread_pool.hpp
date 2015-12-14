@@ -11,7 +11,7 @@ class Pool {
 public:
 
 	typedef std::function<void(uint32_t)> Parallel_program;
-	typedef std::function<void(uint32_t, uint32_t)> Range_program;
+	typedef std::function<void(int32_t, int32_t)> Range_program;
 
 	Pool(uint32_t num_threads);
 	~Pool();
@@ -19,18 +19,18 @@ public:
 	uint32_t num_threads() const;
 
 	void run(Parallel_program program);
-	void run_range(Range_program program, uint32_t begin, uint32_t end);
+	void run_range(Range_program program, int32_t begin, int32_t end);
 
 private:
 
 	void wake_all();
-	void wake_all(uint32_t begin, uint32_t end);
+	void wake_all(int32_t begin, int32_t end);
 
 	void wait_all();
 
 	struct Unique {
-		uint32_t begin;
-		uint32_t end;
+		int32_t begin;
+		int32_t end;
 		std::condition_variable wake_signal;
 		std::condition_variable done_signal;
 		std::mutex mutex;

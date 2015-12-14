@@ -122,7 +122,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 	float frame_duration = 0.f;
 	bool  motion_blur = true;
 	scene::camera::Perspective::Focus focus;
-	float fov = 60.f;
+	float fov = math::degrees_to_radians(60.f);
 	float lens_radius = 0.f;
 
 	for (auto n = type_value->MemberBegin(); n != type_value->MemberEnd(); ++n) {
@@ -159,10 +159,10 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 		}
 	}
 
-	math::uint2 resolution;
+	math::int2 resolution;
 	if (sensor_value) {
-		resolution = json::read_uint2(*sensor_value, "resolution");
-		if (math::uint2::identity == resolution) {
+		resolution = json::read_int2(*sensor_value, "resolution");
+		if (math::int2::identity == resolution) {
 			throw std::runtime_error("Sensor resolution is [0, 0]");
 		}
 	} else {
@@ -177,7 +177,12 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 
 	if ("Cubic" == type_name) {
 		if (stereo.interpupillary_distance > 0.f) {
-			scene::camera::Cubic_stereoscopic::Layout layout = scene::camera::Cubic_stereoscopic::Layout::xmxymyzmz;
+			scene::camera::Cubic_stereoscopic::Layout layout =
+					scene::camera::Cubic_stereoscopic::Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz;
+
+			if ("lxlmxlylmylzlmzrxrmxryrmyrzrmz" == layout_type) {
+				layout = scene::camera::Cubic_stereoscopic::Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz;
+			}
 
 			camera = std::make_shared<scene::camera::Cubic_stereoscopic>(
 						layout, stereo.interpupillary_distance, resolution,
@@ -234,7 +239,7 @@ void Loader::load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopi
 }
 
 rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_value,
-											   math::uint2 dimensions, bool alpha_transparency) const {
+											   math::int2 dimensions, bool alpha_transparency) const {
 	float exposure = 0.f;
 	math::float3 clamp_max(-1.f, -1.f, -1.f);
 	std::unique_ptr<rendering::sensor::tonemapping::Tonemapper> tonemapper;

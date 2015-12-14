@@ -10,10 +10,10 @@ public:
 
 	Texture_2D_byte_3_snorm(std::shared_ptr<Image> image);
 
-	virtual float        at_1(uint32_t x, uint32_t y) const final override;
-	virtual math::float2 at_2(uint32_t x, uint32_t y) const final override;
-	virtual math::float3 at_3(uint32_t x, uint32_t y) const final override;
-	virtual math::float4 at_4(uint32_t x, uint32_t y) const final override;
+	virtual float        at_1(int32_t x, int32_t y) const final override;
+	virtual math::float2 at_2(int32_t x, int32_t y) const final override;
+	virtual math::float3 at_3(int32_t x, int32_t y) const final override;
+	virtual math::float4 at_4(int32_t x, int32_t y) const final override;
 
 private:
 

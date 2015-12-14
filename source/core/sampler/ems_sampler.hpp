@@ -13,7 +13,7 @@ public:
 
 	virtual math::uint2 seed() const final override;
 
-	virtual void generate_camera_sample(math::uint2 pixel, uint32_t index, Camera_sample& sample) final override;
+	virtual void generate_camera_sample(math::int2 pixel, uint32_t index, Camera_sample& sample) final override;
 
 	virtual math::float2 generate_sample_2D() final override;
 

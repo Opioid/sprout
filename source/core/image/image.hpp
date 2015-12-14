@@ -17,10 +17,10 @@ public:
 
 	struct Description {
 		Description();
-		Description(Type type, math::uint2 dimensions);
+		Description(Type type, math::int2 dimensions);
 
 		Type type;
-		math::uint2 dimensions;
+		math::int2 dimensions;
 	};
 
 	Image(const Description& description);
@@ -28,7 +28,7 @@ public:
 
 	const Description& description() const;
 
-	virtual void resize(math::uint2 dimensions) = 0;
+	virtual void resize(math::int2 dimensions) = 0;
 
 protected:
 

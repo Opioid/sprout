@@ -10,7 +10,7 @@
 
 namespace exporting {
 
-Ffmpeg::Ffmpeg(const std::string& filename, const math::uint2& dimensions, uint32_t framerate) : Srgb(dimensions) {
+Ffmpeg::Ffmpeg(const std::string& filename, const math::int2& dimensions, uint32_t framerate) : Srgb(dimensions) {
 	// start ffmpeg telling it to expect raw rgba 720p-60hz frames
 	// -i - tells it to read frames from stdin
 	std::ostringstream cmd;

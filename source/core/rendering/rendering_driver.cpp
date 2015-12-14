@@ -21,7 +21,7 @@ Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_fa
 			   std::shared_ptr<sampler::Sampler> sampler) :
 	surface_integrator_factory_(surface_integrator_factory),
 	sampler_(sampler),
-	tile_dimensions_(math::uint2(32, 32)) {}
+	tile_dimensions_(math::int2(32, 32)) {}
 
 void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& pool,
 					exporting::Sink& exporter, progress::Sink& progressor) {
@@ -155,7 +155,7 @@ void Driver::render_subframe(scene::camera::Camera& camera,
 				auto& worker = workers[index];
 
 				for (;;) {
-					Rectui tile;
+					math::Recti tile;
 					if (!tiles.pop(tile)) {
 						break;
 					}

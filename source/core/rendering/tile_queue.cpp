@@ -3,13 +3,13 @@
 
 namespace rendering {
 
-Tile_queue::Tile_queue(math::uint2 resolution, math::uint2 tile_dimensions) :
+Tile_queue::Tile_queue(math::int2 resolution, math::int2 tile_dimensions) :
 	tiles_(static_cast<size_t>(std::ceil(static_cast<float>(resolution.x) / static_cast<float>(tile_dimensions.x)))
 		 * static_cast<size_t>(std::ceil(static_cast<float>(resolution.y) / static_cast<float>(tile_dimensions.y)))),
 	current_produce_(0), current_consume_(0) {
-	math::uint2 current_pixel(0, 0);
+	math::int2 current_pixel(0, 0);
 	for (;;) {
-		push(Rectui{current_pixel, math::min(current_pixel + tile_dimensions, resolution)});
+		push(math::Recti{current_pixel, math::min(current_pixel + tile_dimensions, resolution)});
 
 		current_pixel.x += tile_dimensions.x;
 
@@ -33,7 +33,7 @@ void Tile_queue::restart() {
 	current_consume_ = 0;
 }
 
-bool Tile_queue::pop(Rectui& tile) {
+bool Tile_queue::pop(math::Recti& tile) {
 	std::lock_guard<std::mutex> lock(mutex_);
 
 	if (current_consume_ < tiles_.size()) {
@@ -44,7 +44,7 @@ bool Tile_queue::pop(Rectui& tile) {
 	return false;
 }
 
-void Tile_queue::push(const Rectui& tile) {
+void Tile_queue::push(const math::Recti& tile) {
 	tiles_[current_produce_++] = tile;
 }
 

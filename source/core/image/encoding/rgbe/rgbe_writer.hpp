@@ -15,7 +15,7 @@ public:
 
 private:
 
-	static void write_header(std::ostream& stream, math::uint2 dimensions);
+	static void write_header(std::ostream& stream, math::int2 dimensions);
 
 	static void write_pixels(std::ostream& stream, const Image_float_4& image);
 

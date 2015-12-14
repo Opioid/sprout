@@ -15,31 +15,31 @@ Typed_image<T>::~Typed_image() {
 }
 
 template<typename T>
-void Typed_image<T>::resize(math::uint2 dimensions) {
+void Typed_image<T>::resize(math::int2 dimensions) {
 	delete [] data_;
 
 	description_.dimensions = dimensions;
 }
 
 template<typename T>
-const T& Typed_image<T>::at(uint32_t index) const {
+const T& Typed_image<T>::at(int32_t index) const {
 	return data_[index];
 }
 
 template<typename T>
-T& Typed_image<T>::at(uint32_t index) {
+T& Typed_image<T>::at(int32_t index) {
 	return data_[index];
 }
 
 template<typename T>
-const T& Typed_image<T>::at(uint32_t x, uint32_t y) const {
-	uint32_t i = y * description_.dimensions.x + x;
+const T& Typed_image<T>::at(int32_t x, int32_t y) const {
+	int32_t i = y * description_.dimensions.x + x;
 	return data_[i];
 }
 
 template<typename T>
-T& Typed_image<T>::at(uint32_t x, uint32_t y) {
-	uint32_t i = y * description_.dimensions.x + x;
+T& Typed_image<T>::at(int32_t x, int32_t y) {
+	int32_t i = y * description_.dimensions.x + x;
 	return data_[i];
 }
 

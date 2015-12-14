@@ -38,7 +38,7 @@ void Pool::run(Parallel_program program) {
 	wait_all();
 }
 
-void Pool::run_range(Range_program program, uint32_t begin, uint32_t end) {
+void Pool::run_range(Range_program program, int32_t begin, int32_t end) {
 	shared_.range_program = program;
 	shared_.parallel_program = nullptr;
 
@@ -54,13 +54,13 @@ void Pool::wake_all() {
 	}
 }
 
-void Pool::wake_all(uint32_t begin, uint32_t end) {
+void Pool::wake_all(int32_t begin, int32_t end) {
 	float range = static_cast<float>(end - begin);
 
-	uint32_t step = static_cast<uint32_t>(std::ceil(range / static_cast<float>(threads_.size())));
+	int32_t step = static_cast<int32_t>(std::ceil(range / static_cast<float>(threads_.size())));
 
-	uint32_t b = 0;
-	uint32_t e = begin;
+	int32_t b = 0;
+	int32_t e = begin;
 
 	for (auto& u : uniques_) {
 		b = e;

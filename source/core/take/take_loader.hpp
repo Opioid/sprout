@@ -53,7 +53,7 @@ private:
 	void load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopic& stereo) const;
 
 	rendering::sensor::Sensor* load_sensor(const rapidjson::Value& sensor_value,
-										   math::uint2 dimensions, bool alpha_transparency) const;
+										   math::int2 dimensions, bool alpha_transparency) const;
 
 	std::unique_ptr<rendering::sensor::tonemapping::Tonemapper>
 	load_tonemapper(const rapidjson::Value& tonemapper_value) const;

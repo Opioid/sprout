@@ -9,8 +9,8 @@
 
 namespace scene { namespace camera {
 
-Cubic::Cubic(Layout layout, math::uint2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
-	Camera(math::uint2(resolution.x, resolution.x), ray_max_t, frame_duration, motion_blur) {
+Cubic::Cubic(Layout layout, math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
+	Camera(math::int2(resolution.x, resolution.x), ray_max_t, frame_duration, motion_blur) {
 	float f = static_cast<float>(resolution.x);
 
 	left_top_ = math::float3(-1.f,  1.f, 1.f);
@@ -21,23 +21,33 @@ Cubic::Cubic(Layout layout, math::uint2 resolution, float ray_max_t, float frame
 	d_y_ = (left_bottom - left_top_) / f;
 
 	if (Layout::xmxymyzmz == layout) {
-		view_offsets_[0] = math::uint2(0, 0);
-		view_offsets_[1] = math::uint2(resolution.x, 0);
-		view_offsets_[2] = math::uint2(resolution.x * 2, 0);
-		view_offsets_[3] = math::uint2(resolution.x * 3, 0);
-		view_offsets_[4] = math::uint2(resolution.x * 4, 0);
-		view_offsets_[5] = math::uint2(resolution.x * 5, 0);
+		for (uint32_t i = 0; i < 6; ++i) {
+			math::int2 offset = math::int2(resolution.x * i, 0);
 
-		sensor_dimensions_ = math::uint2(resolution_.x * 6, resolution_.y);
+			view_bounds_[i] = math::Recti{offset, offset + resolution};
+		}
+
+		sensor_dimensions_ = math::int2(resolution_.x * 6, resolution_.y);
 	} else if (Layout::xmxy_myzmz == layout) {
-		view_offsets_[0] = math::uint2(0, 0);
-		view_offsets_[1] = math::uint2(resolution.x, 0);
-		view_offsets_[2] = math::uint2(resolution.x * 2, 0);
-		view_offsets_[3] = math::uint2(0, resolution.x);
-		view_offsets_[4] = math::uint2(resolution.x, resolution.x);
-		view_offsets_[5] = math::uint2(resolution.x * 2, resolution.x);
+		math::int2 offset = math::int2(resolution.x * 0, 0);
+		view_bounds_[0] = math::Recti{offset, offset + resolution};
 
-		sensor_dimensions_ = math::uint2(resolution_.x * 3, resolution_.y * 2);
+		offset = math::int2(resolution.x * 1, 0);
+		view_bounds_[1] = math::Recti{offset, offset + resolution};
+
+		offset = math::int2(resolution.x * 2, 0);
+		view_bounds_[2] = math::Recti{offset, offset + resolution};
+
+		offset = math::int2(resolution.x * 0, resolution.x);
+		view_bounds_[3] = math::Recti{offset, offset + resolution};
+
+		offset = math::int2(resolution.x * 1, resolution.x);
+		view_bounds_[4] = math::Recti{offset, offset + resolution};
+
+		offset = math::int2(resolution.x * 2, resolution.x);
+		view_bounds_[5] = math::Recti{offset, offset + resolution};
+
+		sensor_dimensions_ = math::int2(resolution_.x * 3, resolution_.y * 2);
 	}
 
 	math::set_rotation_y(view_rotations_[0], math::degrees_to_radians(-90.f));
@@ -52,12 +62,12 @@ uint32_t Cubic::num_views() const {
 	return 6;
 }
 
-math::uint2 Cubic::sensor_dimensions() const {
+math::int2 Cubic::sensor_dimensions() const {
 	return sensor_dimensions_;
 }
 
-math::uint2 Cubic::sensor_pixel(math::uint2 pixel, uint32_t view) const {
-	return view_offsets_[view] + pixel;
+math::Recti Cubic::sensor_bounds(uint32_t view) const {
+	return view_bounds_[view];
 }
 
 void Cubic::update_focus(rendering::Worker& /*worker*/) {}

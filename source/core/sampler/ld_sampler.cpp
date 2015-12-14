@@ -21,7 +21,7 @@ math::uint2 LD::seed() const {
 	return math::uint2(rng_.random_uint(), rng_.random_uint());
 }
 
-void LD::generate_camera_sample(math::uint2 pixel, uint32_t index, Camera_sample& sample) {
+void LD::generate_camera_sample(math::int2 pixel, uint32_t index, Camera_sample& sample) {
 	math::float2 s2d = ld(index, seed_.x, seed_.y);
 
 	sample.pixel = pixel;

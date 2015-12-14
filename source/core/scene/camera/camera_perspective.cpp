@@ -11,7 +11,7 @@
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(math::uint2 resolution, float ray_max_t, float frame_duration, bool motion_blur,
+Perspective::Perspective(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur,
 						 const Focus& focus, float fov, float lens_radius) :
 	Camera(resolution, ray_max_t, frame_duration, motion_blur), focus_(focus),
 	lens_radius_(lens_radius), focal_distance_(focus_.distance) {
@@ -35,12 +35,12 @@ uint32_t Perspective::num_views() const {
 	return 1;
 }
 
-math::uint2 Perspective::sensor_dimensions() const {
+math::int2 Perspective::sensor_dimensions() const {
 	return resolution_;
 }
 
-math::uint2 Perspective::sensor_pixel(math::uint2 pixel, uint32_t /*view*/) const {
-	return pixel;
+math::Recti Perspective::sensor_bounds(uint32_t /*view*/) const {
+	return math::Recti{math::int2(0, 0), resolution_};
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {

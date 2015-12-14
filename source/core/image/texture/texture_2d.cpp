@@ -11,7 +11,7 @@ Texture_2D::Texture_2D(std::shared_ptr<Image> image) :
 
 Texture_2D::~Texture_2D() {}
 
-math::uint2 Texture_2D::dimensions() const {
+math::int2 Texture_2D::dimensions() const {
 	return image_->description().dimensions;
 }
 
@@ -24,8 +24,8 @@ math::float4 Texture_2D::average() const {
 
 	math::float4 average = math::float4::identity;
 
-	for (uint32_t y = 0; y < d.y; ++y) {
-		for (uint32_t x = 0; x < d.x; ++x) {
+	for (int32_t y = 0; y < d.y; ++y) {
+		for (int32_t x = 0; x < d.x; ++x) {
 			average += at_4(x, y);
 		}
 	}

@@ -12,13 +12,13 @@ public:
 	Typed_image(const Image::Description& description);
 	~Typed_image();
 
-	virtual void resize(math::uint2 dimensions) final override;
+	virtual void resize(math::int2 dimensions) final override;
 
-	const T& at(uint32_t index) const;
-	T& at(uint32_t index);
+	const T& at(int32_t index) const;
+	T& at(int32_t index);
 
-	const T& at(uint32_t x, uint32_t y) const;
-	T& at(uint32_t x, uint32_t y);
+	const T& at(int32_t x, int32_t y) const;
+	T& at(int32_t x, int32_t y);
 
 private:
 

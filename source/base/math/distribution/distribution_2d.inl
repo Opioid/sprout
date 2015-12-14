@@ -5,12 +5,12 @@
 
 namespace math {
 
-inline void Distribution_2D::init(const float* data, const math::uint2& dimensions) {
+inline void Distribution_2D::init(const float* data, const math::int2& dimensions) {
 	conditional_.resize(dimensions.y);
 
 	std::vector<float> integrals(dimensions.y);
 
-	for (uint32_t i = 0; i < dimensions.y; ++i) {
+	for (int32_t i = 0; i < dimensions.y; ++i) {
 		conditional_[i].init(data + i * dimensions.x, dimensions.x);
 
 		integrals[i] = conditional_[i].integral();

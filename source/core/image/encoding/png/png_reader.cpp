@@ -34,17 +34,17 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, uint32_t num_channels)
 	return create_image(info, num_channels);
 }
 
-std::shared_ptr<Image> Reader::create_image(const Info& info, uint32_t num_channels) const {
+std::shared_ptr<Image> Reader::create_image(const Info& info, int32_t num_channels) const {
 	if (0 == info.num_channels) {
 		return nullptr;
 	}
 
 	if (1 == num_channels) {
 		std::shared_ptr<Image_byte_1> image = std::make_shared<Image_byte_1>(
-					Image::Description(Image::Type::Byte_1, math::uint2(info.width, info.height)));
+					Image::Description(Image::Type::Byte_1, math::int2(info.width, info.height)));
 
-		for (uint32_t i = 0, len = info.width * info.height; i < len; ++i) {
-			uint32_t o = i * info.num_channels;
+		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+			int32_t o = i * info.num_channels;
 
 			image->at(i) = info.buffer[o];
 		}
@@ -52,15 +52,15 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, uint32_t num_chann
 		return image;
 	} else if (2 == num_channels) {
 		std::shared_ptr<Image_byte_2> image = std::make_shared<Image_byte_2>(
-					Image::Description(Image::Type::Byte_2, math::uint2(info.width, info.height)));
+					Image::Description(Image::Type::Byte_2, math::int2(info.width, info.height)));
 
 		color::Color2c color(0, 0);
 
-		uint32_t max_channels = std::min(2u, info.num_channels);
+		int32_t max_channels = std::min(2, info.num_channels);
 
-		for (uint32_t i = 0, len = info.width * info.height; i < len; ++i) {
-			uint32_t o = i * info.num_channels;
-			for (uint32_t c = 0; c < max_channels; ++c) {
+		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+			int32_t o = i * info.num_channels;
+			for (int32_t c = 0; c < max_channels; ++c) {
 				color.v[c] = info.buffer[o + c];
 			}
 
@@ -70,15 +70,15 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, uint32_t num_chann
 		return image;
 	} else if (3 == num_channels) {
 		std::shared_ptr<Image_byte_3> image = std::make_shared<Image_byte_3>(
-					Image::Description(Image::Type::Byte_3, math::uint2(info.width, info.height)));
+					Image::Description(Image::Type::Byte_3, math::int2(info.width, info.height)));
 
 		color::Color3c color(0, 0, 0);
 
-		uint32_t max_channels = std::min(3u, info.num_channels);
+		int32_t max_channels = std::min(3, info.num_channels);
 
-		for (uint32_t i = 0, len = info.width * info.height; i < len; ++i) {
-			uint32_t o = i * info.num_channels;
-			for (uint32_t c = 0; c < max_channels; ++c) {
+		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
+			int32_t o = i * info.num_channels;
+			for (int32_t c = 0; c < max_channels; ++c) {
 				color.v[c] = info.buffer[o + c];
 			}
 

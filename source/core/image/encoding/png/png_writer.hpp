@@ -8,7 +8,7 @@ namespace image { namespace encoding { namespace png {
 class Writer : public image::Writer, Srgb {
 public:
 
-	Writer(math::uint2 dimensions);
+	Writer(math::int2 dimensions);
 
 	virtual std::string file_extension() const final override;
 

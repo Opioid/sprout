@@ -12,7 +12,7 @@ namespace image { namespace encoding { namespace rgbe {
 std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 	Header header = read_header(stream);
 
-	math::uint2 dimensions(header.width, header.height);
+	math::int2 dimensions(header.width, header.height);
 
 	auto image = std::make_shared<Image_float_3>(Image::Description(Image::Type::Float_3, dimensions));
 

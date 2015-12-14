@@ -1,9 +1,9 @@
 #pragma once
 
-#include "rectangle.hpp"
 #include "scene/shape/node_stack.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
+#include "base/math/rectangle.hpp"
 #include "base/math/random/generator.hpp"
 
 namespace image { namespace texture { namespace sampler {
@@ -76,7 +76,7 @@ private:
 class Camera_worker : public Worker {
 public:
 
-	void render(scene::camera::Camera& camera, uint32_t view, const Rectui& tile,
+	void render(scene::camera::Camera& camera, uint32_t view, const math::Recti& tile,
 				uint32_t sample_begin, uint32_t sample_end,
 				float normalized_tick_offset, float normalized_tick_slice);
 };

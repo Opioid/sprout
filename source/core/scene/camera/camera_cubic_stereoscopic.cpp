@@ -11,9 +11,9 @@ namespace scene { namespace camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout layout,
 									   float interpupillary_distance,
-									   math::uint2 resolution, float ray_max_t,
+									   math::int2 resolution, float ray_max_t,
 									   float frame_duration, bool motion_blur) :
-	Stereoscopic(interpupillary_distance, math::uint2(resolution.x, resolution.x),
+	Stereoscopic(interpupillary_distance, math::int2(resolution.x, resolution.x),
 				 ray_max_t, frame_duration, motion_blur) {
 	float f = static_cast<float>(resolution.x);
 
@@ -24,23 +24,29 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout,
 	d_x_ = (right_top - left_top_)   / f;
 	d_y_ = (left_bottom - left_top_) / f;
 
-//	if (Layout::xmxymyzmz == layout) {
+	if (Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz == layout) {
 		for (uint32_t i = 0; i < 12; ++i) {
-			view_offsets_[i]  = math::uint2(resolution.x * i, 0);
+			math::int2 offset = math::int2(resolution.x * i, 0);
+
+			view_bounds_[i] = math::Recti{offset, offset + resolution};
 		}
 
-		sensor_dimensions_ = math::uint2(resolution_.x * 12, resolution_.y);
-/*	} else if (Layout::xmxy_myzmz == layout) {
-		view_offsets_[0] = math::uint2(0, 0);
-		view_offsets_[1] = math::uint2(resolution.x, 0);
-		view_offsets_[2] = math::uint2(resolution.x * 2, 0);
-		view_offsets_[3] = math::uint2(0, resolution.x);
-		view_offsets_[4] = math::uint2(resolution.x, resolution.x);
-		view_offsets_[5] = math::uint2(resolution.x * 2, resolution.x);
+		sensor_dimensions_ = math::int2(resolution_.x * 12, resolution_.x);
+	} else if (Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz == layout) {
+		for (uint32_t i = 0; i < 6; ++i) {
+			math::int2 offset = math::int2(resolution.x * (i + 6), 0);
 
-		sensor_dimensions_ = math::uint2(resolution_.x * 3, resolution_.y * 2);
+			view_bounds_[i] = math::Recti{offset, offset + resolution};
+		}
+
+		for (uint32_t i = 6; i < 12; ++i) {
+			math::int2 offset = math::int2(resolution.x * (i - 6), 0);
+
+			view_bounds_[i] = math::Recti{offset, offset + resolution};
+		}
+
+		sensor_dimensions_ = math::int2(resolution_.x * 12, resolution_.x);
 	}
-*/
 
 	math::set_rotation_y(view_rotations_[0], math::degrees_to_radians(-90.f));
 	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians(90.f));
@@ -61,12 +67,12 @@ uint32_t Cubic_stereoscopic::num_views() const {
 	return 12;
 }
 
-math::uint2 Cubic_stereoscopic::sensor_dimensions() const {
+math::int2 Cubic_stereoscopic::sensor_dimensions() const {
 	return sensor_dimensions_;
 }
 
-math::uint2 Cubic_stereoscopic::sensor_pixel(math::uint2 pixel, uint32_t view) const {
-	return view_offsets_[view] + pixel;
+math::Recti Cubic_stereoscopic::sensor_bounds(uint32_t view) const {
+	return view_bounds_[view];
 }
 
 void Cubic_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}

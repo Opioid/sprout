@@ -8,7 +8,7 @@ namespace math {
 class Distribution_2D {
 public:
 
-	void init(const float* data, const math::uint2& dimensions);
+	void init(const float* data, const math::int2& dimensions);
 
 	math::float2 sample_continuous(math::float2 r2, float& pdf) const;
 

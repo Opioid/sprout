@@ -5,7 +5,6 @@ SOURCES += \
 
 HEADERS += \
 	rendering/rendering_context.hpp \
-	rendering/rectangle.hpp \
 	rendering/rendering_driver.hpp \
 	rendering/rendering_worker.hpp \
 	rendering/tile_queue.hpp \

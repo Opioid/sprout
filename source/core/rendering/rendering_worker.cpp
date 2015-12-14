@@ -75,24 +75,26 @@ scene::shape::Node_stack& Worker::node_stack() {
 	return node_stack_;
 }
 
-void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const Rectui& tile,
+void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const math::Recti& tile,
 						   uint32_t sample_begin, uint32_t sample_end,
 						   float normalized_tick_offset, float normalized_tick_slice) {
 	auto& sensor = camera.sensor();
+
+	math::Recti bounds = camera.sensor_bounds(view);
 
 	uint32_t num_samples = sample_end - sample_begin;
 
 	sampler::Camera_sample sample;
 	math::Oray ray;
 
-	for (uint32_t y = tile.start.y; y < tile.end.y; ++y) {
-		for (uint32_t x = tile.start.x; x < tile.end.x; ++x) {
+	for (int32_t y = tile.start.y; y < tile.end.y; ++y) {
+		for (int32_t x = tile.start.x; x < tile.end.x; ++x) {
 			if (0 == sample_begin) {
-		//		if (0 == view) {
+				if (0 == view) {
 					math::uint2 seed = sampler_->seed();
 					sampler_->set_seed(seed);
 					camera.set_seed(x, y, seed);
-		//		}
+				}
 
 				sampler_->restart(1);
 			} else {
@@ -101,7 +103,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const R
 
 			surface_integrator_->start_new_pixel(num_samples);
 
-			math::uint2 pixel(x, y);
+			math::int2 pixel(x, y);
 
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);
@@ -112,9 +114,9 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const R
 
 				math::float4 color = li(ray);
 
-				sample.pixel = camera.sensor_pixel(pixel, view);
+				sample.pixel += bounds.start;
 
-				sensor.add_sample(sample, color, tile);
+				sensor.add_sample(sample, color, tile, bounds);
 			}
 		}
 	}

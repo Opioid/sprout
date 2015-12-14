@@ -17,7 +17,7 @@ math::uint2 Scrambled_hammersley::seed() const {
 	return math::uint2(rng_.random_uint(), 0);
 }
 
-void Scrambled_hammersley::generate_camera_sample(math::uint2 pixel, uint32_t index, Camera_sample& sample) {
+void Scrambled_hammersley::generate_camera_sample(math::int2 pixel, uint32_t index, Camera_sample& sample) {
 	math::float2 s2d = math::scrambled_hammersley(index, num_samples_per_iteration_, seed_.x);
 
 	sample.pixel = pixel;

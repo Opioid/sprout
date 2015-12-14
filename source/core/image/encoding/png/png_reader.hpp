@@ -50,11 +50,11 @@ private:
 
 	struct Info {
 		// header
-		uint32_t width;
-		uint32_t height;
+		int32_t width;
+		int32_t height;
 
-		uint32_t num_channels;
-		uint32_t bytes_per_pixel;
+		int32_t num_channels;
+		int32_t bytes_per_pixel;
 
 		std::vector<uint8_t> buffer;
 
@@ -71,7 +71,7 @@ private:
 		mz_stream stream;
 	};
 
-	std::shared_ptr<Image> create_image(const Info& info, uint32_t num_channels) const;
+	std::shared_ptr<Image> create_image(const Info& info, int32_t num_channels) const;
 
 	static void read_chunk(std::istream& stream, Chunk& chunk);
 

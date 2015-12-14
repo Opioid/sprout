@@ -19,7 +19,7 @@ bool Writer::write(std::ostream& stream, const image::Image_float_4& image, thre
 	return true;
 }
 
-void Writer::write_header(std::ostream& stream, math::uint2 dimensions) {
+void Writer::write_header(std::ostream& stream, math::int2 dimensions) {
 	stream << "#?RGBE\n";
 	stream << "FORMAT=32-bit_rle_rgbe\n\n";
 	stream << "-Y " << dimensions.y << " +X " << dimensions.x << "\n";

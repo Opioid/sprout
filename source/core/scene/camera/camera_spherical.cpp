@@ -9,7 +9,7 @@
 
 namespace scene { namespace camera {
 
-Spherical::Spherical(math::uint2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
+Spherical::Spherical(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
 	Camera(resolution, ray_max_t, frame_duration, motion_blur) {
 	math::float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
@@ -20,12 +20,12 @@ uint32_t Spherical::num_views() const {
 	return 1;
 }
 
-math::uint2 Spherical::sensor_dimensions() const {
+math::int2 Spherical::sensor_dimensions() const {
 	return resolution_;
 }
 
-math::uint2 Spherical::sensor_pixel(math::uint2 pixel, uint32_t /*view*/) const {
-	return pixel;
+math::Recti Spherical::sensor_bounds(uint32_t /*view*/) const {
+	return math::Recti{math::int2(0, 0), resolution_};
 }
 
 void Spherical::update_focus(rendering::Worker& /*worker*/) {}

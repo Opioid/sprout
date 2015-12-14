@@ -10,27 +10,27 @@
 namespace scene { namespace camera {
 
 Spherical_stereoscopic::Spherical_stereoscopic(float interpupillary_distance,
-											   math::uint2 resolution, float ray_max_t,
+											   math::int2 resolution, float ray_max_t,
 											   float frame_duration, bool motion_blur) :
 	Stereoscopic(interpupillary_distance, resolution, ray_max_t, frame_duration, motion_blur) {
 	math::float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;
 
-	view_offsets_[0] = math::uint2(0, 0);
-	view_offsets_[1] = math::uint2(resolution.x, 0);
+	view_bounds_[0] = math::Recti{math::int2(0, 0), resolution};
+	view_bounds_[1] = math::Recti{math::int2(resolution.x, 0), math::int2(resolution.x * 2, resolution.y)};
 }
 
 uint32_t Spherical_stereoscopic::num_views() const {
 	return 2;
 }
 
-math::uint2 Spherical_stereoscopic::sensor_dimensions() const {
-	return math::uint2(resolution_.x * 2, resolution_.y);
+math::int2 Spherical_stereoscopic::sensor_dimensions() const {
+	return math::int2(resolution_.x * 2, resolution_.y);
 }
 
-math::uint2 Spherical_stereoscopic::sensor_pixel(math::uint2 pixel, uint32_t view) const {
-	return view_offsets_[view] + pixel;
+math::Recti Spherical_stereoscopic::sensor_bounds(uint32_t view) const {
+	return view_bounds_[view];
 }
 
 void Spherical_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}

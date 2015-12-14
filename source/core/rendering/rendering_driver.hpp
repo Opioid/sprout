@@ -49,8 +49,8 @@ private:
 	std::shared_ptr<Surface_integrator_factory> surface_integrator_factory_;
 	std::shared_ptr<sampler::Sampler> sampler_;
 
-	math::uint2 tile_dimensions_;
-	uint32_t    current_sample_;
+	math::int2 tile_dimensions_;
+	uint32_t   current_sample_;
 };
 
 }
