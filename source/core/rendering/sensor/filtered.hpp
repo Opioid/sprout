@@ -20,7 +20,7 @@ public:
 private:
 
 	void weight_and_add_pixel(int32_t x, int32_t y, math::float2 relative_offset,
-							  const math::float4& color, const math::Recti& tile, const math::Recti& view_bounds);
+							  const math::float4& color, const math::Recti& view_tile, const math::Recti& view_bounds);
 
 	Clamp clamp_;
 
