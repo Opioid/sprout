@@ -82,28 +82,22 @@ void Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-//	direction *= view_rotations_[view];
-//	view = 4;
-
 	direction = math::normalized(direction * view_rotations_[view]);
-
-	uint32_t eye = view < 6 ? 0 : 1;
-
-//	float a = (direction.x - 0.5f) * 2.f * math::Pi;
-
-//	float a = math::dot(math::float2(direction.x, direction.z), math::float2(0.f, 1.f));
 
 	float a = std::atan2(direction.x, direction.z);
 
 	math::float3x3 rotation;
-	math::set_rotation_y(rotation, a);
-	math::float3 eye_offset = eye_offsets_[eye] * rotation;
-//	math::float3 eye_offset = eye_offsets_[eye] * view_rotations_[view];
+	math::set_rotation_y(rotation, -a);
+
+	float ipd_scale = 1.f - 2.f * (std::acos(direction.y) * math::Pi_inv - 0.5f);
+
+	uint32_t eye = view < 6 ? 0 : 1;
+	math::float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
 
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 	ray.origin = math::transform_point(transformation.object_to_world, eye_offset);
-	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(direction)));
+	ray.set_direction(math::transform_vector(transformation.object_to_world, direction));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
 	ray.depth = 0;
