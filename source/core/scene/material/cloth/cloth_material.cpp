@@ -38,7 +38,8 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 	return sample;
 }
 
-math::float3 Material::sample_emission(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
+math::float3 Material::sample_emission(math::float2 /*uv*/,
+									   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	return math::float3::identity;
 }
 

@@ -90,7 +90,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*fl
 	return mesh;
 }
 
-std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename,
+std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filename*/,
 													 const std::vector<std::string>& morph_targets) {
 	auto collection = std::make_shared<Morph_target_collection>();
 
