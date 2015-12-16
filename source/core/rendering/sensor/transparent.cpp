@@ -22,30 +22,30 @@ void Transparent::clear() {
 	}
 }
 
-void Transparent::add_pixel(int32_t x, int32_t y, const math::float4& color, float weight) {
+void Transparent::add_pixel(math::int2 pixel, const math::float4& color, float weight) {
 	auto d = dimensions();
 
-	auto& pixel = pixels_[d.x * y + x];
-	pixel.color += weight * color;
-	pixel.weight_sum += weight;
+	auto& value = pixels_[d.x * pixel.y + pixel.x];
+	value.color += weight * color;
+	value.weight_sum += weight;
 }
 
-void Transparent::add_pixel_atomic(int32_t x, int32_t y, const math::float4& color, float weight) {
+void Transparent::add_pixel_atomic(math::int2 pixel, const math::float4& color, float weight) {
 	auto d = dimensions();
 
-	auto& pixel = pixels_[d.x * y + x];
-	atomic::add_assign(pixel.color.x, weight * color.x);
-	atomic::add_assign(pixel.color.y, weight * color.y);
-	atomic::add_assign(pixel.color.z, weight * color.z);
-	atomic::add_assign(pixel.color.w, weight * color.w);
-	atomic::add_assign(pixel.weight_sum, weight);
+	auto& value = pixels_[d.x * pixel.y + pixel.x];
+	atomic::add_assign(value.color.x, weight * color.x);
+	atomic::add_assign(value.color.y, weight * color.y);
+	atomic::add_assign(value.color.z, weight * color.z);
+	atomic::add_assign(value.color.w, weight * color.w);
+	atomic::add_assign(value.weight_sum, weight);
 }
 
 void Transparent::resolve(int32_t begin, int32_t end) {
 	for (int32_t i = begin; i < end; ++i) {
-		auto& pixel = pixels_[i];
+		auto& value = pixels_[i];
 
-		math::float4 color = pixel.color / pixel.weight_sum;
+		math::float4 color = value.color / value.weight_sum;
 
 		math::float3 exposed = expose(color.xyz(), exposure_);
 

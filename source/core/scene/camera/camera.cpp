@@ -43,12 +43,12 @@ void Camera::set_sensor(rendering::sensor::Sensor* sensor) {
 	}
 }
 
-math::uint2 Camera::seed(int32_t x, int32_t y) const {
-	return seeds_[seed_dimensions_.x * (y + filter_radius_) + x + filter_radius_];
+math::uint2 Camera::seed(math::int2 pixel) const {
+	return seeds_[seed_dimensions_.x * (pixel.y + filter_radius_) + pixel.x + filter_radius_];
 }
 
-void Camera::set_seed(int32_t x, int32_t y, math::uint2 seed) {
-	seeds_[seed_dimensions_.x * (y + filter_radius_) + x + filter_radius_] = seed;
+void Camera::set_seed(math::int2 pixel, math::uint2 seed) {
+	seeds_[seed_dimensions_.x * (pixel.y + filter_radius_) + pixel.x + filter_radius_] = seed;
 }
 
 float Camera::frame_duration() const {

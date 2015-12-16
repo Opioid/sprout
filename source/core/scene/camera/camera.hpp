@@ -38,8 +38,8 @@ public:
 	rendering::sensor::Sensor& sensor() const;
 	void set_sensor(rendering::sensor::Sensor* sensor);
 
-	math::uint2 seed(int32_t x, int32_t y) const;
-	void set_seed(int32_t x, int32_t y, math::uint2 seed);
+	math::uint2 seed(math::int2 pixel) const;
+	void set_seed(math::int2 pixel, math::uint2 seed);
 
 	float frame_duration() const;
 
