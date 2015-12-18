@@ -1,8 +1,6 @@
 #pragma once
 
-#include "triangle_bvh_split_candidate.hpp"
 #include "base/math/bounding/aabb.hpp"
-#include "base/math/plane.hpp"
 #include <cstdint>
 #include <cstddef>
 #include <vector>
@@ -38,38 +36,15 @@ struct Build_node {
 };
 
 class Builder  {
-public:
+protected:
 
-    template<typename Data>
-	void build(Tree<Data>& tree,
-			   const std::vector<Index_triangle>& triangles,
-			   const std::vector<Vertex>& vertices,
-			   uint32_t max_primitives);
-
-private:
+	typedef std::vector<uint32_t>::iterator index;
 
 	void serialize(Build_node* node);
 
 	Node& new_node();
 
 	uint32_t current_node_index() const;
-
-	uint32_t num_nodes_;
-	uint32_t current_node_;
-
-	std::vector<Node>* nodes_;
-
-	std::vector<Split_candidate> split_candidates_;
-
-	typedef std::vector<uint32_t>::iterator index;
-
-	template<typename Data>
-	void split(Build_node* node,
-			   index begin, index end,
-			   const std::vector<Index_triangle>& triangles,
-			   const std::vector<Vertex>& vertices,
-			   uint32_t max_primitives, uint32_t depth,
-			   Tree<Data>& tree);
 
 	template<typename Data>
 	static void assign(Build_node* node,
@@ -82,10 +57,10 @@ private:
 								   const std::vector<Index_triangle>& triangles,
 								   const std::vector<Vertex>& vertices);
 
-	Split_candidate splitting_plane(const math::aabb& aabb,
-									index begin, index end,
-									const std::vector<Index_triangle>& triangles,
-									const std::vector<Vertex>& vertices);
+	uint32_t num_nodes_;
+	uint32_t current_node_;
+
+	std::vector<Node>* nodes_;
 };
 
 }}}}

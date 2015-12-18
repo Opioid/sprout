@@ -6,7 +6,7 @@
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
-#include "bvh/triangle_bvh_builder.inl"
+#include "bvh/triangle_bvh_builder_suh.inl"
 #include "bvh/triangle_bvh_data_generic.inl"
 #include "file/file_system.hpp"
 #include "base/math/vector.inl"
@@ -82,7 +82,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*fl
 
 	auto mesh = std::make_shared<Mesh>();
 
-	bvh::Builder builder;
+	bvh::Builder_SUH builder;
 	builder.build<bvh::Data_generic<Triangle_type>>(mesh->tree_, triangles, vertices, 8);
 
 	mesh->init();
