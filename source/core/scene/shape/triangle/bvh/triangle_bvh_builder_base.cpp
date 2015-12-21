@@ -1,4 +1,4 @@
-#include "triangle_bvh_builder.hpp"
+#include "triangle_bvh_builder_base.hpp"
 #include "triangle_bvh_tree.inl"
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
@@ -27,7 +27,7 @@ void Build_node::num_sub_nodes(uint32_t& count) {
 	}
 }
 
-void Builder::serialize(Build_node* node) {
+void Builder_base::serialize(Build_node* node) {
 	auto& n = new_node();
 	n.aabb = node->aabb;
 	n.start_index = node->start_index;
@@ -47,17 +47,17 @@ void Builder::serialize(Build_node* node) {
 	}
 }
 
-Node& Builder::new_node() {
+Node& Builder_base::new_node() {
 	return (*nodes_)[current_node_++];
 }
 
-uint32_t Builder::current_node_index() const {
+uint32_t Builder_base::current_node_index() const {
 	return current_node_;
 }
 
-math::aabb Builder::submesh_aabb(index begin, index end,
-								 const std::vector<Index_triangle>& triangles,
-								 const std::vector<Vertex>& vertices) {
+math::aabb Builder_base::submesh_aabb(index begin, index end,
+									  const std::vector<Index_triangle>& triangles,
+									  const std::vector<Vertex>& vertices) {
 
 	float max_float = std::numeric_limits<float>::max();
 	math::float3 min( max_float,  max_float,  max_float);

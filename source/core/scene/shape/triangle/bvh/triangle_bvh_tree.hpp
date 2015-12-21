@@ -89,8 +89,6 @@ private:
     Data data_;
 
 	uint32_t num_parts_;
-
-	friend class Builder;
 };
 
 }}}}

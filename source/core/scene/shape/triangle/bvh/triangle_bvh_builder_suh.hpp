@@ -1,6 +1,6 @@
 #pragma once
 
-#include "triangle_bvh_builder.hpp"
+#include "triangle_bvh_builder_base.hpp"
 #include "base/math/plane.hpp"
 #include "base/math/vector.hpp"
 
@@ -33,7 +33,7 @@ private:
 	uint8_t axis_;
 };
 
-class Builder_SUH : private Builder  {
+class Builder_SUH : private Builder_base  {
 public:
 
 	template<typename Data>

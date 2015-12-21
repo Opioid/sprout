@@ -3,7 +3,7 @@
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_primitive_mt.hpp"
 #include "bvh/triangle_bvh_tree.inl"
-#include "bvh/triangle_bvh_builder_suh.inl"
+#include "bvh/triangle_bvh_builder.inl"
 #include "bvh/triangle_bvh_data_generic.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
@@ -89,9 +89,9 @@ float Morphable_mesh::opacity(const entity::Composed_transformation& transformat
 	return tree_.opacity(tray, node_stack, materials, sampler);
 }
 
-void Morphable_mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-							const math::float3& p, const math::float3& /*n*/, bool two_sided, bool /*total_sphere*/,
-							sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
+void Morphable_mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
+							const math::float3& /*p*/, const math::float3& /*n*/, bool /*two_sided*/, bool /*total_sphere*/,
+							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/, Sample& /*sample*/) const {
 /*
 	float r = sampler.generate_sample_1D();
 	math::float2 r2 = sampler.generate_sample_2D();
@@ -132,7 +132,7 @@ void Morphable_mesh::sample(uint32_t /*part*/,
 							const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Morphable_mesh::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-						  const math::float3& /*p*/, const math::float3& /*wi*/, bool two_sided, bool /*total_sphere*/,
+						  const math::float3& /*p*/, const math::float3& /*wi*/, bool /*two_sided*/, bool /*total_sphere*/,
 						  shape::Node_stack& /*node_stack*/) const {
 	return 1.f;
 }
@@ -158,7 +158,7 @@ Morphable_shape* Morphable_mesh::morphable_shape() {
 void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) {
 	collection_->morph(a, b, weight, pool, vertices_);
 
-	bvh::Builder_SUH builder;
+	bvh::Builder builder;
 	builder.build<bvh::Data_generic<Triangle_MT>>(tree_, collection_->triangles(), vertices_, 8);
 
 	init();

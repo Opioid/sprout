@@ -1,7 +1,7 @@
 #pragma once
 
 #include "triangle_bvh_builder_suh.hpp"
-#include "triangle_bvh_builder.inl"
+#include "triangle_bvh_builder_base.inl"
 #include "triangle_bvh_tree.inl"
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/node_stack.inl"

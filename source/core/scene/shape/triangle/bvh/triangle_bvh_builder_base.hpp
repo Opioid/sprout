@@ -35,7 +35,7 @@ struct Build_node {
 	Build_node* children[2];
 };
 
-class Builder  {
+class Builder_base  {
 protected:
 
 	typedef std::vector<uint32_t>::iterator index;
