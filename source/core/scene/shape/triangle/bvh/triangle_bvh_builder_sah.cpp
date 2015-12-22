@@ -68,7 +68,7 @@ uint8_t Builder_SAH::Split_candidate::axis() const {
 	return axis_;
 }
 
-Builder_SAH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb,
+Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const math::aabb& aabb,
 														  index begin, index end,
 														  const std::vector<Index_triangle>& triangles,
 														  const std::vector<Vertex>& vertices) {
