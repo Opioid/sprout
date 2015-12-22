@@ -118,16 +118,17 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb
 			positions.push_back(vertices[t.c].p);
 		}
 
-	//	auto compare = [](const math::float3& a, const math::float3& b) { return a.x < b.x; };
-
 		size_t middle = positions.size() / 2;
-		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(), [](const math::float3& a, const math::float3& b) { return a.x < b.x; });
+		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
+						 [](const math::float3& a, const math::float3& b) { return a.x < b.x; });
 		math::float3 x_median = positions[middle];
 
-		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(), [](const math::float3& a, const math::float3& b) { return a.y < b.y; });
+		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
+						 [](const math::float3& a, const math::float3& b) { return a.y < b.y; });
 		math::float3 y_median = positions[middle];
 
-		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(), [](const math::float3& a, const math::float3& b) { return a.z < b.z; });
+		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
+						 [](const math::float3& a, const math::float3& b) { return a.z < b.z; });
 		math::float3 z_median = positions[middle];
 
 		split_candidates_.clear();
