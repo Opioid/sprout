@@ -1,4 +1,4 @@
-#include "triangle_bvh_builder_suh.hpp"
+#include "triangle_bvh_builder_sah.hpp"
 #include "triangle_bvh_tree.inl"
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
@@ -9,9 +9,9 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Builder_SUH::Split_candidate::Split_candidate(const math::plane& plane, uint8_t axis) : plane_(plane), axis_(axis) {}
+Builder_SAH::Split_candidate::Split_candidate(const math::plane& plane, uint8_t axis) : plane_(plane), axis_(axis) {}
 
-Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::float3& p,
+Builder_SAH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::float3& p,
 											  index begin, index end,
 											  const std::vector<Index_triangle>& triangles,
 											  const std::vector<Vertex>& vertices) : axis_(split_axis)  {
@@ -56,19 +56,19 @@ Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axi
 	}
 }
 
-uint64_t Builder_SUH::Split_candidate::key() const {
+uint64_t Builder_SAH::Split_candidate::key() const {
 	return key_;
 }
 
-const math::plane& Builder_SUH::Split_candidate::plane() const {
+const math::plane& Builder_SAH::Split_candidate::plane() const {
 	return plane_;
 }
 
-uint8_t Builder_SUH::Split_candidate::axis() const {
+uint8_t Builder_SAH::Split_candidate::axis() const {
 	return axis_;
 }
 
-Builder_SUH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb,
+Builder_SAH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb,
 														  index begin, index end,
 														  const std::vector<Index_triangle>& triangles,
 														  const std::vector<Vertex>& vertices) {

@@ -6,7 +6,7 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-class Builder_SUH : private Builder_base  {
+class Builder_SAH : private Builder_base  {
 public:
 
 	template<typename Data>
