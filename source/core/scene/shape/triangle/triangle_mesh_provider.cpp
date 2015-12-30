@@ -6,7 +6,8 @@
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
-#include "bvh/triangle_bvh_builder.inl"
+#include "bvh/triangle_bvh_builder_sah.inl"
+#include "bvh/triangle_bvh_builder_suh.inl"
 #include "bvh/triangle_bvh_data_generic.inl"
 #include "file/file_system.hpp"
 #include "base/math/vector.inl"
@@ -16,9 +17,10 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-Provider::Provider(file::System& file_system) : resource::Provider<Shape>(file_system) {}
+Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
+	resource::Provider<Shape>(file_system, thread_pool) {}
 
-std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*flags*/) {
+std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t flags) {
 	auto stream_pointer = file_system_.read_stream(filename);
 
 	std::vector<Index_triangle> triangles;
@@ -82,8 +84,13 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t /*fl
 
 	auto mesh = std::make_shared<Mesh>();
 
-	bvh::Builder builder;
-	builder.build<bvh::Data_generic<Triangle_type>>(mesh->tree_, triangles, vertices, 8);
+	if (static_cast<uint32_t>(Provider::Flags::BVH_preset_slow) == flags) {
+		bvh::Builder_SAH builder(16, 64);
+		builder.build<bvh::Data_generic<Triangle_type>>(mesh->tree_, triangles, vertices, 4, thread_pool_);
+	} else {
+		bvh::Builder_SUH builder;
+		builder.build<bvh::Data_generic<Triangle_type>>(mesh->tree_, triangles, vertices, 8);
+	}
 
 	mesh->init();
 

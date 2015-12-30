@@ -9,12 +9,11 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Builder_SUH::Split_candidate::Split_candidate(const math::plane& plane, uint8_t axis) : plane_(plane), axis_(axis) {}
-
 Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::float3& p,
 											  index begin, index end,
 											  const std::vector<Index_triangle>& triangles,
-											  const std::vector<Vertex>& vertices) : axis_(split_axis)  {
+											  const std::vector<Vertex>& vertices) :
+	d_(p.v[split_axis]), axis_(split_axis)  {
 	math::float3 n;
 
 	switch (split_axis) {
@@ -58,6 +57,16 @@ Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axi
 
 uint64_t Builder_SUH::Split_candidate::key() const {
 	return key_;
+}
+
+uint32_t Builder_SUH::Split_candidate::side(const math::float3& a, const math::float3& b, const math::float3& c) const {
+	return 0;
+}
+
+bool Builder_SUH::Split_candidate::completely_behind(const math::float3& a,
+													 const math::float3& b,
+													 const math::float3& c) const {
+	return true;
 }
 
 const math::plane& Builder_SUH::Split_candidate::plane() const {
@@ -158,7 +167,18 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb
 			[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 	}
 
-	return split_candidates_[0];
+	size_t sc = 0;
+	uint64_t  min_key = split_candidates_[0].key();
+
+	for (size_t i = 1, len = split_candidates_.size(); i < len; ++i) {
+		uint64_t key = split_candidates_[i].key();
+		if (key < min_key) {
+			sc = i;
+			min_key = key;
+		}
+	}
+
+	return split_candidates_[sc];
 }
 
 }}}}

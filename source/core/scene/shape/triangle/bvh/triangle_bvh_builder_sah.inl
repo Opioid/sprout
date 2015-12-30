@@ -16,10 +16,26 @@ template<typename Data>
 void Builder_SAH::build(Tree<Data>& tree,
 						const std::vector<Index_triangle>& triangles,
 						const std::vector<Vertex>& vertices,
-						uint32_t max_primitives) {
+						uint32_t max_primitives,
+						thread::Pool& thread_pool) {
 	std::vector<uint32_t> primitive_indices(triangles.size());
-	for (uint32_t i = 0, len = static_cast<uint32_t>(primitive_indices.size()); i < len; ++i) {
+	std::vector<math::aabb> primitive_bounds(triangles.size());
+
+	math::aabb aabb = math::aabb::empty();
+
+	for (uint32_t i = 0, len = static_cast<uint32_t>(triangles.size()); i < len; ++i) {
 		primitive_indices[i] = i;
+
+		auto& a = vertices[triangles[i].a].p;
+		auto& b = vertices[triangles[i].b].p;
+		auto& c = vertices[triangles[i].c].p;
+
+		math::float3 min = triangle_min(a, b, c);
+		math::float3 max = triangle_max(a, b, c);
+
+		primitive_bounds[i] = math::aabb(min, max);
+
+		aabb.merge_assign(primitive_bounds[i]);
 	}
 
 	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()));
@@ -27,7 +43,7 @@ void Builder_SAH::build(Tree<Data>& tree,
 	Build_node root;
 	split(&root,
 		  primitive_indices.begin(), primitive_indices.end(),
-		  triangles, vertices, max_primitives, 0, tree);
+		  aabb, triangles, vertices, primitive_bounds, max_primitives, thread_pool, tree);
 
 	num_nodes_ = 1;
 	root.num_sub_nodes(num_nodes_);
@@ -41,36 +57,44 @@ void Builder_SAH::build(Tree<Data>& tree,
 template<typename Data>
 void Builder_SAH::split(Build_node* node,
 						index begin, index end,
+						const math::aabb& aabb,
 						const std::vector<Index_triangle>& triangles,
 						const std::vector<Vertex>& vertices,
-						uint32_t max_primitives, uint32_t depth,
+						const std::vector<math::aabb>& triangle_bounds,
+						uint32_t max_primitives,
+						thread::Pool& thread_pool,
 						Tree<Data>& tree) {
-	node->aabb = submesh_aabb(begin, end, triangles, vertices);
+	node->aabb = aabb;
 
-	if (static_cast<uint32_t>(std::distance(begin, end)) <= max_primitives || depth > 20) {
+	uint32_t num_primitives = static_cast<uint32_t>(std::distance(begin, end));
+
+	if (num_primitives <= max_primitives) {
 		assign(node, begin, end, triangles, vertices, tree);
 	} else {
-		Split_candidate sp = splitting_plane(node->aabb, begin, end, triangles, vertices);
+		Split_candidate sp = splitting_plane(begin, end, aabb, triangle_bounds, thread_pool);
 
-		node->axis = sp.axis();
-
-		index pids1_begin = std::partition(begin, end,
-			[&sp, &triangles, &vertices](uint32_t pi) {
-				auto& t = triangles[pi];
-
-				return 0 == triangle_side(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, sp.plane());
-			});
-
-		if (begin == pids1_begin) {
-			// This can happen if we didn't find a good splitting plane.
-			// It means no triangle was completely on "this" side of the plane.
-			assign(node, pids1_begin, end, triangles, vertices, tree);
+		if (static_cast<float>(num_primitives) <= sp.cost()) {
+			assign(node, begin, end, triangles, vertices, tree);
 		} else {
-			node->children[0] = new Build_node;
-			split(node->children[0], begin, pids1_begin, triangles, vertices, max_primitives, depth + 1, tree);
+			node->axis = sp.axis();
 
-			node->children[1] = new Build_node;
-			split(node->children[1], pids1_begin, end, triangles, vertices, max_primitives, depth + 1, tree);
+			index pids1_begin = std::partition(begin, end,
+				[&sp, &triangle_bounds](uint32_t pi) { return sp.behind(triangle_bounds[pi].max()); });
+
+			if (begin == pids1_begin || end == pids1_begin) {
+				// This can happen if we didn't find a good splitting plane.
+				// It means every triangle was (partially) on the same side of the plane.
+
+				assign(node, begin, end, triangles, vertices, tree);
+			} else {
+				node->children[0] = new Build_node;
+				split(node->children[0], begin, pids1_begin, sp.aabb_0(), triangles, vertices, triangle_bounds,
+					  max_primitives, thread_pool, tree);
+
+				node->children[1] = new Build_node;
+				split(node->children[1], pids1_begin, end, sp.aabb_1(), triangles, vertices, triangle_bounds,
+					  max_primitives, thread_pool, tree);
+			}
 		}
 	}
 }

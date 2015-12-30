@@ -22,11 +22,8 @@ struct Data_triangle;
 namespace bvh {
 
 struct Node {
+	/*
 	static const uint32_t has_children_flag = 0xFFFFFFFC;
-
-	struct Children {
-		uint32_t a, b;
-	};
 
 	uint32_t axis() const;
 	void set_axis(uint32_t axis);
@@ -39,6 +36,20 @@ struct Node {
 	math::aabb aabb;
 	uint32_t start_index;
 	uint32_t end_index;
+	*/
+
+	uint32_t primitive_end() const;
+
+	math::aabb aabb;
+
+	union {
+		uint32_t second_child_index;
+		uint32_t primitive_offset;
+	};
+
+	uint8_t axis;
+	uint8_t num_primitives;
+	uint8_t pad[2];
 };
 
 template<typename Data>

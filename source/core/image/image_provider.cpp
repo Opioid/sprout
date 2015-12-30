@@ -7,7 +7,8 @@
 
 namespace image  {
 
-Provider::Provider(file::System& file_system) : resource::Provider<Image>(file_system) {}
+Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
+	resource::Provider<Image>(file_system, thread_pool) {}
 
 std::shared_ptr<Image> Provider::load(const std::string& filename, uint32_t flags) {
 	auto stream_pointer = file_system_.read_stream(filename);

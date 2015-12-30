@@ -33,7 +33,7 @@ public:
 	Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
 		   std::shared_ptr<sampler::Sampler> sampler);
 
-	void render(scene::Scene& scene, const Context& context, thread::Pool& pool,
+	void render(scene::Scene& scene, const Context& context, thread::Pool& thread_pool,
 				exporting::Sink& exporter, progress::Sink& progressor);
 
 private:

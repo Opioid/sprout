@@ -6,158 +6,126 @@
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
+#include "base/thread/thread_pool.hpp"
+
+#include <iostream>
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Builder_SAH::Split_candidate::Split_candidate(const math::plane& plane, uint8_t axis) : plane_(plane), axis_(axis) {}
+Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p) :
+	aabb_0_(math::aabb::empty()),
+	aabb_1_(math::aabb::empty()),
+	d_(p.v[split_axis]),
+	axis_(split_axis) {}
 
-Builder_SAH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::float3& p,
-											  index begin, index end,
-											  const std::vector<Index_triangle>& triangles,
-											  const std::vector<Vertex>& vertices) : axis_(split_axis)  {
-	math::float3 n;
+void Builder_SAH::Split_candidate::evaluate(index begin, index end,
+											float aabb_surface_area,
+											const std::vector<math::aabb>& triangle_bounds) {
+	uint32_t num_side_0 = 0;
+	uint32_t num_side_1 = 0;
 
-	switch (split_axis) {
-	default:
-	case 0: n = math::float3(1.f, 0.f, 0.f); break;
-	case 1: n = math::float3(0.f, 1.f, 0.f); break;
-	case 2: n = math::float3(0.f, 0.f, 1.f); break;
-	}
-
-	plane_ = math::plane(n, p);
-
-	key_ = std::abs(static_cast<int>(bb_axis) - static_cast<int>(split_axis));
-
-	int num_side_0 = 0;
-	int num_side_1 = 0;
-	uint32_t split = 0;
 	for (index i = begin; i != end; ++i) {
-		auto pi = *i;
-		auto& a = vertices[triangles[pi].a].p;
-		auto& b = vertices[triangles[pi].b].p;
-		auto& c = vertices[triangles[pi].c].p;
-		uint32_t side = triangle_side(a, b, c, plane_);
+		auto& bounds = triangle_bounds[*i];
 
-		if (0 == side) {
+		if (behind(bounds.max())) {
 			++num_side_0;
+
+			aabb_0_.merge_assign(bounds);
 		} else {
 			++num_side_1;
 
-			if (2 == side) {
-				++split;
-			}
+			aabb_1_.merge_assign(bounds);
 		}
 	}
 
-	key_ += split;
-
-	if (0 == num_side_0) {
-		key_ += 0x1000000000000000;
+	if (0 == num_side_0 || 0 == num_side_1) {
+		cost_ = 2.f + static_cast<float>(std::distance(begin, end));
+	} else {
+		cost_ = 2.f + (static_cast<float>(num_side_0) * aabb_0_.surface_area() +
+					   static_cast<float>(num_side_1) * aabb_1_.surface_area()) / aabb_surface_area;
 	}
 }
 
-uint64_t Builder_SAH::Split_candidate::key() const {
-	return key_;
+float Builder_SAH::Split_candidate::cost() const {
+	return cost_;
 }
 
-const math::plane& Builder_SAH::Split_candidate::plane() const {
-	return plane_;
+bool Builder_SAH::Split_candidate::behind(const math::float3& point) const {
+	return point.v[axis_] < d_;
 }
 
 uint8_t Builder_SAH::Split_candidate::axis() const {
 	return axis_;
 }
 
-Builder_SAH::Split_candidate Builder_SAH::splitting_plane(const math::aabb& aabb,
-														  index begin, index end,
-														  const std::vector<Index_triangle>& triangles,
-														  const std::vector<Vertex>& vertices) {
+const math::aabb& Builder_SAH::Split_candidate::aabb_0() const {
+	return aabb_0_;
+}
+
+const math::aabb& Builder_SAH::Split_candidate::aabb_1() const {
+	return aabb_1_;
+}
+
+Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold) :
+	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
+
+Builder_SAH::Split_candidate Builder_SAH::splitting_plane(index begin, index end,
+														  const math::aabb& aabb,
+														  const std::vector<math::aabb>& triangle_bounds,
+														  thread::Pool& thread_pool) {
 	split_candidates_.clear();
 
-	math::float3 average = math::float3::identity;
+	uint32_t num_triangles = static_cast<uint32_t>(std::distance(begin, end));
 
-	for (index i = begin; i != end; ++i) {
-		auto& t = triangles[*i];
-		average += vertices[t.a].p + vertices[t.b].p + vertices[t.c].p;
-	}
-
-	average /= static_cast<float>(std::distance(begin, end) * 3);
-
-	math::float3 halfsize = aabb.halfsize();
-
-	uint8_t bb_axis;
-
-	if (halfsize.x >= halfsize.y && halfsize.x >= halfsize.z) {
-		bb_axis = 0;
-	} else if (halfsize.y >= halfsize.x && halfsize.y >= halfsize.z) {
-		bb_axis = 1;
-	} else {
-		bb_axis = 2;
-	}
-
-	split_candidates_.push_back(Split_candidate(bb_axis, 0, average,
-								begin, end, triangles, vertices));
-
-	split_candidates_.push_back(Split_candidate(bb_axis, 1, average,
-								begin, end, triangles, vertices));
-
-	split_candidates_.push_back(Split_candidate(bb_axis, 2, average,
-								begin, end, triangles, vertices));
-
-	std::sort(split_candidates_.begin(), split_candidates_.end(),
-		[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
-
-	if (split_candidates_[0].key() >= 0x1000000000000000) {
-		std::vector<math::float3> positions;
-		positions.reserve(std::distance(begin, end));
-
+	if (num_triangles <= sweep_threshold_) {
 		for (index i = begin; i != end; ++i) {
-			auto& t = triangles[*i];
-			positions.push_back(vertices[t.a].p);
-			positions.push_back(vertices[t.b].p);
-			positions.push_back(vertices[t.c].p);
+			const math::float3& max = triangle_bounds[*i].max();
+			split_candidates_.push_back(Split_candidate(0, max));
+			split_candidates_.push_back(Split_candidate(1, max));
+			split_candidates_.push_back(Split_candidate(2, max));
 		}
+	} else {
+		math::float3 halfsize = aabb.halfsize();
+		math::float3 position = aabb.position();
 
-		auto compare = [](const math::float3& a, const math::float3& b) { return a.x < b.x; };
+		math::float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
+		for (uint32_t i = 1; i < num_slices_; ++i) {
+			float fi = static_cast<float>(i);
 
-		size_t middle = positions.size() / 2;
-		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(), compare);
-		math::float3 x_median = positions[middle];
+			math::float3 slice_x(aabb.min().x + fi * step.x, position.y, position.z);
+			split_candidates_.push_back(Split_candidate(0, slice_x));
 
-		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(), compare);
-		math::float3 y_median = positions[middle];
+			math::float3 slice_y(position.x, aabb.min().y + fi * step.y, position.z);
+			split_candidates_.push_back(Split_candidate(1, slice_y));
 
-		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(), compare);
-		math::float3 z_median = positions[middle];
-
-		split_candidates_.clear();
-
-		split_candidates_.push_back(Split_candidate(bb_axis, 0, x_median,
-									begin, end, triangles, vertices));
-		split_candidates_.push_back(Split_candidate(bb_axis, 0, y_median,
-									begin, end, triangles, vertices));
-		split_candidates_.push_back(Split_candidate(bb_axis, 0, z_median,
-									begin, end, triangles, vertices));
-
-		split_candidates_.push_back(Split_candidate(bb_axis, 1, y_median,
-									begin, end, triangles, vertices));
-		split_candidates_.push_back(Split_candidate(bb_axis, 1, x_median,
-									begin, end, triangles, vertices));
-		split_candidates_.push_back(Split_candidate(bb_axis, 1, z_median,
-									begin, end, triangles, vertices));
-
-		split_candidates_.push_back(Split_candidate(bb_axis, 2, z_median,
-									begin, end, triangles, vertices));
-		split_candidates_.push_back(Split_candidate(bb_axis, 2, x_median,
-									begin, end, triangles, vertices));
-		split_candidates_.push_back(Split_candidate(bb_axis, 2, y_median,
-									begin, end, triangles, vertices));
-
-		std::sort(split_candidates_.begin(), split_candidates_.end(),
-			[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
+			math::float3 slice_z(position.x, position.y, aabb.min().z + fi * step.z);
+			split_candidates_.push_back(Split_candidate(2, slice_z));
+		}
 	}
 
-	return split_candidates_[0];
+	float aabb_surface_area = aabb.surface_area();
+
+	thread_pool.run_range(
+		[this, begin, end, aabb_surface_area, &triangle_bounds]
+		(int32_t sc_begin, int32_t sc_end) {
+			for (int32_t i = sc_begin; i < sc_end; ++i) {
+				split_candidates_[i].evaluate(begin, end, aabb_surface_area, triangle_bounds);
+			}
+		},
+		0, static_cast<int32_t>(split_candidates_.size()));
+
+	size_t sc = 0;
+	float  min_cost = split_candidates_[0].cost();
+
+	for (size_t i = 1, len = split_candidates_.size(); i < len; ++i) {
+		float cost = split_candidates_[i].cost();
+		if (cost < min_cost) {
+			sc = i;
+			min_cost = cost;
+		}
+	}
+
+	return split_candidates_[sc];
 }
 
 }}}}

@@ -15,7 +15,7 @@ class Texture_2D;
 class Provider : public resource::Provider<Texture_2D> {
 public:
 
-	Provider(file::System& file_system);
+	Provider(file::System& file_system, thread::Pool& thread_pool);
 
 	enum class Flags {
 		None              = 0,

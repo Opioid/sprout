@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 
 	logging::info("#Threads " + string::to_string(num_workers));
 
-	thread::Pool pool(num_workers);
+	thread::Pool thread_pool(num_workers);
 
 	logging::info("Loading...");
 
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 
 	// The scene loader must be alive during rendering, otherwise some resources might be released prematurely.
 	// This is confusing and should be adressed.
-	scene::Loader scene_loader(file_system, num_workers);
+	scene::Loader scene_loader(file_system, thread_pool);
 	scene::Scene scene;
 
 	try {
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 
 	auto rendering_start = clock.now();
 
-	driver.render(scene, take->context, pool, *take->exporter, progressor);
+	driver.render(scene, take->context, thread_pool, *take->exporter, progressor);
 
 	auto rendering_duration = clock.now() - rendering_start;
 	logging::info("Total render time " + string::to_string(chrono::duration_to_seconds(rendering_duration)) + " s");

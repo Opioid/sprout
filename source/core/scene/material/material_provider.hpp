@@ -27,9 +27,8 @@ typedef std::vector<std::shared_ptr<IMaterial>> Materials;
 class Provider : public resource::Provider<IMaterial> {
 public:
 
-	Provider(file::System& file_system,
-			 resource::Cache<image::texture::Texture_2D>& texture_cache,
-			 uint32_t num_workers);
+	Provider(file::System& file_system, thread::Pool& thread_pool,
+			 resource::Cache<image::texture::Texture_2D>& texture_cache);
 
 	virtual std::shared_ptr<IMaterial> load(const std::string& filename, uint32_t flags = 0);
 

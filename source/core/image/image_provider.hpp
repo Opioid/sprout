@@ -10,7 +10,7 @@ class Image;
 class Provider : public resource::Provider<Image> {
 public:
 
-	Provider(file::System& file_system);
+	Provider(file::System& file_system, thread::Pool& thread_pool);
 
 	virtual std::shared_ptr<Image> load(const std::string& filename, uint32_t flags = 0) final override;
 

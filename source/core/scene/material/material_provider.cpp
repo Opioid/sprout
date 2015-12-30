@@ -16,21 +16,21 @@
 #include "substitute/substitute_sample.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
+#include "base/thread/thread_pool.hpp"
 #include <iostream>
 
 namespace scene { namespace material {
 
-Provider::Provider(file::System& file_system,
-				   resource::Cache<image::texture::Texture_2D>& texture_cache,
-				   uint32_t num_workers) :
-	resource::Provider<IMaterial>(file_system),
+Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
+				   resource::Cache<image::texture::Texture_2D>& texture_cache) :
+	resource::Provider<IMaterial>(file_system, thread_pool),
 	texture_cache_(texture_cache),
-	cloth_cache_(num_workers),
-	glass_cache_(num_workers),
-	light_cache_(num_workers),
-	metal_iso_cache_(num_workers),
-	metal_aniso_cache_(num_workers),
-	substitute_cache_(num_workers) {
+	cloth_cache_(thread_pool.num_threads()),
+	glass_cache_(thread_pool.num_threads()),
+	light_cache_(thread_pool.num_threads()),
+	metal_iso_cache_(thread_pool.num_threads()),
+	metal_aniso_cache_(thread_pool.num_threads()),
+	substitute_cache_(thread_pool.num_threads()) {
 	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr, false);
 	material->set_color(math::float3(1.f, 0.f, 0.f)),
 	material->set_roughness(1.f);
@@ -304,7 +304,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	std::shared_ptr<image::texture::Texture_2D> emission_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
-	math::float3 color(0.75f, 0.75f, 0.75f);
+    math::float3 color(0.6f, 0.6f, 0.6f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float emission_factor = 1.f;

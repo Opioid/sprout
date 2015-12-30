@@ -58,8 +58,8 @@ public:
 	float tick_duration() const;
 	float simulation_time() const;
 
-	void tick(thread::Pool& pool);
-	float seek(float time, thread::Pool& pool);
+	void tick(thread::Pool& thread_pool);
+	float seek(float time, thread::Pool& thread_pool);
 
 	entity::Dummy* create_dummy();
 

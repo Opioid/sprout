@@ -36,6 +36,12 @@ Vector3<T> AABB<T>::halfsize() const {
 }
 
 template<typename T>
+T AABB<T>::surface_area() const {
+	Vector3<T> d = bounds_[1] - bounds_[0];
+	return T(2) * (d.x * d.y + d.x * d.z + d.y * d.z);
+}
+
+template<typename T>
 T AABB<T>::volume() const {
 	Vector3<T> d = bounds_[1] - bounds_[0];
 	return d.x * d.y * d.z;

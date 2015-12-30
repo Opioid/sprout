@@ -20,8 +20,6 @@ private:
 	class Split_candidate {
 	public:
 
-		Split_candidate(const math::plane& plane, uint8_t axis);
-
 		typedef std::vector<uint32_t>::iterator index;
 
 		Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::float3& p,
@@ -30,6 +28,10 @@ private:
 						const std::vector<Vertex>& vertices);
 
 		uint64_t key() const;
+
+		uint32_t side(const math::float3& a, const math::float3& b, const math::float3& c) const;
+
+		bool completely_behind(const math::float3& a, const math::float3& b, const math::float3& c) const;
 
 		const math::plane& plane() const;
 
@@ -40,6 +42,8 @@ private:
 		uint64_t key_;
 
 		math::plane plane_;
+
+		float d_;
 
 		uint8_t axis_;
 	};

@@ -56,7 +56,7 @@ float Scene::simulation_time() const {
 	return simulation_time_;
 }
 
-void Scene::tick(thread::Pool& pool) {
+void Scene::tick(thread::Pool& thread_pool) {
 	for (auto a : animations_) {
 		a->tick(tick_duration_);
 	}
@@ -66,7 +66,7 @@ void Scene::tick(thread::Pool& pool) {
 	}
 
 	for (auto p : finite_props_) {
-		p->morph(pool);
+		p->morph(thread_pool);
 	}
 
 	for (auto d : dummies_) {
@@ -86,7 +86,7 @@ void Scene::tick(thread::Pool& pool) {
 	simulation_time_ += tick_duration_;
 }
 
-float Scene::seek(float time, thread::Pool& pool) {
+float Scene::seek(float time, thread::Pool& thread_pool) {
 //	float tick_offset = std::fmod(time, tick_duration_);
 
 	// see http://stackoverflow.com/questions/4218961/why-fmod1-0-0-1-1
@@ -105,7 +105,7 @@ float Scene::seek(float time, thread::Pool& pool) {
 
 	simulation_time_ = first_tick;
 
-	tick(pool);
+	tick(thread_pool);
 
 	return tick_offset;
 }

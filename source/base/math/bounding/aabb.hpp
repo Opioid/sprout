@@ -19,6 +19,7 @@ public:
 	Vector3<T> position() const;
 	Vector3<T> halfsize() const;
 
+	T surface_area() const;
 	T volume() const;
 
 	bool intersect_p(const math::Optimized_ray<T>& ray) const;

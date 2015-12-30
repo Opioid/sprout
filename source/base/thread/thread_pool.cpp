@@ -49,7 +49,9 @@ void Pool::run_range(Range_program program, int32_t begin, int32_t end) {
 
 void Pool::wake_all() {
 	for (auto& u : uniques_) {
+		std::unique_lock<std::mutex> lock(u.mutex);
 		u.wake  = true;
+		lock.unlock();
 		u.wake_signal.notify_one();
 	}
 }
@@ -66,9 +68,11 @@ void Pool::wake_all(int32_t begin, int32_t end) {
 		b = e;
 		e += step;
 
+		std::unique_lock<std::mutex> lock(u.mutex);
 		u.begin = b;
 		u.end   = std::min(e, end);
 		u.wake  = true;
+		lock.unlock();
 		u.wake_signal.notify_one();
 	}
 }
@@ -76,14 +80,14 @@ void Pool::wake_all(int32_t begin, int32_t end) {
 void Pool::wait_all() {
 	for (auto& u : uniques_) {
 		std::unique_lock<std::mutex> lock(u.mutex);
-		u.done_signal.wait(lock, [&u]{return !u.wake;});
+		u.done_signal.wait(lock, [&u]{ return !u.wake; });
 	}
 }
 
 void Pool::loop(uint32_t id, Unique& unique, const Shared& shared) {
 	for (;;) {
 		std::unique_lock<std::mutex> lock(unique.mutex);
-		unique.wake_signal.wait(lock, [&unique]{return unique.wake;});
+		unique.wake_signal.wait(lock, [&unique]{ return unique.wake; });
 
 		if (shared.end) {
 			break;

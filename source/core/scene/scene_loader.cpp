@@ -28,18 +28,18 @@
 
 namespace scene {
 
-Loader::Loader(file::System& file_system, uint32_t num_workers) :
+Loader::Loader(file::System& file_system, thread::Pool& thread_pool) :
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
 	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
-	mesh_provider_(file_system),
+	mesh_provider_(file_system, thread_pool),
 	mesh_cache_(mesh_provider_),
-	texture_provider_(file_system),
+	texture_provider_(file_system, thread_pool),
 	texture_cache_(texture_provider_),
-	material_provider_(file_system, texture_cache_, num_workers),
+	material_provider_(file_system, thread_pool, texture_cache_),
 	material_cache_(material_provider_) {}
 
 Loader::~Loader() {}
@@ -187,7 +187,15 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 	std::string file = json::read_string(shape_value, "file");
 	if (!file.empty()) {
 		try {
-			return mesh_cache_.load(file);
+			shape::triangle::Provider::Flags flags = shape::triangle::Provider::Flags::BVH_preset_fast;
+
+			std::string bvh_preset = json::read_string(shape_value, "bvh_preset");
+
+			if ("slow" == bvh_preset) {
+				flags = shape::triangle::Provider::Flags::BVH_preset_slow;
+			}
+
+			return mesh_cache_.load(file, static_cast<uint32_t>(flags));
 		} catch (const std::exception& e) {
 			std::cout << "Cannot load \"" << file << "\": " << e.what() << std::endl;
 		}

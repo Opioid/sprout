@@ -4,6 +4,14 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
+math::float3 triangle_min(const math::float3& a, const math::float3& b, const math::float3& c) {
+	return math::min(a, math::min(b, c));
+}
+
+math::float3 triangle_max(const math::float3& a, const math::float3& b, const math::float3& c) {
+	return math::max(a, math::max(b, c));
+}
+
 math::float3 triangle_min(const math::float3& a, const math::float3& b, const math::float3& c, const math::float3& x) {
 	return math::min(a, math::min(b, math::min(c, x)));
 }
@@ -38,6 +46,15 @@ uint32_t triangle_side(const math::float3& a, const math::float3& b, const math:
 	} else {
 		return 2;
 	}
+}
+
+bool triangle_completely_behind(const math::float3& a, const math::float3& b, const math::float3& c,
+								const math::plane& p) {
+	if (math::behind(p, a) && math::behind(p, b) && math::behind(p, c)) {
+		return true;
+	}
+
+	return false;
 }
 
 }}}}

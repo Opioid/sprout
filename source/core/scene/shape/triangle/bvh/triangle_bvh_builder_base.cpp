@@ -30,6 +30,7 @@ void Build_node::num_sub_nodes(uint32_t& count) {
 void Builder_base::serialize(Build_node* node) {
 	auto& n = new_node();
 	n.aabb = node->aabb;
+	/*
 	n.start_index = node->start_index;
 	n.end_index = node->end_index;
 
@@ -44,6 +45,21 @@ void Builder_base::serialize(Build_node* node) {
 
 		// axis and start_index share the same memory, so only set this if node contains no triangles
 		n.set_axis(node->axis);
+	}
+	*/
+
+	if (node->children[0]) {
+		serialize(node->children[0]);
+
+		n.second_child_index = current_node_index();
+
+		serialize(node->children[1]);
+
+		n.axis = node->axis;
+		n.num_primitives = 0;
+	} else {
+		n.primitive_offset = node->start_index;
+		n.num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
 	}
 }
 

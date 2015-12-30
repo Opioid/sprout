@@ -10,6 +10,8 @@
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
 
+#include <iostream>
+
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
@@ -58,13 +60,14 @@ void Builder_SUH::split(Build_node* node,
 			[&sp, &triangles, &vertices](uint32_t pi) {
 				auto& t = triangles[pi];
 
-				return 0 == triangle_side(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, sp.plane());
+				return triangle_completely_behind(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, sp.plane());
 			});
 
-		if (begin == pids1_begin) {
+		if (begin == pids1_begin || end == pids1_begin) {
 			// This can happen if we didn't find a good splitting plane.
-			// It means no triangle was completely on "this" side of the plane.
-			assign(node, pids1_begin, end, triangles, vertices, tree);
+			// It means every triangle was (partially) on the same side of the plane.
+
+			assign(node, begin, end, triangles, vertices, tree);
 		} else {
 			node->children[0] = new Build_node;
 			split(node->children[0], begin, pids1_begin, triangles, vertices, max_primitives, depth + 1, tree);

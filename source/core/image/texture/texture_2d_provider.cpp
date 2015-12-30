@@ -14,9 +14,9 @@
 
 namespace image { namespace texture {
 
-Provider::Provider(file::System& file_system) :
-	resource::Provider<Texture_2D>(file_system),
-	image_provider_(file_system_),
+Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
+	resource::Provider<Texture_2D>(file_system, thread_pool),
+	image_provider_(file_system_, thread_pool),
 	image_cache_(image_provider_) {
 	encoding::init();
 }

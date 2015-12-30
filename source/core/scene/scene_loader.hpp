@@ -27,7 +27,7 @@ class Prop;
 class Loader {
 public:
 
-	Loader(file::System& file_system, uint32_t num_workers);
+	Loader(file::System& file_system, thread::Pool& thread_pool);
 	~Loader();
 
 	void load(std::istream& stream, Scene& scene);
