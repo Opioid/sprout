@@ -35,14 +35,14 @@ Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axi
 		auto& a = vertices[triangles[pi].a].p;
 		auto& b = vertices[triangles[pi].b].p;
 		auto& c = vertices[triangles[pi].c].p;
-		uint32_t side = triangle_side(a, b, c, plane_);
+		uint32_t s = side(a, b, c);
 
-		if (0 == side) {
+		if (0 == s) {
 			++num_side_0;
 		} else {
 			++num_side_1;
 
-			if (2 == side) {
+			if (2 == s) {
 				++split;
 			}
 		}
@@ -60,13 +60,37 @@ uint64_t Builder_SUH::Split_candidate::key() const {
 }
 
 uint32_t Builder_SUH::Split_candidate::side(const math::float3& a, const math::float3& b, const math::float3& c) const {
-	return 0;
+	uint32_t behind = 0;
+
+	if (a.v[axis_] < d_) {
+		++behind;
+	}
+
+	if (b.v[axis_] < d_) {
+		++behind;
+	}
+
+	if (c.v[axis_] < d_) {
+		++behind;
+	}
+
+	if (3 == behind) {
+		return 0;
+	} else if (0 == behind) {
+		return 1;
+	} else {
+		return 2;
+	}
 }
 
 bool Builder_SUH::Split_candidate::completely_behind(const math::float3& a,
 													 const math::float3& b,
 													 const math::float3& c) const {
-	return true;
+	if (a.v[axis_] < d_ && b.v[axis_] < d_ && c.v[axis_] < d_) {
+		return true;
+	}
+
+	return false;
 }
 
 const math::plane& Builder_SUH::Split_candidate::plane() const {
