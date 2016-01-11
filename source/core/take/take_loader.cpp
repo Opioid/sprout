@@ -19,7 +19,7 @@
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
-#include "rendering/integrator/volume/emission.hpp"
+#include "rendering/integrator/volume/attenuation.hpp"
 #include "sampler/ems_sampler.hpp"
 #include "sampler/ld_sampler.hpp"
 #include "sampler/random_sampler.hpp"
@@ -99,7 +99,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	}
 
 	if (!take->volume_integrator_factory) {
-		take->volume_integrator_factory = std::make_shared<rendering::integrator::volume::Emission_factory>(
+		take->volume_integrator_factory = std::make_shared<rendering::integrator::volume::Attenuation_factory>(
 					take->settings);
 	}
 
@@ -459,8 +459,8 @@ Loader::load_volume_integrator_factory(const rapidjson::Value& integrator_value,
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("Emission" == node_name) {
-			return std::make_shared<rendering::integrator::volume::Emission_factory>(settings);
+		if ("Attenuation" == node_name) {
+			return std::make_shared<rendering::integrator::volume::Attenuation_factory>(settings);
 		}
 	}
 

@@ -3,6 +3,7 @@
 #include "scene/entity/dummy.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
+#include "scene/prop/volume.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
@@ -15,9 +16,11 @@
 
 namespace scene {
 
-Scene::Scene() : tick_duration_(1.f / 60.f), simulation_time_(0.f) {}
+Scene::Scene() : tick_duration_(1.f / 60.f), simulation_time_(0.f), volume_region_(nullptr) {}
 
 Scene::~Scene() {
+	delete volume_region_;
+
 	for (auto l : lights_) {
 		delete l;
 	}
@@ -54,6 +57,24 @@ float Scene::tick_duration() const {
 
 float Scene::simulation_time() const {
 	return simulation_time_;
+}
+
+const std::vector<light::Light*>& Scene::lights() const {
+	return lights_;
+}
+
+const light::Light* Scene::montecarlo_light(float random, float& pdf) const {
+	if (lights_.empty()) {
+		return nullptr;
+	}
+
+	uint32_t l = light_distribution_.sample_discrete(random, pdf);
+
+	return lights_[l];
+}
+
+const Volume* Scene::volume_region() const {
+	return volume_region_;
 }
 
 void Scene::tick(thread::Pool& thread_pool) {
@@ -130,20 +151,6 @@ Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape, const material::Ma
 	return prop;
 }
 
-const std::vector<light::Light*>& Scene::lights() const {
-	return lights_;
-}
-
-const light::Light* Scene::montecarlo_light(float random, float& pdf) const {
-	if (lights_.empty()) {
-		return nullptr;
-	}
-
-	uint32_t l = light_distribution_.sample_discrete(random, pdf);
-
-	return lights_[l];
-}
-
 light::Prop_light* Scene::create_prop_light(Prop* prop, uint32_t part) {
 	light::Prop_light* light = new light::Prop_light;
 	lights_.push_back(light);
@@ -156,6 +163,11 @@ light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t par
 	lights_.push_back(light);
 	light->init(prop, part);
 	return light;
+}
+
+Volume* Scene::create_volume() {
+	volume_region_ = new Volume;
+	return volume_region_;
 }
 
 void Scene::add_animation(std::shared_ptr<animation::Animation> animation) {

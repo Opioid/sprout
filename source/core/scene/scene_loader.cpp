@@ -6,6 +6,7 @@
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
 #include "scene/prop/prop.hpp"
+#include "scene/prop/volume.hpp"
 #include "scene/shape/canopy.hpp"
 #include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/disk.hpp"
@@ -82,6 +83,8 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 			entity = load_prop(*e, scene);
 		} else if ("Dummy" == type_name) {
 			entity = scene.create_dummy();
+		} else if ("Volume" == type_name) {
+			entity = scene.create_volume();
 		}
 
 		if (!entity) {

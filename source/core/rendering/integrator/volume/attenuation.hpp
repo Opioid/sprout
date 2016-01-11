@@ -4,16 +4,16 @@
 
 namespace rendering { namespace integrator { namespace volume {
 
-class Emission : public Integrator {
+class Attenuation : public Integrator {
 public:
 
-	Emission(const take::Settings& take_settings, math::random::Generator& rng);
+	Attenuation(const take::Settings& take_settings, math::random::Generator& rng);
 };
 
-class Emission_factory : public Integrator_factory {
+class Attenuation_factory : public Integrator_factory {
 public:
 
-	Emission_factory(const take::Settings& settings);
+	Attenuation_factory(const take::Settings& settings);
 
 	virtual Integrator* create(math::random::Generator& rng) const;
 };
