@@ -1,6 +1,7 @@
 #include "rendering_worker.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "rendering/integrator/surface/surface_integrator.hpp"
+#include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
@@ -16,18 +17,22 @@
 
 namespace rendering {
 
-Worker::Worker() : sampler_(nullptr), node_stack_(128) {}
+Worker::Worker() : surface_integrator_(nullptr), volume_integrator_(nullptr), sampler_(nullptr), node_stack_(128) {}
 
 Worker::~Worker() {
 	delete sampler_;
+	delete volume_integrator_;
+	delete surface_integrator_;
 }
 
 void Worker::init(uint32_t id, const math::random::Generator& rng,
 				  integrator::surface::Integrator_factory& surface_integrator_factory,
+				  integrator::volume::Integrator_factory& volume_integrator_factory,
 				  sampler::Sampler& sampler, const scene::Scene& scene) {
 	id_ = id;
 	rng_ = rng;
 	surface_integrator_ = surface_integrator_factory.create(rng_);
+	volume_integrator_  = volume_integrator_factory.create(rng_);
 	sampler_ = sampler.clone();
 	scene_ = &scene;
 }

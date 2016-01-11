@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
 	auto loading_duration = clock.now() - loading_start;
 	logging::info("Loading time " + string::to_string(chrono::duration_to_seconds(loading_duration)) + " s");
 
-	rendering::Driver driver(take->surface_integrator_factory, take->sampler);
+	rendering::Driver driver(take->surface_integrator_factory, take->volume_integrator_factory, take->sampler);
 
 	progress::Stdout progressor;
 

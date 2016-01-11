@@ -10,7 +10,7 @@ public:
 	Integrator(const take::Settings& settings, math::random::Generator& rng);
 	virtual ~Integrator();
 
-	virtual math::float4 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) = 0;
+
 };
 
 class Integrator_factory {

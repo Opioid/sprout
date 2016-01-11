@@ -19,6 +19,7 @@
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
+#include "rendering/integrator/volume/emission.hpp"
 #include "sampler/ems_sampler.hpp"
 #include "sampler/ld_sampler.hpp"
 #include "sampler/random_sampler.hpp"
@@ -61,7 +62,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		} else if ("num_frames" == node_name) {
 			take->context.num_frames = json::read_uint(node_value);
 		} else if ("integrator" == node_name) {
-			take->surface_integrator_factory = load_surface_integrator_factory(node_value, take->settings);
+			load_integrator_factories(node_value, *take);
 		} else if ("sampler" == node_name) {
 			take->sampler = load_sampler(node_value, take->rng);
 		} else if ("scene" == node_name) {
@@ -375,9 +376,21 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 	return nullptr;
 }
 
+void Loader::load_integrator_factories(const rapidjson::Value& integrator_value, Take& take) const {
+	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("surface" == node_name) {
+			take.surface_integrator_factory = load_surface_integrator_factory(node_value, take.settings);
+		} else if ("volume" == node_name) {
+			take.volume_integrator_factory = load_volume_integrator_factory(node_value, take.settings);
+		}
+	}
+}
+
 std::shared_ptr<rendering::integrator::surface::Integrator_factory>
-Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value,
-										const Settings& settings) const {
+Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
 	uint32_t default_max_light_samples = 1;
@@ -429,6 +442,20 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 			}
 
 			return std::make_shared<rendering::integrator::surface::Normal_factory>(settings, vector);
+		}
+	}
+
+	return nullptr;
+}
+
+std::shared_ptr<rendering::integrator::volume::Integrator_factory>
+Loader::load_volume_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const {
+	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("Emission" == node_name) {
+			return std::make_shared<rendering::integrator::volume::Emission_factory>(settings);
 		}
 	}
 

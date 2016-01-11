@@ -28,11 +28,12 @@ namespace filter { class Filter; }
 
 }
 
-namespace integrator { namespace surface {
+namespace integrator {
 
-class Integrator_factory;
+namespace surface { class Integrator_factory; }
+namespace volume  { class Integrator_factory; }
 
-}}
+}
 
 }
 
@@ -65,9 +66,13 @@ private:
 	std::shared_ptr<sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value,
 												   math::random::Generator& rng) const;
 
+	void load_integrator_factories(const rapidjson::Value& integrator_value, Take& take) const;
+
 	std::shared_ptr<rendering::integrator::surface::Integrator_factory>
-	load_surface_integrator_factory(const rapidjson::Value& integrator_value,
-									const Settings& settings) const;
+	load_surface_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const;
+
+	std::shared_ptr<rendering::integrator::volume::Integrator_factory>
+	load_volume_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const;
 
 	bool peek_alpha_transparency(const rapidjson::Value& take_value) const;
 

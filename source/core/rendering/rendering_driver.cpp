@@ -18,8 +18,10 @@
 namespace rendering {
 
 Driver::Driver(std::shared_ptr<integrator::surface::Integrator_factory> surface_integrator_factory,
+			   std::shared_ptr<integrator::volume::Integrator_factory> volume_integrator_factory,
 			   std::shared_ptr<sampler::Sampler> sampler) :
 	surface_integrator_factory_(surface_integrator_factory),
+	volume_integrator_factory_(volume_integrator_factory),
 	sampler_(sampler),
 	tile_dimensions_(math::int2(32, 32)) {}
 
@@ -34,7 +36,7 @@ void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& t
 	std::vector<Camera_worker> workers(num_workers);
 	for (uint32_t i = 0; i < num_workers; ++i) {
 		math::random::Generator rng(i + 0, i + 1, i + 2, i + 3);
-		workers[i].init(i, rng, *surface_integrator_factory_, *sampler_, scene);
+		workers[i].init(i, rng, *surface_integrator_factory_, *volume_integrator_factory_, *sampler_, scene);
 	}
 
 	std::chrono::high_resolution_clock clock;

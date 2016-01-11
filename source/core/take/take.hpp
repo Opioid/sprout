@@ -8,9 +8,14 @@
 
 namespace exporting { class Sink; }
 
-namespace scene { namespace animation { class Animation; }}
+namespace scene { namespace animation { class Animation; } }
 
-namespace rendering { namespace integrator { namespace surface { class Integrator_factory; }}}
+namespace rendering { namespace integrator {
+
+namespace surface { class Integrator_factory; }
+namespace volume  { class Integrator_factory; }
+
+}}
 
 namespace sampler { class Sampler; }
 
@@ -24,6 +29,7 @@ struct Take {
 	rendering::Context													context;
 	std::shared_ptr<scene::animation::Animation>						camera_animation;
 	std::shared_ptr<rendering::integrator::surface::Integrator_factory> surface_integrator_factory;
+	std::shared_ptr<rendering::integrator::volume::Integrator_factory>  volume_integrator_factory;
 	std::shared_ptr<sampler::Sampler>									sampler;
 	std::unique_ptr<exporting::Sink>									exporter;
 	math::random::Generator rng;

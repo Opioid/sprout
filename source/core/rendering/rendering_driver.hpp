@@ -26,16 +26,18 @@ class Tile_queue;
 class Camera_worker;
 struct Context;
 
-namespace integrator { namespace surface {
+namespace integrator {
 
-class Integrator_factory;
+namespace surface { class Integrator_factory; }
+namespace volume { class Integrator_factory; }
 
-}}
+}
 
 class Driver {
 public:
 
 	Driver(std::shared_ptr<integrator::surface::Integrator_factory> surface_integrator_factory,
+		   std::shared_ptr<integrator::volume::Integrator_factory> volume_integrator_factory,
 		   std::shared_ptr<sampler::Sampler> sampler);
 
 	void render(scene::Scene& scene, const Context& context, thread::Pool& thread_pool,
@@ -52,6 +54,7 @@ private:
 									  const scene::camera::Camera& camera, uint32_t num_tiles) const;
 
 	std::shared_ptr<integrator::surface::Integrator_factory> surface_integrator_factory_;
+	std::shared_ptr<integrator::volume::Integrator_factory> volume_integrator_factory_;
 	std::shared_ptr<sampler::Sampler> sampler_;
 
 	math::int2 tile_dimensions_;
