@@ -9,10 +9,10 @@
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
-namespace rendering {
+namespace rendering { namespace integrator { namespace surface {
 
 Ao::Ao(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, settings.num_samples) {}
+	Integrator(take_settings, rng), settings_(settings), sampler_(rng, settings.num_samples) {}
 
 void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
@@ -49,14 +49,14 @@ math::float4 Ao::li(Worker& worker, math::Oray& ray, scene::Intersection& inters
 }
 
 Ao_factory::Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius) :
-	Surface_integrator_factory(settings) {
+	Integrator_factory(settings) {
 	settings_.num_samples = num_samples;
 	settings_.num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
 	settings_.radius = radius;
 }
 
-Surface_integrator* Ao_factory::create(math::random::Generator& rng) const {
+Integrator* Ao_factory::create(math::random::Generator& rng) const {
 	return new Ao(take_settings_, rng, settings_);
 }
 
-}
+}}}

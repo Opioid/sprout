@@ -93,7 +93,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	}
 
 	if (!take->surface_integrator_factory) {
-		take->surface_integrator_factory = std::make_shared<rendering::Pathtracer_DL_factory>(
+		take->surface_integrator_factory = std::make_shared<rendering::integrator::surface::Pathtracer_DL_factory>(
 					take->settings, 4, 8, 1, false);
 	}
 
@@ -375,7 +375,7 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 	return nullptr;
 }
 
-std::shared_ptr<rendering::Surface_integrator_factory>
+std::shared_ptr<rendering::integrator::surface::Integrator_factory>
 Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value,
 										const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
@@ -389,46 +389,46 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 		if ("AO" == node_name) {
 			uint32_t num_samples = json::read_uint(node_value, "num_samples", 1);
 			float radius = json::read_float(node_value, "radius", 1.f);
-			return std::make_shared<rendering::Ao_factory>(settings, num_samples, radius);
+			return std::make_shared<rendering::integrator::surface::Ao_factory>(settings, num_samples, radius);
 		} else if ("Whitted" == node_name) {
 			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
-			return std::make_shared<rendering::Whitted_factory>(settings, num_light_samples);
+			return std::make_shared<rendering::integrator::surface::Whitted_factory>(settings, num_light_samples);
 		} else if ("PT" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
-			return std::make_shared<rendering::Pathtracer_factory>(settings, min_bounces, max_bounces,
-																   disable_caustics);
+			return std::make_shared<rendering::integrator::surface::Pathtracer_factory>(
+						settings, min_bounces, max_bounces, disable_caustics);
 		} else if ("PTDL" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
 			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
-			return std::make_shared<rendering::Pathtracer_DL_factory>(settings, min_bounces, max_bounces,
-																	  num_light_samples, disable_caustics);
+			return std::make_shared<rendering::integrator::surface::Pathtracer_DL_factory>(
+						settings, min_bounces, max_bounces, num_light_samples, disable_caustics);
 		} else if ("PTMIS" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
 			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
 			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
-			return std::make_shared<rendering::Pathtracer_MIS_factory>(settings, min_bounces, max_bounces,
-																	   num_light_samples, disable_caustics);
+			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
+						settings, min_bounces, max_bounces, num_light_samples, disable_caustics);
 		} else if ("Normal" == node_name) {
-			rendering::Normal::Settings::Vector vector = rendering::Normal::Settings::Vector::Shading_normal;
+			auto vector = rendering::integrator::surface::Normal::Settings::Vector::Shading_normal;
 
 			std::string vector_type = json::read_string(node_value, "vector");
 
 			if ("Tangent" == vector_type) {
-				vector = rendering::Normal::Settings::Vector::Tangent;
+				vector = rendering::integrator::surface::Normal::Settings::Vector::Tangent;
 			} else if ("Bitangent" == vector_type) {
-				vector = rendering::Normal::Settings::Vector::Bitangent;
+				vector = rendering::integrator::surface::Normal::Settings::Vector::Bitangent;
 			} else if ("Geometric_normal" == vector_type) {
-				vector = rendering::Normal::Settings::Vector::Geometric_normal;
+				vector = rendering::integrator::surface::Normal::Settings::Vector::Geometric_normal;
 			} else if ("Shading_normal" == vector_type) {
-				vector = rendering::Normal::Settings::Vector::Shading_normal;
+				vector = rendering::integrator::surface::Normal::Settings::Vector::Shading_normal;
 			}
 
-			return std::make_shared<rendering::Normal_factory>(settings, vector);
+			return std::make_shared<rendering::integrator::surface::Normal_factory>(settings, vector);
 		}
 	}
 

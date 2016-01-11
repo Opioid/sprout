@@ -15,10 +15,10 @@
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
-namespace rendering {
+namespace rendering { namespace integrator { namespace surface {
 
 Pathtracer::Pathtracer(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {}
+	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {}
 
 void Pathtracer::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
@@ -107,16 +107,14 @@ math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, scene::Intersection
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 									   uint32_t min_bounces, uint32_t max_bounces,
 									   bool disable_caustics) :
-	Surface_integrator_factory(take_settings) {
+	Integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
 	settings_.disable_caustics = disable_caustics;
 }
 
-Surface_integrator* Pathtracer_factory::create(math::random::Generator& rng) const {
+Integrator* Pathtracer_factory::create(math::random::Generator& rng) const {
 	return new Pathtracer(take_settings_, rng, settings_);
 }
 
-}
-
-
+}}}

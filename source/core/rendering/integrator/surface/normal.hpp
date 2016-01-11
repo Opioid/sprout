@@ -1,12 +1,12 @@
 #pragma once
 
-#include "rendering/integrator/integrator.hpp"
+#include "rendering/integrator/surface/surface_integrator.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
 #include "image/texture/sampler/address_mode.hpp"
 
-namespace rendering {
+namespace rendering { namespace integrator { namespace surface {
 
-class Normal : public Surface_integrator {
+class Normal : public Integrator {
 public:
 
 	struct Settings {
@@ -33,16 +33,16 @@ private:
 	Settings settings_;
 };
 
-class Normal_factory : public Surface_integrator_factory {
+class Normal_factory : public Integrator_factory {
 public:
 
 	Normal_factory(const take::Settings& take_settings, Normal::Settings::Vector vector);
 
-	virtual Surface_integrator* create(math::random::Generator& rng) const final override;
+	virtual Integrator* create(math::random::Generator& rng) const final override;
 
 private:
 
 	Normal::Settings settings_;
 };
 
-}
+}}}

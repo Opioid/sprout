@@ -1,6 +1,6 @@
 #include "rendering_worker.hpp"
 #include "rendering/sensor/sensor.hpp"
-#include "rendering/integrator/integrator.hpp"
+#include "rendering/integrator/surface/surface_integrator.hpp"
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
@@ -23,7 +23,7 @@ Worker::~Worker() {
 }
 
 void Worker::init(uint32_t id, const math::random::Generator& rng,
-				  Surface_integrator_factory& surface_integrator_factory,
+				  integrator::surface::Integrator_factory& surface_integrator_factory,
 				  sampler::Sampler& sampler, const scene::Scene& scene) {
 	id_ = id;
 	rng_ = rng;

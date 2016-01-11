@@ -5,3 +5,4 @@ HEADERS += \
 	rendering/integrator/integrator.hpp \
 
 include(surface/surface.pri)
+include(volume/volume.pri)

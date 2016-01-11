@@ -24,13 +24,18 @@ namespace rendering {
 
 class Tile_queue;
 class Camera_worker;
-class Surface_integrator_factory;
 struct Context;
+
+namespace integrator { namespace surface {
+
+class Integrator_factory;
+
+}}
 
 class Driver {
 public:
 
-	Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
+	Driver(std::shared_ptr<integrator::surface::Integrator_factory> surface_integrator_factory,
 		   std::shared_ptr<sampler::Sampler> sampler);
 
 	void render(scene::Scene& scene, const Context& context, thread::Pool& thread_pool,
@@ -46,7 +51,7 @@ private:
 	uint32_t calculate_progress_range(const scene::Scene& scene,
 									  const scene::camera::Camera& camera, uint32_t num_tiles) const;
 
-	std::shared_ptr<Surface_integrator_factory> surface_integrator_factory_;
+	std::shared_ptr<integrator::surface::Integrator_factory> surface_integrator_factory_;
 	std::shared_ptr<sampler::Sampler> sampler_;
 
 	math::int2 tile_dimensions_;

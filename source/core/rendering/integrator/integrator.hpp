@@ -18,6 +18,8 @@ namespace rendering {
 
 class Worker;
 
+namespace integrator {
+
 class Integrator {
 public:
 
@@ -34,30 +36,4 @@ protected:
 	math::random::Generator& rng_;
 };
 
-class Surface_integrator : public Integrator {
-public:
-
-	Surface_integrator(const take::Settings& settings, math::random::Generator& rng);
-	virtual ~Surface_integrator();
-
-	virtual math::float4 li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) = 0;
-
-protected:
-
-	bool resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
-					  const image::texture::sampler::Sampler_2D& texture_sampler);
-};
-
-class Surface_integrator_factory {
-public:
-
-	Surface_integrator_factory(const take::Settings& settings);
-
-	virtual Surface_integrator* create(math::random::Generator& rng) const = 0;
-
-protected:
-
-	const take::Settings& take_settings_;
-};
-
-}
+}}

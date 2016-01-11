@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rendering/integrator/integrator.hpp"
+#include "rendering/integrator/surface/surface_integrator.hpp"
 #include "sampler/ems_sampler.hpp"
 #include "sampler/ld_sampler.hpp"
 #include "sampler/scrambled_hammersley_sampler.hpp"
@@ -8,9 +8,9 @@
 #include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/address_mode.hpp"
 
-namespace rendering {
+namespace rendering { namespace integrator { namespace surface {
 
-class Ao : public Surface_integrator {
+class Ao : public Integrator {
 public:
 
 	struct Settings {
@@ -34,16 +34,16 @@ private:
 	sampler::EMS sampler_;
 };
 
-class Ao_factory : public Surface_integrator_factory {
+class Ao_factory : public Integrator_factory {
 public:
 
 	Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius);
 
-	virtual Surface_integrator* create(math::random::Generator& rng) const;
+	virtual Integrator* create(math::random::Generator& rng) const;
 
 private:
 
 	Ao::Settings settings_;
 };
 
-}
+}}}

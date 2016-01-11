@@ -28,8 +28,12 @@ class Camera;
 
 namespace rendering {
 
-class Surface_integrator;
-class Surface_integrator_factory;
+namespace integrator { namespace surface {
+
+class Integrator;
+class Integrator_factory;
+
+}}
 
 class Worker {
 public:
@@ -37,7 +41,8 @@ public:
 	Worker();
 	~Worker();
 
-	void init(uint32_t id, const math::random::Generator& rng, Surface_integrator_factory& surface_integrator_factory,
+	void init(uint32_t id, const math::random::Generator& rng,
+			  integrator::surface::Integrator_factory& surface_integrator_factory,
 			  sampler::Sampler& sampler, const scene::Scene& scene);
 
 	uint32_t id() const;
@@ -64,7 +69,7 @@ private:
 
 protected:
 
-	Surface_integrator* surface_integrator_;
+	integrator::surface::Integrator* surface_integrator_;
 	sampler::Sampler* sampler_;
 
 private:

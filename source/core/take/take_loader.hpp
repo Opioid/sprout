@@ -28,7 +28,11 @@ namespace filter { class Filter; }
 
 }
 
-class Surface_integrator_factory;
+namespace integrator { namespace surface {
+
+class Integrator_factory;
+
+}}
 
 }
 
@@ -61,7 +65,7 @@ private:
 	std::shared_ptr<sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value,
 												   math::random::Generator& rng) const;
 
-	std::shared_ptr<rendering::Surface_integrator_factory>
+	std::shared_ptr<rendering::integrator::surface::Integrator_factory>
 	load_surface_integrator_factory(const rapidjson::Value& integrator_value,
 									const Settings& settings) const;
 

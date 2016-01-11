@@ -17,7 +17,7 @@
 
 namespace rendering {
 
-Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
+Driver::Driver(std::shared_ptr<integrator::surface::Integrator_factory> surface_integrator_factory,
 			   std::shared_ptr<sampler::Sampler> sampler) :
 	surface_integrator_factory_(surface_integrator_factory),
 	sampler_(sampler),

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rendering/integrator/integrator.hpp"
+#include "rendering/integrator/surface/surface_integrator.hpp"
 #include "sampler/random_sampler.hpp"
 #include "sampler/ems_sampler.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
@@ -13,9 +13,9 @@ namespace material { class Sample; }
 
 }
 
-namespace rendering {
+namespace rendering { namespace integrator { namespace surface {
 
-class Whitted : public Surface_integrator {
+class Whitted : public Integrator {
 public:
 
 	struct Settings {
@@ -46,17 +46,16 @@ private:
 	sampler::Random sampler_;
 };
 
-class Whitted_factory : public Surface_integrator_factory {
+class Whitted_factory : public Integrator_factory {
 public:
 
 	Whitted_factory(const take::Settings& take_settings, uint32_t num_light_samples);
 
-	virtual Surface_integrator* create(math::random::Generator& rng) const;
+	virtual Integrator* create(math::random::Generator& rng) const;
 
 private:
 
 	Whitted::Settings settings_;
 };
 
-}
-
+}}}

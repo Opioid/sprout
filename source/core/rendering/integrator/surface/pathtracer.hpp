@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rendering/integrator/integrator.hpp"
-#include "transmission.hpp"
+#include "rendering/integrator/surface/surface_integrator.hpp"
+#include "transmission/transmission_closed.hpp"
 #include "sampler/random_sampler.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
@@ -14,9 +14,9 @@ struct Sample;
 
 }}
 
-namespace rendering {
+namespace rendering { namespace integrator { namespace surface {
 
-class Pathtracer : public Surface_integrator {
+class Pathtracer : public Integrator {
 public:
 
 	struct Settings {
@@ -42,23 +42,21 @@ private:
 
 	std::vector<scene::light::Sample> light_samples_;
 
-	Transmission transmission_;
+	transmission::Closed transmission_;
 };
 
-class Pathtracer_factory : public Surface_integrator_factory {
+class Pathtracer_factory : public Integrator_factory {
 public:
 
 	Pathtracer_factory(const take::Settings &take_settings,
 					   uint32_t min_bounces, uint32_t max_bounces,
 					   bool disable_caustics);
 
-	virtual Surface_integrator* create(math::random::Generator& rng) const final override;
+	virtual Integrator* create(math::random::Generator& rng) const final override;
 
 private:
 
 	Pathtracer::Settings settings_;
 };
 
-}
-
-
+}}}

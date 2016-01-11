@@ -13,10 +13,10 @@
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
-namespace rendering {
+namespace rendering { namespace integrator { namespace surface {
 
 Whitted::Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Surface_integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
+	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
 void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
@@ -105,13 +105,13 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const math::Oray& ra
 }
 
 Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t num_light_samples) :
-	Surface_integrator_factory(take_settings) {
+	Integrator_factory(take_settings) {
 	settings_.num_light_samples = num_light_samples;
 	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
 }
 
-Surface_integrator* Whitted_factory::create(math::random::Generator& rng) const {
+Integrator* Whitted_factory::create(math::random::Generator& rng) const {
 	return new Whitted(take_settings_, rng, settings_);
 }
 
-}
+}}}
