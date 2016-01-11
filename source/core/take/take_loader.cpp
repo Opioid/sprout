@@ -98,6 +98,11 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 					take->settings, 4, 8, 1, false);
 	}
 
+	if (!take->volume_integrator_factory) {
+		take->volume_integrator_factory = std::make_shared<rendering::integrator::volume::Emission_factory>(
+					take->settings);
+	}
+
 	return take;
 }
 
