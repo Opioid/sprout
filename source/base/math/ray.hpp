@@ -13,6 +13,8 @@ struct Ray {
 
 	Vector3<T> point(T t) const;
 
+	T length() const;
+
 	Vector3<T> origin, direction;
 	T min_t, max_t;
 };

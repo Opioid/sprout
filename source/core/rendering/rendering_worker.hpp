@@ -20,11 +20,9 @@ class Prop;
 class Scene;
 struct Intersection;
 
-namespace camera {
+namespace camera { class Camera; }
 
-class Camera;
-
-}}
+}
 
 namespace rendering {
 
@@ -42,9 +40,7 @@ namespace volume {
 class Integrator;
 class Integrator_factory;
 
-}
-
-}
+}}
 
 class Worker {
 public:
@@ -66,9 +62,9 @@ public:
 
 	bool visibility(const math::Oray& ray);
 
-	bool intersect_m(math::Oray& ray, scene::Intersection& intersection);
-
 	float masked_visibility(const math::Oray& ray, const image::texture::sampler::Sampler_2D& sampler);
+
+	math::float3 transmittance(const math::Oray& ray);
 
 	const scene::Scene& scene() const;
 

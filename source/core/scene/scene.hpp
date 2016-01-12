@@ -39,7 +39,8 @@ namespace animation { class Animation; }
 
 struct Intersection;
 class Prop;
-class Volume;
+
+namespace volume { class Volume; }
 
 class Scene {
 public:
@@ -60,7 +61,7 @@ public:
 
 	const light::Light* montecarlo_light(float random, float& pdf) const;
 
-	const Volume* volume_region() const;
+	const volume::Volume* volume_region() const;
 
 	void tick(thread::Pool& thread_pool);
 	float seek(float time, thread::Pool& thread_pool);
@@ -72,7 +73,7 @@ public:
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
 	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
 
-	Volume* create_volume();
+	volume::Volume* create_volume(const math::float3& absorption);
 
     void add_animation(std::shared_ptr<animation::Animation> animation);
 
@@ -99,7 +100,7 @@ public:
 
 	math::Distribution_1D light_distribution_;
 
-	Volume* volume_region_;
+	volume::Volume* volume_region_;
 
     std::vector<std::shared_ptr<animation::Animation>> animations_;
 

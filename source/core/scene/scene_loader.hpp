@@ -19,6 +19,8 @@ namespace surrounding { class Surrounding; }
 
 namespace light { class Light; }
 
+namespace volume { class Volume; }
+
 namespace shape { class Shape; }
 
 class Scene;
@@ -39,6 +41,8 @@ private:
 	Prop* load_prop(const rapidjson::Value& prop_value, Scene& scene);
 
 	void load_light(const rapidjson::Value& light_value, Prop* prop, Scene& scene);
+
+	volume::Volume* load_volume(const rapidjson::Value& volume_value, Scene& scene);
 
 	std::shared_ptr<shape::Shape> load_shape(const rapidjson::Value& shape_value);
 

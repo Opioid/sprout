@@ -225,6 +225,11 @@ Vector3<T> saturate(const Vector3<T>& v) {
 }
 
 template<typename T>
+Vector3<T> exp(const Vector3<T>& v) {
+	return Vector3<T>(std::exp(v.x), std::exp(v.y), std::exp(v.z));
+}
+
+template<typename T>
 Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, T t) {
 	T u = T(1) - t;
 	return u * a + t * b;

@@ -44,10 +44,27 @@ uint32_t Worker::id() const {
 math::float4 Worker::li(math::Oray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
-	if (hit) {
-		return surface_integrator_->li(*this, ray, intersection);
+
+	auto volume = scene_->volume_region();
+
+	if (volume) {
+
+		math::float3 t;
+		math::float3 e;
+
+		t = volume_integrator_->transmittance(volume, ray);
+
+		if (hit) {
+			return surface_integrator_->li(*this, ray, intersection) * math::float4(t, 1.f);
+		} else {
+			return math::float4::identity;
+		}
 	} else {
-		return math::float4::identity;
+		if (hit) {
+			return surface_integrator_->li(*this, ray, intersection);
+		} else {
+			return math::float4::identity;
+		}
 	}
 }
 
@@ -70,6 +87,16 @@ bool Worker::visibility(const math::Oray& ray) {
 
 float Worker::masked_visibility(const math::Oray& ray, const image::texture::sampler::Sampler_2D& sampler) {
 	return 1.f - scene_->opacity(ray, node_stack_, sampler);
+}
+
+math::float3 Worker::transmittance(const math::Oray& ray) {
+	auto volume = scene_->volume_region();
+
+	if (!volume) {
+		return math::float3(1.f, 1.f, 1.f);
+	}
+
+	return volume_integrator_->transmittance(volume, ray);
 }
 
 const scene::Scene& Worker::scene() const {

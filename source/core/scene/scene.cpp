@@ -3,10 +3,10 @@
 #include "scene/entity/dummy.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
-#include "scene/prop/volume.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
+#include "scene/volume/homogeneous.hpp"
 #include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -73,7 +73,7 @@ const light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 	return lights_[l];
 }
 
-const Volume* Scene::volume_region() const {
+const volume::Volume* Scene::volume_region() const {
 	return volume_region_;
 }
 
@@ -165,8 +165,8 @@ light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t par
 	return light;
 }
 
-Volume* Scene::create_volume() {
-	volume_region_ = new Volume;
+volume::Volume* Scene::create_volume(const math::float3& absorption) {
+	volume_region_ = new volume::Homogeneous(absorption);
 	return volume_region_;
 }
 

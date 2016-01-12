@@ -92,10 +92,12 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const math::Oray& ra
 
 				float mv = worker.masked_visibility(shadow_ray, texture_sampler);
 				if (mv > 0.f) {
+				//	math::float3 t = worker.transmittance(shadow_ray);
+
 					float bxdf_pdf;
 					math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-					result += mv * light_sample.energy * f / light_sample.shape.pdf;
+					result += mv * /*t **/ light_sample.energy * f / light_sample.shape.pdf;
 				}
 			}
 		}

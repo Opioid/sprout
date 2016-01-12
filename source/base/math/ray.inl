@@ -1,5 +1,6 @@
 #include "ray.hpp"
 #include "math.hpp"
+#include "vector3.inl"
 
 namespace math {
 
@@ -14,6 +15,11 @@ Ray<T>::Ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t, T ma
 template<typename T>
 Vector3<T> Ray<T>::point(T t) const {
 	return origin + t * direction;
+}
+
+template<typename T>
+T Ray<T>::length() const {
+	return distance(point(min_t), point(max_t));
 }
 
 template<typename T>

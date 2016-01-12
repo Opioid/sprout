@@ -8,6 +8,8 @@ class Attenuation : public Integrator {
 public:
 
 	Attenuation(const take::Settings& take_settings, math::random::Generator& rng);
+
+	virtual math::float3 transmittance(const scene::volume::Volume* volume, const math::Oray& ray) final override;
 };
 
 class Attenuation_factory : public Integrator_factory {

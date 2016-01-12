@@ -1,4 +1,5 @@
 #include "scene_loader.hpp"
+#include "logging/logging.hpp"
 #include "scene.hpp"
 #include "scene/animation/animation.hpp"
 #include "scene/animation/animation_loader.hpp"
@@ -6,7 +7,6 @@
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
 #include "scene/prop/prop.hpp"
-#include "scene/prop/volume.hpp"
 #include "scene/shape/canopy.hpp"
 #include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/disk.hpp"
@@ -20,12 +20,12 @@
 #include "scene/material/metal/metal_sample.hpp"
 #include "scene/material/substitute/substitute_sample.hpp"
 #include "scene/material/material_sample_cache.inl"
+#include "scene/volume/volume.hpp"
 #include "resource/resource_cache.inl"
 #include "resource/resource_provider.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/math/quaternion.inl"
-#include <iostream>
 
 namespace scene {
 
@@ -84,7 +84,7 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 		} else if ("Dummy" == type_name) {
 			entity = scene.create_dummy();
 		} else if ("Volume" == type_name) {
-			entity = scene.create_volume();
+			entity = load_volume(*e, scene);
 		}
 
 		if (!entity) {
@@ -181,6 +181,21 @@ void Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Sce
 	}
 }
 
+volume::Volume* Loader::load_volume(const rapidjson::Value& volume_value, Scene& scene) {
+	math::float3 absorption(0.f, 0.f, 0.f);
+
+	for (auto n = volume_value.MemberBegin(); n != volume_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("absorption" == node_name) {
+			absorption = json::read_float3(node_value);
+		}
+	}
+
+	return scene.create_volume(absorption);
+}
+
 std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {
 	std::string type = json::read_string(shape_value, "type");
 	if (!type.empty()) {
@@ -200,7 +215,7 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 
 			return mesh_cache_.load(file, static_cast<uint32_t>(flags));
 		} catch (const std::exception& e) {
-			std::cout << "Cannot load \"" << file << "\": " << e.what() << std::endl;
+			logging::error("Cannot load \"" + file + "\": " + e.what());
 		}
 	}
 
@@ -240,10 +255,10 @@ void Loader::load_materials(const rapidjson::Value& materials_value, material::M
 		} catch (const std::exception& e) {
 			materials.push_back(material_provider_.fallback_material());
 
-			std::cout << "Loading \"" << m->GetString() << "\": " << e.what() << ". Using fallback material. " << std::endl;
+			logging::warning("Loading \"" + std::string(m->GetString()) + "\": " +
+							 e.what() + ". Using fallback material.");
 		}
 	}
 }
-
 
 }
