@@ -189,6 +189,10 @@ void Scene::compile() {
 	}
 
 	light_distribution_.init(light_powers_.data(), light_powers_.size());
+
+	if (volume_region_) {
+		volume_region_->set_scene_aabb(bvh_.aabb());
+	}
 }
 
 }

@@ -12,6 +12,11 @@ math::float3 Attenuation::transmittance(const scene::volume::Volume* volume, con
 	return math::exp(-tau);
 }
 
+math::float3 Attenuation::li(const scene::volume::Volume* volume, const math::Oray& ray) {
+	math::float3 tau = volume->optical_depth(ray);
+	return math::exp(-tau);
+}
+
 Attenuation_factory::Attenuation_factory(const take::Settings& settings) :
 	Integrator_factory(settings) {}
 

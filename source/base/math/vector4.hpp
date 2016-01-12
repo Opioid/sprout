@@ -37,6 +37,8 @@ struct Vector4
 
 	Vector4 operator*(const Vector4<T>& v) const;
 
+	Vector4 operator*(const Vector3<T>& v) const;
+
 	Vector4 operator/(T s) const;
 
 	Vector4& operator+=(const Vector4& v);

@@ -20,6 +20,7 @@
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
+#include "rendering/integrator/volume/single_scattering.hpp"
 #include "sampler/ems_sampler.hpp"
 #include "sampler/ld_sampler.hpp"
 #include "sampler/random_sampler.hpp"
@@ -457,10 +458,12 @@ std::shared_ptr<rendering::integrator::volume::Integrator_factory>
 Loader::load_volume_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const {
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		//const rapidjson::Value& node_value = n->value;
 
 		if ("Attenuation" == node_name) {
 			return std::make_shared<rendering::integrator::volume::Attenuation_factory>(settings);
+		} else if ("Single_scattering" == node_name) {
+			return std::make_shared<rendering::integrator::volume::Single_scattering_factory>(settings);
 		}
 	}
 

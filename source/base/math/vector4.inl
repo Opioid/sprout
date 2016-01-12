@@ -30,6 +30,11 @@ Vector4<T> Vector4<T>::operator*(const Vector4<T>& v) const {
 }
 
 template<typename T>
+Vector4<T> Vector4<T>::operator*(const Vector3<T>& v) const {
+	return Vector4(x * v.x, y * v.y, z * v.z, w);
+}
+
+template<typename T>
 Vector4<T> Vector4<T>::operator/(T s) const {
 	T is = T(1) / s;
 	return Vector4(is * x, is * y, is * z, is * w);

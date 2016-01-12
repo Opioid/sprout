@@ -48,14 +48,11 @@ math::float4 Worker::li(math::Oray& ray) {
 	auto volume = scene_->volume_region();
 
 	if (volume) {
-
-		math::float3 t;
-		math::float3 e;
-
-		t = volume_integrator_->transmittance(volume, ray);
+		math::float3 vli = volume_integrator_->li(volume, ray);
 
 		if (hit) {
-			return surface_integrator_->li(*this, ray, intersection) * math::float4(t, 1.f);
+			math::float4 li = surface_integrator_->li(*this, ray, intersection);
+			return li * vli;
 		} else {
 			return math::float4::identity;
 		}
