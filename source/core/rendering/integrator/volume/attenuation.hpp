@@ -11,7 +11,8 @@ public:
 
 	virtual math::float3 transmittance(const scene::volume::Volume* volume, const math::Oray& ray) final override;
 
-	virtual math::float3 li(const scene::volume::Volume* volume, const math::Oray& ray) final override;
+	virtual math::float3 li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
+							math::float3& transmittance) final override;
 };
 
 class Attenuation_factory : public Integrator_factory {

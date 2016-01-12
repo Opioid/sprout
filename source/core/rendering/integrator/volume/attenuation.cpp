@@ -12,9 +12,12 @@ math::float3 Attenuation::transmittance(const scene::volume::Volume* volume, con
 	return math::exp(-tau);
 }
 
-math::float3 Attenuation::li(const scene::volume::Volume* volume, const math::Oray& ray) {
+math::float3 Attenuation::li(Worker& /*worker*/, const scene::volume::Volume* volume, const math::Oray& ray,
+							 math::float3& transmittance) {
 	math::float3 tau = volume->optical_depth(ray);
-	return math::exp(-tau);
+	transmittance = math::exp(-tau);
+
+	return math::float3::identity;
 }
 
 Attenuation_factory::Attenuation_factory(const take::Settings& settings) :

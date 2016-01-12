@@ -38,6 +38,10 @@ Scene::~Scene() {
 	}
 }
 
+const math::aabb& Scene::aabb() const {
+	return bvh_.aabb();
+}
+
 bool Scene::intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersection& intersection) const {
 	return bvh_.intersect(ray, node_stack, intersection);
 }
@@ -165,8 +169,8 @@ light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t par
 	return light;
 }
 
-volume::Volume* Scene::create_volume(const math::float3& absorption) {
-	volume_region_ = new volume::Homogeneous(absorption);
+volume::Volume* Scene::create_volume(const math::float3& absorption, const math::float3& scattering) {
+	volume_region_ = new volume::Homogeneous(absorption, scattering);
 	return volume_region_;
 }
 

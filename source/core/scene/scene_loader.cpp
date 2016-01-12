@@ -183,6 +183,7 @@ void Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Sce
 
 volume::Volume* Loader::load_volume(const rapidjson::Value& volume_value, Scene& scene) {
 	math::float3 absorption(0.f, 0.f, 0.f);
+	math::float3 scattering(0.f, 0.f, 0.f);
 
 	for (auto n = volume_value.MemberBegin(); n != volume_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -190,10 +191,12 @@ volume::Volume* Loader::load_volume(const rapidjson::Value& volume_value, Scene&
 
 		if ("absorption" == node_name) {
 			absorption = json::read_float3(node_value);
+		} else if ("scattering" == node_name) {
+			scattering = json::read_float3(node_value);
 		}
 	}
 
-	return scene.create_volume(absorption);
+	return scene.create_volume(absorption, scattering);
 }
 
 std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {

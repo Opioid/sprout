@@ -23,6 +23,7 @@ public:
 	T volume() const;
 
 	bool intersect_p(const math::Optimized_ray<T>& ray) const;
+	bool intersect_p(const math::Optimized_ray<T>& ray, T& min_t, T& max_t) const;
 
 	void set_min_max(const Vector3<T>& min, const Vector3<T>& max);
 

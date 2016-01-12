@@ -14,7 +14,8 @@ public:
 
 	virtual math::float3 transmittance(const scene::volume::Volume* volume, const math::Oray& ray) = 0;
 
-	virtual math::float3 li(const scene::volume::Volume* volume, const math::Oray& ray) = 0;
+	virtual math::float3 li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
+							math::float3& transmittance) = 0;
 };
 
 class Integrator_factory {
