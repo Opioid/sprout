@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
-#include "transmission/transmission_closed.hpp"
+#include "transmittance/transmittance_closed.hpp"
 #include "sampler/random_sampler.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
@@ -42,7 +42,7 @@ private:
 
 	std::vector<scene::light::Sample> light_samples_;
 
-	transmission::Closed transmission_;
+	transmittance::Closed transmittance_;
 };
 
 class Pathtracer_factory : public Integrator_factory {

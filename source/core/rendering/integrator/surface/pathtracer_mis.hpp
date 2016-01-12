@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
-#include "transmission/transmission_closed.hpp"
+#include "transmittance/transmittance_closed.hpp"
 #include "sampler/ems_sampler.hpp"
 #include "sampler/random_sampler.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
@@ -47,7 +47,7 @@ private:
 
 	sampler::Random sampler_;
 
-	transmission::Closed transmission_;
+	transmittance::Closed transmittance_;
 };
 
 class Pathtracer_MIS_factory : public Integrator_factory {

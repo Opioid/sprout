@@ -22,7 +22,7 @@ namespace rendering { namespace integrator { namespace surface {
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings,
 							   math::random::Generator& rng,
 							   const Settings& settings) :
-	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmission_(take_settings, rng) {}
+	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmittance_(take_settings, rng) {}
 
 void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
@@ -78,8 +78,8 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
-			math::float3 transmitted = transmission_.resolve(worker, ray, intersection, material_sample.attenuation(),
-															 sampler_, settings_.sampler_nearest, sample_result);
+			math::float3 transmitted = transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
+															  sampler_, settings_.sampler_nearest, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
 			}

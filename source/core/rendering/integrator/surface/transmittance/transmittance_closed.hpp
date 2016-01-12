@@ -6,7 +6,7 @@ namespace sampler { class Sampler; }
 
 namespace scene { namespace material { namespace bxdf { struct Result; } } }
 
-namespace rendering { namespace integrator { namespace surface { namespace transmission {
+namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
 class Closed : public integrator::Integrator {
 public:

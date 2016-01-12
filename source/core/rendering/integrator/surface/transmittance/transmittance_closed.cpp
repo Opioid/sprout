@@ -1,4 +1,4 @@
-#include "transmission_closed.hpp"
+#include "transmittance_closed.hpp"
 #include "../integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/material/bxdf.hpp"
@@ -10,7 +10,7 @@
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 
-namespace rendering { namespace integrator { namespace surface { namespace transmission {
+namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
 Closed::Closed(const take::Settings &take_settings, math::random::Generator &rng) :
 	integrator::Integrator(take_settings, rng) {}
