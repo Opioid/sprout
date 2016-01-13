@@ -458,12 +458,13 @@ std::shared_ptr<rendering::integrator::volume::Integrator_factory>
 Loader::load_volume_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const {
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		//const rapidjson::Value& node_value = n->value;
+		const rapidjson::Value& node_value = n->value;
 
 		if ("Attenuation" == node_name) {
 			return std::make_shared<rendering::integrator::volume::Attenuation_factory>(settings);
 		} else if ("Single_scattering" == node_name) {
-			return std::make_shared<rendering::integrator::volume::Single_scattering_factory>(settings);
+			float step_size = json::read_float(node_value, "step_size", 1.f);
+			return std::make_shared<rendering::integrator::volume::Single_scattering_factory>(settings, step_size);
 		}
 	}
 

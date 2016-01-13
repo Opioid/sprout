@@ -20,14 +20,14 @@ class Pathtracer_MIS : public Integrator {
 public:
 
 	struct Settings {
+		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
+		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
+
 		uint32_t min_bounces;
 		uint32_t max_bounces;
 		uint32_t num_light_samples;
 		float    num_light_samples_reciprocal;
 		bool	 disable_caustics;
-
-		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
-		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
 	};
 
 	Pathtracer_MIS(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
@@ -43,7 +43,7 @@ private:
 									   const scene::material::Sample& material_sample,
 									   const image::texture::sampler::Sampler_2D& texture_sampler);
 
-	Settings settings_;
+	const Settings& settings_;
 
 	sampler::Random sampler_;
 

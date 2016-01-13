@@ -49,6 +49,10 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			break;
 		}
 
+		if (i > 0) {
+			throughput *= worker.transmittance(ray);
+		}
+
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, *texture_sampler, worker.id());
@@ -152,13 +156,15 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 
 			float mv = worker.masked_visibility(shadow_ray, texture_sampler);
 			if (mv > 0.f) {
+				math::float3 t = worker.transmittance(shadow_ray);
+
 				float bxdf_pdf;
 				math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
 				float weight = power_heuristic(light_sample.shape.pdf, bxdf_pdf);
 
 				result += (weight / light_sample.shape.pdf * light_pdf_reciprocal)
-					   * mv * light_sample.energy * f;
+					   * mv * t * light_sample.energy * f;
 			}
 		}
 
@@ -189,7 +195,9 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 																	 settings_.sampler_nearest, worker.id());
 
 				if (light_material_sample.same_hemisphere(wo)) {
-					math::float3 ls_energy = light_material_sample.emission();
+					math::float3 t = worker.transmittance(shadow_ray);
+
+					math::float3 ls_energy = t * light_material_sample.emission();
 
 					float weight = power_heuristic(sample_result.pdf, ls_pdf);
 

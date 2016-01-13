@@ -20,12 +20,12 @@ class Pathtracer : public Integrator {
 public:
 
 	struct Settings {
+		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
+		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
+
 		uint32_t min_bounces;
 		uint32_t max_bounces;
 		bool disable_caustics;
-
-		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
-		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
 	};
 
 	Pathtracer(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
@@ -36,7 +36,7 @@ public:
 
 private:
 
-	Settings settings_;
+	const Settings& settings_;
 
 	sampler::Random sampler_;
 

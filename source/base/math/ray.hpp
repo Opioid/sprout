@@ -21,6 +21,10 @@ struct Ray {
 
 template<typename T>
 struct Optimized_ray : public Ray<T> {
+	Optimized_ray();
+	Optimized_ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t = T(0), T max_t = T(1),
+				  T time = T(0), uint32_t depth = 0);
+
 	void set_direction(const Vector3<T>& v);
 
 	Vector3<T> reciprocal_direction;

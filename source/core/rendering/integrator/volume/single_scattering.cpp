@@ -27,29 +27,36 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 								   math::float3& transmittance) {
 	float min_t;
 	float max_t;
-/*	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
+	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
 		transmittance = math::float3(1.f, 1.f, 1.f);
 		return math::float3::identity;
 	}
-*/
-	min_t = ray.min_t;
 
-	float atmosphere_y = worker.scene().aabb().max().y;
-	max_t = (atmosphere_y - ray.origin.y) * ray.reciprocal_direction.y;
+//	min_t = ray.min_t;
 
-	if (max_t < 0.f || max_t > ray.max_t) {
-		max_t = ray.max_t;
+//	float atmosphere_y = worker.scene().aabb().max().y;
+//	max_t = (atmosphere_y - ray.origin.y) * ray.reciprocal_direction.y;
+
+//	if (max_t < 0.f || max_t > ray.max_t) {
+//		max_t = ray.max_t;
+//	}
+
+	float range = max_t - min_t;
+
+	if (range < 0.0001f) {
+		transmittance = math::float3(1.f, 1.f, 1.f);
+		return math::float3::identity;
 	}
 
+	uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+
+	float step =range / static_cast<float>(num_samples);
+
+	math::float3 w = -ray.direction;
 
 	math::float3 emission = math::float3::identity;
 
 	math::float3 scattering = volume->scattering();
-
-	float step_size = 0.5f;
-
-	uint32_t num_samples = static_cast<uint32_t>(std::ceil((max_t - min_t) / step_size));
-	float step = (max_t - min_t) / static_cast<float>(num_samples);
 
 	math::float3 tr(1.f, 1.f, 1.f);
 
@@ -62,12 +69,7 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		previous = current;
 		current  = ray.point(min_t);
 
-		math::Oray tau_ray;
-		tau_ray.origin = previous;
-		tau_ray.set_direction(current - previous);
-		tau_ray.min_t = 0.f;
-		tau_ray.max_t = 1.f;
-
+		math::Oray tau_ray(previous, current - previous, 0.f, 1.f);
 		math::float3 tau = volume->optical_depth(tau_ray);
 		tr *= math::exp(-tau);
 
@@ -78,26 +80,22 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(0.f,
+		light->sample(ray.time,
 					  current, math::float3::identity, true,
 					  settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
-			math::Oray shadow_ray;
-			shadow_ray.origin = current;
-			shadow_ray.set_direction(light_sample.shape.wi);
-			shadow_ray.min_t = 0.f;
-			shadow_ray.max_t = light_sample.shape.t;
+			math::Oray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t);
 
 			float mv = worker.masked_visibility(shadow_ray, settings_.sampler_nearest);
 			if (mv > 0.f) {
-				float p = volume->phase(-math::normalized(ray.direction), -light_sample.shape.wi);
-				emission += p * mv * tr * scattering * light_sample.energy / (light_pdf * light_sample.shape.pdf);
-			} else {
-			//	std::cout << "shadow" << std::endl;
+				float p = volume->phase(w, -light_sample.shape.wi);
+
+				math::float3 l = Single_scattering::transmittance(volume, shadow_ray) * light_sample.energy;
+
+				emission += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
 		}
-
 	}
 
 	transmittance = tr;
@@ -105,8 +103,10 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 	return step * emission;
 }
 
-Single_scattering_factory::Single_scattering_factory(const take::Settings& settings) :
-	Integrator_factory(settings) {}
+Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings, float step_size) :
+	Integrator_factory(take_settings) {
+	settings_.step_size = step_size;
+}
 
 Integrator* Single_scattering_factory::create(math::random::Generator& rng) const {
 	return new Single_scattering(take_settings_, rng, settings_);

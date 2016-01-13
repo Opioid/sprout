@@ -12,6 +12,8 @@ public:
 
 	struct Settings {
 		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
+
+		float step_size;
 	};
 
 	Single_scattering(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
@@ -23,7 +25,7 @@ public:
 
 private:
 
-	Settings settings_;
+	const Settings& settings_;
 
 	sampler::Random sampler_;
 };
@@ -31,7 +33,7 @@ private:
 class Single_scattering_factory : public Integrator_factory {
 public:
 
-	Single_scattering_factory(const take::Settings& settings);
+	Single_scattering_factory(const take::Settings& take_settings, float step_size);
 
 	virtual Integrator* create(math::random::Generator& rng) const;
 

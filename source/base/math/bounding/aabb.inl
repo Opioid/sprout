@@ -129,6 +129,14 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray, T& min_out, T& max_
 	min_out = min_t;
 	max_out = max_t;
 
+	if (min_out < ray.min_t) {
+		min_out = ray.min_t;
+	}
+
+	if (max_out > ray.max_t) {
+		max_out = ray.max_t;
+	}
+
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
 
