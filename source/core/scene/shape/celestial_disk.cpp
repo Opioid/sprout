@@ -57,8 +57,14 @@ float Celestial_disk::opacity(const entity::Composed_transformation& /*transform
 	return 0.f;
 }
 
+void Celestial_disk::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
+							const math::float3& p, const math::float3& /*n*/, bool two_sided,
+							sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
+	Celestial_disk::sample(part, transformation, area, p, two_sided, sampler, node_stack, sample);
+}
+
 void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
-							const math::float3& /*p*/, const math::float3& /*n*/, bool /*two_sided*/, bool /*total_sphere*/,
+							const math::float3& /*p*/, bool /*two_sided*/,
 							sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	math::float2 r2 = sampler.generate_sample_2D();
 	math::float2 xy = math::sample_disk_concentric(r2);

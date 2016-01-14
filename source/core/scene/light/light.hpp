@@ -34,6 +34,9 @@ public:
 				const image::texture::sampler::Sampler_2D& image_sampler,
 				sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const;
 
+	void sample(float time, const math::float3& p, const image::texture::sampler::Sampler_2D& image_sampler,
+				sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const;
+
 	virtual float pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
 					  const image::texture::sampler::Sampler_2D& image_sampler,

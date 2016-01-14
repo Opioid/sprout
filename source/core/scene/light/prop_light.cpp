@@ -27,14 +27,18 @@ void Prop_light::sample(const entity::Composed_transformation& transformation,
 
 	bool two_sided = material->is_two_sided();
 
-	prop_->shape()->sample(part_, transformation, area_, p, n, two_sided, total_sphere,
-						   sampler, node_stack, result.shape);
-
-	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
-		result.energy = material->sample_emission(result.shape.uv, image_sampler);
+	if (total_sphere) {
+		prop_->shape()->sample(part_, transformation, area_, p, two_sided, sampler, node_stack, result.shape);
 	} else {
-		result.shape.pdf = 0.f;
+		prop_->shape()->sample(part_, transformation, area_, p, n, two_sided, sampler, node_stack, result.shape);
+
+		if (math::dot(result.shape.wi, n) <= 0.f) {
+			result.shape.pdf = 0.f;
+			return;
+		}
 	}
+
+	result.energy = material->sample_emission(result.shape.uv, image_sampler);
 }
 
 float Prop_light::pdf(const entity::Composed_transformation& transformation,

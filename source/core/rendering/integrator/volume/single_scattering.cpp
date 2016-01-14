@@ -80,9 +80,7 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(ray.time,
-					  current, math::float3::identity, true,
-					  settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
+		light->sample(ray.time, current, settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
 			math::Oray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t);

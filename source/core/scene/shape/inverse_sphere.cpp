@@ -100,7 +100,7 @@ float Inverse_sphere::opacity(const entity::Composed_transformation& transformat
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-							const math::float3& p, const math::float3& n, bool /*two_sided*/, bool /*total_sphere*/,
+							const math::float3& p, const math::float3& n, bool /*two_sided*/,
 							sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	math::float3 dir = n;
 
@@ -157,6 +157,12 @@ void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transforma
 	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, tdir);
 	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 							 std::acos(xyz.y) * math::Pi_inv);
+}
+
+void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
+							const math::float3& p, bool /*two_sided*/,
+							sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
+	// TODO
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,

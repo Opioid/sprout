@@ -90,38 +90,12 @@ float Morphable_mesh::opacity(const entity::Composed_transformation& transformat
 }
 
 void Morphable_mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-							const math::float3& /*p*/, const math::float3& /*n*/, bool /*two_sided*/, bool /*total_sphere*/,
-							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/, Sample& /*sample*/) const {
-/*
-	float r = sampler.generate_sample_1D();
-	math::float2 r2 = sampler.generate_sample_2D();
+							const math::float3& /*p*/, const math::float3& /*n*/, bool /*two_sided*/,
+							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
 
-	uint32_t index = distributions_[part].distribution.sample_discrete(r);
-
-	math::float3 sv;
-	math::float3 sn;
-	math::float2 tc;
-	tree_.sample(index, r2, sv, sn, tc);
-
-	math::float3 v = math::transform_point(transformation.object_to_world, sv);
-	math::float3 wn = math::transform_vector(transformation.rotation, sn);
-
-	math::float3 axis = v - p;
-
-	sample.wi = math::normalized(axis);
-
-	float c = math::dot(wn, -sample.wi);
-
-	if (c <= 0.f) {
-		sample.pdf = 0.f;
-	} else {
-		sample.uv = tc;
-		float sl = math::squared_length(axis);
-		sample.t = std::sqrt(sl);
-		sample.pdf = sl / (c * area);
-	}
-	*/
-}
+void Morphable_mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
+							const math::float3& /*p*/, bool /*two_sided*/,
+							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
 
 void Morphable_mesh::sample(uint32_t /*part*/,
 							const entity::Composed_transformation& /*transformation*/, float /*area*/,

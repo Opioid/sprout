@@ -40,7 +40,11 @@ public:
 						  const image::texture::sampler::Sampler_2D& sampler) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-						const math::float3& p, const math::float3& n, bool two_sided, bool total_sphere,
+						const math::float3& p, const math::float3& n, bool two_sided,
+						sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const = 0;
+
+	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
+						const math::float3& p, bool two_sided,
 						sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,

@@ -12,7 +12,12 @@ void Light::sample(float time, const math::float3& p, const math::float3& n, boo
 	transformation_at(time, transformation);
 
 	sample(transformation, p, n, total_sphere, image_sampler, sampler, node_stack, result);
-};
+}
+
+void Light::sample(float time, const math::float3& p, const image::texture::sampler::Sampler_2D& image_sampler,
+				   sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const {
+	sample(time, p, math::float3::identity, true, image_sampler, sampler, node_stack, result);
+}
 
 }}
 
