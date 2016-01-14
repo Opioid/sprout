@@ -41,29 +41,25 @@ uint32_t Worker::id() const {
 	return id_;
 }
 
-math::float4 Worker::li(math::Oray& ray) {
-	scene::Intersection intersection;
-	bool hit = intersect(ray, intersection);
-
+math::float3 Worker::volume_li(const math::Oray& ray, math::float3& transmittance) {
 	auto volume = scene_->volume_region();
 
-	if (volume) {
-		math::float3 vt;
-		math::float3 vli = volume_integrator_->li(*this, volume, ray, vt);
-
-		if (hit) {
-			math::float4 li = surface_integrator_->li(*this, ray, intersection);
-			return math::float4(vt * li.xyz() + vli, li.w);
-		} else {
-			return math::float4(vli, 1.f);
-		}
-	} else {
-		if (hit) {
-			return surface_integrator_->li(*this, ray, intersection);
-		} else {
-			return math::float4(0.f, 0.f, 0.f, 1.f);
-		}
+	if (!volume) {
+		transmittance = math::float3(1.f, 1.f, 1.f);
+		return math::float3::identity;
 	}
+
+	return volume_integrator_->li(*this, volume, ray, transmittance);
+}
+
+math::float3 Worker::transmittance(const math::Oray& ray) {
+	auto volume = scene_->volume_region();
+
+	if (!volume) {
+		return math::float3(1.f, 1.f, 1.f);
+	}
+
+	return volume_integrator_->transmittance(volume, ray);
 }
 
 bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) {
@@ -87,22 +83,37 @@ float Worker::masked_visibility(const math::Oray& ray, const image::texture::sam
 	return 1.f - scene_->opacity(ray, node_stack_, sampler);
 }
 
-math::float3 Worker::transmittance(const math::Oray& ray) {
-	auto volume = scene_->volume_region();
-
-	if (!volume) {
-		return math::float3(1.f, 1.f, 1.f);
-	}
-
-	return volume_integrator_->transmittance(volume, ray);
-}
-
 const scene::Scene& Worker::scene() const {
 	return *scene_;
 }
 
 scene::shape::Node_stack& Worker::node_stack() {
 	return node_stack_;
+}
+
+math::float4 Worker::surface_li(math::Oray& ray) {
+	scene::Intersection intersection;
+	bool hit = intersect(ray, intersection);
+
+	auto volume = scene_->volume_region();
+
+	if (volume) {
+		math::float3 vtr;
+		math::float3 vli = volume_integrator_->li(*this, volume, ray, vtr);
+
+		if (hit) {
+			math::float4 li = surface_integrator_->li(*this, ray, intersection);
+			return math::float4(vtr * li.xyz() + vli, li.w);
+		} else {
+			return math::float4(vli, 1.f);
+		}
+	} else {
+		if (hit) {
+			return surface_integrator_->li(*this, ray, intersection);
+		} else {
+			return math::float4(0.f, 0.f, 0.f, 1.f);
+		}
+	}
 }
 
 void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const math::Recti& tile,
@@ -144,7 +155,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 
 				ray.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
-				math::float4 color = li(ray);
+				math::float4 color = surface_li(ray);
 
 				sensor.add_sample(sample, color, tile, bounds);
 			}

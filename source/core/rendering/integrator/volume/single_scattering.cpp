@@ -9,7 +9,7 @@
 #include "base/math/bounding/aabb.inl"
 #include "base/math/random/generator.inl"
 
-#include <iostream>
+//#include <iostream>
 
 namespace rendering { namespace integrator { namespace volume {
 
@@ -50,7 +50,7 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 	uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 
-	float step =range / static_cast<float>(num_samples);
+	float step = range / static_cast<float>(num_samples);
 
 	math::float3 w = -ray.direction;
 

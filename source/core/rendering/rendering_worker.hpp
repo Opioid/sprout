@@ -55,7 +55,9 @@ public:
 
 	uint32_t id() const;
 
-	math::float4 li(math::Oray& ray);
+	math::float3 volume_li(const math::Oray& ray, math::float3& transmittance);
+
+	math::float3 transmittance(const math::Oray& ray);
 
 	bool intersect(math::Oray& ray, scene::Intersection& intersection);
 	bool intersect(const scene::Prop* prop, math::Oray& ray, scene::Intersection& intersection);
@@ -64,24 +66,22 @@ public:
 
 	float masked_visibility(const math::Oray& ray, const image::texture::sampler::Sampler_2D& sampler);
 
-	math::float3 transmittance(const math::Oray& ray);
-
 	const scene::Scene& scene() const;
 
 	scene::shape::Node_stack& node_stack();
 
-private:
-
-	uint32_t id_;
-	math::random::Generator rng_;
-
 protected:
+
+	math::float4 surface_li(math::Oray& ray);
 
 	integrator::surface::Integrator* surface_integrator_;
 	integrator::volume::Integrator*  volume_integrator_;
 	sampler::Sampler* sampler_;
 
 private:
+
+	uint32_t id_;
+	math::random::Generator rng_;
 
 	const scene::Scene* scene_;
 	scene::shape::Node_stack node_stack_;

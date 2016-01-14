@@ -50,7 +50,10 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 
 		if (i > 0) {
-			throughput *= worker.transmittance(ray);
+		//	throughput *= worker.transmittance(ray);
+			math::float3 tr;
+			result += throughput * worker.volume_li(ray, tr);
+			throughput *= tr;
 		}
 
 		math::float3 wo = -ray.direction;
@@ -82,14 +85,14 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 		}
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
-			math::float3 transmitted = transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
-															  sampler_, settings_.sampler_nearest, sample_result);
+			math::float3 tr = transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
+													 sampler_, settings_.sampler_nearest, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
 			}
 
-			throughput *= transmitted;
-			opacity += 1.f - sample_result.pdf * color::luminance(transmitted);
+			throughput *= tr;
+			opacity += 1.f - sample_result.pdf * color::luminance(tr);
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 			opacity = 1.f;
