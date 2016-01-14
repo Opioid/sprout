@@ -14,7 +14,7 @@ Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng
 
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
-math::float4 Normal::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+math::float4 Normal::li(Worker& worker, math::Oray& ray, bool /*volume*/, scene::Intersection& intersection) {
 	math::float3 vector;
 
 	if (Settings::Vector::Tangent == settings_.vector) {

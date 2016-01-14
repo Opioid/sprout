@@ -18,7 +18,7 @@ void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Ao::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+math::float4 Ao::li(Worker& worker, math::Oray& ray, bool /*volume*/, scene::Intersection& intersection) {
 	math::Oray occlusion_ray;
 	occlusion_ray.time = ray.time;
 	occlusion_ray.origin = intersection.geo.p;

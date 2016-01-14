@@ -28,7 +28,7 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersection& intersection) {
+math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, bool volume, scene::Intersection& intersection) {
 	scene::material::bxdf::Result sample_result;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
@@ -49,7 +49,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, scene::Intersec
 			break;
 		}
 
-		if (i > 0) {
+		if (volume && i > 0) {
 		//	throughput *= worker.transmittance(ray);
 			math::float3 tr;
 			result += throughput * worker.volume_li(ray, tr);

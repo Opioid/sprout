@@ -8,6 +8,7 @@
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
 #include "base/math/random/generator.inl"
+#include "base/math/sampling/sampling.inl"
 
 //#include <iostream>
 
@@ -73,6 +74,7 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		math::float3 tau = volume->optical_depth(tau_ray);
 		tr *= math::exp(-tau);
 
+		// Direct light scattering
 		float light_pdf;
 		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
 		if (!light) {
@@ -83,7 +85,7 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		light->sample(ray.time, current, settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
-			math::Oray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t);
+			math::Oray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t, ray.time);
 
 			float mv = worker.masked_visibility(shadow_ray, settings_.sampler_nearest);
 			if (mv > 0.f) {
@@ -94,6 +96,20 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 				emission += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
 		}
+
+		// Indirect light scattering
+		math::float2 uv(rng_.random_float(), rng_.random_float());
+		math::float3 dir = math::sample_sphere_uniform(uv);
+
+		math::Oray scatter_ray(current, dir, 0.f, 10000.f, ray.time);
+
+		math::float3 li = worker.surface_li(scatter_ray);
+
+		float p = volume->phase(w, -dir);
+
+		math::float3 l = Single_scattering::transmittance(volume, scatter_ray) * li;
+
+		emission += p * tr * scattering * l;
 	}
 
 	transmittance = tr;

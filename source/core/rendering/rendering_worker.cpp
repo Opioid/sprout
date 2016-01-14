@@ -41,6 +41,18 @@ uint32_t Worker::id() const {
 	return id_;
 }
 
+math::float3 Worker::surface_li(math::Oray& ray) {
+	scene::Intersection intersection;
+	bool hit = intersect(ray, intersection);
+
+	if (hit) {
+		math::Oray tray = ray;
+		return surface_integrator_->li(*this, tray, false, intersection).xyz();
+	} else {
+		return math::float3(0.f, 0.f, 0.f);
+	}
+}
+
 math::float3 Worker::volume_li(const math::Oray& ray, math::float3& transmittance) {
 	auto volume = scene_->volume_region();
 
@@ -91,7 +103,7 @@ scene::shape::Node_stack& Worker::node_stack() {
 	return node_stack_;
 }
 
-math::float4 Worker::surface_li(math::Oray& ray) {
+math::float4 Worker::li(math::Oray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 
@@ -102,14 +114,14 @@ math::float4 Worker::surface_li(math::Oray& ray) {
 		math::float3 vli = volume_integrator_->li(*this, volume, ray, vtr);
 
 		if (hit) {
-			math::float4 li = surface_integrator_->li(*this, ray, intersection);
+			math::float4 li = surface_integrator_->li(*this, ray, true, intersection);
 			return math::float4(vtr * li.xyz() + vli, li.w);
 		} else {
 			return math::float4(vli, 1.f);
 		}
 	} else {
 		if (hit) {
-			return surface_integrator_->li(*this, ray, intersection);
+			return surface_integrator_->li(*this, ray, false, intersection);
 		} else {
 			return math::float4(0.f, 0.f, 0.f, 1.f);
 		}
@@ -155,7 +167,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 
 				ray.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
-				math::float4 color = surface_li(ray);
+				math::float4 color = li(ray);
 
 				sensor.add_sample(sample, color, tile, bounds);
 			}
