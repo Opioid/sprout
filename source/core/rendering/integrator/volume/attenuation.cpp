@@ -17,7 +17,7 @@ math::float3 Attenuation::transmittance(Worker& worker, const scene::volume::Vol
 		return math::float3(1.f, 1.f, 1.f);
 	}
 
-	math::Oray tray(ray.origin, ray.direction, min_t, max_t);
+	math::Oray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
 	math::float3 tau = volume->optical_depth(tray);
 	return math::exp(-tau);
@@ -32,7 +32,7 @@ math::float3 Attenuation::li(Worker& worker, const scene::volume::Volume* volume
 		return math::float3::identity;
 	}
 
-	math::Oray tray(ray.origin, ray.direction, min_t, max_t);
+	math::Oray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
 	math::float3 tau = volume->optical_depth(tray);
 	transmittance = math::exp(-tau);

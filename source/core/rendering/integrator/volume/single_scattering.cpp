@@ -27,7 +27,7 @@ math::float3 Single_scattering::transmittance(Worker& worker, const scene::volum
 		return math::float3(1.f, 1.f, 1.f);
 	}
 
-	math::Oray tray(ray.origin, ray.direction, min_t, max_t);
+	math::Oray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
 	math::float3 tau = volume->optical_depth(tray);
 	return math::exp(-tau);
@@ -79,7 +79,7 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		previous = current;
 		current  = ray.point(min_t);
 
-		math::Oray tau_ray(previous, current - previous, 0.f, 1.f);
+		math::Oray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
 		math::float3 tau = volume->optical_depth(tau_ray);
 		tr *= math::exp(-tau);
 
