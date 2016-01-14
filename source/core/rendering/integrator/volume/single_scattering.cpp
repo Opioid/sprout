@@ -19,8 +19,17 @@ Single_scattering::Single_scattering(const take::Settings& take_settings,
 									 const Settings& settings) :
 	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
-math::float3 Single_scattering::transmittance(const scene::volume::Volume* volume, const math::Oray& ray) {
-	math::float3 tau = volume->optical_depth(ray);
+math::float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume* volume,
+											  const math::Oray& ray) {
+	float min_t;
+	float max_t;
+	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
+		return math::float3(1.f, 1.f, 1.f);
+	}
+
+	math::Oray tray(ray.origin, ray.direction, min_t, max_t);
+
+	math::float3 tau = volume->optical_depth(tray);
 	return math::exp(-tau);
 }
 
@@ -91,13 +100,14 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 			if (mv > 0.f) {
 				float p = volume->phase(w, -light_sample.shape.wi);
 
-				math::float3 l = Single_scattering::transmittance(volume, shadow_ray) * light_sample.energy;
+				math::float3 l = Single_scattering::transmittance(worker, volume, shadow_ray) * light_sample.energy;
 
 				emission += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
 		}
 
 		// Indirect light scattering
+		/*
 		math::float2 uv(rng_.random_float(), rng_.random_float());
 		math::float3 dir = math::sample_sphere_uniform(uv);
 
@@ -110,6 +120,7 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		math::float3 l = Single_scattering::transmittance(volume, scatter_ray) * li;
 
 		emission += p * tr * scattering * l;
+		*/
 	}
 
 	transmittance = tr;

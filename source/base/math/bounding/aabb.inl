@@ -49,11 +49,11 @@ T AABB<T>::volume() const {
 
 template<typename T>
 bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray) const {
-	int sign_0 = ray.sign[0];
+	int8_t sign_0 = ray.sign[0];
 	T min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.reciprocal_direction.x;
 	T max_t = (bounds_[1 - sign_0].x - ray.origin.x) * ray.reciprocal_direction.x;
 
-	int sign_1 = ray.sign[1];
+	int8_t sign_1 = ray.sign[1];
 	T min_ty = (bounds_[    sign_1].y - ray.origin.y) * ray.reciprocal_direction.y;
 	T max_ty = (bounds_[1 - sign_1].y - ray.origin.y) * ray.reciprocal_direction.y;
 
@@ -69,7 +69,7 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray) const {
 		max_t = max_ty;
 	}
 
-	int sign_2 = ray.sign[2];
+	int8_t sign_2 = ray.sign[2];
 	T min_tz = (bounds_[    sign_2].z - ray.origin.z) * ray.reciprocal_direction.z;
 	T max_tz = (bounds_[1 - sign_2].z - ray.origin.z) * ray.reciprocal_direction.z;
 
@@ -90,11 +90,11 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray) const {
 
 template<typename T>
 bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray, T& min_out, T& max_out) const {
-	int sign_0 = ray.sign[0];
+	int8_t sign_0 = ray.sign[0];
 	T min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.reciprocal_direction.x;
 	T max_t = (bounds_[1 - sign_0].x - ray.origin.x) * ray.reciprocal_direction.x;
 
-	int sign_1 = ray.sign[1];
+	int8_t sign_1 = ray.sign[1];
 	T min_ty = (bounds_[    sign_1].y - ray.origin.y) * ray.reciprocal_direction.y;
 	T max_ty = (bounds_[1 - sign_1].y - ray.origin.y) * ray.reciprocal_direction.y;
 
@@ -110,7 +110,7 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray, T& min_out, T& max_
 		max_t = max_ty;
 	}
 
-	int sign_2 = ray.sign[2];
+	int8_t sign_2 = ray.sign[2];
 	T min_tz = (bounds_[    sign_2].z - ray.origin.z) * ray.reciprocal_direction.z;
 	T max_tz = (bounds_[1 - sign_2].z - ray.origin.z) * ray.reciprocal_direction.z;
 

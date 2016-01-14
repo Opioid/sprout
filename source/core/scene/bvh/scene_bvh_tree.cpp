@@ -24,7 +24,7 @@ bool Build_node::intersect(math::Oray& ray, const std::vector<Prop*>& props, sha
 	bool hit = false;
 
 	if (children[0]) {
-		uint8_t c = ray.sign[axis];
+		int8_t c = ray.sign[axis];
 
 		if (children[c]->intersect(ray, props, node_stack, intersection)) {
 			hit = true;

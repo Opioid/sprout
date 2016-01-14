@@ -71,7 +71,7 @@ math::float3 Worker::transmittance(const math::Oray& ray) {
 		return math::float3(1.f, 1.f, 1.f);
 	}
 
-	return volume_integrator_->transmittance(volume, ray);
+	return volume_integrator_->transmittance(*this, volume, ray);
 }
 
 bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) {
@@ -114,7 +114,7 @@ math::float4 Worker::li(math::Oray& ray) {
 		math::float3 vli = volume_integrator_->li(*this, volume, ray, vtr);
 
 		if (hit) {
-			math::float4 li = surface_integrator_->li(*this, ray, true, intersection);
+			math::float4 li = surface_integrator_->li(*this, ray, false, intersection);
 			return math::float4(vtr * li.xyz() + vli, li.w);
 		} else {
 			return math::float4(vli, 1.f);

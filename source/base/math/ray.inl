@@ -28,13 +28,13 @@ Optimized_ray<T>::Optimized_ray() {}
 template<typename T>
 Optimized_ray<T>::Optimized_ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t, T max_t,
 								T time, uint32_t depth) :
-	Ray(origin, direction, min_t, max_t),
+	Ray<T>(origin, direction, min_t, max_t),
 	reciprocal_direction(T(1) / direction.x, T(1) / direction.y, T(1) / direction.z),
 	time(time),
 	depth(depth) {
-	sign[0] = static_cast<int>(std::signbit(direction.x));
-	sign[1] = static_cast<int>(std::signbit(direction.y));
-	sign[2] = static_cast<int>(std::signbit(direction.z));
+	sign[0] = std::signbit(direction.x) ? 1 : 0;
+	sign[1] = std::signbit(direction.y) ? 1 : 0;
+	sign[2] = std::signbit(direction.z) ? 1 : 0;
 }
 
 
@@ -43,9 +43,9 @@ void Optimized_ray<T>::set_direction(const Vector3<T>& v) {
 	this->direction = v;
 	reciprocal_direction = Vector3<T>(T(1) / v.x, T(1) / v.y, T(1) / v.z);
 
-	sign[0] = static_cast<int>(std::signbit(v.x));
-	sign[1] = static_cast<int>(std::signbit(v.y));
-	sign[2] = static_cast<int>(std::signbit(v.z));
+	sign[0] = std::signbit(v.x) ? 1 : 0;
+	sign[1] = std::signbit(v.y) ? 1 : 0;
+	sign[2] = std::signbit(v.z) ? 1 : 0;
 }
 
 }
