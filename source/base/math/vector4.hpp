@@ -35,7 +35,9 @@ struct Vector4
 
 	Vector3<T> xyz() const;
 
-	Vector4 operator*(const Vector4<T>& v) const;
+	Vector4 operator+(const Vector4& v) const;
+
+	Vector4 operator*(const Vector4& v) const;
 
 	Vector4 operator*(const Vector3<T>& v) const;
 

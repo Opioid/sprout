@@ -14,7 +14,7 @@ public:
 
 	virtual math::float3 transmittance(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray) = 0;
 
-	virtual math::float3 li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
+	virtual math::float4 li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
 							math::float3& transmittance) = 0;
 };
 

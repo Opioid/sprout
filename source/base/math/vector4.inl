@@ -25,7 +25,12 @@ Vector3<T> Vector4<T>::xyz() const {
 }
 
 template<typename T>
-Vector4<T> Vector4<T>::operator*(const Vector4<T>& v) const {
+Vector4<T> Vector4<T>::operator+(const Vector4& v) const {
+	return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
+}
+
+template<typename T>
+Vector4<T> Vector4<T>::operator*(const Vector4& v) const {
 	return Vector4(x * v.x, y * v.y, z * v.z, w * v.w);
 }
 

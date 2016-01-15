@@ -56,7 +56,7 @@ public:
 	uint32_t id() const;
 
 	math::float3 surface_li(math::Oray& ray);
-	math::float3 volume_li(const math::Oray& ray, math::float3& transmittance);
+	math::float4 volume_li(const math::Oray& ray, math::float3& transmittance);
 
 	math::float3 transmittance(const math::Oray& ray);
 

@@ -51,7 +51,11 @@ math::float4 Pathtracer_DL::li(Worker& worker, math::Oray& ray, bool volume, sce
 		}
 
 		if (i > 0) {
-			throughput *= worker.transmittance(ray);
+		//	throughput *= worker.transmittance(ray);
+			math::float3 tr;
+			math::float4 vli = worker.volume_li(ray, tr);
+			result += throughput * vli.xyz();
+			throughput *= tr;
 		}
 
 		math::float3 wo = -ray.direction;
@@ -63,6 +67,7 @@ math::float4 Pathtracer_DL::li(Worker& worker, math::Oray& ray, bool volume, sce
 		}
 
 		if (material_sample.is_pure_emissive()) {
+			opacity = 1.f;
 			break;
 		}
 

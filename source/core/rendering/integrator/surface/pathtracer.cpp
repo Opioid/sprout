@@ -48,6 +48,14 @@ math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, bool volume, scene:
 			break;
 		}
 
+		if (i > 0) {
+		//	throughput *= worker.transmittance(ray);
+			math::float3 tr;
+			math::float4 vli = worker.volume_li(ray, tr);
+			result += throughput * vli.xyz();
+			throughput *= tr;
+		}
+
 		opacity = 1.f;
 
 		math::float3 wo = -ray.direction;

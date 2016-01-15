@@ -52,7 +52,8 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, bool volume, sc
 		if (volume && i > 0) {
 		//	throughput *= worker.transmittance(ray);
 			math::float3 tr;
-			result += throughput * worker.volume_li(ray, tr);
+			math::float4 vli = worker.volume_li(ray, tr);
+			result += throughput * vli.xyz();
 			throughput *= tr;
 		}
 
@@ -65,6 +66,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, bool volume, sc
 		}
 
 		if (material_sample.is_pure_emissive()) {
+			opacity = 1.f;
 			break;
 		}
 
@@ -92,7 +94,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, bool volume, sc
 			}
 
 			throughput *= tr;
-			opacity += 1.f - sample_result.pdf * color::luminance(tr);
+			opacity += /*1.f - sample_result.pdf **/ color::luminance(tr);
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 			opacity = 1.f;

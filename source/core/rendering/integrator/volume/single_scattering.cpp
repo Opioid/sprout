@@ -4,6 +4,7 @@
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/volume/volume.hpp"
+#include "base/color/color.inl"
 #include "base/math/ray.inl"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
@@ -33,13 +34,13 @@ math::float3 Single_scattering::transmittance(Worker& worker, const scene::volum
 	return math::exp(-tau);
 }
 
-math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
+math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
 								   math::float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
 		transmittance = math::float3(1.f, 1.f, 1.f);
-		return math::float3::identity;
+		return math::float4::identity;
 	}
 
 //	min_t = ray.min_t;
@@ -55,7 +56,7 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 	if (range < 0.0001f) {
 		transmittance = math::float3(1.f, 1.f, 1.f);
-		return math::float3::identity;
+		return math::float4::identity;
 	}
 
 	uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
@@ -125,7 +126,9 @@ math::float3 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 	transmittance = tr;
 
-	return step * emission;
+	math::float3 color = step * emission;
+
+	return math::float4(color, color::luminance(color));
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings, float step_size) :

@@ -12,7 +12,7 @@ public:
 	virtual math::float3 transmittance(Worker& worker, const scene::volume::Volume* volume,
 									   const math::Oray& ray) final override;
 
-	virtual math::float3 li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
+	virtual math::float4 li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
 							math::float3& transmittance) final override;
 };
 

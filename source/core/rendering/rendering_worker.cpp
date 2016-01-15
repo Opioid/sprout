@@ -53,12 +53,12 @@ math::float3 Worker::surface_li(math::Oray& ray) {
 	}
 }
 
-math::float3 Worker::volume_li(const math::Oray& ray, math::float3& transmittance) {
+math::float4 Worker::volume_li(const math::Oray& ray, math::float3& transmittance) {
 	auto volume = scene_->volume_region();
 
 	if (!volume) {
 		transmittance = math::float3(1.f, 1.f, 1.f);
-		return math::float3::identity;
+		return math::float4::identity;
 	}
 
 	return volume_integrator_->li(*this, volume, ray, transmittance);
@@ -111,19 +111,19 @@ math::float4 Worker::li(math::Oray& ray) {
 
 	if (volume) {
 		math::float3 vtr;
-		math::float3 vli = volume_integrator_->li(*this, volume, ray, vtr);
+		math::float4 vli = volume_integrator_->li(*this, volume, ray, vtr);
 
 		if (hit) {
 			math::float4 li = surface_integrator_->li(*this, ray, false, intersection);
-			return math::float4(vtr * li.xyz() + vli, li.w);
+			return math::float4(vtr * li.xyz(), li.w) + vli;
 		} else {
-			return math::float4(vli, 1.f);
+			return vli;
 		}
 	} else {
 		if (hit) {
 			return surface_integrator_->li(*this, ray, false, intersection);
 		} else {
-			return math::float4(0.f, 0.f, 0.f, 1.f);
+			return math::float4(0.f, 0.f, 0.f, 0.f);
 		}
 	}
 }
