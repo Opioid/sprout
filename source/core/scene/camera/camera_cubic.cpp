@@ -1,4 +1,5 @@
 #include "camera_cubic.hpp"
+#include "scene/scene_ray.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"
@@ -72,7 +73,7 @@ math::Recti Cubic::view_bounds(uint32_t view) const {
 
 void Cubic::update_focus(rendering::Worker& /*worker*/) {}
 
-void Cubic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, math::Oray& ray) const {
+void Cubic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;

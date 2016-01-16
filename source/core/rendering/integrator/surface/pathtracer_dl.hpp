@@ -35,12 +35,12 @@ public:
 
 	virtual void start_new_pixel(uint32_t num_samples) final override;
 
-	virtual math::float4 li(Worker& worker, math::Oray& ray, bool volume,
+	virtual math::float4 li(Worker& worker, scene::Ray& ray, bool volume,
 							scene::Intersection& intersection) final override;
 
 private:
 
-	math::float3 estimate_direct_light(Worker& worker, const math::Oray& ray,
+	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
 									   const image::texture::sampler::Sampler_2D& texture_sampler);

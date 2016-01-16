@@ -4,6 +4,7 @@
 #include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
@@ -27,7 +28,7 @@ void Pathtracer_DL::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Pathtracer_DL::li(Worker& worker, math::Oray& ray, bool volume, scene::Intersection& intersection) {
+math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type previous_sample_type;
 
@@ -60,7 +61,7 @@ math::float4 Pathtracer_DL::li(Worker& worker, math::Oray& ray, bool volume, sce
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, *texture_sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, 1.f, *texture_sampler, worker.id());
 
 		if (material_sample.same_hemisphere(wo) && primary_ray) {
 			result += throughput * material_sample.emission();
@@ -118,14 +119,14 @@ math::float4 Pathtracer_DL::li(Worker& worker, math::Oray& ray, bool volume, sce
 	return math::float4(result, opacity);
 }
 
-math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const math::Oray& ray,
+math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 												  const scene::Intersection& intersection,
 												  const scene::material::Sample& material_sample,
 												  const image::texture::sampler::Sampler_2D& texture_sampler) {
 	math::float3 result = math::float3::identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	math::Oray shadow_ray;
+	scene::Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;

@@ -1,6 +1,7 @@
 #include "single_scattering.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/volume/volume.hpp"
@@ -21,20 +22,20 @@ Single_scattering::Single_scattering(const take::Settings& take_settings,
 	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
 math::float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume* volume,
-											  const math::Oray& ray) {
+											  const scene::Ray& ray) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
 		return math::float3(1.f, 1.f, 1.f);
 	}
 
-	math::Oray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
+	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
 	math::float3 tau = volume->optical_depth(tray);
 	return math::exp(-tau);
 }
 
-math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
+math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray,
 								   math::float3& transmittance) {
 	float min_t;
 	float max_t;
@@ -80,7 +81,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		previous = current;
 		current  = ray.point(min_t);
 
-		math::Oray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
+		scene::Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
 		math::float3 tau = volume->optical_depth(tau_ray);
 		tr *= math::exp(-tau);
 
@@ -95,7 +96,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		light->sample(ray.time, current, settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
-			math::Oray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t, ray.time);
+			scene::Ray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t, ray.time);
 
 			float mv = worker.masked_visibility(shadow_ray, settings_.sampler_nearest);
 			if (mv > 0.f) {

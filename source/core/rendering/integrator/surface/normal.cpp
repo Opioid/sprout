@@ -1,5 +1,6 @@
 #include "normal.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
@@ -14,7 +15,7 @@ Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng
 
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
-math::float4 Normal::li(Worker& worker, math::Oray& ray, bool /*volume*/, scene::Intersection& intersection) {
+math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene::Intersection& intersection) {
 	math::float3 vector;
 
 	if (Settings::Vector::Tangent == settings_.vector) {
@@ -27,7 +28,7 @@ math::float4 Normal::li(Worker& worker, math::Oray& ray, bool /*volume*/, scene:
 		auto material = intersection.material();
 
 		math::float3 wo = -ray.direction;
-		auto& material_sample = material->sample(intersection.geo, wo, settings_.sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, 1.f, settings_.sampler, worker.id());
 
 		vector = material_sample.shading_normal();
 	}

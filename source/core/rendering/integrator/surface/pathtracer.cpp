@@ -4,6 +4,7 @@
 #include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
@@ -24,7 +25,7 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, bool volume, scene::Intersection& intersection) {
+math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type previous_sample_type;
 
@@ -60,7 +61,7 @@ math::float4 Pathtracer::li(Worker& worker, math::Oray& ray, bool volume, scene:
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, *texture_sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, 1.f, *texture_sampler, worker.id());
 
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.emission();

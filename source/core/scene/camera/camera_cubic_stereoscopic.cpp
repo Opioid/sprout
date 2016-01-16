@@ -1,5 +1,6 @@
 #include "camera_cubic_stereoscopic.hpp"
 #include "rendering/sensor/sensor.hpp"
+#include "scene/scene_ray.inl"
 #include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -77,7 +78,7 @@ math::Recti Cubic_stereoscopic::view_bounds(uint32_t view) const {
 
 void Cubic_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
-void Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, math::Oray& ray) const {
+void Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;

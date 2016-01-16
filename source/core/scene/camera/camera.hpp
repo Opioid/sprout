@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene/entity/entity.hpp"
-#include "base/math/ray.hpp"
 #include "base/math/rectangle.hpp"
 
 namespace sampler { struct Camera_sample; }
@@ -14,7 +13,11 @@ namespace sensor { class Sensor; }
 
 }
 
-namespace scene { namespace camera {
+namespace scene {
+
+struct Ray;
+
+namespace camera {
 
 class Camera : public entity::Entity {
 public:
@@ -31,7 +34,7 @@ public:
 
 	virtual void update_focus(rendering::Worker& worker) = 0;
 
-	virtual void generate_ray(const sampler::Camera_sample& sample, uint32_t view, math::Oray& ray) const = 0;
+	virtual void generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const = 0;
 
 	math::int2 resolution() const;
 

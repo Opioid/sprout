@@ -13,6 +13,7 @@ class Sampler_2D;
 
 namespace scene {
 
+struct Ray;
 class Prop;
 
 namespace bvh {
@@ -21,12 +22,12 @@ struct Build_node {
 	Build_node();
 	~Build_node();
 
-	bool intersect(math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
+	bool intersect(scene::Ray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
 				   Intersection& intersection) const;
 
-	bool intersect_p(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack) const;
+	bool intersect_p(const scene::Ray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
+	float opacity(const scene::Ray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
 				  const image::texture::sampler::Sampler_2D& sampler) const;
 
 	math::aabb aabb;
@@ -46,11 +47,11 @@ public:
 
 	const math::aabb& aabb() const;
 
-	bool intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
+	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const;
+	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+	float opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 				  const image::texture::sampler::Sampler_2D& sampler) const;
 
 private:

@@ -4,6 +4,7 @@
 #include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"
@@ -28,7 +29,7 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, bool volume, scene::Intersection& intersection) {
+math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
 	scene::material::bxdf::Result sample_result;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
@@ -59,7 +60,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, math::Oray& ray, bool volume, sc
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, *texture_sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, 1.f, *texture_sampler, worker.id());
 
 		if (material_sample.same_hemisphere(wo) && primary_ray) {
 			result += throughput * material_sample.emission();
@@ -124,14 +125,14 @@ float power_heuristic(float fpdf, float gpdf) {
 	return f2 / (f2 + gpdf * gpdf);
 }
 
-math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::Oray& ray,
+math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 												   const scene::Intersection& intersection,
 												   const scene::material::Sample& material_sample,
 												   const image::texture::sampler::Sampler_2D& texture_sampler) {
 	math::float3 result = math::float3::identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	math::Oray shadow_ray;
+	scene::Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;
@@ -196,7 +197,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const math::O
 		&&  resolve_mask(worker, shadow_ray, light_intersection, texture_sampler)) {
 			if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
 				auto light_material = light_intersection.material();
-				auto& light_material_sample = light_material->sample(light_intersection.geo, wo,
+				auto& light_material_sample = light_material->sample(light_intersection.geo, wo, 1.f,
 																	 settings_.sampler_nearest, worker.id());
 
 				if (light_material_sample.same_hemisphere(wo)) {

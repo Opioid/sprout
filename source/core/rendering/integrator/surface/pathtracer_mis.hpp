@@ -2,6 +2,7 @@
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "transmittance/transmittance_closed.hpp"
+#include "transmittance/transmittance_open.hpp"
 #include "sampler/ems_sampler.hpp"
 #include "sampler/random_sampler.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
@@ -34,12 +35,12 @@ public:
 
 	virtual void start_new_pixel(uint32_t num_samples) final override;
 
-	virtual math::float4 li(Worker& worker, math::Oray& ray, bool volume,
+	virtual math::float4 li(Worker& worker, scene::Ray& ray, bool volume,
 							scene::Intersection& intersection) final override;
 
 private:
 
-	math::float3 estimate_direct_light(Worker& worker, const math::Oray& ray,
+	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
 									   const image::texture::sampler::Sampler_2D& texture_sampler);
@@ -48,7 +49,7 @@ private:
 
 	sampler::Random sampler_;
 
-	transmittance::Closed transmittance_;
+	transmittance::Open transmittance_;
 };
 
 class Pathtracer_MIS_factory : public Integrator_factory {

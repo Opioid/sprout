@@ -37,10 +37,11 @@ class Prop_image_light;
 
 namespace animation { class Animation; }
 
-struct Intersection;
-class Prop;
-
 namespace volume { class Volume; }
+
+struct Intersection;
+struct Ray;
+class Prop;
 
 class Scene {
 public:
@@ -50,10 +51,10 @@ public:
 
 	const math::aabb& aabb() const;
 
-	bool intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
-	bool intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const;
+	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
+	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+	float opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 				  const image::texture::sampler::Sampler_2D& sampler) const;
 
 	float tick_duration() const;

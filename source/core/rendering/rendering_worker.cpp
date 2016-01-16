@@ -5,13 +5,13 @@
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/camera/camera.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/node_stack.inl"
 #include "scene/material/material.hpp"
 #include "base/math/vector.inl"
-#include "base/math/ray.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/math/random/generator.inl"
 
@@ -41,19 +41,19 @@ uint32_t Worker::id() const {
 	return id_;
 }
 
-math::float3 Worker::surface_li(math::Oray& ray) {
+math::float3 Worker::surface_li(scene::Ray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 
 	if (hit) {
-		math::Oray tray = ray;
+		scene::Ray tray = ray;
 		return surface_integrator_->li(*this, tray, false, intersection).xyz();
 	} else {
 		return math::float3(0.f, 0.f, 0.f);
 	}
 }
 
-math::float4 Worker::volume_li(const math::Oray& ray, math::float3& transmittance) {
+math::float4 Worker::volume_li(const scene::Ray& ray, math::float3& transmittance) {
 	auto volume = scene_->volume_region();
 
 	if (!volume) {
@@ -64,7 +64,7 @@ math::float4 Worker::volume_li(const math::Oray& ray, math::float3& transmittanc
 	return volume_integrator_->li(*this, volume, ray, transmittance);
 }
 
-math::float3 Worker::transmittance(const math::Oray& ray) {
+math::float3 Worker::transmittance(const scene::Ray& ray) {
 	auto volume = scene_->volume_region();
 
 	if (!volume) {
@@ -74,11 +74,11 @@ math::float3 Worker::transmittance(const math::Oray& ray) {
 	return volume_integrator_->transmittance(*this, volume, ray);
 }
 
-bool Worker::intersect(math::Oray& ray, scene::Intersection& intersection) {
+bool Worker::intersect(scene::Ray& ray, scene::Intersection& intersection) {
 	return scene_->intersect(ray, node_stack_, intersection);
 }
 
-bool Worker::intersect(const scene::Prop* prop, math::Oray& ray, scene::Intersection& intersection) {
+bool Worker::intersect(const scene::Prop* prop, scene::Ray& ray, scene::Intersection& intersection) {
 	bool hit = prop->intersect(ray, node_stack_, intersection.geo);
 	if (hit) {
 		intersection.prop = prop;
@@ -87,11 +87,11 @@ bool Worker::intersect(const scene::Prop* prop, math::Oray& ray, scene::Intersec
 	return hit;
 }
 
-bool Worker::visibility(const math::Oray& ray) {
+bool Worker::visibility(const scene::Ray& ray) {
 	return !scene_->intersect_p(ray, node_stack_);
 }
 
-float Worker::masked_visibility(const math::Oray& ray, const image::texture::sampler::Sampler_2D& sampler) {
+float Worker::masked_visibility(const scene::Ray& ray, const image::texture::sampler::Sampler_2D& sampler) {
 	return 1.f - scene_->opacity(ray, node_stack_, sampler);
 }
 
@@ -103,7 +103,7 @@ scene::shape::Node_stack& Worker::node_stack() {
 	return node_stack_;
 }
 
-math::float4 Worker::li(math::Oray& ray) {
+math::float4 Worker::li(scene::Ray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 
@@ -138,7 +138,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 	uint32_t num_samples = sample_end - sample_begin;
 
 	sampler::Camera_sample sample;
-	math::Oray ray;
+	scene::Ray ray;
 
 	for (int32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (int32_t x = tile.start.x; x < tile.end.x; ++x) {
@@ -163,9 +163,8 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);
 
-				camera.generate_ray(sample, view, ray);
-
 				ray.time = normalized_tick_offset + sample.time * normalized_tick_slice;
+				camera.generate_ray(sample, view, ray);
 
 				math::float4 color = li(ray);
 

@@ -1,4 +1,5 @@
 #include "prop.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/morphable_shape.hpp"
@@ -31,7 +32,7 @@ void Prop::set_visibility(bool primary, bool secondary) {
 	properties_.set(Properties::Secondary_visibility, secondary);
 }
 
-bool Prop::intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const {
+bool Prop::intersect(scene::Ray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const {
 	if (!visible(ray.depth)) {
 		return false;
 	}
@@ -46,7 +47,7 @@ bool Prop::intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Inte
 	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
 
-bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const {
+bool Prop::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
 	if (!visible(ray.depth)) {
 		return false;
 	}
@@ -61,7 +62,7 @@ bool Prop::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) con
 	return shape_->intersect_p(transformation, ray, node_stack);
 }
 
-float Prop::opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+float Prop::opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 					const image::texture::sampler::Sampler_2D& sampler) const {
 	if (!visible(ray.depth)) {
 		return 0.f;

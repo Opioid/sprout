@@ -1,6 +1,7 @@
 #include "surface_integrator.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "take/take_settings.hpp"
 #include "base/math/random/generator.inl"
@@ -12,7 +13,7 @@ Integrator::Integrator(const take::Settings& settings, math::random::Generator& 
 
 Integrator::~Integrator() {}
 
-bool Integrator::resolve_mask(Worker& worker, math::Oray& ray, scene::Intersection& intersection,
+bool Integrator::resolve_mask(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 									  const image::texture::sampler::Sampler_2D& texture_sampler) {
 	float opacity = intersection.opacity(texture_sampler);
 

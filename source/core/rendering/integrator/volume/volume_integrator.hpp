@@ -2,7 +2,13 @@
 
 #include "rendering/integrator/integrator.hpp"
 
-namespace scene { namespace volume { class Volume; } }
+namespace scene {
+
+struct Ray;
+
+namespace volume { class Volume; }
+
+}
 
 namespace rendering { namespace integrator { namespace volume {
 
@@ -12,9 +18,9 @@ public:
 	Integrator(const take::Settings& settings, math::random::Generator& rng);
 	virtual ~Integrator();
 
-	virtual math::float3 transmittance(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray) = 0;
+	virtual math::float3 transmittance(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray) = 0;
 
-	virtual math::float4 li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
+	virtual math::float4 li(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray,
 							math::float3& transmittance) = 0;
 };
 

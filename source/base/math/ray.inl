@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ray.hpp"
 #include "math.hpp"
 #include "vector3.inl"
@@ -26,12 +28,9 @@ template<typename T>
 Optimized_ray<T>::Optimized_ray() {}
 
 template<typename T>
-Optimized_ray<T>::Optimized_ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t, T max_t,
-								T time, uint32_t depth) :
+Optimized_ray<T>::Optimized_ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t, T max_t) :
 	Ray<T>(origin, direction, min_t, max_t),
-	reciprocal_direction(T(1) / direction.x, T(1) / direction.y, T(1) / direction.z),
-	time(time),
-	depth(depth) {
+	reciprocal_direction(T(1) / direction.x, T(1) / direction.y, T(1) / direction.z) {
 	sign[0] = reciprocal_direction.x < T(0) ? 1 : 0;//std::signbit(reciprocal_direction.x) ? 1 : 0;
 	sign[1] = reciprocal_direction.y < T(0) ? 1 : 0;//std::signbit(reciprocal_direction.y) ? 1 : 0;
 	sign[2] = reciprocal_direction.z < T(0) ? 1 : 0;//std::signbit(reciprocal_direction.z) ? 1 : 0;

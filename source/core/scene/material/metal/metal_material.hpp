@@ -14,7 +14,7 @@ public:
 	Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
 					   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
+	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo, float ior_i,
 										   const image::texture::sampler::Sampler_2D& sampler,
 										   uint32_t worker_id) final override;
 
@@ -49,7 +49,7 @@ public:
 	Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
 						 std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
+	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo, float ior_i,
 										   const image::texture::sampler::Sampler_2D& sampler,
 										   uint32_t worker_id) final override;
 

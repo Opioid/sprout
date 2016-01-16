@@ -3,7 +3,6 @@
 #include "scene/entity/entity.hpp"
 #include "scene/material/material.hpp"
 #include "base/flags/flags.hpp"
-#include "base/math/ray.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include <memory>
 #include <vector>
@@ -11,6 +10,8 @@
 namespace thread { class Pool; }
 
 namespace scene {
+
+struct Ray;
 
 namespace shape {
 
@@ -29,11 +30,11 @@ public:
 
 	void set_visibility(bool primary, bool secondary);
 
-	bool intersect(math::Oray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const;
+	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const;
 
-	bool intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const;
+	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+	float opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 				  const image::texture::sampler::Sampler_2D& sampler) const;
 
 	const shape::Shape* shape() const;

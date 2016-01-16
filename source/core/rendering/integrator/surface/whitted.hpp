@@ -7,11 +7,7 @@
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
 #include "image/texture/sampler/address_mode.hpp"
 
-namespace scene {
-
-namespace material { class Sample; }
-
-}
+namespace scene { namespace material { class Sample; } }
 
 namespace rendering { namespace integrator { namespace surface {
 
@@ -30,13 +26,13 @@ public:
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
-	virtual math::float4 li(Worker& worker, math::Oray& ray, bool volume, scene::Intersection& intersection);
+	virtual math::float4 li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection);
 
 private:
 
-	math::float3 shade(Worker& worker, const math::Oray& ray, const scene::Intersection& intersection);
+	math::float3 shade(Worker& worker, const scene::Ray& ray, const scene::Intersection& intersection);
 
-	math::float3 estimate_direct_light(Worker& worker, const math::Oray& ray,
+	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
 									   const image::texture::sampler::Sampler_2D& texture_sampler);

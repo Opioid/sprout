@@ -1,6 +1,7 @@
 #include "camera_perspective_stereoscopic.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/scene_ray.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -45,7 +46,7 @@ math::Recti Perspective_stereoscopic::view_bounds(uint32_t view) const {
 void Perspective_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
 void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
-											math::Oray& ray) const {
+											scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;

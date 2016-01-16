@@ -1,7 +1,7 @@
 #include "scene_bvh_tree.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/prop/prop.hpp"
 #include "base/math/bounding/aabb.inl"
-#include <iostream>
 
 namespace scene { namespace bvh {
 
@@ -15,7 +15,7 @@ Build_node::~Build_node() {
 	delete children[1];
 }
 
-bool Build_node::intersect(math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
+bool Build_node::intersect(scene::Ray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
 						   Intersection& intersection) const {
 	if (!aabb.intersect_p(ray)) {
 		return false;
@@ -46,7 +46,7 @@ bool Build_node::intersect(math::Oray& ray, const std::vector<Prop*>& props, sha
 	return hit;
 }
 
-bool Build_node::intersect_p(const math::Oray& ray, const std::vector<Prop*>& props,
+bool Build_node::intersect_p(const scene::Ray& ray, const std::vector<Prop*>& props,
 							 shape::Node_stack& node_stack) const {
 	if (!aabb.intersect_p(ray)) {
 		return false;
@@ -71,7 +71,7 @@ bool Build_node::intersect_p(const math::Oray& ray, const std::vector<Prop*>& pr
 	return false;
 }
 
-float Build_node::opacity(const math::Oray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
+float Build_node::opacity(const scene::Ray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
 						  const image::texture::sampler::Sampler_2D& sampler) const {
 	if (!aabb.intersect_p(ray)) {
 		return 0.f;
@@ -124,7 +124,7 @@ const math::aabb& Tree::aabb() const {
 	return root_.aabb;
 }
 
-bool Tree::intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersection& intersection) const {
+bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const {
 	bool hit = false;
 
 	if (root_.intersect(ray, props_, node_stack, intersection)) {
@@ -142,7 +142,7 @@ bool Tree::intersect(math::Oray& ray, shape::Node_stack& node_stack, Intersectio
 	return hit;
 }
 
-bool Tree::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) const {
+bool Tree::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
 	if (root_.intersect_p(ray, props_, node_stack)) {
 		return true;
 	}
@@ -156,7 +156,7 @@ bool Tree::intersect_p(const math::Oray& ray, shape::Node_stack& node_stack) con
 	return false;
 }
 
-float Tree::opacity(const math::Oray& ray, shape::Node_stack& node_stack,
+float Tree::opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 					const image::texture::sampler::Sampler_2D& sampler) const {
 	float opacity = root_.opacity(ray, props_, node_stack, sampler);
 

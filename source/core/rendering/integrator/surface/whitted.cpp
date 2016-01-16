@@ -3,6 +3,7 @@
 #include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
@@ -22,7 +23,7 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Whitted::li(Worker& worker, math::Oray& ray, bool volume, scene::Intersection& intersection) {
+math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
 	math::float3 result = math::float3::identity;
 
 	float opacity = intersection.opacity(settings_.sampler_linear);
@@ -48,11 +49,11 @@ math::float4 Whitted::li(Worker& worker, math::Oray& ray, bool volume, scene::In
 	return math::float4(result, opacity);
 }
 
-math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::Intersection& intersection) {
+math::float3 Whitted::shade(Worker& worker, const scene::Ray& ray, const scene::Intersection& intersection) {
 	math::float3 result = math::float3::identity;
 
 	math::float3 wo = -ray.direction;
-	auto& material_sample = intersection.material()->sample(intersection.geo, wo, settings_.sampler_linear,
+	auto& material_sample = intersection.material()->sample(intersection.geo, wo, 1.f, settings_.sampler_linear,
 															worker.id());
 
 	result += material_sample.emission();
@@ -66,14 +67,14 @@ math::float3 Whitted::shade(Worker& worker, const math::Oray& ray, const scene::
 	return result;
 }
 
-math::float3 Whitted::estimate_direct_light(Worker& worker, const math::Oray& ray,
+math::float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 											const scene::Intersection& intersection,
 											const scene::material::Sample& material_sample,
 											const image::texture::sampler::Sampler_2D& texture_sampler) {
 	math::float3 result = math::float3::identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	math::Oray shadow_ray;
+	scene::Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;

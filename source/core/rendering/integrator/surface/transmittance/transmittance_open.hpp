@@ -14,10 +14,10 @@ namespace material { namespace bxdf { struct Result; } }
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
-class Closed : public integrator::Integrator {
+class Open : public integrator::Integrator {
 public:
 
-	Closed(const take::Settings& take_settings, math::random::Generator& rng);
+	Open(const take::Settings& take_settings, math::random::Generator& rng);
 
 	math::float3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 						 const math::float3& attenuation,

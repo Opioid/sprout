@@ -2,15 +2,10 @@
 
 #include "scene/shape/node_stack.hpp"
 #include "base/math/vector.hpp"
-#include "base/math/ray.hpp"
 #include "base/math/rectangle.hpp"
 #include "base/math/random/generator.hpp"
 
-namespace image { namespace texture { namespace sampler {
-
-class Sampler_2D;
-
-}}}
+namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 
 namespace sampler { class Sampler; }
 
@@ -19,6 +14,7 @@ namespace scene {
 class Prop;
 class Scene;
 struct Intersection;
+struct Ray;
 
 namespace camera { class Camera; }
 
@@ -55,17 +51,17 @@ public:
 
 	uint32_t id() const;
 
-	math::float3 surface_li(math::Oray& ray);
-	math::float4 volume_li(const math::Oray& ray, math::float3& transmittance);
+	math::float3 surface_li(scene::Ray& ray);
+	math::float4 volume_li(const scene::Ray& ray, math::float3& transmittance);
 
-	math::float3 transmittance(const math::Oray& ray);
+	math::float3 transmittance(const scene::Ray& ray);
 
-	bool intersect(math::Oray& ray, scene::Intersection& intersection);
-	bool intersect(const scene::Prop* prop, math::Oray& ray, scene::Intersection& intersection);
+	bool intersect(scene::Ray& ray, scene::Intersection& intersection);
+	bool intersect(const scene::Prop* prop, scene::Ray& ray, scene::Intersection& intersection);
 
-	bool visibility(const math::Oray& ray);
+	bool visibility(const scene::Ray& ray);
 
-	float masked_visibility(const math::Oray& ray, const image::texture::sampler::Sampler_2D& sampler);
+	float masked_visibility(const scene::Ray& ray, const image::texture::sampler::Sampler_2D& sampler);
 
 	const scene::Scene& scene() const;
 
@@ -73,7 +69,7 @@ public:
 
 protected:
 
-	math::float4 li(math::Oray& ray);
+	math::float4 li(scene::Ray& ray);
 
 	integrator::surface::Integrator* surface_integrator_;
 	integrator::volume::Integrator*  volume_integrator_;

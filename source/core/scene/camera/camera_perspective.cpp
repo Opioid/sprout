@@ -1,12 +1,12 @@
 #include "camera_perspective.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/ray.inl"
 #include "base/math/sampling/sampling.inl"
 
 namespace scene { namespace camera {
@@ -50,11 +50,12 @@ void Perspective::update_focus(rendering::Worker& worker) {
 		entity::Composed_transformation transformation;
 		transformation_at(0.f, transformation);
 
-		math::Oray ray;
+		scene::Ray ray;
 		ray.origin = transformation.position;
 		ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(direction)));
 		ray.min_t = 0.f;
 		ray.max_t = ray_max_t_;
+		ray.time = 0.f;
 		ray.depth = 0;
 
 		Intersection intersection;
@@ -66,7 +67,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 	}
 }
 
-void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, math::Oray& ray) const {
+void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;

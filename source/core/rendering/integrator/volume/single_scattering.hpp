@@ -19,9 +19,9 @@ public:
 	Single_scattering(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
 
 	virtual math::float3 transmittance(Worker& worker, const scene::volume::Volume* volume,
-									   const math::Oray& ray) final override;
+									   const scene::Ray& ray) final override;
 
-	virtual math::float4 li(Worker& worker, const scene::volume::Volume* volume, const math::Oray& ray,
+	virtual math::float4 li(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray,
 							math::float3& transmittance) final override;
 
 private:

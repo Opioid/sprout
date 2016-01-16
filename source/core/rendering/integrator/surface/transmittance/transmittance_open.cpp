@@ -1,4 +1,4 @@
-#include "transmittance_closed.hpp"
+#include "transmittance_open.hpp"
 #include "../integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene_ray.inl"
@@ -13,16 +13,18 @@
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
-Closed::Closed(const take::Settings &take_settings, math::random::Generator &rng) :
+Open::Open(const take::Settings &take_settings, math::random::Generator &rng) :
 	integrator::Integrator(take_settings, rng) {}
 
-math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-							 const math::float3& attenuation,
-							 sampler::Sampler& sampler,
-							 const image::texture::sampler::Sampler_2D& texture_sampler,
-							 scene::material::bxdf::Result& sample_result) {
+math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
+						   const math::float3& attenuation,
+						   sampler::Sampler& sampler,
+						   const image::texture::sampler::Sampler_2D& texture_sampler,
+						   scene::material::bxdf::Result& sample_result) {
 	math::float3 throughput = sample_result.reflection / sample_result.pdf;
 	math::float3 previous_sample_attenuation = attenuation;
+
+	auto original_material = intersection.material();
 
 	for (;;) {
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -31,13 +33,13 @@ math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersectio
 		ray.min_t = ray_offset;
 		ray.max_t = take_settings_.ray_max_t;
 
-		if (!worker.intersect(intersection.prop, ray, intersection)) {
+		if (!worker.intersect(ray, intersection)) {
 			break;
 		}
 
 		math::float3 wo = -ray.direction;
-		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, 1.f, texture_sampler, worker.id());
+	//	auto material = intersection.material();
+		auto& material_sample = original_material->sample(intersection.geo, wo, 1.f, texture_sampler, worker.id());
 
 		material_sample.sample_evaluate(sampler, sample_result);
 		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {

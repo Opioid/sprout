@@ -5,6 +5,8 @@ SOURCES += \
 HEADERS += \
 	scene/scene.hpp \
 	scene/scene_loader.hpp \
+	scene/scene_ray.hpp \
+	scene/scene_ray.inl \
 
 include(animation/animation.pri)
 include(bvh/bvh.pri)

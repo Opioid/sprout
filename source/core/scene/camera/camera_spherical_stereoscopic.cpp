@@ -1,10 +1,10 @@
 #include "camera_spherical_stereoscopic.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/scene_ray.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/ray.inl"
 #include "base/math/sampling/sampling.inl"
 
 namespace scene { namespace camera {
@@ -35,7 +35,7 @@ math::Recti Spherical_stereoscopic::view_bounds(uint32_t view) const {
 
 void Spherical_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
-void Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, math::Oray& ray) const {
+void Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	float x = d_x_ * coordinates.x;
