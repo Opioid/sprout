@@ -10,7 +10,7 @@ namespace scene { namespace material { namespace glass {
 Glass::Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
 	Material(cache, mask, false) {}
 
-const material::Sample& Glass::sample(const shape::Differential& dg, const math::float3& wo, float /*ior_i*/,
+const material::Sample& Glass::sample(const shape::Differential& dg, const math::float3& wo, float ior_i,
 									  const image::texture::sampler::Sampler_2D& sampler,
 									  uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
@@ -24,7 +24,7 @@ const material::Sample& Glass::sample(const shape::Differential& dg, const math:
 		sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
 	}
 
-	sample.set(color_, attenuation_distance_, ior_);
+	sample.set(color_, attenuation_distance_, ior_, ior_i);
 
 	return sample;
 }
@@ -39,6 +39,10 @@ math::float3 Glass::average_emission() const {
 
 const image::texture::Texture_2D* Glass::emission_map() const {
 	return nullptr;
+}
+
+float Glass::ior() const {
+	return ior_;
 }
 
 void Glass::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {

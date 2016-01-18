@@ -11,9 +11,12 @@ math::float2 IMaterial::emission_importance_sample(math::float2 /*r2*/, float& /
 	return math::float2::identity;
 }
 
-float IMaterial::emission_pdf(math::float2 /*uv*/,
-							  const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+float IMaterial::emission_pdf(math::float2 /*uv*/, const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	return 0.f;
+}
+
+float IMaterial::ior() const {
+	return 1.5f;
 }
 
 void IMaterial::prepare_sampling(bool /*spherical*/) {}

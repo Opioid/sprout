@@ -45,13 +45,14 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& color, float attenuation_distance, float ior);
+	void set(const math::float3& color, float attenuation_distance, float ior, float ior_outside);
 
 private:
 
 	math::float3 color_;
 	math::float3 attenuation_;
 	float ior_;
+	float ior_outside_;
 
 	BRDF brdf_;
 	BTDF btdf_;

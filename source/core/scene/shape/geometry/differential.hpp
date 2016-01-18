@@ -23,6 +23,11 @@ struct Differential {
 			v.x * t.y + v.y * b.y,
 			v.x * t.z + v.y * b.z);
 	}
+
+	void revert_direction() {
+		n = -n;
+		geo_n = -geo_n;
+	}
 };
 
 }}

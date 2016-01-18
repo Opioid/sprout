@@ -41,6 +41,8 @@ public:
 
 	virtual float emission_pdf(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const;
 
+	virtual float ior() const;
+
 	virtual void prepare_sampling(bool spherical);
 
 	bool is_masked() const;

@@ -22,7 +22,7 @@ void test() {
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
 
-	sample.set(color, attenuation_distance, ior);
+	sample.set(color, attenuation_distance, ior, 1.f);
 
 	math::float3 t(1.f, 0.f, 0.f);
 	math::float3 b(0.f, 1.f, 0.f);

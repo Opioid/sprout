@@ -151,10 +151,11 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(const math::float3& color, float attenuation_distance, float ior) {
+void Sample::set(const math::float3& color, float attenuation_distance, float ior, float ior_outside) {
 	color_ = color;
 	attenuation_ = material::Sample::attenuation(color, attenuation_distance);
 	ior_ = ior;
+	ior_outside_ = ior_outside;
 }
 
 }}}

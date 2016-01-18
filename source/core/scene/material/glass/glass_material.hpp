@@ -24,6 +24,8 @@ public:
 
 	virtual const image::texture::Texture_2D* emission_map() const final override;
 
+	virtual float ior() const final override;
+
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 
 	void set_color(const math::float3& color);
