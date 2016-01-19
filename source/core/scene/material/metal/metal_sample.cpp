@@ -1,4 +1,5 @@
 #include "metal_sample.hpp"
+#include "scene/material/material_sample.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"

@@ -1,5 +1,6 @@
 #include "light_constant.hpp"
 #include "light_material_sample.hpp"
+#include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
 #include "base/color/color.inl"

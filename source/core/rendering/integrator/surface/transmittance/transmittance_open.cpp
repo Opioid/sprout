@@ -5,11 +5,14 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
+#include "scene/shape/geometry/differential.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "take/take_settings.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
+
+#include <iostream>
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
@@ -25,6 +28,8 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 	math::float3 previous_sample_attenuation = attenuation;
 
 	auto original_material = intersection.material();
+
+	bool evil_within = !intersection.geo.same_hemisphere(ray.direction);
 
 	float ior = ray.ior;
 
@@ -43,6 +48,8 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 
 		auto intersection_material = intersection.material();
 		if (original_material != intersection_material) {
+		// The idea is
+	//	if (intersection.geo.same_hemisphere(wo)) {
 			intersection.geo.revert_direction();
 			ior = intersection.material()->ior();
 		}
@@ -55,8 +62,14 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 			break;
 		}
 
+		if (evil_within) {
+			previous_sample_attenuation = material_sample.attenuation();
+		}
+
 		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
 		throughput *= sample_result.reflection / sample_result.pdf;
+
+		previous_sample_attenuation = material_sample.attenuation();
 
 		// Only inner reflections are handled here
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
@@ -73,12 +86,12 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 				}
 
 				throughput *= sample_result.reflection / sample_result.pdf;
+
+				sample_result.type.set(scene::material::bxdf::Type::Transmission, true);
 			}
 
 			break;
 		}
-
-		previous_sample_attenuation = material_sample.attenuation();
 	}
 
 	return throughput;

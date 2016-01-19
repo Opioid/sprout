@@ -1,5 +1,6 @@
 #include "substitute_sample.hpp"
 #include "rendering/integrator/surface/integrator_helper.hpp"
+#include "scene/material/material_sample.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/lambert/lambert.inl"
 #include "scene/material/oren_nayar/oren_nayar.inl"

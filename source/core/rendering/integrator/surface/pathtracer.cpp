@@ -10,7 +10,7 @@
 #include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
-#include "scene/material/material_sample.hpp"
+#include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"

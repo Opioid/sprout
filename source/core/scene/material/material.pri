@@ -8,6 +8,7 @@ HEADERS += \
 	scene/material/material_print.hpp \
 	scene/material/material_provider.hpp \
 	scene/material/material_sample.hpp \
+	scene/material/material_sample.inl \
 	scene/material/material_sample_cache.hpp \
 	scene/material/material_sample_cache.inl \
 

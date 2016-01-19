@@ -1,8 +1,9 @@
 #include "glass_material.hpp"
 #include "glass_sample.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
-#include "scene/shape/geometry/differential.hpp"
+#include "scene/shape/geometry/differential.inl"
 #include "base/math/vector.inl"
 
 namespace scene { namespace material { namespace glass {

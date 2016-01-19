@@ -10,24 +10,13 @@ struct Differential {
 	math::float3 geo_n;		// geometry normal in world space
 	math::float2 uv;		// texture coordinates
 
-	math::float3 tangent_to_world(const math::float3& v) const{
-		return math::float3(
-			v.x * t.x + v.y * b.x + v.z * n.x,
-			v.x * t.y + v.y * b.y + v.z * n.y,
-			v.x * t.z + v.y * b.z + v.z * n.z);
-	}
+	math::float3 tangent_to_world(const math::float3& v) const;
 
-	math::float3 tangent_to_world(math::float2 v) const{
-		return math::float3(
-			v.x * t.x + v.y * b.x,
-			v.x * t.y + v.y * b.y,
-			v.x * t.z + v.y * b.z);
-	}
+	math::float3 tangent_to_world(math::float2 v) const;
 
-	void revert_direction() {
-		n = -n;
-		geo_n = -geo_n;
-	}
+	bool same_hemisphere(const math::float3& v) const;
+
+	void revert_direction();
 };
 
 }}

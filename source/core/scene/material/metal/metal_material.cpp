@@ -1,8 +1,9 @@
 #include "metal_material.hpp"
 #include "metal_sample.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
-#include "scene/shape/geometry/differential.hpp"
+#include "scene/shape/geometry/differential.inl"
 #include "base/math/vector.inl"
 
 // http://www.3delight.com/en/modules/forum/viewtopic.php?t=4205

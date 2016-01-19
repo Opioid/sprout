@@ -1,5 +1,6 @@
 #include "glass_sample.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/material_sample.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"

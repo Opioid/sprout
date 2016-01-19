@@ -9,7 +9,7 @@
 #include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
-#include "scene/material/material_sample.hpp"
+#include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "take/take_settings.hpp"
 #include "base/color/color.inl"
@@ -101,7 +101,8 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 			opacity = 1.f;
 		}
 
-		if (!sample_result.type.test(scene::material::bxdf::Type::Specular)) {
+		if (!sample_result.type.test(scene::material::bxdf::Type::Specular)
+		&&  !sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			primary_ray = false;
 		}
 
