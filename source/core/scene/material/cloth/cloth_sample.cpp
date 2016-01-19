@@ -1,5 +1,6 @@
 #include "cloth_sample.hpp"
 #include "rendering/integrator/surface/integrator_helper.hpp"
+#include "scene/material/material_sample.inl"
 #include "scene/material/lambert/lambert.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
