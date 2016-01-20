@@ -15,6 +15,10 @@ float IMaterial::emission_pdf(math::float2 /*uv*/, const image::texture::sampler
 	return 0.f;
 }
 
+bool IMaterial::is_transmissive() const {
+	return false;
+}
+
 float IMaterial::ior() const {
 	return 1.5f;
 }

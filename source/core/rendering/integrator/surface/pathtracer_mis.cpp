@@ -62,7 +62,8 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, 1.f, *texture_sampler, worker.id());
 
-		if (material_sample.same_hemisphere(wo) && primary_ray) {
+		if (material_sample.same_hemisphere(wo)
+		&& (primary_ray || sample_result.type.test(scene::material::bxdf::Type::Specular))) {
 			result += throughput * material_sample.emission();
 		}
 
@@ -101,8 +102,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 			opacity = 1.f;
 		}
 
-		if (!sample_result.type.test(scene::material::bxdf::Type::Specular)
-		&&  !sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
+		if (!sample_result.type.test(scene::material::bxdf::Type::Specular)) {
 			primary_ray = false;
 		}
 

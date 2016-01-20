@@ -29,8 +29,6 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 
 	auto original_material = intersection.material();
 
-	bool evil_within = !intersection.geo.same_hemisphere(ray.direction);
-
 	float ior = ray.ior;
 
 	for (;;) {
@@ -47,49 +45,20 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 		math::float3 wo = -ray.direction;
 
 		auto intersection_material = intersection.material();
-		if (original_material != intersection_material) {
-		// The idea is
-	//	if (intersection.geo.same_hemisphere(wo)) {
-			intersection.geo.revert_direction();
-			ior = intersection.material()->ior();
-		}
-
-	//	auto material = intersection.material();
-		auto& material_sample = original_material->sample(intersection.geo, wo, ior, texture_sampler, worker.id());
+		auto& material_sample = intersection_material->sample(intersection.geo, wo, 1.f, texture_sampler, worker.id());
 
 		material_sample.sample_evaluate(sampler, sample_result);
 		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
 			break;
 		}
 
-		if (evil_within) {
-			previous_sample_attenuation = material_sample.attenuation();
-		}
-
 		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
 		throughput *= sample_result.reflection / sample_result.pdf;
 
-		previous_sample_attenuation = material_sample.attenuation();
+	//	previous_sample_attenuation = material_sample.attenuation();
 
 		// Only inner reflections are handled here
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
-
-			if (original_material != intersection_material) {
-				ray.ior = intersection_material->ior();
-
-				intersection.geo.revert_direction();
-				auto& material_sample = intersection_material->sample(intersection.geo, wo, ior, texture_sampler, worker.id());
-
-				material_sample.sample_evaluate(sampler, sample_result);
-				if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
-					break;
-				}
-
-				throughput *= sample_result.reflection / sample_result.pdf;
-
-				sample_result.type.set(scene::material::bxdf::Type::Transmission, true);
-			}
-
 			break;
 		}
 	}

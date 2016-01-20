@@ -42,6 +42,10 @@ const image::texture::Texture_2D* Glass::emission_map() const {
 	return nullptr;
 }
 
+bool Glass::is_transmissive() const {
+	return true;
+}
+
 float Glass::ior() const {
 	return ior_;
 }
