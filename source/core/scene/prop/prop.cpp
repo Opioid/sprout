@@ -116,6 +116,14 @@ bool Prop::has_masked_material() const {
 	return properties_.test(Properties::Has_masked_material);
 }
 
+bool Prop::is_open() const {
+	return properties_.test(Properties::Is_open);
+}
+
+void Prop::set_open(bool open) {
+	properties_.set(Properties::Is_open, open);
+}
+
 bool Prop::primary_visibility() const {
 	return properties_.test(Properties::Primary_visibility);
 }

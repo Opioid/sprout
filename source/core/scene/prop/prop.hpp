@@ -49,6 +49,9 @@ public:
 
 	bool has_masked_material() const;
 
+	bool is_open() const;
+	void set_open(bool open);
+
 	bool primary_visibility() const;
 	bool secondary_visibility() const;
 
@@ -67,9 +70,10 @@ private:
 	material::Materials materials_;
 
 	enum class Properties {
-		Has_masked_material	    = 1 << 0,
-		Primary_visibility		= 1 << 1,
-		Secondary_visibility	= 1 << 2
+		Primary_visibility		= 1 << 0,
+		Secondary_visibility	= 1 << 1,
+		Has_masked_material	    = 1 << 2,
+		Is_open					= 1 << 3
 	};
 
 	flags::Flags<Properties> properties_;

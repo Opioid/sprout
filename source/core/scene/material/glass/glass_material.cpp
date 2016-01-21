@@ -42,14 +42,6 @@ const image::texture::Texture_2D* Glass::emission_map() const {
 	return nullptr;
 }
 
-bool Glass::is_transmissive() const {
-	return true;
-}
-
-float Glass::ior() const {
-	return ior_;
-}
-
 void Glass::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
 	normal_map_ = normal_map;
 }

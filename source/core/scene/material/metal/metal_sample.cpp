@@ -22,6 +22,10 @@ math::float3 Sample_isotropic::attenuation() const {
 	return math::float3(100.f, 100.f, 100.f);;
 }
 
+float Sample_isotropic::ior() const {
+	return 1.5f;
+}
+
 void Sample_isotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
 	float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
@@ -29,6 +33,10 @@ void Sample_isotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 }
 
 bool Sample_isotropic::is_pure_emissive() const {
+	return false;
+}
+
+bool Sample_isotropic::is_transmissive() const {
 	return false;
 }
 
@@ -59,6 +67,10 @@ math::float3 Sample_anisotropic::attenuation() const {
 	return math::float3(100.f, 100.f, 100.f);
 }
 
+float Sample_anisotropic::ior() const {
+	return 1.5f;
+}
+
 void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
 	float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
@@ -66,6 +78,10 @@ void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result
 }
 
 bool Sample_anisotropic::is_pure_emissive() const {
+	return false;
+}
+
+bool Sample_anisotropic::is_transmissive() const {
 	return false;
 }
 

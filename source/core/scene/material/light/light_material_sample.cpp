@@ -19,6 +19,10 @@ math::float3 Sample::attenuation() const {
 	return math::float3(100.f, 100.f, 100.f);
 }
 
+float Sample::ior() const {
+	return 1.5f;
+}
+
 void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
 	result.reflection = math::float3::identity;
 	result.pdf = 0.f;
@@ -28,6 +32,10 @@ void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, bxdf::Result& result
 
 bool Sample::is_pure_emissive() const {
 	return true;
+}
+
+bool Sample::is_transmissive() const {
+	return false;
 }
 
 bool Sample::is_translucent() const {

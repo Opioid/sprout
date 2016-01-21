@@ -23,7 +23,9 @@ namespace rendering { namespace integrator { namespace surface {
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings,
 							   math::random::Generator& rng,
 							   const Settings& settings) :
-	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmittance_(take_settings, rng) {}
+	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1),
+	transmittance_open_(take_settings, rng),
+	transmittance_closed_(take_settings, rng) {}
 
 void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
@@ -89,8 +91,8 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 		}
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
-			math::float3 tr = transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
-													 sampler_, settings_.sampler_nearest, sample_result);
+			math::float3 tr = resolve_transmission(worker, ray, intersection, material_sample.attenuation(),
+												   settings_.sampler_nearest, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
 			}
@@ -216,6 +218,20 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 	}
 
 	return settings_.num_light_samples_reciprocal * result;
+}
+
+math::float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
+												  scene::Intersection& intersection,
+												  const math::float3& attenuation,
+												  const image::texture::sampler::Sampler_2D& texture_sampler,
+												  scene::material::bxdf::Result& sample_result) {
+	if (intersection.prop->is_open()) {
+		return transmittance_open_.resolve(worker, ray, intersection, attenuation,
+										   sampler_, texture_sampler, sample_result);
+	} else {
+		return transmittance_closed_.resolve(worker, ray, intersection, attenuation,
+											 sampler_, texture_sampler, sample_result);
+	}
 }
 
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,

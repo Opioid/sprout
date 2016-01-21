@@ -22,7 +22,7 @@ math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersectio
 							 const image::texture::sampler::Sampler_2D& texture_sampler,
 							 scene::material::bxdf::Result& sample_result) {
 	math::float3 throughput = sample_result.reflection / sample_result.pdf;
-	math::float3 previous_sample_attenuation = attenuation;
+	math::float3 used_attenuation = attenuation;
 
 	for (;;) {
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -44,15 +44,17 @@ math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersectio
 			break;
 		}
 
-		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
+		if (material_sample.is_transmissive()) {
+			used_attenuation = material_sample.attenuation();
+		}
+
+		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, used_attenuation);
 		throughput *= sample_result.reflection / sample_result.pdf;
 
 		// Only inner reflections are handled here
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			break;
 		}
-
-		previous_sample_attenuation = material_sample.attenuation();
 	}
 
 	return throughput;

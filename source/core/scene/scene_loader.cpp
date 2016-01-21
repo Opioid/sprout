@@ -138,6 +138,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	material::Materials materials;
 	bool primary_visibility = true;
 	bool secondary_visibility = true;
+	bool open = false;
 
 	for (auto n = prop_value.MemberBegin(); n != prop_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -150,6 +151,8 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 		} else if ("visibility" == node_name) {
 			primary_visibility   = json::read_bool(node_value, "primary",   true);
 			secondary_visibility = json::read_bool(node_value, "secondary", true);
+		} else if ("open" == node_name) {
+			open = json::read_bool(node_value);
 		}
 	}
 
@@ -164,6 +167,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	Prop* prop = scene.create_prop(shape, materials);
 
 	prop->set_visibility(primary_visibility, secondary_visibility);
+	prop->set_open(open);
 
 	return prop;
 }

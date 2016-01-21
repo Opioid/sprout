@@ -45,11 +45,18 @@ private:
 									   const scene::material::Sample& material_sample,
 									   const image::texture::sampler::Sampler_2D& texture_sampler);
 
+	math::float3 resolve_transmission(Worker& worker, scene::Ray& ray,
+									  scene::Intersection& intersection,
+									  const math::float3& attenuation,
+									  const image::texture::sampler::Sampler_2D& texture_sampler,
+									  scene::material::bxdf::Result& sample_result);
+
 	const Settings& settings_;
 
 	sampler::Random sampler_;
 
-	transmittance::Open transmittance_;
+	transmittance::Open   transmittance_open_;
+	transmittance::Closed transmittance_closed_;
 };
 
 class Pathtracer_MIS_factory : public Integrator_factory {

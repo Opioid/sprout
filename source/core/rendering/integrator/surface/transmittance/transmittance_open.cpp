@@ -25,11 +25,7 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 						   const image::texture::sampler::Sampler_2D& texture_sampler,
 						   scene::material::bxdf::Result& sample_result) {
 	math::float3 throughput = sample_result.reflection / sample_result.pdf;
-	math::float3 previous_sample_attenuation = attenuation;
-
-	auto original_material = intersection.material();
-
-	float ior = ray.ior;
+	math::float3 used_attenuation = attenuation;
 
 	for (;;) {
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -43,19 +39,20 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 		}
 
 		math::float3 wo = -ray.direction;
-
-		auto intersection_material = intersection.material();
-		auto& material_sample = intersection_material->sample(intersection.geo, wo, 1.f, texture_sampler, worker.id());
+		auto material = intersection.material();
+		auto& material_sample = material->sample(intersection.geo, wo, 1.f, texture_sampler, worker.id());
 
 		material_sample.sample_evaluate(sampler, sample_result);
 		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
 			break;
 		}
 
-		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, previous_sample_attenuation);
-		throughput *= sample_result.reflection / sample_result.pdf;
+		if (material_sample.is_transmissive()) {
+			used_attenuation = material_sample.attenuation();
+		}
 
-	//	previous_sample_attenuation = material_sample.attenuation();
+		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, used_attenuation);
+		throughput *= sample_result.reflection / sample_result.pdf;
 
 		// Only inner reflections are handled here
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {

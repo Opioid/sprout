@@ -63,7 +63,8 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, 1.f, *texture_sampler, worker.id());
 
-		if (material_sample.same_hemisphere(wo) && primary_ray) {
+		if (material_sample.same_hemisphere(wo)
+		&& (primary_ray || sample_result.type.test(scene::material::bxdf::Type::Specular))) {
 			result += throughput * material_sample.emission();
 		}
 

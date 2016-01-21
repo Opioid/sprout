@@ -126,6 +126,10 @@ math::float3 Sample::attenuation() const {
 	return attenuation_;
 }
 
+float Sample::ior() const {
+	return ior_;
+}
+
 void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float p = sampler.generate_sample_1D();
 
@@ -146,6 +150,10 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 
 bool Sample::is_pure_emissive() const {
 	return false;
+}
+
+bool Sample::is_transmissive() const {
+	return true;
 }
 
 bool Sample::is_translucent() const {
