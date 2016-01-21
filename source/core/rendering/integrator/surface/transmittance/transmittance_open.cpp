@@ -16,8 +16,8 @@
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
-Open::Open(const take::Settings &take_settings, math::random::Generator &rng) :
-	integrator::Integrator(take_settings, rng) {}
+Open::Open(const take::Settings &take_settings, math::random::Generator &rng, uint32_t max_bounces) :
+	integrator::Integrator(take_settings, rng), max_bounces_(max_bounces) {}
 
 math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 						   const math::float3& attenuation,
@@ -27,7 +27,7 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 	math::float3 throughput = sample_result.reflection / sample_result.pdf;
 	math::float3 used_attenuation = attenuation;
 
-	for (;;) {
+	for (uint32_t i = 0; i < max_bounces_;) {
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
@@ -49,6 +49,9 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 
 		if (material_sample.is_transmissive()) {
 			used_attenuation = material_sample.attenuation();
+		} else {
+			++ray.depth;
+			++i;
 		}
 
 		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, used_attenuation);
