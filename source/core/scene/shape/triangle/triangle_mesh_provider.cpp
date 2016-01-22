@@ -52,6 +52,10 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 			throw std::runtime_error("Mesh does not contain vertex positions");
 		}
 
+		if (handler.indices().empty()) {
+			throw std::runtime_error("Mesh does not contain indices");
+		}
+
 		if (!handler.has_normals()) {
 			// If no normals were loaded assign identity
 			// Might be smarter to throw an exception
