@@ -4,13 +4,14 @@
 #include "file/file.hpp"
 #include "file/file_system.hpp"
 #include "base/math/vector.inl"
+#include "base/memory/variant_map.inl"
 
 namespace image  {
 
 Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
 	resource::Provider<Image>(file_system, thread_pool) {}
 
-std::shared_ptr<Image> Provider::load(const std::string& filename, uint32_t flags) {
+std::shared_ptr<Image> Provider::load(const std::string& filename, const memory::Variant_map& options) {
 	auto stream_pointer = file_system_.read_stream(filename);
 	if (!*stream_pointer) {
 		throw std::runtime_error("File \"" + filename + "\" could not be opened");
@@ -21,7 +22,9 @@ std::shared_ptr<Image> Provider::load(const std::string& filename, uint32_t flag
 	file::Type type = file::query_type(stream);
 
 	if (file::Type::PNG == type) {
-		return png_reader_.read(stream, flags);
+		uint32_t num_channels = 0;
+		options.query("num_channels", num_channels);
+		return png_reader_.read(stream, num_channels);
 	} else if (file::Type::RGBE == type) {
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);

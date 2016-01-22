@@ -5,7 +5,6 @@
 
 struct Options {
 	std::string take;
-//	std::string mount;
 	std::vector<std::string> mounts;
 	int threads;
 };

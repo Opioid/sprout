@@ -10,17 +10,18 @@
 #include "bvh/triangle_bvh_builder_suh.inl"
 #include "bvh/triangle_bvh_data_generic.inl"
 #include "file/file_system.hpp"
-#include "base/math/vector.inl"
-#include "base/math/bounding/aabb.inl"
 #include "base/json/json.hpp"
 #include "base/json/json_read_stream.hpp"
+#include "base/math/vector.inl"
+#include "base/math/bounding/aabb.inl"
+#include "base/memory/variant_map.inl"
 
 namespace scene { namespace shape { namespace triangle {
 
 Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
 	resource::Provider<Shape>(file_system, thread_pool) {}
 
-std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t flags) {
+std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory::Variant_map& options) {
 	auto stream_pointer = file_system_.read_stream(filename);
 
 	std::vector<Index_triangle> triangles;
@@ -84,7 +85,10 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, uint32_t flag
 
 	auto mesh = std::make_shared<Mesh>();
 
-	if (static_cast<uint32_t>(Provider::Flags::BVH_preset_slow) == flags) {
+	BVH_preset bvh_preset = BVH_preset::Slow;
+	options.query("bvh_preset", bvh_preset);
+
+	if (Provider::BVH_preset::Slow == bvh_preset) {
 		bvh::Builder_SAH builder(16, 64);
 		builder.build<bvh::Data_generic<Triangle_type>>(mesh->tree_, triangles, vertices, 4, thread_pool_);
 	} else {

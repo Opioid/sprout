@@ -16,6 +16,7 @@
 #include "substitute/substitute_sample.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
+#include "base/memory/variant_map.inl"
 #include "base/thread/thread_pool.hpp"
 #include <iostream>
 
@@ -38,7 +39,7 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 	fallback_material_ = material;
 }
 
-std::shared_ptr<IMaterial> Provider::load(const std::string& filename, uint32_t /*flags*/) {
+std::shared_ptr<IMaterial> Provider::load(const std::string& filename, const memory::Variant_map& /*options*/) {
 	auto stream_pointer = file_system_.read_stream(filename);
 
 	auto root = json::parse(*stream_pointer);
@@ -99,16 +100,17 @@ std::shared_ptr<IMaterial> Provider::load_cloth(const rapidjson::Value& cloth_va
 					continue;
 				}
 
+				memory::Variant_map options;
+
 				if ("Color" == usage) {
-					color_map = texture_cache_.load(filename);
+					options.insert("usage", image::texture::Provider::Usage::Color);
+					color_map = texture_cache_.load(filename, options);
 				} else if ("Normal" == usage) {
-					normal_map = texture_cache_.load(filename,
-													 static_cast<uint32_t>(
-														image::texture::Provider::Flags::Use_as_normal));
+					options.insert("usage", image::texture::Provider::Usage::Normal);
+					normal_map = texture_cache_.load(filename, options);
 				} else if ("Mask" == usage) {
-					mask = texture_cache_.load(filename,
-												static_cast<uint32_t>(
-												   image::texture::Provider::Flags::Use_as_mask));
+					options.insert("usage", image::texture::Provider::Usage::Mask);
+					mask = texture_cache_.load(filename, options);
 				}
 			}
 		}
@@ -149,9 +151,11 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 					continue;
 				}
 
+				memory::Variant_map options;
+
 				if ("Normal" == usage) {
-					normal_map = texture_cache_.load(filename, static_cast<uint32_t>(
-														 image::texture::Provider::Flags::Use_as_normal));
+					options.insert("usage", image::texture::Provider::Usage::Normal);
+					normal_map = texture_cache_.load(filename, options);
 				}
 			}
 		}
@@ -195,12 +199,14 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 					continue;
 				}
 
+				memory::Variant_map options;
+
 				if ("Emission" == usage) {
-					emissionmap = texture_cache_.load(filename);
+					options.insert("usage", image::texture::Provider::Usage::Color);
+					emissionmap = texture_cache_.load(filename, options);
 				} else if ("Mask" == usage) {
-					mask = texture_cache_.load(filename,
-											   static_cast<uint32_t>(
-												   image::texture::Provider::Flags::Use_as_mask));
+					options.insert("usage", image::texture::Provider::Usage::Mask);
+					mask = texture_cache_.load(filename, options);
 				}
 			}
 		}
@@ -250,22 +256,21 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 					continue;
 				}
 
+				memory::Variant_map options;
+
 				if ("Normal" == usage) {
-					normal_map = texture_cache_.load(filename,
-													 static_cast<uint32_t>(
-														image::texture::Provider::Flags::Use_as_normal));
+					options.insert("usage", image::texture::Provider::Usage::Normal);
+					normal_map = texture_cache_.load(filename, options);
 			/*	} else if ("Surface" == usage) {
 					surface_map = texture_cache_.load(filename,
 													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));*/
 				} else if ("Anisotropy" == usage) {
-					direction_map = texture_cache_.load(filename,
-														static_cast<uint32_t>(
-														image::texture::Provider::Flags::Use_as_anisotropy));
+					options.insert("usage", image::texture::Provider::Usage::Anisotropy);
+					direction_map = texture_cache_.load(filename, options);
 				} else if ("Mask" == usage) {
-					mask = texture_cache_.load(filename,
-											   static_cast<uint32_t>(
-												   image::texture::Provider::Flags::Use_as_mask));
+					options.insert("usage", image::texture::Provider::Usage::Mask);
+					mask = texture_cache_.load(filename, options);
 				}
 			}
 		}
@@ -338,22 +343,23 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 					continue;
 				}
 
+				memory::Variant_map options;
+
 				if ("Color" == usage) {
-					color_map = texture_cache_.load(filename);
+					options.insert("usage", image::texture::Provider::Usage::Color);
+					color_map = texture_cache_.load(filename, options);
 				} else if ("Normal" == usage) {
-					normal_map = texture_cache_.load(filename,
-													 static_cast<uint32_t>(
-														image::texture::Provider::Flags::Use_as_normal));
+					options.insert("usage", image::texture::Provider::Usage::Normal);
+					normal_map = texture_cache_.load(filename, options);
 				} else if ("Surface" == usage) {
-					surface_map = texture_cache_.load(filename,
-													  static_cast<uint32_t>(
-														 image::texture::Provider::Flags::Use_as_surface));
+					options.insert("usage", image::texture::Provider::Usage::Surface);
+					surface_map = texture_cache_.load(filename, options);
 				} else if ("Emission" == usage) {
-					emission_map = texture_cache_.load(filename);
+					options.insert("usage", image::texture::Provider::Usage::Color);
+					emission_map = texture_cache_.load(filename, options);
 				} else if ("Mask" == usage) {
-					mask = texture_cache_.load(filename,
-												static_cast<uint32_t>(
-												   image::texture::Provider::Flags::Use_as_mask));
+					options.insert("usage", image::texture::Provider::Usage::Mask);
+					mask = texture_cache_.load(filename, options);
 				}
 			}
 		}

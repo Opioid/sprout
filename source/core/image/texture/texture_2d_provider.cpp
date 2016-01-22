@@ -11,6 +11,7 @@
 #include "image/image_provider.hpp"
 #include "resource/resource_provider.inl"
 #include "resource/resource_cache.inl"
+#include "base/memory/variant_map.inl"
 
 namespace image { namespace texture {
 
@@ -21,18 +22,23 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
 	encoding::init();
 }
 
-std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, uint32_t flags) {
+std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, const memory::Variant_map& options) {
 	uint32_t num_channels = 3;
 
-	if (static_cast<uint32_t>(Provider::Flags::Use_as_mask) == flags) {
+	Usage usage = Usage::Unknown;
+	options.query("usage", usage);
+
+	if (Usage::Mask == usage) {
 		num_channels = 1;
-	} else if (static_cast<uint32_t>(Provider::Flags::Use_as_anisotropy) == flags) {
+	} else if (Usage::Anisotropy == usage) {
 		num_channels = 2;
-	} else if (static_cast<uint32_t>(Provider::Flags::Use_as_surface) == flags) {
+	} else if (Usage::Surface == usage) {
 		num_channels = 2;
 	}
 
-	auto image = image_cache_.load(filename, num_channels);
+	memory::Variant_map image_options;
+	image_options.insert("num_channels", num_channels);
+	auto image = image_cache_.load(filename, image_options);
 	if (!image) {
 		return nullptr;
 	}
@@ -40,15 +46,15 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, uint32_t
 	if (Image::Type::Byte_1 == image->description().type) {
 		return std::make_shared<Texture_2D_byte_1_unorm>(image);
 	} else if (Image::Type::Byte_2 == image->description().type) {
-		if (static_cast<uint32_t>(Provider::Flags::Use_as_anisotropy) == flags) {
+		if (Usage::Anisotropy == usage) {
 			return std::make_shared<Texture_2D_byte_2_snorm>(image);
 		} else {
 			return std::make_shared<Texture_2D_byte_2_unorm>(image);
 		}
 	} else if (Image::Type::Byte_3 == image->description().type) {
-		if (static_cast<uint32_t>(Provider::Flags::Use_as_normal) == flags) {
+		if (Usage::Normal == usage) {
 			return std::make_shared<Texture_2D_byte_3_snorm>(image);
-		} else if (static_cast<uint32_t>(Provider::Flags::Use_as_surface) == flags) {
+		} else if (Usage::Surface == usage) {
 			return std::make_shared<Texture_2D_byte_3_unorm>(image);
 		} else {
 			return std::make_shared<Texture_2D_byte_3_sRGB>(image);

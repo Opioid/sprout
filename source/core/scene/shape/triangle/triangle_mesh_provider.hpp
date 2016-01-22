@@ -16,13 +16,13 @@ public:
 
 	Provider(file::System& file_system, thread::Pool& thread_pool);
 
-	enum class Flags {
-		None            = 0,
-		BVH_preset_fast = 1,
-		BVH_preset_slow = 2
+	enum class BVH_preset {
+		Unknown = 0,
+		Fast	= 1,
+		Slow	= 2
 	};
 
-	virtual std::shared_ptr<Shape> load(const std::string& filename, uint32_t flags = 0) final override;
+	virtual std::shared_ptr<Shape> load(const std::string& filename, const memory::Variant_map& options) final override;
 
 private:
 

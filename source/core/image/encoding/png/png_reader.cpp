@@ -85,17 +85,6 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, int32_t num_channe
 			image->at(i) = color;
 		}
 
-//		for (uint32_t y = 0; y < info.height; ++y) {
-//			for (uint32_t x = 0; x < info.width; ++x) {
-//				uint32_t o = (y * info.width + x) * info.num_channels;
-//				for (uint32_t c = 0; c < max_channels; ++c) {
-//					color.v[c] = info.buffer[o + c];
-//				}
-
-//				image->at(x, y) = color;
-//			}
-//		}
-
 		return image;
 	}
 

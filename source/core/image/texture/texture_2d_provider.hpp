@@ -17,15 +17,17 @@ public:
 
 	Provider(file::System& file_system, thread::Pool& thread_pool);
 
-	enum class Flags {
-		None              = 0,
-		Use_as_normal     = 1,
-		Use_as_anisotropy = 2,
-		Use_as_surface    = 3,
-		Use_as_mask       = 4
+	enum class Usage {
+		Unknown    = 0,
+		Color      = 1,
+		Normal     = 2,
+		Anisotropy = 3,
+		Surface    = 4,
+		Mask       = 5
 	};
 
-	virtual std::shared_ptr<Texture_2D> load(const std::string& filename, uint32_t flags = 0) final override;
+	virtual std::shared_ptr<Texture_2D> load(const std::string& filename,
+											 const memory::Variant_map& options) final override;
 
 private:
 

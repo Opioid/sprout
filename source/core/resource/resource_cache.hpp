@@ -14,13 +14,13 @@ public:
 
 	Cache(Provider<T>& provider);
 
-	std::shared_ptr<T> load(const std::string& filename, uint32_t flags = 0);
+	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options);
 
 private:
 
 	Provider<T>& provider_;
 
-	std::map<std::pair<std::string, uint32_t>, std::shared_ptr<T>> resources_;
+	std::map<std::pair<std::string, memory::Variant_map>, std::shared_ptr<T>> resources_;
 };
 
 }

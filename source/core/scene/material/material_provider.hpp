@@ -6,11 +6,7 @@
 #include "base/json/rapidjson_types.hpp"
 #include <vector>
 
-namespace image { namespace texture {
-
-class Texture_2D;
-
-}}
+namespace image { namespace texture { class Texture_2D; }}
 
 namespace scene { namespace material {
 
@@ -30,7 +26,7 @@ public:
 	Provider(file::System& file_system, thread::Pool& thread_pool,
 			 resource::Cache<image::texture::Texture_2D>& texture_cache);
 
-	virtual std::shared_ptr<IMaterial> load(const std::string& filename, uint32_t flags = 0);
+	virtual std::shared_ptr<IMaterial> load(const std::string& filename, const memory::Variant_map& options);
 
 	std::shared_ptr<IMaterial> fallback_material() const;
 

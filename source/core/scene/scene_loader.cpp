@@ -26,6 +26,7 @@
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/math/quaternion.inl"
+#include "base/memory/variant_map.inl"
 
 namespace scene {
 
@@ -212,15 +213,17 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 	std::string file = json::read_string(shape_value, "file");
 	if (!file.empty()) {
 		try {
-			shape::triangle::Provider::Flags flags = shape::triangle::Provider::Flags::BVH_preset_fast;
+			shape::triangle::Provider::BVH_preset bvh_preset = shape::triangle::Provider::BVH_preset::Fast;
 
-			std::string bvh_preset = json::read_string(shape_value, "bvh_preset");
+			std::string bvh_preset_value = json::read_string(shape_value, "bvh_preset");
 
-			if ("slow" == bvh_preset) {
-				flags = shape::triangle::Provider::Flags::BVH_preset_slow;
+			if ("slow" == bvh_preset_value) {
+				bvh_preset = shape::triangle::Provider::BVH_preset::Slow;
 			}
 
-			return mesh_cache_.load(file, static_cast<uint32_t>(flags));
+			memory::Variant_map options;
+			options.insert("bvh_preset", static_cast<uint32_t>(bvh_preset));
+			return mesh_cache_.load(file, options);
 		} catch (const std::exception& e) {
 			logging::error("Cannot load \"" + file + "\": " + e.what());
 		}
@@ -256,7 +259,7 @@ void Loader::load_materials(const rapidjson::Value& materials_value, material::M
 
 	for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
 		try {
-			auto material = material_cache_.load(m->GetString());
+			auto material = material_cache_.load(m->GetString(), memory::Variant_map());
 
 			materials.push_back(material);
 		} catch (const std::exception& e) {
