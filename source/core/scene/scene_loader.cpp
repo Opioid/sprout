@@ -13,6 +13,7 @@
 #include "scene/shape/inverse_sphere.hpp"
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
+#include "scene/shape/triangle/triangle_bvh_preset.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
 #include "scene/material/cloth/cloth_sample.hpp"
 #include "scene/material/glass/glass_sample.hpp"
@@ -213,16 +214,18 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 	std::string file = json::read_string(shape_value, "file");
 	if (!file.empty()) {
 		try {
-			shape::triangle::Provider::BVH_preset bvh_preset = shape::triangle::Provider::BVH_preset::Fast;
+			shape::triangle::BVH_preset bvh_preset = shape::triangle::BVH_preset::Unknown;
 
 			std::string bvh_preset_value = json::read_string(shape_value, "bvh_preset");
 
-			if ("slow" == bvh_preset_value) {
-				bvh_preset = shape::triangle::Provider::BVH_preset::Slow;
+			if ("fast" == bvh_preset_value) {
+				bvh_preset = shape::triangle::BVH_preset::Fast;
+			} else if ("slow" == bvh_preset_value) {
+				bvh_preset = shape::triangle::BVH_preset::Slow;
 			}
 
 			memory::Variant_map options;
-			options.insert("bvh_preset", static_cast<uint32_t>(bvh_preset));
+			options.insert("bvh_preset", bvh_preset);
 			return mesh_cache_.load(file, options);
 		} catch (const std::exception& e) {
 			logging::error("Cannot load \"" + file + "\": " + e.what());

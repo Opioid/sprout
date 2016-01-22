@@ -6,6 +6,7 @@ SOURCES += \
 	scene/shape/triangle/triangle_morphable_mesh.cpp \
 
 HEADERS += \
+	scene/shape/triangle/triangle_bvh_preset.hpp \
 	scene/shape/triangle/triangle_intersection.hpp \
 	scene/shape/triangle/triangle_json_handler.hpp \
 	scene/shape/triangle/triangle_mesh.hpp \

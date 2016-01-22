@@ -18,9 +18,11 @@ void Json_handler::clear() {
 	expected_object_ = Object::Unknown;
 	current_vertex_ = 0;
 	current_vertex_element_ = 0;
+	bvh_preset_ = BVH_preset::Unknown,
 	has_positions_ = false;
 	has_normals_ = false;
 	has_tangents_ = false;
+	has_texture_coordinates_ = false;
 }
 
 void Json_handler::create_part() {
@@ -78,7 +80,15 @@ bool Json_handler::Double(double d) {
 }
 
 bool Json_handler::String(const char* str, size_t /*length*/, bool /*copy*/) {
-	if (String_type::Morph_target == expected_string_) {
+	if (String_type::BVH_preset == expected_string_) {
+		std::string bvh_preset_value(str);
+
+		if ("fast" == bvh_preset_value) {
+			bvh_preset_ = shape::triangle::BVH_preset::Fast;
+		} else if ("slow" == bvh_preset_value) {
+			bvh_preset_ = shape::triangle::BVH_preset::Slow;
+		}
+	} else if (String_type::Morph_target == expected_string_) {
 		morph_targets_.push_back(str);
 	}
 
@@ -109,6 +119,9 @@ bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
 		} else if ("morph_targets" == name) {
 			top_object_ = Object::Morph_targets;
 			expected_string_ = String_type::Morph_target;
+			return true;
+		} else if ("bvh_preset" == name) {
+			expected_string_ = String_type::BVH_preset;
 			return true;
 		}
 	}
@@ -173,6 +186,10 @@ bool Json_handler::StartArray() {
 
 bool Json_handler::EndArray(size_t /*elementCount*/) {
 	return true;
+}
+
+BVH_preset Json_handler::bvh_preset() const {
+	return bvh_preset_;
 }
 
 bool Json_handler::has_positions() const {

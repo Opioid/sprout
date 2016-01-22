@@ -16,12 +16,6 @@ public:
 
 	Provider(file::System& file_system, thread::Pool& thread_pool);
 
-	enum class BVH_preset {
-		Unknown = 0,
-		Fast	= 1,
-		Slow	= 2
-	};
-
 	virtual std::shared_ptr<Shape> load(const std::string& filename, const memory::Variant_map& options) final override;
 
 private:

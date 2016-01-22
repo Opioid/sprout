@@ -1,5 +1,6 @@
 #pragma once
 
+#include "triangle_bvh_preset.hpp"
 #include "scene/shape/geometry/vertex.hpp"
 #include <vector>
 #include <string>
@@ -34,6 +35,8 @@ public:
 	bool EndObject(size_t memberCount);
 	bool StartArray();
 	bool EndArray(size_t elementCount);
+
+	BVH_preset bvh_preset() const;
 
 	bool has_positions() const;
 	bool has_normals() const;
@@ -74,6 +77,7 @@ private:
 
 	enum class String_type {
 		Unknown,
+		BVH_preset,
 		Morph_target
 	};
 
@@ -100,6 +104,8 @@ private:
 
 	uint32_t current_vertex_;
 	uint32_t current_vertex_element_;
+
+	BVH_preset bvh_preset_;
 
 	bool has_positions_;
 	bool has_normals_;

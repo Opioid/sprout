@@ -1,5 +1,6 @@
 #include "triangle_mesh_provider.hpp"
 #include "resource/resource_provider.inl"
+#include "triangle_bvh_preset.hpp"
 #include "triangle_type.hpp"
 #include "triangle_json_handler.hpp"
 #include "triangle_morphable_mesh.hpp"
@@ -23,6 +24,9 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
 
 std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory::Variant_map& options) {
 	auto stream_pointer = file_system_.read_stream(filename);
+
+	BVH_preset bvh_preset = BVH_preset::Unknown;
+	options.query("bvh_preset", bvh_preset);
 
 	std::vector<Index_triangle> triangles;
 	std::vector<Vertex> vertices;
@@ -81,14 +85,15 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 		}
 
 		vertices.swap(handler.vertices());
+
+		if (BVH_preset::Unknown == bvh_preset) {
+			bvh_preset = handler.bvh_preset();
+		}
 	}
 
 	auto mesh = std::make_shared<Mesh>();
 
-	BVH_preset bvh_preset = BVH_preset::Slow;
-	options.query("bvh_preset", bvh_preset);
-
-	if (Provider::BVH_preset::Slow == bvh_preset) {
+	if (BVH_preset::Slow == bvh_preset) {
 		bvh::Builder_SAH builder(16, 64);
 		builder.build<bvh::Data_generic<Triangle_type>>(mesh->tree_, triangles, vertices, 4, thread_pool_);
 	} else {
