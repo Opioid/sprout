@@ -1,5 +1,8 @@
+#pragma once
+
 #include "resource_cache.hpp"
 #include "file/file_system.hpp"
+#include "base/memory/variant_map.inl"
 
 namespace resource {
 

@@ -23,8 +23,7 @@ bool Variant_map::query(const std::string& key, T& value) const {
 	return true;
 }
 
-template<>
-bool Variant_map::query(const std::string& key, bool& value) const {
+inline bool Variant_map::query(const std::string& key, bool& value) const {
 	auto i = map_.find(key);
 
 	if (map_.end() == i) {
@@ -42,8 +41,7 @@ bool Variant_map::query(const std::string& key, bool& value) const {
 	return true;
 }
 
-template<>
-bool Variant_map::query(const std::string& key, uint32_t& value) const {
+inline bool Variant_map::query(const std::string& key, uint32_t& value) const {
 	auto i = map_.find(key);
 
 	if (map_.end() == i) {
@@ -61,8 +59,7 @@ bool Variant_map::query(const std::string& key, uint32_t& value) const {
 	return true;
 }
 
-template<>
-bool Variant_map::query(const std::string& key, float& value) const {
+inline bool Variant_map::query(const std::string& key, float& value) const {
 	auto i = map_.find(key);
 
 	if (map_.end() == i) {
@@ -85,18 +82,15 @@ void Variant_map::insert(const std::string& key, T value) {
 	map_[key] = Variant(static_cast<uint32_t>(value));
 }
 
-template<>
-void Variant_map::insert(const std::string& key, bool value) {
+inline void Variant_map::insert(const std::string& key, bool value) {
 	map_[key] = Variant(value);
 }
 
-template<>
-void Variant_map::insert(const std::string& key, uint32_t value) {
+inline void Variant_map::insert(const std::string& key, uint32_t value) {
 	map_[key] = Variant(value);
 }
 
-template<>
-void Variant_map::insert(const std::string& key, float value) {
+inline void Variant_map::insert(const std::string& key, float value) {
 	map_[key] = Variant(value);
 }
 

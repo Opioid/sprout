@@ -11,25 +11,19 @@ public:
 	template<typename T>
 	bool query(const std::string& key, T& value) const;
 
-	template<>
 	bool query(const std::string& key, bool& value) const;
 
-	template<>
 	bool query(const std::string& key, uint32_t& value) const;
 
-	template<>
 	bool query(const std::string& key, float& value) const;
 
 	template<typename T>
 	void insert(const std::string& key, T value);
 
-	template<>
 	void insert(const std::string& key, bool value);
 
-	template<>
 	void insert(const std::string& key, uint32_t value);
 
-	template<>
 	void insert(const std::string& key, float value);
 
 	bool operator<(const Variant_map& other) const;

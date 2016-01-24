@@ -28,7 +28,7 @@ public:
 
 	void init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
 
-	void set_visibility(bool primary, bool secondary);
+	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const;
 
@@ -52,8 +52,9 @@ public:
 	bool is_open() const;
 	void set_open(bool open);
 
-	bool primary_visibility() const;
-	bool secondary_visibility() const;
+	bool visible_in_camera() const;
+	bool visible_in_reflection() const;
+	bool visible_in_shadow() const;
 
 private:
 
@@ -70,10 +71,11 @@ private:
 	material::Materials materials_;
 
 	enum class Properties {
-		Primary_visibility		= 1 << 0,
-		Secondary_visibility	= 1 << 1,
-		Has_masked_material	    = 1 << 2,
-		Is_open					= 1 << 3
+		Visible_in_camera		= 1 << 0,
+		Visible_in_reflection	= 1 << 1,
+		Visible_in_shadow		= 1 << 2,
+		Masked_material			= 1 << 3,
+		Open					= 1 << 4
 	};
 
 	flags::Flags<Properties> properties_;

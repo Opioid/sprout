@@ -78,7 +78,7 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 		if ("Light" == type_name) {
 			Prop* prop = load_prop(*e, scene);
 			entity = prop;
-			if (prop && prop->secondary_visibility()) {
+			if (prop && prop->visible_in_reflection()) {
 				load_light(*e, prop, scene);
 			}
 		} else if ("Prop" == type_name) {
@@ -138,8 +138,9 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
 	material::Materials materials;
-	bool primary_visibility = true;
-	bool secondary_visibility = true;
+	bool visible_in_camera = true;
+	bool visible_in_reflection = true;
+	bool visible_in_shadow = true;
 	bool open = false;
 
 	for (auto n = prop_value.MemberBegin(); n != prop_value.MemberEnd(); ++n) {
@@ -151,8 +152,9 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 		} else if ("materials" == node_name) {
 			load_materials(node_value, materials);
 		} else if ("visibility" == node_name) {
-			primary_visibility   = json::read_bool(node_value, "primary",   true);
-			secondary_visibility = json::read_bool(node_value, "secondary", true);
+			visible_in_camera   = json::read_bool(node_value, "in_camera",   true);
+			visible_in_reflection = json::read_bool(node_value, "in_reflection", true);
+			visible_in_shadow = json::read_bool(node_value, "in_shadow", true);
 		} else if ("open" == node_name) {
 			open = json::read_bool(node_value);
 		}
@@ -168,7 +170,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 
 	Prop* prop = scene.create_prop(shape, materials);
 
-	prop->set_visibility(primary_visibility, secondary_visibility);
+	prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	prop->set_open(open);
 
 	return prop;

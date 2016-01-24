@@ -21,15 +21,16 @@ void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& 
 
 	for (auto m : materials_) {
 		if (m->is_masked()) {
-			properties_.set(Properties::Has_masked_material);
+			properties_.set(Properties::Masked_material);
 			break;
 		}
 	}
 }
 
-void Prop::set_visibility(bool primary, bool secondary) {
-	properties_.set(Properties::Primary_visibility,   primary);
-	properties_.set(Properties::Secondary_visibility, secondary);
+void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
+	properties_.set(Properties::Visible_in_camera,   in_camera);
+	properties_.set(Properties::Visible_in_reflection, in_reflection);
+	properties_.set(Properties::Visible_in_shadow, in_shadow);
 }
 
 bool Prop::intersect(scene::Ray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const {
@@ -48,7 +49,7 @@ bool Prop::intersect(scene::Ray& ray, shape::Node_stack& node_stack, shape::Inte
 }
 
 bool Prop::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
-	if (!visible(ray.depth)) {
+	if (!visible_in_shadow()) {
 		return false;
 	}
 
@@ -64,7 +65,7 @@ bool Prop::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 
 float Prop::opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 					const image::texture::sampler::Sampler_2D& sampler) const {
-	if (!visible(ray.depth)) {
+	if (!visible_in_shadow()) {
 		return 0.f;
 	}
 
@@ -113,32 +114,36 @@ material::IMaterial* Prop::material(uint32_t index) const {
 }
 
 bool Prop::has_masked_material() const {
-	return properties_.test(Properties::Has_masked_material);
+	return properties_.test(Properties::Masked_material);
 }
 
 bool Prop::is_open() const {
-	return properties_.test(Properties::Is_open);
+	return properties_.test(Properties::Open);
 }
 
 void Prop::set_open(bool open) {
-	properties_.set(Properties::Is_open, open);
+	properties_.set(Properties::Open, open);
 }
 
-bool Prop::primary_visibility() const {
-	return properties_.test(Properties::Primary_visibility);
+bool Prop::visible_in_camera() const {
+	return properties_.test(Properties::Visible_in_camera);
 }
 
-bool Prop::secondary_visibility() const {
-	return properties_.test(Properties::Secondary_visibility);
+bool Prop::visible_in_reflection() const {
+	return properties_.test(Properties::Visible_in_reflection);
+}
+
+bool Prop::visible_in_shadow() const {
+	return properties_.test(Properties::Visible_in_shadow);
 }
 
 bool Prop::visible(uint32_t ray_depth) const {
 	if (ray_depth < 1) {
-		if (!properties_.test(Properties::Primary_visibility)) {
+		if (!properties_.test(Properties::Visible_in_camera)) {
 			return false;
 		}
 	} else {
-		if (!properties_.test(Properties::Secondary_visibility)) {
+		if (!properties_.test(Properties::Visible_in_reflection)) {
 			return false;
 		}
 	}
