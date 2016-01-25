@@ -87,7 +87,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			throughput *= transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
-												sampler_, settings_.sampler_nearest, sample_result);
+												 sampler_, settings_.sampler_nearest, sample_result);
 
 			if (0.f == sample_result.pdf) {
 				break;

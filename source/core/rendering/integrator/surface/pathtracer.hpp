@@ -2,7 +2,8 @@
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "transmittance/transmittance_closed.hpp"
-#include "sampler/random_sampler.hpp"
+#include "sampler/sampler_random.hpp"
+#include "sampler/sampler_ems.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
 #include "image/texture/sampler/address_mode.hpp"

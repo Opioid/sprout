@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/volume/volume_integrator.hpp"
-#include "sampler/random_sampler.hpp"
+#include "sampler/sampler_random.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
 #include "image/texture/sampler/address_mode.hpp"
 

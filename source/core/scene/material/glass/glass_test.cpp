@@ -1,7 +1,7 @@
 #include "glass_test.hpp"
 #include "glass_sample.hpp"
 #include "scene/material/material_print.hpp"
-#include "sampler/random_sampler.hpp"
+#include "sampler/sampler_random.hpp"
 #include "base/math/random/generator.hpp"
 
 namespace scene { namespace material { namespace glass {

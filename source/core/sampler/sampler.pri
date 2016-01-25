@@ -1,15 +1,15 @@
 SOURCES += \
-	sampler/ems_sampler.cpp \
-	sampler/ld_sampler.cpp \
-	sampler/random_sampler.cpp \
+	sampler/sampler_ems.cpp \
+	sampler/sampler_ld.cpp \
+	sampler/sampler_random.cpp \
 	sampler/sampler.cpp \
-	sampler/scrambled_hammersley_sampler.cpp \
+	sampler/sampler_scrambled_hammersley.cpp \
 
 HEADERS += \
 	sampler/camera_sample.hpp \
-	sampler/ems_sampler.hpp \
-	sampler/ld_sampler.hpp \
-	sampler/random_sampler.hpp \
+	sampler/sampler_ems.hpp \
+	sampler/sampler_ld.hpp \
+	sampler/sampler_random.hpp \
 	sampler/sampler.hpp \
-	sampler/scrambled_hammersley_sampler.hpp \
+	sampler/sampler_scrambled_hammersley.hpp \
 

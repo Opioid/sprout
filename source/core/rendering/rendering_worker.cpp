@@ -154,11 +154,14 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 				}
 
 				sampler_->restart(1);
+
+				surface_integrator_->start_new_pixel(num_samples);
+
 			} else {
 				sampler_->set_seed(camera.seed(pixel));
 			}
 
-			surface_integrator_->start_new_pixel(num_samples);
+
 
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);

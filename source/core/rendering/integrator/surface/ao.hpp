@@ -1,10 +1,10 @@
 #pragma once
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
-#include "sampler/ems_sampler.hpp"
-#include "sampler/ld_sampler.hpp"
-#include "sampler/scrambled_hammersley_sampler.hpp"
-#include "sampler/random_sampler.hpp"
+#include "sampler/sampler_ems.hpp"
+#include "sampler/sampler_ld.hpp"
+#include "sampler/sampler_scrambled_hammersley.hpp"
+#include "sampler/sampler_random.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/address_mode.hpp"
 

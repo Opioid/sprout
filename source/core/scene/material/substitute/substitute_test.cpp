@@ -1,7 +1,7 @@
 #include "substitute_test.hpp"
 #include "substitute_sample.hpp"
 #include "scene/material/material_print.hpp"
-#include "sampler/random_sampler.hpp"
+#include "sampler/sampler_random.hpp"
 #include "base/math/random/generator.inl"
 #include "base/math/vector.inl"
 #include "base/math/print.hpp"
