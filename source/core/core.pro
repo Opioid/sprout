@@ -6,8 +6,9 @@ CONFIG += staticlib
 CONFIG += c++14
 CONFIG(debug, release|debug):DEFINES += _DEBUG
 
-#QMAKE_CXXFLAGS_RELEASE += /Zi
-#QMAKE_LFLAGS_RELEASE += /DEBUG
+#QMAKE_CFLAGS_RELEASE += -Zi
+#QMAKE_CXXFLAGS_RELEASE += -Zi
+#QMAKE_LFLAGS_RELEASE += /DEBUG /OPT:REF
 
 SOURCES += \
 	$$PWD/../../thirdparty/include/miniz/miniz.cpp
