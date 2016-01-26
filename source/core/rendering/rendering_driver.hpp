@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+namespace take { struct Context; }
+
 namespace scene {
 
 namespace camera { class Camera; }
@@ -24,7 +26,6 @@ namespace rendering {
 
 class Tile_queue;
 class Camera_worker;
-struct Context;
 
 namespace integrator {
 
@@ -40,7 +41,7 @@ public:
 		   std::shared_ptr<integrator::volume::Integrator_factory> volume_integrator_factory,
 		   std::shared_ptr<sampler::Sampler> sampler);
 
-	void render(scene::Scene& scene, const Context& context, thread::Pool& thread_pool,
+	void render(scene::Scene& scene, const take::Context& context, thread::Pool& thread_pool,
 				exporting::Sink& exporter, progress::Sink& progressor);
 
 private:

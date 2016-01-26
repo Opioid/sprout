@@ -1,15 +1,15 @@
 #include "rendering_driver.hpp"
-#include "rendering_context.hpp"
 #include "rendering_worker.hpp"
 #include "tile_queue.hpp"
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"
+#include "progress/progress_sink.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "scene/camera/camera.hpp"
-#include "progress/progress_sink.hpp"
+#include "take/take_context.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector.inl"
 #include "base/math/random/generator.inl"
@@ -26,7 +26,7 @@ Driver::Driver(std::shared_ptr<integrator::surface::Integrator_factory> surface_
 	sampler_(sampler),
 	tile_dimensions_(math::int2(32, 32)) {}
 
-void Driver::render(scene::Scene& scene, const Context& context, thread::Pool& thread_pool,
+void Driver::render(scene::Scene& scene, const take::Context& context, thread::Pool& thread_pool,
 					exporting::Sink& exporter, progress::Sink& progressor) {
 	auto& camera = *context.camera;
 	auto& sensor = camera.sensor();
