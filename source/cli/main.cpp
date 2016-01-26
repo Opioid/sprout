@@ -6,6 +6,7 @@
 #include "core/rendering/rendering_driver.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
+#include "core/scene/camera/camera.hpp"
 #include "core/progress/progress_sink_null.hpp"
 #include "core/progress/progress_sink_stdout.hpp"
 #include "base/chrono/chrono.hpp"
@@ -68,7 +69,7 @@ int main(int argc, char* argv[]) {
 	try {
 		scene_loader.load(*file_system.read_stream(take->scene), scene);
 
-		if (take->camera_animation) {
+		if (take->camera_animation && take->context.camera) {
 			scene.add_animation(take->camera_animation);
 			scene.create_animation_stage(take->context.camera.get(), take->camera_animation.get());
 		}

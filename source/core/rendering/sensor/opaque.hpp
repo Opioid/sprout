@@ -28,5 +28,4 @@ protected:
 	Pixel* pixels_;
 };
 
-
 }}

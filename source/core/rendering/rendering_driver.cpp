@@ -8,6 +8,7 @@
 #include "rendering/integrator/integrator.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
+#include "scene/camera/camera.hpp"
 #include "progress/progress_sink.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector.inl"

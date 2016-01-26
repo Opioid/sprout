@@ -1,7 +1,8 @@
 #pragma once
 
-#include "scene/camera/camera.hpp"
 #include <memory>
+
+namespace scene { namespace camera { class Camera; } }
 
 namespace rendering {
 
