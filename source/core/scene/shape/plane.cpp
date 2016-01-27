@@ -28,8 +28,8 @@ bool Plane::intersect(const entity::Composed_transformation& transformation, mat
 		intersection.b = transformation.rotation.y;
 		intersection.n = normal;
 		intersection.geo_n = normal;
-		intersection.uv.x = math::dot(intersection.t, intersection.p) * transformation.scale.x;
-		intersection.uv.y = math::dot(intersection.b, intersection.p) * transformation.scale.y;
+		intersection.uv.x = math::dot(intersection.t, intersection.p) * -transformation.scale.x;
+		intersection.uv.y = math::dot(intersection.b, intersection.p) * -transformation.scale.y;
 
 		intersection.part = 0;
 
