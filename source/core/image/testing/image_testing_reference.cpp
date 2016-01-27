@@ -5,7 +5,21 @@
 
 namespace image { namespace testing {
 
-// the normal will look correct if tangent follows same direction as texture coordinates
+// the normal map will look correct if tangent follows same direction as texture coordinates
+// positive z is pointing into the screen
+
+// [0, 0]-----[1, 0]
+// |			   |
+// |			   |
+// |			   |
+// |			   |
+// |			   |
+// [0, 1]-----[1, 1]
+
+// tangent		[1,  0,  0]
+// bi-tangent	[0, -1,  0]
+// normal       [0,  0, -1]
+
 math::float3 reference_normal(math::float2 p, math::float2 range) {
 	float vx = -1.f + p.x * range.x;
 	float vy = -1.f + p.y * range.y;
