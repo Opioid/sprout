@@ -2,7 +2,7 @@
 
 namespace scene { namespace material { namespace substitute {
 
-namespace test {
+namespace testing {
 
 void test();
 

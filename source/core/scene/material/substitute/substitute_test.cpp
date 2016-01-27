@@ -9,13 +9,13 @@
 
 namespace scene { namespace material { namespace substitute {
 
-namespace test {
+namespace testing {
 
 void test() {
 	math::random::Generator rng;
 	sampler::Random sampler(rng, 0);
 
-	std::cout << "substitute::test()" << std::endl;
+	std::cout << "substitute::testing::test()" << std::endl;
 
 	Sample sample;
 

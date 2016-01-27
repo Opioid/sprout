@@ -2,7 +2,7 @@
 
 namespace scene { namespace material { namespace glass {
 
-namespace test {
+namespace testing {
 
 void test();
 
