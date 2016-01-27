@@ -59,9 +59,9 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		} else if ("export" == node_name) {
 			exporter_value = &node_value;
 		} else if ("start_frame" == node_name) {
-			take->context.start_frame = json::read_uint(node_value);
+			take->view.start_frame = json::read_uint(node_value);
 		} else if ("num_frames" == node_name) {
-			take->context.num_frames = json::read_uint(node_value);
+			take->view.num_frames = json::read_uint(node_value);
 		} else if ("integrator" == node_name) {
 			load_integrator_factories(node_value, *take);
 		} else if ("sampler" == node_name) {
@@ -77,16 +77,16 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		throw std::runtime_error("No reference to scene included");
 	}
 
-	if (!take->context.camera) {
+	if (!take->view.camera) {
 		throw std::runtime_error("No camera configuration included");
 	}
 
 	if (exporter_value) {
-		take->exporter = load_exporter(*exporter_value, *take->context.camera);
+		take->exporter = load_exporter(*exporter_value, *take->view.camera);
 	}
 
 	if (!take->exporter) {
-		image::Writer* writer = new image::encoding::png::Writer(take->context.camera->sensor().dimensions());
+		image::Writer* writer = new image::encoding::png::Writer(take->view.camera->sensor().dimensions());
 		take->exporter = std::make_unique<exporting::Image_sequence>("output_", writer);
 	}
 
@@ -231,7 +231,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 	camera->set_sensor(sensor);
 	camera->set_transformation(transformation);
 
-	take.context.camera = camera;
+	take.view.camera = camera;
 }
 
 void Loader::load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopic& stereo) const {

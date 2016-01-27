@@ -9,7 +9,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "scene/camera/camera.hpp"
-#include "take/take_context.hpp"
+#include "take/take_view.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector.inl"
 #include "base/math/random/generator.inl"
@@ -26,9 +26,9 @@ Driver::Driver(std::shared_ptr<integrator::surface::Integrator_factory> surface_
 	sampler_(sampler),
 	tile_dimensions_(math::int2(32, 32)) {}
 
-void Driver::render(scene::Scene& scene, const take::Context& context, thread::Pool& thread_pool,
+void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& thread_pool,
 					exporting::Sink& exporter, progress::Sink& progressor) {
-	auto& camera = *context.camera;
+	auto& camera = *view.camera;
 	auto& sensor = camera.sensor();
 
 	Tile_queue tiles(camera.resolution(), tile_dimensions_, sensor.filter_radius_int());
@@ -43,11 +43,11 @@ void Driver::render(scene::Scene& scene, const take::Context& context, thread::P
 	std::chrono::high_resolution_clock clock;
 	const uint32_t progress_range = calculate_progress_range(scene, camera, tiles.size());
 
-	float tick_offset = scene.seek(static_cast<float>(context.start_frame) * camera.frame_duration(), thread_pool);
+	float tick_offset = scene.seek(static_cast<float>(view.start_frame) * camera.frame_duration(), thread_pool);
 	float tick_rest   = scene.tick_duration() - tick_offset;
 
-	for (uint32_t f = 0; f < context.num_frames; ++f) {
-		uint32_t current_frame = context.start_frame + f;
+	for (uint32_t f = 0; f < view.num_frames; ++f) {
+		uint32_t current_frame = view.start_frame + f;
 		logging::info("Frame " + string::to_string(current_frame));
 
 		auto render_start = clock.now();

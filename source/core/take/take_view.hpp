@@ -6,7 +6,7 @@ namespace scene { namespace camera { class Camera; } }
 
 namespace take {
 
-struct Context {
+struct View {
 	std::shared_ptr<scene::camera::Camera> camera;
 
 	uint32_t start_frame = 0;

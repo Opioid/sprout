@@ -69,9 +69,9 @@ int main(int argc, char* argv[]) {
 	try {
 		scene_loader.load(*file_system.read_stream(take->scene), scene);
 
-		if (take->camera_animation && take->context.camera) {
+		if (take->camera_animation && take->view.camera) {
 			scene.add_animation(take->camera_animation);
-			scene.create_animation_stage(take->context.camera.get(), take->camera_animation.get());
+			scene.create_animation_stage(take->view.camera.get(), take->camera_animation.get());
 		}
 	} catch (const std::exception& e) {
 		logging::error("Scene \"" + take->scene + "\" could not be loaded: " + e.what() + ".");
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
 
 	auto rendering_start = clock.now();
 
-	driver.render(scene, take->context, thread_pool, *take->exporter, progressor);
+	driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
 
 	auto rendering_duration = clock.now() - rendering_start;
 	logging::info("Total render time " + string::to_string(chrono::duration_to_seconds(rendering_duration)) + " s");

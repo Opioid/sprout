@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-namespace take { struct Context; }
+namespace take { struct View; }
 
 namespace scene {
 
@@ -41,7 +41,7 @@ public:
 		   std::shared_ptr<integrator::volume::Integrator_factory> volume_integrator_factory,
 		   std::shared_ptr<sampler::Sampler> sampler);
 
-	void render(scene::Scene& scene, const take::Context& context, thread::Pool& thread_pool,
+	void render(scene::Scene& scene, const take::View& view, thread::Pool& thread_pool,
 				exporting::Sink& exporter, progress::Sink& progressor);
 
 private:
