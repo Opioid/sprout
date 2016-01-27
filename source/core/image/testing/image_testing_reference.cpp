@@ -5,10 +5,10 @@
 
 namespace image { namespace testing {
 
-// the normal will look correct if tangent space equals the rotation matrix (for a flat surface) so to speak
+// the normal will look correct if tangent follows same direction as texture coordinates
 math::float3 reference_normal(math::float2 p, math::float2 range) {
-	float vx = 1.f - p.x * range.x;
-	float vy = 1.f - p.y * range.y;
+	float vx = -1.f + p.x * range.x;
+	float vy = -1.f + p.y * range.y;
 
 	math::float2 xy(vx, vy);
 	float l = math::length(xy);

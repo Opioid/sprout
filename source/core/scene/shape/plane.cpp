@@ -24,12 +24,12 @@ bool Plane::intersect(const entity::Composed_transformation& transformation, mat
 		intersection.epsilon = 5e-4f * t;
 
 		intersection.p = ray.point(t);
-		intersection.t = transformation.rotation.x;
-		intersection.b = transformation.rotation.y;
+		intersection.t = -transformation.rotation.x;
+		intersection.b = -transformation.rotation.y;
 		intersection.n = normal;
 		intersection.geo_n = normal;
-		intersection.uv.x = math::dot(intersection.t, intersection.p) * -transformation.scale.x;
-		intersection.uv.y = math::dot(intersection.b, intersection.p) * -transformation.scale.y;
+		intersection.uv.x = math::dot(intersection.t, intersection.p) * transformation.scale.x;
+		intersection.uv.y = math::dot(intersection.b, intersection.p) * transformation.scale.y;
 
 		intersection.part = 0;
 

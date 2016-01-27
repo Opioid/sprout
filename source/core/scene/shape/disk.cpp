@@ -34,14 +34,14 @@ bool Disk::intersect(const entity::Composed_transformation& transformation, math
 			intersection.epsilon = 5e-4f * t;
 
 			intersection.p = p;
-			intersection.t = transformation.rotation.x;
-			intersection.b = transformation.rotation.y;
+			intersection.t = -transformation.rotation.x;
+			intersection.b = -transformation.rotation.y;
 			intersection.n = normal;
 			intersection.geo_n = normal;
 			math::float3 sk = k / radius;
 
-			intersection.uv.x = (math::dot(transformation.rotation.x, sk) + 1.f) * -0.5f * transformation.scale.z;
-			intersection.uv.y = (math::dot(transformation.rotation.y, sk) + 1.f) * -0.5f * transformation.scale.z;
+			intersection.uv.x = (math::dot(intersection.t, sk) + 1.f) * 0.5f * transformation.scale.z;
+			intersection.uv.y = (math::dot(intersection.b, sk) + 1.f) * 0.5f * transformation.scale.z;
 
 			intersection.part = 0;
 
