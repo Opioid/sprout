@@ -107,7 +107,7 @@ inline uint8_t float_to_snorm(float x) {
 const Color3 luminance_vector(0.299f, 0.587f, 0.114f);
 
 inline float luminance(const Color3& c) {
-	return dot(c, luminance_vector);
+	return math::dot(c, luminance_vector);
 }
 
 }
