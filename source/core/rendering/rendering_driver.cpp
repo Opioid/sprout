@@ -1,5 +1,5 @@
 #include "rendering_driver.hpp"
-#include "rendering_worker.hpp"
+#include "rendering_camera_worker.hpp"
 #include "tile_queue.hpp"
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"

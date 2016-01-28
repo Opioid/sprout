@@ -12,13 +12,18 @@
 namespace scene { namespace material { namespace substitute {
 
 math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
+	if (!same_hemisphere(wo_)) {
+		pdf = 0.f;
+		return math::float3::identity;
+	}
+
 	// This is a bit complicated to understand:
 	// If the material does not have transmission, we will never get a wi which is in the wrong hemisphere,
 	// because that case is handled before coming here,
 	// so the check is only neccessary transmissive materials (codified by thickness > 0).
 	// On the other hand, if the there is transmission and wi is actullay coming from "behind", then we don't need
 	// to calculate the reflection. In the other case, transmission won't be visible and we only need reflection.
-	if (thickness_ > 0.f && math::dot(wi, geo_n_) < 0.f) {
+	if (thickness_ > 0.f && !same_hemisphere(wi)) {
 		float n_dot_wi = std::max(-math::dot(n_, wi),  0.00001f);
 		float approximated_distance = thickness_ / n_dot_wi;
 		math::float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);

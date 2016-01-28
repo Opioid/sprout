@@ -77,17 +77,17 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		throw std::runtime_error("No reference to scene included");
 	}
 
-	if (!take->view.camera) {
-		throw std::runtime_error("No camera configuration included");
-	}
+//	if (!take->view.camera) {
+//		throw std::runtime_error("No camera configuration included");
+//	}
 
-	if (exporter_value) {
+	if (exporter_value && take->view.camera) {
 		take->exporter = load_exporter(*exporter_value, *take->view.camera);
-	}
 
-	if (!take->exporter) {
-		image::Writer* writer = new image::encoding::png::Writer(take->view.camera->sensor().dimensions());
-		take->exporter = std::make_unique<exporting::Image_sequence>("output_", writer);
+		if (!take->exporter) {
+			image::Writer* writer = new image::encoding::png::Writer(take->view.camera->sensor().dimensions());
+			take->exporter = std::make_unique<exporting::Image_sequence>("output_", writer);
+		}
 	}
 
 	if (!take->sampler) {

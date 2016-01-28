@@ -1,14 +1,15 @@
 #include "options/options.hpp"
 #include "core/file/file_system.hpp"
 #include "core/logging/logging.hpp"
-#include "core/take/take_loader.hpp"
-#include "core/take/take.hpp"
+#include "core/baking/baking_driver.hpp"
+#include "core/progress/progress_sink_null.hpp"
+#include "core/progress/progress_sink_stdout.hpp"
 #include "core/rendering/rendering_driver.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/camera/camera.hpp"
-#include "core/progress/progress_sink_null.hpp"
-#include "core/progress/progress_sink_stdout.hpp"
+#include "core/take/take_loader.hpp"
+#include "core/take/take.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
@@ -81,15 +82,19 @@ int main(int argc, char* argv[]) {
 	auto loading_duration = clock.now() - loading_start;
 	logging::info("Loading time " + string::to_string(chrono::duration_to_seconds(loading_duration)) + " s");
 
-	rendering::Driver driver(take->surface_integrator_factory, take->volume_integrator_factory, take->sampler);
-
 	progress::Stdout progressor;
 
 	logging::info("Rendering...");
 
 	auto rendering_start = clock.now();
 
-	driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
+	if (take->view.camera) {
+		rendering::Driver driver(take->surface_integrator_factory, take->volume_integrator_factory, take->sampler);
+		driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
+	} else {
+		baking::Driver driver(take->surface_integrator_factory, take->volume_integrator_factory, take->sampler);
+		driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
+	}
 
 	auto rendering_duration = clock.now() - rendering_start;
 	logging::info("Total render time " + string::to_string(chrono::duration_to_seconds(rendering_duration)) + " s");

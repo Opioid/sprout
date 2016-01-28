@@ -51,6 +51,7 @@ public:
 
 	uint32_t id() const;
 
+	math::float4 li(scene::Ray& ray);
 	math::float3 surface_li(scene::Ray& ray);
 	math::float4 volume_li(const scene::Ray& ray, math::float3& transmittance);
 
@@ -69,8 +70,6 @@ public:
 
 protected:
 
-	math::float4 li(scene::Ray& ray);
-
 	integrator::surface::Integrator* surface_integrator_;
 	integrator::volume::Integrator*  volume_integrator_;
 	sampler::Sampler* sampler_;
@@ -82,14 +81,6 @@ private:
 
 	const scene::Scene* scene_;
 	scene::shape::Node_stack node_stack_;
-};
-
-class Camera_worker : public Worker {
-public:
-
-	void render(scene::camera::Camera& camera, uint32_t view, const math::Recti& tile,
-				uint32_t sample_begin, uint32_t sample_end,
-				float normalized_tick_offset, float normalized_tick_slice);
 };
 
 }

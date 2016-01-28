@@ -37,7 +37,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;
 	float opacity = 0.f;
-	bool primary_ray = true;
+	bool primary_ray = 0 == ray.depth;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
 		const image::texture::sampler::Sampler_2D* texture_sampler;
