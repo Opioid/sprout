@@ -9,8 +9,6 @@
 #include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 
-#include <iostream>
-
 namespace scene { namespace shape {
 
 Sphere::Sphere() {
@@ -20,9 +18,9 @@ Sphere::Sphere() {
 bool Sphere::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	math::float3 v = transformation.position - ray.origin;
-	float b = dot(v, ray.direction);
+	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale.x;
-	float det = (b * b) - dot(v, v) + (radius * radius);
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
 	if (det > 0.f) {
 		float dist = std::sqrt(det);
@@ -93,9 +91,9 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 bool Sphere::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 						 Node_stack& /*node_stack*/) const {
 	math::float3 v = transformation.position - ray.origin;
-	float b = dot(v, ray.direction);
+	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale.x;
-	float det = (b * b) - dot(v, v) + (radius * radius);
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
 	if (det > 0.f) {
 		float dist = std::sqrt(det);
