@@ -5,7 +5,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/camera/camera.hpp"
-
+#include "base/math/vector.inl"
 
 namespace rendering {
 
