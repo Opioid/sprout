@@ -250,7 +250,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 	float exposure = 0.f;
 	math::float3 clamp_max(-1.f, -1.f, -1.f);
 	const rendering::sensor::tonemapping::Tonemapper* tonemapper = nullptr;
-	bool filter = false;
+	const rendering::sensor::filter::Filter* filter = nullptr;
 
 	for (auto n = sensor_value.MemberBegin(); n != sensor_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -263,8 +263,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 		} else if ("tonemapper" == node_name) {
 			tonemapper = load_tonemapper(node_value);
 		} else if ("filter" == node_name) {
-			//filter = load_filter(node_value);
-			filter = true;
+			filter = load_filter(node_value);
 		}
 	}
 
@@ -275,23 +274,19 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 	bool clamp = !math::contains_negative(clamp_max);
 
 	if (filter) {
-		float radius = 0.8f;
-		float alpha  = 0.3f;
-		auto gaussian = new rendering::sensor::filter::Gaussian(radius, alpha);
-
 		if (alpha_transparency) {
 			if (clamp) {
 				return new rendering::sensor::Filtered<
 						rendering::sensor::Transparent,
 						rendering::sensor::clamp::Clamp>(
 							dimensions, exposure, tonemapper,
-							rendering::sensor::clamp::Clamp(clamp_max), gaussian);
+							rendering::sensor::clamp::Clamp(clamp_max), filter);
 			} else {
 				return new rendering::sensor::Filtered<
 						rendering::sensor::Transparent,
 						rendering::sensor::clamp::Identity>(
 							dimensions, exposure, tonemapper,
-							rendering::sensor::clamp::Identity(), gaussian);
+							rendering::sensor::clamp::Identity(), filter);
 			}
 		}
 
@@ -300,13 +295,13 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 					rendering::sensor::Opaque,
 					rendering::sensor::clamp::Clamp>(
 						dimensions, exposure, tonemapper,
-						rendering::sensor::clamp::Clamp(clamp_max), gaussian);
+						rendering::sensor::clamp::Clamp(clamp_max), filter);
 		} else {
 			return new rendering::sensor::Filtered<
 					rendering::sensor::Opaque,
 					rendering::sensor::clamp::Identity>(
 						dimensions, exposure, tonemapper,
-						rendering::sensor::clamp::Identity(), gaussian);
+						rendering::sensor::clamp::Identity(), filter);
 		}
 	}
 
@@ -328,13 +323,13 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 		return new rendering::sensor::Unfiltered<
 				rendering::sensor::Opaque,
 				rendering::sensor::clamp::Clamp>
-				(dimensions, exposure, std::move(tonemapper), rendering::sensor::clamp::Clamp(clamp_max));
+				(dimensions, exposure, tonemapper, rendering::sensor::clamp::Clamp(clamp_max));
 	}
 
 	return new rendering::sensor::Unfiltered<
 			rendering::sensor::Opaque,
 			rendering::sensor::clamp::Identity>
-			(dimensions, exposure, std::move(tonemapper), rendering::sensor::clamp::Identity());
+			(dimensions, exposure, tonemapper, rendering::sensor::clamp::Identity());
 }
 
 const rendering::sensor::tonemapping::Tonemapper*
@@ -348,6 +343,23 @@ Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 			return new rendering::sensor::tonemapping::Filmic(linear_white);
 		} else if ("Identity" == node_name) {
 			return new rendering::sensor::tonemapping::Identity();
+		}
+	}
+
+	return nullptr;
+}
+
+const rendering::sensor::filter::Filter*
+Loader::load_filter(const rapidjson::Value& filter_value) const {
+	for (auto n = filter_value.MemberBegin(); n != filter_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("Gaussian" == node_name) {
+			float radius = json::read_float(node_value, "radius", 0.8f);
+			float alpha  = json::read_float(node_value, "alpha", 0.3f);
+
+			return new rendering::sensor::filter::Gaussian(radius, alpha);
 		}
 	}
 

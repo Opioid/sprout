@@ -33,9 +33,7 @@ namespace integrator {
 namespace surface { class Integrator_factory; }
 namespace volume  { class Integrator_factory; }
 
-}
-
-}
+}}
 
 namespace take {
 
@@ -62,6 +60,9 @@ private:
 
 	const rendering::sensor::tonemapping::Tonemapper*
 	load_tonemapper(const rapidjson::Value& tonemapper_value) const;
+
+	const rendering::sensor::filter::Filter*
+	load_filter(const rapidjson::Value& filter_value) const;
 
 	std::shared_ptr<sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value,
 												   math::random::Generator& rng) const;
