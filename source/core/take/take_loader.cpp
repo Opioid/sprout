@@ -10,7 +10,7 @@
 #include "rendering/sensor/clamp.inl"
 #include "rendering/sensor/filtered.inl"
 #include "rendering/sensor/unfiltered.inl"
-#include "rendering/sensor/filter/gaussian.inl"
+#include "rendering/sensor/filter/gaussian.hpp"
 #include "rendering/sensor/tonemapping/filmic.hpp"
 #include "rendering/sensor/tonemapping/identity.hpp"
 #include "rendering/integrator/surface/ao.hpp"
@@ -249,7 +249,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 											   math::int2 dimensions, bool alpha_transparency) const {
 	float exposure = 0.f;
 	math::float3 clamp_max(-1.f, -1.f, -1.f);
-	std::unique_ptr<rendering::sensor::tonemapping::Tonemapper> tonemapper;
+	const rendering::sensor::tonemapping::Tonemapper* tonemapper = nullptr;
 	bool filter = false;
 
 	for (auto n = sensor_value.MemberBegin(); n != sensor_value.MemberEnd(); ++n) {
@@ -269,7 +269,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 	}
 
 	if (!tonemapper) {
-		tonemapper = std::make_unique<rendering::sensor::tonemapping::Identity>();
+		tonemapper = new rendering::sensor::tonemapping::Identity();
 	}
 
 	bool clamp = !math::contains_negative(clamp_max);
@@ -277,40 +277,36 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 	if (filter) {
 		float radius = 0.8f;
 		float alpha  = 0.3f;
-		auto gaussian = std::make_unique<rendering::sensor::filter::Gaussian>(radius, alpha);
+		auto gaussian = new rendering::sensor::filter::Gaussian(radius, alpha);
 
 		if (alpha_transparency) {
 			if (clamp) {
 				return new rendering::sensor::Filtered<
 						rendering::sensor::Transparent,
-						rendering::sensor::clamp::Clamp,
-						rendering::sensor::filter::Gaussian>(
-							dimensions, exposure, std::move(tonemapper),
-							rendering::sensor::clamp::Clamp(clamp_max), std::move(gaussian));
+						rendering::sensor::clamp::Clamp>(
+							dimensions, exposure, tonemapper,
+							rendering::sensor::clamp::Clamp(clamp_max), gaussian);
 			} else {
 				return new rendering::sensor::Filtered<
 						rendering::sensor::Transparent,
-						rendering::sensor::clamp::Identity,
-						rendering::sensor::filter::Gaussian>(
-							dimensions, exposure, std::move(tonemapper),
-							rendering::sensor::clamp::Identity(), std::move(gaussian));
+						rendering::sensor::clamp::Identity>(
+							dimensions, exposure, tonemapper,
+							rendering::sensor::clamp::Identity(), gaussian);
 			}
 		}
 
 		if (clamp) {
 			return new rendering::sensor::Filtered<
 					rendering::sensor::Opaque,
-					rendering::sensor::clamp::Clamp,
-					rendering::sensor::filter::Gaussian>(
-						dimensions, exposure, std::move(tonemapper),
-						rendering::sensor::clamp::Clamp(clamp_max), std::move(gaussian));
+					rendering::sensor::clamp::Clamp>(
+						dimensions, exposure, tonemapper,
+						rendering::sensor::clamp::Clamp(clamp_max), gaussian);
 		} else {
 			return new rendering::sensor::Filtered<
 					rendering::sensor::Opaque,
-					rendering::sensor::clamp::Identity,
-					rendering::sensor::filter::Gaussian>(
-						dimensions, exposure, std::move(tonemapper),
-						rendering::sensor::clamp::Identity(), std::move(gaussian));
+					rendering::sensor::clamp::Identity>(
+						dimensions, exposure, tonemapper,
+						rendering::sensor::clamp::Identity(), gaussian);
 		}
 	}
 
@@ -319,12 +315,12 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 			return new rendering::sensor::Unfiltered<
 					rendering::sensor::Transparent,
 					rendering::sensor::clamp::Clamp>
-					(dimensions, exposure, std::move(tonemapper), rendering::sensor::clamp::Clamp(clamp_max));
+					(dimensions, exposure, tonemapper, rendering::sensor::clamp::Clamp(clamp_max));
 		} else {
 			return new rendering::sensor::Unfiltered<
 					rendering::sensor::Transparent,
 					rendering::sensor::clamp::Identity>
-					(dimensions, exposure, std::move(tonemapper), rendering::sensor::clamp::Identity());
+					(dimensions, exposure, tonemapper, rendering::sensor::clamp::Identity());
 		}
 	}
 
@@ -341,7 +337,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 			(dimensions, exposure, std::move(tonemapper), rendering::sensor::clamp::Identity());
 }
 
-std::unique_ptr<rendering::sensor::tonemapping::Tonemapper>
+const rendering::sensor::tonemapping::Tonemapper*
 Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 	for (auto n = tonemapper_value.MemberBegin(); n != tonemapper_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -349,9 +345,9 @@ Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 
 		if ("Filmic" == node_name) {
 			math::float3 linear_white = json::read_float3(node_value, "linear_white");
-			return std::make_unique<rendering::sensor::tonemapping::Filmic>(linear_white);
+			return new rendering::sensor::tonemapping::Filmic(linear_white);
 		} else if ("Identity" == node_name) {
-			return std::make_unique<rendering::sensor::tonemapping::Identity>();
+			return new rendering::sensor::tonemapping::Identity();
 		}
 	}
 

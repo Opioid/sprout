@@ -1,27 +1,30 @@
 #pragma once
 
 #include "filtered.hpp"
+#include "filter/filter.hpp"
 #include "sampler/camera_sample.hpp"
 
 namespace rendering { namespace sensor {
 
-template<class Base, class Clamp, class Filter>
-Filtered<Base, Clamp, Filter>::Filtered(const math::int2& dimensions, float exposure,
-										std::unique_ptr<tonemapping::Tonemapper> tonemapper, const Clamp& clamp,
-										std::unique_ptr<Filter> filter) :
-	Base(dimensions, exposure, std::move(tonemapper)), clamp_(clamp), filter_(std::move(filter)) {}
+template<class Base, class Clamp>
+Filtered<Base, Clamp>::Filtered(math::int2 dimensions, float exposure,
+								const tonemapping::Tonemapper* tonemapper, const Clamp& clamp,
+								const filter::Filter* filter) :
+	Base(dimensions, exposure, tonemapper), clamp_(clamp), filter_(filter) {}
 
-template<class Base, class Clamp, class Filter>
-Filtered<Base, Clamp, Filter>::~Filtered() {}
+template<class Base, class Clamp>
+Filtered<Base, Clamp>::~Filtered() {
+	delete filter_;
+}
 
-template<class Base, class Clamp, class Filter>
-int32_t Filtered<Base, Clamp, Filter>::filter_radius_int() const {
+template<class Base, class Clamp>
+int32_t Filtered<Base, Clamp>::filter_radius_int() const {
 	return static_cast<int32_t>(filter_->radius() + 0.5f);
 }
 
-template<class Base, class Clamp, class Filter>
-void Filtered<Base, Clamp, Filter>::add_sample(const sampler::Camera_sample& sample, const math::float4& color,
-											   const math::Recti& tile, const math::Recti& view_bounds) {
+template<class Base, class Clamp>
+void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, const math::float4& color,
+									   const math::Recti& tile, const math::Recti& view_bounds) {
 	math::Recti view_tile{view_bounds.start + tile.start, view_bounds.start + tile.end};
 
 	math::float4 clamped_color = clamp_.clamp(color);
@@ -60,10 +63,10 @@ void Filtered<Base, Clamp, Filter>::add_sample(const sampler::Camera_sample& sam
 						 clamped_color, view_tile, view_bounds);
 }
 
-template<class Base, class Clamp, class Filter>
-void Filtered<Base, Clamp, Filter>::weight_and_add_pixel(math::int2 pixel, math::float2 relative_offset,
-														 const math::float4& color,
-														 const math::Recti& view_tile, const math::Recti& view_bounds) {
+template<class Base, class Clamp>
+void Filtered<Base, Clamp>::weight_and_add_pixel(math::int2 pixel, math::float2 relative_offset,
+												 const math::float4& color,
+												 const math::Recti& view_tile, const math::Recti& view_bounds) {
 	if (pixel.x < view_bounds.start.x || pixel.x >= view_bounds.end.x
 	||  pixel.y < view_bounds.start.y || pixel.y >= view_bounds.end.y) {
 		return;

@@ -6,8 +6,8 @@
 
 namespace rendering { namespace sensor {
 
-Opaque::Opaque(math::int2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper) :
-	Sensor(dimensions, exposure, std::move(tonemapper)),
+Opaque::Opaque(math::int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper) :
+	Sensor(dimensions, exposure, tonemapper),
 	pixels_(new Pixel[dimensions.x * dimensions.y]) {}
 
 Opaque::~Opaque() {

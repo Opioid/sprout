@@ -1,16 +1,19 @@
 #pragma once
 
 #include "base/math/rectangle.hpp"
-#include <memory>
 
 namespace rendering { namespace sensor {
 
-template<class Base, class Clamp, class Filter>
+namespace tonemapping { class Tonemapper; }
+
+namespace filter { class Filter; }
+
+template<class Base, class Clamp>
 class Filtered : public Base {
 public:
 
-	Filtered(const math::int2& dimensions, float exposure,
-			 std::unique_ptr<tonemapping::Tonemapper> tonemapper, const Clamp& clamp, std::unique_ptr<Filter> filter);
+	Filtered(math::int2 dimensions, float exposure,
+			 const tonemapping::Tonemapper* tonemapper, const Clamp& clamp, const filter::Filter* filter);
 
 	~Filtered();
 
@@ -26,7 +29,7 @@ private:
 
 	Clamp clamp_;
 
-	std::unique_ptr<Filter> filter_;
+	const filter::Filter* filter_;
 };
 
 }}

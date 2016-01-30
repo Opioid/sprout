@@ -2,7 +2,6 @@
 
 #include "image/typed_image.hpp"
 #include "base/math/rectangle.hpp"
-#include <memory>
 
 namespace thread { class Pool; }
 
@@ -15,7 +14,7 @@ namespace tonemapping { class Tonemapper; }
 class Sensor {
 public:
 
-	Sensor(math::int2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper);
+	Sensor(math::int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper);
 	virtual ~Sensor();
 
 	math::int2 dimensions() const;
@@ -41,7 +40,7 @@ protected:
 
 	float exposure_;
 
-	std::unique_ptr<tonemapping::Tonemapper> tonemapper_;
+	const tonemapping::Tonemapper* tonemapper_;
 
 	image::Image_float_4 image_;
 };

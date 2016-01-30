@@ -6,7 +6,7 @@
 
 namespace rendering { namespace sensor {
 
-Transparent::Transparent(math::int2 dimensions, float exposure, std::unique_ptr<tonemapping::Tonemapper> tonemapper) :
+Transparent::Transparent(math::int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper) :
 	Sensor(dimensions, exposure, std::move(tonemapper)),
 	pixels_(new Pixel[dimensions.x * dimensions.y]) {}
 

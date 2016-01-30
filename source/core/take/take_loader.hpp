@@ -60,7 +60,7 @@ private:
 	rendering::sensor::Sensor* load_sensor(const rapidjson::Value& sensor_value,
 										   math::int2 dimensions, bool alpha_transparency) const;
 
-	std::unique_ptr<rendering::sensor::tonemapping::Tonemapper>
+	const rendering::sensor::tonemapping::Tonemapper*
 	load_tonemapper(const rapidjson::Value& tonemapper_value) const;
 
 	std::shared_ptr<sampler::Sampler> load_sampler(const rapidjson::Value& sampler_value,

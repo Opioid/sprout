@@ -7,8 +7,8 @@ namespace rendering { namespace sensor {
 
 template<class Base, class Clamp>
 Unfiltered<Base, Clamp>::Unfiltered(math::int2 dimensions, float exposure,
-									std::unique_ptr<tonemapping::Tonemapper> tonemapper, const Clamp& clamp) :
-	Base(dimensions, exposure, std::move(tonemapper)), clamp_(clamp) {}
+									const tonemapping::Tonemapper* tonemapper, const Clamp& clamp) :
+	Base(dimensions, exposure, tonemapper), clamp_(clamp) {}
 
 template<class Base, class Clamp>
 int32_t Unfiltered<Base, Clamp>::filter_radius_int() const {

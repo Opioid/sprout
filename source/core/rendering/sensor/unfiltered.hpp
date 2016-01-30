@@ -1,15 +1,17 @@
 #pragma once
 
-#include <cstdint>
+#include "base/math/vector.hpp"
 
 namespace rendering { namespace sensor {
+
+namespace tonemapping { class Tonemapper; }
 
 template<class Base, class Clamp>
 class Unfiltered : public Base {
 public:
 
 	Unfiltered(math::int2 dimensions, float exposure,
-			   std::unique_ptr<tonemapping::Tonemapper> tonemapper, const Clamp& clamp);
+			   const tonemapping::Tonemapper* tonemapper, const Clamp& clamp);
 
 	virtual int32_t filter_radius_int() const final override;
 

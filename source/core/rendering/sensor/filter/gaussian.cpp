@@ -22,17 +22,17 @@ private:
 	float alpha_;
 };
 
-inline Gaussian::Gaussian(float radius, float alpha) :
+Gaussian::Gaussian(float radius, float alpha) :
 	radius_(radius),
 	gaussian_(0.f, radius * radius, 256, Gaussian_functor(radius * radius, alpha)),
 	exp_(std::exp(-alpha * radius * radius)),
 	alpha_(alpha) {}
 
-inline float Gaussian::radius() const {
+float Gaussian::radius() const {
 	return radius_;
 }
 
-inline float Gaussian::evaluate(math::float2 p) const {
+float Gaussian::evaluate(math::float2 p) const {
 	return gaussian_.f(p.x * p.x) * gaussian_.f(p.y * p.y);
 
 //	return gaussian(p.x) * gaussian(p.y);

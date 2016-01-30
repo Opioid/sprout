@@ -1,18 +1,19 @@
 #pragma once
 
+#include "filter.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/function/interpolated_function.hpp"
 
 namespace rendering { namespace sensor { namespace filter {
 
-class Gaussian {
+class Gaussian : public Filter {
 public:
 
 	Gaussian(float radius, float alpha);
 
-	float radius() const;
+	virtual float radius() const final override;
 
-	float evaluate(math::float2 p) const;
+	virtual float evaluate(math::float2 p) const final override;
 
 private:
 
