@@ -31,6 +31,7 @@ rendering::sensor::Sensor& Camera::sensor() const {
 }
 
 void Camera::set_sensor(rendering::sensor::Sensor* sensor) {
+	delete sensor_;
 	sensor_ = sensor;
 
 	filter_radius_ = sensor->filter_radius_int();
