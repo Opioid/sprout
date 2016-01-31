@@ -52,4 +52,3 @@ void Prop_image_light::prepare_sampling() {
 }
 
 }}
-
