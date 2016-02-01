@@ -85,6 +85,13 @@ inline float3 sample_hemisphere_cosine(float2 uv) {
 	return float3(xy.x, xy.y, z);
 }
 
+inline float3 sample_oriented_hemisphere_cosine(float2 uv, const float3& x, const float3& y, const float3& z) {
+	float2 xy = sample_disk_concentric(uv);
+	float  za = std::sqrt(std::max(0.f, 1.f - xy.x * xy.x - xy.y * xy.y));
+
+	return  xy.x * x + xy.y * y + za * z;
+}
+
 inline float3 sample_sphere_uniform(float2 uv) {
 	float z = 1.f - 2.f * uv.x;
 	float r = std::sqrt(std::max(0.f, 1.f - z * z));

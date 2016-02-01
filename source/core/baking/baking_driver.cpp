@@ -24,7 +24,7 @@ Driver::Driver(std::shared_ptr<rendering::integrator::surface::Integrator_factor
 
 void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& thread_pool,
 					exporting::Sink& exporter, progress::Sink& progressor) {
-	math::int2 dimensions(128, 128);
+	math::int2 dimensions(512, 512);
 
 	scene.tick(thread_pool);
 
@@ -41,16 +41,18 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 	math::float3 bake_quad_extent(2.f, 0.f, -2.f);
 	math::float3 bake_quad_range = bake_quad_extent - bake_quad_origin;
 
-	uint32_t num_samples = 256;
+	uint32_t num_samples = 4096;
 
 	math::float3x3 bake_space(1.f, 0.f, 0.f,
 							  0.f, 0.f, -1.f,
 							  0.f, 1.f, 0.f);
 
-	sampler_->restart_and_seed(num_samples);
+
 
 	for (int32_t y = 0; y < dimensions.y; ++y) {
 		for (int32_t x = 0; x < dimensions.x; ++x) {
+
+			sampler_->restart_and_seed(num_samples);
 
 			math::float3 offset((static_cast<float>(x) + 0.5f) * (bake_quad_range.x / static_cast<float>(dimensions.x)),
 								0.f,
@@ -65,7 +67,7 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 				ray.origin = origin;
 
 				math::float2 sample = sampler_->generate_sample_2D();
-				math::float3 hs = math::sample_oriented_hemisphere_uniform(sample, bake_space.x, bake_space.y, bake_space.z);
+				math::float3 hs = math::sample_oriented_hemisphere_cosine(sample, bake_space.x, bake_space.y, bake_space.z);
 
 				ray.set_direction(hs);
 				ray.depth = 1;
