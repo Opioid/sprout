@@ -12,18 +12,16 @@ public:
 	bool query(const std::string& key, T& value) const;
 
 	bool query(const std::string& key, bool& value) const;
-
+	bool query(const std::string& key, int32_t& value) const;
 	bool query(const std::string& key, uint32_t& value) const;
-
 	bool query(const std::string& key, float& value) const;
 
 	template<typename T>
 	void insert(const std::string& key, T value);
 
 	void insert(const std::string& key, bool value);
-
+	void insert(const std::string& key, int32_t value);
 	void insert(const std::string& key, uint32_t value);
-
 	void insert(const std::string& key, float value);
 
 	bool operator<(const Variant_map& other) const;
@@ -31,9 +29,9 @@ public:
 private:
 
 	struct Variant {
-
 		Variant();
 		Variant(bool bool_value);
+		Variant(int32_t int_value);
 		Variant(uint32_t uint_value);
 		Variant(float float_value);
 
@@ -42,6 +40,7 @@ private:
 		enum class Type {
 			Unknown,
 			Bool,
+			Int,
 			Uint,
 			Float
 		};
@@ -50,6 +49,7 @@ private:
 
 		union {
 			bool	 bool_value;
+			int32_t  int_value;
 			uint32_t uint_value;
 			float	 float_value;
 		};

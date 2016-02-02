@@ -200,6 +200,10 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 
 				memory::Variant_map options;
 
+				if (texture_description.num_elements > 1) {
+					options.insert("num_elements", texture_description.num_elements);
+				}
+
 				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
 					emissionmap = texture_cache_.load(texture_description.filename, options);

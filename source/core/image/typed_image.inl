@@ -7,8 +7,7 @@ namespace image {
 template<typename T>
 Typed_image<T>::Typed_image(const Image::Description& description) :
 	Image(description),
-	area_(description.dimensions.x * description.dimensions.y),
-	data_(new T[description.dimensions.x * description.dimensions.y]) {}
+	data_(new T[description.dimensions.x * description.dimensions.y * description.num_elements]) {}
 
 template<typename T>
 Typed_image<T>::~Typed_image() {

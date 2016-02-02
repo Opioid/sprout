@@ -41,6 +41,24 @@ inline bool Variant_map::query(const std::string& key, bool& value) const {
 	return true;
 }
 
+inline bool Variant_map::query(const std::string& key, int32_t& value) const {
+	auto i = map_.find(key);
+
+	if (map_.end() == i) {
+		return false;
+	}
+
+	auto& variant = i->second;
+
+	if (Variant::Type::Int != variant.type) {
+		return false;
+	}
+
+	value = variant.int_value;
+
+	return true;
+}
+
 inline bool Variant_map::query(const std::string& key, uint32_t& value) const {
 	auto i = map_.find(key);
 
@@ -85,6 +103,11 @@ void Variant_map::insert(const std::string& key, T value) {
 inline void Variant_map::insert(const std::string& key, bool value) {
 	map_[key] = Variant(value);
 }
+
+inline void Variant_map::insert(const std::string& key, int32_t value) {
+	map_[key] = Variant(value);
+}
+
 
 inline void Variant_map::insert(const std::string& key, uint32_t value) {
 	map_[key] = Variant(value);

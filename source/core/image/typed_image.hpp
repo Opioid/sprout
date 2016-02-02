@@ -23,8 +23,6 @@ public:
 
 private:
 
-	int32_t area_;
-
 	T* data_;
 };
 

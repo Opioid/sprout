@@ -38,9 +38,16 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, const me
 
 	memory::Variant_map image_options;
 	image_options.insert("num_channels", num_channels);
+
 	auto image = image_cache_.load(filename, image_options);
 	if (!image) {
 		return nullptr;
+	}
+
+	int32_t num_elements = 1;
+	options.query("num_elements", num_elements);
+	if (num_elements > 1) {
+		image->set_num_elements(num_elements);
 	}
 
 	if (Image::Type::Byte_1 == image->description().type) {
