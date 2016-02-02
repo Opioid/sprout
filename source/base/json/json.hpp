@@ -26,6 +26,8 @@ math::float3 read_float3(const rapidjson::Value& value, const std::string& name,
 
 math::float4 read_float4(const rapidjson::Value& value);
 
+int32_t read_int(const rapidjson::Value& value);
+
 uint32_t read_uint(const rapidjson::Value& value);
 uint32_t read_uint(const rapidjson::Value& value, const std::string& name, uint32_t default_value = 0);
 

@@ -24,4 +24,20 @@ math::float4 Texture_2D_float_3::at_4(int32_t x, int32_t y) const {
 	return math::float4(image_.at(x, y), 1.f);
 }
 
+float Texture_2D_float_3::at_1(int32_t x, int32_t y, int32_t element) const {
+	return image_.at(x, y, element).x;
+}
+
+math::float2 Texture_2D_float_3::at_2(int32_t x, int32_t y, int32_t element) const {
+	return image_.at(x, y, element).xy();
+}
+
+math::float3 Texture_2D_float_3::at_3(int32_t x, int32_t y, int32_t element) const {
+	return image_.at(x, y, element);
+}
+
+math::float4 Texture_2D_float_3::at_4(int32_t x, int32_t y, int32_t element) const {
+	return math::float4(image_.at(x, y, element), 1.f);
+}
+
 }}

@@ -18,7 +18,6 @@
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.inl"
 #include "base/thread/thread_pool.hpp"
-#include <iostream>
 
 namespace scene { namespace material {
 
@@ -93,24 +92,24 @@ std::shared_ptr<IMaterial> Provider::load_cloth(const rapidjson::Value& cloth_va
 			two_sided = json::read_bool(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
-				std::string filename = json::read_string(*tn, "file", "");
-				std::string usage    = json::read_string(*tn, "usage", "Color");
+				Texture_description texture_description;
+				read_texture_description(*tn, texture_description);
 
-				if (filename.empty()) {
+				if (texture_description.filename.empty()) {
 					continue;
 				}
 
 				memory::Variant_map options;
 
-				if ("Color" == usage) {
+				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = texture_cache_.load(filename, options);
-				} else if ("Normal" == usage) {
+					color_map = texture_cache_.load(texture_description.filename, options);
+				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(filename, options);
-				} else if ("Mask" == usage) {
+					normal_map = texture_cache_.load(texture_description.filename, options);
+				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(filename, options);
+					mask = texture_cache_.load(texture_description.filename, options);
 				}
 			}
 		}
@@ -144,18 +143,18 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 			ior = json::read_float(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
-				std::string filename = json::read_string(*tn, "file", "");
-				std::string usage    = json::read_string(*tn, "usage", "Color");
+				Texture_description texture_description;
+				read_texture_description(*tn, texture_description);
 
-				if (filename.empty()) {
+				if (texture_description.filename.empty()) {
 					continue;
 				}
 
 				memory::Variant_map options;
 
-				if ("Normal" == usage) {
+				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(filename, options);
+					normal_map = texture_cache_.load(texture_description.filename, options);
 				}
 			}
 		}
@@ -192,21 +191,21 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 			two_sided = json::read_bool(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
-				std::string filename = json::read_string(*tn, "file", "");
-				std::string usage    = json::read_string(*tn, "usage", "Color");
+				Texture_description texture_description;
+				read_texture_description(*tn, texture_description);
 
-				if (filename.empty()) {
+				if (texture_description.filename.empty()) {
 					continue;
 				}
 
 				memory::Variant_map options;
 
-				if ("Emission" == usage) {
+				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emissionmap = texture_cache_.load(filename, options);
-				} else if ("Mask" == usage) {
+					emissionmap = texture_cache_.load(texture_description.filename, options);
+				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(filename, options);
+					mask = texture_cache_.load(texture_description.filename, options);
 				}
 			}
 		}
@@ -249,28 +248,28 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 			two_sided = json::read_bool(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
-				std::string filename = json::read_string(*tn, "file", "");
-				std::string usage    = json::read_string(*tn, "usage", "Color");
+				Texture_description texture_description;
+				read_texture_description(*tn, texture_description);
 
-				if (filename.empty()) {
+				if (texture_description.filename.empty()) {
 					continue;
 				}
 
 				memory::Variant_map options;
 
-				if ("Normal" == usage) {
+				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(filename, options);
+					normal_map = texture_cache_.load(texture_description.filename, options);
 			/*	} else if ("Surface" == usage) {
 					surface_map = texture_cache_.load(filename,
 													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));*/
-				} else if ("Anisotropy" == usage) {
+				} else if ("Anisotropy" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Anisotropy);
-					direction_map = texture_cache_.load(filename, options);
-				} else if ("Mask" == usage) {
+					direction_map = texture_cache_.load(texture_description.filename, options);
+				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(filename, options);
+					mask = texture_cache_.load(texture_description.filename, options);
 				}
 			}
 		}
@@ -336,30 +335,30 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 			two_sided = json::read_bool(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
-				std::string filename = json::read_string(*tn, "file", "");
-				std::string usage    = json::read_string(*tn, "usage", "Color");
+				Texture_description texture_description;
+				read_texture_description(*tn, texture_description);
 
-				if (filename.empty()) {
+				if (texture_description.filename.empty()) {
 					continue;
 				}
 
 				memory::Variant_map options;
 
-				if ("Color" == usage) {
+				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = texture_cache_.load(filename, options);
-				} else if ("Normal" == usage) {
+					color_map = texture_cache_.load(texture_description.filename, options);
+				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(filename, options);
-				} else if ("Surface" == usage) {
+					normal_map = texture_cache_.load(texture_description.filename, options);
+				} else if ("Surface" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Surface);
-					surface_map = texture_cache_.load(filename, options);
-				} else if ("Emission" == usage) {
+					surface_map = texture_cache_.load(texture_description.filename, options);
+				} else if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = texture_cache_.load(filename, options);
-				} else if ("Mask" == usage) {
+					emission_map = texture_cache_.load(texture_description.filename, options);
+				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(filename, options);
+					mask = texture_cache_.load(texture_description.filename, options);
 				}
 			}
 		}
@@ -380,6 +379,25 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	material->set_attenuation_distance(attenuation_distance);
 
 	return material;
+}
+
+void Provider::read_texture_description(const rapidjson::Value& texture_value, Texture_description& description) {
+	description.filename = "";
+	description.usage = "Color";
+	description.num_elements = 1;
+
+	for (auto n = texture_value.MemberBegin(); n != texture_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("file" == node_name) {
+			description.filename = json::read_string(node_value);
+		} else if ("usage" == node_name) {
+			description.usage = json::read_string(node_value);
+		} else if ("num_elements" == node_name) {
+			description.num_elements = json::read_int(node_value);
+		}
+	}
 }
 
 }}

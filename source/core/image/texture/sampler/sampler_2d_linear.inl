@@ -114,6 +114,113 @@ math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture
 }
 
 template<typename Address_mode>
+float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, math::float2 uv, int32_t element) const {
+	auto d  = texture.dimensions();
+	auto df = texture.dimensions_float();
+
+	uv = address_mode_.f(uv);
+
+	float u = uv.x * df.x - 0.5f;
+	float v = uv.y * df.y - 0.5f;
+
+	float fu = std::floor(u);
+	float fv = std::floor(v);
+
+	int32_t x = static_cast<int32_t>(fu);
+	int32_t y = static_cast<int32_t>(fv);
+
+	int32_t x1 = std::min(x + 1, d.x - 1);
+	int32_t y1 = std::min(y + 1, d.y - 1);
+
+	x = std::max(x, 0);
+	y = std::max(y, 0);
+
+	int32_t min_element = std::min(texture.num_elements() - 1, element);
+
+	float c00 = texture.at_1(x,  y,  min_element);
+	float c01 = texture.at_1(x,  y1, min_element);
+	float c10 = texture.at_1(x1, y,  min_element);
+	float c11 = texture.at_1(x1, y1, min_element);
+
+	float s = u - fu;
+	float t = v - fv;
+
+	return bilinear_1(c00, c01, c10, c11, s, t);
+}
+
+template<typename Address_mode>
+math::float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture, math::float2 uv,
+													   int32_t element) const {
+	auto d  = texture.dimensions();
+	auto df = texture.dimensions_float();
+
+	uv = address_mode_.f(uv);
+
+	float u = uv.x * df.x - 0.5f;
+	float v = uv.y * df.y - 0.5f;
+
+	float fu = std::floor(u);
+	float fv = std::floor(v);
+
+	int32_t x = static_cast<int32_t>(fu);
+	int32_t y = static_cast<int32_t>(fv);
+
+	int x1 = std::min(x + 1, d.x - 1);
+	int y1 = std::min(y + 1, d.y - 1);
+
+	x = std::max(x, 0);
+	y = std::max(y, 0);
+
+	int32_t min_element = std::min(texture.num_elements() - 1, element);
+
+	math::float2 c00 = texture.at_2(x,  y,  min_element);
+	math::float2 c01 = texture.at_2(x,  y1, min_element);
+	math::float2 c10 = texture.at_2(x1, y,  min_element);
+	math::float2 c11 = texture.at_2(x1, y1, min_element);
+
+	float s = u - fu;
+	float t = v - fv;
+
+	return bilinear_2(c00, c01, c10, c11, s, t);
+}
+
+template<typename Address_mode>
+math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture, math::float2 uv,
+													   int32_t element) const {
+	auto d  = texture.dimensions();
+	auto df = texture.dimensions_float();
+
+	uv = address_mode_.f(uv);
+
+	float u = uv.x * df.x - 0.5f;
+	float v = uv.y * df.y - 0.5f;
+
+	float fu = std::floor(u);
+	float fv = std::floor(v);
+
+	int32_t x = static_cast<int32_t>(fu);
+	int32_t y = static_cast<int32_t>(fv);
+
+	int x1 = std::min(x + 1, d.x - 1);
+	int y1 = std::min(y + 1, d.y - 1);
+
+	x = std::max(x, 0);
+	y = std::max(y, 0);
+
+	int32_t min_element = std::min(texture.num_elements() - 1, element);
+
+	math::float3 c00 = texture.at_3(x,  y,  min_element);
+	math::float3 c01 = texture.at_3(x,  y1, min_element);
+	math::float3 c10 = texture.at_3(x1, y,  min_element);
+	math::float3 c11 = texture.at_3(x1, y1, min_element);
+
+	float s = u - fu;
+	float t = v - fv;
+
+	return bilinear(c00, c01, c10, c11, s, t);
+}
+
+template<typename Address_mode>
 math::float2 Sampler_2D_linear<Address_mode>::address(math::float2 uv) const {
 	return address_mode_.f(uv);
 }

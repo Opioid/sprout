@@ -34,4 +34,29 @@ math::float4 Texture_2D_byte_3_unorm::at_4(int32_t x, int32_t y) const {
 						color::unorm_to_float(value.z), 1.f);
 }
 
+float Texture_2D_byte_3_unorm::at_1(int32_t x, int32_t y, int32_t element) const {
+	auto& value = image_.at(x, y, element);
+	return color::unorm_to_float(value.x);
+}
+
+math::float2 Texture_2D_byte_3_unorm::at_2(int32_t x, int32_t y, int32_t element) const {
+	auto& value = image_.at(x, y, element);
+	return math::float2(color::unorm_to_float(value.x),
+						color::unorm_to_float(value.y));
+}
+
+math::float3 Texture_2D_byte_3_unorm::at_3(int32_t x, int32_t y, int32_t element) const {
+	auto& value = image_.at(x, y, element);
+	return math::float3(color::unorm_to_float(value.x),
+						color::unorm_to_float(value.y),
+						color::unorm_to_float(value.z));
+}
+
+math::float4 Texture_2D_byte_3_unorm::at_4(int32_t x, int32_t y, int32_t element) const {
+	auto& value = image_.at(x, y, element);
+	return math::float4(color::unorm_to_float(value.x),
+						color::unorm_to_float(value.y),
+						color::unorm_to_float(value.z), 1.f);
+}
+
 }}

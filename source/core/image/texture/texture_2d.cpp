@@ -19,6 +19,10 @@ math::float2 Texture_2D::dimensions_float() const {
 	return dimensions_float_;
 }
 
+int32_t Texture_2D::num_elements() const {
+	return image_->description().num_elements;
+}
+
 math::float4 Texture_2D::average() const {
 	auto d = dimensions();
 

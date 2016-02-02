@@ -12,20 +12,23 @@ public:
 	Typed_image(const Image::Description& description);
 	~Typed_image();
 
-	virtual void resize(math::int2 dimensions) final override;
-
 	const T& at(int32_t index) const;
 	T& at(int32_t index);
 
 	const T& at(int32_t x, int32_t y) const;
 	T& at(int32_t x, int32_t y);
 
+	const T& at(int32_t x, int32_t y, int32_t element) const;
+	T& at(int32_t x, int32_t y, int32_t element);
+
 private:
+
+	int32_t area_;
 
 	T* data_;
 };
 
-typedef Typed_image<uint8_t>  Image_byte_1;
+typedef Typed_image<uint8_t>		Image_byte_1;
 typedef Typed_image<color::Color2c> Image_byte_2;
 typedef Typed_image<color::Color3c> Image_byte_3;
 typedef Typed_image<math::float3>   Image_float_3;

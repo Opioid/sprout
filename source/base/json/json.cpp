@@ -107,6 +107,10 @@ math::float4 read_float4(const rapidjson::Value& value) {
 						static_cast<float>(value[2].GetDouble()), static_cast<float>(value[3].GetDouble()));
 }
 
+int32_t read_int(const rapidjson::Value& value) {
+	return value.GetInt();
+}
+
 uint32_t read_uint(const rapidjson::Value& value) {
 	return value.GetUint();
 }

@@ -38,6 +38,14 @@ private:
 	std::shared_ptr<IMaterial> load_metal(const rapidjson::Value& metal_value);
 	std::shared_ptr<IMaterial> load_substitute(const rapidjson::Value& substitute_value);
 
+	struct Texture_description {
+		std::string filename;
+		std::string usage;
+		int32_t     num_elements;
+	};
+
+	void read_texture_description(const rapidjson::Value& texture_value, Texture_description& description);
+
 	resource::Cache<image::texture::Texture_2D>& texture_cache_;
 
 	Generic_sample_cache<cloth::Sample>				cloth_cache_;

@@ -5,7 +5,8 @@ namespace image {
 
 Image::Description::Description() {}
 
-Image::Description::Description(Type type, math::int2 dimensions) : type(type), dimensions(dimensions) {}
+Image::Description::Description(Type type, math::int2 dimensions, int32_t num_elements) :
+	type(type), dimensions(dimensions), num_elements(num_elements) {}
 
 Image::Image(const Description& description) : description_(description) {}
 

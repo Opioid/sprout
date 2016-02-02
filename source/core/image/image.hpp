@@ -17,18 +17,18 @@ public:
 
 	struct Description {
 		Description();
-		Description(Type type, math::int2 dimensions);
+		Description(Type type, math::int2 dimensions, int32_t num_elements = 1);
 
 		Type type;
 		math::int2 dimensions;
+
+		int32_t num_elements;
 	};
 
 	Image(const Description& description);
 	virtual ~Image();
 
 	const Description& description() const;
-
-	virtual void resize(math::int2 dimensions) = 0;
 
 protected:
 
