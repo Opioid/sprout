@@ -37,9 +37,9 @@ const material::Sample& Emissionmap_animated::sample(const shape::Differential& 
 	return sample;
 }
 
-math::float3 Emissionmap_animated::sample_emission(math::float2 uv,
+math::float3 Emissionmap_animated::sample_emission(math::float2 uv, float /*time*/,
 												   const image::texture::sampler::Sampler_2D& sampler) const {
-	return emission_factor_ * sampler.sample_3(*emission_, uv);
+	return emission_factor_ * sampler.sample_3(*emission_, uv, element_);
 }
 
 math::float3 Emissionmap_animated::average_emission() const {

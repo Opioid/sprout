@@ -155,7 +155,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 
 		// Light source importance sample
 		scene::light::Sample light_sample;
-		light->sample(transformation,
+		light->sample(transformation, ray.time,
 					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
 					  settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 

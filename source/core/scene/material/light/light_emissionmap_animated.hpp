@@ -16,14 +16,14 @@ public:
 						 std::shared_ptr<image::texture::Texture_2D> emission,
 						 float emission_factor, float animation_length);
 
-	virtual void tick(float absolute_time, float time_slice);
+	virtual void tick(float absolute_time, float time_slice) override;
 
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   float time, float ior_i,
 										   const image::texture::sampler::Sampler_2D& sampler,
 										   uint32_t worker_id) final override;
 
-	virtual math::float3 sample_emission(math::float2 uv,
+	virtual math::float3 sample_emission(math::float2 uv, float time,
 										 const image::texture::sampler::Sampler_2D& sampler) const final override;
 
 	virtual math::float3 average_emission() const final override;

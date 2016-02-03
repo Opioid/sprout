@@ -17,7 +17,7 @@ public:
 										   const image::texture::sampler::Sampler_2D& sampler,
 										   uint32_t worker_id) final override;
 
-	virtual math::float3 sample_emission(math::float2 uv,
+	virtual math::float3 sample_emission(math::float2 uv, float time,
 										 const image::texture::sampler::Sampler_2D& sampler) const final override;
 
 	virtual math::float3 average_emission() const final override;

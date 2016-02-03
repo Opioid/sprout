@@ -25,7 +25,7 @@ public:
 
 	virtual void transformation_at(float time, entity::Composed_transformation& transformation) const = 0;
 
-	virtual void sample(const entity::Composed_transformation& transformation,
+	virtual void sample(const entity::Composed_transformation& transformation, float time,
 						const math::float3& p, const math::float3& n, bool total_sphere,
 						const image::texture::sampler::Sampler_2D& image_sampler,
 						sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const = 0;

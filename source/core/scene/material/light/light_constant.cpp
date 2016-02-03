@@ -24,7 +24,7 @@ const material::Sample& Constant::sample(const shape::Differential& dg, const ma
 	return sample;
 }
 
-math::float3 Constant::sample_emission(math::float2 /*uv*/,
+math::float3 Constant::sample_emission(math::float2 /*uv*/, float /*time*/,
 									   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	return emission_;
 }

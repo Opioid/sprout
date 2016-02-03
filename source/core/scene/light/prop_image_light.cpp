@@ -12,7 +12,7 @@
 
 namespace scene { namespace light {
 
-void Prop_image_light::sample(const entity::Composed_transformation& transformation,
+void Prop_image_light::sample(const entity::Composed_transformation& transformation, float time,
 							  const math::float3& p, const math::float3& n, bool total_sphere,
 							  const image::texture::sampler::Sampler_2D& image_sampler,
 							  sampler::Sampler& sampler, shape::Node_stack& /*node_stack*/, Sample& result) const {
@@ -25,7 +25,7 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
 		result.shape.pdf *= pdf;
-		result.energy = material->sample_emission(result.shape.uv, image_sampler);
+		result.energy = material->sample_emission(result.shape.uv, time, image_sampler);
 	} else {
 		result.shape.pdf = 0.f;
 	}

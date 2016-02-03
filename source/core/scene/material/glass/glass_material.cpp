@@ -31,7 +31,8 @@ const material::Sample& Glass::sample(const shape::Differential& dg, const math:
 	return sample;
 }
 
-math::float3 Glass::sample_emission(math::float2 /*uv*/, const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+math::float3 Glass::sample_emission(math::float2 /*uv*/, float /*time*/,
+									const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	return math::float3::identity;
 }
 

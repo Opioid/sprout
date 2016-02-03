@@ -30,7 +30,7 @@ const material::Sample& Emissionmap::sample(const shape::Differential& dg, const
 	return sample;
 }
 
-math::float3 Emissionmap::sample_emission(math::float2 uv,
+math::float3 Emissionmap::sample_emission(math::float2 uv, float /*time*/,
 										  const image::texture::sampler::Sampler_2D& sampler) const {
 	return emission_factor_ * sampler.sample_3(*emission_, uv);
 }
