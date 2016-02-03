@@ -45,6 +45,8 @@ public:
 
 	virtual void prepare_sampling(bool spherical);
 
+	virtual bool is_animated() const;
+
 	bool is_masked() const;
 	bool is_emissive() const;
 	bool is_two_sided() const;

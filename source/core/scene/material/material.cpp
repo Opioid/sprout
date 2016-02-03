@@ -19,6 +19,10 @@ float IMaterial::emission_pdf(math::float2 /*uv*/, const image::texture::sampler
 
 void IMaterial::prepare_sampling(bool /*spherical*/) {}
 
+bool IMaterial::is_animated() const {
+	return false;
+}
+
 bool IMaterial::is_masked() const {
 	return !mask_ == false;
 }

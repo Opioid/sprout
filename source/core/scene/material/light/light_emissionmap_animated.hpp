@@ -37,6 +37,8 @@ public:
 
 	virtual void prepare_sampling(bool spherical) final override;
 
+	virtual bool is_animated() const final override;
+
 private:
 
 	std::shared_ptr<image::texture::Texture_2D> emission_;
@@ -52,9 +54,6 @@ private:
 	math::Distribution_2D distribution_;
 
 	const float frame_length_;
-
-	float absolute_time_;
-	float time_slice_;
 
 	int32_t element_;
 };

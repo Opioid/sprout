@@ -17,25 +17,19 @@ Emissionmap_animated::Emissionmap_animated(Generic_sample_cache<Sample>& cache,
 	Material(cache, mask, two_sided), emission_(emission), emission_factor_(emission_factor),
 	animation_length_(animation_length),
 	average_emission_(math::float3(-1.f, -1.f, -1.f)),
-	frame_length_(animation_length_ / static_cast<float>((emission_->num_elements()))) {}
+	frame_length_(animation_length_ / static_cast<float>(emission_->num_elements())) {}
 
 void Emissionmap_animated::tick(float absolute_time, float time_slice) {
-	absolute_time_ = absolute_time;
-	time_slice_ = time_slice;
-
-
+	element_ = static_cast<int32_t>(absolute_time / frame_length_) % emission_->num_elements();
 }
 
 const material::Sample& Emissionmap_animated::sample(const shape::Differential& dg, const math::float3& wo,
-													 float time, float /*ior_i*/,
+													 float /*time*/, float /*ior_i*/,
 													 const image::texture::sampler::Sampler_2D& sampler,
 													 uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
-
-	float current_time = absolute_time_ + time * time_slice_;
-	element_ = static_cast<int32_t>(current_time / frame_length_) % emission_->num_elements();
 
 	math::float3 emission = sampler.sample_3(*emission_, dg.uv, element_);
 	sample.set(emission_factor_ * emission);
@@ -115,6 +109,10 @@ void Emissionmap_animated::prepare_sampling(bool spherical) {
 	} else {
 		average_emission_ = emission_factor_ * emission_->average().xyz();
 	}
+}
+
+bool Emissionmap_animated::is_animated() const {
+	return true;
 }
 
 }}}

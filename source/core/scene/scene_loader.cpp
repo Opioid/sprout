@@ -268,7 +268,9 @@ void Loader::load_materials(const rapidjson::Value& materials_value, Scene& scen
 			bool was_cached;
 			auto material = material_cache_.load(m->GetString(), memory::Variant_map(), was_cached);
 
-			scene.add_material(material);
+			if (material->is_animated() && !was_cached) {
+				scene.add_material(material);
+			}
 
 			materials.push_back(material);
 		} catch (const std::exception& e) {
