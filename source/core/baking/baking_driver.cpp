@@ -35,7 +35,7 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 	worker.init(0, rng, *surface_integrator_factory_, *volume_integrator_factory_, *sampler_, scene);
 
 	scene::Ray ray;
-	ray.time = 0.f;
+	ray.tick_time = 0.f;
 
 	math::float3 bake_quad_origin(-2.f, 0.f, 2.f);
 	math::float3 bake_quad_extent(2.f, 0.f, -2.f);

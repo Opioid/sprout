@@ -9,6 +9,7 @@
 #include "glass/glass_sample.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
+#include "light/light_emissionmap_animated.hpp"
 #include "light/light_material_sample.hpp"
 #include "metal/metal_material.hpp"
 #include "metal/metal_sample.hpp"
@@ -174,6 +175,7 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {
 	math::float3 emission(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
+	float animation_duration = 0.f;
 
 	std::shared_ptr<image::texture::Texture_2D> emissionmap;
 	std::shared_ptr<image::texture::Texture_2D> mask;
@@ -189,6 +191,8 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 			emission_factor = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
+		} else if ("animation_duration" == node_name) {
+			animation_duration = json::read_float(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				Texture_description texture_description;
@@ -216,7 +220,12 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 	}
 
 	if (emissionmap) {
-		return std::make_shared<light::Emissionmap>(light_cache_, mask, two_sided, emissionmap, emission_factor);
+		if (animation_duration > 0.f) {
+			return std::make_shared<light::Emissionmap_animated>(light_cache_, mask, two_sided,
+																 emissionmap, emission_factor, animation_duration);
+		} else {
+			return std::make_shared<light::Emissionmap>(light_cache_, mask, two_sided, emissionmap, emission_factor);
+		}
 	}
 
 	return std::make_shared<light::Constant>(light_cache_, mask, two_sided, emission);

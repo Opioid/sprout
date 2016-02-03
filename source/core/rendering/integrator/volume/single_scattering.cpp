@@ -29,7 +29,7 @@ math::float3 Single_scattering::transmittance(Worker& worker, const scene::volum
 		return math::float3(1.f, 1.f, 1.f);
 	}
 
-	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
+	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.tick_time);
 
 	math::float3 tau = volume->optical_depth(tray);
 	return math::exp(-tau);
@@ -81,7 +81,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		previous = current;
 		current  = ray.point(min_t);
 
-		scene::Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
+		scene::Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.tick_time);
 		math::float3 tau = volume->optical_depth(tau_ray);
 		tr *= math::exp(-tau);
 
@@ -93,10 +93,10 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(ray.time, current, settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
+		light->sample(ray.tick_time, current, settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
-			scene::Ray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t, ray.time);
+			scene::Ray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t, ray.tick_time);
 
 			float mv = worker.masked_visibility(shadow_ray, settings_.sampler_nearest);
 			if (mv > 0.f) {
@@ -113,7 +113,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		math::float2 uv(rng_.random_float(), rng_.random_float());
 		math::float3 dir = math::sample_sphere_uniform(uv);
 
-		math::Oray scatter_ray(current, dir, 0.f, 10000.f, ray.time);
+		math::Oray scatter_ray(current, dir, 0.f, 10000.f, ray.tick_time);
 
 		math::float3 li = worker.surface_li(scatter_ray);
 

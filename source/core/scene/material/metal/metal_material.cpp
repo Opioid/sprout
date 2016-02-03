@@ -36,7 +36,7 @@ Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& c
 	material::Material<Generic_sample_cache<Sample_isotropic>>(cache, mask, two_sided) {}
 
 const material::Sample& Material_isotropic::sample(const shape::Differential& dg, const math::float3& wo,
-												   float /*ior_i*/,
+												   float /*time*/, float /*ior_i*/,
 												   const image::texture::sampler::Sampler_2D& sampler,
 												   uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
@@ -89,7 +89,7 @@ Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotrop
 	material::Material<Generic_sample_cache<Sample_anisotropic>>(cache, mask, two_sided) {}
 
 const material::Sample& Material_anisotropic::sample(const shape::Differential& dg, const math::float3& wo,
-													 float /*ior_i*/,
+													 float /*time*/, float /*ior_i*/,
 													 const image::texture::sampler::Sampler_2D& sampler,
 													 uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);

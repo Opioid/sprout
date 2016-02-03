@@ -62,7 +62,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, 1.f, *texture_sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, *texture_sampler, worker.id());
 
 		if (material_sample.same_hemisphere(wo)
 		&& (primary_ray || sample_result.type.test(scene::material::bxdf::Type::Specular))) {
@@ -139,7 +139,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;
-	shadow_ray.time   = ray.time;
+	shadow_ray.tick_time   = ray.tick_time;
 
 	for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 		float light_pdf;
@@ -151,7 +151,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 		float light_pdf_reciprocal = 1.f / light_pdf;
 
 		scene::entity::Composed_transformation transformation;
-		light->transformation_at(ray.time, transformation);
+		light->transformation_at(ray.tick_time, transformation);
 
 		// Light source importance sample
 		scene::light::Sample light_sample;
@@ -200,7 +200,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 		&&  resolve_mask(worker, shadow_ray, light_intersection, texture_sampler)) {
 			if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
 				auto light_material = light_intersection.material();
-				auto& light_material_sample = light_material->sample(light_intersection.geo, wo, 1.f,
+				auto& light_material_sample = light_material->sample(light_intersection.geo, wo, ray.time, 1.f,
 																	 settings_.sampler_nearest, worker.id());
 
 				if (light_material_sample.same_hemisphere(wo)) {

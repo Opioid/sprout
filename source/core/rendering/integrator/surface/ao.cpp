@@ -21,17 +21,18 @@ void Ao::start_new_pixel(uint32_t num_samples) {
 
 math::float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene::Intersection& intersection) {
 	scene::Ray occlusion_ray;
-	occlusion_ray.origin = intersection.geo.p;
-	occlusion_ray.min_t  = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	occlusion_ray.max_t  = settings_.radius;
-	occlusion_ray.time = ray.time;
+	occlusion_ray.origin	= intersection.geo.p;
+	occlusion_ray.min_t		= take_settings_.ray_offset_factor * intersection.geo.epsilon;
+	occlusion_ray.max_t		= settings_.radius;
+	occlusion_ray.tick_time = ray.tick_time;
 
 	float result = 0.f;
 
 	auto material = intersection.material();
 
 	math::float3 wo = -ray.direction;
-	auto& material_sample = material->sample(intersection.geo, wo, 1.f, settings_.sampler_linear, worker.id());
+	auto& material_sample = material->sample(intersection.geo, wo, ray.tick_time, 1.f,
+											 settings_.sampler_linear, worker.id());
 
 	for (uint32_t i = 0; i < settings_.num_samples; ++i) {
 		math::float2 sample = sampler_.generate_sample_2D();

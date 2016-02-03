@@ -17,7 +17,8 @@ Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
 	Material(cache, mask, two_sided), emission_(emission), emission_factor_(emission_factor),
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
-const material::Sample& Emissionmap::sample(const shape::Differential& dg, const math::float3& wo, float /*ior_i*/,
+const material::Sample& Emissionmap::sample(const shape::Differential& dg, const math::float3& wo,
+											float /*time*/, float /*ior_i*/,
 											const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 

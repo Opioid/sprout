@@ -11,6 +11,7 @@ namespace rendering {
 
 void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const math::Recti& tile,
 						   uint32_t sample_begin, uint32_t sample_end,
+						   float absolute_time, float tick_slice,
 						   float normalized_tick_offset, float normalized_tick_slice) {
 	auto& sensor = camera.sensor();
 
@@ -42,12 +43,14 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 				sampler_->set_seed(camera.seed(pixel));
 			}
 
-
-
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);
 
-				ray.time = normalized_tick_offset + sample.time * normalized_tick_slice;
+				float tick_time = normalized_tick_offset + sample.time * normalized_tick_slice;
+
+				ray.time      = absolute_time + tick_slice * tick_time;
+				ray.tick_time = tick_time;
+
 				camera.generate_ray(sample, view, ray);
 
 				math::float4 color = li(ray);

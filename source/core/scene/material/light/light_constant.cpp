@@ -12,7 +12,8 @@ Constant::Constant(Generic_sample_cache<Sample>& cache,
 				   const math::float3& emission) :
 	Material(cache, mask, two_sided), emission_(emission) {}
 
-const material::Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo, float /*ior_i*/,
+const material::Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
+										 float /*time*/, float /*ior_i*/,
 										 const image::texture::sampler::Sampler_2D& /*sampler*/,
 										 uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);

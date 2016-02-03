@@ -12,7 +12,8 @@ public:
 
 	Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo, float ior_i,
+	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
+										   float time, float ior_i,
 										   const image::texture::sampler::Sampler_2D& sampler,
 										   uint32_t worker_id) final override;
 

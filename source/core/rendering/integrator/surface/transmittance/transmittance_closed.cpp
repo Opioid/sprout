@@ -37,7 +37,7 @@ math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersectio
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, 1.f, texture_sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, ray.tick_time, 1.f, texture_sampler, worker.id());
 
 		material_sample.sample_evaluate(sampler, sample_result);
 		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {

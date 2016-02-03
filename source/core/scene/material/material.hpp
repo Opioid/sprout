@@ -27,7 +27,7 @@ public:
 
 	IMaterial(std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
-	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo, float ior_i,
+	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo, float time, float ior_i,
 								 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) = 0;
 
 	virtual math::float3 sample_emission(math::float2 uv,

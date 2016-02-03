@@ -53,8 +53,8 @@ math::float3 Whitted::shade(Worker& worker, const scene::Ray& ray, const scene::
 	math::float3 result = math::float3::identity;
 
 	math::float3 wo = -ray.direction;
-	auto& material_sample = intersection.material()->sample(intersection.geo, wo, 1.f, settings_.sampler_linear,
-															worker.id());
+	auto& material_sample = intersection.material()->sample(intersection.geo, wo, ray.tick_time, 1.f,
+															settings_.sampler_linear, worker.id());
 
 	result += material_sample.emission();
 
@@ -78,12 +78,12 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ra
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;
-	shadow_ray.time   = ray.time;
+	shadow_ray.tick_time   = ray.tick_time;
 
 	for (auto l : worker.scene().lights()) {
 		for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 			scene::light::Sample light_sample;
-			l->sample(ray.time,
+			l->sample(ray.tick_time,
 					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
 					  settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 
