@@ -9,10 +9,8 @@ inline Ray::Ray() {}
 
 inline Ray::Ray(const math::float3& origin, const math::float3& direction,
 				float min_t, float max_t,
-				float time, float tick_time,
-				uint32_t depth, float ior) :
+				float time, uint32_t depth, float ior) :
 	math::Oray(origin, direction, min_t, max_t),
-	time(time), tick_time(tick_time),
-	depth(depth), ior(ior) {}
+	time(time), depth(depth), ior(ior) {}
 
 }

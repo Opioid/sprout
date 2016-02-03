@@ -82,6 +82,10 @@ const volume::Volume* Scene::volume_region() const {
 }
 
 void Scene::tick(thread::Pool& thread_pool) {
+	for (auto m : materials_) {
+		m->tick(simulation_time_, tick_duration_);
+	}
+
 	for (auto a : animations_) {
 		a->tick(tick_duration_);
 	}
@@ -172,6 +176,10 @@ light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t par
 volume::Volume* Scene::create_volume(const math::float3& absorption, const math::float3& scattering) {
 	volume_region_ = new volume::Homogeneous(absorption, scattering);
 	return volume_region_;
+}
+
+void Scene::add_material(std::shared_ptr<material::IMaterial> material) {
+	materials_.push_back(material);
 }
 
 void Scene::add_animation(std::shared_ptr<animation::Animation> animation) {

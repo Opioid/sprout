@@ -101,16 +101,16 @@ std::shared_ptr<IMaterial> Provider::load_cloth(const rapidjson::Value& cloth_va
 				}
 
 				memory::Variant_map options;
-
+				bool was_cached;
 				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = texture_cache_.load(texture_description.filename, options);
+					color_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(texture_description.filename, options);
+					normal_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(texture_description.filename, options);
+					mask = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
 		}
@@ -152,10 +152,10 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 				}
 
 				memory::Variant_map options;
-
+				bool was_cached;
 				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(texture_description.filename, options);
+					normal_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
 		}
@@ -208,12 +208,13 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 					options.insert("num_elements", texture_description.num_elements);
 				}
 
+				bool was_cached;
 				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emissionmap = texture_cache_.load(texture_description.filename, options);
+					emissionmap = texture_cache_.load(texture_description.filename, options, was_cached);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(texture_description.filename, options);
+					mask = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
 		}
@@ -269,20 +270,20 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 				}
 
 				memory::Variant_map options;
-
+				bool was_cached;
 				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(texture_description.filename, options);
+					normal_map = texture_cache_.load(texture_description.filename, options, was_cached);
 			/*	} else if ("Surface" == usage) {
 					surface_map = texture_cache_.load(filename,
 													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));*/
 				} else if ("Anisotropy" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Anisotropy);
-					direction_map = texture_cache_.load(texture_description.filename, options);
+					direction_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(texture_description.filename, options);
+					mask = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
 		}
@@ -356,22 +357,22 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 				}
 
 				memory::Variant_map options;
-
+				bool was_cached;
 				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = texture_cache_.load(texture_description.filename, options);
+					color_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(texture_description.filename, options);
+					normal_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				} else if ("Surface" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Surface);
-					surface_map = texture_cache_.load(texture_description.filename, options);
+					surface_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				} else if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = texture_cache_.load(texture_description.filename, options);
+					emission_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(texture_description.filename, options);
+					mask = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
 		}

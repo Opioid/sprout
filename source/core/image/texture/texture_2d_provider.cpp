@@ -39,7 +39,9 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, const me
 	memory::Variant_map image_options;
 	image_options.insert("num_channels", num_channels);
 
-	auto image = image_cache_.load(filename, image_options);
+	bool was_cached;
+
+	auto image = image_cache_.load(filename, image_options, was_cached);
 	if (!image) {
 		return nullptr;
 	}

@@ -28,7 +28,7 @@ math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene:
 		auto material = intersection.material();
 
 		math::float3 wo = -ray.direction;
-		auto& material_sample = material->sample(intersection.geo, wo, ray.tick_time, 1.f, settings_.sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, settings_.sampler, worker.id());
 
 		vector = material_sample.shading_normal();
 	}

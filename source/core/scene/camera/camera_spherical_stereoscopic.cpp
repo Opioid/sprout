@@ -52,7 +52,7 @@ void Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, 
 	math::float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
 
 	entity::Composed_transformation transformation;
-	transformation_at(ray.tick_time, transformation);
+	transformation_at(ray.time, transformation);
 
 	math::float3x3 rotation;
 	math::set_rotation_y(rotation, (x - 0.5f) * 2.f * math::Pi);

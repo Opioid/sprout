@@ -52,7 +52,7 @@ void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
 	entity::Composed_transformation transformation;
-	transformation_at(ray.tick_time, transformation);
+	transformation_at(ray.time, transformation);
 	ray.origin = math::transform_point(transformation.object_to_world, eye_offsets_[view]);
 	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(direction)));
 	ray.min_t = 0.f;

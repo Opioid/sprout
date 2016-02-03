@@ -16,6 +16,8 @@ public:
 						 std::shared_ptr<image::texture::Texture_2D> emission,
 						 float emission_factor, float animation_length);
 
+	virtual void tick(float absolute_time, float time_slice);
+
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   float time, float ior_i,
 										   const image::texture::sampler::Sampler_2D& sampler,
@@ -48,6 +50,13 @@ private:
 	float total_weight_;
 
 	math::Distribution_2D distribution_;
+
+	const float frame_length_;
+
+	float absolute_time_;
+	float time_slice_;
+
+	int32_t element_;
 };
 
 }}}

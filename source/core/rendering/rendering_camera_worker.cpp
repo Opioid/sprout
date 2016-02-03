@@ -46,10 +46,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);
 
-				float tick_time = normalized_tick_offset + sample.time * normalized_tick_slice;
-
-				ray.time      = absolute_time + tick_slice * tick_time;
-				ray.tick_time = tick_time;
+				ray.time = normalized_tick_offset + sample.time * normalized_tick_slice;;
 
 				camera.generate_ray(sample, view, ray);
 

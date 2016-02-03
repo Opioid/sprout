@@ -14,7 +14,7 @@ public:
 
 	Cache(Provider<T>& provider);
 
-	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options);
+	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options, bool& was_cached);
 
 private:
 

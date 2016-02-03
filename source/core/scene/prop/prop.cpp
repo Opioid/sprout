@@ -43,7 +43,7 @@ bool Prop::intersect(scene::Ray& ray, shape::Node_stack& node_stack, shape::Inte
 	}
 
 	entity::Composed_transformation transformation;
-	transformation_at(ray.tick_time, transformation);
+	transformation_at(ray.time, transformation);
 
 	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
@@ -58,7 +58,7 @@ bool Prop::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 	}
 
 	entity::Composed_transformation transformation;
-	transformation_at(ray.tick_time, transformation);
+	transformation_at(ray.time, transformation);
 
 	return shape_->intersect_p(transformation, ray, node_stack);
 }
@@ -78,7 +78,7 @@ float Prop::opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 	}
 
 	entity::Composed_transformation transformation;
-	transformation_at(ray.tick_time, transformation);
+	transformation_at(ray.time, transformation);
 
 	return shape_->opacity(transformation, ray, node_stack, materials_, sampler);
 }

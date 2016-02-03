@@ -61,7 +61,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, ray.tick_time, 1.f, *texture_sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, *texture_sampler, worker.id());
 
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.emission();

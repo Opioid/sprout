@@ -61,7 +61,7 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 
 		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, ray.tick_time, 1.f, *texture_sampler, worker.id());
+		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, *texture_sampler, worker.id());
 
 		if (material_sample.same_hemisphere(wo)
 		&& (primary_ray || sample_result.type.test(scene::material::bxdf::Type::Specular))) {
@@ -131,7 +131,7 @@ math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::R
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;
-	shadow_ray.tick_time   = ray.tick_time;
+	shadow_ray.time   = ray.time;
 
 	for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 		float light_pdf;
@@ -141,7 +141,7 @@ math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::R
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(ray.tick_time,
+		light->sample(ray.time,
 					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
 					  settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
 

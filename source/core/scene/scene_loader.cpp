@@ -150,7 +150,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 		if ("shape" == node_name) {
 			shape = load_shape(node_value);
 		} else if ("materials" == node_name) {
-			load_materials(node_value, materials);
+			load_materials(node_value, scene, materials);
 		} else if ("visibility" == node_name) {
 			visible_in_camera   = json::read_bool(node_value, "in_camera",   true);
 			visible_in_reflection = json::read_bool(node_value, "in_reflection", true);
@@ -228,7 +228,8 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 
 			memory::Variant_map options;
 			options.insert("bvh_preset", bvh_preset);
-			return mesh_cache_.load(file, options);
+			bool was_cached;
+			return mesh_cache_.load(file, options, was_cached);
 		} catch (const std::exception& e) {
 			logging::error("Cannot load \"" + file + "\": " + e.what());
 		}
@@ -255,7 +256,7 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type) const {
 	return nullptr;
 }
 
-void Loader::load_materials(const rapidjson::Value& materials_value, material::Materials& materials) {
+void Loader::load_materials(const rapidjson::Value& materials_value, Scene& scene, material::Materials& materials) {
 	if (!materials_value.IsArray()) {
 		return;
 	}
@@ -264,7 +265,10 @@ void Loader::load_materials(const rapidjson::Value& materials_value, material::M
 
 	for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
 		try {
-			auto material = material_cache_.load(m->GetString(), memory::Variant_map());
+			bool was_cached;
+			auto material = material_cache_.load(m->GetString(), memory::Variant_map(), was_cached);
+
+			scene.add_material(material);
 
 			materials.push_back(material);
 		} catch (const std::exception& e) {

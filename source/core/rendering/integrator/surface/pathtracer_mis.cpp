@@ -139,7 +139,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;
-	shadow_ray.tick_time   = ray.tick_time;
+	shadow_ray.time   = ray.time;
 
 	for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 		float light_pdf;
@@ -151,7 +151,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 		float light_pdf_reciprocal = 1.f / light_pdf;
 
 		scene::entity::Composed_transformation transformation;
-		light->transformation_at(ray.tick_time, transformation);
+		light->transformation_at(ray.time, transformation);
 
 		// Light source importance sample
 		scene::light::Sample light_sample;

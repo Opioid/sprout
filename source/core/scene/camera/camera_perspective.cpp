@@ -55,7 +55,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 		ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(direction)));
 		ray.min_t = 0.f;
 		ray.max_t = ray_max_t_;
-		ray.tick_time = 0.f;
+		ray.time = 0.f;
 		ray.depth = 0;
 
 		Intersection intersection;
@@ -83,7 +83,7 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*
 	}
 
 	entity::Composed_transformation transformation;
-	transformation_at(ray.tick_time, transformation);
+	transformation_at(ray.time, transformation);
 	ray.origin = math::transform_point(transformation.object_to_world, r.origin);
 	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(r.direction)));
 	ray.min_t = 0.f;
