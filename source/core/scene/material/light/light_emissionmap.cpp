@@ -11,10 +11,8 @@
 namespace scene { namespace material { namespace light {
 
 Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
-						 std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided,
-						 std::shared_ptr<image::texture::Texture_2D> emission,
-						 float emission_factor) :
-	Material(cache, mask, two_sided), emission_(emission), emission_factor_(emission_factor),
+						 std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
+	Material(cache, mask, two_sided),
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
 const material::Sample& Emissionmap::sample(const shape::Differential& dg, const math::float3& wo,
@@ -24,7 +22,7 @@ const material::Sample& Emissionmap::sample(const shape::Differential& dg, const
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 
-	math::float3 emission = sampler.sample_3(*emission_, dg.uv);
+	math::float3 emission = sampler.sample_3(*emission_map_, dg.uv);
 	sample.set(emission_factor_ * emission);
 
 	return sample;
@@ -32,7 +30,7 @@ const material::Sample& Emissionmap::sample(const shape::Differential& dg, const
 
 math::float3 Emissionmap::sample_emission(math::float2 uv, float /*time*/,
 										  const image::texture::sampler::Sampler_2D& sampler) const {
-	return emission_factor_ * sampler.sample_3(*emission_, uv);
+	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }
 
 math::float3 Emissionmap::average_emission() const {
@@ -40,7 +38,7 @@ math::float3 Emissionmap::average_emission() const {
 }
 
 bool Emissionmap::has_emission_map() const {
-	return nullptr != emission_;
+	return nullptr != emission_map_;
 }
 
 math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf) const {
@@ -77,7 +75,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 	if (spherical) {
 		average_emission_ = math::float3::identity;
 
-		auto d = emission_->dimensions();
+		auto d = emission_map_->dimensions();
 		std::vector<float> luminance(d.x * d.y);
 
 		total_weight_ = 0.f;
@@ -86,7 +84,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				math::float3 emission = emission_factor_ * emission_->at_3(x, y);
+				math::float3 emission = emission_factor_ * emission_map_->at_3(x, y);
 
 				luminance[l] = color::luminance(emission);
 
@@ -100,8 +98,16 @@ void Emissionmap::prepare_sampling(bool spherical) {
 
 		distribution_.init(luminance.data(), d);
 	} else {
-		average_emission_ = emission_factor_ * emission_->average_3();
+		average_emission_ = emission_factor_ * emission_map_->average_3();
 	}
+}
+
+void Emissionmap::set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map) {
+	emission_map_ = emission_map;
+}
+
+void Emissionmap::set_emission_factor(float emission_factor) {
+	emission_factor_ = emission_factor;
 }
 
 }}}

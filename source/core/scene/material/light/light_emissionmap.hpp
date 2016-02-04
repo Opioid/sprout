@@ -11,10 +11,7 @@ class Sample;
 class Emissionmap : public Material {
 public:
 
-	Emissionmap(Generic_sample_cache<Sample>& cache,
-				std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided,
-				std::shared_ptr<image::texture::Texture_2D> emission,
-				float emission_factor);
+	Emissionmap(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   float time, float ior_i,
@@ -35,9 +32,12 @@ public:
 
 	virtual void prepare_sampling(bool spherical) final override;
 
+	void set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map);
+	void set_emission_factor(float emission_factor);
+
 private:
 
-	std::shared_ptr<image::texture::Texture_2D> emission_;
+	std::shared_ptr<image::texture::Texture_2D> emission_map_;
 
 	float emission_factor_;
 

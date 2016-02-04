@@ -16,6 +16,7 @@
 #include "scene/shape/triangle/triangle_bvh_preset.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
 #include "scene/material/cloth/cloth_sample.hpp"
+#include "scene/material/display/display_sample.hpp"
 #include "scene/material/glass/glass_sample.hpp"
 #include "scene/material/light/light_material_sample.hpp"
 #include "scene/material/metal/metal_sample.hpp"

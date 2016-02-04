@@ -11,6 +11,7 @@ namespace image { namespace texture { class Texture_2D; }}
 namespace scene { namespace material {
 
 namespace cloth { class Sample; }
+namespace display { class Sample; }
 namespace glass { class Sample; }
 namespace light { class Sample; }
 namespace metal { class Sample_isotropic; class Sample_anisotropic; }
@@ -33,6 +34,7 @@ public:
 private:
 
 	std::shared_ptr<IMaterial> load_cloth(const rapidjson::Value& cloth_value);
+	std::shared_ptr<IMaterial> load_display(const rapidjson::Value& display_value);
 	std::shared_ptr<IMaterial> load_glass(const rapidjson::Value& glass_value);
 	std::shared_ptr<IMaterial> load_light(const rapidjson::Value& light_value);
 	std::shared_ptr<IMaterial> load_metal(const rapidjson::Value& metal_value);
@@ -49,6 +51,7 @@ private:
 	resource::Cache<image::texture::Texture_2D>& texture_cache_;
 
 	Generic_sample_cache<cloth::Sample>				cloth_cache_;
+	Generic_sample_cache<display::Sample>			display_cache_;
 	Generic_sample_cache<glass::Sample>				glass_cache_;
 	Generic_sample_cache<light::Sample>				light_cache_;
 	Generic_sample_cache<metal::Sample_isotropic>   metal_iso_cache_;

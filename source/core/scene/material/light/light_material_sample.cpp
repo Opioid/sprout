@@ -4,8 +4,6 @@
 
 namespace scene { namespace material { namespace light {
 
-Sample::Sample() {}
-
 math::float3 Sample::evaluate(const math::float3& /*wi*/, float& pdf) const {
 	pdf = 0.f;
 	return math::float3::identity;
@@ -26,8 +24,6 @@ float Sample::ior() const {
 void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
 	result.reflection = math::float3::identity;
 	result.pdf = 0.f;
-
-	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 }
 
 bool Sample::is_pure_emissive() const {

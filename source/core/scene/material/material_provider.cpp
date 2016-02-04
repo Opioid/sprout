@@ -5,6 +5,8 @@
 #include "image/texture/texture_2d_provider.hpp"
 #include "cloth/cloth_material.hpp"
 #include "cloth/cloth_sample.hpp"
+#include "display/display_material.hpp"
+#include "display/display_sample.hpp"
 #include "glass/glass_material.hpp"
 #include "glass/glass_sample.hpp"
 #include "light/light_constant.hpp"
@@ -27,6 +29,7 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 	resource::Provider<IMaterial>(file_system, thread_pool),
 	texture_cache_(texture_cache),
 	cloth_cache_(thread_pool.num_threads()),
+	display_cache_(thread_pool.num_threads()),
 	glass_cache_(thread_pool.num_threads()),
 	light_cache_(thread_pool.num_threads()),
 	metal_iso_cache_(thread_pool.num_threads()),
@@ -34,6 +37,7 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 	substitute_cache_(thread_pool.num_threads()) {
 	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr, false);
 	material->set_color(math::float3(1.f, 0.f, 0.f)),
+	material->set_ior(1.45),
 	material->set_roughness(1.f);
 	material->set_metallic(0.f);
 	fallback_material_ = material;
@@ -44,7 +48,6 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, const mem
 
 	auto root = json::parse(*stream_pointer);
 
-	// checking for positions now, but handling them later
 	const rapidjson::Value::ConstMemberIterator rendering_node = root->FindMember("rendering");
 	if (root->MemberEnd() == rendering_node) {
 		throw std::runtime_error("Material has no render node");
@@ -58,6 +61,8 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, const mem
 
 		if ("Cloth" == node_name) {
 			return load_cloth(node_value);
+		} else if ("Display" == node_name) {
+			return load_display(node_value);
 		} else if ("Glass" == node_name) {
 			return load_glass(node_value);
 		} else if ("Light" == node_name) {
@@ -126,6 +131,74 @@ std::shared_ptr<IMaterial> Provider::load_cloth(const rapidjson::Value& cloth_va
 	return material;
 }
 
+std::shared_ptr<IMaterial> Provider::load_display(const rapidjson::Value& display_value) {
+	std::shared_ptr<image::texture::Texture_2D> emission_map;
+	std::shared_ptr<image::texture::Texture_2D> mask;
+	bool two_sided = false;
+
+	math::float3 emission(10.f, 10.f, 10.f);
+	float emission_factor = 1.f;
+	float roughness = 1.f;
+	float ior = 1.5;
+	float animation_duration = 0.f;
+
+	for (auto n = display_value.MemberBegin(); n != display_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("emission" == node_name) {
+			emission = json::read_float3(node_value);
+		} else if ("emission_factor" == node_name) {
+			emission_factor = json::read_float(node_value);
+		} else if ("roughness" == node_name) {
+			roughness = json::read_float(node_value);
+		} else if ("ior" == node_name) {
+			ior = json::read_float(node_value);
+		} else if ("two_sided" == node_name) {
+			two_sided = json::read_bool(node_value);
+		} else if ("animation_duration" == node_name) {
+			animation_duration = json::read_float(node_value);
+		} else if ("textures" == node_name) {
+			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+				Texture_description texture_description;
+				read_texture_description(*tn, texture_description);
+
+				if (texture_description.filename.empty()) {
+					continue;
+				}
+
+				memory::Variant_map options;
+
+				if (texture_description.num_elements > 1) {
+					options.insert("num_elements", texture_description.num_elements);
+				}
+
+				bool was_cached;
+				if ("Emission" == texture_description.usage) {
+					options.insert("usage", image::texture::Provider::Usage::Color);
+					emission_map = texture_cache_.load(texture_description.filename, options, was_cached);
+				} else if ("Mask" == texture_description.usage) {
+					options.insert("usage", image::texture::Provider::Usage::Mask);
+					mask = texture_cache_.load(texture_description.filename, options, was_cached);
+				}
+			}
+		}
+	}
+
+/*	if (animation_duration > 0.f) {
+		return std::make_shared<light::Emissionmap_animated>(light_cache_, mask, two_sided,
+															 emission_map, emission_factor, animation_duration);
+	} else*/ {
+		auto material = std::make_shared<display::Material>(display_cache_, mask, two_sided);
+		material->set_emission_map(emission_map);
+		material->set_emission(emission);
+		material->set_emission_factor(emission_factor);
+		material->set_roughness(roughness);
+		material->set_ior(ior);
+		return material;
+	}
+}
+
 std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_value) {
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	math::float3 color(1.f, 1.f, 1.f);
@@ -177,7 +250,7 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 	float emission_factor = 1.f;
 	float animation_duration = 0.f;
 
-	std::shared_ptr<image::texture::Texture_2D> emissionmap;
+	std::shared_ptr<image::texture::Texture_2D> emission_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
 
@@ -211,7 +284,7 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 				bool was_cached;
 				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emissionmap = texture_cache_.load(texture_description.filename, options, was_cached);
+					emission_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
 					mask = texture_cache_.load(texture_description.filename, options, was_cached);
@@ -220,12 +293,15 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 		}
 	}
 
-	if (emissionmap) {
+	if (emission_map) {
 		if (animation_duration > 0.f) {
 			return std::make_shared<light::Emissionmap_animated>(light_cache_, mask, two_sided,
-																 emissionmap, emission_factor, animation_duration);
+																 emission_map, emission_factor, animation_duration);
 		} else {
-			return std::make_shared<light::Emissionmap>(light_cache_, mask, two_sided, emissionmap, emission_factor);
+			auto material = std::make_shared<light::Emissionmap>(light_cache_, mask, two_sided);
+			material->set_emission_map(emission_map);
+			material->set_emission_factor(emission_factor);
+			return material;
 		}
 	}
 
