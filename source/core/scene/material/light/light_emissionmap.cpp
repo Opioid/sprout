@@ -100,7 +100,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 
 		distribution_.init(luminance.data(), d);
 	} else {
-		average_emission_ = emission_factor_ * emission_->average().xyz();
+		average_emission_ = emission_factor_ * emission_->average_3();
 	}
 }
 

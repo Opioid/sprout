@@ -47,7 +47,7 @@ private:
 
 	float animation_length_;
 
-	math::float3 average_emission_;
+	std::vector<math::float3> average_emissions_;
 
 	float total_weight_;
 

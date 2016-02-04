@@ -63,9 +63,10 @@ math::float3 Prop_light::power(const math::aabb& scene_bb) const {
 void Prop_light::prepare_sampling() {
 	prop_->material(part_)->prepare_sampling(false);
 
+	prop_->shape()->prepare_sampling(part_);
+
 	entity::Composed_transformation transformation;
 	prop_->transformation_at(0.f, transformation);
-	prop_->shape()->prepare_sampling(part_);
 	area_ = prop_->shape()->area(part_, transformation.scale);
 }
 

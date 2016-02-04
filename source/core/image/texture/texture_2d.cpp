@@ -23,11 +23,38 @@ int32_t Texture_2D::num_elements() const {
 	return image_->description().num_elements;
 }
 
-math::float4 Texture_2D::average() const {
-	auto d = dimensions();
+math::float3 Texture_2D::average_3() const {
+	math::float3 average = math::float3::identity;
 
+	auto d = dimensions();
+	for (int32_t y = 0; y < d.y; ++y) {
+		for (int32_t x = 0; x < d.x; ++x) {
+			average += at_3(x, y);
+		}
+	}
+
+	auto df = dimensions_float();
+	return average / (df.x * df.y);
+}
+
+math::float3 Texture_2D::average_3(int32_t element) const {
+	math::float3 average = math::float3::identity;
+
+	auto d = dimensions();
+	for (int32_t y = 0; y < d.y; ++y) {
+		for (int32_t x = 0; x < d.x; ++x) {
+			average += at_3(x, y, element);
+		}
+	}
+
+	auto df = dimensions_float();
+	return average / (df.x * df.y);
+}
+
+math::float4 Texture_2D::average_4() const {
 	math::float4 average = math::float4::identity;
 
+	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {
 		for (int32_t x = 0; x < d.x; ++x) {
 			average += at_4(x, y);

@@ -16,8 +16,12 @@ Emissionmap_animated::Emissionmap_animated(Generic_sample_cache<Sample>& cache,
 										   float emission_factor, float animation_length) :
 	Material(cache, mask, two_sided), emission_(emission), emission_factor_(emission_factor),
 	animation_length_(animation_length),
-	average_emission_(math::float3(-1.f, -1.f, -1.f)),
-	frame_length_(animation_length_ / static_cast<float>(emission_->num_elements())) {}
+	average_emissions_(emission_->num_elements()),
+	frame_length_(animation_length_ / static_cast<float>(emission_->num_elements())) {
+	for (auto& ae : average_emissions_) {
+		ae = math::float3(-1.f, -1.f, -1.f);
+	}
+}
 
 void Emissionmap_animated::tick(float absolute_time, float time_slice) {
 	element_ = static_cast<int32_t>(absolute_time / frame_length_) % emission_->num_elements();
@@ -43,7 +47,7 @@ math::float3 Emissionmap_animated::sample_emission(math::float2 uv, float /*time
 }
 
 math::float3 Emissionmap_animated::average_emission() const {
-	return average_emission_;
+	return average_emissions_[element_];
 }
 
 const image::texture::Texture_2D* Emissionmap_animated::emission_map() const {
@@ -75,14 +79,14 @@ float Emissionmap_animated::emission_pdf(math::float2 uv, const image::texture::
 }
 
 void Emissionmap_animated::prepare_sampling(bool spherical) {
-	if (average_emission_.x >= 0.f) {
+	if (average_emissions_[element_].x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
 		return;
 	}
 
 	if (spherical) {
-		average_emission_ = math::float3::identity;
+	/*	average_emission_ = math::float3::identity;
 
 		auto d = emission_->dimensions();
 		std::vector<float> luminance(d.x * d.y);
@@ -105,9 +109,9 @@ void Emissionmap_animated::prepare_sampling(bool spherical) {
 
 		average_emission_ /= total_weight_;
 
-		distribution_.init(luminance.data(), d);
+		distribution_.init(luminance.data(), d);*/
 	} else {
-		average_emission_ = emission_factor_ * emission_->average().xyz();
+		average_emissions_[element_] = emission_factor_ * emission_->average_3(element_);
 	}
 }
 

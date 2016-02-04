@@ -69,7 +69,7 @@ math::float3 Material::sample_emission(math::float2 uv, float /*time*/,
 
 math::float3 Material::average_emission() const {
 	if (emission_map_) {
-		return emission_factor_ * emission_map_->average().xyz();
+		return emission_factor_ * emission_map_->average_3();
 	} else {
 		return math::float3::identity;
 	}
