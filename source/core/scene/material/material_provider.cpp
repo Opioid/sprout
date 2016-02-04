@@ -325,7 +325,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
     math::float3 color(0.6f, 0.6f, 0.6f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
-	float ior = 1.42;
+	float ior = 1.46;
 	float emission_factor = 1.f;
 	float thickness = 0.f;
 	float attenuation_distance = 0.f;
