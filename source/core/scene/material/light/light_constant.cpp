@@ -33,8 +33,8 @@ math::float3 Constant::average_emission() const {
 	return emission_;
 }
 
-const image::texture::Texture_2D* Constant::emission_map() const {
-	return nullptr;
+bool Constant::has_emission_map() const {
+	return false;
 }
 
 }}}

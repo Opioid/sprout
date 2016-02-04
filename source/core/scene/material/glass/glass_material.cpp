@@ -40,8 +40,8 @@ math::float3 Glass::average_emission() const {
 	return math::float3::identity;
 }
 
-const image::texture::Texture_2D* Glass::emission_map() const {
-	return nullptr;
+bool Glass::has_emission_map() const {
+	return false;
 }
 
 void Glass::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {

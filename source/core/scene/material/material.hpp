@@ -37,7 +37,7 @@ public:
 
 	virtual math::float3 average_emission() const = 0;
 
-	virtual const image::texture::Texture_2D* emission_map() const = 0;
+	virtual bool has_emission_map() const = 0;
 
 	virtual math::float2 emission_importance_sample(math::float2 r2, float& pdf) const;
 

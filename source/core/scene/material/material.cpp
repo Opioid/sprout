@@ -28,7 +28,7 @@ bool IMaterial::is_masked() const {
 }
 
 bool IMaterial::is_emissive() const {
-	if (emission_map()) {
+	if (has_emission_map()) {
 		return true;
 	}
 

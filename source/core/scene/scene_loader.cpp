@@ -180,7 +180,7 @@ void Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Sce
 	auto& materials = prop->materials();
 	for (size_t i = 0, len = materials.size(); i < len; ++i) {
 		if (materials[i]->is_emissive()) {
-			if (prop->shape()->is_analytical() && materials[i]->emission_map()) {
+			if (prop->shape()->is_analytical() && materials[i]->has_emission_map()) {
 				scene.create_prop_image_light(prop, static_cast<uint32_t>(i));
 			} else {
 				scene.create_prop_light(prop, static_cast<uint32_t>(i));

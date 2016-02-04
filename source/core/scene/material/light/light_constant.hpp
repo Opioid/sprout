@@ -22,7 +22,7 @@ public:
 
 	virtual math::float3 average_emission() const final override;
 
-	virtual const image::texture::Texture_2D* emission_map() const final override;
+	virtual bool has_emission_map() const final override;
 
 private:
 

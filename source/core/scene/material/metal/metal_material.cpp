@@ -64,8 +64,8 @@ math::float3 Material_isotropic::average_emission() const {
 	return math::float3::identity;
 }
 
-const image::texture::Texture_2D* Material_isotropic::emission_map() const {
-	return nullptr;
+bool Material_isotropic::has_emission_map() const {
+	return false;
 }
 
 void Material_isotropic::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
@@ -124,8 +124,8 @@ math::float3 Material_anisotropic::average_emission() const {
 	return math::float3::identity;
 }
 
-const image::texture::Texture_2D* Material_anisotropic::emission_map() const {
-	return nullptr;
+bool Material_anisotropic::has_emission_map() const {
+	return false;
 }
 
 void Material_anisotropic::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {

@@ -22,7 +22,7 @@ public:
 
 	virtual math::float3 average_emission() const final override;
 
-	virtual const image::texture::Texture_2D* emission_map() const final override;
+	virtual bool has_emission_map() const final override;
 
 	void set_color_map(std::shared_ptr<image::texture::Texture_2D> color_map);
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);

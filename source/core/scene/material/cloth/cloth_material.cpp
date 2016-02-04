@@ -49,8 +49,8 @@ math::float3 Material::average_emission() const {
 	return math::float3::identity;
 }
 
-const image::texture::Texture_2D* Material::emission_map() const {
-	return nullptr;
+bool Material::has_emission_map() const {
+	return false;
 }
 
 void Material::set_color_map(std::shared_ptr<image::texture::Texture_2D> color_map) {

@@ -50,8 +50,8 @@ math::float3 Emissionmap_animated::average_emission() const {
 	return average_emissions_[element_];
 }
 
-const image::texture::Texture_2D* Emissionmap_animated::emission_map() const {
-	return emission_.get();
+bool Emissionmap_animated::has_emission_map() const {
+	return nullptr != emission_;
 }
 
 math::float2 Emissionmap_animated::emission_importance_sample(math::float2 r2, float& pdf) const {
