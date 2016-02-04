@@ -1,20 +1,22 @@
 #pragma once
 
-#include "light_material.hpp"
+#include "scene/material/material.hpp"
+#include "scene/material/material_sample_cache.hpp"
 #include "image/texture/texture_2d.hpp"
 #include "base/math/distribution/distribution_2d.hpp"
 
-namespace scene { namespace material { namespace light {
+namespace scene { namespace material { namespace display {
 
 class Sample;
 
-class Emissionmap_animated : public Material {
+class Material_animated : public material::Material<Generic_sample_cache<Sample>> {
 public:
 
-	Emissionmap_animated(Generic_sample_cache<Sample>& cache,
-						 std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided,
-						 std::shared_ptr<image::texture::Texture_2D> emission_map,
-						 float emission_factor, float animation_duration);
+	Material_animated(Generic_sample_cache<Sample>& cache,
+					  std::shared_ptr<image::texture::Texture_2D> mask,
+					  bool two_sided,
+					  std::shared_ptr<image::texture::Texture_2D> emission_map,
+					  float animation_duration);
 
 	virtual void tick(float absolute_time, float time_slice) final override;
 
@@ -39,11 +41,21 @@ public:
 
 	virtual bool is_animated() const final override;
 
+	void set_emission_factor(float emission_factor);
+	void set_roughness(float roughness);
+	void set_ior(float ior);
+
 private:
 
 	std::shared_ptr<image::texture::Texture_2D> emission_map_;
 
+	math::float3 emission_;
+
 	float emission_factor_;
+
+	float roughness_;
+
+	float f0_;
 
 	std::vector<math::float3> average_emissions_;
 

@@ -60,7 +60,7 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 		if (0.f == camera.frame_duration()) {
 			scene.tick(thread_pool);
 			camera.update_focus(workers[0]);
-			render_subframe(camera, 0.f, 0.f, 0.f, 0.f, 1.f, tiles, workers, thread_pool, progressor);
+			render_subframe(camera, 0.f, 0.f, 1.f, tiles, workers, thread_pool, progressor);
 		} else if (!camera.motion_blur()) {
 			float frame_offset = 0.f;
 			float frame_rest = camera.frame_duration();
@@ -80,7 +80,7 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 				if (!rendered) {
 					float normalized_tick_offset = tick_offset / scene.tick_duration();
 
-					render_subframe(camera, scene.simulation_time() - scene.tick_duration(), scene.tick_duration(),
+					render_subframe(camera,
 									normalized_tick_offset, 0.f, 1.f,
 									tiles, workers, thread_pool, progressor);
 
@@ -112,7 +112,6 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 				float normalized_frame_slice = subframe_slice / camera.frame_duration();
 
 				render_subframe(camera,
-								scene.simulation_time() - scene.tick_duration(), scene.tick_duration(),
 								normalized_tick_offset, normalized_tick_slice, normalized_frame_slice,
 								tiles, workers, thread_pool, progressor);
 
@@ -137,7 +136,6 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 }
 
 void Driver::render_subframe(scene::camera::Camera& camera,
-							 float absolute_time, float tick_slice,
 							 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
 							 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& thread_pool,
 							 progress::Sink& progressor) {
@@ -156,7 +154,7 @@ void Driver::render_subframe(scene::camera::Camera& camera,
 
 		thread_pool.run(
 			[&workers, &camera, v, &tiles, &progressor,
-			 sample_begin, sample_end, absolute_time, tick_slice,
+			 sample_begin, sample_end,
 			 normalized_tick_offset, normalized_tick_slice]
 			(uint32_t index) {
 				auto& worker = workers[index];
@@ -169,7 +167,6 @@ void Driver::render_subframe(scene::camera::Camera& camera,
 
 					worker.render(camera, v, tile,
 								  sample_begin, sample_end,
-								  absolute_time, tick_slice,
 								  normalized_tick_offset, normalized_tick_slice);
 
 					progressor.tick();

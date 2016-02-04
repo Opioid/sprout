@@ -6,6 +6,7 @@
 #include "cloth/cloth_material.hpp"
 #include "cloth/cloth_sample.hpp"
 #include "display/display_material.hpp"
+#include "display/display_material_animated.hpp"
 #include "display/display_sample.hpp"
 #include "glass/glass_material.hpp"
 #include "glass/glass_sample.hpp"
@@ -185,10 +186,14 @@ std::shared_ptr<IMaterial> Provider::load_display(const rapidjson::Value& displa
 		}
 	}
 
-/*	if (animation_duration > 0.f) {
-		return std::make_shared<light::Emissionmap_animated>(light_cache_, mask, two_sided,
-															 emission_map, emission_factor, animation_duration);
-	} else*/ {
+	if (animation_duration > 0.f) {
+		auto material = std::make_shared<display::Material_animated>(display_cache_, mask, two_sided,
+																	 emission_map, animation_duration);
+		material->set_emission_factor(emission_factor);
+		material->set_roughness(roughness);
+		material->set_ior(ior);
+		return material;
+	} else {
 		auto material = std::make_shared<display::Material>(display_cache_, mask, two_sided);
 		material->set_emission_map(emission_map);
 		material->set_emission(emission);

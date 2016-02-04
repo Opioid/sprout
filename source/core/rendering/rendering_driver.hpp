@@ -47,7 +47,6 @@ public:
 private:
 
 	void render_subframe(scene::camera::Camera& camera,
-						 float absolute_time, float tick_slice,
 						 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
 						 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& pool,
 						 progress::Sink& progressor);
