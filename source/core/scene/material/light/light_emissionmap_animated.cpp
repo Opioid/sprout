@@ -23,7 +23,7 @@ Emissionmap_animated::Emissionmap_animated(Generic_sample_cache<Sample>& cache,
 	}
 }
 
-void Emissionmap_animated::tick(float absolute_time, float time_slice) {
+void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 	element_ = static_cast<int32_t>(absolute_time / frame_length_) % emission_->num_elements();
 }
 
