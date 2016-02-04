@@ -3,6 +3,7 @@
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
+#include "scene/material/ggx/ggx.inl"
 #include "scene/shape/geometry/differential.inl"
 #include "base/math/vector.inl"
 
@@ -50,9 +51,9 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 
 	if (emission_map_) {
 		math::float3 emission = emission_factor_ * sampler.sample_3(*emission_map_, dg.uv);
-		sample.set(color, emission, surface.x, surface.y, thickness, attenuation_distance_);
+		sample.set(color, emission, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
 	} else {
-		sample.set(color, math::float3::identity, surface.x, surface.y, thickness, attenuation_distance_);
+		sample.set(color, math::float3::identity, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
 	}
 
 	return sample;
@@ -97,6 +98,10 @@ void Material::set_emission_map(std::shared_ptr<image::texture::Texture_2D> emis
 
 void Material::set_color(const math::float3& color) {
 	color_ = color;
+}
+
+void Material::set_ior(float ior) {
+	constant_f0_ = ggx::schlick_f0(1.f, ior);
 }
 
 void Material::set_roughness(float roughness) {

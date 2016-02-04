@@ -20,7 +20,7 @@ void test() {
 	Sample sample;
 
 	math::float3 color(1.f, 1.f, 1.f);
-	sample.set(color, math::float3::identity, 1.f, 0.f, 0.f, 100.f);
+	sample.set(color, math::float3::identity, 0.03f, 1.f, 0.f, 0.f, 100.f);
 
 	math::float3 t(1.f, 0.f, 0.f);
 	math::float3 b(0.f, 1.f, 0.f);
@@ -34,7 +34,6 @@ void test() {
 	float pdf;
 	math::float3 reflection = sample.evaluate(wi, pdf);
 	print(reflection, pdf);
-
 
 	bxdf::Result result;
 	sample.sample_evaluate(sampler, result);

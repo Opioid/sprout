@@ -30,6 +30,7 @@ public:
 	void set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map);
 
 	void set_color(const math::float3& color);
+	void set_ior(float ior);
 	void set_roughness(float roughness);
 	void set_metallic(float metallic);
 	void set_emission_factor(float emission_factor);
@@ -44,6 +45,7 @@ private:
 	std::shared_ptr<image::texture::Texture_2D> emission_map_;
 
 	math::float3 color_;
+	float constant_f0_;
 	float roughness_;
 	float metallic_;
 	float emission_factor_;

@@ -325,6 +325,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
     math::float3 color(0.6f, 0.6f, 0.6f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
+	float ior = 1.42;
 	float emission_factor = 1.f;
 	float thickness = 0.f;
 	float attenuation_distance = 0.f;
@@ -335,6 +336,8 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 
 		if ("color" == node_name) {
 			color = json::read_float3(node_value);
+		} else if ("ior" == node_name) {
+			ior = json::read_float(node_value);
 		} else if ("roughness" == node_name) {
 			roughness = json::read_float(node_value);
 		} else if ("metallic" == node_name) {
@@ -386,6 +389,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	material->set_emission_map(emission_map);
 
 	material->set_color(color);
+	material->set_ior(ior);
 	material->set_roughness(roughness);
 	material->set_metallic(metallic);
 	material->set_emission_factor(emission_factor);

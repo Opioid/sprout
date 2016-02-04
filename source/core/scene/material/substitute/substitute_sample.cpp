@@ -100,7 +100,7 @@ math::float3 Sample::attenuation() const {
 }
 
 float Sample::ior() const {
-	return 1.5f;
+	return 0.f;
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
@@ -194,9 +194,10 @@ bool Sample::is_translucent() const {
 }
 
 void Sample::set(const math::float3& color, const math::float3& emission,
-				 float roughness, float metallic, float thickness, float attenuation_distance) {
+				 float constant_f0, float roughness, float metallic,
+				 float thickness, float attenuation_distance) {
 	diffuse_color_ = (1.f - metallic) * color;
-	f0_ = math::lerp(math::float3(0.03f), color, metallic);
+	f0_ = math::lerp(math::float3(constant_f0), color, metallic);
 	emission_ = emission;
 
 	float a = roughness * roughness;

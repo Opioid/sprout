@@ -301,4 +301,9 @@ inline math::float3 fresnel_conductor(float wo_dot_h, const math::float3& eta, c
 	return 0.5f * (r_p + r_o);
 }
 
+inline float schlick_f0(float n0, float n1) {
+	float t = (n0 - n1) / (n0 + n1);
+	return t * t;
+}
+
 }}}
