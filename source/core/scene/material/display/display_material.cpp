@@ -104,6 +104,10 @@ void Material::prepare_sampling(bool spherical) {
 		distribution_.init(luminance.data(), d);
 	} else {
 		average_emission_ = emission_factor_ * emission_map_->average_3();
+
+		if (is_two_sided()) {
+			average_emission_ *= 2.f;
+		}
 	}
 }
 

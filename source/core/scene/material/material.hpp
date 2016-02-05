@@ -43,6 +43,8 @@ public:
 
 	virtual float emission_pdf(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const;
 
+	virtual float opacity(math::float2 uv, float time, const image::texture::sampler::Sampler_2D& sampler) const;
+
 	virtual void prepare_sampling(bool spherical);
 
 	virtual bool is_animated() const;
@@ -50,8 +52,6 @@ public:
 	bool is_masked() const;
 	bool is_emissive() const;
 	bool is_two_sided() const;
-
-	float opacity(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const;
 
 protected:
 

@@ -76,7 +76,7 @@ bool Disk::intersect_p(const entity::Composed_transformation& transformation, co
 	return false;
 }
 
-float Disk::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
+float Disk::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
 					Node_stack& /*node_stack*/, const material::Materials& materials,
 					const image::texture::sampler::Sampler_2D& sampler) const {
 	const math::float3& normal = transformation.rotation.z;
@@ -97,7 +97,7 @@ float Disk::opacity(const entity::Composed_transformation& transformation, const
 			math::float2 uv((math::dot(transformation.rotation.x, sk) + 1.f) * 0.5f,
 							(math::dot(transformation.rotation.y, sk) + 1.f) * 0.5f);
 
-			return materials[0]->opacity(uv, sampler);
+			return materials[0]->opacity(uv, time, sampler);
 		}
 	}
 

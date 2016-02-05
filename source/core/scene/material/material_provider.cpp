@@ -38,7 +38,7 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 	substitute_cache_(thread_pool.num_threads()) {
 	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr, false);
 	material->set_color(math::float3(1.f, 0.f, 0.f)),
-	material->set_ior(1.45),
+	material->set_ior(1.45f),
 	material->set_roughness(1.f);
 	material->set_metallic(0.f);
 	fallback_material_ = material;
@@ -406,7 +406,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
     math::float3 color(0.6f, 0.6f, 0.6f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
-	float ior = 1.46;
+	float ior = 1.46f;
 	float emission_factor = 1.f;
 	float thickness = 0.f;
 	float attenuation_distance = 0.f;

@@ -77,6 +77,15 @@ float Emissionmap_animated::emission_pdf(math::float2 uv, const image::texture::
 	return distribution_.pdf(sampler.address(uv)) * (total_weight_ / sin_theta);
 }
 
+float Emissionmap_animated::opacity(math::float2 uv, float /*time*/,
+									const image::texture::sampler::Sampler_2D& sampler) const {
+	if (mask_) {
+		return sampler.sample_1(*mask_, uv, element_);
+	} else {
+		return 1.f;
+	}
+}
+
 void Emissionmap_animated::prepare_sampling(bool spherical) {
 	if (average_emissions_[element_].x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
@@ -111,6 +120,10 @@ void Emissionmap_animated::prepare_sampling(bool spherical) {
 		distribution_.init(luminance.data(), d);*/
 	} else {
 		average_emissions_[element_] = emission_factor_ * emission_map_->average_3(element_);
+
+		if (is_two_sided()) {
+			average_emissions_[element_] *= 2.f;
+		}
 	}
 }
 

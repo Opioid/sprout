@@ -26,7 +26,7 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
 	math::float3 result = math::float3::identity;
 
-	float opacity = intersection.opacity(settings_.sampler_linear);
+	float opacity = intersection.opacity(ray.time, settings_.sampler_linear);
 	float throughput = opacity;
 
 	while (opacity < 1.f) {
@@ -40,7 +40,7 @@ math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::In
 			return math::float4(result, opacity);
 		}
 
-		throughput = (1.f - opacity) * intersection.opacity(settings_.sampler_linear);
+		throughput = (1.f - opacity) * intersection.opacity(ray.time, settings_.sampler_linear);
 		opacity   += throughput;
 	}
 

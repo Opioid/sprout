@@ -35,7 +35,7 @@ public:
 	virtual bool intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 							 Node_stack& node_stack) const = 0;
 
-	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
+	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
 						  Node_stack& node_stack, const material::Materials& materials,
 						  const image::texture::sampler::Sampler_2D& sampler) const = 0;
 

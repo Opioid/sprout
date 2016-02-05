@@ -21,7 +21,7 @@ class Prop;
 struct Intersection {
 	material::IMaterial* material() const;
 
-	float opacity(const image::texture::sampler::Sampler_2D& sampler) const;
+	float opacity(float time, const image::texture::sampler::Sampler_2D& sampler) const;
 
 	const Prop* prop;
 	shape::Intersection geo;

@@ -68,7 +68,7 @@ public:
 
 	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
 
-	float opacity(math::Oray& ray, Node_stack& node_stack,
+	float opacity(math::Oray& ray, float time, Node_stack& node_stack,
 				  const material::Materials& materials,
 				  const image::texture::sampler::Sampler_2D& sampler) const;
 

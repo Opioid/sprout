@@ -80,7 +80,7 @@ float Prop::opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 	entity::Composed_transformation transformation;
 	transformation_at(ray.time, transformation);
 
-	return shape_->opacity(transformation, ray, node_stack, materials_, sampler);
+	return shape_->opacity(transformation, ray, ray.time, node_stack, materials_, sampler);
 }
 
 const shape::Shape* Prop::shape() const {

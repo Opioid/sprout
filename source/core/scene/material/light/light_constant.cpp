@@ -30,6 +30,10 @@ math::float3 Constant::sample_emission(math::float2 /*uv*/, float /*time*/,
 }
 
 math::float3 Constant::average_emission() const {
+	if (is_two_sided()) {
+		return 2.f * emission_;
+	}
+
 	return emission_;
 }
 

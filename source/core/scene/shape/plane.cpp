@@ -55,7 +55,7 @@ bool Plane::intersect_p(const entity::Composed_transformation& transformation, c
 	return false;
 }
 
-float Plane::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
+float Plane::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
 					 Node_stack& /*node_stack*/, const material::Materials& materials,
 					 const image::texture::sampler::Sampler_2D& sampler) const {
 	const math::float3& normal = transformation.rotation.z;
@@ -68,7 +68,7 @@ float Plane::opacity(const entity::Composed_transformation& transformation, cons
 		math::float3 p = ray.point(t);
 		math::float2 uv(math::dot(transformation.rotation.x, p), math::dot(transformation.rotation.y, p));
 
-		return materials[0]->opacity(uv, sampler);
+		return materials[0]->opacity(uv, time, sampler);
 	}
 
 	return 0.f;

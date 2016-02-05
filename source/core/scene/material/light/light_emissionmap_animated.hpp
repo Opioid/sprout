@@ -35,6 +35,9 @@ public:
 	virtual float emission_pdf(math::float2 uv,
 							   const image::texture::sampler::Sampler_2D& sampler) const final override;
 
+	virtual float opacity(math::float2 uv, float time,
+						  const image::texture::sampler::Sampler_2D& sampler) const final override;
+
 	virtual void prepare_sampling(bool spherical) final override;
 
 	virtual bool is_animated() const final override;

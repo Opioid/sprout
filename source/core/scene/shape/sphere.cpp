@@ -114,7 +114,7 @@ bool Sphere::intersect_p(const entity::Composed_transformation& transformation, 
 }
 
 float Sphere::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-					  Node_stack& /*node_stack*/, const material::Materials& materials,
+					  float time, Node_stack& /*node_stack*/, const material::Materials& materials,
 					  const image::texture::sampler::Sampler_2D& sampler) const {
 	math::float3 v = transformation.position - ray.origin;
 	float b = dot(v, ray.direction);
@@ -132,7 +132,7 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 			math::float2 uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
-			return materials[0]->opacity(uv, sampler);
+			return materials[0]->opacity(uv, time, sampler);
 		}
 
 		float t1 = b + dist;
@@ -144,7 +144,7 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 			math::float2 uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
-			return materials[0]->opacity(uv, sampler);
+			return materials[0]->opacity(uv, time, sampler);
 		}
 	}
 

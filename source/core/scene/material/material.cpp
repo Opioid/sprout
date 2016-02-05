@@ -17,6 +17,15 @@ float IMaterial::emission_pdf(math::float2 /*uv*/, const image::texture::sampler
 	return 0.f;
 }
 
+
+float IMaterial::opacity(math::float2 uv, float /*time*/, const image::texture::sampler::Sampler_2D& sampler) const {
+	if (mask_) {
+		return sampler.sample_1(*mask_, uv);
+	} else {
+		return 1.f;
+	}
+}
+
 void IMaterial::prepare_sampling(bool /*spherical*/) {}
 
 bool IMaterial::is_animated() const {
@@ -42,14 +51,6 @@ bool IMaterial::is_emissive() const {
 
 bool IMaterial::is_two_sided() const {
 	return two_sided_;
-}
-
-float IMaterial::opacity(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
-	if (mask_) {
-		return sampler.sample_1(*mask_, uv);
-	} else {
-		return 1.f;
-	}
 }
 
 }}
