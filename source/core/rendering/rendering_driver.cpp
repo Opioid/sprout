@@ -2,6 +2,7 @@
 #include "rendering_camera_worker.hpp"
 #include "tile_queue.hpp"
 #include "exporting/exporting_sink.hpp"
+#include "image/typed_image.inl"
 #include "logging/logging.hpp"
 #include "progress/progress_sink.hpp"
 #include "rendering/sensor/sensor.hpp"
@@ -30,6 +31,8 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 					exporting::Sink& exporter, progress::Sink& progressor) {
 	auto& camera = *view.camera;
 	auto& sensor = camera.sensor();
+
+	image::Image_float_4 target(image::Image::Description(image::Image::Type::Float_4, camera.sensor_dimensions()));
 
 	Tile_queue tiles(camera.resolution(), tile_dimensions_, sensor.filter_radius_int());
 
@@ -129,7 +132,8 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 		logging::info("Render time " + string::to_string(render_duration) + " s");
 
 		auto export_start = clock.now();
-		exporter.write(sensor.resolve(thread_pool), current_frame, thread_pool);
+		sensor.resolve(thread_pool, target);
+		exporter.write(target, current_frame, thread_pool);
 		auto export_duration = chrono::duration_to_seconds(clock.now() - export_start);
 		logging::info("Export time " + string::to_string(export_duration) + " s");
 	}

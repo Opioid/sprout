@@ -1,6 +1,9 @@
 #pragma once
 
+#include "base/math/rectangle.hpp"
 #include "base/math/vector.hpp"
+
+namespace sampler { struct Camera_sample; }
 
 namespace rendering { namespace sensor {
 

@@ -19,7 +19,7 @@ public:
 
 	math::int2 dimensions() const;
 
-	const image::Image_float_4& resolve(thread::Pool& pool);
+	void resolve(thread::Pool& pool, image::Image_float_4& target);
 
 	virtual int32_t filter_radius_int() const = 0;
 
@@ -34,15 +34,15 @@ protected:
 
 	virtual void add_pixel_atomic(math::int2 pixel, const math::float4& color, float weight) = 0;
 
-	virtual void resolve(int32_t begin, int32_t end) = 0;
+	virtual void resolve(int32_t begin, int32_t end, image::Image_float_4& target) = 0;
 
 	static math::float3 expose(const math::float3& color, float exposure);
+
+	math::int2 dimensions_;
 
 	float exposure_;
 
 	const tonemapping::Tonemapper* tonemapper_;
-
-	image::Image_float_4 image_;
 };
 
 }}

@@ -40,7 +40,7 @@ void Opaque::add_pixel_atomic(math::int2 pixel, const math::float4& color, float
 	atomic::add_assign(value.weight_sum, weight);
 }
 
-void Opaque::resolve(int32_t begin, int32_t end) {
+void Opaque::resolve(int32_t begin, int32_t end, image::Image_float_4& target) {
 	for (int32_t i = begin; i < end; ++i) {
 		auto& value = pixels_[i];
 
@@ -50,7 +50,7 @@ void Opaque::resolve(int32_t begin, int32_t end) {
 
 		math::float3 tonemapped = tonemapper_->tonemap(exposed);
 
-		image_.at(i) = math::float4(tonemapped, 1.f);
+		target.at(i) = math::float4(tonemapped, 1.f);
 	}
 }
 
