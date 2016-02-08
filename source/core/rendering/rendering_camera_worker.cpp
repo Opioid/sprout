@@ -27,24 +27,20 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 
 			if (0 == sample_begin) {
 				if (0 == view) {
-					math::uint2 seed = sampler_->seed();
-					sampler_->set_seed(seed);
-					camera.set_seed(pixel, seed);
-				} else {
-					sampler_->set_seed(camera.seed(pixel));
+					camera.set_seed(pixel, sampler_->seed());
 				}
 
 				sampler_->restart(1);
 
 				surface_integrator_->start_new_pixel(num_samples);
-			} else {
-				sampler_->set_seed(camera.seed(pixel));
 			}
+
+			sampler_->set_seed(camera.seed(pixel));
 
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);
 
-				ray.time = normalized_tick_offset + sample.time * normalized_tick_slice;;
+				sample.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
 				camera.generate_ray(sample, view, ray);
 
