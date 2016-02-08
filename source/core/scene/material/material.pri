@@ -14,6 +14,7 @@ HEADERS += \
 
 include(cloth/cloth.pri)
 include(display/display.pri)
+include(fresnel/fresnel.pri)
 include(ggx/ggx.pri)
 include(glass/glass.pri)
 include(lambert/lambert.pri)

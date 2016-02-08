@@ -55,9 +55,4 @@ float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h, math
 
 float geometric_shadowing(float n_dot_wi, float n_dot_wo, float a2);
 
-math::float3 fresnel_schlick(float wo_dot_h, const math::float3& f0);
-float fresnel_schlick(float wo_dot_h, float f0);
-
-float schlick_f0(float n0, float n1);
-
 }}}

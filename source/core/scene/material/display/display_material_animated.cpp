@@ -3,7 +3,7 @@
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
-#include "scene/material/ggx/ggx.inl"
+#include "scene/material/fresnel/fresnel.inl"
 #include "scene/shape/geometry/differential.hpp"
 #include "base/color/color.inl"
 #include "base/math/math.hpp"
@@ -147,7 +147,7 @@ void Material_animated::set_roughness(float roughness) {
 }
 
 void Material_animated::set_ior(float ior) {
-	f0_ = ggx::schlick_f0(1.f, ior);
+	f0_ = fresnel::schlick_f0(1.f, ior);
 }
 
 }}}

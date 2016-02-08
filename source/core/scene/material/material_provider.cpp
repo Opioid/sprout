@@ -10,6 +10,8 @@
 #include "display/display_sample.hpp"
 #include "glass/glass_material.hpp"
 #include "glass/glass_sample.hpp"
+#include "glass/glass_rough_material.hpp"
+#include "glass/glass_rough_sample.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
 #include "light/light_emissionmap_animated.hpp"
@@ -32,6 +34,7 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 	cloth_cache_(thread_pool.num_threads()),
 	display_cache_(thread_pool.num_threads()),
 	glass_cache_(thread_pool.num_threads()),
+	glass_rough_cache_(thread_pool.num_threads()),
 	light_cache_(thread_pool.num_threads()),
 	metal_iso_cache_(thread_pool.num_threads()),
 	metal_aniso_cache_(thread_pool.num_threads()),
@@ -209,6 +212,7 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 	math::float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
+	float roughness = 0.f;
 
 	for (auto n = glass_value.MemberBegin(); n != glass_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -220,6 +224,8 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 			attenuation_distance = json::read_float(node_value);
 		} else if ("ior" == node_name) {
 			ior = json::read_float(node_value);
+		} else if ("roughness" == node_name) {
+			roughness = json::read_float(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				Texture_description texture_description;
@@ -239,15 +245,22 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 		}
 	}
 
-	auto material = std::make_shared<glass::Glass>(glass_cache_, nullptr);
-
-	material->set_normal_map(normal_map);
-
-	material->set_color(color);
-	material->set_attenuation_distance(attenuation_distance);
-	material->set_ior(ior);
-
-	return material;
+	if (roughness >= 0.f) {
+		auto material = std::make_shared<glass::Glass>(glass_cache_, nullptr);
+		material->set_normal_map(normal_map);
+		material->set_color(color);
+		material->set_attenuation_distance(attenuation_distance);
+		material->set_ior(ior);
+		return material;
+	} else {
+		auto material = std::make_shared<glass::Glass_rough>(glass_rough_cache_, nullptr);
+		material->set_normal_map(normal_map);
+		material->set_color(color);
+		material->set_attenuation_distance(attenuation_distance);
+		material->set_ior(ior);
+		material->set_roughness(roughness);
+		return material;
+	}
 }
 
 std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {

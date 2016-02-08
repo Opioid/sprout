@@ -12,7 +12,7 @@ namespace scene { namespace material {
 
 namespace cloth { class Sample; }
 namespace display { class Sample; }
-namespace glass { class Sample; }
+namespace glass { class Sample; class Sample_rough; }
 namespace light { class Sample; }
 namespace metal { class Sample_isotropic; class Sample_anisotropic; }
 namespace substitute { class Sample; }
@@ -53,6 +53,7 @@ private:
 	Generic_sample_cache<cloth::Sample>				cloth_cache_;
 	Generic_sample_cache<display::Sample>			display_cache_;
 	Generic_sample_cache<glass::Sample>				glass_cache_;
+	Generic_sample_cache<glass::Sample_rough>		glass_rough_cache_;
 	Generic_sample_cache<light::Sample>				light_cache_;
 	Generic_sample_cache<metal::Sample_isotropic>   metal_iso_cache_;
 	Generic_sample_cache<metal::Sample_anisotropic> metal_aniso_cache_;

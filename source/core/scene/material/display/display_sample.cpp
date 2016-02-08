@@ -1,6 +1,7 @@
 #include "display_sample.hpp"
 #include "scene/material/material_sample.inl"
 #include "sampler/sampler.hpp"
+#include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "base/math/vector.inl"
 
@@ -23,7 +24,7 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 
 	float d = ggx::distribution_isotropic(n_dot_h, std::max(a2_, 0.0000001f));
 	float g = ggx::geometric_shadowing(n_dot_wi, n_dot_wo, a2_);
-	math::float3 f = ggx::fresnel_schlick(wo_dot_h, f0_);
+	math::float3 f = fresnel::schlick(wo_dot_h, f0_);
 
 	math::float3 specular = d * g * f;
 
