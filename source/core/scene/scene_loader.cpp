@@ -18,6 +18,7 @@
 #include "scene/material/cloth/cloth_sample.hpp"
 #include "scene/material/display/display_sample.hpp"
 #include "scene/material/glass/glass_sample.hpp"
+#include "scene/material/glass/glass_rough_sample.hpp"
 #include "scene/material/light/light_material_sample.hpp"
 #include "scene/material/metal/metal_sample.hpp"
 #include "scene/material/substitute/substitute_sample.hpp"
