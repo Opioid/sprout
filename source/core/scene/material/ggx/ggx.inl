@@ -92,8 +92,6 @@ float Schlick_isotropic<Sample>::importance_sample(const Sample& sample,
 	return n_dot_wi;
 }
 
-math::float3 fresnel_conductor(float cos_theta_i, const math::float3& eta, const math::float3& k);
-
 template<typename Sample>
 math::float3 Conductor_isotropic<Sample>::evaluate(const Sample& sample,
 												   const math::float3& wi, float n_dot_wi, float n_dot_wo,
