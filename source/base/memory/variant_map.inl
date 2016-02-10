@@ -108,7 +108,6 @@ inline void Variant_map::insert(const std::string& key, int32_t value) {
 	map_[key] = Variant(value);
 }
 
-
 inline void Variant_map::insert(const std::string& key, uint32_t value) {
 	map_[key] = Variant(value);
 }

@@ -21,8 +21,9 @@ math::float3 Schlick_isotropic<Sample>::evaluate(const Sample& sample,
 	float n_dot_h  = math::saturate(math::dot(sample.n_, h));
 	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 
-	float d = distribution_isotropic(n_dot_h, std::max(sample.a2_, 0.0000001f));
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
+	float clamped_a2 = clamp_a2(sample.a2_);
+	float d = distribution_isotropic(n_dot_h, clamped_a2);
+	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
 	math::float3 specular = d * g * f;
@@ -62,11 +63,13 @@ float Schlick_isotropic<Sample>::importance_sample(const Sample& sample,
 
 	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
 
-	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
-//	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
+//	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
+	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
 
-	float d = distribution_isotropic(n_dot_h, std::max(sample.a2_, 0.0000001f));
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
+	float clamped_a2 = clamp_a2(sample.a2_);
+	float d = distribution_isotropic(n_dot_h, clamped_a2);
+//	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
+	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -89,6 +92,11 @@ float Schlick_isotropic<Sample>::importance_sample(const Sample& sample,
 //		std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
 //	}
 
+	//	float thing = math::dot(sample.n_, sample.wo_);
+//		if (math::dot(sample.n_, sample.wo_) < 0.f) {
+//			result.reflection = math::float3(1.f, 0.f, 0.f);
+//		}
+
 	return n_dot_wi;
 }
 
@@ -107,8 +115,9 @@ math::float3 Conductor_isotropic<Sample>::evaluate(const Sample& sample,
 	float n_dot_h  = math::saturate(math::dot(sample.n_, h));
 	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 
-	float d = distribution_isotropic(n_dot_h, std::max(sample.a2_, 0.0000001f));
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
+	float clamped_a2 = clamp_a2(sample.a2_);
+	float d = distribution_isotropic(n_dot_h, clamped_a2);
+	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
 	math::float3 specular = d * g * f;
@@ -144,11 +153,11 @@ float Conductor_isotropic<Sample>::importance_sample(const Sample& sample,
 
 	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
 
-	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
-//	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
+	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
 
-	float d = distribution_isotropic(n_dot_h, std::max(sample.a2_, 0.0000001f));
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
+	float clamped_a2 = clamp_a2(sample.a2_);
+	float d = distribution_isotropic(n_dot_h, clamped_a2);
+	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -268,6 +277,10 @@ inline float geometric_shadowing(float n_dot_wi, float n_dot_wo, float a2) {
 	float g_wo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
 	float g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
 	return 1.f / (g_wo * g_wi);
+}
+
+inline float clamp_a2(float a2) {
+	return std::max(a2, 0.00000003f);
 }
 
 }}}
