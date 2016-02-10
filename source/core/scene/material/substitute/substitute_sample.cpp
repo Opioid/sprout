@@ -32,8 +32,8 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 		return n_dot_wi * (math::Pi_inv * attenuation * diffuse_color_);
 	}
 
-	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
-	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
+	float n_dot_wi = std::abs(math::dot(n_, wi));
+	float n_dot_wo = std::abs(math::dot(n_, wo_));
 
 	// oren nayar
 
@@ -53,12 +53,12 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float b = 0.45f * (a2 / (a2 + 0.09f));
 
 	math::float3 diffuse = math::Pi_inv * (a + b * s * t) * diffuse_color_;
-
+	float diffuse_pdf = n_dot_wi * math::Pi_inv;
 	// ----
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {
-		pdf = n_dot_wi * math::Pi_inv;
+		pdf = diffuse_pdf;
 		return n_dot_wi * diffuse;
 	}
 
@@ -67,13 +67,12 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float n_dot_h  = math::dot(n_, h);
 	float wo_dot_h = math::dot(wo_, h);
 
-	float d = ggx::distribution_isotropic(n_dot_h, std::max(a2_, 0.0000001f));
-	float g = ggx::geometric_shadowing(n_dot_wi, n_dot_wo, a2_);
+	float clamped_a2 = ggx::clamp_a2(a2_);
+	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
+	float g = ggx::geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel::schlick(wo_dot_h, f0_);
 
 	math::float3 specular = d * g * f;
-
-	float diffuse_pdf = n_dot_wi * math::Pi_inv;
 
 	// this helped in the past, but problem maybe caused by faulty sphere normals
 //	float ggx_pdf     = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
