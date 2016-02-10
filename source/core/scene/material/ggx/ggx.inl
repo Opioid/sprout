@@ -28,14 +28,6 @@ math::float3 Schlick_isotropic<Sample>::evaluate(const Sample& sample,
 
 	math::float3 specular = d * g * f;
 
-//	if (math::contains_negative(specular)) {
-//		std::cout << "GGX<Sample>::evaluate()" << std::endl;
-//	}
-
-//	if (math::contains_inf(specular) || math::contains_nan(specular)) {
-//		std::cout << "GGX<Sample>::evaluate()" << std::endl;
-//	}
-
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	return specular;
 }
@@ -44,60 +36,61 @@ template<typename Sample>
 float Schlick_isotropic<Sample>::importance_sample(const Sample& sample,
 												   sampler::Sampler& sampler, float n_dot_wo,
 												   bxdf::Result& result) const {
-	math::float2 xi = sampler.generate_sample_2D();
+	if (0.f == sample.a2_) {
+		constexpr float n_dot_h = 1.f;
 
-	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
-	// TODO: Optimize the perfect mirror case more
-	float n_dot_h = 0.f == sample.a2_ ? 1.f : std::sqrt((1.f - xi.y) / ((sample.a2_ - 1.f) * xi.y + 1.f));
+		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
 
-	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-	float phi = 2.f * math::Pi * xi.x;
-	float sin_phi = std::sin(phi);
-	float cos_phi = std::cos(phi);
+		math::float3 wi = math::normalized((2.f * wo_dot_h) * sample.n_ - sample.wo_);
 
-	math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	math::float3 h = sample.tangent_to_world(is);
+		float d = distribution_isotropic(n_dot_h, min_a2);
+		float g = geometric_shadowing(n_dot_wo, n_dot_wo, min_a2);
+		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
-	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
-//	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
+		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 
-	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
+		math::float3 specular = d * g * f;
+		result.reflection = specular;
+		result.wi = wi;
+		result.type.clear_set(bxdf::Type::Specular_reflection);
 
-//	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
-	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
+		return n_dot_wo;
+	} else {
+		math::float2 xi = sampler.generate_sample_2D();
 
-	float clamped_a2 = clamp_a2(sample.a2_);
-	float d = distribution_isotropic(n_dot_h, clamped_a2);
-//	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
+		float n_dot_h = std::sqrt((1.f - xi.y) / ((sample.a2_ - 1.f) * xi.y + 1.f));
 
-	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+		float phi = 2.f * math::Pi * xi.x;
+		float sin_phi = std::sin(phi);
+		float cos_phi = std::cos(phi);
 
-	math::float3 specular = d * g * f;
-	result.reflection = specular;
-	result.wi = wi;
-	result.type.clear_set(0.f == sample.a2_ ? bxdf::Type::Specular_reflection
-											: bxdf::Type::Glossy_reflection);
+		math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+		math::float3 h = sample.tangent_to_world(is);
 
-//	if (wo_dot_h > 1.f) {
-//		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
-//	}
+		float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+	//	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
 
-//	if (math::contains_negative(result.reflection)) {
-//		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
-//		std::cout << "d: " << d << std::endl;
-//		std::cout << "g: " << g << std::endl;
-//		std::cout << "f: " << f << std::endl;
-//		std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
-//	}
+		math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
 
-	//	float thing = math::dot(sample.n_, sample.wo_);
-//		if (math::dot(sample.n_, sample.wo_) < 0.f) {
-//			result.reflection = math::float3(1.f, 0.f, 0.f);
-//		}
+	//	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
+		float n_dot_wi = std::abs(math::dot(sample.n_, wi));
 
-	return n_dot_wi;
+		float clamped_a2 = clamp_a2(sample.a2_);
+		float d = distribution_isotropic(n_dot_h, clamped_a2);
+	//	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
+		float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
+		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
+
+		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+
+		math::float3 specular = d * g * f;
+		result.reflection = specular;
+		result.wi = wi;
+		result.type.clear_set(bxdf::Type::Glossy_reflection);
+
+		return n_dot_wi;
+	}
 }
 
 template<typename Sample>
@@ -122,10 +115,6 @@ math::float3 Conductor_isotropic<Sample>::evaluate(const Sample& sample,
 
 	math::float3 specular = d * g * f;
 
-//	if (math::contains_negative(specular)) {
-//		std::cout << "GGX<Sample>::evaluate()" << std::endl;
-//	}
-
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	return specular;
 }
@@ -134,49 +123,61 @@ template<typename Sample>
 float Conductor_isotropic<Sample>::importance_sample(const Sample& sample,
 													 sampler::Sampler& sampler, float n_dot_wo,
 													 bxdf::Result& result) const {
-	math::float2 xi = sampler.generate_sample_2D();
+	if (0.f == sample.a2_) {
+		constexpr float n_dot_h = 1.f;
 
-	// For zero roughness we risk NaN if xi.y == 1: n_dot_h is always 1 anyway
-	// TODO: Optimize the perfect mirror case more
-	float n_dot_h = 0.f == sample.a2_ ? 1.f : std::sqrt((1.f - xi.y) / ((sample.a2_ - 1.f) * xi.y + 1.f));
+		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
 
-	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-	float phi = 2.f * math::Pi * xi.x;
-	float sin_phi = std::sin(phi);
-	float cos_phi = std::cos(phi);
+		math::float3 wi = math::normalized((2.f * wo_dot_h) * sample.n_ - sample.wo_);
 
-	math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	math::float3 h = sample.tangent_to_world(is);
+		float d = distribution_isotropic(n_dot_h, min_a2);
+		float g = geometric_shadowing(n_dot_wo, n_dot_wo, min_a2);
+		math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
-//	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
-	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
+		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 
-	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
+		math::float3 specular = d * g * f;
+		result.reflection = specular;
+		result.wi = wi;
+		result.type.clear_set(bxdf::Type::Specular_reflection);
 
-	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
+		return n_dot_wo;
+	} else {
+		math::float2 xi = sampler.generate_sample_2D();
 
-	float clamped_a2 = clamp_a2(sample.a2_);
-	float d = distribution_isotropic(n_dot_h, clamped_a2);
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
+		float n_dot_h = std::sqrt((1.f - xi.y) / ((sample.a2_ - 1.f) * xi.y + 1.f));
 
-	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+		float phi = 2.f * math::Pi * xi.x;
+		float sin_phi = std::sin(phi);
+		float cos_phi = std::cos(phi);
 
-	math::float3 specular = d * g * f;
-	result.reflection = specular;
-	result.wi = wi;
-	result.type.clear_set(0.f == sample.a2_ ? bxdf::Type::Specular_reflection
-											: bxdf::Type::Glossy_reflection);
+		math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+		math::float3 h = sample.tangent_to_world(is);
 
-//	if (math::contains_negative(result.reflection)) {
-//		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
-//		std::cout << "d: " << d << std::endl;
-//		std::cout << "g: " << g << std::endl;
-//		std::cout << "f: " << f << std::endl;
-//		std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
-//	}
+		float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+	//	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
 
-	return n_dot_wi;
+		math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
+
+	//	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
+		float n_dot_wi = std::abs(math::dot(sample.n_, wi));
+
+		float clamped_a2 = clamp_a2(sample.a2_);
+		float d = distribution_isotropic(n_dot_h, clamped_a2);
+	//	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
+		float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
+		math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
+
+		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+
+		math::float3 specular = d * g * f;
+		result.reflection = specular;
+		result.wi = wi;
+		result.type.clear_set(bxdf::Type::Glossy_reflection);
+
+		return n_dot_wi;
+	}
 }
 
 template<typename Sample>
@@ -201,10 +202,6 @@ math::float3 Conductor_anisotropic<Sample>::evaluate(const Sample& sample,
 	math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
 	math::float3 specular = d * g * f;
-
-//	if (math::contains_negative(specular)) {
-//		std::cout << "GGX<Sample>::evaluate()" << std::endl;
-//	}
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	return specular;
@@ -249,14 +246,6 @@ float Conductor_anisotropic<Sample>::importance_sample(const Sample& sample,
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
-//	if (math::contains_negative(result.reflection)) {
-//		std::cout << "GGX<Sample>::importance_sample()" << std::endl;
-//		std::cout << "d: " << d << std::endl;
-//		std::cout << "g: " << g << std::endl;
-//		std::cout << "f: " << f << std::endl;
-//		std::cout << "wo_dot_h: " << wo_dot_h << std::endl;
-//	}
-
 	return n_dot_wi;
 }
 
@@ -280,7 +269,7 @@ inline float geometric_shadowing(float n_dot_wi, float n_dot_wo, float a2) {
 }
 
 inline float clamp_a2(float a2) {
-	return std::max(a2, 0.00000003f);
+	return std::max(a2, min_a2);
 }
 
 }}}
