@@ -26,10 +26,8 @@ math::float3 Schlick_isotropic<Sample>::evaluate(const Sample& sample,
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
-	math::float3 specular = d * g * f;
-
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
-	return specular;
+	return d * g * f;
 }
 
 template<typename Sample>
@@ -48,9 +46,7 @@ float Schlick_isotropic<Sample>::importance_sample(const Sample& sample,
 		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-
-		math::float3 specular = d * g * f;
-		result.reflection = specular;
+		result.reflection = d * g * f;
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Specular_reflection);
 
@@ -83,9 +79,7 @@ float Schlick_isotropic<Sample>::importance_sample(const Sample& sample,
 		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-
-		math::float3 specular = d * g * f;
-		result.reflection = specular;
+		result.reflection = d * g * f;
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
 
@@ -113,10 +107,8 @@ math::float3 Conductor_isotropic<Sample>::evaluate(const Sample& sample,
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
-	math::float3 specular = d * g * f;
-
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
-	return specular;
+	return d * g * f;
 }
 
 template<typename Sample>
@@ -170,9 +162,7 @@ float Conductor_isotropic<Sample>::importance_sample(const Sample& sample,
 		math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-
-		math::float3 specular = d * g * f;
-		result.reflection = specular;
+		result.reflection = d * g * f;
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
 
