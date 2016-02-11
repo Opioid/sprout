@@ -69,8 +69,8 @@ float Schlick_isotropic<Sample>::importance_sample(const Sample& sample,
 
 		math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
 
-	//	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
-		float n_dot_wi = std::abs(math::dot(sample.n_, wi));
+		float n_dot_wi = std::max(math::dot(sample.n_, wi),	0.00001f);
+	//	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
 
 		float clamped_a2 = clamp_a2(sample.a2_);
 		float d = distribution_isotropic(n_dot_h, clamped_a2);
@@ -152,8 +152,8 @@ float Conductor_isotropic<Sample>::importance_sample(const Sample& sample,
 
 		math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
 
-	//	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
-		float n_dot_wi = std::abs(math::dot(sample.n_, wi));
+		float n_dot_wi = std::max(math::dot(sample.n_, wi),	0.00001f);
+	//	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
 
 		float clamped_a2 = clamp_a2(sample.a2_);
 		float d = distribution_isotropic(n_dot_h, clamped_a2);
@@ -221,7 +221,7 @@ float Conductor_anisotropic<Sample>::importance_sample(const Sample& sample,
 
 	math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
 
-	float n_dot_wi = std::max(math::dot(sample.n_, wi),	  0.00001f);
+	float n_dot_wi = std::max(math::dot(sample.n_, wi),	0.00001f);
 //	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
 //	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));

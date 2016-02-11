@@ -116,8 +116,8 @@ float Oren_nayar<Sample>::importance_sample(const Sample& sample,
 	math::float3 is = math::sample_hemisphere_cosine(s2d);
 	math::float3 wi = math::normalized(sample.tangent_to_world(is));
 
-//	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
-	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
+	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
+//	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
 	result.pdf = n_dot_wi * math::Pi_inv;
 
 	float wi_dot_wo = math::dot(wi, sample.wo_);

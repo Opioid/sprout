@@ -7,13 +7,13 @@
 
 namespace scene { namespace material {
 
-inline float Sample::absolute_n_dot_wo() const {
-	return std::abs(math::dot(n_, wo_));
-}
-
-//inline float Sample::clamped_n_dot_wo() const {
-//	return std::max(math::dot(n_, wo_), 0.00001f);
+//inline float Sample::absolute_n_dot_wo() const {
+//	return std::abs(math::dot(n_, wo_));
 //}
+
+inline float Sample::clamped_n_dot_wo() const {
+	return std::max(math::dot(n_, wo_), 0.00001f);
+}
 
 inline const math::float3& Sample::shading_normal() const {
 	return n_;

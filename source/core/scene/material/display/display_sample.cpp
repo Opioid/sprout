@@ -51,7 +51,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		return;
 	}
 
-	float n_dot_wo = absolute_n_dot_wo();
+	float n_dot_wo = clamped_n_dot_wo();
 
 	float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 

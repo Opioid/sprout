@@ -27,8 +27,8 @@ public:
 
 	virtual bool is_translucent() const = 0;
 
-	float absolute_n_dot_wo() const;
-	//float clamped_n_dot_wo() const;
+	//float absolute_n_dot_wo() const;
+	float clamped_n_dot_wo() const;
 
 	const math::float3& shading_normal() const;
 

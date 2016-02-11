@@ -27,7 +27,7 @@ float Sample_isotropic::ior() const {
 }
 
 void Sample_isotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float n_dot_wo = absolute_n_dot_wo();
+	float n_dot_wo = clamped_n_dot_wo();
 	float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 	result.reflection *= n_dot_wi;
 }
@@ -72,7 +72,7 @@ float Sample_anisotropic::ior() const {
 }
 
 void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float n_dot_wo = absolute_n_dot_wo();
+	float n_dot_wo = clamped_n_dot_wo();
 	float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 	result.reflection *= n_dot_wi;
 }

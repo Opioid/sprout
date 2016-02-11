@@ -32,8 +32,8 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 		return n_dot_wi * (math::Pi_inv * attenuation * diffuse_color_);
 	}
 
-	float n_dot_wi = std::abs(math::dot(n_, wi));
-	float n_dot_wo = std::abs(math::dot(n_, wo_));
+	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
+	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	// oren nayar
 
@@ -121,12 +121,12 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
 			if (1.f == metallic_) {
-				float n_dot_wo = absolute_n_dot_wo();
+				float n_dot_wo = clamped_n_dot_wo();
 				float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 				result.reflection *= n_dot_wi;
 				result.pdf *= 0.5f;
 			} else {
-				float n_dot_wo = absolute_n_dot_wo();
+				float n_dot_wo = clamped_n_dot_wo();
 
 				if (p < 0.75f) {
 					float n_dot_wi = oren_nayar_.importance_sample(*this, sampler, n_dot_wo, result);
@@ -151,13 +151,13 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		}
 	} else {
 		if (1.f == metallic_) {
-			float n_dot_wo = absolute_n_dot_wo();
+			float n_dot_wo = clamped_n_dot_wo();
 			float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 			result.reflection *= n_dot_wi;
 		} else {
 			float p = sampler.generate_sample_1D();
 
-			float n_dot_wo = absolute_n_dot_wo();
+			float n_dot_wo = clamped_n_dot_wo();
 
 			if (p < 0.5f) {
 				float n_dot_wi = oren_nayar_.importance_sample(*this, sampler, n_dot_wo, result);
