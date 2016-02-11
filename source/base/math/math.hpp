@@ -6,11 +6,11 @@
 
 namespace math {
 
-extern const float Pi;
-extern const float Pi_div_2;
-extern const float Pi_div_180;
-extern const float _180_div_pi;
-extern const float Pi_inv;
+constexpr float Pi = 3.14159265358979323846f;
+constexpr float Pi_div_2 = 1.57079632679489661923f;
+constexpr float Pi_div_180 = Pi / 180.f;
+constexpr float _180_div_pi = 180.f / Pi;
+constexpr float Pi_inv = 0.318309886183790671538f;
 
 inline float degrees_to_radians(float degrees) {
 	return degrees * Pi_div_180;

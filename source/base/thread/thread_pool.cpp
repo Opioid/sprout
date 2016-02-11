@@ -50,7 +50,7 @@ void Pool::run_range(Range_program program, int32_t begin, int32_t end) {
 void Pool::wake_all() {
 	for (auto& u : uniques_) {
 		std::unique_lock<std::mutex> lock(u.mutex);
-		u.wake  = true;
+		u.wake = true;
 		lock.unlock();
 		u.wake_signal.notify_one();
 	}
