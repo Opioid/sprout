@@ -293,4 +293,18 @@ bool contains_inf(const Vector3<T>& v) {
 	return std::isinf(v.x) || std::isinf(v.y) || std::isinf(v.z);
 }
 
+/****************************************************************************
+ *
+ * Aligned 3D vector
+ *
+ ****************************************************************************/
+
+inline Vector3fa::Vector3fa() {}
+
+inline Vector3fa::Vector3fa(float x, float y, float z) : x(x), y(y), z(z)  {}
+
+inline Vector3fa::Vector3fa(float s) : x(s), y(s), z(s) {}
+
+inline Vector3fa::Vector3fa(const Vector3<float>& v) : x(v.x), y(v.y), z(v.z) {}
+
 }

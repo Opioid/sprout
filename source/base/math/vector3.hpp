@@ -131,4 +131,29 @@ bool contains_nan(const Vector3<T>& v);
 template<typename T>
 bool contains_inf(const Vector3<T>& v);
 
+/****************************************************************************
+ *
+ * Aligned 3D float vector
+ *
+ ****************************************************************************/
+
+__declspec(align(16))
+struct Vector3fa {
+	union {
+		struct {
+			float x, y, z;
+		};
+
+		float v[3];
+	};
+
+	Vector3fa();
+
+	Vector3fa(float x, float y, float z);
+
+	explicit Vector3fa(float s);
+
+	explicit Vector3fa(const Vector3<float>& v);
+};
+
 }

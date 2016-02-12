@@ -41,4 +41,5 @@ include(distribution/distribution.pri)
 include(function/function.pri)
 include(random/random.pri)
 include(sampling/sampling.pri)
+include(simd/simd.pri)
 
