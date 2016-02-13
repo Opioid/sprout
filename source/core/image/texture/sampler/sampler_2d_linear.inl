@@ -30,11 +30,11 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, math:
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int32_t x1 = std::min(x + 1, d.x - 1);
-	int32_t y1 = std::min(y + 1, d.y - 1);
-
-	x = std::max(x, 0);
-	y = std::max(y, 0);
+	math::int2 m = math::int2(d.x - 1, d.y - 1);
+	int32_t x1 = address_mode_.increment(x, m.x);
+	int32_t y1 = address_mode_.increment(y, m.y);
+	x = address_mode_.lower_bound(x, m.x);
+	y = address_mode_.lower_bound(y, m.y);
 
 	float c00 = texture.at_1(x,  y);
 	float c01 = texture.at_1(x,  y1);
@@ -63,11 +63,11 @@ math::float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int x1 = std::min(x + 1, d.x - 1);
-	int y1 = std::min(y + 1, d.y - 1);
-
-	x = std::max(x, 0);
-	y = std::max(y, 0);
+	math::int2 m = math::int2(d.x - 1, d.y - 1);
+	int32_t x1 = address_mode_.increment(x, m.x);
+	int32_t y1 = address_mode_.increment(y, m.y);
+	x = address_mode_.lower_bound(x, m.x);
+	y = address_mode_.lower_bound(y, m.y);
 
 	math::float2 c00 = texture.at_2(x,  y);
 	math::float2 c01 = texture.at_2(x,  y1);
@@ -96,15 +96,11 @@ math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-//	int32_t x1 = std::min(x + 1, d.x - 1);
-//	int32_t y1 = std::min(y + 1, d.y - 1);
-	int32_t x1 = address_mode_.increment(x, d.x);
-	int32_t y1 = address_mode_.increment(y, d.y);
-
-//	x = std::max(x, 0);
-//	y = std::max(y, 0);
-	x = address_mode_.lower_bound(x, d.x);
-	y = address_mode_.lower_bound(y, d.y);
+	math::int2 m = math::int2(d.x - 1, d.y - 1);
+	int32_t x1 = address_mode_.increment(x, m.x);
+	int32_t y1 = address_mode_.increment(y, m.y);
+	x = address_mode_.lower_bound(x, m.x);
+	y = address_mode_.lower_bound(y, m.y);
 
 	math::float3 c00 = texture.at_3(x,  y);
 	math::float3 c01 = texture.at_3(x,  y1);
@@ -133,13 +129,11 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, math:
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int32_t x1 = std::min(x + 1, d.x - 1);
-	int32_t y1 = std::min(y + 1, d.y - 1);
-//	int32_t x1 = address_mode_.increment(x, d.x);
-//	int32_t y1 = address_mode_.increment(y, d.y);
-
-	x = std::max(x, 0);
-	y = std::max(y, 0);
+	math::int2 m = math::int2(d.x - 1, d.y - 1);
+	int32_t x1 = address_mode_.increment(x, m.x);
+	int32_t y1 = address_mode_.increment(y, m.y);
+	x = address_mode_.lower_bound(x, m.x);
+	y = address_mode_.lower_bound(y, m.y);
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
@@ -171,11 +165,11 @@ math::float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int x1 = std::min(x + 1, d.x - 1);
-	int y1 = std::min(y + 1, d.y - 1);
-
-	x = std::max(x, 0);
-	y = std::max(y, 0);
+	math::int2 m = math::int2(d.x - 1, d.y - 1);
+	int32_t x1 = address_mode_.increment(x, m.x);
+	int32_t y1 = address_mode_.increment(y, m.y);
+	x = address_mode_.lower_bound(x, m.x);
+	y = address_mode_.lower_bound(y, m.y);
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
@@ -207,11 +201,11 @@ math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int x1 = std::min(x + 1, d.x - 1);
-	int y1 = std::min(y + 1, d.y - 1);
-
-	x = std::max(x, 0);
-	y = std::max(y, 0);
+	math::int2 m = math::int2(d.x - 1, d.y - 1);
+	int32_t x1 = address_mode_.increment(x, m.x);
+	int32_t y1 = address_mode_.increment(y, m.y);
+	x = address_mode_.lower_bound(x, m.x);
+	y = address_mode_.lower_bound(y, m.y);
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
