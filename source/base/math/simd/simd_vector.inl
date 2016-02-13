@@ -107,6 +107,19 @@ inline Vector SU_CALLCONV sub3(FVector a, FVector b) {
 #endif
 }
 
+inline Vector SU_CALLCONV mul3(FVector a, FVector b) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector result;
+	result.vector4_f32[0] = a.vector4_f32[0] * a.vector4_f32[0];
+	result.vector4_f32[1] = b.vector4_f32[1] * b.vector4_f32[1];
+	result.vector4_f32[2] = c.vector4_f32[2] * c.vector4_f32[2];
+ // result.vector4_f32[3] = d.vector4_f32[3] * d.vector4_f32[3];
+	return result;
+#elif defined(_SU_SSE_INTRINSICS_)
+	return _mm_mul_ps(a, b);
+#endif
+}
+
 inline Vector SU_CALLCONV div3(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;

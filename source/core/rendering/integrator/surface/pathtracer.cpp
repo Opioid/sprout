@@ -27,7 +27,7 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 
 math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
 	scene::material::bxdf::Result sample_result;
-	scene::material::bxdf::Result::Type previous_sample_type;
+	scene::material::bxdf::Result::Type_flag previous_sample_type;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
 	math::float3 result = math::float3::identity;

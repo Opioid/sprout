@@ -26,8 +26,8 @@ struct Result {
 	math::float3 wi;
 	float        pdf;
 
-	typedef flags::Flags<Type> Type;
-	Type type;
+	typedef flags::Flags<Type> Type_flag;
+	Type_flag type;
 };
 
 }}}

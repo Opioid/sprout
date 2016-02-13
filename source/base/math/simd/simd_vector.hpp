@@ -14,13 +14,16 @@ namespace math { namespace simd {
 #	endif
 #endif
 
-#if _XM_VECTORCALL_
-#	define XM_CALLCONV __vectorcall
+#if _SU_VECTORCALL_
+#	define SU_CALLCONV __vectorcall
 #else
-#	define XM_CALLCONV __fastcall
+#	define SU_CALLCONV __fastcall
 #endif
 */
 
+// This seems to be recognized on all compilers I tried (VS2015, clang 3.7, gcc
+#define _SU_VECTORCALL_ 1
+//#define SU_CALLCONV __vectorcall
 #define SU_CALLCONV
 
 #if !defined(_SU_SSE_INTRINSICS_) && !defined(_SU_NO_INTRINSICS_)
@@ -139,6 +142,7 @@ void SU_CALLCONV store_float3(Vector3fa& destination, FVector v);
 Vector SU_CALLCONV add3(FVector a, FVector b);
 Vector SU_CALLCONV sub3(FVector a, FVector b);
 
+Vector SU_CALLCONV mul3(FVector a, FVector b);
 Vector SU_CALLCONV div3(FVector a, FVector b);
 
 Vector SU_CALLCONV dot3(FVector a, FVector b);
@@ -191,7 +195,7 @@ Vector SU_CALLCONV dot3(FVector a, FVector b);
 //XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR3       = {0.0f, 0.0f, 0.0f,-1.0f};
 //XMGLOBALCONST XMVECTORU32 g_XMNegativeZero      = {0x80000000, 0x80000000, 0x80000000, 0x80000000};
 //XMGLOBALCONST XMVECTORU32 g_XMNegate3           = {0x80000000, 0x80000000, 0x80000000, 0x00000000};
-SUGLOBALCONST Vector_u32 g_SUMask3				= {{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 }};
+SUGLOBALCONST Vector_u32 g_SUMask3				= {{{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 }}};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskX             = {0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskY             = {0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskZ             = {0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000};
