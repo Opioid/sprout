@@ -2,6 +2,7 @@ SOURCES += \
 	memory/variant_map.cpp \
 
 HEADERS += \
+	memory/align.hpp \
 	memory/tiled_array.hpp \
 	memory/tiled_array.inl \
 	memory/variant_map.hpp \

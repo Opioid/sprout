@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vector2.hpp"
+#include "memory/align.hpp"
 #include <cstdint>
 
 namespace math {
@@ -137,8 +138,7 @@ bool contains_inf(const Vector3<T>& v);
  *
  ****************************************************************************/
 
-__declspec(align(16))
-struct Vector3fa {
+struct ALIGN(16) Vector3fa {
 	union {
 		struct {
 			float x, y, z;

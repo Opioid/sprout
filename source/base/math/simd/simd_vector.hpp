@@ -3,6 +3,7 @@
 // This is basically a subset of DirectXMath!
 
 #include "math/vector3.hpp"
+#include "memory/align.hpp"
 
 namespace math { namespace simd {
 
@@ -102,7 +103,7 @@ typedef const Vector& CVector;
 //------------------------------------------------------------------------------
 // Conversion types for constants
 
-__declspec(align(16)) struct Vector_u32
+struct ALIGN(16) Vector_u32
 {
 	union
 	{
@@ -163,7 +164,11 @@ Vector SU_CALLCONV dot3(FVector a, FVector b);
 // separate math routine it would be reloaded.
 
 #ifndef SUGLOBALCONST
-#define SUGLOBALCONST extern const __declspec(selectany)
+#	ifdef __GNUG__
+#		define SUGLOBALCONST extern const
+#	elif defined(_MSC_VER)
+#		define SUGLOBALCONST extern const __declspec(selectany)
+#	endif
 #endif
 
 //XMGLOBALCONST XMVECTORF32 g_XMSinCoefficients0    = {-0.16666667f, +0.0083333310f, -0.00019840874f, +2.7525562e-06f};
@@ -192,7 +197,7 @@ Vector SU_CALLCONV dot3(FVector a, FVector b);
 //XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR3       = {0.0f, 0.0f, 0.0f,-1.0f};
 //XMGLOBALCONST XMVECTORU32 g_XMNegativeZero      = {0x80000000, 0x80000000, 0x80000000, 0x80000000};
 //XMGLOBALCONST XMVECTORU32 g_XMNegate3           = {0x80000000, 0x80000000, 0x80000000, 0x00000000};
-SUGLOBALCONST Vector_u32 g_SUMask3				= {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000};
+SUGLOBALCONST Vector_u32 g_SUMask3				= {{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 }};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskX             = {0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskY             = {0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskZ             = {0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000};
