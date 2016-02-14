@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/math/vector.hpp"
+#include "base/math/simd/simd_vector.hpp"
 #include <vector>
 
 namespace scene { namespace shape {
@@ -20,6 +21,13 @@ public:
 	bool intersect(uint32_t index, math::Oray& ray, math::float2& uv) const;
 
 	bool intersect_p(uint32_t index, const math::Oray& ray) const;
+
+	bool SU_CALLCONV intersect(uint32_t index,
+							   math::simd::FVector origin, math::simd::FVector direction, float min_t, float max_t,
+							   float& out_t, math::float2& uv);
+
+	bool SU_CALLCONV intersect_p(uint32_t index,
+								 math::simd::FVector origin, math::simd::FVector direction, float min_t, float max_t);
 
 	void interpolate_data(uint32_t index, math::float2 uv,
 						  math::float3& n, math::float3& t, math::float2& tc) const;

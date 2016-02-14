@@ -140,11 +140,10 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray, T& min_out, T& max_
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
 
-/*
 template<typename T>
-bool AABB<T>::intersect_p(simd::FVector origin, simd::FVector inv_direction, float min_t, float max_t) {
+bool SU_CALLCONV AABB<T>::intersect_p(simd::FVector origin, simd::FVector inv_direction, float min_t, float max_t) {
 	// you may already have those values hanging around somewhere
-	const __m128
+/*	const __m128
 		plus_inf	= loadps(ps_cst_plus_inf),
 		minus_inf	= loadps(ps_cst_minus_inf);
 
@@ -189,6 +188,7 @@ bool AABB<T>::intersect_p(simd::FVector origin, simd::FVector inv_direction, flo
 	storess(lmax, &rs.t_far);
 
 	return  ret;
+	*/
 
 	simd::Vector box_min = simd::load_float3(bounds_[0]);
 	simd::Vector box_max = simd::load_float3(bounds_[1]);
@@ -196,18 +196,9 @@ bool AABB<T>::intersect_p(simd::FVector origin, simd::FVector inv_direction, flo
 	simd::Vector l0 = simd::mul3(simd::sub3(box_min, origin), inv_direction);
 	simd::Vector l1 = simd::mul3(simd::sub3(box_max, origin), inv_direction);
 
-	// the order we use for those min/max is vital to filter out
-	// NaNs that happens when an inv_dir is +/- inf and
-	// (box_min - pos) is 0. inf * 0 = NaN
-	const __m128 filtered_l1a = minps(l1, plus_inf);
-	const __m128 filtered_l2a = minps(l2, plus_inf);
-
-	const __m128 filtered_l1b = maxps(l1, minus_inf);
-	const __m128 filtered_l2b = maxps(l2, minus_inf);
-
 	return false;
 }
-*/
+
 
 template<typename T>
 void AABB<T>::set_min_max(const Vector3<T>& min, const Vector3<T>& max) {

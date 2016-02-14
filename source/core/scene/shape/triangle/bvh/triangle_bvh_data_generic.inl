@@ -26,6 +26,21 @@ bool Data_generic<Triangle>::intersect_p(uint32_t index, const math::Oray& ray) 
 }
 
 template<typename Triangle>
+bool SU_CALLCONV Data_generic<Triangle>::intersect(uint32_t index,
+												   math::simd::FVector origin, math::simd::FVector direction,
+												   float min_t, float max_t,
+												   float& out_t, math::float2& uv) {
+	return triangles_[index].intersect(origin, direction, min_t, max_t, out_t, uv);
+}
+
+template<typename Triangle>
+bool SU_CALLCONV Data_generic<Triangle>::intersect_p(uint32_t index,
+													 math::simd::FVector origin, math::simd::FVector direction,
+													 float min_t, float max_t) {
+	return triangles_[index].intersect(origin, direction, min_t, max_t);
+}
+
+template<typename Triangle>
 void Data_generic<Triangle>::interpolate_data(uint32_t index, math::float2 uv,
 											  math::float3& n, math::float3& t, math::float2& tc) const {
 	triangles_[index].interpolate_data(uv, n, t, tc);

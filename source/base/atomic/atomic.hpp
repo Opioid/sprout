@@ -1,16 +1,15 @@
 #pragma once
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#undef min
-#undef max
+#	define WIN32_LEAN_AND_MEAN
+#	include <windows.h>
+#	undef min
+#	undef max
 #endif
 
 namespace atomic {
 
 inline void add_assign(volatile float& a, float b) {
-
 	union bits { float f; uint32_t i; };
 
 	bits old_value;

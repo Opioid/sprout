@@ -8,32 +8,6 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-/*
-inline uint32_t Node::axis() const {
-	return start_index & ~has_children_flag;
-}
-
-inline void Node::set_axis(uint32_t axis) {
-	start_index |= axis;
-}
-
-inline bool Node::has_children() const {
-	return has_children_flag == (start_index & has_children_flag);
-}
-
-inline void Node::set_has_children(bool children) {
-	if (children) {
-		start_index |= has_children_flag;
-	} else {
-		start_index &= ~has_children_flag;
-	}
-}
-
-inline void Node::set_right_child(uint32_t offset) {
-	end_index = offset;
-}
-*/
-
 inline uint32_t Node::primitive_end() const {
 	return primitive_offset + static_cast<uint32_t>(num_primitives);
 }
@@ -68,37 +42,11 @@ bool Tree<Data>::intersect(math::Oray& ray, Node_stack& node_stack, Intersection
 	math::float2 uv;
 	uint32_t index = 0xFFFFFFFF;
 
-/*	while (!node_stack.empty()) {
-		auto& node = nodes_[n];
-
-		if (node.aabb.intersect_p(ray)) {
-			if (node.has_children()) {
-				if (0 == ray.sign[node.axis()]) {
-					node_stack.push(node.end_index);
-					n = n + 1;
-				} else {
-					node_stack.push(n + 1);
-					n = node.end_index;
-				}
-			} else {
-				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
-                    if (data_.intersect(i, ray, uv)) {
-						index = i;
-					}
-				}
-
-				n = node_stack.pop();
-			}
-		} else {
-			n = node_stack.pop();
-		}
-	}
-*/
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
 		if (node.aabb.intersect_p(ray)) {
-			if (node.num_primitives) {
+			if (node.num_primitives > 0) {
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						index = i;
@@ -132,37 +80,11 @@ bool Tree<Data>::intersect_p(const math::Oray& ray, Node_stack& node_stack) cons
 	node_stack.push(0);
 	uint32_t n = 0;
 
-/*	while (!node_stack.empty()) {
-		auto& node = nodes_[n];
-
-		if (node.aabb.intersect_p(ray)) {
-			if (node.has_children()) {
-				if (0 == ray.sign[node.axis()]) {
-					node_stack.push(node.end_index);
-					n = n + 1;
-				} else {
-					node_stack.push(n + 1);
-					n = node.end_index;
-				}
-			} else {
-				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
-                    if (data_.intersect_p(i, ray)) {
-						return true;
-					}
-				}
-
-				n = node_stack.pop();
-			}
-		} else {
-			n = node_stack.pop();
-		}
-	}
-	*/
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
 		if (node.aabb.intersect_p(ray)) {
-			if (node.num_primitives) {
+			if (node.num_primitives > 0) {
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect_p(i, ray)) {
 						return true;
@@ -200,42 +122,11 @@ float Tree<Data>::opacity(math::Oray& ray, float time, Node_stack& node_stack,
 	math::float2 uv;
 	float max_t = ray.max_t;
 
-/*	while (!node_stack.empty()) {
-		auto& node = nodes_[n];
-
-		if (node.aabb.intersect_p(ray)) {
-			if (node.has_children()) {
-				if (0 == ray.sign[node.axis()]) {
-					node_stack.push(node.end_index);
-					n = n + 1;
-				} else {
-					node_stack.push(n + 1);
-					n = node.end_index;
-				}
-			} else {
-				for (uint32_t i = node.start_index; i < node.end_index; ++i) {
-                    if (data_.intersect(i, ray, uv)) {
-                        uv = data_.interpolate_uv(i, uv);
-                        opacity += (1.f - opacity) * materials[data_.material_index(i)]->opacity(uv, sampler);
-						if (opacity >= 1.f) {
-							return 1.f;
-						}
-						ray.max_t = max_t;
-					}
-				}
-
-				n = node_stack.pop();
-			}
-		} else {
-			n = node_stack.pop();
-		}
-	}
-*/
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
 		if (node.aabb.intersect_p(ray)) {
-			if (node.num_primitives) {
+			if (node.num_primitives > 0) {
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						uv = data_.interpolate_uv(i, uv);

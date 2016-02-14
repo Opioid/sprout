@@ -32,10 +32,13 @@ namespace math { namespace simd {
 #endif
 */
 
-// This seems to be recognized on all compilers I tried (VS2015, clang 3.7, gcc 5.2)
 #define _SU_VECTORCALL_ 1
-//#define SU_CALLCONV __vectorcall
-#define SU_CALLCONV
+
+#ifdef __GNUG__
+#	define SU_CALLCONV __attribute__((vectorcall))
+#elif defined(_MSC_VER)
+#	define SU_CALLCONV __vectorcall
+#endif
 
 /****************************************************************************
  *
@@ -44,12 +47,11 @@ namespace math { namespace simd {
  ****************************************************************************/
 
 #if defined(_SU_SSE_INTRINSICS_) && !defined(_SU_NO_INTRINSICS_)
-
-#if defined(_SU_NO_MOVNT_)
-#	define XM_STREAM_PS( p, a ) _mm_store_ps(p, a)
-#else
-#	define SU_STREAM_PS(p, a) _mm_stream_ps(p, a)
-#endif
+#	if defined(_SU_NO_MOVNT_)
+#		define XM_STREAM_PS( p, a ) _mm_store_ps(p, a)
+#	else
+#		define SU_STREAM_PS(p, a) _mm_stream_ps(p, a)
+#	endif
 #	define SU_PERMUTE_PS(v, c) _mm_shuffle_ps(v, v, c)
 #endif // _SU_SSE_INTRINSICS_ && !_SU_NO_INTRINSICS_
 

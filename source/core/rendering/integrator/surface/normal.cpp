@@ -31,6 +31,8 @@ math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene:
 		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, settings_.sampler, worker.id());
 
 		vector = material_sample.shading_normal();
+	} else {
+		vector = math::float3::identity;
 	}
 
 	return math::float4(0.5f * (vector + math::float3(1.f, 1.f, 1.f)), 1.f);
