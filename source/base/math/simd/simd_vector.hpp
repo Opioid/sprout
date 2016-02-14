@@ -3,7 +3,6 @@
 // This is basically a subset of DirectXMath!
 
 #include "math/vector3.hpp"
-#include "memory/align.hpp"
 
 namespace math { namespace simd {
 
@@ -102,7 +101,7 @@ typedef const Vector& CVector;
 //------------------------------------------------------------------------------
 // Conversion types for constants
 
-struct ALIGN(16) Vector_u32 {
+struct alignas(16) Vector_u32 {
 	union {
 		uint32_t u[4];
 		Vector v;
