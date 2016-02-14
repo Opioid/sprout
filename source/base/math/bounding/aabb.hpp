@@ -3,6 +3,7 @@
 #include "math/vector3.hpp"
 #include "math/matrix4x4.hpp"
 #include "math/ray.hpp"
+#include "math/simd/simd_vector.hpp"
 
 namespace math {
 
@@ -24,6 +25,8 @@ public:
 
 	bool intersect_p(const math::Optimized_ray<T>& ray) const;
 	bool intersect_p(const math::Optimized_ray<T>& ray, T& min_t, T& max_t) const;
+
+//	bool intersect_p(simd::FVector origin, simd::FVector inv_direction, float min_t, float max_t);
 
 	void set_min_max(const Vector3<T>& min, const Vector3<T>& max);
 

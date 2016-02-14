@@ -3,6 +3,18 @@
 // This is basically a subset of DirectXMath!
 
 #include "math/vector3.hpp"
+#include <cmath>
+
+#if !defined(_SU_SSE_INTRINSICS_) && !defined(_SU_NO_INTRINSICS_)
+#	define _SU_SSE_INTRINSICS_
+#endif // !_SU_SSE_INTRINSICS_ && !_SU_NO_INTRINSICS_
+
+#if defined(_SU_SSE_INTRINSICS_)
+#ifndef _SU_NO_INTRINSICS_
+#	include <xmmintrin.h>
+#	include <emmintrin.h>
+#endif
+#endif
 
 namespace math { namespace simd {
 
@@ -24,19 +36,6 @@ namespace math { namespace simd {
 #define _SU_VECTORCALL_ 1
 //#define SU_CALLCONV __vectorcall
 #define SU_CALLCONV
-
-#if !defined(_SU_SSE_INTRINSICS_) && !defined(_SU_NO_INTRINSICS_)
-#	define _SU_SSE_INTRINSICS_
-#endif // !_SU_SSE_INTRINSICS_ && !_SU_NO_INTRINSICS_
-
-#include <cmath>
-
-#if defined(_SU_SSE_INTRINSICS_)
-#ifndef _SU_NO_INTRINSICS_
-#	include <xmmintrin.h>
-#	include <emmintrin.h>
-#endif
-#endif
 
 /****************************************************************************
  *
@@ -160,11 +159,11 @@ Vector SU_CALLCONV dot3(FVector a, FVector b);
 // times in a function, but if the constant is used (and declared) in a
 // separate math routine it would be reloaded.
 
-#ifndef SUGLOBALCONST
+#ifndef SU_GLOBALCONST
 #	ifdef __GNUG__
-#		define SUGLOBALCONST extern const
+#		define SU_GLOBALCONST(X) extern const X __attribute__((weak))
 #	elif defined(_MSC_VER)
-#		define SUGLOBALCONST extern const __declspec(selectany)
+#		define SU_GLOBALCONST(X) extern const __declspec(selectany) X
 #	endif
 #endif
 
@@ -194,7 +193,7 @@ Vector SU_CALLCONV dot3(FVector a, FVector b);
 //XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR3       = {0.0f, 0.0f, 0.0f,-1.0f};
 //XMGLOBALCONST XMVECTORU32 g_XMNegativeZero      = {0x80000000, 0x80000000, 0x80000000, 0x80000000};
 //XMGLOBALCONST XMVECTORU32 g_XMNegate3           = {0x80000000, 0x80000000, 0x80000000, 0x00000000};
-SUGLOBALCONST Vector_u32 g_SUMask3				= {{{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 }}};
+SU_GLOBALCONST(Vector_u32) g_SUMask3			= {{{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 }}};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskX             = {0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskY             = {0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskZ             = {0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000};

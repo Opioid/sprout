@@ -30,20 +30,20 @@ Optimized_ray<T>::Optimized_ray() {}
 template<typename T>
 Optimized_ray<T>::Optimized_ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t, T max_t) :
 	Ray<T>(origin, direction, min_t, max_t),
-	reciprocal_direction(T(1) / direction.x, T(1) / direction.y, T(1) / direction.z) {
-	sign[0] = reciprocal_direction.x < T(0) ? 1 : 0;//std::signbit(reciprocal_direction.x) ? 1 : 0;
-	sign[1] = reciprocal_direction.y < T(0) ? 1 : 0;//std::signbit(reciprocal_direction.y) ? 1 : 0;
-	sign[2] = reciprocal_direction.z < T(0) ? 1 : 0;//std::signbit(reciprocal_direction.z) ? 1 : 0;
+	inv_direction(T(1) / direction.x, T(1) / direction.y, T(1) / direction.z) {
+	sign[0] = inv_direction.x < T(0) ? 1 : 0;
+	sign[1] = inv_direction.y < T(0) ? 1 : 0;
+	sign[2] = inv_direction.z < T(0) ? 1 : 0;
 }
 
 template<typename T>
 void Optimized_ray<T>::set_direction(const Vector3<T>& v) {
 	this->direction = v;
-	reciprocal_direction = Vector3<T>(T(1) / v.x, T(1) / v.y, T(1) / v.z);
+	inv_direction = Vector3<T>(T(1) / v.x, T(1) / v.y, T(1) / v.z);
 
-	sign[0] = reciprocal_direction.x < T(0) ? 1 : 0;//std::signbit(reciprocal_direction.x) ? 1 : 0;
-	sign[1] = reciprocal_direction.y < T(0) ? 1 : 0;//std::signbit(reciprocal_direction.y) ? 1 : 0;
-	sign[2] = reciprocal_direction.z < T(0) ? 1 : 0;//std::signbit(reciprocal_direction.z) ? 1 : 0;
+	sign[0] = inv_direction.x < T(0) ? 1 : 0;
+	sign[1] = inv_direction.y < T(0) ? 1 : 0;
+	sign[2] = inv_direction.z < T(0) ? 1 : 0;
 }
 
 }
