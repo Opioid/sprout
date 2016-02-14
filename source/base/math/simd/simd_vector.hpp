@@ -32,7 +32,7 @@ namespace math { namespace simd {
 #endif
 */
 
-// This seems to be recognized on all compilers I tried (VS2015, clang 3.7, gcc
+// This seems to be recognized on all compilers I tried (VS2015, clang 3.7, gcc 5.2)
 #define _SU_VECTORCALL_ 1
 //#define SU_CALLCONV __vectorcall
 #define SU_CALLCONV
@@ -48,9 +48,9 @@ namespace math { namespace simd {
 #if defined(_SU_NO_MOVNT_)
 #	define XM_STREAM_PS( p, a ) _mm_store_ps(p, a)
 #else
-#	define SU_STREAM_PS( p, a ) _mm_stream_ps(p, a)
+#	define SU_STREAM_PS(p, a) _mm_stream_ps(p, a)
 #endif
-#	define SU_PERMUTE_PS( v, c ) _mm_shuffle_ps(v, v, c)
+#	define SU_PERMUTE_PS(v, c) _mm_shuffle_ps(v, v, c)
 #endif // _SU_SSE_INTRINSICS_ && !_SU_NO_INTRINSICS_
 
 #if defined(_SU_NO_INTRINSICS_)
@@ -74,14 +74,14 @@ typedef __vector4 Vector;
 
 
 // Fix-up for (1st-3rd) Vector parameters that are pass-in-register for x86 and vector call; by reference otherwise
-#if ( defined(_M_IX86) || _SU_VECTORCALL_ ) && !defined(_SU_NO_INTRINSICS_)
+#if (defined(_M_IX86) || _SU_VECTORCALL_ ) && !defined(_SU_NO_INTRINSICS_)
 	typedef const Vector FVector;
 #else
 	typedef const Vector& FVector;
 #endif
 
 // Fix-up for (4th) Vector parameter to pass in-register for x64 vector call; by reference otherwise
-#if ( (_SU_VECTORCALL_ && !defined(_M_IX86) ) ) && !defined(_SU_NO_INTRINSICS_)
+#if ((_SU_VECTORCALL_ && !defined(_M_IX86))) && !defined(_SU_NO_INTRINSICS_)
 	typedef const Vector GVector;
 #else
 	typedef const Vector& GVector;
