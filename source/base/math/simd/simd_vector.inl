@@ -28,7 +28,7 @@ inline Vector SU_CALLCONV load_float3(const Vector3<float>& source) {
 #endif
 }
 
-inline Vector SU_CALLCONV load_float3(const Vector3fa& source) {
+inline Vector SU_CALLCONV load_float3(const Vector3f_a& source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector v;
 	v.vector4_f32[0] = source.x;
@@ -63,7 +63,7 @@ inline void SU_CALLCONV store_float3(Vector3<float>& destination, FVector v) {
 #endif
 }
 
-inline void SU_CALLCONV store_float3(Vector3fa& destination, FVector v) {
+inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
 #if defined(_SU_NO_INTRINSICS_)
 	destination.x = v.vector4_f32[0];
 	destination.y = v.vector4_f32[1];

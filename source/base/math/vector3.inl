@@ -299,12 +299,12 @@ bool contains_inf(const Vector3<T>& v) {
  *
  ****************************************************************************/
 
-inline Vector3fa::Vector3fa() {}
+inline Vector3f_a::Vector3f_a() {}
 
-inline Vector3fa::Vector3fa(float x, float y, float z) : x(x), y(y), z(z)  {}
+inline Vector3f_a::Vector3f_a(float x, float y, float z) : x(x), y(y), z(z)  {}
 
-inline Vector3fa::Vector3fa(float s) : x(s), y(s), z(s) {}
+inline Vector3f_a::Vector3f_a(float s) : x(s), y(s), z(s) {}
 
-inline Vector3fa::Vector3fa(const Vector3<float>& v) : x(v.x), y(v.y), z(v.z) {}
+inline Vector3f_a::Vector3f_a(const Vector3<float>& v) : x(v.x), y(v.y), z(v.z) {}
 
 }

@@ -121,7 +121,7 @@ struct alignas(16) Vector_u32 {
  ****************************************************************************/
 
 Vector SU_CALLCONV load_float3(const Vector3<float>& source);
-Vector SU_CALLCONV load_float3(const Vector3fa& source);
+Vector SU_CALLCONV load_float3(const Vector3f_a& source);
 
 /****************************************************************************
  *
@@ -130,7 +130,7 @@ Vector SU_CALLCONV load_float3(const Vector3fa& source);
  ****************************************************************************/
 
 void SU_CALLCONV store_float3(Vector3<float>& destination, FVector v);
-void SU_CALLCONV store_float3(Vector3fa& destination, FVector v);
+void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v);
 
 /****************************************************************************
  *

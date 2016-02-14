@@ -137,7 +137,7 @@ bool contains_inf(const Vector3<T>& v);
  *
  ****************************************************************************/
 
-struct alignas(16) Vector3fa {
+struct alignas(16) Vector3f_a {
 	union {
 		struct {
 			float x, y, z;
@@ -146,13 +146,13 @@ struct alignas(16) Vector3fa {
 		float v[3];
 	};
 
-	Vector3fa();
+	Vector3f_a();
 
-	Vector3fa(float x, float y, float z);
+	Vector3f_a(float x, float y, float z);
 
-	explicit Vector3fa(float s);
+	explicit Vector3f_a(float s);
 
-	explicit Vector3fa(const Vector3<float>& v);
+	explicit Vector3f_a(const Vector3<float>& v);
 };
 
 }
