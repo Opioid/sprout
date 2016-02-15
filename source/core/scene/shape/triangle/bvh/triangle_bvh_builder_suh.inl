@@ -10,8 +10,6 @@
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
 
-#include <iostream>
-
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
@@ -34,7 +32,7 @@ void Builder_SUH::build(Tree<Data>& tree,
 	num_nodes_ = 1;
 	root.num_sub_nodes(num_nodes_);
 
-	nodes_ = &tree.allocate_nodes(num_nodes_);
+	nodes_ = tree.allocate_nodes(num_nodes_);
 
 	current_node_ = 0;
 	serialize(&root);

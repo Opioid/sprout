@@ -1,17 +1,19 @@
 #pragma once
 
 #include "typed_image.hpp"
+#include "base/memory/align.inl"
 
 namespace image {
 
 template<typename T>
 Typed_image<T>::Typed_image(const Image::Description& description) :
-	Image(description),
-	data_(new T[description.dimensions.x * description.dimensions.y * description.num_elements]) {}
+	Image(description) {
+	data_ = memory::allocate_aligned<T>(description.dimensions.x * description.dimensions.y * description.num_elements);
+}
 
 template<typename T>
 Typed_image<T>::~Typed_image() {
-	delete [] data_;
+	memory::free_aligned(data_);
 }
 
 template<typename T>

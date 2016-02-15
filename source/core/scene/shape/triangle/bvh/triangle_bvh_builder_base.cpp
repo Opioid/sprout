@@ -47,7 +47,7 @@ void Builder_base::serialize(Build_node* node) {
 }
 
 Node& Builder_base::new_node() {
-	return (*nodes_)[current_node_++];
+	return nodes_[current_node_++];
 }
 
 uint32_t Builder_base::current_node_index() const {

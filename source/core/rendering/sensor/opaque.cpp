@@ -2,16 +2,18 @@
 #include "image/typed_image.inl"
 #include "tonemapping/tonemapper.hpp"
 #include "base/atomic/atomic.hpp"
+#include "base/memory/align.inl"
 #include "base/math/vector.inl"
 
 namespace rendering { namespace sensor {
 
 Opaque::Opaque(math::int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper) :
-	Sensor(dimensions, exposure, tonemapper),
-	pixels_(new Pixel[dimensions.x * dimensions.y]) {}
+	Sensor(dimensions, exposure, tonemapper) {
+	pixels_ = memory::allocate_aligned<Pixel>(dimensions.x * dimensions.y);
+}
 
 Opaque::~Opaque() {
-	delete [] pixels_;
+	memory::free_aligned(pixels_);
 }
 
 void Opaque::clear() {
@@ -46,7 +48,7 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Image_float_4& target) {
 
 		math::float3 color = value.color / value.weight_sum;
 
-		math::float3 exposed = expose(color, exposure_);
+		math::float3 exposed = expose(color);
 
 		math::float3 tonemapped = tonemapper_->tonemap(exposed);
 

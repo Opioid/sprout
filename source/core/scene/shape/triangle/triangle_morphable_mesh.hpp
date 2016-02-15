@@ -3,7 +3,7 @@
 #include "scene/shape/shape.hpp"
 #include "scene/shape/morphable_shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
-#include "bvh/triangle_bvh_data_generic.hpp"
+#include "bvh/triangle_bvh_data_interleaved.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {
@@ -62,7 +62,7 @@ public:
 
 private:
 
-	typedef bvh::Tree<bvh::Data_generic<Triangle_MT>> Tree;
+	typedef bvh::Tree<bvh::Data_interleaved<Triangle_MT>> Tree;
 
 	Tree tree_;
 

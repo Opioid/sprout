@@ -36,11 +36,11 @@ protected:
 
 	virtual void resolve(int32_t begin, int32_t end, image::Image_float_4& target) = 0;
 
-	static math::float3 expose(const math::float3& color, float exposure);
+	math::float3 expose(const math::float3& color) const;
 
 	math::int2 dimensions_;
 
-	float exposure_;
+	const float exp2_exposure_;
 
 	const tonemapping::Tonemapper* tonemapper_;
 };

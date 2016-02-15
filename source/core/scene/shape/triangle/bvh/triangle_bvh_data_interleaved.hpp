@@ -11,10 +11,10 @@ struct Vertex;
 namespace triangle { namespace bvh {
 
 template<typename Triangle>
-class Data_generic {
+class Data_interleaved {
 public:
 
-	~Data_generic();
+	~Data_interleaved();
 
 	uint32_t num_triangles() const;
 
@@ -42,9 +42,9 @@ public:
 	float area(uint32_t index) const;
 	float area(uint32_t index, const math::float3& scale) const;
 
-	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
+//	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
 	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const;
-	void sample(uint32_t index, math::float2 r2, math::float3& p) const;
+//	void sample(uint32_t index, math::float2 r2, math::float3& p) const;
 
 	void allocate_triangles(uint32_t num_triangles);
 

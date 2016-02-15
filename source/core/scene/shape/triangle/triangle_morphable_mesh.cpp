@@ -4,7 +4,7 @@
 #include "triangle_primitive_mt.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "bvh/triangle_bvh_builder.inl"
-#include "bvh/triangle_bvh_data_generic.inl"
+#include "bvh/triangle_bvh_data_interleaved.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
@@ -133,7 +133,7 @@ void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& p
 	collection_->morph(a, b, weight, pool, vertices_);
 
 	bvh::Builder builder;
-	builder.build<bvh::Data_generic<Triangle_MT>>(tree_, collection_->triangles(), vertices_, 8);
+	builder.build(tree_, collection_->triangles(), vertices_, 8);
 
 	init();
 }

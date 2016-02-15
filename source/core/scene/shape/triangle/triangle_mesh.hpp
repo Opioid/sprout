@@ -3,7 +3,8 @@
 #include "triangle_type.hpp"
 #include "scene/shape/shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
-#include "bvh/triangle_bvh_data_generic.hpp"
+#include "bvh/triangle_bvh_data.hpp"
+#include "bvh/triangle_bvh_data_interleaved.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {
@@ -53,7 +54,9 @@ public:
 
 private:
 
-	typedef bvh::Tree<bvh::Data_generic<Triangle_type>> Tree;
+//	typedef bvh::Tree<bvh::Data_interleaved<Triangle_type>> Tree;
+
+	typedef bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>> Tree;
 
     Tree tree_;
 

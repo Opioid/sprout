@@ -12,8 +12,10 @@ HEADERS += \
 	scene/shape/triangle/bvh/triangle_bvh_builder_sah.inl \
 	scene/shape/triangle/bvh/triangle_bvh_builder_suh.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_builder_suh.inl \
-	scene/shape/triangle/bvh/triangle_bvh_data_generic.hpp \
-	scene/shape/triangle/bvh/triangle_bvh_data_generic.inl \
+	scene/shape/triangle/bvh/triangle_bvh_data.hpp \
+	scene/shape/triangle/bvh/triangle_bvh_data.inl \	
+	scene/shape/triangle/bvh/triangle_bvh_data_interleaved.hpp \
+	scene/shape/triangle/bvh/triangle_bvh_data_interleaved.inl \
 	scene/shape/triangle/bvh/triangle_bvh_helper.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_tree.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_tree.inl \

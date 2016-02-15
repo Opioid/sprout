@@ -5,7 +5,6 @@
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/bounding/aabb.hpp"
-#include <vector>
 
 namespace scene { namespace shape {
 
@@ -40,7 +39,10 @@ template<typename Data>
 class Tree  {
 public:
 
-    std::vector<Node>& allocate_nodes(uint32_t num_nodes);
+	Tree();
+	~Tree();
+
+	Node* allocate_nodes(uint32_t num_nodes);
 
 	const math::aabb& aabb() const;
 
@@ -79,7 +81,7 @@ public:
 
 private:
 
-	std::vector<Node> nodes_;
+	Node* nodes_;
 
     Data data_;
 

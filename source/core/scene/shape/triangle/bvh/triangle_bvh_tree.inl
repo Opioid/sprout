@@ -5,6 +5,7 @@
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
+#include "base/memory/align.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -13,9 +14,17 @@ inline uint32_t Node::primitive_end() const {
 }
 
 template<typename Data>
-std::vector<Node>& Tree<Data>::allocate_nodes(uint32_t num_nodes) {
-    nodes_.resize(num_nodes);
-    return nodes_;
+Tree<Data>::Tree() : nodes_(nullptr) {}
+
+template<typename Data>
+Tree<Data>::~Tree() {
+	memory::free_aligned(nodes_);
+}
+
+template<typename Data>
+Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
+	nodes_ = memory::allocate_aligned<Node>(num_nodes);
+	return nodes_;
 }
 
 template<typename Data>

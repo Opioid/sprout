@@ -9,7 +9,8 @@
 #include "triangle_primitive.hpp"
 #include "bvh/triangle_bvh_builder_sah.inl"
 #include "bvh/triangle_bvh_builder_suh.inl"
-#include "bvh/triangle_bvh_data_generic.inl"
+#include "bvh/triangle_bvh_data.inl"
+#include "bvh/triangle_bvh_data_interleaved.inl"
 #include "file/file_system.hpp"
 #include "base/json/json.hpp"
 #include "base/json/json_read_stream.hpp"
@@ -99,10 +100,10 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 
 	if (BVH_preset::Slow == bvh_preset) {
 		bvh::Builder_SAH builder(16, 64);
-		builder.build<bvh::Data_generic<Triangle_type>>(mesh->tree_, triangles, vertices, 4, thread_pool_);
+		builder.build(mesh->tree_, triangles, vertices, 4, thread_pool_);
 	} else {
 		bvh::Builder_SUH builder;
-		builder.build<bvh::Data_generic<Triangle_type>>(mesh->tree_, triangles, vertices, 8);
+		builder.build(mesh->tree_, triangles, vertices, 8);
 	}
 
 	mesh->init();

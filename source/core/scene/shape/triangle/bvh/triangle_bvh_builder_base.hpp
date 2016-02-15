@@ -60,7 +60,7 @@ protected:
 	uint32_t num_nodes_;
 	uint32_t current_node_;
 
-	std::vector<Node>* nodes_;
+	Node* nodes_;
 };
 
 }}}}

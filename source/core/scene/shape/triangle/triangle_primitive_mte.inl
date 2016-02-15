@@ -75,14 +75,6 @@ inline bool Triangle_MTE::intersect_p(const math::Oray& ray) const {
 	return false;
 }
 
-inline void Triangle_MTE::interpolate(math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const {
-	float w = 1.f - uv.x - uv.y;
-
-	p  = w * ap + uv.x * (ap + e1)  + uv.y * (ap + e2);
-	n  = math::normalized(w * an + uv.x * bn + uv.y * cn);
-	tc = w * auv + uv.x * buv + uv.y * cuv;
-}
-
 inline void Triangle_MTE::interpolate(math::float2 uv, math::float3& p, math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
@@ -90,14 +82,8 @@ inline void Triangle_MTE::interpolate(math::float2 uv, math::float3& p, math::fl
 	tc = w * auv + uv.x * buv + uv.y * cuv;
 }
 
-inline void Triangle_MTE::interpolate(math::float2 uv, math::float3& p) const {
-	float w = 1.f - uv.x - uv.y;
-
-	p  = w * ap + uv.x * (ap + e1)  + uv.y * (ap + e2);
-}
-
 inline void Triangle_MTE::interpolate_data(math::float2 uv,
-										  math::float3& n, math::float3& t, math::float2& tc) const {
+										   math::float3& n, math::float3& t, math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	n  = math::normalized(w * an + uv.x * bn + uv.y * cn);
@@ -121,6 +107,114 @@ inline float Triangle_MTE::area() const {
 
 inline float Triangle_MTE::area(const math::float3& scale) const {
 	return 0.5f * math::length(math::cross(scale * e1, scale * e2));
+}
+
+inline Intersection_triangle_MTE::Intersection_triangle_MTE(const shape::Vertex& a,
+															const shape::Vertex& b,
+															const shape::Vertex& c) :
+	ap(a.p), e1(b.p - a.p), e2(c.p - a.p) {}
+
+inline bool Intersection_triangle_MTE::intersect(math::Oray& ray, math::float2& uv) const {
+	math::float3 pvec = math::cross(ray.direction, e2);
+
+	float det = math::dot(e1, pvec);
+	float inv_det = 1.f / det;
+
+	math::float3 tvec = ray.origin - ap;
+	float u = math::dot(tvec, pvec) * inv_det;
+
+	if (u < 0.f || u > 1.f) {
+		return false;
+	}
+
+	math::float3 qvec = math::cross(tvec, e1);
+	float v = math::dot(ray.direction, qvec) * inv_det;
+
+	if (v < 0.f || u + v > 1.f) {
+		return false;
+	}
+
+	float hit_t = math::dot(e2, qvec) * inv_det;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		ray.max_t = hit_t;
+		uv.x = u;
+		uv.y = v;
+		return true;
+	}
+
+	return false;
+}
+
+inline bool Intersection_triangle_MTE::intersect_p(const math::Oray& ray) const {
+	math::float3 pvec = math::cross(ray.direction, e2);
+
+	float det = math::dot(e1, pvec);
+	float inv_det = 1.f / det;
+
+	math::float3 tvec = ray.origin - ap;
+	float u = math::dot(tvec, pvec) * inv_det;
+
+	if (u < 0.f || u > 1.f) {
+		return false;
+	}
+
+	math::float3 qvec = math::cross(tvec, e1);
+	float v = math::dot(ray.direction, qvec) * inv_det;
+
+	if (v < 0.f || u + v > 1.f) {
+		return false;
+	}
+
+	float hit_t = math::dot(e2, qvec) * inv_det;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		return true;
+	}
+
+	return false;
+}
+
+inline void Intersection_triangle_MTE::interpolate(math::float2 uv, math::float3& p) const {
+	float w = 1.f - uv.x - uv.y;
+
+	p  = w * ap + uv.x * (ap + e1)  + uv.y * (ap + e2);
+}
+
+inline math::float3 Intersection_triangle_MTE::normal() const {
+	return math::normalized(math::cross(e1, e2));
+}
+
+inline float Intersection_triangle_MTE::area() const {
+	return 0.5f * math::length(math::cross(e1, e2));
+}
+
+inline float Intersection_triangle_MTE::area(const math::float3& scale) const {
+	return 0.5f * math::length(math::cross(scale * e1, scale * e2));
+}
+
+inline Shading_triangle_MTE::Shading_triangle_MTE(const shape::Vertex& a,
+												  const shape::Vertex& b,
+												  const shape::Vertex& c,
+												  uint32_t material_index) :
+		an(a.n), bn(b.n), cn(c.n),
+		at(a.t), bt(b.t), ct(c.t),
+		auv(a.uv), buv(b.uv), cuv(c.uv),
+		bitangent_sign(a.bitangent_sign), material_index(material_index) {}
+
+inline void Shading_triangle_MTE::interpolate_data(math::float2 uv,
+												   math::float3& n, math::float3& t, math::float2& tc) const {
+	float w = 1.f - uv.x - uv.y;
+
+	n  = math::normalized(w * an + uv.x * bn + uv.y * cn);
+	t  = math::normalized(w * at + uv.x * bt + uv.y * ct);
+	tc = w * auv + uv.x * buv + uv.y * cuv;
+}
+
+inline math::float2 Shading_triangle_MTE::interpolate_uv(math::float2 uv) const {
+	float w = 1.f - uv.x - uv.y;
+
+	return w * auv + uv.x * buv + uv.y * cuv;
 }
 
 }}}
