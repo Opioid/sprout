@@ -109,10 +109,14 @@ inline float Triangle_MTE::area(const math::float3& scale) const {
 	return 0.5f * math::length(math::cross(scale * e1, scale * e2));
 }
 
+inline Intersection_triangle_MTE::Intersection_triangle_MTE() {}
+
 inline Intersection_triangle_MTE::Intersection_triangle_MTE(const shape::Vertex& a,
 															const shape::Vertex& b,
 															const shape::Vertex& c) :
-	ap(a.p), e1(b.p - a.p), e2(c.p - a.p) {}
+	ap(a.p), e1(b.p - a.p), e2(c.p - a.p) {
+	n = math::normalized(math::cross(e1, e2));
+}
 
 inline bool Intersection_triangle_MTE::intersect(math::Oray& ray, math::float2& uv) const {
 	math::float3 pvec = math::cross(ray.direction, e2);
@@ -182,7 +186,7 @@ inline void Intersection_triangle_MTE::interpolate(math::float2 uv, math::float3
 }
 
 inline math::float3 Intersection_triangle_MTE::normal() const {
-	return math::normalized(math::cross(e1, e2));
+	return n;;
 }
 
 inline float Intersection_triangle_MTE::area() const {
@@ -193,14 +197,16 @@ inline float Intersection_triangle_MTE::area(const math::float3& scale) const {
 	return 0.5f * math::length(math::cross(scale * e1, scale * e2));
 }
 
+inline Shading_triangle_MTE::Shading_triangle_MTE() {}
+
 inline Shading_triangle_MTE::Shading_triangle_MTE(const shape::Vertex& a,
 												  const shape::Vertex& b,
 												  const shape::Vertex& c,
 												  uint32_t material_index) :
-		an(a.n), bn(b.n), cn(c.n),
-		at(a.t), bt(b.t), ct(c.t),
-		auv(a.uv), buv(b.uv), cuv(c.uv),
-		bitangent_sign(a.bitangent_sign), material_index(material_index) {}
+	an(a.n), bn(b.n), cn(c.n),
+	at(a.t), bt(b.t), ct(c.t),
+	auv(a.uv), buv(b.uv), cuv(c.uv),
+	bitangent_sign(a.bitangent_sign), material_index(material_index) {}
 
 inline void Shading_triangle_MTE::interpolate_data(math::float2 uv,
 												   math::float3& n, math::float3& t, math::float2& tc) const {

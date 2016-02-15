@@ -17,6 +17,7 @@ public:
 	~Data_interleaved();
 
 	uint32_t num_triangles() const;
+	uint32_t current_triangle() const;
 
 	bool intersect(uint32_t index, math::Oray& ray, math::float2& uv) const;
 

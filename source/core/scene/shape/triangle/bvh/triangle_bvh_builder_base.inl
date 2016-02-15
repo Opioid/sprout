@@ -17,14 +17,14 @@ void Builder_base::assign(Build_node* node,
 						  const std::vector<Index_triangle>& triangles,
 						  const std::vector<Vertex>& vertices,
 						  Tree<Data>& tree) {
-	node->start_index = tree.num_triangles();
+	node->start_index = tree.current_triangle();
 
 	for (index i = begin; i != end; ++i) {
 		auto& t = triangles[*i];
 		tree.add_triangle(vertices[t.a], vertices[t.b], vertices[t.c], t.material_index);
 	}
 
-	node->end_index = tree.num_triangles();
+	node->end_index = tree.current_triangle();
 }
 
 }}}}

@@ -49,6 +49,7 @@ public:
 	uint32_t num_parts() const;
 
 	uint32_t num_triangles() const;
+	uint32_t current_triangle() const;
 
 	bool intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
@@ -81,6 +82,7 @@ public:
 
 private:
 
+	uint32_t num_nodes_;
 	Node* nodes_;
 
     Data data_;

@@ -2,7 +2,6 @@
 
 #include "base/math/vector.hpp"
 #include "base/math/simd/simd_vector.hpp"
-#include <vector>
 
 namespace scene { namespace shape {
 
@@ -18,6 +17,7 @@ public:
 	~Data();
 
 	uint32_t num_triangles() const;
+	uint32_t current_triangle() const;
 
 	bool intersect(uint32_t index, math::Oray& ray, math::float2& uv) const;
 
@@ -56,11 +56,8 @@ private:
 	uint32_t num_triangles_;
 	uint32_t current_triangle_;
 
-//	Intersection_triangle* intersection_triangles_;
-//	Shading_triangle*	   shading_triangles_;
-
-	std::vector<Intersection_triangle> intersection_triangles_;
-	std::vector<Shading_triangle> shading_triangles_;
+	Intersection_triangle* intersection_triangles_;
+	Shading_triangle*	   shading_triangles_;
 };
 
 }}}}

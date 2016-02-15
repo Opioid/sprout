@@ -6,23 +6,29 @@
 #include "base/math/sampling/sampling.inl"
 #include "base/memory/align.inl"
 
+//#include <iostream>
+
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Intersection_triangle, typename Shading_triangle>
 Data<Intersection_triangle, Shading_triangle>::Data() :
-	num_triangles_(0), current_triangle_(0)/*,
-	intersection_triangles_(nullptr), shading_triangles_(nullptr)*/ {}
+	num_triangles_(0), current_triangle_(0),
+	intersection_triangles_(nullptr), shading_triangles_(nullptr) {}
 
 template<typename Intersection_triangle, typename Shading_triangle>
 Data<Intersection_triangle, Shading_triangle>::~Data() {
-//	memory::free_aligned(intersection_triangles_);
-//	memory::free_aligned(shading_triangles_);
+	memory::free_aligned(intersection_triangles_);
+	memory::free_aligned(shading_triangles_);
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
 uint32_t Data<Intersection_triangle, Shading_triangle>::num_triangles() const {
-//	return num_triangles_;
-	return static_cast<uint32_t>(intersection_triangles_.size());
+	return num_triangles_;
+}
+
+template<typename Intersection_triangle, typename Shading_triangle>
+uint32_t Data<Intersection_triangle, Shading_triangle>::current_triangle() const {
+	return current_triangle_;
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
@@ -116,33 +122,22 @@ void Data<Intersection_triangle, Shading_triangle>::allocate_triangles(uint32_t 
 	num_triangles_ = num_triangles;
 	current_triangle_ = 0;
 
-/*	memory::free_aligned(intersection_triangles_);
+	memory::free_aligned(intersection_triangles_);
 	memory::free_aligned(shading_triangles_);
+
+//	std::cout << sizeof(Intersection_triangle) << std::endl;
+//	std::cout << sizeof(Shading_triangle) << std::endl;
 
 	intersection_triangles_ = memory::allocate_aligned<Intersection_triangle>(num_triangles);
 	shading_triangles_      = memory::allocate_aligned<Shading_triangle>(num_triangles);
-	*/
-
-	intersection_triangles_.clear();
-	intersection_triangles_.reserve(num_triangles);
-	shading_triangles_.clear();
-	shading_triangles_.reserve(num_triangles);
-
-//	triangles_.clear();
-//	triangles_.reserve(num_triangles);
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
 void Data<Intersection_triangle, Shading_triangle>::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c,
 											  uint32_t material_index) {
-/*	intersection_triangles_[current_triangle_] = Intersection_triangle(a, b, c);
+	intersection_triangles_[current_triangle_] = Intersection_triangle(a, b, c);
 	shading_triangles_[current_triangle_] = Shading_triangle(a, b, c, material_index);
-	++current_triangle_;*/
-
-	intersection_triangles_.push_back(Intersection_triangle(a, b, c));
-	shading_triangles_.push_back(Shading_triangle(a, b, c, material_index));
-
-//	triangles_.push_back(Shading_triangle(a, b, c, material_index));
+	++current_triangle_;
 }
 
 }}}}

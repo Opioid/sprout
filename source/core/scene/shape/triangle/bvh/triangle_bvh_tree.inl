@@ -14,7 +14,7 @@ inline uint32_t Node::primitive_end() const {
 }
 
 template<typename Data>
-Tree<Data>::Tree() : nodes_(nullptr) {}
+Tree<Data>::Tree() : num_nodes_(0), nodes_(nullptr) {}
 
 template<typename Data>
 Tree<Data>::~Tree() {
@@ -23,6 +23,7 @@ Tree<Data>::~Tree() {
 
 template<typename Data>
 Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
+	num_nodes_ = num_nodes;
 	nodes_ = memory::allocate_aligned<Node>(num_nodes);
 	return nodes_;
 }
@@ -40,6 +41,11 @@ uint32_t Tree<Data>::num_parts() const {
 template<typename Data>
 uint32_t Tree<Data>::num_triangles() const {
     return data_.num_triangles();
+}
+
+template<typename Data>
+uint32_t Tree<Data>::current_triangle() const {
+	return data_.current_triangle();
 }
 
 template<typename Data>

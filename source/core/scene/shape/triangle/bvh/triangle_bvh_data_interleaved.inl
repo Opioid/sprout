@@ -12,7 +12,12 @@ Data_interleaved<Triangle>::~Data_interleaved() {}
 
 template<typename Triangle>
 uint32_t Data_interleaved<Triangle>::num_triangles() const {
-    return static_cast<uint32_t>(triangles_.size());
+	return static_cast<uint32_t>(triangles_.capacity());
+}
+
+template<typename Triangle>
+uint32_t Data_interleaved<Triangle>::current_triangle() const {
+	return static_cast<uint32_t>(triangles_.size());
 }
 
 template<typename Triangle>
