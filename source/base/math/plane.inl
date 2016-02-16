@@ -2,6 +2,7 @@
 
 #include "plane.hpp"
 #include "vector3.inl"
+#include "vector4.inl"
 
 namespace math {
 

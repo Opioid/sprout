@@ -1,4 +1,5 @@
 #include "shape.hpp"
+#include "base/math/vector.inl"
 
 namespace scene { namespace shape {
 

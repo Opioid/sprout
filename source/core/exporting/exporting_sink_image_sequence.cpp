@@ -1,5 +1,6 @@
 #include "exporting_sink_image_sequence.hpp"
 #include "image/image_writer.hpp"
+#include "base/math/vector.inl"
 #include "base/string/string.inl"
 #include <fstream>
 

@@ -1,4 +1,5 @@
 #include "volume.hpp"
+#include "base/math/vector.inl"
 
 namespace scene { namespace volume {
 

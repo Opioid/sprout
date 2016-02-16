@@ -4,6 +4,7 @@
 #include "scene/prop/prop_intersection.inl"
 #include "take/take_settings.hpp"
 #include "base/math/random/generator.inl"
+#include "base/math/vector.inl"
 
 namespace rendering { namespace integrator {
 

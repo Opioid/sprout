@@ -11,6 +11,7 @@
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
 #include "base/chrono/chrono.hpp"
+#include "base/math/vector.inl"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 

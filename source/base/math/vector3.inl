@@ -130,7 +130,7 @@ bool Vector3<T>::operator!=(const Vector3& v) const {
 /*
 template<typename T>
 Vector3<T>::operator unsigned int() const {
-/*	const __m128 m4x255f = _mm_set_ps1(255.f);
+	const __m128 m4x255f = _mm_set_ps1(255.f);
 
 	__m128 m0 = _mm_set_ps(b, g, r, 0.f);
 

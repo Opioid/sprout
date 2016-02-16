@@ -1,4 +1,5 @@
 #include "light_material.hpp"
+#include "base/math/vector.inl"
 
 namespace scene { namespace material { namespace light {
 

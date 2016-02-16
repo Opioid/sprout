@@ -1,4 +1,5 @@
 #include "exporting_sink_null.hpp"
+#include "base/math/vector.inl"
 
 namespace exporting {
 
