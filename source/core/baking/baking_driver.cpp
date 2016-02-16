@@ -24,7 +24,7 @@ Driver::Driver(std::shared_ptr<rendering::integrator::surface::Integrator_factor
 
 void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& thread_pool,
 					exporting::Sink& exporter, progress::Sink& progressor) {
-	math::int2 dimensions(512, 512);
+/*	math::int2 dimensions(512, 512);
 
 	scene.tick(thread_pool);
 
@@ -60,7 +60,7 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 
 			math::float3 origin = bake_quad_origin + offset;
 
-			math::float3 irradiance = math::float3::identity;
+			math::float3 irradiance = math::float3_identity;
 
 			for (uint32_t s = 0; s < num_samples; ++s) {
 
@@ -74,7 +74,7 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 				ray.min_t = 0.01f;
 				ray.max_t = 10000.f;
 
-				irradiance += worker.li(ray).xyz();
+				irradiance += math::float3(worker.li(ray).xyz());
 			}
 
 			irradiance /= static_cast<float>(num_samples);
@@ -94,6 +94,7 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 	std::ofstream stream("pastry.png", std::ios::binary);
 
 	writer.write(stream, target, thread_pool);
+	*/
 }
 
 }

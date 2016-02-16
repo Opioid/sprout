@@ -6,11 +6,27 @@
 
 namespace math {
 
-constexpr float Pi = 3.14159265358979323846f;
-constexpr float Pi_div_2 = 1.57079632679489661923f;
-constexpr float Pi_div_180 = Pi / 180.f;
-constexpr float _180_div_pi = 180.f / Pi;
-constexpr float Pi_inv = 0.318309886183790671538f;
+// The purpose of the following global constants is to prevent redundant
+// reloading of the constants when they are referenced by more than one
+// separate inline math routine called within the same function.  Declaring
+// a constant locally within a routine is sufficient to prevent redundant
+// reloads of that constant when that single routine is called multiple
+// times in a function, but if the constant is used (and declared) in a
+// separate math routine it would be reloaded.
+
+#ifndef SU_GLOBALCONST
+#	ifdef __GNUG__
+#		define SU_GLOBALCONST(X) extern const X __attribute__((weak))
+#	elif defined(_MSC_VER)
+#		define SU_GLOBALCONST(X) extern const __declspec(selectany) X
+#	endif
+#endif
+
+SU_GLOBALCONST(float) Pi = 3.14159265358979323846f;
+SU_GLOBALCONST(float) Pi_div_2 = 1.57079632679489661923f;
+SU_GLOBALCONST(float) Pi_div_180 = Pi / 180.f;
+SU_GLOBALCONST(float) _180_div_pi = 180.f / Pi;
+SU_GLOBALCONST(float) Pi_inv = 0.318309886183790671538f;
 
 inline float degrees_to_radians(float degrees) {
 	return degrees * Pi_div_180;

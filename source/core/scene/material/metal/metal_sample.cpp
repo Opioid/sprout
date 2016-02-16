@@ -15,11 +15,11 @@ math::float3 Sample_isotropic::evaluate(const math::float3& wi, float& pdf) cons
 }
 
 math::float3 Sample_isotropic::emission() const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 math::float3 Sample_isotropic::attenuation() const {
-	return math::float3(100.f, 100.f, 100.f);;
+	return math::float3(100.f, 100.f, 100.f);
 }
 
 float Sample_isotropic::ior() const {
@@ -60,7 +60,7 @@ math::float3 Sample_anisotropic::evaluate(const math::float3& wi, float& pdf) co
 }
 
 math::float3 Sample_anisotropic::emission() const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 math::float3 Sample_anisotropic::attenuation() const {

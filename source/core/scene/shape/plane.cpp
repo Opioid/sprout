@@ -11,12 +11,12 @@
 namespace scene { namespace shape {
 
 Plane::Plane() {
-	aabb_.set_min_max(math::float3::identity, math::float3::identity);
+	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
 bool Plane::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const math::float3& normal = transformation.rotation.z;
+	const math::float3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -26,8 +26,8 @@ bool Plane::intersect(const entity::Composed_transformation& transformation, mat
 		intersection.epsilon = 5e-4f * t;
 
 		intersection.p = ray.point(t);
-		intersection.t = -transformation.rotation.x;
-		intersection.b = -transformation.rotation.y;
+		intersection.t = -transformation.rotation.x3;
+		intersection.b = -transformation.rotation.y3;
 		intersection.n = normal;
 		intersection.geo_n = normal;
 		intersection.uv.x = math::dot(intersection.t, intersection.p) * transformation.scale.x;
@@ -88,7 +88,7 @@ bool Plane::intersect(const entity::Composed_transformation& transformation, mat
 
 bool Plane::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 						Node_stack& /*node_stack*/) const {
-	const math::float3& normal = transformation.rotation.z;
+	const math::float3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -104,7 +104,7 @@ bool Plane::intersect_p(const entity::Composed_transformation& transformation, c
 float Plane::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
 					 Node_stack& /*node_stack*/, const material::Materials& materials,
 					 const image::texture::sampler::Sampler_2D& sampler) const {
-	const math::float3& normal = transformation.rotation.z;
+	const math::float3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -112,7 +112,7 @@ float Plane::opacity(const entity::Composed_transformation& transformation, cons
 
 	if (t > ray.min_t && t < ray.max_t) {
 		math::float3 p = ray.point(t);
-		math::float2 uv(math::dot(transformation.rotation.x, p), math::dot(transformation.rotation.y, p));
+		math::float2 uv(math::dot(transformation.rotation.x3, p), math::dot(transformation.rotation.y3, p));
 
 		return materials[0]->opacity(uv, time, sampler);
 	}

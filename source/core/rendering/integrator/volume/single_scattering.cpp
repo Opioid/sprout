@@ -41,7 +41,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
 		transmittance = math::float3(1.f, 1.f, 1.f);
-		return math::float4::identity;
+		return math::float4_identity;
 	}
 
 //	min_t = ray.min_t;
@@ -57,7 +57,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 	if (range < 0.0001f) {
 		transmittance = math::float3(1.f, 1.f, 1.f);
-		return math::float4::identity;
+		return math::float4_identity;
 	}
 
 	uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
@@ -66,7 +66,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 	math::float3 w = -ray.direction;
 
-	math::float3 emission = math::float3::identity;
+	math::float3 emission = math::float3_identity;
 
 	math::float3 scattering = volume->scattering();
 

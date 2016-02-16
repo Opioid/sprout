@@ -58,7 +58,7 @@ math::float4 Worker::li(scene::Ray& ray) {
 		if (hit) {
 			return surface_integrator_->li(*this, ray, false, intersection);
 		} else {
-			return math::float4(0.f, 0.f, 0.f, 0.f);
+			return math::float4_identity;
 		}
 	}
 }
@@ -69,7 +69,7 @@ math::float3 Worker::surface_li(scene::Ray& ray) {
 
 	if (hit) {
 		scene::Ray tray = ray;
-		return surface_integrator_->li(*this, tray, false, intersection).xyz();
+		return math::float3(surface_integrator_->li(*this, tray, false, intersection).xyz());
 	} else {
 		return math::float3(0.f, 0.f, 0.f);
 	}
@@ -80,7 +80,7 @@ math::float4 Worker::volume_li(const scene::Ray& ray, math::float3& transmittanc
 
 	if (!volume) {
 		transmittance = math::float3(1.f, 1.f, 1.f);
-		return math::float4::identity;
+		return math::float4_identity;
 	}
 
 	return volume_integrator_->li(*this, volume, ray, transmittance);

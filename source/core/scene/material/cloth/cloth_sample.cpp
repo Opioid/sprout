@@ -16,7 +16,7 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 }
 
 math::float3 Sample::emission() const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 math::float3 Sample::attenuation() const {

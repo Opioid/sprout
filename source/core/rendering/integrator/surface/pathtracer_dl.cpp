@@ -33,7 +33,7 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
-	math::float3 result = math::float3::identity;
+	math::float3 result = math::float3_identity;
 	float opacity = 0.f;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
@@ -55,7 +55,7 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 		//	throughput *= worker.transmittance(ray);
 			math::float3 tr;
 			math::float4 vli = worker.volume_li(ray, tr);
-			result += throughput * vli.xyz();
+			result += throughput * math::float3(vli.xyz());
 			throughput *= tr;
 		}
 
@@ -124,7 +124,7 @@ math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::R
 												  const scene::Intersection& intersection,
 												  const scene::material::Sample& material_sample,
 												  const image::texture::sampler::Sampler_2D& texture_sampler) {
-	math::float3 result = math::float3::identity;
+	math::float3 result = math::float3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	scene::Ray shadow_ray;

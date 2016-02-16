@@ -78,7 +78,7 @@ void Material::prepare_sampling(bool spherical) {
 	}
 
 	if (spherical) {
-		average_emission_ = math::float3::identity;
+		average_emission_ = math::float3_identity;
 
 		auto d = emission_map_->dimensions();
 		std::vector<float> luminance(d.x * d.y);

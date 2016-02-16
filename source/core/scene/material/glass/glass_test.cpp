@@ -32,29 +32,29 @@ void test() {
 
 	wo = t;
 	sample.set_basis(t, b, n, n, wo);
-	result.wi = math::float3::identity;
-	result.reflection = math::float3::identity;
+	result.wi = math::float3_identity;
+	result.reflection = math::float3_identity;
 	brdf.importance_sample(sample, sampler, result);
 	print(result);
-	result.reflection = math::float3::identity;
+	result.reflection = math::float3_identity;
 	btdf.importance_sample(sample, sampler, result);
 	print(result);
 
 	wo = b;
 	sample.set_basis(t, b, n, n, wo);
-	result.reflection = math::float3::identity;
+	result.reflection = math::float3_identity;
 	brdf.importance_sample(sample, sampler, result);
 	print(result);
-	result.reflection = math::float3::identity;
+	result.reflection = math::float3_identity;
 	btdf.importance_sample(sample, sampler, result);
 	print(result);
 
 	wo = n;
 	sample.set_basis(t, b, n, n, wo);
-	result.reflection = math::float3::identity;
+	result.reflection = math::float3_identity;
 	brdf.importance_sample(sample, sampler, result);
 	print(result);
-	result.reflection = math::float3::identity;
+	result.reflection = math::float3_identity;
 	btdf.importance_sample(sample, sampler, result);
 	print(result);
 }

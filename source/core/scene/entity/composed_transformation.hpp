@@ -10,11 +10,11 @@ namespace scene { namespace entity {
 struct Composed_transformation {
 	void set(const math::transformation& t);
 
-	math::float3   position;
-	math::float3   scale;
-	math::float3x3 rotation;
-	math::float4x4 object_to_world;
-	math::float4x4 world_to_object;
+	math::float3 position;
+	math::float3 scale;
+	math::Matrix4x4f_a rotation;
+	math::Matrix4x4f_a object_to_world;
+	math::Matrix4x4f_a world_to_object;
 };
 
 }}

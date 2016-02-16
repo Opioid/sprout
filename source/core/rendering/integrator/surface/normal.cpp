@@ -32,7 +32,7 @@ math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene:
 
 		vector = material_sample.shading_normal();
 	} else {
-		vector = math::float3::identity;
+		vector = math::float3_identity;
 	}
 
 	return math::float4(0.5f * (vector + math::float3(1.f, 1.f, 1.f)), 1.f);

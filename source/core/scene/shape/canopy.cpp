@@ -12,7 +12,7 @@
 namespace scene { namespace shape {
 
 Canopy::Canopy() {
-	aabb_.set_min_max(math::float3::identity, math::float3::identity);
+	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
 bool Canopy::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
@@ -21,8 +21,8 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.epsilon = 5e-4f;
 
 		intersection.p = ray.point(10000.f);
-		intersection.t = transformation.rotation.x;
-		intersection.b = transformation.rotation.y;
+		intersection.t = transformation.rotation.x3;
+		intersection.b = transformation.rotation.y3;
 		intersection.n = -ray.direction;
 		intersection.geo_n = intersection.n;
 		intersection.part = 0;

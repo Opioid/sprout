@@ -1,22 +1,17 @@
 #pragma once
 
-#include <cstdint>
-
-namespace math {
-
-template<typename T> struct Vector2;
-template<typename T> struct Vector3;
-template<typename T> struct Vector4;
-
-}
+#include "math/vector.hpp"
 
 namespace color {
 
 typedef math::Vector2<uint8_t> Color2c;
 typedef math::Vector3<uint8_t> Color3c;
-typedef math::Vector3<float>   Color3;
+//typedef math::Vector3<float>   Color3;
+//typedef math::Vector3f_a	   Color3_a;
+typedef math::float3 Color3;
 typedef math::Vector4<uint8_t> Color4c;
-typedef math::Vector4<float>   Color4;
+//typedef math::Vector4<float>   Color4;
+typedef math::float4		   Color4;
 
 // convert sRGB linear color to sRGB gamma color
 Color3 linear_to_sRGB(const Color3& c);

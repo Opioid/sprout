@@ -1,6 +1,7 @@
 #pragma once
 
 #include "matrix3x3.hpp"
+#include "vector4.inl"
 #include <cmath>
 
 namespace math {
@@ -100,11 +101,23 @@ Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v) {
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
+inline Vector3f_a operator*(const Vector3f_a& v, const Matrix3x3<float>& m) {
+	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+}
+
 template<typename T>
 Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, const Vector3<T>& v) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
 					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
 					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
+}
+
+inline Vector3f_a operator*(const Matrix3x3<float>& m, const Vector3f_a& v) {
+	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
 template<typename T>
@@ -284,6 +297,22 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m) {
 	return Matrix3x3<T>(m.m00, m.m10, m.m20,
 						m.m01, m.m11, m.m21,
 						m.m02, m.m12, m.m22);
+}
+
+inline Matrix3x3<float> create_matrix3x3(const Vector4f_a& q) {
+	float d = dot(q, q);
+
+	float s = 2.f / d;
+
+	float xs = q.x * s,  ys = q.y * s,  zs = q.z * s;
+	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
+	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
+	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+
+	return Matrix3x3<float>(
+				1.f - (yy + zz), xy - wz,         xz + wy,
+				xy + wz,         1.f - (xx + zz), yz - wx,
+				xz - wy,         yz + wx,         1.f - (xx + yy));
 }
 
 }

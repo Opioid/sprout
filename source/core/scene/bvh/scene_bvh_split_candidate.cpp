@@ -20,7 +20,7 @@ Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p, cons
 	case 2: n = math::float3(0.f, 0.f, 1.f); break;
 	}
 
-	plane_ = math::plane(n, p);
+	plane_ = math::create_plane(n, p);
 
 	int num_side_0 = 0;
 	int num_side_1 = 0;
@@ -61,7 +61,7 @@ Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p, inde
 	case 2: n = math::float3(0.f, 0.f, 1.f); break;
 	}
 
-	plane_ = math::plane(n, p);
+	plane_ = math::create_plane(n, p);
 
 	int num_side_0 = 0;
 	int num_side_1 = 0;

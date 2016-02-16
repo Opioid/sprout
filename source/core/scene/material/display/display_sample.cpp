@@ -11,7 +11,7 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {
 		pdf = 0.f;
-		return math::float3::identity;
+		return math::float3_identity;
 	}
 
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);

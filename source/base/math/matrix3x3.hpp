@@ -1,10 +1,19 @@
 #pragma once
 
+#include "vector3.hpp"
+
 namespace math {
 
 template<typename T> struct Vector3;
 template<typename T> struct Matrix4x4;
 template<typename T> struct Quaternion;
+struct alignas(16) Vector4f_a;
+
+/****************************************************************************
+ *
+ * Generic 3x3 matrix
+ *
+ ****************************************************************************/
 
 template<typename T> 
 struct Matrix3x3 {
@@ -52,11 +61,15 @@ struct Matrix3x3 {
 template<typename T>
 Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m);
 
+Vector3f_a operator*(const Vector3f_a& v, const Matrix3x3<float>& m);
+
 template<typename T>
 Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m);
 
 template<typename T>
 Vector3<T> operator*(const Matrix3x3<T>& m, const Vector3<T>& v);
+
+Vector3f_a operator*(const Matrix3x3<float>& m, const Vector3f_a& v);
 
 template<typename T>
 Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v);
@@ -105,5 +118,42 @@ void set_rotation(Matrix3x3<T>& m, const Vector3<T>& v, T a);
 
 template<typename T>
 Matrix3x3<T> transposed(const Matrix3x3<T>& m);
+
+/****************************************************************************
+ *
+ * Aligned 3x3 float matrix
+ *
+ ****************************************************************************/
+
+struct alignas(16) Vector4f_a;
+
+/*
+struct alignas(16) Matrix3x3f_a {
+	union {
+		struct {
+			float m00, m01, m02, pade0,
+				  m10, m11, m12, pade1,
+				  m20, m21, m22, pade2;
+		};
+
+		struct {
+			Vector3f_a x; float padv0;
+			Vector3f_a y; float padv1;
+			Vector3f_a z; float padv2;
+		};
+	};
+
+	Matrix3x3f_a();
+
+	Matrix3x3f_a(float m00, float m01, float m02,
+				 float m10, float m11, float m12,
+				 float m20, float m21, float m22);
+
+	Matrix3x3f_a(const Vector3f_a& x, const Vector3f_a& y, const Vector3f_a& z);
+
+	explicit Matrix3x3f_a(const Vector4f_a& q);
+};*/
+
+Matrix3x3<float> create_matrix3x3(const Vector4f_a& q);
 
 }

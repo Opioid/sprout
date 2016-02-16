@@ -153,7 +153,7 @@ math::float3 Reader::rgbe_to_float3(uint8_t rgbe[4]) {
 							static_cast<float>(rgbe[1]) * f,
 							static_cast<float>(rgbe[2]) * f);
 	} else {
-		return math::float3::identity;
+		return math::float3_identity;
 	}
 }
 

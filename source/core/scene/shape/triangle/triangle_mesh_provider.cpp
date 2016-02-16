@@ -61,7 +61,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 			// If no normals were loaded assign identity
 			// Might be smarter to throw an exception
 			for (auto& v : handler.vertices()) {
-				v.n = math::float3::identity;
+				v.n = math::float3_identity;
 			}
 		}
 
@@ -136,7 +136,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 			// If no normals were loaded assign identity
 			// Might be smarter to throw an exception
 			for (auto& v : handler.vertices()) {
-				v.n = math::float3::identity;
+				v.n = math::float3_identity;
 			}
 		}
 

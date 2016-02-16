@@ -96,9 +96,9 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 		}
 
 		math::transformation transformation{
-			math::float3::identity,
+			math::float3_identity,
 			math::float3(1.f, 1.f, 1.f),
-			math::quaternion::identity
+			math::quaternion_identity
 		};
 
 		const rapidjson::Value* animation_value = nullptr;

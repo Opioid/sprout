@@ -7,32 +7,31 @@
 
 namespace math {
 
-template<typename T>
 class AABB {
 public:
 
 	AABB();
-	AABB(const Vector3<T>& min, const Vector3<T>& max);
+	AABB(const Vector3f_a& min, const Vector3f_a& max);
 
-	const Vector3<T>& min() const;
-	const Vector3<T>& max() const;
+	const Vector3f_a& min() const;
+	const Vector3f_a& max() const;
 
-	Vector3<T> position() const;
-	Vector3<T> halfsize() const;
+	Vector3f_a position() const;
+	Vector3f_a halfsize() const;
 
-	T surface_area() const;
-	T volume() const;
+	float surface_area() const;
+	float volume() const;
 
-	bool intersect_p(const math::Optimized_ray<T>& ray) const;
-	bool intersect_p(const math::Optimized_ray<T>& ray, T& min_t, T& max_t) const;
+	bool intersect_p(const math::Oray& ray) const;
+	bool intersect_p(const math::Oray& ray, float& min_t, float& max_t) const;
 
 	bool SU_CALLCONV intersect_p(simd::FVector origin, simd::FVector inv_direction, float min_t, float max_t);
 
-	void set_min_max(const Vector3<T>& min, const Vector3<T>& max);
+	void set_min_max(const Vector3f_a& min, const Vector3f_a& max);
 
-	void insert(const Vector3<T>& p);
+	void insert(const Vector3f_a& p);
 
-	AABB transform(const Matrix4x4<T>& m) const;
+	AABB transform(const Matrix4x4f_a& m) const;
 
 	AABB merge(const AABB& other) const;
 	void merge_assign(const AABB& other);
@@ -42,9 +41,9 @@ public:
 
 private:
 
-	Vector3<T> bounds_[2];
+	Vector3f_a bounds_[2];
 };
 
-typedef AABB<float> aabb;
+typedef AABB aabb;
 
 }

@@ -30,7 +30,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
-	math::float3 result = math::float3::identity;
+	math::float3 result = math::float3_identity;
 	float opacity = 0.f;
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
@@ -53,7 +53,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 		//	throughput *= worker.transmittance(ray);
 			math::float3 tr;
 			math::float4 vli = worker.volume_li(ray, tr);
-			result += throughput * vli.xyz();
+			result += throughput * math::float3(vli.xyz());
 			throughput *= tr;
 		}
 

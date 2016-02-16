@@ -67,7 +67,7 @@ void Prop_light::prepare_sampling() {
 
 	entity::Composed_transformation transformation;
 	prop_->transformation_at(0.f, transformation);
-	area_ = prop_->shape()->area(part_, transformation.scale);
+	area_ = prop_->shape()->area(part_, math::float3(transformation.scale));
 }
 
 bool Prop_light::equals(const Prop* prop, uint32_t part) const {

@@ -1,13 +1,30 @@
 #pragma once
 
+#include "math.hpp"
+#include "vector4.hpp"
+
 namespace math {
 
 template<typename T> struct Vector3;
 template<typename T> struct Matrix3x3;
+struct alignas(16) Vector4f_a;
+
+/****************************************************************************
+ *
+ * Generic quaternion
+ *
+ ****************************************************************************/
 
 template<typename T>
 struct Quaternion {
-	T x, y, z, w;
+
+	union {
+		struct {
+			T x, y, z, w;
+		};
+
+		T v[4];
+	};
 
 	Quaternion();
 
@@ -16,8 +33,6 @@ struct Quaternion {
 	explicit Quaternion(const Matrix3x3<T>& m);
 
 	Quaternion operator*(const Quaternion& q) const;
-
-	Quaternion& operator*=(const Quaternion& q);
 
 	static const Quaternion identity;
 };
@@ -49,6 +64,27 @@ void set_rotation(Quaternion<T>& q, T yaw, T pitch, T roll);
 template<typename T>
 Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t);
 
-typedef Quaternion<float> quaternion;
+/****************************************************************************
+ *
+ * Aligned quaternon functions
+ *
+ ****************************************************************************/
+
+//typedef Quaternion<float> quaternion;
+typedef Vector4f_a quaternion;
+
+quaternion create_quaternion(const Matrix3x3<float>& m);
+
+quaternion create_quaternion_rotation_x(float a);
+
+quaternion create_quaternion_rotation_y(float a);
+
+quaternion create_quaternion_rotation_z(float a);
+
+quaternion mul_quaternion(const quaternion& a, const quaternion& b);
+
+quaternion slerp_quaternion(const quaternion& a, const quaternion& b, float t);
+
+SU_GLOBALCONST(quaternion) quaternion_identity(0.f, 0.f, 0.f, 1.f);
 
 }

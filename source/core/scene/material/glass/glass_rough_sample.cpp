@@ -10,7 +10,7 @@ namespace scene { namespace material { namespace glass {
 
 math::float3 BRDF_rough::evaluate(const Sample_rough& /*sample*/,
 								  const math::float3& /*wi*/, float /*n_dot_wi*/) const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 float BRDF_rough::pdf(const Sample_rough& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) const {
@@ -57,7 +57,7 @@ float BRDF_rough::importance_sample(const Sample_rough& sample,
 
 math::float3 BTDF_rough::evaluate(const Sample_rough& /*sample*/,
 								  const math::float3& /*wi*/, float /*n_dot_wi*/) const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 float BTDF_rough::pdf(const Sample_rough& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) const {
@@ -102,11 +102,11 @@ float BTDF_rough::importance_sample(const Sample_rough& sample,
 
 math::float3 Sample_rough::evaluate(const math::float3& /*wi*/, float& pdf) const {
 	pdf = 0.f;
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 math::float3 Sample_rough::emission() const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 math::float3 Sample_rough::attenuation() const {

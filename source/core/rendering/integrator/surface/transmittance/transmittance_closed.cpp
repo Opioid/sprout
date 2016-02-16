@@ -40,7 +40,7 @@ math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersectio
 		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, texture_sampler, worker.id());
 
 		material_sample.sample_evaluate(sampler, sample_result);
-		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
+		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {
 			break;
 		}
 

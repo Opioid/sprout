@@ -57,11 +57,11 @@ const material::Sample& Material_isotropic::sample(const shape::Differential& dg
 
 math::float3 Material_isotropic::sample_emission(math::float2 /*uv*/, float /*time*/,
 										   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 math::float3 Material_isotropic::average_emission() const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 bool Material_isotropic::has_emission_map() const {
@@ -117,11 +117,11 @@ const material::Sample& Material_anisotropic::sample(const shape::Differential& 
 
 math::float3 Material_anisotropic::sample_emission(math::float2 /*uv*/, float /*time*/,
 												   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 math::float3 Material_anisotropic::average_emission() const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 bool Material_anisotropic::has_emission_map() const {

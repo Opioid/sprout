@@ -51,7 +51,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 		transformation_at(0.f, transformation);
 
 		scene::Ray ray;
-		ray.origin = transformation.position;
+		ray.origin = math::float3(transformation.position);
 		ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(direction)));
 		ray.min_t = 0.f;
 		ray.max_t = ray_max_t_;
@@ -72,7 +72,7 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-	math::Ray<float> r(math::float3::identity, direction);
+	math::Ray r(math::float3_identity, direction);
 
 	if (lens_radius_ > 0.f) {
 		math::float2 lens  = math::sample_disk_concentric(sample.lens_uv);

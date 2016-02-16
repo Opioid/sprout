@@ -49,10 +49,10 @@ bool Morphable_mesh::intersect(const entity::Composed_transformation& transforma
 		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
 
 		intersection.geo_n = math::transform_vector(transformation.rotation, tree_.triangle_normal(pi.index));
-	//	intersection.n = math::transform_vector(transformation.rotation, n);
-	//	intersection.t = math::transform_vector(transformation.rotation, t);
+		intersection.n = math::transform_vector(transformation.rotation, n);
+		intersection.t = math::transform_vector(transformation.rotation, t);
 
-		math::transform_vectors(transformation.rotation, n, t, intersection.n, intersection.t);
+	//	math::transform_vectors(transformation.rotation, n, t, intersection.n, intersection.t);
 
 		float bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
 		intersection.b = bitangent_sign * math::cross(intersection.n, intersection.t);

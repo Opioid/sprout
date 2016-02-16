@@ -28,7 +28,7 @@ void Opaque::add_pixel(math::int2 pixel, const math::float4& color, float weight
 	auto d = dimensions();
 
 	auto& value = pixels_[d.x * pixel.y + pixel.x];
-	value.color += weight * color.xyz();
+	value.color += weight * math::float3(color.xyz());
 	value.weight_sum += weight;
 }
 

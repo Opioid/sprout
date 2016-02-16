@@ -1,8 +1,15 @@
 #pragma once
 
 #include "quaternion.hpp"
+#include "matrix3x3.inl"
 
 namespace math {
+
+/****************************************************************************
+ *
+ * Generic quaternion
+ *
+ ****************************************************************************/
 
 template<typename T>
 Quaternion<T>::Quaternion() {}
@@ -49,16 +56,6 @@ Quaternion<T> Quaternion<T>::operator*(const Quaternion<T>& q) const {
 						 w * q.y + y * q.w + z * q.x - x * q.z,
 						 w * q.z + z * q.w + x * q.y - y * q.x,
 						 w * q.w - x * q.x - y * q.y - z * q.z);
-}
-
-template<typename T>
-Quaternion<T>& Quaternion<T>::operator*=(const Quaternion<T>& q) {
-	Quaternion<T> temp(w * q.x + x * q.w + y * q.z - z * q.y,
-					   w * q.y + y * q.w + z * q.x - x * q.z,
-					   w * q.z + z * q.w + x * q.y - y * q.x,
-					   w * q.w - x * q.x - y * q.y - z * q.z);
-
-	return *this = temp;
 }
 
 template<typename T>
@@ -138,7 +135,7 @@ void set_rotation(Quaternion<T>& q, T yaw, T pitch, T roll) {
 template<typename T>
 Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 	// calc cosine theta
-	float cosom = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+	T cosom = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 
 	// adjust signs (if necessary)
 	Quaternion<T> end = b;
@@ -172,6 +169,112 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 						 sclp * a.y + sclq * end.y,
 						 sclp * a.z + sclq * end.z,
 						 sclp * a.w + sclq * end.w);
+}
+
+/****************************************************************************
+ *
+ * Aligned quaternon functions
+ *
+ ****************************************************************************/
+
+inline quaternion create_quaternion(const Matrix3x3<float>& m) {
+	float trace = m.m00 + m.m11 + m.m22;
+	quaternion temp;
+
+	if (trace > 0.f) {
+		float s = std::sqrt(trace + 1.f);
+		temp.v[3] = s * 0.5f;
+		s = 0.5f / s;
+
+		temp.v[0] = (m.m21 - m.m12) * s;
+		temp.v[1] = (m.m02 - m.m20) * s;
+		temp.v[2] = (m.m10 - m.m01) * s;
+	} else {
+		int i = m.m00 < m.m11 ? (m.m11 < m.m22 ? 2 : 1) : (m.m00 < m.m22 ? 2 : 0);
+		int j = (i + 1) % 3;
+		int k = (i + 2) % 3;
+
+		float s = std::sqrt(m.m[i * 3 + i] - m.m[j * 3 + j] - m.m[k * 3 + k] + 1.f);
+		temp.v[i] = s * 0.5f;
+		s = 0.5f / s;
+
+		temp.v[3] = (m.m[k * 3 + j] - m.m[j * 3 + k]) * s;
+		temp.v[j] = (m.m[j * 3 + i] + m.m[i * 3 + j]) * s;
+		temp.v[k] = (m.m[k * 3 + i] + m.m[i * 3 + k]) * s;
+	}
+
+	return temp;
+}
+
+inline quaternion create_quaternion_rotation_x(float a) {
+	return quaternion(
+				std::sin(a * 0.5f),
+				0.f,
+				0.f,
+				std::cos(a * 0.5f));
+}
+
+inline quaternion create_quaternion_rotation_y(float a) {
+	return quaternion(
+				0.f,
+				std::sin(a * 0.5f),
+				0.f,
+				std::cos(a * 0.5f));
+}
+
+inline quaternion create_quaternion_rotation_z(float a) {
+	return quaternion(
+				0.f,
+				0.f,
+				std::sin(a * 0.5f),
+				std::cos(a * 0.5f));
+}
+
+inline quaternion mul_quaternion(const quaternion& a, const quaternion& b) {
+	return quaternion(
+				a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+				a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z,
+				a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x,
+				a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z);
+}
+
+inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, float t) {
+	// calc cosine theta
+	float cosom = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+
+	// adjust signs (if necessary)
+	quaternion end = b;
+
+	if (cosom < 0.f) {
+		cosom = -cosom;
+		end.x = -end.x;   // Reverse all signs
+		end.y = -end.y;
+		end.z = -end.z;
+		end.w = -end.w;
+	}
+
+	// Calculate coefficients
+	float sclp;
+	float sclq;
+
+	// 0.0001 -> some epsillon
+	if (1.f - cosom > 0.0001f) {
+		// Standard case (slerp)
+		float omega = std::acos(cosom); // extract theta from dot product's cos theta
+		float sinom = std::sin(omega);
+		sclp  = std::sin((1.f - t) * omega) / sinom;
+		sclq  = std::sin(t * omega) / sinom;
+	} else {
+		// Very close, do linear interpolation (because it's faster)
+		sclp = 1.f - t;
+		sclq = t;
+	}
+
+	return quaternion(
+				sclp * a.x + sclq * end.x,
+				sclp * a.y + sclq * end.y,
+				sclp * a.z + sclq * end.z,
+				sclp * a.w + sclq * end.w);
 }
 
 }

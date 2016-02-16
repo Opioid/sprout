@@ -42,11 +42,11 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 
 math::float3 Material::sample_emission(math::float2 /*uv*/, float /*time*/,
 									   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 math::float3 Material::average_emission() const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 bool Material::has_emission_map() const {

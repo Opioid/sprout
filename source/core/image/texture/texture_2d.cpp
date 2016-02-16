@@ -24,7 +24,7 @@ int32_t Texture_2D::num_elements() const {
 }
 
 math::float3 Texture_2D::average_3() const {
-	math::float3 average = math::float3::identity;
+	math::float3 average = math::float3_identity;
 
 	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {
@@ -38,7 +38,7 @@ math::float3 Texture_2D::average_3() const {
 }
 
 math::float3 Texture_2D::average_3(int32_t element) const {
-	math::float3 average = math::float3::identity;
+	math::float3 average = math::float3_identity;
 
 	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {
@@ -52,7 +52,7 @@ math::float3 Texture_2D::average_3(int32_t element) const {
 }
 
 math::float4 Texture_2D::average_4() const {
-	math::float4 average = math::float4::identity;
+	math::float4 average = math::float4_identity;
 
 	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {

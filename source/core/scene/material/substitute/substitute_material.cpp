@@ -53,7 +53,7 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 		math::float3 emission = emission_factor_ * sampler.sample_3(*emission_map_, dg.uv);
 		sample.set(color, emission, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
 	} else {
-		sample.set(color, math::float3::identity, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
+		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
 	}
 
 	return sample;
@@ -64,7 +64,7 @@ math::float3 Material::sample_emission(math::float2 uv, float /*time*/,
 	if (emission_map_) {
 		return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 	} else {
-		return math::float3::identity;
+		return math::float3_identity;
 	}
 }
 
@@ -72,7 +72,7 @@ math::float3 Material::average_emission() const {
 	if (emission_map_) {
 		return emission_factor_ * emission_map_->average_3();
 	} else {
-		return math::float3::identity;
+		return math::float3_identity;
 	}
 }
 

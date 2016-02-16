@@ -6,56 +6,47 @@
 
 namespace math {
 
-template<typename T>
-AABB<T>::AABB() {}
+inline AABB::AABB() {}
 
-template<typename T>
-AABB<T>::AABB(const Vector3<T>& min, const Vector3<T>& max) {
+inline AABB::AABB(const Vector3f_a& min, const Vector3f_a& max) {
 	bounds_[0] = min;
 	bounds_[1] = max;
 }
 
-template<typename T>
-const Vector3<T>& AABB<T>::min() const {
+inline const Vector3f_a& AABB::min() const {
 	return bounds_[0];
 }
 
-template<typename T>
-const Vector3<T>& AABB<T>::max() const {
+inline const Vector3f_a& AABB::max() const {
 	return bounds_[1];
 }
 
-template<typename T>
-Vector3<T> AABB<T>::position() const {
-	return T(0.5) * (bounds_[0] + bounds_[1]);
+inline Vector3f_a AABB::position() const {
+	return 0.5f * (bounds_[0] + bounds_[1]);
 }
 
-template<typename T>
-Vector3<T> AABB<T>::halfsize() const {
-	return T(0.5) * (bounds_[1] - bounds_[0]);
+inline Vector3f_a AABB::halfsize() const {
+	return 0.5f * (bounds_[1] - bounds_[0]);
 }
 
-template<typename T>
-T AABB<T>::surface_area() const {
-	Vector3<T> d = bounds_[1] - bounds_[0];
-	return T(2) * (d.x * d.y + d.x * d.z + d.y * d.z);
+inline float AABB::surface_area() const {
+	Vector3f_a d = bounds_[1] - bounds_[0];
+	return 2.f * (d.x * d.y + d.x * d.z + d.y * d.z);
 }
 
-template<typename T>
-T AABB<T>::volume() const {
-	Vector3<T> d = bounds_[1] - bounds_[0];
+inline float AABB::volume() const {
+	Vector3f_a d = bounds_[1] - bounds_[0];
 	return d.x * d.y * d.z;
 }
 
-template<typename T>
-bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray) const {
+inline bool AABB::intersect_p(const math::Oray& ray) const {
 	int8_t sign_0 = ray.sign[0];
-	T min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
-	T max_t = (bounds_[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;
+	float min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
+	float max_t = (bounds_[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;
 
 	int8_t sign_1 = ray.sign[1];
-	T min_ty = (bounds_[    sign_1].y - ray.origin.y) * ray.inv_direction.y;
-	T max_ty = (bounds_[1 - sign_1].y - ray.origin.y) * ray.inv_direction.y;
+	float min_ty = (bounds_[    sign_1].y - ray.origin.y) * ray.inv_direction.y;
+	float max_ty = (bounds_[1 - sign_1].y - ray.origin.y) * ray.inv_direction.y;
 
 	if (min_t > max_ty || min_ty > max_t) {
 		return false;
@@ -70,8 +61,8 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray) const {
 	}
 
 	int8_t sign_2 = ray.sign[2];
-	T min_tz = (bounds_[    sign_2].z - ray.origin.z) * ray.inv_direction.z;
-	T max_tz = (bounds_[1 - sign_2].z - ray.origin.z) * ray.inv_direction.z;
+	float min_tz = (bounds_[    sign_2].z - ray.origin.z) * ray.inv_direction.z;
+	float max_tz = (bounds_[1 - sign_2].z - ray.origin.z) * ray.inv_direction.z;
 
 	if (min_t > max_tz || min_tz > max_t) {
 		return false;
@@ -88,15 +79,14 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray) const {
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
 
-template<typename T>
-bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray, T& min_out, T& max_out) const {
+inline bool AABB::intersect_p(const math::Oray& ray, float& min_out, float& max_out) const {
 	int8_t sign_0 = ray.sign[0];
-	T min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
-	T max_t = (bounds_[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;
+	float min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
+	float max_t = (bounds_[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;
 
 	int8_t sign_1 = ray.sign[1];
-	T min_ty = (bounds_[    sign_1].y - ray.origin.y) * ray.inv_direction.y;
-	T max_ty = (bounds_[1 - sign_1].y - ray.origin.y) * ray.inv_direction.y;
+	float min_ty = (bounds_[    sign_1].y - ray.origin.y) * ray.inv_direction.y;
+	float max_ty = (bounds_[1 - sign_1].y - ray.origin.y) * ray.inv_direction.y;
 
 	if (min_t > max_ty || min_ty > max_t) {
 		return false;
@@ -111,8 +101,8 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray, T& min_out, T& max_
 	}
 
 	int8_t sign_2 = ray.sign[2];
-	T min_tz = (bounds_[    sign_2].z - ray.origin.z) * ray.inv_direction.z;
-	T max_tz = (bounds_[1 - sign_2].z - ray.origin.z) * ray.inv_direction.z;
+	float min_tz = (bounds_[    sign_2].z - ray.origin.z) * ray.inv_direction.z;
+	float max_tz = (bounds_[1 - sign_2].z - ray.origin.z) * ray.inv_direction.z;
 
 	if (min_t > max_tz || min_tz > max_t) {
 		return false;
@@ -140,8 +130,7 @@ bool AABB<T>::intersect_p(const math::Optimized_ray<T>& ray, T& min_out, T& max_
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
 
-template<typename T>
-bool SU_CALLCONV AABB<T>::intersect_p(simd::FVector origin, simd::FVector inv_direction, float min_t, float max_t) {
+inline bool SU_CALLCONV AABB::intersect_p(simd::FVector origin, simd::FVector inv_direction, float min_t, float max_t) {
 	// you may already have those values hanging around somewhere
 /*	const __m128
 		plus_inf	= loadps(ps_cst_plus_inf),
@@ -199,55 +188,47 @@ bool SU_CALLCONV AABB<T>::intersect_p(simd::FVector origin, simd::FVector inv_di
 	return false;
 }
 
-
-template<typename T>
-void AABB<T>::set_min_max(const Vector3<T>& min, const Vector3<T>& max) {
+inline void AABB::set_min_max(const Vector3f_a& min, const Vector3f_a& max) {
 	bounds_[0] = min;
 	bounds_[1] = max;
 }
 
-template<typename T>
-void AABB<T>::insert(const Vector3<T>& p) {
+inline void AABB::insert(const Vector3f_a& p) {
 	bounds_[0] = math::min(p, bounds_[0]);
 	bounds_[1] = math::max(p, bounds_[1]);
 }
 
-template<typename T>
-AABB<T> AABB<T>::transform(const Matrix4x4<T>& m) const {
-	Vector3<T> xa = bounds_[0].x * m.x.xyz();
-	Vector3<T> xb = bounds_[1].x * m.x.xyz();
+inline AABB AABB::transform(const Matrix4x4f_a& m) const {
+	Vector3f_a xa = bounds_[0].x * m.x.xyz();
+	Vector3f_a xb = bounds_[1].x * m.x.xyz();
 
-	Vector3<T> ya = bounds_[0].y * m.y.xyz();
-	Vector3<T> yb = bounds_[1].y * m.y.xyz();
+	Vector3f_a ya = bounds_[0].y * m.y.xyz();
+	Vector3f_a yb = bounds_[1].y * m.y.xyz();
 
-	Vector3<T> za = bounds_[0].z * m.z.xyz();
-	Vector3<T> zb = bounds_[1].z * m.z.xyz();
+	Vector3f_a za = bounds_[0].z * m.z.xyz();
+	Vector3f_a zb = bounds_[1].z * m.z.xyz();
 
-	return AABB<T>(math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb) + m.w.xyz(),
-				   math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb) + m.w.xyz());
+	return AABB(math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb) + m.w.xyz(),
+				math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb) + m.w.xyz());
 }
 
-template<typename T>
-AABB<T> AABB<T>::merge(const AABB<T>& other) const {
-	return AABB<T>(math::min(bounds_[0], other.bounds_[0]), math::max(bounds_[1], other.bounds_[1]));
+inline AABB AABB::merge(const AABB& other) const {
+	return AABB(math::min(bounds_[0], other.bounds_[0]), math::max(bounds_[1], other.bounds_[1]));
 }
 
-template<typename T>
-void AABB<T>::merge_assign(const AABB& other) {
+inline void AABB::merge_assign(const AABB& other) {
 	bounds_[0] = math::min(bounds_[0], other.bounds_[0]);
 	bounds_[1] = math::max(bounds_[1], other.bounds_[1]);
 }
 
-template<typename T>
-AABB<T> AABB<T>::empty() {
-	T max = std::numeric_limits<T>::max();
-	return AABB<T>(Vector3<T>(max, max, max), Vector3<T>(-max, -max, -max));
+inline AABB AABB::empty() {
+	float max = std::numeric_limits<float>::max();
+	return AABB(Vector3f_a(max, max, max), Vector3f_a(-max, -max, -max));
 }
 
-template<typename T>
-AABB<T> AABB<T>::infinite() {
-	T max = T(1000000);
-	return AABB<T>(Vector3<T>(-max, -max, -max), Vector3<T>(max, max, max));
+inline AABB AABB::infinite() {
+	float max = 1000000.f;
+	return AABB(Vector3f_a(-max, -max, -max), Vector3f_a(max, max, max));
 }
 
 }

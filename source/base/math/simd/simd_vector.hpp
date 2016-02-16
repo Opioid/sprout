@@ -2,6 +2,7 @@
 
 // This is basically a subset of DirectXMath!
 
+#include "math/math.hpp"
 #include "math/vector3.hpp"
 #include <cmath>
 
@@ -152,22 +153,6 @@ Vector SU_CALLCONV dot3(FVector a, FVector b);
  * Globals
  *
  ****************************************************************************/
-
-// The purpose of the following global constants is to prevent redundant
-// reloading of the constants when they are referenced by more than one
-// separate inline math routine called within the same function.  Declaring
-// a constant locally within a routine is sufficient to prevent redundant
-// reloads of that constant when that single routine is called multiple
-// times in a function, but if the constant is used (and declared) in a
-// separate math routine it would be reloaded.
-
-#ifndef SU_GLOBALCONST
-#	ifdef __GNUG__
-#		define SU_GLOBALCONST(X) extern const X __attribute__((weak))
-#	elif defined(_MSC_VER)
-#		define SU_GLOBALCONST(X) extern const __declspec(selectany) X
-#	endif
-#endif
 
 //XMGLOBALCONST XMVECTORF32 g_XMSinCoefficients0    = {-0.16666667f, +0.0083333310f, -0.00019840874f, +2.7525562e-06f};
 //XMGLOBALCONST XMVECTORF32 g_XMSinCoefficients1    = {-2.3889859e-08f, -0.16665852f /*Est1*/, +0.0083139502f /*Est2*/, -0.00018524670f /*Est3*/};

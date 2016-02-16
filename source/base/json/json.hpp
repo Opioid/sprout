@@ -22,7 +22,7 @@ math::float2 read_float2(const rapidjson::Value& value);
 
 math::float3 read_float3(const rapidjson::Value& value);
 math::float3 read_float3(const rapidjson::Value& value, const std::string& name,
-						 const math::float3& default_value = math::float3::identity);
+						 const math::float3& default_value = math::float3_identity);
 
 math::float4 read_float4(const rapidjson::Value& value);
 

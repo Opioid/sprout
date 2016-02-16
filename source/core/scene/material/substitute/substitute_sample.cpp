@@ -15,7 +15,7 @@ namespace scene { namespace material { namespace substitute {
 math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
-		return math::float3::identity;
+		return math::float3_identity;
 	}
 
 	// This is a bit complicated to understand:

@@ -12,12 +12,12 @@
 namespace scene { namespace shape {
 
 Celestial_disk::Celestial_disk() {
-	aabb_.set_min_max(math::float3::identity, math::float3::identity);
+	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
 bool Celestial_disk::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const math::float3& v = transformation.rotation.z;
+	const math::float3& v = transformation.rotation.z3;
 	float b = -math::dot(v, ray.direction);
 
 	if (b < 0.f) {
@@ -31,10 +31,10 @@ bool Celestial_disk::intersect(const entity::Composed_transformation& transforma
 		intersection.epsilon = 5e-4f;
 
 		intersection.p = ray.point(9999.9f);
-		intersection.t = transformation.rotation.x;
-		intersection.b = transformation.rotation.y;
-		intersection.n = transformation.rotation.z;
-		intersection.geo_n = transformation.rotation.z;
+		intersection.t = transformation.rotation.x3;
+		intersection.b = transformation.rotation.y3;
+		intersection.n = transformation.rotation.z3;
+		intersection.geo_n = transformation.rotation.z3;
 		intersection.part = 0;
 
 		ray.max_t = 9999.9f;
@@ -72,7 +72,7 @@ void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transforma
 	math::float3 ls = math::float3(xy, 0.f);
 	math::float3 ws = transformation.scale.x * math::transform_vector(transformation.rotation, ls);
 
-	sample.wi = math::normalized(ws - transformation.rotation.z);
+	sample.wi = math::normalized(ws - transformation.rotation.z3);
 	sample.t = 10000.f;
 	sample.pdf = 1.f / area;
 }

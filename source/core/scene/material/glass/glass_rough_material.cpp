@@ -33,11 +33,11 @@ const material::Sample& Glass_rough::sample(const shape::Differential& dg, const
 
 math::float3 Glass_rough::sample_emission(math::float2 /*uv*/, float /*time*/,
 										  const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 math::float3 Glass_rough::average_emission() const {
-	return math::float3::identity;
+	return math::float3_identity;
 }
 
 bool Glass_rough::has_emission_map() const {

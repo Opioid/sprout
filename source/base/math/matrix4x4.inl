@@ -1,17 +1,24 @@
 #pragma once
 
 #include "matrix4x4.hpp"
+#include "transformation.inl"
 
 namespace math {
+
+/****************************************************************************
+ *
+ * Generic 4x4 matrix
+ *
+ ****************************************************************************/
 
 template<typename T>
 Matrix4x4<T>::Matrix4x4() {}
 
 template<typename T>
 Matrix4x4<T>::Matrix4x4(T m00, T m01, T m02, T m03,
-							   T m10, T m11, T m12, T m13,
-							   T m20, T m21, T m22, T m23,
-							   T m30, T m31, T m32, T m33) :
+						T m10, T m11, T m12, T m13,
+						T m20, T m21, T m22, T m23,
+						T m30, T m31, T m32, T m33) :
 	m00(m00), m01(m01), m02(m02), m03(m03),
 	m10(m10), m11(m11), m12(m12), m13(m13),
 	m20(m20), m21(m21), m22(m22), m23(m23),
@@ -35,6 +42,11 @@ Matrix4x4<T>::Matrix4x4(const Matrix3x3<T>& m) :
 template<typename T>
 Matrix4x4<T>::Matrix4x4(const Transformation<T>& t) {
 	set_basis_scale_origin(*this, math::float3x3(t.rotation), t.scale, t.position);
+}
+
+template<typename T>
+Matrix4x4<T>::Matrix4x4(const Transformationf_a& t) {
+	set_basis_scale_origin(*this, math::create_matrix3x3(t.rotation), t.scale, t.position);
 }
 
 template<typename T>
@@ -114,7 +126,6 @@ Vector3<T> operator*(const Vector3<T>& v, const Matrix4x4<T>& m) {
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
 }
-
 
 template<typename T>
 Vector3<T> &operator*=(Vector3<T>& v, const Matrix4x4<T>& m)
@@ -391,216 +402,131 @@ void set_basis_scale_origin(Matrix4x4<T>& m,
 
 }
 
-template<typename T>
-void set_look_at(Matrix4x4<T>& m, const Vector3<T>& eye, const Vector3<T>& at, const Vector3<T>& up) {
-//	zaxis = normal(At - Eye)
-//	xaxis = normal(cross(Up, zaxis))
-//	yaxis = cross(zaxis, xaxis)
+/****************************************************************************
+ *
+ * Aligned 4x4 float matrix
+ *
+ ****************************************************************************/
 
-//	xaxis.x           yaxis.x           zaxis.x          0
-//	xaxis.y           yaxis.y           zaxis.y          0
-//	xaxis.z           yaxis.z           zaxis.z          0
-//	-dot(xaxis, eye)  -dot(yaxis, eye)  -dot(zaxis, eye) 1
+inline Matrix4x4f_a::Matrix4x4f_a() {}
 
-	Vector3<T> z = normalize(at - eye);
-	Vector3<T> x = normalize(cross(up, z));
-	Vector3<T> y = cross(z, x);
+inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03,
+								  float m10, float m11, float m12, float m13,
+								  float m20, float m21, float m22, float m23,
+								  float m30, float m31, float m32, float m33) :
+	m00(m00), m01(m01), m02(m02), m03(m03),
+	m10(m10), m11(m11), m12(m12), m13(m13),
+	m20(m20), m21(m21), m22(m22), m23(m23),
+	m30(m30), m31(m31), m32(m32), m33(m33) {}
 
-	m.m00 =  x.x;		m.m01 = y.x;		m.m02 = z.x;          m.m03 = T(0);
-	m.m10 =  x.y;         	m.m11 = y.y;          	m.m12 = z.y;	      m.m13 = T(0);
-	m.m20 =  x.z;         	m.m21 = y.z;          	m.m22 = z.z;          m.m23 = T(0);
-	m.m30 = -dot(x, eye); 	m.m31 = -dot(y, eye); 	m.m32 = -dot(z, eye); m.m33 = T(1);
+inline Matrix4x4f_a::Matrix4x4f_a(const Transformationf_a& t) {
+	set_basis_scale_origin(*this, math::create_matrix3x3(t.rotation), t.scale, t.position);
 }
 
-template<typename T>
-void set_look_at_negative_x(Matrix4x4<T>& m, const Vector3<T>& eye, const Vector3<T>& at, const Vector3<T>& up) {
-	Vector3<T> z = normalize(at - eye);
-	Vector3<T> x = normalize(cross(up, z));
-	Vector3<T> y = cross(z, x);
-
-	m.m00 = -x.x;		m.m01 = y.x;		m.m02 = z.x;          m.m03 = T(0);
-	m.m10 = -x.y;         	m.m11 = y.y;          	m.m12 = z.y;	      m.m13 = T(0);
-	m.m20 = -x.z;         	m.m21 = y.z;          	m.m22 = z.z;          m.m23 = T(0);
-	m.m30 = -dot(x, eye); 	m.m31 = -dot(y, eye); 	m.m32 = -dot(z, eye); m.m33 = T(1);
+inline Vector3f_a operator*(const Vector3f_a& v, const Matrix4x4<float>& m) {
+	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
 }
 
-template<typename T>
-void set_look_at_negative_y(Matrix4x4<T>& m, const Vector3<T>& eye, const Vector3<T>& at, const Vector3<T>& up) {
-	Vector3<T> z = normalize(at - eye);
-	Vector3<T> x = normalize(cross(up, z));
-	Vector3<T> y = cross(z, x);
-
-	m.m00 =  x.x;		    m.m01 = -y.x;		m.m02 = z.x;          m.m03 = T(0);
-	m.m10 =  x.y;         	m.m11 = -y.y;          	m.m12 = z.y;	      m.m13 = T(0);
-	m.m20 =  x.z;         	m.m21 = -y.z;          	m.m22 = z.z;          m.m23 = T(0);
-	m.m30 = -dot(x, eye); 	m.m31 = -dot(y, eye); 	m.m32 = -dot(z, eye); m.m33 = T(1);
+inline Vector3f_a transform_vector(const Matrix4x4f_a& m, const Vector3f_a& v) {
+	return Vector3f_a(
+				v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
+				v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
+				v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
-template<typename T>
-void set_look_at_RH(Matrix4x4<T>& m, const Vector3<T>& eye, const Vector3<T>& at, const Vector3<T>& up)
-{
-//	zaxis = normal(Eye - At)
-//	xaxis = normal(cross(Up, zaxis))
-//	yaxis = cross(zaxis, xaxis)
-
-//	xaxis.x           yaxis.x           zaxis.x          0
-//	xaxis.y           yaxis.y           zaxis.y          0
-//	xaxis.z           yaxis.z           zaxis.z          0
-//   -dot(xaxis, eye)  -dot(yaxis, eye)  -dot(zaxis, eye)  1
-
-	Vector3<T> z = normalize(eye - at);
-	Vector3<T> x = normalize(cross(up, z));
-	Vector3<T> y = cross(z, x);
-
-	m.m00 = x.x;		 m.m01 = y.x;		  m.m02 = z.x; 		   m.m03 = T(0);
-	m.m10 = x.y;		 m.m11 = y.y;		  m.m12 = z.y;		   m.m13 = T(0);
-	m.m20 = x.z;		 m.m21 = y.z;		  m.m22 = z.z; 		   m.m23 = T(0);
-	m.m30 = dot(x, eye); m.m31 = dot(y, eye); m.m32 = dot(z, eye); m.m33 = T(1);
+inline Vector3f_a transform_vector_transposed(const Matrix4x4f_a& m, const Vector3f_a& v) {
+	return Vector3f_a(
+				v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
+				v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
+				v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
 }
 
-template<typename T>
-void set_perspective(Matrix4x4<T>& m, T fov, T ratio, T z_near, T z_far, bool upside_down)
-{
-#ifdef CLIP_NEAR_Z_MINUS_ONE
-
-	T f = math::cot(fov * T(0.5));
-	T f_n = T(1) / (z_far - z_near);
-
-	m.m00 = f / ratio; m.m01 = T(0); m.m02 =  T(0); 				         m.m03 = T(0);
-	m.m10 = T(0);	   m.m11 = f;  	 m.m12 =  T(0);				             m.m13 = T(0);
-	m.m20 = T(0);	   m.m21 = T(0); m.m22 =  (z_far + z_near) * f_n; 		 m.m23 = T(1);
-	m.m30 = T(0);	   m.m31 = T(0); m.m32 = -(T(2) * z_far * z_near) * f_n; m.m33 = T(0);
-
-//	m.m00 = f / ratio; m.m01 = T(0); m.m02 =  T(0); 				         m.m03 = T(0);
-//	m.m10 = T(0);	   m.m11 = f;  	 m.m12 =  T(0);				             m.m13 = T(0);
-//	m.m20 = T(0);	   m.m21 = T(0); m.m22 =  (z_far + z_near) / (z_near - z_far); 		 m.m23 = -T(1);
-//	m.m30 = T(0);	   m.m31 = T(0); m.m32 = (2) / (z_near * z_far); m.m33 = T(1);
-
-#else
-
-//	xScale     0          0               0
-//	0        yScale       0               0
-//	0          0       zf/(zf-zn)         1
-//	0          0       -zn*zf/(zf-zn)     0
-//	where:
-//	yScale = cot(fovY/2)
-//	xScale = aspect ratio * yScale
-
-	T t = fov * T(0.5);
-	T y = cos(t) / sin(t);
-	T x = y / ratio;
-
-	m.m00 = x;    m.m01 = T(0); m.m02 =  T(0);                  m.m03 = T(0);
-	m.m10 = T(0); m.m11 = y;    m.m12 =  T(0);                  m.m13 = T(0);
-	m.m20 = T(0); m.m21 = T(0); m.m22 =  z_far / (z_far - z_near); m.m23 = T(1);
-	m.m30 = T(0); m.m31 = T(0); m.m32 = -z_near * m.m22;         m.m33 = T(0);
-
-#endif
-
-	if (upside_down)
-	{
-		m.m11 *= -T(1);
-	}
+inline Vector3f_a transform_point(const Matrix4x4f_a& m, const Vector3f_a& v) {
+	return Vector3f_a(
+				v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
+				v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
+				v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
 }
 
-template<typename T>
-void set_perspective_linear(Matrix4x4<T>& m, T fov, T aspect, T znear, T zfar) {
-//	xScale     0          0               0
-//	0        yScale       0               0
-//	0          0       zf/(zf-zn)         1
-//	0          0       -zn*zf/(zf-zn)     0
-//	where:
-//	yScale = cot(fovY/2)
-//	xScale = aspect ratio * yScale
-
-	T t = fov * T(0.5);
-	T y = cos(t) / sin(t);
-	T x = y / aspect;
-
-	m.m00 = x;    m.m01 = T(0); m.m02 =  T(0);                  m.m03 = T(0);
-	m.m10 = T(0); m.m11 = y;    m.m12 =  T(0);                  m.m13 = T(0);
-	m.m20 = T(0); m.m21 = T(0); m.m22 =  zfar / (zfar - znear); m.m23 = T(1);
-	m.m30 = T(0); m.m31 = T(0); m.m32 = -znear * m.m22;         m.m33 = T(0);
-
-	m.m22 /= zfar;
-	m.m32 /= zfar;
+inline void set_basis_scale_origin(Matrix4x4f_a& m,
+								   const Matrix3x3<float>& basis, const Vector3f_a& scale, const Vector3f_a& origin) {
+	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
+	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
+	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
+	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 0.f;
 }
 
-template<typename T>
-void set_ortho(Matrix4x4<T>& m, T width, T height, T z_near, T z_far) {
+inline Matrix4x4f_a create_matrix4x4(const Vector4f_a& q) {
+	float d = dot(q, q);
 
-#ifdef CLIP_NEAR_Z_MINUS_ONE
+	float s = 2.f / d;
 
-	T f_n = T(1) / (z_far - z_near);
+	float xs = q.x * s,  ys = q.y * s,  zs = q.z * s;
+	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
+	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
+	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
 
-	m.m00 = T(2) / width; m.m01 = T(0);          m.m02 =  T(0);                   m.m03 = T(0);
-	m.m10 = T(0);         m.m11 = T(2) / height; m.m12 =  T(0);                   m.m13 = T(0);
-	m.m20 = T(0);         m.m21 = T(0);          m.m22 =  T(2) * f_n;			  m.m23 = T(0);
-	m.m30 = T(0);         m.m31 = T(0);          m.m32 = -(z_far + z_near) * f_n; m.m33 = T(1);
-
-#else
-
-//	2/w  0    0           0
-//	0    2/h  0           0
-//	0    0    1/(zf-zn)   0
-//	0    0    zn/(zn-zf)  1
-
-	m.m00 = T(2) / width; m.m01 = T(0);          m.m02 = T(0);                      m.m03 = T(0);
-	m.m10 = T(0);         m.m11 = T(2) / height; m.m12 = T(0);                      m.m13 = T(0);
-	m.m20 = T(0);         m.m21 = T(0);          m.m22 = T(1) / (z_far - z_near);   m.m23 = T(0);
-	m.m30 = T(0);         m.m31 = T(0);          m.m32 = z_near / (z_near - z_far); m.m33 = T(1);
-
-#endif
+	return Matrix4x4f_a(
+				1.f - (yy + zz), xy - wz,         xz + wy,			0.f,
+				xy + wz,         1.f - (xx + zz), yz - wx,			0.f,
+				xz - wy,         yz + wx,         1.f - (xx + yy),	0.f,
+				0.f,			 0.f,			  0.f,				1.f);
 }
 
-template<typename T>
-void set_clip(Matrix4x4<T>& m, T cx, T cy, T cw, T ch, T zmin, T zmax) {
-//	2/cw		0			0				 0
-//	0			2/ch		0				 0
-//	0			0			1/(zmax-zmin)	 0
-//	-1-2(cx/cw)	1-2(cy/ch) -zmin/(zmax-zmin)	 1
+inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
+	float m00_11 = m.m00 * m.m11;
+	float m01_12 = m.m01 * m.m12;
+	float m02_10 = m.m02 * m.m10;
+	float m00_12 = m.m00 * m.m12;
+	float m01_10 = m.m01 * m.m10;
+	float m02_11 = m.m02 * m.m11;
 
-	const T zdif = zmax - zmin;
+	float id = 1.f / (m00_11 * m.m22 + m01_12 * m.m20 + m02_10 * m.m21
+					- m00_12 * m.m21 - m01_10 * m.m22 - m02_11 * m.m20);
 
-	m.m00 = T(2) / cw;                m.m01 = T(0);                     m.m02 = T(0);         m.m03 = T(0);
-	m.m10 = T(0);                     m.m11 = T(2) / ch;                m.m12 = T(0);         m.m13 = T(0);
-	m.m20 = T(0);                     m.m21 = T(0);                     m.m22 = T(1) / zdif;  m.m23 = T(0);
-	m.m30 = -T(1) - T(2) * (cx / cw); m.m31 = -T(1) - T(2) * (cy / ch); m.m32 = -zmin / zdif; m.m33 = T(1);
+	float m11_22 = m.m11 * m.m22;
+	float m12_21 = m.m12 * m.m21;
+	float m02_21 = m.m02 * m.m21;
+	float m01_22 = m.m01 * m.m22;
+	float m12_20 = m.m12 * m.m20;
+	float m10_22 = m.m10 * m.m22;
+	float m00_22 = m.m00 * m.m22;
+	float m02_20 = m.m02 * m.m20;
+	float m10_21 = m.m10 * m.m21;
+	float m11_20 = m.m11 * m.m20;
+	float m01_20 = m.m01 * m.m20;
+	float m00_21 = m.m00 * m.m21;
+
+	return Matrix4x4f_a(
+		(m11_22 - m12_21) * id,
+		(m02_21 - m01_22) * id,
+		(m01_12 - m02_11) * id,
+		0.f,
+
+		(m12_20 - m10_22) * id,
+		(m00_22 - m02_20) * id,
+		(m02_10 - m00_12) * id,
+		0.f,
+
+		(m10_21 - m11_20) * id,
+		(m01_20 - m00_21) * id,
+		(m00_11 - m01_10) * id,
+		0.f,
+
+		(m10_22 * m.m31 + m11_20 * m.m32 + m12_21 * m.m30 - m10_21 * m.m32 - m11_22 * m.m30 - m12_20 * m.m31) * id,
+		(m00_21 * m.m32 + m01_22 * m.m30 + m02_20 * m.m31 - m00_22 * m.m31 - m01_20 * m.m32 - m02_21 * m.m30) * id,
+		(m00_12 * m.m31 + m01_10 * m.m32 + m02_11 * m.m30 - m00_11 * m.m32 - m01_12 * m.m30 - m02_10 * m.m31) * id,
+		1.f);
 }
 
-template<typename T>
-void set_viewport_scale(Matrix4x4<T>& m, T x, T y, T width, T height) {
-//	width	0			0	0
-//	0		-height		0	0
-//	0		0			1	0
-//	x		height+y	0	1
-	m.m00 = width; m.m01 = T(0);       m.m02 = T(0); m.m03 = T(0);
-	m.m10 = T(0);  m.m11 = -height;    m.m12 = T(0); m.m13 = T(0);
-	m.m20 = T(0);  m.m21 = T(0);       m.m22 = T(1); m.m23 = T(0);
-	m.m30 = x;     m.m31 = height + y; m.m32 = T(0); m.m33 = T(1);
-}
-
-template<typename T>
-Vector2<T> project_to_screen(const Vector3<T>& v, const Matrix4x4<T>& worldViewProj, float halfW, float halfH, float x, float y) {
-	Vector4<T> t = Vector4<T>(v.x, v.y, v.z, T(1)) * worldViewProj;
-	Vector2<T> o = Vector2<T>(t.x, t.y) / t.w;
-
-	o.x = (o.x + T(1)) * halfW + x;
-	o.y = (T(1) - o.y) * halfH + y;
-
-	return o;
-}
-
-template<typename T>
-Vector3<T> project_to_screen(const Vector3<T>& v, const Matrix4x4<T>& worldViewProj, float halfW, float halfH, float x, float y, float zmin, float zmax) {
-	Vector4<T> t = Vector4<T>(v.x, v.y, v.z, T(1)) * worldViewProj;
-	Vector3<T> o = Vector3<T>(t.x, t.y, t.z) / t.w;
-
-	o.x = (o.x + T(1)) * halfW + x;
-	o.y = (T(1) - o.y) * halfH + y;
-	o.z = zmin + (zmax - zmin) * o.z;
-
-	return o;
+inline void set_basis_scale_origin(Matrix4x4f_a& m,
+								   const Matrix4x4f_a& basis, const Vector3f_a& scale, const Vector3f_a& origin) {
+	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
+	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
+	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
+	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 0.f;
 }
 
 }

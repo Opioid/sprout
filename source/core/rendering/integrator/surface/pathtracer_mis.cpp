@@ -35,7 +35,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 	scene::material::bxdf::Result sample_result;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
-	math::float3 result = math::float3::identity;
+	math::float3 result = math::float3_identity;
 	float opacity = 0.f;
 	bool primary_ray = 0 == ray.depth;
 
@@ -56,7 +56,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 		//	throughput *= worker.transmittance(ray);
 			math::float3 tr;
 			math::float4 vli = worker.volume_li(ray, tr);
-			result += throughput * vli.xyz();
+			result += throughput * math::float3(vli.xyz());
 			throughput *= tr;
 		}
 
@@ -81,7 +81,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 		}
 
 		material_sample.sample_evaluate(sampler_, sample_result);
-		if (0.f == sample_result.pdf || math::float3::identity == sample_result.reflection) {
+		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {
 			break;
 		}
 
@@ -132,7 +132,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 												   const scene::Intersection& intersection,
 												   const scene::material::Sample& material_sample,
 												   const image::texture::sampler::Sampler_2D& texture_sampler) {
-	math::float3 result = math::float3::identity;
+	math::float3 result = math::float3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	scene::Ray shadow_ray;

@@ -13,7 +13,7 @@ math::float3 Schlick_isotropic<Sample>::evaluate(const Sample& sample,
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
 		pdf = 0.f;
-		return math::float3::identity;
+		return math::float3_identity;
 	}
 
 	math::float3 h = math::normalized(sample.wo_ + wi);
@@ -94,7 +94,7 @@ math::float3 Conductor_isotropic<Sample>::evaluate(const Sample& sample,
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
 		pdf = 0.f;
-		return math::float3::identity;
+		return math::float3_identity;
 	}
 
 	math::float3 h = math::normalized(sample.wo_ + wi);

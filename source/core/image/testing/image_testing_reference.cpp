@@ -61,7 +61,7 @@ void create_reference_normal_map(math::int2 dimensions) {
 			float fx = static_cast<float>(x);
 			float fy = static_cast<float>(y);
 
-			math::float3 v = math::float3::identity;
+			math::float3 v = math::float3_identity;
 
 			for (int32_t ay = 0; ay < aa.y; ++ay) {
 				for (int32_t ax = 0; ax < aa.x; ++ax) {

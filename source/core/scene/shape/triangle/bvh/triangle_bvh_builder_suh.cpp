@@ -23,7 +23,7 @@ Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axi
 	case 2: n = math::float3(0.f, 0.f, 1.f); break;
 	}
 
-	plane_ = math::plane(n, p);
+	plane_ = math::create_plane(n, p);
 
 	key_ = std::abs(static_cast<int>(bb_axis) - static_cast<int>(split_axis));
 
@@ -107,7 +107,7 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb
 														  const std::vector<Vertex>& vertices) {
 	split_candidates_.clear();
 
-	math::float3 average = math::float3::identity;
+	math::float3 average = math::float3_identity;
 
 	for (index i = begin; i != end; ++i) {
 		auto& t = triangles[*i];

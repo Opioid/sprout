@@ -21,7 +21,7 @@ void test() {
 	Sample sample;
 
 	math::float3 color(1.f, 1.f, 1.f);
-	math::float3 emission = math::float3::identity;
+	math::float3 emission = math::float3_identity;
 	float constant_f0 = 0.03f;
 	float roughness   = 0.f;
 	float metallic    = 0.f;

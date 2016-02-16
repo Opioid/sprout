@@ -1,36 +1,41 @@
 #pragma once
 
+#include "vector3.hpp"
 #include <cstdint>
 
 namespace math {
 
-template<typename T> struct Vector3;
-
-template<typename T>
 struct Ray {
 	Ray();
-	Ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t = T(0), T max_t = T(1));
+	Ray(const Vector3f_a& origin, const Vector3f_a& direction, float min_t = 0.f, float max_t = 1.f);
 
-	Vector3<T> point(T t) const;
+	Vector3f_a point(float t) const;
 
-	T length() const;
+	float length() const;
 
-	Vector3<T> origin, direction;
-	T min_t, max_t;
+	Vector3f_a origin, direction;
+	float min_t, max_t;
 };
 
-template<typename T>
-struct Optimized_ray : public Ray<T> {
+struct Optimized_ray {
 	Optimized_ray();
-	Optimized_ray(const Vector3<T>& origin, const Vector3<T>& direction, T min_t = T(0), T max_t = T(1));
+	Optimized_ray(const Vector3f_a& origin, const Vector3f_a& direction, float min_t = 0.f, float max_t = 1.f);
 
-	void set_direction(const Vector3<T>& v);
+	void set_direction(const Vector3f_a& v);
 
-	Vector3<T> inv_direction;
+	Vector3f_a point(float t) const;
+
+	float length() const;
+
+	Vector3f_a origin;
+	Vector3f_a direction;
+	Vector3f_a inv_direction;
+	float min_t;
+	float max_t;
 	int8_t sign[3];
 	int8_t pad;
 };
 
-typedef Optimized_ray<float> Oray;
+typedef Optimized_ray Oray;
 
 }

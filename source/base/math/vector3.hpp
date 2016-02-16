@@ -5,6 +5,14 @@
 
 namespace math {
 
+struct alignas(16) Vector3f_a;
+
+/****************************************************************************
+ *
+ * Generic 3D vector
+ *
+ ****************************************************************************/
+
 template<typename T>
 struct Vector3 {
 	union {
@@ -24,6 +32,8 @@ struct Vector3 {
 	explicit Vector3(Vector2<T> xy, T z = T(0));
 
 	explicit Vector3(const T* v);
+
+	explicit Vector3(const Vector3f_a& v);
 
 	Vector2<T> xy() const;
 
@@ -57,7 +67,7 @@ struct Vector3 {
 
 	bool operator!=(const Vector3& v) const;
 
-	explicit operator unsigned int() const;
+//	explicit operator unsigned int() const;
 
 	T absolute_max(uint32_t& i) const;
 
@@ -152,7 +162,88 @@ struct alignas(16) Vector3f_a {
 
 	explicit Vector3f_a(float s);
 
+	explicit Vector3f_a(Vector2<float> xy, float z);
+
 	explicit Vector3f_a(const Vector3<float>& v);
+
+	Vector2<float> xy() const;
+
+	Vector3f_a operator+(float s) const;
+
+	Vector3f_a operator+(const Vector3f_a& v) const;
+
+	Vector3f_a operator-(float s) const;
+
+	Vector3f_a operator-(const Vector3f_a& v) const;
+
+	Vector3f_a operator*(const Vector3f_a& v) const;
+
+	Vector3f_a operator/(float s) const;
+
+	Vector3f_a operator/(const Vector3f_a& v) const;
+
+	Vector3f_a operator-() const;
+
+	Vector3f_a& operator+=(const Vector3f_a& v);
+
+	Vector3f_a& operator-=(const Vector3f_a& v);
+
+	Vector3f_a& operator*=(const Vector3f_a& v);
+
+	Vector3f_a& operator*=(float s);
+
+	Vector3f_a& operator/=(float s);
+
+	bool operator==(const Vector3f_a& v) const;
+
+	bool operator!=(const Vector3f_a& v) const;
+
+	float absolute_max(uint32_t& i) const;
 };
+
+Vector3f_a operator*(float s, const Vector3f_a& v);
+
+float dot(const Vector3f_a& a, const Vector3f_a& b);
+
+float length(const Vector3f_a& v);
+
+float squared_length(const Vector3f_a& v);
+
+Vector3f_a normalized(const Vector3f_a& v);
+
+Vector3f_a reciprocal(const Vector3f_a& v);
+
+Vector3f_a cross(const Vector3f_a& a, const Vector3f_a& b);
+
+Vector3f_a project(const Vector3f_a& a, const Vector3f_a& b);
+
+float distance(const Vector3f_a& a, const Vector3f_a& b);
+
+float squared_distance(const Vector3f_a& a, const Vector3f_a& b);
+
+Vector3f_a saturate(const Vector3f_a& v);
+
+Vector3f_a exp(const Vector3f_a& v);
+
+Vector3f_a lerp(const Vector3f_a& a, const Vector3f_a& b, float t);
+
+Vector3f_a reflect(const Vector3f_a& normal, const Vector3f_a& v);
+
+// Assuming n is unit length
+void coordinate_system(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b);
+
+Vector3f_a min(const Vector3f_a& a, const Vector3f_a& b);
+
+Vector3f_a max(const Vector3f_a& a, const Vector3f_a& b);
+
+Vector3f_a abs(const Vector3f_a& v);
+
+bool contains_negative(const Vector3f_a& v);
+
+bool contains_greater_one(const Vector3f_a& v);
+
+bool contains_nan(const Vector3f_a& v);
+
+bool contains_inf(const Vector3f_a& v);
 
 }
