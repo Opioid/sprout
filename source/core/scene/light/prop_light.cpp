@@ -15,8 +15,9 @@ void Prop_light::init(Prop* prop, uint32_t part) {
 	part_ = part;
 }
 
-void Prop_light::transformation_at(float time, entity::Composed_transformation& transformation) const {
-	prop_->transformation_at(time, transformation);
+const entity::Composed_transformation& Prop_light::transformation_at(float time,
+															 entity::Composed_transformation& transformation) const {
+	return prop_->transformation_at(time, transformation);
 }
 
 void Prop_light::sample(const entity::Composed_transformation& transformation, float time,
@@ -65,8 +66,8 @@ void Prop_light::prepare_sampling() {
 
 	prop_->shape()->prepare_sampling(part_);
 
-	entity::Composed_transformation transformation;
-	prop_->transformation_at(0.f, transformation);
+	entity::Composed_transformation temp;
+	auto& transformation = prop_->transformation_at(0.f, temp);
 	area_ = prop_->shape()->area(part_, math::float3(transformation.scale));
 }
 

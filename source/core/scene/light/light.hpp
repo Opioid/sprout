@@ -23,7 +23,8 @@ public:
 
 	virtual ~Light() {}
 
-	virtual void transformation_at(float time, entity::Composed_transformation& transformation) const = 0;
+	virtual const entity::Composed_transformation& transformation_at(
+			float time, entity::Composed_transformation& transformation) const = 0;
 
 	virtual void sample(const entity::Composed_transformation& transformation, float time,
 						const math::float3& p, const math::float3& n, bool total_sphere,

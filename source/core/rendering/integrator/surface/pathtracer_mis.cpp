@@ -150,8 +150,8 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 
 		float light_pdf_reciprocal = 1.f / light_pdf;
 
-		scene::entity::Composed_transformation transformation;
-		light->transformation_at(ray.time, transformation);
+		scene::entity::Composed_transformation temp;
+		auto& transformation = light->transformation_at(ray.time, temp);
 
 		// Light source importance sample
 		scene::light::Sample light_sample;

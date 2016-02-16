@@ -15,7 +15,8 @@ public:
 
 	void init(Prop* prop, uint32_t part);
 
-	virtual void transformation_at(float time, entity::Composed_transformation& transformation) const final override;
+	virtual const entity::Composed_transformation& transformation_at(
+			float time, entity::Composed_transformation& transformation) const final override;
 
 	virtual void sample(const entity::Composed_transformation& transformation, float time,
 						const math::float3& p, const math::float3& n, bool total_sphere,

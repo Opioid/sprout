@@ -8,14 +8,15 @@ Entity::Entity() : parent_(nullptr), next_(nullptr), child_(nullptr) {}
 
 Entity::~Entity() {}
 
-bool Entity::transformation_at(float tick_delta, Composed_transformation& transformation) const {
+const Composed_transformation& Entity::transformation_at(float tick_delta,
+														 Composed_transformation& transformation) const {
 	if (!animated_) {
-		transformation = world_transformation_;
-	} else {
-		transformation.set(math::lerp(world_frame_a_, world_frame_b_, tick_delta));
+		return world_transformation_;
 	}
 
-	return animated_;
+	transformation.set(math::lerp(world_frame_a_, world_frame_b_, tick_delta));
+
+	return transformation;
 }
 
 void Entity::set_transformation(const math::transformation& t) {

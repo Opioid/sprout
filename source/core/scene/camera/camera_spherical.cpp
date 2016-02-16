@@ -46,8 +46,9 @@ void Spherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*vi
 
 	math::float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
 
-	entity::Composed_transformation transformation;
-	transformation_at(sample.time, transformation);
+	entity::Composed_transformation temp;
+	auto& transformation = transformation_at(sample.time, temp);
+
 	ray.origin = math::float3(transformation.position);
 	ray.set_direction(math::transform_vector(transformation.rotation, dir));
 	ray.min_t = 0.f;

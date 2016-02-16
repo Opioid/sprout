@@ -47,8 +47,8 @@ void Perspective::update_focus(rendering::Worker& worker) {
 	if (focus_.use_point) {
 		math::float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
 
-		entity::Composed_transformation transformation;
-		transformation_at(0.f, transformation);
+		entity::Composed_transformation temp;
+		auto& transformation = transformation_at(0.f, temp);
 
 		scene::Ray ray;
 		ray.origin = math::float3(transformation.position);
@@ -82,8 +82,8 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*
 		r.direction = focus - r.origin;
 	}
 
-	entity::Composed_transformation transformation;
-	transformation_at(sample.time, transformation);
+	entity::Composed_transformation temp;
+	auto& transformation = transformation_at(sample.time, temp);
 	ray.origin = math::transform_point(transformation.object_to_world, r.origin);
 	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(r.direction)));
 	ray.min_t = 0.f;

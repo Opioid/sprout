@@ -42,8 +42,8 @@ bool Prop::intersect(scene::Ray& ray, shape::Node_stack& node_stack, shape::Inte
 		return false;
 	}
 
-	entity::Composed_transformation transformation;
-	transformation_at(ray.time, transformation);
+	entity::Composed_transformation temp;
+	auto& transformation = transformation_at(ray.time, temp);
 
 	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
@@ -57,8 +57,8 @@ bool Prop::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 		return false;
 	}
 
-	entity::Composed_transformation transformation;
-	transformation_at(ray.time, transformation);
+	entity::Composed_transformation temp;
+	auto& transformation = transformation_at(ray.time, temp);
 
 	return shape_->intersect_p(transformation, ray, node_stack);
 }
@@ -77,8 +77,8 @@ float Prop::opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 		return false;
 	}
 
-	entity::Composed_transformation transformation;
-	transformation_at(ray.time, transformation);
+	entity::Composed_transformation temp;
+	auto& transformation = transformation_at(ray.time, temp);
 
 	return shape_->opacity(transformation, ray, ray.time, node_stack, materials_, sampler);
 }
