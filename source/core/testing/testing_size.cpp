@@ -2,6 +2,7 @@
 #include "scene/entity/keyframe.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/triangle/triangle_primitive_mte.hpp"
+#include "base/math/vector.inl"
 #include <string>
 #include <iostream>
 
