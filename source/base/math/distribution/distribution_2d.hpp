@@ -16,9 +16,9 @@ public:
 
 private:
 
-	std::vector<Distribution_1D> conditional_;
-
 	Distribution_1D marginal_;
+
+	std::vector<Distribution_1D> conditional_;
 };
 
 }

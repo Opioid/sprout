@@ -12,10 +12,10 @@ public:
 
 	float integral() const;
 
-	float sample_continuous(float r, float& pdf) const;
-
 	uint32_t sample_discrete(float r) const;
 	uint32_t sample_discrete(float r, float& pdf) const;
+
+	float sample_continuous(float r, float& pdf) const;
 
 	float pdf(float u) const;
 

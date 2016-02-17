@@ -73,12 +73,12 @@ void Emissionmap::prepare_sampling(bool spherical) {
 	}
 
 	if (spherical) {
-		average_emission_ = math::float3_identity;
+		math::float3 average_emission = math::float3_identity;
+
+		float total_weight = 0.f;
 
 		auto d = emission_map_->dimensions();
 		std::vector<float> luminance(d.x * d.y);
-
-		total_weight_ = 0.f;
 
 		for (int32_t y = 0, l = 0; y < d.y; ++y) {
 			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
@@ -86,15 +86,17 @@ void Emissionmap::prepare_sampling(bool spherical) {
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
 				math::float3 emission = emission_factor_ * emission_map_->at_3(x, y);
 
+				average_emission += sin_theta * emission;
+
+				total_weight += sin_theta;
+
 				luminance[l] = color::luminance(emission);
-
-				average_emission_ += sin_theta * emission;
-
-				total_weight_ += sin_theta;
 			}
 		}
 
-		average_emission_ /= total_weight_;
+		average_emission_ = average_emission / total_weight;
+
+		total_weight_ = total_weight;
 
 		distribution_.init(luminance.data(), d);
 	} else {

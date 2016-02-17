@@ -10,16 +10,12 @@
 #include "core/scene/camera/camera.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
-#include "core/testing/testing_size.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector.inl"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 
 int main(int argc, char* argv[]) {
-
-	testing::size();
-
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout!");
 
