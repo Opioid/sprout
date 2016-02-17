@@ -41,13 +41,13 @@ protected:
 
 	virtual void on_set_transformation() = 0;
 
+	Composed_transformation world_transformation_;
+
 	Keyframe local_frame_a_;
 	Keyframe local_frame_b_;
 
 	math::transformation world_frame_a_;
 	math::transformation world_frame_b_;
-
-	Composed_transformation world_transformation_;
 
 	Entity* parent_;
 	Entity* next_;

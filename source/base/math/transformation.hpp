@@ -32,7 +32,7 @@ Transformation<T> lerp(const Transformation<T>& a, const Transformation<T>& b, T
  *
  ****************************************************************************/
 
-struct Transformationf_a {
+struct alignas(16) Transformationf_a {
 	Vector3f_a position;
 	Vector3f_a scale;
 	quaternion rotation;

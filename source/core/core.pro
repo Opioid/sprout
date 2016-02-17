@@ -27,6 +27,7 @@ include(resource/resource.pri)
 include(sampler/sampler.pri)
 include(scene/scene.pri)
 include(take/take.pri)
+include(testing/testing.pri)
 
 unix {
 	target.path = /usr/lib

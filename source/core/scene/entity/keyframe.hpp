@@ -6,10 +6,9 @@
 
 namespace scene { namespace entity {
 
-struct Keyframe {
+struct alignas(16) Keyframe {
 	void interpolate(const Keyframe& other, float t, Keyframe& result) const;
 
-	float time;
 	math::transformation transformation;
 
 	struct Morphing {
@@ -18,6 +17,8 @@ struct Keyframe {
 	};
 
 	Morphing morphing;
+
+	float time;
 };
 
 }}
