@@ -11,6 +11,8 @@
 #include "base/math/ray.inl"
 #include "base/math/matrix.inl"
 #include "base/math/distribution/distribution_1d.inl"
+#include "base/math/simd/simd_vector.inl"
+#include "base/math/simd/simd_matrix.inl"
 
 #include <iostream>
 #include "base/math/print.hpp"
@@ -37,28 +39,61 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 
 	Intersection pi;
 	if (tree_.intersect(tray, node_stack, pi)) {
-		intersection.epsilon = 3e-3f * tray.max_t;
+		ray.max_t = tray.max_t;
 
-		intersection.p = ray.point(tray.max_t);
+		float epsilon = 3e-3f * tray.max_t;
+
+		math::float3 p_w = ray.point(tray.max_t);
 
 		math::float3 n;
 		math::float3 t;
 		math::float2 uv;
 		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
 
-		intersection.geo_n = math::transform_vector(transformation.rotation, tree_.triangle_normal(pi.index));
-
-	//	math::transform_vectors(transformation.rotation, n, t, intersection.n, intersection.t);
-
-		intersection.n = math::transform_vector(transformation.rotation, n);
-		intersection.t = math::transform_vector(transformation.rotation, t);
+		math::float3 geo_n = tree_.triangle_normal(pi.index);
 
 		float bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
-		intersection.b = bitangent_sign * math::cross(intersection.n, intersection.t);
-		intersection.uv = uv;
-		intersection.part = tree_.triangle_material_index(pi.index);
+		uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-		ray.max_t = tray.max_t;
+		math::float3 geo_n_w = math::transform_vector(transformation.rotation, geo_n);
+		math::float3 n_w	 = math::transform_vector(transformation.rotation, n);
+		math::float3 t_w	 = math::transform_vector(transformation.rotation, t);
+		math::float3 b_w	 = bitangent_sign * math::cross(n_w, t_w);
+
+
+
+/*
+		math::simd::Matrix rotation = math::simd::load_float4x4(transformation.rotation);
+
+		math::simd::Vector simd_t = math::simd::load_float3(t);
+		math::simd::Vector t_w = math::simd::transform_vector(rotation, simd_t);
+		math::simd::store_float3(intersection.t, t_w);
+
+		math::simd::Vector simd_n = math::simd::load_float3(n);
+		math::simd::Vector n_w = math::simd::transform_vector(rotation, simd_n);
+		math::simd::store_float3(intersection.n, n_w);
+
+		math::simd::Vector simd_geo_n = math::simd::load_float3(geo_n);
+		math::simd::Vector geo_n_w = math::simd::transform_vector(rotation, simd_geo_n);
+		math::simd::store_float3(intersection.geo_n, geo_n_w);
+
+		math::simd::Vector b_w = math::simd::cross3(n_w, t_w);
+		math::float3 ub_w;
+		math::simd::store_float3(ub_w, b_w);
+		intersection.b = bitangent_sign * ub_w;
+*/
+
+
+
+		intersection.p = p_w;
+		intersection.t = t_w;
+		intersection.b = b_w;
+		intersection.n = n_w;
+		intersection.geo_n = geo_n_w;
+		intersection.uv = uv;
+		intersection.epsilon = epsilon;
+		intersection.part = material_index;
+
 		return true;
 	}
 

@@ -186,7 +186,7 @@ inline void Intersection_triangle_MTE::interpolate(math::float2 uv, math::float3
 }
 
 inline math::float3 Intersection_triangle_MTE::normal() const {
-	return n;;
+	return n;
 }
 
 inline float Intersection_triangle_MTE::area() const {

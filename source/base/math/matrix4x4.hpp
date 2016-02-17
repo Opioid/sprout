@@ -172,10 +172,10 @@ struct alignas(16) Matrix4x4f_a {
 		};
 
 		struct {
-			Vector3f_a x3; //float pad0;
-			Vector3f_a y3; //float pad1;
-			Vector3f_a z3; //float pad2;
-			Vector3f_a w3; //float pad3;
+			Vector3f_a x3;
+			Vector3f_a y3;
+			Vector3f_a z3;
+			Vector3f_a w3;
 		};
 	};
 

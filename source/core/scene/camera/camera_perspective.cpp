@@ -72,20 +72,29 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-	math::Ray r(math::float3_identity, direction);
+	math::float3 origin;
 
 	if (lens_radius_ > 0.f) {
 		math::float2 lens  = math::sample_disk_concentric(sample.lens_uv);
-		math::float3 focus = r.point(focal_distance_ / r.direction.z);
 
-		r.origin = math::float3(lens.x * lens_radius_, lens.y * lens_radius_, 0.f);
-		r.direction = focus - r.origin;
+		float t = focal_distance_ / direction.z;
+		math::float3 focus = t * direction;
+
+		origin = math::float3(lens.x * lens_radius_, lens.y * lens_radius_, 0.f);
+		direction = focus - origin;
+	} else {
+		origin = math::float3_identity;
 	}
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);
-	ray.origin = math::transform_point(transformation.object_to_world, r.origin);
-	ray.set_direction(math::transform_vector(transformation.object_to_world, math::normalized(r.direction)));
+
+	math::float3 origin_w = math::transform_point(transformation.object_to_world, origin);
+	math::float3 direction_w = math::normalized(direction);
+	direction_w = math::transform_vector(transformation.object_to_world, direction_w);
+
+	ray.origin = origin_w;
+	ray.set_direction(direction_w);
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
 	ray.time = sample.time;

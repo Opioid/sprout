@@ -24,7 +24,8 @@ inline float Distribution_1D::sample_continuous(float r, float& pdf) const {
 
 	pdf = pdf_[offset];
 
-	float t = (cdf_[offset + 1] - r) / (cdf_[offset + 1] - cdf_[offset]);
+	float c = cdf_[offset + 1];
+	float t = (c - r) / (c - cdf_[offset]);
 
 	return (static_cast<float>(offset) + t) / size_;
 }

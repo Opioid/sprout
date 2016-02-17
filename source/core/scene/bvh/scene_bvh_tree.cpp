@@ -23,6 +23,7 @@ bool Build_node::intersect(scene::Ray& ray, const std::vector<Prop*>& props, sha
 	}
 
 	bool hit = false;
+	const Prop* prop;
 
 	if (children[0]) {
 		int8_t c = ray.sign[axis];
@@ -38,12 +39,13 @@ bool Build_node::intersect(scene::Ray& ray, const std::vector<Prop*>& props, sha
 		for (uint32_t i = offset; i < props_end; ++i) {
 			auto p = props[i];
 			if (p->intersect(ray, node_stack, intersection.geo)) {
-				intersection.prop = p;
+				prop = p;
 				hit = true;
 			}
 		}
 	}
 
+	intersection.prop = prop;
 	return hit;
 }
 
@@ -132,14 +134,17 @@ bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack, Intersectio
 		hit = true;
 	}
 
+	const Prop* prop = intersection.prop;
+
 	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
 		auto p = props_[i];
 		if (p->intersect(ray, node_stack, intersection.geo)) {
-			intersection.prop = p;
+			prop = p;
 			hit = true;
 		}
 	}
 
+	intersection.prop = prop;
 	return hit;
 }
 

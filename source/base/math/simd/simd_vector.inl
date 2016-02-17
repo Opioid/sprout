@@ -1,6 +1,7 @@
 #pragma once
 
 #include "simd_vector.hpp"
+#include "math/vector3.inl"
 
 namespace math { namespace simd {
 
