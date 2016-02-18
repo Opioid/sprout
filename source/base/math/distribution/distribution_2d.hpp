@@ -22,6 +22,8 @@ private:
 	Distribution_impl marginal_;
 
 	std::vector<Distribution_impl> conditional_;
+
+	float conditional_max_;
 };
 
 }

@@ -17,6 +17,8 @@ inline void Distribution_2D::init(const float* data, const math::int2& dimension
 	}
 
 	marginal_.init(integrals.data(), dimensions.y);
+
+	conditional_max_ = static_cast<float>(conditional_.size() - 1);
 }
 
 inline math::float2 Distribution_2D::sample_continuous(math::float2 r2, float& pdf) const {
@@ -25,7 +27,7 @@ inline math::float2 Distribution_2D::sample_continuous(math::float2 r2, float& p
 	float v_pdf;
 	result.y = marginal_.sample_continuous(r2.y, v_pdf);
 
-	size_t c = static_cast<size_t>(result.y * static_cast<float>(conditional_.size() - 1));
+	size_t c = static_cast<size_t>(result.y * conditional_max_);
 	float u_pdf;
 	result.x = conditional_[c].sample_continuous(r2.x, u_pdf);
 
@@ -37,7 +39,7 @@ inline math::float2 Distribution_2D::sample_continuous(math::float2 r2, float& p
 inline float Distribution_2D::pdf(math::float2 uv) const {
 	float v_pdf = marginal_.pdf(uv.y);
 
-	size_t c = static_cast<size_t>(uv.y * static_cast<float>(conditional_.size() - 1));
+	size_t c = static_cast<size_t>(uv.y * conditional_max_);
 	float u_pdf = conditional_[c].pdf(uv.x);
 
 	return u_pdf * v_pdf;
