@@ -16,9 +16,12 @@ public:
 
 private:
 
-	Distribution_1D marginal_;
+//	typedef Distribution_1D Distribution_impl;
+	typedef Distribution_lut_1D<8> Distribution_impl;
 
-	std::vector<Distribution_1D> conditional_;
+	Distribution_impl marginal_;
+
+	std::vector<Distribution_impl> conditional_;
 };
 
 }
