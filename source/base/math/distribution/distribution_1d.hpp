@@ -30,6 +30,9 @@ private:
 	float size_;
 };
 
+// LUT implementation inspired by
+// https://geidav.wordpress.com/2013/12/29/optimizing-binary-search/
+
 template<uint32_t LUT_bits>
 class Distribution_lut_1D {
 public:
