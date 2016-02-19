@@ -16,7 +16,8 @@ Emissionmap_animated::Emissionmap_animated(Generic_sample_cache<Sample>& cache,
 										   float emission_factor, float animation_duration) :
 	Material(cache, mask, two_sided), emission_map_(emission_map), emission_factor_(emission_factor),
 	average_emissions_(emission_map->num_elements()),
-	frame_length_(animation_duration / static_cast<float>(emission_map_->num_elements())) {
+	frame_length_(animation_duration / static_cast<float>(emission_map_->num_elements())),
+	element_(0) {
 	for (auto& ae : average_emissions_) {
 		ae = math::float3(-1.f, -1.f, -1.f);
 	}
