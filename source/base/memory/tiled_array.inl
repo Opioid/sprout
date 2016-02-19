@@ -1,3 +1,5 @@
+#pragma once
+
 #include "tiled_array.hpp"
 
 namespace memory {

@@ -32,8 +32,8 @@ uint32_t Mesh::num_parts() const {
 bool Mesh::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					 Node_stack& node_stack, shape::Intersection& intersection) const {
 	math::Oray tray;
-	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
-	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
@@ -55,9 +55,9 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 		float bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
 		uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-		math::float3 geo_n_w = math::transform_vector(transformation.rotation, geo_n);
-		math::float3 n_w	 = math::transform_vector(transformation.rotation, n);
-		math::float3 t_w	 = math::transform_vector(transformation.rotation, t);
+		math::float3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
+		math::float3 n_w	 = math::transform_vector(n, transformation.rotation);
+		math::float3 t_w	 = math::transform_vector(t, transformation.rotation);
 		math::float3 b_w	 = bitangent_sign * math::cross(n_w, t_w);
 
 
@@ -103,8 +103,8 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 bool Mesh::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 					   Node_stack& node_stack) const {
 	math::Oray tray;
-	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
-	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
@@ -115,8 +115,8 @@ float Mesh::opacity(const entity::Composed_transformation& transformation, const
 					float time, Node_stack& node_stack, const material::Materials& materials,
 					const image::texture::sampler::Sampler_2D& sampler) const {
 	math::Oray tray;
-	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
-	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
@@ -140,10 +140,10 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	math::float3 sv;
 	math::float2 tc;
 	tree_.sample(index, r2, sv, tc);
-	math::float3 v = math::transform_point(transformation.object_to_world, sv);
+	math::float3 v = math::transform_point(sv, transformation.object_to_world);
 
 	math::float3 sn = tree_.triangle_normal(index);
-	math::float3 wn = math::transform_vector(transformation.rotation, sn);
+	math::float3 wn = math::transform_vector(sn, transformation.rotation);
 
 	math::float3 axis = v - p;
 	float sl = math::squared_length(axis);
@@ -176,8 +176,8 @@ float Mesh::pdf(uint32_t part, const entity::Composed_transformation& transforma
 				const math::float3& p, const math::float3& wi, bool two_sided, bool /*total_sphere*/,
 				Node_stack& node_stack) const {
 	math::Oray ray;
-	ray.origin = math::transform_point(transformation.world_to_object, p);
-	ray.set_direction(math::transform_vector(transformation.world_to_object, wi));
+	ray.origin = math::transform_point(p, transformation.world_to_object);
+	ray.set_direction(math::transform_vector(wi, transformation.world_to_object));
 	ray.min_t = 0.f;
 	ray.max_t = 10000.f;
 
@@ -189,7 +189,7 @@ float Mesh::pdf(uint32_t part, const entity::Composed_transformation& transforma
 		}
 
 		math::float3 sn = tree_.triangle_normal(pi.index);
-		math::float3 wn = math::transform_vector(transformation.rotation, sn);
+		math::float3 wn = math::transform_vector(sn, transformation.rotation);
 
 		float c = math::dot(wn, -wi);
 

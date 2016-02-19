@@ -70,7 +70,7 @@ void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transforma
 	math::float2 xy = math::sample_disk_concentric(r2);
 
 	math::float3 ls = math::float3(xy, 0.f);
-	math::float3 ws = transformation.scale.x * math::transform_vector(transformation.rotation, ls);
+	math::float3 ws = transformation.scale.x * math::transform_vector(ls, transformation.rotation);
 
 	sample.wi = math::normalized(ws - transformation.rotation.z3);
 	sample.t = 10000.f;

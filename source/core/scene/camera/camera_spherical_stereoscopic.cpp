@@ -58,8 +58,8 @@ void Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, 
 	math::set_rotation_y(rotation, (x - 0.5f) * 2.f * math::Pi);
 	math::float3 eye_pos = rotation * eye_offsets_[view];
 
-	ray.origin = math::transform_point(transformation.object_to_world, eye_pos);
-	ray.set_direction(math::transform_vector(transformation.rotation, dir));
+	ray.origin = math::transform_point(eye_pos, transformation.object_to_world);
+	ray.set_direction(math::transform_vector(dir, transformation.rotation));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
 	ray.time = sample.time;

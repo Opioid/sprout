@@ -10,25 +10,25 @@ Texture_2D_byte_3_snorm::Texture_2D_byte_3_snorm(std::shared_ptr<Image> image) :
 	image_(*dynamic_cast<const Image_byte_3*>(image.get())) {}
 
 float Texture_2D_byte_3_snorm::at_1(int32_t x, int32_t y) const {
-	auto& value = image_.at(x, y);
+	auto value = image_.load(x, y);
 	return encoding::snorm_to_float(value.x);
 }
 
 math::float2 Texture_2D_byte_3_snorm::at_2(int32_t x, int32_t y) const {
-	auto& value = image_.at(x, y);
+	auto value = image_.load(x, y);
 	return math::float2(encoding::snorm_to_float(value.x),
 						encoding::snorm_to_float(value.y));
 }
 
 math::float3 Texture_2D_byte_3_snorm::at_3(int32_t x, int32_t y) const {
-	auto& value = image_.at(x, y);
+	auto value = image_.load(x, y);
 	return math::float3(encoding::snorm_to_float(value.x),
 						encoding::snorm_to_float(value.y),
 						encoding::snorm_to_float(value.z));
 }
 
 math::float4 Texture_2D_byte_3_snorm::at_4(int32_t x, int32_t y) const {
-	auto& value = image_.at(x, y);
+	auto value = image_.load(x, y);
 	return math::float4(encoding::snorm_to_float(value.x),
 						encoding::snorm_to_float(value.y),
 						encoding::snorm_to_float(value.z), 1.f);

@@ -98,8 +98,8 @@ void Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);
 
-	ray.origin = math::transform_point(transformation.object_to_world, eye_offset);
-	ray.set_direction(math::transform_vector(transformation.object_to_world, direction));
+	ray.origin = math::transform_point(eye_offset, transformation.object_to_world);
+	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
 	ray.time = sample.time;

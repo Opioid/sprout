@@ -28,7 +28,7 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.part = 0;
 
 		math::float3 xyz = math::normalized(
-					math::transform_vector_transposed(transformation.rotation, ray.direction));
+					math::transform_vector_transposed(ray.direction, transformation.rotation));
 		intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 									   std::acos(xyz.y) * math::Pi_inv);
 
@@ -63,7 +63,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 
 	sample.wi = dir;
 
-	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
+	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 							 std::acos(xyz.y) * math::Pi_inv);
 
@@ -79,7 +79,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 
 	sample.wi = dir;
 
-	math::float3 xyz = math::transform_vector_transposed(transformation.rotation, dir);
+	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 							 std::acos(xyz.y) * math::Pi_inv);
 
@@ -99,7 +99,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 
 	math::float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
 
-	sample.wi = math::transform_vector(transformation.rotation, dir);
+	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;
 	sample.t  = 10000.f;
 	sample.pdf = 1.f / (4.f * math::Pi);
@@ -107,7 +107,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
 					const math::float3& /*p*/, const math::float3& wi, Sample& sample) const {
-	math::float3 xyz = math::normalized(math::transform_vector_transposed(transformation.rotation, wi));
+	math::float3 xyz = math::normalized(math::transform_vector_transposed(wi, transformation.rotation));
 	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 	sample.pdf = 1.f / (4.f * math::Pi);

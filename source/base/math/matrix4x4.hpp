@@ -1,13 +1,10 @@
 #pragma once
 
+#include "vector3.hpp"
 #include "vector4.hpp"
 
 namespace math {
 
-template<typename T> struct Vector2;
-template<typename T> struct Vector3;
-struct alignas(16) Vector3f_a;
-template<typename T> struct Vector4;
 template<typename T> struct Matrix3x3;
 template<typename T> struct Transformation;
 struct Transformationf_a;
@@ -191,11 +188,11 @@ struct alignas(16) Matrix4x4f_a {
 	Matrix4x4f_a operator*(const Matrix4x4f_a& m) const;
 };
 
-Vector3f_a transform_vector(const Matrix4x4f_a& m, const Vector3f_a& v);
+Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m);
 
-Vector3f_a transform_vector_transposed(const Matrix4x4f_a& m, const Vector3f_a& v);
+Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m);
 
-Vector3f_a transform_point(const Matrix4x4f_a& m, const Vector3f_a& v);
+Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m);
 
 void set_basis_scale_origin(Matrix4x4f_a& m,
 							const Matrix3x3<float>& basis, const Vector3f_a& scale, const Vector3f_a& origin);

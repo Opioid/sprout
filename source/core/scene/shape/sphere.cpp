@@ -35,7 +35,7 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 			intersection.geo_n = intersection.n;
 
 			math::float3 xyz = math::normalized(
-						math::transform_vector_transposed(transformation.rotation, intersection.n));
+						math::transform_vector_transposed(intersection.n, transformation.rotation));
 			intersection.uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
@@ -51,8 +51,7 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 
 			math::float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
 
-			t = math::normalized(math::transform_vector(transformation.rotation, t));
-			t = math::normalized(t);
+			t = math::normalized(math::transform_vector(t, transformation.rotation));
 
 			intersection.t = t;
 			intersection.b = -math::cross(t, n);
@@ -74,7 +73,7 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 			intersection.geo_n = intersection.n;
 
 			math::float3 xyz = math::normalized(
-						math::transform_vector_transposed(transformation.rotation, intersection.n));
+						math::transform_vector_transposed(intersection.n, transformation.rotation));
 			intersection.uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
@@ -128,7 +127,7 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 		if (t0 > ray.min_t && t0 < ray.max_t) {
 			math::float3 n = math::normalized(ray.point(t0) - transformation.position);
 			math::float3 xyz = math::normalized(
-						math::transform_vector_transposed(transformation.rotation, n));
+						math::transform_vector_transposed(n, transformation.rotation));
 			math::float2 uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
@@ -140,7 +139,7 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 		if (t1 > ray.min_t && t1 < ray.max_t) {
 			math::float3 n = math::normalized(ray.point(t1) - transformation.position);
 			math::float3 xyz = math::normalized(
-						math::transform_vector_transposed(transformation.rotation, n));
+						math::transform_vector_transposed(n, transformation.rotation));
 			math::float2 uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
@@ -196,7 +195,7 @@ void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	float cos_phi   = std::cos(phi);
 
 	math::float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
-	math::float3 ws = math::transform_point(transformation.object_to_world, ls);
+	math::float3 ws = math::transform_point(ls, transformation.object_to_world);
 
 	math::float3 axis = ws - p;
 	float sl = math::squared_length(axis);
@@ -232,7 +231,7 @@ void Sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 		math::float3 hit = p + t * wi;
 		math::float3 wn = math::normalized(hit - transformation.position);
 
-		math::float3 xyz = math::transform_vector_transposed(transformation.rotation, wn);
+		math::float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
 		sample.uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 								 std::acos(xyz.y) * math::Pi_inv);
 

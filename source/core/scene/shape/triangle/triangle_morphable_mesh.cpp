@@ -32,8 +32,8 @@ uint32_t Morphable_mesh::num_parts() const {
 bool Morphable_mesh::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 							   Node_stack& node_stack, shape::Intersection& intersection) const {
 	math::Oray tray;
-	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
-	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
@@ -48,9 +48,9 @@ bool Morphable_mesh::intersect(const entity::Composed_transformation& transforma
 		math::float2 uv;
 		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
 
-		intersection.geo_n = math::transform_vector(transformation.rotation, tree_.triangle_normal(pi.index));
-		intersection.n = math::transform_vector(transformation.rotation, n);
-		intersection.t = math::transform_vector(transformation.rotation, t);
+		intersection.geo_n = math::transform_vector(tree_.triangle_normal(pi.index), transformation.rotation);
+		intersection.n = math::transform_vector(n, transformation.rotation);
+		intersection.t = math::transform_vector(t, transformation.rotation);
 
 	//	math::transform_vectors(transformation.rotation, n, t, intersection.n, intersection.t);
 
@@ -69,8 +69,8 @@ bool Morphable_mesh::intersect(const entity::Composed_transformation& transforma
 bool Morphable_mesh::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 								 Node_stack& node_stack) const {
 	math::Oray tray;
-	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
-	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
@@ -81,8 +81,8 @@ float Morphable_mesh::opacity(const entity::Composed_transformation& transformat
 							  float time, Node_stack& node_stack, const material::Materials& materials,
 							  const image::texture::sampler::Sampler_2D& sampler) const {
 	math::Oray tray;
-	tray.origin = math::transform_point(transformation.world_to_object, ray.origin);
-	tray.set_direction(math::transform_vector(transformation.world_to_object, ray.direction));
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 

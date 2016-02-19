@@ -201,49 +201,53 @@ struct alignas(16) Vector3f_a {
 	float absolute_max(uint32_t& i) const;
 };
 
-Vector3f_a operator*(float s, const Vector3f_a& v);
+typedef const Vector3f_a FVector3f_a;
 
-float dot(const Vector3f_a& a, const Vector3f_a& b);
+Vector3f_a operator*(float s, FVector3f_a v);
 
-float length(const Vector3f_a& v);
+Vector3f_a mul(FVector3f_a v, float s);
 
-float squared_length(const Vector3f_a& v);
+float dot(FVector3f_a a, FVector3f_a b);
 
-Vector3f_a normalized(const Vector3f_a& v);
+float length(FVector3f_a v);
 
-Vector3f_a reciprocal(const Vector3f_a& v);
+float squared_length(FVector3f_a v);
 
-Vector3f_a cross(const Vector3f_a& a, const Vector3f_a& b);
+Vector3f_a normalized(FVector3f_a v);
 
-Vector3f_a project(const Vector3f_a& a, const Vector3f_a& b);
+Vector3f_a reciprocal(FVector3f_a v);
 
-float distance(const Vector3f_a& a, const Vector3f_a& b);
+Vector3f_a cross(FVector3f_a a, FVector3f_a b);
 
-float squared_distance(const Vector3f_a& a, const Vector3f_a& b);
+Vector3f_a project(FVector3f_a a, FVector3f_a b);
 
-Vector3f_a saturate(const Vector3f_a& v);
+float distance(FVector3f_a a, FVector3f_a b);
 
-Vector3f_a exp(const Vector3f_a& v);
+float squared_distance(FVector3f_a a, FVector3f_a b);
 
-Vector3f_a lerp(const Vector3f_a& a, const Vector3f_a& b, float t);
+Vector3f_a saturate(FVector3f_a v);
 
-Vector3f_a reflect(const Vector3f_a& normal, const Vector3f_a& v);
+Vector3f_a exp(FVector3f_a v);
+
+Vector3f_a lerp(FVector3f_a a, FVector3f_a, float t);
+
+Vector3f_a reflect(FVector3f_a normal, FVector3f_a v);
 
 // Assuming n is unit length
-void coordinate_system(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b);
+void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b);
 
-Vector3f_a min(const Vector3f_a& a, const Vector3f_a& b);
+Vector3f_a min(FVector3f_a a, FVector3f_a b);
 
-Vector3f_a max(const Vector3f_a& a, const Vector3f_a& b);
+Vector3f_a max(FVector3f_a a, FVector3f_a b);
 
-Vector3f_a abs(const Vector3f_a& v);
+Vector3f_a abs(FVector3f_a v);
 
-bool contains_negative(const Vector3f_a& v);
+bool contains_negative(FVector3f_a v);
 
-bool contains_greater_one(const Vector3f_a& v);
+bool contains_greater_one(FVector3f_a v);
 
-bool contains_nan(const Vector3f_a& v);
+bool contains_nan(FVector3f_a v);
 
-bool contains_inf(const Vector3f_a& v);
+bool contains_inf(FVector3f_a v);
 
 }

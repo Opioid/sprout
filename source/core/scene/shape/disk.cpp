@@ -117,7 +117,7 @@ void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& tran
 	math::float2 xy = math::sample_disk_concentric(r2);
 
 	math::float3 ls = math::float3(xy, 0.f);
-	math::float3 ws = transformation.position + transformation.scale.x * math::transform_vector(transformation.rotation, ls);
+	math::float3 ws = transformation.position + transformation.scale.x * math::transform_vector(ls, transformation.rotation);
 
 	math::float3 axis = ws - p;
 

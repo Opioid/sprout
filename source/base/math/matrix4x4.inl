@@ -423,27 +423,21 @@ inline Matrix4x4f_a::Matrix4x4f_a(const Transformationf_a& t) {
 	set_basis_scale_origin(*this, math::create_matrix3x3(t.rotation), t.scale, t.position);
 }
 
-inline Vector3f_a operator*(const Vector3f_a& v, const Matrix4x4<float>& m) {
-	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
-					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
-					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
-}
-
-inline Vector3f_a transform_vector(const Matrix4x4f_a& m, const Vector3f_a& v) {
+inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a(
 				v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 				v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
 				v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
-inline Vector3f_a transform_vector_transposed(const Matrix4x4f_a& m, const Vector3f_a& v) {
+inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a(
 				v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
 				v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
 				v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
 }
 
-inline Vector3f_a transform_point(const Matrix4x4f_a& m, const Vector3f_a& v) {
+inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a(
 				v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
 				v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,

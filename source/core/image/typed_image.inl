@@ -7,13 +7,21 @@ namespace image {
 
 template<typename T>
 Typed_image<T>::Typed_image(const Image::Description& description) :
-	Image(description) {
-	data_ = memory::allocate_aligned<T>(description.dimensions.x * description.dimensions.y * description.num_elements);
-}
+	Image(description),
+	data_(memory::allocate_aligned<T>(description.dimensions.x *
+									  description.dimensions.y *
+									  description.num_elements)) {}
 
 template<typename T>
 Typed_image<T>::~Typed_image() {
 	memory::free_aligned(data_);
+}
+
+
+template<typename T>
+T Typed_image<T>::load(int32_t x, int32_t y) const {
+	int32_t i = y * description_.dimensions.x + x;
+	return data_[i];
 }
 
 template<typename T>

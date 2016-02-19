@@ -419,68 +419,68 @@ inline float Vector3f_a::absolute_max(uint32_t& i) const {
 	return az;
 }
 
-inline Vector3f_a operator*(float s, const Vector3f_a& v) {
+inline Vector3f_a operator*(float s, FVector3f_a v) {
 	return Vector3f_a(s * v.x, s * v.y, s * v.z);
 }
 
-inline float dot(const Vector3f_a& a, const Vector3f_a& b) {
+inline float dot(FVector3f_a a, FVector3f_a b) {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-inline float length(const Vector3f_a& v) {
+inline float length(FVector3f_a v) {
 	return std::sqrt(dot(v, v));
 }
 
-inline float squared_length(const Vector3f_a& v) {
+inline float squared_length(FVector3f_a v) {
 	return dot(v, v);
 }
 
-inline Vector3f_a normalized(const Vector3f_a& v) {
+inline Vector3f_a normalized(FVector3f_a v) {
 	return v / length(v);
 }
 
-inline Vector3f_a reciprocal(const Vector3f_a& v) {
+inline Vector3f_a reciprocal(FVector3f_a v) {
 	return Vector3f_a(1.f / v.x, 1.f / v.y, 1.f / v.z);
 }
 
-inline Vector3f_a cross(const Vector3f_a& a, const Vector3f_a& b) {
+inline Vector3f_a cross(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(a.y * b.z - a.z * b.y,
 					  a.z * b.x - a.x * b.z,
 					  a.x * b.y - a.y * b.x);
 }
 
-inline Vector3f_a project(const Vector3f_a& a, const Vector3f_a& b) {
+inline Vector3f_a project(FVector3f_a a, FVector3f_a b) {
 	return dot(b, a) * b;
 }
 
-inline float distance(const Vector3f_a& a, const Vector3f_a& b) {
+inline float distance(FVector3f_a a, FVector3f_a b) {
 	return length(a - b);
 }
 
-inline float squared_distance(const Vector3f_a& a, const Vector3f_a& b) {
+inline float squared_distance(FVector3f_a a, FVector3f_a b) {
 	return squared_length(a - b);
 }
 
-inline Vector3f_a saturate(const Vector3f_a& v) {
+inline Vector3f_a saturate(FVector3f_a v) {
 	return Vector3f_a(std::min(std::max(v.x, 0.f), 1.f),
 					  std::min(std::max(v.y, 0.f), 1.f),
 					  std::min(std::max(v.z, 0.f), 1.f));
 }
 
-inline Vector3f_a exp(const Vector3f_a& v) {
+inline Vector3f_a exp(FVector3f_a v) {
 	return Vector3f_a(std::exp(v.x), std::exp(v.y), std::exp(v.z));
 }
 
-inline Vector3f_a lerp(const Vector3f_a& a, const Vector3f_a& b, float t) {
+inline Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t) {
 	float u = 1.f - t;
 	return u * a + t * b;
 }
 
-inline Vector3f_a reflect(const Vector3f_a& normal, const Vector3f_a& v) {
+inline Vector3f_a reflect(FVector3f_a normal, FVector3f_a v) {
 	return 2.f * dot(v, normal) * normal - v;
 }
 
-inline void coordinate_system(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
+inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
 	Vector3f_a r1;
 
 	if (n.x < 0.6f && n.x > -0.6f) {
@@ -497,31 +497,31 @@ inline void coordinate_system(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b)
 	b = cross(r0, n);
 }
 
-inline Vector3f_a min(const Vector3f_a& a, const Vector3f_a& b) {
+inline Vector3f_a min(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
 }
 
-inline Vector3f_a max(const Vector3f_a& a, const Vector3f_a& b) {
+inline Vector3f_a max(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
 }
 
-inline Vector3f_a abs(const Vector3f_a& v) {
+inline Vector3f_a abs(FVector3f_a v) {
 	return Vector3f_a(std::abs(v.x), std::abs(v.y), std::abs(v.z));
 }
 
-inline bool contains_negative(const Vector3f_a& v) {
+inline bool contains_negative(FVector3f_a v) {
 	return v.x < 0.f || v.y < 0.f || v.z < 0.f;
 }
 
-inline bool contains_greater_one(const Vector3f_a& v) {
+inline bool contains_greater_one(FVector3f_a v) {
 	return v.x > 1.f || v.y > 1.f || v.z > 1.f;
 }
 
-inline bool contains_nan(const Vector3f_a& v) {
+inline bool contains_nan(FVector3f_a v) {
 	return std::isnan(v.x) || std::isnan(v.y) || std::isnan(v.z);
 }
 
-inline bool contains_inf(const Vector3f_a& v) {
+inline bool contains_inf(FVector3f_a v) {
 	return std::isinf(v.x) || std::isinf(v.y) || std::isinf(v.z);
 }
 

@@ -12,6 +12,8 @@ public:
 	Typed_image(const Image::Description& description);
 	~Typed_image();
 
+	T load(int32_t x, int32_t y) const;
+
 	const T& at(int32_t index) const;
 	T& at(int32_t index);
 
