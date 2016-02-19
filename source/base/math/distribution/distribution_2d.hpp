@@ -18,6 +18,7 @@ private:
 
 //	typedef Distribution_1D Distribution_impl;
 	typedef Distribution_lut_1D<8> Distribution_impl;
+//	typedef Distribution_luty_1D Distribution_impl;
 
 	Distribution_impl marginal_;
 
