@@ -79,8 +79,8 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(const float* data, size_t len
 
 template<uint32_t LUT_bits>
 Distribution_lut_1D<LUT_bits>::Distribution_lut_1D() :
-	lut_((1 << LUT_bits) + 2),
-	lut_range_(static_cast<float>(1 << LUT_bits)) {}
+	lut_((1 << LUT_bits) + 1),
+	lut_range_(static_cast<float>(1 << LUT_bits) - 1) {}
 
 template<uint32_t LUT_bits>
 void Distribution_lut_1D<LUT_bits>::init(const float* data, size_t len) {
@@ -203,10 +203,15 @@ void Distribution_lut_1D<LUT_bits>::init_lut() {
 	}
 }
 
-/*
-inline void Distribution_luty_1D::init(const float* data, size_t len) {
+
+inline void Distribution_luty_1D::init(const float* data, uint32_t len, uint32_t lut_size) {
 	precompute_1D_pdf_cdf(data, len);
-	init_lut(8);
+
+	if (0 == lut_size) {
+		lut_size = lut_heuristic(len);
+	}
+
+	init_lut(lut_size);
 }
 
 inline float Distribution_luty_1D::integral() const {
@@ -263,12 +268,12 @@ inline uint32_t Distribution_luty_1D::map(float s) const {
 	return static_cast<uint32_t>(s * lut_range_);
 }
 
-inline void Distribution_luty_1D::precompute_1D_pdf_cdf(const float* data, size_t len) {
+inline void Distribution_luty_1D::precompute_1D_pdf_cdf(const float* data, uint32_t len) {
 	pdf_.resize(len);
 	cdf_.resize(len + 1);
 
 	float integral = 0.f;
-	for (size_t i = 0; i < len; ++i) {
+	for (uint32_t i = 0; i < len; ++i) {
 		integral += data[i];
 	}
 
@@ -276,12 +281,12 @@ inline void Distribution_luty_1D::precompute_1D_pdf_cdf(const float* data, size_
 		integral = 1.f;
 	}
 
-	for (size_t i = 0; i < len; ++i) {
+	for (uint32_t i = 0; i < len; ++i) {
 		pdf_[i] = data[i] / integral;
 	}
 
 	cdf_[0] = 0.f;
-	for (size_t i = 1; i < len; ++i) {
+	for (uint32_t i = 1; i < len; ++i) {
 		cdf_[i] = cdf_[i - 1] + pdf_[i - 1];
 	}
 	cdf_[len] = 1.f;
@@ -291,9 +296,9 @@ inline void Distribution_luty_1D::precompute_1D_pdf_cdf(const float* data, size_
 	size_ = static_cast<float>(len);
 }
 
-inline void Distribution_luty_1D::init_lut(uint32_t lut_bits) {
-	lut_.resize((1 << lut_bits) + 2),
-	lut_range_ = static_cast<float>(1 << lut_bits);
+inline void Distribution_luty_1D::init_lut(uint32_t lut_size) {
+	lut_.resize(lut_size + 1),
+	lut_range_ = static_cast<float>(lut_size - 1);
 
 	lut_[0] = 0;
 
@@ -306,7 +311,7 @@ inline void Distribution_luty_1D::init_lut(uint32_t lut_bits) {
 		if (mapped > border) {
 			last = static_cast<uint32_t>(i);
 
-			for (size_t j = border + 1; j <= mapped; ++j) {
+			for (uint32_t j = border + 1; j <= mapped; ++j) {
 				lut_[j] = last;
 			}
 
@@ -314,10 +319,13 @@ inline void Distribution_luty_1D::init_lut(uint32_t lut_bits) {
 		}
 	}
 
-	for (size_t i = border + 1, len = lut_.size(); i < len; ++i) {
+	for (uint32_t i = border + 1, len = static_cast<uint32_t>(lut_.size()); i < len; ++i) {
 		lut_[i] = last;
 	}
 }
-*/
+
+inline uint32_t Distribution_luty_1D::lut_heuristic(uint32_t len) const {
+	return std::max(len / 16, 1u);
+}
 
 }

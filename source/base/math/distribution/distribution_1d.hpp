@@ -67,11 +67,11 @@ private:
 	const float lut_range_;
 };
 
-/*
+
 class Distribution_luty_1D {
 public:
 
-	void init(const float* data, size_t len);
+	void init(const float* data, uint32_t len, uint32_t lut_size = 0);
 
 	float integral() const;
 
@@ -86,8 +86,10 @@ private:
 
 	uint32_t map(float s) const;
 
-	void precompute_1D_pdf_cdf(const float* data, size_t len);
-	void init_lut(uint32_t lut_bits);
+	void precompute_1D_pdf_cdf(const float* data, uint32_t len);
+	void init_lut(uint32_t lut_size);
+
+	uint32_t lut_heuristic(uint32_t len) const;
 
 	std::vector<uint32_t> lut_;
 	std::vector<float> pdf_;
@@ -98,6 +100,6 @@ private:
 
 	float lut_range_;
 };
-*/
+
 
 }
