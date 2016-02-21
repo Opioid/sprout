@@ -79,8 +79,8 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(const float* data, size_t len
 
 template<uint32_t LUT_bits>
 Distribution_lut_1D<LUT_bits>::Distribution_lut_1D() :
-	lut_((1 << LUT_bits) + 1),
-	lut_range_(static_cast<float>(1 << LUT_bits) - 1) {}
+	lut_((1 << LUT_bits) + 2),
+	lut_range_(static_cast<float>(1 << LUT_bits)) {}
 
 template<uint32_t LUT_bits>
 void Distribution_lut_1D<LUT_bits>::init(const float* data, size_t len) {
@@ -297,19 +297,19 @@ inline void Distribution_luty_1D::precompute_1D_pdf_cdf(const float* data, uint3
 }
 
 inline void Distribution_luty_1D::init_lut(uint32_t lut_size) {
-	lut_.resize(lut_size + 1),
-	lut_range_ = static_cast<float>(lut_size - 1);
+	lut_.resize(lut_size + 2),
+	lut_range_ = static_cast<float>(lut_size);
 
 	lut_[0] = 0;
 
 	uint32_t border = 0;
 	uint32_t last = 0;
 
-	for (size_t i = 1, len = cdf_.size(); i < len; ++i) {
+	for (uint32_t i = 1, len = static_cast<uint32_t>(cdf_.size()); i < len; ++i) {
 		uint32_t mapped = map(cdf_[i]);
 
 		if (mapped > border) {
-			last = static_cast<uint32_t>(i);
+			last = i;
 
 			for (uint32_t j = border + 1; j <= mapped; ++j) {
 				lut_[j] = last;
