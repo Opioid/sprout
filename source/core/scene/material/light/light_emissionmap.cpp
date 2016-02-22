@@ -80,8 +80,10 @@ void Emissionmap::prepare_sampling(bool spherical) {
 		auto d = emission_map_->dimensions();
 		std::vector<float> luminance(d.x * d.y);
 
+		float my = 1.f / static_cast<float>(d.y) * math::Pi;
+
 		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
+			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
 				math::float3 emission = emission_factor_ * emission_map_->at_3(x, y);
