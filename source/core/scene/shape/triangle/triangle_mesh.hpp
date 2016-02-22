@@ -66,8 +66,8 @@ private:
 
 		uint32_t sample(float r) const;
 
-		math::Distribution_1D distribution;
 		std::vector<uint32_t> triangle_mapping;
+		math::Distribution_lut_1D distribution;
 	};
 
 	std::vector<Distribution> distributions_;
