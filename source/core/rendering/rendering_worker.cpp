@@ -45,7 +45,7 @@ math::float4 Worker::li(scene::Ray& ray) {
 	auto volume = scene_->volume_region();
 
 	if (volume) {
-		math::float3 vtr;
+		math::vec3 vtr;
 		math::float4 vli = volume_integrator_->li(*this, volume, ray, vtr);
 
 		if (hit) {
@@ -63,34 +63,34 @@ math::float4 Worker::li(scene::Ray& ray) {
 	}
 }
 
-math::float3 Worker::surface_li(scene::Ray& ray) {
+math::vec3 Worker::surface_li(scene::Ray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 
 	if (hit) {
 		scene::Ray tray = ray;
-		return math::float3(surface_integrator_->li(*this, tray, false, intersection).xyz());
+		return math::vec3(surface_integrator_->li(*this, tray, false, intersection).xyz());
 	} else {
-		return math::float3(0.f, 0.f, 0.f);
+		return math::vec3(0.f, 0.f, 0.f);
 	}
 }
 
-math::float4 Worker::volume_li(const scene::Ray& ray, math::float3& transmittance) {
+math::float4 Worker::volume_li(const scene::Ray& ray, math::vec3& transmittance) {
 	auto volume = scene_->volume_region();
 
 	if (!volume) {
-		transmittance = math::float3(1.f, 1.f, 1.f);
+		transmittance = math::vec3(1.f, 1.f, 1.f);
 		return math::float4_identity;
 	}
 
 	return volume_integrator_->li(*this, volume, ray, transmittance);
 }
 
-math::float3 Worker::transmittance(const scene::Ray& ray) {
+math::vec3 Worker::transmittance(const scene::Ray& ray) {
 	auto volume = scene_->volume_region();
 
 	if (!volume) {
-		return math::float3(1.f, 1.f, 1.f);
+		return math::vec3(1.f, 1.f, 1.f);
 	}
 
 	return volume_integrator_->transmittance(*this, volume, ray);

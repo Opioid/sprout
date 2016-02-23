@@ -20,8 +20,8 @@ void test() {
 
 	Sample sample;
 
-	math::float3 color(1.f, 1.f, 1.f);
-	math::float3 emission = math::float3_identity;
+	math::vec3 color(1.f, 1.f, 1.f);
+	math::vec3 emission = math::vec3_identity;
 	float constant_f0 = 0.03f;
 	float roughness   = 0.f;
 	float metallic    = 0.f;
@@ -29,19 +29,19 @@ void test() {
 	float attenuation_distance = 100.f;
 	sample.set(color, emission, constant_f0, roughness, metallic, thickness, attenuation_distance);
 
-	math::float3 t(1.f, 0.f, 0.f);
-	math::float3 b(0.f, 1.f, 0.f);
-	math::float3 n(0.f, 0.f, 1.f);
+	math::vec3 t(1.f, 0.f, 0.f);
+	math::vec3 b(0.f, 1.f, 0.f);
+	math::vec3 n(0.f, 0.f, 1.f);
 
-	math::float3 arbitrary = math::normalized(math::float3(0.5f, 0.5f, 0.5f));
+	math::vec3 arbitrary = math::normalized(math::vec3(0.5f, 0.5f, 0.5f));
 
-	math::float3 wo = n;
+	math::vec3 wo = n;
 
 	sample.set_basis(t, b, n, n, wo);
 
-	math::float3 wi = arbitrary;//n;
+	math::vec3 wi = arbitrary;//n;
 	float pdf;
-	math::float3 reflection = sample.evaluate(wi, pdf);
+	math::vec3 reflection = sample.evaluate(wi, pdf);
 	print(reflection, pdf);
 
 	bxdf::Result result;

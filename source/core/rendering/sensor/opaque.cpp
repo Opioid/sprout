@@ -19,7 +19,7 @@ Opaque::~Opaque() {
 void Opaque::clear() {
 	auto d = dimensions();
 	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
-		pixels_[i].color = math::float3(0.f, 0.f, 0.f);
+		pixels_[i].color = math::vec3(0.f, 0.f, 0.f);
 		pixels_[i].weight_sum = 0.f;
 	}
 }
@@ -28,7 +28,7 @@ void Opaque::add_pixel(math::int2 pixel, const math::float4& color, float weight
 	auto d = dimensions();
 
 	auto& value = pixels_[d.x * pixel.y + pixel.x];
-	value.color += weight * math::float3(color.xyz());
+	value.color += weight * math::vec3(color.xyz());
 	value.weight_sum += weight;
 }
 
@@ -46,11 +46,11 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Image_float_4& target) {
 	for (int32_t i = begin; i < end; ++i) {
 		auto& value = pixels_[i];
 
-		math::float3 color = value.color / value.weight_sum;
+		math::vec3 color = value.color / value.weight_sum;
 
-		math::float3 exposed = expose(color);
+		math::vec3 exposed = expose(color);
 
-		math::float3 tonemapped = tonemapper_->tonemap(exposed);
+		math::vec3 tonemapped = tonemapper_->tonemap(exposed);
 
 		target.at(i) = math::float4(tonemapped, 1.f);
 	}

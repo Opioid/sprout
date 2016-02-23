@@ -8,18 +8,18 @@
 
 namespace scene { namespace material { namespace glass {
 
-math::float3 BRDF_rough::evaluate(const Sample_rough& /*sample*/,
-								  const math::float3& /*wi*/, float /*n_dot_wi*/) const {
-	return math::float3_identity;
+math::vec3 BRDF_rough::evaluate(const Sample_rough& /*sample*/,
+								  const math::vec3& /*wi*/, float /*n_dot_wi*/) const {
+	return math::vec3_identity;
 }
 
-float BRDF_rough::pdf(const Sample_rough& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+float BRDF_rough::pdf(const Sample_rough& /*sample*/, const math::vec3& /*wi*/, float /*n_dot_wi*/) const {
 	return 0.f;
 }
 
 float BRDF_rough::importance_sample(const Sample_rough& sample,
 									sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
-	math::float3 n = sample.n_;
+	math::vec3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
 	float eta_t = sample.ior_;
 
@@ -48,25 +48,25 @@ float BRDF_rough::importance_sample(const Sample_rough& sample,
 		f = fresnel::dielectric_holgerusan(n_dot_wo, n_dot_t, eta_i, eta_t);
 	}
 
-	result.reflection = math::float3(f);
+	result.reflection = math::vec3(f);
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_reflection);
 
 	return 1.f;
 }
 
-math::float3 BTDF_rough::evaluate(const Sample_rough& /*sample*/,
-								  const math::float3& /*wi*/, float /*n_dot_wi*/) const {
-	return math::float3_identity;
+math::vec3 BTDF_rough::evaluate(const Sample_rough& /*sample*/,
+								  const math::vec3& /*wi*/, float /*n_dot_wi*/) const {
+	return math::vec3_identity;
 }
 
-float BTDF_rough::pdf(const Sample_rough& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+float BTDF_rough::pdf(const Sample_rough& /*sample*/, const math::vec3& /*wi*/, float /*n_dot_wi*/) const {
 	return 0.f;
 }
 
 float BTDF_rough::importance_sample(const Sample_rough& sample,
 									sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
-	math::float3 n = sample.n_;
+	math::vec3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
 	float eta_t = sample.ior_;
 
@@ -100,16 +100,16 @@ float BTDF_rough::importance_sample(const Sample_rough& sample,
 	return 1.f;
 }
 
-math::float3 Sample_rough::evaluate(const math::float3& /*wi*/, float& pdf) const {
+math::vec3 Sample_rough::evaluate(math::pvec3 /*wi*/, float& pdf) const {
 	pdf = 0.f;
-	return math::float3_identity;
+	return math::vec3_identity;
 }
 
-math::float3 Sample_rough::emission() const {
-	return math::float3_identity;
+math::vec3 Sample_rough::emission() const {
+	return math::vec3_identity;
 }
 
-math::float3 Sample_rough::attenuation() const {
+math::vec3 Sample_rough::attenuation() const {
 	return attenuation_;
 }
 
@@ -147,7 +147,7 @@ bool Sample_rough::is_translucent() const {
 	return false;
 }
 
-void Sample_rough::set(const math::float3& color, float attenuation_distance, float ior, float ior_outside) {
+void Sample_rough::set(const math::vec3& color, float attenuation_distance, float ior, float ior_outside) {
 	color_ = color;
 	attenuation_ = material::Sample::attenuation(color, attenuation_distance);
 	ior_ = ior;

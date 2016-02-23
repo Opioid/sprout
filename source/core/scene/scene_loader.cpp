@@ -96,8 +96,8 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 		}
 
 		math::transformation transformation{
-			math::float3_identity,
-			math::float3(1.f, 1.f, 1.f),
+			math::vec3_identity,
+			math::vec3(1.f, 1.f, 1.f),
 			math::quaternion_identity
 		};
 
@@ -192,17 +192,17 @@ void Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Sce
 }
 
 volume::Volume* Loader::load_volume(const rapidjson::Value& volume_value, Scene& scene) {
-	math::float3 absorption(0.f, 0.f, 0.f);
-	math::float3 scattering(0.f, 0.f, 0.f);
+	math::vec3 absorption(0.f, 0.f, 0.f);
+	math::vec3 scattering(0.f, 0.f, 0.f);
 
 	for (auto n = volume_value.MemberBegin(); n != volume_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
 		if ("absorption" == node_name) {
-			absorption = json::read_float3(node_value);
+			absorption = json::read_vec3(node_value);
 		} else if ("scattering" == node_name) {
-			scattering = json::read_float3(node_value);
+			scattering = json::read_vec3(node_value);
 		}
 	}
 

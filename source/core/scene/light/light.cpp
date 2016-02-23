@@ -5,7 +5,7 @@
 
 namespace scene { namespace light {
 
-void Light::sample(float time, const math::float3& p, const math::float3& n, bool total_sphere,
+void Light::sample(float time, const math::vec3& p, const math::vec3& n, bool total_sphere,
 				   const image::texture::sampler::Sampler_2D& image_sampler,
 				   sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const {
 	entity::Composed_transformation temp;
@@ -14,9 +14,9 @@ void Light::sample(float time, const math::float3& p, const math::float3& n, boo
 	sample(transformation, time, p, n, total_sphere, image_sampler, sampler, node_stack, result);
 }
 
-void Light::sample(float time, const math::float3& p, const image::texture::sampler::Sampler_2D& image_sampler,
+void Light::sample(float time, const math::vec3& p, const image::texture::sampler::Sampler_2D& image_sampler,
 				   sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const {
-	sample(time, p, math::float3_identity, true, image_sampler, sampler, node_stack, result);
+	sample(time, p, math::vec3_identity, true, image_sampler, sampler, node_stack, result);
 }
 
 }}

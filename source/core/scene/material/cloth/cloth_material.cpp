@@ -12,22 +12,22 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
 	material::Material<Generic_sample_cache<Sample>>(cache, mask, two_sided) {}
 
-const material::Sample& Material::sample(const shape::Differential& dg, const math::float3& wo,
+const material::Sample& Material::sample(const shape::Differential& dg, const math::vec3& wo,
 										 float /*time*/, float /*ior_i*/,
 										 const image::texture::sampler::Sampler_2D& sampler,
 										 uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	if (normal_map_) {
-		math::float3 nm = sampler.sample_3(*normal_map_, dg.uv);
-		math::float3 n = math::normalized(dg.tangent_to_world(nm));
+		math::vec3 nm = sampler.sample_3(*normal_map_, dg.uv);
+		math::vec3 n = math::normalized(dg.tangent_to_world(nm));
 
 		sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo, two_sided_);
 	} else {
 		sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 	}
 
-	math::float3 color;
+	math::vec3 color;
 
 	if (color_map_) {
 		color = sampler.sample_3(*color_map_, dg.uv);
@@ -40,13 +40,13 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 	return sample;
 }
 
-math::float3 Material::sample_emission(math::float2 /*uv*/, float /*time*/,
+math::vec3 Material::sample_emission(math::float2 /*uv*/, float /*time*/,
 									   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return math::float3_identity;
+	return math::vec3_identity;
 }
 
-math::float3 Material::average_emission() const {
-	return math::float3_identity;
+math::vec3 Material::average_emission() const {
+	return math::vec3_identity;
 }
 
 bool Material::has_emission_map() const {
@@ -61,7 +61,7 @@ void Material::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal
 	normal_map_ = normal_map;
 }
 
-void Material::set_color(const math::float3& color) {
+void Material::set_color(const math::vec3& color) {
 	color_ = color;
 }
 

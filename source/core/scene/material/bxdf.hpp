@@ -22,8 +22,8 @@ enum class Type {
 };
 
 struct Result {
-	math::float3 reflection;
-	math::float3 wi;
+	math::vec3 reflection;
+	math::vec3 wi;
 	float        pdf;
 
 	typedef flags::Flags<Type> Type_flag;

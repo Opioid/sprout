@@ -11,12 +11,12 @@
 namespace scene { namespace shape {
 
 Plane::Plane() {
-	aabb_.set_min_max(math::float3_identity, math::float3_identity);
+	aabb_.set_min_max(math::vec3_identity, math::vec3_identity);
 }
 
 bool Plane::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::vec3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -43,15 +43,15 @@ bool Plane::intersect(const entity::Composed_transformation& transformation, mat
 
 
 /*
-	math::float3a vn(transformation.rotation.z);
-	math::float3a vp(transformation.position);
-	math::float3a vd(ray.direction);
-	math::float3a vo(ray.origin);
+	math::vec3a vn(transformation.rotation.z);
+	math::vec3a vp(transformation.position);
+	math::vec3a vd(ray.direction);
+	math::vec3a vo(ray.origin);
 
-	math::simd::Vector normal = math::simd::load_float3(vn);
-	math::simd::Vector position = math::simd::load_float3(vp);
-	math::simd::Vector direction = math::simd::load_float3(vd);
-	math::simd::Vector origin = math::simd::load_float3(vo);
+	math::simd::Vector normal = math::simd::load_vec3(vn);
+	math::simd::Vector position = math::simd::load_vec3(vp);
+	math::simd::Vector direction = math::simd::load_vec3(vd);
+	math::simd::Vector origin = math::simd::load_vec3(vo);
 
 	math::simd::Vector d = math::simd::dot3(normal, position);
 	math::simd::Vector denom = math::simd::dot3(normal, direction);
@@ -60,8 +60,8 @@ bool Plane::intersect(const entity::Composed_transformation& transformation, mat
 
 	math::simd::Vector ttt = math::simd::div3(numer, denom);
 
-	math::float3a tt;
-	math::simd::store_float3(tt, ttt);
+	math::vec3a tt;
+	math::simd::store_vec3(tt, ttt);
 
 	float t = -tt.x;
 
@@ -88,7 +88,7 @@ bool Plane::intersect(const entity::Composed_transformation& transformation, mat
 
 bool Plane::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 						Node_stack& /*node_stack*/) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::vec3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -104,14 +104,14 @@ bool Plane::intersect_p(const entity::Composed_transformation& transformation, c
 float Plane::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
 					 Node_stack& /*node_stack*/, const material::Materials& materials,
 					 const image::texture::sampler::Sampler_2D& sampler) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::vec3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
 	float t = -(numer / denom);
 
 	if (t > ray.min_t && t < ray.max_t) {
-		math::float3 p = ray.point(t);
+		math::vec3 p = ray.point(t);
 		math::float2 uv(math::dot(transformation.rotation.x3, p), math::dot(transformation.rotation.y3, p));
 
 		return materials[0]->opacity(uv, time, sampler);
@@ -121,30 +121,30 @@ float Plane::opacity(const entity::Composed_transformation& transformation, cons
 }
 
 void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, const math::float3& /*n*/, bool /*two_sided*/,
+				   const math::vec3& /*p*/, const math::vec3& /*n*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
 void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, bool /*two_sided*/,
+				   const math::vec3& /*p*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
 void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
+				   const math::vec3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
 
 void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
+				   const math::vec3& /*p*/, const math::vec3& /*wi*/, Sample& /*sample*/) const {}
 
 float Plane::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				 const math::float3& /*p*/, const math::float3& /*wi*/, bool /*two_sided*/, bool /*total_sphere*/,
+				 const math::vec3& /*p*/, const math::vec3& /*wi*/, bool /*two_sided*/, bool /*total_sphere*/,
 				 Node_stack& /*node_stack*/) const {
 	return 0.f;
 }
 
-float Plane::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
+float Plane::area(uint32_t /*part*/, const math::vec3& /*scale*/) const {
 	return 1.f;
 }
 

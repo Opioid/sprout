@@ -43,43 +43,43 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 
 		float epsilon = 3e-3f * tray.max_t;
 
-		math::float3 p_w = ray.point(tray.max_t);
+		math::vec3 p_w = ray.point(tray.max_t);
 
-		math::float3 n;
-		math::float3 t;
+		math::vec3 n;
+		math::vec3 t;
 		math::float2 uv;
 		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
 
-		math::float3 geo_n = tree_.triangle_normal(pi.index);
+		math::vec3 geo_n = tree_.triangle_normal(pi.index);
 
 		float bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
 		uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-		math::float3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
-		math::float3 n_w	 = math::transform_vector(n, transformation.rotation);
-		math::float3 t_w	 = math::transform_vector(t, transformation.rotation);
-		math::float3 b_w	 = bitangent_sign * math::cross(n_w, t_w);
+		math::vec3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
+		math::vec3 n_w	 = math::transform_vector(n, transformation.rotation);
+		math::vec3 t_w	 = math::transform_vector(t, transformation.rotation);
+		math::vec3 b_w	 = bitangent_sign * math::cross(n_w, t_w);
 
 
 
 /*
 		math::simd::Matrix rotation = math::simd::load_float4x4(transformation.rotation);
 
-		math::simd::Vector simd_t = math::simd::load_float3(t);
+		math::simd::Vector simd_t = math::simd::load_vec3(t);
 		math::simd::Vector t_w = math::simd::transform_vector(rotation, simd_t);
-		math::simd::store_float3(intersection.t, t_w);
+		math::simd::store_vec3(intersection.t, t_w);
 
-		math::simd::Vector simd_n = math::simd::load_float3(n);
+		math::simd::Vector simd_n = math::simd::load_vec3(n);
 		math::simd::Vector n_w = math::simd::transform_vector(rotation, simd_n);
-		math::simd::store_float3(intersection.n, n_w);
+		math::simd::store_vec3(intersection.n, n_w);
 
-		math::simd::Vector simd_geo_n = math::simd::load_float3(geo_n);
+		math::simd::Vector simd_geo_n = math::simd::load_vec3(geo_n);
 		math::simd::Vector geo_n_w = math::simd::transform_vector(rotation, simd_geo_n);
-		math::simd::store_float3(intersection.geo_n, geo_n_w);
+		math::simd::store_vec3(intersection.geo_n, geo_n_w);
 
 		math::simd::Vector b_w = math::simd::cross3(n_w, t_w);
-		math::float3 ub_w;
-		math::simd::store_float3(ub_w, b_w);
+		math::vec3 ub_w;
+		math::simd::store_vec3(ub_w, b_w);
 		intersection.b = bitangent_sign * ub_w;
 */
 
@@ -124,31 +124,31 @@ float Mesh::opacity(const entity::Composed_transformation& transformation, const
 }
 
 void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-				  const math::float3& p, const math::float3& /*n*/, bool two_sided,
+				  const math::vec3& p, const math::vec3& /*n*/, bool two_sided,
 				  sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
 	Mesh::sample(part, transformation, area, p, two_sided, sampler, node_stack, sample);
 }
 
 void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-				  const math::float3& p, bool two_sided,
+				  const math::vec3& p, bool two_sided,
 				  sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	float r = sampler.generate_sample_1D();
 	math::float2 r2 = sampler.generate_sample_2D();
 
 	uint32_t index = distributions_[part].sample(r);
 
-	math::float3 sv;
+	math::vec3 sv;
 	math::float2 tc;
 	tree_.sample(index, r2, sv, tc);
-	math::float3 v = math::transform_point(sv, transformation.object_to_world);
+	math::vec3 v = math::transform_point(sv, transformation.object_to_world);
 
-	math::float3 sn = tree_.triangle_normal(index);
-	math::float3 wn = math::transform_vector(sn, transformation.rotation);
+	math::vec3 sn = tree_.triangle_normal(index);
+	math::vec3 wn = math::transform_vector(sn, transformation.rotation);
 
-	math::float3 axis = v - p;
+	math::vec3 axis = v - p;
 	float sl = math::squared_length(axis);
 	float d  = std::sqrt(sl);
-	math::float3 dir = axis / d;
+	math::vec3 dir = axis / d;
 
 	float c = math::dot(wn, -dir);
 
@@ -167,13 +167,13 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 }
 
 void Mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
+				  const math::vec3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
 
 void Mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
+				  const math::vec3& /*p*/, const math::vec3& /*wi*/, Sample& /*sample*/) const {}
 
 float Mesh::pdf(uint32_t part, const entity::Composed_transformation& transformation, float area,
-				const math::float3& p, const math::float3& wi, bool two_sided, bool /*total_sphere*/,
+				const math::vec3& p, const math::vec3& wi, bool two_sided, bool /*total_sphere*/,
 				Node_stack& node_stack) const {
 	math::Oray ray;
 	ray.origin = math::transform_point(p, transformation.world_to_object);
@@ -188,8 +188,8 @@ float Mesh::pdf(uint32_t part, const entity::Composed_transformation& transforma
 			return 0.f;
 		}
 
-		math::float3 sn = tree_.triangle_normal(pi.index);
-		math::float3 wn = math::transform_vector(sn, transformation.rotation);
+		math::vec3 sn = tree_.triangle_normal(pi.index);
+		math::vec3 wn = math::transform_vector(sn, transformation.rotation);
 
 		float c = math::dot(wn, -wi);
 
@@ -208,7 +208,7 @@ float Mesh::pdf(uint32_t part, const entity::Composed_transformation& transforma
 	return 0.f;
 }
 
-float Mesh::area(uint32_t part, const math::float3& scale) const {
+float Mesh::area(uint32_t part, const math::vec3& scale) const {
 	return distributions_[part].distribution.integral() * scale.x * scale.x;
 }
 

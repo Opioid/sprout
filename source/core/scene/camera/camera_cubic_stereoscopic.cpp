@@ -18,9 +18,9 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout,
 				 ray_max_t, frame_duration, motion_blur) {
 	float f = static_cast<float>(resolution.x);
 
-	left_top_ = math::float3(-1.f,  1.f, 1.f);
-	math::float3 right_top	( 1.f,  1.f, 1.f);
-	math::float3 left_bottom(-1.f, -1.f, 1.f);
+	left_top_ = math::vec3(-1.f,  1.f, 1.f);
+	math::vec3 right_top	( 1.f,  1.f, 1.f);
+	math::vec3 left_bottom(-1.f, -1.f, 1.f);
 
 	d_x_ = (right_top - left_top_)   / f;
 	d_y_ = (left_bottom - left_top_) / f;
@@ -81,7 +81,7 @@ void Cubic_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 void Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
-	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
+	math::vec3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
 	direction = math::normalized(direction * view_rotations_[view]);
 
@@ -93,7 +93,7 @@ void Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	float ipd_scale = 1.f - 2.f * (std::acos(direction.y) * math::Pi_inv - 0.5f);
 
 	uint32_t eye = view < 6 ? 0 : 1;
-	math::float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
+	math::vec3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);

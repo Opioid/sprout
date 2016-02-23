@@ -21,7 +21,7 @@ protected:
 	virtual void resolve(int32_t begin, int32_t end, image::Image_float_4& target) final override;
 
 	struct Pixel {
-		math::float3 color;
+		math::vec3 color;
 		float        weight_sum;
 	};
 

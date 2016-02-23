@@ -27,7 +27,7 @@ private:
 
 		typedef std::vector<uint32_t>::iterator index;
 
-		Split_candidate(uint8_t split_axis, const math::float3& p);
+		Split_candidate(uint8_t split_axis, const math::vec3& p);
 
 		void evaluate(index begin, index end,
 					  float aabb_surface_area,
@@ -35,7 +35,7 @@ private:
 
 		float cost() const;
 
-		bool behind(const math::float3& point) const;
+		bool behind(const math::vec3& point) const;
 
 		uint8_t axis() const;
 

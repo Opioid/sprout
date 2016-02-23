@@ -179,8 +179,8 @@ inline bool SU_CALLCONV AABB::intersect_p(simd::FVector origin, simd::FVector in
 	return  ret;
 	*/
 
-	simd::Vector box_min = simd::load_float3(bounds_[0]);
-	simd::Vector box_max = simd::load_float3(bounds_[1]);
+	simd::Vector box_min = simd::load_vec3(bounds_[0]);
+	simd::Vector box_max = simd::load_vec3(bounds_[1]);
 
 	simd::Vector l0 = simd::mul3(simd::sub3(box_min, origin), inv_direction);
 	simd::Vector l1 = simd::mul3(simd::sub3(box_max, origin), inv_direction);

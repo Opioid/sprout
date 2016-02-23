@@ -7,17 +7,17 @@ namespace scene { namespace bvh {
 
 Split_candidate::Split_candidate(const math::plane& plane, uint8_t axis) : plane_(plane), axis_(axis) {}
 
-Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p, const std::vector<Prop*>& props) :
+Split_candidate::Split_candidate(uint8_t split_axis, const math::vec3& p, const std::vector<Prop*>& props) :
 	axis_(split_axis) {
 	key_ = 0;
 
-	math::float3 n;
+	math::vec3 n;
 
 	switch (split_axis) {
 	default:
-	case 0: n = math::float3(1.f, 0.f, 0.f); break;
-	case 1: n = math::float3(0.f, 1.f, 0.f); break;
-	case 2: n = math::float3(0.f, 0.f, 1.f); break;
+	case 0: n = math::vec3(1.f, 0.f, 0.f); break;
+	case 1: n = math::vec3(0.f, 1.f, 0.f); break;
+	case 2: n = math::vec3(0.f, 0.f, 1.f); break;
 	}
 
 	plane_ = math::create_plane(n, p);
@@ -48,17 +48,17 @@ Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p, cons
 	}
 }
 
-Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p, index begin, index end) :
+Split_candidate::Split_candidate(uint8_t split_axis, const math::vec3& p, index begin, index end) :
 	axis_(split_axis) {
 	key_ = 0;
 
-	math::float3 n;
+	math::vec3 n;
 
 	switch (split_axis) {
 	default:
-	case 0: n = math::float3(1.f, 0.f, 0.f); break;
-	case 1: n = math::float3(0.f, 1.f, 0.f); break;
-	case 2: n = math::float3(0.f, 0.f, 1.f); break;
+	case 0: n = math::vec3(1.f, 0.f, 0.f); break;
+	case 1: n = math::vec3(0.f, 1.f, 0.f); break;
+	case 2: n = math::vec3(0.f, 0.f, 1.f); break;
 	}
 
 	plane_ = math::create_plane(n, p);

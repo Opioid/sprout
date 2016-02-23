@@ -12,10 +12,10 @@
 
 namespace scene { namespace material { namespace substitute {
 
-math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
+math::vec3 Sample::evaluate(math::pvec3 wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
-		return math::float3_identity;
+		return math::vec3_identity;
 	}
 
 	// This is a bit complicated to understand:
@@ -27,7 +27,7 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	if (thickness_ > 0.f && !same_hemisphere(wi)) {
 		float n_dot_wi = std::max(-math::dot(n_, wi),  0.00001f);
 		float approximated_distance = thickness_ / n_dot_wi;
-		math::float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
+		math::vec3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 		pdf = 0.5f * n_dot_wi * math::Pi_inv;
 		return n_dot_wi * (math::Pi_inv * attenuation * diffuse_color_);
 	}
@@ -52,7 +52,7 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
 	float b = 0.45f * (a2 / (a2 + 0.09f));
 
-	math::float3 diffuse = math::Pi_inv * (a + b * s * t) * diffuse_color_;
+	math::vec3 diffuse = math::Pi_inv * (a + b * s * t) * diffuse_color_;
 	float diffuse_pdf = n_dot_wi * math::Pi_inv;
 	// ----
 
@@ -62,7 +62,7 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 		return n_dot_wi * diffuse;
 	}
 
-	math::float3 h = math::normalized(wo_ + wi);
+	math::vec3 h = math::normalized(wo_ + wi);
 
 	float n_dot_h  = math::dot(n_, h);
 	float wo_dot_h = math::dot(wo_, h);
@@ -70,9 +70,9 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	float clamped_a2 = ggx::clamp_a2(a2_);
 	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
 	float g = ggx::geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel::schlick(wo_dot_h, f0_);
+	math::vec3 f = fresnel::schlick(wo_dot_h, f0_);
 
-	math::float3 specular = d * g * f;
+	math::vec3 specular = d * g * f;
 
 	// this helped in the past, but problem maybe caused by faulty sphere normals
 //	float ggx_pdf     = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
@@ -91,12 +91,12 @@ math::float3 Sample::evaluate(const math::float3& wi, float& pdf) const {
 	return n_dot_wi * (diffuse + specular);
 }
 
-math::float3 Sample::emission() const {
+math::vec3 Sample::emission() const {
 	return emission_;
 }
 
-math::float3 Sample::attenuation() const {
-	return math::float3(100.f, 100.f, 100.f);
+math::vec3 Sample::attenuation() const {
+	return math::vec3(100.f, 100.f, 100.f);
 }
 
 float Sample::ior() const {
@@ -117,7 +117,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 			result.wi *= -1.f;
 			result.pdf *= 0.5f;
 			float approximated_distance = thickness_ / n_dot_wi;
-			math::float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
+			math::vec3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
 			if (1.f == metallic_) {
@@ -132,7 +132,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 					float n_dot_wi = oren_nayar_.importance_sample(*this, sampler, n_dot_wo, result);
 
 					float ggx_pdf;
-					math::float3 ggx_reflection = ggx_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
+					math::vec3 ggx_reflection = ggx_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
 
 					result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 					result.pdf = 0.25f * (result.pdf + ggx_pdf);
@@ -141,7 +141,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 					float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 
 					float oren_nayar_pdf;
-					math::float3 oren_nayar_reflection = oren_nayar_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo,
+					math::vec3 oren_nayar_reflection = oren_nayar_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo,
 																			  oren_nayar_pdf);
 
 					result.reflection = n_dot_wi * (result.reflection + oren_nayar_reflection);
@@ -163,7 +163,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 				float n_dot_wi = oren_nayar_.importance_sample(*this, sampler, n_dot_wo, result);
 
 				float ggx_pdf;
-				math::float3 ggx_reflection = ggx_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
+				math::vec3 ggx_reflection = ggx_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
 
 				result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 				result.pdf = 0.5f * (result.pdf + ggx_pdf);
@@ -171,7 +171,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 				float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
 
 				float oren_nayar_pdf;
-				math::float3 oren_nayar_reflection = oren_nayar_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo,
+				math::vec3 oren_nayar_reflection = oren_nayar_.evaluate(*this, result.wi, n_dot_wi, n_dot_wo,
 																		  oren_nayar_pdf);
 
 				result.reflection = n_dot_wi * (result.reflection + oren_nayar_reflection);
@@ -193,11 +193,11 @@ bool Sample::is_translucent() const {
 	return thickness_ > 0.f;
 }
 
-void Sample::set(const math::float3& color, const math::float3& emission,
+void Sample::set(const math::vec3& color, const math::vec3& emission,
 				 float constant_f0, float roughness, float metallic,
 				 float thickness, float attenuation_distance) {
 	diffuse_color_ = (1.f - metallic) * color;
-	f0_ = math::lerp(math::float3(constant_f0), color, metallic);
+	f0_ = math::lerp(math::vec3(constant_f0), color, metallic);
 	emission_ = emission;
 
 	float a = roughness * roughness;

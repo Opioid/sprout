@@ -29,8 +29,8 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
 
-	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
-	math::float3 result = math::float3_identity;
+	math::vec3 throughput = math::vec3(1.f, 1.f, 1.f);
+	math::vec3 result = math::vec3_identity;
 	float opacity = 0.f;
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
@@ -51,15 +51,15 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 
 		if (i > 0) {
 		//	throughput *= worker.transmittance(ray);
-			math::float3 tr;
+			math::vec3 tr;
 			math::float4 vli = worker.volume_li(ray, tr);
-			result += throughput * math::float3(vli.xyz());
+			result += throughput * math::vec3(vli.xyz());
 			throughput *= tr;
 		}
 
 		opacity = 1.f;
 
-		math::float3 wo = -ray.direction;
+		math::vec3 wo = -ray.direction;
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, *texture_sampler, worker.id());
 

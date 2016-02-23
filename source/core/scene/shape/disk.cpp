@@ -12,20 +12,20 @@
 namespace scene { namespace shape {
 
 Disk::Disk() {
-	aabb_.set_min_max(math::float3(-1.f, -1.f, -0.1f), math::float3(1.f, 1.f, 0.1f));
+	aabb_.set_min_max(math::vec3(-1.f, -1.f, -0.1f), math::vec3(1.f, 1.f, 0.1f));
 }
 
 bool Disk::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					 Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::vec3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
 	float t = -(numer / denom);
 
 	if (t > ray.min_t && t < ray.max_t) {
-		math::float3 p = ray.point(t);
-		math::float3 k = p - transformation.position;
+		math::vec3 p = ray.point(t);
+		math::vec3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
 		float radius = transformation.scale.x;
@@ -38,7 +38,7 @@ bool Disk::intersect(const entity::Composed_transformation& transformation, math
 			intersection.b = -transformation.rotation.y3;
 			intersection.n = normal;
 			intersection.geo_n = normal;
-			math::float3 sk = k / radius;
+			math::vec3 sk = k / radius;
 
 			intersection.uv.x = (math::dot(intersection.t, sk) + 1.f) * 0.5f * transformation.scale.z;
 			intersection.uv.y = (math::dot(intersection.b, sk) + 1.f) * 0.5f * transformation.scale.z;
@@ -55,15 +55,15 @@ bool Disk::intersect(const entity::Composed_transformation& transformation, math
 
 bool Disk::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 					   Node_stack& /*node_stack*/) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::vec3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
 	float t = -(numer / denom);
 
 	if (t > ray.min_t && t < ray.max_t) {
-		math::float3 p = ray.point(t);
-		math::float3 k = p - transformation.position;
+		math::vec3 p = ray.point(t);
+		math::vec3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
 		float radius = transformation.scale.x;
@@ -79,21 +79,21 @@ bool Disk::intersect_p(const entity::Composed_transformation& transformation, co
 float Disk::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
 					Node_stack& /*node_stack*/, const material::Materials& materials,
 					const image::texture::sampler::Sampler_2D& sampler) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::vec3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
 	float t = -(numer / denom);
 
 	if (t > ray.min_t && t < ray.max_t) {
-		math::float3 p = ray.point(t);
-		math::float3 k = p - transformation.position;
+		math::vec3 p = ray.point(t);
+		math::vec3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
 		float radius = transformation.scale.x;
 
 		if (l <= radius * radius) {
-			math::float3 sk = k / radius;
+			math::vec3 sk = k / radius;
 			math::float2 uv((math::dot(transformation.rotation.x3, sk) + 1.f) * 0.5f,
 							(math::dot(transformation.rotation.y3, sk) + 1.f) * 0.5f);
 
@@ -105,23 +105,23 @@ float Disk::opacity(const entity::Composed_transformation& transformation, const
 }
 
 void Disk::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-				  const math::float3& p, const math::float3& /*n*/, bool two_sided,
+				  const math::vec3& p, const math::vec3& /*n*/, bool two_sided,
 				  sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
 	Disk::sample(part, transformation, area, p, two_sided, sampler, node_stack, sample);
 }
 
 void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
-				  const math::float3& p, bool two_sided,
+				  const math::vec3& p, bool two_sided,
 				  sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	math::float2 r2 = sampler.generate_sample_2D();
 	math::float2 xy = math::sample_disk_concentric(r2);
 
-	math::float3 ls = math::float3(xy, 0.f);
-	math::float3 ws = transformation.position + transformation.scale.x * math::transform_vector(ls, transformation.rotation);
+	math::vec3 ls = math::vec3(xy, 0.f);
+	math::vec3 ws = transformation.position + transformation.scale.x * math::transform_vector(ls, transformation.rotation);
 
-	math::float3 axis = ws - p;
+	math::vec3 axis = ws - p;
 
-	math::float3 wi = math::normalized(axis);
+	math::vec3 wi = math::normalized(axis);
 
 	float c = math::dot(transformation.rotation.z3, -wi);
 
@@ -140,15 +140,15 @@ void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& tran
 }
 
 void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
+				  const math::vec3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
 
 void Disk::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
+				  const math::vec3& /*p*/, const math::vec3& /*wi*/, Sample& /*sample*/) const {}
 
 float Disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
-				const math::float3& p, const math::float3& wi, bool two_sided, bool /*total_sphere*/,
+				const math::vec3& p, const math::vec3& wi, bool two_sided, bool /*total_sphere*/,
 				Node_stack& /*node_stack*/) const {
-	math::float3 normal = transformation.rotation.z3;
+	math::vec3 normal = transformation.rotation.z3;
 
 	float c = math::dot(normal, -wi);
 
@@ -165,8 +165,8 @@ float Disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& transf
 	float numer = math::dot(normal, p) + d;
 	float t = -(numer / denom);
 
-	math::float3 ws = p + t * wi; // ray.point(t);
-	math::float3 k = ws - transformation.position;
+	math::vec3 ws = p + t * wi; // ray.point(t);
+	math::vec3 k = ws - transformation.position;
 	float l = math::dot(k, k);
 
 	float radius = transformation.scale.x;
@@ -179,7 +179,7 @@ float Disk::pdf(uint32_t /*part*/, const entity::Composed_transformation& transf
 	return 0.f;
 }
 
-float Disk::area(uint32_t /*part*/, const math::float3& scale) const {
+float Disk::area(uint32_t /*part*/, const math::vec3& scale) const {
 	return math::Pi * scale.x * scale.x;
 }
 

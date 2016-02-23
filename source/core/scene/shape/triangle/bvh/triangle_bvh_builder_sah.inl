@@ -30,8 +30,8 @@ void Builder_SAH::build(Tree<Data>& tree,
 		auto& b = vertices[triangles[i].b].p;
 		auto& c = vertices[triangles[i].c].p;
 
-		math::float3 min = triangle_min(a, b, c);
-		math::float3 max = triangle_max(a, b, c);
+		math::vec3 min = triangle_min(a, b, c);
+		math::vec3 max = triangle_max(a, b, c);
 
 		primitive_bounds[i] = math::aabb(min, max);
 

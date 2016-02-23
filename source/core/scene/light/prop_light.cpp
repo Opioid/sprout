@@ -21,7 +21,7 @@ const entity::Composed_transformation& Prop_light::transformation_at(float time,
 }
 
 void Prop_light::sample(const entity::Composed_transformation& transformation, float time,
-						const math::float3& p, const math::float3& n, bool total_sphere,
+						const math::vec3& p, const math::vec3& n, bool total_sphere,
 						const image::texture::sampler::Sampler_2D& image_sampler,
 						sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const {
 	auto material = prop_->material(part_);
@@ -43,7 +43,7 @@ void Prop_light::sample(const entity::Composed_transformation& transformation, f
 }
 
 float Prop_light::pdf(const entity::Composed_transformation& transformation,
-					  const math::float3& p, const math::float3& wi, bool total_sphere,
+					  const math::vec3& p, const math::vec3& wi, bool total_sphere,
 					  const image::texture::sampler::Sampler_2D& /*image_sampler*/,
 					  shape::Node_stack& node_stack) const {
 	bool two_sided = prop_->material(part_)->is_two_sided();
@@ -51,8 +51,8 @@ float Prop_light::pdf(const entity::Composed_transformation& transformation,
 	return prop_->shape()->pdf(part_, transformation, area_, p, wi, two_sided, total_sphere, node_stack);
 }
 
-math::float3 Prop_light::power(const math::aabb& scene_bb) const {
-	math::float3 emission = prop_->material(part_)->average_emission();
+math::vec3 Prop_light::power(const math::aabb& scene_bb) const {
+	math::vec3 emission = prop_->material(part_)->average_emission();
 
 	if (prop_->shape()->is_finite()) {
 		return area_ * emission;
@@ -68,7 +68,7 @@ void Prop_light::prepare_sampling() {
 
 	entity::Composed_transformation temp;
 	auto& transformation = prop_->transformation_at(0.f, temp);
-	area_ = prop_->shape()->area(part_, math::float3(transformation.scale));
+	area_ = prop_->shape()->area(part_, math::vec3(transformation.scale));
 }
 
 bool Prop_light::equals(const Prop* prop, uint32_t part) const {

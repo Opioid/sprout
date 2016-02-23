@@ -36,7 +36,7 @@ protected:
 
 	virtual void resolve(int32_t begin, int32_t end, image::Image_float_4& target) = 0;
 
-	math::float3 expose(const math::float3& color) const;
+	math::vec3 expose(math::pvec3 color) const;
 
 	math::int2 dimensions_;
 

@@ -7,19 +7,19 @@
 
 namespace scene { namespace material { namespace metal {
 
-math::float3 Sample_isotropic::evaluate(const math::float3& wi, float& pdf) const {
+math::vec3 Sample_isotropic::evaluate(math::pvec3 wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	return n_dot_wi * ggx_.evaluate(*this, wi, n_dot_wi, n_dot_wo, pdf);
 }
 
-math::float3 Sample_isotropic::emission() const {
-	return math::float3_identity;
+math::vec3 Sample_isotropic::emission() const {
+	return math::vec3_identity;
 }
 
-math::float3 Sample_isotropic::attenuation() const {
-	return math::float3(100.f, 100.f, 100.f);
+math::vec3 Sample_isotropic::attenuation() const {
+	return math::vec3(100.f, 100.f, 100.f);
 }
 
 float Sample_isotropic::ior() const {
@@ -44,7 +44,7 @@ bool Sample_isotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_isotropic::set(const math::float3& ior, const math::float3& absorption, float roughness) {
+void Sample_isotropic::set(const math::vec3& ior, const math::vec3& absorption, float roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 
@@ -52,19 +52,19 @@ void Sample_isotropic::set(const math::float3& ior, const math::float3& absorpti
 	a2_ = a * a;
 }
 
-math::float3 Sample_anisotropic::evaluate(const math::float3& wi, float& pdf) const {
+math::vec3 Sample_anisotropic::evaluate(math::pvec3 wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	return n_dot_wi * ggx_.evaluate(*this, wi, n_dot_wi, n_dot_wo, pdf);
 }
 
-math::float3 Sample_anisotropic::emission() const {
-	return math::float3_identity;
+math::vec3 Sample_anisotropic::emission() const {
+	return math::vec3_identity;
 }
 
-math::float3 Sample_anisotropic::attenuation() const {
-	return math::float3(100.f, 100.f, 100.f);
+math::vec3 Sample_anisotropic::attenuation() const {
+	return math::vec3(100.f, 100.f, 100.f);
 }
 
 float Sample_anisotropic::ior() const {
@@ -89,7 +89,7 @@ bool Sample_anisotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_anisotropic::set(const math::float3& ior, const math::float3& absorption, math::float2 roughness) {
+void Sample_anisotropic::set(const math::vec3& ior, const math::vec3& absorption, math::float2 roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 

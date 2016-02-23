@@ -81,7 +81,7 @@ math::float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture
 }
 
 template<typename Address_mode>
-math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture, math::float2 uv) const {
+math::vec3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture, math::float2 uv) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -102,10 +102,10 @@ math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture
 	x = address_mode_.lower_bound(x, m.x);
 	y = address_mode_.lower_bound(y, m.y);
 
-	math::float3 c00 = texture.at_3(x,  y);
-	math::float3 c01 = texture.at_3(x,  y1);
-	math::float3 c10 = texture.at_3(x1, y);
-	math::float3 c11 = texture.at_3(x1, y1);
+	math::vec3 c00 = texture.at_3(x,  y);
+	math::vec3 c01 = texture.at_3(x,  y1);
+	math::vec3 c10 = texture.at_3(x1, y);
+	math::vec3 c11 = texture.at_3(x1, y1);
 
 	float s = u - fu;
 	float t = v - fv;
@@ -185,7 +185,7 @@ math::float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture
 }
 
 template<typename Address_mode>
-math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture, math::float2 uv,
+math::vec3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture, math::float2 uv,
 													   int32_t element) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
@@ -209,10 +209,10 @@ math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	math::float3 c00 = texture.at_3(x,  y,  min_element);
-	math::float3 c01 = texture.at_3(x,  y1, min_element);
-	math::float3 c10 = texture.at_3(x1, y,  min_element);
-	math::float3 c11 = texture.at_3(x1, y1, min_element);
+	math::vec3 c00 = texture.at_3(x,  y,  min_element);
+	math::vec3 c01 = texture.at_3(x,  y1, min_element);
+	math::vec3 c10 = texture.at_3(x1, y,  min_element);
+	math::vec3 c11 = texture.at_3(x1, y1, min_element);
 
 	float s = u - fu;
 	float t = v - fv;

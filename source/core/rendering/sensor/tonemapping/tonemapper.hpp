@@ -9,7 +9,7 @@ public:
 
 	virtual ~Tonemapper() {}
 
-	virtual math::float3 tonemap(const math::float3& color) const = 0;
+	virtual math::vec3 tonemap(math::pvec3 color) const = 0;
 };
 
 }}}

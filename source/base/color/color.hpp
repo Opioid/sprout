@@ -8,7 +8,7 @@ typedef math::Vector2<uint8_t> Color2c;
 typedef math::Vector3<uint8_t> Color3c;
 //typedef math::Vector3<float>   Color3;
 //typedef math::Vector3f_a	   Color3_a;
-typedef math::float3 Color3;
+typedef math::vec3 Color3;
 typedef math::Vector4<uint8_t> Color4c;
 //typedef math::Vector4<float>   Color4;
 typedef math::float4		   Color4;

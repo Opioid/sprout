@@ -23,8 +23,8 @@ int32_t Texture_2D::num_elements() const {
 	return image_->description().num_elements;
 }
 
-math::float3 Texture_2D::average_3() const {
-	math::float3 average = math::float3_identity;
+math::vec3 Texture_2D::average_3() const {
+	math::vec3 average = math::vec3_identity;
 
 	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {
@@ -37,8 +37,8 @@ math::float3 Texture_2D::average_3() const {
 	return average / (df.x * df.y);
 }
 
-math::float3 Texture_2D::average_3(int32_t element) const {
-	math::float3 average = math::float3_identity;
+math::vec3 Texture_2D::average_3(int32_t element) const {
+	math::vec3 average = math::vec3_identity;
 
 	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {

@@ -24,7 +24,7 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 }
 
 math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
-	math::float3 result = math::float3_identity;
+	math::vec3 result = math::vec3_identity;
 
 	float opacity = intersection.opacity(ray.time, settings_.sampler_linear);
 	float throughput = opacity;
@@ -49,10 +49,10 @@ math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::In
 	return math::float4(result, opacity);
 }
 
-math::float3 Whitted::shade(Worker& worker, const scene::Ray& ray, const scene::Intersection& intersection) {
-	math::float3 result = math::float3_identity;
+math::vec3 Whitted::shade(Worker& worker, const scene::Ray& ray, const scene::Intersection& intersection) {
+	math::vec3 result = math::vec3_identity;
 
-	math::float3 wo = -ray.direction;
+	math::vec3 wo = -ray.direction;
 	auto& material_sample = intersection.material()->sample(intersection.geo, wo, ray.time, 1.f,
 															settings_.sampler_linear, worker.id());
 
@@ -67,11 +67,11 @@ math::float3 Whitted::shade(Worker& worker, const scene::Ray& ray, const scene::
 	return result;
 }
 
-math::float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ray,
+math::vec3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 											const scene::Intersection& intersection,
 											const scene::material::Sample& material_sample,
 											const image::texture::sampler::Sampler_2D& texture_sampler) {
-	math::float3 result = math::float3_identity;
+	math::vec3 result = math::vec3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	scene::Ray shadow_ray;
@@ -93,10 +93,10 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ra
 
 				float mv = worker.masked_visibility(shadow_ray, texture_sampler);
 				if (mv > 0.f) {
-					math::float3 tr = worker.transmittance(shadow_ray);
+					math::vec3 tr = worker.transmittance(shadow_ray);
 
 					float bxdf_pdf;
-					math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+					math::vec3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
 					result += mv * tr * light_sample.energy * f / light_sample.shape.pdf;
 				}

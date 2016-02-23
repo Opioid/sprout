@@ -52,10 +52,10 @@ public:
 	uint32_t id() const;
 
 	math::float4 li(scene::Ray& ray);
-	math::float3 surface_li(scene::Ray& ray);
-	math::float4 volume_li(const scene::Ray& ray, math::float3& transmittance);
+	math::vec3 surface_li(scene::Ray& ray);
+	math::float4 volume_li(const scene::Ray& ray, math::vec3& transmittance);
 
-	math::float3 transmittance(const scene::Ray& ray);
+	math::vec3 transmittance(const scene::Ray& ray);
 
 	bool intersect(scene::Ray& ray, scene::Intersection& intersection);
 	bool intersect(const scene::Prop* prop, scene::Ray& ray, scene::Intersection& intersection);

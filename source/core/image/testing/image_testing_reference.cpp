@@ -20,27 +20,27 @@ namespace image { namespace testing {
 // bi-tangent	[0, -1,  0]
 // normal       [0,  0, -1]
 
-math::float3 reference_normal(math::float2 p, math::float2 range) {
+math::vec3 reference_normal(math::float2 p, math::float2 range) {
 	float vx = -1.f + p.x * range.x;
 	float vy = -1.f + p.y * range.y;
 
 	math::float2 xy(vx, vy);
 	float l = math::length(xy);
 
-	math::float3 v;
+	math::vec3 v;
 
 	const float radius = 1.f - 0.5f * range.y;
 	if (l < radius) {
-		v = math::float3(vx, vy, 1.f - l);
+		v = math::vec3(vx, vy, 1.f - l);
 	} else {
-		v = math::float3(0.f, 0.f, 1.f);
+		v = math::vec3(0.f, 0.f, 1.f);
 	}
 
 //	return math::normalized(v);
 
 	v = math::normalized(v);
 
-	return 0.5f * math::float3(v.x + 1.f, v.y + 1.f, v.z + 1.f);
+	return 0.5f * math::vec3(v.x + 1.f, v.y + 1.f, v.z + 1.f);
 }
 
 void create_reference_normal_map(math::int2 dimensions) {
@@ -61,7 +61,7 @@ void create_reference_normal_map(math::int2 dimensions) {
 			float fx = static_cast<float>(x);
 			float fy = static_cast<float>(y);
 
-			math::float3 v = math::float3_identity;
+			math::vec3 v = math::vec3_identity;
 
 			for (int32_t ay = 0; ay < aa.y; ++ay) {
 				for (int32_t ax = 0; ax < aa.x; ++ax) {

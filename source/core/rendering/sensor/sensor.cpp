@@ -24,7 +24,7 @@ void Sensor::resolve(thread::Pool& pool, image::Image_float_4& target) {
 	pool.run_range([this, &target](int32_t begin, int32_t end){ resolve(begin, end, target); }, 0, d.x * d.y);
 }
 
-math::float3 Sensor::expose(const math::float3& color) const {
+math::vec3 Sensor::expose(math::pvec3 color) const {
 	return exp2_exposure_ * color;
 }
 

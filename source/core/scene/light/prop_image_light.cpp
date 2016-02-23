@@ -13,7 +13,7 @@
 namespace scene { namespace light {
 
 void Prop_image_light::sample(const entity::Composed_transformation& transformation, float time,
-							  const math::float3& p, const math::float3& n, bool total_sphere,
+							  const math::vec3& p, const math::vec3& n, bool total_sphere,
 							  const image::texture::sampler::Sampler_2D& image_sampler,
 							  sampler::Sampler& sampler, shape::Node_stack& /*node_stack*/, Sample& result) const {
 	auto material = prop_->material(part_);
@@ -32,7 +32,7 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 }
 
 float Prop_image_light::pdf(const entity::Composed_transformation& transformation,
-							const math::float3& p, const math::float3& wi, bool /*total_sphere*/,
+							const math::vec3& p, const math::vec3& wi, bool /*total_sphere*/,
 							const image::texture::sampler::Sampler_2D& image_sampler,
 							shape::Node_stack& /*node_stack*/) const {
 	shape::Sample sample;
@@ -48,7 +48,7 @@ void Prop_image_light::prepare_sampling() {
 
 	entity::Composed_transformation temp;
 	auto& transformation = prop_->transformation_at(0.f, temp);
-	area_ = prop_->shape()->area(part_, math::float3(transformation.scale));
+	area_ = prop_->shape()->area(part_, math::vec3(transformation.scale));
 }
 
 }}

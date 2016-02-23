@@ -5,7 +5,7 @@
 namespace scene { namespace shape {
 
 struct Sample {
-	math::float3 wi;
+	math::vec3 wi;
 	math::float2 uv;
 	float t;
 	float pdf;

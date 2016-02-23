@@ -5,7 +5,7 @@
 
 namespace image { namespace texture { namespace sampler {
 
-math::float3 Spherical_nearest::sample_3(const Texture_2D& texture, const math::float3& xyz) const {
+math::vec3 Spherical_nearest::sample_3(const Texture_2D& texture, const math::vec3& xyz) const {
 	math::float2 uv((std::atan2(xyz.x, xyz.z) * math::Pi_inv + 1.f) * 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 	const math::int2 d = texture.dimensions();

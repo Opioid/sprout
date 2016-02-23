@@ -5,11 +5,11 @@
 
 namespace scene { namespace material { namespace fresnel {
 
-inline math::float3 schlick(float wo_dot_h, const math::float3& f0) {
-	return f0 + std::pow(1.f - wo_dot_h, 5.f) * math::float3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
+inline math::vec3 schlick(float wo_dot_h, const math::vec3& f0) {
+	return f0 + std::pow(1.f - wo_dot_h, 5.f) * math::vec3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
 
 	// Gaussian approximation
-	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * math::float3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
+	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * math::vec3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
 }
 
 inline float schlick(float wo_dot_h, float f0) {
@@ -22,17 +22,17 @@ inline float schlick_f0(float n0, float n1) {
 	return t * t;
 }
 
-inline math::float3 conductor(float wo_dot_h, const math::float3& eta, const math::float3& k) {
-	math::float3 tmp_f = eta * eta + k * k;
+inline math::vec3 conductor(float wo_dot_h, const math::vec3& eta, const math::vec3& k) {
+	math::vec3 tmp_f = eta * eta + k * k;
 
 	float wo_dot_h2 = wo_dot_h * wo_dot_h;
-	math::float3 tmp = wo_dot_h2 * tmp_f;
+	math::vec3 tmp = wo_dot_h2 * tmp_f;
 
-	math::float3 a = 2.f * wo_dot_h * eta;
-	math::float3 r_p = (tmp - a + 1.f)
+	math::vec3 a = 2.f * wo_dot_h * eta;
+	math::vec3 r_p = (tmp - a + 1.f)
 					 / (tmp + a + 1.f);
 
-	math::float3 r_o = (tmp_f - a + wo_dot_h2)
+	math::vec3 r_o = (tmp_f - a + wo_dot_h2)
 					 / (tmp_f + a + wo_dot_h2);
 
 	return 0.5f * (r_p + r_o);

@@ -22,16 +22,16 @@ public:
 
 	virtual float        at_1(int32_t x, int32_t y) const = 0;
 	virtual math::float2 at_2(int32_t x, int32_t y) const = 0;
-	virtual math::float3 at_3(int32_t x, int32_t y) const = 0;
+	virtual math::vec3 at_3(int32_t x, int32_t y) const = 0;
 	virtual math::float4 at_4(int32_t x, int32_t y) const = 0;
 
 	virtual float        at_1(int32_t x, int32_t y, int32_t element) const = 0;
 	virtual math::float2 at_2(int32_t x, int32_t y, int32_t element) const = 0;
-	virtual math::float3 at_3(int32_t x, int32_t y, int32_t element) const = 0;
+	virtual math::vec3 at_3(int32_t x, int32_t y, int32_t element) const = 0;
 	virtual math::float4 at_4(int32_t x, int32_t y, int32_t element) const = 0;
 
-	math::float3 average_3() const;
-	math::float3 average_3(int32_t element) const;
+	math::vec3 average_3() const;
+	math::vec3 average_3(int32_t element) const;
 
 	math::float4 average_4() const;
 

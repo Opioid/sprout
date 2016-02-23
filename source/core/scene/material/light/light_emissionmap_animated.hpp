@@ -18,15 +18,15 @@ public:
 
 	virtual void tick(float absolute_time, float time_slice) final override;
 
-	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
+	virtual const material::Sample& sample(const shape::Differential& dg, const math::vec3& wo,
 										   float time, float ior_i,
 										   const image::texture::sampler::Sampler_2D& sampler,
 										   uint32_t worker_id) final override;
 
-	virtual math::float3 sample_emission(math::float2 uv, float time,
+	virtual math::vec3 sample_emission(math::float2 uv, float time,
 										 const image::texture::sampler::Sampler_2D& sampler) const final override;
 
-	virtual math::float3 average_emission() const final override;
+	virtual math::vec3 average_emission() const final override;
 
 	virtual bool has_emission_map() const final override;
 
@@ -48,7 +48,7 @@ private:
 
 	float emission_factor_;
 
-	std::vector<math::float3> average_emissions_;
+	std::vector<math::vec3> average_emissions_;
 
 	float total_weight_;
 

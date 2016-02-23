@@ -72,7 +72,7 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
 
 		if (rgbe[0] != 2 || rgbe[1] != 2 || (rgbe[2] & 0x80) != 0) {
 			// this file is not run length encoded
-			math::float3 color = rgbe_to_float3(rgbe);
+			math::vec3 color = rgbe_to_vec3(rgbe);
 
 			image.at(0) = color;
 
@@ -128,7 +128,7 @@ void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint
 			rgbe[2] = scanline_buffer[i + 2 * scanline_width];
 			rgbe[3] = scanline_buffer[i + 3 * scanline_width];
 
-			image.at(offset++) = rgbe_to_float3(rgbe);
+			image.at(offset++) = rgbe_to_vec3(rgbe);
 		}
 	}
 }
@@ -139,21 +139,21 @@ void Reader::read_pixels(std::istream& stream, uint32_t num_pixels, Image_float_
 	for (; num_pixels > 0; --num_pixels) {
 		stream.read(reinterpret_cast<char*>(rgbe), sizeof(rgbe));
 
-		math::float3 color = rgbe_to_float3(rgbe);
+		math::vec3 color = rgbe_to_vec3(rgbe);
 
 		image.at(offset++) = color;
 	}
 }
 
-math::float3 Reader::rgbe_to_float3(uint8_t rgbe[4]) {
+math::vec3 Reader::rgbe_to_vec3(uint8_t rgbe[4]) {
 	if (rgbe[3] > 0) {
 		// nonzero pixel
 		float f = std::ldexp(1.f, static_cast<int>(rgbe[3]) - (128 + 8));
-		return math::float3(static_cast<float>(rgbe[0]) * f,
+		return math::vec3(static_cast<float>(rgbe[0]) * f,
 							static_cast<float>(rgbe[1]) * f,
 							static_cast<float>(rgbe[2]) * f);
 	} else {
-		return math::float3_identity;
+		return math::vec3_identity;
 	}
 }
 

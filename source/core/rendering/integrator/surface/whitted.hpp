@@ -30,9 +30,9 @@ public:
 
 private:
 
-	math::float3 shade(Worker& worker, const scene::Ray& ray, const scene::Intersection& intersection);
+	math::vec3 shade(Worker& worker, const scene::Ray& ray, const scene::Intersection& intersection);
 
-	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
+	math::vec3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
 									   const image::texture::sampler::Sampler_2D& texture_sampler);

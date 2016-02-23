@@ -44,7 +44,7 @@ void Spherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*vi
 	float sin_phi   = std::sin(phi);
 	float cos_phi   = std::cos(phi);
 
-	math::float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+	math::vec3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);

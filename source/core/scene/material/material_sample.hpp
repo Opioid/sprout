@@ -11,11 +11,11 @@ namespace bxdf { struct Result; }
 class Sample {
 public:
 
-	virtual math::float3 evaluate(const math::float3& wi, float& pdf) const = 0;
+	virtual math::vec3 evaluate(math::pvec3 wi, float& pdf) const = 0;
 
-	virtual math::float3 emission() const = 0;
+	virtual math::vec3 emission() const = 0;
 
-	virtual math::float3 attenuation() const = 0;
+	virtual math::vec3 attenuation() const = 0;
 
 	virtual float ior() const = 0;
 
@@ -30,24 +30,24 @@ public:
 	//float absolute_n_dot_wo() const;
 	float clamped_n_dot_wo() const;
 
-	const math::float3& shading_normal() const;
+	const math::vec3& shading_normal() const;
 
-	const math::float3& geometric_normal() const;
+	const math::vec3& geometric_normal() const;
 
-	math::float3 tangent_to_world(const math::float3& v) const;
+	math::vec3 tangent_to_world(math::pvec3 v) const;
 
-	bool same_hemisphere(const math::float3& v) const;
+	bool same_hemisphere(math::pvec3 v) const;
 
-	void set_basis(const math::float3& t, const math::float3& b, const math::float3& n,
-				   const math::float3& geo_n, const math::float3& wo, bool two_sided = false);
+	void set_basis(const math::vec3& t, const math::vec3& b, const math::vec3& n,
+				   const math::vec3& geo_n, const math::vec3& wo, bool two_sided = false);
 
-	static math::float3 attenuation(const math::float3& color, float distance);
+	static math::vec3 attenuation(math::pvec3 color, float distance);
 
 protected:
 
-	math::float3 t_, b_, n_;
-	math::float3 geo_n_;
-	math::float3 wo_;
+	math::vec3 t_, b_, n_;
+	math::vec3 geo_n_;
+	math::vec3 wo_;
 };
 
 }}

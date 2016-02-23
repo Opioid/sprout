@@ -12,7 +12,7 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p) :
+Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, const math::vec3& p) :
 	aabb_0_(math::aabb::empty()),
 	aabb_1_(math::aabb::empty()),
 	d_(p.v[split_axis]),
@@ -50,7 +50,7 @@ float Builder_SAH::Split_candidate::cost() const {
 	return cost_;
 }
 
-bool Builder_SAH::Split_candidate::behind(const math::float3& point) const {
+bool Builder_SAH::Split_candidate::behind(const math::vec3& point) const {
 	return point.v[axis_] < d_;
 }
 
@@ -79,26 +79,26 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(index begin, index end
 
 	if (num_triangles <= sweep_threshold_) {
 		for (index i = begin; i != end; ++i) {
-			const math::float3& max = triangle_bounds[*i].max();
+			const math::vec3& max = triangle_bounds[*i].max();
 			split_candidates_.push_back(Split_candidate(0, max));
 			split_candidates_.push_back(Split_candidate(1, max));
 			split_candidates_.push_back(Split_candidate(2, max));
 		}
 	} else {
-		math::float3 halfsize = aabb.halfsize();
-		math::float3 position = aabb.position();
+		math::vec3 halfsize = aabb.halfsize();
+		math::vec3 position = aabb.position();
 
-		math::float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
+		math::vec3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1; i < num_slices_; ++i) {
 			float fi = static_cast<float>(i);
 
-			math::float3 slice_x(aabb.min().x + fi * step.x, position.y, position.z);
+			math::vec3 slice_x(aabb.min().x + fi * step.x, position.y, position.z);
 			split_candidates_.push_back(Split_candidate(0, slice_x));
 
-			math::float3 slice_y(position.x, aabb.min().y + fi * step.y, position.z);
+			math::vec3 slice_y(position.x, aabb.min().y + fi * step.y, position.z);
 			split_candidates_.push_back(Split_candidate(1, slice_y));
 
-			math::float3 slice_z(position.x, position.y, aabb.min().z + fi * step.z);
+			math::vec3 slice_z(position.x, position.y, aabb.min().z + fi * step.z);
 			split_candidates_.push_back(Split_candidate(2, slice_z));
 		}
 	}

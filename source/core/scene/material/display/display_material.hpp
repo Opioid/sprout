@@ -14,15 +14,15 @@ public:
 
 	Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
+	virtual const material::Sample& sample(const shape::Differential& dg, const math::vec3& wo,
 										   float time, float ior_i,
 										   const image::texture::sampler::Sampler_2D& sampler,
 										   uint32_t worker_id) final override;
 
-	virtual math::float3 sample_emission(math::float2 uv, float time,
+	virtual math::vec3 sample_emission(math::float2 uv, float time,
 										 const image::texture::sampler::Sampler_2D& sampler) const final override;
 
-	virtual math::float3 average_emission() const final override;
+	virtual math::vec3 average_emission() const final override;
 
 	virtual bool has_emission_map() const final override;
 
@@ -35,7 +35,7 @@ public:
 
 	void set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map);
 
-	void set_emission(const math::float3& emission);
+	void set_emission(const math::vec3& emission);
 	void set_emission_factor(float emission_factor);
 	void set_roughness(float roughness);
 	void set_ior(float ior);
@@ -44,7 +44,7 @@ private:
 
 	std::shared_ptr<image::texture::Texture_2D> emission_map_;
 
-	math::float3 emission_;
+	math::vec3 emission_;
 
 	float emission_factor_;
 
@@ -52,7 +52,7 @@ private:
 
 	float f0_;
 
-	math::float3 average_emission_;
+	math::vec3 average_emission_;
 
 	float total_weight_;
 

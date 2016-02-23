@@ -40,7 +40,7 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 	metal_aniso_cache_(thread_pool.num_threads()),
 	substitute_cache_(thread_pool.num_threads()) {
 	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr, false);
-	material->set_color(math::float3(1.f, 0.f, 0.f)),
+	material->set_color(math::vec3(1.f, 0.f, 0.f)),
 	material->set_ior(1.45f),
 	material->set_roughness(1.f);
 	material->set_metallic(0.f);
@@ -90,14 +90,14 @@ std::shared_ptr<IMaterial> Provider::load_cloth(const rapidjson::Value& cloth_va
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
-	math::float3 color(0.75f, 0.75f, 0.75f);
+	math::vec3 color(0.75f, 0.75f, 0.75f);
 
 	for (auto n = cloth_value.MemberBegin(); n != cloth_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
 		if ("color" == node_name) {
-			color = json::read_float3(node_value);
+			color = json::read_vec3(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
 		} else if ("textures" == node_name) {
@@ -140,7 +140,7 @@ std::shared_ptr<IMaterial> Provider::load_display(const rapidjson::Value& displa
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
 
-	math::float3 emission(10.f, 10.f, 10.f);
+	math::vec3 emission(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
 	float roughness = 1.f;
 	float ior = 1.5;
@@ -151,7 +151,7 @@ std::shared_ptr<IMaterial> Provider::load_display(const rapidjson::Value& displa
 		const rapidjson::Value& node_value = n->value;
 
 		if ("emission" == node_name) {
-			emission = json::read_float3(node_value);
+			emission = json::read_vec3(node_value);
 		} else if ("emission_factor" == node_name) {
 			emission_factor = json::read_float(node_value);
 		} else if ("roughness" == node_name) {
@@ -209,7 +209,7 @@ std::shared_ptr<IMaterial> Provider::load_display(const rapidjson::Value& displa
 
 std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_value) {
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
-	math::float3 color(1.f, 1.f, 1.f);
+	math::vec3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
 	float roughness = 0.f;
@@ -219,7 +219,7 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 		const rapidjson::Value& node_value = n->value;
 
 		if ("color" == node_name) {
-			color = json::read_float3(node_value);
+			color = json::read_vec3(node_value);
 		} else if ("attenuation_distance" == node_name) {
 			attenuation_distance = json::read_float(node_value);
 		} else if ("ior" == node_name) {
@@ -264,7 +264,7 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 }
 
 std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {
-	math::float3 emission(10.f, 10.f, 10.f);
+	math::vec3 emission(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
 	float animation_duration = 0.f;
 
@@ -277,7 +277,7 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 		const rapidjson::Value& node_value = n->value;
 
 		if ("emission" == node_name) {
-			emission = json::read_float3(node_value);
+			emission = json::read_vec3(node_value);
 		} else if ("emission_factor" == node_name) {
 			emission_factor = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
@@ -332,8 +332,8 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 	std::shared_ptr<image::texture::Texture_2D> direction_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
-	math::float3 ior(1.f, 1.f, 1.f);
-	math::float3 absorption(0.75f, 0.75f, 0.75f);
+	math::vec3 ior(1.f, 1.f, 1.f);
+	math::vec3 absorption(0.75f, 0.75f, 0.75f);
 	math::float2 anisotropy(0.f, 0.f);
 	float roughness = 0.9f;
 	math::float2 roughness_aniso(0.f, 0.f);
@@ -343,9 +343,9 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 		const rapidjson::Value& node_value = n->value;
 
 		if ("ior" == node_name) {
-			ior = json::read_float3(node_value);
+			ior = json::read_vec3(node_value);
 		} else if ("absorption" == node_name) {
-			absorption = json::read_float3(node_value);
+			absorption = json::read_vec3(node_value);
 		} else if ("roughness" == node_name) {
 			if (node_value.IsArray()) {
 				roughness_aniso = json::read_float2(node_value);
@@ -416,7 +416,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 	std::shared_ptr<image::texture::Texture_2D> emission_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
-    math::float3 color(0.6f, 0.6f, 0.6f);
+    math::vec3 color(0.6f, 0.6f, 0.6f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float ior = 1.46f;
@@ -429,7 +429,7 @@ std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& sub
 		const rapidjson::Value& node_value = n->value;
 
 		if ("color" == node_name) {
-			color = json::read_float3(node_value);
+			color = json::read_vec3(node_value);
 		} else if ("ior" == node_name) {
 			ior = json::read_float(node_value);
 		} else if ("roughness" == node_name) {

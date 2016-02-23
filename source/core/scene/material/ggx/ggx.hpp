@@ -14,8 +14,8 @@ template<typename Sample>
 class Schlick_isotropic {
 public:
 
-	math::float3 evaluate(const Sample& sample,
-						  const math::float3& wi, float n_dot_wi, float n_dot_wo,
+	math::vec3 evaluate(const Sample& sample,
+						  const math::vec3& wi, float n_dot_wi, float n_dot_wo,
 						  float& pdf) const;
 
 	float importance_sample(const Sample& sample,
@@ -27,8 +27,8 @@ template<typename Sample>
 class Conductor_isotropic {
 public:
 
-	math::float3 evaluate(const Sample& sample,
-						  const math::float3& wi, float n_dot_wi, float n_dot_wo,
+	math::vec3 evaluate(const Sample& sample,
+						  const math::vec3& wi, float n_dot_wi, float n_dot_wo,
 						  float& pdf) const;
 
 	float importance_sample(const Sample& sample,
@@ -40,8 +40,8 @@ template<typename Sample>
 class Conductor_anisotropic {
 public:
 
-	math::float3 evaluate(const Sample& sample,
-						  const math::float3& wi, float n_dot_wi, float n_dot_wo,
+	math::vec3 evaluate(const Sample& sample,
+						  const math::vec3& wi, float n_dot_wi, float n_dot_wo,
 						  float& pdf) const;
 
 	float importance_sample(const Sample& sample,

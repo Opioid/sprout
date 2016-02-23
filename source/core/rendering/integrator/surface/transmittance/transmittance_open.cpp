@@ -19,13 +19,13 @@ namespace rendering { namespace integrator { namespace surface { namespace trans
 Open::Open(const take::Settings &take_settings, math::random::Generator &rng, uint32_t max_bounces) :
 	integrator::Integrator(take_settings, rng), max_bounces_(max_bounces) {}
 
-math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-						   const math::float3& attenuation,
+math::vec3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
+						   const math::vec3& attenuation,
 						   sampler::Sampler& sampler,
 						   const image::texture::sampler::Sampler_2D& texture_sampler,
 						   scene::material::bxdf::Result& sample_result) {
-	math::float3 throughput = sample_result.reflection / sample_result.pdf;
-	math::float3 used_attenuation = attenuation;
+	math::vec3 throughput = sample_result.reflection / sample_result.pdf;
+	math::vec3 used_attenuation = attenuation;
 
 	for (uint32_t i = 0; i < max_bounces_;) {
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -38,12 +38,12 @@ math::float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 			break;
 		}
 
-		math::float3 wo = -ray.direction;
+		math::vec3 wo = -ray.direction;
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, texture_sampler, worker.id());
 
 		material_sample.sample_evaluate(sampler, sample_result);
-		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {
+		if (0.f == sample_result.pdf || math::vec3_identity == sample_result.reflection) {
 			break;
 		}
 

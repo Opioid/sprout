@@ -88,18 +88,18 @@ math::float2 read_float2(const rapidjson::Value& value) {
 	return math::float2(static_cast<float>(value[0u].GetDouble()), static_cast<float>(value[1].GetDouble()));
 }
 
-math::float3 read_float3(const rapidjson::Value& value) {
-	return math::float3(static_cast<float>(value[0u].GetDouble()), static_cast<float>(value[1].GetDouble()),
+math::vec3 read_vec3(const rapidjson::Value& value) {
+	return math::vec3(static_cast<float>(value[0u].GetDouble()), static_cast<float>(value[1].GetDouble()),
 						static_cast<float>(value[2].GetDouble()));
 }
 
-math::float3 read_float3(const rapidjson::Value& value, const std::string& name, const math::float3& default_value) {
+math::vec3 read_vec3(const rapidjson::Value& value, const std::string& name, const math::vec3& default_value) {
 	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
 	if (value.MemberEnd() == node) {
 		return default_value;
 	}
 
-	return read_float3(node->value);
+	return read_vec3(node->value);
 }
 
 math::float4 read_float4(const rapidjson::Value& value) {
@@ -159,7 +159,7 @@ math::quaternion read_quaternion(const rapidjson::Value& value) {
 }
 */
 math::float3x3 read_rotation_matrix(const rapidjson::Value& value) {
-	math::float3 rot = read_float3(value);
+	math::vec3 rot = read_vec3(value);
 
 	math::float3x3 rot_x;
 	set_rotation_x(rot_x, math::degrees_to_radians(rot.x));
@@ -197,9 +197,9 @@ void read_transformation(const rapidjson::Value& value, math::transformation& tr
 		const rapidjson::Value& node_value = n->value;
 
 		if ("position" == node_name) {
-			transformation.position = json::read_float3(node_value);
+			transformation.position = json::read_vec3(node_value);
 		} else if ("scale" == node_name) {
-			transformation.scale = json::read_float3(node_value);
+			transformation.scale = json::read_vec3(node_value);
 		} else if ("rotation" == node_name) {
 			transformation.rotation = json::read_local_rotation(node_value);
 		}

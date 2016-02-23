@@ -47,7 +47,7 @@ bool SU_CALLCONV Data_interleaved<Triangle>::intersect_p(uint32_t index,
 
 template<typename Triangle>
 void Data_interleaved<Triangle>::interpolate_data(uint32_t index, math::float2 uv,
-												  math::float3& n, math::float3& t, math::float2& tc) const {
+												  math::vec3& n, math::vec3& t, math::float2& tc) const {
 	triangles_[index].interpolate_data(uv, n, t, tc);
 }
 
@@ -67,7 +67,7 @@ uint32_t Data_interleaved<Triangle>::material_index(uint32_t index) const {
 }
 
 template<typename Triangle>
-math::float3 Data_interleaved<Triangle>::normal(uint32_t index) const {
+math::vec3 Data_interleaved<Triangle>::normal(uint32_t index) const {
     return triangles_[index].normal();
 }
 
@@ -77,25 +77,25 @@ float Data_interleaved<Triangle>::area(uint32_t index) const {
 }
 
 template<typename Triangle>
-float Data_interleaved<Triangle>::area(uint32_t index, const math::float3& scale) const {
+float Data_interleaved<Triangle>::area(uint32_t index, const math::vec3& scale) const {
     return triangles_[index].area(scale);
 }
 
 /*
 template<typename Triangle>
 void Data_interleaved<Triangle>::sample(uint32_t index, math::float2 r2,
-									math::float3& p, math::float3& n, math::float2& tc) const {
+									math::vec3& p, math::vec3& n, math::float2& tc) const {
     triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, n, tc);
 }*/
 
 template<typename Triangle>
-void Data_interleaved<Triangle>::sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const {
+void Data_interleaved<Triangle>::sample(uint32_t index, math::float2 r2, math::vec3& p, math::float2& tc) const {
 	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, tc);
 }
 
 /*
 template<typename Triangle>
-void Data_interleaved<Triangle>::sample(uint32_t index, math::float2 r2, math::float3& p) const {
+void Data_interleaved<Triangle>::sample(uint32_t index, math::float2 r2, math::vec3& p) const {
 	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p);
 }
 */

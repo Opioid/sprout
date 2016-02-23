@@ -60,7 +60,7 @@ bool SU_CALLCONV Data<Intersection_triangle, Shading_triangle>::intersect_p(uint
 
 template<typename Intersection_triangle, typename Shading_triangle>
 void Data<Intersection_triangle, Shading_triangle>::interpolate_data(uint32_t index, math::float2 uv,
-												  math::float3& n, math::float3& t, math::float2& tc) const {
+												  math::vec3& n, math::vec3& t, math::float2& tc) const {
 	shading_triangles_[index].interpolate_data(uv, n, t, tc);
 }
 
@@ -80,7 +80,7 @@ uint32_t Data<Intersection_triangle, Shading_triangle>::material_index(uint32_t 
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
-math::float3 Data<Intersection_triangle, Shading_triangle>::normal(uint32_t index) const {
+math::vec3 Data<Intersection_triangle, Shading_triangle>::normal(uint32_t index) const {
 	return intersection_triangles_[index].normal();
 }
 
@@ -90,19 +90,19 @@ float Data<Intersection_triangle, Shading_triangle>::area(uint32_t index) const 
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
-float Data<Intersection_triangle, Shading_triangle>::area(uint32_t index, const math::float3& scale) const {
+float Data<Intersection_triangle, Shading_triangle>::area(uint32_t index, const math::vec3& scale) const {
 	return intersection_triangles_[index].area(scale);
 }
 
 /*
 template<typename Intersection_triangle, typename Shading_triangle>
 void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, math::float2 r2,
-									math::float3& p, math::float3& n, math::float2& tc) const {
+									math::vec3& p, math::vec3& n, math::float2& tc) const {
     triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, n, tc);
 }*/
 
 template<typename Intersection_triangle, typename Shading_triangle>
-void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const {
+void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, math::float2 r2, math::vec3& p, math::float2& tc) const {
 	math::float2 uv = math::sample_triangle_uniform(r2);
 	intersection_triangles_[index].interpolate(uv, p);
 	tc = shading_triangles_[index].interpolate_uv(uv);
@@ -113,7 +113,7 @@ void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, math:
 
 /*
 template<typename Intersection_triangle, typename Shading_triangle>
-void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, math::float2 r2, math::float3& p) const {
+void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, math::float2 r2, math::vec3& p) const {
 	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p);
 }*/
 

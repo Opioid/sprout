@@ -14,9 +14,9 @@ namespace scene { namespace material { namespace display {
 Material::Material(Generic_sample_cache<Sample>& cache,
 				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
 	material::Material<Generic_sample_cache<Sample>>(cache, mask, two_sided),
-	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
+	average_emission_(math::vec3(-1.f, -1.f, -1.f)) {}
 
-const material::Sample& Material::sample(const shape::Differential& dg, const math::float3& wo,
+const material::Sample& Material::sample(const shape::Differential& dg, const math::vec3& wo,
 										 float /*time*/, float /*ior_i*/,
 										 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
@@ -24,7 +24,7 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 
 	if (emission_map_) {
-		math::float3 emission = sampler.sample_3(*emission_map_, dg.uv);
+		math::vec3 emission = sampler.sample_3(*emission_map_, dg.uv);
 		sample.set(emission_factor_ * emission, f0_, roughness_);
 	} else {
 		sample.set(emission_factor_ * emission_, f0_, roughness_);
@@ -33,12 +33,12 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 	return sample;
 }
 
-math::float3 Material::sample_emission(math::float2 uv, float /*time*/,
+math::vec3 Material::sample_emission(math::float2 uv, float /*time*/,
 										  const image::texture::sampler::Sampler_2D& sampler) const {
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }
 
-math::float3 Material::average_emission() const {
+math::vec3 Material::average_emission() const {
 	return average_emission_;
 }
 
@@ -78,7 +78,7 @@ void Material::prepare_sampling(bool spherical) {
 	}
 
 	if (spherical) {
-		average_emission_ = math::float3_identity;
+		average_emission_ = math::vec3_identity;
 
 		auto d = emission_map_->dimensions();
 		std::vector<float> luminance(d.x * d.y);
@@ -89,7 +89,7 @@ void Material::prepare_sampling(bool spherical) {
 			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				math::float3 emission = emission_factor_ * emission_map_->at_3(x, y);
+				math::vec3 emission = emission_factor_ * emission_map_->at_3(x, y);
 
 				luminance[l] = color::luminance(emission);
 
@@ -115,7 +115,7 @@ void Material::set_emission_map(std::shared_ptr<image::texture::Texture_2D> emis
 	emission_map_ = emission_map;
 }
 
-void Material::set_emission(const math::float3& emission) {
+void Material::set_emission(const math::vec3& emission) {
 	emission_ = emission;
 }
 
