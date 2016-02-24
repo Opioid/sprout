@@ -12,6 +12,7 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
+#include "base/color/color.hpp"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
@@ -34,7 +35,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 	float opacity = 0.f;
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
-	for (uint32_t i = 0; i <= settings_.max_bounces; ++i) {
+	for (uint32_t i = 0;; ++i) {
 		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::bxdf::Type::Specular);
 
 		const image::texture::sampler::Sampler_2D* texture_sampler;
@@ -73,6 +74,17 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 
 		if (material_sample.is_pure_emissive()) {
 			break;
+		}
+
+		// Russian roulette termination
+		if (i > settings_.min_bounces) {
+			float q = std::min(color::luminance(throughput), settings_.path_continuation_probability);
+
+			if (sampler_.generate_sample_1D() >= q) {
+				break;
+			}
+
+			throughput /= q;
 		}
 
 		material_sample.sample_evaluate(sampler_, sample_result);
@@ -115,10 +127,12 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 									   uint32_t min_bounces, uint32_t max_bounces,
+									   float path_termination_probability,
 									   bool disable_caustics) :
 	Integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
+	settings_.path_continuation_probability = 1.f - path_termination_probability;
 	settings_.disable_caustics = disable_caustics;
 }
 

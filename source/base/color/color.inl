@@ -49,7 +49,7 @@ inline Color3 sRGB_to_linear(Color3c c) {
 }
 
 // convert sRGB gamma color to sRGB linear color
-inline Color3 sRGB_to_linear(const Color3& c) {
+inline Color3 sRGB_to_linear(math::pvec3 c) {
 	return Color3(sRGB_to_linear(c.x), sRGB_to_linear(c.y), sRGB_to_linear(c.z));
 }
 
@@ -61,14 +61,14 @@ inline Color4 sRGB_to_linear(Color4c c) {
 }
 
 // convert linear color to gamma color
-inline Color3 linear_to_gamma(const Color3& c, float gamma) {
+inline Color3 linear_to_gamma(math::pvec3 c, float gamma) {
 	float p = 1.f / gamma;
 
 	return Color3(std::pow(c.x, p), std::pow(c.y, p), std::pow(c.z, p));
 }
 
 // convert gamma color to linear color
-inline Color3 gamma_to_linear(const Color3& c, float gamma) {
+inline Color3 gamma_to_linear(math::pvec3 c, float gamma) {
 	return Color3(std::pow(c.x, gamma), std::pow(c.y, gamma), std::pow(c.z, gamma));
 }
 
@@ -106,7 +106,7 @@ inline uint8_t float_to_snorm(float x) {
 
 const Color3 luminance_vector(0.299f, 0.587f, 0.114f);
 
-inline float luminance(const Color3& c) {
+inline float luminance(math::pvec3 c) {
 	return math::dot(c, luminance_vector);
 }
 

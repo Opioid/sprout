@@ -56,9 +56,9 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 		uint32_t material_index = tree_.triangle_material_index(pi.index);
 
 		math::vec3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
-		math::vec3 n_w	 = math::transform_vector(n, transformation.rotation);
-		math::vec3 t_w	 = math::transform_vector(t, transformation.rotation);
-		math::vec3 b_w	 = bitangent_sign * math::cross(n_w, t_w);
+		math::vec3 n_w	   = math::transform_vector(n, transformation.rotation);
+		math::vec3 t_w	   = math::transform_vector(t, transformation.rotation);
+		math::vec3 b_w	   = bitangent_sign * math::cross(n_w, t_w);
 
 
 

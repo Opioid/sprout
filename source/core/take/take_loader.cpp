@@ -95,8 +95,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	}
 
 	if (!take->surface_integrator_factory) {
-		take->surface_integrator_factory = std::make_shared<rendering::integrator::surface::Pathtracer_DL_factory>(
-					take->settings, 4, 8, 1, false);
+		take->surface_integrator_factory = std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
+					take->settings, 4, 8, 0.5f, 1, false);
 	}
 
 	if (!take->volume_integrator_factory) {
@@ -408,6 +408,8 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
 	uint32_t default_max_light_samples = 1;
+	float default_path_termination_probability = 0.5f;
+	bool default_caustics = true;
 
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -423,23 +425,31 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 		} else if ("PT" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
-			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
+			float path_termination_probability = json::read_float(node_value, "path_termination_probability",
+																  default_path_termination_probability);
+			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
 			return std::make_shared<rendering::integrator::surface::Pathtracer_factory>(
-						settings, min_bounces, max_bounces, disable_caustics);
+						settings, min_bounces, max_bounces, path_termination_probability, disable_caustics);
 		} else if ("PTDL" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
+			float path_termination_probability = json::read_float(node_value, "path_termination_probability",
+																  default_path_termination_probability);
 			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
-			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
+			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
 			return std::make_shared<rendering::integrator::surface::Pathtracer_DL_factory>(
-						settings, min_bounces, max_bounces, num_light_samples, disable_caustics);
+						settings, min_bounces, max_bounces, path_termination_probability,
+						num_light_samples, disable_caustics);
 		} else if ("PTMIS" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
+			float path_termination_probability = json::read_float(node_value, "path_termination_probability",
+																  default_path_termination_probability);
 			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
-			bool disable_caustics = !json::read_bool(node_value, "caustics", true);
+			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
 			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
-						settings, min_bounces, max_bounces, num_light_samples, disable_caustics);
+						settings, min_bounces, max_bounces, path_termination_probability,
+						num_light_samples, disable_caustics);
 		} else if ("Normal" == node_name) {
 			auto vector = rendering::integrator::surface::Normal::Settings::Vector::Shading_normal;
 

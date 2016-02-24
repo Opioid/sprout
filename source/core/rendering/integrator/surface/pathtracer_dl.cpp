@@ -79,6 +79,17 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 			break;
 		}
 
+		// Russian roulette termination
+		if (i > settings_.min_bounces) {
+			float q = std::min(color::luminance(throughput), settings_.path_continuation_probability);
+
+			if (sampler_.generate_sample_1D() >= q) {
+				break;
+			}
+
+			throughput /= q;
+		}
+
 		material_sample.sample_evaluate(sampler_, sample_result);
 		if (0.f == sample_result.pdf) {
 			break;
@@ -166,10 +177,12 @@ math::vec3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::Ray
 
 Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings,
 											 uint32_t min_bounces, uint32_t max_bounces,
+											 float path_termination_probability,
 											 uint32_t num_light_samples, bool disable_caustics) :
 	Integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
+	settings_.path_continuation_probability = 1.f - path_termination_probability;
 	settings_.num_light_samples = num_light_samples;
 	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
 	settings_.disable_caustics = disable_caustics;

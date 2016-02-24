@@ -39,7 +39,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 	float opacity = 0.f;
 	bool primary_ray = 0 == ray.depth;
 
-	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
+	for (uint32_t i = 0; ; ++i) {
 		const image::texture::sampler::Sampler_2D* texture_sampler;
 
 		if (primary_ray) {
@@ -80,6 +80,17 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 			break;
 		}
 
+		// Russian roulette termination
+		if (i > settings_.min_bounces) {
+			float q = std::min(color::luminance(throughput), settings_.path_continuation_probability);
+
+			if (sampler_.generate_sample_1D() >= q) {
+				break;
+			}
+
+			throughput /= q;
+		}
+
 		material_sample.sample_evaluate(sampler_, sample_result);
 		if (0.f == sample_result.pdf || math::vec3_identity == sample_result.reflection) {
 			break;
@@ -92,7 +103,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			math::vec3 tr = resolve_transmission(worker, ray, intersection, material_sample.attenuation(),
-												   settings_.sampler_nearest, sample_result);
+												 settings_.sampler_nearest, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
 			}
@@ -221,10 +232,10 @@ math::vec3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ra
 }
 
 math::vec3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
-												  scene::Intersection& intersection,
-												  const math::vec3& attenuation,
-												  const image::texture::sampler::Sampler_2D& texture_sampler,
-												  scene::material::bxdf::Result& sample_result) {
+												scene::Intersection& intersection,
+												const math::vec3& attenuation,
+												const image::texture::sampler::Sampler_2D& texture_sampler,
+												scene::material::bxdf::Result& sample_result) {
 	if (intersection.prop->is_open()) {
 		return transmittance_open_.resolve(worker, ray, intersection, attenuation,
 										   sampler_, texture_sampler, sample_result);
@@ -236,10 +247,12 @@ math::vec3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
 
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,
 											   uint32_t min_bounces, uint32_t max_bounces,
+											   float path_termination_probability,
 											   uint32_t num_light_samples, bool disable_caustics) :
 	Integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
+	settings_.path_continuation_probability = 1.f - path_termination_probability;
 	settings_.num_light_samples = num_light_samples;
 	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
 	settings_.disable_caustics = disable_caustics;

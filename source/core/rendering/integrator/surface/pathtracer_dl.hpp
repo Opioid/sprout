@@ -26,6 +26,8 @@ public:
 
 		uint32_t min_bounces;
 		uint32_t max_bounces;
+		float    path_continuation_probability;
+
 		uint32_t num_light_samples;
 		float    num_light_samples_reciprocal;
 		bool	 disable_caustics;
@@ -55,7 +57,9 @@ private:
 class Pathtracer_DL_factory : public Integrator_factory {
 public:
 
-	Pathtracer_DL_factory(const take::Settings& take_settings, uint32_t min_bounces, uint32_t max_bounces,
+	Pathtracer_DL_factory(const take::Settings& take_settings,
+						  uint32_t min_bounces, uint32_t max_bounces,
+						  float path_termination_probability,
 						  uint32_t num_light_samples, bool disable_caustics);
 
 	virtual Integrator* create(math::random::Generator& rng) const final override;
