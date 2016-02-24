@@ -39,6 +39,9 @@ inline float AABB::volume() const {
 	return d.x * d.y * d.z;
 }
 
+// This test is presented in the paper
+// "An Efficient and Robust Ray–Box Intersection Algorithm"
+// http://www.cs.utah.edu/~awilliam/box/box.pdf
 inline bool AABB::intersect_p(const math::Oray& ray) const {
 	int8_t sign_0 = ray.sign[0];
 	float min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
