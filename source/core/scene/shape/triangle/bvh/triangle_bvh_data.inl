@@ -6,8 +6,6 @@
 #include "base/math/sampling/sampling.inl"
 #include "base/memory/align.inl"
 
-//#include <iostream>
-
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Intersection_triangle, typename Shading_triangle>
@@ -94,28 +92,12 @@ float Data<Intersection_triangle, Shading_triangle>::area(uint32_t index, const 
 	return intersection_triangles_[index].area(scale);
 }
 
-/*
-template<typename Intersection_triangle, typename Shading_triangle>
-void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, math::float2 r2,
-									math::vec3& p, math::vec3& n, math::float2& tc) const {
-    triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, n, tc);
-}*/
-
 template<typename Intersection_triangle, typename Shading_triangle>
 void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, math::float2 r2, math::vec3& p, math::float2& tc) const {
 	math::float2 uv = math::sample_triangle_uniform(r2);
 	intersection_triangles_[index].interpolate(uv, p);
 	tc = shading_triangles_[index].interpolate_uv(uv);
-
-
-//	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, tc);
 }
-
-/*
-template<typename Intersection_triangle, typename Shading_triangle>
-void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, math::float2 r2, math::vec3& p) const {
-	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p);
-}*/
 
 template<typename Intersection_triangle, typename Shading_triangle>
 void Data<Intersection_triangle, Shading_triangle>::allocate_triangles(uint32_t num_triangles) {
@@ -124,9 +106,6 @@ void Data<Intersection_triangle, Shading_triangle>::allocate_triangles(uint32_t 
 
 	memory::free_aligned(intersection_triangles_);
 	memory::free_aligned(shading_triangles_);
-
-//	std::cout << sizeof(Intersection_triangle) << std::endl;
-//	std::cout << sizeof(Shading_triangle) << std::endl;
 
 	intersection_triangles_ = memory::allocate_aligned<Intersection_triangle>(num_triangles);
 	shading_triangles_      = memory::allocate_aligned<Shading_triangle>(num_triangles);
