@@ -20,20 +20,7 @@ struct Data_triangle;
 
 namespace bvh {
 
-struct Node {
-	uint32_t primitive_end() const;
-
-	math::aabb aabb;
-
-	union {
-		uint32_t second_child_index;
-		uint32_t primitive_offset;
-	};
-
-	uint8_t axis;
-	uint8_t num_primitives;
-	uint8_t pad[2];
-};
+struct Node;
 
 template<typename Data>
 class Tree  {
@@ -45,6 +32,7 @@ public:
 	Node* allocate_nodes(uint32_t num_nodes);
 
 	const math::aabb& aabb() const;
+	void set_aabb(const math::aabb& aabb);
 
 	uint32_t num_parts() const;
 
@@ -81,6 +69,8 @@ public:
 	void add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
 
 private:
+
+	math::aabb aabb_;
 
 	uint32_t num_nodes_;
 	Node* nodes_;

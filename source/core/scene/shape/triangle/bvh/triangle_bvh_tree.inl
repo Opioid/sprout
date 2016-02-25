@@ -1,6 +1,7 @@
 #pragma once
 
 #include "triangle_bvh_tree.hpp"
+#include "triangle_bvh_node.inl"
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/vector.inl"
@@ -8,10 +9,6 @@
 #include "base/memory/align.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
-
-inline uint32_t Node::primitive_end() const {
-	return primitive_offset + static_cast<uint32_t>(num_primitives);
-}
 
 template<typename Data>
 Tree<Data>::Tree() : num_nodes_(0), nodes_(nullptr) {}
@@ -30,7 +27,12 @@ Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
 
 template<typename Data>
 const math::aabb& Tree<Data>::aabb() const {
-	return nodes_[0].aabb;
+	return aabb_;
+}
+
+template<typename Data>
+void Tree<Data>::set_aabb(const math::aabb& aabb) {
+	aabb_ = aabb;
 }
 
 template<typename Data>
@@ -60,7 +62,7 @@ bool Tree<Data>::intersect(math::Oray& ray, Node_stack& node_stack, Intersection
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
-		if (node.aabb.intersect_p(ray)) {
+		if (node.intersect_p(ray)) {
 			if (node.num_primitives > 0) {
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
@@ -98,7 +100,7 @@ bool Tree<Data>::intersect_p(const math::Oray& ray, Node_stack& node_stack) cons
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
-		if (node.aabb.intersect_p(ray)) {
+		if (node.intersect_p(ray)) {
 			if (node.num_primitives > 0) {
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect_p(i, ray)) {
@@ -140,7 +142,7 @@ float Tree<Data>::opacity(math::Oray& ray, float time, Node_stack& node_stack,
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
-		if (node.aabb.intersect_p(ray)) {
+		if (node.intersect_p(ray)) {
 			if (node.num_primitives > 0) {
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {

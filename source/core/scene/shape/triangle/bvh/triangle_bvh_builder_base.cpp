@@ -29,7 +29,7 @@ void Build_node::num_sub_nodes(uint32_t& count) {
 
 void Builder_base::serialize(Build_node* node) {
 	auto& n = new_node();
-	n.aabb = node->aabb;
+	n.set_aabb(node->aabb);
 
 	if (node->children[0]) {
 		serialize(node->children[0]);
