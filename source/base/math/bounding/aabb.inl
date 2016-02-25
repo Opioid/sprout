@@ -8,7 +8,7 @@ namespace math {
 
 inline AABB::AABB() {}
 
-inline AABB::AABB(const Vector3f_a& min, const Vector3f_a& max) {
+inline AABB::AABB(FVector3f_a min, FVector3f_a max) {
 	bounds_[0] = min;
 	bounds_[1] = max;
 }
@@ -133,12 +133,12 @@ inline bool AABB::intersect_p(const math::Oray& ray, float& min_out, float& max_
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
 
-inline void AABB::set_min_max(const Vector3f_a& min, const Vector3f_a& max) {
+inline void AABB::set_min_max(FVector3f_a min, FVector3f_a max) {
 	bounds_[0] = min;
 	bounds_[1] = max;
 }
 
-inline void AABB::insert(const Vector3f_a& p) {
+inline void AABB::insert(FVector3f_a p) {
 	bounds_[0] = math::min(p, bounds_[0]);
 	bounds_[1] = math::max(p, bounds_[1]);
 }

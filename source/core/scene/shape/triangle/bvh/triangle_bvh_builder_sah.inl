@@ -49,7 +49,6 @@ void Builder_SAH::build(Tree<Data>& tree,
 	num_nodes_ = 1;
 	root.num_sub_nodes(num_nodes_);
 
-	tree.set_aabb(root.aabb);
 	nodes_ = tree.allocate_nodes(num_nodes_);
 
 	current_node_ = 0;

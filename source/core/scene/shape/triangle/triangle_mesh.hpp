@@ -12,6 +12,12 @@ namespace scene { namespace shape { namespace triangle {
 class Mesh : public Shape {
 public:
 
+//	typedef bvh::Tree<bvh::Data_interleaved<Triangle_type>> Tree;
+
+	typedef bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>> Tree;
+
+	Tree& tree();
+
 	void init();
 
 	virtual uint32_t num_parts() const final override;
@@ -54,10 +60,6 @@ public:
 
 private:
 
-//	typedef bvh::Tree<bvh::Data_interleaved<Triangle_type>> Tree;
-
-	typedef bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>> Tree;
-
     Tree tree_;
 
 	struct Distribution {
@@ -71,8 +73,6 @@ private:
 	};
 
 	std::vector<Distribution> distributions_;
-
-	friend class Provider;
 };
 
 }}}

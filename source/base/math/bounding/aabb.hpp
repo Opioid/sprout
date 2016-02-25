@@ -10,7 +10,7 @@ class AABB {
 public:
 
 	AABB();
-	AABB(const Vector3f_a& min, const Vector3f_a& max);
+	AABB(FVector3f_a min, FVector3f_a max);
 
 	const Vector3f_a& min() const;
 	const Vector3f_a& max() const;
@@ -24,9 +24,9 @@ public:
 	bool intersect_p(const math::Oray& ray) const;
 	bool intersect_p(const math::Oray& ray, float& min_t, float& max_t) const;
 
-	void set_min_max(const Vector3f_a& min, const Vector3f_a& max);
+	void set_min_max(FVector3f_a min, FVector3f_a max);
 
-	void insert(const Vector3f_a& p);
+	void insert(FVector3f_a p);
 
 	AABB transform(const Matrix4x4f_a& m) const;
 

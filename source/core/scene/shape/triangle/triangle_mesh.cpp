@@ -14,10 +14,11 @@
 #include "base/math/simd/simd_vector.inl"
 #include "base/math/simd/simd_matrix.inl"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace scene { namespace shape { namespace triangle {
+
+Mesh::Tree& Mesh::tree() {
+	return tree_;
+}
 
 void Mesh::init() {
 	aabb_ = tree_.aabb();

@@ -31,8 +31,7 @@ public:
 
 	Node* allocate_nodes(uint32_t num_nodes);
 
-	const math::aabb& aabb() const;
-	void set_aabb(const math::aabb& aabb);
+	math::aabb aabb() const;
 
 	uint32_t num_parts() const;
 
@@ -71,8 +70,6 @@ public:
 	void add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
 
 private:
-
-	math::aabb aabb_;
 
 	uint32_t num_nodes_;
 	Node*	 nodes_;

@@ -31,13 +31,8 @@ Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
 }
 
 template<typename Data>
-const math::aabb& Tree<Data>::aabb() const {
-	return aabb_;
-}
-
-template<typename Data>
-void Tree<Data>::set_aabb(const math::aabb& aabb) {
-	aabb_ = aabb;
+math::aabb Tree<Data>::aabb() const {
+	return math::aabb(nodes_[0].bounds[0], nodes_[0].bounds[1]);
 }
 
 template<typename Data>
