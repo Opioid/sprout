@@ -15,13 +15,7 @@
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 
-
-#include "core/testing/testing_size.hpp"
-
 int main(int argc, char* argv[]) {
-	testing::size();
-
-
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout!");
 

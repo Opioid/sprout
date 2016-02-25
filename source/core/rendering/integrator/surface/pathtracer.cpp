@@ -12,7 +12,7 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
-#include "base/color/color.hpp"
+#include "base/color/color.inl"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
