@@ -16,6 +16,7 @@ template<typename Data>
 void Builder_SAH::build(Tree<Data>& tree,
 						const std::vector<Index_triangle>& triangles,
 						const std::vector<Vertex>& vertices,
+						uint32_t num_parts,
 						uint32_t max_primitives,
 						thread::Pool& thread_pool) {
 	std::vector<uint32_t> primitive_indices(triangles.size());
@@ -38,7 +39,7 @@ void Builder_SAH::build(Tree<Data>& tree,
 		aabb.merge_assign(primitive_bounds[i]);
 	}
 
-	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()));
+	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), num_parts);
 
 	Build_node root;
 	split(&root,

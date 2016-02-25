@@ -31,6 +31,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 
 	std::vector<Index_triangle> triangles;
 	std::vector<Vertex> vertices;
+	uint32_t num_parts = 0;
 
 	{
 		json::Read_stream json_stream(*stream_pointer);
@@ -91,6 +92,8 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 
 		vertices.swap(handler.vertices());
 
+		num_parts = static_cast<uint32_t>(handler.parts().size());
+
 		if (BVH_preset::Unknown == bvh_preset) {
 			bvh_preset = handler.bvh_preset();
 		}
@@ -100,10 +103,10 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 
 	if (BVH_preset::Slow == bvh_preset) {
 		bvh::Builder_SAH builder(16, 64);
-		builder.build(mesh->tree_, triangles, vertices, 4, thread_pool_);
+		builder.build(mesh->tree_, triangles, vertices, num_parts, 4, thread_pool_);
 	} else {
 		bvh::Builder_SUH builder;
-		builder.build(mesh->tree_, triangles, vertices, 8);
+		builder.build(mesh->tree_, triangles, vertices, num_parts, 8);
 	}
 
 	mesh->init();

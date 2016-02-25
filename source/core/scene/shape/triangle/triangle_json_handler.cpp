@@ -131,6 +131,7 @@ bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
 			expected_object_ = Object::Part;
 		} else if ("vertices" == name) {
 			top_object_ = Object::Vertices;
+			expected_object_ = Object::Unknown;
 		} else if ("material_index" == name && Object::Part == expected_object_) {
 			expected_number_ = Number::Material_index;
 		} else if ("start_index" == name && Object::Part == expected_object_) {

@@ -11,17 +11,22 @@
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
-Tree<Data>::Tree() : num_nodes_(0), nodes_(nullptr) {}
+Tree<Data>::Tree() : num_nodes_(0), nodes_(nullptr), num_parts_(0), num_part_triangles_(nullptr) {}
 
 template<typename Data>
 Tree<Data>::~Tree() {
+	delete [] num_part_triangles_;
+
 	memory::free_aligned(nodes_);
 }
 
 template<typename Data>
 Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
 	num_nodes_ = num_nodes;
+
+	memory::free_aligned(nodes_);
 	nodes_ = memory::allocate_aligned<Node>(num_nodes);
+
 	return nodes_;
 }
 
@@ -43,6 +48,11 @@ uint32_t Tree<Data>::num_parts() const {
 template<typename Data>
 uint32_t Tree<Data>::num_triangles() const {
     return data_.num_triangles();
+}
+
+template<typename Data>
+uint32_t Tree<Data>::num_triangles(uint32_t part) const {
+	return num_part_triangles_[part];
 }
 
 template<typename Data>
@@ -225,15 +235,24 @@ void Tree<Data>::sample(uint32_t index, math::float2 r2, math::vec3& p) const {
 }
 
 template<typename Data>
-void Tree<Data>::allocate_triangles(uint32_t num_triangles) {
-    data_.allocate_triangles(num_triangles);
-	num_parts_ = 0;
+void Tree<Data>::allocate_triangles(uint32_t num_triangles, uint32_t num_parts) {
+	num_parts_ = num_parts;
+
+	delete [] num_part_triangles_;
+	num_part_triangles_ = new uint32_t[num_parts];
+
+	for (uint32_t i = 0; i < num_parts; ++i) {
+		num_part_triangles_[i] = 0;
+	}
+
+	data_.allocate_triangles(num_triangles);
 }
 
 template<typename Data>
 void Tree<Data>::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index) {
+	++num_part_triangles_[material_index];
+
     data_.add_triangle(a, b, c, material_index);
-	num_parts_ = std::max(num_parts_, material_index + 1);
 }
 
 }}}}

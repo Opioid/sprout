@@ -37,6 +37,8 @@ public:
 	uint32_t num_parts() const;
 
 	uint32_t num_triangles() const;
+	uint32_t num_triangles(uint32_t part) const;
+
 	uint32_t current_triangle() const;
 
 	bool intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const;
@@ -64,7 +66,7 @@ public:
 	void sample(uint32_t index, math::float2 r2, math::vec3& p, math::float2& tc) const;
 	void sample(uint32_t index, math::float2 r2, math::vec3& p) const;
 
-	void allocate_triangles(uint32_t num_triangles);
+	void allocate_triangles(uint32_t num_triangles, uint32_t num_parts);
 
 	void add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
 
@@ -73,11 +75,12 @@ private:
 	math::aabb aabb_;
 
 	uint32_t num_nodes_;
-	Node* nodes_;
+	Node*	 nodes_;
+
+	uint32_t  num_parts_;
+	uint32_t* num_part_triangles_;
 
     Data data_;
-
-	uint32_t num_parts_;
 };
 
 }}}}

@@ -227,18 +227,21 @@ void Mesh::prepare_sampling(uint32_t part) {
 }
 
 void Mesh::Distribution::init(uint32_t part, const Tree& tree) {
-	std::vector<float> areas;
+	uint32_t num_triangles = tree.num_triangles(part);
 
-	triangle_mapping.clear();
+	std::vector<float> areas(num_triangles);
 
-    for (uint32_t t = 0, len = tree.num_triangles(); t < len; ++t) {
+	triangle_mapping.resize(num_triangles);
+
+	for (uint32_t t = 0, mt = 0, len = tree.num_triangles(); t < len; ++t) {
         if (tree.triangle_material_index(t) == part) {
-			areas.push_back(tree.triangle_area(t));
-			triangle_mapping.push_back(t);
+			areas[mt] = tree.triangle_area(t);
+			triangle_mapping[mt] = t;
+			++mt;
 		}
 	}
 
-	distribution.init(areas.data(), areas.size());
+	distribution.init(areas.data(), num_triangles);
 }
 
 bool Mesh::Distribution::empty() const {
