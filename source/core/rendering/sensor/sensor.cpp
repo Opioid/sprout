@@ -19,7 +19,7 @@ math::int2 Sensor::dimensions() const {
 	return dimensions_;
 }
 
-void Sensor::resolve(thread::Pool& pool, image::Image_float_4& target) {
+void Sensor::resolve(thread::Pool& pool, image::Image_float_4& target) const {
 	auto d = target.description().dimensions;
 	pool.run_range([this, &target](int32_t begin, int32_t end){ resolve(begin, end, target); }, 0, d.x * d.y);
 }

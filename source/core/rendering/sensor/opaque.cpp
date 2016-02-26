@@ -40,7 +40,7 @@ void Opaque::add_pixel_atomic(math::int2 pixel, const math::float4& color, float
 	atomic::add_assign(value.w, weight);
 }
 
-void Opaque::resolve(int32_t begin, int32_t end, image::Image_float_4& target) {
+void Opaque::resolve(int32_t begin, int32_t end, image::Image_float_4& target) const {
 	for (int32_t i = begin; i < end; ++i) {
 		auto& value = pixels_[i];
 

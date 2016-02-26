@@ -48,7 +48,8 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, con
 						 clamped_color, view_tile, view_bounds);
 
 	// center
-	weight_and_add_pixel(math::int2(x, y), math::float2(ox, oy), clamped_color, view_tile, view_bounds);
+	weight_and_add_pixel(math::int2(x, y), math::float2(ox, oy),
+						 clamped_color, view_tile, view_bounds);
 
 	weight_and_add_pixel(math::int2(x + 1, y), math::float2(ox - 1.f, oy),
 						 clamped_color, view_tile, view_bounds);

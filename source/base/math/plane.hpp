@@ -1,10 +1,9 @@
 #pragma once
 
-namespace math {
+#include "vector3.hpp"
+#include "vector4.hpp"
 
-template<typename T> struct Vector3;
-struct alignas(16) Vector3f_a;
-struct alignas(16) Vector4f_a;
+namespace math {
 
 /****************************************************************************
  *
@@ -48,12 +47,12 @@ bool behind(const Plane<T>& p, const Vector3<T>& point);
 //typedef Plane<float> plane;
 typedef Vector4f_a plane;
 
-plane create_plane(const Vector3f_a& normal, float d);
-plane create_plane(const Vector3f_a& normal, const Vector3f_a& point);
-plane create_plane(const Vector3f_a& v0, const Vector3f_a& v1, const Vector3f_a& v2);
+plane create_plane(FVector3f_a normal, float d);
+plane create_plane(FVector3f_a normal, FVector3f_a point);
+plane create_plane(FVector3f_a v0, FVector3f_a v1, FVector3f_a v2);
 
-float dot(const plane& p, const Vector3f_a& v);
+float dot(const plane& p, FVector3f_a v);
 
-bool behind(const plane& p, const Vector3f_a& point);
+bool behind(const plane& p, FVector3f_a point);
 
 }

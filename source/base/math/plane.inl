@@ -51,25 +51,25 @@ bool behind(const Plane<T>& p, const Vector3<T>& point) {
  *
  ****************************************************************************/
 
-inline plane create_plane(const Vector3f_a& normal, float d) {
+inline plane create_plane(FVector3f_a normal, float d) {
 	return plane(normal, d);
 }
 
-inline plane create_plane(const Vector3f_a& normal, const Vector3f_a& point) {
+inline plane create_plane(FVector3f_a normal, FVector3f_a point) {
 	return plane(normal.x, normal.y, normal.z, -dot(normal, point));
 }
 
-inline plane create_plane(const Vector3f_a& v0, const Vector3f_a& v1, const Vector3f_a& v2) {
+inline plane create_plane(FVector3f_a v0, FVector3f_a v1, FVector3f_a v2) {
 	Vector3f_a n = normalized(cross(v2 - v1, v0 - v1));
 
 	return create_plane(n, v0);
 }
 
-inline float dot(const plane& p, const Vector3f_a& v) {
+inline float dot(const plane& p, FVector3f_a v) {
 	return p.x * v.x + p.y * v.y + p.z * v.z + p.w;
 }
 
-inline bool behind(const plane& p, const Vector3f_a& point) {
+inline bool behind(const plane& p, FVector3f_a point) {
 	return dot(p, point) < 0.f;
 }
 
