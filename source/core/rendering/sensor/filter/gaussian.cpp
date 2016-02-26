@@ -33,7 +33,7 @@ float Gaussian::radius() const {
 }
 
 float Gaussian::evaluate(math::float2 p) const {
-	return gaussian_.f(p.x * p.x) * gaussian_.f(p.y * p.y);
+	return gaussian_(p.x * p.x) * gaussian_(p.y * p.y);
 
 //	return gaussian(p.x) * gaussian(p.y);
 }

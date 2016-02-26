@@ -13,7 +13,7 @@ public:
 
 	~Interpolated_function();
 
-	T f(float x) const;
+	T operator()(float x) const;
 
 private:
 

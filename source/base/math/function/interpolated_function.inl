@@ -27,7 +27,7 @@ Interpolated_function<T>::~Interpolated_function() {
 }
 
 template<typename T>
-T Interpolated_function<T>::f(float x) const {
+T Interpolated_function<T>::operator()(float x) const {
 	x = std::min(x, range_end_);
 
 	float o = x * inverse_range_;

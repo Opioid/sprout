@@ -367,7 +367,7 @@ Loader::load_filter(const rapidjson::Value& filter_value) const {
 		}
 	}
 
-	logging::warning("A filter with unknonw type was declared. Not using any filter.");
+	logging::warning("A reconstruction filter with unknonw type was declared. Not using any filter.");
 
 	return nullptr;
 }
