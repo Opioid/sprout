@@ -12,8 +12,9 @@
 #include "rendering/sensor/filtered.inl"
 #include "rendering/sensor/unfiltered.inl"
 #include "rendering/sensor/filter/gaussian.hpp"
-#include "rendering/sensor/tonemapping/filmic.hpp"
+#include "rendering/sensor/tonemapping/aces.hpp"
 #include "rendering/sensor/tonemapping/identity.hpp"
+#include "rendering/sensor/tonemapping/uncharted.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/integrator/surface/normal.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
@@ -342,13 +343,17 @@ Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("Filmic" == node_name) {
-			math::vec3 linear_white = json::read_vec3(node_value, "linear_white");
-			return new rendering::sensor::tonemapping::Filmic(linear_white);
+		if ("ACES" == node_name) {
+			return new rendering::sensor::tonemapping::Aces();
 		} else if ("Identity" == node_name) {
 			return new rendering::sensor::tonemapping::Identity();
+		} else if ("Uncharted" == node_name) {
+			math::vec3 linear_white = json::read_vec3(node_value, "linear_white");
+			return new rendering::sensor::tonemapping::Uncharted(linear_white);
 		}
 	}
+
+	logging::warning("A tonemapper with unknonw type was declared. Not using any tonemapper.");
 
 	return nullptr;
 }
