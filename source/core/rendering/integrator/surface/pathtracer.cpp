@@ -54,7 +54,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 		//	throughput *= worker.transmittance(ray);
 			math::vec3 tr;
 			math::float4 vli = worker.volume_li(ray, tr);
-			result += throughput * math::vec3(vli.xyz());
+			result += throughput * vli.xyz;
 			throughput *= tr;
 		}
 

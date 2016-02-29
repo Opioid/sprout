@@ -28,7 +28,7 @@ void Writer::write_header(std::ostream& stream, math::int2 dimensions) {
 void Writer::write_pixels(std::ostream& stream, const Image_float_4& image) {
 	const auto& d = image.description().dimensions;
 	for (uint32_t i = 0, len = d.x * d.y; i < len; ++i) {
-		color::Color4c rgbe = float_to_rgbe(image.at(i).xyz());
+		color::Color4c rgbe = float_to_rgbe(image.at(i).xyz);
 
 		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(color::Color4c));
 	}
@@ -59,7 +59,7 @@ void Writer::write_pixels_rle(std::ostream& stream, const Image_float_4& image) 
 		for (uint32_t i = 0; i < scanline_width; ++i, ++current_pixel) {
 			const auto& pixel = image.at(current_pixel);
 
-			rgbe = float_to_rgbe(pixel.xyz());
+			rgbe = float_to_rgbe(pixel.xyz);
 
 			buffer[i]					   = rgbe.x;
 			buffer[i + scanline_width]     = rgbe.y;

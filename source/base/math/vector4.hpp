@@ -22,6 +22,8 @@ struct Vector4
 			T x, y, z, w;
 		};
 
+		Vector3<T> xyz;
+
 		T v[4];
 	};
 
@@ -32,8 +34,6 @@ struct Vector4
 	explicit Vector4(Vector2<T> xy, T z, T w = T(1));
 
 	explicit Vector4(const Vector3<T>& xyz, T w = T(1));
-
-	Vector3<T> xyz() const;
 
 	Vector4 operator+(const Vector4& v) const;
 
@@ -71,6 +71,8 @@ struct alignas(16) Vector4f_a
 			float x, y, z, w;
 		};
 
+		Vector3f_a xyz;
+
 		float v[4];
 	};
 
@@ -83,8 +85,6 @@ struct alignas(16) Vector4f_a
 	explicit Vector4f_a(const Vector3f_a& xyz, float w = 1.f);
 
 	explicit Vector4f_a(const Vector3<float>& xyz, float w = 1.f);
-
-	Vector3f_a xyz() const;
 
 	Vector4f_a operator+(const Vector4f_a& v) const;
 

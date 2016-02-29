@@ -7,7 +7,17 @@ namespace rendering { namespace sensor { namespace tonemapping {
 class Aces : public Tonemapper {
 public:
 
+	Aces(math::pvec3 linear_white, float exposure);
+
 	virtual math::vec3 tonemap(math::pvec3 color) const final override;
+
+private:
+
+	static math::vec3 tonemap_function(math::pvec3 color);
+
+	math::vec3 white_factor_;
+
+	float exposure_factor_;
 };
 
 }}}

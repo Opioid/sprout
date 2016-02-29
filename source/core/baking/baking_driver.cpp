@@ -72,7 +72,7 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 				ray.min_t = 0.01f;
 				ray.max_t = 10000.f;
 
-				irradiance += math::vec3(worker.li(ray).xyz());
+				irradiance += worker.li(ray).xyz;
 			}
 
 			irradiance /= static_cast<float>(num_samples);

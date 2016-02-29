@@ -3,13 +3,12 @@
 
 namespace rendering { namespace sensor { namespace tonemapping {
 
-Uncharted::Uncharted(math::pvec3 linear_white) : linear_white_(linear_white) {}
+Uncharted::Uncharted(math::pvec3 linear_white, float exposure) :
+	white_factor_(1.f / tonemap_function(linear_white)),
+	exposure_factor_(std::exp2(exposure)) {}
 
 math::vec3 Uncharted::tonemap(math::pvec3 color) const {
-	math::vec3 numerator   = tonemap_function(color);
-	math::vec3 denominator = tonemap_function(linear_white_);
-
-	return numerator / denominator;
+	return white_factor_ * tonemap_function(exposure_factor_ * color);
 }
 
 math::vec3 Uncharted::tonemap_function(math::pvec3 color) {

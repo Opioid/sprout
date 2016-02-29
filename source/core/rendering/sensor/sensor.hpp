@@ -14,7 +14,7 @@ namespace tonemapping { class Tonemapper; }
 class Sensor {
 public:
 
-	Sensor(math::int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper);
+	Sensor(math::int2 dimensions, const tonemapping::Tonemapper* tonemapper);
 	virtual ~Sensor();
 
 	math::int2 dimensions() const;
@@ -36,11 +36,7 @@ protected:
 
 	virtual void resolve(int32_t begin, int32_t end, image::Image_float_4& target) const = 0;
 
-	math::vec3 expose(math::pvec3 color) const;
-
 	math::int2 dimensions_;
-
-	const float exp2_exposure_;
 
 	const tonemapping::Tonemapper* tonemapper_;
 };

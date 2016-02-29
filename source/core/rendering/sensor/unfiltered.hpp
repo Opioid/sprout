@@ -13,8 +13,7 @@ template<class Base, class Clamp>
 class Unfiltered : public Base {
 public:
 
-	Unfiltered(math::int2 dimensions, float exposure,
-			   const tonemapping::Tonemapper* tonemapper, const Clamp& clamp);
+	Unfiltered(math::int2 dimensions, const tonemapping::Tonemapper* tonemapper, const Clamp& clamp);
 
 	virtual int32_t filter_radius_int() const final override;
 

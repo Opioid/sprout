@@ -6,9 +6,8 @@
 
 namespace rendering { namespace sensor {
 
-Sensor::Sensor(math::int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper) :
+Sensor::Sensor(math::int2 dimensions, const tonemapping::Tonemapper* tonemapper) :
 	dimensions_(dimensions),
-	exp2_exposure_(std::exp2(exposure)),
 	tonemapper_(tonemapper) {}
 
 Sensor::~Sensor() {
@@ -22,10 +21,6 @@ math::int2 Sensor::dimensions() const {
 void Sensor::resolve(thread::Pool& pool, image::Image_float_4& target) const {
 	auto d = target.description().dimensions;
 	pool.run_range([this, &target](int32_t begin, int32_t end){ resolve(begin, end, target); }, 0, d.x * d.y);
-}
-
-math::vec3 Sensor::expose(math::pvec3 color) const {
-	return exp2_exposure_ * color;
 }
 
 }}

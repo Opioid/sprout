@@ -7,7 +7,7 @@ namespace rendering { namespace sensor {
 class Transparent : public Sensor {
 public:
 
-	Transparent(math::int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper);
+	Transparent(math::int2 dimensions, const tonemapping::Tonemapper* tonemapper);
 	virtual ~Transparent();
 
 	virtual void clear() final override;

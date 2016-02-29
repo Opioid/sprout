@@ -7,8 +7,8 @@
 
 namespace rendering { namespace sensor {
 
-Opaque::Opaque(math::int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper) :
-	Sensor(dimensions, exposure, tonemapper) {
+Opaque::Opaque(math::int2 dimensions, const tonemapping::Tonemapper* tonemapper) :
+	Sensor(dimensions, tonemapper) {
 	pixels_ = memory::allocate_aligned<math::float4>(dimensions.x * dimensions.y);
 }
 
@@ -27,7 +27,7 @@ void Opaque::add_pixel(math::int2 pixel, const math::float4& color, float weight
 	auto d = dimensions();
 
 	auto& value = pixels_[d.x * pixel.y + pixel.x];
-	value += math::float4(weight * color.xyz(), weight);
+	value += math::float4(weight * color.xyz, weight);
 }
 
 void Opaque::add_pixel_atomic(math::int2 pixel, const math::float4& color, float weight) {
@@ -44,11 +44,9 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Image_float_4& target) c
 	for (int32_t i = begin; i < end; ++i) {
 		auto& value = pixels_[i];
 
-		math::vec3 color = value.xyz() / value.w;
+		math::vec3 color = value.xyz / value.w;
 
-		math::vec3 exposed = expose(color);
-
-		math::vec3 tonemapped = tonemapper_->tonemap(exposed);
+		math::vec3 tonemapped = tonemapper_->tonemap(color);
 
 		target.at(i) = math::float4(tonemapped, 1.f);
 	}

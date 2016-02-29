@@ -423,6 +423,10 @@ inline Vector3f_a operator*(float s, FVector3f_a v) {
 	return Vector3f_a(s * v.x, s * v.y, s * v.z);
 }
 
+inline Vector3f_a operator/(float s, FVector3f_a v) {
+	return Vector3f_a(s / v.x, s / v.y, s / v.z);
+}
+
 inline float dot(FVector3f_a a, FVector3f_a b) {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }

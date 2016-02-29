@@ -205,6 +205,8 @@ typedef const Vector3f_a& FVector3f_a;
 
 Vector3f_a operator*(float s, FVector3f_a v);
 
+Vector3f_a operator/(float s, FVector3f_a v);
+
 Vector3f_a mul(FVector3f_a v, float s);
 
 float dot(FVector3f_a a, FVector3f_a b);

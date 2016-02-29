@@ -20,6 +20,8 @@ void size() {
 
 	print_size<math::vec3>("vec3", 16);
 
+	print_size<math::float4>("float4", 16);
+
 	print_size<math::float4x4>("float4x4", 64);
 
 	print_size<math::transformation>("transformation", 48);

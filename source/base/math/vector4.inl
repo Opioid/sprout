@@ -19,14 +19,8 @@ Vector4<T>::Vector4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
 template<typename T>
 Vector4<T>::Vector4(Vector2<T> xy, T z, T w) : x(xy.x), y(xy.y), z(z), w(w) {}
 
-
 template<typename T>
 Vector4<T>::Vector4(const Vector3<T>& xyz, T w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
-
-template<typename T>
-Vector3<T> Vector4<T>::xyz() const {
-	return Vector3<T>(x, y, z);
-}
 
 template<typename T>
 Vector4<T> Vector4<T>::operator+(const Vector4& v) const {
@@ -89,10 +83,6 @@ inline Vector4f_a::Vector4f_a(Vector2<float> xy, float z, float w) : x(xy.x), y(
 inline Vector4f_a::Vector4f_a(const Vector3f_a& xyz, float w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
 
 inline Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
-
-inline Vector3f_a Vector4f_a::xyz() const {
-	return Vector3f_a(x, y, z);
-}
 
 inline Vector4f_a Vector4f_a::operator+(const Vector4f_a& v) const {
 	return Vector4f_a(x + v.x, y + v.y, z + v.z, w + v.w);

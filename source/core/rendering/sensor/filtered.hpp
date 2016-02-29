@@ -15,8 +15,10 @@ template<class Base, class Clamp>
 class Filtered : public Base {
 public:
 
-	Filtered(math::int2 dimensions, float exposure,
-			 const tonemapping::Tonemapper* tonemapper, const Clamp& clamp, const filter::Filter* filter);
+	Filtered(math::int2 dimensions,
+			 const tonemapping::Tonemapper* tonemapper,
+			 const Clamp& clamp,
+			 const filter::Filter* filter);
 
 	~Filtered();
 
