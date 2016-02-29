@@ -39,8 +39,6 @@ struct Vector4
 
 	Vector4 operator*(const Vector4& v) const;
 
-	Vector4 operator*(const Vector3<T>& v) const;
-
 	Vector4 operator/(T s) const;
 
 	Vector4& operator+=(const Vector4& v);
@@ -89,8 +87,6 @@ struct alignas(16) Vector4f_a
 	Vector4f_a operator+(const Vector4f_a& v) const;
 
 	Vector4f_a operator*(const Vector4f_a& v) const;
-
-	Vector4f_a operator*(const Vector3f_a& v) const;
 
 	Vector4f_a operator/(float s) const;
 

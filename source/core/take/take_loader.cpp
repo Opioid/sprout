@@ -337,13 +337,13 @@ Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 		const rapidjson::Value& node_value = n->value;
 
 		if ("ACES" == node_name) {
-			math::vec3 linear_white = json::read_vec3(node_value, "linear_white", math::vec3(1.f, 1.f, 1.f));
+			math::vec3 linear_white = json::read_vec3(node_value, "linear_white", math::vec3_identity);
 			float exposure = json::read_float(node_value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Aces(linear_white, exposure);
 		} else if ("Identity" == node_name) {
 			return new rendering::sensor::tonemapping::Identity();
 		} else if ("Uncharted" == node_name) {
-			math::vec3 linear_white = json::read_vec3(node_value, "linear_white", math::vec3(1.f, 1.f, 1.f));
+			math::vec3 linear_white = json::read_vec3(node_value, "linear_white", math::vec3_identity);
 			float exposure = json::read_float(node_value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Uncharted(linear_white, exposure);
 		}
@@ -531,7 +531,7 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& e
 		} else if ("Movie" == node_name) {
 			uint32_t framerate = json::read_uint(node_value, "framerate");
 
-			if (!framerate) {
+			if (0 == framerate) {
 				framerate = static_cast<uint32_t>(1.f / camera.frame_duration() + 0.5f);
 			}
 

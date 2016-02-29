@@ -33,11 +33,6 @@ Vector4<T> Vector4<T>::operator*(const Vector4& v) const {
 }
 
 template<typename T>
-Vector4<T> Vector4<T>::operator*(const Vector3<T>& v) const {
-	return Vector4(x * v.x, y * v.y, z * v.z, w);
-}
-
-template<typename T>
 Vector4<T> Vector4<T>::operator/(T s) const {
 	T is = T(1) / s;
 	return Vector4(is * x, is * y, is * z, is * w);
@@ -90,10 +85,6 @@ inline Vector4f_a Vector4f_a::operator+(const Vector4f_a& v) const {
 
 inline Vector4f_a Vector4f_a::operator*(const Vector4f_a& v) const {
 	return Vector4f_a(x * v.x, y * v.y, z * v.z, w * v.w);
-}
-
-inline Vector4f_a Vector4f_a::operator*(const Vector3f_a& v) const {
-	return Vector4f_a(x * v.x, y * v.y, z * v.z, w);
 }
 
 inline Vector4f_a Vector4f_a::operator/(float s) const {

@@ -2,6 +2,7 @@ SOURCES += \
 	rendering/sensor/tonemapping/aces.cpp \
 	rendering/sensor/tonemapping/uncharted.cpp \
 	rendering/sensor/tonemapping/identity.cpp \
+	rendering/sensor/tonemapping/tonemapper.cpp \
 
 HEADERS += \
 	rendering/sensor/tonemapping/aces.hpp \

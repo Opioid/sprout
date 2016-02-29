@@ -4,7 +4,7 @@
 namespace rendering { namespace sensor { namespace tonemapping {
 
 Aces::Aces(math::pvec3 linear_white, float exposure) :
-	white_factor_(1.f / tonemap_function(linear_white)),
+	white_factor_(white_factor(linear_white, tonemap_function(linear_white))),
 	exposure_factor_(std::exp2(exposure)) {}
 
 math::vec3 Aces::tonemap(math::pvec3 color) const {
