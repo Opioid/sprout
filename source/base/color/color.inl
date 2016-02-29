@@ -104,10 +104,8 @@ inline uint8_t float_to_snorm(float x) {
 	return static_cast<uint8_t>((x + 1.f) * 0.5f * 255.f);
 }
 
-const Color3 luminance_vector(0.299f, 0.587f, 0.114f);
-
 inline float luminance(math::pvec3 c) {
-	return math::dot(c, luminance_vector);
+	return 0.212671f * c.x + 0.715160f * c.y + 0.072169f * c.z;
 }
 
 }
