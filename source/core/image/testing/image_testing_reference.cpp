@@ -44,7 +44,7 @@ math::float3 reference_normal(math::float2 p, math::float2 range) {
 }
 
 void create_reference_normal_map(math::int2 dimensions) {
-	color::Color4c* rgba = new color::Color4c[dimensions.x * dimensions.y];
+	math::byte4* rgba = new math::byte4[dimensions.x * dimensions.y];
 
 	math::float2 range(2.f / static_cast<float>(dimensions.x),
 					   2.f / static_cast<float>(dimensions.y));

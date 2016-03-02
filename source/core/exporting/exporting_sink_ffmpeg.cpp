@@ -51,7 +51,7 @@ void Ffmpeg::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 
 	std::cout << "Ffmpeg after pool" << std::endl;
 
-	fwrite(rgba_, sizeof(color::Color4c) * d.x * d.y, 1, stream_);
+	fwrite(rgba_, sizeof(math::byte4) * d.x * d.y, 1, stream_);
 
 	std::cout << "Ffmpeg after write" << std::endl;
 }

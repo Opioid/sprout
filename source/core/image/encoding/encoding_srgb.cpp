@@ -5,7 +5,7 @@
 
 namespace image { namespace encoding {
 
-Srgb::Srgb(math::int2 dimensions) :rgba_(new color::Color4c[dimensions.x * dimensions.y]) {}
+Srgb::Srgb(math::int2 dimensions) :rgba_(new math::byte4[dimensions.x * dimensions.y]) {}
 
 Srgb::~Srgb() {
 	delete [] rgba_;

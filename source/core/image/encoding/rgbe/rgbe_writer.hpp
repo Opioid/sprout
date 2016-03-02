@@ -23,7 +23,7 @@ private:
 
 	static void write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t num_bytes);
 
-	static color::Color4c float_to_rgbe(const color::Color3& c);
+	static math::byte4 float_to_rgbe(math::pfloat3 c);
 };
 
 }}}

@@ -19,13 +19,13 @@ inline float linear_to_sRGB(float c) {
 }
 
 // convert sRGB linear color to sRGB gamma color
-inline Color3 linear_to_sRGB(const Color3& c) {
-	return Color3(linear_to_sRGB(c.x), linear_to_sRGB(c.y), linear_to_sRGB(c.z));
+inline math::float3 linear_to_sRGB(math::pfloat3 c) {
+	return math::float3(linear_to_sRGB(c.x), linear_to_sRGB(c.y), linear_to_sRGB(c.z));
 }
 
 // convert sRGB linear color to sRGB gamma color
-inline Color4 linear_to_sRGB(const Color4& c) {
-	return Color4(linear_to_sRGB(c.x), linear_to_sRGB(c.y), linear_to_sRGB(c.z), c.w);
+inline math::float4 linear_to_sRGB(const math::float4& c) {
+	return math::float4(linear_to_sRGB(c.x), linear_to_sRGB(c.y), linear_to_sRGB(c.z), c.w);
 }
 
 // convert sRGB gamma value to sRGB linear value
@@ -42,54 +42,59 @@ inline float sRGB_to_linear(float c) {
 }
 
 // convert sRGB gamma color to sRGB linear color
-inline Color3 sRGB_to_linear(Color3c c) {
-	return Color3(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
-				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
-				  sRGB_to_linear(static_cast<float>(c.z) / 255.f));
+inline math::float3 sRGB_to_linear(math::byte3 c) {
+	return math::float3(
+				sRGB_to_linear(static_cast<float>(c.x) / 255.f),
+				sRGB_to_linear(static_cast<float>(c.y) / 255.f),
+				sRGB_to_linear(static_cast<float>(c.z) / 255.f));
 }
 
 // convert sRGB gamma color to sRGB linear color
-inline Color3 sRGB_to_linear(math::pfloat3 c) {
-	return Color3(sRGB_to_linear(c.x), sRGB_to_linear(c.y), sRGB_to_linear(c.z));
+inline math::float3 sRGB_to_linear(math::pfloat3 c) {
+	return math::float3(sRGB_to_linear(c.x), sRGB_to_linear(c.y), sRGB_to_linear(c.z));
 }
 
-inline Color4 sRGB_to_linear(Color4c c) {
-	return Color4(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
-				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
-				  sRGB_to_linear(static_cast<float>(c.z) / 255.f),
-				  static_cast<float>(c.w) / 255.f);
+inline math::float4 sRGB_to_linear(math::byte4 c) {
+	return math::float4(
+				sRGB_to_linear(static_cast<float>(c.x) / 255.f),
+				sRGB_to_linear(static_cast<float>(c.y) / 255.f),
+				sRGB_to_linear(static_cast<float>(c.z) / 255.f),
+				static_cast<float>(c.w) / 255.f);
 }
 
 // convert linear color to gamma color
-inline Color3 linear_to_gamma(math::pfloat3 c, float gamma) {
+inline math::float3 linear_to_gamma(math::pfloat3 c, float gamma) {
 	float p = 1.f / gamma;
 
-	return Color3(std::pow(c.x, p), std::pow(c.y, p), std::pow(c.z, p));
+	return math::float3(std::pow(c.x, p), std::pow(c.y, p), std::pow(c.z, p));
 }
 
 // convert gamma color to linear color
-inline Color3 gamma_to_linear(math::pfloat3 c, float gamma) {
-	return Color3(std::pow(c.x, gamma), std::pow(c.y, gamma), std::pow(c.z, gamma));
+inline math::float3 gamma_to_linear(math::pfloat3 c, float gamma) {
+	return math::float3(std::pow(c.x, gamma), std::pow(c.y, gamma), std::pow(c.z, gamma));
 }
 
-inline Color3 to_float(Color3c c) {
-	return Color3(static_cast<float>(c.x) / 255.f,
-				  static_cast<float>(c.y) / 255.f,
-				  static_cast<float>(c.z) / 255.f);
+inline math::float3 to_float(math::byte3 c) {
+	return math::float3(
+				static_cast<float>(c.x) / 255.f,
+				static_cast<float>(c.y) / 255.f,
+				static_cast<float>(c.z) / 255.f);
 }
 
-inline Color4 to_float(Color4c c) {
-	return Color4(static_cast<float>(c.x) / 255.f,
-				  static_cast<float>(c.y) / 255.f,
-				  static_cast<float>(c.z) / 255.f,
-				  static_cast<float>(c.w) / 255.f);
+inline math::float4 to_float(math::byte4 c) {
+	return math::float4(
+				static_cast<float>(c.x) / 255.f,
+				static_cast<float>(c.y) / 255.f,
+				static_cast<float>(c.z) / 255.f,
+				static_cast<float>(c.w) / 255.f);
 }
 
-inline Color4c to_byte(const Color4& c) {
-	return Color4c(static_cast<uint8_t>(c.x * 255.f),
-				   static_cast<uint8_t>(c.y * 255.f),
-				   static_cast<uint8_t>(c.z * 255.f),
-				   static_cast<uint8_t>(c.w * 255.f));
+inline math::byte4 to_byte(const math::float4& c) {
+	return math::byte4(
+				static_cast<uint8_t>(c.x * 255.f),
+				static_cast<uint8_t>(c.y * 255.f),
+				static_cast<uint8_t>(c.z * 255.f),
+				static_cast<uint8_t>(c.w * 255.f));
 }
 
 inline float snorm_to_float(uint8_t byte) {

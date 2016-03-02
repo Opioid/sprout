@@ -1,7 +1,6 @@
 #pragma once
 
 #include "image.hpp"
-#include "base/color/color.hpp"
 
 namespace image {
 
@@ -28,10 +27,10 @@ private:
 	T* data_;
 };
 
-typedef Typed_image<uint8_t>		Image_byte_1;
-typedef Typed_image<color::Color2c> Image_byte_2;
-typedef Typed_image<color::Color3c> Image_byte_3;
-typedef Typed_image<math::float3>   Image_float_3;
-typedef Typed_image<math::float4>   Image_float_4;
+typedef Typed_image<uint8_t>	  Image_byte_1;
+typedef Typed_image<math::byte2>  Image_byte_2;
+typedef Typed_image<math::byte3>  Image_byte_3;
+typedef Typed_image<math::float3> Image_float_3;
+typedef Typed_image<math::float4> Image_float_4;
 
 }

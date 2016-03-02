@@ -94,7 +94,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels)
 		std::shared_ptr<Image_byte_2> image = std::make_shared<Image_byte_2>(
 					Image::Description(Image::Type::Byte_2, math::int2(info.width, info.height)));
 
-		color::Color2c color(0, 0);
+		math::byte2 color(0, 0);
 
 		int32_t max_channels = std::min(2, info.num_channels);
 
@@ -112,7 +112,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels)
 		std::shared_ptr<Image_byte_3> image = std::make_shared<Image_byte_3>(
 					Image::Description(Image::Type::Byte_3, math::int2(info.width, info.height)));
 
-		color::Color3c color(0, 0, 0);
+		math::byte3 color(0, 0, 0);
 
 		int32_t max_channels = std::min(3, info.num_channels);
 
