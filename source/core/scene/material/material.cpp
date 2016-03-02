@@ -41,7 +41,7 @@ bool IMaterial::is_emissive() const {
 		return true;
 	}
 
-	math::vec3 e = average_emission();
+	math::float3 e = average_emission();
 	if (e.x > 0.f || e.y > 0.f || e.z > 0.f) {
 		return true;
 	}

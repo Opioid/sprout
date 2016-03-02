@@ -7,7 +7,7 @@ namespace rendering { namespace sensor { namespace tonemapping {
 class Identity : public Tonemapper {
 public:
 
-	virtual math::vec3 tonemap(math::pvec3 color) const final override;
+	virtual math::float3 tonemap(math::pfloat3 color) const final override;
 };
 
 }}}

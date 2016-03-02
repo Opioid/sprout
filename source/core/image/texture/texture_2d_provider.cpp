@@ -24,21 +24,21 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
 }
 
 std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, const memory::Variant_map& options) {
-	uint32_t num_channels = 3;
+	Channels channels = Channels::XYZ;
 
 	Usage usage = Usage::Unknown;
 	options.query("usage", usage);
 
 	if (Usage::Mask == usage) {
-		num_channels = 1;
+		channels = Channels::W;
 	} else if (Usage::Anisotropy == usage) {
-		num_channels = 2;
+		channels = Channels::XY;
 	} else if (Usage::Surface == usage) {
-		num_channels = 2;
+		channels = Channels::XY;
 	}
 
 	memory::Variant_map image_options;
-	image_options.insert("num_channels", num_channels);
+	image_options.insert("channels", channels);
 
 	bool was_cached;
 

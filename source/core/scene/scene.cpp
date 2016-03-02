@@ -173,7 +173,7 @@ light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t par
 	return light;
 }
 
-volume::Volume* Scene::create_volume(const math::vec3& absorption, const math::vec3& scattering) {
+volume::Volume* Scene::create_volume(const math::float3& absorption, const math::float3& scattering) {
 	volume_region_ = new volume::Homogeneous(absorption, scattering);
 	return volume_region_;
 }

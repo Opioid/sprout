@@ -32,8 +32,8 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
 
-	math::vec3 throughput = math::vec3(1.f, 1.f, 1.f);
-	math::vec3 result = math::vec3_identity;
+	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
+	math::float3 result = math::float3_identity;
 	float opacity = 0.f;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
@@ -53,13 +53,13 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 
 		if (i > 0) {
 		//	throughput *= worker.transmittance(ray);
-			math::vec3 tr;
+			math::float3 tr;
 			math::float4 vli = worker.volume_li(ray, tr);
 			result += throughput * vli.xyz;
 			throughput *= tr;
 		}
 
-		math::vec3 wo = -ray.direction;
+		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, *texture_sampler, worker.id());
 
@@ -101,7 +101,7 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 		}
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
-			math::vec3 transmitted = transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
+			math::float3 transmitted = transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
 															  sampler_, settings_.sampler_nearest, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
@@ -131,11 +131,11 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 	return math::float4(result, opacity);
 }
 
-math::vec3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::Ray& ray,
+math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 												  const scene::Intersection& intersection,
 												  const scene::material::Sample& material_sample,
 												  const image::texture::sampler::Sampler_2D& texture_sampler) {
-	math::vec3 result = math::vec3_identity;
+	math::float3 result = math::float3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	scene::Ray shadow_ray;
@@ -162,10 +162,10 @@ math::vec3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::Ray
 
 			float mv = worker.masked_visibility(shadow_ray, texture_sampler);
 			if (mv > 0.f) {
-				math::vec3 t = worker.transmittance(shadow_ray);
+				math::float3 t = worker.transmittance(shadow_ray);
 
 				float bxdf_pdf;
-				math::vec3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+				math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
 				result += mv * t * light_sample.energy * f / (light_pdf * light_sample.shape.pdf);
 			}

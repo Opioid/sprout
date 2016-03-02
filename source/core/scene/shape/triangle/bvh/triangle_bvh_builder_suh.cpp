@@ -9,18 +9,18 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::vec3& p,
+Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::float3& p,
 											  index begin, index end,
 											  const std::vector<Index_triangle>& triangles,
 											  const std::vector<Vertex>& vertices) :
 	d_(p.v[split_axis]), axis_(split_axis)  {
-	math::vec3 n;
+	math::float3 n;
 
 	switch (split_axis) {
 	default:
-	case 0: n = math::vec3(1.f, 0.f, 0.f); break;
-	case 1: n = math::vec3(0.f, 1.f, 0.f); break;
-	case 2: n = math::vec3(0.f, 0.f, 1.f); break;
+	case 0: n = math::float3(1.f, 0.f, 0.f); break;
+	case 1: n = math::float3(0.f, 1.f, 0.f); break;
+	case 2: n = math::float3(0.f, 0.f, 1.f); break;
 	}
 
 	plane_ = math::create_plane(n, p);
@@ -59,7 +59,7 @@ uint64_t Builder_SUH::Split_candidate::key() const {
 	return key_;
 }
 
-uint32_t Builder_SUH::Split_candidate::side(const math::vec3& a, const math::vec3& b, const math::vec3& c) const {
+uint32_t Builder_SUH::Split_candidate::side(const math::float3& a, const math::float3& b, const math::float3& c) const {
 	uint32_t behind = 0;
 
 	if (a.v[axis_] < d_) {
@@ -83,9 +83,9 @@ uint32_t Builder_SUH::Split_candidate::side(const math::vec3& a, const math::vec
 	}
 }
 
-bool Builder_SUH::Split_candidate::completely_behind(const math::vec3& a,
-													 const math::vec3& b,
-													 const math::vec3& c) const {
+bool Builder_SUH::Split_candidate::completely_behind(const math::float3& a,
+													 const math::float3& b,
+													 const math::float3& c) const {
 	if (a.v[axis_] < d_ && b.v[axis_] < d_ && c.v[axis_] < d_) {
 		return true;
 	}
@@ -107,7 +107,7 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb
 														  const std::vector<Vertex>& vertices) {
 	split_candidates_.clear();
 
-	math::vec3 average = math::vec3_identity;
+	math::float3 average = math::float3_identity;
 
 	for (index i = begin; i != end; ++i) {
 		auto& t = triangles[*i];
@@ -116,7 +116,7 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb
 
 	average /= static_cast<float>(std::distance(begin, end) * 3);
 
-	math::vec3 halfsize = aabb.halfsize();
+	math::float3 halfsize = aabb.halfsize();
 
 	uint8_t bb_axis;
 
@@ -141,7 +141,7 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb
 		[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
 	if (split_candidates_[0].key() >= 0x1000000000000000) {
-		std::vector<math::vec3> positions;
+		std::vector<math::float3> positions;
 		positions.reserve(std::distance(begin, end));
 
 		for (index i = begin; i != end; ++i) {
@@ -153,16 +153,16 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(const math::aabb& aabb
 
 		size_t middle = positions.size() / 2;
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
-						 [](const math::vec3& a, const math::vec3& b) { return a.x < b.x; });
-		math::vec3 x_median = positions[middle];
+						 [](const math::float3& a, const math::float3& b) { return a.x < b.x; });
+		math::float3 x_median = positions[middle];
 
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
-						 [](const math::vec3& a, const math::vec3& b) { return a.y < b.y; });
-		math::vec3 y_median = positions[middle];
+						 [](const math::float3& a, const math::float3& b) { return a.y < b.y; });
+		math::float3 y_median = positions[middle];
 
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
-						 [](const math::vec3& a, const math::vec3& b) { return a.z < b.z; });
-		math::vec3 z_median = positions[middle];
+						 [](const math::float3& a, const math::float3& b) { return a.z < b.z; });
+		math::float3 z_median = positions[middle];
 
 		split_candidates_.clear();
 

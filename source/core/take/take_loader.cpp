@@ -122,8 +122,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 	}
 
 	math::transformation transformation{
-		math::vec3_identity,
-		math::vec3(1.f, 1.f, 1.f),
+		math::float3_identity,
+		math::float3(1.f, 1.f, 1.f),
 		math::quaternion_identity
 	};
 
@@ -252,7 +252,7 @@ void Loader::load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopi
 
 rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_value,
 											   math::int2 dimensions, bool alpha_transparency) const {
-	math::vec3 clamp_max(-1.f, -1.f, -1.f);
+	math::float3 clamp_max(-1.f, -1.f, -1.f);
 	const rendering::sensor::tonemapping::Tonemapper* tonemapper = nullptr;
 	const rendering::sensor::filter::Filter* filter = nullptr;
 
@@ -261,7 +261,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 		const rapidjson::Value& node_value = n->value;
 
 		if ("clamp" == node_name) {
-			clamp_max = json::read_vec3(node_value);
+			clamp_max = json::read_float3(node_value);
 		} else if ("tonemapper" == node_name) {
 			tonemapper = load_tonemapper(node_value);
 		} else if ("filter" == node_name) {
@@ -337,13 +337,13 @@ Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 		const rapidjson::Value& node_value = n->value;
 
 		if ("ACES" == node_name) {
-			math::vec3 linear_white = json::read_vec3(node_value, "linear_white", math::vec3_identity);
+			math::float3 linear_white = json::read_float3(node_value, "linear_white", math::float3_identity);
 			float exposure = json::read_float(node_value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Aces(linear_white, exposure);
 		} else if ("Identity" == node_name) {
 			return new rendering::sensor::tonemapping::Identity();
 		} else if ("Uncharted" == node_name) {
-			math::vec3 linear_white = json::read_vec3(node_value, "linear_white", math::vec3_identity);
+			math::float3 linear_white = json::read_float3(node_value, "linear_white", math::float3_identity);
 			float exposure = json::read_float(node_value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Uncharted(linear_white, exposure);
 		}
@@ -561,7 +561,7 @@ void load_focus(const rapidjson::Value& focus_value, scene::camera::Perspective:
 		const rapidjson::Value& node_value = n->value;
 
 		if ("point" == node_name) {
-			focus.point = json::read_vec3(node_value);
+			focus.point = json::read_float3(node_value);
 			focus.use_point = true;
 		} else if ("distance" == node_name) {
 			focus.distance = json::read_float(node_value);

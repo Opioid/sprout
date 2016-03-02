@@ -9,11 +9,11 @@ public:
 
 	Attenuation(const take::Settings& take_settings, math::random::Generator& rng);
 
-	virtual math::vec3 transmittance(Worker& worker, const scene::volume::Volume* volume,
+	virtual math::float3 transmittance(Worker& worker, const scene::volume::Volume* volume,
 									   const scene::Ray& ray) final override;
 
 	virtual math::float4 li(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray,
-							math::vec3& transmittance) final override;
+							math::float3& transmittance) final override;
 };
 
 class Attenuation_factory : public Integrator_factory {

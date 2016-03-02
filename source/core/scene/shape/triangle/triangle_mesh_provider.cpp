@@ -62,14 +62,14 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 			// If no normals were loaded assign identity
 			// Might be smarter to throw an exception
 			for (auto& v : handler.vertices()) {
-				v.n = math::vec3_identity;
+				v.n = math::float3_identity;
 			}
 		}
 
 		if (!handler.has_tangents()) {
 			// If no tangents were loaded, compute the tangent space manually
 			for (auto& v : handler.vertices()) {
-				math::vec3 b;
+				math::float3 b;
 				math::coordinate_system(v.n, v.t, b);
 				v.bitangent_sign = 1.f;
 			}
@@ -139,14 +139,14 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 			// If no normals were loaded assign identity
 			// Might be smarter to throw an exception
 			for (auto& v : handler.vertices()) {
-				v.n = math::vec3_identity;
+				v.n = math::float3_identity;
 			}
 		}
 
 		if (!handler.has_tangents()) {
 			// If no tangents were loaded, compute the tangent space manually
 			for (auto& v : handler.vertices()) {
-				math::vec3 b;
+				math::float3 b;
 				math::coordinate_system(v.n, v.t, b);
 				v.bitangent_sign = 1.f;
 			}

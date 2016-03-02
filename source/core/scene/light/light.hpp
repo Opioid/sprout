@@ -27,23 +27,23 @@ public:
 			float time, entity::Composed_transformation& transformation) const = 0;
 
 	virtual void sample(const entity::Composed_transformation& transformation, float time,
-						const math::vec3& p, const math::vec3& n, bool total_sphere,
+						const math::float3& p, const math::float3& n, bool total_sphere,
 						const image::texture::sampler::Sampler_2D& image_sampler,
 						sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const = 0;
 
-	void sample(float time, const math::vec3& p, const math::vec3& n, bool total_sphere,
+	void sample(float time, const math::float3& p, const math::float3& n, bool total_sphere,
 				const image::texture::sampler::Sampler_2D& image_sampler,
 				sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const;
 
-	void sample(float time, const math::vec3& p, const image::texture::sampler::Sampler_2D& image_sampler,
+	void sample(float time, const math::float3& p, const image::texture::sampler::Sampler_2D& image_sampler,
 				sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const;
 
 	virtual float pdf(const entity::Composed_transformation& transformation,
-					  const math::vec3& p, const math::vec3& wi, bool total_sphere,
+					  const math::float3& p, const math::float3& wi, bool total_sphere,
 					  const image::texture::sampler::Sampler_2D& image_sampler,
 					  shape::Node_stack& node_stack) const = 0;
 
-	virtual math::vec3 power(const math::aabb& scene_bb) const = 0;
+	virtual math::float3 power(const math::aabb& scene_bb) const = 0;
 
 	virtual void prepare_sampling() = 0;
 

@@ -42,14 +42,14 @@ public:
 
 private:
 
-	math::vec3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
+	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
 									   const image::texture::sampler::Sampler_2D& texture_sampler);
 
-	math::vec3 resolve_transmission(Worker& worker, scene::Ray& ray,
+	math::float3 resolve_transmission(Worker& worker, scene::Ray& ray,
 									  scene::Intersection& intersection,
-									  const math::vec3& attenuation,
+									  const math::float3& attenuation,
 									  const image::texture::sampler::Sampler_2D& texture_sampler,
 									  scene::material::bxdf::Result& sample_result);
 

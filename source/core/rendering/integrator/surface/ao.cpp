@@ -30,15 +30,15 @@ math::float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene::Int
 
 	auto material = intersection.material();
 
-	math::vec3 wo = -ray.direction;
+	math::float3 wo = -ray.direction;
 	auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f,
 											 settings_.sampler_linear, worker.id());
 
 	for (uint32_t i = 0; i < settings_.num_samples; ++i) {
 		math::float2 sample = sampler_.generate_sample_2D();
-		math::vec3 hs = math::sample_hemisphere_cosine(sample);
-//		math::vec3 ws = intersection.geo.tangent_to_world(hs);
-		math::vec3 ws = material_sample.tangent_to_world(hs);
+		math::float3 hs = math::sample_hemisphere_cosine(sample);
+//		math::float3 ws = intersection.geo.tangent_to_world(hs);
+		math::float3 ws = material_sample.tangent_to_world(hs);
 
 		occlusion_ray.set_direction(ws);
 

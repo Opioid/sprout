@@ -19,7 +19,7 @@ Emissionmap_animated::Emissionmap_animated(Generic_sample_cache<Sample>& cache,
 	frame_length_(animation_duration / static_cast<float>(emission_map_->num_elements())),
 	element_(0) {
 	for (auto& ae : average_emissions_) {
-		ae = math::vec3(-1.f, -1.f, -1.f);
+		ae = math::float3(-1.f, -1.f, -1.f);
 	}
 }
 
@@ -27,7 +27,7 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 	element_ = static_cast<int32_t>(absolute_time / frame_length_) % emission_map_->num_elements();
 }
 
-const material::Sample& Emissionmap_animated::sample(const shape::Differential& dg, const math::vec3& wo,
+const material::Sample& Emissionmap_animated::sample(const shape::Differential& dg, const math::float3& wo,
 													 float /*time*/, float /*ior_i*/,
 													 const image::texture::sampler::Sampler_2D& sampler,
 													 uint32_t worker_id) {
@@ -35,18 +35,18 @@ const material::Sample& Emissionmap_animated::sample(const shape::Differential& 
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 
-	math::vec3 emission = sampler.sample_3(*emission_map_, dg.uv, element_);
+	math::float3 emission = sampler.sample_3(*emission_map_, dg.uv, element_);
 	sample.set(emission_factor_ * emission);
 
 	return sample;
 }
 
-math::vec3 Emissionmap_animated::sample_emission(math::float2 uv, float /*time*/,
+math::float3 Emissionmap_animated::sample_emission(math::float2 uv, float /*time*/,
 												   const image::texture::sampler::Sampler_2D& sampler) const {
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv, element_);
 }
 
-math::vec3 Emissionmap_animated::average_emission() const {
+math::float3 Emissionmap_animated::average_emission() const {
 	return average_emissions_[element_];
 }
 
@@ -95,7 +95,7 @@ void Emissionmap_animated::prepare_sampling(bool spherical) {
 	}
 
 	if (spherical) {
-	/*	average_emission_ = math::vec3::identity;
+	/*	average_emission_ = math::float3::identity;
 
 		auto d = emission_->dimensions();
 		std::vector<float> luminance(d.x * d.y);
@@ -106,7 +106,7 @@ void Emissionmap_animated::prepare_sampling(bool spherical) {
 			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				math::vec3 emission = emission_factor_ * emission_->at_3(x, y);
+				math::float3 emission = emission_factor_ * emission_->at_3(x, y);
 
 				luminance[l] = color::luminance(emission);
 

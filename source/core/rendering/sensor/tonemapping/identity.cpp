@@ -3,7 +3,7 @@
 
 namespace rendering { namespace sensor { namespace tonemapping {
 
-math::vec3 Identity::tonemap(math::pvec3 color) const {
+math::float3 Identity::tonemap(math::pfloat3 color) const {
 	return color;
 }
 

@@ -44,9 +44,9 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Image_float_4& target) c
 	for (int32_t i = begin; i < end; ++i) {
 		auto& value = pixels_[i];
 
-		math::vec3 color = value.xyz / value.w;
+		math::float3 color = value.xyz / value.w;
 
-		math::vec3 tonemapped = tonemapper_->tonemap(color);
+		math::float3 tonemapped = tonemapper_->tonemap(color);
 
 		target.at(i) = math::float4(tonemapped, 1.f);
 	}

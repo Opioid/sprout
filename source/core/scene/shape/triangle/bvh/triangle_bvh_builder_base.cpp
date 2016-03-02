@@ -59,8 +59,8 @@ math::aabb Builder_base::submesh_aabb(index begin, index end,
 									  const std::vector<Vertex>& vertices) {
 
 	float max_float = std::numeric_limits<float>::max();
-	math::vec3 min( max_float,  max_float,  max_float);
-	math::vec3 max(-max_float, -max_float, -max_float);
+	math::float3 min( max_float,  max_float,  max_float);
+	math::float3 max(-max_float, -max_float, -max_float);
 
 	for (index i = begin; i != end; ++i) {
 		auto& t = triangles[*i];

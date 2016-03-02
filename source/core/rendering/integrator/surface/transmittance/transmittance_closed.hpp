@@ -19,8 +19,8 @@ public:
 
 	Closed(const take::Settings& take_settings, math::random::Generator& rng);
 
-	math::vec3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-						 const math::vec3& attenuation,
+	math::float3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
+						 const math::float3& attenuation,
 						 sampler::Sampler& sampler,
 						 const image::texture::sampler::Sampler_2D& texture_sampler,
 						 scene::material::bxdf::Result& sample_result);

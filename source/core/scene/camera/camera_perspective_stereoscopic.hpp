@@ -26,9 +26,9 @@ private:
 
 	float fov_;
 
-	math::vec3 left_top_;
-	math::vec3 d_x_;
-	math::vec3 d_y_;
+	math::float3 left_top_;
+	math::float3 d_x_;
+	math::float3 d_y_;
 
 	math::Recti view_bounds_[2];
 };

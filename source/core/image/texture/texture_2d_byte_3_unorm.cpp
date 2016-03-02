@@ -20,9 +20,9 @@ math::float2 Texture_2D_byte_3_unorm::at_2(int32_t x, int32_t y) const {
 						color::unorm_to_float(value.y));
 }
 
-math::vec3 Texture_2D_byte_3_unorm::at_3(int32_t x, int32_t y) const {
+math::float3 Texture_2D_byte_3_unorm::at_3(int32_t x, int32_t y) const {
 	auto& value = image_.at(x, y);
-	return math::vec3(color::unorm_to_float(value.x),
+	return math::float3(color::unorm_to_float(value.x),
 						color::unorm_to_float(value.y),
 						color::unorm_to_float(value.z));
 }
@@ -45,9 +45,9 @@ math::float2 Texture_2D_byte_3_unorm::at_2(int32_t x, int32_t y, int32_t element
 						color::unorm_to_float(value.y));
 }
 
-math::vec3 Texture_2D_byte_3_unorm::at_3(int32_t x, int32_t y, int32_t element) const {
+math::float3 Texture_2D_byte_3_unorm::at_3(int32_t x, int32_t y, int32_t element) const {
 	auto& value = image_.at(x, y, element);
-	return math::vec3(color::unorm_to_float(value.x),
+	return math::float3(color::unorm_to_float(value.x),
 						color::unorm_to_float(value.y),
 						color::unorm_to_float(value.z));
 }

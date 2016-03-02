@@ -31,21 +31,21 @@ public:
 								 math::simd::FVector origin, math::simd::FVector direction, float min_t, float max_t);
 
 	void interpolate_data(uint32_t index, math::float2 uv,
-						  math::vec3& n, math::vec3& t, math::float2& tc) const;
+						  math::float3& n, math::float3& t, math::float2& tc) const;
 
 	math::float2 interpolate_uv(uint32_t index, math::float2 uv) const;
 
 	float    bitangent_sign(uint32_t index) const;
 	uint32_t material_index(uint32_t index) const;
 
-	math::vec3 normal(uint32_t index) const;
+	math::float3 normal(uint32_t index) const;
 
 	float area(uint32_t index) const;
-	float area(uint32_t index, const math::vec3& scale) const;
+	float area(uint32_t index, const math::float3& scale) const;
 
-//	void sample(uint32_t index, math::float2 r2, math::vec3& p, math::vec3& n, math::float2& tc) const;
-	void sample(uint32_t index, math::float2 r2, math::vec3& p, math::float2& tc) const;
-//	void sample(uint32_t index, math::float2 r2, math::vec3& p) const;
+//	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
+	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const;
+//	void sample(uint32_t index, math::float2 r2, math::float3& p) const;
 
 	void allocate_triangles(uint32_t num_triangles);
 

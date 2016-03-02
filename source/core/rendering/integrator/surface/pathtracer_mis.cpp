@@ -34,8 +34,8 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
 	scene::material::bxdf::Result sample_result;
 
-	math::vec3 throughput = math::vec3(1.f, 1.f, 1.f);
-	math::vec3 result = math::vec3_identity;
+	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
+	math::float3 result = math::float3_identity;
 	float opacity = 0.f;
 	bool primary_ray = 0 == ray.depth;
 
@@ -54,13 +54,13 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 
 		if (volume && i > 0) {
 		//	throughput *= worker.transmittance(ray);
-			math::vec3 tr;
+			math::float3 tr;
 			math::float4 vli = worker.volume_li(ray, tr);
 			result += throughput * vli.xyz;
 			throughput *= tr;
 		}
 
-		math::vec3 wo = -ray.direction;
+		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, *texture_sampler, worker.id());
 
@@ -92,7 +92,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 		}
 
 		material_sample.sample_evaluate(sampler_, sample_result);
-		if (0.f == sample_result.pdf || math::vec3_identity == sample_result.reflection) {
+		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {
 			break;
 		}
 
@@ -102,7 +102,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume, sc
 		}
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
-			math::vec3 tr = resolve_transmission(worker, ray, intersection, material_sample.attenuation(),
+			math::float3 tr = resolve_transmission(worker, ray, intersection, material_sample.attenuation(),
 												 settings_.sampler_nearest, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
@@ -139,11 +139,11 @@ float power_heuristic(float fpdf, float gpdf) {
 	return f2 / (f2 + gpdf * gpdf);
 }
 
-math::vec3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& ray,
+math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 												   const scene::Intersection& intersection,
 												   const scene::material::Sample& material_sample,
 												   const image::texture::sampler::Sampler_2D& texture_sampler) {
-	math::vec3 result = math::vec3_identity;
+	math::float3 result = math::float3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	scene::Ray shadow_ray;
@@ -176,10 +176,10 @@ math::vec3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ra
 
 			float mv = worker.masked_visibility(shadow_ray, texture_sampler);
 			if (mv > 0.f) {
-				math::vec3 t = worker.transmittance(shadow_ray);
+				math::float3 t = worker.transmittance(shadow_ray);
 
 				float bxdf_pdf;
-				math::vec3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+				math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
 				float weight = power_heuristic(light_sample.shape.pdf, bxdf_pdf);
 
@@ -202,7 +202,7 @@ math::vec3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ra
 			continue;
 		}
 
-		math::vec3 wo = -sample_result.wi;
+		math::float3 wo = -sample_result.wi;
 		shadow_ray.set_direction(sample_result.wi);
 		shadow_ray.max_t = take_settings_.ray_max_t;
 
@@ -215,9 +215,9 @@ math::vec3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ra
 																	 settings_.sampler_nearest, worker.id());
 
 				if (light_material_sample.same_hemisphere(wo)) {
-					math::vec3 t = worker.transmittance(shadow_ray);
+					math::float3 t = worker.transmittance(shadow_ray);
 
-					math::vec3 ls_energy = t * light_material_sample.emission();
+					math::float3 ls_energy = t * light_material_sample.emission();
 
 					float weight = power_heuristic(sample_result.pdf, ls_pdf);
 
@@ -231,9 +231,9 @@ math::vec3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ra
 	return settings_.num_light_samples_reciprocal * result;
 }
 
-math::vec3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
+math::float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
 												scene::Intersection& intersection,
-												const math::vec3& attenuation,
+												const math::float3& attenuation,
 												const image::texture::sampler::Sampler_2D& texture_sampler,
 												scene::material::bxdf::Result& sample_result) {
 	if (intersection.prop->is_open()) {

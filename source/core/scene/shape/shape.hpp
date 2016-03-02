@@ -40,24 +40,24 @@ public:
 						  const image::texture::sampler::Sampler_2D& sampler) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-						const math::vec3& p, const math::vec3& n, bool two_sided,
+						const math::float3& p, const math::float3& n, bool two_sided,
 						sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-						const math::vec3& p, bool two_sided,
+						const math::float3& p, bool two_sided,
 						sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-						const math::vec3& p, math::float2 uv, Sample& sample) const = 0;
+						const math::float3& p, math::float2 uv, Sample& sample) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
-						const math::vec3& p, const math::vec3& wi, Sample& sample) const = 0;
+						const math::float3& p, const math::float3& wi, Sample& sample) const = 0;
 
 	virtual float pdf(uint32_t part, const entity::Composed_transformation& transformation, float area,
-					  const math::vec3& p, const math::vec3& wi, bool two_sided, bool total_sphere,
+					  const math::float3& p, const math::float3& wi, bool two_sided, bool total_sphere,
 					  Node_stack& node_stack) const = 0;
 
-	virtual float area(uint32_t part, const math::vec3& scale) const = 0;
+	virtual float area(uint32_t part, const math::float3& scale) const = 0;
 
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;

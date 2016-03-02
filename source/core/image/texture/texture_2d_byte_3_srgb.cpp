@@ -20,9 +20,9 @@ math::float2 Texture_2D_byte_3_sRGB::at_2(int32_t x, int32_t y) const {
 						encoding::srgb_to_float(value.y));
 }
 
-math::vec3 Texture_2D_byte_3_sRGB::at_3(int32_t x, int32_t y) const {
+math::float3 Texture_2D_byte_3_sRGB::at_3(int32_t x, int32_t y) const {
 	auto value = image_.load(x, y);
-	return math::vec3(encoding::srgb_to_float(value.x),
+	return math::float3(encoding::srgb_to_float(value.x),
 						encoding::srgb_to_float(value.y),
 						encoding::srgb_to_float(value.z));
 }
@@ -45,9 +45,9 @@ math::float2 Texture_2D_byte_3_sRGB::at_2(int32_t x, int32_t y, int32_t element)
 						encoding::srgb_to_float(value.y));
 }
 
-math::vec3 Texture_2D_byte_3_sRGB::at_3(int32_t x, int32_t y, int32_t element) const {
+math::float3 Texture_2D_byte_3_sRGB::at_3(int32_t x, int32_t y, int32_t element) const {
 	auto& value = image_.at(x, y, element);
-	return math::vec3(encoding::srgb_to_float(value.x),
+	return math::float3(encoding::srgb_to_float(value.x),
 						encoding::srgb_to_float(value.y),
 						encoding::srgb_to_float(value.z));
 }

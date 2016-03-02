@@ -4,6 +4,7 @@ SOURCES += \
 	image/image_writer.cpp \
 
 HEADERS += \
+	image/channels.hpp
 	image/image.hpp \
 	image/image_provider.hpp \
 	image/image_writer.hpp \

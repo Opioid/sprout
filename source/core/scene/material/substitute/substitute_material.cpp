@@ -13,22 +13,22 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
 	material::Material<Generic_sample_cache<Sample>>(cache, mask, two_sided) {}
 
-const material::Sample& Material::sample(const shape::Differential& dg, const math::vec3& wo,
+const material::Sample& Material::sample(const shape::Differential& dg, const math::float3& wo,
 										 float /*time*/, float /*ior_i*/,
 										 const image::texture::sampler::Sampler_2D& sampler,
 										 uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	if (normal_map_) {
-		math::vec3 nm = sampler.sample_3(*normal_map_, dg.uv);
-		math::vec3 n = math::normalized(dg.tangent_to_world(nm));
+		math::float3 nm = sampler.sample_3(*normal_map_, dg.uv);
+		math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
 		sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo, two_sided_);
 	} else {
 		sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 	}
 
-	math::vec3 color;
+	math::float3 color;
 
 	if (color_map_) {
 		color = sampler.sample_3(*color_map_, dg.uv);
@@ -50,29 +50,29 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 	thickness = thickness_;
 
 	if (emission_map_) {
-		math::vec3 emission = emission_factor_ * sampler.sample_3(*emission_map_, dg.uv);
+		math::float3 emission = emission_factor_ * sampler.sample_3(*emission_map_, dg.uv);
 		sample.set(color, emission, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
 	} else {
-		sample.set(color, math::vec3_identity, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
+		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
 	}
 
 	return sample;
 }
 
-math::vec3 Material::sample_emission(math::float2 uv, float /*time*/,
+math::float3 Material::sample_emission(math::float2 uv, float /*time*/,
 									   const image::texture::sampler::Sampler_2D& sampler) const {
 	if (emission_map_) {
 		return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 	} else {
-		return math::vec3_identity;
+		return math::float3_identity;
 	}
 }
 
-math::vec3 Material::average_emission() const {
+math::float3 Material::average_emission() const {
 	if (emission_map_) {
 		return emission_factor_ * emission_map_->average_3();
 	} else {
-		return math::vec3_identity;
+		return math::float3_identity;
 	}
 }
 
@@ -96,7 +96,7 @@ void Material::set_emission_map(std::shared_ptr<image::texture::Texture_2D> emis
 	emission_map_ = emission_map;
 }
 
-void Material::set_color(const math::vec3& color) {
+void Material::set_color(const math::float3& color) {
 	color_ = color;
 }
 

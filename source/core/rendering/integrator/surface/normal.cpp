@@ -16,7 +16,7 @@ Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
 math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene::Intersection& intersection) {
-	math::vec3 vector;
+	math::float3 vector;
 
 	if (Settings::Vector::Tangent == settings_.vector) {
 		vector = intersection.geo.t;
@@ -27,15 +27,15 @@ math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene:
 	} else if (Settings::Vector::Shading_normal == settings_.vector) {
 		auto material = intersection.material();
 
-		math::vec3 wo = -ray.direction;
+		math::float3 wo = -ray.direction;
 		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, settings_.sampler, worker.id());
 
 		vector = material_sample.shading_normal();
 	} else {
-		vector = math::vec3_identity;
+		vector = math::float3_identity;
 	}
 
-	return math::float4(0.5f * (vector + math::vec3(1.f, 1.f, 1.f)), 1.f);
+	return math::float4(0.5f * (vector + math::float3(1.f, 1.f, 1.f)), 1.f);
 }
 
 Normal_factory::Normal_factory(const take::Settings& take_settings, Normal::Settings::Vector vector) :

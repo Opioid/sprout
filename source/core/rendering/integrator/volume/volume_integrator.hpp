@@ -18,10 +18,10 @@ public:
 	Integrator(const take::Settings& settings, math::random::Generator& rng);
 	virtual ~Integrator();
 
-	virtual math::vec3 transmittance(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray) = 0;
+	virtual math::float3 transmittance(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray) = 0;
 
 	virtual math::float4 li(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray,
-							math::vec3& transmittance) = 0;
+							math::float3& transmittance) = 0;
 };
 
 class Integrator_factory {

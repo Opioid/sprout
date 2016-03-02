@@ -21,26 +21,26 @@ Single_scattering::Single_scattering(const take::Settings& take_settings,
 									 const Settings& settings) :
 	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
-math::vec3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume* volume,
+math::float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume* volume,
 											  const scene::Ray& ray) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
-		return math::vec3(1.f, 1.f, 1.f);
+		return math::float3(1.f, 1.f, 1.f);
 	}
 
 	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	math::vec3 tau = volume->optical_depth(tray);
+	math::float3 tau = volume->optical_depth(tray);
 	return math::exp(-tau);
 }
 
 math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray,
-								   math::vec3& transmittance) {
+								   math::float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
-		transmittance = math::vec3(1.f, 1.f, 1.f);
+		transmittance = math::float3(1.f, 1.f, 1.f);
 		return math::float4_identity;
 	}
 
@@ -56,7 +56,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 	float range = max_t - min_t;
 
 	if (range < 0.0001f) {
-		transmittance = math::vec3(1.f, 1.f, 1.f);
+		transmittance = math::float3(1.f, 1.f, 1.f);
 		return math::float4_identity;
 	}
 
@@ -64,16 +64,16 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 	float step = range / static_cast<float>(num_samples);
 
-	math::vec3 w = -ray.direction;
+	math::float3 w = -ray.direction;
 
-	math::vec3 emission = math::vec3_identity;
+	math::float3 emission = math::float3_identity;
 
-	math::vec3 scattering = volume->scattering();
+	math::float3 scattering = volume->scattering();
 
-	math::vec3 tr(1.f, 1.f, 1.f);
+	math::float3 tr(1.f, 1.f, 1.f);
 
-	math::vec3 current = ray.point(min_t);
-	math::vec3 previous;
+	math::float3 current = ray.point(min_t);
+	math::float3 previous;
 
 	min_t += rng_.random_float() * step;
 
@@ -82,7 +82,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		current  = ray.point(min_t);
 
 		scene::Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
-		math::vec3 tau = volume->optical_depth(tau_ray);
+		math::float3 tau = volume->optical_depth(tau_ray);
 		tr *= math::exp(-tau);
 
 		// Direct light scattering
@@ -102,7 +102,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 			if (mv > 0.f) {
 				float p = volume->phase(w, -light_sample.shape.wi);
 
-				math::vec3 l = Single_scattering::transmittance(worker, volume, shadow_ray) * light_sample.energy;
+				math::float3 l = Single_scattering::transmittance(worker, volume, shadow_ray) * light_sample.energy;
 
 				emission += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
@@ -111,15 +111,15 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		// Indirect light scattering
 		/*
 		math::float2 uv(rng_.random_float(), rng_.random_float());
-		math::vec3 dir = math::sample_sphere_uniform(uv);
+		math::float3 dir = math::sample_sphere_uniform(uv);
 
 		math::Oray scatter_ray(current, dir, 0.f, 10000.f, ray.time);
 
-		math::vec3 li = worker.surface_li(scatter_ray);
+		math::float3 li = worker.surface_li(scatter_ray);
 
 		float p = volume->phase(w, -dir);
 
-		math::vec3 l = Single_scattering::transmittance(volume, scatter_ray) * li;
+		math::float3 l = Single_scattering::transmittance(volume, scatter_ray) * li;
 
 		emission += p * tr * scattering * l;
 		*/
@@ -127,7 +127,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 	transmittance = tr;
 
-	math::vec3 color = step * emission;
+	math::float3 color = step * emission;
 
 	return math::float4(color, color::luminance(color));
 }

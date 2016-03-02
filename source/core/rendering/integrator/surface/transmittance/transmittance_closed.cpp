@@ -16,13 +16,13 @@ namespace rendering { namespace integrator { namespace surface { namespace trans
 Closed::Closed(const take::Settings &take_settings, math::random::Generator &rng) :
 	integrator::Integrator(take_settings, rng) {}
 
-math::vec3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-							 const math::vec3& attenuation,
+math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
+							 const math::float3& attenuation,
 							 sampler::Sampler& sampler,
 							 const image::texture::sampler::Sampler_2D& texture_sampler,
 							 scene::material::bxdf::Result& sample_result) {
-	math::vec3 throughput = sample_result.reflection / sample_result.pdf;
-	math::vec3 used_attenuation = attenuation;
+	math::float3 throughput = sample_result.reflection / sample_result.pdf;
+	math::float3 used_attenuation = attenuation;
 
 	for (;;) {
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -35,12 +35,12 @@ math::vec3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection&
 			break;
 		}
 
-		math::vec3 wo = -ray.direction;
+		math::float3 wo = -ray.direction;
 		auto material = intersection.material();
 		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, texture_sampler, worker.id());
 
 		material_sample.sample_evaluate(sampler, sample_result);
-		if (0.f == sample_result.pdf || math::vec3_identity == sample_result.reflection) {
+		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {
 			break;
 		}
 

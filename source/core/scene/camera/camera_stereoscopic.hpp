@@ -14,7 +14,7 @@ public:
 
 protected:
 
-	math::vec3 eye_offsets_[2];
+	math::float3 eye_offsets_[2];
 };
 
 }}

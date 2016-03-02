@@ -8,8 +8,8 @@
 namespace scene { namespace material { namespace oren_nayar {
 
 template<typename Sample>
-math::vec3 Oren_nayar<Sample>::evaluate(const Sample& sample,
-										  const math::vec3& wi, float n_dot_wi, float n_dot_wo,
+math::float3 Oren_nayar<Sample>::evaluate(const Sample& sample,
+										  const math::float3& wi, float n_dot_wi, float n_dot_wo,
 										  float& pdf) const {
 /*
 	float roughness = 1.f;
@@ -113,8 +113,8 @@ float Oren_nayar<Sample>::importance_sample(const Sample& sample,
 											bxdf::Result& result) const {
 	math::float2 s2d = sampler.generate_sample_2D();
 
-	math::vec3 is = math::sample_hemisphere_cosine(s2d);
-	math::vec3 wi = math::normalized(sample.tangent_to_world(is));
+	math::float3 is = math::sample_hemisphere_cosine(s2d);
+	math::float3 wi = math::normalized(sample.tangent_to_world(is));
 
 	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
 //	float n_dot_wi = std::abs(math::dot(sample.n_, wi));

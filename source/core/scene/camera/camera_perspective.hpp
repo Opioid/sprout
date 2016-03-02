@@ -8,7 +8,7 @@ class Perspective : public Camera {
 public:
 
 	struct Focus {
-		math::vec3 point = math::vec3(0.5f, 0.5f, 0.f);
+		math::float3 point = math::float3(0.5f, 0.5f, 0.f);
 		bool use_point = true;
 
 		float distance;
@@ -33,9 +33,9 @@ private:
 	Focus focus_;
 	float lens_radius_;
 
-	math::vec3 left_top_;
-	math::vec3 d_x_;
-	math::vec3 d_y_;
+	math::float3 left_top_;
+	math::float3 d_x_;
+	math::float3 d_y_;
 
 	float focal_distance_;
 };

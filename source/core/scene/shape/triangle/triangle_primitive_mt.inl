@@ -13,22 +13,22 @@ inline Triangle_MT::Triangle_MT(const shape::Vertex& a,
 inline Triangle_MT::Vertex::Vertex(const shape::Vertex& v) : p(v.p), n(v.n), t(v.t), uv(v.uv) {}
 
 inline bool Triangle_MT::intersect(math::Oray& ray, math::float2& uv) const {
-	math::vec3 e1 = b.p - a.p;
-	math::vec3 e2 = c.p - a.p;
+	math::float3 e1 = b.p - a.p;
+	math::float3 e2 = c.p - a.p;
 
-	math::vec3 pvec = math::cross(ray.direction, e2);
+	math::float3 pvec = math::cross(ray.direction, e2);
 
 	float det = math::dot(e1, pvec);
 	float inv_det = 1.f / det;
 
-	math::vec3 tvec = ray.origin - a.p;
+	math::float3 tvec = ray.origin - a.p;
 	float u = math::dot(tvec, pvec) * inv_det;
 
 	if (u < 0.f || u > 1.f) {
 		return false;
 	}
 
-	math::vec3 qvec = math::cross(tvec, e1);
+	math::float3 qvec = math::cross(tvec, e1);
 	float v = math::dot(ray.direction, qvec) * inv_det;
 
 	if (v < 0.f || u + v > 1.f) {
@@ -48,22 +48,22 @@ inline bool Triangle_MT::intersect(math::Oray& ray, math::float2& uv) const {
 }
 
 inline bool Triangle_MT::intersect_p(const math::Oray& ray) const {
-	math::vec3 e1 = b.p - a.p;
-	math::vec3 e2 = c.p - a.p;
+	math::float3 e1 = b.p - a.p;
+	math::float3 e2 = c.p - a.p;
 
-	math::vec3 pvec = math::cross(ray.direction, e2);
+	math::float3 pvec = math::cross(ray.direction, e2);
 
 	float det = math::dot(e1, pvec);
 	float inv_det = 1.f / det;
 
-	math::vec3 tvec = ray.origin - a.p;
+	math::float3 tvec = ray.origin - a.p;
 	float u = math::dot(tvec, pvec) * inv_det;
 
 	if (u < 0.f || u > 1.f) {
 		return false;
 	}
 
-	math::vec3 qvec = math::cross(tvec, e1);
+	math::float3 qvec = math::cross(tvec, e1);
 	float v = math::dot(ray.direction, qvec) * inv_det;
 
 	if (v < 0.f || u + v > 1.f) {
@@ -79,7 +79,7 @@ inline bool Triangle_MT::intersect_p(const math::Oray& ray) const {
 	return false;
 }
 
-inline void Triangle_MT::interpolate(math::float2 uv, math::vec3& p, math::vec3& n, math::float2& tc) const {
+inline void Triangle_MT::interpolate(math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	p  = w * a.p + uv.x * b.p + uv.y * c.p;
@@ -87,21 +87,21 @@ inline void Triangle_MT::interpolate(math::float2 uv, math::vec3& p, math::vec3&
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline void Triangle_MT::interpolate(math::float2 uv, math::vec3& p, math::float2& tc) const {
+inline void Triangle_MT::interpolate(math::float2 uv, math::float3& p, math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	p  = w * a.p + uv.x * b.p + uv.y * c.p;
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline void Triangle_MT::interpolate(math::float2 uv, math::vec3& p) const {
+inline void Triangle_MT::interpolate(math::float2 uv, math::float3& p) const {
 	float w = 1.f - uv.x - uv.y;
 
 	p = w * a.p + uv.x * b.p + uv.y * c.p;
 }
 
 inline void Triangle_MT::interpolate_data(math::float2 uv,
-										  math::vec3& n, math::vec3& t, math::float2& tc) const {
+										  math::float3& n, math::float3& t, math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	n  = math::normalized(w * a.n + uv.x * b.n + uv.y * c.n);
@@ -115,9 +115,9 @@ inline math::float2 Triangle_MT::interpolate_uv(math::float2 uv) const {
 	return w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline math::vec3 Triangle_MT::normal() const {
-	math::vec3 e1 = b.p - a.p;
-	math::vec3 e2 = c.p - a.p;
+inline math::float3 Triangle_MT::normal() const {
+	math::float3 e1 = b.p - a.p;
+	math::float3 e2 = c.p - a.p;
 
 	return math::normalized(math::cross(e1, e2));
 }
@@ -126,10 +126,10 @@ inline float Triangle_MT::area() const {
 	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
 }
 
-inline float Triangle_MT::area(const math::vec3& scale) const {
-	math::vec3 sa = scale * a.p;
-	math::vec3 sb = scale * b.p;
-	math::vec3 sc = scale * c.p;
+inline float Triangle_MT::area(const math::float3& scale) const {
+	math::float3 sa = scale * a.p;
+	math::float3 sb = scale * b.p;
+	math::float3 sc = scale * c.p;
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 

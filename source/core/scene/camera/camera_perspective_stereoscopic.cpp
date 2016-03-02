@@ -20,9 +20,9 @@ Perspective_stereoscopic::Perspective_stereoscopic(float interpupillary_distance
 
 	float z = ratio * math::Pi / fov_ * 0.5f;
 
-	left_top_ = math::vec3(-ratio,  1.f, z);
-	math::vec3 right_top	( ratio,  1.f, z);
-	math::vec3 left_bottom(-ratio, -1.f, z);
+	left_top_ = math::float3(-ratio,  1.f, z);
+	math::float3 right_top	( ratio,  1.f, z);
+	math::float3 left_bottom(-ratio, -1.f, z);
 
 	d_x_ = (right_top - left_top_)   / fr.x;
 	d_y_ = (left_bottom - left_top_) / fr.y;
@@ -49,7 +49,7 @@ void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 											scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
-	math::vec3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
+	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);

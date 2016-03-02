@@ -4,17 +4,17 @@
 
 namespace scene { namespace material { namespace light {
 
-math::vec3 Sample::evaluate(math::pvec3 /*wi*/, float& pdf) const {
+math::float3 Sample::evaluate(math::pfloat3 /*wi*/, float& pdf) const {
 	pdf = 0.f;
-	return math::vec3_identity;
+	return math::float3_identity;
 }
 
-math::vec3 Sample::emission() const {
+math::float3 Sample::emission() const {
 	return emission_;
 }
 
-math::vec3 Sample::attenuation() const {
-	return math::vec3(100.f, 100.f, 100.f);
+math::float3 Sample::attenuation() const {
+	return math::float3(100.f, 100.f, 100.f);
 }
 
 float Sample::ior() const {
@@ -22,7 +22,7 @@ float Sample::ior() const {
 }
 
 void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
-	result.reflection = math::vec3_identity;
+	result.reflection = math::float3_identity;
 	result.pdf = 0.f;
 }
 
@@ -38,7 +38,7 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(const math::vec3& emission) {
+void Sample::set(const math::float3& emission) {
 	emission_ = emission;
 }
 

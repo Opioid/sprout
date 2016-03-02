@@ -47,7 +47,7 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Image_float_4& targ
 
 		math::float4 color = value.color / value.weight_sum;
 
-		math::vec3 tonemapped = tonemapper_->tonemap(color.xyz);
+		math::float3 tonemapped = tonemapper_->tonemap(color.xyz);
 
 		target.at(i) = math::float4(tonemapped, std::min(color.w, 1.f));
 	}

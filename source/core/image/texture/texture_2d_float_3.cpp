@@ -16,7 +16,7 @@ math::float2 Texture_2D_float_3::at_2(int32_t x, int32_t y) const {
 	return image_.load(x, y).xy();
 }
 
-math::vec3 Texture_2D_float_3::at_3(int32_t x, int32_t y) const {
+math::float3 Texture_2D_float_3::at_3(int32_t x, int32_t y) const {
 	return image_.load(x, y);
 }
 
@@ -32,7 +32,7 @@ math::float2 Texture_2D_float_3::at_2(int32_t x, int32_t y, int32_t element) con
 	return image_.at(x, y, element).xy();
 }
 
-math::vec3 Texture_2D_float_3::at_3(int32_t x, int32_t y, int32_t element) const {
+math::float3 Texture_2D_float_3::at_3(int32_t x, int32_t y, int32_t element) const {
 	return image_.at(x, y, element);
 }
 

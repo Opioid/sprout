@@ -9,7 +9,7 @@ namespace image { namespace encoding { namespace png {
 
 Reader::Reader() {}
 
-std::shared_ptr<Image> Reader::read(std::istream& stream, uint32_t num_channels) {
+std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels) {
 	std::array<uint8_t, Signature_size> signature;
 
 	stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
@@ -31,22 +31,62 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, uint32_t num_channels)
 
 	mz_inflateEnd(&info.stream);
 
-	return create_image(info, num_channels);
+	return create_image(info, channels);
 }
 
-std::shared_ptr<Image> Reader::create_image(const Info& info, int32_t num_channels) const {
-	if (0 == info.num_channels) {
+std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels) const {
+	if (0 == info.num_channels || Channels::None == channels) {
 		return nullptr;
+	}
+
+	uint32_t num_channels;
+
+	switch (channels) {
+	case Channels::X:
+	case Channels::Y:
+	case Channels::Z:
+	case Channels::W:
+	default:
+		num_channels = 1;
+		break;
+	case Channels::XY:
+		num_channels = 2;
+		break;
+	case Channels::XYZ:
+		num_channels = 3;
+		break;
 	}
 
 	if (1 == num_channels) {
 		std::shared_ptr<Image_byte_1> image = std::make_shared<Image_byte_1>(
 					Image::Description(Image::Type::Byte_1, math::int2(info.width, info.height)));
 
+		int32_t c;
+
+		switch (channels) {
+		case Channels::X:
+		default:
+			c = 0;
+			break;
+		case Channels::Y:
+			c = 1;
+			break;
+		case Channels::Z:
+			c = 2;
+			break;
+		case Channels::W:
+			c = 3;
+			break;
+		}
+
+		if (c >= info.num_channels) {
+			c = 0;
+		}
+
 		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
 			int32_t o = i * info.num_channels;
 
-			image->at(i) = info.buffer[o];
+			image->at(i) = info.buffer[o + c];
 		}
 
 		return image;

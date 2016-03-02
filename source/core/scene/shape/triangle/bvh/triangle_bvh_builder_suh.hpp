@@ -23,16 +23,16 @@ private:
 
 		typedef std::vector<uint32_t>::iterator index;
 
-		Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::vec3& p,
+		Split_candidate(uint8_t bb_axis, uint8_t split_axis, const math::float3& p,
 						index begin, index end,
 						const std::vector<Index_triangle>& triangles,
 						const std::vector<Vertex>& vertices);
 
 		uint64_t key() const;
 
-		uint32_t side(const math::vec3& a, const math::vec3& b, const math::vec3& c) const;
+		uint32_t side(const math::float3& a, const math::float3& b, const math::float3& c) const;
 
-		bool completely_behind(const math::vec3& a, const math::vec3& b, const math::vec3& c) const;
+		bool completely_behind(const math::float3& a, const math::float3& b, const math::float3& c) const;
 
 		const math::plane& plane() const;
 

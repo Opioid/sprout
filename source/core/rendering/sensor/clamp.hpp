@@ -13,13 +13,13 @@ public:
 class Clamp {
 public:
 
-	Clamp(const math::vec3& max);
+	Clamp(const math::float3& max);
 
 	math::float4 clamp(const math::float4& color) const;
 
 private:
 
-	math::vec3 max_;
+	math::float3 max_;
 };
 
 }}}

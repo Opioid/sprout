@@ -9,18 +9,18 @@
 
 namespace scene { namespace material { namespace cloth {
 
-math::vec3 Sample::evaluate(math::pvec3 wi, float& pdf) const {
+math::float3 Sample::evaluate(math::pfloat3 wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	pdf = n_dot_wi * math::Pi_inv;
 	return pdf * diffuse_color_;
 }
 
-math::vec3 Sample::emission() const {
-	return math::vec3_identity;
+math::float3 Sample::emission() const {
+	return math::float3_identity;
 }
 
-math::vec3 Sample::attenuation() const {
-	return math::vec3(100.f, 100.f, 100.f);
+math::float3 Sample::attenuation() const {
+	return math::float3(100.f, 100.f, 100.f);
 }
 
 float Sample::ior() const {
@@ -49,7 +49,7 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(const math::vec3& color) {
+void Sample::set(const math::float3& color) {
 	diffuse_color_ = color;
 }
 

@@ -5,21 +5,21 @@
 
 namespace scene { namespace shape {
 
-inline math::vec3 Differential::tangent_to_world(const math::vec3& v) const{
-	return math::vec3(
+inline math::float3 Differential::tangent_to_world(const math::float3& v) const{
+	return math::float3(
 		v.x * t.x + v.y * b.x + v.z * n.x,
 		v.x * t.y + v.y * b.y + v.z * n.y,
 		v.x * t.z + v.y * b.z + v.z * n.z);
 }
 
-inline math::vec3 Differential::tangent_to_world(math::float2 v) const{
-	return math::vec3(
+inline math::float3 Differential::tangent_to_world(math::float2 v) const{
+	return math::float3(
 		v.x * t.x + v.y * b.x,
 		v.x * t.y + v.y * b.y,
 		v.x * t.z + v.y * b.z);
 }
 
-inline bool Differential::same_hemisphere(const math::vec3& v) const {
+inline bool Differential::same_hemisphere(const math::float3& v) const {
 	return math::dot(geo_n, v) > 0.f;
 }
 

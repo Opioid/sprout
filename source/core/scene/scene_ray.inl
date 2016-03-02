@@ -7,7 +7,7 @@ namespace scene {
 
 inline Ray::Ray() {}
 
-inline Ray::Ray(const math::vec3& origin, const math::vec3& direction,
+inline Ray::Ray(const math::float3& origin, const math::float3& direction,
 				float min_t, float max_t,
 				float time, uint32_t depth, float ior) :
 	math::Oray(origin, direction, min_t, max_t),

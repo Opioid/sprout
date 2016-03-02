@@ -76,7 +76,7 @@ public:
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
 	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
 
-	volume::Volume* create_volume(const math::vec3& absorption, const math::vec3& scattering);
+	volume::Volume* create_volume(const math::float3& absorption, const math::float3& scattering);
 
 	void add_material(std::shared_ptr<material::IMaterial> material);
     void add_animation(std::shared_ptr<animation::Animation> animation);

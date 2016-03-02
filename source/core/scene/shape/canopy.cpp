@@ -12,7 +12,7 @@
 namespace scene { namespace shape {
 
 Canopy::Canopy() {
-	aabb_.set_min_max(math::vec3_identity, math::vec3_identity);
+	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
 bool Canopy::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
@@ -27,7 +27,7 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.geo_n = intersection.n;
 		intersection.part = 0;
 
-		math::vec3 xyz = math::normalized(
+		math::float3 xyz = math::normalized(
 					math::transform_vector_transposed(ray.direction, transformation.rotation));
 		intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 									   std::acos(xyz.y) * math::Pi_inv);
@@ -53,17 +53,17 @@ float Canopy::opacity(const entity::Composed_transformation& /*transformation*/,
 }
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-					const math::vec3& /*p*/, const math::vec3& n, bool /*two_sided*/,
+					const math::float3& /*p*/, const math::float3& n, bool /*two_sided*/,
 					sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
-	math::vec3 x, y;
+	math::float3 x, y;
 	math::coordinate_system(n, x, y);
 
 	math::float2 uv = sampler.generate_sample_2D();
-	math::vec3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
+	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
 	sample.wi = dir;
 
-	math::vec3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
+	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 							 std::acos(xyz.y) * math::Pi_inv);
 
@@ -72,14 +72,14 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 }
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-					const math::vec3& /*p*/, bool /*two_sided*/,
+					const math::float3& /*p*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	math::float2 uv = sampler.generate_sample_2D();
-	math::vec3 dir = math::sample_sphere_uniform(uv);
+	math::float3 dir = math::sample_sphere_uniform(uv);
 
 	sample.wi = dir;
 
-	math::vec3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
+	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 							 std::acos(xyz.y) * math::Pi_inv);
 
@@ -88,7 +88,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 }
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-					const math::vec3& /*p*/, math::float2 uv, Sample& sample) const {
+					const math::float3& /*p*/, math::float2 uv, Sample& sample) const {
 	float phi   = (-uv.x + 0.75f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
@@ -97,7 +97,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	float sin_phi   = std::sin(phi);
 	float cos_phi   = std::cos(phi);
 
-	math::vec3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+	math::float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
 
 	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;
@@ -106,15 +106,15 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 }
 
 void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-					const math::vec3& /*p*/, const math::vec3& wi, Sample& sample) const {
-	math::vec3 xyz = math::normalized(math::transform_vector_transposed(wi, transformation.rotation));
+					const math::float3& /*p*/, const math::float3& wi, Sample& sample) const {
+	math::float3 xyz = math::normalized(math::transform_vector_transposed(wi, transformation.rotation));
 	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f, std::acos(xyz.y) * math::Pi_inv);
 
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 
 float Canopy::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::vec3& /*p*/, const math::vec3& /*wi*/, bool /*two_sided*/, bool total_sphere,
+				  const math::float3& /*p*/, const math::float3& /*wi*/, bool /*two_sided*/, bool total_sphere,
 				  Node_stack& /*node_stack*/) const {
 	if (total_sphere) {
 		return 1.f / (4.f * math::Pi);
@@ -123,7 +123,7 @@ float Canopy::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*tr
 	}
 }
 
-float Canopy::area(uint32_t /*part*/, const math::vec3& /*scale*/) const {
+float Canopy::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
 	return 4.f * math::Pi;
 }
 

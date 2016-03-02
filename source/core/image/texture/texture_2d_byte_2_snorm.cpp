@@ -19,9 +19,9 @@ math::float2 Texture_2D_byte_2_snorm::at_2(int32_t x, int32_t y) const {
 	return math::float2(encoding::snorm_to_float(value.x), encoding::snorm_to_float(value.y));
 }
 
-math::vec3 Texture_2D_byte_2_snorm::at_3(int32_t x, int32_t y) const {
+math::float3 Texture_2D_byte_2_snorm::at_3(int32_t x, int32_t y) const {
 	auto& value = image_.at(x, y);
-	return math::vec3(encoding::snorm_to_float(value.x), encoding::snorm_to_float(value.y), 0.f);
+	return math::float3(encoding::snorm_to_float(value.x), encoding::snorm_to_float(value.y), 0.f);
 }
 
 math::float4 Texture_2D_byte_2_snorm::at_4(int32_t x, int32_t y) const {
@@ -39,9 +39,9 @@ math::float2 Texture_2D_byte_2_snorm::at_2(int32_t x, int32_t y, int32_t element
 	return math::float2(encoding::snorm_to_float(value.x), encoding::snorm_to_float(value.y));
 }
 
-math::vec3 Texture_2D_byte_2_snorm::at_3(int32_t x, int32_t y, int32_t element) const {
+math::float3 Texture_2D_byte_2_snorm::at_3(int32_t x, int32_t y, int32_t element) const {
 	auto& value = image_.at(x, y, element);
-	return math::vec3(encoding::snorm_to_float(value.x), encoding::snorm_to_float(value.y), 0.f);
+	return math::float3(encoding::snorm_to_float(value.x), encoding::snorm_to_float(value.y), 0.f);
 }
 
 math::float4 Texture_2D_byte_2_snorm::at_4(int32_t x, int32_t y, int32_t element) const {

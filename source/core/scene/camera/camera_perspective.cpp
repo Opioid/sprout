@@ -20,9 +20,9 @@ Perspective::Perspective(math::int2 resolution, float ray_max_t, float frame_dur
 
 	float z = ratio * math::Pi / fov * 0.5f;
 
-	left_top_ = math::vec3(-ratio,  1.f, z);
-	math::vec3 right_top	( ratio,  1.f, z);
-	math::vec3 left_bottom(-ratio, -1.f, z);
+	left_top_ = math::float3(-ratio,  1.f, z);
+	math::float3 right_top	( ratio,  1.f, z);
+	math::float3 left_bottom(-ratio, -1.f, z);
 
 	d_x_ = (right_top - left_top_)   / fr.x;
 	d_y_ = (left_bottom - left_top_) / fr.y;
@@ -45,7 +45,7 @@ math::Recti Perspective::view_bounds(uint32_t /*view*/) const {
 
 void Perspective::update_focus(rendering::Worker& worker) {
 	if (focus_.use_point) {
-		math::vec3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
+		math::float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
 
 		entity::Composed_transformation temp;
 		auto& transformation = transformation_at(0.f, temp);
@@ -70,27 +70,27 @@ void Perspective::update_focus(rendering::Worker& worker) {
 void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
-	math::vec3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
+	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-	math::vec3 origin;
+	math::float3 origin;
 
 	if (lens_radius_ > 0.f) {
 		math::float2 lens  = math::sample_disk_concentric(sample.lens_uv);
 
 		float t = focal_distance_ / direction.z;
-		math::vec3 focus = t * direction;
+		math::float3 focus = t * direction;
 
-		origin = math::vec3(lens.x * lens_radius_, lens.y * lens_radius_, 0.f);
+		origin = math::float3(lens.x * lens_radius_, lens.y * lens_radius_, 0.f);
 		direction = focus - origin;
 	} else {
-		origin = math::vec3_identity;
+		origin = math::float3_identity;
 	}
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);
 
-	math::vec3 origin_w = math::transform_point(origin, transformation.object_to_world);
-	math::vec3 direction_w = math::normalized(direction);
+	math::float3 origin_w = math::transform_point(origin, transformation.object_to_world);
+	math::float3 direction_w = math::normalized(direction);
 	direction_w = math::transform_vector(direction_w, transformation.object_to_world);
 
 	ray.origin = origin_w;

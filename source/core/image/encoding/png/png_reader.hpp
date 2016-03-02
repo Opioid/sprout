@@ -3,6 +3,7 @@
 // based on
 // https://github.com/jansol/LuPng
 
+#include "image/channels.hpp"
 #include "miniz/miniz.hpp"
 #include <cstdint>
 #include <istream>
@@ -21,7 +22,7 @@ public:
 
 	Reader();
 
-	std::shared_ptr<Image> read(std::istream& stream, uint32_t num_channels);
+	std::shared_ptr<Image> read(std::istream& stream, Channels channels);
 
 private:
 
@@ -33,9 +34,9 @@ private:
 	};
 
 	enum class Color_type {
-		Grayscale = 0,
-		Truecolor = 2,
-		Palleted = 3,
+		Grayscale		= 0,
+		Truecolor		= 2,
+		Palleted		= 3,
 		Grayscale_alpha = 4,
 		Truecolor_alpha = 6
 	};
@@ -71,7 +72,7 @@ private:
 		mz_stream stream;
 	};
 
-	std::shared_ptr<Image> create_image(const Info& info, int32_t num_channels) const;
+	std::shared_ptr<Image> create_image(const Info& info, Channels channels) const;
 
 	static void read_chunk(std::istream& stream, Chunk& chunk);
 

@@ -13,27 +13,27 @@ namespace scene { namespace material { namespace light {
 Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
 						 std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
 	Material(cache, mask, two_sided),
-	average_emission_(math::vec3(-1.f, -1.f, -1.f)) {}
+	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
-const material::Sample& Emissionmap::sample(const shape::Differential& dg, const math::vec3& wo,
+const material::Sample& Emissionmap::sample(const shape::Differential& dg, const math::float3& wo,
 											float /*time*/, float /*ior_i*/,
 											const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
 	auto& sample = cache_.get(worker_id);
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 
-	math::vec3 emission = sampler.sample_3(*emission_map_, dg.uv);
+	math::float3 emission = sampler.sample_3(*emission_map_, dg.uv);
 	sample.set(emission_factor_ * emission);
 
 	return sample;
 }
 
-math::vec3 Emissionmap::sample_emission(math::float2 uv, float /*time*/,
+math::float3 Emissionmap::sample_emission(math::float2 uv, float /*time*/,
 										  const image::texture::sampler::Sampler_2D& sampler) const {
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }
 
-math::vec3 Emissionmap::average_emission() const {
+math::float3 Emissionmap::average_emission() const {
 	return average_emission_;
 }
 
@@ -73,7 +73,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 	}
 
 	if (spherical) {
-		math::vec3 average_emission = math::vec3_identity;
+		math::float3 average_emission = math::float3_identity;
 
 		float total_weight = 0.f;
 
@@ -86,7 +86,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				math::vec3 emission = emission_factor_ * emission_map_->at_3(x, y);
+				math::float3 emission = emission_factor_ * emission_map_->at_3(x, y);
 
 				average_emission += sin_theta * emission;
 

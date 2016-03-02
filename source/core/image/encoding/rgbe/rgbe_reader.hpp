@@ -25,7 +25,7 @@ private:
 	static void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines, Image_float_3& image);
 	static void read_pixels(std::istream& stream, uint32_t num_pixels, Image_float_3& image, uint32_t offset);
 
-	static math::vec3 rgbe_to_vec3(uint8_t rgbe[4]);
+	static math::float3 rgbe_to_float3(uint8_t rgbe[4]);
 };
 
 }}}

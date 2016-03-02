@@ -19,9 +19,9 @@ math::float2 Texture_2D_byte_1_unorm::at_2(int32_t x, int32_t y) const {
 	return math::float2(encoding::unorm_to_float(value), 0.f);
 }
 
-math::vec3 Texture_2D_byte_1_unorm::at_3(int32_t x, int32_t y) const {
+math::float3 Texture_2D_byte_1_unorm::at_3(int32_t x, int32_t y) const {
 	auto& value = image_.at(x, y);
-	return math::vec3(encoding::unorm_to_float(value), 0.f, 0.f);
+	return math::float3(encoding::unorm_to_float(value), 0.f, 0.f);
 }
 
 math::float4 Texture_2D_byte_1_unorm::at_4(int32_t x, int32_t y) const {
@@ -39,9 +39,9 @@ math::float2 Texture_2D_byte_1_unorm::at_2(int32_t x, int32_t y, int32_t element
 	return math::float2(encoding::unorm_to_float(value), 0.f);
 }
 
-math::vec3 Texture_2D_byte_1_unorm::at_3(int32_t x, int32_t y, int32_t element) const {
+math::float3 Texture_2D_byte_1_unorm::at_3(int32_t x, int32_t y, int32_t element) const {
 	auto& value = image_.at(x, y, element);
-	return math::vec3(encoding::unorm_to_float(value), 0.f, 0.f);
+	return math::float3(encoding::unorm_to_float(value), 0.f, 0.f);
 }
 
 math::float4 Texture_2D_byte_1_unorm::at_4(int32_t x, int32_t y, int32_t element) const {
