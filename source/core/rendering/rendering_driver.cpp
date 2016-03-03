@@ -40,7 +40,7 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 	std::vector<Camera_worker> workers(num_workers);
 	for (uint32_t i = 0; i < num_workers; ++i) {
 		math::random::Generator rng(i + 0, i + 1, i + 2, i + 3);
-		workers[i].init(i, rng, *surface_integrator_factory_, *volume_integrator_factory_, *sampler_, scene);
+		workers[i].init(i, scene, rng, *surface_integrator_factory_, *volume_integrator_factory_, *sampler_);
 	}
 
 	std::chrono::high_resolution_clock clock;

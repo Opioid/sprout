@@ -2,6 +2,8 @@
 
 #include "rendering_worker.hpp"
 
+namespace scene { namespace camera { class Camera; }}
+
 namespace rendering {
 
 class Camera_worker : public Worker {

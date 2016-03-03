@@ -32,7 +32,7 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 
 	math::random::Generator rng(0, 1, 2, 3);
 	baking::Baking_worker worker;
-	worker.init(0, rng, *surface_integrator_factory_, *volume_integrator_factory_, *sampler_, scene);
+	worker.init(0, scene, rng, *surface_integrator_factory_, *volume_integrator_factory_, *sampler_);
 
 	scene::Ray ray;
 	ray.time = 0.f;
