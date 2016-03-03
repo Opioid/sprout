@@ -74,6 +74,7 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ra
 	math::float3 result = math::float3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+
 	scene::Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;

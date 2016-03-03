@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rendering/integrator/surface/surface_integrator.hpp"
+#include "surface_integrator.hpp"
 #include "sampler/sampler_random.hpp"
 #include "sampler/sampler_ems.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
