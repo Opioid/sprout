@@ -24,6 +24,8 @@ public:
 	void insert(const std::string& key, uint32_t value);
 	void insert(const std::string& key, float value);
 
+	void inherit(const std::string& key, const Variant_map& other);
+
 	bool operator<(const Variant_map& other) const;
 
 private:

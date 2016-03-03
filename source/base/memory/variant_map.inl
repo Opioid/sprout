@@ -116,4 +116,14 @@ inline void Variant_map::insert(const std::string& key, float value) {
 	map_[key] = Variant(value);
 }
 
+inline void Variant_map::inherit(const std::string& key, const Variant_map& other) {
+	auto i = other.map_.find(key);
+
+	if (other.map_.end() == i) {
+		return;
+	}
+
+	map_[key] = i->second;
+}
+
 }

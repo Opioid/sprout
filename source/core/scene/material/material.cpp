@@ -17,7 +17,6 @@ float IMaterial::emission_pdf(math::float2 /*uv*/, const image::texture::sampler
 	return 0.f;
 }
 
-
 float IMaterial::opacity(math::float2 uv, float /*time*/, const image::texture::sampler::Sampler_2D& sampler) const {
 	if (mask_) {
 		return sampler.sample_1(*mask_, uv);

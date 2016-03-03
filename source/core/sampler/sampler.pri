@@ -4,6 +4,7 @@ SOURCES += \
 	sampler/sampler_random.cpp \
 	sampler/sampler.cpp \
 	sampler/sampler_scrambled_hammersley.cpp \
+	sampler/sampler_uniform.cpp \	
 
 HEADERS += \
 	sampler/camera_sample.hpp \
@@ -12,4 +13,5 @@ HEADERS += \
 	sampler/sampler_random.hpp \
 	sampler/sampler.hpp \
 	sampler/sampler_scrambled_hammersley.hpp \
+	sampler/sampler_uniform.hpp \
 

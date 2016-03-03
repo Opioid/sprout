@@ -4,10 +4,10 @@
 
 namespace sampler {
 
-class Random : public Sampler {
+class Uniform : public Sampler {
 public:
 
-	Random(math::random::Generator& rng, uint32_t num_samples_per_iteration);
+	Uniform(math::random::Generator& rng);
 
 	virtual Sampler* clone() const final override;
 

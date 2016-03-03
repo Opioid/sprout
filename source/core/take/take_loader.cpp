@@ -27,6 +27,7 @@
 #include "sampler/sampler_ld.hpp"
 #include "sampler/sampler_random.hpp"
 #include "sampler/sampler_scrambled_hammersley.hpp"
+#include "sampler/sampler_uniform.hpp"
 #include "scene/animation/animation_loader.hpp"
 #include "scene/camera/camera_cubic.hpp"
 #include "scene/camera/camera_cubic_stereoscopic.hpp"
@@ -379,7 +380,10 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		 if ("Random" == node_name) {
+		if ("Uniform" == node_name) {
+		//   uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
+		   return std::make_shared<sampler::Uniform>(rng);
+		} else if ("Random" == node_name) {
 			uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
 			return std::make_shared<sampler::Random>(rng, num_samples);
 		} else if ("Scrambled_hammersley" == node_name) {

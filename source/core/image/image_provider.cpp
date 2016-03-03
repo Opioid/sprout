@@ -24,7 +24,11 @@ std::shared_ptr<Image> Provider::load(const std::string& filename, const memory:
 	if (file::Type::PNG == type) {
 		Channels channels = Channels::None;
 		options.query("channels", channels);
-		return png_reader_.read(stream, channels);
+
+		int32_t num_elements = 1;
+		options.query("num_elements", num_elements);
+
+		return png_reader_.read(stream, channels, num_elements);
 	} else if (file::Type::RGBE == type) {
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);

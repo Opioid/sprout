@@ -20,14 +20,4 @@ const Image::Description& Image::description() const {
 	return description_;
 }
 
-void Image::set_num_elements(int32_t num_elements) {
-	int32_t dy = description_.num_elements * description_.dimensions.y;
-
-	description_.dimensions.y = dy / num_elements;
-
-	area_ = description_.dimensions.x * description_.dimensions.y;
-
-	description_.num_elements = num_elements;
-}
-
 }

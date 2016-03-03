@@ -30,8 +30,6 @@ public:
 
 	const Description& description() const;
 
-	void set_num_elements(int32_t num_elements);
-
 protected:
 
 	Description description_;
