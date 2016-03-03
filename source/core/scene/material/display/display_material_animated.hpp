@@ -9,7 +9,7 @@ namespace scene { namespace material { namespace display {
 
 class Sample;
 
-class Material_animated : public material::Material<Generic_sample_cache<Sample>> {
+class Material_animated : public material::Typed_material<Generic_sample_cache<Sample>> {
 public:
 
 	Material_animated(Generic_sample_cache<Sample>& cache,

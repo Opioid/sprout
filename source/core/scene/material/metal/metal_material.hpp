@@ -8,7 +8,7 @@ namespace scene { namespace material { namespace metal {
 
 class Sample_isotropic;
 
-class Material_isotropic : public material::Material<Generic_sample_cache<Sample_isotropic>> {
+class Material_isotropic : public material::Typed_material<Generic_sample_cache<Sample_isotropic>> {
 public:
 
 	Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
@@ -44,7 +44,7 @@ protected:
 
 class Sample_anisotropic;
 
-class Material_anisotropic : public material::Material<Generic_sample_cache<Sample_anisotropic>> {
+class Material_anisotropic : public material::Typed_material<Generic_sample_cache<Sample_anisotropic>> {
 public:
 
 	Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,

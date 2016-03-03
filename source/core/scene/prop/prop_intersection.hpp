@@ -2,24 +2,14 @@
 
 #include "scene/shape/geometry/shape_intersection.hpp"
 
-namespace image { namespace texture { namespace sampler {
+namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 
-class Sampler_2D;
-
-}}}
-
-namespace scene {
-
-namespace material {
-
-class IMaterial;
-
-}
+namespace scene { namespace material { class Material; }
 
 class Prop;
 
 struct Intersection {
-	material::IMaterial* material() const;
+	material::Material* material() const;
 
 	float opacity(float time, const image::texture::sampler::Sampler_2D& sampler) const;
 

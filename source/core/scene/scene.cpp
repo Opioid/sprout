@@ -178,7 +178,7 @@ volume::Volume* Scene::create_volume(const math::float3& absorption, const math:
 	return volume_region_;
 }
 
-void Scene::add_material(std::shared_ptr<material::IMaterial> material) {
+void Scene::add_material(std::shared_ptr<material::Material> material) {
 	materials_.push_back(material);
 }
 

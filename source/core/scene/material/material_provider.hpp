@@ -17,28 +17,28 @@ namespace light { class Sample; }
 namespace metal { class Sample_isotropic; class Sample_anisotropic; }
 namespace substitute { class Sample; }
 
-class IMaterial;
+class Material;
 
-typedef std::vector<std::shared_ptr<IMaterial>> Materials;
+typedef std::vector<std::shared_ptr<Material>> Materials;
 
-class Provider : public resource::Provider<IMaterial> {
+class Provider : public resource::Provider<Material> {
 public:
 
 	Provider(file::System& file_system, thread::Pool& thread_pool,
 			 resource::Cache<image::texture::Texture_2D>& texture_cache);
 
-	virtual std::shared_ptr<IMaterial> load(const std::string& filename, const memory::Variant_map& options);
+	virtual std::shared_ptr<Material> load(const std::string& filename, const memory::Variant_map& options);
 
-	std::shared_ptr<IMaterial> fallback_material() const;
+	std::shared_ptr<Material> fallback_material() const;
 
 private:
 
-	std::shared_ptr<IMaterial> load_cloth(const rapidjson::Value& cloth_value);
-	std::shared_ptr<IMaterial> load_display(const rapidjson::Value& display_value);
-	std::shared_ptr<IMaterial> load_glass(const rapidjson::Value& glass_value);
-	std::shared_ptr<IMaterial> load_light(const rapidjson::Value& light_value);
-	std::shared_ptr<IMaterial> load_metal(const rapidjson::Value& metal_value);
-	std::shared_ptr<IMaterial> load_substitute(const rapidjson::Value& substitute_value);
+	std::shared_ptr<Material> load_cloth(const rapidjson::Value& cloth_value);
+	std::shared_ptr<Material> load_display(const rapidjson::Value& display_value);
+	std::shared_ptr<Material> load_glass(const rapidjson::Value& glass_value);
+	std::shared_ptr<Material> load_light(const rapidjson::Value& light_value);
+	std::shared_ptr<Material> load_metal(const rapidjson::Value& metal_value);
+	std::shared_ptr<Material> load_substitute(const rapidjson::Value& substitute_value);
 
 	struct Texture_description {
 		std::string filename;
@@ -59,7 +59,7 @@ private:
 	Generic_sample_cache<metal::Sample_anisotropic> metal_aniso_cache_;
 	Generic_sample_cache<substitute::Sample>		substitute_cache_;
 
-	std::shared_ptr<material::IMaterial> fallback_material_;
+	std::shared_ptr<material::Material> fallback_material_;
 };
 
 }}

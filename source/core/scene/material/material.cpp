@@ -4,20 +4,20 @@
 
 namespace scene { namespace material {
 
-IMaterial::IMaterial(std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
+Material::Material(std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
 	mask_(mask), two_sided_(two_sided) {}
 
-void IMaterial::tick(float /*absolute_time*/, float /*time_slice*/) {}
+void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-math::float2 IMaterial::emission_importance_sample(math::float2 /*r2*/, float& /*pdf*/) const {
+math::float2 Material::emission_importance_sample(math::float2 /*r2*/, float& /*pdf*/) const {
 	return math::float2::identity;
 }
 
-float IMaterial::emission_pdf(math::float2 /*uv*/, const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+float Material::emission_pdf(math::float2 /*uv*/, const image::texture::sampler::Sampler_2D& /*sampler*/) const {
 	return 0.f;
 }
 
-float IMaterial::opacity(math::float2 uv, float /*time*/, const image::texture::sampler::Sampler_2D& sampler) const {
+float Material::opacity(math::float2 uv, float /*time*/, const image::texture::sampler::Sampler_2D& sampler) const {
 	if (mask_) {
 		return sampler.sample_1(*mask_, uv);
 	} else {
@@ -25,17 +25,17 @@ float IMaterial::opacity(math::float2 uv, float /*time*/, const image::texture::
 	}
 }
 
-void IMaterial::prepare_sampling(bool /*spherical*/) {}
+void Material::prepare_sampling(bool /*spherical*/) {}
 
-bool IMaterial::is_animated() const {
+bool Material::is_animated() const {
 	return false;
 }
 
-bool IMaterial::is_masked() const {
+bool Material::is_masked() const {
 	return !mask_ == false;
 }
 
-bool IMaterial::is_emissive() const {
+bool Material::is_emissive() const {
 	if (has_emission_map()) {
 		return true;
 	}
@@ -48,7 +48,7 @@ bool IMaterial::is_emissive() const {
 	return false;
 }
 
-bool IMaterial::is_two_sided() const {
+bool Material::is_two_sided() const {
 	return two_sided_;
 }
 

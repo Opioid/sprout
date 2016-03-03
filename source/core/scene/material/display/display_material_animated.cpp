@@ -16,7 +16,7 @@ Material_animated::Material_animated(Generic_sample_cache<Sample>& cache,
 									 bool two_sided,
 									 std::shared_ptr<image::texture::Texture_2D> emission_map,
 									 float animation_duration) :
-	material::Material<Generic_sample_cache<Sample>>(cache, mask, two_sided),
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, two_sided),
 	emission_map_(emission_map),
 	average_emissions_(emission_map->num_elements()),
 	frame_length_(animation_duration / static_cast<float>(emission_map_->num_elements())),

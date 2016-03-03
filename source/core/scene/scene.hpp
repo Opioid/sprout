@@ -78,7 +78,7 @@ public:
 
 	volume::Volume* create_volume(const math::float3& absorption, const math::float3& scattering);
 
-	void add_material(std::shared_ptr<material::IMaterial> material);
+	void add_material(std::shared_ptr<material::Material> material);
     void add_animation(std::shared_ptr<animation::Animation> animation);
 
     void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
@@ -106,7 +106,7 @@ public:
 
 	volume::Volume* volume_region_;
 
-	std::vector<std::shared_ptr<material::IMaterial>> materials_;
+	std::vector<std::shared_ptr<material::Material>> materials_;
 
     std::vector<std::shared_ptr<animation::Animation>> animations_;
 

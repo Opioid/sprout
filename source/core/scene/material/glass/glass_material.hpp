@@ -8,7 +8,7 @@ namespace scene { namespace material { namespace glass {
 
 class Sample;
 
-class Glass : public Material<Generic_sample_cache<Sample>> {
+class Glass : public Typed_material<Generic_sample_cache<Sample>> {
 public:
 
 	Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);

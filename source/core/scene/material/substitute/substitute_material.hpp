@@ -7,7 +7,7 @@ namespace scene { namespace material { namespace substitute {
 
 class Sample;
 
-class Material : public material::Material<Generic_sample_cache<Sample>> {
+class Material : public material::Typed_material<Generic_sample_cache<Sample>> {
 public:
 
 	Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);

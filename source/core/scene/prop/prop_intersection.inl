@@ -5,7 +5,7 @@
 
 namespace scene {
 
-inline material::IMaterial* Intersection::material() const {
+inline material::Material* Intersection::material() const {
 	return prop->material(geo.part);
 }
 

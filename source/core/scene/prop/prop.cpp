@@ -109,7 +109,7 @@ const material::Materials& Prop::materials() const {
 	return materials_;
 }
 
-material::IMaterial* Prop::material(uint32_t index) const {
+material::Material* Prop::material(uint32_t index) const {
 	return materials_[index].get();
 }
 

@@ -64,7 +64,7 @@ private:
 	resource::Cache<image::texture::Texture_2D> texture_cache_;
 
 	material::Provider material_provider_;
-	resource::Cache<material::IMaterial> material_cache_;
+	resource::Cache<material::Material> material_cache_;
 };
 
 }

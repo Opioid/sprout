@@ -22,10 +22,10 @@ namespace material {
 
 class Sample;
 
-class IMaterial {
+class Material {
 public:
 
-	IMaterial(std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
+	Material(std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided);
 
 	virtual void tick(float absolute_time, float time_slice);
 
@@ -61,17 +61,17 @@ protected:
 };
 
 template<typename Sample_cache>
-class Material : public IMaterial {
+class Typed_material : public Material {
 public:
 
-	Material(Sample_cache& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
-		IMaterial(mask, two_sided), cache_(cache) {}
+	Typed_material(Sample_cache& cache, std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
+		Material(mask, two_sided), cache_(cache) {}
 
 protected:
 
 	Sample_cache& cache_;
 };
 
-typedef std::vector<std::shared_ptr<material::IMaterial>> Materials;
+typedef std::vector<std::shared_ptr<material::Material>> Materials;
 
 }}

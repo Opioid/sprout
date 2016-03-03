@@ -9,7 +9,7 @@
 namespace scene { namespace material { namespace glass {
 
 Glass_rough::Glass_rough(Generic_sample_cache<Sample_rough>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
-	Material(cache, mask, false) {}
+	Typed_material(cache, mask, false) {}
 
 const material::Sample& Glass_rough::sample(const shape::Differential& dg, const math::float3& wo,
 											float /*time*/, float ior_i,

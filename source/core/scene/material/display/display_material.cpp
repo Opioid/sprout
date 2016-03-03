@@ -13,7 +13,7 @@ namespace scene { namespace material { namespace display {
 
 Material::Material(Generic_sample_cache<Sample>& cache,
 				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
-	material::Material<Generic_sample_cache<Sample>>(cache, mask, two_sided),
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, two_sided),
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
 const material::Sample& Material::sample(const shape::Differential& dg, const math::float3& wo,

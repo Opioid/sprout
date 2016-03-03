@@ -45,7 +45,7 @@ public:
 	const math::aabb& aabb() const;
 
 	const material::Materials& materials() const;
-	material::IMaterial* material(uint32_t index) const;
+	material::Material* material(uint32_t index) const;
 
 	bool has_masked_material() const;
 

@@ -29,7 +29,7 @@ namespace scene { namespace material {
 
 Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 				   resource::Cache<image::texture::Texture_2D>& texture_cache) :
-	resource::Provider<IMaterial>(file_system, thread_pool),
+	resource::Provider<Material>(file_system, thread_pool),
 	texture_cache_(texture_cache),
 	cloth_cache_(thread_pool.num_threads()),
 	display_cache_(thread_pool.num_threads()),
@@ -47,7 +47,7 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 	fallback_material_ = material;
 }
 
-std::shared_ptr<IMaterial> Provider::load(const std::string& filename, const memory::Variant_map& /*options*/) {
+std::shared_ptr<Material> Provider::load(const std::string& filename, const memory::Variant_map& /*options*/) {
 	auto stream_pointer = file_system_.read_stream(filename);
 
 	auto root = json::parse(*stream_pointer);
@@ -81,11 +81,11 @@ std::shared_ptr<IMaterial> Provider::load(const std::string& filename, const mem
 	throw std::runtime_error("Material is of unknown type");
 }
 
-std::shared_ptr<IMaterial> Provider::fallback_material() const {
+std::shared_ptr<Material> Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-std::shared_ptr<IMaterial> Provider::load_cloth(const rapidjson::Value& cloth_value) {
+std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_value) {
 	std::shared_ptr<image::texture::Texture_2D> color_map;
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
@@ -135,7 +135,7 @@ std::shared_ptr<IMaterial> Provider::load_cloth(const rapidjson::Value& cloth_va
 	return material;
 }
 
-std::shared_ptr<IMaterial> Provider::load_display(const rapidjson::Value& display_value) {
+std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display_value) {
 	std::shared_ptr<image::texture::Texture_2D> emission_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
@@ -207,7 +207,7 @@ std::shared_ptr<IMaterial> Provider::load_display(const rapidjson::Value& displa
 	}
 }
 
-std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_value) {
+std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_value) {
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	math::float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
@@ -263,7 +263,7 @@ std::shared_ptr<IMaterial> Provider::load_glass(const rapidjson::Value& glass_va
 	}
 }
 
-std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_value) {
+std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_value) {
 	math::float3 emission(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
 	float animation_duration = 0.f;
@@ -326,7 +326,7 @@ std::shared_ptr<IMaterial> Provider::load_light(const rapidjson::Value& light_va
 	return std::make_shared<light::Constant>(light_cache_, mask, two_sided, emission);
 }
 
-std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitute_value) {
+std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitute_value) {
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 //	std::shared_ptr<image::texture::Texture_2D> surface_map;
 	std::shared_ptr<image::texture::Texture_2D> direction_map;
@@ -409,7 +409,7 @@ std::shared_ptr<IMaterial> Provider::load_metal(const rapidjson::Value& substitu
 	}
 }
 
-std::shared_ptr<IMaterial> Provider::load_substitute(const rapidjson::Value& substitute_value) {
+std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& substitute_value) {
 	std::shared_ptr<image::texture::Texture_2D> color_map;
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	std::shared_ptr<image::texture::Texture_2D> surface_map;
