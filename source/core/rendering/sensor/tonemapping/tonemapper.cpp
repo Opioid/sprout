@@ -1,4 +1,5 @@
 #include "tonemapper.hpp"
+#include "base/math/vector.inl"
 
 namespace rendering { namespace sensor { namespace tonemapping {
 

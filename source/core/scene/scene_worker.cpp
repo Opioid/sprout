@@ -3,6 +3,7 @@
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
 #include "shape/node_stack.inl"
+#include "base/math/vector.inl"
 
 namespace scene {
 

@@ -22,7 +22,7 @@ typedef Vector4<uint8_t>  byte4;
 typedef Vector4f_a		  float4;
 typedef Vector4<int32_t>  int4;
 
-typedef const FVector3f_a& pfloat3;
+typedef FVector3f_a pfloat3;
 
 SU_GLOBALCONST(Vector3f_a) float3_identity(0.f, 0.f, 0.f);
 SU_GLOBALCONST(Vector4f_a) float4_identity(0.f, 0.f, 0.f, 0.f);
