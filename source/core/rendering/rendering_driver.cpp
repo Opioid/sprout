@@ -49,6 +49,8 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 	float tick_offset = scene.seek(static_cast<float>(view.start_frame) * camera.frame_duration(), thread_pool);
 	float tick_rest   = scene.tick_duration() - tick_offset;
 
+	camera.update_focus(workers[0]);
+
 	for (uint32_t f = 0; f < view.num_frames; ++f) {
 		uint32_t current_frame = view.start_frame + f;
 		logging::info("Frame " + string::to_string(current_frame));
