@@ -21,6 +21,8 @@ class Material;
 
 typedef std::vector<std::shared_ptr<Material>> Materials;
 
+struct Sampler_settings;
+
 class Provider : public resource::Provider<Material> {
 public:
 
@@ -46,6 +48,7 @@ private:
 		int32_t     num_elements;
 	};
 
+	void read_sampler_settings(const rapidjson::Value& sampler_value, Sampler_settings& settings);
 	void read_texture_description(const rapidjson::Value& texture_value, Texture_description& description);
 
 	resource::Cache<image::texture::Texture_2D>& texture_cache_;

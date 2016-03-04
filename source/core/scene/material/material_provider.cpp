@@ -125,6 +125,8 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 					mask = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
+		} else if ("sampler" == node_name) {
+			read_sampler_settings(node_value, sampler_settings);
 		}
 	}
 
@@ -191,6 +193,8 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 					mask = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
+		} else if ("sampler" == node_name) {
+			read_sampler_settings(node_value, sampler_settings);
 		}
 	}
 
@@ -249,6 +253,8 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 					normal_map = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
+		} else if ("sampler" == node_name) {
+			read_sampler_settings(node_value, sampler_settings);
 		}
 	}
 
@@ -317,6 +323,8 @@ std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_val
 					mask = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
+		} else if ("sampler" == node_name) {
+			read_sampler_settings(node_value, sampler_settings);
 		}
 	}
 
@@ -391,6 +399,8 @@ std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitut
 					mask = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
+		} else if ("sampler" == node_name) {
+			read_sampler_settings(node_value, sampler_settings);
 		}
 	}
 
@@ -487,6 +497,8 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 					mask = texture_cache_.load(texture_description.filename, options, was_cached);
 				}
 			}
+		} else if ("sampler" == node_name) {
+			read_sampler_settings(node_value, sampler_settings);
 		}
 	}
 
@@ -506,6 +518,23 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 	material->set_attenuation_distance(attenuation_distance);
 
 	return material;
+}
+
+void Provider::read_sampler_settings(const rapidjson::Value& sampler_value, Sampler_settings& settings) {
+	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("filter" == node_name) {
+			std::string filter = json::read_string(node_value);
+
+			if ("Nearest" == filter) {
+				settings.filter = Sampler_settings::Filter::Nearest;
+			} else if ("Linear" == filter) {
+				settings.filter = Sampler_settings::Filter::Linear;
+			}
+		}
+	}
 }
 
 void Provider::read_texture_description(const rapidjson::Value& texture_value, Texture_description& description) {
