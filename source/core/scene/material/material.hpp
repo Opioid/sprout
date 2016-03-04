@@ -1,5 +1,6 @@
 #pragma once
 
+#include "texture_filter.hpp"
 #include "image/texture/texture_2d.hpp"
 #include "base/math/vector.hpp"
 #include <vector>
@@ -49,6 +50,8 @@ public:
 
 	virtual bool is_animated() const;
 
+	uint32_t sampler_key() const;
+
 	bool is_masked() const;
 	bool is_emissive() const;
 	bool is_two_sided() const;
@@ -56,6 +59,8 @@ public:
 protected:
 
 	std::shared_ptr<image::texture::Texture_2D> mask_;
+
+	uint32_t sampler_key_;
 
 	bool two_sided_;
 };

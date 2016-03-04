@@ -27,6 +27,7 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 }
 
 math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
+	scene::material::Texture_filter override_filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
 
@@ -38,15 +39,13 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 	for (uint32_t i = 0;; ++i) {
 		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::bxdf::Type::Specular);
 
-		const image::texture::sampler::Sampler_2D* texture_sampler;
-
 		if (primary_ray) {
-			texture_sampler = &settings_.sampler_linear;
+			override_filter = scene::material::Texture_filter::Unknown;
 		} else {
-			texture_sampler = &settings_.sampler_nearest;
+			override_filter = scene::material::Texture_filter::Nearest;
 		}
 
-		if (!resolve_mask(worker, ray, intersection, *texture_sampler)) {
+		if (!resolve_mask(worker, ray, intersection, override_filter)) {
 			break;
 		}
 
@@ -61,8 +60,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 		opacity = 1.f;
 
 		math::float3 wo = -ray.direction;
-		auto material = intersection.material();
-		auto& material_sample = material->sample(intersection.geo, wo, ray.time, 1.f, *texture_sampler, worker.id());
+		auto& material_sample = intersection.sample(worker, wo, ray.time, override_filter);
 
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.emission();
@@ -99,7 +97,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			throughput *= transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
-												 sampler_, settings_.sampler_nearest, sample_result);
+												 sampler_, scene::material::Texture_filter::Nearest, sample_result);
 
 			if (0.f == sample_result.pdf) {
 				break;

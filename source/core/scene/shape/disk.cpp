@@ -1,6 +1,7 @@
 #include "disk.hpp"
 #include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
+#include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"
@@ -77,8 +78,8 @@ bool Disk::intersect_p(const entity::Composed_transformation& transformation, co
 }
 
 float Disk::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
-					Node_stack& /*node_stack*/, const material::Materials& materials,
-					const image::texture::sampler::Sampler_2D& sampler) const {
+					const material::Materials& materials,
+					Worker& worker, material::Texture_filter override_filter) const {
 	const math::float3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
@@ -97,7 +98,9 @@ float Disk::opacity(const entity::Composed_transformation& transformation, const
 			math::float2 uv((math::dot(transformation.rotation.x3, sk) + 1.f) * 0.5f,
 							(math::dot(transformation.rotation.y3, sk) + 1.f) * 0.5f);
 
-			return materials[0]->opacity(uv, time, sampler);
+			auto material = materials[0];
+			auto& sampler = worker.sampler(material->sampler_key(), override_filter);
+			return material->opacity(uv, time, sampler);
 		}
 	}
 

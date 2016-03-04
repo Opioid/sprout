@@ -1,6 +1,7 @@
 #pragma once
 
-#include "scene/shape/node_stack.hpp"
+#include "shape/node_stack.hpp"
+#include "material/texture_sampler_cache.hpp"
 
 namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 
@@ -16,20 +17,23 @@ public:
 
 	Worker();
 
-	void init(uint32_t id, const scene::Scene& scene);
+	void init(uint32_t id, const Scene& scene);
 
 	uint32_t id() const;
 
-	bool intersect(scene::Ray& ray, scene::Intersection& intersection);
-	bool intersect(const scene::Prop* prop, scene::Ray& ray, scene::Intersection& intersection);
+	bool intersect(Ray& ray, Intersection& intersection);
+	bool intersect(const Prop* prop, Ray& ray, Intersection& intersection);
 
-	bool visibility(const scene::Ray& ray);
+	bool visibility(const Ray& ray);
 
-	float masked_visibility(const scene::Ray& ray, const image::texture::sampler::Sampler_2D& sampler);
+	float masked_visibility(const Ray& ray, material::Texture_filter override_filter);
 
-	const scene::Scene& scene() const;
+	const Scene& scene() const;
 
-	scene::shape::Node_stack& node_stack();
+	shape::Node_stack& node_stack();
+
+	const image::texture::sampler::Sampler_2D&
+	sampler(uint32_t key, material::Texture_filter override_filter) const;
 
 private:
 
@@ -37,9 +41,11 @@ private:
 
 protected:
 
-	const scene::Scene* scene_;
+	const Scene* scene_;
 
-	scene::shape::Node_stack node_stack_;
+	shape::Node_stack node_stack_;
+
+	material::Texture_sampler_cache sampler_cache_;
 };
 
 }

@@ -9,13 +9,12 @@ public:
 
 	virtual void sample(const entity::Composed_transformation& transformation, float time,
 						const math::float3& p, const math::float3& n, bool total_sphere,
-						const image::texture::sampler::Sampler_2D& image_sampler,
-						sampler::Sampler& sampler, shape::Node_stack& node_stack, Sample& result) const final override;
+						sampler::Sampler& sampler, Worker& worker,
+						material::Texture_filter override_filter, Sample& result) const final override;
 
 	virtual float pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
-					  const image::texture::sampler::Sampler_2D& image_sampler,
-					  shape::Node_stack& node_stack) const final override;
+					  Worker& worker, material::Texture_filter override_filter) const final override;
 
 	virtual void prepare_sampling() final override;
 };

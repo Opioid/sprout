@@ -1,6 +1,7 @@
 #include "sphere.hpp"
 #include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
+#include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"
@@ -113,8 +114,8 @@ bool Sphere::intersect_p(const entity::Composed_transformation& transformation, 
 }
 
 float Sphere::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-					  float time, Node_stack& /*node_stack*/, const material::Materials& materials,
-					  const image::texture::sampler::Sampler_2D& sampler) const {
+					  float time, const material::Materials& materials,
+					  Worker& worker, material::Texture_filter override_filter) const {
 	math::float3 v = transformation.position - ray.origin;
 	float b = dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -131,7 +132,9 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 			math::float2 uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
-			return materials[0]->opacity(uv, time, sampler);
+			auto material = materials[0];
+			auto& sampler = worker.sampler(material->sampler_key(), override_filter);
+			return material->opacity(uv, time, sampler);
 		}
 
 		float t1 = b + dist;
@@ -143,7 +146,9 @@ float Sphere::opacity(const entity::Composed_transformation& transformation, con
 			math::float2 uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
-			return materials[0]->opacity(uv, time, sampler);
+			auto material = materials[0];
+			auto& sampler = worker.sampler(material->sampler_key(), override_filter);
+			return material->opacity(uv, time, sampler);
 		}
 	}
 

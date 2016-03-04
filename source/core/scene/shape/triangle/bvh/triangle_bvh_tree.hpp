@@ -1,13 +1,17 @@
 #pragma once
 
-#include "scene/shape/node_stack.hpp"
 #include "scene/material/material.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/bounding/aabb.hpp"
 
-namespace scene { namespace shape {
+namespace scene {
 
+class Worker;
+
+namespace shape {
+
+class Node_stack;
 struct Vertex;
 
 namespace triangle {
@@ -44,9 +48,8 @@ public:
 
 	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
 
-	float opacity(math::Oray& ray, float time, Node_stack& node_stack,
-				  const material::Materials& materials,
-				  const image::texture::sampler::Sampler_2D& sampler) const;
+	float opacity(math::Oray& ray, float time, const material::Materials& materials,
+				  Worker& worker, material::Texture_filter override_filter) const;
 
 	void interpolate_triangle_data(uint32_t index, math::float2 uv,
 								   math::float3& n, math::float3& t, math::float2& tc) const;

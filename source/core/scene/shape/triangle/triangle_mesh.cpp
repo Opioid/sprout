@@ -113,15 +113,15 @@ bool Mesh::intersect_p(const entity::Composed_transformation& transformation, co
 }
 
 float Mesh::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-					float time, Node_stack& node_stack, const material::Materials& materials,
-					const image::texture::sampler::Sampler_2D& sampler) const {
+					float time, const material::Materials& materials,
+					Worker& worker, material::Texture_filter override_filter) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
 	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
-	return tree_.opacity(tray, time, node_stack, materials, sampler);
+	return tree_.opacity(tray, time, materials, worker, override_filter);
 }
 
 void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,

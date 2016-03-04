@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
+#include "scene/material/texture_filter.hpp"
 
 namespace scene { struct Ray; }
 
@@ -17,7 +18,7 @@ public:
 protected:
 
 	bool resolve_mask(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-					  const image::texture::sampler::Sampler_2D& texture_sampler);
+					  scene::material::Texture_filter override_filter);
 };
 
 class Integrator_factory {

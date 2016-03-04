@@ -1,5 +1,6 @@
 #include "prop.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/morphable_shape.hpp"
@@ -33,7 +34,7 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
 	properties_.set(Properties::Visible_in_shadow, in_shadow);
 }
 
-bool Prop::intersect(scene::Ray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const {
+bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const {
 	if (!visible(ray.depth)) {
 		return false;
 	}
@@ -48,7 +49,7 @@ bool Prop::intersect(scene::Ray& ray, shape::Node_stack& node_stack, shape::Inte
 	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
 
-bool Prop::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
+bool Prop::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {
 	if (!visible_in_shadow()) {
 		return false;
 	}
@@ -63,14 +64,13 @@ bool Prop::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 	return shape_->intersect_p(transformation, ray, node_stack);
 }
 
-float Prop::opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
-					const image::texture::sampler::Sampler_2D& sampler) const {
+float Prop::opacity(const Ray& ray, Worker& worker, material::Texture_filter override_filter) const {
 	if (!visible_in_shadow()) {
 		return 0.f;
 	}
 
 	if (!has_masked_material()) {
-		return intersect_p(ray, node_stack) ? 1.f : 0.f;
+		return intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 	}
 
 	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
@@ -80,7 +80,7 @@ float Prop::opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->opacity(transformation, ray, ray.time, node_stack, materials_, sampler);
+	return shape_->opacity(transformation, ray, ray.time, materials_, worker, override_filter);
 }
 
 const shape::Shape* Prop::shape() const {

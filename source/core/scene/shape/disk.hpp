@@ -16,8 +16,8 @@ public:
 							 Node_stack& node_stack) const final override;
 
 	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
-						  Node_stack& node_stack, const material::Materials& materials,
-						  const image::texture::sampler::Sampler_2D& sampler) const final override;
+						  const material::Materials& materials,
+						  Worker& worker, material::Texture_filter override_filter) const final override;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 						const math::float3& p, const math::float3& n, bool two_sided,

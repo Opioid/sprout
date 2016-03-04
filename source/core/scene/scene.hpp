@@ -1,9 +1,10 @@
 #pragma once
 
-#include "scene/animation/animation_stage.hpp"
-#include "scene/bvh/scene_bvh_builder.hpp"
-#include "scene/bvh/scene_bvh_tree.hpp"
-#include "scene/material/material.hpp"
+#include "scene_worker.hpp"
+#include "animation/animation_stage.hpp"
+#include "bvh/scene_bvh_builder.hpp"
+#include "bvh/scene_bvh_tree.hpp"
+#include "material/material.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 #include <vector>
@@ -16,7 +17,6 @@ namespace scene {
 namespace shape {
 
 class Shape;
-class Node_stack;
 
 }
 
@@ -54,8 +54,7 @@ public:
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const scene::Ray& ray, shape::Node_stack& node_stack,
-				  const image::texture::sampler::Sampler_2D& sampler) const;
+	float opacity(const scene::Ray& ray, Worker& worker, material::Texture_filter override_filter) const;
 
 	float tick_duration() const;
 	float simulation_time() const;

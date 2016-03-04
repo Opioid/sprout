@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
+#include "scene/material/texture_filter.hpp"
 
 namespace sampler { class Sampler; }
 
@@ -22,7 +23,7 @@ public:
 	math::float3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 						 const math::float3& attenuation,
 						 sampler::Sampler& sampler,
-						 const image::texture::sampler::Sampler_2D& texture_sampler,
+						 scene::material::Texture_filter override_filter,
 						 scene::material::bxdf::Result& sample_result);
 };
 

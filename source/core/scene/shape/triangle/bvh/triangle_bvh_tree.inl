@@ -2,6 +2,7 @@
 
 #include "triangle_bvh_tree.hpp"
 #include "triangle_bvh_node.inl"
+#include "scene/scene_worker.hpp"
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/vector.inl"
@@ -132,9 +133,9 @@ bool Tree<Data>::intersect_p(const math::Oray& ray, Node_stack& node_stack) cons
 }
 
 template<typename Data>
-float Tree<Data>::opacity(math::Oray& ray, float time, Node_stack& node_stack,
-						  const material::Materials& materials,
-						  const image::texture::sampler::Sampler_2D& sampler) const {
+float Tree<Data>::opacity(math::Oray& ray, float time, const material::Materials& materials,
+						  Worker& worker, material::Texture_filter override_filter) const {
+	auto& node_stack = worker.node_stack();
 	node_stack.clear();
 	node_stack.push(0);
 	uint32_t n = 0;
@@ -152,10 +153,15 @@ float Tree<Data>::opacity(math::Oray& ray, float time, Node_stack& node_stack,
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						uv = data_.interpolate_uv(i, uv);
-						opacity += (1.f - opacity) * materials[data_.material_index(i)]->opacity(uv, time, sampler);
+
+						auto material = materials[data_.material_index(i)];
+						auto& sampler = worker.sampler(material->sampler_key(), override_filter);
+
+						opacity += (1.f - opacity) * material->opacity(uv, time, sampler);
 						if (opacity >= 1.f) {
 							return 1.f;
 						}
+
 						ray.max_t = max_t;
 					}
 				}

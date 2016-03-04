@@ -17,9 +17,6 @@ public:
 	struct Settings {
 		uint32_t num_light_samples;
 		float    num_light_samples_reciprocal;
-
-		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
-		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
 	};
 
 	Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
@@ -34,8 +31,7 @@ private:
 
 	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
-									   const scene::material::Sample& material_sample,
-									   const image::texture::sampler::Sampler_2D& texture_sampler);
+									   const scene::material::Sample& material_sample);
 
 	Settings settings_;
 

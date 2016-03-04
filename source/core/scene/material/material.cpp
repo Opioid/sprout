@@ -31,6 +31,10 @@ bool Material::is_animated() const {
 	return false;
 }
 
+uint32_t Material::sampler_key() const {
+	return 0;
+}
+
 bool Material::is_masked() const {
 	return !mask_ == false;
 }

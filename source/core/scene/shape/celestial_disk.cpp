@@ -51,8 +51,8 @@ bool Celestial_disk::intersect_p(const entity::Composed_transformation& /*transf
 }
 
 float Celestial_disk::opacity(const entity::Composed_transformation& /*transformation*/, const math::Oray& /*ray*/,
-							  float /*time*/, Node_stack& /*node_stack*/, const material::Materials& /*materials*/,
-							  const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+							  float /*time*/, const material::Materials& /*materials*/,
+							  Worker& /*worker*/, material::Texture_filter /*override_filter*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }

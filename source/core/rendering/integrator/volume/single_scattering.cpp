@@ -93,12 +93,12 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(ray.time, current, settings_.sampler_nearest, sampler_, worker.node_stack(), light_sample);
+		light->sample(ray.time, current, sampler_, worker, scene::material::Texture_filter::Nearest, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
 			scene::Ray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t, ray.time);
 
-			float mv = worker.masked_visibility(shadow_ray, settings_.sampler_nearest);
+			float mv = worker.masked_visibility(shadow_ray, scene::material::Texture_filter::Nearest);
 			if (mv > 0.f) {
 				float p = volume->phase(w, -light_sample.shape.wi);
 

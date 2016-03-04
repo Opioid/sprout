@@ -7,6 +7,8 @@ namespace sampler { class Sampler; }
 
 namespace scene {
 
+class Worker;
+
 namespace entity {
 
 struct Composed_transformation;
@@ -35,9 +37,9 @@ public:
 	virtual bool intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
 							 Node_stack& node_stack) const = 0;
 
-	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
-						  Node_stack& node_stack, const material::Materials& materials,
-						  const image::texture::sampler::Sampler_2D& sampler) const = 0;
+	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
+						  float time, const material::Materials& materials,
+						  Worker& worker, material::Texture_filter override_filter) const = 0;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 						const math::float3& p, const math::float3& n, bool two_sided,

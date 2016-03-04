@@ -21,9 +21,6 @@ class Pathtracer : public Integrator {
 public:
 
 	struct Settings {
-		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
-		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
-
 		uint32_t min_bounces;
 		uint32_t max_bounces;
 		float    path_continuation_probability;

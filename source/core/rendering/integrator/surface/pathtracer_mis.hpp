@@ -21,9 +21,6 @@ class Pathtracer_MIS : public Integrator {
 public:
 
 	struct Settings {
-		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
-		image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat> sampler_nearest;
-
 		uint32_t min_bounces;
 		uint32_t max_bounces;
 		float    path_continuation_probability;
@@ -45,12 +42,12 @@ private:
 	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
-									   const image::texture::sampler::Sampler_2D& texture_sampler);
+									   scene::material::Texture_filter override_filter);
 
 	math::float3 resolve_transmission(Worker& worker, scene::Ray& ray,
 									  scene::Intersection& intersection,
 									  const math::float3& attenuation,
-									  const image::texture::sampler::Sampler_2D& texture_sampler,
+									  scene::material::Texture_filter override_filter,
 									  scene::material::bxdf::Result& sample_result);
 
 	const Settings& settings_;

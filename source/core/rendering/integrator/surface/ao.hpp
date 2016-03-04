@@ -17,8 +17,6 @@ public:
 		uint32_t num_samples;
 		float num_samples_reciprocal;
 		float radius;
-
-		image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat> sampler_linear;
 	};
 
 	Ao(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
