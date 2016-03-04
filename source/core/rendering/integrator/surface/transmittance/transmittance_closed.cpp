@@ -19,7 +19,7 @@ Closed::Closed(const take::Settings &take_settings, math::random::Generator &rng
 math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 							 const math::float3& attenuation,
 							 sampler::Sampler& sampler,
-							 scene::material::Texture_filter override_filter,
+							 scene::material::Sampler_settings::Filter filter,
 							 scene::material::bxdf::Result& sample_result) {
 	math::float3 throughput = sample_result.reflection / sample_result.pdf;
 	math::float3 used_attenuation = attenuation;
@@ -36,7 +36,7 @@ math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersectio
 		}
 
 		math::float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(worker, wo, ray.time, override_filter);
+		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		material_sample.sample_evaluate(sampler, sample_result);
 		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {

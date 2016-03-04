@@ -54,7 +54,7 @@ public:
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const;
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const scene::Ray& ray, Worker& worker, material::Texture_filter override_filter) const;
+	float opacity(const scene::Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const;
 
 	float tick_duration() const;
 	float simulation_time() const;

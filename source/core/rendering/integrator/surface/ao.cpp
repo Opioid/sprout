@@ -29,7 +29,7 @@ math::float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene::Int
 	float result = 0.f;
 
 	math::float3 wo = -ray.direction;
-	auto& material_sample = intersection.sample(worker, wo, ray.time, scene::material::Texture_filter::Unknown);
+	auto& material_sample = intersection.sample(worker, wo, ray.time, scene::material::Sampler_settings::Filter::Unknown);
 
 	for (uint32_t i = 0; i < settings_.num_samples; ++i) {
 		math::float2 sample = sampler_.generate_sample_2D();

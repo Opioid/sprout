@@ -20,10 +20,10 @@ class Prop;
 struct Intersection {
 	material::Material* material() const;
 
-	float opacity(Worker& worker, float time, material::Texture_filter override_filter) const;
+	float opacity(Worker& worker, float time, material::Sampler_settings::Filter filter) const;
 
 	const material::Sample& sample(Worker& worker, math::pfloat3 wo, float time,
-								   material::Texture_filter override_filter) const;
+								   material::Sampler_settings::Filter filter) const;
 
 	const Prop* prop;
 	shape::Intersection geo;

@@ -49,7 +49,7 @@ public:
 	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
 
 	float opacity(math::Oray& ray, float time, const material::Materials& materials,
-				  Worker& worker, material::Texture_filter override_filter) const;
+				  Worker& worker, material::Sampler_settings::Filter filter) const;
 
 	void interpolate_triangle_data(uint32_t index, math::float2 uv,
 								   math::float3& n, math::float3& t, math::float2& tc) const;

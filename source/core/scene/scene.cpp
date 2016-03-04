@@ -50,8 +50,8 @@ bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) co
 	return bvh_.intersect_p(ray, node_stack);
 }
 
-float Scene::opacity(const scene::Ray& ray, Worker& worker, material::Texture_filter override_filter) const {
-	return bvh_.opacity(ray, worker, override_filter);
+float Scene::opacity(const scene::Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const {
+	return bvh_.opacity(ray, worker, filter);
 }
 
 float Scene::tick_duration() const {

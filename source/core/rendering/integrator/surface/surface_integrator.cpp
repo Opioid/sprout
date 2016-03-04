@@ -15,8 +15,8 @@ Integrator::Integrator(const take::Settings& settings, math::random::Generator& 
 Integrator::~Integrator() {}
 
 bool Integrator::resolve_mask(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-							  scene::material::Texture_filter override_filter) {
-	float opacity = intersection.opacity(worker, ray.time, override_filter);
+							  scene::material::Sampler_settings::Filter filter) {
+	float opacity = intersection.opacity(worker, ray.time, filter);
 
 	while (opacity < 1.f) {
 		if (opacity > 0.f && opacity > rng_.random_float()) {
@@ -32,7 +32,7 @@ bool Integrator::resolve_mask(Worker& worker, scene::Ray& ray, scene::Intersecti
 			return false;
 		}
 
-		opacity = intersection.opacity(worker, ray.time, override_filter);
+		opacity = intersection.opacity(worker, ray.time, filter);
 	}
 
 	return true;

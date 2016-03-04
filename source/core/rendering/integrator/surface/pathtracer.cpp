@@ -27,7 +27,7 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 }
 
 math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
-	scene::material::Texture_filter override_filter;
+	scene::material::Sampler_settings::Filter filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
 
@@ -40,12 +40,12 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::bxdf::Type::Specular);
 
 		if (primary_ray) {
-			override_filter = scene::material::Texture_filter::Unknown;
+			filter = scene::material::Sampler_settings::Filter::Unknown;
 		} else {
-			override_filter = scene::material::Texture_filter::Nearest;
+			filter = scene::material::Sampler_settings::Filter::Nearest;
 		}
 
-		if (!resolve_mask(worker, ray, intersection, override_filter)) {
+		if (!resolve_mask(worker, ray, intersection, filter)) {
 			break;
 		}
 
@@ -60,7 +60,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 		opacity = 1.f;
 
 		math::float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(worker, wo, ray.time, override_filter);
+		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.emission();
@@ -97,7 +97,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			throughput *= transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
-												 sampler_, scene::material::Texture_filter::Nearest, sample_result);
+												 sampler_, scene::material::Sampler_settings::Filter::Nearest, sample_result);
 
 			if (0.f == sample_result.pdf) {
 				break;

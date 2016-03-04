@@ -1,5 +1,6 @@
 #include "light_constant.hpp"
 #include "light_material_sample.hpp"
+#include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
@@ -8,15 +9,15 @@
 namespace scene { namespace material { namespace light {
 
 Constant::Constant(Generic_sample_cache<Sample>& cache,
-				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided,
+				   std::shared_ptr<image::texture::Texture_2D> mask,
+				   const Sampler_settings& sampler_settings, bool two_sided,
 				   const math::float3& emission) :
-	Material(cache, mask, two_sided), emission_(emission) {}
+	Material(cache, mask, sampler_settings, two_sided), emission_(emission) {}
 
 const material::Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
 										 float /*time*/, float /*ior_i*/,
-										 const image::texture::sampler::Sampler_2D& /*sampler*/,
-										 uint32_t worker_id) {
-	auto& sample = cache_.get(worker_id);
+										 const Worker& worker, Sampler_settings::Filter /*filter*/) {
+	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 	sample.set(emission_);
@@ -25,7 +26,7 @@ const material::Sample& Constant::sample(const shape::Differential& dg, const ma
 }
 
 math::float3 Constant::sample_emission(math::float2 /*uv*/, float /*time*/,
-									   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+									   const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
 	return emission_;
 }
 

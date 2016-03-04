@@ -1,6 +1,7 @@
 #include "glass_material.hpp"
 #include "glass_sample.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.inl"
@@ -8,16 +9,18 @@
 
 namespace scene { namespace material { namespace glass {
 
-Glass::Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask) :
-	Typed_material(cache, mask, false) {}
+Glass::Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+			 const Sampler_settings& sampler_settings) :
+	Typed_material(cache, mask, sampler_settings, false) {}
 
 const material::Sample& Glass::sample(const shape::Differential& dg, const math::float3& wo,
 									  float /*time*/, float ior_i,
-									  const image::texture::sampler::Sampler_2D& sampler,
-									  uint32_t worker_id) {
-	auto& sample = cache_.get(worker_id);
+									  const Worker& worker, Sampler_settings::Filter filter) {
+	auto& sample = cache_.get(worker.id());
 
 	if (normal_map_) {
+		auto& sampler = worker.sampler(sampler_key_, filter);
+
 		math::float3 nm = sampler.sample_3(*normal_map_, dg.uv);
 		math::float3 n = math::normalized(dg.tangent_to_world(nm));
 
@@ -32,7 +35,7 @@ const material::Sample& Glass::sample(const shape::Differential& dg, const math:
 }
 
 math::float3 Glass::sample_emission(math::float2 /*uv*/, float /*time*/,
-									const image::texture::sampler::Sampler_2D& /*sampler*/) const {
+									const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
 	return math::float3_identity;
 }
 

@@ -64,7 +64,7 @@ bool Prop::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {
 	return shape_->intersect_p(transformation, ray, node_stack);
 }
 
-float Prop::opacity(const Ray& ray, Worker& worker, material::Texture_filter override_filter) const {
+float Prop::opacity(const Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const {
 	if (!visible_in_shadow()) {
 		return 0.f;
 	}
@@ -80,7 +80,7 @@ float Prop::opacity(const Ray& ray, Worker& worker, material::Texture_filter ove
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->opacity(transformation, ray, ray.time, materials_, worker, override_filter);
+	return shape_->opacity(transformation, ray, ray.time, materials_, worker, filter);
 }
 
 const shape::Shape* Prop::shape() const {

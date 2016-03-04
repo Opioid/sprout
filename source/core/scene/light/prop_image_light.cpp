@@ -16,7 +16,7 @@ namespace scene { namespace light {
 void Prop_image_light::sample(const entity::Composed_transformation& transformation, float time,
 							  const math::float3& p, const math::float3& n, bool total_sphere,
 							  sampler::Sampler& sampler, Worker& worker,
-							  material::Texture_filter override_filter, Sample& result) const {
+							  material::Sampler_settings::Filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
 
 	float pdf;
@@ -25,9 +25,8 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 	prop_->shape()->sample(part_, transformation, area_, p, uv, result.shape);
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
-		auto& image_sampler = worker.sampler(material->sampler_key(), override_filter);
 		result.shape.pdf *= pdf;
-		result.energy = material->sample_emission(result.shape.uv, time, image_sampler);
+		result.energy = material->sample_emission(result.shape.uv, time, worker, filter);
 	} else {
 		result.shape.pdf = 0.f;
 	}
@@ -35,13 +34,11 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 
 float Prop_image_light::pdf(const entity::Composed_transformation& transformation,
 							const math::float3& p, const math::float3& wi, bool /*total_sphere*/,
-							Worker& worker, material::Texture_filter override_filter) const {
+							Worker& worker, material::Sampler_settings::Filter filter) const {
 	shape::Sample sample;
 	prop_->shape()->sample(part_, transformation, area_, p, wi, sample);
 
-	auto material = prop_->material(part_);
-	auto& sampler = worker.sampler(material->sampler_key(), override_filter);
-	float pdf = material->emission_pdf(sample.uv, sampler);
+	float pdf = prop_->material(part_)->emission_pdf(sample.uv, worker, filter);
 
 	return sample.pdf * pdf;
 }

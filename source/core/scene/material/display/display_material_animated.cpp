@@ -1,6 +1,7 @@
 #include "display_material_animated.hpp"
 #include "display_sample.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
@@ -13,10 +14,11 @@ namespace scene { namespace material { namespace display {
 
 Material_animated::Material_animated(Generic_sample_cache<Sample>& cache,
 									 std::shared_ptr<image::texture::Texture_2D> mask,
+									 const Sampler_settings& sampler_settings,
 									 bool two_sided,
 									 std::shared_ptr<image::texture::Texture_2D> emission_map,
 									 float animation_duration) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, two_sided),
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings, two_sided),
 	emission_map_(emission_map),
 	average_emissions_(emission_map->num_elements()),
 	frame_length_(animation_duration / static_cast<float>(emission_map_->num_elements())),
@@ -32,13 +34,14 @@ void Material_animated::tick(float absolute_time, float /*time_slice*/) {
 
 const material::Sample& Material_animated::sample(const shape::Differential& dg, const math::float3& wo,
 												  float /*time*/, float /*ior_i*/,
-												  const image::texture::sampler::Sampler_2D& sampler,
-												  uint32_t worker_id) {
-	auto& sample = cache_.get(worker_id);
+												  const Worker& worker, Sampler_settings::Filter filter) {
+	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 
 	if (emission_map_) {
+		auto& sampler = worker.sampler(sampler_key_, filter);
+
 		math::float3 emission = sampler.sample_3(*emission_map_, dg.uv, element_);
 		sample.set(emission_factor_ * emission, f0_, roughness_);
 	} else {
@@ -49,7 +52,8 @@ const material::Sample& Material_animated::sample(const shape::Differential& dg,
 }
 
 math::float3 Material_animated::sample_emission(math::float2 uv, float /*time*/,
-												const image::texture::sampler::Sampler_2D& sampler) const {
+												const Worker& worker, Sampler_settings::Filter filter) const {
+	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv, element_);
 }
 
@@ -75,10 +79,12 @@ math::float2 Material_animated::emission_importance_sample(math::float2 r2, floa
 	return uv;
 }
 
-float Material_animated::emission_pdf(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
+float Material_animated::emission_pdf(math::float2 uv, const Worker& worker, Sampler_settings::Filter filter) const {
 	if (uv.y == 0.f) {
 		return 0.f;
 	}
+
+	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	float sin_theta = std::sin(uv.y * math::Pi);
 
@@ -86,8 +92,9 @@ float Material_animated::emission_pdf(math::float2 uv, const image::texture::sam
 }
 
 float Material_animated::opacity(math::float2 uv, float /*time*/,
-								 const image::texture::sampler::Sampler_2D& sampler) const {
+								 const Worker& worker, Sampler_settings::Filter filter) const {
 	if (mask_) {
+		auto& sampler = worker.sampler(sampler_key_, filter);
 		return sampler.sample_1(*mask_, uv, element_);
 	} else {
 		return 1.f;

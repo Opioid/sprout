@@ -1,5 +1,6 @@
 #include "light_emissionmap.hpp"
 #include "light_material_sample.hpp"
+#include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/differential.hpp"
@@ -11,14 +12,17 @@
 namespace scene { namespace material { namespace light {
 
 Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
-						 std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
-	Material(cache, mask, two_sided),
+						 std::shared_ptr<image::texture::Texture_2D> mask,
+						 const Sampler_settings& sampler_settings, bool two_sided) :
+	Material(cache, mask, sampler_settings, two_sided),
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
 const material::Sample& Emissionmap::sample(const shape::Differential& dg, const math::float3& wo,
 											float /*time*/, float /*ior_i*/,
-											const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
-	auto& sample = cache_.get(worker_id);
+											const Worker& worker, Sampler_settings::Filter filter) {
+	auto& sample = cache_.get(worker.id());
+
+	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 
@@ -29,7 +33,8 @@ const material::Sample& Emissionmap::sample(const shape::Differential& dg, const
 }
 
 math::float3 Emissionmap::sample_emission(math::float2 uv, float /*time*/,
-										  const image::texture::sampler::Sampler_2D& sampler) const {
+										  const Worker& worker, Sampler_settings::Filter filter) const {
+	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }
 
@@ -55,10 +60,12 @@ math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf
 	return uv;
 }
 
-float Emissionmap::emission_pdf(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
+float Emissionmap::emission_pdf(math::float2 uv, const Worker& worker, Sampler_settings::Filter filter) const {
 	if (uv.y == 0.f) {
 		return 0.f;
 	}
+
+	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	float sin_theta = std::sin(uv.y * math::Pi);
 

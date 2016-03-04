@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene/material/texture_filter.hpp"
+#include "scene/material/sampler_settings.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/node_stack.hpp"
 #include "base/math/bounding/aabb.hpp"
@@ -30,7 +30,7 @@ struct Build_node {
 	bool intersect_p(const scene::Ray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack) const;
 
 	float opacity(const scene::Ray& ray, const std::vector<Prop*>& props, Worker& worker,
-				  material::Texture_filter override_filter) const;
+				  material::Sampler_settings::Filter filter) const;
 
 	math::aabb aabb;
 
@@ -53,7 +53,7 @@ public:
 
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const scene::Ray& ray, Worker& worker, material::Texture_filter override_filter) const;
+	float opacity(const scene::Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const;
 
 private:
 

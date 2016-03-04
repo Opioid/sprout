@@ -39,7 +39,8 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 	metal_iso_cache_(thread_pool.num_threads()),
 	metal_aniso_cache_(thread_pool.num_threads()),
 	substitute_cache_(thread_pool.num_threads()) {
-	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr, false);
+	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr,
+														   Sampler_settings(Sampler_settings::Filter::Linear), false);
 	material->set_color(math::float3(1.f, 0.f, 0.f)),
 	material->set_ior(1.45f),
 	material->set_roughness(1.f);
@@ -86,6 +87,8 @@ std::shared_ptr<Material> Provider::fallback_material() const {
 }
 
 std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_value) {
+	scene::material::Sampler_settings sampler_settings;
+
 	std::shared_ptr<image::texture::Texture_2D> color_map;
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
@@ -125,7 +128,7 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 		}
 	}
 
-	auto material = std::make_shared<cloth::Material>(cloth_cache_, mask, two_sided);
+	auto material = std::make_shared<cloth::Material>(cloth_cache_, mask, sampler_settings, two_sided);
 
 	material->set_color_map(color_map);
 	material->set_normal_map(normal_map);
@@ -136,6 +139,8 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 }
 
 std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display_value) {
+	scene::material::Sampler_settings sampler_settings;
+
 	std::shared_ptr<image::texture::Texture_2D> emission_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
@@ -190,14 +195,14 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 	}
 
 	if (animation_duration > 0.f) {
-		auto material = std::make_shared<display::Material_animated>(display_cache_, mask, two_sided,
+		auto material = std::make_shared<display::Material_animated>(display_cache_, mask, sampler_settings, two_sided,
 																	 emission_map, animation_duration);
 		material->set_emission_factor(emission_factor);
 		material->set_roughness(roughness);
 		material->set_ior(ior);
 		return material;
 	} else {
-		auto material = std::make_shared<display::Material>(display_cache_, mask, two_sided);
+		auto material = std::make_shared<display::Material>(display_cache_, mask, sampler_settings, two_sided);
 		material->set_emission_map(emission_map);
 		material->set_emission(emission);
 		material->set_emission_factor(emission_factor);
@@ -208,6 +213,8 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 }
 
 std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_value) {
+	scene::material::Sampler_settings sampler_settings;
+
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	math::float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
@@ -246,14 +253,14 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 	}
 
 	if (roughness >= 0.f) {
-		auto material = std::make_shared<glass::Glass>(glass_cache_, nullptr);
+		auto material = std::make_shared<glass::Glass>(glass_cache_, nullptr, sampler_settings);
 		material->set_normal_map(normal_map);
 		material->set_color(color);
 		material->set_attenuation_distance(attenuation_distance);
 		material->set_ior(ior);
 		return material;
 	} else {
-		auto material = std::make_shared<glass::Glass_rough>(glass_rough_cache_, nullptr);
+		auto material = std::make_shared<glass::Glass_rough>(glass_rough_cache_, nullptr, sampler_settings);
 		material->set_normal_map(normal_map);
 		material->set_color(color);
 		material->set_attenuation_distance(attenuation_distance);
@@ -264,6 +271,8 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 }
 
 std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_value) {
+	scene::material::Sampler_settings sampler_settings;
+
 	math::float3 emission(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
 	float animation_duration = 0.f;
@@ -313,20 +322,22 @@ std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_val
 
 	if (emission_map) {
 		if (animation_duration > 0.f) {
-			return std::make_shared<light::Emissionmap_animated>(light_cache_, mask, two_sided,
+			return std::make_shared<light::Emissionmap_animated>(light_cache_, mask, sampler_settings, two_sided,
 																 emission_map, emission_factor, animation_duration);
 		} else {
-			auto material = std::make_shared<light::Emissionmap>(light_cache_, mask, two_sided);
+			auto material = std::make_shared<light::Emissionmap>(light_cache_, mask, sampler_settings, two_sided);
 			material->set_emission_map(emission_map);
 			material->set_emission_factor(emission_factor);
 			return material;
 		}
 	}
 
-	return std::make_shared<light::Constant>(light_cache_, mask, two_sided, emission);
+	return std::make_shared<light::Constant>(light_cache_, mask, sampler_settings, two_sided, emission);
 }
 
 std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitute_value) {
+	scene::material::Sampler_settings sampler_settings;
+
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 //	std::shared_ptr<image::texture::Texture_2D> surface_map;
 	std::shared_ptr<image::texture::Texture_2D> direction_map;
@@ -384,7 +395,8 @@ std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitut
 	}
 
 	if (roughness_aniso.x > 0.f && roughness_aniso.y > 0.f) {
-		auto material = std::make_shared<metal::Material_anisotropic>(metal_aniso_cache_, mask, two_sided);
+		auto material = std::make_shared<metal::Material_anisotropic>(metal_aniso_cache_, mask,
+																	  sampler_settings, two_sided);
 
 		material->set_normal_map(normal_map);
 	//	material->set_surface_map(surface_map);
@@ -396,7 +408,8 @@ std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitut
 
 		return material;
 	} else {
-		auto material = std::make_shared<metal::Material_isotropic>(metal_iso_cache_, mask, two_sided);
+		auto material = std::make_shared<metal::Material_isotropic>(metal_iso_cache_, mask,
+																	sampler_settings, two_sided);
 
 		material->set_normal_map(normal_map);
 	//	material->set_surface_map(surface_map);
@@ -410,6 +423,8 @@ std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitut
 }
 
 std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& substitute_value) {
+	scene::material::Sampler_settings sampler_settings;
+
 	std::shared_ptr<image::texture::Texture_2D> color_map;
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	std::shared_ptr<image::texture::Texture_2D> surface_map;
@@ -475,7 +490,7 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 		}
 	}
 
-	auto material = std::make_shared<substitute::Material>(substitute_cache_, mask, two_sided);
+	auto material = std::make_shared<substitute::Material>(substitute_cache_, mask, sampler_settings, two_sided);
 
 	material->set_color_map(color_map);
 	material->set_normal_map(normal_map);

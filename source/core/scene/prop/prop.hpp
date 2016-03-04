@@ -35,7 +35,7 @@ public:
 
 	bool intersect_p(const Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const Ray& ray, Worker& worker, material::Texture_filter override_filter) const;
+	float opacity(const Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const;
 
 	const shape::Shape* shape() const;
 	shape::Shape* shape();

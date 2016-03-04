@@ -42,12 +42,12 @@ private:
 	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
-									   scene::material::Texture_filter override_filter);
+									   scene::material::Sampler_settings::Filter filter);
 
 	math::float3 resolve_transmission(Worker& worker, scene::Ray& ray,
 									  scene::Intersection& intersection,
 									  const math::float3& attenuation,
-									  scene::material::Texture_filter override_filter,
+									  scene::material::Sampler_settings::Filter filter,
 									  scene::material::bxdf::Result& sample_result);
 
 	const Settings& settings_;

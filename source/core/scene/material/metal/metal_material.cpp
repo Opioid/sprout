@@ -1,5 +1,6 @@
 #include "metal_material.hpp"
 #include "metal_sample.hpp"
+#include "scene/scene_worker.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
@@ -32,14 +33,16 @@
 namespace scene { namespace material { namespace metal {
 
 Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
-									   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_isotropic>>(cache, mask, two_sided) {}
+									   std::shared_ptr<image::texture::Texture_2D> mask,
+									   const Sampler_settings& sampler_settings, bool two_sided) :
+	material::Typed_material<Generic_sample_cache<Sample_isotropic>>(cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Material_isotropic::sample(const shape::Differential& dg, const math::float3& wo,
 												   float /*time*/, float /*ior_i*/,
-												   const image::texture::sampler::Sampler_2D& sampler,
-												   uint32_t worker_id) {
-	auto& sample = cache_.get(worker_id);
+												   const Worker& worker, Sampler_settings::Filter filter) {
+	auto& sample = cache_.get(worker.id());
+
+	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	if (normal_map_) {
 		math::float3 nm = sampler.sample_3(*normal_map_, dg.uv);
@@ -53,19 +56,6 @@ const material::Sample& Material_isotropic::sample(const shape::Differential& dg
 	sample.set(ior_, absorption_, roughness_);
 
 	return sample;
-}
-
-math::float3 Material_isotropic::sample_emission(math::float2 /*uv*/, float /*time*/,
-										   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return math::float3_identity;
-}
-
-math::float3 Material_isotropic::average_emission() const {
-	return math::float3_identity;
-}
-
-bool Material_isotropic::has_emission_map() const {
-	return false;
 }
 
 void Material_isotropic::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
@@ -85,14 +75,16 @@ void Material_isotropic::set_roughness(float roughness) {
 }
 
 Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
-										   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_anisotropic>>(cache, mask, two_sided) {}
+										   std::shared_ptr<image::texture::Texture_2D> mask,
+										   const Sampler_settings& sampler_settings, bool two_sided) :
+	material::Typed_material<Generic_sample_cache<Sample_anisotropic>>(cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Material_anisotropic::sample(const shape::Differential& dg, const math::float3& wo,
 													 float /*time*/, float /*ior_i*/,
-													 const image::texture::sampler::Sampler_2D& sampler,
-													 uint32_t worker_id) {
-	auto& sample = cache_.get(worker_id);
+													 const Worker& worker, Sampler_settings::Filter filter) {
+	auto& sample = cache_.get(worker.id());
+
+	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	if (normal_map_) {
 		math::float3 nm = sampler.sample_3(*normal_map_, dg.uv);
@@ -113,19 +105,6 @@ const material::Sample& Material_anisotropic::sample(const shape::Differential& 
 	sample.set(ior_, absorption_, roughness_);
 
 	return sample;
-}
-
-math::float3 Material_anisotropic::sample_emission(math::float2 /*uv*/, float /*time*/,
-												   const image::texture::sampler::Sampler_2D& /*sampler*/) const {
-	return math::float3_identity;
-}
-
-math::float3 Material_anisotropic::average_emission() const {
-	return math::float3_identity;
-}
-
-bool Material_anisotropic::has_emission_map() const {
-	return false;
 }
 
 void Material_anisotropic::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {

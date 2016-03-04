@@ -11,19 +11,12 @@ class Sample_rough;
 class Glass_rough : public Typed_material<Generic_sample_cache<Sample_rough>> {
 public:
 
-	Glass_rough(Generic_sample_cache<Sample_rough>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
+	Glass_rough(Generic_sample_cache<Sample_rough>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+				const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   float time, float ior_i,
-										   const image::texture::sampler::Sampler_2D& sampler,
-										   uint32_t worker_id) final override;
-
-	virtual math::float3 sample_emission(math::float2 uv, float time,
-										 const image::texture::sampler::Sampler_2D& sampler) const final override;
-
-	virtual math::float3 average_emission() const final override;
-
-	virtual bool has_emission_map() const final override;
+										   const Worker& worker, Sampler_settings::Filter filter) final override;
 
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 

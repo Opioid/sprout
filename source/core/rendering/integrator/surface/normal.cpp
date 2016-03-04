@@ -26,7 +26,7 @@ math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene:
 		vector = intersection.geo.geo_n;
 	} else if (Settings::Vector::Shading_normal == settings_.vector) {
 		math::float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(worker, wo, ray.time, scene::material::Texture_filter::Unknown);
+		auto& material_sample = intersection.sample(worker, wo, ray.time, scene::material::Sampler_settings::Filter::Unknown);
 
 		vector = material_sample.shading_normal();
 	} else {

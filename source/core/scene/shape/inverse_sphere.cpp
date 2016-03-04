@@ -96,7 +96,7 @@ bool Inverse_sphere::intersect_p(const entity::Composed_transformation& transfor
 
 float Inverse_sphere::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
 							  float /*time*/, const material::Materials& /*materials*/,
-							  Worker& worker, material::Texture_filter /*override_filter*/) const {
+							  Worker& worker, material::Sampler_settings::Filter /*filter*/) const {
 	return intersect_p(transformation, ray, worker.node_stack()) ? 1.f : 0.f;
 }
 

@@ -24,7 +24,7 @@ const entity::Composed_transformation& Prop_light::transformation_at(float time,
 void Prop_light::sample(const entity::Composed_transformation& transformation, float time,
 						const math::float3& p, const math::float3& n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
-						material::Texture_filter override_filter, Sample& result) const {
+						material::Sampler_settings::Filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
 
 	bool two_sided = material->is_two_sided();
@@ -42,13 +42,12 @@ void Prop_light::sample(const entity::Composed_transformation& transformation, f
 		}
 	}
 
-	auto& image_sampler = worker.sampler(material->sampler_key(), override_filter);
-	result.energy = material->sample_emission(result.shape.uv, time, image_sampler);
+	result.energy = material->sample_emission(result.shape.uv, time, worker, filter);
 }
 
 float Prop_light::pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
-					  Worker& worker, material::Texture_filter /*override_filter*/) const {
+					  Worker& worker, material::Sampler_settings::Filter /*filter*/) const {
 	bool two_sided = prop_->material(part_)->is_two_sided();
 
 	return prop_->shape()->pdf(part_, transformation, area_, p, wi, two_sided, total_sphere, worker.node_stack());

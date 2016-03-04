@@ -1,6 +1,7 @@
 #include "display_material.hpp"
 #include "display_sample.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
@@ -12,18 +13,21 @@
 namespace scene { namespace material { namespace display {
 
 Material::Material(Generic_sample_cache<Sample>& cache,
-				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, two_sided),
+				   std::shared_ptr<image::texture::Texture_2D> mask,
+				   const Sampler_settings& sampler_settings, bool two_sided) :
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings, two_sided),
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
 const material::Sample& Material::sample(const shape::Differential& dg, const math::float3& wo,
 										 float /*time*/, float /*ior_i*/,
-										 const image::texture::sampler::Sampler_2D& sampler, uint32_t worker_id) {
-	auto& sample = cache_.get(worker_id);
+										 const Worker& worker, Sampler_settings::Filter filter) {
+	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
 
 	if (emission_map_) {
+		auto& sampler = worker.sampler(sampler_key_, filter);
+
 		math::float3 emission = sampler.sample_3(*emission_map_, dg.uv);
 		sample.set(emission_factor_ * emission, f0_, roughness_);
 	} else {
@@ -34,7 +38,9 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 }
 
 math::float3 Material::sample_emission(math::float2 uv, float /*time*/,
-										  const image::texture::sampler::Sampler_2D& sampler) const {
+									   const Worker& worker, Sampler_settings::Filter filter) const {
+	auto& sampler = worker.sampler(sampler_key_, filter);
+
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }
 
@@ -60,10 +66,12 @@ math::float2 Material::emission_importance_sample(math::float2 r2, float& pdf) c
 	return uv;
 }
 
-float Material::emission_pdf(math::float2 uv, const image::texture::sampler::Sampler_2D& sampler) const {
+float Material::emission_pdf(math::float2 uv, const Worker& worker, Sampler_settings::Filter filter) const {
 	if (uv.y == 0.f) {
 		return 0.f;
 	}
+
+	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	float sin_theta = std::sin(uv.y * math::Pi);
 

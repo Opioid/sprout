@@ -1,19 +1,19 @@
 #pragma once
 
-#include "texture_filter.hpp"
+#include "sampler_settings.hpp"
 #include <cstdint>
 
 namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 
 namespace scene { namespace material {
 
-class Texture_sampler_cache {
+class Sampler_cache {
 public:
 
-	Texture_sampler_cache();
-	~Texture_sampler_cache();
+	Sampler_cache();
+	~Sampler_cache();
 
-	const image::texture::sampler::Sampler_2D& sampler(uint32_t key, Texture_filter override_filter) const;
+	const image::texture::sampler::Sampler_2D& sampler(uint32_t key, Sampler_settings::Filter filter) const;
 
 private:
 

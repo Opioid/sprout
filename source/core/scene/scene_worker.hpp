@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shape/node_stack.hpp"
-#include "material/texture_sampler_cache.hpp"
+#include "material/sampler_cache.hpp"
 
 namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 
@@ -26,14 +26,14 @@ public:
 
 	bool visibility(const Ray& ray);
 
-	float masked_visibility(const Ray& ray, material::Texture_filter override_filter);
+	float masked_visibility(const Ray& ray, material::Sampler_settings::Filter filter);
 
 	const Scene& scene() const;
 
 	shape::Node_stack& node_stack();
 
 	const image::texture::sampler::Sampler_2D&
-	sampler(uint32_t key, material::Texture_filter override_filter) const;
+	sampler(uint32_t key, material::Sampler_settings::Filter filter) const;
 
 private:
 
@@ -45,7 +45,7 @@ protected:
 
 	shape::Node_stack node_stack_;
 
-	material::Texture_sampler_cache sampler_cache_;
+	material::Sampler_cache sampler_cache_;
 };
 
 }

@@ -104,7 +104,7 @@ bool Plane::intersect_p(const entity::Composed_transformation& transformation, c
 
 float Plane::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
 					 float time, const material::Materials& materials,
-					 Worker& worker, material::Texture_filter override_filter) const {
+					 Worker& worker, material::Sampler_settings::Filter filter) const {
 	const math::float3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
@@ -115,9 +115,7 @@ float Plane::opacity(const entity::Composed_transformation& transformation, cons
 		math::float3 p = ray.point(t);
 		math::float2 uv(math::dot(transformation.rotation.x3, p), math::dot(transformation.rotation.y3, p));
 
-		auto material = materials[0];
-		auto& sampler = worker.sampler(material->sampler_key(), override_filter);
-		return material->opacity(uv, time, sampler);
+		return materials[0]->opacity(uv, time, worker, filter);
 	}
 
 	return 0.f;

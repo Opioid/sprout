@@ -26,7 +26,7 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
 	math::float3 result = math::float3_identity;
 
-	float opacity = intersection.opacity(worker, ray.time, scene::material::Texture_filter::Unknown);
+	float opacity = intersection.opacity(worker, ray.time, scene::material::Sampler_settings::Filter::Unknown);
 	float throughput = opacity;
 
 	while (opacity < 1.f) {
@@ -40,7 +40,7 @@ math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::In
 			return math::float4(result, opacity);
 		}
 
-		throughput = (1.f - opacity) * intersection.opacity(worker, ray.time, scene::material::Texture_filter::Unknown);
+		throughput = (1.f - opacity) * intersection.opacity(worker, ray.time, scene::material::Sampler_settings::Filter::Unknown);
 		opacity   += throughput;
 	}
 
@@ -53,7 +53,7 @@ math::float3 Whitted::shade(Worker& worker, const scene::Ray& ray, const scene::
 	math::float3 result = math::float3_identity;
 
 	math::float3 wo = -ray.direction;
-	auto& material_sample = intersection.sample(worker, wo, ray.time, scene::material::Texture_filter::Unknown);
+	auto& material_sample = intersection.sample(worker, wo, ray.time, scene::material::Sampler_settings::Filter::Unknown);
 
 	result += material_sample.emission();
 
@@ -84,13 +84,13 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ra
 			scene::light::Sample light_sample;
 			l->sample(ray.time,
 					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
-					  sampler_, worker, scene::material::Texture_filter::Linear, light_sample);
+					  sampler_, worker, scene::material::Sampler_settings::Filter::Linear, light_sample);
 
 			if (light_sample.shape.pdf > 0.f) {
 				shadow_ray.set_direction(light_sample.shape.wi);
 				shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
-				float mv = worker.masked_visibility(shadow_ray, scene::material::Texture_filter::Unknown);
+				float mv = worker.masked_visibility(shadow_ray, scene::material::Sampler_settings::Filter::Unknown);
 				if (mv > 0.f) {
 					math::float3 tr = worker.transmittance(shadow_ray);
 

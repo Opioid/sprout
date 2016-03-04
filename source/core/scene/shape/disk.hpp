@@ -17,7 +17,7 @@ public:
 
 	virtual float opacity(const entity::Composed_transformation& transformation, const math::Oray& ray, float time,
 						  const material::Materials& materials,
-						  Worker& worker, material::Texture_filter override_filter) const final override;
+						  Worker& worker, material::Sampler_settings::Filter filter) const final override;
 
 	virtual void sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
 						const math::float3& p, const math::float3& n, bool two_sided,

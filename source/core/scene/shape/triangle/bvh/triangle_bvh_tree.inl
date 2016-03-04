@@ -134,7 +134,7 @@ bool Tree<Data>::intersect_p(const math::Oray& ray, Node_stack& node_stack) cons
 
 template<typename Data>
 float Tree<Data>::opacity(math::Oray& ray, float time, const material::Materials& materials,
-						  Worker& worker, material::Texture_filter override_filter) const {
+						  Worker& worker, material::Sampler_settings::Filter filter) const {
 	auto& node_stack = worker.node_stack();
 	node_stack.clear();
 	node_stack.push(0);
@@ -155,9 +155,8 @@ float Tree<Data>::opacity(math::Oray& ray, float time, const material::Materials
 						uv = data_.interpolate_uv(i, uv);
 
 						auto material = materials[data_.material_index(i)];
-						auto& sampler = worker.sampler(material->sampler_key(), override_filter);
 
-						opacity += (1.f - opacity) * material->opacity(uv, time, sampler);
+						opacity += (1.f - opacity) * material->opacity(uv, time, worker, filter);
 						if (opacity >= 1.f) {
 							return 1.f;
 						}

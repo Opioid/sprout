@@ -9,17 +9,14 @@ inline material::Material* Intersection::material() const {
 	return prop->material(geo.part);
 }
 
-inline float Intersection::opacity(Worker& worker, float time, material::Texture_filter override_filter) const {
-	auto m = material();
-	auto& sampler = worker.sampler(m->sampler_key(), override_filter);
-	return m->opacity(geo.uv, time, sampler);
+inline float Intersection::opacity(Worker& worker, float time,
+								   material::Sampler_settings::Filter filter) const {
+	return material()->opacity(geo.uv, time, worker, filter);
 }
 
 inline const material::Sample& Intersection::sample(Worker& worker, math::pfloat3 wo, float time,
-													material::Texture_filter override_filter) const {
-	auto m = material();
-	auto& sampler = worker.sampler(m->sampler_key(), override_filter);
-	return m->sample(geo, wo, time, 1.f, sampler, worker.id());
+													material::Sampler_settings::Filter filter) const {
+	return material()->sample(geo, wo, time, 1.f, worker, filter);
 }
 
 }

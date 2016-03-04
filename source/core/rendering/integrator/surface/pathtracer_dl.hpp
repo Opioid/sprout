@@ -8,7 +8,7 @@
 #include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
 #include "image/texture/sampler/address_mode.hpp"
-#include "scene/material/texture_filter.hpp"
+#include "scene/material/sampler_settings.hpp"
 
 namespace scene {
 
@@ -43,7 +43,7 @@ private:
 	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
-									   scene::material::Texture_filter override_filter);
+									   scene::material::Sampler_settings::Filter filter);
 
 	const Settings& settings_;
 

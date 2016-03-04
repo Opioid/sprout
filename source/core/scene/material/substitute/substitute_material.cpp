@@ -1,6 +1,7 @@
 #include "substitute_material.hpp"
 #include "substitute_sample.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
@@ -10,14 +11,16 @@
 namespace scene { namespace material { namespace substitute {
 
 Material::Material(Generic_sample_cache<Sample>& cache,
-				   std::shared_ptr<image::texture::Texture_2D> mask, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, two_sided) {}
+				   std::shared_ptr<image::texture::Texture_2D> mask,
+				   const Sampler_settings& sampler_settings, bool two_sided) :
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(const shape::Differential& dg, const math::float3& wo,
 										 float /*time*/, float /*ior_i*/,
-										 const image::texture::sampler::Sampler_2D& sampler,
-										 uint32_t worker_id) {
-	auto& sample = cache_.get(worker_id);
+										 const Worker& worker, Sampler_settings::Filter filter) {
+	auto& sample = cache_.get(worker.id());
+
+	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	if (normal_map_) {
 		math::float3 nm = sampler.sample_3(*normal_map_, dg.uv);
@@ -60,8 +63,9 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 }
 
 math::float3 Material::sample_emission(math::float2 uv, float /*time*/,
-									   const image::texture::sampler::Sampler_2D& sampler) const {
+									   const Worker& worker, Sampler_settings::Filter filter) const {
 	if (emission_map_) {
+		auto& sampler = worker.sampler(sampler_key_, filter);
 		return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 	} else {
 		return math::float3_identity;

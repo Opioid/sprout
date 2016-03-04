@@ -11,15 +11,15 @@ class Sample;
 class Glass : public Typed_material<Generic_sample_cache<Sample>> {
 public:
 
-	Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask);
+	Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+		  const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   float time, float ior_i,
-										   const image::texture::sampler::Sampler_2D& sampler,
-										   uint32_t worker_id) final override;
+										   const Worker& worker, Sampler_settings::Filter filter) final override;
 
 	virtual math::float3 sample_emission(math::float2 uv, float time,
-										 const image::texture::sampler::Sampler_2D& sampler) const final override;
+										 const Worker& worker, Sampler_settings::Filter filter) const final override;
 
 	virtual math::float3 average_emission() const final override;
 

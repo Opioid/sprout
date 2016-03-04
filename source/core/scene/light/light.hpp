@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene/material/texture_filter.hpp"
+#include "scene/material/sampler_settings.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/bounding/aabb.hpp"
 
@@ -31,18 +31,18 @@ public:
 	virtual void sample(const entity::Composed_transformation& transformation, float time,
 						const math::float3& p, const math::float3& n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
-						material::Texture_filter override_filter, Sample& result) const = 0;
+						material::Sampler_settings::Filter filter, Sample& result) const = 0;
 
 	void sample(float time, const math::float3& p, const math::float3& n, bool total_sphere,
 				sampler::Sampler& sampler, Worker& worker,
-				material::Texture_filter override_filter, Sample& result) const;
+				material::Sampler_settings::Filter filter, Sample& result) const;
 
 	void sample(float time, const math::float3& p, sampler::Sampler& sampler,
-				Worker& worker, material::Texture_filter override_filter, Sample& result) const;
+				Worker& worker, material::Sampler_settings::Filter filter, Sample& result) const;
 
 	virtual float pdf(const entity::Composed_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
-					  Worker& worker, material::Texture_filter override_filter) const = 0;
+					  Worker& worker, material::Sampler_settings::Filter filter) const = 0;
 
 	virtual math::float3 power(const math::aabb& scene_bb) const = 0;
 

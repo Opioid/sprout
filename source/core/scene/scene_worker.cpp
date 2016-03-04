@@ -1,6 +1,6 @@
 #include "scene_worker.hpp"
 #include "scene.hpp"
-#include "material/texture_sampler_cache.hpp"
+#include "material/sampler_cache.hpp"
 #include "prop/prop.hpp"
 #include "prop/prop_intersection.hpp"
 #include "shape/node_stack.inl"
@@ -36,8 +36,8 @@ bool Worker::visibility(const Ray& ray) {
 	return !scene_->intersect_p(ray, node_stack_);
 }
 
-float Worker::masked_visibility(const Ray& ray, material::Texture_filter override_filter) {
-	return 1.f - scene_->opacity(ray, *this, override_filter);
+float Worker::masked_visibility(const Ray& ray, material::Sampler_settings::Filter filter) {
+	return 1.f - scene_->opacity(ray, *this, filter);
 }
 
 const scene::Scene& Worker::scene() const {
@@ -49,8 +49,8 @@ scene::shape::Node_stack& Worker::node_stack() {
 }
 
 const image::texture::sampler::Sampler_2D&
-Worker::sampler(uint32_t key, material::Texture_filter override_filter) const {
-	return sampler_cache_.sampler(key, override_filter);
+Worker::sampler(uint32_t key, material::Sampler_settings::Filter filter) const {
+	return sampler_cache_.sampler(key, filter);
 }
 
 }
