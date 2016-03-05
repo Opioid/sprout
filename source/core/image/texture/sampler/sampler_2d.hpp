@@ -11,6 +11,8 @@ namespace sampler {
 class Sampler_2D {
 public:
 
+	virtual ~Sampler_2D() {}
+
 	virtual float        sample_1(const Texture_2D& texture, math::float2 uv) const = 0;
 	virtual math::float2 sample_2(const Texture_2D& texture, math::float2 uv) const = 0;
 	virtual math::float3 sample_3(const Texture_2D& texture, math::float2 uv) const = 0;
