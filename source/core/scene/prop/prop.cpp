@@ -65,12 +65,12 @@ bool Prop::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {
 }
 
 float Prop::opacity(const Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const {
-	if (!visible_in_shadow()) {
-		return 0.f;
-	}
-
 	if (!has_masked_material()) {
 		return intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
+	}
+
+	if (!visible_in_shadow()) {
+		return 0.f;
 	}
 
 	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
