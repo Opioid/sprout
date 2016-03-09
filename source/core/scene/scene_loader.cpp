@@ -154,9 +154,9 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 		} else if ("materials" == node_name) {
 			load_materials(node_value, scene, materials);
 		} else if ("visibility" == node_name) {
-			visible_in_camera   = json::read_bool(node_value, "in_camera",   true);
+			visible_in_camera	  = json::read_bool(node_value, "in_camera",   true);
 			visible_in_reflection = json::read_bool(node_value, "in_reflection", true);
-			visible_in_shadow = json::read_bool(node_value, "in_shadow", true);
+			visible_in_shadow     = json::read_bool(node_value, "in_shadow", true);
 		} else if ("open" == node_name) {
 			open = json::read_bool(node_value);
 		}
