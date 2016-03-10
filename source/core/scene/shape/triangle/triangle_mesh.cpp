@@ -2,6 +2,7 @@
 #include "triangle_intersection.hpp"
 #include "bvh/triangle_bvh_tree.inl"
 #include "bvh/triangle_bvh_data.inl"
+#include "bvh/triangle_bvh_indexed_data.inl"
 #include "bvh/triangle_bvh_data_interleaved.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
@@ -11,8 +12,6 @@
 #include "base/math/ray.inl"
 #include "base/math/matrix.inl"
 #include "base/math/distribution/distribution_1d.inl"
-#include "base/math/simd/simd_vector.inl"
-#include "base/math/simd/simd_matrix.inl"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -57,9 +56,9 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 		uint32_t material_index = tree_.triangle_material_index(pi.index);
 
 		math::float3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
-		math::float3 n_w	   = math::transform_vector(n, transformation.rotation);
-		math::float3 t_w	   = math::transform_vector(t, transformation.rotation);
-		math::float3 b_w	   = bitangent_sign * math::cross(n_w, t_w);
+		math::float3 n_w	 = math::transform_vector(n, transformation.rotation);
+		math::float3 t_w	 = math::transform_vector(t, transformation.rotation);
+		math::float3 b_w	 = bitangent_sign * math::cross(n_w, t_w);
 
 
 

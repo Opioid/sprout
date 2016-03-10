@@ -8,6 +8,7 @@ struct Vertex {
 	math::float3 p, n, t;
 	float bitangent_sign;
 	math::float2 uv;
+	uint32_t material_index;
 };
 
 struct Data_vertex {

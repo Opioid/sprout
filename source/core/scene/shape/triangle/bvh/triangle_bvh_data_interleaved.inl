@@ -31,21 +31,6 @@ bool Data_interleaved<Triangle>::intersect_p(uint32_t index, const math::Oray& r
 }
 
 template<typename Triangle>
-bool SU_CALLCONV Data_interleaved<Triangle>::intersect(uint32_t index,
-													   math::simd::FVector origin, math::simd::FVector direction,
-													   float min_t, float max_t,
-													   float& out_t, math::float2& uv) {
-	return triangles_[index].intersect(origin, direction, min_t, max_t, out_t, uv);
-}
-
-template<typename Triangle>
-bool SU_CALLCONV Data_interleaved<Triangle>::intersect_p(uint32_t index,
-														 math::simd::FVector origin, math::simd::FVector direction,
-														 float min_t, float max_t) {
-	return triangles_[index].intersect(origin, direction, min_t, max_t);
-}
-
-template<typename Triangle>
 void Data_interleaved<Triangle>::interpolate_data(uint32_t index, math::float2 uv,
 												  math::float3& n, math::float3& t, math::float2& tc) const {
 	triangles_[index].interpolate_data(uv, n, t, tc);
@@ -100,15 +85,15 @@ void Data_interleaved<Triangle>::sample(uint32_t index, math::float2 r2, math::f
 }
 */
 template<typename Triangle>
-void Data_interleaved<Triangle>::allocate_triangles(uint32_t num_triangles) {
+void Data_interleaved<Triangle>::allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& /*vertices*/) {
     triangles_.clear();
     triangles_.reserve(num_triangles);
 }
 
 template<typename Triangle>
-void Data_interleaved<Triangle>::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c,
-											  uint32_t material_index) {
-	triangles_.push_back(Triangle(a, b, c, material_index));
+void Data_interleaved<Triangle>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+											  const std::vector<Vertex>& vertices) {
+	triangles_.push_back(Triangle(vertices[a], vertices[b], vertices[c], material_index));
 }
 
 }}}}

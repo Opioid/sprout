@@ -235,7 +235,7 @@ void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p) const 
 }
 
 template<typename Data>
-void Tree<Data>::allocate_triangles(uint32_t num_triangles, uint32_t num_parts) {
+void Tree<Data>::allocate_triangles(uint32_t num_triangles, uint32_t num_parts, const std::vector<Vertex>& vertices) {
 	num_parts_ = num_parts;
 
 	delete [] num_part_triangles_;
@@ -245,14 +245,20 @@ void Tree<Data>::allocate_triangles(uint32_t num_triangles, uint32_t num_parts) 
 		num_part_triangles_[i] = 0;
 	}
 
-	data_.allocate_triangles(num_triangles);
+	data_.allocate_triangles(num_triangles, vertices);
 }
 
 template<typename Data>
-void Tree<Data>::add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index) {
+void Tree<Data>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+							  const std::vector<Vertex>& vertices) {
 	++num_part_triangles_[material_index];
 
-    data_.add_triangle(a, b, c, material_index);
+	data_.add_triangle(a, b, c, material_index, vertices);
+}
+
+template<typename Data>
+size_t Tree<Data>::num_bytes() const {
+	return data_.num_bytes();
 }
 
 }}}}

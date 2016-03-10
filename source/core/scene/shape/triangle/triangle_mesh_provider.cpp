@@ -11,12 +11,15 @@
 #include "bvh/triangle_bvh_builder_suh.inl"
 #include "bvh/triangle_bvh_data.inl"
 #include "bvh/triangle_bvh_data_interleaved.inl"
+#include "bvh/triangle_bvh_indexed_data.inl"
 #include "file/file_system.hpp"
 #include "base/json/json.hpp"
 #include "base/json/json_read_stream.hpp"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
 #include "base/memory/variant_map.inl"
+
+#include <iostream>
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -76,6 +79,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 			}
 		}
 
+		auto& hv = handler.vertices();
 		auto& indices = handler.indices();
 
 		for (auto& p : handler.parts()) {
@@ -88,6 +92,10 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 				uint32_t c = indices[i * 3 + 2];
 
 				triangles.push_back(Index_triangle{a, b, c, p.material_index});
+
+				hv[a].material_index = p.material_index;
+				hv[b].material_index = p.material_index;
+				hv[c].material_index = p.material_index;
 			}
 		}
 
@@ -111,6 +119,9 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 	}
 
 	mesh->init();
+
+	size_t bytes = mesh->tree().num_bytes();
+	std::cout << "mesh: " << bytes / 1024 / 1024 << " MiB" << std::endl;
 
 	return mesh;
 }

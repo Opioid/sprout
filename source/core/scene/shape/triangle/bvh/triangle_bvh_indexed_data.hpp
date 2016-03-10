@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base/math/vector.hpp"
-#include <vector>
 
 namespace scene { namespace shape {
 
@@ -9,11 +8,12 @@ struct Vertex;
 
 namespace triangle { namespace bvh {
 
-template<typename Triangle>
-class Data_interleaved {
+template<typename Intersection_vertex, typename Shading_vertex>
+class Indexed_data {
 public:
 
-	~Data_interleaved();
+	Indexed_data();
+	~Indexed_data();
 
 	uint32_t num_triangles() const;
 	uint32_t current_triangle() const;
@@ -43,9 +43,21 @@ public:
 
 	void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index, const std::vector<Vertex>& vertices);
 
+	size_t num_bytes() const;
+
 private:
 
-	std::vector<Triangle> triangles_;
+	uint32_t num_triangles_;
+	uint32_t current_triangle_;
+	uint32_t num_vertices_;
+
+	struct Index_triangle {
+		uint32_t a, b, c;
+	};
+
+	Index_triangle*      triangles_;
+	Intersection_vertex* intersection_vertices_;
+	Shading_vertex*		 shading_vertices_;
 };
 
 }}}}

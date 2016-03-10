@@ -68,9 +68,12 @@ public:
 	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const;
 	void sample(uint32_t index, math::float2 r2, math::float3& p) const;
 
-	void allocate_triangles(uint32_t num_triangles, uint32_t num_parts);
+	void allocate_triangles(uint32_t num_triangles, uint32_t num_parts, const std::vector<Vertex>& vertices);
 
-	void add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
+	void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+					  const std::vector<Vertex>& vertices);
+
+	size_t num_bytes() const;
 
 private:
 

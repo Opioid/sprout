@@ -39,7 +39,7 @@ void Builder_SAH::build(Tree<Data>& tree,
 		aabb.merge_assign(primitive_bounds[i]);
 	}
 
-	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), num_parts);
+	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), num_parts, vertices);
 
 	Build_node root;
 	split(&root,

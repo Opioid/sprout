@@ -23,7 +23,7 @@ void Builder_SUH::build(Tree<Data>& tree,
 		primitive_indices[i] = i;
 	}
 
-	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), num_parts);
+	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), num_parts, vertices);
 
 	Build_node root;
 	split(&root,

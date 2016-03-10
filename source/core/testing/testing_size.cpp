@@ -3,6 +3,7 @@
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/triangle/triangle_primitive_mte.hpp"
 #include "scene/shape/triangle/bvh/triangle_bvh_node.inl"
+#include "scene/shape/triangle/triangle_primitive_mt.hpp"
 #include "base/math/vector.inl"
 #include <string>
 #include <iostream>
@@ -35,6 +36,10 @@ void size() {
 	print_size<scene::shape::triangle::Shading_triangle_MTE>("Shading_triangle_MTE", 128);
 
 	print_size<scene::shape::triangle::bvh::Node>("triangle::bvh::Node", 32);
+
+	print_size<scene::shape::triangle::Intersection_vertex_MT>("Intersection_vertex_MT", 16);
+
+	print_size<scene::shape::triangle::Shading_vertex_MT>("Shading_vertex_MT", 48);
 }
 
 }

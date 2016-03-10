@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base/math/vector.hpp"
-#include "base/math/simd/simd_vector.hpp"
 
 namespace scene { namespace shape {
 
@@ -23,13 +22,6 @@ public:
 
 	bool intersect_p(uint32_t index, const math::Oray& ray) const;
 
-	bool SU_CALLCONV intersect(uint32_t index,
-							   math::simd::FVector origin, math::simd::FVector direction, float min_t, float max_t,
-							   float& out_t, math::float2& uv);
-
-	bool SU_CALLCONV intersect_p(uint32_t index,
-								 math::simd::FVector origin, math::simd::FVector direction, float min_t, float max_t);
-
 	void interpolate_data(uint32_t index, math::float2 uv,
 						  math::float3& n, math::float3& t, math::float2& tc) const;
 
@@ -47,9 +39,11 @@ public:
 	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const;
 //	void sample(uint32_t index, math::float2 r2, math::float3& p) const;
 
-	void allocate_triangles(uint32_t num_triangles);
+	void allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& vertices);
 
-	void add_triangle(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
+	void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index, const std::vector<Vertex>& vertices);
+
+	size_t num_bytes() const;
 
 private:
 
