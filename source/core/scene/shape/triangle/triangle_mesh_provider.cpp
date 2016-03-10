@@ -59,10 +59,11 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 		}
 
 		if (!handler.has_normals()) {
-			// If no normals were loaded assign identity
-			// Might be smarter to throw an exception
+			// If no normals were loaded assign something.
+			// Might be smarter to throw an exception,
+			// or just go ahead and actually compute the geometry normal...
 			for (auto& v : handler.vertices()) {
-				v.n = math::float3_identity;
+				v.n = math::float3(0.f, 1.f, 0.f);
 			}
 		}
 
@@ -73,7 +74,6 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 				math::coordinate_system(v.n, v.t, b);
 				v.bitangent_sign = 1.f;
 			}
-		}
 
 		auto& indices = handler.indices();
 
