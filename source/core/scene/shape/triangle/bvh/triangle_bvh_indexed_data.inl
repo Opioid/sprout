@@ -54,8 +54,10 @@ bool Indexed_data<Intersection_vertex, Shading_vertex>::intersect_p(uint32_t ind
 }
 
 template<typename Intersection_vertex, typename Shading_vertex>
-void Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_data(
-		uint32_t index, math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
+void Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_data(uint32_t index, math::float2 uv,
+																		 math::float3& n,
+																		 math::float3& t,
+																		 math::float2& tc) const {
 	const auto& tri = triangles_[index];
 	const Shading_vertex& a = shading_vertices_[tri.a];
 	const Shading_vertex& b = shading_vertices_[tri.b];
@@ -66,8 +68,12 @@ void Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_data(
 
 template<typename Intersection_vertex, typename Shading_vertex>
 math::float2 Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_uv(uint32_t index, math::float2 uv) const {
-//	return shading_triangles_[index].interpolate_uv(uv);
-	return math::float2(0.f, 0.f);
+	const auto& tri = triangles_[index];
+	const Shading_vertex& sa = shading_vertices_[tri.a];
+	const Shading_vertex& sb = shading_vertices_[tri.b];
+	const Shading_vertex& sc = shading_vertices_[tri.c];
+
+	return triangle::interpolate_uv(sa, sb, sc, uv);
 }
 
 template<typename Intersection_vertex, typename Shading_vertex>

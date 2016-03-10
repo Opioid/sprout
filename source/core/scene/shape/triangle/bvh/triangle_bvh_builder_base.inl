@@ -3,6 +3,7 @@
 #include "triangle_bvh_builder_base.hpp"
 #include "triangle_bvh_tree.inl"
 #include "triangle_bvh_helper.hpp"
+#include "../triangle_primitive.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
