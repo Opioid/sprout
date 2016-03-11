@@ -119,8 +119,8 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 		throw std::runtime_error("Mesh could not be initialized");
 	}
 
-	size_t bytes = mesh->tree().num_bytes();
-	std::cout << "mesh: " << bytes / 1024 / 1024 << " MiB" << std::endl;
+//	size_t bytes = mesh->tree().num_bytes();
+//	std::cout << "mesh: " << bytes / 1024 / 1024 << " MiB" << std::endl;
 
 	return mesh;
 }
