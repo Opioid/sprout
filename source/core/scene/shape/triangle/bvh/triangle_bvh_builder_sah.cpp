@@ -8,8 +8,6 @@
 #include "base/math/bounding/aabb.inl"
 #include "base/thread/thread_pool.hpp"
 
-#include <iostream>
-
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p) :
