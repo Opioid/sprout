@@ -16,6 +16,7 @@ typedef Vector3<uint8_t>  byte3;
 //typedef Vector3<float>    float3;
 typedef Vector3f_a		  float3;
 typedef Vector3<uint32_t> uint3;
+typedef Vector3<float>    packed_float3;
 
 typedef Vector4<uint8_t>  byte4;
 //typedef Vector4<float>    float4;

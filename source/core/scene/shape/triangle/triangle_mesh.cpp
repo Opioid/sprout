@@ -15,14 +15,16 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-Mesh::Tree& Mesh::tree() {
-	return tree_;
-}
-
-void Mesh::init() {
+bool Mesh::init() {
 	aabb_ = tree_.aabb();
 
 	distributions_.resize(tree_.num_parts());
+
+	return 0 != tree_.num_parts();
+}
+
+Mesh::Tree& Mesh::tree() {
+	return tree_;
 }
 
 uint32_t Mesh::num_parts() const {

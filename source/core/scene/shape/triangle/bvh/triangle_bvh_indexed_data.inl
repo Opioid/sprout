@@ -154,13 +154,12 @@ void Indexed_data<Intersection_vertex, Shading_vertex>::allocate_triangles(uint3
 	shading_vertices_      = memory::allocate_aligned<Shading_vertex>(num_vertices_);
 
 	for (uint32_t i = 0, len = num_vertices_; i < len; ++i) {
-		intersection_vertices_[i].p = vertices[i].p;
+		intersection_vertices_[i].p = math::float3(vertices[i].p);
 
-		shading_vertices_[i].n  = vertices[i].n;
-		shading_vertices_[i].t  = vertices[i].t;
+		shading_vertices_[i].n  = math::float3(vertices[i].n);
+		shading_vertices_[i].t  = math::float3(vertices[i].t);
 		shading_vertices_[i].uv = vertices[i].uv;
 		shading_vertices_[i].bitangent_sign = vertices[i].bitangent_sign;
-		shading_vertices_[i].material_index = vertices[i].material_index;
 	}
 }
 
@@ -169,6 +168,10 @@ void Indexed_data<Intersection_vertex, Shading_vertex>::add_triangle(
 		uint32_t a, uint32_t b, uint32_t c, uint32_t material_index, const std::vector<Vertex>& /*vertices*/) {
 	triangles_[current_triangle_] = Index_triangle{a, b, c};
 	++current_triangle_;
+
+	shading_vertices_[a].material_index = material_index;
+	shading_vertices_[b].material_index = material_index;
+	shading_vertices_[c].material_index = material_index;
 }
 
 template<typename Intersection_vertex, typename Shading_vertex>

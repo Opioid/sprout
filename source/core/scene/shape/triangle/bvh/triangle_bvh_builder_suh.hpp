@@ -30,9 +30,13 @@ private:
 
 		uint64_t key() const;
 
-		uint32_t side(const math::float3& a, const math::float3& b, const math::float3& c) const;
+		uint32_t side(const math::packed_float3& a,
+					  const math::packed_float3& b,
+					  const math::packed_float3& c) const;
 
-		bool completely_behind(const math::float3& a, const math::float3& b, const math::float3& c) const;
+		bool completely_behind(const math::packed_float3& a,
+							   const math::packed_float3& b,
+							   const math::packed_float3& c) const;
 
 		const math::plane& plane() const;
 

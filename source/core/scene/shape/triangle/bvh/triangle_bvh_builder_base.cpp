@@ -64,8 +64,13 @@ math::aabb Builder_base::submesh_aabb(index begin, index end,
 
 	for (index i = begin; i != end; ++i) {
 		auto& t = triangles[*i];
-		min = triangle_min(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, min);
-		max = triangle_max(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p, max);
+
+		auto a = math::float3(vertices[t.a].p);
+		auto b = math::float3(vertices[t.b].p);
+		auto c = math::float3(vertices[t.c].p);
+
+		min = triangle_min(a, b, c, min);
+		max = triangle_max(a, b, c, max);
 	}
 
 //	constexpr float epsilon = 0.000000001f;

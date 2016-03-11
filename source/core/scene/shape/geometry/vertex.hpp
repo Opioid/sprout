@@ -5,15 +5,11 @@
 namespace scene { namespace shape {
 
 struct Vertex {
-	math::float3 p, n, t;
+	math::packed_float3 p;
+	math::packed_float3 n;
+	math::packed_float3 t;
+	math::float2 uv;
 	float bitangent_sign;
-	math::float2 uv;
-	uint32_t material_index;
-};
-
-struct Data_vertex {
-	math::float3 n, t;
-	math::float2 uv;
 };
 
 }}

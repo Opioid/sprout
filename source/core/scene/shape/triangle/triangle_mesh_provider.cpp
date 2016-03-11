@@ -19,16 +19,12 @@
 #include "base/math/bounding/aabb.inl"
 #include "base/memory/variant_map.inl"
 
-#include <iostream>
-
 namespace scene { namespace shape { namespace triangle {
 
 Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
 	resource::Provider<Shape>(file_system, thread_pool) {}
 
 std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory::Variant_map& options) {
-	auto stream_pointer = file_system_.read_stream(filename);
-
 	BVH_preset bvh_preset = BVH_preset::Unknown;
 	options.query("bvh_preset", bvh_preset);
 
@@ -37,6 +33,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 	uint32_t num_parts = 0;
 
 	{
+		auto stream_pointer = file_system_.read_stream(filename);
 		json::Read_stream json_stream(*stream_pointer);
 
 		Json_handler handler;
@@ -66,21 +63,25 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 			// Might be smarter to throw an exception,
 			// or just go ahead and actually compute the geometry normal...
 			for (auto& v : handler.vertices()) {
-				v.n = math::float3(0.f, 1.f, 0.f);
+				v.n = math::packed_float3(0.f, 1.f, 0.f);
 			}
 		}
 
 		if (!handler.has_tangents()) {
 			// If no tangents were loaded, compute the tangent space manually
 			for (auto& v : handler.vertices()) {
-				math::float3 b;
+				math::packed_float3 b;
 				math::coordinate_system(v.n, v.t, b);
 				v.bitangent_sign = 1.f;
 			}
 		}
 
-		auto& hv = handler.vertices();
 		auto& indices = handler.indices();
+
+		if (!handler.parts().empty()) {
+			auto& p = handler.parts().back();
+			triangles.reserve(p.start_index + p.num_indices);
+		}
 
 		for (auto& p : handler.parts()) {
 			uint32_t triangles_start = p.start_index / 3;
@@ -92,10 +93,6 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 				uint32_t c = indices[i * 3 + 2];
 
 				triangles.push_back(Index_triangle{a, b, c, p.material_index});
-
-				hv[a].material_index = p.material_index;
-				hv[b].material_index = p.material_index;
-				hv[c].material_index = p.material_index;
 			}
 		}
 
@@ -118,10 +115,12 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 		builder.build(mesh->tree(), triangles, vertices, num_parts, 8);
 	}
 
-	mesh->init();
+	if (!mesh->init()) {
+		throw std::runtime_error("Mesh could not be initialized");
+	}
 
-	size_t bytes = mesh->tree().num_bytes();
-	std::cout << "mesh: " << bytes / 1024 / 1024 << " MiB" << std::endl;
+//	size_t bytes = mesh->tree().num_bytes();
+//	std::cout << "mesh: " << bytes / 1024 / 1024 << " MiB" << std::endl;
 
 	return mesh;
 }
@@ -151,14 +150,14 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 			// If no normals were loaded assign identity
 			// Might be smarter to throw an exception
 			for (auto& v : handler.vertices()) {
-				v.n = math::float3_identity;
+				v.n = math::packed_float3(0.f, 0.f, 1.f);
 			}
 		}
 
 		if (!handler.has_tangents()) {
 			// If no tangents were loaded, compute the tangent space manually
 			for (auto& v : handler.vertices()) {
-				math::float3 b;
+				math::packed_float3 b;
 				math::coordinate_system(v.n, v.t, b);
 				v.bitangent_sign = 1.f;
 			}

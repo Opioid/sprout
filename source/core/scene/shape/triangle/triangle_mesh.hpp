@@ -15,13 +15,13 @@ public:
 
 //	typedef bvh::Tree<bvh::Data_interleaved<Triangle_type>> Tree;
 
-	typedef bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>> Tree;
+//	typedef bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>> Tree;
 
-//	typedef bvh::Tree<bvh::Indexed_data<Intersection_vertex_type, Shading_vertex_type>> Tree;
+	typedef bvh::Tree<bvh::Indexed_data<Intersection_vertex_type, Shading_vertex_type>> Tree;
+
+	bool init();
 
 	Tree& tree();
-
-	void init();
 
 	virtual uint32_t num_parts() const final override;
 
