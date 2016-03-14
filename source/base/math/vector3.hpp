@@ -20,6 +20,8 @@ struct Vector3 {
 			T x, y, z;
 		};
 
+		Vector2<T> xy;
+
 		T v[3];
 	};
 
@@ -34,8 +36,6 @@ struct Vector3 {
 	explicit Vector3(const T* v);
 
 	explicit Vector3(const Vector3f_a& v);
-
-	Vector2<T> xy() const;
 
 	Vector3 operator+(T s) const;
 
@@ -153,6 +153,8 @@ struct alignas(16) Vector3f_a {
 			float x, y, z;
 		};
 
+		Vector2<float> xy;
+
 		float v[3];
 	};
 
@@ -165,8 +167,6 @@ struct alignas(16) Vector3f_a {
 	explicit Vector3f_a(Vector2<float> xy, float z);
 
 	explicit Vector3f_a(const Vector3<float>& v);
-
-	Vector2<float> xy() const;
 
 	Vector3f_a operator+(float s) const;
 

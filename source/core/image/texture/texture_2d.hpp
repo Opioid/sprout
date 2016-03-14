@@ -15,6 +15,8 @@ public:
 	Texture_2D(std::shared_ptr<Image> image);
 	virtual ~Texture_2D();
 
+	const Image* image() const;
+
 	math::int2 dimensions() const;
 	math::float2 dimensions_float() const;
 

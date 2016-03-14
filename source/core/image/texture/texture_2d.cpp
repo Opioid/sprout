@@ -11,6 +11,10 @@ Texture_2D::Texture_2D(std::shared_ptr<Image> image) :
 
 Texture_2D::~Texture_2D() {}
 
+const Image* Texture_2D::image() const {
+	return image_.get();
+}
+
 math::int2 Texture_2D::dimensions() const {
 	return image_->description().dimensions;
 }

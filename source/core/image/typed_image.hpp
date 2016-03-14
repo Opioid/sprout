@@ -22,6 +22,8 @@ public:
 	const T& at(int32_t x, int32_t y, int32_t element) const;
 	T& at(int32_t x, int32_t y, int32_t element);
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	T* data_;
@@ -30,7 +32,8 @@ private:
 typedef Typed_image<uint8_t>	  Image_byte_1;
 typedef Typed_image<math::byte2>  Image_byte_2;
 typedef Typed_image<math::byte3>  Image_byte_3;
-typedef Typed_image<math::float3> Image_float_3;
+//typedef Typed_image<math::float3> Image_float_3;
+typedef Typed_image<math::packed_float3> Image_float_3;
 typedef Typed_image<math::float4> Image_float_4;
 
 }
