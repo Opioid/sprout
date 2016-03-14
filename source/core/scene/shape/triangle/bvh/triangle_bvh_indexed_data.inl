@@ -334,8 +334,15 @@ void Indexed_data1<Intersection_vertex, Shading_vertex>::allocate_triangles(uint
 template<typename Intersection_vertex, typename Shading_vertex>
 void Indexed_data1<Intersection_vertex, Shading_vertex>::add_triangle(
 		uint32_t a, uint32_t b, uint32_t c, uint32_t material_index, const std::vector<Vertex>& vertices) {
+	float bitanget_sign = 1.f;
 
-	triangles_[current_triangle_] = Index_triangle(a, b, c, material_index, vertices[a].bitangent_sign);
+	if ((vertices[a].bitangent_sign < 0.f && vertices[b].bitangent_sign < 0.f)
+	||  (vertices[b].bitangent_sign < 0.f && vertices[c].bitangent_sign < 0.f)
+	||  (vertices[c].bitangent_sign < 0.f && vertices[a].bitangent_sign < 0.f)) {
+		bitanget_sign = -1.f;
+	}
+
+	triangles_[current_triangle_] = Index_triangle(a, b, c, material_index, bitanget_sign);
 	++current_triangle_;
 }
 
