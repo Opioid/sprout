@@ -252,4 +252,28 @@ inline float area(const Intersection_vertex_MT& a,
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 
+inline math::float2 interpolate_uv(const Shading_vertex_MTC& a,
+								   const Shading_vertex_MTC& b,
+								   const Shading_vertex_MTC& c,
+								   math::float2 uv) {
+	float w = 1.f - uv.x - uv.y;
+
+	return math::float2(w * a.n_u.w + uv.x * b.n_u.w + uv.y * c.n_u.w,
+						w * a.t_v.w + uv.x * b.t_v.w + uv.y * c.t_v.w);
+}
+
+inline void interpolate_data(const Shading_vertex_MTC& a,
+							 const Shading_vertex_MTC& b,
+							 const Shading_vertex_MTC& c,
+							 math::float2 uv,
+							 math::float3& n, math::float3& t, math::float2& tc) {
+	float w = 1.f - uv.x - uv.y;
+
+	n  = math::normalized(w * a.n_u.xyz + uv.x * b.n_u.xyz + uv.y * c.n_u.xyz);
+	t  = math::normalized(w * a.t_v.xyz + uv.x * b.t_v.xyz + uv.y * c.t_v.xyz);
+
+	tc = math::float2(w * a.n_u.w + uv.x * b.n_u.w + uv.y * c.n_u.w,
+					  w * a.t_v.w + uv.x * b.t_v.w + uv.y * c.t_v.w);
+}
+
 }}}

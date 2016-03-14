@@ -80,4 +80,20 @@ float area(const Intersection_vertex_MT& a,
 		   const Intersection_vertex_MT& c,
 		   const math::float3& scale);
 
+struct Shading_vertex_MTC {
+	math::float4 n_u;
+	math::float4 t_v;
+};
+
+math::float2 interpolate_uv(const Shading_vertex_MTC& a,
+							const Shading_vertex_MTC& b,
+							const Shading_vertex_MTC& c,
+							math::float2 uv);
+
+void interpolate_data(const Shading_vertex_MTC& a,
+					  const Shading_vertex_MTC& b,
+					  const Shading_vertex_MTC& c,
+					  math::float2 uv,
+					  math::float3& n, math::float3& t, math::float2& tc);
+
 }}}

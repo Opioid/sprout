@@ -17,7 +17,9 @@ public:
 
 //	typedef bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>> Tree;
 
-	typedef bvh::Tree<bvh::Indexed_data<Intersection_vertex_type, Shading_vertex_type>> Tree;
+//	typedef bvh::Tree<bvh::Indexed_data<Intersection_vertex_type, Shading_vertex_type>> Tree;
+
+	typedef bvh::Tree<bvh::Indexed_data1<Intersection_vertex_type, Shading_vertex_type>> Tree;
 
 	bool init();
 
