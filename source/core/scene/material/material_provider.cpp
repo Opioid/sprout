@@ -25,9 +25,6 @@
 #include "base/memory/variant_map.inl"
 #include "base/thread/thread_pool.hpp"
 
-#include "image/image.hpp"
-#include <iostream>
-
 namespace scene { namespace material {
 
 Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
@@ -332,10 +329,6 @@ std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_val
 	}
 
 	if (emission_map) {
-
-		size_t bytes = emission_map->image()->num_bytes();
-		std::cout << "hdri: " << bytes / 1024 / 1024 << " MiB" << std::endl;
-
 		if (animation_duration > 0.f) {
 			return std::make_shared<light::Emissionmap_animated>(light_cache_, mask, sampler_settings, two_sided,
 																 emission_map, emission_factor, animation_duration);
