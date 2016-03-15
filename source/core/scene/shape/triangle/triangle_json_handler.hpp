@@ -1,6 +1,7 @@
 #pragma once
 
 #include "triangle_bvh_preset.hpp"
+#include "triangle_primitive.hpp"
 #include "scene/shape/geometry/vertex.hpp"
 #include <vector>
 #include <string>
@@ -45,7 +46,7 @@ public:
 
 	const std::vector<Part>& parts() const;
 
-	const std::vector<uint32_t>& indices() const;
+	std::vector<Index_triangle>& triangles();
 
 	const std::vector<Vertex>& vertices() const;
 	std::vector<Vertex>& vertices();
@@ -53,6 +54,10 @@ public:
 	const std::vector<std::string>& morph_targets() const;
 
 private:
+
+	void add_index(uint32_t i);
+
+	void increment_triangle_element();
 
 	void handle_vertex(float v);
 
@@ -94,13 +99,16 @@ private:
 
 	std::vector<Part> parts_;
 
-	std::vector<uint32_t> indices_;
+	std::vector<Index_triangle> triangles_;
 
 	std::vector<Vertex> vertices_;
 
 	Number expected_number_;
 	String_type expected_string_;
 	Object expected_object_;
+
+	uint32_t current_triangle_;
+	uint32_t current_triangle_element_;
 
 	uint32_t current_vertex_;
 	uint32_t current_vertex_element_;

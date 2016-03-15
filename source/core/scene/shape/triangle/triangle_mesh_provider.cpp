@@ -54,7 +54,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 			throw std::runtime_error("Mesh does not contain vertex positions");
 		}
 
-		if (handler.indices().empty()) {
+		if (handler.triangles().empty()) {
 			throw std::runtime_error("Mesh does not contain indices");
 		}
 
@@ -76,7 +76,18 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 			}
 		}
 
-		auto& indices = handler.indices();
+		triangles.swap(handler.triangles());
+
+		for (auto& p : handler.parts()) {
+			uint32_t triangles_start = p.start_index / 3;
+			uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
+
+			for (uint32_t i = triangles_start; i < triangles_end; ++i) {
+				triangles[i].material_index = p.material_index;
+			}
+		}
+
+	/*	auto& indices = handler.indices();
 
 		if (!handler.parts().empty()) {
 			auto& p = handler.parts().back();
@@ -95,6 +106,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 				triangles.push_back(Index_triangle{a, b, c, p.material_index});
 			}
 		}
+		*/
 
 		vertices.swap(handler.vertices());
 
@@ -162,7 +174,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 				v.bitangent_sign = 1.f;
 			}
 		}
-
+/*
 		// The idea is to have one identical set of indices for all morph targets
 		if (collection->triangles().empty()) {
 			auto& indices = handler.indices();
@@ -180,7 +192,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 				}
 			}
 		}
-
+*/
 		collection->add_swap_vertices(handler.vertices());
 	}
 

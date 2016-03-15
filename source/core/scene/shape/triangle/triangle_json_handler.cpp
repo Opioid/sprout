@@ -10,14 +10,16 @@ Json_handler::Json_handler () {
 void Json_handler::clear() {
 	object_level_ = 0;
 	top_object_ = Object::Unknown;
-	parts_.clear();
 	vertices_.clear();
-	indices_.clear();
+	triangles_.clear();
+	parts_.clear();
 	expected_number_ = Number::Unknown;
 	expected_string_ = String_type::Unknown;
 	expected_object_ = Object::Unknown;
 	current_vertex_ = 0;
 	current_vertex_element_ = 0;
+	current_triangle_ = 0;
+	current_triangle_element_ = 0;
 	bvh_preset_ = BVH_preset::Unknown,
 	has_positions_ = false;
 	has_normals_ = false;
@@ -26,7 +28,7 @@ void Json_handler::clear() {
 }
 
 void Json_handler::create_part() {
-	parts_.push_back(Part{0, 0, static_cast<uint32_t>(indices_.size())});
+	parts_.push_back(Part{0, 0, 3 * static_cast<uint32_t>(triangles_.size())});
 }
 
 bool Json_handler::Null() {
@@ -55,7 +57,7 @@ bool Json_handler::Uint(unsigned i) {
 		parts_.back().num_indices = i;
 		break;
 	case Number::Index:
-		indices_.push_back(i);
+		add_index(i);
 		break;
 	default:
 		handle_vertex(static_cast<float>(i));
@@ -140,6 +142,11 @@ bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
 			expected_number_ = Number::Num_indices;
 		} else if ("indices" == name) {
 			expected_number_ = Number::Index;
+
+			if (!parts_.empty()) {
+				auto& p = parts_.back();
+				triangles_.reserve(p.start_index + p.num_indices);
+			}
 		}
 
 		return true;
@@ -213,8 +220,8 @@ const std::vector<Json_handler::Part>& Json_handler::parts() const {
 	return parts_;
 }
 
-const std::vector<uint32_t>& Json_handler::indices() const {
-	return indices_;
+std::vector<Index_triangle>& Json_handler::triangles() {
+	return triangles_;
 }
 
 const std::vector<Vertex>& Json_handler::vertices() const {
@@ -227,6 +234,24 @@ std::vector<Vertex>& Json_handler::vertices() {
 
 const std::vector<std::string>& Json_handler::morph_targets() const {
 	return morph_targets_;
+}
+
+void Json_handler::add_index(uint32_t i) {
+	if (current_triangle_ == triangles_.size()) {
+		triangles_.push_back(Index_triangle());
+	}
+
+	triangles_[current_triangle_].i[current_triangle_element_] = i;
+
+	increment_triangle_element();
+}
+
+void Json_handler::increment_triangle_element() {
+	++current_triangle_element_;
+	if (current_triangle_element_ >= 3) {
+		current_triangle_element_ = 0;
+		++current_triangle_;
+	}
 }
 
 void Json_handler::handle_vertex(float v) {
@@ -249,7 +274,7 @@ void Json_handler::handle_vertex(float v) {
 }
 
 void Json_handler::add_position(float v) {
-	if (current_vertex_ == vertices_.size()) {
+	if (vertices_.size() == current_vertex_) {
 		vertices_.push_back(Vertex());
 	}
 
@@ -259,7 +284,7 @@ void Json_handler::add_position(float v) {
 }
 
 void Json_handler::add_normal(float v) {
-	if (current_vertex_ == vertices_.size()) {
+	if (vertices_.size() == current_vertex_) {
 		vertices_.push_back(Vertex());
 	}
 
@@ -269,7 +294,7 @@ void Json_handler::add_normal(float v) {
 }
 
 void Json_handler::add_tangent(float v) {
-	if (current_vertex_ == vertices_.size()) {
+	if (vertices_.size() == current_vertex_) {
 		vertices_.push_back(Vertex());
 	}
 
@@ -283,7 +308,7 @@ void Json_handler::add_tangent(float v) {
 }
 
 void Json_handler::add_texture_coordinate(float v) {
-	if (current_vertex_ == vertices_.size()) {
+	if (vertices_.size() == current_vertex_) {
 		vertices_.push_back(Vertex());
 	}
 
