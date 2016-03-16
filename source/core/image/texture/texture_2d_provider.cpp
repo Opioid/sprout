@@ -12,7 +12,6 @@
 #include "image/image_provider.hpp"
 #include "resource/resource_provider.inl"
 #include "resource/resource_manager.inl"
-#include "resource/resource_cache.inl"
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.inl"
 

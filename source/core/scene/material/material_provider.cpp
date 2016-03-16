@@ -1,7 +1,6 @@
 #include "material_provider.hpp"
 #include "resource/resource_provider.inl"
 #include "resource/resource_manager.inl"
-#include "resource/resource_cache.inl"
 #include "material_sample_cache.inl"
 #include "image/texture/texture_2d_provider.hpp"
 #include "cloth/cloth_material.hpp"
