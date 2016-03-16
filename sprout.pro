@@ -5,4 +5,5 @@ CONFIG += ordered
 SUBDIRS += \
 	source/base \
 	source/core \
-	source/cli
+	source/extension \
+	source/cli \

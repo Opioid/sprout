@@ -10,6 +10,7 @@ HEADERS += \
 	scene/shape/triangle/triangle_intersection.hpp \
 	scene/shape/triangle/triangle_json_handler.hpp \
 	scene/shape/triangle/triangle_mesh.hpp \
+	scene/shape/triangle/triangle_mesh_generator.hpp \
 	scene/shape/triangle/triangle_mesh_provider.hpp \
 	scene/shape/triangle/triangle_morph_target_collection.hpp \
 	scene/shape/triangle/triangle_morphable_mesh.hpp \

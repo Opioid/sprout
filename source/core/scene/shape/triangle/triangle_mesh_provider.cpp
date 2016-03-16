@@ -1,7 +1,6 @@
 #include "triangle_mesh_provider.hpp"
 #include "resource/resource_provider.inl"
 #include "resource/resource_manager.hpp"
-#include "triangle_bvh_preset.hpp"
 #include "triangle_type.hpp"
 #include "triangle_json_handler.hpp"
 #include "triangle_morphable_mesh.hpp"
@@ -89,27 +88,6 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 			}
 		}
 
-	/*	auto& indices = handler.indices();
-
-		if (!handler.parts().empty()) {
-			auto& p = handler.parts().back();
-			triangles.reserve(p.start_index + p.num_indices);
-		}
-
-		for (auto& p : handler.parts()) {
-			uint32_t triangles_start = p.start_index / 3;
-			uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
-
-			for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-				uint32_t a = indices[i * 3 + 0];
-				uint32_t b = indices[i * 3 + 1];
-				uint32_t c = indices[i * 3 + 2];
-
-				triangles.push_back(Index_triangle{a, b, c, p.material_index});
-			}
-		}
-		*/
-
 		vertices.swap(handler.vertices());
 
 		num_parts = static_cast<uint32_t>(handler.parts().size());
@@ -119,24 +97,31 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 		}
 	}
 
-	auto mesh = std::make_shared<Mesh>();
+    return create_mesh(triangles, vertices, num_parts, bvh_preset, manager.thread_pool());
+}
 
-	if (BVH_preset::Slow == bvh_preset) {
-		bvh::Builder_SAH builder(16, 64);
-		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, manager.thread_pool());
-	} else {
-		bvh::Builder_SUH builder;
-		builder.build(mesh->tree(), triangles, vertices, num_parts, 8);
-	}
+std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& triangles,
+                                             const std::vector<Vertex>& vertices,
+                                             uint32_t num_parts, BVH_preset bvh_preset,
+                                             thread::Pool& thread_pool) {
+    auto mesh = std::make_shared<Mesh>();
 
-	if (!mesh->init()) {
-		throw std::runtime_error("Mesh could not be initialized");
-	}
+    if (BVH_preset::Slow == bvh_preset) {
+        bvh::Builder_SAH builder(16, 64);
+        builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
+    } else {
+        bvh::Builder_SUH builder;
+        builder.build(mesh->tree(), triangles, vertices, num_parts, 8);
+    }
+
+    if (!mesh->init()) {
+        throw std::runtime_error("Mesh could not be initialized");
+    }
 
 //	size_t bytes = mesh->tree().num_bytes();
 //	std::cout << "mesh: " << bytes / 1024 / 1024 << " MiB" << std::endl;
 
-	return mesh;
+    return mesh;
 }
 
 std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filename*/,

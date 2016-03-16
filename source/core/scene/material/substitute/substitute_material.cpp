@@ -1,5 +1,6 @@
 #include "substitute_material.hpp"
 #include "substitute_sample.hpp"
+#include "image/texture/texture_2d.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"

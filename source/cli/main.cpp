@@ -16,6 +16,7 @@
 #include "core/scene/camera/camera.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
+#include "extension/procedural/mesh/mesh.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector.inl"
 #include "base/string/string.inl"
@@ -85,7 +86,10 @@ int main(int argc, char* argv[]) {
 
 	// The scene loader must be alive during rendering, otherwise some resources might be released prematurely.
 	// This is confusing and should be adressed.
-	scene::Loader scene_loader(resource_manager, material_provider.fallback_material());
+    scene::Loader scene_loader(resource_manager, material_provider.fallback_material(), mesh_provider);
+
+	procedural::mesh::init(scene_loader);
+
 	scene::Scene scene;
 
 	try {

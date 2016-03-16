@@ -1,11 +1,11 @@
 #pragma once
 
 #include "sampler_settings.hpp"
-#include "image/texture/texture_2d.hpp"
 #include "base/math/vector.hpp"
+#include <memory>
 #include <vector>
 
-namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
+namespace image { namespace texture { class Texture_2D; }}
 
 namespace scene {
 

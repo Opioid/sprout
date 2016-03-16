@@ -4,6 +4,7 @@
 #include "base/json/rapidjson_types.hpp"
 #include <istream>
 #include <string>
+#include <map>
 #include <memory>
 
 namespace file { class System; }
@@ -20,7 +21,16 @@ namespace light { class Light; }
 
 namespace volume { class Volume; }
 
-namespace shape { class Shape; }
+namespace shape {
+
+class Shape;
+
+namespace triangle {
+
+class Generator;
+class Provider;
+
+}}
 
 class Scene;
 class Prop;
@@ -28,10 +38,14 @@ class Prop;
 class Loader {
 public:
 
-	Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material);
-	~Loader();
+    Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material,
+           shape::triangle::Provider& provider);
+
+    ~Loader();
 
 	void load(std::istream& stream, Scene& scene);
+
+    void register_mesh_generator(const std::string& name, shape::triangle::Generator* generator);
 
 private:
 
@@ -45,7 +59,7 @@ private:
 
 	std::shared_ptr<shape::Shape> load_shape(const rapidjson::Value& shape_value);
 
-	std::shared_ptr<shape::Shape> shape(const std::string& type) const;
+    std::shared_ptr<shape::Shape> shape(const std::string& type, const rapidjson::Value& shape_value) const;
 
 	void load_materials(const rapidjson::Value& materials_value, Scene& scene, material::Materials& materials);
 
@@ -59,6 +73,10 @@ private:
 	std::shared_ptr<shape::Shape> sphere_;
 
 	std::shared_ptr<material::Material> fallback_material_;
+
+    shape::triangle::Provider& mesh_provider_;
+
+    std::map<std::string, shape::triangle::Generator*> mesh_generators_;
 };
 
 }

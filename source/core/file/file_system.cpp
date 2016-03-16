@@ -40,7 +40,7 @@ std::unique_ptr<std::istream> System::open_read_stream(const std::string& name) 
 		}
 	}
 
-	auto stream = std::unique_ptr<std::istream>(new std::ifstream(name, std::ios::binary));
+    auto stream = std::unique_ptr<std::istream>(new std::ifstream(name, std::ios::binary));
 	if (*stream) {
 		return stream;
 	}

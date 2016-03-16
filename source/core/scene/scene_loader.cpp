@@ -15,6 +15,7 @@
 #include "scene/shape/sphere.hpp"
 #include "scene/shape/triangle/triangle_bvh_preset.hpp"
 #include "scene/shape/triangle/triangle_mesh.hpp"
+#include "scene/shape/triangle/triangle_mesh_generator.hpp"
 #include "scene/volume/volume.hpp"
 #include "resource/resource_cache.inl"
 #include "resource/resource_manager.inl"
@@ -27,7 +28,8 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material) :
+Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material,
+               shape::triangle::Provider& provider) :
 	resource_manager_(manager),
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
@@ -35,7 +37,8 @@ Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> f
 	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
-	fallback_material_(fallback_material) {}
+    fallback_material_(fallback_material),
+    mesh_provider_(provider) {}
 
 Loader::~Loader() {}
 
@@ -50,6 +53,10 @@ void Loader::load(std::istream& stream, Scene& scene) {
 			load_entities(node_value, nullptr, scene);
 		}
 	}
+}
+
+void Loader::register_mesh_generator(const std::string& name, shape::triangle::Generator* generator) {
+    mesh_generators_[name] = generator;
 }
 
 void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entity* parent, Scene& scene) {
@@ -202,24 +209,21 @@ volume::Volume* Loader::load_volume(const rapidjson::Value& volume_value, Scene&
 std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {
 	std::string type = json::read_string(shape_value, "type");
 	if (!type.empty()) {
-		return shape(type);
+        return shape(type, shape_value);
 	}
 
 	std::string file = json::read_string(shape_value, "file");
 	if (!file.empty()) {
 		try {
-			shape::triangle::BVH_preset bvh_preset = shape::triangle::BVH_preset::Unknown;
+            memory::Variant_map options;
 
 			std::string bvh_preset_value = json::read_string(shape_value, "bvh_preset");
-
 			if ("fast" == bvh_preset_value) {
-				bvh_preset = shape::triangle::BVH_preset::Fast;
+                options.insert("bvh_preset", shape::triangle::BVH_preset::Fast);
 			} else if ("slow" == bvh_preset_value) {
-				bvh_preset = shape::triangle::BVH_preset::Slow;
+                options.insert("bvh_preset", shape::triangle::BVH_preset::Slow);
 			}
 
-			memory::Variant_map options;
-			options.insert("bvh_preset", bvh_preset);
 			return resource_manager_.load<shape::Shape>(file, options);
 		} catch (const std::exception& e) {
 			logging::error("Cannot load \"" + file + "\": " + e.what());
@@ -229,7 +233,7 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 	return nullptr;
 }
 
-std::shared_ptr<shape::Shape> Loader::shape(const std::string& type) const {
+std::shared_ptr<shape::Shape> Loader::shape(const std::string& type, const rapidjson::Value& shape_value) const {
 	if ("Canopy" == type) {
 		return canopy_;
 	} else if ("Celestial_disk" == type) {
@@ -242,7 +246,12 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type) const {
 		return plane_;
 	} else if ("Sphere" == type) {
 		return sphere_;
-	}
+    } else {
+        auto g = mesh_generators_.find(type);
+        if (mesh_generators_.end() != g) {
+            return g->second->create_mesh(shape_value, mesh_provider_, resource_manager_.thread_pool());
+        }
+    }
 
 	return nullptr;
 }
