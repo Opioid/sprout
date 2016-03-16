@@ -15,9 +15,6 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 									  const memory::Variant_map& options,
 									  resource::Manager& manager) {
 	auto stream_pointer = manager.file_system().read_stream(filename);
-	if (!*stream_pointer) {
-		throw std::runtime_error("File \"" + filename + "\" could not be opened");
-	}
 
 	auto& stream = *stream_pointer;
 
@@ -36,7 +33,7 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 		return reader.read(stream);
 	}
 
-	return nullptr;
+	throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
 }
 
 }

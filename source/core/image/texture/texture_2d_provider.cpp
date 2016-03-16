@@ -7,6 +7,7 @@
 #include "texture_2d_byte_3_unorm.hpp"
 #include "texture_2d_float_3.hpp"
 #include "texture_encoding.hpp"
+#include "logging/logging.hpp"
 #include "image/image.hpp"
 #include "image/image_provider.hpp"
 #include "resource/resource_provider.inl"
@@ -41,29 +42,30 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 	image_options.insert("channels", channels);
 	image_options.inherit("num_elements", options);
 
-	auto image = manager.load<Image>(filename, image_options);
-	if (!image) {
-		return nullptr;
-	}
+	try {
+		auto image = manager.load<Image>(filename, image_options);
 
-	if (Image::Type::Byte_1 == image->description().type) {
-		return std::make_shared<Texture_2D_byte_1_unorm>(image);
-	} else if (Image::Type::Byte_2 == image->description().type) {
-		if (Usage::Anisotropy == usage) {
-			return std::make_shared<Texture_2D_byte_2_snorm>(image);
-		} else {
-			return std::make_shared<Texture_2D_byte_2_unorm>(image);
+		if (Image::Type::Byte_1 == image->description().type) {
+			return std::make_shared<Texture_2D_byte_1_unorm>(image);
+		} else if (Image::Type::Byte_2 == image->description().type) {
+			if (Usage::Anisotropy == usage) {
+				return std::make_shared<Texture_2D_byte_2_snorm>(image);
+			} else {
+				return std::make_shared<Texture_2D_byte_2_unorm>(image);
+			}
+		} else if (Image::Type::Byte_3 == image->description().type) {
+			if (Usage::Normal == usage) {
+				return std::make_shared<Texture_2D_byte_3_snorm>(image);
+			} else if (Usage::Surface == usage) {
+				return std::make_shared<Texture_2D_byte_3_unorm>(image);
+			} else {
+				return std::make_shared<Texture_2D_byte_3_sRGB>(image);
+			}
+		} else if (Image::Type::Float_3 == image->description().type) {
+			return std::make_shared<Texture_2D_float_3>(image);
 		}
-	} else if (Image::Type::Byte_3 == image->description().type) {
-		if (Usage::Normal == usage) {
-			return std::make_shared<Texture_2D_byte_3_snorm>(image);
-		} else if (Usage::Surface == usage) {
-			return std::make_shared<Texture_2D_byte_3_unorm>(image);
-		} else {
-			return std::make_shared<Texture_2D_byte_3_sRGB>(image);
-		}
-	} else if (Image::Type::Float_3 == image->description().type) {
-		return std::make_shared<Texture_2D_float_3>(image);
+	} catch (const std::exception& e) {
+		logging::warning("Loading texture: \"" + filename + "\": " + e.what() + ".");
 	}
 
 	return nullptr;

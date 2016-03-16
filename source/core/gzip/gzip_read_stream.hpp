@@ -18,7 +18,7 @@ public:
 	typedef traits_type::pos_type  pos_type;
 	typedef traits_type::off_type  off_type;
 
-	typedef std::basic_streambuf<char, std::char_traits<char>>   __streambuf_type;
+	typedef std::basic_streambuf<char, std::char_traits<char>> __streambuf_type;
 
 	Filebuffer();
 
