@@ -5,6 +5,11 @@
 #include "core/progress/progress_sink_null.hpp"
 #include "core/progress/progress_sink_stdout.hpp"
 #include "core/rendering/rendering_driver.hpp"
+#include "core/resource/resource_manager.inl"
+#include "core/image/image_provider.hpp"
+#include "core/image/texture/texture_2d_provider.hpp"
+#include "core/scene/material/material_provider.hpp"
+#include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/camera/camera.hpp"
@@ -63,9 +68,23 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
+	resource::Manager resource_manager(file_system, thread_pool);
+
+	scene::shape::triangle::Provider mesh_provider;
+	resource_manager.register_provider(mesh_provider);
+
+	image::Provider image_provider;
+	resource_manager.register_provider(image_provider);
+
+	image::texture::Provider texture_provider;
+	resource_manager.register_provider(texture_provider);
+
+	scene::material::Provider material_provider(thread_pool.num_threads());
+	resource_manager.register_provider(material_provider);
+
 	// The scene loader must be alive during rendering, otherwise some resources might be released prematurely.
 	// This is confusing and should be adressed.
-	scene::Loader scene_loader(file_system, thread_pool);
+	scene::Loader scene_loader(resource_manager, material_provider.fallback_material());
 	scene::Scene scene;
 
 	try {

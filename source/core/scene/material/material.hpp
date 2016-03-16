@@ -5,11 +5,7 @@
 #include "base/math/vector.hpp"
 #include <vector>
 
-namespace image { namespace texture { namespace sampler {
-
-class Sampler_2D;
-
-}}}
+namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 
 namespace scene {
 

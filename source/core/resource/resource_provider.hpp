@@ -1,5 +1,6 @@
 #pragma once
 
+#include "identifiable.hpp"
 #include <istream>
 #include <memory>
 
@@ -11,19 +12,19 @@ namespace thread { class Pool; }
 
 namespace resource {
 
+class Manager;
+
 template<typename T>
-class Provider {
+class Provider : public Identifiable<T> {
 public:
 
-	Provider(file::System& file_system, thread::Pool& thread_pool);
+	Provider(const std::string& name);
 	virtual ~Provider();
 
-	virtual std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options) = 0;
+	virtual std::shared_ptr<T> load(const std::string& filename,
+									const memory::Variant_map& options,
+									Manager& manager) = 0;
 
-protected:
-
-	file::System& file_system_;
-	thread::Pool& thread_pool_;
 };
 
 }

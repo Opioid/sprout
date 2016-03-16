@@ -1,7 +1,6 @@
 #pragma once
 
 #include "resource/resource_provider.hpp"
-#include "resource/resource_cache.hpp"
 #include "material_sample_cache.hpp"
 #include "base/json/rapidjson_types.hpp"
 #include <vector>
@@ -26,21 +25,22 @@ struct Sampler_settings;
 class Provider : public resource::Provider<Material> {
 public:
 
-	Provider(file::System& file_system, thread::Pool& thread_pool,
-			 resource::Cache<image::texture::Texture_2D>& texture_cache);
+	Provider(uint32_t num_threads);
 
-	virtual std::shared_ptr<Material> load(const std::string& filename, const memory::Variant_map& options);
+	virtual std::shared_ptr<Material> load(const std::string& filename,
+										   const memory::Variant_map& options,
+										   resource::Manager& manager) final override;
 
 	std::shared_ptr<Material> fallback_material() const;
 
 private:
 
-	std::shared_ptr<Material> load_cloth(const rapidjson::Value& cloth_value);
-	std::shared_ptr<Material> load_display(const rapidjson::Value& display_value);
-	std::shared_ptr<Material> load_glass(const rapidjson::Value& glass_value);
-	std::shared_ptr<Material> load_light(const rapidjson::Value& light_value);
-	std::shared_ptr<Material> load_metal(const rapidjson::Value& metal_value);
-	std::shared_ptr<Material> load_substitute(const rapidjson::Value& substitute_value);
+	std::shared_ptr<Material> load_cloth     (const rapidjson::Value& cloth_value,      resource::Manager& manager);
+	std::shared_ptr<Material> load_display   (const rapidjson::Value& display_value,    resource::Manager& manager);
+	std::shared_ptr<Material> load_glass     (const rapidjson::Value& glass_value,      resource::Manager& manager);
+	std::shared_ptr<Material> load_light     (const rapidjson::Value& light_value,      resource::Manager& manager);
+	std::shared_ptr<Material> load_metal     (const rapidjson::Value& metal_value,      resource::Manager& manager);
+	std::shared_ptr<Material> load_substitute(const rapidjson::Value& substitute_value, resource::Manager& manager);
 
 	struct Texture_description {
 		std::string filename;
@@ -50,8 +50,6 @@ private:
 
 	void read_sampler_settings(const rapidjson::Value& sampler_value, Sampler_settings& settings);
 	void read_texture_description(const rapidjson::Value& texture_value, Texture_description& description);
-
-	resource::Cache<image::texture::Texture_2D>& texture_cache_;
 
 	Generic_sample_cache<cloth::Sample>				cloth_cache_;
 	Generic_sample_cache<display::Sample>			display_cache_;

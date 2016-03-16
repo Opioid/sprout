@@ -6,8 +6,7 @@
 namespace resource {
 
 template<typename T>
-Provider<T>::Provider(file::System& file_system, thread::Pool& thread_pool) :
-	file_system_(file_system), thread_pool_(thread_pool) {}
+Provider<T>::Provider(const std::string& name) : Identifiable<T>(name) {}
 
 template<typename T>
 Provider<T>::~Provider() {}

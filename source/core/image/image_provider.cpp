@@ -1,4 +1,5 @@
 #include "image_provider.hpp"
+#include "resource/resource_manager.hpp"
 #include "resource/resource_provider.inl"
 #include "image/encoding/rgbe/rgbe_reader.hpp"
 #include "file/file.hpp"
@@ -8,11 +9,12 @@
 
 namespace image  {
 
-Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
-	resource::Provider<Image>(file_system, thread_pool) {}
+Provider::Provider() : resource::Provider<Image>("Image") {}
 
-std::shared_ptr<Image> Provider::load(const std::string& filename, const memory::Variant_map& options) {
-	auto stream_pointer = file_system_.read_stream(filename);
+std::shared_ptr<Image> Provider::load(const std::string& filename,
+									  const memory::Variant_map& options,
+									  resource::Manager& manager) {
+	auto stream_pointer = manager.file_system().read_stream(filename);
 	if (!*stream_pointer) {
 		throw std::runtime_error("File \"" + filename + "\" could not be opened");
 	}

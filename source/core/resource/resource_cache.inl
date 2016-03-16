@@ -7,10 +7,11 @@
 namespace resource {
 
 template<typename T>
-Cache<T>::Cache(Provider<T>& provider) : provider_(provider) {}
+Typed_cache<T>::Typed_cache(Provider<T>& provider) : provider_(provider) {}
 
 template<typename T>
-std::shared_ptr<T> Cache<T>::load(const std::string& filename, const memory::Variant_map& options, bool& was_cached) {
+std::shared_ptr<T> Typed_cache<T>::load(const std::string& filename, const memory::Variant_map& options,
+										Manager& manager, bool& was_cached) {
 	auto key = std::make_pair(filename, options);
 
 	auto cached = resources_.find(key);
@@ -21,7 +22,7 @@ std::shared_ptr<T> Cache<T>::load(const std::string& filename, const memory::Var
 
 	was_cached = false;
 
-	auto resource = provider_.load(filename, options);
+	auto resource = provider_.load(filename, options, manager);
 	if (!resource) {
 		return nullptr;
 	}

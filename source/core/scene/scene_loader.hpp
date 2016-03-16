@@ -1,15 +1,14 @@
 #pragma once
 
-#include "shape/triangle/triangle_mesh_provider.hpp"
-#include "material/material_provider.hpp"
-#include "image/texture/texture_2d_provider.hpp"
-#include "resource/resource_cache.hpp"
+#include "material/material.hpp"
 #include "base/json/rapidjson_types.hpp"
 #include <istream>
 #include <string>
 #include <memory>
 
 namespace file { class System; }
+
+namespace resource { class Manager; }
 
 namespace scene {
 
@@ -29,7 +28,7 @@ class Prop;
 class Loader {
 public:
 
-	Loader(file::System& file_system, thread::Pool& thread_pool);
+	Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material);
 	~Loader();
 
 	void load(std::istream& stream, Scene& scene);
@@ -50,6 +49,8 @@ private:
 
 	void load_materials(const rapidjson::Value& materials_value, Scene& scene, material::Materials& materials);
 
+	resource::Manager& resource_manager_;
+
 	std::shared_ptr<shape::Shape> canopy_;
 	std::shared_ptr<shape::Shape> celestial_disk_;
 	std::shared_ptr<shape::Shape> disk_;
@@ -57,14 +58,7 @@ private:
 	std::shared_ptr<shape::Shape> plane_;
 	std::shared_ptr<shape::Shape> sphere_;
 
-	shape::triangle::Provider mesh_provider_;
-	resource::Cache<shape::Shape> mesh_cache_;
-
-	image::texture::Provider texture_provider_;
-	resource::Cache<image::texture::Texture_2D> texture_cache_;
-
-	material::Provider material_provider_;
-	resource::Cache<material::Material> material_cache_;
+	std::shared_ptr<material::Material> fallback_material_;
 };
 
 }

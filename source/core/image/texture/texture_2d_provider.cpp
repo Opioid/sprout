@@ -10,20 +10,20 @@
 #include "image/image.hpp"
 #include "image/image_provider.hpp"
 #include "resource/resource_provider.inl"
+#include "resource/resource_manager.inl"
 #include "resource/resource_cache.inl"
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.inl"
 
 namespace image { namespace texture {
 
-Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
-	resource::Provider<Texture_2D>(file_system, thread_pool),
-	image_provider_(file_system_, thread_pool),
-	image_cache_(image_provider_) {
+Provider::Provider() : resource::Provider<Texture_2D>("Texture_2D") {
 	encoding::init();
 }
 
-std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, const memory::Variant_map& options) {
+std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
+										   const memory::Variant_map& options,
+										   resource::Manager& manager) {
 	Channels channels = Channels::XYZ;
 
 	Usage usage = Usage::Unknown;
@@ -41,8 +41,7 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename, const me
 	image_options.insert("channels", channels);
 	image_options.inherit("num_elements", options);
 
-	bool was_cached;
-	auto image = image_cache_.load(filename, image_options, was_cached);
+	auto image = manager.load<Image>(filename, image_options);
 	if (!image) {
 		return nullptr;
 	}

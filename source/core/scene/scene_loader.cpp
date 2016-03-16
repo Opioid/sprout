@@ -21,31 +21,30 @@
 #include "scene/material/glass/glass_rough_sample.hpp"
 #include "scene/material/light/light_material_sample.hpp"
 #include "scene/material/metal/metal_sample.hpp"
+#include "scene/material/substitute/substitute_material.hpp"
 #include "scene/material/substitute/substitute_sample.hpp"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/volume/volume.hpp"
 #include "resource/resource_cache.inl"
+#include "resource/resource_manager.inl"
 #include "resource/resource_provider.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/math/quaternion.inl"
 #include "base/memory/variant_map.inl"
+#include "base/thread/thread_pool.hpp"
 
 namespace scene {
 
-Loader::Loader(file::System& file_system, thread::Pool& thread_pool) :
+Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material) :
+	resource_manager_(manager),
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
 	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
-	mesh_provider_(file_system, thread_pool),
-	mesh_cache_(mesh_provider_),
-	texture_provider_(file_system, thread_pool),
-	texture_cache_(texture_provider_),
-	material_provider_(file_system, thread_pool, texture_cache_),
-	material_cache_(material_provider_) {}
+	fallback_material_(fallback_material) {}
 
 Loader::~Loader() {}
 
@@ -167,7 +166,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	}
 
 	while (materials.size() < shape->num_parts()) {
-		materials.push_back(material_provider_.fallback_material());
+		materials.push_back(fallback_material_);
 	}
 
 	Prop* prop = scene.create_prop(shape, materials);
@@ -230,8 +229,7 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 
 			memory::Variant_map options;
 			options.insert("bvh_preset", bvh_preset);
-			bool was_cached;
-			return mesh_cache_.load(file, options, was_cached);
+			return resource_manager_.load<shape::Shape>(file, options);
 		} catch (const std::exception& e) {
 			logging::error("Cannot load \"" + file + "\": " + e.what());
 		}
@@ -268,7 +266,9 @@ void Loader::load_materials(const rapidjson::Value& materials_value, Scene& scen
 	for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
 		try {
 			bool was_cached;
-			auto material = material_cache_.load(m->GetString(), memory::Variant_map(), was_cached);
+			auto material = resource_manager_.load<material::Material>(m->GetString(),
+																	   memory::Variant_map(),
+																	   was_cached);
 
 			if (material->is_animated() && !was_cached) {
 				scene.add_material(material);
@@ -276,7 +276,7 @@ void Loader::load_materials(const rapidjson::Value& materials_value, Scene& scen
 
 			materials.push_back(material);
 		} catch (const std::exception& e) {
-			materials.push_back(material_provider_.fallback_material());
+			materials.push_back(fallback_material_);
 
 			logging::warning("Loading \"" + std::string(m->GetString()) + "\": " +
 							 e.what() + ". Using fallback material.");

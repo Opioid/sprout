@@ -1,5 +1,6 @@
 #include "triangle_mesh_provider.hpp"
 #include "resource/resource_provider.inl"
+#include "resource/resource_manager.hpp"
 #include "triangle_bvh_preset.hpp"
 #include "triangle_type.hpp"
 #include "triangle_json_handler.hpp"
@@ -21,10 +22,11 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-Provider::Provider(file::System& file_system, thread::Pool& thread_pool) :
-	resource::Provider<Shape>(file_system, thread_pool) {}
+Provider::Provider() : resource::Provider<Shape>("Mesh") {}
 
-std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory::Variant_map& options) {
+std::shared_ptr<Shape> Provider::load(const std::string& filename,
+									  const memory::Variant_map& options,
+									  resource::Manager& manager) {
 	BVH_preset bvh_preset = BVH_preset::Unknown;
 	options.query("bvh_preset", bvh_preset);
 
@@ -33,7 +35,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 	uint32_t num_parts = 0;
 
 	{
-		auto stream_pointer = file_system_.read_stream(filename);
+		auto stream_pointer = manager.file_system().read_stream(filename);
 		json::Read_stream json_stream(*stream_pointer);
 
 		Json_handler handler;
@@ -47,7 +49,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 		}
 
 		if (!handler.morph_targets().empty()) {
-			return load_morphable_mesh(filename, handler.morph_targets());
+			return load_morphable_mesh(filename, handler.morph_targets(), manager);
 		}
 
 		if (!handler.has_positions()) {
@@ -121,7 +123,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 
 	if (BVH_preset::Slow == bvh_preset) {
 		bvh::Builder_SAH builder(16, 64);
-		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool_);
+		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, manager.thread_pool());
 	} else {
 		bvh::Builder_SUH builder;
 		builder.build(mesh->tree(), triangles, vertices, num_parts, 8);
@@ -138,13 +140,14 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename, const memory:
 }
 
 std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filename*/,
-													 const std::vector<std::string>& morph_targets) {
+													 const std::vector<std::string>& morph_targets,
+													 resource::Manager& manager) {
 	auto collection = std::make_shared<Morph_target_collection>();
 
 	Json_handler handler;
 
 	for (auto& targets : morph_targets) {
-		auto stream_pointer = file_system_.read_stream(targets);
+		auto stream_pointer = manager.file_system().read_stream(targets);
 
 		json::Read_stream json_stream(*stream_pointer);
 

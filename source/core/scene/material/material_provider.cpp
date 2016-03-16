@@ -1,5 +1,6 @@
 #include "material_provider.hpp"
 #include "resource/resource_provider.inl"
+#include "resource/resource_manager.inl"
 #include "resource/resource_cache.inl"
 #include "material_sample_cache.inl"
 #include "image/texture/texture_2d_provider.hpp"
@@ -27,18 +28,16 @@
 
 namespace scene { namespace material {
 
-Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
-				   resource::Cache<image::texture::Texture_2D>& texture_cache) :
-	resource::Provider<Material>(file_system, thread_pool),
-	texture_cache_(texture_cache),
-	cloth_cache_(thread_pool.num_threads()),
-	display_cache_(thread_pool.num_threads()),
-	glass_cache_(thread_pool.num_threads()),
-	glass_rough_cache_(thread_pool.num_threads()),
-	light_cache_(thread_pool.num_threads()),
-	metal_iso_cache_(thread_pool.num_threads()),
-	metal_aniso_cache_(thread_pool.num_threads()),
-	substitute_cache_(thread_pool.num_threads()) {
+Provider::Provider(uint32_t num_threads) :
+	resource::Provider<Material>("Material"),
+	cloth_cache_(num_threads),
+	display_cache_(num_threads),
+	glass_cache_(num_threads),
+	glass_rough_cache_(num_threads),
+	light_cache_(num_threads),
+	metal_iso_cache_(num_threads),
+	metal_aniso_cache_(num_threads),
+	substitute_cache_(num_threads) {
 	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr,
 														   Sampler_settings(Sampler_settings::Filter::Linear), false);
 	material->set_color(math::float3(1.f, 0.f, 0.f)),
@@ -48,8 +47,10 @@ Provider::Provider(file::System& file_system, thread::Pool& thread_pool,
 	fallback_material_ = material;
 }
 
-std::shared_ptr<Material> Provider::load(const std::string& filename, const memory::Variant_map& /*options*/) {
-	auto stream_pointer = file_system_.read_stream(filename);
+std::shared_ptr<Material> Provider::load(const std::string& filename,
+										 const memory::Variant_map& /*options*/,
+										 resource::Manager& manager) {
+	auto stream_pointer = manager.file_system().read_stream(filename);
 
 	auto root = json::parse(*stream_pointer);
 
@@ -65,17 +66,17 @@ std::shared_ptr<Material> Provider::load(const std::string& filename, const memo
 		const rapidjson::Value& node_value = n->value;
 
 		if ("Cloth" == node_name) {
-			return load_cloth(node_value);
+			return load_cloth(node_value, manager);
 		} else if ("Display" == node_name) {
-			return load_display(node_value);
+			return load_display(node_value, manager);
 		} else if ("Glass" == node_name) {
-			return load_glass(node_value);
+			return load_glass(node_value, manager);
 		} else if ("Light" == node_name) {
-			return load_light(node_value);
+			return load_light(node_value, manager);
 		} else if ("Metal" == node_name) {
-			return load_metal(node_value);
+			return load_metal(node_value, manager);
 		} else if ("Substitute" == node_name) {
-			return load_substitute(node_value);
+			return load_substitute(node_value, manager);
 		}
 	}
 
@@ -86,7 +87,7 @@ std::shared_ptr<Material> Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_value) {
+std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_value, resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> color_map;
@@ -113,16 +114,15 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 				}
 
 				memory::Variant_map options;
-				bool was_cached;
 				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					color_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					normal_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(texture_description.filename, options, was_cached);
+					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -140,7 +140,7 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display_value) {
+std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display_value, resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> emission_map;
@@ -184,13 +184,12 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 					options.insert("num_elements", texture_description.num_elements);
 				}
 
-				bool was_cached;
 				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					emission_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);;
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(texture_description.filename, options, was_cached);
+					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);;
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -216,7 +215,7 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 	}
 }
 
-std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_value) {
+std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_value, resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
@@ -247,10 +246,9 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 				}
 
 				memory::Variant_map options;
-				bool was_cached;
 				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					normal_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -276,7 +274,7 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 	}
 }
 
-std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_value) {
+std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_value, resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	math::float3 emission(10.f, 10.f, 10.f);
@@ -314,13 +312,12 @@ std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_val
 					options.insert("num_elements", texture_description.num_elements);
 				}
 
-				bool was_cached;
 				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					emission_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(texture_description.filename, options, was_cached);
+					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -343,7 +340,7 @@ std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_val
 	return std::make_shared<light::Constant>(light_cache_, mask, sampler_settings, two_sided, emission);
 }
 
-std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitute_value) {
+std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitute_value, resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
@@ -383,20 +380,19 @@ std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitut
 				}
 
 				memory::Variant_map options;
-				bool was_cached;
 				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					normal_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 			/*	} else if ("Surface" == usage) {
 					surface_map = texture_cache_.load(filename,
 													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));*/
 				} else if ("Anisotropy" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Anisotropy);
-					direction_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					direction_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(texture_description.filename, options, was_cached);
+					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -432,7 +428,8 @@ std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitut
 	}
 }
 
-std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& substitute_value) {
+std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& substitute_value,
+													resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> color_map;
@@ -479,22 +476,21 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 				}
 
 				memory::Variant_map options;
-				bool was_cached;
 				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					color_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					normal_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				} else if ("Surface" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Surface);
-					surface_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					surface_map =manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				} else if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = texture_cache_.load(texture_description.filename, options, was_cached);
+					emission_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = texture_cache_.load(texture_description.filename, options, was_cached);
+					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
