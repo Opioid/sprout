@@ -23,10 +23,10 @@ public:
 										const memory::Variant_map& options,
 										resource::Manager& manager) final override;
 
-    std::shared_ptr<Shape> create_mesh(const std::vector<Index_triangle>& triangles,
-                                       const std::vector<Vertex>& vertices,
-                                       uint32_t num_parts, BVH_preset bvh_preset,
-                                       thread::Pool& thread_pool);
+	static std::shared_ptr<Shape> create_mesh(const std::vector<Index_triangle>& triangles,
+											  const std::vector<Vertex>& vertices,
+											  uint32_t num_parts, BVH_preset bvh_preset,
+											  thread::Pool& thread_pool);
 
 private:
 

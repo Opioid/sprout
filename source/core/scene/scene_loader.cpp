@@ -28,8 +28,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material,
-			   shape::triangle::Provider& provider) :
+Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material) :
 	resource_manager_(manager),
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
@@ -37,8 +36,7 @@ Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> f
 	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
-	fallback_material_(fallback_material),
-	mesh_provider_(provider) {}
+	fallback_material_(fallback_material) {}
 
 Loader::~Loader() {}
 
@@ -226,7 +224,7 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 
 			return resource_manager_.load<shape::Shape>(file, options);
 		} catch (const std::exception& e) {
-			logging::error("Cannot load \"" + file + "\": " + e.what());
+			logging::error("Cannot load \"" + file + "\": " + e.what() + ".");
 		}
 	}
 
@@ -249,7 +247,11 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type, const rapid
     } else {
         auto g = mesh_generators_.find(type);
         if (mesh_generators_.end() != g) {
-			return g->second->create_mesh(shape_value, mesh_provider_, resource_manager_.thread_pool());
+			try {
+				return g->second->create_mesh(shape_value, resource_manager_.thread_pool());
+			} catch (const std::exception& e) {
+				logging::error("Cannot create \"" + type + "\": " + e.what() + ".");
+			}
         }
     }
 

@@ -104,6 +104,10 @@ std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& 
                                              const std::vector<Vertex>& vertices,
                                              uint32_t num_parts, BVH_preset bvh_preset,
                                              thread::Pool& thread_pool) {
+	if (triangles.empty() || vertices.empty()) {
+		throw std::runtime_error("No mesh data");
+	}
+
     auto mesh = std::make_shared<Mesh>();
 
     if (BVH_preset::Slow == bvh_preset) {

@@ -22,5 +22,8 @@ win32:INCLUDEPATH += .
 INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/..
 
+INCLUDEPATH += $$PWD/../base
+DEPENDPATH += $$PWD/../base
+
 INCLUDEPATH += $$PWD/../core
 DEPENDPATH += $$PWD/../core

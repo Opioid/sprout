@@ -38,9 +38,7 @@ class Prop;
 class Loader {
 public:
 
-	Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material,
-		   shape::triangle::Provider& provider);
-
+	Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material);
     ~Loader();
 
 	void load(std::istream& stream, Scene& scene);
@@ -73,8 +71,6 @@ private:
 	std::shared_ptr<shape::Shape> sphere_;
 
 	std::shared_ptr<material::Material> fallback_material_;
-
-	shape::triangle::Provider& mesh_provider_;
 
     std::map<std::string, shape::triangle::Generator*> mesh_generators_;
 };

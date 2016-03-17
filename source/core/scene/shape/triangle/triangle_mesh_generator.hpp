@@ -16,8 +16,7 @@ class Provider;
 class Generator {
 public:
 
-    virtual std::shared_ptr<Shape> create_mesh(const rapidjson::Value& mesh_value,
-											   Provider& provider, thread::Pool& thread_pool) = 0;
+	virtual std::shared_ptr<Shape> create_mesh(const rapidjson::Value& mesh_value, thread::Pool& thread_pool) = 0;
 };
 
 }}}

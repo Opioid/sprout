@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
 
 	// The scene loader must be alive during rendering, otherwise some resources might be released prematurely.
 	// This is confusing and should be adressed.
-    scene::Loader scene_loader(resource_manager, material_provider.fallback_material(), mesh_provider);
+	scene::Loader scene_loader(resource_manager, material_provider.fallback_material());
 
 	procedural::mesh::init(scene_loader);
 
