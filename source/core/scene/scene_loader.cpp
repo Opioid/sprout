@@ -29,7 +29,7 @@
 namespace scene {
 
 Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material,
-               shape::triangle::Provider& provider) :
+			   shape::triangle::Provider& provider) :
 	resource_manager_(manager),
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
@@ -37,8 +37,8 @@ Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> f
 	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
-    fallback_material_(fallback_material),
-    mesh_provider_(provider) {}
+	fallback_material_(fallback_material),
+	mesh_provider_(provider) {}
 
 Loader::~Loader() {}
 
@@ -249,7 +249,7 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type, const rapid
     } else {
         auto g = mesh_generators_.find(type);
         if (mesh_generators_.end() != g) {
-            return g->second->create_mesh(shape_value, mesh_provider_, resource_manager_.thread_pool());
+			return g->second->create_mesh(shape_value, mesh_provider_, resource_manager_.thread_pool());
         }
     }
 
