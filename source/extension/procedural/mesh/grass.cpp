@@ -4,7 +4,7 @@
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/random/generator.hpp"
+#include "base/math/random/generator.inl"
 #include "base/math/sampling/sample_distribution.inl"
 
 namespace procedural { namespace mesh {
@@ -18,16 +18,16 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& 
 
 	const uint32_t num_vertices = 15;
 
-/*
+
 	float r = 0.f;
 	float l = 0.5f;
 	add_blade(math::packed_float3(0.2f, 0.f, 0.f), r, l, 0, triangles, vertices);
 
 	r = math::degrees_to_radians(90.f);
 	add_blade(math::packed_float3(-0.2f, 0.f, 0.f), r, l, num_vertices, triangles, vertices);
-*/
 
-	math::random::Generator rng(0, 1, 2, 3);
+
+/*	math::random::Generator rng(0, 1, 2, 3);
 
 	uint32_t num_blades = 2*1024;
 
@@ -45,7 +45,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& 
 
 		add_blade(math::packed_float3(p.x, 0.f, p.y), rotation_y, 0.2f, i * num_vertices, triangles, vertices);
 	}
-
+*/
 	return scene::shape::triangle::Provider::create_mesh(triangles, vertices, num_parts, bvh_preset, thread_pool);
 }
 
