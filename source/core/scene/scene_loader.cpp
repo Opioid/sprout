@@ -248,7 +248,7 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type, const rapid
         auto g = mesh_generators_.find(type);
         if (mesh_generators_.end() != g) {
 			try {
-				return g->second->create_mesh(shape_value, resource_manager_.thread_pool());
+				return g->second->create_mesh(shape_value, resource_manager_);
 			} catch (const std::exception& e) {
 				logging::error("Cannot create \"" + type + "\": " + e.what() + ".");
 			}

@@ -1,4 +1,8 @@
 #include "grass.hpp"
+#include "core/image/texture/texture_2d_provider.hpp"
+#include "core/image/texture/sampler/address_mode.hpp"
+#include "core/image/texture/sampler/sampler_2d_linear.inl"
+#include "core/resource/resource_manager.hpp"
 #include "core/scene/shape/geometry/vertex.hpp"
 #include "core/scene/shape/triangle/triangle_primitive.hpp"
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
@@ -7,10 +11,12 @@
 #include "base/math/random/generator.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/math/sampling/sampling.inl"
+#include "base/memory/variant_map.hpp"
 
 namespace procedural { namespace mesh {
 
-std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& mesh_value, thread::Pool& thread_pool) {
+std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& /*mesh_value*/,
+														resource::Manager& manager) {
 
 	std::vector<scene::shape::triangle::Index_triangle> triangles;
 	std::vector<scene::shape::Vertex> vertices;
@@ -19,40 +25,60 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& 
 
 	const uint32_t num_vertices = 15;
 
-/*
+
 	float r = 0.f;
 	float l = 0.5f;
-	add_blade(math::packed_float3(0.2f, 0.f, 0.f), r, l, 0, triangles, vertices);
+	float h = 1.f;
+	add_blade(math::packed_float3(0.2f, 0.f, 0.f), r, l, h, 0, triangles, vertices);
 
 	r = math::degrees_to_radians(90.f);
-	add_blade(math::packed_float3(-0.2f, 0.f, 0.f), r, l, num_vertices, triangles, vertices);
-*/
+
+	for (uint32_t i = 0; i < 10; ++i) {
+		l = 0.1f * static_cast<float>(i);
+		add_blade(math::packed_float3(-0.1f, 0.f, 0.f), r, l, h, i * num_vertices, triangles, vertices);
+	}
+
+
+	/*
+	memory::Variant_map options;
+	options.insert("usage", image::texture::Provider::Usage::Mask);
+	auto mask = manager.load<image::texture::Texture_2D>("textures/how.png", options);;
+
+	image::texture::sampler::Sampler_2D_linear<image::texture::sampler::Address_mode_repeat> sampler;
 
 	math::random::Generator rng(0, 1, 2, 3);
 
-	uint32_t num_blades = 192 * 1024;
+	uint32_t num_blades = 20 * 1024;
 
-	math::float2 start(-1.f, -1.f);
-	math::float2 end  ( 1.f,  1.f);
+	math::float2 start(-1.25f,  1.25f);
+	math::float2 end  ( 1.25f, -1.25f);
 
 	math::float2 range = end - start;
 
 	for (uint32_t i = 0; i < num_blades; ++i) {
 		math::float2 s = math::ems(i, 3, 4);
 
-	//	math::float2 p = start + s * range;
-		math::float2 p = 6.f * math::sample_disk_concentric(s);
+		math::float2 p = start + s * range;
+	//	math::float2 p = 6.f * math::sample_disk_concentric(s);
+
+		float randomness = sampler.sample_1(*mask, s);
 
 		float rotation_y = rng.random_float() * 2.f * math::Pi;
 
-		float h = 0.8 + 0.2 * rng.random_float();
+		rotation_y = math::lerp(0.25f * math::Pi, rotation_y, randomness);
 
-		add_blade(math::packed_float3(p.x, 0.f, p.y), rotation_y, 0.25f, h, i * num_vertices, triangles, vertices);
+		float h = 0.8f + 0.2f * rng.random_float() + 0.15f - (0.15f * randomness);
+
+		float l = 0.2f + 0.15f - (0.15f * randomness);
+
+		add_blade(math::packed_float3(p.x, 0.f, p.y), rotation_y, l, h, i * num_vertices, triangles, vertices);
 	}
+*/
 
 	calculate_normals(triangles, vertices);
 
-	return scene::shape::triangle::Provider::create_mesh(triangles, vertices, num_parts, bvh_preset, thread_pool);
+	return scene::shape::triangle::Provider::create_mesh(triangles, vertices, num_parts, bvh_preset,
+														 manager.thread_pool());
 }
 
 void Grass::add_blade(const math::packed_float3& offset,
@@ -111,12 +137,12 @@ void Grass::add_blade(const math::packed_float3& offset,
 
 	math::packed_float3 segments[num_segments + 1];
 	segments[0] = math::packed_float3(0.025f,  0.f,                                          0.008f);
-	segments[1] = math::packed_float3(0.0225f, segments[0].y + 0.35f * height - segment_leans[1] * segment_leans[1],  0.007f);
-	segments[2] = math::packed_float3(0.0175f, segments[1].y + 0.3f  * height - segment_leans[2] * segment_leans[2],  0.006f);
-	segments[3] = math::packed_float3(0.0125f, segments[2].y + 0.2f  * height - segment_leans[3] * segment_leans[3],  0.005f);
-	segments[4] = math::packed_float3(0.005f,  segments[3].y + 0.075 * height - segment_leans[4] * segment_leans[4], 0.004f);
+	segments[1] = math::packed_float3(0.0225f, segments[0].y + 0.35f  * height - segment_leans[1] * segment_leans[1],  0.007f);
+	segments[2] = math::packed_float3(0.0175f, segments[1].y + 0.3f   * height - segment_leans[2] * segment_leans[2],  0.006f);
+	segments[3] = math::packed_float3(0.0125f, segments[2].y + 0.2f   * height - segment_leans[3] * segment_leans[3],  0.005f);
+	segments[4] = math::packed_float3(0.005f,  segments[3].y + 0.075f * height - segment_leans[4] * segment_leans[4], 0.004f);
 
-	math::packed_float3 scale(0.2f, 0.2f, 0.2f);
+	math::packed_float3 scale(0.5f, 0.5f, 0.5f);
 	for (uint32_t i = 0, len = num_segments + 1; i < len; ++i) {
 		segments[i] *= scale;
 	}

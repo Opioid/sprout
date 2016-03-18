@@ -3,7 +3,7 @@
 #include "base/json/rapidjson_types.hpp"
 #include <memory>
 
-namespace thread { class Pool; }
+namespace resource { class Manager; }
 
 namespace scene { namespace shape {
 
@@ -16,7 +16,7 @@ class Provider;
 class Generator {
 public:
 
-	virtual std::shared_ptr<Shape> create_mesh(const rapidjson::Value& mesh_value, thread::Pool& thread_pool) = 0;
+	virtual std::shared_ptr<Shape> create_mesh(const rapidjson::Value& mesh_value, resource::Manager& manager) = 0;
 };
 
 }}}
