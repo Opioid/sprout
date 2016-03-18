@@ -126,8 +126,6 @@ void Grass::add_blade(const math::packed_float3& offset,
 	math::float3x3 rotation;
 	math::set_rotation_y(rotation, rotation_y);
 
-
-
 	math::packed_float3 segment_controls[num_segments + 1];
 	segment_controls[0] = math::packed_float3(width *  0.035f,            0.f,  width *  0.01f);
 	segment_controls[1] = math::packed_float3(width * -0.005f, height * 0.35f,  width * -0.001f);
