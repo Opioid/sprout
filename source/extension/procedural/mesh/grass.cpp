@@ -25,33 +25,33 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& 
 
 	const uint32_t num_vertices = 15;
 
-
+/*
 	float r = 0.f;
-	float l = 0.5f;
-	float h = 1.f;
-	add_blade(math::packed_float3(0.2f, 0.f, 0.f), r, l, h, 0, triangles, vertices);
+	float l = 0.f;
+	float w = 0.2f;
+	float h = 0.2f;
+	add_blade(math::packed_float3(0.2f, 0.f, 0.f), r, l, w, h, 0, triangles, vertices);
 
 	r = math::degrees_to_radians(90.f);
 
 	for (uint32_t i = 0; i < 10; ++i) {
 		l = 0.1f * static_cast<float>(i);
-		add_blade(math::packed_float3(-0.1f, 0.f, 0.f), r, l, h, i * num_vertices, triangles, vertices);
+		add_blade(math::packed_float3(-0.1f, 0.f, 0.f), r, l, w, h, i * num_vertices, triangles, vertices);
 	}
+*/
 
 
-	/*
-	memory::Variant_map options;
-	options.insert("usage", image::texture::Provider::Usage::Mask);
-	auto mask = manager.load<image::texture::Texture_2D>("textures/how.png", options);;
-
-	image::texture::sampler::Sampler_2D_linear<image::texture::sampler::Address_mode_repeat> sampler;
+//	memory::Variant_map options;
+//	options.insert("usage", image::texture::Provider::Usage::Mask);
+//	auto mask = manager.load<image::texture::Texture_2D>("textures/how.png", options);;
+//	image::texture::sampler::Sampler_2D_linear<image::texture::sampler::Address_mode_repeat> sampler;
 
 	math::random::Generator rng(0, 1, 2, 3);
 
-	uint32_t num_blades = 20 * 1024;
+	uint32_t num_blades = 4 * 1024;
 
-	math::float2 start(-1.25f,  1.25f);
-	math::float2 end  ( 1.25f, -1.25f);
+	math::float2 start(-1.f,  1.f);
+	math::float2 end  ( 1.f, -1.f);
 
 	math::float2 range = end - start;
 
@@ -61,19 +61,21 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& 
 		math::float2 p = start + s * range;
 	//	math::float2 p = 6.f * math::sample_disk_concentric(s);
 
-		float randomness = sampler.sample_1(*mask, s);
+		float randomness = 1.f;//sampler.sample_1(*mask, s);
 
 		float rotation_y = rng.random_float() * 2.f * math::Pi;
 
 		rotation_y = math::lerp(0.25f * math::Pi, rotation_y, randomness);
 
-		float h = 0.8f + 0.2f * rng.random_float() + 0.15f - (0.15f * randomness);
+		float l = 0.2f + 0.15f * rng.random_float();//- (0.15f * randomness);
+		float w = 0.2f;
+		float h = 0.4f + 0.2f * rng.random_float();// + 0.15f - (0.15f * randomness);
 
-		float l = 0.2f + 0.15f - (0.15f * randomness);
 
-		add_blade(math::packed_float3(p.x, 0.f, p.y), rotation_y, l, h, i * num_vertices, triangles, vertices);
+
+		add_blade(math::packed_float3(p.x, 0.f, p.y), rotation_y, l, w, h, i * num_vertices, triangles, vertices);
 	}
-*/
+
 
 	calculate_normals(triangles, vertices);
 
@@ -82,7 +84,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& 
 }
 
 void Grass::add_blade(const math::packed_float3& offset,
-					  float rotation_y, float lean_factor, float height,
+					  float rotation_y, float lean_factor, float width, float height,
 					  uint32_t vertex_offset,
 					  std::vector<scene::shape::triangle::Index_triangle>& triangles,
 					  std::vector<scene::shape::Vertex>& vertices) const {
@@ -121,43 +123,60 @@ void Grass::add_blade(const math::packed_float3& offset,
 	v.t = math::packed_float3(1.f, 0.f, 0.f);
 	v.bitangent_sign = 1.f;
 
-	math::float3x3 rotation = math::float3x3::identity;
+	math::float3x3 rotation;
 	math::set_rotation_y(rotation, rotation_y);
 
-	math::packed_float3 p;
-
-	float segment_leans[num_segments + 1];
-	segment_leans[0] = 0.f;
-	segment_leans[1] = 0.1f * lean_factor;
-	segment_leans[2] = 0.25f * lean_factor;
-	segment_leans[3] = 0.4f * lean_factor;
-	segment_leans[4] = 0.45f * lean_factor;
 
 
+	math::packed_float3 segment_controls[num_segments + 1];
+	segment_controls[0] = math::packed_float3(width *  0.035f,            0.f,  width *  0.01f);
+	segment_controls[1] = math::packed_float3(width * -0.005f, height * 0.35f,  width * -0.001f);
+	segment_controls[2] = math::packed_float3(width * -0.005f, height * 0.25f,  width * -0.0015f);
+	segment_controls[3] = math::packed_float3(width * -0.01f,  height * 0.125f, width * -0.002f);
+	segment_controls[4] = math::packed_float3(width * -0.01f,  height * 0.05f,  width * -0.002f);
 
-	math::packed_float3 segments[num_segments + 1];
-	segments[0] = math::packed_float3(0.025f,  0.f,                                          0.008f);
-	segments[1] = math::packed_float3(0.0225f, segments[0].y + 0.35f  * height - segment_leans[1] * segment_leans[1],  0.007f);
-	segments[2] = math::packed_float3(0.0175f, segments[1].y + 0.3f   * height - segment_leans[2] * segment_leans[2],  0.006f);
-	segments[3] = math::packed_float3(0.0125f, segments[2].y + 0.2f   * height - segment_leans[3] * segment_leans[3],  0.005f);
-	segments[4] = math::packed_float3(0.005f,  segments[3].y + 0.075f * height - segment_leans[4] * segment_leans[4], 0.004f);
 
-	math::packed_float3 scale(0.5f, 0.5f, 0.5f);
+	struct Segment {
+		math::packed_float3 a, b;
+	};
+
+	Segment segments[num_segments + 1];
+
+	math::float3x3 rx;
+	float ax = -0.4f * math::Pi;
+	math::set_rotation_x(rx, lean_factor * ax);
+	segments[0].a = segment_controls[0] * rx;
+	segments[0].b = math::packed_float3(0.f, segment_controls[0].y, -segment_controls[0].z) * rx;
+
+	ax += -0.1f;
+	math::set_rotation_x(rx, lean_factor * ax);
+	segments[1].a = segments[0].a + segment_controls[1] * rx;
+	segments[1].b = segments[0].b + math::packed_float3(0.f, segment_controls[1].y, -segment_controls[1].z) * rx;
+
+	ax += -0.5f;
+	math::set_rotation_x(rx, lean_factor * ax);
+	segments[2].a = segments[1].a + segment_controls[2] * rx;
+	segments[2].b = segments[1].b + math::packed_float3(0.f, segment_controls[2].y, -segment_controls[2].z) * rx;
+
+	ax += -0.6f;
+	math::set_rotation_x(rx, lean_factor * ax);
+	segments[3].a = segments[2].a + segment_controls[3] * rx;
+	segments[3].b = segments[2].b + math::packed_float3(0.f, segment_controls[3].y, -segment_controls[3].z) * rx;
+
+	ax += -0.8f;
+	math::set_rotation_x(rx, lean_factor * ax);
+	segments[4].a = segments[3].a + segment_controls[4] * rx;
+	segments[4].b = segments[3].b + math::packed_float3(0.f, segment_controls[4].y, -segment_controls[4].z) * rx;
+
+
 	for (uint32_t i = 0, len = num_segments + 1; i < len; ++i) {
-		segments[i] *= scale;
-	}
-
-	for (uint32_t i = 0, len = num_segments + 1; i < len; ++i) {
-		p = math::packed_float3(-segments[i].x, segments[i].y, segments[i].z + segment_leans[i]) * rotation + offset;
-		v.p = p;
+		v.p = math::packed_float3(-segments[i].a.x, segments[i].a.y, segments[i].a.z) * rotation + offset;
 		vertices.push_back(v);
 
-		p = math::packed_float3(0.f, segments[i].y, -segments[i].z + segment_leans[i]) * rotation + offset;
-		v.p = p;
+		v.p = math::packed_float3(0.f, segments[i].b.y, segments[i].b.z) * rotation + offset;
 		vertices.push_back(v);
 
-		p = math::packed_float3(segments[i].x, segments[i].y, segments[i].z + segment_leans[i]) * rotation + offset;
-		v.p = p;
+		v.p = math::packed_float3(segments[i].a.x, segments[i].a.y, segments[i].a.z) * rotation + offset;
 		vertices.push_back(v);
 	}
 }
