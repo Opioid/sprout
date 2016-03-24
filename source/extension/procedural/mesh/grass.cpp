@@ -53,7 +53,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& 
 	math::float2 start(-1.f,  1.f);
 	math::float2 end  ( 1.f, -1.f);
 
-	math::float2 range = end - start;
+//	math::float2 range = end - start;
 
 	for (uint32_t i = 0; i < num_blades; ++i) {
 		math::float2 s = math::ems(i, 3, 4);
