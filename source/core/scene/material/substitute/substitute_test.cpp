@@ -25,9 +25,7 @@ void test() {
 	float constant_f0 = 0.03f;
 	float roughness   = 0.f;
 	float metallic    = 0.f;
-	float thickness   = 0.f;
-	float attenuation_distance = 100.f;
-	sample.set(color, emission, constant_f0, roughness, metallic, thickness, attenuation_distance);
+	sample.set(color, emission, constant_f0, roughness, metallic);
 
 	math::float3 t(1.f, 0.f, 0.f);
 	math::float3 b(0.f, 1.f, 0.f);

@@ -7,7 +7,7 @@
 
 namespace scene { namespace material { namespace substitute {
 
-class Sample : public material::Sample {
+class Sample_translucent : public material::Sample {
 public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
@@ -27,24 +27,27 @@ public:
 	virtual bool is_translucent() const final override;
 
 	void set(const math::float3& color, const math::float3& emission,
-			 float constant_f0, float roughness, float metallic);
+			 float constant_f0, float roughness, float metallic,
+			 float thickness, float attenuation_distance);
 
 private:
 
 	math::float3 diffuse_color_;
+	math::float3 attenuation_;
 	math::float3 f0_;
 	math::float3 emission_;
 
 	float a2_;
 	float metallic_;
+	float thickness_;
 
-	lambert::Lambert<Sample> lambert_;
-	oren_nayar::Oren_nayar<Sample> oren_nayar_;
-	ggx::Schlick_isotropic<Sample> ggx_;
+	lambert::Lambert<Sample_translucent> lambert_;
+	oren_nayar::Oren_nayar<Sample_translucent> oren_nayar_;
+	ggx::Schlick_isotropic<Sample_translucent> ggx_;
 
-	friend lambert::Lambert<Sample>;
-	friend oren_nayar::Oren_nayar<Sample>;
-	friend ggx::Schlick_isotropic<Sample>;
+	friend lambert::Lambert<Sample_translucent>;
+	friend oren_nayar::Oren_nayar<Sample_translucent>;
+	friend ggx::Schlick_isotropic<Sample_translucent>;
 };
 
 }}}

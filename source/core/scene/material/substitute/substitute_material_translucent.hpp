@@ -5,13 +5,14 @@
 
 namespace scene { namespace material { namespace substitute {
 
-class Sample;
+class Sample_translucent;
 
-class Material : public material::Typed_material<Generic_sample_cache<Sample>> {
+class Material_translucent : public material::Typed_material<Generic_sample_cache<Sample_translucent>> {
 public:
 
-	Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
-			 const Sampler_settings& sampler_settings, bool two_sided);
+	Material_translucent(Generic_sample_cache<Sample_translucent>& cache,
+						 std::shared_ptr<image::texture::Texture_2D> mask,
+						 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
 										   float time, float ior_i,
@@ -34,6 +35,8 @@ public:
 	void set_roughness(float roughness);
 	void set_metallic(float metallic);
 	void set_emission_factor(float emission_factor);
+	void set_thickness(float thickness);
+	void set_attenuation_distance(float attenuation_distance);
 
 private:
 
@@ -47,6 +50,8 @@ private:
 	float roughness_;
 	float metallic_;
 	float emission_factor_;
+	float thickness_;
+	float attenuation_distance_;
 };
 
 }}}

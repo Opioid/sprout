@@ -9,6 +9,7 @@
 #include "light/light_material_sample.hpp"
 #include "metal/metal_sample.hpp"
 #include "substitute/substitute_sample.hpp"
+#include "substitute/substitute_sample_translucent.hpp"
 #include "base/json/rapidjson_types.hpp"
 #include <vector>
 
@@ -51,14 +52,15 @@ private:
 	void read_sampler_settings(const rapidjson::Value& sampler_value, Sampler_settings& settings);
 	void read_texture_description(const rapidjson::Value& texture_value, Texture_description& description);
 
-	Generic_sample_cache<cloth::Sample>				cloth_cache_;
-	Generic_sample_cache<display::Sample>			display_cache_;
-	Generic_sample_cache<glass::Sample>				glass_cache_;
-	Generic_sample_cache<glass::Sample_rough>		glass_rough_cache_;
-	Generic_sample_cache<light::Sample>				light_cache_;
-	Generic_sample_cache<metal::Sample_isotropic>   metal_iso_cache_;
-	Generic_sample_cache<metal::Sample_anisotropic> metal_aniso_cache_;
-	Generic_sample_cache<substitute::Sample>		substitute_cache_;
+	Generic_sample_cache<cloth::Sample>						cloth_cache_;
+	Generic_sample_cache<display::Sample>					display_cache_;
+	Generic_sample_cache<glass::Sample>						glass_cache_;
+	Generic_sample_cache<glass::Sample_rough>				glass_rough_cache_;
+	Generic_sample_cache<light::Sample>						light_cache_;
+	Generic_sample_cache<metal::Sample_isotropic>			metal_iso_cache_;
+	Generic_sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
+	Generic_sample_cache<substitute::Sample>				substitute_cache_;
+	Generic_sample_cache<substitute::Sample_translucent>	substitute_transmissive_cache_;
 
 	std::shared_ptr<material::Material> fallback_material_;
 };
