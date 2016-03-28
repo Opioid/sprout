@@ -3,7 +3,6 @@
 #include "scene/material/material_sample.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
-#include "scene/material/lambert/lambert.inl"
 #include "scene/material/oren_nayar/oren_nayar.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"

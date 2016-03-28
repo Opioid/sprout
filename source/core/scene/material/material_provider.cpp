@@ -13,6 +13,7 @@
 #include "light/light_emissionmap_animated.hpp"
 #include "metal/metal_material.hpp"
 #include "substitute/substitute_material.hpp"
+#include "substitute/substitute_material_clearcoat.hpp"
 #include "substitute/substitute_material_translucent.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -31,7 +32,8 @@ Provider::Provider(uint32_t num_threads) :
 	metal_iso_cache_(num_threads),
 	metal_aniso_cache_(num_threads),
 	substitute_cache_(num_threads),
-	substitute_transmissive_cache_(num_threads) {
+	substitute_clearcoat_cache_(num_threads),
+	substitute_translucent_cache_(num_threads) {
 	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr,
 														   Sampler_settings(Sampler_settings::Filter::Linear), false);
 	material->set_color(math::float3(1.f, 0.f, 0.f)),
@@ -439,6 +441,7 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 	float emission_factor = 1.f;
 	float thickness = 0.f;
 	float attenuation_distance = 0.f;
+	bool clearcoat = false;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -460,6 +463,8 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 			attenuation_distance = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
+		} else if ("clearcoat" == node_name) {
+			clearcoat = json::read_bool(node_value);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				Texture_description texture_description;
@@ -493,7 +498,7 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 	}
 
 	if (thickness > 0.f) {
-		auto material = std::make_shared<substitute::Material_translucent>(substitute_transmissive_cache_, mask,
+		auto material = std::make_shared<substitute::Material_translucent>(substitute_translucent_cache_, mask,
 																		   sampler_settings, two_sided);
 
 		material->set_color_map(color_map);
@@ -508,6 +513,22 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 		material->set_emission_factor(emission_factor);
 		material->set_thickness(thickness);
 		material->set_attenuation_distance(attenuation_distance);
+
+		return material;
+	} else if (clearcoat) {
+		auto material = std::make_shared<substitute::Material_clearcoat>(substitute_clearcoat_cache_, mask,
+																		 sampler_settings, two_sided);
+
+		material->set_color_map(color_map);
+		material->set_normal_map(normal_map);
+		material->set_surface_map(surface_map);
+		material->set_emission_map(emission_map);
+
+		material->set_color(color);
+		material->set_ior(ior);
+		material->set_roughness(roughness);
+		material->set_metallic(metallic);
+		material->set_emission_factor(emission_factor);
 
 		return material;
 	}

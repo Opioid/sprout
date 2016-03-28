@@ -9,6 +9,7 @@
 #include "light/light_material_sample.hpp"
 #include "metal/metal_sample.hpp"
 #include "substitute/substitute_sample.hpp"
+#include "substitute/substitute_sample_clearcoat.hpp"
 #include "substitute/substitute_sample_translucent.hpp"
 #include "base/json/rapidjson_types.hpp"
 #include <vector>
@@ -60,7 +61,8 @@ private:
 	Generic_sample_cache<metal::Sample_isotropic>			metal_iso_cache_;
 	Generic_sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
 	Generic_sample_cache<substitute::Sample>				substitute_cache_;
-	Generic_sample_cache<substitute::Sample_translucent>	substitute_transmissive_cache_;
+	Generic_sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
+	Generic_sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;
 
 	std::shared_ptr<material::Material> fallback_material_;
 };

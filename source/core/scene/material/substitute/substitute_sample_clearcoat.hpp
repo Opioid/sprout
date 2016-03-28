@@ -2,11 +2,26 @@
 
 #include "scene/material/material_sample.hpp"
 #include "scene/material/ggx/ggx.hpp"
+#include "scene/material/lambert/lambert.hpp"
 #include "scene/material/oren_nayar/oren_nayar.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
-class Sample : public material::Sample {
+class Sample_clearcoat;
+
+class Clearcoat {
+public:
+
+	math::float3 evaluate(const Sample_clearcoat& sample, const math::float3& wi, float n_dot_wi) const;
+
+	float pdf(const Sample_clearcoat& sample, const math::float3& wi, float n_dot_wi) const;
+
+	float importance_sample(const Sample_clearcoat& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
+
+	float fresnel(const Sample_clearcoat& sample) const;
+};
+
+class Sample_clearcoat : public material::Sample {
 public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
@@ -37,11 +52,15 @@ private:
 	float a2_;
 	float metallic_;
 
-	oren_nayar::Oren_nayar<Sample> oren_nayar_;
-	ggx::Schlick_isotropic<Sample> ggx_;
+	float ior_;
 
-	friend oren_nayar::Oren_nayar<Sample>;
-	friend ggx::Schlick_isotropic<Sample>;
+	Clearcoat clearcoat_;
+	oren_nayar::Oren_nayar<Sample_clearcoat> oren_nayar_;
+	ggx::Schlick_isotropic<Sample_clearcoat> ggx_;
+
+	friend Clearcoat;
+	friend oren_nayar::Oren_nayar<Sample_clearcoat>;
+	friend ggx::Schlick_isotropic<Sample_clearcoat>;
 };
 
 }}}
