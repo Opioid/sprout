@@ -7,9 +7,9 @@
 namespace scene { namespace material { namespace ggx {
 
 template<typename Sample>
-math::float3 Schlick_isotropic<Sample>::evaluate(const Sample& sample,
-												 const math::float3& wi, float n_dot_wi, float n_dot_wo,
-												 float &pdf) const {
+math::float3 Schlick_isotropic::evaluate(const Sample& sample,
+										 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+										 float &pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
 		pdf = 0.f;
@@ -31,9 +31,9 @@ math::float3 Schlick_isotropic<Sample>::evaluate(const Sample& sample,
 }
 
 template<typename Sample>
-float Schlick_isotropic<Sample>::importance_sample(const Sample& sample,
-												   sampler::Sampler& sampler, float n_dot_wo,
-												   bxdf::Result& result) const {
+float Schlick_isotropic::importance_sample(const Sample& sample,
+										   sampler::Sampler& sampler, float n_dot_wo,
+										   bxdf::Result& result) {
 	if (0.f == sample.a2_) {
 		constexpr float n_dot_h = 1.f;
 
@@ -88,9 +88,9 @@ float Schlick_isotropic<Sample>::importance_sample(const Sample& sample,
 }
 
 template<typename Sample>
-math::float3 Conductor_isotropic<Sample>::evaluate(const Sample& sample,
-												   const math::float3& wi, float n_dot_wi, float n_dot_wo,
-												   float &pdf) const {
+math::float3 Conductor_isotropic::evaluate(const Sample& sample,
+										   const math::float3& wi, float n_dot_wi, float n_dot_wo,
+										   float &pdf)  {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
 		pdf = 0.f;
@@ -112,9 +112,9 @@ math::float3 Conductor_isotropic<Sample>::evaluate(const Sample& sample,
 }
 
 template<typename Sample>
-float Conductor_isotropic<Sample>::importance_sample(const Sample& sample,
-													 sampler::Sampler& sampler, float n_dot_wo,
-													 bxdf::Result& result) const {
+float Conductor_isotropic::importance_sample(const Sample& sample,
+											 sampler::Sampler& sampler, float n_dot_wo,
+											 bxdf::Result& result) {
 	if (0.f == sample.a2_) {
 		constexpr float n_dot_h = 1.f;
 
@@ -171,9 +171,9 @@ float Conductor_isotropic<Sample>::importance_sample(const Sample& sample,
 }
 
 template<typename Sample>
-math::float3 Conductor_anisotropic<Sample>::evaluate(const Sample& sample,
-													 const math::float3& wi, float n_dot_wi, float n_dot_wo,
-													 float &pdf) const {
+math::float3 Conductor_anisotropic::evaluate(const Sample& sample,
+											 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+											 float &pdf) {
 	math::float3 h = math::normalized(sample.wo_ + wi);
 
 	float n_dot_h  = math::saturate(math::dot(sample.n_, h));
@@ -198,9 +198,9 @@ math::float3 Conductor_anisotropic<Sample>::evaluate(const Sample& sample,
 }
 
 template<typename Sample>
-float Conductor_anisotropic<Sample>::importance_sample(const Sample& sample,
-													   sampler::Sampler& sampler, float n_dot_wo,
-													   bxdf::Result& result) const {
+float Conductor_anisotropic::importance_sample(const Sample& sample,
+											   sampler::Sampler& sampler, float n_dot_wo,
+											   bxdf::Result& result) {
 	math::float2 xi = sampler.generate_sample_2D();
 
 	float phi = 2.f * math::Pi * xi.x;

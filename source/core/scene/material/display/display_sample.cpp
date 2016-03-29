@@ -53,7 +53,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 
 	float n_dot_wo = clamped_n_dot_wo();
 
-	float n_dot_wi = ggx_.importance_sample(*this, sampler, n_dot_wo, result);
+	float n_dot_wi = ggx::Schlick_isotropic::importance_sample(*this, sampler, n_dot_wo, result);
 
 	result.reflection = n_dot_wi * result.reflection;
 }

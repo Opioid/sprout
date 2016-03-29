@@ -13,21 +13,21 @@ class Sample;
 class BRDF {
 public:
 
-	math::float3 evaluate(const Sample& sample, const math::float3& wi, float n_dot_wi) const;
+	static math::float3 evaluate(const Sample& sample, const math::float3& wi, float n_dot_wi);
 
-	float pdf(const Sample& sample, const math::float3& wi, float n_dot_wi) const;
+	static float pdf(const Sample& sample, const math::float3& wi, float n_dot_wi);
 
-	float importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
+	static float importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result);
 };
 
 class BTDF {
 public:
 
-	math::float3 evaluate(const Sample& sample, const math::float3& wi, float n_dot_wi) const;
+	static math::float3 evaluate(const Sample& sample, const math::float3& wi, float n_dot_wi);
 
-	float pdf(const Sample& sample, const math::float3& wi, float n_dot_wi) const;
+	static float pdf(const Sample& sample, const math::float3& wi, float n_dot_wi);
 
-	float importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
+	static float importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result);
 };
 
 class Sample : public material::Sample {
@@ -57,9 +57,6 @@ private:
 	math::float3 attenuation_;
 	float ior_;
 	float ior_outside_;
-
-	BRDF brdf_;
-	BTDF btdf_;
 
 	friend BRDF;
 	friend BTDF;

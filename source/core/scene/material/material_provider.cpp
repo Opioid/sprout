@@ -15,6 +15,7 @@
 #include "substitute/substitute_material.hpp"
 #include "substitute/substitute_material_clearcoat.hpp"
 #include "substitute/substitute_material_translucent.hpp"
+#include "substitute/substitute_material_base.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.inl"

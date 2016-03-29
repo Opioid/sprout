@@ -10,17 +10,18 @@ namespace bxdf { struct Result; }
 
 namespace oren_nayar {
 
-template<typename Sample>
 class Oren_nayar {
 public:
 
-	math::float3 evaluate(const Sample& sample,
-						  const math::float3& wi, float n_dot_wi, float n_dot_wo,
-						  float& pdf) const;
+	template<typename Sample>
+	static math::float3 evaluate(const Sample& sample,
+								 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+								 float& pdf);
 
-	float importance_sample(const Sample& sample,
-							sampler::Sampler& sampler, float n_dot_wo,
-							bxdf::Result& result) const;
+	template<typename Sample>
+	static float importance_sample(const Sample& sample,
+								   sampler::Sampler& sampler, float n_dot_wo,
+								   bxdf::Result& result);
 };
 
 }}}

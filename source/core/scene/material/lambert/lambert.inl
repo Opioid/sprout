@@ -10,17 +10,17 @@
 namespace scene { namespace material { namespace lambert {
 
 template<typename Sample>
-math::float3 Lambert<Sample>::evaluate(const Sample& sample, const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+math::float3 Lambert::evaluate(const Sample& sample, const math::float3& /*wi*/, float /*n_dot_wi*/) {
 	return math::Pi_inv * sample.diffuse_color_;
 }
 
 template<typename Sample>
-float Lambert<Sample>::pdf(const Sample& /*sample*/, const math::float3& /*wi*/, float n_dot_wi) const {
+float Lambert::pdf(const Sample& /*sample*/, const math::float3& /*wi*/, float n_dot_wi) {
 	return n_dot_wi * math::Pi_inv;
 }
 
 template<typename Sample>
-float Lambert<Sample>::importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result) const {
+float Lambert::importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result) {
 	math::float2 s2d = sampler.generate_sample_2D();
 
 	math::float3 is = math::sample_hemisphere_cosine(s2d);

@@ -33,7 +33,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		return;
 	}
 
-	float n_dot_wi = lambert_.importance_sample(*this, sampler, result);
+	float n_dot_wi = lambert::Lambert::importance_sample(*this, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 

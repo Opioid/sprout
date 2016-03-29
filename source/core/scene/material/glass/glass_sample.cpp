@@ -8,15 +8,15 @@
 
 namespace scene { namespace material { namespace glass {
 
-math::float3 BRDF::evaluate(const Sample& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+math::float3 BRDF::evaluate(const Sample& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) {
 	return math::float3_identity;
 }
 
-float BRDF::pdf(const Sample& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+float BRDF::pdf(const Sample& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) {
 	return 0.f;
 }
 
-float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
+float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/, bxdf::Result& result) {
 	math::float3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
 	float eta_t = sample.ior_;
@@ -53,15 +53,15 @@ float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*
 	return 1.f;
 }
 
-math::float3 BTDF::evaluate(const Sample& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+math::float3 BTDF::evaluate(const Sample& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) {
 	return math::float3_identity;
 }
 
-float BTDF::pdf(const Sample& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) const {
+float BTDF::pdf(const Sample& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) {
 	return 0.f;
 }
 
-float BTDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
+float BTDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/, bxdf::Result& result) {
 	math::float3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
 	float eta_t = sample.ior_;
@@ -117,10 +117,10 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
-		brdf_.importance_sample(*this, sampler, result);
+		BRDF::importance_sample(*this, sampler, result);
 		result.pdf *= 0.5f;
 	} else {
-		btdf_.importance_sample(*this, sampler, result);
+		BTDF::importance_sample(*this, sampler, result);
 		result.pdf *= 0.5f;
 	}
 

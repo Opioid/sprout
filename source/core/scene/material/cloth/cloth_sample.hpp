@@ -30,9 +30,7 @@ private:
 
 	math::float3 diffuse_color_;
 
-	lambert::Lambert<Sample> lambert_;
-
-	friend lambert::Lambert<Sample>;
+	friend lambert::Lambert;
 };
 
 }}}
