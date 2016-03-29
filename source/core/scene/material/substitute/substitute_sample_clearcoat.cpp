@@ -27,8 +27,6 @@ float Clearcoat::importance_sample(const Sample_clearcoat& sample, sampler::Samp
 
 	float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
 
-	result.wi = math::normalized(2.f * n_dot_wo * n - sample.wo_);
-
 	float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
@@ -39,11 +37,12 @@ float Clearcoat::importance_sample(const Sample_clearcoat& sample, sampler::Samp
 
 		// fresnel has to be the same value that would have been computed by BRDF
 
-	//	f = fresnel_dielectric(n_dot_t, n_dot_wo, eta);
+	//	f = fresnel::dielectric(n_dot_t, n_dot_wo, eta_t);
 
 		f = fresnel::dielectric_holgerusan(n_dot_wo, n_dot_t, eta_i, eta_t);
 	}
 
+	result.wi = math::normalized(2.f * n_dot_wo * n - sample.wo_);
 	result.reflection = math::float3(f);
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_reflection);
@@ -118,7 +117,7 @@ void Sample_clearcoat::set(const math::float3& color, const math::float3& emissi
 
 	metallic_ = metallic;
 
-	clearcoat_ior_ = 1.5f;
+	clearcoat_ior_ = 1.45f;
 }
 
 }}}
