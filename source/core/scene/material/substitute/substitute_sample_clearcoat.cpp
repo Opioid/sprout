@@ -43,6 +43,7 @@ float Clearcoat::importance_sample(const Sample_clearcoat& sample, sampler::Samp
 	}
 
 	result.wi = math::normalized(2.f * n_dot_wo * n - sample.wo_);
+
 	result.reflection = math::float3(f);
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_reflection);
