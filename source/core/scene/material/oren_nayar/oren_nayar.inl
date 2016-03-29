@@ -10,7 +10,7 @@ namespace scene { namespace material { namespace oren_nayar {
 template<typename Sample>
 math::float3 Oren_nayar::evaluate(const Sample& sample,
 								  const math::float3& wi, float n_dot_wi, float n_dot_wo,
-								  float& pdf) const {
+								  float& pdf) {
 /*
 	float roughness = 1.f;
 	float roughness_square = roughness * roughness;

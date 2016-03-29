@@ -23,7 +23,8 @@ template<typename Sample>
 math::float3 Material_base<Sample>::sample_emission(math::float2 uv, float /*time*/,
 													const Worker& worker, Sampler_settings::Filter filter) const {
 	if (emission_map_) {
-		auto& sampler = worker.sampler(sampler_key_, filter);
+		// For some reason Clang needs this to find inherited Material::sampler_key_
+		auto& sampler = worker.sampler(this->sampler_key_, filter);
 		return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 	} else {
 		return math::float3_identity;
