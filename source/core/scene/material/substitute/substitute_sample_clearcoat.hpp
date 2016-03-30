@@ -12,7 +12,8 @@ public:
 	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
 	void set(const math::float3& color, const math::float3& emission,
-			 float constant_f0, float roughness, float metallic, float clearcoat_ior);
+			 float constant_f0, float roughness, float metallic,
+			 float clearcoat_ior, float clearcoat_a2);
 
 private:
 
@@ -22,6 +23,7 @@ private:
 
 	float clearcoat_ior_;
 	float clearcoat_f0_;
+	float clearcoat_a2_;
 };
 
 }}}

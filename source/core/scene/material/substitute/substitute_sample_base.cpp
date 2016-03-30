@@ -62,7 +62,7 @@ math::float3 Sample_base::base_evaluate(math::pfloat3 wi, float& pdf) const {
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {
-		pdf = diffuse_pdf;
+		pdf = 0.5f * diffuse_pdf;
 		return n_dot_wi * diffuse;
 	}
 
@@ -78,9 +78,7 @@ math::float3 Sample_base::base_evaluate(math::pfloat3 wi, float& pdf) const {
 
 	math::float3 specular = d * g * f;
 
-	// this helped in the past, but problem maybe caused by faulty sphere normals
-//	float ggx_pdf     = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
-	float ggx_pdf     = d * n_dot_h / (4.f * wo_dot_h);
+	float ggx_pdf = d * n_dot_h / (4.f * wo_dot_h);
 
 	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
 

@@ -36,7 +36,7 @@ const material::Sample& Material_clearcoat::sample(const shape::Differential& dg
 	math::float2 surface;
 
 	if (surface_map_) {
-		surface  = sampler.sample_2(*surface_map_, dg.uv);
+		surface = sampler.sample_2(*surface_map_, dg.uv);
 	} else {
 		surface.x = roughness_;
 		surface.y = metallic_;
@@ -44,16 +44,18 @@ const material::Sample& Material_clearcoat::sample(const shape::Differential& dg
 
 	if (emission_map_) {
 		math::float3 emission = emission_factor_ * sampler.sample_3(*emission_map_, dg.uv);
-		sample.set(color, emission, constant_f0_, surface.x, surface.y, clearcoat_ior_);
+		sample.set(color, emission, constant_f0_, surface.x, surface.y, clearcoat_ior_, clearcoat_a2_);
 	} else {
-		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y, clearcoat_ior_);
+		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y, clearcoat_ior_, clearcoat_a2_);
 	}
 
 	return sample;
 }
 
-void Material_clearcoat::set_clearcoat(float ior) {
+void Material_clearcoat::set_clearcoat(float ior, float roughness) {
 	clearcoat_ior_ = ior;
+	float a = roughness * roughness;
+	clearcoat_a2_ = a * a;
 }
 
 }}}

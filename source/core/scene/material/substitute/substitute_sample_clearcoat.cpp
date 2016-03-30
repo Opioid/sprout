@@ -22,7 +22,6 @@ math::float3 Sample_clearcoat::evaluate(math::pfloat3 wi, float& pdf) const {
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	// oren nayar
-
 	float wi_dot_wo = math::dot(wi, wo_);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
@@ -44,18 +43,31 @@ math::float3 Sample_clearcoat::evaluate(math::pfloat3 wi, float& pdf) const {
 
 	math::float3 h = math::normalized(wo_ + wi);
 
+	float n_dot_h  = math::dot(n_, h);
 	float wo_dot_h = math::dot(wo_, h);
 
+	float cl_specular;
+	float cl_pdf;
+
 	float cl_f = fresnel::schlick(wo_dot_h, clearcoat_f0_);
-	float clearcoat = 1.f - cl_f;
+
+	if (0.f == clearcoat_a2_) {
+		cl_specular = 0.f;
+		cl_pdf = 0.f;
+	} else {
+		float cl_clamped_a2 = ggx::clamp_a2(clearcoat_a2_);
+		float cl_d = ggx::distribution_isotropic(n_dot_h, cl_clamped_a2);
+		float cl_g = ggx::geometric_shadowing(n_dot_wi, n_dot_wo, cl_clamped_a2);
+
+		cl_specular = cl_d * cl_g * cl_f;
+		cl_pdf = cl_d * n_dot_h / (4.f * wo_dot_h);
+	}
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {
-		pdf = diffuse_pdf;
-		return clearcoat * n_dot_wi * diffuse;
+		pdf = 0.5f * (cl_pdf + 0.5f * diffuse_pdf);
+		return (1.f - cl_f) * n_dot_wi * diffuse;
 	}
-
-	float n_dot_h  = math::dot(n_, h);
 
 	float clamped_a2 = ggx::clamp_a2(a2_);
 	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
@@ -64,13 +76,11 @@ math::float3 Sample_clearcoat::evaluate(math::pfloat3 wi, float& pdf) const {
 
 	math::float3 specular = d * g * f;
 
-	// this helped in the past, but problem maybe caused by faulty sphere normals
-//	float ggx_pdf     = d * n_dot_h / (4.f * std::max(wo_dot_h, 0.00001f));
-	float ggx_pdf     = d * n_dot_h / (4.f * wo_dot_h);
+	float ggx_pdf = d * n_dot_h / (4.f * wo_dot_h);
 
-	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
+	pdf = 0.5f * (cl_pdf + 0.5f * (diffuse_pdf + ggx_pdf));
 
-	return clearcoat * n_dot_wi * (diffuse + specular);
+	return (1.f - cl_f) * n_dot_wi * (diffuse + specular);
 }
 
 void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
@@ -82,15 +92,12 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
-	//	Clearcoat::importance_sample(*this, sampler, result);
-
 		float n_dot_wo = clamped_n_dot_wo();
 		float n_dot_wi = ggx::Schlick_isotropic::importance_sample(*this,
-																   0.f, clearcoat_f0_,
+																   clearcoat_f0_, clearcoat_a2_,
 																   sampler, n_dot_wo, result);
 
 		result.reflection = n_dot_wi * result.reflection;
-
 		result.pdf *= 0.5f;
 	} else {
 		if (1.f == metallic_) {
@@ -108,7 +115,8 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 }
 
 void Sample_clearcoat::set(const math::float3& color, const math::float3& emission,
-						   float constant_f0, float roughness, float metallic, float clearcoat_ior) {
+						   float constant_f0, float roughness, float metallic,
+						   float clearcoat_ior, float clearcoat_a2) {
 	diffuse_color_ = (1.f - metallic) * color;
 	f0_ = math::lerp(math::float3(constant_f0), color, metallic);
 	emission_ = emission;
@@ -121,6 +129,7 @@ void Sample_clearcoat::set(const math::float3& color, const math::float3& emissi
 	clearcoat_ior_ = clearcoat_ior;
 
 	clearcoat_f0_ = fresnel::schlick_f0(1.f, clearcoat_ior);
+	clearcoat_a2_ = clearcoat_a2;
 }
 
 void Sample_clearcoat::diffuse_importance_sample_and_clearcoat(sampler::Sampler& sampler, bxdf::Result& result) const {

@@ -16,11 +16,12 @@ public:
 										   float time, float ior_i,
 										   const Worker& worker, Sampler_settings::Filter filter) final override;
 
-	void set_clearcoat(float ior);
+	void set_clearcoat(float ior, float roughness);
 
 private:
 
 	float clearcoat_ior_;
+	float clearcoat_a2_;
 };
 
 }}}

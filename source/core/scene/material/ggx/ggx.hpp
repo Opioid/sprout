@@ -29,7 +29,7 @@ public:
 								   bxdf::Result& result);
 
 	template<typename Sample>
-	static float importance_sample(const Sample& sample, float a2, float f0,
+	static float importance_sample(const Sample& sample, float f0, float a2,
 								   sampler::Sampler& sampler, float n_dot_wo,
 								   bxdf::Result& result);
 

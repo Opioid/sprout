@@ -532,7 +532,7 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 		material->set_roughness(roughness);
 		material->set_metallic(metallic);
 		material->set_emission_factor(emission_factor);
-		material->set_clearcoat(clearcoat.ior);
+		material->set_clearcoat(clearcoat.ior, clearcoat.roughness);
 
 		return material;
 	}
@@ -600,6 +600,8 @@ void Provider::read_clearcoat_description(const rapidjson::Value& clearcoat_valu
 
 		if ("ior" == node_name) {
 			description.ior = json::read_float(node_value);
+		} else if ("roughness" == node_name) {
+			description.roughness = json::read_float(node_value);
 		}
 	}
 }

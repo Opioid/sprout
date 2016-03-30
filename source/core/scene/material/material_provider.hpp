@@ -55,6 +55,7 @@ private:
 
 	struct Clearcoat_description {
 		float ior = 1.f;
+		float roughness = 0.f;
 	};
 
 	static void read_clearcoat_description(const rapidjson::Value& clearcoat_value, Clearcoat_description& description);
