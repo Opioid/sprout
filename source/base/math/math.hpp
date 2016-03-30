@@ -38,7 +38,7 @@ inline float radians_to_degrees(float radians) {
 
 template <typename T>
 T cot(T x) {
-	return tan(Pi_div_2 - x);
+	return std::tan(Pi_div_2 - x);
 }
 
 template <typename T>
@@ -74,7 +74,13 @@ T lerp(T a, T b, T t) {
 
 template<typename T>
 T exp2(T x) {
-	return pow(T(2), x);
+	return std::pow(T(2), x);
+}
+
+template<typename T>
+T pow4(T x) {
+	T x2 = x * x;
+	return x2 * x2;
 }
 
 template<typename T>

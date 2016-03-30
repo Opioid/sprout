@@ -39,7 +39,7 @@ protected:
 
 	math::float3 color_;
 	float constant_f0_;
-	float roughness_;
+	float a2_;
 	float metallic_;
 	float emission_factor_;
 };

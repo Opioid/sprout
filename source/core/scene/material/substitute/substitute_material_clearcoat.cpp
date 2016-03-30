@@ -37,8 +37,9 @@ const material::Sample& Material_clearcoat::sample(const shape::Differential& dg
 
 	if (surface_map_) {
 		surface = sampler.sample_2(*surface_map_, dg.uv);
+		surface.x = math::pow4(surface.x);
 	} else {
-		surface.x = roughness_;
+		surface.x = a2_;
 		surface.y = metallic_;
 	}
 
@@ -54,8 +55,7 @@ const material::Sample& Material_clearcoat::sample(const shape::Differential& dg
 
 void Material_clearcoat::set_clearcoat(float ior, float roughness) {
 	clearcoat_ior_ = ior;
-	float a = roughness * roughness;
-	clearcoat_a2_ = a * a;
+	clearcoat_a2_  = math::pow4(roughness);
 }
 
 }}}

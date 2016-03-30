@@ -36,9 +36,10 @@ const material::Sample& Material::sample(const shape::Differential& dg, const ma
 	math::float2 surface;
 
 	if (surface_map_) {
-		surface  = sampler.sample_2(*surface_map_, dg.uv);
+		surface = sampler.sample_2(*surface_map_, dg.uv);
+		surface.x = math::pow4(surface.x);
 	} else {
-		surface.x = roughness_;
+		surface.x = a2_;
 		surface.y = metallic_;
 	}
 

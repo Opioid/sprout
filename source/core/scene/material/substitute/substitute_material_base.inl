@@ -77,7 +77,7 @@ void Material_base<Sample>::set_ior(float ior) {
 
 template<typename Sample>
 void Material_base<Sample>::set_roughness(float roughness) {
-	roughness_ = roughness;
+	a2_ = math::pow4(roughness);
 }
 
 template<typename Sample>

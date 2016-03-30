@@ -115,14 +115,13 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 }
 
 void Sample_clearcoat::set(const math::float3& color, const math::float3& emission,
-						   float constant_f0, float roughness, float metallic,
+						   float constant_f0, float a2, float metallic,
 						   float clearcoat_ior, float clearcoat_a2) {
 	diffuse_color_ = (1.f - metallic) * color;
 	f0_ = math::lerp(math::float3(constant_f0), color, metallic);
 	emission_ = emission;
 
-	float a = roughness * roughness;
-	a2_ = a * a;
+	a2_ = a2;
 
 	metallic_ = metallic;
 
