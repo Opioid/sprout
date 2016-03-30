@@ -44,7 +44,7 @@ bool Sphere::intersect(const entity::Composed_transformation& transformation, ma
 			math::float2 uv = math::float2(-std::atan2(n.x, n.z) + math::Pi, std::acos(n.y));
 
 			float phi   = uv.x;
-			float theta = uv.y;
+			float theta = std::max(uv.y, 0.99999f);
 
 			float sin_theta = std::sin(theta);
 			float sin_phi   = std::sin(phi);
