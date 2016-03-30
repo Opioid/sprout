@@ -50,8 +50,14 @@ private:
 		int32_t     num_elements;
 	};
 
-	void read_sampler_settings(const rapidjson::Value& sampler_value, Sampler_settings& settings);
-	void read_texture_description(const rapidjson::Value& texture_value, Texture_description& description);
+	static void read_sampler_settings(const rapidjson::Value& sampler_value, Sampler_settings& settings);
+	static void read_texture_description(const rapidjson::Value& texture_value, Texture_description& description);
+
+	struct Clearcoat_description {
+		float ior = 1.f;
+	};
+
+	static void read_clearcoat_description(const rapidjson::Value& clearcoat_value, Clearcoat_description& description);
 
 	Generic_sample_cache<cloth::Sample>						cloth_cache_;
 	Generic_sample_cache<display::Sample>					display_cache_;

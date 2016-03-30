@@ -442,7 +442,10 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 	float emission_factor = 1.f;
 	float thickness = 0.f;
 	float attenuation_distance = 0.f;
-	bool clearcoat = false;
+
+	Clearcoat_description clearcoat;
+
+//	bool clearcoat = false;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -465,7 +468,8 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
 		} else if ("clearcoat" == node_name) {
-			clearcoat = json::read_bool(node_value);
+			//clearcoat = json::read_bool(node_value);
+			read_clearcoat_description(node_value, clearcoat);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				Texture_description texture_description;
@@ -516,7 +520,7 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 		material->set_attenuation_distance(attenuation_distance);
 
 		return material;
-	} else if (clearcoat) {
+	} else if (clearcoat.ior > 1.f) {
 		auto material = std::make_shared<substitute::Material_clearcoat>(substitute_clearcoat_cache_, mask,
 																		 sampler_settings, two_sided);
 
@@ -530,6 +534,7 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 		material->set_roughness(roughness);
 		material->set_metallic(metallic);
 		material->set_emission_factor(emission_factor);
+		material->set_clearcoat(clearcoat.ior);
 
 		return material;
 	}
@@ -582,6 +587,21 @@ void Provider::read_texture_description(const rapidjson::Value& texture_value, T
 			description.usage = json::read_string(node_value);
 		} else if ("num_elements" == node_name) {
 			description.num_elements = json::read_int(node_value);
+		}
+	}
+}
+
+void Provider::read_clearcoat_description(const rapidjson::Value& clearcoat_value, Clearcoat_description& description) {
+	if (!clearcoat_value.IsObject()) {
+		return;
+	}
+
+	for (auto n = clearcoat_value.MemberBegin(); n != clearcoat_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const rapidjson::Value& node_value = n->value;
+
+		if ("ior" == node_name) {
+			description.ior = json::read_float(node_value);
 		}
 	}
 }

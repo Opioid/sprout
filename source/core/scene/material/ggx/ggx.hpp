@@ -19,9 +19,24 @@ public:
 								 float& pdf);
 
 	template<typename Sample>
+	static math::float3 evaluate_and_clearcoat(const Sample& sample, float clearcoat_f0,
+											   const math::float3& wi, float n_dot_wi, float n_dot_wo,
+											   float& pdf, float& clearcoat);
+
+	template<typename Sample>
 	static float importance_sample(const Sample& sample,
 								   sampler::Sampler& sampler, float n_dot_wo,
 								   bxdf::Result& result);
+
+	template<typename Sample>
+	static float importance_sample(const Sample& sample, float a2, float f0,
+								   sampler::Sampler& sampler, float n_dot_wo,
+								   bxdf::Result& result);
+
+	template<typename Sample>
+	static float importance_sample_and_clearcoat(const Sample& sample, float clearcoat_f0,
+												 sampler::Sampler& sampler, float n_dot_wo,
+												 bxdf::Result& result, float& clearcoat);
 };
 
 class Conductor_isotropic {

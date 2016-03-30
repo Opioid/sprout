@@ -44,12 +44,16 @@ const material::Sample& Material_clearcoat::sample(const shape::Differential& dg
 
 	if (emission_map_) {
 		math::float3 emission = emission_factor_ * sampler.sample_3(*emission_map_, dg.uv);
-		sample.set(color, emission, constant_f0_, surface.x, surface.y);
+		sample.set(color, emission, constant_f0_, surface.x, surface.y, clearcoat_ior_);
 	} else {
-		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y);
+		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y, clearcoat_ior_);
 	}
 
 	return sample;
+}
+
+void Material_clearcoat::set_clearcoat(float ior) {
+	clearcoat_ior_ = ior;
 }
 
 }}}

@@ -84,10 +84,6 @@ math::float3 Sample_base::base_evaluate(math::pfloat3 wi, float& pdf) const {
 
 	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
 
-//	if (math::contains_negative(diffuse) || math::contains_negative(specular)) {
-//		std::cout << "substitute::Sample::evaluate()" << std::endl;
-//	}
-
 	return n_dot_wi * (diffuse + specular);
 }
 

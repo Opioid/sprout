@@ -4,20 +4,6 @@
 
 namespace scene { namespace material { namespace substitute {
 
-class Sample_clearcoat;
-
-class Clearcoat {
-public:
-
-	static math::float3 evaluate(const Sample_clearcoat& sample, const math::float3& wi, float n_dot_wi);
-
-	static float pdf(const Sample_clearcoat& sample, const math::float3& wi, float n_dot_wi);
-
-	static float importance_sample(const Sample_clearcoat& sample, sampler::Sampler& sampler, bxdf::Result& result);
-
-	static float fresnel(const Sample_clearcoat& sample);
-};
-
 class Sample_clearcoat : public Sample_base {
 public:
 
@@ -26,13 +12,16 @@ public:
 	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
 	void set(const math::float3& color, const math::float3& emission,
-			 float constant_f0, float roughness, float metallic);
+			 float constant_f0, float roughness, float metallic, float clearcoat_ior);
 
 private:
 
-	float clearcoat_ior_;
+	void diffuse_importance_sample_and_clearcoat(sampler::Sampler& sampler, bxdf::Result& result) const;
+	void specular_importance_sample_and_clearcoat(sampler::Sampler& sampler, bxdf::Result& result) const;
+	void pure_specular_importance_sample_and_clearcoat(sampler::Sampler& sampler, bxdf::Result& result) const;
 
-	friend Clearcoat;
+	float clearcoat_ior_;
+	float clearcoat_f0_;
 };
 
 }}}
