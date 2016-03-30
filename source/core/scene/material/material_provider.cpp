@@ -21,6 +21,8 @@
 #include "base/memory/variant_map.inl"
 #include "base/thread/thread_pool.hpp"
 
+#include <iostream>
+
 namespace scene { namespace material {
 
 Provider::Provider(uint32_t num_threads) :
@@ -442,10 +444,7 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 	float emission_factor = 1.f;
 	float thickness = 0.f;
 	float attenuation_distance = 0.f;
-
 	Clearcoat_description clearcoat;
-
-//	bool clearcoat = false;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -468,7 +467,6 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
 		} else if ("clearcoat" == node_name) {
-			//clearcoat = json::read_bool(node_value);
 			read_clearcoat_description(node_value, clearcoat);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
