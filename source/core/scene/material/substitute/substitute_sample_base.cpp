@@ -39,26 +39,8 @@ math::float3 Sample_base::base_evaluate(math::pfloat3 wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
-	// oren nayar
-
-	float wi_dot_wo = math::dot(wi, wo_);
-
-	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
-
-	float t;
-	if (s >= 0.f) {
-		t = std::min(1.f, n_dot_wi / n_dot_wo);
-	} else {
-		t = n_dot_wi;
-	}
-
-	float a2 = a2_;
-	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
-	float b = 0.45f * (a2 / (a2 + 0.09f));
-
-	math::float3 diffuse = math::Pi_inv * (a + b * s * t) * diffuse_color_;
-	float diffuse_pdf = n_dot_wi * math::Pi_inv;
-	// ----
+	float diffuse_pdf;
+	math::float3 diffuse = oren_nayar::Oren_nayar::evaluate(*this, wi, n_dot_wi, n_dot_wo, diffuse_pdf);
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {

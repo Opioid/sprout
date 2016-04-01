@@ -11,51 +11,6 @@ template<typename Sample>
 math::float3 Oren_nayar::evaluate(const Sample& sample,
 								  const math::float3& wi, float n_dot_wi, float n_dot_wo,
 								  float& pdf) {
-/*
-	float roughness = 1.f;
-	float roughness_square = roughness * roughness;
-
-	float alpha = std::max(std::acos(n_dot_wo), std::acos(n_dot_wi));
-	float beta  = std::min(std::acos(n_dot_wo), std::acos(n_dot_wi));
-	float gamma = math::dot( BxDF<Sample>::sample_.wo_ - n_dot_wo *  BxDF<Sample>::sample_.n_, wi - n_dot_wi *  BxDF<Sample>::sample_.n_);
-
-	float c1 = 1.f - 0.5f * (roughness_square / (roughness_square + 0.33f));
-	float c2 = 0.45f * (roughness_square / (roughness_square + 0.09));
-
-
-
-	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
-
-	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
-
-	float t;
-	if (s > 0.f) {
-		t = std::min(1.f, n_dot_wi / n_dot_wo);
-	} else {
-		t = n_dot_wi;
-	}
-
-
-	float sin_alpha = std::sin(alpha);
-
-	if (gamma > 0.f) {
-		c2 *= sin_alpha;
-	} else {
-		c2 *= sin_alpha - std::pow((2.f * beta) / math::Pi, 3.f);
-	}
-
-	float c3 = 1.f / 8.f;
-	c3 *= roughness_square / (roughness_square + 0.09f);
-	c3 *= std::pow((4.f * alpha * beta) / (math::Pi * math::Pi), 2.f);
-
-	float tan_beta = std::tan(beta);
-	float tan_alpha_beta_2 = std::tan((alpha + beta) / 2.f);
-
-	float a  = gamma * c2 * tan_beta;
-	float b = (1.f - std::abs(gamma)) * c3 * tan_alpha_beta_2;
-
-	return math::Pi_inv * (c1 + a + b) *  BxDF<Sample>::sample_.diffuse_color_;
-*/
 	float wi_dot_wo = math::dot(wi, sample.wo_);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
@@ -73,38 +28,6 @@ math::float3 Oren_nayar::evaluate(const Sample& sample,
 
 	pdf = n_dot_wi * math::Pi_inv;
 	return math::Pi_inv * (a + b * s * t) * sample.diffuse_color_;
-
-//	if (math::contains_negative(math::Pi_inv * (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_)) {
-//		std::cout << "Oren_nayar<Sample>::evaluate()" << std::endl;
-//	}
-
-	// http://mimosa-pudica.net/improved-oren-nayar.html
-/*
-	float wi_dot_wo = math::dot(wi, BxDF<Sample>::sample_.wo_);
-
-	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
-
-//	float t;
-//	if (s <= 0.f) {
-//		t = 1.f;
-//	} else {
-//		t = std::max(n_dot_wi, n_dot_wo);
-//	}
-
-	float t;
-	if (s >= 0.f) {
-		t = std::min(1.f, n_dot_wi / n_dot_wo);
-	} else {
-		t = n_dot_wi;
-	}
-
-	float sigma = 1.f;
-	float a = 1.f / (math::Pi + (math::Pi_div_2 - 2.f / 3.f) * sigma);
-	float b = sigma * a;
-
-//	return (a + b * (s / t)) * BxDF<Sample>::sample_.diffuse_color_;
-	return (a + b * s * t) * BxDF<Sample>::sample_.diffuse_color_;
-*/
 }
 
 template<typename Sample>
