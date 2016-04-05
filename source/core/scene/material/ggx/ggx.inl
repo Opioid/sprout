@@ -22,7 +22,7 @@ float Schlick_isotropic::init_importance_sample(const Sample& sample,
 		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
 		n_dot_h_ = n_dot_h;
-		wo_dot_h_ = wo_dot_h_;
+		wo_dot_h_ = wo_dot_h;
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 		result.reflection = d * g * f;
@@ -58,7 +58,7 @@ float Schlick_isotropic::init_importance_sample(const Sample& sample,
 		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
 		n_dot_h_ = n_dot_h;
-		wo_dot_h_ = wo_dot_h_;
+		wo_dot_h_ = wo_dot_h;
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 		result.reflection = d * g * f;
@@ -94,9 +94,9 @@ math::float3 Schlick_isotropic::evaluate(const Sample& sample,
 }
 
 template<typename Sample>
-static math::float3 Schlick_isotropic::evaluate(const Sample& sample, float f0, float a2,
-												const math::float3& wi, float n_dot_wi, float n_dot_wo,
-												float& pdf) {
+ math::float3 Schlick_isotropic::evaluate(const Sample& sample, float f0, float a2,
+										  const math::float3& wi, float n_dot_wi, float n_dot_wo,
+										  float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
 		pdf = 0.f;
