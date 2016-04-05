@@ -63,7 +63,7 @@ math::float3 Sample_clearcoat::evaluate(math::pfloat3 wi, float& pdf) const {
 
 	pdf = 0.5f * (cl_pdf + 0.5f * (diffuse_pdf + ggx_pdf));
 
-	return (1.f - cl_f) * n_dot_wi * (diffuse + specular);
+	return n_dot_wi * (math::float3(cl_specular) + (1.f - cl_f) * (diffuse + specular));
 }
 
 void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
@@ -79,21 +79,36 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 		float n_dot_wi = ggx::Schlick_isotropic::importance_sample(*this,
 																   clearcoat_f0_, clearcoat_a2_,
 																   sampler, n_dot_wo, result);
+	//	result.reflection = n_dot_wi * result.reflection;
+	//	result.pdf *= 0.5f;
 
-		result.reflection = n_dot_wi * result.reflection;
-		result.pdf *= 0.5f;
+		float oren_nayar_pdf;
+		math::float3 oren_nayar_reflection = oren_nayar::Oren_nayar::evaluate(
+					*this, result.wi, n_dot_wi, n_dot_wo, oren_nayar_pdf);
+
+		float ggx_pdf;
+		float clearcoat;
+		math::float3 ggx_reflection = ggx::Schlick_isotropic::evaluate_and_clearcoat(*this, clearcoat_f0_,
+																					 result.wi, n_dot_wi, n_dot_wo,
+																					 ggx_pdf, clearcoat);
+
+		result.reflection = n_dot_wi * (result.reflection + clearcoat * (oren_nayar_reflection + ggx_reflection));
+		result.pdf = 0.5f * (result.pdf + oren_nayar_pdf + ggx_pdf);
 	} else {
 		if (1.f == metallic_) {
 			pure_specular_importance_sample_and_clearcoat(sampler, result);
+
+			result.pdf *= 0.5f;
+
 		} else {
 			if (p < 0.75f) {
 				diffuse_importance_sample_and_clearcoat(sampler, result);
 			} else {
 				specular_importance_sample_and_clearcoat(sampler, result);
 			}
-		}
 
-		result.pdf *= 0.5f;
+			result.pdf *= 0.5f;
+		}
 	}
 }
 
@@ -124,8 +139,13 @@ void Sample_clearcoat::diffuse_importance_sample_and_clearcoat(sampler::Sampler&
 																				 result.wi, n_dot_wi, n_dot_wo,
 																				 ggx_pdf, clearcoat);
 
-	result.reflection = clearcoat * n_dot_wi * (result.reflection + ggx_reflection);
-	result.pdf = 0.5f * (result.pdf + ggx_pdf);
+	float cl_pdf;
+	math::float3 cl_reflection = ggx::Schlick_isotropic::evaluate(*this, clearcoat_f0_, clearcoat_a2_,
+																  result.wi, n_dot_wi, n_dot_wo,
+																  cl_pdf);
+
+	result.reflection = n_dot_wi * (cl_reflection + clearcoat * (result.reflection + ggx_reflection));
+	result.pdf = 0.5f * (cl_pdf + result.pdf + ggx_pdf);
 }
 
 void Sample_clearcoat::specular_importance_sample_and_clearcoat(sampler::Sampler& sampler, bxdf::Result& result) const {
@@ -134,13 +154,17 @@ void Sample_clearcoat::specular_importance_sample_and_clearcoat(sampler::Sampler
 	float n_dot_wi = ggx::Schlick_isotropic::importance_sample_and_clearcoat(*this, clearcoat_f0_,
 																			 sampler, n_dot_wo,
 																			 result, clearcoat);
-
 	float oren_nayar_pdf;
 	math::float3 oren_nayar_reflection = oren_nayar::Oren_nayar::evaluate(
 				*this, result.wi, n_dot_wi, n_dot_wo, oren_nayar_pdf);
 
-	result.reflection = clearcoat * n_dot_wi * (result.reflection + oren_nayar_reflection);
-	result.pdf = 0.5f * (result.pdf + oren_nayar_pdf);
+	float cl_pdf;
+	math::float3 cl_reflection = ggx::Schlick_isotropic::evaluate(*this, clearcoat_f0_, clearcoat_a2_,
+																  result.wi, n_dot_wi, n_dot_wo,
+																  cl_pdf);
+
+	result.reflection = n_dot_wi * (cl_reflection + clearcoat * (result.reflection + oren_nayar_reflection));
+	result.pdf = 0.5f * (cl_pdf + result.pdf + oren_nayar_pdf);
 }
 
 void Sample_clearcoat::pure_specular_importance_sample_and_clearcoat(sampler::Sampler& sampler,

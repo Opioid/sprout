@@ -14,7 +14,17 @@ class Schlick_isotropic {
 public:
 
 	template<typename Sample>
+	float init_importance_sample(const Sample& sample,
+								 sampler::Sampler& sampler, float n_dot_wo,
+								 bxdf::Result& result);
+
+	template<typename Sample>
 	static math::float3 evaluate(const Sample& sample,
+								 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+								 float& pdf);
+
+	template<typename Sample>
+	static math::float3 evaluate(const Sample& sample, float f0, float a2,
 								 const math::float3& wi, float n_dot_wi, float n_dot_wo,
 								 float& pdf);
 
@@ -37,6 +47,11 @@ public:
 	static float importance_sample_and_clearcoat(const Sample& sample, float clearcoat_f0,
 												 sampler::Sampler& sampler, float n_dot_wo,
 												 bxdf::Result& result, float& clearcoat);
+private:
+
+	float n_dot_h_;
+	float wo_dot_h_;
+
 };
 
 class Conductor_isotropic {
