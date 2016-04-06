@@ -7,25 +7,19 @@
 namespace scene { namespace material { namespace ggx {
 
 template<typename Sample>
-float Schlick_isotropic::init_importance_sample(const Sample& sample,
+float Schlick_isotropic::init_importance_sample(const Sample& sample, float a2,
 												sampler::Sampler& sampler, float n_dot_wo,
 												bxdf::Result& result) {
-	if (0.f == sample.a2_) {
+	if (0.f == a2) {
 		constexpr float n_dot_h = 1.f;
 
 		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
 
 		math::float3 wi = math::normalized((2.f * wo_dot_h) * sample.n_ - sample.wo_);
 
-		float d = distribution_isotropic(n_dot_h, min_a2);
-		float g = geometric_shadowing(n_dot_wo, n_dot_wo, min_a2);
-		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
-
 		n_dot_h_ = n_dot_h;
 		wo_dot_h_ = wo_dot_h;
 
-		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = d * g * f;
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Specular_reflection);
 
@@ -33,7 +27,7 @@ float Schlick_isotropic::init_importance_sample(const Sample& sample,
 	} else {
 		math::float2 xi = sampler.generate_sample_2D();
 
-		float n_dot_h = std::sqrt((1.f - xi.y) / ((sample.a2_ - 1.f) * xi.y + 1.f));
+		float n_dot_h = std::sqrt((1.f - xi.y) / ((a2 - 1.f) * xi.y + 1.f));
 
 		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 		float phi = 2.f * math::Pi * xi.x;
@@ -51,22 +45,63 @@ float Schlick_isotropic::init_importance_sample(const Sample& sample,
 		float n_dot_wi = std::max(math::dot(sample.n_, wi),	0.00001f);
 	//	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
 
-		float clamped_a2 = clamp_a2(sample.a2_);
-		float d = distribution_isotropic(n_dot_h, clamped_a2);
-	//	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
-		float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
-
-		n_dot_h_ = n_dot_h;
-		wo_dot_h_ = wo_dot_h;
-
-		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = d * g * f;
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
 
 		return n_dot_wi;
 	}
+}
+
+template<typename Sample>
+float Schlick_isotropic::init_evaluate(const Sample& sample, math::pfloat3 wi) {
+	math::float3 h = math::normalized(sample.wo_ + wi);
+
+	n_dot_h_  = math::saturate(math::dot(sample.n_, h));
+	wo_dot_h_ = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+}
+
+inline
+float Schlick_isotropic::evaluate(float f0, float a2, float n_dot_wi, float n_dot_wo, float& pdf) const {
+	// Roughness zero will always have zero specular term (or worse NaN)
+	if (0.f == a2) {
+		pdf = 0.f;
+		return 0.f;
+	}
+
+	float clamped_a2 = clamp_a2(a2);
+	float d = distribution_isotropic(n_dot_h_, clamped_a2);
+	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
+	float f = fresnel::schlick(wo_dot_h_, f0);
+
+	pdf = d * n_dot_h_ / (4.f * wo_dot_h_);
+	return d * g * f;
+}
+
+inline
+math::float3 Schlick_isotropic::evaluate(math::pfloat3 f0, float a2, float n_dot_wi, float n_dot_wo, float& pdf) const {
+	// Roughness zero will always have zero specular term (or worse NaN)
+	if (0.f == a2) {
+		pdf = 0.f;
+		return math::float3_identity;
+	}
+
+	float clamped_a2 = clamp_a2(a2);
+	float d = distribution_isotropic(n_dot_h_, clamped_a2);
+	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
+	math::float3 f = fresnel::schlick(wo_dot_h_, f0);
+
+	pdf = d * n_dot_h_ / (4.f * wo_dot_h_);
+	return d * g * f;
+}
+
+inline
+float Schlick_isotropic::fresnel(float f0) const {
+	return fresnel::schlick(wo_dot_h_, f0);
+}
+
+inline
+math::float3 Schlick_isotropic::fresnel(math::pfloat3 f0) const {
+	return fresnel::schlick(wo_dot_h_, f0);
 }
 
 template<typename Sample>
@@ -94,9 +129,9 @@ math::float3 Schlick_isotropic::evaluate(const Sample& sample,
 }
 
 template<typename Sample>
- math::float3 Schlick_isotropic::evaluate(const Sample& sample, float f0, float a2,
-										  const math::float3& wi, float n_dot_wi, float n_dot_wo,
-										  float& pdf) {
+math::float3 Schlick_isotropic::evaluate(const Sample& sample, float f0, float a2,
+										 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+										 float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
 		pdf = 0.f;

@@ -5,15 +5,15 @@
 
 namespace scene { namespace material { namespace fresnel {
 
-inline math::float3 schlick(float wo_dot_h, const math::float3& f0) {
+inline float schlick(float wo_dot_h, float f0) {
+	return f0 + std::pow(1.f - wo_dot_h, 5.f) * (1.f - f0);
+}
+
+inline math::float3 schlick(float wo_dot_h, math::pfloat3 f0) {
 	return f0 + std::pow(1.f - wo_dot_h, 5.f) * math::float3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
 
 	// Gaussian approximation
 	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * math::float3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
-}
-
-inline float schlick(float wo_dot_h, float f0) {
-	return f0 + std::pow(1.f - wo_dot_h, 5.f) * (1.f - f0);
 }
 
 inline float schlick_f0(float n0, float n1) {
@@ -21,7 +21,7 @@ inline float schlick_f0(float n0, float n1) {
 	return t * t;
 }
 
-inline math::float3 conductor(float wo_dot_h, const math::float3& eta, const math::float3& k) {
+inline math::float3 conductor(float wo_dot_h, math::pfloat3 eta, math::pfloat3 k) {
 	math::float3 tmp_f = eta * eta + k * k;
 
 	float wo_dot_h2 = wo_dot_h * wo_dot_h;

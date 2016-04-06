@@ -30,16 +30,16 @@ public:
 	//float absolute_n_dot_wo() const;
 	float clamped_n_dot_wo() const;
 
-	const math::float3& shading_normal() const;
+	math::pfloat3 shading_normal() const;
 
-	const math::float3& geometric_normal() const;
+	math::pfloat3 geometric_normal() const;
 
 	math::float3 tangent_to_world(math::pfloat3 v) const;
 
 	bool same_hemisphere(math::pfloat3 v) const;
 
-	void set_basis(const math::float3& t, const math::float3& b, const math::float3& n,
-				   const math::float3& geo_n, const math::float3& wo, bool two_sided = false);
+	void set_basis(math::pfloat3 t, math::pfloat3 b, math::pfloat3 n,
+				   math::pfloat3 geo_n, math::pfloat3 wo, bool two_sided = false);
 
 	static math::float3 attenuation(math::pfloat3 color, float distance);
 

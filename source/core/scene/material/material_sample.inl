@@ -15,11 +15,11 @@ inline float Sample::clamped_n_dot_wo() const {
 	return std::max(math::dot(n_, wo_), 0.00001f);
 }
 
-inline const math::float3& Sample::shading_normal() const {
+inline math::pfloat3 Sample::shading_normal() const {
 	return n_;
 }
 
-inline const math::float3& Sample::geometric_normal() const {
+inline math::pfloat3 Sample::geometric_normal() const {
 	return geo_n_;
 }
 
@@ -34,8 +34,8 @@ inline bool Sample::same_hemisphere(math::pfloat3 v) const {
 	return math::dot(geo_n_, v) > 0.f;
 }
 
-inline void Sample::set_basis(const math::float3& t, const math::float3& b, const math::float3& n,
-							  const math::float3& geo_n, const math::float3& wo, bool two_sided) {
+inline void Sample::set_basis(math::pfloat3 t, math::pfloat3 b, math::pfloat3 n,
+							  math::pfloat3 geo_n, math::pfloat3 wo, bool two_sided) {
 	t_ = t;
 	b_ = b;
 
