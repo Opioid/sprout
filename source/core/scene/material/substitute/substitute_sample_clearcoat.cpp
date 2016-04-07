@@ -105,8 +105,6 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 				specular_importance_sample_and_clearcoat(sampler, result);
 			}
 		}
-
-		result.pdf *= 0.5f;
 	}
 }
 
@@ -144,7 +142,10 @@ void Sample_clearcoat::diffuse_importance_sample_and_clearcoat(sampler::Sampler&
 	math::float3 base_layer = (1.f - cl_fresnel) * (result.reflection + ggx_reflection);
 
 	result.reflection = n_dot_wi * (math::float3(cl_reflection) + base_layer);
-	result.pdf = 0.5f * (cl_pdf + result.pdf + ggx_pdf);
+
+	// PDF has 0.5 * 0.5
+	// 0.5 chance to select substitute layer and then 0.5 chance to select this importance sample
+	result.pdf = 0.25f * (cl_pdf + result.pdf + ggx_pdf);
 }
 
 void Sample_clearcoat::specular_importance_sample_and_clearcoat(sampler::Sampler& sampler, bxdf::Result& result) const {
@@ -167,7 +168,10 @@ void Sample_clearcoat::specular_importance_sample_and_clearcoat(sampler::Sampler
 	math::float3 base_layer = (1.f - cl_fresnel) * (oren_nayar_reflection + ggx_reflection);
 
 	result.reflection = n_dot_wi * (math::float3(cl_reflection) + base_layer);
-	result.pdf = 0.5f * (cl_pdf + oren_nayar_pdf + ggx_pdf);
+
+	// PDF has 0.5 * 0.5
+	// 0.5 chance to select substitute layer and then 0.5 chance to select this importance sample
+	result.pdf = 0.25f * (cl_pdf + oren_nayar_pdf + ggx_pdf);
 }
 
 void Sample_clearcoat::pure_specular_importance_sample_and_clearcoat(sampler::Sampler& sampler,
