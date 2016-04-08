@@ -2,6 +2,7 @@ SOURCES += \
 	scene/shape/canopy.cpp \
 	scene/shape/celestial_disk.cpp \
 	scene/shape/disk.cpp \
+	scene/shape/infinite_sphere.cpp \
 	scene/shape/inverse_sphere.cpp \
 	scene/shape/plane.cpp \
 	scene/shape/shape.cpp \
@@ -11,6 +12,7 @@ HEADERS += \
 	scene/shape/canopy.hpp \
 	scene/shape/celestial_disk.hpp \
 	scene/shape/disk.hpp \
+	scene/shape/infinite_sphere.hpp \
 	scene/shape/inverse_sphere.hpp \
 	scene/shape/morphable_shape.hpp \
 	scene/shape/node_stack.hpp \
