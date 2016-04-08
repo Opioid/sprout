@@ -11,7 +11,7 @@ namespace scene {
 
 class Worker;
 
-namespace shape { struct Differential; }
+namespace shape { struct Hitpoint; }
 
 namespace material {
 
@@ -25,7 +25,7 @@ public:
 
 	virtual void tick(float absolute_time, float time_slice);
 
-	virtual const Sample& sample(const shape::Differential& dg, const math::float3& wo, float time, float ior_i,
+	virtual const Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo, float time, float ior_i,
 								 const Worker& worker, Sampler_settings::Filter filter) = 0;
 
 	virtual math::float3 sample_emission(math::float2 uv, float time,

@@ -24,12 +24,11 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& emission);
+	void set(math::pfloat3 emission);
 
 private:
 
 	math::float3 emission_;
-
 };
 
 }}}

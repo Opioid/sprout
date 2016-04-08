@@ -103,6 +103,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	if (!take->surface_integrator_factory) {
 		take->surface_integrator_factory = std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
 					take->settings, 4, 8, 0.5f, 1, false);
+		logging::warning("No surface integrator specified, defaulting to Pathtracer Multiple Importance Sampling.");
 	}
 
 	if (!take->volume_integrator_factory) {

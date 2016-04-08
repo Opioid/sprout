@@ -4,7 +4,7 @@
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
-#include "scene/shape/geometry/differential.inl"
+#include "scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
 
 // http://www.3delight.com/en/modules/forum/viewtopic.php?t=4205
@@ -37,7 +37,7 @@ Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& c
 									   const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<Sample_isotropic>>(cache, mask, sampler_settings, two_sided) {}
 
-const material::Sample& Material_isotropic::sample(const shape::Differential& dg, const math::float3& wo,
+const material::Sample& Material_isotropic::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 												   float /*time*/, float /*ior_i*/,
 												   const Worker& worker, Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
@@ -45,12 +45,12 @@ const material::Sample& Material_isotropic::sample(const shape::Differential& dg
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	if (normal_map_) {
-		math::float3 nm = sampler.sample_3(*normal_map_, dg.uv);
-		math::float3 n = math::normalized(dg.tangent_to_world(nm));
+		math::float3 nm = sampler.sample_3(*normal_map_, hp.uv);
+		math::float3 n = math::normalized(hp.tangent_to_world(nm));
 
-		sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
+		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo);
 	} else {
-		sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
+		sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
 	}
 
 	sample.set(ior_, absorption_, roughness_);
@@ -62,11 +62,11 @@ void Material_isotropic::set_normal_map(std::shared_ptr<image::texture::Texture_
 	normal_map_ = normal_map;
 }
 
-void Material_isotropic::set_ior(const math::float3& ior) {
+void Material_isotropic::set_ior(math::pfloat3 ior) {
 	ior_ = ior;
 }
 
-void Material_isotropic::set_absorption(const math::float3& absorption) {
+void Material_isotropic::set_absorption(math::pfloat3 absorption) {
 	absorption_ = absorption;
 }
 
@@ -79,7 +79,7 @@ Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotrop
 										   const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<Sample_anisotropic>>(cache, mask, sampler_settings, two_sided) {}
 
-const material::Sample& Material_anisotropic::sample(const shape::Differential& dg, const math::float3& wo,
+const material::Sample& Material_anisotropic::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 													 float /*time*/, float /*ior_i*/,
 													 const Worker& worker, Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
@@ -87,19 +87,19 @@ const material::Sample& Material_anisotropic::sample(const shape::Differential& 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	if (normal_map_) {
-		math::float3 nm = sampler.sample_3(*normal_map_, dg.uv);
-		math::float3 n = math::normalized(dg.tangent_to_world(nm));
+		math::float3 nm = sampler.sample_3(*normal_map_, hp.uv);
+		math::float3 n = math::normalized(hp.tangent_to_world(nm));
 
-		sample.set_basis(dg.t, dg.b, n, dg.geo_n, wo);
+		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo);
 	} else if (direction_map_) {
-		math::float2 tm = sampler.sample_2(*direction_map_, dg.uv);
-		math::float3 t = math::normalized(dg.tangent_to_world(tm));
+		math::float2 tm = sampler.sample_2(*direction_map_, hp.uv);
+		math::float3 t = math::normalized(hp.tangent_to_world(tm));
 
-		math::float3 b = math::cross(dg.n, t);
+		math::float3 b = math::cross(hp.n, t);
 
-		sample.set_basis(t, b, dg.n, dg.geo_n, wo);
+		sample.set_basis(t, b, hp.n, hp.geo_n, wo);
 	} else {
-		sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo);
+		sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
 	}
 
 	sample.set(ior_, absorption_, roughness_);
@@ -115,11 +115,11 @@ void Material_anisotropic::set_direction_map(std::shared_ptr<image::texture::Tex
 	direction_map_ = direction_map;
 }
 
-void Material_anisotropic::set_ior(const math::float3& ior) {
+void Material_anisotropic::set_ior(math::pfloat3 ior) {
 	ior_ = ior;
 }
 
-void Material_anisotropic::set_absorption(const math::float3& absorption) {
+void Material_anisotropic::set_absorption(math::pfloat3 absorption) {
 	absorption_ = absorption;
 }
 
@@ -128,4 +128,3 @@ void Material_anisotropic::set_roughness(math::float2 roughness) {
 }
 
 }}}
-

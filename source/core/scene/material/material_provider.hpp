@@ -8,6 +8,8 @@
 #include "glass/glass_rough_sample.hpp"
 #include "light/light_material_sample.hpp"
 #include "metal/metal_sample.hpp"
+#include "sky/sky_sample_clear.hpp"
+#include "sky/sky_sample_overcast.hpp"
 #include "substitute/substitute_sample.hpp"
 #include "substitute/substitute_sample_clearcoat.hpp"
 #include "substitute/substitute_sample_translucent.hpp"
@@ -42,6 +44,7 @@ private:
 	std::shared_ptr<Material> load_glass     (const rapidjson::Value& glass_value,      resource::Manager& manager);
 	std::shared_ptr<Material> load_light     (const rapidjson::Value& light_value,      resource::Manager& manager);
 	std::shared_ptr<Material> load_metal     (const rapidjson::Value& metal_value,      resource::Manager& manager);
+	std::shared_ptr<Material> load_sky		 (const rapidjson::Value& sky_value,		resource::Manager& manager);
 	std::shared_ptr<Material> load_substitute(const rapidjson::Value& substitute_value, resource::Manager& manager);
 
 	struct Texture_description {
@@ -67,6 +70,8 @@ private:
 	Generic_sample_cache<light::Sample>						light_cache_;
 	Generic_sample_cache<metal::Sample_isotropic>			metal_iso_cache_;
 	Generic_sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
+	Generic_sample_cache<sky::Sample_clear>					sky_clear_cache_;
+	Generic_sample_cache<sky::Sample_overcast>				sky_overcast_cache_;
 	Generic_sample_cache<substitute::Sample>				substitute_cache_;
 	Generic_sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
 	Generic_sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;

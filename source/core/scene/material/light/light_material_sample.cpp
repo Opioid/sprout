@@ -38,7 +38,7 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(const math::float3& emission) {
+void Sample::set(math::pfloat3 emission) {
 	emission_ = emission;
 }
 

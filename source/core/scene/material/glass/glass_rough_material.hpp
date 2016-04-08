@@ -14,7 +14,7 @@ public:
 	Glass_rough(Generic_sample_cache<Sample_rough>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
 				const Sampler_settings& sampler_settings);
 
-	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
+	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										   float time, float ior_i,
 										   const Worker& worker, Sampler_settings::Filter filter) final override;
 

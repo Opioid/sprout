@@ -5,7 +5,7 @@
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
-#include "scene/shape/geometry/differential.hpp"
+#include "scene/shape/geometry/hitpoint.inl"
 #include "base/color/color.inl"
 #include "base/math/math.hpp"
 #include "base/math/distribution/distribution_2d.inl"
@@ -18,17 +18,17 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings, two_sided),
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
-const material::Sample& Material::sample(const shape::Differential& dg, const math::float3& wo,
+const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										 float /*time*/, float /*ior_i*/,
 										 const Worker& worker, Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
+	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
 
 	if (emission_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		math::float3 emission = sampler.sample_3(*emission_map_, dg.uv);
+		math::float3 emission = sampler.sample_3(*emission_map_, hp.uv);
 		sample.set(emission_factor_ * emission, f0_, roughness_);
 	} else {
 		sample.set(emission_factor_ * emission_, f0_, roughness_);

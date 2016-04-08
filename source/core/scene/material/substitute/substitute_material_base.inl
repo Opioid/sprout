@@ -8,7 +8,7 @@
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
-#include "scene/shape/geometry/differential.inl"
+#include "scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
 
 namespace scene { namespace material { namespace substitute {

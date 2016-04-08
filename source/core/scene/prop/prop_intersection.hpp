@@ -1,8 +1,7 @@
 #pragma once
 
 #include "scene/shape/geometry/shape_intersection.hpp"
-
-namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
+#include "scene/material/sampler_settings.hpp"
 
 namespace scene {
 

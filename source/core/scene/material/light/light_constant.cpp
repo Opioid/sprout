@@ -3,7 +3,7 @@
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
-#include "scene/shape/geometry/differential.hpp"
+#include "scene/shape/geometry/hitpoint.inl"
 #include "base/color/color.inl"
 
 namespace scene { namespace material { namespace light {
@@ -14,12 +14,12 @@ Constant::Constant(Generic_sample_cache<Sample>& cache,
 				   const math::float3& emission) :
 	Material(cache, mask, sampler_settings, two_sided), emission_(emission) {}
 
-const material::Sample& Constant::sample(const shape::Differential& dg, const math::float3& wo,
+const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										 float /*time*/, float /*ior_i*/,
 										 const Worker& worker, Sampler_settings::Filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
-	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
+	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
 	sample.set(emission_);
 
 	return sample;

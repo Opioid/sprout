@@ -3,7 +3,7 @@
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
-#include "scene/shape/geometry/differential.hpp"
+#include "scene/shape/geometry/hitpoint.inl"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "base/color/color.inl"
 #include "base/math/math.hpp"
@@ -30,16 +30,16 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 	element_ = static_cast<int32_t>(absolute_time / frame_length_) % emission_map_->num_elements();
 }
 
-const material::Sample& Emissionmap_animated::sample(const shape::Differential& dg, const math::float3& wo,
+const material::Sample& Emissionmap_animated::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 													 float /*time*/, float /*ior_i*/,
 													 const Worker& worker, Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	sample.set_basis(dg.t, dg.b, dg.n, dg.geo_n, wo, two_sided_);
+	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
 
-	math::float3 emission = sampler.sample_3(*emission_map_, dg.uv, element_);
+	math::float3 emission = sampler.sample_3(*emission_map_, hp.uv, element_);
 	sample.set(emission_factor_ * emission);
 
 	return sample;

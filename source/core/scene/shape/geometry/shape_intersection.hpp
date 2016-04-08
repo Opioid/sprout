@@ -1,10 +1,10 @@
 #pragma once
 
-#include "differential.hpp"
+#include "hitpoint.hpp"
 
 namespace scene { namespace shape {
 
-struct Intersection : public Differential {
+struct Intersection : public Hitpoint {
 	float epsilon;
 	uint32_t part;
 };

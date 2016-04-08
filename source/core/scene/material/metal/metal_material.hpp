@@ -15,14 +15,14 @@ public:
 					   std::shared_ptr<image::texture::Texture_2D> mask,
 					   const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
+	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										   float time, float ior_i,
 										   const Worker& worker, Sampler_settings::Filter filter) final override;
 
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 
-	void set_ior(const math::float3& ior);
-	void set_absorption(const math::float3& absorption);
+	void set_ior(math::pfloat3 ior);
+	void set_absorption(math::pfloat3 absorption);
 	void set_roughness(float roughness);
 
 protected:
@@ -44,15 +44,15 @@ public:
 						 std::shared_ptr<image::texture::Texture_2D> mask,
 						 const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Differential& dg, const math::float3& wo,
+	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										   float time, float ior_i,
 										   const Worker& worker, Sampler_settings::Filter filter) final override;
 
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 	void set_direction_map(std::shared_ptr<image::texture::Texture_2D> direction_map);
 
-	void set_ior(const math::float3& ior);
-	void set_absorption(const math::float3& absorption);
+	void set_ior(math::pfloat3 ior);
+	void set_absorption(math::pfloat3 absorption);
 	void set_roughness(math::float2 roughness);
 
 protected:
