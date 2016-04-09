@@ -31,6 +31,7 @@
 #include "scene/animation/animation_loader.hpp"
 #include "scene/camera/camera_cubic.hpp"
 #include "scene/camera/camera_cubic_stereoscopic.hpp"
+#include "scene/camera/camera_hemispherical.hpp"
 #include "scene/camera/camera_perspective.hpp"
 #include "scene/camera/camera_perspective_stereoscopic.hpp"
 #include "scene/camera/camera_spherical.hpp"
@@ -229,6 +230,9 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 			camera = std::make_shared<scene::camera::Spherical>(
 						resolution, take.settings.ray_max_t, frame_duration, motion_blur);
 		}
+	} else if ("Hemispherical" == type_name) {
+		camera = std::make_shared<scene::camera::Hemispherical>(
+					resolution, take.settings.ray_max_t, frame_duration, motion_blur);
 	} else {
 		throw std::runtime_error("Camera type \"" + type_name + "\" not recognized");
 	}

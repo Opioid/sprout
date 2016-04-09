@@ -1,14 +1,13 @@
 #pragma once
 
-#include "camera_stereoscopic.hpp"
+#include "camera.hpp"
 
 namespace scene { namespace camera {
 
-class Spherical_stereoscopic : public Stereoscopic {
+class Hemispherical : public Camera {
 public:
 
-	Spherical_stereoscopic(float interpupillary_distance,
-						   math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur);
+	Hemispherical(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur);
 
 	virtual uint32_t num_views() const final override;
 
@@ -25,8 +24,6 @@ private:
 
 	float d_x_;
 	float d_y_;
-
-	math::Recti view_bounds_[2];
 };
 
 }}

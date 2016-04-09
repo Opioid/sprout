@@ -17,7 +17,7 @@ public:
 
 	virtual void update_focus(rendering::Worker& worker) final override;
 
-	virtual void generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 							  scene::Ray& ray) const final override;
 
 private:

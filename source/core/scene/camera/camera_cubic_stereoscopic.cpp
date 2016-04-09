@@ -78,7 +78,7 @@ math::Recti Cubic_stereoscopic::view_bounds(uint32_t view) const {
 
 void Cubic_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
-void Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
+bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
@@ -102,8 +102,10 @@ void Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
-	ray.time = sample.time;
+	ray.time  = sample.time;
 	ray.depth = 0;
+
+	return true;
 }
 
 }}

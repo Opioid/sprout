@@ -2,6 +2,7 @@ SOURCES += \
 	scene/camera/camera.cpp \
 	scene/camera/camera_cubic.cpp \
 	scene/camera/camera_cubic_stereoscopic.cpp \
+	scene/camera/camera_hemispherical.cpp \
 	scene/camera/camera_perspective.cpp \
 	scene/camera/camera_perspective_stereoscopic.cpp \
 	scene/camera/camera_spherical.cpp \
@@ -12,6 +13,7 @@ HEADERS += \
 	scene/camera/camera.hpp \
 	scene/camera/camera_cubic.hpp \
 	scene/camera/camera_cubic_stereoscopic.hpp \
+	scene/camera/camera_hemispherical.hpp \
 	scene/camera/camera_perspective.hpp \
 	scene/camera/camera_perspective_stereoscopic.hpp \
 	scene/camera/camera_spherical.hpp \

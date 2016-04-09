@@ -42,11 +42,12 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 
 				sample.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
-				camera.generate_ray(sample, view, ray);
-
-				math::float4 color = li(ray);
-
-				sensor.add_sample(sample, color, tile, bounds);
+				if (camera.generate_ray(sample, view, ray)) {
+					math::float4 color = li(ray);
+					sensor.add_sample(sample, color, tile, bounds);
+				} else {
+					sensor.add_sample(sample, math::float4(0.f, 0.f, 0.f, 0.f), tile, bounds);
+				}
 			}
 		}
 	}

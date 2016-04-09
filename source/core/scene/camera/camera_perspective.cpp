@@ -67,15 +67,15 @@ void Perspective::update_focus(rendering::Worker& worker) {
 	}
 }
 
-void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, scene::Ray& ray) const {
-	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
+bool Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, scene::Ray& ray) const {
+	math::float2 coordinates = math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
 	math::float3 origin;
 
 	if (lens_radius_ > 0.f) {
-		math::float2 lens  = math::sample_disk_concentric(sample.lens_uv);
+		math::float2 lens = math::sample_disk_concentric(sample.lens_uv);
 
 		float t = focal_distance_ / direction.z;
 		math::float3 focus = t * direction;
@@ -97,8 +97,10 @@ void Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*
 	ray.set_direction(direction_w);
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
-	ray.time = sample.time;
+	ray.time  = sample.time;
 	ray.depth = 0;
+
+	return true;
 }
 
 }}

@@ -45,7 +45,7 @@ math::Recti Perspective_stereoscopic::view_bounds(uint32_t view) const {
 
 void Perspective_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
-void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 											scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
@@ -58,8 +58,10 @@ void Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 	ray.set_direction(math::transform_vector(math::normalized(direction), transformation.object_to_world));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
-	ray.time = sample.time;
+	ray.time  = sample.time;
 	ray.depth = 0;
+
+	return true;
 }
 
 }}

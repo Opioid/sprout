@@ -35,7 +35,7 @@ math::Recti Spherical_stereoscopic::view_bounds(uint32_t view) const {
 
 void Spherical_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
-void Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
+bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	float x = d_x_ * coordinates.x;
@@ -62,8 +62,10 @@ void Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, 
 	ray.set_direction(math::transform_vector(dir, transformation.rotation));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
-	ray.time = sample.time;
+	ray.time  = sample.time;
 	ray.depth = 0;
+
+	return true;
 }
 
 }}

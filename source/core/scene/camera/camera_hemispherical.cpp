@@ -1,4 +1,4 @@
-#include "camera_spherical.hpp"
+#include "camera_hemispherical.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "scene/scene_ray.inl"
@@ -9,42 +9,46 @@
 
 namespace scene { namespace camera {
 
-Spherical::Spherical(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
+Hemispherical::Hemispherical(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
 	Camera(resolution, ray_max_t, frame_duration, motion_blur) {
 	math::float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;
 }
 
-uint32_t Spherical::num_views() const {
+uint32_t Hemispherical::num_views() const {
 	return 1;
 }
 
-math::int2 Spherical::sensor_dimensions() const {
+math::int2 Hemispherical::sensor_dimensions() const {
 	return resolution_;
 }
 
-math::Recti Spherical::view_bounds(uint32_t /*view*/) const {
+math::Recti Hemispherical::view_bounds(uint32_t /*view*/) const {
 	return math::Recti{math::int2(0, 0), resolution_};
 }
 
-void Spherical::update_focus(rendering::Worker& /*worker*/) {}
+void Hemispherical::update_focus(rendering::Worker& /*worker*/) {}
 
-bool Spherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, scene::Ray& ray) const {
-	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
+bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, scene::Ray& ray) const {
+	math::float2 coordinates = math::float2(sample.pixel) + sample.pixel_uv;
 
 	float x = d_x_ * coordinates.x;
 	float y = d_y_ * coordinates.y;
 
-	float phi   = (-x + 0.75f) * 2.f * math::Pi;
-	float theta = y * math::Pi;
+	x = 2.f * x - 1.f;
+	y = 2.f * y - 1.f;
 
-	float sin_theta = std::sin(theta);
-	float cos_theta = std::cos(theta);
-	float sin_phi   = std::sin(phi);
-	float cos_phi   = std::cos(phi);
+	float x2 = x * x;
+	float y2 = y * y;
 
-	math::float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+	if (x2 + y2 > 1.f) {
+		return false;
+	}
+
+	float z = std::sqrt(std::max(0.f, 1.f - x2 - y2));
+
+	math::float3 dir = math::float3(x, -y, z);
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);
