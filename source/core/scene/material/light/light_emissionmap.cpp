@@ -32,7 +32,7 @@ const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, math::pfl
 	return sample;
 }
 
-math::float3 Emissionmap::sample_emission(math::float2 uv, float /*time*/,
+math::float3 Emissionmap::sample_emission(math::pfloat3 /*wi*/, math::float2 uv, float /*time*/,
 										  const Worker& worker, Sampler_settings::Filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);

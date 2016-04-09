@@ -24,7 +24,7 @@ public:
 										   float time, float ior_i,
 										   const Worker& worker, Sampler_settings::Filter filter) final override;
 
-	virtual math::float3 sample_emission(math::float2 uv, float time,
+	virtual math::float3 sample_emission(math::pfloat3 wi, math::float2 uv, float time,
 										 const Worker& worker, Sampler_settings::Filter filter) const final override;
 
 	virtual math::float3 average_emission() const final override;

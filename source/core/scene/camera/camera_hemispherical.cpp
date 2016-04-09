@@ -33,22 +33,19 @@ void Hemispherical::update_focus(rendering::Worker& /*worker*/) {}
 bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, scene::Ray& ray) const {
 	math::float2 coordinates = math::float2(sample.pixel) + sample.pixel_uv;
 
+	// Paraboloid mapping
 	float x = d_x_ * coordinates.x;
 	float y = d_y_ * coordinates.y;
 
 	x = 2.f * x - 1.f;
 	y = 2.f * y - 1.f;
 
-	float x2 = x * x;
-	float y2 = y * y;
-
-	if (x2 + y2 > 1.f) {
+	float z = x * x + y * y;
+	if (z > 1.f) {
 		return false;
 	}
 
-	float z = std::sqrt(std::max(0.f, 1.f - x2 - y2));
-
-	math::float3 dir = math::float3(x, -y, z);
+	math::float3 dir = math::float3(x, -y, 0.5f - 0.5f * z);
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);

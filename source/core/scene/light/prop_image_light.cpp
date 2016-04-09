@@ -26,7 +26,7 @@ void Prop_image_light::sample(const entity::Composed_transformation& transformat
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
 		result.shape.pdf *= pdf;
-		result.energy = material->sample_emission(result.shape.uv, time, worker, filter);
+		result.energy = material->sample_emission(result.shape.wi, result.shape.uv, time, worker, filter);
 	} else {
 		result.shape.pdf = 0.f;
 	}

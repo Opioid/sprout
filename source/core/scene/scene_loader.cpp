@@ -10,6 +10,7 @@
 #include "scene/shape/canopy.hpp"
 #include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/disk.hpp"
+#include "scene/shape/infinite_sphere.hpp"
 #include "scene/shape/inverse_sphere.hpp"
 #include "scene/shape/plane.hpp"
 #include "scene/shape/sphere.hpp"
@@ -33,6 +34,7 @@ Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> f
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
+	infinite_sphere_(std::make_shared<shape::Infinite_sphere>()),
 	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	sphere_(std::make_shared<shape::Sphere>()),
@@ -238,6 +240,8 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type, const rapid
 		return celestial_disk_;
 	} else if ("Disk" == type) {
 		return disk_;
+	} else if ("Infinite_sphere" == type) {
+		return infinite_sphere_;
 	} else if ("Inverse_sphere" == type) {
 		return inverse_sphere_;
 	} else if ("Plane" == type) {
@@ -252,8 +256,10 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type, const rapid
 			} catch (const std::exception& e) {
 				logging::error("Cannot create \"" + type + "\": " + e.what() + ".");
 			}
-        }
-    }
+		} else {
+			logging::error("Cannot create \"" + type + "\": Unknown type.");
+		}
+	}
 
 	return nullptr;
 }

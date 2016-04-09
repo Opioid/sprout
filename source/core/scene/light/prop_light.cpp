@@ -16,8 +16,8 @@ void Prop_light::init(Prop* prop, uint32_t part) {
 	part_ = part;
 }
 
-const entity::Composed_transformation& Prop_light::transformation_at(float time,
-															 entity::Composed_transformation& transformation) const {
+const entity::Composed_transformation& Prop_light::transformation_at(
+		float time, entity::Composed_transformation& transformation) const {
 	return prop_->transformation_at(time, transformation);
 }
 
@@ -42,7 +42,7 @@ void Prop_light::sample(const entity::Composed_transformation& transformation, f
 		}
 	}
 
-	result.energy = material->sample_emission(result.shape.uv, time, worker, filter);
+	result.energy = material->sample_emission(result.shape.wi, result.shape.uv, time, worker, filter);
 }
 
 float Prop_light::pdf(const entity::Composed_transformation& transformation,

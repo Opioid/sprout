@@ -34,19 +34,6 @@ const material::Sample& Glass::sample(const shape::Hitpoint& hp, math::pfloat3 w
 	return sample;
 }
 
-math::float3 Glass::sample_emission(math::float2 /*uv*/, float /*time*/,
-									const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
-	return math::float3_identity;
-}
-
-math::float3 Glass::average_emission() const {
-	return math::float3_identity;
-}
-
-bool Glass::has_emission_map() const {
-	return false;
-}
-
 void Glass::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
 	normal_map_ = normal_map;
 }

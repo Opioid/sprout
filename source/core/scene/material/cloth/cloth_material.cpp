@@ -42,19 +42,6 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat
 	return sample;
 }
 
-math::float3 Material::sample_emission(math::float2 /*uv*/, float /*time*/,
-									   const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
-	return math::float3_identity;
-}
-
-math::float3 Material::average_emission() const {
-	return math::float3_identity;
-}
-
-bool Material::has_emission_map() const {
-	return false;
-}
-
 void Material::set_color_map(std::shared_ptr<image::texture::Texture_2D> color_map) {
 	color_map_ = color_map;
 }

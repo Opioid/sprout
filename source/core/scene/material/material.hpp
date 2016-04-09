@@ -28,7 +28,7 @@ public:
 	virtual const Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo, float time, float ior_i,
 								 const Worker& worker, Sampler_settings::Filter filter) = 0;
 
-	virtual math::float3 sample_emission(math::float2 uv, float time,
+	virtual math::float3 sample_emission(math::pfloat3 wi, math::float2 uv, float time,
 										 const Worker& worker, Sampler_settings::Filter filter) const;
 
 	virtual math::float3 average_emission() const;

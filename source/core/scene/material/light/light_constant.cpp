@@ -25,7 +25,7 @@ const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat
 	return sample;
 }
 
-math::float3 Constant::sample_emission(math::float2 /*uv*/, float /*time*/,
+math::float3 Constant::sample_emission(math::pfloat3 /*wi*/, math::float2 /*uv*/, float /*time*/,
 									   const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
 	return emission_;
 }
