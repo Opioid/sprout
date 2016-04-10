@@ -23,8 +23,10 @@ bool Infinite_sphere::intersect(const entity::Composed_transformation& transform
 		intersection.p = ray.point(10000.f);
 		intersection.t = transformation.rotation.x3;
 		intersection.b = transformation.rotation.y3;
-		intersection.n = -ray.direction;
-		intersection.geo_n = intersection.n;
+
+		math::float3 n = -ray.direction;
+		intersection.n = n;
+		intersection.geo_n = n;
 		intersection.part = 0;
 
 		math::float3 xyz = math::normalized(math::transform_vector_transposed(ray.direction, transformation.rotation));

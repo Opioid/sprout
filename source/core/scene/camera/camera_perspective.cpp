@@ -24,7 +24,7 @@ Perspective::Perspective(math::int2 resolution, float ray_max_t, float frame_dur
 	math::float3 right_top	( ratio,  1.f, z);
 	math::float3 left_bottom(-ratio, -1.f, z);
 
-	d_x_ = (right_top - left_top_)   / fr.x;
+	d_x_ = (right_top   - left_top_) / fr.x;
 	d_y_ = (left_bottom - left_top_) / fr.y;
 
 	focus_.point.x *= fr.x;
@@ -90,8 +90,9 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*
 	auto& transformation = transformation_at(sample.time, temp);
 
 	math::float3 origin_w = math::transform_point(origin, transformation.object_to_world);
-	math::float3 direction_w = math::normalized(direction);
-	direction_w = math::transform_vector(direction_w, transformation.object_to_world);
+
+	direction = math::normalized(direction);
+	math::float3 direction_w = math::transform_vector(direction, transformation.object_to_world);
 
 	ray.origin = origin_w;
 	ray.set_direction(direction_w);

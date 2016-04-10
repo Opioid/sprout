@@ -29,11 +29,14 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.p = ray.point(10000.f);
 		intersection.t = transformation.rotation.x3;
 		intersection.b = transformation.rotation.y3;
-		intersection.n = -ray.direction;
-		intersection.geo_n = intersection.n;
+
+		math::float3 n = -ray.direction;
+		intersection.n = n;
+		intersection.geo_n = n;
 		intersection.part = 0;
 
 		math::float3 xyz = math::normalized(math::transform_vector_transposed(ray.direction, transformation.rotation));
+
 		intersection.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
 		intersection.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
 
@@ -69,8 +72,8 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	sample.wi = dir;
 
 	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
-	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-							 std::acos(xyz.y) * math::Pi_inv);
+	sample.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
+	sample.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
 
 	sample.t   = 10000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
@@ -82,14 +85,14 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	math::float2 uv = sampler.generate_sample_2D();
 	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv,
 																transformation.rotation.x3,
-																transformation.rotation.z3,
-																transformation.rotation.y3);
+																transformation.rotation.y3,
+																transformation.rotation.z3);
 
 	sample.wi = dir;
 
 	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
-	sample.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-							 std::acos(xyz.y) * math::Pi_inv);
+	sample.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
+	sample.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
 
 	sample.t   = 10000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
