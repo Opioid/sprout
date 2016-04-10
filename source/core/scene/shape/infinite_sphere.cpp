@@ -62,7 +62,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const entity::Composed_transform
 
 	sample.wi = dir;
 
-	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
+	math::float3 xyz = math::normalized(math::transform_vector_transposed(dir, transformation.rotation));
 	sample.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 	sample.uv.y = std::acos(xyz.y) * math::Pi_inv;
 
@@ -78,7 +78,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const entity::Composed_transform
 
 	sample.wi = dir;
 
-	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
+	math::float3 xyz = math::normalized(math::transform_vector_transposed(dir, transformation.rotation));
 	sample.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 	sample.uv.y = std::acos(xyz.y) * math::Pi_inv;
 

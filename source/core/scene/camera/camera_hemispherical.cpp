@@ -45,7 +45,7 @@ bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t 
 		return false;
 	}
 
-	math::float3 dir = math::float3(x, -y, 0.5f - 0.5f * z);
+	math::float3 dir = math::normalized(math::float3(x, -y, 0.5f - 0.5f * z));
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);
