@@ -24,7 +24,7 @@ bool Celestial_disk::intersect(const entity::Composed_transformation& transforma
 		return false;
 	}
 
-	float radius = transformation.scale.x;
+	float radius = math::degrees_to_radians(transformation.scale.x);
 	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= 10000.f) {
@@ -70,7 +70,8 @@ void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transforma
 	math::float2 xy = math::sample_disk_concentric(r2);
 
 	math::float3 ls = math::float3(xy, 0.f);
-	math::float3 ws = transformation.scale.x * math::transform_vector(ls, transformation.rotation);
+	float radius = math::degrees_to_radians(transformation.scale.x);
+	math::float3 ws = radius * math::transform_vector(ls, transformation.rotation);
 
 	sample.wi = math::normalized(ws - transformation.rotation.z3);
 	sample.t = 10000.f;
@@ -90,7 +91,8 @@ float Celestial_disk::pdf(uint32_t /*part*/, const entity::Composed_transformati
 }
 
 float Celestial_disk::area(uint32_t /*part*/, const math::float3& scale) const {
-	return math::Pi * scale.x * scale.x;
+	float radius = math::degrees_to_radians(scale.x);
+	return math::Pi * radius * radius;
 }
 
 bool Celestial_disk::is_finite() const {
