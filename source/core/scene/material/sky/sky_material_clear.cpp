@@ -26,7 +26,7 @@ const material::Sample& Material_clear::sample(const shape::Hitpoint& hp, math::
 
 math::float3 Material_clear::sample_emission(math::pfloat3 /*wi*/, math::float2 /*uv*/, float /*time*/,
 											 const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
-	return emission_;
+	return math::float3(1.f, 0.f, 0.f);
 }
 
 math::float3 Material_clear::average_emission() const {
@@ -42,7 +42,7 @@ bool Material_clear::has_emission_map() const {
 }
 
 void Material_clear::prepare_sampling(bool /*spherical*/) {
-
+	model_.init();
 }
 
 void Material_clear::set_turbidity(float turbidity) {

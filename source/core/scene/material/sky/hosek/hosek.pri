@@ -1,5 +1,5 @@
 SOURCES += \
-	scene/material/sky/hosek/ArHosekSkyModel.c \
+	scene/material/sky/hosek/ArHosekSkyModel.cpp \
 
 HEADERS += \
 	scene/material/sky/hosek/ArHosekSkyModel.h \

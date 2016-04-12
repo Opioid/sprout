@@ -11,7 +11,7 @@ math::float3 Sample_clear::evaluate(math::pfloat3 /*wi*/, float& pdf) const {
 }
 
 math::float3 Sample_clear::emission() const {
-	return ((1.f + 2.f * math::dot(zenith_, -wo_)) / 3.f) * emission_;
+	return model_->evaluate(-wo_);
 }
 
 math::float3 Sample_clear::attenuation() const {

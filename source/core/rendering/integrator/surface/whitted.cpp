@@ -42,7 +42,7 @@ math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::In
 
 		throughput = (1.f - opacity) * intersection.opacity(worker, ray.time,
 															scene::material::Sampler_settings::Filter::Unknown);
-		opacity   += throughput;
+		opacity += throughput;
 	}
 
 	result += throughput * shade(worker, ray, intersection);
@@ -57,7 +57,9 @@ math::float3 Whitted::shade(Worker& worker, const scene::Ray& ray, const scene::
 	auto& material_sample = intersection.sample(worker, wo, ray.time,
 												scene::material::Sampler_settings::Filter::Unknown);
 
-	result += material_sample.emission();
+	if (material_sample.same_hemisphere(wo)) {
+		result += material_sample.emission();
+	}
 
 	if (material_sample.is_pure_emissive()) {
 		return result;
