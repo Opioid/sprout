@@ -43,7 +43,6 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 		workers[i].init(i, scene, rng, *surface_integrator_factory_, *volume_integrator_factory_, *sampler_);
 	}
 
-	std::chrono::high_resolution_clock clock;
 	const uint32_t progress_range = calculate_progress_range(scene, camera, tiles.size());
 
 	float tick_offset = scene.seek(static_cast<float>(view.start_frame) * camera.frame_duration(), thread_pool);
@@ -55,7 +54,7 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 		uint32_t current_frame = view.start_frame + f;
 		logging::info("Frame " + string::to_string(current_frame));
 
-		auto render_start = clock.now();
+		auto render_start = std::chrono::high_resolution_clock::now();
 
 		sensor.clear();
 		current_sample_ = 0;
@@ -130,13 +129,13 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 
 		progressor.end();
 
-		auto render_duration = chrono::duration_to_seconds(clock.now() - render_start);
+		auto render_duration = chrono::duration_to_seconds(std::chrono::high_resolution_clock::now() - render_start);
 		logging::info("Render time " + string::to_string(render_duration) + " s");
 
-		auto export_start = clock.now();
+		auto export_start = std::chrono::high_resolution_clock::now();
 		sensor.resolve(thread_pool, target);
 		exporter.write(target, current_frame, thread_pool);
-		auto export_duration = chrono::duration_to_seconds(clock.now() - export_start);
+		auto export_duration = chrono::duration_to_seconds(std::chrono::high_resolution_clock::now() - export_start);
 		logging::info("Export time " + string::to_string(export_duration) + " s");
 	}
 }

@@ -17,10 +17,10 @@ Infinite_sphere::Infinite_sphere() {
 
 bool Infinite_sphere::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 								Node_stack& /*node_stack*/, Intersection& intersection) const {
-	if (ray.max_t >= 10000.f) {
+	if (ray.max_t >= 1000000.f) {
 		intersection.epsilon = 5e-4f;
 
-		intersection.p = ray.point(10000.f);
+		intersection.p = ray.point(1000000.f);
 		intersection.t = transformation.rotation.x3;
 		intersection.b = transformation.rotation.y3;
 
@@ -33,7 +33,7 @@ bool Infinite_sphere::intersect(const entity::Composed_transformation& transform
 		intersection.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 		intersection.uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-		ray.max_t = 10000.f;
+		ray.max_t = 1000000.f;
 		return true;
 	}
 
@@ -68,7 +68,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const entity::Composed_transform
 	sample.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 	sample.uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-	sample.t   = 10000.f;
+	sample.t   = 1000000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
@@ -84,7 +84,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const entity::Composed_transform
 	sample.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 	sample.uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-	sample.t   = 10000.f;
+	sample.t   = 1000000.f;
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 
@@ -102,7 +102,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const entity::Composed_transform
 
 	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;
-	sample.t  = 10000.f;
+	sample.t  = 1000000.f;
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 

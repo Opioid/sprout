@@ -19,14 +19,14 @@ Canopy::Canopy() {
 
 bool Canopy::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	if (ray.max_t >= 10000.f) {
+	if (ray.max_t >= 1000000.f) {
 		if (math::dot(ray.direction, transformation.rotation.z3) < 0.f) {
 			return false;
 		}
 
 		intersection.epsilon = 5e-4f;
 
-		intersection.p = ray.point(10000.f);
+		intersection.p = ray.point(1000000.f);
 		intersection.t = transformation.rotation.x3;
 		intersection.b = transformation.rotation.y3;
 
@@ -40,7 +40,7 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
 		intersection.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
 
-		ray.max_t = 10000.f;
+		ray.max_t = 1000000.f;
 		return true;
 	}
 
@@ -75,7 +75,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	sample.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
 	sample.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
 
-	sample.t   = 10000.f;
+	sample.t   = 1000000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
@@ -94,7 +94,7 @@ void Canopy::sample(uint32_t /*part*/, const entity::Composed_transformation& tr
 	sample.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
 	sample.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
 
-	sample.t   = 10000.f;
+	sample.t   = 1000000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 

@@ -40,9 +40,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	std::chrono::high_resolution_clock clock;
-
-	auto total_start = clock.now();
+	auto total_start = std::chrono::high_resolution_clock::now();
 
 	uint32_t available_threads = static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u));
 	uint32_t num_workers;
@@ -58,7 +56,7 @@ int main(int argc, char* argv[]) {
 
 	logging::info("Loading...");
 
-	auto loading_start = clock.now();
+	auto loading_start = std::chrono::high_resolution_clock::now();
 
 	std::shared_ptr<take::Take> take;
 
@@ -104,14 +102,14 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	auto loading_duration = clock.now() - loading_start;
+	auto loading_duration = std::chrono::high_resolution_clock::now() - loading_start;
 	logging::info("Loading time " + string::to_string(chrono::duration_to_seconds(loading_duration)) + " s");
 
 	progress::Stdout progressor;
 
 	logging::info("Rendering...");
 
-	auto rendering_start = clock.now();
+	auto rendering_start = std::chrono::high_resolution_clock::now();
 
 	if (take->view.camera) {
 		rendering::Driver driver(take->surface_integrator_factory, take->volume_integrator_factory, take->sampler);
@@ -121,10 +119,10 @@ int main(int argc, char* argv[]) {
 		driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
 	}
 
-	auto rendering_duration = clock.now() - rendering_start;
+	auto rendering_duration = std::chrono::high_resolution_clock::now() - rendering_start;
 	logging::info("Total render time " + string::to_string(chrono::duration_to_seconds(rendering_duration)) + " s");
 
-	auto total_duration = clock.now() - total_start;
+	auto total_duration = std::chrono::high_resolution_clock::now() - total_start;
 	logging::info("Total elapsed time " + string::to_string(chrono::duration_to_seconds(total_duration)) + " s");
 
 	logging::release();

@@ -27,17 +27,17 @@ bool Celestial_disk::intersect(const entity::Composed_transformation& transforma
 	float radius = math::degrees_to_radians(transformation.scale.x);
 	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
-	if (det > 0.f && ray.max_t >= 10000.f) {
+	if (det > 0.f && ray.max_t >= 1000000.f) {
 		intersection.epsilon = 5e-4f;
 
-		intersection.p = ray.point(9999.9f);
+		intersection.p = ray.point(999999.9f);
 		intersection.t = transformation.rotation.x3;
 		intersection.b = transformation.rotation.y3;
 		intersection.n = transformation.rotation.z3;
 		intersection.geo_n = transformation.rotation.z3;
 		intersection.part = 0;
 
-		ray.max_t = 9999.9f;
+		ray.max_t = 999999.9f;
 		return true;
 	}
 
@@ -74,7 +74,7 @@ void Celestial_disk::sample(uint32_t /*part*/, const entity::Composed_transforma
 	math::float3 ws = radius * math::transform_vector(ls, transformation.rotation);
 
 	sample.wi = math::normalized(ws - transformation.rotation.z3);
-	sample.t = 10000.f;
+	sample.t = 1000000.f;
 	sample.pdf = 1.f / area;
 }
 
