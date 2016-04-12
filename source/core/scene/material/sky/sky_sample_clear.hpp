@@ -5,6 +5,8 @@
 
 namespace scene { namespace material { namespace sky {
 
+class Model;
+
 class Sample_clear : public material::Sample {
 public:
 
@@ -24,9 +26,11 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(math::pfloat3 zenith, math::pfloat3 emission);
+	void set(const Model* model, math::pfloat3 zenith, math::pfloat3 emission);
 
 private:
+
+	const Model* model_;
 
 	math::float3 zenith_;
 

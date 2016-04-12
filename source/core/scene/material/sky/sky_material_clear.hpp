@@ -2,6 +2,7 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
+#include "sky_model.hpp"
 
 namespace scene { namespace material { namespace sky {
 
@@ -25,11 +26,19 @@ public:
 
 	virtual bool has_emission_map() const final override;
 
+	virtual void prepare_sampling(bool spherical) final override;
+
+	void set_ground_albedo(math::pfloat3 albedo);
+
+	void set_turbidity(float turbidity);
+
 	void set_emission(math::pfloat3 emission);
 
 protected:
 
 	math::float3 emission_;
+
+	Model model_;
 };
 
 }}}

@@ -39,10 +39,6 @@ math::float3 Material_overcast::average_emission() const {
 	return emission_;
 }
 
-bool Material_overcast::has_emission_map() const {
-	return false;
-}
-
 void Material_overcast::set_emission(math::pfloat3 emission) {
 	emission_ = emission;
 }

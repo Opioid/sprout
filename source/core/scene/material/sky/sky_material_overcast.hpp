@@ -23,8 +23,6 @@ public:
 
 	virtual math::float3 average_emission() const final override;
 
-	virtual bool has_emission_map() const final override;
-
 	void set_emission(math::pfloat3 emission);
 
 protected:

@@ -1,4 +1,5 @@
 #include "sky_sample_clear.hpp"
+#include "sky_model.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
 
@@ -38,7 +39,8 @@ bool Sample_clear::is_translucent() const {
 	return false;
 }
 
-void Sample_clear::set(math::pfloat3 zenith, math::pfloat3 emission) {
+void Sample_clear::set(const Model* model, math::pfloat3 zenith, math::pfloat3 emission) {
+	model_ = model;
 	zenith_   = zenith;
 	emission_ = emission;
 }

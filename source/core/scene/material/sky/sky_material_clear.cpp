@@ -19,7 +19,7 @@ const material::Sample& Material_clear::sample(const shape::Hitpoint& hp, math::
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
-	sample.set(math::float3(0.f, 1.f, 0.f), emission_);
+	sample.set(&model_, math::float3(0.f, 1.f, 0.f), emission_);
 
 	return sample;
 }
@@ -39,6 +39,18 @@ math::float3 Material_clear::average_emission() const {
 
 bool Material_clear::has_emission_map() const {
 	return false;
+}
+
+void Material_clear::prepare_sampling(bool /*spherical*/) {
+
+}
+
+void Material_clear::set_turbidity(float turbidity) {
+	model_.set_turbidity(turbidity);
+}
+
+void Material_clear::set_ground_albedo(math::pfloat3 albedo) {
+	model_.set_ground_albedo(albedo);
 }
 
 void Material_clear::set_emission(math::pfloat3 emission) {

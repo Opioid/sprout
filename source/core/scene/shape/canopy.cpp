@@ -36,7 +36,6 @@ bool Canopy::intersect(const entity::Composed_transformation& transformation, ma
 		intersection.part = 0;
 
 		math::float3 xyz = math::normalized(math::transform_vector_transposed(ray.direction, transformation.rotation));
-
 		intersection.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
 		intersection.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
 

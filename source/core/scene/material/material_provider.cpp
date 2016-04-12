@@ -442,11 +442,18 @@ std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
 	bool two_sided = false;
 	math::float3 emission(0.6f, 0.6f, 0.6f);
 
+	math::float3 ground_albedo(0.3, 0.3, 0.3);
+	float turbidity = 0.f;
+
 	for (auto n = sky_value.MemberBegin(); n != sky_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
 
-		if ("emission" == node_name) {
+		if ("ground_albedo" == node_name) {
+			ground_albedo = json::read_float3(node_value);
+		} else if ("turbidity" == node_name) {
+			turbidity = json::read_float(node_value);
+		} else if ("emission" == node_name) {
 			emission = json::read_float3(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
@@ -470,11 +477,21 @@ std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
 		}
 	}
 
-	auto material = std::make_shared<sky::Material_overcast>(sky_overcast_cache_, mask, sampler_settings, two_sided);
+	if (turbidity > 0.f) {
+		auto material = std::make_shared<sky::Material_clear>(sky_clear_cache_, mask,
+															  sampler_settings, two_sided);
 
-	material->set_emission(emission);
+		material->set_emission(emission);
 
-	return material;
+		return material;
+	} else {
+		auto material = std::make_shared<sky::Material_overcast>(sky_overcast_cache_, mask,
+																 sampler_settings, two_sided);
+
+		material->set_emission(emission);
+
+		return material;
+	}
 }
 
 std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& substitute_value,
