@@ -1,4 +1,5 @@
 #include "sky_model.hpp"
+#include "base/math/vector.inl"
 
 namespace scene { namespace material { namespace sky {
 
