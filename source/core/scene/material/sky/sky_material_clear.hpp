@@ -32,11 +32,7 @@ public:
 
 	void set_turbidity(float turbidity);
 
-	void set_emission(math::pfloat3 emission);
-
 protected:
-
-	math::float3 emission_;
 
 	Model model_;
 };

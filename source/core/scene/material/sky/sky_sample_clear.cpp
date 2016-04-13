@@ -39,10 +39,9 @@ bool Sample_clear::is_translucent() const {
 	return false;
 }
 
-void Sample_clear::set(const Model* model, math::pfloat3 zenith, math::pfloat3 emission) {
+void Sample_clear::set(const Model* model, math::pfloat3 zenith) {
 	model_ = model;
 	zenith_   = zenith;
-	emission_ = emission;
 }
 
 }}}

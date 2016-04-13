@@ -442,7 +442,7 @@ std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
 	bool two_sided = false;
 	math::float3 emission(0.6f, 0.6f, 0.6f);
 
-	math::float3 ground_albedo(0.3, 0.3, 0.3);
+	math::float3 ground_albedo(0.3f, 0.3f, 0.3f);
 	float turbidity = 0.f;
 
 	for (auto n = sky_value.MemberBegin(); n != sky_value.MemberEnd(); ++n) {
@@ -481,7 +481,8 @@ std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
 		auto material = std::make_shared<sky::Material_clear>(sky_clear_cache_, mask,
 															  sampler_settings, two_sided);
 
-		material->set_emission(emission);
+		material->set_turbidity(turbidity);
+		material->set_ground_albedo(ground_albedo);
 
 		return material;
 	} else {

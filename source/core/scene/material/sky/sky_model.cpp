@@ -27,12 +27,12 @@ void Model::set_turbidity(float turbidity) {
 }
 
 math::float3 Model::evaluate(math::pfloat3 wi) const {
-	float theta = std::acos(math::dot(math::float3(0.f, 1.f, 0.f), wi));
+	float theta = std::acos(wi.y);
 	float gamma = std::acos(math::dot(math::float3(0.f, 1.f, 0.f), wi));
 
 	math::float3 radiance;
 	for (uint32_t i = 0; i < 3; ++i) {
-		radiance.v[i] = arhosek_tristim_skymodel_radiance(skymodel_states_[i], theta, gamma, i);
+		radiance.v[i] = static_cast<float>(arhosek_tristim_skymodel_radiance(skymodel_states_[i], theta, gamma, i));
 	}
 
 	return radiance;

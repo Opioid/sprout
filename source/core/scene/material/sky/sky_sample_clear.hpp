@@ -26,7 +26,7 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const Model* model, math::pfloat3 zenith, math::pfloat3 emission);
+	void set(const Model* model, math::pfloat3 zenith);
 
 private:
 
