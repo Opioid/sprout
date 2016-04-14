@@ -23,34 +23,34 @@ struct __vector4 {
 // Vector intrinsic: Four 32 bit floating point components aligned on a 16 byte
 // boundary and mapped to hardware vector registers
 #if defined(_SU_SSE_INTRINSICS_) && !defined(_SU_NO_INTRINSICS_)
-	typedef __m128 Vector;
+	using Vector = __m128;
 #else
-	typedef __vector4 Vector;
+	using Vector = __vector4;
 #endif
 
 // Fix-up for (1st-3rd) Vector parameters that are pass-in-register for x86 and vector call; by reference otherwise
 #if (defined(_M_IX86) || _SU_VECTORCALL_ ) && !defined(_SU_NO_INTRINSICS_)
-	typedef const Vector FVector;
+	using FVector = const Vector;
 #else
-	typedef const Vector& FVector;
+	using FVector = const Vector&;
 #endif
 
 // Fix-up for (4th) Vector parameter to pass in-register for x64 vector call; by reference otherwise
 #if ((_SU_VECTORCALL_ && !defined(_M_IX86))) && !defined(_SU_NO_INTRINSICS_)
-	typedef const Vector GVector;
+	using GVector = const Vector;
 #else
-	typedef const Vector& GVector;
+	using GVector = const Vector&;
 #endif
 
 // Fix-up for (5th & 6th) Vector parameter to pass in-register for vector call; by reference otherwise
 #if ( _SU_VECTORCALL_ ) && !defined(_SU_NO_INTRINSICS_)
-	typedef const Vector HVector;
+	using HVector = const Vector;
 #else
-	typedef const Vector& HVector;
+	using HVector = const Vector&;
 #endif
 
 // Fix-up for (7th+) Vector parameters to pass by reference
-typedef const Vector& CVector;
+using CVector = const Vector&;
 
 //------------------------------------------------------------------------------
 // Conversion types for constants

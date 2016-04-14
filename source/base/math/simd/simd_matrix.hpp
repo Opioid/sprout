@@ -29,13 +29,13 @@ namespace math { namespace simd {
 
 // Fix-up for (1st) XMMATRIX parameter to pass in-register on vector call; by reference otherwise
 #if (_SU_VECTORCALL_ ) && !defined(_SU_NO_INTRINSICS_)
-	typedef const Matrix FMatrix;
+	using FMatrix = const Matrix;
 #else
-	typedef const Matrix& FMatrix;
+	using FMatrix = const Matrix&;
 #endif
 
 // Fix-up for (2nd+) XMMATRIX parameters to pass by reference
-typedef const Matrix& CMatrix;
+using CMatrix = const Matrix&;
 
 /****************************************************************************
  *
