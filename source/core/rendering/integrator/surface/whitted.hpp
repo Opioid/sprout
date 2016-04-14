@@ -19,15 +19,18 @@ public:
 		float    num_light_samples_reciprocal;
 	};
 
-	Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
+	Whitted(const take::Settings& take_settings,
+			math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples);
 
-	virtual math::float4 li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection);
+	virtual math::float4 li(Worker& worker, scene::Ray& ray,
+							bool volume, scene::Intersection& intersection);
 
 private:
 
-	math::float3 shade(Worker& worker, const scene::Ray& ray, const scene::Intersection& intersection);
+	math::float3 shade(Worker& worker, const scene::Ray& ray,
+					   const scene::Intersection& intersection);
 
 	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,

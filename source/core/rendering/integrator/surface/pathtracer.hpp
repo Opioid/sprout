@@ -28,7 +28,8 @@ public:
 		bool disable_caustics;
 	};
 
-	Pathtracer(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
+	Pathtracer(const take::Settings& take_settings,
+			   math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples) final override;
 

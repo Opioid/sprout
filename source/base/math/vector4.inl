@@ -71,13 +71,17 @@ T dot(const Vector4<T>& a, const Vector4<T>& b) {
 
 inline Vector4f_a::Vector4f_a() {}
 
-inline Vector4f_a::Vector4f_a(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+inline Vector4f_a::Vector4f_a(float x, float y, float z, float w) :
+	x(x), y(y), z(z), w(w) {}
 
-inline Vector4f_a::Vector4f_a(Vector2<float> xy, float z, float w) : x(xy.x), y(xy.y), z(z), w(w) {}
+inline Vector4f_a::Vector4f_a(Vector2<float> xy, float z, float w) :
+	x(xy.x), y(xy.y), z(z), w(w) {}
 
-inline Vector4f_a::Vector4f_a(const Vector3f_a& xyz, float w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+inline Vector4f_a::Vector4f_a(const Vector3f_a& xyz, float w) :
+	x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
 
-inline Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+inline Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) :
+	x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
 
 inline Vector4f_a Vector4f_a::operator+(const Vector4f_a& v) const {
 	return Vector4f_a(x + v.x, y + v.y, z + v.z, w + v.w);

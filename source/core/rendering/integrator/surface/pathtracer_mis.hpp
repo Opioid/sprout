@@ -30,7 +30,8 @@ public:
 		bool	 disable_caustics;
 	};
 
-	Pathtracer_MIS(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
+	Pathtracer_MIS(const take::Settings& take_settings,
+				   math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples) final override;
 
@@ -42,12 +43,12 @@ private:
 	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
-									   scene::material::Sampler_settings::Filter filter);
+									   Sampler_filter filter);
 
 	math::float3 resolve_transmission(Worker& worker, scene::Ray& ray,
 									  scene::Intersection& intersection,
 									  const math::float3& attenuation,
-									  scene::material::Sampler_settings::Filter filter,
+									  Sampler_filter filter,
 									  scene::material::bxdf::Result& sample_result);
 
 	const Settings& settings_;

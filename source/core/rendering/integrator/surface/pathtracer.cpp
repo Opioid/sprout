@@ -19,14 +19,17 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Pathtracer::Pathtracer(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmittance_(take_settings, rng) {}
+Pathtracer::Pathtracer(const take::Settings& take_settings,
+					   math::random::Generator& rng, const Settings& settings) :
+	Integrator(take_settings, rng),
+	settings_(settings), sampler_(rng, 1), transmittance_(take_settings, rng) {}
 
 void Pathtracer::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
+math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray,
+							bool volume, scene::Intersection& intersection) {
 	scene::material::Sampler_settings::Filter filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
@@ -37,12 +40,13 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = 0;; ++i) {
-		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::bxdf::Type::Specular);
+		bool primary_ray = 0 == i
+							 || previous_sample_type.test(scene::material::bxdf::Type::Specular);
 
 		if (primary_ray) {
-			filter = scene::material::Sampler_settings::Filter::Unknown;
+			filter = Sampler_filter::Unknown;
 		} else {
-			filter = scene::material::Sampler_settings::Filter::Nearest;
+			filter = Sampler_filter::Nearest;
 		}
 
 		if (!resolve_mask(worker, ray, intersection, filter)) {
@@ -76,7 +80,8 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 
 		// Russian roulette termination
 		if (i > settings_.min_bounces) {
-			float q = std::min(color::luminance(throughput), settings_.path_continuation_probability);
+			float q = std::min(color::luminance(throughput),
+							   settings_.path_continuation_probability);
 
 			if (sampler_.generate_sample_1D() >= q) {
 				break;
@@ -96,8 +101,9 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume, scene:
 		}
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
-			throughput *= transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
-												 sampler_, scene::material::Sampler_settings::Filter::Nearest,
+			throughput *= transmittance_.resolve(worker, ray, intersection,
+												 material_sample.attenuation(),
+												 sampler_, Sampler_filter::Nearest,
 												 sample_result);
 
 			if (0.f == sample_result.pdf) {

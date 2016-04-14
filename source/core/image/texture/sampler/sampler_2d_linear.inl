@@ -8,7 +8,8 @@ namespace image { namespace texture { namespace sampler {
 
 inline float bilinear_1(float c00, float c01, float c10, float c11, float s, float t);
 
-inline math::float2 bilinear_2(math::float2 c00, math::float2 c01, math::float2 c10, math::float2 c11,
+inline math::float2 bilinear_2(math::float2 c00, math::float2 c01,
+							   math::float2 c10, math::float2 c11,
 							   float s, float t);
 
 template<typename T>
@@ -48,7 +49,8 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, math:
 }
 
 template<typename Address_mode>
-math::float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture, math::float2 uv) const {
+math::float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture,
+													   math::float2 uv) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -81,7 +83,8 @@ math::float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture
 }
 
 template<typename Address_mode>
-math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture, math::float2 uv) const {
+math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture,
+													   math::float2 uv) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -114,7 +117,8 @@ math::float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture
 }
 
 template<typename Address_mode>
-float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, math::float2 uv, int32_t element) const {
+float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, math::float2 uv,
+												int32_t element) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -232,7 +236,8 @@ inline float bilinear_1(float c00, float c01, float c10, float c11, float s, flo
 	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
 }
 
-inline math::float2 bilinear_2(math::float2 c00, math::float2 c01, math::float2 c10, math::float2 c11,
+inline math::float2 bilinear_2(math::float2 c00, math::float2 c01,
+							   math::float2 c10, math::float2 c11,
 							   float s, float t) {
 	float _s = 1.f - s;
 	float _t = 1.f - t;

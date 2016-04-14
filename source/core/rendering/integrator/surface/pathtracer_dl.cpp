@@ -22,13 +22,15 @@ namespace rendering { namespace integrator { namespace surface {
 Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings,
 							 math::random::Generator& rng,
 							 const Settings& settings) :
-	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1), transmittance_(take_settings, rng) {}
+	Integrator(take_settings, rng),
+	settings_(settings), sampler_(rng, 1), transmittance_(take_settings, rng) {}
 
 void Pathtracer_DL::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
+math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray,
+							   bool volume, scene::Intersection& intersection) {
 	scene::material::Sampler_settings::Filter filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
@@ -38,12 +40,13 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 	float opacity = 0.f;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		bool primary_ray = 0 == i || previous_sample_type.test(scene::material::bxdf::Type::Specular);
+		bool primary_ray = 0 == i
+							 || previous_sample_type.test(scene::material::bxdf::Type::Specular);
 
 		if (primary_ray) {
-			filter = scene::material::Sampler_settings::Filter::Unknown;
+			filter = Sampler_filter::Unknown;
 		} else {
-			filter = scene::material::Sampler_settings::Filter::Nearest;
+			filter = Sampler_filter::Nearest;
 		}
 
 		if (!resolve_mask(worker, ray, intersection, filter)) {
@@ -71,7 +74,8 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 			break;
 		}
 
-		result += throughput * estimate_direct_light(worker, ray, intersection, material_sample, filter);
+		result += throughput * estimate_direct_light(worker, ray, intersection,
+													 material_sample, filter);
 
 		if (i == settings_.max_bounces - 1) {
 			break;
@@ -79,7 +83,8 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 
 		// Russian roulette termination
 		if (i > settings_.min_bounces) {
-			float q = std::min(color::luminance(throughput), settings_.path_continuation_probability);
+			float q = std::min(color::luminance(throughput),
+							   settings_.path_continuation_probability);
 
 			if (sampler_.generate_sample_1D() >= q) {
 				break;
@@ -99,8 +104,9 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 		}
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
-			math::float3 transmitted = transmittance_.resolve(worker, ray, intersection, material_sample.attenuation(),
-															  sampler_, scene::material::Sampler_settings::Filter::Nearest,
+			math::float3 transmitted = transmittance_.resolve(worker, ray, intersection,
+															  material_sample.attenuation(),
+															  sampler_, Sampler_filter::Nearest,
 															  sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
@@ -133,7 +139,7 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool volume, sce
 math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 												  const scene::Intersection& intersection,
 												  const scene::material::Sample& material_sample,
-												  scene::material::Sampler_settings::Filter filter) {
+												  Sampler_filter filter) {
 	math::float3 result = math::float3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -145,15 +151,17 @@ math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::R
 
 	for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 		float light_pdf;
-		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
+		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(),
+																		   light_pdf);
 		if (!light) {
 			continue;
 		}
 
 		scene::light::Sample light_sample;
 		light->sample(ray.time,
-					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
-					  sampler_, worker, scene::material::Sampler_settings::Filter::Nearest, light_sample);
+					  intersection.geo.p, material_sample.geometric_normal(),
+					  material_sample.is_translucent(), sampler_,
+					  worker, Sampler_filter::Nearest, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
 			shadow_ray.set_direction(light_sample.shape.wi);

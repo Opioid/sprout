@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 
 	auto total_start = std::chrono::high_resolution_clock::now();
 
-	uint32_t available_threads = static_cast<uint32_t>(std::max(std::thread::hardware_concurrency(), 1u));
+	uint32_t available_threads = std::max(std::thread::hardware_concurrency(), 1u);
 	uint32_t num_workers;
 	if (args.threads <= 0) {
 		num_workers = std::max(available_threads - static_cast<uint32_t>(-args.threads), 1u);
@@ -82,7 +82,8 @@ int main(int argc, char* argv[]) {
 	scene::material::Provider material_provider(thread_pool.num_threads());
 	resource_manager.register_provider(material_provider);
 
-	// The scene loader must be alive during rendering, otherwise some resources might be released prematurely.
+	// The scene loader must be alive during rendering,
+	// otherwise some resources might be released prematurely.
 	// This is confusing and should be adressed.
 	scene::Loader scene_loader(resource_manager, material_provider.fallback_material());
 
@@ -103,7 +104,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	auto loading_duration = std::chrono::high_resolution_clock::now() - loading_start;
-	logging::info("Loading time " + string::to_string(chrono::duration_to_seconds(loading_duration)) + " s");
+	logging::info("Loading time " +
+				  string::to_string(chrono::duration_to_seconds(loading_duration)) + " s");
 
 	progress::Stdout progressor;
 
@@ -112,18 +114,24 @@ int main(int argc, char* argv[]) {
 	auto rendering_start = std::chrono::high_resolution_clock::now();
 
 	if (take->view.camera) {
-		rendering::Driver driver(take->surface_integrator_factory, take->volume_integrator_factory, take->sampler);
+		rendering::Driver driver(take->surface_integrator_factory,
+								 take->volume_integrator_factory, take->sampler);
+
 		driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
 	} else {
-		baking::Driver driver(take->surface_integrator_factory, take->volume_integrator_factory, take->sampler);
+		baking::Driver driver(take->surface_integrator_factory,
+							  take->volume_integrator_factory, take->sampler);
+
 		driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
 	}
 
 	auto rendering_duration = std::chrono::high_resolution_clock::now() - rendering_start;
-	logging::info("Total render time " + string::to_string(chrono::duration_to_seconds(rendering_duration)) + " s");
+	logging::info("Total render time " +
+				  string::to_string(chrono::duration_to_seconds(rendering_duration)) + " s");
 
 	auto total_duration = std::chrono::high_resolution_clock::now() - total_start;
-	logging::info("Total elapsed time " + string::to_string(chrono::duration_to_seconds(total_duration)) + " s");
+	logging::info("Total elapsed time " +
+				  string::to_string(chrono::duration_to_seconds(total_duration)) + " s");
 
 	logging::release();
 

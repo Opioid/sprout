@@ -16,17 +16,19 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Whitted::Whitted(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
+Whitted::Whitted(const take::Settings& take_settings,
+				 math::random::Generator& rng, const Settings& settings) :
 	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
 void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) {
+math::float4 Whitted::li(Worker& worker, scene::Ray& ray,
+						 bool volume, scene::Intersection& intersection) {
 	math::float3 result = math::float3_identity;
 
-	float opacity = intersection.opacity(worker, ray.time, scene::material::Sampler_settings::Filter::Unknown);
+	float opacity = intersection.opacity(worker, ray.time, Sampler_filter::Unknown);
 	float throughput = opacity;
 
 	while (opacity < 1.f) {
@@ -41,7 +43,7 @@ math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::In
 		}
 
 		throughput = (1.f - opacity) * intersection.opacity(worker, ray.time,
-															scene::material::Sampler_settings::Filter::Unknown);
+															Sampler_filter::Unknown);
 		opacity += throughput;
 	}
 
@@ -50,12 +52,13 @@ math::float4 Whitted::li(Worker& worker, scene::Ray& ray, bool volume, scene::In
 	return math::float4(result, opacity);
 }
 
-math::float3 Whitted::shade(Worker& worker, const scene::Ray& ray, const scene::Intersection& intersection) {
+math::float3 Whitted::shade(Worker& worker, const scene::Ray& ray,
+							const scene::Intersection& intersection) {
 	math::float3 result = math::float3_identity;
 
 	math::float3 wo = -ray.direction;
 	auto& material_sample = intersection.sample(worker, wo, ray.time,
-												scene::material::Sampler_settings::Filter::Unknown);
+												Sampler_filter::Unknown);
 
 	if (material_sample.same_hemisphere(wo)) {
 		result += material_sample.emission();
@@ -87,14 +90,15 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ra
 		for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 			scene::light::Sample light_sample;
 			l->sample(ray.time,
-					  intersection.geo.p, material_sample.geometric_normal(), material_sample.is_translucent(),
-					  sampler_, worker, scene::material::Sampler_settings::Filter::Linear, light_sample);
+					  intersection.geo.p, material_sample.geometric_normal(),
+					  material_sample.is_translucent(), sampler_, worker,
+					  Sampler_filter::Linear, light_sample);
 
 			if (light_sample.shape.pdf > 0.f) {
 				shadow_ray.set_direction(light_sample.shape.wi);
 				shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
-				float mv = worker.masked_visibility(shadow_ray, scene::material::Sampler_settings::Filter::Unknown);
+				float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Unknown);
 				if (mv > 0.f) {
 					math::float3 tr = worker.transmittance(shadow_ray);
 

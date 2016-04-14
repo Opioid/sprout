@@ -13,12 +13,15 @@ public:
 	Integrator(const take::Settings& settings, math::random::Generator& rng);
 	virtual ~Integrator();
 
-	virtual math::float4 li(Worker& worker, scene::Ray& ray, bool volume, scene::Intersection& intersection) = 0;
+	virtual math::float4 li(Worker& worker, scene::Ray& ray,
+							bool volume, scene::Intersection& intersection) = 0;
 
 protected:
 
+	using Sampler_filter = scene::material::Sampler_settings::Filter;
+
 	bool resolve_mask(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-					  scene::material::Sampler_settings::Filter filter);
+					  Sampler_filter filter);
 };
 
 class Integrator_factory {

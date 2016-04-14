@@ -28,8 +28,11 @@ namespace baking {
 class Driver {
 public:
 
-	Driver(std::shared_ptr<rendering::integrator::surface::Integrator_factory> surface_integrator_factory,
-		   std::shared_ptr<rendering::integrator::volume::Integrator_factory> volume_integrator_factory,
+	using Surface_integrator_factory = rendering::integrator::surface::Integrator_factory;
+	using Volume_integrator_factory  = rendering::integrator::volume::Integrator_factory;
+
+	Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
+		   std::shared_ptr<Volume_integrator_factory> volume_integrator_factory,
 		   std::shared_ptr<sampler::Sampler> sampler);
 
 
@@ -38,8 +41,8 @@ public:
 
 private:
 
-	std::shared_ptr<rendering::integrator::surface::Integrator_factory> surface_integrator_factory_;
-	std::shared_ptr<rendering::integrator::volume::Integrator_factory> volume_integrator_factory_;
+	std::shared_ptr<Surface_integrator_factory> surface_integrator_factory_;
+	std::shared_ptr<Volume_integrator_factory> volume_integrator_factory_;
 	std::shared_ptr<sampler::Sampler> sampler_;
 };
 

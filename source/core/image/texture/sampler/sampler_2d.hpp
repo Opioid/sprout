@@ -17,9 +17,12 @@ public:
 	virtual math::float2 sample_2(const Texture_2D& texture, math::float2 uv) const = 0;
 	virtual math::float3 sample_3(const Texture_2D& texture, math::float2 uv) const = 0;
 
-	virtual float        sample_1(const Texture_2D& texture, math::float2 uv, int32_t element) const = 0;
-	virtual math::float2 sample_2(const Texture_2D& texture, math::float2 uv, int32_t element) const = 0;
-	virtual math::float3 sample_3(const Texture_2D& texture, math::float2 uv, int32_t element) const = 0;
+	virtual float        sample_1(const Texture_2D& texture, math::float2 uv,
+								  int32_t element) const = 0;
+	virtual math::float2 sample_2(const Texture_2D& texture, math::float2 uv,
+								  int32_t element) const = 0;
+	virtual math::float3 sample_3(const Texture_2D& texture, math::float2 uv,
+								  int32_t element) const = 0;
 
 	virtual math::float2 address(math::float2 uv) const = 0;
 };

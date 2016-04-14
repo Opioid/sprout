@@ -9,7 +9,8 @@
 
 namespace scene { namespace camera {
 
-Hemispherical::Hemispherical(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
+Hemispherical::Hemispherical(math::int2 resolution, float ray_max_t,
+							 float frame_duration, bool motion_blur) :
 	Camera(resolution, ray_max_t, frame_duration, motion_blur) {
 	math::float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
@@ -30,7 +31,8 @@ math::Recti Hemispherical::view_bounds(uint32_t /*view*/) const {
 
 void Hemispherical::update_focus(rendering::Worker& /*worker*/) {}
 
-bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, scene::Ray& ray) const {
+bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/,
+								 scene::Ray& ray) const {
 	math::float2 coordinates = math::float2(sample.pixel) + sample.pixel_uv;
 
 	// Paraboloid mapping
@@ -45,9 +47,13 @@ bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t 
 		return false;
 	}
 
-	math::float3 dir = math::normalized(math::float3(x, -y, 0.5f - 0.5f * z));
-//	math::float3 dir = math::normalized(math::float3(x, -y, 1.f - std::sqrt(z)));
-//	math::float3 dir = math::normalized(math::float3(x, -y, std::sqrt(std::max(0.f, 1.f - x * x - y * y))));
+	// paraboloid
+//	math::float3 dir = math::normalized(math::float3(x, -y, 0.5f - 0.5f * z));
+
+	math::float3 dir = math::normalized(math::float3(x, -y, 1.f - std::sqrt(z)));
+
+//	math::float3 dir = math::normalized(math::float3(x, -y,
+//										std::sqrt(std::max(0.f, 1.f - x * x - y * y))));
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);
