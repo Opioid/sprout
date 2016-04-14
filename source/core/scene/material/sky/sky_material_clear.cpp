@@ -24,9 +24,9 @@ const material::Sample& Material_clear::sample(const shape::Hitpoint& hp, math::
 	return sample;
 }
 
-math::float3 Material_clear::sample_emission(math::pfloat3 /*wi*/, math::float2 /*uv*/, float /*time*/,
+math::float3 Material_clear::sample_emission(math::pfloat3 wi, math::float2 /*uv*/, float /*time*/,
 											 const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
-	return math::float3(1.f, 0.f, 0.f);
+	return model_.evaluate(wi);
 }
 
 math::float3 Material_clear::average_emission() const {
@@ -41,12 +41,16 @@ void Material_clear::prepare_sampling(bool /*spherical*/) {
 	model_.init();
 }
 
-void Material_clear::set_turbidity(float turbidity) {
-	model_.set_turbidity(turbidity);
+void Material_clear::set_sun_direction(math::pfloat3 direction) {
+	model_.set_sun_direction(direction);
 }
 
 void Material_clear::set_ground_albedo(math::pfloat3 albedo) {
 	model_.set_ground_albedo(albedo);
+}
+
+void Material_clear::set_turbidity(float turbidity) {
+	model_.set_turbidity(turbidity);
 }
 
 }}}

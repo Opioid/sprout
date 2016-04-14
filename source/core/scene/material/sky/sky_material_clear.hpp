@@ -28,6 +28,8 @@ public:
 
 	virtual void prepare_sampling(bool spherical) final override;
 
+	void set_sun_direction(math::pfloat3 direction);
+
 	void set_ground_albedo(math::pfloat3 albedo);
 
 	void set_turbidity(float turbidity);
