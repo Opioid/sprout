@@ -22,7 +22,7 @@ namespace scene { namespace material {
 
 class Material;
 
-typedef std::vector<std::shared_ptr<Material>> Materials;
+using Materials = std::vector<std::shared_ptr<Material>>;
 
 struct Sampler_settings;
 

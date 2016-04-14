@@ -21,6 +21,6 @@ private:
 	memory::Tiled_array<T, Log_tile_size> data_;
 };
 
-//typedef Tiled_image<color::Color3c, 1> Image_byte_3;
+// using Image_byte_3 = Tiled_image<color::Color3c, 1> Image_byte_3;
 
 }

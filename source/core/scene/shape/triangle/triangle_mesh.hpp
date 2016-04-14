@@ -13,13 +13,13 @@ namespace scene { namespace shape { namespace triangle {
 class Mesh : public Shape {
 public:
 
-//	typedef bvh::Tree<bvh::Data_interleaved<Triangle_type>> Tree;
+//	using Tree = bvh::Tree<bvh::Data_interleaved<Triangle_type>>;
 
-//	typedef bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>> Tree;
+//	using Tree = bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>>;
 
-//	typedef bvh::Tree<bvh::Indexed_data<Intersection_vertex_type, Shading_vertex_type>> Tree;
+//	using Tree = bvh::Tree<bvh::Indexed_data<Intersection_vertex_type, Shading_vertex_type>>;
 
-	typedef bvh::Tree<bvh::Indexed_data1<Intersection_vertex_type, Shading_vertex_type>> Tree;
+	using Tree = bvh::Tree<bvh::Indexed_data1<Intersection_vertex_type, Shading_vertex_type>>;
 
 	bool init();
 

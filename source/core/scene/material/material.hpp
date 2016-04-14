@@ -74,6 +74,6 @@ protected:
 	Sample_cache& cache_;
 };
 
-typedef std::vector<std::shared_ptr<material::Material>> Materials;
+using Materials = std::vector<std::shared_ptr<material::Material>>;
 
 }}

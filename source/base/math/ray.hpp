@@ -38,6 +38,6 @@ struct Optimized_ray {
 	int8_t pad;
 };
 
-typedef Optimized_ray Oray;
+using Oray = Optimized_ray;
 
 }

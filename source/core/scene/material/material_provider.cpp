@@ -440,10 +440,13 @@ std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
 	std::shared_ptr<image::texture::Texture_2D> mask;
 
 	bool two_sided = false;
+
+	// only used for "overcast sky"
 	math::float3 emission(0.6f, 0.6f, 0.6f);
 
 	math::float3 ground_albedo(0.3f, 0.3f, 0.3f);
 	float turbidity = 0.f;
+	math::float3 sun_direction;
 
 	for (auto n = sky_value.MemberBegin(); n != sky_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -453,6 +456,10 @@ std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
 			ground_albedo = json::read_float3(node_value);
 		} else if ("turbidity" == node_name) {
 			turbidity = json::read_float(node_value);
+		} else if ("sun" == node_name) {
+			math::float3 angles = json::read_float3(node_value, "rotation");
+			math::float3x3 rotation = json::create_rotation_matrix(angles);
+			sun_direction = math::float3(rotation.z);
 		} else if ("emission" == node_name) {
 			emission = json::read_float3(node_value);
 		} else if ("two_sided" == node_name) {

@@ -12,7 +12,7 @@ namespace json {
 class Read_stream {
 public:
 
-	typedef char Ch;	//!< Character type (byte).
+	using Ch = char;	//!< Character type (byte).
 
 	Read_stream(std::istream& stream, size_t buffer_size = 4096) :
 		stream_(&stream),  buffer_size_(buffer_size), buffer_(new Ch[buffer_size]),

@@ -44,8 +44,8 @@ bool behind(const Plane<T>& p, const Vector3<T>& point);
  *
  ****************************************************************************/
 
-//typedef Plane<float> plane;
-typedef Vector4f_a plane;
+// using plane = Plane<float>;
+using plane = Vector4f_a;
 
 plane create_plane(FVector3f_a normal, float d);
 plane create_plane(FVector3f_a normal, FVector3f_a point);

@@ -2,9 +2,9 @@
 #include "triangle_intersection.hpp"
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_primitive_mt.hpp"
-#include "bvh/triangle_bvh_tree.inl"
-#include "bvh/triangle_bvh_builder.inl"
+#include "bvh/triangle_bvh_builder_suh.inl"
 #include "bvh/triangle_bvh_data_interleaved.inl"
+#include "bvh/triangle_bvh_tree.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
@@ -132,7 +132,7 @@ Morphable_shape* Morphable_mesh::morphable_shape() {
 void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) {
 	collection_->morph(a, b, weight, pool, vertices_);
 
-	bvh::Builder builder;
+	bvh::Builder_SUH builder;
 	builder.build(tree_, collection_->triangles(), vertices_, 0, 8);
 
 	init();

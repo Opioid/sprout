@@ -24,7 +24,7 @@ struct Transformation {
 template<typename T>
 Transformation<T> lerp(const Transformation<T>& a, const Transformation<T>& b, T t);
 
-// typedef Transformation<float> transformation;
+// using transformation = Transformation<float>;
 
 /****************************************************************************
  *
@@ -40,6 +40,6 @@ struct alignas(16) Transformationf_a {
 
 Transformationf_a lerp(const Transformationf_a& a, const Transformationf_a& b, float t);
 
-typedef Transformationf_a transformation;
+using transformation = Transformationf_a;
 
 }

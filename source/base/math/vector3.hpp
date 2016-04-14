@@ -201,7 +201,7 @@ struct alignas(16) Vector3f_a {
 	float absolute_max(uint32_t& i) const;
 };
 
-typedef const Vector3f_a& FVector3f_a;
+using FVector3f_a = const Vector3f_a&;
 
 Vector3f_a operator*(float s, FVector3f_a v);
 

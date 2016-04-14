@@ -19,7 +19,7 @@ public:
 
 private:
 
-	typedef std::vector<Prop*>::iterator index;
+	using index = std::vector<Prop*>::iterator;
 
 	void split(Build_node* node, index begin, index end, uint32_t max_shapes, std::vector<Prop*>& out_props);
 

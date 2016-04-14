@@ -27,7 +27,7 @@ private:
 
 	static void read_pixels(std::istream& stream, uint32_t num_pixels, Image_float_3& image, uint32_t offset);
 
-	typedef math::packed_float3 image_float3;
+	using image_float3 = math::packed_float3;
 
 	static image_float3 rgbe_to_float3(uint8_t rgbe[4]);
 };

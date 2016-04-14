@@ -62,7 +62,7 @@ public:
 
 private:
 
-	typedef bvh::Tree<bvh::Data_interleaved<Triangle_MT>> Tree;
+	using Tree = bvh::Tree<bvh::Data_interleaved<Triangle_MT>>;
 
 	Tree tree_;
 

@@ -41,6 +41,6 @@ private:
 	Vector3f_a bounds_[2];
 };
 
-typedef AABB aabb;
+using aabb = AABB;
 
 }

@@ -10,8 +10,8 @@ namespace thread {
 class Pool {
 public:
 
-	typedef std::function<void(uint32_t)> Parallel_program;
-	typedef std::function<void(int32_t, int32_t)> Range_program;
+	using Parallel_program = std::function<void(uint32_t)>;
+	using Range_program	   = std::function<void(int32_t, int32_t)>;
 
 	Pool(uint32_t num_threads);
 	~Pool();

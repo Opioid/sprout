@@ -26,7 +26,7 @@ private:
 	class Split_candidate {
 	public:
 
-		typedef std::vector<uint32_t>::iterator index;
+		using index = std::vector<uint32_t>::iterator;
 
 		Split_candidate(uint8_t split_axis, const math::float3& p);
 

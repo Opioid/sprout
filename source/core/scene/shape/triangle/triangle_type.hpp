@@ -2,13 +2,13 @@
 
 namespace scene { namespace shape { namespace triangle {
 
-typedef struct Triangle_MTE Triangle_type;
+using Triangle_type = struct Triangle_MTE;
 
-typedef struct Intersection_triangle_MTE Intersection_triangle_type;
-typedef struct Shading_triangle_MTE		 Shading_triangle_type;
+using Intersection_triangle_type = struct Intersection_triangle_MTE;
+using Shading_triangle_type = struct Shading_triangle_MTE;
 
-typedef struct Intersection_vertex_MT Intersection_vertex_type;
-//typedef struct Shading_vertex_MT	  Shading_vertex_type;
-typedef struct Shading_vertex_MTC	  Shading_vertex_type;
+using Intersection_vertex_type = struct Intersection_vertex_MT;
+// Shading_vertex_type = using struct Shading_vertex_MT;
+using Shading_vertex_type = struct Shading_vertex_MTC;
 
 }}}

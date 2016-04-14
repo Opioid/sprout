@@ -11,6 +11,6 @@ template <typename Encoding, typename Allocator> class GenericValue;
 
 template<typename CharType> struct UTF8;
 
-typedef GenericValue<UTF8<char>, MemoryPoolAllocator<CrtAllocator>> Value;
+using Value = GenericValue<UTF8<char>, MemoryPoolAllocator<CrtAllocator>>;
 
 }

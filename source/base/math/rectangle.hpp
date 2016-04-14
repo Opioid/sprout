@@ -11,6 +11,6 @@ struct Rectangle {
 	Vector2<T> end;
 };
 
-typedef Rectangle<int32_t> Recti;
+using Recti = Rectangle<int32_t>;
 
 }

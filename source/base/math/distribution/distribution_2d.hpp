@@ -16,8 +16,8 @@ public:
 
 private:
 
-//	typedef Distribution_1D Distribution_impl;
-	typedef Distribution_lut_1D Distribution_impl;
+//	using Distribution_impl = Distribution_1D;
+	using Distribution_impl = Distribution_lut_1D;
 
 	Distribution_impl marginal_;
 

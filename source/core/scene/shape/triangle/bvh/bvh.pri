@@ -5,7 +5,6 @@ SOURCES += \
 	scene/shape/triangle/bvh/triangle_bvh_helper.cpp \
 
 HEADERS += \
-	scene/shape/triangle/bvh/triangle_bvh_builder.inl \
 	scene/shape/triangle/bvh/triangle_bvh_builder_base.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_builder_base.inl \
 	scene/shape/triangle/bvh/triangle_bvh_builder_sah.hpp \

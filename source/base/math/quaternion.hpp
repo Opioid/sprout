@@ -70,8 +70,8 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t);
  *
  ****************************************************************************/
 
-//typedef Quaternion<float> quaternion;
-typedef Vector4f_a quaternion;
+// using quaternion = Quaternion<float>;
+using quaternion = Vector4f_a;
 
 quaternion create_quaternion(const Matrix3x3<float>& m);
 

@@ -17,7 +17,7 @@ public:
 	Split_candidate(const math::plane& plane, uint8_t axis);
 	Split_candidate(uint8_t split_axis, const math::float3& p, const std::vector<Prop*>& props);
 
-	typedef std::vector<Prop*>::iterator index;
+	using index = std::vector<Prop*>::iterator;
 
 	Split_candidate(uint8_t split_axis, const math::float3& p, index begin, index end);
 

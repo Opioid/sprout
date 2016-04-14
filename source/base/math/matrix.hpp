@@ -5,9 +5,10 @@
 
 namespace math {
 
-typedef Matrix3x3<float> float3x3;
-//typedef Matrix4x4<float> float4x4;
+using float3x3 = Matrix3x3<float>;
 
-typedef Matrix4x4f_a float4x4;
+// using float4x4 = Matrix4x4<float>;
+
+using float4x4 = Matrix4x4f_a;
 
 }

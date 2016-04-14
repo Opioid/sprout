@@ -38,7 +38,7 @@ struct Build_node {
 class Builder_base  {
 protected:
 
-	typedef std::vector<uint32_t>::iterator index;
+	using index = std::vector<uint32_t>::iterator;
 
 	void serialize(Build_node* node);
 

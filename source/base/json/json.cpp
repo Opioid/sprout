@@ -158,19 +158,24 @@ math::quaternion read_quaternion(const rapidjson::Value& value) {
 	 return quaternion(float(value[0u].GetDouble()), float(value[1].GetDouble()), float(value[2].GetDouble()), float(value[3].GetDouble()));
 }
 */
+
+math::float3x3 create_rotation_matrix(math::pfloat3 xyz) {
+	math::float3x3 rot_x;
+	math::set_rotation_x(rot_x, math::degrees_to_radians(xyz.x));
+
+	math::float3x3 rot_y;
+	math::set_rotation_y(rot_y, math::degrees_to_radians(xyz.y));
+
+	math::float3x3 rot_z;
+	math::set_rotation_z(rot_z, math::degrees_to_radians(xyz.z));
+
+	return rot_z * rot_x * rot_y;
+}
+
 math::float3x3 read_rotation_matrix(const rapidjson::Value& value) {
 	math::float3 rot = read_float3(value);
 
-	math::float3x3 rot_x;
-	set_rotation_x(rot_x, math::degrees_to_radians(rot.x));
-
-	math::float3x3 rot_y;
-	set_rotation_y(rot_y, math::degrees_to_radians(rot.y));
-
-	math::float3x3 rot_z;
-	set_rotation_z(rot_z, math::degrees_to_radians(rot.z));
-
-    return rot_z * rot_x * rot_y;
+	return create_rotation_matrix(rot);
 }
 
 math::quaternion read_local_rotation(const rapidjson::Value& value) {
