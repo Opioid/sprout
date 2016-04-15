@@ -16,7 +16,8 @@ math::uint2 Random::seed() const {
 	return math::uint2::identity;
 }
 
-void Random::generate_camera_sample(math::int2 pixel, uint32_t /*index*/, Camera_sample& sample) {
+void Random::generate_camera_sample(math::int2 pixel, uint32_t /*index*/,
+									Camera_sample& sample) {
 	math::float2 s2d(rng_.random_float(), rng_.random_float());
 
 	sample.pixel = pixel;

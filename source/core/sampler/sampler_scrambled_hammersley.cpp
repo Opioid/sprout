@@ -6,7 +6,8 @@
 
 namespace sampler {
 
-Scrambled_hammersley::Scrambled_hammersley(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
+Scrambled_hammersley::Scrambled_hammersley(math::random::Generator& rng,
+										   uint32_t num_samples_per_iteration) :
 	Sampler(rng, num_samples_per_iteration) {}
 
 Sampler* Scrambled_hammersley::clone() const {
@@ -17,7 +18,8 @@ math::uint2 Scrambled_hammersley::seed() const {
 	return math::uint2(rng_.random_uint(), 0);
 }
 
-void Scrambled_hammersley::generate_camera_sample(math::int2 pixel, uint32_t index, Camera_sample& sample) {
+void Scrambled_hammersley::generate_camera_sample(math::int2 pixel, uint32_t index,
+												  Camera_sample& sample) {
 	math::float2 s2d = math::scrambled_hammersley(index, num_samples_per_iteration_, seed_.x);
 
 	sample.pixel = pixel;
@@ -27,7 +29,9 @@ void Scrambled_hammersley::generate_camera_sample(math::int2 pixel, uint32_t ind
 }
 
 math::float2 Scrambled_hammersley::generate_sample_2D() {
-	return math::scrambled_hammersley(current_sample_++, num_iterations_ * num_samples_per_iteration_, seed_.x);
+	return math::scrambled_hammersley(current_sample_++,
+									  num_iterations_ * num_samples_per_iteration_,
+									  seed_.x);
 }
 
 float Scrambled_hammersley::generate_sample_1D() {

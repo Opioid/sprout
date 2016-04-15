@@ -12,14 +12,17 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Ao::Ao(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
-	Integrator(take_settings, rng), settings_(settings), sampler_(rng, settings.num_samples) {}
+Ao::Ao(const take::Settings& take_settings, math::random::Generator& rng,
+	   const Settings& settings) :
+	Integrator(take_settings, rng),
+	settings_(settings), sampler_(rng, settings.num_samples) {}
 
 void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene::Intersection& intersection) {
+math::float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
+					scene::Intersection& intersection) {
 	scene::Ray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t	 = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -29,7 +32,7 @@ math::float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene::Int
 	float result = 0.f;
 
 	math::float3 wo = -ray.direction;
-	auto& material_sample = intersection.sample(worker, wo, ray.time, scene::material::Sampler_settings::Filter::Unknown);
+	auto& material_sample = intersection.sample(worker, wo, ray.time, Sampler_filter::Unknown);
 
 	for (uint32_t i = 0; i < settings_.num_samples; ++i) {
 		math::float2 sample = sampler_.generate_sample_2D();
