@@ -46,13 +46,14 @@ public:
 
 private:
 
-	void render_subframe(scene::camera::Camera& camera,
-						 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
-						 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& pool,
-						 progress::Sink& progressor);
+	void render_subframe(scene::camera::Camera& camera, float normalized_tick_offset,
+						 float normalized_tick_slice, float normalized_frame_slice,
+						 Tile_queue& tiles, std::vector<Camera_worker>& workers,
+						 thread::Pool& pool, progress::Sink& progressor);
 
 	uint32_t calculate_progress_range(const scene::Scene& scene,
-									  const scene::camera::Camera& camera, uint32_t num_tiles) const;
+									  const scene::camera::Camera& camera,
+									  uint32_t num_tiles) const;
 
 	std::shared_ptr<integrator::surface::Integrator_factory> surface_integrator_factory_;
 	std::shared_ptr<integrator::volume::Integrator_factory> volume_integrator_factory_;

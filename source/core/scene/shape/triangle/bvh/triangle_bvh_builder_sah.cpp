@@ -67,10 +67,9 @@ const math::aabb& Builder_SAH::Split_candidate::aabb_1() const {
 Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold) :
 	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
-Builder_SAH::Split_candidate Builder_SAH::splitting_plane(index begin, index end,
-														  const math::aabb& aabb,
-														  const std::vector<math::aabb>& triangle_bounds,
-														  thread::Pool& thread_pool) {
+Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
+		index begin, index end, const math::aabb& aabb,
+		const std::vector<math::aabb>& triangle_bounds, thread::Pool& thread_pool) {
 	split_candidates_.clear();
 
 	uint32_t num_triangles = static_cast<uint32_t>(std::distance(begin, end));

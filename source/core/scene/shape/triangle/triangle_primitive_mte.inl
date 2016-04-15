@@ -83,7 +83,8 @@ inline void Triangle_MTE::interpolate(math::float2 uv, math::float3& p, math::fl
 }
 
 inline void Triangle_MTE::interpolate_data(math::float2 uv,
-										   math::float3& n, math::float3& t, math::float2& tc) const {
+										   math::float3& n, math::float3& t,
+										   math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	n  = math::normalized(w * an + uv.x * bn + uv.y * cn);
@@ -211,7 +212,8 @@ inline Shading_triangle_MTE::Shading_triangle_MTE(const shape::Vertex& a,
 	material_index(material_index) {}
 
 inline void Shading_triangle_MTE::interpolate_data(math::float2 uv,
-												   math::float3& n, math::float3& t, math::float2& tc) const {
+												   math::float3& n, math::float3& t,
+												   math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	n  = math::normalized(w * an + uv.x * bn + uv.y * cn);

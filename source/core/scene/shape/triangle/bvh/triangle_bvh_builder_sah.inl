@@ -80,7 +80,8 @@ void Builder_SAH::split(Build_node* node,
 			node->axis = sp.axis();
 
 			index pids1_begin = std::partition(begin, end,
-				[&sp, &triangle_bounds](uint32_t pi) { return sp.behind(triangle_bounds[pi].max()); });
+				[&sp, &triangle_bounds](uint32_t pi) {
+					return sp.behind(triangle_bounds[pi].max()); });
 
 			if (begin == pids1_begin || end == pids1_begin) {
 				// This can happen if we didn't find a good splitting plane.
@@ -89,11 +90,13 @@ void Builder_SAH::split(Build_node* node,
 				assign(node, begin, end, triangles, vertices, tree);
 			} else {
 				node->children[0] = new Build_node;
-				split(node->children[0], begin, pids1_begin, sp.aabb_0(), triangles, vertices, triangle_bounds,
+				split(node->children[0], begin, pids1_begin, sp.aabb_0(),
+					  triangles, vertices, triangle_bounds,
 					  max_primitives, thread_pool, tree);
 
 				node->children[1] = new Build_node;
-				split(node->children[1], pids1_begin, end, sp.aabb_1(), triangles, vertices, triangle_bounds,
+				split(node->children[1], pids1_begin, end, sp.aabb_1(),
+					  triangles, vertices, triangle_bounds,
 					  max_primitives, thread_pool, tree);
 			}
 		}

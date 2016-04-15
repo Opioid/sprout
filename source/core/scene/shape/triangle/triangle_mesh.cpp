@@ -31,7 +31,7 @@ uint32_t Mesh::num_parts() const {
 	return tree_.num_parts();
 }
 
-bool Mesh::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
+bool Mesh::intersect(const Entity_transformation& transformation, math::Oray& ray,
 					 Node_stack& node_stack, shape::Intersection& intersection) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -102,7 +102,7 @@ bool Mesh::intersect(const entity::Composed_transformation& transformation, math
 	return false;
 }
 
-bool Mesh::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
+bool Mesh::intersect_p(const Entity_transformation& transformation, const math::Oray& ray,
 					   Node_stack& node_stack) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -113,7 +113,7 @@ bool Mesh::intersect_p(const entity::Composed_transformation& transformation, co
 	return tree_.intersect_p(tray, node_stack);
 }
 
-float Mesh::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
+float Mesh::opacity(const Entity_transformation& transformation, const math::Oray& ray,
 					float time, const material::Materials& materials,
 					Worker& worker, material::Sampler_settings::Filter filter) const {
 	math::Oray tray;
@@ -125,13 +125,13 @@ float Mesh::opacity(const entity::Composed_transformation& transformation, const
 	return tree_.opacity(tray, time, materials, worker, filter);
 }
 
-void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
+void Mesh::sample(uint32_t part, const Entity_transformation& transformation, float area,
 				  const math::float3& p, const math::float3& /*n*/, bool two_sided,
 				  sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
 	Mesh::sample(part, transformation, area, p, two_sided, sampler, node_stack, sample);
 }
 
-void Mesh::sample(uint32_t part, const entity::Composed_transformation& transformation, float area,
+void Mesh::sample(uint32_t part, const Entity_transformation& transformation, float area,
 				  const math::float3& p, bool two_sided,
 				  sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	float r = sampler.generate_sample_1D();
@@ -168,15 +168,17 @@ void Mesh::sample(uint32_t part, const entity::Composed_transformation& transfor
 	}
 }
 
-void Mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
+void Mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+				  float /*area*/, const math::float3& /*p*/, math::float2 /*uv*/,
+				  Sample& /*sample*/) const {}
 
-void Mesh::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				  const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
+void Mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+				  float /*area*/, const math::float3& /*p*/, const math::float3& /*wi*/,
+				  Sample& /*sample*/) const {}
 
-float Mesh::pdf(uint32_t part, const entity::Composed_transformation& transformation, float area,
-				const math::float3& p, const math::float3& wi, bool two_sided, bool /*total_sphere*/,
-				Node_stack& node_stack) const {
+float Mesh::pdf(uint32_t part, const Entity_transformation& transformation,
+				float area, const math::float3& p, const math::float3& wi,
+				bool two_sided, bool /*total_sphere*/, Node_stack& node_stack) const {
 	math::Oray ray;
 	ray.origin = math::transform_point(p, transformation.world_to_object);
 	ray.set_direction(math::transform_vector(wi, transformation.world_to_object));

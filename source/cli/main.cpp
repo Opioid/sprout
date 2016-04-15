@@ -96,16 +96,16 @@ int main(int argc, char* argv[]) {
 
 		if (take->camera_animation && take->view.camera) {
 			scene.add_animation(take->camera_animation);
-			scene.create_animation_stage(take->view.camera.get(), take->camera_animation.get());
+			scene.create_animation_stage(take->view.camera.get(),
+										 take->camera_animation.get());
 		}
 	} catch (const std::exception& e) {
 		logging::error("Scene \"" + take->scene + "\" could not be loaded: " + e.what() + ".");
 		return 1;
 	}
 
-	auto loading_duration = std::chrono::high_resolution_clock::now() - loading_start;
 	logging::info("Loading time " +
-				  string::to_string(chrono::duration_to_seconds(loading_duration)) + " s");
+				  string::to_string(chrono::seconds_since(loading_start)) + " s");
 
 	progress::Stdout progressor;
 
@@ -125,13 +125,11 @@ int main(int argc, char* argv[]) {
 		driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
 	}
 
-	auto rendering_duration = std::chrono::high_resolution_clock::now() - rendering_start;
 	logging::info("Total render time " +
-				  string::to_string(chrono::duration_to_seconds(rendering_duration)) + " s");
+				  string::to_string(chrono::seconds_since(rendering_start)) + " s");
 
-	auto total_duration = std::chrono::high_resolution_clock::now() - total_start;
 	logging::info("Total elapsed time " +
-				  string::to_string(chrono::duration_to_seconds(total_duration)) + " s");
+				  string::to_string(chrono::seconds_since(total_start)) + " s");
 
 	logging::release();
 

@@ -8,7 +8,8 @@ inline bool same_sign(float a, float b) {
 	return a * b >= 0.f;
 }
 
-Triangle_YF::Triangle_YF(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index) :
+Triangle_YF::Triangle_YF(const Vertex& a, const Vertex& b, const Vertex& c,
+						 uint32_t material_index) :
 	a(a), b(b), c(c), material_index(material_index) {
 	math::float3 e1 = b.p - a.p;
 	math::float3 e2 = c.p - a.p;
@@ -93,7 +94,8 @@ inline bool Triangle_YF::intersect_p(const math::Oray& ray) const {
 	return false;
 }
 
-inline void Triangle_YF::interpolate(math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const {
+inline void Triangle_YF::interpolate(math::float2 uv,
+									 math::float3& p, math::float3& n, math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	p  = w * a.p + uv.x * b.p + uv.y * c.p;
@@ -101,7 +103,9 @@ inline void Triangle_YF::interpolate(math::float2 uv, math::float3& p, math::flo
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline void Triangle_YF::interpolate_data(math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const {
+inline void Triangle_YF::interpolate_data(math::float2 uv,
+										  math::float3& n, math::float3& t,
+										  math::float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	n  = math::normalized(w * a.n + uv.x * b.n + uv.y * c.n);

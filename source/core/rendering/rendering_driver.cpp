@@ -32,7 +32,8 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 	auto& camera = *view.camera;
 	auto& sensor = camera.sensor();
 
-	image::Image_float_4 target(image::Image::Description(image::Image::Type::Float_4, camera.sensor_dimensions()));
+	image::Image_float_4 target(image::Image::Description(image::Image::Type::Float_4,
+														  camera.sensor_dimensions()));
 
 	Tile_queue tiles(camera.resolution(), tile_dimensions_, sensor.filter_radius_int());
 
@@ -40,12 +41,14 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 	std::vector<Camera_worker> workers(num_workers);
 	for (uint32_t i = 0; i < num_workers; ++i) {
 		math::random::Generator rng(i + 0, i + 1, i + 2, i + 3);
-		workers[i].init(i, scene, rng, *surface_integrator_factory_, *volume_integrator_factory_, *sampler_);
+		workers[i].init(i, scene, rng, *surface_integrator_factory_,
+						*volume_integrator_factory_, *sampler_);
 	}
 
 	const uint32_t progress_range = calculate_progress_range(scene, camera, tiles.size());
 
-	float tick_offset = scene.seek(static_cast<float>(view.start_frame) * camera.frame_duration(), thread_pool);
+	float tick_offset = scene.seek(static_cast<float>(view.start_frame) * camera.frame_duration(),
+								   thread_pool);
 	float tick_rest   = scene.tick_duration() - tick_offset;
 
 	camera.update_focus(workers[0]);
@@ -115,9 +118,8 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 				float normalized_tick_slice  = subframe_slice / scene.tick_duration();
 				float normalized_frame_slice = subframe_slice / camera.frame_duration();
 
-				render_subframe(camera,
-								normalized_tick_offset, normalized_tick_slice, normalized_frame_slice,
-								tiles, workers, thread_pool, progressor);
+				render_subframe(camera, normalized_tick_offset, normalized_tick_slice,
+								normalized_frame_slice, tiles, workers, thread_pool, progressor);
 
 				tick_offset += subframe_slice;
 				tick_rest   -= subframe_slice;
@@ -129,21 +131,21 @@ void Driver::render(scene::Scene& scene, const take::View& view, thread::Pool& t
 
 		progressor.end();
 
-		auto render_duration = chrono::duration_to_seconds(std::chrono::high_resolution_clock::now() - render_start);
+		auto render_duration = chrono::seconds_since(render_start);
 		logging::info("Render time " + string::to_string(render_duration) + " s");
 
 		auto export_start = std::chrono::high_resolution_clock::now();
 		sensor.resolve(thread_pool, target);
 		exporter.write(target, current_frame, thread_pool);
-		auto export_duration = chrono::duration_to_seconds(std::chrono::high_resolution_clock::now() - export_start);
+		auto export_duration = chrono::seconds_since(export_start);
 		logging::info("Export time " + string::to_string(export_duration) + " s");
 	}
 }
 
-void Driver::render_subframe(scene::camera::Camera& camera,
-							 float normalized_tick_offset, float normalized_tick_slice, float normalized_frame_slice,
-							 Tile_queue& tiles, std::vector<Camera_worker>& workers, thread::Pool& thread_pool,
-							 progress::Sink& progressor) {
+void Driver::render_subframe(scene::camera::Camera& camera, float normalized_tick_offset,
+							 float normalized_tick_slice, float normalized_frame_slice,
+							 Tile_queue& tiles, std::vector<Camera_worker>& workers,
+							 thread::Pool& thread_pool, progress::Sink& progressor) {
 	float num_samples = static_cast<float>(sampler_->num_samples_per_iteration());
 
 	uint32_t sample_begin = current_sample_;
@@ -183,13 +185,17 @@ void Driver::render_subframe(scene::camera::Camera& camera,
 	current_sample_ = sample_end;
 }
 
-uint32_t Driver::calculate_progress_range(const scene::Scene& scene, const scene::camera::Camera& camera,
+uint32_t Driver::calculate_progress_range(const scene::Scene& scene,
+										  const scene::camera::Camera& camera,
 										  uint32_t num_tiles) const {
 	const float num_subframes = 0.f == camera.frame_duration() || !camera.motion_blur()
 							  ? 1.f : std::min(camera.frame_duration() / scene.tick_duration(),
-											   static_cast<float>(sampler_->num_samples_per_iteration()));
+											   static_cast<float>(
+												   sampler_->num_samples_per_iteration()));
 
-	return static_cast<uint32_t>(static_cast<float>(num_tiles * camera.num_views()) * num_subframes);
+	float range = static_cast<float>(num_tiles * camera.num_views()) * num_subframes;
+
+	return static_cast<uint32_t>(range);
 }
 
 }

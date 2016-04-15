@@ -15,7 +15,7 @@ Plane::Plane() {
 	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
-bool Plane::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
+bool Plane::intersect(const Entity_transformation& transformation, math::Oray& ray,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const math::float3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
@@ -87,7 +87,7 @@ bool Plane::intersect(const entity::Composed_transformation& transformation, mat
 */
 }
 
-bool Plane::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
+bool Plane::intersect_p(const Entity_transformation& transformation, const math::Oray& ray,
 						Node_stack& /*node_stack*/) const {
 	const math::float3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
@@ -102,7 +102,7 @@ bool Plane::intersect_p(const entity::Composed_transformation& transformation, c
 	return false;
 }
 
-float Plane::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
+float Plane::opacity(const Entity_transformation& transformation, const math::Oray& ray,
 					 float time, const material::Materials& materials,
 					 Worker& worker, material::Sampler_settings::Filter filter) const {
 	const math::float3& normal = transformation.rotation.z3;
@@ -113,7 +113,8 @@ float Plane::opacity(const entity::Composed_transformation& transformation, cons
 
 	if (t > ray.min_t && t < ray.max_t) {
 		math::float3 p = ray.point(t);
-		math::float2 uv(math::dot(transformation.rotation.x3, p), math::dot(transformation.rotation.y3, p));
+		math::float2 uv(math::dot(transformation.rotation.x3, p),
+						math::dot(transformation.rotation.y3, p));
 
 		return materials[0]->opacity(uv, time, worker, filter);
 	}
@@ -121,27 +122,31 @@ float Plane::opacity(const entity::Composed_transformation& transformation, cons
 	return 0.f;
 }
 
-void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, const math::float3& /*n*/, bool /*two_sided*/,
-				   sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/, Sample& sample) const {
+void Plane::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+				   float /*area*/, const math::float3& /*p*/,
+				   const math::float3& /*n*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+				   Node_stack& /*node_stack*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
-void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, bool /*two_sided*/,
-				   sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/, Sample& sample) const {
+void Plane::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+				   float /*area*/, const math::float3& /*p*/, bool /*two_sided*/,
+				   sampler::Sampler& /*sampler*/,
+				   Node_stack& /*node_stack*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
-void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, math::float2 /*uv*/, Sample& /*sample*/) const {}
+void Plane::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+				   float /*area*/, const math::float3& /*p*/, math::float2 /*uv*/,
+				   Sample& /*sample*/) const {}
 
-void Plane::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				   const math::float3& /*p*/, const math::float3& /*wi*/, Sample& /*sample*/) const {}
+void Plane::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+				   float /*area*/, const math::float3& /*p*/,
+				   const math::float3& /*wi*/, Sample& /*sample*/) const {}
 
-float Plane::pdf(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-				 const math::float3& /*p*/, const math::float3& /*wi*/, bool /*two_sided*/, bool /*total_sphere*/,
-				 Node_stack& /*node_stack*/) const {
+float Plane::pdf(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+				 float /*area*/, const math::float3& /*p*/, const math::float3& /*wi*/,
+				 bool /*two_sided*/, bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
 	return 0.f;
 }
 

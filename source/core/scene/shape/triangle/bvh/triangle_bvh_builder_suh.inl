@@ -68,10 +68,12 @@ void Builder_SUH::split(Build_node* node,
 			assign(node, begin, end, triangles, vertices, tree);
 		} else {
 			node->children[0] = new Build_node;
-			split(node->children[0], begin, pids1_begin, triangles, vertices, max_primitives, depth + 1, tree);
+			split(node->children[0], begin, pids1_begin, triangles,
+				  vertices, max_primitives, depth + 1, tree);
 
 			node->children[1] = new Build_node;
-			split(node->children[1], pids1_begin, end, triangles, vertices, max_primitives, depth + 1, tree);
+			split(node->children[1], pids1_begin, end, triangles,
+				  vertices, max_primitives, depth + 1, tree);
 		}
 	}
 }

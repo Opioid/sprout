@@ -6,4 +6,6 @@ namespace chrono {
 
 float duration_to_seconds(std::chrono::high_resolution_clock::duration duration);
 
+float seconds_since(std::chrono::high_resolution_clock::time_point time_point);
+
 }

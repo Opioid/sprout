@@ -5,9 +5,11 @@
 
 namespace scene { namespace bvh {
 
-Split_candidate::Split_candidate(const math::plane& plane, uint8_t axis) : plane_(plane), axis_(axis) {}
+Split_candidate::Split_candidate(const math::plane& plane, uint8_t axis) :
+	plane_(plane), axis_(axis) {}
 
-Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p, const std::vector<Prop*>& props) :
+Split_candidate::Split_candidate(uint8_t split_axis, math::pfloat3 p,
+								 const std::vector<Prop*>& props) :
 	axis_(split_axis) {
 	key_ = 0;
 
@@ -48,7 +50,8 @@ Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p, cons
 	}
 }
 
-Split_candidate::Split_candidate(uint8_t split_axis, const math::float3& p, index begin, index end) :
+Split_candidate::Split_candidate(uint8_t split_axis, math::pfloat3 p,
+								 index begin, index end) :
 	axis_(split_axis) {
 	key_ = 0;
 

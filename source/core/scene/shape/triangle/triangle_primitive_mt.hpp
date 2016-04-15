@@ -6,7 +6,8 @@
 namespace scene { namespace shape { namespace triangle {
 
 struct Triangle_MT {
-	Triangle_MT(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c, uint32_t material_index);
+	Triangle_MT(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c,
+				uint32_t material_index);
 
 	struct Vertex {
 		Vertex(const shape::Vertex& v);
@@ -25,7 +26,8 @@ struct Triangle_MT {
 	void interpolate(math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const;
 	void interpolate(math::float2 uv, math::float3& p, math::float2& tc) const;
 	void interpolate(math::float2 uv, math::float3& p) const;
-	void interpolate_data(math::float2 uv, math::float3& n, math::float3& t, math::float2& tc) const;
+	void interpolate_data(math::float2 uv, math::float3& n,
+						  math::float3& t, math::float2& tc) const;
 	math::float2 interpolate_uv(math::float2 uv) const;
 
 	math::float3 normal() const;
