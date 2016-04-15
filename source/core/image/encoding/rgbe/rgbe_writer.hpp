@@ -11,7 +11,8 @@ public:
 
 	virtual std::string file_extension() const final override;
 
-	virtual bool write(std::ostream& stream, const Image_float_4& image, thread::Pool& pool) final override;
+	virtual bool write(std::ostream& stream, const Image_float_4& image,
+					   thread::Pool& pool) final override;
 
 private:
 

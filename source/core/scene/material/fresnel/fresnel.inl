@@ -10,10 +10,11 @@ inline float schlick(float wo_dot_h, float f0) {
 }
 
 inline math::float3 schlick(float wo_dot_h, math::pfloat3 f0) {
-	return f0 + std::pow(1.f - wo_dot_h, 5.f) * math::float3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
+	math::float3 omf(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
+	return f0 + std::pow(1.f - wo_dot_h, 5.f) * omf;
 
 	// Gaussian approximation
-	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * math::float3(1.f - f0.x, 1.f - f0.y, 1.f - f0.z);
+	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * omf;
 }
 
 inline float schlick_f0(float n0, float n1) {
@@ -49,8 +50,11 @@ inline float dielectric(float n_dot_wi, float n_dot_wo, float eta) {
 }
 
 inline float dielectric_holgerusan(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
-	float r_p = (eta_t * cos_theta_i + eta_i * cos_theta_t) / (eta_t * cos_theta_i - eta_i * cos_theta_t);
-	float r_o = (eta_i * cos_theta_i + eta_t * cos_theta_t) / (eta_i * cos_theta_i - eta_t * cos_theta_t);
+	float r_p = (eta_t * cos_theta_i + eta_i * cos_theta_t)
+			  / (eta_t * cos_theta_i - eta_i * cos_theta_t);
+
+	float r_o = (eta_i * cos_theta_i + eta_t * cos_theta_t)
+			  / (eta_i * cos_theta_i - eta_t * cos_theta_t);
 
 	return 0.5f * (r_p * r_p + r_o * r_o);
 }

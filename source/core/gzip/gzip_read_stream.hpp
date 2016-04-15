@@ -38,7 +38,8 @@ protected:
 
 	virtual pos_type seekpos(pos_type pos, std::ios_base::openmode);
 
-	virtual pos_type seekoff(off_type off, std::ios_base::seekdir dir, std::ios_base::openmode mode);
+	virtual pos_type seekoff(off_type off, std::ios_base::seekdir dir,
+							 std::ios_base::openmode mode);
 
 	virtual int_type overflow(int_type c = traits_type::eof());
 
@@ -75,7 +76,8 @@ public:
 
 	Read_stream();
 
-	explicit Read_stream(const std::string& name, std::ios_base::openmode mode = std::ios_base::binary);
+	explicit Read_stream(const std::string& name,
+						 std::ios_base::openmode mode = std::ios_base::binary);
 	explicit Read_stream(const char* name, std::ios_base::openmode mode = std::ios_base::binary);
 	explicit Read_stream(std::unique_ptr<std::istream> stream);
 

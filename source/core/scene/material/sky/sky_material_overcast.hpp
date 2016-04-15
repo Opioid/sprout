@@ -16,10 +16,12 @@ public:
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										   float time, float ior_i,
-										   const Worker& worker, Sampler_settings::Filter filter) final override;
+										   const Worker& worker,
+										   Sampler_settings::Filter filter) final override;
 
 	virtual math::float3 sample_emission(math::pfloat3 wi, math::float2 uv, float time,
-										 const Worker& worker, Sampler_settings::Filter filter) const final override;
+										 const Worker& worker,
+										 Sampler_settings::Filter filter) const final override;
 
 	virtual math::float3 average_emission() const final override;
 

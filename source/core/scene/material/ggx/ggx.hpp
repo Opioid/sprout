@@ -6,8 +6,6 @@ namespace sampler { class Sampler; }
 
 namespace scene { namespace material {
 
-
-
 namespace bxdf { struct Result; }
 
 namespace ggx {
@@ -23,8 +21,11 @@ public:
 	template<typename Sample>
 	void init_evaluate(const Sample& sample, math::pfloat3 wi);
 
-	float        evaluate(float f0, float a2, float n_dot_wi, float n_dot_wo, float& fresnel, float& pdf) const;
-	math::float3 evaluate(math::pfloat3 f0, float a2, float n_dot_wi, float n_dot_wo, float& pdf) const;
+	float evaluate(float f0, float a2, float n_dot_wi, float n_dot_wo,
+				   float& fresnel, float& pdf) const;
+
+	math::float3 evaluate(math::pfloat3 f0, float a2, float n_dot_wi, float n_dot_wo,
+						  float& pdf) const;
 
 	template<typename Sample>
 	static math::float3 evaluate(const Sample& sample,
@@ -46,7 +47,7 @@ public:
 
 	template<typename Sample>
 	static math::float3 evaluate(const Sample& sample,
-								 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+								 math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
 								 float& pdf);
 
 	template<typename Sample>
@@ -60,7 +61,7 @@ public:
 
 	template<typename Sample>
 	static math::float3 evaluate(const Sample& sample,
-								 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+								 math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
 								 float& pdf);
 
 	template<typename Sample>
@@ -71,7 +72,8 @@ public:
 
 float distribution_isotropic(float n_dot_h, float a2);
 
-float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a2, float axy);
+float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
+							   math::float2 a2, float axy);
 
 float geometric_shadowing(float n_dot_wi, float n_dot_wo, float a2);
 

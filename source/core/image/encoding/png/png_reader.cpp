@@ -34,7 +34,8 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels, int
 	return create_image(info, channels, num_elements);
 }
 
-std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels, int32_t num_elements) const {
+std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
+											int32_t num_elements) const {
 	if (0 == info.num_channels || Channels::None == channels) {
 		return nullptr;
 	}
@@ -241,7 +242,8 @@ bool Reader::parse_data(const Chunk& chunk, Info& info) {
 		info.stream.avail_out = buffer_size;
 
 		int status = mz_inflate(&info.stream, MZ_NO_FLUSH);
-		if (status != MZ_OK && status != MZ_STREAM_END && status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
+		if (status != MZ_OK && status != MZ_STREAM_END
+			&& status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
 			return false;
 		}
 
@@ -331,7 +333,8 @@ uint8_t Reader::paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
 }
 
 uint32_t Reader::byteswap(uint32_t v) {
-	return ((v & 0xFF) << 24) | ((v & 0xFF00) << 8) | ((v & 0xFF0000) >> 8) | ((v & 0xFF000000) >> 24);
+	return ((v & 0xFF) << 24) | ((v & 0xFF00) << 8)
+		 | ((v & 0xFF0000) >> 8) | ((v & 0xFF000000) >> 24);
 }
 
 const std::array<uint8_t, Reader::Signature_size> Reader::Signature = {

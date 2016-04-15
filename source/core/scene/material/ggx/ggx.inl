@@ -81,7 +81,8 @@ inline float Schlick_isotropic::evaluate(float f0, float a2, float n_dot_wi, flo
 	return d * g * f;
 }
 
-inline math::float3 Schlick_isotropic::evaluate(math::pfloat3 f0, float a2, float n_dot_wi, float n_dot_wo,
+inline math::float3 Schlick_isotropic::evaluate(math::pfloat3 f0, float a2,
+												float n_dot_wi, float n_dot_wo,
 												float& pdf) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2) {
@@ -100,7 +101,7 @@ inline math::float3 Schlick_isotropic::evaluate(math::pfloat3 f0, float a2, floa
 
 template<typename Sample>
 math::float3 Schlick_isotropic::evaluate(const Sample& sample,
-										 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+										 math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
 										 float &pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
@@ -264,7 +265,7 @@ float Conductor_isotropic::importance_sample(const Sample& sample,
 
 template<typename Sample>
 math::float3 Conductor_anisotropic::evaluate(const Sample& sample,
-											 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+											 math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
 											 float &pdf) {
 	math::float3 h = math::normalized(sample.wo_ + wi);
 
@@ -336,7 +337,8 @@ inline float distribution_isotropic(float n_dot_h, float a2) {
 	return a2 / (math::Pi * d * d);
 }
 
-inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h, math::float2 a2, float axy) {
+inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
+									  math::float2 a2, float axy) {
 	float x = (x_dot_h * x_dot_h) / a2.x;
 	float y = (y_dot_h * y_dot_h) / a2.y;
 	float d = (x + y + n_dot_h * n_dot_h);

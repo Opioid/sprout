@@ -11,11 +11,13 @@ namespace scene { namespace material { namespace sky {
 Material_clear::Material_clear(Generic_sample_cache<Sample_clear>& cache,
 							   std::shared_ptr<image::texture::Texture_2D> mask,
 							   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_clear>>(cache, mask, sampler_settings, two_sided) {}
+	material::Typed_material<Generic_sample_cache<Sample_clear>>(
+		cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Material_clear::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 											   float /*time*/, float /*ior_i*/,
-											   const Worker& worker, Sampler_settings::Filter /*filter*/) {
+											   const Worker& worker,
+											   Sampler_settings::Filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
@@ -24,8 +26,9 @@ const material::Sample& Material_clear::sample(const shape::Hitpoint& hp, math::
 	return sample;
 }
 
-math::float3 Material_clear::sample_emission(math::pfloat3 wi, math::float2 /*uv*/, float /*time*/,
-											 const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
+math::float3 Material_clear::sample_emission(math::pfloat3 wi, math::float2 /*uv*/,
+											 float /*time*/, const Worker& /*worker*/,
+											 Sampler_settings::Filter /*filter*/) const {
 	return model_.evaluate(wi);
 }
 

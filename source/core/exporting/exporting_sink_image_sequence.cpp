@@ -14,7 +14,8 @@ Image_sequence::~Image_sequence() {
 }
 
 void Image_sequence::write(const image::Image_float_4& image, uint32_t frame, thread::Pool& pool) {
-	std::ofstream stream(filename_ + string::to_string(frame, 2) + "." + writer_->file_extension(), std::ios::binary);
+	std::ofstream stream(filename_ + string::to_string(frame, 2) + "." +
+						 writer_->file_extension(), std::ios::binary);
 	if (!stream) {
 		return;
 	}

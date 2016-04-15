@@ -36,7 +36,8 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& 
 
 	for (uint32_t i = 0; i < 10; ++i) {
 		l = 0.1f * static_cast<float>(i);
-		add_blade(math::packed_float3(-0.1f, 0.f, 0.f), r, l, w, h, i * num_vertices, triangles, vertices);
+		add_blade(math::packed_float3(-0.1f, 0.f, 0.f),
+				  r, l, w, h, i * num_vertices, triangles, vertices);
 	}
 */
 
@@ -71,13 +72,15 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& 
 		float w = 0.1f;
 		float h = 0.2f + 0.1f * rng.random_float();// + 0.15f - (0.15f * randomness);
 
-		add_blade(math::packed_float3(p.x, 0.f, p.y), rotation_y, l, w, h, i * num_vertices, triangles, vertices);
+		add_blade(math::packed_float3(p.x, 0.f, p.y),
+				  rotation_y, l, w, h, i * num_vertices, triangles, vertices);
 	}
 
 
 	calculate_normals(triangles, vertices);
 
-	return scene::shape::triangle::Provider::create_mesh(triangles, vertices, num_parts, bvh_preset,
+	return scene::shape::triangle::Provider::create_mesh(triangles, vertices,
+														 num_parts, bvh_preset,
 														 manager.thread_pool());
 }
 
@@ -169,29 +172,40 @@ void Grass::add_blade(const math::packed_float3& offset,
 	ax += -0.1f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[1].a = segments[0].a + segment_controls[1] * rx;
-	segments[1].b = segments[0].b + math::packed_float3(0.f, segment_controls[1].y, -segment_controls[1].z) * rx;
+	segments[1].b = segments[0].b + math::packed_float3(0.f,
+														segment_controls[1].y,
+														-segment_controls[1].z) * rx;
 
 	ax += -0.5f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[2].a = segments[1].a + segment_controls[2] * rx;
-	segments[2].b = segments[1].b + math::packed_float3(0.f, segment_controls[2].y, -segment_controls[2].z) * rx;
+	segments[2].b = segments[1].b + math::packed_float3(0.f,
+														segment_controls[2].y,
+														-segment_controls[2].z) * rx;
 
 	ax += -0.6f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[3].a = segments[2].a + segment_controls[3] * rx;
-	segments[3].b = segments[2].b + math::packed_float3(0.f, segment_controls[3].y, -segment_controls[3].z) * rx;
+	segments[3].b = segments[2].b + math::packed_float3(0.f,
+														segment_controls[3].y,
+														-segment_controls[3].z) * rx;
 
 	ax += -0.8f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[4].a = segments[3].a + segment_controls[4] * rx;
-	segments[4].b = segments[3].b + math::packed_float3(0.f, segment_controls[4].y, -segment_controls[4].z) * rx;
+	segments[4].b = segments[3].b + math::packed_float3(0.f,
+														segment_controls[4].y,
+														-segment_controls[4].z) * rx;
 
 	ax += -0.4f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[5].a = segments[4].a + segment_controls[5] * rx;
 
 	for (uint32_t i = 0, len = num_segments + 1; i < len; ++i) {
-		v.p = math::packed_float3(-segments[i].a.x, segments[i].a.y, segments[i].a.z) * rotation + offset;
+		v.p = math::packed_float3(-segments[i].a.x,
+								   segments[i].a.y,
+								   segments[i].a.z) * rotation + offset;
+
 		v.uv = math::float2(1.f - segment_uvs[i].x, segment_uvs[i].y);
 		vertices.push_back(v);
 
@@ -199,7 +213,9 @@ void Grass::add_blade(const math::packed_float3& offset,
 		v.uv = math::float2(0.5f, segment_uvs[i].y);
 		vertices.push_back(v);
 
-		v.p = math::packed_float3(segments[i].a.x, segments[i].a.y, segments[i].a.z) * rotation + offset;
+		v.p = math::packed_float3(segments[i].a.x,
+								  segments[i].a.y,
+								  segments[i].a.z) * rotation + offset;
 		v.uv = segment_uvs[i];
 		vertices.push_back(v);
 	}

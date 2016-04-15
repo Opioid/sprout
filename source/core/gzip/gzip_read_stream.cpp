@@ -2,7 +2,6 @@
 #include <fstream>
 #include <limits>
 #include <string>
-#include <iostream>
 
 namespace gzip {
 
@@ -120,7 +119,8 @@ Filebuffer::int_type Filebuffer::underflow() {
 		uint32_t avail_out = z_stream_.avail_out;
 
 		int status = mz_inflate(&z_stream_, MZ_NO_FLUSH);
-		if (status != MZ_OK && status != MZ_STREAM_END && status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
+		if (status != MZ_OK && status != MZ_STREAM_END
+		&&  status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
 			return traits_type::eof();
 		}
 
@@ -163,7 +163,8 @@ Filebuffer::pos_type Filebuffer::seekpos(pos_type pos, std::ios_base::openmode) 
 	return pos;
 }
 
-Filebuffer::pos_type Filebuffer::seekoff(off_type off, std::ios_base::seekdir dir, std::ios_base::openmode mode) {
+Filebuffer::pos_type Filebuffer::seekoff(off_type off, std::ios_base::seekdir dir,
+										 std::ios_base::openmode mode) {
 	if (!is_open() /*|| m_is_write_stream*/) {
 		return pos_type(off_type(-1));
 	}
@@ -271,11 +272,13 @@ bool Filebuffer::init_z_stream() {
 
 Read_stream::Read_stream() : __istream_type(&stream_buffer_) {}
 
-Read_stream::Read_stream(const std::string& name, std::ios_base::openmode mode) : __istream_type(&stream_buffer_)/*, name_(name)*/ {
+Read_stream::Read_stream(const std::string& name, std::ios_base::openmode mode) :
+	__istream_type(&stream_buffer_)/*, name_(name)*/ {
 	open(name.c_str(), mode);
 }
 
-Read_stream::Read_stream(const char* name, std::ios_base::openmode mode) : __istream_type(&stream_buffer_)/*, name_(name)*/ {
+Read_stream::Read_stream(const char* name, std::ios_base::openmode mode) :
+	__istream_type(&stream_buffer_)/*, name_(name)*/ {
 	open(name, mode);
 }
 

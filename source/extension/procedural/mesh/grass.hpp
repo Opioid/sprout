@@ -18,8 +18,8 @@ namespace procedural { namespace mesh {
 class Grass : public scene::shape::triangle::Generator {
 public:
 
-	virtual std::shared_ptr<scene::shape::Shape> create_mesh(const rapidjson::Value& mesh_value,
-															 resource::Manager& manager) final override;
+	virtual std::shared_ptr<scene::shape::Shape> create_mesh(
+			const rapidjson::Value& mesh_value, resource::Manager& manager) final override;
 
 private:
 

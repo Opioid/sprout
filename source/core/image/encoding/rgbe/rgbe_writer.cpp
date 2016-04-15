@@ -11,7 +11,8 @@ std::string Writer::file_extension() const {
 	return "hdr";
 }
 
-bool Writer::write(std::ostream& stream, const image::Image_float_4& image, thread::Pool& /*pool*/) {
+bool Writer::write(std::ostream& stream, const image::Image_float_4& image,
+				   thread::Pool& /*pool*/) {
 	write_header(stream, image.description().dimensions);
 
 	write_pixels_rle(stream, image);
@@ -127,7 +128,8 @@ void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t
 
 			stream.write(reinterpret_cast<char*>(&buffer), sizeof(uint8_t));
 
-			stream.write(reinterpret_cast<const char*>(&data[current]), sizeof(uint8_t) * nonrun_count);
+			stream.write(reinterpret_cast<const char*>(&data[current]),
+						 sizeof(uint8_t) * nonrun_count);
 
 			current += nonrun_count;
 		}
