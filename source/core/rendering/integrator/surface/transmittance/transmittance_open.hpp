@@ -18,13 +18,14 @@ namespace rendering { namespace integrator { namespace surface { namespace trans
 class Open : public integrator::Integrator {
 public:
 
-	Open(const take::Settings& take_settings, math::random::Generator& rng, uint32_t max_bounces);
+	Open(const take::Settings& take_settings, math::random::Generator& rng,
+		 uint32_t max_bounces);
+
+	using Sampler_filter = scene::material::Sampler_settings::Filter;
 
 	math::float3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-						 const math::float3& attenuation,
-						 sampler::Sampler& sampler,
-						 scene::material::Sampler_settings::Filter filter,
-						 scene::material::bxdf::Result& sample_result);
+						 const math::float3& attenuation, sampler::Sampler& sampler,
+						 Sampler_filter filter, scene::material::bxdf::Result& sample_result);
 
 private:
 

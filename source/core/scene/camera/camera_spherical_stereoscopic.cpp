@@ -18,7 +18,8 @@ Spherical_stereoscopic::Spherical_stereoscopic(float interpupillary_distance,
 	d_y_ = 1.f / fr.y;
 
 	view_bounds_[0] = math::Recti{math::int2(0, 0), resolution};
-	view_bounds_[1] = math::Recti{math::int2(resolution.x, 0), math::int2(resolution.x * 2, resolution.y)};
+	view_bounds_[1] = math::Recti{math::int2(resolution.x, 0),
+								  math::int2(resolution.x * 2, resolution.y)};
 }
 
 uint32_t Spherical_stereoscopic::num_views() const {
@@ -35,7 +36,8 @@ math::Recti Spherical_stereoscopic::view_bounds(uint32_t view) const {
 
 void Spherical_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
-bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
+bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+										  scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	float x = d_x_ * coordinates.x;

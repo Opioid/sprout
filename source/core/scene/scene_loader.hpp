@@ -47,7 +47,8 @@ public:
 
 private:
 
-	void load_entities(const rapidjson::Value& entities_value, entity::Entity* parent, Scene& scene);
+	void load_entities(const rapidjson::Value& entities_value, entity::Entity* parent,
+					   Scene& scene);
 
 	Prop* load_prop(const rapidjson::Value& prop_value, Scene& scene);
 
@@ -57,9 +58,11 @@ private:
 
 	std::shared_ptr<shape::Shape> load_shape(const rapidjson::Value& shape_value);
 
-    std::shared_ptr<shape::Shape> shape(const std::string& type, const rapidjson::Value& shape_value) const;
+	std::shared_ptr<shape::Shape> shape(const std::string& type,
+										const rapidjson::Value& shape_value) const;
 
-	void load_materials(const rapidjson::Value& materials_value, Scene& scene, material::Materials& materials);
+	void load_materials(const rapidjson::Value& materials_value, Scene& scene,
+						material::Materials& materials);
 
 	resource::Manager& resource_manager_;
 

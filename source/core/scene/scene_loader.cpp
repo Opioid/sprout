@@ -55,11 +55,13 @@ void Loader::load(std::istream& stream, Scene& scene) {
 	}
 }
 
-void Loader::register_mesh_generator(const std::string& name, shape::triangle::Generator* generator) {
+void Loader::register_mesh_generator(const std::string& name,
+									 shape::triangle::Generator* generator) {
     mesh_generators_[name] = generator;
 }
 
-void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entity* parent, Scene& scene) {
+void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entity* parent,
+						   Scene& scene) {
 	if (!entities_value.IsArray()) {
 		return;
 	}
@@ -233,7 +235,8 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 	return nullptr;
 }
 
-std::shared_ptr<shape::Shape> Loader::shape(const std::string& type, const rapidjson::Value& shape_value) const {
+std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
+											const rapidjson::Value& shape_value) const {
 	if ("Canopy" == type) {
 		return canopy_;
 	} else if ("Celestial_disk" == type) {
@@ -264,7 +267,8 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type, const rapid
 	return nullptr;
 }
 
-void Loader::load_materials(const rapidjson::Value& materials_value, Scene& scene, material::Materials& materials) {
+void Loader::load_materials(const rapidjson::Value& materials_value, Scene& scene,
+							material::Materials& materials) {
 	if (!materials_value.IsArray()) {
 		return;
 	}

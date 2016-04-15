@@ -25,17 +25,20 @@ class Node_stack;
 class Prop : public entity::Entity {
 public:
 
+	using Sampler_filter = material::Sampler_settings::Filter;
+
 	virtual ~Prop();
 
 	void init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
 
 	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
-	bool intersect(Ray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const;
+	bool intersect(Ray& ray, shape::Node_stack& node_stack,
+				   shape::Intersection& intersection) const;
 
 	bool intersect_p(const Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const;
+	float opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const;
 
 	const shape::Shape* shape() const;
 	shape::Shape* shape();

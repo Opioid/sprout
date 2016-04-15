@@ -34,7 +34,8 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
 	properties_.set(Properties::Visible_in_shadow, in_shadow);
 }
 
-bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack, shape::Intersection& intersection) const {
+bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack,
+					 shape::Intersection& intersection) const {
 	if (!visible(ray.depth)) {
 		return false;
 	}
@@ -64,7 +65,7 @@ bool Prop::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {
 	return shape_->intersect_p(transformation, ray, node_stack);
 }
 
-float Prop::opacity(const Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const {
+float Prop::opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const {
 	if (!has_masked_material()) {
 		return intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 	}
@@ -95,7 +96,8 @@ void Prop::morph(thread::Pool& pool) {
 	if (animated_) {
 		shape::Morphable_shape* morphable = shape_->morphable_shape();
 		if (morphable) {
-			morphable->morph(local_frame_a_.morphing.targets[0], local_frame_a_.morphing.targets[1],
+			morphable->morph(local_frame_a_.morphing.targets[0],
+							 local_frame_a_.morphing.targets[1],
 							 local_frame_a_.morphing.weight, pool);
 		}
 	}
@@ -159,7 +161,8 @@ void Prop::on_set_transformation() {
 		constexpr float interval = 1.f / static_cast<float>(num_steps + 1);
 		float t = interval;
 		for (uint32_t i = 0; i < num_steps; ++i) {
-			math::float4x4 interpolated = math::float4x4(math::lerp(world_frame_a_, world_frame_b_, t));
+			math::float4x4 interpolated = math::float4x4(math::lerp(world_frame_a_,
+																	world_frame_b_, t));
 			math::aabb tmp = shape_->aabb().transform(interpolated);
 			aabb.merge_assign(tmp);
 			t += interval;

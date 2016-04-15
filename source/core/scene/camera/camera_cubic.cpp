@@ -10,7 +10,8 @@
 
 namespace scene { namespace camera {
 
-Cubic::Cubic(Layout layout, math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
+Cubic::Cubic(Layout layout, math::int2 resolution, float ray_max_t,
+			 float frame_duration, bool motion_blur) :
 	Camera(math::int2(resolution.x, resolution.x), ray_max_t, frame_duration, motion_blur) {
 	float f = static_cast<float>(resolution.x);
 
@@ -73,17 +74,18 @@ math::Recti Cubic::view_bounds(uint32_t view) const {
 
 void Cubic::update_focus(rendering::Worker& /*worker*/) {}
 
-bool Cubic::generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const {
+bool Cubic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+						 scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-	direction = direction * view_rotations_[view];
+	direction = math::normalized(direction * view_rotations_[view]);
 
 	entity::Composed_transformation transformation;
 	transformation_at(sample.time, transformation);
 	ray.origin = math::transform_point(math::float3_identity, transformation.object_to_world);
-	ray.set_direction(math::transform_vector(math::normalized(direction), transformation.object_to_world));
+	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;
 	ray.time  = sample.time;

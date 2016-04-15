@@ -8,7 +8,8 @@ class Spherical_stereoscopic : public Stereoscopic {
 public:
 
 	Spherical_stereoscopic(float interpupillary_distance,
-						   math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur);
+						   math::int2 resolution, float ray_max_t,
+						   float frame_duration, bool motion_blur);
 
 	virtual uint32_t num_views() const final override;
 

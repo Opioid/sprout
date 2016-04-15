@@ -11,7 +11,8 @@
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur,
+Perspective::Perspective(math::int2 resolution, float ray_max_t,
+						 float frame_duration, bool motion_blur,
 						 const Focus& focus, float fov, float lens_radius) :
 	Camera(resolution, ray_max_t, frame_duration, motion_blur), focus_(focus),
 	lens_radius_(lens_radius), focal_distance_(focus_.distance) {
@@ -46,13 +47,14 @@ math::Recti Perspective::view_bounds(uint32_t /*view*/) const {
 void Perspective::update_focus(rendering::Worker& worker) {
 	if (focus_.use_point) {
 		math::float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
+		direction = math::normalized(direction);
 
 		entity::Composed_transformation temp;
 		auto& transformation = transformation_at(0.f, temp);
 
 		scene::Ray ray;
 		ray.origin = transformation.position;
-		ray.set_direction(math::transform_vector(math::normalized(direction), transformation.object_to_world));
+		ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
 		ray.min_t = 0.f;
 		ray.max_t = ray_max_t_;
 		ray.time = 0.f;
@@ -67,7 +69,8 @@ void Perspective::update_focus(rendering::Worker& worker) {
 	}
 }
 
-bool Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/, scene::Ray& ray) const {
+bool Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/,
+							   scene::Ray& ray) const {
 	math::float2 coordinates = math::float2(sample.pixel) + sample.pixel_uv;
 
 	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;

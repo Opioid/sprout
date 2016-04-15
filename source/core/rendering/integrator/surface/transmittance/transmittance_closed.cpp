@@ -17,10 +17,8 @@ Closed::Closed(const take::Settings &take_settings, math::random::Generator &rng
 	integrator::Integrator(take_settings, rng) {}
 
 math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-							 const math::float3& attenuation,
-							 sampler::Sampler& sampler,
-							 scene::material::Sampler_settings::Filter filter,
-							 scene::material::bxdf::Result& sample_result) {
+							 const math::float3& attenuation, sampler::Sampler& sampler,
+							 Sampler_filter filter, scene::material::bxdf::Result& sample_result) {
 	math::float3 throughput = sample_result.reflection / sample_result.pdf;
 	math::float3 used_attenuation = attenuation;
 
