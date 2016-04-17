@@ -2,12 +2,8 @@ SOURCES += \
 	math/math.cpp \
 
 HEADERS += \
-	math/distribution.hpp \
-	math/distribution.inl \
-	math/distribution_1d.hpp \
-	math/distribution_1d.inl \	
-	math/distribution_2d.hpp \
-	math/distribution_2d.inl \	
+	math/mapping.hpp \
+	math/mapping.inl \
 	math/math.hpp \
 	math/matrix.hpp \
 	math/matrix.inl \

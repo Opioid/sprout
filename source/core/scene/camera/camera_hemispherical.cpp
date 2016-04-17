@@ -2,10 +2,13 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "scene/scene_ray.inl"
+#include "base/math/mapping.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/sampling/sampling.inl"
+
+#include <iostream>
 
 namespace scene { namespace camera {
 
@@ -35,7 +38,6 @@ bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t 
 								 scene::Ray& ray) const {
 	math::float2 coordinates = math::float2(sample.pixel) + sample.pixel_uv;
 
-	// Paraboloid mapping
 	float x = d_x_ * coordinates.x;
 	float y = d_y_ * coordinates.y;
 
@@ -47,10 +49,12 @@ bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t 
 		return false;
 	}
 
+	math::float3 dir = math::disk_to_hemisphere_equidistant(math::float2(x, y));
+
 	// paraboloid
 //	math::float3 dir = math::normalized(math::float3(x, -y, 0.5f - 0.5f * z));
 
-	math::float3 dir = math::normalized(math::float3(x, -y, 1.f - std::sqrt(z)));
+//	math::float3 dir = math::normalized(math::float3(x, -y, 1.f - std::sqrt(z)));
 
 //	math::float3 dir = math::normalized(math::float3(x, -y,
 //										std::sqrt(std::max(0.f, 1.f - x * x - y * y))));
