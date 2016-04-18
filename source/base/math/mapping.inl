@@ -5,10 +5,10 @@
 
 namespace math {
 
-math::float3 disk_to_hemisphere_equidistant(math::float2 disk) {
-	float longitude = std::atan2(-disk.y, disk.x) ;
+math::float3 disk_to_hemisphere_equidistant(math::float2 uv) {
+	float longitude = std::atan2(-uv.y, uv.x) ;
 
-	float r = std::sqrt(disk.x * disk.x + disk.y * disk.y);
+	float r = std::sqrt(uv.x * uv.x + uv.y * uv.y);
 
 	// Equidistant projection
 	float colatitude = r * math::Pi_div_2;

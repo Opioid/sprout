@@ -4,6 +4,6 @@
 
 namespace math {
 
-math::float3 disk_to_hemisphere_equidistant(math::float2 disk);
+math::float3 disk_to_hemisphere_equidistant(math::float2 uv);
 
 }
