@@ -3,6 +3,7 @@
 #include "geometry/shape_intersection.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
+#include "base/math/mapping.inl"
 #include "base/math/sampling/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -39,8 +40,9 @@ bool Canopy::intersect(const Entity_transformation& transformation, math::Oray& 
 		math::float3 xyz = math::transform_vector_transposed(ray.direction,
 															 transformation.rotation);
 		xyz = math::normalized(xyz);
-		intersection.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
-		intersection.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
+		math::float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+		intersection.uv.x = 0.5f * disk.x + 0.5f;
+		intersection.uv.y = 0.5f * disk.y + 0.5f;
 
 		ray.max_t = 1000000.f;
 		return true;
@@ -76,8 +78,10 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 	sample.wi = dir;
 
 	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
-	sample.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
-	sample.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
+	xyz = math::normalized(xyz);
+	math::float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+	sample.uv.x = 0.5f * disk.x + 0.5f;
+	sample.uv.y = 0.5f * disk.y + 0.5f;
 
 	sample.t   = 1000000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
@@ -95,8 +99,10 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 	sample.wi = dir;
 
 	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
-	sample.uv.x =  0.5f * (xyz.x / (xyz.z + 1.f)) + 0.5f;
-	sample.uv.y = -0.5f * (xyz.y / (xyz.z + 1.f)) + 0.5f;
+	xyz = math::normalized(xyz);
+	math::float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+	sample.uv.x = 0.5f * disk.x + 0.5f;
+	sample.uv.y = 0.5f * disk.y + 0.5f;
 
 	sample.t   = 1000000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
