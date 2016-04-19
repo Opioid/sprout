@@ -78,6 +78,17 @@ inline float3 sample_oriented_hemisphere_uniform(float2 uv, pfloat3 x, pfloat3 y
 	return (cos_phi * r) * x + (sin_phi * r) * y + za * z;
 }
 
+inline float3 sample_oriented_hemisphere_uniform(float2 uv, const float4x4& m) {
+	float za = 1.f - uv.x;
+	float r = std::sqrt(1.f - za * za);
+	float phi = uv.y * 2.f * Pi;
+
+	float sin_phi = std::sin(phi);
+	float cos_phi = std::cos(phi);
+
+	return (cos_phi * r) * m.x3 + (sin_phi * r) * m.y3 + za * m.z3;
+}
+
 inline float3 sample_hemisphere_cosine(float2 uv) {
 	float2 xy = sample_disk_concentric(uv);
 	float  z  = std::sqrt(std::max(0.f, 1.f - xy.x * xy.x - xy.y * xy.y));

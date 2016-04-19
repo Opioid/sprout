@@ -139,7 +139,9 @@ Matrix4x4<T> affine_inverted(const Matrix4x4<T>& m);
 
 template<typename T>
 void set_basis_scale_origin(Matrix4x4<T>& m,
-							const Matrix3x3<T>& basis, const Vector3<T>& scale, const Vector3<T>& origin);
+							const Matrix3x3<T>& basis,
+							const Vector3<T>& scale,
+							const Vector3<T>& origin);
 
 /****************************************************************************
  *
@@ -195,13 +197,17 @@ Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m);
 Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m);
 
 void set_basis_scale_origin(Matrix4x4f_a& m,
-							const Matrix3x3<float>& basis, const Vector3f_a& scale, const Vector3f_a& origin);
+							const Matrix3x3<float>& basis,
+							const Vector3f_a& scale,
+							const Vector3f_a& origin);
 
 Matrix4x4f_a create_matrix4x4(const Vector4f_a& q);
 
 Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m);
 
 void set_basis_scale_origin(Matrix4x4f_a& m,
-							const Matrix4x4f_a& basis, const Vector3f_a& scale, const Vector3f_a& origin);
+							const Matrix4x4f_a& basis,
+							const Vector3f_a& scale,
+							const Vector3f_a& origin);
 
 }

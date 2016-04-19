@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/vector.hpp"
+#include "math/matrix.hpp"
 
 namespace math {
 
@@ -11,6 +12,8 @@ float2 sample_triangle_uniform(float2 uv);
 float3 sample_hemisphere_uniform(float2 uv);
 
 float3 sample_oriented_hemisphere_uniform(float2 uv, pfloat3 x, pfloat3 y, pfloat3 z);
+float3 sample_oriented_hemisphere_uniform(float2 uv, const float4x4& m);
+
 
 float3 sample_hemisphere_cosine(float2 uv);
 
