@@ -104,7 +104,7 @@ bool Plane::intersect_p(const Entity_transformation& transformation, const math:
 
 float Plane::opacity(const Entity_transformation& transformation, const math::Oray& ray,
 					 float time, const material::Materials& materials,
-					 Worker& worker, material::Sampler_settings::Filter filter) const {
+					 Worker& worker, Sampler_filter filter) const {
 	const math::float3& normal = transformation.rotation.z3;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);

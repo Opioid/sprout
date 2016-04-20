@@ -64,7 +64,7 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 			return std::make_shared<Texture_2D_float_3>(image);
 		}
 	} catch (const std::exception& e) {
-		logging::warning("Loading texture: \"" + filename + "\": " + e.what() + ".");
+		logging::error("Loading texture: \"" + filename + "\": " + e.what() + ".");
 	}
 
 	return nullptr;

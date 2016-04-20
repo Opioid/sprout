@@ -41,8 +41,9 @@ Provider::Provider(uint32_t num_threads) :
 	substitute_cache_(num_threads),
 	substitute_clearcoat_cache_(num_threads),
 	substitute_translucent_cache_(num_threads) {
-	auto material = std::make_shared<substitute::Material>(substitute_cache_, nullptr,
-														   Sampler_settings(Sampler_settings::Filter::Linear), false);
+	auto material = std::make_shared<substitute::Material>(
+				substitute_cache_, nullptr,
+				Sampler_settings(Sampler_settings::Filter::Linear), false);
 	material->set_color(math::float3(1.f, 0.f, 0.f)),
 	material->set_ior(1.45f),
 	material->set_roughness(1.f);
@@ -92,7 +93,8 @@ std::shared_ptr<Material> Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_value, resource::Manager& manager) {
+std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_value,
+											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> color_map;
@@ -121,13 +123,16 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 				memory::Variant_map options;
 				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					color_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					normal_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					mask = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -135,7 +140,8 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 		}
 	}
 
-	auto material = std::make_shared<cloth::Material>(cloth_cache_, mask, sampler_settings, two_sided);
+	auto material = std::make_shared<cloth::Material>(cloth_cache_, mask,
+													  sampler_settings, two_sided);
 
 	material->set_color_map(color_map);
 	material->set_normal_map(normal_map);
@@ -145,7 +151,8 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display_value, resource::Manager& manager) {
+std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display_value,
+												 resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> emission_map;
@@ -191,10 +198,12 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 
 				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);;
+					emission_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);;
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);;
+					mask = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);;
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -203,14 +212,17 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 	}
 
 	if (animation_duration > 0.f) {
-		auto material = std::make_shared<display::Material_animated>(display_cache_, mask, sampler_settings, two_sided,
-																	 emission_map, animation_duration);
+		auto material = std::make_shared<display::Material_animated>(display_cache_, mask,
+																	 sampler_settings, two_sided,
+																	 emission_map,
+																	 animation_duration);
 		material->set_emission_factor(emission_factor);
 		material->set_roughness(roughness);
 		material->set_ior(ior);
 		return material;
 	} else {
-		auto material = std::make_shared<display::Material>(display_cache_, mask, sampler_settings, two_sided);
+		auto material = std::make_shared<display::Material>(display_cache_, mask,
+															sampler_settings, two_sided);
 		material->set_emission_map(emission_map);
 		material->set_emission(emission);
 		material->set_emission_factor(emission_factor);
@@ -220,7 +232,8 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 	}
 }
 
-std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_value, resource::Manager& manager) {
+std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_value,
+											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
@@ -253,7 +266,8 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 				memory::Variant_map options;
 				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					normal_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -269,7 +283,8 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 		material->set_ior(ior);
 		return material;
 	} else {
-		auto material = std::make_shared<glass::Glass_rough>(glass_rough_cache_, nullptr, sampler_settings);
+		auto material = std::make_shared<glass::Glass_rough>(glass_rough_cache_,
+															 nullptr, sampler_settings);
 		material->set_normal_map(normal_map);
 		material->set_color(color);
 		material->set_attenuation_distance(attenuation_distance);
@@ -279,7 +294,8 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 	}
 }
 
-std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_value, resource::Manager& manager) {
+std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_value,
+											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	math::float3 emission(10.f, 10.f, 10.f);
@@ -319,10 +335,12 @@ std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_val
 
 				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					emission_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					mask = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -332,20 +350,25 @@ std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_val
 
 	if (emission_map) {
 		if (animation_duration > 0.f) {
-			return std::make_shared<light::Emissionmap_animated>(light_cache_, mask, sampler_settings, two_sided,
-																 emission_map, emission_factor, animation_duration);
+			return std::make_shared<light::Emissionmap_animated>(light_cache_, mask,
+																 sampler_settings, two_sided,
+																 emission_map, emission_factor,
+																 animation_duration);
 		} else {
-			auto material = std::make_shared<light::Emissionmap>(light_cache_, mask, sampler_settings, two_sided);
+			auto material = std::make_shared<light::Emissionmap>(light_cache_, mask,
+																 sampler_settings, two_sided);
 			material->set_emission_map(emission_map);
 			material->set_emission_factor(emission_factor);
 			return material;
 		}
 	}
 
-	return std::make_shared<light::Constant>(light_cache_, mask, sampler_settings, two_sided, emission);
+	return std::make_shared<light::Constant>(light_cache_, mask, sampler_settings,
+											 two_sided, emission);
 }
 
-std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitute_value, resource::Manager& manager) {
+std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitute_value,
+											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
@@ -387,17 +410,20 @@ std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitut
 				memory::Variant_map options;
 				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					normal_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 			/*	} else if ("Surface" == usage) {
 					surface_map = texture_cache_.load(filename,
 													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));*/
 				} else if ("Anisotropy" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Anisotropy);
-					direction_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					direction_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					mask = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -476,7 +502,8 @@ std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
 				memory::Variant_map options;
 				if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					mask = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -556,19 +583,24 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 				memory::Variant_map options;
 				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					color_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					normal_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				} else if ("Surface" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Surface);
-					surface_map =manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					surface_map =manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				} else if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					emission_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = manager.load<image::texture::Texture_2D>(texture_description.filename, options);
+					mask = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -577,8 +609,8 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 	}
 
 	if (thickness > 0.f) {
-		auto material = std::make_shared<substitute::Material_translucent>(substitute_translucent_cache_, mask,
-																		   sampler_settings, two_sided);
+		auto material = std::make_shared<substitute::Material_translucent>(
+					substitute_translucent_cache_, mask, sampler_settings, two_sided);
 
 		material->set_color_map(color_map);
 		material->set_normal_map(normal_map);
@@ -595,8 +627,8 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 
 		return material;
 	} else if (clearcoat.ior > 1.f) {
-		auto material = std::make_shared<substitute::Material_clearcoat>(substitute_clearcoat_cache_, mask,
-																		 sampler_settings, two_sided);
+		auto material = std::make_shared<substitute::Material_clearcoat>(
+					substitute_clearcoat_cache_, mask, sampler_settings, two_sided);
 
 		material->set_color_map(color_map);
 		material->set_normal_map(normal_map);
@@ -613,7 +645,8 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 		return material;
 	}
 
-	auto material = std::make_shared<substitute::Material>(substitute_cache_, mask, sampler_settings, two_sided);
+	auto material = std::make_shared<substitute::Material>(
+				substitute_cache_, mask, sampler_settings, two_sided);
 
 	material->set_color_map(color_map);
 	material->set_normal_map(normal_map);
@@ -629,7 +662,8 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 	return material;
 }
 
-void Provider::read_sampler_settings(const rapidjson::Value& sampler_value, Sampler_settings& settings) {
+void Provider::read_sampler_settings(const rapidjson::Value& sampler_value,
+									 Sampler_settings& settings) {
 	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
@@ -646,7 +680,8 @@ void Provider::read_sampler_settings(const rapidjson::Value& sampler_value, Samp
 	}
 }
 
-void Provider::read_texture_description(const rapidjson::Value& texture_value, Texture_description& description) {
+void Provider::read_texture_description(const rapidjson::Value& texture_value,
+										Texture_description& description) {
 	description.filename = "";
 	description.usage = "Color";
 	description.num_elements = 1;
@@ -665,7 +700,8 @@ void Provider::read_texture_description(const rapidjson::Value& texture_value, T
 	}
 }
 
-void Provider::read_clearcoat_description(const rapidjson::Value& clearcoat_value, Clearcoat_description& description) {
+void Provider::read_clearcoat_description(const rapidjson::Value& clearcoat_value,
+										  Clearcoat_description& description) {
 	if (!clearcoat_value.IsObject()) {
 		return;
 	}

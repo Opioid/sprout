@@ -16,8 +16,9 @@ Inverse_sphere::Inverse_sphere() {
 	aabb_.set_min_max(math::float3(-1.f, -1.f, -1.f), math::float3(1.f, 1.f, 1.f));
 }
 
-bool Inverse_sphere::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
-							   Node_stack& /*node_stack*/, Intersection& intersection) const {
+bool Inverse_sphere::intersect(const Entity_transformation& transformation,
+							   math::Oray& ray, Node_stack& /*node_stack*/,
+							   Intersection& intersection) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -35,7 +36,8 @@ bool Inverse_sphere::intersect(const entity::Composed_transformation& transforma
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
 
-			math::float3 xyz = math::transform_vector_transposed(-intersection.n, transformation.rotation);
+			math::float3 xyz = math::transform_vector_transposed(-intersection.n,
+																 transformation.rotation);
 			intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
@@ -55,7 +57,8 @@ bool Inverse_sphere::intersect(const entity::Composed_transformation& transforma
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
 
-			math::float3 xyz = math::transform_vector_transposed(-intersection.n, transformation.rotation);
+			math::float3 xyz = math::transform_vector_transposed(-intersection.n,
+																 transformation.rotation);
 			intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
@@ -69,8 +72,8 @@ bool Inverse_sphere::intersect(const entity::Composed_transformation& transforma
 	return false;
 }
 
-bool Inverse_sphere::intersect_p(const entity::Composed_transformation& transformation, const math::Oray& ray,
-								 Node_stack& /*node_stack*/) const {
+bool Inverse_sphere::intersect_p(const Entity_transformation& transformation,
+								 const math::Oray& ray, Node_stack& /*node_stack*/) const {
 	math::float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -94,15 +97,17 @@ bool Inverse_sphere::intersect_p(const entity::Composed_transformation& transfor
 	return false;
 }
 
-float Inverse_sphere::opacity(const entity::Composed_transformation& transformation, const math::Oray& ray,
-							  float /*time*/, const material::Materials& /*materials*/,
-							  Worker& worker, material::Sampler_settings::Filter /*filter*/) const {
+float Inverse_sphere::opacity(const Entity_transformation& transformation,
+							  const math::Oray& ray, float /*time*/,
+							  const material::Materials& /*materials*/,
+							  Worker& worker, Sampler_filter /*filter*/) const {
 	return intersect_p(transformation, ray, worker.node_stack()) ? 1.f : 0.f;
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-							const math::float3& p, const math::float3& n, bool /*two_sided*/,
-							sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
+void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+							float /*area*/, const math::float3& p, const math::float3& n,
+							bool /*two_sided*/, sampler::Sampler& sampler,
+							Node_stack& /*node_stack*/, Sample& sample) const {
 	math::float3 dir = n;
 
 	math::Oray ray;
@@ -128,7 +133,8 @@ void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transforma
 //			intersection.n = (transformation.position - intersection.p) / radius;
 			intersection.n = math::normalized(p - intersection.p);
 
-			math::float3 xyz = math::transform_vector_transposed(-intersection.n, transformation.rotation);
+			math::float3 xyz = math::transform_vector_transposed(-intersection.n,
+																 transformation.rotation);
 			intersection.uv = math::float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 		}
@@ -159,14 +165,16 @@ void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transforma
 							 std::acos(xyz.y) * math::Pi_inv);
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& /*transformation*/, float /*area*/,
-							const math::float3& /*p*/, bool /*two_sided*/,
-							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/, Sample& /*sample*/) const {
+void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+							float /*area*/, const math::float3& /*p*/, bool /*two_sided*/,
+							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/,
+							Sample& /*sample*/) const {
 	// TODO
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float area,
-							const math::float3& p, math::float2 uv, Sample& sample) const {
+void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+							float area, const math::float3& p, math::float2 uv,
+							Sample& sample) const {
 	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
@@ -198,8 +206,9 @@ void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transforma
 	}
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-							const math::float3& p, const math::float3& wi, Sample& sample) const {
+void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+							float /*area*/, const math::float3& p,
+							const math::float3& wi, Sample& sample) const {
 	math::float3 v = p - transformation.position;
 	float b = -dot(v, wi);
 	float radius = transformation.scale.x;
@@ -222,8 +231,9 @@ void Inverse_sphere::sample(uint32_t /*part*/, const entity::Composed_transforma
 	}
 }
 
-float Inverse_sphere::pdf(uint32_t /*part*/, const entity::Composed_transformation& transformation, float /*area*/,
-						  const math::float3& p, const math::float3& /*wi*/, bool /*two_sided*/, bool /*total_sphere*/,
+float Inverse_sphere::pdf(uint32_t /*part*/, const Entity_transformation& transformation,
+						  float /*area*/, const math::float3& p, const math::float3& /*wi*/,
+						  bool /*two_sided*/, bool /*total_sphere*/,
 						  Node_stack& /*node_stack*/) const {
 	math::float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);

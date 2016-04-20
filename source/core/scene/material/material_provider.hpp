@@ -39,13 +39,26 @@ public:
 
 private:
 
-	std::shared_ptr<Material> load_cloth     (const rapidjson::Value& cloth_value,      resource::Manager& manager);
-	std::shared_ptr<Material> load_display   (const rapidjson::Value& display_value,    resource::Manager& manager);
-	std::shared_ptr<Material> load_glass     (const rapidjson::Value& glass_value,      resource::Manager& manager);
-	std::shared_ptr<Material> load_light     (const rapidjson::Value& light_value,      resource::Manager& manager);
-	std::shared_ptr<Material> load_metal     (const rapidjson::Value& metal_value,      resource::Manager& manager);
-	std::shared_ptr<Material> load_sky		 (const rapidjson::Value& sky_value,		resource::Manager& manager);
-	std::shared_ptr<Material> load_substitute(const rapidjson::Value& substitute_value, resource::Manager& manager);
+	std::shared_ptr<Material> load_cloth(const rapidjson::Value& cloth_value,
+										 resource::Manager& manager);
+
+	std::shared_ptr<Material> load_display(const rapidjson::Value& display_value,
+										   resource::Manager& manager);
+
+	std::shared_ptr<Material> load_glass(const rapidjson::Value& glass_value,
+										 resource::Manager& manager);
+
+	std::shared_ptr<Material> load_light(const rapidjson::Value& light_value,
+										 resource::Manager& manager);
+
+	std::shared_ptr<Material> load_metal(const rapidjson::Value& metal_value,
+										 resource::Manager& manager);
+
+	std::shared_ptr<Material> load_sky(const rapidjson::Value& sky_value,
+									   resource::Manager& manager);
+
+	std::shared_ptr<Material> load_substitute(const rapidjson::Value& substitute_value,
+											  resource::Manager& manager);
 
 	struct Texture_description {
 		std::string filename;
@@ -53,15 +66,19 @@ private:
 		int32_t     num_elements;
 	};
 
-	static void read_sampler_settings(const rapidjson::Value& sampler_value, Sampler_settings& settings);
-	static void read_texture_description(const rapidjson::Value& texture_value, Texture_description& description);
+	static void read_sampler_settings(const rapidjson::Value& sampler_value,
+									  Sampler_settings& settings);
+
+	static void read_texture_description(const rapidjson::Value& texture_value,
+										 Texture_description& description);
 
 	struct Clearcoat_description {
 		float ior = 1.f;
 		float roughness = 0.f;
 	};
 
-	static void read_clearcoat_description(const rapidjson::Value& clearcoat_value, Clearcoat_description& description);
+	static void read_clearcoat_description(const rapidjson::Value& clearcoat_value,
+										   Clearcoat_description& description);
 
 	Generic_sample_cache<cloth::Sample>						cloth_cache_;
 	Generic_sample_cache<display::Sample>					display_cache_;
