@@ -15,7 +15,7 @@ Infinite_sphere::Infinite_sphere() {
 	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
-bool Infinite_sphere::intersect(const entity::Composed_transformation& transformation,
+bool Infinite_sphere::intersect(const Entity_transformation& transformation,
 								math::Oray& ray, Node_stack& /*node_stack*/,
 								Intersection& intersection) const {
 	if (ray.max_t >= 1000000.f) {
@@ -43,22 +43,21 @@ bool Infinite_sphere::intersect(const entity::Composed_transformation& transform
 	return false;
 }
 
-bool Infinite_sphere::intersect_p(const entity::Composed_transformation& /*transformation*/,
+bool Infinite_sphere::intersect_p(const Entity_transformation& /*transformation*/,
 								  const math::Oray& /*ray*/, Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
-float Infinite_sphere::opacity(const entity::Composed_transformation& /*transformation*/,
+float Infinite_sphere::opacity(const Entity_transformation& /*transformation*/,
 							   const math::Oray& /*ray*/, float /*time*/,
 							   const material::Materials& /*materials*/, Worker& /*worker*/,
-							   material::Sampler_settings::Filter /*filter*/) const {
+							   Sampler_filter /*filter*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
 
-void Infinite_sphere::sample(uint32_t /*part*/,
-							 const entity::Composed_transformation& transformation,
+void Infinite_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
 							 float /*area*/, const math::float3& /*p*/, const math::float3& n,
 							 bool /*two_sided*/, sampler::Sampler& sampler,
 							 Node_stack& /*node_stack*/, Sample& sample) const {
@@ -79,8 +78,7 @@ void Infinite_sphere::sample(uint32_t /*part*/,
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
-void Infinite_sphere::sample(uint32_t /*part*/,
-							 const entity::Composed_transformation& transformation,
+void Infinite_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
 							 float /*area*/, const math::float3& /*p*/, bool /*two_sided*/,
 							 sampler::Sampler& sampler, Node_stack& /*node_stack*/,
 							 Sample& sample) const {
@@ -98,9 +96,9 @@ void Infinite_sphere::sample(uint32_t /*part*/,
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 
-void Infinite_sphere::sample(uint32_t /*part*/,
-							 const entity::Composed_transformation& transformation, float /*area*/,
-							 const math::float3& /*p*/, math::float2 uv, Sample& sample) const {
+void Infinite_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+							 float /*area*/, const math::float3& /*p*/,
+							 math::float2 uv, Sample& sample) const {
 	float phi   = (-uv.x + 0.75f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
@@ -117,8 +115,7 @@ void Infinite_sphere::sample(uint32_t /*part*/,
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 
-void Infinite_sphere::sample(uint32_t /*part*/,
-							 const entity::Composed_transformation& transformation,
+void Infinite_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
 							 float /*area*/, const math::float3& /*p*/,
 							 const math::float3& wi, Sample& sample) const {
 	math::float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
@@ -129,11 +126,10 @@ void Infinite_sphere::sample(uint32_t /*part*/,
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 
-float Infinite_sphere::pdf(uint32_t /*part*/,
-						   const entity::Composed_transformation& /*transformation*/,
+float Infinite_sphere::pdf(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
 						   float /*area*/, const math::float3& /*p*/,
-						   const math::float3& /*wi*/, bool /*two_sided*/, bool total_sphere,
-						   Node_stack& /*node_stack*/) const {
+						   const math::float3& /*wi*/, bool /*two_sided*/,
+						   bool total_sphere, Node_stack& /*node_stack*/) const {
 	if (total_sphere) {
 		return 1.f / (4.f * math::Pi);
 	} else {

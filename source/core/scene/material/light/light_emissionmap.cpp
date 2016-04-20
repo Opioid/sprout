@@ -55,6 +55,8 @@ math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf
 	} else {
 		float sin_theta = std::sin(uv.y * math::Pi);
 
+	//	float sin_theta = std::sin(uv.x * math::Pi) * std::sin(uv.y * math::Pi);
+
 		pdf *= total_weight_ / sin_theta;
 	}
 
@@ -97,11 +99,13 @@ void Emissionmap::prepare_sampling(bool spherical) {
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
 				math::float3 emission = emission_factor_ * emission_map_->at_3(x, y);
 
+		//		float sin_theta = std::sin((static_cast<float>(x) + 0.5f) * my) * std::sin((static_cast<float>(y) + 0.5f) * my);
+
 				average_emission += sin_theta * emission;
 
 				total_weight += sin_theta;
 
-				luminance[l] = color::luminance(emission);
+				luminance[l] = /*sin_theta * */color::luminance(emission);
 			}
 		}
 

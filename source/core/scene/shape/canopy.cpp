@@ -105,8 +105,33 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
 					float /*area*/, const math::float3& /*p*/,
 					math::float2 uv, Sample& sample) const {
-	// TODO
-	std::cout << "Canopy::sample() not implemented!" << std::endl;
+	uv.x = 2.f * uv.x - 1.f;
+	uv.y = 2.f * uv.y - 1.f;
+
+	math::float3 dir = math::disk_to_hemisphere_equidistant(uv);
+
+	sample.wi = math::transform_vector(dir, transformation.rotation);
+	sample.uv  = uv;
+	sample.t   = 1000000.f;
+	sample.pdf = 1.f / (2.f * math::Pi);
+
+	/*
+
+	float phi   = (-uv.x + 0.75f) * 2.f * math::Pi;
+	float theta = uv.y * math::Pi;
+
+	float sin_theta = std::sin(theta);
+	float cos_theta = std::cos(theta);
+	float sin_phi   = std::sin(phi);
+	float cos_phi   = std::cos(phi);
+
+	math::float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+
+	sample.wi = math::transform_vector(dir, transformation.rotation);
+	sample.uv = uv;
+	sample.t  = 1000000.f;
+	sample.pdf = 1.f / (4.f * math::Pi);
+	*/
 }
 
 void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,

@@ -42,7 +42,8 @@ const math::aabb& Scene::aabb() const {
 	return bvh_.aabb();
 }
 
-bool Scene::intersect(scene::Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const {
+bool Scene::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
+					  Intersection& intersection) const {
 	return bvh_.intersect(ray, node_stack, intersection);
 }
 
@@ -50,7 +51,8 @@ bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) co
 	return bvh_.intersect_p(ray, node_stack);
 }
 
-float Scene::opacity(const scene::Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const {
+float Scene::opacity(const scene::Ray& ray, Worker& worker,
+					 material::Sampler_settings::Filter filter) const {
 	return bvh_.opacity(ray, worker, filter);
 }
 
@@ -118,7 +120,8 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 //	float tick_offset = std::fmod(time, tick_duration_);
 
 	// see http://stackoverflow.com/questions/4218961/why-fmod1-0-0-1-1
-	// for explanation why std::floor() variant seems to give results more in line with my expectations
+	// for explanation why std::floor() variant
+	// seems to give results more in line with my expectations
 	float tick_offset = time - std::floor(time / tick_duration_) * tick_duration_;
 
 	float first_tick = time - tick_offset;
@@ -144,7 +147,8 @@ entity::Dummy* Scene::create_dummy() {
 	return dummy;
 }
 
-Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape, const material::Materials& materials) {
+Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape,
+						 const material::Materials& materials) {
 	Prop* prop = new Prop;
 
 	if (shape->is_finite()) {
@@ -172,7 +176,8 @@ light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t par
 	return light;
 }
 
-volume::Volume* Scene::create_volume(const math::float3& absorption, const math::float3& scattering) {
+volume::Volume* Scene::create_volume(const math::float3& absorption,
+									 const math::float3& scattering) {
 	volume_region_ = new volume::Homogeneous(absorption, scattering);
 	return volume_region_;
 }
