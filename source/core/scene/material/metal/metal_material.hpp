@@ -17,7 +17,8 @@ public:
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										   float time, float ior_i,
-										   const Worker& worker, Sampler_settings::Filter filter) final override;
+										   const Worker& worker,
+										   Sampler_settings::Filter filter) final override;
 
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 
@@ -37,7 +38,8 @@ protected:
 
 class Sample_anisotropic;
 
-class Material_anisotropic : public material::Typed_material<Generic_sample_cache<Sample_anisotropic>> {
+class Material_anisotropic :
+		public material::Typed_material<Generic_sample_cache<Sample_anisotropic>> {
 public:
 
 	Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
@@ -46,7 +48,8 @@ public:
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										   float time, float ior_i,
-										   const Worker& worker, Sampler_settings::Filter filter) final override;
+										   const Worker& worker,
+										   Sampler_settings::Filter filter) final override;
 
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 	void set_direction_map(std::shared_ptr<image::texture::Texture_2D> direction_map);

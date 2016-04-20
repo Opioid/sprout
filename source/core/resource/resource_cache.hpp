@@ -8,9 +8,7 @@
 
 namespace resource {
 
-class Cache {
-
-};
+class Cache {};
 
 template<typename T>
 class Typed_cache : public Cache {

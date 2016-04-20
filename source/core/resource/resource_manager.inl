@@ -12,13 +12,16 @@ void Manager::register_provider(Provider<Type>& provider) {
 }
 
 template<typename Type>
-std::shared_ptr<Type> Manager::load(const std::string& filename, const memory::Variant_map& options) {
+std::shared_ptr<Type> Manager::load(const std::string& filename,
+									const memory::Variant_map& options) {
 	bool was_cached;
 	return load<Type>(filename, options, was_cached);
 }
 
 template<typename Type>
-std::shared_ptr<Type> Manager::load(const std::string& filename, const memory::Variant_map& options, bool& was_cached) {
+std::shared_ptr<Type> Manager::load(const std::string& filename,
+									const memory::Variant_map& options,
+									bool& was_cached) {
 	if (filename.empty()) {
 		return nullptr;
 	}

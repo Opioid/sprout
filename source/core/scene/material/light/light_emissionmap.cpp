@@ -18,8 +18,8 @@ Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
 const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-											float /*time*/, float /*ior_i*/,
-											const Worker& worker, Sampler_settings::Filter filter) {
+											float /*time*/, float /*ior_i*/, const Worker& worker,
+											Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
@@ -32,8 +32,9 @@ const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, math::pfl
 	return sample;
 }
 
-math::float3 Emissionmap::sample_emission(math::pfloat3 /*wi*/, math::float2 uv, float /*time*/,
-										  const Worker& worker, Sampler_settings::Filter filter) const {
+math::float3 Emissionmap::sample_emission(math::pfloat3 /*wi*/, math::float2 uv,
+										  float /*time*/, const Worker& worker,
+										  Sampler_settings::Filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }
@@ -60,7 +61,8 @@ math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf
 	return uv;
 }
 
-float Emissionmap::emission_pdf(math::float2 uv, const Worker& worker, Sampler_settings::Filter filter) const {
+float Emissionmap::emission_pdf(math::float2 uv, const Worker& worker,
+								Sampler_settings::Filter filter) const {
 	if (uv.y == 0.f) {
 		return 0.f;
 	}

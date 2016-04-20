@@ -35,11 +35,14 @@ namespace scene { namespace material { namespace metal {
 Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
 									   std::shared_ptr<image::texture::Texture_2D> mask,
 									   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_isotropic>>(cache, mask, sampler_settings, two_sided) {}
+	material::Typed_material<Generic_sample_cache<Sample_isotropic>>(cache, mask,
+																	 sampler_settings,
+																	 two_sided) {}
 
 const material::Sample& Material_isotropic::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 												   float /*time*/, float /*ior_i*/,
-												   const Worker& worker, Sampler_settings::Filter filter) {
+												   const Worker& worker,
+												   Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
@@ -76,12 +79,16 @@ void Material_isotropic::set_roughness(float roughness) {
 
 Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
 										   std::shared_ptr<image::texture::Texture_2D> mask,
-										   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_anisotropic>>(cache, mask, sampler_settings, two_sided) {}
+										   const Sampler_settings& sampler_settings,
+										   bool two_sided) :
+	material::Typed_material<Generic_sample_cache<Sample_anisotropic>>(cache, mask,
+																	   sampler_settings,
+																	   two_sided) {}
 
 const material::Sample& Material_anisotropic::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 													 float /*time*/, float /*ior_i*/,
-													 const Worker& worker, Sampler_settings::Filter filter) {
+													 const Worker& worker,
+													 Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
@@ -111,7 +118,8 @@ void Material_anisotropic::set_normal_map(std::shared_ptr<image::texture::Textur
 	normal_map_ = normal_map;
 }
 
-void Material_anisotropic::set_direction_map(std::shared_ptr<image::texture::Texture_2D> direction_map) {
+void Material_anisotropic::set_direction_map(
+		std::shared_ptr<image::texture::Texture_2D> direction_map) {
 	direction_map_ = direction_map;
 }
 

@@ -15,8 +15,8 @@ Constant::Constant(Generic_sample_cache<Sample>& cache,
 	Material(cache, mask, sampler_settings, two_sided), emission_(emission) {}
 
 const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										 float /*time*/, float /*ior_i*/,
-										 const Worker& worker, Sampler_settings::Filter /*filter*/) {
+										 float /*time*/, float /*ior_i*/, const Worker& worker,
+										 Sampler_settings::Filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
@@ -25,8 +25,9 @@ const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat
 	return sample;
 }
 
-math::float3 Constant::sample_emission(math::pfloat3 /*wi*/, math::float2 /*uv*/, float /*time*/,
-									   const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
+math::float3 Constant::sample_emission(math::pfloat3 /*wi*/, math::float2 /*uv*/,
+									   float /*time*/, const Worker& /*worker*/,
+									   Sampler_settings::Filter /*filter*/) const {
 	return emission_;
 }
 

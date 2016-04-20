@@ -44,7 +44,9 @@ bool Sample_isotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_isotropic::set(const math::float3& ior, const math::float3& absorption, float roughness) {
+void Sample_isotropic::set(const math::float3& ior,
+						   const math::float3& absorption,
+						   float roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 
@@ -73,7 +75,8 @@ float Sample_anisotropic::ior() const {
 
 void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
-	float n_dot_wi = ggx::Conductor_anisotropic::importance_sample(*this, sampler, n_dot_wo, result);
+	float n_dot_wi = ggx::Conductor_anisotropic::importance_sample(*this, sampler,
+																   n_dot_wo, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -89,7 +92,8 @@ bool Sample_anisotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_anisotropic::set(const math::float3& ior, const math::float3& absorption, math::float2 roughness) {
+void Sample_anisotropic::set(const math::float3& ior, const math::float3& absorption,
+							 math::float2 roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 

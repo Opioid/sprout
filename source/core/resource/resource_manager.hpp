@@ -33,7 +33,8 @@ public:
 	std::shared_ptr<Type> load(const std::string& filename, const memory::Variant_map& options);
 
 	template<typename Type>
-	std::shared_ptr<Type> load(const std::string& filename, const memory::Variant_map& options, bool& was_cached);
+	std::shared_ptr<Type> load(const std::string& filename, const memory::Variant_map& options,
+							   bool& was_cached);
 
 private:
 
