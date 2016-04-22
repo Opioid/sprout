@@ -11,7 +11,7 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 
 const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										 float /*time*/, float /*ior_i*/,
-										 const Worker& worker, Sampler_settings::Filter filter) {
+										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);

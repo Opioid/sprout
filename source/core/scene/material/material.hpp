@@ -20,16 +20,19 @@ class Sample;
 class Material {
 public:
 
+	using Sampler_filter = material::Sampler_settings::Filter;
+
 	Material(std::shared_ptr<image::texture::Texture_2D> mask,
 			 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual void tick(float absolute_time, float time_slice);
 
-	virtual const Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo, float time, float ior_i,
-								 const Worker& worker, Sampler_settings::Filter filter) = 0;
+	virtual const Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+								 float time, float ior_i, const Worker& worker,
+								 Sampler_filter filter) = 0;
 
 	virtual math::float3 sample_emission(math::pfloat3 wi, math::float2 uv, float time,
-										 const Worker& worker, Sampler_settings::Filter filter) const;
+										 const Worker& worker, Sampler_filter filter) const;
 
 	virtual math::float3 average_emission() const;
 
@@ -37,10 +40,10 @@ public:
 
 	virtual math::float2 emission_importance_sample(math::float2 r2, float& pdf) const;
 
-	virtual float emission_pdf(math::float2 uv, const Worker& worker, Sampler_settings::Filter filter) const;
+	virtual float emission_pdf(math::float2 uv, const Worker& worker, Sampler_filter filter) const;
 
 	virtual float opacity(math::float2 uv, float time,
-						  const Worker& worker, Sampler_settings::Filter filter) const;
+						  const Worker& worker, Sampler_filter filter) const;
 
 	virtual void prepare_sampling(bool spherical);
 

@@ -14,7 +14,7 @@ Material::Material(std::shared_ptr<image::texture::Texture_2D> mask,
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
 math::float3 Material::sample_emission(math::pfloat3 /*wi*/, math::float2 /*uv*/, float /*time*/,
-									   const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
+									   const Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	return math::float3(0.f, 0.f, 0.f);
 }
 
@@ -30,12 +30,13 @@ math::float2 Material::emission_importance_sample(math::float2 /*r2*/, float& /*
 	return math::float2::identity;
 }
 
-float Material::emission_pdf(math::float2 /*uv*/, const Worker& /*worker*/, Sampler_settings::Filter /*filter*/) const {
+float Material::emission_pdf(math::float2 /*uv*/, const Worker& /*worker*/,
+							 Sampler_filter /*filter*/) const {
 	return 0.f;
 }
 
 float Material::opacity(math::float2 uv, float /*time*/,
-						const Worker& worker, Sampler_settings::Filter filter) const {
+						const Worker& worker, Sampler_filter filter) const {
 	if (mask_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 		return sampler.sample_1(*mask_, uv);
