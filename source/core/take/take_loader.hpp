@@ -51,7 +51,8 @@ private:
 		float interpupillary_distance = 0.f;
 	};
 
-	void load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const;
+	void load_camera(const rapidjson::Value& camera_value, bool alpha_transparency,
+					 Take& take) const;
 
 	void load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopic& stereo) const;
 
@@ -70,10 +71,12 @@ private:
 	void load_integrator_factories(const rapidjson::Value& integrator_value, Take& take) const;
 
 	std::shared_ptr<rendering::integrator::surface::Integrator_factory>
-	load_surface_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const;
+	load_surface_integrator_factory(const rapidjson::Value& integrator_value,
+									const Settings& settings) const;
 
 	std::shared_ptr<rendering::integrator::volume::Integrator_factory>
-	load_volume_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const;
+	load_volume_integrator_factory(const rapidjson::Value& integrator_value,
+								   const Settings& settings) const;
 
 	bool peek_alpha_transparency(const rapidjson::Value& take_value) const;
 

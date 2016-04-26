@@ -34,7 +34,8 @@ public:
 
 	virtual void update_focus(rendering::Worker& worker) = 0;
 
-	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view, scene::Ray& ray) const = 0;
+	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+							  scene::Ray& ray) const = 0;
 
 	math::int2 resolution() const;
 

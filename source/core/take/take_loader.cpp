@@ -81,17 +81,14 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		throw std::runtime_error("No reference to scene included");
 	}
 
-//	if (!take->view.camera) {
-//		throw std::runtime_error("No camera configuration included");
-//	}
-
 	if (take->view.camera) {
 		if (exporter_value) {
 			take->exporter = load_exporter(*exporter_value, *take->view.camera);
 		}
 
 		if (!take->exporter) {
-			image::Writer* writer = new image::encoding::png::Writer(take->view.camera->sensor().dimensions());
+			image::Writer* writer = new image::encoding::png::Writer(
+						take->view.camera->sensor().dimensions());
 			take->exporter = std::make_unique<exporting::Image_sequence>("output_", writer);
 			logging::warning("No exporter was specified, defaulting to PNG writer.");
 		}
@@ -102,20 +99,22 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	}
 
 	if (!take->surface_integrator_factory) {
-		take->surface_integrator_factory = std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
+		take->surface_integrator_factory = std::make_shared<
+				rendering::integrator::surface::Pathtracer_MIS_factory>(
 					take->settings, 4, 8, 0.5f, 1, false);
 		logging::warning("No surface integrator specified, defaulting to Pathtracer Multiple Importance Sampling.");
 	}
 
 	if (!take->volume_integrator_factory) {
-		take->volume_integrator_factory = std::make_shared<rendering::integrator::volume::Attenuation_factory>(
-					take->settings);
+		take->volume_integrator_factory = std::make_shared<
+				rendering::integrator::volume::Attenuation_factory>(take->settings);
 	}
 
 	return take;
 }
 
-void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transparency, Take& take) const {
+void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transparency,
+						 Take& take) const {
 	std::string type_name = "Perspective";
 	const rapidjson::Value* type_value = nullptr;
 
@@ -219,7 +218,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 						take.settings.ray_max_t, frame_duration, motion_blur, fov);
 		} else {
 			camera = std::make_shared<scene::camera::Perspective>(
-						resolution, take.settings.ray_max_t, frame_duration, motion_blur, focus, fov, lens_radius);
+						resolution, take.settings.ray_max_t, frame_duration,
+						motion_blur, focus, fov, lens_radius);
 		}
 	} else if ("Spherical" == type_name) {
 		if (stereo.interpupillary_distance > 0.f) {
@@ -237,7 +237,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 		throw std::runtime_error("Camera type \"" + type_name + "\" not recognized");
 	}
 
-	rendering::sensor::Sensor* sensor = load_sensor(*sensor_value, camera->sensor_dimensions(), alpha_transparency);
+	rendering::sensor::Sensor* sensor = load_sensor(*sensor_value, camera->sensor_dimensions(),
+													alpha_transparency);
 
 	camera->set_sensor(sensor);
 	camera->set_transformation(transformation);
@@ -257,7 +258,8 @@ void Loader::load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopi
 }
 
 rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_value,
-											   math::int2 dimensions, bool alpha_transparency) const {
+											   math::int2 dimensions,
+											   bool alpha_transparency) const {
 	math::float3 clamp_max(-1.f, -1.f, -1.f);
 	const rendering::sensor::tonemapping::Tonemapper* tonemapper = nullptr;
 	const rendering::sensor::filter::Filter* filter = nullptr;
@@ -287,7 +289,8 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 				return new rendering::sensor::Filtered<
 						rendering::sensor::Transparent,
 						rendering::sensor::clamp::Clamp>(
-							dimensions, tonemapper, rendering::sensor::clamp::Clamp(clamp_max), filter);
+							dimensions, tonemapper,
+							rendering::sensor::clamp::Clamp(clamp_max), filter);
 			} else {
 				return new rendering::sensor::Filtered<
 						rendering::sensor::Transparent,
@@ -343,13 +346,13 @@ Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 		const rapidjson::Value& node_value = n->value;
 
 		if ("ACES" == node_name) {
-			math::float3 linear_white = json::read_float3(node_value, "linear_white", math::float3_identity);
+			math::float3 linear_white = json::read_float3(node_value, "linear_white");
 			float exposure = json::read_float(node_value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Aces(linear_white, exposure);
 		} else if ("Identity" == node_name) {
 			return new rendering::sensor::tonemapping::Identity();
 		} else if ("Uncharted" == node_name) {
-			math::float3 linear_white = json::read_float3(node_value, "linear_white", math::float3_identity);
+			math::float3 linear_white = json::read_float3(node_value, "linear_white");
 			float exposure = json::read_float(node_value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Uncharted(linear_white, exposure);
 		}
@@ -412,15 +415,18 @@ void Loader::load_integrator_factories(const rapidjson::Value& integrator_value,
 		const rapidjson::Value& node_value = n->value;
 
 		if ("surface" == node_name) {
-			take.surface_integrator_factory = load_surface_integrator_factory(node_value, take.settings);
+			take.surface_integrator_factory = load_surface_integrator_factory(node_value,
+																			  take.settings);
 		} else if ("volume" == node_name) {
-			take.volume_integrator_factory = load_volume_integrator_factory(node_value, take.settings);
+			take.volume_integrator_factory = load_volume_integrator_factory(node_value,
+																			take.settings);
 		}
 	}
 }
 
 std::shared_ptr<rendering::integrator::surface::Integrator_factory>
-Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const {
+Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value,
+										const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
 	uint32_t default_max_light_samples = 1;
@@ -434,35 +440,57 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 		if ("AO" == node_name) {
 			uint32_t num_samples = json::read_uint(node_value, "num_samples", 1);
 			float radius = json::read_float(node_value, "radius", 1.f);
-			return std::make_shared<rendering::integrator::surface::Ao_factory>(settings, num_samples, radius);
+			return std::make_shared<rendering::integrator::surface::Ao_factory>(
+						settings, num_samples, radius);
 		} else if ("Whitted" == node_name) {
-			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
-			return std::make_shared<rendering::integrator::surface::Whitted_factory>(settings, num_light_samples);
+			uint32_t num_light_samples = json::read_uint(
+						node_value, "num_light_samples", default_max_light_samples);
+
+			return std::make_shared<rendering::integrator::surface::Whitted_factory>(
+						settings, num_light_samples);
 		} else if ("PT" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
-			float path_termination_probability = json::read_float(node_value, "path_termination_probability",
-																  default_path_termination_probability);
+
+			float path_termination_probability = json::read_float(
+						node_value, "path_termination_probability",
+						default_path_termination_probability);
+
 			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
+
 			return std::make_shared<rendering::integrator::surface::Pathtracer_factory>(
-						settings, min_bounces, max_bounces, path_termination_probability, disable_caustics);
+						settings, min_bounces, max_bounces,
+						path_termination_probability, disable_caustics);
 		} else if ("PTDL" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
-			float path_termination_probability = json::read_float(node_value, "path_termination_probability",
-																  default_path_termination_probability);
-			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
+
+			float path_termination_probability = json::read_float(
+						node_value, "path_termination_probability",
+						default_path_termination_probability);
+
+			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples",
+														 default_max_light_samples);
+
 			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
+
 			return std::make_shared<rendering::integrator::surface::Pathtracer_DL_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
 						num_light_samples, disable_caustics);
 		} else if ("PTMIS" == node_name) {
 			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
-			float path_termination_probability = json::read_float(node_value, "path_termination_probability",
-																  default_path_termination_probability);
-			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples", default_max_light_samples);
+
+			float path_termination_probability = json::read_float(
+						node_value, "path_termination_probability",
+						default_path_termination_probability);
+
+			uint32_t num_light_samples = json::read_uint(
+						node_value, "num_light_samples",
+						default_max_light_samples);
+
 			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
+
 			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
 						num_light_samples, disable_caustics);
@@ -481,7 +509,8 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 				vector = rendering::integrator::surface::Normal::Settings::Vector::Shading_normal;
 			}
 
-			return std::make_shared<rendering::integrator::surface::Normal_factory>(settings, vector);
+			return std::make_shared<rendering::integrator::surface::Normal_factory>(
+						settings, vector);
 		}
 	}
 
@@ -489,7 +518,8 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 }
 
 std::shared_ptr<rendering::integrator::volume::Integrator_factory>
-Loader::load_volume_integrator_factory(const rapidjson::Value& integrator_value, const Settings& settings) const {
+Loader::load_volume_integrator_factory(const rapidjson::Value& integrator_value,
+									   const Settings& settings) const {
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
@@ -498,7 +528,8 @@ Loader::load_volume_integrator_factory(const rapidjson::Value& integrator_value,
 			return std::make_shared<rendering::integrator::volume::Attenuation_factory>(settings);
 		} else if ("Single_scattering" == node_name) {
 			float step_size = json::read_float(node_value, "step_size", 1.f);
-			return std::make_shared<rendering::integrator::volume::Single_scattering_factory>(settings, step_size);
+			return std::make_shared<
+					rendering::integrator::volume::Single_scattering_factory>(settings, step_size);
 		}
 	}
 
@@ -544,7 +575,8 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& e
 				framerate = static_cast<uint32_t>(1.f / camera.frame_duration() + 0.5f);
 			}
 
-			return std::make_unique<exporting::Ffmpeg>("output", camera.sensor().dimensions(), framerate);
+			return std::make_unique<exporting::Ffmpeg>("output",
+													   camera.sensor().dimensions(), framerate);
 		} else if ("Null" == node_name) {
 			return std::make_unique<exporting::Null>();
 		}

@@ -147,10 +147,12 @@ void Driver::render_subframe(scene::camera::Camera& camera, float normalized_tic
 							 Tile_queue& tiles, std::vector<Camera_worker>& workers,
 							 thread::Pool& thread_pool, progress::Sink& progressor) {
 	float num_samples = static_cast<float>(sampler_->num_samples_per_iteration());
+	float samples_per_slice = normalized_frame_slice * num_samples;
 
 	uint32_t sample_begin = current_sample_;
-	uint32_t sample_range = std::max(static_cast<uint32_t>(normalized_frame_slice * num_samples + 0.5f), 1u);
-	uint32_t sample_end   = std::min(sample_begin + sample_range, sampler_->num_samples_per_iteration());
+	uint32_t sample_range = std::max(static_cast<uint32_t>(samples_per_slice + 0.5f), 1u);
+	uint32_t sample_end   = std::min(sample_begin + sample_range,
+									 sampler_->num_samples_per_iteration());
 
 	if (sample_begin == sample_end) {
 		return;
@@ -188,10 +190,12 @@ void Driver::render_subframe(scene::camera::Camera& camera, float normalized_tic
 uint32_t Driver::calculate_progress_range(const scene::Scene& scene,
 										  const scene::camera::Camera& camera,
 										  uint32_t num_tiles) const {
-	const float num_subframes = 0.f == camera.frame_duration() || !camera.motion_blur()
-							  ? 1.f : std::min(camera.frame_duration() / scene.tick_duration(),
-											   static_cast<float>(
-												   sampler_->num_samples_per_iteration()));
+	float num_subframes = 1.f;
+
+	if (camera.frame_duration() > 0.f && camera.motion_blur()) {
+		num_subframes = std::min(camera.frame_duration() / scene.tick_duration(),
+								 static_cast<float>(sampler_->num_samples_per_iteration()));
+	}
 
 	float range = static_cast<float>(num_tiles * camera.num_views()) * num_subframes;
 
