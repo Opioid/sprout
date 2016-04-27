@@ -10,7 +10,6 @@
 #include "core/image/image_provider.hpp"
 #include "core/image/texture/texture_2d_provider.hpp"
 #include "core/scene/material/material_provider.hpp"
-#include "core/scene/material/material_sample_cache.inl"
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"

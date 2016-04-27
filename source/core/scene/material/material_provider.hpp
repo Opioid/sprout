@@ -30,6 +30,7 @@ class Provider : public resource::Provider<Material> {
 public:
 
 	Provider(uint32_t num_threads);
+	~Provider();
 
 	virtual std::shared_ptr<Material> load(const std::string& filename,
 										   const memory::Variant_map& options,

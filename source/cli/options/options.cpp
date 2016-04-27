@@ -19,7 +19,7 @@ void init(int argc, char* argv[]) {
 
 		TCLAP::MultiArg<std::string> mount_args(
 					"m", "mount",
-					"Sets a mount point for the data directory. "
+					"Specifies a mount point for the data directory. "
 					"The default value is \"../data/\"",
 					false, "directory path");
 

@@ -23,8 +23,6 @@
 #include "base/memory/variant_map.inl"
 #include "base/thread/thread_pool.hpp"
 
-#include <iostream>
-
 namespace scene { namespace material {
 
 Provider::Provider(uint32_t num_threads) :
@@ -50,6 +48,8 @@ Provider::Provider(uint32_t num_threads) :
 	material->set_metallic(0.f);
 	fallback_material_ = material;
 }
+
+Provider::~Provider() {}
 
 std::shared_ptr<Material> Provider::load(const std::string& filename,
 										 const memory::Variant_map& /*options*/,
