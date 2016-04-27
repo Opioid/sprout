@@ -11,17 +11,28 @@ void init(int argc, char* argv[]) {
 	try {
 		TCLAP::CmdLine cmd("sprout is a global illumination renderer experiment", ' ', "0.1");
 
-		TCLAP::UnlabeledValueArg<std::string> take_arg("take", "The take file to render.", true, "", "file path");
+		TCLAP::UnlabeledValueArg<std::string> take_arg(
+					"take", "The take file to render.",
+					true, "", "file path");
+
 		cmd.add(take_arg);
 
-		TCLAP::MultiArg<std::string> mount_args("m", "mount", "Sets a mount point for the data directory. "
-															  "The default value is \"../data/\"", false, "directory path");
+		TCLAP::MultiArg<std::string> mount_args(
+					"m", "mount",
+					"Sets a mount point for the data directory. "
+					"The default value is \"../data/\"",
+					false, "directory path");
+
 		cmd.add(mount_args);
 
-		TCLAP::ValueArg<int> threads_arg("t", "threads", "Sets the number of threads. "
-														 "0 uses all available threads. "
-														 "-x uses all available threads but x. "
-														 "The default value is 0.", false, 0, "integer number");
+		TCLAP::ValueArg<int> threads_arg(
+					"t", "threads",
+					"Specifies the number of threads used by sprout. "
+					"0 creates one thread for each logical CPU. "
+					"-x creates a number of threads equal to the number of logical CPUs minus x. "
+					"The default value is 0.",
+					false, 0, "integer number");
+
 		cmd.add(threads_arg);
 
 		cmd.parse(argc, argv);
