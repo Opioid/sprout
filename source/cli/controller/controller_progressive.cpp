@@ -4,6 +4,7 @@
 #include "core/scene/scene.hpp"
 #include "core/take/take.hpp"
 #include "core/progress/progress_sink.hpp"
+#include "base/math/vector.inl"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 #include <iostream>

@@ -32,4 +32,6 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 	}
 }
 
+Driver::~Driver() {}
+
 }

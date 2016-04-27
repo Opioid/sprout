@@ -2,6 +2,12 @@
 
 #include "rendering_driver.hpp"
 
+namespace scene { namespace camera { class Camera; } }
+
+namespace exporting { class Sink; }
+
+namespace progress { class Sink; }
+
 namespace rendering {
 
 class Driver_finalframe : public Driver {

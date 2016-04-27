@@ -3,27 +3,16 @@
 #include "rendering_camera_worker.hpp"
 #include "tile_queue.hpp"
 #include "image/typed_image.hpp"
-#include "base/math/vector.hpp"
 #include <memory>
 #include <vector>
 
 namespace take { struct View; }
 
-namespace scene {
-
-namespace camera { class Camera; }
-
-class Scene;
-
-}
+namespace scene { class Scene; }
 
 namespace sampler { class Sampler; }
 
 namespace thread { class Pool; }
-
-namespace exporting { class Sink; }
-
-namespace progress { class Sink; }
 
 namespace rendering {
 
@@ -45,6 +34,8 @@ public:
 		   std::shared_ptr<sampler::Sampler> sampler,
 		   scene::Scene& scene, const take::View& view,
 		   thread::Pool& thread_pool);
+
+	~Driver();
 
 protected:
 

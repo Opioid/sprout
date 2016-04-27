@@ -1,6 +1,13 @@
 #pragma once
 
 #include "rendering_driver.hpp"
+#include <thread>
+
+namespace scene { namespace camera { class Camera; } }
+
+namespace exporting { class Sink; }
+
+namespace progress { class Sink; }
 
 namespace rendering {
 
