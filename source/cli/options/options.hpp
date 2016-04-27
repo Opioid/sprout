@@ -7,6 +7,7 @@ struct Options {
 	std::string take;
 	std::vector<std::string> mounts;
 	int threads;
+	bool progressive;
 };
 
 namespace options {

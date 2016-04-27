@@ -1,10 +1,11 @@
+#include "controller/controller_progressive.hpp"
 #include "options/options.hpp"
 #include "core/file/file_system.hpp"
 #include "core/logging/logging.hpp"
 #include "core/baking/baking_driver.hpp"
 #include "core/progress/progress_sink_null.hpp"
 #include "core/progress/progress_sink_stdout.hpp"
-#include "core/rendering/rendering_driver.hpp"
+#include "core/rendering/rendering_driver_finalframe.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/image/image_provider.hpp"
 #include "core/image/texture/texture_2d_provider.hpp"
@@ -107,29 +108,35 @@ int main(int argc, char* argv[]) {
 	logging::info("Loading time " +
 				  string::to_string(chrono::seconds_since(loading_start)) + " s");
 
-	progress::Stdout progressor;
-
 	logging::info("Rendering...");
 
-	auto rendering_start = std::chrono::high_resolution_clock::now();
-
-	if (take->view.camera) {
-		rendering::Driver driver(take->surface_integrator_factory,
-								 take->volume_integrator_factory, take->sampler);
-
-		driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
+	if (args.progressive) {
+		controller::progressive(*take, scene, thread_pool);
 	} else {
-		baking::Driver driver(take->surface_integrator_factory,
-							  take->volume_integrator_factory, take->sampler);
+		progress::Stdout progressor;
 
-		driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
+		auto rendering_start = std::chrono::high_resolution_clock::now();
+
+		if (take->view.camera) {
+			rendering::Driver_finalframe driver(take->surface_integrator_factory,
+												take->volume_integrator_factory,
+												take->sampler, scene, take->view,
+												thread_pool);
+
+			driver.render(*take->exporter, progressor);
+		} else {
+			baking::Driver driver(take->surface_integrator_factory,
+								  take->volume_integrator_factory, take->sampler);
+
+			driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
+		}
+
+		logging::info("Total render time " +
+					  string::to_string(chrono::seconds_since(rendering_start)) + " s");
+
+		logging::info("Total elapsed time " +
+					  string::to_string(chrono::seconds_since(total_start)) + " s");
 	}
-
-	logging::info("Total render time " +
-				  string::to_string(chrono::seconds_since(rendering_start)) + " s");
-
-	logging::info("Total elapsed time " +
-				  string::to_string(chrono::seconds_since(total_start)) + " s");
 
 	logging::release();
 

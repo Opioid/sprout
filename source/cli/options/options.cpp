@@ -35,11 +35,19 @@ void init(int argc, char* argv[]) {
 
 		cmd.add(threads_arg);
 
+		TCLAP::SwitchArg progressive_arg(
+					"p", "progressive",
+					"Starts sprout in progressive mode.",
+					false);
+
+		cmd.add(progressive_arg);
+
 		cmd.parse(argc, argv);
 
-		options_.take    = take_arg.getValue();
-		options_.mounts  = mount_args.getValue();
-		options_.threads = threads_arg.getValue();
+		options_.take		 = take_arg.getValue();
+		options_.mounts		 = mount_args.getValue();
+		options_.threads	 = threads_arg.getValue();
+		options_.progressive = progressive_arg.getValue();
 	} catch (TCLAP::ArgException& e) {
 		std::stringstream stream;
 		stream << e.error() << " for arg " << e.argId();

@@ -15,6 +15,7 @@ CONFIG(debug, release|debug):DEFINES += _DEBUG
 SOURCES += \
 	main.cpp
 
+include(controller/controller.pri)
 include(options/options.pri)
 
 win32:INCLUDEPATH += .
