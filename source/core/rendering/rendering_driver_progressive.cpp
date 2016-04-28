@@ -43,7 +43,7 @@ void Driver_progressive::render(exporting::Sink& exporter) {
 	export_    = false;
 
 	render_thread_ = std::thread([this, &exporter](){
-		for (;rendering_; ++iteration_) {
+		for (; rendering_; ++iteration_) {
 			render_loop(exporter);
 		}
 	});
@@ -73,7 +73,8 @@ void Driver_progressive::render_loop(exporting::Sink& exporter) {
 	for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
 		tiles_.restart();
 
-		thread_pool_.run([this, v](uint32_t index) {
+		thread_pool_.run(
+			[this, v](uint32_t index) {
 				auto& worker = workers_[index];
 
 				for (;;) {
