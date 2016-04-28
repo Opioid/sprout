@@ -51,8 +51,6 @@ protected:
 private:
 
 	math::random::Generator rng_;
-
-
 };
 
 }
