@@ -23,9 +23,10 @@ Driver_progressive::Driver_progressive(Surface_integrator_factory surface_integr
 									   scene::Scene& scene, const take::View& view,
 									   thread::Pool& thread_pool) :
 	Driver(surface_integrator_factory, volume_integrator_factory,
-		   sampler, scene, view, thread_pool) {}
+		   sampler, scene, view, thread_pool),
+	iteration_(0) {}
 
-void Driver_progressive::render(exporting::Sink& exporter, progress::Sink& progressor) {
+void Driver_progressive::render(exporting::Sink& exporter) {
 	auto& camera = *view_.camera;
 	auto& sensor = camera.sensor();
 
@@ -37,9 +38,9 @@ void Driver_progressive::render(exporting::Sink& exporter, progress::Sink& progr
 
 	rendering_ = true;
 
-	render_thread_ = std::thread([this, &exporter, &progressor](){
-		for (;rendering_;) {
-			render_loop(exporter, progressor);
+	render_thread_ = std::thread([this, &exporter](){
+		for (;rendering_; ++iteration_) {
+			render_loop(exporter);
 		}
 	});
 }
@@ -50,7 +51,11 @@ void Driver_progressive::abort() {
 	render_thread_.join();
 }
 
-void Driver_progressive::render_loop(exporting::Sink& exporter, progress::Sink& progressor) {
+uint32_t Driver_progressive::iteration() const {
+	return iteration_;
+}
+
+void Driver_progressive::render_loop(exporting::Sink& exporter) {
 	auto& camera = *view_.camera;
 	auto& sensor = camera.sensor();
 
@@ -66,16 +71,14 @@ void Driver_progressive::render_loop(exporting::Sink& exporter, progress::Sink& 
 						break;
 					}
 
-					worker.render(*view_.camera, v, tile, 0, 1, 0.f, 1.f);
+					worker.render(*view_.camera, v, tile, iteration_, iteration_ + 1, 0.f, 1.f);
 				}
 			}
 		);
 	}
 
 	sensor.resolve(thread_pool_, target_);
-	exporter.write(target_, 0, thread_pool_);
-
-	progressor.tick();
+	exporter.write(target_, iteration_, thread_pool_);
 }
 
 }

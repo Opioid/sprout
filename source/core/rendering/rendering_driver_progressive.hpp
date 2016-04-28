@@ -21,15 +21,19 @@ public:
 					   scene::Scene& scene, const take::View& view,
 					   thread::Pool& thread_pool);
 
-	void render(exporting::Sink& exporter, progress::Sink& progressor);
+	void render(exporting::Sink& exporter);
 
 	void abort();
 
+	uint32_t iteration() const;
+
 private:
 
-	void render_loop(exporting::Sink& exporter, progress::Sink& progressor);
+	void render_loop(exporting::Sink& exporter);
 
 	std::thread render_thread_;
+
+	uint32_t iteration_;
 
 	bool rendering_;
 };
