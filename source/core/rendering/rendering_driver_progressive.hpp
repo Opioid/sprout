@@ -23,6 +23,8 @@ public:
 
 	void render(exporting::Sink& exporter);
 
+	void restart();
+
 	void abort();
 
 	void schedule_export();

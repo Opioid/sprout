@@ -24,17 +24,19 @@ Driver_progressive::Driver_progressive(Surface_integrator_factory surface_integr
 									   thread::Pool& thread_pool) :
 	Driver(surface_integrator_factory, volume_integrator_factory,
 		   sampler, scene, view, thread_pool),
-	iteration_(0) {}
+	iteration_(0),
+	rendering_(false) {}
 
 void Driver_progressive::render(exporting::Sink& exporter) {
-	auto& camera = *view_.camera;
-	auto& sensor = camera.sensor();
+	if (rendering_) {
+		return;
+	}
 
 	scene_.tick(thread_pool_);
 
-	camera.update_focus(workers_[0]);
+	view_.camera->update_focus(workers_[0]);
 
-	sensor.clear();
+	view_.camera->sensor().clear();
 
 	iteration_ = 0;
 	rendering_ = true;
@@ -45,6 +47,12 @@ void Driver_progressive::render(exporting::Sink& exporter) {
 			render_loop(exporter);
 		}
 	});
+}
+
+void Driver_progressive::restart() {
+	view_.camera->sensor().clear();
+
+	iteration_ = 0;
 }
 
 void Driver_progressive::abort() {
@@ -62,9 +70,6 @@ uint32_t Driver_progressive::iteration() const {
 }
 
 void Driver_progressive::render_loop(exporting::Sink& exporter) {
-	auto& camera = *view_.camera;
-	auto& sensor = camera.sensor();
-
 	for (uint32_t v = 0, len = view_.camera->num_views(); v < len; ++v) {
 		tiles_.restart();
 
@@ -84,7 +89,7 @@ void Driver_progressive::render_loop(exporting::Sink& exporter) {
 	}
 
 	if (export_) {
-		sensor.resolve(thread_pool_, target_);
+		view_.camera->sensor().resolve(thread_pool_, target_);
 		exporter.write(target_, iteration_, thread_pool_);
 
 		export_ = false;
