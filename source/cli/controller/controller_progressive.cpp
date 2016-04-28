@@ -32,11 +32,11 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 		if ("abort" == input || "exit" == input || "quit" == input) {
 			break;
 		} else if ("restart" == input) {
-			driver.restart();
-		} else if ("iteration" == input) {
-			logging::info(string::to_string(driver.iteration()));
+			driver.schedule_restart();
 		} else if ("export" == input) {
 			driver.schedule_export();
+		} else if ("iteration" == input) {
+			logging::info(string::to_string(driver.iteration()));
 		}
 	}
 

@@ -23,10 +23,9 @@ public:
 
 	void render(exporting::Sink& exporter);
 
-	void restart();
-
 	void abort();
 
+	void schedule_restart();
 	void schedule_export();
 
 	uint32_t iteration() const;
@@ -41,7 +40,12 @@ private:
 
 	bool rendering_;
 
-	bool export_;
+	struct Schedule {
+		bool restart;
+		bool exporti;
+	};
+
+	Schedule schedule_;
 };
 
 }
