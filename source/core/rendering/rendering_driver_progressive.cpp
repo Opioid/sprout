@@ -36,7 +36,9 @@ void Driver_progressive::render(exporting::Sink& exporter) {
 
 	sensor.clear();
 
+	iteration_ = 0;
 	rendering_ = true;
+	export_    = false;
 
 	render_thread_ = std::thread([this, &exporter](){
 		for (;rendering_; ++iteration_) {
@@ -49,6 +51,10 @@ void Driver_progressive::abort() {
 	rendering_ = false;
 
 	render_thread_.join();
+}
+
+void Driver_progressive::schedule_export() {
+	export_ = true;
 }
 
 uint32_t Driver_progressive::iteration() const {
@@ -77,8 +83,12 @@ void Driver_progressive::render_loop(exporting::Sink& exporter) {
 		);
 	}
 
-	sensor.resolve(thread_pool_, target_);
-	exporter.write(target_, iteration_, thread_pool_);
+	if (export_) {
+		sensor.resolve(thread_pool_, target_);
+		exporter.write(target_, iteration_, thread_pool_);
+
+		export_ = false;
+	}
 }
 
 }

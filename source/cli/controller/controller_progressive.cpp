@@ -33,6 +33,8 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 			break;
 		} else if ("iteration" == input) {
 			logging::info(string::to_string(driver.iteration()));
+		} else if ("export" == input) {
+			driver.schedule_export();
 		}
 	}
 

@@ -17,7 +17,6 @@ Typed_image<T>::~Typed_image() {
 	memory::free_aligned(data_);
 }
 
-
 template<typename T>
 T Typed_image<T>::load(int32_t x, int32_t y) const {
 	int32_t i = y * description_.dimensions.x + x;
@@ -60,7 +59,9 @@ T& Typed_image<T>::at(int32_t x, int32_t y, int32_t element) {
 
 template<typename T>
 size_t Typed_image<T>::num_bytes() const {
-	return description_.dimensions.x * description_.dimensions.y * description_.num_elements * sizeof(T);
+	return description_.dimensions.x *
+		   description_.dimensions.y *
+		   description_.num_elements * sizeof(T);
 }
 
 }

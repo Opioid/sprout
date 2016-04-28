@@ -25,6 +25,8 @@ public:
 
 	void abort();
 
+	void schedule_export();
+
 	uint32_t iteration() const;
 
 private:
@@ -36,6 +38,8 @@ private:
 	uint32_t iteration_;
 
 	bool rendering_;
+
+	bool export_;
 };
 
 }
