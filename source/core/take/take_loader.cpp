@@ -3,6 +3,7 @@
 #include "exporting/exporting_sink_ffmpeg.hpp"
 #include "exporting/exporting_sink_image_sequence.hpp"
 #include "exporting/exporting_sink_null.hpp"
+#include "exporting/exporting_sink_statistics.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/encoding/rgbe/rgbe_writer.hpp"
 #include "logging/logging.hpp"
@@ -102,7 +103,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		take->surface_integrator_factory = std::make_shared<
 				rendering::integrator::surface::Pathtracer_MIS_factory>(
 					take->settings, 4, 8, 0.5f, 1, false);
-		logging::warning("No surface integrator specified, defaulting to Pathtracer Multiple Importance Sampling.");
+		logging::warning("No surface integrator specified, "
+						 "defaulting to Pathtracer Multiple Importance Sampling.");
 	}
 
 	if (!take->volume_integrator_factory) {
@@ -377,7 +379,8 @@ Loader::load_filter(const rapidjson::Value& filter_value) const {
 		}
 	}
 
-	logging::warning("A reconstruction filter with unknonw type was declared. Not using any filter.");
+	logging::warning("A reconstruction filter with unknonw type was declared. "
+					 "Not using any filter.");
 
 	return nullptr;
 }
@@ -579,6 +582,8 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& e
 													   camera.sensor().dimensions(), framerate);
 		} else if ("Null" == node_name) {
 			return std::make_unique<exporting::Null>();
+		} else if ("Statistics" == node_name) {
+			return std::make_unique<exporting::Statistics>();
 		}
 	}
 

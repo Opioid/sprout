@@ -1,7 +1,6 @@
 #pragma once
 
 #include "exporting_sink.hpp"
-#include "image/encoding/encoding_srgb.hpp"
 #include <string>
 
 namespace image { class Writer; }

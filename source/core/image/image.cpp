@@ -20,4 +20,8 @@ const Image::Description& Image::description() const {
 	return description_;
 }
 
+uint32_t Image::area() const {
+	return area_;
+}
+
 }

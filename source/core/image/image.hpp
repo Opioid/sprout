@@ -30,6 +30,8 @@ public:
 
 	const Description& description() const;
 
+	uint32_t area() const;
+
 	virtual size_t num_bytes() const = 0;
 
 protected:
