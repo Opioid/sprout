@@ -54,8 +54,25 @@ math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf
 		pdf = 0.f;
 	} else {
 		float sin_theta = std::sin(uv.y * math::Pi);
+/*
+		math::float2 disk(
+					2.f * uv.x - 1.f,
+					2.f * uv.y - 1.f);
 
-	//	float sin_theta = std::sin(uv.x * math::Pi) * std::sin(uv.y * math::Pi);
+
+		float r = std::sqrt(disk.x * disk.x + disk.y * disk.y);
+
+		// Equidistant projection
+		float colatitude = r * math::Pi_div_2;
+
+
+		float sin_theta = r * r;// std::cos(colatitude);
+
+		if (r > 1.f) {
+			pdf = 0.f;
+			return uv;
+		}
+*/
 
 		pdf *= total_weight_ / sin_theta;
 	}
@@ -99,7 +116,27 @@ void Emissionmap::prepare_sampling(bool spherical) {
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
 				math::float3 emission = emission_factor_ * emission_map_->at_3(x, y);
 
-		//		float sin_theta = std::sin((static_cast<float>(x) + 0.5f) * my) * std::sin((static_cast<float>(y) + 0.5f) * my);
+
+			/*
+				math::float2 disk(
+							2.f * ((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x)) - 1.f,
+							2.f * ((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) - 1.f);
+
+
+				float r = std::sqrt(disk.x * disk.x + disk.y * disk.y);
+
+				// Equidistant projection
+				float colatitude = r * math::Pi_div_2;
+
+
+
+				float sin_theta = r * r;// std::cos(colatitude);
+
+
+				if (r > 1.f) {
+					sin_theta = 0.f;
+				}
+			*/
 
 				average_emission += sin_theta * emission;
 

@@ -105,12 +105,17 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
 					float /*area*/, const math::float3& /*p*/,
 					math::float2 uv, Sample& sample) const {
-	uv.x = 2.f * uv.x - 1.f;
-	uv.y = 2.f * uv.y - 1.f;
+	math::float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
 
-	math::float3 dir = math::disk_to_hemisphere_equidistant(uv);
+	float z = math::dot(disk, disk);
+	if (z > 1.f) {
+		sample.pdf = 0.f;
+		return;
+	}
 
-	sample.wi = math::transform_vector(dir, transformation.rotation);
+	math::float3 dir = math::disk_to_hemisphere_equidistant(disk);
+
+	sample.wi  = math::transform_vector(dir, transformation.rotation);
 	sample.uv  = uv;
 	sample.t   = 1000000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
