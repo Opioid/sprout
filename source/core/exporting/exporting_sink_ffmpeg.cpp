@@ -10,7 +10,8 @@
 
 namespace exporting {
 
-Ffmpeg::Ffmpeg(const std::string& filename, const math::int2& dimensions, uint32_t framerate) : Srgb(dimensions) {
+Ffmpeg::Ffmpeg(const std::string& filename, math::int2 dimensions, uint32_t framerate) :
+	Srgb(dimensions) {
 	// start ffmpeg telling it to expect raw rgba 720p-60hz frames
 	// -i - tells it to read frames from stdin
 	std::ostringstream cmd;
@@ -47,7 +48,8 @@ void Ffmpeg::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 	std::cout << "Ffmpeg before pool" << std::endl;
 
 	auto d = image.description().dimensions;
-	pool.run_range([this, &image](uint32_t begin, uint32_t end){ to_sRGB(image, begin, end); }, 0, d.x * d.y);
+	pool.run_range([this, &image](uint32_t begin, uint32_t end){
+		to_sRGB(image, begin, end); }, 0, d.x * d.y);
 
 	std::cout << "Ffmpeg after pool" << std::endl;
 
