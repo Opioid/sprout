@@ -17,6 +17,7 @@ SOURCES += \
 
 include(controller/controller.pri)
 include(options/options.pri)
+include(server/server.pri)
 
 win32:INCLUDEPATH += .
 

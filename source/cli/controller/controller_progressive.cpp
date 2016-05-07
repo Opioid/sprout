@@ -1,4 +1,5 @@
 #include "controller_progressive.hpp"
+#include "server/server.hpp"
 #include "core/logging/logging.hpp"
 #include "core/rendering/rendering_driver_progressive.hpp"
 #include "core/scene/scene.hpp"
@@ -24,6 +25,11 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 										 thread_pool);
 
 	driver.render(*take.exporter);
+
+	server::Server server;
+
+	server.run();
+	std::cout << "server run done" << std::endl;
 
 	for (;;) {
 		std::string input;
