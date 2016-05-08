@@ -34,7 +34,6 @@ Socket::Socket(const std::string& service) {
 
 		int yes = 1;
 		if (setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-		//	std::cout << "setsockopt" << std::endl;
 			return;
 		}
 
@@ -81,7 +80,7 @@ int Socket::receive(char* buffer, uint32_t size) const {
 }
 
 int Socket::send(char* buffer, uint32_t size) const {
-	return ::send(socket_, buffer, size, 0);
+	return ::send(socket_, buffer, size, MSG_NOSIGNAL);
 }
 
 }

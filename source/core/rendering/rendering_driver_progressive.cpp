@@ -37,7 +37,7 @@ void Driver_progressive::render(exporting::Sink& exporter) {
 	rendering_ = true;
 	schedule_.restart = false;
 
-	render_thread_ = std::thread([this, &exporter](){
+	render_thread_ = std::thread([this, &exporter]() {
 		for (; rendering_; ++iteration_) {
 			render_loop(exporter);
 		}

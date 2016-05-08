@@ -89,6 +89,13 @@ inline math::float4 to_float(math::byte4 c) {
 				static_cast<float>(c.w) / 255.f);
 }
 
+inline math::byte3 to_byte(math::pfloat3 c) {
+	return math::byte3(
+				static_cast<uint8_t>(c.x * 255.f),
+				static_cast<uint8_t>(c.y * 255.f),
+				static_cast<uint8_t>(c.z * 255.f));
+}
+
 inline math::byte4 to_byte(const math::float4& c) {
 	return math::byte4(
 				static_cast<uint8_t>(c.x * 255.f),

@@ -30,20 +30,20 @@ bool Websocket::handshake() {
 	return true;
 }
 
-void Websocket::send(const std::string& text) {
+bool Websocket::send(const std::string& text) {
 	prepare_header(text.size(), Opcode::Text_frame);
 
 	buffer_.insert(buffer_.end(), text.begin(), text.end());
 
-	socket_.send(buffer_.data(), buffer_.size());
+	return socket_.send(buffer_.data(), buffer_.size()) >= 0;
 }
 
-void Websocket::send(const char* data, size_t size) {
+bool Websocket::send(const char* data, size_t size) {
 	prepare_header(size, Opcode::Binary_frame);
 
 	buffer_.insert(buffer_.end(), data, data + size);
 
-	socket_.send(buffer_.data(), buffer_.size());
+	return socket_.send(buffer_.data(), buffer_.size()) >= 0;
 }
 
 std::string Websocket::handshake_response(const char* header) {

@@ -5,7 +5,7 @@
 
 namespace image { namespace encoding { namespace png {
 
-Writer::Writer(math::int2 dimensions) : Srgb(dimensions) {}
+Writer::Writer(math::int2 dimensions) : Srgb_alpha(dimensions) {}
 
 std::string Writer::file_extension() const {
 	return "png";

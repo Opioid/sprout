@@ -15,9 +15,9 @@ public:
 
 	bool handshake();
 
-	void send(const std::string& text);
+	bool send(const std::string& text);
 
-	void send(const char* data, size_t size);
+	bool send(const char* data, size_t size);
 
 	static std::string handshake_response(const char* header);
 

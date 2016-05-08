@@ -2,6 +2,8 @@
 
 #include "core/exporting/exporting_sink.hpp"
 #include "image/encoding/encoding_srgb.hpp"
+#include "base/net/socket.hpp"
+#include <list>
 #include <thread>
 
 namespace server {
@@ -26,9 +28,9 @@ private:
 
 	std::thread accept_thread_;
 
-	std::vector<Websocket*> clients_;
+	std::list<Websocket*> clients_;
 
-	image::encoding::Srgb srgb_;
+	image::encoding::Srgb_alpha srgb_;
 };
 
 
