@@ -1,13 +1,20 @@
 #include "server.hpp"
 #include "websocket.hpp"
 #include "base/net/socket.hpp"
+#include "base/thread/thread_pool.hpp"
 
 #include <vector>
 #include <iostream>
 
+
+
+#include "base/math/vector.inl"
+#include "miniz/miniz.hpp"
+
+
 namespace server {
 
-Server::Server() {}
+Server::Server(math::int2 dimensions) : srgb_(dimensions) {}
 
 Server::~Server() {}
 
@@ -22,53 +29,72 @@ void Server::run() {
 		return;
 	}
 
-	std::vector<char> buffer(1024);
-	int read_bytes = connection_socket.receive(buffer.data(), buffer.size() - 1);
-	if (read_bytes < 0) {
+	Websocket* client = new Websocket(connection_socket);
+
+	if (!client->handshake()) {
 		return;
 	}
 
-	buffer[read_bytes] = '\0';
+	client->send("Strange stuff");
 
-	std::cout << "receieved " << read_bytes << std::endl;
-	std::cout << buffer.data() << std::endl;
+	math::int2 dimensions(512, 512);
+	math::byte4* rgba = new math::byte4[dimensions.x * dimensions.y];
 
-	std::string handshake_response = Websocket::handshake_response(buffer.data());
+	for (int32_t y = 0; y < dimensions.y; ++y) {
+		for (int32_t x = 0; x < dimensions.x; ++x) {
+			auto& pixel = rgba[y * dimensions.x + x];
 
-		std::vector<uint8_t> header;
-
-		size_t message_size = handshake_response.size();
-
-		enum opcode_type {
-					CONTINUATION = 0x0,
-					TEXT_FRAME = 0x1,
-					BINARY_FRAME = 0x2,
-					CLOSE = 8,
-					PING = 9,
-					PONG = 0xa,
-				};
-
-		header.assign(2 + (message_size >= 126 ? 2 : 0) + (message_size >= 65536 ? 6 : 0), 0);
-		header[0] = 0x80 | opcode_type::TEXT_FRAME;
-
-		if (message_size < 126) {
-
-
-			header[1] = message_size & 0xff;
-
-		} else if (message_size < 65536) {
-			  header[1] = 126;
-			  header[2] = (message_size >> 8) & 0xff;
-			  header[3] = (message_size >> 0) & 0xff;
-
+			pixel.x = static_cast<uint8_t>(255.f * static_cast<float>(x) / static_cast<float>(dimensions.x - 1));
+			pixel.y = static_cast<uint8_t>(255.f * static_cast<float>(y) / static_cast<float>(dimensions.y - 1));
+			pixel.z = 127;
+			pixel.w = 255;
 		}
+	}
 
-		std::vector<char> txbuf;
 
-		txbuf.insert(txbuf.end(), header.begin(), header.end());
-		txbuf.insert(txbuf.end(), handshake_response.begin(), handshake_response.end());
 
-	connection_socket.send(txbuf.data(), txbuf.size());
+	size_t buffer_len = 0;
+	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgba, dimensions.x, dimensions.y,
+															   4, &buffer_len);
+
+	if (!png_buffer) {
+		delete [] rgba;
+		return;
+	}
+
+
+	// do stuff
+	client->send(static_cast<char*>(png_buffer), buffer_len);
+
+	mz_free(png_buffer);
+
+	delete [] rgba;
+
+	clients_.push_back(client);
+}
+
+void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread::Pool& pool) {
+	auto d = image.description().dimensions;
+	pool.run_range([this, &image](uint32_t begin, uint32_t end){
+		srgb_.to_sRGB(image, begin, end); }, 0, d.x * d.y);
+
+	size_t buffer_len = 0;
+	void* png_buffer = tdefl_write_image_to_png_file_in_memory(srgb_.rgba(), d.x, d.y,
+															   4, &buffer_len);
+
+	if (!png_buffer) {
+		return;
+	}
+
+	for (Websocket* c : clients_) {
+		c->send(static_cast<char*>(png_buffer), buffer_len);
+	}
+
+	mz_free(png_buffer);
+}
+
+void Server::accept_loop() {
+
 }
 
 }

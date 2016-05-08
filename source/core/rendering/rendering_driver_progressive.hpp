@@ -26,7 +26,6 @@ public:
 	void abort();
 
 	void schedule_restart();
-	void schedule_export();
 
 	uint32_t iteration() const;
 
@@ -42,7 +41,6 @@ private:
 
 	struct Schedule {
 		bool restart;
-		bool exporti;
 	};
 
 	Schedule schedule_;

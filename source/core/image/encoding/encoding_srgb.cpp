@@ -11,6 +11,10 @@ Srgb::~Srgb() {
 	delete [] rgba_;
 }
 
+const math::byte4* Srgb::rgba() const {
+	return rgba_;
+}
+
 void Srgb::to_sRGB(const image::Image_float_4& image, int32_t begin, int32_t end) {
 	for (int32_t i = begin; i < end; ++i) {
 		math::float4 color = image.at(i);

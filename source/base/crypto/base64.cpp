@@ -13,7 +13,7 @@ static constexpr char base64_rfc4648_alphabet[] = {
 
 std::string encode(const uint8_t* data, size_t size) {
 	std::ostringstream result;
-	int i = 0;
+	uint32_t i = 0;
 	unsigned char char_array_3[3];
 	unsigned char char_array_4[4];
 

@@ -49,9 +49,7 @@ Socket::Socket(const std::string& service) {
 	freeaddrinfo(server_info);
 }
 
-Socket::~Socket() {
-//	close();
-}
+Socket::~Socket() {}
 
 bool Socket::is_valid() const {
 	return socket_ != -1;

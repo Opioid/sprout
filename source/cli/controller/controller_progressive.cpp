@@ -2,6 +2,7 @@
 #include "server/server.hpp"
 #include "core/logging/logging.hpp"
 #include "core/rendering/rendering_driver_progressive.hpp"
+#include "core/scene/camera/camera.hpp"
 #include "core/scene/scene.hpp"
 #include "core/take/take.hpp"
 #include "core/progress/progress_sink.hpp"
@@ -24,12 +25,12 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 										 take.sampler, scene, take.view,
 										 thread_pool);
 
-	driver.render(*take.exporter);
-
-	server::Server server;
+	server::Server server(take.view.camera->sensor_dimensions());
 
 	server.run();
-	std::cout << "server run done" << std::endl;
+
+//	driver.render(*take.exporter);
+	driver.render(server);
 
 	for (;;) {
 		std::string input;
@@ -39,8 +40,6 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 			break;
 		} else if ("restart" == input) {
 			driver.schedule_restart();
-		} else if ("export" == input) {
-			driver.schedule_export();
 		} else if ("iteration" == input) {
 			logging::info(string::to_string(driver.iteration()));
 		}

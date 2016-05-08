@@ -65,9 +65,10 @@ void create_reference_normal_map(math::int2 dimensions) {
 
 			for (int32_t ay = 0; ay < aa.y; ++ay) {
 				for (int32_t ax = 0; ax < aa.x; ++ax) {
-					v += reference_normal(math::float2(fx + aa_offset.x + static_cast<float>(ax) * aa_delta.x,
-													   fy + aa_offset.y + static_cast<float>(ay) * aa_delta.y),
-										  range);
+					math::float2 p(fx + aa_offset.x + static_cast<float>(ax) * aa_delta.x,
+								   fy + aa_offset.y + static_cast<float>(ay) * aa_delta.y);
+
+					v += reference_normal(p, range);
 				}
 			}
 
@@ -93,7 +94,8 @@ void create_reference_normal_map(math::int2 dimensions) {
 	}
 
 	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgba, dimensions.x, dimensions.y, 4, &buffer_len);
+	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgba, dimensions.x, dimensions.y,
+															   4, &buffer_len);
 
 	if (!png_buffer) {
 		delete [] rgba;
