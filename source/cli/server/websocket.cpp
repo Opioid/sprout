@@ -2,16 +2,15 @@
 #include "base/crypto/base64.hpp"
 #include "base/crypto/sha1.hpp"
 
-
-#include <iostream>
-
 namespace server {
 
 Websocket::Websocket(const net::Socket& socket) : socket_(socket) {
 	buffer_.reserve(1024);
 }
 
-Websocket::~Websocket() {}
+Websocket::~Websocket() {
+	socket_.close();
+}
 
 bool Websocket::handshake() {
 	buffer_.resize(1024);
@@ -24,7 +23,6 @@ bool Websocket::handshake() {
 	buffer_[read_bytes] = '\0';
 
 	std::string response = handshake_response(buffer_.data());
-
 	send(response);
 
 	return true;
@@ -49,8 +47,10 @@ bool Websocket::send(const char* data, size_t size) {
 std::string Websocket::handshake_response(const char* header) {
 	std::string key_accept = Websocket::sec_websocket_accept(header);
 
-	return "HTTP/1.0 101 Switching Protocols\r\nContent-Type: application/json; "
-		   "charset=utf-8\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"
+	return "HTTP/1.0 101 Switching Protocols\r\n"
+		   "Content-Type: application/json; charset=utf-8\r\n"
+		   "Upgrade: websocket\r\n"
+		   "Connection: Upgrade\r\n"
 		   "Sec-WebSocket-Accept: " + key_accept + "\r\n\r\n";
 }
 

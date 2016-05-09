@@ -44,14 +44,13 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 	for (auto c = clients_.begin(); c != clients_.end();) {
 		// Here we are assuming that the client disconnected if the send fails.
 		// The nice solution probably is listening for a close message.
-		if (!(*c)->send(static_cast<char*>(png_buffer), buffer_len)) {
+		if (!(*c)->send(static_cast<const char*>(png_buffer), buffer_len)) {
 			delete *c;
 			c = clients_.erase(c);
 		} else {
 			++c;
 		}
 	}
-
 
 	mz_free(png_buffer);
 }

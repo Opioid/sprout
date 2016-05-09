@@ -3,6 +3,7 @@ window.onload = function() {
 
 	// Create a new WebSocket.
 	var socket = new WebSocket('ws://localhost:8080');
+//	socket.binaryType = "arraybuffer";
 
 	// Handle any errors that occur.
 	socket.onerror = function(error) {
@@ -18,8 +19,17 @@ window.onload = function() {
 	// Handle messages sent by the server.
 	socket.onmessage = function(event) {
 		if (event.data instanceof Blob) {
-			var imageUrl = URL.createObjectURL(event.data);
-			viewerImage.src = imageUrl;
+			viewerImage.src = URL.createObjectURL(event.data);
+			viewerImage.onload = function() {
+				URL.revokeObjectURL(this.src);
+			}
+		} else if (event.data instanceof ArrayBuffer) {
+			var binaryData = new Uint8Array(event.data);
+			var blob = new Blob([binaryData], { type: 'image/png' }); 
+			viewerImage.src = URL.createObjectURL(blob);
+			viewerImage.onload = function() {
+				URL.revokeObjectURL(this.src);
+			}
 		} else {
 			// var message = event.data;
 			// messagesList.innerHTML += '<li class="received"><span>Received:</span>' 
