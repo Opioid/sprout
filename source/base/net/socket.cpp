@@ -105,11 +105,9 @@ int Socket::send(char* buffer, uint32_t size) const {
 
 bool Socket::init() {
 #ifdef WIN32
-	WSAData wsa_data;
-
 	// Use the MAKEWORD(lowbyte, highbyte) macro declared in Windef.h
 	WORD version_requested = MAKEWORD(2, 2);
-
+	WSAData wsa_data;
 	return 0 == WSAStartup(version_requested, &wsa_data);
 #else
 	return true;

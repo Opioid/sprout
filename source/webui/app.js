@@ -18,8 +18,7 @@ window.onload = function() {
 	// Handle messages sent by the server.
 	socket.onmessage = function(event) {
 		if (event.data instanceof Blob) {
-			var urlCreator = window.URL || window.webkitURL;
-			var imageUrl = urlCreator.createObjectURL(event.data);
+			var imageUrl = URL.createObjectURL(event.data);
 			viewerImage.src = imageUrl;
 		} else {
 			// var message = event.data;
