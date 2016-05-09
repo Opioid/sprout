@@ -5,7 +5,8 @@
 
 namespace image { namespace encoding { namespace png {
 
-class Writer : public image::Writer, Srgb {
+class Writer : public image::Writer, Srgb_alpha {
+
 public:
 
 	Writer(math::int2 dimensions);

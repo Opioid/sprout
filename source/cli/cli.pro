@@ -17,6 +17,7 @@ SOURCES += \
 
 include(controller/controller.pri)
 include(options/options.pri)
+include(server/server.pri)
 
 win32:INCLUDEPATH += .
 
@@ -71,4 +72,5 @@ else:unix: PRE_TARGETDEPS += $$OUT_PWD/../base/libbase.a
 INCLUDEPATH += $$PWD/../../thirdparty/include
 DEPENDPATH += $$PWD/../../thirdparty/include
 
-unix: LIBS += -pthread
+win32: LIBS += Ws2_32.lib
+else:unix: LIBS += -pthread

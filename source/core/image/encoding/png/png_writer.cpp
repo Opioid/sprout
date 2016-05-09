@@ -5,7 +5,7 @@
 
 namespace image { namespace encoding { namespace png {
 
-Writer::Writer(math::int2 dimensions) : Srgb(dimensions) {}
+Writer::Writer(math::int2 dimensions) : Srgb_alpha(dimensions) {}
 
 std::string Writer::file_extension() const {
 	return "png";
@@ -13,7 +13,7 @@ std::string Writer::file_extension() const {
 
 bool Writer::write(std::ostream& stream, const Image_float_4& image, thread::Pool& pool) {
 	auto d = image.description().dimensions;
-	pool.run_range([this, &image](uint32_t begin, uint32_t end){
+	pool.run_range([this, &image](uint32_t begin, uint32_t end) {
 		to_sRGB(image, begin, end); }, 0, d.x * d.y);
 
 	size_t buffer_len = 0;

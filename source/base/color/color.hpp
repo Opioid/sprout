@@ -25,6 +25,7 @@ math::float3 gamma_to_linear(math::pfloat3 c, float gamma);
 math::float3 to_float(math::byte3 c);
 math::float4 to_float(math::byte4 c);
 
+math::byte3 to_byte(math::pfloat3 c);
 math::byte4 to_byte(const math::float4& c);
 uint32_t to_uint(const math::float4& c);
 
