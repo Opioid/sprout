@@ -22,6 +22,7 @@ public:
 
 	bool is_valid() const;
 
+	void shutdown() const;
 	void close();
 
 	bool listen(int backlog) const;

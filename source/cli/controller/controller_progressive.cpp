@@ -46,6 +46,7 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 	}
 
 	driver.abort();
+	server.shutdown();
 }
 
 }

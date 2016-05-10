@@ -25,7 +25,26 @@ void Server::run() {
 		return;
 	}
 
+	accept_socket_ = net::Socket("8080");
+
+	if (!accept_socket_.is_valid()) {
+		logging::error("Could not establish accept socket.");
+		return;
+	}
+
+	shutdown_ = false;
+
 	accept_thread_ = std::thread(&Server::accept_loop, this);
+}
+
+void Server::shutdown() {
+	shutdown_ = true;
+
+	accept_socket_.shutdown();
+
+	accept_thread_.join();
+
+	accept_socket_.close();
 }
 
 void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread::Pool& pool) {
@@ -56,20 +75,17 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 }
 
 void Server::accept_loop() {
-	net::Socket listen_socket("8080");
-
-	if (!listen_socket.is_valid()) {
-		logging::error("Could not establish listen socket.");
-		return;
-	}
-
-	listen_socket.listen(10);
+	accept_socket_.listen(10);
 
 	for (;;) {
-		net::Socket connection_socket = listen_socket.accept();
+		net::Socket connection_socket = accept_socket_.accept();
 
 		if (!connection_socket.is_valid()) {
-			continue;
+			if (shutdown_) {
+				return;
+			} else {
+				continue;
+			}
 		}
 
 		Websocket* client = new Websocket(connection_socket);

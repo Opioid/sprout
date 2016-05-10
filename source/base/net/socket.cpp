@@ -63,6 +63,10 @@ bool Socket::is_valid() const {
 	return socket_ != Invalid_socket;
 }
 
+void Socket::shutdown() const {
+	::shutdown(socket_, SHUT_RDWR);
+}
+
 void Socket::close() {
 #ifdef WIN32
 	closesocket(socket_);
