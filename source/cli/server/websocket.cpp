@@ -15,7 +15,7 @@ Websocket::~Websocket() {
 bool Websocket::handshake() {
 	buffer_.resize(1024);
 
-	int read_bytes = socket_.receive(buffer_.data(), buffer_.size() - 1);
+	int read_bytes = socket_.receive(buffer_.data(), static_cast<uint32_t>(buffer_.size() - 1));
 	if (read_bytes < 0) {
 		return false;
 	}
@@ -33,7 +33,7 @@ bool Websocket::send(const std::string& text) {
 
 	buffer_.insert(buffer_.end(), text.begin(), text.end());
 
-	return socket_.send(buffer_.data(), buffer_.size()) >= 0;
+	return socket_.send(buffer_.data(), static_cast<uint32_t>(buffer_.size())) >= 0;
 }
 
 bool Websocket::send(const char* data, size_t size) {
@@ -41,7 +41,7 @@ bool Websocket::send(const char* data, size_t size) {
 
 	buffer_.insert(buffer_.end(), data, data + size);
 
-	return socket_.send(buffer_.data(), buffer_.size()) >= 0;
+	return socket_.send(buffer_.data(), static_cast<uint32_t>(buffer_.size())) >= 0;
 }
 
 std::string Websocket::handshake_response(const char* header) {
