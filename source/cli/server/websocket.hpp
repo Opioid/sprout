@@ -10,10 +10,16 @@ class Websocket {
 
 public:
 
-	Websocket(const net::Socket& socket);
+	Websocket(net::Socket socket);
 	~Websocket();
 
+	void shutdown() const;
+
 	bool handshake();
+
+	void ping(const std::string& text);
+
+	int receive(char* data, size_t size);
 
 	bool send(const std::string& text);
 
@@ -24,6 +30,11 @@ public:
 	static std::string sec_websocket_accept(const char* header);
 
 	static std::string sec_websocket_key(const char* header);
+
+	static bool is_pong(const char* data, size_t size);
+	static bool is_text(const char* data, size_t size);
+
+	static void decode_text(const char* data, size_t size, std::string& text);
 
 private:
 

@@ -4,12 +4,16 @@
 
 namespace server {
 
-Websocket::Websocket(const net::Socket& socket) : socket_(socket) {
+Websocket::Websocket(net::Socket socket) : socket_(socket) {
 	buffer_.reserve(1024);
 }
 
 Websocket::~Websocket() {
 	socket_.close();
+}
+
+void Websocket::shutdown() const {
+	socket_.shutdown();
 }
 
 bool Websocket::handshake() {
@@ -26,6 +30,18 @@ bool Websocket::handshake() {
 	send(response);
 
 	return true;
+}
+
+void Websocket::ping(const std::string& text) {
+	prepare_header(text.size(), Opcode::Ping);
+
+	buffer_.insert(buffer_.end(), text.begin(), text.end());
+
+	socket_.send(buffer_.data(), static_cast<uint32_t>(buffer_.size()));
+}
+
+int Websocket::receive(char* data, size_t size) {
+	return socket_.receive(data, static_cast<uint32_t>(size));
 }
 
 bool Websocket::send(const std::string& text) {
@@ -73,6 +89,57 @@ std::string Websocket::sec_websocket_key(const char* header) {
 	auto key_start_iter = key_iter + key_label.size();
 
 	return string.substr(key_start_iter, key_end_iter - key_start_iter);
+}
+
+bool Websocket::is_pong(const char* data, size_t size) {
+	if (!size) {
+		return false;
+	}
+
+	return (0x80 | static_cast<char>(Opcode::Pong)) == (data[0] & 0xff);
+}
+
+bool Websocket::is_text(const char* data, size_t size) {
+	if (!size) {
+		return false;
+	}
+
+	return (0x80 | static_cast<char>(Opcode::Text_frame)) == (data[0] & 0xff);
+}
+
+void Websocket::decode_text(const char* data, size_t size, std::string& text) {
+	uint32_t payload_length = 0;
+
+	bool masked = (data[1] & 0x80) == 0x80;
+
+	uint32_t mask_start = 0;
+	if ((data[1] & 0x7f) < 126) {
+		payload_length = static_cast<uint32_t>(data[1] & 0x7f);
+		mask_start = 2;
+	}
+
+	char mask[4];
+	uint32_t payload_start = 0;
+
+	if (masked) {
+		mask[0] = data[mask_start + 0];
+		mask[1] = data[mask_start + 1];
+		mask[2] = data[mask_start + 2];
+		mask[3] = data[mask_start + 3];
+
+		payload_start = mask_start + 4;
+	} else {
+		payload_start = mask_start;
+	}
+
+	text.clear();
+
+	for (uint32_t i = 0; i < payload_length; ++i) {
+		uint32_t index = payload_start + i;
+		text.insert(text.end(), data[index] ^ mask[i % 4]);
+	}
+
+	text.insert(text.end(), '\0');
 }
 
 void Websocket::prepare_header(size_t payload_length, Opcode opcode) {

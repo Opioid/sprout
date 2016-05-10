@@ -1,5 +1,5 @@
 #include "server.hpp"
-#include "websocket.hpp"
+#include "client.hpp"
 #include "core/logging/logging.hpp"
 #include "base/math/vector.inl"
 #include "base/thread/thread_pool.hpp"
@@ -12,7 +12,7 @@ namespace server {
 Server::Server(math::int2 dimensions) : srgb_(dimensions) {}
 
 Server::~Server() {
-	for (Websocket* c : clients_) {
+	for (Client* c : clients_) {
 		delete c;
 	}
 
@@ -45,6 +45,10 @@ void Server::shutdown() {
 	accept_thread_.join();
 
 	accept_socket_.close();
+
+	for (Client* c : clients_) {
+		c->shutdown();
+	}
 }
 
 void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread::Pool& pool) {
@@ -61,10 +65,13 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 	}
 
 	for (auto c = clients_.begin(); c != clients_.end();) {
+		Client* client = *c;
+
 		// Here we are assuming that the client disconnected if the send fails.
 		// The nice solution probably is listening for a close message.
-		if (!(*c)->send(static_cast<const char*>(png_buffer), buffer_len)) {
-			delete *c;
+		if (!client->send(static_cast<const char*>(png_buffer), buffer_len)) {
+			client->shutdown();
+			delete client;
 			c = clients_.erase(c);
 		} else {
 			++c;
@@ -88,9 +95,9 @@ void Server::accept_loop() {
 			}
 		}
 
-		Websocket* client = new Websocket(connection_socket);
+		Client* client = new Client(connection_socket);
 
-		if (!client->handshake()) {
+		if (!client->run()) {
 			delete client;
 			continue;
 		}

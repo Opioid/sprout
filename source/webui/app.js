@@ -1,4 +1,7 @@
 window.onload = function() {
+	var consoleForm = document.getElementById('consoleForm');
+	var consoleInput = document.getElementById('consoleInput');
+
 	var viewerImage = document.getElementById('viewerImage');
 
 	// Create a new WebSocket.
@@ -41,6 +44,22 @@ window.onload = function() {
 	socket.onclose = function(event) {
 		// socketStatus.innerHTML = 'Disconnected from WebSocket.';
 		// socketStatus.className = 'closed';
+	};
+
+	// Send a message when the form is submitted.
+	consoleForm.onsubmit = function(e) {
+		e.preventDefault();
+
+		// Retrieve the message from the textarea.
+		var message = consoleInput.value;
+
+    	// Send the message through the WebSocket.
+		socket.send(message);
+
+		// Clear out the message field.
+		consoleInput.value = '';
+
+		return false;
 	};
 };
  

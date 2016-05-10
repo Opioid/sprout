@@ -8,7 +8,7 @@
 
 namespace server {
 
-class Websocket;
+class Client;
 
 class Server : public exporting::Sink {
 
@@ -33,7 +33,7 @@ private:
 
 	bool shutdown_;
 
-	std::list<Websocket*> clients_;
+	std::list<Client*> clients_;
 
 	image::encoding::Srgb_alpha srgb_;
 };
