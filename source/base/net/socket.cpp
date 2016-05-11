@@ -64,7 +64,13 @@ bool Socket::is_valid() const {
 }
 
 void Socket::shutdown() const {
-	::shutdown(socket_, SHUT_RDWR);
+#ifdef WIN32
+	int how = SD_BOTH;
+#else
+	int how = SHUT_RDWR;
+#endif
+
+	::shutdown(socket_, how);
 }
 
 void Socket::close() {
