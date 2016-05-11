@@ -28,7 +28,7 @@ bool Client::send(const char* data, size_t size) {
 }
 
 void Client::loop() {
-	std::vector<char> buffer(128);
+	std::vector<char> buffer(512);
 
 	std::string text;
 

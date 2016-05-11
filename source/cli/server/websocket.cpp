@@ -95,41 +95,54 @@ std::string Websocket::sec_websocket_key(const char* header) {
 	return string.substr(key_start_iter, key_end_iter - key_start_iter);
 }
 
-bool Websocket::is_pong(const char* data, size_t size) {
+bool Websocket::is_pong(const char* buffer, size_t size) {
 	if (!size) {
 		return false;
 	}
 
-	return (0x80 | static_cast<char>(Opcode::Pong)) == (data[0] & 0xff);
+	return (0x80 | static_cast<char>(Opcode::Pong)) == (buffer[0] & 0xff);
 }
 
-bool Websocket::is_text(const char* data, size_t size) {
+bool Websocket::is_text(const char* buffer, size_t size) {
 	if (!size) {
 		return false;
 	}
 
-	return (0x80 | static_cast<char>(Opcode::Text_frame)) == (data[0] & 0xff);
+	return (0x80 | static_cast<char>(Opcode::Text_frame)) == (buffer[0] & 0xff);
 }
 
-void Websocket::decode_text(const char* data, size_t size, std::string& text) {
-	uint32_t payload_length = 0;
+void Websocket::decode_text(const char* buffer, size_t size, std::string& text) {
+	uint64_t payload_length = 0;
 
-	bool masked = (data[1] & 0x80) == 0x80;
+	bool masked = (buffer[1] & 0x80) == 0x80;
 
 	uint32_t mask_start = 0;
-	if ((data[1] & 0x7f) < 126) {
-		payload_length = static_cast<uint32_t>(data[1] & 0x7f);
+
+	const uint32_t length_marker = buffer[1] & 0x7f;
+	if (length_marker < 126) {
+		payload_length = length_marker;
 		mask_start = 2;
+	} else if (length_marker == 126) {
+		payload_length = buffer[2] << 8
+					   | buffer[3];
+		mask_start = 4;
+	}
+
+	if (payload_length > size) {
+		// to really support websockets we need a mechanism
+		// to decode data which is larger than the current buffer
+		text.clear();
+		return;
 	}
 
 	char mask[4];
 	uint32_t payload_start = 0;
 
 	if (masked) {
-		mask[0] = data[mask_start + 0];
-		mask[1] = data[mask_start + 1];
-		mask[2] = data[mask_start + 2];
-		mask[3] = data[mask_start + 3];
+		mask[0] = buffer[mask_start + 0];
+		mask[1] = buffer[mask_start + 1];
+		mask[2] = buffer[mask_start + 2];
+		mask[3] = buffer[mask_start + 3];
 
 		payload_start = mask_start + 4;
 	} else {
@@ -138,12 +151,10 @@ void Websocket::decode_text(const char* data, size_t size, std::string& text) {
 
 	text.clear();
 
-	for (uint32_t i = 0; i < payload_length; ++i) {
-		uint32_t index = payload_start + i;
-		text.insert(text.end(), data[index] ^ mask[i % 4]);
+	for (uint64_t i = 0; i < payload_length; ++i) {
+		uint64_t index = payload_start + i;
+		text.insert(text.end(), buffer[index] ^ mask[i % 4]);
 	}
-
-	text.insert(text.end(), '\0');
 }
 
 void Websocket::prepare_header(size_t payload_length, Opcode opcode) {

@@ -31,10 +31,10 @@ public:
 
 	static std::string sec_websocket_key(const char* header);
 
-	static bool is_pong(const char* data, size_t size);
-	static bool is_text(const char* data, size_t size);
+	static bool is_pong(const char* buffer, size_t size);
+	static bool is_text(const char* buffer, size_t size);
 
-	static void decode_text(const char* data, size_t size, std::string& text);
+	static void decode_text(const char* buffer, size_t size, std::string& text);
 
 private:
 

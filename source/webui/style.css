@@ -1,4 +1,41 @@
 body {
 	margin: 0px;
-    background-color: #272822;
+
+	color: #e6e5e2;
+
+	background-color: #272822;
 } 
+
+#consoleInput {
+	background-color: #272822;
+
+	border: solid 2px #e6e5e2;
+
+	color: #e6e5e2;
+
+	font-family: monospace;
+	font-size: 16px;
+
+	width: 800px;
+}
+
+.top { 
+	overflow:hidden; 
+}
+
+#viewer {
+	float: left;
+}
+
+.sidebar {
+	float: left;
+
+	margin: 4px;
+}
+
+#fpsLabel {
+	float: left;
+
+	font-size: 20px;
+	font-family: sans-serif;
+}

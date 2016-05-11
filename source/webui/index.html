@@ -9,16 +9,28 @@
 
 	<script src="app.js"></script>
 
-	<div id="viewer">
-		<img id="viewerImage"/>
+	<div class="top">
+
+		<div id="viewer">
+			<img id="viewerImage"/>
+		</div>
+
+		<!--
+		<div class="sidebar">
+			<div id="fpsLabel">
+				0 FPS
+			</div>
+		</div>
+		-->
+
 	</div>
 
 	<div id="console">
 		<form id="consoleForm" action="#" method="post">
-			<textarea id="consoleInput" placeholder="Write your message here..." required></textarea>
-			<button type="submit">Send Message</button>
+			<input id="consoleInput" type="text" placeholder="Write command here..." required/>
 		</form>
 	</div>
+
 
 </body>
 </html> 
