@@ -1,5 +1,4 @@
 #include "client.hpp"
-#include <iostream>
 
 namespace server {
 
@@ -32,8 +31,8 @@ bool Client::pop_message(std::string& message) {
 		return false;
 	}
 
-	message = messages_[0];
-	messages_.clear();
+	message = messages_.front();
+	messages_.pop_front();
 	return true;
 }
 
@@ -57,8 +56,6 @@ void Client::loop() {
 			Websocket::decode_text(buffer.data(), read_bytes, text);
 
 			push_message(text);
-
-		//	std::cout << text << std::endl;
 		}
 	}
 }

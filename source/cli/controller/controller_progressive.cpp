@@ -44,7 +44,6 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 
 	server.run();
 
-//	driver.render(*take.exporter);
 	driver.render(server);
 
 	for (;;) {

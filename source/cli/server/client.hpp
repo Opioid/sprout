@@ -1,6 +1,7 @@
 #pragma once
 
 #include "websocket.hpp"
+#include <deque>
 #include <thread>
 
 namespace server {
@@ -29,7 +30,7 @@ private:
 
 	std::thread thread_;
 
-	std::vector<std::string> messages_;
+	std::deque<std::string> messages_;
 };
 
 }

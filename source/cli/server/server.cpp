@@ -84,7 +84,7 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 
 		// If the client is still active we can process any messages that queued up
 		if (client) {
-			if (client->pop_message(message)) {
+			while (client->pop_message(message)) {
 				message_handler_.handle(message);
 			}
 		}
