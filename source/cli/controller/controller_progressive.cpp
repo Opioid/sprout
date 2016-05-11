@@ -1,4 +1,5 @@
 #include "controller_progressive.hpp"
+#include "server/message_handler.hpp"
 #include "server/server.hpp"
 #include "core/logging/logging.hpp"
 #include "core/rendering/rendering_driver_progressive.hpp"
@@ -13,6 +14,19 @@
 
 namespace controller {
 
+class Message_handler : public server::Message_handler {
+
+public:
+
+	Message_handler(rendering::Driver_progressive& driver) : driver_(driver) {}
+
+	virtual void handle(const std::string& message) final override;
+
+private:
+
+	rendering::Driver_progressive& driver_;
+};
+
 void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thread_pool) {
 	logging::info("Progressive mode... type stuff to interact");
 
@@ -25,7 +39,8 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 										 take.sampler, scene, take.view,
 										 thread_pool);
 
-	server::Server server(take.view.camera->sensor_dimensions());
+	Message_handler handler(driver);
+	server::Server server(take.view.camera->sensor_dimensions(), handler);
 
 	server.run();
 
@@ -38,16 +53,22 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 
 		if ("abort" == input || "exit" == input || "quit" == input) {
 			break;
-		} else if ("restart" == input) {
-			driver.schedule_restart();
 		} else if ("iteration" == input) {
 			logging::info(string::to_string(driver.iteration()));
+		} else {
+			handler.handle(input);
 		}
 	}
 
 	driver.abort();
 
 	server.shutdown();
+}
+
+void Message_handler::handle(const std::string& message) {
+	if ("restart" == message) {
+		driver_.schedule_restart();
+	}
 }
 
 }

@@ -17,13 +17,19 @@ public:
 
 	bool send(const char* data, size_t size);
 
+	bool pop_message(std::string& message);
+
 private:
 
 	void loop();
 
+	void push_message(const std::string& message);
+
 	Websocket websocket_;
 
 	std::thread thread_;
+
+	std::vector<std::string> messages_;
 };
 
 }

@@ -5,5 +5,6 @@
 
 HEADERS += \
 	server/client.hpp \
+	server/message_handler.hpp \
 	server/server.hpp \ 
 	server/websocket.hpp \

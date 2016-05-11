@@ -1,5 +1,6 @@
 #include "server.hpp"
 #include "client.hpp"
+#include "message_handler.hpp"
 #include "core/logging/logging.hpp"
 #include "base/math/vector.inl"
 #include "base/thread/thread_pool.hpp"
@@ -9,7 +10,8 @@
 
 namespace server {
 
-Server::Server(math::int2 dimensions) : srgb_(dimensions) {}
+Server::Server(math::int2 dimensions, Message_handler& message_handler) :
+	srgb_(dimensions), message_handler_(message_handler) {}
 
 Server::~Server() {
 	for (Client* c : clients_) {
@@ -64,6 +66,8 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 		return;
 	}
 
+	std::string message;
+
 	for (auto c = clients_.begin(); c != clients_.end();) {
 		Client* client = *c;
 
@@ -72,9 +76,17 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 		if (!client->send(static_cast<const char*>(png_buffer), buffer_len)) {
 			client->shutdown();
 			delete client;
+			client = nullptr;
 			c = clients_.erase(c);
 		} else {
 			++c;
+		}
+
+		// If the client is still active we can process any messages that queued up
+		if (client) {
+			if (client->pop_message(message)) {
+				message_handler_.handle(message);
+			}
 		}
 	}
 

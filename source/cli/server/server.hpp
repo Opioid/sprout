@@ -9,12 +9,13 @@
 namespace server {
 
 class Client;
+class Message_handler;
 
 class Server : public exporting::Sink {
 
 public:
 
-	Server(math::int2 dimensions);
+	Server(math::int2 dimensions, Message_handler& message_handler);
 	~Server();
 
 	void run();
@@ -26,6 +27,8 @@ public:
 private:
 
 	void accept_loop();
+
+	Message_handler& message_handler_;
 
 	std::thread accept_thread_;
 
