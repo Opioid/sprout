@@ -22,6 +22,7 @@ public:
 
 	bool is_valid() const;
 
+	void cancel_blocking_accept();
 	void shutdown() const;
 	void close();
 

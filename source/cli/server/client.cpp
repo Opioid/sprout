@@ -34,7 +34,12 @@ void Client::loop() {
 
 	for (;;) {
 		int read_bytes = websocket_.receive(buffer.data(), buffer.size());
-		if (!read_bytes) {
+
+		// read_bytes >  0 means something was received
+		// read_bytes == 0 means the socket is done with receiving
+		// read_bytes <  0 means there was some kind of error
+
+		if (read_bytes <= 0) {
 			return;
 		}
 

@@ -63,6 +63,14 @@ bool Socket::is_valid() const {
 	return socket_ != Invalid_socket;
 }
 
+void Socket::cancel_blocking_accept() {
+#ifdef WIN32
+	close();
+#else
+	shutdown();
+#endif
+}
+
 void Socket::shutdown() const {
 #ifdef WIN32
 	int how = SD_BOTH;

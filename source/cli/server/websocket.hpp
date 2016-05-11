@@ -13,7 +13,7 @@ public:
 	Websocket(net::Socket socket);
 	~Websocket();
 
-	void shutdown() const;
+	void shutdown();
 
 	bool handshake();
 

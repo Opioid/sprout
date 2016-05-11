@@ -12,8 +12,12 @@ Websocket::~Websocket() {
 	socket_.close();
 }
 
-void Websocket::shutdown() const {
+void Websocket::shutdown() {
+//	socket_.cancel_blocking();
+
 	socket_.shutdown();
+
+//	socket_.close();
 }
 
 bool Websocket::handshake() {

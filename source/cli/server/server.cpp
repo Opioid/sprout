@@ -40,7 +40,7 @@ void Server::run() {
 void Server::shutdown() {
 	shutdown_ = true;
 
-	accept_socket_.shutdown();
+	accept_socket_.cancel_blocking_accept();
 
 	accept_thread_.join();
 
