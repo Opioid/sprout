@@ -24,9 +24,9 @@ public:
 	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 							  scene::Ray& ray) const final override;
 
-private:
+	void set_fov(float fov);
 
-	float fov_;
+private:
 
 	math::float3 left_top_;
 	math::float3 d_x_;

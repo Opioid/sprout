@@ -13,14 +13,11 @@
 namespace scene { namespace camera {
 
 Perspective::Perspective(math::int2 resolution, float ray_max_t,
-						 const Focus& focus, float fov, float lens_radius) :
-	Camera(resolution, ray_max_t), focus_(focus),
-	lens_radius_(lens_radius), focal_distance_(focus_.distance) {
+						 float fov, float lens_radius, const Focus& focus) :
+	Camera(resolution, ray_max_t),
+	lens_radius_(lens_radius) {
 	set_fov(fov);
-
-	math::float2 fr(resolution);
-	focus_.point.x *= fr.x;
-	focus_.point.y *= fr.y;
+	set_focus(focus);
 }
 
 void Perspective::set_parameters(const json::Value& parameters) {
@@ -32,6 +29,10 @@ void Perspective::set_parameters(const json::Value& parameters) {
 			set_fov(math::degrees_to_radians(json::read_float(node_value)));
 		} else if ("lens_radius" == node_name) {
 			lens_radius_ = json::read_float(node_value);
+		} else if ("focus" == node_name) {
+			Focus focus;
+			load_focus(node_value, focus);
+			set_focus(focus);
 		}
 	}
 }
@@ -123,6 +124,36 @@ void Perspective::set_fov(float fov) {
 
 	d_x_ = (right_top   - left_top_) / fr.x;
 	d_y_ = (left_bottom - left_top_) / fr.y;
+}
+
+void Perspective::set_lens_radius(float lens_radius) {
+	lens_radius_ = lens_radius;
+}
+
+void Perspective::set_focus(const Focus& focus) {
+	focus_ = focus;
+
+	math::float2 fr(resolution_);
+	focus_.point.x *= fr.x;
+	focus_.point.y *= fr.y;
+
+	focal_distance_ = focus_.distance;
+}
+
+void Perspective::load_focus(const json::Value& focus_value, Focus& focus) {
+	focus.use_point = false;
+
+	for (auto n = focus_value.MemberBegin(); n != focus_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const json::Value& node_value = n->value;
+
+		if ("point" == node_name) {
+			focus.point = json::read_float3(node_value);
+			focus.use_point = true;
+		} else if ("distance" == node_name) {
+			focus.distance = json::read_float(node_value);
+		}
+	}
 }
 
 }}

@@ -15,7 +15,7 @@ public:
 	};
 
 	Perspective(math::int2 resolution, float ray_max_t,
-				const Focus& focus, float fov, float lens_radius);
+				float fov, float lens_radius, const Focus& focus);
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 
@@ -31,6 +31,15 @@ public:
 							  scene::Ray& ray) const final override;
 
 	void set_fov(float fov);
+
+	void set_lens_radius(float lens_radius);
+
+	void set_focus(const Focus& focus);
+
+
+protected:
+
+	static void load_focus(const json::Value& focus_value, Focus& focus);
 
 private:
 

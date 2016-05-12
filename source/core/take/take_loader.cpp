@@ -221,7 +221,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 		} else {
 			camera = std::make_shared<scene::camera::Perspective>(
 						resolution, take.settings.ray_max_t,
-						focus, fov, lens_radius);
+						fov, lens_radius, focus);
 		}
 	} else if ("Spherical" == type_name) {
 		if (stereo.interpupillary_distance > 0.f) {
