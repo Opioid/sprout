@@ -17,6 +17,8 @@ public:
 	Perspective(math::int2 resolution, float ray_max_t,
 				const Focus& focus, float fov, float lens_radius);
 
+	virtual void set_parameters(const json::Value& parameters) final override;
+
 	virtual uint32_t num_views() const final override;
 
 	virtual math::int2 sensor_dimensions() const final override;
@@ -27,6 +29,8 @@ public:
 
 	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 							  scene::Ray& ray) const final override;
+
+	void set_fov(float fov);
 
 private:
 

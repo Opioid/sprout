@@ -63,6 +63,8 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout,
 	view_rotations_[11] = view_rotations_[5];
 }
 
+void Cubic_stereoscopic::set_parameters(const json::Value& /*parameters*/) {}
+
 uint32_t Cubic_stereoscopic::num_views() const {
 	return 12;
 }

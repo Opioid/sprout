@@ -33,6 +33,8 @@ private:
 
 	void render_loop(exporting::Sink& exporter);
 
+	void restart();
+
 	std::thread render_thread_;
 
 	uint32_t iteration_;

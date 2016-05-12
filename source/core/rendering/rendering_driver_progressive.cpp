@@ -29,13 +29,9 @@ void Driver_progressive::render(exporting::Sink& exporter) {
 
 	scene_.tick(thread_pool_);
 
-	view_.camera->update_focus(workers_[0]);
+	restart();
 
-	view_.camera->sensor().clear();
-
-	iteration_ = 0;
 	rendering_ = true;
-	schedule_.restart = false;
 
 	render_thread_ = std::thread([this, &exporter]() {
 		for (; rendering_; ++iteration_) {
@@ -82,11 +78,17 @@ void Driver_progressive::render_loop(exporting::Sink& exporter) {
 	exporter.write(target_, iteration_, thread_pool_);
 
 	if (schedule_.restart) {
-		view_.camera->sensor().clear();
-		iteration_ = 0;
-
-		schedule_.restart = false;
+		restart();
 	}
+}
+
+void Driver_progressive::restart() {
+	view_.camera->update_focus(workers_[0]);
+
+	view_.camera->sensor().clear();
+	iteration_ = 0;
+
+	schedule_.restart = false;
 }
 
 }

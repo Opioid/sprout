@@ -6,15 +6,15 @@
 
 namespace scene { namespace animation {
 
-std::shared_ptr<animation::Animation> load_keyframes(const rapidjson::Value& keyframes_value,
-													 const math::transformation& default_transformation);
+std::shared_ptr<animation::Animation> load_keyframes(
+		const json::Value& keyframes_value, const math::transformation& default_transformation);
 
-std::shared_ptr<animation::Animation> load_sequence(const rapidjson::Value& keyframes_value,
-													const math::transformation& default_transformation);
+std::shared_ptr<animation::Animation> load_sequence(
+		const json::Value& keyframes_value, const math::transformation& default_transformation);
 
-void read_morphing(const rapidjson::Value& value, entity::Keyframe::Morphing& morphing);
+void read_morphing(const json::Value& value, entity::Keyframe::Morphing& morphing);
 
-std::shared_ptr<animation::Animation> load(const rapidjson::Value& animation_value,
+std::shared_ptr<animation::Animation> load(const json::Value& animation_value,
 										   const math::transformation& default_transformation) {
 	for (auto n = animation_value.MemberBegin(); n != animation_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -30,8 +30,8 @@ std::shared_ptr<animation::Animation> load(const rapidjson::Value& animation_val
 	return nullptr;
 }
 
-std::shared_ptr<animation::Animation> load_keyframes(const rapidjson::Value& keyframes_value,
-													 const math::transformation& default_transformation) {
+std::shared_ptr<animation::Animation> load_keyframes(
+		const json::Value& keyframes_value, const math::transformation& default_transformation) {
 	if (!keyframes_value.IsArray()) {
 		return nullptr;
 	}
@@ -67,8 +67,8 @@ std::shared_ptr<animation::Animation> load_keyframes(const rapidjson::Value& key
 	return animation;
 }
 
-std::shared_ptr<animation::Animation> load_sequence(const rapidjson::Value& sequence_value,
-													const math::transformation& default_transformation) {
+std::shared_ptr<animation::Animation> load_sequence(
+		const json::Value& sequence_value, const math::transformation& default_transformation) {
 	uint32_t start_frame = 0;
 	uint32_t num_frames = 0;
 	uint32_t frames_per_second = 0;
@@ -117,7 +117,7 @@ std::shared_ptr<animation::Animation> load_sequence(const rapidjson::Value& sequ
 	return animation;
 }
 
-void read_morphing(const rapidjson::Value& value, entity::Keyframe::Morphing& morphing) {
+void read_morphing(const json::Value& value, entity::Keyframe::Morphing& morphing) {
 	for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;

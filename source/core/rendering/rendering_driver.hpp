@@ -37,6 +37,8 @@ public:
 
 	~Driver();
 
+	scene::camera::Camera& camera();
+
 protected:
 
 	Surface_integrator_factory surface_integrator_factory_;

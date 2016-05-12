@@ -1,7 +1,7 @@
 #pragma once
 
 #include "material/material.hpp"
-#include "base/json/rapidjson_types.hpp"
+#include "base/json/json_types.hpp"
 #include <istream>
 #include <string>
 #include <map>

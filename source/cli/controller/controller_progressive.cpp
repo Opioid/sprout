@@ -7,6 +7,7 @@
 #include "core/scene/scene.hpp"
 #include "core/take/take.hpp"
 #include "core/progress/progress_sink.hpp"
+#include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
@@ -67,6 +68,16 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 void Message_handler::handle(const std::string& message) {
 	if ("restart" == message) {
 		driver_.schedule_restart();
+	} else {
+
+		try {
+			auto root = json::parse(message);
+
+			driver_.camera().set_parameters(*root);
+			driver_.schedule_restart();
+		} catch (const std::exception& e) {
+			logging::error(e.what());
+		}
 	}
 }
 

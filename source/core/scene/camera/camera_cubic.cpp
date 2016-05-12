@@ -59,6 +59,8 @@ Cubic::Cubic(Layout layout, math::int2 resolution, float ray_max_t) :
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 }
 
+void Cubic::set_parameters(const json::Value& /*parameters*/) {}
+
 uint32_t Cubic::num_views() const {
 	return 6;
 }

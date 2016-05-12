@@ -13,7 +13,7 @@
 #include "substitute/substitute_sample.hpp"
 #include "substitute/substitute_sample_clearcoat.hpp"
 #include "substitute/substitute_sample_translucent.hpp"
-#include "base/json/rapidjson_types.hpp"
+#include "base/json/json_types.hpp"
 #include <vector>
 
 namespace image { namespace texture { class Texture_2D; }}

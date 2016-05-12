@@ -44,6 +44,20 @@ std::string read_error(rapidjson::Document& document, std::istream& stream) {
 	return sstream.str();
 }
 
+std::unique_ptr<rapidjson::Document> parse(const std::string& buffer) {
+	rapidjson::StringStream json_stream(buffer.c_str());
+
+	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
+
+	document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
+
+	if (document->HasParseError()) {
+		throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
+	}
+
+	return document;
+}
+
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
 	Read_stream json_stream(stream);
 

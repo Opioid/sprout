@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/json/rapidjson_types.hpp"
+#include "base/json/json_types.hpp"
 #include <memory>
 
 namespace resource { class Manager; }
@@ -16,7 +16,8 @@ class Provider;
 class Generator {
 public:
 
-	virtual std::shared_ptr<Shape> create_mesh(const rapidjson::Value& mesh_value, resource::Manager& manager) = 0;
+	virtual std::shared_ptr<Shape> create_mesh(const json::Value& mesh_value,
+											   resource::Manager& manager) = 0;
 };
 
 }}}

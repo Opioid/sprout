@@ -4,4 +4,4 @@ SOURCES += \
 HEADERS += \
 	json/json.hpp \
 	json/json_read_stream.hpp \
-	json/rapidjson_types.hpp \
+	json/json_types.hpp \

@@ -32,6 +32,8 @@ Perspective_stereoscopic::Perspective_stereoscopic(float interpupillary_distance
 								  math::int2(resolution.x * 2, resolution.y)};
 }
 
+void Perspective_stereoscopic::set_parameters(const json::Value& /*parameters*/) {}
+
 uint32_t Perspective_stereoscopic::num_views() const {
 	return 2;
 }

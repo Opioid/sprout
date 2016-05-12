@@ -10,6 +10,7 @@
 
 namespace json {
 
+std::unique_ptr<rapidjson::Document> parse(const std::string& buffer);
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream);
 
 bool read_bool(const rapidjson::Value& value);

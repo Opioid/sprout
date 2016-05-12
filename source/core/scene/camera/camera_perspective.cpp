@@ -4,6 +4,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.hpp"
 #include "sampler/camera_sample.hpp"
+#include "base/json/json.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -15,20 +16,24 @@ Perspective::Perspective(math::int2 resolution, float ray_max_t,
 						 const Focus& focus, float fov, float lens_radius) :
 	Camera(resolution, ray_max_t), focus_(focus),
 	lens_radius_(lens_radius), focal_distance_(focus_.distance) {
+	set_fov(fov);
+
 	math::float2 fr(resolution);
-	float ratio = fr.x / fr.y;
-
-	float z = ratio * math::Pi / fov * 0.5f;
-
-	left_top_ = math::float3(-ratio,  1.f, z);
-	math::float3 right_top	( ratio,  1.f, z);
-	math::float3 left_bottom(-ratio, -1.f, z);
-
-	d_x_ = (right_top   - left_top_) / fr.x;
-	d_y_ = (left_bottom - left_top_) / fr.y;
-
 	focus_.point.x *= fr.x;
 	focus_.point.y *= fr.y;
+}
+
+void Perspective::set_parameters(const json::Value& parameters) {
+	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const json::Value& node_value = n->value;
+
+		if ("fov" == node_name) {
+			set_fov(math::degrees_to_radians(json::read_float(node_value)));
+		} else if ("lens_radius" == node_name) {
+			lens_radius_ = json::read_float(node_value);
+		}
+	}
 }
 
 uint32_t Perspective::num_views() const {
@@ -104,6 +109,20 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*
 	ray.depth = 0;
 
 	return true;
+}
+
+void Perspective::set_fov(float fov) {
+	math::float2 fr(resolution_);
+	float ratio = fr.x / fr.y;
+
+	float z = ratio * math::Pi / fov * 0.5f;
+
+	left_top_ = math::float3(-ratio,  1.f, z);
+	math::float3 right_top	( ratio,  1.f, z);
+	math::float3 left_bottom(-ratio, -1.f, z);
+
+	d_x_ = (right_top   - left_top_) / fr.x;
+	d_y_ = (left_bottom - left_top_) / fr.y;
 }
 
 }}

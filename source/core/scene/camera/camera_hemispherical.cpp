@@ -19,6 +19,8 @@ Hemispherical::Hemispherical(math::int2 resolution, float ray_max_t) :
 	d_y_ = 1.f / fr.y;
 }
 
+void Hemispherical::set_parameters(const json::Value& /*parameters*/) {}
+
 uint32_t Hemispherical::num_views() const {
 	return 1;
 }

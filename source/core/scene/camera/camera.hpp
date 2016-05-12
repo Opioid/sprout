@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/entity/entity.hpp"
+#include "base/json/json_types.hpp"
 #include "base/math/rectangle.hpp"
 
 namespace sampler { struct Camera_sample; }
@@ -25,6 +26,8 @@ public:
 	Camera(math::int2 resolution, float ray_max_t);
 
 	virtual ~Camera();
+
+	virtual void set_parameters(const json::Value& parameters) = 0;
 
 	virtual uint32_t num_views() const = 0;
 
