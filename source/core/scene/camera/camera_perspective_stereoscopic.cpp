@@ -12,9 +12,8 @@ namespace scene { namespace camera {
 
 Perspective_stereoscopic::Perspective_stereoscopic(float interpupillary_distance,
 												   math::int2 resolution, float ray_max_t,
-												   float frame_duration, bool motion_blur,
 												   float fov) :
-	Stereoscopic(interpupillary_distance, resolution, ray_max_t, frame_duration, motion_blur),
+	Stereoscopic(interpupillary_distance, resolution, ray_max_t),
 	fov_(fov) {
 	math::float2 fr(resolution);
 	float ratio = fr.x / fr.y;

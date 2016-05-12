@@ -6,15 +6,15 @@
 
 namespace scene { namespace camera {
 
-Camera::Camera(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur) :
+Camera::Camera(math::int2 resolution, float ray_max_t) :
 	resolution_(resolution),
 	sensor_(nullptr),
 	seed_dimensions_(0, 0),
 	seeds_(nullptr),
 	filter_radius_(0),
 	ray_max_t_(ray_max_t),
-	frame_duration_(frame_duration),
-	motion_blur_(motion_blur) {}
+	frame_duration_(0.f),
+	motion_blur_(false) {}
 
 Camera::~Camera() {
 	delete [] seeds_;
@@ -35,7 +35,8 @@ void Camera::set_sensor(rendering::sensor::Sensor* sensor) {
 	sensor_ = sensor;
 
 	filter_radius_ = sensor->filter_radius_int();
-	const math::int2 seed_dimensions = resolution_ + math::int2(2 * filter_radius_, 2 * filter_radius_);
+	const math::int2 seed_dimensions = resolution_ + math::int2(2 * filter_radius_,
+																2 * filter_radius_);
 
 	if (seed_dimensions != seed_dimensions_) {
 		seed_dimensions_ = seed_dimensions;
@@ -56,8 +57,16 @@ float Camera::frame_duration() const {
 	return frame_duration_;
 }
 
+void Camera::set_frame_duration(float frame_duration) {
+	frame_duration_ = frame_duration;
+}
+
 bool Camera::motion_blur() const {
 	return motion_blur_;
+}
+
+void Camera::set_motion_blur(bool motion_blur) {
+	motion_blur_ = motion_blur;
 }
 
 void Camera::on_set_transformation() {}

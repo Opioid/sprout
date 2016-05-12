@@ -8,8 +8,7 @@ class Stereoscopic : public Camera {
 public:
 
 	Stereoscopic(float interpupillary_distance,
-				 math::int2 resolution, float ray_max_t,
-				 float frame_duration, bool motion_blur);
+				 math::int2 resolution, float ray_max_t);
 
 	virtual ~Stereoscopic();
 

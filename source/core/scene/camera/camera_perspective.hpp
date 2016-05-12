@@ -15,7 +15,6 @@ public:
 	};
 
 	Perspective(math::int2 resolution, float ray_max_t,
-				float frame_duration, bool motion_blur,
 				const Focus& focus, float fov, float lens_radius);
 
 	virtual uint32_t num_views() const final override;

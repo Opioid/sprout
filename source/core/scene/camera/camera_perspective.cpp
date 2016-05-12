@@ -12,9 +12,8 @@
 namespace scene { namespace camera {
 
 Perspective::Perspective(math::int2 resolution, float ray_max_t,
-						 float frame_duration, bool motion_blur,
 						 const Focus& focus, float fov, float lens_radius) :
-	Camera(resolution, ray_max_t, frame_duration, motion_blur), focus_(focus),
+	Camera(resolution, ray_max_t), focus_(focus),
 	lens_radius_(lens_radius), focal_distance_(focus_.distance) {
 	math::float2 fr(resolution);
 	float ratio = fr.x / fr.y;

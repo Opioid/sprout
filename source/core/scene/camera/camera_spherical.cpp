@@ -9,9 +9,8 @@
 
 namespace scene { namespace camera {
 
-Spherical::Spherical(math::int2 resolution, float ray_max_t,
-					 float frame_duration, bool motion_blur) :
-	Camera(resolution, ray_max_t, frame_duration, motion_blur) {
+Spherical::Spherical(math::int2 resolution, float ray_max_t) :
+	Camera(resolution, ray_max_t) {
 	math::float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;

@@ -10,9 +10,8 @@
 namespace scene { namespace camera {
 
 Spherical_stereoscopic::Spherical_stereoscopic(float interpupillary_distance,
-											   math::int2 resolution, float ray_max_t,
-											   float frame_duration, bool motion_blur) :
-	Stereoscopic(interpupillary_distance, resolution, ray_max_t, frame_duration, motion_blur) {
+											   math::int2 resolution, float ray_max_t) :
+	Stereoscopic(interpupillary_distance, resolution, ray_max_t) {
 	math::float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;

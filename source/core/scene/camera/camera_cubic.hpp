@@ -13,8 +13,7 @@ public:
 		xmxy_myzmz
 	};
 
-	Cubic(Layout layout, math::int2 resolution, float ray_max_t,
-		  float frame_duration, bool motion_blur);
+	Cubic(Layout layout, math::int2 resolution, float ray_max_t);
 
 	virtual uint32_t num_views() const final override;
 

@@ -47,7 +47,7 @@ void Loader::load(std::istream& stream, Scene& scene) {
 
 	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("entities" == node_name) {
 			load_entities(node_value, nullptr, scene);
@@ -60,14 +60,14 @@ void Loader::register_mesh_generator(const std::string& name,
     mesh_generators_[name] = generator;
 }
 
-void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entity* parent,
+void Loader::load_entities(const json::Value& entities_value, entity::Entity* parent,
 						   Scene& scene) {
 	if (!entities_value.IsArray()) {
 		return;
 	}
 
 	for (auto e = entities_value.Begin(); e != entities_value.End(); ++e) {
-		const rapidjson::Value::ConstMemberIterator type_node = e->FindMember("type");
+		const json::Value::ConstMemberIterator type_node = e->FindMember("type");
 		if (e->MemberEnd() == type_node) {
 			continue;
 		}
@@ -100,12 +100,12 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 			math::quaternion_identity
 		};
 
-		const rapidjson::Value* animation_value = nullptr;
-		const rapidjson::Value* children = nullptr;
+		const json::Value* animation_value = nullptr;
+		const json::Value* children = nullptr;
 
 		for (auto n = e->MemberBegin(); n != e->MemberEnd(); ++n) {
 			const std::string node_name = n->name.GetString();
-			const rapidjson::Value& node_value = n->value;
+			const json::Value& node_value = n->value;
 
 			if ("transformation" == node_name) {
 				json::read_transformation(node_value, transformation);
@@ -136,7 +136,7 @@ void Loader::load_entities(const rapidjson::Value& entities_value, entity::Entit
 	}
 }
 
-Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
+Prop* Loader::load_prop(const json::Value& prop_value, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
 	material::Materials materials;
 	bool visible_in_camera = true;
@@ -146,7 +146,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 
 	for (auto n = prop_value.MemberBegin(); n != prop_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("shape" == node_name) {
 			shape = load_shape(node_value);
@@ -177,7 +177,7 @@ Prop* Loader::load_prop(const rapidjson::Value& prop_value, Scene& scene) {
 	return prop;
 }
 
-void Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Scene& scene) {
+void Loader::load_light(const json::Value& /*light_value*/, Prop* prop, Scene& scene) {
 	auto& materials = prop->materials();
 	for (size_t i = 0, len = materials.size(); i < len; ++i) {
 		if (materials[i]->is_emissive()) {
@@ -190,13 +190,13 @@ void Loader::load_light(const rapidjson::Value& /*light_value*/, Prop* prop, Sce
 	}
 }
 
-volume::Volume* Loader::load_volume(const rapidjson::Value& volume_value, Scene& scene) {
+volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scene) {
 	math::float3 absorption(0.f, 0.f, 0.f);
 	math::float3 scattering(0.f, 0.f, 0.f);
 
 	for (auto n = volume_value.MemberBegin(); n != volume_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("absorption" == node_name) {
 			absorption = json::read_float3(node_value);
@@ -208,7 +208,7 @@ volume::Volume* Loader::load_volume(const rapidjson::Value& volume_value, Scene&
 	return scene.create_volume(absorption, scattering);
 }
 
-std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_value) {
+std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value) {
 	std::string type = json::read_string(shape_value, "type");
 	if (!type.empty()) {
         return shape(type, shape_value);
@@ -236,7 +236,7 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const rapidjson::Value& shape_v
 }
 
 std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
-											const rapidjson::Value& shape_value) const {
+											const json::Value& shape_value) const {
 	if ("Canopy" == type) {
 		return canopy_;
 	} else if ("Celestial_disk" == type) {
@@ -267,7 +267,7 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
 	return nullptr;
 }
 
-void Loader::load_materials(const rapidjson::Value& materials_value, Scene& scene,
+void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 							material::Materials& materials) {
 	if (!materials_value.IsArray()) {
 		return;

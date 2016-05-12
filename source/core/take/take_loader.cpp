@@ -45,19 +45,19 @@
 
 namespace take {
 
-void load_focus(const rapidjson::Value& focus_value, scene::camera::Perspective::Focus& focus);
+void load_focus(const json::Value& focus_value, scene::camera::Perspective::Focus& focus);
 
 std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	auto root = json::parse(stream);
 
 	auto take = std::make_shared<Take>();
 
-	const rapidjson::Value* exporter_value = nullptr;
+	const json::Value* exporter_value = nullptr;
 	bool alpha_transparency = peek_alpha_transparency(*root);
 
 	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("camera" == node_name) {
 			load_camera(node_value, alpha_transparency, *take);
@@ -115,10 +115,10 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	return take;
 }
 
-void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transparency,
+void Loader::load_camera(const json::Value& camera_value, bool alpha_transparency,
 						 Take& take) const {
 	std::string type_name = "Perspective";
-	const rapidjson::Value* type_value = nullptr;
+	const json::Value* type_value = nullptr;
 
 	for (auto n = camera_value.MemberBegin(); n != camera_value.MemberEnd(); ++n) {
 		type_name = n->name.GetString();
@@ -131,8 +131,8 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 		math::quaternion_identity
 	};
 
-	const rapidjson::Value* animation_value = nullptr;
-	const rapidjson::Value* sensor_value = nullptr;
+	const json::Value* animation_value = nullptr;
+	const json::Value* sensor_value = nullptr;
 	std::string layout_type;
 	Stereoscopic stereo;
 	float frame_duration = 0.f;
@@ -143,7 +143,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 
 	for (auto n = type_value->MemberBegin(); n != type_value->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("transformation" == node_name) {
 			json::read_transformation(node_value, transformation);
@@ -202,7 +202,7 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 
 			camera = std::make_shared<scene::camera::Cubic_stereoscopic>(
 						layout, stereo.interpupillary_distance, resolution,
-						take.settings.ray_max_t, frame_duration, motion_blur);
+						take.settings.ray_max_t);
 		} else {
 			scene::camera::Cubic::Layout layout = scene::camera::Cubic::Layout::xmxymyzmz;
 
@@ -211,30 +211,30 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 			}
 
 			camera = std::make_shared<scene::camera::Cubic>(
-						layout, resolution, take.settings.ray_max_t, frame_duration, motion_blur);
+						layout, resolution, take.settings.ray_max_t);
 		}
 	} else if ("Perspective" == type_name) {
 		if (stereo.interpupillary_distance > 0.f) {
 			camera = std::make_shared<scene::camera::Perspective_stereoscopic>(
 						stereo.interpupillary_distance, resolution,
-						take.settings.ray_max_t, frame_duration, motion_blur, fov);
+						take.settings.ray_max_t, fov);
 		} else {
 			camera = std::make_shared<scene::camera::Perspective>(
-						resolution, take.settings.ray_max_t, frame_duration,
-						motion_blur, focus, fov, lens_radius);
+						resolution, take.settings.ray_max_t,
+						focus, fov, lens_radius);
 		}
 	} else if ("Spherical" == type_name) {
 		if (stereo.interpupillary_distance > 0.f) {
 			camera = std::make_shared<scene::camera::Spherical_stereoscopic>(
 						stereo.interpupillary_distance, resolution,
-						take.settings.ray_max_t, frame_duration, motion_blur);
+						take.settings.ray_max_t);
 		} else {
 			camera = std::make_shared<scene::camera::Spherical>(
-						resolution, take.settings.ray_max_t, frame_duration, motion_blur);
+						resolution, take.settings.ray_max_t);
 		}
 	} else if ("Hemispherical" == type_name) {
 		camera = std::make_shared<scene::camera::Hemispherical>(
-					resolution, take.settings.ray_max_t, frame_duration, motion_blur);
+					resolution, take.settings.ray_max_t);
 	} else {
 		throw std::runtime_error("Camera type \"" + type_name + "\" not recognized");
 	}
@@ -244,14 +244,16 @@ void Loader::load_camera(const rapidjson::Value& camera_value, bool alpha_transp
 
 	camera->set_sensor(sensor);
 	camera->set_transformation(transformation);
+	camera->set_frame_duration(frame_duration);
+	camera->set_motion_blur(motion_blur);
 
 	take.view.camera = camera;
 }
 
-void Loader::load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopic& stereo) const {
+void Loader::load_stereoscopic(const json::Value& stereo_value, Stereoscopic& stereo) const {
 	for (auto n = stereo_value.MemberBegin(); n != stereo_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("interpupillary_distance" == node_name) {
 			stereo.interpupillary_distance = json::read_float(node_value);
@@ -259,7 +261,7 @@ void Loader::load_stereoscopic(const rapidjson::Value& stereo_value, Stereoscopi
 	}
 }
 
-rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_value,
+rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 											   math::int2 dimensions,
 											   bool alpha_transparency) const {
 	math::float3 clamp_max(-1.f, -1.f, -1.f);
@@ -268,7 +270,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 
 	for (auto n = sensor_value.MemberBegin(); n != sensor_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("clamp" == node_name) {
 			clamp_max = json::read_float3(node_value);
@@ -342,10 +344,10 @@ rendering::sensor::Sensor* Loader::load_sensor(const rapidjson::Value& sensor_va
 }
 
 const rendering::sensor::tonemapping::Tonemapper*
-Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
+Loader::load_tonemapper(const json::Value& tonemapper_value) const {
 	for (auto n = tonemapper_value.MemberBegin(); n != tonemapper_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("ACES" == node_name) {
 			math::float3 linear_white = json::read_float3(node_value, "linear_white");
@@ -366,10 +368,10 @@ Loader::load_tonemapper(const rapidjson::Value& tonemapper_value) const {
 }
 
 const rendering::sensor::filter::Filter*
-Loader::load_filter(const rapidjson::Value& filter_value) const {
+Loader::load_filter(const json::Value& filter_value) const {
 	for (auto n = filter_value.MemberBegin(); n != filter_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("Gaussian" == node_name) {
 			float radius = json::read_float(node_value, "radius", 0.8f);
@@ -385,11 +387,11 @@ Loader::load_filter(const rapidjson::Value& filter_value) const {
 	return nullptr;
 }
 
-std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& sampler_value,
+std::shared_ptr<sampler::Sampler> Loader::load_sampler(const json::Value& sampler_value,
 													   math::random::Generator& rng) const {
 	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("Uniform" == node_name) {
 		//   uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
@@ -412,10 +414,10 @@ std::shared_ptr<sampler::Sampler> Loader::load_sampler(const rapidjson::Value& s
 	return nullptr;
 }
 
-void Loader::load_integrator_factories(const rapidjson::Value& integrator_value, Take& take) const {
+void Loader::load_integrator_factories(const json::Value& integrator_value, Take& take) const {
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("surface" == node_name) {
 			take.surface_integrator_factory = load_surface_integrator_factory(node_value,
@@ -428,7 +430,7 @@ void Loader::load_integrator_factories(const rapidjson::Value& integrator_value,
 }
 
 std::shared_ptr<rendering::integrator::surface::Integrator_factory>
-Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value,
+Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 										const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
@@ -438,7 +440,7 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("AO" == node_name) {
 			uint32_t num_samples = json::read_uint(node_value, "num_samples", 1);
@@ -521,11 +523,11 @@ Loader::load_surface_integrator_factory(const rapidjson::Value& integrator_value
 }
 
 std::shared_ptr<rendering::integrator::volume::Integrator_factory>
-Loader::load_volume_integrator_factory(const rapidjson::Value& integrator_value,
+Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 									   const Settings& settings) const {
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("Attenuation" == node_name) {
 			return std::make_shared<rendering::integrator::volume::Attenuation_factory>(settings);
@@ -539,13 +541,13 @@ Loader::load_volume_integrator_factory(const rapidjson::Value& integrator_value,
 	return nullptr;
 }
 
-bool Loader::peek_alpha_transparency(const rapidjson::Value& take_value) const {
-	const rapidjson::Value::ConstMemberIterator export_node = take_value.FindMember("export");
+bool Loader::peek_alpha_transparency(const json::Value& take_value) const {
+	const json::Value::ConstMemberIterator export_node = take_value.FindMember("export");
 	if (take_value.MemberEnd() == export_node) {
 		return false;
 	}
 
-	const rapidjson::Value::ConstMemberIterator node = export_node->value.FindMember("Image");
+	const json::Value::ConstMemberIterator node = export_node->value.FindMember("Image");
 	if (export_node->value.MemberEnd() == node) {
 		return false;
 	}
@@ -553,11 +555,11 @@ bool Loader::peek_alpha_transparency(const rapidjson::Value& take_value) const {
 	return json::read_bool(node->value, "alpha_transparency");
 }
 
-std::unique_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& exporter_value,
+std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& exporter_value,
 													   scene::camera::Camera& camera) const {
 	for (auto n = exporter_value.MemberBegin(); n != exporter_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("Image" == node_name) {
 			const std::string format = json::read_string(node_value, "format", "PNG");
@@ -590,10 +592,10 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const rapidjson::Value& e
 	return nullptr;
 }
 
-void Loader::load_settings(const rapidjson::Value& settings_value, Settings& settings) const {
+void Loader::load_settings(const json::Value& settings_value, Settings& settings) const {
 	for (auto n = settings_value.MemberBegin(); n != settings_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("ray_offset_factor" == node_name) {
 			settings.ray_offset_factor = json::read_float(node_value);
@@ -601,10 +603,10 @@ void Loader::load_settings(const rapidjson::Value& settings_value, Settings& set
 	}
 }
 
-void load_focus(const rapidjson::Value& focus_value, scene::camera::Perspective::Focus& focus) {
+void load_focus(const json::Value& focus_value, scene::camera::Perspective::Focus& focus) {
 	for (auto n = focus_value.MemberBegin(); n != focus_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("point" == node_name) {
 			focus.point = json::read_float3(node_value);

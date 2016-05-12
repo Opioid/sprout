@@ -9,7 +9,7 @@ public:
 
 	Perspective_stereoscopic(float interpupillary_distance,
 							 math::int2 resolution, float ray_max_t,
-							 float frame_duration, bool motion_blur, float fov);
+							 float fov);
 
 	virtual uint32_t num_views() const final override;
 

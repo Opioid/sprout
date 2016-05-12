@@ -10,9 +10,8 @@
 
 namespace scene { namespace camera {
 
-Cubic::Cubic(Layout layout, math::int2 resolution, float ray_max_t,
-			 float frame_duration, bool motion_blur) :
-	Camera(math::int2(resolution.x, resolution.x), ray_max_t, frame_duration, motion_blur) {
+Cubic::Cubic(Layout layout, math::int2 resolution, float ray_max_t) :
+	Camera(math::int2(resolution.x, resolution.x), ray_max_t) {
 	float f = static_cast<float>(resolution.x);
 
 	left_top_ = math::float3(-1.f,  1.f, 1.f);

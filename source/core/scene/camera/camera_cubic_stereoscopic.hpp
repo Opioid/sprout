@@ -15,8 +15,7 @@ public:
 
 	Cubic_stereoscopic(Layout layout,
 					   float interpupillary_distance,
-					   math::int2 resolution, float ray_max_t,
-					   float frame_duration, bool motion_blur);
+					   math::int2 resolution, float ray_max_t);
 
 	virtual uint32_t num_views() const final override;
 

@@ -7,7 +7,7 @@ namespace scene { namespace camera {
 class Spherical : public Camera {
 public:
 
-	Spherical(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur);
+	Spherical(math::int2 resolution, float ray_max_t);
 
 	virtual uint32_t num_views() const final override;
 

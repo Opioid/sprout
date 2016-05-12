@@ -58,16 +58,16 @@ std::shared_ptr<Material> Provider::load(const std::string& filename,
 
 	auto root = json::parse(*stream_pointer);
 
-	const rapidjson::Value::ConstMemberIterator rendering_node = root->FindMember("rendering");
+	const json::Value::ConstMemberIterator rendering_node = root->FindMember("rendering");
 	if (root->MemberEnd() == rendering_node) {
 		throw std::runtime_error("Material has no render node");
 	}
 
-	const rapidjson::Value& rendering_value = rendering_node->value;
+	const json::Value& rendering_value = rendering_node->value;
 
 	for (auto n = rendering_value.MemberBegin(); n != rendering_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("Cloth" == node_name) {
 			return load_cloth(node_value, manager);
@@ -93,7 +93,7 @@ std::shared_ptr<Material> Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_value,
+std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -105,7 +105,7 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 
 	for (auto n = cloth_value.MemberBegin(); n != cloth_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("color" == node_name) {
 			color = json::read_float3(node_value);
@@ -151,7 +151,7 @@ std::shared_ptr<Material> Provider::load_cloth(const rapidjson::Value& cloth_val
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display_value,
+std::shared_ptr<Material> Provider::load_display(const json::Value& display_value,
 												 resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -167,7 +167,7 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 
 	for (auto n = display_value.MemberBegin(); n != display_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("emission" == node_name) {
 			emission = json::read_float3(node_value);
@@ -232,7 +232,7 @@ std::shared_ptr<Material> Provider::load_display(const rapidjson::Value& display
 	}
 }
 
-std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_value,
+std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -244,7 +244,7 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 
 	for (auto n = glass_value.MemberBegin(); n != glass_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("color" == node_name) {
 			color = json::read_float3(node_value);
@@ -294,7 +294,7 @@ std::shared_ptr<Material> Provider::load_glass(const rapidjson::Value& glass_val
 	}
 }
 
-std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_value,
+std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -308,7 +308,7 @@ std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_val
 
 	for (auto n = light_value.MemberBegin(); n != light_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("emission" == node_name) {
 			emission = json::read_float3(node_value);
@@ -367,7 +367,7 @@ std::shared_ptr<Material> Provider::load_light(const rapidjson::Value& light_val
 											 two_sided, emission);
 }
 
-std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitute_value,
+std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -384,7 +384,7 @@ std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitut
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("ior" == node_name) {
 			ior = json::read_float3(node_value);
@@ -459,7 +459,7 @@ std::shared_ptr<Material> Provider::load_metal(const rapidjson::Value& substitut
 	}
 }
 
-std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
+std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 											 resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -476,7 +476,7 @@ std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
 
 	for (auto n = sky_value.MemberBegin(); n != sky_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("ground_albedo" == node_name) {
 			ground_albedo = json::read_float3(node_value);
@@ -530,7 +530,7 @@ std::shared_ptr<Material> Provider::load_sky(const rapidjson::Value& sky_value,
 	}
 }
 
-std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& substitute_value,
+std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitute_value,
 													resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -551,7 +551,7 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("color" == node_name) {
 			color = json::read_float3(node_value);
@@ -662,11 +662,11 @@ std::shared_ptr<Material> Provider::load_substitute(const rapidjson::Value& subs
 	return material;
 }
 
-void Provider::read_sampler_settings(const rapidjson::Value& sampler_value,
+void Provider::read_sampler_settings(const json::Value& sampler_value,
 									 Sampler_settings& settings) {
 	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("filter" == node_name) {
 			std::string filter = json::read_string(node_value);
@@ -680,7 +680,7 @@ void Provider::read_sampler_settings(const rapidjson::Value& sampler_value,
 	}
 }
 
-void Provider::read_texture_description(const rapidjson::Value& texture_value,
+void Provider::read_texture_description(const json::Value& texture_value,
 										Texture_description& description) {
 	description.filename = "";
 	description.usage = "Color";
@@ -688,7 +688,7 @@ void Provider::read_texture_description(const rapidjson::Value& texture_value,
 
 	for (auto n = texture_value.MemberBegin(); n != texture_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("file" == node_name) {
 			description.filename = json::read_string(node_value);
@@ -700,7 +700,7 @@ void Provider::read_texture_description(const rapidjson::Value& texture_value,
 	}
 }
 
-void Provider::read_clearcoat_description(const rapidjson::Value& clearcoat_value,
+void Provider::read_clearcoat_description(const json::Value& clearcoat_value,
 										  Clearcoat_description& description) {
 	if (!clearcoat_value.IsObject()) {
 		return;
@@ -708,7 +708,7 @@ void Provider::read_clearcoat_description(const rapidjson::Value& clearcoat_valu
 
 	for (auto n = clearcoat_value.MemberBegin(); n != clearcoat_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+		const json::Value& node_value = n->value;
 
 		if ("ior" == node_name) {
 			description.ior = json::read_float(node_value);

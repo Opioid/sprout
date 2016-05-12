@@ -22,7 +22,7 @@ namespace camera {
 class Camera : public entity::Entity {
 public:
 
-	Camera(math::int2 resolution, float ray_max_t, float frame_duration, bool motion_blur);
+	Camera(math::int2 resolution, float ray_max_t);
 
 	virtual ~Camera();
 
@@ -46,8 +46,10 @@ public:
 	void set_seed(math::int2 pixel, math::uint2 seed);
 
 	float frame_duration() const;
+	void set_frame_duration(float frame_duration);
 
 	bool motion_blur() const;
+	void set_motion_blur(bool motion_blur);
 
 protected:
 
