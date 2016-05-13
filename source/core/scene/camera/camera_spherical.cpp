@@ -16,8 +16,6 @@ Spherical::Spherical(math::int2 resolution, float ray_max_t) :
 	d_y_ = 1.f / fr.y;
 }
 
-void Spherical::set_parameters(const json::Value& /*parameters*/) {}
-
 uint32_t Spherical::num_views() const {
 	return 1;
 }
@@ -61,5 +59,7 @@ bool Spherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*vi
 
 	return true;
 }
+
+void Spherical::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
 }}

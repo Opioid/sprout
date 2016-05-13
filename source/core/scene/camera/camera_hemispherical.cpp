@@ -19,8 +19,6 @@ Hemispherical::Hemispherical(math::int2 resolution, float ray_max_t) :
 	d_y_ = 1.f / fr.y;
 }
 
-void Hemispherical::set_parameters(const json::Value& /*parameters*/) {}
-
 uint32_t Hemispherical::num_views() const {
 	return 1;
 }
@@ -72,5 +70,7 @@ bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t 
 
 	return true;
 }
+
+void Hemispherical::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
 }}

@@ -1,5 +1,6 @@
 #include "camera.hpp"
 #include "rendering/sensor/sensor.hpp"
+#include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
@@ -14,12 +15,34 @@ Camera::Camera(math::int2 resolution, float ray_max_t) :
 	filter_radius_(0),
 	ray_max_t_(ray_max_t),
 	frame_duration_(0.f),
-	motion_blur_(false) {}
+	motion_blur_(true) {}
 
 Camera::~Camera() {
 	delete [] seeds_;
 
 	delete sensor_;
+}
+
+void Camera::set_parameters(const json::Value& parameters) {
+	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const json::Value& node_value = n->value;
+
+		if ("frame_duration" == node_name) {
+			frame_duration_ = json::read_float(node_value);
+		} else if ("frames_per_second" == node_name) {
+			float fps = json::read_float(node_value);
+			if (0.f == fps) {
+				frame_duration_ = 0.f;
+			} else {
+				frame_duration_ = 1.f / fps;
+			}
+		} else if ("motion_blur" == node_name) {
+			motion_blur_ = json::read_bool(node_value);
+		} else {
+			set_parameter(node_name, node_value);
+		}
+	}
 }
 
 math::int2 Camera::resolution() const {

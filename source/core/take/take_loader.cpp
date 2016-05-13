@@ -131,43 +131,25 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 		math::quaternion_identity
 	};
 
+	const json::Value* parameters_value = nullptr;
 	const json::Value* animation_value = nullptr;
 	const json::Value* sensor_value = nullptr;
+
 	std::string layout_type;
 	Stereoscopic stereo;
-	float frame_duration = 0.f;
-	bool  motion_blur = true;
-	scene::camera::Perspective::Focus focus;
-	float fov = math::degrees_to_radians(60.f);
-	float lens_radius = 0.f;
 
 	for (auto n = type_value->MemberBegin(); n != type_value->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;
 
-		if ("transformation" == node_name) {
+		if ("parameters" == node_name) {
+			parameters_value = &node_value;
+		} else if ("transformation" == node_name) {
 			json::read_transformation(node_value, transformation);
 		} else if ("animation" == node_name) {
 			animation_value = &node_value;
 		} else if ("sensor" == node_name) {
 			sensor_value = &node_value;
-		} else if ("frame_duration" == node_name) {
-			frame_duration = json::read_float(node_value);
-		} else if ("frames_per_second" == node_name) {
-			float fps = json::read_float(node_value);
-			if (0.f == fps) {
-				frame_duration = 0.f;
-			} else {
-				frame_duration = 1.f / fps;
-			}
-		} else if ("motion_blur" == node_name) {
-			motion_blur = json::read_bool(node_value);
-		} else if ("focus" == node_name) {
-			load_focus(node_value, focus);
-		} else if ("fov" == node_name) {
-			fov = math::degrees_to_radians(json::read_float(node_value));
-		} else if ("lens_radius" == node_name) {
-			lens_radius = json::read_float(node_value);
 		} else if ("layout" == node_name) {
 			layout_type = json::read_string(node_value);
 		} else if ("stereoscopic" == node_name) {
@@ -217,11 +199,10 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 		if (stereo.interpupillary_distance > 0.f) {
 			camera = std::make_shared<scene::camera::Perspective_stereoscopic>(
 						stereo.interpupillary_distance, resolution,
-						take.settings.ray_max_t, fov);
+						take.settings.ray_max_t);
 		} else {
 			camera = std::make_shared<scene::camera::Perspective>(
-						resolution, take.settings.ray_max_t,
-						fov, lens_radius, focus);
+						resolution, take.settings.ray_max_t);
 		}
 	} else if ("Spherical" == type_name) {
 		if (stereo.interpupillary_distance > 0.f) {
@@ -239,13 +220,19 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 		throw std::runtime_error("Camera type \"" + type_name + "\" not recognized");
 	}
 
-	rendering::sensor::Sensor* sensor = load_sensor(*sensor_value, camera->sensor_dimensions(),
-													alpha_transparency);
+	if (parameters_value) {
+		camera->set_parameters(*parameters_value);
+	}
 
-	camera->set_sensor(sensor);
 	camera->set_transformation(transformation);
-	camera->set_frame_duration(frame_duration);
-	camera->set_motion_blur(motion_blur);
+
+	if (sensor_value) {
+		rendering::sensor::Sensor* sensor = load_sensor(*sensor_value,
+														camera->sensor_dimensions(),
+														alpha_transparency);
+
+		camera->set_sensor(sensor);
+	}
 
 	take.view.camera = camera;
 }

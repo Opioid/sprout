@@ -59,8 +59,6 @@ Cubic::Cubic(Layout layout, math::int2 resolution, float ray_max_t) :
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 }
 
-void Cubic::set_parameters(const json::Value& /*parameters*/) {}
-
 uint32_t Cubic::num_views() const {
 	return 6;
 }
@@ -94,5 +92,7 @@ bool Cubic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 
 	return true;
 }
+
+void Cubic::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
 }}

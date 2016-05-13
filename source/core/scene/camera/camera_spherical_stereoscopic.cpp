@@ -21,8 +21,6 @@ Spherical_stereoscopic::Spherical_stereoscopic(float interpupillary_distance,
 								  math::int2(resolution.x * 2, resolution.y)};
 }
 
-void Spherical_stereoscopic::set_parameters(const json::Value& /*parameters*/) {}
-
 uint32_t Spherical_stereoscopic::num_views() const {
 	return 2;
 }
@@ -70,5 +68,8 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, 
 
 	return true;
 }
+
+void Spherical_stereoscopic::set_parameter(const std::string& /*name*/,
+										   const json::Value& /*value*/) {}
 
 }}

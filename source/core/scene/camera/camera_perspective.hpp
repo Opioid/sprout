@@ -14,10 +14,7 @@ public:
 		float distance;
 	};
 
-	Perspective(math::int2 resolution, float ray_max_t,
-				float fov, float lens_radius, const Focus& focus);
-
-	virtual void set_parameters(const json::Value& parameters) final override;
+	Perspective(math::int2 resolution, float ray_max_t);
 
 	virtual uint32_t num_views() const final override;
 
@@ -27,7 +24,8 @@ public:
 
 	virtual void update_focus(rendering::Worker& worker) final override;
 
-	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+	virtual bool generate_ray(const sampler::Camera_sample& sample,
+							  uint32_t view,
 							  scene::Ray& ray) const final override;
 
 	void set_fov(float fov);
@@ -36,15 +34,15 @@ public:
 
 	void set_focus(const Focus& focus);
 
+private:
 
-protected:
+	virtual void set_parameter(const std::string& name,
+							   const json::Value& value) final override;
 
 	static void load_focus(const json::Value& focus_value, Focus& focus);
 
-private:
-
-	Focus focus_;
 	float lens_radius_;
+	Focus focus_;
 
 	math::float3 left_top_;
 	math::float3 d_x_;

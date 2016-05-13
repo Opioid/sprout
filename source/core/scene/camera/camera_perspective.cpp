@@ -12,29 +12,11 @@
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(math::int2 resolution, float ray_max_t,
-						 float fov, float lens_radius, const Focus& focus) :
+Perspective::Perspective(math::int2 resolution, float ray_max_t) :
 	Camera(resolution, ray_max_t),
-	lens_radius_(lens_radius) {
-	set_fov(fov);
-	set_focus(focus);
-}
-
-void Perspective::set_parameters(const json::Value& parameters) {
-	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("fov" == node_name) {
-			set_fov(math::degrees_to_radians(json::read_float(node_value)));
-		} else if ("lens_radius" == node_name) {
-			lens_radius_ = json::read_float(node_value);
-		} else if ("focus" == node_name) {
-			Focus focus;
-			load_focus(node_value, focus);
-			set_focus(focus);
-		}
-	}
+	lens_radius_(0.f) {
+	set_fov(60.f);
+	set_focus(Focus());
 }
 
 uint32_t Perspective::num_views() const {
@@ -74,7 +56,8 @@ void Perspective::update_focus(rendering::Worker& worker) {
 	}
 }
 
-bool Perspective::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/,
+bool Perspective::generate_ray(const sampler::Camera_sample& sample,
+							   uint32_t /*view*/,
 							   scene::Ray& ray) const {
 	math::float2 coordinates = math::float2(sample.pixel) + sample.pixel_uv;
 
@@ -138,6 +121,18 @@ void Perspective::set_focus(const Focus& focus) {
 	focus_.point.y *= fr.y;
 
 	focal_distance_ = focus_.distance;
+}
+
+void Perspective::set_parameter(const std::string& name, const json::Value& value) {
+	if ("fov" == name) {
+		set_fov(math::degrees_to_radians(json::read_float(value)));
+	} else if ("lens_radius" == name) {
+		lens_radius_ = json::read_float(value);
+	} else if ("focus" == name) {
+		Focus focus;
+		load_focus(value, focus);
+		set_focus(focus);
+	}
 }
 
 void Perspective::load_focus(const json::Value& focus_value, Focus& focus) {

@@ -15,8 +15,6 @@ public:
 
 	Cubic(Layout layout, math::int2 resolution, float ray_max_t);
 
-	virtual void set_parameters(const json::Value& parameters) final override;
-
 	virtual uint32_t num_views() const final override;
 
 	virtual math::int2 sensor_dimensions() const final override;
@@ -29,6 +27,8 @@ public:
 							  scene::Ray& ray) const final override;
 
 private:
+
+	virtual void set_parameter(const std::string& name, const json::Value& value) final override;
 
 	math::float3 left_top_;
 	math::float3 d_x_;

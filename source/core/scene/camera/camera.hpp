@@ -3,6 +3,7 @@
 #include "scene/entity/entity.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/rectangle.hpp"
+#include <string>
 
 namespace sampler { struct Camera_sample; }
 
@@ -27,8 +28,6 @@ public:
 
 	virtual ~Camera();
 
-	virtual void set_parameters(const json::Value& parameters) = 0;
-
 	virtual uint32_t num_views() const = 0;
 
 	virtual math::int2 sensor_dimensions() const = 0;
@@ -37,8 +36,11 @@ public:
 
 	virtual void update_focus(rendering::Worker& worker) = 0;
 
-	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+	virtual bool generate_ray(const sampler::Camera_sample& sample,
+							  uint32_t view,
 							  scene::Ray& ray) const = 0;
+
+	void set_parameters(const json::Value& parameters);
 
 	math::int2 resolution() const;
 
@@ -55,6 +57,9 @@ public:
 	void set_motion_blur(bool motion_blur);
 
 protected:
+
+	virtual void set_parameter(const std::string& name,
+							   const json::Value& value) = 0;
 
 	virtual void on_set_transformation() final override;
 

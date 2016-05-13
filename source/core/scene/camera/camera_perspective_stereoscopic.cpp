@@ -12,25 +12,14 @@
 namespace scene { namespace camera {
 
 Perspective_stereoscopic::Perspective_stereoscopic(float interpupillary_distance,
-												   math::int2 resolution, float ray_max_t,
-												   float fov) :
+												   math::int2 resolution,
+												   float ray_max_t) :
 	Stereoscopic(interpupillary_distance, resolution, ray_max_t) {
-	set_fov(fov);
+	set_fov(90.f);
 
 	view_bounds_[0] = math::Recti{math::int2(0, 0), resolution};
 	view_bounds_[1] = math::Recti{math::int2(resolution.x, 0),
 								  math::int2(resolution.x * 2, resolution.y)};
-}
-
-void Perspective_stereoscopic::set_parameters(const json::Value& parameters) {
-	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("fov" == node_name) {
-			set_fov(math::degrees_to_radians(json::read_float(node_value)));
-		}
-	}
 }
 
 uint32_t Perspective_stereoscopic::num_views() const {
@@ -47,7 +36,8 @@ math::Recti Perspective_stereoscopic::view_bounds(uint32_t view) const {
 
 void Perspective_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
-bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
+											uint32_t view,
 											scene::Ray& ray) const {
 	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
 
@@ -79,6 +69,13 @@ void Perspective_stereoscopic::set_fov(float fov) {
 
 	d_x_ = (right_top   - left_top_) / fr.x;
 	d_y_ = (left_bottom - left_top_) / fr.y;
+}
+
+void Perspective_stereoscopic::set_parameter(const std::string& name,
+											 const json::Value& value) {
+	if ("fov" == name) {
+		set_fov(math::degrees_to_radians(json::read_float(value)));
+	}
 }
 
 }}
