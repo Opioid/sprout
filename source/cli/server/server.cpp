@@ -58,6 +58,7 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 	pool.run_range([this, &image](uint32_t begin, uint32_t end) {
 		srgb_.to_sRGB(image, begin, end); }, 0, d.x * d.y);
 
+	/*
 	size_t buffer_len = 0;
 	void* png_buffer = tdefl_write_image_to_png_file_in_memory(srgb_.data(), d.x, d.y,
 															   4, &buffer_len);
@@ -65,6 +66,9 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 	if (!png_buffer) {
 		return;
 	}
+	*/
+
+	size_t buffer_len = d.x * d.y * sizeof(math::byte4);
 
 	std::string message;
 
@@ -73,7 +77,8 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 
 		// Here we are assuming that the client disconnected if the send fails.
 		// The nice solution probably is listening for a close message.
-		if (!client->send(static_cast<const char*>(png_buffer), buffer_len)) {
+	//	if (!client->send(static_cast<const char*>(png_buffer), buffer_len)) {
+		if (!client->send(reinterpret_cast<const char*>(srgb_.data()), buffer_len)) {
 			client->shutdown();
 			delete client;
 			client = nullptr;
@@ -90,7 +95,7 @@ void Server::write(const image::Image_float_4& image, uint32_t /*frame*/, thread
 		}
 	}
 
-	mz_free(png_buffer);
+//	mz_free(png_buffer);
 }
 
 void Server::accept_loop() {

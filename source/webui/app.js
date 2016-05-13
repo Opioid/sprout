@@ -4,9 +4,16 @@ window.onload = function() {
 
 	var viewerImage = document.getElementById('viewerImage');
 
+	viewerImage.width  = 640;
+	viewerImage.height = 360;
+
+	var context = viewerImage.getContext("2d");
+	var id = context.getImageData(0, 0, 640, 480); // only do this once per page
+	var target  = id.data; 
+
 	// Create a new WebSocket.
 	var socket = new WebSocket('ws://localhost:8080');
-//	socket.binaryType = "arraybuffer";
+	socket.binaryType = "arraybuffer";
 
 	// Handle any errors that occur.
 	socket.onerror = function(error) {
@@ -22,17 +29,29 @@ window.onload = function() {
 	// Handle messages sent by the server.
 	socket.onmessage = function(event) {
 		if (event.data instanceof Blob) {
+			/*
 			viewerImage.src = URL.createObjectURL(event.data);
 			viewerImage.onload = function() {
 				URL.revokeObjectURL(this.src);
-			}
+			}*/
+
+
+		//	myContext.putImageData( id, x, y );
+
 		} else if (event.data instanceof ArrayBuffer) {
+			/*
 			var binaryData = new Uint8Array(event.data);
 			var blob = new Blob([binaryData], { type: 'image/png' }); 
 			viewerImage.src = URL.createObjectURL(blob);
 			viewerImage.onload = function() {
 				URL.revokeObjectURL(this.src);
 			}
+			*/
+
+			var binaryData = new Uint8Array(event.data);
+
+			target.set(binaryData);
+			context.putImageData(id, 0, 0);
 		} else {
 			// var message = event.data;
 			// messagesList.innerHTML += '<li class="received"><span>Received:</span>' 
