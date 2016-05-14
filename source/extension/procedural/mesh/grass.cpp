@@ -15,7 +15,7 @@
 
 namespace procedural { namespace mesh {
 
-std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const rapidjson::Value& /*mesh_value*/,
+std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mesh_value*/,
 														resource::Manager& manager) {
 
 	std::vector<scene::shape::triangle::Index_triangle> triangles;
