@@ -39,7 +39,8 @@ private:
 	std::list<Client*> clients_;
 
 	image::encoding::Srgb_alpha srgb_;
-};
 
+	std::string introduction_;
+};
 
 }

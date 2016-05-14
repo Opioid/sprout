@@ -6,10 +6,12 @@ Client::Client(net::Socket socket) : websocket_(socket) {}
 
 Client::~Client() {}
 
-bool Client::run() {
+bool Client::run(const std::string& introduction) {
 	if (!websocket_.handshake()) {
 		return false;
 	}
+
+	websocket_.send(introduction);
 
 	thread_ = std::thread(&Client::loop, this);
 

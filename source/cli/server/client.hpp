@@ -13,7 +13,7 @@ public:
 	Client(net::Socket socket);
 	~Client();
 
-	bool run();
+	bool run(const std::string& introduction);
 	void shutdown();
 
 	bool send(const char* data, size_t size);

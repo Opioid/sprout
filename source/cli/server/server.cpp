@@ -6,12 +6,17 @@
 #include "base/thread/thread_pool.hpp"
 #include "miniz/miniz.hpp"
 
+#include <sstream>
 #include <iostream>
 
 namespace server {
 
 Server::Server(math::int2 dimensions, Message_handler& message_handler) :
-	srgb_(dimensions), message_handler_(message_handler) {}
+	srgb_(dimensions), message_handler_(message_handler) {
+	std::ostringstream stream;
+	stream << "{ \"resolution\": [" << dimensions.x << ", " << dimensions.y << "] }";
+	introduction_ = stream.str();
+}
 
 Server::~Server() {
 	for (Client* c : clients_) {
@@ -114,7 +119,7 @@ void Server::accept_loop() {
 
 		Client* client = new Client(connection_socket);
 
-		if (!client->run()) {
+		if (!client->run(introduction_)) {
 			delete client;
 			continue;
 		}
