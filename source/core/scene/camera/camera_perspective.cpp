@@ -15,7 +15,7 @@ namespace scene { namespace camera {
 Perspective::Perspective(math::int2 resolution, float ray_max_t) :
 	Camera(resolution, ray_max_t),
 	lens_radius_(0.f) {
-	set_fov(60.f);
+	set_fov(math::degrees_to_radians(60.f));
 	set_focus(Focus());
 }
 

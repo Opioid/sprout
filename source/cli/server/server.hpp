@@ -28,6 +28,8 @@ private:
 
 	void accept_loop();
 
+	image::encoding::Srgb_alpha srgb_;
+
 	Message_handler& message_handler_;
 
 	std::thread accept_thread_;
@@ -37,8 +39,6 @@ private:
 	bool shutdown_;
 
 	std::list<Client*> clients_;
-
-	image::encoding::Srgb_alpha srgb_;
 
 	std::string introduction_;
 };
