@@ -1,3 +1,30 @@
+FpsCounter = function() {
+	this.previousTime = 0.0;
+	this.frameTimeCounter = 0.0;
+	this.frameCounter = 0;
+	this.label = document.getElementById('fpsLabel');
+}
+
+FpsCounter.prototype.constructor = FpsCounter;
+
+FpsCounter.prototype.update = function() {
+	var currentTime = performance.now();
+	var frameTime = (currentTime - this.previousTime) / 1000.0;
+
+	this.previousTime = currentTime;
+
+	this.frameTimeCounter += frameTime;
+
+	this.frameCounter++;
+
+	if (this.frameTimeCounter > 1.0) {
+		this.label.innerHTML = this.frameCounter + ' FPS';
+
+		this.frameTimeCounter = 0.0;
+		this.frameCounter = 0;
+	}
+}
+
 window.onload = function() {
 	var consoleForm = document.getElementById('consoleForm');
 	var consoleInput = document.getElementById('consoleInput');
@@ -10,6 +37,8 @@ window.onload = function() {
 	var context = viewerImage.getContext("2d");
 	var imageData = context.getImageData(0, 0, 1, 1); // only do this once per page
 	var target  = imageData.data; 
+
+	var fpsCounter = new FpsCounter();
 
 	// Create a new WebSocket.
 	var socket = new WebSocket('ws://localhost:8080');
@@ -29,38 +58,15 @@ window.onload = function() {
 	// Handle messages sent by the server.
 	socket.onmessage = function(event) {
 		if (event.data instanceof Blob) {
-			/*
-			viewerImage.src = URL.createObjectURL(event.data);
-			viewerImage.onload = function() {
-				URL.revokeObjectURL(this.src);
-			}*/
-
-
-		//	myContext.putImageData( id, x, y );
-
+			// 
 		} else if (event.data instanceof ArrayBuffer) {
-			/*
-			var binaryData = new Uint8Array(event.data);
-			var blob = new Blob([binaryData], { type: 'image/png' }); 
-			viewerImage.src = URL.createObjectURL(blob);
-			viewerImage.onload = function() {
-				URL.revokeObjectURL(this.src);
-			}
-			*/
+			fpsCounter.update();
 
 			var binaryData = new Uint8Array(event.data);
 
 			target.set(binaryData);
 			context.putImageData(imageData, 0, 0);
 		} else {
-
-			// var thing = JSON.parse(event.data, function(k, v) {
-			// 	if (k === 'resolution') {
-			// 		console.log(v);
-			// 	//	console.log(v[1]);
-			// 	}
-			// });
-
 			var messageObject = JSON.parse(event.data);
 
 			var resolution = messageObject["resolution"];
