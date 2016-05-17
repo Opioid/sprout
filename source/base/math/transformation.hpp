@@ -5,9 +5,6 @@
 
 namespace math {
 
-template<typename T> struct Vector3;
-template<typename T> struct Quaternion;
-
 /****************************************************************************
  *
  * Generic 3D transformation
