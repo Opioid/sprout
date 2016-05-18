@@ -33,16 +33,17 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 
 	driver.render(server);
 
-	for (;;) {
-		std::string input;
-		std::cin >> input;
+	std::string input_line;
 
-		if ("abort" == input || "exit" == input || "quit" == input) {
+	for (;;) {
+		std::getline(std::cin, input_line);
+
+		if ("abort" == input_line || "exit" == input_line || "quit" == input_line) {
 			break;
-		} else if ("iteration" == input) {
+		} else if ("iteration" == input_line) {
 			logging::info(string::to_string(driver.iteration()));
 		} else {
-			handler.handle(input);
+			handler.handle(input_line);
 		}
 	}
 
