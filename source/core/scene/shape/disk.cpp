@@ -19,9 +19,9 @@ Disk::Disk() {
 bool Disk::intersect(const Entity_transformation& transformation, math::Oray& ray,
 					 Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const math::float3& normal = transformation.rotation.z3;
-	float d = -math::dot(normal, transformation.position);
+	float d = math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
-	float numer = math::dot(normal, ray.origin) + d;
+	float numer = math::dot(normal, ray.origin) - d;
 	float t = -(numer / denom);
 
 	if (t > ray.min_t && t < ray.max_t) {
@@ -59,9 +59,9 @@ bool Disk::intersect(const Entity_transformation& transformation, math::Oray& ra
 bool Disk::intersect_p(const Entity_transformation& transformation,
 					   const math::Oray& ray, Node_stack& /*node_stack*/) const {
 	const math::float3& normal = transformation.rotation.z3;
-	float d = -math::dot(normal, transformation.position);
+	float d = math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
-	float numer = math::dot(normal, ray.origin) + d;
+	float numer = math::dot(normal, ray.origin) - d;
 	float t = -(numer / denom);
 
 	if (t > ray.min_t && t < ray.max_t) {
@@ -83,9 +83,9 @@ float Disk::opacity(const Entity_transformation& transformation, const math::Ora
 					float time, const material::Materials& materials,
 					Worker& worker, material::Sampler_settings::Filter filter) const {
 	const math::float3& normal = transformation.rotation.z3;
-	float d = -math::dot(normal, transformation.position);
+	float d = math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
-	float numer = math::dot(normal, ray.origin) + d;
+	float numer = math::dot(normal, ray.origin) - d;
 	float t = -(numer / denom);
 
 	if (t > ray.min_t && t < ray.max_t) {
@@ -166,9 +166,9 @@ float Disk::pdf(uint32_t /*part*/, const Entity_transformation& transformation,
 		return 0.f;
 	}
 
-	float d = -math::dot(normal, transformation.position);
+	float d = math::dot(normal, transformation.position);
 	float denom = math::dot(normal, wi);
-	float numer = math::dot(normal, p) + d;
+	float numer = math::dot(normal, p) - d;
 	float t = -(numer / denom);
 
 	math::float3 ws = p + t * wi; // ray.point(t);

@@ -18,14 +18,15 @@ Celestial_disk::Celestial_disk() {
 bool Celestial_disk::intersect(const entity::Composed_transformation& transformation, math::Oray& ray,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const math::float3& v = transformation.rotation.z3;
-	float b = -math::dot(v, ray.direction);
+	float b = math::dot(v, ray.direction);
 
-	if (b < 0.f) {
+	if (b > 0.f) {
 		return false;
 	}
 
 	float radius = math::degrees_to_radians(transformation.scale.x);
 	float det = (b * b) - math::dot(v, v) + (radius * radius);
+//	float det = -b - std::cos(radius);
 
 	if (det > 0.f && ray.max_t >= 1000000.f) {
 		intersection.epsilon = 5e-4f;
