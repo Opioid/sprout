@@ -33,8 +33,6 @@ void Message_handler::handle(const std::string& message) {
 		auto space = value.find_first_of(' ');
 		if (std::string::npos != space) {
 			value = value.substr(0, space);
-
-			std::cout << value << std::endl;
 		}
 
 		std::string parameters = message.substr(op + 1);
