@@ -117,7 +117,7 @@ bool Sphere::intersect_p(const Entity_transformation& transformation, const math
 
 float Sphere::opacity(const Entity_transformation& transformation, const math::Oray& ray,
 					  float time, const material::Materials& materials,
-					  Worker& worker, material::Sampler_settings::Filter filter) const {
+					  Worker& worker, Sampler_filter filter) const {
 	math::float3 v = transformation.position - ray.origin;
 	float b = dot(v, ray.direction);
 	float radius = transformation.scale.x;
