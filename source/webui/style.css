@@ -4,6 +4,8 @@ body {
 	color: #e6e5e2;
 
 	background-color: #272822;
+
+	font-family: sans-serif;
 } 
 
 #consoleInput {
@@ -38,5 +40,5 @@ body {
 
 	font-size: 20px;
 	font-weight: bold;
-	font-family: sans-serif;
+	
 }

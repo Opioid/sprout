@@ -5,7 +5,8 @@
 
 namespace scene { namespace bvh {
 
-void Builder::build(Tree& tree, std::vector<Prop*>& finite_props, const std::vector<Prop*>& infite_props) {
+void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
+					const std::vector<Prop*>& infite_props) {
 	tree.clear();
 
 	tree.props_.reserve(finite_props.size() + infite_props.size());
@@ -25,7 +26,8 @@ void Builder::build(Tree& tree, std::vector<Prop*>& finite_props, const std::vec
 	tree.infinite_props_end_ = static_cast<uint32_t>(tree.props_.size());
 }
 
-void Builder::split(Build_node* node, index begin, index end, uint32_t max_shapes, std::vector<Prop*>& out_props) {
+void Builder::split(Build_node* node, index begin, index end, uint32_t max_shapes,
+					std::vector<Prop*>& out_props) {
 	node->aabb = aabb(begin, end);
 
 	if (static_cast<uint32_t>(std::distance(begin, end)) <= max_shapes) {

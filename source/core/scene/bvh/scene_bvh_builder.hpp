@@ -15,13 +15,15 @@ namespace bvh {
 class Builder {
 public:
 
-	void build(Tree& tree, std::vector<Prop*>& finite_props, const std::vector<Prop*>& infite_props);
+	void build(Tree& tree, std::vector<Prop*>& finite_props,
+			   const std::vector<Prop*>& infite_props);
 
 private:
 
 	using index = std::vector<Prop*>::iterator;
 
-	void split(Build_node* node, index begin, index end, uint32_t max_shapes, std::vector<Prop*>& out_props);
+	void split(Build_node* node, index begin, index end, uint32_t max_shapes,
+			   std::vector<Prop*>& out_props);
 
 	static void assign(Build_node* node, index begin, index end, std::vector<Prop*>& out_props);
 
