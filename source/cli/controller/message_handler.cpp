@@ -30,9 +30,9 @@ void Message_handler::handle(const std::string& message) {
 		}
 
 		auto value_begin = std::find_if_not(assignee.begin() + dot + 1, assignee.end(),
-											std::isspace);
+											string::is_space);
 
-		auto value_end = std::find_if(value_begin, assignee.end(), std::isspace);
+		auto value_end = std::find_if(value_begin, assignee.end(), string::is_space);
 
 		std::string value(value_begin, value_end);
 

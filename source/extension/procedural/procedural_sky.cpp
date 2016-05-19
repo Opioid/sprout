@@ -4,6 +4,7 @@
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/material/sky/sky_material_clear.hpp"
 #include "core/scene/prop/prop.hpp"
+#include "base/math/vector.inl"
 #include <iostream>
 
 namespace procedural { namespace sky {
