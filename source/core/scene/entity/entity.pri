@@ -8,4 +8,5 @@ HEADERS += \
 	scene/entity/composed_transformation.hpp \
 	scene/entity/dummy.hpp \
 	scene/entity/entity.hpp \
+	scene/entity/entity_extension_provider.hpp \
 	scene/entity/keyframe.hpp \

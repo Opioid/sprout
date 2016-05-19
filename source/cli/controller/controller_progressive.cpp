@@ -26,7 +26,7 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 										 take.sampler, scene, take.view,
 										 thread_pool);
 
-	driver.set_force_statistics(true);
+//	driver.set_force_statistics(true);
 
 	Message_handler handler(driver);
 	server::Server server(take.view.camera->sensor_dimensions(), handler);

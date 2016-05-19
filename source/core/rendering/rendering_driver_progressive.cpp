@@ -20,6 +20,7 @@ Driver_progressive::Driver_progressive(Surface_integrator_factory surface_integr
 	Driver(surface_integrator_factory, volume_integrator_factory,
 		   sampler, scene, view, thread_pool),
 	iteration_(0),
+	samples_per_iteration_(1),
 	rendering_(false),
 	force_statistics_(false) {}
 
@@ -77,7 +78,9 @@ void Driver_progressive::render_loop(exporting::Sink& exporter) {
 						break;
 					}
 
-					worker.render(*view_.camera, v, tile, iteration_, iteration_ + 1, 0.f, 1.f);
+					uint32_t begin_sample = iteration_ * samples_per_iteration_;
+					uint32_t end_sample   = begin_sample + samples_per_iteration_;
+					worker.render(*view_.camera, v, tile, begin_sample, end_sample, 0.f, 1.f);
 				}
 			}
 		);

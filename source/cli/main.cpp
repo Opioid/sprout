@@ -16,6 +16,7 @@
 #include "core/scene/camera/camera.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
+#include "extension/procedural/procedural_sky.hpp"
 #include "extension/procedural/mesh/mesh.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector.inl"
@@ -87,6 +88,7 @@ int main(int argc, char* argv[]) {
 	// This is confusing and should be adressed.
 	scene::Loader scene_loader(resource_manager, material_provider.fallback_material());
 
+	procedural::sky::init(scene_loader);
 	procedural::mesh::init(scene_loader);
 
 	scene::Scene scene;

@@ -43,11 +43,13 @@ private:
 
 	uint32_t iteration_;
 
+	uint32_t samples_per_iteration_;
+
 	bool rendering_;
 
 	struct Schedule {
-		bool restart;
-		bool statistics;
+		bool restart	= false;
+		bool statistics = false;
 	};
 
 	Schedule schedule_;

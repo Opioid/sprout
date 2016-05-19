@@ -13,7 +13,12 @@ namespace resource { class Manager; }
 
 namespace scene {
 
-namespace entity { class Entity; }
+namespace entity {
+
+class Entity;
+class Extension_provider;
+
+}
 
 namespace surrounding { class Surrounding; }
 
@@ -43,11 +48,13 @@ public:
 
 	void load(std::istream& stream, Scene& scene);
 
+	void register_extension_provider(const std::string& name, entity::Extension_provider* provider);
     void register_mesh_generator(const std::string& name, shape::triangle::Generator* generator);
 
 private:
 
-	void load_entities(const json::Value& entities_value, entity::Entity* parent,
+	void load_entities(const json::Value& entities_value,
+					   entity::Entity* parent,
 					   Scene& scene);
 
 	Prop* load_prop(const json::Value& prop_value, Scene& scene);
@@ -55,6 +62,10 @@ private:
 	void load_light(const json::Value& light_value, Prop* prop, Scene& scene);
 
 	volume::Volume* load_volume(const json::Value& volume_value, Scene& scene);
+
+	entity::Entity* load_extension(const std::string& type,
+								   const json::Value& extension_value,
+								   Scene& scene);
 
 	std::shared_ptr<shape::Shape> load_shape(const json::Value& shape_value);
 
@@ -76,6 +87,7 @@ private:
 
 	std::shared_ptr<material::Material> fallback_material_;
 
+	std::map<std::string, entity::Extension_provider*> extension_providers_;
     std::map<std::string, shape::triangle::Generator*> mesh_generators_;
 };
 

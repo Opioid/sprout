@@ -14,11 +14,7 @@ namespace thread { class Pool; }
 
 namespace scene {
 
-namespace shape {
-
-class Shape;
-
-}
+namespace shape { class Shape; }
 
 namespace entity {
 

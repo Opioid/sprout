@@ -4,6 +4,7 @@
 #include "scene/animation/animation.hpp"
 #include "scene/animation/animation_loader.hpp"
 #include "scene/entity/dummy.hpp"
+#include "scene/entity/entity_extension_provider.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
 #include "scene/prop/prop.hpp"
@@ -55,12 +56,18 @@ void Loader::load(std::istream& stream, Scene& scene) {
 	}
 }
 
+void Loader::register_extension_provider(const std::string& name,
+										 entity::Extension_provider* provider) {
+	extension_providers_[name] = provider;
+}
+
 void Loader::register_mesh_generator(const std::string& name,
 									 shape::triangle::Generator* generator) {
     mesh_generators_[name] = generator;
 }
 
-void Loader::load_entities(const json::Value& entities_value, entity::Entity* parent,
+void Loader::load_entities(const json::Value& entities_value,
+						   entity::Entity* parent,
 						   Scene& scene) {
 	if (!entities_value.IsArray()) {
 		return;
@@ -88,9 +95,12 @@ void Loader::load_entities(const json::Value& entities_value, entity::Entity* pa
 			entity = scene.create_dummy();
 		} else if ("Volume" == type_name) {
 			entity = load_volume(*e, scene);
+		} else {
+			entity = load_extension(type_name, *e, scene);
 		}
 
 		if (!entity) {
+			logging::error("Cannot create entity \"" + type_name + "\": Unknown type.");
 			continue;
 		}
 
@@ -208,6 +218,17 @@ volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scen
 	return scene.create_volume(absorption, scattering);
 }
 
+entity::Entity* Loader::load_extension(const std::string& type,
+									   const json::Value& extension_value,
+									   Scene& scene) {
+	auto p = extension_providers_.find(type);
+	if (extension_providers_.end() != p) {
+		p->second->create_extension(extension_value, scene, resource_manager_);
+	}
+
+	return nullptr;
+}
+
 std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value) {
 	std::string type = json::read_string(shape_value, "type");
 	if (!type.empty()) {
@@ -257,10 +278,10 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
 			try {
 				return g->second->create_mesh(shape_value, resource_manager_);
 			} catch (const std::exception& e) {
-				logging::error("Cannot create \"" + type + "\": " + e.what() + ".");
+				logging::error("Cannot create shape \"" + type + "\": " + e.what() + ".");
 			}
 		} else {
-			logging::error("Cannot create \"" + type + "\": Unknown type.");
+			logging::error("Cannot create shape \"" + type + "\": Unknown type.");
 		}
 	}
 

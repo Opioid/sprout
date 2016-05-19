@@ -36,4 +36,6 @@ uint8_t float_to_snorm(float x);
 
 float luminance(math::pfloat3 c);
 
+float radiance_to_nit(math::pfloat3 c);
+
 }

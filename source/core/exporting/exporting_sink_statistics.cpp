@@ -19,8 +19,12 @@ void Statistics::write(const image::Image_float_4& image, uint32_t frame, thread
 	float average_luminance = image::average_and_max_luminance(image, max_luminance);
 
 	logging::info("Average RGB:       " + string::to_string(average_rgb));
-	logging::info("Average luminance: " + string::to_string(average_luminance));
-	logging::info("Max     luminance: " + string::to_string(max_luminance));
+
+	logging::info("Average luminance: " + string::to_string(average_luminance) +
+				  " (" + string::to_string(683.f * average_luminance) + " cd/m^2)");
+
+	logging::info("Max     luminance: " + string::to_string(max_luminance) +
+				  " (" + string::to_string(683.f * max_luminance) + " cd/m^2)");
 }
 
 }
