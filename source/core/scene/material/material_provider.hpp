@@ -2,17 +2,6 @@
 
 #include "resource/resource_provider.hpp"
 #include "material_sample_cache.hpp"
-#include "cloth/cloth_sample.hpp"
-#include "display/display_sample.hpp"
-#include "glass/glass_sample.hpp"
-#include "glass/glass_rough_sample.hpp"
-#include "light/light_material_sample.hpp"
-#include "metal/metal_sample.hpp"
-#include "sky/sky_sample_clear.hpp"
-#include "sky/sky_sample_overcast.hpp"
-#include "substitute/substitute_sample.hpp"
-#include "substitute/substitute_sample_clearcoat.hpp"
-#include "substitute/substitute_sample_translucent.hpp"
 #include "base/json/json_types.hpp"
 #include <vector>
 
@@ -20,9 +9,29 @@ namespace image { namespace texture { class Texture_2D; }}
 
 namespace scene { namespace material {
 
-class Material;
+namespace cloth { class Sample; }
+namespace display { class Sample; }
+namespace glass { class Sample; class Sample_rough; }
+namespace light { class Sample; }
+namespace metal { class Sample_isotropic; class Sample_anisotropic; }
 
-using Materials = std::vector<std::shared_ptr<Material>>;
+namespace sky {
+
+class Sample_clear;
+class Material_clear;
+class Sample_overcast;
+
+}
+
+namespace substitute {
+
+class Sample;
+class Sample_clearcoat;
+class Sample_translucent;
+
+}
+
+class Material;
 
 struct Sampler_settings;
 
@@ -37,6 +46,8 @@ public:
 										   resource::Manager& manager) final override;
 
 	std::shared_ptr<Material> fallback_material() const;
+
+	std::shared_ptr<sky::Material_clear> create_clear_sky();
 
 private:
 

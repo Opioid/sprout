@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 	// This is confusing and should be adressed.
 	scene::Loader scene_loader(resource_manager, material_provider.fallback_material());
 
-	procedural::sky::init(scene_loader);
+	procedural::sky::init(scene_loader, material_provider);
 	procedural::mesh::init(scene_loader);
 
 	scene::Scene scene;

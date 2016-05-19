@@ -66,6 +66,10 @@ void Loader::register_mesh_generator(const std::string& name,
     mesh_generators_[name] = generator;
 }
 
+std::shared_ptr<shape::Shape> Loader::canopy() {
+	return canopy_;
+}
+
 void Loader::load_entities(const json::Value& entities_value,
 						   entity::Entity* parent,
 						   Scene& scene) {
@@ -223,7 +227,7 @@ entity::Entity* Loader::load_extension(const std::string& type,
 									   Scene& scene) {
 	auto p = extension_providers_.find(type);
 	if (extension_providers_.end() != p) {
-		p->second->create_extension(extension_value, scene, resource_manager_);
+		return p->second->create_extension(extension_value, scene, resource_manager_);
 	}
 
 	return nullptr;

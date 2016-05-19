@@ -3,19 +3,30 @@
 #include "resource/resource_manager.inl"
 #include "material_sample_cache.inl"
 #include "image/texture/texture_2d_provider.hpp"
+#include "cloth/cloth_sample.hpp"
 #include "cloth/cloth_material.hpp"
+#include "display/display_sample.hpp"
 #include "display/display_material.hpp"
 #include "display/display_material_animated.hpp"
+#include "glass/glass_sample.hpp"
 #include "glass/glass_material.hpp"
+#include "glass/glass_rough_sample.hpp"
 #include "glass/glass_rough_material.hpp"
+#include "light/light_material_sample.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
 #include "light/light_emissionmap_animated.hpp"
+#include "metal/metal_sample.hpp"
 #include "metal/metal_material.hpp"
+#include "sky/sky_sample_clear.hpp"
 #include "sky/sky_material_clear.hpp"
+#include "sky/sky_sample_overcast.hpp"
 #include "sky/sky_material_overcast.hpp"
+#include "substitute/substitute_sample.hpp"
 #include "substitute/substitute_material.hpp"
+#include "substitute/substitute_sample_clearcoat.hpp"
 #include "substitute/substitute_material_clearcoat.hpp"
+#include "substitute/substitute_sample_translucent.hpp"
 #include "substitute/substitute_material_translucent.hpp"
 #include "substitute/substitute_material_base.inl"
 #include "base/json/json.hpp"
@@ -91,6 +102,13 @@ std::shared_ptr<Material> Provider::load(const std::string& filename,
 
 std::shared_ptr<Material> Provider::fallback_material() const {
 	return fallback_material_;
+}
+
+std::shared_ptr<sky::Material_clear> Provider::create_clear_sky() {
+	scene::material::Sampler_settings sampler_settings;
+
+	return std::make_shared<sky::Material_clear>(sky_clear_cache_, nullptr,
+												 sampler_settings, false);
 }
 
 std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
