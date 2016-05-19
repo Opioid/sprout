@@ -10,9 +10,8 @@ namespace scene { namespace material { namespace light {
 
 Constant::Constant(Generic_sample_cache<Sample>& cache,
 				   std::shared_ptr<image::texture::Texture_2D> mask,
-				   const Sampler_settings& sampler_settings, bool two_sided,
-				   const math::float3& emission) :
-	Material(cache, mask, sampler_settings, two_sided), emission_(emission) {}
+				   const Sampler_settings& sampler_settings, bool two_sided) :
+	Material(cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
 										 float /*time*/, float /*ior_i*/, const Worker& worker,
@@ -41,6 +40,10 @@ math::float3 Constant::average_emission() const {
 
 bool Constant::has_emission_map() const {
 	return false;
+}
+
+void Constant::set_emission(math::pfloat3 emission) {
+	emission_ = emission;
 }
 
 }}}

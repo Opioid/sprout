@@ -23,6 +23,7 @@ class Node_stack;
 }
 
 class Prop : public entity::Entity {
+
 public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;

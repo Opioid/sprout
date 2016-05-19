@@ -27,3 +27,6 @@ DEPENDPATH += $$PWD/../base
 
 INCLUDEPATH += $$PWD/../core
 DEPENDPATH += $$PWD/../core
+
+INCLUDEPATH += $$PWD/../../thirdparty/include
+DEPENDPATH += $$PWD/../../thirdparty/include

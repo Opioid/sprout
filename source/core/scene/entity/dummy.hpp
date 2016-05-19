@@ -5,6 +5,7 @@
 namespace scene { namespace entity {
 
 class Dummy : public Entity {
+
 public:
 
 private:

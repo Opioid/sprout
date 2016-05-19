@@ -21,28 +21,32 @@ namespace light {
 struct Sample;
 
 class Light {
+
 public:
+
+	using Entity_transformation = entity::Composed_transformation;
+	using Sampler_filter = material::Sampler_settings::Filter;
 
 	virtual ~Light() {}
 
-	virtual const entity::Composed_transformation& transformation_at(
-			float time, entity::Composed_transformation& transformation) const = 0;
+	virtual const Entity_transformation& transformation_at(
+			float time, Entity_transformation& transformation) const = 0;
 
-	virtual void sample(const entity::Composed_transformation& transformation, float time,
+	virtual void sample(const Entity_transformation& transformation, float time,
 						const math::float3& p, const math::float3& n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
-						material::Sampler_settings::Filter filter, Sample& result) const = 0;
+						Sampler_filter filter, Sample& result) const = 0;
 
-	void sample(float time, const math::float3& p, const math::float3& n, bool total_sphere,
-				sampler::Sampler& sampler, Worker& worker,
-				material::Sampler_settings::Filter filter, Sample& result) const;
+	void sample(float time, const math::float3& p, const math::float3& n,
+				bool total_sphere, sampler::Sampler& sampler, Worker& worker,
+				Sampler_filter filter, Sample& result) const;
 
 	void sample(float time, const math::float3& p, sampler::Sampler& sampler,
-				Worker& worker, material::Sampler_settings::Filter filter, Sample& result) const;
+				Worker& worker, Sampler_filter filter, Sample& result) const;
 
-	virtual float pdf(const entity::Composed_transformation& transformation,
+	virtual float pdf(const Entity_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
-					  Worker& worker, material::Sampler_settings::Filter filter) const = 0;
+					  Worker& worker, Sampler_filter filter) const = 0;
 
 	virtual math::float3 power(const math::aabb& scene_bb) const = 0;
 

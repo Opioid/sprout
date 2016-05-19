@@ -104,6 +104,13 @@ std::shared_ptr<Material> Provider::fallback_material() const {
 	return fallback_material_;
 }
 
+std::shared_ptr<light::Constant> Provider::create_light() {
+	scene::material::Sampler_settings sampler_settings;
+
+	return std::make_shared<light::Constant>(light_cache_, nullptr,
+											 sampler_settings, false);
+}
+
 std::shared_ptr<sky::Material_clear> Provider::create_clear_sky() {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -381,8 +388,11 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 		}
 	}
 
-	return std::make_shared<light::Constant>(light_cache_, mask, sampler_settings,
-											 two_sided, emission);
+	auto material = std::make_shared<light::Constant>(light_cache_, mask,
+													  sampler_settings, two_sided);
+	material->set_emission(emission);
+
+	return material;
 }
 
 std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_value,

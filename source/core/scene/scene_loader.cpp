@@ -70,6 +70,10 @@ std::shared_ptr<shape::Shape> Loader::canopy() {
 	return canopy_;
 }
 
+std::shared_ptr<shape::Shape> Loader::celestial_disk() {
+	return celestial_disk_;
+}
+
 void Loader::load_entities(const json::Value& entities_value,
 						   entity::Entity* parent,
 						   Scene& scene) {
@@ -108,7 +112,7 @@ void Loader::load_entities(const json::Value& entities_value,
 			continue;
 		}
 
-		math::transformation transformation{
+		math::transformation transformation {
 			math::float3_identity,
 			math::float3(1.f, 1.f, 1.f),
 			math::quaternion_identity

@@ -12,7 +12,14 @@ namespace scene { namespace material {
 namespace cloth { class Sample; }
 namespace display { class Sample; }
 namespace glass { class Sample; class Sample_rough; }
-namespace light { class Sample; }
+
+namespace light {
+
+class Sample;
+class Constant;
+
+}
+
 namespace metal { class Sample_isotropic; class Sample_anisotropic; }
 
 namespace sky {
@@ -46,6 +53,8 @@ public:
 										   resource::Manager& manager) final override;
 
 	std::shared_ptr<Material> fallback_material() const;
+
+	std::shared_ptr<light::Constant> create_light();
 
 	std::shared_ptr<sky::Material_clear> create_clear_sky();
 

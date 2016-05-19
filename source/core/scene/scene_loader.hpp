@@ -52,6 +52,7 @@ public:
     void register_mesh_generator(const std::string& name, shape::triangle::Generator* generator);
 
 	std::shared_ptr<shape::Shape> canopy();
+	std::shared_ptr<shape::Shape> celestial_disk();
 
 private:
 

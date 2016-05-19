@@ -125,7 +125,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 		type_value = &n->value;
 	}
 
-	math::transformation transformation{
+	math::transformation transformation {
 		math::float3_identity,
 		math::float3(1.f, 1.f, 1.f),
 		math::quaternion_identity

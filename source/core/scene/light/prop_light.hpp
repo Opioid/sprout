@@ -9,21 +9,22 @@ namespace shape { class Node_stack; }
 namespace light {
 
 class Prop_light : public Light {
+
 public:
 
 	void init(Prop* prop, uint32_t part);
 
-	virtual const entity::Composed_transformation& transformation_at(
-			float time, entity::Composed_transformation& transformation) const final override;
+	virtual const Entity_transformation& transformation_at(
+			float time, Entity_transformation& transformation) const final override;
 
-	virtual void sample(const entity::Composed_transformation& transformation, float time,
+	virtual void sample(const Entity_transformation& transformation, float time,
 						const math::float3& p, const math::float3& n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
-						material::Sampler_settings::Filter filter, Sample& result) const override;
+						Sampler_filter filter, Sample& result) const override;
 
-	virtual float pdf(const entity::Composed_transformation& transformation,
+	virtual float pdf(const Entity_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
-					  Worker& worker, material::Sampler_settings::Filter filter) const override;
+					  Worker& worker, Sampler_filter filter) const override;
 
 	virtual math::float3 power(const math::aabb& scene_bb) const final override;
 

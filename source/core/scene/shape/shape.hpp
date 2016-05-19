@@ -19,6 +19,7 @@ class Node_stack;
 class Morphable_shape;
 
 class Shape {
+
 public:
 
 	using Entity_transformation = entity::Composed_transformation;
