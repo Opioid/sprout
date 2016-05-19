@@ -36,8 +36,6 @@ void Message_handler::handle(const std::string& message) {
 
 		std::string value(value_begin, value_end);
 
-		std::cout << "|" << value << "|" << std::endl;
-
 		std::string parameters = message.substr(op + 1);
 
 		try {

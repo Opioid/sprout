@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rendering_driver.hpp"
+#include "exporting/exporting_sink_statistics.hpp"
 #include <thread>
 
 namespace scene { namespace camera { class Camera; } }
@@ -26,6 +27,9 @@ public:
 	void abort();
 
 	void schedule_restart();
+	void schedule_statistics();
+
+	void set_force_statistics(bool force);
 
 	uint32_t iteration() const;
 
@@ -43,9 +47,14 @@ private:
 
 	struct Schedule {
 		bool restart;
+		bool statistics;
 	};
 
 	Schedule schedule_;
+
+	bool force_statistics_;
+
+	exporting::Statistics statistics_;
 };
 
 }

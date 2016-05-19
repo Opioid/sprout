@@ -20,7 +20,8 @@ Driver_progressive::Driver_progressive(Surface_integrator_factory surface_integr
 	Driver(surface_integrator_factory, volume_integrator_factory,
 		   sampler, scene, view, thread_pool),
 	iteration_(0),
-	rendering_(false) {}
+	rendering_(false),
+	force_statistics_(false) {}
 
 void Driver_progressive::render(exporting::Sink& exporter) {
 	if (rendering_) {
@@ -50,6 +51,14 @@ void Driver_progressive::schedule_restart() {
 	schedule_.restart = true;
 }
 
+void Driver_progressive::schedule_statistics() {
+	schedule_.statistics = true;
+}
+
+void Driver_progressive::set_force_statistics(bool force) {
+	force_statistics_ = force;
+}
+
 uint32_t Driver_progressive::iteration() const {
 	return iteration_;
 }
@@ -76,6 +85,11 @@ void Driver_progressive::render_loop(exporting::Sink& exporter) {
 
 	view_.camera->sensor().resolve(thread_pool_, target_);
 	exporter.write(target_, iteration_, thread_pool_);
+
+	if (schedule_.statistics || force_statistics_) {
+		statistics_.write(target_, iteration_, thread_pool_);
+		schedule_.statistics = false;
+	}
 
 	if (schedule_.restart) {
 		restart();

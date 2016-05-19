@@ -26,6 +26,8 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 										 take.sampler, scene, take.view,
 										 thread_pool);
 
+	driver.set_force_statistics(true);
+
 	Message_handler handler(driver);
 	server::Server server(take.view.camera->sensor_dimensions(), handler);
 
@@ -38,10 +40,14 @@ void progressive(const take::Take& take, scene::Scene& scene, thread::Pool& thre
 	for (;;) {
 		std::getline(std::cin, input_line);
 
+		string::trim(input_line);
+
 		if ("abort" == input_line || "exit" == input_line || "quit" == input_line) {
 			break;
 		} else if ("iteration" == input_line) {
 			logging::info(string::to_string(driver.iteration()));
+		} else if ("statistics" == input_line || "stats" == input_line) {
+			driver.schedule_statistics();
 		} else {
 			handler.handle(input_line);
 		}
