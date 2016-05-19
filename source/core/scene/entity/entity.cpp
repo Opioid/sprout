@@ -8,8 +8,12 @@ Entity::Entity() : parent_(nullptr), next_(nullptr), child_(nullptr) {}
 
 Entity::~Entity() {}
 
-const Composed_transformation& Entity::transformation_at(float tick_delta,
-														 Composed_transformation& transformation) const {
+const math::transformation& Entity::local_frame_a() const {
+	return local_frame_a_.transformation;
+}
+
+const Composed_transformation& Entity::transformation_at(
+		float tick_delta, Composed_transformation& transformation) const {
 	if (!animated_) {
 		return world_transformation_;
 	}
@@ -89,17 +93,27 @@ void Entity::inherit_transformation(const math::transformation& a, const math::t
 	animated_ = true;
 
 	math::float4x4 transformation;
-	math::set_basis_scale_origin(transformation, math::create_matrix3x3(a.rotation), a.scale, a.position);
+	math::set_basis_scale_origin(transformation,
+								 math::create_matrix3x3(a.rotation), a.scale, a.position);
 
-	world_frame_a_.position = math::transform_point(local_frame_a_.transformation.position, transformation);
-	world_frame_a_.rotation = math::mul_quaternion(local_frame_a_.transformation.rotation, a.rotation);
-	world_frame_a_.scale    = local_frame_a_.transformation.scale;
+	world_frame_a_.position = math::transform_point(local_frame_a_.transformation.position,
+													transformation);
 
-	math::set_basis_scale_origin(transformation, math::create_matrix3x3(b.rotation), b.scale, b.position);
+	world_frame_a_.rotation = math::mul_quaternion(local_frame_a_.transformation.rotation,
+												   a.rotation);
 
-	world_frame_b_.position = math::transform_point(local_frame_b_.transformation.position, transformation);
-	world_frame_b_.rotation = math::mul_quaternion(local_frame_b_.transformation.rotation, b.rotation);
-	world_frame_b_.scale    = local_frame_b_.transformation.scale;
+	world_frame_a_.scale = local_frame_a_.transformation.scale;
+
+	math::set_basis_scale_origin(transformation,
+								 math::create_matrix3x3(b.rotation), b.scale, b.position);
+
+	world_frame_b_.position = math::transform_point(local_frame_b_.transformation.position,
+													transformation);
+
+	world_frame_b_.rotation = math::mul_quaternion(local_frame_b_.transformation.rotation,
+												   b.rotation);
+
+	world_frame_b_.scale = local_frame_b_.transformation.scale;
 
 	on_set_transformation();
 

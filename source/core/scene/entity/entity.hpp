@@ -13,11 +13,15 @@ public:
 	Entity();
 	virtual ~Entity();
 
+	const math::transformation& local_frame_a() const;
+
 	// Only the returned reference is guaranteed to contain the actual transformation data.
 	// This might or might not be the same reference which is passed as a parameter,
 	// depending on whether the entity is animated or not.
-	// This can sometimes avoid a relatively costly copy, while keeping the animated state out of the interface.
-	const Composed_transformation& transformation_at(float tick_delta, Composed_transformation& transformation) const;
+	// This can sometimes avoid a relatively costly copy,
+	// while keeping the animated state out of the interface.
+	const Composed_transformation& transformation_at(float tick_delta,
+													 Composed_transformation& transformation) const;
 
 	void set_transformation(const math::transformation& t);
 

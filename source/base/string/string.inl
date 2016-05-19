@@ -1,7 +1,9 @@
 #include "string.hpp"
 #include "math/print.hpp"
-#include <sstream>
+#include <algorithm>
+#include <cctype>
 #include <iomanip>
+#include <sstream>
 
 namespace string {
 
@@ -15,6 +17,10 @@ std::string to_string(T value, int num_padded_zeros) {
 
 	stream << value;
 	return stream.str();
+}
+
+inline void trim(std::string& text) {
+	text.erase(std::remove_if(text.begin(), text.end(), std::isspace), text.end());
 }
 
 }

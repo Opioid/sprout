@@ -4,6 +4,7 @@
 #include "core/scene/camera/camera.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
+#include "base/string/string.inl"
 
 #include <iostream>
 
@@ -16,24 +17,26 @@ void Message_handler::handle(const std::string& message) {
 		driver_.schedule_restart();
 	} else {
 
-		auto op = message.find_first_of("=");
+		size_t op = message.find_first_of("=");
 		if (std::string::npos == op) {
 			return;
 		}
 
 		std::string assignee = message.substr(0, op);
 
-		auto dot = assignee.find_first_of('.');
-
+		size_t dot = assignee.find_first_of('.');
 		if (std::string::npos == dot) {
 			return;
 		}
 
-		std::string value = assignee.substr(dot + 1);
-		auto space = value.find_first_of(' ');
-		if (std::string::npos != space) {
-			value = value.substr(0, space);
-		}
+		auto value_begin = std::find_if_not(assignee.begin() + dot + 1, assignee.end(),
+											std::isspace);
+
+		auto value_end = std::find_if(value_begin, assignee.end(), std::isspace);
+
+		std::string value(value_begin, value_end);
+
+		std::cout << "|" << value << "|" << std::endl;
 
 		std::string parameters = message.substr(op + 1);
 
@@ -42,6 +45,10 @@ void Message_handler::handle(const std::string& message) {
 
 			if ("parameters" == value) {
 				driver_.camera().set_parameters(*root);
+			} else if ("transformation" == value) {
+				math::transformation t = driver_.camera().local_frame_a();
+				json::read_transformation(*root, t);
+				driver_.camera().set_transformation(t);
 			} else {
 				return;
 			}
