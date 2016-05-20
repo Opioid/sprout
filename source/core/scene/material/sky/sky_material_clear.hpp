@@ -2,16 +2,15 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
+#include "scene/material/light/light_material_sample.hpp"
 #include "sky_model.hpp"
 
 namespace scene { namespace material { namespace sky {
 
-class Sample_clear;
-
-class Material_clear : public material::Typed_material<Generic_sample_cache<Sample_clear>> {
+class Material_clear : public material::Typed_material<Generic_sample_cache<light::Sample>> {
 public:
 
-	Material_clear(Generic_sample_cache<Sample_clear>& cache,
+	Material_clear(Generic_sample_cache<light::Sample>& cache,
 				   std::shared_ptr<image::texture::Texture_2D> mask,
 				   const Sampler_settings& sampler_settings, bool two_sided);
 

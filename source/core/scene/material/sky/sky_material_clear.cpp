@@ -1,5 +1,4 @@
 #include "sky_material_clear.hpp"
-#include "sky_sample_clear.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
@@ -8,10 +7,10 @@
 
 namespace scene { namespace material { namespace sky {
 
-Material_clear::Material_clear(Generic_sample_cache<Sample_clear>& cache,
+Material_clear::Material_clear(Generic_sample_cache<light::Sample>& cache,
 							   std::shared_ptr<image::texture::Texture_2D> mask,
 							   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_clear>>(
+	material::Typed_material<Generic_sample_cache<light::Sample>>(
 		cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Material_clear::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
@@ -21,7 +20,10 @@ const material::Sample& Material_clear::sample(const shape::Hitpoint& hp, math::
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
-	sample.set(&model_, math::float3(0.f, 1.f, 0.f));
+
+	math::float3 radiance = model_.evaluate(-wo);
+
+	sample.set(radiance);
 
 	return sample;
 }

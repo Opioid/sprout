@@ -18,9 +18,7 @@
 #include "light/light_emissionmap_animated.hpp"
 #include "metal/metal_sample.hpp"
 #include "metal/metal_material.hpp"
-#include "sky/sky_sample_clear.hpp"
 #include "sky/sky_material_clear.hpp"
-#include "sky/sky_sample_overcast.hpp"
 #include "sky/sky_material_overcast.hpp"
 #include "substitute/substitute_sample.hpp"
 #include "substitute/substitute_material.hpp"
@@ -45,8 +43,6 @@ Provider::Provider(uint32_t num_threads) :
 	light_cache_(num_threads),
 	metal_iso_cache_(num_threads),
 	metal_aniso_cache_(num_threads),
-	sky_clear_cache_(num_threads),
-	sky_overcast_cache_(num_threads),
 	substitute_cache_(num_threads),
 	substitute_clearcoat_cache_(num_threads),
 	substitute_translucent_cache_(num_threads) {
@@ -114,7 +110,7 @@ std::shared_ptr<light::Constant> Provider::create_light() {
 std::shared_ptr<sky::Material_clear> Provider::create_clear_sky() {
 	scene::material::Sampler_settings sampler_settings;
 
-	return std::make_shared<sky::Material_clear>(sky_clear_cache_, nullptr,
+	return std::make_shared<sky::Material_clear>(light_cache_, nullptr,
 												 sampler_settings, false);
 }
 
@@ -540,7 +536,7 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 	}
 
 	if (turbidity > 0.f) {
-		auto material = std::make_shared<sky::Material_clear>(sky_clear_cache_, mask,
+		auto material = std::make_shared<sky::Material_clear>(light_cache_, mask,
 															  sampler_settings, two_sided);
 
 		material->set_sun_direction(sun_direction);
@@ -549,7 +545,7 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 
 		return material;
 	} else {
-		auto material = std::make_shared<sky::Material_overcast>(sky_overcast_cache_, mask,
+		auto material = std::make_shared<sky::Material_overcast>(light_cache_, mask,
 																 sampler_settings, two_sided);
 
 		material->set_emission(emission);

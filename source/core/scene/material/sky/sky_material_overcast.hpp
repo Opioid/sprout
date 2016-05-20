@@ -2,15 +2,14 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
+#include "scene/material/light/light_material_sample.hpp"
 
 namespace scene { namespace material { namespace sky {
 
-class Sample_overcast;
-
-class Material_overcast : public material::Typed_material<Generic_sample_cache<Sample_overcast>> {
+class Material_overcast : public material::Typed_material<Generic_sample_cache<light::Sample>> {
 public:
 
-	Material_overcast(Generic_sample_cache<Sample_overcast>& cache,
+	Material_overcast(Generic_sample_cache<light::Sample>& cache,
 					  std::shared_ptr<image::texture::Texture_2D> mask,
 					  const Sampler_settings& sampler_settings, bool two_sided);
 
@@ -27,7 +26,9 @@ public:
 
 	void set_emission(math::pfloat3 emission);
 
-protected:
+private:
+
+	math::float3 overcast(math::pfloat3 wi) const;
 
 	math::float3 emission_;
 };

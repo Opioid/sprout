@@ -22,13 +22,7 @@ class Constant;
 
 namespace metal { class Sample_isotropic; class Sample_anisotropic; }
 
-namespace sky {
-
-class Sample_clear;
-class Material_clear;
-class Sample_overcast;
-
-}
+namespace sky { class Material_clear; }
 
 namespace substitute {
 
@@ -108,8 +102,6 @@ private:
 	Generic_sample_cache<light::Sample>						light_cache_;
 	Generic_sample_cache<metal::Sample_isotropic>			metal_iso_cache_;
 	Generic_sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
-	Generic_sample_cache<sky::Sample_clear>					sky_clear_cache_;
-	Generic_sample_cache<sky::Sample_overcast>				sky_overcast_cache_;
 	Generic_sample_cache<substitute::Sample>				substitute_cache_;
 	Generic_sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
 	Generic_sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;
