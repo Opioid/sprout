@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene/entity/entity.hpp"
-#include "base/json/json_types.hpp"
 #include "base/math/rectangle.hpp"
 #include <string>
 
@@ -40,7 +39,7 @@ public:
 							  uint32_t view,
 							  scene::Ray& ray) const = 0;
 
-	void set_parameters(const json::Value& parameters);
+	virtual void set_parameters(const json::Value& parameters) final override;
 
 	math::int2 resolution() const;
 

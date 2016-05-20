@@ -76,6 +76,7 @@ public:
 
 	volume::Volume* create_volume(const math::float3& absorption, const math::float3& scattering);
 
+	void add_extension(entity::Entity* extension);
 	void add_material(std::shared_ptr<material::Material> material);
     void add_animation(std::shared_ptr<animation::Animation> animation);
 
@@ -97,6 +98,8 @@ public:
 	std::vector<Prop*> infinite_props_;
 
 	std::vector<light::Light*> lights_;
+
+	std::vector<entity::Entity*> extensions_;
 
 	std::vector<float> light_powers_;
 

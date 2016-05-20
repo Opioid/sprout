@@ -21,6 +21,10 @@ Scene::Scene() : tick_duration_(1.f / 60.f), simulation_time_(0.f), volume_regio
 Scene::~Scene() {
 	delete volume_region_;
 
+	for (auto e : extensions_) {
+		delete e;
+	}
+
 	for (auto l : lights_) {
 		delete l;
 	}
@@ -103,6 +107,10 @@ void Scene::tick(thread::Pool& thread_pool) {
 		d->calculate_world_transformation();
 	}
 
+	for (auto e : extensions_) {
+		e->calculate_world_transformation();
+	}
+
 	for (auto p : finite_props_) {
 		p->calculate_world_transformation();
 	}
@@ -180,6 +188,10 @@ volume::Volume* Scene::create_volume(const math::float3& absorption,
 									 const math::float3& scattering) {
 	volume_region_ = new volume::Homogeneous(absorption, scattering);
 	return volume_region_;
+}
+
+void Scene::add_extension(entity::Entity* extension) {
+	extensions_.push_back(extension);
 }
 
 void Scene::add_material(std::shared_ptr<material::Material> material) {

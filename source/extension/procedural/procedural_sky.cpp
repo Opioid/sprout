@@ -103,7 +103,7 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 	{
 		auto material = material_provider_->create_light();
 
-		material->set_emission(math::float3(1600000.f, 800000.f, 400000.f));
+		material->set_emission(math::float3(2477907.f, 2133774.f, 1763460.f));
 
 		scene.add_material(material);
 
@@ -130,5 +130,9 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 
 	return dummy;
 }
+
+Sky::Sky(std::shared_ptr<scene::material::Material> sky_material) : sky_material_(sky_material) {}
+
+void Sky::set_parameters(const json::Value& /*parameters*/) {}
 
 }}

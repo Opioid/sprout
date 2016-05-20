@@ -32,6 +32,8 @@ public:
 
 	void init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
 
+	virtual void set_parameters(const json::Value& parameters) final override;
+
 	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
 	bool intersect(Ray& ray, shape::Node_stack& node_stack,

@@ -26,7 +26,7 @@ inline void trim(std::string& text) {
 }
 
 inline bool is_space(char c) {
-	return std::isspace(static_cast<int>(c));
+	return std::isspace(static_cast<int>(c)) != 0;
 }
 
 }

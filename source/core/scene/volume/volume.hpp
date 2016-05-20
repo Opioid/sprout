@@ -15,6 +15,8 @@ public:
 
 	virtual float phase(const math::float3& w, const math::float3& wp) const = 0;
 
+	virtual void set_parameters(const json::Value& parameters) final override;
+
 	void set_scene_aabb(const math::aabb& aabb);
 
 protected:

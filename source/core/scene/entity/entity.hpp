@@ -2,6 +2,7 @@
 
 #include "composed_transformation.hpp"
 #include "keyframe.hpp"
+#include "base/json/json_types.hpp"
 #include "base/math/quaternion.hpp"
 #include "base/math/transformation.hpp"
 
@@ -12,6 +13,8 @@ public:
 
 	Entity();
 	virtual ~Entity();
+
+	virtual void set_parameters(const json::Value& parameters) = 0;
 
 	const math::transformation& local_frame_a() const;
 

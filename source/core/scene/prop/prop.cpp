@@ -28,6 +28,8 @@ void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& 
 	}
 }
 
+void Prop::set_parameters(const json::Value& /*parameters*/) {}
+
 void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
 	properties_.set(Properties::Visible_in_camera,   in_camera);
 	properties_.set(Properties::Visible_in_reflection, in_reflection);
