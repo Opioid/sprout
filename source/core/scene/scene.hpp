@@ -40,6 +40,7 @@ struct Ray;
 class Prop;
 
 class Scene {
+
 public:
 
 	Scene();
@@ -58,6 +59,8 @@ public:
 	float tick_duration() const;
 	float simulation_time() const;
 
+	entity::Entity* entity(size_t index) const;
+
 	const std::vector<light::Light*>& lights() const;
 
 	const light::Light* montecarlo_light(float random, float& pdf) const;
@@ -66,6 +69,8 @@ public:
 
 	void tick(thread::Pool& thread_pool);
 	float seek(float time, thread::Pool& thread_pool);
+
+	void compile();
 
 	entity::Dummy* create_dummy();
 
@@ -82,9 +87,7 @@ public:
 
     void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
 
-public:
-
-	void compile();
+private:
 
 	float tick_duration_;
 	float simulation_time_;
@@ -100,6 +103,8 @@ public:
 	std::vector<light::Light*> lights_;
 
 	std::vector<entity::Entity*> extensions_;
+
+	std::vector<entity::Entity*> entities_;
 
 	std::vector<float> light_powers_;
 

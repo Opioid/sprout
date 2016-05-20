@@ -48,8 +48,9 @@ void Driver_progressive::abort() {
 	render_thread_.join();
 }
 
-void Driver_progressive::schedule_restart() {
+void Driver_progressive::schedule_restart(bool recompile) {
 	schedule_.restart = true;
+	schedule_.recompile = recompile;
 }
 
 void Driver_progressive::schedule_statistics() {
@@ -104,6 +105,10 @@ void Driver_progressive::restart() {
 
 	view_.camera->sensor().clear();
 	iteration_ = 0;
+
+	if (schedule_.recompile) {
+		scene_.compile();
+	}
 
 	schedule_.restart = false;
 }

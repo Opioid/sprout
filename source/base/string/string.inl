@@ -20,9 +20,10 @@ std::string to_string(T value, int num_padded_zeros) {
 }
 
 inline void trim(std::string& text) {
-	auto trimmed_end = std::remove_if(text.begin(), text.end(), is_space);
+	auto begin = std::find_if_not(text.begin(), text.end(), is_space);
+	auto end   = std::find_if_not(text.rbegin(), text.rend(), is_space).base();
 
-	text.erase(trimmed_end, text.end());
+	text.assign(begin, end);
 }
 
 inline bool is_space(char c) {

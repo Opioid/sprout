@@ -76,8 +76,6 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 		material->set_ground_albedo(ground_albedo);
 		material->set_turbidity(turbidity);
 
-		scene.add_material(material);
-
 		std::vector<std::shared_ptr<scene::material::Material>> materials(1);
 		materials[0] = material;
 
@@ -104,8 +102,6 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 		auto material = material_provider_->create_light();
 
 		material->set_emission(math::float3(2477907.f, 2133774.f, 1763460.f));
-
-		scene.add_material(material);
 
 		std::vector<std::shared_ptr<scene::material::Material>> materials(1);
 		materials[0] = material;

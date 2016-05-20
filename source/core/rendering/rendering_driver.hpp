@@ -39,6 +39,8 @@ public:
 
 	scene::camera::Camera& camera();
 
+	const scene::Scene& scene() const;
+
 protected:
 
 	Surface_integrator_factory surface_integrator_factory_;

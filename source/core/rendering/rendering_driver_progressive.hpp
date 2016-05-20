@@ -26,7 +26,7 @@ public:
 
 	void abort();
 
-	void schedule_restart();
+	void schedule_restart(bool recompile);
 	void schedule_statistics();
 
 	void set_force_statistics(bool force);
@@ -49,6 +49,7 @@ private:
 
 	struct Schedule {
 		bool restart	= false;
+		bool recompile  = false;
 		bool statistics = false;
 	};
 
