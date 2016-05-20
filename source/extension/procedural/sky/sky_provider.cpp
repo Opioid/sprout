@@ -1,4 +1,4 @@
-#include "procedural_sky.hpp"
+#include "sky_provider.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/entity/dummy.hpp"

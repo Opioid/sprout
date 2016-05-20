@@ -16,7 +16,7 @@
 #include "core/scene/camera/camera.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
-#include "extension/procedural/procedural_sky.hpp"
+#include "extension/procedural/sky/sky_provider.hpp"
 #include "extension/procedural/mesh/mesh.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector.inl"
