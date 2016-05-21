@@ -68,6 +68,7 @@ private:
 
 	entity::Entity* load_extension(const std::string& type,
 								   const json::Value& extension_value,
+								   const std::string& name,
 								   Scene& scene);
 
 	std::shared_ptr<shape::Shape> load_shape(const json::Value& shape_value);

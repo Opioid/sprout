@@ -9,6 +9,7 @@ namespace animation {
 class Animation;
 
 class Stage {
+
 public:
 
     Stage(entity::Entity* entity, Animation* animation);

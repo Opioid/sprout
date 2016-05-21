@@ -75,8 +75,7 @@ std::shared_ptr<shape::Shape> Loader::celestial_disk() {
 }
 
 void Loader::load_entities(const json::Value& entities_value,
-						   entity::Entity* parent,
-						   Scene& scene) {
+						   entity::Entity* parent, Scene& scene) {
 	if (!entities_value.IsArray()) {
 		return;
 	}
@@ -88,6 +87,8 @@ void Loader::load_entities(const json::Value& entities_value,
 		}
 
 		std::string type_name = type_node->value.GetString();
+
+		std::string name = json::read_string(*e, "name");
 
 		entity::Entity* entity = nullptr;
 
@@ -104,7 +105,7 @@ void Loader::load_entities(const json::Value& entities_value,
 		} else if ("Volume" == type_name) {
 			entity = load_volume(*e, scene);
 		} else {
-			entity = load_extension(type_name, *e, scene);
+			entity = load_extension(type_name, *e, name, scene);
 		}
 
 		if (!entity) {
@@ -229,10 +230,15 @@ volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scen
 
 entity::Entity* Loader::load_extension(const std::string& type,
 									   const json::Value& extension_value,
+									   const std::string& name,
 									   Scene& scene) {
 	auto p = extension_providers_.find(type);
 	if (extension_providers_.end() != p) {
-		return p->second->create_extension(extension_value, scene, resource_manager_);
+		entity::Entity* entity = p->second->create_extension(extension_value, scene,
+															 resource_manager_);
+		scene.add_extension(entity, name);
+
+		return entity;
 	}
 
 	return nullptr;

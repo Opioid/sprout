@@ -63,12 +63,14 @@ void Message_handler::handle(const std::string& message) {
 		if ("camera" == assignee) {
 			entity = &driver_.camera();
 		} else if ("entities" == assignee.substr(0, 8)) {
-
 			try {
 				uint32_t number = std::stoul(index);
 				entity = driver_.scene().entity(number);
 				recompile = true;
 			} catch (...) {}
+		} else {
+			entity = driver_.scene().entity(assignee);
+			recompile = true;
 		}
 
 		if (!entity) {

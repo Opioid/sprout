@@ -1,5 +1,6 @@
 #include "scene.hpp"
 #include "scene/animation/animation.hpp"
+#include "scene/animation/animation_stage.hpp"
 #include "scene/entity/dummy.hpp"
 #include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
@@ -85,6 +86,15 @@ entity::Entity* Scene::entity(size_t index) const {
 	}
 
 	return entities_[index];
+}
+
+entity::Entity* Scene::entity(const std::string& name) const {
+	auto e = named_entities_.find(name);
+	if (named_entities_.end() == e) {
+		return nullptr;
+	}
+
+	return e->second;
 }
 
 const std::vector<light::Light*>& Scene::lights() const {
@@ -197,6 +207,14 @@ entity::Dummy* Scene::create_dummy() {
 	return dummy;
 }
 
+entity::Dummy* Scene::create_dummy(const std::string& name) {
+	entity::Dummy* dummy = create_dummy();
+
+	add_named_entity(dummy, name);
+
+	return dummy;
+}
+
 Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape) {
 	Prop* prop = new Prop;
 
@@ -209,6 +227,14 @@ Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape) {
 	prop->set_shape(shape);
 
 	entities_.push_back(prop);
+
+	return prop;
+}
+
+Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape, const std::string& name) {
+	Prop* prop = create_prop(shape);
+
+	add_named_entity(prop, name);
 
 	return prop;
 }
@@ -248,6 +274,13 @@ void Scene::add_extension(entity::Entity* extension) {
 	entities_.push_back(extension);
 }
 
+void Scene::add_extension(entity::Entity* extension, const std::string& name) {
+	add_extension(extension);
+
+	add_named_entity(extension, name);
+}
+
+
 void Scene::add_material(std::shared_ptr<material::Material> material) {
 	materials_.push_back(material);
 }
@@ -258,6 +291,18 @@ void Scene::add_animation(std::shared_ptr<animation::Animation> animation) {
 
 void Scene::create_animation_stage(entity::Entity* entity, animation::Animation* animation) {
     animation_stages_.push_back(animation::Stage(entity, animation));
+}
+
+void Scene::add_named_entity(entity::Entity* entity, const std::string& name) {
+	if (!entity || name.empty()) {
+		return;
+	}
+
+	if (named_entities_.find(name) != named_entities_.end()) {
+		return;
+	}
+
+	named_entities_[name] = entity;
 }
 
 }

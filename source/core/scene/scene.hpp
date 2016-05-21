@@ -1,12 +1,10 @@
 #pragma once
 
 #include "scene_worker.hpp"
-#include "animation/animation_stage.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "bvh/scene_bvh_tree.hpp"
-#include "material/material.hpp"
-#include "base/math/ray.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
+#include <map>
 #include <vector>
 #include <memory>
 
@@ -23,6 +21,8 @@ class Dummy;
 
 }
 
+namespace material { class Material; }
+
 namespace light {
 
 class Light;
@@ -31,13 +31,19 @@ class Prop_image_light;
 
 }
 
-namespace animation { class Animation; }
+namespace animation {
+
+class Animation;
+class Stage;
+
+}
 
 namespace volume { class Volume; }
 
 struct Intersection;
 struct Ray;
 class Prop;
+
 
 class Scene {
 
@@ -60,6 +66,7 @@ public:
 	float simulation_time() const;
 
 	entity::Entity* entity(size_t index) const;
+	entity::Entity* entity(const std::string& name) const;
 
 	const std::vector<light::Light*>& lights() const;
 
@@ -73,8 +80,10 @@ public:
 	void compile();
 
 	entity::Dummy* create_dummy();
+	entity::Dummy* create_dummy(const std::string& name);
 
 	Prop* create_prop(std::shared_ptr<shape::Shape> shape);
+	Prop* create_prop(std::shared_ptr<shape::Shape> shape, const std::string& name);
 
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
 	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
@@ -82,12 +91,16 @@ public:
 	volume::Volume* create_volume(const math::float3& absorption, const math::float3& scattering);
 
 	void add_extension(entity::Entity* extension);
+	void add_extension(entity::Entity* extension, const std::string& name);
+
 	void add_material(std::shared_ptr<material::Material> material);
     void add_animation(std::shared_ptr<animation::Animation> animation);
 
     void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
 
 private:
+
+	void add_named_entity(entity::Entity* entity, const std::string& name);
 
 	float tick_duration_;
 	float simulation_time_;
@@ -105,6 +118,8 @@ private:
 	std::vector<entity::Entity*> extensions_;
 
 	std::vector<entity::Entity*> entities_;
+
+	std::map<std::string, entity::Entity*> named_entities_;
 
 	std::vector<float> light_powers_;
 
