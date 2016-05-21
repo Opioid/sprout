@@ -1,10 +1,10 @@
 #include "sky_provider.hpp"
+#include "sky.hpp"
+#include "sky_material.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
-#include "core/scene/entity/dummy.hpp"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/material/light/light_constant.hpp"
-#include "core/scene/material/sky/sky_material_clear.hpp"
 #include "core/scene/prop/prop.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -35,100 +35,40 @@ void Provider::set_material_provider(scene::material::Provider& provider) {
 scene::entity::Entity* Provider::create_extension(const json::Value& extension_value,
 												  scene::Scene& scene,
 												  resource::Manager& /*manager*/) {
-	math::float3x3 sun_rotation(1.f, 0.f, 0.f,
-								0.f, 0.f, 1.f,
-								0.f, -1.f, 0.f);
+	scene::Prop* sky_prop = scene.create_prop(scene_loader_->canopy());
+	scene::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk());
 
-	math::float3 ground_albedo(0.3f, 0.3f, 0.3f);
-	float turbidity = 1.f;
+	Sky* sky = new Sky(*sky_prop, *sun_prop);
 
-	extension_value.FindMember("parameters");
+	auto sky_material = std::make_shared<Material>(material_provider_->light_cache(), sky->model());
+
+	auto sun_material = material_provider_->create_light();
+	sun_material->set_emission(math::float3(2477907.f, 2133774.f, 1763460.f));
 
 	const json::Value::ConstMemberIterator p = extension_value.FindMember("parameters");
 	if (extension_value.MemberEnd() != p) {
-		const json::Value& parameters_value = p->value;
-		for (auto n = parameters_value.MemberBegin(); n != parameters_value.MemberEnd(); ++n) {
-			const std::string node_name = n->name.GetString();
-			const json::Value& node_value = n->value;
-
-			if ("sun" == node_name) {
-				math::float3 angles = json::read_float3(node_value, "rotation");
-				sun_rotation = json::create_rotation_matrix(angles);
-			} else if ("ground_albedo" == node_name) {
-				ground_albedo = json::read_float3(node_value);
-			} else if ("turbidity" == node_name) {
-				turbidity = json::read_float(node_value);
-			}
-		}
+		sky->set_parameters(p->value);
 	}
-
-	scene::entity::Entity* dummy = scene.create_dummy();
 
 	bool visible_in_camera = true;
 	bool visible_in_reflection = true;
 	bool visible_in_shadow = true;
 
-	// create sky
-	{
-		auto material = material_provider_->create_clear_sky();
+	scene::material::Materials materials(1);
 
-		material->set_sun_direction(math::float3(sun_rotation.z));
-		material->set_ground_albedo(ground_albedo);
-		material->set_turbidity(turbidity);
+	materials[0] = sky_material;
+	sky_prop->set_materials(materials);
+	sky_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
+	sky_prop->set_open(false);
+	scene.create_prop_light(sky_prop, 0);
 
-		std::vector<std::shared_ptr<scene::material::Material>> materials(1);
-		materials[0] = material;
+	materials[0] = sun_material;
+	sun_prop->set_materials(materials);
+	sun_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
+	sun_prop->set_open(false);
+	scene.create_prop_light(sun_prop, 0);
 
-		scene::Prop* prop = scene.create_prop(scene_loader_->canopy(), materials);
-
-		prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
-		prop->set_open(false);
-
-		math::transformation transformation {
-			math::float3_identity,
-			math::float3(1.f, 1.f, 1.f),
-			math::create_quaternion_rotation_x(math::degrees_to_radians(90.f))
-		};
-
-		prop->set_transformation(transformation);
-
-		scene.create_prop_light(prop, 0);
-
-		dummy->attach(prop);
-	}
-
-	// create sun
-	{
-		auto material = material_provider_->create_light();
-
-		material->set_emission(math::float3(2477907.f, 2133774.f, 1763460.f));
-
-		std::vector<std::shared_ptr<scene::material::Material>> materials(1);
-		materials[0] = material;
-
-		scene::Prop* prop = scene.create_prop(scene_loader_->celestial_disk(), materials);
-
-		prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
-		prop->set_open(false);
-
-		math::transformation transformation {
-			math::float3_identity,
-			math::float3(0.26f, 0.26f, 0.26f),
-			math::create_quaternion(sun_rotation)
-		};
-
-		prop->set_transformation(transformation);
-
-		scene.create_prop_light(prop, 0);
-
-		dummy->attach(prop);
-	}
-
-	return dummy;
+	return sky;
 }
-
-Sky::Sky(std::shared_ptr<scene::material::Material> sky_material) : sky_material_(sky_material) {}
-
-void Sky::set_parameters(const json::Value& /*parameters*/) {}
 
 }}

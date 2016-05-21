@@ -7,6 +7,7 @@
 namespace math {
 
 class AABB {
+
 public:
 
 	AABB();

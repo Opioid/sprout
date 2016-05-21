@@ -25,7 +25,7 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& ior, const math::float3& absorption, float roughness);
+	void set(math::pfloat3 ior, math::pfloat3 absorption, float roughness);
 
 private:
 
@@ -57,7 +57,7 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& ior, const math::float3& absorption, math::float2 roughness);
+	void set(math::pfloat3 ior, math::pfloat3 absorption, math::float2 roughness);
 
 private:
 

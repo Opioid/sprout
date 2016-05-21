@@ -9,6 +9,7 @@ namespace scene { namespace material {
 namespace bxdf { struct Result; }
 
 class Sample {
+
 public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const = 0;

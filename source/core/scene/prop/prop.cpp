@@ -14,10 +14,13 @@ namespace scene {
 
 Prop::~Prop() {}
 
-void Prop::init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials) {
+void Prop::set_shape(std::shared_ptr<shape::Shape> shape) {
+	shape_ = shape;
+}
+
+void Prop::set_materials(const material::Materials& materials) {
 	properties_.clear();
 
-	shape_ = shape;
 	materials_ = materials;
 
 	for (auto m : materials_) {

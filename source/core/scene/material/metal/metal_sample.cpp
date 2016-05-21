@@ -44,9 +44,7 @@ bool Sample_isotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_isotropic::set(const math::float3& ior,
-						   const math::float3& absorption,
-						   float roughness) {
+void Sample_isotropic::set(math::pfloat3 ior, math::pfloat3 absorption, float roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 
@@ -92,8 +90,7 @@ bool Sample_anisotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_anisotropic::set(const math::float3& ior, const math::float3& absorption,
-							 math::float2 roughness) {
+void Sample_anisotropic::set(math::pfloat3 ior, math::pfloat3 absorption, math::float2 roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 

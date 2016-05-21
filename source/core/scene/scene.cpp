@@ -197,8 +197,7 @@ entity::Dummy* Scene::create_dummy() {
 	return dummy;
 }
 
-Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape,
-						 const material::Materials& materials) {
+Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape) {
 	Prop* prop = new Prop;
 
 	if (shape->is_finite()) {
@@ -207,7 +206,7 @@ Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape,
 		infinite_props_.push_back(prop);
 	}
 
-	prop->init(shape, materials);
+	prop->set_shape(shape);
 
 	entities_.push_back(prop);
 

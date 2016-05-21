@@ -1,4 +1,5 @@
 #include "light_material_sample.hpp"
+#include "scene/material/bxdf.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
 

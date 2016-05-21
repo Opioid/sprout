@@ -74,7 +74,7 @@ public:
 
 	entity::Dummy* create_dummy();
 
-	Prop* create_prop(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
+	Prop* create_prop(std::shared_ptr<shape::Shape> shape);
 
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
 	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);

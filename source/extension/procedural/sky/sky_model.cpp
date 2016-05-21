@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace scene { namespace material { namespace sky {
+namespace procedural { namespace sky {
 
 Model::Model() {
 	for (uint32_t i = 0; i < 3; ++i) {
@@ -68,4 +68,4 @@ void Model::release() {
 
 const math::float3 Model::zenith_ = math::float3(0.f, 1.f, 0.f);
 
-}}}
+}}

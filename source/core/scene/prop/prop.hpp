@@ -30,7 +30,9 @@ public:
 
 	virtual ~Prop();
 
-	void init(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
+	void set_shape(std::shared_ptr<shape::Shape> shape);
+
+	void set_materials(const material::Materials& materials);
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/scene/entity/entity.hpp"
 #include "core/scene/entity/entity_extension_provider.hpp"
 #include <memory>
 
@@ -8,12 +7,9 @@ namespace scene {
 
 class Loader;
 
-namespace material {
+namespace material { class Provider; }
 
-class Material;
-class Provider;
-
-}}
+}
 
 namespace procedural { namespace sky {
 
@@ -36,19 +32,6 @@ private:
 
 	scene::Loader* scene_loader_;
 	scene::material::Provider* material_provider_;
-};
-
-class Sky : public scene::entity::Entity {
-
-public:
-
-	Sky(std::shared_ptr<scene::material::Material> sky_material);
-
-	virtual void set_parameters(const json::Value& parameters) final override;
-
-private:
-
-	std::shared_ptr<scene::material::Material> sky_material_;
 };
 
 }}

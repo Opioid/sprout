@@ -187,8 +187,9 @@ Prop* Loader::load_prop(const json::Value& prop_value, Scene& scene) {
 		materials.push_back(fallback_material_);
 	}
 
-	Prop* prop = scene.create_prop(shape, materials);
+	Prop* prop = scene.create_prop(shape);
 
+	prop->set_materials(materials);
 	prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	prop->set_open(open);
 

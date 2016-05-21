@@ -37,6 +37,7 @@ class Material;
 struct Sampler_settings;
 
 class Provider : public resource::Provider<Material> {
+
 public:
 
 	Provider(uint32_t num_threads);
@@ -48,9 +49,9 @@ public:
 
 	std::shared_ptr<Material> fallback_material() const;
 
-	std::shared_ptr<light::Constant> create_light();
+	Generic_sample_cache<light::Sample>& light_cache();
 
-	std::shared_ptr<sky::Material_clear> create_clear_sky();
+	std::shared_ptr<light::Constant> create_light();
 
 private:
 

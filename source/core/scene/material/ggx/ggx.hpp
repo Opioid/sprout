@@ -11,6 +11,7 @@ namespace bxdf { struct Result; }
 namespace ggx {
 
 class Schlick_isotropic {
+
 public:
 
 	template<typename Sample>
@@ -43,6 +44,7 @@ private:
 };
 
 class Conductor_isotropic {
+
 public:
 
 	template<typename Sample>
@@ -57,6 +59,7 @@ public:
 };
 
 class Conductor_anisotropic {
+
 public:
 
 	template<typename Sample>

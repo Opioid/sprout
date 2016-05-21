@@ -4,9 +4,10 @@
 
 struct ArHosekSkyModelState;
 
-namespace scene { namespace material { namespace sky {
+namespace procedural { namespace sky {
 
 class Model {
+
 public:
 
 	Model();
@@ -34,4 +35,4 @@ private:
 	static const math::float3 zenith_;
 };
 
-}}}
+}}

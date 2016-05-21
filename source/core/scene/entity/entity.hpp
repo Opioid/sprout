@@ -9,6 +9,7 @@
 namespace scene { namespace entity {
 
 class Entity {
+
 public:
 
 	Entity();

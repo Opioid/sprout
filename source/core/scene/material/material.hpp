@@ -18,6 +18,7 @@ namespace material {
 class Sample;
 
 class Material {
+
 public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;
@@ -66,6 +67,7 @@ protected:
 
 template<typename Sample_cache>
 class Typed_material : public Material {
+
 public:
 
 	Typed_material(Sample_cache& cache, std::shared_ptr<image::texture::Texture_2D> mask,

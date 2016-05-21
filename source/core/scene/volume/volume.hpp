@@ -7,6 +7,7 @@
 namespace scene { namespace volume {
 
 class Volume : public entity::Entity {
+
 public:
 
 	virtual math::float3 optical_depth(const math::Oray& ray) const = 0;

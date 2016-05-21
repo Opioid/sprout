@@ -18,7 +18,6 @@
 #include "light/light_emissionmap_animated.hpp"
 #include "metal/metal_sample.hpp"
 #include "metal/metal_material.hpp"
-#include "sky/sky_material_clear.hpp"
 #include "sky/sky_material_overcast.hpp"
 #include "substitute/substitute_sample.hpp"
 #include "substitute/substitute_material.hpp"
@@ -100,18 +99,15 @@ std::shared_ptr<Material> Provider::fallback_material() const {
 	return fallback_material_;
 }
 
+Generic_sample_cache<light::Sample>& Provider::light_cache() {
+	return light_cache_;
+}
+
 std::shared_ptr<light::Constant> Provider::create_light() {
 	scene::material::Sampler_settings sampler_settings;
 
 	return std::make_shared<light::Constant>(light_cache_, nullptr,
 											 sampler_settings, false);
-}
-
-std::shared_ptr<sky::Material_clear> Provider::create_clear_sky() {
-	scene::material::Sampler_settings sampler_settings;
-
-	return std::make_shared<sky::Material_clear>(light_cache_, nullptr,
-												 sampler_settings, false);
 }
 
 std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
@@ -491,26 +487,13 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 
 	bool two_sided = false;
 
-	// only used for "overcast sky"
 	math::float3 emission(0.6f, 0.6f, 0.6f);
-
-	math::float3 sun_direction;
-	math::float3 ground_albedo(0.3f, 0.3f, 0.3f);
-	float turbidity = 0.f;
 
 	for (auto n = sky_value.MemberBegin(); n != sky_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;
 
-		if ("ground_albedo" == node_name) {
-			ground_albedo = json::read_float3(node_value);
-		} else if ("turbidity" == node_name) {
-			turbidity = json::read_float(node_value);
-		} else if ("sun" == node_name) {
-			math::float3 angles = json::read_float3(node_value, "rotation");
-			math::float3x3 rotation = json::create_rotation_matrix(angles);
-			sun_direction = math::float3(rotation.z);
-		} else if ("emission" == node_name) {
+		if ("emission" == node_name) {
 			emission = json::read_float3(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
@@ -535,23 +518,12 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 		}
 	}
 
-	if (turbidity > 0.f) {
-		auto material = std::make_shared<sky::Material_clear>(light_cache_, mask,
-															  sampler_settings, two_sided);
+	auto material = std::make_shared<sky::Material_overcast>(light_cache_, mask,
+															 sampler_settings, two_sided);
 
-		material->set_sun_direction(sun_direction);
-		material->set_ground_albedo(ground_albedo);
-		material->set_turbidity(turbidity);
+	material->set_emission(emission);
 
-		return material;
-	} else {
-		auto material = std::make_shared<sky::Material_overcast>(light_cache_, mask,
-																 sampler_settings, two_sided);
-
-		material->set_emission(emission);
-
-		return material;
-	}
+	return material;
 }
 
 std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitute_value,
