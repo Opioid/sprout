@@ -32,6 +32,8 @@ private:
 
 	ArHosekSkyModelState* skymodel_states_[3];
 
+	bool dirty_;
+
 	static const math::float3 zenith_;
 };
 

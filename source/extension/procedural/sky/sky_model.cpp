@@ -2,11 +2,9 @@
 #include "hosek/ArHosekSkyModel.h"
 #include "base/math/vector.inl"
 
-#include <iostream>
-
 namespace procedural { namespace sky {
 
-Model::Model() {
+Model::Model() : dirty_(true) {
 	for (uint32_t i = 0; i < 3; ++i) {
 		skymodel_states_[i] = nullptr;
 	}
@@ -17,6 +15,10 @@ Model::~Model() {
 }
 
 void Model::init() {
+	if (!dirty_) {
+		return;
+	}
+
 	release();
 
 	float elevation = std::max(math::dot(sun_direction_, zenith_) * -0.5f * math::Pi, 0.f);
@@ -26,18 +28,23 @@ void Model::init() {
 																   ground_albedo_.v[i],
 																   elevation);
 	}
+
+	dirty_ = false;
 }
 
 void Model::set_sun_direction(math::pfloat3 direction) {
 	sun_direction_ = direction;
+	dirty_ = true;
 }
 
 void Model::set_ground_albedo(math::pfloat3 albedo) {
 	ground_albedo_ = albedo;
+	dirty_ = true;
 }
 
 void Model::set_turbidity(float turbidity) {
 	turbidity_ = turbidity;
+	dirty_ = true;
 }
 
 math::float3 Model::evaluate(math::pfloat3 wi) const {
@@ -51,10 +58,6 @@ math::float3 Model::evaluate(math::pfloat3 wi) const {
 	for (uint32_t i = 0; i < 3; ++i) {
 		radiance.v[i] = static_cast<float>(arhosek_tristim_skymodel_radiance(skymodel_states_[i],
 																			 theta, gamma, i));
-	}
-
-	if (math::contains_inf(radiance) || math::contains_nan(radiance)) {
-		std::cout << "sky error for wi_dot_z == " << wi_dot_z << " wi_dot_s == " << wi_dot_s << std::endl;
 	}
 
 	return radiance;
