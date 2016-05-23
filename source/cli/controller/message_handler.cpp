@@ -63,11 +63,17 @@ void Message_handler::handle(const std::string& message) {
 		if ("camera" == assignee) {
 			entity = &driver_.camera();
 		} else if ("entities" == assignee.substr(0, 8)) {
-			try {
-				uint32_t number = std::stoul(index);
-				entity = driver_.scene().entity(number);
+			if ('\"' == index.front() && '\"' == index.back()) {
+				std::string index_string = index.substr(1, index.size() - 2);
+				entity = driver_.scene().entity(index_string);
 				recompile = true;
-			} catch (...) {}
+			} else {
+				try {
+					uint32_t index_number = std::stoul(index);
+					entity = driver_.scene().entity(index_number);
+					recompile = true;
+				} catch (...) {}
+			}
 		} else {
 			entity = driver_.scene().entity(assignee);
 			recompile = true;
