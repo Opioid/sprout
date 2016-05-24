@@ -28,13 +28,13 @@ const material::Sample& Material_overcast::sample(const shape::Hitpoint& hp, mat
 	return sample;
 }
 
-math::float3 Material_overcast::sample_emission(math::pfloat3 wi, math::float2 /*uv*/,
+math::float3 Material_overcast::sample_radiance(math::pfloat3 wi, math::float2 /*uv*/,
 												float /*time*/, const Worker& /*worker*/,
 												Sampler_settings::Filter /*filter*/) const {
 	return overcast(wi);
 }
 
-math::float3 Material_overcast::average_emission() const {
+math::float3 Material_overcast::average_radiance() const {
 	if (is_two_sided()) {
 		return 2.f * emission_;
 	}
@@ -42,8 +42,8 @@ math::float3 Material_overcast::average_emission() const {
 	return emission_;
 }
 
-void Material_overcast::set_emission(math::pfloat3 emission) {
-	emission_ = emission;
+void Material_overcast::set_emission(math::pfloat3 radiance) {
+	emission_ = radiance;
 }
 
 math::float3 Material_overcast::overcast(math::pfloat3 wi) const {

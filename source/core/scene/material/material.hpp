@@ -32,19 +32,19 @@ public:
 								 float time, float ior_i, const Worker& worker,
 								 Sampler_filter filter) = 0;
 
-	virtual math::float3 sample_emission(math::pfloat3 wi, math::float2 uv, float time,
+	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv, float time,
 										 const Worker& worker, Sampler_filter filter) const;
 
-	virtual math::float3 average_emission() const;
+	virtual math::float3 average_radiance() const;
 
 	virtual bool has_emission_map() const;
 
-	virtual math::float2 emission_importance_sample(math::float2 r2, float& pdf) const;
+	virtual math::float2 radiance_importance_sample(math::float2 r2, float& pdf) const;
 
 	virtual float emission_pdf(math::float2 uv, const Worker& worker, Sampler_filter filter) const;
 
-	virtual float opacity(math::float2 uv, float time,
-						  const Worker& worker, Sampler_filter filter) const;
+	virtual float opacity(math::float2 uv, float time, const Worker& worker,
+						  Sampler_filter filter) const;
 
 	virtual void prepare_sampling(bool spherical);
 

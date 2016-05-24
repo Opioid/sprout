@@ -67,7 +67,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray,
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)) {
-			result += throughput * material_sample.emission();
+			result += throughput * material_sample.radiance();
 		}
 
 		if (i == settings_.max_bounces) {

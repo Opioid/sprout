@@ -9,7 +9,7 @@ public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
 
-	virtual math::float3 emission() const final override;
+	virtual math::float3 radiance() const final override;
 
 	virtual math::float3 attenuation() const final override;
 
@@ -24,7 +24,7 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(math::pfloat3 emission);
+	void set(math::pfloat3 radiance);
 
 private:
 

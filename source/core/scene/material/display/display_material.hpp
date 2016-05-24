@@ -19,14 +19,14 @@ public:
 										   float time, float ior_i,
 										   const Worker& worker, Sampler_settings::Filter filter) final override;
 
-	virtual math::float3 sample_emission(math::pfloat3 wi, math::float2 uv, float time,
+	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv, float time,
 										 const Worker& worker, Sampler_settings::Filter filter) const final override;
 
-	virtual math::float3 average_emission() const final override;
+	virtual math::float3 average_radiance() const final override;
 
 	virtual bool has_emission_map() const final override;
 
-	virtual math::float2 emission_importance_sample(math::float2 r2, float& pdf) const final override;
+	virtual math::float2 radiance_importance_sample(math::float2 r2, float& pdf) const final override;
 
 	virtual float emission_pdf(math::float2 uv,
 							   const Worker& worker, Sampler_settings::Filter filter) const final override;
@@ -35,7 +35,7 @@ public:
 
 	void set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map);
 
-	void set_emission(const math::float3& emission);
+	void set_emission(const math::float3& radiance);
 	void set_emission_factor(float emission_factor);
 	void set_roughness(float roughness);
 	void set_ior(float ior);

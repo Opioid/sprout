@@ -24,13 +24,13 @@ const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat
 	return sample;
 }
 
-math::float3 Constant::sample_emission(math::pfloat3 /*wi*/, math::float2 /*uv*/,
+math::float3 Constant::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/,
 									   float /*time*/, const Worker& /*worker*/,
 									   Sampler_settings::Filter /*filter*/) const {
 	return emission_;
 }
 
-math::float3 Constant::average_emission() const {
+math::float3 Constant::average_radiance() const {
 	if (is_two_sided()) {
 		return 2.f * emission_;
 	}

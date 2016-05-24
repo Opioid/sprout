@@ -12,10 +12,10 @@ public:
 	Material_base(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
 				  const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual math::float3 sample_emission(math::pfloat3 wi, math::float2 uv, float time,
+	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv, float time,
 										 const Worker& worker, Sampler_settings::Filter filter) const final override;
 
-	virtual math::float3 average_emission() const final override;
+	virtual math::float3 average_radiance() const final override;
 
 	virtual bool has_emission_map() const final override;
 

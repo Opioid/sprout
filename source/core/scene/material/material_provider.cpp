@@ -176,7 +176,7 @@ std::shared_ptr<Material> Provider::load_display(const json::Value& display_valu
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
 
-	math::float3 emission(10.f, 10.f, 10.f);
+	math::float3 radiance(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
 	float roughness = 1.f;
 	float ior = 1.5;
@@ -186,8 +186,8 @@ std::shared_ptr<Material> Provider::load_display(const json::Value& display_valu
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;
 
-		if ("emission" == node_name) {
-			emission = json::read_float3(node_value);
+		if ("radiance" == node_name) {
+			radiance = json::read_float3(node_value);
 		} else if ("emission_factor" == node_name) {
 			emission_factor = json::read_float(node_value);
 		} else if ("roughness" == node_name) {
@@ -241,7 +241,7 @@ std::shared_ptr<Material> Provider::load_display(const json::Value& display_valu
 		auto material = std::make_shared<display::Material>(display_cache_, mask,
 															sampler_settings, two_sided);
 		material->set_emission_map(emission_map);
-		material->set_emission(emission);
+		material->set_emission(radiance);
 		material->set_emission_factor(emission_factor);
 		material->set_roughness(roughness);
 		material->set_ior(ior);
@@ -487,14 +487,14 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 
 	bool two_sided = false;
 
-	math::float3 emission(0.6f, 0.6f, 0.6f);
+	math::float3 radiance(0.6f, 0.6f, 0.6f);
 
 	for (auto n = sky_value.MemberBegin(); n != sky_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;
 
-		if ("emission" == node_name) {
-			emission = json::read_float3(node_value);
+		if ("radiance" == node_name) {
+			radiance = json::read_float3(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
 		} else if ("textures" == node_name) {
@@ -521,7 +521,7 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 	auto material = std::make_shared<sky::Material_overcast>(light_cache_, mask,
 															 sampler_settings, two_sided);
 
-	material->set_emission(emission);
+	material->set_emission(radiance);
 
 	return material;
 }

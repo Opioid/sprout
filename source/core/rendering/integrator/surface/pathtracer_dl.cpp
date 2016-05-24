@@ -66,7 +66,7 @@ math::float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray,
 
 		if (material_sample.same_hemisphere(wo)
 		&& (primary_ray || sample_result.type.test(scene::material::bxdf::Type::Specular))) {
-			result += throughput * material_sample.emission();
+			result += throughput * material_sample.radiance();
 		}
 
 		if (material_sample.is_pure_emissive()) {

@@ -10,7 +10,7 @@ class Sample_base : public material::Sample {
 
 public:
 
-	virtual math::float3 emission() const final override;
+	virtual math::float3 radiance() const final override;
 
 	virtual math::float3 attenuation() const final override;
 

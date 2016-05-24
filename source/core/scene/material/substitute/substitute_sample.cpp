@@ -37,11 +37,11 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 	}
 }
 
-void Sample::set(math::pfloat3 color, math::pfloat3 emission,
+void Sample::set(math::pfloat3 color, math::pfloat3 radiance,
 				 float constant_f0, float a2, float metallic) {
 	diffuse_color_ = (1.f - metallic) * color;
 	f0_ = math::lerp(math::float3(constant_f0), color, metallic);
-	emission_ = emission;
+	emission_ = radiance;
 
 	a2_ = a2;
 

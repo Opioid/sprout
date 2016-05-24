@@ -13,12 +13,12 @@ Material::Material(std::shared_ptr<image::texture::Texture_2D> mask,
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-math::float3 Material::sample_emission(math::pfloat3 /*wi*/, math::float2 /*uv*/, float /*time*/,
+math::float3 Material::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/, float /*time*/,
 									   const Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	return math::float3(0.f, 0.f, 0.f);
 }
 
-math::float3 Material::average_emission() const {
+math::float3 Material::average_radiance() const {
 	return math::float3(0.f, 0.f, 0.f);
 }
 
@@ -26,7 +26,7 @@ bool Material::has_emission_map() const {
 	return false;
 }
 
-math::float2 Material::emission_importance_sample(math::float2 /*r2*/, float& /*pdf*/) const {
+math::float2 Material::radiance_importance_sample(math::float2 /*r2*/, float& /*pdf*/) const {
 	return math::float2::identity;
 }
 
@@ -64,7 +64,7 @@ bool Material::is_emissive() const {
 		return true;
 	}
 
-	math::float3 e = average_emission();
+	math::float3 e = average_radiance();
 	if (e.x > 0.f || e.y > 0.f || e.z > 0.f) {
 		return true;
 	}

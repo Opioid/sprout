@@ -17,11 +17,11 @@ public:
 										   float time, float ior_i, const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
-	virtual math::float3 sample_emission(math::pfloat3 wi, math::float2 uv,
+	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv,
 										 float time, const Worker& worker,
 										 Sampler_settings::Filter filter) const final override;
 
-	virtual math::float3 average_emission() const final override;
+	virtual math::float3 average_radiance() const final override;
 
 	virtual bool has_emission_map() const final override;
 

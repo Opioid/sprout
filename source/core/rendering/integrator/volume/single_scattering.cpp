@@ -66,7 +66,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 	math::float3 w = -ray.direction;
 
-	math::float3 emission = math::float3_identity;
+	math::float3 radiance = math::float3_identity;
 
 	math::float3 scattering = volume->scattering();
 
@@ -104,7 +104,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 				math::float3 l = Single_scattering::transmittance(worker, volume, shadow_ray) * light_sample.energy;
 
-				emission += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
+				radiance += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
 		}
 
@@ -121,13 +121,13 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 		math::float3 l = Single_scattering::transmittance(volume, scatter_ray) * li;
 
-		emission += p * tr * scattering * l;
+		radiance += p * tr * scattering * l;
 		*/
 	}
 
 	transmittance = tr;
 
-	math::float3 color = step * emission;
+	math::float3 color = step * radiance;
 
 	return math::float4(color, color::luminance(color));
 }

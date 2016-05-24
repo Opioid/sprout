@@ -20,13 +20,13 @@ void Prop_image_light::sample(const Entity_transformation& transformation, float
 	auto material = prop_->material(part_);
 
 	float pdf;
-	math::float2 uv = material->emission_importance_sample(sampler.generate_sample_2D(), pdf);
+	math::float2 uv = material->radiance_importance_sample(sampler.generate_sample_2D(), pdf);
 
 	prop_->shape()->sample(part_, transformation, area_, p, uv, result.shape);
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
 		result.shape.pdf *= pdf;
-		result.energy = material->sample_emission(result.shape.wi, result.shape.uv,
+		result.energy = material->sample_radiance(result.shape.wi, result.shape.uv,
 												  time, worker, filter);
 	} else {
 		result.shape.pdf = 0.f;

@@ -30,13 +30,13 @@ const scene::material::Sample& Material::sample(const scene::shape::Hitpoint& hp
 	return sample;
 }
 
-math::float3 Material::sample_emission(math::pfloat3 wi, math::float2 /*uv*/,
+math::float3 Material::sample_radiance(math::pfloat3 wi, math::float2 /*uv*/,
 									   float /*time*/, const scene::Worker& /*worker*/,
 									   Sampler_filter /*filter*/) const {
 	return model_.evaluate(wi);
 }
 
-math::float3 Material::average_emission() const {
+math::float3 Material::average_radiance() const {
 	return math::float3(1.f, 1.f, 1.f);
 }
 

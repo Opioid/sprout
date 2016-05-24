@@ -26,20 +26,20 @@ const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, math::pfl
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
 
-	math::float3 emission = sampler.sample_3(*emission_map_, hp.uv);
-	sample.set(emission_factor_ * emission);
+	math::float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
+	sample.set(emission_factor_ * radiance);
 
 	return sample;
 }
 
-math::float3 Emissionmap::sample_emission(math::pfloat3 /*wi*/, math::float2 uv,
+math::float3 Emissionmap::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
 										  float /*time*/, const Worker& worker,
 										  Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }
 
-math::float3 Emissionmap::average_emission() const {
+math::float3 Emissionmap::average_radiance() const {
 	return average_emission_;
 }
 
@@ -47,7 +47,7 @@ bool Emissionmap::has_emission_map() const {
 	return nullptr != emission_map_;
 }
 
-math::float2 Emissionmap::emission_importance_sample(math::float2 r2, float& pdf) const {
+math::float2 Emissionmap::radiance_importance_sample(math::float2 r2, float& pdf) const {
 	math::float2 uv = distribution_.sample_continuous(r2, pdf);
 
 	if (uv.y == 0.f) {
@@ -101,7 +101,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 	}
 
 	if (spherical) {
-		math::float3 average_emission = math::float3_identity;
+		math::float3 average_radiance = math::float3_identity;
 
 		float total_weight = 0.f;
 
@@ -114,7 +114,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				math::float3 emission = emission_factor_ * emission_map_->at_3(x, y);
+				math::float3 radiance = emission_factor_ * emission_map_->at_3(x, y);
 
 
 			/*
@@ -138,15 +138,15 @@ void Emissionmap::prepare_sampling(bool spherical) {
 				}
 			*/
 
-				average_emission += sin_theta * emission;
+				average_radiance += sin_theta * radiance;
 
 				total_weight += sin_theta;
 
-				luminance[l] = sin_theta * color::luminance(emission);
+				luminance[l] = sin_theta * color::luminance(radiance);
 			}
 		}
 
-		average_emission_ = average_emission / total_weight;
+		average_emission_ = average_radiance / total_weight;
 
 		total_weight_ = total_weight;
 

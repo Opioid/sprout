@@ -64,7 +64,7 @@ Version history:
 1.3   January 21st, 2013 (not released to the public)
       Added support for solar discs that are not exactly the same size as
       the terrestrial sun. Also added support for suns with a different
-      emission spectrum ("Alien World" functionality).
+      radiance spectrum ("Alien World" functionality).
 
 1.2a  December 18th, 2012
       Fixed a mistake and some inaccuracies in the solar radiance function
@@ -131,7 +131,7 @@ is given in radians.
                 );
 
 Note that starting with version 1.3, there is also a second initialisation 
-function which generates skydome states for different solar emission spectra 
+function which generates skydome states for different solar radiance spectra 
 and solar radii: 'arhosekskymodelstate_alienworld_alloc_init()'.
 
 See the notes about the "Alien World" functionality provided further down for a 
@@ -189,7 +189,7 @@ Solar Radiance Function
 -----------------------
 
 For each position on the solar disc, this function returns the entire radiance 
-one sees - direct emission, as well as in-scattered light in the area of the 
+one sees - direct radiance, as well as in-scattered light in the area of the 
 solar disc. The latter is important for low solar elevations - nice images of 
 the setting sun would not be possible without this. This is also the reason why 
 this function, just like the regular sky dome model evaluation function, needs 
@@ -235,9 +235,9 @@ model states (you will have to provide values for star temperature and solar
 intensity compared to the terrestrial sun), and do everything else as you 
 did before.
 
-CAVEAT #1: we assume the emission of the star that illuminates the alien world 
-           to be a perfect blackbody emission spectrum. This is never entirely 
-           realistic - real star emission spectra are considerably more complex 
+CAVEAT #1: we assume the radiance of the star that illuminates the alien world 
+           to be a perfect blackbody radiance spectrum. This is never entirely 
+           realistic - real star radiance spectra are considerably more complex 
            than this, mainly due to absorption effects in the outer layers of 
            stars. However, blackbody spectra are a reasonable first assumption 
            in a usage scenario like this, where 100% accuracy is simply not 
@@ -261,12 +261,12 @@ CAVEAT #3: you have to provide a value for the solar intensity of the star
             
            Too much irradiance, and the atmosphere probably boils off into 
            space, too little, it freezes. Which means that stars of 
-           considerably different emission colour than our sun will have to be 
+           considerably different radiance colour than our sun will have to be 
            fairly different in size from it, to still provide a reasonable and 
            inhabitable amount of irradiance. Red stars will need to be much 
            larger than our sun, while white or blue stars will have to be 
            comparatively tiny. The initialisation function handles this and 
-           computes a plausible solar radius for a given emission spectrum. In
+           computes a plausible solar radius for a given radiance spectrum. In
            terms of absolute radiometric values, you should probably not stray
            all too far from a solar intensity value of 1.0.
 
@@ -323,8 +323,8 @@ typedef double ArHosekSkyModelConfiguration[9];
     'emission_correction_factor_sky'
     'emission_correction_factor_sun'
 
-        The original model coefficients were fitted against the emission of 
-        our local sun. If a different solar emission is desired (i.e. if the
+        The original model coefficients were fitted against the radiance of 
+        our local sun. If a different solar radiance is desired (i.e. if the
         model is being used to predict skydome appearance for an earth-like 
         planet that orbits a different star), these correction factors, which 
         are determined during the alloc_init step, are applied to each waveband 

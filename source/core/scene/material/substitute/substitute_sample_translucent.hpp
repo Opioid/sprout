@@ -14,7 +14,7 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& color, const math::float3& emission,
+	void set(const math::float3& color, const math::float3& radiance,
 			 float constant_f0, float a2, float metallic,
 			 float thickness, float attenuation_distance);
 

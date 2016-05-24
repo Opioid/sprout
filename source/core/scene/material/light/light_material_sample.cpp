@@ -10,7 +10,7 @@ math::float3 Sample::evaluate(math::pfloat3 /*wi*/, float& pdf) const {
 	return math::float3_identity;
 }
 
-math::float3 Sample::emission() const {
+math::float3 Sample::radiance() const {
 	return emission_;
 }
 
@@ -39,8 +39,8 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(math::pfloat3 emission) {
-	emission_ = emission;
+void Sample::set(math::pfloat3 radiance) {
+	emission_ = radiance;
 }
 
 }}}

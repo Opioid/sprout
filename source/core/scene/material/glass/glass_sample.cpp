@@ -101,7 +101,7 @@ math::float3 Sample::evaluate(math::pfloat3 /*wi*/, float& pdf) const {
 	return math::float3_identity;
 }
 
-math::float3 Sample::emission() const {
+math::float3 Sample::radiance() const {
 	return math::float3_identity;
 }
 

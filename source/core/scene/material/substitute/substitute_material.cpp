@@ -44,8 +44,8 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat
 	}
 
 	if (emission_map_) {
-		math::float3 emission = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
-		sample.set(color, emission, constant_f0_, surface.x, surface.y);
+		math::float3 radiance = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
+		sample.set(color, radiance, constant_f0_, surface.x, surface.y);
 	} else {
 		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y);
 	}

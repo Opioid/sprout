@@ -34,7 +34,7 @@ math::float3 Sample::evaluate(math::pfloat3 wi, float& pdf) const {
 	return n_dot_wi * specular;
 }
 
-math::float3 Sample::emission() const {
+math::float3 Sample::radiance() const {
 	return emission_;
 }
 
@@ -71,8 +71,8 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(const math::float3& emission, float f0, float roughness) {
-	emission_ = emission;
+void Sample::set(const math::float3& radiance, float f0, float roughness) {
+	emission_ = radiance;
 	f0_ = math::float3(f0);
 	float a = roughness * roughness;
 	a2_ = a * a;

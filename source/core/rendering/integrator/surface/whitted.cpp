@@ -61,7 +61,7 @@ math::float3 Whitted::shade(Worker& worker, const scene::Ray& ray,
 												Sampler_filter::Unknown);
 
 	if (material_sample.same_hemisphere(wo)) {
-		result += material_sample.emission();
+		result += material_sample.radiance();
 	}
 
 	if (material_sample.is_pure_emissive()) {

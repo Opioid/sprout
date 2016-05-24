@@ -63,7 +63,7 @@ Version history:
 1.3   January 21st, 2013 (not released to the public)
       Added support for solar discs that are not exactly the same size as
       the terrestrial sun. Also added support for suns with a different
-      emission spectrum ("Alien World" functionality).
+      radiance spectrum ("Alien World" functionality).
 
 1.2a  December 18th, 2012
       Fixed a mistake and some inaccuracies in the solar radiance function
@@ -380,7 +380,7 @@ double art_blackbody_dd_value(
 //   The solar spectrum incident at the top of the atmosphere, as it was used 
 //   in the brute force path tracer that generated the reference results the 
 //   model was fitted to. We need this as the yardstick to compare any altered 
-//   Blackbody emission spectra for alien world stars to.
+//   Blackbody radiance spectra for alien world stars to.
 
 //   This is just the data from the Preetham paper, extended into the UV range.
 

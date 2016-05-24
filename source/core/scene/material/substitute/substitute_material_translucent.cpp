@@ -48,8 +48,8 @@ const material::Sample& Material_translucent::sample(const shape::Hitpoint& hp, 
 	thickness = thickness_;
 
 	if (emission_map_) {
-		math::float3 emission = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
-		sample.set(color, emission, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
+		math::float3 radiance = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
+		sample.set(color, radiance, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
 	} else {
 		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
 	}

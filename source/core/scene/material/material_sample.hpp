@@ -14,7 +14,7 @@ public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const = 0;
 
-	virtual math::float3 emission() const = 0;
+	virtual math::float3 radiance() const = 0;
 
 	virtual math::float3 attenuation() const = 0;
 

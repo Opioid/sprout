@@ -20,7 +20,7 @@ Material_base<Sample>::Material_base(Generic_sample_cache<Sample>& cache,
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings, two_sided) {}
 
 template<typename Sample>
-math::float3 Material_base<Sample>::sample_emission(math::pfloat3 /*wi*/, math::float2 uv, float /*time*/,
+math::float3 Material_base<Sample>::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv, float /*time*/,
 													const Worker& worker, Sampler_settings::Filter filter) const {
 	if (emission_map_) {
 		// For some reason Clang needs this to find inherited Material::sampler_key_
@@ -32,7 +32,7 @@ math::float3 Material_base<Sample>::sample_emission(math::pfloat3 /*wi*/, math::
 }
 
 template<typename Sample>
-math::float3 Material_base<Sample>::average_emission() const {
+math::float3 Material_base<Sample>::average_radiance() const {
 	if (emission_map_) {
 		return emission_factor_ * emission_map_->average_3();
 	} else {

@@ -11,7 +11,7 @@
 
 namespace scene { namespace material { namespace substitute {
 
-math::float3 Sample_base::emission() const {
+math::float3 Sample_base::radiance() const {
 	return emission_;
 }
 

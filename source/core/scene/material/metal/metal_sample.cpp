@@ -14,7 +14,7 @@ math::float3 Sample_isotropic::evaluate(math::pfloat3 wi, float& pdf) const {
 	return n_dot_wi * ggx::Conductor_isotropic::evaluate(*this, wi, n_dot_wi, n_dot_wo, pdf);
 }
 
-math::float3 Sample_isotropic::emission() const {
+math::float3 Sample_isotropic::radiance() const {
 	return math::float3_identity;
 }
 
@@ -59,7 +59,7 @@ math::float3 Sample_anisotropic::evaluate(math::pfloat3 wi, float& pdf) const {
 	return n_dot_wi * ggx::Conductor_anisotropic::evaluate(*this, wi, n_dot_wi, n_dot_wo, pdf);
 }
 
-math::float3 Sample_anisotropic::emission() const {
+math::float3 Sample_anisotropic::radiance() const {
 	return math::float3_identity;
 }
 

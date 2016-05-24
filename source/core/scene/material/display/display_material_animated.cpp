@@ -42,8 +42,8 @@ const material::Sample& Material_animated::sample(const shape::Hitpoint& hp, mat
 	if (emission_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		math::float3 emission = sampler.sample_3(*emission_map_, hp.uv, element_);
-		sample.set(emission_factor_ * emission, f0_, roughness_);
+		math::float3 radiance = sampler.sample_3(*emission_map_, hp.uv, element_);
+		sample.set(emission_factor_ * radiance, f0_, roughness_);
 	} else {
 		sample.set(emission_factor_ * emission_, f0_, roughness_);
 	}
@@ -51,13 +51,13 @@ const material::Sample& Material_animated::sample(const shape::Hitpoint& hp, mat
 	return sample;
 }
 
-math::float3 Material_animated::sample_emission(math::pfloat3 /*wi*/, math::float2 uv, float /*time*/,
+math::float3 Material_animated::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv, float /*time*/,
 												const Worker& worker, Sampler_settings::Filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv, element_);
 }
 
-math::float3 Material_animated::average_emission() const {
+math::float3 Material_animated::average_radiance() const {
 	return average_emissions_[element_];
 }
 
@@ -65,7 +65,7 @@ bool Material_animated::has_emission_map() const {
 	return nullptr != emission_map_;
 }
 
-math::float2 Material_animated::emission_importance_sample(math::float2 r2, float& pdf) const {
+math::float2 Material_animated::radiance_importance_sample(math::float2 r2, float& pdf) const {
 	math::float2 uv = distribution_.sample_continuous(r2, pdf);
 
 	if (uv.y == 0.f) {
@@ -120,11 +120,11 @@ void Material_animated::prepare_sampling(bool spherical) {
 			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				math::float3 emission = emission_factor_ * emission_->at_3(x, y);
+				math::float3 radiance = emission_factor_ * emission_->at_3(x, y);
 
-				luminance[l] = color::luminance(emission);
+				luminance[l] = color::luminance(radiance);
 
-				average_emission_ += sin_theta * emission;
+				average_emission_ += sin_theta * radiance;
 
 				total_weight_ += sin_theta;
 			}

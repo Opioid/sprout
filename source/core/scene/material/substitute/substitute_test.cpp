@@ -21,11 +21,11 @@ void test() {
 	Sample sample;
 
 	math::float3 color(1.f, 1.f, 1.f);
-	math::float3 emission = math::float3_identity;
+	math::float3 radiance = math::float3_identity;
 	float constant_f0 = 0.03f;
 	float roughness   = 0.f;
 	float metallic    = 0.f;
-	sample.set(color, emission, constant_f0, roughness, metallic);
+	sample.set(color, radiance, constant_f0, roughness, metallic);
 
 	math::float3 t(1.f, 0.f, 0.f);
 	math::float3 b(0.f, 1.f, 0.f);

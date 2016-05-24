@@ -65,7 +65,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
 
 		if (material_sample.same_hemisphere(wo)
 		&& (primary_ray || sample_result.type.test(scene::material::bxdf::Type::Specular))) {
-			result += throughput * material_sample.emission();
+			result += throughput * material_sample.radiance();
 		}
 
 		if (material_sample.is_pure_emissive()) {
@@ -221,7 +221,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 				if (light_material_sample.same_hemisphere(wo)) {
 					math::float3 t = worker.transmittance(shadow_ray);
 
-					math::float3 ls_energy = t * light_material_sample.emission();
+					math::float3 ls_energy = t * light_material_sample.radiance();
 
 					float weight = power_heuristic(sample_result.pdf, ls_pdf);
 

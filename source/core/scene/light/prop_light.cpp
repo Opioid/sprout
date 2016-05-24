@@ -42,7 +42,7 @@ void Prop_light::sample(const Entity_transformation& transformation, float time,
 		}
 	}
 
-	result.energy = material->sample_emission(result.shape.wi, result.shape.uv,
+	result.energy = material->sample_radiance(result.shape.wi, result.shape.uv,
 											  time, worker, filter);
 }
 
@@ -56,12 +56,12 @@ float Prop_light::pdf(const Entity_transformation& transformation,
 }
 
 math::float3 Prop_light::power(const math::aabb& scene_bb) const {
-	math::float3 emission = prop_->material(part_)->average_emission();
+	math::float3 radiance = prop_->material(part_)->average_radiance();
 
 	if (prop_->shape()->is_finite()) {
-		return area_ * emission;
+		return area_ * radiance;
 	} else {
-		return math::squared_length(scene_bb.halfsize()) * area_ * emission;
+		return math::squared_length(scene_bb.halfsize()) * area_ * radiance;
 	}
 }
 
