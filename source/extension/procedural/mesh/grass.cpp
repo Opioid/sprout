@@ -135,7 +135,7 @@ void Grass::add_blade(const math::packed_float3& offset,
 	v.t = math::packed_float3(1.f, 0.f, 0.f);
 	v.bitangent_sign = 1.f;
 
-	math::float3x rotation;
+	math::float3x3 rotation;
 	math::set_rotation_y(rotation, rotation_y);
 
 	float max_width = 0.035f;
@@ -163,7 +163,7 @@ void Grass::add_blade(const math::packed_float3& offset,
 
 	Segment segments[num_segments + 2];
 
-	math::float3x rx;
+	math::float3x3 rx;
 	float ax = -0.4f * math::Pi;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[0].a = segment_controls[0] * rx;

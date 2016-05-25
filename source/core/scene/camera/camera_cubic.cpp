@@ -55,7 +55,7 @@ Cubic::Cubic(Layout layout, math::int2 resolution, float ray_max_t) :
 	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians(90.f));
 	math::set_rotation_x(view_rotations_[2], math::degrees_to_radians(90.f));
 	math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
-	view_rotations_[4] = math::float3x::identity;
+	view_rotations_[4] = math::float3x3::identity;
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 }
 

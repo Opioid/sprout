@@ -40,7 +40,7 @@ private:
 
 	math::Recti view_bounds_[12];
 
-	math::float3x view_rotations_[12];
+	math::float3x3 view_rotations_[12];
 };
 
 }}

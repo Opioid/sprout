@@ -38,7 +38,7 @@ private:
 
 	math::Recti view_bounds_[6];
 
-	math::float3x view_rotations_[6];
+	math::float3x3 view_rotations_[6];
 };
 
 }}

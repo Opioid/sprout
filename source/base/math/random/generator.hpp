@@ -19,7 +19,7 @@ private:
 
 	uint32_t advance_lfsr113();
 
-	uint32_t z0, z1, z2, z;
+	uint32_t z0, z1, z2, z3;
 };
 
 }}

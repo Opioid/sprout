@@ -55,7 +55,7 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);
 
-	math::float3x rotation;
+	math::float3x3 rotation;
 	math::set_rotation_y(rotation, (x - 0.5f) * 2.f * math::Pi);
 	math::float3 eye_pos = rotation * eye_offsets_[view];
 
