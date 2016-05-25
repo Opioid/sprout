@@ -60,7 +60,7 @@ public:
 					  float area, const math::float3& p, const math::float3& wi, bool two_sided,
 					  bool total_sphere, Node_stack& node_stack) const final override;
 
-	virtual float area(uint32_t part, const math::float3& scale) const final override;
+	virtual float area(uint32_t part, math::pfloat3 scale) const final override;
 
 	virtual bool is_complex() const final override;
 

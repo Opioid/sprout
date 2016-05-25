@@ -37,8 +37,6 @@ protected:
 	Prop* prop_;
 
 	uint32_t part_;
-
-	float area_;
 };
 
 }}

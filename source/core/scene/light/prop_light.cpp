@@ -27,13 +27,15 @@ void Prop_light::sample(const Entity_transformation& transformation, float time,
 						Sampler_filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
 
+	float area = prop_->area(part_);
+
 	bool two_sided = material->is_two_sided();
 
 	if (total_sphere) {
-		prop_->shape()->sample(part_, transformation, area_, p,
+		prop_->shape()->sample(part_, transformation, area, p,
 							   two_sided, sampler, worker.node_stack(), result.shape);
 	} else {
-		prop_->shape()->sample(part_, transformation, area_, p, n,
+		prop_->shape()->sample(part_, transformation, area, p, n,
 							   two_sided, sampler, worker.node_stack(), result.shape);
 
 		if (math::dot(result.shape.wi, n) <= 0.f) {
@@ -49,30 +51,30 @@ void Prop_light::sample(const Entity_transformation& transformation, float time,
 float Prop_light::pdf(const Entity_transformation& transformation,
 					  const math::float3& p, const math::float3& wi, bool total_sphere,
 					  Worker& worker, Sampler_filter /*filter*/) const {
+	float area = prop_->area(part_);
+
 	bool two_sided = prop_->material(part_)->is_two_sided();
 
-	return prop_->shape()->pdf(part_, transformation, area_, p, wi,
+	return prop_->shape()->pdf(part_, transformation, area, p, wi,
 							   two_sided, total_sphere, worker.node_stack());
 }
 
 math::float3 Prop_light::power(const math::aabb& scene_bb) const {
+	float area = prop_->area(part_);
+
 	math::float3 radiance = prop_->material(part_)->average_radiance();
 
 	if (prop_->shape()->is_finite()) {
-		return area_ * radiance;
+		return area * radiance;
 	} else {
-		return math::squared_length(scene_bb.halfsize()) * area_ * radiance;
+		return math::squared_length(scene_bb.halfsize()) * area * radiance;
 	}
 }
 
 void Prop_light::prepare_sampling() {
 	prop_->material(part_)->prepare_sampling(false);
 
-	prop_->shape()->prepare_sampling(part_);
-
-	entity::Composed_transformation temp;
-	auto& transformation = prop_->transformation_at(0.f, temp);
-	area_ = prop_->shape()->area(part_, math::float3(transformation.scale));
+	prop_->prepare_sampling(part_);
 }
 
 bool Prop_light::equals(const Prop* prop, uint32_t part) const {

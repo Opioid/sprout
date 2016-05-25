@@ -38,6 +38,10 @@ public:
 
 	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
+	void prepare_sampling(uint32_t part);
+
+	void morph(thread::Pool& pool);
+
 	bool intersect(Ray& ray, shape::Node_stack& node_stack,
 				   shape::Intersection& intersection) const;
 
@@ -48,12 +52,12 @@ public:
 	const shape::Shape* shape() const;
 	shape::Shape* shape();
 
-	void morph(thread::Pool& pool);
-
 	const math::aabb& aabb() const;
 
+	float area(uint32_t part) const;
+
 	const material::Materials& materials() const;
-	material::Material* material(uint32_t index) const;
+	material::Material* material(uint32_t part) const;
 
 	bool has_masked_material() const;
 
@@ -77,6 +81,8 @@ private:
 	math::aabb aabb_;
 
 	material::Materials materials_;
+
+	std::vector<float> areas_;
 
 	enum class Properties {
 		Visible_in_camera		= 1 << 0,

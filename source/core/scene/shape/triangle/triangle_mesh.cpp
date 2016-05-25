@@ -212,7 +212,7 @@ float Mesh::pdf(uint32_t part, const Entity_transformation& transformation,
 	return 0.f;
 }
 
-float Mesh::area(uint32_t part, const math::float3& scale) const {
+float Mesh::area(uint32_t part, math::pfloat3 scale) const {
 	return distributions_[part].distribution.integral() * scale.x * scale.x;
 }
 

@@ -16,6 +16,7 @@ Prop::~Prop() {}
 
 void Prop::set_shape(std::shared_ptr<shape::Shape> shape) {
 	shape_ = shape;
+	areas_.resize(shape->num_parts(), 0.f);
 }
 
 void Prop::set_materials(const material::Materials& materials) {
@@ -37,6 +38,25 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
 	properties_.set(Properties::Visible_in_camera,   in_camera);
 	properties_.set(Properties::Visible_in_reflection, in_reflection);
 	properties_.set(Properties::Visible_in_shadow, in_shadow);
+}
+
+void Prop::prepare_sampling(uint32_t part) {
+	shape_->prepare_sampling(part);
+
+	entity::Composed_transformation temp;
+	auto& transformation = transformation_at(0.f, temp);
+	areas_[part] = shape_->area(part, transformation.scale);
+}
+
+void Prop::morph(thread::Pool& pool) {
+	if (animated_) {
+		shape::Morphable_shape* morphable = shape_->morphable_shape();
+		if (morphable) {
+			morphable->morph(local_frame_a_.morphing.targets[0],
+							 local_frame_a_.morphing.targets[1],
+							 local_frame_a_.morphing.weight, pool);
+		}
+	}
 }
 
 bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack,
@@ -97,27 +117,20 @@ shape::Shape* Prop::shape() {
 	return shape_.get();
 }
 
-void Prop::morph(thread::Pool& pool) {
-	if (animated_) {
-		shape::Morphable_shape* morphable = shape_->morphable_shape();
-		if (morphable) {
-			morphable->morph(local_frame_a_.morphing.targets[0],
-							 local_frame_a_.morphing.targets[1],
-							 local_frame_a_.morphing.weight, pool);
-		}
-	}
-}
-
 const math::aabb& Prop::aabb() const {
 	return aabb_;
+}
+
+float Prop::area(uint32_t part) const {
+	return areas_[part];
 }
 
 const material::Materials& Prop::materials() const {
 	return materials_;
 }
 
-material::Material* Prop::material(uint32_t index) const {
-	return materials_[index].get();
+material::Material* Prop::material(uint32_t part) const {
+	return materials_[part].get();
 }
 
 bool Prop::has_masked_material() const {
