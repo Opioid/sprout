@@ -4,7 +4,7 @@ namespace math {
 
 template<typename T> struct Vector2;
 template<typename T> struct Vector3;
-struct alignas(16) Vector3f_a;
+struct Vector3f_a;
 
 /****************************************************************************
  *
@@ -13,12 +13,9 @@ struct alignas(16) Vector3f_a;
  ****************************************************************************/
 
 template<typename T>
-struct Vector4
-{
-	union
-	{
-		struct
-		{
+struct Vector4 {
+	union {
+		struct {
 			T x, y, z, w;
 		};
 
@@ -60,12 +57,9 @@ T dot(const Vector4<T>& a, const Vector4<T>& b);
  *
  ****************************************************************************/
 
-struct alignas(16) Vector4f_a
-{
-	union
-	{
-		struct
-		{
+struct alignas(16) Vector4f_a {
+	union {
+		struct {
 			float x, y, z, w;
 		};
 

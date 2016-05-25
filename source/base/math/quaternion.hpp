@@ -7,7 +7,7 @@ namespace math {
 
 template<typename T> struct Vector3;
 template<typename T> struct Matrix3x3;
-struct alignas(16) Vector4f_a;
+struct Vector4f_a;
 
 /****************************************************************************
  *

@@ -7,7 +7,7 @@ namespace math {
 template<typename T> struct Vector3;
 template<typename T> struct Matrix4x4;
 template<typename T> struct Quaternion;
-struct alignas(16) Vector4f_a;
+struct Vector4f_a;
 
 /****************************************************************************
  *
@@ -125,7 +125,7 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m);
  *
  ****************************************************************************/
 
-struct alignas(16) Vector4f_a;
+struct Vector4f_a;
 
 /*
 struct alignas(16) Matrix3x3f_a {
