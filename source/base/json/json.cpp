@@ -175,20 +175,20 @@ math::uint3 read_uint3(const rapidjson::Value& value) {
 	return math::uint3(value[0u].GetUint(), value[1].GetUint(), value[2].GetUint());
 }
 
-math::float3x3 create_rotation_matrix(math::pfloat3 xyz) {
-	math::float3x3 rot_x;
+math::float3x create_rotation_matrix(math::pfloat3 xyz) {
+	math::float3x rot_x;
 	math::set_rotation_x(rot_x, math::degrees_to_radians(xyz.x));
 
-	math::float3x3 rot_y;
+	math::float3x rot_y;
 	math::set_rotation_y(rot_y, math::degrees_to_radians(xyz.y));
 
-	math::float3x3 rot_z;
+	math::float3x rot_z;
 	math::set_rotation_z(rot_z, math::degrees_to_radians(xyz.z));
 
 	return rot_z * rot_x * rot_y;
 }
 
-math::float3x3 read_rotation_matrix(const rapidjson::Value& value) {
+math::float3x read_rotation_matrix(const rapidjson::Value& value) {
 	math::float3 rot = read_float3(value);
 
 	return create_rotation_matrix(rot);

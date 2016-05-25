@@ -21,15 +21,15 @@ Canopy::Canopy() {
 bool Canopy::intersect(const Entity_transformation& transformation, math::Oray& ray,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	if (ray.max_t >= 1000000.f) {
-		if (math::dot(ray.direction, transformation.rotation.z3) < 0.f) {
+		if (math::dot(ray.direction, transformation.rotation.v3.z) < 0.f) {
 			return false;
 		}
 
 		intersection.epsilon = 5e-4f;
 
 		intersection.p = ray.point(1000000.f);
-		intersection.t = transformation.rotation.x3;
-		intersection.b = transformation.rotation.y3;
+		intersection.t = transformation.rotation.v3.x;
+		intersection.b = transformation.rotation.v3.y;
 
 		math::float3 n = -ray.direction;
 		intersection.n = n;

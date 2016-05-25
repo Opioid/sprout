@@ -144,17 +144,17 @@ inline void AABB::insert(FVector3f_a p) {
 }
 
 inline AABB AABB::transform(const Matrix4x4f_a& m) const {
-	Vector3f_a xa = bounds_[0].x * m.x.xyz;
-	Vector3f_a xb = bounds_[1].x * m.x.xyz;
+	Vector3f_a xa = bounds_[0].x * m.v3.x;
+	Vector3f_a xb = bounds_[1].x * m.v3.x;
 
-	Vector3f_a ya = bounds_[0].y * m.y.xyz;
-	Vector3f_a yb = bounds_[1].y * m.y.xyz;
+	Vector3f_a ya = bounds_[0].y * m.v3.y;
+	Vector3f_a yb = bounds_[1].y * m.v3.y;
 
-	Vector3f_a za = bounds_[0].z * m.z.xyz;
-	Vector3f_a zb = bounds_[1].z * m.z.xyz;
+	Vector3f_a za = bounds_[0].z * m.v3.z;
+	Vector3f_a zb = bounds_[1].z * m.v3.z;
 
-	return AABB(math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb) + m.w.xyz,
-				math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb) + m.w.xyz);
+	return AABB(math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb) + m.v3.w,
+				math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb) + m.v3.w);
 }
 
 inline AABB AABB::merge(const AABB& other) const {

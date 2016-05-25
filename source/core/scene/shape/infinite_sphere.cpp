@@ -22,8 +22,8 @@ bool Infinite_sphere::intersect(const Entity_transformation& transformation,
 		intersection.epsilon = 5e-4f;
 
 		intersection.p = ray.point(1000000.f);
-		intersection.t = transformation.rotation.x3;
-		intersection.b = transformation.rotation.y3;
+		intersection.t = transformation.rotation.v3.x;
+		intersection.b = transformation.rotation.v3.y;
 
 		math::float3 n = -ray.direction;
 		intersection.n = n;

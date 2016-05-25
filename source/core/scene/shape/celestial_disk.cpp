@@ -17,7 +17,7 @@ Celestial_disk::Celestial_disk() {
 
 bool Celestial_disk::intersect(const Entity_transformation& transformation, math::Oray& ray,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const math::float3& v = transformation.rotation.z3;
+	const math::float3& v = transformation.rotation.v3.z;
 	float b = math::dot(v, ray.direction);
 
 	if (b > 0.f) {
@@ -32,10 +32,10 @@ bool Celestial_disk::intersect(const Entity_transformation& transformation, math
 		intersection.epsilon = 5e-4f;
 
 		intersection.p = ray.point(999999.9f);
-		intersection.t = transformation.rotation.x3;
-		intersection.b = transformation.rotation.y3;
-		intersection.n = transformation.rotation.z3;
-		intersection.geo_n = transformation.rotation.z3;
+		intersection.t = transformation.rotation.v3.x;
+		intersection.b = transformation.rotation.v3.y;
+		intersection.n = transformation.rotation.v3.z;
+		intersection.geo_n = transformation.rotation.v3.z;
 		intersection.part = 0;
 
 		ray.max_t = 999999.9f;
@@ -77,7 +77,7 @@ void Celestial_disk::sample(uint32_t /*part*/, const Entity_transformation& tran
 	float radius = math::degrees_to_radians(transformation.scale.x);
 	math::float3 ws = radius * math::transform_vector(ls, transformation.rotation);
 
-	sample.wi = math::normalized(ws - transformation.rotation.z3);
+	sample.wi = math::normalized(ws - transformation.rotation.v3.z);
 	sample.t = 1000000.f;
 	sample.pdf = 1.f / area;
 }

@@ -5,7 +5,7 @@
 
 namespace math {
 
-using float3x3 = Matrix3x3<float>;
+using float3x = Matrix3x3<float>;
 
 // using float4x4 = Matrix4x4<float>;
 

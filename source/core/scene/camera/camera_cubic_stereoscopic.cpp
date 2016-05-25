@@ -52,7 +52,7 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout,
 	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians(90.f));
 	math::set_rotation_x(view_rotations_[2], math::degrees_to_radians(90.f));
 	math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
-	view_rotations_[4] = math::float3x3::identity;
+	view_rotations_[4] = math::float3x::identity;
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 
 	view_rotations_[6]  = view_rotations_[0];
@@ -87,7 +87,7 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 
 	float a = std::atan2(direction.x, direction.z);
 
-	math::float3x3 rotation;
+	math::float3x rotation;
 	math::set_rotation_y(rotation, -a);
 
 	float ipd_scale = 1.f - 2.f * (std::acos(direction.y) * math::Pi_inv - 0.5f);

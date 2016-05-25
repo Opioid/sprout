@@ -17,7 +17,7 @@ Plane::Plane() {
 
 bool Plane::intersect(const Entity_transformation& transformation, math::Oray& ray,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::float3& normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -27,8 +27,8 @@ bool Plane::intersect(const Entity_transformation& transformation, math::Oray& r
 		intersection.epsilon = 5e-4f * t;
 
 		intersection.p = ray.point(t);
-		intersection.t = -transformation.rotation.x3;
-		intersection.b = -transformation.rotation.y3;
+		intersection.t = -transformation.rotation.v3.x;
+		intersection.b = -transformation.rotation.v3.y;
 		intersection.n = normal;
 		intersection.geo_n = normal;
 		intersection.uv.x = math::dot(intersection.t, intersection.p) * transformation.scale.x;
@@ -89,7 +89,7 @@ bool Plane::intersect(const Entity_transformation& transformation, math::Oray& r
 
 bool Plane::intersect_p(const Entity_transformation& transformation, const math::Oray& ray,
 						Node_stack& /*node_stack*/) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::float3& normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -105,7 +105,7 @@ bool Plane::intersect_p(const Entity_transformation& transformation, const math:
 float Plane::opacity(const Entity_transformation& transformation, const math::Oray& ray,
 					 float time, const material::Materials& materials,
 					 Worker& worker, Sampler_filter filter) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::float3& normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -113,8 +113,8 @@ float Plane::opacity(const Entity_transformation& transformation, const math::Or
 
 	if (t > ray.min_t && t < ray.max_t) {
 		math::float3 p = ray.point(t);
-		math::float2 uv(math::dot(transformation.rotation.x3, p),
-						math::dot(transformation.rotation.y3, p));
+		math::float2 uv(math::dot(transformation.rotation.v3.x, p),
+						math::dot(transformation.rotation.v3.y, p));
 
 		return materials[0]->opacity(uv, time, worker, filter);
 	}

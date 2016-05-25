@@ -14,7 +14,7 @@ inline void Generator::seed(uint32_t seed0, uint32_t seed1, uint32_t seed2, uint
 	z0 = seed0 | 128;
 	z1 = seed1 | 128;
 	z2 = seed2 | 128;
-	z3 = seed3 | 128;
+	z = seed3 | 128;
 }
 
 inline float Generator::random_float() {
@@ -35,10 +35,10 @@ inline uint32_t Generator::advance_lfsr113() {
 	z1 = ((z1 & uint32_t(4294967288)) << 2) ^ b;
 	b  = ((z2 << 13) ^ z2) >> 21;
 	z2 = ((z2 & uint32_t(4294967280)) << 7) ^ b;
-	b  = ((z3 << 3) ^ z3) >> 12;
-	z3 = ((z3 & uint32_t(4294967168)) << 13) ^ b;
+	b  = ((z << 3) ^ z) >> 12;
+	z = ((z & uint32_t(4294967168)) << 13) ^ b;
 
-	return z0 ^ z1 ^ z2 ^ z3;
+	return z0 ^ z1 ^ z2 ^ z;
 }
 
 }}

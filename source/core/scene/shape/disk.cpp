@@ -18,7 +18,7 @@ Disk::Disk() {
 
 bool Disk::intersect(const Entity_transformation& transformation, math::Oray& ray,
 					 Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::float3& normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -35,8 +35,8 @@ bool Disk::intersect(const Entity_transformation& transformation, math::Oray& ra
 			intersection.epsilon = 5e-4f * t;
 
 			intersection.p = p;
-			intersection.t = -transformation.rotation.x3;
-			intersection.b = -transformation.rotation.y3;
+			intersection.t = -transformation.rotation.v3.x;
+			intersection.b = -transformation.rotation.v3.y;
 			intersection.n = normal;
 			intersection.geo_n = normal;
 			math::float3 sk = k / radius;
@@ -58,7 +58,7 @@ bool Disk::intersect(const Entity_transformation& transformation, math::Oray& ra
 
 bool Disk::intersect_p(const Entity_transformation& transformation,
 					   const math::Oray& ray, Node_stack& /*node_stack*/) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::float3& normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -82,7 +82,7 @@ bool Disk::intersect_p(const Entity_transformation& transformation,
 float Disk::opacity(const Entity_transformation& transformation, const math::Oray& ray,
 					float time, const material::Materials& materials,
 					Worker& worker, material::Sampler_settings::Filter filter) const {
-	const math::float3& normal = transformation.rotation.z3;
+	const math::float3& normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -97,8 +97,8 @@ float Disk::opacity(const Entity_transformation& transformation, const math::Ora
 
 		if (l <= radius * radius) {
 			math::float3 sk = k / radius;
-			math::float2 uv((math::dot(transformation.rotation.x3, sk) + 1.f) * 0.5f,
-							(math::dot(transformation.rotation.y3, sk) + 1.f) * 0.5f);
+			math::float2 uv((math::dot(transformation.rotation.v3.x, sk) + 1.f) * 0.5f,
+							(math::dot(transformation.rotation.v3.y, sk) + 1.f) * 0.5f);
 
 			return materials[0]->opacity(uv, time, worker, filter);
 		}
@@ -127,7 +127,7 @@ void Disk::sample(uint32_t /*part*/, const Entity_transformation& transformation
 
 	math::float3 wi = math::normalized(axis);
 
-	float c = math::dot(transformation.rotation.z3, -wi);
+	float c = math::dot(transformation.rotation.v3.z, -wi);
 
 	if (two_sided) {
 		c = std::abs(c);
@@ -154,7 +154,7 @@ void Disk::sample(uint32_t /*part*/, const Entity_transformation& /*transformati
 float Disk::pdf(uint32_t /*part*/, const Entity_transformation& transformation,
 				float area, const math::float3& p, const math::float3& wi,
 				bool two_sided,  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
-	math::float3 normal = transformation.rotation.z3;
+	math::float3 normal = transformation.rotation.v3.z;
 
 	float c = math::dot(normal, -wi);
 

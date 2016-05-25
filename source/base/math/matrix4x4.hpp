@@ -164,18 +164,18 @@ struct alignas(16) Matrix4x4f_a {
 
 		struct {
 			Vector4f_a x, y, z, w;
-		};
+		} v;
 
 		struct {
 			Vector4f_a rows[4];
 		};
 
 		struct {
-			Vector3f_a x3;
-			Vector3f_a y3;
-			Vector3f_a z3;
-			Vector3f_a w3;
-		};
+			Vector3f_a x;
+			Vector3f_a y;
+			Vector3f_a z;
+			Vector3f_a w;
+		} v3;
 	};
 
 	Matrix4x4f_a();

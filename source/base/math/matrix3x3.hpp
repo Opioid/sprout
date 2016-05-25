@@ -11,7 +11,7 @@ struct Vector4f_a;
 
 /****************************************************************************
  *
- * Generic 3x3 matrix
+ * Generic 3x matrix
  *
  ****************************************************************************/
 
@@ -78,7 +78,8 @@ template<typename T>
 Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, const Vector3<T>& v);
 
 template<typename T>
-void transform_vectors(const Matrix3x3<T>& m, const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob);
+void transform_vectors(const Matrix3x3<T>& m,
+					   const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob);
 
 template<typename T>
 Matrix3x3<T> normalized(const Matrix3x3<T>& m);
@@ -121,14 +122,14 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m);
 
 /****************************************************************************
  *
- * Aligned 3x3 float matrix
+ * Aligned 3x float matrix
  *
  ****************************************************************************/
 
 struct Vector4f_a;
 
 /*
-struct alignas(16) Matrix3x3f_a {
+struct alignas(16) Matrixxf_a {
 	union {
 		struct {
 			float m00, m01, m02, pade0,
@@ -143,15 +144,15 @@ struct alignas(16) Matrix3x3f_a {
 		};
 	};
 
-	Matrix3x3f_a();
+	Matrixxf_a();
 
-	Matrix3x3f_a(float m00, float m01, float m02,
+	Matrixxf_a(float m00, float m01, float m02,
 				 float m10, float m11, float m12,
 				 float m20, float m21, float m22);
 
-	Matrix3x3f_a(const Vector3f_a& x, const Vector3f_a& y, const Vector3f_a& z);
+	Matrixxf_a(const Vector3f_a& x, const Vector3f_a& y, const Vector3f_a& z);
 
-	explicit Matrix3x3f_a(const Vector4f_a& q);
+	explicit Matrixxf_a(const Vector4f_a& q);
 };*/
 
 Matrix3x3<float> create_matrix3x3(const Vector4f_a& q);

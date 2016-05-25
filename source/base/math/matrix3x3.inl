@@ -11,14 +11,15 @@ Matrix3x3<T>::Matrix3x3() {}
 
 template<typename T>
 Matrix3x3<T>::Matrix3x3(T m00, T m01, T m02,
-							   T m10, T m11, T m12,
-							   T m20, T m21, T m22):
+                        T m10, T m11, T m12,
+                        T m20, T m21, T m22):
 	m00(m00), m01(m01), m02(m02),
 	m10(m10), m11(m11), m12(m12),
 	m20(m20), m21(m21), m22(m22) {}
 
 template<typename T>
-Matrix3x3<T>::Matrix3x3(const Vector3<T>& x, const Vector3<T>& y, const Vector3<T>& z) : x(x), y(y), z(z) {}
+Matrix3x3<T>::Matrix3x3(const Vector3<T>& x, const Vector3<T>& y, const Vector3<T>& z) :
+    x(x), y(y), z(z) {}
 
 template<typename T>
 Matrix3x3<T>::Matrix3x3(const Matrix4x4<T>& m) :
@@ -121,7 +122,8 @@ inline Vector3f_a operator*(const Matrix3x3<float>& m, const Vector3f_a& v) {
 }
 
 template<typename T>
-void transform_vectors(const Matrix3x3<T>& m, const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob) {
+void transform_vectors(const Matrix3x3<T>& m,
+                       const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob) {
 	oa.x = a.x * m.m00 + a.y * m.m10 + a.z * m.m20;
 	oa.y = a.x * m.m01 + a.y * m.m11 + a.z * m.m21;
 	oa.z = a.x * m.m02 + a.y * m.m12 + a.z * m.m22;

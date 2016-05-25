@@ -7,8 +7,8 @@ HEADERS += \
 	math/math.hpp \
 	math/matrix.hpp \
 	math/matrix.inl \
-	math/matrix3x3.hpp \
-	math/matrix3x3.inl \
+    math/matrix3x3.hpp \
+    math/matrix3x3.inl \
 	math/matrix4x4.hpp \
 	math/matrix4x4.inl \
 	math/plane.hpp \
