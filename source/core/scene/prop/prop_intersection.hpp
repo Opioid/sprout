@@ -17,9 +17,11 @@ class Material;
 class Prop;
 
 struct Intersection {
+	using Sampler_filter = material::Sampler_settings::Filter;
+
 	material::Material* material() const;
 
-	using Sampler_filter = material::Sampler_settings::Filter;
+	float area() const;
 
 	float opacity(Worker& worker, float time, Sampler_filter filter) const;
 

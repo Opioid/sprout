@@ -16,7 +16,7 @@ Prop::~Prop() {}
 
 void Prop::set_shape(std::shared_ptr<shape::Shape> shape) {
 	shape_ = shape;
-	areas_.resize(shape->num_parts(), 0.f);
+	areas_.resize(shape->num_parts(), 1.f);
 }
 
 void Prop::set_materials(const material::Materials& materials) {
@@ -35,9 +35,9 @@ void Prop::set_materials(const material::Materials& materials) {
 void Prop::set_parameters(const json::Value& /*parameters*/) {}
 
 void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
-	properties_.set(Properties::Visible_in_camera,   in_camera);
-	properties_.set(Properties::Visible_in_reflection, in_reflection);
-	properties_.set(Properties::Visible_in_shadow, in_shadow);
+	properties_.set(Properties::Visible_in_camera,		in_camera);
+	properties_.set(Properties::Visible_in_reflection,	in_reflection);
+	properties_.set(Properties::Visible_in_shadow,		in_shadow);
 }
 
 void Prop::prepare_sampling(uint32_t part) {

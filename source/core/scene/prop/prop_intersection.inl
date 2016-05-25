@@ -9,6 +9,10 @@ inline material::Material* Intersection::material() const {
 	return prop->material(geo.part);
 }
 
+inline float Intersection::area() const {
+	return prop->area(geo.part);
+}
+
 inline float Intersection::opacity(Worker& worker, float time,
 								   Sampler_filter filter) const {
 	return material()->opacity(geo.uv, time, worker, filter);
