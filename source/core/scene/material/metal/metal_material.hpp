@@ -9,6 +9,7 @@ namespace scene { namespace material { namespace metal {
 class Sample_isotropic;
 
 class Material_isotropic : public material::Typed_material<Generic_sample_cache<Sample_isotropic>> {
+
 public:
 
 	Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
@@ -16,7 +17,7 @@ public:
 					   const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										   float time, float ior_i,
+										   float area, float time, float ior_i,
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
@@ -38,8 +39,9 @@ protected:
 
 class Sample_anisotropic;
 
-class Material_anisotropic :
-		public material::Typed_material<Generic_sample_cache<Sample_anisotropic>> {
+class Material_anisotropic : public material::Typed_material<
+		Generic_sample_cache<Sample_anisotropic>> {
+
 public:
 
 	Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
@@ -47,7 +49,7 @@ public:
 						 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										   float time, float ior_i,
+										   float area, float time, float ior_i,
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 

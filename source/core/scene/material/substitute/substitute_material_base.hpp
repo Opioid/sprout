@@ -7,13 +7,18 @@ namespace scene { namespace material { namespace substitute {
 
 template<typename Sample>
 class Material_base : public material::Typed_material<Generic_sample_cache<Sample>> {
+
 public:
 
-	Material_base(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+	using Sampler_filter = material::Sampler_settings::Filter;
+
+	Material_base(Generic_sample_cache<Sample>& cache,
+				  std::shared_ptr<image::texture::Texture_2D> mask,
 				  const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv, float time,
-										 const Worker& worker, Sampler_settings::Filter filter) const final override;
+	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv,
+										 float area, float time, const Worker& worker,
+										 Sampler_filter filter) const final override;
 
 	virtual math::float3 average_radiance() const final override;
 

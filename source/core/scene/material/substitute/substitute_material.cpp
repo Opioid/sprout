@@ -10,7 +10,7 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 	Material_base<Sample>(cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										 float /*time*/, float /*ior_i*/,
+										 float /*area*/, float /*time*/, float /*ior_i*/,
 										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 

@@ -45,7 +45,7 @@ void Prop_light::sample(const Entity_transformation& transformation, float time,
 	}
 
 	result.energy = material->sample_radiance(result.shape.wi, result.shape.uv,
-											  time, worker, filter);
+											  area, time, worker, filter);
 }
 
 float Prop_light::pdf(const Entity_transformation& transformation,

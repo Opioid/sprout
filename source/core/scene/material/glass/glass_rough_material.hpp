@@ -15,8 +15,9 @@ public:
 				const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										   float time, float ior_i,
-										   const Worker& worker, Sampler_settings::Filter filter) final override;
+										   float area, float time, float ior_i,
+										   const Worker& worker,
+										   Sampler_filter filter) final override;
 
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 

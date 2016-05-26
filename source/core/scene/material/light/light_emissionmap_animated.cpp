@@ -17,7 +17,9 @@ Emissionmap_animated::Emissionmap_animated(Generic_sample_cache<Sample>& cache,
 										   bool two_sided,
 										   std::shared_ptr<image::texture::Texture_2D> emission_map,
 										   float emission_factor, float animation_duration) :
-	Material(cache, mask, sampler_settings, two_sided), emission_map_(emission_map), emission_factor_(emission_factor),
+	Material(cache, mask, sampler_settings, two_sided),
+	emission_map_(emission_map),
+	emission_factor_(emission_factor),
 	average_emissions_(emission_map->num_elements()),
 	frame_length_(animation_duration / static_cast<float>(emission_map_->num_elements())),
 	element_(0) {
@@ -31,8 +33,9 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 }
 
 const material::Sample& Emissionmap_animated::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-													 float /*time*/, float /*ior_i*/,
-													 const Worker& worker, Sampler_settings::Filter filter) {
+													 float /*area*/, float /*time*/,
+													 float /*ior_i*/, const Worker& worker,
+													 Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
@@ -40,13 +43,15 @@ const material::Sample& Emissionmap_animated::sample(const shape::Hitpoint& hp, 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
 
 	math::float3 radiance = sampler.sample_3(*emission_map_, hp.uv, element_);
-	sample.set(emission_factor_ * radiance);
+	sample.set(radiance);
 
 	return sample;
 }
 
-math::float3 Emissionmap_animated::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv, float /*time*/,
-												   const Worker& worker, Sampler_settings::Filter filter) const {
+math::float3 Emissionmap_animated::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
+												   float /*area*/, float /*time*/,
+												   const Worker& worker,
+												   Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv, element_);
 }
@@ -73,7 +78,8 @@ math::float2 Emissionmap_animated::radiance_importance_sample(math::float2 r2, f
 	return uv;
 }
 
-float Emissionmap_animated::emission_pdf(math::float2 uv, const Worker& worker, Sampler_settings::Filter filter) const {
+float Emissionmap_animated::emission_pdf(math::float2 uv, const Worker& worker,
+										 Sampler_filter filter) const {
 	if (uv.y == 0.f) {
 		return 0.f;
 	}
@@ -86,7 +92,7 @@ float Emissionmap_animated::emission_pdf(math::float2 uv, const Worker& worker, 
 }
 
 float Emissionmap_animated::opacity(math::float2 uv, float /*time*/,
-									const Worker& worker, Sampler_settings::Filter filter) const {
+									const Worker& worker, Sampler_filter filter) const {
 	if (mask_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 		return sampler.sample_1(*mask_, uv, element_);

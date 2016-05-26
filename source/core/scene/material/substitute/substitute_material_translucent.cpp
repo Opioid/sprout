@@ -6,12 +6,14 @@ namespace scene { namespace material { namespace substitute {
 
 Material_translucent::Material_translucent(Generic_sample_cache<Sample_translucent>& cache,
 										   std::shared_ptr<image::texture::Texture_2D> mask,
-										   const Sampler_settings& sampler_settings, bool two_sided) :
+										   const Sampler_settings& sampler_settings,
+										   bool two_sided) :
 	Material_base<Sample_translucent>(cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Material_translucent::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-													 float /*time*/, float /*ior_i*/,
-													 const Worker& worker, Sampler_settings::Filter filter) {
+													 float /*area*/, float /*time*/,
+													 float /*ior_i*/, const Worker& worker,
+													 Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);

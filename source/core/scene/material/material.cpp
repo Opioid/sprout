@@ -13,7 +13,8 @@ Material::Material(std::shared_ptr<image::texture::Texture_2D> mask,
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-math::float3 Material::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/, float /*time*/,
+math::float3 Material::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/,
+									   float /*area*/, float /*time*/,
 									   const Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	return math::float3(0.f, 0.f, 0.f);
 }

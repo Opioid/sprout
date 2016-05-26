@@ -28,7 +28,7 @@ public:
 
 private:
 
-	math::float3 emission_;
+	math::float3 radiance_;
 };
 
 }}}

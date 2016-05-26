@@ -40,7 +40,7 @@ Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& c
 																	 two_sided) {}
 
 const material::Sample& Material_isotropic::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-												   float /*time*/, float /*ior_i*/,
+												   float /*area*/, float /*time*/, float /*ior_i*/,
 												   const Worker& worker,
 												   Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
@@ -86,7 +86,7 @@ Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotrop
 																	   two_sided) {}
 
 const material::Sample& Material_anisotropic::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-													 float /*time*/, float /*ior_i*/,
+													 float /*area*/, float /*time*/, float /*ior_i*/,
 													 const Worker& worker,
 													 Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());

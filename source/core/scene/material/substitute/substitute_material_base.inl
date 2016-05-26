@@ -20,8 +20,10 @@ Material_base<Sample>::Material_base(Generic_sample_cache<Sample>& cache,
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings, two_sided) {}
 
 template<typename Sample>
-math::float3 Material_base<Sample>::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv, float /*time*/,
-													const Worker& worker, Sampler_settings::Filter filter) const {
+math::float3 Material_base<Sample>::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
+													float /*area*/, float /*time*/,
+													const Worker& worker,
+													Sampler_filter filter) const {
 	if (emission_map_) {
 		// For some reason Clang needs this to find inherited Material::sampler_key_
 		auto& sampler = worker.sampler(this->sampler_key_, filter);
@@ -56,12 +58,14 @@ void Material_base<Sample>::set_normal_map(std::shared_ptr<image::texture::Textu
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_surface_map(std::shared_ptr<image::texture::Texture_2D> surface_map) {
+void Material_base<Sample>::set_surface_map(
+		std::shared_ptr<image::texture::Texture_2D> surface_map) {
 	surface_map_ = surface_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map) {
+void Material_base<Sample>::set_emission_map(
+		std::shared_ptr<image::texture::Texture_2D> emission_map) {
 	emission_map_ = emission_map;
 }
 

@@ -21,23 +21,26 @@ public:
 	virtual void tick(float absolute_time, float time_slice) final override;
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										   float time, float ior_i,
-										   const Worker& worker, Sampler_settings::Filter filter) final override;
+										   float area, float time, float ior_i,
+										   const Worker& worker,
+										   Sampler_filter filter) final override;
 
-	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv, float time,
-										 const Worker& worker, Sampler_settings::Filter filter) const final override;
+	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv,
+										 float area, float time, const Worker& worker,
+										 Sampler_filter filter) const final override;
 
 	virtual math::float3 average_radiance() const final override;
 
 	virtual bool has_emission_map() const final override;
 
-	virtual math::float2 radiance_importance_sample(math::float2 r2, float& pdf) const final override;
+	virtual math::float2 radiance_importance_sample(math::float2 r2,
+													float& pdf) const final override;
 
-	virtual float emission_pdf(math::float2 uv,
-							   const Worker& worker, Sampler_settings::Filter filter) const final override;
+	virtual float emission_pdf(math::float2 uv, const Worker& worker,
+							   Sampler_filter filter) const final override;
 
 	virtual float opacity(math::float2 uv, float time,
-						  const Worker& worker, Sampler_settings::Filter filter) const final override;
+						  const Worker& worker, Sampler_filter filter) const final override;
 
 	virtual void prepare_sampling(bool spherical) final override;
 

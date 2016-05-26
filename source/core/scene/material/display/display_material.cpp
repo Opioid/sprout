@@ -15,12 +15,13 @@ namespace scene { namespace material { namespace display {
 Material::Material(Generic_sample_cache<Sample>& cache,
 				   std::shared_ptr<image::texture::Texture_2D> mask,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings, two_sided),
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
+														   sampler_settings, two_sided),
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
 const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										 float /*time*/, float /*ior_i*/,
-										 const Worker& worker, Sampler_settings::Filter filter) {
+										 float /*area*/, float /*time*/, float /*ior_i*/,
+										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
@@ -37,8 +38,9 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat
 	return sample;
 }
 
-math::float3 Material::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv, float /*time*/,
-									   const Worker& worker, Sampler_settings::Filter filter) const {
+math::float3 Material::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
+									   float /*area*/, float /*time*/, const Worker& worker,
+									   Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
@@ -66,7 +68,8 @@ math::float2 Material::radiance_importance_sample(math::float2 r2, float& pdf) c
 	return uv;
 }
 
-float Material::emission_pdf(math::float2 uv, const Worker& worker, Sampler_settings::Filter filter) const {
+float Material::emission_pdf(math::float2 uv, const Worker& worker,
+							 Sampler_filter filter) const {
 	if (uv.y == 0.f) {
 		return 0.f;
 	}
@@ -94,7 +97,8 @@ void Material::prepare_sampling(bool spherical) {
 		total_weight_ = 0.f;
 
 		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
+			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) /
+										 static_cast<float>(d.y)) * math::Pi);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
 				math::float3 radiance = emission_factor_ * emission_map_->at_3(x, y);
@@ -123,7 +127,7 @@ void Material::set_emission_map(std::shared_ptr<image::texture::Texture_2D> emis
 	emission_map_ = emission_map;
 }
 
-void Material::set_emission(const math::float3& radiance) {
+void Material::set_emission(math::pfloat3 radiance) {
 	emission_ = radiance;
 }
 

@@ -9,13 +9,16 @@
 
 namespace scene { namespace material { namespace cloth {
 
-Material::Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+Material::Material(Generic_sample_cache<Sample>& cache,
+				   std::shared_ptr<image::texture::Texture_2D> mask,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings, two_sided) {}
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
+														   sampler_settings,
+														   two_sided) {}
 
 const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										 float /*time*/, float /*ior_i*/,
-										 const Worker& worker, Sampler_settings::Filter filter) {
+										 float /*area*/, float /*time*/, float /*ior_i*/,
+										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);

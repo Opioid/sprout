@@ -10,8 +10,8 @@ Material_clearcoat::Material_clearcoat(Generic_sample_cache<Sample_clearcoat>& c
 	Material_base<Sample_clearcoat>(cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Material_clearcoat::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-												   float /*time*/, float /*ior_i*/,
-												   const Worker& worker, Sampler_settings::Filter filter) {
+												   float /*area*/, float /*time*/, float /*ior_i*/,
+												   const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
@@ -45,9 +45,11 @@ const material::Sample& Material_clearcoat::sample(const shape::Hitpoint& hp, ma
 
 	if (emission_map_) {
 		math::float3 radiance = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
-		sample.set(color, radiance, constant_f0_, surface.x, surface.y, clearcoat_ior_, clearcoat_a2_);
+		sample.set(color, radiance, constant_f0_, surface.x, surface.y,
+				   clearcoat_ior_, clearcoat_a2_);
 	} else {
-		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y, clearcoat_ior_, clearcoat_a2_);
+		sample.set(color, math::float3_identity, constant_f0_,
+				   surface.x, surface.y, clearcoat_ior_, clearcoat_a2_);
 	}
 
 	return sample;

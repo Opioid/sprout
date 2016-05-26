@@ -14,7 +14,7 @@ public:
 			 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										   float time, float ior_i,
+										   float area, float time, float ior_i,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 };

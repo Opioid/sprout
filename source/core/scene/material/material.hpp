@@ -29,10 +29,10 @@ public:
 	virtual void tick(float absolute_time, float time_slice);
 
 	virtual const Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-								 float time, float ior_i, const Worker& worker,
-								 Sampler_filter filter) = 0;
+								 float area, float time, float ior_i,
+								 const Worker& worker, Sampler_filter filter) = 0;
 
-	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv, float time,
+	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv, float area, float time,
 										 const Worker& worker, Sampler_filter filter) const;
 
 	virtual math::float3 average_radiance() const;

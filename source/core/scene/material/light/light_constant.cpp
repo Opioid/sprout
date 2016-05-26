@@ -14,28 +14,31 @@ Constant::Constant(Generic_sample_cache<Sample>& cache,
 	Material(cache, mask, sampler_settings, two_sided) {}
 
 const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										 float /*time*/, float /*ior_i*/, const Worker& worker,
-										 Sampler_settings::Filter /*filter*/) {
+										 float area, float /*time*/, float /*ior_i*/,
+										 const Worker& worker, Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
-	sample.set(emission_);
+
+	sample.set(emittance_.radiance(area));
 
 	return sample;
 }
 
 math::float3 Constant::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/,
-									   float /*time*/, const Worker& /*worker*/,
-									   Sampler_settings::Filter /*filter*/) const {
-	return emission_;
+									   float area, float /*time*/, const Worker& /*worker*/,
+									   Sampler_filter /*filter*/) const {
+	return emittance_.radiance(area);
 }
 
 math::float3 Constant::average_radiance() const {
+	math::float3 radiance = emittance_.radiance(0.f);
+
 	if (is_two_sided()) {
-		return 2.f * emission_;
+		return 2.f * radiance;
 	}
 
-	return emission_;
+	return radiance;
 }
 
 bool Constant::has_emission_map() const {
@@ -43,7 +46,7 @@ bool Constant::has_emission_map() const {
 }
 
 void Constant::set_emission(math::pfloat3 emission) {
-	emission_ = emission;
+	emittance_.set_radiance(emission);
 }
 
 }}}

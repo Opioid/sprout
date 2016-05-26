@@ -18,7 +18,7 @@ Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
 	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
 
 const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-											float /*time*/, float /*ior_i*/,
+											float /*area*/, float /*time*/, float /*ior_i*/,
 											const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
@@ -27,14 +27,14 @@ const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, math::pfl
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
 
 	math::float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
-	sample.set(emission_factor_ * radiance);
+	sample.set(radiance);
 
 	return sample;
 }
 
 math::float3 Emissionmap::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
-										  float /*time*/, const Worker& worker,
-										  Sampler_filter filter) const {
+										  float /*area*/, float /*time*/,
+										  const Worker& worker, Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }

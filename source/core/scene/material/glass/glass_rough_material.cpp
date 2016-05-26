@@ -9,13 +9,14 @@
 
 namespace scene { namespace material { namespace glass {
 
-Glass_rough::Glass_rough(Generic_sample_cache<Sample_rough>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+Glass_rough::Glass_rough(Generic_sample_cache<Sample_rough>& cache,
+						 std::shared_ptr<image::texture::Texture_2D> mask,
 						 const Sampler_settings& sampler_settings) :
 	Typed_material(cache, mask, sampler_settings, false) {}
 
 const material::Sample& Glass_rough::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-											float /*time*/, float ior_i,
-											const Worker& worker, Sampler_settings::Filter filter) {
+											float /*area*/, float /*time*/, float ior_i,
+											const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	if (normal_map_) {

@@ -20,7 +20,7 @@ inline float Intersection::opacity(Worker& worker, float time,
 
 inline const material::Sample& Intersection::sample(Worker& worker, math::pfloat3 wo,
 													float time, Sampler_filter filter) const {
-	return material()->sample(geo, wo, time, 1.f, worker, filter);
+	return material()->sample(geo, wo, area(), time, 1.f, worker, filter);
 }
 
 }

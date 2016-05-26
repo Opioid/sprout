@@ -16,22 +16,21 @@ Material::Material(scene::material::Generic_sample_cache<scene::material::light:
 	model_(model) {}
 
 const scene::material::Sample& Material::sample(const scene::shape::Hitpoint& hp,
-												math::pfloat3 wo, float /*time*/,
+												math::pfloat3 wo, float /*area*/, float /*time*/,
 												float /*ior_i*/, const scene::Worker& worker,
 												Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
 
-	math::float3 radiance = model_.evaluate(-wo);
-
-	sample.set(radiance);
+	sample.set(model_.evaluate(-wo));
 
 	return sample;
 }
 
 math::float3 Material::sample_radiance(math::pfloat3 wi, math::float2 /*uv*/,
-									   float /*time*/, const scene::Worker& /*worker*/,
+									   float /*area*/, float /*time*/,
+									   const scene::Worker& /*worker*/,
 									   Sampler_filter /*filter*/) const {
 	return model_.evaluate(wi);
 }

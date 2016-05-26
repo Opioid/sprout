@@ -13,8 +13,9 @@ public:
 					   const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-										   float time, float ior_i,
-										   const Worker& worker, Sampler_settings::Filter filter) final override;
+										   float area, float time, float ior_i,
+										   const Worker& worker,
+										   Sampler_filter filter) final override;
 
 	void set_clearcoat(float ior, float roughness);
 
