@@ -67,6 +67,7 @@ inline float Schlick_isotropic::evaluate(float f0, float a2, float n_dot_wi, flo
 										 float& fresnel, float& pdf) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2) {
+		fresnel = 0.f;
 		pdf = 0.f;
 		return 0.f;
 	}
@@ -102,7 +103,7 @@ inline math::float3 Schlick_isotropic::evaluate(math::pfloat3 f0, float a2,
 template<typename Sample>
 math::float3 Schlick_isotropic::evaluate(const Sample& sample,
 										 math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
-										 float &pdf) {
+										 float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
 		pdf = 0.f;
@@ -182,8 +183,8 @@ float Schlick_isotropic::importance_sample(const Sample& sample,
 
 template<typename Sample>
 math::float3 Conductor_isotropic::evaluate(const Sample& sample,
-										   const math::float3& wi, float n_dot_wi, float n_dot_wo,
-										   float &pdf)  {
+										   math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
+										   float& pdf)  {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
 		pdf = 0.f;

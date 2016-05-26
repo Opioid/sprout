@@ -30,7 +30,7 @@ public:
 
 	template<typename Sample>
 	static math::float3 evaluate(const Sample& sample,
-								 const math::float3& wi, float n_dot_wi, float n_dot_wo,
+								 math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
 								 float& pdf);
 
 	template<typename Sample>

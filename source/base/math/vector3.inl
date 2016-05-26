@@ -326,11 +326,11 @@ inline Vector3f_a Vector3f_a::operator-(float s) const {
 	return Vector3f_a(x - s, y - s, z - s);
 }
 
-inline Vector3f_a Vector3f_a::operator-(const Vector3f_a& v) const {
+inline Vector3f_a Vector3f_a::operator-(FVector3f_a v) const {
 	return Vector3f_a(x - v.x, y - v.y, z - v.z);
 }
 
-inline Vector3f_a Vector3f_a::operator*(const Vector3f_a& v) const {
+inline Vector3f_a Vector3f_a::operator*(FVector3f_a v) const {
 	return Vector3f_a(x * v.x, y * v.y, z * v.z);
 }
 
@@ -339,7 +339,7 @@ inline Vector3f_a Vector3f_a::operator/(float s) const {
 	return Vector3f_a(is * x, is * y, is * z);
 }
 
-inline Vector3f_a Vector3f_a::operator/(const Vector3f_a& v) const {
+inline Vector3f_a Vector3f_a::operator/(FVector3f_a v) const {
 	return Vector3f_a(x / v.x, y / v.y, z / v.z);
 }
 
@@ -347,21 +347,21 @@ inline Vector3f_a Vector3f_a::operator-() const {
 	return Vector3f_a(-x, -y, -z);
 }
 
-inline Vector3f_a& Vector3f_a::operator+=(const Vector3f_a& v) {
+inline Vector3f_a& Vector3f_a::operator+=(FVector3f_a v) {
 	x += v.x;
 	y += v.y;
 	z += v.z;
 	return *this;
 }
 
-inline Vector3f_a& Vector3f_a::operator-=(const Vector3f_a& v) {
+inline Vector3f_a& Vector3f_a::operator-=(FVector3f_a v) {
 	x -= v.x;
 	y -= v.y;
 	z -= v.z;
 	return *this;
 }
 
-inline Vector3f_a& Vector3f_a::operator*=(const Vector3f_a& v) {
+inline Vector3f_a& Vector3f_a::operator*=(FVector3f_a v) {
 	x *= v.x;
 	y *= v.y;
 	z *= v.z;
@@ -383,11 +383,11 @@ inline Vector3f_a& Vector3f_a::operator/=(float s) {
 	return *this;
 }
 
-inline bool Vector3f_a::operator==(const Vector3f_a& v) const {
+inline bool Vector3f_a::operator==(FVector3f_a v) const {
 	return x == v.x && y == v.y && z == v.z;
 }
 
-inline bool Vector3f_a::operator!=(const Vector3f_a& v) const {
+inline bool Vector3f_a::operator!=(FVector3f_a v) const {
 	return x != v.x || y != v.y || z != v.z;
 }
 

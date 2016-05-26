@@ -7,8 +7,6 @@
 #include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 
-#include "base/math/simd/simd_vector.inl"
-
 namespace scene { namespace shape {
 
 Plane::Plane() {

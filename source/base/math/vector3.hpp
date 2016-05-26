@@ -5,7 +5,10 @@
 
 namespace math {
 
-struct alignas(16) Vector3f_a;
+struct Vector3f_a;
+
+
+using FVector3f_a = const Vector3f_a&;
 
 /****************************************************************************
  *
@@ -170,38 +173,36 @@ struct alignas(16) Vector3f_a {
 
 	Vector3f_a operator+(float s) const;
 
-	Vector3f_a operator+(const Vector3f_a& v) const;
+	Vector3f_a operator+(FVector3f_a v) const;
 
 	Vector3f_a operator-(float s) const;
 
-	Vector3f_a operator-(const Vector3f_a& v) const;
+	Vector3f_a operator-(FVector3f_a v) const;
 
-	Vector3f_a operator*(const Vector3f_a& v) const;
+	Vector3f_a operator*(FVector3f_a v) const;
 
 	Vector3f_a operator/(float s) const;
 
-	Vector3f_a operator/(const Vector3f_a& v) const;
+	Vector3f_a operator/(FVector3f_a v) const;
 
 	Vector3f_a operator-() const;
 
-	Vector3f_a& operator+=(const Vector3f_a& v);
+	Vector3f_a& operator+=(FVector3f_a v);
 
-	Vector3f_a& operator-=(const Vector3f_a& v);
+	Vector3f_a& operator-=(FVector3f_a v);
 
-	Vector3f_a& operator*=(const Vector3f_a& v);
+	Vector3f_a& operator*=(FVector3f_a v);
 
 	Vector3f_a& operator*=(float s);
 
 	Vector3f_a& operator/=(float s);
 
-	bool operator==(const Vector3f_a& v) const;
+	bool operator==(FVector3f_a v) const;
 
-	bool operator!=(const Vector3f_a& v) const;
+	bool operator!=(FVector3f_a v) const;
 
 	float absolute_max(uint32_t& i) const;
 };
-
-using FVector3f_a = const Vector3f_a&;
 
 Vector3f_a operator*(float s, FVector3f_a v);
 
