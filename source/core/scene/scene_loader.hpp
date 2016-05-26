@@ -60,7 +60,7 @@ private:
 					   entity::Entity* parent,
 					   Scene& scene);
 
-	Prop* load_prop(const json::Value& prop_value, Scene& scene);
+	Prop* load_prop(const json::Value& prop_value, const std::string& name, Scene& scene);
 
 	void load_light(const json::Value& light_value, Prop* prop, Scene& scene);
 

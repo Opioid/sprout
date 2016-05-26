@@ -93,13 +93,13 @@ void Loader::load_entities(const json::Value& entities_value,
 		entity::Entity* entity = nullptr;
 
 		if ("Light" == type_name) {
-			Prop* prop = load_prop(*e, scene);
+			Prop* prop = load_prop(*e, name, scene);
 			entity = prop;
 			if (prop && prop->visible_in_reflection()) {
 				load_light(*e, prop, scene);
 			}
 		} else if ("Prop" == type_name) {
-			entity = load_prop(*e, scene);
+			entity = load_prop(*e, name, scene);
 		} else if ("Dummy" == type_name) {
 			entity = scene.create_dummy();
 		} else if ("Volume" == type_name) {
@@ -155,7 +155,7 @@ void Loader::load_entities(const json::Value& entities_value,
 	}
 }
 
-Prop* Loader::load_prop(const json::Value& prop_value, Scene& scene) {
+Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
 	material::Materials materials;
 	bool visible_in_camera = true;
@@ -172,9 +172,9 @@ Prop* Loader::load_prop(const json::Value& prop_value, Scene& scene) {
 		} else if ("materials" == node_name) {
 			load_materials(node_value, scene, materials);
 		} else if ("visibility" == node_name) {
-			visible_in_camera	  = json::read_bool(node_value, "in_camera",   true);
+			visible_in_camera	  = json::read_bool(node_value, "in_camera",     true);
 			visible_in_reflection = json::read_bool(node_value, "in_reflection", true);
-			visible_in_shadow     = json::read_bool(node_value, "in_shadow", true);
+			visible_in_shadow     = json::read_bool(node_value, "in_shadow",     true);
 		} else if ("open" == node_name) {
 			open = json::read_bool(node_value);
 		}
@@ -188,7 +188,7 @@ Prop* Loader::load_prop(const json::Value& prop_value, Scene& scene) {
 		materials.push_back(fallback_material_);
 	}
 
-	Prop* prop = scene.create_prop(shape);
+	Prop* prop = scene.create_prop(shape, name);
 
 	prop->set_materials(materials);
 	prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
