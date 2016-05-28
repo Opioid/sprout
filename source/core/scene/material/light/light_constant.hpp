@@ -1,7 +1,7 @@
 #pragma once
 
 #include "light_material.hpp"
-#include "scene/light/emittance.hpp"
+#include "scene/light/radiometry.hpp"
 
 namespace scene { namespace material { namespace light {
 
@@ -31,7 +31,7 @@ public:
 
 private:
 
-	::light::Emittance emittance_;
+	::light::Radiometry radiometry_;
 };
 
 }}}

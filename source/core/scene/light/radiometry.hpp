@@ -4,23 +4,25 @@
 
 namespace light {
 
-class Emittance {
+class Radiometry {
 
 public:
 
-	enum class Metric {
+	enum class Quantity {
+		Intensity,
 		Radiance
 	};
 
+	void set_intensity(math::pfloat3 intensity);
 	void set_radiance(math::pfloat3 radiance);
 
 	math::float3 radiance(float area) const;
 
 private:
 
-	math::float3 quantity_;
+	math::float3 value_;
 
-	Metric metric_;
+	Quantity quantity_;
 };
 
 }
