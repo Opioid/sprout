@@ -315,6 +315,17 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
+	enum class Photometric {
+		Undefined,
+		Flux,
+		Intensity,
+		Luminance
+	};
+
+	Photometric quantity = Photometric::Undefined;
+	math::float3 color(0.f, 0.f, 0.f);
+	float value = 0.f;
+
 	math::float3 emission(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
 	float animation_duration = 0.f;
@@ -329,6 +340,15 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 
 		if ("emission" == node_name) {
 			emission = json::read_float3(node_value);
+		} else if ("emittance" == node_name) {
+			std::string quantity_string = json::read_string(node_value, "quantity");
+
+			if ("Intensity" == quantity_string) {
+				quantity = Photometric::Intensity;
+			}
+
+			color = json::read_float3(node_value, "color");
+			value = json::read_float(node_value, "value");
 		} else if ("emission_factor" == node_name) {
 			emission_factor = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
@@ -382,7 +402,11 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 
 	auto material = std::make_shared<light::Constant>(light_cache_, mask,
 													  sampler_settings, two_sided);
-	material->set_emission(emission);
+	if (Photometric::Intensity == quantity) {
+		material->emittance().set_intensity(color, value);
+	} else {
+		material->set_emission(emission);
+	}
 
 	return material;
 }

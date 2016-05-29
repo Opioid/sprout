@@ -45,6 +45,10 @@ bool Constant::has_emission_map() const {
 	return false;
 }
 
+::light::Emittance& Constant::emittance() {
+	return emittance_;
+}
+
 void Constant::set_emission(math::pfloat3 emission) {
 	emittance_.set_radiance(emission);
 }

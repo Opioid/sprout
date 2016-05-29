@@ -9,6 +9,10 @@ void Emittance::set_intensity(math::pfloat3 intensity) {
 	quantity_ = Quantity::Intensity;
 }
 
+void Emittance::set_intensity(math::pfloat3 color, float value) {
+
+}
+
 void Emittance::set_radiance(math::pfloat3 radiance) {
 	value_ = radiance;
 

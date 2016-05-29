@@ -28,6 +28,8 @@ public:
 
 	virtual bool has_emission_map() const final override;
 
+	::light::Emittance& emittance();
+
 	void set_emission(math::pfloat3 emission);
 
 private:
