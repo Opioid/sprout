@@ -4,7 +4,7 @@
 
 namespace light {
 
-class Radiometry {
+class Emittance {
 
 public:
 

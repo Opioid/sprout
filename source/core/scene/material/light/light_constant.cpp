@@ -20,7 +20,7 @@ const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
 
-	sample.set(radiometry_.radiance(area));
+	sample.set(emittance_.radiance(area));
 
 	return sample;
 }
@@ -28,11 +28,11 @@ const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat
 math::float3 Constant::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/,
 									   float area, float /*time*/, const Worker& /*worker*/,
 									   Sampler_filter /*filter*/) const {
-	return radiometry_.radiance(area);
+	return emittance_.radiance(area);
 }
 
 math::float3 Constant::average_radiance() const {
-	math::float3 radiance = radiometry_.radiance(0.f);
+	math::float3 radiance = emittance_.radiance(0.f);
 
 	if (is_two_sided()) {
 		return 2.f * radiance;
@@ -46,7 +46,7 @@ bool Constant::has_emission_map() const {
 }
 
 void Constant::set_emission(math::pfloat3 emission) {
-	radiometry_.set_radiance(emission);
+	emittance_.set_radiance(emission);
 }
 
 }}}

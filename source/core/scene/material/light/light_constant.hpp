@@ -1,13 +1,14 @@
 #pragma once
 
 #include "light_material.hpp"
-#include "scene/light/radiometry.hpp"
+#include "scene/light/emittance.hpp"
 
 namespace scene { namespace material { namespace light {
 
 class Sample;
 
 class Constant : public Material {
+
 public:
 
 	Constant(Generic_sample_cache<Sample>& cache,
@@ -31,7 +32,7 @@ public:
 
 private:
 
-	::light::Radiometry radiometry_;
+	::light::Emittance emittance_;
 };
 
 }}}
