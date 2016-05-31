@@ -120,8 +120,8 @@ inline float luminance(math::pfloat3 c) {
 	return 0.212671f * c.x + 0.715160f * c.y + 0.072169f * c.z;
 }
 
-inline float radiance_to_nit(math::pfloat3 c) {
-	return 683.f * luminance(c);
+inline float watt_to_lumen(math::pfloat3 c) {
+	return CIE_constant * luminance(c);
 }
 
 }
