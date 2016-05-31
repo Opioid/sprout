@@ -43,7 +43,7 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 	auto sky_material = std::make_shared<Material>(material_provider_->light_cache(), sky->model());
 
 	auto sun_material = material_provider_->create_light();
-	sun_material->set_emission(math::float3(2477907.f, 2133774.f, 1763460.f));
+	sun_material->emittance().set_radiance(math::float3(2477907.f, 2133774.f, 1763460.f));
 
 	const json::Value::ConstMemberIterator p = extension_value.FindMember("parameters");
 	if (extension_value.MemberEnd() != p) {

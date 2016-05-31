@@ -34,7 +34,7 @@ math::float3 Material_base<Sample>::sample_radiance(math::pfloat3 /*wi*/, math::
 }
 
 template<typename Sample>
-math::float3 Material_base<Sample>::average_radiance() const {
+math::float3 Material_base<Sample>::average_radiance(float /*area*/) const {
 	if (emission_map_) {
 		return emission_factor_ * emission_map_->average_3();
 	} else {
@@ -70,7 +70,7 @@ void Material_base<Sample>::set_emission_map(
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_color(const math::float3& color) {
+void Material_base<Sample>::set_color(math::pfloat3 color) {
 	color_ = color;
 }
 

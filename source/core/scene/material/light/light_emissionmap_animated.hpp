@@ -29,7 +29,7 @@ public:
 										 float area, float time, const Worker& worker,
 										 Sampler_filter filter) const final override;
 
-	virtual math::float3 average_radiance() const final override;
+	virtual math::float3 average_radiance(float area) const final override;
 
 	virtual bool has_emission_map() const final override;
 

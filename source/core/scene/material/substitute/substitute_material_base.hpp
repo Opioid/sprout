@@ -20,7 +20,7 @@ public:
 										 float area, float time, const Worker& worker,
 										 Sampler_filter filter) const final override;
 
-	virtual math::float3 average_radiance() const final override;
+	virtual math::float3 average_radiance(float area) const final override;
 
 	virtual bool has_emission_map() const final override;
 
@@ -29,7 +29,7 @@ public:
 	void set_surface_map(std::shared_ptr<image::texture::Texture_2D> surface_map);
 	void set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map);
 
-	void set_color(const math::float3& color);
+	void set_color(math::pfloat3 color);
 	void set_ior(float ior);
 	void set_roughness(float roughness);
 	void set_metallic(float metallic);

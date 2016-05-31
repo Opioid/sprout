@@ -3,6 +3,7 @@
 #include "resource/resource_provider.hpp"
 #include "material_sample_cache.hpp"
 #include "base/json/json_types.hpp"
+#include "base/math/vector.hpp"
 #include <vector>
 
 namespace image { namespace texture { class Texture_2D; }}
@@ -95,6 +96,8 @@ private:
 
 	static void read_clearcoat_description(const json::Value& clearcoat_value,
 										   Clearcoat_description& description);
+
+	static math::float3 read_spectrum(const json::Value& spectrum_value);
 
 	Generic_sample_cache<cloth::Sample>						cloth_cache_;
 	Generic_sample_cache<display::Sample>					display_cache_;

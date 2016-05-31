@@ -31,8 +31,8 @@ math::float3 Constant::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/
 	return emittance_.radiance(area);
 }
 
-math::float3 Constant::average_radiance() const {
-	math::float3 radiance = emittance_.radiance(0.f);
+math::float3 Constant::average_radiance(float area) const {
+	math::float3 radiance = emittance_.radiance(area);
 
 	if (is_two_sided()) {
 		return 2.f * radiance;
@@ -47,10 +47,6 @@ bool Constant::has_emission_map() const {
 
 ::light::Emittance& Constant::emittance() {
 	return emittance_;
-}
-
-void Constant::set_emission(math::pfloat3 emission) {
-	emittance_.set_radiance(emission);
 }
 
 }}}

@@ -35,7 +35,7 @@ public:
 	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv, float area, float time,
 										 const Worker& worker, Sampler_filter filter) const;
 
-	virtual math::float3 average_radiance() const;
+	virtual math::float3 average_radiance(float area) const;
 
 	virtual bool has_emission_map() const;
 

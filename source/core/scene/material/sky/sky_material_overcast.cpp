@@ -32,7 +32,7 @@ math::float3 Material_overcast::sample_radiance(math::pfloat3 wi, math::float2 /
 	return overcast(wi);
 }
 
-math::float3 Material_overcast::average_radiance() const {
+math::float3 Material_overcast::average_radiance(float /*area*/) const {
 	if (is_two_sided()) {
 		return 2.f * color_;
 	}

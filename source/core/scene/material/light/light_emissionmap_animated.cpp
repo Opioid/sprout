@@ -56,7 +56,7 @@ math::float3 Emissionmap_animated::sample_radiance(math::pfloat3 /*wi*/, math::f
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv, element_);
 }
 
-math::float3 Emissionmap_animated::average_radiance() const {
+math::float3 Emissionmap_animated::average_radiance(float /*area*/) const {
 	return average_emissions_[element_];
 }
 

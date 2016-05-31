@@ -26,6 +26,7 @@
 #include "substitute/substitute_sample_translucent.hpp"
 #include "substitute/substitute_material_translucent.hpp"
 #include "substitute/substitute_material_base.inl"
+#include "base/color/color.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.inl"
@@ -315,18 +316,11 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	enum class Photometric {
-		Undefined,
-		Flux,
-		Intensity,
-		Luminance
-	};
+	std::string quantity;
+	math::float3 color(1.f, 1.f, 1.f);
+	float value = 1.f;
 
-	Photometric quantity = Photometric::Undefined;
-	math::float3 color(0.f, 0.f, 0.f);
-	float value = 0.f;
-
-	math::float3 emission(10.f, 10.f, 10.f);
+	math::float3 radiance(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
 	float animation_duration = 0.f;
 
@@ -339,15 +333,15 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 		const json::Value& node_value = n->value;
 
 		if ("emission" == node_name) {
-			emission = json::read_float3(node_value);
+			radiance = json::read_float3(node_value);
 		} else if ("emittance" == node_name) {
-			std::string quantity_string = json::read_string(node_value, "quantity");
+			quantity = json::read_string(node_value, "quantity");
 
-			if ("Intensity" == quantity_string) {
-				quantity = Photometric::Intensity;
+			auto s = node_value.FindMember("spectrum");
+			if (node_value.MemberEnd() != s) {
+				color = read_spectrum(s->value);
 			}
 
-			color = json::read_float3(node_value, "color");
 			value = json::read_float(node_value, "value");
 		} else if ("emission_factor" == node_name) {
 			emission_factor = json::read_float(node_value);
@@ -402,10 +396,18 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 
 	auto material = std::make_shared<light::Constant>(light_cache_, mask,
 													  sampler_settings, two_sided);
-	if (Photometric::Intensity == quantity) {
+	if ("Flux" == quantity) {
+		material->emittance().set_flux(color, value);
+	} else if ("Intensity" == quantity) {
 		material->emittance().set_intensity(color, value);
+	} else if ("Exitance" == quantity) {
+		material->emittance().set_exitance(color, value);
+	} else if ("Luminance" == quantity) {
+		material->emittance().set_luminance(color, value);
+	} else if ("Radiance" == quantity) {
+		material->emittance().set_radiance(value * color);
 	} else {
-		material->set_emission(emission);
+		material->emittance().set_radiance(radiance);
 	}
 
 	return material;
@@ -736,6 +738,24 @@ void Provider::read_clearcoat_description(const json::Value& clearcoat_value,
 			description.roughness = json::read_float(node_value);
 		}
 	}
+}
+
+math::float3 Provider::read_spectrum(const json::Value& spectrum_value) {
+	if (!spectrum_value.IsObject()) {
+		return math::float3(0.f, 0.f, 0.f);
+	}
+
+	for (auto n = spectrum_value.MemberBegin(); n != spectrum_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const json::Value& node_value = n->value;
+
+		if ("sRGB" == node_name) {
+			math::float3 srgb = json::read_float3(node_value);
+			return color::sRGB_to_linear(srgb);
+		}
+	}
+
+	return math::float3(0.f, 0.f, 0.f);
 }
 
 }}

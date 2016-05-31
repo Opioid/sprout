@@ -62,7 +62,7 @@ float Prop_light::pdf(const Entity_transformation& transformation,
 math::float3 Prop_light::power(const math::aabb& scene_bb) const {
 	float area = prop_->area(part_);
 
-	math::float3 radiance = prop_->material(part_)->average_radiance();
+	math::float3 radiance = prop_->material(part_)->average_radiance(area);
 
 	if (prop_->shape()->is_finite()) {
 		return area * radiance;
