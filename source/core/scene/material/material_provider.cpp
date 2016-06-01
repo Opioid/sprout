@@ -3,6 +3,7 @@
 #include "resource/resource_manager.inl"
 #include "material_sample_cache.inl"
 #include "image/texture/texture_2d_provider.hpp"
+#include "scene/light/blackbody.hpp"
 #include "cloth/cloth_sample.hpp"
 #include "cloth/cloth_material.hpp"
 #include "display/display_sample.hpp"
@@ -752,6 +753,10 @@ math::float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 		if ("sRGB" == node_name) {
 			math::float3 srgb = json::read_float3(node_value);
 			return color::sRGB_to_linear(srgb);
+		} else if ("temperature" == node_name) {
+			float temperature = json::read_float(node_value);
+			temperature = std::max(1667.f, temperature);
+			return scene::light::blackbody(temperature);
 		}
 	}
 
