@@ -27,7 +27,7 @@
 #include "substitute/substitute_sample_translucent.hpp"
 #include "substitute/substitute_material_translucent.hpp"
 #include "substitute/substitute_material_base.inl"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.inl"
@@ -752,7 +752,7 @@ math::float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 
 		if ("sRGB" == node_name) {
 			math::float3 srgb = json::read_float3(node_value);
-			return color::sRGB_to_linear(srgb);
+			return spectrum::sRGB_to_linear(srgb);
 		} else if ("temperature" == node_name) {
 			float temperature = json::read_float(node_value);
 			temperature = std::max(1667.f, temperature);

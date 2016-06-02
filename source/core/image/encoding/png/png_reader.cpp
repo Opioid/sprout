@@ -1,7 +1,7 @@
 #include "png_reader.hpp"
 #include "image/typed_image.inl"
 #include "image/tiled_image.inl"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "base/math/vector.inl"
 #include <cstring>
 

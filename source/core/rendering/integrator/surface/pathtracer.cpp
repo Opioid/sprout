@@ -12,7 +12,7 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
@@ -80,7 +80,7 @@ math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray,
 
 		// Russian roulette termination
 		if (i > settings_.min_bounces) {
-			float q = std::min(color::luminance(throughput),
+			float q = std::min(spectrum::luminance(throughput),
 							   settings_.path_continuation_probability);
 
 			if (sampler_.generate_sample_1D() >= q) {

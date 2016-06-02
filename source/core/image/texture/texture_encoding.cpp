@@ -1,5 +1,5 @@
 #include "texture_encoding.hpp"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 
 namespace image { namespace texture { namespace encoding {
 
@@ -9,15 +9,15 @@ float unorm_float[256];
 
 void init() {
 	for (uint32_t i = 0; i < 256; ++i) {
-		srgb_float[i] = color::sRGB_to_linear(static_cast<float>(i) / 255.f);
+		srgb_float[i] = spectrum::sRGB_to_linear(static_cast<float>(i) / 255.f);
 	}
 
 	for (uint32_t i = 0; i < 256; ++i) {
-		snorm_float[i] = color::snorm_to_float(static_cast<uint8_t>(i));
+		snorm_float[i] = spectrum::snorm_to_float(static_cast<uint8_t>(i));
 	}
 
 	for (uint32_t i = 0; i < 256; ++i) {
-		unorm_float[i] = color::unorm_to_float(static_cast<uint8_t>(i));
+		unorm_float[i] = spectrum::unorm_to_float(static_cast<uint8_t>(i));
 	}
 }
 

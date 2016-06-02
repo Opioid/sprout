@@ -4,7 +4,7 @@
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/hitpoint.inl"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 
 namespace scene { namespace material { namespace light {
 

@@ -3,7 +3,7 @@
 #include "xyz.hpp"
 #include "math/vector.inl"
 
-namespace color {
+namespace spectrum {
 
 inline math::float3 xyz_to_linear(math::pfloat3 xyz) {
 	return math::float3(

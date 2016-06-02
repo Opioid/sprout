@@ -16,13 +16,13 @@ HEADERS +=
 
 include(atomic/atomic.pri)
 include(chrono/chrono.pri)
-include(color/color.pri)
 include(crypto/crypto.pri)
 include(flags/flags.pri)
 include(json/json.pri)
 include(math/math.pri)
 include(memory/memory.pri)
 include(net/net.pri)
+include(spectrum/spectrum.pri)
 include(string/string.pri)
 include(thread/thread.pri)
 

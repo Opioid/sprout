@@ -1,6 +1,6 @@
 #include "exporting_sink_ffmpeg.hpp"
 #include "image/image.hpp"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "base/thread/thread_pool.hpp"
 #include <sstream>
 

@@ -1,6 +1,6 @@
 #include "image_helper.hpp"
 #include "typed_image.inl"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 
 namespace image {
 
@@ -27,7 +27,7 @@ float average_and_max_luminance(const Image_float_4& image, float& max) {
 	max = 0.f;
 
 	for (uint32_t i = 0; i < len; ++i) {
-		float luminance = color::luminance(image.at(i).xyz);
+		float luminance = spectrum::luminance(image.at(i).xyz);
 		average += ilen * luminance;
 		max = std::max(luminance, max);
 	}

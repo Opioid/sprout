@@ -8,7 +8,7 @@
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
 #include "scene/volume/homogeneous.hpp"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
@@ -188,7 +188,7 @@ void Scene::compile() {
 
 	for (auto l : lights_) {
 		l->prepare_sampling();
-		light_powers_.push_back(std::sqrt(color::luminance(l->power(bvh_.aabb()))));
+		light_powers_.push_back(std::sqrt(spectrum::luminance(l->power(bvh_.aabb()))));
 	}
 
 	light_distribution_.init(light_powers_.data(), light_powers_.size());

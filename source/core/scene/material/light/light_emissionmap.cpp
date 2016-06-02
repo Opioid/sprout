@@ -5,7 +5,7 @@
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/hitpoint.inl"
 #include "image/texture/sampler/sampler_2d.hpp"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "base/math/math.hpp"
 #include "base/math/distribution/distribution_2d.inl"
 
@@ -142,7 +142,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 
 				total_weight += sin_theta;
 
-				luminance[l] = sin_theta * color::luminance(radiance);
+				luminance[l] = sin_theta * spectrum::luminance(radiance);
 			}
 		}
 

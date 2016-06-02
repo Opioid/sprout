@@ -1,7 +1,7 @@
 #pragma once
 
 #include "image.hpp"
-#include "base/color/color.hpp"
+#include "base/spectrum/rgb.hpp"
 #include "base/memory/tiled_array.hpp"
 
 namespace image {
@@ -21,6 +21,6 @@ private:
 	memory::Tiled_array<T, Log_tile_size> data_;
 };
 
-// using Image_byte_3 = Tiled_image<color::Color3c, 1> Image_byte_3;
+// using Image_byte_3 = Tiled_image<spectrum::Color3c, 1> Image_byte_3;
 
 }

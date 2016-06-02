@@ -1,5 +1,5 @@
 #include "image_testing_reference.hpp"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "miniz/miniz.hpp"
 #include <fstream>
 
@@ -74,9 +74,9 @@ void create_reference_normal_map(math::int2 dimensions) {
 
 //			v = math::normalized(v / static_cast<float>(aa.x * aa.y));
 
-//			pixel.x = color::float_to_snorm(v.x);
-//			pixel.y = color::float_to_snorm(v.y);
-//			pixel.z = color::float_to_snorm(v.z);
+//			pixel.x = spectrum::float_to_snorm(v.x);
+//			pixel.y = spectrum::float_to_snorm(v.y);
+//			pixel.z = spectrum::float_to_snorm(v.z);
 
 			v = v / static_cast<float>(aa.x * aa.y);
 

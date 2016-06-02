@@ -5,7 +5,7 @@
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/volume/volume.hpp"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "base/math/ray.inl"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
@@ -129,7 +129,7 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 	math::float3 color = step * radiance;
 
-	return math::float4(color, color::luminance(color));
+	return math::float4(color, spectrum::luminance(color));
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings, float step_size) :

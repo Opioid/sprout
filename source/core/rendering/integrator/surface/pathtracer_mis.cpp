@@ -12,7 +12,7 @@
 #include "scene/material/material_sample.inl"
 #include "scene/prop/prop_intersection.inl"
 #include "take/take_settings.hpp"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
@@ -82,7 +82,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
 
 		// Russian roulette termination
 		if (i > settings_.min_bounces) {
-			float q = std::min(color::luminance(throughput),
+			float q = std::min(spectrum::luminance(throughput),
 							   settings_.path_continuation_probability);
 
 			if (sampler_.generate_sample_1D() >= q) {
@@ -111,7 +111,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
 			}
 
 			throughput *= tr;
-			opacity += /*1.f - sample_result.pdf **/ color::luminance(tr);
+			opacity += /*1.f - sample_result.pdf **/ spectrum::luminance(tr);
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 			opacity = 1.f;

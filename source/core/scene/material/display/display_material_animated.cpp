@@ -6,7 +6,7 @@
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/shape/geometry/hitpoint.inl"
-#include "base/color/color.inl"
+#include "base/spectrum/rgb.inl"
 #include "base/math/math.hpp"
 #include "base/math/distribution/distribution_2d.inl"
 
@@ -125,7 +125,7 @@ void Material_animated::prepare_sampling(bool spherical) {
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
 				math::float3 radiance = emission_factor_ * emission_->at_3(x, y);
 
-				luminance[l] = color::luminance(radiance);
+				luminance[l] = spectrum::luminance(radiance);
 
 				average_emission_ += sin_theta * radiance;
 

@@ -1,5 +1,5 @@
 #include "blackbody.hpp"
-#include "base/color/xyz.inl"
+#include "base/spectrum/xyz.inl"
 #include "base/math/vector.inl"
 
 namespace scene { namespace light {
@@ -30,11 +30,9 @@ math::float3 blackbody(float temperature) {
 		yc =  3.0817580f * xc3 - 5.87338670f * xc2 + 3.75112997f * xc - 0.37001483f;
 	}
 
-	float x = xc / yc;
-	float y = 1.f;
-	float z = (1.f - xc - yc) / yc;
+	math::float3 xyz(xc / yc, 1.f, (1.f - xc - yc) / yc);
 
-	return math::normalized(color::xyz_to_linear(math::float3(x, y, z)));
+	return math::normalized(spectrum::xyz_to_linear(xyz));
 
 }
 
