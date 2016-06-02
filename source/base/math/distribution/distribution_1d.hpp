@@ -6,6 +6,7 @@
 namespace math {
 
 class Distribution_1D {
+
 public:
 
 	void init(const float* data, size_t len);
@@ -34,6 +35,7 @@ private:
 // https://geidav.wordpress.com/2013/12/29/optimizing-binary-search/
 
 class Distribution_lut_1D {
+
 public:
 
 	void init(const float* data, uint32_t len, uint32_t lut_size = 0);
