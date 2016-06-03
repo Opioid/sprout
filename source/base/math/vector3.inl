@@ -492,6 +492,20 @@ inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
 	b = cross(r0, n);
 }
 
+inline Vector3f_a tangent(FVector3f_a n) {
+	Vector3f_a r1;
+
+	if (n.x < 0.6f && n.x > -0.6f) {
+		r1 = Vector3f_a(1.f, 0.f, 0.f);
+	} else if (n.y < 0.6f && n.y > -0.6f) {
+		r1 = Vector3f_a(0.f, 1.f, 0.f);
+	} else {
+		r1 = Vector3f_a(0.f, 0.f, 1.f);
+	}
+
+	return normalized(cross(n, r1));
+}
+
 inline Vector3f_a min(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
 }

@@ -19,6 +19,7 @@ namespace material { class Sample; }
 namespace rendering { namespace integrator { namespace surface {
 
 class Pathtracer_DL : public Integrator {
+
 public:
 
 	struct Settings {
@@ -54,6 +55,7 @@ private:
 };
 
 class Pathtracer_DL_factory : public Integrator_factory {
+
 public:
 
 	Pathtracer_DL_factory(const take::Settings& take_settings,

@@ -14,8 +14,8 @@ Integrator::Integrator(const take::Settings& settings, math::random::Generator& 
 
 Integrator::~Integrator() {}
 
-bool Integrator::resolve_mask(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-							  scene::material::Sampler_settings::Filter filter) {
+bool Integrator::resolve_mask(Worker& worker, scene::Ray& ray,
+							  scene::Intersection& intersection, Sampler_filter filter) {
 	float opacity = intersection.opacity(worker, ray.time, filter);
 
 	while (opacity < 1.f) {

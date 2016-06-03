@@ -19,7 +19,7 @@ math::float3 Material::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/
 	return math::float3(0.f, 0.f, 0.f);
 }
 
-math::float3 Material::average_radiance(float area) const {
+math::float3 Material::average_radiance(float /*area*/) const {
 	return math::float3(0.f, 0.f, 0.f);
 }
 

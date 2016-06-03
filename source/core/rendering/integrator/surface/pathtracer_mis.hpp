@@ -18,6 +18,7 @@ namespace material { class Sample; }
 namespace rendering { namespace integrator { namespace surface {
 
 class Pathtracer_MIS : public Integrator {
+
 public:
 
 	struct Settings {
@@ -45,11 +46,13 @@ private:
 									   const scene::material::Sample& material_sample,
 									   Sampler_filter filter);
 
+	using Bxdf_result = scene::material::bxdf::Result;
+
 	math::float3 resolve_transmission(Worker& worker, scene::Ray& ray,
 									  scene::Intersection& intersection,
 									  const math::float3& attenuation,
 									  Sampler_filter filter,
-									  scene::material::bxdf::Result& sample_result);
+									  Bxdf_result& sample_result);
 
 	const Settings& settings_;
 

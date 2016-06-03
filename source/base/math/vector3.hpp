@@ -238,6 +238,7 @@ Vector3f_a reflect(FVector3f_a normal, FVector3f_a v);
 
 // Assuming n is unit length
 void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b);
+Vector3f_a tangent(FVector3f_a n);
 
 Vector3f_a min(FVector3f_a a, FVector3f_a b);
 

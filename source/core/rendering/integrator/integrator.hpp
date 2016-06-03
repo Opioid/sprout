@@ -20,6 +20,7 @@ class Worker;
 namespace integrator {
 
 class Integrator {
+
 public:
 
 	Integrator(const take::Settings& settings, math::random::Generator& rng);

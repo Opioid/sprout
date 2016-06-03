@@ -12,6 +12,7 @@ namespace scene { namespace material { class Sample; } }
 namespace rendering { namespace integrator { namespace surface {
 
 class Whitted : public Integrator {
+
 public:
 
 	struct Settings {
@@ -42,6 +43,7 @@ private:
 };
 
 class Whitted_factory : public Integrator_factory {
+
 public:
 
 	Whitted_factory(const take::Settings& take_settings, uint32_t num_light_samples);

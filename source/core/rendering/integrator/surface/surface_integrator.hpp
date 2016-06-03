@@ -8,6 +8,7 @@ namespace scene { struct Ray; }
 namespace rendering { namespace integrator { namespace surface {
 
 class Integrator : public integrator::Integrator {
+
 public:
 
 	Integrator(const take::Settings& settings, math::random::Generator& rng);
@@ -20,11 +21,12 @@ protected:
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 
-	bool resolve_mask(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-					  Sampler_filter filter);
+	bool resolve_mask(Worker& worker, scene::Ray& ray,
+					  scene::Intersection& intersection, Sampler_filter filter);
 };
 
 class Integrator_factory {
+
 public:
 
 	Integrator_factory(const take::Settings& settings);

@@ -18,8 +18,6 @@
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
-#include <iostream>
-
 namespace rendering { namespace integrator { namespace surface {
 
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings,
@@ -198,10 +196,6 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 		scene::material::bxdf::Result sample_result;
 		material_sample.sample_evaluate(sampler_, sample_result);
 
-		if (!std::isfinite(sample_result.pdf)) {
-			std::cout << "alarm" << std::endl;
-		}
-
 		if (0.f == sample_result.pdf
 		||  sample_result.type.test(scene::material::bxdf::Type::Specular)) {
 			continue;
@@ -246,7 +240,7 @@ math::float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ra
 												  scene::Intersection& intersection,
 												  const math::float3& attenuation,
 												  Sampler_filter filter,
-												  scene::material::bxdf::Result& sample_result) {
+												  Bxdf_result& sample_result) {
 	if (intersection.prop->is_open()) {
 		return transmittance_open_.resolve(worker, ray, intersection, attenuation,
 										   sampler_, filter, sample_result);

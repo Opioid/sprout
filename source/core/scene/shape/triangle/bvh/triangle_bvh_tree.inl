@@ -61,7 +61,8 @@ uint32_t Tree<Data>::current_triangle() const {
 }
 
 template<typename Data>
-bool Tree<Data>::intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const {
+bool Tree<Data>::intersect(math::Oray& ray, Node_stack& node_stack,
+						   Intersection& intersection) const {
 	node_stack.clear();
 	node_stack.push(0);
 	uint32_t n = 0;
@@ -189,7 +190,8 @@ float Tree<Data>::opacity(math::Oray& ray, float time, const material::Materials
 
 template<typename Data>
 void Tree<Data>::interpolate_triangle_data(uint32_t index, math::float2 uv,
-										   math::float3& n, math::float3& t, math::float2& tc) const {
+										   math::float3& n, math::float3& t,
+										   math::float2& tc) const {
 	data_.interpolate_data(index, uv, n, t, tc);
 }
 
@@ -224,7 +226,8 @@ float Tree<Data>::triangle_area(uint32_t index, const math::float3& scale) const
 }
 
 template<typename Data>
-void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const {
+void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p,
+						math::float3& n, math::float2& tc) const {
     data_.sample(index, r2, p, n, tc);
 }
 
@@ -239,7 +242,8 @@ void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p) const 
 }
 
 template<typename Data>
-void Tree<Data>::allocate_triangles(uint32_t num_triangles, uint32_t num_parts, const std::vector<Vertex>& vertices) {
+void Tree<Data>::allocate_triangles(uint32_t num_triangles, uint32_t num_parts,
+									const std::vector<Vertex>& vertices) {
 	num_parts_ = num_parts;
 
 	delete [] num_part_triangles_;

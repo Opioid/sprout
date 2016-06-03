@@ -2,8 +2,7 @@
 #include "hosek/ArHosekSkyModel.h"
 #include "base/math/vector.inl"
 #include "base/spectrum/spectrum.inl"
-
-#include <iostream>
+#include "base/spectrum/xyz.inl"
 
 namespace procedural { namespace sky {
 
@@ -41,7 +40,6 @@ void Model::init() {
 															  turbidity_,
 															  ground_albedo_.v[0]);
 	}
-
 
 	dirty_ = false;
 }

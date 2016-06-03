@@ -18,6 +18,7 @@ struct Sample;
 namespace rendering { namespace integrator { namespace surface {
 
 class Pathtracer : public Integrator {
+
 public:
 
 	struct Settings {
@@ -48,6 +49,7 @@ private:
 };
 
 class Pathtracer_factory : public Integrator_factory {
+
 public:
 
 	Pathtracer_factory(const take::Settings &take_settings,
