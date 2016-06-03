@@ -19,12 +19,12 @@ inline float linear_to_sRGB(float c) {
 }
 
 // convert sRGB linear color to sRGB gamma color
-inline math::float3 linear_to_sRGB(math::pfloat3 c) {
+inline math::float3 linearRGB_to_sRGB(math::pfloat3 c) {
 	return math::float3(linear_to_sRGB(c.x), linear_to_sRGB(c.y), linear_to_sRGB(c.z));
 }
 
 // convert sRGB linear color to sRGB gamma color
-inline math::float4 linear_to_sRGB(const math::float4& c) {
+inline math::float4 linearRGB_to_sRGB(const math::float4& c) {
 	return math::float4(linear_to_sRGB(c.x), linear_to_sRGB(c.y), linear_to_sRGB(c.z), c.w);
 }
 
@@ -42,7 +42,7 @@ inline float sRGB_to_linear(float c) {
 }
 
 // convert sRGB gamma color to sRGB linear color
-inline math::float3 sRGB_to_linear(math::byte3 c) {
+inline math::float3 sRGB_to_linearRGB(math::byte3 c) {
 	return math::float3(
 				sRGB_to_linear(static_cast<float>(c.x) / 255.f),
 				sRGB_to_linear(static_cast<float>(c.y) / 255.f),
@@ -50,11 +50,11 @@ inline math::float3 sRGB_to_linear(math::byte3 c) {
 }
 
 // convert sRGB gamma color to sRGB linear color
-inline math::float3 sRGB_to_linear(math::pfloat3 c) {
+inline math::float3 sRGB_to_linearRGB(math::pfloat3 c) {
 	return math::float3(sRGB_to_linear(c.x), sRGB_to_linear(c.y), sRGB_to_linear(c.z));
 }
 
-inline math::float4 sRGB_to_linear(math::byte4 c) {
+inline math::float4 sRGB_to_linearRGB(math::byte4 c) {
 	return math::float4(
 				sRGB_to_linear(static_cast<float>(c.x) / 255.f),
 				sRGB_to_linear(static_cast<float>(c.y) / 255.f),

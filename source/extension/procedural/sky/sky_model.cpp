@@ -1,6 +1,7 @@
 #include "sky_model.hpp"
 #include "hosek/ArHosekSkyModel.h"
 #include "base/math/vector.inl"
+#include "base/spectrum/spectrum.inl"
 
 namespace procedural { namespace sky {
 
@@ -8,6 +9,8 @@ Model::Model() : dirty_(true) {
 	for (uint32_t i = 0; i < 3; ++i) {
 		skymodel_states_[i] = nullptr;
 	}
+
+	Spectrum::init();
 }
 
 Model::~Model() {

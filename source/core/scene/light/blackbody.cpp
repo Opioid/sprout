@@ -51,7 +51,7 @@ math::float3 blackbody(float temperature) {
 	constexpr float wl_step = 5.f;
 	constexpr uint32_t numSteps = static_cast<uint32_t>((wl_max - wl_min) / wl_step) + 1;
 
-	math::float3 xyz(0.f, 0.f, 0.f);
+	math::float3 xyz(0.f);
 	for (uint32_t k = 0; k < numSteps; k++ ) {
 		// convert to nanometer
 		float wl = (wl_min + static_cast<float>(k) * wl_step) * 1e-9f;

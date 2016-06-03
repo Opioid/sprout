@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/math/vector.hpp"
+#include "base/spectrum/spectrum.hpp"
 
 struct ArHosekSkyModelState;
 
@@ -35,6 +36,8 @@ private:
 	bool dirty_;
 
 	static const math::float3 zenith_;
+
+	using Spectrum = spectrum::Discrete_spectral_power_distribution<16>;
 };
 
 }}
