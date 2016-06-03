@@ -105,13 +105,6 @@ Generic_sample_cache<light::Sample>& Provider::light_cache() {
 	return light_cache_;
 }
 
-std::shared_ptr<light::Constant> Provider::create_light() {
-	scene::material::Sampler_settings sampler_settings;
-
-	return std::make_shared<light::Constant>(light_cache_, nullptr,
-											 sampler_settings, false);
-}
-
 std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;

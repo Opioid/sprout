@@ -46,6 +46,10 @@ void Model::init() {
 	dirty_ = false;
 }
 
+math::float3 Model::sun_direction() const {
+	return sun_direction_;
+}
+
 void Model::set_sun_direction(math::pfloat3 direction) {
 	sun_direction_ = direction;
 	dirty_ = true;
@@ -61,7 +65,7 @@ void Model::set_turbidity(float turbidity) {
 	dirty_ = true;
 }
 
-math::float3 Model::evaluate(math::pfloat3 wi) const {
+math::float3 Model::evaluate_sky(math::pfloat3 wi) const {
 	float wi_dot_z = std::max(wi.y, 0.00001f);
 	float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
@@ -85,6 +89,28 @@ math::float3 Model::evaluate(math::pfloat3 wi) const {
 	}
 
 	return spectrum::XYZ_to_linear_RGB(radiance.XYZ());
+}
+
+math::float3 Model::evaluate_sky_and_sun(math::pfloat3 wi) const {
+	float wi_dot_z = std::max(wi.y, 0.00001f);
+	float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
+
+	float theta = std::acos(wi_dot_z);
+	float gamma = std::acos(wi_dot_s);
+
+	Spectrum radiance;
+	for (uint32_t i = 0; i < Num_bands; ++i) {
+		float wl_center = Spectrum::wavelength_center(i);
+		radiance.set_bin(i, static_cast<float>(arhosekskymodel_solar_radiance(skymodel_states_[i],
+																			  theta, gamma,
+																			  wl_center)));
+	}
+
+	return spectrum::XYZ_to_linear_RGB(radiance.XYZ());
+}
+
+math::float3 Model::zenith() {
+	return zenith_;
 }
 
 void Model::release() {

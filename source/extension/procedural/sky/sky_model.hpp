@@ -16,11 +16,17 @@ public:
 
 	void init();
 
+	math::float3 sun_direction() const;
 	void set_sun_direction(math::pfloat3 direction);
+
 	void set_ground_albedo(math::pfloat3 albedo);
 	void set_turbidity(float turbidity);
 
-	math::float3 evaluate(math::pfloat3 wi) const;
+	math::float3 evaluate_sky(math::pfloat3 wi) const;
+
+	math::float3 evaluate_sky_and_sun(math::pfloat3 wi) const;
+
+	static math::float3 zenith();
 
 private:
 

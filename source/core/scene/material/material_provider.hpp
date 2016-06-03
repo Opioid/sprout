@@ -52,8 +52,6 @@ public:
 
 	Generic_sample_cache<light::Sample>& light_cache();
 
-	std::shared_ptr<light::Constant> create_light();
-
 private:
 
 	std::shared_ptr<Material> load_cloth(const json::Value& cloth_value,
