@@ -9,6 +9,8 @@
 #include "base/math/math.hpp"
 #include "base/math/sampling/sampling.inl"
 
+#include <iostream>
+
 namespace scene { namespace material { namespace substitute {
 
 math::float3 Sample_base::radiance() const {
@@ -76,6 +78,10 @@ void Sample_base::diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Res
 
 	result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 	result.pdf = 0.5f * (result.pdf + ggx_pdf);
+
+	if (!std::isfinite(result.pdf)) {
+		std::cout << "alarm" << std::endl;
+	}
 }
 
 void Sample_base::specular_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const {
@@ -88,6 +94,10 @@ void Sample_base::specular_importance_sample(sampler::Sampler& sampler, bxdf::Re
 
 	result.reflection = n_dot_wi * (result.reflection + oren_nayar_reflection);
 	result.pdf = 0.5f * (result.pdf + oren_nayar_pdf);
+
+	if (!std::isfinite(result.pdf)) {
+		std::cout << "alarm" << std::endl;
+	}
 }
 
 void Sample_base::pure_specular_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const {

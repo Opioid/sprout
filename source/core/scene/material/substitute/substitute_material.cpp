@@ -2,6 +2,8 @@
 #include "substitute_sample.hpp"
 #include "substitute_material_base.inl"
 
+#include <iostream>
+
 namespace scene { namespace material { namespace substitute {
 
 Material::Material(Generic_sample_cache<Sample>& cache,
@@ -19,6 +21,10 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat
 	if (normal_map_) {
 		math::float3 nm = sampler.sample_3(*normal_map_, hp.uv);
 		math::float3 n = math::normalized(hp.tangent_to_world(nm));
+
+		if (!std::isfinite(n.x)) {
+			std::cout << "alarm" << std::endl;
+		}
 
 		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo, two_sided_);
 	} else {

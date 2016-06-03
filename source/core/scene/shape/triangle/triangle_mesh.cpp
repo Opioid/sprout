@@ -13,6 +13,8 @@
 #include "base/math/matrix.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
+#include <iostream>
+
 namespace scene { namespace shape { namespace triangle {
 
 bool Mesh::init() {
@@ -95,6 +97,10 @@ bool Mesh::intersect(const Entity_transformation& transformation, math::Oray& ra
 		intersection.uv = uv;
 		intersection.epsilon = epsilon;
 		intersection.part = material_index;
+
+		if (!std::isfinite(t_w.x)) {
+			std::cout << "alarm" << std::endl;
+		}
 
 		return true;
 	}

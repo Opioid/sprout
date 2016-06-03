@@ -18,6 +18,8 @@
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
+#include <iostream>
+
 namespace rendering { namespace integrator { namespace surface {
 
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings,
@@ -195,6 +197,11 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 		// Material BSDF importance sample
 		scene::material::bxdf::Result sample_result;
 		material_sample.sample_evaluate(sampler_, sample_result);
+
+		if (!std::isfinite(sample_result.pdf)) {
+			std::cout << "alarm" << std::endl;
+		}
+
 		if (0.f == sample_result.pdf
 		||  sample_result.type.test(scene::material::bxdf::Type::Specular)) {
 			continue;
