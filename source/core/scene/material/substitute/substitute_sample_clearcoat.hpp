@@ -9,7 +9,8 @@ public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const final override;
+	virtual void sample_evaluate(sampler::Sampler& sampler,
+								 bxdf::Result& result) const final override;
 
 	void set(math::pfloat3 color, math::pfloat3 radiance,
 			 float constant_f0, float a2, float metallic,
@@ -17,9 +18,14 @@ public:
 
 private:
 
-	void diffuse_importance_sample_and_clearcoat(sampler::Sampler& sampler, bxdf::Result& result) const;
-	void specular_importance_sample_and_clearcoat(sampler::Sampler& sampler, bxdf::Result& result) const;
-	void pure_specular_importance_sample_and_clearcoat(sampler::Sampler& sampler, bxdf::Result& result) const;
+	void diffuse_importance_sample_and_clearcoat(sampler::Sampler& sampler,
+												 bxdf::Result& result) const;
+
+	void specular_importance_sample_and_clearcoat(sampler::Sampler& sampler,
+												  bxdf::Result& result) const;
+
+	void pure_specular_importance_sample_and_clearcoat(sampler::Sampler& sampler,
+													   bxdf::Result& result) const;
 
 	float clearcoat_ior_;
 	float clearcoat_f0_;
