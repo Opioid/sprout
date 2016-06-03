@@ -752,7 +752,7 @@ math::float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 
 		if ("sRGB" == node_name) {
 			math::float3 srgb = json::read_float3(node_value);
-			return spectrum::sRGB_to_linearRGB(srgb);
+			return spectrum::sRGB_to_linear_RGB(srgb);
 		} else if ("temperature" == node_name) {
 			float temperature = json::read_float(node_value);
 			temperature = std::max(800.f, temperature);

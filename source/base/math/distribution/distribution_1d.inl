@@ -16,7 +16,7 @@ inline float Distribution_1D::integral() const {
 inline uint32_t Distribution_1D::sample_discrete(float r) const {
 	auto it = std::lower_bound(cdf_.begin(), cdf_.end(), r);
 
-	uint32_t offset =  0;
+	uint32_t offset = 0;
 	if (it != cdf_.begin()) {
 		offset = static_cast<uint32_t>(it - cdf_.begin() - 1);
 	}

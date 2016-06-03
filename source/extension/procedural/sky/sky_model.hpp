@@ -31,13 +31,15 @@ private:
 
 	float turbidity_;
 
-	ArHosekSkyModelState* skymodel_states_[3];
+	static constexpr uint32_t Num_bands = 8;
+
+	ArHosekSkyModelState* skymodel_states_[Num_bands];
 
 	bool dirty_;
 
 	static const math::float3 zenith_;
 
-	using Spectrum = spectrum::Discrete_spectral_power_distribution<16>;
+	using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 };
 
 }}

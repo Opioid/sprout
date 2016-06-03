@@ -1,5 +1,6 @@
 #pragma once
 
+#include "interpolated.hpp"
 #include "math/vector.hpp"
 
 namespace spectrum {
@@ -9,11 +10,19 @@ class Discrete_spectral_power_distribution {
 
 public:
 
+	Discrete_spectral_power_distribution();
+
+	Discrete_spectral_power_distribution(const Interpolated& interpolated);
+
 	void set_bin(uint32_t bin, float value);
 
-	math::float3 xyz() const;
+	math::float3 XYZ() const;
 
 	static void init(float start_wavelength = 380.f, float end_wavelength = 720.f);
+
+	static constexpr uint32_t num_bands();
+
+	static float wavelength_center(uint32_t bin);
 
 private:
 
