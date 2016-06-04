@@ -40,7 +40,8 @@ math::float3 Sample_base::base_evaluate(math::pfloat3 wi, float& pdf) const {
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	float diffuse_pdf;
-	math::float3 diffuse = oren_nayar::Oren_nayar::evaluate(*this, wi, n_dot_wi, n_dot_wo, diffuse_pdf);
+	math::float3 diffuse = oren_nayar::Oren_nayar::evaluate(*this, wi, n_dot_wi,
+															n_dot_wo, diffuse_pdf);
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {
@@ -72,13 +73,15 @@ void Sample_base::diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Res
 	float n_dot_wi = oren_nayar::Oren_nayar::importance_sample(*this, sampler, n_dot_wo, result);
 
 	float ggx_pdf;
-	math::float3 ggx_reflection = ggx::Schlick_isotropic::evaluate(*this, result.wi, n_dot_wi, n_dot_wo, ggx_pdf);
+	math::float3 ggx_reflection = ggx::Schlick_isotropic::evaluate(*this, result.wi, n_dot_wi,
+																   n_dot_wo, ggx_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 	result.pdf = 0.5f * (result.pdf + ggx_pdf);
 }
 
-void Sample_base::specular_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_base::specular_importance_sample(sampler::Sampler& sampler,
+											 bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
 	float n_dot_wi = ggx::Schlick_isotropic::importance_sample(*this, sampler, n_dot_wo, result);
 
@@ -90,7 +93,8 @@ void Sample_base::specular_importance_sample(sampler::Sampler& sampler, bxdf::Re
 	result.pdf = 0.5f * (result.pdf + oren_nayar_pdf);
 }
 
-void Sample_base::pure_specular_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_base::pure_specular_importance_sample(sampler::Sampler& sampler,
+												  bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
 	float n_dot_wi = ggx::Schlick_isotropic::importance_sample(*this, sampler, n_dot_wo, result);
 	result.reflection *= n_dot_wi;

@@ -82,6 +82,6 @@ float geometric_shadowing(float n_dot_wi, float n_dot_wo, float a2);
 
 float clamp_a2(float a2);
 
-constexpr float min_a2 = 0.00000003f;
+constexpr float Min_a2 = 0.0000000299f;
 
 }}}

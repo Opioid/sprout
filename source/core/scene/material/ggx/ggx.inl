@@ -4,6 +4,8 @@
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
 
+#include <iostream>
+
 namespace scene { namespace material { namespace ggx {
 
 template<typename Sample>
@@ -121,6 +123,11 @@ math::float3 Schlick_isotropic::evaluate(const Sample& sample,
 	math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
+
+	if (!std::isfinite(pdf)) {
+		std::cout << "evaluate" << std::endl;
+	}
+
 	return d * g * f;
 }
 
@@ -135,8 +142,8 @@ float Schlick_isotropic::importance_sample(const Sample& sample,
 
 		math::float3 wi = math::normalized((2.f * wo_dot_h) * sample.n_ - sample.wo_);
 
-		float d = distribution_isotropic(n_dot_h, min_a2);
-		float g = geometric_shadowing(n_dot_wo, n_dot_wo, min_a2);
+		float d = distribution_isotropic(n_dot_h, Min_a2);
+		float g = geometric_shadowing(n_dot_wo, n_dot_wo, Min_a2);
 		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -177,6 +184,10 @@ float Schlick_isotropic::importance_sample(const Sample& sample,
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
 
+		if (!std::isfinite(result.pdf)) {
+			std::cout << "importance_sample" << std::endl;
+		}
+
 		return n_dot_wi;
 	}
 }
@@ -216,8 +227,8 @@ float Conductor_isotropic::importance_sample(const Sample& sample,
 
 		math::float3 wi = math::normalized((2.f * wo_dot_h) * sample.n_ - sample.wo_);
 
-		float d = distribution_isotropic(n_dot_h, min_a2);
-		float g = geometric_shadowing(n_dot_wo, n_dot_wo, min_a2);
+		float d = distribution_isotropic(n_dot_h, Min_a2);
+		float g = geometric_shadowing(n_dot_wo, n_dot_wo, Min_a2);
 		math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -354,7 +365,7 @@ inline float geometric_shadowing(float n_dot_wi, float n_dot_wo, float a2) {
 }
 
 inline float clamp_a2(float a2) {
-	return std::max(a2, min_a2);
+	return std::max(a2, Min_a2);
 }
 
 }}}

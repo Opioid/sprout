@@ -24,11 +24,15 @@
 #include "base/thread/thread_pool.hpp"
 
 
-#include "base/spectrum/spectrum.inl"
-#include "base/spectrum/xyz.inl"
-#include <iostream>
+#include "scene/material/substitute/substitute_test.hpp"
 
 int main(int argc, char* argv[]) {
+	scene::material::substitute::testing::test();
+
+
+	return 0;
+
+
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout!");
 

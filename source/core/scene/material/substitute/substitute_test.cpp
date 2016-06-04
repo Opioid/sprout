@@ -46,6 +46,22 @@ void test() {
 	sample.sample_evaluate(sampler, result);
 
 	print(result);
+
+
+	float xiy = 1.f;
+	float a2 = ggx::Min_a2;
+	float n_dot_h = std::sqrt((1.f - xiy) / ((a2 - 1.f) * xiy + 1.f));
+
+	std::cout << "n_dot_h == " << n_dot_h << std::endl;
+
+	n_dot_h = 1.f;
+	float d = ggx::distribution_isotropic(n_dot_h, ggx::Min_a2);
+
+	std::cout << "d == " << d << std::endl;
+
+	float n_dot_wo = 1.f;
+	float g = ggx::geometric_shadowing(n_dot_wo, n_dot_wo, /*ggx::Min_a2*/0.00000001f);
+	std::cout << "g == " << g << std::endl;
 }
 
 }
