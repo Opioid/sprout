@@ -3,7 +3,6 @@
 #include "resource/resource_manager.inl"
 #include "material_sample_cache.inl"
 #include "image/texture/texture_2d_provider.hpp"
-#include "scene/light/blackbody.hpp"
 #include "cloth/cloth_sample.hpp"
 #include "cloth/cloth_material.hpp"
 #include "display/display_sample.hpp"
@@ -27,10 +26,11 @@
 #include "substitute/substitute_sample_translucent.hpp"
 #include "substitute/substitute_material_translucent.hpp"
 #include "substitute/substitute_material_base.inl"
-#include "base/spectrum/rgb.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.inl"
+#include "base/spectrum/blackbody.hpp"
+#include "base/spectrum/rgb.inl"
 #include "base/thread/thread_pool.hpp"
 
 namespace scene { namespace material {
@@ -736,7 +736,7 @@ void Provider::read_clearcoat_description(const json::Value& clearcoat_value,
 
 math::float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 	if (!spectrum_value.IsObject()) {
-		return math::float3(0.f, 0.f, 0.f);
+		return math::float3(0.f);
 	}
 
 	for (auto n = spectrum_value.MemberBegin(); n != spectrum_value.MemberEnd(); ++n) {
@@ -746,14 +746,16 @@ math::float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 		if ("sRGB" == node_name) {
 			math::float3 srgb = json::read_float3(node_value);
 			return spectrum::sRGB_to_linear_RGB(srgb);
+		} else if ("RGB" == node_name) {
+			return json::read_float3(node_value);
 		} else if ("temperature" == node_name) {
 			float temperature = json::read_float(node_value);
 			temperature = std::max(800.f, temperature);
-			return scene::light::blackbody(temperature);
+			return spectrum::blackbody(temperature);
 		}
 	}
 
-	return math::float3(0.f, 0.f, 0.f);
+	return math::float3(0.f);
 }
 
 }}

@@ -1,8 +1,10 @@
 #include "blackbody.hpp"
-#include "base/spectrum/xyz.inl"
-#include "base/math/vector.inl"
+#include "xyz.inl"
+#include "math/vector.inl"
 
-namespace scene { namespace light {
+// http://www.scratchapixel.com/old/lessons/3d-advanced-lessons/blackbody/spectrum-of-blackbodies/
+
+namespace spectrum {
 
 float planck(float temperature, float wavelength) {
 	constexpr float h = 6.62606896e-34f;   // Plank constant
@@ -65,7 +67,7 @@ math::float3 blackbody(float temperature) {
 	// normalize the result
 	xyz /= std::max(xyz.x, std::max(xyz.y, xyz.z));
 
-	return (spectrum::XYZ_to_linear_RGB(xyz));
+	return spectrum::XYZ_to_linear_RGB(xyz);
 //  return math::normalized(spectrum::XYZ_to_linear_RGB(xyz));
 }
 
@@ -100,4 +102,4 @@ math::float3 blackbody_fast(float temperature) {
 	return /*math::normalized*/(spectrum::XYZ_to_linear_RGB(xyz));
 }
 
-}}
+}
