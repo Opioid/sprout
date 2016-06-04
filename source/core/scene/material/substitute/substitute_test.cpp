@@ -60,7 +60,7 @@ void test() {
 	std::cout << "d == " << d << std::endl;
 
 	float n_dot_wo = 1.f;
-	float g = ggx::geometric_shadowing(n_dot_wo, n_dot_wo, /*ggx::Min_a2*/0.00000001f);
+	float g = ggx::geometric_shadowing(n_dot_wo, n_dot_wo, ggx::Min_a2);
 	std::cout << "g == " << g << std::endl;
 }
 
