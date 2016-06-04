@@ -2,6 +2,7 @@
 #include "substitute_sample.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_print.hpp"
+#include "scene/material/ggx/ggx.inl"
 #include "sampler/sampler_random.hpp"
 #include "base/math/random/generator.inl"
 #include "base/math/vector.inl"
