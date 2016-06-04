@@ -30,7 +30,7 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 
 math::float4 Pathtracer::li(Worker& worker, scene::Ray& ray,
 							bool volume, scene::Intersection& intersection) {
-	scene::material::Sampler_settings::Filter filter;
+	Sampler_filter filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
 

@@ -33,7 +33,7 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 
 math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
 								bool volume, scene::Intersection& intersection) {
-	scene::material::Sampler_settings::Filter filter;
+	Sampler_filter filter;
 	scene::material::bxdf::Result sample_result;
 
 	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
