@@ -9,7 +9,8 @@ class Sample_clearcoat;
 class Material_clearcoat : public Material_base<Sample_clearcoat> {
 public:
 
-	Material_clearcoat(Generic_sample_cache<Sample_clearcoat>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+	Material_clearcoat(Generic_sample_cache<Sample_clearcoat>& cache,
+					   std::shared_ptr<image::texture::Texture_2D> mask,
 					   const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,

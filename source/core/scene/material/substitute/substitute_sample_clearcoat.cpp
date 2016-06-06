@@ -148,7 +148,7 @@ void Sample_clearcoat::diffuse_importance_sample_and_clearcoat(sampler::Sampler&
 
 	result.reflection = n_dot_wi * (math::float3(cl_reflection) + base_layer);
 
-	// PDF has 0.5 * 0.5
+	// PDF weight 0.5 * 0.5
 	// 0.5 chance to select substitute layer and then 0.5 chance to select this importance sample
 	result.pdf = 0.25f * (cl_pdf + result.pdf + ggx_pdf);
 }
@@ -176,7 +176,7 @@ void Sample_clearcoat::specular_importance_sample_and_clearcoat(sampler::Sampler
 
 	result.reflection = n_dot_wi * (math::float3(cl_reflection) + base_layer);
 
-	// PDF has 0.5 * 0.5
+	// PDF weight 0.5 * 0.5
 	// 0.5 chance to select substitute layer and then 0.5 chance to select this importance sample
 	result.pdf = 0.25f * (cl_pdf + oren_nayar_pdf + ggx_pdf);
 }

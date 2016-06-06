@@ -41,7 +41,6 @@ float Oren_nayar::importance_sample(const Sample& sample,
 
 	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
 //	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
-	result.pdf = n_dot_wi * math::Pi_inv;
 
 	float wi_dot_wo = math::dot(wi, sample.wo_);
 
@@ -58,13 +57,10 @@ float Oren_nayar::importance_sample(const Sample& sample,
 	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
 	float b = 0.45f * (a2 / (a2 + 0.09f));
 
+	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = math::Pi_inv * (a + b * s * t) * sample.diffuse_color_;
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
-
-//	if (math::contains_negative(result.reflection)) {
-//		std::cout << "Oren_nayar<Sample>::importance_sample()" << std::endl;
-//	}
 
 	return n_dot_wi;
 }

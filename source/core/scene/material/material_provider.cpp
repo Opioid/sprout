@@ -652,7 +652,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 		material->set_emission_map(emission_map);
 
 		material->set_color(color);
-		material->set_ior(ior);
+		material->set_ior(ior, clearcoat.ior);
 		material->set_roughness(roughness);
 		material->set_metallic(metallic);
 		material->set_emission_factor(emission_factor);
