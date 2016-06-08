@@ -7,9 +7,8 @@
 namespace scene { namespace material { namespace ggx {
 
 template<typename Sample>
-float Schlick_isotropic::init_importance_sample(const Sample& sample, float a2,
-												sampler::Sampler& sampler, float n_dot_wo,
-												bxdf::Result& result) {
+float Isotropic::init_importance_sample(float n_dot_wo, float a2, const Sample& sample,
+										sampler::Sampler& sampler, bxdf::Result& result) {
 	if (0.f == a2) {
 		constexpr float n_dot_h = 1.f;
 
@@ -57,35 +56,36 @@ float Schlick_isotropic::init_importance_sample(const Sample& sample, float a2,
 }
 
 template<typename Sample>
-void Schlick_isotropic::init_evaluate(const Sample& sample, math::pfloat3 wi) {
+void Isotropic::init_evaluate(math::pfloat3 wi, const Sample& sample) {
 	math::float3 h = math::normalized(sample.wo_ + wi);
 
 	n_dot_h_  = math::saturate(math::dot(sample.n_, h));
 	wo_dot_h_ = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 }
 
-inline float Schlick_isotropic::evaluate(float f0, float a2, float n_dot_wi, float n_dot_wo,
-										 float& fresnel, float& pdf) const {
+template<typename Fresnel>
+math::float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2, const Fresnel& fresnel,
+								 math::float3& fresnel_result, float& pdf) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2 && 1.f != n_dot_h_) {
-		fresnel = 0.f;
+		fresnel_result = math::float3(0.f);
 		pdf = 0.f;
-		return 0.f;
+		return math::float3(0.f);
 	}
 
 	float clamped_a2 = clamp_a2(a2);
 	float d = distribution_isotropic(n_dot_h_, clamped_a2);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	float f = fresnel::schlick(wo_dot_h_, f0);
+	math::float3 f = fresnel.f(wo_dot_h_);
 
-	fresnel = f;
+	fresnel_result = f;
 	pdf = d * n_dot_h_ / (4.f * wo_dot_h_);
 	return d * g * f;
 }
 
-inline math::float3 Schlick_isotropic::evaluate(math::pfloat3 f0, float a2,
-												float n_dot_wi, float n_dot_wo,
-												float& pdf) const {
+template<typename Fresnel>
+math::float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2,
+								 const Fresnel& fresnel, float& pdf) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2 && 1.f != n_dot_h_) {
 		pdf = 0.f;
@@ -95,16 +95,15 @@ inline math::float3 Schlick_isotropic::evaluate(math::pfloat3 f0, float a2,
 	float clamped_a2 = clamp_a2(a2);
 	float d = distribution_isotropic(n_dot_h_, clamped_a2);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel::schlick(wo_dot_h_, f0);
+	math::float3 f = fresnel.f(wo_dot_h_);
 
 	pdf = d * n_dot_h_ / (4.f * wo_dot_h_);
 	return d * g * f;
 }
 
-template<typename Sample>
-math::float3 Schlick_isotropic::evaluate(const Sample& sample,
-										 math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
-										 float& pdf) {
+template<typename Sample, typename Fresnel>
+math::float3 Isotropic::evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
+								 const Sample& sample, const Fresnel& fresnel, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == sample.a2_) {
 		pdf = 0.f;
@@ -119,16 +118,15 @@ math::float3 Schlick_isotropic::evaluate(const Sample& sample,
 	float clamped_a2 = clamp_a2(sample.a2_);
 	float d = distribution_isotropic(n_dot_h, clamped_a2);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
+	math::float3 f = fresnel.f(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	return d * g * f;
 }
 
-template<typename Sample>
-float Schlick_isotropic::importance_sample(const Sample& sample,
-										   sampler::Sampler& sampler, float n_dot_wo,
-										   bxdf::Result& result) {
+template<typename Sample, typename Fresnel>
+float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const Fresnel& fresnel,
+								   sampler::Sampler& sampler, bxdf::Result& result) {
 	if (0.f == sample.a2_) {
 		constexpr float n_dot_h = 1.f;
 
@@ -138,7 +136,7 @@ float Schlick_isotropic::importance_sample(const Sample& sample,
 
 		float d = distribution_isotropic(n_dot_h, Min_a2);
 		float g = geometric_shadowing(n_dot_wo, n_dot_wo, Min_a2);
-		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
+		math::float3 f = fresnel.f(wo_dot_h);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 		result.reflection = d * g * f;
@@ -171,7 +169,7 @@ float Schlick_isotropic::importance_sample(const Sample& sample,
 		float d = distribution_isotropic(n_dot_h, clamped_a2);
 	//	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
 		float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-		math::float3 f = fresnel::schlick(wo_dot_h, sample.f0_);
+		math::float3 f = fresnel.f(wo_dot_h);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 		result.reflection = d * g * f;
@@ -182,91 +180,9 @@ float Schlick_isotropic::importance_sample(const Sample& sample,
 	}
 }
 
-template<typename Sample>
-math::float3 Conductor_isotropic::evaluate(const Sample& sample,
-										   math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
-										   float& pdf)  {
-	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == sample.a2_) {
-		pdf = 0.f;
-		return math::float3_identity;
-	}
-
-	math::float3 h = math::normalized(sample.wo_ + wi);
-
-	float n_dot_h  = math::saturate(math::dot(sample.n_, h));
-	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
-
-	float clamped_a2 = clamp_a2(sample.a2_);
-	float d = distribution_isotropic(n_dot_h, clamped_a2);
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
-
-	pdf = d * n_dot_h / (4.f * wo_dot_h);
-	return d * g * f;
-}
-
-template<typename Sample>
-float Conductor_isotropic::importance_sample(const Sample& sample,
-											 sampler::Sampler& sampler, float n_dot_wo,
-											 bxdf::Result& result) {
-	if (0.f == sample.a2_) {
-		constexpr float n_dot_h = 1.f;
-
-		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
-
-		math::float3 wi = math::normalized((2.f * wo_dot_h) * sample.n_ - sample.wo_);
-
-		float d = distribution_isotropic(n_dot_h, Min_a2);
-		float g = geometric_shadowing(n_dot_wo, n_dot_wo, Min_a2);
-		math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
-
-		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = d * g * f;
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Specular_reflection);
-
-		return n_dot_wo;
-	} else {
-		math::float2 xi = sampler.generate_sample_2D();
-
-		float clamped_a2 = clamp_a2(sample.a2_);
-		float n_dot_h = std::sqrt((1.f - xi.y) / ((clamped_a2 - 1.f) * xi.y + 1.f));
-
-		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-		float phi = 2.f * math::Pi * xi.x;
-		float sin_phi = std::sin(phi);
-		float cos_phi = std::cos(phi);
-
-		math::float3 is = math::float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-		math::float3 h = sample.tangent_to_world(is);
-
-		float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
-	//	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
-
-		math::float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
-
-		float n_dot_wi = std::max(math::dot(sample.n_, wi),	0.00001f);
-	//	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
-
-		float d = distribution_isotropic(n_dot_h, clamped_a2);
-	//	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
-		float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-		math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
-
-		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = d * g * f;
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Glossy_reflection);
-
-		return n_dot_wi;
-	}
-}
-
-template<typename Sample>
-math::float3 Conductor_anisotropic::evaluate(const Sample& sample,
-											 math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
-											 float &pdf) {
+template<typename Sample, typename Fresnel>
+math::float3 Anisotropic::evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
+								   const Sample& sample, const Fresnel& fresnel, float &pdf) {
 	math::float3 h = math::normalized(sample.wo_ + wi);
 
 	float n_dot_h  = math::saturate(math::dot(sample.n_, h));
@@ -279,19 +195,17 @@ math::float3 Conductor_anisotropic::evaluate(const Sample& sample,
 
 	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 
-//	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, sample.a2_, sample.axy_);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.axy_);
-	math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
+	math::float3 f = fresnel.f(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	return d * g * f;
 }
 
-template<typename Sample>
-float Conductor_anisotropic::importance_sample(const Sample& sample,
-											   sampler::Sampler& sampler, float n_dot_wo,
-											   bxdf::Result& result) {
+template<typename Sample, typename Fresnel>
+float Anisotropic::importance_sample(float n_dot_wo, const Sample& sample, const Fresnel& fresnel,
+									 sampler::Sampler& sampler, bxdf::Result& result) {
 	math::float2 xi = sampler.generate_sample_2D();
 
 	float phi = 2.f * math::Pi * xi.x;
@@ -315,10 +229,9 @@ float Conductor_anisotropic::importance_sample(const Sample& sample,
 	float n_dot_wi = std::max(math::dot(sample.n_, wi),	0.00001f);
 //	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
-//	float d = ggx::d(n_dot_h, std::max(sample.a2_, 0.0000001f));
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, sample.a2_, sample.axy_);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.axy_);
-	math::float3 f = fresnel::conductor(wo_dot_h, sample.ior_, sample.absorption_);
+	math::float3 f = fresnel.f(wo_dot_h);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
