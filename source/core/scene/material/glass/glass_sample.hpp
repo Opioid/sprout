@@ -11,28 +11,23 @@ namespace glass {
 class Sample;
 
 class BRDF {
+
 public:
-
-	static math::float3 evaluate(const Sample& sample, math::pfloat3 wi, float n_dot_wi);
-
-	static float pdf(const Sample& sample, math::pfloat3 wi, float n_dot_wi);
 
 	static float importance_sample(const Sample& sample, sampler::Sampler& sampler,
 								   bxdf::Result& result);
 };
 
 class BTDF {
+
 public:
-
-	static math::float3 evaluate(const Sample& sample, math::pfloat3 wi, float n_dot_wi);
-
-	static float pdf(const Sample& sample, math::pfloat3 wi, float n_dot_wi);
 
 	static float importance_sample(const Sample& sample, sampler::Sampler& sampler,
 								   bxdf::Result& result);
 };
 
 class Sample : public material::Sample {
+
 public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;

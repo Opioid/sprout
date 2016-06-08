@@ -8,14 +8,6 @@
 
 namespace scene { namespace material { namespace glass {
 
-math::float3 BRDF::evaluate(const Sample& /*sample*/, math::pfloat3 /*wi*/, float /*n_dot_wi*/) {
-	return math::float3_identity;
-}
-
-float BRDF::pdf(const Sample& /*sample*/, math::pfloat3 /*wi*/, float /*n_dot_wi*/) {
-	return 0.f;
-}
-
 float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/,
 							  bxdf::Result& result) {
 	math::float3 n = sample.n_;
@@ -52,14 +44,6 @@ float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*
 	result.type.clear_set(bxdf::Type::Specular_reflection);
 
 	return 1.f;
-}
-
-math::float3 BTDF::evaluate(const Sample& /*sample*/, math::pfloat3 /*wi*/, float /*n_dot_wi*/) {
-	return math::float3_identity;
-}
-
-float BTDF::pdf(const Sample& /*sample*/, const math::float3& /*wi*/, float /*n_dot_wi*/) {
-	return 0.f;
 }
 
 float BTDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/,
