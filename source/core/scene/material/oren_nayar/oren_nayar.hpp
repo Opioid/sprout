@@ -10,18 +10,16 @@ namespace bxdf { struct Result; }
 
 namespace oren_nayar {
 
-class Oren_nayar {
+class Isotropic {
 public:
 
 	template<typename Sample>
-	static math::float3 evaluate(const Sample& sample,
-								 math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
-								 float& pdf);
+	static math::float3 evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
+								 const Sample& sample, float& pdf);
 
 	template<typename Sample>
-	static float importance_sample(const Sample& sample,
-								   sampler::Sampler& sampler, float n_dot_wo,
-								   bxdf::Result& result);
+	static float importance_sample(float n_dot_wo, const Sample& sample,
+								   sampler::Sampler& sampler, bxdf::Result& result);
 };
 
 }}}

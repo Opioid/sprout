@@ -13,21 +13,23 @@ class Sample;
 class BRDF {
 public:
 
-	static math::float3 evaluate(const Sample& sample, const math::float3& wi, float n_dot_wi);
+	static math::float3 evaluate(const Sample& sample, math::pfloat3 wi, float n_dot_wi);
 
-	static float pdf(const Sample& sample, const math::float3& wi, float n_dot_wi);
+	static float pdf(const Sample& sample, math::pfloat3 wi, float n_dot_wi);
 
-	static float importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result);
+	static float importance_sample(const Sample& sample, sampler::Sampler& sampler,
+								   bxdf::Result& result);
 };
 
 class BTDF {
 public:
 
-	static math::float3 evaluate(const Sample& sample, const math::float3& wi, float n_dot_wi);
+	static math::float3 evaluate(const Sample& sample, math::pfloat3 wi, float n_dot_wi);
 
-	static float pdf(const Sample& sample, const math::float3& wi, float n_dot_wi);
+	static float pdf(const Sample& sample, math::pfloat3 wi, float n_dot_wi);
 
-	static float importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result);
+	static float importance_sample(const Sample& sample, sampler::Sampler& sampler,
+								   bxdf::Result& result);
 };
 
 class Sample : public material::Sample {
@@ -41,7 +43,8 @@ public:
 
 	virtual float ior() const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const final override;
+	virtual void sample_evaluate(sampler::Sampler& sampler,
+								 bxdf::Result& result) const final override;
 
 	virtual bool is_pure_emissive() const final override;
 
@@ -49,7 +52,7 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& color, float attenuation_distance, float ior, float ior_outside);
+	void set(math::pfloat3 color, float attenuation_distance, float ior, float ior_outside);
 
 private:
 

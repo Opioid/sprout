@@ -410,6 +410,14 @@ inline float Vector3f_a::absolute_max(uint32_t& i) const {
 	return az;
 }
 
+inline Vector3f_a operator+(float s, FVector3f_a v) {
+	return Vector3f_a(s + v.x, s + v.y, s + v.z);
+}
+
+inline Vector3f_a operator-(float s, FVector3f_a v) {
+	return Vector3f_a(s - v.x, s - v.y, s - v.z);
+}
+
 inline Vector3f_a operator*(float s, FVector3f_a v) {
 	return Vector3f_a(s * v.x, s * v.y, s * v.z);
 }
@@ -516,6 +524,10 @@ inline Vector3f_a max(FVector3f_a a, FVector3f_a b) {
 
 inline Vector3f_a abs(FVector3f_a v) {
 	return Vector3f_a(std::abs(v.x), std::abs(v.y), std::abs(v.z));
+}
+
+inline Vector3f_a cos(FVector3f_a v) {
+		return Vector3f_a(std::cos(v.x), std::cos(v.y), std::cos(v.z));
 }
 
 inline bool contains_negative(FVector3f_a v) {

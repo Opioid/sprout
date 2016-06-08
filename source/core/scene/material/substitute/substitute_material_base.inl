@@ -76,6 +76,7 @@ void Material_base<Sample>::set_color(math::pfloat3 color) {
 
 template<typename Sample>
 void Material_base<Sample>::set_ior(float ior, float externeal_ior) {
+	ior_ = ior;
 	constant_f0_ = fresnel::schlick_f0(externeal_ior, ior);
 }
 

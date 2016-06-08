@@ -15,4 +15,64 @@ float dielectric(float n_dot_wi, float n_dot_wo, float eta);
 
 float dielectric_holgerusan(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t);
 
+math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
+					  float internal_ior, float thickness);
+
+class Schlick_scalar {
+
+public:
+
+	Schlick_scalar(float f0);
+
+	math::float3 f(float wo_dot_h) const;
+
+private:
+
+	float f0_;
+};
+
+class Schlick_spectral {
+
+public:
+
+	Schlick_spectral(math::pfloat3 f0);
+
+	math::float3 f(float wo_dot_h) const;
+
+private:
+
+	math::float3 f0_;
+};
+
+class Thinfilm {
+
+public:
+
+	Thinfilm(float external_ior, float thinfilm_ior,
+			 float internal_ior, float thickness);
+
+	math::float3 f(float wo_dot_h) const;
+
+private:
+
+	float external_ior_;
+	float thinfilm_ior_;
+	float internal_ior_;
+	float thickness_;
+};
+
+class Conductor {
+
+public:
+
+	Conductor(math::pfloat3 eta, math::pfloat3 k);
+
+	math::float3 f(float wo_dot_h) const;
+
+private:
+
+	math::float3 eta_;
+	math::float3 k_;
+};
+
 }}}

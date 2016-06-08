@@ -34,7 +34,7 @@ private:
 
 	float a2_;
 
-	friend ggx::Conductor_isotropic;
+	friend ggx::Isotropic;
 };
 
 class Sample_anisotropic : public material::Sample {
@@ -67,7 +67,7 @@ private:
 	math::float2 a2_;
 	float axy_;
 
-	friend ggx::Conductor_anisotropic;
+	friend ggx::Anisotropic;
 };
 
 }}}

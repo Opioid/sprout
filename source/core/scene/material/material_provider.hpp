@@ -90,6 +90,7 @@ private:
 	struct Clearcoat_description {
 		float ior = 1.f;
 		float roughness = 0.f;
+		float thickness = 0.f;
 	};
 
 	static void read_clearcoat_description(const json::Value& clearcoat_value,

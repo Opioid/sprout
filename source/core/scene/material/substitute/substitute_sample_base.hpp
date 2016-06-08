@@ -34,11 +34,13 @@ protected:
 	math::float3 f0_;
 	math::float3 emission_;
 
+	float ior_;
 	float a2_;
 	float metallic_;
 
-	friend oren_nayar::Oren_nayar;
-	friend ggx::Schlick_isotropic;
+	friend oren_nayar::Isotropic;
+//	friend ggx::Schlick_isotropic;
+	friend ggx::Isotropic;
 };
 
 }}}

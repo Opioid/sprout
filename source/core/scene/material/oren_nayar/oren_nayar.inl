@@ -8,9 +8,8 @@
 namespace scene { namespace material { namespace oren_nayar {
 
 template<typename Sample>
-math::float3 Oren_nayar::evaluate(const Sample& sample,
-								  math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
-								  float& pdf) {
+math::float3 Isotropic::evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
+								 const Sample& sample, float& pdf) {
 	float wi_dot_wo = math::dot(wi, sample.wo_);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
@@ -31,9 +30,8 @@ math::float3 Oren_nayar::evaluate(const Sample& sample,
 }
 
 template<typename Sample>
-float Oren_nayar::importance_sample(const Sample& sample,
-									sampler::Sampler& sampler, float n_dot_wo,
-									bxdf::Result& result) {
+float Isotropic::importance_sample(float n_dot_wo, const Sample& sample,
+								   sampler::Sampler& sampler, bxdf::Result& result) {
 	math::float2 s2d = sampler.generate_sample_2D();
 
 	math::float3 is = math::sample_hemisphere_cosine(s2d);

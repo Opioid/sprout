@@ -18,12 +18,13 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_clearcoat(float ior, float roughness);
+	void set_clearcoat(float ior, float roughness, float thickness);
 
 private:
 
 	float clearcoat_ior_;
 	float clearcoat_a2_;
+	float clearcoat_thickness_;
 };
 
 }}}

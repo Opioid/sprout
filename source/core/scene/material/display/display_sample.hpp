@@ -32,7 +32,8 @@ private:
 	math::float3 f0_;
 	float a2_;
 
-	friend ggx::Schlick_isotropic;
+//	friend ggx::Schlick_isotropic;
+	friend ggx::Isotropic;
 };
 
 }}}

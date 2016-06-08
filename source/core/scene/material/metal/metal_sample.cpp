@@ -11,7 +11,8 @@ math::float3 Sample_isotropic::evaluate(math::pfloat3 wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
-	return n_dot_wi * ggx::Conductor_isotropic::evaluate(*this, wi, n_dot_wi, n_dot_wo, pdf);
+	fresnel::Conductor conductor(ior_, absorption_);
+	return n_dot_wi * ggx::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this, conductor, pdf);
 }
 
 math::float3 Sample_isotropic::radiance() const {
@@ -28,7 +29,8 @@ float Sample_isotropic::ior() const {
 
 void Sample_isotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
-	float n_dot_wi = ggx::Conductor_isotropic::importance_sample(*this, sampler, n_dot_wo, result);
+	fresnel::Conductor conductor(ior_, absorption_);
+	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, conductor, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -55,8 +57,8 @@ void Sample_isotropic::set(math::pfloat3 ior, math::pfloat3 absorption, float ro
 math::float3 Sample_anisotropic::evaluate(math::pfloat3 wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
-
-	return n_dot_wi * ggx::Conductor_anisotropic::evaluate(*this, wi, n_dot_wi, n_dot_wo, pdf);
+	fresnel::Conductor conductor(ior_, absorption_);
+	return n_dot_wi * ggx::Anisotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this, conductor, pdf);
 }
 
 math::float3 Sample_anisotropic::radiance() const {
@@ -73,8 +75,9 @@ float Sample_anisotropic::ior() const {
 
 void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
-	float n_dot_wi = ggx::Conductor_anisotropic::importance_sample(*this, sampler,
-																   n_dot_wo, result);
+	fresnel::Conductor conductor(ior_, absorption_);
+	float n_dot_wi = ggx::Anisotropic::importance_sample(n_dot_wo, *this, conductor,
+														 sampler, result);
 	result.reflection *= n_dot_wi;
 }
 

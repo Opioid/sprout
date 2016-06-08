@@ -13,8 +13,8 @@ public:
 								 bxdf::Result& result) const final override;
 
 	void set(math::pfloat3 color, math::pfloat3 radiance,
-			 float constant_f0, float a2, float metallic,
-			 float clearcoat_ior, float clearcoat_a2);
+			 float ior, float constant_f0, float a2, float metallic,
+			 float clearcoat_ior, float clearcoat_a2, float clearcoat_thickness);
 
 private:
 
@@ -30,6 +30,7 @@ private:
 	float clearcoat_ior_;
 	float clearcoat_f0_;
 	float clearcoat_a2_;
+	float clearcoat_thickness_;
 };
 
 }}}

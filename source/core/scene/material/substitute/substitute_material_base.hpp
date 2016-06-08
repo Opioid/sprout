@@ -43,6 +43,7 @@ protected:
 	std::shared_ptr<image::texture::Texture_2D> emission_map_;
 
 	math::float3 color_;
+	float ior_;
 	float constant_f0_;
 	float a2_;
 	float metallic_;

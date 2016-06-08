@@ -53,8 +53,8 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 	}
 
 	float n_dot_wo = clamped_n_dot_wo();
-
-	float n_dot_wi = ggx::Schlick_isotropic::importance_sample(*this, sampler, n_dot_wo, result);
+	fresnel::Schlick_spectral schlick(f0_);
+	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, schlick, sampler, result);
 
 	result.reflection = n_dot_wi * result.reflection;
 }
