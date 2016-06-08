@@ -72,7 +72,7 @@ void Sample_base::diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Res
 	float n_dot_wo = clamped_n_dot_wo();
 	float n_dot_wi = oren_nayar::Isotropic::importance_sample(n_dot_wo, *this, sampler, result);
 
-	fresnel::Schlick_spectral schlick(f0_);
+	fresnel::Schlick schlick(f0_);
 	float ggx_pdf;
 	math::float3 ggx_reflection = ggx::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
 														   *this, schlick, ggx_pdf);
@@ -84,7 +84,7 @@ void Sample_base::diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Res
 void Sample_base::specular_importance_sample(sampler::Sampler& sampler,
 											 bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
-	fresnel::Schlick_spectral schlick(f0_);
+	fresnel::Schlick schlick(f0_);
 	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, schlick, sampler, result);
 
 	float oren_nayar_pdf;
@@ -98,7 +98,7 @@ void Sample_base::specular_importance_sample(sampler::Sampler& sampler,
 void Sample_base::pure_specular_importance_sample(sampler::Sampler& sampler,
 												  bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot_wo();
-	fresnel::Schlick_spectral schlick(f0_);
+	fresnel::Schlick schlick(f0_);
 	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, schlick, sampler, result);
 	result.reflection *= n_dot_wi;
 }

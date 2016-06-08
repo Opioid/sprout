@@ -127,7 +127,7 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 		math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, clearcoat_a2_,
 													   thinfilm, cl_fresnel, cl_pdf);
 
-		fresnel::Schlick_spectral schlick(f0_);
+		fresnel::Schlick schlick(f0_);
 		float ggx_pdf;
 		math::float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
 
@@ -178,7 +178,7 @@ void Sample_clearcoat::diffuse_importance_sample_and_clearcoat(sampler::Sampler&
 	ggx::Isotropic specular;
 	specular.init_evaluate(result.wi, *this);
 
-	fresnel::Schlick_spectral schlick(f0_);
+	fresnel::Schlick schlick(f0_);
 	float ggx_pdf;
 	math::float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
 
@@ -210,7 +210,7 @@ void Sample_clearcoat::specular_importance_sample_and_clearcoat(sampler::Sampler
 	math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, clearcoat_a2_,
 												   thinfilm, cl_fresnel, cl_pdf);
 
-	fresnel::Schlick_spectral schlick(f0_);
+	fresnel::Schlick schlick(f0_);
 	float ggx_pdf;
 	math::float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
 
@@ -240,7 +240,7 @@ void Sample_clearcoat::pure_specular_importance_sample_and_clearcoat(sampler::Sa
 	math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, clearcoat_a2_,
 												   thinfilm, cl_fresnel, cl_pdf);
 
-	fresnel::Schlick_spectral schlick(f0_);
+	fresnel::Schlick schlick(f0_);
 	float ggx_pdf;
 	math::float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
 

@@ -5,10 +5,6 @@
 
 namespace scene { namespace material { namespace fresnel {
 
-inline float schlick(float wo_dot_h, float f0) {
-	return f0 + std::pow(1.f - wo_dot_h, 5.f) * (1.f - f0);
-}
-
 inline math::float3 schlick(float wo_dot_h, math::pfloat3 f0) {
 	return f0 + std::pow(1.f - wo_dot_h, 5.f) * (1.f - f0);
 
@@ -128,15 +124,9 @@ inline math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_
 	return math::float3(1.f) - beam_ratio * 0.5f * (ts + tp);
 }
 
-inline Schlick_scalar::Schlick_scalar(float f0) : f0_(f0) {}
+inline Schlick::Schlick(math::pfloat3 f0) : f0_(f0) {}
 
-inline math::float3 Schlick_scalar::f(float wo_dot_h) const {
-	return math::float3(schlick(wo_dot_h, f0_));
-}
-
-inline Schlick_spectral::Schlick_spectral(math::pfloat3 f0) : f0_(f0) {}
-
-inline math::float3 Schlick_spectral::f(float wo_dot_h) const {
+inline math::float3 Schlick::f(float wo_dot_h) const {
 	return schlick(wo_dot_h, f0_);
 }
 

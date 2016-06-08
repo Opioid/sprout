@@ -4,7 +4,6 @@
 
 namespace scene { namespace material { namespace fresnel {
 
-float		 schlick(float wo_dot_h, float f0);
 math::float3 schlick(float wo_dot_h, math::pfloat3 f0);
 
 float schlick_f0(float n0, float n1);
@@ -18,24 +17,11 @@ float dielectric_holgerusan(float cos_theta_i, float cos_theta_t, float eta_i, f
 math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
 					  float internal_ior, float thickness);
 
-class Schlick_scalar {
+class Schlick {
 
 public:
 
-	Schlick_scalar(float f0);
-
-	math::float3 f(float wo_dot_h) const;
-
-private:
-
-	float f0_;
-};
-
-class Schlick_spectral {
-
-public:
-
-	Schlick_spectral(math::pfloat3 f0);
+	Schlick(math::pfloat3 f0);
 
 	math::float3 f(float wo_dot_h) const;
 
