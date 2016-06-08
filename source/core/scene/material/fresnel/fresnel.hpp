@@ -23,7 +23,7 @@ public:
 
 	Schlick(math::pfloat3 f0);
 
-	math::float3 f(float wo_dot_h) const;
+	math::float3 operator()(float wo_dot_h) const;
 
 private:
 
@@ -37,7 +37,7 @@ public:
 	Thinfilm(float external_ior, float thinfilm_ior,
 			 float internal_ior, float thickness);
 
-	math::float3 f(float wo_dot_h) const;
+	math::float3 operator()(float wo_dot_h) const;
 
 private:
 
@@ -53,7 +53,7 @@ public:
 
 	Conductor(math::pfloat3 eta, math::pfloat3 k);
 
-	math::float3 f(float wo_dot_h) const;
+	math::float3 operator()(float wo_dot_h) const;
 
 private:
 

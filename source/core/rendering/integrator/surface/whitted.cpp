@@ -105,7 +105,7 @@ math::float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ra
 					float bxdf_pdf;
 					math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-					result += mv * tr * light_sample.energy * f / light_sample.shape.pdf;
+					result += mv * tr * light_sample.radiance * f / light_sample.shape.pdf;
 				}
 			}
 		}

@@ -5,6 +5,7 @@
 namespace rendering { namespace sensor { namespace filter {
 
 class Filter {
+
 public:
 
 	virtual ~Filter() {}

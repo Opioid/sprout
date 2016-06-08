@@ -174,7 +174,7 @@ math::float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::R
 				float bxdf_pdf;
 				math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-				result += mv * t * light_sample.energy * f / (light_pdf * light_sample.shape.pdf);
+				result += mv * t * light_sample.radiance * f / (light_pdf * light_sample.shape.pdf);
 			}
 		}
 	}

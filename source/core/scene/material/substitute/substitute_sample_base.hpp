@@ -39,7 +39,6 @@ protected:
 	float metallic_;
 
 	friend oren_nayar::Isotropic;
-//	friend ggx::Schlick_isotropic;
 	friend ggx::Isotropic;
 };
 

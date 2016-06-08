@@ -121,12 +121,12 @@ inline math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_
 	float beam_ratio = (internal_ior * cos2) / (external_ior * wo_dot_h);
 
 	// Calculate the average reflectance.
-	return math::float3(1.f) - beam_ratio * 0.5f * (ts + tp);
+	return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
 inline Schlick::Schlick(math::pfloat3 f0) : f0_(f0) {}
 
-inline math::float3 Schlick::f(float wo_dot_h) const {
+inline math::float3 Schlick::operator()(float wo_dot_h) const {
 	return schlick(wo_dot_h, f0_);
 }
 
@@ -135,13 +135,13 @@ inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior,
 	external_ior_(external_ior), thinfilm_ior_(thinfilm_ior),
 	internal_ior_(internal_ior), thickness_(thickness) {}
 
-inline math::float3 Thinfilm::f(float wo_dot_h) const {
+inline math::float3 Thinfilm::operator()(float wo_dot_h) const {
 	return thinfilm(wo_dot_h, external_ior_, thinfilm_ior_, internal_ior_, thickness_);
 }
 
 inline Conductor::Conductor(math::pfloat3 eta, math::pfloat3 k) : eta_(eta), k_(k) {}
 
-inline math::float3 Conductor::f(float wo_dot_h) const {
+inline math::float3 Conductor::operator()(float wo_dot_h) const {
 	return conductor(wo_dot_h, eta_, k_);
 }
 

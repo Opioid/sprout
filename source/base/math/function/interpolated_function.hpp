@@ -6,6 +6,7 @@ namespace math {
 
 template<typename T>
 class Interpolated_function {
+
 public:
 
 	template<typename F>

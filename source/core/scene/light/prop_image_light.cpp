@@ -28,8 +28,8 @@ void Prop_image_light::sample(const Entity_transformation& transformation, float
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
 		result.shape.pdf *= pdf;
-		result.energy = material->sample_radiance(result.shape.wi, result.shape.uv,
-												  area, time, worker, filter);
+		result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv,
+													area, time, worker, filter);
 	} else {
 		result.shape.pdf = 0.f;
 	}

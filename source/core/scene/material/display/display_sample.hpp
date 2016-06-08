@@ -6,6 +6,7 @@
 namespace scene { namespace material { namespace display {
 
 class Sample : public material::Sample {
+
 public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
@@ -32,7 +33,6 @@ private:
 	math::float3 f0_;
 	float a2_;
 
-//	friend ggx::Schlick_isotropic;
 	friend ggx::Isotropic;
 };
 

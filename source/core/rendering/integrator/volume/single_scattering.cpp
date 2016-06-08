@@ -12,8 +12,6 @@
 #include "base/math/random/generator.inl"
 #include "base/math/sampling/sampling.inl"
 
-//#include <iostream>
-
 namespace rendering { namespace integrator { namespace volume {
 
 Single_scattering::Single_scattering(const take::Settings& take_settings,
@@ -35,8 +33,8 @@ math::float3 Single_scattering::transmittance(Worker& worker, const scene::volum
 	return math::exp(-tau);
 }
 
-math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray,
-								   math::float3& transmittance) {
+math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume,
+								   const scene::Ray& ray, math::float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
@@ -87,22 +85,24 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 
 		// Direct light scattering
 		float light_pdf;
-		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
+		const auto light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
 		if (!light) {
 			continue;
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(ray.time, current, sampler_, worker, scene::material::Sampler_settings::Filter::Nearest, light_sample);
+		light->sample(ray.time, current, sampler_, worker, Sampler_filter::Nearest, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
-			scene::Ray shadow_ray(current, light_sample.shape.wi, 0.f, light_sample.shape.t, ray.time);
+			scene::Ray shadow_ray(current, light_sample.shape.wi, 0.f,
+								  light_sample.shape.t, ray.time);
 
-			float mv = worker.masked_visibility(shadow_ray, scene::material::Sampler_settings::Filter::Nearest);
+			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
 			if (mv > 0.f) {
 				float p = volume->phase(w, -light_sample.shape.wi);
 
-				math::float3 l = Single_scattering::transmittance(worker, volume, shadow_ray) * light_sample.energy;
+				math::float3 l = Single_scattering::transmittance(worker, volume, shadow_ray)
+							   * light_sample.radiance;
 
 				radiance += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
@@ -132,7 +132,8 @@ math::float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* 
 	return math::float4(color, spectrum::luminance(color));
 }
 
-Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings, float step_size) :
+Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
+													 float step_size) :
 	Integrator_factory(take_settings) {
 	settings_.step_size = step_size;
 }

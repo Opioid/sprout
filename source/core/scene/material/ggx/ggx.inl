@@ -76,7 +76,7 @@ math::float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2, const
 	float clamped_a2 = clamp_a2(a2);
 	float d = distribution_isotropic(n_dot_h_, clamped_a2);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel.f(wo_dot_h_);
+	math::float3 f = fresnel(wo_dot_h_);
 
 	fresnel_result = f;
 	pdf = d * n_dot_h_ / (4.f * wo_dot_h_);
@@ -95,7 +95,7 @@ math::float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2,
 	float clamped_a2 = clamp_a2(a2);
 	float d = distribution_isotropic(n_dot_h_, clamped_a2);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel.f(wo_dot_h_);
+	math::float3 f = fresnel(wo_dot_h_);
 
 	pdf = d * n_dot_h_ / (4.f * wo_dot_h_);
 	return d * g * f;
@@ -118,7 +118,7 @@ math::float3 Isotropic::evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_w
 	float clamped_a2 = clamp_a2(sample.a2_);
 	float d = distribution_isotropic(n_dot_h, clamped_a2);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel.f(wo_dot_h);
+	math::float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	return d * g * f;
@@ -136,7 +136,7 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const F
 
 		float d = distribution_isotropic(n_dot_h, Min_a2);
 		float g = geometric_shadowing(n_dot_wo, n_dot_wo, Min_a2);
-		math::float3 f = fresnel.f(wo_dot_h);
+		math::float3 f = fresnel(wo_dot_h);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 		result.reflection = d * g * f;
@@ -169,7 +169,7 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const F
 		float d = distribution_isotropic(n_dot_h, clamped_a2);
 	//	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
 		float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-		math::float3 f = fresnel.f(wo_dot_h);
+		math::float3 f = fresnel(wo_dot_h);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 		result.reflection = d * g * f;
@@ -197,7 +197,7 @@ math::float3 Anisotropic::evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, sample.a2_, sample.axy_);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.axy_);
-	math::float3 f = fresnel.f(wo_dot_h);
+	math::float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	return d * g * f;
@@ -231,7 +231,7 @@ float Anisotropic::importance_sample(float n_dot_wo, const Sample& sample, const
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, sample.a2_, sample.axy_);
 	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.axy_);
-	math::float3 f = fresnel.f(wo_dot_h);
+	math::float3 f = fresnel(wo_dot_h);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
