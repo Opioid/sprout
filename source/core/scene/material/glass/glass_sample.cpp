@@ -30,13 +30,10 @@ float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*
 	if (sint2 > 1.f) {
 		f = 1.f;
 	} else {
-		float n_dot_t = -std::sqrt(1.f - sint2);
+		float n_dot_t = std::sqrt(1.f - sint2);
 
 		// fresnel has to be the same value that would have been computed by BRDF
-
-	//	f = fresnel_dielectric(n_dot_t, n_dot_wo, eta);
-
-		f = fresnel::dielectric_holgerusan(n_dot_wo, n_dot_t, eta_i, eta_t);
+		f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 	}
 
 	result.reflection = math::float3(f);
@@ -67,13 +64,11 @@ float BTDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*
 		return 0.f;
 	}
 
-	float n_dot_t = -std::sqrt(1.f - sint2);
-	result.wi = math::normalized((eta_i * n_dot_wo + n_dot_t) * n - eta_i * sample.wo_);
+	float n_dot_t = std::sqrt(1.f - sint2);
+	result.wi = math::normalized((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
 
 	// fresnel has to be the same value that would have been computed by BRDF
-//	float f = fresnel_dielectric(n_dot_t, n_dot_wo, eta);
-
-	float f = fresnel::dielectric_holgerusan(n_dot_wo, n_dot_t, eta_i, eta_t);
+	float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
 	result.reflection = (1.f - f) * sample.color_;
 	result.pdf = 1.f;

@@ -33,23 +33,12 @@ inline math::float3 conductor(float wo_dot_h, math::pfloat3 eta, math::pfloat3 k
 	return 0.5f * (r_p + r_o);
 }
 
-// Adapted from https://seblagarde.wordpress.com/2013/04/29/memo-on-fresnel-equations/#more-1921
-inline float dielectric(float n_dot_wi, float n_dot_wo, float eta) {
-	float t1 = eta * n_dot_wo;
-	float t2 = eta * n_dot_wi;
+inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
+	float r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t)
+			  / (eta_t * cos_theta_i + eta_i * cos_theta_t);
 
-	float rs = (n_dot_wi + t1) / (n_dot_wi - t1);
-	float rp = (n_dot_wo + t2) / (n_dot_wo - t2);
-
-	return 0.5f * (rs * rs + rp * rp);
-}
-
-inline float dielectric_holgerusan(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
-	float r_p = (eta_t * cos_theta_i + eta_i * cos_theta_t)
-			  / (eta_t * cos_theta_i - eta_i * cos_theta_t);
-
-	float r_o = (eta_i * cos_theta_i + eta_t * cos_theta_t)
-			  / (eta_i * cos_theta_i - eta_t * cos_theta_t);
+	float r_o = (eta_i * cos_theta_i - eta_t * cos_theta_t)
+			  / (eta_i * cos_theta_i + eta_t * cos_theta_t);
 
 	return 0.5f * (r_p * r_p + r_o * r_o);
 }

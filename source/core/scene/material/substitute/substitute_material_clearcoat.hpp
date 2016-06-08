@@ -7,6 +7,7 @@ namespace scene { namespace material { namespace substitute {
 class Sample_clearcoat;
 
 class Material_clearcoat : public Material_base<Sample_clearcoat> {
+
 public:
 
 	Material_clearcoat(Generic_sample_cache<Sample_clearcoat>& cache,
