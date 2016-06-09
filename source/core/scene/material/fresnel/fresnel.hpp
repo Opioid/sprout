@@ -19,6 +19,7 @@ class Schlick {
 
 public:
 
+	Schlick(float f0);
 	Schlick(math::pfloat3 f0);
 
 	math::float3 operator()(float wo_dot_h) const;

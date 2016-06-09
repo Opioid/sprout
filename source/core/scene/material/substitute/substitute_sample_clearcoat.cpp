@@ -77,36 +77,35 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 	}
 
 
-/*
+
 	float n_dot_wo = clamped_n_dot_wo();
 
 	ggx::Isotropic specular;
-	float n_dot_wi = specular.init_importance_sample(*this, clearcoat_a2_, sampler,
-													 n_dot_wo, result);
+	float n_dot_wi = specular.init_importance_sample(n_dot_wo, clearcoat_a2_, *this, sampler,
+													 result);
 
 	float externalIOR = 1.f;
 	float thinfilmIOR = 1.8f;
-	float internalIOR = 1.47f;
-	float thickness = 1600.f;
+	float internalIOR = 3.f;
+	float thickness = 160.f;
 
 	fresnel::Thinfilm thinfilm(externalIOR, thinfilmIOR, internalIOR, thickness);
+
+//	fresnel::Schlick thinfilm(clearcoat_f0_);
+//	result.reflection = thinfilm(n_dot_wi);
+//	result.pdf = 1.f;
+
 	math::float3 cl_fresnel;
 	float cl_pdf;
-	math::float3 cl_reflection = specular.evaluate(thinfilm, clearcoat_a2_, n_dot_wi,
-												   n_dot_wo, cl_fresnel, cl_pdf);
-
-
-//	float cl_fresnel;
-//	float cl_pdf;
-//	float cl_reflection = specular.evaluate(clearcoat_f0_, clearcoat_a2_, n_dot_wi,
-//											n_dot_wo, cl_fresnel, cl_pdf);
+	math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, clearcoat_a2_,
+												   thinfilm, cl_fresnel, cl_pdf);
 
 	result.reflection = n_dot_wi * cl_reflection;
 	result.pdf = cl_pdf;
-*/
 
 
 
+/*
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
@@ -145,7 +144,7 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 			}
 		}
 	}
-
+*/
 }
 
 void Sample_clearcoat::set(math::pfloat3 color, math::pfloat3 radiance,
@@ -177,7 +176,7 @@ void Sample_clearcoat::diffuse_importance_sample_and_clearcoat(sampler::Sampler&
 	float ggx_pdf;
 	math::float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
 
-	fresnel::Schlick thinfilm((math::float3(clearcoat_f0_)));
+	fresnel::Schlick thinfilm(clearcoat_f0_);
 //	fresnel::Thinfilm thinfilm(1.f, clearcoat_ior_, ior_, clearcoat_thickness_);
 	math::float3 cl_fresnel;
 	float cl_pdf;
@@ -200,7 +199,7 @@ void Sample_clearcoat::specular_importance_sample_and_clearcoat(sampler::Sampler
 	ggx::Isotropic specular;
 	float n_dot_wi = specular.init_importance_sample(n_dot_wo, a2_, *this, sampler, result);
 
-	fresnel::Schlick thinfilm((math::float3(clearcoat_f0_)));
+	fresnel::Schlick thinfilm(clearcoat_f0_);
 //	fresnel::Thinfilm thinfilm(1.f, clearcoat_ior_, ior_, clearcoat_thickness_);
 	math::float3 cl_fresnel;
 	float cl_pdf;

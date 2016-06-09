@@ -113,6 +113,8 @@ inline math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_
 	return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
+inline Schlick::Schlick(float f0) : f0_(f0) {}
+
 inline Schlick::Schlick(math::pfloat3 f0) : f0_(f0) {}
 
 inline math::float3 Schlick::operator()(float wo_dot_h) const {
