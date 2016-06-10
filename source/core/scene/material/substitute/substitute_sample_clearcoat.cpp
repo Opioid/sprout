@@ -84,12 +84,12 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 	float n_dot_wi = specular.init_importance_sample(n_dot_wo, clearcoat_a2_, *this, sampler,
 													 result);
 
-	float externalIOR = 1.f;
-	float thinfilmIOR = 1.8f;
-	float internalIOR = 3.f;
+	float external_ior = 1.f;
+	float thinfilm_ior = 1.8f;
+	float internal_ior = 1.47f;
 	float thickness = 160.f;
 
-	fresnel::Thinfilm thinfilm(externalIOR, thinfilmIOR, internalIOR, thickness);
+	fresnel::Thinfilm thinfilm(external_ior, thinfilm_ior, internal_ior, thickness);
 
 //	fresnel::Schlick thinfilm(clearcoat_f0_);
 //	result.reflection = thinfilm(n_dot_wi);
