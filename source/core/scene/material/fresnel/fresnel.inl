@@ -88,7 +88,7 @@ inline math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_
 
 	// Calculate the interference phase change.
 	math::float3 phi = math::float3(2.f * thinfilm_ior * thickness * cos1);
-	phi *= 2.f * math::Pi / math::float3(650, 510, 475);
+	phi *= 2.f * math::Pi / math::float3(650.f, 510.f, 475.f);
 	phi += math::float3(delta);
 
 	// Obtain the various Fresnel amplitude coefficients.
