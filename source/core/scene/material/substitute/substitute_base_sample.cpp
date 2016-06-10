@@ -1,4 +1,4 @@
-#include "substitute_sample_base.hpp"
+#include "substitute_base_sample.hpp"
 #include "rendering/integrator/surface/integrator_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/fresnel/fresnel.inl"

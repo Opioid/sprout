@@ -1,6 +1,6 @@
-#include "substitute_material_translucent.hpp"
-#include "substitute_sample_translucent.hpp"
-#include "substitute_material_base.inl"
+#include "substitute_translucent_material.hpp"
+#include "substitute_translucent_sample.hpp"
+#include "substitute_base_material.inl"
 
 namespace scene { namespace material { namespace substitute {
 

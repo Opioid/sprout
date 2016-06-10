@@ -1,6 +1,6 @@
 #include "substitute_material.hpp"
 #include "substitute_sample.hpp"
-#include "substitute_material_base.inl"
+#include "substitute_base_material.inl"
 
 namespace scene { namespace material { namespace substitute {
 

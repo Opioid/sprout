@@ -1,6 +1,6 @@
 #pragma once
 
-#include "substitute_sample_base.hpp"
+#include "substitute_base_sample.hpp"
 #include "scene/material/lambert/lambert.hpp"
 
 namespace scene { namespace material { namespace substitute {

@@ -1,6 +1,6 @@
-#include "substitute_material_clearcoat.hpp"
-#include "substitute_sample_clearcoat.hpp"
-#include "substitute_material_base.inl"
+#include "substitute_clearcoat_material.hpp"
+#include "substitute_clearcoat_sample.hpp"
+#include "substitute_base_material.inl"
 
 namespace scene { namespace material { namespace substitute {
 

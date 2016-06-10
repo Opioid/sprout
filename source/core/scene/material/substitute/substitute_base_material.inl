@@ -1,6 +1,6 @@
 #pragma once
 
-#include "substitute_material_base.hpp"
+#include "substitute_base_material.hpp"
 #include "substitute_sample.hpp"
 #include "image/texture/texture_2d.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"

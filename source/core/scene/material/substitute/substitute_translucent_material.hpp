@@ -1,12 +1,13 @@
 #pragma once
 
-#include "substitute_material_base.hpp"
+#include "substitute_base_material.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
 class Sample_translucent;
 
 class Material_translucent : public Material_base<Sample_translucent> {
+
 public:
 
 	Material_translucent(Generic_sample_cache<Sample_translucent>& cache,

@@ -1,4 +1,4 @@
-#include "substitute_sample_clearcoat.hpp"
+#include "substitute_clearcoat_sample.hpp"
 #include "rendering/integrator/surface/integrator_helper.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
