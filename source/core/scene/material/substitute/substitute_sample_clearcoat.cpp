@@ -84,24 +84,53 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 	float n_dot_wi = specular.init_importance_sample(n_dot_wo, clearcoat_a2_, *this, sampler,
 													 result);
 
-	float external_ior = 1.f;
-	float thinfilm_ior = 1.8f;
-	float internal_ior = 1.47f;
-	float thickness = 160.f;
+	float ior = 1.5f;
 
-	fresnel::Thinfilm thinfilm(external_ior, thinfilm_ior, internal_ior, thickness);
+	// schlick
 
-//	fresnel::Schlick thinfilm(clearcoat_f0_);
-//	result.reflection = thinfilm(n_dot_wi);
+	float f0 = fresnel::schlick_f0(1.f, ior);
+	fresnel::Schlick schlick(f0);
+//	result.reflection = /*n_dot_wi **/ schlick(n_dot_wi);
 //	result.pdf = 1.f;
 
-	math::float3 cl_fresnel;
-	float cl_pdf;
-	math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, clearcoat_a2_,
-												   thinfilm, cl_fresnel, cl_pdf);
+	n_dot_wo = 0.0f;
 
-	result.reflection = n_dot_wi * cl_reflection;
-	result.pdf = cl_pdf;
+	float schnuck = schlick(n_dot_wo).x;
+
+	// dielectric
+
+	float eta_i = 1.f / ior;
+	float eta_t = ior;
+
+	float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
+
+	float f;
+	if (sint2 > 1.f) {
+		f = 1.f;
+	} else {
+		float n_dot_t = std::sqrt(1.f - sint2);
+
+		f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
+	}
+
+	result.reflection = math::float3(f);
+	result.pdf = 1.f;
+
+	// thinfilm
+
+//	float external_ior = 1.;
+//	float thinfilm_ior = 1.8f;
+//	float internal_ior = 1.47f;
+//	float thickness = 400.f;
+
+//	fresnel::Thinfilm thinfilm(external_ior, thinfilm_ior, internal_ior, thickness);
+//	math::float3 cl_fresnel;
+//	float cl_pdf;
+//	math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, clearcoat_a2_,
+//												   thinfilm, cl_fresnel, cl_pdf);
+
+//	result.reflection = n_dot_wi * cl_reflection;
+//	result.pdf = cl_pdf;
 
 
 
