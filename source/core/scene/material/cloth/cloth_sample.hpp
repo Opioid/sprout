@@ -6,6 +6,7 @@
 namespace scene { namespace material { namespace cloth {
 
 class Sample : public material::Sample {
+
 public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
@@ -24,13 +25,13 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& color);
+	void set(math::pfloat3 color);
 
 private:
 
 	math::float3 diffuse_color_;
 
-	friend lambert::Lambert;
+	friend lambert::Isotropic;
 };
 
 }}}

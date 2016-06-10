@@ -10,17 +10,19 @@ namespace bxdf { struct Result; }
 
 namespace lambert {
 
-class Lambert {
+class Isotropic {
+
 public:
 
 	template<typename Sample>
-	static math::float3 evaluate(const Sample& sample, const math::float3& wi, float n_dot_wi);
+	static math::float3 evaluate(math::pfloat3 wi, float n_dot_wi, const Sample& sample);
 
 	template<typename Sample>
-	static float pdf(const Sample& sample, const math::float3& wi, float n_dot_wi);
+	static float pdf(math::pfloat3 wi, float n_dot_wi, const Sample& sample);
 
 	template<typename Sample>
-	static float importance_sample(const Sample& sample, sampler::Sampler& sampler, bxdf::Result& result);
+	static float importance_sample(const Sample& sample, sampler::Sampler& sampler,
+								   bxdf::Result& result);
 };
 
 

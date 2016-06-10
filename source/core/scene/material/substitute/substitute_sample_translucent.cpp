@@ -20,8 +20,9 @@ math::float3 Sample_translucent::evaluate(math::pfloat3 wi, float& pdf) const {
 	// If the material does not have transmission, we will never get a wi which is in the wrong hemisphere,
 	// because that case is handled before coming here,
 	// so the check is only neccessary for transmissive materials (codified by thickness > 0).
-	// On the other hand, if the there is transmission and wi is actullay coming from "behind", then we don't need
-	// to calculate the reflection. In the other case, transmission won't be visible and we only need reflection.
+	// On the other hand, if the there is transmission and wi is actullay coming from "behind",
+	// then we don't need to calculate the reflection.
+	// In the other case, transmission won't be visible and we only need reflection.
 	if (thickness_ > 0.f && !same_hemisphere(wi)) {
 		float n_dot_wi = std::max(-math::dot(n_, wi),  0.00001f);
 		float approximated_distance = thickness_ / n_dot_wi;
@@ -49,7 +50,7 @@ void Sample_translucent::sample_evaluate(sampler::Sampler& sampler, bxdf::Result
 		float p = sampler.generate_sample_1D();
 
 		if (p < 0.5f) {
-			float n_dot_wi = lambert::Lambert::importance_sample(*this, sampler, result);
+			float n_dot_wi = lambert::Isotropic::importance_sample(*this, sampler, result);
 			result.wi *= -1.f;
 			result.pdf *= 0.5f;
 			float approximated_distance = thickness_ / n_dot_wi;
@@ -87,7 +88,7 @@ bool Sample_translucent::is_translucent() const {
 	return thickness_ > 0.f;
 }
 
-void Sample_translucent::set(const math::float3& color, const math::float3& radiance,
+void Sample_translucent::set(math::pfloat3 color, math::pfloat3 radiance,
 							 float constant_f0, float a2, float metallic,
 							 float thickness, float attenuation_distance) {
 	diffuse_color_ = (1.f - metallic) * color;

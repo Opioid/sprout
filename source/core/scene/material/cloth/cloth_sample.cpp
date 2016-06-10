@@ -33,7 +33,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		return;
 	}
 
-	float n_dot_wi = lambert::Lambert::importance_sample(*this, sampler, result);
+	float n_dot_wi = lambert::Isotropic::importance_sample(*this, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -49,7 +49,7 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(const math::float3& color) {
+void Sample::set(math::pfloat3 color) {
 	diffuse_color_ = color;
 }
 
