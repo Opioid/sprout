@@ -24,6 +24,8 @@
 #include "substitute/substitute_clearcoat_material.hpp"
 #include "substitute/substitute_material.hpp"
 #include "substitute/substitute_sample.hpp"
+#include "substitute/substitute_thinfilm_sample.hpp"
+#include "substitute/substitute_thinfilm_material.hpp"
 #include "substitute/substitute_translucent_sample.hpp"
 #include "substitute/substitute_translucent_material.hpp"
 #include "base/json/json.hpp"
@@ -46,6 +48,7 @@ Provider::Provider(uint32_t num_threads) :
 	metal_aniso_cache_(num_threads),
 	substitute_cache_(num_threads),
 	substitute_clearcoat_cache_(num_threads),
+	substitute_thinfilm_cache_(num_threads),
 	substitute_translucent_cache_(num_threads) {
 	auto material = std::make_shared<substitute::Material>(
 				substitute_cache_, nullptr,
@@ -661,8 +664,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 		return material;
 	}
 
-	auto material = std::make_shared<substitute::Material>(
-				substitute_cache_, mask, sampler_settings, two_sided);
+	auto material = std::make_shared<substitute::Material_thinfilm>(
+				substitute_thinfilm_cache_, mask, sampler_settings, two_sided);
 
 	material->set_color_map(color_map);
 	material->set_normal_map(normal_map);

@@ -29,6 +29,7 @@ namespace substitute {
 
 class Sample;
 class Sample_clearcoat;
+class Sample_thinfilm;
 class Sample_translucent;
 
 }
@@ -107,6 +108,7 @@ private:
 	Generic_sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
 	Generic_sample_cache<substitute::Sample>				substitute_cache_;
 	Generic_sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
+	Generic_sample_cache<substitute::Sample_thinfilm>		substitute_thinfilm_cache_;
 	Generic_sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;
 
 	std::shared_ptr<material::Material> fallback_material_;
