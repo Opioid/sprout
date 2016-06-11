@@ -567,6 +567,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	float thickness = 0.f;
 	float attenuation_distance = 0.f;
 	Clearcoat_description clearcoat;
+	Clearcoat_description thinfilm;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -590,6 +591,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 			two_sided = json::read_bool(node_value);
 		} else if ("clearcoat" == node_name) {
 			read_clearcoat_description(node_value, clearcoat);
+		} else if ("thinfilm" == node_name) {
+			read_clearcoat_description(node_value, thinfilm);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				Texture_description texture_description;
@@ -662,10 +665,27 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 		material->set_clearcoat(clearcoat.ior, clearcoat.roughness, clearcoat.thickness);
 
 		return material;
+	} else if (thinfilm.ior > 1.f && thinfilm.thickness > 0.f) {
+		auto material = std::make_shared<substitute::Material_thinfilm>(
+					substitute_thinfilm_cache_, mask, sampler_settings, two_sided);
+
+		material->set_color_map(color_map);
+		material->set_normal_map(normal_map);
+		material->set_surface_map(surface_map);
+		material->set_emission_map(emission_map);
+
+		material->set_color(color);
+		material->set_ior(ior);
+		material->set_roughness(roughness);
+		material->set_metallic(metallic);
+		material->set_emission_factor(emission_factor);
+		material->set_thinfilm(thinfilm.ior, thinfilm.thickness);
+
+		return material;
 	}
 
-	auto material = std::make_shared<substitute::Material_thinfilm>(
-				substitute_thinfilm_cache_, mask, sampler_settings, two_sided);
+	auto material = std::make_shared<substitute::Material>(
+				substitute_cache_, mask, sampler_settings, two_sided);
 
 	material->set_color_map(color_map);
 	material->set_normal_map(normal_map);
