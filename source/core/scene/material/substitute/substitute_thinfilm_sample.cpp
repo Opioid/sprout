@@ -39,14 +39,16 @@ math::float3 Sample_thinfilm::evaluate(math::pfloat3 wi, float& pdf) const {
 	float clamped_a2 = ggx::clamp_a2(a2_);
 	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
 	float g = ggx::geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
-//	math::float3 f = fresnel::schlick(wo_dot_h, f0_);
-	math::float3 f = fresnel::thinfilm(wo_dot_h, 1.f, thinfilm_ior_, ior_, thinfilm_thickness_);
+	math::float3 f = fresnel::schlick(wo_dot_h, f0_);
+	math::float3 t_f = fresnel::thinfilm(wo_dot_h, 1.f, thinfilm_ior_, ior_, thinfilm_thickness_);
 
 	math::float3 specular = d * g * f;
 
 	float ggx_pdf = d * n_dot_h / (4.f * wo_dot_h);
 
 	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
+
+	return /*n_dot_wi **/  f;
 
 	return n_dot_wi * (diffuse + specular);
 

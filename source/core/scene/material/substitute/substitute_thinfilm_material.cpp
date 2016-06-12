@@ -48,9 +48,6 @@ const material::Sample& Material_thinfilm::sample(const shape::Hitpoint& hp, mat
 		radiance = math::float3_identity;
 	}
 
-	thinfilm_ior_ = 1.8f;
-	thinfilm_thickness_ = 10000.f;
-
 	sample.set(color, radiance, constant_f0_, ior_, surface.x, surface.y,
 			   thinfilm_ior_, thinfilm_thickness_);
 
