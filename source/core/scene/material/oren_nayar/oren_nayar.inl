@@ -38,7 +38,6 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample,
 	math::float3 wi = math::normalized(sample.tangent_to_world(is));
 
 	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
-//	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
 
 	float wi_dot_wo = math::dot(wi, sample.wo_);
 

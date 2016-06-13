@@ -25,12 +25,14 @@ float Isotropic::importance_sample(const Sample& sample, sampler::Sampler& sampl
 	math::float2 s2d = sampler.generate_sample_2D();
 
 	math::float3 is = math::sample_hemisphere_cosine(s2d);
-	result.wi = math::normalized(sample.tangent_to_world(is));
 
-	float n_dot_wi = std::max(math::dot(sample.n_, result.wi), 0.00001f);
+	math::float3 wi = math::normalized(sample.tangent_to_world(is));
+
+	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
+
 	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = math::Pi_inv * sample.diffuse_color_;
-
+	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
 	return n_dot_wi;
