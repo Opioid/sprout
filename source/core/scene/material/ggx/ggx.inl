@@ -75,7 +75,7 @@ math::float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2, const
 
 	float clamped_a2 = clamp_a2(a2);
 	float d = distribution_isotropic(n_dot_h_, clamped_a2);
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
+	float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel(wo_dot_h_);
 
 	fresnel_result = f;
@@ -94,7 +94,7 @@ math::float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2,
 
 	float clamped_a2 = clamp_a2(a2);
 	float d = distribution_isotropic(n_dot_h_, clamped_a2);
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
+	float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel(wo_dot_h_);
 
 	pdf = d * n_dot_h_ / (4.f * wo_dot_h_);
@@ -117,7 +117,7 @@ math::float3 Isotropic::evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_w
 
 	float clamped_a2 = clamp_a2(sample.a2_);
 	float d = distribution_isotropic(n_dot_h, clamped_a2);
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
+	float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
 	math::float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -135,7 +135,7 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const F
 		math::float3 wi = math::normalized((2.f * wo_dot_h) * sample.n_ - sample.wo_);
 
 		float d = distribution_isotropic(n_dot_h, Min_a2);
-		float g = geometric_shadowing(n_dot_wo, n_dot_wo, Min_a2);
+		float g = geometric_visibility(n_dot_wo, n_dot_wo, Min_a2);
 		math::float3 f = fresnel(wo_dot_h);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -167,8 +167,8 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const F
 	//	float n_dot_wi = std::abs(math::dot(sample.n_, wi));
 
 		float d = distribution_isotropic(n_dot_h, clamped_a2);
-	//	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.a2_);
-		float g = geometric_shadowing(n_dot_wi, n_dot_wo, clamped_a2);
+	//	float g = geometric_visibility(n_dot_wi, n_dot_wo, sample.a2_);
+		float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
 		math::float3 f = fresnel(wo_dot_h);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -196,7 +196,7 @@ math::float3 Anisotropic::evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot
 	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, sample.a2_, sample.axy_);
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.axy_);
+	float g = geometric_visibility(n_dot_wi, n_dot_wo, sample.axy_);
 	math::float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -230,7 +230,7 @@ float Anisotropic::importance_sample(float n_dot_wo, const Sample& sample, const
 //	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, sample.a2_, sample.axy_);
-	float g = geometric_shadowing(n_dot_wi, n_dot_wo, sample.axy_);
+	float g = geometric_visibility(n_dot_wi, n_dot_wo, sample.axy_);
 	math::float3 f = fresnel(wo_dot_h);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -255,7 +255,7 @@ inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_
 	return 1.f / (math::Pi * axy * d * d);
 }
 
-inline float geometric_shadowing(float n_dot_wi, float n_dot_wo, float a2) {
+inline float geometric_visibility(float n_dot_wi, float n_dot_wo, float a2) {
 	float g_wo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
 	float g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
 	return 1.f / (g_wo * g_wi);
