@@ -44,19 +44,18 @@ const material::Sample& Material_clearcoat::sample(const shape::Hitpoint& hp, ma
 	if (emission_map_) {
 		math::float3 radiance = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
 		sample.set(color, radiance, ior_, constant_f0_, surface.x, surface.y,
-				   clearcoat_ior_, clearcoat_a2_, clearcoat_thickness_);
+				   clearcoat_ior_, clearcoat_a2_);
 	} else {
 		sample.set(color, math::float3_identity, ior_, constant_f0_, surface.x, surface.y,
-				   clearcoat_ior_, clearcoat_a2_, clearcoat_thickness_);
+				   clearcoat_ior_, clearcoat_a2_);
 	}
 
 	return sample;
 }
 
-void Material_clearcoat::set_clearcoat(float ior, float roughness, float thickness) {
+void Material_clearcoat::set_clearcoat(float ior, float roughness) {
 	clearcoat_ior_ = ior;
 	clearcoat_a2_  = math::pow4(roughness);
-	clearcoat_thickness_ = thickness;
 }
 
 }}}

@@ -19,6 +19,15 @@ public:
 
 private:
 
+	void diffuse_importance_sample_and_thinfilm(sampler::Sampler& sampler,
+												bxdf::Result& result) const;
+
+	void specular_importance_sample_and_thinfilm(sampler::Sampler& sampler,
+												 bxdf::Result& result) const;
+
+	void pure_specular_importance_sample_and_thinfilm(sampler::Sampler& sampler,
+													  bxdf::Result& result) const;
+
 	float ior_;
 	float thinfilm_ior_;
 	float thinfilm_thickness_;

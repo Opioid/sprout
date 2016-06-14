@@ -19,7 +19,7 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_clearcoat(float ior, float roughness, float thickness);
+	void set_clearcoat(float ior, float roughness);
 
 private:
 

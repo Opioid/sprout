@@ -68,7 +68,7 @@ math::float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2, const
 								 math::float3& fresnel_result, float& pdf) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2 && 1.f != n_dot_h_) {
-		fresnel_result = math::float3(0.f);
+		fresnel_result = fresnel(wo_dot_h_);
 		pdf = 0.f;
 		return math::float3(0.f);
 	}
