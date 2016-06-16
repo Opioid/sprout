@@ -18,14 +18,15 @@ const material::Sample& Material_clearcoat::sample(const shape::Hitpoint& hp, ma
 
 	set_sample(hp, wo, sampler, sample);
 
-	sample.set_clearcoat(clearcoat_ior_, clearcoat_a2_);
+	sample.set_clearcoat(clearcoat_);
 
 	return sample;
 }
 
-void Material_clearcoat::set_clearcoat(float ior, float roughness) {
-	clearcoat_ior_ = ior;
-	clearcoat_a2_  = math::pow4(roughness);
+void Material_clearcoat::set_clearcoat(float ior, float roughness, float weight) {
+	clearcoat_.f0 = fresnel::schlick_f0(1.f, ior);
+	clearcoat_.a2 = math::pow4(roughness);
+	clearcoat_.weight = weight;
 }
 
 }}}

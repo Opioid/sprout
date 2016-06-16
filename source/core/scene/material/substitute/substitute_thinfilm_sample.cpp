@@ -30,29 +30,28 @@ math::float3 Sample_thinfilm::evaluate(math::pfloat3 wi, float& pdf) const {
 	float n_dot_h  = math::dot(n_, h);
 	float wo_dot_h = math::dot(wo_, h);
 
-	math::float3 cl_specular;
-	float cl_pdf;
+	math::float3 c_reflection;
+	float c_pdf;
 
-	math::float3 cl_f = fresnel::thinfilm(wo_dot_h,
-										  1.f, thinfilm_.ior,
-										  ior_, thinfilm_.thickness);
+	math::float3 c_fresnel = thinfilm_.weight * fresnel::thinfilm(wo_dot_h, 1.f, thinfilm_.ior,
+															 ior_, thinfilm_.thickness);
 /*	if (0.f == thinfilm_a2_) {
-		cl_specular = math::float3_identity;
-		cl_pdf = 0.f;
+		c_reflection = math::float3_identity;
+		c_pdf = 0.f;
 	} else*/ {
 		float cl_clamped_a2 = ggx::clamp_a2(0.01f);
 		float cl_d = ggx::distribution_isotropic(n_dot_h, cl_clamped_a2);
 		float cl_g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, cl_clamped_a2);
 
-		cl_specular = cl_d * cl_g * cl_f;
-		cl_pdf = cl_d * n_dot_h / (4.f * wo_dot_h);
+		c_reflection = cl_d * cl_g * c_fresnel;
+		c_pdf = cl_d * n_dot_h / (4.f * wo_dot_h);
 	}
 
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {
-		pdf = 0.5f * (cl_pdf + 0.5f * diffuse_pdf);
-		return n_dot_wi * (1.f - cl_f) * diffuse;
+		pdf = 0.5f * (c_pdf + 0.5f * diffuse_pdf);
+		return n_dot_wi * (1.f - c_fresnel) * diffuse;
 	}
 
 	float clamped_a2 = ggx::clamp_a2(a2_);
@@ -64,9 +63,9 @@ math::float3 Sample_thinfilm::evaluate(math::pfloat3 wi, float& pdf) const {
 
 	float ggx_pdf = d * n_dot_h / (4.f * wo_dot_h);
 
-	pdf = 0.5f * (cl_pdf + 0.5f * (diffuse_pdf + ggx_pdf));
+	pdf = 0.5f * (c_pdf + 0.5f * (diffuse_pdf + ggx_pdf));
 
-	return n_dot_wi * (thinfilm_.weight * cl_specular + (1.f - thinfilm_.weight * cl_f) * (diffuse + specular));
+	return n_dot_wi * (c_reflection + (1.f - c_fresnel) * (diffuse + specular));
 }
 
 void Sample_thinfilm::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
@@ -85,10 +84,10 @@ void Sample_thinfilm::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& r
 														 sampler, result);
 
 		fresnel::Thinfilm thinfilm(1.f, thinfilm_.ior, ior_, thinfilm_.thickness);
-		math::float3 cl_fresnel;
-		float cl_pdf;
-		math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
-													   thinfilm, cl_fresnel, cl_pdf);
+		math::float3 c_fresnelresnel;
+		float c_pdf;
+		math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
+													  thinfilm, c_fresnelresnel, c_pdf);
 
 		fresnel::Schlick schlick(f0_);
 		float ggx_pdf;
@@ -98,10 +97,10 @@ void Sample_thinfilm::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& r
 		math::float3 oren_nayar_reflection = oren_nayar::Isotropic::evaluate(
 			result.wi, n_dot_wi, n_dot_wo, *this, oren_nayar_pdf);
 
-		math::float3 base_layer = (1.f - thinfilm_.weight * cl_fresnel) * (oren_nayar_reflection + ggx_reflection);
+		math::float3 base_layer = (1.f - thinfilm_.weight * c_fresnelresnel) * (oren_nayar_reflection + ggx_reflection);
 
-		result.reflection = n_dot_wi * (thinfilm_.weight * cl_reflection + base_layer);
-		result.pdf = 0.5f * (cl_pdf + oren_nayar_pdf + ggx_pdf);
+		result.reflection = n_dot_wi * (thinfilm_.weight * c_reflection + base_layer);
+		result.pdf = 0.5f * (c_pdf + oren_nayar_pdf + ggx_pdf);
 	} else {
 		if (1.f == metallic_) {
 			pure_specular_importance_sample_and_thinfilm(sampler, result);
@@ -133,18 +132,18 @@ void Sample_thinfilm::diffuse_importance_sample_and_thinfilm(sampler::Sampler& s
 	math::float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
 
 	fresnel::Thinfilm thinfilm(1.f, thinfilm_.ior, ior_, thinfilm_.thickness);
-	math::float3 cl_fresnel;
-	float cl_pdf;
-	math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
-												   thinfilm, cl_fresnel, cl_pdf);
+	math::float3 c_fresnelresnel;
+	float c_pdf;
+	math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
+												  thinfilm, c_fresnelresnel, c_pdf);
 
-	math::float3 base_layer = (1.f - thinfilm_.weight * cl_fresnel) * (result.reflection + ggx_reflection);
+	math::float3 base_layer = (1.f - thinfilm_.weight * c_fresnelresnel) * (result.reflection + ggx_reflection);
 
-	result.reflection = n_dot_wi * (thinfilm_.weight * cl_reflection + base_layer);
+	result.reflection = n_dot_wi * (thinfilm_.weight * c_reflection + base_layer);
 
 	// PDF weight 0.5 * 0.5
 	// 0.5 chance to select substitute layer and then 0.5 chance to select this importance sample
-	result.pdf = 0.25f * (cl_pdf + result.pdf + ggx_pdf);
+	result.pdf = 0.25f * (c_pdf + result.pdf + ggx_pdf);
 }
 
 void Sample_thinfilm::specular_importance_sample_and_thinfilm(sampler::Sampler& sampler,
@@ -155,10 +154,10 @@ void Sample_thinfilm::specular_importance_sample_and_thinfilm(sampler::Sampler& 
 	float n_dot_wi = specular.init_importance_sample(n_dot_wo, a2_, *this, sampler, result);
 
 	fresnel::Thinfilm thinfilm(1.f, thinfilm_.ior, ior_, thinfilm_.thickness);
-	math::float3 cl_fresnel;
-	float cl_pdf;
-	math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
-												   thinfilm, cl_fresnel, cl_pdf);
+	math::float3 c_fresnelresnel;
+	float c_pdf;
+	math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
+												  thinfilm, c_fresnelresnel, c_pdf);
 
 	fresnel::Schlick schlick(f0_);
 	float ggx_pdf;
@@ -168,13 +167,13 @@ void Sample_thinfilm::specular_importance_sample_and_thinfilm(sampler::Sampler& 
 	math::float3 oren_nayar_reflection = oren_nayar::Isotropic::evaluate(
 		result.wi, n_dot_wi, n_dot_wo, *this, oren_nayar_pdf);
 
-	math::float3 base_layer = (1.f - thinfilm_.weight * cl_fresnel) * (oren_nayar_reflection + ggx_reflection);
+	math::float3 base_layer = (1.f - thinfilm_.weight * c_fresnelresnel) * (oren_nayar_reflection + ggx_reflection);
 
-	result.reflection = n_dot_wi * (thinfilm_.weight * cl_reflection + base_layer);
+	result.reflection = n_dot_wi * (thinfilm_.weight * c_reflection + base_layer);
 
 	// PDF weight 0.5 * 0.5
 	// 0.5 chance to select substitute layer and then 0.5 chance to select this importance sample
-	result.pdf = 0.25f * (cl_pdf + oren_nayar_pdf + ggx_pdf);
+	result.pdf = 0.25f * (c_pdf + oren_nayar_pdf + ggx_pdf);
 }
 
 void Sample_thinfilm::pure_specular_importance_sample_and_thinfilm(sampler::Sampler& sampler,
@@ -185,19 +184,19 @@ void Sample_thinfilm::pure_specular_importance_sample_and_thinfilm(sampler::Samp
 	float n_dot_wi = specular.init_importance_sample(n_dot_wo, a2_, *this, sampler, result);
 
 	fresnel::Thinfilm thinfilm(1.f, thinfilm_.ior, ior_, thinfilm_.thickness);
-	math::float3 cl_fresnel;
-	float cl_pdf;
-	math::float3 cl_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
-												   thinfilm, cl_fresnel, cl_pdf);
+	math::float3 c_fresnelresnel;
+	float c_pdf;
+	math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
+												  thinfilm, c_fresnelresnel, c_pdf);
 
 	fresnel::Schlick schlick(f0_);
 	float ggx_pdf;
 	math::float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
 
-	math::float3 base_layer = (1.f - thinfilm_.weight * cl_fresnel) * ggx_reflection;
+	math::float3 base_layer = (1.f - thinfilm_.weight * c_fresnelresnel) * ggx_reflection;
 
-	result.reflection = n_dot_wi * (thinfilm_.weight * cl_reflection + base_layer);
-	result.pdf = 0.5f * (cl_pdf + ggx_pdf);
+	result.reflection = n_dot_wi * (thinfilm_.weight * c_reflection + base_layer);
+	result.pdf = 0.5f * (c_pdf + ggx_pdf);
 }
 
 }}}

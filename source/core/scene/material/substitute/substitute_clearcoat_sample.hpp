@@ -1,10 +1,12 @@
 #pragma once
 
 #include "substitute_base_sample.hpp"
+#include "scene/material/coating/coating.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
 class Sample_clearcoat : public Sample_base {
+
 public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
@@ -12,7 +14,7 @@ public:
 	virtual void sample_evaluate(sampler::Sampler& sampler,
 								 bxdf::Result& result) const final override;
 
-	void set_clearcoat(float clearcoat_ior, float clearcoat_a2);
+	void set_clearcoat(const coating::Clearcoat& clearcoat);
 
 private:
 
@@ -25,8 +27,7 @@ private:
 	void pure_specular_importance_sample_and_clearcoat(sampler::Sampler& sampler,
 													   bxdf::Result& result) const;
 
-	float clearcoat_f0_;
-	float clearcoat_a2_;
+	coating::Clearcoat clearcoat_;
 };
 
 }}}

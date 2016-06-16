@@ -1,6 +1,7 @@
 #pragma once
 
 #include "substitute_base_material.hpp"
+#include "scene/material/coating/coating.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
@@ -19,12 +20,11 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_clearcoat(float ior, float roughness);
+	void set_clearcoat(float ior, float roughness, float weight);
 
 private:
 
-	float clearcoat_ior_;
-	float clearcoat_a2_;
+	coating::Clearcoat clearcoat_;
 };
 
 }}}
