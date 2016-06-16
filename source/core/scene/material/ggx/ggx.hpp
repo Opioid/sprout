@@ -21,6 +21,8 @@ public:
 	template<typename Sample>
 	void init_evaluate(math::pfloat3 wi, const Sample& sample);
 
+	// This method is intended for cases where the fresnel value
+	// will also be used for blending with other layers
 	template<typename Fresnel>
 	math::float3 evaluate(float n_dot_wi, float n_dot_wo, float a2, const Fresnel& fresnel,
 						  math::float3& fresnel_result, float& pdf) const;
