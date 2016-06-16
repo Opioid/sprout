@@ -1,6 +1,7 @@
 #pragma once
 
 #include "substitute_base_sample.hpp"
+#include "scene/material/coating/coating.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
@@ -13,9 +14,7 @@ public:
 	virtual void sample_evaluate(sampler::Sampler& sampler,
 								 bxdf::Result& result) const final override;
 
-	void set(math::pfloat3 color, math::pfloat3 radiance,
-			 float constant_f0, float ior, float a2, float metallic,
-			 float thinfilm_ior, float thinfilm_thickness);
+	void set_thinfilm(const coating::Thinfilm& thinfilm);
 
 private:
 
@@ -28,9 +27,7 @@ private:
 	void pure_specular_importance_sample_and_thinfilm(sampler::Sampler& sampler,
 													  bxdf::Result& result) const;
 
-	float ior_;
-	float thinfilm_ior_;
-	float thinfilm_thickness_;
+	coating::Thinfilm thinfilm_;
 };
 
 }}}

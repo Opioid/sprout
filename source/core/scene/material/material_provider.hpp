@@ -88,14 +88,15 @@ private:
 	static void read_texture_description(const json::Value& texture_value,
 										 Texture_description& description);
 
-	struct Clearcoat_description {
+	struct Coating_description {
 		float ior = 1.f;
 		float roughness = 0.f;
 		float thickness = 0.f;
+		float weight = 1.f;
 	};
 
-	static void read_clearcoat_description(const json::Value& clearcoat_value,
-										   Clearcoat_description& description);
+	static void read_coating_description(const json::Value& clearcoat_value,
+										 Coating_description& description);
 
 	static math::float3 read_spectrum(const json::Value& spectrum_value);
 

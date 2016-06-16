@@ -16,6 +16,7 @@ HEADERS += \
 	scene/material/sampler_cache.hpp \
 	scene/material/sampler_settings.hpp \
 
+include(coating/coating.pri)
 include(cloth/cloth.pri)
 include(display/display.pri)
 include(fresnel/fresnel.pri)

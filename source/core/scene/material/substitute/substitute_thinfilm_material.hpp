@@ -1,6 +1,7 @@
 #pragma once
 
 #include "substitute_base_material.hpp"
+#include "scene/material/coating/coating.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
@@ -19,12 +20,11 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_thinfilm(float ior, float thickness);
+	void set_thinfilm(float ior, float thickness, float weight);
 
 private:
 
-	float thinfilm_ior_;
-	float thinfilm_thickness_;
+	coating::Thinfilm thinfilm_;
 };
 
 }}}

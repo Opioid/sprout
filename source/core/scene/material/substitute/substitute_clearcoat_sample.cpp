@@ -112,17 +112,7 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 	}
 }
 
-void Sample_clearcoat::set(math::pfloat3 color, math::pfloat3 radiance,
-						   float ior, float constant_f0, float a2, float metallic,
-						   float clearcoat_ior, float clearcoat_a2) {
-	diffuse_color_ = (1.f - metallic) * color;
-	f0_ = math::lerp(math::float3(constant_f0), color, metallic);
-	emission_ = radiance;
-	ior_ = ior;
-	a2_ = a2;
-
-	metallic_ = metallic;
-
+void Sample_clearcoat::set_clearcoat(float clearcoat_ior, float clearcoat_a2) {
 	clearcoat_f0_ = fresnel::schlick_f0(1.f, clearcoat_ior);
 	clearcoat_a2_ = clearcoat_a2;
 }

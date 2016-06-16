@@ -23,10 +23,11 @@ void test() {
 
 	math::float3 color(1.f, 1.f, 1.f);
 	math::float3 radiance = math::float3_identity;
-	float constant_f0 = 0.03f;
+	float ior         = 1.47f;
+	float constant_f0 = fresnel::schlick_f0(1.f, ior);
 	float roughness   = 0.f;
 	float metallic    = 0.f;
-	sample.set(color, radiance, constant_f0, roughness, metallic);
+	sample.set(color, radiance, ior, constant_f0, roughness, metallic);
 
 	math::float3 t(1.f, 0.f, 0.f);
 	math::float3 b(0.f, 1.f, 0.f);

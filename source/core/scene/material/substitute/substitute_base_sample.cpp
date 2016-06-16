@@ -103,4 +103,14 @@ void Sample_base::pure_specular_importance_sample(sampler::Sampler& sampler,
 	result.reflection *= n_dot_wi;
 }
 
+void Sample_base::set(math::pfloat3 color, math::pfloat3 radiance,
+					  float ior, float constant_f0, float a2, float metallic) {
+	diffuse_color_ = (1.f - metallic) * color;
+	f0_ = math::lerp(math::float3(constant_f0), color, metallic);
+	emission_ = radiance;
+	ior_ = ior;
+	a2_ = a2;
+	metallic_ = metallic;
+}
+
 }}}

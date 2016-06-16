@@ -25,7 +25,6 @@ private:
 
 	float clearcoat_ior_;
 	float clearcoat_a2_;
-	float clearcoat_thickness_;
 };
 
 }}}

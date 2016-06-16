@@ -13,8 +13,6 @@ public:
 	virtual void sample_evaluate(sampler::Sampler& sampler,
 								 bxdf::Result& result) const final override;
 
-	void set(math::pfloat3 color, math::pfloat3 radiance,
-			 float constant_f0, float a2, float metallic);
 };
 
 }}}

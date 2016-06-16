@@ -3,6 +3,8 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
 
+namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
+
 namespace scene { namespace material { namespace substitute {
 
 template<typename Sample>
@@ -36,6 +38,10 @@ public:
 	void set_emission_factor(float emission_factor);
 
 protected:
+
+	void set_sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+					const image::texture::sampler::Sampler_2D& sampler,
+					Sample& sample);
 
 	std::shared_ptr<image::texture::Texture_2D> color_map_;
 	std::shared_ptr<image::texture::Texture_2D> normal_map_;

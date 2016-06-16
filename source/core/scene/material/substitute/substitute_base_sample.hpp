@@ -22,6 +22,9 @@ public:
 
 	virtual bool is_translucent() const override;
 
+	void set(math::pfloat3 color, math::pfloat3 radiance,
+			 float ior, float constant_f0, float a2, float metallic);
+
 protected:
 
 	math::float3 base_evaluate(math::pfloat3 wi, float& pdf) const;
