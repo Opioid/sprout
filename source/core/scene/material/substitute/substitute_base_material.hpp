@@ -39,9 +39,10 @@ public:
 
 protected:
 
+	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
+
 	void set_sample(const shape::Hitpoint& hp, math::pfloat3 wo,
-					const image::texture::sampler::Sampler_2D& sampler,
-					Sample& sample);
+					const Texture_sampler_2D& sampler, Sample& sample);
 
 	std::shared_ptr<image::texture::Texture_2D> color_map_;
 	std::shared_ptr<image::texture::Texture_2D> normal_map_;
