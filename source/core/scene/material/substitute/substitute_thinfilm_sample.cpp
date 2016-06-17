@@ -34,7 +34,7 @@ math::float3 Sample_thinfilm::evaluate(math::pfloat3 wi, float& pdf) const {
 	float c_pdf;
 
 	math::float3 c_fresnel = thinfilm_.weight * fresnel::thinfilm(wo_dot_h, 1.f, thinfilm_.ior,
-															 ior_, thinfilm_.thickness);
+																  ior_, thinfilm_.thickness);
 /*	if (0.f == thinfilm_a2_) {
 		c_reflection = math::float3_identity;
 		c_pdf = 0.f;
@@ -46,7 +46,6 @@ math::float3 Sample_thinfilm::evaluate(math::pfloat3 wi, float& pdf) const {
 		c_reflection = cl_d * cl_g * c_fresnel;
 		c_pdf = cl_d * n_dot_h / (4.f * wo_dot_h);
 	}
-
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2_) {
@@ -94,14 +93,14 @@ void Sample_thinfilm::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& r
 		float ggx_pdf;
 		math::float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
 
-		float oren_nayar_pdf;
-		math::float3 oren_nayar_reflection = oren_nayar::Isotropic::evaluate(
-			result.wi, n_dot_wi, n_dot_wo, *this, oren_nayar_pdf);
+		float on_pdf;
+		math::float3 on_reflection = oren_nayar::Isotropic::evaluate(
+			result.wi, n_dot_wi, n_dot_wo, *this, on_pdf);
 
-		math::float3 base_layer = (1.f - c_fresnel) * (oren_nayar_reflection + ggx_reflection);
+		math::float3 base_layer = (1.f - c_fresnel) * (on_reflection + ggx_reflection);
 
 		result.reflection = n_dot_wi * (c_reflection + base_layer);
-		result.pdf = 0.5f * (c_pdf + oren_nayar_pdf + ggx_pdf);
+		result.pdf = 0.5f * (c_pdf + on_pdf + ggx_pdf);
 	} else {
 		if (1.f == metallic_) {
 			pure_specular_importance_sample_and_thinfilm(sampler, result);
@@ -166,17 +165,17 @@ void Sample_thinfilm::specular_importance_sample_and_thinfilm(sampler::Sampler& 
 	float ggx_pdf;
 	math::float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
 
-	float oren_nayar_pdf;
-	math::float3 oren_nayar_reflection = oren_nayar::Isotropic::evaluate(
-		result.wi, n_dot_wi, n_dot_wo, *this, oren_nayar_pdf);
+	float on_pdf;
+	math::float3 on_reflection = oren_nayar::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
+																 *this, on_pdf);
 
-	math::float3 base_layer = (1.f - c_fresnel) * (oren_nayar_reflection + ggx_reflection);
+	math::float3 base_layer = (1.f - c_fresnel) * (on_reflection + ggx_reflection);
 
 	result.reflection = n_dot_wi * (c_reflection + base_layer);
 
 	// PDF weight 0.5 * 0.5
 	// 0.5 chance to select substitute layer and then 0.5 chance to select this importance sample
-	result.pdf = 0.25f * (c_pdf + oren_nayar_pdf + ggx_pdf);
+	result.pdf = 0.25f * (c_pdf + on_pdf + ggx_pdf);
 }
 
 void Sample_thinfilm::pure_specular_importance_sample_and_thinfilm(sampler::Sampler& sampler,

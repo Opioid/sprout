@@ -87,12 +87,12 @@ void Sample_base::specular_importance_sample(sampler::Sampler& sampler,
 	fresnel::Schlick schlick(f0_);
 	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, schlick, sampler, result);
 
-	float oren_nayar_pdf;
-	math::float3 oren_nayar_reflection = oren_nayar::Isotropic::evaluate(
-				result.wi, n_dot_wi, n_dot_wo, *this, oren_nayar_pdf);
+	float on_pdf;
+	math::float3 on_reflection = oren_nayar::Isotropic::evaluate(
+				result.wi, n_dot_wi, n_dot_wo, *this, on_pdf);
 
-	result.reflection = n_dot_wi * (result.reflection + oren_nayar_reflection);
-	result.pdf = 0.5f * (result.pdf + oren_nayar_pdf);
+	result.reflection = n_dot_wi * (result.reflection + on_reflection);
+	result.pdf = 0.5f * (result.pdf + on_pdf);
 }
 
 void Sample_base::pure_specular_importance_sample(sampler::Sampler& sampler,

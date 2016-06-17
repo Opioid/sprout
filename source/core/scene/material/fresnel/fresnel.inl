@@ -121,6 +121,16 @@ inline math::float3 Schlick::operator()(float wo_dot_h) const {
 	return schlick(wo_dot_h, f0_);
 }
 
+inline Schlick_weighted::Schlick_weighted(float f0, float weight) :
+	schlick_(f0), weight_(weight) {}
+
+inline Schlick_weighted::Schlick_weighted(math::pfloat3 f0, float weight) :
+	schlick_(f0), weight_(weight) {}
+
+inline math::float3 Schlick_weighted::operator()(float wo_dot_h) const {
+	return weight_ * schlick_(wo_dot_h);
+}
+
 inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior,
 						  float internal_ior, float thickness) :
 	external_ior_(external_ior), thinfilm_ior_(thinfilm_ior),

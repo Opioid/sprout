@@ -29,6 +29,21 @@ private:
 	math::float3 f0_;
 };
 
+class Schlick_weighted {
+
+public:
+
+	Schlick_weighted(float f0, float weight);
+	Schlick_weighted(math::pfloat3 f0, float weight);
+
+	math::float3 operator()(float wo_dot_h) const;
+
+private:
+
+	Schlick schlick_;
+	float weight_;
+};
+
 class Thinfilm {
 
 public:
