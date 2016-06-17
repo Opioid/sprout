@@ -39,7 +39,7 @@ math::float3 Sample_thinfilm::evaluate(math::pfloat3 wi, float& pdf) const {
 		c_reflection = math::float3_identity;
 		c_pdf = 0.f;
 	} else*/ {
-		float cl_clamped_a2 = ggx::clamp_a2(0.01f);
+		float cl_clamped_a2 = ggx::Min_a2;//ggx::clamp_a2(0.01f);
 		float cl_d = ggx::distribution_isotropic(n_dot_h, cl_clamped_a2);
 		float cl_g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, cl_clamped_a2);
 
@@ -79,14 +79,14 @@ void Sample_thinfilm::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& r
 		float n_dot_wo = clamped_n_dot_wo();
 
 		ggx::Isotropic specular;
-		float n_dot_wi = specular.init_importance_sample(n_dot_wo, 0.01f, *this,
+		float n_dot_wi = specular.init_importance_sample(n_dot_wo, ggx::Min_a2, *this,
 														 sampler, result);
 
 		fresnel::Thinfilm_weighted thinfilm(1.f, thinfilm_.ior, ior_,
 											thinfilm_.thickness, thinfilm_.weight);
 		math::float3 c_fresnel;
 		float c_pdf;
-		math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
+		math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, ggx::Min_a2,
 													  thinfilm, c_fresnel, c_pdf);
 
 		fresnel::Schlick schlick(f0_);
@@ -135,7 +135,7 @@ void Sample_thinfilm::diffuse_importance_sample_and_thinfilm(sampler::Sampler& s
 										thinfilm_.thickness, thinfilm_.weight);
 	math::float3 c_fresnel;
 	float c_pdf;
-	math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
+	math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, ggx::Min_a2,
 												  thinfilm, c_fresnel, c_pdf);
 
 	math::float3 base_layer = (1.f - c_fresnel) * (result.reflection + ggx_reflection);
@@ -158,7 +158,7 @@ void Sample_thinfilm::specular_importance_sample_and_thinfilm(sampler::Sampler& 
 										thinfilm_.thickness, thinfilm_.weight);
 	math::float3 c_fresnel;
 	float c_pdf;
-	math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
+	math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, ggx::Min_a2,
 												  thinfilm, c_fresnel, c_pdf);
 
 	fresnel::Schlick schlick(f0_);
@@ -189,7 +189,7 @@ void Sample_thinfilm::pure_specular_importance_sample_and_thinfilm(sampler::Samp
 										thinfilm_.thickness, thinfilm_.weight);
 	math::float3 c_fresnel;
 	float c_pdf;
-	math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, 0.01f,
+	math::float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, ggx::Min_a2,
 												  thinfilm, c_fresnel, c_pdf);
 
 	fresnel::Schlick schlick(f0_);
