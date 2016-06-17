@@ -130,6 +130,14 @@ inline math::float3 Thinfilm::operator()(float wo_dot_h) const {
 	return thinfilm(wo_dot_h, external_ior_, thinfilm_ior_, internal_ior_, thickness_);
 }
 
+inline Thinfilm_weighted::Thinfilm_weighted(float external_ior, float thinfilm_ior,
+											float internal_ior, float thickness, float weight) :
+	thinfilm_(external_ior, thinfilm_ior, internal_ior, thickness), weight_(weight) {}
+
+inline math::float3 Thinfilm_weighted::operator()(float wo_dot_h) const {
+	return weight_ * thinfilm_(wo_dot_h);
+}
+
 inline Conductor::Conductor(math::pfloat3 eta, math::pfloat3 k) : eta_(eta), k_(k) {}
 
 inline math::float3 Conductor::operator()(float wo_dot_h) const {

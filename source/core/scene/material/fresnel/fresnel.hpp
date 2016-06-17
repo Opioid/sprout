@@ -46,6 +46,21 @@ private:
 	float thickness_;
 };
 
+class Thinfilm_weighted {
+
+public:
+
+	Thinfilm_weighted(float external_ior, float thinfilm_ior,
+					  float internal_ior, float thickness, float weight);
+
+	math::float3 operator()(float wo_dot_h) const;
+
+private:
+
+	Thinfilm thinfilm_;
+	float weight_;
+};
+
 class Conductor {
 
 public:
