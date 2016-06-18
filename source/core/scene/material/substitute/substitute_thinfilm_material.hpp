@@ -20,7 +20,7 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_thinfilm(float ior, float thickness, float weight);
+	void set_thinfilm(float ior, float roughness, float thickness, float weight);
 
 private:
 

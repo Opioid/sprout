@@ -23,8 +23,9 @@ const material::Sample& Material_thinfilm::sample(const shape::Hitpoint& hp, mat
 	return sample;
 }
 
-void Material_thinfilm::set_thinfilm(float ior, float thickness, float weight) {
+void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness, float weight) {
 	thinfilm_.ior = ior;
+	thinfilm_.a2  = math::pow4(roughness);
 	thinfilm_.thickness = thickness;
 	thinfilm_.weight = weight;
 }

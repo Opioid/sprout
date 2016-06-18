@@ -10,6 +10,7 @@ struct Clearcoat {
 
 struct Thinfilm {
 	float ior;
+	float a2;
 	float thickness;
 	float weight;
 };
