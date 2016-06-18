@@ -33,6 +33,34 @@ protected:
 	void specular_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const;
 	void pure_specular_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const;
 
+	template<typename Coating>
+	math::float3 base_evaluate_and_coating(math::pfloat3 wi, const Coating& coating,
+										   float coating_a2, float& pdf) const;
+
+	template<typename Coating>
+	void base_sample_evaluate_and_coating(const Coating& coating,
+										  float coating_a2,
+										  sampler::Sampler& sampler,
+										  bxdf::Result& result) const;
+
+	template<typename Coating>
+	void diffuse_importance_sample_and_coating(const Coating& coating,
+											   float coating_a2,
+											   sampler::Sampler& sampler,
+											   bxdf::Result& result) const;
+
+	template<typename Coating>
+	void specular_importance_sample_and_coating(const Coating& coating,
+												float coating_a2,
+												sampler::Sampler& sampler,
+												bxdf::Result& result) const;
+
+	template<typename Coating>
+	void pure_specular_importance_sample_and_coating(const Coating& coating,
+													 float coating_a2,
+													 sampler::Sampler& sampler,
+													 bxdf::Result& result) const;
+
 	math::float3 diffuse_color_;
 	math::float3 f0_;
 	math::float3 emission_;

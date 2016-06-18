@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ggx.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/fresnel/fresnel.inl"

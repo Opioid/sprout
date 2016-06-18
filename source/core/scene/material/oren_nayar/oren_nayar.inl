@@ -1,3 +1,5 @@
+#pragma once
+
 #include "oren_nayar.hpp"
 #include "scene/material/bxdf.hpp"
 #include "sampler/sampler.hpp"

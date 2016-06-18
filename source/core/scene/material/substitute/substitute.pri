@@ -14,6 +14,7 @@ HEADERS += \
 	scene/material/substitute/substitute_base_material.hpp \
 	scene/material/substitute/substitute_base_material.inl \
 	scene/material/substitute/substitute_base_sample.hpp \	
+	scene/material/substitute/substitute_base_sample.inl \	
 	scene/material/substitute/substitute_clearcoat_material.hpp \
 	scene/material/substitute/substitute_clearcoat_sample.hpp \
 	scene/material/substitute/substitute_material.hpp \	

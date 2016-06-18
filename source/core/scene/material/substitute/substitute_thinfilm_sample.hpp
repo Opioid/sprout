@@ -14,20 +14,11 @@ public:
 	virtual void sample_evaluate(sampler::Sampler& sampler,
 								 bxdf::Result& result) const final override;
 
-	void set_thinfilm(const coating::Thinfilm& thinfilm);
+	void set_thinfilm(const coating::Thinfilm& coating);
 
 private:
 
-	void diffuse_importance_sample_and_thinfilm(sampler::Sampler& sampler,
-												bxdf::Result& result) const;
-
-	void specular_importance_sample_and_thinfilm(sampler::Sampler& sampler,
-												 bxdf::Result& result) const;
-
-	void pure_specular_importance_sample_and_thinfilm(sampler::Sampler& sampler,
-													  bxdf::Result& result) const;
-
-	coating::Thinfilm thinfilm_;
+	coating::Thinfilm coating_;
 };
 
 }}}
