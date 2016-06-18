@@ -327,8 +327,8 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 		} catch (const std::exception& e) {
 			materials.push_back(fallback_material_);
 
-			logging::warning("Loading \"" + std::string(m->GetString()) + "\": " +
-							 e.what() + ". Using fallback material.");
+			logging::error("Loading \"" + std::string(m->GetString()) + "\": " +
+						   e.what() + ". Using fallback material.");
 		}
 	}
 }
