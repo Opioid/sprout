@@ -566,8 +566,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	float emission_factor = 1.f;
 	float thickness = 0.f;
 	float attenuation_distance = 0.f;
-	Coating_description clearcoat;
-	Coating_description thinfilm;
+	Coating_description coating;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -589,10 +588,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 			attenuation_distance = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
-		} else if ("clearcoat" == node_name) {
-			read_coating_description(node_value, clearcoat);
-		} else if ("thinfilm" == node_name) {
-			read_coating_description(node_value, thinfilm);
+		} else if ("coating" == node_name) {
+			read_coating_description(node_value, coating);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				Texture_description texture_description;
@@ -613,7 +610,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 								texture_description.filename, options);
 				} else if ("Surface" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Surface);
-					surface_map =manager.load<image::texture::Texture_2D>(
+					surface_map = manager.load<image::texture::Texture_2D>(
 								texture_description.filename, options);
 				} else if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
@@ -648,41 +645,43 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 		material->set_attenuation_distance(attenuation_distance);
 
 		return material;
-	} else if (clearcoat.ior > 1.f) {
-		auto material = std::make_shared<substitute::Material_clearcoat>(
-					substitute_clearcoat_cache_, mask, sampler_settings, two_sided);
+	} else if (coating.ior > 1.f) {
+		if (coating.thickness > 0.f) {
+			auto material = std::make_shared<substitute::Material_thinfilm>(
+						substitute_thinfilm_cache_, mask, sampler_settings, two_sided);
 
-		material->set_color_map(color_map);
-		material->set_normal_map(normal_map);
-		material->set_surface_map(surface_map);
-		material->set_emission_map(emission_map);
+			material->set_color_map(color_map);
+			material->set_normal_map(normal_map);
+			material->set_surface_map(surface_map);
+			material->set_emission_map(emission_map);
 
-		material->set_color(color);
-		material->set_ior(ior/*, clearcoat.ior*/);
-		material->set_roughness(roughness);
-		material->set_metallic(metallic);
-		material->set_emission_factor(emission_factor);
-		material->set_clearcoat(clearcoat.ior, clearcoat.roughness, clearcoat.weight);
+			material->set_color(color);
+			material->set_ior(ior);
+			material->set_roughness(roughness);
+			material->set_metallic(metallic);
+			material->set_emission_factor(emission_factor);
+			material->set_thinfilm(coating.ior, coating.roughness,
+								   coating.thickness, coating.weight);
 
-		return material;
-	} else if (thinfilm.ior > 1.f && thinfilm.thickness > 0.f) {
-		auto material = std::make_shared<substitute::Material_thinfilm>(
-					substitute_thinfilm_cache_, mask, sampler_settings, two_sided);
+			return material;
+		} else {
+			auto material = std::make_shared<substitute::Material_clearcoat>(
+						substitute_clearcoat_cache_, mask, sampler_settings, two_sided);
 
-		material->set_color_map(color_map);
-		material->set_normal_map(normal_map);
-		material->set_surface_map(surface_map);
-		material->set_emission_map(emission_map);
+			material->set_color_map(color_map);
+			material->set_normal_map(normal_map);
+			material->set_surface_map(surface_map);
+			material->set_emission_map(emission_map);
 
-		material->set_color(color);
-		material->set_ior(ior);
-		material->set_roughness(roughness);
-		material->set_metallic(metallic);
-		material->set_emission_factor(emission_factor);
-		material->set_thinfilm(thinfilm.ior, thinfilm.roughness,
-							   thinfilm.thickness, thinfilm.weight);
+			material->set_color(color);
+			material->set_ior(ior/*, clearcoat.ior*/);
+			material->set_roughness(roughness);
+			material->set_metallic(metallic);
+			material->set_emission_factor(emission_factor);
+			material->set_clearcoat(coating.ior, coating.roughness, coating.weight);
 
-		return material;
+			return material;
+		}
 	}
 
 	auto material = std::make_shared<substitute::Material>(
