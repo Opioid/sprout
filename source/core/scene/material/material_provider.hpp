@@ -10,20 +10,13 @@ namespace image { namespace texture { class Texture_2D; }}
 
 namespace scene { namespace material {
 
-namespace cloth { class Sample; }
-namespace display { class Sample; }
-namespace glass { class Sample; class Sample_rough; }
-
-namespace light {
-
-class Sample;
-class Constant;
-
-}
-
-namespace metal { class Sample_isotropic; class Sample_anisotropic; }
-
-namespace sky { class Material_clear; }
+namespace cloth		{ class Sample; }
+namespace display	{ class Sample; }
+namespace glass		{ class Sample; class Sample_rough; }
+namespace light		{ class Sample; }
+namespace matte		{ class Sample; }
+namespace metal		{ class Sample_isotropic; class Sample_anisotropic; }
+namespace sky		{ class Material_clear; }
 
 namespace substitute {
 
@@ -67,6 +60,9 @@ private:
 	std::shared_ptr<Material> load_light(const json::Value& light_value,
 										 resource::Manager& manager);
 
+	std::shared_ptr<Material> load_matte(const json::Value& metal_value,
+										 resource::Manager& manager);
+
 	std::shared_ptr<Material> load_metal(const json::Value& metal_value,
 										 resource::Manager& manager);
 
@@ -105,6 +101,7 @@ private:
 	Generic_sample_cache<glass::Sample>						glass_cache_;
 	Generic_sample_cache<glass::Sample_rough>				glass_rough_cache_;
 	Generic_sample_cache<light::Sample>						light_cache_;
+	Generic_sample_cache<matte::Sample>						matte_cache_;
 	Generic_sample_cache<metal::Sample_isotropic>			metal_iso_cache_;
 	Generic_sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
 	Generic_sample_cache<substitute::Sample>				substitute_cache_;

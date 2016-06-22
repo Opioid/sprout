@@ -37,6 +37,23 @@ std::shared_ptr<Type> Manager::load(const std::string& filename,
 }
 
 template<typename Type>
+std::shared_ptr<Type> Manager::get(const std::string& filename,
+								   const memory::Variant_map& options) {
+	if (filename.empty()) {
+		return nullptr;
+	}
+
+	Typed_cache<Type>* cache = typed_cache<Type>();
+
+	// a provider for this resource type was never registered
+	if (!cache) {
+		return nullptr;
+	}
+
+	return cache->get(filename, options);
+}
+
+template<typename Type>
 Typed_cache<Type>* Manager::typed_cache() {
 	auto cache = caches_.find(Provider<Type>::id());
 

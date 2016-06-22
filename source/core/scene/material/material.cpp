@@ -1,6 +1,7 @@
 #include "material.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/scene_worker.hpp"
+#include "base/json/json.hpp"
 #include "base/math/vector.inl"
 
 namespace scene { namespace material {
@@ -10,6 +11,17 @@ Material::Material(std::shared_ptr<image::texture::Texture_2D> mask,
 	mask_(mask),
 	sampler_key_(static_cast<uint32_t>(sampler_settings.filter)),
 	two_sided_(two_sided) {}
+
+Material::~Material() {}
+
+void Material::set_parameters(const json::Value& parameters) {
+	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const json::Value& node_value = n->value;
+
+		set_parameter(node_name, node_value);
+	}
+}
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
@@ -75,6 +87,11 @@ bool Material::is_emissive() const {
 
 bool Material::is_two_sided() const {
 	return two_sided_;
+}
+
+void Material::set_parameter(const std::string& name,
+							 const json::Value& value) {
+
 }
 
 }}

@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
 	logging::info("Rendering...");
 
 	if (args.progressive) {
-		controller::progressive(*take, scene, thread_pool);
+		controller::progressive(*take, scene, resource_manager, thread_pool);
 	} else {
 		progress::Stdout progressor;
 

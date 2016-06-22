@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sampler_settings.hpp"
+#include "base/json/json_types.hpp"
 #include "base/math/vector.hpp"
 #include <memory>
 #include <vector>
@@ -25,6 +26,10 @@ public:
 
 	Material(std::shared_ptr<image::texture::Texture_2D> mask,
 			 const Sampler_settings& sampler_settings, bool two_sided);
+
+	virtual ~Material();
+
+	void set_parameters(const json::Value& parameters);
 
 	virtual void tick(float absolute_time, float time_slice);
 
@@ -57,6 +62,9 @@ public:
 	bool is_two_sided() const;
 
 protected:
+
+	virtual void set_parameter(const std::string& name,
+							   const json::Value& value);
 
 	std::shared_ptr<image::texture::Texture_2D> mask_;
 

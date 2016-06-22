@@ -2,7 +2,6 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
-#include "image/texture/texture_2d.hpp"
 
 namespace scene { namespace material { namespace metal {
 

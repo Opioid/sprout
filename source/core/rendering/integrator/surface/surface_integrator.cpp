@@ -25,7 +25,8 @@ bool Integrator::resolve_mask(Worker& worker, scene::Ray& ray,
 
 		// We never change the ray origin and just slide along the segment instead.
 		// This seems to be more robust than setting the new origin from the last intersection.
-		// Possible indicator of imprecision issues in other parts of the code, but this seems to work well enough.
+		// Possible indicator of imprecision issues in other parts of the code,
+		// but this seems to work well enough.
 		ray.min_t = ray.max_t;
 		ray.max_t = take_settings_.ray_max_t;
 		if (!worker.intersect(ray, intersection)) {

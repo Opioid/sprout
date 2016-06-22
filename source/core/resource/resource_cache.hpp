@@ -12,12 +12,15 @@ class Cache {};
 
 template<typename T>
 class Typed_cache : public Cache {
+
 public:
 
 	Typed_cache(Provider<T>& provider);
 
 	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options,
 							Manager& manager, bool& was_cached);
+
+	std::shared_ptr<T> get(const std::string& filename, const memory::Variant_map& options);
 
 private:
 

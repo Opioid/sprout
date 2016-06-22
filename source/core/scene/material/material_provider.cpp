@@ -16,6 +16,8 @@
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
 #include "light/light_emissionmap_animated.hpp"
+#include "matte/matte_sample.hpp"
+#include "matte/matte_material.hpp"
 #include "metal/metal_sample.hpp"
 #include "metal/metal_material.hpp"
 #include "sky/sky_material_overcast.hpp"
@@ -44,6 +46,7 @@ Provider::Provider(uint32_t num_threads) :
 	glass_cache_(num_threads),
 	glass_rough_cache_(num_threads),
 	light_cache_(num_threads),
+	matte_cache_(num_threads),
 	metal_iso_cache_(num_threads),
 	metal_aniso_cache_(num_threads),
 	substitute_cache_(num_threads),
@@ -88,6 +91,8 @@ std::shared_ptr<Material> Provider::load(const std::string& filename,
 			return load_glass(node_value, manager);
 		} else if ("Light" == node_name) {
 			return load_light(node_value, manager);
+		} else if ("Matte" == node_name) {
+			return load_matte(node_value, manager);
 		} else if ("Metal" == node_name) {
 			return load_metal(node_value, manager);
 		} else if ("Sky" == node_name) {
@@ -408,6 +413,59 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 	}
 
 	return material;
+}
+
+std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_value,
+											   resource::Manager& manager) {
+	scene::material::Sampler_settings sampler_settings;
+
+//	std::shared_ptr<image::texture::Texture_2D> normal_map;
+	std::shared_ptr<image::texture::Texture_2D> mask;
+	bool two_sided = false;
+	math::float3 color(0.6f, 0.6f, 0.6f);
+
+	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const json::Value& node_value = n->value;
+
+		if ("color" == node_name) {
+			color = json::read_float3(node_value);
+		} else if ("two_sided" == node_name) {
+			two_sided = json::read_bool(node_value);
+		} else if ("textures" == node_name) {
+			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+				Texture_description texture_description;
+				read_texture_description(*tn, texture_description);
+
+				if (texture_description.filename.empty()) {
+					continue;
+				}
+
+				memory::Variant_map options;
+				/*if ("Normal" == texture_description.usage) {
+					options.insert("usage", image::texture::Provider::Usage::Normal);
+					normal_map = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
+				} else*/ if ("Mask" == texture_description.usage) {
+					options.insert("usage", image::texture::Provider::Usage::Mask);
+					mask = manager.load<image::texture::Texture_2D>(
+								texture_description.filename, options);
+				}
+			}
+		} else if ("sampler" == node_name) {
+			read_sampler_settings(node_value, sampler_settings);
+		}
+	}
+
+	auto material = std::make_shared<matte::Material>(matte_cache_, mask,
+													  sampler_settings, two_sided);
+
+//	material->set_normal_map(normal_map);
+
+	material->set_color(color);
+
+	return material;
+
 }
 
 std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_value,

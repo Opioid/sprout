@@ -36,6 +36,9 @@ public:
 	std::shared_ptr<Type> load(const std::string& filename, const memory::Variant_map& options,
 							   bool& was_cached);
 
+	template<typename Type>
+	std::shared_ptr<Type> get(const std::string& filename, const memory::Variant_map& options);
+
 private:
 
 	template<typename Type>

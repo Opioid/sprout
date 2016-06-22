@@ -7,6 +7,7 @@
 namespace rendering { namespace integrator { namespace surface {
 
 class Normal : public Integrator {
+
 public:
 
 	struct Settings {
@@ -20,7 +21,8 @@ public:
 		Vector vector;
 	};
 
-	Normal(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings);
+	Normal(const take::Settings& take_settings, math::random::Generator& rng,
+		   const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples) final override;
 
@@ -33,6 +35,7 @@ private:
 };
 
 class Normal_factory : public Integrator_factory {
+
 public:
 
 	Normal_factory(const take::Settings& take_settings, Normal::Settings::Vector vector);

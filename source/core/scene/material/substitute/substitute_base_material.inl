@@ -17,7 +17,8 @@ template<typename Sample>
 Material_base<Sample>::Material_base(Generic_sample_cache<Sample>& cache,
 									 std::shared_ptr<image::texture::Texture_2D> mask,
 									 const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings, two_sided) {}
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
+														   sampler_settings, two_sided) {}
 
 template<typename Sample>
 math::float3 Material_base<Sample>::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,

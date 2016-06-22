@@ -11,12 +11,14 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng, const Settings& settings) :
+Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng,
+			   const Settings& settings) :
 	Integrator(take_settings, rng), settings_(settings) {}
 
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
-math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene::Intersection& intersection) {
+math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
+						scene::Intersection& intersection) {
 	math::float3 vector;
 
 	if (Settings::Vector::Tangent == settings_.vector) {
@@ -42,7 +44,8 @@ math::float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/, scene:
 	return math::float4(0.5f * (vector + math::float3(1.f, 1.f, 1.f)), 1.f);
 }
 
-Normal_factory::Normal_factory(const take::Settings& take_settings, Normal::Settings::Vector vector) :
+Normal_factory::Normal_factory(const take::Settings& take_settings,
+							   Normal::Settings::Vector vector) :
 	Integrator_factory(take_settings) {
 	settings_.vector = vector;
 }

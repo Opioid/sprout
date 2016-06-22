@@ -21,6 +21,7 @@ struct Ray;
 namespace camera {
 
 class Camera : public entity::Entity {
+
 public:
 
 	Camera(math::int2 resolution, float ray_max_t);

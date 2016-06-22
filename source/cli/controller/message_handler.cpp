@@ -1,15 +1,19 @@
 #include "message_handler.hpp"
 #include "core/logging/logging.hpp"
 #include "core/rendering/rendering_driver_progressive.hpp"
+#include "core/resource/resource_manager.inl"
 #include "core/scene/scene.hpp"
 #include "core/scene/camera/camera.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
+#include "base/memory/variant_map.hpp"
 #include "base/string/string.inl"
 
 namespace controller {
 
-Message_handler::Message_handler(rendering::Driver_progressive& driver) : driver_(driver) {}
+Message_handler::Message_handler(rendering::Driver_progressive& driver,
+								 resource::Manager& resource_manager) :
+	driver_(driver), resource_manager_(resource_manager) {}
 
 void Message_handler::handle(const std::string& message) {
 	if ("restart" == message) {
@@ -27,7 +31,6 @@ void Message_handler::handle(const std::string& message) {
 		if (std::string::npos == dot) {
 			return;
 		}
-
 
 		auto assignee_begin = std::find_if_not(operand.begin(), operand.begin() + dot,
 											   string::is_space);
@@ -57,50 +60,62 @@ void Message_handler::handle(const std::string& message) {
 
 		std::string parameters = message.substr(op + 1);
 
-		scene::entity::Entity* entity = nullptr;
-		bool recompile = false;
-
 		if ("camera" == assignee) {
-			entity = &driver_.camera();
+			handle_entity(&driver_.camera(), value, parameters, false);
 		} else if ("entities" == assignee.substr(0, 8)) {
 			if ('\"' == index.front() && '\"' == index.back()) {
 				std::string index_string = index.substr(1, index.size() - 2);
-				entity = driver_.scene().entity(index_string);
-				recompile = true;
+				scene::entity::Entity* entity = driver_.scene().entity(index_string);
+				handle_entity(entity, value, parameters, true);
 			} else {
 				try {
 					uint32_t index_number = std::stoul(index);
-					entity = driver_.scene().entity(index_number);
-					recompile = true;
+					scene::entity::Entity* entity = driver_.scene().entity(index_number);
+					handle_entity(entity, value, parameters, true);
 				} catch (...) {}
 			}
+		} else if ("materials") {
+			if ('\"' == index.front() && '\"' == index.back()) {
+				std::string index_string = index.substr(1, index.size() - 2);
+				scene::material::Material* material = resource_manager_.
+						get<scene::material::Material>(index_string, memory::Variant_map()).get();
+				handle_material(material, value, parameters);
+			}
 		} else {
-			entity = driver_.scene().entity(assignee);
-			recompile = true;
+			scene::entity::Entity* entity = driver_.scene().entity(assignee);
+			handle_entity(entity, value, parameters, true);
 		}
+	}
+}
 
-		if (!entity) {
+void Message_handler::handle_entity(scene::entity::Entity* entity, const std::string& value,
+									const std::string& parameters, bool recompile) {
+	if (!entity) {
+		return;
+	}
+
+	try {
+		auto root = json::parse(parameters);
+
+		if ("parameters" == value) {
+			entity->set_parameters(*root);
+		} else if ("transformation" == value) {
+			math::transformation t = entity->local_frame_a();
+			json::read_transformation(*root, t);
+			entity->set_transformation(t);
+		} else {
 			return;
 		}
 
-		try {
-			auto root = json::parse(parameters);
-
-			if ("parameters" == value) {
-				entity->set_parameters(*root);
-			} else if ("transformation" == value) {
-				math::transformation t = entity->local_frame_a();
-				json::read_transformation(*root, t);
-				entity->set_transformation(t);
-			} else {
-				return;
-			}
-
-			driver_.schedule_restart(recompile);
-		} catch (const std::exception& e) {
-			logging::error(e.what());
-		}
+		driver_.schedule_restart(recompile);
+	} catch (const std::exception& e) {
+		logging::error(e.what());
 	}
+}
+
+void Message_handler::handle_material(scene::material::Material* material, const std::string& value,
+									  const std::string& parameters) {
+
 }
 
 }

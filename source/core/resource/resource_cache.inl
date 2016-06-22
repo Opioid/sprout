@@ -33,4 +33,17 @@ std::shared_ptr<T> Typed_cache<T>::load(const std::string& filename,
 	return resource;
 }
 
+template<typename T>
+std::shared_ptr<T> Typed_cache<T>::get(const std::string& filename,
+									   const memory::Variant_map& options) {
+	auto key = std::make_pair(filename, options);
+
+	auto cached = resources_.find(key);
+	if (resources_.end() != cached) {
+		return cached->second;
+	}
+
+	return nullptr;
+}
+
 }

@@ -16,6 +16,7 @@ class Manager;
 
 template<typename T>
 class Provider : public Identifiable<T> {
+
 public:
 
 	Provider(const std::string& name);

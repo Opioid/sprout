@@ -6,6 +6,7 @@
 namespace memory {
 
 class Variant_map {
+
 public:
 
 	template<typename T>

@@ -6,6 +6,7 @@
 namespace scene { namespace material { namespace metal {
 
 class Sample_isotropic : public material::Sample {
+
 public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
@@ -38,6 +39,7 @@ private:
 };
 
 class Sample_anisotropic : public material::Sample {
+
 public:
 
 	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
