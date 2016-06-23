@@ -7,7 +7,7 @@
 
 namespace scene { namespace camera {
 
-Camera::Camera(math::int2 resolution, float ray_max_t) :
+Camera::Camera(int2 resolution, float ray_max_t) :
 	resolution_(resolution),
 	sensor_(nullptr),
 	seed_dimensions_(0, 0),
@@ -45,7 +45,7 @@ void Camera::set_parameters(const json::Value& parameters) {
 	}
 }
 
-math::int2 Camera::resolution() const {
+int2 Camera::resolution() const {
 	return resolution_;
 }
 
@@ -58,7 +58,7 @@ void Camera::set_sensor(rendering::sensor::Sensor* sensor) {
 	sensor_ = sensor;
 
 	filter_radius_ = sensor->filter_radius_int();
-	const math::int2 seed_dimensions = resolution_ + math::int2(2 * filter_radius_,
+	const int2 seed_dimensions = resolution_ + int2(2 * filter_radius_,
 																2 * filter_radius_);
 
 	if (seed_dimensions != seed_dimensions_) {
@@ -68,11 +68,11 @@ void Camera::set_sensor(rendering::sensor::Sensor* sensor) {
 	}
 }
 
-math::uint2 Camera::seed(math::int2 pixel) const {
+math::uint2 Camera::seed(int2 pixel) const {
 	return seeds_[seed_dimensions_.x * (pixel.y + filter_radius_) + pixel.x + filter_radius_];
 }
 
-void Camera::set_seed(math::int2 pixel, math::uint2 seed) {
+void Camera::set_seed(int2 pixel, math::uint2 seed) {
 	seeds_[seed_dimensions_.x * (pixel.y + filter_radius_) + pixel.x + filter_radius_] = seed;
 }
 

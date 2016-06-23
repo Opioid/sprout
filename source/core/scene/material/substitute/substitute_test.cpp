@@ -21,27 +21,27 @@ void test() {
 
 	Sample sample;
 
-	math::float3 color(1.f, 1.f, 1.f);
-	math::float3 radiance = math::float3_identity;
+	float3 color(1.f, 1.f, 1.f);
+	float3 radiance = math::float3_identity;
 	float ior         = 1.47f;
 	float constant_f0 = fresnel::schlick_f0(1.f, ior);
 	float roughness   = 0.f;
 	float metallic    = 0.f;
 	sample.set(color, radiance, ior, constant_f0, roughness, metallic);
 
-	math::float3 t(1.f, 0.f, 0.f);
-	math::float3 b(0.f, 1.f, 0.f);
-	math::float3 n(0.f, 0.f, 1.f);
+	float3 t(1.f, 0.f, 0.f);
+	float3 b(0.f, 1.f, 0.f);
+	float3 n(0.f, 0.f, 1.f);
 
-	math::float3 arbitrary = math::normalized(math::float3(0.5f, 0.5f, 0.5f));
+	float3 arbitrary = math::normalized(float3(0.5f, 0.5f, 0.5f));
 
-	math::float3 wo = n;
+	float3 wo = n;
 
 	sample.set_basis(t, b, n, n, wo);
 
-	math::float3 wi = arbitrary;//n;
+	float3 wi = arbitrary;//n;
 	float pdf;
-	math::float3 reflection = sample.evaluate(wi, pdf);
+	float3 reflection = sample.evaluate(wi, pdf);
 	print(reflection, pdf);
 
 	bxdf::Result result;

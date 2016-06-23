@@ -12,7 +12,7 @@ public:
 
 	virtual float radius() const = 0;
 
-	virtual float evaluate(math::float2 p) const = 0;
+	virtual float evaluate(float2 p) const = 0;
 };
 
 }}}

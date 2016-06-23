@@ -33,22 +33,22 @@ public:
 			float time, Entity_transformation& transformation) const = 0;
 
 	virtual void sample(const Entity_transformation& transformation, float time,
-						const math::float3& p, const math::float3& n, bool total_sphere,
+						const float3& p, const float3& n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
 						Sampler_filter filter, Sample& result) const = 0;
 
-	void sample(float time, const math::float3& p, const math::float3& n,
+	void sample(float time, const float3& p, const float3& n,
 				bool total_sphere, sampler::Sampler& sampler, Worker& worker,
 				Sampler_filter filter, Sample& result) const;
 
-	void sample(float time, const math::float3& p, sampler::Sampler& sampler,
+	void sample(float time, const float3& p, sampler::Sampler& sampler,
 				Worker& worker, Sampler_filter filter, Sample& result) const;
 
 	virtual float pdf(const Entity_transformation& transformation,
-					  const math::float3& p, const math::float3& wi, bool total_sphere,
+					  const float3& p, const float3& wi, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const = 0;
 
-	virtual math::float3 power(const math::aabb& scene_bb) const = 0;
+	virtual float3 power(const math::aabb& scene_bb) const = 0;
 
 	virtual void prepare_sampling() = 0;
 

@@ -4,7 +4,7 @@
 
 namespace spectrum {
 
-math::float3 XYZ_to_linear_RGB(math::pfloat3 xyz);
+float3 XYZ_to_linear_RGB(float3_p xyz);
 
 constexpr uint32_t CIE_XYZ_Num = (830 - 360) + 1; // 471
 

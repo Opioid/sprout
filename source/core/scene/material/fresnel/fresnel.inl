@@ -5,7 +5,7 @@
 
 namespace scene { namespace material { namespace fresnel {
 
-inline math::float3 schlick(float wo_dot_h, math::pfloat3 f0) {
+inline float3 schlick(float wo_dot_h, float3_p f0) {
 	return f0 + std::pow(1.f - wo_dot_h, 5.f) * (1.f - f0);
 
 	// Gaussian approximation
@@ -17,17 +17,17 @@ inline float schlick_f0(float n0, float n1) {
 	return t * t;
 }
 
-inline math::float3 conductor(float wo_dot_h, math::pfloat3 eta, math::pfloat3 k) {
-	math::float3 tmp_f = eta * eta + k * k;
+inline float3 conductor(float wo_dot_h, float3_p eta, float3_p k) {
+	float3 tmp_f = eta * eta + k * k;
 
 	float wo_dot_h2 = wo_dot_h * wo_dot_h;
-	math::float3 tmp = wo_dot_h2 * tmp_f;
+	float3 tmp = wo_dot_h2 * tmp_f;
 
-	math::float3 a = 2.f * wo_dot_h * eta;
-	math::float3 r_p = (tmp - a + 1.f)
+	float3 a = 2.f * wo_dot_h * eta;
+	float3 r_p = (tmp - a + 1.f)
 					 / (tmp + a + 1.f);
 
-	math::float3 r_o = (tmp_f - a + wo_dot_h2)
+	float3 r_o = (tmp_f - a + wo_dot_h2)
 					 / (tmp_f + a + wo_dot_h2);
 
 	return 0.5f * (r_p + r_o);
@@ -63,7 +63,7 @@ inline float tp(float n1, float n2, float cosI, float cosT) {
 	return 2.f * n1 * cosI / (n1 * cosT + n2 * cosI);
 }
 
-inline math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
+inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
 							 float internal_ior, float thickness) {
 	// Precompute the reflection phase changes (depends on IOR)
 	float delta10 = (thinfilm_ior < external_ior) ? math::Pi : 0.f;
@@ -80,16 +80,16 @@ inline math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_
 	float sin2 = eta_i * eta_i * a;
 
 	if (sin1 > 1.f || sin2 > 1.f) {
-		return math::float3(1.f); // Account for TIR.
+		return float3(1.f); // Account for TIR.
 	}
 
 	float cos1 = std::sqrt(1.f - sin1);
 	float cos2 = std::sqrt(1.f - sin2);
 
 	// Calculate the interference phase change.
-	math::float3 phi = math::float3(2.f * thinfilm_ior * thickness * cos1);
-	phi *= 2.f * math::Pi / math::float3(650.f, 510.f, 475.f);
-	phi += math::float3(delta);
+	float3 phi = float3(2.f * thinfilm_ior * thickness * cos1);
+	phi *= 2.f * math::Pi / float3(650.f, 510.f, 475.f);
+	phi += float3(delta);
 
 	// Obtain the various Fresnel amplitude coefficients.
 	float alpha_s = rs(thinfilm_ior, external_ior, cos1, wo_dot_h)
@@ -102,9 +102,9 @@ inline math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_
 				  * tp(thinfilm_ior, internal_ior, cos1, cos2);
 
 	// Calculate the s- and p-polarized intensity transmission coefficient
-	math::float3 cos_phi = math::cos(phi);
-	math::float3 ts = (beta_s * beta_s) / ((alpha_s * alpha_s) - 2.f * alpha_s * cos_phi + 1.f);
-	math::float3 tp = (beta_p * beta_p) / ((alpha_p * alpha_p) - 2.f * alpha_p * cos_phi + 1.f);
+	float3 cos_phi = math::cos(phi);
+	float3 ts = (beta_s * beta_s) / ((alpha_s * alpha_s) - 2.f * alpha_s * cos_phi + 1.f);
+	float3 tp = (beta_p * beta_p) / ((alpha_p * alpha_p) - 2.f * alpha_p * cos_phi + 1.f);
 
 	// Calculate the transmitted power ratio for medium change.
 	float beam_ratio = (internal_ior * cos2) / (external_ior * wo_dot_h);
@@ -115,19 +115,19 @@ inline math::float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_
 
 inline Schlick::Schlick(float f0) : f0_(f0) {}
 
-inline Schlick::Schlick(math::pfloat3 f0) : f0_(f0) {}
+inline Schlick::Schlick(float3_p f0) : f0_(f0) {}
 
-inline math::float3 Schlick::operator()(float wo_dot_h) const {
+inline float3 Schlick::operator()(float wo_dot_h) const {
 	return schlick(wo_dot_h, f0_);
 }
 
 inline Schlick_weighted::Schlick_weighted(float f0, float weight) :
 	schlick_(f0), weight_(weight) {}
 
-inline Schlick_weighted::Schlick_weighted(math::pfloat3 f0, float weight) :
+inline Schlick_weighted::Schlick_weighted(float3_p f0, float weight) :
 	schlick_(f0), weight_(weight) {}
 
-inline math::float3 Schlick_weighted::operator()(float wo_dot_h) const {
+inline float3 Schlick_weighted::operator()(float wo_dot_h) const {
 	return weight_ * schlick_(wo_dot_h);
 }
 
@@ -136,7 +136,7 @@ inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior,
 	external_ior_(external_ior), thinfilm_ior_(thinfilm_ior),
 	internal_ior_(internal_ior), thickness_(thickness) {}
 
-inline math::float3 Thinfilm::operator()(float wo_dot_h) const {
+inline float3 Thinfilm::operator()(float wo_dot_h) const {
 	return thinfilm(wo_dot_h, external_ior_, thinfilm_ior_, internal_ior_, thickness_);
 }
 
@@ -144,13 +144,13 @@ inline Thinfilm_weighted::Thinfilm_weighted(float external_ior, float thinfilm_i
 											float internal_ior, float thickness, float weight) :
 	thinfilm_(external_ior, thinfilm_ior, internal_ior, thickness), weight_(weight) {}
 
-inline math::float3 Thinfilm_weighted::operator()(float wo_dot_h) const {
+inline float3 Thinfilm_weighted::operator()(float wo_dot_h) const {
 	return weight_ * thinfilm_(wo_dot_h);
 }
 
-inline Conductor::Conductor(math::pfloat3 eta, math::pfloat3 k) : eta_(eta), k_(k) {}
+inline Conductor::Conductor(float3_p eta, float3_p k) : eta_(eta), k_(k) {}
 
-inline math::float3 Conductor::operator()(float wo_dot_h) const {
+inline float3 Conductor::operator()(float wo_dot_h) const {
 	return conductor(wo_dot_h, eta_, k_);
 }
 

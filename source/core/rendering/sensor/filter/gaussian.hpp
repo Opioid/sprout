@@ -13,7 +13,7 @@ public:
 
 	virtual float radius() const final override;
 
-	virtual float evaluate(math::float2 p) const final override;
+	virtual float evaluate(float2 p) const final override;
 
 private:
 

@@ -21,7 +21,7 @@ Sky::Sky(scene::Prop& sky, scene::Prop& sun) :
 
 	math::transformation transformation {
 		math::float3_identity,
-		math::float3(1.f, 1.f, 1.f),
+		float3(1.f, 1.f, 1.f),
 		math::create_quaternion_rotation_x(math::degrees_to_radians(90.f))
 	};
 
@@ -36,7 +36,7 @@ void Sky::set_parameters(const json::Value& parameters) {
 		const json::Value& node_value = n->value;
 
 		if ("sun" == node_name) {
-			math::float3 angles = json::read_float3(node_value, "rotation");
+			float3 angles = json::read_float3(node_value, "rotation");
 			sun_rotation_ = json::create_rotation_matrix(angles);
 		} else if ("ground_albedo" == node_name) {
 			ground_albedo_ = json::read_float3(node_value);
@@ -53,13 +53,13 @@ Model& Sky::model() {
 }
 
 void Sky::update() {
-	model_.set_sun_direction(math::float3(sun_rotation_.z));
+	model_.set_sun_direction(float3(sun_rotation_.z));
 	model_.set_ground_albedo(ground_albedo_);
 	model_.set_turbidity(turbidity_);
 
 	math::transformation transformation {
 		math::float3_identity,
-		math::float3(0.26f, 0.26f, 0.26f),
+		float3(0.26f, 0.26f, 0.26f),
 		math::create_quaternion(sun_rotation_)
 	};
 

@@ -56,7 +56,7 @@ private:
 	void load_stereoscopic(const json::Value& stereo_value, Stereoscopic& stereo) const;
 
 	rendering::sensor::Sensor* load_sensor(const json::Value& sensor_value,
-										   math::int2 dimensions,
+										   int2 dimensions,
 										   bool alpha_transparency) const;
 
 	const rendering::sensor::tonemapping::Tonemapper*

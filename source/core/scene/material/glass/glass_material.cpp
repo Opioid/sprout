@@ -13,7 +13,7 @@ Glass::Glass(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture
 			 const Sampler_settings& sampler_settings) :
 	Typed_material(cache, mask, sampler_settings, false) {}
 
-const material::Sample& Glass::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Glass::sample(const shape::Hitpoint& hp, float3_p wo,
 									  float /*area*/, float /*time*/, float ior_i,
 									  const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
@@ -21,8 +21,8 @@ const material::Sample& Glass::sample(const shape::Hitpoint& hp, math::pfloat3 w
 	if (normal_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		math::float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		math::float3 n = math::normalized(hp.tangent_to_world(nm));
+		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
+		float3 n = math::normalized(hp.tangent_to_world(nm));
 
 		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo);
 	} else {
@@ -38,7 +38,7 @@ void Glass::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_ma
 	normal_map_ = normal_map;
 }
 
-void Glass::set_color(const math::float3& color) {
+void Glass::set_color(const float3& color) {
 	color_ = color;
 }
 

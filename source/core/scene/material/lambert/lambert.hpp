@@ -15,11 +15,11 @@ class Isotropic {
 public:
 
 	template<typename Sample>
-	static math::float3 evaluate(math::pfloat3 wi, float n_dot_wi,
+	static float3 evaluate(float3_p wi, float n_dot_wi,
 								 const Sample& sample, float& pdf);
 
 	template<typename Sample>
-	static float pdf(math::pfloat3 wi, float n_dot_wi, const Sample& sample);
+	static float pdf(float3_p wi, float n_dot_wi, const Sample& sample);
 
 	template<typename Sample>
 	static float importance_sample(const Sample& sample, sampler::Sampler& sampler,

@@ -14,22 +14,22 @@ float Texture_2D_byte_3_unorm::at_1(int32_t x, int32_t y) const {
 	return spectrum::unorm_to_float(value.x);
 }
 
-math::float2 Texture_2D_byte_3_unorm::at_2(int32_t x, int32_t y) const {
+float2 Texture_2D_byte_3_unorm::at_2(int32_t x, int32_t y) const {
 	auto& value = image_.at(x, y);
-	return math::float2(spectrum::unorm_to_float(value.x),
+	return float2(spectrum::unorm_to_float(value.x),
 						spectrum::unorm_to_float(value.y));
 }
 
-math::float3 Texture_2D_byte_3_unorm::at_3(int32_t x, int32_t y) const {
+float3 Texture_2D_byte_3_unorm::at_3(int32_t x, int32_t y) const {
 	auto& value = image_.at(x, y);
-	return math::float3(spectrum::unorm_to_float(value.x),
+	return float3(spectrum::unorm_to_float(value.x),
 						spectrum::unorm_to_float(value.y),
 						spectrum::unorm_to_float(value.z));
 }
 
-math::float4 Texture_2D_byte_3_unorm::at_4(int32_t x, int32_t y) const {
+float4 Texture_2D_byte_3_unorm::at_4(int32_t x, int32_t y) const {
 	auto& value = image_.at(x, y);
-	return math::float4(spectrum::unorm_to_float(value.x),
+	return float4(spectrum::unorm_to_float(value.x),
 						spectrum::unorm_to_float(value.y),
 						spectrum::unorm_to_float(value.z), 1.f);
 }
@@ -39,22 +39,22 @@ float Texture_2D_byte_3_unorm::at_1(int32_t x, int32_t y, int32_t element) const
 	return spectrum::unorm_to_float(value.x);
 }
 
-math::float2 Texture_2D_byte_3_unorm::at_2(int32_t x, int32_t y, int32_t element) const {
+float2 Texture_2D_byte_3_unorm::at_2(int32_t x, int32_t y, int32_t element) const {
 	auto& value = image_.at(x, y, element);
-	return math::float2(spectrum::unorm_to_float(value.x),
+	return float2(spectrum::unorm_to_float(value.x),
 						spectrum::unorm_to_float(value.y));
 }
 
-math::float3 Texture_2D_byte_3_unorm::at_3(int32_t x, int32_t y, int32_t element) const {
+float3 Texture_2D_byte_3_unorm::at_3(int32_t x, int32_t y, int32_t element) const {
 	auto& value = image_.at(x, y, element);
-	return math::float3(spectrum::unorm_to_float(value.x),
+	return float3(spectrum::unorm_to_float(value.x),
 						spectrum::unorm_to_float(value.y),
 						spectrum::unorm_to_float(value.z));
 }
 
-math::float4 Texture_2D_byte_3_unorm::at_4(int32_t x, int32_t y, int32_t element) const {
+float4 Texture_2D_byte_3_unorm::at_4(int32_t x, int32_t y, int32_t element) const {
 	auto& value = image_.at(x, y, element);
-	return math::float4(spectrum::unorm_to_float(value.x),
+	return float4(spectrum::unorm_to_float(value.x),
 						spectrum::unorm_to_float(value.y),
 						spectrum::unorm_to_float(value.z), 1.f);
 }

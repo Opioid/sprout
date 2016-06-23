@@ -11,12 +11,12 @@
 
 namespace scene { namespace material { namespace substitute {
 
-math::float3 Sample_base::radiance() const {
+float3 Sample_base::radiance() const {
 	return emission_;
 }
 
-math::float3 Sample_base::attenuation() const {
-	return math::float3(100.f, 100.f, 100.f);
+float3 Sample_base::attenuation() const {
+	return float3(100.f, 100.f, 100.f);
 }
 
 float Sample_base::ior() const {
@@ -35,12 +35,12 @@ bool Sample_base::is_translucent() const {
 	return false;
 }
 
-math::float3 Sample_base::base_evaluate(math::pfloat3 wi, float& pdf) const {
+float3 Sample_base::base_evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
 	float diffuse_pdf;
-	math::float3 diffuse = oren_nayar::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo,
+	float3 diffuse = oren_nayar::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo,
 														   *this, diffuse_pdf);
 
 	// Roughness zero will always have zero specular term (or worse NaN)
@@ -49,7 +49,7 @@ math::float3 Sample_base::base_evaluate(math::pfloat3 wi, float& pdf) const {
 		return n_dot_wi * diffuse;
 	}
 
-	math::float3 h = math::normalized(wo_ + wi);
+	float3 h = math::normalized(wo_ + wi);
 
 	float n_dot_h  = math::dot(n_, h);
 	float wo_dot_h = math::dot(wo_, h);
@@ -57,9 +57,9 @@ math::float3 Sample_base::base_evaluate(math::pfloat3 wi, float& pdf) const {
 	float clamped_a2 = ggx::clamp_a2(a2_);
 	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
 	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	math::float3 f = fresnel::schlick(wo_dot_h, f0_);
+	float3 f = fresnel::schlick(wo_dot_h, f0_);
 
-	math::float3 specular = d * g * f;
+	float3 specular = d * g * f;
 
 	float ggx_pdf = d * n_dot_h / (4.f * wo_dot_h);
 
@@ -74,7 +74,7 @@ void Sample_base::diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Res
 
 	fresnel::Schlick schlick(f0_);
 	float ggx_pdf;
-	math::float3 ggx_reflection = ggx::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
+	float3 ggx_reflection = ggx::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
 														   *this, schlick, ggx_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
@@ -88,7 +88,7 @@ void Sample_base::specular_importance_sample(sampler::Sampler& sampler,
 	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, schlick, sampler, result);
 
 	float on_pdf;
-	math::float3 on_reflection = oren_nayar::Isotropic::evaluate(
+	float3 on_reflection = oren_nayar::Isotropic::evaluate(
 				result.wi, n_dot_wi, n_dot_wo, *this, on_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + on_reflection);
@@ -103,10 +103,10 @@ void Sample_base::pure_specular_importance_sample(sampler::Sampler& sampler,
 	result.reflection *= n_dot_wi;
 }
 
-void Sample_base::set(math::pfloat3 color, math::pfloat3 radiance,
+void Sample_base::set(float3_p color, float3_p radiance,
 					  float ior, float constant_f0, float a2, float metallic) {
 	diffuse_color_ = (1.f - metallic) * color;
-	f0_ = math::lerp(math::float3(constant_f0), color, metallic);
+	f0_ = math::lerp(float3(constant_f0), color, metallic);
 	emission_ = radiance;
 	ior_ = ior;
 	a2_ = a2;

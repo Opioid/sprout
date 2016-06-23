@@ -17,7 +17,7 @@ inline float Intersection::opacity(Worker& worker, float time, Sampler_filter fi
 	return material()->opacity(geo.uv, time, worker, filter);
 }
 
-inline const material::Sample& Intersection::sample(Worker& worker, math::pfloat3 wo,
+inline const material::Sample& Intersection::sample(Worker& worker, float3_p wo,
 													float time, Sampler_filter filter) const {
 	return material()->sample(geo, wo, area(), time, 1.f, worker, filter);
 }

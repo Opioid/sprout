@@ -7,11 +7,11 @@ namespace scene { namespace material { namespace light {
 class Sample : public material::Sample {
 public:
 
-	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
+	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
-	virtual math::float3 radiance() const final override;
+	virtual float3 radiance() const final override;
 
-	virtual math::float3 attenuation() const final override;
+	virtual float3 attenuation() const final override;
 
 	virtual float ior() const final override;
 
@@ -24,11 +24,11 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(math::pfloat3 radiance);
+	void set(float3_p radiance);
 
 private:
 
-	math::float3 radiance_;
+	float3 radiance_;
 };
 
 }}}

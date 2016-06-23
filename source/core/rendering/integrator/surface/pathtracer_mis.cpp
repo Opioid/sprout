@@ -31,13 +31,13 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
-								bool volume, scene::Intersection& intersection) {
+float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
+						  bool volume, scene::Intersection& intersection) {
 	Sampler_filter filter;
 	scene::material::bxdf::Result sample_result;
 
-	math::float3 throughput = math::float3(1.f, 1.f, 1.f);
-	math::float3 result = math::float3_identity;
+	float3 throughput = float3(1.f, 1.f, 1.f);
+	float3 result = math::float3_identity;
 	float opacity = 0.f;
 	bool primary_ray = 0 == ray.depth;
 
@@ -54,13 +54,13 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
 
 		if (volume && i > 0) {
 		//	throughput *= worker.transmittance(ray);
-			math::float3 tr;
-			math::float4 vli = worker.volume_li(ray, tr);
+			float3 tr;
+			float4 vli = worker.volume_li(ray, tr);
 			result += throughput * vli.xyz;
 			throughput *= tr;
 		}
 
-		math::float3 wo = -ray.direction;
+		float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)
@@ -103,9 +103,9 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
 		}
 
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
-			math::float3 tr = resolve_transmission(worker, ray, intersection,
-												   material_sample.attenuation(),
-												   Sampler_filter::Nearest, sample_result);
+			float3 tr = resolve_transmission(worker, ray, intersection,
+											 material_sample.attenuation(),
+											 Sampler_filter::Nearest, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
 			}
@@ -133,7 +133,7 @@ math::float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
 		}
 	}
 
-	return math::float4(result, opacity);
+	return float4(result, opacity);
 }
 
 float power_heuristic(float fpdf, float gpdf) {
@@ -141,11 +141,11 @@ float power_heuristic(float fpdf, float gpdf) {
 	return f2 / (f2 + gpdf * gpdf);
 }
 
-math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& ray,
-												   const scene::Intersection& intersection,
-												   const scene::material::Sample& material_sample,
-												   Sampler_filter filter) {
-	math::float3 result = math::float3_identity;
+float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& ray,
+											 const scene::Intersection& intersection,
+											 const scene::material::Sample& material_sample,
+											 Sampler_filter filter) {
+	float3 result = math::float3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	scene::Ray shadow_ray;
@@ -180,10 +180,10 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 
 			float mv = worker.masked_visibility(shadow_ray, filter);
 			if (mv > 0.f) {
-				math::float3 t = worker.transmittance(shadow_ray);
+				float3 t = worker.transmittance(shadow_ray);
 
 				float bxdf_pdf;
-				math::float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+				float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
 				float weight = power_heuristic(light_sample.shape.pdf, bxdf_pdf);
 
@@ -208,7 +208,7 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 			continue;
 		}
 
-		math::float3 wo = -sample_result.wi;
+		float3 wo = -sample_result.wi;
 		shadow_ray.set_direction(sample_result.wi);
 		shadow_ray.max_t = take_settings_.ray_max_t;
 
@@ -220,9 +220,9 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 																		Sampler_filter::Nearest);
 
 				if (light_material_sample.same_hemisphere(wo)) {
-					math::float3 t = worker.transmittance(shadow_ray);
+					float3 t = worker.transmittance(shadow_ray);
 
-					math::float3 ls_energy = t * light_material_sample.radiance();
+					float3 ls_energy = t * light_material_sample.radiance();
 
 					float weight = power_heuristic(sample_result.pdf, ls_pdf);
 
@@ -236,11 +236,11 @@ math::float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::
 	return settings_.num_light_samples_reciprocal * result;
 }
 
-math::float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
-												  scene::Intersection& intersection,
-												  const math::float3& attenuation,
-												  Sampler_filter filter,
-												  Bxdf_result& sample_result) {
+float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
+											scene::Intersection& intersection,
+											const float3& attenuation,
+											Sampler_filter filter,
+											Bxdf_result& sample_result) {
 	if (intersection.prop->is_open()) {
 		return transmittance_open_.resolve(worker, ray, intersection, attenuation,
 										   sampler_, filter, sample_result);

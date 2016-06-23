@@ -58,7 +58,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 		break;
 	}
 
-	math::int2 dimensions;
+	int2 dimensions;
 
 	if (1 == num_elements) {
 		dimensions.x = info.width;

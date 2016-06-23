@@ -9,11 +9,11 @@ class Sample_isotropic : public material::Sample {
 
 public:
 
-	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
+	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
-	virtual math::float3 radiance() const final override;
+	virtual float3 radiance() const final override;
 
-	virtual math::float3 attenuation() const final override;
+	virtual float3 attenuation() const final override;
 
 	virtual float ior() const final override;
 
@@ -26,12 +26,12 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(math::pfloat3 ior, math::pfloat3 absorption, float roughness);
+	void set(float3_p ior, float3_p absorption, float roughness);
 
 private:
 
-	math::float3 ior_;
-	math::float3 absorption_;
+	float3 ior_;
+	float3 absorption_;
 
 	float a2_;
 
@@ -42,11 +42,11 @@ class Sample_anisotropic : public material::Sample {
 
 public:
 
-	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
+	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
-	virtual math::float3 radiance() const final override;
+	virtual float3 radiance() const final override;
 
-	virtual math::float3 attenuation() const final override;
+	virtual float3 attenuation() const final override;
 
 	virtual float ior() const final override;
 
@@ -59,14 +59,14 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(math::pfloat3 ior, math::pfloat3 absorption, math::float2 roughness);
+	void set(float3_p ior, float3_p absorption, float2 roughness);
 
 private:
 
-	math::float3 ior_;
-	math::float3 absorption_;
-	math::float2 a_;
-	math::float2 a2_;
+	float3 ior_;
+	float3 absorption_;
+	float2 a_;
+	float2 a2_;
 	float axy_;
 
 	friend ggx::Anisotropic;

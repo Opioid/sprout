@@ -16,7 +16,7 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 														   sampler_settings,
 														   two_sided) {}
 
-const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Material::sample(const shape::Hitpoint& hp, float3_p wo,
 										 float /*area*/, float /*time*/, float /*ior_i*/,
 										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
@@ -24,15 +24,15 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	if (normal_map_) {
-		math::float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		math::float3 n = math::normalized(hp.tangent_to_world(nm));
+		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
+		float3 n = math::normalized(hp.tangent_to_world(nm));
 
 		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo, two_sided_);
 	} else {
 		sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
 	}
 
-	math::float3 color;
+	float3 color;
 
 	if (color_map_) {
 		color = sampler.sample_3(*color_map_, hp.uv);
@@ -53,7 +53,7 @@ void Material::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal
 	normal_map_ = normal_map;
 }
 
-void Material::set_color(const math::float3& color) {
+void Material::set_color(const float3& color) {
 	color_ = color;
 }
 

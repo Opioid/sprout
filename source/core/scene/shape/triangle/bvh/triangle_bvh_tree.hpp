@@ -51,22 +51,22 @@ public:
 	float opacity(math::Oray& ray, float time, const material::Materials& materials,
 				  Worker& worker, material::Sampler_settings::Filter filter) const;
 
-	void interpolate_triangle_data(uint32_t index, math::float2 uv,
-								   math::float3& n, math::float3& t, math::float2& tc) const;
+	void interpolate_triangle_data(uint32_t index, float2 uv,
+								   float3& n, float3& t, float2& tc) const;
 
-    math::float2 interpolate_triangle_uv(uint32_t index, math::float2 uv) const;
+    float2 interpolate_triangle_uv(uint32_t index, float2 uv) const;
 
 	float    triangle_bitangent_sign(uint32_t index) const;
     uint32_t triangle_material_index(uint32_t index) const;
 
-	math::float3 triangle_normal(uint32_t index) const;
+	float3 triangle_normal(uint32_t index) const;
 
 	float triangle_area(uint32_t index) const;
-    float triangle_area(uint32_t index, const math::float3& scale) const;
+    float triangle_area(uint32_t index, const float3& scale) const;
 
-	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float3& n, math::float2& tc) const;
-	void sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const;
-	void sample(uint32_t index, math::float2 r2, math::float3& p) const;
+	void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const;
+	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
+	void sample(uint32_t index, float2 r2, float3& p) const;
 
 	void allocate_triangles(uint32_t num_triangles, uint32_t num_parts, const std::vector<Vertex>& vertices);
 

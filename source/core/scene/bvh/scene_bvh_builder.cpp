@@ -79,7 +79,7 @@ math::aabb Builder::aabb(index begin, index end) {
 Split_candidate Builder::splitting_plane(const math::aabb& /*aabb*/, index begin, index end) {
 	split_candidates_.clear();
 
-	math::float3 average = math::float3_identity;
+	float3 average = math::float3_identity;
 
 	for (index i = begin; i != end; ++i) {
 		average += (*i)->aabb().position();

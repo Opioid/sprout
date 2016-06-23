@@ -7,7 +7,7 @@
 
 namespace scene { namespace material { namespace substitute {
 
-math::float3 Sample_clearcoat::evaluate(math::pfloat3 wi, float& pdf) const {
+float3 Sample_clearcoat::evaluate(float3_p wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
 		return math::float3_identity;

@@ -13,7 +13,7 @@ Material_overcast::Material_overcast(Generic_sample_cache<light::Sample>& cache,
 	material::Typed_material<Generic_sample_cache<light::Sample>>(
 		cache, mask, sampler_settings, two_sided) {}
 
-const material::Sample& Material_overcast::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Material_overcast::sample(const shape::Hitpoint& hp, float3_p wo,
 												  float /*area*/, float /*time*/, float /*ior_i*/,
 												  const Worker& worker, Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
@@ -25,14 +25,14 @@ const material::Sample& Material_overcast::sample(const shape::Hitpoint& hp, mat
 	return sample;
 }
 
-math::float3 Material_overcast::sample_radiance(math::pfloat3 wi, math::float2 /*uv*/,
+float3 Material_overcast::sample_radiance(float3_p wi, float2 /*uv*/,
 												float /*area*/, float /*time*/,
 												const Worker& /*worker*/,
 												Sampler_filter /*filter*/) const {
 	return overcast(wi);
 }
 
-math::float3 Material_overcast::average_radiance(float /*area*/) const {
+float3 Material_overcast::average_radiance(float /*area*/) const {
 	if (is_two_sided()) {
 		return 2.f * color_;
 	}
@@ -40,12 +40,12 @@ math::float3 Material_overcast::average_radiance(float /*area*/) const {
 	return color_;
 }
 
-void Material_overcast::set_emission(math::pfloat3 radiance) {
+void Material_overcast::set_emission(float3_p radiance) {
 	color_ = radiance;
 }
 
-math::float3 Material_overcast::overcast(math::pfloat3 wi) const {
-	return ((1.f + 2.f * math::dot(math::float3(0.f, 1.f, 0.f), wi)) / 3.f) * color_;
+float3 Material_overcast::overcast(float3_p wi) const {
+	return ((1.f + 2.f * math::dot(float3(0.f, 1.f, 0.f), wi)) / 3.f) * color_;
 }
 
 }}}

@@ -10,18 +10,18 @@
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis,
-											  math::pfloat3 p,
+											  float3_p p,
 											  index begin, index end,
 											  const std::vector<Index_triangle>& triangles,
 											  const std::vector<Vertex>& vertices) :
 	d_(p.v[split_axis]), axis_(split_axis)  {
-	math::float3 n;
+	float3 n;
 
 	switch (split_axis) {
 	default:
-	case 0: n = math::float3(1.f, 0.f, 0.f); break;
-	case 1: n = math::float3(0.f, 1.f, 0.f); break;
-	case 2: n = math::float3(0.f, 0.f, 1.f); break;
+	case 0: n = float3(1.f, 0.f, 0.f); break;
+	case 1: n = float3(0.f, 1.f, 0.f); break;
+	case 2: n = float3(0.f, 0.f, 1.f); break;
 	}
 
 	plane_ = math::create_plane(n, p);
@@ -109,19 +109,19 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 		const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {
 	split_candidates_.clear();
 
-	math::float3 average = math::float3_identity;
+	float3 average = math::float3_identity;
 
 	for (index i = begin; i != end; ++i) {
 		auto& t = triangles[*i];
-		auto a = math::float3(vertices[t.a].p);
-		auto b = math::float3(vertices[t.b].p);
-		auto c = math::float3(vertices[t.c].p);
+		auto a = float3(vertices[t.a].p);
+		auto b = float3(vertices[t.b].p);
+		auto c = float3(vertices[t.c].p);
 		average += a + b + c;
 	}
 
 	average /= static_cast<float>(std::distance(begin, end) * 3);
 
-	math::float3 halfsize = aabb.halfsize();
+	float3 halfsize = aabb.halfsize();
 
 	uint8_t bb_axis;
 
@@ -160,17 +160,17 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
 						 [](const math::packed_float3& a, const math::packed_float3& b) {
 								return a.x < b.x; });
-		math::float3 x_median = math::float3(positions[middle]);
+		float3 x_median = float3(positions[middle]);
 
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
 						 [](const math::packed_float3& a, const math::packed_float3& b) {
 								return a.y < b.y; });
-		math::float3 y_median = math::float3(positions[middle]);
+		float3 y_median = float3(positions[middle]);
 
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
 						 [](const math::packed_float3& a, const math::packed_float3& b) {
 								return a.z < b.z; });
-		math::float3 z_median = math::float3(positions[middle]);
+		float3 z_median = float3(positions[middle]);
 
 		split_candidates_.clear();
 

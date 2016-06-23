@@ -15,7 +15,7 @@ class Server : public exporting::Sink {
 
 public:
 
-	Server(math::int2 dimensions, Message_handler& message_handler);
+	Server(int2 dimensions, Message_handler& message_handler);
 	~Server();
 
 	void run();

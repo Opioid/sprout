@@ -14,7 +14,7 @@ public:
 			 std::shared_ptr<image::texture::Texture_2D> mask,
 			 const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
 										   float area, float time, float ior_i,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;

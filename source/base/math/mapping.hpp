@@ -4,10 +4,10 @@
 
 namespace math {
 
-math::float3 disk_to_hemisphere_equidistant(math::float2 uv);
+float3 disk_to_hemisphere_equidistant(float2 uv);
 
-math::float2 hemisphere_to_disk_equidistant(math::pfloat3 dir);
+float2 hemisphere_to_disk_equidistant(float3_p dir);
 
-math::float2 hemisphere_to_disk_paraboloid(math::pfloat3 dir);
+float2 hemisphere_to_disk_paraboloid(float3_p dir);
 
 }

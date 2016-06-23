@@ -9,25 +9,25 @@ struct Triangle_MTE {
 	Triangle_MTE(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c,
 				 uint32_t material_index);
 
-	math::float3 ap, e1, e2;
-	math::float3 an, bn, cn;
-	math::float3 at, bt, ct;
-	math::float2 auv, buv, cuv;
+	float3 ap, e1, e2;
+	float3 an, bn, cn;
+	float3 at, bt, ct;
+	float2 auv, buv, cuv;
 	float bitangent_sign;
 	uint32_t material_index;
 
-	bool intersect(math::Oray& ray, math::float2& uv) const;
+	bool intersect(math::Oray& ray, float2& uv) const;
 	bool intersect_p(const math::Oray& ray) const;
 
-	void interpolate(math::float2 uv, math::float3& p, math::float2& tc) const;
-	void interpolate_data(math::float2 uv, math::float3& n,
-						  math::float3& t, math::float2& tc) const;
-	math::float2 interpolate_uv(math::float2 uv) const;
+	void interpolate(float2 uv, float3& p, float2& tc) const;
+	void interpolate_data(float2 uv, float3& n,
+						  float3& t, float2& tc) const;
+	float2 interpolate_uv(float2 uv) const;
 
-	math::float3 normal() const;
+	float3 normal() const;
 
 	float area() const;
-	float area(const math::float3& scale) const;
+	float area(const float3& scale) const;
 };
 
 struct alignas(16) Intersection_triangle_MTE {
@@ -36,20 +36,20 @@ struct alignas(16) Intersection_triangle_MTE {
 							  const shape::Vertex& b,
 							  const shape::Vertex& c);
 
-	math::float3 ap;
-	math::float3 e1;
-	math::float3 e2;
-	math::float3 n;
+	float3 ap;
+	float3 e1;
+	float3 e2;
+	float3 n;
 
-	bool intersect(math::Oray& ray, math::float2& uv) const;
+	bool intersect(math::Oray& ray, float2& uv) const;
 	bool intersect_p(const math::Oray& ray) const;
 
-	void interpolate(math::float2 uv, math::float3& p) const;
+	void interpolate(float2 uv, float3& p) const;
 
-	math::float3 normal() const;
+	float3 normal() const;
 
 	float area() const;
-	float area(const math::float3& scale) const;
+	float area(const float3& scale) const;
 };
 
 struct alignas(16) Shading_triangle_MTE {
@@ -57,23 +57,23 @@ struct alignas(16) Shading_triangle_MTE {
 	Shading_triangle_MTE(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c,
 						 uint32_t material_index);
 
-	math::float3 an;
-	math::float3 bn;
-	math::float3 cn;
-	math::float3 at;
-	math::float3 bt;
-	math::float3 ct;
+	float3 an;
+	float3 bn;
+	float3 cn;
+	float3 at;
+	float3 bt;
+	float3 ct;
 
-	math::float2 auv;
-	math::float2 buv;
-	math::float2 cuv;
+	float2 auv;
+	float2 buv;
+	float2 cuv;
 
 	float bitangent_sign;
 	uint32_t material_index;
 
-	void interpolate_data(math::float2 uv, math::float3& n,
-						  math::float3& t, math::float2& tc) const;
-	math::float2 interpolate_uv(math::float2 uv) const;
+	void interpolate_data(float2 uv, float3& n,
+						  float3& t, float2& tc) const;
+	float2 interpolate_uv(float2 uv) const;
 };
 
 }}}

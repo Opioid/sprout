@@ -8,7 +8,7 @@
 
 namespace server {
 
-Server::Server(math::int2 dimensions, Message_handler& message_handler) :
+Server::Server(int2 dimensions, Message_handler& message_handler) :
 	srgb_(dimensions), message_handler_(message_handler) {
 	std::ostringstream stream;
 	stream << "{ \"resolution\": [" << dimensions.x << ", " << dimensions.y << "] }";

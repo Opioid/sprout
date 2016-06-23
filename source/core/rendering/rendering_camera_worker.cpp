@@ -23,7 +23,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 
 	for (int32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (int32_t x = tile.start.x; x < tile.end.x; ++x) {
-			math::int2 pixel(x, y);
+			int2 pixel(x, y);
 
 			if (0 == sample_begin) {
 				if (0 == view) {
@@ -43,10 +43,10 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 				sample.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
 				if (camera.generate_ray(sample, view, ray)) {
-					math::float4 color = li(ray);
+					float4 color = li(ray);
 					sensor.add_sample(sample, color, tile, bounds);
 				} else {
-					sensor.add_sample(sample, math::float4(0.f, 0.f, 0.f, 0.f), tile, bounds);
+					sensor.add_sample(sample, float4(0.f, 0.f, 0.f, 0.f), tile, bounds);
 				}
 			}
 		}

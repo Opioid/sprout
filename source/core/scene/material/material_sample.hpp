@@ -12,11 +12,11 @@ class Sample {
 
 public:
 
-	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const = 0;
+	virtual float3 evaluate(float3_p wi, float& pdf) const = 0;
 
-	virtual math::float3 radiance() const = 0;
+	virtual float3 radiance() const = 0;
 
-	virtual math::float3 attenuation() const = 0;
+	virtual float3 attenuation() const = 0;
 
 	virtual float ior() const = 0;
 
@@ -31,24 +31,24 @@ public:
 	//float absolute_n_dot_wo() const;
 	float clamped_n_dot_wo() const;
 
-	math::pfloat3 shading_normal() const;
+	float3_p shading_normal() const;
 
-	math::pfloat3 geometric_normal() const;
+	float3_p geometric_normal() const;
 
-	math::float3 tangent_to_world(math::pfloat3 v) const;
+	float3 tangent_to_world(float3_p v) const;
 
-	bool same_hemisphere(math::pfloat3 v) const;
+	bool same_hemisphere(float3_p v) const;
 
-	void set_basis(math::pfloat3 t, math::pfloat3 b, math::pfloat3 n,
-				   math::pfloat3 geo_n, math::pfloat3 wo, bool two_sided = false);
+	void set_basis(float3_p t, float3_p b, float3_p n,
+				   float3_p geo_n, float3_p wo, bool two_sided = false);
 
-	static math::float3 attenuation(math::pfloat3 color, float distance);
+	static float3 attenuation(float3_p color, float distance);
 
 protected:
 
-	math::float3 t_, b_, n_;
-	math::float3 geo_n_;
-	math::float3 wo_;
+	float3 t_, b_, n_;
+	float3 geo_n_;
+	float3 wo_;
 };
 
 }}

@@ -36,7 +36,7 @@ struct Node {
 	bool intersect_p(const math::Oray& ray, float& min_t, float& max_t) const;
 
 	union {
-		math::float3 bounds[2];
+		float3 bounds[2];
 
 		struct {
 			float pad0[3];

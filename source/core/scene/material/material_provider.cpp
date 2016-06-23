@@ -56,7 +56,7 @@ Provider::Provider(uint32_t num_threads) :
 	auto material = std::make_shared<substitute::Material>(
 				substitute_cache_, nullptr,
 				Sampler_settings(Sampler_settings::Filter::Linear), false);
-	material->set_color(math::float3(1.f, 0.f, 0.f)),
+	material->set_color(float3(1.f, 0.f, 0.f)),
 	material->set_ior(1.45f),
 	material->set_roughness(1.f);
 	material->set_metallic(0.f);
@@ -121,7 +121,7 @@ std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
-	math::float3 color(0.75f, 0.75f, 0.75f);
+	float3 color(0.75f, 0.75f, 0.75f);
 
 	for (auto n = cloth_value.MemberBegin(); n != cloth_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -179,7 +179,7 @@ std::shared_ptr<Material> Provider::load_display(const json::Value& display_valu
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
 
-	math::float3 radiance(10.f, 10.f, 10.f);
+	float3 radiance(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
 	float roughness = 1.f;
 	float ior = 1.5;
@@ -257,7 +257,7 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 	scene::material::Sampler_settings sampler_settings;
 
 	std::shared_ptr<image::texture::Texture_2D> normal_map;
-	math::float3 color(1.f, 1.f, 1.f);
+	float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
 	float roughness = 0.f;
@@ -319,10 +319,10 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 	scene::material::Sampler_settings sampler_settings;
 
 	std::string quantity;
-	math::float3 color(1.f, 1.f, 1.f);
+	float3 color(1.f, 1.f, 1.f);
 	float value = 1.f;
 
-	math::float3 radiance(10.f, 10.f, 10.f);
+	float3 radiance(10.f, 10.f, 10.f);
 	float emission_factor = 1.f;
 	float animation_duration = 0.f;
 
@@ -422,7 +422,7 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_val
 //	std::shared_ptr<image::texture::Texture_2D> normal_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
-	math::float3 color(0.6f, 0.6f, 0.6f);
+	float3 color(0.6f, 0.6f, 0.6f);
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -477,11 +477,11 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 	std::shared_ptr<image::texture::Texture_2D> direction_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
-	math::float3 ior(1.f, 1.f, 1.f);
-	math::float3 absorption(0.75f, 0.75f, 0.75f);
-	math::float2 anisotropy(0.f, 0.f);
+	float3 ior(1.f, 1.f, 1.f);
+	float3 absorption(0.75f, 0.75f, 0.75f);
+	float2 anisotropy(0.f, 0.f);
 	float roughness = 0.9f;
-	math::float2 roughness_aniso(0.f, 0.f);
+	float2 roughness_aniso(0.f, 0.f);
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -568,7 +568,7 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 
 	bool two_sided = false;
 
-	math::float3 radiance(0.6f, 0.6f, 0.6f);
+	float3 radiance(0.6f, 0.6f, 0.6f);
 
 	for (auto n = sky_value.MemberBegin(); n != sky_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -617,7 +617,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	std::shared_ptr<image::texture::Texture_2D> emission_map;
 	std::shared_ptr<image::texture::Texture_2D> mask;
 	bool two_sided = false;
-    math::float3 color(0.6f, 0.6f, 0.6f);
+    float3 color(0.6f, 0.6f, 0.6f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float ior = 1.46f;
@@ -819,9 +819,9 @@ void Provider::read_coating_description(const json::Value& coating_value,
 	}
 }
 
-math::float3 Provider::read_spectrum(const json::Value& spectrum_value) {
+float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 	if (!spectrum_value.IsObject()) {
-		return math::float3(0.f);
+		return float3(0.f);
 	}
 
 	for (auto n = spectrum_value.MemberBegin(); n != spectrum_value.MemberEnd(); ++n) {
@@ -829,7 +829,7 @@ math::float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 		const json::Value& node_value = n->value;
 
 		if ("sRGB" == node_name) {
-			math::float3 srgb = json::read_float3(node_value);
+			float3 srgb = json::read_float3(node_value);
 			return spectrum::sRGB_to_linear_RGB(srgb);
 		} else if ("RGB" == node_name) {
 			return json::read_float3(node_value);
@@ -840,7 +840,7 @@ math::float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 		}
 	}
 
-	return math::float3(0.f);
+	return float3(0.f);
 }
 
 }}

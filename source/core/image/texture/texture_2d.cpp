@@ -15,11 +15,11 @@ const Image* Texture_2D::image() const {
 	return image_.get();
 }
 
-math::int2 Texture_2D::dimensions() const {
+int2 Texture_2D::dimensions() const {
 	return image_->description().dimensions;
 }
 
-math::float2 Texture_2D::dimensions_float() const {
+float2 Texture_2D::dimensions_float() const {
 	return dimensions_float_;
 }
 
@@ -27,8 +27,8 @@ int32_t Texture_2D::num_elements() const {
 	return image_->description().num_elements;
 }
 
-math::float3 Texture_2D::average_3() const {
-	math::float3 average = math::float3_identity;
+float3 Texture_2D::average_3() const {
+	float3 average = math::float3_identity;
 
 	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {
@@ -41,8 +41,8 @@ math::float3 Texture_2D::average_3() const {
 	return average / (df.x * df.y);
 }
 
-math::float3 Texture_2D::average_3(int32_t element) const {
-	math::float3 average = math::float3_identity;
+float3 Texture_2D::average_3(int32_t element) const {
+	float3 average = math::float3_identity;
 
 	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {
@@ -55,8 +55,8 @@ math::float3 Texture_2D::average_3(int32_t element) const {
 	return average / (df.x * df.y);
 }
 
-math::float4 Texture_2D::average_4() const {
-	math::float4 average = math::float4_identity;
+float4 Texture_2D::average_4() const {
+	float4 average = math::float4_identity;
 
 	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {

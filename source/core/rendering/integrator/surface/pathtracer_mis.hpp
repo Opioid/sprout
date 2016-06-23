@@ -36,23 +36,23 @@ public:
 
 	virtual void start_new_pixel(uint32_t num_samples) final override;
 
-	virtual math::float4 li(Worker& worker, scene::Ray& ray, bool volume,
+	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
 							scene::Intersection& intersection) final override;
 
 private:
 
-	math::float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
-									   const scene::Intersection& intersection,
-									   const scene::material::Sample& material_sample,
-									   Sampler_filter filter);
+	float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
+								 const scene::Intersection& intersection,
+								 const scene::material::Sample& material_sample,
+								 Sampler_filter filter);
 
 	using Bxdf_result = scene::material::bxdf::Result;
 
-	math::float3 resolve_transmission(Worker& worker, scene::Ray& ray,
-									  scene::Intersection& intersection,
-									  const math::float3& attenuation,
-									  Sampler_filter filter,
-									  Bxdf_result& sample_result);
+	float3 resolve_transmission(Worker& worker, scene::Ray& ray,
+								scene::Intersection& intersection,
+								const float3& attenuation,
+								Sampler_filter filter,
+								Bxdf_result& sample_result);
 
 	const Settings& settings_;
 

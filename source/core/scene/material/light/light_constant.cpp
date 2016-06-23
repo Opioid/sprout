@@ -13,7 +13,7 @@ Constant::Constant(Generic_sample_cache<Sample>& cache,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
 	Material(cache, mask, sampler_settings, two_sided) {}
 
-const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Constant::sample(const shape::Hitpoint& hp, float3_p wo,
 										 float area, float /*time*/, float /*ior_i*/,
 										 const Worker& worker, Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
@@ -25,14 +25,14 @@ const material::Sample& Constant::sample(const shape::Hitpoint& hp, math::pfloat
 	return sample;
 }
 
-math::float3 Constant::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/,
+float3 Constant::sample_radiance(float3_p /*wi*/, float2 /*uv*/,
 									   float area, float /*time*/, const Worker& /*worker*/,
 									   Sampler_filter /*filter*/) const {
 	return emittance_.radiance(area);
 }
 
-math::float3 Constant::average_radiance(float area) const {
-	math::float3 radiance = emittance_.radiance(area);
+float3 Constant::average_radiance(float area) const {
+	float3 radiance = emittance_.radiance(area);
 
 	if (is_two_sided()) {
 		return 2.f * radiance;

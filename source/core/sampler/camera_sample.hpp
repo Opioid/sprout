@@ -5,9 +5,9 @@
 namespace sampler {
 
 struct Camera_sample {
-	math::int2   pixel;
-	math::float2 pixel_uv;
-	math::float2 lens_uv;
+	int2   pixel;
+	float2 pixel_uv;
+	float2 lens_uv;
 	float        time;
 };
 

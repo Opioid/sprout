@@ -33,7 +33,7 @@ uint32_t Indexed_data<Intersection_vertex, Shading_vertex>::current_triangle() c
 template<typename Intersection_vertex, typename Shading_vertex>
 bool Indexed_data<Intersection_vertex, Shading_vertex>::intersect(uint32_t index,
 																  math::Oray& ray,
-																  math::float2& uv) const {
+																  float2& uv) const {
 	const auto& t = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[t.a];
 	const Intersection_vertex& b = intersection_vertices_[t.b];
@@ -55,10 +55,10 @@ bool Indexed_data<Intersection_vertex, Shading_vertex>::intersect_p(uint32_t ind
 
 template<typename Intersection_vertex, typename Shading_vertex>
 void Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_data(uint32_t index,
-																		 math::float2 uv,
-																		 math::float3& n,
-																		 math::float3& t,
-																		 math::float2& tc) const {
+																		 float2 uv,
+																		 float3& n,
+																		 float3& t,
+																		 float2& tc) const {
 	const auto& tri = triangles_[index];
 	const Shading_vertex& a = shading_vertices_[tri.a];
 	const Shading_vertex& b = shading_vertices_[tri.b];
@@ -68,8 +68,8 @@ void Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_data(uint32_
 }
 
 template<typename Intersection_vertex, typename Shading_vertex>
-math::float2 Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_uv(
-		uint32_t index, math::float2 uv) const {
+float2 Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_uv(
+		uint32_t index, float2 uv) const {
 	const auto& tri = triangles_[index];
 	const Shading_vertex& sa = shading_vertices_[tri.a];
 	const Shading_vertex& sb = shading_vertices_[tri.b];
@@ -89,14 +89,14 @@ uint32_t Indexed_data<Intersection_vertex, Shading_vertex>::material_index(uint3
 }
 
 template<typename Intersection_vertex, typename Shading_vertex>
-math::float3 Indexed_data<Intersection_vertex, Shading_vertex>::normal(uint32_t index) const {
+float3 Indexed_data<Intersection_vertex, Shading_vertex>::normal(uint32_t index) const {
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[tri.a];
 	const Intersection_vertex& b = intersection_vertices_[tri.b];
 	const Intersection_vertex& c = intersection_vertices_[tri.c];
 
-	math::float3 e1 = b.p - a.p;
-	math::float3 e2 = c.p - a.p;
+	float3 e1 = b.p - a.p;
+	float3 e2 = c.p - a.p;
 	return math::normalized(math::cross(e1, e2));
 }
 
@@ -112,7 +112,7 @@ float Indexed_data<Intersection_vertex, Shading_vertex>::area(uint32_t index) co
 
 template<typename Intersection_vertex, typename Shading_vertex>
 float Indexed_data<Intersection_vertex, Shading_vertex>::area(uint32_t index,
-															  const math::float3& scale) const {
+															  const float3& scale) const {
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[tri.a];
 	const Intersection_vertex& b = intersection_vertices_[tri.b];
@@ -123,10 +123,10 @@ float Indexed_data<Intersection_vertex, Shading_vertex>::area(uint32_t index,
 
 template<typename Intersection_vertex, typename Shading_vertex>
 void Indexed_data<Intersection_vertex, Shading_vertex>::sample(uint32_t index,
-															   math::float2 r2,
-															   math::float3& p,
-															   math::float2& tc) const {
-	math::float2 uv = math::sample_triangle_uniform(r2);
+															   float2 r2,
+															   float3& p,
+															   float2& tc) const {
+	float2 uv = math::sample_triangle_uniform(r2);
 
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& ia = intersection_vertices_[tri.a];
@@ -159,10 +159,10 @@ void Indexed_data<Intersection_vertex, Shading_vertex>::allocate_triangles(
 	shading_vertices_      = memory::allocate_aligned<Shading_vertex>(num_vertices_);
 
 	for (uint32_t i = 0, len = num_vertices_; i < len; ++i) {
-		intersection_vertices_[i].p = math::float3(vertices[i].p);
+		intersection_vertices_[i].p = float3(vertices[i].p);
 
-		shading_vertices_[i].n  = math::float3(vertices[i].n);
-		shading_vertices_[i].t  = math::float3(vertices[i].t);
+		shading_vertices_[i].n  = float3(vertices[i].n);
+		shading_vertices_[i].t  = float3(vertices[i].t);
 		shading_vertices_[i].uv = vertices[i].uv;
 		shading_vertices_[i].bitangent_sign = vertices[i].bitangent_sign;
 	}
@@ -211,7 +211,7 @@ uint32_t Indexed_data1<Intersection_vertex, Shading_vertex>::current_triangle() 
 template<typename Intersection_vertex, typename Shading_vertex>
 bool Indexed_data1<Intersection_vertex, Shading_vertex>::intersect(uint32_t index,
 																  math::Oray& ray,
-																  math::float2& uv) const {
+																  float2& uv) const {
 	const auto& t = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[t.a];
 	const Intersection_vertex& b = intersection_vertices_[t.b];
@@ -233,10 +233,10 @@ bool Indexed_data1<Intersection_vertex, Shading_vertex>::intersect_p(uint32_t in
 
 template<typename Intersection_vertex, typename Shading_vertex>
 void Indexed_data1<Intersection_vertex, Shading_vertex>::interpolate_data(uint32_t index,
-																		  math::float2 uv,
-																		  math::float3& n,
-																		  math::float3& t,
-																		  math::float2& tc) const {
+																		  float2 uv,
+																		  float3& n,
+																		  float3& t,
+																		  float2& tc) const {
 	const auto& tri = triangles_[index];
 	const Shading_vertex& a = shading_vertices_[tri.a];
 	const Shading_vertex& b = shading_vertices_[tri.b];
@@ -246,8 +246,8 @@ void Indexed_data1<Intersection_vertex, Shading_vertex>::interpolate_data(uint32
 }
 
 template<typename Intersection_vertex, typename Shading_vertex>
-math::float2 Indexed_data1<Intersection_vertex, Shading_vertex>::interpolate_uv(
-		uint32_t index, math::float2 uv) const {
+float2 Indexed_data1<Intersection_vertex, Shading_vertex>::interpolate_uv(
+		uint32_t index, float2 uv) const {
 	const auto& tri = triangles_[index];
 	const Shading_vertex& sa = shading_vertices_[tri.a];
 	const Shading_vertex& sb = shading_vertices_[tri.b];
@@ -269,14 +269,14 @@ uint32_t Indexed_data1<Intersection_vertex, Shading_vertex>::material_index(uint
 }
 
 template<typename Intersection_vertex, typename Shading_vertex>
-math::float3 Indexed_data1<Intersection_vertex, Shading_vertex>::normal(uint32_t index) const {
+float3 Indexed_data1<Intersection_vertex, Shading_vertex>::normal(uint32_t index) const {
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[tri.a];
 	const Intersection_vertex& b = intersection_vertices_[tri.b];
 	const Intersection_vertex& c = intersection_vertices_[tri.c];
 
-	math::float3 e1 = b.p - a.p;
-	math::float3 e2 = c.p - a.p;
+	float3 e1 = b.p - a.p;
+	float3 e2 = c.p - a.p;
 	return math::normalized(math::cross(e1, e2));
 }
 
@@ -292,7 +292,7 @@ float Indexed_data1<Intersection_vertex, Shading_vertex>::area(uint32_t index) c
 
 template<typename Intersection_vertex, typename Shading_vertex>
 float Indexed_data1<Intersection_vertex, Shading_vertex>::area(uint32_t index,
-															   const math::float3& scale) const {
+															   const float3& scale) const {
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[tri.a];
 	const Intersection_vertex& b = intersection_vertices_[tri.b];
@@ -303,10 +303,10 @@ float Indexed_data1<Intersection_vertex, Shading_vertex>::area(uint32_t index,
 
 template<typename Intersection_vertex, typename Shading_vertex>
 void Indexed_data1<Intersection_vertex, Shading_vertex>::sample(uint32_t index,
-																math::float2 r2,
-																math::float3& p,
-																math::float2& tc) const {
-	math::float2 uv = math::sample_triangle_uniform(r2);
+																float2 r2,
+																float3& p,
+																float2& tc) const {
+	float2 uv = math::sample_triangle_uniform(r2);
 
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& ia = intersection_vertices_[tri.a];
@@ -339,10 +339,10 @@ void Indexed_data1<Intersection_vertex, Shading_vertex>::allocate_triangles(
 	shading_vertices_      = memory::allocate_aligned<Shading_vertex>(num_vertices_);
 
 	for (uint32_t i = 0, len = num_vertices_; i < len; ++i) {
-		intersection_vertices_[i].p = math::float3(vertices[i].p);
+		intersection_vertices_[i].p = float3(vertices[i].p);
 
-		shading_vertices_[i].n_u = math::float4(vertices[i].n, vertices[i].uv.x);
-		shading_vertices_[i].t_v = math::float4(vertices[i].t, vertices[i].uv.y);
+		shading_vertices_[i].n_u = float4(vertices[i].n, vertices[i].uv.x);
+		shading_vertices_[i].t_v = float4(vertices[i].t, vertices[i].uv.y);
 
 		// Not too happy about handling degenerate tangents here (only one very special case even)
 		if (0.f == shading_vertices_[i].t_v.x

@@ -10,7 +10,7 @@ namespace scene { namespace material { namespace glass {
 
 float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/,
 							  bxdf::Result& result) {
-	math::float3 n = sample.n_;
+	float3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
 	float eta_t = sample.ior_;
 
@@ -36,7 +36,7 @@ float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*
 		f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 	}
 
-	result.reflection = math::float3(f);
+	result.reflection = float3(f);
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_reflection);
 
@@ -45,7 +45,7 @@ float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*
 
 float BTDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/,
 							  bxdf::Result& result) {
-	math::float3 n = sample.n_;
+	float3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
 	float eta_t = sample.ior_;
 
@@ -77,16 +77,16 @@ float BTDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*
 	return 1.f;
 }
 
-math::float3 Sample::evaluate(math::pfloat3 /*wi*/, float& pdf) const {
+float3 Sample::evaluate(float3_p /*wi*/, float& pdf) const {
 	pdf = 0.f;
 	return math::float3_identity;
 }
 
-math::float3 Sample::radiance() const {
+float3 Sample::radiance() const {
 	return math::float3_identity;
 }
 
-math::float3 Sample::attenuation() const {
+float3 Sample::attenuation() const {
 	return attenuation_;
 }
 
@@ -124,7 +124,7 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(math::pfloat3 color, float attenuation_distance, float ior, float ior_outside) {
+void Sample::set(float3_p color, float attenuation_distance, float ior, float ior_outside) {
 	color_ = color;
 	attenuation_ = material::Sample::attenuation(color, attenuation_distance);
 	ior_ = ior;

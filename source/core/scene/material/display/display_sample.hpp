@@ -9,11 +9,11 @@ class Sample : public material::Sample {
 
 public:
 
-	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
+	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
-	virtual math::float3 radiance() const final override;
+	virtual float3 radiance() const final override;
 
-	virtual math::float3 attenuation() const final override;
+	virtual float3 attenuation() const final override;
 
 	virtual float ior() const final override;
 
@@ -25,12 +25,12 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& radiance, float f0, float roughness);
+	void set(const float3& radiance, float f0, float roughness);
 
 private:
 
-	math::float3 emission_;
-	math::float3 f0_;
+	float3 emission_;
+	float3 f0_;
 	float a2_;
 
 	friend ggx::Isotropic;

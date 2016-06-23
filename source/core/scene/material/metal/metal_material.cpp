@@ -39,7 +39,7 @@ Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& c
 																	 sampler_settings,
 																	 two_sided) {}
 
-const material::Sample& Material_isotropic::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Material_isotropic::sample(const shape::Hitpoint& hp, float3_p wo,
 												   float /*area*/, float /*time*/, float /*ior_i*/,
 												   const Worker& worker,
 												   Sampler_settings::Filter filter) {
@@ -48,8 +48,8 @@ const material::Sample& Material_isotropic::sample(const shape::Hitpoint& hp, ma
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	if (normal_map_) {
-		math::float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		math::float3 n = math::normalized(hp.tangent_to_world(nm));
+		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
+		float3 n = math::normalized(hp.tangent_to_world(nm));
 
 		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo);
 	} else {
@@ -65,11 +65,11 @@ void Material_isotropic::set_normal_map(std::shared_ptr<image::texture::Texture_
 	normal_map_ = normal_map;
 }
 
-void Material_isotropic::set_ior(math::pfloat3 ior) {
+void Material_isotropic::set_ior(float3_p ior) {
 	ior_ = ior;
 }
 
-void Material_isotropic::set_absorption(math::pfloat3 absorption) {
+void Material_isotropic::set_absorption(float3_p absorption) {
 	absorption_ = absorption;
 }
 
@@ -85,7 +85,7 @@ Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotrop
 																	   sampler_settings,
 																	   two_sided) {}
 
-const material::Sample& Material_anisotropic::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Material_anisotropic::sample(const shape::Hitpoint& hp, float3_p wo,
 													 float /*area*/, float /*time*/, float /*ior_i*/,
 													 const Worker& worker,
 													 Sampler_settings::Filter filter) {
@@ -94,15 +94,15 @@ const material::Sample& Material_anisotropic::sample(const shape::Hitpoint& hp, 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	if (normal_map_) {
-		math::float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		math::float3 n = math::normalized(hp.tangent_to_world(nm));
+		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
+		float3 n = math::normalized(hp.tangent_to_world(nm));
 
 		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo);
 	} else if (direction_map_) {
-		math::float2 tm = sampler.sample_2(*direction_map_, hp.uv);
-		math::float3 t = math::normalized(hp.tangent_to_world(tm));
+		float2 tm = sampler.sample_2(*direction_map_, hp.uv);
+		float3 t = math::normalized(hp.tangent_to_world(tm));
 
-		math::float3 b = math::cross(hp.n, t);
+		float3 b = math::cross(hp.n, t);
 
 		sample.set_basis(t, b, hp.n, hp.geo_n, wo);
 	} else {
@@ -123,15 +123,15 @@ void Material_anisotropic::set_direction_map(
 	direction_map_ = direction_map;
 }
 
-void Material_anisotropic::set_ior(math::pfloat3 ior) {
+void Material_anisotropic::set_ior(float3_p ior) {
 	ior_ = ior;
 }
 
-void Material_anisotropic::set_absorption(math::pfloat3 absorption) {
+void Material_anisotropic::set_absorption(float3_p absorption) {
 	absorption_ = absorption;
 }
 
-void Material_anisotropic::set_roughness(math::float2 roughness) {
+void Material_anisotropic::set_roughness(float2 roughness) {
 	roughness_ = roughness;
 }
 

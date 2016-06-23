@@ -18,28 +18,28 @@ public:
 	};
 
 	// lumen
-	void set_flux(math::pfloat3 color, float value);
+	void set_flux(float3_p color, float value);
 
 	// watt per unit solid angle (W / sr)
-	void set_intensity(math::pfloat3 intensity);
+	void set_intensity(float3_p intensity);
 
 	// lumen per unit solid angle (lm / sr == candela (cd))
-	void set_intensity(math::pfloat3 color, float value);
+	void set_intensity(float3_p color, float value);
 
 	// lumen per unit projected area (lumen / m^2)
-	void set_exitance(math::pfloat3 color, float value);
+	void set_exitance(float3_p color, float value);
 
 	// watt per unit solid angle per unit projected area (W / sr / m^2)
-	void set_radiance(math::pfloat3 radiance);
+	void set_radiance(float3_p radiance);
 
 	// lumen per unit solid angle per unit projected area (lm / sr / m^2 == cd / m^2)
-	void set_luminance(math::pfloat3 color, float value);
+	void set_luminance(float3_p color, float value);
 
-	math::float3 radiance(float area) const;
+	float3 radiance(float area) const;
 
 private:
 
-	math::float3 value_;
+	float3 value_;
 
 	Quantity quantity_;
 };

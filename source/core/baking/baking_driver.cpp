@@ -24,7 +24,7 @@ Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_fa
 
 void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Pool& thread_pool,
 					exporting::Sink& /*exporter*/, progress::Sink& /*progressor*/) {
-	math::int2 dimensions(512, 512);
+	int2 dimensions(512, 512);
 
 	scene.tick(thread_pool);
 
@@ -38,37 +38,37 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 	scene::Ray ray;
 	ray.time = 0.f;
 
-	math::float3 bake_quad_origin(-2.f, 0.f, 2.f);
-	math::float3 bake_quad_extent(2.f, 0.f, -2.f);
-	math::float3 bake_quad_range = bake_quad_extent - bake_quad_origin;
+	float3 bake_quad_origin(-2.f, 0.f, 2.f);
+	float3 bake_quad_extent(2.f, 0.f, -2.f);
+	float3 bake_quad_range = bake_quad_extent - bake_quad_origin;
 
 	uint32_t num_samples = 4096;
 
-	math::float3 bake_space_x(1.f, 0.f, 0.f);
-	math::float3 bake_space_y(0.f, 0.f, -1.f);
-	math::float3 bake_space_z(0.f, 1.f, 0.f);
+	float3 bake_space_x(1.f, 0.f, 0.f);
+	float3 bake_space_y(0.f, 0.f, -1.f);
+	float3 bake_space_z(0.f, 1.f, 0.f);
 
 	for (int32_t y = 0; y < dimensions.y; ++y) {
 		for (int32_t x = 0; x < dimensions.x; ++x) {
 
 			sampler_->restart_and_seed(num_samples);
 
-			math::float3 offset((static_cast<float>(x) + 0.5f) *
+			float3 offset((static_cast<float>(x) + 0.5f) *
 								(bake_quad_range.x / static_cast<float>(dimensions.x)),
 								0.f,
 								(static_cast<float>(y) + 0.5f) *
 								(bake_quad_range.z / static_cast<float>(dimensions.y)));
 
-			math::float3 origin = bake_quad_origin + offset;
+			float3 origin = bake_quad_origin + offset;
 
-			math::float3 irradiance = math::float3_identity;
+			float3 irradiance = math::float3_identity;
 
 			for (uint32_t s = 0; s < num_samples; ++s) {
 
 				ray.origin = origin;
 
-				math::float2 sample = sampler_->generate_sample_2D();
-				math::float3 hs = math::sample_oriented_hemisphere_cosine(sample,
+				float2 sample = sampler_->generate_sample_2D();
+				float3 hs = math::sample_oriented_hemisphere_cosine(sample,
 																		  bake_space_x,
 																		  bake_space_y,
 																		  bake_space_z);

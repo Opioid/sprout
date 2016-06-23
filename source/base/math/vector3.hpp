@@ -7,7 +7,6 @@ namespace math {
 
 struct Vector3f_a;
 
-
 using FVector3f_a = const Vector3f_a&;
 
 /****************************************************************************

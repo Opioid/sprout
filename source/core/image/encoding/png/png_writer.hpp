@@ -9,7 +9,7 @@ class Writer : public image::Writer, Srgb_alpha {
 
 public:
 
-	Writer(math::int2 dimensions);
+	Writer(int2 dimensions);
 
 	virtual std::string file_extension() const final override;
 

@@ -25,30 +25,30 @@ void Material::set_parameters(const json::Value& parameters) {
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-math::float3 Material::sample_radiance(math::pfloat3 /*wi*/, math::float2 /*uv*/,
-									   float /*area*/, float /*time*/,
-									   const Worker& /*worker*/, Sampler_filter /*filter*/) const {
-	return math::float3(0.f, 0.f, 0.f);
+float3 Material::sample_radiance(float3_p /*wi*/, float2 /*uv*/,
+								 float /*area*/, float /*time*/,
+								 const Worker& /*worker*/, Sampler_filter /*filter*/) const {
+	return float3(0.f, 0.f, 0.f);
 }
 
-math::float3 Material::average_radiance(float /*area*/) const {
-	return math::float3(0.f, 0.f, 0.f);
+float3 Material::average_radiance(float /*area*/) const {
+	return float3(0.f, 0.f, 0.f);
 }
 
 bool Material::has_emission_map() const {
 	return false;
 }
 
-math::float2 Material::radiance_importance_sample(math::float2 /*r2*/, float& /*pdf*/) const {
-	return math::float2::identity;
+float2 Material::radiance_importance_sample(float2 /*r2*/, float& /*pdf*/) const {
+	return float2::identity;
 }
 
-float Material::emission_pdf(math::float2 /*uv*/, const Worker& /*worker*/,
+float Material::emission_pdf(float2 /*uv*/, const Worker& /*worker*/,
 							 Sampler_filter /*filter*/) const {
 	return 0.f;
 }
 
-float Material::opacity(math::float2 uv, float /*time*/,
+float Material::opacity(float2 uv, float /*time*/,
 						const Worker& worker, Sampler_filter filter) const {
 	if (mask_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
@@ -77,7 +77,7 @@ bool Material::is_emissive() const {
 		return true;
 	}
 
-	math::float3 e = average_radiance(1.f);
+	float3 e = average_radiance(1.f);
 	if (e.x > 0.f || e.y > 0.f || e.z > 0.f) {
 		return true;
 	}

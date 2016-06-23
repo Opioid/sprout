@@ -44,9 +44,9 @@ bool Morphable_mesh::intersect(const Entity_transformation& transformation, math
 
 		intersection.p = ray.point(tray.max_t);
 
-		math::float3 n;
-		math::float3 t;
-		math::float2 uv;
+		float3 n;
+		float3 t;
+		float2 uv;
 		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
 
 		intersection.geo_n = math::transform_vector(tree_.triangle_normal(pi.index),
@@ -92,31 +92,31 @@ float Morphable_mesh::opacity(const Entity_transformation& transformation, const
 }
 
 void Morphable_mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
-							float /*area*/, const math::float3& /*p*/, const math::float3& /*n*/,
+							float /*area*/, const float3& /*p*/, const float3& /*n*/,
 							bool /*two_sided*/, sampler::Sampler& /*sampler*/,
 							Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
 
 void Morphable_mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
-							float /*area*/, const math::float3& /*p*/, bool /*two_sided*/,
+							float /*area*/, const float3& /*p*/, bool /*two_sided*/,
 							sampler::Sampler& /*sampler*/,
 							Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
 
 void Morphable_mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
-							float /*area*/, const math::float3& /*p*/, math::float2 /*uv*/,
+							float /*area*/, const float3& /*p*/, float2 /*uv*/,
 							Sample& /*sample*/) const {}
 
 void Morphable_mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
-							float /*area*/, const math::float3& /*p*/,
-							const math::float3& /*wi*/, Sample& /*sample*/) const {}
+							float /*area*/, const float3& /*p*/,
+							const float3& /*wi*/, Sample& /*sample*/) const {}
 
 float Morphable_mesh::pdf(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
-						  float /*area*/, const math::float3& /*p*/, const math::float3& /*wi*/,
+						  float /*area*/, const float3& /*p*/, const float3& /*wi*/,
 						  bool /*two_sided*/, bool /*total_sphere*/,
 						  shape::Node_stack& /*node_stack*/) const {
 	return 1.f;
 }
 
-float Morphable_mesh::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
+float Morphable_mesh::area(uint32_t /*part*/, const float3& /*scale*/) const {
 	return 1.f;
 }
 

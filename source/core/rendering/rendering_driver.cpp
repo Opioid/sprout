@@ -21,7 +21,7 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 	sampler_(sampler),
 	scene_(scene), view_(view), thread_pool_(thread_pool),
 	workers_(thread_pool.num_threads()),
-	tiles_(view.camera->resolution(), math::int2(32, 32),
+	tiles_(view.camera->resolution(), int2(32, 32),
 		   view.camera->sensor().filter_radius_int()),
 	target_(image::Image::Description(image::Image::Type::Float_4,
 									  view.camera->sensor_dimensions())) {

@@ -5,7 +5,7 @@
 
 namespace math {
 
-inline math::float3 disk_to_hemisphere_equidistant(math::float2 uv) {
+inline float3 disk_to_hemisphere_equidistant(float2 uv) {
 	float longitude = std::atan2(-uv.y, uv.x) ;
 
 	float r = std::sqrt(uv.x * uv.x + uv.y * uv.y);
@@ -25,10 +25,10 @@ inline math::float3 disk_to_hemisphere_equidistant(math::float2 uv) {
 	float sin_lon = std::sin(longitude);
 	float cos_lon = std::cos(longitude);
 
-	return math::float3(sin_col * cos_lon, sin_col * sin_lon, cos_col);
+	return float3(sin_col * cos_lon, sin_col * sin_lon, cos_col);
 }
 
-inline math::float2 hemisphere_to_disk_equidistant(math::pfloat3 dir) {
+inline float2 hemisphere_to_disk_equidistant(float3_p dir) {
 	// cartesian to spherical
 	float colatidude = std::acos(dir.z);
 
@@ -39,12 +39,12 @@ inline math::float2 hemisphere_to_disk_equidistant(math::pfloat3 dir) {
 	float sin_lon = std::sin(longitude);
 	float cos_lon = std::cos(longitude);
 
-	return math::float2(r * cos_lon, r * sin_lon);
+	return float2(r * cos_lon, r * sin_lon);
 }
 
-inline math::float2 hemisphere_to_disk_paraboloid(math::pfloat3 dir) {
+inline float2 hemisphere_to_disk_paraboloid(float3_p dir) {
 	float zoi = 1.f / (dir.z + 1.f);
-	return math::float2(dir.x * zoi, dir.y * -zoi);
+	return float2(dir.x * zoi, dir.y * -zoi);
 }
 
 }

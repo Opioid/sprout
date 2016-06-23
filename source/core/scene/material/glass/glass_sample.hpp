@@ -30,11 +30,11 @@ class Sample : public material::Sample {
 
 public:
 
-	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
+	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
-	virtual math::float3 radiance() const final override;
+	virtual float3 radiance() const final override;
 
-	virtual math::float3 attenuation() const final override;
+	virtual float3 attenuation() const final override;
 
 	virtual float ior() const final override;
 
@@ -47,12 +47,12 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(math::pfloat3 color, float attenuation_distance, float ior, float ior_outside);
+	void set(float3_p color, float attenuation_distance, float ior, float ior_outside);
 
 private:
 
-	math::float3 color_;
-	math::float3 attenuation_;
+	float3 color_;
+	float3 attenuation_;
 	float ior_;
 	float ior_outside_;
 

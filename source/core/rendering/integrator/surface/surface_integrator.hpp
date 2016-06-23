@@ -14,7 +14,7 @@ public:
 	Integrator(const take::Settings& settings, math::random::Generator& rng);
 	virtual ~Integrator();
 
-	virtual math::float4 li(Worker& worker, scene::Ray& ray,
+	virtual float4 li(Worker& worker, scene::Ray& ray,
 							bool volume, scene::Intersection& intersection) = 0;
 
 protected:

@@ -51,16 +51,16 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 
 	uint32_t num_blades = 196 * 1024;
 
-	math::float2 start(-1.f,  1.f);
-	math::float2 end  ( 1.f, -1.f);
+	float2 start(-1.f,  1.f);
+	float2 end  ( 1.f, -1.f);
 
-//	math::float2 range = end - start;
+//	float2 range = end - start;
 
 	for (uint32_t i = 0; i < num_blades; ++i) {
-		math::float2 s = math::ems(i, 3, 4);
+		float2 s = math::ems(i, 3, 4);
 
-	//	math::float2 p = start + s * range;
-		math::float2 p = 6.f * math::sample_disk_concentric(s);
+	//	float2 p = start + s * range;
+		float2 p = 6.f * math::sample_disk_concentric(s);
 
 		float randomness = 1.f;//sampler.sample_1(*mask, s);
 
@@ -148,13 +148,13 @@ void Grass::add_blade(const math::packed_float3& offset,
 	segment_controls[4] = math::packed_float3(width * -0.006f,	  height * 0.08f, width * -0.001f);
 	segment_controls[5] = math::packed_float3(0.f,				  height * 0.05f,  0.f);
 
-	math::float2 segment_uvs[num_segments + 2];
+	float2 segment_uvs[num_segments + 2];
 
-	math::float2 temp(0.f, 0.f);
+	float2 temp(0.f, 0.f);
 	for (uint32_t i = 0, len = num_segments + 2; i < len; ++i) {
 		temp += segment_controls[i].xy;
 
-		segment_uvs[i] = math::float2(temp.x / (width * max_width), 1.f - temp.y);
+		segment_uvs[i] = float2(temp.x / (width * max_width), 1.f - temp.y);
 	}
 
 	struct Segment {
@@ -206,11 +206,11 @@ void Grass::add_blade(const math::packed_float3& offset,
 								   segments[i].a.y,
 								   segments[i].a.z) * rotation + offset;
 
-		v.uv = math::float2(1.f - segment_uvs[i].x, segment_uvs[i].y);
+		v.uv = float2(1.f - segment_uvs[i].x, segment_uvs[i].y);
 		vertices.push_back(v);
 
 		v.p = math::packed_float3(0.f, segments[i].b.y, segments[i].b.z) * rotation + offset;
-		v.uv = math::float2(0.5f, segment_uvs[i].y);
+		v.uv = float2(0.5f, segment_uvs[i].y);
 		vertices.push_back(v);
 
 		v.p = math::packed_float3(segments[i].a.x,
@@ -222,7 +222,7 @@ void Grass::add_blade(const math::packed_float3& offset,
 
 	uint32_t i = num_segments + 1;
 	v.p = math::packed_float3(0.f, segments[i].a.y, segments[i].a.z) * rotation + offset;
-	v.uv = math::float2(0.5f, segment_uvs[i].y);
+	v.uv = float2(0.5f, segment_uvs[i].y);
 	vertices.push_back(v);
 }
 

@@ -16,17 +16,17 @@ void test() {
 
 	Sample sample;
 
-	math::float3 color(1.f, 1.f, 1.f);
+	float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
 
 	sample.set(color, attenuation_distance, ior, 1.f);
 
-	math::float3 t(1.f, 0.f, 0.f);
-	math::float3 b(0.f, 1.f, 0.f);
-	math::float3 n(0.f, 0.f, 1.f);
+	float3 t(1.f, 0.f, 0.f);
+	float3 b(0.f, 1.f, 0.f);
+	float3 n(0.f, 0.f, 1.f);
 
-	math::float3 wo;
+	float3 wo;
 
 	wo = t;
 	sample.set_basis(t, b, n, n, wo);

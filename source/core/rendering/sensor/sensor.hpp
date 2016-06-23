@@ -14,10 +14,10 @@ namespace tonemapping { class Tonemapper; }
 class Sensor {
 public:
 
-	Sensor(math::int2 dimensions, const tonemapping::Tonemapper* tonemapper);
+	Sensor(int2 dimensions, const tonemapping::Tonemapper* tonemapper);
 	virtual ~Sensor();
 
-	math::int2 dimensions() const;
+	int2 dimensions() const;
 
 	void resolve(thread::Pool& pool, image::Image_float_4& target) const;
 
@@ -25,18 +25,18 @@ public:
 
 	virtual void clear() = 0;
 
-	virtual void add_sample(const sampler::Camera_sample& sample, const math::float4& color,
+	virtual void add_sample(const sampler::Camera_sample& sample, const float4& color,
 							const math::Recti& tile, const math::Recti& view_bounds) = 0;
 
 protected:
 
-	virtual void add_pixel(math::int2 pixel, const math::float4& color, float weight) = 0;
+	virtual void add_pixel(int2 pixel, const float4& color, float weight) = 0;
 
-	virtual void add_pixel_atomic(math::int2 pixel, const math::float4& color, float weight) = 0;
+	virtual void add_pixel_atomic(int2 pixel, const float4& color, float weight) = 0;
 
 	virtual void resolve(int32_t begin, int32_t end, image::Image_float_4& target) const = 0;
 
-	math::int2 dimensions_;
+	int2 dimensions_;
 
 	const tonemapping::Tonemapper* tonemapper_;
 };

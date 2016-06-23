@@ -4,12 +4,12 @@
 
 namespace image {
 
-math::float3 average_3(const Image_float_4& image) {
+float3 average_3(const Image_float_4& image) {
 	uint32_t len = image.area();
 
 	float ilen = 1.f / static_cast<float>(len);
 
-	math::float3 average = math::float3_identity;
+	float3 average = math::float3_identity;
 
 	for (uint32_t i = 0; i < len; ++i) {
 		average += ilen * image.at(i).xyz;

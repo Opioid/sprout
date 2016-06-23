@@ -15,27 +15,27 @@ inline float Sample::clamped_n_dot_wo() const {
 	return std::max(math::dot(n_, wo_), 0.00001f);
 }
 
-inline math::pfloat3 Sample::shading_normal() const {
+inline float3_p Sample::shading_normal() const {
 	return n_;
 }
 
-inline math::pfloat3 Sample::geometric_normal() const {
+inline float3_p Sample::geometric_normal() const {
 	return geo_n_;
 }
 
-inline math::float3 Sample::tangent_to_world(math::pfloat3 v) const {
-	return math::float3(
+inline float3 Sample::tangent_to_world(float3_p v) const {
+	return float3(
 		v.x * t_.x + v.y * b_.x + v.z * n_.x,
 		v.x * t_.y + v.y * b_.y + v.z * n_.y,
 		v.x * t_.z + v.y * b_.z + v.z * n_.z);
 }
 
-inline bool Sample::same_hemisphere(math::pfloat3 v) const {
+inline bool Sample::same_hemisphere(float3_p v) const {
 	return math::dot(geo_n_, v) > 0.f;
 }
 
-inline void Sample::set_basis(math::pfloat3 t, math::pfloat3 b, math::pfloat3 n,
-							  math::pfloat3 geo_n, math::pfloat3 wo, bool two_sided) {
+inline void Sample::set_basis(float3_p t, float3_p b, float3_p n,
+							  float3_p geo_n, float3_p wo, bool two_sided) {
 	t_ = t;
 	b_ = b;
 
@@ -50,8 +50,8 @@ inline void Sample::set_basis(math::pfloat3 t, math::pfloat3 b, math::pfloat3 n,
 	wo_ = wo;
 }
 
-inline math::float3 Sample::attenuation(math::pfloat3 color, float distance) {
-	return math::float3(
+inline float3 Sample::attenuation(float3_p color, float distance) {
+	return float3(
 		color.x > 0.f ? 1.f / (color.x * distance) : 0.f,
 		color.y > 0.f ? 1.f / (color.y * distance) : 0.f,
 		color.z > 0.f ? 1.f / (color.z * distance) : 0.f);

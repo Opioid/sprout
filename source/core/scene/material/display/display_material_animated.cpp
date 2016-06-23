@@ -25,7 +25,7 @@ Material_animated::Material_animated(Generic_sample_cache<Sample>& cache,
 	frame_length_(animation_duration / static_cast<float>(emission_map_->num_elements())),
 	element_(0) {
 	for (auto& ae : average_emissions_) {
-		ae = math::float3(-1.f, -1.f, -1.f);
+		ae = float3(-1.f, -1.f, -1.f);
 	}
 }
 
@@ -33,7 +33,7 @@ void Material_animated::tick(float absolute_time, float /*time_slice*/) {
 	element_ = static_cast<int32_t>(absolute_time / frame_length_) % emission_map_->num_elements();
 }
 
-const material::Sample& Material_animated::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Material_animated::sample(const shape::Hitpoint& hp, float3_p wo,
 												  float /*area*/, float /*time*/, float /*ior_i*/,
 												  const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
@@ -43,7 +43,7 @@ const material::Sample& Material_animated::sample(const shape::Hitpoint& hp, mat
 	if (emission_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		math::float3 radiance = sampler.sample_3(*emission_map_, hp.uv, element_);
+		float3 radiance = sampler.sample_3(*emission_map_, hp.uv, element_);
 		sample.set(emission_factor_ * radiance, f0_, roughness_);
 	} else {
 		sample.set(emission_factor_ * emission_, f0_, roughness_);
@@ -52,14 +52,14 @@ const material::Sample& Material_animated::sample(const shape::Hitpoint& hp, mat
 	return sample;
 }
 
-math::float3 Material_animated::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
+float3 Material_animated::sample_radiance(float3_p /*wi*/, float2 uv,
 												float /*area*/, float /*time*/,
 												const Worker& worker, Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv, element_);
 }
 
-math::float3 Material_animated::average_radiance(float /*area*/) const {
+float3 Material_animated::average_radiance(float /*area*/) const {
 	return average_emissions_[element_];
 }
 
@@ -67,8 +67,8 @@ bool Material_animated::has_emission_map() const {
 	return nullptr != emission_map_;
 }
 
-math::float2 Material_animated::radiance_importance_sample(math::float2 r2, float& pdf) const {
-	math::float2 uv = distribution_.sample_continuous(r2, pdf);
+float2 Material_animated::radiance_importance_sample(float2 r2, float& pdf) const {
+	float2 uv = distribution_.sample_continuous(r2, pdf);
 
 	if (uv.y == 0.f) {
 		pdf = 0.f;
@@ -81,7 +81,7 @@ math::float2 Material_animated::radiance_importance_sample(math::float2 r2, floa
 	return uv;
 }
 
-float Material_animated::emission_pdf(math::float2 uv, const Worker& worker,
+float Material_animated::emission_pdf(float2 uv, const Worker& worker,
 									  Sampler_filter filter) const {
 	if (uv.y == 0.f) {
 		return 0.f;
@@ -94,7 +94,7 @@ float Material_animated::emission_pdf(math::float2 uv, const Worker& worker,
 	return distribution_.pdf(sampler.address(uv)) * (total_weight_ / sin_theta);
 }
 
-float Material_animated::opacity(math::float2 uv, float /*time*/,
+float Material_animated::opacity(float2 uv, float /*time*/,
 								 const Worker& worker, Sampler_filter filter) const {
 	if (mask_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
@@ -112,7 +112,7 @@ void Material_animated::prepare_sampling(bool spherical) {
 	}
 
 	if (spherical) {
-	/*	average_emission_ = math::float3::identity;
+	/*	average_emission_ = float3::identity;
 
 		auto d = emission_->dimensions();
 		std::vector<float> luminance(d.x * d.y);
@@ -123,7 +123,7 @@ void Material_animated::prepare_sampling(bool spherical) {
 			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				math::float3 radiance = emission_factor_ * emission_->at_3(x, y);
+				float3 radiance = emission_factor_ * emission_->at_3(x, y);
 
 				luminance[l] = spectrum::luminance(radiance);
 

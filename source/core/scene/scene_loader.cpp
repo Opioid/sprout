@@ -115,7 +115,7 @@ void Loader::load_entities(const json::Value& entities_value,
 
 		math::transformation transformation {
 			math::float3_identity,
-			math::float3(1.f, 1.f, 1.f),
+			float3(1.f, 1.f, 1.f),
 			math::quaternion_identity
 		};
 
@@ -212,8 +212,8 @@ void Loader::load_light(const json::Value& /*light_value*/, Prop* prop, Scene& s
 }
 
 volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scene) {
-	math::float3 absorption(0.f, 0.f, 0.f);
-	math::float3 scattering(0.f, 0.f, 0.f);
+	float3 absorption(0.f, 0.f, 0.f);
+	float3 scattering(0.f, 0.f, 0.f);
 
 	for (auto n = volume_value.MemberBegin(); n != volume_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();

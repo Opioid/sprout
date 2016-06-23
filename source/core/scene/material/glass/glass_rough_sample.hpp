@@ -13,9 +13,9 @@ class Sample_rough;
 class BRDF_rough {
 public:
 
-	math::float3 evaluate(const Sample_rough& sample, const math::float3& wi, float n_dot_wi) const;
+	float3 evaluate(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
 
-	float pdf(const Sample_rough& sample, const math::float3& wi, float n_dot_wi) const;
+	float pdf(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
 
 	float importance_sample(const Sample_rough& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
 };
@@ -23,9 +23,9 @@ public:
 class BTDF_rough {
 public:
 
-	math::float3 evaluate(const Sample_rough& sample, const math::float3& wi, float n_dot_wi) const;
+	float3 evaluate(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
 
-	float pdf(const Sample_rough& sample, const math::float3& wi, float n_dot_wi) const;
+	float pdf(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
 
 	float importance_sample(const Sample_rough& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
 };
@@ -33,11 +33,11 @@ public:
 class Sample_rough : public material::Sample {
 public:
 
-	virtual math::float3 evaluate(math::pfloat3 wi, float& pdf) const final override;
+	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
-	virtual math::float3 radiance() const final override;
+	virtual float3 radiance() const final override;
 
-	virtual math::float3 attenuation() const final override;
+	virtual float3 attenuation() const final override;
 
 	virtual float ior() const final override;
 
@@ -49,12 +49,12 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const math::float3& color, float attenuation_distance, float ior, float ior_outside);
+	void set(const float3& color, float attenuation_distance, float ior, float ior_outside);
 
 private:
 
-	math::float3 color_;
-	math::float3 attenuation_;
+	float3 color_;
+	float3 attenuation_;
 	float ior_;
 	float ior_outside_;
 

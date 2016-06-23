@@ -13,12 +13,12 @@
 namespace scene { namespace shape {
 
 Sphere::Sphere() {
-	aabb_.set_min_max(math::float3(-1.f, -1.f, -1.f), math::float3(1.f, 1.f, 1.f));
+	aabb_.set_min_max(float3(-1.f, -1.f, -1.f), float3(1.f, 1.f, 1.f));
 }
 
 bool Sphere::intersect(const Entity_transformation& transformation, math::Oray& ray,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	math::float3 v = transformation.position - ray.origin;
+	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale.x;
 	float det = (b * b) - math::dot(v, v) + (radius * radius);
@@ -35,14 +35,14 @@ bool Sphere::intersect(const Entity_transformation& transformation, math::Oray& 
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
 
-			math::float3 xyz = math::transform_vector_transposed(
+			float3 xyz = math::transform_vector_transposed(
 						intersection.n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			intersection.uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+			intersection.uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
-			math::float3 n = xyz;//intersection.n;
-			math::float2 uv = math::float2(-std::atan2(n.x, n.z) + math::Pi, std::acos(n.y));
+			float3 n = xyz;//intersection.n;
+			float2 uv = float2(-std::atan2(n.x, n.z) + math::Pi, std::acos(n.y));
 
 			float phi   = uv.x;
 			float theta = std::max(uv.y, 0.99999f);
@@ -51,7 +51,7 @@ bool Sphere::intersect(const Entity_transformation& transformation, math::Oray& 
 			float sin_phi   = std::sin(phi);
 			float cos_phi   = std::cos(phi);
 
-			math::float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
+			float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
 
 			t = math::normalized(math::transform_vector(t, transformation.rotation));
 
@@ -74,10 +74,10 @@ bool Sphere::intersect(const Entity_transformation& transformation, math::Oray& 
 			math::coordinate_system(intersection.n, intersection.t, intersection.b);
 			intersection.geo_n = intersection.n;
 
-			math::float3 xyz = math::transform_vector_transposed(
+			float3 xyz = math::transform_vector_transposed(
 						intersection.n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			intersection.uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+			intersection.uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
 			intersection.part = 0;
@@ -92,7 +92,7 @@ bool Sphere::intersect(const Entity_transformation& transformation, math::Oray& 
 
 bool Sphere::intersect_p(const Entity_transformation& transformation, const math::Oray& ray,
 						 Node_stack& /*node_stack*/) const {
-	math::float3 v = transformation.position - ray.origin;
+	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale.x;
 	float det = (b * b) - math::dot(v, v) + (radius * radius);
@@ -118,7 +118,7 @@ bool Sphere::intersect_p(const Entity_transformation& transformation, const math
 float Sphere::opacity(const Entity_transformation& transformation, const math::Oray& ray,
 					  float time, const material::Materials& materials,
 					  Worker& worker, Sampler_filter filter) const {
-	math::float3 v = transformation.position - ray.origin;
+	float3 v = transformation.position - ray.origin;
 	float b = dot(v, ray.direction);
 	float radius = transformation.scale.x;
 	float det = (b * b) - dot(v, v) + (radius * radius);
@@ -128,10 +128,10 @@ float Sphere::opacity(const Entity_transformation& transformation, const math::O
 		float t0 = b - dist;
 
 		if (t0 > ray.min_t && t0 < ray.max_t) {
-			math::float3 n = math::normalized(ray.point(t0) - transformation.position);
-			math::float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+			float3 n = math::normalized(ray.point(t0) - transformation.position);
+			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			math::float2 uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
 			return materials[0]->opacity(uv, time, worker, filter);
@@ -140,10 +140,10 @@ float Sphere::opacity(const Entity_transformation& transformation, const math::O
 		float t1 = b + dist;
 
 		if (t1 > ray.min_t && t1 < ray.max_t) {
-			math::float3 n = math::normalized(ray.point(t1) - transformation.position);
-			math::float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+			float3 n = math::normalized(ray.point(t1) - transformation.position);
+			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			math::float2 uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 										   std::acos(xyz.y) * math::Pi_inv);
 
 			return materials[0]->opacity(uv, time, worker, filter);
@@ -154,15 +154,15 @@ float Sphere::opacity(const Entity_transformation& transformation, const math::O
 }
 
 void Sphere::sample(uint32_t part, const Entity_transformation& transformation, float area,
-					const math::float3& p, const math::float3& /*n*/, bool two_sided,
+					const float3& p, const float3& /*n*/, bool two_sided,
 					sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
 	Sphere::sample(part, transformation, area, p, two_sided, sampler, node_stack, sample);
 }
 
 void Sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
-					float /*area*/, const math::float3& p, bool /*two_sided*/,
+					float /*area*/, const float3& p, bool /*two_sided*/,
 					sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
-	math::float3 axis = transformation.position - p;
+	float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
 
 	float radius_square = transformation.scale.x * transformation.scale.x;
@@ -171,12 +171,12 @@ void Sphere::sample(uint32_t /*part*/, const Entity_transformation& transformati
 	cos_theta_max = std::min(0.99999995f, cos_theta_max);
 
 	float axis_length = std::sqrt(axis_squared_length);
-	math::float3 z = axis / axis_length;
-	math::float3 x, y;
+	float3 z = axis / axis_length;
+	float3 x, y;
 	math::coordinate_system(z, x, y);
 
-	math::float2 r2 = sampler.generate_sample_2D();
-	math::float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
+	float2 r2 = sampler.generate_sample_2D();
+	float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
 	sample.wi = dir;
 	sample.t = axis_length - transformation.scale.x; // this is not accurate
@@ -188,7 +188,7 @@ void Sphere::sample(uint32_t /*part*/, const Entity_transformation& transformati
 }
 
 void Sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation, float area,
-					const math::float3& p, math::float2 uv, Sample& sample) const {
+					const float3& p, float2 uv, Sample& sample) const {
 	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
@@ -197,16 +197,16 @@ void Sphere::sample(uint32_t /*part*/, const Entity_transformation& transformati
 	float sin_phi   = std::sin(phi);
 	float cos_phi   = std::cos(phi);
 
-	math::float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
-	math::float3 ws = math::transform_point(ls, transformation.object_to_world);
+	float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+	float3 ws = math::transform_point(ls, transformation.object_to_world);
 
-	math::float3 axis = ws - p;
+	float3 axis = ws - p;
 	float sl = math::squared_length(axis);
 	float d = std::sqrt(sl);
 
-	math::float3 dir = axis / d;
+	float3 dir = axis / d;
 
-	math::float3 wn = math::normalized(ws - transformation.position);
+	float3 wn = math::normalized(ws - transformation.position);
 
 	float c = math::dot(wn, -dir);
 
@@ -221,8 +221,8 @@ void Sphere::sample(uint32_t /*part*/, const Entity_transformation& transformati
 }
 
 void Sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation, float area,
-					const math::float3& p, const math::float3& wi, Sample& sample) const {
-	math::float3 v = transformation.position - p;
+					const float3& p, const float3& wi, Sample& sample) const {
+	float3 v = transformation.position - p;
 	float b = math::dot(v, wi);
 	float radius = transformation.scale.x;
 	float det = (b * b) - math::dot(v, v) + (radius * radius);
@@ -231,11 +231,11 @@ void Sphere::sample(uint32_t /*part*/, const Entity_transformation& transformati
 		float dist = std::sqrt(det);
 
 		float t = b - dist;
-		math::float3 hit = p + t * wi;
-		math::float3 wn = math::normalized(hit - transformation.position);
+		float3 hit = p + t * wi;
+		float3 wn = math::normalized(hit - transformation.position);
 
-		math::float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
-		sample.uv = math::float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+		float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
+		sample.uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 								 std::acos(xyz.y) * math::Pi_inv);
 
 		float sl = t * t;
@@ -247,9 +247,9 @@ void Sphere::sample(uint32_t /*part*/, const Entity_transformation& transformati
 }
 
 float Sphere::pdf(uint32_t /*part*/, const Entity_transformation& transformation,
-				  float /*area*/, const math::float3& p, const math::float3& wi,
+				  float /*area*/, const float3& p, const float3& wi,
 				  bool /*two_sided*/, bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
-	math::float3 axis = transformation.position - p;
+	float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
 	float radius_square = transformation.scale.x * transformation.scale.x;
 
@@ -267,7 +267,7 @@ float Sphere::pdf(uint32_t /*part*/, const Entity_transformation& transformation
 	return math::cone_pdf_uniform(cos_theta_max);
 }
 
-float Sphere::area(uint32_t /*part*/, const math::float3& scale) const {
+float Sphere::area(uint32_t /*part*/, const float3& scale) const {
 	return 4.f * math::Pi * scale.x * scale.x;
 }
 

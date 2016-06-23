@@ -59,15 +59,15 @@ math::aabb Builder_base::submesh_aabb(index begin, index end,
 									  const std::vector<Vertex>& vertices) {
 
 	float max_float = std::numeric_limits<float>::max();
-	math::float3 min( max_float,  max_float,  max_float);
-	math::float3 max(-max_float, -max_float, -max_float);
+	float3 min( max_float,  max_float,  max_float);
+	float3 max(-max_float, -max_float, -max_float);
 
 	for (index i = begin; i != end; ++i) {
 		auto& t = triangles[*i];
 
-		auto a = math::float3(vertices[t.a].p);
-		auto b = math::float3(vertices[t.b].p);
-		auto c = math::float3(vertices[t.c].p);
+		auto a = float3(vertices[t.a].p);
+		auto b = float3(vertices[t.b].p);
+		auto c = float3(vertices[t.c].p);
 
 		min = triangle_min(a, b, c, min);
 		max = triangle_max(a, b, c, max);

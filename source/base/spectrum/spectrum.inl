@@ -31,8 +31,8 @@ void Discrete_spectral_power_distribution<N>::set_bin(uint32_t bin, float value)
 }
 
 template<uint32_t N>
-math::float3 Discrete_spectral_power_distribution<N>::XYZ() const {
-	math::float3 xyz(0.f);
+float3 Discrete_spectral_power_distribution<N>::XYZ() const {
+	float3 xyz(0.f);
 	for (uint32_t i = 0; i < N; ++i) {
 		xyz.x += cie_x_.values_[i] * values_[i];
 		xyz.y += cie_y_.values_[i] * values_[i];

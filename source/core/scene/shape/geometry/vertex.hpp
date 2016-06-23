@@ -8,7 +8,7 @@ struct Vertex {
 	math::packed_float3 p;
 	math::packed_float3 n;
 	math::packed_float3 t;
-	math::float2 uv;
+	float2 uv;
 	float bitangent_sign;
 };
 

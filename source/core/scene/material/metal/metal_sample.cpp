@@ -7,7 +7,7 @@
 
 namespace scene { namespace material { namespace metal {
 
-math::float3 Sample_isotropic::evaluate(math::pfloat3 wi, float& pdf) const {
+float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 
@@ -15,12 +15,12 @@ math::float3 Sample_isotropic::evaluate(math::pfloat3 wi, float& pdf) const {
 	return n_dot_wi * ggx::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this, conductor, pdf);
 }
 
-math::float3 Sample_isotropic::radiance() const {
+float3 Sample_isotropic::radiance() const {
 	return math::float3_identity;
 }
 
-math::float3 Sample_isotropic::attenuation() const {
-	return math::float3(100.f, 100.f, 100.f);
+float3 Sample_isotropic::attenuation() const {
+	return float3(100.f, 100.f, 100.f);
 }
 
 float Sample_isotropic::ior() const {
@@ -46,7 +46,7 @@ bool Sample_isotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_isotropic::set(math::pfloat3 ior, math::pfloat3 absorption, float roughness) {
+void Sample_isotropic::set(float3_p ior, float3_p absorption, float roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 
@@ -54,19 +54,19 @@ void Sample_isotropic::set(math::pfloat3 ior, math::pfloat3 absorption, float ro
 	a2_ = a * a;
 }
 
-math::float3 Sample_anisotropic::evaluate(math::pfloat3 wi, float& pdf) const {
+float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
 	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
 	fresnel::Conductor conductor(ior_, absorption_);
 	return n_dot_wi * ggx::Anisotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this, conductor, pdf);
 }
 
-math::float3 Sample_anisotropic::radiance() const {
+float3 Sample_anisotropic::radiance() const {
 	return math::float3_identity;
 }
 
-math::float3 Sample_anisotropic::attenuation() const {
-	return math::float3(100.f, 100.f, 100.f);
+float3 Sample_anisotropic::attenuation() const {
+	return float3(100.f, 100.f, 100.f);
 }
 
 float Sample_anisotropic::ior() const {
@@ -93,7 +93,7 @@ bool Sample_anisotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_anisotropic::set(math::pfloat3 ior, math::pfloat3 absorption, math::float2 roughness) {
+void Sample_anisotropic::set(float3_p ior, float3_p absorption, float2 roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 

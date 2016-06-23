@@ -16,24 +16,24 @@ public:
 
 	void init();
 
-	math::float3 sun_direction() const;
-	void set_sun_direction(math::pfloat3 direction);
+	float3 sun_direction() const;
+	void set_sun_direction(float3_p direction);
 
-	void set_ground_albedo(math::pfloat3 albedo);
+	void set_ground_albedo(float3_p albedo);
 	void set_turbidity(float turbidity);
 
-	math::float3 evaluate_sky(math::pfloat3 wi) const;
+	float3 evaluate_sky(float3_p wi) const;
 
-	math::float3 evaluate_sky_and_sun(math::pfloat3 wi) const;
+	float3 evaluate_sky_and_sun(float3_p wi) const;
 
-	static math::float3 zenith();
+	static float3 zenith();
 
 private:
 
 	void release();
 
-	math::float3 sun_direction_;
-	math::float3 ground_albedo_;
+	float3 sun_direction_;
+	float3 ground_albedo_;
 
 	float turbidity_;
 
@@ -43,7 +43,7 @@ private:
 
 	bool dirty_;
 
-	static const math::float3 zenith_;
+	static const float3 zenith_;
 
 	using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 };

@@ -47,13 +47,13 @@ constexpr float color_matching[][3] = {
 	{ 0.0001f, 0.0000f, 0.0000f }, { 0.0001f, 0.0000f, 0.0000f }, { 0.0000f, 0.0000f, 0.0000f }
 };
 
-math::float3 blackbody(float temperature) {
+float3 blackbody(float temperature) {
 	constexpr float wl_min = 380.f;
 	constexpr float wl_max = 780.f;
 	constexpr float wl_step = 5.f;
 	constexpr uint32_t numSteps = static_cast<uint32_t>((wl_max - wl_min) / wl_step) + 1;
 
-	math::float3 xyz(0.f);
+	float3 xyz(0.f);
 	for (uint32_t k = 0; k < numSteps; k++ ) {
 		// convert to nanometer
 		float wl = (wl_min + static_cast<float>(k) * wl_step) * 1e-9f;
@@ -71,7 +71,7 @@ math::float3 blackbody(float temperature) {
 //  return math::normalized(spectrum::XYZ_to_linear_RGB(xyz));
 }
 
-math::float3 blackbody_fast(float temperature) {
+float3 blackbody_fast(float temperature) {
 	float arg1 = 1e9f / (temperature * temperature * temperature);
 	float arg2 = 1e6f / (temperature * temperature);
 	float arg3 = 1e3f / temperature;
@@ -95,7 +95,7 @@ math::float3 blackbody_fast(float temperature) {
 		yc =  3.0817580f * xc3 - 5.87338670f * xc2 + 3.75112997f * xc - 0.37001483f;
 	}
 
-	math::float3 xyz(xc / yc, 1.f, (1.f - xc - yc) / yc);
+	float3 xyz(xc / yc, 1.f, (1.f - xc - yc) / yc);
 
 	xyz /= std::max(xyz.x, std::max(xyz.y, xyz.z));
 

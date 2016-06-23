@@ -10,7 +10,7 @@
 
 namespace scene { namespace material { namespace substitute {
 
-math::float3 Sample_translucent::evaluate(math::pfloat3 wi, float& pdf) const {
+float3 Sample_translucent::evaluate(float3_p wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
 		return math::float3_identity;
@@ -26,12 +26,12 @@ math::float3 Sample_translucent::evaluate(math::pfloat3 wi, float& pdf) const {
 	if (thickness_ > 0.f && !same_hemisphere(wi)) {
 		float n_dot_wi = std::max(-math::dot(n_, wi),  0.00001f);
 		float approximated_distance = thickness_ / n_dot_wi;
-		math::float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
+		float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 		pdf = 0.5f * n_dot_wi * math::Pi_inv;
 		return n_dot_wi * (math::Pi_inv * attenuation * diffuse_color_);
 	}
 
-	math::float3 result = base_evaluate(wi, pdf);
+	float3 result = base_evaluate(wi, pdf);
 
 	if (thickness_ > 0.f) {
 		pdf *= 0.5f;
@@ -54,7 +54,7 @@ void Sample_translucent::sample_evaluate(sampler::Sampler& sampler, bxdf::Result
 			result.wi *= -1.f;
 			result.pdf *= 0.5f;
 			float approximated_distance = thickness_ / n_dot_wi;
-			math::float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
+			float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
 			if (1.f == metallic_) {
@@ -88,11 +88,11 @@ bool Sample_translucent::is_translucent() const {
 	return thickness_ > 0.f;
 }
 
-void Sample_translucent::set(math::pfloat3 color, math::pfloat3 radiance,
+void Sample_translucent::set(float3_p color, float3_p radiance,
 							 float constant_f0, float a2, float metallic,
 							 float thickness, float attenuation_distance) {
 	diffuse_color_ = (1.f - metallic) * color;
-	f0_ = math::lerp(math::float3(constant_f0), color, metallic);
+	f0_ = math::lerp(float3(constant_f0), color, metallic);
 	emission_ = radiance;
 
 	a2_ = a2;

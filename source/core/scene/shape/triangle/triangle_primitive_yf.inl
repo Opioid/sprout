@@ -11,8 +11,8 @@ inline bool same_sign(float a, float b) {
 Triangle_YF::Triangle_YF(const Vertex& a, const Vertex& b, const Vertex& c,
 						 uint32_t material_index) :
 	a(a), b(b), c(c), material_index(material_index) {
-	math::float3 e1 = b.p - a.p;
-	math::float3 e2 = c.p - a.p;
+	float3 e1 = b.p - a.p;
+	float3 e2 = c.p - a.p;
 
 	n = math::cross(e1, e2);
 	d = math::dot(n, a.p);
@@ -24,7 +24,7 @@ Triangle_YF::Triangle_YF(const Vertex& a, const Vertex& b, const Vertex& c,
 	d2 = -math::dot(n2, a.p);
 }
 
-inline bool Triangle_YF::intersect(math::Oray& ray, math::float2& uv) const {
+inline bool Triangle_YF::intersect(math::Oray& ray, float2& uv) const {
 	float det = math::dot(ray.direction, n);
 
 	float t = d - math::dot(ray.origin, n);
@@ -33,7 +33,7 @@ inline bool Triangle_YF::intersect(math::Oray& ray, math::float2& uv) const {
 		return false;
 	}
 
-	math::float3 p = det * ray.origin + t * ray.direction;
+	float3 p = det * ray.origin + t * ray.direction;
 
 	float u = math::dot(p, n1) + det * d1;
 
@@ -71,7 +71,7 @@ inline bool Triangle_YF::intersect_p(const math::Oray& ray) const {
 		return false;
 	}
 
-	math::float3 p = det * ray.origin + t * ray.direction;
+	float3 p = det * ray.origin + t * ray.direction;
 
 	float u = (math::dot(p, n1) + det * d1);
 
@@ -94,8 +94,8 @@ inline bool Triangle_YF::intersect_p(const math::Oray& ray) const {
 	return false;
 }
 
-inline void Triangle_YF::interpolate(math::float2 uv,
-									 math::float3& p, math::float3& n, math::float2& tc) const {
+inline void Triangle_YF::interpolate(float2 uv,
+									 float3& p, float3& n, float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	p  = w * a.p + uv.x * b.p + uv.y * c.p;
@@ -103,9 +103,9 @@ inline void Triangle_YF::interpolate(math::float2 uv,
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline void Triangle_YF::interpolate_data(math::float2 uv,
-										  math::float3& n, math::float3& t,
-										  math::float2& tc) const {
+inline void Triangle_YF::interpolate_data(float2 uv,
+										  float3& n, float3& t,
+										  float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	n  = math::normalized(w * a.n + uv.x * b.n + uv.y * c.n);
@@ -113,20 +113,20 @@ inline void Triangle_YF::interpolate_data(math::float2 uv,
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline math::float2 Triangle_YF::interpolate_uv(math::float2 uv) const {
+inline float2 Triangle_YF::interpolate_uv(float2 uv) const {
 	float w = 1.f - uv.x - uv.y;
 
 	return w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline math::float3 Triangle_YF::normal() const {
+inline float3 Triangle_YF::normal() const {
 	return math::normalized(n);
 }
 
-inline float Triangle_YF::area(const math::float3& scale) const {
-	math::float3 sa = scale * a.p;
-	math::float3 sb = scale * b.p;
-	math::float3 sc = scale * c.p;
+inline float Triangle_YF::area(const float3& scale) const {
+	float3 sa = scale * a.p;
+	float3 sb = scale * b.p;
+	float3 sc = scale * c.p;
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 

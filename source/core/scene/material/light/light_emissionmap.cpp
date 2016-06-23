@@ -15,9 +15,9 @@ Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
 						 std::shared_ptr<image::texture::Texture_2D> mask,
 						 const Sampler_settings& sampler_settings, bool two_sided) :
 	Material(cache, mask, sampler_settings, two_sided),
-	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
+	average_emission_(float3(-1.f, -1.f, -1.f)) {}
 
-const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, float3_p wo,
 											float /*area*/, float /*time*/, float /*ior_i*/,
 											const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
@@ -26,20 +26,20 @@ const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, math::pfl
 
 	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
 
-	math::float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
+	float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
 	sample.set(radiance);
 
 	return sample;
 }
 
-math::float3 Emissionmap::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
+float3 Emissionmap::sample_radiance(float3_p /*wi*/, float2 uv,
 										  float /*area*/, float /*time*/,
 										  const Worker& worker, Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }
 
-math::float3 Emissionmap::average_radiance(float /*area*/) const {
+float3 Emissionmap::average_radiance(float /*area*/) const {
 	return average_emission_;
 }
 
@@ -47,15 +47,15 @@ bool Emissionmap::has_emission_map() const {
 	return nullptr != emission_map_;
 }
 
-math::float2 Emissionmap::radiance_importance_sample(math::float2 r2, float& pdf) const {
-	math::float2 uv = distribution_.sample_continuous(r2, pdf);
+float2 Emissionmap::radiance_importance_sample(float2 r2, float& pdf) const {
+	float2 uv = distribution_.sample_continuous(r2, pdf);
 
 	if (uv.y == 0.f) {
 		pdf = 0.f;
 	} else {
 		float sin_theta = std::sin(uv.y * math::Pi);
 /*
-		math::float2 disk(
+		float2 disk(
 					2.f * uv.x - 1.f,
 					2.f * uv.y - 1.f);
 
@@ -80,7 +80,7 @@ math::float2 Emissionmap::radiance_importance_sample(math::float2 r2, float& pdf
 	return uv;
 }
 
-float Emissionmap::emission_pdf(math::float2 uv, const Worker& worker,
+float Emissionmap::emission_pdf(float2 uv, const Worker& worker,
 								Sampler_filter filter) const {
 	if (uv.y == 0.f) {
 		return 0.f;
@@ -101,7 +101,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 	}
 
 	if (spherical) {
-		math::float3 average_radiance = math::float3_identity;
+		float3 average_radiance = math::float3_identity;
 
 		float total_weight = 0.f;
 
@@ -114,11 +114,11 @@ void Emissionmap::prepare_sampling(bool spherical) {
 			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				math::float3 radiance = emission_factor_ * emission_map_->at_3(x, y);
+				float3 radiance = emission_factor_ * emission_map_->at_3(x, y);
 
 
 			/*
-				math::float2 disk(
+				float2 disk(
 							2.f * ((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x)) - 1.f,
 							2.f * ((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) - 1.f);
 

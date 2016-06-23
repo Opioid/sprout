@@ -13,7 +13,7 @@ Statistics::~Statistics() {}
 void Statistics::write(const image::Image_float_4& image, uint32_t frame, thread::Pool& /*pool*/) {
 	logging::info("Frame: " + string::to_string(frame));
 
-	math::float3 average_rgb = image::average_3(image);
+	float3 average_rgb = image::average_3(image);
 
 	float max_luminance;
 	float average_luminance = image::average_and_max_luminance(image, max_luminance);

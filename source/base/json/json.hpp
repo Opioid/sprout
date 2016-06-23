@@ -19,13 +19,13 @@ bool read_bool(const rapidjson::Value& value, const std::string& name, bool defa
 float read_float(const rapidjson::Value& value);
 float read_float(const rapidjson::Value& value, const std::string& name, float default_value = 0.f);
 
-math::float2 read_float2(const rapidjson::Value& value);
+float2 read_float2(const rapidjson::Value& value);
 
-math::float3 read_float3(const rapidjson::Value& value);
-math::float3 read_float3(const rapidjson::Value& value, const std::string& name,
-						 const math::float3& default_value = math::float3_identity);
+float3 read_float3(const rapidjson::Value& value);
+float3 read_float3(const rapidjson::Value& value, const std::string& name,
+						 const float3& default_value = math::float3_identity);
 
-math::float4 read_float4(const rapidjson::Value& value);
+float4 read_float4(const rapidjson::Value& value);
 
 int32_t read_int(const rapidjson::Value& value);
 
@@ -33,9 +33,9 @@ uint32_t read_uint(const rapidjson::Value& value);
 uint32_t read_uint(const rapidjson::Value& value, const std::string& name,
 				   uint32_t default_value = 0);
 
-math::int2 read_int2(const rapidjson::Value& value);
-math::int2 read_int2(const rapidjson::Value& value, const std::string& name,
-					 math::int2 default_value = math::int2::identity);
+int2 read_int2(const rapidjson::Value& value);
+int2 read_int2(const rapidjson::Value& value, const std::string& name,
+					 int2 default_value = int2::identity);
 
 math::uint2 read_uint2(const rapidjson::Value& value);
 math::uint2 read_uint2(const rapidjson::Value& value, const std::string& name,
@@ -45,7 +45,7 @@ math::uint3 read_uint3(const rapidjson::Value& value);
 
 // math::quaternion read_quaternion(const rapidjson::Value& value);
 
-math::float3x3   create_rotation_matrix(math::pfloat3 xyz);
+math::float3x3   create_rotation_matrix(float3_p xyz);
 math::float3x3   read_rotation_matrix(const rapidjson::Value& value);
 math::quaternion read_local_rotation(const rapidjson::Value& value);
 

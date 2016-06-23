@@ -10,9 +10,9 @@ class Sample_base : public material::Sample {
 
 public:
 
-	virtual math::float3 radiance() const final override;
+	virtual float3 radiance() const final override;
 
-	virtual math::float3 attenuation() const final override;
+	virtual float3 attenuation() const final override;
 
 	virtual float ior() const final override;
 
@@ -22,19 +22,19 @@ public:
 
 	virtual bool is_translucent() const override;
 
-	void set(math::pfloat3 color, math::pfloat3 radiance,
+	void set(float3_p color, float3_p radiance,
 			 float ior, float constant_f0, float a2, float metallic);
 
 protected:
 
-	math::float3 base_evaluate(math::pfloat3 wi, float& pdf) const;
+	float3 base_evaluate(float3_p wi, float& pdf) const;
 
 	void diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const;
 	void specular_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const;
 	void pure_specular_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const;
 
 	template<typename Coating>
-	math::float3 base_evaluate_and_coating(math::pfloat3 wi, const Coating& coating,
+	float3 base_evaluate_and_coating(float3_p wi, const Coating& coating,
 										   float coating_a2, float& pdf) const;
 
 	template<typename Coating>
@@ -61,9 +61,9 @@ protected:
 													 sampler::Sampler& sampler,
 													 bxdf::Result& result) const;
 
-	math::float3 diffuse_color_;
-	math::float3 f0_;
-	math::float3 emission_;
+	float3 diffuse_color_;
+	float3 f0_;
+	float3 emission_;
 
 	float ior_;
 	float a2_;

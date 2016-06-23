@@ -13,7 +13,7 @@ public:
 	Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
 			 const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
 										   float area, float time, float ior_i,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
@@ -21,14 +21,14 @@ public:
 	void set_color_map(std::shared_ptr<image::texture::Texture_2D> color_map);
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 
-	void set_color(const math::float3& color);
+	void set_color(const float3& color);
 
 private:
 
 	std::shared_ptr<image::texture::Texture_2D> color_map_;
 	std::shared_ptr<image::texture::Texture_2D> normal_map_;
 
-	math::float3 color_;
+	float3 color_;
 };
 
 }}}

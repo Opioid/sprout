@@ -15,7 +15,7 @@ class Isotropic {
 public:
 
 	template<typename Sample>
-	static math::float3 evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
+	static float3 evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
 								 const Sample& sample, float& pdf);
 
 	template<typename Sample>
@@ -25,7 +25,7 @@ public:
 private:
 
 	template<typename Sample>
-	static float f(math::pfloat3 wi, float n_dot_wi, float n_dot_wo, const Sample& sample);
+	static float f(float3_p wi, float n_dot_wi, float n_dot_wo, const Sample& sample);
 };
 
 }}}

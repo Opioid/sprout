@@ -7,7 +7,7 @@ namespace image { namespace texture { namespace sampler {
 class Spherical_nearest : public Spherical {
 public:
 
-	virtual math::float3 sample_3(const Texture_2D& texture, const math::float3& xyz) const;
+	virtual float3 sample_3(const Texture_2D& texture, const float3& xyz) const;
 };
 
 }}}

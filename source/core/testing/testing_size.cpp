@@ -19,9 +19,9 @@ void print_size(const std::string& name, size_t expected_size) {
 void size() {
 	std::cout << "Sizes:" << std::endl;
 
-	print_size<math::float3>("float3", 16);
+	print_size<float3>("float3", 16);
 
-	print_size<math::float4>("float4", 16);
+	print_size<float4>("float4", 16);
 
 	print_size<math::float4x4>("float4x4", 64);
 

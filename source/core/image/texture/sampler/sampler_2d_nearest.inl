@@ -7,7 +7,7 @@
 namespace image { namespace texture { namespace sampler {
 
 template<typename Address_mode>
-float Sampler_2D_nearest<Address_mode>::sample_1(const Texture_2D& texture, math::float2 uv) const {
+float Sampler_2D_nearest<Address_mode>::sample_1(const Texture_2D& texture, float2 uv) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -20,7 +20,7 @@ float Sampler_2D_nearest<Address_mode>::sample_1(const Texture_2D& texture, math
 }
 
 template<typename Address_mode>
-math::float2 Sampler_2D_nearest<Address_mode>::sample_2(const Texture_2D& texture, math::float2 uv) const {
+float2 Sampler_2D_nearest<Address_mode>::sample_2(const Texture_2D& texture, float2 uv) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -33,7 +33,7 @@ math::float2 Sampler_2D_nearest<Address_mode>::sample_2(const Texture_2D& textur
 }
 
 template<typename Address_mode>
-math::float3 Sampler_2D_nearest<Address_mode>::sample_3(const Texture_2D& texture, math::float2 uv) const {
+float3 Sampler_2D_nearest<Address_mode>::sample_3(const Texture_2D& texture, float2 uv) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -46,7 +46,7 @@ math::float3 Sampler_2D_nearest<Address_mode>::sample_3(const Texture_2D& textur
 }
 
 template<typename Address_mode>
-float Sampler_2D_nearest<Address_mode>::sample_1(const Texture_2D& texture, math::float2 uv, int32_t element) const {
+float Sampler_2D_nearest<Address_mode>::sample_1(const Texture_2D& texture, float2 uv, int32_t element) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -61,7 +61,7 @@ float Sampler_2D_nearest<Address_mode>::sample_1(const Texture_2D& texture, math
 }
 
 template<typename Address_mode>
-math::float2 Sampler_2D_nearest<Address_mode>::sample_2(const Texture_2D& texture, math::float2 uv,
+float2 Sampler_2D_nearest<Address_mode>::sample_2(const Texture_2D& texture, float2 uv,
 														int32_t element) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
@@ -77,7 +77,7 @@ math::float2 Sampler_2D_nearest<Address_mode>::sample_2(const Texture_2D& textur
 }
 
 template<typename Address_mode>
-math::float3 Sampler_2D_nearest<Address_mode>::sample_3(const Texture_2D& texture, math::float2 uv,
+float3 Sampler_2D_nearest<Address_mode>::sample_3(const Texture_2D& texture, float2 uv,
 														int32_t element) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
@@ -93,7 +93,7 @@ math::float3 Sampler_2D_nearest<Address_mode>::sample_3(const Texture_2D& textur
 }
 
 template<typename Address_mode>
-math::float2 Sampler_2D_nearest<Address_mode>::address(math::float2 uv) const {
+float2 Sampler_2D_nearest<Address_mode>::address(float2 uv) const {
 	return address_mode_.f(uv);
 }
 

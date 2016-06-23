@@ -21,7 +21,7 @@ void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-math::float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
+float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 					scene::Intersection& intersection) {
 	scene::Ray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
@@ -31,14 +31,14 @@ math::float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 
 	float result = 0.f;
 
-	math::float3 wo = -ray.direction;
+	float3 wo = -ray.direction;
 	auto& material_sample = intersection.sample(worker, wo, ray.time, Sampler_filter::Unknown);
 
 	for (uint32_t i = 0; i < settings_.num_samples; ++i) {
-		math::float2 sample = sampler_.generate_sample_2D();
-		math::float3 hs = math::sample_hemisphere_cosine(sample);
-//		math::float3 ws = intersection.geo.tangent_to_world(hs);
-		math::float3 ws = material_sample.tangent_to_world(hs);
+		float2 sample = sampler_.generate_sample_2D();
+		float3 hs = math::sample_hemisphere_cosine(sample);
+//		float3 ws = intersection.geo.tangent_to_world(hs);
+		float3 ws = material_sample.tangent_to_world(hs);
 
 		occlusion_ray.set_direction(ws);
 
@@ -47,7 +47,7 @@ math::float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 		}
 	}
 
-	return math::float4(result, result, result, 1.f);
+	return float4(result, result, result, 1.f);
 }
 
 Ao_factory::Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius) :

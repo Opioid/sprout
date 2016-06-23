@@ -16,7 +16,7 @@ public:
 
 private:
 
-	static void write_header(std::ostream& stream, math::int2 dimensions);
+	static void write_header(std::ostream& stream, int2 dimensions);
 
 	static void write_pixels(std::ostream& stream, const Image_float_4& image);
 
@@ -24,7 +24,7 @@ private:
 
 	static void write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t num_bytes);
 
-	static math::byte4 float_to_rgbe(math::pfloat3 c);
+	static math::byte4 float_to_rgbe(float3_p c);
 };
 
 }}}

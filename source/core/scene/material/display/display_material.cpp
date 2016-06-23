@@ -17,9 +17,9 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
 														   sampler_settings, two_sided),
-	average_emission_(math::float3(-1.f, -1.f, -1.f)) {}
+	average_emission_(float3(-1.f, -1.f, -1.f)) {}
 
-const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Material::sample(const shape::Hitpoint& hp, float3_p wo,
 										 float /*area*/, float /*time*/, float /*ior_i*/,
 										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
@@ -29,7 +29,7 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat
 	if (emission_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		math::float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
+		float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
 		sample.set(emission_factor_ * radiance, f0_, roughness_);
 	} else {
 		sample.set(emission_factor_ * emission_, f0_, roughness_);
@@ -38,7 +38,7 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat
 	return sample;
 }
 
-math::float3 Material::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
+float3 Material::sample_radiance(float3_p /*wi*/, float2 uv,
 									   float /*area*/, float /*time*/, const Worker& worker,
 									   Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
@@ -46,7 +46,7 @@ math::float3 Material::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }
 
-math::float3 Material::average_radiance(float /*area*/) const {
+float3 Material::average_radiance(float /*area*/) const {
 	return average_emission_;
 }
 
@@ -54,8 +54,8 @@ bool Material::has_emission_map() const {
 	return nullptr != emission_map_;
 }
 
-math::float2 Material::radiance_importance_sample(math::float2 r2, float& pdf) const {
-	math::float2 uv = distribution_.sample_continuous(r2, pdf);
+float2 Material::radiance_importance_sample(float2 r2, float& pdf) const {
+	float2 uv = distribution_.sample_continuous(r2, pdf);
 
 	if (uv.y == 0.f) {
 		pdf = 0.f;
@@ -68,7 +68,7 @@ math::float2 Material::radiance_importance_sample(math::float2 r2, float& pdf) c
 	return uv;
 }
 
-float Material::emission_pdf(math::float2 uv, const Worker& worker,
+float Material::emission_pdf(float2 uv, const Worker& worker,
 							 Sampler_filter filter) const {
 	if (uv.y == 0.f) {
 		return 0.f;
@@ -101,7 +101,7 @@ void Material::prepare_sampling(bool spherical) {
 										 static_cast<float>(d.y)) * math::Pi);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				math::float3 radiance = emission_factor_ * emission_map_->at_3(x, y);
+				float3 radiance = emission_factor_ * emission_map_->at_3(x, y);
 
 				luminance[l] = spectrum::luminance(radiance);
 
@@ -127,7 +127,7 @@ void Material::set_emission_map(std::shared_ptr<image::texture::Texture_2D> emis
 	emission_map_ = emission_map;
 }
 
-void Material::set_emission(math::pfloat3 radiance) {
+void Material::set_emission(float3_p radiance) {
 	emission_ = radiance;
 }
 

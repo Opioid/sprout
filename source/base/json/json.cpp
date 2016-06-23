@@ -98,19 +98,19 @@ float read_float(const rapidjson::Value& value, const std::string& name, float d
 	return static_cast<float>(node->value.GetDouble());
 }
 
-math::float2 read_float2(const rapidjson::Value& value) {
-	return math::float2(static_cast<float>(value[0u].GetDouble()),
+float2 read_float2(const rapidjson::Value& value) {
+	return float2(static_cast<float>(value[0u].GetDouble()),
 						static_cast<float>(value[1].GetDouble()));
 }
 
-math::float3 read_float3(const rapidjson::Value& value) {
-	return math::float3(static_cast<float>(value[0u].GetDouble()),
+float3 read_float3(const rapidjson::Value& value) {
+	return float3(static_cast<float>(value[0u].GetDouble()),
 						static_cast<float>(value[1].GetDouble()),
 						static_cast<float>(value[2].GetDouble()));
 }
 
-math::float3 read_float3(const rapidjson::Value& value, const std::string& name,
-						 const math::float3& default_value) {
+float3 read_float3(const rapidjson::Value& value, const std::string& name,
+						 const float3& default_value) {
 	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
 	if (value.MemberEnd() == node) {
 		return default_value;
@@ -119,8 +119,8 @@ math::float3 read_float3(const rapidjson::Value& value, const std::string& name,
 	return read_float3(node->value);
 }
 
-math::float4 read_float4(const rapidjson::Value& value) {
-	return math::float4(static_cast<float>(value[0u].GetDouble()),
+float4 read_float4(const rapidjson::Value& value) {
+	return float4(static_cast<float>(value[0u].GetDouble()),
 						static_cast<float>(value[1].GetDouble()),
 						static_cast<float>(value[2].GetDouble()),
 						static_cast<float>(value[3].GetDouble()));
@@ -143,12 +143,12 @@ uint32_t read_uint(const rapidjson::Value& value, const std::string& name, uint3
 	return node->value.GetUint();
 }
 
-math::int2 read_int2(const rapidjson::Value& value) {
-	return math::int2(value[0].GetInt(), value[1].GetInt());
+int2 read_int2(const rapidjson::Value& value) {
+	return int2(value[0].GetInt(), value[1].GetInt());
 }
 
-math::int2 read_int2(const rapidjson::Value& value, const std::string& name,
-					 math::int2 default_value) {
+int2 read_int2(const rapidjson::Value& value, const std::string& name,
+					 int2 default_value) {
 	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
 	if (value.MemberEnd() == node) {
 		return default_value;
@@ -175,7 +175,7 @@ math::uint3 read_uint3(const rapidjson::Value& value) {
 	return math::uint3(value[0u].GetUint(), value[1].GetUint(), value[2].GetUint());
 }
 
-math::float3x3 create_rotation_matrix(math::pfloat3 xyz) {
+math::float3x3 create_rotation_matrix(float3_p xyz) {
 	math::float3x3 rot_x;
 	math::set_rotation_x(rot_x, math::degrees_to_radians(xyz.x));
 
@@ -189,7 +189,7 @@ math::float3x3 create_rotation_matrix(math::pfloat3 xyz) {
 }
 
 math::float3x3 read_rotation_matrix(const rapidjson::Value& value) {
-	math::float3 rot = read_float3(value);
+	float3 rot = read_float3(value);
 
 	return create_rotation_matrix(rot);
 }

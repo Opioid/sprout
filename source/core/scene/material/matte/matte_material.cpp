@@ -15,9 +15,9 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
 														   sampler_settings, two_sided) {}
 
-const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Material::sample(const shape::Hitpoint& hp, float3_p wo,
 										 float /*area*/, float /*time*/, float /*ior_i*/,
-										 const Worker& worker, Sampler_filter filter) {
+										 const Worker& worker, Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
 //	auto& sampler = worker.sampler(sampler_key_, filter);
@@ -29,7 +29,7 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, math::pfloat
 	return sample;
 }
 
-void Material::set_color(math::pfloat3 color) {
+void Material::set_color(float3_p color) {
 	color_ = color;
 }
 

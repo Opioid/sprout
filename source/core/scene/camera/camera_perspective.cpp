@@ -12,7 +12,7 @@
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(math::int2 resolution, float ray_max_t) :
+Perspective::Perspective(int2 resolution, float ray_max_t) :
 	Camera(resolution, ray_max_t),
 	lens_radius_(0.f) {
 	set_fov(math::degrees_to_radians(60.f));
@@ -23,17 +23,17 @@ uint32_t Perspective::num_views() const {
 	return 1;
 }
 
-math::int2 Perspective::sensor_dimensions() const {
+int2 Perspective::sensor_dimensions() const {
 	return resolution_;
 }
 
 math::Recti Perspective::view_bounds(uint32_t /*view*/) const {
-	return math::Recti{math::int2(0, 0), resolution_};
+	return math::Recti{int2(0, 0), resolution_};
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {
 	if (focus_.use_point) {
-		math::float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
+		float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
 		direction = math::normalized(direction);
 
 		entity::Composed_transformation temp;
@@ -59,19 +59,19 @@ void Perspective::update_focus(rendering::Worker& worker) {
 bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 							   uint32_t /*view*/,
 							   scene::Ray& ray) const {
-	math::float2 coordinates = math::float2(sample.pixel) + sample.pixel_uv;
+	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
-	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
+	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-	math::float3 origin;
+	float3 origin;
 
 	if (lens_radius_ > 0.f) {
-		math::float2 lens = math::sample_disk_concentric(sample.lens_uv);
+		float2 lens = math::sample_disk_concentric(sample.lens_uv);
 
 		float t = focal_distance_ / direction.z;
-		math::float3 focus = t * direction;
+		float3 focus = t * direction;
 
-		origin = math::float3(lens.x * lens_radius_, lens.y * lens_radius_, 0.f);
+		origin = float3(lens.x * lens_radius_, lens.y * lens_radius_, 0.f);
 		direction = focus - origin;
 	} else {
 		origin = math::float3_identity;
@@ -80,10 +80,10 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);
 
-	math::float3 origin_w = math::transform_point(origin, transformation.object_to_world);
+	float3 origin_w = math::transform_point(origin, transformation.object_to_world);
 
 	direction = math::normalized(direction);
-	math::float3 direction_w = math::transform_vector(direction, transformation.object_to_world);
+	float3 direction_w = math::transform_vector(direction, transformation.object_to_world);
 
 	ray.origin = origin_w;
 	ray.set_direction(direction_w);
@@ -96,14 +96,14 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 }
 
 void Perspective::set_fov(float fov) {
-	math::float2 fr(resolution_);
+	float2 fr(resolution_);
 	float ratio = fr.x / fr.y;
 
 	float z = ratio * math::Pi / fov * 0.5f;
 
-	left_top_ = math::float3(-ratio,  1.f, z);
-	math::float3 right_top	( ratio,  1.f, z);
-	math::float3 left_bottom(-ratio, -1.f, z);
+	left_top_ = float3(-ratio,  1.f, z);
+	float3 right_top	( ratio,  1.f, z);
+	float3 left_bottom(-ratio, -1.f, z);
 
 	d_x_ = (right_top   - left_top_) / fr.x;
 	d_y_ = (left_bottom - left_top_) / fr.y;
@@ -116,7 +116,7 @@ void Perspective::set_lens_radius(float lens_radius) {
 void Perspective::set_focus(const Focus& focus) {
 	focus_ = focus;
 
-	math::float2 fr(resolution_);
+	float2 fr(resolution_);
 	focus_.point.x *= fr.x;
 	focus_.point.y *= fr.y;
 

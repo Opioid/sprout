@@ -7,11 +7,11 @@ namespace scene { namespace camera {
 class Hemispherical : public Camera {
 public:
 
-	Hemispherical(math::int2 resolution, float ray_max_t);
+	Hemispherical(int2 resolution, float ray_max_t);
 
 	virtual uint32_t num_views() const final override;
 
-	virtual math::int2 sensor_dimensions() const final override;
+	virtual int2 sensor_dimensions() const final override;
 
 	virtual math::Recti view_bounds(uint32_t view) const final override;
 

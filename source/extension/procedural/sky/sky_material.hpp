@@ -35,15 +35,15 @@ public:
 				 Model& model);
 
 	virtual const scene::material::Sample& sample(const scene::shape::Hitpoint& hp,
-												  math::pfloat3 wo, float area, float time,
+												  float3_p wo, float area, float time,
 												  float ior_i, const scene::Worker& worker,
 												  Sampler_filter filter) final override;
 
-	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv,
+	virtual float3 sample_radiance(float3_p wi, float2 uv,
 										 float area, float time, const scene::Worker& worker,
 										 Sampler_filter filter) const final override;
 
-	virtual math::float3 average_radiance(float area) const final override;
+	virtual float3 average_radiance(float area) const final override;
 };
 
 class Sun_material : public Material {
@@ -54,15 +54,15 @@ public:
 				 Model& model);
 
 	virtual const scene::material::Sample& sample(const scene::shape::Hitpoint& hp,
-												  math::pfloat3 wo, float area, float time,
+												  float3_p wo, float area, float time,
 												  float ior_i, const scene::Worker& worker,
 												  Sampler_filter filter) final override;
 
-	virtual math::float3 sample_radiance(math::pfloat3 wi, math::float2 uv,
+	virtual float3 sample_radiance(float3_p wi, float2 uv,
 										 float area, float time, const scene::Worker& worker,
 										 Sampler_filter filter) const final override;
 
-	virtual math::float3 average_radiance(float area) const final override;
+	virtual float3 average_radiance(float area) const final override;
 };
 
 }}

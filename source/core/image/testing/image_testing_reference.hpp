@@ -4,6 +4,6 @@
 
 namespace image { namespace testing {
 
-void create_reference_normal_map(math::int2 dimensions);
+void create_reference_normal_map(int2 dimensions);
 
 }}

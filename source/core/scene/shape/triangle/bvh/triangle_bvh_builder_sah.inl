@@ -27,12 +27,12 @@ void Builder_SAH::build(Tree<Data>& tree,
 	for (uint32_t i = 0, len = static_cast<uint32_t>(triangles.size()); i < len; ++i) {
 		primitive_indices[i] = i;
 
-		auto a = math::float3(vertices[triangles[i].a].p);
-		auto b = math::float3(vertices[triangles[i].b].p);
-		auto c = math::float3(vertices[triangles[i].c].p);
+		auto a = float3(vertices[triangles[i].a].p);
+		auto b = float3(vertices[triangles[i].b].p);
+		auto c = float3(vertices[triangles[i].c].p);
 
-		math::float3 min = triangle_min(a, b, c);
-		math::float3 max = triangle_max(a, b, c);
+		float3 min = triangle_min(a, b, c);
+		float3 max = triangle_max(a, b, c);
 
 		primitive_bounds[i] = math::aabb(min, max);
 

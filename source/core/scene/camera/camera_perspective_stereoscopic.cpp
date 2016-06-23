@@ -12,22 +12,22 @@
 namespace scene { namespace camera {
 
 Perspective_stereoscopic::Perspective_stereoscopic(float interpupillary_distance,
-												   math::int2 resolution,
+												   int2 resolution,
 												   float ray_max_t) :
 	Stereoscopic(interpupillary_distance, resolution, ray_max_t) {
 	set_fov(90.f);
 
-	view_bounds_[0] = math::Recti{math::int2(0, 0), resolution};
-	view_bounds_[1] = math::Recti{math::int2(resolution.x, 0),
-								  math::int2(resolution.x * 2, resolution.y)};
+	view_bounds_[0] = math::Recti{int2(0, 0), resolution};
+	view_bounds_[1] = math::Recti{int2(resolution.x, 0),
+								  int2(resolution.x * 2, resolution.y)};
 }
 
 uint32_t Perspective_stereoscopic::num_views() const {
 	return 2;
 }
 
-math::int2 Perspective_stereoscopic::sensor_dimensions() const {
-	return math::int2(resolution_.x * 2, resolution_.y);
+int2 Perspective_stereoscopic::sensor_dimensions() const {
+	return int2(resolution_.x * 2, resolution_.y);
 }
 
 math::Recti Perspective_stereoscopic::view_bounds(uint32_t view) const {
@@ -39,9 +39,9 @@ void Perspective_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 											uint32_t view,
 											scene::Ray& ray) const {
-	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
+	float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
 
-	math::float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
+	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 	direction = math::normalized(direction);
 
 	entity::Composed_transformation temp;
@@ -58,14 +58,14 @@ bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 }
 
 void Perspective_stereoscopic::set_fov(float fov) {
-	math::float2 fr(resolution_);
+	float2 fr(resolution_);
 	float ratio = fr.x / fr.y;
 
 	float z = ratio * math::Pi / fov * 0.5f;
 
-	left_top_ = math::float3(-ratio,  1.f, z);
-	math::float3 right_top	( ratio,  1.f, z);
-	math::float3 left_bottom(-ratio, -1.f, z);
+	left_top_ = float3(-ratio,  1.f, z);
+	float3 right_top	( ratio,  1.f, z);
+	float3 left_bottom(-ratio, -1.f, z);
 
 	d_x_ = (right_top   - left_top_) / fr.x;
 	d_y_ = (left_bottom - left_top_) / fr.y;

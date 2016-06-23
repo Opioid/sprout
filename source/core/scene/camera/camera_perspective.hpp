@@ -8,17 +8,17 @@ class Perspective : public Camera {
 public:
 
 	struct Focus {
-		math::float3 point = math::float3(0.5f, 0.5f, 0.f);
+		float3 point = float3(0.5f, 0.5f, 0.f);
 		bool use_point = true;
 
 		float distance;
 	};
 
-	Perspective(math::int2 resolution, float ray_max_t);
+	Perspective(int2 resolution, float ray_max_t);
 
 	virtual uint32_t num_views() const final override;
 
-	virtual math::int2 sensor_dimensions() const final override;
+	virtual int2 sensor_dimensions() const final override;
 
 	virtual math::Recti view_bounds(uint32_t view) const final override;
 
@@ -44,9 +44,9 @@ private:
 	float lens_radius_;
 	Focus focus_;
 
-	math::float3 left_top_;
-	math::float3 d_x_;
-	math::float3 d_y_;
+	float3 left_top_;
+	float3 d_x_;
+	float3 d_y_;
 
 	float focal_distance_;
 };

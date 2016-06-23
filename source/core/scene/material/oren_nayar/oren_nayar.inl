@@ -10,7 +10,7 @@
 namespace scene { namespace material { namespace oren_nayar {
 
 template<typename Sample>
-math::float3 Isotropic::evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
+float3 Isotropic::evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
 								 const Sample& sample, float& pdf) {
 	float on = f(wi, n_dot_wi, n_dot_wo, sample);
 
@@ -21,10 +21,10 @@ math::float3 Isotropic::evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_w
 template<typename Sample>
 float Isotropic::importance_sample(float n_dot_wo, const Sample& sample,
 								   sampler::Sampler& sampler, bxdf::Result& result) {
-	math::float2 s2d = sampler.generate_sample_2D();
+	float2 s2d = sampler.generate_sample_2D();
 
-	math::float3 is = math::sample_hemisphere_cosine(s2d);
-	math::float3 wi = math::normalized(sample.tangent_to_world(is));
+	float3 is = math::sample_hemisphere_cosine(s2d);
+	float3 wi = math::normalized(sample.tangent_to_world(is));
 
 	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
 
@@ -39,7 +39,7 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample,
 }
 
 template<typename Sample>
-float Isotropic::f(math::pfloat3 wi, float n_dot_wi, float n_dot_wo, const Sample& sample) {
+float Isotropic::f(float3_p wi, float n_dot_wi, float n_dot_wo, const Sample& sample) {
 	float wi_dot_wo = math::dot(wi, sample.wo_);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;

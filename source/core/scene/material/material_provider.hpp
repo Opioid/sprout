@@ -94,7 +94,7 @@ private:
 	static void read_coating_description(const json::Value& clearcoat_value,
 										 Coating_description& description);
 
-	static math::float3 read_spectrum(const json::Value& spectrum_value);
+	static float3 read_spectrum(const json::Value& spectrum_value);
 
 	Generic_sample_cache<cloth::Sample>						cloth_cache_;
 	Generic_sample_cache<display::Sample>					display_cache_;

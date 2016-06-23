@@ -28,7 +28,7 @@ Sky_material::Sky_material(
 		Model& model) : Material(cache, model) {}
 
 const scene::material::Sample& Sky_material::sample(const scene::shape::Hitpoint& hp,
-													math::pfloat3 wo, float /*area*/,
+													float3_p wo, float /*area*/,
 													float /*time*/, float /*ior_i*/,
 													const scene::Worker& worker,
 													Sampler_filter /*filter*/) {
@@ -41,14 +41,14 @@ const scene::material::Sample& Sky_material::sample(const scene::shape::Hitpoint
 	return sample;
 }
 
-math::float3 Sky_material::sample_radiance(math::pfloat3 wi, math::float2 /*uv*/,
+float3 Sky_material::sample_radiance(float3_p wi, float2 /*uv*/,
 										   float /*area*/, float /*time*/,
 										   const scene::Worker& /*worker*/,
 										   Sampler_filter /*filter*/) const {
 	return model_.evaluate_sky(wi);
 }
 
-math::float3 Sky_material::average_radiance(float /*area*/) const {
+float3 Sky_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky(model_.zenith());
 }
 
@@ -57,7 +57,7 @@ Sun_material::Sun_material(
 		Model& model) : Material(cache, model) {}
 
 const scene::material::Sample& Sun_material::sample(const scene::shape::Hitpoint& hp,
-													math::pfloat3 wo, float /*area*/,
+													float3_p wo, float /*area*/,
 													float /*time*/, float /*ior_i*/,
 													const scene::Worker& worker,
 													Sampler_filter /*filter*/) {
@@ -70,14 +70,14 @@ const scene::material::Sample& Sun_material::sample(const scene::shape::Hitpoint
 	return sample;
 }
 
-math::float3 Sun_material::sample_radiance(math::pfloat3 wi, math::float2 /*uv*/,
+float3 Sun_material::sample_radiance(float3_p wi, float2 /*uv*/,
 										   float /*area*/, float /*time*/,
 										   const scene::Worker& /*worker*/,
 										   Sampler_filter /*filter*/) const {
 	return model_.evaluate_sky_and_sun(wi);
 }
 
-math::float3 Sun_material::average_radiance(float /*area*/) const {
+float3 Sun_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky_and_sun(-model_.sun_direction());
 }
 

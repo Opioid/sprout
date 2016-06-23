@@ -127,7 +127,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 
 	math::transformation transformation {
 		math::float3_identity,
-		math::float3(1.f, 1.f, 1.f),
+		float3(1.f, 1.f, 1.f),
 		math::quaternion_identity
 	};
 
@@ -157,10 +157,10 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 		}
 	}
 
-	math::int2 resolution;
+	int2 resolution;
 	if (sensor_value) {
 		resolution = json::read_int2(*sensor_value, "resolution");
-		if (math::int2::identity == resolution) {
+		if (int2::identity == resolution) {
 			throw std::runtime_error("Sensor resolution is [0, 0]");
 		}
 	} else {
@@ -249,9 +249,9 @@ void Loader::load_stereoscopic(const json::Value& stereo_value, Stereoscopic& st
 }
 
 rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
-											   math::int2 dimensions,
+											   int2 dimensions,
 											   bool alpha_transparency) const {
-	math::float3 clamp_max(-1.f, -1.f, -1.f);
+	float3 clamp_max(-1.f, -1.f, -1.f);
 	const rendering::sensor::tonemapping::Tonemapper* tonemapper = nullptr;
 	const rendering::sensor::filter::Filter* filter = nullptr;
 
@@ -337,13 +337,13 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) const {
 		const json::Value& node_value = n->value;
 
 		if ("ACES" == node_name) {
-			math::float3 linear_white = json::read_float3(node_value, "linear_white");
+			float3 linear_white = json::read_float3(node_value, "linear_white");
 			float exposure = json::read_float(node_value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Aces(linear_white, exposure);
 		} else if ("Identity" == node_name) {
 			return new rendering::sensor::tonemapping::Identity();
 		} else if ("Uncharted" == node_name) {
-			math::float3 linear_white = json::read_float3(node_value, "linear_white");
+			float3 linear_white = json::read_float3(node_value, "linear_white");
 			float exposure = json::read_float(node_value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Uncharted(linear_white, exposure);
 		}

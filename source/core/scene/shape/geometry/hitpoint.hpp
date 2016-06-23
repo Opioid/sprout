@@ -5,16 +5,16 @@
 namespace scene { namespace shape {
 
 struct Hitpoint {
-	math::float3 p;			// posisition in world space
-	math::float3 t, b, n;	// interpolated tangent frame in world space
-	math::float3 geo_n;		// geometry normal in world space
-	math::float2 uv;		// texture coordinates
+	float3 p;			// posisition in world space
+	float3 t, b, n;	// interpolated tangent frame in world space
+	float3 geo_n;		// geometry normal in world space
+	float2 uv;		// texture coordinates
 
-	math::float3 tangent_to_world(math::pfloat3 v) const;
+	float3 tangent_to_world(float3_p v) const;
 
-	math::float3 tangent_to_world(math::float2 v) const;
+	float3 tangent_to_world(float2 v) const;
 
-	bool same_hemisphere(math::pfloat3 v) const;
+	bool same_hemisphere(float3_p v) const;
 
 	void revert_direction();
 };

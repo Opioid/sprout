@@ -22,7 +22,7 @@ const Light::Entity_transformation& Prop_light::transformation_at(
 }
 
 void Prop_light::sample(const Entity_transformation& transformation, float time,
-						const math::float3& p, const math::float3& n, bool total_sphere,
+						const float3& p, const float3& n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
 						Sampler_filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
@@ -49,7 +49,7 @@ void Prop_light::sample(const Entity_transformation& transformation, float time,
 }
 
 float Prop_light::pdf(const Entity_transformation& transformation,
-					  const math::float3& p, const math::float3& wi, bool total_sphere,
+					  const float3& p, const float3& wi, bool total_sphere,
 					  Worker& worker, Sampler_filter /*filter*/) const {
 	float area = prop_->area(part_);
 
@@ -59,10 +59,10 @@ float Prop_light::pdf(const Entity_transformation& transformation,
 							   two_sided, total_sphere, worker.node_stack());
 }
 
-math::float3 Prop_light::power(const math::aabb& scene_bb) const {
+float3 Prop_light::power(const math::aabb& scene_bb) const {
 	float area = prop_->area(part_);
 
-	math::float3 radiance = prop_->material(part_)->average_radiance(area);
+	float3 radiance = prop_->material(part_)->average_radiance(area);
 
 	if (prop_->shape()->is_finite()) {
 		return area * radiance;

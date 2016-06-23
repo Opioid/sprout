@@ -11,14 +11,14 @@ public:
 	Texture_2D_byte_1_unorm(std::shared_ptr<Image> image);
 
 	virtual float        at_1(int32_t x, int32_t y) const final override;
-	virtual math::float2 at_2(int32_t x, int32_t y) const final override;
-	virtual math::float3 at_3(int32_t x, int32_t y) const final override;
-	virtual math::float4 at_4(int32_t x, int32_t y) const final override;
+	virtual float2 at_2(int32_t x, int32_t y) const final override;
+	virtual float3 at_3(int32_t x, int32_t y) const final override;
+	virtual float4 at_4(int32_t x, int32_t y) const final override;
 
 	virtual float        at_1(int32_t x, int32_t y, int32_t element) const final override;
-	virtual math::float2 at_2(int32_t x, int32_t y, int32_t element) const final override;
-	virtual math::float3 at_3(int32_t x, int32_t y, int32_t element) const final override;
-	virtual math::float4 at_4(int32_t x, int32_t y, int32_t element) const final override;
+	virtual float2 at_2(int32_t x, int32_t y, int32_t element) const final override;
+	virtual float3 at_3(int32_t x, int32_t y, int32_t element) const final override;
+	virtual float4 at_4(int32_t x, int32_t y, int32_t element) const final override;
 
 private:
 

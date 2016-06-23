@@ -9,7 +9,7 @@ Material_thinfilm::Material_thinfilm(Generic_sample_cache<Sample_thinfilm>& cach
 									 const Sampler_settings& sampler_settings, bool two_sided) :
 	Material_base<Sample_thinfilm>(cache, mask, sampler_settings, two_sided) {}
 
-const material::Sample& Material_thinfilm::sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+const material::Sample& Material_thinfilm::sample(const shape::Hitpoint& hp, float3_p wo,
 												  float /*area*/, float /*time*/, float /*ior_i*/,
 												  const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());

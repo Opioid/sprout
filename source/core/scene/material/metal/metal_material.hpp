@@ -15,23 +15,23 @@ public:
 					   std::shared_ptr<image::texture::Texture_2D> mask,
 					   const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
 										   float area, float time, float ior_i,
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 
-	void set_ior(math::pfloat3 ior);
-	void set_absorption(math::pfloat3 absorption);
+	void set_ior(float3_p ior);
+	void set_absorption(float3_p absorption);
 	void set_roughness(float roughness);
 
 protected:
 
 	std::shared_ptr<image::texture::Texture_2D> normal_map_;
 
-	math::float3 ior_;
-	math::float3 absorption_;
+	float3 ior_;
+	float3 absorption_;
 
 	float roughness_;
 };
@@ -47,7 +47,7 @@ public:
 						 std::shared_ptr<image::texture::Texture_2D> mask,
 						 const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
 										   float area, float time, float ior_i,
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
@@ -55,19 +55,19 @@ public:
 	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
 	void set_direction_map(std::shared_ptr<image::texture::Texture_2D> direction_map);
 
-	void set_ior(math::pfloat3 ior);
-	void set_absorption(math::pfloat3 absorption);
-	void set_roughness(math::float2 roughness);
+	void set_ior(float3_p ior);
+	void set_absorption(float3_p absorption);
+	void set_roughness(float2 roughness);
 
 protected:
 
 	std::shared_ptr<image::texture::Texture_2D> normal_map_;
 	std::shared_ptr<image::texture::Texture_2D> direction_map_;
 
-	math::float3 ior_;
-	math::float3 absorption_;
+	float3 ior_;
+	float3 absorption_;
 
-	math::float2 roughness_;
+	float2 roughness_;
 };
 
 }}}

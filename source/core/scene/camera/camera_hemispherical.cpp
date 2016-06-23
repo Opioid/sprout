@@ -12,9 +12,9 @@
 
 namespace scene { namespace camera {
 
-Hemispherical::Hemispherical(math::int2 resolution, float ray_max_t) :
+Hemispherical::Hemispherical(int2 resolution, float ray_max_t) :
 	Camera(resolution, ray_max_t) {
-	math::float2 fr(resolution);
+	float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;
 }
@@ -23,19 +23,19 @@ uint32_t Hemispherical::num_views() const {
 	return 1;
 }
 
-math::int2 Hemispherical::sensor_dimensions() const {
+int2 Hemispherical::sensor_dimensions() const {
 	return resolution_;
 }
 
 math::Recti Hemispherical::view_bounds(uint32_t /*view*/) const {
-	return math::Recti{math::int2(0, 0), resolution_};
+	return math::Recti{int2(0, 0), resolution_};
 }
 
 void Hemispherical::update_focus(rendering::Worker& /*worker*/) {}
 
 bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/,
 								 scene::Ray& ray) const {
-	math::float2 coordinates = math::float2(sample.pixel) + sample.pixel_uv;
+	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
 	float x = d_x_ * coordinates.x;
 	float y = d_y_ * coordinates.y;
@@ -48,14 +48,14 @@ bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t 
 		return false;
 	}
 
-	math::float3 dir = math::disk_to_hemisphere_equidistant(math::float2(x, y));
+	float3 dir = math::disk_to_hemisphere_equidistant(float2(x, y));
 
 	// paraboloid
-//	math::float3 dir = math::normalized(math::float3(x, -y, 0.5f - 0.5f * z));
+//	float3 dir = math::normalized(float3(x, -y, 0.5f - 0.5f * z));
 
-//	math::float3 dir = math::normalized(math::float3(x, -y, 1.f - std::sqrt(z)));
+//	float3 dir = math::normalized(float3(x, -y, 1.f - std::sqrt(z)));
 
-//	math::float3 dir = math::normalized(math::float3(x, -y,
+//	float3 dir = math::normalized(float3(x, -y,
 //										std::sqrt(std::max(0.f, 1.f - x * x - y * y))));
 
 	entity::Composed_transformation temp;

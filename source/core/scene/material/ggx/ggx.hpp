@@ -19,20 +19,20 @@ public:
 								 sampler::Sampler& sampler, bxdf::Result& result);
 
 	template<typename Sample>
-	void init_evaluate(math::pfloat3 wi, const Sample& sample);
+	void init_evaluate(float3_p wi, const Sample& sample);
 
 	// This method is intended for cases where the fresnel value
 	// will also be used for blending with other layers
 	template<typename Fresnel>
-	math::float3 evaluate(float n_dot_wi, float n_dot_wo, float a2, const Fresnel& fresnel,
-						  math::float3& fresnel_result, float& pdf) const;
+	float3 evaluate(float n_dot_wi, float n_dot_wo, float a2, const Fresnel& fresnel,
+						  float3& fresnel_result, float& pdf) const;
 
 	template<typename Fresnel>
-	math::float3 evaluate(float n_dot_wi, float n_dot_wo, float a2,
+	float3 evaluate(float n_dot_wi, float n_dot_wo, float a2,
 						  const Fresnel& fresnel, float& pdf) const;
 
 	template<typename Sample, typename Fresnel>
-	static math::float3 evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
+	static float3 evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
 								 const Sample& sample, const Fresnel& fresnel, float& pdf);
 
 	template<typename Sample, typename Fresnel>
@@ -49,7 +49,7 @@ class Anisotropic {
 public:
 
 	template<typename Sample, typename Fresnel>
-	static math::float3 evaluate(math::pfloat3 wi, float n_dot_wi, float n_dot_wo,
+	static float3 evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
 								 const Sample& sample, const Fresnel& fresnel, float& pdf);
 
 	template<typename Sample, typename Fresnel>
@@ -60,7 +60,7 @@ public:
 float distribution_isotropic(float n_dot_h, float a2);
 
 float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
-							   math::float2 a2, float axy);
+							   float2 a2, float axy);
 
 float geometric_visibility(float n_dot_wi, float n_dot_wo, float a2);
 

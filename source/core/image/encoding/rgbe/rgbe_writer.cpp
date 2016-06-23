@@ -20,7 +20,7 @@ bool Writer::write(std::ostream& stream, const image::Image_float_4& image,
 	return true;
 }
 
-void Writer::write_header(std::ostream& stream, math::int2 dimensions) {
+void Writer::write_header(std::ostream& stream, int2 dimensions) {
 	stream << "#?RGBE\n";
 	stream << "FORMAT=32-bit_rle_rgbe\n\n";
 	stream << "-Y " << dimensions.y << " +X " << dimensions.x << "\n";
@@ -146,7 +146,7 @@ void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t
 	}
 }
 
-math::byte4 Writer::float_to_rgbe(math::pfloat3 c) {
+math::byte4 Writer::float_to_rgbe(float3_p c) {
 	float v = c.x;
 
 	if (c.y > v) {

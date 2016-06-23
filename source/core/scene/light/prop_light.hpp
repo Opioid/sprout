@@ -18,15 +18,15 @@ public:
 			float time, Entity_transformation& transformation) const final override;
 
 	virtual void sample(const Entity_transformation& transformation, float time,
-						const math::float3& p, const math::float3& n, bool total_sphere,
+						const float3& p, const float3& n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
 						Sampler_filter filter, Sample& result) const override;
 
 	virtual float pdf(const Entity_transformation& transformation,
-					  const math::float3& p, const math::float3& wi, bool total_sphere,
+					  const float3& p, const float3& wi, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const override;
 
-	virtual math::float3 power(const math::aabb& scene_bb) const final override;
+	virtual float3 power(const math::aabb& scene_bb) const final override;
 
 	virtual void prepare_sampling() override;
 

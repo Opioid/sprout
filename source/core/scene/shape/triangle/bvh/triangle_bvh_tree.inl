@@ -67,7 +67,7 @@ bool Tree<Data>::intersect(math::Oray& ray, Node_stack& node_stack,
 	node_stack.push(0);
 	uint32_t n = 0;
 
-	math::float2 uv;
+	float2 uv;
 	uint32_t index = 0xFFFFFFFF;
 
 	while (!node_stack.empty()) {
@@ -147,7 +147,7 @@ float Tree<Data>::opacity(math::Oray& ray, float time, const material::Materials
 
 	float opacity = 0.f;
 
-	math::float2 uv;
+	float2 uv;
 	float max_t = ray.max_t;
 
 	while (!node_stack.empty()) {
@@ -189,14 +189,14 @@ float Tree<Data>::opacity(math::Oray& ray, float time, const material::Materials
 }
 
 template<typename Data>
-void Tree<Data>::interpolate_triangle_data(uint32_t index, math::float2 uv,
-										   math::float3& n, math::float3& t,
-										   math::float2& tc) const {
+void Tree<Data>::interpolate_triangle_data(uint32_t index, float2 uv,
+										   float3& n, float3& t,
+										   float2& tc) const {
 	data_.interpolate_data(index, uv, n, t, tc);
 }
 
 template<typename Data>
-math::float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, math::float2 uv) const {
+float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, float2 uv) const {
     return data_.interpolate_uv(index, uv);
 }
 
@@ -211,7 +211,7 @@ uint32_t Tree<Data>::triangle_material_index(uint32_t index) const {
 }
 
 template<typename Data>
-math::float3 Tree<Data>::triangle_normal(uint32_t index) const {
+float3 Tree<Data>::triangle_normal(uint32_t index) const {
     return data_.normal(index);
 }
 
@@ -221,23 +221,23 @@ float Tree<Data>::triangle_area(uint32_t index) const {
 }
 
 template<typename Data>
-float Tree<Data>::triangle_area(uint32_t index, const math::float3& scale) const {
+float Tree<Data>::triangle_area(uint32_t index, const float3& scale) const {
     return data_.area(index, scale);
 }
 
 template<typename Data>
-void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p,
-						math::float3& n, math::float2& tc) const {
+void Tree<Data>::sample(uint32_t index, float2 r2, float3& p,
+						float3& n, float2& tc) const {
     data_.sample(index, r2, p, n, tc);
 }
 
 template<typename Data>
-void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p, math::float2& tc) const {
+void Tree<Data>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
 	data_.sample(index, r2, p, tc);
 }
 
 template<typename Data>
-void Tree<Data>::sample(uint32_t index, math::float2 r2, math::float3& p) const {
+void Tree<Data>::sample(uint32_t index, float2 r2, float3& p) const {
 	data_.sample(index, r2, p);
 }
 

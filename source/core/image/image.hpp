@@ -5,6 +5,7 @@
 namespace image {
 
 class Image {
+
 public:
 
 	enum class Type {
@@ -17,10 +18,10 @@ public:
 
 	struct Description {
 		Description();
-		Description(Type type, math::int2 dimensions, int32_t num_elements = 1);
+		Description(Type type, int2 dimensions, int32_t num_elements = 1);
 
 		Type type;
-		math::int2 dimensions;
+		int2 dimensions;
 
 		int32_t num_elements;
 	};

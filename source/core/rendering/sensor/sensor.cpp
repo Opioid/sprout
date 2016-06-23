@@ -6,7 +6,7 @@
 
 namespace rendering { namespace sensor {
 
-Sensor::Sensor(math::int2 dimensions, const tonemapping::Tonemapper* tonemapper) :
+Sensor::Sensor(int2 dimensions, const tonemapping::Tonemapper* tonemapper) :
 	dimensions_(dimensions),
 	tonemapper_(tonemapper) {}
 
@@ -14,7 +14,7 @@ Sensor::~Sensor() {
 	delete tonemapper_;
 }
 
-math::int2 Sensor::dimensions() const {
+int2 Sensor::dimensions() const {
 	return dimensions_;
 }
 

@@ -21,7 +21,7 @@ Material_base<Sample>::Material_base(Generic_sample_cache<Sample>& cache,
 														   sampler_settings, two_sided) {}
 
 template<typename Sample>
-math::float3 Material_base<Sample>::sample_radiance(math::pfloat3 /*wi*/, math::float2 uv,
+float3 Material_base<Sample>::sample_radiance(float3_p /*wi*/, float2 uv,
 													float /*area*/, float /*time*/,
 													const Worker& worker,
 													Sampler_filter filter) const {
@@ -35,7 +35,7 @@ math::float3 Material_base<Sample>::sample_radiance(math::pfloat3 /*wi*/, math::
 }
 
 template<typename Sample>
-math::float3 Material_base<Sample>::average_radiance(float /*area*/) const {
+float3 Material_base<Sample>::average_radiance(float /*area*/) const {
 	if (emission_map_) {
 		return emission_factor_ * emission_map_->average_3();
 	} else {
@@ -71,7 +71,7 @@ void Material_base<Sample>::set_emission_map(
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_color(math::pfloat3 color) {
+void Material_base<Sample>::set_color(float3_p color) {
 	color_ = color;
 }
 
@@ -97,25 +97,25 @@ void Material_base<Sample>::set_emission_factor(float emission_factor) {
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_sample(const shape::Hitpoint& hp, math::pfloat3 wo,
+void Material_base<Sample>::set_sample(const shape::Hitpoint& hp, float3_p wo,
 									   const Texture_sampler_2D& sampler, Sample& sample) {
 	if (normal_map_) {
-		math::float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		math::float3 n = math::normalized(hp.tangent_to_world(nm));
+		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
+		float3 n = math::normalized(hp.tangent_to_world(nm));
 
 		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo, Material::two_sided_);
 	} else {
 		sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, Material::two_sided_);
 	}
 
-	math::float3 color;
+	float3 color;
 	if (color_map_) {
 		color = sampler.sample_3(*color_map_, hp.uv);
 	} else {
 		color = color_;
 	}
 
-	math::float2 surface;
+	float2 surface;
 	if (surface_map_) {
 		surface = sampler.sample_2(*surface_map_, hp.uv);
 		surface.x = math::pow4(surface.x);
@@ -124,7 +124,7 @@ void Material_base<Sample>::set_sample(const shape::Hitpoint& hp, math::pfloat3 
 		surface.y = metallic_;
 	}
 
-	math::float3 radiance;
+	float3 radiance;
 	if (emission_map_) {
 		radiance = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
 	} else {

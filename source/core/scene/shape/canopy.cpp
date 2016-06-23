@@ -31,16 +31,16 @@ bool Canopy::intersect(const Entity_transformation& transformation, math::Oray& 
 		intersection.t = transformation.rotation.v3.x;
 		intersection.b = transformation.rotation.v3.y;
 
-		math::float3 n = -ray.direction;
+		float3 n = -ray.direction;
 		intersection.n = n;
 		intersection.geo_n = n;
 		intersection.part = 0;
 
 		// paraboloid, so doesn't match hemispherical camera
-		math::float3 xyz = math::transform_vector_transposed(ray.direction,
+		float3 xyz = math::transform_vector_transposed(ray.direction,
 															 transformation.rotation);
 		xyz = math::normalized(xyz);
-		math::float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+		float2 disk = math::hemisphere_to_disk_equidistant(xyz);
 		intersection.uv.x = 0.5f * disk.x + 0.5f;
 		intersection.uv.y = 0.5f * disk.y + 0.5f;
 
@@ -66,17 +66,17 @@ float Canopy::opacity(const Entity_transformation& /*transformation*/,
 }
 
 void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
-					float /*area*/, const math::float3& /*p*/, const math::float3& /*n*/,
+					float /*area*/, const float3& /*p*/, const float3& /*n*/,
 					bool /*two_sided*/, sampler::Sampler& sampler,
 					Node_stack& /*node_stack*/, Sample& sample) const {
-	math::float2 uv = sampler.generate_sample_2D();
-	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
+	float2 uv = sampler.generate_sample_2D();
+	float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
 	sample.wi = dir;
 
-	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
+	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	xyz = math::normalized(xyz);
-	math::float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+	float2 disk = math::hemisphere_to_disk_equidistant(xyz);
 	sample.uv.x = 0.5f * disk.x + 0.5f;
 	sample.uv.y = 0.5f * disk.y + 0.5f;
 
@@ -85,16 +85,16 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 }
 
 void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
-					float /*area*/, const math::float3& /*p*/, bool /*two_sided*/,
+					float /*area*/, const float3& /*p*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
-	math::float2 uv = sampler.generate_sample_2D();
-	math::float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
+	float2 uv = sampler.generate_sample_2D();
+	float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
 	sample.wi = dir;
 
-	math::float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
+	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	xyz = math::normalized(xyz);
-	math::float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+	float2 disk = math::hemisphere_to_disk_equidistant(xyz);
 	sample.uv.x = 0.5f * disk.x + 0.5f;
 	sample.uv.y = 0.5f * disk.y + 0.5f;
 
@@ -103,9 +103,9 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 }
 
 void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
-					float /*area*/, const math::float3& /*p*/,
-					math::float2 uv, Sample& sample) const {
-	math::float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
+					float /*area*/, const float3& /*p*/,
+					float2 uv, Sample& sample) const {
+	float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
 
 	float z = math::dot(disk, disk);
 	if (z > 1.f) {
@@ -113,7 +113,7 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 		return;
 	}
 
-	math::float3 dir = math::disk_to_hemisphere_equidistant(disk);
+	float3 dir = math::disk_to_hemisphere_equidistant(disk);
 
 	sample.wi  = math::transform_vector(dir, transformation.rotation);
 	sample.uv  = uv;
@@ -130,7 +130,7 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 	float sin_phi   = std::sin(phi);
 	float cos_phi   = std::cos(phi);
 
-	math::float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+	float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
 
 	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;
@@ -140,19 +140,19 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 }
 
 void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
-					float /*area*/, const math::float3& /*p*/,
-					const math::float3& wi, Sample& sample) const {
+					float /*area*/, const float3& /*p*/,
+					const float3& wi, Sample& sample) const {
 	// TODO
 	std::cout << "Canopy::sample() not implemented!" << std::endl;
 }
 
 float Canopy::pdf(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
-				  float /*area*/, const math::float3& /*p*/, const math::float3& /*wi*/,
+				  float /*area*/, const float3& /*p*/, const float3& /*wi*/,
 				  bool /*two_sided*/, bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
 	return 1.f / (2.f * math::Pi);
 }
 
-float Canopy::area(uint32_t /*part*/, const math::float3& /*scale*/) const {
+float Canopy::area(uint32_t /*part*/, const float3& /*scale*/) const {
 	return 2.f * math::Pi;
 }
 

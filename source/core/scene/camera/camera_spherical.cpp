@@ -9,9 +9,9 @@
 
 namespace scene { namespace camera {
 
-Spherical::Spherical(math::int2 resolution, float ray_max_t) :
+Spherical::Spherical(int2 resolution, float ray_max_t) :
 	Camera(resolution, ray_max_t) {
-	math::float2 fr(resolution);
+	float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;
 }
@@ -20,19 +20,19 @@ uint32_t Spherical::num_views() const {
 	return 1;
 }
 
-math::int2 Spherical::sensor_dimensions() const {
+int2 Spherical::sensor_dimensions() const {
 	return resolution_;
 }
 
 math::Recti Spherical::view_bounds(uint32_t /*view*/) const {
-	return math::Recti{math::int2(0, 0), resolution_};
+	return math::Recti{int2(0, 0), resolution_};
 }
 
 void Spherical::update_focus(rendering::Worker& /*worker*/) {}
 
 bool Spherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/,
 							 scene::Ray& ray) const {
-	math::float2 coordinates =  math::float2(sample.pixel) + sample.pixel_uv;
+	float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
 
 	float x = d_x_ * coordinates.x;
 	float y = d_y_ * coordinates.y;
@@ -45,7 +45,7 @@ bool Spherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*vi
 	float sin_phi   = std::sin(phi);
 	float cos_phi   = std::cos(phi);
 
-	math::float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+	float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);

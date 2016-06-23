@@ -36,11 +36,11 @@ public:
 			  integrator::volume::Integrator_factory& volume_integrator_factory,
 			  sampler::Sampler& sampler);
 
-	math::float4 li(scene::Ray& ray);
-	math::float3 surface_li(scene::Ray& ray);
-	math::float4 volume_li(const scene::Ray& ray, math::float3& transmittance);
+	float4 li(scene::Ray& ray);
+	float3 surface_li(scene::Ray& ray);
+	float4 volume_li(const scene::Ray& ray, float3& transmittance);
 
-	math::float3 transmittance(const scene::Ray& ray);
+	float3 transmittance(const scene::Ray& ray);
 
 protected:
 

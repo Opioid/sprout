@@ -16,9 +16,9 @@ math::uint2 Random::seed() const {
 	return math::uint2::identity;
 }
 
-void Random::generate_camera_sample(math::int2 pixel, uint32_t /*index*/,
+void Random::generate_camera_sample(int2 pixel, uint32_t /*index*/,
 									Camera_sample& sample) {
-	math::float2 s2d(rng_.random_float(), rng_.random_float());
+	float2 s2d(rng_.random_float(), rng_.random_float());
 
 	sample.pixel = pixel;
 	sample.pixel_uv = s2d;
@@ -26,8 +26,8 @@ void Random::generate_camera_sample(math::int2 pixel, uint32_t /*index*/,
 	sample.time = rng_.random_float();
 }
 
-math::float2 Random::generate_sample_2D() {
-	return math::float2(rng_.random_float(), rng_.random_float());
+float2 Random::generate_sample_2D() {
+	return float2(rng_.random_float(), rng_.random_float());
 }
 
 float Random::generate_sample_1D() {

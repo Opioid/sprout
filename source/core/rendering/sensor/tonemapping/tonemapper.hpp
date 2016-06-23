@@ -9,11 +9,11 @@ public:
 
 	virtual ~Tonemapper();
 
-	virtual math::float3 tonemap(math::pfloat3 color) const = 0;
+	virtual float3 tonemap(float3_p color) const = 0;
 
 protected:
 
-	static math::float3 white_factor(math::pfloat3 linear_white, math::pfloat3 tonemapped_white);
+	static float3 white_factor(float3_p linear_white, float3_p tonemapped_white);
 };
 
 }}}

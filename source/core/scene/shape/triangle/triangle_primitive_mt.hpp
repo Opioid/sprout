@@ -12,37 +12,37 @@ struct Triangle_MT {
 	struct Vertex {
 		Vertex(const shape::Vertex& v);
 
-		math::float3 p, n, t;
-		math::float2 uv;
+		float3 p, n, t;
+		float2 uv;
 	};
 
 	Vertex a, b, c;
 	float bitangent_sign;
 	uint32_t material_index;
 
-	bool intersect(math::Oray& ray, math::float2& uv) const;
+	bool intersect(math::Oray& ray, float2& uv) const;
 	bool intersect_p(const math::Oray& ray) const;
 
-	void interpolate(math::float2 uv, math::float3& p, math::float3& n, math::float2& tc) const;
-	void interpolate(math::float2 uv, math::float3& p, math::float2& tc) const;
-	void interpolate(math::float2 uv, math::float3& p) const;
-	void interpolate_data(math::float2 uv, math::float3& n,
-						  math::float3& t, math::float2& tc) const;
-	math::float2 interpolate_uv(math::float2 uv) const;
+	void interpolate(float2 uv, float3& p, float3& n, float2& tc) const;
+	void interpolate(float2 uv, float3& p, float2& tc) const;
+	void interpolate(float2 uv, float3& p) const;
+	void interpolate_data(float2 uv, float3& n,
+						  float3& t, float2& tc) const;
+	float2 interpolate_uv(float2 uv) const;
 
-	math::float3 normal() const;
+	float3 normal() const;
 
 	float area() const;
-	float area(const math::float3& scale) const;
+	float area(const float3& scale) const;
 };
 
 struct Intersection_vertex_MT {
-	math::float3 p;
+	float3 p;
 };
 
 struct Shading_vertex_MT {
-	math::float3 n, t;
-	math::float2 uv;
+	float3 n, t;
+	float2 uv;
 	float bitangent_sign;
 	uint32_t material_index;
 };
@@ -50,7 +50,7 @@ struct Shading_vertex_MT {
 bool intersect(const Intersection_vertex_MT& a,
 			   const Intersection_vertex_MT& b,
 			   const Intersection_vertex_MT& c,
-			   math::Oray& ray, math::float2& uv);
+			   math::Oray& ray, float2& uv);
 
 bool intersect_p(const Intersection_vertex_MT& a,
 				 const Intersection_vertex_MT& b,
@@ -60,18 +60,18 @@ bool intersect_p(const Intersection_vertex_MT& a,
 void interpolate_p(const Intersection_vertex_MT& a,
 				   const Intersection_vertex_MT& b,
 				   const Intersection_vertex_MT& c,
-				   math::float2 uv, math::float3& p);
+				   float2 uv, float3& p);
 
-math::float2 interpolate_uv(const Shading_vertex_MT& a,
+float2 interpolate_uv(const Shading_vertex_MT& a,
 							const Shading_vertex_MT& b,
 							const Shading_vertex_MT& c,
-							math::float2 uv);
+							float2 uv);
 
 void interpolate_data(const Shading_vertex_MT& a,
 					  const Shading_vertex_MT& b,
 					  const Shading_vertex_MT& c,
-					  math::float2 uv,
-					  math::float3& n, math::float3& t, math::float2& tc);
+					  float2 uv,
+					  float3& n, float3& t, float2& tc);
 
 float area(const Intersection_vertex_MT& a,
 		   const Intersection_vertex_MT& b,
@@ -80,22 +80,22 @@ float area(const Intersection_vertex_MT& a,
 float area(const Intersection_vertex_MT& a,
 		   const Intersection_vertex_MT& b,
 		   const Intersection_vertex_MT& c,
-		   const math::float3& scale);
+		   const float3& scale);
 
 struct Shading_vertex_MTC {
-	math::float4 n_u;
-	math::float4 t_v;
+	float4 n_u;
+	float4 t_v;
 };
 
-math::float2 interpolate_uv(const Shading_vertex_MTC& a,
+float2 interpolate_uv(const Shading_vertex_MTC& a,
 							const Shading_vertex_MTC& b,
 							const Shading_vertex_MTC& c,
-							math::float2 uv);
+							float2 uv);
 
 void interpolate_data(const Shading_vertex_MTC& a,
 					  const Shading_vertex_MTC& b,
 					  const Shading_vertex_MTC& c,
-					  math::float2 uv,
-					  math::float3& n, math::float3& t, math::float2& tc);
+					  float2 uv,
+					  float3& n, float3& t, float2& tc);
 
 }}}

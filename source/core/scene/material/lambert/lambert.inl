@@ -10,25 +10,25 @@
 namespace scene { namespace material { namespace lambert {
 
 template<typename Sample>
-math::float3 Isotropic::evaluate(math::pfloat3 /*wi*/, float n_dot_wi,
+float3 Isotropic::evaluate(float3_p /*wi*/, float n_dot_wi,
 								 const Sample& sample, float& pdf) {
 	pdf = n_dot_wi * math::Pi_inv;
 	return math::Pi_inv * sample.diffuse_color_;
 }
 
 template<typename Sample>
-float Isotropic::pdf(math::pfloat3 /*wi*/, float n_dot_wi, const Sample& /*sample*/) {
+float Isotropic::pdf(float3_p /*wi*/, float n_dot_wi, const Sample& /*sample*/) {
 	return n_dot_wi * math::Pi_inv;
 }
 
 template<typename Sample>
 float Isotropic::importance_sample(const Sample& sample, sampler::Sampler& sampler,
 								   bxdf::Result& result) {
-	math::float2 s2d = sampler.generate_sample_2D();
+	float2 s2d = sampler.generate_sample_2D();
 
-	math::float3 is = math::sample_hemisphere_cosine(s2d);
+	float3 is = math::sample_hemisphere_cosine(s2d);
 
-	math::float3 wi = math::normalized(sample.tangent_to_world(is));
+	float3 wi = math::normalized(sample.tangent_to_world(is));
 
 	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
 

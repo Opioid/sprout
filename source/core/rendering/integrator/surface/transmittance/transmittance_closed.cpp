@@ -16,11 +16,11 @@ namespace rendering { namespace integrator { namespace surface { namespace trans
 Closed::Closed(const take::Settings &take_settings, math::random::Generator &rng) :
 	integrator::Integrator(take_settings, rng) {}
 
-math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-							 const math::float3& attenuation, sampler::Sampler& sampler,
+float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
+							 const float3& attenuation, sampler::Sampler& sampler,
 							 Sampler_filter filter, Bxdf_result& sample_result) {
-	math::float3 throughput = sample_result.reflection / sample_result.pdf;
-	math::float3 used_attenuation = attenuation;
+	float3 throughput = sample_result.reflection / sample_result.pdf;
+	float3 used_attenuation = attenuation;
 
 	for (;;) {
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -33,7 +33,7 @@ math::float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersectio
 			break;
 		}
 
-		math::float3 wo = -ray.direction;
+		float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		material_sample.sample_evaluate(sampler, sample_result);

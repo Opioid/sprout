@@ -5,21 +5,21 @@
 
 namespace scene { namespace shape {
 
-inline math::float3 Hitpoint::tangent_to_world(math::pfloat3 v) const{
-	return math::float3(
+inline float3 Hitpoint::tangent_to_world(float3_p v) const{
+	return float3(
 		v.x * t.x + v.y * b.x + v.z * n.x,
 		v.x * t.y + v.y * b.y + v.z * n.y,
 		v.x * t.z + v.y * b.z + v.z * n.z);
 }
 
-inline math::float3 Hitpoint::tangent_to_world(math::float2 v) const{
-	return math::float3(
+inline float3 Hitpoint::tangent_to_world(float2 v) const{
+	return float3(
 		v.x * t.x + v.y * b.x,
 		v.x * t.y + v.y * b.y,
 		v.x * t.z + v.y * b.z);
 }
 
-inline bool Hitpoint::same_hemisphere(math::pfloat3 v) const {
+inline bool Hitpoint::same_hemisphere(float3_p v) const {
 	return math::dot(geo_n, v) > 0.f;
 }
 

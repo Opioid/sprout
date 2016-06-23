@@ -23,9 +23,18 @@ using byte4  = Vector4<uint8_t>;
 using float4 = Vector4f_a;
 using int4   = Vector4<int32_t>;
 
-using pfloat3 = FVector3f_a;
+using float3_p = FVector3f_a;
 
 SU_GLOBALCONST(Vector3f_a) float3_identity(0.f, 0.f, 0.f);
 SU_GLOBALCONST(Vector4f_a) float4_identity(0.f, 0.f, 0.f, 0.f);
 
 }
+
+using float2 = math::float2;
+using int2   = math::int2;
+
+using float3 = math::float3;
+
+using float3_p = math::float3_p;
+
+using float4 = math::float4;
