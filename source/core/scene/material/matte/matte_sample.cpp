@@ -1,4 +1,5 @@
 #include "matte_sample.hpp"
+#include "scene/material/material_sample.inl"
 #include "scene/material/lambert/lambert.inl"
 #include "base/math/vector.inl"
 
