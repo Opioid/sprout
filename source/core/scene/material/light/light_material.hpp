@@ -12,7 +12,7 @@ class Material : public material::Typed_material<Generic_sample_cache<Sample>> {
 public:
 
 	Material(Generic_sample_cache<Sample>& cache,
-			 std::shared_ptr<image::texture::Texture_2D> mask,
+			 Texture_2D_ptr mask,
 			 const Sampler_settings& sampler_settings, bool two_sided);
 };
 

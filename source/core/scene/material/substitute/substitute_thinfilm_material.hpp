@@ -11,8 +11,7 @@ class Material_thinfilm : public Material_base<Sample_thinfilm> {
 
 public:
 
-	Material_thinfilm(Generic_sample_cache<Sample_thinfilm>& cache,
-					  std::shared_ptr<image::texture::Texture_2D> mask,
+	Material_thinfilm(Generic_sample_cache<Sample_thinfilm>& cache, Texture_2D_ptr mask,
 					  const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,

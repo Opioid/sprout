@@ -5,7 +5,7 @@
 namespace scene { namespace material { namespace substitute {
 
 Material_translucent::Material_translucent(Generic_sample_cache<Sample_translucent>& cache,
-										   std::shared_ptr<image::texture::Texture_2D> mask,
+										   Texture_2D_ptr mask,
 										   const Sampler_settings& sampler_settings,
 										   bool two_sided) :
 	Material_base<Sample_translucent>(cache, mask, sampler_settings, two_sided) {}

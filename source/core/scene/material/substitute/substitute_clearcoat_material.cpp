@@ -5,7 +5,7 @@
 namespace scene { namespace material { namespace substitute {
 
 Material_clearcoat::Material_clearcoat(Generic_sample_cache<Sample_clearcoat>& cache,
-									   std::shared_ptr<image::texture::Texture_2D> mask,
+									   Texture_2D_ptr mask,
 									   const Sampler_settings& sampler_settings, bool two_sided) :
 	Material_base<Sample_clearcoat>(cache, mask, sampler_settings, two_sided) {}
 

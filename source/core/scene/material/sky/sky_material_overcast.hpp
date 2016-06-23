@@ -10,7 +10,7 @@ class Material_overcast : public material::Typed_material<Generic_sample_cache<l
 public:
 
 	Material_overcast(Generic_sample_cache<light::Sample>& cache,
-					  std::shared_ptr<image::texture::Texture_2D> mask,
+					  Texture_2D_ptr mask,
 					  const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,

@@ -14,17 +14,15 @@
 namespace scene { namespace material { namespace substitute {
 
 template<typename Sample>
-Material_base<Sample>::Material_base(Generic_sample_cache<Sample>& cache,
-									 std::shared_ptr<image::texture::Texture_2D> mask,
+Material_base<Sample>::Material_base(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
 									 const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
 														   sampler_settings, two_sided) {}
 
 template<typename Sample>
-float3 Material_base<Sample>::sample_radiance(float3_p /*wi*/, float2 uv,
-													float /*area*/, float /*time*/,
-													const Worker& worker,
-													Sampler_filter filter) const {
+float3 Material_base<Sample>::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
+											  float /*time*/, const Worker& worker,
+											  Sampler_filter filter) const {
 	if (emission_map_) {
 		// For some reason Clang needs this to find inherited Material::sampler_key_
 		auto& sampler = worker.sampler(this->sampler_key_, filter);
@@ -49,24 +47,22 @@ bool Material_base<Sample>::has_emission_map() const {
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_color_map(std::shared_ptr<image::texture::Texture_2D> color_map) {
+void Material_base<Sample>::set_color_map(Texture_2D_ptr color_map) {
 	color_map_ = color_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
+void Material_base<Sample>::set_normal_map(Texture_2D_ptr normal_map) {
 	normal_map_ = normal_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_surface_map(
-		std::shared_ptr<image::texture::Texture_2D> surface_map) {
+void Material_base<Sample>::set_surface_map(Texture_2D_ptr surface_map) {
 	surface_map_ = surface_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_emission_map(
-		std::shared_ptr<image::texture::Texture_2D> emission_map) {
+void Material_base<Sample>::set_emission_map(Texture_2D_ptr emission_map) {
 	emission_map_ = emission_map;
 }
 

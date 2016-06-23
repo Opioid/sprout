@@ -1,7 +1,5 @@
 #include "whitted.hpp"
 #include "rendering/rendering_worker.hpp"
-#include "image/texture/sampler/sampler_2d_linear.inl"
-#include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/prop/prop_intersection.inl"

@@ -10,7 +10,7 @@
 namespace scene { namespace material { namespace cloth {
 
 Material::Material(Generic_sample_cache<Sample>& cache,
-				   std::shared_ptr<image::texture::Texture_2D> mask,
+				   Texture_2D_ptr mask,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
 														   sampler_settings,
@@ -45,11 +45,11 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, float3_p wo,
 	return sample;
 }
 
-void Material::set_color_map(std::shared_ptr<image::texture::Texture_2D> color_map) {
+void Material::set_color_map(Texture_2D_ptr color_map) {
 	color_map_ = color_map;
 }
 
-void Material::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
+void Material::set_normal_map(Texture_2D_ptr normal_map) {
 	normal_map_ = normal_map;
 }
 

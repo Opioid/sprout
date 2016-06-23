@@ -6,8 +6,7 @@
 
 namespace scene { namespace material {
 
-Material::Material(std::shared_ptr<image::texture::Texture_2D> mask,
-				   const Sampler_settings& sampler_settings, bool two_sided) :
+Material::Material(Texture_2D_ptr mask, const Sampler_settings& sampler_settings, bool two_sided) :
 	mask_(mask),
 	sampler_key_(static_cast<uint32_t>(sampler_settings.filter)),
 	two_sided_(two_sided) {}

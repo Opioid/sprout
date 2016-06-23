@@ -1,12 +1,11 @@
 #pragma once
 
 #include "sampler_settings.hpp"
+#include "image/texture/texture_types.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/vector.hpp"
 #include <memory>
 #include <vector>
-
-namespace image { namespace texture { class Texture_2D; }}
 
 namespace scene {
 
@@ -24,8 +23,7 @@ public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;
 
-	Material(std::shared_ptr<image::texture::Texture_2D> mask,
-			 const Sampler_settings& sampler_settings, bool two_sided);
+	Material(Texture_2D_ptr mask, const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual ~Material();
 
@@ -66,7 +64,7 @@ protected:
 	virtual void set_parameter(const std::string& name,
 							   const json::Value& value);
 
-	std::shared_ptr<image::texture::Texture_2D> mask_;
+	Texture_2D_ptr mask_;
 
 	uint32_t sampler_key_;
 
@@ -78,7 +76,7 @@ class Typed_material : public Material {
 
 public:
 
-	Typed_material(Sample_cache& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+	Typed_material(Sample_cache& cache, Texture_2D_ptr mask,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
 		Material(mask, sampler_settings, two_sided), cache_(cache) {}
 

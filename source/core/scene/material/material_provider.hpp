@@ -6,8 +6,6 @@
 #include "base/math/vector.hpp"
 #include <vector>
 
-namespace image { namespace texture { class Texture_2D; }}
-
 namespace scene { namespace material {
 
 namespace cloth		{ class Sample; }

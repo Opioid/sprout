@@ -12,10 +12,10 @@
 namespace scene { namespace material { namespace light {
 
 Emissionmap_animated::Emissionmap_animated(Generic_sample_cache<Sample>& cache,
-										   std::shared_ptr<image::texture::Texture_2D> mask,
+										   Texture_2D_ptr mask,
 										   const Sampler_settings& sampler_settings,
 										   bool two_sided,
-										   std::shared_ptr<image::texture::Texture_2D> emission_map,
+										   Texture_2D_ptr emission_map,
 										   float emission_factor, float animation_duration) :
 	Material(cache, mask, sampler_settings, two_sided),
 	emission_map_(emission_map),

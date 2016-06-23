@@ -11,6 +11,7 @@ namespace texture {
 class Texture_2D;
 
 class Provider : public resource::Provider<Texture_2D> {
+
 public:
 
 	Provider();

@@ -12,7 +12,7 @@
 namespace scene { namespace material { namespace light {
 
 Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
-						 std::shared_ptr<image::texture::Texture_2D> mask,
+						 Texture_2D_ptr mask,
 						 const Sampler_settings& sampler_settings, bool two_sided) :
 	Material(cache, mask, sampler_settings, two_sided),
 	average_emission_(float3(-1.f, -1.f, -1.f)) {}
@@ -156,7 +156,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 	}
 }
 
-void Emissionmap::set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map) {
+void Emissionmap::set_emission_map(Texture_2D_ptr emission_map) {
 	emission_map_ = emission_map;
 }
 

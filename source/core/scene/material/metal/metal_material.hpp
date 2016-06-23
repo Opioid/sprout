@@ -12,7 +12,7 @@ class Material_isotropic : public material::Typed_material<Generic_sample_cache<
 public:
 
 	Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
-					   std::shared_ptr<image::texture::Texture_2D> mask,
+					   Texture_2D_ptr mask,
 					   const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
@@ -20,7 +20,7 @@ public:
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
-	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
+	void set_normal_map(Texture_2D_ptr normal_map);
 
 	void set_ior(float3_p ior);
 	void set_absorption(float3_p absorption);
@@ -28,7 +28,7 @@ public:
 
 protected:
 
-	std::shared_ptr<image::texture::Texture_2D> normal_map_;
+	Texture_2D_ptr normal_map_;
 
 	float3 ior_;
 	float3 absorption_;
@@ -44,7 +44,7 @@ class Material_anisotropic : public material::Typed_material<
 public:
 
 	Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
-						 std::shared_ptr<image::texture::Texture_2D> mask,
+						 Texture_2D_ptr mask,
 						 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
@@ -52,8 +52,8 @@ public:
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
-	void set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map);
-	void set_direction_map(std::shared_ptr<image::texture::Texture_2D> direction_map);
+	void set_normal_map(Texture_2D_ptr normal_map);
+	void set_direction_map(Texture_2D_ptr direction_map);
 
 	void set_ior(float3_p ior);
 	void set_absorption(float3_p absorption);
@@ -61,8 +61,8 @@ public:
 
 protected:
 
-	std::shared_ptr<image::texture::Texture_2D> normal_map_;
-	std::shared_ptr<image::texture::Texture_2D> direction_map_;
+	Texture_2D_ptr normal_map_;
+	Texture_2D_ptr direction_map_;
 
 	float3 ior_;
 	float3 absorption_;

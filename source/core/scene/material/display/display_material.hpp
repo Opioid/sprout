@@ -2,7 +2,6 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
-#include "image/texture/texture_2d.hpp"
 #include "base/math/distribution/distribution_2d.hpp"
 
 namespace scene { namespace material { namespace display {
@@ -12,7 +11,7 @@ class Sample;
 class Material : public material::Typed_material<Generic_sample_cache<Sample>> {
 public:
 
-	Material(Generic_sample_cache<Sample>& cache, std::shared_ptr<image::texture::Texture_2D> mask,
+	Material(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
 			 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
@@ -36,7 +35,7 @@ public:
 
 	virtual void prepare_sampling(bool spherical) final override;
 
-	void set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map);
+	void set_emission_map(Texture_2D_ptr emission_map);
 
 	void set_emission(float3_p radiance);
 	void set_emission_factor(float emission_factor);
@@ -45,7 +44,7 @@ public:
 
 private:
 
-	std::shared_ptr<image::texture::Texture_2D> emission_map_;
+	Texture_2D_ptr emission_map_;
 
 	float3 emission_;
 

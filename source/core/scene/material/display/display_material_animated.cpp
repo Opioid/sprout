@@ -13,10 +13,10 @@
 namespace scene { namespace material { namespace display {
 
 Material_animated::Material_animated(Generic_sample_cache<Sample>& cache,
-									 std::shared_ptr<image::texture::Texture_2D> mask,
+									 Texture_2D_ptr mask,
 									 const Sampler_settings& sampler_settings,
 									 bool two_sided,
-									 std::shared_ptr<image::texture::Texture_2D> emission_map,
+									 Texture_2D_ptr emission_map,
 									 float animation_duration) :
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
 														   sampler_settings, two_sided),

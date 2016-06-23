@@ -117,9 +117,9 @@ std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	std::shared_ptr<image::texture::Texture_2D> color_map;
-	std::shared_ptr<image::texture::Texture_2D> normal_map;
-	std::shared_ptr<image::texture::Texture_2D> mask;
+	Texture_2D_ptr color_map;
+	Texture_2D_ptr normal_map;
+	Texture_2D_ptr mask;
 	bool two_sided = false;
 	float3 color(0.75f, 0.75f, 0.75f);
 
@@ -175,8 +175,8 @@ std::shared_ptr<Material> Provider::load_display(const json::Value& display_valu
 												 resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	std::shared_ptr<image::texture::Texture_2D> emission_map;
-	std::shared_ptr<image::texture::Texture_2D> mask;
+	Texture_2D_ptr emission_map;
+	Texture_2D_ptr mask;
 	bool two_sided = false;
 
 	float3 radiance(10.f, 10.f, 10.f);
@@ -256,7 +256,7 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	std::shared_ptr<image::texture::Texture_2D> normal_map;
+	Texture_2D_ptr normal_map;
 	float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
@@ -326,8 +326,8 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 	float emission_factor = 1.f;
 	float animation_duration = 0.f;
 
-	std::shared_ptr<image::texture::Texture_2D> emission_map;
-	std::shared_ptr<image::texture::Texture_2D> mask;
+	Texture_2D_ptr emission_map;
+	Texture_2D_ptr mask;
 	bool two_sided = false;
 
 	for (auto n = light_value.MemberBegin(); n != light_value.MemberEnd(); ++n) {
@@ -419,8 +419,8 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_val
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-//	std::shared_ptr<image::texture::Texture_2D> normal_map;
-	std::shared_ptr<image::texture::Texture_2D> mask;
+//	Texture_2D_ptr normal_map;
+	Texture_2D_ptr mask;
 	bool two_sided = false;
 	float3 color(0.6f, 0.6f, 0.6f);
 
@@ -472,10 +472,10 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	std::shared_ptr<image::texture::Texture_2D> normal_map;
-//	std::shared_ptr<image::texture::Texture_2D> surface_map;
-	std::shared_ptr<image::texture::Texture_2D> direction_map;
-	std::shared_ptr<image::texture::Texture_2D> mask;
+	Texture_2D_ptr normal_map;
+//	Texture_2D_ptr surface_map;
+	Texture_2D_ptr direction_map;
+	Texture_2D_ptr mask;
 	bool two_sided = false;
 	float3 ior(1.f, 1.f, 1.f);
 	float3 absorption(0.75f, 0.75f, 0.75f);
@@ -564,7 +564,7 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 											 resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	std::shared_ptr<image::texture::Texture_2D> mask;
+	Texture_2D_ptr mask;
 
 	bool two_sided = false;
 
@@ -611,11 +611,11 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 													resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	std::shared_ptr<image::texture::Texture_2D> color_map;
-	std::shared_ptr<image::texture::Texture_2D> normal_map;
-	std::shared_ptr<image::texture::Texture_2D> surface_map;
-	std::shared_ptr<image::texture::Texture_2D> emission_map;
-	std::shared_ptr<image::texture::Texture_2D> mask;
+	Texture_2D_ptr color_map;
+	Texture_2D_ptr normal_map;
+	Texture_2D_ptr surface_map;
+	Texture_2D_ptr emission_map;
+	Texture_2D_ptr mask;
 	bool two_sided = false;
     float3 color(0.6f, 0.6f, 0.6f);
 	float roughness = 0.9f;

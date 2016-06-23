@@ -10,7 +10,7 @@
 namespace scene { namespace material { namespace glass {
 
 Glass_rough::Glass_rough(Generic_sample_cache<Sample_rough>& cache,
-						 std::shared_ptr<image::texture::Texture_2D> mask,
+						 Texture_2D_ptr mask,
 						 const Sampler_settings& sampler_settings) :
 	Typed_material(cache, mask, sampler_settings, false) {}
 
@@ -35,7 +35,7 @@ const material::Sample& Glass_rough::sample(const shape::Hitpoint& hp, float3_p 
 	return sample;
 }
 
-void Glass_rough::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
+void Glass_rough::set_normal_map(Texture_2D_ptr normal_map) {
 	normal_map_ = normal_map;
 }
 

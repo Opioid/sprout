@@ -8,7 +8,7 @@
 namespace scene { namespace material { namespace sky {
 
 Material_overcast::Material_overcast(Generic_sample_cache<light::Sample>& cache,
-									 std::shared_ptr<image::texture::Texture_2D> mask,
+									 Texture_2D_ptr mask,
 									 const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<light::Sample>>(
 		cache, mask, sampler_settings, two_sided) {}

@@ -33,7 +33,7 @@
 namespace scene { namespace material { namespace metal {
 
 Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
-									   std::shared_ptr<image::texture::Texture_2D> mask,
+									   Texture_2D_ptr mask,
 									   const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<Sample_isotropic>>(cache, mask,
 																	 sampler_settings,
@@ -61,7 +61,7 @@ const material::Sample& Material_isotropic::sample(const shape::Hitpoint& hp, fl
 	return sample;
 }
 
-void Material_isotropic::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
+void Material_isotropic::set_normal_map(Texture_2D_ptr normal_map) {
 	normal_map_ = normal_map;
 }
 
@@ -78,7 +78,7 @@ void Material_isotropic::set_roughness(float roughness) {
 }
 
 Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
-										   std::shared_ptr<image::texture::Texture_2D> mask,
+										   Texture_2D_ptr mask,
 										   const Sampler_settings& sampler_settings,
 										   bool two_sided) :
 	material::Typed_material<Generic_sample_cache<Sample_anisotropic>>(cache, mask,
@@ -114,12 +114,12 @@ const material::Sample& Material_anisotropic::sample(const shape::Hitpoint& hp, 
 	return sample;
 }
 
-void Material_anisotropic::set_normal_map(std::shared_ptr<image::texture::Texture_2D> normal_map) {
+void Material_anisotropic::set_normal_map(Texture_2D_ptr normal_map) {
 	normal_map_ = normal_map;
 }
 
 void Material_anisotropic::set_direction_map(
-		std::shared_ptr<image::texture::Texture_2D> direction_map) {
+		Texture_2D_ptr direction_map) {
 	direction_map_ = direction_map;
 }
 

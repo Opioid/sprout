@@ -1,5 +1,6 @@
 #include "display_material.hpp"
 #include "display_sample.hpp"
+#include "image/texture/texture_2d.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
@@ -13,7 +14,7 @@
 namespace scene { namespace material { namespace display {
 
 Material::Material(Generic_sample_cache<Sample>& cache,
-				   std::shared_ptr<image::texture::Texture_2D> mask,
+				   Texture_2D_ptr mask,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
 														   sampler_settings, two_sided),
@@ -123,7 +124,7 @@ void Material::prepare_sampling(bool spherical) {
 	}
 }
 
-void Material::set_emission_map(std::shared_ptr<image::texture::Texture_2D> emission_map) {
+void Material::set_emission_map(Texture_2D_ptr emission_map) {
 	emission_map_ = emission_map;
 }
 
