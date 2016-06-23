@@ -16,8 +16,8 @@ namespace scene { namespace material { namespace substitute {
 template<typename Sample>
 Material_base<Sample>::Material_base(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
 									 const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
-														   sampler_settings, two_sided) {}
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask, sampler_settings,
+														   two_sided) {}
 
 template<typename Sample>
 float3 Material_base<Sample>::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,

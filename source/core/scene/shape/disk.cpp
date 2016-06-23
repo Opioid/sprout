@@ -16,7 +16,7 @@ Disk::Disk() {
 	aabb_.set_min_max(float3(-1.f, -1.f, -0.1f), float3(1.f, 1.f, 0.1f));
 }
 
-bool Disk::intersect(const Entity_transformation& transformation, math::Oray& ray,
+bool Disk::intersect(const Transformation& transformation, math::Oray& ray,
 					 Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const float3& normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
@@ -56,7 +56,7 @@ bool Disk::intersect(const Entity_transformation& transformation, math::Oray& ra
 	return false;
 }
 
-bool Disk::intersect_p(const Entity_transformation& transformation,
+bool Disk::intersect_p(const Transformation& transformation,
 					   const math::Oray& ray, Node_stack& /*node_stack*/) const {
 	const float3& normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
@@ -79,9 +79,9 @@ bool Disk::intersect_p(const Entity_transformation& transformation,
 	return false;
 }
 
-float Disk::opacity(const Entity_transformation& transformation, const math::Oray& ray,
+float Disk::opacity(const Transformation& transformation, const math::Oray& ray,
 					float time, const material::Materials& materials,
-					Worker& worker, material::Sampler_settings::Filter filter) const {
+					Worker& worker, Sampler_filter filter) const {
 	const float3& normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
@@ -107,13 +107,13 @@ float Disk::opacity(const Entity_transformation& transformation, const math::Ora
 	return 0.f;
 }
 
-void Disk::sample(uint32_t part, const Entity_transformation& transformation, float area,
+void Disk::sample(uint32_t part, const Transformation& transformation, float area,
 				  const float3& p, const float3& /*n*/, bool two_sided,
 				  sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
 	Disk::sample(part, transformation, area, p, two_sided, sampler, node_stack, sample);
 }
 
-void Disk::sample(uint32_t /*part*/, const Entity_transformation& transformation, float area,
+void Disk::sample(uint32_t /*part*/, const Transformation& transformation, float area,
 				  const float3& p, bool two_sided, sampler::Sampler& sampler,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
 	float2 r2 = sampler.generate_sample_2D();
@@ -121,7 +121,7 @@ void Disk::sample(uint32_t /*part*/, const Entity_transformation& transformation
 
 	float3 ls = float3(xy, 0.f);
 	float3 ws = transformation.position
-					+ transformation.scale.x * math::transform_vector(ls, transformation.rotation);
+			  + transformation.scale.x * math::transform_vector(ls, transformation.rotation);
 
 	float3 axis = ws - p;
 
@@ -143,17 +143,17 @@ void Disk::sample(uint32_t /*part*/, const Entity_transformation& transformation
 	}
 }
 
-void Disk::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				  float /*area*/, const float3& /*p*/,
 				  float2 /*uv*/, Sample& /*sample*/) const {}
 
-void Disk::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				  float /*area*/, const float3& /*p*/,
 				  const float3& /*wi*/, Sample& /*sample*/) const {}
 
-float Disk::pdf(uint32_t /*part*/, const Entity_transformation& transformation,
-				float area, const float3& p, const float3& wi,
-				bool two_sided,  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
+float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
+				float area, const float3& p, const float3& wi, bool two_sided,
+				bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
 	float3 normal = transformation.rotation.v3.z;
 
 	float c = math::dot(normal, -wi);

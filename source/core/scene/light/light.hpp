@@ -24,15 +24,15 @@ class Light {
 
 public:
 
-	using Entity_transformation = entity::Composed_transformation;
+	using Transformation = entity::Composed_transformation;
 	using Sampler_filter = material::Sampler_settings::Filter;
 
 	virtual ~Light() {}
 
-	virtual const Entity_transformation& transformation_at(
-			float time, Entity_transformation& transformation) const = 0;
+	virtual const Transformation& transformation_at(
+			float time, Transformation& transformation) const = 0;
 
-	virtual void sample(const Entity_transformation& transformation, float time,
+	virtual void sample(const Transformation& transformation, float time,
 						float3_p p, float3_p n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
 						Sampler_filter filter, Sample& result) const = 0;
@@ -44,7 +44,7 @@ public:
 	void sample(float time, float3_p p, sampler::Sampler& sampler,
 				Worker& worker, Sampler_filter filter, Sample& result) const;
 
-	virtual float pdf(const Entity_transformation& transformation,
+	virtual float pdf(const Transformation& transformation,
 					  float3_p p, float3_p wi, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const = 0;
 

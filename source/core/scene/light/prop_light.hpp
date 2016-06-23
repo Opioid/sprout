@@ -14,15 +14,15 @@ public:
 
 	void init(Prop* prop, uint32_t part);
 
-	virtual const Entity_transformation& transformation_at(
-			float time, Entity_transformation& transformation) const final override;
+	virtual const Transformation& transformation_at(
+			float time, Transformation& transformation) const final override;
 
-	virtual void sample(const Entity_transformation& transformation, float time,
+	virtual void sample(const Transformation& transformation, float time,
 						float3_p p, float3_p n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
 						Sampler_filter filter, Sample& result) const override;
 
-	virtual float pdf(const Entity_transformation& transformation,
+	virtual float pdf(const Transformation& transformation,
 					  float3_p p, float3_p wi, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const override;
 

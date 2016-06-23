@@ -13,7 +13,7 @@ Plane::Plane() {
 	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
-bool Plane::intersect(const Entity_transformation& transformation, math::Oray& ray,
+bool Plane::intersect(const Transformation& transformation, math::Oray& ray,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const float3& normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
@@ -85,7 +85,7 @@ bool Plane::intersect(const Entity_transformation& transformation, math::Oray& r
 */
 }
 
-bool Plane::intersect_p(const Entity_transformation& transformation, const math::Oray& ray,
+bool Plane::intersect_p(const Transformation& transformation, const math::Oray& ray,
 						Node_stack& /*node_stack*/) const {
 	const float3& normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
@@ -100,7 +100,7 @@ bool Plane::intersect_p(const Entity_transformation& transformation, const math:
 	return false;
 }
 
-float Plane::opacity(const Entity_transformation& transformation, const math::Oray& ray,
+float Plane::opacity(const Transformation& transformation, const math::Oray& ray,
 					 float time, const material::Materials& materials,
 					 Worker& worker, Sampler_filter filter) const {
 	const float3& normal = transformation.rotation.v3.z;
@@ -120,31 +120,32 @@ float Plane::opacity(const Entity_transformation& transformation, const math::Or
 	return 0.f;
 }
 
-void Plane::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
-				   float /*area*/, const float3& /*p*/,
-				   const float3& /*n*/, bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+				   float /*area*/, const float3& /*p*/, const float3& /*n*/,
+				   bool /*two_sided*/, sampler::Sampler& /*sampler*/,
 				   Node_stack& /*node_stack*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
-void Plane::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				   float /*area*/, const float3& /*p*/, bool /*two_sided*/,
-				   sampler::Sampler& /*sampler*/,
-				   Node_stack& /*node_stack*/, Sample& sample) const {
+				   sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/,
+				   Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
-void Plane::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				   float /*area*/, const float3& /*p*/, float2 /*uv*/,
 				   Sample& /*sample*/) const {}
 
-void Plane::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				   float /*area*/, const float3& /*p*/,
 				   const float3& /*wi*/, Sample& /*sample*/) const {}
 
-float Plane::pdf(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+float Plane::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 				 float /*area*/, const float3& /*p*/, const float3& /*wi*/,
-				 bool /*two_sided*/, bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
+				 bool /*two_sided*/, bool /*total_sphere*/,
+				 Node_stack& /*node_stack*/) const {
 	return 0.f;
 }
 

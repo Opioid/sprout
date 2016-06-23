@@ -30,7 +30,7 @@ uint32_t Morphable_mesh::num_parts() const {
 	return num_parts_;
 }
 
-bool Morphable_mesh::intersect(const Entity_transformation& transformation, math::Oray& ray,
+bool Morphable_mesh::intersect(const Transformation& transformation, math::Oray& ray,
 							   Node_stack& node_stack, shape::Intersection& intersection) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -68,7 +68,7 @@ bool Morphable_mesh::intersect(const Entity_transformation& transformation, math
 	return false;
 }
 
-bool Morphable_mesh::intersect_p(const Entity_transformation& transformation,
+bool Morphable_mesh::intersect_p(const Transformation& transformation,
 								 const math::Oray& ray, Node_stack& node_stack) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -79,7 +79,7 @@ bool Morphable_mesh::intersect_p(const Entity_transformation& transformation,
 	return tree_.intersect_p(tray, node_stack);
 }
 
-float Morphable_mesh::opacity(const Entity_transformation& transformation, const math::Oray& ray,
+float Morphable_mesh::opacity(const Transformation& transformation, const math::Oray& ray,
 							  float time, const material::Materials& materials,
 							  Worker& worker, material::Sampler_settings::Filter filter) const {
 	math::Oray tray;
@@ -91,25 +91,25 @@ float Morphable_mesh::opacity(const Entity_transformation& transformation, const
 	return tree_.opacity(tray, time, materials, worker, filter);
 }
 
-void Morphable_mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							float /*area*/, const float3& /*p*/, const float3& /*n*/,
 							bool /*two_sided*/, sampler::Sampler& /*sampler*/,
 							Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
 
-void Morphable_mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							float /*area*/, const float3& /*p*/, bool /*two_sided*/,
 							sampler::Sampler& /*sampler*/,
 							Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
 
-void Morphable_mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							float /*area*/, const float3& /*p*/, float2 /*uv*/,
 							Sample& /*sample*/) const {}
 
-void Morphable_mesh::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							float /*area*/, const float3& /*p*/,
 							const float3& /*wi*/, Sample& /*sample*/) const {}
 
-float Morphable_mesh::pdf(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+float Morphable_mesh::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 						  float /*area*/, const float3& /*p*/, const float3& /*wi*/,
 						  bool /*two_sided*/, bool /*total_sphere*/,
 						  shape::Node_stack& /*node_stack*/) const {

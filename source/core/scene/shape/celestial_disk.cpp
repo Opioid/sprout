@@ -15,7 +15,7 @@ Celestial_disk::Celestial_disk() {
 	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
-bool Celestial_disk::intersect(const Entity_transformation& transformation, math::Oray& ray,
+bool Celestial_disk::intersect(const Transformation& transformation, math::Oray& ray,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const float3& v = transformation.rotation.v3.z;
 	float b = math::dot(v, ray.direction);
@@ -45,13 +45,13 @@ bool Celestial_disk::intersect(const Entity_transformation& transformation, math
 	return false;
 }
 
-bool Celestial_disk::intersect_p(const Entity_transformation& /*transformation*/,
+bool Celestial_disk::intersect_p(const Transformation& /*transformation*/,
 								 const math::Oray& /*ray*/, Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
-float Celestial_disk::opacity(const Entity_transformation& /*transformation*/,
+float Celestial_disk::opacity(const Transformation& /*transformation*/,
 							  const math::Oray& /*ray*/, float /*time*/,
 							  const material::Materials& /*materials*/,
 							  Worker& /*worker*/, Sampler_filter /*filter*/) const {
@@ -59,14 +59,14 @@ float Celestial_disk::opacity(const Entity_transformation& /*transformation*/,
 	return 0.f;
 }
 
-void Celestial_disk::sample(uint32_t part, const Entity_transformation& transformation,
+void Celestial_disk::sample(uint32_t part, const Transformation& transformation,
 							float area, const float3& p, const float3& /*n*/,
 							bool two_sided, sampler::Sampler& sampler,
 							Node_stack& node_stack, Sample& sample) const {
 	Celestial_disk::sample(part, transformation, area, p, two_sided, sampler, node_stack, sample);
 }
 
-void Celestial_disk::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformation,
 							float area, const float3& /*p*/, bool /*two_sided*/,
 							sampler::Sampler& sampler, Node_stack& /*node_stack*/,
 							Sample& sample) const {
@@ -82,15 +82,15 @@ void Celestial_disk::sample(uint32_t /*part*/, const Entity_transformation& tran
 	sample.pdf = 1.f / area;
 }
 
-void Celestial_disk::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Celestial_disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							float /*area*/, const float3& /*p*/,
 							float2 /*uv*/, Sample& /*sample*/) const {}
 
-void Celestial_disk::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Celestial_disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							float /*area*/, const float3& /*p*/,
 							const float3& /*wi*/, Sample& /*sample*/) const {}
 
-float Celestial_disk::pdf(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+float Celestial_disk::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 						  float area, const float3& /*p*/, const float3& /*wi*/,
 						  bool /*two_sided*/, bool /*total_sphere*/,
 						  Node_stack& /*node_stack*/) const {

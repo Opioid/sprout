@@ -16,12 +16,12 @@ void Prop_light::init(Prop* prop, uint32_t part) {
 	part_ = part;
 }
 
-const Light::Entity_transformation& Prop_light::transformation_at(
-		float time, Entity_transformation& transformation) const {
+const Light::Transformation& Prop_light::transformation_at(
+		float time, Transformation& transformation) const {
 	return prop_->transformation_at(time, transformation);
 }
 
-void Prop_light::sample(const Entity_transformation& transformation, float time,
+void Prop_light::sample(const Transformation& transformation, float time,
 						float3_p p, float3_p n, bool total_sphere,
 						sampler::Sampler& sampler, Worker& worker,
 						Sampler_filter filter, Sample& result) const {
@@ -48,7 +48,7 @@ void Prop_light::sample(const Entity_transformation& transformation, float time,
 												area, time, worker, filter);
 }
 
-float Prop_light::pdf(const Entity_transformation& transformation,
+float Prop_light::pdf(const Transformation& transformation,
 					  float3_p p, float3_p wi, bool total_sphere,
 					  Worker& worker, Sampler_filter /*filter*/) const {
 	float area = prop_->area(part_);

@@ -13,7 +13,7 @@
 
 namespace scene { namespace light {
 
-void Prop_image_light::sample(const Entity_transformation& transformation, float time,
+void Prop_image_light::sample(const Transformation& transformation, float time,
 							  float3_p p, float3_p n, bool total_sphere,
 							  sampler::Sampler& sampler, Worker& worker,
 							  Sampler_filter filter, Sample& result) const {
@@ -35,7 +35,7 @@ void Prop_image_light::sample(const Entity_transformation& transformation, float
 	}
 }
 
-float Prop_image_light::pdf(const Entity_transformation& transformation,
+float Prop_image_light::pdf(const Transformation& transformation,
 							float3_p p, float3_p wi, bool /*total_sphere*/,
 							Worker& worker, Sampler_filter filter) const {
 	float area = prop_->area(part_);

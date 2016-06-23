@@ -18,7 +18,7 @@ Canopy::Canopy() {
 	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
-bool Canopy::intersect(const Entity_transformation& transformation, math::Oray& ray,
+bool Canopy::intersect(const Transformation& transformation, math::Oray& ray,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	if (ray.max_t >= 1000000.f) {
 		if (math::dot(ray.direction, transformation.rotation.v3.z) < 0.f) {
@@ -51,13 +51,13 @@ bool Canopy::intersect(const Entity_transformation& transformation, math::Oray& 
 	return false;
 }
 
-bool Canopy::intersect_p(const Entity_transformation& /*transformation*/,
+bool Canopy::intersect_p(const Transformation& /*transformation*/,
 						 const math::Oray& /*ray*/, Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
-float Canopy::opacity(const Entity_transformation& /*transformation*/,
+float Canopy::opacity(const Transformation& /*transformation*/,
 					  const math::Oray& /*ray*/, float /*time*/,
 					  const material::Materials& /*materials*/, Worker& /*worker*/,
 					  material::Sampler_settings::Filter /*filter*/) const {
@@ -65,7 +65,7 @@ float Canopy::opacity(const Entity_transformation& /*transformation*/,
 	return 0.f;
 }
 
-void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					float /*area*/, const float3& /*p*/, const float3& /*n*/,
 					bool /*two_sided*/, sampler::Sampler& sampler,
 					Node_stack& /*node_stack*/, Sample& sample) const {
@@ -84,7 +84,7 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
-void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					float /*area*/, const float3& /*p*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
 	float2 uv = sampler.generate_sample_2D();
@@ -102,7 +102,7 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
-void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					float /*area*/, const float3& /*p*/,
 					float2 uv, Sample& sample) const {
 	float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
@@ -139,14 +139,14 @@ void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformati
 	*/
 }
 
-void Canopy::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					float /*area*/, const float3& /*p*/,
 					const float3& wi, Sample& sample) const {
 	// TODO
 	std::cout << "Canopy::sample() not implemented!" << std::endl;
 }
 
-float Canopy::pdf(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+float Canopy::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 				  float /*area*/, const float3& /*p*/, const float3& /*wi*/,
 				  bool /*two_sided*/, bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
 	return 1.f / (2.f * math::Pi);

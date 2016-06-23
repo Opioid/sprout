@@ -16,7 +16,7 @@ Inverse_sphere::Inverse_sphere() {
 	aabb_.set_min_max(float3(-1.f, -1.f, -1.f), float3(1.f, 1.f, 1.f));
 }
 
-bool Inverse_sphere::intersect(const Entity_transformation& transformation,
+bool Inverse_sphere::intersect(const Transformation& transformation,
 							   math::Oray& ray, Node_stack& /*node_stack*/,
 							   Intersection& intersection) const {
 	float3 v = ray.origin - transformation.position;
@@ -72,7 +72,7 @@ bool Inverse_sphere::intersect(const Entity_transformation& transformation,
 	return false;
 }
 
-bool Inverse_sphere::intersect_p(const Entity_transformation& transformation,
+bool Inverse_sphere::intersect_p(const Transformation& transformation,
 								 const math::Oray& ray, Node_stack& /*node_stack*/) const {
 	float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
@@ -97,14 +97,14 @@ bool Inverse_sphere::intersect_p(const Entity_transformation& transformation,
 	return false;
 }
 
-float Inverse_sphere::opacity(const Entity_transformation& transformation,
+float Inverse_sphere::opacity(const Transformation& transformation,
 							  const math::Oray& ray, float /*time*/,
 							  const material::Materials& /*materials*/,
 							  Worker& worker, Sampler_filter /*filter*/) const {
 	return intersect_p(transformation, ray, worker.node_stack()) ? 1.f : 0.f;
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							float /*area*/, const float3& p, const float3& n,
 							bool /*two_sided*/, sampler::Sampler& sampler,
 							Node_stack& /*node_stack*/, Sample& sample) const {
@@ -165,14 +165,14 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& tran
 							 std::acos(xyz.y) * math::Pi_inv);
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& /*transformation*/,
+void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							float /*area*/, const float3& /*p*/, bool /*two_sided*/,
 							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/,
 							Sample& /*sample*/) const {
 	// TODO
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							float area, const float3& p, float2 uv,
 							Sample& sample) const {
 	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
@@ -206,7 +206,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& tran
 	}
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& transformation,
+void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							float /*area*/, const float3& p,
 							const float3& wi, Sample& sample) const {
 	float3 v = p - transformation.position;
@@ -231,7 +231,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Entity_transformation& tran
 	}
 }
 
-float Inverse_sphere::pdf(uint32_t /*part*/, const Entity_transformation& transformation,
+float Inverse_sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
 						  float /*area*/, const float3& p, const float3& /*wi*/,
 						  bool /*two_sided*/, bool /*total_sphere*/,
 						  Node_stack& /*node_stack*/) const {
