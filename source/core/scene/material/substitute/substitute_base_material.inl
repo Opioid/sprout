@@ -95,15 +95,15 @@ void Material_base<Sample>::set_emission_factor(float emission_factor) {
 template<typename Sample>
 void Material_base<Sample>::set_sample(const shape::Hitpoint& hp, float3_p wo,
 									   const Texture_sampler_2D& sampler, Sample& sample) {
-	float side = sample.set_basis(hp.geo_n, wo);
+	sample.set_basis(hp.geo_n, wo);
 
 	if (normal_map_) {
 		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
 		float3 n = math::normalized(hp.tangent_to_world(nm));
 
-		sample.layer_.set_basis(hp.t, hp.b, n, side);
+		sample.layer_.set_basis(hp.t, hp.b, n);
 	} else {
-		sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
+		sample.layer_.set_basis(hp.t, hp.b, hp.n);
 	}
 
 	float3 color;

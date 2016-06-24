@@ -6,10 +6,10 @@
 
 namespace scene { namespace material {
 
-inline void Sample::Layer::set_basis(float3_p t, float3_p b, float3_p n, float sign) {
+inline void Sample::Layer::set_basis(float3_p t, float3_p b, float3_p n) {
 	this->t = t;
 	this->b = b;
-	this->n = sign * n;
+	this->n = n;
 }
 
 inline float Sample::Layer::clamped_n_dot(float3_p v) const {
@@ -31,16 +31,9 @@ inline bool Sample::same_hemisphere(float3_p v) const {
 	return math::dot(geo_n_, v) > 0.f;
 }
 
-inline float Sample::set_basis(float3_p geo_n, float3_p wo, bool two_sided) {
+inline void Sample::set_basis(float3_p geo_n, float3_p wo) {
 	wo_ = wo;
-
-	if (two_sided && math::dot(geo_n, wo) < 0.f) {
-		geo_n_ = -geo_n;
-		return -1.f;
-	} else {
-		geo_n_ = geo_n;
-		return 1.f;
-	}
+	geo_n_ = geo_n;
 }
 
 inline float3 Sample::attenuation(float3_p color, float distance) {

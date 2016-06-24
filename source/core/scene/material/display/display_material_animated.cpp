@@ -38,9 +38,9 @@ const material::Sample& Material_animated::sample(float3_p wo, const Renderstate
 												  const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	float side = sample.set_basis(rs.geo_n, wo, two_sided_);
+	sample.set_basis(rs.geo_n, wo);
 
-	sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
+	sample.layer_.set_basis(rs.t, rs.b, rs.n);
 
 	if (emission_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);

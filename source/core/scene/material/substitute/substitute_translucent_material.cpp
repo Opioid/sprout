@@ -18,15 +18,15 @@ const material::Sample& Material_translucent::sample(float3_p wo, const Renderst
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float side = sample.set_basis(rs.geo_n, wo);
+	sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_) {
 		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
 		float3 n = math::normalized(rs.tangent_to_world(nm));
 
-		sample.layer_.set_basis(rs.t, rs.b, n, side);
+		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else {
-		sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
+		sample.layer_.set_basis(rs.t, rs.b, rs.n);
 	}
 
 	float3 color;

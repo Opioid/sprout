@@ -23,13 +23,14 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float side = sample.set_basis(rs.geo_n, wo, two_sided_);
+	sample.set_basis(rs.geo_n, wo);
+
 	if (normal_map_) {
 		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
-		float3 n = side * math::normalized(rs.tangent_to_world(nm));
-		sample.layer_.set_basis(rs.t, rs.b, n, side);
+		float3 n = math::normalized(rs.tangent_to_world(nm));
+		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else {
-		sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
+		sample.layer_.set_basis(rs.t, rs.b, rs.n);
 	}
 
 	float3 color;

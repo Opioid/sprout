@@ -25,8 +25,8 @@ struct Intersection {
 
 	float opacity(Worker& worker, float time, Sampler_filter filter) const;
 
-	const material::Sample& sample(Worker& worker, float3_p wo,
-								   float time, Sampler_filter filter) const;
+	const material::Sample& sample(Worker& worker, float3_p wo, float time,
+								   Sampler_filter filter) const;
 
 	const Prop* prop;
 	shape::Intersection geo;

@@ -24,7 +24,7 @@ void test() {
 
 	wo = t;
 	sample.set_basis(n, wo);
-	sample.layer_.set_basis(t, b, n, 1.f);
+	sample.layer_.set_basis(t, b, n);
 
 	float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;

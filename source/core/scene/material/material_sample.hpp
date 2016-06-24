@@ -13,7 +13,7 @@ class Sample {
 public:
 
 	struct Layer {
-		void set_basis(float3_p t, float3_p b, float3_p n, float sign);
+		void set_basis(float3_p t, float3_p b, float3_p n);
 
 		float clamped_n_dot(float3_p v) const;
 
@@ -46,7 +46,7 @@ public:
 
 	bool same_hemisphere(float3_p v) const;
 
-	float set_basis(float3_p geo_n, float3_p wo, bool two_sided = false);
+	void set_basis(float3_p geo_n, float3_p wo);
 
 	static float3 attenuation(float3_p color, float distance);
 

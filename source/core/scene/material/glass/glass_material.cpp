@@ -18,17 +18,17 @@ const material::Sample& Glass::sample(float3_p wo, const Renderstate& rs,
 									  const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	float side = sample.set_basis(rs.geo_n, wo);
+	sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
 		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
-		float3 n = side * math::normalized(rs.tangent_to_world(nm));
+		float3 n  = math::normalized(rs.tangent_to_world(nm));
 
-		sample.layer_.set_basis(rs.t, rs.b, n, side);
+		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else {
-		sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
+		sample.layer_.set_basis(rs.t, rs.b, rs.n);
 	}
 
 	sample.layer_.set(color_, attenuation_distance_, ior_, rs.ior);

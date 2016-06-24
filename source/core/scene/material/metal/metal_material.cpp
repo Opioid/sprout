@@ -45,16 +45,16 @@ const material::Sample& Material_isotropic::sample(float3_p wo, const Renderstat
 												   Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	float side = sample.set_basis(rs.geo_n, wo);
+	sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
 		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
-		sample.layer_.set_basis(rs.t, rs.b, n, side);
+		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else {
-		sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
+		sample.layer_.set_basis(rs.t, rs.b, rs.n);
 	}
 
 	sample.layer_.set(ior_, absorption_, roughness_);
@@ -93,21 +93,21 @@ const material::Sample& Material_anisotropic::sample(float3_p wo, const Renderst
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float side = sample.set_basis(rs.geo_n, wo);
+	sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_) {
 		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
 
-		sample.layer_.set_basis(rs.t, rs.b, n, side);
+		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else if (direction_map_) {
 		float2 tm = sampler.sample_2(*direction_map_, rs.uv);
 		float3 t  = math::normalized(rs.tangent_to_world(tm));
 		float3 b  = math::cross(rs.n, t);
 
-		sample.layer_.set_basis(t, b, rs.n, side);
+		sample.layer_.set_basis(t, b, rs.n);
 	} else {
-		sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
+		sample.layer_.set_basis(rs.t, rs.b, rs.n);
 	}
 
 	sample.layer_.set(ior_, absorption_, roughness_);

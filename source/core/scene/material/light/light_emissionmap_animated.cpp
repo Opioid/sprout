@@ -39,9 +39,9 @@ const material::Sample& Emissionmap_animated::sample(float3_p wo, const Renderst
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float side = sample.set_basis(rs.geo_n, wo, two_sided_);
+	sample.set_basis(rs.geo_n, wo);
 
-	sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
+	sample.layer_.set_basis(rs.t, rs.b, rs.n);
 
 	float3 radiance = sampler.sample_3(*emission_map_, rs.uv, element_);
 	sample.layer_.set(radiance);

@@ -21,9 +21,9 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 //	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float side = sample.set_basis(rs.geo_n, wo);
+	sample.set_basis(rs.geo_n, wo);
 
-	sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
+	sample.layer_.set_basis(rs.t, rs.b, rs.n);
 
 	return sample;
 }
