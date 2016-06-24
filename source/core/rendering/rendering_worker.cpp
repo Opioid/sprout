@@ -4,8 +4,8 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
-#include "scene/prop/prop.hpp"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/prop.hpp"
+#include "scene/scene_intersection.hpp"
 #include "scene/material/material.hpp"
 #include "base/math/vector.inl"
 #include "base/math/sampling/sample_distribution.inl"
@@ -13,7 +13,10 @@
 
 namespace rendering {
 
-Worker::Worker() : surface_integrator_(nullptr), volume_integrator_(nullptr), sampler_(nullptr) {}
+Worker::Worker() :
+	surface_integrator_(nullptr),
+	volume_integrator_(nullptr),
+	sampler_(nullptr) {}
 
 Worker::~Worker() {
 	delete sampler_;

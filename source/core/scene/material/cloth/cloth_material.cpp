@@ -23,24 +23,23 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, float3_p wo,
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
+	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
 	if (normal_map_) {
 		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		float3 n = math::normalized(hp.tangent_to_world(nm));
-
-		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo, two_sided_);
+		float3 n = side * math::normalized(hp.tangent_to_world(nm));
+		sample.layer_.set_basis(hp.t, hp.b, n, side);
 	} else {
-		sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
+		sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
 	}
 
 	float3 color;
-
 	if (color_map_) {
 		color = sampler.sample_3(*color_map_, hp.uv);
 	} else {
 		color = color_;
 	}
 
-	sample.set(color);
+	sample.layer_.set(color);
 
 	return sample;
 }

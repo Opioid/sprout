@@ -8,6 +8,7 @@ namespace scene { namespace material { namespace cloth {
 class Sample;
 
 class Material : public material::Typed_material<Generic_sample_cache<Sample>> {
+
 public:
 
 	Material(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scene/material/sampler_settings.hpp"
-#include "scene/prop/prop_intersection.hpp"
+#include "scene/scene_intersection.hpp"
 #include "scene/shape/node_stack.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include <vector>
@@ -24,10 +24,11 @@ struct Build_node {
 	Build_node();
 	~Build_node();
 
-	bool intersect(scene::Ray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
-				   Intersection& intersection) const;
+	bool intersect(scene::Ray& ray, const std::vector<Prop*>& props,
+				   shape::Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect_p(const scene::Ray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack) const;
+	bool intersect_p(const scene::Ray& ray, const std::vector<Prop*>& props,
+					 shape::Node_stack& node_stack) const;
 
 	float opacity(const scene::Ray& ray, const std::vector<Prop*>& props, Worker& worker,
 				  material::Sampler_settings::Filter filter) const;

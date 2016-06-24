@@ -8,22 +8,24 @@ namespace scene { namespace material {
 
 namespace bxdf { struct Result; }
 
+class Sample;
+
 namespace lambert {
 
 class Isotropic {
 
 public:
 
-	template<typename Sample>
+	template<typename Layer>
 	static float3 evaluate(float3_p wi, float n_dot_wi,
-								 const Sample& sample, float& pdf);
+						   const Sample& sample, const Layer& layer, float& pdf);
 
-	template<typename Sample>
-	static float pdf(float3_p wi, float n_dot_wi, const Sample& sample);
+	template<typename Layer>
+	static float pdf(float3_p wi, float n_dot_wi, const Sample& sample, const Layer& layer);
 
-	template<typename Sample>
-	static float importance_sample(const Sample& sample, sampler::Sampler& sampler,
-								   bxdf::Result& result);
+	template<typename Layer>
+	static float importance_sample(const Sample& sample, const Layer& layer,
+								   sampler::Sampler& sampler, bxdf::Result& result);
 };
 
 

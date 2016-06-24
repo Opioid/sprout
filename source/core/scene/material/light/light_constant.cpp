@@ -17,9 +17,11 @@ const material::Sample& Constant::sample(const shape::Hitpoint& hp, float3_p wo,
 										 const Worker& worker, Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
-	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
+	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
 
-	sample.set(emittance_.radiance(area));
+	sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
+
+	sample.layer_.set(emittance_.radiance(area));
 
 	return sample;
 }

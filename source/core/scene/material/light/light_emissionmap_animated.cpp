@@ -40,10 +40,12 @@ const material::Sample& Emissionmap_animated::sample(const shape::Hitpoint& hp, 
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
+	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
+
+	sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
 
 	float3 radiance = sampler.sample_3(*emission_map_, hp.uv, element_);
-	sample.set(radiance);
+	sample.layer_.set(radiance);
 
 	return sample;
 }

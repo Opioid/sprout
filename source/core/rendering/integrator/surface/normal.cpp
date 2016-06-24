@@ -3,7 +3,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
-#include "scene/prop/prop_intersection.inl"
+#include "scene/scene_intersection.inl"
 #include "scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"

@@ -16,12 +16,6 @@ void test() {
 
 	Sample sample;
 
-	float3 color(1.f, 1.f, 1.f);
-	float attenuation_distance = 1.f;
-	float ior = 1.5f;
-
-	sample.set(color, attenuation_distance, ior, 1.f);
-
 	float3 t(1.f, 0.f, 0.f);
 	float3 b(0.f, 1.f, 0.f);
 	float3 n(0.f, 0.f, 1.f);
@@ -29,31 +23,40 @@ void test() {
 	float3 wo;
 
 	wo = t;
-	sample.set_basis(t, b, n, n, wo);
+	sample.set_basis(n, wo);
+	sample.layer_.set_basis(t, b, n, 1.f);
+
+	float3 color(1.f, 1.f, 1.f);
+	float attenuation_distance = 1.f;
+	float ior = 1.5f;
+
+	sample.layer_.set(color, attenuation_distance, ior, 1.f);
+
+
 	result.wi = math::float3_identity;
 	result.reflection = math::float3_identity;
-	BRDF::importance_sample(sample, sampler, result);
+	Sample::BRDF::importance_sample(sample, sample.layer_, sampler, result);
 	print(result);
 	result.reflection = math::float3_identity;
-	BTDF::importance_sample(sample, sampler, result);
+	Sample::BTDF::importance_sample(sample, sample.layer_, sampler, result);
 	print(result);
 
 	wo = b;
-	sample.set_basis(t, b, n, n, wo);
+	sample.set_basis(n, wo);
 	result.reflection = math::float3_identity;
-	BRDF::importance_sample(sample, sampler, result);
+	Sample::BRDF::importance_sample(sample, sample.layer_, sampler, result);
 	print(result);
 	result.reflection = math::float3_identity;
-	BTDF::importance_sample(sample, sampler, result);
+	Sample::BTDF::importance_sample(sample, sample.layer_, sampler, result);
 	print(result);
 
 	wo = n;
-	sample.set_basis(t, b, n, n, wo);
+	sample.set_basis(n, wo);
 	result.reflection = math::float3_identity;
-	BRDF::importance_sample(sample, sampler, result);
+	Sample::BRDF::importance_sample(sample, sample.layer_, sampler, result);
 	print(result);
 	result.reflection = math::float3_identity;
-	BTDF::importance_sample(sample, sampler, result);
+	Sample::BTDF::importance_sample(sample, sample.layer_, sampler, result);
 	print(result);
 }
 

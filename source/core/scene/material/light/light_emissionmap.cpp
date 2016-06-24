@@ -24,17 +24,19 @@ const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, float3_p 
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
+	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
+
+	sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
 
 	float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
-	sample.set(radiance);
+	sample.layer_.set(radiance);
 
 	return sample;
 }
 
 float3 Emissionmap::sample_radiance(float3_p /*wi*/, float2 uv,
-										  float /*area*/, float /*time*/,
-										  const Worker& worker, Sampler_filter filter) const {
+									float /*area*/, float /*time*/,
+									const Worker& worker, Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
 }

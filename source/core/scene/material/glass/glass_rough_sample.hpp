@@ -1,5 +1,6 @@
 #pragma once
 
+/*
 #include "scene/material/material_sample.hpp"
 
 namespace scene { namespace material {
@@ -11,6 +12,7 @@ namespace glass {
 class Sample_rough;
 
 class BRDF_rough {
+
 public:
 
 	float3 evaluate(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
@@ -21,6 +23,7 @@ public:
 };
 
 class BTDF_rough {
+
 public:
 
 	float3 evaluate(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
@@ -30,8 +33,13 @@ public:
 	float importance_sample(const Sample_rough& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
 };
 
-class Sample_rough : public material::Sample {
+class Sample_rough : public material::Sample, material::Sample::Layer {
+
 public:
+
+	virtual float3_p shading_normal() const final override;
+
+	virtual float3 tangent_to_world(float3_p v) const final override;
 
 	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
@@ -41,7 +49,8 @@ public:
 
 	virtual float ior() const final override;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const final override;
+	virtual void sample_evaluate(sampler::Sampler& sampler,
+								 bxdf::Result& result) const final override;
 
 	virtual bool is_pure_emissive() const final override;
 
@@ -49,7 +58,8 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(const float3& color, float attenuation_distance, float ior, float ior_outside);
+	void set(float3_p n, float3_p color, float attenuation_distance,
+			 float ior, float ior_outside);
 
 private:
 
@@ -66,3 +76,4 @@ private:
 };
 
 }}}
+*/

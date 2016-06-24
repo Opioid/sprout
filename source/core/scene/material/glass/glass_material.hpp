@@ -9,6 +9,7 @@ namespace scene { namespace material { namespace glass {
 class Sample;
 
 class Glass : public Typed_material<Generic_sample_cache<Sample>> {
+
 public:
 
 	Glass(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,

@@ -27,7 +27,7 @@ void test() {
 	float constant_f0 = fresnel::schlick_f0(1.f, ior);
 	float roughness   = 0.f;
 	float metallic    = 0.f;
-	sample.set(color, radiance, ior, constant_f0, roughness, metallic);
+	sample.layer_.set(color, radiance, ior, constant_f0, roughness, metallic);
 
 	float3 t(1.f, 0.f, 0.f);
 	float3 b(0.f, 1.f, 0.f);
@@ -37,7 +37,8 @@ void test() {
 
 	float3 wo = n;
 
-	sample.set_basis(t, b, n, n, wo);
+	sample.set_basis(n, wo);
+	sample.layer_.set_basis(t, b, n, 1.f);
 
 	float3 wi = arbitrary;//n;
 	float pdf;

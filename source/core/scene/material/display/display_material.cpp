@@ -13,8 +13,7 @@
 
 namespace scene { namespace material { namespace display {
 
-Material::Material(Generic_sample_cache<Sample>& cache,
-				   Texture_2D_ptr mask,
+Material::Material(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
 														   sampler_settings, two_sided),
@@ -25,23 +24,25 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, float3_p wo,
 										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
+	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
+
+	sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
 
 	if (emission_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
 		float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
-		sample.set(emission_factor_ * radiance, f0_, roughness_);
+		sample.layer_.set(emission_factor_ * radiance, f0_, roughness_);
 	} else {
-		sample.set(emission_factor_ * emission_, f0_, roughness_);
+		sample.layer_.set(emission_factor_ * emission_, f0_, roughness_);
 	}
 
 	return sample;
 }
 
 float3 Material::sample_radiance(float3_p /*wi*/, float2 uv,
-									   float /*area*/, float /*time*/, const Worker& worker,
-									   Sampler_filter filter) const {
+								 float /*area*/, float /*time*/, const Worker& worker,
+								 Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	return emission_factor_ * sampler.sample_3(*emission_map_, uv);

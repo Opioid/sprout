@@ -9,37 +9,38 @@
 
 namespace scene { namespace material { namespace oren_nayar {
 
-template<typename Sample>
+template<typename Layer>
 float3 Isotropic::evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
-								 const Sample& sample, float& pdf) {
-	float on = f(wi, n_dot_wi, n_dot_wo, sample);
+						   const Sample& sample, const Layer& layer, float& pdf) {
+	float on = f(wi, n_dot_wi, n_dot_wo, sample, layer);
 
 	pdf = n_dot_wi * math::Pi_inv;
-	return on * sample.diffuse_color_;
+	return on * layer.diffuse_color;
 }
 
-template<typename Sample>
-float Isotropic::importance_sample(float n_dot_wo, const Sample& sample,
+template<typename Layer>
+float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const Layer& layer,
 								   sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 s2d = sampler.generate_sample_2D();
 
 	float3 is = math::sample_hemisphere_cosine(s2d);
-	float3 wi = math::normalized(sample.tangent_to_world(is));
+	float3 wi = math::normalized(layer.tangent_to_world(is));
 
-	float n_dot_wi = std::max(math::dot(sample.n_, wi), 0.00001f);
+	float n_dot_wi = layer.clamped_n_dot(wi);
 
-	float on = f(wi, n_dot_wi, n_dot_wo, sample);
+	float on = f(wi, n_dot_wi, n_dot_wo, sample, layer);
 
 	result.pdf = n_dot_wi * math::Pi_inv;
-	result.reflection = on * sample.diffuse_color_;
+	result.reflection = on * layer.diffuse_color;
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
 	return n_dot_wi;
 }
 
-template<typename Sample>
-float Isotropic::f(float3_p wi, float n_dot_wi, float n_dot_wo, const Sample& sample) {
+template<typename Layer>
+float Isotropic::f(float3_p wi, float n_dot_wi, float n_dot_wo,
+				   const Sample& sample, const Layer& layer) {
 	float wi_dot_wo = math::dot(wi, sample.wo_);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
@@ -51,7 +52,7 @@ float Isotropic::f(float3_p wi, float n_dot_wi, float n_dot_wo, const Sample& sa
 		t = n_dot_wi;
 	}
 
-	float a2 = sample.a2_;
+	float a2 = layer.a2;
 	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
 	float b = 0.45f * (a2 / (a2 + 0.09f));
 

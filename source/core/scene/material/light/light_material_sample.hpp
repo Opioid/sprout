@@ -5,7 +5,12 @@
 namespace scene { namespace material { namespace light {
 
 class Sample : public material::Sample {
+
 public:
+
+	virtual float3_p shading_normal() const final override;
+
+	virtual float3 tangent_to_world(float3_p v) const final override;
 
 	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
@@ -24,11 +29,13 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(float3_p radiance);
+	struct Layer : public material::Sample::Layer {
+		void set(float3_p radiance);
 
-private:
+		float3 radiance;
+	};
 
-	float3 radiance_;
+	Layer layer_;
 };
 
 }}}

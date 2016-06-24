@@ -24,11 +24,11 @@ float3 Sample_translucent::evaluate(float3_p wi, float& pdf) const {
 	// then we don't need to calculate the reflection.
 	// In the other case, transmission won't be visible and we only need reflection.
 	if (thickness_ > 0.f && !same_hemisphere(wi)) {
-		float n_dot_wi = std::max(-math::dot(n_, wi),  0.00001f);
+		float n_dot_wi = std::max(-math::dot(layer_.n, wi), 0.00001f);
 		float approximated_distance = thickness_ / n_dot_wi;
 		float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 		pdf = 0.5f * n_dot_wi * math::Pi_inv;
-		return n_dot_wi * (math::Pi_inv * attenuation * diffuse_color_);
+		return n_dot_wi * (math::Pi_inv * attenuation * layer_.diffuse_color);
 	}
 
 	float3 result = base_evaluate(wi, pdf);
@@ -50,14 +50,14 @@ void Sample_translucent::sample_evaluate(sampler::Sampler& sampler, bxdf::Result
 		float p = sampler.generate_sample_1D();
 
 		if (p < 0.5f) {
-			float n_dot_wi = lambert::Isotropic::importance_sample(*this, sampler, result);
+			float n_dot_wi = lambert::Isotropic::importance_sample(*this, layer_, sampler, result);
 			result.wi *= -1.f;
 			result.pdf *= 0.5f;
 			float approximated_distance = thickness_ / n_dot_wi;
 			float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
-			if (1.f == metallic_) {
+			if (1.f == layer_.metallic) {
 				pure_specular_importance_sample(sampler, result);
 			} else {
 				if (p < 0.75f) {
@@ -70,7 +70,7 @@ void Sample_translucent::sample_evaluate(sampler::Sampler& sampler, bxdf::Result
 			result.pdf *= 0.5f;
 		}
 	} else {
-		if (1.f == metallic_) {
+		if (1.f == layer_.metallic) {
 			pure_specular_importance_sample(sampler, result);
 		} else {
 			float p = sampler.generate_sample_1D();
@@ -88,20 +88,12 @@ bool Sample_translucent::is_translucent() const {
 	return thickness_ > 0.f;
 }
 
-void Sample_translucent::set(float3_p color, float3_p radiance,
-							 float constant_f0, float a2, float metallic,
+void Sample_translucent::set(float3_p color, float metallic,
 							 float thickness, float attenuation_distance) {
-	diffuse_color_ = (1.f - metallic) * color;
-	f0_ = math::lerp(float3(constant_f0), color, metallic);
-	emission_ = radiance;
-
-	a2_ = a2;
-
-	metallic_ = metallic;
-	thickness_ = thickness;
+	float3 diffuse_color = (1.f - metallic) * color;
 
 	if (thickness > 0.f) {
-		attenuation_ = material::Sample::attenuation(diffuse_color_, attenuation_distance);
+		attenuation_ = material::Sample::attenuation(diffuse_color, attenuation_distance);
 	}
 }
 

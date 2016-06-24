@@ -22,9 +22,9 @@ const material::Sample& Material::sample(const shape::Hitpoint& hp, float3_p wo,
 
 //	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
+	float side = sample.set_basis(hp.geo_n, wo);
 
-	sample.set(color_);
+	sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
 
 	return sample;
 }

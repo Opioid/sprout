@@ -16,7 +16,7 @@ public:
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 
 	Material(scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
-				 Model& model);
+			 Model& model);
 
 	virtual bool has_emission_map() const final override;
 
@@ -40,8 +40,8 @@ public:
 												  Sampler_filter filter) final override;
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv,
-										 float area, float time, const scene::Worker& worker,
-										 Sampler_filter filter) const final override;
+								   float area, float time, const scene::Worker& worker,
+								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
 };
@@ -59,8 +59,8 @@ public:
 												  Sampler_filter filter) final override;
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv,
-										 float area, float time, const scene::Worker& worker,
-										 Sampler_filter filter) const final override;
+								   float area, float time, const scene::Worker& worker,
+								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
 };

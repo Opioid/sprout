@@ -5,13 +5,21 @@
 
 namespace scene { namespace material { namespace light {
 
+float3_p Sample::shading_normal() const {
+	return layer_.n;
+}
+
+float3 Sample::tangent_to_world(float3_p v) const {
+	return layer_.tangent_to_world(v);
+}
+
 float3 Sample::evaluate(float3_p /*wi*/, float& pdf) const {
 	pdf = 0.f;
 	return math::float3_identity;
 }
 
 float3 Sample::radiance() const {
-	return radiance_;
+	return layer_.radiance;
 }
 
 float3 Sample::attenuation() const {
@@ -39,8 +47,8 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(float3_p radiance) {
-	radiance_ = radiance;
+void Sample::Layer::set(float3_p radiance) {
+	this->radiance = radiance;
 }
 
 }}}

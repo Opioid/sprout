@@ -10,17 +10,17 @@ namespace scene { namespace material { namespace substitute {
 
 template<typename Coating>
 float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coating,
-													float coating_a2, float& pdf) const {
-	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
-	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
+											  float coating_a2, float& pdf) const {
+	float n_dot_wi = layer_.clamped_n_dot(wi);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	float diffuse_pdf;
 	float3 diffuse = oren_nayar::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo,
-														   *this, diffuse_pdf);
+													 *this, layer_, diffuse_pdf);
 
 	float3 h = math::normalized(wo_ + wi);
 
-	float n_dot_h  = math::dot(n_, h);
+	float n_dot_h  = math::dot(layer_.n, h);
 	float wo_dot_h = math::dot(wo_, h);
 
 	float3 c_reflection;
@@ -40,15 +40,15 @@ float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coatin
 	}
 
 	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == a2_) {
+	if (0.f == layer_.a2) {
 		pdf = 0.5f * (c_pdf + 0.5f * diffuse_pdf);
 		return n_dot_wi * (1.f - c_fresnel) * diffuse;
 	}
 
-	float clamped_a2 = ggx::clamp_a2(a2_);
+	float clamped_a2 = ggx::clamp_a2(layer_.a2);
 	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
 	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	float3 f = fresnel::schlick(wo_dot_h, f0_);
+	float3 f = fresnel::schlick(wo_dot_h, layer_.f0);
 
 	float3 specular = d * g * f;
 
@@ -67,31 +67,31 @@ void Sample_base::base_sample_evaluate_and_coating(const Coating& coating,
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
-		float n_dot_wo = clamped_n_dot_wo();
+		float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 		ggx::Isotropic specular;
-		float n_dot_wi = specular.init_importance_sample(n_dot_wo, coating_a2, *this,
+		float n_dot_wi = specular.init_importance_sample(n_dot_wo, coating_a2, *this, layer_,
 														 sampler, result);
 
 		float3 c_fresnel;
 		float c_pdf;
 		float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, coating_a2,
-													  coating, c_fresnel, c_pdf);
+												coating, c_fresnel, c_pdf);
 
-		fresnel::Schlick schlick(f0_);
+		fresnel::Schlick schlick(layer_.f0);
 		float ggx_pdf;
-		float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
+		float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, layer_.a2, schlick, ggx_pdf);
 
 		float on_pdf;
-		float3 on_reflection = oren_nayar::Isotropic::evaluate(
-			result.wi, n_dot_wi, n_dot_wo, *this, on_pdf);
+		float3 on_reflection = oren_nayar::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
+															   *this, layer_, on_pdf);
 
 		float3 base_layer = (1.f - c_fresnel) * (on_reflection + ggx_reflection);
 
 		result.reflection = n_dot_wi * (c_reflection + base_layer);
 		result.pdf = 0.5f * (c_pdf + on_pdf + ggx_pdf);
 	} else {
-		if (1.f == metallic_) {
+		if (1.f == layer_.metallic) {
 			pure_specular_importance_sample_and_coating(coating, coating_a2, sampler, result);
 		} else {
 			if (p < 0.75f) {
@@ -108,20 +108,21 @@ void Sample_base::diffuse_importance_sample_and_coating(const Coating& coating,
 														float coating_a2,
 														sampler::Sampler& sampler,
 														bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot_wo();
-	float n_dot_wi = oren_nayar::Isotropic::importance_sample(n_dot_wo, *this, sampler, result);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+	float n_dot_wi = oren_nayar::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+															  sampler, result);
 
 	ggx::Isotropic specular;
-	specular.init_evaluate(result.wi, *this);
+	specular.init_evaluate(result.wi, *this, layer_);
 
-	fresnel::Schlick schlick(f0_);
+	fresnel::Schlick schlick(layer_.f0);
 	float ggx_pdf;
-	float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
+	float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, layer_.a2, schlick, ggx_pdf);
 
 	float3 c_fresnel;
 	float c_pdf;
 	float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, coating_a2,
-												  coating, c_fresnel, c_pdf);
+											coating, c_fresnel, c_pdf);
 
 	float3 base_layer = (1.f - c_fresnel) * (result.reflection + ggx_reflection);
 
@@ -137,23 +138,24 @@ void Sample_base::specular_importance_sample_and_coating(const Coating& coating,
 														 float coating_a2,
 														 sampler::Sampler& sampler,
 														 bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot_wo();
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	ggx::Isotropic specular;
-	float n_dot_wi = specular.init_importance_sample(n_dot_wo, a2_, *this, sampler, result);
+	float n_dot_wi = specular.init_importance_sample(n_dot_wo, layer_.a2, *this, layer_,
+													 sampler, result);
 
 	float3 c_fresnel;
 	float c_pdf;
 	float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, coating_a2,
-												  coating, c_fresnel, c_pdf);
+											coating, c_fresnel, c_pdf);
 
-	fresnel::Schlick schlick(f0_);
+	fresnel::Schlick schlick(layer_.f0);
 	float ggx_pdf;
-	float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
+	float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, layer_.a2, schlick, ggx_pdf);
 
 	float on_pdf;
 	float3 on_reflection = oren_nayar::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
-																 *this, on_pdf);
+														   *this, layer_, on_pdf);
 
 	float3 base_layer = (1.f - c_fresnel) * (on_reflection + ggx_reflection);
 
@@ -170,19 +172,20 @@ void Sample_base::pure_specular_importance_sample_and_coating(const Coating& coa
 															  float coating_a2,
 															  sampler::Sampler& sampler,
 															  bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot_wo();
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	ggx::Isotropic specular;
-	float n_dot_wi = specular.init_importance_sample(n_dot_wo, a2_, *this, sampler, result);
+	float n_dot_wi = specular.init_importance_sample(n_dot_wo, layer_.a2, *this, layer_,
+													 sampler, result);
 
 	float3 c_fresnel;
 	float c_pdf;
 	float3 c_reflection = specular.evaluate(n_dot_wi, n_dot_wo, coating_a2,
 												  coating, c_fresnel, c_pdf);
 
-	fresnel::Schlick schlick(f0_);
+	fresnel::Schlick schlick(layer_.f0);
 	float ggx_pdf;
-	float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, a2_, schlick, ggx_pdf);
+	float3 ggx_reflection = specular.evaluate(n_dot_wi, n_dot_wo, layer_.a2, schlick, ggx_pdf);
 
 	float3 base_layer = (1.f - c_fresnel) * ggx_reflection;
 

@@ -3,51 +3,44 @@
 #include "material_sample.hpp"
 #include "base/math/vector.inl"
 #include <cmath>
-//#include <algorithm>
 
 namespace scene { namespace material {
 
-//inline float Sample::absolute_n_dot_wo() const {
-//	return std::abs(math::dot(n_, wo_));
-//}
-
-inline float Sample::clamped_n_dot_wo() const {
-	return std::max(math::dot(n_, wo_), 0.00001f);
+inline void Sample::Layer::set_basis(float3_p t, float3_p b, float3_p n, float sign) {
+	this->t = t;
+	this->b = b;
+	this->n = sign * n;
 }
 
-inline float3_p Sample::shading_normal() const {
-	return n_;
+inline float Sample::Layer::clamped_n_dot(float3_p v) const {
+	return std::max(math::dot(n, v), 0.00001f);
+}
+
+inline float3 Sample::Layer::tangent_to_world(float3_p v) const {
+	return float3(
+		v.x * t.x + v.y * b.x + v.z * n.x,
+		v.x * t.y + v.y * b.y + v.z * n.y,
+		v.x * t.z + v.y * b.z + v.z * n.z);
 }
 
 inline float3_p Sample::geometric_normal() const {
 	return geo_n_;
 }
 
-inline float3 Sample::tangent_to_world(float3_p v) const {
-	return float3(
-		v.x * t_.x + v.y * b_.x + v.z * n_.x,
-		v.x * t_.y + v.y * b_.y + v.z * n_.y,
-		v.x * t_.z + v.y * b_.z + v.z * n_.z);
-}
-
 inline bool Sample::same_hemisphere(float3_p v) const {
 	return math::dot(geo_n_, v) > 0.f;
 }
 
-inline void Sample::set_basis(float3_p t, float3_p b, float3_p n,
-							  float3_p geo_n, float3_p wo, bool two_sided) {
-	t_ = t;
-	b_ = b;
+inline float Sample::set_basis(float3_p geo_n, float3_p wo, bool two_sided) {
+	wo_ = wo;
 
 	if (two_sided && math::dot(geo_n, wo) < 0.f) {
-		n_ = -n;
 		geo_n_ = -geo_n;
+		return -1.f;
 	} else {
-		n_ = n;
 		geo_n_ = geo_n;
+		return 1.f;
 	}
-
-	wo_ = wo;
 }
 
 inline float3 Sample::attenuation(float3_p color, float distance) {

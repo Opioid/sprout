@@ -1,3 +1,4 @@
+/*
 #include "glass_rough_sample.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
@@ -8,17 +9,17 @@
 
 namespace scene { namespace material { namespace glass {
 
-float3 BRDF_rough::evaluate(const Sample_rough& /*sample*/,
-								  const float3& /*wi*/, float /*n_dot_wi*/) const {
+float3 BRDF_rough::evaluate(const Sample_rough& sample,
+							const float3& wi, float n_dot_wi) const {
 	return math::float3_identity;
 }
 
-float BRDF_rough::pdf(const Sample_rough& /*sample*/, const float3& /*wi*/, float /*n_dot_wi*/) const {
+float BRDF_rough::pdf(const Sample_rough& sample, const float3& wi, float n_dot_wi) const {
 	return 0.f;
 }
 
 float BRDF_rough::importance_sample(const Sample_rough& sample,
-									sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
+									sampler::Sampler& sampler, bxdf::Result& result) const {
 	float3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
 	float eta_t = sample.ior_;
@@ -52,17 +53,17 @@ float BRDF_rough::importance_sample(const Sample_rough& sample,
 	return 1.f;
 }
 
-float3 BTDF_rough::evaluate(const Sample_rough& /*sample*/,
-								  const float3& /*wi*/, float /*n_dot_wi*/) const {
+float3 BTDF_rough::evaluate(const Sample_rough& sample,
+								  const float3& wi, float n_dot_wi) const {
 	return math::float3_identity;
 }
 
-float BTDF_rough::pdf(const Sample_rough& /*sample*/, const float3& /*wi*/, float /*n_dot_wi*/) const {
+float BTDF_rough::pdf(const Sample_rough& sample, const float3& wi, float n_dot_wi) const {
 	return 0.f;
 }
 
 float BTDF_rough::importance_sample(const Sample_rough& sample,
-									sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
+									sampler::Sampler& sampler, bxdf::Result& result) const {
 	float3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
 	float eta_t = sample.ior_;
@@ -95,7 +96,16 @@ float BTDF_rough::importance_sample(const Sample_rough& sample,
 	return 1.f;
 }
 
-float3 Sample_rough::evaluate(float3_p /*wi*/, float& pdf) const {
+
+float3_p Sample_rough::shading_normal() const {
+	return n;
+}
+
+float3 Sample_rough::tangent_to_world(float3_p v) const {
+	return tangent_to_world(n, v);
+}
+
+float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
 	pdf = 0.f;
 	return math::float3_identity;
 }
@@ -142,7 +152,9 @@ bool Sample_rough::is_translucent() const {
 	return false;
 }
 
-void Sample_rough::set(const float3& color, float attenuation_distance, float ior, float ior_outside) {
+void Sample_rough::set(float3_p n, float3_p color, float attenuation_distance,
+					   float ior, float ior_outside) {
+	this->n = n;
 	color_ = color;
 	attenuation_ = material::Sample::attenuation(color, attenuation_distance);
 	ior_ = ior;
@@ -150,3 +162,4 @@ void Sample_rough::set(const float3& color, float attenuation_distance, float io
 }
 
 }}}
+*/

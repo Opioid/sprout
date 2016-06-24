@@ -44,7 +44,7 @@ Provider::Provider(uint32_t num_threads) :
 	cloth_cache_(num_threads),
 	display_cache_(num_threads),
 	glass_cache_(num_threads),
-	glass_rough_cache_(num_threads),
+//	glass_rough_cache_(num_threads),
 	light_cache_(num_threads),
 	matte_cache_(num_threads),
 	metal_iso_cache_(num_threads),
@@ -303,6 +303,7 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 		material->set_ior(ior);
 		return material;
 	} else {
+		/*
 		auto material = std::make_shared<glass::Glass_rough>(glass_rough_cache_,
 															 nullptr, sampler_settings);
 		material->set_normal_map(normal_map);
@@ -311,6 +312,8 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 		material->set_ior(ior);
 		material->set_roughness(roughness);
 		return material;
+		*/
+		return nullptr;
 	}
 }
 
@@ -815,6 +818,19 @@ void Provider::read_coating_description(const json::Value& coating_value,
 			description.thickness = json::read_float(node_value);
 		} else if ("weight" == node_name) {
 			description.weight = json::read_float(node_value);
+		} else if ("textures" == node_name) {
+			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+				Texture_description texture_description;
+				read_texture_description(*tn, texture_description);
+
+				if (texture_description.filename.empty()) {
+					continue;
+				}
+
+				if ("Normal" == texture_description.usage) {
+					description.normal_map_filename = texture_description.filename;
+				}
+			}
 		}
 	}
 }

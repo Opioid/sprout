@@ -10,6 +10,10 @@ class Sample_base : public material::Sample {
 
 public:
 
+	virtual float3_p shading_normal() const final override;
+
+	virtual float3 tangent_to_world(float3_p v) const final override;
+
 	virtual float3 radiance() const final override;
 
 	virtual float3 attenuation() const final override;
@@ -22,9 +26,6 @@ public:
 
 	virtual bool is_translucent() const override;
 
-	void set(float3_p color, float3_p radiance,
-			 float ior, float constant_f0, float a2, float metallic);
-
 protected:
 
 	float3 base_evaluate(float3_p wi, float& pdf) const;
@@ -35,7 +36,7 @@ protected:
 
 	template<typename Coating>
 	float3 base_evaluate_and_coating(float3_p wi, const Coating& coating,
-										   float coating_a2, float& pdf) const;
+									 float coating_a2, float& pdf) const;
 
 	template<typename Coating>
 	void base_sample_evaluate_and_coating(const Coating& coating,
@@ -61,16 +62,22 @@ protected:
 													 sampler::Sampler& sampler,
 													 bxdf::Result& result) const;
 
-	float3 diffuse_color_;
-	float3 f0_;
-	float3 emission_;
+public:
 
-	float ior_;
-	float a2_;
-	float metallic_;
+	struct Layer : material::Sample::Layer {
+		void set(float3_p color, float3_p radiance,
+				 float ior, float constant_f0, float a2, float metallic);
 
-	friend oren_nayar::Isotropic;
-	friend ggx::Isotropic;
+		float3 diffuse_color;
+		float3 f0;
+		float3 emission;
+
+		float ior;
+		float a2;
+		float metallic;
+	};
+
+	Layer layer_;
 };
 
 }}}

@@ -18,17 +18,18 @@ const material::Sample& Material_overcast::sample(const shape::Hitpoint& hp, flo
 												  const Worker& worker, Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
-	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
+	sample.set_basis(hp.geo_n, wo);
+	sample.layer_.set_basis(hp.t, hp.b, hp.n, 1.f);
 
-	sample.set(overcast(-wo));
+	sample.layer_.set(overcast(-wo));
 
 	return sample;
 }
 
 float3 Material_overcast::sample_radiance(float3_p wi, float2 /*uv*/,
-												float /*area*/, float /*time*/,
-												const Worker& /*worker*/,
-												Sampler_filter /*filter*/) const {
+										  float /*area*/, float /*time*/,
+										  const Worker& /*worker*/,
+										  Sampler_filter /*filter*/) const {
 	return overcast(wi);
 }
 

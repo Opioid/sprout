@@ -5,10 +5,18 @@
 
 namespace scene { namespace material { namespace matte {
 
-float3 Sample::evaluate(float3_p wi, float& pdf) const {
-	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
+float3_p Sample::shading_normal() const {
+	return layer_.n;
+}
 
-	return n_dot_wi * lambert::Isotropic::evaluate(wi, n_dot_wi, *this, pdf);
+float3 Sample::tangent_to_world(float3_p v) const {
+	return layer_.tangent_to_world(v);
+}
+
+float3 Sample::evaluate(float3_p wi, float& pdf) const {
+	float n_dot_wi = layer_.clamped_n_dot(wi);
+
+	return n_dot_wi * lambert::Isotropic::evaluate(wi, n_dot_wi, *this, layer_, pdf);
 }
 
 float3 Sample::radiance() const {
@@ -24,7 +32,7 @@ float Sample::ior() const {
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float n_dot_wi = lambert::Isotropic::importance_sample(*this, sampler, result);
+	float n_dot_wi = lambert::Isotropic::importance_sample(*this, layer_, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -40,8 +48,8 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(float3_p color) {
-	diffuse_color_ = color;
+void Sample::Layer::set(float3_p color) {
+	this->diffuse_color = color;
 }
 
 }}}

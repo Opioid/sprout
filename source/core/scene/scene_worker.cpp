@@ -1,8 +1,8 @@
 #include "scene_worker.hpp"
+#include "prop.hpp"
 #include "scene.hpp"
+#include "scene_intersection.hpp"
 #include "material/sampler_cache.hpp"
-#include "prop/prop.hpp"
-#include "prop/prop_intersection.hpp"
 #include "shape/node_stack.inl"
 #include "base/math/vector.inl"
 

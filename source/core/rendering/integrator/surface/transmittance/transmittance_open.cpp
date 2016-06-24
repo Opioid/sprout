@@ -6,7 +6,7 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/shape/geometry/hitpoint.inl"
-#include "scene/prop/prop_intersection.inl"
+#include "scene/scene_intersection.inl"
 #include "take/take_settings.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"

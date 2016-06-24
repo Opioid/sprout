@@ -1,5 +1,5 @@
 #include "scene_bvh_builder.hpp"
-#include "scene/prop/prop.hpp"
+#include "scene/prop.hpp"
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
 

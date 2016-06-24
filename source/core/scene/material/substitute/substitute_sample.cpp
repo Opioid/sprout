@@ -24,7 +24,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		return;
 	}
 
-	if (1.f == metallic_) {
+	if (1.f == layer_.metallic) {
 		pure_specular_importance_sample(sampler, result);
 	} else {
 		float p = sampler.generate_sample_1D();

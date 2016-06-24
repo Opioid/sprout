@@ -7,12 +7,21 @@
 
 namespace scene { namespace material { namespace metal {
 
-float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
-	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
-	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
+float3_p Sample_isotropic::shading_normal() const {
+	return layer_.n;
+}
 
-	fresnel::Conductor conductor(ior_, absorption_);
-	return n_dot_wi * ggx::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this, conductor, pdf);
+float3 Sample_isotropic::tangent_to_world(float3_p v) const {
+	return layer_.tangent_to_world(v);
+}
+
+float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
+	float n_dot_wi = layer_.clamped_n_dot(wi);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+
+	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
+	return n_dot_wi * ggx::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this,
+											   layer_, conductor, pdf);
 }
 
 float3 Sample_isotropic::radiance() const {
@@ -28,9 +37,11 @@ float Sample_isotropic::ior() const {
 }
 
 void Sample_isotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot_wo();
-	fresnel::Conductor conductor(ior_, absorption_);
-	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, conductor, sampler, result);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+
+	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
+	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+													   conductor, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -46,19 +57,27 @@ bool Sample_isotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_isotropic::set(float3_p ior, float3_p absorption, float roughness) {
-	ior_ = ior;
-	absorption_ = absorption;
+void Sample_isotropic::Layer::set(float3_p ior, float3_p absorption, float roughness) {
+	this->ior = ior;
+	this->absorption = absorption;
+	this->a2 = math::pow4(roughness);
+}
 
-	float a = roughness * roughness;
-	a2_ = a * a;
+float3_p Sample_anisotropic::shading_normal() const {
+	return layer_.n;
+}
+
+float3 Sample_anisotropic::tangent_to_world(float3_p v) const {
+	return layer_.tangent_to_world(v);
 }
 
 float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
-	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
-	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
-	fresnel::Conductor conductor(ior_, absorption_);
-	return n_dot_wi * ggx::Anisotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this, conductor, pdf);
+	float n_dot_wi = layer_.clamped_n_dot(wi);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+
+	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
+	return n_dot_wi * ggx::Anisotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this, layer_,
+												 conductor, pdf);
 }
 
 float3 Sample_anisotropic::radiance() const {
@@ -74,9 +93,10 @@ float Sample_anisotropic::ior() const {
 }
 
 void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot_wo();
-	fresnel::Conductor conductor(ior_, absorption_);
-	float n_dot_wi = ggx::Anisotropic::importance_sample(n_dot_wo, *this, conductor,
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+
+	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
+	float n_dot_wi = ggx::Anisotropic::importance_sample(n_dot_wo, *this, layer_, conductor,
 														 sampler, result);
 	result.reflection *= n_dot_wi;
 }
@@ -93,14 +113,14 @@ bool Sample_anisotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_anisotropic::set(float3_p ior, float3_p absorption, float2 roughness) {
-	ior_ = ior;
-	absorption_ = absorption;
+void Sample_anisotropic::Layer::set(float3_p ior, float3_p absorption, float2 roughness) {
+	this->ior = ior;
+	this->absorption = absorption;
 
-	a_ = roughness * roughness;
-	a2_ = a_ * a_;
-
-	axy_ = a_.x * a_.y;
+	float2 a = roughness * roughness;
+	this->a  = a;
+	this->a2 = a * a;
+	this->axy = a.x * a.y;
 }
 
 }}}

@@ -1,5 +1,5 @@
 #include "sky.hpp"
-#include "core/scene/prop/prop.hpp"
+#include "core/scene/prop.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"

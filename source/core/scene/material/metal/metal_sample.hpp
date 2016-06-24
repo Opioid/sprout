@@ -9,6 +9,10 @@ class Sample_isotropic : public material::Sample {
 
 public:
 
+	virtual float3_p shading_normal() const final override;
+
+	virtual float3 tangent_to_world(float3_p v) const final override;
+
 	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
 	virtual float3 radiance() const final override;
@@ -26,22 +30,25 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(float3_p ior, float3_p absorption, float roughness);
+	struct Layer : material::Sample::Layer {
+		void set(float3_p ior, float3_p absorption, float roughness);
+		float3 ior;
+		float3 absorption;
 
-private:
+		float a2;
+	};
 
-	float3 ior_;
-	float3 absorption_;
-
-	float a2_;
-
-	friend ggx::Isotropic;
+	Layer layer_;
 };
 
 class Sample_anisotropic : public material::Sample {
 
 public:
 
+	virtual float3_p shading_normal() const final override;
+
+	virtual float3 tangent_to_world(float3_p v) const final override;
+
 	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
 	virtual float3 radiance() const final override;
@@ -59,17 +66,17 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(float3_p ior, float3_p absorption, float2 roughness);
+	struct Layer : material::Sample::Layer {
+		void set(float3_p ior, float3_p absorption, float2 roughness);
 
-private:
+		float3 ior;
+		float3 absorption;
+		float2 a;
+		float2 a2;
+		float axy;
+	};
 
-	float3 ior_;
-	float3 absorption_;
-	float2 a_;
-	float2 a2_;
-	float axy_;
-
-	friend ggx::Anisotropic;
+	Layer layer_;
 };
 
 }}}

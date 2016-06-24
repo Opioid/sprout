@@ -8,7 +8,7 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
-#include "scene/prop/prop_intersection.inl"
+#include "scene/scene_intersection.inl"
 #include "take/take_settings.hpp"
 #include "base/spectrum/rgb.inl"
 #include "base/math/vector.inl"

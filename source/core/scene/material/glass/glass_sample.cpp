@@ -8,16 +8,79 @@
 
 namespace scene { namespace material { namespace glass {
 
-float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/,
-							  bxdf::Result& result) {
-	float3 n = sample.n_;
-	float eta_i = 1.f / sample.ior_;
-	float eta_t = sample.ior_;
+float3_p Sample::shading_normal() const {
+	return layer_.n;
+}
+
+float3 Sample::tangent_to_world(float3_p v) const {
+	return layer_.tangent_to_world(v);
+}
+
+float3 Sample::evaluate(float3_p /*wi*/, float& pdf) const {
+	pdf = 0.f;
+	return math::float3_identity;
+}
+
+float3 Sample::radiance() const {
+	return math::float3_identity;
+}
+
+float3 Sample::attenuation() const {
+	return layer_.attenuation;
+}
+
+float Sample::ior() const {
+	return layer_.ior;
+}
+
+void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+	float p = sampler.generate_sample_1D();
+
+	if (p < 0.5f) {
+		BRDF::importance_sample(*this, layer_, sampler, result);
+		result.pdf *= 0.5f;
+	} else {
+		BTDF::importance_sample(*this, layer_, sampler, result);
+		result.pdf *= 0.5f;
+	}
+
+//	brdf_.importance_sample(sampler, result);
+
+//	btdf_.importance_sample(sampler, result);
+
+//	result.pdf *= 0.5f;
+}
+
+bool Sample::is_pure_emissive() const {
+	return false;
+}
+
+bool Sample::is_transmissive() const {
+	return true;
+}
+
+bool Sample::is_translucent() const {
+	return false;
+}
+
+void Sample::Layer::set(float3_p color, float attenuation_distance,
+						float ior, float ior_outside) {
+	this->color = color;
+	this->attenuation = material::Sample::attenuation(color, attenuation_distance);
+	this->ior = ior;
+	this->ior_outside = ior_outside;
+}
+
+float Sample::BRDF::importance_sample(const Sample& sample, const Layer& layer,
+									  sampler::Sampler& /*sampler*/, bxdf::Result& result) {
+	float3 n = layer.n;
+	float eta_i = 1.f / layer.ior;
+	float eta_t = layer.ior;
 
 	if (!sample.same_hemisphere(sample.wo_)) {
 		n *= -1.f;
 		eta_t = eta_i;
-		eta_i = sample.ior_;
+		eta_i = layer.ior;
 	}
 
 	float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
@@ -43,16 +106,16 @@ float BRDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*
 	return 1.f;
 }
 
-float BTDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*/,
-							  bxdf::Result& result) {
-	float3 n = sample.n_;
-	float eta_i = 1.f / sample.ior_;
-	float eta_t = sample.ior_;
+float Sample::BTDF::importance_sample(const Sample& sample, const Layer& layer,
+									  sampler::Sampler& /*sampler*/, bxdf::Result& result) {
+	float3 n = layer.n;
+	float eta_i = 1.f / layer.ior;
+	float eta_t = layer.ior;
 
 	if (!sample.same_hemisphere(sample.wo_)) {
 		n *= -1.f;
 		eta_t = eta_i;
-		eta_i = sample.ior_;
+		eta_i = layer.ior;
 	}
 
 	float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
@@ -70,65 +133,11 @@ float BTDF::importance_sample(const Sample& sample, sampler::Sampler& /*sampler*
 	// fresnel has to be the same value that would have been computed by BRDF
 	float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
-	result.reflection = (1.f - f) * sample.color_;
+	result.reflection = (1.f - f) * layer.color;
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_transmission);
 
 	return 1.f;
-}
-
-float3 Sample::evaluate(float3_p /*wi*/, float& pdf) const {
-	pdf = 0.f;
-	return math::float3_identity;
-}
-
-float3 Sample::radiance() const {
-	return math::float3_identity;
-}
-
-float3 Sample::attenuation() const {
-	return attenuation_;
-}
-
-float Sample::ior() const {
-	return ior_;
-}
-
-void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float p = sampler.generate_sample_1D();
-
-	if (p < 0.5f) {
-		BRDF::importance_sample(*this, sampler, result);
-		result.pdf *= 0.5f;
-	} else {
-		BTDF::importance_sample(*this, sampler, result);
-		result.pdf *= 0.5f;
-	}
-
-//	brdf_.importance_sample(sampler, result);
-
-//	btdf_.importance_sample(sampler, result);
-
-//	result.pdf *= 0.5f;
-}
-
-bool Sample::is_pure_emissive() const {
-	return false;
-}
-
-bool Sample::is_transmissive() const {
-	return true;
-}
-
-bool Sample::is_translucent() const {
-	return false;
-}
-
-void Sample::set(float3_p color, float attenuation_distance, float ior, float ior_outside) {
-	color_ = color;
-	attenuation_ = material::Sample::attenuation(color, attenuation_distance);
-	ior_ = ior;
-	ior_outside_ = ior_outside;
 }
 
 }}}

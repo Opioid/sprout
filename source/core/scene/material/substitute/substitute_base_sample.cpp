@@ -11,8 +11,16 @@
 
 namespace scene { namespace material { namespace substitute {
 
+float3_p Sample_base::shading_normal() const {
+	return layer_.n;
+}
+
+float3 Sample_base::tangent_to_world(float3_p v) const {
+	return layer_.tangent_to_world(v);
+}
+
 float3 Sample_base::radiance() const {
-	return emission_;
+	return layer_.emission;
 }
 
 float3 Sample_base::attenuation() const {
@@ -20,7 +28,7 @@ float3 Sample_base::attenuation() const {
 }
 
 float Sample_base::ior() const {
-	return ior_;
+	return layer_.ior;
 }
 
 bool Sample_base::is_pure_emissive() const {
@@ -36,28 +44,28 @@ bool Sample_base::is_translucent() const {
 }
 
 float3 Sample_base::base_evaluate(float3_p wi, float& pdf) const {
-	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
-	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
+	float n_dot_wi = layer_.clamped_n_dot(wi);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	float diffuse_pdf;
 	float3 diffuse = oren_nayar::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo,
-														   *this, diffuse_pdf);
+													 *this, layer_, diffuse_pdf);
 
 	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == a2_) {
+	if (0.f == layer_.a2) {
 		pdf = 0.5f * diffuse_pdf;
 		return n_dot_wi * diffuse;
 	}
 
 	float3 h = math::normalized(wo_ + wi);
 
-	float n_dot_h  = math::dot(n_, h);
+	float n_dot_h  = math::dot(layer_.n, h);
 	float wo_dot_h = math::dot(wo_, h);
 
-	float clamped_a2 = ggx::clamp_a2(a2_);
+	float clamped_a2 = ggx::clamp_a2(layer_.a2);
 	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
 	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	float3 f = fresnel::schlick(wo_dot_h, f0_);
+	float3 f = fresnel::schlick(wo_dot_h, layer_.f0);
 
 	float3 specular = d * g * f;
 
@@ -69,13 +77,14 @@ float3 Sample_base::base_evaluate(float3_p wi, float& pdf) const {
 }
 
 void Sample_base::diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot_wo();
-	float n_dot_wi = oren_nayar::Isotropic::importance_sample(n_dot_wo, *this, sampler, result);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+	float n_dot_wi = oren_nayar::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+															  sampler, result);
 
-	fresnel::Schlick schlick(f0_);
+	fresnel::Schlick schlick(layer_.f0);
 	float ggx_pdf;
 	float3 ggx_reflection = ggx::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
-														   *this, schlick, ggx_pdf);
+													 *this, layer_, schlick, ggx_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 	result.pdf = 0.5f * (result.pdf + ggx_pdf);
@@ -83,13 +92,14 @@ void Sample_base::diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Res
 
 void Sample_base::specular_importance_sample(sampler::Sampler& sampler,
 											 bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot_wo();
-	fresnel::Schlick schlick(f0_);
-	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, schlick, sampler, result);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+	fresnel::Schlick schlick(layer_.f0);
+	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+													   schlick, sampler, result);
 
 	float on_pdf;
-	float3 on_reflection = oren_nayar::Isotropic::evaluate(
-				result.wi, n_dot_wi, n_dot_wo, *this, on_pdf);
+	float3 on_reflection = oren_nayar::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
+														   *this, layer_, on_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + on_reflection);
 	result.pdf = 0.5f * (result.pdf + on_pdf);
@@ -97,20 +107,21 @@ void Sample_base::specular_importance_sample(sampler::Sampler& sampler,
 
 void Sample_base::pure_specular_importance_sample(sampler::Sampler& sampler,
 												  bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot_wo();
-	fresnel::Schlick schlick(f0_);
-	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, schlick, sampler, result);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+	fresnel::Schlick schlick(layer_.f0);
+	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+													   schlick, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
-void Sample_base::set(float3_p color, float3_p radiance,
-					  float ior, float constant_f0, float a2, float metallic) {
-	diffuse_color_ = (1.f - metallic) * color;
-	f0_ = math::lerp(float3(constant_f0), color, metallic);
-	emission_ = radiance;
-	ior_ = ior;
-	a2_ = a2;
-	metallic_ = metallic;
+void Sample_base::Layer::set(float3_p color, float3_p radiance,
+							 float ior, float constant_f0, float a2, float metallic) {
+	this->diffuse_color = (1.f - metallic) * color;
+	this->f0 = math::lerp(float3(constant_f0), color, metallic);
+	this->emission = radiance;
+	this->ior = ior;
+	this->a2 = a2;
+	this->metallic = metallic;
 }
 
 }}}

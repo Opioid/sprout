@@ -9,10 +9,18 @@
 
 namespace scene { namespace material { namespace cloth {
 
+float3_p Sample::shading_normal() const {
+	return layer_.n;
+}
+
+float3 Sample::tangent_to_world(float3_p v) const {
+	return layer_.tangent_to_world(v);
+}
+
 float3 Sample::evaluate(float3_p wi, float& pdf) const {
-	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
+	float n_dot_wi = layer_.clamped_n_dot(wi);
 	pdf = n_dot_wi * math::Pi_inv;
-	return pdf * diffuse_color_;
+	return pdf * layer_.diffuse_color;
 }
 
 float3 Sample::radiance() const {
@@ -33,7 +41,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		return;
 	}
 
-	float n_dot_wi = lambert::Isotropic::importance_sample(*this, sampler, result);
+	float n_dot_wi = lambert::Isotropic::importance_sample(*this, layer_, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -49,8 +57,8 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(float3_p color) {
-	diffuse_color_ = color;
+void Sample::Layer::set(float3_p color) {
+	this->diffuse_color = color;
 }
 
 }}}

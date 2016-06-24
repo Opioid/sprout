@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
 #include "image/texture/texture_2d.hpp"
@@ -9,6 +9,7 @@ namespace scene { namespace material { namespace glass {
 class Sample_rough;
 
 class Glass_rough : public Typed_material<Generic_sample_cache<Sample_rough>> {
+
 public:
 
 	Glass_rough(Generic_sample_cache<Sample_rough>& cache, Texture_2D_ptr mask,
@@ -37,3 +38,4 @@ protected:
 };
 
 }}}
+*/

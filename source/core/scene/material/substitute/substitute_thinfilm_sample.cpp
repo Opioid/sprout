@@ -13,7 +13,7 @@ float3 Sample_thinfilm::evaluate(float3_p wi, float& pdf) const {
 		return math::float3_identity;
 	}
 
-	fresnel::Thinfilm_weighted thinfilm(1.f, coating_.ior, ior_,
+	fresnel::Thinfilm_weighted thinfilm(1.f, coating_.ior, layer_.ior,
 										coating_.thickness, coating_.weight);
 
 	return base_evaluate_and_coating(wi, thinfilm, coating_.a2, pdf);
@@ -25,7 +25,7 @@ void Sample_thinfilm::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& r
 		return;
 	}
 
-	fresnel::Thinfilm_weighted thinfilm(1.f, coating_.ior, ior_,
+	fresnel::Thinfilm_weighted thinfilm(1.f, coating_.ior, layer_.ior,
 										coating_.thickness, coating_.weight);
 
 	base_sample_evaluate_and_coating(thinfilm, coating_.a2, sampler, result);

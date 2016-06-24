@@ -1,6 +1,6 @@
 #include "scene_bvh_tree.hpp"
 #include "scene/scene_ray.inl"
-#include "scene/prop/prop.hpp"
+#include "scene/prop.hpp"
 #include "base/math/vector4.inl"
 #include "base/math/bounding/aabb.inl"
 
@@ -16,8 +16,8 @@ Build_node::~Build_node() {
 	delete children[1];
 }
 
-bool Build_node::intersect(scene::Ray& ray, const std::vector<Prop*>& props, shape::Node_stack& node_stack,
-						   Intersection& intersection) const {
+bool Build_node::intersect(scene::Ray& ray, const std::vector<Prop*>& props,
+						   shape::Node_stack& node_stack, Intersection& intersection) const {
 	if (!aabb.intersect_p(ray)) {
 		return false;
 	}

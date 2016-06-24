@@ -1,5 +1,5 @@
 #include "scene_bvh_split_candidate.hpp"
-#include "scene/prop/prop.hpp"
+#include "scene/prop.hpp"
 #include "base/math/bounding/aabb.inl"
 #include "base/math/plane.inl"
 

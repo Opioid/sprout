@@ -9,6 +9,7 @@ namespace scene { namespace material { namespace display {
 class Sample;
 
 class Material : public material::Typed_material<Generic_sample_cache<Sample>> {
+
 public:
 
 	Material(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
@@ -20,8 +21,8 @@ public:
 										   Sampler_filter filter) final override;
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv,
-										 float area, float time, const Worker& worker,
-										 Sampler_filter filter) const final override;
+								   float area, float time, const Worker& worker,
+								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
 

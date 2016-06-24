@@ -9,6 +9,7 @@ namespace scene { namespace material { namespace light {
 class Sample;
 
 class Emissionmap : public Material {
+
 public:
 
 	Emissionmap(Generic_sample_cache<Sample>& cache,

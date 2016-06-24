@@ -7,7 +7,7 @@
 #include "scene/entity/entity_extension_provider.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
-#include "scene/prop/prop.hpp"
+#include "scene/prop.hpp"
 #include "scene/shape/canopy.hpp"
 #include "scene/shape/celestial_disk.hpp"
 #include "scene/shape/disk.hpp"

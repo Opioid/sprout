@@ -1,10 +1,4 @@
 #include "integrator.hpp"
-#include "image/texture/sampler/sampler_2d.hpp"
-#include "rendering/rendering_worker.hpp"
-#include "scene/prop/prop_intersection.inl"
-#include "take/take_settings.hpp"
-#include "base/math/random/generator.inl"
-#include "base/math/vector.inl"
 
 namespace rendering { namespace integrator {
 

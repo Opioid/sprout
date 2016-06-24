@@ -12,7 +12,6 @@ public:
 
 	virtual void sample_evaluate(sampler::Sampler& sampler,
 								 bxdf::Result& result) const final override;
-
 };
 
 }}}

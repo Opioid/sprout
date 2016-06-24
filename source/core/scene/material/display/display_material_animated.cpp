@@ -38,15 +38,17 @@ const material::Sample& Material_animated::sample(const shape::Hitpoint& hp, flo
 												  const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
+	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
+
+	sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
 
 	if (emission_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
 		float3 radiance = sampler.sample_3(*emission_map_, hp.uv, element_);
-		sample.set(emission_factor_ * radiance, f0_, roughness_);
+		sample.layer_.set(emission_factor_ * radiance, f0_, roughness_);
 	} else {
-		sample.set(emission_factor_ * emission_, f0_, roughness_);
+		sample.layer_.set(emission_factor_ * emission_, f0_, roughness_);
 	}
 
 	return sample;

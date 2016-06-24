@@ -34,17 +34,19 @@ const scene::material::Sample& Sky_material::sample(const scene::shape::Hitpoint
 													Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
-	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
+	sample.set_basis(hp.geo_n, wo);
 
-	sample.set(model_.evaluate_sky(-wo));
+	sample.layer_.set_basis(hp.t, hp.b, hp.n, 1.f);
+
+	sample.layer_.set(model_.evaluate_sky(-wo));
 
 	return sample;
 }
 
 float3 Sky_material::sample_radiance(float3_p wi, float2 /*uv*/,
-										   float /*area*/, float /*time*/,
-										   const scene::Worker& /*worker*/,
-										   Sampler_filter /*filter*/) const {
+									 float /*area*/, float /*time*/,
+									 const scene::Worker& /*worker*/,
+									 Sampler_filter /*filter*/) const {
 	return model_.evaluate_sky(wi);
 }
 
@@ -63,17 +65,19 @@ const scene::material::Sample& Sun_material::sample(const scene::shape::Hitpoint
 													Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
-	sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
+	sample.set_basis(hp.geo_n, wo);
 
-	sample.set(model_.evaluate_sky_and_sun(-wo));
+	sample.layer_.set_basis(hp.t, hp.b, hp.n, 1.f);
+
+	sample.layer_.set(model_.evaluate_sky_and_sun(-wo));
 
 	return sample;
 }
 
 float3 Sun_material::sample_radiance(float3_p wi, float2 /*uv*/,
-										   float /*area*/, float /*time*/,
-										   const scene::Worker& /*worker*/,
-										   Sampler_filter /*filter*/) const {
+									 float /*area*/, float /*time*/,
+									 const scene::Worker& /*worker*/,
+									 Sampler_filter /*filter*/) const {
 	return model_.evaluate_sky_and_sun(wi);
 }
 

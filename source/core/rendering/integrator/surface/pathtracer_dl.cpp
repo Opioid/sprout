@@ -5,7 +5,7 @@
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
-#include "scene/prop/prop_intersection.inl"
+#include "scene/scene_intersection.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"

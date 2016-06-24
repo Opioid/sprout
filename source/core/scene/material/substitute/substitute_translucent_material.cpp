@@ -18,17 +18,18 @@ const material::Sample& Material_translucent::sample(const shape::Hitpoint& hp, 
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
+	float side = sample.set_basis(hp.geo_n, wo);
+
 	if (normal_map_) {
 		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
 		float3 n = math::normalized(hp.tangent_to_world(nm));
 
-		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo, two_sided_);
+		sample.layer_.set_basis(hp.t, hp.b, n, side);
 	} else {
-		sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo, two_sided_);
+		sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
 	}
 
 	float3 color;
-
 	if (color_map_) {
 		color = sampler.sample_3(*color_map_, hp.uv);
 	} else {
@@ -36,7 +37,6 @@ const material::Sample& Material_translucent::sample(const shape::Hitpoint& hp, 
 	}
 
 	float2 surface;
-
 	if (surface_map_) {
 		surface = sampler.sample_2(*surface_map_, hp.uv);
 		surface.x = math::pow4(surface.x);
@@ -45,16 +45,17 @@ const material::Sample& Material_translucent::sample(const shape::Hitpoint& hp, 
 		surface.y = metallic_;
 	}
 
+	if (emission_map_) {
+		float3 radiance = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
+		sample.layer_.set(color, radiance, ior_, constant_f0_, surface.x, surface.y);
+	} else {
+		sample.layer_.set(color, math::float3_identity, ior_, constant_f0_, surface.x, surface.y);
+	}
+
 	float thickness;
 
 	thickness = thickness_;
-
-	if (emission_map_) {
-		float3 radiance = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
-		sample.set(color, radiance, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
-	} else {
-		sample.set(color, math::float3_identity, constant_f0_, surface.x, surface.y, thickness, attenuation_distance_);
-	}
+	sample.set(color, surface.y, thickness, attenuation_distance_);
 
 	return sample;
 }

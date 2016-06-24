@@ -7,25 +7,33 @@
 
 namespace scene { namespace material { namespace display {
 
+float3_p Sample::shading_normal() const {
+	return layer_.n;
+}
+
+float3 Sample::tangent_to_world(float3_p v) const {
+	return layer_.tangent_to_world(v);
+}
+
 float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == a2_) {
+	if (0.f == layer_.a2) {
 		pdf = 0.f;
 		return math::float3_identity;
 	}
 
-	float n_dot_wi = std::max(math::dot(n_, wi),  0.00001f);
-	float n_dot_wo = std::max(math::dot(n_, wo_), 0.00001f);
+	float n_dot_wi = layer_.clamped_n_dot(wi);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	float3 h = math::normalized(wo_ + wi);
 
-	float n_dot_h  = math::dot(n_, h);
+	float n_dot_h  = math::dot(layer_.n, h);
 	float wo_dot_h = math::dot(wo_, h);
 
-	float clamped_a2 = ggx::clamp_a2(a2_);
+	float clamped_a2 = ggx::clamp_a2(layer_.a2);
 	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
 	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	float3 f = fresnel::schlick(wo_dot_h, f0_);
+	float3 f = fresnel::schlick(wo_dot_h, layer_.f0);
 
 	float3 specular = d * g * f;
 
@@ -35,7 +43,7 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 }
 
 float3 Sample::radiance() const {
-	return emission_;
+	return layer_.emission;
 }
 
 float3 Sample::attenuation() const {
@@ -52,9 +60,10 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		return;
 	}
 
-	float n_dot_wo = clamped_n_dot_wo();
-	fresnel::Schlick schlick(f0_);
-	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, schlick, sampler, result);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+	fresnel::Schlick schlick(layer_.f0);
+	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+													   schlick, sampler, result);
 
 	result.reflection = n_dot_wi * result.reflection;
 }
@@ -71,11 +80,11 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::set(const float3& radiance, float f0, float roughness) {
-	emission_ = radiance;
-	f0_ = float3(f0);
-	float a = roughness * roughness;
-	a2_ = a * a;
+void Sample::Layer::set(float3_p radiance, float f0, float roughness) {
+	this->n = n;
+	this->emission = radiance;
+	this->f0 = float3(f0);
+	this->a2 = math::pow4(roughness);
 }
 
 }}}
