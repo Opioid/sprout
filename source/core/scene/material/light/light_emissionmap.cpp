@@ -1,5 +1,6 @@
 #include "light_emissionmap.hpp"
 #include "light_material_sample.hpp"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
@@ -11,24 +12,22 @@
 
 namespace scene { namespace material { namespace light {
 
-Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
-						 Texture_2D_ptr mask,
+Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
 						 const Sampler_settings& sampler_settings, bool two_sided) :
 	Material(cache, mask, sampler_settings, two_sided),
 	average_emission_(float3(-1.f, -1.f, -1.f)) {}
 
-const material::Sample& Emissionmap::sample(const shape::Hitpoint& hp, float3_p wo,
-											float /*area*/, float /*time*/, float /*ior_i*/,
+const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,
 											const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
+	float side = sample.set_basis(rs.geo_n, wo, two_sided_);
 
-	sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
+	sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
 
-	float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
+	float3 radiance = sampler.sample_3(*emission_map_, rs.uv);
 	sample.layer_.set(radiance);
 
 	return sample;

@@ -1,5 +1,6 @@
 #include "metal_material.hpp"
 #include "metal_sample.hpp"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/material/material_sample.inl"
@@ -39,24 +40,24 @@ Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& c
 																	 sampler_settings,
 																	 two_sided) {}
 
-const material::Sample& Material_isotropic::sample(const shape::Hitpoint& hp, float3_p wo,
-												   float /*area*/, float /*time*/, float /*ior_i*/,
+const material::Sample& Material_isotropic::sample(float3_p wo, const Renderstate& rs,
 												   const Worker& worker,
 												   Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	auto& sampler = worker.sampler(sampler_key_, filter);
+	float side = sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_) {
-		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		float3 n = math::normalized(hp.tangent_to_world(nm));
+		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo);
+		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
+		float3 n  = math::normalized(rs.tangent_to_world(nm));
+		sample.layer_.set_basis(rs.t, rs.b, n, side);
 	} else {
-		sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
+		sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
 	}
 
-	sample.set(ior_, absorption_, roughness_);
+	sample.layer_.set(ior_, absorption_, roughness_);
 
 	return sample;
 }
@@ -85,31 +86,31 @@ Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotrop
 																	   sampler_settings,
 																	   two_sided) {}
 
-const material::Sample& Material_anisotropic::sample(const shape::Hitpoint& hp, float3_p wo,
-													 float /*area*/, float /*time*/, float /*ior_i*/,
+const material::Sample& Material_anisotropic::sample(float3_p wo, const Renderstate& rs,
 													 const Worker& worker,
 													 Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
+	float side = sample.set_basis(rs.geo_n, wo);
+
 	if (normal_map_) {
-		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		float3 n = math::normalized(hp.tangent_to_world(nm));
+		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
+		float3 n  = math::normalized(rs.tangent_to_world(nm));
 
-		sample.set_basis(hp.t, hp.b, n, hp.geo_n, wo);
+		sample.layer_.set_basis(rs.t, rs.b, n, side);
 	} else if (direction_map_) {
-		float2 tm = sampler.sample_2(*direction_map_, hp.uv);
-		float3 t = math::normalized(hp.tangent_to_world(tm));
+		float2 tm = sampler.sample_2(*direction_map_, rs.uv);
+		float3 t  = math::normalized(rs.tangent_to_world(tm));
+		float3 b  = math::cross(rs.n, t);
 
-		float3 b = math::cross(hp.n, t);
-
-		sample.set_basis(t, b, hp.n, hp.geo_n, wo);
+		sample.layer_.set_basis(t, b, rs.n, side);
 	} else {
-		sample.set_basis(hp.t, hp.b, hp.n, hp.geo_n, wo);
+		sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
 	}
 
-	sample.set(ior_, absorption_, roughness_);
+	sample.layer_.set(ior_, absorption_, roughness_);
 
 	return sample;
 }

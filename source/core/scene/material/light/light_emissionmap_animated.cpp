@@ -1,5 +1,6 @@
 #include "light_emissionmap_animated.hpp"
 #include "light_material_sample.hpp"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
@@ -32,19 +33,17 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 	element_ = static_cast<int32_t>(absolute_time / frame_length_) % emission_map_->num_elements();
 }
 
-const material::Sample& Emissionmap_animated::sample(const shape::Hitpoint& hp, float3_p wo,
-													 float /*area*/, float /*time*/,
-													 float /*ior_i*/, const Worker& worker,
-													 Sampler_filter filter) {
+const material::Sample& Emissionmap_animated::sample(float3_p wo, const Renderstate& rs,
+													 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
+	float side = sample.set_basis(rs.geo_n, wo, two_sided_);
 
-	sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
+	sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
 
-	float3 radiance = sampler.sample_3(*emission_map_, hp.uv, element_);
+	float3 radiance = sampler.sample_3(*emission_map_, rs.uv, element_);
 	sample.layer_.set(radiance);
 
 	return sample;

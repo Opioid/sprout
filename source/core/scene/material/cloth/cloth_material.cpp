@@ -1,6 +1,7 @@
 #include "cloth_material.hpp"
 #include "cloth_sample.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
@@ -16,25 +17,24 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 														   sampler_settings,
 														   two_sided) {}
 
-const material::Sample& Material::sample(const shape::Hitpoint& hp, float3_p wo,
-										 float /*area*/, float /*time*/, float /*ior_i*/,
+const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
+	float side = sample.set_basis(rs.geo_n, wo, two_sided_);
 	if (normal_map_) {
-		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		float3 n = side * math::normalized(hp.tangent_to_world(nm));
-		sample.layer_.set_basis(hp.t, hp.b, n, side);
+		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
+		float3 n = side * math::normalized(rs.tangent_to_world(nm));
+		sample.layer_.set_basis(rs.t, rs.b, n, side);
 	} else {
-		sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
+		sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
 	}
 
 	float3 color;
 	if (color_map_) {
-		color = sampler.sample_3(*color_map_, hp.uv);
+		color = sampler.sample_3(*color_map_, rs.uv);
 	} else {
 		color = color_;
 	}

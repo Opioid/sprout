@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene_intersection.hpp"
+#include "scene_renderstate.hpp"
 #include "prop.hpp"
 
 namespace scene {
@@ -19,7 +20,18 @@ inline float Intersection::opacity(Worker& worker, float time, Sampler_filter fi
 
 inline const material::Sample& Intersection::sample(Worker& worker, float3_p wo,
 													float time, Sampler_filter filter) const {
-	return material()->sample(geo, wo, area(), time, 1.f, worker, filter);
+	Renderstate rs;
+	rs.p = geo.p;
+	rs.t = geo.t;
+	rs.b = geo.b;
+	rs.n = geo.n;
+	rs.geo_n = geo.geo_n;
+	rs.uv = geo.uv;
+
+	rs.area = area();
+	rs.time = time;
+
+	return material()->sample(wo, rs, worker, filter);
 }
 
 }

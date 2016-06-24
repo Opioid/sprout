@@ -22,8 +22,7 @@ public:
 
 	virtual void tick(float absolute_time, float time_slice) final override;
 
-	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
-										   float area, float time, float ior_i,
+	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 

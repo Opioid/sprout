@@ -14,8 +14,7 @@ public:
 	Material_thinfilm(Generic_sample_cache<Sample_thinfilm>& cache, Texture_2D_ptr mask,
 					  const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
-										   float area, float time, float ior_i,
+	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 

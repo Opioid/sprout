@@ -34,13 +34,12 @@ public:
 	Sky_material(scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
 				 Model& model);
 
-	virtual const scene::material::Sample& sample(const scene::shape::Hitpoint& hp,
-												  float3_p wo, float area, float time,
-												  float ior_i, const scene::Worker& worker,
+	virtual const scene::material::Sample& sample(float3_p wo, const scene::Renderstate& rs,
+												  const scene::Worker& worker,
 												  Sampler_filter filter) final override;
 
-	virtual float3 sample_radiance(float3_p wi, float2 uv,
-								   float area, float time, const scene::Worker& worker,
+	virtual float3 sample_radiance(float3_p wi, float2 uv, float area,
+								   float time, const scene::Worker& worker,
 								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
@@ -53,9 +52,8 @@ public:
 	Sun_material(scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
 				 Model& model);
 
-	virtual const scene::material::Sample& sample(const scene::shape::Hitpoint& hp,
-												  float3_p wo, float area, float time,
-												  float ior_i, const scene::Worker& worker,
+	virtual const scene::material::Sample& sample(float3_p wo, const scene::Renderstate& rs,
+												  const scene::Worker& worker,
 												  Sampler_filter filter) final override;
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv,

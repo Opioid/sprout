@@ -2,6 +2,7 @@
 #include "display_sample.hpp"
 #include "image/texture/texture_2d.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
@@ -19,19 +20,18 @@ Material::Material(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
 														   sampler_settings, two_sided),
 	average_emission_(float3(-1.f, -1.f, -1.f)) {}
 
-const material::Sample& Material::sample(const shape::Hitpoint& hp, float3_p wo,
-										 float /*area*/, float /*time*/, float /*ior_i*/,
+const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	float side = sample.set_basis(hp.geo_n, wo, two_sided_);
+	float side = sample.set_basis(rs.geo_n, wo, two_sided_);
 
-	sample.layer_.set_basis(hp.t, hp.b, hp.n, side);
+	sample.layer_.set_basis(rs.t, rs.b, rs.n, side);
 
 	if (emission_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		float3 radiance = sampler.sample_3(*emission_map_, hp.uv);
+		float3 radiance = sampler.sample_3(*emission_map_, rs.uv);
 		sample.layer_.set(emission_factor_ * radiance, f0_, roughness_);
 	} else {
 		sample.layer_.set(emission_factor_ * emission_, f0_, roughness_);

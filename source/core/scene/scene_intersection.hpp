@@ -1,6 +1,5 @@
 #pragma once
 
-#include "scene_renderstate.hpp"
 #include "shape/geometry/shape_intersection.hpp"
 #include "material/sampler_settings.hpp"
 
@@ -31,7 +30,6 @@ struct Intersection {
 
 	const Prop* prop;
 	shape::Intersection geo;
-	Renderstate renderstate;
 };
 
 }

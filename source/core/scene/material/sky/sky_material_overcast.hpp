@@ -13,14 +13,13 @@ public:
 					  Texture_2D_ptr mask,
 					  const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const shape::Hitpoint& hp, float3_p wo,
-										   float area, float time, float ior_i,
+	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv,
-										 float area, float time, const Worker& worker,
-										 Sampler_filter filter) const final override;
+								   float area, float time, const Worker& worker,
+								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
 

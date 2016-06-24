@@ -1,11 +1,10 @@
 #pragma once
 
-#include "shape/geometry/shape_intersection.hpp"
+#include "shape/geometry/hitpoint.hpp"
 
 namespace scene {
 
-struct Renderstate {
-	shape::Intersection geo;
+struct Renderstate : public shape::Hitpoint {
 	float area;
 	float time;
 	float ior;

@@ -1,4 +1,5 @@
 #include "sky_material_overcast.hpp"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
@@ -13,13 +14,12 @@ Material_overcast::Material_overcast(Generic_sample_cache<light::Sample>& cache,
 	material::Typed_material<Generic_sample_cache<light::Sample>>(
 		cache, mask, sampler_settings, two_sided) {}
 
-const material::Sample& Material_overcast::sample(const shape::Hitpoint& hp, float3_p wo,
-												  float /*area*/, float /*time*/, float /*ior_i*/,
+const material::Sample& Material_overcast::sample(float3_p wo, const Renderstate& rs,
 												  const Worker& worker, Sampler_filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
-	sample.set_basis(hp.geo_n, wo);
-	sample.layer_.set_basis(hp.t, hp.b, hp.n, 1.f);
+	sample.set_basis(rs.geo_n, wo);
+	sample.layer_.set_basis(rs.t, rs.b, rs.n, 1.f);
 
 	sample.layer_.set(overcast(-wo));
 
