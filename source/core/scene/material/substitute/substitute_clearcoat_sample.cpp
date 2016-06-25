@@ -1,6 +1,7 @@
 #include "substitute_clearcoat_sample.hpp"
 #include "substitute_base_sample.inl"
 #include "scene/material/material_sample.inl"
+#include "scene/material/coating/coating.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "base/math/vector.inl"
 #include "base/math/math.hpp"
@@ -30,7 +31,7 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 }
 
 void Sample_clearcoat::set_clearcoat(const coating::Clearcoat& clearcoat) {
-	coating_ = clearcoat;
+	coating_.set(clearcoat);
 }
 
 }}}

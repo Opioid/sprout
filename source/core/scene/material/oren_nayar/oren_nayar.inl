@@ -6,7 +6,7 @@
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/sampling/sampling.inl"
-
+\
 namespace scene { namespace material { namespace oren_nayar {
 
 template<typename Layer>

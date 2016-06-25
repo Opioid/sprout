@@ -40,6 +40,7 @@ inline const material::Sample& Intersection::sample(Worker& worker, float3_p wo,
 
 	rs.area = area();
 	rs.time = time;
+	rs.ior  = 1.f;
 
 	return material->sample(wo, rs, worker, filter);
 }

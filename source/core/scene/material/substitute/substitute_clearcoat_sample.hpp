@@ -16,9 +16,7 @@ public:
 
 	void set_clearcoat(const coating::Clearcoat& coating);
 
-private:
-
-	coating::Clearcoat coating_;
+	coating::Clearcoat_layer coating_;
 };
 
 }}}
