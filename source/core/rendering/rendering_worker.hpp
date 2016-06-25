@@ -26,6 +26,7 @@ class Integrator_factory;
 }}
 
 class Worker : public scene::Worker {
+
 public:
 
 	Worker();

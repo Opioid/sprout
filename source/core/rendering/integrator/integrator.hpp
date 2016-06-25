@@ -1,23 +1,10 @@
 #pragma once
 
-#include "base/math/vector.hpp"
 #include "base/math/random/generator.hpp"
-
-namespace image { namespace texture { namespace sampler {
-
-class Sampler_2D;
-
-}}}
 
 namespace take { struct Settings; }
 
-namespace scene { struct Intersection; }
-
-namespace rendering {
-
-class Worker;
-
-namespace integrator {
+namespace rendering { namespace integrator {
 
 class Integrator {
 

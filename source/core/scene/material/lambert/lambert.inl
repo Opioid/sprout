@@ -11,7 +11,7 @@ namespace scene { namespace material { namespace lambert {
 
 template<typename Layer>
 float3 Isotropic::evaluate(float3_p /*wi*/, float n_dot_wi,
-						   const Sample& sample, const Layer& layer, float& pdf) {
+						   const Sample& /*sample*/, const Layer& layer, float& pdf) {
 	pdf = n_dot_wi * math::Pi_inv;
 	return math::Pi_inv * layer.diffuse_color;
 }
@@ -23,7 +23,7 @@ float Isotropic::pdf(float3_p /*wi*/, float n_dot_wi,
 }
 
 template<typename Layer>
-float Isotropic::importance_sample(const Sample& sample, const Layer& layer,
+float Isotropic::importance_sample(const Sample& /*sample*/, const Layer& layer,
 								   sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 s2d = sampler.generate_sample_2D();
 

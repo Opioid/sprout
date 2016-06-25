@@ -5,6 +5,7 @@
 namespace math { namespace random {
 
 class Generator {
+
 public:
 
 	Generator();

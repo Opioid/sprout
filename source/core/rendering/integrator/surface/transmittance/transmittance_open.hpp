@@ -2,18 +2,24 @@
 
 #include "rendering/integrator/integrator.hpp"
 #include "scene/material/sampler_settings.hpp"
+#include "base/math/vector.hpp"
 
 namespace sampler { class Sampler; }
 
 namespace scene {
 
-struct Ray;
-
 namespace material { namespace bxdf { struct Result; } }
+
+struct Intersection;
+struct Ray;
 
 }
 
-namespace rendering { namespace integrator { namespace surface { namespace transmittance {
+namespace rendering {
+
+class Worker;
+
+namespace integrator { namespace surface { namespace transmittance {
 
 class Open : public integrator::Integrator {
 
@@ -26,8 +32,8 @@ public:
 	using Bxdf_result = scene::material::bxdf::Result;
 
 	float3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-						 const float3& attenuation, sampler::Sampler& sampler,
-						 Sampler_filter filter, Bxdf_result& sample_result);
+				   const float3& attenuation, sampler::Sampler& sampler,
+				   Sampler_filter filter, Bxdf_result& sample_result);
 
 private:
 

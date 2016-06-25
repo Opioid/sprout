@@ -1,6 +1,6 @@
 #include "transmittance_closed.hpp"
-#include "../integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "rendering/integrator/surface/integrator_helper.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
@@ -17,8 +17,8 @@ Closed::Closed(const take::Settings &take_settings, math::random::Generator &rng
 	integrator::Integrator(take_settings, rng) {}
 
 float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-							 const float3& attenuation, sampler::Sampler& sampler,
-							 Sampler_filter filter, Bxdf_result& sample_result) {
+					   const float3& attenuation, sampler::Sampler& sampler,
+					   Sampler_filter filter, Bxdf_result& sample_result) {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_attenuation = attenuation;
 

@@ -3,6 +3,7 @@
 #include "scene_intersection.hpp"
 #include "scene_renderstate.hpp"
 #include "prop.hpp"
+#include "shape/geometry/hitpoint.inl"
 
 namespace scene {
 

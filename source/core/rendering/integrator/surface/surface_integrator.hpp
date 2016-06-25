@@ -2,10 +2,20 @@
 
 #include "rendering/integrator/integrator.hpp"
 #include "scene/material/sampler_settings.hpp"
+#include "base/math/vector.hpp"
 
-namespace scene { struct Ray; }
+namespace scene {
 
-namespace rendering { namespace integrator { namespace surface {
+struct Intersection;
+struct Ray;
+
+}
+
+namespace rendering {
+
+class Worker;
+
+namespace integrator { namespace surface {
 
 class Integrator : public integrator::Integrator {
 
@@ -15,7 +25,7 @@ public:
 	virtual ~Integrator();
 
 	virtual float4 li(Worker& worker, scene::Ray& ray,
-							bool volume, scene::Intersection& intersection) = 0;
+					  bool volume, scene::Intersection& intersection) = 0;
 
 protected:
 

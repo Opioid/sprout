@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
+#include "base/math/vector.hpp"
 
 namespace scene {
 
@@ -10,7 +11,11 @@ namespace volume { class Volume; }
 
 }
 
-namespace rendering { namespace integrator { namespace volume {
+namespace rendering {
+
+class Worker;
+
+namespace integrator { namespace volume {
 
 class Integrator : public integrator::Integrator {
 
@@ -20,10 +25,10 @@ public:
 	virtual ~Integrator();
 
 	virtual float3 transmittance(Worker& worker, const scene::volume::Volume* volume,
-									   const scene::Ray& ray) = 0;
+								 const scene::Ray& ray) = 0;
 
 	virtual float4 li(Worker& worker, const scene::volume::Volume* volume,
-							const scene::Ray& ray, float3& transmittance) = 0;
+					  const scene::Ray& ray, float3& transmittance) = 0;
 };
 
 class Integrator_factory {
