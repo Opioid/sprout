@@ -17,18 +17,16 @@ class Isotropic {
 public:
 
 	template<typename Layer>
-	static float3 evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
-						   const Sample& sample, const Layer& layer, float& pdf);
+	static float3 evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+						   const Layer& layer, float& pdf);
 
 	template<typename Layer>
-	static float importance_sample(float n_dot_wo, const Sample& sample, const Layer& layer,
+	static float importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   sampler::Sampler& sampler, bxdf::Result& result);
 
 private:
 
-	template<typename Layer>
-	static float f(float3_p wi, float n_dot_wi, float n_dot_wo,
-				   const Sample& sample, const Layer& layer);
+	static float f(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo, float a2);
 };
 
 }}}

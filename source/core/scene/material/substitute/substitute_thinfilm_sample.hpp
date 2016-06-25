@@ -14,10 +14,6 @@ public:
 	virtual void sample_evaluate(sampler::Sampler& sampler,
 								 bxdf::Result& result) const final override;
 
-	void set_thinfilm(const coating::Thinfilm& coating);
-
-private:
-
 	coating::Thinfilm coating_;
 };
 

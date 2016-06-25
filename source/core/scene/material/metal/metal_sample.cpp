@@ -20,7 +20,7 @@ float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
-	return n_dot_wi * ggx::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this,
+	return n_dot_wi * ggx::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
 											   layer_, conductor, pdf);
 }
 
@@ -40,7 +40,7 @@ void Sample_isotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
-	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+	float n_dot_wi = ggx::Isotropic::importance_sample(wo_, n_dot_wo, layer_,
 													   conductor, sampler, result);
 	result.reflection *= n_dot_wi;
 }
@@ -76,8 +76,8 @@ float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
-	return n_dot_wi * ggx::Anisotropic::evaluate(wi, n_dot_wi, n_dot_wo, *this, layer_,
-												 conductor, pdf);
+	return n_dot_wi * ggx::Anisotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
+												 layer_, conductor, pdf);
 }
 
 float3 Sample_anisotropic::radiance() const {
@@ -96,7 +96,7 @@ void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
-	float n_dot_wi = ggx::Anisotropic::importance_sample(n_dot_wo, *this, layer_, conductor,
+	float n_dot_wi = ggx::Anisotropic::importance_sample(wo_, n_dot_wo, layer_, conductor,
 														 sampler, result);
 	result.reflection *= n_dot_wi;
 }

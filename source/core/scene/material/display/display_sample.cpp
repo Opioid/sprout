@@ -62,7 +62,7 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 	fresnel::Schlick schlick(layer_.f0);
-	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+	float n_dot_wi = ggx::Isotropic::importance_sample(wo_, n_dot_wo, layer_,
 													   schlick, sampler, result);
 
 	result.reflection = n_dot_wi * result.reflection;
@@ -81,7 +81,6 @@ bool Sample::is_translucent() const {
 }
 
 void Sample::Layer::set(float3_p radiance, float f0, float roughness) {
-	this->n = n;
 	this->emission = radiance;
 	this->f0 = float3(f0);
 	this->a2 = math::pow4(roughness);

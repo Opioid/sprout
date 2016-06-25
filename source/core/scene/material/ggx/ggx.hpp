@@ -17,30 +17,28 @@ class Isotropic {
 public:
 
 	template<typename Layer>
-	float init_importance_sample(float n_dot_wo, float a2,
-								 const Sample& sample, const Layer& layer,
+	float init_importance_sample(float3_p wo, float n_dot_wo, float a2, const Layer& layer,
 								 sampler::Sampler& sampler, bxdf::Result& result);
 
 	template<typename Layer>
-	void init_evaluate(float3_p wi, const Sample& sample, const Layer& layer);
+	void init_evaluate(float3_p wi, float3_p wo, const Layer& layer);
 
 	// This method is intended for cases where the fresnel value
 	// will also be used for blending with other layers
 	template<typename Fresnel>
 	float3 evaluate(float n_dot_wi, float n_dot_wo, float a2, const Fresnel& fresnel,
-						  float3& fresnel_result, float& pdf) const;
+					float3& fresnel_result, float& pdf) const;
 
 	template<typename Fresnel>
 	float3 evaluate(float n_dot_wi, float n_dot_wo, float a2,
 					const Fresnel& fresnel, float& pdf) const;
 
 	template<typename Layer, typename Fresnel>
-	static float3 evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
-						   const Sample& sample, const Layer& layer,
-						   const Fresnel& fresnel, float& pdf);
+	static float3 evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+						   const Layer& layer, const Fresnel& fresnel, float& pdf);
 
 	template<typename Layer, typename Fresnel>
-	static float importance_sample(float n_dot_wo, const Sample& sample, const Layer& layer,
+	static float importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   const Fresnel& fresnel, sampler::Sampler& sampler,
 								   bxdf::Result& result);
 private:
@@ -54,12 +52,11 @@ class Anisotropic {
 public:
 
 	template<typename Layer, typename Fresnel>
-	static float3 evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
-						   const Sample& sample, const Layer& layer,
-						   const Fresnel& fresnel, float& pdf);
+	static float3 evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+						   const Layer& layer, const Fresnel& fresnel, float& pdf);
 
 	template<typename Layer, typename Fresnel>
-	static float importance_sample(float n_dot_wo, const Sample& sample,
+	static float importance_sample(float3_p wo, float n_dot_wo,
 								   const Layer& layer, const Fresnel& fresnel,
 								   sampler::Sampler& sampler, bxdf::Result& result);
 };

@@ -9,15 +9,14 @@
 namespace scene { namespace material { namespace ggx {
 
 template<typename Layer>
-float Isotropic::init_importance_sample(float n_dot_wo, float a2,
-										const Sample& sample, const Layer& layer,
+float Isotropic::init_importance_sample(float3_p wo, float n_dot_wo, float a2, const Layer& layer,
 										sampler::Sampler& sampler, bxdf::Result& result) {
 	if (0.f == a2) {
 		constexpr float n_dot_h = 1.f;
 
 		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
 
-		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - sample.wo_);
+		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
 
 		n_dot_h_ = n_dot_h;
 		wo_dot_h_ = wo_dot_h;
@@ -40,10 +39,10 @@ float Isotropic::init_importance_sample(float n_dot_wo, float a2,
 		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 		float3 h = layer.tangent_to_world(is);
 
-		float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	//	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
 
-		float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
+		float3 wi = math::normalized((2.f * wo_dot_h) * h - wo);
 
 		float n_dot_wi = layer.clamped_n_dot(wi);
 
@@ -58,11 +57,11 @@ float Isotropic::init_importance_sample(float n_dot_wo, float a2,
 }
 
 template<typename Layer>
-void Isotropic::init_evaluate(float3_p wi, const Sample& sample, const Layer& layer) {
-	float3 h = math::normalized(sample.wo_ + wi);
+void Isotropic::init_evaluate(float3_p wi, float3_p wo, const Layer& layer) {
+	float3 h = math::normalized(wo + wi);
 
 	n_dot_h_  = math::saturate(math::dot(layer.n, h));
-	wo_dot_h_ = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+	wo_dot_h_ = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 }
 
 template<typename Fresnel>
@@ -104,19 +103,18 @@ float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2,
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
-						   const Sample& sample, const Layer& layer,
-						   const Fresnel& fresnel, float& pdf) {
+float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+						   const Layer& layer, const Fresnel& fresnel, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == layer.a2) {
 		pdf = 0.f;
 		return math::float3_identity;
 	}
 
-	float3 h = math::normalized(sample.wo_ + wi);
+	float3 h = math::normalized(wo + wi);
 
 	float n_dot_h  = math::saturate(math::dot(layer.n, h));
-	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
 	float clamped_a2 = clamp_a2(layer.a2);
 	float d = distribution_isotropic(n_dot_h, clamped_a2);
@@ -128,7 +126,7 @@ float3 Isotropic::evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const Layer& layer,
+float Isotropic::importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   const Fresnel& fresnel, sampler::Sampler& sampler,
 								   bxdf::Result& result) {
 	if (0.f == layer.a2) {
@@ -136,7 +134,7 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const L
 
 		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
 
-		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - sample.wo_);
+		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
 
 		float d = distribution_isotropic(n_dot_h, Min_a2);
 		float g = geometric_visibility(n_dot_wo, n_dot_wo, Min_a2);
@@ -162,9 +160,9 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const L
 		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 		float3 h = layer.tangent_to_world(is);
 
-		float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
-		float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
+		float3 wi = math::normalized((2.f * wo_dot_h) * h - wo);
 
 		float n_dot_wi = layer.clamped_n_dot(wi);
 
@@ -182,10 +180,9 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const L
 }
 
 template<typename Layer, typename Fresnel>
-float3 Anisotropic::evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
-							 const Sample& sample, const Layer& layer,
-							 const Fresnel& fresnel, float &pdf) {
-	float3 h = math::normalized(sample.wo_ + wi);
+float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+							 const Layer& layer, const Fresnel& fresnel, float &pdf) {
+	float3 h = math::normalized(wo + wi);
 
 	float n_dot_h  = math::saturate(math::dot(layer.n, h));
 
@@ -195,7 +192,7 @@ float3 Anisotropic::evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
 	float x_dot_h  = math::dot(layer.t, h);
 	float y_dot_h  = math::dot(layer.b, h);
 
-	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
+	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.a2, layer.axy);
 	float g = geometric_visibility(n_dot_wi, n_dot_wo, layer.axy);
@@ -206,7 +203,7 @@ float3 Anisotropic::evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
 }
 
 template<typename Layer, typename Fresnel>
-float Anisotropic::importance_sample(float n_dot_wo, const Sample& sample, const Layer& layer,
+float Anisotropic::importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
 									 const Fresnel& fresnel, sampler::Sampler& sampler,
 									 bxdf::Result& result) {
 	float2 xi = sampler.generate_sample_2D();
@@ -225,9 +222,9 @@ float Anisotropic::importance_sample(float n_dot_wo, const Sample& sample, const
 	float n_dot_h = math::dot(layer.n, h);
 
 //	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
-	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
+	float wo_dot_h = std::max(math::dot(wo, h), 0.00001f);
 
-	float3 wi = math::normalized((2.f * wo_dot_h) * h - sample.wo_);
+	float3 wi = math::normalized((2.f * wo_dot_h) * h - wo);
 
 	float n_dot_wi = std::max(math::dot(layer.n, wi),	0.00001f);
 //	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);

@@ -48,8 +48,8 @@ float3 Sample_base::base_evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	float diffuse_pdf;
-	float3 diffuse = oren_nayar::Isotropic::evaluate(wi, n_dot_wi, n_dot_wo,
-													 *this, layer_, diffuse_pdf);
+	float3 diffuse = oren_nayar::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
+													 layer_, diffuse_pdf);
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == layer_.a2) {
@@ -78,13 +78,13 @@ float3 Sample_base::base_evaluate(float3_p wi, float& pdf) const {
 
 void Sample_base::diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
-	float n_dot_wi = oren_nayar::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+	float n_dot_wi = oren_nayar::Isotropic::importance_sample(wo_, n_dot_wo, layer_,
 															  sampler, result);
 
 	fresnel::Schlick schlick(layer_.f0);
 	float ggx_pdf;
-	float3 ggx_reflection = ggx::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
-													 *this, layer_, schlick, ggx_pdf);
+	float3 ggx_reflection = ggx::Isotropic::evaluate(result.wi, wo_, n_dot_wi, n_dot_wo,
+													 layer_, schlick, ggx_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 	result.pdf = 0.5f * (result.pdf + ggx_pdf);
@@ -94,12 +94,12 @@ void Sample_base::specular_importance_sample(sampler::Sampler& sampler,
 											 bxdf::Result& result) const {
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 	fresnel::Schlick schlick(layer_.f0);
-	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+	float n_dot_wi = ggx::Isotropic::importance_sample(wo_, n_dot_wo, layer_,
 													   schlick, sampler, result);
 
 	float on_pdf;
-	float3 on_reflection = oren_nayar::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
-														   *this, layer_, on_pdf);
+	float3 on_reflection = oren_nayar::Isotropic::evaluate(result.wi, wo_, n_dot_wi, n_dot_wo,
+														   layer_, on_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + on_reflection);
 	result.pdf = 0.5f * (result.pdf + on_pdf);
@@ -109,7 +109,7 @@ void Sample_base::pure_specular_importance_sample(sampler::Sampler& sampler,
 												  bxdf::Result& result) const {
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 	fresnel::Schlick schlick(layer_.f0);
-	float n_dot_wi = ggx::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+	float n_dot_wi = ggx::Isotropic::importance_sample(wo_, n_dot_wo, layer_,
 													   schlick, sampler, result);
 	result.reflection *= n_dot_wi;
 }
@@ -123,5 +123,20 @@ void Sample_base::Layer::set(float3_p color, float3_p radiance,
 	this->a2 = a2;
 	this->metallic = metallic;
 }
+
+//void Sample_base::Layer::diffuse_importance_sample(sampler::Sampler& sampler,
+//												   bxdf::Result& result) const {
+//	float n_dot_wo = layer_.clamped_n_dot(wo_);
+//	float n_dot_wi = oren_nayar::Isotropic::importance_sample(n_dot_wo, *this, layer_,
+//															  sampler, result);
+
+//	fresnel::Schlick schlick(layer_.f0);
+//	float ggx_pdf;
+//	float3 ggx_reflection = ggx::Isotropic::evaluate(result.wi, n_dot_wi, n_dot_wo,
+//													 *this, layer_, schlick, ggx_pdf);
+
+//	result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
+//	result.pdf = 0.5f * (result.pdf + ggx_pdf);
+//}
 
 }}}

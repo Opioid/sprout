@@ -2,6 +2,7 @@
 #include "substitute_clearcoat_sample.hpp"
 #include "substitute_base_material.inl"
 #include "scene/scene_renderstate.hpp"
+#include "scene/material/coating/coating.inl"
 
 namespace scene { namespace material { namespace substitute {
 
@@ -18,7 +19,7 @@ const material::Sample& Material_clearcoat::sample(float3_p wo, const Renderstat
 
 	set_sample(rs, wo, sampler, sample);
 
-	sample.set_clearcoat(clearcoat_);
+	sample.coating_.set(clearcoat_.f0, clearcoat_.a2, clearcoat_.weight);
 
 	return sample;
 }

@@ -10,16 +10,16 @@
 namespace scene { namespace material { namespace oren_nayar {
 
 template<typename Layer>
-float3 Isotropic::evaluate(float3_p wi, float n_dot_wi, float n_dot_wo,
-						   const Sample& sample, const Layer& layer, float& pdf) {
-	float on = f(wi, n_dot_wi, n_dot_wo, sample, layer);
+float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+						   const Layer& layer, float& pdf) {
+	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.a2);
 
 	pdf = n_dot_wi * math::Pi_inv;
 	return on * layer.diffuse_color;
 }
 
 template<typename Layer>
-float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const Layer& layer,
+float Isotropic::importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 s2d = sampler.generate_sample_2D();
 
@@ -28,7 +28,7 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const L
 
 	float n_dot_wi = layer.clamped_n_dot(wi);
 
-	float on = f(wi, n_dot_wi, n_dot_wo, sample, layer);
+	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.a2);
 
 	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = on * layer.diffuse_color;
@@ -38,10 +38,8 @@ float Isotropic::importance_sample(float n_dot_wo, const Sample& sample, const L
 	return n_dot_wi;
 }
 
-template<typename Layer>
-float Isotropic::f(float3_p wi, float n_dot_wi, float n_dot_wo,
-				   const Sample& sample, const Layer& layer) {
-	float wi_dot_wo = math::dot(wi, sample.wo_);
+inline float Isotropic::f(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo, float a2) {
+	float wi_dot_wo = math::dot(wi, wo);
 
 	float s = wi_dot_wo - n_dot_wi * n_dot_wo;
 
@@ -52,7 +50,6 @@ float Isotropic::f(float3_p wi, float n_dot_wi, float n_dot_wo,
 		t = n_dot_wi;
 	}
 
-	float a2 = layer.a2;
 	float a = 1.f - 0.5f * (a2 / (a2 + 0.33f));
 	float b = 0.45f * (a2 / (a2 + 0.09f));
 

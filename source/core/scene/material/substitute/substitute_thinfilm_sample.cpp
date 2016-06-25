@@ -31,8 +31,4 @@ void Sample_thinfilm::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& r
 	base_sample_evaluate_and_coating(thinfilm, coating_.a2, sampler, result);
 }
 
-void Sample_thinfilm::set_thinfilm(const coating::Thinfilm& coating) {
-	coating_ = coating;
-}
-
 }}}

@@ -2,6 +2,7 @@
 #include "substitute_thinfilm_sample.hpp"
 #include "substitute_base_material.inl"
 #include "scene/scene_renderstate.hpp"
+#include "scene/material/coating/coating.inl"
 
 namespace scene { namespace material { namespace substitute {
 
@@ -18,7 +19,7 @@ const material::Sample& Material_thinfilm::sample(float3_p wo, const Renderstate
 
 	set_sample(rs, wo, sampler, sample);
 
-	sample.set_thinfilm(thinfilm_);
+	sample.coating_.set(thinfilm_.ior, thinfilm_.a2, thinfilm_.thickness, thinfilm_.weight);
 
 	return sample;
 }

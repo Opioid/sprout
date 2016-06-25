@@ -30,8 +30,4 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 	base_sample_evaluate_and_coating(clearcoat, coating_.a2, sampler, result);
 }
 
-void Sample_clearcoat::set_clearcoat(const coating::Clearcoat& clearcoat) {
-	coating_.set(clearcoat);
-}
-
 }}}

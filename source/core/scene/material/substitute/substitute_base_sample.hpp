@@ -68,6 +68,8 @@ public:
 		void set(float3_p color, float3_p radiance,
 				 float ior, float constant_f0, float a2, float metallic);
 
+	//	void diffuse_importance_sample(sampler::Sampler& sampler, bxdf::Result& result) const;
+
 		float3 diffuse_color;
 		float3 f0;
 		float3 emission;

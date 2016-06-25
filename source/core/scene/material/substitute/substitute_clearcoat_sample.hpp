@@ -14,8 +14,6 @@ public:
 	virtual void sample_evaluate(sampler::Sampler& sampler,
 								 bxdf::Result& result) const final override;
 
-	void set_clearcoat(const coating::Clearcoat& coating);
-
 	coating::Clearcoat_layer coating_;
 };
 
