@@ -186,9 +186,6 @@ float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 
 	float n_dot_h  = math::saturate(math::dot(layer.n, h));
 
-//	float x_dot_h  = math::saturate(math::dot(sample.t_, h));
-//	float y_dot_h  = math::saturate(math::dot(sample.b_, h));
-
 	float x_dot_h  = math::dot(layer.t, h);
 	float y_dot_h  = math::dot(layer.b, h);
 
@@ -221,13 +218,11 @@ float Anisotropic::importance_sample(float3_p wo, float n_dot_wo, const Layer& l
 	float y_dot_h = math::dot(layer.b, h);
 	float n_dot_h = math::dot(layer.n, h);
 
-//	float wo_dot_h = math::clamp(math::dot(sample.wo_, h), 0.00001f, 1.f);
 	float wo_dot_h = std::max(math::dot(wo, h), 0.00001f);
 
 	float3 wi = math::normalized((2.f * wo_dot_h) * h - wo);
 
-	float n_dot_wi = std::max(math::dot(layer.n, wi),	0.00001f);
-//	float n_dot_wo = std::max(math::dot(sample.n_, BxDF<Sample>::sample_.wo_), 0.00001f);
+	float n_dot_wi = layer.clamped_n_dot(wi);
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.a2, layer.axy);
 	float g = geometric_visibility(n_dot_wi, n_dot_wo, layer.axy);

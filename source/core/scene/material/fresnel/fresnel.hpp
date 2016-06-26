@@ -13,7 +13,7 @@ float3 conductor(float wo_dot_h, float3_p eta, float3_p k);
 float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t);
 
 float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
-					  float internal_ior, float thickness);
+				float internal_ior, float thickness);
 
 class Schlick {
 

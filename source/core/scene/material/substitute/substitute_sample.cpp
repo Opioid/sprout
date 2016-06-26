@@ -25,14 +25,14 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 	}
 
 	if (1.f == layer_.metallic) {
-		pure_specular_importance_sample(sampler, result);
+		layer_.pure_specular_importance_sample(wo_, sampler, result);
 	} else {
 		float p = sampler.generate_sample_1D();
 
 		if (p < 0.5f) {
-			diffuse_importance_sample(sampler, result);
+			layer_.diffuse_importance_sample(wo_, sampler, result);
 		} else {
-			specular_importance_sample(sampler, result);
+			layer_.specular_importance_sample(wo_, sampler, result);
 		}
 	}
 }

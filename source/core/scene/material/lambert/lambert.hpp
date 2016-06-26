@@ -18,14 +18,14 @@ public:
 
 	template<typename Layer>
 	static float3 evaluate(float3_p wi, float n_dot_wi,
-						   const Sample& sample, const Layer& layer, float& pdf);
+						   const Layer& layer, float& pdf);
 
 	template<typename Layer>
-	static float pdf(float3_p wi, float n_dot_wi, const Sample& sample, const Layer& layer);
+	static float pdf(float3_p wi, float n_dot_wi, const Layer& layer);
 
 	template<typename Layer>
-	static float importance_sample(const Sample& sample, const Layer& layer,
-								   sampler::Sampler& sampler, bxdf::Result& result);
+	static float importance_sample(const Layer& layer, sampler::Sampler& sampler,
+								   bxdf::Result& result);
 };
 
 
