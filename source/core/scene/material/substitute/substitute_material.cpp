@@ -15,7 +15,7 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	set_sample(rs, wo, sampler, sample);
+	set_sample(wo, rs, sampler, sample);
 
 	return sample;
 }

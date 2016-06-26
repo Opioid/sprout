@@ -17,7 +17,7 @@ const material::Sample& Material_thinfilm::sample(float3_p wo, const Renderstate
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	set_sample(rs, wo, sampler, sample);
+	set_sample(wo, rs, sampler, sample);
 
 	sample.coating_.set(thinfilm_.ior, thinfilm_.a2, thinfilm_.thickness, thinfilm_.weight);
 

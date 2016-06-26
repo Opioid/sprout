@@ -17,8 +17,9 @@ const material::Sample& Material_clearcoat::sample(float3_p wo, const Renderstat
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	set_sample(rs, wo, sampler, sample);
+	set_sample(wo, rs, sampler, sample);
 
+	sample.coating_.set_basis(rs.t, rs.b, rs.n);
 	sample.coating_.set(clearcoat_.f0, clearcoat_.a2, clearcoat_.weight);
 
 	return sample;

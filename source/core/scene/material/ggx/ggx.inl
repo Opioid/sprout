@@ -180,6 +180,91 @@ float Isotropic::importance_sample(float3_p wo, float n_dot_wo, const Layer& lay
 }
 
 template<typename Layer, typename Fresnel>
+float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+						   const Layer& layer, const Fresnel& fresnel,
+						   float3& fresnel_result, float& pdf) {
+	float3 h = math::normalized(wo + wi);
+
+	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+
+	// Roughness zero will always have zero specular term (or worse NaN)
+	if (0.f == layer.a2) {
+		fresnel_result = fresnel(wo_dot_h);
+		pdf = 0.f;
+		return math::float3_identity;
+	}
+
+	float n_dot_h  = math::saturate(math::dot(layer.n, h));
+
+	float clamped_a2 = clamp_a2(layer.a2);
+	float d = distribution_isotropic(n_dot_h, clamped_a2);
+	float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
+	float3 f = fresnel(wo_dot_h);
+
+	fresnel_result = f;
+	pdf = d * n_dot_h / (4.f * wo_dot_h);
+	return d * g * f;
+}
+
+template<typename Layer, typename Fresnel>
+float Isotropic::importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
+								   const Fresnel& fresnel, sampler::Sampler& sampler,
+								   float3& fresnel_result, bxdf::Result& result) {
+	if (0.f == layer.a2) {
+		constexpr float n_dot_h = 1.f;
+
+		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
+
+		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
+
+		float d = distribution_isotropic(n_dot_h, Min_a2);
+		float g = geometric_visibility(n_dot_wo, n_dot_wo, Min_a2);
+		float3 f = fresnel(wo_dot_h);
+
+		fresnel_result = f;
+
+		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+		result.reflection = d * g * f;
+		result.wi = wi;
+		result.type.clear_set(bxdf::Type::Specular_reflection);
+
+		return n_dot_wo;
+	} else {
+		float2 xi = sampler.generate_sample_2D();
+
+		float clamped_a2 = clamp_a2(layer.a2);
+		float n_dot_h = std::sqrt((1.f - xi.y) / ((clamped_a2 - 1.f) * xi.y + 1.f));
+
+		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+		float phi = 2.f * math::Pi * xi.x;
+		float sin_phi = std::sin(phi);
+		float cos_phi = std::cos(phi);
+
+		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+		float3 h = layer.tangent_to_world(is);
+
+		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+
+		float3 wi = math::normalized((2.f * wo_dot_h) * h - wo);
+
+		float n_dot_wi = layer.clamped_n_dot(wi);
+
+		float d = distribution_isotropic(n_dot_h, clamped_a2);
+		float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
+		float3 f = fresnel(wo_dot_h);
+
+		fresnel_result = f;
+
+		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+		result.reflection = d * g * f;
+		result.wi = wi;
+		result.type.clear_set(bxdf::Type::Glossy_reflection);
+
+		return n_dot_wi;
+	}
+}
+
+template<typename Layer, typename Fresnel>
 float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
 							 const Layer& layer, const Fresnel& fresnel, float &pdf) {
 	float3 h = math::normalized(wo + wi);

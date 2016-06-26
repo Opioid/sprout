@@ -93,7 +93,7 @@ void Material_base<Sample>::set_emission_factor(float emission_factor) {
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_sample(const shape::Hitpoint& hp, float3_p wo,
+void Material_base<Sample>::set_sample(float3_p wo, const shape::Hitpoint& hp,
 									   const Texture_sampler_2D& sampler, Sample& sample) {
 	sample.set_basis(hp.geo_n, wo);
 

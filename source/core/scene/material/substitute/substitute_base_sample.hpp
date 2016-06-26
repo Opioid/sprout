@@ -58,6 +58,24 @@ protected:
 													 sampler::Sampler& sampler,
 													 bxdf::Result& result) const;
 
+	template<typename Coating>
+	float3 base_evaluate_and_coating(float3_p wi, const Coating& coating, float& pdf) const;
+
+	template<typename Coating>
+	void base_sample_evaluate_and_coating(const Coating& coating,
+										  sampler::Sampler& sampler,
+										  bxdf::Result& result) const;
+
+	template<typename Coating>
+	void diffuse_importance_sample_and_coating(const Coating& coating,
+											   sampler::Sampler& sampler,
+											   bxdf::Result& result) const;
+
+	template<typename Coating>
+	void specular_importance_sample_and_coating(const Coating& coating,
+												sampler::Sampler& sampler,
+												bxdf::Result& result) const;
+
 public:
 
 	struct Layer : material::Sample::Layer {

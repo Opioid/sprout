@@ -40,7 +40,7 @@ protected:
 
 	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
 
-	void set_sample(const shape::Hitpoint& hp, float3_p wo,
+	void set_sample(float3_p wo, const shape::Hitpoint& hp,
 					const Texture_sampler_2D& sampler, Sample& sample);
 
 	Texture_2D_ptr color_map_;

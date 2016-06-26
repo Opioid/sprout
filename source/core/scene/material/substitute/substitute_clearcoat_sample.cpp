@@ -14,9 +14,11 @@ float3 Sample_clearcoat::evaluate(float3_p wi, float& pdf) const {
 		return math::float3_identity;
 	}
 
-	fresnel::Schlick_weighted clearcoat(coating_.f0, coating_.weight);
+//	fresnel::Schlick_weighted clearcoat(coating_.f0, coating_.weight);
 
-	return base_evaluate_and_coating(wi, clearcoat, coating_.a2, pdf);
+//	return base_evaluate_and_coating(wi, clearcoat, coating_.a2, pdf);
+
+	return base_evaluate_and_coating(wi, coating_, pdf);
 }
 
 void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
@@ -25,9 +27,10 @@ void Sample_clearcoat::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& 
 		return;
 	}
 
-	fresnel::Schlick_weighted clearcoat(coating_.f0, coating_.weight);
+//	fresnel::Schlick_weighted clearcoat(coating_.f0, coating_.weight);
+//	base_sample_evaluate_and_coating(clearcoat, sampler, result);
 
-	base_sample_evaluate_and_coating(clearcoat, coating_.a2, sampler, result);
+	base_sample_evaluate_and_coating(coating_, sampler, result);
 }
 
 }}}
