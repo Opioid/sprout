@@ -2,6 +2,7 @@
 
 #include "substitute_coating_material.hpp"
 #include "substitute_base_material.inl"
+#include "scene/scene_renderstate.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
@@ -20,7 +21,7 @@ template<typename Coating, typename Sample>
 void Material_coating<Coating, Sample>::set_coating_basis(const Renderstate& rs,
 														  const Texture_sampler_2D& sampler,
 														  Sample& sample) {
-	if (normal_map_ == coating_normal_map_) {
+	if (Material_base<Sample>::normal_map_ == coating_normal_map_) {
 		sample.coating_.set_basis(rs.t, rs.b, sample.layer_.n);
 	} else if (coating_normal_map_) {
 		float3 nm = sampler.sample_3(*coating_normal_map_, rs.uv);
