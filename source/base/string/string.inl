@@ -20,7 +20,7 @@ std::string to_string(T value, int num_padded_zeros) {
 }
 
 inline void trim(std::string& text) {
-	auto begin = std::find_if_not(text.begin(), text.end(), is_space);
+	auto begin = std::find_if_not(text.begin(),  text.end(),  is_space);
 	auto end   = std::find_if_not(text.rbegin(), text.rend(), is_space).base();
 
 	text.assign(begin, end);
