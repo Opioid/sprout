@@ -21,8 +21,8 @@ float3 Clearcoat::evaluate(float3_p wi, float3_p wo, float /*internal_ior*/, con
 
 	fresnel::Schlick_weighted schlick(f0, weight);
 
-	return ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo, layer,
-									schlick, fresnel_result, pdf);
+	return n_dot_wi * ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo, layer,
+											   schlick, fresnel_result, pdf);
 }
 
 template<typename Layer>
@@ -54,8 +54,8 @@ float3 Thinfilm::evaluate(float3_p wi, float3_p wo, float internal_ior, const La
 
 	fresnel::Thinfilm_weighted thinfilm(1.f, ior, internal_ior, thickness, weight);
 
-	return ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo, layer,
-									thinfilm, fresnel_result, pdf);
+	return n_dot_wi * ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo, layer,
+											   thinfilm, fresnel_result, pdf);
 }
 
 template<typename Layer>

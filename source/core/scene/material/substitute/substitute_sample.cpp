@@ -15,7 +15,7 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 		return math::float3_identity;
 	}
 
-	return base_evaluate(wi, pdf);
+	return layer_.base_evaluate(wi, wo_, pdf);
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {

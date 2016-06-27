@@ -8,100 +8,6 @@
 
 namespace scene { namespace material { namespace ggx {
 
-template<typename Layer>
-float Isotropic::init_importance_sample(float3_p wo, float n_dot_wo, float a2, const Layer& layer,
-										sampler::Sampler& sampler, bxdf::Result& result) {
-	if (0.f == a2) {
-		constexpr float n_dot_h = 1.f;
-
-		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
-
-		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
-
-		n_dot_h_ = n_dot_h;
-		wo_dot_h_ = wo_dot_h;
-
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Specular_reflection);
-
-		return n_dot_wo;
-	} else {
-		float2 xi = sampler.generate_sample_2D();
-
-		float clamped_a2 = clamp_a2(a2);
-		float n_dot_h = std::sqrt((1.f - xi.y) / ((clamped_a2 - 1.f) * xi.y + 1.f));
-
-		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-		float phi = 2.f * math::Pi * xi.x;
-		float sin_phi = std::sin(phi);
-		float cos_phi = std::cos(phi);
-
-		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-		float3 h = layer.tangent_to_world(is);
-
-		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
-	//	float wo_dot_h = std::max(math::dot(sample.wo_, h), 0.00001f);
-
-		float3 wi = math::normalized((2.f * wo_dot_h) * h - wo);
-
-		float n_dot_wi = layer.clamped_n_dot(wi);
-
-		n_dot_h_ = n_dot_h;
-		wo_dot_h_ = wo_dot_h;
-
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Glossy_reflection);
-
-		return n_dot_wi;
-	}
-}
-
-template<typename Layer>
-void Isotropic::init_evaluate(float3_p wi, float3_p wo, const Layer& layer) {
-	float3 h = math::normalized(wo + wi);
-
-	n_dot_h_  = math::saturate(math::dot(layer.n, h));
-	wo_dot_h_ = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
-}
-
-template<typename Fresnel>
-float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2, const Fresnel& fresnel,
-						   float3& fresnel_result, float& pdf) const {
-	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == a2 && 1.f != n_dot_h_) {
-		fresnel_result = fresnel(wo_dot_h_);
-		pdf = 0.f;
-		return float3(0.f);
-	}
-
-	float clamped_a2 = clamp_a2(a2);
-	float d = distribution_isotropic(n_dot_h_, clamped_a2);
-	float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	float3 f = fresnel(wo_dot_h_);
-
-	fresnel_result = f;
-	pdf = d * n_dot_h_ / (4.f * wo_dot_h_);
-	return d * g * f;
-}
-
-template<typename Fresnel>
-float3 Isotropic::evaluate(float n_dot_wi, float n_dot_wo, float a2,
-						   const Fresnel& fresnel, float& pdf) const {
-	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == a2 && 1.f != n_dot_h_) {
-		pdf = 0.f;
-		return math::float3_identity;
-	}
-
-	float clamped_a2 = clamp_a2(a2);
-	float d = distribution_isotropic(n_dot_h_, clamped_a2);
-	float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	float3 f = fresnel(wo_dot_h_);
-
-	pdf = d * n_dot_h_ / (4.f * wo_dot_h_);
-	return d * g * f;
-}
-
 template<typename Layer, typename Fresnel>
 float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
 						   const Layer& layer, const Fresnel& fresnel, float& pdf) {
@@ -113,8 +19,8 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 
 	float3 h = math::normalized(wo + wi);
 
-	float n_dot_h  = math::saturate(math::dot(layer.n, h));
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+	float n_dot_h  = math::saturate(math::dot(layer.n, h));
 
 	float clamped_a2 = clamp_a2(layer.a2);
 	float d = distribution_isotropic(n_dot_h, clamped_a2);

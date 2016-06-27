@@ -2,6 +2,7 @@
 
 #include "resource/resource_provider.hpp"
 #include "material_sample_cache.hpp"
+#include "substitute/substitute_coating_sample.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/vector.hpp"
 #include <vector>
@@ -19,8 +20,6 @@ namespace sky		{ class Material_clear; }
 namespace substitute {
 
 class Sample;
-class Sample_clearcoat;
-class Sample_thinfilm;
 class Sample_translucent;
 
 }

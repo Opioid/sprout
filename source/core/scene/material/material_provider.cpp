@@ -22,12 +22,10 @@
 #include "metal/metal_material.hpp"
 #include "sky/sky_material_overcast.hpp"
 #include "substitute/substitute_base_material.inl"
-#include "substitute/substitute_clearcoat_sample.hpp"
-#include "substitute/substitute_clearcoat_material.hpp"
+#include "substitute/substitute_coating_material.inl"
+#include "substitute/substitute_coating_sample.inl"
 #include "substitute/substitute_material.hpp"
 #include "substitute/substitute_sample.hpp"
-#include "substitute/substitute_thinfilm_sample.hpp"
-#include "substitute/substitute_thinfilm_material.hpp"
 #include "substitute/substitute_translucent_sample.hpp"
 #include "substitute/substitute_translucent_material.hpp"
 #include "base/json/json.hpp"
@@ -707,6 +705,12 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 
 		return material;
 	} else if (coating.ior > 1.f) {
+
+		memory::Variant_map options;
+		options.insert("usage", image::texture::Provider::Usage::Normal);
+		Texture_2D_ptr coating_normal_map = manager.load<image::texture::Texture_2D>(
+												coating.normal_map_filename, options);
+
 		if (coating.thickness > 0.f) {
 			auto material = std::make_shared<substitute::Material_thinfilm>(
 						substitute_thinfilm_cache_, mask, sampler_settings, two_sided);
@@ -721,6 +725,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 			material->set_roughness(roughness);
 			material->set_metallic(metallic);
 			material->set_emission_factor(emission_factor);
+
+			material->set_coating_normal_map(coating_normal_map);
 			material->set_thinfilm(coating.ior, coating.roughness,
 								   coating.thickness, coating.weight);
 
@@ -739,6 +745,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 			material->set_roughness(roughness);
 			material->set_metallic(metallic);
 			material->set_emission_factor(emission_factor);
+
+			material->set_coating_normal_map(coating_normal_map);
 			material->set_clearcoat(coating.ior, coating.roughness, coating.weight);
 
 			return material;

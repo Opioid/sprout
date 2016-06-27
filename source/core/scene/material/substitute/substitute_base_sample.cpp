@@ -43,39 +43,6 @@ bool Sample_base::is_translucent() const {
 	return false;
 }
 
-float3 Sample_base::base_evaluate(float3_p wi, float& pdf) const {
-	float n_dot_wi = layer_.clamped_n_dot(wi);
-	float n_dot_wo = layer_.clamped_n_dot(wo_);
-
-	float diffuse_pdf;
-	float3 diffuse = oren_nayar::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
-													 layer_, diffuse_pdf);
-
-	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == layer_.a2) {
-		pdf = 0.5f * diffuse_pdf;
-		return n_dot_wi * diffuse;
-	}
-
-	float3 h = math::normalized(wo_ + wi);
-
-	float n_dot_h  = math::dot(layer_.n, h);
-	float wo_dot_h = math::dot(wo_, h);
-
-	float clamped_a2 = ggx::clamp_a2(layer_.a2);
-	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
-	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	float3 f = fresnel::schlick(wo_dot_h, layer_.f0);
-
-	float3 specular = d * g * f;
-
-	float ggx_pdf = d * n_dot_h / (4.f * wo_dot_h);
-
-	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
-
-	return n_dot_wi * (diffuse + specular);
-}
-
 void Sample_base::Layer::set(float3_p color, float3_p radiance, float ior,
 							 float constant_f0, float a2, float metallic) {
 	this->diffuse_color = (1.f - metallic) * color;

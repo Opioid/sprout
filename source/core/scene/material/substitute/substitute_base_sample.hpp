@@ -28,36 +28,6 @@ public:
 
 protected:
 
-	float3 base_evaluate(float3_p wi, float& pdf) const;
-
-	template<typename Coating>
-	float3 base_evaluate_and_coating(float3_p wi, const Coating& coating,
-									 float coating_a2, float& pdf) const;
-
-	template<typename Coating>
-	void base_sample_evaluate_and_coating(const Coating& coating,
-										  float coating_a2,
-										  sampler::Sampler& sampler,
-										  bxdf::Result& result) const;
-
-	template<typename Coating>
-	void diffuse_importance_sample_and_coating(const Coating& coating,
-											   float coating_a2,
-											   sampler::Sampler& sampler,
-											   bxdf::Result& result) const;
-
-	template<typename Coating>
-	void specular_importance_sample_and_coating(const Coating& coating,
-												float coating_a2,
-												sampler::Sampler& sampler,
-												bxdf::Result& result) const;
-
-	template<typename Coating>
-	void pure_specular_importance_sample_and_coating(const Coating& coating,
-													 float coating_a2,
-													 sampler::Sampler& sampler,
-													 bxdf::Result& result) const;
-
 	template<typename Coating>
 	float3 base_evaluate_and_coating(float3_p wi, const Coating& coating, float& pdf) const;
 
@@ -75,6 +45,11 @@ protected:
 	void specular_importance_sample_and_coating(const Coating& coating,
 												sampler::Sampler& sampler,
 												bxdf::Result& result) const;
+
+	template<typename Coating>
+	void pure_specular_importance_sample_and_coating(const Coating& coating,
+													 sampler::Sampler& sampler,
+													 bxdf::Result& result) const;
 
 public:
 

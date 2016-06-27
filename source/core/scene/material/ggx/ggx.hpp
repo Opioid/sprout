@@ -16,23 +16,6 @@ class Isotropic {
 
 public:
 
-	template<typename Layer>
-	float init_importance_sample(float3_p wo, float n_dot_wo, float a2, const Layer& layer,
-								 sampler::Sampler& sampler, bxdf::Result& result);
-
-	template<typename Layer>
-	void init_evaluate(float3_p wi, float3_p wo, const Layer& layer);
-
-	// This method is intended for cases where the fresnel value
-	// will also be used for blending with other layers
-	template<typename Fresnel>
-	float3 evaluate(float n_dot_wi, float n_dot_wo, float a2, const Fresnel& fresnel,
-					float3& fresnel_result, float& pdf) const;
-
-	template<typename Fresnel>
-	float3 evaluate(float n_dot_wi, float n_dot_wo, float a2,
-					const Fresnel& fresnel, float& pdf) const;
-
 	template<typename Layer, typename Fresnel>
 	static float3 evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
 						   const Layer& layer, const Fresnel& fresnel, float& pdf);
@@ -51,11 +34,6 @@ public:
 	static float importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   const Fresnel& fresnel, sampler::Sampler& sampler,
 								   float3& fresnel_result, bxdf::Result& result);
-
-private:
-
-	float n_dot_h_;
-	float wo_dot_h_;
 };
 
 class Anisotropic {
