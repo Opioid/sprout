@@ -7,10 +7,13 @@
 
 namespace scene { namespace material { namespace coating {
 
-inline void Clearcoat::set(float f0, float a2, float weight) {
+inline void Coating_base::set_weight(float weight) {
+	this->weight = weight;
+}
+
+inline void Clearcoat::set(float f0, float a2) {
 	this->f0 = f0;
 	this->a2 = a2;
-	this->weight = weight;
 }
 
 template<typename Layer>
@@ -39,11 +42,10 @@ void Clearcoat::importance_sample(float3_p wo, float /*internal_ior*/,
 	result.reflection *= n_dot_wi;
 }
 
-inline void Thinfilm::set(float ior, float a2, float thickness, float weight) {
+inline void Thinfilm::set(float ior, float a2, float thickness) {
 	this->ior = ior;
 	this->a2  = a2;
 	this->thickness = thickness;
-	this->weight = weight;
 }
 
 template<typename Layer>

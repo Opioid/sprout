@@ -87,6 +87,7 @@ private:
 		float thickness = 0.f;
 		float weight = 1.f;
 		std::string normal_map_filename;
+		std::string weight_map_filename;
 	};
 
 	static void read_coating_description(const json::Value& clearcoat_value,

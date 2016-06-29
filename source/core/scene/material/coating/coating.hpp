@@ -4,8 +4,14 @@
 
 namespace scene { namespace material { namespace coating {
 
-struct Clearcoat {
-	void set(float f0, float a2, float weight);
+struct Coating_base {
+	void set_weight(float weight);
+
+	float weight;
+};
+
+struct Clearcoat : public Coating_base {
+	void set(float f0, float a2);
 
 	template<typename Layer>
 	float3 evaluate(float3_p wi, float3_p wo, float internal_ior, const Layer& layer,
@@ -18,11 +24,10 @@ struct Clearcoat {
 
 	float f0;
 	float a2;
-	float weight;
 };
 
-struct Thinfilm {
-	void set(float ior, float a2, float thickness, float weight);
+struct Thinfilm : public Coating_base {
+	void set(float ior, float a2, float thickness);
 
 	template<typename Layer>
 	float3 evaluate(float3_p wi, float3_p wo, float internal_ior, const Layer& layer,
@@ -36,7 +41,6 @@ struct Thinfilm {
 	float ior;
 	float a2;
 	float thickness;
-	float weight;
 };
 
 template<typename Coating>

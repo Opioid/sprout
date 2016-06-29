@@ -706,10 +706,22 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 		return material;
 	} else if (coating.ior > 1.f) {
 
-		memory::Variant_map options;
-		options.insert("usage", image::texture::Provider::Usage::Normal);
-		Texture_2D_ptr coating_normal_map = manager.load<image::texture::Texture_2D>(
-												coating.normal_map_filename, options);
+		Texture_2D_ptr coating_normal_map;
+		Texture_2D_ptr coating_weight_map;
+
+		if (!coating.normal_map_filename.empty()) {
+			memory::Variant_map options;
+			options.insert("usage", image::texture::Provider::Usage::Normal);
+			coating_normal_map = manager.load<image::texture::Texture_2D>(
+						coating.normal_map_filename, options);
+		}
+
+		if (!coating.weight_map_filename.empty()) {
+			memory::Variant_map options;
+			options.insert("usage", image::texture::Provider::Usage::Mask);
+			coating_weight_map = manager.load<image::texture::Texture_2D>(
+						coating.weight_map_filename, options);
+		}
 
 		if (coating.thickness > 0.f) {
 			auto material = std::make_shared<substitute::Material_thinfilm>(
@@ -727,6 +739,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 			material->set_emission_factor(emission_factor);
 
 			material->set_coating_normal_map(coating_normal_map);
+			material->set_coating_weight_map(coating_weight_map);
 			material->set_thinfilm(coating.ior, coating.roughness,
 								   coating.thickness, coating.weight);
 
@@ -747,6 +760,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 			material->set_emission_factor(emission_factor);
 
 			material->set_coating_normal_map(coating_normal_map);
+			material->set_coating_weight_map(coating_weight_map);
 			material->set_clearcoat(coating.ior, coating.roughness, coating.weight);
 
 			return material;
@@ -837,6 +851,8 @@ void Provider::read_coating_description(const json::Value& coating_value,
 
 				if ("Normal" == texture_description.usage) {
 					description.normal_map_filename = texture_description.filename;
+				} else if ("Mask" == texture_description.usage) {
+					description.weight_map_filename = texture_description.filename;
 				}
 			}
 		}

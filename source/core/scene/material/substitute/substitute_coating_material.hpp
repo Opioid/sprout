@@ -15,6 +15,7 @@ public:
 					 const Sampler_settings& sampler_settings, bool two_sided);
 
 	void set_coating_normal_map(Texture_2D_ptr normal_map);
+	void set_coating_weight_map(Texture_2D_ptr weight_map);
 
 protected:
 
@@ -24,6 +25,7 @@ protected:
 						   Sample& sample);
 
 	Texture_2D_ptr coating_normal_map_;
+	Texture_2D_ptr coating_weight_map_;
 
 	Coating coating_;
 };
