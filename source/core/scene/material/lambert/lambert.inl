@@ -17,8 +17,7 @@ float3 Isotropic::evaluate(float3_p /*wi*/, float n_dot_wi,
 }
 
 template<typename Layer>
-float Isotropic::pdf(float3_p /*wi*/, float n_dot_wi,
-					 const Layer& /*layer*/) {
+float Isotropic::pdf(float3_p /*wi*/, float n_dot_wi, const Layer& /*layer*/) {
 	return n_dot_wi * math::Pi_inv;
 }
 
