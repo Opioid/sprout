@@ -6,9 +6,8 @@
 namespace scene { namespace material { namespace substitute {
 
 Material_clearcoat::Material_clearcoat(Generic_sample_cache<Sample_clearcoat>& cache,
-									   Texture_2D_ptr mask,
 									   const Sampler_settings& sampler_settings, bool two_sided) :
-	Material_coating<coating::Clearcoat, Sample_clearcoat>(cache, mask, sampler_settings,
+	Material_coating<coating::Clearcoat, Sample_clearcoat>(cache, sampler_settings,
 														   two_sided) {}
 
 const material::Sample& Material_clearcoat::sample(float3_p wo, const Renderstate& rs,
@@ -33,9 +32,8 @@ void Material_clearcoat::set_clearcoat(float ior, float roughness, float weight)
 }
 
 Material_thinfilm::Material_thinfilm(Generic_sample_cache<Sample_thinfilm>& cache,
-									 Texture_2D_ptr mask,
 									 const Sampler_settings& sampler_settings, bool two_sided) :
-	Material_coating<coating::Thinfilm, Sample_thinfilm>(cache, mask, sampler_settings,
+	Material_coating<coating::Thinfilm, Sample_thinfilm>(cache, sampler_settings,
 														 two_sided) {}
 
 const material::Sample& Material_thinfilm::sample(float3_p wo, const Renderstate& rs,

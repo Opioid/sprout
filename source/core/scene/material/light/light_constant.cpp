@@ -9,9 +9,9 @@
 
 namespace scene { namespace material { namespace light {
 
-Constant::Constant(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
+Constant::Constant(Generic_sample_cache<Sample>& cache,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
-	Material(cache, mask, sampler_settings, two_sided) {}
+	Material(cache, sampler_settings, two_sided) {}
 
 const material::Sample& Constant::sample(float3_p wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter /*filter*/) {

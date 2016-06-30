@@ -24,9 +24,11 @@ public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;
 
-	Material(Texture_2D_ptr mask, const Sampler_settings& sampler_settings, bool two_sided);
+	Material(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual ~Material();
+
+	void set_mask(Texture_2D_ptr mask);
 
 	void set_parameters(const json::Value& parameters);
 
@@ -76,9 +78,8 @@ class Typed_material : public Material {
 
 public:
 
-	Typed_material(Sample_cache& cache, Texture_2D_ptr mask,
-				   const Sampler_settings& sampler_settings, bool two_sided) :
-		Material(mask, sampler_settings, two_sided), cache_(cache) {}
+	Typed_material(Sample_cache& cache, const Sampler_settings& sampler_settings, bool two_sided) :
+		Material(sampler_settings, two_sided), cache_(cache) {}
 
 protected:
 

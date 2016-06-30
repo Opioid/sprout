@@ -9,10 +9,9 @@
 namespace scene { namespace material { namespace sky {
 
 Material_overcast::Material_overcast(Generic_sample_cache<light::Sample>& cache,
-									 Texture_2D_ptr mask,
 									 const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Generic_sample_cache<light::Sample>>(
-		cache, mask, sampler_settings, two_sided) {}
+		cache, sampler_settings, two_sided) {}
 
 const material::Sample& Material_overcast::sample(float3_p wo, const Renderstate& rs,
 												  const Worker& worker, Sampler_filter /*filter*/) {

@@ -10,7 +10,6 @@ class Material_overcast : public material::Typed_material<Generic_sample_cache<l
 public:
 
 	Material_overcast(Generic_sample_cache<light::Sample>& cache,
-					  Texture_2D_ptr mask,
 					  const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,

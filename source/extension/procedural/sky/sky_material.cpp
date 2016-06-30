@@ -13,7 +13,7 @@ Material::Material(scene::material::Generic_sample_cache<scene::material::light:
 				   Model& model) :
 	scene::material::Typed_material<
 		scene::material::Generic_sample_cache<scene::material::light::Sample>>(
-			cache, nullptr, scene::material::Sampler_settings(), false),
+			cache, scene::material::Sampler_settings(), false),
 	model_(model) {}
 
 bool Material::has_emission_map() const {

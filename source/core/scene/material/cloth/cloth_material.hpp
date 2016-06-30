@@ -11,7 +11,7 @@ class Material : public material::Typed_material<Generic_sample_cache<Sample>> {
 
 public:
 
-	Material(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
+	Material(Generic_sample_cache<Sample>& cache,
 			 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
@@ -21,7 +21,7 @@ public:
 	void set_color_map(Texture_2D_ptr color_map);
 	void set_normal_map(Texture_2D_ptr normal_map);
 
-	void set_color(const float3& color);
+	void set_color(float3_p color);
 
 private:
 

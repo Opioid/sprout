@@ -6,10 +6,9 @@
 namespace scene { namespace material { namespace substitute {
 
 Material_translucent::Material_translucent(Generic_sample_cache<Sample_translucent>& cache,
-										   Texture_2D_ptr mask,
 										   const Sampler_settings& sampler_settings,
 										   bool two_sided) :
-	Material_base<Sample_translucent>(cache, mask, sampler_settings, two_sided) {}
+	Material_base<Sample_translucent>(cache, sampler_settings, two_sided) {}
 
 const material::Sample& Material_translucent::sample(float3_p wo, const Renderstate& rs,
 													 const Worker& worker,

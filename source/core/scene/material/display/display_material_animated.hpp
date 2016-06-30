@@ -14,7 +14,6 @@ class Material_animated : public material::Typed_material<Generic_sample_cache<S
 public:
 
 	Material_animated(Generic_sample_cache<Sample>& cache,
-					  Texture_2D_ptr mask,
 					  const Sampler_settings& sampler_settings,
 					  bool two_sided,
 					  Texture_2D_ptr emission_map,
@@ -27,8 +26,8 @@ public:
 										   Sampler_filter filter) final override;
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv,
-										 float area, float time, const Worker& worker,
-										 Sampler_filter filter) const final override;
+								   float area, float time, const Worker& worker,
+								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
 

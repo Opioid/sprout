@@ -12,7 +12,7 @@ class Glass : public Typed_material<Generic_sample_cache<Sample>> {
 
 public:
 
-	Glass(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
+	Glass(Generic_sample_cache<Sample>& cache,
 		  const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,

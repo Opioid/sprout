@@ -11,7 +11,7 @@ class Material_coating : public Material_base<Sample> {
 
 public:
 
-	Material_coating(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
+	Material_coating(Generic_sample_cache<Sample>& cache,
 					 const Sampler_settings& sampler_settings, bool two_sided);
 
 	void set_coating_normal_map(Texture_2D_ptr normal_map);
@@ -36,7 +36,7 @@ class Material_clearcoat : public Material_coating<coating::Clearcoat, Sample_cl
 
 public:
 
-	Material_clearcoat(Generic_sample_cache<Sample_clearcoat>& cache, Texture_2D_ptr mask,
+	Material_clearcoat(Generic_sample_cache<Sample_clearcoat>& cache,
 					   const Sampler_settings& sampler_settings, bool two_sided);
 
 	using Sampler_filter = material::Sampler_settings::Filter;
@@ -52,7 +52,7 @@ class Material_thinfilm : public Material_coating<coating::Thinfilm, Sample_thin
 
 public:
 
-	Material_thinfilm(Generic_sample_cache<Sample_thinfilm>& cache, Texture_2D_ptr mask,
+	Material_thinfilm(Generic_sample_cache<Sample_thinfilm>& cache,
 					  const Sampler_settings& sampler_settings, bool two_sided);
 
 	using Sampler_filter = material::Sampler_settings::Filter;

@@ -14,13 +14,11 @@
 namespace scene { namespace material { namespace display {
 
 Material_animated::Material_animated(Generic_sample_cache<Sample>& cache,
-									 Texture_2D_ptr mask,
 									 const Sampler_settings& sampler_settings,
 									 bool two_sided,
 									 Texture_2D_ptr emission_map,
 									 float animation_duration) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
-														   sampler_settings, two_sided),
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, sampler_settings, two_sided),
 	emission_map_(emission_map),
 	average_emissions_(emission_map->num_elements()),
 	frame_length_(animation_duration / static_cast<float>(emission_map_->num_elements())),

@@ -10,6 +10,7 @@ class Image;
 namespace texture {
 
 class Texture_2D {
+
 public:
 
 	Texture_2D(std::shared_ptr<Image> image);

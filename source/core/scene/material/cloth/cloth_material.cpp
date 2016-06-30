@@ -11,9 +11,8 @@
 namespace scene { namespace material { namespace cloth {
 
 Material::Material(Generic_sample_cache<Sample>& cache,
-				   Texture_2D_ptr mask,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, mask,
+	material::Typed_material<Generic_sample_cache<Sample>>(cache,
 														   sampler_settings,
 														   two_sided) {}
 
@@ -53,7 +52,7 @@ void Material::set_normal_map(Texture_2D_ptr normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material::set_color(const float3& color) {
+void Material::set_color(float3_p color) {
 	color_ = color;
 }
 

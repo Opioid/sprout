@@ -12,9 +12,9 @@
 
 namespace scene { namespace material { namespace light {
 
-Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
+Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
 						 const Sampler_settings& sampler_settings, bool two_sided) :
-	Material(cache, mask, sampler_settings, two_sided),
+	Material(cache, sampler_settings, two_sided),
 	average_emission_(float3(-1.f, -1.f, -1.f)) {}
 
 const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,

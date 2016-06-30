@@ -6,12 +6,15 @@
 
 namespace scene { namespace material {
 
-Material::Material(Texture_2D_ptr mask, const Sampler_settings& sampler_settings, bool two_sided) :
-	mask_(mask),
+Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	sampler_key_(static_cast<uint32_t>(sampler_settings.filter)),
 	two_sided_(two_sided) {}
 
 Material::~Material() {}
+
+void Material::set_mask(Texture_2D_ptr mask) {
+	mask_ = mask;
+}
 
 void Material::set_parameters(const json::Value& parameters) {
 	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
@@ -24,8 +27,7 @@ void Material::set_parameters(const json::Value& parameters) {
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-float3 Material::sample_radiance(float3_p /*wi*/, float2 /*uv*/,
-								 float /*area*/, float /*time*/,
+float3 Material::sample_radiance(float3_p /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
 								 const Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	return float3(0.f, 0.f, 0.f);
 }
@@ -47,8 +49,8 @@ float Material::emission_pdf(float2 /*uv*/, const Worker& /*worker*/,
 	return 0.f;
 }
 
-float Material::opacity(float2 uv, float /*time*/,
-						const Worker& worker, Sampler_filter filter) const {
+float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
+						Sampler_filter filter) const {
 	if (mask_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 		return sampler.sample_1(*mask_, uv);

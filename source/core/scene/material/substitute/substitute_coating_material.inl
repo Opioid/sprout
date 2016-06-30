@@ -8,9 +8,9 @@ namespace scene { namespace material { namespace substitute {
 
 template<typename Coating, typename Sample>
 Material_coating<Coating, Sample>::Material_coating(
-		Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
+		Generic_sample_cache<Sample>& cache,
 		const Sampler_settings& sampler_settings, bool two_sided) :
-	Material_base<Sample>(cache, mask, sampler_settings, two_sided) {}
+	Material_base<Sample>(cache, sampler_settings, two_sided) {}
 
 template<typename Coating, typename Sample>
 void Material_coating<Coating, Sample>::set_coating_normal_map(Texture_2D_ptr normal_map) {

@@ -10,9 +10,9 @@
 
 namespace scene { namespace material { namespace glass {
 
-Glass::Glass(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
+Glass::Glass(Generic_sample_cache<Sample>& cache,
 			 const Sampler_settings& sampler_settings) :
-	Typed_material(cache, mask, sampler_settings, false) {}
+	Typed_material(cache, sampler_settings, false) {}
 
 const material::Sample& Glass::sample(float3_p wo, const Renderstate& rs,
 									  const Worker& worker, Sampler_filter filter) {

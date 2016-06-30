@@ -12,7 +12,6 @@ class Emissionmap_animated : public Material {
 public:
 
 	Emissionmap_animated(Generic_sample_cache<Sample>& cache,
-						 Texture_2D_ptr mask,
 						 const Sampler_settings& sampler_settings,
 						 bool two_sided,
 						 Texture_2D_ptr emission_map,

@@ -11,6 +11,8 @@ SOURCES += \
 	image/texture/texture_encoding.cpp \
 
 HEADERS += \
+	image/texture/texture_2d_adapter.hpp \
+	image/texture/texture_2d_adapter.inl \
 	image/texture/texture_2d.hpp \
 	image/texture/texture_2d_byte_1_unorm.hpp \	
 	image/texture/texture_2d_byte_2_unorm.hpp \	

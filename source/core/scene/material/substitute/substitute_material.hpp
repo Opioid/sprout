@@ -10,7 +10,7 @@ class Material : public Material_base<Sample> {
 
 public:
 
-	Material(Generic_sample_cache<Sample>& cache, Texture_2D_ptr mask,
+	Material(Generic_sample_cache<Sample>& cache,
 			 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,

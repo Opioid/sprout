@@ -34,9 +34,8 @@
 namespace scene { namespace material { namespace metal {
 
 Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
-									   Texture_2D_ptr mask,
 									   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_isotropic>>(cache, mask,
+	material::Typed_material<Generic_sample_cache<Sample_isotropic>>(cache,
 																	 sampler_settings,
 																	 two_sided) {}
 
@@ -79,10 +78,9 @@ void Material_isotropic::set_roughness(float roughness) {
 }
 
 Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
-										   Texture_2D_ptr mask,
 										   const Sampler_settings& sampler_settings,
 										   bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_anisotropic>>(cache, mask,
+	material::Typed_material<Generic_sample_cache<Sample_anisotropic>>(cache,
 																	   sampler_settings,
 																	   two_sided) {}
 
