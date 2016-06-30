@@ -822,6 +822,7 @@ void Provider::read_texture_description(const json::Value& texture_value,
 										Texture_description& description) {
 	description.filename = "";
 	description.usage = "Color";
+	description.scale = float2(1.f, 1.f);
 	description.num_elements = 1;
 
 	for (auto n = texture_value.MemberBegin(); n != texture_value.MemberEnd(); ++n) {
@@ -832,6 +833,8 @@ void Provider::read_texture_description(const json::Value& texture_value,
 			description.filename = json::read_string(node_value);
 		} else if ("usage" == node_name) {
 			description.usage = json::read_string(node_value);
+		} else if ("scale" == node_name) {
+			description.scale = json::read_float2(node_value);
 		} else if ("num_elements" == node_name) {
 			description.num_elements = json::read_int(node_value);
 		}

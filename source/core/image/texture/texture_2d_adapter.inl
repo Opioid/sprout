@@ -6,6 +6,8 @@
 
 namespace image { namespace texture {
 
+Texture_2D_adapter::Texture_2D_adapter(std::shared_ptr<Texture_2D> texture) :
+	texture_(texture), scale_(float2(1.f, 1.f)) {}
 
 Texture_2D_adapter::Texture_2D_adapter(std::shared_ptr<Texture_2D> texture, float2 scale) :
 	texture_(texture), scale_(scale) {}

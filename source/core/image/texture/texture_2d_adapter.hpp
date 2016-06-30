@@ -13,6 +13,7 @@ class Texture_2D_adapter {
 
 public:
 
+	Texture_2D_adapter(std::shared_ptr<Texture_2D> texture);
 	Texture_2D_adapter(std::shared_ptr<Texture_2D> texture, float2 scale);
 	~Texture_2D_adapter();
 
@@ -30,7 +31,7 @@ public:
 
 	float2 address(float2 uv) const;
 
-protected:
+private:
 
 	std::shared_ptr<Texture_2D> texture_;
 

@@ -72,6 +72,7 @@ private:
 	struct Texture_description {
 		std::string filename;
 		std::string usage;
+		float2		scale;
 		int32_t     num_elements;
 	};
 
