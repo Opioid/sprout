@@ -1,8 +1,6 @@
 #pragma once
 
 #include "scene/material/material_sample.hpp"
-#include "scene/material/ggx/ggx.hpp"
-#include "scene/material/oren_nayar/oren_nayar.hpp"
 
 namespace scene { namespace material { namespace substitute {
 

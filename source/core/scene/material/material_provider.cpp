@@ -761,7 +761,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 
 			material->set_coating_normal_map(coating_normal_map);
 			material->set_coating_weight_map(coating_weight_map);
-			material->set_clearcoat(coating.ior, coating.roughness, coating.weight);
+			material->set_clearcoat(coating.color, coating.ior, coating.roughness, coating.weight);
 
 			return material;
 		}
@@ -832,7 +832,9 @@ void Provider::read_coating_description(const json::Value& coating_value,
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;
 
-		if ("ior" == node_name) {
+		if ("color" == node_name) {
+			description.color = json::read_float3(node_value);
+		} else if ("ior" == node_name) {
 			description.ior = json::read_float(node_value);
 		} else if ("roughness" == node_name) {
 			description.roughness = json::read_float(node_value);

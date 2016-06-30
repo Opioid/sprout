@@ -19,15 +19,15 @@ float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coatin
 	float3 diffuse = oren_nayar::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
 													 layer_, diffuse_pdf);
 
-	float3 coating_fresnel;
+	float3 coating_attenuation;
 	float  coating_pdf;
 	float3 coating_reflection = coating.evaluate(wi, wo_, layer_.ior,
-												 coating_fresnel, coating_pdf);
+												 coating_attenuation, coating_pdf);
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == layer_.a2) {
 		pdf = 0.5f * (coating_pdf + 0.5f * diffuse_pdf);
-		return coating_reflection + n_dot_wi * (1.f - coating_fresnel) * diffuse;
+		return coating_reflection + n_dot_wi * coating_attenuation * diffuse;
 	}
 
 	float3 h = math::normalized(wo_ + wi);
@@ -46,7 +46,7 @@ float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coatin
 
 	pdf = (coating_pdf + diffuse_pdf + ggx_pdf) / 3.f;
 
-	return coating_reflection + n_dot_wi * (1.f - coating_fresnel) * (diffuse + specular);
+	return coating_reflection + n_dot_wi * coating_attenuation * (diffuse + specular);
 }
 
 template<typename Coating>
@@ -56,14 +56,14 @@ void Sample_base::base_sample_evaluate_and_coating(const Coating& coating,
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
-		float3 fresnel_c;
-		coating.importance_sample(wo_, layer_.ior, sampler, fresnel_c, result);
+		float3 coating_attenuation;
+		coating.importance_sample(wo_, layer_.ior, sampler, coating_attenuation, result);
 
 		float base_pdf;
 		float3 base_reflection = layer_.base_evaluate(result.wi, wo_, base_pdf);
 
 		result.pdf = (result.pdf + 2.f * base_pdf) / 3.f;
-		result.reflection = result.reflection + (1.f - fresnel_c) * base_reflection;
+		result.reflection = result.reflection + coating_attenuation * base_reflection;
 	} else {
 		if (1.f == layer_.metallic) {
 			pure_specular_importance_sample_and_coating(coating, sampler, result);
@@ -83,13 +83,13 @@ void Sample_base::diffuse_importance_sample_and_coating(const Coating& coating,
 														bxdf::Result& result) const {
 	layer_.diffuse_importance_sample(wo_, sampler, result);
 
-	float3 coating_fresnel;
+	float3 coating_attenuation;
 	float  coating_pdf;
 	float3 coating_reflection = coating.evaluate(result.wi, wo_, layer_.ior,
-												 coating_fresnel, coating_pdf);
+												 coating_attenuation, coating_pdf);
 
 	result.pdf = (2.f * result.pdf + coating_pdf) / 3.f;
-	result.reflection = (1.f - coating_fresnel) * result.reflection + coating_reflection;
+	result.reflection = coating_attenuation * result.reflection + coating_reflection;
 }
 
 template<typename Coating>
@@ -98,13 +98,13 @@ void Sample_base::specular_importance_sample_and_coating(const Coating& coating,
 														 bxdf::Result& result) const {
 	layer_.specular_importance_sample(wo_, sampler, result);
 
-	float3 coating_fresnel;
+	float3 coating_attenuation;
 	float  coating_pdf;
 	float3 coating_reflection = coating.evaluate(result.wi, wo_, layer_.ior,
-												 coating_fresnel, coating_pdf);
+												 coating_attenuation, coating_pdf);
 
 	result.pdf = (2.f * result.pdf + coating_pdf) / 3.f;
-	result.reflection = (1.f - coating_fresnel) * result.reflection + coating_reflection;
+	result.reflection = coating_attenuation * result.reflection + coating_reflection;
 }
 
 template<typename Coating>
@@ -113,13 +113,13 @@ void Sample_base::pure_specular_importance_sample_and_coating(const Coating& coa
 															  bxdf::Result& result) const {
 	layer_.pure_specular_importance_sample(wo_, sampler, result);
 
-	float3 coating_fresnel;
+	float3 coating_attenuation;
 	float  coating_pdf;
 	float3 coating_reflection = coating.evaluate(result.wi, wo_, layer_.ior,
-												 coating_fresnel, coating_pdf);
+												 coating_attenuation, coating_pdf);
 
 	result.pdf = 0.5f * (result.pdf + coating_pdf);
-	result.reflection = (1.f - coating_fresnel) * result.reflection + coating_reflection;
+	result.reflection = coating_attenuation * result.reflection + coating_reflection;
 }
 
 }}}

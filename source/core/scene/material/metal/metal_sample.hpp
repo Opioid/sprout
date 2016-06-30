@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene/material/material_sample.hpp"
-#include "scene/material/ggx/ggx.hpp"
 
 namespace scene { namespace material { namespace metal {
 

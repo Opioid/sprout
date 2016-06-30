@@ -82,10 +82,11 @@ private:
 										 Texture_description& description);
 
 	struct Coating_description {
-		float ior = 1.f;
-		float roughness = 0.f;
-		float thickness = 0.f;
-		float weight = 1.f;
+		float3 color = float3(1.f, 1.f, 1.f);
+		float  ior = 1.f;
+		float  roughness = 0.f;
+		float  thickness = 0.f;
+		float  weight = 1.f;
 		std::string normal_map_filename;
 		std::string weight_map_filename;
 	};

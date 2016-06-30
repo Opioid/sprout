@@ -21,12 +21,13 @@ const material::Sample& Material_clearcoat::sample(float3_p wo, const Renderstat
 
 	set_coating_basis(rs, sampler, sample);
 
-	sample.coating_.set(coating_.f0, coating_.a2);
+	sample.coating_.set(coating_.color, coating_.f0, coating_.a2);
 
 	return sample;
 }
 
-void Material_clearcoat::set_clearcoat(float ior, float roughness, float weight) {
+void Material_clearcoat::set_clearcoat(float3_p color, float ior, float roughness, float weight) {
+	coating_.color = color;
 	coating_.f0 = fresnel::schlick_f0(1.f, ior);
 	coating_.a2 = math::pow4(roughness);
 	coating_.weight = weight;
