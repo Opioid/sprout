@@ -740,6 +740,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 
 			material->set_coating_normal_map(coating_normal_map);
 			material->set_coating_weight_map(coating_weight_map);
+			material->set_coating_color(coating.color);
 			material->set_thinfilm(coating.ior, coating.roughness,
 								   coating.thickness, coating.weight);
 
@@ -761,7 +762,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 
 			material->set_coating_normal_map(coating_normal_map);
 			material->set_coating_weight_map(coating_weight_map);
-			material->set_clearcoat(coating.color, coating.ior, coating.roughness, coating.weight);
+			material->set_coating_color(coating.color);
+			material->set_clearcoat(coating.ior, coating.roughness, coating.weight);
 
 			return material;
 		}

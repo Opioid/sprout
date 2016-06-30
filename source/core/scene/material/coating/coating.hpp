@@ -5,13 +5,14 @@
 namespace scene { namespace material { namespace coating {
 
 struct Coating_base {
-	void set_weight(float weight);
+	void set_color_and_weight(float3_p color, float weight);
 
-	float weight;
+	float3 color;
+	float  weight;
 };
 
 struct Clearcoat : public Coating_base {
-	void set(float3_p color, float f0, float a2);
+	void set(float f0, float a2);
 
 	template<typename Layer>
 	float3 evaluate(float3_p wi, float3_p wo, float internal_ior,
@@ -24,8 +25,6 @@ struct Clearcoat : public Coating_base {
 
 	float f0;
 	float a2;
-
-	float3 color;
 };
 
 struct Thinfilm : public Coating_base {

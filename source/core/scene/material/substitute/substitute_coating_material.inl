@@ -23,6 +23,11 @@ void Material_coating<Coating, Sample>::set_coating_weight_map(Texture_2D_ptr we
 }
 
 template<typename Coating, typename Sample>
+void Material_coating<Coating, Sample>::set_coating_color(float3_p color) {
+	coating_.color = color;
+}
+
+template<typename Coating, typename Sample>
 void Material_coating<Coating, Sample>::set_coating_basis(const Renderstate& rs,
 														  const Texture_sampler_2D& sampler,
 														  Sample& sample) {
@@ -39,9 +44,9 @@ void Material_coating<Coating, Sample>::set_coating_basis(const Renderstate& rs,
 
 	if (coating_weight_map_) {
 		float weight = sampler.sample_1(*coating_weight_map_, rs.uv);
-		sample.coating_.set_weight(weight);
+		sample.coating_.set_color_and_weight(coating_.color, weight);
 	} else {
-		sample.coating_.set_weight(coating_.weight);
+		sample.coating_.set_color_and_weight(coating_.color, coating_.weight);
 	}
 }
 

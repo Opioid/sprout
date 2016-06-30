@@ -17,6 +17,8 @@ public:
 	void set_coating_normal_map(Texture_2D_ptr normal_map);
 	void set_coating_weight_map(Texture_2D_ptr weight_map);
 
+	void set_coating_color(float3_p color);
+
 protected:
 
 	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
@@ -43,7 +45,7 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_clearcoat(float3_p color, float ior, float roughness, float weight);
+	void set_clearcoat(float ior, float roughness, float weight);
 };
 
 class Material_thinfilm : public Material_coating<coating::Thinfilm, Sample_thinfilm> {

@@ -7,12 +7,12 @@
 
 namespace scene { namespace material { namespace coating {
 
-inline void Coating_base::set_weight(float weight) {
+inline void Coating_base::set_color_and_weight(float3_p color, float weight) {
+	this->color  = color;
 	this->weight = weight;
 }
 
-inline void Clearcoat::set(float3_p color, float f0, float a2) {
-	this->color = color;
+inline void Clearcoat::set(float f0, float a2) {
 	this->f0    = f0;
 	this->a2    = a2;
 }
@@ -67,7 +67,7 @@ float3 Thinfilm::evaluate(float3_p wi, float3_p wo, float internal_ior,
 	float3 result = n_dot_wi * ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo, layer,
 														thinfilm, attenuation, pdf);
 
-	attenuation = 1.f - attenuation;
+	attenuation = (1.f - attenuation) * math::lerp(float3(1.f, 1.f, 1.f), color, weight);
 
 	return result;
 }
@@ -84,7 +84,7 @@ void Thinfilm::importance_sample(float3_p wo, float internal_ior,
 													   thinfilm, sampler,
 													   attenuation, result);
 
-	attenuation = 1.f - attenuation;
+	attenuation = (1.f - attenuation) * math::lerp(float3(1.f, 1.f, 1.f), color, weight);
 
 	result.reflection *= n_dot_wi;
 }
