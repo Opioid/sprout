@@ -2,7 +2,7 @@
 
 #include "scene/material/material_sample.hpp"
 
-namespace scene { namespace material { namespace metal {
+namespace scene { namespace material { namespace metallic_paint {
 
 class Sample : public material::Sample {
 

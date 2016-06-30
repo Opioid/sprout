@@ -5,7 +5,7 @@
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 
-namespace scene { namespace material { namespace metal {
+namespace scene { namespace material { namespace metallic_paint {
 
 float3_p Sample::shading_normal() const {
 	return layer_.n;
