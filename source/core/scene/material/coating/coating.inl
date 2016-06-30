@@ -18,8 +18,8 @@ inline void Clearcoat::set(float3_p color, float f0, float a2) {
 }
 
 template<typename Layer>
-float3 Clearcoat::evaluate(float3_p wi, float3_p wo, float /*internal_ior*/, const Layer& layer,
-						   float3& attenuation, float& pdf) const {
+float3 Clearcoat::evaluate(float3_p wi, float3_p wo, float /*internal_ior*/,
+						   const Layer& layer, float3& attenuation, float& pdf) const {
 	float n_dot_wi = layer.clamped_n_dot(wi);
 	float n_dot_wo = layer.clamped_n_dot(wo);
 
@@ -57,8 +57,8 @@ inline void Thinfilm::set(float ior, float a2, float thickness) {
 }
 
 template<typename Layer>
-float3 Thinfilm::evaluate(float3_p wi, float3_p wo, float internal_ior, const Layer& layer,
-						  float3& attenuation, float& pdf) const {
+float3 Thinfilm::evaluate(float3_p wi, float3_p wo, float internal_ior,
+						  const Layer& layer, float3& attenuation, float& pdf) const {
 	float n_dot_wi = layer.clamped_n_dot(wi);
 	float n_dot_wo = layer.clamped_n_dot(wo);
 

@@ -14,8 +14,8 @@ struct Clearcoat : public Coating_base {
 	void set(float3_p color, float f0, float a2);
 
 	template<typename Layer>
-	float3 evaluate(float3_p wi, float3_p wo, float internal_ior, const Layer& layer,
-					float3& attenuation, float& pdf) const;
+	float3 evaluate(float3_p wi, float3_p wo, float internal_ior,
+					const Layer& layer, float3& attenuation, float& pdf) const;
 
 	template<typename Layer>
 	void importance_sample(float3_p wo, float internal_ior,
@@ -32,8 +32,8 @@ struct Thinfilm : public Coating_base {
 	void set(float ior, float a2, float thickness);
 
 	template<typename Layer>
-	float3 evaluate(float3_p wi, float3_p wo, float internal_ior, const Layer& layer,
-					float3& attenuation, float& pdf) const;
+	float3 evaluate(float3_p wi, float3_p wo, float internal_ior,
+					const Layer& layer, float3& attenuation, float& pdf) const;
 
 	template<typename Layer>
 	void importance_sample(float3_p wo, float internal_ior,
