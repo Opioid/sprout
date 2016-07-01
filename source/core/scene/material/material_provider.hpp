@@ -2,6 +2,7 @@
 
 #include "resource/resource_provider.hpp"
 #include "material_sample_cache.hpp"
+#include "image/texture/texture_types.hpp"
 #include "substitute/substitute_coating_sample.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/vector.hpp"
@@ -81,6 +82,10 @@ private:
 
 	static void read_texture_description(const json::Value& texture_value,
 										 Texture_description& description);
+
+	static Adapter_2D create_texture(const Texture_description& description,
+									 const memory::Variant_map& options,
+									 resource::Manager& manager);
 
 	struct Coating_description {
 		float3 color = float3(1.f, 1.f, 1.f);

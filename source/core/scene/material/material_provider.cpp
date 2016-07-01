@@ -141,22 +141,13 @@ std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
 				memory::Variant_map options;
 				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					color_map = create_texture(texture_description, options, manager);
 				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					normal_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					mask = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -222,16 +213,10 @@ std::shared_ptr<Material> Provider::load_display(const json::Value& display_valu
 
 				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					emission_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					mask = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -295,10 +280,7 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 				memory::Variant_map options;
 				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					normal_map = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -383,16 +365,10 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 
 				if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					emission_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					mask = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -473,10 +449,7 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_val
 								texture_description.filename, options);
 				} else*/ if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					mask = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -538,26 +511,17 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 				memory::Variant_map options;
 				if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					normal_map = create_texture(texture_description, options, manager);
 			/*	} else if ("Surface" == usage) {
 					surface_map = texture_cache_.load(filename,
 													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));*/
 				} else if ("Anisotropy" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Anisotropy);
-					direction_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					direction_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					mask = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -625,10 +589,7 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 				memory::Variant_map options;
 				if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					mask = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -698,34 +659,19 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 				memory::Variant_map options;
 				if ("Color" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					color_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					color_map = create_texture(texture_description, options, manager);
 				} else if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					normal_map = create_texture(texture_description, options, manager);
 				} else if ("Surface" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Surface);
-					surface_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					surface_map = create_texture(texture_description, options, manager);
 				} else if ("Emission" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Color);
-					emission_map = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					emission_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Mask);
-					mask = Adapter_2D(
-								manager.load<image::texture::Texture_2D>(
-									texture_description.filename, options),
-								texture_description.scale);
+					mask = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -760,19 +706,13 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 		if (!coating.weight_map_description.filename.empty()) {
 			memory::Variant_map options;
 			options.insert("usage", image::texture::Provider::Usage::Mask);
-			coating_weight_map = Adapter_2D(
-						manager.load<image::texture::Texture_2D>(
-							coating.weight_map_description.filename, options),
-						coating.weight_map_description.scale);
+			coating_weight_map = create_texture(coating.weight_map_description, options, manager);
 		}
 
 		if (!coating.normal_map_description.filename.empty()) {
 			memory::Variant_map options;
 			options.insert("usage", image::texture::Provider::Usage::Normal);
-			coating_normal_map = Adapter_2D(
-						manager.load<image::texture::Texture_2D>(
-							coating.normal_map_description.filename, options),
-						coating.normal_map_description.scale);
+			coating_normal_map = create_texture(coating.normal_map_description, options, manager);
 		}
 
 		if (coating.thickness > 0.f) {
@@ -880,6 +820,13 @@ void Provider::read_texture_description(const json::Value& texture_value,
 			description.num_elements = json::read_int(node_value);
 		}
 	}
+}
+
+Adapter_2D Provider::create_texture(const Texture_description& description,
+									const memory::Variant_map& options,
+									resource::Manager& manager) {
+	return Adapter_2D(manager.load<image::texture::Texture_2D>(description.filename, options),
+					  description.scale);
 }
 
 void Provider::read_coating_description(const json::Value& coating_value,
