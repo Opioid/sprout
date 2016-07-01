@@ -720,18 +720,18 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 		Texture_2D_ptr coating_normal_map;
 		Texture_2D_ptr coating_weight_map;
 
-		if (!coating.normal_map_filename.empty()) {
+		if (!coating.normal_map_description.filename.empty()) {
 			memory::Variant_map options;
 			options.insert("usage", image::texture::Provider::Usage::Normal);
 			coating_normal_map = manager.load<image::texture::Texture_2D>(
-						coating.normal_map_filename, options);
+						coating.normal_map_description.filename, options);
 		}
 
-		if (!coating.weight_map_filename.empty()) {
+		if (!coating.weight_map_description.filename.empty()) {
 			memory::Variant_map options;
 			options.insert("usage", image::texture::Provider::Usage::Mask);
 			coating_weight_map = manager.load<image::texture::Texture_2D>(
-						coating.weight_map_filename, options);
+						coating.weight_map_description.filename, options);
 		}
 
 		if (coating.thickness > 0.f) {
@@ -871,9 +871,9 @@ void Provider::read_coating_description(const json::Value& coating_value,
 				}
 
 				if ("Normal" == texture_description.usage) {
-					description.normal_map_filename = texture_description.filename;
+					description.normal_map_description = texture_description;
 				} else if ("Mask" == texture_description.usage) {
-					description.weight_map_filename = texture_description.filename;
+					description.weight_map_description = texture_description;
 				}
 			}
 		}
