@@ -57,9 +57,14 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) c
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
 
+	float3 h = math::normalized(wo + wi);
+	float wo_dot_h = std::max(math::dot(wo, h), 0.00001f);
+
+	float3 f = fresnel::schlick(wo_dot_h, f0);
+
 	float diffuse_pdf;
-	float3 diffuse = oren_nayar::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
-													 *this, diffuse_pdf);
+	float3 diffuse = (1.f - f) * oren_nayar::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
+																 *this, diffuse_pdf);
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == a2) {
@@ -67,15 +72,11 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) c
 		return n_dot_wi * diffuse;
 	}
 
-	float3 h = math::normalized(wo + wi);
-
 	float n_dot_h  = math::dot(n, h);
-	float wo_dot_h = math::dot(wo, h);
 
 	float clamped_a2 = ggx::clamp_a2(a2);
 	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
 	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	float3 f = fresnel::schlick(wo_dot_h, f0);
 
 	float3 specular = d * g * f;
 
@@ -93,11 +94,12 @@ void Sample_base::Layer::diffuse_importance_sample(float3_p wo, sampler::Sampler
 															  sampler, result);
 
 	fresnel::Schlick schlick(f0);
-	float ggx_pdf;
+	float3 ggx_fresnel;
+	float  ggx_pdf;
 	float3 ggx_reflection = ggx::Isotropic::evaluate(result.wi, wo, n_dot_wi, n_dot_wo,
-													 *this, schlick, ggx_pdf);
+													 *this, schlick, ggx_fresnel, ggx_pdf);
 
-	result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
+	result.reflection = n_dot_wi * ((1.f - ggx_fresnel) * result.reflection + ggx_reflection);
 	result.pdf = 0.5f * (result.pdf + ggx_pdf);
 }
 
@@ -105,14 +107,15 @@ void Sample_base::Layer::specular_importance_sample(float3_p wo, sampler::Sample
 													bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
 	fresnel::Schlick schlick(f0);
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this,
-													   schlick, sampler, result);
+	float3 ggx_fresnel;
+	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this, schlick,
+													   sampler, ggx_fresnel, result);
 
 	float on_pdf;
 	float3 on_reflection = oren_nayar::Isotropic::evaluate(result.wi, wo, n_dot_wi, n_dot_wo,
 														   *this, on_pdf);
 
-	result.reflection = n_dot_wi * (result.reflection + on_reflection);
+	result.reflection = n_dot_wi * (result.reflection + (1.f - ggx_fresnel) * on_reflection);
 	result.pdf = 0.5f * (result.pdf + on_pdf);
 }
 

@@ -15,9 +15,14 @@ float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coatin
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
+	float3 h = math::normalized(wo_ + wi);
+	float wo_dot_h = std::max(math::dot(wo_, h), 0.00001f);
+
+	float3 f = fresnel::schlick(wo_dot_h, layer_.f0);
+
 	float diffuse_pdf;
-	float3 diffuse = oren_nayar::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
-													 layer_, diffuse_pdf);
+	float3 diffuse = (1.f - f) * oren_nayar::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
+																 layer_, diffuse_pdf);
 
 	float3 coating_attenuation;
 	float  coating_pdf;
@@ -30,15 +35,11 @@ float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coatin
 		return coating_reflection + n_dot_wi * coating_attenuation * diffuse;
 	}
 
-	float3 h = math::normalized(wo_ + wi);
-
-	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer_.n, h));
 
 	float clamped_a2 = ggx::clamp_a2(layer_.a2);
 	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
 	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	float3 f = fresnel::schlick(wo_dot_h, layer_.f0);
 
 	float3 specular = d * g * f;
 
