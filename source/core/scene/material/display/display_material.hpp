@@ -35,7 +35,7 @@ public:
 
 	virtual void prepare_sampling(bool spherical) final override;
 
-	void set_emission_map(Texture_2D_ptr emission_map);
+	void set_emission_map(const Adapter_2D& emission_map);
 
 	void set_emission(float3_p radiance);
 	void set_emission_factor(float emission_factor);
@@ -44,7 +44,7 @@ public:
 
 private:
 
-	Texture_2D_ptr emission_map_;
+	Adapter_2D emission_map_;
 
 	float3 emission_;
 

@@ -1,5 +1,5 @@
 #include "material.hpp"
-#include "image/texture/sampler/sampler_2d.hpp"
+#include "image/texture/texture_2d_adapter.inl"
 #include "scene/scene_worker.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -12,7 +12,7 @@ Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 
 Material::~Material() {}
 
-void Material::set_mask(Texture_2D_ptr mask) {
+void Material::set_mask(const Adapter_2D& mask) {
 	mask_ = mask;
 }
 
@@ -51,9 +51,9 @@ float Material::emission_pdf(float2 /*uv*/, const Worker& /*worker*/,
 
 float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
 						Sampler_filter filter) const {
-	if (mask_) {
+	if (mask_.is_valid()) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
-		return sampler.sample_1(*mask_, uv);
+		return mask_.sample_1(sampler, uv);
 	} else {
 		return 1.f;
 	}
@@ -70,7 +70,7 @@ uint32_t Material::sampler_key() const {
 }
 
 bool Material::is_masked() const {
-	return !mask_ == false;
+	return mask_.is_valid();
 }
 
 bool Material::is_emissive() const {

@@ -46,10 +46,10 @@ const material::Sample& Material_isotropic::sample(float3_p wo, const Renderstat
 
 	sample.set_basis(rs.geo_n, wo);
 
-	if (normal_map_) {
+	if (normal_map_.is_valid()) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
+		float3 nm = normal_map_.sample_3(sampler, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
 		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else {
@@ -61,7 +61,7 @@ const material::Sample& Material_isotropic::sample(float3_p wo, const Renderstat
 	return sample;
 }
 
-void Material_isotropic::set_normal_map(Texture_2D_ptr normal_map) {
+void Material_isotropic::set_normal_map(const Adapter_2D& normal_map) {
 	normal_map_ = normal_map;
 }
 
@@ -93,13 +93,13 @@ const material::Sample& Material_anisotropic::sample(float3_p wo, const Renderst
 
 	sample.set_basis(rs.geo_n, wo);
 
-	if (normal_map_) {
-		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
+	if (normal_map_.is_valid()) {
+		float3 nm = normal_map_.sample_3(sampler, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
 
 		sample.layer_.set_basis(rs.t, rs.b, n);
-	} else if (direction_map_) {
-		float2 tm = sampler.sample_2(*direction_map_, rs.uv);
+	} else if (direction_map_.is_valid()) {
+		float2 tm = direction_map_.sample_2(sampler, rs.uv);
 		float3 t  = math::normalized(rs.tangent_to_world(tm));
 		float3 b  = math::cross(rs.n, t);
 
@@ -113,12 +113,11 @@ const material::Sample& Material_anisotropic::sample(float3_p wo, const Renderst
 	return sample;
 }
 
-void Material_anisotropic::set_normal_map(Texture_2D_ptr normal_map) {
+void Material_anisotropic::set_normal_map(const Adapter_2D& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material_anisotropic::set_direction_map(
-		Texture_2D_ptr direction_map) {
+void Material_anisotropic::set_direction_map(const Adapter_2D& direction_map) {
 	direction_map_ = direction_map;
 }
 

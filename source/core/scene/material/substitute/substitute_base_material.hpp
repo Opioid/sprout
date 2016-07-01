@@ -25,10 +25,10 @@ public:
 
 	virtual bool has_emission_map() const final override;
 
-	void set_color_map(Texture_2D_ptr color_map);
-	void set_normal_map(Texture_2D_ptr normal_map);
-	void set_surface_map(Texture_2D_ptr surface_map);
-	void set_emission_map(Texture_2D_ptr emission_map);
+	void set_color_map(const Adapter_2D& color_map);
+	void set_normal_map(const Adapter_2D& normal_map);
+	void set_surface_map(const Adapter_2D& surface_map);
+	void set_emission_map(const Adapter_2D& emission_map);
 
 	void set_color(float3_p color);
 	void set_ior(float ior, float external_ior = 1.f);
@@ -43,10 +43,10 @@ protected:
 	void set_sample(float3_p wo, const shape::Hitpoint& hp,
 					const Texture_sampler_2D& sampler, Sample& sample);
 
-	Texture_2D_ptr color_map_;
-	Texture_2D_ptr normal_map_;
-	Texture_2D_ptr surface_map_;
-	Texture_2D_ptr emission_map_;
+	Adapter_2D color_map_;
+	Adapter_2D normal_map_;
+	Adapter_2D surface_map_;
+	Adapter_2D emission_map_;
 
 	float3 color_;
 	float ior_;

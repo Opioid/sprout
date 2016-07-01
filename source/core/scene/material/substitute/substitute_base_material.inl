@@ -23,10 +23,10 @@ template<typename Sample>
 float3 Material_base<Sample>::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
 											  float /*time*/, const Worker& worker,
 											  Sampler_filter filter) const {
-	if (emission_map_) {
+	if (emission_map_.is_valid()) {
 		// For some reason Clang needs this to find inherited Material::sampler_key_
 		auto& sampler = worker.sampler(this->sampler_key_, filter);
-		return emission_factor_ * sampler.sample_3(*emission_map_, uv);
+		return emission_factor_ * emission_map_.sample_3(sampler, uv);
 	} else {
 		return math::float3_identity;
 	}
@@ -34,8 +34,8 @@ float3 Material_base<Sample>::sample_radiance(float3_p /*wi*/, float2 uv, float 
 
 template<typename Sample>
 float3 Material_base<Sample>::average_radiance(float /*area*/) const {
-	if (emission_map_) {
-		return emission_factor_ * emission_map_->average_3();
+	if (emission_map_.is_valid()) {
+		return emission_factor_ * emission_map_.texture()->average_3();
 	} else {
 		return math::float3_identity;
 	}
@@ -43,26 +43,26 @@ float3 Material_base<Sample>::average_radiance(float /*area*/) const {
 
 template<typename Sample>
 bool Material_base<Sample>::has_emission_map() const {
-	return nullptr != emission_map_;
+	return emission_map_.is_valid();
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_color_map(Texture_2D_ptr color_map) {
+void Material_base<Sample>::set_color_map(const Adapter_2D& color_map) {
 	color_map_ = color_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_normal_map(Texture_2D_ptr normal_map) {
+void Material_base<Sample>::set_normal_map(const Adapter_2D& normal_map) {
 	normal_map_ = normal_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_surface_map(Texture_2D_ptr surface_map) {
+void Material_base<Sample>::set_surface_map(const Adapter_2D& surface_map) {
 	surface_map_ = surface_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_emission_map(Texture_2D_ptr emission_map) {
+void Material_base<Sample>::set_emission_map(const Adapter_2D& emission_map) {
 	emission_map_ = emission_map;
 }
 
@@ -97,8 +97,8 @@ void Material_base<Sample>::set_sample(float3_p wo, const shape::Hitpoint& hp,
 									   const Texture_sampler_2D& sampler, Sample& sample) {
 	sample.set_basis(hp.geo_n, wo);
 
-	if (normal_map_) {
-		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
+	if (normal_map_.is_valid()) {
+		float3 nm = normal_map_.sample_3(sampler, hp.uv);
 		float3 n = math::normalized(hp.tangent_to_world(nm));
 
 		sample.layer_.set_basis(hp.t, hp.b, n);
@@ -107,15 +107,15 @@ void Material_base<Sample>::set_sample(float3_p wo, const shape::Hitpoint& hp,
 	}
 
 	float3 color;
-	if (color_map_) {
-		color = sampler.sample_3(*color_map_, hp.uv);
+	if (color_map_.is_valid()) {
+		color = color_map_.sample_3(sampler, hp.uv);
 	} else {
 		color = color_;
 	}
 
 	float2 surface;
-	if (surface_map_) {
-		surface = sampler.sample_2(*surface_map_, hp.uv);
+	if (surface_map_.is_valid()) {
+		surface = surface_map_.sample_2(sampler, hp.uv);
 		surface.x = math::pow4(surface.x);
 	} else {
 		surface.x = a2_;
@@ -123,8 +123,8 @@ void Material_base<Sample>::set_sample(float3_p wo, const shape::Hitpoint& hp,
 	}
 
 	float3 radiance;
-	if (emission_map_) {
-		radiance = emission_factor_ * sampler.sample_3(*emission_map_, hp.uv);
+	if (emission_map_.is_valid()) {
+		radiance = emission_factor_ * emission_map_.sample_3(sampler, hp.uv);
 	} else {
 		radiance = math::float3_identity;
 	}

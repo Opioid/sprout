@@ -14,8 +14,8 @@ public:
 	Material_coating(Generic_sample_cache<Sample>& cache,
 					 const Sampler_settings& sampler_settings, bool two_sided);
 
-	void set_coating_normal_map(Texture_2D_ptr normal_map);
-	void set_coating_weight_map(Texture_2D_ptr weight_map);
+	void set_coating_weight_map(const Adapter_2D& weight_map);
+	void set_coating_normal_map(const Adapter_2D& normal_map);
 
 	void set_coating_color(float3_p color);
 
@@ -26,8 +26,8 @@ protected:
 	void set_coating_basis(const Renderstate& rs, const Texture_sampler_2D& sampler,
 						   Sample& sample);
 
-	Texture_2D_ptr coating_normal_map_;
-	Texture_2D_ptr coating_weight_map_;
+	Adapter_2D coating_weight_map_;
+	Adapter_2D coating_normal_map_;
 
 	Coating coating_;
 };

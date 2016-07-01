@@ -14,7 +14,7 @@ public:
 	Emissionmap_animated(Generic_sample_cache<Sample>& cache,
 						 const Sampler_settings& sampler_settings,
 						 bool two_sided,
-						 Texture_2D_ptr emission_map,
+						 const Adapter_2D& emission_map,
 						 float emission_factor, float animation_duration);
 
 	virtual void tick(float absolute_time, float time_slice) final override;
@@ -46,7 +46,7 @@ public:
 
 private:
 
-	Texture_2D_ptr emission_map_;
+	Adapter_2D emission_map_;
 
 	float emission_factor_;
 

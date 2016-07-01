@@ -5,7 +5,7 @@
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/hitpoint.inl"
-#include "image/texture/sampler/sampler_2d.hpp"
+#include "image/texture/texture_2d_adapter.inl"
 #include "base/spectrum/rgb.inl"
 #include "base/math/math.hpp"
 #include "base/math/distribution/distribution_2d.inl"
@@ -27,8 +27,8 @@ const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,
 
 	sample.layer_.set_basis(rs.t, rs.b, rs.n);
 
-	float3 radiance = sampler.sample_3(*emission_map_, rs.uv);
-	sample.layer_.set(radiance);
+	float3 radiance = emission_map_.sample_3(sampler, rs.uv);
+	sample.layer_.set(emission_factor_ * radiance);
 
 	return sample;
 }
@@ -37,7 +37,7 @@ float3 Emissionmap::sample_radiance(float3_p /*wi*/, float2 uv,
 									float /*area*/, float /*time*/,
 									const Worker& worker, Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
-	return emission_factor_ * sampler.sample_3(*emission_map_, uv);
+	return emission_factor_ * emission_map_.sample_3(sampler, uv);
 }
 
 float3 Emissionmap::average_radiance(float /*area*/) const {
@@ -45,7 +45,7 @@ float3 Emissionmap::average_radiance(float /*area*/) const {
 }
 
 bool Emissionmap::has_emission_map() const {
-	return nullptr != emission_map_;
+	return emission_map_.is_valid();
 }
 
 float2 Emissionmap::radiance_importance_sample(float2 r2, float& pdf) const {
@@ -106,7 +106,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 
 		float total_weight = 0.f;
 
-		auto d = emission_map_->dimensions();
+		auto d = emission_map_.texture()->dimensions();
 		std::vector<float> luminance(d.x * d.y);
 
 		float my = 1.f / static_cast<float>(d.y) * math::Pi;
@@ -115,7 +115,7 @@ void Emissionmap::prepare_sampling(bool spherical) {
 			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				float3 radiance = emission_factor_ * emission_map_->at_3(x, y);
+				float3 radiance = emission_factor_ * emission_map_.texture()->at_3(x, y);
 
 
 			/*
@@ -153,11 +153,11 @@ void Emissionmap::prepare_sampling(bool spherical) {
 
 		distribution_.init(luminance.data(), d);
 	} else {
-		average_emission_ = emission_factor_ * emission_map_->average_3();
+		average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
 	}
 }
 
-void Emissionmap::set_emission_map(Texture_2D_ptr emission_map) {
+void Emissionmap::set_emission_map(const Adapter_2D& emission_map) {
 	emission_map_ = emission_map;
 }
 

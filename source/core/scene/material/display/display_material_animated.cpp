@@ -1,6 +1,6 @@
 #include "display_material_animated.hpp"
 #include "display_sample.hpp"
-#include "image/texture/sampler/sampler_2d.hpp"
+#include "image/texture/texture_2d_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
@@ -16,12 +16,12 @@ namespace scene { namespace material { namespace display {
 Material_animated::Material_animated(Generic_sample_cache<Sample>& cache,
 									 const Sampler_settings& sampler_settings,
 									 bool two_sided,
-									 Texture_2D_ptr emission_map,
+									 const Adapter_2D& emission_map,
 									 float animation_duration) :
 	material::Typed_material<Generic_sample_cache<Sample>>(cache, sampler_settings, two_sided),
 	emission_map_(emission_map),
-	average_emissions_(emission_map->num_elements()),
-	frame_length_(animation_duration / static_cast<float>(emission_map_->num_elements())),
+	average_emissions_(emission_map.texture()->num_elements()),
+	frame_length_(animation_duration / static_cast<float>(emission_map_.texture()->num_elements())),
 	element_(0) {
 	for (auto& ae : average_emissions_) {
 		ae = float3(-1.f, -1.f, -1.f);
@@ -29,7 +29,8 @@ Material_animated::Material_animated(Generic_sample_cache<Sample>& cache,
 }
 
 void Material_animated::tick(float absolute_time, float /*time_slice*/) {
-	element_ = static_cast<int32_t>(absolute_time / frame_length_) % emission_map_->num_elements();
+	element_ = static_cast<int32_t>(absolute_time / frame_length_) %
+									emission_map_.texture()->num_elements();
 }
 
 const material::Sample& Material_animated::sample(float3_p wo, const Renderstate& rs,
@@ -40,10 +41,10 @@ const material::Sample& Material_animated::sample(float3_p wo, const Renderstate
 
 	sample.layer_.set_basis(rs.t, rs.b, rs.n);
 
-	if (emission_map_) {
+	if (emission_map_.is_valid()) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		float3 radiance = sampler.sample_3(*emission_map_, rs.uv, element_);
+		float3 radiance = emission_map_.sample_3(sampler, rs.uv, element_);
 		sample.layer_.set(emission_factor_ * radiance, f0_, roughness_);
 	} else {
 		sample.layer_.set(emission_factor_ * emission_, f0_, roughness_);
@@ -56,7 +57,7 @@ float3 Material_animated::sample_radiance(float3_p /*wi*/, float2 uv,
 										  float /*area*/, float /*time*/,
 										  const Worker& worker, Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
-	return emission_factor_ * sampler.sample_3(*emission_map_, uv, element_);
+	return emission_factor_ * emission_map_.sample_3(sampler, uv, element_);
 }
 
 float3 Material_animated::average_radiance(float /*area*/) const {
@@ -64,7 +65,7 @@ float3 Material_animated::average_radiance(float /*area*/) const {
 }
 
 bool Material_animated::has_emission_map() const {
-	return nullptr != emission_map_;
+	return emission_map_.is_valid();
 }
 
 float2 Material_animated::radiance_importance_sample(float2 r2, float& pdf) const {
@@ -96,9 +97,9 @@ float Material_animated::emission_pdf(float2 uv, const Worker& worker,
 
 float Material_animated::opacity(float2 uv, float /*time*/,
 								 const Worker& worker, Sampler_filter filter) const {
-	if (mask_) {
+	if (mask_.is_valid()) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
-		return sampler.sample_1(*mask_, uv, element_);
+		return mask_.sample_1(sampler, uv, element_);
 	} else {
 		return 1.f;
 	}
@@ -137,7 +138,8 @@ void Material_animated::prepare_sampling(bool spherical) {
 
 		distribution_.init(luminance.data(), d);*/
 	} else {
-		average_emissions_[element_] = emission_factor_ * emission_map_->average_3(element_);
+		average_emissions_[element_] = emission_factor_
+									 * emission_map_.texture()->average_3(element_);
 
 		if (is_two_sided()) {
 			average_emissions_[element_] *= 2.f;

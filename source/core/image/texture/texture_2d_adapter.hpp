@@ -13,11 +13,16 @@ class Texture_2D_adapter {
 
 public:
 
+	Texture_2D_adapter();
 	Texture_2D_adapter(std::shared_ptr<Texture_2D> texture);
 	Texture_2D_adapter(std::shared_ptr<Texture_2D> texture, float2 scale);
 	~Texture_2D_adapter();
 
+	bool operator==(const Texture_2D_adapter& other) const;
+
 	bool is_valid() const;
+
+	const Texture_2D* texture() const;
 
 	using Texture_sampler_2D = sampler::Sampler_2D;
 
@@ -29,7 +34,7 @@ public:
 	float2 sample_2(const Texture_sampler_2D& sampler, float2 uv, int32_t element) const;
 	float3 sample_3(const Texture_sampler_2D& sampler, float2 uv, int32_t element) const;
 
-	float2 address(float2 uv) const;
+	float2 address(const Texture_sampler_2D& sampler, float2 uv) const;
 
 private:
 

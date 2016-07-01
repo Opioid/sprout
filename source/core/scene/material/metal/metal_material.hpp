@@ -18,7 +18,7 @@ public:
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
-	void set_normal_map(Texture_2D_ptr normal_map);
+	void set_normal_map(const Adapter_2D& normal_map);
 
 	void set_ior(float3_p ior);
 	void set_absorption(float3_p absorption);
@@ -26,7 +26,7 @@ public:
 
 protected:
 
-	Texture_2D_ptr normal_map_;
+	Adapter_2D normal_map_;
 
 	float3 ior_;
 	float3 absorption_;
@@ -48,8 +48,8 @@ public:
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
-	void set_normal_map(Texture_2D_ptr normal_map);
-	void set_direction_map(Texture_2D_ptr direction_map);
+	void set_normal_map(const Adapter_2D& normal_map);
+	void set_direction_map(const Adapter_2D& direction_map);
 
 	void set_ior(float3_p ior);
 	void set_absorption(float3_p absorption);
@@ -57,8 +57,8 @@ public:
 
 protected:
 
-	Texture_2D_ptr normal_map_;
-	Texture_2D_ptr direction_map_;
+	Adapter_2D normal_map_;
+	Adapter_2D direction_map_;
 
 	float3 ior_;
 	float3 absorption_;

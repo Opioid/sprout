@@ -1,6 +1,6 @@
 #include "cloth_material.hpp"
 #include "cloth_sample.hpp"
-#include "image/texture/sampler/sampler_2d.hpp"
+#include "image/texture/texture_2d_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
@@ -24,8 +24,8 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	sample.set_basis(rs.geo_n, wo);
 
-	if (normal_map_) {
-		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
+	if (normal_map_.is_valid()) {
+		float3 nm = normal_map_.sample_3(sampler, rs.uv);
 		float3 n = math::normalized(rs.tangent_to_world(nm));
 		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else {
@@ -33,8 +33,8 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 	}
 
 	float3 color;
-	if (color_map_) {
-		color = sampler.sample_3(*color_map_, rs.uv);
+	if (color_map_.is_valid()) {
+		color = color_map_.sample_3(sampler, rs.uv);
 	} else {
 		color = color_;
 	}
@@ -44,11 +44,11 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 	return sample;
 }
 
-void Material::set_color_map(Texture_2D_ptr color_map) {
+void Material::set_color_map(const Adapter_2D& color_map) {
 	color_map_ = color_map;
 }
 
-void Material::set_normal_map(Texture_2D_ptr normal_map) {
+void Material::set_normal_map(const Adapter_2D& normal_map) {
 	normal_map_ = normal_map;
 }
 

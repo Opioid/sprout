@@ -19,7 +19,7 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_normal_map(Texture_2D_ptr normal_map);
+	void set_normal_map(const Adapter_2D& normal_map);
 
 	void set_color(const float3& color);
 	void set_attenuation_distance(float attenuation_distance);
@@ -27,7 +27,7 @@ public:
 
 protected:
 
-	Texture_2D_ptr normal_map_;
+	Adapter_2D normal_map_;
 
 	float3 color_;
 	float attenuation_distance_;

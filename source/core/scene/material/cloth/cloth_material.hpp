@@ -18,15 +18,15 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_color_map(Texture_2D_ptr color_map);
-	void set_normal_map(Texture_2D_ptr normal_map);
+	void set_color_map(const Adapter_2D& color_map);
+	void set_normal_map(const Adapter_2D& normal_map);
 
 	void set_color(float3_p color);
 
 private:
 
-	Texture_2D_ptr color_map_;
-	Texture_2D_ptr normal_map_;
+	Adapter_2D color_map_;
+	Adapter_2D normal_map_;
 
 	float3 color_;
 };
