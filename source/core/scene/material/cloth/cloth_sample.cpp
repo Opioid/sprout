@@ -41,7 +41,8 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		return;
 	}
 
-	float n_dot_wi = lambert::Isotropic::importance_sample(layer_, sampler, result);
+	float n_dot_wi = lambert::Isotropic::importance_sample(layer_.diffuse_color, layer_,
+														   sampler, result);
 	result.reflection *= n_dot_wi;
 }
 

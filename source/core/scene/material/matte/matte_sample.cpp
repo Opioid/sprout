@@ -16,7 +16,7 @@ float3 Sample::tangent_to_world(float3_p v) const {
 float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 
-	return n_dot_wi * lambert::Isotropic::evaluate(wi, n_dot_wi, layer_, pdf);
+	return n_dot_wi * lambert::Isotropic::evaluate(layer_.diffuse_color, n_dot_wi, layer_, pdf);
 }
 
 float3 Sample::radiance() const {
@@ -32,7 +32,8 @@ float Sample::ior() const {
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float n_dot_wi = lambert::Isotropic::importance_sample(layer_, sampler, result);
+	float n_dot_wi = lambert::Isotropic::importance_sample(layer_.diffuse_color, layer_,
+														   sampler, result);
 	result.reflection *= n_dot_wi;
 }
 

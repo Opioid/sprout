@@ -21,36 +21,25 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
-
+/*
 	if (normal_map_) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
 		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
 		sample.layer_.set_basis(rs.t, rs.b, n);
-	} else {
+	} else {*/
 		sample.layer_.set_basis(rs.t, rs.b, rs.n);
-	}
+//	}
 
-	sample.layer_.set(ior_, absorption_, roughness_);
+	sample.layer_.set(color_a_, color_b_);
 
 	return sample;
 }
 
-void Material::set_normal_map(Texture_2D_ptr normal_map) {
-	normal_map_ = normal_map;
-}
-
-void Material::set_ior(float3_p ior) {
-	ior_ = ior;
-}
-
-void Material::set_absorption(float3_p absorption) {
-	absorption_ = absorption;
-}
-
-void Material::set_roughness(float roughness) {
-	roughness_ = roughness;
+void Material::set_color(float3_p a, float3_p b) {
+	color_a_ = a;
+	color_b_ = b;
 }
 
 }}}

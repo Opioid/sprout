@@ -4,6 +4,8 @@
 
 namespace scene { namespace material { namespace fresnel {
 
+float schlick(float wo_dot_h, float f0);
+
 float3 schlick(float wo_dot_h, float3_p f0);
 
 float schlick_f0(float n0, float n1);

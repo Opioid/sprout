@@ -4,31 +4,33 @@
 #include "material_sample_cache.inl"
 #include "image/texture/texture_2d_adapter.inl"
 #include "image/texture/texture_2d_provider.hpp"
-#include "cloth/cloth_sample.hpp"
 #include "cloth/cloth_material.hpp"
-#include "display/display_sample.hpp"
+#include "cloth/cloth_sample.hpp"
 #include "display/display_material.hpp"
 #include "display/display_material_animated.hpp"
-#include "glass/glass_sample.hpp"
+#include "display/display_sample.hpp"
 #include "glass/glass_material.hpp"
-#include "glass/glass_rough_sample.hpp"
+#include "glass/glass_sample.hpp"
 #include "glass/glass_rough_material.hpp"
-#include "light/light_material_sample.hpp"
+#include "glass/glass_rough_sample.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
 #include "light/light_emissionmap_animated.hpp"
-#include "matte/matte_sample.hpp"
+#include "light/light_material_sample.hpp"
 #include "matte/matte_material.hpp"
-#include "metal/metal_sample.hpp"
+#include "matte/matte_sample.hpp"
 #include "metal/metal_material.hpp"
+#include "metal/metal_sample.hpp"
+#include "metallic_paint/metallic_paint_material.hpp"
+#include "metallic_paint/metallic_paint_sample.hpp"
 #include "sky/sky_material_overcast.hpp"
 #include "substitute/substitute_base_material.inl"
 #include "substitute/substitute_coating_material.inl"
 #include "substitute/substitute_coating_sample.inl"
 #include "substitute/substitute_material.hpp"
 #include "substitute/substitute_sample.hpp"
-#include "substitute/substitute_translucent_sample.hpp"
 #include "substitute/substitute_translucent_material.hpp"
+#include "substitute/substitute_translucent_sample.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.inl"
@@ -48,6 +50,7 @@ Provider::Provider(uint32_t num_threads) :
 	matte_cache_(num_threads),
 	metal_iso_cache_(num_threads),
 	metal_aniso_cache_(num_threads),
+	metallic_paint_cache_(num_threads),
 	substitute_cache_(num_threads),
 	substitute_clearcoat_cache_(num_threads),
 	substitute_thinfilm_cache_(num_threads),
@@ -93,6 +96,8 @@ std::shared_ptr<Material> Provider::load(const std::string& filename,
 			return load_matte(node_value, manager);
 		} else if ("Metal" == node_name) {
 			return load_metal(node_value, manager);
+		} else if ("Metallic_paint" == node_name) {
+			return load_metallic_paint(node_value, manager);
 		} else if ("Sky" == node_name) {
 			return load_sky(node_value, manager);
 		} else if ("Substitute" == node_name) {
@@ -465,7 +470,6 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_val
 	material->set_color(color);
 
 	return material;
-
 }
 
 std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_value,
@@ -557,6 +561,58 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 
 		return material;
 	}
+}
+
+std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& substitute_value,
+														resource::Manager& manager) {
+	scene::material::Sampler_settings sampler_settings;
+
+//	Texture_2D_ptr normal_map;
+	Adapter_2D mask;
+	bool two_sided = false;
+	float3 color_a(1.f, 0.f, 0.f);
+	float3 color_b(0.f, 0.f, 1.f);
+
+	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
+		const std::string node_name = n->name.GetString();
+		const json::Value& node_value = n->value;
+
+		if ("color_a" == node_name) {
+			color_a = json::read_float3(node_value);
+		} else if ("color_b" == node_name) {
+			color_b = json::read_float3(node_value);
+		} else if ("two_sided" == node_name) {
+			two_sided = json::read_bool(node_value);
+		} else if ("textures" == node_name) {
+			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+				Texture_description texture_description;
+				read_texture_description(*tn, texture_description);
+
+				if (texture_description.filename.empty()) {
+					continue;
+				}
+
+				memory::Variant_map options;
+				if ("Mask" == texture_description.usage) {
+					options.insert("usage", image::texture::Provider::Usage::Mask);
+					mask = create_texture(texture_description, options, manager);
+				}
+			}
+		} else if ("sampler" == node_name) {
+			read_sampler_settings(node_value, sampler_settings);
+		}
+	}
+
+	auto material = std::make_shared<metallic_paint::Material>(metallic_paint_cache_,
+															   sampler_settings,
+															   two_sided);
+
+	material->set_mask(mask);
+//	material->set_normal_map(normal_map);
+
+	material->set_color(color_a, color_b);
+
+	return material;
 }
 
 std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,

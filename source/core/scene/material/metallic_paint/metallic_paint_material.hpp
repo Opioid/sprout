@@ -18,20 +18,12 @@ public:
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
-	void set_normal_map(Texture_2D_ptr normal_map);
-
-	void set_ior(float3_p ior);
-	void set_absorption(float3_p absorption);
-	void set_roughness(float roughness);
+	void set_color(float3_p a, float3_p b);
 
 protected:
 
-	Texture_2D_ptr normal_map_;
-
-	float3 ior_;
-	float3 absorption_;
-
-	float roughness_;
+	float3 color_a_;
+	float3 color_b_;
 };
 
 }}}

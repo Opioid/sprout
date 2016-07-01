@@ -10,13 +10,13 @@
 
 namespace scene { namespace material {
 
-namespace cloth		{ class Sample; }
-namespace display	{ class Sample; }
-namespace glass		{ class Sample; class Sample_rough; }
-namespace light		{ class Sample; }
-namespace matte		{ class Sample; }
-namespace metal		{ class Sample_isotropic; class Sample_anisotropic; }
-namespace sky		{ class Material_clear; }
+namespace cloth				{ class Sample; }
+namespace display			{ class Sample; }
+namespace glass				{ class Sample; class Sample_rough; }
+namespace light				{ class Sample; }
+namespace matte				{ class Sample; }
+namespace metal				{ class Sample_isotropic; class Sample_anisotropic; }
+namespace metallic_paint	{ class Sample; }
 
 namespace substitute {
 
@@ -64,6 +64,9 @@ private:
 	std::shared_ptr<Material> load_metal(const json::Value& metal_value,
 										 resource::Manager& manager);
 
+	std::shared_ptr<Material> load_metallic_paint(const json::Value& metal_value,
+												  resource::Manager& manager);
+
 	std::shared_ptr<Material> load_sky(const json::Value& sky_value,
 									   resource::Manager& manager);
 
@@ -110,6 +113,7 @@ private:
 	Generic_sample_cache<matte::Sample>						matte_cache_;
 	Generic_sample_cache<metal::Sample_isotropic>			metal_iso_cache_;
 	Generic_sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
+	Generic_sample_cache<metallic_paint::Sample>			metallic_paint_cache_;
 	Generic_sample_cache<substitute::Sample>				substitute_cache_;
 	Generic_sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
 	Generic_sample_cache<substitute::Sample_thinfilm>		substitute_thinfilm_cache_;
