@@ -33,10 +33,16 @@ public:
 	struct Layer : material::Sample::Layer {
 		void set(float3_p color_a, float3_p color_b);
 
+		float3 evaluate(float3_p wi, float3_p wo, float& pdf) const;
+
+		void importance_sample(float3_p wo, sampler::Sampler& sampler,
+							   bxdf::Result& result) const;
+
 		float3 color_a;
 		float3 color_b;
 
 		float a2;
+		float base_a2;
 	};
 
 	Layer layer_;

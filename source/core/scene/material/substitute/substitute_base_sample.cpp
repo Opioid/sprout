@@ -57,34 +57,19 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) c
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
 
-	float3 h = math::normalized(wo + wi);
-	float wo_dot_h = std::max(math::dot(wo, h), 0.00001f);
+	float on_pdf;
+	float3 on_reflection = oren_nayar::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
+														   *this, on_pdf);
 
-	float3 f = fresnel::schlick(wo_dot_h, f0);
+	fresnel::Schlick schlick(f0);
+	float3 ggx_fresnel;
+	float  ggx_pdf;
+	float3 ggx_reflection = ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
+													 *this, schlick, ggx_fresnel, ggx_pdf);
 
-	float diffuse_pdf;
-	float3 diffuse = (1.f - f) * oren_nayar::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
-																 *this, diffuse_pdf);
+	pdf = 0.5f * (on_pdf + ggx_pdf);
 
-	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == a2) {
-		pdf = 0.5f * diffuse_pdf;
-		return n_dot_wi * diffuse;
-	}
-
-	float n_dot_h  = math::dot(n, h);
-
-	float clamped_a2 = ggx::clamp_a2(a2);
-	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
-	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-
-	float3 specular = d * g * f;
-
-	float ggx_pdf = d * n_dot_h / (4.f * wo_dot_h);
-
-	pdf = 0.5f * (diffuse_pdf + ggx_pdf);
-
-	return n_dot_wi * (diffuse + specular);
+	return n_dot_wi * ((1.f - ggx_fresnel) * on_reflection + ggx_reflection);
 }
 
 void Sample_base::Layer::diffuse_importance_sample(float3_p wo, sampler::Sampler& sampler,

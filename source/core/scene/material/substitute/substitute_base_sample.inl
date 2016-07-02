@@ -12,7 +12,7 @@ namespace scene { namespace material { namespace substitute {
 template<typename Coating>
 float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coating,
 											  float& pdf) const {
-	float n_dot_wi = layer_.clamped_n_dot(wi);
+/*	float n_dot_wi = layer_.clamped_n_dot(wi);
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	float3 h = math::normalized(wo_ + wi);
@@ -48,6 +48,18 @@ float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coatin
 	pdf = (coating_pdf + diffuse_pdf + ggx_pdf) / 3.f;
 
 	return coating_reflection + n_dot_wi * coating_attenuation * (diffuse + specular);
+	*/
+
+	float3 coating_attenuation;
+	float  coating_pdf;
+	float3 coating_reflection = coating.evaluate(wi, wo_, layer_.ior,
+												 coating_attenuation, coating_pdf);
+
+	float base_pdf;
+	float3 base_reflection = layer_.base_evaluate(wi, wo_, base_pdf);
+
+	pdf = (coating_pdf + 2.f * base_pdf) / 3.f;
+	return coating_reflection + coating_attenuation * base_reflection;
 }
 
 template<typename Coating>

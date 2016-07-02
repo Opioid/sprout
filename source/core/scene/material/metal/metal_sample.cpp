@@ -16,6 +16,11 @@ float3 Sample_isotropic::tangent_to_world(float3_p v) const {
 }
 
 float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
+	if (!same_hemisphere(wo_)) {
+		pdf = 0.f;
+		return math::float3_identity;
+	}
+
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
@@ -37,6 +42,11 @@ float Sample_isotropic::ior() const {
 }
 
 void Sample_isotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+	if (!same_hemisphere(wo_)) {
+		result.pdf = 0.f;
+		return;
+	}
+
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
@@ -72,6 +82,11 @@ float3 Sample_anisotropic::tangent_to_world(float3_p v) const {
 }
 
 float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
+	if (!same_hemisphere(wo_)) {
+		pdf = 0.f;
+		return math::float3_identity;
+	}
+
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
@@ -93,6 +108,11 @@ float Sample_anisotropic::ior() const {
 }
 
 void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+	if (!same_hemisphere(wo_)) {
+		result.pdf = 0.f;
+		return;
+	}
+
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	fresnel::Conductor conductor(layer_.ior, layer_.absorption);

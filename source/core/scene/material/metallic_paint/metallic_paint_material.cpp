@@ -31,11 +31,17 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else {*/
 		sample.layer_.set_basis(rs.t, rs.b, rs.n);
+
+		sample.coating_.set_basis(rs.t, rs.b, rs.n);
 //	}
 
 	sample.layer_.set(color_a_, color_b_);
 
-	sample.coating_.set(0.04f, 0.01f);
+	sample.coating_.set_color_and_weight(float3(1.f, 1.f, 1.f), 1.f);
+
+	float coating_f0 = fresnel::schlick_f0(1.f, 1.6f);
+	float coating_a2 = math::pow4(0.01f);
+	sample.coating_.set(coating_f0, coating_a2);
 
 	return sample;
 }

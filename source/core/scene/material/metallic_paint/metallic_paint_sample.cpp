@@ -19,53 +19,21 @@ float3 Sample::tangent_to_world(float3_p v) const {
 }
 
 float3 Sample::evaluate(float3_p wi, float& pdf) const {
+	if (!same_hemisphere(wo_)) {
+		pdf = 0.f;
+		return math::float3_identity;
+	}
 
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating_.evaluate(wi, wo_, 0.f,
-												  coating_attenuation, coating_pdf);
+	float3 coating_reflection = coating_.evaluate(wi, wo_, 0.f, coating_attenuation, coating_pdf);
 
+	float  base_pdf;
+	float3 base_reflection = layer_.evaluate(wi, wo_, base_pdf);
 
+	pdf = 0.5f * (coating_pdf + base_pdf);
 
-//	float3 h = math::normalized(wo_ + wi);
-//	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
-
-/*
-	float n_dot_wo = math::saturate(math::dot(layer_.n, wo_));
-
-
-	float3 f0 = layer_.color_a;
-	float3 f = fresnel::schlick(n_dot_wo, f0);
-
-	float3 color = math::lerp(layer_.color_a, layer_.color_b, f);
-
-	float n_dot_wi = layer_.clamped_n_dot(wi);
-
-	return n_dot_wi * lambert::Isotropic::evaluate(f, n_dot_wi, layer_, pdf);
-*/
-
-	float n_dot_wi = layer_.clamped_n_dot(wi);
-	float n_dot_wo = layer_.clamped_n_dot(wo_);
-
-//	fresnel::Conductor fresnel(layer_.color_a, layer_.color_b);
-
-
-
-//	float f0 = 0.015f;
-//	float f = fresnel::schlick(n_dot_wo, f0);
-
-	float f = n_dot_wo;// * n_dot_wo;
-
-	float3 color = math::lerp(layer_.color_b, layer_.color_a, f);
-
-	fresnel::Schlick fresnel(color);
-
-	float3 base_reflection = ggx::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
-													  layer_, fresnel, pdf);
-
-
-	return coating_reflection + n_dot_wi * coating_attenuation * base_reflection;
-
+	return coating_reflection + coating_attenuation * base_reflection;
 }
 
 float3 Sample::radiance() const {
@@ -81,13 +49,33 @@ float Sample::ior() const {
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
-/*	float n_dot_wo = layer_.clamped_n_dot(wo_);
+	if (!same_hemisphere(wo_)) {
+		result.pdf = 0.f;
+		return;
+	}
 
-	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo_, n_dot_wo, layer_,
-													   conductor, sampler, result);
-	result.reflection *= n_dot_wi;
-	*/
+	float p = sampler.generate_sample_1D();
+
+	if (p < 0.5f) {
+		float3 coating_attenuation;
+		coating_.importance_sample(wo_, 1.f, sampler, coating_attenuation, result);
+
+		float  base_pdf;
+		float3 base_reflection = layer_.evaluate(result.wi, wo_, base_pdf);
+
+		result.pdf = 0.5f * (result.pdf + base_pdf);
+		result.reflection = result.reflection + coating_attenuation * base_reflection;
+	} else {
+		layer_.importance_sample(wo_, sampler, result);
+
+		float3 coating_attenuation;
+		float  coating_pdf;
+		float3 coating_reflection = coating_.evaluate(result.wi, wo_, 1.f,
+													  coating_attenuation, coating_pdf);
+
+		result.pdf = 0.5f * (result.pdf + coating_pdf);
+		result.reflection = coating_attenuation * result.reflection + coating_reflection;
+	}
 }
 
 bool Sample::is_pure_emissive() const {
@@ -107,6 +95,37 @@ void Sample::Layer::set(float3_p color_a, float3_p color_b) {
 	this->color_b = color_b;
 
 	this->a2 = 0.1f;
+}
+
+float3 Sample::Layer::evaluate(float3_p wi, float3_p wo, float& pdf) const {
+	float n_dot_wi = clamped_n_dot(wi);
+	float n_dot_wo = clamped_n_dot(wo);
+
+	float f = n_dot_wo;
+
+	float3 color = math::lerp(color_b, color_a, f);
+
+	fresnel::Schlick fresnel(color);
+
+	float3 ggx_reflection = ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
+													 *this, fresnel, pdf);
+
+	return n_dot_wi * ggx_reflection;
+}
+
+void Sample::Layer::importance_sample(float3_p wo, sampler::Sampler& sampler,
+									  bxdf::Result& result) const {
+	float n_dot_wo = clamped_n_dot(wo);
+
+	float f = n_dot_wo;
+
+	float3 color = math::lerp(color_b, color_a, f);
+
+	fresnel::Schlick fresnel(color);
+
+	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this,
+													   fresnel, sampler, result);
+	result.reflection *= n_dot_wi;
 }
 
 }}}
