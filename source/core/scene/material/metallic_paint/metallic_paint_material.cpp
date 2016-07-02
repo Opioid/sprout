@@ -2,7 +2,7 @@
 #include "metallic_paint_sample.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
-#include "image/texture/sampler/sampler_2d.hpp"
+#include "image/texture/texture_2d_adapter.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/coating/coating.inl"
@@ -18,7 +18,7 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 
 const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 										 const Worker& worker,
-										 Sampler_settings::Filter /*filter*/) {
+										 Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
@@ -30,18 +30,38 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
 		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else {*/
-		sample.layer_.set_basis(rs.t, rs.b, rs.n);
+		sample.base_.set_basis(rs.t, rs.b, rs.n);
 
 		sample.coating_.set_basis(rs.t, rs.b, rs.n);
 //	}
 
-	sample.layer_.set(color_a_, color_b_);
+	if (flakes_normal_map_.is_valid()) {
+		auto& sampler = worker.sampler(sampler_key_, filter);
+		float3 nm = flakes_normal_map_.sample_3(sampler, rs.uv);
+		float3 n = math::normalized(rs.tangent_to_world(nm));
+
+		sample.flakes_.set_basis(rs.t, rs.b, n);
+	} else {
+		sample.flakes_.set_basis(rs.t, rs.b, rs.n);
+	}
+
+	sample.base_.set(color_a_, color_b_);
+
+
+
+	sample.flakes_.ior = float3(0.18267f, 0.49447f, 1.3761f);
+	sample.flakes_.absorption = float3(3.1178f, 2.3515f, 1.8324f);
+	sample.flakes_.a2 = math::pow4(0.2f);
 
 	sample.coating_.set_color_and_weight(float3(1.f, 1.f, 1.f), coating_.weight);
 
 	sample.coating_.set(coating_.f0, coating_.a2);
 
 	return sample;
+}
+
+void Material::set_flakes_normal_map(const Adapter_2D& normal_map) {
+	flakes_normal_map_ = normal_map;
 }
 
 void Material::set_color(float3_p a, float3_p b) {

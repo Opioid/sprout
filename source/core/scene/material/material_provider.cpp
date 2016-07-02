@@ -567,8 +567,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 														resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-//	Texture_2D_ptr normal_map;
 	Adapter_2D mask;
+	Adapter_2D flakes_normal_map;
 	bool two_sided = false;
 	float3 color_a(1.f, 0.f, 0.f);
 	float3 color_b(0.f, 0.f, 1.f);
@@ -607,12 +607,19 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 		}
 	}
 
+	Texture_description texture_description;
+	texture_description.filename = "textures/flakes_normal.png";
+	texture_description.scale = float2(1.f, 1.f);
+	memory::Variant_map options;
+	options.insert("usage", image::texture::Provider::Usage::Normal);
+	flakes_normal_map = create_texture(texture_description, options, manager);
+
 	auto material = std::make_shared<metallic_paint::Material>(metallic_paint_cache_,
 															   sampler_settings,
 															   two_sided);
 
 	material->set_mask(mask);
-//	material->set_normal_map(normal_map);
+	material->set_flakes_normal_map(flakes_normal_map);
 
 	material->set_color(color_a, color_b);
 	material->set_clearcoat(coating.ior, coating.roughness, coating.weight);

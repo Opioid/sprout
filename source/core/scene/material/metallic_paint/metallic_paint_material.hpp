@@ -19,11 +19,15 @@ public:
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
+	void set_flakes_normal_map(const Adapter_2D& normal_map);
+
 	void set_color(float3_p a, float3_p b);
 
 	void set_clearcoat(float ior, float roughness, float weight);
 
 protected:
+
+	Adapter_2D flakes_normal_map_;
 
 	float3 color_a_;
 	float3 color_b_;
