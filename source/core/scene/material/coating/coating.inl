@@ -13,8 +13,8 @@ inline void Coating_base::set_color_and_weight(float3_p color, float weight) {
 }
 
 inline void Clearcoat::set(float f0, float a2) {
-	this->f0    = f0;
-	this->a2    = a2;
+	this->f0 = f0;
+	this->a2 = a2;
 }
 
 template<typename Layer>

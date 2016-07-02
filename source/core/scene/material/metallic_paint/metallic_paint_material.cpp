@@ -5,6 +5,7 @@
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
+#include "scene/material/coating/coating.inl"
 #include "scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
 
@@ -33,6 +34,8 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 //	}
 
 	sample.layer_.set(color_a_, color_b_);
+
+	sample.coating_.set(0.04f, 0.01f);
 
 	return sample;
 }

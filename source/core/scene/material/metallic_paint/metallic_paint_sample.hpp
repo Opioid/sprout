@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/material/material_sample.hpp"
+#include "scene/material/coating/coating.hpp"
 
 namespace scene { namespace material { namespace metallic_paint {
 
@@ -31,11 +32,16 @@ public:
 
 	struct Layer : material::Sample::Layer {
 		void set(float3_p color_a, float3_p color_b);
+
 		float3 color_a;
 		float3 color_b;
+
+		float a2;
 	};
 
 	Layer layer_;
+
+	coating::Clearcoat_layer coating_;
 };
 
 }}}

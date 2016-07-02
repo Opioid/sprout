@@ -120,12 +120,23 @@ inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
 	return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
+inline float3 schlick_blending(float wo_dot_h, float3_p a, float3_p b, float f0) {
+	return math::lerp(a, b, schlick(wo_dot_h, f0));
+}
+
 inline Schlick::Schlick(float f0) : f0_(f0) {}
 
 inline Schlick::Schlick(float3_p f0) : f0_(f0) {}
 
 inline float3 Schlick::operator()(float wo_dot_h) const {
 	return schlick(wo_dot_h, f0_);
+}
+
+inline Schlick_blending::Schlick_blending(float3_p a, float3_p b, float f0) :
+	a_(a), b_(b), f0_(f0) {}
+
+inline float3 Schlick_blending::operator()(float wo_dot_h) const {
+	return schlick_blending(wo_dot_h, a_, b_, f0_);
 }
 
 inline Schlick_weighted::Schlick_weighted(float f0, float weight) :

@@ -1,5 +1,7 @@
 #include "metallic_paint_sample.hpp"
+#include "scene/material/coating/coating.inl"
 #include "scene/material/fresnel/fresnel.inl"
+#include "scene/material/ggx/ggx.inl"
 #include "scene/material/lambert/lambert.inl"
 #include "scene/material/material_sample.inl"
 #include "sampler/sampler.hpp"
@@ -17,21 +19,53 @@ float3 Sample::tangent_to_world(float3_p v) const {
 }
 
 float3 Sample::evaluate(float3_p wi, float& pdf) const {
+
+	float3 coating_attenuation;
+	float  coating_pdf;
+	float3 coating_reflection = coating_.evaluate(wi, wo_, 0.f,
+												  coating_attenuation, coating_pdf);
+
+
+
 //	float3 h = math::normalized(wo_ + wi);
 //	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
 
-
+/*
 	float n_dot_wo = math::saturate(math::dot(layer_.n, wo_));
 
 
-	float f0 = 0.02f;
-	float f = fresnel::schlick(n_dot_wo, f0);
+	float3 f0 = layer_.color_a;
+	float3 f = fresnel::schlick(n_dot_wo, f0);
 
 	float3 color = math::lerp(layer_.color_a, layer_.color_b, f);
 
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 
-	return n_dot_wi * lambert::Isotropic::evaluate(color, n_dot_wi, layer_, pdf);
+	return n_dot_wi * lambert::Isotropic::evaluate(f, n_dot_wi, layer_, pdf);
+*/
+
+	float n_dot_wi = layer_.clamped_n_dot(wi);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+
+//	fresnel::Conductor fresnel(layer_.color_a, layer_.color_b);
+
+
+
+//	float f0 = 0.015f;
+//	float f = fresnel::schlick(n_dot_wo, f0);
+
+	float f = n_dot_wo;// * n_dot_wo;
+
+	float3 color = math::lerp(layer_.color_b, layer_.color_a, f);
+
+	fresnel::Schlick fresnel(color);
+
+	float3 base_reflection = ggx::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
+													  layer_, fresnel, pdf);
+
+
+	return coating_reflection + n_dot_wi * coating_attenuation * base_reflection;
+
 }
 
 float3 Sample::radiance() const {
@@ -71,6 +105,8 @@ bool Sample::is_translucent() const {
 void Sample::Layer::set(float3_p color_a, float3_p color_b) {
 	this->color_a = color_a;
 	this->color_b = color_b;
+
+	this->a2 = 0.1f;
 }
 
 }}}

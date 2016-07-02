@@ -17,6 +17,8 @@ float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t)
 float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
 				float internal_ior, float thickness);
 
+float3 schlick_blending(float wo_dot_h, float3_p a, float3_p b, float f0);
+
 class Schlick {
 
 public:
@@ -44,6 +46,21 @@ private:
 
 	Schlick schlick_;
 	float weight_;
+};
+
+class Schlick_blending {
+
+public:
+
+	Schlick_blending(float3_p a, float3_p b, float f0);
+
+	float3 operator()(float wo_dot_h) const;
+
+private:
+
+	float3 a_;
+	float3 b_;
+	float f0_;
 };
 
 class Thinfilm {
