@@ -18,7 +18,7 @@ Material::Material(Generic_sample_cache<Sample>& cache,
 
 const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 										 const Worker& worker,
-										 Sampler_settings::Filter filter) {
+										 Sampler_settings::Filter /*filter*/) {
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
@@ -37,11 +37,9 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	sample.layer_.set(color_a_, color_b_);
 
-	sample.coating_.set_color_and_weight(float3(1.f, 1.f, 1.f), 1.f);
+	sample.coating_.set_color_and_weight(float3(1.f, 1.f, 1.f), coating_.weight);
 
-	float coating_f0 = fresnel::schlick_f0(1.f, 1.6f);
-	float coating_a2 = math::pow4(0.01f);
-	sample.coating_.set(coating_f0, coating_a2);
+	sample.coating_.set(coating_.f0, coating_.a2);
 
 	return sample;
 }
@@ -49,6 +47,12 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 void Material::set_color(float3_p a, float3_p b) {
 	color_a_ = a;
 	color_b_ = b;
+}
+
+void Material::set_clearcoat(float ior, float roughness, float weight) {
+	coating_.f0 = fresnel::schlick_f0(1.f, ior);
+	coating_.a2 = math::pow4(roughness);
+	coating_.weight = weight;
 }
 
 }}}

@@ -2,6 +2,7 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
+#include "scene/material/coating/coating.hpp"
 
 namespace scene { namespace material { namespace metallic_paint {
 
@@ -20,10 +21,14 @@ public:
 
 	void set_color(float3_p a, float3_p b);
 
+	void set_clearcoat(float ior, float roughness, float weight);
+
 protected:
 
 	float3 color_a_;
 	float3 color_b_;
+
+	coating::Clearcoat coating_;
 };
 
 }}}

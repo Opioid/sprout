@@ -572,6 +572,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 	bool two_sided = false;
 	float3 color_a(1.f, 0.f, 0.f);
 	float3 color_b(0.f, 0.f, 1.f);
+	Coating_description coating;
+	coating.ior = 1.5f;
 
 	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -583,6 +585,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 			color_b = json::read_float3(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
+		} else if ("coating" == node_name) {
+			read_coating_description(node_value, coating);
 		} else if ("textures" == node_name) {
 			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
 				Texture_description texture_description;
@@ -611,6 +615,7 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 //	material->set_normal_map(normal_map);
 
 	material->set_color(color_a, color_b);
+	material->set_clearcoat(coating.ior, coating.roughness, coating.weight);
 
 	return material;
 }
