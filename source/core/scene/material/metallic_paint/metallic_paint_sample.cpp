@@ -28,16 +28,16 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	float  coating_pdf;
 	float3 coating_reflection = coating_.evaluate(wi, wo_, 1.f, coating_attenuation, coating_pdf);
 
-	float  base_pdf;
-	float3 base_reflection = base_.evaluate(wi, wo_, base_pdf);
-
-	float  flakes_weight;
+	float3 flakes_fresnel;
 	float  flakes_pdf;
-	float3 flakes_reflection = flakes_.evaluate(wi, wo_, base_.n, flakes_weight, flakes_pdf);
+	float3 flakes_reflection = flakes_.evaluate(wi, wo_, flakes_fresnel, flakes_pdf);
+
+	float  base_pdf;
+	float3 base_reflection = (1.f - flakes_fresnel) * base_.evaluate(wi, wo_, base_pdf);
 
 	pdf = (coating_pdf + flakes_pdf + base_pdf) / 3.f;
 
-	return coating_reflection + coating_attenuation * ((1.f - flakes_weight) * base_reflection + flakes_reflection);
+	return coating_reflection + coating_attenuation * (base_reflection + flakes_reflection);
 }
 
 float3 Sample::radiance() const {
@@ -64,13 +64,13 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		float3 coating_attenuation;
 		coating_.importance_sample(wo_, 1.f, sampler, coating_attenuation, result);
 
-		float  flakes_weight;
+		float3 flakes_fresnel;
 		float  flakes_pdf;
-		float3 flakes_reflection = flakes_.evaluate(result.wi, wo_, base_.n,
-													flakes_weight, flakes_pdf);
+		float3 flakes_reflection = flakes_.evaluate(result.wi, wo_,
+													flakes_fresnel, flakes_pdf);
 
 		float  base_pdf;
-		float3 base_reflection = (1.f - flakes_weight) * base_.evaluate(result.wi, wo_, base_pdf);
+		float3 base_reflection = (1.f - flakes_fresnel) * base_.evaluate(result.wi, wo_, base_pdf);
 
 		result.pdf = (result.pdf + base_pdf + flakes_pdf) / 3.f;
 		result.reflection = result.reflection
@@ -83,12 +83,12 @@ void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) co
 		float3 coating_reflection = coating_.evaluate(result.wi, wo_, 1.f,
 													  coating_attenuation, coating_pdf);
 
-		float  flakes_weight;
+		float3 flakes_fresnel;
 		float  flakes_pdf;
-		float3 flakes_reflection = flakes_.evaluate(result.wi, wo_, base_.n,
-													flakes_weight, flakes_pdf);
+		float3 flakes_reflection = flakes_.evaluate(result.wi, wo_,
+													flakes_fresnel, flakes_pdf);
 
-		float3 base_reflection = (1.f - flakes_weight) * result.reflection;
+		float3 base_reflection = (1.f - flakes_fresnel) * result.reflection;
 
 		result.pdf = (result.pdf + coating_pdf + flakes_pdf) / 3.f;
 		result.reflection = coating_reflection
@@ -146,31 +146,26 @@ void Sample::Base_layer::importance_sample(float3_p wo, sampler::Sampler& sample
 	result.reflection *= n_dot_wi;
 }
 
-float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo, float3_p base_n,
-									  float& weight, float& pdf) const {
+float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo,
+									  float3& fresnel_result, float& pdf) const {
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
 
-//	weight = math::saturate(1.f - math::dot(base_n, n));
-
-	weight = math::dot(base_n, n) > 0.9f ? 0.f : 1.f;
-
 	fresnel::Conductor conductor(ior, absorption);
-	return n_dot_wi * weight * ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
-														*this, conductor, pdf);
+	return n_dot_wi * ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
+											   *this, conductor, fresnel_result, pdf);
 }
 
-void Sample::Flakes_layer::importance_sample(float3_p wo, float3_p base_n,
-											 sampler::Sampler& sampler,
-											 float& weight, bxdf::Result& result) const {
+void Sample::Flakes_layer::importance_sample(float3_p wo, sampler::Sampler& sampler,
+											 float3& fresnel_result, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
 
-	weight = math::saturate(1.f - math::dot(base_n, n));
+	fresnel_result = float3(fresnel::schlick(n_dot_wo, 1.f));
 
 	fresnel::Conductor conductor(ior, absorption);
 	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this,
-													   conductor, sampler, result);
-	result.reflection *= n_dot_wi * weight;
+													   conductor, sampler, fresnel_result, result);
+	result.reflection *= n_dot_wi;
 }
 
 }}}

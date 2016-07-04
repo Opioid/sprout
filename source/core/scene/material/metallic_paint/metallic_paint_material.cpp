@@ -51,7 +51,7 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	sample.flakes_.ior = float3(0.18267f, 0.49447f, 1.3761f);
 	sample.flakes_.absorption = float3(3.1178f, 2.3515f, 1.8324f);
-	sample.flakes_.a2 = math::pow4(0.2f);
+	sample.flakes_.a2 = math::pow4(0.15f);
 
 	sample.coating_.set_color_and_weight(float3(1.f, 1.f, 1.f), coating_.weight);
 

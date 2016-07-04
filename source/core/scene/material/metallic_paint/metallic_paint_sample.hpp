@@ -45,10 +45,11 @@ public:
 	};
 
 	struct Flakes_layer : material::Sample::Layer {
-		float3 evaluate(float3_p wi, float3_p wo, float3_p base_n, float& weight, float& pdf) const;
+		float3 evaluate(float3_p wi, float3_p wo,
+						float3& fresnel_result, float& pdf) const;
 
-		void importance_sample(float3_p wo, float3_p base_n, sampler::Sampler& sampler,
-							   float& weight, bxdf::Result& result) const;
+		void importance_sample(float3_p wo, sampler::Sampler& sampler,
+							   float3& fresnel_result, bxdf::Result& result) const;
 
 		float3 ior;
 		float3 absorption;
