@@ -1,7 +1,7 @@
 #include "sky_model.hpp"
 #include "hosek/ArHosekSkyModel.h"
 #include "base/math/vector.inl"
-#include "base/spectrum/spectrum.inl"
+#include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.inl"
 
 namespace procedural { namespace sky {

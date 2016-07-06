@@ -1,6 +1,6 @@
 #pragma once
 
-#include "spectrum.hpp"
+#include "discrete.hpp"
 #include "xyz.hpp"
 
 namespace spectrum {
@@ -72,7 +72,6 @@ template<uint32_t N>
 constexpr uint32_t Discrete_spectral_power_distribution<N>::num_bands() {
 	return N;
 }
-
 
 template<uint32_t N>
 float Discrete_spectral_power_distribution<N>::wavelength_center(uint32_t bin) {

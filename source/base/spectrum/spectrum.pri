@@ -5,10 +5,10 @@ SOURCES += \
 
 HEADERS += \
 	spectrum/blackbody.hpp \
+	spectrum/discrete.hpp \
+	spectrum/discrete.inl \	
 	spectrum/interpolated.hpp \
 	spectrum/rgb.hpp \
 	spectrum/rgb.inl \
-	spectrum/spectrum.hpp \
-	spectrum/spectrum.inl \	
 	spectrum/xyz.hpp \
 	spectrum/xyz.inl \	

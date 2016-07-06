@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base/math/vector.hpp"
-#include "base/spectrum/spectrum.hpp"
+#include "base/spectrum/discrete.hpp"
 
 struct ArHosekSkyModelState;
 
