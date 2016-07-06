@@ -5,11 +5,16 @@
 
 namespace spectrum {
 
+// XYZ <-> RGB conversion matrices
+// http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+
+// This function uses CIE-RGB with E
+
 inline float3 XYZ_to_linear_RGB(float3_p xyz) {
 	return float3(
-		3.240479f * xyz.x - 1.537150f * xyz.y - 0.498535f * xyz.z,
-	   -0.969256f * xyz.x + 1.875991f * xyz.y + 0.041556f * xyz.z,
-		0.055648f * xyz.x - 0.204043f * xyz.y + 1.057311f * xyz.z);
+		2.3706743f * xyz.x - 0.9000405f * xyz.y - 0.4706338f * xyz.z,
+	   -0.5138850f * xyz.x + 1.4253036f * xyz.y + 0.0885814f * xyz.z,
+		0.0052982f * xyz.x - 0.0146949f * xyz.y + 1.0093968f * xyz.z);
 }
 
 }
