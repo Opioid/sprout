@@ -8,6 +8,7 @@ namespace image {
 class Image;
 
 class Provider : public resource::Provider<Image> {
+
 public:
 
 	Provider();

@@ -1,8 +1,9 @@
 #include "png_reader.hpp"
 #include "image/typed_image.inl"
 #include "image/tiled_image.inl"
-#include "base/spectrum/rgb.inl"
 #include "base/math/vector.inl"
+#include "base/spectrum/rgb.inl"
+#include "base/string/string.inl"
 #include <cstring>
 
 namespace image { namespace encoding { namespace png {
@@ -177,9 +178,9 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
 	info.width  = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]);
 	info.height = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]);
 
-	uint8_t depth = chunk.data[8];
+	uint32_t depth = static_cast<uint32_t>(chunk.data[8]);
 	if (8 != depth) {
-		return false;
+		throw std::runtime_error(string::to_string(depth) +  " bit depth PNG not supported");
 	}
 
 	Color_type color_type = static_cast<Color_type>(chunk.data[9]);

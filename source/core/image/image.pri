@@ -16,5 +16,6 @@ HEADERS += \
 	image/typed_image.inl \
 
 include(encoding/encoding.pri)
+include(procedural/procedural.pri)
 include(testing/testing.pri)
 include(texture/texture.pri)

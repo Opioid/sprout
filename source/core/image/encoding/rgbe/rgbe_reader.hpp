@@ -9,6 +9,7 @@
 namespace image { namespace encoding { namespace rgbe {
 
 class Reader {
+
 public:
 
 	std::shared_ptr<Image> read(std::istream& stream) const;

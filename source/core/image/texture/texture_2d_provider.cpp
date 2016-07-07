@@ -43,6 +43,10 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 
 	try {
 		auto image = manager.load<Image>(filename, image_options);
+		if (!image) {
+			logging::error("Loading texture: \"" + filename + "\": Unknown error.");
+			return nullptr;
+		}
 
 		if (Image::Type::Byte_1 == image->description().type) {
 			return std::make_shared<Texture_2D_byte_1_unorm>(image);

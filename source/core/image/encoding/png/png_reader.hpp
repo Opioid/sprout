@@ -18,6 +18,7 @@ class Image;
 namespace encoding { namespace png {
 
 class Reader {
+
 public:
 
 	Reader();
@@ -51,11 +52,11 @@ private:
 
 	struct Info {
 		// header
-		int32_t width;
-		int32_t height;
+		int32_t width  = 0;
+		int32_t height = 0;
 
-		int32_t num_channels;
-		int32_t bytes_per_pixel;
+		int32_t num_channels	= 0;
+		int32_t bytes_per_pixel = 0;
 
 		std::vector<uint8_t> buffer;
 

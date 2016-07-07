@@ -608,7 +608,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 	}
 
 	Texture_description texture_description;
-	texture_description.filename = "textures/flakes_normal.png";
+//	texture_description.filename = "textures/flakes_normal.png";
+	texture_description.filename = "wildtown01-GI.png";
 	texture_description.scale = float2(12.f, 12.f);
 	memory::Variant_map options;
 	options.insert("usage", image::texture::Provider::Usage::Normal);
