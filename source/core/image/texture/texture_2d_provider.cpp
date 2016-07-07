@@ -44,7 +44,7 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 	try {
 		auto image = manager.load<Image>(filename, image_options);
 		if (!image) {
-			logging::error("Loading texture: \"" + filename + "\": Unknown error.");
+			logging::error("Loading texture \"" + filename + "\": Unknown error.");
 			return nullptr;
 		}
 
@@ -68,7 +68,7 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 			return std::make_shared<Texture_2D_float_3>(image);
 		}
 	} catch (const std::exception& e) {
-		logging::error("Loading texture: \"" + filename + "\": " + e.what() + ".");
+		logging::error("Loading texture \"" + filename + "\": " + e.what() + ".");
 	}
 
 	return nullptr;

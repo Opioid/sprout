@@ -23,6 +23,8 @@ public:
 	const T& at(int32_t x, int32_t y, int32_t element) const;
 	T& at(int32_t x, int32_t y, int32_t element);
 
+	const T* data() const;
+
 	virtual size_t num_bytes() const final override;
 
 private:

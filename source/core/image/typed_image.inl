@@ -58,6 +58,11 @@ T& Typed_image<T>::at(int32_t x, int32_t y, int32_t element) {
 }
 
 template<typename T>
+const T* Typed_image<T>::data() const {
+	return data_;
+}
+
+template<typename T>
 size_t Typed_image<T>::num_bytes() const {
 	return description_.dimensions.x *
 		   description_.dimensions.y *

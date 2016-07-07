@@ -1,7 +1,8 @@
 #pragma once
 
 #include "resource/resource_provider.hpp"
-#include "image/encoding/png/png_reader.hpp"
+#include "encoding/png/png_reader.hpp"
+#include "procedural/flakes/flakes_provider.hpp"
 
 namespace image {
 
@@ -12,6 +13,7 @@ class Provider : public resource::Provider<Image> {
 public:
 
 	Provider();
+	~Provider();
 
 	virtual std::shared_ptr<Image> load(const std::string& filename,
 										const memory::Variant_map& options,
@@ -20,6 +22,7 @@ public:
 private:
 
 	encoding::png::Reader png_reader_;
+	procedural::flakes::Provider flakes_provider_;
 };
 
 }

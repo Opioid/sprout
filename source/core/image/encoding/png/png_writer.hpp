@@ -15,6 +15,8 @@ public:
 
 	virtual bool write(std::ostream& stream, const Image_float_4& image,
 					   thread::Pool& pool) final override;
+
+	static bool write(const std::string& name, const Image_byte_3& image);
 };
 
 }}}

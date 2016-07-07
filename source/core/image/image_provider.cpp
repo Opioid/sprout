@@ -11,9 +11,15 @@ namespace image  {
 
 Provider::Provider() : resource::Provider<Image>("Image") {}
 
+Provider::~Provider() {}
+
 std::shared_ptr<Image> Provider::load(const std::string& filename,
 									  const memory::Variant_map& options,
 									  resource::Manager& manager) {
+	if ("proc:flakes" == filename) {
+		return flakes_provider_.create(options);
+	}
+
 	auto stream_pointer = manager.file_system().read_stream(filename);
 
 	auto& stream = *stream_pointer;

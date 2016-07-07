@@ -8,6 +8,7 @@ namespace thread { class Pool; }
 namespace image {
 
 class Writer {
+
 public:
 
 	virtual ~Writer();
