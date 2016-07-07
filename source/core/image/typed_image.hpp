@@ -6,6 +6,7 @@ namespace image {
 
 template<typename T>
 class Typed_image : public Image {
+
 public:
 
 	Typed_image(const Image::Description& description);

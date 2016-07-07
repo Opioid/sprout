@@ -39,7 +39,7 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 
 	memory::Variant_map image_options;
 	image_options.insert("channels", channels);
-	image_options.inherit("num_elements", options);
+	image_options.inherit_except(options, "usage");
 
 	try {
 		auto image = manager.load<Image>(filename, image_options);

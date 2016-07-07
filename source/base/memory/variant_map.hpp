@@ -25,7 +25,8 @@ public:
 	void insert(const std::string& key, uint32_t value);
 	void insert(const std::string& key, float value);
 
-	void inherit(const std::string& key, const Variant_map& other);
+	void inherit(const Variant_map& other, const std::string& key);
+	void inherit_except(const Variant_map& other, const std::string& key);
 
 	bool operator<(const Variant_map& other) const;
 

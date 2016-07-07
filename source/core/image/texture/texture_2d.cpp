@@ -5,18 +5,17 @@
 namespace image { namespace texture {
 
 Texture_2D::Texture_2D(std::shared_ptr<Image> image) :
-	image_(image),
-	dimensions_float_(static_cast<float>(image_->description().dimensions.x),
-					  static_cast<float>(image_->description().dimensions.y)) {}
+	untyped_image_(image),
+	dimensions_float_(float2(image->description().dimensions)) {}
 
 Texture_2D::~Texture_2D() {}
 
 const Image* Texture_2D::image() const {
-	return image_.get();
+	return untyped_image_.get();
 }
 
 int2 Texture_2D::dimensions() const {
-	return image_->description().dimensions;
+	return untyped_image_->description().dimensions;
 }
 
 float2 Texture_2D::dimensions_float() const {
@@ -24,7 +23,7 @@ float2 Texture_2D::dimensions_float() const {
 }
 
 int32_t Texture_2D::num_elements() const {
-	return image_->description().num_elements;
+	return untyped_image_->description().num_elements;
 }
 
 float3 Texture_2D::average_3() const {

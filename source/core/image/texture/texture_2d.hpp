@@ -40,7 +40,7 @@ public:
 
 protected:
 
-	std::shared_ptr<Image> image_;
+	std::shared_ptr<Image> untyped_image_;
 
 	float2 dimensions_float_;
 };

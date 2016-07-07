@@ -8,7 +8,7 @@ namespace spectrum {
 // XYZ <-> RGB conversion matrices
 // http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
 
-// This function uses CIE-RGB with E
+// This function uses CIE-RGB with illuminant E
 
 inline float3 XYZ_to_linear_RGB(float3_p xyz) {
 	return float3(
