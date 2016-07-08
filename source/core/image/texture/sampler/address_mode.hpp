@@ -6,11 +6,11 @@
 namespace image { namespace texture { namespace sampler {
 
 struct Address_mode_repeat {
-	float2 f(float2 uv) const {
+	static float2 f(float2 uv) {
 		return float2(math::frac(uv.x), math::frac(uv.y));
 	}
 
-	int32_t increment(int32_t v, int32_t max) const {
+	static int32_t increment(int32_t v, int32_t max) {
 		if (v >= max) {
 			return 0;
 		}
@@ -18,7 +18,7 @@ struct Address_mode_repeat {
 		return v + 1;
 	}
 
-	int32_t lower_bound(int32_t v, int32_t max) const {
+	static int32_t lower_bound(int32_t v, int32_t max) {
 		if (v < 0) {
 			return max;
 		}

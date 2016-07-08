@@ -6,6 +6,7 @@
 namespace rendering { namespace sensor { namespace filter {
 
 class Gaussian_functor {
+
 public:
 
 	Gaussian_functor(float radius_square, float alpha) :

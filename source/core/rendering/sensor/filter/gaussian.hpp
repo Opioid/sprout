@@ -7,6 +7,7 @@
 namespace rendering { namespace sensor { namespace filter {
 
 class Gaussian : public Filter {
+
 public:
 
 	Gaussian(float radius, float alpha);

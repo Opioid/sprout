@@ -1,7 +1,7 @@
 SOURCES += \
+	image/procedural/image_renderer.cpp \
 
 HEADERS += \
-	image/procedural/typed_image_renderer.hpp \
-	image/procedural/typed_image_renderer.inl \
+	image/procedural/image_renderer.hpp \
 
 include(flakes/flakes.pri)

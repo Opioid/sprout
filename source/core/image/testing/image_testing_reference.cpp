@@ -44,10 +44,10 @@ float3 reference_normal(float2 p, float2 range) {
 }
 
 void create_reference_normal_map(int2 dimensions) {
-	math::byte4* rgba = new math::byte4[dimensions.x * dimensions.y];
+	math::byte3* rgb = new math::byte3[dimensions.x * dimensions.y];
 
 	float2 range(2.f / static_cast<float>(dimensions.x),
-					   2.f / static_cast<float>(dimensions.y));
+				 2.f / static_cast<float>(dimensions.y));
 
 	int2 aa(16, 16);
 
@@ -56,7 +56,7 @@ void create_reference_normal_map(int2 dimensions) {
 
 	for (int32_t y = 0; y < dimensions.y; ++y) {
 		for (int32_t x = 0; x < dimensions.x; ++x) {
-			auto& pixel = rgba[y * dimensions.x + x];
+			auto& pixel = rgb[y * dimensions.x + x];
 
 			float fx = static_cast<float>(x);
 			float fy = static_cast<float>(y);
@@ -66,7 +66,7 @@ void create_reference_normal_map(int2 dimensions) {
 			for (int32_t ay = 0; ay < aa.y; ++ay) {
 				for (int32_t ax = 0; ax < aa.x; ++ax) {
 					float2 p(fx + aa_offset.x + static_cast<float>(ax) * aa_delta.x,
-								   fy + aa_offset.y + static_cast<float>(ay) * aa_delta.y);
+							 fy + aa_offset.y + static_cast<float>(ay) * aa_delta.y);
 
 					v += reference_normal(p, range);
 				}
@@ -83,8 +83,6 @@ void create_reference_normal_map(int2 dimensions) {
 			pixel.x = static_cast<uint8_t>(v.x * 255.f);
 			pixel.y = static_cast<uint8_t>(v.y * 255.f);
 			pixel.z = static_cast<uint8_t>(v.z * 255.f);
-
-			pixel.w = 255;
 		}
 	}
 
@@ -94,11 +92,11 @@ void create_reference_normal_map(int2 dimensions) {
 	}
 
 	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgba, dimensions.x, dimensions.y,
-															   4, &buffer_len);
+	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgb, dimensions.x, dimensions.y,
+															   3, &buffer_len);
 
 	if (!png_buffer) {
-		delete [] rgba;
+		delete [] rgb;
 		return;
 	}
 
@@ -106,7 +104,7 @@ void create_reference_normal_map(int2 dimensions) {
 
 	mz_free(png_buffer);
 
-	delete [] rgba;
+	delete [] rgb;
 }
 
 }}

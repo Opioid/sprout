@@ -11,7 +11,7 @@ float Sampler_2D_nearest<Address_mode>::sample_1(const Texture_2D& texture, floa
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
-	uv = address_mode_.f(uv);
+	uv = Address_mode::f(uv);
 
 	int32_t x = std::min(static_cast<int32_t>(uv.x * df.x), d.x - 1);
 	int32_t y = std::min(static_cast<int32_t>(uv.y * df.y), d.y - 1);
@@ -24,7 +24,7 @@ float2 Sampler_2D_nearest<Address_mode>::sample_2(const Texture_2D& texture, flo
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
-	uv = address_mode_.f(uv);
+	uv = Address_mode::f(uv);
 
 	int32_t x = std::min(static_cast<int32_t>(uv.x * df.x), d.x - 1);
 	int32_t y = std::min(static_cast<int32_t>(uv.y * df.y), d.y - 1);
@@ -37,7 +37,7 @@ float3 Sampler_2D_nearest<Address_mode>::sample_3(const Texture_2D& texture, flo
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
-	uv = address_mode_.f(uv);
+	uv = Address_mode::f(uv);
 
 	int32_t x = std::min(static_cast<int32_t>(uv.x * df.x), d.x - 1);
 	int32_t y = std::min(static_cast<int32_t>(uv.y * df.y), d.y - 1);
@@ -50,7 +50,7 @@ float Sampler_2D_nearest<Address_mode>::sample_1(const Texture_2D& texture, floa
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
-	uv = address_mode_.f(uv);
+	uv = Address_mode::f(uv);
 
 	int32_t x = std::min(static_cast<int32_t>(uv.x * df.x), d.x - 1);
 	int32_t y = std::min(static_cast<int32_t>(uv.y * df.y), d.y - 1);
@@ -66,7 +66,7 @@ float2 Sampler_2D_nearest<Address_mode>::sample_2(const Texture_2D& texture, flo
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
-	uv = address_mode_.f(uv);
+	uv = Address_mode::f(uv);
 
 	int32_t x = std::min(static_cast<int32_t>(uv.x * df.x), d.x - 1);
 	int32_t y = std::min(static_cast<int32_t>(uv.y * df.y), d.y - 1);
@@ -82,7 +82,7 @@ float3 Sampler_2D_nearest<Address_mode>::sample_3(const Texture_2D& texture, flo
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
-	uv = address_mode_.f(uv);
+	uv = Address_mode::f(uv);
 
 	int32_t x = std::min(static_cast<int32_t>(uv.x * df.x), d.x - 1);
 	int32_t y = std::min(static_cast<int32_t>(uv.y * df.y), d.y - 1);
@@ -94,7 +94,7 @@ float3 Sampler_2D_nearest<Address_mode>::sample_3(const Texture_2D& texture, flo
 
 template<typename Address_mode>
 float2 Sampler_2D_nearest<Address_mode>::address(float2 uv) const {
-	return address_mode_.f(uv);
+	return Address_mode::f(uv);
 }
 
 }}}

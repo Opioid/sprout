@@ -25,17 +25,20 @@ float3 linear_to_gamma(float3_p c, float gamma);
 // convert gamma color to linear color
 float3 gamma_to_linear_RGB(float3_p c, float gamma);
 
-float3 to_float(math::byte3 c);
-float4 to_float(math::byte4 c);
+float3 unorm_to_float(math::byte3 c);
+float4 unorm_to_float(math::byte4 c);
 
-math::byte3 to_byte(float3_p c);
-math::byte4 to_byte(const float4& c);
+byte3 float_to_unorm(float3_p c);
+math::byte4 float_to_unorm(const float4& c);
+
 uint32_t to_uint(const float4& c);
 
 float snorm_to_float(uint8_t byte);
 float unorm_to_float(uint8_t byte);
 
 uint8_t float_to_snorm(float x);
+
+byte3 float_to_snorm(float3_p c);
 
 float luminance(float3_p c);
 

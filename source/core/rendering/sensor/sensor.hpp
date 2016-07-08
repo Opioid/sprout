@@ -12,6 +12,7 @@ namespace rendering { namespace sensor {
 namespace tonemapping { class Tonemapper; }
 
 class Sensor {
+
 public:
 
 	Sensor(int2 dimensions, const tonemapping::Tonemapper* tonemapper);
