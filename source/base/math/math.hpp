@@ -73,4 +73,10 @@ T inverse_sqrt(T x) {
 	return T(1) / std::sqrt(x);
 }
 
+template<typename T>
+T mod(T k, T n) {
+	// Works for negative k; apparently % is the reminder, not really modulo
+	return (k %= n) < T(0) ? k + n : k;
+}
+
 }

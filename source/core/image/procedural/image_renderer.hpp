@@ -26,7 +26,6 @@ private:
 	void set_row(int start_x, int end_x, int y, const float4& color);
 
 	int num_sqrt_samples_;
-	int num_samples_;
 
 	int2 dimensions_;
 

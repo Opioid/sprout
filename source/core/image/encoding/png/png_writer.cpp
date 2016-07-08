@@ -51,6 +51,8 @@ bool Writer::write(const std::string& name, const Image_byte_3& image) {
 	stream.write(static_cast<char*>(png_buffer), buffer_len);
 
 	mz_free(png_buffer);
+
+	return true;
 }
 
 }}}
