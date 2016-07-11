@@ -24,6 +24,8 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	sample.layer_.set_basis(rs.t, rs.b, rs.n);
 
+	sample.layer_.set(color_);
+
 	return sample;
 }
 

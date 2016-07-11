@@ -18,6 +18,7 @@ HEADERS += \
 
 include(coating/coating.pri)
 include(cloth/cloth.pri)
+include(disney/disney.pri)
 include(display/display.pri)
 include(fresnel/fresnel.pri)
 include(ggx/ggx.pri)

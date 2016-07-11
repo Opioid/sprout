@@ -34,6 +34,8 @@ public:
 		void set(float3_p color);
 
 		float3 diffuse_color;
+		float  roughness;
+		float  a2;
 	};
 
 	Layer layer_;
