@@ -26,6 +26,10 @@ public:
 
 private:
 
+	template<typename Layer>
+	static float3 evaluate(float3_p wi, float3_p h, float n_dot_wi, float n_dot_wo,
+						   const Layer& layer);
+
 	static float f_D90(float3_p wi, float3_p h, float roughness);
 };
 

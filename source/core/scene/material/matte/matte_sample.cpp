@@ -22,9 +22,9 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-//	float3 brdf = disney::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo, layer_, pdf);
+	float3 brdf = disney::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo, layer_, pdf);
 
-	float3 brdf = oren_nayar::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo, layer_, pdf);
+//	float3 brdf = oren_nayar::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo, layer_, pdf);
 
 	return n_dot_wi * brdf;
 }
@@ -38,12 +38,18 @@ float3 Sample::attenuation() const {
 }
 
 float Sample::ior() const {
-	return 1.5f;
+	return 1.47f;
 }
 
 void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float n_dot_wi = lambert::Isotropic::importance_sample(layer_.diffuse_color, layer_,
-														   sampler, result);
+//	float n_dot_wi = lambert::Isotropic::importance_sample(layer_.diffuse_color, layer_,
+//														   sampler, result);
+
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+
+	float n_dot_wi = disney::Isotropic::importance_sample(wo_, n_dot_wo, layer_,
+														  sampler, result);
+
 	result.reflection *= n_dot_wi;
 }
 
