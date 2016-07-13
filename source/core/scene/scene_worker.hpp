@@ -13,6 +13,7 @@ struct Intersection;
 struct Ray;
 
 class Worker {
+
 public:
 
 	Worker();

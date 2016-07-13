@@ -7,6 +7,7 @@
 namespace scene { namespace shape {
 
 class Node_stack {
+
 public:
 
 	Node_stack(size_t size);

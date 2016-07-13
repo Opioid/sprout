@@ -57,8 +57,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 }
 
 bool Perspective::generate_ray(const sampler::Camera_sample& sample,
-							   uint32_t /*view*/,
-							   scene::Ray& ray) const {
+							   uint32_t /*view*/, scene::Ray& ray) const {
 	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
 	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
@@ -102,7 +101,8 @@ void Perspective::set_fov(float fov) {
 	float z = ratio * math::Pi / fov * 0.5f;
 
 	left_top_ = float3(-ratio,  1.f, z);
-	float3 right_top	( ratio,  1.f, z);
+
+	float3 right_top(ratio, 1.f, z);
 	float3 left_bottom(-ratio, -1.f, z);
 
 	d_x_ = (right_top   - left_top_) / fr.x;

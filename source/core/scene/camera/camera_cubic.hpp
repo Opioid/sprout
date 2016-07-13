@@ -6,6 +6,7 @@
 namespace scene { namespace camera {
 
 class Cubic : public Camera {
+
 public:
 
 	enum class Layout {

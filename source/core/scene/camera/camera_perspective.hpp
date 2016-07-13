@@ -5,6 +5,7 @@
 namespace scene { namespace camera {
 
 class Perspective : public Camera {
+
 public:
 
 	struct Focus {
@@ -25,8 +26,7 @@ public:
 	virtual void update_focus(rendering::Worker& worker) final override;
 
 	virtual bool generate_ray(const sampler::Camera_sample& sample,
-							  uint32_t view,
-							  scene::Ray& ray) const final override;
+							  uint32_t view, scene::Ray& ray) const final override;
 
 	void set_fov(float fov);
 

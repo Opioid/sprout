@@ -6,6 +6,7 @@
 namespace scene { namespace camera {
 
 class Cubic_stereoscopic : public Stereoscopic {
+
 public:
 
 	enum class Layout {
@@ -13,8 +14,7 @@ public:
 		rxlmxryrmyrzrmzlxlmxlylmylzlmz,
 	};
 
-	Cubic_stereoscopic(Layout layout,
-					   float interpupillary_distance,
+	Cubic_stereoscopic(Layout layout, float interpupillary_distance,
 					   int2 resolution, float ray_max_t);
 
 	virtual uint32_t num_views() const final override;

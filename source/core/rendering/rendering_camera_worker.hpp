@@ -7,6 +7,7 @@ namespace scene { namespace camera { class Camera; }}
 namespace rendering {
 
 class Camera_worker : public Worker {
+
 public:
 
 	void render(scene::camera::Camera& camera, uint32_t view, const math::Recti& tile,

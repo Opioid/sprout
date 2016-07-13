@@ -24,6 +24,7 @@ namespace volume { class Integrator_factory; }
 }
 
 class Driver {
+
 public:
 
 	using Surface_integrator_factory = std::shared_ptr<integrator::surface::Integrator_factory>;

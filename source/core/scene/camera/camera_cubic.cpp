@@ -14,8 +14,9 @@ Cubic::Cubic(Layout layout, int2 resolution, float ray_max_t) :
 	Camera(int2(resolution.x, resolution.x), ray_max_t) {
 	float f = static_cast<float>(resolution.x);
 
-	left_top_ = float3(-1.f,  1.f, 1.f);
-	float3 right_top	( 1.f,  1.f, 1.f);
+	left_top_ = float3(-1.f, 1.f, 1.f);
+
+	float3 right_top(1.f, 1.f, 1.f);
 	float3 left_bottom(-1.f, -1.f, 1.f);
 
 	d_x_ = (right_top - left_top_)   / f;
@@ -52,8 +53,8 @@ Cubic::Cubic(Layout layout, int2 resolution, float ray_max_t) :
 	}
 
 	math::set_rotation_y(view_rotations_[0], math::degrees_to_radians(-90.f));
-	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians(90.f));
-	math::set_rotation_x(view_rotations_[2], math::degrees_to_radians(90.f));
+	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians( 90.f));
+	math::set_rotation_x(view_rotations_[2], math::degrees_to_radians( 90.f));
 	math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
 	view_rotations_[4] = math::float3x3::identity;
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
@@ -75,14 +76,15 @@ void Cubic::update_focus(rendering::Worker& /*worker*/) {}
 
 bool Cubic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 						 scene::Ray& ray) const {
-	float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
+	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
 	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
 	direction = math::normalized(direction * view_rotations_[view]);
 
-	entity::Composed_transformation transformation;
-	transformation_at(sample.time, transformation);
+	entity::Composed_transformation temp;
+	auto& transformation = transformation_at(0.f, temp);
+
 	ray.origin = math::transform_point(math::float3_identity, transformation.object_to_world);
 	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
 	ray.min_t = 0.f;
@@ -93,6 +95,7 @@ bool Cubic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 	return true;
 }
 
-void Cubic::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
+void Cubic::set_parameter(const std::string& /*name*/,
+						  const json::Value& /*value*/) {}
 
 }}

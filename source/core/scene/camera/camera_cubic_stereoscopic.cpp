@@ -10,15 +10,14 @@
 
 namespace scene { namespace camera {
 
-Cubic_stereoscopic::Cubic_stereoscopic(Layout layout,
-									   float interpupillary_distance,
+Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, float interpupillary_distance,
 									   int2 resolution, float ray_max_t) :
-	Stereoscopic(interpupillary_distance, int2(resolution.x, resolution.x),
-				 ray_max_t) {
+	Stereoscopic(interpupillary_distance, int2(resolution.x, resolution.x), ray_max_t) {
 	float f = static_cast<float>(resolution.x);
 
-	left_top_ = float3(-1.f,  1.f, 1.f);
-	float3 right_top	( 1.f,  1.f, 1.f);
+	left_top_ = float3(-1.f, 1.f, 1.f);
+
+	float3 right_top( 1.f, 1.f, 1.f);
 	float3 left_bottom(-1.f, -1.f, 1.f);
 
 	d_x_ = (right_top - left_top_)   / f;
@@ -49,8 +48,8 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout,
 	}
 
 	math::set_rotation_y(view_rotations_[0], math::degrees_to_radians(-90.f));
-	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians(90.f));
-	math::set_rotation_x(view_rotations_[2], math::degrees_to_radians(90.f));
+	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians( 90.f));
+	math::set_rotation_x(view_rotations_[2], math::degrees_to_radians( 90.f));
 	math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
 	view_rotations_[4] = math::float3x3::identity;
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
@@ -108,6 +107,7 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	return true;
 }
 
-void Cubic_stereoscopic::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
+void Cubic_stereoscopic::set_parameter(const std::string& /*name*/,
+									   const json::Value& /*value*/) {}
 
 }}

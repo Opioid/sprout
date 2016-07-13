@@ -8,6 +8,7 @@ namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 namespace scene { namespace material {
 
 class Sampler_cache {
+
 public:
 
 	Sampler_cache();
