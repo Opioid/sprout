@@ -2,9 +2,6 @@
 
 #include "substitute_base_sample.hpp"
 #include "scene/material/coating/coating.inl"
-#include "scene/material/fresnel/fresnel.inl"
-#include "scene/material/ggx/ggx.inl"
-#include "scene/material/oren_nayar/oren_nayar.inl"
 #include "base/math/vector.inl"
 
 namespace scene { namespace material { namespace substitute {
@@ -12,44 +9,6 @@ namespace scene { namespace material { namespace substitute {
 template<typename Coating>
 float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coating,
 											  float& pdf) const {
-/*	float n_dot_wi = layer_.clamped_n_dot(wi);
-	float n_dot_wo = layer_.clamped_n_dot(wo_);
-
-	float3 h = math::normalized(wo_ + wi);
-	float wo_dot_h = std::max(math::dot(wo_, h), 0.00001f);
-
-	float3 f = fresnel::schlick(wo_dot_h, layer_.f0);
-
-	float diffuse_pdf;
-	float3 diffuse = (1.f - f) * oren_nayar::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
-																 layer_, diffuse_pdf);
-
-	float3 coating_attenuation;
-	float  coating_pdf;
-	float3 coating_reflection = coating.evaluate(wi, wo_, layer_.ior,
-												 coating_attenuation, coating_pdf);
-
-	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == layer_.a2) {
-		pdf = 0.5f * (coating_pdf + 0.5f * diffuse_pdf);
-		return coating_reflection + n_dot_wi * coating_attenuation * diffuse;
-	}
-
-	float n_dot_h  = math::saturate(math::dot(layer_.n, h));
-
-	float clamped_a2 = ggx::clamp_a2(layer_.a2);
-	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
-	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-
-	float3 specular = d * g * f;
-
-	float ggx_pdf = d * n_dot_h / (4.f * wo_dot_h);
-
-	pdf = (coating_pdf + diffuse_pdf + ggx_pdf) / 3.f;
-
-	return coating_reflection + n_dot_wi * coating_attenuation * (diffuse + specular);
-	*/
-
 	float3 coating_attenuation;
 	float  coating_pdf;
 	float3 coating_reflection = coating.evaluate(wi, wo_, layer_.ior,

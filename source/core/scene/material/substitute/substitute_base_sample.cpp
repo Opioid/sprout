@@ -2,8 +2,8 @@
 #include "rendering/integrator/surface/integrator_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/fresnel/fresnel.inl"
+#include "scene/material/disney/disney.inl"
 #include "scene/material/ggx/ggx.inl"
-#include "scene/material/oren_nayar/oren_nayar.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
 #include "base/math/math.hpp"
@@ -59,8 +59,8 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) c
 	float n_dot_wo = clamped_n_dot(wo);
 
 	float on_pdf;
-	float3 on_reflection = oren_nayar::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
-														   *this, on_pdf);
+	float3 on_reflection = disney::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
+													   *this, on_pdf);
 
 	fresnel::Schlick schlick(f0);
 	float3 ggx_fresnel;
@@ -76,8 +76,8 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) c
 void Sample_base::Layer::diffuse_importance_sample(float3_p wo, sampler::Sampler& sampler,
 												   bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
-	float n_dot_wi = oren_nayar::Isotropic::importance_sample(wo, n_dot_wo, *this,
-															  sampler, result);
+	float n_dot_wi = disney::Isotropic::importance_sample(wo, n_dot_wo, *this,
+														  sampler, result);
 
 	fresnel::Schlick schlick(f0);
 	float3 ggx_fresnel;
@@ -98,8 +98,8 @@ void Sample_base::Layer::specular_importance_sample(float3_p wo, sampler::Sample
 													   sampler, ggx_fresnel, result);
 
 	float on_pdf;
-	float3 on_reflection = oren_nayar::Isotropic::evaluate(result.wi, wo, n_dot_wi, n_dot_wo,
-														   *this, on_pdf);
+	float3 on_reflection = disney::Isotropic::evaluate(result.wi, wo, n_dot_wi, n_dot_wo,
+													   *this, on_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + (1.f - ggx_fresnel) * on_reflection);
 	result.pdf = 0.5f * (result.pdf + on_pdf);
