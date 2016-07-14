@@ -32,10 +32,10 @@ inline float3 conductor(float wo_dot_h, float3_p eta, float3_p k) {
 
 	float3 a = 2.f * wo_dot_h * eta;
 	float3 r_p = (tmp - a + 1.f)
-					 / (tmp + a + 1.f);
+			   / (tmp + a + 1.f);
 
 	float3 r_o = (tmp_f - a + wo_dot_h2)
-					 / (tmp_f + a + wo_dot_h2);
+			   / (tmp_f + a + wo_dot_h2);
 
 	return 0.5f * (r_p + r_o);
 }
@@ -71,7 +71,7 @@ inline float tp(float n1, float n2, float cosI, float cosT) {
 }
 
 inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
-							 float internal_ior, float thickness) {
+					   float internal_ior, float thickness) {
 	// Precompute the reflection phase changes (depends on IOR)
 	float delta10 = (thinfilm_ior < external_ior) ? math::Pi : 0.f;
 	float delta12 = (thinfilm_ior < internal_ior) ? math::Pi : 0.f;
