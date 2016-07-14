@@ -18,44 +18,12 @@ const material::Sample& Material_translucent::sample(float3_p wo, const Renderst
 
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	sample.set_basis(rs.geo_n, wo);
-
-	if (normal_map_.is_valid()) {
-		float3 nm = normal_map_.sample_3(sampler, rs.uv);
-		float3 n = math::normalized(rs.tangent_to_world(nm));
-
-		sample.layer_.set_basis(rs.t, rs.b, n);
-	} else {
-		sample.layer_.set_basis(rs.t, rs.b, rs.n);
-	}
-
-	float3 color;
-	if (color_map_.is_valid()) {
-		color = color_map_.sample_3(sampler, rs.uv);
-	} else {
-		color = color_;
-	}
-
-	float2 surface;
-	if (surface_map_.is_valid()) {
-		surface = surface_map_.sample_2(sampler, rs.uv);
-		surface.x = math::pow4(surface.x);
-	} else {
-		surface.x = a2_;
-		surface.y = metallic_;
-	}
-
-	if (emission_map_.is_valid()) {
-		float3 radiance = emission_factor_ * emission_map_.sample_3(sampler, rs.uv);
-		sample.layer_.set(color, radiance, ior_, constant_f0_, surface.x, surface.y);
-	} else {
-		sample.layer_.set(color, math::float3_identity, ior_, constant_f0_, surface.x, surface.y);
-	}
+	set_sample(wo, rs, sampler, sample);
 
 	float thickness;
 
 	thickness = thickness_;
-	sample.set(color, surface.y, thickness, attenuation_distance_);
+	sample.set(sample.layer_.diffuse_color, thickness, attenuation_distance_);
 
 	return sample;
 }

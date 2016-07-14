@@ -89,10 +89,7 @@ bool Sample_translucent::is_translucent() const {
 	return thickness_ > 0.f;
 }
 
-void Sample_translucent::set(float3_p color, float metallic,
-							 float thickness, float attenuation_distance) {
-	float3 diffuse_color = (1.f - metallic) * color;
-
+void Sample_translucent::set(float3_p diffuse_color, float thickness, float attenuation_distance) {
 	if (thickness > 0.f) {
 		attenuation_ = material::Sample::attenuation(diffuse_color, attenuation_distance);
 	}

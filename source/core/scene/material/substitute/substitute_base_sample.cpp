@@ -44,12 +44,13 @@ bool Sample_base::is_translucent() const {
 }
 
 void Sample_base::Layer::set(float3_p color, float3_p radiance, float ior,
-							 float constant_f0, float a2, float metallic) {
+							 float constant_f0, float roughness, float metallic) {
 	this->diffuse_color = (1.f - metallic) * color;
 	this->f0 = math::lerp(float3(constant_f0), color, metallic);
 	this->emission = radiance;
 	this->ior = ior;
-	this->a2 = a2;
+	this->roughness = roughness;
+	this->a2 = math::pow4(roughness);
 	this->metallic = metallic;
 }
 

@@ -45,9 +45,9 @@ public:
 						   const Layer& layer, const Fresnel& fresnel, float& pdf);
 
 	template<typename Layer, typename Fresnel>
-	static float importance_sample(float3_p wo, float n_dot_wo,
-								   const Layer& layer, const Fresnel& fresnel,
-								   sampler::Sampler& sampler, bxdf::Result& result);
+	static float importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
+								   const Fresnel& fresnel, sampler::Sampler& sampler,
+								   bxdf::Result& result);
 };
 
 float distribution_isotropic(float n_dot_h, float a2);

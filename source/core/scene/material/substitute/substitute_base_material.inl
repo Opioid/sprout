@@ -78,7 +78,7 @@ void Material_base<Sample>::set_ior(float ior, float externeal_ior) {
 
 template<typename Sample>
 void Material_base<Sample>::set_roughness(float roughness) {
-	a2_ = math::pow4(roughness);
+	roughness_ = roughness;
 }
 
 template<typename Sample>
@@ -115,9 +115,8 @@ void Material_base<Sample>::set_sample(float3_p wo, const shape::Hitpoint& hp,
 	float2 surface;
 	if (surface_map_.is_valid()) {
 		surface = surface_map_.sample_2(sampler, hp.uv);
-		surface.x = math::pow4(surface.x);
 	} else {
-		surface.x = a2_;
+		surface.x = roughness_;
 		surface.y = metallic_;
 	}
 

@@ -53,7 +53,7 @@ public:
 
 	struct Layer : material::Sample::Layer {
 		void set(float3_p color, float3_p radiance, float ior,
-				 float constant_f0, float a2, float metallic);
+				 float constant_f0, float roughness, float metallic);
 
 		float3 base_evaluate(float3_p wi, float3_p wo, float& pdf) const;
 
@@ -71,6 +71,7 @@ public:
 		float3 emission;
 
 		float ior;
+		float roughness;
 		float a2;
 		float metallic;
 	};

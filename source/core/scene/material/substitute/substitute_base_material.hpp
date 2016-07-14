@@ -51,7 +51,7 @@ protected:
 	float3 color_;
 	float ior_;
 	float constant_f0_;
-	float a2_;
+	float roughness_;
 	float metallic_;
 	float emission_factor_;
 };
