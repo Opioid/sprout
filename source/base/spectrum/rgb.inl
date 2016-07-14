@@ -108,12 +108,16 @@ inline math::byte4 float_to_unorm(const float4& c) {
 					   static_cast<uint8_t>(c.w * 255.f));
 }
 
+inline float unorm_to_float(uint8_t byte) {
+	return static_cast<float>(byte) / 255.f;
+}
+
 inline float snorm_to_float(uint8_t byte) {
 	return static_cast<float>(byte) / 128.f - 1.f;
 }
 
-inline float unorm_to_float(uint8_t byte) {
-	return static_cast<float>(byte) / 255.f;
+inline uint8_t float_to_unorm(float x) {
+	return static_cast<uint8_t>(x * 255.f);
 }
 
 inline uint8_t float_to_snorm(float x) {

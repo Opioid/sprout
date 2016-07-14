@@ -33,9 +33,10 @@ math::byte4 float_to_unorm(const float4& c);
 
 uint32_t to_uint(const float4& c);
 
-float snorm_to_float(uint8_t byte);
 float unorm_to_float(uint8_t byte);
+float snorm_to_float(uint8_t byte);
 
+uint8_t float_to_unorm(float x);
 uint8_t float_to_snorm(float x);
 
 byte3 float_to_snorm(float3_p c);

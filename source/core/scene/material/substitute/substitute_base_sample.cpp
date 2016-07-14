@@ -58,9 +58,9 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) c
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
 
-	float on_pdf;
-	float3 on_reflection = disney::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
-													   *this, on_pdf);
+	float d_pdf;
+	float3 d_reflection = disney::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
+													  *this, d_pdf);
 
 	fresnel::Schlick schlick(f0);
 	float3 ggx_fresnel;
@@ -68,9 +68,9 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) c
 	float3 ggx_reflection = ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
 													 *this, schlick, ggx_fresnel, ggx_pdf);
 
-	pdf = 0.5f * (on_pdf + ggx_pdf);
+	pdf = 0.5f * (d_pdf + ggx_pdf);
 
-	return n_dot_wi * ((1.f - ggx_fresnel) * on_reflection + ggx_reflection);
+	return n_dot_wi * ((1.f - ggx_fresnel) * d_reflection + ggx_reflection);
 }
 
 void Sample_base::Layer::diffuse_importance_sample(float3_p wo, sampler::Sampler& sampler,
@@ -92,22 +92,24 @@ void Sample_base::Layer::diffuse_importance_sample(float3_p wo, sampler::Sampler
 void Sample_base::Layer::specular_importance_sample(float3_p wo, sampler::Sampler& sampler,
 													bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
+
 	fresnel::Schlick schlick(f0);
 	float3 ggx_fresnel;
 	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this, schlick,
 													   sampler, ggx_fresnel, result);
 
-	float on_pdf;
-	float3 on_reflection = disney::Isotropic::evaluate(result.wi, wo, n_dot_wi, n_dot_wo,
-													   *this, on_pdf);
+	float d_pdf;
+	float3 d_reflection = disney::Isotropic::evaluate(result.wi, wo, n_dot_wi, n_dot_wo,
+													  *this, d_pdf);
 
-	result.reflection = n_dot_wi * (result.reflection + (1.f - ggx_fresnel) * on_reflection);
-	result.pdf = 0.5f * (result.pdf + on_pdf);
+	result.reflection = n_dot_wi * (result.reflection + (1.f - ggx_fresnel) * d_reflection);
+	result.pdf = 0.5f * (result.pdf + d_pdf);
 }
 
 void Sample_base::Layer::pure_specular_importance_sample(float3_p wo, sampler::Sampler& sampler,
 														 bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
+
 	fresnel::Schlick schlick(f0);
 	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this,
 													   schlick, sampler, result);

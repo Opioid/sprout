@@ -14,7 +14,9 @@ class Provider {
 
 public:
 
-	std::shared_ptr<Image> create(const memory::Variant_map& options);
+	std::shared_ptr<Image> create_normal_map(const memory::Variant_map& options);
+
+	std::shared_ptr<Image> create_mask(const memory::Variant_map& options);
 };
 
 }}}

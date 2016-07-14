@@ -17,7 +17,9 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 									  const memory::Variant_map& options,
 									  resource::Manager& manager) {
 	if ("proc:flakes" == filename) {
-		return flakes_provider_.create(options);
+		return flakes_provider_.create_normal_map(options);
+	} else if ("proc:flakes_mask" == filename) {
+		return flakes_provider_.create_mask(options);
 	}
 
 	auto stream_pointer = manager.file_system().read_stream(filename);

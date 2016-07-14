@@ -109,4 +109,18 @@ private:
 	float3 k_;
 };
 
+class Conductor_weighted {
+
+public:
+
+	Conductor_weighted(float3_p eta, float3_p k, float weight);
+
+	float3 operator()(float wo_dot_h) const;
+
+private:
+
+	Conductor conductor_;
+	float weight_;
+};
+
 }}}

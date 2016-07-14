@@ -99,6 +99,41 @@ void Renderer::resolve(Image_byte_3& image) const {
 	}
 }
 
+void Renderer::resolve(Image_byte_1& image) const {
+	if (1 == num_sqrt_samples_) {
+		for (int i = 0, len = image.area(); i < len; ++i) {
+			auto& s = samples_[i];
+
+			image.at(i) = spectrum::float_to_unorm(s.x);
+		}
+	} else {
+		int num_samples = num_sqrt_samples_ * num_sqrt_samples_;
+
+		float n = 1.f / static_cast<float>(num_samples);
+
+		auto i_d = image.description().dimensions;
+
+		for (int i_y = 0; i_y < i_d.y; ++i_y) {
+			int b_y = num_sqrt_samples_ * i_y;
+			for (int i_x = 0; i_x < i_d.x; ++i_x) {
+				int b_x = num_sqrt_samples_ * i_x;
+
+				float result = 0.f;
+
+				for (int y = 0; y < num_sqrt_samples_; ++y) {
+					for (int x = 0; x < num_sqrt_samples_; ++x) {
+						int s = dimensions_.x * (b_y + y) + b_x + x;
+
+						result += samples_[s].x;
+					}
+				}
+
+				image.at(i_x, i_y) = spectrum::float_to_unorm(n * result);
+			}
+		}
+	}
+}
+
 void Renderer::set_sample(int x, int y, const float4& color) {
 	x = math::mod(x, dimensions_.x);
 	y = math::mod(y, dimensions_.y);

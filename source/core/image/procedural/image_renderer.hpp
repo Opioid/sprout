@@ -20,6 +20,8 @@ public:
 
 	void resolve(Image_byte_3& target) const;
 
+	void resolve(Image_byte_1& target) const;
+
 private:
 
 	void set_sample(int x, int y, const float4& color);

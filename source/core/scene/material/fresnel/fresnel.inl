@@ -172,4 +172,12 @@ inline float3 Conductor::operator()(float wo_dot_h) const {
 	return conductor(wo_dot_h, eta_, k_);
 }
 
+inline Conductor_weighted::Conductor_weighted(float3_p eta, float3_p k, float weight) :
+	conductor_(eta, k),
+	weight_(weight){}
+
+inline float3 Conductor_weighted::operator()(float wo_dot_h) const {
+	return weight_ * conductor_(wo_dot_h);
+}
+
 }}}

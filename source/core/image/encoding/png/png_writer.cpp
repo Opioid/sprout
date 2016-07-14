@@ -55,4 +55,27 @@ bool Writer::write(const std::string& name, const Image_byte_3& image) {
 	return true;
 }
 
+bool Writer::write(const std::string& name, const Image_byte_1& image) {
+	std::ofstream stream(name, std::ios::binary);
+	if (!stream) {
+		return false;
+	}
+
+	auto d = image.description().dimensions;
+
+	size_t buffer_len = 0;
+	void* png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d.x, d.y,
+															   1, &buffer_len);
+
+	if (!png_buffer) {
+		return false;
+	}
+
+	stream.write(static_cast<char*>(png_buffer), buffer_len);
+
+	mz_free(png_buffer);
+
+	return true;
+}
+
 }}}

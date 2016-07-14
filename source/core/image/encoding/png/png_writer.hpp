@@ -17,6 +17,8 @@ public:
 					   thread::Pool& pool) final override;
 
 	static bool write(const std::string& name, const Image_byte_3& image);
+
+	static bool write(const std::string& name, const Image_byte_1& image);
 };
 
 }}}

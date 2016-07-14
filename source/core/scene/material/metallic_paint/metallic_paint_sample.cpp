@@ -151,7 +151,8 @@ float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo,
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
 
-	fresnel::Conductor conductor(ior, absorption);
+//	fresnel::Conductor conductor(ior, absorption);
+	fresnel::Conductor_weighted conductor(ior, absorption, weight);
 	return n_dot_wi * ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
 											   *this, conductor, fresnel_result, pdf);
 }
@@ -160,11 +161,10 @@ void Sample::Flakes_layer::importance_sample(float3_p wo, sampler::Sampler& samp
 											 float3& fresnel_result, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
 
-	fresnel_result = float3(fresnel::schlick(n_dot_wo, 1.f));
-
-	fresnel::Conductor conductor(ior, absorption);
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this,
-													   conductor, sampler, fresnel_result, result);
+//	fresnel::Conductor conductor(ior, absorption);
+	fresnel::Conductor_weighted conductor(ior, absorption, weight);
+	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this, conductor,
+													   sampler, fresnel_result, result);
 	result.reflection *= n_dot_wi;
 }
 

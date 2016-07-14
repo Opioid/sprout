@@ -13,12 +13,10 @@ namespace scene { namespace material { namespace metallic_paint {
 
 Material::Material(Generic_sample_cache<Sample>& cache,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, sampler_settings,
-														   two_sided) {}
+	material::Typed_material<Generic_sample_cache<Sample>>(cache, sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
-										 const Worker& worker,
-										 Sampler_settings::Filter filter) {
+										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
@@ -35,8 +33,10 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 		sample.coating_.set_basis(rs.t, rs.b, rs.n);
 //	}
 
+	auto& sampler = worker.sampler(sampler_key_, filter);
+
 	if (flakes_normal_map_.is_valid()) {
-		auto& sampler = worker.sampler(sampler_key_, filter);
+
 		float3 nm = flakes_normal_map_.sample_3(sampler, rs.uv);
 		float3 n = math::normalized(rs.tangent_to_world(nm));
 
@@ -47,7 +47,12 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	sample.base_.set(color_a_, color_b_);
 
-
+	if (flakes_mask_.is_valid()) {
+		float weight = flakes_mask_.sample_1(sampler, rs.uv);
+		sample.flakes_.weight = weight;
+	} else {
+		sample.flakes_.weight = 1.f;
+	}
 
 	sample.flakes_.ior = float3(0.18267f, 0.49447f, 1.3761f);
 	sample.flakes_.absorption = float3(3.1178f, 2.3515f, 1.8324f);
@@ -58,6 +63,10 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 	sample.coating_.set(coating_.f0, coating_.a2);
 
 	return sample;
+}
+
+void Material::set_flakes_mask(const Adapter_2D& mask) {
+	flakes_mask_ = mask;
 }
 
 void Material::set_flakes_normal_map(const Adapter_2D& normal_map) {

@@ -11,7 +11,7 @@
 
 namespace image { namespace procedural { namespace flakes {
 
-std::shared_ptr<Image> Provider::create(const memory::Variant_map& options) {
+std::shared_ptr<Image> Provider::create_normal_map(const memory::Variant_map& options) {
 	int2 dimensions(256, 256);
 
 	Renderer renderer(dimensions, 4);
@@ -22,16 +22,13 @@ std::shared_ptr<Image> Provider::create(const memory::Variant_map& options) {
 	renderer.set_brush(float3(0.f, 0.f, 1.f));
 	renderer.clear();
 
-//	math::random::Generator rng(456, 234756, 34521, 787808);
 	math::random::Generator rng(1, 2, 3, 4);
 
 	uint32_t r_0 = rng.random_uint();
 	uint32_t r_1 = rng.random_uint();
 
-
-
-	uint32_t num_flakes = 2048;
-
+	uint32_t num_flakes = 4096;
+//	uint32_t num_flakes = 512;
 
 	for (uint32_t i = 0; i < num_flakes; ++i) {
 		float2 s_0 = math::thing(i, num_flakes, r_0);
@@ -45,10 +42,6 @@ std::shared_ptr<Image> Provider::create(const memory::Variant_map& options) {
 
 		normal = math::normalized(normal + float3(0.f, 0.f, 1.f));
 
-		if (normal.z < 0.f) {
-			std::cout << "oh noes" << std::endl;
-		}
-
 		renderer.set_brush(normal);
 
 		float r_f = rng.random_float();
@@ -57,7 +50,44 @@ std::shared_ptr<Image> Provider::create(const memory::Variant_map& options) {
 
 	renderer.resolve(*image);
 
-	encoding::png::Writer::write("flakes.png", *image);
+	encoding::png::Writer::write("flakes_normal.png", *image);
+
+	return image;
+}
+
+std::shared_ptr<Image> Provider::create_mask(const memory::Variant_map& options) {
+	int2 dimensions(256, 256);
+
+	Renderer renderer(dimensions, 4);
+
+	std::shared_ptr<Image_byte_1> image = std::make_shared<Image_byte_1>(
+				Image::Description(Image::Type::Byte_1, dimensions));
+
+	renderer.set_brush(float3(0.f, 0.f, 0.f));
+	renderer.clear();
+
+	math::random::Generator rng(1, 2, 3, 4);
+
+	uint32_t r_0 = rng.random_uint();
+	uint32_t r_1 = rng.random_uint();
+
+	uint32_t num_flakes = 4096;
+//	uint32_t num_flakes = 512;
+
+	renderer.set_brush(float3(1.f, 1.f, 1.f));
+
+	for (uint32_t i = 0; i < num_flakes; ++i) {
+		float2 s_0 = math::thing(i, num_flakes, r_0);
+
+		float2 s_1 = float2(rng.random_float(), rng.random_float());
+
+		float r_f = rng.random_float();
+		renderer.draw_circle(s_0, 0.005f + 0.005f * r_f);
+	}
+
+	renderer.resolve(*image);
+
+	encoding::png::Writer::write("flakes_mask.png", *image);
 
 	return image;
 }
