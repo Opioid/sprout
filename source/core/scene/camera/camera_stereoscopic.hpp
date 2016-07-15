@@ -5,6 +5,7 @@
 namespace scene { namespace camera {
 
 class Stereoscopic : public Camera {
+
 public:
 
 	Stereoscopic(float interpupillary_distance,

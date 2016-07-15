@@ -26,7 +26,10 @@ public:
 
 	void set_color(float3_p a, float3_p b);
 
-	void set_clearcoat(float ior, float roughness, float weight);
+	void set_coating_weight(float weight);
+	void set_coating_color(float3_p color);
+
+	void set_clearcoat(float ior, float roughness);
 
 protected:
 

@@ -78,7 +78,7 @@ void Cubic_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
 bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 									  scene::Ray& ray) const {
-	float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
+	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
 	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 

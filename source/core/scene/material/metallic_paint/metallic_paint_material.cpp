@@ -58,7 +58,7 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 	sample.flakes_.absorption = float3(3.1178f, 2.3515f, 1.8324f);
 	sample.flakes_.a2 = math::pow4(0.15f);
 
-	sample.coating_.set_color_and_weight(float3(1.f, 1.f, 1.f), coating_.weight);
+	sample.coating_.set_color_and_weight(coating_.color, coating_.weight);
 
 	sample.coating_.set(coating_.f0, coating_.a2);
 
@@ -78,10 +78,17 @@ void Material::set_color(float3_p a, float3_p b) {
 	color_b_ = b;
 }
 
-void Material::set_clearcoat(float ior, float roughness, float weight) {
+void Material::set_coating_weight(float weight) {
+	coating_.weight = weight;
+}
+
+void Material::set_coating_color(float3_p color) {
+	coating_.color = color;
+}
+
+void Material::set_clearcoat(float ior, float roughness) {
 	coating_.f0 = fresnel::schlick_f0(1.f, ior);
 	coating_.a2 = math::pow4(roughness);
-	coating_.weight = weight;
 }
 
 }}}

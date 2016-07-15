@@ -17,6 +17,7 @@ public:
 	void set_coating_weight_map(const Adapter_2D& weight_map);
 	void set_coating_normal_map(const Adapter_2D& normal_map);
 
+	void set_coating_weight(float weight);
 	void set_coating_color(float3_p color);
 
 protected:
@@ -45,7 +46,7 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_clearcoat(float ior, float roughness, float weight);
+	void set_clearcoat(float ior, float roughness);
 };
 
 class Material_thinfilm : public Material_coating<coating::Thinfilm, Sample_thinfilm> {
@@ -61,7 +62,7 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_thinfilm(float ior, float roughness, float thickness, float weight);
+	void set_thinfilm(float ior, float roughness, float thickness);
 };
 
 }}}

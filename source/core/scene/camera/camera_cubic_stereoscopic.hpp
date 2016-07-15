@@ -30,7 +30,8 @@ public:
 
 private:
 
-	virtual void set_parameter(const std::string& name, const json::Value& value) final override;
+	virtual void set_parameter(const std::string& name,
+							   const json::Value& value) final override;
 
 	float3 left_top_;
 	float3 d_x_;

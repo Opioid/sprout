@@ -631,11 +631,15 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 															   two_sided);
 
 	material->set_mask(mask);
+
+	material->set_color(color_a, color_b);
+
 	material->set_flakes_mask(flakes_mask);
 	material->set_flakes_normal_map(flakes_normal_map);
 
-	material->set_color(color_a, color_b);
-	material->set_clearcoat(coating.ior, coating.roughness, coating.weight);
+	material->set_coating_weight(coating.weight);
+	material->set_coating_color(coating.color);
+	material->set_clearcoat(coating.ior, coating.roughness);
 
 	return material;
 }
@@ -814,9 +818,10 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 
 			material->set_coating_normal_map(coating_normal_map);
 			material->set_coating_weight_map(coating_weight_map);
+			material->set_coating_weight(coating.weight);
 			material->set_coating_color(coating.color);
 			material->set_thinfilm(coating.ior, coating.roughness,
-								   coating.thickness, coating.weight);
+								   coating.thickness);
 
 			return material;
 		} else {
@@ -837,8 +842,9 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 
 			material->set_coating_normal_map(coating_normal_map);
 			material->set_coating_weight_map(coating_weight_map);
+			material->set_coating_weight(coating.weight);
 			material->set_coating_color(coating.color);
-			material->set_clearcoat(coating.ior, coating.roughness, coating.weight);
+			material->set_clearcoat(coating.ior, coating.roughness);
 
 			return material;
 		}

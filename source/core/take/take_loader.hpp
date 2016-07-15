@@ -41,6 +41,7 @@ struct Take;
 struct Settings;
 
 class Loader {
+
 public:
 
 	std::shared_ptr<Take> load(std::istream& stream);

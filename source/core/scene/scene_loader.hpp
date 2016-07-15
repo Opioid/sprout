@@ -41,6 +41,7 @@ class Scene;
 class Prop;
 
 class Loader {
+
 public:
 
 	Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material);

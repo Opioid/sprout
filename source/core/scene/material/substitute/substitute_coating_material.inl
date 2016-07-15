@@ -25,6 +25,11 @@ void Material_coating<Coating, Sample>::set_coating_normal_map(const Adapter_2D&
 }
 
 template<typename Coating, typename Sample>
+void Material_coating<Coating, Sample>::set_coating_weight(float weight) {
+	coating_.weight = weight;
+}
+
+template<typename Coating, typename Sample>
 void Material_coating<Coating, Sample>::set_coating_color(float3_p color) {
 	coating_.color = color;
 }
