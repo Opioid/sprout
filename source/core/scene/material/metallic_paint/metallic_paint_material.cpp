@@ -36,7 +36,6 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
 	if (flakes_normal_map_.is_valid()) {
-
 		float3 nm = flakes_normal_map_.sample_3(sampler, rs.uv);
 		float3 n = math::normalized(rs.tangent_to_world(nm));
 
@@ -45,14 +44,17 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 		sample.flakes_.set_basis(rs.t, rs.b, rs.n);
 	}
 
-	sample.base_.set(color_a_, color_b_);
+	sample.base_.set(color_a_, color_b_, a2_);
 
+	/*
 	if (flakes_mask_.is_valid()) {
 		float weight = flakes_mask_.sample_1(sampler, rs.uv);
 		sample.flakes_.weight = weight;
 	} else {
 		sample.flakes_.weight = 1.f;
-	}
+	}*/
+
+	sample.flakes_.weight = 1.f;// - math::dot(sample.base_.n, sample.flakes_.n);
 
 	sample.flakes_.ior = float3(0.18267f, 0.49447f, 1.3761f);
 	sample.flakes_.absorption = float3(3.1178f, 2.3515f, 1.8324f);
@@ -76,6 +78,10 @@ void Material::set_flakes_normal_map(const Adapter_2D& normal_map) {
 void Material::set_color(float3_p a, float3_p b) {
 	color_a_ = a;
 	color_b_ = b;
+}
+
+void Material::set_roughness(float roughness) {
+	a2_ = math::pow4(roughness);
 }
 
 void Material::set_coating_weight(float weight) {

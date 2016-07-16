@@ -573,6 +573,7 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 	bool two_sided = false;
 	float3 color_a(1.f, 0.f, 0.f);
 	float3 color_b(0.f, 0.f, 1.f);
+	float roughness = 0.575f;
 	Coating_description coating;
 	coating.ior = 1.5f;
 
@@ -584,6 +585,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 			color_a = json::read_float3(node_value);
 		} else if ("color_b" == node_name) {
 			color_b = json::read_float3(node_value);
+		} else if ("roughness" == node_name) {
+			roughness  = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
 		} else if ("coating" == node_name) {
@@ -633,6 +636,7 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 	material->set_mask(mask);
 
 	material->set_color(color_a, color_b);
+	material->set_roughness(roughness);
 
 	material->set_flakes_mask(flakes_mask);
 	material->set_flakes_normal_map(flakes_normal_map);

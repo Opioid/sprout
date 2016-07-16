@@ -40,7 +40,7 @@ std::shared_ptr<Image> Provider::create_normal_map(const memory::Variant_map& op
 
 //		float3 normal(1.f, 1.f, 1.f);
 
-		normal = math::normalized(normal + float3(0.f, 0.f, 1.f));
+	//	normal = math::normalized(normal + float3(0.f, 0.f, 1.f));
 
 		renderer.set_brush(normal);
 
@@ -50,7 +50,7 @@ std::shared_ptr<Image> Provider::create_normal_map(const memory::Variant_map& op
 
 	renderer.resolve(*image);
 
-	encoding::png::Writer::write("flakes_normal.png", *image);
+//	encoding::png::Writer::write("flakes_normal.png", *image);
 
 	return image;
 }
@@ -87,7 +87,7 @@ std::shared_ptr<Image> Provider::create_mask(const memory::Variant_map& options)
 
 	renderer.resolve(*image);
 
-	encoding::png::Writer::write("flakes_mask.png", *image);
+//	encoding::png::Writer::write("flakes_mask.png", *image);
 
 	return image;
 }

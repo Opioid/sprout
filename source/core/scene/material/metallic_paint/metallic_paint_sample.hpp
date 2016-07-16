@@ -31,7 +31,7 @@ public:
 	virtual bool is_translucent() const final override;
 
 	struct Base_layer : material::Sample::Layer {
-		void set(float3_p color_a, float3_p color_b);
+		void set(float3_p color_a, float3_p color_b, float a2);
 
 		float3 evaluate(float3_p wi, float3_p wo, float& pdf) const;
 

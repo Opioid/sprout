@@ -25,6 +25,7 @@ public:
 	void set_flakes_normal_map(const Adapter_2D& normal_map);
 
 	void set_color(float3_p a, float3_p b);
+	void set_roughness(float roughness);
 
 	void set_coating_weight(float weight);
 	void set_coating_color(float3_p color);
@@ -38,6 +39,8 @@ protected:
 
 	float3 color_a_;
 	float3 color_b_;
+
+	float a2_;
 
 	coating::Clearcoat coating_;
 };
