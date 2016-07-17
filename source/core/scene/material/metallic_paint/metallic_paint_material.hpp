@@ -21,11 +21,13 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	void set_flakes_mask(const Adapter_2D& mask);
-	void set_flakes_normal_map(const Adapter_2D& normal_map);
-
 	void set_color(float3_p a, float3_p b);
 	void set_roughness(float roughness);
+
+	void set_flakes_mask(const Adapter_2D& mask);
+	void set_flakes_normal_map(const Adapter_2D& normal_map);
+	void set_flakes_ior(float3_p ior);
+	void set_flakes_absorption(float3_p absorption);
 
 	void set_coating_weight(float weight);
 	void set_coating_color(float3_p color);
@@ -41,6 +43,9 @@ protected:
 	float3 color_b_;
 
 	float a2_;
+
+	float3 flakes_ior_;
+	float3 flakes_absorption_;
 
 	coating::Clearcoat coating_;
 };

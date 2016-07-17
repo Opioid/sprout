@@ -483,7 +483,6 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 	bool two_sided = false;
 	float3 ior(1.f, 1.f, 1.f);
 	float3 absorption(0.75f, 0.75f, 0.75f);
-	float2 anisotropy(0.f, 0.f);
 	float roughness = 0.9f;
 	float2 roughness_aniso(0.f, 0.f);
 
@@ -574,6 +573,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 	float3 color_a(1.f, 0.f, 0.f);
 	float3 color_b(0.f, 0.f, 1.f);
 	float roughness = 0.575f;
+	float3 flakes_ior(1.f, 1.f, 1.f);
+	float3 flakes_absorption(0.75f, 0.75f, 0.75f);
 	Coating_description coating;
 	coating.ior = 1.5f;
 
@@ -589,6 +590,9 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 			roughness  = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
+		} else if ("flakes" == node_name) {
+			flakes_ior = json::read_float3(node_value, "ior", flakes_ior);
+			flakes_absorption = json::read_float3(node_value, "absorption", flakes_absorption);
 		} else if ("coating" == node_name) {
 			read_coating_description(node_value, coating);
 		} else if ("textures" == node_name) {
@@ -640,6 +644,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 
 	material->set_flakes_mask(flakes_mask);
 	material->set_flakes_normal_map(flakes_normal_map);
+	material->set_flakes_ior(flakes_ior);
+	material->set_flakes_absorption(flakes_absorption);
 
 	material->set_coating_weight(coating.weight);
 	material->set_coating_color(coating.color);

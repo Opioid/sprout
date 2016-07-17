@@ -46,33 +46,26 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	sample.base_.set(color_a_, color_b_, a2_);
 
-	/*
+	float flakes_weight;
 	if (flakes_mask_.is_valid()) {
-		float weight = flakes_mask_.sample_1(sampler, rs.uv);
-		sample.flakes_.weight = weight;
+		flakes_weight = flakes_mask_.sample_1(sampler, rs.uv);
 	} else {
-		sample.flakes_.weight = 1.f;
-	}*/
+		flakes_weight = 1.f;
+	}
 
-	sample.flakes_.weight = 1.f;// - math::dot(sample.base_.n, sample.flakes_.n);
+//	sample.flakes_.weight = 0.f;// - math::dot(sample.base_.n, sample.flakes_.n);
 
-	sample.flakes_.ior = float3(0.18267f, 0.49447f, 1.3761f);
-	sample.flakes_.absorption = float3(3.1178f, 2.3515f, 1.8324f);
-	sample.flakes_.a2 = math::pow4(0.15f);
+//	sample.flakes_.ior = float3(0.18267f, 0.49447f, 1.3761f);
+//	sample.flakes_.absorption = float3(3.1178f, 2.3515f, 1.8324f);
+//	sample.flakes_.a2 = math::pow4(0.2f);
+
+	sample.flakes_.set(flakes_ior_, flakes_absorption_, math::pow4(0.1f), flakes_weight);
 
 	sample.coating_.set_color_and_weight(coating_.color, coating_.weight);
 
 	sample.coating_.set(coating_.f0, coating_.a2);
 
 	return sample;
-}
-
-void Material::set_flakes_mask(const Adapter_2D& mask) {
-	flakes_mask_ = mask;
-}
-
-void Material::set_flakes_normal_map(const Adapter_2D& normal_map) {
-	flakes_normal_map_ = normal_map;
 }
 
 void Material::set_color(float3_p a, float3_p b) {
@@ -82,6 +75,23 @@ void Material::set_color(float3_p a, float3_p b) {
 
 void Material::set_roughness(float roughness) {
 	a2_ = math::pow4(roughness);
+}
+
+
+void Material::set_flakes_mask(const Adapter_2D& mask) {
+	flakes_mask_ = mask;
+}
+
+void Material::set_flakes_normal_map(const Adapter_2D& normal_map) {
+	flakes_normal_map_ = normal_map;
+}
+
+void Material::set_flakes_ior(float3_p ior) {
+	flakes_ior_ = ior;
+}
+
+void Material::set_flakes_absorption(float3_p absorption) {
+	flakes_absorption_ = absorption;
 }
 
 void Material::set_coating_weight(float weight) {

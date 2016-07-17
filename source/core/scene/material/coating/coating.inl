@@ -41,9 +41,8 @@ void Clearcoat::importance_sample(float3_p wo, float /*internal_ior*/,
 
 	fresnel::Schlick_weighted schlick(f0, weight);
 
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, layer,
-													   schlick, sampler,
-													   attenuation, result);
+	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, layer, schlick,
+													   sampler, attenuation, result);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f, 1.f, 1.f), color, weight);
 
@@ -80,9 +79,8 @@ void Thinfilm::importance_sample(float3_p wo, float internal_ior,
 
 	fresnel::Thinfilm_weighted thinfilm(1.f, ior, internal_ior, thickness, weight);
 
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, layer,
-													   thinfilm, sampler,
-													   attenuation, result);
+	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, layer, thinfilm,
+													   sampler, attenuation, result);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f, 1.f, 1.f), color, weight);
 

@@ -27,8 +27,11 @@ std::shared_ptr<Image> Provider::create_normal_map(const memory::Variant_map& op
 	uint32_t r_0 = rng.random_uint();
 	uint32_t r_1 = rng.random_uint();
 
-	uint32_t num_flakes = 4096;
+	uint32_t num_flakes = 4096 * 3;
 //	uint32_t num_flakes = 512;
+
+	float radius   = 0.002f;
+	float variance = 0.001f;
 
 	for (uint32_t i = 0; i < num_flakes; ++i) {
 		float2 s_0 = math::thing(i, num_flakes, r_0);
@@ -40,12 +43,12 @@ std::shared_ptr<Image> Provider::create_normal_map(const memory::Variant_map& op
 
 //		float3 normal(1.f, 1.f, 1.f);
 
-	//	normal = math::normalized(normal + float3(0.f, 0.f, 1.f));
+		normal = math::normalized(normal + float3(0.f, 0.f, 1.f));
 
 		renderer.set_brush(normal);
 
 		float r_f = rng.random_float();
-		renderer.draw_circle(s_0, 0.005f + 0.005f * r_f);
+		renderer.draw_circle(s_0, radius + r_f * variance);
 	}
 
 	renderer.resolve(*image);
@@ -71,8 +74,11 @@ std::shared_ptr<Image> Provider::create_mask(const memory::Variant_map& options)
 	uint32_t r_0 = rng.random_uint();
 	uint32_t r_1 = rng.random_uint();
 
-	uint32_t num_flakes = 4096;
+	uint32_t num_flakes = 4096 * 3;
 //	uint32_t num_flakes = 512;
+
+	float radius   = 0.002f;
+	float variance = 0.001f;
 
 	renderer.set_brush(float3(1.f, 1.f, 1.f));
 
@@ -82,7 +88,7 @@ std::shared_ptr<Image> Provider::create_mask(const memory::Variant_map& options)
 		float2 s_1 = float2(rng.random_float(), rng.random_float());
 
 		float r_f = rng.random_float();
-		renderer.draw_circle(s_0, 0.005f + 0.005f * r_f);
+		renderer.draw_circle(s_0, radius + r_f * variance);
 	}
 
 	renderer.resolve(*image);

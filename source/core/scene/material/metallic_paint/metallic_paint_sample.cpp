@@ -193,6 +193,13 @@ void Sample::Base_layer::importance_sample(float3_p wo, sampler::Sampler& sample
 	result.reflection *= n_dot_wi;
 }
 
+void Sample::Flakes_layer::set(float3_p ior, float3_p absorption, float a2, float weight) {
+	this->ior = ior;
+	this->absorption = absorption;
+	this->a2 = a2;
+	this->weight = weight;
+}
+
 float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo,
 									  float3& fresnel_result, float& pdf) const {
 	float n_dot_wi = clamped_n_dot(wi);
