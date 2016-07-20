@@ -96,23 +96,23 @@ inline bool Variant_map::query(const std::string& key, float& value) const {
 }
 
 template<typename T>
-void Variant_map::insert(const std::string& key, T value) {
+void Variant_map::set(const std::string& key, T value) {
 	map_[key] = Variant(static_cast<uint32_t>(value));
 }
 
-inline void Variant_map::insert(const std::string& key, bool value) {
+inline void Variant_map::set(const std::string& key, bool value) {
 	map_[key] = Variant(value);
 }
 
-inline void Variant_map::insert(const std::string& key, int32_t value) {
+inline void Variant_map::set(const std::string& key, int32_t value) {
 	map_[key] = Variant(value);
 }
 
-inline void Variant_map::insert(const std::string& key, uint32_t value) {
+inline void Variant_map::set(const std::string& key, uint32_t value) {
 	map_[key] = Variant(value);
 }
 
-inline void Variant_map::insert(const std::string& key, float value) {
+inline void Variant_map::set(const std::string& key, float value) {
 	map_[key] = Variant(value);
 }
 

@@ -18,12 +18,12 @@ public:
 	bool query(const std::string& key, float& value) const;
 
 	template<typename T>
-	void insert(const std::string& key, T value);
+	void set(const std::string& key, T value);
 
-	void insert(const std::string& key, bool value);
-	void insert(const std::string& key, int32_t value);
-	void insert(const std::string& key, uint32_t value);
-	void insert(const std::string& key, float value);
+	void set(const std::string& key, bool value);
+	void set(const std::string& key, int32_t value);
+	void set(const std::string& key, uint32_t value);
+	void set(const std::string& key, float value);
 
 	void inherit(const Variant_map& other, const std::string& key);
 	void inherit_except(const Variant_map& other, const std::string& key);

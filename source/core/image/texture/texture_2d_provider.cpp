@@ -38,7 +38,7 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 	}
 
 	memory::Variant_map image_options;
-	image_options.insert("channels", channels);
+	image_options.set("channels", channels);
 	image_options.inherit_except(options, "usage");
 
 	try {

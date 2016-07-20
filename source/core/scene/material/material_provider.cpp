@@ -146,13 +146,13 @@ std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
 
 				memory::Variant_map options;
 				if ("Color" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Color);
+					options.set("usage", image::texture::Provider::Usage::Color);
 					color_map = create_texture(texture_description, options, manager);
 				} else if ("Normal" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Normal);
+					options.set("usage", image::texture::Provider::Usage::Normal);
 					normal_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Mask);
+					options.set("usage", image::texture::Provider::Usage::Mask);
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
@@ -214,14 +214,14 @@ std::shared_ptr<Material> Provider::load_display(const json::Value& display_valu
 				memory::Variant_map options;
 
 				if (texture_description.num_elements > 1) {
-					options.insert("num_elements", texture_description.num_elements);
+					options.set("num_elements", texture_description.num_elements);
 				}
 
 				if ("Emission" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Color);
+					options.set("usage", image::texture::Provider::Usage::Color);
 					emission_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Mask);
+					options.set("usage", image::texture::Provider::Usage::Mask);
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
@@ -285,7 +285,7 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 
 				memory::Variant_map options;
 				if ("Normal" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Normal);
+					options.set("usage", image::texture::Provider::Usage::Normal);
 					normal_map = create_texture(texture_description, options, manager);
 				}
 			}
@@ -366,14 +366,14 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 				memory::Variant_map options;
 
 				if (texture_description.num_elements > 1) {
-					options.insert("num_elements", texture_description.num_elements);
+					options.set("num_elements", texture_description.num_elements);
 				}
 
 				if ("Emission" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Color);
+					options.set("usage", image::texture::Provider::Usage::Color);
 					emission_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Mask);
+					options.set("usage", image::texture::Provider::Usage::Mask);
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
@@ -454,7 +454,7 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_val
 					normal_map = manager.load<image::texture::Texture_2D>(
 								texture_description.filename, options);
 				} else*/ if ("Mask" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Mask);
+					options.set("usage", image::texture::Provider::Usage::Mask);
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
@@ -516,17 +516,17 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 
 				memory::Variant_map options;
 				if ("Normal" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Normal);
+					options.set("usage", image::texture::Provider::Usage::Normal);
 					normal_map = create_texture(texture_description, options, manager);
 			/*	} else if ("Surface" == usage) {
 					surface_map = texture_cache_.load(filename,
 													  static_cast<uint32_t>(
 														 image::texture::Provider::Flags::Use_as_surface));*/
 				} else if ("Anisotropy" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Anisotropy);
+					options.set("usage", image::texture::Provider::Usage::Anisotropy);
 					direction_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Mask);
+					options.set("usage", image::texture::Provider::Usage::Mask);
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
@@ -576,6 +576,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 	float3 color_a(1.f, 0.f, 0.f);
 	float3 color_b(0.f, 0.f, 1.f);
 	float roughness = 0.575f;
+	float flakes_size = 0.1f;
+	float flakes_density = 0.2f;
 	float3 flakes_ior(1.f, 1.f, 1.f);
 	float3 flakes_absorption(0.75f, 0.75f, 0.75f);
 	Coating_description coating;
@@ -602,6 +604,9 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 			} else {
 				metal::ior_and_absorption(flakes_preset, flakes_ior, flakes_absorption);
 			}
+
+			flakes_size = json::read_float(node_value, "size", flakes_size);
+			flakes_density = json::read_float(node_value, "density", flakes_density);
 		} else if ("coating" == node_name) {
 			read_coating_description(node_value, coating);
 		} else if ("textures" == node_name) {
@@ -615,7 +620,7 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 
 				memory::Variant_map options;
 				if ("Mask" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Mask);
+					options.set("usage", image::texture::Provider::Usage::Mask);
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
@@ -624,23 +629,20 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 		}
 	}
 
-	{
-		Texture_description texture_description;
-		texture_description.filename = "proc:flakes";
-		texture_description.scale = float2(16.f, 16.f);
-		memory::Variant_map options;
-		options.insert("usage", image::texture::Provider::Usage::Normal);
-		flakes_normal_map = create_texture(texture_description, options, manager);
-	}
+	Texture_description texture_description;
+	texture_description.scale = float2(16.f, 16.f);
 
-	{
-		Texture_description texture_description;
-		texture_description.filename = "proc:flakes_mask";
-		texture_description.scale = float2(16.f, 16.f);
-		memory::Variant_map options;
-		options.insert("usage", image::texture::Provider::Usage::Mask);
-		flakes_mask = create_texture(texture_description, options, manager);
-	}
+	memory::Variant_map options;
+	options.set("size", flakes_size);
+	options.set("density", flakes_density);
+
+	texture_description.filename = "proc:flakes";
+	options.set("usage", image::texture::Provider::Usage::Normal);
+	flakes_normal_map = create_texture(texture_description, options, manager);
+
+	texture_description.filename = "proc:flakes_mask";
+	options.set("usage", image::texture::Provider::Usage::Mask);
+	flakes_mask = create_texture(texture_description, options, manager);
 
 	auto material = std::make_shared<metallic_paint::Material>(metallic_paint_cache_,
 															   sampler_settings,
@@ -692,7 +694,7 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 
 				memory::Variant_map options;
 				if ("Mask" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Mask);
+					options.set("usage", image::texture::Provider::Usage::Mask);
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
@@ -762,19 +764,19 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 
 				memory::Variant_map options;
 				if ("Color" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Color);
+					options.set("usage", image::texture::Provider::Usage::Color);
 					color_map = create_texture(texture_description, options, manager);
 				} else if ("Normal" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Normal);
+					options.set("usage", image::texture::Provider::Usage::Normal);
 					normal_map = create_texture(texture_description, options, manager);
 				} else if ("Surface" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Surface);
+					options.set("usage", image::texture::Provider::Usage::Surface);
 					surface_map = create_texture(texture_description, options, manager);
 				} else if ("Emission" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Color);
+					options.set("usage", image::texture::Provider::Usage::Color);
 					emission_map = create_texture(texture_description, options, manager);
 				} else if ("Mask" == texture_description.usage) {
-					options.insert("usage", image::texture::Provider::Usage::Mask);
+					options.set("usage", image::texture::Provider::Usage::Mask);
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
@@ -809,13 +811,13 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 
 		if (!coating.weight_map_description.filename.empty()) {
 			memory::Variant_map options;
-			options.insert("usage", image::texture::Provider::Usage::Mask);
+			options.set("usage", image::texture::Provider::Usage::Mask);
 			coating_weight_map = create_texture(coating.weight_map_description, options, manager);
 		}
 
 		if (!coating.normal_map_description.filename.empty()) {
 			memory::Variant_map options;
-			options.insert("usage", image::texture::Provider::Usage::Normal);
+			options.set("usage", image::texture::Provider::Usage::Normal);
 			coating_normal_map = create_texture(coating.normal_map_description, options, manager);
 		}
 
