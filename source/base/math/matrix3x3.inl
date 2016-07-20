@@ -115,7 +115,7 @@ Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, const Vector3<T>& 
 					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
 }
 
-inline Vector3f_a operator*(const Matrix3x3<float>& m, const Vector3f_a& v) {
+inline Vector3f_a operator*(const Matrix3x3<float>& m, FVector3f_a v) {
 	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
@@ -245,8 +245,7 @@ void set_rotation_x(Matrix3x3<T>& m, T a) {
 }
 
 template<typename T>
-void set_rotation_y(Matrix3x3<T>& m, T a)
-{
+void set_rotation_y(Matrix3x3<T>& m, T a) {
 	T c = std::cos(a);
 	T s = std::sin(a);
 

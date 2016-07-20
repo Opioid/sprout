@@ -69,7 +69,7 @@ Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m);
 template<typename T>
 Vector3<T> operator*(const Matrix3x3<T>& m, const Vector3<T>& v);
 
-Vector3f_a operator*(const Matrix3x3<float>& m, const Vector3f_a& v);
+Vector3f_a operator*(const Matrix3x3<float>& m, FVector3f_a v);
 
 template<typename T>
 Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v);

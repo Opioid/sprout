@@ -53,13 +53,6 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, float interpupillary_dista
 	math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
 	view_rotations_[4] = math::float3x3::identity;
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
-
-	view_rotations_[6]  = view_rotations_[0];
-	view_rotations_[7]  = view_rotations_[1];
-	view_rotations_[8]  = view_rotations_[2];
-	view_rotations_[9]  = view_rotations_[3];
-	view_rotations_[10] = view_rotations_[4];
-	view_rotations_[11] = view_rotations_[5];
 }
 
 uint32_t Cubic_stereoscopic::num_views() const {
@@ -82,14 +75,15 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 
 	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-	direction = math::normalized(direction * view_rotations_[view]);
+	uint32_t face = view % 6;
+	direction = math::normalized(direction * view_rotations_[face]);
 
 	float a = std::atan2(direction.x, direction.z);
 
 	math::float3x3 rotation;
 	math::set_rotation_y(rotation, -a);
 
-	float ipd_scale = 1.f - 2.f * (std::acos(direction.y) * math::Pi_inv - 0.5f);
+	float ipd_scale = std::acos(direction.y * direction.y) * math::Pi_inv * 2.f;
 
 	uint32_t eye = view < 6 ? 0 : 1;
 	float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
