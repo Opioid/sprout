@@ -20,6 +20,7 @@
 #include "matte/matte_material.hpp"
 #include "matte/matte_sample.hpp"
 #include "metal/metal_material.hpp"
+#include "metal/metal_presets.hpp"
 #include "metal/metal_sample.hpp"
 #include "metallic_paint/metallic_paint_material.hpp"
 #include "metallic_paint/metallic_paint_sample.hpp"
@@ -494,6 +495,8 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 			ior = json::read_float3(node_value);
 		} else if ("absorption" == node_name) {
 			absorption = json::read_float3(node_value);
+		} else if ("preset" == node_name) {
+			metal::ior_and_absorption(node_value.GetString(), ior, absorption);
 		} else if ("roughness" == node_name) {
 			if (node_value.IsArray()) {
 				roughness_aniso = json::read_float2(node_value);
@@ -591,8 +594,14 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 		} else if ("two_sided" == node_name) {
 			two_sided = json::read_bool(node_value);
 		} else if ("flakes" == node_name) {
-			flakes_ior = json::read_float3(node_value, "ior", flakes_ior);
-			flakes_absorption = json::read_float3(node_value, "absorption", flakes_absorption);
+			std::string flakes_preset = json::read_string(node_value, "preset");
+
+			if (flakes_preset.empty()) {
+				flakes_ior = json::read_float3(node_value, "ior", flakes_ior);
+				flakes_absorption = json::read_float3(node_value, "absorption", flakes_absorption);
+			} else {
+				metal::ior_and_absorption(flakes_preset, flakes_ior, flakes_absorption);
+			}
 		} else if ("coating" == node_name) {
 			read_coating_description(node_value, coating);
 		} else if ("textures" == node_name) {
