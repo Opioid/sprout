@@ -28,6 +28,7 @@ public:
 	void set_flakes_normal_map(const Adapter_2D& normal_map);
 	void set_flakes_ior(float3_p ior);
 	void set_flakes_absorption(float3_p absorption);
+	void set_flakes_roughness(float roughness);
 
 	void set_coating_weight(float weight);
 	void set_coating_color(float3_p color);
@@ -46,6 +47,7 @@ protected:
 
 	float3 flakes_ior_;
 	float3 flakes_absorption_;
+	float  flakes_a2_;
 
 	coating::Clearcoat coating_;
 };

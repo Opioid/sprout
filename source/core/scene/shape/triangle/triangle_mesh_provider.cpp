@@ -111,7 +111,7 @@ std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& 
     auto mesh = std::make_shared<Mesh>();
 
     if (BVH_preset::Slow == bvh_preset) {
-        bvh::Builder_SAH builder(16, 64);
+		bvh::Builder_SAH builder(16, 64);
         builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
     } else {
         bvh::Builder_SUH builder;

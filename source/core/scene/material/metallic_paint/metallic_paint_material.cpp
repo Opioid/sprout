@@ -55,11 +55,7 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 //	sample.flakes_.weight = 0.f;// - math::dot(sample.base_.n, sample.flakes_.n);
 
-//	sample.flakes_.ior = float3(0.18267f, 0.49447f, 1.3761f);
-//	sample.flakes_.absorption = float3(3.1178f, 2.3515f, 1.8324f);
-//	sample.flakes_.a2 = math::pow4(0.2f);
-
-	sample.flakes_.set(flakes_ior_, flakes_absorption_, math::pow4(0.25f), flakes_weight);
+	sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_a2_, flakes_weight);
 
 	sample.coating_.set_color_and_weight(coating_.color, coating_.weight);
 
@@ -92,6 +88,10 @@ void Material::set_flakes_ior(float3_p ior) {
 
 void Material::set_flakes_absorption(float3_p absorption) {
 	flakes_absorption_ = absorption;
+}
+
+void Material::set_flakes_roughness(float roughness) {
+	flakes_a2_ = math::pow4(roughness);
 }
 
 void Material::set_coating_weight(float weight) {

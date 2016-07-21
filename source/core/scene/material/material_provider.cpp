@@ -580,6 +580,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 	float flakes_density = 0.2f;
 	float3 flakes_ior(1.f, 1.f, 1.f);
 	float3 flakes_absorption(0.75f, 0.75f, 0.75f);
+	float flakes_roughness = 0.3f;
+	float2 flakes_scale(1.f, 1.f);
 	Coating_description coating;
 	coating.ior = 1.5f;
 
@@ -607,6 +609,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 
 			flakes_size = json::read_float(node_value, "size", flakes_size);
 			flakes_density = json::read_float(node_value, "density", flakes_density);
+			flakes_roughness = json::read_float(node_value, "roughness", flakes_roughness);
+			flakes_scale = json::read_float2(node_value, "scale", flakes_scale);
 		} else if ("coating" == node_name) {
 			read_coating_description(node_value, coating);
 		} else if ("textures" == node_name) {
@@ -630,7 +634,7 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 	}
 
 	Texture_description texture_description;
-	texture_description.scale = float2(16.f, 16.f);
+	texture_description.scale = flakes_scale;
 
 	memory::Variant_map options;
 	options.set("size", flakes_size);
@@ -657,6 +661,7 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 	material->set_flakes_normal_map(flakes_normal_map);
 	material->set_flakes_ior(flakes_ior);
 	material->set_flakes_absorption(flakes_absorption);
+	material->set_flakes_roughness(flakes_roughness);
 
 	material->set_coating_weight(coating.weight);
 	material->set_coating_color(coating.color);

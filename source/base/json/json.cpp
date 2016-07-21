@@ -100,13 +100,23 @@ float read_float(const rapidjson::Value& value, const std::string& name, float d
 
 float2 read_float2(const rapidjson::Value& value) {
 	return float2(static_cast<float>(value[0u].GetDouble()),
-						static_cast<float>(value[1].GetDouble()));
+				  static_cast<float>(value[1].GetDouble()));
+}
+
+float2 read_float2(const rapidjson::Value& value, const std::string& name,
+				   const float2& default_value) {
+	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name.c_str());
+	if (value.MemberEnd() == node) {
+		return default_value;
+	}
+
+	return read_float2(node->value);
 }
 
 float3 read_float3(const rapidjson::Value& value) {
 	return float3(static_cast<float>(value[0u].GetDouble()),
-						static_cast<float>(value[1].GetDouble()),
-						static_cast<float>(value[2].GetDouble()));
+				  static_cast<float>(value[1].GetDouble()),
+				  static_cast<float>(value[2].GetDouble()));
 }
 
 float3 read_float3(const rapidjson::Value& value, const std::string& name,
