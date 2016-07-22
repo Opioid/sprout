@@ -10,12 +10,8 @@
 
 namespace scene { namespace material { namespace metallic_paint {
 
-float3_p Sample::shading_normal() const {
-	return base_.n;
-}
-
-float3 Sample::tangent_to_world(float3_p v) const {
-	return base_.tangent_to_world(v);
+const material::Sample::Layer& Sample::base_layer() const {
+	return base_;
 }
 
 float3 Sample::evaluate(float3_p wi, float& pdf) const {

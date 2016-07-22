@@ -16,6 +16,10 @@ inline float Sample::Layer::clamped_n_dot(float3_p v) const {
 	return std::max(math::dot(n, v), 0.00001f);
 }
 
+inline float3_p Sample::Layer::shading_normal() const {
+	return n;
+}
+
 inline float3 Sample::Layer::tangent_to_world(float3_p v) const {
 	return float3(v.x * t.x + v.y * b.x + v.z * n.x,
 				  v.x * t.y + v.y * b.y + v.z * n.y,

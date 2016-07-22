@@ -65,7 +65,8 @@ public:
 	Pathtracer_MIS_factory(const take::Settings& take_settings,
 						   uint32_t min_bounces, uint32_t max_bounces,
 						   float path_termination_probability,
-						   uint32_t num_light_samples, bool disable_caustics);
+						   uint32_t num_light_samples,
+						   bool disable_caustics);
 
 	virtual Integrator* create(math::random::Generator& rng) const final override;
 

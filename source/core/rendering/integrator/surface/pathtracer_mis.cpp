@@ -167,9 +167,8 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 
 		// Light source importance sample
 		scene::light::Sample light_sample;
-		light->sample(transformation, ray.time,
-					  intersection.geo.p, material_sample.geometric_normal(),
-					  material_sample.is_translucent(),
+		light->sample(transformation, ray.time, intersection.geo.p,
+					  material_sample.geometric_normal(), material_sample.is_translucent(),
 					  sampler_, worker, Sampler_filter::Nearest, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
@@ -251,7 +250,8 @@ float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,
 											   uint32_t min_bounces, uint32_t max_bounces,
 											   float path_termination_probability,
-											   uint32_t num_light_samples, bool disable_caustics) :
+											   uint32_t num_light_samples,
+											   bool disable_caustics) :
 	Integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;

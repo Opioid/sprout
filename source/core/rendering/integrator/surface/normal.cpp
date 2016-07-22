@@ -1,24 +1,26 @@
 #include "normal.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "scene/scene_intersection.inl"
 #include "scene/scene_ray.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
-#include "scene/scene_intersection.inl"
-#include "scene/shape/geometry/hitpoint.inl"
+#include "take/take_settings.hpp"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
-Normal::Normal(const take::Settings& take_settings, math::random::Generator& rng,
+Normal::Normal(const take::Settings& take_settings,
+			   math::random::Generator& rng,
 			   const Settings& settings) :
-	Integrator(take_settings, rng), settings_(settings) {}
+	Integrator(take_settings, rng),
+	settings_(settings) {}
 
 void Normal::start_new_pixel(uint32_t /*num_samples*/) {}
 
 float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-						scene::Intersection& intersection) {
+				  scene::Intersection& intersection) {
 	float3 vector;
 
 	if (Settings::Vector::Tangent == settings_.vector) {
@@ -30,13 +32,13 @@ float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 	} else if (Settings::Vector::Shading_normal == settings_.vector) {
 		float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(worker, wo, ray.time,
-													scene::material::Sampler_settings::Filter::Unknown);
+													Sampler_filter::Unknown);
 
 		if (!material_sample.same_hemisphere(wo)) {
 			return float4(0.f, 0.f, 0.f, 1.f);
 		}
 
-		vector = material_sample.shading_normal();
+		vector = material_sample.base_layer().shading_normal();
 	} else {
 		return float4(0.f, 0.f, 0.f, 1.f);
 	}

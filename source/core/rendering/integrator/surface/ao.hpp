@@ -11,6 +11,7 @@
 namespace rendering { namespace integrator { namespace surface {
 
 class Ao : public Integrator {
+
 public:
 
 	struct Settings {
@@ -19,13 +20,14 @@ public:
 		float radius;
 	};
 
-	Ao(const take::Settings& take_settings, math::random::Generator& rng,
+	Ao(const take::Settings& take_settings,
+	   math::random::Generator& rng,
 	   const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples) final override;
 
 	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
-							scene::Intersection& intersection) final override;
+					  scene::Intersection& intersection) final override;
 
 private:
 
@@ -35,6 +37,7 @@ private:
 };
 
 class Ao_factory : public Integrator_factory {
+
 public:
 
 	Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius);

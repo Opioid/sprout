@@ -1,7 +1,7 @@
 #include "ao.hpp"
 #include "rendering/rendering_worker.hpp"
-#include "scene/scene_ray.inl"
 #include "scene/scene_intersection.inl"
+#include "scene/scene_ray.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
@@ -12,10 +12,12 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Ao::Ao(const take::Settings& take_settings, math::random::Generator& rng,
+Ao::Ao(const take::Settings& take_settings,
+	   math::random::Generator& rng,
 	   const Settings& settings) :
 	Integrator(take_settings, rng),
-	settings_(settings), sampler_(rng, settings.num_samples) {}
+	settings_(settings),
+	sampler_(rng, settings.num_samples) {}
 
 void Ao::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
@@ -38,7 +40,7 @@ float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 		float2 sample = sampler_.generate_sample_2D();
 		float3 hs = math::sample_hemisphere_cosine(sample);
 //		float3 ws = intersection.geo.tangent_to_world(hs);
-		float3 ws = material_sample.tangent_to_world(hs);
+		float3 ws = material_sample.base_layer().tangent_to_world(hs);
 
 		occlusion_ray.set_direction(ws);
 

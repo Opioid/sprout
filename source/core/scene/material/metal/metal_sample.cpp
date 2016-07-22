@@ -7,12 +7,8 @@
 
 namespace scene { namespace material { namespace metal {
 
-float3_p Sample_isotropic::shading_normal() const {
-	return layer_.n;
-}
-
-float3 Sample_isotropic::tangent_to_world(float3_p v) const {
-	return layer_.tangent_to_world(v);
+const material::Sample::Layer& Sample_isotropic::base_layer() const {
+	return layer_;
 }
 
 float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
@@ -73,12 +69,8 @@ void Sample_isotropic::Layer::set(float3_p ior, float3_p absorption, float rough
 	this->a2 = math::pow4(roughness);
 }
 
-float3_p Sample_anisotropic::shading_normal() const {
-	return layer_.n;
-}
-
-float3 Sample_anisotropic::tangent_to_world(float3_p v) const {
-	return layer_.tangent_to_world(v);
+const material::Sample::Layer& Sample_anisotropic::base_layer() const {
+	return layer_;
 }
 
 float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
@@ -116,8 +108,8 @@ void Sample_anisotropic::sample_evaluate(sampler::Sampler& sampler, bxdf::Result
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
-	float n_dot_wi = ggx::Anisotropic::importance_sample(wo_, n_dot_wo, layer_, conductor,
-														 sampler, result);
+	float n_dot_wi = ggx::Anisotropic::importance_sample(wo_, n_dot_wo, layer_,
+														 conductor, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 

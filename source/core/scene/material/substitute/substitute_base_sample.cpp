@@ -11,12 +11,8 @@
 
 namespace scene { namespace material { namespace substitute {
 
-float3_p Sample_base::shading_normal() const {
-	return layer_.n;
-}
-
-float3 Sample_base::tangent_to_world(float3_p v) const {
-	return layer_.tangent_to_world(v);
+const material::Sample::Layer& Sample_base::base_layer() const {
+	return layer_;
 }
 
 float3 Sample_base::radiance() const {

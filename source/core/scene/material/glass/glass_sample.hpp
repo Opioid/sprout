@@ -12,9 +12,7 @@ class Sample : public material::Sample {
 
 public:
 
-	virtual float3_p shading_normal() const final override;
-
-	virtual float3 tangent_to_world(float3_p v) const final override;
+	virtual const Layer& base_layer() const final override;
 
 	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 

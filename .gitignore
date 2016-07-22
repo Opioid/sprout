@@ -5,3 +5,4 @@ system/
 *.fuse-hidden*
 *.autosave
 .directory
+\#*#

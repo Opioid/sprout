@@ -17,14 +17,14 @@ public:
 
 		float clamped_n_dot(float3_p v) const;
 
+		float3_p shading_normal() const;
+
 		float3 tangent_to_world(float3_p v) const;
 
 		float3 t, b, n;
 	};
 
-	virtual float3_p shading_normal() const = 0;
-
-	virtual float3 tangent_to_world(float3_p v) const = 0;
+	virtual const Layer& base_layer() const = 0;
 
 	virtual float3 evaluate(float3_p wi, float& pdf) const = 0;
 
@@ -34,7 +34,8 @@ public:
 
 	virtual float ior() const = 0;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
+	virtual void sample_evaluate(sampler::Sampler& sampler,
+								 bxdf::Result& result) const = 0;
 
 	virtual bool is_pure_emissive() const = 0;
 
