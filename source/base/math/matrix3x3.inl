@@ -95,42 +95,10 @@ Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) {
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
-template<typename T>
-Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v) {
-	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
-					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
-					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
-}
-
-inline Vector3f_a operator*(const Vector3f_a& v, const Matrix3x3<float>& m) {
+inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3<float>& m) {
 	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
 					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
-}
-
-template<typename T>
-Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, const Vector3<T>& v) {
-	return Vector3<T>(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
-					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
-					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
-}
-
-inline Vector3f_a operator*(const Matrix3x3<float>& m, FVector3f_a v) {
-	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
-					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
-					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
-}
-
-template<typename T>
-void transform_vectors(const Matrix3x3<T>& m,
-                       const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob) {
-	oa.x = a.x * m.m00 + a.y * m.m10 + a.z * m.m20;
-	oa.y = a.x * m.m01 + a.y * m.m11 + a.z * m.m21;
-	oa.z = a.x * m.m02 + a.y * m.m12 + a.z * m.m22;
-
-	ob.x = b.x * m.m00 + b.y * m.m10 + b.z * m.m20;
-	ob.y = b.x * m.m01 + b.y * m.m11 + b.z * m.m21;
-	ob.z = b.x * m.m02 + b.y * m.m12 + b.z * m.m22;
 }
 
 template<typename T>
@@ -143,10 +111,29 @@ Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m) {
 }
 
 template<typename T>
-Vector3<T> operator*(const Matrix3x3<T>& m, const Vector3<T>& v) {
+Vector3<T> transform_vector(const Matrix3x3<T>& m, const Vector3<T>& v) {
+	return Vector3<T>(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+}
+
+template<typename T>
+Vector3<T> transform_vector_transposed(const Matrix3x3<T>& m, const Vector3<T>& v) {
 	return Vector3<T>(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
 					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
 					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
+}
+
+template<typename T>
+void transform_vectors(const Matrix3x3<T>& m,
+                       const Vector3<T>& a, const Vector3<T>& b, Vector3<T>& oa, Vector3<T>& ob) {
+	oa.x = a.x * m.m00 + a.y * m.m10 + a.z * m.m20;
+	oa.y = a.x * m.m01 + a.y * m.m11 + a.z * m.m21;
+	oa.z = a.x * m.m02 + a.y * m.m12 + a.z * m.m22;
+
+	ob.x = b.x * m.m00 + b.y * m.m10 + b.z * m.m20;
+	ob.y = b.x * m.m01 + b.y * m.m11 + b.z * m.m21;
+	ob.z = b.x * m.m02 + b.y * m.m12 + b.z * m.m22;
 }
 
 template<typename T>

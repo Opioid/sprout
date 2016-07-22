@@ -78,10 +78,10 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	uint32_t face = view % 6;
 	direction = math::normalized(direction * view_rotations_[face]);
 
-	float a = std::atan2(direction.x, direction.z);
+	float a = -std::atan2(direction.x, direction.z);
 
 	math::float3x3 rotation;
-	math::set_rotation_y(rotation, -a);
+	math::set_rotation_y(rotation, a);
 
 	float ipd_scale = std::acos(direction.y * direction.y) * math::Pi_inv * 2.f;
 

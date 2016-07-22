@@ -22,7 +22,7 @@ void Ao::start_new_pixel(uint32_t num_samples) {
 }
 
 float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-					scene::Intersection& intersection) {
+			  scene::Intersection& intersection) {
 	scene::Ray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t	 = take_settings_.ray_offset_factor * intersection.geo.epsilon;

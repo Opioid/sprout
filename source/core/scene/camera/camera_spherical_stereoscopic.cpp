@@ -45,22 +45,22 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, 
 	float x = d_x_ * coordinates.x;
 	float y = d_y_ * coordinates.y;
 
-	float phi   = (-x + 0.75f) * 2.f * math::Pi;
+	float phi   = (x - 0.5f) * 2.f * math::Pi;
 	float theta = y * math::Pi;
 
-	float sin_theta = std::sin(theta);
-	float cos_theta = std::cos(theta);
 	float sin_phi   = std::sin(phi);
 	float cos_phi   = std::cos(phi);
+	float sin_theta = std::sin(theta);
+	float cos_theta = std::cos(theta);
 
-	float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+	float3 dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
+
+	math::float3x3 rotation;
+	math::set_rotation_y(rotation, phi);
+	float3 eye_pos = eye_offsets_[view] * rotation;
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);
-
-	math::float3x3 rotation;
-	math::set_rotation_y(rotation, (x - 0.5f) * 2.f * math::Pi);
-	float3 eye_pos = rotation * eye_offsets_[view];
 
 	ray.origin = math::transform_point(eye_pos, transformation.object_to_world);
 	ray.set_direction(math::transform_vector(dir, transformation.rotation));

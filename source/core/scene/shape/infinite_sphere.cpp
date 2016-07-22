@@ -102,12 +102,12 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	float phi   = (-uv.x + 0.75f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
-	float sin_theta = std::sin(theta);
-	float cos_theta = std::cos(theta);
 	float sin_phi   = std::sin(phi);
 	float cos_phi   = std::cos(phi);
+	float sin_theta = std::sin(theta);
+	float cos_theta = std::cos(theta);
 
-	float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+	float3 dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
 	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;

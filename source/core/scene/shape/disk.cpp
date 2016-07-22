@@ -98,7 +98,7 @@ float Disk::opacity(const Transformation& transformation, const math::Oray& ray,
 		if (l <= radius * radius) {
 			float3 sk = k / radius;
 			float2 uv((math::dot(transformation.rotation.v3.x, sk) + 1.f) * 0.5f,
-							(math::dot(transformation.rotation.v3.y, sk) + 1.f) * 0.5f);
+					  (math::dot(transformation.rotation.v3.y, sk) + 1.f) * 0.5f);
 
 			return materials[0]->opacity(uv, time, worker, filter);
 		}

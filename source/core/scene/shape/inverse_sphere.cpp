@@ -39,7 +39,7 @@ bool Inverse_sphere::intersect(const Transformation& transformation,
 			float3 xyz = math::transform_vector_transposed(-intersection.n,
 																 transformation.rotation);
 			intersection.uv = float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-										   std::acos(xyz.y) * math::Pi_inv);
+									 std::acos(xyz.y) * math::Pi_inv);
 
 			intersection.part = 0;
 
@@ -58,9 +58,9 @@ bool Inverse_sphere::intersect(const Transformation& transformation,
 			intersection.geo_n = intersection.n;
 
 			float3 xyz = math::transform_vector_transposed(-intersection.n,
-																 transformation.rotation);
+														   transformation.rotation);
 			intersection.uv = float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-										   std::acos(xyz.y) * math::Pi_inv);
+									 std::acos(xyz.y) * math::Pi_inv);
 
 			intersection.part = 0;
 
@@ -136,7 +136,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 			float3 xyz = math::transform_vector_transposed(-intersection.n,
 																 transformation.rotation);
 			intersection.uv = float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-										   std::acos(xyz.y) * math::Pi_inv);
+									 std::acos(xyz.y) * math::Pi_inv);
 		}
 	}
 
@@ -162,7 +162,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 
 	float3 xyz = math::transform_vector_transposed(tdir, transformation.rotation);
 	sample.uv = float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-							 std::acos(xyz.y) * math::Pi_inv);
+					   std::acos(xyz.y) * math::Pi_inv);
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& /*transformation*/,

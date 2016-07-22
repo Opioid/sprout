@@ -128,8 +128,7 @@ Vector3<T> operator*(const Vector3<T>& v, const Matrix4x4<T>& m) {
 }
 
 template<typename T>
-Vector3<T> &operator*=(Vector3<T>& v, const Matrix4x4<T>& m)
-{
+Vector3<T> &operator*=(Vector3<T>& v, const Matrix4x4<T>& m) {
 	Vector3<T> temp(v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
 					v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
 					v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
@@ -237,8 +236,8 @@ void set_translation(Matrix4x4<T>& m, const Vector3<T>& v) {
 
 template<typename T>
 void set_rotation_x(Matrix4x4<T>& m, T a) {
-	T c = cos(a);
-	T s = sin(a);
+	T c = std::cos(a);
+	T s = std::sin(a);
 
 	m.m00 = T(1); m.m01 = T(0); m.m02 =  T(0); m.m03 = T(0);
 	m.m10 = T(0); m.m11 = c;    m.m12 = -s;    m.m13 = T(0);
@@ -248,8 +247,8 @@ void set_rotation_x(Matrix4x4<T>& m, T a) {
 
 template<typename T>
 void set_rotation_y(Matrix4x4<T>& m, T a) {
-	T c = cos(a);
-	T s = sin(a);
+	T c = std::cos(a);
+	T s = std::sin(a);
 
 	m.m00 =  c;    m.m01 = T(0); m.m02 = s;    m.m03 = T(0);
 	m.m10 =  T(0); m.m11 = T(1); m.m12 = T(0); m.m13 = T(0);
@@ -259,8 +258,8 @@ void set_rotation_y(Matrix4x4<T>& m, T a) {
 
 template<typename T>
 void set_rotation_z(Matrix4x4<T>& m, T a) {
-	T c = cos(a);
-	T s = sin(a);
+	T c = std::cos(a);
+	T s = std::sin(a);
 
 	m.m00 = c;    m.m01 = -s;   m.m02 = T(0); m.m03 = T(0);
 	m.m10 = s;    m.m11 = c;    m.m12 = T(0); m.m13 = T(0);
@@ -270,8 +269,8 @@ void set_rotation_z(Matrix4x4<T>& m, T a) {
 
 template<typename T>
 void set_rotation(Matrix4x4<T>& m, const Vector3<T>& v, T a) {
-	T c = cos(a);
-	T s = sin(a);
+	T c = std::cos(a);
+	T s = std::sin(a);
 	T t = T(1) - c;
 
 	m.m00 = c + v.x * v.x * t;
@@ -295,7 +294,6 @@ void set_rotation(Matrix4x4<T>& m, const Vector3<T>& v, T a) {
 
 	m.m21 = tmp1 + tmp2;
 	m.m12 = tmp1 - tmp2;
-
 
 	m.m03 = T(0); m.m13 = T(0); m.m23 = T(0);
 	m.m30 = T(0); m.m31 = T(0); m.m32 = T(0); m.m33 = T(1);
