@@ -6,6 +6,8 @@
 
 namespace scene {
 
+namespace material { namespace bxdf { struct Result; enum class Type; } }
+
 struct Intersection;
 struct Ray;
 
@@ -30,6 +32,8 @@ public:
 protected:
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
+	using Bxdf_result    = scene::material::bxdf::Result;
+	using Bxdf_type		 = scene::material::bxdf::Type;
 
 	bool resolve_mask(Worker& worker, scene::Ray& ray,
 					  scene::Intersection& intersection,

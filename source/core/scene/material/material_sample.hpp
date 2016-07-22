@@ -34,8 +34,7 @@ public:
 
 	virtual float ior() const = 0;
 
-	virtual void sample_evaluate(sampler::Sampler& sampler,
-								 bxdf::Result& result) const = 0;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
 
 	virtual bool is_pure_emissive() const = 0;
 

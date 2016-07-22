@@ -122,7 +122,7 @@ float Sample_rough::ior() const {
 	return ior_;
 }
 
-void Sample_rough::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {

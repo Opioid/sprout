@@ -85,7 +85,7 @@ void test() {
 	print(reflection, pdf);
 
 	bxdf::Result result;
-	sample.sample_evaluate(sampler, result);
+	sample.sample(sampler, result);
 
 	print(result);
 
@@ -122,7 +122,7 @@ void Setup::test(float3_p wi, float3_p wo,
 	print(reflection, pdf);
 
 	bxdf::Result result;
-	sample.sample_evaluate(sampler, result);
+	sample.sample(sampler, result);
 
 	print(result);
 }

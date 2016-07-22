@@ -6,11 +6,7 @@
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_random.hpp"
 
-namespace scene {
-
-namespace material { class Sample; }
-
-}
+namespace scene { namespace material { class Sample; } }
 
 namespace rendering { namespace integrator { namespace surface {
 
@@ -42,8 +38,6 @@ private:
 								 const scene::Intersection& intersection,
 								 const scene::material::Sample& material_sample,
 								 Sampler_filter filter);
-
-	using Bxdf_result = scene::material::bxdf::Result;
 
 	float3 resolve_transmission(Worker& worker, scene::Ray& ray,
 								scene::Intersection& intersection,

@@ -28,8 +28,8 @@ void Pathtracer::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-float4 Pathtracer::li(Worker& worker, scene::Ray& ray,
-					  bool volume, scene::Intersection& intersection) {
+float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool volume,
+					  scene::Intersection& intersection) {
 	Sampler_filter filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
@@ -40,8 +40,7 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray,
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
 	for (uint32_t i = 0;; ++i) {
-		bool primary_ray = 0 == i
-							 || previous_sample_type.test(scene::material::bxdf::Type::Specular);
+		bool primary_ray = 0 == i || previous_sample_type.test(Bxdf_type::Specular);
 
 		if (primary_ray) {
 			filter = Sampler_filter::Unknown;
@@ -90,13 +89,13 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray,
 			throughput /= q;
 		}
 
-		material_sample.sample_evaluate(sampler_, sample_result);
+		material_sample.sample(sampler_, sample_result);
 		if (0.f == sample_result.pdf) {
 			break;
 		}
 
 		if (ray.depth > 0 && settings_.disable_caustics
-		&&  sample_result.type.test(scene::material::bxdf::Type::Specular)) {
+		&&  sample_result.type.test(Bxdf_type::Specular)) {
 			break;
 		}
 

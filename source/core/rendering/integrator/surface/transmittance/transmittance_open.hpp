@@ -29,7 +29,7 @@ public:
 		 uint32_t max_bounces);
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
-	using Bxdf_result = scene::material::bxdf::Result;
+	using Bxdf_result    = scene::material::bxdf::Result;
 
 	float3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 				   const float3& attenuation, sampler::Sampler& sampler,

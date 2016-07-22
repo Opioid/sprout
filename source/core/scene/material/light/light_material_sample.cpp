@@ -27,7 +27,7 @@ float Sample::ior() const {
 	return 1.5f;
 }
 
-void Sample::sample_evaluate(sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
+void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
 	result.reflection = math::float3_identity;
 	result.pdf = 0.f;
 }

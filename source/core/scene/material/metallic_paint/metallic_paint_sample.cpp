@@ -48,7 +48,7 @@ float Sample::ior() const {
 	return 1.5f;
 }
 
-void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 		return;

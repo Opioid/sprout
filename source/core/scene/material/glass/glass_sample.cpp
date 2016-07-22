@@ -29,7 +29,7 @@ float Sample::ior() const {
 	return layer_.ior;
 }
 
-void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {

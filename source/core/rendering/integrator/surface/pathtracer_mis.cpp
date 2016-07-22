@@ -29,8 +29,8 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
-						  bool volume, scene::Intersection& intersection) {
+float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
+						  scene::Intersection& intersection) {
 	Sampler_filter filter;
 	scene::material::bxdf::Result sample_result;
 
@@ -90,7 +90,7 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray,
 			throughput /= q;
 		}
 
-		material_sample.sample_evaluate(sampler_, sample_result);
+		material_sample.sample(sampler_, sample_result);
 		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {
 			break;
 		}
@@ -190,17 +190,17 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 		}
 
 		// Material BSDF importance sample
-		scene::material::bxdf::Result sample_result;
-		material_sample.sample_evaluate(sampler_, sample_result);
+		Bxdf_result sample_result;
+		material_sample.sample(sampler_, sample_result);
 
 		if (0.f == sample_result.pdf
-		||  sample_result.type.test(scene::material::bxdf::Type::Specular)) {
+		||  sample_result.type.test(Bxdf_type::Specular)) {
 			continue;
 		}
 
-		float ls_pdf = light->pdf(transformation, intersection.geo.p, sample_result.wi,
-								  material_sample.is_translucent(), worker,
-								  Sampler_filter::Nearest);
+		float ls_pdf = light->pdf(transformation, intersection.geo.p,
+								  sample_result.wi, material_sample.is_translucent(),
+								  worker, Sampler_filter::Nearest);
 		if (0.f == ls_pdf) {
 			continue;
 		}

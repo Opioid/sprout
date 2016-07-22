@@ -18,7 +18,7 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	return layer_.base_evaluate(wi, wo_, pdf);
 }
 
-void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 		return;

@@ -22,7 +22,7 @@ float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coatin
 }
 
 template<typename Coating>
-void Sample_base::base_sample_evaluate_and_coating(const Coating& coating,
+void Sample_base::base_sample_and_coating(const Coating& coating,
 												   sampler::Sampler& sampler,
 												   bxdf::Result& result) const {
 	float p = sampler.generate_sample_1D();

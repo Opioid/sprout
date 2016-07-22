@@ -37,7 +37,7 @@ float Sample::ior() const {
 	return 1.47f;
 }
 
-void Sample::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 //	float n_dot_wi = lambert::Isotropic::importance_sample(layer_.diffuse_color, layer_,
 //														   sampler, result);
 

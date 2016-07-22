@@ -40,7 +40,7 @@ float3 Sample_translucent::evaluate(float3_p wi, float& pdf) const {
 	return result;
 }
 
-void Sample_translucent::sample_evaluate(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 		return;

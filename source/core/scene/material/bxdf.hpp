@@ -24,7 +24,7 @@ enum class Type {
 struct Result {
 	float3 reflection;
 	float3 wi;
-	float        pdf;
+	float  pdf;
 
 	using Type_flag = flags::Flags<Type>;
 	Type_flag type;
