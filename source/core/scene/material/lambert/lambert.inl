@@ -17,7 +17,7 @@ float3 Isotropic::evaluate(float3_p color, float n_dot_wi,
 }
 
 template<typename Layer>
-float Isotropic::importance_sample(float3_p color, const Layer& layer,
+float Isotropic::sample(float3_p color, const Layer& layer,
 								   sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 s2d = sampler.generate_sample_2D();
 

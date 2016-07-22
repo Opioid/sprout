@@ -19,7 +19,7 @@ public:
 
 	float pdf(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
 
-	float importance_sample(const Sample_rough& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
+	float sample(const Sample_rough& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
 };
 
 class BTDF_rough {
@@ -30,7 +30,7 @@ public:
 
 	float pdf(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
 
-	float importance_sample(const Sample_rough& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
+	float sample(const Sample_rough& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
 };
 
 class Sample_rough : public material::Sample, material::Sample::Layer {

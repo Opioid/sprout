@@ -19,7 +19,7 @@ struct Clearcoat : public Coating_base {
 					const Layer& layer, float3& attenuation, float& pdf) const;
 
 	template<typename Layer>
-	void importance_sample(float3_p wo, float internal_ior,
+	void sample(float3_p wo, float internal_ior,
 						   const Layer& layer, sampler::Sampler& sampler,
 						   float3& attenuation, bxdf::Result& result) const;
 
@@ -35,7 +35,7 @@ struct Thinfilm : public Coating_base {
 					const Layer& layer, float3& attenuation, float& pdf) const;
 
 	template<typename Layer>
-	void importance_sample(float3_p wo, float internal_ior,
+	void sample(float3_p wo, float internal_ior,
 						   const Layer& layer, sampler::Sampler& sampler,
 						   float3& attenuation, bxdf::Result& result) const;
 
@@ -49,7 +49,7 @@ struct Coating_layer : Sample::Layer, Coating {
 	float3 evaluate(float3_p wi, float3_p wo, float internal_ior,
 					float3& attenuation, float& pdf) const;
 
-	void importance_sample(float3_p wo, float internal_ior,
+	void sample(float3_p wo, float internal_ior,
 						   sampler::Sampler& sampler,
 						   float3& attenuation, bxdf::Result& result) const;
 };

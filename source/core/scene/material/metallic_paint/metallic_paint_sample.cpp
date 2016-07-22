@@ -59,7 +59,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 /*
 	if (p < 0.5f) {
 		float3 coating_attenuation;
-		coating_.importance_sample(wo_, 1.f, sampler, coating_attenuation, result);
+		coating_.sample(wo_, 1.f, sampler, coating_attenuation, result);
 
 		float3 flakes_fresnel;
 		float  flakes_pdf;
@@ -72,7 +72,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 		result.reflection = result.reflection
 						  + coating_attenuation * (base_reflection + flakes_reflection);
 	} else {
-		base_.importance_sample(wo_, sampler, result);
+		base_.sample(wo_, sampler, result);
 
 		float3 coating_attenuation;
 		float  coating_pdf;
@@ -93,7 +93,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 
 	if (p < 0.4f) {
 		float3 coating_attenuation;
-		coating_.importance_sample(wo_, 1.f, sampler, coating_attenuation, result);
+		coating_.sample(wo_, 1.f, sampler, coating_attenuation, result);
 
 		float3 flakes_fresnel;
 		float  flakes_pdf;
@@ -106,7 +106,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 		result.reflection = result.reflection
 						  + coating_attenuation * (base_reflection + flakes_reflection);
 	} else if (p < 0.7f) {
-		base_.importance_sample(wo_, sampler, result);
+		base_.sample(wo_, sampler, result);
 
 		float3 coating_attenuation;
 		float  coating_pdf;
@@ -124,7 +124,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 						  + coating_attenuation * (base_reflection + flakes_reflection);
 	} else {
 		float3 flakes_fresnel;
-		flakes_.importance_sample(wo_, sampler, flakes_fresnel, result);
+		flakes_.sample(wo_, sampler, flakes_fresnel, result);
 
 		float3 coating_attenuation;
 		float  coating_pdf;
@@ -174,8 +174,8 @@ float3 Sample::Base_layer::evaluate(float3_p wi, float3_p wo, float& pdf) const 
 	return n_dot_wi * ggx_reflection;
 }
 
-void Sample::Base_layer::importance_sample(float3_p wo, sampler::Sampler& sampler,
-										   bxdf::Result& result) const {
+void Sample::Base_layer::sample(float3_p wo, sampler::Sampler& sampler,
+								bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
 
 	float f = n_dot_wo;
@@ -184,8 +184,8 @@ void Sample::Base_layer::importance_sample(float3_p wo, sampler::Sampler& sample
 
 	fresnel::Schlick fresnel(color);
 
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this,
-													   fresnel, sampler, result);
+	float n_dot_wi = ggx::Isotropic::sample(wo, n_dot_wo, *this,
+											fresnel, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -207,14 +207,14 @@ float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo,
 											   conductor, fresnel_result, pdf);
 }
 
-void Sample::Flakes_layer::importance_sample(float3_p wo, sampler::Sampler& sampler,
-											 float3& fresnel_result, bxdf::Result& result) const {
+void Sample::Flakes_layer::sample(float3_p wo, sampler::Sampler& sampler,
+								  float3& fresnel_result, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
 
 //	fresnel::Conductor conductor(ior, absorption);
 	fresnel::Conductor_weighted conductor(ior, absorption, weight);
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this, conductor,
-													   sampler, fresnel_result, result);
+	float n_dot_wi = ggx::Isotropic::sample(wo, n_dot_wo, *this, conductor,
+											sampler, fresnel_result, result);
 	result.reflection *= n_dot_wi;
 }
 

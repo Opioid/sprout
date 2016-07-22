@@ -68,7 +68,7 @@ bool Material_animated::has_emission_map() const {
 	return emission_map_.is_valid();
 }
 
-float2 Material_animated::radiance_importance_sample(float2 r2, float& pdf) const {
+float2 Material_animated::radiance_sample(float2 r2, float& pdf) const {
 	float2 uv = distribution_.sample_continuous(r2, pdf);
 
 	if (uv.y == 0.f) {

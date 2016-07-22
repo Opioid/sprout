@@ -21,7 +21,7 @@ public:
 						   const Layer& layer, const Fresnel& fresnel, float& pdf);
 
 	template<typename Layer, typename Fresnel>
-	static float importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
+	static float sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   const Fresnel& fresnel, sampler::Sampler& sampler,
 								   bxdf::Result& result);
 
@@ -31,7 +31,7 @@ public:
 						   float3& fresnel_result, float& pdf);
 
 	template<typename Layer, typename Fresnel>
-	static float importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
+	static float sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   const Fresnel& fresnel, sampler::Sampler& sampler,
 								   float3& fresnel_result, bxdf::Result& result);
 };
@@ -45,7 +45,7 @@ public:
 						   const Layer& layer, const Fresnel& fresnel, float& pdf);
 
 	template<typename Layer, typename Fresnel>
-	static float importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
+	static float sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   const Fresnel& fresnel, sampler::Sampler& sampler,
 								   bxdf::Result& result);
 };

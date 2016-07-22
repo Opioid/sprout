@@ -69,10 +69,10 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) c
 	return n_dot_wi * ((1.f - ggx_fresnel) * d_reflection + ggx_reflection);
 }
 
-void Sample_base::Layer::diffuse_importance_sample(float3_p wo, sampler::Sampler& sampler,
+void Sample_base::Layer::diffuse_sample(float3_p wo, sampler::Sampler& sampler,
 												   bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
-	float n_dot_wi = disney::Isotropic::importance_sample(wo, n_dot_wo, *this,
+	float n_dot_wi = disney::Isotropic::sample(wo, n_dot_wo, *this,
 														  sampler, result);
 
 	fresnel::Schlick schlick(f0);
@@ -85,13 +85,13 @@ void Sample_base::Layer::diffuse_importance_sample(float3_p wo, sampler::Sampler
 	result.pdf = 0.5f * (result.pdf + ggx_pdf);
 }
 
-void Sample_base::Layer::specular_importance_sample(float3_p wo, sampler::Sampler& sampler,
+void Sample_base::Layer::specular_sample(float3_p wo, sampler::Sampler& sampler,
 													bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
 
 	fresnel::Schlick schlick(f0);
 	float3 ggx_fresnel;
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this, schlick,
+	float n_dot_wi = ggx::Isotropic::sample(wo, n_dot_wo, *this, schlick,
 													   sampler, ggx_fresnel, result);
 
 	float d_pdf;
@@ -102,12 +102,12 @@ void Sample_base::Layer::specular_importance_sample(float3_p wo, sampler::Sample
 	result.pdf = 0.5f * (result.pdf + d_pdf);
 }
 
-void Sample_base::Layer::pure_specular_importance_sample(float3_p wo, sampler::Sampler& sampler,
+void Sample_base::Layer::pure_specular_sample(float3_p wo, sampler::Sampler& sampler,
 														 bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
 
 	fresnel::Schlick schlick(f0);
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo, n_dot_wo, *this,
+	float n_dot_wi = ggx::Isotropic::sample(wo, n_dot_wo, *this,
 													   schlick, sampler, result);
 	result.reflection *= n_dot_wi;
 }

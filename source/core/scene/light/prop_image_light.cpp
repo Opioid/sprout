@@ -22,7 +22,7 @@ void Prop_image_light::sample(const Transformation& transformation, float time,
 	float area = prop_->area(part_);
 
 	float pdf;
-	float2 uv = material->radiance_importance_sample(sampler.generate_sample_2D(), pdf);
+	float2 uv = material->radiance_sample(sampler.generate_sample_2D(), pdf);
 
 	prop_->shape()->sample(part_, transformation, area, p, uv, result.shape);
 

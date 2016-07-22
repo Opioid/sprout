@@ -21,7 +21,7 @@ public:
 						   const Layer& layer, float& pdf);
 
 	template<typename Layer>
-	static float importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
+	static float sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   sampler::Sampler& sampler, bxdf::Result& result);
 
 private:

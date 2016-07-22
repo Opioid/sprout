@@ -50,7 +50,7 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result)
 		float p = sampler.generate_sample_1D();
 
 		if (p < 0.5f) {
-			float n_dot_wi = lambert::Isotropic::importance_sample(layer_.diffuse_color, layer_,
+			float n_dot_wi = lambert::Isotropic::sample(layer_.diffuse_color, layer_,
 																   sampler, result);
 			result.wi *= -1.f;
 			result.pdf *= 0.5f;
@@ -59,12 +59,12 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result)
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
 			if (1.f == layer_.metallic) {
-				layer_.pure_specular_importance_sample(wo_, sampler, result);
+				layer_.pure_specular_sample(wo_, sampler, result);
 			} else {
 				if (p < 0.75f) {
-					layer_.diffuse_importance_sample(wo_, sampler, result);
+					layer_.diffuse_sample(wo_, sampler, result);
 				} else {
-					layer_.specular_importance_sample(wo_, sampler, result);
+					layer_.specular_sample(wo_, sampler, result);
 				}
 			}
 
@@ -72,14 +72,14 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result)
 		}
 	} else {
 		if (1.f == layer_.metallic) {
-			layer_.pure_specular_importance_sample(wo_, sampler, result);
+			layer_.pure_specular_sample(wo_, sampler, result);
 		} else {
 			float p = sampler.generate_sample_1D();
 
 			if (p < 0.5f) {
-				layer_.diffuse_importance_sample(wo_, sampler, result);
+				layer_.diffuse_sample(wo_, sampler, result);
 			} else {
-				layer_.specular_importance_sample(wo_, sampler, result);
+				layer_.specular_sample(wo_, sampler, result);
 			}
 		}
 	}

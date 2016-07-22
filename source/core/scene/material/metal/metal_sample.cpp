@@ -46,8 +46,8 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Result& result) c
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo_, n_dot_wo, layer_,
-													   conductor, sampler, result);
+	float n_dot_wi = ggx::Isotropic::sample(wo_, n_dot_wo, layer_,
+											conductor, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -108,8 +108,8 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Result& result)
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
-	float n_dot_wi = ggx::Anisotropic::importance_sample(wo_, n_dot_wo, layer_,
-														 conductor, sampler, result);
+	float n_dot_wi = ggx::Anisotropic::sample(wo_, n_dot_wo, layer_,
+											  conductor, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 

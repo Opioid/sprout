@@ -18,7 +18,7 @@ float BRDF_rough::pdf(const Sample_rough& sample, const float3& wi, float n_dot_
 	return 0.f;
 }
 
-float BRDF_rough::importance_sample(const Sample_rough& sample,
+float BRDF_rough::sample(const Sample_rough& sample,
 									sampler::Sampler& sampler, bxdf::Result& result) const {
 	float3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
@@ -62,7 +62,7 @@ float BTDF_rough::pdf(const Sample_rough& sample, const float3& wi, float n_dot_
 	return 0.f;
 }
 
-float BTDF_rough::importance_sample(const Sample_rough& sample,
+float BTDF_rough::sample(const Sample_rough& sample,
 									sampler::Sampler& sampler, bxdf::Result& result) const {
 	float3 n = sample.n_;
 	float eta_i = 1.f / sample.ior_;
@@ -126,16 +126,16 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Result& result) const
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
-		brdf_.importance_sample(*this, sampler, result);
+		brdf_.sample(*this, sampler, result);
 		result.pdf *= 0.5f;
 	} else {
-		btdf_.importance_sample(*this, sampler, result);
+		btdf_.sample(*this, sampler, result);
 		result.pdf *= 0.5f;
 	}
 
-//	brdf_.importance_sample(sampler, result);
+//	brdf_.sample(sampler, result);
 
-//	btdf_.importance_sample(sampler, result);
+//	btdf_.sample(sampler, result);
 
 //	result.pdf *= 0.5f;
 }

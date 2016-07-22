@@ -44,7 +44,7 @@ public:
 
 	virtual bool has_emission_map() const;
 
-	virtual float2 radiance_importance_sample(float2 r2, float& pdf) const;
+	virtual float2 radiance_sample(float2 r2, float& pdf) const;
 
 	virtual float emission_pdf(float2 uv, const Worker& worker, Sampler_filter filter) const;
 

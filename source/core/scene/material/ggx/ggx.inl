@@ -32,7 +32,7 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
+float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   const Fresnel& fresnel, sampler::Sampler& sampler,
 								   bxdf::Result& result) {
 	if (0.f == layer.a2) {
@@ -113,7 +113,7 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
+float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 								   const Fresnel& fresnel, sampler::Sampler& sampler,
 								   float3& fresnel_result, bxdf::Result& result) {
 	if (0.f == layer.a2) {
@@ -191,7 +191,7 @@ float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 }
 
 template<typename Layer, typename Fresnel>
-float Anisotropic::importance_sample(float3_p wo, float n_dot_wo, const Layer& layer,
+float Anisotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 									 const Fresnel& fresnel, sampler::Sampler& sampler,
 									 bxdf::Result& result) {
 	float2 xi = sampler.generate_sample_2D();

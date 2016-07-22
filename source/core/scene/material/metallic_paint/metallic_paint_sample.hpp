@@ -20,7 +20,7 @@ public:
 	virtual float ior() const final override;
 
 	virtual void sample(sampler::Sampler& sampler,
-								 bxdf::Result& result) const final override;
+						bxdf::Result& result) const final override;
 
 	virtual bool is_pure_emissive() const final override;
 
@@ -33,7 +33,7 @@ public:
 
 		float3 evaluate(float3_p wi, float3_p wo, float& pdf) const;
 
-		void importance_sample(float3_p wo, sampler::Sampler& sampler,
+		void sample(float3_p wo, sampler::Sampler& sampler,
 							   bxdf::Result& result) const;
 
 		float3 color_a;
@@ -47,8 +47,8 @@ public:
 
 		float3 evaluate(float3_p wi, float3_p wo, float3& fresnel_result, float& pdf) const;
 
-		void importance_sample(float3_p wo, sampler::Sampler& sampler,
-							   float3& fresnel_result, bxdf::Result& result) const;
+		void sample(float3_p wo, sampler::Sampler& sampler,
+					float3& fresnel_result, bxdf::Result& result) const;
 
 		float3 ior;
 		float3 absorption;

@@ -58,7 +58,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 	fresnel::Schlick schlick(layer_.f0);
-	float n_dot_wi = ggx::Isotropic::importance_sample(wo_, n_dot_wo, layer_,
+	float n_dot_wi = ggx::Isotropic::sample(wo_, n_dot_wo, layer_,
 													   schlick, sampler, result);
 
 	result.reflection = n_dot_wi * result.reflection;

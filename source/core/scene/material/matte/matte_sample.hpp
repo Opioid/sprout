@@ -20,7 +20,7 @@ public:
 	virtual float ior() const final override;
 
 	virtual void sample(sampler::Sampler& sampler,
-								 bxdf::Result& result) const final override;
+						bxdf::Result& result) const final override;
 
 	virtual bool is_pure_emissive() const final override;
 
