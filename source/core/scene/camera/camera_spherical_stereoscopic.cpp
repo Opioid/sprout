@@ -7,6 +7,9 @@
 #include "base/math/matrix.inl"
 #include "base/math/sampling/sampling.inl"
 
+// the layout should match
+// https://developers.google.com/vr/jump/rendering-ods-content.pdf
+
 namespace scene { namespace camera {
 
 Spherical_stereoscopic::Spherical_stereoscopic(float interpupillary_distance,
@@ -17,8 +20,8 @@ Spherical_stereoscopic::Spherical_stereoscopic(float interpupillary_distance,
 	d_y_ = 1.f / fr.y;
 
 	view_bounds_[0] = math::Recti{int2(0, 0), resolution};
-	view_bounds_[1] = math::Recti{int2(resolution.x, 0),
-								  int2(resolution.x * 2, resolution.y)};
+	view_bounds_[1] = math::Recti{int2(0, resolution.y),
+								  int2(resolution.x, resolution.y * 2)};
 }
 
 uint32_t Spherical_stereoscopic::num_views() const {
@@ -26,7 +29,7 @@ uint32_t Spherical_stereoscopic::num_views() const {
 }
 
 int2 Spherical_stereoscopic::sensor_dimensions() const {
-	return int2(resolution_.x * 2, resolution_.y);
+	return view_bounds_[1].end;
 }
 
 math::Recti Spherical_stereoscopic::view_bounds(uint32_t view) const {
