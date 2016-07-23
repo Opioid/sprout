@@ -64,7 +64,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 		float cos_phi = std::cos(phi);
 
 		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-		float3 h = layer.tangent_to_world(is);
+		float3 h = math::normalized(layer.tangent_to_world(is));
 
 		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
@@ -101,6 +101,10 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 	}
 
 	float n_dot_h  = math::saturate(math::dot(layer.n, h));
+
+	if (n_dot_h != math::dot(layer.n, h)) {
+		std::cout << math::dot(layer.n, h) << std::endl;
+	}
 
 	float clamped_a2 = clamp_a2(layer.a2);
 	float d = distribution_isotropic(n_dot_h, clamped_a2);
@@ -147,7 +151,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 		float cos_phi = std::cos(phi);
 
 		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-		float3 h = layer.tangent_to_world(is);
+		float3 h = math::normalized(layer.tangent_to_world(is));
 
 		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
