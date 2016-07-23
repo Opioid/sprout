@@ -1,6 +1,7 @@
 SOURCES += \
 	scene/material/material.cpp \
 	scene/material/material_provider.cpp \
+	scene/material/material_test.cpp \
 	scene/material/sampler_cache.cpp \
 	scene/material/sampler_settings.cpp \
 
@@ -13,6 +14,7 @@ HEADERS += \
 	scene/material/material_sample.inl \
 	scene/material/material_sample_cache.hpp \
 	scene/material/material_sample_cache.inl \
+	scene/material/material_test.hpp \
 	scene/material/sampler_cache.hpp \
 	scene/material/sampler_settings.hpp \
 

@@ -235,7 +235,7 @@ Vector3f_a saturate(FVector3f_a v);
 
 Vector3f_a exp(FVector3f_a v);
 
-Vector3f_a lerp(FVector3f_a a, FVector3f_a, float t);
+Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t);
 
 Vector3f_a reflect(FVector3f_a normal, FVector3f_a v);
 
@@ -258,5 +258,7 @@ bool contains_greater_one(FVector3f_a v);
 bool contains_nan(FVector3f_a v);
 
 bool contains_inf(FVector3f_a v);
+
+bool contains_only_finite(FVector3f_a v);
 
 }

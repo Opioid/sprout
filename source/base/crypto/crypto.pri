@@ -5,5 +5,3 @@ SOURCES += \
 HEADERS += \
 	crypto/base64.hpp \
 	crypto/sha1.hpp \ 
-
- 

@@ -6,7 +6,10 @@
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/sampling/sampling.inl"
-\
+
+#include "scene/material/material_test.hpp"
+#include "base/debug/assert.hpp"
+
 namespace scene { namespace material { namespace disney {
 
 template<typename Layer>
@@ -15,7 +18,11 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi,
 	float3 h = math::normalized(wo + wi);
 
 	pdf = n_dot_wi * math::Pi_inv;
-	return evaluate(wi, h, n_dot_wi, n_dot_wo, layer);
+	float3 result = evaluate(wi, h, n_dot_wi, n_dot_wo, layer);
+
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+
+	return result;
 }
 
 template<typename Layer>
@@ -34,6 +41,8 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 	result.reflection = evaluate(wi, h, n_dot_wi, n_dot_wo, layer);
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
+
+	SOFT_ASSERT(testing::check(result, wo));
 
 	return n_dot_wi;
 }

@@ -6,7 +6,10 @@
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/sampling/sampling.inl"
-\
+
+#include "scene/material/material_test.hpp"
+#include "base/debug/assert.hpp"
+
 namespace scene { namespace material { namespace oren_nayar {
 
 template<typename Layer>
@@ -15,7 +18,11 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.a2);
 
 	pdf = n_dot_wi * math::Pi_inv;
-	return on * layer.diffuse_color;
+	float3 result = on * layer.diffuse_color;
+
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+
+	return result;
 }
 
 template<typename Layer>
@@ -34,6 +41,8 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 	result.reflection = on * layer.diffuse_color;
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
+
+	SOFT_ASSERT(testing::check(result, wo));
 
 	return n_dot_wi;
 }

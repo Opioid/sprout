@@ -546,4 +546,8 @@ inline bool contains_inf(FVector3f_a v) {
 	return std::isinf(v.x) || std::isinf(v.y) || std::isinf(v.z);
 }
 
+inline bool contains_only_finite(FVector3f_a v) {
+	return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z);
+}
+
 }

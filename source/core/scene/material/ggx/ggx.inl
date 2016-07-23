@@ -6,6 +6,9 @@
 #include "scene/material/fresnel/fresnel.inl"
 #include "base/math/math.hpp"
 
+#include "scene/material/material_test.hpp"
+#include "base/debug/assert.hpp"
+
 namespace scene { namespace material { namespace ggx {
 
 template<typename Layer, typename Fresnel>
@@ -28,13 +31,16 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 	float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
-	return d * g * f;
+	float3 result = d * g * f;
+
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+
+	return result;
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
-						const Fresnel& fresnel, sampler::Sampler& sampler,
-						bxdf::Result& result) {
+float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
+						sampler::Sampler& sampler, bxdf::Result& result) {
 	if (0.f == layer.a2) {
 		constexpr float n_dot_h = 1.f;
 
@@ -50,6 +56,8 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 		result.reflection = d * g * f;
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Specular_reflection);
+
+		SOFT_ASSERT(testing::check(result, wo));
 
 		return n_dot_wo;
 	} else {
@@ -80,6 +88,8 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 		result.reflection = d * g * f;
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
+
+		SOFT_ASSERT(testing::check(result, wo));
 
 		return n_dot_wi;
 	}
@@ -102,10 +112,6 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 
 	float n_dot_h  = math::saturate(math::dot(layer.n, h));
 
-	if (n_dot_h != math::dot(layer.n, h)) {
-		std::cout << math::dot(layer.n, h) << std::endl;
-	}
-
 	float clamped_a2 = clamp_a2(layer.a2);
 	float d = distribution_isotropic(n_dot_h, clamped_a2);
 	float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
@@ -113,13 +119,16 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 
 	fresnel_result = f;
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
-	return d * g * f;
+	float3 result = d * g * f;
+
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+
+	return result;
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
-						const Fresnel& fresnel, sampler::Sampler& sampler,
-						float3& fresnel_result, bxdf::Result& result) {
+float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
+						sampler::Sampler& sampler, float3& fresnel_result, bxdf::Result& result) {
 	if (0.f == layer.a2) {
 		constexpr float n_dot_h = 1.f;
 
@@ -137,6 +146,8 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 		result.reflection = d * g * f;
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Specular_reflection);
+
+		SOFT_ASSERT(testing::check(result, wo));
 
 		return n_dot_wo;
 	} else {
@@ -170,6 +181,8 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
 
+		SOFT_ASSERT(testing::check(result, wo));
+
 		return n_dot_wi;
 	}
 }
@@ -191,13 +204,16 @@ float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 	float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
-	return d * g * f;
+	float3 result = d * g * f;
+
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+
+	return result;
 }
 
 template<typename Layer, typename Fresnel>
-float Anisotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
-						  const Fresnel& fresnel, sampler::Sampler& sampler,
-						  bxdf::Result& result) {
+float Anisotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
+						  sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 xi = sampler.generate_sample_2D();
 
 	float phi = 2.f * math::Pi * xi.x;
@@ -227,6 +243,8 @@ float Anisotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
+
+	SOFT_ASSERT(testing::check(result, wo));
 
 	return n_dot_wi;
 }

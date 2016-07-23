@@ -6,6 +6,9 @@
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 
+#include "scene/material/material_test.hpp"
+#include "base/debug/assert.hpp"
+
 namespace scene { namespace material { namespace glass {
 
 const material::Sample::Layer& Sample::base_layer() const {
@@ -99,6 +102,8 @@ float Sample::BRDF::sample(const Sample& sample, const Layer& layer,
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_reflection);
 
+	SOFT_ASSERT(testing::check(result, wo));
+
 	return 1.f;
 }
 
@@ -132,6 +137,8 @@ float Sample::BTDF::sample(const Sample& sample, const Layer& layer,
 	result.reflection = (1.f - f) * layer.color;
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_transmission);
+
+	SOFT_ASSERT(testing::check(result, wo));
 
 	return 1.f;
 }

@@ -17,6 +17,7 @@ HEADERS +=
 include(atomic/atomic.pri)
 include(chrono/chrono.pri)
 include(crypto/crypto.pri)
+include(debug/debug.pri)
 include(flags/flags.pri)
 include(json/json.pri)
 include(math/math.pri)
