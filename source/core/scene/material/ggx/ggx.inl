@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ggx.hpp"
+#include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/fresnel/fresnel.inl"
-#include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
 
 namespace scene { namespace material { namespace ggx {
@@ -33,8 +33,8 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 
 template<typename Layer, typename Fresnel>
 float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
-								   const Fresnel& fresnel, sampler::Sampler& sampler,
-								   bxdf::Result& result) {
+						const Fresnel& fresnel, sampler::Sampler& sampler,
+						bxdf::Result& result) {
 	if (0.f == layer.a2) {
 		constexpr float n_dot_h = 1.f;
 
@@ -114,8 +114,8 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 
 template<typename Layer, typename Fresnel>
 float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
-								   const Fresnel& fresnel, sampler::Sampler& sampler,
-								   float3& fresnel_result, bxdf::Result& result) {
+						const Fresnel& fresnel, sampler::Sampler& sampler,
+						float3& fresnel_result, bxdf::Result& result) {
 	if (0.f == layer.a2) {
 		constexpr float n_dot_h = 1.f;
 
@@ -192,8 +192,8 @@ float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 
 template<typename Layer, typename Fresnel>
 float Anisotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
-									 const Fresnel& fresnel, sampler::Sampler& sampler,
-									 bxdf::Result& result) {
+						  const Fresnel& fresnel, sampler::Sampler& sampler,
+						  bxdf::Result& result) {
 	float2 xi = sampler.generate_sample_2D();
 
 	float phi = 2.f * math::Pi * xi.x;

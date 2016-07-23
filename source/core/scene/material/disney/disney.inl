@@ -1,8 +1,8 @@
 #pragma once
 
 #include "disney.hpp"
-#include "scene/material/bxdf.hpp"
 #include "sampler/sampler.hpp"
+#include "scene/material/bxdf.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/sampling/sampling.inl"
@@ -10,8 +10,8 @@
 namespace scene { namespace material { namespace disney {
 
 template<typename Layer>
-float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
-						   const Layer& layer, float& pdf) {
+float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi,
+						   float n_dot_wo, const Layer& layer, float& pdf) {
 	float3 h = math::normalized(wo + wi);
 
 	pdf = n_dot_wi * math::Pi_inv;
@@ -20,7 +20,7 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 
 template<typename Layer>
 float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
-								   sampler::Sampler& sampler, bxdf::Result& result) {
+						sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 s2d = sampler.generate_sample_2D();
 
 	float3 is = math::sample_hemisphere_cosine(s2d);
@@ -39,8 +39,8 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 }
 
 template<typename Layer>
-float3 Isotropic::evaluate(float3_p wi, float3_p h, float n_dot_wi, float n_dot_wo,
-						   const Layer& layer) {
+float3 Isotropic::evaluate(float3_p wi, float3_p h, float n_dot_wi,
+						   float n_dot_wo, const Layer& layer) {
 	float fmo = f_D90(wi, h, layer.roughness) - 1.f;
 
 	float a = 1.f + fmo * std::pow(1.f - n_dot_wi, 5.f);
@@ -55,4 +55,3 @@ inline float Isotropic::f_D90(float3_p wi, float3_p h, float roughness) {
 }
 
 }}}
-

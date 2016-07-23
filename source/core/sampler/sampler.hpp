@@ -2,17 +2,14 @@
 
 #include "base/math/vector.hpp"
 
-namespace math { namespace random {
-
-class Generator;
-
-}}
+namespace math { namespace random { class Generator; }}
 
 namespace sampler {
 
 struct Camera_sample;
 
 class Sampler {
+
 public:
 
 	Sampler(math::random::Generator& rng, uint32_t num_samples_per_iteration);
