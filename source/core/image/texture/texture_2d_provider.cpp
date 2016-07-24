@@ -15,6 +15,9 @@
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.inl"
 
+#include "texture_test.hpp"
+#include "base/debug/assert.hpp"
+
 namespace image { namespace texture {
 
 Provider::Provider() : resource::Provider<Texture_2D>("Texture_2D") {
@@ -58,6 +61,9 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 			}
 		} else if (Image::Type::Byte_3 == image->description().type) {
 			if (Usage::Normal == usage) {
+
+				SOFT_ASSERT(testing::is_valid_normal_map(*image.get(), filename));
+
 				return std::make_shared<Texture_2D_byte_3_snorm>(image);
 			} else if (Usage::Surface == usage) {
 				return std::make_shared<Texture_2D_byte_3_unorm>(image);

@@ -10,6 +10,9 @@
 #include "scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
 
+#include "scene/material/material_test.hpp"
+#include "base/debug/assert.hpp"
+
 namespace scene { namespace material { namespace substitute {
 
 template<typename Sample>
@@ -99,6 +102,8 @@ void Material_base<Sample>::set_sample(float3_p wo, const shape::Hitpoint& hp,
 	if (normal_map_.is_valid()) {
 		float3 nm = normal_map_.sample_3(sampler, hp.uv);
 		float3 n = math::normalized(hp.tangent_to_world(nm));
+
+		SOFT_ASSERT(testing::check_normal_map(n, nm, hp.uv));
 
 		sample.layer_.set_basis(hp.t, hp.b, n);
 	} else {

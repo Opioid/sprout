@@ -9,6 +9,7 @@ SOURCES += \
 	image/texture/texture_2d_float_3.cpp \
 	image/texture/texture_2d_provider.cpp \
 	image/texture/texture_encoding.cpp \
+	image/texture/texture_test.cpp \
 
 HEADERS += \
 	image/texture/texture_2d_adapter.hpp \
@@ -23,6 +24,7 @@ HEADERS += \
 	image/texture/texture_2d_float_3.hpp \
 	image/texture/texture_2d_provider.hpp \
 	image/texture/texture_encoding.hpp \
+	image/texture/texture_test.hpp \
 	image/texture/texture_types.hpp \
 
 include(sampler/sampler.pri)

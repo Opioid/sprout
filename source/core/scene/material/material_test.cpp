@@ -27,4 +27,15 @@ bool check(const bxdf::Result& result, float3_p wo, const Sample::Layer& layer) 
 	return check(result.reflection, result.wi, wo, result.pdf, layer);
 }
 
+bool check_normal_map(float3_p n, float3_p tangent_space_n, float2 uv) {
+	if (!math::contains_only_finite(n)) {
+		std::cout << "n: " << n << std::endl;
+		std::cout << "ts_n: " << tangent_space_n << std::endl;
+		std::cout << "uv: " << uv << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
 }}}
