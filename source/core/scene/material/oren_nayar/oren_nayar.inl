@@ -20,14 +20,14 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = on * layer.diffuse_color;
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
 
 	return result;
 }
 
 template<typename Layer>
 float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
-								   sampler::Sampler& sampler, bxdf::Result& result) {
+						sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 s2d = sampler.generate_sample_2D();
 
 	float3 is = math::sample_hemisphere_cosine(s2d);
@@ -42,7 +42,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
-	SOFT_ASSERT(testing::check(result, wo));
+	SOFT_ASSERT(testing::check(result, wo, layer));
 
 	return n_dot_wi;
 }

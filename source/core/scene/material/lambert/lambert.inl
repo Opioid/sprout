@@ -13,11 +13,11 @@
 namespace scene { namespace material { namespace lambert {
 
 template<typename Layer>
-float3 Isotropic::evaluate(float3_p color, float n_dot_wi, const Layer& /*layer*/, float& pdf) {
+float3 Isotropic::evaluate(float3_p color, float n_dot_wi, const Layer& layer, float& pdf) {
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = math::Pi_inv * color;
 
-	SOFT_ASSERT(testing::check(result, math::float3_identity, math::float3_identity, pdf));
+	SOFT_ASSERT(testing::check(result, math::float3_identity, math::float3_identity, pdf, layer));
 
 	return result;
 }
@@ -38,7 +38,7 @@ float Isotropic::sample(float3_p color, const Layer& layer,
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
-	SOFT_ASSERT(testing::check(result, math::float3_identity));
+	SOFT_ASSERT(testing::check(result, math::float3_identity, layer));
 
 	return n_dot_wi;
 }

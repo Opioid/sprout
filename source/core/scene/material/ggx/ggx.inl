@@ -33,7 +33,7 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	float3 result = d * g * f;
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
 
 	return result;
 }
@@ -57,7 +57,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Specular_reflection);
 
-		SOFT_ASSERT(testing::check(result, wo));
+		SOFT_ASSERT(testing::check(result, wo, layer));
 
 		return n_dot_wo;
 	} else {
@@ -89,7 +89,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
 
-		SOFT_ASSERT(testing::check(result, wo));
+		SOFT_ASSERT(testing::check(result, wo, layer));
 
 		return n_dot_wi;
 	}
@@ -121,7 +121,7 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	float3 result = d * g * f;
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
 
 	return result;
 }
@@ -147,7 +147,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Specular_reflection);
 
-		SOFT_ASSERT(testing::check(result, wo));
+		SOFT_ASSERT(testing::check(result, wo, layer));
 
 		return n_dot_wo;
 	} else {
@@ -181,7 +181,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
 
-		SOFT_ASSERT(testing::check(result, wo));
+		SOFT_ASSERT(testing::check(result, wo, layer));
 
 		return n_dot_wi;
 	}
@@ -206,7 +206,7 @@ float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	float3 result = d * g * f;
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
 
 	return result;
 }
@@ -244,7 +244,7 @@ float Anisotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
-	SOFT_ASSERT(testing::check(result, wo));
+	SOFT_ASSERT(testing::check(result, wo, layer));
 
 	return n_dot_wi;
 }

@@ -20,7 +20,7 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi,
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = evaluate(wi, h, n_dot_wi, n_dot_wo, layer);
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf));
+	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
 
 	return result;
 }
@@ -42,7 +42,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
-	SOFT_ASSERT(testing::check(result, wo));
+	SOFT_ASSERT(testing::check(result, wo, layer));
 
 	return n_dot_wi;
 }

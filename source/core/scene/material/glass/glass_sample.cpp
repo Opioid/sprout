@@ -102,7 +102,7 @@ float Sample::BRDF::sample(const Sample& sample, const Layer& layer,
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_reflection);
 
-	SOFT_ASSERT(testing::check(result, sample.wo_));
+	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
 	return 1.f;
 }
@@ -138,7 +138,7 @@ float Sample::BTDF::sample(const Sample& sample, const Layer& layer,
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_transmission);
 
-	SOFT_ASSERT(testing::check(result, sample.wo_));
+	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
 	return 1.f;
 }
