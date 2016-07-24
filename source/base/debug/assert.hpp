@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef SUDEBUG
+#ifndef SU_DEBUG
 #define SOFT_ASSERT(EXPRESSION) ((void)0)
 #else
 #include <iostream>

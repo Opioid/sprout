@@ -567,8 +567,8 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& export
 				framerate = static_cast<uint32_t>(1.f / camera.frame_duration() + 0.5f);
 			}
 
-			return std::make_unique<exporting::Ffmpeg>("output",
-													   camera.sensor().dimensions(), framerate);
+			return std::make_unique<exporting::Ffmpeg>("output", camera.sensor().dimensions(),
+													   framerate);
 		} else if ("Null" == node_name) {
 			return std::make_unique<exporting::Null>();
 		} else if ("Statistics" == node_name) {
