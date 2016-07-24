@@ -15,8 +15,8 @@ bool check(float3_p result, float3_p wi, float3_p wo, float pdf, const Sample::L
 		std::cout << "pdf: " << pdf << std::endl;
 		std::cout << "reflection " << result << std::endl;
 		std::cout << "t " << layer.t << std::endl;
-		std::cout << "b " << layer.t << std::endl;
-		std::cout << "n " << layer.t << std::endl;
+		std::cout << "b " << layer.b << std::endl;
+		std::cout << "n " << layer.n << std::endl;
 		return false;
 	}
 
