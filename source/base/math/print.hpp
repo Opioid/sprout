@@ -9,6 +9,12 @@ std::ostream& operator<<(std::ostream& stream, const math::Vector2<T>& v) {
 	return stream << "[" << v.x << ", " << v.y << "]";
 }
 
+inline std::ostream& operator<<(std::ostream& stream, const math::Vector3<uint8_t>& v) {
+	return stream << "[" << static_cast<uint32_t>(v.x) << ", "
+						 << static_cast<uint32_t>(v.y) << ", "
+						 << static_cast<uint32_t>(v.z) << "]";
+}
+
 template<typename T>
 std::ostream& operator<<(std::ostream& stream, const math::Vector3<T>& v) {
 	return stream << "[" << v.x << ", " << v.y << ", " << v.z << "]";
