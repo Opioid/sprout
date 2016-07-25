@@ -21,10 +21,10 @@ std::unique_ptr<std::istream> System::read_stream(const std::string& name,
 	Type type = query_type(*stream);
 
 	if (Type::GZIP == type) {
-		return std::unique_ptr<std::istream>(new gzip::Read_stream(std::move(stream)));
+		return std::unique_ptr<std::istream>(new gzip::Read_stream(stream));
 	}
 
-	return stream;
+	return std::unique_ptr<std::istream>(stream);
 }
 
 void System::push_mount(const std::string& folder) {
@@ -46,24 +46,24 @@ void System::pop_mount() {
 	mount_folders_.pop_back();
 }
 
-std::unique_ptr<std::istream> System::open_read_stream(const std::string& name,
-													   std::string& resolved_name) const {
+std::istream* System::open_read_stream(const std::string& name,
+									   std::string& resolved_name) const {
 	for (auto& f : mount_folders_) {
 		resolved_name = f + name;
 
-		auto stream = std::unique_ptr<std::istream>(new std::ifstream(resolved_name,
-																	  std::ios::binary));
+		std::istream* stream = new std::ifstream(resolved_name, std::ios::binary);
 		if (*stream) {
 			return stream;
 		}
 	}
 
-    auto stream = std::unique_ptr<std::istream>(new std::ifstream(name, std::ios::binary));
+	std::istream* stream = new std::ifstream(name, std::ios::binary);
 	if (*stream) {
 		resolved_name = name;
 		return stream;
 	}
 
+	delete stream;
 	return nullptr;
 }
 

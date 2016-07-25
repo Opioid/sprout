@@ -5,7 +5,7 @@
 
 namespace gzip {
 
-Filebuffer::Filebuffer() {}
+Filebuffer::Filebuffer() : stream_(nullptr) {}
 
 Filebuffer::~Filebuffer() {
 	close();
@@ -21,15 +21,13 @@ Filebuffer* Filebuffer::open(const char* filename, std::ios_base::openmode mode)
 		return nullptr;
 	}
 
-	auto stream = std::unique_ptr<std::istream>(new std::ifstream(filename, mode));
-
-	open(std::move(stream));
+	open(std::move(new std::ifstream(filename, mode)));
 
 	return this;
 }
 
-Filebuffer* Filebuffer::open(std::unique_ptr<std::istream> stream) {
-	stream_ = std::move(stream);
+Filebuffer* Filebuffer::open(std::istream* stream) {
+	stream_ = stream;
 
 	uint8_t header[10];
 	stream_->read(reinterpret_cast<char*>(header), sizeof(header));
@@ -85,7 +83,8 @@ Filebuffer* Filebuffer::close() {
 
 	mz_inflateEnd(&z_stream_);
 
-	stream_.release();
+	delete stream_;
+	stream_ = nullptr;
 
 	return this;
 }
@@ -282,8 +281,9 @@ Read_stream::Read_stream(const char* name, std::ios_base::openmode mode) :
 	open(name, mode);
 }
 
-Read_stream::Read_stream(std::unique_ptr<std::istream> stream) : __istream_type(&stream_buffer_) {
-	open(std::move(stream));
+Read_stream::Read_stream(std::istream* stream) :
+	__istream_type(&stream_buffer_) {
+	open(stream);
 }
 
 const Filebuffer* Read_stream::rdbuf() const {
@@ -304,8 +304,8 @@ void Read_stream::open(const char* name, std::ios_base::openmode mode) {
 	}
 }
 
-void Read_stream::open(std::unique_ptr<std::istream> stream) {
-	if (!rdbuf()->open(std::move(stream))) {
+void Read_stream::open(std::istream* stream) {
+	if (!rdbuf()->open(stream)) {
 		__istream_type::setstate(std::ios_base::failbit);
 	}
 }

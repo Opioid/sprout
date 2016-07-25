@@ -3,7 +3,6 @@
 #include "miniz/miniz.hpp"
 #include <streambuf>
 #include <istream>
-#include <memory>
 #include <array>
 
 namespace gzip {
@@ -28,24 +27,24 @@ public:
 
 	Filebuffer* open(const char* filename, std::ios_base::openmode mode);
 
-	Filebuffer* open(std::unique_ptr<std::istream> stream);
+	Filebuffer* open(std::istream* stream);
 
 	Filebuffer* close();
 
 protected:
 
-	virtual int_type underflow();
+	virtual int_type underflow() final override;
 
-	virtual pos_type seekpos(pos_type pos, std::ios_base::openmode);
+	virtual pos_type seekpos(pos_type pos, std::ios_base::openmode) final override;
 
 	virtual pos_type seekoff(off_type off, std::ios_base::seekdir dir,
-							 std::ios_base::openmode mode);
+							 std::ios_base::openmode mode) final override;
 
-	virtual int_type overflow(int_type c = traits_type::eof());
+	virtual int_type overflow(int_type c = traits_type::eof()) final override;
 
-	virtual int sync();
+	virtual int sync() final override;
 
-	virtual std::streamsize showmanyc();
+	virtual std::streamsize showmanyc() final override;
 
 private:
 
@@ -53,7 +52,7 @@ private:
 
 	pos_type data_start_;
 
-	std::unique_ptr<std::istream> stream_;
+	std::istream* stream_;
 
 	mz_stream z_stream_;
 
@@ -82,7 +81,7 @@ public:
 	explicit Read_stream(const char* name,
 						 std::ios_base::openmode mode = std::ios_base::binary);
 
-	explicit Read_stream(std::unique_ptr<std::istream> stream);
+	explicit Read_stream(std::istream* stream);
 
 	const Filebuffer* rdbuf() const;
 
@@ -90,8 +89,10 @@ public:
 
 	bool is_open() const;
 
-	void open(char const* name, std::ios_base::openmode mode = std::ios_base::binary);
-	void open(std::unique_ptr<std::istream> stream);
+	void open(char const* name, 
+			  std::ios_base::openmode mode = std::ios_base::binary);
+	
+	void open(std::istream* stream);
 
 	void close();
 
