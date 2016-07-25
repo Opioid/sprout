@@ -65,7 +65,7 @@ private:
 class Read_stream : public std::basic_istream<char, std::char_traits<char>> {
 
 public:
-	// Types:
+
 	using char_type = char;
 	using traits_type = std::char_traits<char>;
 	using int_type = traits_type::int_type;
@@ -78,7 +78,10 @@ public:
 
 	explicit Read_stream(const std::string& name,
 						 std::ios_base::openmode mode = std::ios_base::binary);
-	explicit Read_stream(const char* name, std::ios_base::openmode mode = std::ios_base::binary);
+
+	explicit Read_stream(const char* name,
+						 std::ios_base::openmode mode = std::ios_base::binary);
+
 	explicit Read_stream(std::unique_ptr<std::istream> stream);
 
 	const Filebuffer* rdbuf() const;
