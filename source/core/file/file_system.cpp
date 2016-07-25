@@ -7,7 +7,13 @@
 namespace file {
 
 std::unique_ptr<std::istream> System::read_stream(const std::string& name) const {
-	auto stream = open_read_stream(name);
+	std::string resolved_name;
+	return read_stream(name, resolved_name);
+}
+
+std::unique_ptr<std::istream> System::read_stream(const std::string& name,
+												  std::string& resolved_name) const {
+	auto stream = open_read_stream(name, resolved_name);
 	if (!stream) {
 		throw std::runtime_error("Stream \"" + name + "\" could not be opened");
 	}
@@ -22,6 +28,10 @@ std::unique_ptr<std::istream> System::read_stream(const std::string& name) const
 }
 
 void System::push_mount(const std::string& folder) {
+	if (folder.empty()) {
+		return;
+	}
+
 	std::stringstream stream;
 	stream << folder;
 
@@ -32,9 +42,17 @@ void System::push_mount(const std::string& folder) {
 	mount_folders_.push_back(stream.str());
 }
 
-std::unique_ptr<std::istream> System::open_read_stream(const std::string& name) const {
+void System::pop_mount() {
+	mount_folders_.pop_back();
+}
+
+std::unique_ptr<std::istream> System::open_read_stream(const std::string& name,
+													   std::string& resolved_name) const {
 	for (auto& f : mount_folders_) {
-		auto stream = std::unique_ptr<std::istream>(new std::ifstream(f + name, std::ios::binary));
+		resolved_name = f + name;
+
+		auto stream = std::unique_ptr<std::istream>(new std::ifstream(resolved_name,
+																	  std::ios::binary));
 		if (*stream) {
 			return stream;
 		}
@@ -42,6 +60,7 @@ std::unique_ptr<std::istream> System::open_read_stream(const std::string& name) 
 
     auto stream = std::unique_ptr<std::istream>(new std::ifstream(name, std::ios::binary));
 	if (*stream) {
+		resolved_name = name;
 		return stream;
 	}
 

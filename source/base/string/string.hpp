@@ -12,4 +12,6 @@ void trim(std::string& text);
 
 bool is_space(char c);
 
+std::string parent_directory(const std::string& filename);
+
 }

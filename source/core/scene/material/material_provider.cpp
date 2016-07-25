@@ -37,6 +37,7 @@
 #include "base/memory/variant_map.inl"
 #include "base/spectrum/blackbody.hpp"
 #include "base/spectrum/rgb.inl"
+#include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 
 namespace scene { namespace material {
@@ -70,7 +71,8 @@ Provider::~Provider() {}
 std::shared_ptr<Material> Provider::load(const std::string& filename,
 										 const memory::Variant_map& /*options*/,
 										 resource::Manager& manager) {
-	auto stream_pointer = manager.file_system().read_stream(filename);
+	std::string resolved_name;
+	auto stream_pointer = manager.file_system().read_stream(filename, resolved_name);
 
 	auto root = json::parse(*stream_pointer);
 
@@ -79,6 +81,10 @@ std::shared_ptr<Material> Provider::load(const std::string& filename,
 		throw std::runtime_error("Material has no render node");
 	}
 
+	manager.file_system().push_mount(string::parent_directory(resolved_name));
+
+	std::shared_ptr<Material> material;
+
 	const json::Value& rendering_value = rendering_node->value;
 
 	for (auto n = rendering_value.MemberBegin(); n != rendering_value.MemberEnd(); ++n) {
@@ -86,27 +92,33 @@ std::shared_ptr<Material> Provider::load(const std::string& filename,
 		const json::Value& node_value = n->value;
 
 		if ("Cloth" == node_name) {
-			return load_cloth(node_value, manager);
+			material = load_cloth(node_value, manager);
 		} else if ("Display" == node_name) {
-			return load_display(node_value, manager);
+			material = load_display(node_value, manager);
 		} else if ("Glass" == node_name) {
-			return load_glass(node_value, manager);
+			material = load_glass(node_value, manager);
 		} else if ("Light" == node_name) {
-			return load_light(node_value, manager);
+			material = load_light(node_value, manager);
 		} else if ("Matte" == node_name) {
-			return load_matte(node_value, manager);
+			material = load_matte(node_value, manager);
 		} else if ("Metal" == node_name) {
-			return load_metal(node_value, manager);
+			material = load_metal(node_value, manager);
 		} else if ("Metallic_paint" == node_name) {
-			return load_metallic_paint(node_value, manager);
+			material = load_metallic_paint(node_value, manager);
 		} else if ("Sky" == node_name) {
-			return load_sky(node_value, manager);
+			material = load_sky(node_value, manager);
 		} else if ("Substitute" == node_name) {
-			return load_substitute(node_value, manager);
+			material = load_substitute(node_value, manager);
 		}
 	}
 
-	throw std::runtime_error("Material is of unknown type");
+	manager.file_system().pop_mount();
+
+	if (!material) {
+		throw std::runtime_error("Material is of unknown type");
+	}
+
+	return material;
 }
 
 std::shared_ptr<Material> Provider::fallback_material() const {

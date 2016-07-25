@@ -30,4 +30,9 @@ inline bool is_space(char c) {
 	return std::isspace(static_cast<int>(c)) != 0;
 }
 
+inline std::string parent_directory(const std::string& filename) {
+	size_t i = filename.find_last_of('/');
+	return filename.substr(0, i + 1);
+}
+
 }
