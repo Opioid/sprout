@@ -59,7 +59,9 @@ float3 Isotropic::evaluate(float3_p wi, float3_p h, float n_dot_wi,
 }
 
 inline float Isotropic::f_D90(float3_p wi, float3_p h, float roughness) {
-	float wi_dot_h = math::dot(wi, h);
+//	float wi_dot_h = math::dot(wi, h);
+	float wi_dot_h = math::saturate(math::dot(wi, h));
+
 	return 0.5f + 2.f * roughness * (wi_dot_h * wi_dot_h);
 }
 

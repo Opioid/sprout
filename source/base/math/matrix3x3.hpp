@@ -88,8 +88,8 @@ Matrix3x3<T> invert(const Matrix3x3<T>& m);
 template<typename T>
 void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>& up);
 
-template<typename T>
-void set_basis(Matrix3x3<T>& m, const Vector3<T>& v);
+// template<typename T>
+// void set_basis(Matrix3x3<T>& m, const Vector3<T>& v);
 
 template<typename T>
 void set_scale(Matrix3x3<T>& m, T x, T y, T z);

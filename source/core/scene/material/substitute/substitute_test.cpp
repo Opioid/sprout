@@ -38,13 +38,21 @@ void test() {
 	float3 b(0.f, 1.f, 0.f);
 	float3 n(0.f, 0.f, 1.f);
 
+
+//	float3 t(0.f, 0.500185f, 0.865919f);
+//	float3 b(-0.979966f, -0.172462f, 0.0996202f);
+//	float3 n(0.199167f, -0.848824f, 0.489725f);
+
 	float3 arbitrary = math::normalized(float3(0.5f, 0.5f, 0.5f));
 
-	float3 wo = n;
+//	float3 arbitrary();
+
+	float3 wo = arbitrary;
 	float3 wi = arbitrary;//n;
 
-	setup.test(wi, wo, t, b, n, sampler);
+	setup.test(-wi, wo, t, b, n, sampler);
 
+	/*
 	setup.test(t, t, t, b, n, sampler);
 	setup.test(t, b, t, b, n, sampler);
 	setup.test(t, n, t, b, n, sampler);
@@ -54,6 +62,7 @@ void test() {
 	setup.test(n, t, t, b, n, sampler);
 	setup.test(n, b, t, b, n, sampler);
 	setup.test(n, n, t, b, n, sampler);
+	*/
 
 
 	/*

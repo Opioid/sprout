@@ -182,23 +182,22 @@ void set_look_at(Matrix3x3<T>& m, const Vector3<T>& dir, const Vector3<T>& up) {
 	m.m20 =  z.x;         m.m21 = z.y;          m.m22 = z.z;
 }
 
+/*
 template<typename T>
 void set_basis(Matrix3x3<T>& m, const Vector3<T>& v) {
 	m.rows[2] = v;
 
 	if (v.x < T(0.6) && v.x > -T(0.6)) {
 		m.rows[1] = Vector3<T>(T(1), T(0), T(0));
-	}
-	else if (v.y < T(0.6) && v.y > T(0.6)) {
+	} else if (v.y < T(0.6) && v.y > T(0.6)) {
 		m.rows[1] = Vector3<T>(T(0), T(1), T(0));
-	}
-	else {
+	} else {
 		m.rows[1] = Vector3<T>(T(0), T(0), T(1));
 	}
 
 	m.rows[0] = normalized(cross(v, m.rows[1]));
 	m.rows[1] = cross(m.rows[0], m.rows[2]);
-}
+}*/
 
 template<typename T>
 void set_scale(Matrix3x3<T>& m, T x, T y, T z) {

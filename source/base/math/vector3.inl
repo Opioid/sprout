@@ -498,6 +498,8 @@ inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
 
 	t = r0;
 	b = cross(r0, n);
+
+	// http://orbit.dtu.dk/files/57573287/onb_frisvad_jgt2012.pdf
 }
 
 inline Vector3f_a tangent(FVector3f_a n) {
