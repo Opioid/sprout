@@ -108,7 +108,7 @@ private:
 	Generic_sample_cache<cloth::Sample>						cloth_cache_;
 	Generic_sample_cache<display::Sample>					display_cache_;
 	Generic_sample_cache<glass::Sample>						glass_cache_;
-//	Generic_sample_cache<glass::Sample_rough>				glass_rough_cache_;
+	Generic_sample_cache<glass::Sample_rough>				glass_rough_cache_;
 	Generic_sample_cache<light::Sample>						light_cache_;
 	Generic_sample_cache<matte::Sample>						matte_cache_;
 	Generic_sample_cache<metal::Sample_isotropic>			metal_iso_cache_;

@@ -180,4 +180,10 @@ inline float3 Conductor_weighted::operator()(float wo_dot_h) const {
 	return weight_ * conductor_(wo_dot_h);
 }
 
+inline Constant::Constant(float3_p f) : f_(f) {}
+
+inline float3 Constant::operator()(float /*wo_dot_h*/) const {
+	return f_;
+}
+
 }}}

@@ -42,12 +42,6 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 		BTDF::sample(*this, layer_, sampler, result);
 		result.pdf *= 0.5f;
 	}
-
-//	brdf_.sample(sampler, result);
-
-//	btdf_.sample(sampler, result);
-
-//	result.pdf *= 0.5f;
 }
 
 bool Sample::is_pure_emissive() const {
@@ -84,8 +78,6 @@ float Sample::BRDF::sample(const Sample& sample, const Layer& layer,
 
 	float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
 
-	result.wi = math::normalized(2.f * n_dot_wo * n - sample.wo_);
-
 	float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
@@ -99,6 +91,7 @@ float Sample::BRDF::sample(const Sample& sample, const Layer& layer,
 	}
 
 	result.reflection = float3(f);
+	result.wi = math::normalized(2.f * n_dot_wo * n - sample.wo_);
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_reflection);
 
@@ -129,12 +122,12 @@ float Sample::BTDF::sample(const Sample& sample, const Layer& layer,
 	}
 
 	float n_dot_t = std::sqrt(1.f - sint2);
-	result.wi = math::normalized((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
 
 	// fresnel has to be the same value that would have been computed by BRDF
 	float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
 	result.reflection = (1.f - f) * layer.color;
+	result.wi = math::normalized((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_transmission);
 

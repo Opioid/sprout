@@ -1,7 +1,7 @@
-/*
 #include "glass_rough_material.hpp"
 #include "glass_rough_sample.hpp"
-#include "image/texture/sampler/sampler_2d.hpp"
+#include "image/texture/texture_2d_adapter.inl"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
@@ -11,37 +11,36 @@
 namespace scene { namespace material { namespace glass {
 
 Glass_rough::Glass_rough(Generic_sample_cache<Sample_rough>& cache,
-						 Texture_2D_ptr mask,
 						 const Sampler_settings& sampler_settings) :
-	Typed_material(cache, mask, sampler_settings, false) {}
+	Typed_material(cache, sampler_settings, false) {}
 
-const material::Sample& Glass_rough::sample(const shape::Hitpoint& hp, float3_p wo,
-											float area, float time, float ior_i,
+const material::Sample& Glass_rough::sample(float3_p wo, const Renderstate& rs,
 											const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	float side = sample.set_basis(hp.t, hp.b, hp.geo_n, wo);
+	sample.set_basis(rs.geo_n, wo);
 
-	float3 n;
-	if (normal_map_) {
+	if (normal_map_.is_valid()) {
 		auto& sampler = worker.sampler(sampler_key_, filter);
 
-		float3 nm = sampler.sample_3(*normal_map_, hp.uv);
-		n = side * math::normalized(hp.tangent_to_world(nm));
+		float3 nm = normal_map_.sample_3(sampler, rs.uv);
+		float3 n  = math::normalized(rs.tangent_to_world(nm));
+
+		sample.layer_.set_basis(rs.t, rs.b, n);
 	} else {
-		n = side * hp.n;
+		sample.layer_.set_basis(rs.t, rs.b, rs.n);
 	}
 
-	sample.set(n, color_, attenuation_distance_, ior_, ior_i);
+	sample.layer_.set(color_, attenuation_distance_, ior_, rs.ior, a2_);
 
 	return sample;
 }
 
-void Glass_rough::set_normal_map(Texture_2D_ptr normal_map) {
+void Glass_rough::set_normal_map(const Adapter_2D& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Glass_rough::set_color(const float3& color) {
+void Glass_rough::set_color(float3_p color) {
 	color_ = color;
 }
 
@@ -54,8 +53,7 @@ void Glass_rough::set_ior(float ior) {
 }
 
 void Glass_rough::set_roughness(float roughness) {
-	roughness_ = roughness;
+	a2_ = math::pow4(roughness);
 }
 
 }}}
-*/

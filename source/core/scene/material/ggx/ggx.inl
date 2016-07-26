@@ -44,7 +44,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 	if (0.f == layer.a2) {
 		constexpr float n_dot_h = 1.f;
 
-		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
+		float wo_dot_h = n_dot_wo;
 
 		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
 
@@ -132,7 +132,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 	if (0.f == layer.a2) {
 		constexpr float n_dot_h = 1.f;
 
-		float wo_dot_h = math::clamp(n_dot_wo, 0.00001f, 1.f);
+		float wo_dot_h = n_dot_wo;
 
 		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
 
@@ -182,6 +182,11 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
 
 		SOFT_ASSERT(testing::check(result, wo, layer));
+
+
+		if (n_dot_wo > 1.f) {
+			std::cout << n_dot_wo << std::endl;
+		}
 
 		return n_dot_wi;
 	}

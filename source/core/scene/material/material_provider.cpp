@@ -47,7 +47,7 @@ Provider::Provider(uint32_t num_threads) :
 	cloth_cache_(num_threads),
 	display_cache_(num_threads),
 	glass_cache_(num_threads),
-//	glass_rough_cache_(num_threads),
+	glass_rough_cache_(num_threads),
 	light_cache_(num_threads),
 	matte_cache_(num_threads),
 	metal_iso_cache_(num_threads),
@@ -306,7 +306,7 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 		}
 	}
 
-	if (roughness >= 0.f) {
+	if (roughness <= 0.f) {
 		auto material = std::make_shared<glass::Glass>(glass_cache_, sampler_settings);
 
 		material->set_normal_map(normal_map);
@@ -315,17 +315,14 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 		material->set_ior(ior);
 		return material;
 	} else {
-		/*
 		auto material = std::make_shared<glass::Glass_rough>(glass_rough_cache_,
-															 nullptr, sampler_settings);
+															 sampler_settings);
 		material->set_normal_map(normal_map);
 		material->set_color(color);
 		material->set_attenuation_distance(attenuation_distance);
 		material->set_ior(ior);
 		material->set_roughness(roughness);
 		return material;
-		*/
-		return nullptr;
 	}
 }
 

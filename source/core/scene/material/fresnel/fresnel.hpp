@@ -123,4 +123,17 @@ private:
 	float weight_;
 };
 
+class Constant {
+
+public:
+
+	Constant(float3_p f);
+
+	float3 operator()(float wo_dot_h) const;
+
+private:
+
+	float3 f_;
+};
+
 }}}

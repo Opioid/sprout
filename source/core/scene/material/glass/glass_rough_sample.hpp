@@ -1,6 +1,5 @@
 #pragma once
 
-/*
 #include "scene/material/material_sample.hpp"
 
 namespace scene { namespace material {
@@ -11,35 +10,11 @@ namespace glass {
 
 class Sample_rough;
 
-class BRDF_rough {
+class Sample_rough : public material::Sample {
 
 public:
 
-	float3 evaluate(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
-
-	float pdf(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
-
-	float sample(const Sample_rough& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
-};
-
-class BTDF_rough {
-
-public:
-
-	float3 evaluate(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
-
-	float pdf(const Sample_rough& sample, const float3& wi, float n_dot_wi) const;
-
-	float sample(const Sample_rough& sample, sampler::Sampler& sampler, bxdf::Result& result) const;
-};
-
-class Sample_rough : public material::Sample, material::Sample::Layer {
-
-public:
-
-	virtual float3_p shading_normal() const final override;
-
-	virtual float3 tangent_to_world(float3_p v) const final override;
+	virtual const Layer& base_layer() const final override;
 
 	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
@@ -50,7 +25,7 @@ public:
 	virtual float ior() const final override;
 
 	virtual void sample(sampler::Sampler& sampler,
-								 bxdf::Result& result) const final override;
+						bxdf::Result& result) const final override;
 
 	virtual bool is_pure_emissive() const final override;
 
@@ -58,22 +33,34 @@ public:
 
 	virtual bool is_translucent() const final override;
 
-	void set(float3_p n, float3_p color, float attenuation_distance,
-			 float ior, float ior_outside);
+	struct Layer : public material::Sample::Layer {
+		void set(float3_p color, float attenuation_distance,
+				 float ior, float ior_outside, float a2);
 
-private:
+		float3 color;
+		float3 attenuation;
+		float ior;
+		float ior_outside;
+		float a2;
+	};
 
-	float3 color_;
-	float3 attenuation_;
-	float ior_;
-	float ior_outside_;
+	Layer layer_;
 
-	BRDF_rough brdf_;
-	BTDF_rough btdf_;
+	class BRDF {
 
-	friend BRDF_rough;
-	friend BTDF_rough;
+	public:
+
+		static float sample(const Sample& sample, const Layer& layer,
+							sampler::Sampler& sampler, bxdf::Result& result);
+	};
+
+	class BTDF {
+
+	public:
+
+		static float sample(const Sample& sample, const Layer& layer,
+							sampler::Sampler& sampler, bxdf::Result& result);
+	};
 };
 
 }}}
-*/
