@@ -11,6 +11,38 @@
 
 namespace scene { namespace material { namespace ggx {
 
+constexpr float Min_a2 = 0.0000000299f;
+
+inline float distribution_isotropic(float n_dot_h, float a2) {
+	float d = n_dot_h * n_dot_h * (a2 - 1.f) + 1.f;
+	return a2 / (math::Pi * d * d);
+}
+
+inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
+									  float2 a2, float axy) {
+	float x = (x_dot_h * x_dot_h) / a2.x;
+	float y = (y_dot_h * y_dot_h) / a2.y;
+	float d = (x + y + n_dot_h * n_dot_h);
+
+	return 1.f / (math::Pi * axy * d * d);
+}
+
+inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo, float a2) {
+	// this is an optimized version that does the following in one step:
+	//
+	//    G_ggx(wi) * G_ggx(wo)
+	// ---------------------------
+	// 4 * dot(n, wi) * dot(n, wo)
+
+	float g_wo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
+	float g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
+	return 1.f / (g_wo * g_wi);
+}
+
+inline float clamp_a2(float a2) {
+	return std::max(a2, Min_a2);
+}
+
 template<typename Layer, typename Fresnel>
 float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
 						   const Layer& layer, const Fresnel& fresnel, float& pdf) {
@@ -247,36 +279,6 @@ float Anisotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
 	return n_dot_wi;
-}
-
-inline float distribution_isotropic(float n_dot_h, float a2) {
-	float d = n_dot_h * n_dot_h * (a2 - 1.f) + 1.f;
-	return a2 / (math::Pi * d * d);
-}
-
-inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
-									  float2 a2, float axy) {
-	float x = (x_dot_h * x_dot_h) / a2.x;
-	float y = (y_dot_h * y_dot_h) / a2.y;
-	float d = (x + y + n_dot_h * n_dot_h);
-
-	return 1.f / (math::Pi * axy * d * d);
-}
-
-inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo, float a2) {
-	// this is an optimized version that does the following in one step:
-	//
-	//    G_ggx(wi) * G_ggx(wo)
-	// ---------------------------
-	// 4 * dot(n, wi) * dot(n, wo)
-
-	float g_wo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
-	float g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
-	return 1.f / (g_wo * g_wi);
-}
-
-inline float clamp_a2(float a2) {
-	return std::max(a2, Min_a2);
 }
 
 }}}

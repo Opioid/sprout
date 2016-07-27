@@ -47,14 +47,4 @@ public:
 						sampler::Sampler& sampler, bxdf::Result& result);
 };
 
-float distribution_isotropic(float n_dot_h, float a2);
-
-float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h, float2 a2, float axy);
-
-float geometric_visibility(float n_dot_wi, float n_dot_wo, float a2);
-
-float clamp_a2(float a2);
-
-constexpr float Min_a2 = 0.0000000299f;
-
 }}}
