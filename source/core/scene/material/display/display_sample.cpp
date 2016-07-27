@@ -12,8 +12,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 }
 
 float3 Sample::evaluate(float3_p wi, float& pdf) const {
-	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == layer_.a2) {
+	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
 		return math::float3_identity;
 	}
@@ -21,21 +20,11 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-	float3 h = math::normalized(wo_ + wi);
+	fresnel::Schlick schlick(layer_.f0);
+	float3 ggx_reflection = ggx::Isotropic::evaluate(wi, wo_, n_dot_wi, n_dot_wo,
+													 layer_, schlick, pdf);
 
-	float n_dot_h  = math::dot(layer_.n, h);
-	float wo_dot_h = math::dot(wo_, h);
-
-	float clamped_a2 = ggx::clamp_a2(layer_.a2);
-	float d = ggx::distribution_isotropic(n_dot_h, clamped_a2);
-	float g = ggx::geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
-	float3 f = fresnel::schlick(wo_dot_h, layer_.f0);
-
-	float3 specular = d * g * f;
-
-	pdf = d * n_dot_h / (4.f * wo_dot_h);
-
-	return n_dot_wi * specular;
+	return n_dot_wi * ggx_reflection;
 }
 
 float3 Sample::radiance() const {
@@ -59,7 +48,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 	fresnel::Schlick schlick(layer_.f0);
 	float n_dot_wi = ggx::Isotropic::sample(wo_, n_dot_wo, layer_,
-													   schlick, sampler, result);
+											schlick, sampler, result);
 
 	result.reflection = n_dot_wi * result.reflection;
 }

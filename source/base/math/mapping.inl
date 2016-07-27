@@ -6,7 +6,7 @@
 namespace math {
 
 inline float3 disk_to_hemisphere_equidistant(float2 uv) {
-	float longitude = std::atan2(-uv.y, uv.x) ;
+	float longitude = std::atan2(-uv.y, uv.x);
 
 	float r = std::sqrt(uv.x * uv.x + uv.y * uv.y);
 

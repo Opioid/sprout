@@ -5,6 +5,7 @@
 namespace scene { namespace camera {
 
 class Hemispherical : public Camera {
+
 public:
 
 	Hemispherical(int2 resolution, float ray_max_t);

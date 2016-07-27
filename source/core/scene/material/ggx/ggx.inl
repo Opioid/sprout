@@ -27,7 +27,7 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 
 	float clamped_a2 = clamp_a2(layer.a2);
 	float d = distribution_isotropic(n_dot_h, clamped_a2);
-	float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, clamped_a2);
 	float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -49,7 +49,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
 
 		float d = distribution_isotropic(n_dot_h, Min_a2);
-		float g = geometric_visibility(n_dot_wo, n_dot_wo, Min_a2);
+		float g = geometric_visibility_and_denominator(n_dot_wo, n_dot_wo, Min_a2);
 		float3 f = fresnel(wo_dot_h);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -81,7 +81,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		float n_dot_wi = layer.clamped_n_dot(wi);
 
 		float d = distribution_isotropic(n_dot_h, clamped_a2);
-		float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
+		float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, clamped_a2);
 		float3 f = fresnel(wo_dot_h);
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -114,7 +114,7 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 
 	float clamped_a2 = clamp_a2(layer.a2);
 	float d = distribution_isotropic(n_dot_h, clamped_a2);
-	float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, clamped_a2);
 	float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
@@ -137,7 +137,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
 
 		float d = distribution_isotropic(n_dot_h, Min_a2);
-		float g = geometric_visibility(n_dot_wo, n_dot_wo, Min_a2);
+		float g = geometric_visibility_and_denominator(n_dot_wo, n_dot_wo, Min_a2);
 		float3 f = fresnel(wo_dot_h);
 
 		fresnel_result = f;
@@ -171,7 +171,7 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		float n_dot_wi = layer.clamped_n_dot(wi);
 
 		float d = distribution_isotropic(n_dot_h, clamped_a2);
-		float g = geometric_visibility(n_dot_wi, n_dot_wo, clamped_a2);
+		float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, clamped_a2);
 		float3 f = fresnel(wo_dot_h);
 
 		fresnel_result = f;
@@ -182,11 +182,6 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
 
 		SOFT_ASSERT(testing::check(result, wo, layer));
-
-
-		if (n_dot_wo > 1.f) {
-			std::cout << n_dot_wo << std::endl;
-		}
 
 		return n_dot_wi;
 	}
@@ -205,7 +200,7 @@ float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.a2, layer.axy);
-	float g = geometric_visibility(n_dot_wi, n_dot_wo, layer.axy);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy);
 	float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -241,7 +236,7 @@ float Anisotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const
 	float n_dot_wi = layer.clamped_n_dot(wi);
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.a2, layer.axy);
-	float g = geometric_visibility(n_dot_wi, n_dot_wo, layer.axy);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy);
 	float3 f = fresnel(wo_dot_h);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -268,7 +263,13 @@ inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_
 	return 1.f / (math::Pi * axy * d * d);
 }
 
-inline float geometric_visibility(float n_dot_wi, float n_dot_wo, float a2) {
+inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo, float a2) {
+	// this is an optimized version that does the following in one step:
+	//
+	//    G_ggx(wi) * G_ggx(wo)
+	// ---------------------------
+	// 4 * dot(n, wi) * dot(n, wo)
+
 	float g_wo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
 	float g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
 	return 1.f / (g_wo * g_wi);
