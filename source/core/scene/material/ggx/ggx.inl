@@ -5,9 +5,13 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/fresnel/fresnel.inl"
 #include "base/math/math.hpp"
+#include "base/math/vector.inl"
 
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
+
+#include "base/math/print.hpp"
+#include <iostream>
 
 namespace scene { namespace material { namespace ggx {
 
@@ -41,6 +45,18 @@ inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo
 
 inline float clamp_a2(float a2) {
 	return std::max(a2, Min_a2);
+}
+
+inline float3 microfacet(float d, float g, float3_p f, float n_dot_wi, float n_dot_wo) {
+	return (d * g * f) / (4.f * n_dot_wi * n_dot_wo);
+}
+
+inline float G_ggx(float n_dot_v, float a2) {
+	return (2.f * n_dot_v) / (n_dot_v + std::sqrt(a2 + (1.f - a2) * (n_dot_v * n_dot_v)));
+}
+
+inline float G_smith(float n_dot_wi, float n_dot_wo, float a2) {
+	return G_ggx(n_dot_wi, a2) * G_ggx(n_dot_wo, a2);
 }
 
 template<typename Layer, typename Fresnel>
@@ -154,6 +170,10 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 	float3 result = d * g * f;
 
 	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
+
+//	float3 alter = microfacet(d, G_smith(n_dot_wi, n_dot_wo, clamped_a2), f, n_dot_wi, n_dot_wo);
+
+//	std::cout << (result - alter) << std::endl;
 
 	return result;
 }
