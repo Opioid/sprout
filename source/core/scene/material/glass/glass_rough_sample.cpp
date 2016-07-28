@@ -17,6 +17,9 @@ const material::Sample::Layer& Sample_rough::base_layer() const {
 }
 
 float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
+//	pdf = 0.f;
+//	return math::float3_identity;
+
 	if (!same_hemisphere(wo_)) {
 		// only handling reflection for now
 		pdf = 0.f;
@@ -44,23 +47,24 @@ float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
 												   layer_, constant, pdf);
 
 	return n_dot_wi * reflection;
+
 }
 
 void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
-//	float p = sampler.generate_sample_1D();
+	float p = sampler.generate_sample_1D();
 
-//	if (p < 0.5f) {
-//		float n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
-//		result.pdf *= 0.5f;
-//		result.reflection *= n_dot_wi;
-//	} else {
-//		float n_dot_wi = BSDF::refract(*this, layer_, sampler, result);
-//		result.pdf *= 0.5f;
-//		result.reflection *= n_dot_wi;
-//	}
+	if (p < 0.5f) {
+		float n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
+		result.pdf *= 0.5f;
+		result.reflection *= n_dot_wi;
+	} else {
+		float n_dot_wi = BSDF::refract(*this, layer_, sampler, result);
+		result.pdf *= 0.5f;
+		result.reflection *= n_dot_wi;
+	}
 
-	float n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
-	result.reflection *= n_dot_wi;
+//	float n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
+//	result.reflection *= n_dot_wi;
 
 //	float n_dot_wi = BSDF::refract(*this, layer_, sampler, result);
 //	result.reflection *= n_dot_wi;
