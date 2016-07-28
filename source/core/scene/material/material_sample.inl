@@ -17,6 +17,11 @@ inline float Sample::Layer::clamped_n_dot(float3_p v) const {
 	return math::clamp(math::dot(n, v), 0.00001f, 1.f);
 }
 
+inline float Sample::Layer::reversed_clamped_n_dot(float3_p v) const {
+	// return std::max(-math::dot(n, v), 0.00001f);
+	return math::clamp(-math::dot(n, v), 0.00001f, 1.f);
+}
+
 inline float3_p Sample::Layer::shading_normal() const {
 	return n;
 }

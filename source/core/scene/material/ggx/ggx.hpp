@@ -25,6 +25,10 @@ public:
 						 sampler::Sampler& sampler, bxdf::Result& result);
 
 	template<typename Layer, typename Fresnel>
+	static float refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer& layer,
+						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Result& result);
+
+	template<typename Layer, typename Fresnel>
 	static float3 reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
 							 const Layer& layer, const Fresnel& fresnel,
 							 float3& fresnel_result, float& pdf);

@@ -94,7 +94,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 		float wo_dot_h = n_dot_wo;
 
-		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
+		float3 wi = math::normalized(2.f * wo_dot_h * layer.n - wo);
 
 		float d = distribution_isotropic(n_dot_h, Min_a2);
 		float g = geometric_visibility_and_denominator(n_dot_wo, n_dot_wo, Min_a2);
@@ -124,7 +124,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
-		float3 wi = math::normalized((2.f * wo_dot_h) * h - wo);
+		float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
 
 		float n_dot_wi = layer.clamped_n_dot(wi);
 
@@ -136,6 +136,86 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 		result.reflection = d * g * f;
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_reflection);
+
+		SOFT_ASSERT(testing::check(result, wo, layer));
+
+		return n_dot_wi;
+	}
+}
+
+template<typename Layer, typename Fresnel>
+float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer& layer,
+						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Result& result) {
+	if (0.f == layer.a2) {
+		// I never tested this path... Perfectly specular glass has it's own implementation
+		constexpr float n_dot_h = 1.f;
+
+		float wo_dot_h = n_dot_wo;
+
+		float3 wi = math::normalized((layer.eta_i * n_dot_wo - n_dot_t) * layer.n
+									 - layer.eta_i * wo);
+
+		float d = distribution_isotropic(n_dot_h, Min_a2);
+		float g = G_smith(n_dot_t, n_dot_wo, Min_a2);
+		float3 f = fresnel(wo_dot_h);
+
+		float3 refraction = d * g * f;
+
+		float factor = (wo_dot_h * wo_dot_h) / (n_dot_t * n_dot_wo);
+
+		float denom = layer.eta_i * wo_dot_h + layer.eta_t * wo_dot_h;
+		denom = denom * denom;
+
+		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+		result.reflection = factor * (((layer.eta_t * layer.eta_t) * refraction) / denom);
+		result.wi = wi;
+		result.type.clear_set(bxdf::Type::Specular_transmission);
+
+		SOFT_ASSERT(testing::check(result, wo, layer));
+
+		return n_dot_wo;
+	} else {
+		float2 xi = sampler.generate_sample_2D();
+
+		float clamped_a2 = clamp_a2(layer.a2);
+		float n_dot_h = std::sqrt((1.f - xi.y) / ((clamped_a2 - 1.f) * xi.y + 1.f));
+
+		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+		float phi = 2.f * math::Pi * xi.x;
+		float sin_phi = std::sin(phi);
+		float cos_phi = std::cos(phi);
+
+		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+		float3 h = math::normalized(layer.tangent_to_world(is));
+
+		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+
+		float3 wi = math::normalized((layer.eta_i * wo_dot_h - n_dot_t) * h - layer.eta_i * wo);
+
+		float n_dot_wi = layer.reversed_clamped_n_dot(wi);
+
+		float d = distribution_isotropic(n_dot_h, clamped_a2);
+		float g = G_smith(n_dot_wi, n_dot_wo, clamped_a2);
+		float3 f = fresnel(wo_dot_h);
+
+		float3 refraction = d * g * f;
+
+		float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
+
+//		float denom = layer.eta_i * wo_dot_h + layer.eta_t * wo_dot_h;
+		float denom = layer.ior_i * wo_dot_h + layer.ior_o * wo_dot_h;
+		denom = denom * denom;
+
+		float ior_o = layer.eta_t;
+		float ior_i = layer.eta_i;
+		float dommy = denom;
+		float thing = ((layer.ior_o * layer.ior_o) * wo_dot_h / denom);
+
+		result.pdf = (d * n_dot_h / (4.f * wo_dot_h)) * thing;
+	//	result.reflection = factor * (((layer.eta_t * layer.eta_t) * refraction) / denom);
+		result.reflection = factor * (((layer.ior_o * layer.ior_o) * refraction) / denom);
+		result.wi = wi;
+		result.type.clear_set(bxdf::Type::Glossy_transmission);
 
 		SOFT_ASSERT(testing::check(result, wo, layer));
 
@@ -186,7 +266,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 		float wo_dot_h = n_dot_wo;
 
-		float3 wi = math::normalized((2.f * wo_dot_h) * layer.n - wo);
+		float3 wi = math::normalized(2.f * wo_dot_h * layer.n - wo);
 
 		float d = distribution_isotropic(n_dot_h, Min_a2);
 		float g = geometric_visibility_and_denominator(n_dot_wo, n_dot_wo, Min_a2);
@@ -218,7 +298,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
-		float3 wi = math::normalized((2.f * wo_dot_h) * h - wo);
+		float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
 
 		float n_dot_wi = layer.clamped_n_dot(wi);
 

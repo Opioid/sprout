@@ -18,14 +18,14 @@ public:
 
 	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
+	virtual void sample(sampler::Sampler& sampler,
+						bxdf::Result& result) const final override;
+
 	virtual float3 radiance() const final override;
 
 	virtual float3 attenuation() const final override;
 
 	virtual float ior() const final override;
-
-	virtual void sample(sampler::Sampler& sampler,
-						bxdf::Result& result) const final override;
 
 	virtual bool is_pure_emissive() const final override;
 
@@ -39,27 +39,24 @@ public:
 
 		float3 color;
 		float3 attenuation;
-		float ior;
-		float ior_outside;
+		float ior_i;
+		float ior_o;
+		float eta_i;
+		float eta_t;
 		float a2;
 	};
 
 	Layer layer_;
 
-	class BRDF {
+	class BSDF {
 
 	public:
 
-		static float sample(const Sample& sample, const Layer& layer,
-							sampler::Sampler& sampler, bxdf::Result& result);
-	};
+		static float reflect(const Sample& sample, const Layer& layer,
+							 sampler::Sampler& sampler, bxdf::Result& result);
 
-	class BTDF {
-
-	public:
-
-		static float sample(const Sample& sample, const Layer& layer,
-							sampler::Sampler& sampler, bxdf::Result& result);
+		static float refract(const Sample& sample, const Layer& layer,
+							 sampler::Sampler& sampler, bxdf::Result& result);
 	};
 };
 

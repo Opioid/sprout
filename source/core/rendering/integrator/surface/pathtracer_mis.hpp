@@ -54,6 +54,7 @@ private:
 };
 
 class Pathtracer_MIS_factory : public Integrator_factory {
+
 public:
 
 	Pathtracer_MIS_factory(const take::Settings& take_settings,

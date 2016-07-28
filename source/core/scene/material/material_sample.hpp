@@ -16,6 +16,7 @@ public:
 		void set_basis(float3_p t, float3_p b, float3_p n);
 
 		float clamped_n_dot(float3_p v) const;
+		float reversed_clamped_n_dot(float3_p v) const;
 
 		float3_p shading_normal() const;
 
@@ -28,13 +29,13 @@ public:
 
 	virtual float3 evaluate(float3_p wi, float& pdf) const = 0;
 
+	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
+
 	virtual float3 radiance() const = 0;
 
 	virtual float3 attenuation() const = 0;
 
 	virtual float ior() const = 0;
-
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
 
 	virtual bool is_pure_emissive() const = 0;
 
@@ -50,7 +51,7 @@ public:
 
 	static float3 attenuation(float3_p color, float distance);
 
-//protected:
+// protected:
 
 	float3 geo_n_;
 	float3 wo_;
