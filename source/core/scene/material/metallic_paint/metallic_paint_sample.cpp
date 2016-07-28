@@ -168,8 +168,8 @@ float3 Sample::Base_layer::evaluate(float3_p wi, float3_p wo, float& pdf) const 
 	float3 color = math::lerp(color_b, color_a, f);
 
 	fresnel::Schlick fresnel(color);
-	float3 ggx_reflection = ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo,
-													 *this, fresnel, pdf);
+	float3 ggx_reflection = ggx::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo,
+													   *this, fresnel, pdf);
 
 	return n_dot_wi * ggx_reflection;
 }
@@ -183,8 +183,8 @@ void Sample::Base_layer::sample(float3_p wo, sampler::Sampler& sampler,
 	float3 color = math::lerp(color_b, color_a, f);
 
 	fresnel::Schlick fresnel(color);
-	float n_dot_wi = ggx::Isotropic::sample(wo, n_dot_wo, *this,
-											fresnel, sampler, result);
+	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this,
+											 fresnel, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -201,8 +201,8 @@ float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo,
 	float n_dot_wo = clamped_n_dot(wo);
 
 	fresnel::Conductor_weighted conductor(ior, absorption, weight);
-	return n_dot_wi * ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo, *this,
-											   conductor, fresnel_result, pdf);
+	return n_dot_wi * ggx::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo, *this,
+												 conductor, fresnel_result, pdf);
 }
 
 void Sample::Flakes_layer::sample(float3_p wo, sampler::Sampler& sampler,
@@ -210,8 +210,8 @@ void Sample::Flakes_layer::sample(float3_p wo, sampler::Sampler& sampler,
 	float n_dot_wo = clamped_n_dot(wo);
 
 	fresnel::Conductor_weighted conductor(ior, absorption, weight);
-	float n_dot_wi = ggx::Isotropic::sample(wo, n_dot_wo, *this, conductor,
-											sampler, fresnel_result, result);
+	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor,
+											 sampler, fresnel_result, result);
 	result.reflection *= n_dot_wi;
 }
 

@@ -36,10 +36,10 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
-		BRDF::sample(*this, layer_, sampler, result);
+		BSDF::reflect(*this, layer_, sampler, result);
 		result.pdf *= 0.5f;
 	} else {
-		BTDF::sample(*this, layer_, sampler, result);
+		BSDF::refract(*this, layer_, sampler, result);
 		result.pdf *= 0.5f;
 	}
 }
@@ -64,8 +64,8 @@ void Sample::Layer::set(float3_p color, float attenuation_distance,
 	this->ior_outside = ior_outside;
 }
 
-float Sample::BRDF::sample(const Sample& sample, const Layer& layer,
-						   sampler::Sampler& /*sampler*/, bxdf::Result& result) {
+float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
+							sampler::Sampler& /*sampler*/, bxdf::Result& result) {
 	float3 n = layer.n;
 	float eta_i = 1.f / layer.ior;
 	float eta_t = layer.ior;
@@ -100,8 +100,8 @@ float Sample::BRDF::sample(const Sample& sample, const Layer& layer,
 	return 1.f;
 }
 
-float Sample::BTDF::sample(const Sample& sample, const Layer& layer,
-						   sampler::Sampler& /*sampler*/, bxdf::Result& result) {
+float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
+							sampler::Sampler& /*sampler*/, bxdf::Result& result) {
 	float3 n = layer.n;
 	float eta_i = 1.f / layer.ior;
 	float eta_t = layer.ior;

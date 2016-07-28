@@ -17,11 +17,12 @@ class Isotropic {
 public:
 
 	template<typename Layer>
-	static float3 evaluate(float3_p color, float n_dot_wi, const Layer& layer, float& pdf);
+	static float3 reflection(float3_p color, float n_dot_wi,
+							 const Layer& layer, float& pdf);
 
 	template<typename Layer>
-	static float sample(float3_p color, const Layer& layer,
-						sampler::Sampler& sampler, bxdf::Result& result);
+	static float reflect(float3_p color, const Layer& layer,
+						 sampler::Sampler& sampler, bxdf::Result& result);
 };
 
 

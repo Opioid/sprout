@@ -35,28 +35,28 @@ void test() {
 
 	result.wi = math::float3_identity;
 	result.reflection = math::float3_identity;
-	Sample::BRDF::sample(sample, sample.layer_, sampler, result);
+	Sample::BSDF::reflect(sample, sample.layer_, sampler, result);
 	print(result);
 	result.reflection = math::float3_identity;
-	Sample::BTDF::sample(sample, sample.layer_, sampler, result);
+	Sample::BSDF::refract(sample, sample.layer_, sampler, result);
 	print(result);
 
 	wo = b;
 	sample.set_basis(n, wo);
 	result.reflection = math::float3_identity;
-	Sample::BRDF::sample(sample, sample.layer_, sampler, result);
+	Sample::BSDF::reflect(sample, sample.layer_, sampler, result);
 	print(result);
 	result.reflection = math::float3_identity;
-	Sample::BTDF::sample(sample, sample.layer_, sampler, result);
+	Sample::BSDF::refract(sample, sample.layer_, sampler, result);
 	print(result);
 
 	wo = n;
 	sample.set_basis(n, wo);
 	result.reflection = math::float3_identity;
-	Sample::BRDF::sample(sample, sample.layer_, sampler, result);
+	Sample::BSDF::reflect(sample, sample.layer_, sampler, result);
 	print(result);
 	result.reflection = math::float3_identity;
-	Sample::BTDF::sample(sample, sample.layer_, sampler, result);
+	Sample::BSDF::refract(sample, sample.layer_, sampler, result);
 	print(result);
 }
 

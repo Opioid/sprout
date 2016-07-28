@@ -13,8 +13,8 @@
 namespace scene { namespace material { namespace oren_nayar {
 
 template<typename Layer>
-float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
-						   const Layer& layer, float& pdf) {
+float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+							 const Layer& layer, float& pdf) {
 	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.a2);
 
 	pdf = n_dot_wi * math::Pi_inv;
@@ -26,8 +26,8 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 }
 
 template<typename Layer>
-float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer,
-						sampler::Sampler& sampler, bxdf::Result& result) {
+float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer,
+						 sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 s2d = sampler.generate_sample_2D();
 
 	float3 is = math::sample_hemisphere_cosine(s2d);

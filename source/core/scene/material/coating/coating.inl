@@ -25,8 +25,8 @@ float3 Clearcoat::evaluate(float3_p wi, float3_p wo, float /*internal_ior*/,
 
 	fresnel::Schlick_weighted schlick(f0, weight);
 
-	float3 result = n_dot_wi * ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo, layer,
-														schlick, attenuation, pdf);
+	float3 result = n_dot_wi * ggx::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo, layer,
+														  schlick, attenuation, pdf);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f, 1.f, 1.f), color, weight);
 
@@ -41,8 +41,8 @@ void Clearcoat::sample(float3_p wo, float /*internal_ior*/,
 
 	fresnel::Schlick_weighted schlick(f0, weight);
 
-	float n_dot_wi = ggx::Isotropic::sample(wo, n_dot_wo, layer, schlick,
-													   sampler, attenuation, result);
+	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, schlick,
+											 sampler, attenuation, result);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f, 1.f, 1.f), color, weight);
 
@@ -63,8 +63,8 @@ float3 Thinfilm::evaluate(float3_p wi, float3_p wo, float internal_ior,
 
 	fresnel::Thinfilm_weighted thinfilm(1.f, ior, internal_ior, thickness, weight);
 
-	float3 result = n_dot_wi * ggx::Isotropic::evaluate(wi, wo, n_dot_wi, n_dot_wo, layer,
-														thinfilm, attenuation, pdf);
+	float3 result = n_dot_wi * ggx::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo, layer,
+														  thinfilm, attenuation, pdf);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f, 1.f, 1.f), color, weight);
 
@@ -79,8 +79,8 @@ void Thinfilm::sample(float3_p wo, float internal_ior,
 
 	fresnel::Thinfilm_weighted thinfilm(1.f, ior, internal_ior, thickness, weight);
 
-	float n_dot_wi = ggx::Isotropic::sample(wo, n_dot_wo, layer, thinfilm,
-													   sampler, attenuation, result);
+	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, thinfilm,
+											 sampler, attenuation, result);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f, 1.f, 1.f), color, weight);
 

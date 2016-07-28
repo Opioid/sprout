@@ -13,7 +13,7 @@
 namespace scene { namespace material { namespace lambert {
 
 template<typename Layer>
-float3 Isotropic::evaluate(float3_p color, float n_dot_wi, const Layer& layer, float& pdf) {
+float3 Isotropic::reflection(float3_p color, float n_dot_wi, const Layer& layer, float& pdf) {
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = math::Pi_inv * color;
 
@@ -23,8 +23,8 @@ float3 Isotropic::evaluate(float3_p color, float n_dot_wi, const Layer& layer, f
 }
 
 template<typename Layer>
-float Isotropic::sample(float3_p color, const Layer& layer,
-						sampler::Sampler& sampler, bxdf::Result& result) {
+float Isotropic::reflect(float3_p color, const Layer& layer,
+						 sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 s2d = sampler.generate_sample_2D();
 
 	float3 is = math::sample_hemisphere_cosine(s2d);

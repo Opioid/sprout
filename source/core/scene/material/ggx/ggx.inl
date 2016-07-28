@@ -60,8 +60,8 @@ inline float G_smith(float n_dot_wi, float n_dot_wo, float a2) {
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
-						   const Layer& layer, const Fresnel& fresnel, float& pdf) {
+float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+							 const Layer& layer, const Fresnel& fresnel, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == layer.a2) {
 		pdf = 0.f;
@@ -87,8 +87,8 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
-						sampler::Sampler& sampler, bxdf::Result& result) {
+float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
+						 sampler::Sampler& sampler, bxdf::Result& result) {
 	if (0.f == layer.a2) {
 		constexpr float n_dot_h = 1.f;
 
@@ -144,9 +144,9 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
-						   const Layer& layer, const Fresnel& fresnel,
-						   float3& fresnel_result, float& pdf) {
+float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+							 const Layer& layer, const Fresnel& fresnel,
+							 float3& fresnel_result, float& pdf) {
 	float3 h = math::normalized(wo + wi);
 
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
@@ -179,8 +179,8 @@ float3 Isotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
-						sampler::Sampler& sampler, float3& fresnel_result, bxdf::Result& result) {
+float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
+						 sampler::Sampler& sampler, float3& fresnel_result, bxdf::Result& result) {
 	if (0.f == layer.a2) {
 		constexpr float n_dot_h = 1.f;
 
@@ -240,8 +240,8 @@ float Isotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const F
 }
 
 template<typename Layer, typename Fresnel>
-float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
-							 const Layer& layer, const Fresnel& fresnel, float &pdf) {
+float3 Anisotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+							   const Layer& layer, const Fresnel& fresnel, float &pdf) {
 	float3 h = math::normalized(wo + wi);
 
 	float n_dot_h  = math::saturate(math::dot(layer.n, h));
@@ -264,8 +264,8 @@ float3 Anisotropic::evaluate(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 }
 
 template<typename Layer, typename Fresnel>
-float Anisotropic::sample(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
-						  sampler::Sampler& sampler, bxdf::Result& result) {
+float Anisotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
+						   sampler::Sampler& sampler, bxdf::Result& result) {
 	float2 xi = sampler.generate_sample_2D();
 
 	float phi = 2.f * math::Pi * xi.x;

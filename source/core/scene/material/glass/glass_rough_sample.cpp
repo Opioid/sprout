@@ -98,13 +98,8 @@ float Sample_rough::BRDF::sample(const Sample& sample, const Layer& layer,
 
 	float3 f3(f);
 	fresnel::Constant constant(f3);
-	float n_dot_wi = ggx::Isotropic::sample(sample.wo_, n_dot_wo, layer, constant,
-											sampler, result);
-
-
-//	result.reflection = float3(f);
-//	result.pdf = 1.f;
-//	result.type.clear_set(bxdf::Type::Specular_reflection);
+	float n_dot_wi = ggx::Isotropic::reflect(sample.wo_, n_dot_wo, layer,
+											 constant, sampler, result);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 

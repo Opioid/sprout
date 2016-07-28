@@ -43,20 +43,15 @@ public:
 
 	Layer layer_;
 
-	class BRDF {
+	class BSDF {
 
 	public:
 
-		static float sample(const Sample& sample, const Layer& layer,
-							sampler::Sampler& sampler, bxdf::Result& result);
-	};
+		static float reflect(const Sample& sample, const Layer& layer,
+							 sampler::Sampler& sampler, bxdf::Result& result);
 
-	class BTDF {
-
-	public:
-
-		static float sample(const Sample& sample, const Layer& layer,
-							sampler::Sampler& sampler, bxdf::Result& result);
+		static float refract(const Sample& sample, const Layer& layer,
+							 sampler::Sampler& sampler, bxdf::Result& result);
 	};
 };
 

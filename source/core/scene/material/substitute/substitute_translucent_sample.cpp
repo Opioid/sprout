@@ -50,8 +50,8 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result)
 		float p = sampler.generate_sample_1D();
 
 		if (p < 0.5f) {
-			float n_dot_wi = lambert::Isotropic::sample(layer_.diffuse_color, layer_,
-																   sampler, result);
+			float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color,
+														 layer_, sampler, result);
 			result.wi *= -1.f;
 			result.pdf *= 0.5f;
 			float approximated_distance = thickness_ / n_dot_wi;

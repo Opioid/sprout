@@ -37,8 +37,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 		return;
 	}
 
-	float n_dot_wi = lambert::Isotropic::sample(layer_.diffuse_color, layer_,
-														   sampler, result);
+	float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color,
+												 layer_, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
