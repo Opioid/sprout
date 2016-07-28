@@ -31,7 +31,7 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 		intersection.part = 0;
 
 		float3 xyz = math::transform_vector_transposed(ray.direction,
-															 transformation.rotation);
+													   transformation.rotation);
 		xyz = math::normalized(xyz);
 		intersection.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 		intersection.uv.y = std::acos(xyz.y) * math::Pi_inv;
@@ -51,8 +51,8 @@ bool Infinite_sphere::intersect_p(const Transformation& /*transformation*/,
 
 float Infinite_sphere::opacity(const Transformation& /*transformation*/,
 							   const math::Oray& /*ray*/, float /*time*/,
-							   const material::Materials& /*materials*/, Worker& /*worker*/,
-							   Sampler_filter /*filter*/) const {
+							   const material::Materials& /*materials*/,
+							   Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
@@ -99,7 +99,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							 float /*area*/, const float3& /*p*/,
 							 float2 uv, Sample& sample) const {
-	float phi   = (-uv.x + 0.75f) * 2.f * math::Pi;
+	float phi   = (uv.x - 0.5f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
 	float sin_phi   = std::sin(phi);

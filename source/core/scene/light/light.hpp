@@ -37,8 +37,8 @@ public:
 						sampler::Sampler& sampler, Worker& worker,
 						Sampler_filter filter, Sample& result) const = 0;
 
-	void sample(float time, float3_p p, float3_p n,
-				bool total_sphere, sampler::Sampler& sampler, Worker& worker,
+	void sample(float time, float3_p p, float3_p n, bool total_sphere,
+				sampler::Sampler& sampler, Worker& worker,
 				Sampler_filter filter, Sample& result) const;
 
 	void sample(float time, float3_p p, sampler::Sampler& sampler,

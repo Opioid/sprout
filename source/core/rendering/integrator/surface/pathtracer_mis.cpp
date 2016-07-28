@@ -41,9 +41,9 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 
 	for (uint32_t i = 0; ; ++i) {
 		if (primary_ray) {
-			filter = scene::material::Sampler_settings::Filter::Unknown;
+			filter = Sampler_filter::Unknown;
 		} else {
-			filter = scene::material::Sampler_settings::Filter::Nearest;
+			filter = Sampler_filter::Nearest;
 		}
 
 		if (!resolve_mask(worker, ray, intersection, filter)) {
@@ -62,7 +62,8 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)
-		&& (primary_ray || sample_result.type.test(scene::material::bxdf::Type::Specular))) {
+		&& (primary_ray || sample_result.type.test(Bxdf_type::Specular)
+						|| sample_result.type.test(Bxdf_type::Transmission))) {
 			result += throughput * material_sample.radiance();
 		}
 
@@ -96,11 +97,11 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 		}
 
 		if (settings_.disable_caustics && !primary_ray
-		&& sample_result.type.test(scene::material::bxdf::Type::Specular)) {
+		&& sample_result.type.test(Bxdf_type::Specular)) {
 			break;
 		}
 
-		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
+		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			float3 tr = resolve_transmission(worker, ray, intersection,
 											 material_sample.attenuation(),
 											 Sampler_filter::Nearest, sample_result);
@@ -115,7 +116,7 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 			opacity = 1.f;
 		}
 
-		if (!sample_result.type.test(scene::material::bxdf::Type::Specular)) {
+		if (!sample_result.type.test(Bxdf_type::Specular)) {
 			primary_ray = false;
 		}
 

@@ -25,6 +25,16 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	return n_dot_wi * brdf;
 }
 
+void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+//	float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color, layer_, sampler, result);
+
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
+
+	float n_dot_wi = disney::Isotropic::reflect(wo_, n_dot_wo, layer_, sampler, result);
+
+	result.reflection *= n_dot_wi;
+}
+
 float3 Sample::radiance() const {
 	return math::float3_identity;
 }
@@ -35,16 +45,6 @@ float3 Sample::attenuation() const {
 
 float Sample::ior() const {
 	return 1.47f;
-}
-
-void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
-//	float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color, layer_, sampler, result);
-
-	float n_dot_wo = layer_.clamped_n_dot(wo_);
-
-	float n_dot_wi = disney::Isotropic::reflect(wo_, n_dot_wo, layer_, sampler, result);
-
-	result.reflection *= n_dot_wi;
 }
 
 bool Sample::is_pure_emissive() const {

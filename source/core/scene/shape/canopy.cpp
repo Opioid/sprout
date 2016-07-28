@@ -38,7 +38,7 @@ bool Canopy::intersect(const Transformation& transformation, math::Oray& ray,
 
 		// paraboloid, so doesn't match hemispherical camera
 		float3 xyz = math::transform_vector_transposed(ray.direction,
-															 transformation.rotation);
+													   transformation.rotation);
 		xyz = math::normalized(xyz);
 		float2 disk = math::hemisphere_to_disk_equidistant(xyz);
 		intersection.uv.x = 0.5f * disk.x + 0.5f;
@@ -59,8 +59,8 @@ bool Canopy::intersect_p(const Transformation& /*transformation*/,
 
 float Canopy::opacity(const Transformation& /*transformation*/,
 					  const math::Oray& /*ray*/, float /*time*/,
-					  const material::Materials& /*materials*/, Worker& /*worker*/,
-					  material::Sampler_settings::Filter /*filter*/) const {
+					  const material::Materials& /*materials*/,
+					  Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
@@ -86,7 +86,8 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					float /*area*/, const float3& /*p*/, bool /*two_sided*/,
-					sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
+					sampler::Sampler& sampler, Node_stack& /*node_stack*/,
+					Sample& sample) const {
 	float2 uv = sampler.generate_sample_2D();
 	float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
@@ -119,24 +120,6 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	sample.uv  = uv;
 	sample.t   = 1000000.f;
 	sample.pdf = 1.f / (2.f * math::Pi);
-
-	/*
-
-	float phi   = (-uv.x + 0.75f) * 2.f * math::Pi;
-	float theta = uv.y * math::Pi;
-
-	float sin_theta = std::sin(theta);
-	float cos_theta = std::cos(theta);
-	float sin_phi   = std::sin(phi);
-	float cos_phi   = std::cos(phi);
-
-	float3 dir(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
-
-	sample.wi = math::transform_vector(dir, transformation.rotation);
-	sample.uv = uv;
-	sample.t  = 1000000.f;
-	sample.pdf = 1.f / (4.f * math::Pi);
-	*/
 }
 
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
