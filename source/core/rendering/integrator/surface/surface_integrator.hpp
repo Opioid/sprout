@@ -19,6 +19,11 @@ class Worker;
 
 namespace integrator { namespace surface {
 
+enum class Light_sampling_strategy {
+	Sample_one,
+	Sample_all
+};
+
 class Integrator : public integrator::Integrator {
 
 public:

@@ -102,7 +102,9 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	if (!take->surface_integrator_factory) {
 		take->surface_integrator_factory = std::make_shared<
 				rendering::integrator::surface::Pathtracer_MIS_factory>(
-					take->settings, 4, 8, 0.5f, 1, false);
+					take->settings, 4, 8, 0.5f,
+					rendering::integrator::surface::Light_sampling_strategy::Sample_one,
+					1, false);
 		logging::warning("No surface integrator specified, "
 						 "defaulting to Pathtracer Multiple Importance Sampling.");
 	}
@@ -421,6 +423,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 										const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
+	rendering::integrator::surface::Light_sampling_strategy light_strategy =
+			rendering::integrator::surface::Light_sampling_strategy::Sample_one;
 	uint32_t default_max_light_samples = 1;
 	float default_path_termination_probability = 0.5f;
 	bool default_caustics = true;
@@ -477,6 +481,17 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						node_value, "path_termination_probability",
 						default_path_termination_probability);
 
+			std::string light_strategy_name = json::read_string(node_value,
+																"light_sampling_strategy");
+
+			if ("Sample_one" == light_strategy_name) {
+				light_strategy =
+						rendering::integrator::surface::Light_sampling_strategy::Sample_one;
+			} else if ("Sample_all" == light_strategy_name) {
+				light_strategy =
+						rendering::integrator::surface::Light_sampling_strategy::Sample_all;
+			}
+
 			uint32_t num_light_samples = json::read_uint(
 						node_value, "num_light_samples",
 						default_max_light_samples);
@@ -485,7 +500,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
-						num_light_samples, disable_caustics);
+						light_strategy, num_light_samples, disable_caustics);
 		} else if ("Normal" == node_name) {
 			auto vector = rendering::integrator::surface::Normal::Settings::Vector::Shading_normal;
 

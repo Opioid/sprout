@@ -6,7 +6,12 @@
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_random.hpp"
 
-namespace scene { namespace material { class Sample; } }
+namespace scene {
+
+namespace light { class Light; }
+namespace material { class Sample; }
+
+}
 
 namespace rendering { namespace integrator { namespace surface {
 
@@ -18,6 +23,8 @@ public:
 		uint32_t min_bounces;
 		uint32_t max_bounces;
 		float    path_continuation_probability;
+
+		Light_sampling_strategy light_strategy;
 
 		uint32_t num_light_samples;
 		float    num_light_samples_reciprocal;
@@ -38,6 +45,12 @@ private:
 								 const scene::Intersection& intersection,
 								 const scene::material::Sample& material_sample,
 								 Sampler_filter filter);
+
+	float3 evaluate_light(const scene::light::Light* light, float light_weight,
+						  Worker& worker, scene::Ray& ray,
+						  const scene::Intersection& intersection,
+						  const scene::material::Sample& material_sample,
+						  Sampler_filter filter);
 
 	float3 resolve_transmission(Worker& worker, scene::Ray& ray,
 								scene::Intersection& intersection,
@@ -60,6 +73,7 @@ public:
 	Pathtracer_MIS_factory(const take::Settings& take_settings,
 						   uint32_t min_bounces, uint32_t max_bounces,
 						   float path_termination_probability,
+						   Light_sampling_strategy light_strategy,
 						   uint32_t num_light_samples,
 						   bool disable_caustics);
 
