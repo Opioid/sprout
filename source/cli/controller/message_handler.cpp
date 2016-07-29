@@ -113,8 +113,9 @@ void Message_handler::handle_entity(scene::entity::Entity* entity, const std::st
 	}
 }
 
-void Message_handler::handle_material(scene::material::Material* material, const std::string& value,
-									  const std::string& parameters) {
+void Message_handler::handle_material(scene::material::Material* /*material*/,
+									  const std::string& /*value*/,
+									  const std::string& /*parameters*/) {
 
 }
 
