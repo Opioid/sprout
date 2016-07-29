@@ -111,6 +111,8 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 
 	if (!sample.same_hemisphere(sample.wo_)) {
 		tmp.n *= -1.f;
+		tmp.ior_i = layer.ior_o;
+		tmp.ior_o = layer.ior_i;
 		tmp.eta_i = layer.eta_t;
 		tmp.eta_t = layer.eta_i;
 	}
@@ -145,6 +147,8 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 
 	if (!sample.same_hemisphere(sample.wo_)) {
 		tmp.n *= -1.f;
+		tmp.ior_i = layer.ior_o;
+		tmp.ior_o = layer.ior_i;
 		tmp.eta_i = layer.eta_t;
 		tmp.eta_t = layer.eta_i;
 	}
