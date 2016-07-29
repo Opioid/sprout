@@ -10,9 +10,6 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-#include "base/math/print.hpp"
-#include <iostream>
-
 namespace scene { namespace material { namespace ggx {
 
 constexpr float Min_a2 = 0.0000000299f;
@@ -32,7 +29,7 @@ inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_
 }
 
 inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo, float a2) {
-	// this is an optimized version that does the following in one step:
+	// This is an optimized version that does the following in one step:
 	//
 	//    G_ggx(wi) * G_ggx(wo)
 	// ---------------------------
@@ -230,14 +227,12 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 
 		float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-//		float denom = layer.eta_i * wo_dot_h + layer.eta_t * wo_dot_h;
 		float denom = layer.ior_i * wo_dot_h + layer.ior_o * wo_dot_h;
 		denom = denom * denom;
 
 //		float thing = ((layer.ior_o * layer.ior_o) * wo_dot_h / denom);
 
 		result.pdf = (d * n_dot_h / (4.f * wo_dot_h));// * thing;
-	//	result.reflection = factor * (((layer.eta_t * layer.eta_t) * refraction) / denom);
 		result.reflection = factor * (((layer.ior_o * layer.ior_o) * refraction) / denom);
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Glossy_transmission);
