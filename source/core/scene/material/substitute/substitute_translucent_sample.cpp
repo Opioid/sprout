@@ -17,14 +17,15 @@ float3 Sample_translucent::evaluate(float3_p wi, float& pdf) const {
 	}
 
 	// This is a bit complicated to understand:
-	// If the material does not have transmission, we will never get a wi which is in the wrong hemisphere,
+	// If the material does not have transmission,
+	// we will never get a wi which is in the wrong hemisphere,
 	// because that case is handled before coming here,
 	// so the check is only neccessary for transmissive materials (codified by thickness > 0).
 	// On the other hand, if the there is transmission and wi is actullay coming from "behind",
 	// then we don't need to calculate the reflection.
 	// In the other case, transmission won't be visible and we only need reflection.
 	if (thickness_ > 0.f && !same_hemisphere(wi)) {
-		float n_dot_wi = std::max(-math::dot(layer_.n, wi), 0.00001f);
+		float n_dot_wi = layer_.reversed_clamped_n_dot(wi);
 		float approximated_distance = thickness_ / n_dot_wi;
 		float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 		pdf = 0.5f * n_dot_wi * math::Pi_inv;

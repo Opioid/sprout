@@ -142,7 +142,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 template<typename Layer, typename Fresnel>
 float3 Isotropic::refraction(float3_p wi, float3_p wo, float n_dot_wi,
-							 float n_dot_wo, float n_dot_t, const Layer& layer,
+							 float n_dot_wo, float /*n_dot_t*/, const Layer& layer,
 							 const Fresnel& fresnel, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	if (0.f == layer.a2) {

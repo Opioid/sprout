@@ -58,7 +58,7 @@ float Infinite_sphere::opacity(const Transformation& /*transformation*/,
 }
 
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							 float /*area*/, const float3& /*p*/, const float3& n,
+							 float3_p /*p*/, float3_p n, float /*area*/,
 							 bool /*two_sided*/, sampler::Sampler& sampler,
 							 Node_stack& /*node_stack*/, Sample& sample) const {
 	float3 x, y;
@@ -79,7 +79,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 }
 
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							 float /*area*/, const float3& /*p*/, bool /*two_sided*/,
+							 float3_p /*p*/, float /*area*/, bool /*two_sided*/,
 							 sampler::Sampler& sampler, Node_stack& /*node_stack*/,
 							 Sample& sample) const {
 	float2 uv = sampler.generate_sample_2D();
@@ -97,8 +97,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 }
 
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							 float /*area*/, const float3& /*p*/,
-							 float2 uv, Sample& sample) const {
+							 float3_p /*p*/, float2 uv, float /*area*/, Sample& sample) const {
 	float phi   = (uv.x - 0.5f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
@@ -116,8 +115,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 }
 
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							 float /*area*/, const float3& /*p*/,
-							 const float3& wi, Sample& sample) const {
+							 float3_p /*p*/, float3_p wi,
+							 float /*area*/, Sample& sample) const {
 	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
 	xyz = math::normalized(xyz);
 	sample.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
@@ -127,9 +126,9 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 }
 
 float Infinite_sphere::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-						   float /*area*/, const float3& /*p*/,
-						   const float3& /*wi*/, bool /*two_sided*/,
-						   bool total_sphere, Node_stack& /*node_stack*/) const {
+						   float3_p /*p*/, float3_p /*wi*/, float /*area*/,
+						   bool /*two_sided*/, bool total_sphere,
+						   Node_stack& /*node_stack*/) const {
 	if (total_sphere) {
 		return 1.f / (4.f * math::Pi);
 	} else {
@@ -137,7 +136,7 @@ float Infinite_sphere::pdf(uint32_t /*part*/, const Transformation& /*transforma
 	}
 }
 
-float Infinite_sphere::area(uint32_t /*part*/, const float3& /*scale*/) const {
+float Infinite_sphere::area(uint32_t /*part*/, float3_p /*scale*/) const {
 	return 4.f * math::Pi;
 }
 

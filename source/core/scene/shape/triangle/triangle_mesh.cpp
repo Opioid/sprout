@@ -125,15 +125,15 @@ float Mesh::opacity(const Transformation& transformation, const math::Oray& ray,
 	return tree_.opacity(tray, time, materials, worker, filter);
 }
 
-void Mesh::sample(uint32_t part, const Transformation& transformation, float area,
-				  const float3& p, const float3& /*n*/, bool two_sided,
+void Mesh::sample(uint32_t part, const Transformation& transformation,
+				  float3_p p, float3_p /*n*/, float area, bool two_sided,
 				  sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
-	Mesh::sample(part, transformation, area, p, two_sided, sampler, node_stack, sample);
+	Mesh::sample(part, transformation, p, area, two_sided, sampler, node_stack, sample);
 }
 
-void Mesh::sample(uint32_t part, const Transformation& transformation, float area,
-				  const float3& p, bool two_sided,
-				  sampler::Sampler& sampler, Node_stack& /*node_stack*/, Sample& sample) const {
+void Mesh::sample(uint32_t part, const Transformation& transformation,
+				  float3_p p, float area, bool two_sided, sampler::Sampler& sampler,
+				  Node_stack& /*node_stack*/, Sample& sample) const {
 	float r = sampler.generate_sample_1D();
 	float2 r2 = sampler.generate_sample_2D();
 
@@ -169,16 +169,14 @@ void Mesh::sample(uint32_t part, const Transformation& transformation, float are
 }
 
 void Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float /*area*/, const float3& /*p*/, float2 /*uv*/,
-				  Sample& /*sample*/) const {}
+				  float3_p /*p*/, float2 /*uv*/, float /*area*/, Sample& /*sample*/) const {}
 
 void Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float /*area*/, const float3& /*p*/, const float3& /*wi*/,
-				  Sample& /*sample*/) const {}
+				  float3_p /*p*/, float3_p /*wi*/, float /*area*/, Sample& /*sample*/) const {}
 
 float Mesh::pdf(uint32_t part, const Transformation& transformation,
-				float area, const float3& p, const float3& wi,
-				bool two_sided, bool /*total_sphere*/, Node_stack& node_stack) const {
+				float3_p p, float3_p wi, float area, bool two_sided,
+				bool /*total_sphere*/, Node_stack& node_stack) const {
 	math::Oray ray;
 	ray.origin = math::transform_point(p, transformation.world_to_object);
 	ray.set_direction(math::transform_vector(wi, transformation.world_to_object));

@@ -90,9 +90,7 @@ bool Material::is_two_sided() const {
 	return two_sided_;
 }
 
-void Material::set_parameter(const std::string& name,
-							 const json::Value& value) {
-
-}
+void Material::set_parameter(const std::string& /*name*/,
+							 const json::Value& /*value*/) {}
 
 }}

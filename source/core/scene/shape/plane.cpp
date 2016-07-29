@@ -121,35 +121,35 @@ float Plane::opacity(const Transformation& transformation, const math::Oray& ray
 }
 
 void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float /*area*/, const float3& /*p*/, const float3& /*n*/,
+				   float3_p /*p*/, float3_p /*n*/, float /*area*/,
 				   bool /*two_sided*/, sampler::Sampler& /*sampler*/,
 				   Node_stack& /*node_stack*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
 void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float /*area*/, const float3& /*p*/, bool /*two_sided*/,
+				   float3_p /*p*/, float /*area*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/,
 				   Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
 void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float /*area*/, const float3& /*p*/, float2 /*uv*/,
+				   float3_p /*p*/, float2 /*uv*/, float /*area*/,
 				   Sample& /*sample*/) const {}
 
 void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float /*area*/, const float3& /*p*/,
-				   const float3& /*wi*/, Sample& /*sample*/) const {}
+				   float3_p /*p*/, float3_p /*wi*/, float /*area*/,
+				   Sample& /*sample*/) const {}
 
 float Plane::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-				 float /*area*/, const float3& /*p*/, const float3& /*wi*/,
+				 float3_p /*p*/, float3_p /*wi*/, float /*area*/,
 				 bool /*two_sided*/, bool /*total_sphere*/,
 				 Node_stack& /*node_stack*/) const {
 	return 0.f;
 }
 
-float Plane::area(uint32_t /*part*/, const float3& /*scale*/) const {
+float Plane::area(uint32_t /*part*/, float3_p /*scale*/) const {
 	return 1.f;
 }
 

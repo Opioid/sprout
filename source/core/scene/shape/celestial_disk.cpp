@@ -60,14 +60,14 @@ float Celestial_disk::opacity(const Transformation& /*transformation*/,
 }
 
 void Celestial_disk::sample(uint32_t part, const Transformation& transformation,
-							float area, const float3& p, const float3& /*n*/,
+							float3_p p, float3_p /*n*/, float area,
 							bool two_sided, sampler::Sampler& sampler,
 							Node_stack& node_stack, Sample& sample) const {
-	Celestial_disk::sample(part, transformation, area, p, two_sided, sampler, node_stack, sample);
+	Celestial_disk::sample(part, transformation, p, area, two_sided, sampler, node_stack, sample);
 }
 
 void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformation,
-							float area, const float3& /*p*/, bool /*two_sided*/,
+							float3_p /*p*/, float area, bool /*two_sided*/,
 							sampler::Sampler& sampler, Node_stack& /*node_stack*/,
 							Sample& sample) const {
 	float2 r2 = sampler.generate_sample_2D();
@@ -83,21 +83,21 @@ void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformat
 }
 
 void Celestial_disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-							float /*area*/, const float3& /*p*/,
-							float2 /*uv*/, Sample& /*sample*/) const {}
+							float3_p /*p*/, float2 /*uv*/, float /*area*/,
+							Sample& /*sample*/) const {}
 
 void Celestial_disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-							float /*area*/, const float3& /*p*/,
-							const float3& /*wi*/, Sample& /*sample*/) const {}
+							float3_p/*p*/, float3_p /*wi*/,
+							float /*area*/, Sample& /*sample*/) const {}
 
 float Celestial_disk::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-						  float area, const float3& /*p*/, const float3& /*wi*/,
+						  float3_p /*p*/, float3_p /*wi*/, float area,
 						  bool /*two_sided*/, bool /*total_sphere*/,
 						  Node_stack& /*node_stack*/) const {
 	return 1.f / area;
 }
 
-float Celestial_disk::area(uint32_t /*part*/, const float3& scale) const {
+float Celestial_disk::area(uint32_t /*part*/, float3_p scale) const {
 	float radius = math::degrees_to_radians(scale.x);
 	return math::Pi * radius * radius;
 }

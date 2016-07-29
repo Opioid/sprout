@@ -32,11 +32,11 @@ void Prop_light::sample(const Transformation& transformation, float time,
 	bool two_sided = material->is_two_sided();
 
 	if (total_sphere) {
-		prop_->shape()->sample(part_, transformation, area, p,
-							   two_sided, sampler, worker.node_stack(), result.shape);
+		prop_->shape()->sample(part_, transformation, p, area, two_sided,
+							   sampler, worker.node_stack(), result.shape);
 	} else {
-		prop_->shape()->sample(part_, transformation, area, p, n,
-							   two_sided, sampler, worker.node_stack(), result.shape);
+		prop_->shape()->sample(part_, transformation, p, n, area, two_sided,
+							   sampler, worker.node_stack(), result.shape);
 
 		if (math::dot(result.shape.wi, n) <= 0.f) {
 			result.shape.pdf = 0.f;
@@ -55,7 +55,7 @@ float Prop_light::pdf(const Transformation& transformation,
 
 	bool two_sided = prop_->material(part_)->is_two_sided();
 
-	return prop_->shape()->pdf(part_, transformation, area, p, wi,
+	return prop_->shape()->pdf(part_, transformation, p, wi, area,
 							   two_sided, total_sphere, worker.node_stack());
 }
 

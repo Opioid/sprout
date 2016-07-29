@@ -42,25 +42,25 @@ public:
 						  Worker& worker, Sampler_filter filter) const final override;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float area, const float3& p, const float3& n,
+						float3_p p, float3_p n, float area,
 						bool two_sided, sampler::Sampler& sampler,
 						Node_stack& node_stack, Sample& sample) const final override;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float area, const float3& p, bool two_sided,
+						float3_p p, float area, bool two_sided,
 						sampler::Sampler& sampler, Node_stack& node_stack,
 						Sample& sample) const final override;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float area, const float3& p, float2 uv,
+						float3_p p, float2 uv, float area,
 						Sample& sample) const final override;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float area,  const float3& p, const float3& wi,
+						float3_p p, float3_p wi, float area,
 						Sample& sample) const final override;
 
 	virtual float pdf(uint32_t part, const Transformation& transformation,
-					  float area, const float3& p, const float3& wi, bool two_sided,
+					  float3_p p, float3_p wi, float area, bool two_sided,
 					  bool total_sphere, Node_stack& node_stack) const final override;
 
 	virtual float area(uint32_t part, float3_p scale) const final override;

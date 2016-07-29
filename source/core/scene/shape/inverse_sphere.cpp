@@ -37,7 +37,7 @@ bool Inverse_sphere::intersect(const Transformation& transformation,
 			intersection.geo_n = intersection.n;
 
 			float3 xyz = math::transform_vector_transposed(-intersection.n,
-																 transformation.rotation);
+															transformation.rotation);
 			intersection.uv = float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 									 std::acos(xyz.y) * math::Pi_inv);
 
@@ -58,7 +58,7 @@ bool Inverse_sphere::intersect(const Transformation& transformation,
 			intersection.geo_n = intersection.n;
 
 			float3 xyz = math::transform_vector_transposed(-intersection.n,
-														   transformation.rotation);
+															transformation.rotation);
 			intersection.uv = float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 									 std::acos(xyz.y) * math::Pi_inv);
 
@@ -105,7 +105,7 @@ float Inverse_sphere::opacity(const Transformation& transformation,
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							float /*area*/, const float3& p, const float3& n,
+							float3_p p, float3_p n, float /*area*/,
 							bool /*two_sided*/, sampler::Sampler& sampler,
 							Node_stack& /*node_stack*/, Sample& sample) const {
 	float3 dir = n;
@@ -166,15 +166,14 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-							float /*area*/, const float3& /*p*/, bool /*two_sided*/,
+							float3_p /*p*/, float /*area*/, bool /*two_sided*/,
 							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/,
 							Sample& /*sample*/) const {
 	// TODO
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							float area, const float3& p, float2 uv,
-							Sample& sample) const {
+							float3_p p, float2 uv, float area, Sample& sample) const {
 	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
@@ -207,8 +206,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							float /*area*/, const float3& p,
-							const float3& wi, Sample& sample) const {
+							float3_p p, float3_p wi, float /*area*/, Sample& sample) const {
 	float3 v = p - transformation.position;
 	float b = -dot(v, wi);
 	float radius = transformation.scale.x;
@@ -232,20 +230,20 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 }
 
 float Inverse_sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
-						  float /*area*/, const float3& p, const float3& /*wi*/,
+						  float3_p p, float3_p /*wi*/, float /*area*/,
 						  bool /*two_sided*/, bool /*total_sphere*/,
 						  Node_stack& /*node_stack*/) const {
 	float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
 
-	float radius_square = transformation.scale.x * transformation.scale.x;
+	float radius_square  = transformation.scale.x * transformation.scale.x;
 	float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 
 	return math::cone_pdf_uniform(cos_theta_max);
 }
 
-float Inverse_sphere::area(uint32_t /*part*/, const float3& scale) const {
+float Inverse_sphere::area(uint32_t /*part*/, float3_p scale) const {
 	return 4.f * math::Pi * scale.x * scale.x;
 }
 
