@@ -7,7 +7,8 @@ namespace math {
 
 struct Ray {
 	Ray();
-	Ray(FVector3f_a origin, FVector3f_a direction, float min_t = 0.f, float max_t = 1.f);
+	Ray(FVector3f_a origin, FVector3f_a direction,
+		float min_t = 0.f, float max_t = 1.f);
 
 	Vector3f_a point(float t) const;
 
@@ -21,7 +22,8 @@ struct Ray {
 
 struct Optimized_ray {
 	Optimized_ray();
-	Optimized_ray(FVector3f_a origin, FVector3f_a direction, float min_t = 0.f, float max_t = 1.f);
+	Optimized_ray(FVector3f_a origin, FVector3f_a direction,
+				  float min_t = 0.f, float max_t = 1.f);
 
 	void set_direction(FVector3f_a v);
 

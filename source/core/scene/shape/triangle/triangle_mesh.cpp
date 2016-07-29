@@ -4,12 +4,12 @@
 #include "bvh/triangle_bvh_data.inl"
 #include "bvh/triangle_bvh_indexed_data.inl"
 #include "bvh/triangle_bvh_data_interleaved.inl"
+#include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
-#include "base/math/ray.inl"
 #include "base/math/matrix.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
@@ -31,7 +31,7 @@ uint32_t Mesh::num_parts() const {
 	return tree_.num_parts();
 }
 
-bool Mesh::intersect(const Transformation& transformation, math::Oray& ray,
+bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 					 Node_stack& node_stack, shape::Intersection& intersection) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -102,7 +102,7 @@ bool Mesh::intersect(const Transformation& transformation, math::Oray& ray,
 	return false;
 }
 
-bool Mesh::intersect_p(const Transformation& transformation, const math::Oray& ray,
+bool Mesh::intersect_p(const Transformation& transformation, const Ray& ray,
 					   Node_stack& node_stack) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -113,8 +113,8 @@ bool Mesh::intersect_p(const Transformation& transformation, const math::Oray& r
 	return tree_.intersect_p(tray, node_stack);
 }
 
-float Mesh::opacity(const Transformation& transformation, const math::Oray& ray,
-					float time, const material::Materials& materials,
+float Mesh::opacity(const Transformation& transformation, const Ray& ray,
+					const material::Materials& materials,
 					Worker& worker, Sampler_filter filter) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -122,7 +122,7 @@ float Mesh::opacity(const Transformation& transformation, const math::Oray& ray,
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
-	return tree_.opacity(tray, time, materials, worker, filter);
+	return tree_.opacity(tray, ray.time, materials, worker, filter);
 }
 
 void Mesh::sample(uint32_t part, const Transformation& transformation,

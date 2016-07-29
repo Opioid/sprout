@@ -1,13 +1,13 @@
 #include "inverse_sphere.hpp"
 #include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace shape {
@@ -17,7 +17,7 @@ Inverse_sphere::Inverse_sphere() {
 }
 
 bool Inverse_sphere::intersect(const Transformation& transformation,
-							   math::Oray& ray, Node_stack& /*node_stack*/,
+							   Ray& ray, Node_stack& /*node_stack*/,
 							   Intersection& intersection) const {
 	float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
@@ -73,7 +73,7 @@ bool Inverse_sphere::intersect(const Transformation& transformation,
 }
 
 bool Inverse_sphere::intersect_p(const Transformation& transformation,
-								 const math::Oray& ray, Node_stack& /*node_stack*/) const {
+								 const Ray& ray, Node_stack& /*node_stack*/) const {
 	float3 v = ray.origin - transformation.position;
 	float b = -dot(v, ray.direction);
 	float radius = transformation.scale.x;
@@ -98,8 +98,7 @@ bool Inverse_sphere::intersect_p(const Transformation& transformation,
 }
 
 float Inverse_sphere::opacity(const Transformation& transformation,
-							  const math::Oray& ray, float /*time*/,
-							  const material::Materials& /*materials*/,
+							  const Ray& ray, const material::Materials& /*materials*/,
 							  Worker& worker, Sampler_filter /*filter*/) const {
 	return intersect_p(transformation, ray, worker.node_stack()) ? 1.f : 0.f;
 }

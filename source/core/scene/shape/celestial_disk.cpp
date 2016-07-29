@@ -1,12 +1,12 @@
 #include "celestial_disk.hpp"
 #include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace shape {
@@ -15,7 +15,7 @@ Celestial_disk::Celestial_disk() {
 	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
-bool Celestial_disk::intersect(const Transformation& transformation, math::Oray& ray,
+bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const float3& v = transformation.rotation.v3.z;
 	float b = math::dot(v, ray.direction);
@@ -46,14 +46,13 @@ bool Celestial_disk::intersect(const Transformation& transformation, math::Oray&
 }
 
 bool Celestial_disk::intersect_p(const Transformation& /*transformation*/,
-								 const math::Oray& /*ray*/, Node_stack& /*node_stack*/) const {
+								 const Ray& /*ray*/, Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
 float Celestial_disk::opacity(const Transformation& /*transformation*/,
-							  const math::Oray& /*ray*/, float /*time*/,
-							  const material::Materials& /*materials*/,
+							  const Ray& /*ray*/, const material::Materials& /*materials*/,
 							  Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;

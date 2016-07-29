@@ -5,12 +5,12 @@
 #include "bvh/triangle_bvh_builder_suh.inl"
 #include "bvh/triangle_bvh_data_interleaved.inl"
 #include "bvh/triangle_bvh_tree.inl"
+#include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/shape/geometry/shape_intersection.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
-#include "base/math/ray.inl"
 #include "base/math/matrix.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
@@ -30,7 +30,7 @@ uint32_t Morphable_mesh::num_parts() const {
 	return num_parts_;
 }
 
-bool Morphable_mesh::intersect(const Transformation& transformation, math::Oray& ray,
+bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
 							   Node_stack& node_stack, shape::Intersection& intersection) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -69,7 +69,7 @@ bool Morphable_mesh::intersect(const Transformation& transformation, math::Oray&
 }
 
 bool Morphable_mesh::intersect_p(const Transformation& transformation,
-								 const math::Oray& ray, Node_stack& node_stack) const {
+								 const Ray& ray, Node_stack& node_stack) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
 	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
@@ -79,8 +79,8 @@ bool Morphable_mesh::intersect_p(const Transformation& transformation,
 	return tree_.intersect_p(tray, node_stack);
 }
 
-float Morphable_mesh::opacity(const Transformation& transformation, const math::Oray& ray,
-							  float time, const material::Materials& materials,
+float Morphable_mesh::opacity(const Transformation& transformation, const Ray& ray,
+							  const material::Materials& materials,
 							  Worker& worker, Sampler_filter filter) const {
 	math::Oray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
@@ -88,7 +88,7 @@ float Morphable_mesh::opacity(const Transformation& transformation, const math::
 	tray.min_t = ray.min_t;
 	tray.max_t = ray.max_t;
 
-	return tree_.opacity(tray, time, materials, worker, filter);
+	return tree_.opacity(tray, ray.time, materials, worker, filter);
 }
 
 void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,

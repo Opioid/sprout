@@ -29,16 +29,14 @@ public:
 	virtual uint32_t num_parts() const final override;
 
 	virtual bool intersect(const Transformation& transformation,
-						   math::Oray& ray, Node_stack& node_stack,
+						   Ray& ray, Node_stack& node_stack,
 						   shape::Intersection& intersection) const final override;
 
-	virtual bool intersect_p(const Transformation& transformation,
-							 const math::Oray& ray,
+	virtual bool intersect_p(const Transformation& transformation, const Ray& ray,
 							 Node_stack& node_stack) const final override;
 
 	virtual float opacity(const Transformation& transformation,
-						  const math::Oray& ray, float time,
-						  const material::Materials& materials,
+						  const Ray& ray, const material::Materials& materials,
 						  Worker& worker, Sampler_filter filter) const final override;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,

@@ -1,10 +1,10 @@
 #include "plane.hpp"
 #include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "base/math/vector.inl"
-#include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace shape {
@@ -13,7 +13,7 @@ Plane::Plane() {
 	aabb_.set_min_max(math::float3_identity, math::float3_identity);
 }
 
-bool Plane::intersect(const Transformation& transformation, math::Oray& ray,
+bool Plane::intersect(const Transformation& transformation, Ray& ray,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const float3& normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
@@ -85,7 +85,7 @@ bool Plane::intersect(const Transformation& transformation, math::Oray& ray,
 */
 }
 
-bool Plane::intersect_p(const Transformation& transformation, const math::Oray& ray,
+bool Plane::intersect_p(const Transformation& transformation, const Ray& ray,
 						Node_stack& /*node_stack*/) const {
 	const float3& normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
@@ -100,8 +100,8 @@ bool Plane::intersect_p(const Transformation& transformation, const math::Oray& 
 	return false;
 }
 
-float Plane::opacity(const Transformation& transformation, const math::Oray& ray,
-					 float time, const material::Materials& materials,
+float Plane::opacity(const Transformation& transformation, const Ray& ray,
+					 const material::Materials& materials,
 					 Worker& worker, Sampler_filter filter) const {
 	const float3& normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
@@ -112,9 +112,9 @@ float Plane::opacity(const Transformation& transformation, const math::Oray& ray
 	if (t > ray.min_t && t < ray.max_t) {
 		float3 p = ray.point(t);
 		float2 uv(math::dot(transformation.rotation.v3.x, p),
-						math::dot(transformation.rotation.v3.y, p));
+				  math::dot(transformation.rotation.v3.y, p));
 
-		return materials[0]->opacity(uv, time, worker, filter);
+		return materials[0]->opacity(uv, ray.time, worker, filter);
 	}
 
 	return 0.f;

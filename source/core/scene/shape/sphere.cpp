@@ -1,13 +1,13 @@
 #include "sphere.hpp"
 #include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace shape {
@@ -16,7 +16,7 @@ Sphere::Sphere() {
 	aabb_.set_min_max(float3(-1.f, -1.f, -1.f), float3(1.f, 1.f, 1.f));
 }
 
-bool Sphere::intersect(const Transformation& transformation, math::Oray& ray,
+bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
@@ -90,7 +90,7 @@ bool Sphere::intersect(const Transformation& transformation, math::Oray& ray,
 	return false;
 }
 
-bool Sphere::intersect_p(const Transformation& transformation, const math::Oray& ray,
+bool Sphere::intersect_p(const Transformation& transformation, const Ray& ray,
 						 Node_stack& /*node_stack*/) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
@@ -115,8 +115,8 @@ bool Sphere::intersect_p(const Transformation& transformation, const math::Oray&
 	return false;
 }
 
-float Sphere::opacity(const Transformation& transformation, const math::Oray& ray,
-					  float time, const material::Materials& materials,
+float Sphere::opacity(const Transformation& transformation, const Ray& ray,
+					  const material::Materials& materials,
 					  Worker& worker, Sampler_filter filter) const {
 	float3 v = transformation.position - ray.origin;
 	float b = dot(v, ray.direction);
@@ -134,7 +134,7 @@ float Sphere::opacity(const Transformation& transformation, const math::Oray& ra
 			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 								std::acos(xyz.y) * math::Pi_inv);
 
-			return materials[0]->opacity(uv, time, worker, filter);
+			return materials[0]->opacity(uv, ray.time, worker, filter);
 		}
 
 		float t1 = b + dist;
@@ -146,7 +146,7 @@ float Sphere::opacity(const Transformation& transformation, const math::Oray& ra
 			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 								std::acos(xyz.y) * math::Pi_inv);
 
-			return materials[0]->opacity(uv, time, worker, filter);
+			return materials[0]->opacity(uv, ray.time, worker, filter);
 		}
 	}
 

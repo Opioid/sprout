@@ -1,12 +1,12 @@
 #include "infinite_sphere.hpp"
 #include "shape_sample.hpp"
 #include "geometry/shape_intersection.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/ray.inl"
 #include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace shape {
@@ -16,7 +16,7 @@ Infinite_sphere::Infinite_sphere() {
 }
 
 bool Infinite_sphere::intersect(const Transformation& transformation,
-								math::Oray& ray, Node_stack& /*node_stack*/,
+								Ray& ray, Node_stack& /*node_stack*/,
 								Intersection& intersection) const {
 	if (ray.max_t >= 1000000.f) {
 		intersection.epsilon = 5e-4f;
@@ -44,14 +44,13 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 }
 
 bool Infinite_sphere::intersect_p(const Transformation& /*transformation*/,
-								  const math::Oray& /*ray*/, Node_stack& /*node_stack*/) const {
+								  const Ray& /*ray*/, Node_stack& /*node_stack*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return false;
 }
 
 float Infinite_sphere::opacity(const Transformation& /*transformation*/,
-							   const math::Oray& /*ray*/, float /*time*/,
-							   const material::Materials& /*materials*/,
+							   const Ray& /*ray*/, const material::Materials& /*materials*/,
 							   Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;

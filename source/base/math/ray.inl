@@ -22,7 +22,8 @@ inline float Ray::length() const {
 
 inline Optimized_ray::Optimized_ray() {}
 
-inline Optimized_ray::Optimized_ray(FVector3f_a origin, FVector3f_a direction, float min_t, float max_t) :
+inline Optimized_ray::Optimized_ray(FVector3f_a origin, FVector3f_a direction,
+									float min_t, float max_t) :
 	origin(origin),
 	direction(direction),
 	inv_direction(1.f / direction.x, 1.f / direction.y, 1.f / direction.z),

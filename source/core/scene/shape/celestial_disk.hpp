@@ -11,15 +11,13 @@ public:
 	Celestial_disk();
 
 	virtual bool intersect(const Transformation& transformation,
-						   math::Oray& ray, Node_stack& node_stack,
+						   Ray& ray, Node_stack& node_stack,
 						   Intersection& intersection) const final override;
 
-	virtual bool intersect_p(const Transformation& transformation,
-							 const math::Oray& ray,
+	virtual bool intersect_p(const Transformation& transformation, const Ray& ray,
 							 Node_stack& node_stack) const final override;
 
-	virtual float opacity(const Transformation& transformation,
-						  const math::Oray& ray, float time,
+	virtual float opacity(const Transformation& transformation, const Ray& ray,
 						  const material::Materials& materials,
 						  Worker& worker, Sampler_filter filter) const final override;
 
