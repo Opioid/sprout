@@ -20,6 +20,7 @@ public:
 										   Sampler_filter filter) final override;
 
 	void set_normal_map(const Adapter_2D& normal_map);
+	void set_roughness_map(const Adapter_2D& roughness_map);
 
 	void set_color(float3_p color);
 	void set_attenuation_distance(float attenuation_distance);
@@ -29,6 +30,7 @@ public:
 protected:
 
 	Adapter_2D normal_map_;
+	Adapter_2D roughness_map_;
 
 	float3 color_;
 	float attenuation_distance_;

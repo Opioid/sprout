@@ -83,7 +83,7 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	math::float3x3 rotation;
 	math::set_rotation_y(rotation, a);
 
-	float ipd_scale = std::acos(direction.y * direction.y) * math::Pi_inv * 2.f;
+	float ipd_scale = 2.f * std::acos(math::pow4(direction.y)) * math::Pi_inv;
 
 	uint32_t eye = view < 6 ? 0 : 1;
 	float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;

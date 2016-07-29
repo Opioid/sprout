@@ -17,12 +17,13 @@ public:
 	Provider();
 
 	enum class Usage {
-		Unknown    = 0,
-		Color      = 1,
-		Normal     = 2,
-		Anisotropy = 3,
-		Surface    = 4,
-		Mask       = 5
+		Unknown,
+		Color,
+		Normal,
+		Anisotropy,
+		Roughness,
+		Surface,
+		Mask
 	};
 
 	virtual std::shared_ptr<Texture_2D> load(const std::string& filename,

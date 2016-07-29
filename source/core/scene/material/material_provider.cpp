@@ -269,6 +269,7 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 	scene::material::Sampler_settings sampler_settings;
 
 	Adapter_2D normal_map;
+	Adapter_2D roughness_map;
 	float3 color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
@@ -299,6 +300,9 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 				if ("Normal" == texture_description.usage) {
 					options.set("usage", image::texture::Provider::Usage::Normal);
 					normal_map = create_texture(texture_description, options, manager);
+				} else if ("Roughness" == texture_description.usage) {
+					options.set("usage", image::texture::Provider::Usage::Roughness);
+					roughness_map = create_texture(texture_description, options, manager);
 				}
 			}
 		} else if ("sampler" == node_name) {
@@ -306,22 +310,23 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 		}
 	}
 
-	if (roughness <= 0.f) {
+	if (roughness > 0.f || roughness_map.is_valid()) {
+		auto material = std::make_shared<glass::Glass_rough>(glass_rough_cache_,
+															 sampler_settings);
+		material->set_normal_map(normal_map);
+		material->set_roughness_map(roughness_map);
+		material->set_color(color);
+		material->set_attenuation_distance(attenuation_distance);
+		material->set_ior(ior);
+		material->set_roughness(roughness);
+		return material;
+	} else {
 		auto material = std::make_shared<glass::Glass>(glass_cache_, sampler_settings);
 
 		material->set_normal_map(normal_map);
 		material->set_color(color);
 		material->set_attenuation_distance(attenuation_distance);
 		material->set_ior(ior);
-		return material;
-	} else {
-		auto material = std::make_shared<glass::Glass_rough>(glass_rough_cache_,
-															 sampler_settings);
-		material->set_normal_map(normal_map);
-		material->set_color(color);
-		material->set_attenuation_distance(attenuation_distance);
-		material->set_ior(ior);
-		material->set_roughness(roughness);
 		return material;
 	}
 }

@@ -20,9 +20,9 @@ const material::Sample& Glass_rough::sample(float3_p wo, const Renderstate& rs,
 
 	sample.set_basis(rs.geo_n, wo);
 
-	if (normal_map_.is_valid()) {
-		auto& sampler = worker.sampler(sampler_key_, filter);
+	auto& sampler = worker.sampler(sampler_key_, filter);
 
+	if (normal_map_.is_valid()) {
 		float3 nm = normal_map_.sample_3(sampler, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
 
@@ -31,13 +31,25 @@ const material::Sample& Glass_rough::sample(float3_p wo, const Renderstate& rs,
 		sample.layer_.set_basis(rs.t, rs.b, rs.n);
 	}
 
-	sample.layer_.set(color_, attenuation_distance_, ior_, rs.ior, a2_);
+	float a2;
+	if (roughness_map_.is_valid()) {
+		float roughness = roughness_map_.sample_1(sampler, rs.uv);
+		a2 = math::pow4(roughness);
+	} else {
+		a2 = a2_;
+	}
+
+	sample.layer_.set(color_, attenuation_distance_, ior_, rs.ior, a2);
 
 	return sample;
 }
 
 void Glass_rough::set_normal_map(const Adapter_2D& normal_map) {
 	normal_map_ = normal_map;
+}
+
+void Glass_rough::set_roughness_map(const Adapter_2D& roughness_map) {
+	roughness_map_ = roughness_map;
 }
 
 void Glass_rough::set_color(float3_p color) {

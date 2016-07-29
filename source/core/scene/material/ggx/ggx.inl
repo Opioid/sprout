@@ -188,11 +188,11 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 
 		float factor = (wo_dot_h * wo_dot_h) / (n_dot_t * n_dot_wo);
 
-		float denom = layer.eta_i * wo_dot_h + layer.eta_t * wo_dot_h;
+		float denom = layer.ior_i * wo_dot_h + layer.ior_o * wo_dot_h;
 		denom = denom * denom;
 
 		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = factor * (((layer.eta_t * layer.eta_t) * refraction) / denom);
+		result.reflection = factor * (((layer.ior_o * layer.ior_o) * refraction) / denom);
 		result.wi = wi;
 		result.type.clear_set(bxdf::Type::Specular_transmission);
 

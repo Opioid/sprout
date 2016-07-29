@@ -38,6 +38,8 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 		channels = Channels::XY;
 	} else if (Usage::Surface == usage) {
 		channels = Channels::XY;
+	} else if (Usage::Roughness == usage) {
+		channels = Channels::X;
 	}
 
 	memory::Variant_map image_options;
