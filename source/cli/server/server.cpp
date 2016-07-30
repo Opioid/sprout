@@ -4,16 +4,11 @@
 #include "core/logging/logging.hpp"
 #include "base/math/vector.inl"
 #include "base/thread/thread_pool.hpp"
-#include <sstream>
 
 namespace server {
 
 Server::Server(int2 dimensions, Message_handler& message_handler) :
-	srgb_(dimensions), message_handler_(message_handler) {
-	std::ostringstream stream;
-	stream << "{ \"resolution\": [" << dimensions.x << ", " << dimensions.y << "] }";
-	introduction_ = stream.str();
-}
+	srgb_(dimensions), message_handler_(message_handler) {}
 
 Server::~Server() {
 	for (Client* c : clients_) {
@@ -103,7 +98,7 @@ void Server::accept_loop() {
 
 		Client* client = new Client(connection_socket);
 
-		if (!client->run(introduction_)) {
+		if (!client->run(message_handler_.introduction())) {
 			delete client;
 			continue;
 		}

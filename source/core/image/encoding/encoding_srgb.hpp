@@ -30,8 +30,6 @@ public:
 	Srgb_alpha(int2 dimensions);
 	virtual ~Srgb_alpha();
 
-
-
 	const math::byte4* data() const;
 
 	void to_sRGB(const image::Image_float_4& image, int32_t begin, int32_t end);

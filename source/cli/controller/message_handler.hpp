@@ -23,6 +23,8 @@ public:
 
 	virtual void handle(const std::string& message) final override;
 
+	virtual std::string introduction() const final override;
+
 private:
 
 	void handle_entity(scene::entity::Entity* entity, const std::string& value,

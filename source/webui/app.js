@@ -5,8 +5,17 @@ IterationCounter = function() {
 
 IterationCounter.prototype.constructor = IterationCounter;
 
+IterationCounter.prototype.init = function(iteration) {
+	this.count = iteration;
+	this.display();
+}
+
 IterationCounter.prototype.update = function() {
 	++this.count;
+	this.display();
+}
+
+IterationCounter.prototype.display = function() {
 	this.label.innerHTML = '# ' + this.count; 
 }
 
@@ -94,6 +103,9 @@ window.onload = function() {
 			target = imageData.data;
 
 			consoleInput.style['width'] = (resolution[0] - 4) + 'px';
+
+			var iteration = messageObject["iteration"];
+			iterationCounter.init(iteration);
 		}
 	};
 

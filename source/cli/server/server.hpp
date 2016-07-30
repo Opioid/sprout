@@ -39,8 +39,6 @@ private:
 	bool shutdown_;
 
 	std::list<Client*> clients_;
-
-	std::string introduction_;
 };
 
 }

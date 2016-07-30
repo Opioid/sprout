@@ -8,6 +8,7 @@
 #include "base/math/vector.inl"
 #include "base/memory/variant_map.hpp"
 #include "base/string/string.inl"
+#include <sstream>
 
 namespace controller {
 
@@ -86,6 +87,19 @@ void Message_handler::handle(const std::string& message) {
 			handle_entity(entity, value, parameters, true);
 		}
 	}
+}
+
+std::string Message_handler::introduction() const {
+	std::ostringstream stream;
+	stream << "{";
+
+	auto d = driver_.camera().sensor_dimensions();
+	stream << "\"resolution\":" << d << ",";
+
+	stream << "\"iteration\":" << driver_.iteration();
+
+	stream << "}";
+	return stream.str();
 }
 
 void Message_handler::handle_entity(scene::entity::Entity* entity, const std::string& value,
