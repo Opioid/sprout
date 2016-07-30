@@ -1,3 +1,15 @@
+IterationCounter = function() {
+	this.count = 0;
+	this.label = document.getElementById('iterationLabel');
+}
+
+IterationCounter.prototype.constructor = IterationCounter;
+
+IterationCounter.prototype.update = function() {
+	++this.count;
+	this.label.innerHTML = '# ' + this.count; 
+}
+
 FpsCounter = function() {
 	this.previousTime = 0.0;
 	this.frameTimeCounter = 0.0;
@@ -38,6 +50,7 @@ window.onload = function() {
 	var imageData = context.getImageData(0, 0, 1, 1); // only do this once per page
 	var target  = imageData.data; 
 
+	var iterationCounter = new IterationCounter();
 	var fpsCounter = new FpsCounter();
 
 	// Create a new WebSocket.
@@ -60,6 +73,7 @@ window.onload = function() {
 		if (event.data instanceof Blob) {
 			// 
 		} else if (event.data instanceof ArrayBuffer) {
+			iterationCounter.update();
 			fpsCounter.update();
 
 			var binaryData = new Uint8Array(event.data);
