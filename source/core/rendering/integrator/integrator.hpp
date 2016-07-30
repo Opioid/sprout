@@ -6,6 +6,11 @@ namespace take { struct Settings; }
 
 namespace rendering { namespace integrator {
 
+enum class Light_sampling_strategy {
+	One,
+	All
+};
+
 class Integrator {
 
 public:

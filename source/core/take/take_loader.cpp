@@ -103,7 +103,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		take->surface_integrator_factory = std::make_shared<
 				rendering::integrator::surface::Pathtracer_MIS_factory>(
 					take->settings, 4, 8, 0.5f,
-					rendering::integrator::surface::Light_sampling_strategy::Sample_one,
+					rendering::integrator::Light_sampling_strategy::One,
 					1, false);
 		logging::warning("No surface integrator specified, "
 						 "defaulting to Pathtracer Multiple Importance Sampling.");
@@ -423,9 +423,9 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 										const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
-	rendering::integrator::surface::Light_sampling_strategy light_strategy =
-			rendering::integrator::surface::Light_sampling_strategy::Sample_one;
-	uint32_t default_max_light_samples = 1;
+	rendering::integrator::Light_sampling_strategy light_strategy =
+			rendering::integrator::Light_sampling_strategy::One;
+	uint32_t default_num_light_samples = 1;
 	float default_path_termination_probability = 0.5f;
 	bool default_caustics = true;
 
@@ -440,7 +440,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						settings, num_samples, radius);
 		} else if ("Whitted" == node_name) {
 			uint32_t num_light_samples = json::read_uint(
-						node_value, "num_light_samples", default_max_light_samples);
+						node_value, "num_light_samples", default_num_light_samples);
 
 			return std::make_shared<rendering::integrator::surface::Whitted_factory>(
 						settings, num_light_samples);
@@ -466,7 +466,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						default_path_termination_probability);
 
 			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples",
-														 default_max_light_samples);
+														 default_num_light_samples);
 
 			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
 
@@ -484,17 +484,16 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			std::string light_strategy_name = json::read_string(node_value,
 																"light_sampling_strategy");
 
-			if ("Sample_one" == light_strategy_name) {
+			if ("One" == light_strategy_name) {
 				light_strategy =
-						rendering::integrator::surface::Light_sampling_strategy::Sample_one;
-			} else if ("Sample_all" == light_strategy_name) {
+						rendering::integrator::Light_sampling_strategy::One;
+			} else if ("All" == light_strategy_name) {
 				light_strategy =
-						rendering::integrator::surface::Light_sampling_strategy::Sample_all;
+						rendering::integrator::Light_sampling_strategy::All;
 			}
 
-			uint32_t num_light_samples = json::read_uint(
-						node_value, "num_light_samples",
-						default_max_light_samples);
+			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples",
+														 default_num_light_samples);
 
 			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
 

@@ -153,7 +153,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 	shadow_ray.depth  = ray.depth + 1;
 	shadow_ray.time   = ray.time;
 
-	if (Light_sampling_strategy::Sample_one == settings_.light_strategy) {
+	if (Light_sampling_strategy::One == settings_.light_strategy) {
 		for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 			float light_pdf;
 			const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(),
