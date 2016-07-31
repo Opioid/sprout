@@ -1,0 +1,58 @@
+{
+	"scene": "mis.scene",
+
+	"num_frames": 1,
+
+	"export": {
+		"Image": {
+			"format": "PNG"
+		}
+	},
+
+	"camera": {
+		"Perspective": {
+			"parameters": {
+				"fov": 60
+			},
+
+			"transformation": {
+				"position": [0, 1, -4],
+				"rotation": [0, 0, 0]
+			},
+
+			"sensor": {
+				"resolution": [960, 540],
+
+				"tonemapper": {
+					"Uncharted": {
+						"exposure": 0,
+						"linear_white": [2, 2, 2]
+					}
+				},
+
+				"filter": { "Gaussian": {} }
+			}
+		}
+	},
+
+	"settings": {
+		"ray_offset_factor": 0.15
+	},
+
+	"sampler": {
+		"EMS": {
+			"samples_per_pixel": 16
+		}
+	},
+
+	"integrator": {
+		"surface": {
+			"PTMIS": {
+				"min_bounces": 8,
+				"max_bounces": 8,
+				"num_light_samples": 1
+			}
+		}
+	}
+}
+ 

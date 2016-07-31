@@ -1,0 +1,44 @@
+{
+	"geometry":
+	{
+		"parts":
+		[
+			{
+				"material_index": 0,
+				"start_index": 0,
+				"num_indices": 6
+			}
+		],
+
+		"primitive_topology": "triangle_list",
+
+		"vertices":
+		{
+
+			"positions": 
+			[
+				1,1,0, -1,1,0, -1,-1,0, 1,-1,0
+			],
+
+			"texture_coordinates_0": 
+			[
+				0,0, 1,0, 1,1, 0,1
+			],
+
+			"normals": 
+			[
+				0,0,1, 0,0,1, 0,0,1, 0,0,1
+			],
+
+			"tangents_and_bitangent_signs": 
+			[
+				-1,0,0,1, -1,0,0,1, -1,0,0,1, -1,0,0,1
+			]
+		},
+
+		"indices": 
+		[
+			0,1,2,3,0,2
+		]
+	}
+}

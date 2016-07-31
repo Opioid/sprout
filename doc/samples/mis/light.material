@@ -1,0 +1,11 @@
+{
+	"rendering": {
+		"Light": {
+			"emittance": {
+				"quantity": "Intensity",
+				"value": 2400,
+				"spectrum": { "temperature": 10000 }
+			}
+		}
+	}
+}

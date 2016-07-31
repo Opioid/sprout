@@ -1,0 +1,82 @@
+{
+	"entities": [
+		{
+			"type": "Light",
+			"shape": { "type": "Sphere" },
+			"materials": [ "light.material" ],
+			"transformation": {
+				"position": [ -1.5, 2, 0 ],
+				"scale": [ 0.0125, 0.0125, 0.0125 ]
+			}
+		}, {
+			"type": "Light",
+			"shape": { "type": "Sphere" },
+			"materials": [ "light.material" ],
+			"transformation": {
+				"position": [ -0.5, 2, 0 ],
+				"scale": [ 0.075, 0.075, 0.075 ]
+			}
+		}, {
+			"type": "Light",
+			"shape": { "type": "Sphere" },
+			"materials": [ "light.material" ],
+			"transformation": {
+				"position": [ 0.5, 2, 0 ],
+				"scale": [ 0.15, 0.15, 0.15 ]
+			}
+		}, {
+			"type": "Light",
+			"shape": { "type": "Sphere" },
+			"materials": [ "light.material" ],
+			"transformation": {
+				"position": [ 1.5, 2, 0 ],
+				"scale": [ 0.35, 0.35, 0.35 ]
+			}			
+		}, {			
+			"type": "Prop",
+			"shape": { "file": "quad.json" },
+			"materials": [ "gray_4.material" ],
+			"transformation": {
+				"position": [0, -0.25, 0],
+				"scale": [4, 4, 1],
+				"rotation": [90, 0, 0]
+			}
+		}, {			
+			"type": "Prop",
+			"shape": { "file": "quad.json" },
+			"materials": [ "gray_0.material" ],
+			"transformation": {
+				"position": [0, 1.93, 2.4],
+				"scale": [2, 0.35, 1],
+				"rotation": [183, 0, 0]
+			}
+		}, {			
+			"type": "Prop",
+			"shape": { "file": "quad.json" },
+			"materials": [ "gray_1.material" ],
+			"transformation": {
+				"position": [0, 1.15, 1.6],
+				"scale": [2, 0.35, 1],
+				"rotation": [166.5, 0, 0]
+			}
+		}, {			
+			"type": "Prop",
+			"shape": { "file": "quad.json" },
+			"materials": [ "gray_2.material" ],
+			"transformation": {
+				"position": [0, 0.5, 0.8],
+				"scale": [2, 0.35, 1],
+				"rotation": [146, 0, 0]
+			}
+		}, {			
+			"type": "Prop",
+			"shape": { "file": "quad.json" },
+			"materials": [ "gray_3.material" ],
+			"transformation": {
+				"position": [0, 0, 0],
+				"scale": [2, 0.35, 1],
+				"rotation": [127.5, 0, 0]
+			}
+		}
+	]
+} 

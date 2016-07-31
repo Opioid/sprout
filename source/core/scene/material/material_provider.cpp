@@ -1,4 +1,5 @@
 #include "material_provider.hpp"
+#include "logging/logging.hpp"
 #include "resource/resource_provider.inl"
 #include "resource/resource_manager.inl"
 #include "material_sample_cache.inl"
@@ -361,7 +362,7 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 				color = read_spectrum(s->value);
 			}
 
-			value = json::read_float(node_value, "value");
+			value = json::read_float(node_value, "value", value);
 		} else if ("emission_factor" == node_name) {
 			emission_factor = json::read_float(node_value);
 		} else if ("two_sided" == node_name) {
