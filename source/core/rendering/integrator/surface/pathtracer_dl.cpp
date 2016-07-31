@@ -29,8 +29,8 @@ void Pathtracer_DL::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray,
-						 bool volume, scene::Intersection& intersection) {
+float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
+						 scene::Intersection& intersection) {
 	scene::material::Sampler_settings::Filter filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;

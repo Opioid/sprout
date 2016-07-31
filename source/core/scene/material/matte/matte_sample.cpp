@@ -1,7 +1,7 @@
 #include "matte_sample.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/disney/disney.inl"
-#include "scene/material/lambert/lambert.inl"
+// #include "scene/material/lambert/lambert.inl"
 #include "scene/material/oren_nayar/oren_nayar.inl"
 #include "base/math/vector.inl"
 

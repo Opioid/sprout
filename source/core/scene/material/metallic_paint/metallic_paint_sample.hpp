@@ -13,14 +13,14 @@ public:
 
 	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
+	virtual void sample(sampler::Sampler& sampler,
+						bxdf::Result& result) const final override;
+
 	virtual float3 radiance() const final override;
 
 	virtual float3 attenuation() const final override;
 
 	virtual float ior() const final override;
-
-	virtual void sample(sampler::Sampler& sampler,
-						bxdf::Result& result) const final override;
 
 	virtual bool is_pure_emissive() const final override;
 

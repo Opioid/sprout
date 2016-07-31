@@ -22,8 +22,8 @@ void Whitted::start_new_pixel(uint32_t num_samples) {
 	sampler_.restart_and_seed(num_samples);
 }
 
-float4 Whitted::li(Worker& worker, scene::Ray& ray,
-				   bool volume, scene::Intersection& intersection) {
+float4 Whitted::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
+				   scene::Intersection& intersection) {
 	float3 result = math::float3_identity;
 
 	float opacity = intersection.opacity(worker, ray.time, Sampler_filter::Unknown);
