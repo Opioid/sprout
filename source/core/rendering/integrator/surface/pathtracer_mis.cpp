@@ -153,8 +153,8 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 	shadow_ray.depth  = ray.depth + 1;
 	shadow_ray.time   = ray.time;
 
-	if (Light_sampling_strategy::One == settings_.light_strategy) {
-		for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
+	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
+		for (uint32_t i = 0; i < settings_.light_sampling.num_samples; ++i) {
 			float light_pdf;
 			const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(),
 																			   light_pdf);
@@ -174,13 +174,15 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 	} else {
 		float light_weight = static_cast<float>(worker.scene().lights().size());
 		for (const auto light : worker.scene().lights()) {
-			shadow_ray.min_t = ray_offset;
+			for (uint32_t i = 0; i < settings_.light_sampling.num_samples; ++i) {
+				shadow_ray.min_t = ray_offset;
 
-			result += evaluate_light(light, light_weight, worker, shadow_ray,
-									 intersection, material_sample, filter);
+				result += evaluate_light(light, light_weight, worker, shadow_ray,
+										 intersection, material_sample, filter);
+			}
 		}
 
-		return result / light_weight;
+		return (settings_.num_light_samples_reciprocal / light_weight) * result;
 	}
 }
 
@@ -280,16 +282,14 @@ float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,
 											   uint32_t min_bounces, uint32_t max_bounces,
 											   float path_termination_probability,
-											   Light_sampling_strategy light_strategy,
-											   uint32_t num_light_samples,
+											   Light_sampling light_sampling,
 											   bool disable_caustics) :
 	Integrator_factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
 	settings_.path_continuation_probability = 1.f - path_termination_probability;
-	settings_.light_strategy = light_strategy;
-	settings_.num_light_samples = num_light_samples;
-	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
+	settings_.light_sampling = light_sampling;
+	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(light_sampling.num_samples);
 	settings_.disable_caustics = disable_caustics;
 }
 

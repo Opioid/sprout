@@ -24,9 +24,8 @@ public:
 		uint32_t max_bounces;
 		float    path_continuation_probability;
 
-		Light_sampling_strategy light_strategy;
+		Light_sampling light_sampling;
 
-		uint32_t num_light_samples;
 		float    num_light_samples_reciprocal;
 		bool	 disable_caustics;
 	};
@@ -73,8 +72,7 @@ public:
 	Pathtracer_MIS_factory(const take::Settings& take_settings,
 						   uint32_t min_bounces, uint32_t max_bounces,
 						   float path_termination_probability,
-						   Light_sampling_strategy light_strategy,
-						   uint32_t num_light_samples,
+						   Light_sampling light_sampling,
 						   bool disable_caustics);
 
 	virtual Integrator* create(math::random::Generator& rng) const final override;

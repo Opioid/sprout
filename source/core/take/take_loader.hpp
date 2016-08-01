@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rendering/integrator/integrator.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/vector.hpp"
 #include <istream>
@@ -84,7 +85,10 @@ private:
 	std::unique_ptr<exporting::Sink> load_exporter(const json::Value& exporter_value,
 												   scene::camera::Camera& camera) const;
 
-	void load_settings(const json::Value& settings_value, Settings& settings) const;
+	static void load_settings(const json::Value& settings_value, Settings& settings);
+
+	static void load_light_sampling(const json::Value& sampling_value,
+									rendering::integrator::Light_sampling& sampling);
 };
 
 }

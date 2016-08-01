@@ -45,8 +45,6 @@
 
 namespace take {
 
-void load_focus(const json::Value& focus_value, scene::camera::Perspective::Focus& focus);
-
 std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	auto root = json::parse(stream);
 
@@ -100,11 +98,11 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	}
 
 	if (!take->surface_integrator_factory) {
+		rendering::integrator::Light_sampling light_sampling{
+			rendering::integrator::Light_sampling::Strategy::One, 1};
 		take->surface_integrator_factory = std::make_shared<
 				rendering::integrator::surface::Pathtracer_MIS_factory>(
-					take->settings, 4, 8, 0.5f,
-					rendering::integrator::Light_sampling_strategy::One,
-					1, false);
+					take->settings, 4, 8, 0.5f, light_sampling, false);
 		logging::warning("No surface integrator specified, "
 						 "defaulting to Pathtracer Multiple Importance Sampling.");
 	}
@@ -423,9 +421,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 										const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
-	rendering::integrator::Light_sampling_strategy light_strategy =
-			rendering::integrator::Light_sampling_strategy::One;
-	uint32_t default_num_light_samples = 1;
+	rendering::integrator::Light_sampling light_sampling{
+		rendering::integrator::Light_sampling::Strategy::One, 1};
 	float default_path_termination_probability = 0.5f;
 	bool default_caustics = true;
 
@@ -440,7 +437,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						settings, num_samples, radius);
 		} else if ("Whitted" == node_name) {
 			uint32_t num_light_samples = json::read_uint(
-						node_value, "num_light_samples", default_num_light_samples);
+						node_value, "num_light_samples", light_sampling.num_samples);
 
 			return std::make_shared<rendering::integrator::surface::Whitted_factory>(
 						settings, num_light_samples);
@@ -465,8 +462,9 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						node_value, "path_termination_probability",
 						default_path_termination_probability);
 
+
 			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples",
-														 default_num_light_samples);
+														 light_sampling.num_samples);
 
 			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
 
@@ -481,25 +479,16 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						node_value, "path_termination_probability",
 						default_path_termination_probability);
 
-			std::string light_strategy_name = json::read_string(node_value,
-																"light_sampling_strategy");
-
-			if ("One" == light_strategy_name) {
-				light_strategy =
-						rendering::integrator::Light_sampling_strategy::One;
-			} else if ("All" == light_strategy_name) {
-				light_strategy =
-						rendering::integrator::Light_sampling_strategy::All;
+			const auto light_sampling_node = node_value.FindMember("light_sampling");
+			if (node_value.MemberEnd() != light_sampling_node) {
+				load_light_sampling(light_sampling_node->value, light_sampling);
 			}
-
-			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples",
-														 default_num_light_samples);
 
 			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
 
 			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
-						light_strategy, num_light_samples, disable_caustics);
+						light_sampling, disable_caustics);
 		} else if ("Normal" == node_name) {
 			auto vector = rendering::integrator::surface::Normal::Settings::Vector::Shading_normal;
 
@@ -593,7 +582,7 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& export
 	return nullptr;
 }
 
-void Loader::load_settings(const json::Value& settings_value, Settings& settings) const {
+void Loader::load_settings(const json::Value& settings_value, Settings& settings) {
 	for (auto n = settings_value.MemberBegin(); n != settings_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;
@@ -604,16 +593,22 @@ void Loader::load_settings(const json::Value& settings_value, Settings& settings
 	}
 }
 
-void load_focus(const json::Value& focus_value, scene::camera::Perspective::Focus& focus) {
-	for (auto n = focus_value.MemberBegin(); n != focus_value.MemberEnd(); ++n) {
+void Loader::load_light_sampling(const json::Value& sampling_value,
+								 rendering::integrator::Light_sampling& sampling) {
+	for (auto n = sampling_value.MemberBegin(); n != sampling_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;
 
-		if ("point" == node_name) {
-			focus.point = json::read_float3(node_value);
-			focus.use_point = true;
-		} else if ("distance" == node_name) {
-			focus.distance = json::read_float(node_value);
+		if ("strategy" == node_name) {
+			std::string strategy = json::read_string(node_value);
+
+			if ("One" == strategy) {
+				sampling.strategy = rendering::integrator::Light_sampling::Strategy::One;
+			} else if ("All" == strategy) {
+				sampling.strategy = rendering::integrator::Light_sampling::Strategy::All;
+			}
+		} else if ("num_samples" == node_name) {
+			sampling.num_samples = json::read_uint(node_value);
 		}
 	}
 }

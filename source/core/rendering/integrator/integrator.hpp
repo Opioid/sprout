@@ -6,9 +6,14 @@ namespace take { struct Settings; }
 
 namespace rendering { namespace integrator {
 
-enum class Light_sampling_strategy {
-	One,
-	All
+struct Light_sampling {
+	enum class Strategy {
+		One,
+		All
+	};
+
+	Strategy strategy;
+	uint32_t num_samples;
 };
 
 class Integrator {
