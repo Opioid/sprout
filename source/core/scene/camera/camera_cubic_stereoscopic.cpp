@@ -9,8 +9,6 @@
 #include "base/math/ray.inl"
 #include "base/math/sampling/sampling.inl"
 
-#include <iostream>
-
 namespace scene { namespace camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution, float ray_max_t) :
