@@ -2,6 +2,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "scene/scene_ray.inl"
+#include "base/json/json.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -12,9 +13,8 @@
 
 namespace scene { namespace camera {
 
-Spherical_stereoscopic::Spherical_stereoscopic(float interpupillary_distance,
-											   int2 resolution, float ray_max_t) :
-	Stereoscopic(interpupillary_distance, resolution, ray_max_t) {
+Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution, float ray_max_t) :
+	Stereoscopic(resolution, ray_max_t) {
 	float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;
@@ -72,7 +72,18 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, 
 	return true;
 }
 
-void Spherical_stereoscopic::set_parameter(const std::string& /*name*/,
-										   const json::Value& /*value*/) {}
+void Spherical_stereoscopic::set_parameter(const std::string& name,
+										   const json::Value& value) {
+	if ("stereo" == name) {
+		for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
+			const std::string node_name = n->name.GetString();
+			const json::Value& node_value = n->value;
+
+			if ("ipd" == node_name) {
+				set_interpupillary_distance(json::read_float(node_value));
+			}
+		}
+	}
+}
 
 }}

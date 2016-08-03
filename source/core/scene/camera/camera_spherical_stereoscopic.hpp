@@ -5,10 +5,10 @@
 namespace scene { namespace camera {
 
 class Spherical_stereoscopic : public Stereoscopic {
+
 public:
 
-	Spherical_stereoscopic(float interpupillary_distance,
-						   int2 resolution, float ray_max_t);
+	Spherical_stereoscopic(int2 resolution, float ray_max_t);
 
 	virtual uint32_t num_views() const final override;
 

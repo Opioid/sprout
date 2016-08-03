@@ -2,17 +2,19 @@
 #include "rendering/sensor/sensor.hpp"
 #include "scene/scene_ray.inl"
 #include "sampler/camera_sample.hpp"
+#include "base/json/json.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 #include "base/math/sampling/sampling.inl"
 
+#include <iostream>
+
 namespace scene { namespace camera {
 
-Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, float interpupillary_distance,
-									   int2 resolution, float ray_max_t) :
-	Stereoscopic(interpupillary_distance, int2(resolution.x, resolution.x), ray_max_t) {
+Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution, float ray_max_t) :
+	Stereoscopic(int2(resolution.x, resolution.x), ray_max_t) {
 	float f = static_cast<float>(resolution.x);
 
 	left_top_ = float3(-1.f, 1.f, 1.f);
@@ -83,7 +85,8 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	math::float3x3 rotation;
 	math::set_rotation_y(rotation, a);
 
-	float ipd_scale = 2.f * std::acos(math::pow4(direction.y)) * math::Pi_inv;
+	// pow 6
+	float ipd_scale = 1.f - std::pow(std::abs(direction.y), 6.f);
 
 	uint32_t eye = view < 6 ? 0 : 1;
 	float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
@@ -101,7 +104,20 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	return true;
 }
 
-void Cubic_stereoscopic::set_parameter(const std::string& /*name*/,
-									   const json::Value& /*value*/) {}
+void Cubic_stereoscopic::set_parameter(const std::string& name,
+									   const json::Value& value) {
+	if ("stereo" == name) {
+		for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
+			const std::string node_name = n->name.GetString();
+			const json::Value& node_value = n->value;
+
+			if ("ipd" == node_name) {
+				set_interpupillary_distance(json::read_float(node_value));
+			} /*else if ("ipd_falloff" == node_name) {
+
+			}*/
+		}
+	}
+}
 
 }}

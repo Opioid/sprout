@@ -11,10 +11,8 @@
 
 namespace scene { namespace camera {
 
-Perspective_stereoscopic::Perspective_stereoscopic(float interpupillary_distance,
-												   int2 resolution,
-												   float ray_max_t) :
-	Stereoscopic(interpupillary_distance, resolution, ray_max_t) {
+Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution, float ray_max_t) :
+	Stereoscopic(resolution, ray_max_t) {
 	set_fov(90.f);
 
 	view_bounds_[0] = math::Recti{int2(0, 0), resolution};
@@ -75,6 +73,8 @@ void Perspective_stereoscopic::set_parameter(const std::string& name,
 											 const json::Value& value) {
 	if ("fov" == name) {
 		set_fov(math::degrees_to_radians(json::read_float(value)));
+	} else if ("stereo" == name) {
+		set_interpupillary_distance(json::read_float(value, "ipd"));
 	}
 }
 

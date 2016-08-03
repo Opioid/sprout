@@ -136,7 +136,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	const json::Value* sensor_value = nullptr;
 
 	std::string layout_type;
-	Stereoscopic stereo;
+	bool stereo = false;
 
 	for (auto n = type_value->MemberBegin(); n != type_value->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -144,6 +144,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 
 		if ("parameters" == node_name) {
 			parameters_value = &node_value;
+			stereo = peek_stereoscopic(node_value);
 		} else if ("transformation" == node_name) {
 			json::read_transformation(node_value, transformation);
 		} else if ("animation" == node_name) {
@@ -152,8 +153,6 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 			sensor_value = &node_value;
 		} else if ("layout" == node_name) {
 			layout_type = json::read_string(node_value);
-		} else if ("stereoscopic" == node_name) {
-			load_stereoscopic(node_value, stereo);
 		}
 	}
 
@@ -174,7 +173,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	std::shared_ptr<scene::camera::Camera> camera;
 
 	if ("Cubic" == type_name) {
-		if (stereo.interpupillary_distance > 0.f) {
+		if (stereo) {
 			scene::camera::Cubic_stereoscopic::Layout layout =
 					scene::camera::Cubic_stereoscopic::Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz;
 
@@ -183,8 +182,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 			}
 
 			camera = std::make_shared<scene::camera::Cubic_stereoscopic>(
-						layout, stereo.interpupillary_distance, resolution,
-						take.settings.ray_max_t);
+						layout, resolution, take.settings.ray_max_t);
 		} else {
 			scene::camera::Cubic::Layout layout = scene::camera::Cubic::Layout::xmxymyzmz;
 
@@ -196,19 +194,17 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 						layout, resolution, take.settings.ray_max_t);
 		}
 	} else if ("Perspective" == type_name) {
-		if (stereo.interpupillary_distance > 0.f) {
+		if (stereo) {
 			camera = std::make_shared<scene::camera::Perspective_stereoscopic>(
-						stereo.interpupillary_distance, resolution,
-						take.settings.ray_max_t);
+						resolution, take.settings.ray_max_t);
 		} else {
 			camera = std::make_shared<scene::camera::Perspective>(
 						resolution, take.settings.ray_max_t);
 		}
 	} else if ("Spherical" == type_name) {
-		if (stereo.interpupillary_distance > 0.f) {
+		if (stereo) {
 			camera = std::make_shared<scene::camera::Spherical_stereoscopic>(
-						stereo.interpupillary_distance, resolution,
-						take.settings.ray_max_t);
+						resolution, take.settings.ray_max_t);
 		} else {
 			camera = std::make_shared<scene::camera::Spherical>(
 						resolution, take.settings.ray_max_t);
@@ -235,17 +231,6 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	}
 
 	take.view.camera = camera;
-}
-
-void Loader::load_stereoscopic(const json::Value& stereo_value, Stereoscopic& stereo) const {
-	for (auto n = stereo_value.MemberBegin(); n != stereo_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("interpupillary_distance" == node_name) {
-			stereo.interpupillary_distance = json::read_float(node_value);
-		}
-	}
 }
 
 rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
@@ -531,13 +516,13 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 	return nullptr;
 }
 
-bool Loader::peek_alpha_transparency(const json::Value& take_value) const {
-	const json::Value::ConstMemberIterator export_node = take_value.FindMember("export");
+bool Loader::peek_alpha_transparency(const json::Value& take_value) {
+	const auto export_node = take_value.FindMember("export");
 	if (take_value.MemberEnd() == export_node) {
 		return false;
 	}
 
-	const json::Value::ConstMemberIterator node = export_node->value.FindMember("Image");
+	const auto node = export_node->value.FindMember("Image");
 	if (export_node->value.MemberEnd() == node) {
 		return false;
 	}
@@ -545,8 +530,17 @@ bool Loader::peek_alpha_transparency(const json::Value& take_value) const {
 	return json::read_bool(node->value, "alpha_transparency");
 }
 
+bool Loader::peek_stereoscopic(const json::Value& parameters_value) {
+	const auto export_node = parameters_value.FindMember("stereo");
+	if (parameters_value.MemberEnd() == export_node) {
+		return false;
+	}
+
+	return true;
+}
+
 std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& exporter_value,
-													   scene::camera::Camera& camera) const {
+													   scene::camera::Camera& camera) {
 	for (auto n = exporter_value.MemberBegin(); n != exporter_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;

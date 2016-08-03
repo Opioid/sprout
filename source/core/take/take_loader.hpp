@@ -55,8 +55,6 @@ private:
 
 	void load_camera(const json::Value& camera_value, bool alpha_transparency, Take& take) const;
 
-	void load_stereoscopic(const json::Value& stereo_value, Stereoscopic& stereo) const;
-
 	rendering::sensor::Sensor* load_sensor(const json::Value& sensor_value,
 										   int2 dimensions,
 										   bool alpha_transparency) const;
@@ -80,10 +78,11 @@ private:
 	load_volume_integrator_factory(const json::Value& integrator_value,
 								   const Settings& settings) const;
 
-	bool peek_alpha_transparency(const json::Value& take_value) const;
+	static bool peek_alpha_transparency(const json::Value& take_value);
+	static bool peek_stereoscopic(const json::Value& parameters_value);
 
-	std::unique_ptr<exporting::Sink> load_exporter(const json::Value& exporter_value,
-												   scene::camera::Camera& camera) const;
+	static std::unique_ptr<exporting::Sink> load_exporter(const json::Value& exporter_value,
+														  scene::camera::Camera& camera);
 
 	static void load_settings(const json::Value& settings_value, Settings& settings);
 

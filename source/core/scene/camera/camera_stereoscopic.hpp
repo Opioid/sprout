@@ -8,10 +8,11 @@ class Stereoscopic : public Camera {
 
 public:
 
-	Stereoscopic(float interpupillary_distance,
-				 int2 resolution, float ray_max_t);
+	Stereoscopic(int2 resolution, float ray_max_t);
 
 	virtual ~Stereoscopic();
+
+	void set_interpupillary_distance(float ipd);
 
 protected:
 
