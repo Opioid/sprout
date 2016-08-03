@@ -27,6 +27,8 @@ public:
 	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 							  scene::Ray& ray) const final override;
 
+	void set_interpupillary_distance_falloff(float ipd_falloff);
+
 private:
 
 	virtual void set_parameter(const std::string& name,
@@ -37,6 +39,8 @@ private:
 	float3 d_y_;
 
 	int2 sensor_dimensions_;
+
+	float ipd_falloff_;
 
 	math::Recti view_bounds_[12];
 

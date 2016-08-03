@@ -12,7 +12,8 @@
 namespace scene { namespace camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution, float ray_max_t) :
-	Stereoscopic(int2(resolution.x, resolution.x), ray_max_t) {
+	Stereoscopic(int2(resolution.x, resolution.x), ray_max_t),
+	ipd_falloff_(0.6f) {
 	float f = static_cast<float>(resolution.x);
 
 	left_top_ = float3(-1.f, 1.f, 1.f);
@@ -83,8 +84,7 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	math::float3x3 rotation;
 	math::set_rotation_y(rotation, a);
 
-	// pow 6
-	float ipd_scale = 1.f - std::pow(std::abs(direction.y), 6.f);
+	float ipd_scale = 1.f - std::pow(std::abs(direction.y), 12.f - ipd_falloff_ * 10.f);
 
 	uint32_t eye = view < 6 ? 0 : 1;
 	float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
@@ -102,6 +102,10 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint
 	return true;
 }
 
+void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) {
+	ipd_falloff_ = ipd_falloff;
+}
+
 void Cubic_stereoscopic::set_parameter(const std::string& name,
 									   const json::Value& value) {
 	if ("stereo" == name) {
@@ -111,9 +115,9 @@ void Cubic_stereoscopic::set_parameter(const std::string& name,
 
 			if ("ipd" == node_name) {
 				set_interpupillary_distance(json::read_float(node_value));
-			} /*else if ("ipd_falloff" == node_name) {
-
-			}*/
+			} else if ("ipd_falloff" == node_name) {
+				set_interpupillary_distance_falloff(json::read_float(node_value));
+			}
 		}
 	}
 }
