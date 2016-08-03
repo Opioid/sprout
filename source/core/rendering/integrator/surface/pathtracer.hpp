@@ -2,8 +2,10 @@
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "transmittance/transmittance_closed.hpp"
-#include "sampler/sampler_random.hpp"
 #include "sampler/sampler_ems.hpp"
+#include "sampler/sampler_halton.hpp"
+#include "sampler/sampler_sobol.hpp"
+#include "sampler/sampler_random.hpp"
 #include "image/texture/sampler/sampler_2d_linear.hpp"
 #include "image/texture/sampler/sampler_2d_nearest.hpp"
 #include "image/texture/sampler/address_mode.hpp"
@@ -42,8 +44,6 @@ private:
 	const Settings& settings_;
 
 	sampler::Random sampler_;
-
-	std::vector<scene::light::Sample> light_samples_;
 
 	transmittance::Closed transmittance_;
 };

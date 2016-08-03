@@ -3,7 +3,6 @@
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "transmittance/transmittance_closed.hpp"
 #include "transmittance/transmittance_open.hpp"
-#include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_random.hpp"
 
 namespace scene {

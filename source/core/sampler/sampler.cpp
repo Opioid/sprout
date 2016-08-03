@@ -4,7 +4,9 @@
 namespace sampler {
 
 Sampler::Sampler(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
-	rng_(rng), num_samples_per_iteration_(num_samples_per_iteration) {}
+	rng_(rng),
+	num_samples_per_iteration_(num_samples_per_iteration),
+	current_sample_(0) {}
 
 Sampler::~Sampler() {}
 

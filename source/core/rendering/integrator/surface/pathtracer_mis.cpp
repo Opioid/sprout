@@ -22,7 +22,9 @@ namespace rendering { namespace integrator { namespace surface {
 Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings,
 							   math::random::Generator& rng,
 							   const Settings& settings) :
-	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1),
+	Integrator(take_settings, rng),
+	settings_(settings),
+	sampler_(rng, 1),
 	transmittance_open_(take_settings, rng, settings.max_bounces),
 	transmittance_closed_(take_settings, rng) {}
 

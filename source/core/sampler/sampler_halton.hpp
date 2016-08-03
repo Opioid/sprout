@@ -1,14 +1,15 @@
 #pragma once
 
 #include "sampler.hpp"
+#include "halton/halton_sampler.hpp"
 
 namespace sampler {
 
-class EMS : public Sampler {
+class Halton : public Sampler {
 
 public:
 
-	EMS(math::random::Generator& rng, uint32_t num_samples_per_iteration);
+	Halton(math::random::Generator& rng, uint32_t num_samples_per_iteration);
 
 	virtual Sampler* clone() const final override;
 
@@ -20,7 +21,10 @@ public:
 	virtual float2 generate_sample_2D() final override;
 
 	virtual float generate_sample_1D() final override;
+
+private:
+
+	Halton_sampler halton_sampler_;
 };
 
 }
-

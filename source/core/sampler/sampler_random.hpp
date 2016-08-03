@@ -5,6 +5,7 @@
 namespace sampler {
 
 class Random : public Sampler {
+
 public:
 
 	Random(math::random::Generator& rng, uint32_t num_samples_per_iteration);
