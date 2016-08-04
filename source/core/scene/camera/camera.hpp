@@ -37,8 +37,7 @@ public:
 	virtual void update_focus(rendering::Worker& worker) = 0;
 
 	virtual bool generate_ray(const sampler::Camera_sample& sample,
-							  uint32_t view,
-							  scene::Ray& ray) const = 0;
+							  uint32_t view, scene::Ray& ray) const = 0;
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 
@@ -48,7 +47,7 @@ public:
 	void set_sensor(rendering::sensor::Sensor* sensor);
 
 	math::uint2 seed(int2 pixel) const;
-	void set_seed(int2 pixel, math::uint2 seed);
+	void set_seed(int2 pixel, uint2 seed);
 
 	float frame_duration() const;
 	void set_frame_duration(float frame_duration);
@@ -67,7 +66,7 @@ protected:
 	rendering::sensor::Sensor* sensor_;
 
 	int2 seed_dimensions_;
-	math::uint2* seeds_;
+	uint2* seeds_;
 	int32_t filter_radius_;
 
 	float ray_max_t_;

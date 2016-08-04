@@ -110,13 +110,13 @@ std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& 
 
     auto mesh = std::make_shared<Mesh>();
 
-    if (BVH_preset::Slow == bvh_preset) {
+	if (BVH_preset::Fast == bvh_preset) {
+		bvh::Builder_SUH builder;
+		builder.build(mesh->tree(), triangles, vertices, num_parts, 8);
+	} else {
 		bvh::Builder_SAH builder(16, 64);
-        builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
-    } else {
-        bvh::Builder_SUH builder;
-        builder.build(mesh->tree(), triangles, vertices, num_parts, 8);
-    }
+		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
+	}
 
     if (!mesh->init()) {
         throw std::runtime_error("Mesh could not be initialized");
