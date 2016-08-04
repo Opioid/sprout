@@ -26,12 +26,12 @@ public:
 	virtual int32_t filter_radius_int() const final override;
 
 	virtual void add_sample(const sampler::Camera_sample& sample, const float4& color,
-							const math::Recti& tile, const math::Recti& view_bounds) final override;
+							const math::Recti& tile, const math::Recti& bounds) final override;
 
 private:
 
 	void weight_and_add_pixel(int2 pixel, float2 relative_offset, const float4& color,
-							  const math::Recti& view_tile, const math::Recti& view_bounds);
+							  const math::Recti& tile, const math::Recti& bounds);
 
 	Clamp clamp_;
 

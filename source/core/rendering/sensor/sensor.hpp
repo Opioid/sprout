@@ -27,7 +27,7 @@ public:
 	virtual void clear() = 0;
 
 	virtual void add_sample(const sampler::Camera_sample& sample, const float4& color,
-							const math::Recti& tile, const math::Recti& view_bounds) = 0;
+							const math::Recti& tile, const math::Recti& bounds) = 0;
 
 protected:
 

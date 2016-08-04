@@ -16,6 +16,8 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 
 	math::Recti bounds = camera.view_bounds(view);
 
+	math::Recti view_tile{bounds.start + tile.start, bounds.start + tile.end};
+
 	uint32_t num_samples = sample_end - sample_begin;
 
 	sampler::Camera_sample sample;
@@ -46,7 +48,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 					float4 color = li(ray);
 					sensor.add_sample(sample, color, tile, bounds);
 				} else {
-					sensor.add_sample(sample, float4(0.f, 0.f, 0.f, 0.f), tile, bounds);
+					sensor.add_sample(sample, float4(0.f, 0.f, 0.f, 0.f), view_tile, bounds);
 				}
 			}
 		}
