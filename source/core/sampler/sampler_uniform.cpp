@@ -8,10 +8,6 @@ namespace sampler {
 Uniform::Uniform(math::random::Generator& rng) :
 	Sampler(rng, 1) {}
 
-Sampler* Uniform::clone() const {
-	return new Uniform(rng_);
-}
-
 math::uint2 Uniform::seed() const {
 	return math::uint2::identity;
 }
@@ -31,6 +27,13 @@ float2 Uniform::generate_sample_2D() {
 
 float Uniform::generate_sample_1D() {
 	return rng_.random_float();
+}
+
+Uniform_factory::Uniform_factory(uint32_t num_samples_per_iteration) :
+	Factory(num_samples_per_iteration) {}
+
+Sampler* Uniform_factory::create(math::random::Generator& rng) const {
+	return new Uniform(rng);
 }
 
 }

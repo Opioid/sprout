@@ -10,10 +10,6 @@ Halton::Halton(math::random::Generator& rng, uint32_t num_samples_per_iteration)
 	halton_sampler_.init_faure();
 }
 
-Sampler* Halton::clone() const {
-	return new Halton(rng_, num_samples_per_iteration_);
-}
-
 math::uint2 Halton::seed() const {
 	return math::uint2::identity;
 }
@@ -35,6 +31,13 @@ float2 Halton::generate_sample_2D() {
 
 float Halton::generate_sample_1D() {
 	return rng_.random_float();
+}
+
+Halton_factory::Halton_factory(uint32_t num_samples_per_iteration) :
+	Factory(num_samples_per_iteration) {}
+
+Sampler* Halton_factory::create(math::random::Generator& rng) const {
+	return new Halton(rng, num_samples_per_iteration_);
 }
 
 }

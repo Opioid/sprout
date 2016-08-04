@@ -121,13 +121,16 @@ int main(int argc, char* argv[]) {
 		if (take->view.camera) {
 			rendering::Driver_finalframe driver(take->surface_integrator_factory,
 												take->volume_integrator_factory,
-												take->sampler, scene, take->view,
+												take->sampler_factory,
+												scene,
+												take->view,
 												thread_pool);
 
 			driver.render(*take->exporter, progressor);
 		} else {
 			baking::Driver driver(take->surface_integrator_factory,
-								  take->volume_integrator_factory, take->sampler);
+								  take->volume_integrator_factory,
+								  take->sampler_factory);
 
 			driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
 		}

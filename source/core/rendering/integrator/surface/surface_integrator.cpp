@@ -40,7 +40,7 @@ bool Integrator::resolve_mask(Worker& worker, scene::Ray& ray,
 	return true;
 }
 
-Integrator_factory::Integrator_factory(const take::Settings& settings) :
+Factory::Factory(const take::Settings& settings) :
 	take_settings_(settings) {}
 
 }}}

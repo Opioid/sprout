@@ -48,7 +48,7 @@ float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 
 Normal_factory::Normal_factory(const take::Settings& take_settings,
 							   Normal::Settings::Vector vector) :
-	Integrator_factory(take_settings) {
+	Factory(take_settings) {
 	settings_.vector = vector;
 }
 

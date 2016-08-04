@@ -64,7 +64,7 @@ private:
 	transmittance::Closed transmittance_closed_;
 };
 
-class Pathtracer_MIS_factory : public Integrator_factory {
+class Pathtracer_MIS_factory : public Factory {
 
 public:
 

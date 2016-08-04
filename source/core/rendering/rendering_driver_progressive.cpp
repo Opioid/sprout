@@ -14,11 +14,12 @@ namespace rendering {
 
 Driver_progressive::Driver_progressive(Surface_integrator_factory surface_integrator_factory,
 									   Volume_integrator_factory volume_integrator_factory,
-									   std::shared_ptr<sampler::Sampler> sampler,
-									   scene::Scene& scene, const take::View& view,
+									   std::shared_ptr<sampler::Factory> sampler_factory,
+									   scene::Scene& scene,
+									   const take::View& view,
 									   thread::Pool& thread_pool) :
 	Driver(surface_integrator_factory, volume_integrator_factory,
-		   sampler, scene, view, thread_pool),
+		   sampler_factory, scene, view, thread_pool),
 	iteration_(0),
 	samples_per_iteration_(1),
 	rendering_(false),

@@ -185,7 +185,7 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings
 											 uint32_t min_bounces, uint32_t max_bounces,
 											 float path_termination_probability,
 											 uint32_t num_light_samples, bool disable_caustics) :
-	Integrator_factory(take_settings) {
+	Factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
 	settings_.path_continuation_probability = 1.f - path_termination_probability;

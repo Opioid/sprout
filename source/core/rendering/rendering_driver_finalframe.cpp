@@ -16,18 +16,20 @@ namespace rendering {
 
 Driver_finalframe::Driver_finalframe(Surface_integrator_factory surface_integrator_factory,
 									 Volume_integrator_factory volume_integrator_factory,
-									 std::shared_ptr<sampler::Sampler> sampler,
-									 scene::Scene& scene, const take::View& view,
+									 std::shared_ptr<sampler::Factory> sampler_factory,
+									 scene::Scene& scene,
+									 const take::View& view,
 									 thread::Pool& thread_pool) :
 	Driver(surface_integrator_factory, volume_integrator_factory,
-		   sampler, scene, view, thread_pool) {}
+		   sampler_factory, scene, view, thread_pool) {}
 
 void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progressor) {
 	auto& camera = *view_.camera;
 	auto& sensor = camera.sensor();
 
+	const uint32_t num_samples_per_iteration = sampler_factory_->num_samples_per_iteration();
 	const uint32_t progress_range = calculate_progress_range(scene_, camera, tiles_.size(),
-															 sampler_->num_samples_per_iteration());
+															 num_samples_per_iteration);
 
 	float tick_offset = scene_.seek(static_cast<float>(view_.start_frame) * camera.frame_duration(),
 									thread_pool_);
@@ -127,13 +129,13 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset,
 										float normalized_tick_slice,
 										float normalized_frame_slice,
 										progress::Sink& progressor) {
-	float num_samples = static_cast<float>(sampler_->num_samples_per_iteration());
+	float num_samples = static_cast<float>(sampler_factory_->num_samples_per_iteration());
 	float samples_per_slice = normalized_frame_slice * num_samples;
 
 	uint32_t sample_begin = current_sample_;
 	uint32_t sample_range = std::max(static_cast<uint32_t>(samples_per_slice + 0.5f), 1u);
 	uint32_t sample_end   = std::min(sample_begin + sample_range,
-									 sampler_->num_samples_per_iteration());
+									 sampler_factory_->num_samples_per_iteration());
 
 	if (sample_begin == sample_end) {
 		return;

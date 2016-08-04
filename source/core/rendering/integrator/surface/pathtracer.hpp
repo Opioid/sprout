@@ -48,7 +48,7 @@ private:
 	transmittance::Closed transmittance_;
 };
 
-class Pathtracer_factory : public Integrator_factory {
+class Pathtracer_factory : public Factory {
 
 public:
 

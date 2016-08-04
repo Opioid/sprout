@@ -10,10 +10,6 @@ Scrambled_hammersley::Scrambled_hammersley(math::random::Generator& rng,
 										   uint32_t num_samples_per_iteration) :
 	Sampler(rng, num_samples_per_iteration) {}
 
-Sampler* Scrambled_hammersley::clone() const {
-	return new Scrambled_hammersley(rng_, num_samples_per_iteration_);
-}
-
 math::uint2 Scrambled_hammersley::seed() const {
 	return math::uint2(rng_.random_uint(), 0);
 }
@@ -36,6 +32,13 @@ float2 Scrambled_hammersley::generate_sample_2D() {
 
 float Scrambled_hammersley::generate_sample_1D() {
 	return rng_.random_float();
+}
+
+Scrambled_hammersley_factory::Scrambled_hammersley_factory(uint32_t num_samples_per_iteration) :
+	Factory(num_samples_per_iteration) {}
+
+Sampler* Scrambled_hammersley_factory::create(math::random::Generator& rng) const {
+	return new Scrambled_hammersley(rng, num_samples_per_iteration_);
 }
 
 }

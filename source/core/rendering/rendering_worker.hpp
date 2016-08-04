@@ -5,7 +5,12 @@
 #include "base/math/rectangle.hpp"
 #include "base/math/random/generator.hpp"
 
-namespace sampler { class Sampler; }
+namespace sampler {
+
+class Sampler;
+class Factory;
+
+}
 
 namespace rendering {
 
@@ -14,14 +19,14 @@ namespace integrator {
 namespace surface {
 
 class Integrator;
-class Integrator_factory;
+class Factory;
 
 }
 
 namespace volume {
 
 class Integrator;
-class Integrator_factory;
+class Factory;
 
 }}
 
@@ -32,16 +37,19 @@ public:
 	Worker();
 	~Worker();
 
-	void init(uint32_t id, const scene::Scene& scene, const math::random::Generator& rng,
-			  integrator::surface::Integrator_factory& surface_integrator_factory,
-			  integrator::volume::Integrator_factory& volume_integrator_factory,
-			  sampler::Sampler& sampler);
+	void init(uint32_t id, const scene::Scene& scene,
+			  const math::random::Generator& rng,
+			  integrator::surface::Factory& surface_integrator_factory,
+			  integrator::volume::Factory& volume_integrator_factory,
+			  sampler::Factory& sampler_factory);
 
 	float4 li(scene::Ray& ray);
 	float3 surface_li(scene::Ray& ray);
 	float4 volume_li(const scene::Ray& ray, float3& transmittance);
 
 	float3 transmittance(const scene::Ray& ray);
+
+	sampler::Sampler* sampler();
 
 protected:
 

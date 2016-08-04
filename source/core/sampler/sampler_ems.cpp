@@ -9,10 +9,6 @@ namespace sampler {
 EMS::EMS(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
 	Sampler(rng, num_samples_per_iteration) {}
 
-Sampler* EMS::clone() const {
-	return new EMS(rng_, num_samples_per_iteration_);
-}
-
 math::uint2 EMS::seed() const {
 	return math::uint2(rng_.random_uint(), rng_.random_uint());
 }
@@ -34,6 +30,13 @@ float2 EMS::generate_sample_2D() {
 float EMS::generate_sample_1D() {
 	return rng_.random_float();
 //	return math::scrambled_radical_inverse_vdC(current_sample_++, seed_.y);
+}
+
+EMS_factory::EMS_factory(uint32_t num_samples_per_iteration) :
+	Factory(num_samples_per_iteration) {}
+
+Sampler* EMS_factory::create(math::random::Generator& rng) const {
+	return new EMS(rng, num_samples_per_iteration_);
 }
 
 }

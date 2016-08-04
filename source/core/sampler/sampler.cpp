@@ -33,4 +33,11 @@ void Sampler::set_seed(math::uint2 seed) {
 	seed_ = seed;
 }
 
+Factory::Factory(uint32_t num_samples_per_iteration) :
+	num_samples_per_iteration_(num_samples_per_iteration) {}
+
+uint32_t Factory::num_samples_per_iteration() const {
+	return num_samples_per_iteration_;
+}
+
 }

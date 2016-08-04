@@ -13,12 +13,13 @@ namespace rendering {
 
 Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 			   Volume_integrator_factory volume_integrator_factory,
-			   std::shared_ptr<sampler::Sampler> sampler,
-			   scene::Scene& scene, const take::View& view,
+			   std::shared_ptr<sampler::Factory> sampler_factory,
+			   scene::Scene& scene,
+			   const take::View& view,
 			   thread::Pool& thread_pool) :
 	surface_integrator_factory_(surface_integrator_factory),
 	volume_integrator_factory_(volume_integrator_factory),
-	sampler_(sampler),
+	sampler_factory_(sampler_factory),
 	scene_(scene), view_(view), thread_pool_(thread_pool),
 	workers_(thread_pool.num_threads()),
 	tiles_(view.camera->resolution(), int2(32, 32),
@@ -28,7 +29,7 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 	for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
 		math::random::Generator rng(i + 0, i + 1, i + 2, i + 3);
 		workers_[i].init(i, scene, rng, *surface_integrator_factory,
-						 *volume_integrator_factory, *sampler);
+						 *volume_integrator_factory, *sampler_factory_);
 	}
 }
 

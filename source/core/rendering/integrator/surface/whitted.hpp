@@ -39,7 +39,7 @@ private:
 	sampler::Random sampler_;
 };
 
-class Whitted_factory : public Integrator_factory {
+class Whitted_factory : public Factory {
 
 public:
 

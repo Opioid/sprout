@@ -53,7 +53,7 @@ float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 }
 
 Ao_factory::Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius) :
-	Integrator_factory(settings) {
+	Factory(settings) {
 	settings_.num_samples = num_samples;
 	settings_.num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
 	settings_.radius = radius;

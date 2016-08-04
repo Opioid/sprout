@@ -11,6 +11,6 @@ Integrator::Integrator(const take::Settings& settings, math::random::Generator& 
 
 Integrator::~Integrator() {}
 
-Integrator_factory::Integrator_factory(const take::Settings& settings) : take_settings_(settings) {}
+Factory::Factory(const take::Settings& settings) : take_settings_(settings) {}
 
 }}}

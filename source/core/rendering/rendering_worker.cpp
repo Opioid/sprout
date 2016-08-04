@@ -26,15 +26,15 @@ Worker::~Worker() {
 
 void Worker::init(uint32_t id, const scene::Scene& scene,
 				  const math::random::Generator& rng,
-				  integrator::surface::Integrator_factory& surface_integrator_factory,
-				  integrator::volume::Integrator_factory& volume_integrator_factory,
-				  sampler::Sampler& sampler) {
+				  integrator::surface::Factory& surface_integrator_factory,
+				  integrator::volume::Factory& volume_integrator_factory,
+				  sampler::Factory& sampler_factory) {
 	scene::Worker::init(id, scene);
 
 	rng_ = rng;
 	surface_integrator_ = surface_integrator_factory.create(rng_);
 	volume_integrator_  = volume_integrator_factory.create(rng_);
-	sampler_ = sampler.clone();
+	sampler_ = sampler_factory.create(rng_);
 }
 
 float4 Worker::li(scene::Ray& ray) {
@@ -93,6 +93,11 @@ float3 Worker::transmittance(const scene::Ray& ray) {
 	}
 
 	return volume_integrator_->transmittance(*this, volume, ray);
+}
+
+
+sampler::Sampler* Worker::sampler() {
+	return sampler_;
 }
 
 }

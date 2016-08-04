@@ -17,10 +17,10 @@ namespace baking {
 
 Driver::Driver(std::shared_ptr<Surface_integrator_factory> surface_integrator_factory,
 			   std::shared_ptr<Volume_integrator_factory> volume_integrator_factory,
-			   std::shared_ptr<sampler::Sampler> sampler) :
+			   std::shared_ptr<sampler::Factory> sampler_factory) :
 	surface_integrator_factory_(surface_integrator_factory),
 	volume_integrator_factory_(volume_integrator_factory),
-	sampler_(sampler) {}
+	sampler_factory_(sampler_factory) {}
 
 void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Pool& thread_pool,
 					exporting::Sink& /*exporter*/, progress::Sink& /*progressor*/) {
@@ -33,7 +33,7 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 	math::random::Generator rng(0, 1, 2, 3);
 	baking::Baking_worker worker;
 	worker.init(0, scene, rng, *surface_integrator_factory_,
-				*volume_integrator_factory_, *sampler_);
+				*volume_integrator_factory_, *sampler_factory_);
 
 	scene::Ray ray;
 	ray.time = 0.f;
@@ -51,13 +51,13 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 	for (int32_t y = 0; y < dimensions.y; ++y) {
 		for (int32_t x = 0; x < dimensions.x; ++x) {
 
-			sampler_->restart_and_seed(num_samples);
+			worker.sampler()->restart_and_seed(num_samples);
 
 			float3 offset((static_cast<float>(x) + 0.5f) *
-								(bake_quad_range.x / static_cast<float>(dimensions.x)),
-								0.f,
-								(static_cast<float>(y) + 0.5f) *
-								(bake_quad_range.z / static_cast<float>(dimensions.y)));
+						   (bake_quad_range.x / static_cast<float>(dimensions.x)),
+							0.f,
+							(static_cast<float>(y) + 0.5f) *
+							(bake_quad_range.z / static_cast<float>(dimensions.y)));
 
 			float3 origin = bake_quad_origin + offset;
 
@@ -67,7 +67,7 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 
 				ray.origin = origin;
 
-				float2 sample = sampler_->generate_sample_2D();
+				float2 sample = worker.sampler()->generate_sample_2D();
 				float3 hs = math::sample_oriented_hemisphere_cosine(sample,
 																		  bake_space_x,
 																		  bake_space_y,

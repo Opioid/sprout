@@ -12,7 +12,9 @@ namespace rendering { namespace integrator { namespace volume {
 Attenuation::Attenuation(const take::Settings& take_settings, math::random::Generator& rng) :
 	Integrator(take_settings, rng) {}
 
-float3 Attenuation::transmittance(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray) {
+float3 Attenuation::transmittance(Worker& worker,
+								  const scene::volume::Volume* volume,
+								  const scene::Ray& ray) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
@@ -25,8 +27,8 @@ float3 Attenuation::transmittance(Worker& worker, const scene::volume::Volume* v
 	return math::exp(-tau);
 }
 
-float4 Attenuation::li(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray,
-							 float3& transmittance) {
+float4 Attenuation::li(Worker& worker, const scene::volume::Volume* volume,
+					   const scene::Ray& ray, float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
@@ -43,7 +45,7 @@ float4 Attenuation::li(Worker& worker, const scene::volume::Volume* volume, cons
 }
 
 Attenuation_factory::Attenuation_factory(const take::Settings& settings) :
-	Integrator_factory(settings) {}
+	Factory(settings) {}
 
 Integrator* Attenuation_factory::create(math::random::Generator& rng) const {
 	return new Attenuation(take_settings_, rng);

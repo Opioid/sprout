@@ -11,8 +11,6 @@ public:
 
 	Halton(math::random::Generator& rng, uint32_t num_samples_per_iteration);
 
-	virtual Sampler* clone() const final override;
-
 	virtual math::uint2 seed() const final override;
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
@@ -25,6 +23,15 @@ public:
 private:
 
 	Halton_sampler halton_sampler_;
+};
+
+class Halton_factory : public Factory {
+
+public:
+
+	Halton_factory(uint32_t num_samples_per_iteration);
+
+	virtual Sampler* create(math::random::Generator& rng) const final override;
 };
 
 }

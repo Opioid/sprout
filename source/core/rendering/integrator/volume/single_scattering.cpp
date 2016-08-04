@@ -20,7 +20,7 @@ Single_scattering::Single_scattering(const take::Settings& take_settings,
 	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
 float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume* volume,
-											  const scene::Ray& ray) {
+										const scene::Ray& ray) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
@@ -34,7 +34,7 @@ float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Vol
 }
 
 float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume,
-								   const scene::Ray& ray, float3& transmittance) {
+							 const scene::Ray& ray, float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
@@ -134,7 +134,7 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
 													 float step_size) :
-	Integrator_factory(take_settings) {
+	Factory(take_settings) {
 	settings_.step_size = step_size;
 }
 

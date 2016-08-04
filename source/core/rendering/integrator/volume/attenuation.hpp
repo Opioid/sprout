@@ -5,18 +5,20 @@
 namespace rendering { namespace integrator { namespace volume {
 
 class Attenuation : public Integrator {
+
 public:
 
 	Attenuation(const take::Settings& take_settings, math::random::Generator& rng);
 
 	virtual float3 transmittance(Worker& worker, const scene::volume::Volume* volume,
-									   const scene::Ray& ray) final override;
+								 const scene::Ray& ray) final override;
 
-	virtual float4 li(Worker& worker, const scene::volume::Volume* volume, const scene::Ray& ray,
-							float3& transmittance) final override;
+	virtual float4 li(Worker& worker, const scene::volume::Volume* volume,
+					  const scene::Ray& ray, float3& transmittance) final override;
 };
 
-class Attenuation_factory : public Integrator_factory {
+class Attenuation_factory : public Factory {
+
 public:
 
 	Attenuation_factory(const take::Settings& settings);

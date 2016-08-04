@@ -18,8 +18,9 @@ public:
 
 	Driver_progressive(Surface_integrator_factory surface_integrator_factory,
 					   Volume_integrator_factory volume_integrator_factory,
-					   std::shared_ptr<sampler::Sampler> sampler,
-					   scene::Scene& scene, const take::View& view,
+					   std::shared_ptr<sampler::Factory> sampler_factory,
+					   scene::Scene& scene,
+					   const take::View& view,
 					   thread::Pool& thread_pool);
 
 	void render(exporting::Sink& exporter);

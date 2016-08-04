@@ -10,7 +10,7 @@ namespace take { struct View; }
 
 namespace scene { class Scene; }
 
-namespace sampler { class Sampler; }
+namespace sampler { class Factory; }
 
 namespace thread { class Pool; }
 
@@ -18,8 +18,8 @@ namespace rendering {
 
 namespace integrator {
 
-namespace surface { class Integrator_factory; }
-namespace volume { class Integrator_factory; }
+namespace surface { class Factory; }
+namespace volume { class Factory; }
 
 }
 
@@ -27,13 +27,14 @@ class Driver {
 
 public:
 
-	using Surface_integrator_factory = std::shared_ptr<integrator::surface::Integrator_factory>;
-	using Volume_integrator_factory  = std::shared_ptr<integrator::volume::Integrator_factory>;
+	using Surface_integrator_factory = std::shared_ptr<integrator::surface::Factory>;
+	using Volume_integrator_factory  = std::shared_ptr<integrator::volume::Factory>;
 
 	Driver(Surface_integrator_factory surface_integrator_factory,
 		   Volume_integrator_factory volume_integrator_factory,
-		   std::shared_ptr<sampler::Sampler> sampler,
-		   scene::Scene& scene, const take::View& view,
+		   std::shared_ptr<sampler::Factory> sampler_factory,
+		   scene::Scene& scene,
+		   const take::View& view,
 		   thread::Pool& thread_pool);
 
 	~Driver();
@@ -46,7 +47,7 @@ protected:
 
 	Surface_integrator_factory surface_integrator_factory_;
 	Volume_integrator_factory volume_integrator_factory_;
-	std::shared_ptr<sampler::Sampler> sampler_;
+	std::shared_ptr<sampler::Factory> sampler_factory_;
 
 	scene::Scene& scene_;
 	const take::View& view_;

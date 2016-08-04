@@ -31,11 +31,11 @@ public:
 					  const scene::Ray& ray, float3& transmittance) = 0;
 };
 
-class Integrator_factory {
+class Factory {
 
 public:
 
-	Integrator_factory(const take::Settings& settings);
+	Factory(const take::Settings& settings);
 
 	virtual Integrator* create(math::random::Generator& rng) const = 0;
 

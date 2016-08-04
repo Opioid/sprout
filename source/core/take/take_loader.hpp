@@ -13,7 +13,7 @@ namespace math { namespace random { class Generator; }}
 
 namespace scene { namespace camera { class Camera; } }
 
-namespace sampler { class Sampler; }
+namespace sampler { class Factory; }
 
 namespace rendering {
 
@@ -31,8 +31,8 @@ namespace filter { class Filter; }
 
 namespace integrator {
 
-namespace surface { class Integrator_factory; }
-namespace volume  { class Integrator_factory; }
+namespace surface { class Factory; }
+namespace volume  { class Factory; }
 
 }}
 
@@ -65,16 +65,15 @@ private:
 	const rendering::sensor::filter::Filter*
 	load_filter(const rapidjson::Value& filter_value) const;
 
-	std::shared_ptr<sampler::Sampler> load_sampler(const json::Value& sampler_value,
-												   math::random::Generator& rng) const;
+	std::shared_ptr<sampler::Factory> load_sampler_factory(const json::Value& sampler_value) const;
 
 	void load_integrator_factories(const json::Value& integrator_value, Take& take) const;
 
-	std::shared_ptr<rendering::integrator::surface::Integrator_factory>
+	std::shared_ptr<rendering::integrator::surface::Factory>
 	load_surface_integrator_factory(const json::Value& integrator_value,
 									const Settings& settings) const;
 
-	std::shared_ptr<rendering::integrator::volume::Integrator_factory>
+	std::shared_ptr<rendering::integrator::volume::Factory>
 	load_volume_integrator_factory(const json::Value& integrator_value,
 								   const Settings& settings) const;
 

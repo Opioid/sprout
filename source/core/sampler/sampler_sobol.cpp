@@ -9,10 +9,6 @@ namespace sampler {
 Sobol::Sobol(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
 	Sampler(rng, num_samples_per_iteration) {}
 
-Sampler* Sobol::clone() const {
-	return new Sobol(rng_, num_samples_per_iteration_);
-}
-
 math::uint2 Sobol::seed() const {
 	return math::uint2(rng_.random_uint(), rng_.random_uint());
 }
@@ -38,6 +34,13 @@ float2 Sobol::generate_sample_2D() {
 
 float Sobol::generate_sample_1D() {
 	return rng_.random_float();
+}
+
+Sobol_factory::Sobol_factory(uint32_t num_samples_per_iteration) :
+	Factory(num_samples_per_iteration) {}
+
+Sampler* Sobol_factory::create(math::random::Generator& rng) const {
+	return new Sobol(rng, num_samples_per_iteration_);
 }
 
 }

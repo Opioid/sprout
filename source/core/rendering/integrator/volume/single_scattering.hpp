@@ -37,7 +37,7 @@ private:
 	sampler::Random sampler_;
 };
 
-class Single_scattering_factory : public Integrator_factory {
+class Single_scattering_factory : public Factory {
 
 public:
 

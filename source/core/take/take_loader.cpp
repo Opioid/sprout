@@ -68,7 +68,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		} else if ("integrator" == node_name) {
 			load_integrator_factories(node_value, *take);
 		} else if ("sampler" == node_name) {
-			take->sampler = load_sampler(node_value, take->rng);
+			take->sampler_factory = load_sampler_factory(node_value);
 		} else if ("scene" == node_name) {
 			take->scene = node_value.GetString();
 		} else if ("settings" == node_name) {
@@ -93,8 +93,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		}
 	}
 
-	if (!take->sampler) {
-		take->sampler = std::make_shared<sampler::Random>(take->rng, 1);
+	if (!take->sampler_factory) {
+		take->sampler_factory = std::make_shared<sampler::Random_factory>(1);
 	}
 
 	if (!take->surface_integrator_factory) {
@@ -359,27 +359,27 @@ Loader::load_filter(const json::Value& filter_value) const {
 	return nullptr;
 }
 
-std::shared_ptr<sampler::Sampler> Loader::load_sampler(const json::Value& sampler_value,
-													   math::random::Generator& rng) const {
+std::shared_ptr<sampler::Factory> Loader::load_sampler_factory(
+		const json::Value& sampler_value) const {
 	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;
 
 		if ("Uniform" == node_name) {
-		//   uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
-		   return std::make_shared<sampler::Uniform>(rng);
+		   // uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
+		   return std::make_shared<sampler::Uniform_factory>(1);
 		} else if ("Random" == node_name) {
 			uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
-			return std::make_shared<sampler::Random>(rng, num_samples);
+			return std::make_shared<sampler::Random_factory>(num_samples);
 		} else if ("Scrambled_hammersley" == node_name) {
 			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
-			 return std::make_shared<sampler::Scrambled_hammersley>(rng, num_samples);
+			 return std::make_shared<sampler::Scrambled_hammersley_factory>(num_samples);
 		 } else if ("EMS" == node_name) {
 			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
-			 return std::make_shared<sampler::EMS>(rng, num_samples);
+			 return std::make_shared<sampler::EMS_factory>(num_samples);
 		 } else if ("LD" == node_name) {
 			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
-			 return std::make_shared<sampler::LD>(rng, num_samples);
+			 return std::make_shared<sampler::LD_factory>(num_samples);
 		 }
 	}
 
@@ -401,7 +401,7 @@ void Loader::load_integrator_factories(const json::Value& integrator_value, Take
 	}
 }
 
-std::shared_ptr<rendering::integrator::surface::Integrator_factory>
+std::shared_ptr<rendering::integrator::surface::Factory>
 Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 										const Settings& settings) const {
 	uint32_t default_min_bounces = 4;
@@ -497,7 +497,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 	return nullptr;
 }
 
-std::shared_ptr<rendering::integrator::volume::Integrator_factory>
+std::shared_ptr<rendering::integrator::volume::Factory>
 Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 									   const Settings& settings) const {
 	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {

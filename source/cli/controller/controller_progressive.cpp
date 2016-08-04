@@ -24,7 +24,9 @@ void progressive(const take::Take& take, scene::Scene& scene,
 
 	rendering::Driver_progressive driver(take.surface_integrator_factory,
 										 take.volume_integrator_factory,
-										 take.sampler, scene, take.view,
+										 take.sampler_factory,
+										 scene,
+										 take.view,
 										 thread_pool);
 
 //	driver.set_force_statistics(true);

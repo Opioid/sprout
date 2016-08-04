@@ -35,7 +35,7 @@ private:
 	Settings settings_;
 };
 
-class Normal_factory : public Integrator_factory {
+class Normal_factory : public Factory {
 
 public:
 

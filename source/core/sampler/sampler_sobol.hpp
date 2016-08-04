@@ -10,8 +10,6 @@ public:
 
 	Sobol(math::random::Generator& rng, uint32_t num_samples_per_iteration);
 
-	virtual Sampler* clone() const final override;
-
 	virtual math::uint2 seed() const final override;
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
@@ -21,6 +19,15 @@ public:
 
 	virtual float generate_sample_1D() final override;
 
+};
+
+class Sobol_factory : public Factory {
+
+public:
+
+	Sobol_factory(uint32_t num_samples_per_iteration);
+
+	virtual Sampler* create(math::random::Generator& rng) const final override;
 };
 
 }

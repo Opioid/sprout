@@ -15,8 +15,6 @@ public:
 	Sampler(math::random::Generator& rng, uint32_t num_samples_per_iteration);
 	virtual ~Sampler();
 
-	virtual Sampler* clone() const = 0;
-
 	math::random::Generator& rng();
 
 	uint32_t num_samples_per_iteration() const;
@@ -41,6 +39,21 @@ protected:
 	uint32_t num_iterations_;
 	uint32_t num_samples_per_iteration_;
 	uint32_t current_sample_;
+};
+
+class Factory {
+
+public:
+
+	Factory(uint32_t num_samples_per_iteration);
+
+	virtual Sampler* create(math::random::Generator& rng) const = 0;
+
+	uint32_t num_samples_per_iteration() const;
+
+protected:
+
+	uint32_t num_samples_per_iteration_;
 };
 
 }

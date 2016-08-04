@@ -38,7 +38,7 @@ private:
 	sampler::EMS sampler_;
 };
 
-class Ao_factory : public Integrator_factory {
+class Ao_factory : public Factory {
 
 public:
 

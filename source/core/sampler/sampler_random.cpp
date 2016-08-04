@@ -8,10 +8,6 @@ namespace sampler {
 Random::Random(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
 	Sampler(rng, num_samples_per_iteration) {}
 
-Sampler* Random::clone() const {
-	return new Random(rng_, num_samples_per_iteration_);
-}
-
 math::uint2 Random::seed() const {
 	return math::uint2::identity;
 }
@@ -32,6 +28,13 @@ float2 Random::generate_sample_2D() {
 
 float Random::generate_sample_1D() {
 	return rng_.random_float();
+}
+
+Random_factory::Random_factory(uint32_t num_samples_per_iteration) :
+	Factory(num_samples_per_iteration) {}
+
+Sampler* Random_factory::create(math::random::Generator& rng) const {
+	return new Random(rng, num_samples_per_iteration_);
 }
 
 }

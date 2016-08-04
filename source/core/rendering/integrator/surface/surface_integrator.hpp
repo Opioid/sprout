@@ -40,11 +40,11 @@ protected:
 					  Sampler_filter filter);
 };
 
-class Integrator_factory {
+class Factory {
 
 public:
 
-	Integrator_factory(const take::Settings& settings);
+	Factory(const take::Settings& settings);
 
 	virtual Integrator* create(math::random::Generator& rng) const = 0;
 

@@ -12,32 +12,28 @@ namespace scene { namespace animation { class Animation; } }
 
 namespace rendering { namespace integrator {
 
-namespace surface { class Integrator_factory; }
-namespace volume  { class Integrator_factory; }
+namespace surface { class Factory; }
+namespace volume  { class Factory; }
 
 }}
 
-namespace sampler { class Sampler; }
+namespace sampler { class Factory; }
 
 namespace take {
 
 struct Take {
-	Take();
-
 	Settings	settings;
 	std::string	scene;
 	take::View	view;
 
 	std::shared_ptr<scene::animation::Animation> camera_animation;
 
-	std::shared_ptr<rendering::integrator::surface::Integrator_factory> surface_integrator_factory;
-	std::shared_ptr<rendering::integrator::volume::Integrator_factory>  volume_integrator_factory;
+	std::shared_ptr<rendering::integrator::surface::Factory> surface_integrator_factory;
+	std::shared_ptr<rendering::integrator::volume::Factory>  volume_integrator_factory;
 
-	std::shared_ptr<sampler::Sampler> sampler;
+	std::shared_ptr<sampler::Factory> sampler_factory;
 
 	std::unique_ptr<exporting::Sink> exporter;
-
-	math::random::Generator rng;
 };
 
 }
