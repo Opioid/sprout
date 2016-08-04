@@ -13,6 +13,7 @@ namespace filter { class Filter; }
 
 template<class Base, class Clamp>
 class Filtered : public Base {
+
 public:
 
 	Filtered(int2 dimensions,
@@ -29,8 +30,8 @@ public:
 
 private:
 
-	void weight_and_add_pixel(int2 pixel, float2 relative_offset,
-							  const float4& color, const math::Recti& view_tile, const math::Recti& view_bounds);
+	void weight_and_add_pixel(int2 pixel, float2 relative_offset, const float4& color,
+							  const math::Recti& view_tile, const math::Recti& view_bounds);
 
 	Clamp clamp_;
 

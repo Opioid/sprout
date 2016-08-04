@@ -5,6 +5,7 @@
 namespace rendering { namespace sensor {
 
 class Opaque : public Sensor {
+
 public:
 
 	Opaque(int2 dimensions, const tonemapping::Tonemapper* tonemapper);

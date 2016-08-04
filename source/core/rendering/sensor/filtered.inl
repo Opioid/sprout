@@ -68,7 +68,8 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, con
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
 												 const float4& color,
-												 const math::Recti& view_tile, const math::Recti& view_bounds) {
+												 const math::Recti& view_tile,
+												 const math::Recti& view_bounds) {
 	if (pixel.x < view_bounds.start.x || pixel.x >= view_bounds.end.x
 	||  pixel.y < view_bounds.start.y || pixel.y >= view_bounds.end.y) {
 		return;
