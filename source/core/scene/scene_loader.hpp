@@ -57,6 +57,8 @@ public:
 
 private:
 
+	void load_materials(const json::Value& materials_value, Scene& scene);
+
 	void load_entities(const json::Value& entities_value,
 					   entity::Entity* parent,
 					   Scene& scene);

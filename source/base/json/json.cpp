@@ -45,11 +45,9 @@ std::string read_error(rapidjson::Document& document, std::istream& stream) {
 }
 
 std::unique_ptr<rapidjson::Document> parse(const std::string& buffer) {
-	rapidjson::StringStream json_stream(buffer.c_str());
-
 	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
-	document->ParseStream<0, rapidjson::UTF8<>>(json_stream);
+	document->Parse(buffer.c_str());
 
 	if (document->HasParseError()) {
 		throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
@@ -59,7 +57,8 @@ std::unique_ptr<rapidjson::Document> parse(const std::string& buffer) {
 }
 
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
-	Read_stream json_stream(stream);
+//	Read_stream json_stream(stream);
+	IStreamWrapper json_stream(stream);
 
 	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
@@ -210,7 +209,7 @@ math::quaternion read_local_rotation(const rapidjson::Value& value) {
 }
 
 std::string read_string(const rapidjson::Value& value) {
-	return value.GetString();
+	return std::string(value.GetString(), value.GetStringLength());
 }
 
 std::string read_string(const rapidjson::Value& value, const std::string& name,
@@ -220,7 +219,7 @@ std::string read_string(const rapidjson::Value& value, const std::string& name,
 		return default_value;
 	}
 
-	return node->value.GetString();
+	return std::string(node->value.GetString(), node->value.GetStringLength());
 }
 
 void read_transformation(const rapidjson::Value& value, math::transformation& transformation) {

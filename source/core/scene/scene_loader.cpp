@@ -28,6 +28,8 @@
 #include "base/memory/variant_map.inl"
 #include "base/thread/thread_pool.hpp"
 
+#include <iostream>
+
 namespace scene {
 
 Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material) :
@@ -45,6 +47,11 @@ Loader::~Loader() {}
 
 void Loader::load(std::istream& stream, Scene& scene) {
 	auto root = json::parse(stream);
+
+	const json::Value::ConstMemberIterator materials_node = root->FindMember("materials");
+	if (root->MemberEnd() != materials_node) {
+		load_materials(materials_node->value, scene);
+	}
 
 	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
@@ -72,6 +79,12 @@ std::shared_ptr<shape::Shape> Loader::canopy() {
 
 std::shared_ptr<shape::Shape> Loader::celestial_disk() {
 	return celestial_disk_;
+}
+
+void Loader::load_materials(const json::Value& materials_value, Scene& scene) {
+	for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
+		std::cout << "Loading material stuff" << std::endl;
+	}
 }
 
 void Loader::load_entities(const json::Value& entities_value,
