@@ -23,7 +23,7 @@ namespace take {
 
 struct Take {
 	Settings	settings;
-	std::string	scene;
+	std::string	scene_filename;
 	take::View	view;
 
 	std::shared_ptr<scene::animation::Animation> camera_animation;

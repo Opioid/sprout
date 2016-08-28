@@ -20,6 +20,10 @@ public:
 	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options,
 							Manager& manager, bool& was_cached);
 
+	std::shared_ptr<T> load(const std::string& name, const void* data,
+							const std::string& mount_folder,
+							const memory::Variant_map& options, Manager& manager);
+
 	std::shared_ptr<T> get(const std::string& filename, const memory::Variant_map& options);
 
 private:

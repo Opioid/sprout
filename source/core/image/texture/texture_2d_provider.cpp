@@ -82,4 +82,11 @@ std::shared_ptr<Texture_2D> Provider::load(const std::string& filename,
 	return nullptr;
 }
 
+std::shared_ptr<Texture_2D> Provider::load(const void* /*data*/,
+										   const std::string& /*mount_folder*/,
+										   const memory::Variant_map& /*options*/,
+										   resource::Manager& /*manager*/) {
+	return nullptr;
+}
+
 }}

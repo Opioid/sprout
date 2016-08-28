@@ -40,11 +40,21 @@ public:
 										   const memory::Variant_map& options,
 										   resource::Manager& manager) final override;
 
+	virtual std::shared_ptr<Material> load(const void* data,
+										   const std::string& mount_folder,
+										   const memory::Variant_map& options,
+										   resource::Manager& manager) final override;
+
 	std::shared_ptr<Material> fallback_material() const;
 
 	Generic_sample_cache<light::Sample>& light_cache();
 
 private:
+
+	std::shared_ptr<Material> load(const json::Value& value,
+								   const std::string& mount_folder,
+								   resource::Manager& manager);
+
 
 	std::shared_ptr<Material> load_cloth(const json::Value& cloth_value,
 										 resource::Manager& manager);

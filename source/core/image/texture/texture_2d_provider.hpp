@@ -29,6 +29,11 @@ public:
 	virtual std::shared_ptr<Texture_2D> load(const std::string& filename,
 											 const memory::Variant_map& options,
 											 resource::Manager& manager) final override;
+
+	virtual std::shared_ptr<Texture_2D> load(const void* data,
+											 const std::string& mount_folder,
+											 const memory::Variant_map& options,
+											 resource::Manager& manager) final override;
 };
 
 }}

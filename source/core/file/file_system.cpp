@@ -28,9 +28,7 @@ std::unique_ptr<std::istream> System::read_stream(const std::string& name,
 }
 
 void System::push_mount(const std::string& folder) {
-	if (folder.empty()) {
-		return;
-	}
+	// We also have to push empty folders, otherwise popping gets complicated
 
 	std::stringstream stream;
 	stream << folder;
@@ -49,6 +47,11 @@ void System::pop_mount() {
 std::istream* System::open_read_stream(const std::string& name,
 									   std::string& resolved_name) const {
 	for (auto& f : mount_folders_) {
+		// Ignore empty folders, because this is handled explicitely
+		if (f.empty()) {
+			continue;
+		}
+
 		resolved_name = f + name;
 
 		std::istream* stream = new std::ifstream(resolved_name, std::ios::binary);

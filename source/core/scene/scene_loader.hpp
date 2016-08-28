@@ -47,7 +47,7 @@ public:
 	Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material);
     ~Loader();
 
-	void load(std::istream& stream, Scene& scene);
+	void load(const std::string& filename, Scene& scene);
 
 	void register_extension_provider(const std::string& name, entity::Extension_provider* provider);
     void register_mesh_generator(const std::string& name, shape::triangle::Generator* generator);
@@ -57,7 +57,8 @@ public:
 
 private:
 
-	void load_materials(const json::Value& materials_value, Scene& scene);
+	void load_materials(const json::Value& materials_value,
+						const std::string& mount_folder, Scene& scene);
 
 	void load_entities(const json::Value& entities_value,
 					   entity::Entity* parent,

@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
 	scene::Scene scene;
 
 	try {
-		scene_loader.load(*file_system.read_stream(take->scene), scene);
+		scene_loader.load(take->scene_filename, scene);
 
 		if (take->camera_animation && take->view.camera) {
 			scene.add_animation(take->camera_animation);
@@ -102,7 +102,8 @@ int main(int argc, char* argv[]) {
 										 take->camera_animation.get());
 		}
 	} catch (const std::exception& e) {
-		logging::error("Scene \"" + take->scene + "\" could not be loaded: " + e.what() + ".");
+		logging::error("Scene \"" + take->scene_filename + "\" could not be loaded: "
+					   + e.what() + ".");
 		return 1;
 	}
 

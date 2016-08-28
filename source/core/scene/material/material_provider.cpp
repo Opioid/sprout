@@ -77,12 +77,27 @@ std::shared_ptr<Material> Provider::load(const std::string& filename,
 
 	auto root = json::parse(*stream_pointer);
 
-	const json::Value::ConstMemberIterator rendering_node = root->FindMember("rendering");
-	if (root->MemberEnd() == rendering_node) {
+	return load(*root, string::parent_directory(resolved_name), manager);
+}
+
+std::shared_ptr<Material> Provider::load(const void* data,
+										 const std::string& mount_folder,
+										 const memory::Variant_map& /*options*/,
+										 resource::Manager& manager) {
+	const json::Value* value = reinterpret_cast<const json::Value*>(data);
+
+	return load(*value, mount_folder, manager);
+}
+
+std::shared_ptr<Material> Provider::load(const json::Value& value,
+										 const std::string& mount_folder,
+										 resource::Manager& manager) {
+	const json::Value::ConstMemberIterator rendering_node = value.FindMember("rendering");
+	if (value.MemberEnd() == rendering_node) {
 		throw std::runtime_error("Material has no render node");
 	}
 
-	manager.file_system().push_mount(string::parent_directory(resolved_name));
+	manager.file_system().push_mount(mount_folder);
 
 	std::shared_ptr<Material> material;
 

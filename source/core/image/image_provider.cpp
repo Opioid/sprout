@@ -44,4 +44,11 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 	throw std::runtime_error("Image type for \"" + filename + "\" not recognized");
 }
 
+std::shared_ptr<Image> Provider::load(const void* /*data*/,
+									  const std::string& /*mount_folder*/,
+									  const memory::Variant_map& /*options*/,
+									  resource::Manager& /*manager*/) {
+	return nullptr;
+}
+
 }

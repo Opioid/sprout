@@ -100,6 +100,13 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
     return create_mesh(triangles, vertices, num_parts, bvh_preset, manager.thread_pool());
 }
 
+std::shared_ptr<Shape> Provider::load(const void* /*data*/,
+									  const std::string& /*mount_folder*/,
+									  const memory::Variant_map& /*options*/,
+									  resource::Manager& /*manager*/) {
+	return nullptr;
+}
+
 std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& triangles,
                                              const std::vector<Vertex>& vertices,
                                              uint32_t num_parts, BVH_preset bvh_preset,

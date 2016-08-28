@@ -26,6 +26,10 @@ public:
 									const memory::Variant_map& options,
 									Manager& manager) = 0;
 
+	virtual std::shared_ptr<T> load(const void* data,
+									const std::string& mount_folder,
+									const memory::Variant_map& options,
+									Manager& manager) = 0;
 };
 
 }

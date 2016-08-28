@@ -37,6 +37,24 @@ std::shared_ptr<Type> Manager::load(const std::string& filename,
 }
 
 template<typename Type>
+std::shared_ptr<Type> Manager::load(const std::string& name, const void* data,
+									const std::string& mount_folder,
+									const memory::Variant_map& options) {
+	if (name.empty()) {
+		return nullptr;
+	}
+
+	Typed_cache<Type>* cache = typed_cache<Type>();
+
+	// a provider for this resource type was never registered
+	if (!cache) {
+		return nullptr;
+	}
+
+	return cache->load(name, data, mount_folder, options, *this);
+}
+
+template<typename Type>
 std::shared_ptr<Type> Manager::get(const std::string& filename,
 								   const memory::Variant_map& options) {
 	if (filename.empty()) {

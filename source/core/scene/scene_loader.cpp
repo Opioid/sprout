@@ -26,9 +26,8 @@
 #include "base/math/vector.inl"
 #include "base/math/quaternion.inl"
 #include "base/memory/variant_map.inl"
+#include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
-
-#include <iostream>
 
 namespace scene {
 
@@ -45,12 +44,16 @@ Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> f
 
 Loader::~Loader() {}
 
-void Loader::load(std::istream& stream, Scene& scene) {
-	auto root = json::parse(stream);
+void Loader::load(const std::string& filename, Scene& scene) {
+	std::string resolved_name;
+	auto stream_pointer = resource_manager_.file_system().read_stream(filename, resolved_name);
+
+	auto root = json::parse(*stream_pointer);
 
 	const json::Value::ConstMemberIterator materials_node = root->FindMember("materials");
 	if (root->MemberEnd() != materials_node) {
-		load_materials(materials_node->value, scene);
+		std::string mount_folder = string::parent_directory(resolved_name);
+		load_materials(materials_node->value, mount_folder, scene);
 	}
 
 	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
@@ -81,9 +84,32 @@ std::shared_ptr<shape::Shape> Loader::celestial_disk() {
 	return celestial_disk_;
 }
 
-void Loader::load_materials(const json::Value& materials_value, Scene& scene) {
+void Loader::load_materials(const json::Value& materials_value,
+							const std::string& mount_folder, Scene& scene) {
+	if (!materials_value.IsArray()) {
+		return;
+	}
+
 	for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
-		std::cout << "Loading material stuff" << std::endl;
+		const json::Value::ConstMemberIterator name_node = m->FindMember("name");
+		if (m->MemberEnd() == name_node) {
+			continue;
+		}
+
+		std::string name = name_node->value.GetString();
+
+		const void* data = reinterpret_cast<const void*>(m);
+
+		try {
+			auto material = resource_manager_.load<material::Material>(name, data, mount_folder,
+																	   memory::Variant_map());
+
+			if (material->is_animated()) {
+				scene.add_material(material);
+			}
+		} catch (const std::exception& e) {
+			logging::error("Creating \"" + name + "\": " + e.what() + ".");
+		}
 	}
 }
 

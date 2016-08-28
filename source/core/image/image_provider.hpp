@@ -19,6 +19,11 @@ public:
 										const memory::Variant_map& options,
 										resource::Manager& manager) final override;
 
+	virtual std::shared_ptr<Image> load(const void* data,
+										const std::string& mount_folder,
+										const memory::Variant_map& options,
+										resource::Manager& manager) final override;
+
 private:
 
 	encoding::png::Reader png_reader_;

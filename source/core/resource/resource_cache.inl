@@ -34,6 +34,22 @@ std::shared_ptr<T> Typed_cache<T>::load(const std::string& filename,
 }
 
 template<typename T>
+std::shared_ptr<T> Typed_cache<T>::load(const std::string& name, const void* data,
+										const std::string& mount_folder,
+										const memory::Variant_map& options, Manager& manager) {
+	auto key = std::make_pair(name, options);
+
+	auto resource = provider_.load(data, mount_folder, options, manager);
+	if (!resource) {
+		return nullptr;
+	}
+
+	resources_[key] = resource;
+
+	return resource;
+}
+
+template<typename T>
 std::shared_ptr<T> Typed_cache<T>::get(const std::string& filename,
 									   const memory::Variant_map& options) {
 	auto key = std::make_pair(filename, options);

@@ -70,13 +70,13 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 		} else if ("sampler" == node_name) {
 			take->sampler_factory = load_sampler_factory(node_value);
 		} else if ("scene" == node_name) {
-			take->scene = node_value.GetString();
+			take->scene_filename = node_value.GetString();
 		} else if ("settings" == node_name) {
 			load_settings(node_value, take->settings);
 		}
 	}
 
-	if (take->scene.empty()) {
+	if (take->scene_filename.empty()) {
 		throw std::runtime_error("No reference to scene included");
 	}
 
