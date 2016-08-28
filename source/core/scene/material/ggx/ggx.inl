@@ -12,6 +12,7 @@
 
 namespace scene { namespace material { namespace ggx {
 
+// constexpr float Min_a2 = 0.0000000299f;
 constexpr float Min_a2 = 0.0000000299f;
 
 inline float distribution_isotropic(float n_dot_h, float a2) {
@@ -41,7 +42,7 @@ inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo
 }
 
 inline float clamp_a2(float a2) {
-	return std::max(a2, Min_a2);
+	return a2;//*/std::max(a2, Min_a2);
 }
 
 inline float3 microfacet(float d, float g, float3_p f, float n_dot_wi, float n_dot_wo) {

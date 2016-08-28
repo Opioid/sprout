@@ -45,8 +45,11 @@ void Sample_base::Layer::set(float3_p color, float3_p radiance, float ior,
 	this->f0 = math::lerp(float3(constant_f0), color, metallic);
 	this->emission = radiance;
 	this->ior = ior;
+
+	roughness = clamp_roughness(roughness);
 	this->roughness = roughness;
 	this->a2 = math::pow4(roughness);
+
 	this->metallic = metallic;
 }
 
@@ -107,6 +110,11 @@ void Sample_base::Layer::pure_specular_sample(float3_p wo, sampler::Sampler& sam
 	fresnel::Schlick schlick(f0);
 	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);
 	result.reflection *= n_dot_wi;
+}
+
+float clamp_roughness(float roughness) {
+	constexpr float min_roughness = 0.01314f;
+	return std::max(min_roughness, roughness);
 }
 
 }}}

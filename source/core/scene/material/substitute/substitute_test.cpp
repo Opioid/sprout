@@ -22,7 +22,7 @@ struct Setup {
 	float3 radiance = math::float3_identity;
 	float ior         = 1.47f;
 	float constant_f0 = fresnel::schlick_f0(1.f, ior);
-	float roughness   = 0.0f;
+	float roughness   = 0.0001f;
 	float metallic    = 0.f;
 };
 
@@ -47,10 +47,13 @@ void test() {
 
 //	float3 arbitrary();
 
-	float3 wo = arbitrary;
-	float3 wi = arbitrary;//n;
+	float3 wo = float3(0.f, 0.f, 1.f);
+	float3 wi = float3(0.f, 0.f, 1.f);
 
-	setup.test(-wi, wo, t, b, n, sampler);
+	setup.test(wi, wo, t, b, n, sampler);
+
+
+
 
 	/*
 	setup.test(t, t, t, b, n, sampler);

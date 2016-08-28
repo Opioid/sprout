@@ -78,4 +78,6 @@ public:
 	Layer layer_;
 };
 
+float clamp_roughness(float roughness);
+
 }}}
