@@ -57,7 +57,6 @@ std::unique_ptr<rapidjson::Document> parse(const std::string& buffer) {
 }
 
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {
-//	Read_stream json_stream(stream);
 	IStreamWrapper json_stream(stream);
 
 	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();

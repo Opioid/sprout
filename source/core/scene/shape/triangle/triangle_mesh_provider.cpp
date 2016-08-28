@@ -35,7 +35,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 	{
 		auto stream_pointer = manager.file_system().read_stream(filename);
-		json::Read_stream json_stream(*stream_pointer);
+		json::IStreamWrapper json_stream(*stream_pointer);
 
 		Json_handler handler;
 
@@ -138,7 +138,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 	for (auto& targets : morph_targets) {
 		auto stream_pointer = manager.file_system().read_stream(targets);
 
-		json::Read_stream json_stream(*stream_pointer);
+		json::IStreamWrapper json_stream(*stream_pointer);
 
 		handler.clear();
 
