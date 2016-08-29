@@ -27,6 +27,7 @@ inline float map_roughness(float roughness) {
 }
 
 inline float clamp_a2(float a2) {
+	return std::max(a2, Min_a2);
 }
 
 inline float distribution_isotropic(float n_dot_h, float a2) {
