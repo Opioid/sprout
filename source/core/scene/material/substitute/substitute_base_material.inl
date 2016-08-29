@@ -4,6 +4,7 @@
 #include "substitute_sample.hpp"
 #include "image/texture/texture_2d_adapter.inl"
 #include "scene/scene_worker.hpp"
+#include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
@@ -81,7 +82,7 @@ void Material_base<Sample>::set_ior(float ior, float externeal_ior) {
 
 template<typename Sample>
 void Material_base<Sample>::set_roughness(float roughness) {
-	roughness_ = roughness;
+	roughness_ = ggx::clamp_roughness(roughness);
 }
 
 template<typename Sample>
@@ -120,6 +121,7 @@ void Material_base<Sample>::set_sample(float3_p wo, const shape::Hitpoint& hp,
 	float2 surface;
 	if (surface_map_.is_valid()) {
 		surface = surface_map_.sample_2(sampler, hp.uv);
+		surface.x = ggx::map_roughness(surface.x);
 	} else {
 		surface.x = roughness_;
 		surface.y = metallic_;

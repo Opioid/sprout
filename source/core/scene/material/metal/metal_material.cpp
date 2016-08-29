@@ -3,6 +3,7 @@
 #include "image/texture/texture_2d_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
+#include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/hitpoint.inl"
@@ -51,7 +52,7 @@ void Material_isotropic::set_absorption(float3_p absorption) {
 }
 
 void Material_isotropic::set_roughness(float roughness) {
-	roughness_ = roughness;
+	roughness_ = ggx::clamp_roughness(roughness);
 }
 
 Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
@@ -107,7 +108,8 @@ void Material_anisotropic::set_absorption(float3_p absorption) {
 }
 
 void Material_anisotropic::set_roughness(float2 roughness) {
-	roughness_ = roughness;
+	roughness_ = float2(ggx::clamp_roughness(roughness.x),
+						ggx::clamp_roughness(roughness.y));
 }
 
 }}}

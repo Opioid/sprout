@@ -12,8 +12,22 @@
 
 namespace scene { namespace material { namespace ggx {
 
+constexpr float Min_roughness = 0.01314f;
+
 // constexpr float Min_a2 = 0.0000000299f;
-constexpr float Min_a2 = 0.0000000299f;
+
+constexpr float Min_a2 = Min_roughness * Min_roughness * Min_roughness * Min_roughness;
+
+inline float clamp_roughness(float roughness) {
+	return std::max(roughness, Min_roughness);
+}
+
+inline float map_roughness(float roughness) {
+	return roughness * (1.f - Min_roughness) + Min_roughness;
+}
+
+inline float clamp_a2(float a2) {
+}
 
 inline float distribution_isotropic(float n_dot_h, float a2) {
 	float d = n_dot_h * n_dot_h * (a2 - 1.f) + 1.f;
@@ -41,10 +55,6 @@ inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo
 	return 1.f / (g_wo * g_wi);
 }
 
-inline float clamp_a2(float a2) {
-	return a2;//*/std::max(a2, Min_a2);
-}
-
 inline float3 microfacet(float d, float g, float3_p f, float n_dot_wi, float n_dot_wo) {
 	return (d * g * f) / (4.f * n_dot_wi * n_dot_wo);
 }
@@ -61,19 +71,15 @@ template<typename Layer, typename Fresnel>
 float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
 							 const Layer& layer, const Fresnel& fresnel, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == layer.a2) {
-		pdf = 0.f;
-		return math::float3_identity;
-	}
+	SOFT_ASSERT(layer.a2 >= Min_a2);
 
 	float3 h = math::normalized(wo + wi);
 
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n, h));
 
-	float clamped_a2 = clamp_a2(layer.a2);
-	float d = distribution_isotropic(n_dot_h, clamped_a2);
-	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, clamped_a2);
+	float d = distribution_isotropic(n_dot_h, layer.a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2);
 	float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -87,58 +93,41 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 template<typename Layer, typename Fresnel>
 float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
 						 sampler::Sampler& sampler, bxdf::Result& result) {
-	if (0.f == layer.a2) {
-		constexpr float n_dot_h = 1.f;
+	// Roughness zero will always have zero specular term (or worse NaN)
+	// For reflections we could do a perfect mirror,
+	// but the decision is to always use a minimum roughness instead
+	SOFT_ASSERT(layer.a2 >= Min_a2);
 
-		float wo_dot_h = n_dot_wo;
+	float2 xi = sampler.generate_sample_2D();
 
-		float3 wi = math::normalized(2.f * wo_dot_h * layer.n - wo);
+	float n_dot_h = std::sqrt((1.f - xi.y) / ((layer.a2 - 1.f) * xi.y + 1.f));
 
-		float d = distribution_isotropic(n_dot_h, Min_a2);
-		float g = geometric_visibility_and_denominator(n_dot_wo, n_dot_wo, Min_a2);
-		float3 f = fresnel(wo_dot_h);
+	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+	float phi = 2.f * math::Pi * xi.x;
+	float sin_phi = std::sin(phi);
+	float cos_phi = std::cos(phi);
 
-		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = d * g * f;
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Specular_reflection);
+	float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+	float3 h = math::normalized(layer.tangent_to_world(is));
 
-		SOFT_ASSERT(testing::check(result, wo, layer));
+	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
-		return n_dot_wo;
-	} else {
-		float2 xi = sampler.generate_sample_2D();
+	float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
 
-		float clamped_a2 = clamp_a2(layer.a2);
-		float n_dot_h = std::sqrt((1.f - xi.y) / ((clamped_a2 - 1.f) * xi.y + 1.f));
+	float n_dot_wi = layer.clamped_n_dot(wi);
 
-		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-		float phi = 2.f * math::Pi * xi.x;
-		float sin_phi = std::sin(phi);
-		float cos_phi = std::cos(phi);
+	float d = distribution_isotropic(n_dot_h, layer.a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2);
+	float3 f = fresnel(wo_dot_h);
 
-		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-		float3 h = math::normalized(layer.tangent_to_world(is));
+	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+	result.reflection = d * g * f;
+	result.wi = wi;
+	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
-		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+	SOFT_ASSERT(testing::check(result, wo, layer));
 
-		float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
-
-		float n_dot_wi = layer.clamped_n_dot(wi);
-
-		float d = distribution_isotropic(n_dot_h, clamped_a2);
-		float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, clamped_a2);
-		float3 f = fresnel(wo_dot_h);
-
-		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = d * g * f;
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Glossy_reflection);
-
-		SOFT_ASSERT(testing::check(result, wo, layer));
-
-		return n_dot_wi;
-	}
+	return n_dot_wi;
 }
 
 template<typename Layer, typename Fresnel>
@@ -146,19 +135,15 @@ float3 Isotropic::refraction(float3_p wi, float3_p wo, float n_dot_wi,
 							 float n_dot_wo, float /*n_dot_t*/, const Layer& layer,
 							 const Fresnel& fresnel, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == layer.a2) {
-		pdf = 0.f;
-		return math::float3_identity;
-	}
+	SOFT_ASSERT(layer.a2 >= Min_a2);
 
 	float3 h = math::normalized(wo + wi);
 
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n, h));
 
-	float clamped_a2 = clamp_a2(layer.a2);
-	float d = distribution_isotropic(n_dot_h, clamped_a2);
-	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, clamped_a2);
+	float d = distribution_isotropic(n_dot_h, layer.a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2);
 	float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -172,76 +157,48 @@ float3 Isotropic::refraction(float3_p wi, float3_p wo, float n_dot_wi,
 template<typename Layer, typename Fresnel>
 float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Result& result) {
-	if (0.f == layer.a2) {
-		// I never tested this path... Perfectly specular glass has it's own implementation
-		constexpr float n_dot_h = 1.f;
+	// Roughness zero will always have zero specular term (or worse NaN)
+	SOFT_ASSERT(layer.a2 >= Min_a2);
 
-		float wo_dot_h = n_dot_wo;
+	float2 xi = sampler.generate_sample_2D();
 
-		float3 wi = math::normalized((layer.eta_i * n_dot_wo - n_dot_t) * layer.n
-									 - layer.eta_i * wo);
+	float n_dot_h = std::sqrt((1.f - xi.y) / ((layer.a2 - 1.f) * xi.y + 1.f));
 
-		float d = distribution_isotropic(n_dot_h, Min_a2);
-		float g = G_smith(n_dot_t, n_dot_wo, Min_a2);
-		float3 f = fresnel(wo_dot_h);
+	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+	float phi = 2.f * math::Pi * xi.x;
+	float sin_phi = std::sin(phi);
+	float cos_phi = std::cos(phi);
 
-		float3 refraction = d * g * f;
+	float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+	float3 h = math::normalized(layer.tangent_to_world(is));
 
-		float factor = (wo_dot_h * wo_dot_h) / (n_dot_t * n_dot_wo);
+	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
-		float denom = layer.ior_i * wo_dot_h + layer.ior_o * wo_dot_h;
-		denom = denom * denom;
+	float3 wi = math::normalized((layer.eta_i * wo_dot_h - n_dot_t) * h - layer.eta_i * wo);
 
-		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = factor * (((layer.ior_o * layer.ior_o) * refraction) / denom);
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Specular_transmission);
+	float n_dot_wi = layer.reversed_clamped_n_dot(wi);
 
-		SOFT_ASSERT(testing::check(result, wo, layer));
+	float d = distribution_isotropic(n_dot_h, layer.a2);
+	float g = G_smith(n_dot_wi, n_dot_wo, layer.a2);
+	float3 f = fresnel(wo_dot_h);
 
-		return n_dot_wo;
-	} else {
-		float2 xi = sampler.generate_sample_2D();
+	float3 refraction = d * g * f;
 
-		float clamped_a2 = clamp_a2(layer.a2);
-		float n_dot_h = std::sqrt((1.f - xi.y) / ((clamped_a2 - 1.f) * xi.y + 1.f));
+	float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-		float phi = 2.f * math::Pi * xi.x;
-		float sin_phi = std::sin(phi);
-		float cos_phi = std::cos(phi);
-
-		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-		float3 h = math::normalized(layer.tangent_to_world(is));
-
-		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
-
-		float3 wi = math::normalized((layer.eta_i * wo_dot_h - n_dot_t) * h - layer.eta_i * wo);
-
-		float n_dot_wi = layer.reversed_clamped_n_dot(wi);
-
-		float d = distribution_isotropic(n_dot_h, clamped_a2);
-		float g = G_smith(n_dot_wi, n_dot_wo, clamped_a2);
-		float3 f = fresnel(wo_dot_h);
-
-		float3 refraction = d * g * f;
-
-		float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
-
-		float denom = layer.ior_i * wo_dot_h + layer.ior_o * wo_dot_h;
-		denom = denom * denom;
+	float denom = layer.ior_i * wo_dot_h + layer.ior_o * wo_dot_h;
+	denom = denom * denom;
 
 //		float thing = ((layer.ior_o * layer.ior_o) * wo_dot_h / denom);
 
-		result.pdf = (d * n_dot_h / (4.f * wo_dot_h));// * thing;
-		result.reflection = factor * (((layer.ior_o * layer.ior_o) * refraction) / denom);
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Glossy_transmission);
+	result.pdf = (d * n_dot_h / (4.f * wo_dot_h));// * thing;
+	result.reflection = factor * (((layer.ior_o * layer.ior_o) * refraction) / denom);
+	result.wi = wi;
+	result.type.clear_set(bxdf::Type::Glossy_transmission);
 
-		SOFT_ASSERT(testing::check(result, wo, layer));
+	SOFT_ASSERT(testing::check(result, wo, layer));
 
-		return n_dot_wi;
-	}
+	return n_dot_wi;
 }
 
 template<typename Layer, typename Fresnel>
@@ -253,17 +210,12 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
 	// Roughness zero will always have zero specular term (or worse NaN)
-	if (0.f == layer.a2) {
-		fresnel_result = fresnel(wo_dot_h);
-		pdf = 0.f;
-		return math::float3_identity;
-	}
+	SOFT_ASSERT(layer.a2 >= Min_a2);
 
 	float n_dot_h  = math::saturate(math::dot(layer.n, h));
 
-	float clamped_a2 = clamp_a2(layer.a2);
-	float d = distribution_isotropic(n_dot_h, clamped_a2);
-	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, clamped_a2);
+	float d = distribution_isotropic(n_dot_h, layer.a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2);
 	float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
@@ -272,72 +224,49 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 
 	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
 
-//	float3 alter = microfacet(d, G_smith(n_dot_wi, n_dot_wo, clamped_a2), f, n_dot_wi, n_dot_wo);
-
-//	std::cout << (result - alter) << std::endl;
-
 	return result;
 }
 
 template<typename Layer, typename Fresnel>
 float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
 						 sampler::Sampler& sampler, float3& fresnel_result, bxdf::Result& result) {
-	if (0.f == layer.a2) {
-		constexpr float n_dot_h = 1.f;
+	// Roughness zero will always have zero specular term (or worse NaN)
+	// For reflections we could do a perfect mirror,
+	// but the decision is to always use a minimum roughness instead
+	SOFT_ASSERT(layer.a2 >= Min_a2);
 
-		float wo_dot_h = n_dot_wo;
+	float2 xi = sampler.generate_sample_2D();
 
-		float3 wi = math::normalized(2.f * wo_dot_h * layer.n - wo);
+	float n_dot_h = std::sqrt((1.f - xi.y) / ((layer.a2 - 1.f) * xi.y + 1.f));
 
-		float d = distribution_isotropic(n_dot_h, Min_a2);
-		float g = geometric_visibility_and_denominator(n_dot_wo, n_dot_wo, Min_a2);
-		float3 f = fresnel(wo_dot_h);
+	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+	float phi = 2.f * math::Pi * xi.x;
+	float sin_phi = std::sin(phi);
+	float cos_phi = std::cos(phi);
 
-		fresnel_result = f;
+	float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+	float3 h = math::normalized(layer.tangent_to_world(is));
 
-		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = d * g * f;
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Specular_reflection);
+	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
-		SOFT_ASSERT(testing::check(result, wo, layer));
+	float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
 
-		return n_dot_wo;
-	} else {
-		float2 xi = sampler.generate_sample_2D();
+	float n_dot_wi = layer.clamped_n_dot(wi);
 
-		float clamped_a2 = clamp_a2(layer.a2);
-		float n_dot_h = std::sqrt((1.f - xi.y) / ((clamped_a2 - 1.f) * xi.y + 1.f));
+	float d = distribution_isotropic(n_dot_h, layer.a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2);
+	float3 f = fresnel(wo_dot_h);
 
-		float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-		float phi = 2.f * math::Pi * xi.x;
-		float sin_phi = std::sin(phi);
-		float cos_phi = std::cos(phi);
+	fresnel_result = f;
 
-		float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-		float3 h = math::normalized(layer.tangent_to_world(is));
+	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+	result.reflection = d * g * f;
+	result.wi = wi;
+	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
-		float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+	SOFT_ASSERT(testing::check(result, wo, layer));
 
-		float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
-
-		float n_dot_wi = layer.clamped_n_dot(wi);
-
-		float d = distribution_isotropic(n_dot_h, clamped_a2);
-		float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, clamped_a2);
-		float3 f = fresnel(wo_dot_h);
-
-		fresnel_result = f;
-
-		result.pdf = d * n_dot_h / (4.f * wo_dot_h);
-		result.reflection = d * g * f;
-		result.wi = wi;
-		result.type.clear_set(bxdf::Type::Glossy_reflection);
-
-		SOFT_ASSERT(testing::check(result, wo, layer));
-
-		return n_dot_wi;
-	}
+	return n_dot_wi;
 }
 
 template<typename Layer, typename Fresnel>

@@ -3,6 +3,7 @@
 #include "image/texture/texture_2d_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
+#include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/hitpoint.inl"
@@ -33,7 +34,7 @@ const material::Sample& Glass_rough::sample(float3_p wo, const Renderstate& rs,
 
 	float a2;
 	if (roughness_map_.is_valid()) {
-		float roughness = roughness_map_.sample_1(sampler, rs.uv);
+		float roughness = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
 		a2 = math::pow4(roughness);
 	} else {
 		a2 = a2_;
@@ -65,7 +66,7 @@ void Glass_rough::set_ior(float ior) {
 }
 
 void Glass_rough::set_roughness(float roughness) {
-	a2_ = math::pow4(roughness);
+	a2_ = math::pow4(ggx::clamp_roughness(roughness));
 }
 
 }}}
