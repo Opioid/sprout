@@ -17,4 +17,9 @@ inline float3 attenuation(float3_p start, float3_p end, float3_p c) {
 	return attenuation(math::distance(start, end), c);
 }
 
+inline float power_heuristic(float fpdf, float gpdf) {
+	float f2 = fpdf * fpdf;
+	return f2 / (f2 + gpdf * gpdf);
+}
+
 }

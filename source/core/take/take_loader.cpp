@@ -22,6 +22,7 @@
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
+#include "rendering/integrator/surface/pathtracer_mis2.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
 #include "sampler/sampler_ems.hpp"
@@ -472,6 +473,24 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
 
 			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
+						settings, min_bounces, max_bounces, path_termination_probability,
+						light_sampling, disable_caustics);
+		} else if ("PTMIS2" == node_name) {
+			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
+			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
+
+			float path_termination_probability = json::read_float(
+						node_value, "path_termination_probability",
+						default_path_termination_probability);
+
+			const auto light_sampling_node = node_value.FindMember("light_sampling");
+			if (node_value.MemberEnd() != light_sampling_node) {
+				load_light_sampling(light_sampling_node->value, light_sampling);
+			}
+
+			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
+
+			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS2_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
 						light_sampling, disable_caustics);
 		} else if ("Normal" == node_name) {

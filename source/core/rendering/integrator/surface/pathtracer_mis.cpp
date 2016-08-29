@@ -15,7 +15,6 @@
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 #include "base/math/random/generator.inl"
-#include <iostream>
 
 namespace rendering { namespace integrator { namespace surface {
 
@@ -136,11 +135,6 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 	}
 
 	return float4(result, opacity);
-}
-
-float power_heuristic(float fpdf, float gpdf) {
-	float f2 = fpdf * fpdf;
-	return f2 / (f2 + gpdf * gpdf);
 }
 
 float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& ray,
