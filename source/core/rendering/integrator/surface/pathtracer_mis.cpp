@@ -33,8 +33,8 @@ void Pathtracer_MIS::start_new_pixel(uint32_t num_samples) {
 
 float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 						  scene::Intersection& intersection) {
-	Sampler_filter filter;
-	scene::material::bxdf::Result sample_result;
+	Sampler_filter filter = Sampler_filter::Unknown;
+	Bxdf_result sample_result;
 
 	float3 throughput = float3(1.f, 1.f, 1.f);
 	float3 result = math::float3_identity;
@@ -42,12 +42,6 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 	bool primary_ray = 0 == ray.depth;
 
 	for (uint32_t i = 0; ; ++i) {
-		if (primary_ray) {
-			filter = Sampler_filter::Unknown;
-		} else {
-			filter = Sampler_filter::Nearest;
-		}
-
 		if (!resolve_mask(worker, ray, intersection, filter)) {
 			break;
 		}
@@ -120,6 +114,7 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 
 		if (!sample_result.type.test(Bxdf_type::Specular)) {
 			primary_ray = false;
+			filter = Sampler_filter::Nearest;
 		}
 
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -239,8 +234,7 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 	ray.max_t = take_settings_.ray_max_t;
 
 	scene::Intersection light_intersection;
-	if (worker.intersect(ray, light_intersection)
-	&&  resolve_mask(worker, ray, light_intersection, filter)) {
+	if (intersect_and_resolve_mask(worker, ray, light_intersection, filter)) {
 		if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
 			auto& light_material_sample = light_intersection.sample(worker, wo, ray.time,
 																	Sampler_filter::Nearest);

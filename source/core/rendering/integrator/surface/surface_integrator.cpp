@@ -40,6 +40,16 @@ bool Integrator::resolve_mask(Worker& worker, scene::Ray& ray,
 	return true;
 }
 
+bool Integrator::intersect_and_resolve_mask(Worker& worker, scene::Ray& ray,
+											scene::Intersection& intersection,
+											Sampler_filter filter) {
+	if (!worker.intersect(ray, intersection)) {
+		return false;
+	}
+
+	return resolve_mask(worker, ray, intersection, filter);
+}
+
 Factory::Factory(const take::Settings& settings) :
 	take_settings_(settings) {}
 

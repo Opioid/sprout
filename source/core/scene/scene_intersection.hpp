@@ -19,6 +19,8 @@ class Prop;
 struct Intersection {
 	using Sampler_filter = material::Sampler_settings::Filter;
 
+	bool hit() const;
+
 	material::Material* material() const;
 
 	float area() const;

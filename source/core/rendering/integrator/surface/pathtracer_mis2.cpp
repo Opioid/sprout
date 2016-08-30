@@ -33,7 +33,7 @@ void Pathtracer_MIS2::start_new_pixel(uint32_t num_samples) {
 
 float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 						   scene::Intersection& intersection) {
-	Sampler_filter filter;
+	Sampler_filter filter = Sampler_filter::Unknown;
 	scene::material::bxdf::Result sample_result;
 
 	float3 throughput = float3(1.f, 1.f, 1.f);
@@ -41,19 +41,12 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 	float opacity = 0.f;
 	bool primary_ray = 0 == ray.depth;
 
+	if (!resolve_mask(worker, ray, intersection, filter)) {
+		return float4(result, opacity);
+	}
+
 	for (uint32_t i = 0; ; ++i) {
-		if (primary_ray) {
-			filter = Sampler_filter::Unknown;
-		} else {
-			filter = Sampler_filter::Nearest;
-		}
-
-		if (!resolve_mask(worker, ray, intersection, filter)) {
-			break;
-		}
-
 		if (volume && i > 0) {
-		//	throughput *= worker.transmittance(ray);
 			float3 tr;
 			float4 vli = worker.volume_li(ray, tr);
 			result += throughput * vli.xyz;
@@ -77,7 +70,7 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		result += throughput * estimate_direct_light(worker, ray, intersection,
 													 material_sample, filter, sample_result);
 
-		if (i == settings_.max_bounces - 1) {
+		if (!intersection.hit() || i == settings_.max_bounces - 1) {
 			break;
 		}
 
@@ -93,7 +86,6 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 			throughput /= q;
 		}
 
-	//	material_sample.sample(sampler_, sample_result);
 		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {
 			break;
 		}
@@ -120,8 +112,8 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 
 		if (!sample_result.type.test(Bxdf_type::Specular)) {
 			primary_ray = false;
+			filter = Sampler_filter::Nearest;
 		}
-
 
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
@@ -130,11 +122,12 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		ray.max_t = take_settings_.ray_max_t;
 		++ray.depth;
 
-		if ((sample_result.type.test(Bxdf_type::Specular) || sample_result.type.test(Bxdf_type::Transmission))
-		&& !worker.intersect(ray, intersection)) {
-			break;
+		if (sample_result.type.test(Bxdf_type::Specular)
+		||  sample_result.type.test(Bxdf_type::Transmission)) {
+			if (!intersect_and_resolve_mask(worker, ray, intersection, filter)) {
+				break;
+			}
 		}
-
 	}
 
 	return float4(result, opacity);
@@ -233,23 +226,22 @@ float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float l
 		return result;
 	}
 
-	float ls_pdf = light->pdf(transformation, intersection.geo.p,
-							  sample_result.wi, material_sample.is_translucent(),
-							  worker, Sampler_filter::Nearest);
-	if (0.f == ls_pdf) {
-		return result;
-	}
-
 	float3 wo = -sample_result.wi;
 	ray.set_direction(sample_result.wi);
 	ray.max_t = take_settings_.ray_max_t;
 
 //	scene::Intersection light_intersection;
-	if (worker.intersect(ray, intersection)
-	&&  resolve_mask(worker, ray, intersection, filter)) {
+	if (intersect_and_resolve_mask(worker, ray, intersection, filter)) {
 		if (light->equals(intersection.prop, intersection.geo.part)) {
+			float ls_pdf = light->pdf(transformation, intersection.geo.p,
+									  sample_result.wi, material_sample.is_translucent(),
+									  worker, Sampler_filter::Nearest);
+			if (0.f == ls_pdf) {
+				return result;
+			}
+
 			auto& light_material_sample = intersection.sample(worker, wo, ray.time,
-																	Sampler_filter::Nearest);
+															  Sampler_filter::Nearest);
 
 			if (light_material_sample.same_hemisphere(wo)) {
 				float3 t = worker.transmittance(ray);

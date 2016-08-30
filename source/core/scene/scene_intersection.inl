@@ -7,6 +7,10 @@
 
 namespace scene {
 
+inline bool Intersection::hit() const {
+	return nullptr != prop;
+}
+
 inline material::Material* Intersection::material() const {
 	return prop->material(geo.part);
 }

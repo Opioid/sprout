@@ -125,8 +125,10 @@ const math::aabb& Tree::aabb() const {
 	return root_.aabb;
 }
 
-bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack, Intersection& intersection) const {
+bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
+					 Intersection& intersection) const {
 	bool hit = false;
+	intersection.prop = nullptr;
 
 	if (root_.intersect(ray, props_, node_stack, intersection)) {
 		hit = true;

@@ -28,6 +28,10 @@ bool Worker::intersect(const Prop* prop, Ray& ray, Intersection& intersection) {
 	if (hit) {
 		intersection.prop = prop;
 	}
+	// The following is problematic for resolve_transmission
+//	else {
+//		intersection.prop = nullptr;
+//	}
 
 	return hit;
 }

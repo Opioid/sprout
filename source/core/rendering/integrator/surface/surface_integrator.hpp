@@ -38,6 +38,10 @@ protected:
 	bool resolve_mask(Worker& worker, scene::Ray& ray,
 					  scene::Intersection& intersection,
 					  Sampler_filter filter);
+
+	bool intersect_and_resolve_mask(Worker& worker, scene::Ray& ray,
+									scene::Intersection& intersection,
+									Sampler_filter filter);
 };
 
 class Factory {
