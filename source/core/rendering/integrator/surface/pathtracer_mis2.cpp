@@ -70,7 +70,10 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		result += throughput * estimate_direct_light(worker, ray, intersection,
 													 material_sample, filter, sample_result);
 
-		if (!intersection.hit() || i == settings_.max_bounces - 1) {
+		if (!intersection.hit()
+		||  i == settings_.max_bounces - 1
+		||  0.f == sample_result.pdf
+		||  math::float3_identity == sample_result.reflection) {
 			break;
 		}
 
@@ -84,10 +87,6 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 			}
 
 			throughput /= q;
-		}
-
-		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {
-			break;
 		}
 
 		if (settings_.disable_caustics && !primary_ray
@@ -104,7 +103,7 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 			}
 
 			throughput *= tr;
-			opacity += /*1.f - sample_result.pdf **/ spectrum::luminance(tr);
+			opacity += spectrum::luminance(tr);
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 			opacity = 1.f;
@@ -226,7 +225,6 @@ float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float l
 		return result;
 	}
 
-	float3 wo = -sample_result.wi;
 	ray.set_direction(sample_result.wi);
 	ray.max_t = take_settings_.ray_max_t;
 
@@ -240,6 +238,7 @@ float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float l
 				return result;
 			}
 
+			float3 wo = -sample_result.wi;
 			auto& light_material_sample = intersection.sample(worker, wo, ray.time,
 															  Sampler_filter::Nearest);
 

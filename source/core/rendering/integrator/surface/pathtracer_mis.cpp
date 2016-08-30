@@ -229,13 +229,13 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 		return result;
 	}
 
-	float3 wo = -sample_result.wi;
 	ray.set_direction(sample_result.wi);
 	ray.max_t = take_settings_.ray_max_t;
 
 	scene::Intersection light_intersection;
 	if (intersect_and_resolve_mask(worker, ray, light_intersection, filter)) {
 		if (light->equals(light_intersection.prop, light_intersection.geo.part)) {
+			float3 wo = -sample_result.wi;
 			auto& light_material_sample = light_intersection.sample(worker, wo, ray.time,
 																	Sampler_filter::Nearest);
 
