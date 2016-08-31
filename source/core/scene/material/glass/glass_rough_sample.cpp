@@ -17,9 +17,6 @@ const material::Sample::Layer& Sample_rough::base_layer() const {
 }
 
 float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
-//	pdf = 0.f;
-//	return math::float3_identity;
-
 	if (!same_hemisphere(wo_)) {
 		// only handling reflection for now
 		pdf = 0.f;

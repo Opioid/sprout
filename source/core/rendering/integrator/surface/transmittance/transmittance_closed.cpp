@@ -37,7 +37,8 @@ float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& int
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		material_sample.sample(sampler, sample_result);
-		if (0.f == sample_result.pdf || math::float3_identity == sample_result.reflection) {
+		if (0.f == sample_result.pdf
+		||  math::float3_identity == sample_result.reflection) {
 			break;
 		}
 
