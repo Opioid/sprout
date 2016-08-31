@@ -89,9 +89,13 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 			throughput /= q;
 		}
 
-		if (settings_.disable_caustics && !primary_ray
-		&& sample_result.type.test(Bxdf_type::Specular)) {
-			break;
+		if (sample_result.type.test(Bxdf_type::Specular)) {
+			if (settings_.disable_caustics && !primary_ray) {
+				break;
+			}
+		} else {
+			primary_ray = false;
+			filter = Sampler_filter::Nearest;
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
@@ -109,11 +113,6 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 			opacity = 1.f;
 		}
 
-		if (!sample_result.type.test(Bxdf_type::Specular)) {
-			primary_ray = false;
-			filter = Sampler_filter::Nearest;
-		}
-
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
@@ -121,6 +120,7 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		ray.max_t = take_settings_.ray_max_t;
 		++ray.depth;
 
+		// For these cases we fallback to plain pathtracing
 		if (sample_result.type.test(Bxdf_type::Specular)
 		||  sample_result.type.test(Bxdf_type::Transmission)) {
 			if (!intersect_and_resolve_mask(worker, ray, intersection, filter)) {
@@ -216,9 +216,9 @@ float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float l
 	}
 
 	// Material BSDF importance sample
-//	Bxdf_result sample_result;
 	material_sample.sample(sampler_, sample_result);
 
+	// For these cases we fallback to plain pathtracing
 	if (0.f == sample_result.pdf
 	||  sample_result.type.test(Bxdf_type::Specular)
 	||  sample_result.type.test(Bxdf_type::Transmission)) {
@@ -228,7 +228,6 @@ float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float l
 	ray.set_direction(sample_result.wi);
 	ray.max_t = take_settings_.ray_max_t;
 
-//	scene::Intersection light_intersection;
 	if (intersect_and_resolve_mask(worker, ray, intersection, filter)) {
 		if (light->equals(intersection.prop, intersection.geo.part)) {
 			float ls_pdf = light->pdf(transformation, intersection.geo.p,
