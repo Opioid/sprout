@@ -227,9 +227,8 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 		materials.push_back(fallback_material_);
 	}
 
-	Prop* prop = scene.create_prop(shape, name);
+	Prop* prop = scene.create_prop(shape, materials, name);
 
-	prop->set_materials(materials);
 	prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	prop->set_open(open);
 
@@ -237,14 +236,13 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 }
 
 void Loader::load_light(const json::Value& /*light_value*/, Prop* prop, Scene& scene) {
-	const size_t num_parts = static_cast<size_t>(prop->shape()->num_parts());
-	auto& materials = prop->materials();
-	for (size_t i = 0, len = std::min(materials.size(), num_parts); i < len; ++i) {
-		if (materials[i]->is_emissive()) {
-			if (prop->shape()->is_analytical() && materials[i]->has_emission_map()) {
-				scene.create_prop_image_light(prop, static_cast<uint32_t>(i));
+	for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
+		auto material = prop->material(i);
+		if (material->is_emissive()) {
+			if (prop->shape()->is_analytical() && material->has_emission_map()) {
+				scene.create_prop_image_light(prop, i);
 			} else {
-				scene.create_prop_light(prop, static_cast<uint32_t>(i));
+				scene.create_prop_light(prop, i);
 			}
 		}
 	}

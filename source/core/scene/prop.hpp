@@ -30,15 +30,14 @@ public:
 
 	virtual ~Prop();
 
-	void set_shape(std::shared_ptr<shape::Shape> shape);
-
-	void set_materials(const material::Materials& materials);
+	void set_shape_and_materials(std::shared_ptr<shape::Shape> shape,
+								 const material::Materials& materials);
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 
 	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
-	void prepare_sampling(uint32_t part);
+	void prepare_sampling(uint32_t part, uint32_t light_id);
 
 	void morph(thread::Pool& pool);
 
@@ -80,9 +79,14 @@ private:
 	// For moving objects it must cover the entire area occupied by the object during the tick.
 	math::aabb aabb_;
 
-	material::Materials materials_;
+	struct Part {
+		float    area;
+		uint32_t light_id;
+	};
 
-	std::vector<float> areas_;
+	std::vector<Part> parts_;
+
+	material::Materials materials_;
 
 	enum class Properties {
 		Visible_in_camera		= 1 << 0,

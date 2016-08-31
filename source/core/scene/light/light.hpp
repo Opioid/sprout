@@ -50,7 +50,7 @@ public:
 
 	virtual float3 power(const math::aabb& scene_bb) const = 0;
 
-	virtual void prepare_sampling() = 0;
+	virtual void prepare_sampling(uint32_t light_id) = 0;
 
 	virtual bool equals(const Prop* prop, uint32_t part) const = 0;
 };

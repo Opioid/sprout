@@ -48,10 +48,10 @@ float Prop_image_light::pdf(const Transformation& transformation,
 	return sample.pdf * pdf;
 }
 
-void Prop_image_light::prepare_sampling() {
+void Prop_image_light::prepare_sampling(uint32_t light_id) {
 	prop_->material(part_)->prepare_sampling(true);
 
-	prop_->prepare_sampling(part_);
+	prop_->prepare_sampling(part_, light_id);
 }
 
 }}

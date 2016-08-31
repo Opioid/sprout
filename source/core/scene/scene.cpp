@@ -186,8 +186,9 @@ void Scene::compile() {
 	// resort lights PDF
 	light_powers_.clear();
 
-	for (auto l : lights_) {
-		l->prepare_sampling();
+	for (size_t i = 0, len = lights_.size(); i < len; ++i) {
+		auto l = lights_[i];
+		l->prepare_sampling(static_cast<uint32_t>(i));
 		light_powers_.push_back(std::sqrt(spectrum::luminance(l->power(bvh_.aabb()))));
 	}
 
@@ -215,7 +216,8 @@ entity::Dummy* Scene::create_dummy(const std::string& name) {
 	return dummy;
 }
 
-Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape) {
+Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape,
+						 const material::Materials& materials) {
 	Prop* prop = new Prop;
 
 	if (shape->is_finite()) {
@@ -224,15 +226,17 @@ Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape) {
 		infinite_props_.push_back(prop);
 	}
 
-	prop->set_shape(shape);
+	prop->set_shape_and_materials(shape, materials);
 
 	entities_.push_back(prop);
 
 	return prop;
 }
 
-Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape, const std::string& name) {
-	Prop* prop = create_prop(shape);
+Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape,
+						 const material::Materials& materials,
+						 const std::string& name) {
+	Prop* prop = create_prop(shape, materials);
 
 	add_named_entity(prop, name);
 

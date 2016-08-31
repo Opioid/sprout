@@ -6,16 +6,21 @@
 
 namespace procedural { namespace sky {
 
-Sky::Sky(scene::Prop& sky, scene::Prop& sun) :
-	sky_(sky),
-	sun_(sun),
+Sky::Sky() :
 	sun_rotation_(1.f, 0.f, 0.f,
 				  0.f, 0.f, 1.f,
 				  0.f, -1.f, 0.f),
 	ground_albedo_(0.2f, 0.2f, 0.2f),
-	turbidity_(2.f) {
-	attach(&sky);
-	attach(&sun);
+	turbidity_(2.f) {}
+
+Sky::~Sky() {}
+
+void Sky::init(scene::Prop* sky, scene::Prop* sun) {
+	sky_ = sky;
+	sun_ = sun;
+
+	attach(sky_);
+	attach(sun_);
 
 	update();
 
@@ -25,10 +30,8 @@ Sky::Sky(scene::Prop& sky, scene::Prop& sun) :
 		math::create_quaternion_rotation_x(math::degrees_to_radians(90.f))
 	};
 
-	sky.set_transformation(transformation);
+	sky->set_transformation(transformation);
 }
-
-Sky::~Sky() {}
 
 void Sky::set_parameters(const json::Value& parameters) {
 	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
@@ -63,7 +66,7 @@ void Sky::update() {
 		math::create_quaternion(sun_rotation_)
 	};
 
-	sun_.set_transformation(transformation);
+	sun_->set_transformation(transformation);
 }
 
 void Sky::on_set_transformation() {}

@@ -28,7 +28,7 @@ public:
 
 	virtual float3 power(const math::aabb& scene_bb) const final override;
 
-	virtual void prepare_sampling() override;
+	virtual void prepare_sampling(uint32_t light_id) override;
 
 	virtual bool equals(const Prop* prop, uint32_t part) const final override;
 

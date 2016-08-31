@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene_worker.hpp"
+#include "material/material.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "bvh/scene_bvh_tree.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
@@ -82,8 +83,9 @@ public:
 	entity::Dummy* create_dummy();
 	entity::Dummy* create_dummy(const std::string& name);
 
-	Prop* create_prop(std::shared_ptr<shape::Shape> shape);
-	Prop* create_prop(std::shared_ptr<shape::Shape> shape, const std::string& name);
+	Prop* create_prop(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
+	Prop* create_prop(std::shared_ptr<shape::Shape> shape, const material::Materials& materials,
+					  const std::string& name);
 
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
 	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);

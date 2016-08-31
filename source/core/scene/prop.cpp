@@ -14,12 +14,16 @@ namespace scene {
 
 Prop::~Prop() {}
 
-void Prop::set_shape(std::shared_ptr<shape::Shape> shape) {
+void Prop::set_shape_and_materials(std::shared_ptr<shape::Shape> shape,
+								   const material::Materials& materials) {
 	shape_ = shape;
-	areas_.resize(shape->num_parts(), 1.f);
-}
 
-void Prop::set_materials(const material::Materials& materials) {
+	parts_.resize(shape->num_parts());
+	for (auto& p : parts_) {
+		p.area = 1.f;
+		p.light_id = 0xFFFFFFFF;
+	}
+
 	properties_.clear();
 
 	materials_ = materials;
@@ -40,12 +44,13 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
 	properties_.set(Properties::Visible_in_shadow,		in_shadow);
 }
 
-void Prop::prepare_sampling(uint32_t part) {
+void Prop::prepare_sampling(uint32_t part, uint32_t light_id) {
 	shape_->prepare_sampling(part);
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(0.f, temp);
-	areas_[part] = shape_->area(part, transformation.scale);
+	parts_[part].area = shape_->area(part, transformation.scale);
+	parts_[part].light_id = light_id;
 }
 
 void Prop::morph(thread::Pool& pool) {
@@ -122,7 +127,7 @@ const math::aabb& Prop::aabb() const {
 }
 
 float Prop::area(uint32_t part) const {
-	return areas_[part];
+	return parts_[part].area;
 }
 
 const material::Materials& Prop::materials() const {

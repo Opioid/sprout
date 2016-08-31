@@ -12,12 +12,12 @@ class Sky : public scene::entity::Entity {
 
 public:
 
-	Sky(scene::Prop& sky, scene::Prop& sun);
+	Sky();
 	~Sky();
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 
-	void set_sun(scene::Prop* sun);
+	void init(scene::Prop* sky, scene::Prop* sun);
 
 	Model& model();
 
@@ -29,8 +29,8 @@ private:
 
 	Model model_;
 
-	scene::Prop& sky_;
-	scene::Prop& sun_;
+	scene::Prop* sky_;
+	scene::Prop* sun_;
 
 	math::float3x3 sun_rotation_;
 	float3 ground_albedo_;

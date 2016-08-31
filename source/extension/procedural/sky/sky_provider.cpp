@@ -35,16 +35,23 @@ void Provider::set_material_provider(scene::material::Provider& provider) {
 scene::entity::Entity* Provider::create_extension(const json::Value& extension_value,
 												  scene::Scene& scene,
 												  resource::Manager& /*manager*/) {
-	scene::Prop* sky_prop = scene.create_prop(scene_loader_->canopy());
-	scene::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk());
-
-	Sky* sky = new Sky(*sky_prop, *sun_prop);
+	Sky* sky = new Sky;
 
 	auto sky_material = std::make_shared<Sky_material>(material_provider_->light_cache(),
 													   sky->model());
 
 	auto sun_material = std::make_shared<Sun_material>(material_provider_->light_cache(),
 													   sky->model());
+
+	scene::material::Materials materials(1);
+
+	materials[0] = sky_material;
+	scene::Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), materials);
+
+	materials[0] = sun_material;
+	scene::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), materials);
+
+	sky->init(sky_prop, sun_prop);
 
 	const json::Value::ConstMemberIterator p = extension_value.FindMember("parameters");
 	if (extension_value.MemberEnd() != p) {
@@ -55,16 +62,10 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 	bool visible_in_reflection = true;
 	bool visible_in_shadow = true;
 
-	scene::material::Materials materials(1);
-
-	materials[0] = sky_material;
-	sky_prop->set_materials(materials);
 	sky_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	sky_prop->set_open(false);
 	scene.create_prop_light(sky_prop, 0);
 
-	materials[0] = sun_material;
-	sun_prop->set_materials(materials);
 	sun_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	sun_prop->set_open(false);
 	scene.create_prop_light(sun_prop, 0);
