@@ -43,15 +43,14 @@ inline float Distribution_1D::sample_continuous(float r, float& pdf) const {
 	return (static_cast<float>(offset) + t) / size_;
 }
 
+inline float Distribution_1D::pdf(uint32_t index) const {
+	return pdf_[index];
+}
+
 inline float Distribution_1D::pdf(float u) const {
 	uint32_t offset = static_cast<uint32_t>(u * size_);
 
 	return pdf_[offset];
-}
-
-
-inline float Distribution_1D::pdfly(uint32_t index) const {
-	return pdf_[index];
 }
 
 inline void Distribution_1D::precompute_1D_pdf_cdf(const float* data, size_t len) {
@@ -136,14 +135,14 @@ inline float Distribution_lut_1D::sample_continuous(float r, float& pdf) const {
 	return (static_cast<float>(offset) + t) / size_;
 }
 
+inline float Distribution_lut_1D::pdf(uint32_t index) const {
+	return pdf_[index];
+}
+
 inline float Distribution_lut_1D::pdf(float u) const {
 	uint32_t offset = static_cast<uint32_t>(u * size_);
 
 	return pdf_[offset];
-}
-
-inline float Distribution_lut_1D::pdfly(uint32_t index) const {
-	return pdf_[index];
 }
 
 inline uint32_t Distribution_lut_1D::map(float s) const {

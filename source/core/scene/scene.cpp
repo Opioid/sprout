@@ -106,7 +106,7 @@ const light::Light* Scene::light(uint32_t id, float& pdf) const {
 		return nullptr;
 	}
 
-	pdf = light_distribution_.pdfly(id);
+	pdf = light_distribution_.pdf(id);
 	return lights_[id];
 }
 

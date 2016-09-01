@@ -18,9 +18,8 @@ public:
 
 	float sample_continuous(float r, float& pdf) const;
 
+	float pdf(uint32_t index) const;
 	float pdf(float u) const;
-
-	float pdfly(uint32_t index) const;
 
 private:
 
@@ -49,9 +48,8 @@ public:
 
 	float sample_continuous(float r, float& pdf) const;
 
+	float pdf(uint32_t index) const;
 	float pdf(float u) const;
-
-	float pdfly(uint32_t index) const;
 
 private:
 
