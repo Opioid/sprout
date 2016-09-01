@@ -54,6 +54,7 @@ public:
 	const math::aabb& aabb() const;
 
 	float area(uint32_t part) const;
+	uint32_t light_id(uint32_t part) const;
 
 	const material::Materials& materials() const;
 	material::Material* material(uint32_t part) const;

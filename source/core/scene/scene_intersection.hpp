@@ -23,6 +23,8 @@ struct Intersection {
 
 	material::Material* material() const;
 
+	uint32_t light_id() const;
+
 	float area() const;
 
 	float opacity(Worker& worker, float time, Sampler_filter filter) const;

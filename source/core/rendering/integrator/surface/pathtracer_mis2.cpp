@@ -230,7 +230,7 @@ float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float l
 
 	if (intersect_and_resolve_mask(worker, ray, intersection, filter)) {
 		if (light->equals(intersection.prop, intersection.geo.part)) {
-			float ls_pdf = light->pdf(transformation, intersection.geo.p,
+			float ls_pdf = light->pdf(transformation, ray.origin,
 									  sample_result.wi, material_sample.is_translucent(),
 									  worker, Sampler_filter::Nearest);
 			if (0.f == ls_pdf) {
@@ -252,6 +252,34 @@ float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float l
 					   * ls_energy * sample_result.reflection;
 			}
 		}
+
+
+//		float custom_light_pdf = 0.f;
+//		const scene::light::Light* custom_light = worker.scene().light(intersection.light_id(), custom_light_pdf);
+
+//		if (custom_light) {
+//			float ls_pdf = custom_light->pdf(transformation, ray.origin,
+//											 sample_result.wi, material_sample.is_translucent(),
+//											 worker, Sampler_filter::Nearest);
+//			if (0.f == ls_pdf) {
+//				return result;
+//			}
+
+//			float3 wo = -sample_result.wi;
+//			auto& light_material_sample = intersection.sample(worker, wo, ray.time,
+//															  Sampler_filter::Nearest);
+
+//			if (light_material_sample.same_hemisphere(wo)) {
+//				float3 t = worker.transmittance(ray);
+
+//				float3 ls_energy = t * light_material_sample.radiance();
+
+//				float weight = power_heuristic(sample_result.pdf, ls_pdf /** custom_light_pdf*/);
+
+//				result += (weight / sample_result.pdf / custom_light_pdf)
+//					   * ls_energy * sample_result.reflection;
+//			}
+//		}
 	}
 
 	return result;

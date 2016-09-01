@@ -19,6 +19,10 @@ inline float Intersection::area() const {
 	return prop->area(geo.part);
 }
 
+inline uint32_t Intersection::light_id() const {
+	return prop->light_id(geo.part);
+}
+
 inline float Intersection::opacity(Worker& worker, float time, Sampler_filter filter) const {
 	return material()->opacity(geo.uv, time, worker, filter);
 }

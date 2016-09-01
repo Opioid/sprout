@@ -20,6 +20,8 @@ public:
 
 	float pdf(float u) const;
 
+	float pdfly(uint32_t index) const;
+
 private:
 
 	void precompute_1D_pdf_cdf(const float* data, size_t len);
@@ -48,6 +50,8 @@ public:
 	float sample_continuous(float r, float& pdf) const;
 
 	float pdf(float u) const;
+
+	float pdfly(uint32_t index) const;
 
 private:
 

@@ -71,6 +71,7 @@ public:
 
 	const std::vector<light::Light*>& lights() const;
 
+	const light::Light* light(uint32_t id, float& pdf) const;
 	const light::Light* montecarlo_light(float random, float& pdf) const;
 
 	const volume::Volume* volume_region() const;

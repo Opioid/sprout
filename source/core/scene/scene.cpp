@@ -101,6 +101,15 @@ const std::vector<light::Light*>& Scene::lights() const {
 	return lights_;
 }
 
+const light::Light* Scene::light(uint32_t id, float& pdf) const {
+	if (lights_.empty() || 0xFFFFFFFF == id) {
+		return nullptr;
+	}
+
+	pdf = light_distribution_.pdfly(id);
+	return lights_[id];
+}
+
 const light::Light* Scene::montecarlo_light(float random, float& pdf) const {
 	if (lights_.empty()) {
 		return nullptr;

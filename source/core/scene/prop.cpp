@@ -130,6 +130,10 @@ float Prop::area(uint32_t part) const {
 	return parts_[part].area;
 }
 
+uint32_t Prop::light_id(uint32_t part) const {
+	return parts_[part].light_id;
+}
+
 const material::Materials& Prop::materials() const {
 	return materials_;
 }
