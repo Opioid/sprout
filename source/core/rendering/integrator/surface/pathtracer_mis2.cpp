@@ -140,10 +140,10 @@ float3 Pathtracer_MIS2::estimate_direct_light(Worker& worker, const scene::Ray& 
 	float3 result = math::float3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	scene::Ray shadow_ray;
-	shadow_ray.origin = intersection.geo.p;
-	shadow_ray.depth  = ray.depth + 1;
-	shadow_ray.time   = ray.time;
+	scene::Ray secondary_ray;
+	secondary_ray.origin = intersection.geo.p;
+	secondary_ray.depth  = ray.depth + 1;
+	secondary_ray.time   = ray.time;
 
 	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
 		for (uint32_t i = 0; i < settings_.light_sampling.num_samples; ++i) {
@@ -156,34 +156,83 @@ float3 Pathtracer_MIS2::estimate_direct_light(Worker& worker, const scene::Ray& 
 
 			float light_pdf_reciprocal = 1.f / light_pdf;
 
-			shadow_ray.min_t = ray_offset;
+			secondary_ray.min_t = ray_offset;
 
-			result += evaluate_light(light, light_pdf_reciprocal, worker, shadow_ray,
-									 intersection, material_sample, filter, sample_result);
+			result += evaluate_light(light, light_pdf_reciprocal, worker, secondary_ray,
+									 intersection, material_sample, filter);
 		}
 
-		return settings_.num_light_samples_reciprocal * result;
+		result *= settings_.num_light_samples_reciprocal;
 	} else {
 		float light_weight = static_cast<float>(worker.scene().lights().size());
 		for (const auto light : worker.scene().lights()) {
 			for (uint32_t i = 0; i < settings_.light_sampling.num_samples; ++i) {
-				shadow_ray.min_t = ray_offset;
+				secondary_ray.min_t = ray_offset;
 
-				result += evaluate_light(light, light_weight, worker, shadow_ray,
-										 intersection, material_sample, filter, sample_result);
+				result += evaluate_light(light, light_weight, worker, secondary_ray,
+										 intersection, material_sample, filter);
 			}
 		}
 
-		return (settings_.num_light_samples_reciprocal / light_weight) * result;
+		result *= settings_.num_light_samples_reciprocal / light_weight;
 	}
+
+	// Material BSDF importance sample
+	material_sample.sample(sampler_, sample_result);
+
+	// Those cases are handled outside at the moment
+	if (0.f == sample_result.pdf
+	||  sample_result.type.test(Bxdf_type::Specular)
+	||  sample_result.type.test(Bxdf_type::Transmission)) {
+		return result;
+	}
+
+	secondary_ray.set_direction(sample_result.wi);
+	secondary_ray.min_t = ray_offset;
+	secondary_ray.max_t = take_settings_.ray_max_t;
+
+	if (intersect_and_resolve_mask(worker, secondary_ray, intersection, filter)) {
+		float light_pdf = 0.f;
+		const scene::light::Light* light = worker.scene().light(intersection.light_id(),
+																light_pdf);
+
+		if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
+			light_pdf = 1.f / static_cast<float>(worker.scene().lights().size());
+		}
+
+		if (light) {
+			float ls_pdf = light->pdf(ray.time, secondary_ray.origin, sample_result.wi,
+									  material_sample.is_translucent(),
+									  worker, Sampler_filter::Nearest);
+			if (0.f == ls_pdf) {
+				return result;
+			}
+
+			float3 wo = -sample_result.wi;
+			auto& light_material_sample = intersection.sample(worker, wo, ray.time,
+															  Sampler_filter::Nearest);
+
+			if (light_material_sample.same_hemisphere(wo)) {
+				float3 t = worker.transmittance(ray);
+
+				float3 ls_energy = t * light_material_sample.radiance();
+
+				float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
+
+				result += (weight / sample_result.pdf)
+					   * ls_energy * sample_result.reflection;
+			}
+		}
+	}
+
+	return result;
 }
 
 float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float light_weight,
 									   Worker& worker, scene::Ray& ray,
-									   scene::Intersection& intersection,
+									   const scene::Intersection& intersection,
 									   const scene::material::Sample& material_sample,
-									   Sampler_filter filter,
-									   Bxdf_result& sample_result) {
+									   Sampler_filter filter) {
 	float3 result = math::float3_identity;
 
 	scene::entity::Composed_transformation temp;
@@ -212,49 +261,6 @@ float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float l
 
 			result += (weight / light_sample.shape.pdf * light_weight)
 				   * mv * t * light_sample.radiance * f;
-		}
-	}
-
-	// Material BSDF importance sample
-	material_sample.sample(sampler_, sample_result);
-
-	// For these cases we fallback to plain pathtracing
-	if (0.f == sample_result.pdf
-	||  sample_result.type.test(Bxdf_type::Specular)
-	||  sample_result.type.test(Bxdf_type::Transmission)) {
-		return result;
-	}
-
-	ray.set_direction(sample_result.wi);
-	ray.max_t = take_settings_.ray_max_t;
-
-	if (intersect_and_resolve_mask(worker, ray, intersection, filter)) {
-		float custom_light_pdf = 0.f;
-		const scene::light::Light* custom_light = worker.scene().light(intersection.light_id(),
-																	   custom_light_pdf);
-
-		if (custom_light) {
-			float ls_pdf = custom_light->pdf(ray.time, ray.origin, sample_result.wi,
-											 material_sample.is_translucent(),
-											 worker, Sampler_filter::Nearest);
-			if (0.f == ls_pdf) {
-				return result;
-			}
-
-			float3 wo = -sample_result.wi;
-			auto& light_material_sample = intersection.sample(worker, wo, ray.time,
-															  Sampler_filter::Nearest);
-
-			if (light_material_sample.same_hemisphere(wo)) {
-				float3 t = worker.transmittance(ray);
-
-				float3 ls_energy = t * light_material_sample.radiance();
-
-				float weight = power_heuristic(sample_result.pdf, ls_pdf * custom_light_pdf);
-
-				result += (weight / sample_result.pdf /*/ custom_light_pdf*/)
-					   * ls_energy * sample_result.reflection;
-			}
 		}
 	}
 

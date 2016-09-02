@@ -47,10 +47,9 @@ private:
 
 	float3 evaluate_light(const scene::light::Light* light, float light_weight,
 						  Worker& worker, scene::Ray& ray,
-						  scene::Intersection& intersection,
+						  const scene::Intersection& intersection,
 						  const scene::material::Sample& material_sample,
-						  Sampler_filter filter,
-						  Bxdf_result& sample_result);
+						  Sampler_filter filter);
 
 	float3 resolve_transmission(Worker& worker, scene::Ray& ray,
 								scene::Intersection& intersection,
