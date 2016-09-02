@@ -19,5 +19,13 @@ void Light::sample(float time, float3_p p, sampler::Sampler& sampler,
 	sample(time, p, math::float3_identity, true, sampler, worker, filter, result);
 }
 
+float Light::pdf(float time, float3_p p, float3_p wi, bool total_sphere,
+				 Worker& worker, Sampler_filter filter) const {
+	entity::Composed_transformation temp;
+	auto& transformation = transformation_at(time, temp);
+
+	return pdf(transformation, p, wi, total_sphere, worker, filter);
+}
+
 }}
 
