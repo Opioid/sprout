@@ -235,12 +235,9 @@ float3 Pathtracer_MIS2::evaluate_light(const scene::light::Light* light, float l
 									   Sampler_filter filter) {
 	float3 result = math::float3_identity;
 
-	scene::entity::Composed_transformation temp;
-	auto& transformation = light->transformation_at(ray.time, temp);
-
 	// Light source importance sample
 	scene::light::Sample light_sample;
-	light->sample(transformation, ray.time, intersection.geo.p,
+	light->sample(ray.time, intersection.geo.p,
 				  material_sample.geometric_normal(), material_sample.is_translucent(),
 				  sampler_, worker, Sampler_filter::Nearest, light_sample);
 
