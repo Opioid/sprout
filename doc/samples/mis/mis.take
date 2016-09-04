@@ -47,7 +47,7 @@
 
 	"integrator": {
 		"surface": {
-			"PTMIS": {
+			"PTMIS2": {
 				"min_bounces": 8,
 				"max_bounces": 8,
 				"num_light_samples": 1

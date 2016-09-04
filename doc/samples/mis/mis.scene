@@ -1,16 +1,55 @@
 {
 	"materials": [
 		{
-			"Rendering": {
+			"name": "gray_0",
+			"rendering": {
 				"Substitute": {
-					
+					"color": [0.8, 0.8, 0.8],
+					"roughness": 0.05
 				}
 			}
 		}, {
-			"Rendering": {
+			"name": "gray_1",
+			"rendering": {
 				"Substitute": {
-					
+					"color": [0.8, 0.8, 0.8],
+					"roughness": 0.125					
 				} 
+			}
+		}, {
+			"name": "gray_2",
+			"rendering": {
+				"Substitute": {
+					"color": [0.8, 0.8, 0.8],
+					"roughness": 0.25
+				} 
+			}
+		}, {
+			"name": "gray_3",
+			"rendering": {
+				"Substitute": {
+					"color": [0.8, 0.8, 0.8],
+					"roughness": 0.4					
+				} 
+			}
+		}, {
+			"name": "gray_4",
+			"rendering": {
+				"Substitute": {
+					"color": [0.6, 0.6, 0.6],
+					"roughness": 0.8					
+				} 
+			}
+		}, {
+			"name": "light", 
+			"rendering": {
+				"Light": {
+					"emittance": {
+						"quantity": "Intensity",
+						"value": 4000,
+						"spectrum": { "temperature": 10000 }
+					}
+				}
 			}
 		}
 	],
@@ -19,7 +58,7 @@
 		{
 			"type": "Light",
 			"shape": { "type": "Sphere" },
-			"materials": [ "light.material" ],
+			"materials": [ "light" ],
 			"transformation": {
 				"position": [ -1.5, 2, 0 ],
 				"scale": [ 0.0125, 0.0125, 0.0125 ]
@@ -27,7 +66,7 @@
 		}, {
 			"type": "Light",
 			"shape": { "type": "Sphere" },
-			"materials": [ "light.material" ],
+			"materials": [ "light" ],
 			"transformation": {
 				"position": [ -0.5, 2, 0 ],
 				"scale": [ 0.075, 0.075, 0.075 ]
@@ -35,7 +74,7 @@
 		}, {
 			"type": "Light",
 			"shape": { "type": "Sphere" },
-			"materials": [ "light.material" ],
+			"materials": [ "light" ],
 			"transformation": {
 				"position": [ 0.5, 2, 0 ],
 				"scale": [ 0.15, 0.15, 0.15 ]
@@ -43,7 +82,7 @@
 		}, {
 			"type": "Light",
 			"shape": { "type": "Sphere" },
-			"materials": [ "light.material" ],
+			"materials": [ "light" ],
 			"transformation": {
 				"position": [ 1.5, 2, 0 ],
 				"scale": [ 0.35, 0.35, 0.35 ]
@@ -51,7 +90,7 @@
 		}, {			
 			"type": "Prop",
 			"shape": { "file": "quad.json" },
-			"materials": [ "gray_4.material" ],
+			"materials": [ "gray_4" ],
 			"transformation": {
 				"position": [0, -0.25, 0],
 				"scale": [4, 4, 1],
@@ -60,7 +99,7 @@
 		}, {			
 			"type": "Prop",
 			"shape": { "file": "quad.json" },
-			"materials": [ "gray_0.material" ],
+			"materials": [ "gray_0" ],
 			"transformation": {
 				"position": [0, 1.93, 2.4],
 				"scale": [2, 0.35, 1],
@@ -69,7 +108,7 @@
 		}, {			
 			"type": "Prop",
 			"shape": { "file": "quad.json" },
-			"materials": [ "gray_1.material" ],
+			"materials": [ "gray_1" ],
 			"transformation": {
 				"position": [0, 1.15, 1.6],
 				"scale": [2, 0.35, 1],
@@ -78,7 +117,7 @@
 		}, {			
 			"type": "Prop",
 			"shape": { "file": "quad.json" },
-			"materials": [ "gray_2.material" ],
+			"materials": [ "gray_2" ],
 			"transformation": {
 				"position": [0, 0.5, 0.8],
 				"scale": [2, 0.35, 1],
@@ -87,7 +126,7 @@
 		}, {			
 			"type": "Prop",
 			"shape": { "file": "quad.json" },
-			"materials": [ "gray_3.material" ],
+			"materials": [ "gray_3" ],
 			"transformation": {
 				"position": [0, 0, 0],
 				"scale": [2, 0.35, 1],
