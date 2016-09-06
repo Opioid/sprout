@@ -56,12 +56,9 @@ void Loader::load(const std::string& filename, Scene& scene) {
 		load_materials(materials_node->value, mount_folder, scene);
 	}
 
-	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("entities" == node_name) {
-			load_entities(node_value, nullptr, scene);
+	for (auto& n : root->GetObject()) {
+		if ("entities" == n.name) {
+			load_entities(n.value, nullptr, scene);
 		}
 	}
 }
@@ -119,32 +116,32 @@ void Loader::load_entities(const json::Value& entities_value,
 		return;
 	}
 
-	for (auto e = entities_value.Begin(); e != entities_value.End(); ++e) {
-		const json::Value::ConstMemberIterator type_node = e->FindMember("type");
-		if (e->MemberEnd() == type_node) {
+	for (auto& e : entities_value.GetArray()) {
+		const json::Value::ConstMemberIterator type_node = e.FindMember("type");
+		if (e.MemberEnd() == type_node) {
 			continue;
 		}
 
 		std::string type_name = type_node->value.GetString();
 
-		std::string name = json::read_string(*e, "name");
+		std::string name = json::read_string(e, "name");
 
 		entity::Entity* entity = nullptr;
 
 		if ("Light" == type_name) {
-			Prop* prop = load_prop(*e, name, scene);
+			Prop* prop = load_prop(e, name, scene);
 			entity = prop;
 			if (prop && prop->visible_in_reflection()) {
-				load_light(*e, prop, scene);
+				load_light(e, prop, scene);
 			}
 		} else if ("Prop" == type_name) {
-			entity = load_prop(*e, name, scene);
+			entity = load_prop(e, name, scene);
 		} else if ("Dummy" == type_name) {
 			entity = scene.create_dummy();
 		} else if ("Volume" == type_name) {
-			entity = load_volume(*e, scene);
+			entity = load_volume(e, scene);
 		} else {
-			entity = load_extension(type_name, *e, name, scene);
+			entity = load_extension(type_name, e, name, scene);
 		}
 
 		if (!entity) {
@@ -161,16 +158,15 @@ void Loader::load_entities(const json::Value& entities_value,
 		const json::Value* animation_value = nullptr;
 		const json::Value* children = nullptr;
 
-		for (auto n = e->MemberBegin(); n != e->MemberEnd(); ++n) {
-			const std::string node_name = n->name.GetString();
-			const json::Value& node_value = n->value;
+		for (auto& n : e.GetObject()) {
+			const std::string node_name = n.name.GetString();
 
 			if ("transformation" == node_name) {
-				json::read_transformation(node_value, transformation);
+				json::read_transformation(n.value, transformation);
 			} else if ("animation" == node_name) {
-				animation_value = &node_value;
+				animation_value = &n.value;
 			} else if ("entities" == node_name) {
-				children = &node_value;
+				children = &n.value;
 			}
 		}
 
@@ -202,20 +198,17 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 	bool visible_in_shadow = true;
 	bool open = false;
 
-	for (auto n = prop_value.MemberBegin(); n != prop_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("shape" == node_name) {
-			shape = load_shape(node_value);
-		} else if ("materials" == node_name) {
-			load_materials(node_value, scene, materials);
-		} else if ("visibility" == node_name) {
-			visible_in_camera	  = json::read_bool(node_value, "in_camera",     true);
-			visible_in_reflection = json::read_bool(node_value, "in_reflection", true);
-			visible_in_shadow     = json::read_bool(node_value, "in_shadow",     true);
-		} else if ("open" == node_name) {
-			open = json::read_bool(node_value);
+	for (auto& n : prop_value.GetObject()) {
+		if ("shape" == n.name) {
+			shape = load_shape(n.value);
+		} else if ("materials" == n.name) {
+			load_materials(n.value, scene, materials);
+		} else if ("visibility" == n.name) {
+			visible_in_camera	  = json::read_bool(n.value, "in_camera",     true);
+			visible_in_reflection = json::read_bool(n.value, "in_reflection", true);
+			visible_in_shadow     = json::read_bool(n.value, "in_shadow",     true);
+		} else if ("open" == n.name) {
+			open = json::read_bool(n.value);
 		}
 	}
 
@@ -252,14 +245,11 @@ volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scen
 	float3 absorption(0.f, 0.f, 0.f);
 	float3 scattering(0.f, 0.f, 0.f);
 
-	for (auto n = volume_value.MemberBegin(); n != volume_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("absorption" == node_name) {
-			absorption = json::read_float3(node_value);
-		} else if ("scattering" == node_name) {
-			scattering = json::read_float3(node_value);
+	for (auto& n : volume_value.GetObject()) {
+		if ("absorption" == n.name) {
+			absorption = json::read_float3(n.value);
+		} else if ("scattering" == n.name) {
+			scattering = json::read_float3(n.value);
 		}
 	}
 
@@ -349,10 +339,10 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 
 	materials.reserve(materials_value.Size());
 
-	for (auto m = materials_value.Begin(); m != materials_value.End(); ++m) {
+	for (auto& m : materials_value.GetArray()) {
 		try {
 			bool was_cached;
-			auto material = resource_manager_.load<material::Material>(m->GetString(),
+			auto material = resource_manager_.load<material::Material>(m.GetString(),
 																	   memory::Variant_map(),
 																	   was_cached);
 
@@ -364,7 +354,7 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 		} catch (const std::exception& e) {
 			materials.push_back(fallback_material_);
 
-			logging::error("Loading \"" + std::string(m->GetString()) + "\": " +
+			logging::error("Loading \"" + std::string(m.GetString()) + "\": " +
 						   e.what() + ". Using fallback material.");
 		}
 	}

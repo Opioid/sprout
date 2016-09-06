@@ -24,23 +24,20 @@ Camera::~Camera() {
 }
 
 void Camera::set_parameters(const json::Value& parameters) {
-	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("frame_duration" == node_name) {
-			frame_duration_ = json::read_float(node_value);
-		} else if ("frames_per_second" == node_name) {
-			float fps = json::read_float(node_value);
+	for (auto& n : parameters.GetObject()) {
+		if ("frame_duration" == n.name) {
+			frame_duration_ = json::read_float(n.value);
+		} else if ("frames_per_second" == n.name) {
+			float fps = json::read_float(n.value);
 			if (0.f == fps) {
 				frame_duration_ = 0.f;
 			} else {
 				frame_duration_ = 1.f / fps;
 			}
-		} else if ("motion_blur" == node_name) {
-			motion_blur_ = json::read_bool(node_value);
+		} else if ("motion_blur" == n.name) {
+			motion_blur_ = json::read_bool(n.value);
 		} else {
-			set_parameter(node_name, node_value);
+			set_parameter(n.name.GetString(), n.value);
 		}
 	}
 }

@@ -40,7 +40,7 @@ std::shared_ptr<animation::Animation> load_keyframes(
 
 	animation->init(keyframes_value.Size());
 
-	for (auto k = keyframes_value.Begin(); k != keyframes_value.End(); ++k) {
+	for (auto& k : keyframes_value.GetArray()) {
 		entity::Keyframe keyframe;
 		keyframe.transformation = default_transformation;
 
@@ -48,16 +48,15 @@ std::shared_ptr<animation::Animation> load_keyframes(
 		keyframe.morphing.targets[1] = 0;
 		keyframe.morphing.weight = 0.f;
 
-		for (auto n = k->MemberBegin(); n != k->MemberEnd(); ++n) {
-			const std::string node_name = n->name.GetString();
-			const rapidjson::Value& node_value = n->value;
+		for (auto& n : k.GetObject()) {
+			const std::string node_name = n.name.GetString();
 
 			if ("time" == node_name) {
-				keyframe.time = json::read_float(node_value);
+				keyframe.time = json::read_float(n.value);
 			} else if ("transformation" == node_name) {
-				json::read_transformation(node_value, keyframe.transformation);
+				json::read_transformation(n.value, keyframe.transformation);
 			} else if ("morphing" == node_name) {
-				read_morphing(node_value, keyframe.morphing);
+				read_morphing(n.value, keyframe.morphing);
 			}
 		}
 
@@ -73,16 +72,15 @@ std::shared_ptr<animation::Animation> load_sequence(
 	uint32_t num_frames = 0;
 	uint32_t frames_per_second = 0;
 
-	for (auto n = sequence_value.MemberBegin(); n != sequence_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+	for (auto& n : sequence_value.GetObject()) {
+		const std::string node_name = n.name.GetString();
 
 		if ("start_frame" == node_name) {
-			start_frame = json::read_uint(node_value);
+			start_frame = json::read_uint(n.value);
 		} else if ("num_frames" == node_name) {
-			num_frames = json::read_uint(node_value);
+			num_frames = json::read_uint(n.value);
 		} else if ("frames_per_second" == node_name) {
-			frames_per_second = json::read_uint(node_value);
+			frames_per_second = json::read_uint(n.value);
 		}
 	}
 
@@ -118,17 +116,16 @@ std::shared_ptr<animation::Animation> load_sequence(
 }
 
 void read_morphing(const json::Value& value, entity::Keyframe::Morphing& morphing) {
-	for (auto n = value.MemberBegin(); n != value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const rapidjson::Value& node_value = n->value;
+	for (auto& n : value.GetObject()) {
+		const std::string node_name = n.name.GetString();
 
 		if ("targets" == node_name) {
-			if (node_value.IsArray() && node_value.Size() >= 2) {
-				morphing.targets[0] = static_cast<float>(node_value[0].GetDouble());
-				morphing.targets[1] = static_cast<float>(node_value[1].GetDouble());
+			if (n.value.IsArray() && n.value.Size() >= 2) {
+				morphing.targets[0] = n.value[0].GetUint();
+				morphing.targets[1] = n.value[1].GetUint();
 			}
 		} else if ("weight" == node_name) {
-			morphing.weight = json::read_float(node_value);
+			morphing.weight = json::read_float(n.value);
 		}
 	}
 }

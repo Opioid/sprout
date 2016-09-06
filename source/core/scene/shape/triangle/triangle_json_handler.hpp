@@ -3,6 +3,7 @@
 #include "triangle_bvh_preset.hpp"
 #include "triangle_primitive.hpp"
 #include "scene/shape/geometry/vertex.hpp"
+#include "rapidjson/reader.h"
 #include <vector>
 #include <string>
 #include <cstdint>
@@ -10,6 +11,7 @@
 namespace scene { namespace shape { namespace triangle {
 
 class Json_handler {
+
 public:
 
 	struct Part {
@@ -30,9 +32,10 @@ public:
 	bool Int64(int64_t i);
 	bool Uint64(uint64_t i);
 	bool Double(double d);
-	bool String(const char* str, size_t length, bool copy);
+	bool RawNumber(const char* str, rapidjson::SizeType length, bool copy);
+	bool String(const char* str, rapidjson::SizeType length, bool copy);
 	bool StartObject();
-	bool Key(const char* str, size_t length, bool copy);
+	bool Key(const char* str, rapidjson::SizeType length, bool copy);
 	bool EndObject(size_t memberCount);
 	bool StartArray();
 	bool EndArray(size_t elementCount);

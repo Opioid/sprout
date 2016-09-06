@@ -4,8 +4,13 @@
 #include "math/matrix.hpp"
 #include "math/quaternion.hpp"
 #include "math/transformation.hpp"
-#include <rapidjson/document.h>
-#include <istream>
+
+#ifndef RAPIDJSON_HAS_STDSTRING
+#	define RAPIDJSON_HAS_STDSTRING 1
+#endif
+#include "rapidjson/document.h"
+
+#include <iosfwd>
 #include <memory>
 
 namespace json {

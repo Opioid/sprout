@@ -54,26 +54,23 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	const json::Value* exporter_value = nullptr;
 	bool alpha_transparency = peek_alpha_transparency(*root);
 
-	for (auto n = root->MemberBegin(); n != root->MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("camera" == node_name) {
-			load_camera(node_value, alpha_transparency, *take);
-		} else if ("export" == node_name) {
-			exporter_value = &node_value;
-		} else if ("start_frame" == node_name) {
-			take->view.start_frame = json::read_uint(node_value);
-		} else if ("num_frames" == node_name) {
-			take->view.num_frames = json::read_uint(node_value);
-		} else if ("integrator" == node_name) {
-			load_integrator_factories(node_value, *take);
-		} else if ("sampler" == node_name) {
-			take->sampler_factory = load_sampler_factory(node_value);
-		} else if ("scene" == node_name) {
-			take->scene_filename = node_value.GetString();
-		} else if ("settings" == node_name) {
-			load_settings(node_value, take->settings);
+	for (auto& n : root->GetObject()) {
+		if ("camera" == n.name) {
+			load_camera(n.value, alpha_transparency, *take);
+		} else if ("export" == n.name) {
+			exporter_value = &n.value;
+		} else if ("start_frame" == n.name) {
+			take->view.start_frame = json::read_uint(n.value);
+		} else if ("num_frames" == n.name) {
+			take->view.num_frames = json::read_uint(n.value);
+		} else if ("integrator" == n.name) {
+			load_integrator_factories(n.value, *take);
+		} else if ("sampler" == n.name) {
+			take->sampler_factory = load_sampler_factory(n.value);
+		} else if ("scene" == n.name) {
+			take->scene_filename = n.value.GetString();
+		} else if ("settings" == n.name) {
+			load_settings(n.value, take->settings);
 		}
 	}
 
@@ -121,9 +118,9 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	std::string type_name = "Perspective";
 	const json::Value* type_value = nullptr;
 
-	for (auto n = camera_value.MemberBegin(); n != camera_value.MemberEnd(); ++n) {
-		type_name = n->name.GetString();
-		type_value = &n->value;
+	for (auto& n : camera_value.GetObject()) {
+		type_name = n.name.GetString();
+		type_value = &n.value;
 	}
 
 	math::transformation transformation {
@@ -139,21 +136,18 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	std::string layout_type;
 	bool stereo = false;
 
-	for (auto n = type_value->MemberBegin(); n != type_value->MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("parameters" == node_name) {
-			parameters_value = &node_value;
-			stereo = peek_stereoscopic(node_value);
-		} else if ("transformation" == node_name) {
-			json::read_transformation(node_value, transformation);
-		} else if ("animation" == node_name) {
-			animation_value = &node_value;
-		} else if ("sensor" == node_name) {
-			sensor_value = &node_value;
-		} else if ("layout" == node_name) {
-			layout_type = json::read_string(node_value);
+	for (auto& n : type_value->GetObject()) {
+		if ("parameters" == n.name) {
+			parameters_value = &n.value;
+			stereo = peek_stereoscopic(n.value);
+		} else if ("transformation" == n.name) {
+			json::read_transformation(n.value, transformation);
+		} else if ("animation" == n.name) {
+			animation_value = &n.value;
+		} else if ("sensor" == n.name) {
+			sensor_value = &n.value;
+		} else if ("layout" == n.name) {
+			layout_type = json::read_string(n.value);
 		}
 	}
 
@@ -241,16 +235,13 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 	const rendering::sensor::tonemapping::Tonemapper* tonemapper = nullptr;
 	const rendering::sensor::filter::Filter* filter = nullptr;
 
-	for (auto n = sensor_value.MemberBegin(); n != sensor_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("clamp" == node_name) {
-			clamp_max = json::read_float3(node_value);
-		} else if ("tonemapper" == node_name) {
-			tonemapper = load_tonemapper(node_value);
-		} else if ("filter" == node_name) {
-			filter = load_filter(node_value);
+	for (auto& n : sensor_value.GetObject()) {
+		if ("clamp" == n.name) {
+			clamp_max = json::read_float3(n.value);
+		} else if ("tonemapper" == n.name) {
+			tonemapper = load_tonemapper(n.value);
+		} else if ("filter" == n.name) {
+			filter = load_filter(n.value);
 		}
 	}
 
@@ -318,19 +309,16 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 
 const rendering::sensor::tonemapping::Tonemapper*
 Loader::load_tonemapper(const json::Value& tonemapper_value) const {
-	for (auto n = tonemapper_value.MemberBegin(); n != tonemapper_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("ACES" == node_name) {
-			float3 linear_white = json::read_float3(node_value, "linear_white");
-			float exposure = json::read_float(node_value, "exposure", 0.f);
+	for (auto& n : tonemapper_value.GetObject()) {
+		if ("ACES" == n.name) {
+			float3 linear_white = json::read_float3(n.value, "linear_white");
+			float exposure = json::read_float(n.value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Aces(linear_white, exposure);
-		} else if ("Identity" == node_name) {
+		} else if ("Identity" == n.name) {
 			return new rendering::sensor::tonemapping::Identity();
-		} else if ("Uncharted" == node_name) {
-			float3 linear_white = json::read_float3(node_value, "linear_white");
-			float exposure = json::read_float(node_value, "exposure", 0.f);
+		} else if ("Uncharted" == n.name) {
+			float3 linear_white = json::read_float3(n.value, "linear_white");
+			float exposure = json::read_float(n.value, "exposure", 0.f);
 			return new rendering::sensor::tonemapping::Uncharted(linear_white, exposure);
 		}
 	}
@@ -342,13 +330,10 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) const {
 
 const rendering::sensor::filter::Filter*
 Loader::load_filter(const json::Value& filter_value) const {
-	for (auto n = filter_value.MemberBegin(); n != filter_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("Gaussian" == node_name) {
-			float radius = json::read_float(node_value, "radius", 0.8f);
-			float alpha  = json::read_float(node_value, "alpha", 0.3f);
+	for (auto& n : filter_value.GetObject()) {
+		if ("Gaussian" == n.name) {
+			float radius = json::read_float(n.value, "radius", 0.8f);
+			float alpha  = json::read_float(n.value, "alpha", 0.3f);
 
 			return new rendering::sensor::filter::Gaussian(radius, alpha);
 		}
@@ -362,24 +347,21 @@ Loader::load_filter(const json::Value& filter_value) const {
 
 std::shared_ptr<sampler::Factory> Loader::load_sampler_factory(
 		const json::Value& sampler_value) const {
-	for (auto n = sampler_value.MemberBegin(); n != sampler_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("Uniform" == node_name) {
+	for (auto& n : sampler_value.GetObject()) {
+		if ("Uniform" == n.name) {
 		   // uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
 		   return std::make_shared<sampler::Uniform_factory>(1);
-		} else if ("Random" == node_name) {
-			uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
+		} else if ("Random" == n.name) {
+			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
 			return std::make_shared<sampler::Random_factory>(num_samples);
-		} else if ("Scrambled_hammersley" == node_name) {
-			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
+		} else if ("Scrambled_hammersley" == n.name) {
+			 uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
 			 return std::make_shared<sampler::Scrambled_hammersley_factory>(num_samples);
-		 } else if ("EMS" == node_name) {
-			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
+		 } else if ("EMS" == n.name) {
+			 uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
 			 return std::make_shared<sampler::EMS_factory>(num_samples);
-		 } else if ("LD" == node_name) {
-			 uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
+		 } else if ("LD" == n.name) {
+			 uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
 			 return std::make_shared<sampler::LD_factory>(num_samples);
 		 }
 	}
@@ -388,15 +370,12 @@ std::shared_ptr<sampler::Factory> Loader::load_sampler_factory(
 }
 
 void Loader::load_integrator_factories(const json::Value& integrator_value, Take& take) const {
-	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("surface" == node_name) {
-			take.surface_integrator_factory = load_surface_integrator_factory(node_value,
+	for (auto& n : integrator_value.GetObject()) {
+		if ("surface" == n.name) {
+			take.surface_integrator_factory = load_surface_integrator_factory(n.value,
 																			  take.settings);
-		} else if ("volume" == node_name) {
-			take.volume_integrator_factory = load_volume_integrator_factory(node_value,
+		} else if ("volume" == n.name) {
+			take.volume_integrator_factory = load_volume_integrator_factory(n.value,
 																			take.settings);
 		}
 	}
@@ -412,91 +391,88 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 	float default_path_termination_probability = 0.5f;
 	bool default_caustics = true;
 
-	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("AO" == node_name) {
-			uint32_t num_samples = json::read_uint(node_value, "num_samples", 1);
-			float radius = json::read_float(node_value, "radius", 1.f);
+	for (auto& n : integrator_value.GetObject()) {
+		if ("AO" == n.name) {
+			uint32_t num_samples = json::read_uint(n.value, "num_samples", 1);
+			float radius = json::read_float(n.value, "radius", 1.f);
 			return std::make_shared<rendering::integrator::surface::Ao_factory>(
 						settings, num_samples, radius);
-		} else if ("Whitted" == node_name) {
+		} else if ("Whitted" == n.name) {
 			uint32_t num_light_samples = json::read_uint(
-						node_value, "num_light_samples", light_sampling.num_samples);
+						n.value, "num_light_samples", light_sampling.num_samples);
 
 			return std::make_shared<rendering::integrator::surface::Whitted_factory>(
 						settings, num_light_samples);
-		} else if ("PT" == node_name) {
-			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
-			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
+		} else if ("PT" == n.name) {
+			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
+			uint32_t max_bounces = json::read_uint(n.value, "max_bounces", default_max_bounces);
 
 			float path_termination_probability = json::read_float(
-						node_value, "path_termination_probability",
+						n.value, "path_termination_probability",
 						default_path_termination_probability);
 
-			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
+			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<rendering::integrator::surface::Pathtracer_factory>(
 						settings, min_bounces, max_bounces,
 						path_termination_probability, disable_caustics);
-		} else if ("PTDL" == node_name) {
-			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
-			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
+		} else if ("PTDL" == n.name) {
+			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
+			uint32_t max_bounces = json::read_uint(n.value, "max_bounces", default_max_bounces);
 
 			float path_termination_probability = json::read_float(
-						node_value, "path_termination_probability",
+						n.value, "path_termination_probability",
 						default_path_termination_probability);
 
 
-			uint32_t num_light_samples = json::read_uint(node_value, "num_light_samples",
+			uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
 														 light_sampling.num_samples);
 
-			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
+			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<rendering::integrator::surface::Pathtracer_DL_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
 						num_light_samples, disable_caustics);
-		} else if ("PTMIS" == node_name) {
-			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
-			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
+		} else if ("PTMIS" == n.name) {
+			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
+			uint32_t max_bounces = json::read_uint(n.value, "max_bounces", default_max_bounces);
 
 			float path_termination_probability = json::read_float(
-						node_value, "path_termination_probability",
+						n.value, "path_termination_probability",
 						default_path_termination_probability);
 
-			const auto light_sampling_node = node_value.FindMember("light_sampling");
-			if (node_value.MemberEnd() != light_sampling_node) {
+			const auto light_sampling_node = n.value.FindMember("light_sampling");
+			if (n.value.MemberEnd() != light_sampling_node) {
 				load_light_sampling(light_sampling_node->value, light_sampling);
 			}
 
-			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
+			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
 						light_sampling, disable_caustics);
-		} else if ("PTMIS2" == node_name) {
-			uint32_t min_bounces = json::read_uint(node_value, "min_bounces", default_min_bounces);
-			uint32_t max_bounces = json::read_uint(node_value, "max_bounces", default_max_bounces);
+		} else if ("PTMIS2" == n.name) {
+			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
+			uint32_t max_bounces = json::read_uint(n.value, "max_bounces", default_max_bounces);
 
 			float path_termination_probability = json::read_float(
-						node_value, "path_termination_probability",
+						n.value, "path_termination_probability",
 						default_path_termination_probability);
 
-			const auto light_sampling_node = node_value.FindMember("light_sampling");
-			if (node_value.MemberEnd() != light_sampling_node) {
+			const auto light_sampling_node = n.value.FindMember("light_sampling");
+			if (n.value.MemberEnd() != light_sampling_node) {
 				load_light_sampling(light_sampling_node->value, light_sampling);
 			}
 
-			bool disable_caustics = !json::read_bool(node_value, "caustics", default_caustics);
+			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS2_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
 						light_sampling, disable_caustics);
-		} else if ("Normal" == node_name) {
+		} else if ("Normal" == n.name) {
 			auto vector = rendering::integrator::surface::Normal::Settings::Vector::Shading_normal;
 
-			std::string vector_type = json::read_string(node_value, "vector");
+			std::string vector_type = json::read_string(n.value, "vector");
 
 			if ("Tangent" == vector_type) {
 				vector = rendering::integrator::surface::Normal::Settings::Vector::Tangent;
@@ -519,14 +495,13 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 std::shared_ptr<rendering::integrator::volume::Factory>
 Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 									   const Settings& settings) const {
-	for (auto n = integrator_value.MemberBegin(); n != integrator_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
+	for (auto& n : integrator_value.GetObject()) {
+		const std::string node_name = n.name.GetString();
 
 		if ("Attenuation" == node_name) {
 			return std::make_shared<rendering::integrator::volume::Attenuation_factory>(settings);
 		} else if ("Single_scattering" == node_name) {
-			float step_size = json::read_float(node_value, "step_size", 1.f);
+			float step_size = json::read_float(n.value, "step_size", 1.f);
 			return std::make_shared<
 					rendering::integrator::volume::Single_scattering_factory>(settings, step_size);
 		}
@@ -560,12 +535,11 @@ bool Loader::peek_stereoscopic(const json::Value& parameters_value) {
 
 std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& exporter_value,
 													   scene::camera::Camera& camera) {
-	for (auto n = exporter_value.MemberBegin(); n != exporter_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
+	for (auto& n : exporter_value.GetObject()) {
+		const std::string node_name = n.name.GetString();
 
 		if ("Image" == node_name) {
-			const std::string format = json::read_string(node_value, "format", "PNG");
+			const std::string format = json::read_string(n.value, "format", "PNG");
 
 			image::Writer* writer;
 
@@ -577,7 +551,7 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& export
 
 			return std::make_unique<exporting::Image_sequence>("output_", writer);
 		} else if ("Movie" == node_name) {
-			uint32_t framerate = json::read_uint(node_value, "framerate");
+			uint32_t framerate = json::read_uint(n.value, "framerate");
 
 			if (0 == framerate) {
 				framerate = static_cast<uint32_t>(1.f / camera.frame_duration() + 0.5f);
@@ -596,24 +570,22 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& export
 }
 
 void Loader::load_settings(const json::Value& settings_value, Settings& settings) {
-	for (auto n = settings_value.MemberBegin(); n != settings_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
+	for (auto& n : settings_value.GetObject()) {
+		const std::string node_name = n.name.GetString();
 
 		if ("ray_offset_factor" == node_name) {
-			settings.ray_offset_factor = json::read_float(node_value);
+			settings.ray_offset_factor = json::read_float(n.value);
 		}
 	}
 }
 
 void Loader::load_light_sampling(const json::Value& sampling_value,
 								 rendering::integrator::Light_sampling& sampling) {
-	for (auto n = sampling_value.MemberBegin(); n != sampling_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
+	for (auto& n : sampling_value.GetObject()) {
+		const std::string node_name = n.name.GetString();
 
-		if ("strategy" == node_name) {
-			std::string strategy = json::read_string(node_value);
+		if ("strategy" == n.name) {
+			std::string strategy = json::read_string(n.value);
 
 			if ("One" == strategy) {
 				sampling.strategy = rendering::integrator::Light_sampling::Strategy::One;
@@ -621,7 +593,7 @@ void Loader::load_light_sampling(const json::Value& sampling_value,
 				sampling.strategy = rendering::integrator::Light_sampling::Strategy::All;
 			}
 		} else if ("num_samples" == node_name) {
-			sampling.num_samples = json::read_uint(node_value);
+			sampling.num_samples = json::read_uint(n.value);
 		}
 	}
 }

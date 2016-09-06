@@ -14,10 +14,10 @@
 #include "bvh/triangle_bvh_indexed_data.inl"
 #include "file/file_system.hpp"
 #include "base/json/json.hpp"
-#include "base/json/json_read_stream.hpp"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
 #include "base/memory/variant_map.inl"
+#include "rapidjson/istreamwrapper.h"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -35,7 +35,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 	{
 		auto stream_pointer = manager.file_system().read_stream(filename);
-		json::IStreamWrapper json_stream(*stream_pointer);
+		rapidjson::IStreamWrapper json_stream(*stream_pointer);
 
 		Json_handler handler;
 
@@ -145,7 +145,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 	for (auto& targets : morph_targets) {
 		auto stream_pointer = manager.file_system().read_stream(targets);
 
-		json::IStreamWrapper json_stream(*stream_pointer);
+		rapidjson::IStreamWrapper json_stream(*stream_pointer);
 
 		handler.clear();
 

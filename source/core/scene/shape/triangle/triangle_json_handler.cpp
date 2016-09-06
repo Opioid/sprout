@@ -81,7 +81,11 @@ bool Json_handler::Double(double d) {
 	return true;
 }
 
-bool Json_handler::String(const char* str, size_t /*length*/, bool /*copy*/) {
+bool Json_handler::RawNumber(const char* /*str*/, rapidjson::SizeType /*length*/, bool /*copy*/) {
+	return true;
+}
+
+bool Json_handler::String(const char* str, rapidjson::SizeType /*length*/, bool /*copy*/) {
 	if (String_type::BVH_preset == expected_string_) {
 		std::string bvh_preset_value(str);
 
@@ -111,7 +115,7 @@ bool Json_handler::StartObject() {
 	return true;
 }
 
-bool Json_handler::Key(const char* str, size_t /*length*/, bool /*copy*/) {
+bool Json_handler::Key(const char* str, rapidjson::SizeType /*length*/, bool /*copy*/) {
 	std::string name(str);
 
 	if (1 == object_level_) {
