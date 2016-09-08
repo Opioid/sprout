@@ -24,6 +24,11 @@ win32:INCLUDEPATH += .
 INCLUDEPATH += $$PWD/..
 DEPENDPATH += $$PWD/..
 
+# VLD
+win32:INCLUDEPATH += "C:/Program Files (x86)/Visual Leak Detector/include"
+
+win32:CONFIG(debug, debug|release): LIBS += -L"C:/Program Files (x86)/Visual Leak Detector/lib/Win64" -lvld
+
 # extension ----------------------------------------
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../extension/release/ -lextension

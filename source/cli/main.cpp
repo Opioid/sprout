@@ -1,3 +1,7 @@
+#ifdef _WIN32
+#	include "vld.h"
+#endif
+
 #include "controller/controller_progressive.hpp"
 #include "options/options.hpp"
 #include "core/file/file_system.hpp"
