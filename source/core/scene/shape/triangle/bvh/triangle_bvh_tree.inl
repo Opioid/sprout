@@ -266,7 +266,10 @@ void Tree<Data>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t mater
 
 template<typename Data>
 size_t Tree<Data>::num_bytes() const {
-	return data_.num_bytes();
+	return sizeof(*this) +
+		   num_nodes_ * sizeof(Node) +
+		   num_parts_ * sizeof(uint32_t) +
+		   data_.num_bytes();
 }
 
 }}}}

@@ -14,4 +14,6 @@ bool is_space(char c);
 
 std::string parent_directory(const std::string& filename);
 
+std::string print_bytes(size_t num_bytes);
+
 }

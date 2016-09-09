@@ -18,6 +18,8 @@ public:
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
+	virtual size_t num_bytes() const final override;
+
 	void set_normal_map(const Adapter_2D& normal_map);
 
 	void set_ior(float3_p ior);
@@ -47,6 +49,8 @@ public:
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
+
+	virtual size_t num_bytes() const final override;
 
 	void set_normal_map(const Adapter_2D& normal_map);
 	void set_direction_map(const Adapter_2D& direction_map);

@@ -53,6 +53,10 @@ float3 Sky_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky(model_.zenith());
 }
 
+size_t Sky_material::num_bytes() const {
+	return sizeof(*this);
+}
+
 Sun_material::Sun_material(
 		scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
 		Model& model) : Material(cache, model) {}
@@ -80,6 +84,10 @@ float3 Sun_material::sample_radiance(float3_p wi, float2 /*uv*/,
 
 float3 Sun_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky_and_sun(-model_.sun_direction());
+}
+
+size_t Sun_material::num_bytes() const {
+	return sizeof(*this);
 }
 
 }}

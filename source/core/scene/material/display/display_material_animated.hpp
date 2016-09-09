@@ -46,6 +46,8 @@ public:
 
 	virtual bool is_animated() const final override;
 
+	virtual size_t num_bytes() const final override;
+
 	void set_emission_factor(float emission_factor);
 	void set_roughness(float roughness);
 	void set_ior(float ior);

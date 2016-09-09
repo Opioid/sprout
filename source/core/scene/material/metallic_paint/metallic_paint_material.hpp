@@ -21,6 +21,8 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
+	virtual size_t num_bytes() const final override;
+
 	void set_color(float3_p a, float3_p b);
 	void set_roughness(float roughness);
 

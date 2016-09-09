@@ -43,6 +43,8 @@ public:
 								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
+
+	virtual size_t num_bytes() const final override;
 };
 
 class Sun_material : public Material {
@@ -61,6 +63,8 @@ public:
 								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
+
+	virtual size_t num_bytes() const final override;
 };
 
 }}

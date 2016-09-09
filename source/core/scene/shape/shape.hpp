@@ -71,6 +71,8 @@ public:
 
 	virtual Morphable_shape* morphable_shape();
 
+	virtual size_t num_bytes() const = 0;
+
 protected:
 
 	math::aabb aabb_;

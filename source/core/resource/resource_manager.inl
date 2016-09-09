@@ -79,6 +79,27 @@ std::shared_ptr<Type> Manager::get(const std::string& filename,
 }
 
 template<typename Type>
+size_t Manager::num_bytes() const {
+	const Typed_cache<Type>* cache = typed_cache<Type>();
+	if (!cache) {
+		return 0;
+	}
+
+	return cache->num_bytes();
+}
+
+template<typename Type>
+const Typed_cache<Type>* Manager::typed_cache() const {
+	auto cache = caches_.find(Provider<Type>::id());
+
+	if (caches_.end() == cache) {
+		return nullptr;
+	}
+
+	return static_cast<const Typed_cache<Type>*>(cache->second);
+}
+
+template<typename Type>
 Typed_cache<Type>* Manager::typed_cache() {
 	auto cache = caches_.find(Provider<Type>::id());
 

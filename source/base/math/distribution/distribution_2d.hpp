@@ -6,6 +6,7 @@
 namespace math {
 
 class Distribution_2D {
+
 public:
 
 	void init(const float* data, int2 dimensions);
@@ -13,6 +14,8 @@ public:
 	float2 sample_continuous(float2 r2, float& pdf) const;
 
 	float pdf(float2 uv) const;
+
+	size_t num_bytes() const;
 
 private:
 

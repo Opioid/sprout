@@ -9,6 +9,7 @@ namespace thread { class Pool; }
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 class Builder_SAH : private Builder_base  {
+
 public:
 
 	Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
@@ -24,6 +25,7 @@ public:
 private:
 
 	class Split_candidate {
+
 	public:
 
 		using index = std::vector<uint32_t>::iterator;

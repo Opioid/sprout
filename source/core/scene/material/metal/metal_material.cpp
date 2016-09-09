@@ -39,6 +39,10 @@ const material::Sample& Material_isotropic::sample(float3_p wo, const Renderstat
 	return sample;
 }
 
+size_t Material_isotropic::num_bytes() const {
+	return sizeof(*this);
+}
+
 void Material_isotropic::set_normal_map(const Adapter_2D& normal_map) {
 	normal_map_ = normal_map;
 }
@@ -89,6 +93,10 @@ const material::Sample& Material_anisotropic::sample(float3_p wo, const Renderst
 	sample.layer_.set(ior_, absorption_, roughness_);
 
 	return sample;
+}
+
+size_t Material_anisotropic::num_bytes() const {
+	return sizeof(*this);
 }
 
 void Material_anisotropic::set_normal_map(const Adapter_2D& normal_map) {

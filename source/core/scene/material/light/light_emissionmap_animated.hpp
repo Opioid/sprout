@@ -44,6 +44,8 @@ public:
 
 	virtual bool is_animated() const final override;
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	Adapter_2D emission_map_;

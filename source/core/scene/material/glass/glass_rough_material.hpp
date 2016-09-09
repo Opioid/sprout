@@ -19,6 +19,8 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
+	virtual size_t num_bytes() const final override;
+
 	void set_normal_map(const Adapter_2D& normal_map);
 	void set_roughness_map(const Adapter_2D& roughness_map);
 

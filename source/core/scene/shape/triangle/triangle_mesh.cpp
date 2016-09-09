@@ -228,6 +228,17 @@ void Mesh::prepare_sampling(uint32_t part) {
    }
 }
 
+
+size_t Mesh::num_bytes() const {
+	size_t num_bytes = 0;
+
+	for (auto& d : distributions_) {
+		num_bytes += d.num_bytes();
+	}
+
+	return sizeof(*this) + tree_.num_bytes() + num_bytes;
+}
+
 void Mesh::Distribution::init(uint32_t part, const Tree& tree) {
 	uint32_t num_triangles = tree.num_triangles(part);
 
@@ -253,5 +264,10 @@ bool Mesh::Distribution::empty() const {
 uint32_t Mesh::Distribution::sample(float r) const {
 	return triangle_mapping[distribution.sample_discrete(r)];
 }
+
+size_t Mesh::Distribution::num_bytes() const {
+	return sizeof(*this) + triangle_mapping.size() * sizeof(uint32_t) + distribution.num_bytes();
+}
+
 
 }}}

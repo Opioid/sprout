@@ -65,6 +65,8 @@ public:
 
 	virtual void morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) final override;
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	using Tree = bvh::Tree<bvh::Data_interleaved<Triangle_MT>>;

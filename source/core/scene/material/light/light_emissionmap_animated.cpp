@@ -148,4 +148,8 @@ bool Emissionmap_animated::is_animated() const {
 	return true;
 }
 
+size_t Emissionmap_animated::num_bytes() const {
+	return sizeof(*this);
+}
+
 }}}

@@ -13,6 +13,7 @@
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
+#include "core/scene/shape/shape.hpp"
 #include "core/scene/camera/camera.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
@@ -22,6 +23,8 @@
 #include "base/math/vector.inl"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
+
+void log_resource_memory(const resource::Manager& manager);
 
 int main(int argc, char* argv[]) {
 	logging::init(logging::Type::Stdout);
@@ -144,7 +147,25 @@ int main(int argc, char* argv[]) {
 					  string::to_string(chrono::seconds_since(total_start)) + " s");
 	}
 
+	log_resource_memory(resource_manager);
+
 	logging::release();
 
 	return 0;
+}
+
+void log_resource_memory(const resource::Manager& manager) {
+	logging::info("Memory consumption:");
+
+	size_t image_num_bytes = manager.num_bytes<image::Image>();
+	logging::info("Images: " + string::print_bytes(image_num_bytes));
+
+	size_t material_num_bytes = manager.num_bytes<scene::material::Material>();
+	logging::info("Materials: " + string::print_bytes(material_num_bytes));
+
+	size_t mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
+	logging::info("Meshes: " + string::print_bytes(mesh_num_bytes));
+
+	size_t total_num_bytes = image_num_bytes + material_num_bytes + mesh_num_bytes;
+	logging::info("Total: " + string::print_bytes(total_num_bytes));
 }

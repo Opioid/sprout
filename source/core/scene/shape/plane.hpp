@@ -46,6 +46,8 @@ public:
 	virtual float area(uint32_t part, float3_p scale) const final override;
 
 	virtual bool is_finite() const final override;
+
+	virtual size_t num_bytes() const final override;
 };
 
 }}

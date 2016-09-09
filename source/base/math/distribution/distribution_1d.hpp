@@ -21,6 +21,8 @@ public:
 	float pdf(uint32_t index) const;
 	float pdf(float u) const;
 
+	size_t num_bytes() const;
+
 private:
 
 	void precompute_1D_pdf_cdf(const float* data, size_t len);
@@ -50,6 +52,8 @@ public:
 
 	float pdf(uint32_t index) const;
 	float pdf(float u) const;
+
+	size_t num_bytes() const;
 
 private:
 

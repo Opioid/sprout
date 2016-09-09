@@ -10,6 +10,7 @@ namespace triangle { namespace bvh {
 
 template<typename Intersection_vertex, typename Shading_vertex>
 class Indexed_data {
+
 public:
 
 	Indexed_data();
@@ -61,6 +62,7 @@ private:
 
 template<typename Intersection_vertex, typename Shading_vertex>
 class Indexed_data1 {
+
 public:
 
 	Indexed_data1();

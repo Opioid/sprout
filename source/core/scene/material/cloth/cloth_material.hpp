@@ -18,6 +18,8 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
+	virtual size_t num_bytes() const final override;
+
 	void set_color_map(const Adapter_2D& color_map);
 	void set_normal_map(const Adapter_2D& normal_map);
 

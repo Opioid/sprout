@@ -246,4 +246,8 @@ float Inverse_sphere::area(uint32_t /*part*/, float3_p scale) const {
 	return 4.f * math::Pi * scale.x * scale.x;
 }
 
+size_t Inverse_sphere::num_bytes() const {
+	return sizeof(*this);
+}
+
 }}

@@ -45,7 +45,13 @@ public:
 	template<typename Type>
 	std::shared_ptr<Type> get(const std::string& filename, const memory::Variant_map& options);
 
+	template<typename Type>
+	size_t num_bytes() const;
+
 private:
+
+	template<typename Type>
+	const Typed_cache<Type>* typed_cache() const;
 
 	template<typename Type>
 	Typed_cache<Type>* typed_cache();

@@ -44,6 +44,8 @@ public:
 					  bool total_sphere, Node_stack& node_stack) const final override;
 
 	virtual float area(uint32_t part, float3_p scale) const final override;
+
+	virtual size_t num_bytes() const final override;
 };
 
 }}

@@ -105,5 +105,9 @@ bool Celestial_disk::is_finite() const {
 	return false;
 }
 
+size_t Celestial_disk::num_bytes() const {
+	return sizeof(*this);
+}
+
 }}
 

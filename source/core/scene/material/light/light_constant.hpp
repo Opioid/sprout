@@ -26,6 +26,8 @@ public:
 
 	virtual bool has_emission_map() const final override;
 
+	virtual size_t num_bytes() const final override;
+
 	::light::Emittance& emittance();
 
 private:

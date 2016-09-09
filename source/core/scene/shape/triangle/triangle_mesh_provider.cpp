@@ -131,9 +131,6 @@ std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& 
         throw std::runtime_error("Mesh could not be initialized");
     }
 
-//	size_t bytes = mesh->tree().num_bytes();
-//	std::cout << "mesh: " << bytes / 1024 / 1024 << " MiB" << std::endl;
-
     return mesh;
 }
 
@@ -201,7 +198,8 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 		return nullptr;
 	}
 
-	auto mesh = std::make_shared<Morphable_mesh>(collection, static_cast<uint32_t>(handler.parts().size()));
+	auto mesh = std::make_shared<Morphable_mesh>(collection,
+												 static_cast<uint32_t>(handler.parts().size()));
 
 	return mesh;
 }

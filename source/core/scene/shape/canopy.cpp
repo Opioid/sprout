@@ -140,4 +140,8 @@ bool Canopy::is_finite() const {
 	return false;
 }
 
+size_t Canopy::num_bytes() const {
+	return sizeof(*this);
+}
+
 }}

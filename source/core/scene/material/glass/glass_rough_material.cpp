@@ -45,6 +45,10 @@ const material::Sample& Glass_rough::sample(float3_p wo, const Renderstate& rs,
 	return sample;
 }
 
+size_t Glass_rough::num_bytes() const {
+	return sizeof(*this);
+}
+
 void Glass_rough::set_normal_map(const Adapter_2D& normal_map) {
 	normal_map_ = normal_map;
 }

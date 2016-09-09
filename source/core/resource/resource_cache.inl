@@ -67,4 +67,15 @@ std::shared_ptr<T> Typed_cache<T>::get(const std::string& filename,
 	return nullptr;
 }
 
+template<typename T>
+size_t Typed_cache<T>::num_bytes() const {
+	size_t num_bytes = 0;
+
+	for (auto r : resources_) {
+		num_bytes += r.second->num_bytes();
+	}
+
+	return num_bytes;
+}
+
 }

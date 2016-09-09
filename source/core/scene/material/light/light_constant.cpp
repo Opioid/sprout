@@ -45,6 +45,10 @@ bool Constant::has_emission_map() const {
 	return false;
 }
 
+size_t Constant::num_bytes() const {
+	return sizeof(*this);
+}
+
 ::light::Emittance& Constant::emittance() {
 	return emittance_;
 }

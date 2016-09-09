@@ -28,6 +28,7 @@ struct Node;
 
 template<typename Data>
 class Tree  {
+
 public:
 
 	Tree();
@@ -68,7 +69,8 @@ public:
 	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 	void sample(uint32_t index, float2 r2, float3& p) const;
 
-	void allocate_triangles(uint32_t num_triangles, uint32_t num_parts, const std::vector<Vertex>& vertices);
+	void allocate_triangles(uint32_t num_triangles, uint32_t num_parts,
+							const std::vector<Vertex>& vertices);
 
 	void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
 					  const std::vector<Vertex>& vertices);

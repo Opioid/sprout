@@ -22,6 +22,8 @@ public:
 
 	virtual float3 average_radiance(float area) const final override;
 
+	virtual size_t num_bytes() const final override;
+
 	void set_emission(float3_p radiance);
 
 private:

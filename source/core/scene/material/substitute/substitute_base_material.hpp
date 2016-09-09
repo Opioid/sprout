@@ -25,6 +25,8 @@ public:
 
 	virtual bool has_emission_map() const final override;
 
+	virtual size_t num_bytes() const final override;
+
 	void set_color_map(const Adapter_2D& color_map);
 	void set_normal_map(const Adapter_2D& normal_map);
 	void set_surface_map(const Adapter_2D& surface_map);

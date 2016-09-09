@@ -151,6 +151,10 @@ bool Material_animated::is_animated() const {
 	return true;
 }
 
+size_t Material_animated::num_bytes() const {
+	return sizeof(*this);
+}
+
 void Material_animated::set_emission_factor(float emission_factor) {
 	emission_factor_ = emission_factor;
 }

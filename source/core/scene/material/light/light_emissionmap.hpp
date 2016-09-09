@@ -33,6 +33,8 @@ public:
 
 	virtual void prepare_sampling(bool spherical) final override;
 
+	virtual size_t num_bytes() const final override;
+
 	void set_emission_map(const Adapter_2D& emission_map);
 	void set_emission_factor(float emission_factor);
 

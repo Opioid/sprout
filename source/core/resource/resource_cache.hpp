@@ -32,6 +32,8 @@ public:
 
 	std::shared_ptr<T> get(const std::string& filename, const memory::Variant_map& options);
 
+	size_t num_bytes() const;
+
 private:
 
 	Provider<T>& provider_;

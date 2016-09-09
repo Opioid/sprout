@@ -40,6 +40,10 @@ float3 Material_overcast::average_radiance(float /*area*/) const {
 	return color_;
 }
 
+size_t Material_overcast::num_bytes() const {
+	return sizeof(*this);
+}
+
 void Material_overcast::set_emission(float3_p radiance) {
 	color_ = radiance;
 }

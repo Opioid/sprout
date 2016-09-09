@@ -69,6 +69,8 @@ public:
 
 	virtual void prepare_sampling(uint32_t part) final override;
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
     Tree tree_;
@@ -78,6 +80,8 @@ private:
 		bool empty() const;
 
 		uint32_t sample(float r) const;
+
+		size_t num_bytes() const;
 
 		std::vector<uint32_t> triangle_mapping;
 		math::Distribution_lut_1D distribution;

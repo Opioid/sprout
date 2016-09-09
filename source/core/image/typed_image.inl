@@ -64,7 +64,8 @@ const T* Typed_image<T>::data() const {
 
 template<typename T>
 size_t Typed_image<T>::num_bytes() const {
-	return description_.dimensions.x *
+	return sizeof(*this) +
+		   description_.dimensions.x *
 		   description_.dimensions.y *
 		   description_.num_elements * sizeof(T);
 }

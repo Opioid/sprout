@@ -123,6 +123,10 @@ void Material::prepare_sampling(bool spherical) {
 	}
 }
 
+size_t Material::num_bytes() const {
+	return sizeof(*this);
+}
+
 void Material::set_emission_map(const Adapter_2D& emission_map) {
 	emission_map_ = emission_map;
 }

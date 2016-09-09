@@ -45,5 +45,14 @@ inline float Distribution_2D::pdf(float2 uv) const {
 	return u_pdf * v_pdf;
 }
 
+inline size_t Distribution_2D::num_bytes() const {
+	size_t num_bytes = 0;
+	for (auto& c : conditional_) {
+		num_bytes += c.num_bytes();
+	}
+
+	return sizeof(*this) + marginal_.num_bytes() + num_bytes;
+}
+
 }
 

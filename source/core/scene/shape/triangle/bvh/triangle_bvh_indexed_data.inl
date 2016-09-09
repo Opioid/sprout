@@ -371,7 +371,8 @@ void Indexed_data1<Intersection_vertex, Shading_vertex>::add_triangle(
 
 template<typename Intersection_vertex, typename Shading_vertex>
 size_t Indexed_data1<Intersection_vertex, Shading_vertex>::num_bytes() const {
-	return num_triangles_ * sizeof(Index_triangle) +
+	return sizeof(*this) +
+		   num_triangles_ * sizeof(Index_triangle) +
 		   num_vertices_ * (sizeof(Intersection_vertex) + sizeof(Shading_vertex));
 }
 
