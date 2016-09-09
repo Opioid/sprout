@@ -3,6 +3,8 @@
 #include "distribution_1d.hpp"
 #include <algorithm>
 
+#include <iostream>
+
 namespace math {
 
 inline void Distribution_1D::init(const float* data, size_t len) {
@@ -37,8 +39,11 @@ inline float Distribution_1D::sample_continuous(float r, float& pdf) const {
 
 	pdf = pdf_[offset];
 
-	float c = cdf_[offset + 1];
-	float t = (c - r) / (c - cdf_[offset]);
+//	float c = cdf_[offset + 1];
+//	float t = (c - r) / (c - cdf_[offset]);
+
+	float c = cdf_[offset];
+	float t = (r - c) / (cdf_[offset + 1] - c);
 
 	return (static_cast<float>(offset) + t) / size_;
 }
@@ -135,6 +140,15 @@ inline float Distribution_lut_1D::sample_continuous(float r, float& pdf) const {
 
 	float c = cdf_[offset + 1];
 	float t = (c - r) / (c - cdf_[offset]);
+
+	// ----
+//	float a = (static_cast<float>(offset) + t);// / size_;
+
+//	float tb = (r - cdf_[offset]) / (cdf_[offset + 1] - cdf_[offset]);
+//	float b = (static_cast<float>(offset) + tb);// / size_;
+
+//	std::cout << a << " " << b << std::endl;
+	// ----
 
 	return (static_cast<float>(offset) + t) / size_;
 }

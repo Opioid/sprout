@@ -19,8 +19,8 @@ public:
 
 private:
 
-//	using Distribution_impl = Distribution_1D;
-	using Distribution_impl = Distribution_lut_1D;
+	using Distribution_impl = Distribution_1D;
+//	using Distribution_impl = Distribution_lut_1D;
 
 	Distribution_impl marginal_;
 
