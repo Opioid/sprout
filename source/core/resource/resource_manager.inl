@@ -8,7 +8,14 @@ namespace resource {
 
 template<typename Type>
 void Manager::register_provider(Provider<Type>& provider) {
-	caches_[Provider<Type>::id()] = new Typed_cache<Type>(provider);
+	uint32_t id = Provider<Type>::id();
+	auto old = caches_.find(id);
+
+	if (caches_.end() != old) {
+		delete old->second;
+	}
+
+	caches_[id] = new Typed_cache<Type>(provider);
 }
 
 template<typename Type>

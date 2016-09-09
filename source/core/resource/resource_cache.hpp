@@ -8,7 +8,12 @@
 
 namespace resource {
 
-class Cache {};
+class Cache {
+
+public:
+
+	virtual ~Cache();
+};
 
 template<typename T>
 class Typed_cache : public Cache {
@@ -16,6 +21,7 @@ class Typed_cache : public Cache {
 public:
 
 	Typed_cache(Provider<T>& provider);
+	~Typed_cache();
 
 	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options,
 							Manager& manager, bool& was_cached);

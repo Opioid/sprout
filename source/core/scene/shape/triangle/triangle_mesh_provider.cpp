@@ -23,6 +23,8 @@ namespace scene { namespace shape { namespace triangle {
 
 Provider::Provider() : resource::Provider<Shape>("Mesh") {}
 
+Provider::~Provider() {}
+
 std::shared_ptr<Shape> Provider::load(const std::string& filename,
 									  const memory::Variant_map& options,
 									  resource::Manager& manager) {

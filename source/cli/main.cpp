@@ -1,7 +1,3 @@
-#ifdef _WIN32
-#	include "vld.h"
-#endif
-
 #include "controller/controller_progressive.hpp"
 #include "options/options.hpp"
 #include "core/file/file_system.hpp"
@@ -108,6 +104,7 @@ int main(int argc, char* argv[]) {
 	} catch (const std::exception& e) {
 		logging::error("Scene \"" + take->scene_filename + "\" could not be loaded: "
 					   + e.what() + ".");
+		logging::release();
 		return 1;
 	}
 

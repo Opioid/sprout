@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+namespace thread { class Pool; }
+
 namespace scene { namespace shape {
 
 class Shape;
@@ -15,9 +17,11 @@ namespace triangle {
 struct Index_triangle;
 
 class Provider : public resource::Provider<Shape> {
+
 public:
 
 	Provider();
+	~Provider();
 
 	virtual std::shared_ptr<Shape> load(const std::string& filename,
 										const memory::Variant_map& options,

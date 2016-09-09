@@ -6,8 +6,13 @@
 
 namespace resource {
 
+inline Cache::~Cache() {}
+
 template<typename T>
 Typed_cache<T>::Typed_cache(Provider<T>& provider) : provider_(provider) {}
+
+template<typename T>
+Typed_cache<T>::~Typed_cache() {}
 
 template<typename T>
 std::shared_ptr<T> Typed_cache<T>::load(const std::string& filename,

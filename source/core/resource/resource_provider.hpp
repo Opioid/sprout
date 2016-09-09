@@ -1,14 +1,9 @@
 #pragma once
 
 #include "identifiable.hpp"
-#include <istream>
 #include <memory>
 
 namespace memory { class Variant_map; }
-
-namespace file { class System; }
-
-namespace thread { class Pool; }
 
 namespace resource {
 

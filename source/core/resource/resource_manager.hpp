@@ -22,6 +22,7 @@ class Manager {
 public:
 
 	Manager(file::System& file_system, thread::Pool& thread_pool);
+	~Manager();
 
 	file::System& file_system();
 	thread::Pool& thread_pool();
