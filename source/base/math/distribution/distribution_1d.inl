@@ -39,11 +39,11 @@ inline float Distribution_1D::sample_continuous(float r, float& pdf) const {
 
 	pdf = pdf_[offset];
 
-//	float c = cdf_[offset + 1];
-//	float t = (c - r) / (c - cdf_[offset]);
+	float c = cdf_[offset + 1];
+	float t = (c - r) / (c - cdf_[offset]);
 
-	float c = cdf_[offset];
-	float t = (r - c) / (cdf_[offset + 1] - c);
+//	float c = cdf_[offset];
+//	float t = (r - c) / (cdf_[offset + 1] - c);
 
 	return (static_cast<float>(offset) + t) / size_;
 }
@@ -63,17 +63,26 @@ inline size_t Distribution_1D::num_bytes() const {
 }
 
 inline void Distribution_1D::precompute_1D_pdf_cdf(const float* data, size_t len) {
-	pdf_.resize(len);
-	cdf_.resize(len + 1);
-
 	float integral = 0.f;
 	for (size_t i = 0; i < len; ++i) {
 		integral += data[i];
 	}
 
 	if (0.f == integral) {
-		integral = 1.f;
+		pdf_.resize(1, 0.f);
+
+		cdf_.resize(2);
+		cdf_[0] = 0.f;
+		cdf_[1] = 1.f;
+
+		integral_ = 0.f;
+		size_ = 1.f;
+
+		return;
 	}
+
+	pdf_.resize(len);
+	cdf_.resize(len + 1);
 
 	for (size_t i = 0; i < len; ++i) {
 		pdf_[i] = data[i] / integral;
@@ -96,6 +105,8 @@ inline void Distribution_lut_1D::init(const float* data, uint32_t len, uint32_t 
 	if (0 == lut_size) {
 		lut_size = lut_heuristic(len);
 	}
+
+	lut_size = std::min(lut_size, static_cast<uint32_t>(pdf_.size()));
 
 	init_lut(lut_size);
 }
@@ -174,17 +185,26 @@ inline uint32_t Distribution_lut_1D::map(float s) const {
 }
 
 inline void Distribution_lut_1D::precompute_1D_pdf_cdf(const float* data, uint32_t len) {
-	pdf_.resize(len);
-	cdf_.resize(len + 1);
-
 	float integral = 0.f;
 	for (uint32_t i = 0; i < len; ++i) {
 		integral += data[i];
 	}
 
 	if (0.f == integral) {
-		integral = 1.f;
+		pdf_.resize(1, 0.f);
+
+		cdf_.resize(2);
+		cdf_[0] = 0.f;
+		cdf_[1] = 1.f;
+
+		integral_ = 0.f;
+		size_ = 1.f;
+
+		return;
 	}
+
+	pdf_.resize(len);
+	cdf_.resize(len + 1);
 
 	for (uint32_t i = 0; i < len; ++i) {
 		pdf_[i] = data[i] / integral;

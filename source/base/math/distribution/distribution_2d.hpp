@@ -19,14 +19,15 @@ public:
 
 private:
 
-	using Distribution_impl = Distribution_1D;
-//	using Distribution_impl = Distribution_lut_1D;
+//	using Distribution_impl = Distribution_1D;
+	using Distribution_impl = Distribution_lut_1D;
 
 	Distribution_impl marginal_;
 
 	std::vector<Distribution_impl> conditional_;
 
-	float conditional_max_;
+	float conditional_size_;
+	uint32_t conditional_max_;
 };
 
 }
