@@ -40,6 +40,7 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 	float3 result = math::float3_identity;
 	float opacity = 0.f;
 	bool primary_ray = 0 == ray.depth;
+	bool requires_bounce = false;
 
 	if (!resolve_mask(worker, ray, intersection, filter)) {
 		return float4(result, opacity);
@@ -56,9 +57,7 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
-		if (material_sample.same_hemisphere(wo)
-		&& (primary_ray ||
-			sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission))) {
+		if ((primary_ray || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 
 			if (i == settings_.max_bounces) {
@@ -74,9 +73,11 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		result += throughput * estimate_direct_light(worker, ray, intersection,
 													 material_sample, filter, sample_result);
 
+		requires_bounce = sample_result.type.test_either(Bxdf_type::Specular,
+														 Bxdf_type::Transmission);
+
 		if (!intersection.hit()
-		||  (i == settings_.max_bounces - 1 &&
-			 !sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission))
+		||  (!requires_bounce && i == settings_.max_bounces - 1)
 		||  0.f == sample_result.pdf
 		||  math::float3_identity == sample_result.reflection) {
 			break;
@@ -126,7 +127,7 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		++ray.depth;
 
 		// For these cases we fallback to plain pathtracing
-		if (sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission)) {
+		if (requires_bounce) {
 			if (!intersect_and_resolve_mask(worker, ray, intersection, filter)) {
 				break;
 			}

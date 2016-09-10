@@ -39,6 +39,10 @@ struct Flags {
 		values = impl_type(0);
 	}
 
+	bool operator!=(Flags other) const {
+		return values != other.values;
+	}
+
 	impl_type values;
 };
 
