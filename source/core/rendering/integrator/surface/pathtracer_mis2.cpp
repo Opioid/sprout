@@ -57,8 +57,8 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)
-		&& (primary_ray || sample_result.type.test_either(Bxdf_type::Specular,
-														  Bxdf_type::Transmission))) {
+		&& (primary_ray ||
+			sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission))) {
 			result += throughput * material_sample.radiance();
 
 			if (i == settings_.max_bounces) {
