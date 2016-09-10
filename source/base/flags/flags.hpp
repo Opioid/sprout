@@ -14,6 +14,11 @@ struct Flags {
 		return static_cast<impl_type>(flag) == (values & static_cast<impl_type>(flag));
 	}
 
+	bool test_either(T flag_a, T flag_b) const {
+		return static_cast<impl_type>(flag_a) == (values & static_cast<impl_type>(flag_a))
+			|| static_cast<impl_type>(flag_b) == (values & static_cast<impl_type>(flag_b));
+	}
+
 	void set(T flag) {
 		values |= static_cast<impl_type>(flag);
 	}

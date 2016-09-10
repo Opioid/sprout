@@ -57,9 +57,13 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)
-		&& (primary_ray || sample_result.type.test(Bxdf_type::Specular)
-						|| sample_result.type.test(Bxdf_type::Transmission))) {
+		&& (primary_ray || sample_result.type.test_either(Bxdf_type::Specular,
+														  Bxdf_type::Transmission))) {
 			result += throughput * material_sample.radiance();
+
+			if (i == settings_.max_bounces) {
+				break;
+			}
 		}
 
 		if (material_sample.is_pure_emissive()) {
@@ -71,7 +75,8 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 													 material_sample, filter, sample_result);
 
 		if (!intersection.hit()
-		||  i == settings_.max_bounces - 1
+		||  (i == settings_.max_bounces - 1 &&
+			 !sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission))
 		||  0.f == sample_result.pdf
 		||  math::float3_identity == sample_result.reflection) {
 			break;
@@ -121,8 +126,7 @@ float4 Pathtracer_MIS2::li(Worker& worker, scene::Ray& ray, bool volume,
 		++ray.depth;
 
 		// For these cases we fallback to plain pathtracing
-		if (sample_result.type.test(Bxdf_type::Specular)
-		||  sample_result.type.test(Bxdf_type::Transmission)) {
+		if (sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission)) {
 			if (!intersect_and_resolve_mask(worker, ray, intersection, filter)) {
 				break;
 			}
