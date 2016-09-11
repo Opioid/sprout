@@ -30,7 +30,7 @@ public:
 	};
 
 	Pathtracer_MIS(const take::Settings& take_settings,
-				   math::random::Generator& rng, const Settings& settings);
+					math::random::Generator& rng, const Settings& settings);
 
 	virtual void start_new_pixel(uint32_t num_samples) final override;
 
@@ -40,9 +40,10 @@ public:
 private:
 
 	float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
-								 const scene::Intersection& intersection,
+								 scene::Intersection& intersection,
 								 const scene::material::Sample& material_sample,
-								 Sampler_filter filter);
+								 Sampler_filter filter,
+								 Bxdf_result& sample_result);
 
 	float3 evaluate_light(const scene::light::Light* light, float light_weight,
 						  Worker& worker, scene::Ray& ray,
@@ -69,10 +70,10 @@ class Pathtracer_MIS_factory : public Factory {
 public:
 
 	Pathtracer_MIS_factory(const take::Settings& take_settings,
-						   uint32_t min_bounces, uint32_t max_bounces,
-						   float path_termination_probability,
-						   Light_sampling light_sampling,
-						   bool disable_caustics);
+							uint32_t min_bounces, uint32_t max_bounces,
+							float path_termination_probability,
+							Light_sampling light_sampling,
+							bool disable_caustics);
 
 	virtual Integrator* create(math::random::Generator& rng) const final override;
 
