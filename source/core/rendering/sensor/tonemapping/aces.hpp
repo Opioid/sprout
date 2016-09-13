@@ -5,6 +5,7 @@
 namespace rendering { namespace sensor { namespace tonemapping {
 
 class Aces : public Tonemapper {
+
 public:
 
 	Aces(float3_p linear_white, float exposure);

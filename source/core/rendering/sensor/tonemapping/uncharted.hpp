@@ -5,6 +5,7 @@
 namespace rendering { namespace sensor { namespace tonemapping {
 
 class Uncharted : public Tonemapper {
+
 public:
 
 	Uncharted(float3_p linear_white, float exposure);

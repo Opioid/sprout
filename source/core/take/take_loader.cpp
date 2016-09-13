@@ -14,6 +14,7 @@
 #include "rendering/sensor/unfiltered.inl"
 #include "rendering/sensor/filter/gaussian.hpp"
 #include "rendering/sensor/tonemapping/aces.hpp"
+#include "rendering/sensor/tonemapping/generic.hpp"
 #include "rendering/sensor/tonemapping/identity.hpp"
 #include "rendering/sensor/tonemapping/uncharted.hpp"
 #include "rendering/integrator/surface/ao.hpp"
@@ -310,13 +311,28 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) const {
 	for (auto& n : tonemapper_value.GetObject()) {
 		if ("ACES" == n.name) {
 			float3 linear_white = json::read_float3(n.value, "linear_white");
+
 			float exposure = json::read_float(n.value, "exposure", 0.f);
+
 			return new rendering::sensor::tonemapping::Aces(linear_white, exposure);
+		} else if ("Generic" == n.name) {
+			float contrast = json::read_float(n.value, "contrast", 1.f);
+			float shoulder = json::read_float(n.value, "shoulder", 8.f);
+			float mid_in   = json::read_float(n.value, "mid_in",   0.8f);
+			float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
+			float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
+
+			float exposure = json::read_float(n.value, "exposure", 0.f);
+
+			return new rendering::sensor::tonemapping::Generic(contrast, shoulder, mid_in,
+															   mid_out, hdr_max, exposure);
 		} else if ("Identity" == n.name) {
 			return new rendering::sensor::tonemapping::Identity();
 		} else if ("Uncharted" == n.name) {
 			float3 linear_white = json::read_float3(n.value, "linear_white");
+
 			float exposure = json::read_float(n.value, "exposure", 0.f);
+
 			return new rendering::sensor::tonemapping::Uncharted(linear_white, exposure);
 		}
 	}
