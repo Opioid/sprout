@@ -17,6 +17,7 @@ class Filtered : public Base {
 public:
 
 	Filtered(int2 dimensions,
+			 float exposure,
 			 const tonemapping::Tonemapper* tonemapper,
 			 const Clamp& clamp,
 			 const filter::Filter* filter);

@@ -5,6 +5,7 @@
 namespace rendering { namespace sensor { namespace tonemapping {
 
 class Tonemapper {
+
 public:
 
 	virtual ~Tonemapper();

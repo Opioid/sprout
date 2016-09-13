@@ -3,11 +3,9 @@
 
 namespace rendering { namespace sensor { namespace tonemapping {
 
-Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, float hdr_max,
-				 float exposure) :
+Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, float hdr_max) :
 	a_(contrast),
-	d_(shoulder),
-	exposure_factor_(std::exp2(exposure)) {
+	d_(shoulder) {
 	float mid_in_pow_a = std::pow(mid_in, a_);
 	float hdr_max_pow_a = std::pow(hdr_max, a_);
 	float hdr_max_pow_a_pow_d = std::pow(hdr_max_pow_a, d_);
@@ -20,7 +18,7 @@ Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, fl
 }
 
 float3 Generic::tonemap(float3_p color) const {
-	return tonemap_function(exposure_factor_ * color);
+	return tonemap_function(color);
 }
 
 float3 Generic::tonemap_function(float3_p color) const {

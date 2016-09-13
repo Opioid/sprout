@@ -3,12 +3,11 @@
 
 namespace rendering { namespace sensor { namespace tonemapping {
 
-Aces::Aces(float3_p linear_white, float exposure) :
-	white_factor_(white_factor(linear_white, tonemap_function(linear_white))),
-	exposure_factor_(std::exp2(exposure)) {}
+Aces::Aces(float3_p linear_white) :
+	white_factor_(white_factor(linear_white, tonemap_function(linear_white))) {}
 
 float3 Aces::tonemap(float3_p color) const {
-	return white_factor_ * tonemap_function(exposure_factor_ * color);
+	return white_factor_ * tonemap_function(color);
 }
 
 float3 Aces::tonemap_function(float3_p color) {

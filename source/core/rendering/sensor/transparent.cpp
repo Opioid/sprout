@@ -6,8 +6,9 @@
 
 namespace rendering { namespace sensor {
 
-Transparent::Transparent(int2 dimensions, const tonemapping::Tonemapper* tonemapper) :
-	Sensor(dimensions, tonemapper),
+Transparent::Transparent(int2 dimensions, float exposure,
+						 const tonemapping::Tonemapper* tonemapper) :
+	Sensor(dimensions, exposure, tonemapper),
 	pixels_(new Pixel[dimensions.x * dimensions.y]) {}
 
 Transparent::~Transparent() {
@@ -42,12 +43,14 @@ void Transparent::add_pixel_atomic(int2 pixel, const float4& color, float weight
 }
 
 void Transparent::resolve(int32_t begin, int32_t end, image::Image_float_4& target) const {
+	float exposure_factor = exposure_factor_;
+
 	for (int32_t i = begin; i < end; ++i) {
 		auto& value = pixels_[i];
 
 		float4 color = value.color / value.weight_sum;
 
-		float3 tonemapped = tonemapper_->tonemap(color.xyz);
+		float3 tonemapped = tonemapper_->tonemap(exposure_factor * color.xyz);
 
 		target.at(i) = float4(tonemapped, std::min(color.w, 1.f));
 	}

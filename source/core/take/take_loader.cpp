@@ -230,12 +230,15 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 											   int2 dimensions,
 											   bool alpha_transparency) const {
+	float exposure = 0.f;
 	float3 clamp_max(-1.f, -1.f, -1.f);
 	const rendering::sensor::tonemapping::Tonemapper* tonemapper = nullptr;
 	const rendering::sensor::filter::Filter* filter = nullptr;
 
 	for (auto& n : sensor_value.GetObject()) {
-		if ("clamp" == n.name) {
+		if ("exposure" == n.name) {
+			exposure = json::read_float(n.value);
+		} else if ("clamp" == n.name) {
 			clamp_max = json::read_float3(n.value);
 		} else if ("tonemapper" == n.name) {
 			tonemapper = load_tonemapper(n.value);
@@ -244,7 +247,10 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 		}
 	}
 
-	if (!tonemapper) {
+	if (!tonemapper) {		
+		logging::warning("A tonemapper with unknonw type was declared. "
+						 "Using identity tonemapper.");
+
 		tonemapper = new rendering::sensor::tonemapping::Identity();
 	}
 
@@ -256,13 +262,14 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 				return new rendering::sensor::Filtered<
 						rendering::sensor::Transparent,
 						rendering::sensor::clamp::Clamp>(
-							dimensions, tonemapper,
+							dimensions, exposure, tonemapper,
 							rendering::sensor::clamp::Clamp(clamp_max), filter);
 			} else {
 				return new rendering::sensor::Filtered<
 						rendering::sensor::Transparent,
 						rendering::sensor::clamp::Identity>(
-							dimensions, tonemapper, rendering::sensor::clamp::Identity(), filter);
+							dimensions, exposure, tonemapper,
+							rendering::sensor::clamp::Identity(), filter);
 			}
 		}
 
@@ -270,12 +277,14 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 			return new rendering::sensor::Filtered<
 					rendering::sensor::Opaque,
 					rendering::sensor::clamp::Clamp>(
-						dimensions, tonemapper, rendering::sensor::clamp::Clamp(clamp_max), filter);
+						dimensions, exposure, tonemapper,
+						rendering::sensor::clamp::Clamp(clamp_max), filter);
 		} else {
 			return new rendering::sensor::Filtered<
 					rendering::sensor::Opaque,
 					rendering::sensor::clamp::Identity>(
-						dimensions, tonemapper, rendering::sensor::clamp::Identity(), filter);
+						dimensions, exposure, tonemapper,
+						rendering::sensor::clamp::Identity(), filter);
 		}
 	}
 
@@ -284,12 +293,14 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 			return new rendering::sensor::Unfiltered<
 					rendering::sensor::Transparent,
 					rendering::sensor::clamp::Clamp>
-					(dimensions, tonemapper, rendering::sensor::clamp::Clamp(clamp_max));
+					(dimensions, exposure, tonemapper,
+					 rendering::sensor::clamp::Clamp(clamp_max));
 		} else {
 			return new rendering::sensor::Unfiltered<
 					rendering::sensor::Transparent,
 					rendering::sensor::clamp::Identity>
-					(dimensions, tonemapper, rendering::sensor::clamp::Identity());
+					(dimensions, exposure, tonemapper,
+					 rendering::sensor::clamp::Identity());
 		}
 	}
 
@@ -297,13 +308,15 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 		return new rendering::sensor::Unfiltered<
 				rendering::sensor::Opaque,
 				rendering::sensor::clamp::Clamp>
-				(dimensions, tonemapper, rendering::sensor::clamp::Clamp(clamp_max));
+				(dimensions, exposure, tonemapper,
+				 rendering::sensor::clamp::Clamp(clamp_max));
 	}
 
 	return new rendering::sensor::Unfiltered<
 			rendering::sensor::Opaque,
 			rendering::sensor::clamp::Identity>
-			(dimensions, tonemapper, rendering::sensor::clamp::Identity());
+			(dimensions, exposure, tonemapper,
+			 rendering::sensor::clamp::Identity());
 }
 
 const rendering::sensor::tonemapping::Tonemapper*
@@ -312,9 +325,7 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) const {
 		if ("ACES" == n.name) {
 			float3 linear_white = json::read_float3(n.value, "linear_white");
 
-			float exposure = json::read_float(n.value, "exposure", 0.f);
-
-			return new rendering::sensor::tonemapping::Aces(linear_white, exposure);
+			return new rendering::sensor::tonemapping::Aces(linear_white);
 		} else if ("Generic" == n.name) {
 			float contrast = json::read_float(n.value, "contrast", 1.f);
 			float shoulder = json::read_float(n.value, "shoulder", 8.f);
@@ -322,22 +333,16 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) const {
 			float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
 			float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
 
-			float exposure = json::read_float(n.value, "exposure", 0.f);
-
 			return new rendering::sensor::tonemapping::Generic(contrast, shoulder, mid_in,
-															   mid_out, hdr_max, exposure);
+															   mid_out, hdr_max);
 		} else if ("Identity" == n.name) {
 			return new rendering::sensor::tonemapping::Identity();
 		} else if ("Uncharted" == n.name) {
 			float3 linear_white = json::read_float3(n.value, "linear_white");
 
-			float exposure = json::read_float(n.value, "exposure", 0.f);
-
-			return new rendering::sensor::tonemapping::Uncharted(linear_white, exposure);
+			return new rendering::sensor::tonemapping::Uncharted(linear_white);
 		}
 	}
-
-	logging::warning("A tonemapper with unknonw type was declared. Using identity tonemapper.");
 
 	return nullptr;
 }

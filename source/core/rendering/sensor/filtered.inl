@@ -8,10 +8,11 @@ namespace rendering { namespace sensor {
 
 template<class Base, class Clamp>
 Filtered<Base, Clamp>::Filtered(int2 dimensions,
+								float exposure,
 								const tonemapping::Tonemapper* tonemapper,
 								const Clamp& clamp,
 								const filter::Filter* filter) :
-	Base(dimensions, tonemapper), clamp_(clamp), filter_(filter) {}
+	Base(dimensions, exposure, tonemapper), clamp_(clamp), filter_(filter) {}
 
 template<class Base, class Clamp>
 Filtered<Base, Clamp>::~Filtered() {

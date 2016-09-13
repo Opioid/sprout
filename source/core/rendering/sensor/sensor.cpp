@@ -6,8 +6,9 @@
 
 namespace rendering { namespace sensor {
 
-Sensor::Sensor(int2 dimensions, const tonemapping::Tonemapper* tonemapper) :
+Sensor::Sensor(int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper) :
 	dimensions_(dimensions),
+	exposure_factor_(std::exp2(exposure)),
 	tonemapper_(tonemapper) {}
 
 Sensor::~Sensor() {

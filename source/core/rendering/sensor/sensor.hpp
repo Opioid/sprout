@@ -15,7 +15,7 @@ class Sensor {
 
 public:
 
-	Sensor(int2 dimensions, const tonemapping::Tonemapper* tonemapper);
+	Sensor(int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper);
 	virtual ~Sensor();
 
 	int2 dimensions() const;
@@ -38,6 +38,8 @@ protected:
 	virtual void resolve(int32_t begin, int32_t end, image::Image_float_4& target) const = 0;
 
 	int2 dimensions_;
+
+	float exposure_factor_;
 
 	const tonemapping::Tonemapper* tonemapper_;
 };
