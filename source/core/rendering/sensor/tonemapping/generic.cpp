@@ -22,7 +22,6 @@ float3 Generic::tonemap(float3_p color) const {
 }
 
 float3 Generic::tonemap_function(float3_p color) const {
-
 	float mx = tonemap_function(color.x);
 
 	float my = tonemap_function(color.y);
