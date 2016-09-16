@@ -14,8 +14,7 @@ public:
 
 private:
 
-	float3 tonemap_function(float3_p color) const;
-	float  tonemap_function(float x) const;
+	float tonemap_function(float x) const;
 
 	float a_;
 	float b_;

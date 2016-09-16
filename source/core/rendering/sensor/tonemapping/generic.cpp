@@ -6,34 +6,29 @@ namespace rendering { namespace sensor { namespace tonemapping {
 Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, float hdr_max) :
 	a_(contrast),
 	d_(shoulder) {
-	float mid_in_pow_a = std::pow(mid_in, a_);
-	float hdr_max_pow_a = std::pow(hdr_max, a_);
-	float hdr_max_pow_a_pow_d = std::pow(hdr_max_pow_a, d_);
+	float ad = contrast * shoulder;
 
-	float y = std::pow(mid_in_pow_a, d_) * mid_out;
-	float z = hdr_max_pow_a_pow_d - y;
+	float midi_pow_a  = std::pow(mid_in, contrast);
+	float midi_pow_ad = std::pow(mid_in, ad);
+	float hdrm_pow_a  = std::pow(hdr_max, contrast);
+	float hdrm_pow_ad = std::pow(hdr_max, ad);
 
-	b_ = (-mid_in_pow_a + hdr_max_pow_a * mid_out) / z;
-	c_ = (hdr_max_pow_a_pow_d * mid_in_pow_a - hdr_max_pow_a * y) / z;
+	float u = hdrm_pow_ad * mid_out - midi_pow_ad * mid_out;
+	float v = midi_pow_ad * mid_out;
+
+	b_ = -((-midi_pow_a + (mid_out * (hdrm_pow_ad * midi_pow_a - hdrm_pow_a * v)) / u) / v);
+	c_ = (hdrm_pow_ad * midi_pow_a - hdrm_pow_a * v) / u;
 }
 
 float3 Generic::tonemap(float3_p color) const {
-	return tonemap_function(color);
-}
-
-float3 Generic::tonemap_function(float3_p color) const {
-	float mx = tonemap_function(color.x);
-
-	float my = tonemap_function(color.y);
-
-	return float3(mx,
-				  my,
+	return float3(tonemap_function(color.x),
+				  tonemap_function(color.y),
 				  tonemap_function(color.z));
 }
 
 float Generic::tonemap_function(float x) const {
-	float x_pow_a = std::pow(x, a_);
-	return x_pow_a / (std::pow(x_pow_a, d_) * b_ + c_);
+	float z = std::pow(x, a_);
+	return z / (std::pow(z, d_) * b_ + c_);
 }
 
 }}}
