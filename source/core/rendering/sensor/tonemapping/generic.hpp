@@ -20,6 +20,8 @@ private:
 	float b_;
 	float c_;
 	float d_;
+
+	float hdr_max_;
 };
 
 }}}
