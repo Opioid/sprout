@@ -22,9 +22,15 @@ Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, fl
 }
 
 float3 Generic::tonemap(float3_p color) const {
-	return float3(tonemap_function(color.x),
-				  tonemap_function(color.y),
-				  tonemap_function(color.z));
+	float peak = math::max_element(color);
+
+	float3 ratio = color / peak;
+
+	return tonemap_function(peak) * ratio;
+
+//	return float3(tonemap_function(color.x),
+//				  tonemap_function(color.y),
+//				  tonemap_function(color.z));
 }
 
 float Generic::tonemap_function(float x) const {

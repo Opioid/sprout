@@ -247,6 +247,8 @@ Vector3f_a min(FVector3f_a a, FVector3f_a b);
 
 Vector3f_a max(FVector3f_a a, FVector3f_a b);
 
+float max_element(FVector3f_a v);
+
 Vector3f_a abs(FVector3f_a v);
 
 Vector3f_a cos(FVector3f_a v);

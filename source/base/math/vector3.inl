@@ -524,6 +524,10 @@ inline Vector3f_a max(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
 }
 
+inline float max_element(FVector3f_a v) {
+	return std::max(std::max(v.x, v.y), v.z);
+}
+
 inline Vector3f_a abs(FVector3f_a v) {
 	return Vector3f_a(std::abs(v.x), std::abs(v.y), std::abs(v.z));
 }
