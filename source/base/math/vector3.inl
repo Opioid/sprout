@@ -474,6 +474,12 @@ inline Vector3f_a exp(FVector3f_a v) {
 	return Vector3f_a(std::exp(v.x), std::exp(v.y), std::exp(v.z));
 }
 
+inline Vector3f_a pow(FVector3f_a v, float e) {
+	return Vector3f_a(std::pow(v.x, e),
+					  std::pow(v.y, e),
+					  std::pow(v.z, e));
+}
+
 inline Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t) {
 	float u = 1.f - t;
 	return u * a + t * b;

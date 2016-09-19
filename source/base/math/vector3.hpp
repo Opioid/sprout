@@ -235,6 +235,8 @@ Vector3f_a saturate(FVector3f_a v);
 
 Vector3f_a exp(FVector3f_a v);
 
+Vector3f_a pow(FVector3f_a v, float e);
+
 Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t);
 
 Vector3f_a reflect(FVector3f_a normal, FVector3f_a v);
