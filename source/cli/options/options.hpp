@@ -8,6 +8,7 @@ struct Options {
 	std::vector<std::string> mounts;
 	int threads;
 	bool progressive;
+	bool no_textures;
 };
 
 namespace options {

@@ -42,12 +42,20 @@ void init(int argc, char* argv[]) {
 
 		cmd.add(progressive_arg);
 
+		TCLAP::SwitchArg no_textures_arg(
+					"", "no-textures",
+					"Disables loading of all textures.",
+					false);
+
+		cmd.add(no_textures_arg);
+
 		cmd.parse(argc, argv);
 
 		options_.take		 = take_arg.getValue();
 		options_.mounts		 = mount_args.getValue();
 		options_.threads	 = threads_arg.getValue();
 		options_.progressive = progressive_arg.getValue();
+		options_.no_textures = no_textures_arg.getValue();
 	} catch (TCLAP::ArgException& e) {
 		std::stringstream stream;
 		stream << e.error() << " for arg " << e.argId();

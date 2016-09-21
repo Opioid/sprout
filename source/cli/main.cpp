@@ -81,7 +81,9 @@ int main(int argc, char* argv[]) {
 	resource_manager.register_provider(image_provider);
 
 	image::texture::Provider texture_provider;
-	resource_manager.register_provider(texture_provider);
+	if (!args.no_textures) {
+		resource_manager.register_provider(texture_provider);
+	}
 
 	scene::material::Provider material_provider(thread_pool.num_threads());
 	resource_manager.register_provider(material_provider);

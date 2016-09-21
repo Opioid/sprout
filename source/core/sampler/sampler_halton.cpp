@@ -25,8 +25,9 @@ void Halton::generate_camera_sample(int2 pixel, uint32_t index,
 }
 
 float2 Halton::generate_sample_2D() {
-	return float2(halton_sampler_.sample(0, current_sample_++),
-				  halton_sampler_.sample(1, current_sample_++));
+	float x = halton_sampler_.sample(0, current_sample_++);
+	float y = halton_sampler_.sample(1, current_sample_++);
+	return float2(x, y);
 }
 
 float Halton::generate_sample_1D() {
