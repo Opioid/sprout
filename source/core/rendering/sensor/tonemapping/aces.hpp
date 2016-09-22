@@ -8,15 +8,15 @@ class Aces : public Tonemapper {
 
 public:
 
-	Aces(float3_p linear_white);
+	Aces(float hdr_max);
 
 	virtual float3 tonemap(float3_p color) const final override;
 
 private:
 
-	static float3 tonemap_function(float3_p color);
+	static float tonemap_function(float x);
 
-	float3 white_factor_;
+	float normalization_factor_;
 };
 
 }}}

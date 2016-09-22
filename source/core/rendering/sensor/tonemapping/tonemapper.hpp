@@ -14,7 +14,7 @@ public:
 
 protected:
 
-	static float3 white_factor(float3_p linear_white, float3_p tonemapped_white);
+	static float normalization_factor(float hdr_max, float tonemapped_max);
 };
 
 }}}

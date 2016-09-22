@@ -3,14 +3,16 @@
 
 namespace rendering { namespace sensor { namespace tonemapping {
 
-Uncharted::Uncharted(float3_p linear_white) :
-	white_factor_(white_factor(linear_white, tonemap_function(linear_white))) {}
+Uncharted::Uncharted(float hdr_max) :
+	normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
 
 float3 Uncharted::tonemap(float3_p color) const {
-	return white_factor_ * tonemap_function(color);
+	return normalization_factor_ * float3(tonemap_function(color.x),
+										  tonemap_function(color.y),
+										  tonemap_function(color.z));
 }
 
-float3 Uncharted::tonemap_function(float3_p color) {
+float Uncharted::tonemap_function(float x) {
 	// Uncharted like in http://filmicgames.com/archives/75
 	float a = 0.22f;
 	float b = 0.30f;
@@ -19,9 +21,9 @@ float3 Uncharted::tonemap_function(float3_p color) {
 	float e = 0.01f;
 	float f = 0.30f;
 
-	float3 a_color = a * color;
+	float ax = a * x;
 
-	return ((color * (a_color + c * b) + d * e) / (color * (a_color + b) + d * f)) - e / f;
+	return ((x * (ax + c * b) + d * e) / (x * (ax + b) + d * f)) - e / f;
 }
 
 }}}
