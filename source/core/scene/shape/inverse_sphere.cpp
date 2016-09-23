@@ -246,6 +246,14 @@ float Inverse_sphere::area(uint32_t /*part*/, float3_p scale) const {
 	return 4.f * math::Pi * scale.x * scale.x;
 }
 
+float Inverse_sphere::uv_weight(float2 uv) const {
+	if (0.f == uv.y) {
+		return 0.f;
+	}
+
+	return 1.f / std::sin(uv.y * math::Pi);
+}
+
 size_t Inverse_sphere::num_bytes() const {
 	return sizeof(*this);
 }

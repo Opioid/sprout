@@ -18,8 +18,8 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
-	virtual float3 sample_radiance(float3_p wi, float2 uv,
-								   float area, float time, const Worker& worker,
+	virtual float3 sample_radiance(float3_p wi, float2 uv, float area,
+								   float time, const Worker& worker,
 								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;

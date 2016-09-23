@@ -63,6 +63,8 @@ public:
 
 	virtual float area(uint32_t part, float3_p scale) const = 0;
 
+	virtual float uv_weight(float2 uv) const = 0;
+
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;
 	virtual bool is_analytical() const;

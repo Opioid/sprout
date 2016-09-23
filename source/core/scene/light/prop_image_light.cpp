@@ -19,16 +19,15 @@ void Prop_image_light::sample(const Transformation& transformation, float time,
 							  Sampler_filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
 
-	float area = prop_->area(part_);
-
 	float pdf;
 	float2 uv = material->radiance_sample(sampler.generate_sample_2D(), pdf);
 
+	float area = prop_->area(part_);
 	prop_->shape()->sample(part_, transformation, p, uv, area, result.shape);
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
-		result.shape.pdf *= pdf;
-		result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv,
+		result.shape.pdf *= pdf * prop_->shape()->uv_weight(uv);
+		result.radiance = material->sample_radiance(result.shape.wi, uv,
 													area, time, worker, filter);
 	} else {
 		result.shape.pdf = 0.f;
@@ -45,7 +44,7 @@ float Prop_image_light::pdf(const Transformation& transformation,
 
 	float pdf = prop_->material(part_)->emission_pdf(sample.uv, worker, filter);
 
-	return sample.pdf * pdf;
+	return sample.pdf * pdf * prop_->shape()->uv_weight(sample.uv);
 }
 
 void Prop_image_light::prepare_sampling(uint32_t light_id) {

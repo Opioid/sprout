@@ -136,6 +136,10 @@ float Canopy::area(uint32_t /*part*/, float3_p /*scale*/) const {
 	return 2.f * math::Pi;
 }
 
+float Canopy::uv_weight(float2 /*uv*/) const {
+	return 1.f;
+}
+
 bool Canopy::is_finite() const {
 	return false;
 }

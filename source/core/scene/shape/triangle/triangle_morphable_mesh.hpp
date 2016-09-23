@@ -55,6 +55,8 @@ public:
 
 	virtual float area(uint32_t part, float3_p scale) const final override;
 
+	virtual float uv_weight(float2 uv) const final override;
+
 	virtual bool is_complex() const final override;
 
 	virtual bool is_analytical() const final override;

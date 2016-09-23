@@ -153,6 +153,10 @@ float Plane::area(uint32_t /*part*/, float3_p /*scale*/) const {
 	return 1.f;
 }
 
+float Plane::uv_weight(float2 /*uv*/) const {
+	return 1.f;
+}
+
 bool Plane::is_finite() const {
 	return false;
 }

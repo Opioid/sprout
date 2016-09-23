@@ -214,6 +214,10 @@ float Mesh::area(uint32_t part, float3_p scale) const {
 	return distributions_[part].distribution.integral() * scale.x * scale.x;
 }
 
+float Mesh::uv_weight(float2 /*uv*/) const {
+	return 1.f;
+}
+
 bool Mesh::is_complex() const {
 	return true;
 }
@@ -227,7 +231,6 @@ void Mesh::prepare_sampling(uint32_t part) {
 	   distributions_[part].init(part, tree_);
    }
 }
-
 
 size_t Mesh::num_bytes() const {
 	size_t num_bytes = 0;

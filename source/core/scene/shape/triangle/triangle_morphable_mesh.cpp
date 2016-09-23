@@ -120,6 +120,10 @@ float Morphable_mesh::area(uint32_t /*part*/, float3_p /*scale*/) const {
 	return 1.f;
 }
 
+float Morphable_mesh::uv_weight(float2 /*uv*/) const {
+	return 1.f;
+}
+
 bool Morphable_mesh::is_complex() const {
 	return true;
 }

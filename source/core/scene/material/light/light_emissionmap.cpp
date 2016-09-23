@@ -33,9 +33,9 @@ const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,
 	return sample;
 }
 
-float3 Emissionmap::sample_radiance(float3_p /*wi*/, float2 uv,
-									float /*area*/, float /*time*/,
-									const Worker& worker, Sampler_filter filter) const {
+float3 Emissionmap::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
+									float /*time*/, const Worker& worker,
+									Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * emission_map_.sample_3(sampler, uv);
 }
@@ -51,28 +51,16 @@ bool Emissionmap::has_emission_map() const {
 float2 Emissionmap::radiance_sample(float2 r2, float& pdf) const {
 	float2 uv = distribution_.sample_continuous(r2, pdf);
 
-	if (uv.y == 0.f) {
-		pdf = 0.f;
-	} else {
-		float sin_theta = std::sin(uv.y * math::Pi);
-
-		pdf *= total_weight_ / sin_theta;
-	}
+	pdf *= total_weight_;
 
 	return uv;
 }
 
 float Emissionmap::emission_pdf(float2 uv, const Worker& worker,
 								Sampler_filter filter) const {
-	if (uv.y == 0.f) {
-		return 0.f;
-	}
-
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float sin_theta = std::sin(uv.y * math::Pi);
-
-	return distribution_.pdf(sampler.address(uv)) * (total_weight_ / sin_theta);
+	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
 void Emissionmap::prepare_sampling(bool spherical) {

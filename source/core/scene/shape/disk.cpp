@@ -188,6 +188,10 @@ float Disk::area(uint32_t /*part*/, float3_p scale) const {
 	return math::Pi * scale.x * scale.x;
 }
 
+float Disk::uv_weight(float2 /*uv*/) const {
+	return 1.f;
+}
+
 size_t Disk::num_bytes() const {
 	return sizeof(*this);
 }

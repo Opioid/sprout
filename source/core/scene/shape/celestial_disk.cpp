@@ -101,6 +101,10 @@ float Celestial_disk::area(uint32_t /*part*/, float3_p scale) const {
 	return math::Pi * radius * radius;
 }
 
+float Celestial_disk::uv_weight(float2 /*uv*/) const {
+	return 1.f;
+}
+
 bool Celestial_disk::is_finite() const {
 	return false;
 }
