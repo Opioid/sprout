@@ -5,6 +5,7 @@ namespace scene { namespace material { namespace metal {
 
 void ior_and_absorption(const std::string& name, float3& ior, float3& absorption) {
 	// http://www.3delight.com/en/modules/forum/viewtopic.php?t=4205
+	// R: 642nm G: 529nm B: 464nm
 	// Table of wavelength-dependent values for ior and absorption (k)
 	// Metal                 index (n)              extinction (k)
 	// ---------  ----------------------------   ------------------------
@@ -23,9 +24,10 @@ void ior_and_absorption(const std::string& name, float3& ior, float3& absorption
 	// Rhodium    (2.17407, 1.92204, 1.81356)    (5.6790, 4.8682, 4.5063)
 	// Silver     (0.13708, 0.12945, 0.14075)    (4.0625, 3.1692, 2.6034)
 	// Tantalum   (1.65178, 2.61195, 2.83282)    (2.1475, 1.8786, 2.0726)
-	// Titanium   (2.18385, 1.8364, 1.72103)     (2.9550, 2.5188, 2.3034)
+	// Titanium   (2.18385, 1.8364,  1.72103)    (2.9550, 2.5188, 2.3034)
 	// Tungsten   (3.66845, 3.48243, 3.31552)    (2.9274, 2.7200, 2.5721)
 	// Vanadium   (3.51454, 3.66353, 3.23655)    (2.9684, 3.0917, 3.3679)
+	// Iron       (2.9038,  2.8857,  2.6420)     (3.0798, 2.9157, 2.8025)
 
 	if ("Aluminium" == name) {
 		ior = float3(1.50694f, 0.926041f, 0.68251f);
@@ -81,6 +83,9 @@ void ior_and_absorption(const std::string& name, float3& ior, float3& absorption
 	} else if ("Vanadium" == name) {
 		ior = float3(3.51454f, 3.66353f, 3.23655f);
 		absorption = float3(2.9684f, 3.0917f, 3.3679f);
+	} else if ("Iron" == name) {
+		ior = float3(2.9038f,  2.8857f,  2.6420f);
+		absorption = float3(3.0798f, 2.9157f, 2.8025f);
 	}
 }
 
