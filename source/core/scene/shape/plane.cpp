@@ -134,14 +134,6 @@ void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 	sample.pdf = 0.f;
 }
 
-void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float3_p /*p*/, float2 /*uv*/, float /*area*/,
-				   Sample& /*sample*/) const {}
-
-void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float3_p /*p*/, float3_p /*wi*/, float /*area*/,
-				   Sample& /*sample*/) const {}
-
 float Plane::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 				 float3_p /*p*/, float3_p /*wi*/, float /*area*/,
 				 bool /*two_sided*/, bool /*total_sphere*/,
@@ -149,11 +141,21 @@ float Plane::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 	return 0.f;
 }
 
-float Plane::area(uint32_t /*part*/, float3_p /*scale*/) const {
+void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+				   float3_p /*p*/, float2 /*uv*/, float /*area*/,
+				   Sample& /*sample*/) const {}
+
+float Plane::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
+					float3_p /*p*/, float3_p /*wi*/, float /*area*/,
+					float2& /*uv*/) const {
 	return 1.f;
 }
 
 float Plane::uv_weight(float2 /*uv*/) const {
+	return 1.f;
+}
+
+float Plane::area(uint32_t /*part*/, float3_p /*scale*/) const {
 	return 1.f;
 }
 

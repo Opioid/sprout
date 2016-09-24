@@ -187,6 +187,27 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 //	}
 }
 
+float Sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
+				  float3_p p, float3_p wi, float /*area*/, bool /*two_sided*/,
+				  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
+	float3 axis = transformation.position - p;
+	float axis_squared_length = math::squared_length(axis);
+	float radius_square = transformation.scale.x * transformation.scale.x;
+
+	float b = math::dot(axis, wi);
+	float det = (b * b) - axis_squared_length + radius_square;
+
+	if (det <= 0.f) {
+		return 0.f;
+	}
+
+	float sin_theta_max2 = radius_square / axis_squared_length;
+	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+	cos_theta_max = std::min(0.99999995f, cos_theta_max);
+
+	return math::cone_pdf_uniform(cos_theta_max);
+}
+
 void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 					float3_p p, float2 uv, float area, Sample& sample) const {
 	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
@@ -220,8 +241,8 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 }
 
-void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-					float3_p p, float3_p wi, float area, Sample& sample) const {
+float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
+					 float3_p p, float3_p wi, float area, float2& uv) const {
 	float3 v = transformation.position - p;
 	float b = math::dot(v, wi);
 	float radius = transformation.scale.x;
@@ -235,40 +256,15 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 		float3 wn = math::normalized(hit - transformation.position);
 
 		float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
-		sample.uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-							std::acos(xyz.y) * math::Pi_inv);
+		uv.x = -std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
+		uv.y =  std::acos(xyz.y) * math::Pi_inv;
 
 		float sl = t * t;
 		float c = math::dot(wn, -wi);
-		sample.pdf = sl / (c * area);
-	} else {
-		sample.pdf = 0.f;
-	}
-}
-
-float Sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
-				  float3_p p, float3_p wi, float /*area*/, bool /*two_sided*/,
-				  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
-	float3 axis = transformation.position - p;
-	float axis_squared_length = math::squared_length(axis);
-	float radius_square = transformation.scale.x * transformation.scale.x;
-
-	float b = math::dot(axis, wi);
-	float det = (b * b) - axis_squared_length + radius_square;
-
-	if (det <= 0.f) {
-		return 0.f;
+		return sl / (c * area);
 	}
 
-	float sin_theta_max2 = radius_square / axis_squared_length;
-	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
-	cos_theta_max = std::min(0.99999995f, cos_theta_max);
-
-	return math::cone_pdf_uniform(cos_theta_max);
-}
-
-float Sphere::area(uint32_t /*part*/, float3_p scale) const {
-	return 4.f * math::Pi * scale.x * scale.x;
+	return 0.f;
 }
 
 float Sphere::uv_weight(float2 uv) const {
@@ -277,6 +273,10 @@ float Sphere::uv_weight(float2 uv) const {
 	}
 
 	return 1.f / std::sin(uv.y * math::Pi);
+}
+
+float Sphere::area(uint32_t /*part*/, float3_p scale) const {
+	return 4.f * math::Pi * scale.x * scale.x;
 }
 
 size_t Sphere::num_bytes() const {

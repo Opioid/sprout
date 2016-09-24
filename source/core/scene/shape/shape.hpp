@@ -47,23 +47,23 @@ public:
 						bool two_sided, sampler::Sampler& sampler,
 						Node_stack& node_stack, Sample& sample) const = 0;
 
-	virtual void sample(uint32_t part, const Transformation& transformation, float3_p p,
-						float area, bool two_sided, sampler::Sampler& sampler,
+	virtual void sample(uint32_t part, const Transformation& transformation,
+						float3_p p, float area, bool two_sided, sampler::Sampler& sampler,
 						Node_stack& node_stack, Sample& sample) const = 0;
-
-	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float2 uv, float area, Sample& sample) const = 0;
-
-	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float3_p wi, float area, Sample& sample) const = 0;
 
 	virtual float pdf(uint32_t part, const Transformation& transformation,
 					  float3_p p, float3_p wi, float area, bool two_sided,
 					  bool total_sphere, Node_stack& node_stack) const = 0;
 
-	virtual float area(uint32_t part, float3_p scale) const = 0;
+	virtual void sample(uint32_t part, const Transformation& transformation,
+						float3_p p, float2 uv, float area, Sample& sample) const = 0;
+
+	virtual float pdf_uv(uint32_t part, const Transformation& transformation,
+						 float3_p p, float3_p wi, float area, float2& uv) const = 0;
 
 	virtual float uv_weight(float2 uv) const = 0;
+
+	virtual float area(uint32_t part, float3_p scale) const = 0;
 
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;

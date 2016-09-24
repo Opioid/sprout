@@ -143,13 +143,6 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 }
 
-void Disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float3_p /*p*/, float2 /*uv*/, float /*area*/, Sample& /*sample*/) const {}
-
-void Disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float3_p /*p*/, float3_p /*wi*/, float /*area*/,
-				  Sample& /*sample*/) const {}
-
 float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
 				float3_p p, float3_p wi, float area, bool two_sided,
 				bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
@@ -184,12 +177,21 @@ float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
 	return 0.f;
 }
 
-float Disk::area(uint32_t /*part*/, float3_p scale) const {
-	return math::Pi * scale.x * scale.x;
+void Disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+				  float3_p /*p*/, float2 /*uv*/, float /*area*/, Sample& /*sample*/) const {}
+
+float Disk::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
+				   float3_p /*p*/, float3_p /*wi*/, float /*area*/,
+				   float2& /*uv*/) const {
+	return 1.f;
 }
 
 float Disk::uv_weight(float2 /*uv*/) const {
 	return 1.f;
+}
+
+float Disk::area(uint32_t /*part*/, float3_p scale) const {
+	return math::Pi * scale.x * scale.x;
 }
 
 size_t Disk::num_bytes() const {

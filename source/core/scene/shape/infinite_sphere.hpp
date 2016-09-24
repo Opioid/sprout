@@ -31,21 +31,21 @@ public:
 						sampler::Sampler& sampler, Node_stack& node_stack,
 						Sample& sample) const final override;
 
-	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float2 uv, float area,
-						Sample& sample) const final override;
-
-	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float3_p wi, float area,
-						Sample& sample) const final override;
-
 	virtual float pdf(uint32_t part, const Transformation& transformation,
 					  float3_p p, float3_p wi, float area, bool two_sided,
 					  bool total_sphere, Node_stack& node_stack) const final override;
 
-	virtual float area(uint32_t part, float3_p scale) const final override;
+	virtual void sample(uint32_t part, const Transformation& transformation,
+						float3_p p, float2 uv, float area,
+						Sample& sample) const final override;
+
+	virtual float pdf_uv(uint32_t part, const Transformation& transformation,
+						 float3_p p, float3_p wi, float area,
+						 float2& uv) const final override;
 
 	virtual float uv_weight(float2 uv) const final override;
+
+	virtual float area(uint32_t part, float3_p scale) const final override;
 
 	virtual bool is_finite() const final override;
 

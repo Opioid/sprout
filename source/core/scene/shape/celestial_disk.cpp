@@ -81,14 +81,6 @@ void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformat
 	sample.pdf = 1.f / area;
 }
 
-void Celestial_disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-							float3_p /*p*/, float2 /*uv*/, float /*area*/,
-							Sample& /*sample*/) const {}
-
-void Celestial_disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-							float3_p/*p*/, float3_p /*wi*/,
-							float /*area*/, Sample& /*sample*/) const {}
-
 float Celestial_disk::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 						  float3_p /*p*/, float3_p /*wi*/, float area,
 						  bool /*two_sided*/, bool /*total_sphere*/,
@@ -96,13 +88,23 @@ float Celestial_disk::pdf(uint32_t /*part*/, const Transformation& /*transformat
 	return 1.f / area;
 }
 
-float Celestial_disk::area(uint32_t /*part*/, float3_p scale) const {
-	float radius = math::degrees_to_radians(scale.x);
-	return math::Pi * radius * radius;
+void Celestial_disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+							float3_p /*p*/, float2 /*uv*/, float /*area*/,
+							Sample& /*sample*/) const {}
+
+float Celestial_disk::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
+							 float3_p/*p*/, float3_p /*wi*/,
+							 float /*area*/, float2& /*uv*/) const {
+	return 1.f;
 }
 
 float Celestial_disk::uv_weight(float2 /*uv*/) const {
 	return 1.f;
+}
+
+float Celestial_disk::area(uint32_t /*part*/, float3_p scale) const {
+	float radius = math::degrees_to_radians(scale.x);
+	return math::Pi * radius * radius;
 }
 
 bool Celestial_disk::is_finite() const {

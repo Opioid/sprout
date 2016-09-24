@@ -95,6 +95,17 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 
+float Infinite_sphere::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
+						   float3_p /*p*/, float3_p /*wi*/, float /*area*/,
+						   bool /*two_sided*/, bool total_sphere,
+						   Node_stack& /*node_stack*/) const {
+	if (total_sphere) {
+		return 1.f / (4.f * math::Pi);
+	} else {
+		return 1.f / (2.f * math::Pi);
+	}
+}
+
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							 float3_p /*p*/, float2 uv, float /*area*/, Sample& sample) const {
 	float phi   = (uv.x - 0.5f) * 2.f * math::Pi;
@@ -113,30 +124,15 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 
-void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							 float3_p /*p*/, float3_p wi,
-							 float /*area*/, Sample& sample) const {
+float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
+							  float3_p /*p*/, float3_p wi,
+							  float /*area*/, float2& uv) const {
 	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
 	xyz = math::normalized(xyz);
-	sample.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
-	sample.uv.y = std::acos(xyz.y) * math::Pi_inv;
+	uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
+	uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-	sample.pdf = 1.f / (4.f * math::Pi);
-}
-
-float Infinite_sphere::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-						   float3_p /*p*/, float3_p /*wi*/, float /*area*/,
-						   bool /*two_sided*/, bool total_sphere,
-						   Node_stack& /*node_stack*/) const {
-	if (total_sphere) {
-		return 1.f / (4.f * math::Pi);
-	} else {
-		return 1.f / (2.f * math::Pi);
-	}
-}
-
-float Infinite_sphere::area(uint32_t /*part*/, float3_p /*scale*/) const {
-	return 4.f * math::Pi;
+	return 1.f / (4.f * math::Pi);
 }
 
 float Infinite_sphere::uv_weight(float2 uv) const {
@@ -145,6 +141,10 @@ float Infinite_sphere::uv_weight(float2 uv) const {
 	}
 
 	return 1.f / std::sin(uv.y * math::Pi);
+}
+
+float Infinite_sphere::area(uint32_t /*part*/, float3_p /*scale*/) const {
+	return 4.f * math::Pi;
 }
 
 bool Infinite_sphere::is_finite() const {

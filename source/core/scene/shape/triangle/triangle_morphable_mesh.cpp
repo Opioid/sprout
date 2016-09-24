@@ -101,14 +101,6 @@ void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transform
 							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/,
 							Sample& /*sample*/) const {}
 
-void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-							float3_p /*p*/, float2 /*uv*/, float /*area*/,
-							Sample& /*sample*/) const {}
-
-void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-							float3_p /*p*/, float3_p /*wi*/, float /*area*/,
-							Sample& /*sample*/) const {}
-
 float Morphable_mesh::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 						  float3_p /*p*/, float3_p /*wi*/, float /*area*/,
 						  bool /*two_sided*/, bool /*total_sphere*/,
@@ -116,11 +108,21 @@ float Morphable_mesh::pdf(uint32_t /*part*/, const Transformation& /*transformat
 	return 1.f;
 }
 
-float Morphable_mesh::area(uint32_t /*part*/, float3_p /*scale*/) const {
+void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+							float3_p /*p*/, float2 /*uv*/, float /*area*/,
+							Sample& /*sample*/) const {}
+
+float Morphable_mesh::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
+							 float3_p /*p*/, float3_p /*wi*/, float /*area*/,
+							 float2& /*uv*/) const {
 	return 1.f;
 }
 
 float Morphable_mesh::uv_weight(float2 /*uv*/) const {
+	return 1.f;
+}
+
+float Morphable_mesh::area(uint32_t /*part*/, float3_p /*scale*/) const {
 	return 1.f;
 }
 

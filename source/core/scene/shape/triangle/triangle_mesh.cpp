@@ -168,12 +168,6 @@ void Mesh::sample(uint32_t part, const Transformation& transformation,
 	}
 }
 
-void Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float3_p /*p*/, float2 /*uv*/, float /*area*/, Sample& /*sample*/) const {}
-
-void Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float3_p /*p*/, float3_p /*wi*/, float /*area*/, Sample& /*sample*/) const {}
-
 float Mesh::pdf(uint32_t part, const Transformation& transformation,
 				float3_p p, float3_p wi, float area, bool two_sided,
 				bool /*total_sphere*/, Node_stack& node_stack) const {
@@ -210,12 +204,20 @@ float Mesh::pdf(uint32_t part, const Transformation& transformation,
 	return 0.f;
 }
 
-float Mesh::area(uint32_t part, float3_p scale) const {
-	return distributions_[part].distribution.integral() * scale.x * scale.x;
+void Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+				  float3_p /*p*/, float2 /*uv*/, float /*area*/, Sample& /*sample*/) const {}
+
+float Mesh::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
+				   float3_p /*p*/, float3_p /*wi*/, float /*area*/, float2& /*uv*/) const {
+	return 1.f;
 }
 
 float Mesh::uv_weight(float2 /*uv*/) const {
 	return 1.f;
+}
+
+float Mesh::area(uint32_t part, float3_p scale) const {
+	return distributions_[part].distribution.integral() * scale.x * scale.x;
 }
 
 bool Mesh::is_complex() const {

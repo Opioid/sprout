@@ -133,7 +133,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 			intersection.n = math::normalized(p - intersection.p);
 
 			float3 xyz = math::transform_vector_transposed(-intersection.n,
-																 transformation.rotation);
+														   transformation.rotation);
 			intersection.uv = float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 									 std::acos(xyz.y) * math::Pi_inv);
 		}
@@ -171,6 +171,20 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& /*transform
 	// TODO
 }
 
+float Inverse_sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
+						  float3_p p, float3_p /*wi*/, float /*area*/,
+						  bool /*two_sided*/, bool /*total_sphere*/,
+						  Node_stack& /*node_stack*/) const {
+	float3 axis = transformation.position - p;
+	float axis_squared_length = math::squared_length(axis);
+
+	float radius_square  = transformation.scale.x * transformation.scale.x;
+	float sin_theta_max2 = radius_square / axis_squared_length;
+	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
+
+	return math::cone_pdf_uniform(cos_theta_max);
+}
+
 void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							float3_p p, float2 uv, float area, Sample& sample) const {
 	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
@@ -204,12 +218,12 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 	}
 }
 
-void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							float3_p p, float3_p wi, float /*area*/, Sample& sample) const {
+float Inverse_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
+							 float3_p p, float3_p wi, float /*area*/, float2& uv) const {
 	float3 v = p - transformation.position;
-	float b = -dot(v, wi);
+	float b = -math::dot(v, wi);
 	float radius = transformation.scale.x;
-	float det = (b * b) - dot(v, v) + (radius * radius);
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
 	if (det > 0.f) {
 		float dist = std::sqrt(det);
@@ -219,31 +233,13 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 		float3 dir = math::normalized(hit - transformation.position);
 
 		float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
-		sample.uv = float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-								 std::acos(xyz.y) * math::Pi_inv);
+		uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
+		uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-		sample.pdf = 1.f / (4.f * math::Pi);
-	} else {
-		sample.pdf = 0.f;
+		return 1.f / (4.f * math::Pi);
 	}
-}
 
-float Inverse_sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
-						  float3_p p, float3_p /*wi*/, float /*area*/,
-						  bool /*two_sided*/, bool /*total_sphere*/,
-						  Node_stack& /*node_stack*/) const {
-	float3 axis = transformation.position - p;
-	float axis_squared_length = math::squared_length(axis);
-
-	float radius_square  = transformation.scale.x * transformation.scale.x;
-	float sin_theta_max2 = radius_square / axis_squared_length;
-	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
-
-	return math::cone_pdf_uniform(cos_theta_max);
-}
-
-float Inverse_sphere::area(uint32_t /*part*/, float3_p scale) const {
-	return 4.f * math::Pi * scale.x * scale.x;
+	return 0.f;
 }
 
 float Inverse_sphere::uv_weight(float2 uv) const {
@@ -252,6 +248,10 @@ float Inverse_sphere::uv_weight(float2 uv) const {
 	}
 
 	return 1.f / std::sin(uv.y * math::Pi);
+}
+
+float Inverse_sphere::area(uint32_t /*part*/, float3_p scale) const {
+	return 4.f * math::Pi * scale.x * scale.x;
 }
 
 size_t Inverse_sphere::num_bytes() const {

@@ -102,6 +102,12 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
+float Canopy::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
+				  float3_p /*p*/, float3_p /*wi*/, float /*area*/, bool /*two_sided*/,
+				  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
+	return 1.f / (2.f * math::Pi);
+}
+
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					float3_p /*p*/, float2 uv, float /*area*/, Sample& sample) const {
 	float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
@@ -120,24 +126,18 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
-void Canopy::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-					float3_p /*p*/, float3_p /*wi*/, float /*area*/, Sample& /*sample*/) const {
+float Canopy::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
+					 float3_p /*p*/, float3_p /*wi*/, float /*area*/, float2& /*uv*/) const {
 	// TODO
 	std::cout << "Canopy::sample() not implemented!" << std::endl;
-}
-
-float Canopy::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float3_p /*p*/, float3_p /*wi*/, float /*area*/, bool /*two_sided*/,
-				  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
-	return 1.f / (2.f * math::Pi);
-}
-
-float Canopy::area(uint32_t /*part*/, float3_p /*scale*/) const {
-	return 2.f * math::Pi;
+	return 0.f;
 }
 
 float Canopy::uv_weight(float2 /*uv*/) const {
 	return 1.f;
+}
+float Canopy::area(uint32_t /*part*/, float3_p /*scale*/) const {
+	return 2.f * math::Pi;
 }
 
 bool Canopy::is_finite() const {
