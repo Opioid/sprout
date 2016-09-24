@@ -23,10 +23,12 @@ void Prop_image_light::sample(const Transformation& transformation, float time,
 	float2 uv = material->radiance_sample(sampler.generate_sample_2D(), material_pdf);
 
 	float area = prop_->area(part_);
+
+	// this pdf includes the uv weight which adjusts for texture distortion by the shape
 	prop_->shape()->sample(part_, transformation, p, uv, area, result.shape);
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
-		result.shape.pdf *= material_pdf * prop_->shape()->uv_weight(uv);
+		result.shape.pdf *= material_pdf;
 		result.radiance = material->sample_radiance(result.shape.wi, uv,
 													area, time, worker, filter);
 	} else {
@@ -39,12 +41,13 @@ float Prop_image_light::pdf(const Transformation& transformation,
 							Worker& worker, Sampler_filter filter) const {
 	float area = prop_->area(part_);
 
+	// this pdf includes the uv weight which adjusts for texture distortion by the shape
 	float2 uv;
 	float shape_pdf = prop_->shape()->pdf_uv(part_, transformation, p, wi, area, uv);
 
 	float material_pdf = prop_->material(part_)->emission_pdf(uv, worker, filter);
 
-	return shape_pdf * material_pdf * prop_->shape()->uv_weight(uv);
+	return shape_pdf * material_pdf;
 }
 
 void Prop_image_light::prepare_sampling(uint32_t light_id) {

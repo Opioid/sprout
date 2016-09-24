@@ -214,7 +214,8 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 		sample.wi = dir;
 		sample.uv = uv;
 		sample.t  = d;
-		sample.pdf = sl / (c * area);
+		// sin_theta because of the uv weight
+		sample.pdf = sl / (c * area * sin_theta);
 	}
 }
 
@@ -236,18 +237,24 @@ float Inverse_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transforma
 		uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 		uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-		return 1.f / (4.f * math::Pi);
+		// sin_theta because of the uv weight
+		float sin_theta = std::sqrt(1.f - xyz.y * xyz.y);
+
+		return 1.f / (4.f * math::Pi * sin_theta);
 	}
 
 	return 0.f;
 }
 
 float Inverse_sphere::uv_weight(float2 uv) const {
-	if (0.f == uv.y) {
+	float sin_theta = std::sin(uv.y * math::Pi);
+
+	if (0.f == sin_theta) {
+		// this case never seemed to be an issue?!
 		return 0.f;
 	}
 
-	return 1.f / std::sin(uv.y * math::Pi);
+	return 1.f / sin_theta;
 }
 
 float Inverse_sphere::area(uint32_t /*part*/, float3_p scale) const {

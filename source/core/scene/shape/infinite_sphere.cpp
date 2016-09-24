@@ -9,6 +9,8 @@
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
 
+#include <iostream>
+
 namespace scene { namespace shape {
 
 Infinite_sphere::Infinite_sphere() {
@@ -121,7 +123,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;
 	sample.t  = 1000000.f;
-	sample.pdf = 1.f / (4.f * math::Pi);
+	// sin_theta because of the uv weight
+	sample.pdf = 1.f / (4.f * math::Pi * sin_theta);
 }
 
 float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
@@ -132,15 +135,21 @@ float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transform
 	uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 	uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-	return 1.f / (4.f * math::Pi);
+	// sin_theta because of the uv weight
+	float sin_theta = std::sqrt(1.f - xyz.y * xyz.y);
+
+	return 1.f / (4.f * math::Pi * sin_theta);
 }
 
 float Infinite_sphere::uv_weight(float2 uv) const {
-	if (0.f == uv.y) {
+	float sin_theta = std::sin(uv.y * math::Pi);
+
+	if (0.f == sin_theta) {
+		// this case never seemed to be an issue?!
 		return 0.f;
 	}
 
-	return 1.f / std::sin(uv.y * math::Pi);
+	return 1.f / sin_theta;
 }
 
 float Infinite_sphere::area(uint32_t /*part*/, float3_p /*scale*/) const {

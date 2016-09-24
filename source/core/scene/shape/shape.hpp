@@ -55,6 +55,8 @@ public:
 					  float3_p p, float3_p wi, float area, bool two_sided,
 					  bool total_sphere, Node_stack& node_stack) const = 0;
 
+	// The following two functions are used for textured lights
+	// and should have the uv weight baked in!
 	virtual void sample(uint32_t part, const Transformation& transformation,
 						float3_p p, float2 uv, float area, Sample& sample) const = 0;
 
