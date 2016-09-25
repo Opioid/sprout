@@ -52,6 +52,7 @@ public:
 						  Sampler_filter filter) const;
 
 	virtual void prepare_sampling(bool spherical);
+	virtual void prepare_sampling();
 
 	virtual bool is_animated() const;
 

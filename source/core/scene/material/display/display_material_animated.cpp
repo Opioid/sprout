@@ -71,28 +71,16 @@ bool Material_animated::has_emission_map() const {
 float2 Material_animated::radiance_sample(float2 r2, float& pdf) const {
 	float2 uv = distribution_.sample_continuous(r2, pdf);
 
-	if (uv.y == 0.f) {
-		pdf = 0.f;
-	} else {
-		float sin_theta = std::sin(uv.y * math::Pi);
-
-		pdf *= total_weight_ / sin_theta;
-	}
+	pdf *= total_weight_;
 
 	return uv;
 }
 
 float Material_animated::emission_pdf(float2 uv, const Worker& worker,
 									  Sampler_filter filter) const {
-	if (uv.y == 0.f) {
-		return 0.f;
-	}
-
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
-	float sin_theta = std::sin(uv.y * math::Pi);
-
-	return distribution_.pdf(sampler.address(uv)) * (total_weight_ / sin_theta);
+	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
 float Material_animated::opacity(float2 uv, float /*time*/,
@@ -105,14 +93,13 @@ float Material_animated::opacity(float2 uv, float /*time*/,
 	}
 }
 
-void Material_animated::prepare_sampling(bool spherical) {
+void Material_animated::prepare_sampling(bool /*spherical*/) {
 	if (average_emissions_[element_].x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
 		return;
 	}
 
-	if (spherical) {
 	/*	average_emission_ = float3::identity;
 
 		auto d = emission_->dimensions();
@@ -137,13 +124,19 @@ void Material_animated::prepare_sampling(bool spherical) {
 		average_emission_ /= total_weight_;
 
 		distribution_.init(luminance.data(), d);*/
-	} else {
-		average_emissions_[element_] = emission_factor_
-									 * emission_map_.texture()->average_3(element_);
+}
 
-		if (is_two_sided()) {
-			average_emissions_[element_] *= 2.f;
-		}
+void Material_animated::prepare_sampling() {
+	if (average_emissions_[element_].x >= 0.f) {
+		// Hacky way to check whether prepare_sampling has been called before
+		// average_emission_ is initialized with negative values...
+		return;
+	}
+
+	average_emissions_[element_] = emission_factor_ * emission_map_.texture()->average_3(element_);
+
+	if (is_two_sided()) {
+		average_emissions_[element_] *= 2.f;
 	}
 }
 

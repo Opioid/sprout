@@ -141,7 +141,7 @@ void Scene::tick(thread::Pool& thread_pool) {
 		p->morph(thread_pool);
 	}
 
-	compile();
+	compile(thread_pool);
 
 	simulation_time_ += tick_duration_;
 }
@@ -171,7 +171,7 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 	return tick_offset;
 }
 
-void Scene::compile() {
+void Scene::compile(thread::Pool& pool) {
 	// handle changed transformations
 	for (auto d : dummies_) {
 		d->calculate_world_transformation();
@@ -195,9 +195,9 @@ void Scene::compile() {
 	// resort lights PDF
 	light_powers_.clear();
 
-	for (size_t i = 0, len = lights_.size(); i < len; ++i) {
+	for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
 		auto l = lights_[i];
-		l->prepare_sampling(static_cast<uint32_t>(i));
+		l->prepare_sampling(i, pool);
 		light_powers_.push_back(std::sqrt(spectrum::luminance(l->power(bvh_.aabb()))));
 	}
 

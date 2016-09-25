@@ -79,7 +79,7 @@ public:
 	void tick(thread::Pool& thread_pool);
 	float seek(float time, thread::Pool& thread_pool);
 
-	void compile();
+	void compile(thread::Pool& pool);
 
 	entity::Dummy* create_dummy();
 	entity::Dummy* create_dummy(const std::string& name);

@@ -50,7 +50,7 @@ float Prop_image_light::pdf(const Transformation& transformation,
 	return shape_pdf * material_pdf;
 }
 
-void Prop_image_light::prepare_sampling(uint32_t light_id) {
+void Prop_image_light::prepare_sampling(uint32_t light_id, thread::Pool& /*pool*/) {
 	prop_->material(part_)->prepare_sampling(true);
 
 	prop_->prepare_sampling(part_, light_id);

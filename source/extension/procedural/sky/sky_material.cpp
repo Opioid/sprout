@@ -7,6 +7,8 @@
 #include "core/scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
 
+#include <iostream>
+
 namespace procedural { namespace sky {
 
 Material::Material(scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
@@ -18,10 +20,6 @@ Material::Material(scene::material::Generic_sample_cache<scene::material::light:
 
 bool Material::has_emission_map() const {
 	return false;
-}
-
-void Material::prepare_sampling(bool /*spherical*/) {
-	model_.init();
 }
 
 Sky_material::Sky_material(
@@ -51,6 +49,12 @@ float3 Sky_material::sample_radiance(float3_p wi, float2 /*uv*/,
 
 float3 Sky_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky(model_.zenith());
+}
+
+void Sky_material::prepare_sampling(bool /*spherical*/) {
+	model_.init();
+
+	std::cout << "Sky_material::prepare_sampling()" << std::endl;
 }
 
 size_t Sky_material::num_bytes() const {
@@ -84,6 +88,10 @@ float3 Sun_material::sample_radiance(float3_p wi, float2 /*uv*/,
 
 float3 Sun_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky_and_sun(-model_.sun_direction());
+}
+
+void Sun_material::prepare_sampling(bool /*spherical*/) {
+	model_.init();
 }
 
 size_t Sun_material::num_bytes() const {

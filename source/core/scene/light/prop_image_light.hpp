@@ -17,7 +17,7 @@ public:
 					  float3_p p, float3_p wi, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const final override;
 
-	virtual void prepare_sampling(uint32_t light_id) final override;
+	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) final override;
 };
 
 }}

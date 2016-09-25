@@ -8,6 +8,8 @@ namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 
 namespace sampler { class Sampler; }
 
+namespace thread { class Pool; }
+
 namespace scene {
 
 namespace entity { struct Composed_transformation; }
@@ -53,7 +55,7 @@ public:
 
 	virtual float3 power(const math::aabb& scene_bb) const = 0;
 
-	virtual void prepare_sampling(uint32_t light_id) = 0;
+	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) = 0;
 
 	virtual bool equals(const Prop* prop, uint32_t part) const = 0;
 };

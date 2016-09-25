@@ -129,7 +129,7 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 float Canopy::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
 					 float3_p /*p*/, float3_p /*wi*/, float /*area*/, float2& /*uv*/) const {
 	// TODO
-	std::cout << "Canopy::sample() not implemented!" << std::endl;
+	std::cout << "Canopy::pdf_uv() not implemented!" << std::endl;
 	return 0.f;
 }
 

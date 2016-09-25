@@ -61,6 +61,8 @@ float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
 
 void Material::prepare_sampling(bool /*spherical*/) {}
 
+void Material::prepare_sampling() {}
+
 bool Material::is_animated() const {
 	return false;
 }

@@ -71,8 +71,8 @@ float3 Prop_light::power(const math::aabb& scene_bb) const {
 	}
 }
 
-void Prop_light::prepare_sampling(uint32_t light_id) {
-	prop_->material(part_)->prepare_sampling(false);
+void Prop_light::prepare_sampling(uint32_t light_id, thread::Pool& /*pool*/) {
+	prop_->material(part_)->prepare_sampling();
 
 	prop_->prepare_sampling(part_, light_id);
 }

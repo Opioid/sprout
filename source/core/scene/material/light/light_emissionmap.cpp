@@ -63,44 +63,54 @@ float Emissionmap::emission_pdf(float2 uv, const Worker& worker,
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Emissionmap::prepare_sampling(bool spherical) {
+void Emissionmap::prepare_sampling(bool /*spherical*/) {
 	if (average_emission_.x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
 		return;
 	}
 
-	if (spherical) {
-		float3 average_radiance = math::float3_identity;
+	float3 average_radiance = math::float3_identity;
 
-		float total_weight = 0.f;
+	float total_weight = 0.f;
 
-		auto d = emission_map_.texture()->dimensions();
-		std::vector<float> luminance(d.x * d.y);
+	auto d = emission_map_.texture()->dimensions();
+	std::vector<float> luminance(d.x * d.y);
 
-		float my = 1.f / static_cast<float>(d.y) * math::Pi;
+	float my = 1.f / static_cast<float>(d.y) * math::Pi;
 
-		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
+	for (int32_t y = 0, l = 0; y < d.y; ++y) {
+		float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
 
-			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				float3 radiance = emission_factor_ * emission_map_.texture()->at_3(x, y);
+		for (int32_t x = 0; x < d.x; ++x, ++l) {
+			float3 radiance = emission_factor_ * emission_map_.texture()->at_3(x, y);
 
-				average_radiance += sin_theta * radiance;
+			average_radiance += sin_theta * radiance;
 
-				total_weight += sin_theta;
+			total_weight += sin_theta;
 
-				luminance[l] = sin_theta * spectrum::luminance(radiance);
-			}
+			luminance[l] = sin_theta * spectrum::luminance(radiance);
 		}
+	}
 
-		average_emission_ = average_radiance / total_weight;
+	average_emission_ = average_radiance / total_weight;
 
-		total_weight_ = total_weight;
+	total_weight_ = total_weight;
 
-		distribution_.init(luminance.data(), d);
-	} else {
-		average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
+	distribution_.init(luminance.data(), d);
+}
+
+void Emissionmap::prepare_sampling() {
+	if (average_emission_.x >= 0.f) {
+		// Hacky way to check whether prepare_sampling has been called before
+		// average_emission_ is initialized with negative values...
+		return;
+	}
+
+	average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
+
+	if (is_two_sided()) {
+		average_emission_ *= 2.f;
 	}
 }
 

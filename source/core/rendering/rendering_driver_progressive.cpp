@@ -108,7 +108,7 @@ void Driver_progressive::restart() {
 	iteration_ = 0;
 
 	if (schedule_.recompile) {
-		scene_.compile();
+		scene_.compile(thread_pool_);
 	}
 
 	schedule_.restart = false;

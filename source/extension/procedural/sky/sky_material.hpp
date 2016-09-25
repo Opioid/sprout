@@ -20,8 +20,6 @@ public:
 
 	virtual bool has_emission_map() const final override;
 
-	virtual void prepare_sampling(bool spherical) final override;
-
 protected:
 
 	Model& model_;
@@ -44,6 +42,8 @@ public:
 
 	virtual float3 average_radiance(float area) const final override;
 
+	virtual void prepare_sampling(bool spherical) final override;
+
 	virtual size_t num_bytes() const final override;
 };
 
@@ -63,6 +63,8 @@ public:
 								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
+
+	virtual void prepare_sampling(bool spherical) final override;
 
 	virtual size_t num_bytes() const final override;
 };

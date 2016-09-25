@@ -32,6 +32,7 @@ public:
 							   Sampler_filter filter) const final override;
 
 	virtual void prepare_sampling(bool spherical) final override;
+	virtual void prepare_sampling() final override;
 
 	virtual size_t num_bytes() const final override;
 

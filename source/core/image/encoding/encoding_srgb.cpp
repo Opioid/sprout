@@ -16,10 +16,25 @@ const math::byte3* Srgb::data() const {
 	return rgb_;
 }
 
+void Srgb::to_sRGB(const image::Image_float_3& image, int32_t begin, int32_t end) {
+	for (int32_t i = begin; i < end; ++i) {
+		float3 color = float3(image.at(i));
+		color = spectrum::linear_RGB_to_sRGB(color);
+		rgb_[i] = spectrum::float_to_unorm(color);
+	}
+}
+
 void Srgb::to_sRGB(const image::Image_float_4& image, int32_t begin, int32_t end) {
 	for (int32_t i = begin; i < end; ++i) {
 		float3 color = image.at(i).xyz;
 		color = spectrum::linear_RGB_to_sRGB(color);
+		rgb_[i] = spectrum::float_to_unorm(color);
+	}
+}
+
+void Srgb::to_byte(const image::Image_float_3& image, int32_t begin, int32_t end) {
+	for (int32_t i = begin; i < end; ++i) {
+		float3 color = float3(image.at(i));
 		rgb_[i] = spectrum::float_to_unorm(color);
 	}
 }
@@ -43,10 +58,25 @@ const math::byte4* Srgb_alpha::data() const {
 	return rgba_;
 }
 
+void Srgb_alpha::to_sRGB(const image::Image_float_3& image, int32_t begin, int32_t end) {
+	for (int32_t i = begin; i < end; ++i) {
+		float4 color = float4(image.at(i), 1.f);
+		color = spectrum::linear_RGB_to_sRGB(color);
+		rgba_[i] = spectrum::float_to_unorm(color);
+	}
+}
+
 void Srgb_alpha::to_sRGB(const image::Image_float_4& image, int32_t begin, int32_t end) {
 	for (int32_t i = begin; i < end; ++i) {
 		float4 color = image.at(i);
 		color = spectrum::linear_RGB_to_sRGB(color);
+		rgba_[i] = spectrum::float_to_unorm(color);
+	}
+}
+
+void Srgb_alpha::to_byte(const image::Image_float_3& image, int32_t begin, int32_t end) {
+	for (int32_t i = begin; i < end; ++i) {
+		float4 color = float4(image.at(i), 1.f);
 		rgba_[i] = spectrum::float_to_unorm(color);
 	}
 }

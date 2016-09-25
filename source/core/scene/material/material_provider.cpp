@@ -757,7 +757,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	Adapter_2D emission_map;
 	Adapter_2D mask;
 	bool two_sided = false;
-    float3 color(0.6f, 0.6f, 0.6f);
+	float3 color(0.4f, 0.4f, 0.4f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float ior = 1.46f;
