@@ -18,9 +18,9 @@ Model::~Model() {
 	release();
 }
 
-void Model::init() {
+bool Model::init() {
 	if (!dirty_) {
-		return;
+		return false;
 	}
 
 	release();
@@ -42,6 +42,8 @@ void Model::init() {
 	}
 
 	dirty_ = false;
+
+	return true;
 }
 
 float3 Model::sun_direction() const {

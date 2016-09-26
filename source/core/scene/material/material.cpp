@@ -59,7 +59,9 @@ float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
 	}
 }
 
-void Material::prepare_sampling(bool /*spherical*/) {}
+void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
+								const Transformation& /*transformation*/,
+								float /*area*/, thread::Pool& /*pool*/) {}
 
 void Material::prepare_sampling() {}
 

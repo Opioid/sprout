@@ -44,13 +44,23 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
 	properties_.set(Properties::Visible_in_shadow,		in_shadow);
 }
 
-void Prop::prepare_sampling(uint32_t part, uint32_t light_id) {
+void Prop::prepare_sampling(uint32_t part, uint32_t light_id, bool material_importance_sampling,
+							thread::Pool& pool) {
 	shape_->prepare_sampling(part);
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(0.f, temp);
-	parts_[part].area = shape_->area(part, transformation.scale);
+
+	float area = shape_->area(part, transformation.scale);
+	parts_[part].area = area;
+
 	parts_[part].light_id = light_id;
+
+	if (material_importance_sampling) {
+		materials_[part]->prepare_sampling(*shape_, part, transformation, area, pool);
+	} else {
+		materials_[part]->prepare_sampling();
+	}
 }
 
 void Prop::morph(thread::Pool& pool) {

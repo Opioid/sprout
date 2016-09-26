@@ -93,7 +93,9 @@ float Material_animated::opacity(float2 uv, float /*time*/,
 	}
 }
 
-void Material_animated::prepare_sampling(bool /*spherical*/) {
+void Material_animated::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
+										 const Transformation& /*transformation*/,
+										 float /*area*/, thread::Pool& /*pool*/) {
 	if (average_emissions_[element_].x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...

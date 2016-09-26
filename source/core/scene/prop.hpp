@@ -37,7 +37,8 @@ public:
 
 	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
-	void prepare_sampling(uint32_t part, uint32_t light_id);
+	void prepare_sampling(uint32_t part, uint32_t light_id, bool material_importance_sampling,
+						  thread::Pool& pool);
 
 	void morph(thread::Pool& pool);
 

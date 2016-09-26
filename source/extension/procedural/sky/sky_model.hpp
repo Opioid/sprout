@@ -14,7 +14,8 @@ public:
 	Model();
 	~Model();
 
-	void init();
+	// Return signals whether there was a change (not success/failure!)
+	bool init();
 
 	float3 sun_direction() const;
 	void set_sun_direction(float3_p direction);

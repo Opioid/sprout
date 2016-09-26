@@ -13,6 +13,8 @@ public:
 
 	virtual std::string file_extension() const final override;
 
+	bool write(std::ostream& stream, const Image_float_3& image, thread::Pool& pool);
+
 	virtual bool write(std::ostream& stream, const Image_float_4& image,
 					   thread::Pool& pool) final override;
 

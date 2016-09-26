@@ -27,13 +27,15 @@ public:
 
 	virtual bool has_emission_map() const final override;
 
-	virtual float2 radiance_sample(float2 r2,
-													float& pdf) const final override;
+	virtual float2 radiance_sample(float2 r2, float& pdf) const final override;
 
 	virtual float emission_pdf(float2 uv, const Worker& worker,
 							   Sampler_filter filter) const final override;
 
-	virtual void prepare_sampling(bool spherical) final override;
+	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
+								  const Transformation& transformation,
+								  float area, thread::Pool& pool) final override;
+
 	virtual void prepare_sampling() final override;
 
 	virtual size_t num_bytes() const final override;

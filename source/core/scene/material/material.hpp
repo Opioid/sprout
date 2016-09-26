@@ -7,12 +7,16 @@
 #include <memory>
 #include <vector>
 
+namespace thread { class Pool; }
+
 namespace scene {
 
-class Worker;
 struct Renderstate;
+class Worker;
 
-namespace shape { struct Hitpoint; }
+namespace entity { struct Composed_transformation; }
+
+namespace shape { struct Hitpoint; class Shape; }
 
 namespace material {
 
@@ -22,6 +26,7 @@ class Material {
 
 public:
 
+	using Transformation = entity::Composed_transformation;
 	using Sampler_filter = material::Sampler_settings::Filter;
 
 	Material(const Sampler_settings& sampler_settings, bool two_sided);
@@ -51,7 +56,10 @@ public:
 	virtual float opacity(float2 uv, float time, const Worker& worker,
 						  Sampler_filter filter) const;
 
-	virtual void prepare_sampling(bool spherical);
+	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
+								  const Transformation& transformation,
+								  float area, thread::Pool& pool);
+
 	virtual void prepare_sampling();
 
 	virtual bool is_animated() const;

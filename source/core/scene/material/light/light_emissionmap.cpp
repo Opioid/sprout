@@ -63,7 +63,9 @@ float Emissionmap::emission_pdf(float2 uv, const Worker& worker,
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Emissionmap::prepare_sampling(bool /*spherical*/) {
+void Emissionmap::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
+								   const Transformation& /*transformation*/,
+								   float /*area*/, thread::Pool& /*pool*/) {
 	if (average_emission_.x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...

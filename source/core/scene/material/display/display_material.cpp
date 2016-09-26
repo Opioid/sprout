@@ -69,7 +69,9 @@ float Material::emission_pdf(float2 uv, const Worker& worker,
 	return distribution_.pdf(sampler.address(uv)) * total_weight_ ;
 }
 
-void Material::prepare_sampling(bool /*spherical*/) {
+void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
+								const Transformation& /*transformation*/,
+								float /*area*/, thread::Pool& /*pool*/) {
 	if (average_emission_.x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
@@ -85,7 +87,7 @@ void Material::prepare_sampling(bool /*spherical*/) {
 
 	for (int32_t y = 0, l = 0; y < d.y; ++y) {
 		float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) /
-										 static_cast<float>(d.y)) * math::Pi);
+									 static_cast<float>(d.y)) * math::Pi);
 
 		for (int32_t x = 0; x < d.x; ++x, ++l) {
 			float3 radiance = emission_factor_ * emission_map_.texture()->at_3(x, y);

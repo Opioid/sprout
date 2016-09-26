@@ -1,12 +1,18 @@
 #include "sky_material.hpp"
 #include "sky_model.hpp"
+#include "core/image/typed_image.inl"
+#include "core/scene/prop.hpp"
 #include "core/scene/scene_renderstate.hpp"
 #include "core/scene/scene_worker.hpp"
+#include "core/scene/shape/shape_sample.hpp"
+#include "core/scene/shape/shape.hpp"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/material/material_sample_cache.inl"
 #include "core/scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
 
+#include "core/image/encoding/png/png_writer.hpp"
+#include <fstream>
 #include <iostream>
 
 namespace procedural { namespace sky {
@@ -51,10 +57,48 @@ float3 Sky_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky(model_.zenith());
 }
 
-void Sky_material::prepare_sampling(bool /*spherical*/) {
-	model_.init();
+void Sky_material::prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
+									const Transformation& transformation,
+									float area, thread::Pool& pool) {
+	if (!model_.init()) {
+		return;
+	}
 
-	std::cout << "Sky_material::prepare_sampling()" << std::endl;
+	std::cout << "Let's bake sky stuff" << std::endl;
+
+	int2 d(256, 256);
+
+	image::Image::Description description(image::Image::Type::Float_3, d);
+	image::Image_float_3 cache(description);
+
+	for (int y = 0; y < d.y; ++y) {
+		for (int x = 0; x < d.x; ++x) {
+			float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x),
+					  (static_cast<float>(y) + 0.5f) / static_cast<float>(d.y));
+
+			scene::shape::Sample sample;
+			shape.sample(part, transformation, math::float3_identity,
+						 uv, area, sample);
+
+			if (0.f == sample.pdf) {
+				cache.at(x, y) = math::packed_float3::identity;
+			} else {
+				float3 radiance = model_.evaluate_sky(sample.wi);
+				cache.at(x, y) = math::packed_float3(0.05f * radiance);
+			}
+
+		}
+	}
+
+	std::ofstream stream("sky.png", std::ios::binary);
+	if (stream) {
+		image::encoding::png::Writer writer(d);
+		writer.write(stream, cache, pool);
+	}
+}
+
+void Sky_material::prepare_sampling() {
+	model_.init();
 }
 
 size_t Sky_material::num_bytes() const {
@@ -90,7 +134,13 @@ float3 Sun_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky_and_sun(-model_.sun_direction());
 }
 
-void Sun_material::prepare_sampling(bool /*spherical*/) {
+void Sun_material::prepare_sampling(const scene::shape::Shape& /*shape*/, uint32_t /*part*/,
+									const Transformation& /*transformation*/,
+									float /*area*/, thread::Pool& /*pool*/) {
+	model_.init();
+}
+
+void Sun_material::prepare_sampling() {
 	model_.init();
 }
 
