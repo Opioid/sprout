@@ -1,6 +1,7 @@
 #include "sky_provider.hpp"
 #include "sky.hpp"
 #include "sky_material.hpp"
+#include "sun_material.hpp"
 #include "core/scene/prop.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
@@ -37,8 +38,17 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 												  resource::Manager& /*manager*/) {
 	Sky* sky = new Sky;
 
-	auto sky_material = std::make_shared<Sky_material>(material_provider_->light_cache(),
-													   sky->model());
+	bool bake = true;
+
+	std::shared_ptr<Material> sky_material;
+
+	if (bake) {
+		sky_material = std::make_shared<Sky_baked_material>(material_provider_->light_cache(),
+															sky->model());
+	} else {
+		sky_material = std::make_shared<Sky_material>(material_provider_->light_cache(),
+													  sky->model());
+	}
 
 	auto sun_material = std::make_shared<Sun_material>(material_provider_->light_cache(),
 													   sky->model());
@@ -64,8 +74,12 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 
 	sky_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	sky_prop->set_open(false);
-	scene.create_prop_light(sky_prop, 0);
-//	scene.create_prop_image_light(sky_prop, 0);
+
+	if (bake) {
+		scene.create_prop_image_light(sky_prop, 0);
+	} else {
+		scene.create_prop_light(sky_prop, 0);
+	}
 
 	sun_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	sun_prop->set_open(false);

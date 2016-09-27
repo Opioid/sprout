@@ -1,14 +1,14 @@
 #include "light_emissionmap.hpp"
 #include "light_material_sample.hpp"
+#include "image/texture/texture_2d_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/geometry/hitpoint.inl"
-#include "image/texture/texture_2d_adapter.inl"
-#include "base/spectrum/rgb.inl"
 #include "base/math/math.hpp"
 #include "base/math/distribution/distribution_2d.inl"
+#include "base/spectrum/rgb.inl"
 
 namespace scene { namespace material { namespace light {
 

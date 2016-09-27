@@ -148,7 +148,7 @@ float Infinite_sphere::uv_weight(float2 uv) const {
 		return 0.f;
 	}
 
-	return 1.f / sin_theta;
+	return sin_theta;
 }
 
 float Infinite_sphere::area(uint32_t /*part*/, float3_p /*scale*/) const {

@@ -1,29 +1,9 @@
 #pragma once
 
-#include "core/scene/material/material.hpp"
-#include "core/scene/material/material_sample_cache.hpp"
-#include "core/scene/material/light/light_material_sample.hpp"
+#include "sky_material_base.hpp"
+#include "base/math/distribution/distribution_2d.hpp"
 
 namespace procedural { namespace sky {
-
-class Model;
-
-class Material : public scene::material::Typed_material<
-		scene::material::Generic_sample_cache<scene::material::light::Sample>> {
-
-public:
-
-	using Sampler_filter = scene::material::Sampler_settings::Filter;
-
-	Material(scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
-			 Model& model);
-
-	virtual bool has_emission_map() const final override;
-
-protected:
-
-	Model& model_;
-};
 
 class Sky_material : public Material {
 
@@ -51,22 +31,29 @@ public:
 	virtual size_t num_bytes() const final override;
 };
 
-class Sun_material : public Material {
+class Sky_baked_material : public Material {
 
 public:
 
-	Sun_material(scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
-				 Model& model);
+	Sky_baked_material(scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
+					   Model& model);
 
 	virtual const scene::material::Sample& sample(float3_p wo, const scene::Renderstate& rs,
 												  const scene::Worker& worker,
 												  Sampler_filter filter) final override;
 
-	virtual float3 sample_radiance(float3_p wi, float2 uv,
-								   float area, float time, const scene::Worker& worker,
+	virtual float3 sample_radiance(float3_p wi, float2 uv, float area,
+								   float time, const scene::Worker& worker,
 								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
+
+	virtual bool has_emission_map() const final override;
+
+	virtual float2 radiance_sample(float2 r2, float& pdf) const final override;
+
+	virtual float emission_pdf(float2 uv, const scene::Worker& worker,
+							   Sampler_filter filter) const final override;
 
 	virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation,
@@ -75,6 +62,16 @@ public:
 	virtual void prepare_sampling() final override;
 
 	virtual size_t num_bytes() const final override;
+
+private:
+
+	Adapter_2D emission_map_;
+
+	float3 average_emission_;
+
+	float total_weight_;
+
+	math::Distribution_2D distribution_;
 };
 
 }}

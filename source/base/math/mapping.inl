@@ -30,11 +30,11 @@ inline float3 disk_to_hemisphere_equidistant(float2 uv) {
 
 inline float2 hemisphere_to_disk_equidistant(float3_p dir) {
 	// cartesian to spherical
-	float colatidude = std::acos(dir.z);
+	float colatitude = std::acos(dir.z);
 
 	float longitude = std::atan2(-dir.y, dir.x);
 
-	float r = colatidude * (math::Pi_inv * 2.f);
+	float r = colatitude * (math::Pi_inv * 2.f);
 
 	float sin_lon = std::sin(longitude);
 	float cos_lon = std::cos(longitude);
