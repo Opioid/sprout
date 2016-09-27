@@ -53,9 +53,9 @@ const material::Sample& Material_animated::sample(float3_p wo, const Renderstate
 	return sample;
 }
 
-float3 Material_animated::sample_radiance(float3_p /*wi*/, float2 uv,
-										  float /*area*/, float /*time*/,
-										  const Worker& worker, Sampler_filter filter) const {
+float3 Material_animated::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
+										  float /*time*/, const Worker& worker,
+										  Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * emission_map_.sample_3(sampler, uv, element_);
 }
@@ -95,40 +95,8 @@ float Material_animated::opacity(float2 uv, float /*time*/,
 
 void Material_animated::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 										 const Transformation& /*transformation*/,
-										 float /*area*/, thread::Pool& /*pool*/) {
-	if (average_emissions_[element_].x >= 0.f) {
-		// Hacky way to check whether prepare_sampling has been called before
-		// average_emission_ is initialized with negative values...
-		return;
-	}
-
-	/*	average_emission_ = float3::identity;
-
-		auto d = emission_->dimensions();
-		std::vector<float> luminance(d.x * d.y);
-
-		total_weight_ = 0.f;
-
-		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) / static_cast<float>(d.y)) * math::Pi);
-
-			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				float3 radiance = emission_factor_ * emission_->at_3(x, y);
-
-				luminance[l] = spectrum::luminance(radiance);
-
-				average_emission_ += sin_theta * radiance;
-
-				total_weight_ += sin_theta;
-			}
-		}
-
-		average_emission_ /= total_weight_;
-
-		distribution_.init(luminance.data(), d);*/
-}
-
-void Material_animated::prepare_sampling() {
+										 float /*area*/, bool /*importance_sampling*/,
+										 thread::Pool& /*pool*/) {
 	if (average_emissions_[element_].x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...

@@ -23,9 +23,8 @@ public:
 
 	virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation,
-								  float area, thread::Pool& pool) final override;
-
-	virtual void prepare_sampling() final override;
+								  float area, bool importance_sampling,
+								  thread::Pool& pool) final override;
 
 	virtual size_t num_bytes() const final override;
 };

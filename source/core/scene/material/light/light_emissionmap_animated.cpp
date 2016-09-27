@@ -49,9 +49,8 @@ const material::Sample& Emissionmap_animated::sample(float3_p wo, const Renderst
 	return sample;
 }
 
-float3 Emissionmap_animated::sample_radiance(float3_p /*wi*/, float2 uv,
-											 float /*area*/, float /*time*/,
-											 const Worker& worker,
+float3 Emissionmap_animated::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
+											 float /*time*/, const Worker& worker,
 											 Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 	return emission_factor_ * emission_map_.sample_3(sampler, uv, element_);
@@ -92,17 +91,8 @@ float Emissionmap_animated::opacity(float2 uv, float /*time*/,
 
 void Emissionmap_animated::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 											const Transformation& /*transformation*/,
-											float /*area*/, thread::Pool& /*pool*/) {
-	if (average_emissions_[element_].x >= 0.f) {
-		// Hacky way to check whether prepare_sampling has been called before
-		// average_emission_ is initialized with negative values...
-		return;
-	}
-
-	prepare_sampling();
-}
-
-void Emissionmap_animated::prepare_sampling() {
+											float /*area*/, bool /*importance_sampling*/,
+											thread::Pool& /*pool*/) {
 	if (average_emissions_[element_].x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...

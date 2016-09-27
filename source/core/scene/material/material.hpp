@@ -58,9 +58,8 @@ public:
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation,
-								  float area, thread::Pool& pool);
-
-	virtual void prepare_sampling();
+								  float area, bool importance_sampling,
+								  thread::Pool& pool);
 
 	virtual bool is_animated() const;
 

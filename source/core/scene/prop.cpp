@@ -56,11 +56,8 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id, bool material_impo
 
 	parts_[part].light_id = light_id;
 
-	if (material_importance_sampling) {
-		materials_[part]->prepare_sampling(*shape_, part, transformation, area, pool);
-	} else {
-		materials_[part]->prepare_sampling();
-	}
+	materials_[part]->prepare_sampling(*shape_, part, transformation, area,
+									   material_importance_sampling, pool);
 }
 
 void Prop::morph(thread::Pool& pool) {

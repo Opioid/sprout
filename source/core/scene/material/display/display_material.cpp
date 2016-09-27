@@ -38,8 +38,8 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 	return sample;
 }
 
-float3 Material::sample_radiance(float3_p /*wi*/, float2 uv,
-								 float /*area*/, float /*time*/, const Worker& worker,
+float3 Material::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
+								 float /*time*/, const Worker& worker,
 								 Sampler_filter filter) const {
 	auto& sampler = worker.sampler(sampler_key_, filter);
 
@@ -71,52 +71,46 @@ float Material::emission_pdf(float2 uv, const Worker& worker,
 
 void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 								const Transformation& /*transformation*/,
-								float /*area*/, thread::Pool& /*pool*/) {
+								float /*area*/, bool importance_sampling,
+								thread::Pool& /*pool*/) {
 	if (average_emission_.x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
 		return;
 	}
 
-	average_emission_ = math::float3_identity;
+	if (importance_sampling) {
+		float3 average_radiance = math::float3_identity;
 
-	auto d = emission_map_.texture()->dimensions();
-	std::vector<float> luminance(d.x * d.y);
+		float total_weight = 0.f;
 
-	total_weight_ = 0.f;
+		auto d = emission_map_.texture()->dimensions();
+		std::vector<float> luminance(d.x * d.y);
 
-	for (int32_t y = 0, l = 0; y < d.y; ++y) {
-		float sin_theta = std::sin(((static_cast<float>(y) + 0.5f) /
-									 static_cast<float>(d.y)) * math::Pi);
+		float my = 1.f / static_cast<float>(d.y) * math::Pi;
 
-		for (int32_t x = 0; x < d.x; ++x, ++l) {
-			float3 radiance = emission_factor_ * emission_map_.texture()->at_3(x, y);
+		for (int32_t y = 0, l = 0; y < d.y; ++y) {
+			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
 
-			luminance[l] = spectrum::luminance(radiance);
+			for (int32_t x = 0; x < d.x; ++x, ++l) {
+				float3 radiance = emission_factor_ * emission_map_.texture()->at_3(x, y);
 
-			average_emission_ += sin_theta * radiance;
+				average_radiance += sin_theta * radiance;
 
-			total_weight_ += sin_theta;
+				total_weight += sin_theta;
+
+				luminance[l] = sin_theta * spectrum::luminance(radiance);
+			}
 		}
+
+		average_emission_ = average_radiance / total_weight;
+
+		total_weight_ = total_weight;
+
+		distribution_.init(luminance.data(), d);
+	} else {
+		average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
 	}
-
-	average_emission_ /= total_weight_;
-
-	if (is_two_sided()) {
-		average_emission_ *= 2.f;
-	}
-
-	distribution_.init(luminance.data(), d);
-}
-
-void Material::prepare_sampling() {
-	if (average_emission_.x >= 0.f) {
-		// Hacky way to check whether prepare_sampling has been called before
-		// average_emission_ is initialized with negative values...
-		return;
-	}
-
-	average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
 
 	if (is_two_sided()) {
 		average_emission_ *= 2.f;

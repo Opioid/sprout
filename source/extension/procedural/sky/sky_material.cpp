@@ -12,6 +12,7 @@
 #include "core/scene/material/material_sample_cache.inl"
 #include "core/scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
+#include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.inl"
 
 #include "core/image/encoding/png/png_writer.hpp"
@@ -51,11 +52,8 @@ float3 Sky_material::average_radiance(float /*area*/) const {
 
 void Sky_material::prepare_sampling(const scene::shape::Shape& /*shape*/, uint32_t /*part*/,
 									const Transformation& /*transformation*/,
-									float /*area*/, thread::Pool& /*pool*/) {
-	model_.init();
-}
-
-void Sky_material::prepare_sampling() {
+									float /*area*/, bool /*importance_sampling*/,
+									thread::Pool& /*pool*/) {
 	model_.init();
 }
 
@@ -117,7 +115,8 @@ float Sky_baked_material::emission_pdf(float2 uv, const scene::Worker& worker,
 
 void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
 										  const Transformation& transformation,
-										  float area, thread::Pool& pool) {
+										  float area, bool importance_sampling,
+										  thread::Pool& pool) {
 	if (!model_.init()) {
 		return;
 	}
@@ -157,42 +156,43 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 		writer.write(stream, *cache, pool);
 	}
 
-	float3 average_radiance = math::float3_identity;
+	if (importance_sampling) {
+		float3 average_radiance = math::float3_identity;
 
-	float total_weight = 0.f;
+		float total_weight = 0.f;
 
-	std::vector<float> luminance(d.x * d.y);
+		std::vector<float> luminance(d.x * d.y);
 
-	for (int32_t y = 0, l = 0; y < d.y; ++y) {
-		for (int32_t x = 0; x < d.x; ++x, ++l) {
-			float3 radiance = float3(cache->at(x, y));
+		for (int32_t y = 0, l = 0; y < d.y; ++y) {
+			for (int32_t x = 0; x < d.x; ++x, ++l) {
+				float3 radiance = float3(cache->at(x, y));
 
-			float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x),
-					  (static_cast<float>(y) + 0.5f) / static_cast<float>(d.y));
+				float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x),
+						  (static_cast<float>(y) + 0.5f) / static_cast<float>(d.y));
 
-			float weight = shape.uv_weight(uv);
+				float weight = shape.uv_weight(uv);
 
-			average_radiance += weight * radiance;
+				average_radiance += weight * radiance;
 
-			total_weight += weight;
+				total_weight += weight;
 
-			luminance[l] = weight * spectrum::luminance(radiance);
+				luminance[l] = weight * spectrum::luminance(radiance);
+			}
 		}
+
+		average_emission_ = average_radiance / total_weight;
+
+		total_weight_ = total_weight;
+
+		distribution_.init(luminance.data(), d);
+	} else {
+		average_emission_ = cache_texture->average_3();
 	}
-
-	average_emission_ = average_radiance / total_weight;
-
-	total_weight_ = total_weight;
-
-	distribution_.init(luminance.data(), d);
-}
-
-void Sky_baked_material::prepare_sampling() {
-	model_.init();
 }
 
 size_t Sky_baked_material::num_bytes() const {
-	return sizeof(*this);
+	return sizeof(*this) + emission_map_.texture()->image()->num_bytes()
+		 + distribution_.num_bytes();
 }
 
 }}
