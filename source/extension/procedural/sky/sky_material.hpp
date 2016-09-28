@@ -63,6 +63,8 @@ public:
 
 private:
 
+	static float3 unclipped_canopy_mapping(const Transformation& transformation, float2 uv);
+
 	Adapter_2D emission_map_;
 
 	float3 average_emission_;

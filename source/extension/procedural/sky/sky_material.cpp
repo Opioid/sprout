@@ -11,6 +11,7 @@
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/material/material_sample_cache.inl"
 #include "core/scene/shape/geometry/hitpoint.inl"
+#include "base/math/mapping.inl"
 #include "base/math/vector.inl"
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.inl"
@@ -113,48 +114,50 @@ float Sky_baked_material::emission_pdf(float2 uv, const scene::Worker& worker,
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
+void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint32_t /*part*/,
 										  const Transformation& transformation,
-										  float area, bool importance_sampling,
-										  thread::Pool& pool) {
+										  float /*area*/, bool importance_sampling,
+										  thread::Pool& /*pool*/) {
 	if (!model_.init()) {
 		return;
 	}
 
-	std::cout << "Let's bake sky stuff" << std::endl;
+//	std::cout << "Let's bake sky stuff" << std::endl;
 
-	int2 d(128, 128);
+	int2 d(256, 256);
 
 	image::Image::Description description(image::Image::Type::Float_3, d);
 	auto cache = std::make_shared<image::Image_float_3>(description);
 
 	for (int y = 0; y < d.y; ++y) {
 		for (int x = 0; x < d.x; ++x) {
+
 			float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x),
 					  (static_cast<float>(y) + 0.5f) / static_cast<float>(d.y));
 
-			scene::shape::Sample sample;
-			shape.sample(part, transformation, math::float3_identity,
-						 uv, area, sample);
+//			scene::shape::Sample sample;
+//			shape.sample(part, transformation, math::float3_identity,
+//						 uv, area, sample);
 
-			if (0.f == sample.pdf) {
+			float3 wi = unclipped_canopy_mapping(transformation, uv);
+
+			/*if (0.f == sample.pdf) {
 				cache->at(x, y) = math::packed_float3::identity;
-			} else {
-				float3 radiance = model_.evaluate_sky(sample.wi);
-				cache->at(x, y) = math::packed_float3(/*0.05f **/ radiance);
+			} else*/ {
+				float3 radiance = model_.evaluate_sky(/*sample.*/wi);
+				cache->at(x, y) = math::packed_float3(radiance);
 			}
-
 		}
 	}
 
 	auto cache_texture = std::make_shared<image::texture::Texture_2D_float_3>(cache);
 	emission_map_ = Adapter_2D(cache_texture);
 
-	std::ofstream stream("sky.png", std::ios::binary);
-	if (stream) {
-		image::encoding::png::Writer writer(d);
-		writer.write(stream, *cache, pool);
-	}
+//	std::ofstream stream("sky.png", std::ios::binary);
+//	if (stream) {
+//		image::encoding::png::Writer writer(d);
+//		writer.write(stream, *cache, pool);
+//	}
 
 	if (importance_sampling) {
 		float3 average_radiance = math::float3_identity;
@@ -186,13 +189,25 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 
 		distribution_.init(luminance.data(), d);
 	} else {
-		average_emission_ = cache_texture->average_3();
+		// This controls how often the sky will be sampled,
+		// Zenith sample cause less variance in one test (favoring the sun)...
+		// average_emission_ = cache_texture->average_3();
+		average_emission_ = model_.evaluate_sky(model_.zenith());
 	}
 }
 
 size_t Sky_baked_material::num_bytes() const {
 	return sizeof(*this) + emission_map_.texture()->image()->num_bytes()
 		 + distribution_.num_bytes();
+}
+
+float3 Sky_baked_material::unclipped_canopy_mapping(const Transformation& transformation,
+													float2 uv) {
+	float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
+
+	float3 dir = math::disk_to_hemisphere_equidistant(disk);
+
+	return math::transform_vector(dir, transformation.rotation);
 }
 
 }}

@@ -8,8 +8,6 @@
 #include "base/math/matrix.inl"
 #include "base/math/sampling/sampling.inl"
 
-#include <iostream>
-
 namespace scene { namespace camera {
 
 Hemispherical::Hemispherical(int2 resolution, float ray_max_t) :
