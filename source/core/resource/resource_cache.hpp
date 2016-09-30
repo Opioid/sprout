@@ -32,6 +32,9 @@ public:
 
 	std::shared_ptr<T> get(const std::string& filename, const memory::Variant_map& options);
 
+	void store(const std::string& name, const memory::Variant_map& options,
+			   std::shared_ptr<T> resource);
+
 	size_t num_bytes() const;
 
 private:

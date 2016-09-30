@@ -12,6 +12,7 @@
 #include "core/scene/material/material_sample_cache.inl"
 #include "core/scene/shape/geometry/hitpoint.inl"
 #include "base/math/mapping.inl"
+#include "base/math/matrix.inl"
 #include "base/math/vector.inl"
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.inl"

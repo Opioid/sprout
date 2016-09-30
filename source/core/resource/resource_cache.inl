@@ -68,6 +68,14 @@ std::shared_ptr<T> Typed_cache<T>::get(const std::string& filename,
 }
 
 template<typename T>
+void Typed_cache<T>::store(const std::string& name, const memory::Variant_map& options,
+						   std::shared_ptr<T> resource) {
+	auto key = std::make_pair(name, options);
+
+	resources_[key] = resource;
+}
+
+template<typename T>
 size_t Typed_cache<T>::num_bytes() const {
 	size_t num_bytes = 0;
 

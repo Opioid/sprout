@@ -323,7 +323,7 @@ const rendering::sensor::tonemapping::Tonemapper*
 Loader::load_tonemapper(const json::Value& tonemapper_value) const {
 	for (auto& n : tonemapper_value.GetObject()) {
 		if ("ACES" == n.name) {
-			float hdr_max = json::read_float(n.value, "hdr_max");
+			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
 			return new rendering::sensor::tonemapping::Aces(hdr_max);
 		} else if ("Generic" == n.name) {
@@ -338,7 +338,7 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) const {
 		} else if ("Identity" == n.name) {
 			return new rendering::sensor::tonemapping::Identity();
 		} else if ("Uncharted" == n.name) {
-			float hdr_max = json::read_float(n.value, "hdr_max");
+			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
 			return new rendering::sensor::tonemapping::Uncharted(hdr_max);
 		}

@@ -27,34 +27,38 @@ public:
 	file::System& file_system();
 	thread::Pool& thread_pool();
 
-	template<typename Type>
-	void register_provider(Provider<Type>& provider);
+	template<typename T>
+	void register_provider(Provider<T>& provider);
 
-	template<typename Type>
-	std::shared_ptr<Type> load(const std::string& filename, const memory::Variant_map& options);
+	template<typename T>
+	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options);
 
-	template<typename Type>
-	std::shared_ptr<Type> load(const std::string& filename, const memory::Variant_map& options,
-							   bool& was_cached);
+	template<typename T>
+	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options,
+							bool& was_cached);
 
-	template<typename Type>
-	std::shared_ptr<Type> load(const std::string& name, const void* data,
-							   const std::string& mount_folder,
-							   const memory::Variant_map& options);
+	template<typename T>
+	std::shared_ptr<T> load(const std::string& name, const void* data,
+							const std::string& mount_folder,
+							const memory::Variant_map& options);
 
-	template<typename Type>
-	std::shared_ptr<Type> get(const std::string& filename, const memory::Variant_map& options);
+	template<typename T>
+	std::shared_ptr<T> get(const std::string& filename, const memory::Variant_map& options);
 
-	template<typename Type>
+	template<typename T>
+	void store(const std::string& name, const memory::Variant_map& options,
+			   std::shared_ptr<T> resource);
+
+	template<typename T>
 	size_t num_bytes() const;
 
 private:
 
-	template<typename Type>
-	const Typed_cache<Type>* typed_cache() const;
+	template<typename T>
+	const Typed_cache<T>* typed_cache() const;
 
-	template<typename Type>
-	Typed_cache<Type>* typed_cache();
+	template<typename T>
+	Typed_cache<T>* typed_cache();
 
 	file::System& file_system_;
 	thread::Pool& thread_pool_;

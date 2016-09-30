@@ -2,6 +2,7 @@
 #include "sky.hpp"
 #include "sky_material.hpp"
 #include "sun_material.hpp"
+#include "core/resource/resource_manager.inl"
 #include "core/scene/prop.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
@@ -35,7 +36,7 @@ void Provider::set_material_provider(scene::material::Provider& provider) {
 
 scene::entity::Entity* Provider::create_extension(const json::Value& extension_value,
 												  scene::Scene& scene,
-												  resource::Manager& /*manager*/) {
+												  resource::Manager& manager) {
 	Sky* sky = new Sky;
 
 	bool bake = true;
@@ -50,8 +51,12 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 													  sky->model());
 	}
 
+	manager.store<scene::material::Material>("proc:sky", memory::Variant_map(), sky_material);
+
 	auto sun_material = std::make_shared<Sun_material>(material_provider_->light_cache(),
 													   sky->model());
+
+	manager.store<scene::material::Material>("proc:sun", memory::Variant_map(), sun_material);
 
 	scene::material::Materials materials(1);
 

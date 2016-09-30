@@ -6,34 +6,34 @@
 
 namespace resource {
 
-template<typename Type>
-void Manager::register_provider(Provider<Type>& provider) {
-	uint32_t id = Provider<Type>::id();
+template<typename T>
+void Manager::register_provider(Provider<T>& provider) {
+	uint32_t id = Provider<T>::id();
 	auto old = caches_.find(id);
 
 	if (caches_.end() != old) {
 		delete old->second;
 	}
 
-	caches_[id] = new Typed_cache<Type>(provider);
+	caches_[id] = new Typed_cache<T>(provider);
 }
 
-template<typename Type>
-std::shared_ptr<Type> Manager::load(const std::string& filename,
-									const memory::Variant_map& options) {
+template<typename T>
+std::shared_ptr<T> Manager::load(const std::string& filename,
+								 const memory::Variant_map& options) {
 	bool was_cached;
-	return load<Type>(filename, options, was_cached);
+	return load<T>(filename, options, was_cached);
 }
 
-template<typename Type>
-std::shared_ptr<Type> Manager::load(const std::string& filename,
-									const memory::Variant_map& options,
-									bool& was_cached) {
+template<typename T>
+std::shared_ptr<T> Manager::load(const std::string& filename,
+								 const memory::Variant_map& options,
+								 bool& was_cached) {
 	if (filename.empty()) {
 		return nullptr;
 	}
 
-	Typed_cache<Type>* cache = typed_cache<Type>();
+	Typed_cache<T>* cache = typed_cache<T>();
 
 	// a provider for this resource type was never registered
 	if (!cache) {
@@ -43,15 +43,15 @@ std::shared_ptr<Type> Manager::load(const std::string& filename,
 	return cache->load(filename, options, *this, was_cached);
 }
 
-template<typename Type>
-std::shared_ptr<Type> Manager::load(const std::string& name, const void* data,
-									const std::string& mount_folder,
-									const memory::Variant_map& options) {
+template<typename T>
+std::shared_ptr<T> Manager::load(const std::string& name, const void* data,
+								 const std::string& mount_folder,
+								 const memory::Variant_map& options) {
 	if (name.empty()) {
 		return nullptr;
 	}
 
-	Typed_cache<Type>* cache = typed_cache<Type>();
+	Typed_cache<T>* cache = typed_cache<T>();
 
 	// a provider for this resource type was never registered
 	if (!cache) {
@@ -61,14 +61,14 @@ std::shared_ptr<Type> Manager::load(const std::string& name, const void* data,
 	return cache->load(name, data, mount_folder, options, *this);
 }
 
-template<typename Type>
-std::shared_ptr<Type> Manager::get(const std::string& filename,
-								   const memory::Variant_map& options) {
+template<typename T>
+std::shared_ptr<T> Manager::get(const std::string& filename,
+								const memory::Variant_map& options) {
 	if (filename.empty()) {
 		return nullptr;
 	}
 
-	Typed_cache<Type>* cache = typed_cache<Type>();
+	Typed_cache<T>* cache = typed_cache<T>();
 
 	// a provider for this resource type was never registered
 	if (!cache) {
@@ -78,9 +78,26 @@ std::shared_ptr<Type> Manager::get(const std::string& filename,
 	return cache->get(filename, options);
 }
 
-template<typename Type>
+template<typename T>
+void Manager::store(const std::string& name, const memory::Variant_map& options,
+					std::shared_ptr<T> resource) {
+	if (name.empty() || !resource) {
+		return;
+	}
+
+	Typed_cache<T>* cache = typed_cache<T>();
+
+	// a provider for this resource type was never registered
+	if (!cache) {
+		return;
+	}
+
+	return cache->store(name, options, resource);
+}
+
+template<typename T>
 size_t Manager::num_bytes() const {
-	const Typed_cache<Type>* cache = typed_cache<Type>();
+	const Typed_cache<T>* cache = typed_cache<T>();
 	if (!cache) {
 		return 0;
 	}
@@ -88,26 +105,26 @@ size_t Manager::num_bytes() const {
 	return cache->num_bytes();
 }
 
-template<typename Type>
-const Typed_cache<Type>* Manager::typed_cache() const {
-	auto cache = caches_.find(Provider<Type>::id());
+template<typename T>
+const Typed_cache<T>* Manager::typed_cache() const {
+	auto cache = caches_.find(Provider<T>::id());
 
 	if (caches_.end() == cache) {
 		return nullptr;
 	}
 
-	return static_cast<const Typed_cache<Type>*>(cache->second);
+	return static_cast<const Typed_cache<T>*>(cache->second);
 }
 
-template<typename Type>
-Typed_cache<Type>* Manager::typed_cache() {
-	auto cache = caches_.find(Provider<Type>::id());
+template<typename T>
+Typed_cache<T>* Manager::typed_cache() {
+	auto cache = caches_.find(Provider<T>::id());
 
 	if (caches_.end() == cache) {
 		return nullptr;
 	}
 
-	return static_cast<Typed_cache<Type>*>(cache->second);
+	return static_cast<Typed_cache<T>*>(cache->second);
 }
 
 }

@@ -5,7 +5,8 @@
 
 namespace resource {
 
-template<typename Type> class Identifiable {
+template<typename T>
+class Identifiable {
 
 public:
 
@@ -28,6 +29,6 @@ private:
 	static uint32_t s_id;
 };
 
-template<typename Type> uint32_t Identifiable<Type>::s_id;
+template<typename T> uint32_t Identifiable<T>::s_id = 0xFFFFFF;
 
 }
