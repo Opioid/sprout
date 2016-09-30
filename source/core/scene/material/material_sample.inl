@@ -46,10 +46,10 @@ inline void Sample::set_basis(float3_p geo_n, float3_p wo) {
 }
 
 inline float3 Sample::attenuation(float3_p color, float distance) {
-	float3 negative = /*float3(1.f, 1.f, 1.f) -*/ color;
-	return float3(negative.x > 0.f ? 1.f / (negative.x * distance) : 0.f,
-				  negative.y > 0.f ? 1.f / (negative.y * distance) : 0.f,
-				  negative.z > 0.f ? 1.f / (negative.z * distance) : 0.f);
+	float3 pushed = color + float3(0.01f, 0.01f, 0.01f);
+	return float3(1.f / (pushed.x * distance),
+				  1.f / (pushed.y * distance),
+				  1.f / (pushed.z * distance));
 }
 
 }}
