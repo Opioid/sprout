@@ -23,7 +23,8 @@ public:
 
 	void set_normal_map(const Adapter_2D& normal_map);
 
-	void set_color(const float3& color);
+	void set_refraction_color(float3_p color);
+	void set_absorbtion_color(float3_p color);
 	void set_attenuation_distance(float attenuation_distance);
 	void set_ior(float ior);
 
@@ -31,7 +32,8 @@ protected:
 
 	Adapter_2D normal_map_;
 
-	float3 color_;
+	float3 refraction_color_;
+	float3 absorbtion_color_;
 	float attenuation_distance_;
 	float ior_;
 };

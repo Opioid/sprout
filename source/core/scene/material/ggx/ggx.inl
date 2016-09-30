@@ -148,7 +148,7 @@ float3 Isotropic::refraction(float3_p wi, float3_p wo, float n_dot_wi,
 	float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
-	float3 result = d * g * f;
+	float3 result = d * g * f * layer.color;
 
 	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
 
@@ -193,7 +193,7 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 //		float thing = ((layer.ior_o * layer.ior_o) * wo_dot_h / denom);
 
 	result.pdf = (d * n_dot_h / (4.f * wo_dot_h));// * thing;
-	result.reflection = factor * (((layer.ior_o * layer.ior_o) * refraction) / denom);
+	result.reflection = factor * (((layer.ior_o * layer.ior_o) * refraction) / denom) * layer.color;
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Glossy_transmission);
 

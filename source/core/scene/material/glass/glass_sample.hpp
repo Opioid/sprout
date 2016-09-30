@@ -32,8 +32,8 @@ public:
 	virtual bool is_translucent() const final override;
 
 	struct Layer : public material::Sample::Layer {
-		void set(float3_p color, float attenuation_distance,
-				 float ior, float ior_outside);
+		void set(float3_p refraction_color, float3_p absorbtion_color,
+				 float attenuation_distance, float ior, float ior_outside);
 
 		float3 color;
 		float3 attenuation;

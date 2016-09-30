@@ -286,7 +286,8 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 
 	Adapter_2D normal_map;
 	Adapter_2D roughness_map;
-	float3 color(1.f, 1.f, 1.f);
+	float3 refraction_color(1.f, 1.f, 1.f);
+	float3 absorbtion_color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
 	float roughness = 0.f;
@@ -296,7 +297,12 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 		const json::Value& node_value = n->value;
 
 		if ("color" == node_name) {
-			color = json::read_float3(node_value);
+			refraction_color = json::read_float3(node_value);
+			absorbtion_color = refraction_color;
+		} else if ("refraction_color" == node_name) {
+			refraction_color = json::read_float3(node_value);
+		} else if ("absorbtion_color" == node_name) {
+			absorbtion_color = json::read_float3(node_value);
 		} else if ("attenuation_distance" == node_name) {
 			attenuation_distance = json::read_float(node_value);
 		} else if ("ior" == node_name) {
@@ -331,7 +337,8 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 															 sampler_settings);
 		material->set_normal_map(normal_map);
 		material->set_roughness_map(roughness_map);
-		material->set_color(color);
+		material->set_refraction_color(refraction_color);
+		material->set_absorbtion_color(absorbtion_color);
 		material->set_attenuation_distance(attenuation_distance);
 		material->set_ior(ior);
 		material->set_roughness(roughness);
@@ -340,7 +347,8 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 		auto material = std::make_shared<glass::Glass>(glass_cache_, sampler_settings);
 
 		material->set_normal_map(normal_map);
-		material->set_color(color);
+		material->set_refraction_color(refraction_color);
+		material->set_absorbtion_color(absorbtion_color);
 		material->set_attenuation_distance(attenuation_distance);
 		material->set_ior(ior);
 		return material;

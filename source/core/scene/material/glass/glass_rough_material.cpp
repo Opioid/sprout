@@ -40,7 +40,8 @@ const material::Sample& Glass_rough::sample(float3_p wo, const Renderstate& rs,
 		a2 = a2_;
 	}
 
-	sample.layer_.set(color_, attenuation_distance_, ior_, rs.ior, a2);
+	sample.layer_.set(refraction_color_, absorbtion_color_,
+					  attenuation_distance_, ior_, rs.ior, a2);
 
 	return sample;
 }
@@ -57,8 +58,12 @@ void Glass_rough::set_roughness_map(const Adapter_2D& roughness_map) {
 	roughness_map_ = roughness_map;
 }
 
-void Glass_rough::set_color(float3_p color) {
-	color_ = color;
+void Glass_rough::set_refraction_color(float3_p color) {
+	refraction_color_ = color;
+}
+
+void Glass_rough::set_absorbtion_color(float3_p color) {
+	absorbtion_color_ = color;
 }
 
 void Glass_rough::set_attenuation_distance(float attenuation_distance) {

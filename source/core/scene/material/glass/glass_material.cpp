@@ -31,7 +31,7 @@ const material::Sample& Glass::sample(float3_p wo, const Renderstate& rs,
 		sample.layer_.set_basis(rs.t, rs.b, rs.n);
 	}
 
-	sample.layer_.set(color_, attenuation_distance_, ior_, rs.ior);
+	sample.layer_.set(refraction_color_, absorbtion_color_, attenuation_distance_, ior_, rs.ior);
 
 	return sample;
 }
@@ -44,8 +44,12 @@ void Glass::set_normal_map(const Adapter_2D& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Glass::set_color(const float3& color) {
-	color_ = color;
+void Glass::set_refraction_color(float3_p color) {
+	refraction_color_ = color;
+}
+
+void Glass::set_absorbtion_color(float3_p color) {
+	absorbtion_color_ = color;
 }
 
 void Glass::set_attenuation_distance(float attenuation_distance) {

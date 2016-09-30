@@ -91,10 +91,10 @@ bool Sample_rough::is_translucent() const {
 	return false;
 }
 
-void Sample_rough::Layer::set(float3_p color, float attenuation_distance,
-							  float ior, float ior_outside, float a2) {
-	this->color = color;
-	this->attenuation = material::Sample::attenuation(color, attenuation_distance);
+void Sample_rough::Layer::set(float3_p refraction_color, float3_p absorbtion_color,
+							  float attenuation_distance, float ior, float ior_outside, float a2) {
+	this->color = refraction_color;
+	this->attenuation = material::Sample::attenuation(absorbtion_color, attenuation_distance);
 	this->ior_i = ior;
 	this->ior_o = ior_outside;
 	this->eta_i = ior_outside / ior;
