@@ -7,8 +7,8 @@
 namespace procedural { namespace sky {
 
 Sky::Sky() :
-	sun_rotation_(1.f, 0.f, 0.f,
-				  0.f, 0.f, 1.f,
+	sun_rotation_(1.f,  0.f, 0.f,
+				  0.f,  0.f, 1.f,
 				  0.f, -1.f, 0.f),
 	ground_albedo_(0.2f, 0.2f, 0.2f),
 	turbidity_(2.f) {}
