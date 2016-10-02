@@ -13,9 +13,6 @@ class Single_scattering : public Integrator {
 public:
 
 	struct Settings {
-		image::texture::sampler::Sampler_2D_nearest<
-			image::texture::sampler::Address_mode_repeat> sampler_nearest;
-
 		float step_size;
 	};
 
@@ -23,10 +20,10 @@ public:
 					  const Settings& settings);
 
 	virtual float3 transmittance(Worker& worker, const scene::volume::Volume* volume,
-									   const scene::Ray& ray) final override;
+								 const scene::Ray& ray) final override;
 
 	virtual float4 li(Worker& worker, const scene::volume::Volume* volume,
-							const scene::Ray& ray, float3& transmittance) final override;
+					  const scene::Ray& ray, float3& transmittance) final override;
 
 private:
 

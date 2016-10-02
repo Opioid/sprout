@@ -5,12 +5,12 @@
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/volume/volume.hpp"
-#include "base/spectrum/rgb.inl"
 #include "base/math/ray.inl"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
 #include "base/math/random/generator.inl"
 #include "base/math/sampling/sampling.inl"
+#include "base/spectrum/rgb.inl"
 
 namespace rendering { namespace integrator { namespace volume {
 
