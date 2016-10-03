@@ -91,7 +91,7 @@ public:
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
 	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
 
-	volume::Volume* create_volume(const float3& absorption, const float3& scattering);
+	volume::Volume* create_volume(float3_p absorption, float3_p scattering, float anisotropy);
 
 	void add_extension(entity::Entity* extension);
 	void add_extension(entity::Entity* extension, const std::string& name);
