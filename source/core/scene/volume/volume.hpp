@@ -10,11 +10,13 @@ class Volume : public entity::Entity {
 
 public:
 
+	Volume();
+
 	virtual float3 optical_depth(const math::Oray& ray) const = 0;
 
 	virtual float3 scattering() const = 0;
 
-	virtual float phase(const float3& w, const float3& wp) const = 0;
+	virtual float phase(float3_p w, float3_p wp) const = 0;
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 
@@ -23,6 +25,11 @@ public:
 protected:
 
 	math::aabb scene_bb_;
+
+	float3 absorption_;
+	float3 scattering_;
+
+	float anisotropy_;
 
 private:
 

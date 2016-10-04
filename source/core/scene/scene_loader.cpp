@@ -242,21 +242,24 @@ void Loader::load_light(const json::Value& /*light_value*/, Prop* prop, Scene& s
 }
 
 volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scene) {
-	float3 absorption(0.f, 0.f, 0.f);
-	float3 scattering(0.f, 0.f, 0.f);
-	float  anisotropy = 0.f;
+	std::string shape_type;
+	const json::Value* parameters_value = nullptr;
 
 	for (auto& n : volume_value.GetObject()) {
-		if ("absorption" == n.name) {
-			absorption = json::read_float3(n.value);
-		} else if ("scattering" == n.name) {
-			scattering = json::read_float3(n.value);
-		} else if ("aniostropy" == n.name) {
-			anisotropy = json::read_float(n.value);
+		if ("shape" == n.name) {
+			shape_type = json::read_string(n.value, "type");
+		} else if ("parameters" == n.name) {
+			parameters_value = &n.value;
 		}
 	}
 
-	return scene.create_volume(absorption, scattering, anisotropy);
+	volume::Volume* volume = scene.create_volume();
+
+	if (parameters_value) {
+		volume->set_parameters(*parameters_value);
+	}
+
+	return volume;
 }
 
 entity::Entity* Loader::load_extension(const std::string& type,

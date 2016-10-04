@@ -5,10 +5,6 @@
 
 namespace scene { namespace volume {
 
-Homogeneous::Homogeneous(float3_p absorption, float3_p scattering, float anisotropy) :
-	absorption_(absorption), scattering_(scattering), anisotropy_(anisotropy)
-{}
-
 float3 Homogeneous::optical_depth(const math::Oray& ray) const {
 	return ray.length() * (absorption_ + scattering_);
 }
