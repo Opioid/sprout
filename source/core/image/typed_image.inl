@@ -46,13 +46,13 @@ T& Typed_image<T>::at(int32_t x, int32_t y) {
 }
 
 template<typename T>
-const T& Typed_image<T>::at(int32_t x, int32_t y, int32_t element) const {
+const T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const {
 	int32_t i = element * area_ + y * description_.dimensions.x + x;
 	return data_[i];
 }
 
 template<typename T>
-T& Typed_image<T>::at(int32_t x, int32_t y, int32_t element) {
+T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) {
 	int32_t i = element * area_ + y * description_.dimensions.x + x;
 	return data_[i];
 }

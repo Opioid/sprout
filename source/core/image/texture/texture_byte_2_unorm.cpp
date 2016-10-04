@@ -16,37 +16,49 @@ float Texture_byte_2_unorm::at_1(int32_t x, int32_t y) const {
 
 float2 Texture_byte_2_unorm::at_2(int32_t x, int32_t y) const {
 	auto& value = image_.at(x, y);
-	return float2(encoding::unorm_to_float(value.x), encoding::unorm_to_float(value.y));
+	return float2(encoding::unorm_to_float(value.x),
+				  encoding::unorm_to_float(value.y));
 }
 
 float3 Texture_byte_2_unorm::at_3(int32_t x, int32_t y) const {
 	auto& value = image_.at(x, y);
-	return float3(encoding::unorm_to_float(value.x), encoding::unorm_to_float(value.y), 0.f);
+	return float3(encoding::unorm_to_float(value.x),
+				  encoding::unorm_to_float(value.y),
+				  0.f);
 }
 
 float4 Texture_byte_2_unorm::at_4(int32_t x, int32_t y) const {
 	auto& value = image_.at(x, y);
-	return float4(encoding::unorm_to_float(value.x), encoding::unorm_to_float(value.y), 0.f, 1.f);
+	return float4(encoding::unorm_to_float(value.x),
+				  encoding::unorm_to_float(value.y),
+				  0.f,
+				  1.f);
 }
 
-float Texture_byte_2_unorm::at_1(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at(x, y, element);
+float Texture_byte_2_unorm::at_element_1(int32_t x, int32_t y, int32_t element) const {
+	auto& value = image_.at_element(x, y, element);
 	return encoding::unorm_to_float(value.x);
 }
 
-float2 Texture_byte_2_unorm::at_2(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at(x, y, element);
-	return float2(encoding::unorm_to_float(value.x), encoding::unorm_to_float(value.y));
+float2 Texture_byte_2_unorm::at_element_2(int32_t x, int32_t y, int32_t element) const {
+	auto& value = image_.at_element(x, y, element);
+	return float2(encoding::unorm_to_float(value.x),
+				  encoding::unorm_to_float(value.y));
 }
 
-float3 Texture_byte_2_unorm::at_3(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at(x, y, element);
-	return float3(encoding::unorm_to_float(value.x), encoding::unorm_to_float(value.y), 0.f);
+float3 Texture_byte_2_unorm::at_element_3(int32_t x, int32_t y, int32_t element) const {
+	auto& value = image_.at_element(x, y, element);
+	return float3(encoding::unorm_to_float(value.x),
+				  encoding::unorm_to_float(value.y),
+				  0.f);
 }
 
-float4 Texture_byte_2_unorm::at_4(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at(x, y, element);
-	return float4(encoding::unorm_to_float(value.x), encoding::unorm_to_float(value.y), 0.f, 1.f);
+float4 Texture_byte_2_unorm::at_element_4(int32_t x, int32_t y, int32_t element) const {
+	auto& value = image_.at_element(x, y, element);
+	return float4(encoding::unorm_to_float(value.x),
+				  encoding::unorm_to_float(value.y),
+				  0.f,
+				  1.f);
 }
 
 }}

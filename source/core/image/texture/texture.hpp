@@ -28,10 +28,10 @@ public:
 	virtual float3 at_3(int32_t x, int32_t y) const = 0;
 	virtual float4 at_4(int32_t x, int32_t y) const = 0;
 
-	virtual float  at_1(int32_t x, int32_t y, int32_t element) const = 0;
-	virtual float2 at_2(int32_t x, int32_t y, int32_t element) const = 0;
-	virtual float3 at_3(int32_t x, int32_t y, int32_t element) const = 0;
-	virtual float4 at_4(int32_t x, int32_t y, int32_t element) const = 0;
+	virtual float  at_element_1(int32_t x, int32_t y, int32_t element) const = 0;
+	virtual float2 at_element_2(int32_t x, int32_t y, int32_t element) const = 0;
+	virtual float3 at_element_3(int32_t x, int32_t y, int32_t element) const = 0;
+	virtual float4 at_element_4(int32_t x, int32_t y, int32_t element) const = 0;
 
 	float3 average_3() const;
 	float3 average_3(int32_t element) const;

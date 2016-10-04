@@ -46,7 +46,7 @@ float3 Texture::average_3(int32_t element) const {
 	auto d = dimensions();
 	for (int32_t y = 0; y < d.y; ++y) {
 		for (int32_t x = 0; x < d.x; ++x) {
-			average += at_3(x, y, element);
+			average += at_element_3(x, y, element);
 		}
 	}
 

@@ -139,10 +139,10 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 u
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float c00 = texture.at_1(x,  y,  min_element);
-	float c01 = texture.at_1(x,  y1, min_element);
-	float c10 = texture.at_1(x1, y,  min_element);
-	float c11 = texture.at_1(x1, y1, min_element);
+	float c00 = texture.at_element_1(x,  y,  min_element);
+	float c01 = texture.at_element_1(x,  y1, min_element);
+	float c10 = texture.at_element_1(x1, y,  min_element);
+	float c11 = texture.at_element_1(x1, y1, min_element);
 
 	float s = u - fu;
 	float t = v - fv;
@@ -175,10 +175,10 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float2 c00 = texture.at_2(x,  y,  min_element);
-	float2 c01 = texture.at_2(x,  y1, min_element);
-	float2 c10 = texture.at_2(x1, y,  min_element);
-	float2 c11 = texture.at_2(x1, y1, min_element);
+	float2 c00 = texture.at_element_2(x,  y,  min_element);
+	float2 c01 = texture.at_element_2(x,  y1, min_element);
+	float2 c10 = texture.at_element_2(x1, y,  min_element);
+	float2 c11 = texture.at_element_2(x1, y1, min_element);
 
 	float s = u - fu;
 	float t = v - fv;
@@ -211,10 +211,10 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float3 c00 = texture.at_3(x,  y,  min_element);
-	float3 c01 = texture.at_3(x,  y1, min_element);
-	float3 c10 = texture.at_3(x1, y,  min_element);
-	float3 c11 = texture.at_3(x1, y1, min_element);
+	float3 c00 = texture.at_element_3(x,  y,  min_element);
+	float3 c01 = texture.at_element_3(x,  y1, min_element);
+	float3 c10 = texture.at_element_3(x1, y,  min_element);
+	float3 c11 = texture.at_element_3(x1, y1, min_element);
 
 	float s = u - fu;
 	float t = v - fv;
