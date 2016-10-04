@@ -1,8 +1,8 @@
 #include "sky_material.hpp"
 #include "sky_model.hpp"
 #include "core/image/typed_image.inl"
-#include "core/image/texture/texture_2d_adapter.inl"
-#include "core/image/texture/texture_2d_float_3.hpp"
+#include "core/image/texture/texture_adapter.inl"
+#include "core/image/texture/texture_float_3.hpp"
 #include "core/scene/prop.hpp"
 #include "core/scene/scene_renderstate.hpp"
 #include "core/scene/scene_worker.hpp"
@@ -24,7 +24,7 @@
 namespace procedural { namespace sky {
 
 Sky_material::Sky_material(
-		scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
+		scene::material::Sample_cache<scene::material::light::Sample>& cache,
 		Model& model) : Material(cache, model) {}
 
 const scene::material::Sample& Sky_material::sample(float3_p wo, const scene::Renderstate& rs,
@@ -64,7 +64,7 @@ size_t Sky_material::num_bytes() const {
 }
 
 Sky_baked_material::Sky_baked_material(
-		scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
+		scene::material::Sample_cache<scene::material::light::Sample>& cache,
 		Model& model) : Material(cache, model) {}
 
 const scene::material::Sample& Sky_baked_material::sample(float3_p wo, const scene::Renderstate& rs,
@@ -151,8 +151,8 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 		}
 	}
 
-	auto cache_texture = std::make_shared<image::texture::Texture_2D_float_3>(cache);
-	emission_map_ = Adapter_2D(cache_texture);
+	auto cache_texture = std::make_shared<image::texture::Texture_float_3>(cache);
+	emission_map_ = Texture_adapter(cache_texture);
 
 //	std::ofstream stream("sky.png", std::ios::binary);
 //	if (stream) {

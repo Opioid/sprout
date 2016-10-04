@@ -7,11 +7,11 @@ namespace scene { namespace material { namespace cloth {
 
 class Sample;
 
-class Material : public material::Typed_material<Generic_sample_cache<Sample>> {
+class Material : public material::Typed_material<Sample_cache<Sample>> {
 
 public:
 
-	Material(Generic_sample_cache<Sample>& cache,
+	Material(Sample_cache<Sample>& cache,
 			 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
@@ -20,15 +20,15 @@ public:
 
 	virtual size_t num_bytes() const final override;
 
-	void set_color_map(const Adapter_2D& color_map);
-	void set_normal_map(const Adapter_2D& normal_map);
+	void set_color_map(const Texture_adapter& color_map);
+	void set_normal_map(const Texture_adapter& normal_map);
 
 	void set_color(float3_p color);
 
 private:
 
-	Adapter_2D color_map_;
-	Adapter_2D normal_map_;
+	Texture_adapter color_map_;
+	Texture_adapter normal_map_;
 
 	float3 color_;
 };

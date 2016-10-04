@@ -1,15 +1,15 @@
 #pragma once
 
-#include "texture_2d.hpp"
+#include "texture.hpp"
 #include "image/typed_image.hpp"
 
 namespace image { namespace texture {
 
-class Texture_2D_byte_3_sRGB : public Texture_2D {
+class Texture_byte_3_snorm : public Texture {
 
 public:
 
-	Texture_2D_byte_3_sRGB(std::shared_ptr<Image> image);
+	Texture_byte_3_snorm(std::shared_ptr<Image> image);
 
 	virtual float  at_1(int32_t x, int32_t y) const final override;
 	virtual float2 at_2(int32_t x, int32_t y) const final override;
@@ -27,4 +27,3 @@ private:
 };
 
 }}
-

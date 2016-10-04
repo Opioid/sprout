@@ -1,6 +1,6 @@
 #include "light_emissionmap.hpp"
 #include "light_material_sample.hpp"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
@@ -12,7 +12,7 @@
 
 namespace scene { namespace material { namespace light {
 
-Emissionmap::Emissionmap(Generic_sample_cache<Sample>& cache,
+Emissionmap::Emissionmap(Sample_cache<Sample>& cache,
 						 const Sampler_settings& sampler_settings, bool two_sided) :
 	Material(cache, sampler_settings, two_sided),
 	average_emission_(float3(-1.f, -1.f, -1.f)) {}
@@ -115,7 +115,7 @@ size_t Emissionmap::num_bytes() const {
 	return sizeof(*this) + distribution_.num_bytes();
 }
 
-void Emissionmap::set_emission_map(const Adapter_2D& emission_map) {
+void Emissionmap::set_emission_map(const Texture_adapter& emission_map) {
 	emission_map_ = emission_map;
 }
 

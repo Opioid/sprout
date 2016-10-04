@@ -8,7 +8,7 @@ class Sun_material : public Material {
 
 public:
 
-	Sun_material(scene::material::Generic_sample_cache<scene::material::light::Sample>& cache,
+	Sun_material(scene::material::Sample_cache<scene::material::light::Sample>& cache,
 				 Model& model);
 
 	virtual const scene::material::Sample& sample(float3_p wo, const scene::Renderstate& rs,

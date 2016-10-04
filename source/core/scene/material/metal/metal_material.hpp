@@ -7,11 +7,11 @@ namespace scene { namespace material { namespace metal {
 
 class Sample_isotropic;
 
-class Material_isotropic : public material::Typed_material<Generic_sample_cache<Sample_isotropic>> {
+class Material_isotropic : public material::Typed_material<Sample_cache<Sample_isotropic>> {
 
 public:
 
-	Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
+	Material_isotropic(Sample_cache<Sample_isotropic>& cache,
 					   const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
@@ -20,7 +20,7 @@ public:
 
 	virtual size_t num_bytes() const final override;
 
-	void set_normal_map(const Adapter_2D& normal_map);
+	void set_normal_map(const Texture_adapter& normal_map);
 
 	void set_ior(float3_p ior);
 	void set_absorption(float3_p absorption);
@@ -28,7 +28,7 @@ public:
 
 protected:
 
-	Adapter_2D normal_map_;
+	Texture_adapter normal_map_;
 
 	float3 ior_;
 	float3 absorption_;
@@ -39,11 +39,11 @@ protected:
 class Sample_anisotropic;
 
 class Material_anisotropic : public material::Typed_material<
-		Generic_sample_cache<Sample_anisotropic>> {
+		Sample_cache<Sample_anisotropic>> {
 
 public:
 
-	Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
+	Material_anisotropic(Sample_cache<Sample_anisotropic>& cache,
 						 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
@@ -52,8 +52,8 @@ public:
 
 	virtual size_t num_bytes() const final override;
 
-	void set_normal_map(const Adapter_2D& normal_map);
-	void set_direction_map(const Adapter_2D& direction_map);
+	void set_normal_map(const Texture_adapter& normal_map);
+	void set_direction_map(const Texture_adapter& direction_map);
 
 	void set_ior(float3_p ior);
 	void set_absorption(float3_p absorption);
@@ -61,8 +61,8 @@ public:
 
 protected:
 
-	Adapter_2D normal_map_;
-	Adapter_2D direction_map_;
+	Texture_adapter normal_map_;
+	Texture_adapter direction_map_;
 
 	float3 ior_;
 	float3 absorption_;

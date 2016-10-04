@@ -11,7 +11,7 @@ class Emissionmap : public Material {
 
 public:
 
-	Emissionmap(Generic_sample_cache<Sample>& cache,
+	Emissionmap(Sample_cache<Sample>& cache,
 				const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
@@ -38,12 +38,12 @@ public:
 
 	virtual size_t num_bytes() const final override;
 
-	void set_emission_map(const Adapter_2D& emission_map);
+	void set_emission_map(const Texture_adapter& emission_map);
 	void set_emission_factor(float emission_factor);
 
 private:
 
-	Adapter_2D emission_map_;
+	Texture_adapter emission_map_;
 
 	float emission_factor_;
 

@@ -2,25 +2,25 @@
 
 #include "substitute_coating_material.hpp"
 #include "substitute_base_material.inl"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
 template<typename Coating, typename Sample>
 Material_coating<Coating, Sample>::Material_coating(
-		Generic_sample_cache<Sample>& cache,
+		Sample_cache<Sample>& cache,
 		const Sampler_settings& sampler_settings, bool two_sided) :
 	Material_base<Sample>(cache, sampler_settings, two_sided) {}
 
 
 template<typename Coating, typename Sample>
-void Material_coating<Coating, Sample>::set_coating_weight_map(const Adapter_2D& weight_map) {
+void Material_coating<Coating, Sample>::set_coating_weight_map(const Texture_adapter& weight_map) {
 	coating_weight_map_ = weight_map;
 }
 
 template<typename Coating, typename Sample>
-void Material_coating<Coating, Sample>::set_coating_normal_map(const Adapter_2D& normal_map) {
+void Material_coating<Coating, Sample>::set_coating_normal_map(const Texture_adapter& normal_map) {
 	coating_normal_map_ = normal_map;
 }
 

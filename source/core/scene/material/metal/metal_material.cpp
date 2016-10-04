@@ -1,6 +1,6 @@
 #include "metal_material.hpp"
 #include "metal_sample.hpp"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/ggx/ggx.inl"
@@ -11,9 +11,9 @@
 
 namespace scene { namespace material { namespace metal {
 
-Material_isotropic::Material_isotropic(Generic_sample_cache<Sample_isotropic>& cache,
+Material_isotropic::Material_isotropic(Sample_cache<Sample_isotropic>& cache,
 									   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_isotropic>>(cache,
+	material::Typed_material<Sample_cache<Sample_isotropic>>(cache,
 																	 sampler_settings,
 																	 two_sided) {}
 
@@ -43,7 +43,7 @@ size_t Material_isotropic::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material_isotropic::set_normal_map(const Adapter_2D& normal_map) {
+void Material_isotropic::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
@@ -59,10 +59,10 @@ void Material_isotropic::set_roughness(float roughness) {
 	roughness_ = ggx::clamp_roughness(roughness);
 }
 
-Material_anisotropic::Material_anisotropic(Generic_sample_cache<Sample_anisotropic>& cache,
+Material_anisotropic::Material_anisotropic(Sample_cache<Sample_anisotropic>& cache,
 										   const Sampler_settings& sampler_settings,
 										   bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample_anisotropic>>(cache,
+	material::Typed_material<Sample_cache<Sample_anisotropic>>(cache,
 																	   sampler_settings,
 																	   two_sided) {}
 
@@ -99,11 +99,11 @@ size_t Material_anisotropic::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material_anisotropic::set_normal_map(const Adapter_2D& normal_map) {
+void Material_anisotropic::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material_anisotropic::set_direction_map(const Adapter_2D& direction_map) {
+void Material_anisotropic::set_direction_map(const Texture_adapter& direction_map) {
 	direction_map_ = direction_map;
 }
 

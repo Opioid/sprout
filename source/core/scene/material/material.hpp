@@ -33,7 +33,7 @@ public:
 
 	virtual ~Material();
 
-	void set_mask(const Adapter_2D& mask);
+	void set_mask(const Texture_adapter& mask);
 
 	void set_parameters(const json::Value& parameters);
 
@@ -76,7 +76,7 @@ protected:
 	virtual void set_parameter(const std::string& name,
 							   const json::Value& value);
 
-	Adapter_2D mask_;
+	Texture_adapter mask_;
 
 	uint32_t sampler_key_;
 

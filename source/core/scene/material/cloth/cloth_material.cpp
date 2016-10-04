@@ -1,6 +1,6 @@
 #include "cloth_material.hpp"
 #include "cloth_sample.hpp"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
@@ -10,9 +10,9 @@
 
 namespace scene { namespace material { namespace cloth {
 
-Material::Material(Generic_sample_cache<Sample>& cache,
+Material::Material(Sample_cache<Sample>& cache,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache,
+	material::Typed_material<Sample_cache<Sample>>(cache,
 														   sampler_settings,
 														   two_sided) {}
 
@@ -48,11 +48,11 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material::set_color_map(const Adapter_2D& color_map) {
+void Material::set_color_map(const Texture_adapter& color_map) {
 	color_map_ = color_map;
 }
 
-void Material::set_normal_map(const Adapter_2D& normal_map) {
+void Material::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 

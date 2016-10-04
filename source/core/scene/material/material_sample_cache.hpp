@@ -5,12 +5,12 @@
 namespace scene { namespace material {
 
 template<typename T>
-class Generic_sample_cache {
+class Sample_cache {
 
 public:
 
-	Generic_sample_cache(uint32_t num_bins);
-	~Generic_sample_cache();
+	Sample_cache(uint32_t num_bins);
+	~Sample_cache();
 
 	T& get(uint32_t id);
 

@@ -1,12 +1,12 @@
 #include "substitute_translucent_material.hpp"
 #include "substitute_translucent_sample.hpp"
 #include "substitute_base_material.inl"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
-Material_translucent::Material_translucent(Generic_sample_cache<Sample_translucent>& cache,
+Material_translucent::Material_translucent(Sample_cache<Sample_translucent>& cache,
 										   const Sampler_settings& sampler_settings,
 										   bool two_sided) :
 	Material_base<Sample_translucent>(cache, sampler_settings, two_sided) {}

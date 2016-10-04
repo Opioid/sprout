@@ -8,7 +8,7 @@
 #include "core/rendering/rendering_driver_finalframe.hpp"
 #include "core/resource/resource_manager.inl"
 #include "core/image/image_provider.hpp"
-#include "core/image/texture/texture_2d_provider.hpp"
+#include "core/image/texture/texture_provider.hpp"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "core/scene/scene.hpp"

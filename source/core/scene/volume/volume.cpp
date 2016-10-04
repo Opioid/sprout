@@ -1,10 +1,11 @@
 #include "volume.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
+#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace volume {
 
-Volume::Volume() : absorption_(0.f, 0.f, 0.f), scattering_(0.f, 0.f, 0.f), anisotropy_(0.f) {}
+Volume::Volume() : absorption_(0.f), scattering_(0.f), anisotropy_(0.f) {}
 
 void Volume::set_parameters(const json::Value& parameters) {
 	for (auto& n : parameters.GetObject()) {

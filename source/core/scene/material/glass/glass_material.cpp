@@ -1,6 +1,6 @@
 #include "glass_material.hpp"
 #include "glass_sample.hpp"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
@@ -10,7 +10,7 @@
 
 namespace scene { namespace material { namespace glass {
 
-Glass::Glass(Generic_sample_cache<Sample>& cache,
+Glass::Glass(Sample_cache<Sample>& cache,
 			 const Sampler_settings& sampler_settings) :
 	Typed_material(cache, sampler_settings, false) {}
 
@@ -40,7 +40,7 @@ size_t Glass::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Glass::set_normal_map(const Adapter_2D& normal_map) {
+void Glass::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 

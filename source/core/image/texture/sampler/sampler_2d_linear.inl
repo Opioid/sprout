@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sampler_2d_linear.hpp"
-#include "image/texture/texture_2d.hpp"
+#include "image/texture/texture.hpp"
 #include <algorithm>
 
 namespace image { namespace texture { namespace sampler {
@@ -16,7 +16,7 @@ template<typename T>
 T bilinear(const T& c00, const T& c01, const T& c10, const T& c11, float s, float t);
 
 template<typename Address_mode>
-float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, float2 uv) const {
+float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 uv) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -49,7 +49,7 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, float
 }
 
 template<typename Address_mode>
-float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture, float2 uv) const {
+float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 uv) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -82,7 +82,7 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture, floa
 }
 
 template<typename Address_mode>
-float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture, float2 uv) const {
+float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 uv) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
 
@@ -115,7 +115,7 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture, floa
 }
 
 template<typename Address_mode>
-float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, float2 uv,
+float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 uv,
 												int32_t element) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
@@ -151,7 +151,7 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture_2D& texture, float
 }
 
 template<typename Address_mode>
-float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture, float2 uv,
+float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 uv,
 												 int32_t element) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();
@@ -187,7 +187,7 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture_2D& texture, floa
 }
 
 template<typename Address_mode>
-float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture_2D& texture, float2 uv,
+float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 uv,
 												 int32_t element) const {
 	auto d  = texture.dimensions();
 	auto df = texture.dimensions_float();

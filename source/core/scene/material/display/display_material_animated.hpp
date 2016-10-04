@@ -2,21 +2,21 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
-#include "image/texture/texture_2d.hpp"
+#include "image/texture/texture.hpp"
 #include "base/math/distribution/distribution_2d.hpp"
 
 namespace scene { namespace material { namespace display {
 
 class Sample;
 
-class Material_animated : public material::Typed_material<Generic_sample_cache<Sample>> {
+class Material_animated : public material::Typed_material<Sample_cache<Sample>> {
 
 public:
 
-	Material_animated(Generic_sample_cache<Sample>& cache,
+	Material_animated(Sample_cache<Sample>& cache,
 					  const Sampler_settings& sampler_settings,
 					  bool two_sided,
-					  const Adapter_2D& emission_map,
+					  const Texture_adapter& emission_map,
 					  float animation_duration);
 
 	virtual void tick(float absolute_time, float time_slice) final override;
@@ -56,7 +56,7 @@ public:
 
 private:
 
-	Adapter_2D emission_map_;
+	Texture_adapter emission_map_;
 
 	float3 emission_;
 

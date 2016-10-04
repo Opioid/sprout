@@ -1,5 +1,5 @@
 #include "material.hpp"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/scene_worker.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -12,7 +12,7 @@ Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 
 Material::~Material() {}
 
-void Material::set_mask(const Adapter_2D& mask) {
+void Material::set_mask(const Texture_adapter& mask) {
 	mask_ = mask;
 }
 

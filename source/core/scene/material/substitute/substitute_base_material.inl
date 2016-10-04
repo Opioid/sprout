@@ -2,7 +2,7 @@
 
 #include "substitute_base_material.hpp"
 #include "substitute_sample.hpp"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
@@ -17,9 +17,9 @@
 namespace scene { namespace material { namespace substitute {
 
 template<typename Sample>
-Material_base<Sample>::Material_base(Generic_sample_cache<Sample>& cache,
+Material_base<Sample>::Material_base(Sample_cache<Sample>& cache,
 									 const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, sampler_settings,
+	material::Typed_material<Sample_cache<Sample>>(cache, sampler_settings,
 														   two_sided) {}
 
 template<typename Sample>
@@ -55,22 +55,22 @@ size_t Material_base<Sample>::num_bytes() const {
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_color_map(const Adapter_2D& color_map) {
+void Material_base<Sample>::set_color_map(const Texture_adapter& color_map) {
 	color_map_ = color_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_normal_map(const Adapter_2D& normal_map) {
+void Material_base<Sample>::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_surface_map(const Adapter_2D& surface_map) {
+void Material_base<Sample>::set_surface_map(const Texture_adapter& surface_map) {
 	surface_map_ = surface_map;
 }
 
 template<typename Sample>
-void Material_base<Sample>::set_emission_map(const Adapter_2D& emission_map) {
+void Material_base<Sample>::set_emission_map(const Texture_adapter& emission_map) {
 	emission_map_ = emission_map;
 }
 

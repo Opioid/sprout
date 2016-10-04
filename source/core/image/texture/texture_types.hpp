@@ -1,10 +1,10 @@
 #pragma once
 
-#include "texture_2d_adapter.hpp"
+#include "texture_adapter.hpp"
 #include <memory>
 
-namespace image { namespace texture { class Texture_2D; }}
+namespace image { namespace texture { class Texture; }}
 
-using Texture_2D_ptr = std::shared_ptr<image::texture::Texture_2D>;
+using Texture_ptr = std::shared_ptr<image::texture::Texture>;
 
-using Adapter_2D = image::texture::Texture_2D_adapter;
+using Texture_adapter = image::texture::Adapter;

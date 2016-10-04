@@ -9,12 +9,12 @@ class Image;
 
 namespace texture {
 
-class Texture_2D {
+class Texture {
 
 public:
 
-	Texture_2D(std::shared_ptr<Image> image);
-	virtual ~Texture_2D();
+	Texture(std::shared_ptr<Image> image);
+	virtual ~Texture();
 
 	const Image* image() const;
 

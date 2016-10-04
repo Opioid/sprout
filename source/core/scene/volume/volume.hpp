@@ -22,6 +22,10 @@ public:
 
 	void set_scene_aabb(const math::aabb& aabb);
 
+private:
+
+	virtual void on_set_transformation() final override;
+
 protected:
 
 	math::aabb scene_bb_;
@@ -30,10 +34,6 @@ protected:
 	float3 scattering_;
 
 	float anisotropy_;
-
-private:
-
-	virtual void on_set_transformation() final override;
 };
 
 }}

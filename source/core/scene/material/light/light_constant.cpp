@@ -9,7 +9,7 @@
 
 namespace scene { namespace material { namespace light {
 
-Constant::Constant(Generic_sample_cache<Sample>& cache,
+Constant::Constant(Sample_cache<Sample>& cache,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
 	Material(cache, sampler_settings, two_sided) {}
 

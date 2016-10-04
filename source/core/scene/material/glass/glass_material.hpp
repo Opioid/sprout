@@ -2,17 +2,17 @@
 
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
-#include "image/texture/texture_2d.hpp"
+#include "image/texture/texture.hpp"
 
 namespace scene { namespace material { namespace glass {
 
 class Sample;
 
-class Glass : public Typed_material<Generic_sample_cache<Sample>> {
+class Glass : public Typed_material<Sample_cache<Sample>> {
 
 public:
 
-	Glass(Generic_sample_cache<Sample>& cache,
+	Glass(Sample_cache<Sample>& cache,
 		  const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
@@ -21,7 +21,7 @@ public:
 
 	virtual size_t num_bytes() const final override;
 
-	void set_normal_map(const Adapter_2D& normal_map);
+	void set_normal_map(const Texture_adapter& normal_map);
 
 	void set_refraction_color(float3_p color);
 	void set_absorbtion_color(float3_p color);
@@ -30,7 +30,7 @@ public:
 
 protected:
 
-	Adapter_2D normal_map_;
+	Texture_adapter normal_map_;
 
 	float3 refraction_color_;
 	float3 absorbtion_color_;

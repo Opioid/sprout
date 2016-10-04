@@ -47,7 +47,7 @@ public:
 
 	std::shared_ptr<Material> fallback_material() const;
 
-	Generic_sample_cache<light::Sample>& light_cache();
+	Sample_cache<light::Sample>& light_cache();
 
 private:
 
@@ -96,9 +96,9 @@ private:
 	static void read_texture_description(const json::Value& texture_value,
 										 Texture_description& description);
 
-	static Adapter_2D create_texture(const Texture_description& description,
-									 const memory::Variant_map& options,
-									 resource::Manager& manager);
+	static Texture_adapter create_texture(const Texture_description& description,
+										  const memory::Variant_map& options,
+										  resource::Manager& manager);
 
 	struct Coating_description {
 		float3 color = float3(1.f, 1.f, 1.f);
@@ -115,19 +115,19 @@ private:
 
 	static float3 read_spectrum(const json::Value& spectrum_value);
 
-	Generic_sample_cache<cloth::Sample>						cloth_cache_;
-	Generic_sample_cache<display::Sample>					display_cache_;
-	Generic_sample_cache<glass::Sample>						glass_cache_;
-	Generic_sample_cache<glass::Sample_rough>				glass_rough_cache_;
-	Generic_sample_cache<light::Sample>						light_cache_;
-	Generic_sample_cache<matte::Sample>						matte_cache_;
-	Generic_sample_cache<metal::Sample_isotropic>			metal_iso_cache_;
-	Generic_sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
-	Generic_sample_cache<metallic_paint::Sample>			metallic_paint_cache_;
-	Generic_sample_cache<substitute::Sample>				substitute_cache_;
-	Generic_sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
-	Generic_sample_cache<substitute::Sample_thinfilm>		substitute_thinfilm_cache_;
-	Generic_sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;
+	Sample_cache<cloth::Sample>						cloth_cache_;
+	Sample_cache<display::Sample>					display_cache_;
+	Sample_cache<glass::Sample>						glass_cache_;
+	Sample_cache<glass::Sample_rough>				glass_rough_cache_;
+	Sample_cache<light::Sample>						light_cache_;
+	Sample_cache<matte::Sample>						matte_cache_;
+	Sample_cache<metal::Sample_isotropic>			metal_iso_cache_;
+	Sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
+	Sample_cache<metallic_paint::Sample>			metallic_paint_cache_;
+	Sample_cache<substitute::Sample>				substitute_cache_;
+	Sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
+	Sample_cache<substitute::Sample_thinfilm>		substitute_thinfilm_cache_;
+	Sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;
 
 	std::shared_ptr<material::Material> fallback_material_;
 };

@@ -3,8 +3,8 @@
 #include "resource/resource_provider.inl"
 #include "resource/resource_manager.inl"
 #include "material_sample_cache.inl"
-#include "image/texture/texture_2d_adapter.inl"
-#include "image/texture/texture_2d_provider.hpp"
+#include "image/texture/texture_adapter.inl"
+#include "image/texture/texture_provider.hpp"
 #include "cloth/cloth_material.hpp"
 #include "cloth/cloth_sample.hpp"
 #include "display/display_material.hpp"
@@ -141,7 +141,7 @@ std::shared_ptr<Material> Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-Generic_sample_cache<light::Sample>& Provider::light_cache() {
+Sample_cache<light::Sample>& Provider::light_cache() {
 	return light_cache_;
 }
 
@@ -149,9 +149,9 @@ std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	Adapter_2D color_map;
-	Adapter_2D normal_map;
-	Adapter_2D mask;
+	Texture_adapter color_map;
+	Texture_adapter normal_map;
+	Texture_adapter mask;
 	bool two_sided = false;
 	float3 color(0.75f, 0.75f, 0.75f);
 
@@ -204,8 +204,8 @@ std::shared_ptr<Material> Provider::load_display(const json::Value& display_valu
 												 resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	Adapter_2D mask;
-	Adapter_2D emission_map;
+	Texture_adapter mask;
+	Texture_adapter emission_map;
 	bool two_sided = false;
 
 	float3 radiance(10.f, 10.f, 10.f);
@@ -284,8 +284,8 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	Adapter_2D normal_map;
-	Adapter_2D roughness_map;
+	Texture_adapter normal_map;
+	Texture_adapter roughness_map;
 	float3 refraction_color(1.f, 1.f, 1.f);
 	float3 absorbtion_color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
@@ -367,8 +367,8 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 	float emission_factor = 1.f;
 	float animation_duration = 0.f;
 
-	Adapter_2D emission_map;
-	Adapter_2D mask;
+	Texture_adapter emission_map;
+	Texture_adapter mask;
 	bool two_sided = false;
 
 	for (auto n = light_value.MemberBegin(); n != light_value.MemberEnd(); ++n) {
@@ -464,8 +464,8 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_val
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-//	Texture_2D_ptr normal_map;
-	Adapter_2D mask;
+//	Texture_ptr normal_map;
+	Texture_adapter mask;
 	bool two_sided = false;
 	float3 color(0.6f, 0.6f, 0.6f);
 
@@ -489,7 +489,7 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_val
 				memory::Variant_map options;
 				/*if ("Normal" == texture_description.usage) {
 					options.insert("usage", image::texture::Provider::Usage::Normal);
-					normal_map = manager.load<image::texture::Texture_2D>(
+					normal_map = manager.load<image::texture::Texture>(
 								texture_description.filename, options);
 				} else*/ if ("Mask" == texture_description.usage) {
 					options.set("usage", image::texture::Provider::Usage::Mask);
@@ -515,10 +515,10 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	Adapter_2D normal_map;
-//	Texture_2D_ptr surface_map;
-	Adapter_2D direction_map;
-	Adapter_2D mask;
+	Texture_adapter normal_map;
+//	Texture_ptr surface_map;
+	Texture_adapter direction_map;
+	Texture_adapter mask;
 	bool two_sided = false;
 	float3 ior(1.f, 1.f, 1.f);
 	float3 absorption(0.75f, 0.75f, 0.75f);
@@ -607,9 +607,9 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& subst
 														resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	Adapter_2D mask;
-	Adapter_2D flakes_normal_map;
-	Adapter_2D flakes_mask;
+	Texture_adapter mask;
+	Texture_adapter flakes_normal_map;
+	Texture_adapter flakes_mask;
 	bool two_sided = false;
 	float3 color_a(1.f, 0.f, 0.f);
 	float3 color_b(0.f, 0.f, 1.f);
@@ -712,7 +712,7 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 											 resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	Adapter_2D mask;
+	Texture_adapter mask;
 
 	bool two_sided = false;
 
@@ -759,11 +759,11 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 													resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
-	Adapter_2D color_map;
-	Adapter_2D normal_map;
-	Adapter_2D surface_map;
-	Adapter_2D emission_map;
-	Adapter_2D mask;
+	Texture_adapter color_map;
+	Texture_adapter normal_map;
+	Texture_adapter surface_map;
+	Texture_adapter emission_map;
+	Texture_adapter mask;
 	bool two_sided = false;
 	float3 color(0.4f, 0.4f, 0.4f);
 	float roughness = 0.9f;
@@ -849,8 +849,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 		return material;
 	} else if (coating.ior > 1.f) {
 
-		Adapter_2D coating_weight_map;
-		Adapter_2D coating_normal_map;
+		Texture_adapter coating_weight_map;
+		Texture_adapter coating_normal_map;
 
 		if (!coating.weight_map_description.filename.empty()) {
 			memory::Variant_map options;
@@ -973,10 +973,10 @@ void Provider::read_texture_description(const json::Value& texture_value,
 	}
 }
 
-Adapter_2D Provider::create_texture(const Texture_description& description,
-									const memory::Variant_map& options,
-									resource::Manager& manager) {
-	return Adapter_2D(manager.load<image::texture::Texture_2D>(description.filename, options),
+Texture_adapter Provider::create_texture(const Texture_description& description,
+										 const memory::Variant_map& options,
+										 resource::Manager& manager) {
+	return Texture_adapter(manager.load<image::texture::Texture>(description.filename, options),
 					  description.scale);
 }
 

@@ -2,7 +2,7 @@
 #include "metallic_paint_sample.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/coating/coating.inl"
@@ -11,9 +11,9 @@
 
 namespace scene { namespace material { namespace metallic_paint {
 
-Material::Material(Generic_sample_cache<Sample>& cache,
+Material::Material(Sample_cache<Sample>& cache,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, sampler_settings, two_sided) {}
+	material::Typed_material<Sample_cache<Sample>>(cache, sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter filter) {
@@ -78,11 +78,11 @@ void Material::set_roughness(float roughness) {
 }
 
 
-void Material::set_flakes_mask(const Adapter_2D& mask) {
+void Material::set_flakes_mask(const Texture_adapter& mask) {
 	flakes_mask_ = mask;
 }
 
-void Material::set_flakes_normal_map(const Adapter_2D& normal_map) {
+void Material::set_flakes_normal_map(const Texture_adapter& normal_map) {
 	flakes_normal_map_ = normal_map;
 }
 

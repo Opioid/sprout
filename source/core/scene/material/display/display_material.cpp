@@ -1,6 +1,6 @@
 #include "display_material.hpp"
 #include "display_sample.hpp"
-#include "image/texture/texture_2d_adapter.inl"
+#include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
@@ -13,9 +13,9 @@
 
 namespace scene { namespace material { namespace display {
 
-Material::Material(Generic_sample_cache<Sample>& cache,
+Material::Material(Sample_cache<Sample>& cache,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Generic_sample_cache<Sample>>(cache, sampler_settings, two_sided),
+	material::Typed_material<Sample_cache<Sample>>(cache, sampler_settings, two_sided),
 	average_emission_(float3(-1.f, -1.f, -1.f)) {}
 
 const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
@@ -121,7 +121,7 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material::set_emission_map(const Adapter_2D& emission_map) {
+void Material::set_emission_map(const Texture_adapter& emission_map) {
 	emission_map_ = emission_map;
 }
 

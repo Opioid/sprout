@@ -8,13 +8,13 @@ namespace scene { namespace material { namespace metallic_paint {
 
 class Sample;
 
-class Material : public material::Typed_material<Generic_sample_cache<Sample>> {
+class Material : public material::Typed_material<Sample_cache<Sample>> {
 
 public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;
 
-	Material(Generic_sample_cache<Sample>& cache,
+	Material(Sample_cache<Sample>& cache,
 			 const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
@@ -26,8 +26,8 @@ public:
 	void set_color(float3_p a, float3_p b);
 	void set_roughness(float roughness);
 
-	void set_flakes_mask(const Adapter_2D& mask);
-	void set_flakes_normal_map(const Adapter_2D& normal_map);
+	void set_flakes_mask(const Texture_adapter& mask);
+	void set_flakes_normal_map(const Texture_adapter& normal_map);
 	void set_flakes_ior(float3_p ior);
 	void set_flakes_absorption(float3_p absorption);
 	void set_flakes_roughness(float roughness);
@@ -39,8 +39,8 @@ public:
 
 protected:
 
-	Adapter_2D flakes_mask_;
-	Adapter_2D flakes_normal_map_;
+	Texture_adapter flakes_mask_;
+	Texture_adapter flakes_normal_map_;
 
 	float3 color_a_;
 	float3 color_b_;
