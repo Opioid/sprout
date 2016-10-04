@@ -125,7 +125,10 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 axis = ws - p;
 
-	float3 wi = math::normalized(axis);
+	float sl = math::squared_length(axis);
+	float t  = std::sqrt(sl);
+
+	float3 wi = axis / t;
 
 	float c = math::dot(transformation.rotation.v3.z, -wi);
 
@@ -137,8 +140,7 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 		sample.pdf = 0.f;
 	} else {
 		sample.wi = wi;
-		float sl = math::squared_length(axis);
-		sample.t = std::sqrt(sl);
+		sample.t = t;
 		sample.pdf = sl / (c * area);
 	}
 }
