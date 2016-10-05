@@ -28,6 +28,8 @@ struct Vector4 {
 
 	Vector4(T x, T y, T z, T w = T(1));
 
+	explicit Vector4(T s);
+
 	explicit Vector4(Vector2<T> xy, T z, T w = T(1));
 
 	explicit Vector4(const Vector3<T>& xyz, T w = T(1));
@@ -71,6 +73,8 @@ struct alignas(16) Vector4f_a {
 	Vector4f_a();
 
 	Vector4f_a(float x, float y, float z, float w = 1.f);
+
+	explicit Vector4f_a(float s);
 
 	explicit Vector4f_a(Vector2<float> xy, float z, float w = 1.f);
 

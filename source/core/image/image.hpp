@@ -19,9 +19,10 @@ public:
 	struct Description {
 		Description();
 		Description(Type type, int2 dimensions, int32_t num_elements = 1);
+		Description(Type type, const int3& dimensions, int32_t num_elements = 1);
 
 		Type type;
-		int2 dimensions;
+		int3 dimensions;
 
 		int32_t num_elements;
 	};

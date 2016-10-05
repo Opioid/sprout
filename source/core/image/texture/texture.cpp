@@ -6,7 +6,7 @@ namespace image { namespace texture {
 
 Texture::Texture(std::shared_ptr<Image> image) :
 	untyped_image_(image),
-	dimensions_float_(float2(image->description().dimensions)) {}
+	dimensions_float_(float3(image->description().dimensions)) {}
 
 Texture::~Texture() {}
 
@@ -14,11 +14,19 @@ const Image* Texture::image() const {
 	return untyped_image_.get();
 }
 
-int2 Texture::dimensions() const {
+int2 Texture::dimensions_2() const {
+	return untyped_image_->description().dimensions.xy;
+}
+
+int3 Texture::dimensions_3() const {
 	return untyped_image_->description().dimensions;
 }
 
-float2 Texture::dimensions_float() const {
+float2 Texture::dimensions_float2() const {
+	return dimensions_float_.xy;
+}
+
+float3 Texture::dimensions_float3() const {
 	return dimensions_float_;
 }
 
@@ -27,44 +35,44 @@ int32_t Texture::num_elements() const {
 }
 
 float3 Texture::average_3() const {
-	float3 average = math::float3_identity;
+	float3 average(0.f);
 
-	auto d = dimensions();
+	auto d = dimensions_2();
 	for (int32_t y = 0; y < d.y; ++y) {
 		for (int32_t x = 0; x < d.x; ++x) {
 			average += at_3(x, y);
 		}
 	}
 
-	auto df = dimensions_float();
+	auto df = dimensions_float2();
 	return average / (df.x * df.y);
 }
 
 float3 Texture::average_3(int32_t element) const {
-	float3 average = math::float3_identity;
+	float3 average(0.f);
 
-	auto d = dimensions();
+	auto d = dimensions_2();
 	for (int32_t y = 0; y < d.y; ++y) {
 		for (int32_t x = 0; x < d.x; ++x) {
 			average += at_element_3(x, y, element);
 		}
 	}
 
-	auto df = dimensions_float();
+	auto df = dimensions_float2();
 	return average / (df.x * df.y);
 }
 
 float4 Texture::average_4() const {
-	float4 average = math::float4_identity;
+	float4 average(0.f);
 
-	auto d = dimensions();
+	auto d = dimensions_2();
 	for (int32_t y = 0; y < d.y; ++y) {
 		for (int32_t x = 0; x < d.x; ++x) {
 			average += at_4(x, y);
 		}
 	}
 
-	auto df = dimensions_float();
+	auto df = dimensions_float2();
 	return average / (df.x * df.y);
 }
 

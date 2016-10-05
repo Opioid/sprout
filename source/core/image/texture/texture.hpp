@@ -18,8 +18,10 @@ public:
 
 	const Image* image() const;
 
-	int2 dimensions() const;
-	float2 dimensions_float() const;
+	int2 dimensions_2() const;
+	int3 dimensions_3() const;
+	float2 dimensions_float2() const;
+	float3 dimensions_float3() const;
 
 	int32_t num_elements() const;
 
@@ -42,7 +44,7 @@ protected:
 
 	std::shared_ptr<Image> untyped_image_;
 
-	float2 dimensions_float_;
+	float3 dimensions_float_;
 };
 
 }}

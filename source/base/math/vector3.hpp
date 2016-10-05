@@ -168,7 +168,8 @@ struct alignas(16) Vector3f_a {
 
 	explicit Vector3f_a(Vector2<float> xy, float z);
 
-	explicit Vector3f_a(const Vector3<float>& v);
+	template<typename T>
+	explicit Vector3f_a(const Vector3<T>& v);
 
 	Vector3f_a operator+(float s) const;
 

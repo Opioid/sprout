@@ -6,19 +6,21 @@
 
 namespace image { namespace texture { namespace sampler {
 
-inline float bilinear_1(float c00, float c01, float c10, float c11, float s, float t);
+inline float bilinear(float c00, float c01, float c10, float c11, float s, float t);
 
-inline float2 bilinear_2(float2 c00, float2 c01,
-						 float2 c10, float2 c11,
-						 float s, float t);
+inline float2 bilinear(float2 c00, float2 c01, float2 c10, float2 c11,
+					   float s, float t);
 
-template<typename T>
-T bilinear(const T& c00, const T& c01, const T& c10, const T& c11, float s, float t);
+inline float3 bilinear(float3_p c00, float3_p c01, float3_p c10, float3_p c11,
+					   float s, float t);
+
+inline float4 bilinear(const float4& c00, const float4& c01, const float4& c10, const float4& c11,
+					   float s, float t);
 
 template<typename Address_mode>
 float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 uv) const {
-	auto d  = texture.dimensions();
-	auto df = texture.dimensions_float();
+	auto d  = texture.dimensions_2();
+	auto df = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
@@ -45,13 +47,13 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 u
 	float s = u - fu;
 	float t = v - fv;
 
-	return bilinear_1(c00, c01, c10, c11, s, t);
+	return bilinear(c00, c01, c10, c11, s, t);
 }
 
 template<typename Address_mode>
 float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 uv) const {
-	auto d  = texture.dimensions();
-	auto df = texture.dimensions_float();
+	auto d  = texture.dimensions_2();
+	auto df = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
@@ -78,13 +80,13 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 
 	float s = u - fu;
 	float t = v - fv;
 
-	return bilinear_2(c00, c01, c10, c11, s, t);
+	return bilinear(c00, c01, c10, c11, s, t);
 }
 
 template<typename Address_mode>
 float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 uv) const {
-	auto d  = texture.dimensions();
-	auto df = texture.dimensions_float();
+	auto d  = texture.dimensions_2();
+	auto df = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
@@ -117,8 +119,8 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 
 template<typename Address_mode>
 float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 uv,
 												int32_t element) const {
-	auto d  = texture.dimensions();
-	auto df = texture.dimensions_float();
+	auto d  = texture.dimensions_2();
+	auto df = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
@@ -147,14 +149,14 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 u
 	float s = u - fu;
 	float t = v - fv;
 
-	return bilinear_1(c00, c01, c10, c11, s, t);
+	return bilinear(c00, c01, c10, c11, s, t);
 }
 
 template<typename Address_mode>
 float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 uv,
 												 int32_t element) const {
-	auto d  = texture.dimensions();
-	auto df = texture.dimensions_float();
+	auto d  = texture.dimensions_2();
+	auto df = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
@@ -183,14 +185,14 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 
 	float s = u - fu;
 	float t = v - fv;
 
-	return bilinear_2(c00, c01, c10, c11, s, t);
+	return bilinear(c00, c01, c10, c11, s, t);
 }
 
 template<typename Address_mode>
 float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 uv,
 												 int32_t element) const {
-	auto d  = texture.dimensions();
-	auto df = texture.dimensions_float();
+	auto d  = texture.dimensions_2();
+	auto df = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
@@ -227,24 +229,31 @@ float2 Sampler_2D_linear<Address_mode>::address(float2 uv) const {
 	return Address_mode::f(uv);
 }
 
-inline float bilinear_1(float c00, float c01, float c10, float c11, float s, float t) {
+inline float bilinear(float c00, float c01, float c10, float c11, float s, float t) {
 	float _s = 1.f - s;
 	float _t = 1.f - t;
 
 	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
 }
 
-inline float2 bilinear_2(float2 c00, float2 c01,
-						 float2 c10, float2 c11,
-						 float s, float t) {
+inline float2 bilinear(float2 c00, float2 c01, float2 c10, float2 c11,
+					   float s, float t) {
 	float _s = 1.f - s;
 	float _t = 1.f - t;
 
 	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
 }
 
-template<typename T>
-T bilinear(const T& c00, const T& c01, const T& c10, const T& c11, float s, float t) {
+inline float3 bilinear(float3_p c00, float3_p c01, float3_p c10, float3_p c11,
+					   float s, float t) {
+	float _s = 1.f - s;
+	float _t = 1.f - t;
+
+	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
+}
+
+inline float4 bilinear(const float4& c00, const float4& c01, const float4& c10, const float4& c11,
+					   float s, float t) {
 	float _s = 1.f - s;
 	float _t = 1.f - t;
 

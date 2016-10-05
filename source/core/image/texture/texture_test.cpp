@@ -15,9 +15,9 @@ bool is_valid_normal_map(const Image& image, const std::string& filename) {
 
 	const Image_byte_3& typed_image = dynamic_cast<const Image_byte_3&>(image);
 
-	int2 dimensions = image.description().dimensions;
-	for (int32_t y = 0; y < dimensions.y; ++y) {
-		for (int32_t x = 0; x < dimensions.x; ++x) {
+	int2 d = image.description().dimensions.xy;
+	for (int32_t y = 0; y < d.y; ++y) {
+		for (int32_t x = 0; x < d.x; ++x) {
 			auto value = typed_image.at(x, y);
 
 			if (0 == value.x + value.y + value.z) {

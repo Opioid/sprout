@@ -6,7 +6,7 @@ namespace math {
 
 /****************************************************************************
  *
- * Generic 3D vector
+ * Generic 4D vector
  *
  ****************************************************************************/
 
@@ -15,6 +15,9 @@ Vector4<T>::Vector4() {}
 
 template<typename T>
 Vector4<T>::Vector4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
+
+template<typename T>
+Vector4<T>::Vector4(T s) : x(s), y(s), z(s), w(s) {}
 
 template<typename T>
 Vector4<T>::Vector4(Vector2<T> xy, T z, T w) : x(xy.x), y(xy.y), z(z), w(w) {}
@@ -73,6 +76,9 @@ inline Vector4f_a::Vector4f_a() {}
 
 inline Vector4f_a::Vector4f_a(float x, float y, float z, float w) :
 	x(x), y(y), z(z), w(w) {}
+
+inline Vector4f_a::Vector4f_a(float s) :
+	x(s), y(s), z(s), w(s) {}
 
 inline Vector4f_a::Vector4f_a(Vector2<float> xy, float z, float w) :
 	x(xy.x), y(xy.y), z(z), w(w) {}

@@ -15,6 +15,7 @@ using uint2  = Vector2<uint32_t>;
 using byte3  = Vector3<uint8_t>;
 // using float3 = Vector3<float>;
 using float3 = Vector3f_a;
+using int3  = Vector3<int32_t>;
 using uint3  = Vector3<uint32_t>;
 using packed_float3 = Vector3<float>;
 
@@ -37,6 +38,7 @@ using int2   = math::int2;
 using uint2  = math::uint2;
 
 using float3 = math::float3;
+using int3	 = math::int3;
 
 using float3_p = math::float3_p;
 
