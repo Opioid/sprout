@@ -7,6 +7,12 @@ namespace scene { namespace volume {
 
 Volume::Volume() : absorption_(0.f), scattering_(0.f), anisotropy_(0.f) {}
 
+float Volume::phase(float3_p w, float3_p wp) const {
+	float g = anisotropy_;
+	float k = 1.55f * g - 0.55f * g * g * g;
+	return phase_schlick(w, wp, k);
+}
+
 void Volume::set_parameters(const json::Value& parameters) {
 	for (auto& n : parameters.GetObject()) {
 		if ("absorption" == n.name) {

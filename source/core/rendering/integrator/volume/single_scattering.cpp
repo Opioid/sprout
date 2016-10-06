@@ -24,12 +24,12 @@ float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Vol
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
-		return float3(1.f, 1.f, 1.f);
+		return float3(1.f);
 	}
 
 	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume->optical_depth(tray);
+	float3 tau = volume->optical_depth(tray, settings_.step_size, rng_);
 	return math::exp(-tau);
 }
 
@@ -78,7 +78,7 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume
 		current  = ray.point(min_t);
 
 		scene::Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
-		float3 tau = volume->optical_depth(tau_ray);
+		float3 tau = volume->optical_depth(tau_ray, settings_.step_size, rng_);
 		tr *= math::exp(-tau);
 
 		// Direct light scattering

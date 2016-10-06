@@ -114,6 +114,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 
 void Loader::load_camera(const json::Value& camera_value, bool alpha_transparency,
 						 Take& take) const {
+	using namespace scene::camera;
+
 	std::string type_name = "Perspective";
 	const json::Value* type_value = nullptr;
 
@@ -164,48 +166,43 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 		take.camera_animation = scene::animation::load(*animation_value, transformation);
 	}
 
-	std::shared_ptr<scene::camera::Camera> camera;
+	std::shared_ptr<Camera> camera;
 
 	if ("Cubic" == type_name) {
 		if (stereo) {
-			scene::camera::Cubic_stereoscopic::Layout layout =
-					scene::camera::Cubic_stereoscopic::Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz;
+			Cubic_stereoscopic::Layout layout =
+					Cubic_stereoscopic::Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz;
 
 			if ("lxlmxlylmylzlmzrxrmxryrmyrzrmz" == layout_type) {
-				layout = scene::camera::Cubic_stereoscopic::Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz;
+				layout = Cubic_stereoscopic::Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz;
 			}
 
-			camera = std::make_shared<scene::camera::Cubic_stereoscopic>(
-						layout, resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Cubic_stereoscopic>(layout, resolution,
+														  take.settings.ray_max_t);
 		} else {
-			scene::camera::Cubic::Layout layout = scene::camera::Cubic::Layout::xmxymyzmz;
+			Cubic::Layout layout = Cubic::Layout::xmxymyzmz;
 
 			if ("xmxy_myzmz" == layout_type) {
-				layout = scene::camera::Cubic::Layout::xmxy_myzmz;
+				layout = Cubic::Layout::xmxy_myzmz;
 			}
 
-			camera = std::make_shared<scene::camera::Cubic>(
-						layout, resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Cubic>(layout, resolution, take.settings.ray_max_t);
 		}
 	} else if ("Perspective" == type_name) {
 		if (stereo) {
-			camera = std::make_shared<scene::camera::Perspective_stereoscopic>(
-						resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Perspective_stereoscopic>(resolution,
+																take.settings.ray_max_t);
 		} else {
-			camera = std::make_shared<scene::camera::Perspective>(
-						resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Perspective>(resolution, take.settings.ray_max_t);
 		}
 	} else if ("Spherical" == type_name) {
 		if (stereo) {
-			camera = std::make_shared<scene::camera::Spherical_stereoscopic>(
-						resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Spherical_stereoscopic>(resolution, take.settings.ray_max_t);
 		} else {
-			camera = std::make_shared<scene::camera::Spherical>(
-						resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Spherical>(resolution, take.settings.ray_max_t);
 		}
 	} else if ("Hemispherical" == type_name) {
-		camera = std::make_shared<scene::camera::Hemispherical>(
-					resolution, take.settings.ray_max_t);
+		camera = std::make_shared<Hemispherical>(resolution, take.settings.ray_max_t);
 	} else {
 		throw std::runtime_error("Camera type \"" + type_name + "\" not recognized");
 	}
@@ -217,9 +214,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	camera->set_transformation(transformation);
 
 	if (sensor_value) {
-		rendering::sensor::Sensor* sensor = load_sensor(*sensor_value,
-														camera->sensor_dimensions(),
-														alpha_transparency);
+		auto sensor = load_sensor(*sensor_value, camera->sensor_dimensions(), alpha_transparency);
 
 		camera->set_sensor(sensor);
 	}
@@ -230,10 +225,12 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 											   int2 dimensions,
 											   bool alpha_transparency) const {
+	using namespace rendering::sensor;
+
 	float exposure = 0.f;
 	float3 clamp_max(-1.f, -1.f, -1.f);
-	const rendering::sensor::tonemapping::Tonemapper* tonemapper = nullptr;
-	const rendering::sensor::filter::Filter* filter = nullptr;
+	const tonemapping::Tonemapper* tonemapper = nullptr;
+	const filter::Filter* filter = nullptr;
 
 	for (auto& n : sensor_value.GetObject()) {
 		if ("exposure" == n.name) {
@@ -251,7 +248,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 		logging::warning("A tonemapper with unknonw type was declared. "
 						 "Using identity tonemapper.");
 
-		tonemapper = new rendering::sensor::tonemapping::Identity();
+		tonemapper = new tonemapping::Identity();
 	}
 
 	bool clamp = !math::contains_negative(clamp_max);
@@ -259,64 +256,40 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 	if (filter) {
 		if (alpha_transparency) {
 			if (clamp) {
-				return new rendering::sensor::Filtered<
-						rendering::sensor::Transparent,
-						rendering::sensor::clamp::Clamp>(
-							dimensions, exposure, tonemapper,
-							rendering::sensor::clamp::Clamp(clamp_max), filter);
+				return new Filtered<Transparent, clamp::Clamp>(dimensions, exposure, tonemapper,
+															   clamp::Clamp(clamp_max), filter);
 			} else {
-				return new rendering::sensor::Filtered<
-						rendering::sensor::Transparent,
-						rendering::sensor::clamp::Identity>(
-							dimensions, exposure, tonemapper,
-							rendering::sensor::clamp::Identity(), filter);
+				return new Filtered<Transparent, clamp::Identity>(dimensions, exposure, tonemapper,
+																  clamp::Identity(), filter);
 			}
 		}
 
 		if (clamp) {
-			return new rendering::sensor::Filtered<
-					rendering::sensor::Opaque,
-					rendering::sensor::clamp::Clamp>(
-						dimensions, exposure, tonemapper,
-						rendering::sensor::clamp::Clamp(clamp_max), filter);
+			return new Filtered<Opaque, clamp::Clamp>( dimensions, exposure, tonemapper,
+													   clamp::Clamp(clamp_max), filter);
 		} else {
-			return new rendering::sensor::Filtered<
-					rendering::sensor::Opaque,
-					rendering::sensor::clamp::Identity>(
-						dimensions, exposure, tonemapper,
-						rendering::sensor::clamp::Identity(), filter);
+			return new Filtered<Opaque, clamp::Identity>(dimensions, exposure, tonemapper,
+														 clamp::Identity(), filter);
 		}
 	}
 
 	if (alpha_transparency) {
 		if (clamp) {
-			return new rendering::sensor::Unfiltered<
-					rendering::sensor::Transparent,
-					rendering::sensor::clamp::Clamp>
-					(dimensions, exposure, tonemapper,
-					 rendering::sensor::clamp::Clamp(clamp_max));
+			return new Unfiltered<Transparent, clamp::Clamp>(dimensions, exposure, tonemapper,
+															 clamp::Clamp(clamp_max));
 		} else {
-			return new rendering::sensor::Unfiltered<
-					rendering::sensor::Transparent,
-					rendering::sensor::clamp::Identity>
-					(dimensions, exposure, tonemapper,
-					 rendering::sensor::clamp::Identity());
+			return new Unfiltered<Transparent, clamp::Identity>(dimensions, exposure, tonemapper,
+																clamp::Identity());
 		}
 	}
 
 	if (clamp) {
-		return new rendering::sensor::Unfiltered<
-				rendering::sensor::Opaque,
-				rendering::sensor::clamp::Clamp>
-				(dimensions, exposure, tonemapper,
-				 rendering::sensor::clamp::Clamp(clamp_max));
+		return new Unfiltered<Opaque, clamp::Clamp> (dimensions, exposure, tonemapper,
+													 clamp::Clamp(clamp_max));
 	}
 
-	return new rendering::sensor::Unfiltered<
-			rendering::sensor::Opaque,
-			rendering::sensor::clamp::Identity>
-			(dimensions, exposure, tonemapper,
-			 rendering::sensor::clamp::Identity());
+	return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, tonemapper,
+												   clamp::Identity());
 }
 
 const rendering::sensor::tonemapping::Tonemapper*
@@ -403,6 +376,8 @@ void Loader::load_integrator_factories(const json::Value& integrator_value, Take
 std::shared_ptr<rendering::integrator::surface::Factory>
 Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 										const Settings& settings) const {
+	using namespace rendering::integrator::surface;
+
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
 	rendering::integrator::Light_sampling light_sampling{
@@ -414,13 +389,13 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 		if ("AO" == n.name) {
 			uint32_t num_samples = json::read_uint(n.value, "num_samples", 1);
 			float radius = json::read_float(n.value, "radius", 1.f);
-			return std::make_shared<rendering::integrator::surface::Ao_factory>(
+			return std::make_shared<Ao_factory>(
 						settings, num_samples, radius);
 		} else if ("Whitted" == n.name) {
 			uint32_t num_light_samples = json::read_uint(
 						n.value, "num_light_samples", light_sampling.num_samples);
 
-			return std::make_shared<rendering::integrator::surface::Whitted_factory>(
+			return std::make_shared<Whitted_factory>(
 						settings, num_light_samples);
 		} else if ("PT" == n.name) {
 			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
@@ -432,7 +407,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
 
-			return std::make_shared<rendering::integrator::surface::Pathtracer_factory>(
+			return std::make_shared<Pathtracer_factory>(
 						settings, min_bounces, max_bounces,
 						path_termination_probability, disable_caustics);
 		} else if ("PTDL" == n.name) {
@@ -449,7 +424,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
 
-			return std::make_shared<rendering::integrator::surface::Pathtracer_DL_factory>(
+			return std::make_shared<Pathtracer_DL_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
 						num_light_samples, disable_caustics);
 		} else if ("PTMIS" == n.name) {
@@ -467,26 +442,25 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
 
-			return std::make_shared<rendering::integrator::surface::Pathtracer_MIS_factory>(
+			return std::make_shared<Pathtracer_MIS_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
 						light_sampling, disable_caustics);
 		} else if ("Normal" == n.name) {
-			auto vector = rendering::integrator::surface::Normal::Settings::Vector::Shading_normal;
+			auto vector = Normal::Settings::Vector::Shading_normal;
 
 			std::string vector_type = json::read_string(n.value, "vector");
 
 			if ("Tangent" == vector_type) {
-				vector = rendering::integrator::surface::Normal::Settings::Vector::Tangent;
+				vector = Normal::Settings::Vector::Tangent;
 			} else if ("Bitangent" == vector_type) {
-				vector = rendering::integrator::surface::Normal::Settings::Vector::Bitangent;
+				vector = Normal::Settings::Vector::Bitangent;
 			} else if ("Geometric_normal" == vector_type) {
-				vector = rendering::integrator::surface::Normal::Settings::Vector::Geometric_normal;
+				vector = Normal::Settings::Vector::Geometric_normal;
 			} else if ("Shading_normal" == vector_type) {
-				vector = rendering::integrator::surface::Normal::Settings::Vector::Shading_normal;
+				vector = Normal::Settings::Vector::Shading_normal;
 			}
 
-			return std::make_shared<rendering::integrator::surface::Normal_factory>(
-						settings, vector);
+			return std::make_shared<Normal_factory>(settings, vector);
 		}
 	}
 
@@ -496,15 +470,16 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 std::shared_ptr<rendering::integrator::volume::Factory>
 Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 									   const Settings& settings) const {
+	using namespace rendering::integrator::volume;
+
 	for (auto& n : integrator_value.GetObject()) {
 		const std::string node_name = n.name.GetString();
 
 		if ("Attenuation" == node_name) {
-			return std::make_shared<rendering::integrator::volume::Attenuation_factory>(settings);
+			return std::make_shared<Attenuation_factory>(settings);
 		} else if ("Single_scattering" == node_name) {
 			float step_size = json::read_float(n.value, "step_size", 1.f);
-			return std::make_shared<
-					rendering::integrator::volume::Single_scattering_factory>(settings, step_size);
+			return std::make_shared<Single_scattering_factory>(settings, step_size);
 		}
 	}
 

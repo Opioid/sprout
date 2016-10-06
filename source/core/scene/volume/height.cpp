@@ -1,5 +1,6 @@
 #include "height.hpp"
 #include "base/json/json.hpp"
+#include "base/math/vector.inl"
 
 namespace scene { namespace volume {
 

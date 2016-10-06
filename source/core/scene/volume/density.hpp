@@ -8,11 +8,10 @@ class Density : public Volume {
 
 public:
 
-	virtual float3 optical_depth(const math::Oray& ray) const final override;
+	virtual float3 optical_depth(const math::Oray& ray, float step_size,
+								 math::random::Generator& rng) const final override;
 
 	virtual float3 scattering(float3_p p) const final override;
-
-	virtual float phase(float3_p w, float3_p wp) const final override;
 
 protected:
 

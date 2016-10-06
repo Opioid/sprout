@@ -5,6 +5,8 @@
 #include "base/math/ray.hpp"
 #include <string>
 
+namespace math { namespace random { class Generator; }}
+
 namespace scene { namespace volume {
 
 class Volume : public entity::Entity {
@@ -13,11 +15,12 @@ public:
 
 	Volume();
 
-	virtual float3 optical_depth(const math::Oray& ray) const = 0;
+	virtual float3 optical_depth(const math::Oray& ray, float step_size,
+								 math::random::Generator& rng) const = 0;
 
 	virtual float3 scattering(float3_p p) const = 0;
 
-	virtual float phase(float3_p w, float3_p wp) const = 0;
+	float phase(float3_p w, float3_p wp) const;
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 
