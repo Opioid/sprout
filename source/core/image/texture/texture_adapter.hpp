@@ -5,7 +5,7 @@
 
 namespace image { namespace texture {
 
-namespace sampler { class Sampler_2D; }
+namespace sampler { class Sampler_2D; class Sampler_3D; }
 
 class Texture;
 
@@ -35,6 +35,14 @@ public:
 	float3 sample_3(const Sampler_2D& sampler, float2 uv, int32_t element) const;
 
 	float2 address(const Sampler_2D& sampler, float2 uv) const;
+
+	using Sampler_3D = sampler::Sampler_3D;
+
+	float  sample_1(const Sampler_3D& sampler, float3_p uvw) const;
+	float2 sample_2(const Sampler_3D& sampler, float3_p uvw) const;
+	float3 sample_3(const Sampler_3D& sampler, float3_p uvw) const;
+
+	float3 address(const Sampler_3D& sampler, float3_p uvw) const;
 
 private:
 

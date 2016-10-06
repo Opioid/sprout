@@ -10,6 +10,10 @@ struct Address_mode_repeat {
 		return float2(math::frac(uv.x), math::frac(uv.y));
 	}
 
+	static float3 f(float3_p uvw) {
+		return float3(math::frac(uvw.x), math::frac(uvw.y), math::frac(uvw.z));
+	}
+
 	static int32_t increment(int32_t v, int32_t max) {
 		if (v >= max) {
 			return 0;

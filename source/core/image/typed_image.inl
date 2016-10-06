@@ -64,6 +64,12 @@ T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) {
 }
 
 template<typename T>
+T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const {
+	int32_t i = z * area_ + y * description_.dimensions.x + x;
+	return data_[i];
+}
+
+template<typename T>
 const T& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
 	int32_t i = z * area_ + y * description_.dimensions.x + x;
 	return data_[i];

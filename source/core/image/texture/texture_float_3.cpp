@@ -44,4 +44,22 @@ float4 Texture_float_3::at_element_4(int32_t x, int32_t y, int32_t element) cons
 	return float4(image_.at_element(x, y, element), 1.f);
 }
 
+float Texture_float_3::at_1(int32_t x, int32_t y, int32_t z) const {
+	return image_.load(x, y, z).x;
+}
+
+float2 Texture_float_3::at_2(int32_t x, int32_t y, int32_t z) const {
+	return image_.load(x, y, z).xy;
+}
+
+float3 Texture_float_3::at_3(int32_t x, int32_t y, int32_t z) const {
+	return float3(image_.load(x, y, z));
+
+//	return float3(image_.at(x, y, z));
+}
+
+float4 Texture_float_3::at_4(int32_t x, int32_t y, int32_t z) const {
+	return float4(image_.load(x, y, z), 1.f);
+}
+
 }}
