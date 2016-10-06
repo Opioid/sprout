@@ -12,16 +12,24 @@ public:
 	Typed_image(const Image::Description& description);
 	~Typed_image();
 
-	T load(int32_t x, int32_t y) const;
-
 	const T& at(int32_t index) const;
 	T& at(int32_t index);
+
+	T load(int32_t x, int32_t y) const;
+
+	T load_element(int32_t x, int32_t y, int32_t element) const;
 
 	const T& at(int32_t x, int32_t y) const;
 	T& at(int32_t x, int32_t y);
 
 	const T& at_element(int32_t x, int32_t y, int32_t element) const;
 	T& at_element(int32_t x, int32_t y, int32_t element);
+
+	const T& at(int32_t x, int32_t y, int32_t z) const;
+	T& at(int32_t x, int32_t y, int32_t z);
+
+	const T& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
+	T& at_element(int32_t x, int32_t y, int32_t z, int32_t element);
 
 	const T* data() const;
 

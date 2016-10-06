@@ -32,7 +32,8 @@ public:
 
 	const Description& description() const;
 
-	uint32_t area() const;
+	int32_t area() const;
+	int32_t volume() const;
 
 	virtual size_t num_bytes() const = 0;
 
@@ -41,6 +42,7 @@ protected:
 	Description description_;
 
 	int32_t area_;
+	int32_t volume_;
 };
 
 }

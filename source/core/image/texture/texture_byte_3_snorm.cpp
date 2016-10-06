@@ -36,25 +36,25 @@ float4 Texture_byte_3_snorm::at_4(int32_t x, int32_t y) const {
 }
 
 float Texture_byte_3_snorm::at_element_1(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at_element(x, y, element);
+	auto value = image_.load_element(x, y, element);
 	return encoding::snorm_to_float(value.x);
 }
 
 float2 Texture_byte_3_snorm::at_element_2(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at_element(x, y, element);
+	auto value = image_.load_element(x, y, element);
 	return float2(encoding::snorm_to_float(value.x),
 				  encoding::snorm_to_float(value.y));
 }
 
 float3 Texture_byte_3_snorm::at_element_3(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at_element(x, y, element);
+	auto value = image_.load_element(x, y, element);
 	return float3(encoding::snorm_to_float(value.x),
 				  encoding::snorm_to_float(value.y),
 				  encoding::snorm_to_float(value.z));
 }
 
 float4 Texture_byte_3_snorm::at_element_4(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at_element(x, y, element);
+	auto value = image_.load_element(x, y, element);
 	return float4(encoding::snorm_to_float(value.x),
 				  encoding::snorm_to_float(value.y),
 				  encoding::snorm_to_float(value.z),

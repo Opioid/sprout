@@ -17,9 +17,9 @@ float2 Texture_float_3::at_2(int32_t x, int32_t y) const {
 }
 
 float3 Texture_float_3::at_3(int32_t x, int32_t y) const {
-//	return image_.load(x, y);
+	return float3(image_.load(x, y));
 
-	return float3(image_.at(x, y));
+//	return float3(image_.at(x, y));
 }
 
 float4 Texture_float_3::at_4(int32_t x, int32_t y) const {

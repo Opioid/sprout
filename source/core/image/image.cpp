@@ -17,7 +17,8 @@ Image::Description::Description(Type type, const int3& dimensions, int32_t num_e
 
 Image::Image(const Description& description) :
 	description_(description),
-	area_(description.dimensions.x * description.dimensions.y * description.dimensions.z) {}
+	area_(description.dimensions.x * description.dimensions.y),
+	volume_(description.dimensions.x * description.dimensions.y * description.dimensions.z) {}
 
 Image::~Image() {}
 
@@ -25,8 +26,12 @@ const Image::Description& Image::description() const {
 	return description_;
 }
 
-uint32_t Image::area() const {
+int32_t Image::area() const {
 	return area_;
+}
+
+int32_t Image::volume() const {
+	return volume_;
 }
 
 }

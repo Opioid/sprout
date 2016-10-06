@@ -6,6 +6,9 @@ namespace image { namespace texture {
 
 Texture::Texture(std::shared_ptr<Image> image) :
 	untyped_image_(image),
+	back_(int3(image->description().dimensions.x - 1,
+			   image->description().dimensions.y - 1,
+			   image->description().dimensions.z - 1)),
 	dimensions_float_(float3(image->description().dimensions)) {}
 
 Texture::~Texture() {}
@@ -20,6 +23,14 @@ int2 Texture::dimensions_2() const {
 
 int3 Texture::dimensions_3() const {
 	return untyped_image_->description().dimensions;
+}
+
+int2 Texture::back_2() const {
+	return back_.xy;
+}
+
+int3 Texture::back_3() const {
+	return back_;
 }
 
 float2 Texture::dimensions_float2() const {

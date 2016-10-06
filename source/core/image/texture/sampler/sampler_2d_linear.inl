@@ -19,13 +19,13 @@ inline float4 bilinear(const float4& c00, const float4& c01, const float4& c10, 
 
 template<typename Address_mode>
 float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 uv) const {
-	auto d  = texture.dimensions_2();
-	auto df = texture.dimensions_float2();
+	auto b = texture.back_2();
+	auto d = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
-	float u = uv.x * df.x - 0.5f;
-	float v = uv.y * df.y - 0.5f;
+	float u = uv.x * d.x - 0.5f;
+	float v = uv.y * d.y - 0.5f;
 
 	float fu = std::floor(u);
 	float fv = std::floor(v);
@@ -33,11 +33,10 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 u
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int2 m = int2(d.x - 1, d.y - 1);
-	int32_t x1 = Address_mode::increment(x, m.x);
-	int32_t y1 = Address_mode::increment(y, m.y);
-	x = Address_mode::lower_bound(x, m.x);
-	y = Address_mode::lower_bound(y, m.y);
+	int32_t x1 = Address_mode::increment(x, b.x);
+	int32_t y1 = Address_mode::increment(y, b.y);
+	x = Address_mode::lower_bound(x, b.x);
+	y = Address_mode::lower_bound(y, b.y);
 
 	float c00 = texture.at_1(x,  y);
 	float c01 = texture.at_1(x,  y1);
@@ -52,13 +51,13 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 u
 
 template<typename Address_mode>
 float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 uv) const {
-	auto d  = texture.dimensions_2();
-	auto df = texture.dimensions_float2();
+	auto b = texture.back_2();
+	auto d = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
-	float u = uv.x * df.x - 0.5f;
-	float v = uv.y * df.y - 0.5f;
+	float u = uv.x * d.x - 0.5f;
+	float v = uv.y * d.y - 0.5f;
 
 	float fu = std::floor(u);
 	float fv = std::floor(v);
@@ -66,11 +65,10 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int2 m = int2(d.x - 1, d.y - 1);
-	int32_t x1 = Address_mode::increment(x, m.x);
-	int32_t y1 = Address_mode::increment(y, m.y);
-	x = Address_mode::lower_bound(x, m.x);
-	y = Address_mode::lower_bound(y, m.y);
+	int32_t x1 = Address_mode::increment(x, b.x);
+	int32_t y1 = Address_mode::increment(y, b.y);
+	x = Address_mode::lower_bound(x, b.x);
+	y = Address_mode::lower_bound(y, b.y);
 
 	float2 c00 = texture.at_2(x,  y);
 	float2 c01 = texture.at_2(x,  y1);
@@ -85,13 +83,13 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 
 
 template<typename Address_mode>
 float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 uv) const {
-	auto d  = texture.dimensions_2();
-	auto df = texture.dimensions_float2();
+	auto b = texture.back_2();
+	auto d = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
-	float u = uv.x * df.x - 0.5f;
-	float v = uv.y * df.y - 0.5f;
+	float u = uv.x * d.x - 0.5f;
+	float v = uv.y * d.y - 0.5f;
 
 	float fu = std::floor(u);
 	float fv = std::floor(v);
@@ -99,11 +97,10 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int2 m = int2(d.x - 1, d.y - 1);
-	int32_t x1 = Address_mode::increment(x, m.x);
-	int32_t y1 = Address_mode::increment(y, m.y);
-	x = Address_mode::lower_bound(x, m.x);
-	y = Address_mode::lower_bound(y, m.y);
+	int32_t x1 = Address_mode::increment(x, b.x);
+	int32_t y1 = Address_mode::increment(y, b.y);
+	x = Address_mode::lower_bound(x, b.x);
+	y = Address_mode::lower_bound(y, b.y);
 
 	float3 c00 = texture.at_3(x,  y);
 	float3 c01 = texture.at_3(x,  y1);
@@ -119,13 +116,13 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 
 template<typename Address_mode>
 float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 uv,
 												int32_t element) const {
-	auto d  = texture.dimensions_2();
-	auto df = texture.dimensions_float2();
+	auto b = texture.back_2();
+	auto d = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
-	float u = uv.x * df.x - 0.5f;
-	float v = uv.y * df.y - 0.5f;
+	float u = uv.x * d.x - 0.5f;
+	float v = uv.y * d.y - 0.5f;
 
 	float fu = std::floor(u);
 	float fv = std::floor(v);
@@ -133,11 +130,10 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 u
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int2 m = int2(d.x - 1, d.y - 1);
-	int32_t x1 = Address_mode::increment(x, m.x);
-	int32_t y1 = Address_mode::increment(y, m.y);
-	x = Address_mode::lower_bound(x, m.x);
-	y = Address_mode::lower_bound(y, m.y);
+	int32_t x1 = Address_mode::increment(x, b.x);
+	int32_t y1 = Address_mode::increment(y, b.y);
+	x = Address_mode::lower_bound(x, b.x);
+	y = Address_mode::lower_bound(y, b.y);
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
@@ -155,13 +151,13 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 u
 template<typename Address_mode>
 float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 uv,
 												 int32_t element) const {
-	auto d  = texture.dimensions_2();
-	auto df = texture.dimensions_float2();
+	auto b = texture.back_2();
+	auto d = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
-	float u = uv.x * df.x - 0.5f;
-	float v = uv.y * df.y - 0.5f;
+	float u = uv.x * d.x - 0.5f;
+	float v = uv.y * d.y - 0.5f;
 
 	float fu = std::floor(u);
 	float fv = std::floor(v);
@@ -169,11 +165,10 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int2 m = int2(d.x - 1, d.y - 1);
-	int32_t x1 = Address_mode::increment(x, m.x);
-	int32_t y1 = Address_mode::increment(y, m.y);
-	x = Address_mode::lower_bound(x, m.x);
-	y = Address_mode::lower_bound(y, m.y);
+	int32_t x1 = Address_mode::increment(x, b.x);
+	int32_t y1 = Address_mode::increment(y, b.y);
+	x = Address_mode::lower_bound(x, b.x);
+	y = Address_mode::lower_bound(y, b.y);
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
@@ -191,13 +186,13 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 
 template<typename Address_mode>
 float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 uv,
 												 int32_t element) const {
-	auto d  = texture.dimensions_2();
-	auto df = texture.dimensions_float2();
+	auto b = texture.back_2();
+	auto d = texture.dimensions_float2();
 
 	uv = Address_mode::f(uv);
 
-	float u = uv.x * df.x - 0.5f;
-	float v = uv.y * df.y - 0.5f;
+	float u = uv.x * d.x - 0.5f;
+	float v = uv.y * d.y - 0.5f;
 
 	float fu = std::floor(u);
 	float fv = std::floor(v);
@@ -205,11 +200,10 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	int2 m = int2(d.x - 1, d.y - 1);
-	int32_t x1 = Address_mode::increment(x, m.x);
-	int32_t y1 = Address_mode::increment(y, m.y);
-	x = Address_mode::lower_bound(x, m.x);
-	y = Address_mode::lower_bound(y, m.y);
+	int32_t x1 = Address_mode::increment(x, b.x);
+	int32_t y1 = Address_mode::increment(y, b.y);
+	x = Address_mode::lower_bound(x, b.x);
+	y = Address_mode::lower_bound(y, b.y);
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 

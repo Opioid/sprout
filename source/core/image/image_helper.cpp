@@ -5,12 +5,12 @@
 namespace image {
 
 float3 average_and_max_3(const Image_float_4& image, float3& max) {
-	uint32_t len = image.area();
+	uint32_t len = image.volume();
 
 	float ilen = 1.f / static_cast<float>(len);
 
-	float3 average = math::float3_identity;
-	max = math::float3_identity;
+	float3 average = float3(0.f);
+	max = float3(0.f);
 
 	for (uint32_t i = 0; i < len; ++i) {
 		const float4& pixel = image.at(i);
@@ -24,7 +24,7 @@ float3 average_and_max_3(const Image_float_4& image, float3& max) {
 }
 
 float average_and_max_luminance(const Image_float_4& image, float& max) {
-	uint32_t len = image.area();
+	uint32_t len = image.volume();
 
 	float ilen = 1.f / static_cast<float>(len);
 

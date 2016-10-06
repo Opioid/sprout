@@ -36,25 +36,25 @@ float4 Texture_byte_3_sRGB::at_4(int32_t x, int32_t y) const {
 }
 
 float Texture_byte_3_sRGB::at_element_1(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at_element(x, y, element);
+	auto value = image_.load_element(x, y, element);
 	return encoding::srgb_to_float(value.x);
 }
 
 float2 Texture_byte_3_sRGB::at_element_2(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at_element(x, y, element);
+	auto value = image_.load_element(x, y, element);
 	return float2(encoding::srgb_to_float(value.x),
 				  encoding::srgb_to_float(value.y));
 }
 
 float3 Texture_byte_3_sRGB::at_element_3(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at_element(x, y, element);
+	auto value = image_.load_element(x, y, element);
 	return float3(encoding::srgb_to_float(value.x),
 				  encoding::srgb_to_float(value.y),
 				  encoding::srgb_to_float(value.z));
 }
 
 float4 Texture_byte_3_sRGB::at_element_4(int32_t x, int32_t y, int32_t element) const {
-	auto& value = image_.at_element(x, y, element);
+	auto value = image_.load_element(x, y, element);
 	return float4(encoding::srgb_to_float(value.x),
 				  encoding::srgb_to_float(value.y),
 				  encoding::srgb_to_float(value.z),

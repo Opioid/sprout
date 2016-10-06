@@ -8,7 +8,7 @@ class Renderer {
 
 public:
 
-	Renderer(int2 dimensions, int num_sqrt_samples = 1);
+	Renderer(int2 dimensions, int32_t num_sqrt_samples = 1);
 	~Renderer();
 
 	void set_brush(float3_p color);
@@ -24,8 +24,8 @@ public:
 
 private:
 
-	void set_sample(int x, int y, const float4& color);
-	void set_row(int start_x, int end_x, int y, const float4& color);
+	void set_sample(int32_t x, int32_t y, const float4& color);
+	void set_row(int32_t start_x, int32_t end_x, int32_t y, const float4& color);
 
 	int num_sqrt_samples_;
 
