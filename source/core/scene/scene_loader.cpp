@@ -128,20 +128,25 @@ void Loader::load_entities(const json::Value& entities_value,
 
 		entity::Entity* entity = nullptr;
 
-		if ("Light" == type_name) {
-			Prop* prop = load_prop(e, name, scene);
-			entity = prop;
-			if (prop && prop->visible_in_reflection()) {
-				load_light(e, prop, scene);
+		try {
+			if ("Light" == type_name) {
+				Prop* prop = load_prop(e, name, scene);
+				entity = prop;
+				if (prop && prop->visible_in_reflection()) {
+					load_light(e, prop, scene);
+				}
+			} else if ("Prop" == type_name) {
+				entity = load_prop(e, name, scene);
+			} else if ("Dummy" == type_name) {
+				entity = scene.create_dummy();
+			} else if ("Volume" == type_name) {
+				entity = load_volume(e, scene);
+			} else {
+				entity = load_extension(type_name, e, name, scene);
 			}
-		} else if ("Prop" == type_name) {
-			entity = load_prop(e, name, scene);
-		} else if ("Dummy" == type_name) {
-			entity = scene.create_dummy();
-		} else if ("Volume" == type_name) {
-			entity = load_volume(e, scene);
-		} else {
-			entity = load_extension(type_name, e, name, scene);
+		} catch (const std::exception& e) {
+			logging::error("Cannot create entity \"" + type_name + "\": " + e.what() + ".");
+			continue;
 		}
 
 		if (!entity) {
@@ -253,7 +258,17 @@ volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scen
 		}
 	}
 
-	volume::Volume* volume = scene.create_volume();
+	volume::Volume* volume = nullptr;
+
+	if ("Homogenous" == shape_type) {
+		volume = scene.create_homogenous_volume();
+	} else if ("Height" == shape_type) {
+		volume = scene.create_height_volume();
+	}
+
+	if (!volume) {
+		throw std::runtime_error("Cannot create shape \"" + shape_type + "\": Unknown type.");
+	}
 
 	if (parameters_value) {
 		volume->set_parameters(*parameters_value);

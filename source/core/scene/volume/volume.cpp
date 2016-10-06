@@ -15,6 +15,8 @@ void Volume::set_parameters(const json::Value& parameters) {
 			scattering_ = json::read_float3(n.value);
 		} else if ("anisotropy" == n.name) {
 			anisotropy_ = json::read_float(n.value);
+		} else {
+			set_parameter(n.name.GetString(), n.value);
 		}
 	}
 }
@@ -24,5 +26,10 @@ void Volume::set_scene_aabb(const math::aabb& aabb) {
 }
 
 void Volume::on_set_transformation() {}
+
+float Volume::phase_schlick(float3_p w, float3_p wp, float k) {
+	float d = 1.f - (k * math::dot(w, wp));
+	return 1.f / (4.f * math::Pi) * (1.f - k * k) / (d * d);
+}
 
 }}

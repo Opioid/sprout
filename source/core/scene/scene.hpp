@@ -91,7 +91,8 @@ public:
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
 	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
 
-	volume::Volume* create_volume();
+	volume::Volume* create_height_volume();
+	volume::Volume* create_homogenous_volume();
 
 	void add_extension(entity::Entity* extension);
 	void add_extension(entity::Entity* extension, const std::string& name);

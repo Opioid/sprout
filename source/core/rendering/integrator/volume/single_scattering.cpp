@@ -38,8 +38,8 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
-		transmittance = float3(1.f, 1.f, 1.f);
-		return math::float4_identity;
+		transmittance = float3(1.f);
+		return float4(0.f);
 	}
 
 //	min_t = ray.min_t;
@@ -54,8 +54,8 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume
 	float range = max_t - min_t;
 
 	if (range < 0.0001f) {
-		transmittance = float3(1.f, 1.f, 1.f);
-		return math::float4_identity;
+		transmittance = float3(1.f);
+		return float4(0.f);
 	}
 
 	uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
@@ -64,11 +64,9 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume
 
 	float3 w = -ray.direction;
 
-	float3 radiance = math::float3_identity;
+	float3 radiance(0.f);
 
-	float3 scattering = volume->scattering();
-
-	float3 tr(1.f, 1.f, 1.f);
+	float3 tr(1.f);
 
 	float3 current = ray.point(min_t);
 	float3 previous;
@@ -100,6 +98,8 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume
 			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
 			if (mv > 0.f) {
 				float p = volume->phase(w, -light_sample.shape.wi);
+
+				float3 scattering = volume->scattering(current);
 
 				float3 l = Single_scattering::transmittance(worker, volume, shadow_ray)
 							   * light_sample.radiance;

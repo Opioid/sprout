@@ -7,6 +7,7 @@
 #include "scene/shape/shape.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
+#include "scene/volume/height.hpp"
 #include "scene/volume/homogeneous.hpp"
 #include "base/spectrum/rgb.inl"
 #include "base/math/vector.inl"
@@ -272,7 +273,15 @@ light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t par
 	return light;
 }
 
-volume::Volume* Scene::create_volume() {
+volume::Volume* Scene::create_height_volume() {
+	volume_region_ = new volume::Height;
+
+	entities_.push_back(volume_region_);
+
+	return volume_region_;
+}
+
+volume::Volume* Scene::create_homogenous_volume() {
 	volume_region_ = new volume::Homogeneous;
 
 	entities_.push_back(volume_region_);
