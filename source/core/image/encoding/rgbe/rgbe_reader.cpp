@@ -2,6 +2,7 @@
 #include "image/typed_image.inl"
 #include "base/math/vector.inl"
 #include <cmath>
+#include <istream>
 #include <string>
 #include <vector>
 

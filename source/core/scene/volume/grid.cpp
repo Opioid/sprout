@@ -5,6 +5,7 @@
 #include "image/texture/sampler/sampler_3d_nearest.inl"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
+#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace volume {
 

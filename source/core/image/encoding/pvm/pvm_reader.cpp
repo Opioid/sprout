@@ -1,5 +1,6 @@
 #include "pvm_reader.hpp"
 #include "image/typed_image.inl"
+#include "base/math/vector.inl"
 #include <string>
 
 namespace image { namespace encoding { namespace pvm {
