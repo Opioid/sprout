@@ -12,21 +12,21 @@ float3 Density::optical_depth(const math::Oray& ray, float step_size,
 
 	math::Oray rn(ray.origin, ray.direction / length, ray.min_t * length, ray.max_t * length);
 
-	float t0;
-	float t1;
+	float min_t;
+	float max_t;
 
-	if (!scene_bb_.intersect_p(rn, t0, t1)) {
+	if (!scene_bb_.intersect_p(rn, min_t, max_t)) {
 		return float3(0.f);
 	}
 
-	float3 tau(0.f);
-	t0 += rng.random_float() * step_size;
+	min_t += rng.random_float() * step_size;
 
 	float3 attenuation = absorption_ + scattering_;
 
-	while (t0 < t1) {
-		tau += density(rn.point(t0)) * attenuation;
-		t0 += step_size;
+	float3 tau(0.f);
+
+	for (; min_t < max_t; min_t += step_size) {
+		tau += density(rn.point(min_t)) * attenuation;
 	}
 
 	return step_size * tau;

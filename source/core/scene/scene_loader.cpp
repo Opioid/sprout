@@ -301,20 +301,17 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value)
 
 	std::string file = json::read_string(shape_value, "file");
 	if (!file.empty()) {
-		try {
-            memory::Variant_map options;
+		memory::Variant_map options;
 
-			std::string bvh_preset_value = json::read_string(shape_value, "bvh_preset");
-			if ("fast" == bvh_preset_value) {
-				options.set("bvh_preset", shape::triangle::BVH_preset::Fast);
-			} else if ("slow" == bvh_preset_value) {
-				options.set("bvh_preset", shape::triangle::BVH_preset::Slow);
-			}
+		std::string bvh_preset_value = json::read_string(shape_value, "bvh_preset");
 
-			return resource_manager_.load<shape::Shape>(file, options);
-		} catch (const std::exception& e) {
-			logging::error("Cannot load \"" + file + "\": " + e.what() + ".");
+		if ("fast" == bvh_preset_value) {
+			options.set("bvh_preset", shape::triangle::BVH_preset::Fast);
+		} else if ("slow" == bvh_preset_value) {
+			options.set("bvh_preset", shape::triangle::BVH_preset::Slow);
 		}
+
+		return resource_manager_.load<shape::Shape>(file, options);
 	}
 
 	return nullptr;
