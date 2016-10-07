@@ -46,6 +46,7 @@ using Image_byte_1 = Typed_image<uint8_t>;
 using Image_byte_2 = Typed_image<math::byte2>;
 using Image_byte_3 = Typed_image<byte3>;
 // using Image_float_3 = Typed_image<float3>;
+using Image_float_1 = Typed_image<float>;
 using Image_float_3 = Typed_image<math::packed_float3>;
 using Image_float_4 = Typed_image<float4>;
 

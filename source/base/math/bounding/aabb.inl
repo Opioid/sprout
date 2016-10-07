@@ -13,11 +13,11 @@ inline AABB::AABB(FVector3f_a min, FVector3f_a max) {
 	bounds_[1] = max;
 }
 
-inline const Vector3f_a& AABB::min() const {
+inline FVector3f_a AABB::min() const {
 	return bounds_[0];
 }
 
-inline const Vector3f_a& AABB::max() const {
+inline FVector3f_a AABB::max() const {
 	return bounds_[1];
 }
 

@@ -21,7 +21,7 @@ const material::Sample& Glass_rough::sample(float3_p wo, const Renderstate& rs,
 
 	sample.set_basis(rs.geo_n, wo);
 
-	auto& sampler = worker.sampler(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key_, filter);
 
 	if (normal_map_.is_valid()) {
 		float3 nm = normal_map_.sample_3(sampler, rs.uv);

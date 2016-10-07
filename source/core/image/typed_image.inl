@@ -10,6 +10,7 @@ Typed_image<T>::Typed_image(const Image::Description& description) :
 	Image(description),
 	data_(memory::allocate_aligned<T>(description.dimensions.x *
 									  description.dimensions.y *
+									  description.dimensions.z *
 									  description.num_elements)) {}
 
 template<typename T>

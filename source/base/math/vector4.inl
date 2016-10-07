@@ -83,7 +83,7 @@ inline Vector4f_a::Vector4f_a(float s) :
 inline Vector4f_a::Vector4f_a(Vector2<float> xy, float z, float w) :
 	x(xy.x), y(xy.y), z(z), w(w) {}
 
-inline Vector4f_a::Vector4f_a(const Vector3f_a& xyz, float w) :
+inline Vector4f_a::Vector4f_a(FVector3f_a xyz, float w) :
 	x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
 
 inline Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) :

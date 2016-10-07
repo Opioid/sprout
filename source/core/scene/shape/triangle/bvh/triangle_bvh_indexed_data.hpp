@@ -34,7 +34,7 @@ public:
 	float3 normal(uint32_t index) const;
 
 	float area(uint32_t index) const;
-	float area(uint32_t index, const float3& scale) const;
+	float area(uint32_t index, float3_p scale) const;
 
 	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
@@ -86,7 +86,7 @@ public:
 	float3 normal(uint32_t index) const;
 
 	float area(uint32_t index) const;
-	float area(uint32_t index, const float3& scale) const;
+	float area(uint32_t index, float3_p scale) const;
 
 	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 

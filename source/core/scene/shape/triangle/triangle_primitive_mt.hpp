@@ -33,7 +33,7 @@ struct Triangle_MT {
 	float3 normal() const;
 
 	float area() const;
-	float area(const float3& scale) const;
+	float area(float3_p scale) const;
 };
 
 struct Intersection_vertex_MT {
@@ -80,7 +80,7 @@ float area(const Intersection_vertex_MT& a,
 float area(const Intersection_vertex_MT& a,
 		   const Intersection_vertex_MT& b,
 		   const Intersection_vertex_MT& c,
-		   const float3& scale);
+		   float3_p scale);
 
 struct Shading_vertex_MTC {
 	float4 n_u;
@@ -88,9 +88,9 @@ struct Shading_vertex_MTC {
 };
 
 float2 interpolate_uv(const Shading_vertex_MTC& a,
-							const Shading_vertex_MTC& b,
-							const Shading_vertex_MTC& c,
-							float2 uv);
+					  const Shading_vertex_MTC& b,
+					  const Shading_vertex_MTC& c,
+					  float2 uv);
 
 void interpolate_data(const Shading_vertex_MTC& a,
 					  const Shading_vertex_MTC& b,

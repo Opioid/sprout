@@ -1,7 +1,8 @@
 #include "image_provider.hpp"
 #include "resource/resource_manager.hpp"
 #include "resource/resource_provider.inl"
-#include "image/encoding/rgbe/rgbe_reader.hpp"
+#include "encoding/pvm/pvm_reader.hpp"
+#include "encoding/rgbe/rgbe_reader.hpp"
 #include "file/file.hpp"
 #include "file/file_system.hpp"
 #include "base/math/vector.inl"
@@ -36,6 +37,9 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 		options.query("num_elements", num_elements);
 
 		return png_reader_.read(stream, channels, num_elements);
+	} else if (file::Type::PVM == type) {
+		encoding::pvm::Reader reader;
+		return reader.read(stream);
 	} else if (file::Type::RGBE == type) {
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);

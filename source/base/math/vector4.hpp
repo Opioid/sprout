@@ -78,7 +78,7 @@ struct alignas(16) Vector4f_a {
 
 	explicit Vector4f_a(Vector2<float> xy, float z, float w = 1.f);
 
-	explicit Vector4f_a(const Vector3f_a& xyz, float w = 1.f);
+	explicit Vector4f_a(FVector3f_a xyz, float w = 1.f);
 
 	explicit Vector4f_a(const Vector3<float>& xyz, float w = 1.f);
 

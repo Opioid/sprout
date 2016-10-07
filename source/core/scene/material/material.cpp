@@ -29,11 +29,11 @@ void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
 float3 Material::sample_radiance(float3_p /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
 								 const Worker& /*worker*/, Sampler_filter /*filter*/) const {
-	return float3(0.f, 0.f, 0.f);
+	return float3(0.f);
 }
 
 float3 Material::average_radiance(float /*area*/) const {
-	return float3(0.f, 0.f, 0.f);
+	return float3(0.f);
 }
 
 bool Material::has_emission_map() const {
@@ -53,7 +53,7 @@ float Material::emission_pdf(float2 /*uv*/, const Worker& /*worker*/,
 float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
 						Sampler_filter filter) const {
 	if (mask_.is_valid()) {
-		auto& sampler = worker.sampler(sampler_key_, filter);
+		auto& sampler = worker.sampler_2D(sampler_key_, filter);
 		return mask_.sample_1(sampler, uv);
 	} else {
 		return 1.f;

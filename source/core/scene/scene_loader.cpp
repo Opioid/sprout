@@ -1,24 +1,25 @@
 #include "scene_loader.hpp"
 #include "logging/logging.hpp"
+#include "image/texture/texture_provider.hpp"
 #include "scene.hpp"
-#include "scene/animation/animation.hpp"
-#include "scene/animation/animation_loader.hpp"
-#include "scene/entity/dummy.hpp"
-#include "scene/entity/entity_extension_provider.hpp"
-#include "scene/light/prop_light.hpp"
-#include "scene/light/prop_image_light.hpp"
-#include "scene/prop.hpp"
-#include "scene/shape/canopy.hpp"
-#include "scene/shape/celestial_disk.hpp"
-#include "scene/shape/disk.hpp"
-#include "scene/shape/infinite_sphere.hpp"
-#include "scene/shape/inverse_sphere.hpp"
-#include "scene/shape/plane.hpp"
-#include "scene/shape/sphere.hpp"
-#include "scene/shape/triangle/triangle_bvh_preset.hpp"
-#include "scene/shape/triangle/triangle_mesh.hpp"
-#include "scene/shape/triangle/triangle_mesh_generator.hpp"
-#include "scene/volume/volume.hpp"
+#include "prop.hpp"
+#include "animation/animation.hpp"
+#include "animation/animation_loader.hpp"
+#include "entity/dummy.hpp"
+#include "entity/entity_extension_provider.hpp"
+#include "light/prop_light.hpp"
+#include "light/prop_image_light.hpp"
+#include "shape/canopy.hpp"
+#include "shape/celestial_disk.hpp"
+#include "shape/disk.hpp"
+#include "shape/infinite_sphere.hpp"
+#include "shape/inverse_sphere.hpp"
+#include "shape/plane.hpp"
+#include "shape/sphere.hpp"
+#include "shape/triangle/triangle_bvh_preset.hpp"
+#include "shape/triangle/triangle_mesh.hpp"
+#include "shape/triangle/triangle_mesh_generator.hpp"
+#include "volume/volume.hpp"
 #include "resource/resource_cache.inl"
 #include "resource/resource_manager.inl"
 #include "resource/resource_provider.inl"
@@ -28,6 +29,8 @@
 #include "base/memory/variant_map.inl"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
+
+#include <iostream>
 
 namespace scene {
 
@@ -248,11 +251,13 @@ void Loader::load_light(const json::Value& /*light_value*/, Prop* prop, Scene& s
 
 volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scene) {
 	std::string shape_type;
+	std::string file;
 	const json::Value* parameters_value = nullptr;
 
 	for (auto& n : volume_value.GetObject()) {
 		if ("shape" == n.name) {
 			shape_type = json::read_string(n.value, "type");
+			file = json::read_string(n.value, "file");
 		} else if ("parameters" == n.name) {
 			parameters_value = &n.value;
 		}
@@ -264,6 +269,11 @@ volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scen
 		volume = scene.create_homogenous_volume();
 	} else if ("Height" == shape_type) {
 		volume = scene.create_height_volume();
+	} else if (!file.empty()) {
+		memory::Variant_map options;
+		options.set("usage", image::texture::Provider::Usage::Mask);
+		auto grid = resource_manager_.load<image::texture::Texture>(file, options);
+		volume = scene.create_grid_volume(grid);
 	}
 
 	if (!volume) {

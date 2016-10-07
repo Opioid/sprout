@@ -19,8 +19,7 @@ namespace scene { namespace material { namespace substitute {
 template<typename Sample>
 Material_base<Sample>::Material_base(Sample_cache<Sample>& cache,
 									 const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Sample_cache<Sample>>(cache, sampler_settings,
-														   two_sided) {}
+	material::Typed_material<Sample_cache<Sample>>(cache, sampler_settings, two_sided) {}
 
 template<typename Sample>
 float3 Material_base<Sample>::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
@@ -28,10 +27,10 @@ float3 Material_base<Sample>::sample_radiance(float3_p /*wi*/, float2 uv, float 
 											  Sampler_filter filter) const {
 	if (emission_map_.is_valid()) {
 		// For some reason Clang needs this to find inherited Material::sampler_key_
-		auto& sampler = worker.sampler(this->sampler_key_, filter);
+		auto& sampler = worker.sampler_2D(this->sampler_key_, filter);
 		return emission_factor_ * emission_map_.sample_3(sampler, uv);
 	} else {
-		return math::float3_identity;
+		return float3(0.f);
 	}
 }
 
@@ -40,7 +39,7 @@ float3 Material_base<Sample>::average_radiance(float /*area*/) const {
 	if (emission_map_.is_valid()) {
 		return emission_factor_ * emission_map_.texture()->average_3();
 	} else {
-		return math::float3_identity;
+		return float3(0.f);
 	}
 }
 

@@ -128,7 +128,7 @@ inline float Triangle_MT::area() const {
 	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
 }
 
-inline float Triangle_MT::area(const float3& scale) const {
+inline float Triangle_MT::area(float3_p scale) const {
 	float3 sa = scale * a.p;
 	float3 sb = scale * b.p;
 	float3 sc = scale * c.p;
@@ -247,7 +247,7 @@ inline float area(const Intersection_vertex_MT& a,
 inline float area(const Intersection_vertex_MT& a,
 				  const Intersection_vertex_MT& b,
 				  const Intersection_vertex_MT& c,
-				  const float3& scale) {
+				  float3_p scale) {
 	float3 sa = scale * a.p;
 	float3 sb = scale * b.p;
 	float3 sc = scale * c.p;
@@ -255,9 +255,9 @@ inline float area(const Intersection_vertex_MT& a,
 }
 
 inline float2 interpolate_uv(const Shading_vertex_MTC& a,
-								   const Shading_vertex_MTC& b,
-								   const Shading_vertex_MTC& c,
-								   float2 uv) {
+							 const Shading_vertex_MTC& b,
+							 const Shading_vertex_MTC& c,
+							 float2 uv) {
 	float w = 1.f - uv.x - uv.y;
 
 	return float2(w * a.n_u.w + uv.x * b.n_u.w + uv.y * c.n_u.w,

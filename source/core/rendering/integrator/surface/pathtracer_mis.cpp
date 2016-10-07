@@ -271,7 +271,7 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 
 float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
 											scene::Intersection& intersection,
-											const float3& attenuation,
+											float3_p attenuation,
 											Sampler_filter filter,
 											Bxdf_result& sample_result) {
 	if (intersection.prop->is_open()) {

@@ -28,7 +28,7 @@ template<typename T>
 Vector3<T>::Vector3(const T* v) : x(v[0]), y(v[1]), z(v[2]) {}
 
 template<typename T>
-Vector3<T>::Vector3(const Vector3f_a& v) : x(v.x), y(v.y), z(v.z) {}
+Vector3<T>::Vector3(FVector3f_a v) : x(v.x), y(v.y), z(v.z) {}
 
 template<typename T>
 Vector3<T> Vector3<T>::operator+(T s) const {
@@ -319,7 +319,7 @@ inline Vector3f_a Vector3f_a::operator+(float s) const {
 	return Vector3f_a(x + s, y + s, z + s);
 }
 
-inline Vector3f_a Vector3f_a::operator+(const Vector3f_a& v) const {
+inline Vector3f_a Vector3f_a::operator+(FVector3f_a v) const {
 	return Vector3f_a(x + v.x, y + v.y, z + v.z);
 }
 

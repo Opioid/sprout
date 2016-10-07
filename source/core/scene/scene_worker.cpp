@@ -56,7 +56,7 @@ scene::shape::Node_stack& Worker::node_stack() {
 }
 
 const image::texture::sampler::Sampler_2D&
-Worker::sampler(uint32_t key, material::Sampler_settings::Filter filter) const {
+Worker::sampler_2D(uint32_t key, material::Sampler_settings::Filter filter) const {
 	return sampler_cache_.sampler(key, filter);
 }
 

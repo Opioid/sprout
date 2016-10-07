@@ -53,7 +53,7 @@ private:
 
 	float3 resolve_transmission(Worker& worker, scene::Ray& ray,
 								scene::Intersection& intersection,
-								const float3& attenuation,
+								float3_p attenuation,
 								Sampler_filter filter,
 								Bxdf_result& sample_result);
 

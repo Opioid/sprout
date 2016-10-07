@@ -37,7 +37,7 @@ struct Vector3 {
 
 	explicit Vector3(const T* v);
 
-	explicit Vector3(const Vector3f_a& v);
+	explicit Vector3(FVector3f_a v);
 
 	Vector3 operator+(T s) const;
 

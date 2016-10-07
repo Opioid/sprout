@@ -5,6 +5,7 @@
 #include "texture_byte_3_snorm.hpp"
 #include "texture_byte_3_srgb.hpp"
 #include "texture_byte_3_unorm.hpp"
+#include "texture_float_1.hpp"
 #include "texture_float_3.hpp"
 #include "texture_encoding.hpp"
 #include "logging/logging.hpp"
@@ -72,6 +73,8 @@ std::shared_ptr<Texture> Provider::load(const std::string& filename,
 			} else {
 				return std::make_shared<Texture_byte_3_sRGB>(image);
 			}
+		} else if (Image::Type::Float_1 == image->description().type) {
+			return std::make_shared<Texture_float_1>(image);
 		} else if (Image::Type::Float_3 == image->description().type) {
 			return std::make_shared<Texture_float_3>(image);
 		}

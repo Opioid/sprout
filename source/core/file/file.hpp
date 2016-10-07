@@ -10,6 +10,7 @@ enum class Type {
 	Unknown,
 	GZIP,
 	PNG,
+	PVM,
 	RGBE
 };
 

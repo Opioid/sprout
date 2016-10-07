@@ -7,6 +7,7 @@
 #include "scene/shape/shape.hpp"
 #include "scene/light/prop_light.hpp"
 #include "scene/light/prop_image_light.hpp"
+#include "scene/volume/grid.hpp"
 #include "scene/volume/height.hpp"
 #include "scene/volume/homogeneous.hpp"
 #include "base/spectrum/rgb.inl"
@@ -283,6 +284,14 @@ volume::Volume* Scene::create_height_volume() {
 
 volume::Volume* Scene::create_homogenous_volume() {
 	volume_region_ = new volume::Homogeneous;
+
+	entities_.push_back(volume_region_);
+
+	return volume_region_;
+}
+
+volume::Volume* Scene::create_grid_volume(Texture_ptr grid) {
+	volume_region_ = new volume::Grid(grid);
 
 	entities_.push_back(volume_region_);
 

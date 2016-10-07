@@ -6,8 +6,10 @@
 namespace scene { namespace material {
 
 Sampler_cache::Sampler_cache() {
-	samplers_[0] = new image::texture::sampler::Sampler_2D_nearest<image::texture::sampler::Address_mode_repeat>;
-	samplers_[1] = new image::texture::sampler::Sampler_2D_linear <image::texture::sampler::Address_mode_repeat>;
+	using namespace image::texture::sampler;
+
+	samplers_[0] = new Sampler_2D_nearest<Address_mode_repeat>;
+	samplers_[1] = new Sampler_2D_linear <Address_mode_repeat>;
 }
 
 Sampler_cache::~Sampler_cache() {

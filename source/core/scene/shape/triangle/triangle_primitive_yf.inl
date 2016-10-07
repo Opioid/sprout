@@ -94,8 +94,8 @@ inline bool Triangle_YF::intersect_p(const math::Oray& ray) const {
 	return false;
 }
 
-inline void Triangle_YF::interpolate(float2 uv,
-									 float3& p, float3& n, float2& tc) const {
+inline void Triangle_YF::interpolate(float2 uv, float3& p,
+									 float3& n, float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	p  = w * a.p + uv.x * b.p + uv.y * c.p;
@@ -103,8 +103,7 @@ inline void Triangle_YF::interpolate(float2 uv,
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline void Triangle_YF::interpolate_data(float2 uv,
-										  float3& n, float3& t,
+inline void Triangle_YF::interpolate_data(float2 uv, float3& n, float3& t,
 										  float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
@@ -123,7 +122,7 @@ inline float3 Triangle_YF::normal() const {
 	return math::normalized(n);
 }
 
-inline float Triangle_YF::area(const float3& scale) const {
+inline float Triangle_YF::area(float3_p scale) const {
 	float3 sa = scale * a.p;
 	float3 sb = scale * b.p;
 	float3 sc = scale * c.p;

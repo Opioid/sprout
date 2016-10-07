@@ -21,7 +21,7 @@ const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,
 											const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	auto& sampler = worker.sampler(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key_, filter);
 
 	sample.set_basis(rs.geo_n, wo);
 
@@ -36,7 +36,7 @@ const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,
 float3 Emissionmap::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
 									float /*time*/, const Worker& worker,
 									Sampler_filter filter) const {
-	auto& sampler = worker.sampler(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key_, filter);
 	return emission_factor_ * emission_map_.sample_3(sampler, uv);
 }
 
@@ -58,7 +58,7 @@ float2 Emissionmap::radiance_sample(float2 r2, float& pdf) const {
 
 float Emissionmap::emission_pdf(float2 uv, const Worker& worker,
 								Sampler_filter filter) const {
-	auto& sampler = worker.sampler(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key_, filter);
 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
@@ -74,7 +74,7 @@ void Emissionmap::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*par
 	}
 
 	if (importance_sampling) {
-		float3 average_radiance = math::float3_identity;
+		float3 average_radiance = float3(0.f);
 
 		float total_weight = 0.f;
 

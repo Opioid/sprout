@@ -14,11 +14,13 @@ public:
 	Sampler_cache();
 	~Sampler_cache();
 
-	const image::texture::sampler::Sampler_2D& sampler(uint32_t key, Sampler_settings::Filter filter) const;
+	using Sampler_2D = image::texture::sampler::Sampler_2D;
+
+	const Sampler_2D& sampler(uint32_t key, Sampler_settings::Filter filter) const;
 
 private:
 
-	image::texture::sampler::Sampler_2D* samplers_[2];
+	Sampler_2D* samplers_[2];
 };
 
 }}

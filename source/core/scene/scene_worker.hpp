@@ -34,7 +34,7 @@ public:
 	shape::Node_stack& node_stack();
 
 	const image::texture::sampler::Sampler_2D&
-	sampler(uint32_t key, material::Sampler_settings::Filter filter) const;
+	sampler_2D(uint32_t key, material::Sampler_settings::Filter filter) const;
 
 private:
 

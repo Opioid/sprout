@@ -3,7 +3,7 @@
 #include "image/typed_image.hpp"
 #include "base/math/vector.hpp"
 #include <cstdint>
-#include <istream>
+#include <iosfwd>
 #include <memory>
 
 namespace image { namespace encoding { namespace rgbe {

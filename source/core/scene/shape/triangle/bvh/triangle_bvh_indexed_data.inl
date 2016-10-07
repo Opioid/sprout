@@ -112,7 +112,7 @@ float Indexed_data<Intersection_vertex, Shading_vertex>::area(uint32_t index) co
 
 template<typename Intersection_vertex, typename Shading_vertex>
 float Indexed_data<Intersection_vertex, Shading_vertex>::area(uint32_t index,
-															  const float3& scale) const {
+															  float3_p scale) const {
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[tri.a];
 	const Intersection_vertex& b = intersection_vertices_[tri.b];
@@ -292,7 +292,7 @@ float Indexed_data1<Intersection_vertex, Shading_vertex>::area(uint32_t index) c
 
 template<typename Intersection_vertex, typename Shading_vertex>
 float Indexed_data1<Intersection_vertex, Shading_vertex>::area(uint32_t index,
-															   const float3& scale) const {
+															   float3_p scale) const {
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[tri.a];
 	const Intersection_vertex& b = intersection_vertices_[tri.b];

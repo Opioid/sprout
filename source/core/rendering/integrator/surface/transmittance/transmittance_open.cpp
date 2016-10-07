@@ -19,8 +19,8 @@ Open::Open(const take::Settings &take_settings, math::random::Generator &rng,
 	integrator::Integrator(take_settings, rng), max_bounces_(max_bounces) {}
 
 float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-						   const float3& attenuation, sampler::Sampler& sampler,
-						   Sampler_filter filter, Bxdf_result& sample_result) {
+					 float3_p attenuation, sampler::Sampler& sampler,
+					 Sampler_filter filter, Bxdf_result& sample_result) {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_attenuation = attenuation;
 

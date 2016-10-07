@@ -37,7 +37,7 @@ const material::Sample& Emissionmap_animated::sample(float3_p wo, const Renderst
 													 const Worker& worker, Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	auto& sampler = worker.sampler(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key_, filter);
 
 	sample.set_basis(rs.geo_n, wo);
 
@@ -52,7 +52,7 @@ const material::Sample& Emissionmap_animated::sample(float3_p wo, const Renderst
 float3 Emissionmap_animated::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
 											 float /*time*/, const Worker& worker,
 											 Sampler_filter filter) const {
-	auto& sampler = worker.sampler(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key_, filter);
 	return emission_factor_ * emission_map_.sample_3(sampler, uv, element_);
 }
 
@@ -74,7 +74,7 @@ float2 Emissionmap_animated::radiance_sample(float2 r2, float& pdf) const {
 
 float Emissionmap_animated::emission_pdf(float2 uv, const Worker& worker,
 										 Sampler_filter filter) const {
-	auto& sampler = worker.sampler(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key_, filter);
 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
@@ -82,7 +82,7 @@ float Emissionmap_animated::emission_pdf(float2 uv, const Worker& worker,
 float Emissionmap_animated::opacity(float2 uv, float /*time*/,
 									const Worker& worker, Sampler_filter filter) const {
 	if (mask_.is_valid()) {
-		auto& sampler = worker.sampler(sampler_key_, filter);
+		auto& sampler = worker.sampler_2D(sampler_key_, filter);
 		return mask_.sample_1(sampler, uv, element_);
 	} else {
 		return 1.f;

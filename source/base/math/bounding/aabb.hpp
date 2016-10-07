@@ -13,8 +13,8 @@ public:
 	AABB();
 	AABB(FVector3f_a min, FVector3f_a max);
 
-	const Vector3f_a& min() const;
-	const Vector3f_a& max() const;
+	FVector3f_a min() const;
+	FVector3f_a max() const;
 
 	Vector3f_a position() const;
 	Vector3f_a halfsize() const;

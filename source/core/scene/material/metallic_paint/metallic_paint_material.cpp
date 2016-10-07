@@ -22,7 +22,7 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 	sample.set_basis(rs.geo_n, wo);
 /*
 	if (normal_map_) {
-		auto& sampler = worker.sampler(sampler_key_, filter);
+		auto& sampler = worker.sampler_2D(sampler_key_, filter);
 
 		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
@@ -33,7 +33,7 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 		sample.coating_.set_basis(rs.t, rs.b, rs.n);
 //	}
 
-	auto& sampler = worker.sampler(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key_, filter);
 
 	if (flakes_normal_map_.is_valid()) {
 		float3 nm = flakes_normal_map_.sample_3(sampler, rs.uv);

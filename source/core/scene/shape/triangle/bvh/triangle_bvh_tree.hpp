@@ -63,7 +63,7 @@ public:
 	float3 triangle_normal(uint32_t index) const;
 
 	float triangle_area(uint32_t index) const;
-    float triangle_area(uint32_t index, const float3& scale) const;
+	float triangle_area(uint32_t index, float3_p scale) const;
 
 	void sample(uint32_t index, float2 r2, float3& p, float3& n, float2& tc) const;
 	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;

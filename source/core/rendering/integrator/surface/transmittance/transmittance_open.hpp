@@ -32,7 +32,7 @@ public:
 	using Bxdf_result    = scene::material::bxdf::Result;
 
 	float3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
-				   const float3& attenuation, sampler::Sampler& sampler,
+				   float3_p attenuation, sampler::Sampler& sampler,
 				   Sampler_filter filter, Bxdf_result& sample_result);
 
 private:
