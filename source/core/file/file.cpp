@@ -4,7 +4,7 @@
 namespace file {
 
 Type query_type(std::istream& stream) {
-	char header[7];
+	char header[4];
 	stream.read(header, sizeof(header));
 
 	Type type = Type::Unknown;
@@ -13,9 +13,6 @@ Type query_type(std::istream& stream) {
 		type = Type::GZIP;
 	} else if (!strncmp("\211PNG", header, 4)) {
 		type = Type::PNG;
-	} else if (!strncmp("PVM", header, 3)
-			|| !strncmp("DDS v3d", header, 7)) {
-		type = Type::PVM;
 	} else if (!strncmp("#?", header, 2)) {
 		type = Type::RGBE;
 	}

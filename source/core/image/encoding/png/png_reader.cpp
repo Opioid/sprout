@@ -5,6 +5,7 @@
 #include "base/spectrum/rgb.inl"
 #include "base/string/string.inl"
 #include <cstring>
+#include <istream>
 
 namespace image { namespace encoding { namespace png {
 

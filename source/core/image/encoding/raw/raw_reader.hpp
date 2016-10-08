@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-namespace image { namespace encoding { namespace pvm {
+namespace image { namespace encoding { namespace raw {
 
 class Reader {
 
@@ -17,9 +17,6 @@ public:
 
 private:
 
-	static std::vector<uint8_t> read_raw_file(std::istream& stream);
-
-	static constexpr size_t DDS_Blocksize = 1 << 20;
 
 };
 

@@ -6,7 +6,7 @@
 #include "image/channels.hpp"
 #include "miniz/miniz.hpp"
 #include <cstdint>
-#include <istream>
+#include <iosfwd>
 #include <memory>
 #include <array>
 #include <vector>

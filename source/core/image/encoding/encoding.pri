@@ -5,5 +5,5 @@ HEADERS += \
 	image/encoding/encoding_srgb.hpp \
 
 include(png/png.pri)
-include(pvm/pvm.pri)
+include(raw/raw.pri)
 include(rgbe/rgbe.pri)

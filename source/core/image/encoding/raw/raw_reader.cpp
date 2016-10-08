@@ -1,25 +1,28 @@
-#include "pvm_reader.hpp"
+#include "raw_reader.hpp"
 #include "image/typed_image.inl"
 #include "base/math/vector.inl"
+#include <istream>
 #include <string>
 
-namespace image { namespace encoding { namespace pvm {
+namespace image { namespace encoding { namespace raw {
 
 
-std::shared_ptr<Image> Reader::read(std::istream& /*stream*/) const {
-/*	std::string line;
+std::shared_ptr<Image> Reader::read(std::istream& stream) const {
+	int3 dimensions(32, 32, 32);
 
-	// header
-	std::getline(stream, line);
+	Image::Description description(Image::Type::Byte_1, dimensions);
 
-	std::vector<uint8_t> data = read_raw_file(stream);
+	auto volume = std::make_shared<Image_byte_1>(description);
 
-	return nullptr;
-	*/
+	size_t num_bytes = dimensions.x * dimensions.y * dimensions.z;
+	stream.read(reinterpret_cast<char*>(volume->data()), num_bytes);
 
-	int3 d(3, 3, 3);
+	return volume;
 
-	Image::Description description(Image::Type::Float_1, d);
+	/*
+	int3 dimensions(3, 3, 3);
+
+	Image::Description description(Image::Type::Float_1, dimensions);
 
 	auto volume = std::make_shared<Image_float_1>(description);
 
@@ -36,14 +39,7 @@ std::shared_ptr<Image> Reader::read(std::istream& /*stream*/) const {
 	volume->at(0, 2, 2) = 1.75f;  volume->at(1, 2, 2) = 2.f;  volume->at(2, 2, 2) = 2.25f;
 
 	return volume;
-}
-
-std::vector<uint8_t> Reader::read_raw_file(std::istream& /*stream*/) {
-
-	std::vector<uint8_t> data;
-
-
-	return data;
+	*/
 }
 
 }}}

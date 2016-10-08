@@ -33,7 +33,7 @@ public:
 	const T& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 	T& at_element(int32_t x, int32_t y, int32_t z, int32_t element);
 
-	const T* data() const;
+	T* data() const;
 
 	virtual size_t num_bytes() const final override;
 

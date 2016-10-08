@@ -95,7 +95,7 @@ T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) 
 }
 
 template<typename T>
-const T* Typed_image<T>::data() const {
+T* Typed_image<T>::data() const {
 	return data_;
 }
 
