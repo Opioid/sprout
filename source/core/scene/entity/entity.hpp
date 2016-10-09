@@ -2,6 +2,7 @@
 
 #include "composed_transformation.hpp"
 #include "keyframe.hpp"
+#include "base/flags/flags.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/quaternion.hpp"
 #include "base/math/transformation.hpp"
@@ -61,7 +62,16 @@ protected:
 	Entity* next_;
 	Entity* child_;
 
-	bool animated_;
+	enum class Properties {
+		Animated				= 1 << 0,
+		Visible_in_camera		= 1 << 1,
+		Visible_in_reflection	= 1 << 2,
+		Visible_in_shadow		= 1 << 3,
+		Masked_material			= 1 << 4,
+		Open					= 1 << 5
+	};
+
+	flags::Flags<Properties> properties_;
 };
 
 }}

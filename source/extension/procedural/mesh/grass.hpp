@@ -16,6 +16,7 @@ struct Vertex;
 namespace procedural { namespace mesh {
 
 class Grass : public scene::shape::triangle::Generator {
+
 public:
 
 	virtual std::shared_ptr<scene::shape::Shape> create_mesh(
@@ -23,7 +24,7 @@ public:
 
 private:
 
-	void add_blade(const math::packed_float3& offset,
+	void add_blade(float3_p offset,
 				   float rotation_y, float lean_factor, float width, float height,
 				   uint32_t vertex_offset,
 				   std::vector<scene::shape::triangle::Index_triangle>& triangles,

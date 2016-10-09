@@ -6,6 +6,7 @@
 namespace math {
 
 template<typename T> struct Matrix3x3;
+struct Matrix3x3f_a;
 template<typename T> struct Transformation;
 struct Transformationf_a;
 
@@ -171,10 +172,7 @@ struct alignas(16) Matrix4x4f_a {
 		};
 
 		struct {
-			Vector3f_a x;
-			Vector3f_a y;
-			Vector3f_a z;
-			Vector3f_a w;
+			Vector3f_a x, y, z, w;
 		} v3;
 	};
 
@@ -204,6 +202,11 @@ void set_basis_scale_origin(Matrix4x4f_a& m,
 Matrix4x4f_a create_matrix4x4(const Vector4f_a& q);
 
 Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m);
+
+void set_basis_scale_origin(Matrix4x4f_a& m,
+							const Matrix3x3f_a& basis,
+							const Vector3f_a& scale,
+							const Vector3f_a& origin);
 
 void set_basis_scale_origin(Matrix4x4f_a& m,
 							const Matrix4x4f_a& basis,

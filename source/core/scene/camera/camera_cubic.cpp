@@ -56,7 +56,7 @@ Cubic::Cubic(Layout layout, int2 resolution, float ray_max_t) :
 	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians( 90.f));
 	math::set_rotation_x(view_rotations_[2], math::degrees_to_radians( 90.f));
 	math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
-	view_rotations_[4] = math::float3x3::identity;
+	view_rotations_[4] = math::float3x3::identity();
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 }
 
@@ -85,7 +85,7 @@ bool Cubic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(0.f, temp);
 
-	ray.origin = math::transform_point(math::float3_identity, transformation.object_to_world);
+	ray.origin = math::transform_point(float3(0.f), transformation.object_to_world);
 	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
 	ray.min_t = 0.f;
 	ray.max_t = ray_max_t_;

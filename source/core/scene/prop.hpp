@@ -2,7 +2,6 @@
 
 #include "scene/entity/entity.hpp"
 #include "scene/material/material.hpp"
-#include "base/flags/flags.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include <memory>
 #include <vector>
@@ -37,8 +36,8 @@ public:
 
 	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 
-	void prepare_sampling(uint32_t part, uint32_t light_id, bool material_importance_sampling,
-						  thread::Pool& pool);
+	void prepare_sampling(uint32_t part, uint32_t light_id,
+						  bool material_importance_sampling, thread::Pool& pool);
 
 	void morph(thread::Pool& pool);
 
@@ -56,8 +55,6 @@ public:
 
 	float area(uint32_t part) const;
 	uint32_t light_id(uint32_t part) const;
-
-	const material::Materials& materials() const;
 	material::Material* material(uint32_t part) const;
 
 	bool has_masked_material() const;
@@ -75,11 +72,11 @@ private:
 
 	virtual void on_set_transformation() final override;
 
-	std::shared_ptr<shape::Shape> shape_;
-
 	// Pre-transformed AABB in world space.
 	// For moving objects it must cover the entire area occupied by the object during the tick.
 	math::aabb aabb_;
+
+	std::shared_ptr<shape::Shape> shape_;
 
 	struct Part {
 		float    area;
@@ -89,16 +86,6 @@ private:
 	std::vector<Part> parts_;
 
 	material::Materials materials_;
-
-	enum class Properties {
-		Visible_in_camera		= 1 << 0,
-		Visible_in_reflection	= 1 << 1,
-		Visible_in_shadow		= 1 << 2,
-		Masked_material			= 1 << 3,
-		Open					= 1 << 4
-	};
-
-	flags::Flags<Properties> properties_;
 };
 
 }

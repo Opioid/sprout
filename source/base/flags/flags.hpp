@@ -23,6 +23,10 @@ struct Flags {
 		values |= static_cast<impl_type>(flag);
 	}
 
+	void unset(T flag) {
+		values &= ~static_cast<impl_type>(flag);
+	}
+
 	void set(T flag, bool value) {
 		if (value) {
 			values |= static_cast<impl_type>(flag);

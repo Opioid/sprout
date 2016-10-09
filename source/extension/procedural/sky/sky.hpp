@@ -32,7 +32,7 @@ private:
 	scene::Prop* sky_;
 	scene::Prop* sun_;
 
-	math::float3x3 sun_rotation_;
+	float3x3 sun_rotation_;
 	float3 ground_albedo_;
 	float turbidity_;
 };

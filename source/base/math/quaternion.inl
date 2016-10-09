@@ -206,6 +206,35 @@ inline quaternion create_quaternion(const Matrix3x3<float>& m) {
 	return temp;
 }
 
+inline quaternion create_quaternion(const Matrix3x3f_a& m) {
+	float trace = m.m00 + m.m11 + m.m22;
+	quaternion temp;
+
+	if (trace > 0.f) {
+		float s = std::sqrt(trace + 1.f);
+		temp.v[3] = s * 0.5f;
+		s = 0.5f / s;
+
+		temp.v[0] = (m.m21 - m.m12) * s;
+		temp.v[1] = (m.m02 - m.m20) * s;
+		temp.v[2] = (m.m10 - m.m01) * s;
+	} else {
+		int i = m.m00 < m.m11 ? (m.m11 < m.m22 ? 2 : 1) : (m.m00 < m.m22 ? 2 : 0);
+		int j = (i + 1) % 3;
+		int k = (i + 2) % 3;
+
+		float s = std::sqrt(m.m[i * 4 + i] - m.m[j * 4 + j] - m.m[k * 4 + k] + 1.f);
+		temp.v[i] = s * 0.5f;
+		s = 0.5f / s;
+
+		temp.v[3] = (m.m[k * 4 + j] - m.m[j * 4 + k]) * s;
+		temp.v[j] = (m.m[j * 4 + i] + m.m[i * 4 + j]) * s;
+		temp.v[k] = (m.m[k * 4 + i] + m.m[i * 4 + k]) * s;
+	}
+
+	return temp;
+}
+
 inline quaternion create_quaternion_rotation_x(float a) {
 	return quaternion(
 				std::sin(a * 0.5f),

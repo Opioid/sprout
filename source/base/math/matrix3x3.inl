@@ -84,9 +84,11 @@ Matrix3x3<T>& Matrix3x3<T>::operator*=(const Matrix3x3& m) {
 }
 
 template<typename T>
-const Matrix3x3<T> Matrix3x3<T>::identity = Matrix3x3<T>(T(1), T(0), T(0),
-														 T(0), T(1), T(0),
-														 T(0), T(0), T(1));
+Matrix3x3<T> Matrix3x3<T>::identity() {
+	return Matrix3x3<T>(T(1), T(0), T(0),
+						T(0), T(1), T(0),
+						T(0), T(0), T(1));
+}
 
 template<typename T>
 Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) {
@@ -286,7 +288,36 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m) {
 						m.m02, m.m12, m.m22);
 }
 
-inline Matrix3x3<float> create_matrix3x3(const Vector4f_a& q) {
+inline Matrix3x3f_a::Matrix3x3f_a() {}
+
+inline Matrix3x3f_a::Matrix3x3f_a(float m00, float m01, float m02,
+								  float m10, float m11, float m12,
+								  float m20, float m21, float m22) :
+	m00(m00), m01(m01), m02(m02),
+	m10(m10), m11(m11), m12(m12),
+	m20(m20), m21(m21), m22(m22) {}
+
+inline Matrix3x3f_a Matrix3x3f_a::operator*(const Matrix3x3f_a& m) const {
+	return Matrix3x3f_a(m00 * m.m00 + m01 * m.m10 + m02 * m.m20,
+						m00 * m.m01 + m01 * m.m11 + m02 * m.m21,
+						m00 * m.m02 + m01 * m.m12 + m02 * m.m22,
+
+						m10 * m.m00 + m11 * m.m10 + m12 * m.m20,
+						m10 * m.m01 + m11 * m.m11 + m12 * m.m21,
+						m10 * m.m02 + m11 * m.m12 + m12 * m.m22,
+
+						m20 * m.m00 + m21 * m.m10 + m22 * m.m20,
+						m20 * m.m01 + m21 * m.m11 + m22 * m.m21,
+						m20 * m.m02 + m21 * m.m12 + m22 * m.m22);
+}
+
+inline Matrix3x3f_a Matrix3x3f_a::identity() {
+	return Matrix3x3f_a(1.f, 0.f, 0.f,
+						0.f, 1.f, 0.f,
+						0.f, 0.f, 1.f);
+}
+
+inline Matrix3x3f_a create_matrix3x3(const Vector4f_a& q) {
 	float d = dot(q, q);
 
 	float s = 2.f / d;
@@ -296,10 +327,82 @@ inline Matrix3x3<float> create_matrix3x3(const Vector4f_a& q) {
 	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
 	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
 
-	return Matrix3x3<float>(
-				1.f - (yy + zz), xy - wz,         xz + wy,
-				xy + wz,         1.f - (xx + zz), yz - wx,
-				xz - wy,         yz + wx,         1.f - (xx + yy));
+	return Matrix3x3f_a(1.f - (yy + zz), xy - wz,         xz + wy,
+						xy + wz,         1.f - (xx + zz), yz - wx,
+						xz - wy,         yz + wx,         1.f - (xx + yy));
+}
+
+inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m) {
+	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+}
+
+inline Vector3f_a transform_vector(FVector3f_a v, const Matrix3x3f_a& m) {
+	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+}
+
+inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix3x3f_a& m) {
+	return Vector3f_a(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
+					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
+					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
+}
+
+inline void set_rotation_x(Matrix3x3f_a& m, float a) {
+	float c = std::cos(a);
+	float s = std::sin(a);
+
+	m.m00 = 1.f; m.m01 = 0.f; m.m02 = 0.f;
+	m.m10 = 0.f; m.m11 = c;    m.m12 = -s;
+	m.m20 = 0.f; m.m21 = s;    m.m22 =  c;
+}
+
+inline void set_rotation_y(Matrix3x3f_a& m, float a) {
+	float c = std::cos(a);
+	float s = std::sin(a);
+
+	m.m00 =  c;   m.m01 = 0.f; m.m02 = s;
+	m.m10 =  0.f; m.m11 = 1.f; m.m12 = 0.f;
+	m.m20 = -s;   m.m21 = 0.f; m.m22 = c;
+}
+
+inline void set_rotation_z(Matrix3x3f_a& m, float a) {
+	float c = std::cos(a);
+	float s = std::sin(a);
+
+	m.m00 = c;   m.m01 = -s;   m.m02 = 0.f;
+	m.m10 = s;   m.m11 =  c;   m.m12 = 0.f;
+	m.m20 = 0.f; m.m21 =  0.f; m.m22 = 1.f;
+}
+
+inline void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a) {
+	float c = std::cos(a);
+	float s = std::sin(a);
+	float t = 1.f - c;
+
+	m.m00 = c + v.x * v.x * t;
+	m.m11 = c + v.y * v.y * t;
+	m.m22 = c + v.z * v.z * t;
+
+	float tmp1 = v.x * v.y * t;
+	float tmp2 = v.z * s;
+
+	m.m10 = tmp1 + tmp2;
+	m.m01 = tmp1 - tmp2;
+
+	tmp1 = v.x * v.z * t;
+	tmp2 = v.y * s;
+
+	m.m20 = tmp1 - tmp2;
+	m.m02 = tmp1 + tmp2;
+
+	tmp1 = v.y * v.z * t;
+	tmp2 = v.x * s;
+
+	m.m21 = tmp1 + tmp2;
+	m.m12 = tmp1 - tmp2;
 }
 
 }

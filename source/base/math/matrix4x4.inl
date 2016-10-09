@@ -518,6 +518,16 @@ inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 }
 
 inline void set_basis_scale_origin(Matrix4x4f_a& m,
+								   const Matrix3x3f_a& basis,
+								   const Vector3f_a& scale,
+								   const Vector3f_a& origin) {
+	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
+	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
+	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
+	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 0.f;
+}
+
+inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix4x4f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {

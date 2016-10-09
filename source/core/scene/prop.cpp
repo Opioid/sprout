@@ -44,8 +44,8 @@ void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
 	properties_.set(Properties::Visible_in_shadow,		in_shadow);
 }
 
-void Prop::prepare_sampling(uint32_t part, uint32_t light_id, bool material_importance_sampling,
-							thread::Pool& pool) {
+void Prop::prepare_sampling(uint32_t part, uint32_t light_id,
+							bool material_importance_sampling, thread::Pool& pool) {
 	shape_->prepare_sampling(part);
 
 	entity::Composed_transformation temp;
@@ -61,7 +61,7 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id, bool material_impo
 }
 
 void Prop::morph(thread::Pool& pool) {
-	if (animated_) {
+	if (properties_.test(Properties::Animated)) {
 		shape::Morphable_shape* morphable = shape_->morphable_shape();
 		if (morphable) {
 			morphable->morph(local_frame_a_.morphing.targets[0],
@@ -141,10 +141,6 @@ uint32_t Prop::light_id(uint32_t part) const {
 	return parts_[part].light_id;
 }
 
-const material::Materials& Prop::materials() const {
-	return materials_;
-}
-
 material::Material* Prop::material(uint32_t part) const {
 	return materials_[part].get();
 }
@@ -188,21 +184,20 @@ bool Prop::visible(uint32_t ray_depth) const {
 }
 
 void Prop::on_set_transformation() {
-	if (animated_) {
-		math::aabb aabb = shape_->aabb().transform(math::float4x4(world_frame_a_));
+	if (properties_.test(Properties::Animated)) {
+		math::aabb aabb = shape_->aabb().transform(float4x4(world_frame_a_));
 
 		constexpr uint32_t num_steps = 3;
 		constexpr float interval = 1.f / static_cast<float>(num_steps + 1);
 		float t = interval;
-		for (uint32_t i = 0; i < num_steps; ++i) {
-			math::float4x4 interpolated = math::float4x4(math::lerp(world_frame_a_,
-																	world_frame_b_, t));
+		for (uint32_t i = 0; i < num_steps; ++i, t += interval) {
+			float4x4 interpolated = float4x4(math::lerp(world_frame_a_,
+														world_frame_b_, t));
 			math::aabb tmp = shape_->aabb().transform(interpolated);
 			aabb.merge_assign(tmp);
-			t += interval;
 		}
 
-		math::aabb tmp = shape_->aabb().transform(math::float4x4(world_frame_b_));
+		math::aabb tmp = shape_->aabb().transform(float4x4(world_frame_b_));
 		aabb_ = aabb.merge(tmp);
 	} else {
 		aabb_ = shape_->aabb().transform(world_transformation_.object_to_world);

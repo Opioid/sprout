@@ -7,6 +7,7 @@ namespace math {
 
 template<typename T> struct Vector3;
 template<typename T> struct Matrix3x3;
+struct Matrix3x3f_a;
 struct Vector4f_a;
 
 /****************************************************************************
@@ -74,6 +75,8 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t);
 using quaternion = Vector4f_a;
 
 quaternion create_quaternion(const Matrix3x3<float>& m);
+
+quaternion create_quaternion(const Matrix3x3f_a& m);
 
 quaternion create_quaternion_rotation_x(float a);
 

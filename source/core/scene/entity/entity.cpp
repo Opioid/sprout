@@ -14,7 +14,7 @@ const math::transformation& Entity::local_frame_a() const {
 
 const Composed_transformation& Entity::transformation_at(
 		float tick_delta, Composed_transformation& transformation) const {
-	if (!animated_) {
+	if (!properties_.test(Properties::Animated)) {
 		return world_transformation_;
 	}
 
@@ -32,7 +32,7 @@ void Entity::set_transformation(const math::transformation& t) {
 	world_frame_a_ = t;
 	world_frame_b_ = t;
 
-	animated_ = false;
+	properties_.unset(Properties::Animated);
 
 	propagate_transformation();
 
@@ -43,7 +43,7 @@ void Entity::tick(const Keyframe& frame) {
 	local_frame_a_ = local_frame_b_;
 	local_frame_b_ = frame;
 
-	animated_ = true;
+	properties_.set(Properties::Animated);
 }
 
 void Entity::calculate_world_transformation() {
@@ -90,11 +90,11 @@ void Entity::inherit_transformation(const math::transformation& a, const math::t
 		next_->inherit_transformation(a, b);
 	}
 
-	animated_ = true;
+	properties_.set(Properties::Animated);
 
-	math::float4x4 transformation;
-	math::set_basis_scale_origin(transformation,
-								 math::create_matrix3x3(a.rotation), a.scale, a.position);
+	float4x4 transformation;
+	math::set_basis_scale_origin(transformation, math::create_matrix3x3(a.rotation),
+								 a.scale, a.position);
 
 	world_frame_a_.position = math::transform_point(local_frame_a_.transformation.position,
 													transformation);
@@ -104,8 +104,8 @@ void Entity::inherit_transformation(const math::transformation& a, const math::t
 
 	world_frame_a_.scale = local_frame_a_.transformation.scale;
 
-	math::set_basis_scale_origin(transformation,
-								 math::create_matrix3x3(b.rotation), b.scale, b.position);
+	math::set_basis_scale_origin(transformation, math::create_matrix3x3(b.rotation),
+								 b.scale, b.position);
 
 	world_frame_b_.position = math::transform_point(local_frame_b_.transformation.position,
 													transformation);
