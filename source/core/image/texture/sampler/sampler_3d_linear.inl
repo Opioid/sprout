@@ -29,33 +29,47 @@ float Sampler_3D_linear<Address_mode>::sample_1(const Texture& texture, float3_p
 
 template<typename Address_mode>
 float2 Sampler_3D_linear<Address_mode>::sample_2(const Texture& texture, float3_p uvw) const {
-	int3 xyz = map(texture, uvw);
+	int3 xyz, xyz1;
+	float3 stu = map(texture, uvw, xyz, xyz1);
 
-	return texture.at_2(xyz.x, xyz.y, xyz.z);
+	float2 c000 = texture.at_2(xyz.x,  xyz.y,  xyz.z);
+	float2 c010 = texture.at_2(xyz.x,  xyz1.y, xyz.z);
+	float2 c100 = texture.at_2(xyz1.x, xyz.y,  xyz.z);
+	float2 c110 = texture.at_2(xyz1.x, xyz1.y, xyz.z);
+	float2 c001 = texture.at_2(xyz.x,  xyz.y,  xyz1.z);
+	float2 c011 = texture.at_2(xyz.x,  xyz1.y, xyz1.z);
+	float2 c101 = texture.at_2(xyz1.x, xyz.y,  xyz1.z);
+	float2 c111 = texture.at_2(xyz1.x, xyz1.y, xyz1.z);
+
+	float2 c0 = bilinear(c000, c010, c100, c110, stu.x, stu.y);
+	float2 c1 = bilinear(c001, c011, c101, c111, stu.x, stu.y);
+
+	return math::lerp(c0, c1, stu.z);
 }
 
 template<typename Address_mode>
 float3 Sampler_3D_linear<Address_mode>::sample_3(const Texture& texture, float3_p uvw) const {
-	int3 xyz = map(texture, uvw);
+	int3 xyz, xyz1;
+	float3 stu = map(texture, uvw, xyz, xyz1);
 
-	return texture.at_3(xyz.x, xyz.y, xyz.z);
+	float3 c000 = texture.at_3(xyz.x,  xyz.y,  xyz.z);
+	float3 c010 = texture.at_3(xyz.x,  xyz1.y, xyz.z);
+	float3 c100 = texture.at_3(xyz1.x, xyz.y,  xyz.z);
+	float3 c110 = texture.at_3(xyz1.x, xyz1.y, xyz.z);
+	float3 c001 = texture.at_3(xyz.x,  xyz.y,  xyz1.z);
+	float3 c011 = texture.at_3(xyz.x,  xyz1.y, xyz1.z);
+	float3 c101 = texture.at_3(xyz1.x, xyz.y,  xyz1.z);
+	float3 c111 = texture.at_3(xyz1.x, xyz1.y, xyz1.z);
+
+	float3 c0 = bilinear(c000, c010, c100, c110, stu.x, stu.y);
+	float3 c1 = bilinear(c001, c011, c101, c111, stu.x, stu.y);
+
+	return math::lerp(c0, c1, stu.z);
 }
 
 template<typename Address_mode>
 float3 Sampler_3D_linear<Address_mode>::address(float3_p uvw) const {
 	return Address_mode::f(uvw);
-}
-
-template<typename Address_mode>
-int3 Sampler_3D_linear<Address_mode>::map(const Texture& texture, float3_p uvw) {
-	auto b = texture.back_3();
-	auto d = texture.dimensions_float3();
-
-	float3 xyz = Address_mode::f(uvw);
-
-	return int3(std::min(static_cast<int32_t>(xyz.x * d.x), b.x),
-				std::min(static_cast<int32_t>(xyz.y * d.y), b.y),
-				std::min(static_cast<int32_t>(xyz.z * d.z), b.z));
 }
 
 template<typename Address_mode>

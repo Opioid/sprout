@@ -17,8 +17,6 @@ public:
 
 private:
 
-	static int3 map(const Texture& texture, float3_p uvw);
-
 	static float3 map(const Texture& texture, float3_p uvw, int3& xyz, int3& xyz1);
 };
 
