@@ -18,12 +18,12 @@ float3 Attenuation::transmittance(Worker& worker,
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
-		return float3(1.f, 1.f, 1.f);
+		return float3(1.f);
 	}
 
 	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume->optical_depth(tray, 1.f, rng_);
+	float3 tau = volume->optical_depth(tray, 1.f, rng_, worker, Sampler_filter::Nearest);
 	return math::exp(-tau);
 }
 
@@ -32,16 +32,16 @@ float4 Attenuation::li(Worker& worker, const scene::volume::Volume* volume,
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
-		transmittance = float3(1.f, 1.f, 1.f);
+		transmittance = float3(1.f);
 		return math::float4_identity;
 	}
 
 	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume->optical_depth(tray, 1.f, rng_);
+	float3 tau = volume->optical_depth(tray, 1.f, rng_, worker, Sampler_filter::Unknown);
 	transmittance = math::exp(-tau);
 
-	return math::float4_identity;
+	return float4(0.f);
 }
 
 Attenuation_factory::Attenuation_factory(const take::Settings& settings) :

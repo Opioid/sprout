@@ -3,6 +3,7 @@ SOURCES += \
 
 HEADERS += \
 	image/texture/sampler/address_mode.hpp \
+	image/texture/sampler/bilinear.hpp \
 	image/texture/sampler/sampler_2d.hpp \
 	image/texture/sampler/sampler_2d_linear.hpp \
 	image/texture/sampler/sampler_2d_linear.inl \	

@@ -7,7 +7,8 @@
 namespace scene { namespace volume {
 
 float3 Density::optical_depth(const math::Oray& ray, float step_size,
-							  math::random::Generator& rng) const {
+							  math::random::Generator& rng, Worker& worker,
+							  Sampler_filter filter) const {
 	float length = math::length(ray.direction);
 
 	math::Oray rn(ray.origin, ray.direction / length, ray.min_t * length, ray.max_t * length);
@@ -26,14 +27,15 @@ float3 Density::optical_depth(const math::Oray& ray, float step_size,
 	float3 tau(0.f);
 
 	for (; min_t < max_t; min_t += step_size) {
-		tau += density(rn.point(min_t)) * attenuation;
+		tau += density(rn.point(min_t), worker, filter) * attenuation;
 	}
 
 	return step_size * tau;
 }
 
-float3 Density::scattering(float3_p p) const {
-	return density(p) * scattering_;
+float3 Density::scattering(float3_p p, Worker& worker,
+						   Sampler_filter filter) const {
+	return density(p, worker, filter) * scattering_;
 }
 
 }}

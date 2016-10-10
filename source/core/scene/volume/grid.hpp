@@ -13,7 +13,8 @@ public:
 
 private:
 
-	virtual float density(float3_p p) const final override;
+	virtual float density(float3_p p, Worker& worker,
+						  Sampler_filter filter) const final override;
 
 	virtual void set_parameter(const std::string& name,
 	                           const json::Value& value) final override;

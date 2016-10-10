@@ -6,7 +6,7 @@ namespace scene { namespace volume {
 
 Height::Height() : a_(1.f), b_(1.f) {}
 
-float Height::density(float3_p p) const {
+float Height::density(float3_p p, Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	return a_ * std::exp(-b_ * p.y);
 }
 

@@ -16,6 +16,8 @@ class Worker {
 
 public:
 
+	using Sampler_filter = material::Sampler_settings::Filter;
+
 	Worker();
 
 	void init(uint32_t id, const Scene& scene);
@@ -27,14 +29,17 @@ public:
 
 	bool visibility(const Ray& ray);
 
-	float masked_visibility(const Ray& ray, material::Sampler_settings::Filter filter);
+	float masked_visibility(const Ray& ray, Sampler_filter filter);
 
 	const Scene& scene() const;
 
 	shape::Node_stack& node_stack();
 
 	const image::texture::sampler::Sampler_2D&
-	sampler_2D(uint32_t key, material::Sampler_settings::Filter filter) const;
+	sampler_2D(uint32_t key, Sampler_filter filter) const;
+
+	const image::texture::sampler::Sampler_3D&
+	sampler_3D(uint32_t key, Sampler_filter filter) const;
 
 private:
 

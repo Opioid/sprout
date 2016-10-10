@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
+#include "scene/material/sampler_settings.hpp"
 #include "base/math/vector.hpp"
 
 namespace scene {
@@ -20,6 +21,8 @@ namespace integrator { namespace volume {
 class Integrator : public integrator::Integrator {
 
 public:
+
+	using Sampler_filter = scene::material::Sampler_settings::Filter;
 
 	Integrator(const take::Settings& settings, math::random::Generator& rng);
 	virtual ~Integrator();

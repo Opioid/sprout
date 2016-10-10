@@ -1,24 +1,33 @@
 #pragma once
 
 #include "scene/entity/entity.hpp"
+#include "scene/material/sampler_settings.hpp"
 #include "base/math/bounding/aabb.hpp"
 #include "base/math/ray.hpp"
 #include <string>
 
 namespace math { namespace random { class Generator; }}
 
-namespace scene { namespace volume {
+namespace scene {
+
+class Worker;
+
+namespace volume {
 
 class Volume : public entity::Entity {
 
 public:
 
+	using Sampler_filter = material::Sampler_settings::Filter;
+
 	Volume();
 
 	virtual float3 optical_depth(const math::Oray& ray, float step_size,
-								 math::random::Generator& rng) const = 0;
+								 math::random::Generator& rng, Worker& worker,
+								 Sampler_filter filter) const = 0;
 
-	virtual float3 scattering(float3_p p) const = 0;
+	virtual float3 scattering(float3_p p, Worker& worker,
+							  Sampler_filter filter) const = 0;
 
 	float phase(float3_p w, float3_p wp) const;
 

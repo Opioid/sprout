@@ -43,7 +43,7 @@ bool Worker::visibility(const Ray& ray) {
 	return !scene_->intersect_p(ray, node_stack_);
 }
 
-float Worker::masked_visibility(const Ray& ray, material::Sampler_settings::Filter filter) {
+float Worker::masked_visibility(const Ray& ray, Sampler_filter filter) {
 	return 1.f - scene_->opacity(ray, *this, filter);
 }
 
@@ -56,8 +56,13 @@ scene::shape::Node_stack& Worker::node_stack() {
 }
 
 const image::texture::sampler::Sampler_2D&
-Worker::sampler_2D(uint32_t key, material::Sampler_settings::Filter filter) const {
-	return sampler_cache_.sampler(key, filter);
+Worker::sampler_2D(uint32_t key, Sampler_filter filter) const {
+	return sampler_cache_.sampler_2D(key, filter);
+}
+
+const image::texture::sampler::Sampler_3D&
+Worker::sampler_3D(uint32_t key, Sampler_filter filter) const {
+	return sampler_cache_.sampler_3D(key, filter);
 }
 
 }

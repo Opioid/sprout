@@ -1,41 +1,11 @@
 #pragma once
 
 #include "sampler_2d_linear.hpp"
+#include "bilinear.hpp"
 #include "image/texture/texture.hpp"
 #include <algorithm>
 
 namespace image { namespace texture { namespace sampler {
-
-inline float bilinear(float c00, float c01, float c10, float c11, float s, float t) {
-	float _s = 1.f - s;
-	float _t = 1.f - t;
-
-	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
-}
-
-inline float2 bilinear(float2 c00, float2 c01, float2 c10, float2 c11,
-					   float s, float t) {
-	float _s = 1.f - s;
-	float _t = 1.f - t;
-
-	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
-}
-
-inline float3 bilinear(float3_p c00, float3_p c01, float3_p c10, float3_p c11,
-					   float s, float t) {
-	float _s = 1.f - s;
-	float _t = 1.f - t;
-
-	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
-}
-
-inline float4 bilinear(const float4& c00, const float4& c01, const float4& c10, const float4& c11,
-					   float s, float t) {
-	float _s = 1.f - s;
-	float _t = 1.f - t;
-
-	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
-}
 
 template<typename Address_mode>
 float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 uv) const {
