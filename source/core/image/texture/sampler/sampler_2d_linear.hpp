@@ -23,6 +23,10 @@ public:
 							int32_t element) const final override;
 
 	virtual float2 address(float2 uv) const final override;
+
+private:
+
+	static float2 map(const Texture& texture, float2 uv, int4& xy_xy1);
 };
 
 }}}

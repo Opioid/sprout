@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sampler_3d_nearest.hpp"
+#include "sampler_3d_linear.hpp"
 #include "image/texture/texture.hpp"
 #include <algorithm>
 
@@ -19,28 +19,28 @@ int3 map(const Texture& texture, float3_p uvw) {
 }
 
 template<typename Address_mode>
-float Sampler_3D_nearest<Address_mode>::sample_1(const Texture& texture, float3_p uvw) const {
+float Sampler_3D_linear<Address_mode>::sample_1(const Texture& texture, float3_p uvw) const {
 	int3 xyz = map<Address_mode>(texture, uvw);
 
 	return texture.at_1(xyz.x, xyz.y, xyz.z);
 }
 
 template<typename Address_mode>
-float2 Sampler_3D_nearest<Address_mode>::sample_2(const Texture& texture, float3_p uvw) const {
+float2 Sampler_3D_linear<Address_mode>::sample_2(const Texture& texture, float3_p uvw) const {
 	int3 xyz = map<Address_mode>(texture, uvw);
 
 	return texture.at_2(xyz.x, xyz.y, xyz.z);
 }
 
 template<typename Address_mode>
-float3 Sampler_3D_nearest<Address_mode>::sample_3(const Texture& texture, float3_p uvw) const {
+float3 Sampler_3D_linear<Address_mode>::sample_3(const Texture& texture, float3_p uvw) const {
 	int3 xyz = map<Address_mode>(texture, uvw);
 
 	return texture.at_3(xyz.x, xyz.y, xyz.z);
 }
 
 template<typename Address_mode>
-float3 Sampler_3D_nearest<Address_mode>::address(float3_p uvw) const {
+float3 Sampler_3D_linear<Address_mode>::address(float3_p uvw) const {
 	return Address_mode::f(uvw);
 }
 

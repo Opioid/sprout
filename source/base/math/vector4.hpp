@@ -97,4 +97,34 @@ Vector4f_a operator*(float s, const Vector4f_a& v);
 
 float dot(const Vector4f_a& a, const Vector4f_a& b);
 
+/****************************************************************************
+ *
+ * Aligned 4D int vector
+ *
+ ****************************************************************************/
+
+struct alignas(16) Vector4i_a {
+	union {
+		struct {
+			int32_t x, y, z, w;
+		};
+
+		int32_t v[4];
+	};
+
+	Vector4i_a();
+
+	Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w);
+
+	explicit Vector4i_a(int32_t s);
+
+	Vector4i_a operator+(const Vector4i_a& v) const;
+
+	Vector4i_a operator*(const Vector4i_a& v) const;
+
+	Vector4i_a& operator+=(const Vector4i_a& v);
+
+	Vector4i_a& operator-=(const Vector4i_a& v);
+};
+
 }

@@ -24,6 +24,9 @@ public:
 
 	virtual float2 address(float2 uv) const final override;
 
+private:
+
+	static int2 map(const Texture& texture, float2 uv);
 };
 
 }}}

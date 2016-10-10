@@ -120,4 +120,36 @@ inline float dot(const Vector4f_a& a, const Vector4f_a& b) {
 	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 }
 
+/****************************************************************************
+ *
+ * Aligned 4D float vector
+ *
+ ****************************************************************************/
+
+inline Vector4i_a::Vector4i_a() {}
+
+inline Vector4i_a::Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w) :
+	x(x), y(y), z(z), w(w) {}
+
+inline Vector4i_a::Vector4i_a(int32_t s) :
+	x(s), y(s), z(s), w(s) {}
+
+inline Vector4i_a Vector4i_a::operator+(const Vector4i_a& v) const {
+	return Vector4i_a(x + v.x, y + v.y, z + v.z, w + v.w);
+}
+
+inline Vector4i_a Vector4i_a::operator*(const Vector4i_a& v) const {
+	return Vector4i_a(x * v.x, y * v.y, z * v.z, w * v.w);
+}
+
+inline Vector4i_a& Vector4i_a::operator+=(const Vector4i_a& v) {
+	x += v.x; y += v.y; z += v.z; w += v.w;
+	return *this;
+}
+
+inline Vector4i_a& Vector4i_a::operator-=(const Vector4i_a& v) {
+	x -= v.x; y -= v.y; z -= v.z; w -= v.w;
+	return *this;
+}
+
 }

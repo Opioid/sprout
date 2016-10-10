@@ -22,7 +22,7 @@ using packed_float3 = Vector3<float>;
 using byte4  = Vector4<uint8_t>;
 // using float4 = Vector4<float>;
 using float4 = Vector4f_a;
-using int4   = Vector4<int32_t>;
+using int4   = Vector4i_a;
 
 using float3_p = FVector3f_a;
 
@@ -43,3 +43,4 @@ using int3	 = math::int3;
 using float3_p = math::float3_p;
 
 using float4 = math::float4;
+using int4   = math::int4;
