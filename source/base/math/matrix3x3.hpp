@@ -130,9 +130,9 @@ struct Vector4f_a;
 struct alignas(16) Matrix3x3f_a {
 	union {
 		struct {
-			float m00, m01, m02, pade0,
-				  m10, m11, m12, pade1,
-				  m20, m21, m22, pade2;
+			float m00, m01, m02, pad0,
+				  m10, m11, m12, pad1,
+				  m20, m21, m22, pad2;
 		};
 
 		struct {

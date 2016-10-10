@@ -12,6 +12,7 @@ Model::Model() : dirty_(true) {
 	}
 
 	Spectrum::init(380.f, 720.f);
+//	Spectrum::init(410.f, 690.f);
 }
 
 Model::~Model() {
