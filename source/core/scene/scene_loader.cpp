@@ -133,7 +133,7 @@ void Loader::load_entities(const json::Value& entities_value,
 
 		try {
 			if ("Light" == type_name) {
-				Prop* prop = load_prop(e, name, scene);
+				scene::Prop* prop = load_prop(e, name, scene);
 				entity = prop;
 				if (prop && prop->visible_in_reflection()) {
 					load_light(e, prop, scene);
@@ -165,6 +165,7 @@ void Loader::load_entities(const json::Value& entities_value,
 
 		const json::Value* animation_value = nullptr;
 		const json::Value* children = nullptr;
+		const json::Value* visibility = nullptr;
 
 		for (auto& n : e.GetObject()) {
 			const std::string node_name = n.name.GetString();
@@ -175,6 +176,8 @@ void Loader::load_entities(const json::Value& entities_value,
 				animation_value = &n.value;
 			} else if ("entities" == node_name) {
 				children = &n.value;
+			} else if ("visibility" == node_name) {
+				visibility = &n.value;
 			}
 		}
 
@@ -195,15 +198,39 @@ void Loader::load_entities(const json::Value& entities_value,
 		} else {
 			entity->set_transformation(transformation);
 		}
+
+		if (visibility) {
+			set_visibility(entity, *visibility);
+		}
 	}
+}
+
+void Loader::set_visibility(entity::Entity* entity, const json::Value& visibility_value) {
+	bool in_camera	   = true;
+	bool in_reflection = true;
+	bool in_shadow	   = true;
+//	bool propagate	   = false;
+
+	for (auto& n : visibility_value.GetObject()) {
+		if ("in_camera" == n.name) {
+			in_camera = json::read_bool(n.value);
+		} else if ("in_reflection" == n.name) {
+			in_reflection = json::read_bool(n.value);
+		} else if ("in_shadow" == n.name) {
+			in_shadow = json::read_bool(n.value);
+		} /*else if ("propagate" == n.name) {
+				propagate = json::read_bool(n.value);
+		}*/
+	}
+
+	entity->set_visibility(in_camera, in_reflection, in_shadow);
+//	entity->set_propagate_visibility(propagate);
 }
 
 Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
 	material::Materials materials;
-	bool visible_in_camera = true;
-	bool visible_in_reflection = true;
-	bool visible_in_shadow = true;
+	const json::Value* visibility = nullptr;
 	bool open = false;
 
 	for (auto& n : prop_value.GetObject()) {
@@ -212,9 +239,7 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 		} else if ("materials" == n.name) {
 			load_materials(n.value, scene, materials);
 		} else if ("visibility" == n.name) {
-			visible_in_camera	  = json::read_bool(n.value, "in_camera",     true);
-			visible_in_reflection = json::read_bool(n.value, "in_reflection", true);
-			visible_in_shadow     = json::read_bool(n.value, "in_shadow",     true);
+			visibility = &n.value;
 		} else if ("open" == n.name) {
 			open = json::read_bool(n.value);
 		}
@@ -230,7 +255,13 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 
 	Prop* prop = scene.create_prop(shape, materials, name);
 
-	prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
+	// Bit annoying that is done again in load_entities(),
+	// but visibility information is already used when creating lights.
+	// Should be improved at some point.
+	if (visibility) {
+		set_visibility(prop, *visibility);
+	}
+
 	prop->set_open(open);
 
 	return prop;

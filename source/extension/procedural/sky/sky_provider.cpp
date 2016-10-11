@@ -67,6 +67,7 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 	scene::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), materials);
 
 	sky->init(sky_prop, sun_prop);
+	sky->set_propagate_visibility(true);
 
 	const json::Value::ConstMemberIterator p = extension_value.FindMember("parameters");
 	if (extension_value.MemberEnd() != p) {

@@ -57,6 +57,38 @@ void Entity::calculate_world_transformation() {
 	}
 }
 
+bool Entity::visible_in_camera() const {
+	return properties_.test(Properties::Visible_in_camera);
+}
+
+bool Entity::visible_in_reflection() const {
+	return properties_.test(Properties::Visible_in_reflection);
+}
+
+bool Entity::visible_in_shadow() const {
+	return properties_.test(Properties::Visible_in_shadow);
+}
+
+void Entity::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
+	properties_.set(Properties::Visible_in_camera,		in_camera);
+	properties_.set(Properties::Visible_in_reflection,	in_reflection);
+	properties_.set(Properties::Visible_in_shadow,		in_shadow);
+
+	if (properties_.test(Properties::Propagate_visibility)) {
+		if (next_) {
+			next_->set_visibility(in_camera, in_reflection, in_shadow);
+		}
+
+		if (child_) {
+			child_->set_visibility(in_camera, in_reflection, in_shadow);
+		}
+	}
+}
+
+void Entity::set_propagate_visibility(bool enable) {
+	properties_.set(Properties::Propagate_visibility, enable);
+}
+
 void Entity::attach(Entity* node) {
 	node->detach();
 

@@ -25,6 +25,9 @@ void Prop::set_shape_and_materials(std::shared_ptr<shape::Shape> shape,
 	}
 
 	properties_.clear();
+	properties_.set(Properties::Visible_in_camera);
+	properties_.set(Properties::Visible_in_reflection);
+	properties_.set(Properties::Visible_in_shadow);
 
 	materials_ = materials;
 
@@ -37,12 +40,6 @@ void Prop::set_shape_and_materials(std::shared_ptr<shape::Shape> shape,
 }
 
 void Prop::set_parameters(const json::Value& /*parameters*/) {}
-
-void Prop::set_visibility(bool in_camera, bool in_reflection, bool in_shadow) {
-	properties_.set(Properties::Visible_in_camera,		in_camera);
-	properties_.set(Properties::Visible_in_reflection,	in_reflection);
-	properties_.set(Properties::Visible_in_shadow,		in_shadow);
-}
 
 void Prop::prepare_sampling(uint32_t part, uint32_t light_id,
 							bool material_importance_sampling, thread::Pool& pool) {
@@ -155,18 +152,6 @@ bool Prop::is_open() const {
 
 void Prop::set_open(bool open) {
 	properties_.set(Properties::Open, open);
-}
-
-bool Prop::visible_in_camera() const {
-	return properties_.test(Properties::Visible_in_camera);
-}
-
-bool Prop::visible_in_reflection() const {
-	return properties_.test(Properties::Visible_in_reflection);
-}
-
-bool Prop::visible_in_shadow() const {
-	return properties_.test(Properties::Visible_in_shadow);
 }
 
 bool Prop::visible(uint32_t ray_depth) const {

@@ -34,6 +34,13 @@ public:
 
 	void calculate_world_transformation();
 
+	bool visible_in_camera() const;
+	bool visible_in_reflection() const;
+	bool visible_in_shadow() const;
+
+	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
+	void set_propagate_visibility(bool enable);
+
 	void attach(Entity* node);
 	void detach();
 
@@ -67,8 +74,9 @@ protected:
 		Visible_in_camera		= 1 << 1,
 		Visible_in_reflection	= 1 << 2,
 		Visible_in_shadow		= 1 << 3,
-		Masked_material			= 1 << 4,
-		Open					= 1 << 5
+		Propagate_visibility	= 1 << 4,
+		Masked_material			= 1 << 5,
+		Open					= 1 << 6
 	};
 
 	flags::Flags<Properties> properties_;

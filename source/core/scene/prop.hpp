@@ -34,8 +34,6 @@ public:
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 
-	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
-
 	void prepare_sampling(uint32_t part, uint32_t light_id,
 						  bool material_importance_sampling, thread::Pool& pool);
 
@@ -61,10 +59,6 @@ public:
 
 	bool is_open() const;
 	void set_open(bool open);
-
-	bool visible_in_camera() const;
-	bool visible_in_reflection() const;
-	bool visible_in_shadow() const;
 
 private:
 
