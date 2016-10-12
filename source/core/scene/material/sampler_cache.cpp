@@ -13,8 +13,8 @@ Sampler_cache::Sampler_cache() {
 	samplers_2D_[0] = new Sampler_2D_nearest<Address_mode_repeat>;
 	samplers_2D_[1] = new Sampler_2D_linear <Address_mode_repeat>;
 
-	samplers_3D_[0] = new Sampler_3D_nearest<Address_mode_repeat>;
-	samplers_3D_[1] = new Sampler_3D_linear <Address_mode_repeat>;
+	samplers_3D_[0] = new Sampler_3D_nearest<Address_mode_clamp>;
+	samplers_3D_[1] = new Sampler_3D_linear <Address_mode_clamp>;
 }
 
 Sampler_cache::~Sampler_cache() {

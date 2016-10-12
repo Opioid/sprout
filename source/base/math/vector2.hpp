@@ -62,6 +62,9 @@ template<typename T>
 Vector2<T> reciprocal(Vector2<T> v);
 
 template<typename T>
+Vector2<T> saturate(Vector2<T> v);
+
+template<typename T>
 Vector2<T> lerp(Vector2<T> a, Vector2<T> b, T t);
 
 template<typename T>
