@@ -168,7 +168,8 @@ inline AABB AABB::transform(const Matrix4x4f_a& m) const {
 }
 
 inline AABB AABB::merge(const AABB& other) const {
-	return AABB(math::min(bounds_[0], other.bounds_[0]), math::max(bounds_[1], other.bounds_[1]));
+	return AABB(math::min(bounds_[0], other.bounds_[0]),
+				math::max(bounds_[1], other.bounds_[1]));
 }
 
 inline void AABB::merge_assign(const AABB& other) {
