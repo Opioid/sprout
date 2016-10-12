@@ -4,6 +4,8 @@
 #include "base/math/bounding/aabb.inl"
 #include "base/math/random/generator.inl"
 
+#include <iostream>
+
 namespace scene { namespace volume {
 
 float3 Density::optical_depth(const math::Oray& ray, float step_size,
@@ -15,8 +17,7 @@ float3 Density::optical_depth(const math::Oray& ray, float step_size,
 
 	float min_t;
 	float max_t;
-
-	if (!scene_bb_.intersect_p(rn, min_t, max_t)) {
+	if (!aabb_.intersect_p(rn, min_t, max_t)) {
 		return float3(0.f);
 	}
 
@@ -27,7 +28,8 @@ float3 Density::optical_depth(const math::Oray& ray, float step_size,
 	float3 tau(0.f);
 
 	for (; min_t < max_t; min_t += step_size) {
-		tau += density(rn.point(min_t), worker, filter) * attenuation;
+		float3 p_o = math::transform_point(rn.point(min_t), world_transformation_.world_to_object);
+		tau += density(p_o, worker, filter) * attenuation;
 	}
 
 	return step_size * tau;
@@ -35,7 +37,8 @@ float3 Density::optical_depth(const math::Oray& ray, float step_size,
 
 float3 Density::scattering(float3_p p, Worker& worker,
 						   Sampler_filter filter) const {
-	return density(p, worker, filter) * scattering_;
+	float3 p_o = math::transform_point(p, world_transformation_.world_to_object);
+	return density(p_o, worker, filter) * scattering_;
 }
 
 }}

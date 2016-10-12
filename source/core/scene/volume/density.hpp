@@ -17,6 +17,7 @@ public:
 
 protected:
 
+	// expects p in object space!
 	virtual float density(float3_p p, Worker& worker,
 						  Sampler_filter filter) const = 0;
 

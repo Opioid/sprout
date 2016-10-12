@@ -14,12 +14,18 @@ namespace scene { namespace volume {
 Grid::Grid(Texture_ptr grid) : grid_(grid) {}
 
 float Grid::density(float3_p p, Worker& worker, Sampler_filter filter) const {
-	float3 grid_p = 0.5f * (float3(1.f) + (p - scene_bb_.position()) / scene_bb_.halfsize());
-	grid_p.y = 1.f - grid_p.y;
+	// p is in object space already
+
+	if (!local_aabb_.intersect(p)) {
+		return 0.f;
+	}
+
+	float3 p_g = 0.5f * (float3(1.f) + p);
+	p_g.y = 1.f - p_g.y;
 
 	auto& sampler = worker.sampler_3D(static_cast<uint32_t>(Sampler_filter::Linear), filter);
 
-	float density = grid_.sample_1(sampler, grid_p);
+	float density = grid_.sample_1(sampler, p_g);
 
 	return density;
 }

@@ -45,7 +45,7 @@ float4 Worker::li(scene::Ray& ray) {
 
 	if (volume) {
 		float3 vtr;
-		float4 vli = volume_integrator_->li(*this, volume, ray, vtr);
+		float4 vli = volume_integrator_->li(*this, *volume, ray, vtr);
 
 		if (hit) {
 			float4 li = surface_integrator_->li(*this, ray, false, intersection);
@@ -82,7 +82,7 @@ float4 Worker::volume_li(const scene::Ray& ray, float3& transmittance) {
 		return float4(0.f);
 	}
 
-	return volume_integrator_->li(*this, volume, ray, transmittance);
+	return volume_integrator_->li(*this, *volume, ray, transmittance);
 }
 
 float3 Worker::transmittance(const scene::Ray& ray) {
@@ -92,7 +92,7 @@ float3 Worker::transmittance(const scene::Ray& ray) {
 		return float3(1.f);
 	}
 
-	return volume_integrator_->transmittance(*this, volume, ray);
+	return volume_integrator_->transmittance(*this, *volume, ray);
 }
 
 

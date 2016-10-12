@@ -19,38 +19,30 @@ Single_scattering::Single_scattering(const take::Settings& take_settings,
 									 const Settings& settings) :
 	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
 
-float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume* volume,
+float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume& volume,
 										const scene::Ray& ray) {
 	float min_t;
 	float max_t;
-	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
+	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
 		return float3(1.f);
 	}
 
 	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume->optical_depth(tray, settings_.step_size, rng_,
-									   worker, Sampler_filter::Nearest);
+	float3 tau = volume.optical_depth(tray, settings_.step_size, rng_,
+									  worker, Sampler_filter::Nearest);
 	return math::exp(-tau);
 }
 
-float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume,
+float4 Single_scattering::li(Worker& worker, const scene::volume::Volume& volume,
 							 const scene::Ray& ray, float3& transmittance) {
 	float min_t;
 	float max_t;
-	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
+//	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
+	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
 		transmittance = float3(1.f);
 		return float4(0.f);
 	}
-
-//	min_t = ray.min_t;
-
-//	float atmosphere_y = worker.scene().aabb().max().y;
-//	max_t = (atmosphere_y - ray.origin.y) * ray.reciprocal_direction.y;
-
-//	if (max_t < 0.f || max_t > ray.max_t) {
-//		max_t = ray.max_t;
-//	}
 
 	float range = max_t - min_t;
 
@@ -79,8 +71,8 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume
 		current  = ray.point(min_t);
 
 		scene::Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
-		float3 tau = volume->optical_depth(tau_ray, settings_.step_size, rng_,
-										   worker, Sampler_filter::Unknown);
+		float3 tau = volume.optical_depth(tau_ray, settings_.step_size, rng_,
+										  worker, Sampler_filter::Unknown);
 		tr *= math::exp(-tau);
 
 		// Direct light scattering
@@ -99,9 +91,9 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume* volume
 
 			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
 			if (mv > 0.f) {
-				float p = volume->phase(w, -light_sample.shape.wi);
+				float p = volume.phase(w, -light_sample.shape.wi);
 
-				float3 scattering = volume->scattering(current, worker, Sampler_filter::Unknown);
+				float3 scattering = volume.scattering(current, worker, Sampler_filter::Unknown);
 
 				float3 l = Single_scattering::transmittance(worker, volume, shadow_ray)
 							   * light_sample.radiance;

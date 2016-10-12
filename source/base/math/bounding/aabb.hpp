@@ -22,6 +22,8 @@ public:
 	float surface_area() const;
 	float volume() const;
 
+	bool intersect(FVector3f_a p) const;
+
 	bool intersect_p(const math::Oray& ray) const;
 	bool intersect_p(const math::Oray& ray, float& min_t, float& max_t) const;
 

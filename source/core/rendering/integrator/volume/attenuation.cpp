@@ -13,7 +13,7 @@ Attenuation::Attenuation(const take::Settings& take_settings, math::random::Gene
 	Integrator(take_settings, rng) {}
 
 float3 Attenuation::transmittance(Worker& worker,
-								  const scene::volume::Volume* volume,
+								  const scene::volume::Volume& volume,
 								  const scene::Ray& ray) {
 	float min_t;
 	float max_t;
@@ -23,11 +23,11 @@ float3 Attenuation::transmittance(Worker& worker,
 
 	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume->optical_depth(tray, 1.f, rng_, worker, Sampler_filter::Nearest);
+	float3 tau = volume.optical_depth(tray, 1.f, rng_, worker, Sampler_filter::Nearest);
 	return math::exp(-tau);
 }
 
-float4 Attenuation::li(Worker& worker, const scene::volume::Volume* volume,
+float4 Attenuation::li(Worker& worker, const scene::volume::Volume& volume,
 					   const scene::Ray& ray, float3& transmittance) {
 	float min_t;
 	float max_t;
@@ -38,7 +38,7 @@ float4 Attenuation::li(Worker& worker, const scene::volume::Volume* volume,
 
 	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume->optical_depth(tray, 1.f, rng_, worker, Sampler_filter::Unknown);
+	float3 tau = volume.optical_depth(tray, 1.f, rng_, worker, Sampler_filter::Unknown);
 	transmittance = math::exp(-tau);
 
 	return float4(0.f);

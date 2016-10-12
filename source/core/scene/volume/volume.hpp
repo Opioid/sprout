@@ -35,6 +35,8 @@ public:
 
 	void set_scene_aabb(const math::aabb& aabb);
 
+	const math::aabb& aabb() const;
+
 private:
 
 	virtual void on_set_transformation() final override;
@@ -46,6 +48,8 @@ protected:
 	static float phase_schlick(float3_p w, float3_p wp, float k);
 
 	math::aabb scene_bb_;
+	math::aabb aabb_;
+	math::aabb local_aabb_;
 
 	float3 absorption_;
 	float3 scattering_;

@@ -5,7 +5,8 @@
 
 namespace scene { namespace volume {
 
-Volume::Volume() : absorption_(0.f), scattering_(0.f), anisotropy_(0.f) {}
+Volume::Volume() : absorption_(0.f), scattering_(0.f), anisotropy_(0.f),
+	local_aabb_(float3(-1.f), float3(1.f)) {}
 
 float Volume::phase(float3_p w, float3_p wp) const {
 	float g = anisotropy_;
@@ -31,7 +32,13 @@ void Volume::set_scene_aabb(const math::aabb& aabb) {
 	scene_bb_ = aabb;
 }
 
-void Volume::on_set_transformation() {}
+const math::aabb& Volume::aabb() const {
+	return aabb_;
+}
+
+void Volume::on_set_transformation() {
+	aabb_ = local_aabb_.transform(world_transformation_.object_to_world);
+}
 
 float Volume::phase_schlick(float3_p w, float3_p wp, float k) {
 	float d = 1.f - (k * math::dot(w, wp));

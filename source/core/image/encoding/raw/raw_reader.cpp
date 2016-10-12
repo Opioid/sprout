@@ -8,7 +8,7 @@ namespace image { namespace encoding { namespace raw {
 
 
 std::shared_ptr<Image> Reader::read(std::istream& stream) const {
-	int3 dimensions(32, 32, 32);
+	int3 dimensions(512, 512, 32);
 
 	Image::Description description(Image::Type::Byte_1, dimensions);
 

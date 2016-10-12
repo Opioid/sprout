@@ -27,10 +27,10 @@ public:
 	Integrator(const take::Settings& settings, math::random::Generator& rng);
 	virtual ~Integrator();
 
-	virtual float3 transmittance(Worker& worker, const scene::volume::Volume* volume,
+	virtual float3 transmittance(Worker& worker, const scene::volume::Volume& volume,
 								 const scene::Ray& ray) = 0;
 
-	virtual float4 li(Worker& worker, const scene::volume::Volume* volume,
+	virtual float4 li(Worker& worker, const scene::volume::Volume& volume,
 					  const scene::Ray& ray, float3& transmittance) = 0;
 };
 

@@ -39,6 +39,16 @@ inline float AABB::volume() const {
 	return d.x * d.y * d.z;
 }
 
+inline bool AABB::intersect(FVector3f_a p) const {
+	if (p.x >= bounds_[0].x && p.x <= bounds_[1].x
+	&&  p.y >= bounds_[0].y && p.y <= bounds_[1].y
+	&&  p.z >= bounds_[0].z && p.z <= bounds_[1].z) {
+		return true;
+	}
+
+	return false;
+}
+
 // This test is presented in the paper
 // "An Efficient and Robust Ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
