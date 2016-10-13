@@ -98,7 +98,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 	if (!take->surface_integrator_factory) {
 		rendering::integrator::Light_sampling light_sampling{
 			rendering::integrator::Light_sampling::Strategy::One, 1};
-		take->surface_integrator_factory = std::make_shared<
+		take->surface_integrator_factory = std::make_unique<
 				rendering::integrator::surface::Pathtracer_MIS_factory>(
 					take->settings, 4, 8, 0.5f, light_sampling, false);
 		logging::warning("No valid surface integrator specified, defaulting to PTMIS.");

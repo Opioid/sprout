@@ -15,4 +15,5 @@ HEADERS += \
 	rendering/tile_queue.hpp \
 
 include(integrator/integrator.pri)
+include(postprocessor/postprocessor.pri)
 include(sensor/sensor.pri)

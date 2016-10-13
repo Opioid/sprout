@@ -118,7 +118,7 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 		logging::info("Render time " + string::to_string(render_duration) + " s");
 
 		auto export_start = std::chrono::high_resolution_clock::now();
-		sensor.resolve(thread_pool_, target_);
+		view_.pipeline.apply(sensor, target_, thread_pool_);
 		exporter.write(target_, current_frame, thread_pool_);
 		auto export_duration = chrono::seconds_since(export_start);
 		logging::info("Export time " + string::to_string(export_duration) + " s");

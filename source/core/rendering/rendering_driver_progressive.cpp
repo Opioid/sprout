@@ -88,7 +88,7 @@ void Driver_progressive::render_loop(exporting::Sink& exporter) {
 		);
 	}
 
-	view_.camera->sensor().resolve(thread_pool_, target_);
+	view_.pipeline.apply(view_.camera->sensor(), target_, thread_pool_);
 	exporter.write(target_, iteration_, thread_pool_);
 
 	if (schedule_.statistics || force_statistics_) {
