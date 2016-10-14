@@ -15,7 +15,7 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 			   Volume_integrator_factory volume_integrator_factory,
 			   std::shared_ptr<sampler::Factory> sampler_factory,
 			   scene::Scene& scene,
-			   const take::View& view,
+			   take::View& view,
 			   thread::Pool& thread_pool) :
 	surface_integrator_factory_(surface_integrator_factory),
 	volume_integrator_factory_(volume_integrator_factory),

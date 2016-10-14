@@ -8,6 +8,14 @@ namespace scene { namespace camera { class Camera; } }
 namespace take {
 
 struct View {
+	View() {};
+
+	void init() {
+		if (camera) {
+			pipeline.init(*camera);
+		}
+	}
+
 	std::shared_ptr<scene::camera::Camera> camera;
 
 	rendering::postprocessor::Pipeline pipeline;

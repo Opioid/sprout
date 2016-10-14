@@ -34,7 +34,7 @@ public:
 		   Volume_integrator_factory volume_integrator_factory,
 		   std::shared_ptr<sampler::Factory> sampler_factory,
 		   scene::Scene& scene,
-		   const take::View& view,
+		   take::View& view,
 		   thread::Pool& thread_pool);
 
 	~Driver();
@@ -50,7 +50,7 @@ protected:
 	std::shared_ptr<sampler::Factory> sampler_factory_;
 
 	scene::Scene& scene_;
-	const take::View& view_;
+	take::View& view_;
 	thread::Pool& thread_pool_;
 
 	std::vector<Camera_worker> workers_;

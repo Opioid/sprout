@@ -22,6 +22,8 @@ namespace sampler { class Factory; }
 namespace take {
 
 struct Take {
+	Take();
+
 	Settings	settings;
 	std::string	scene_filename;
 	take::View	view;

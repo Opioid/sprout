@@ -9,6 +9,7 @@ class Image {
 public:
 
 	enum class Type {
+		Unknown,
 		Byte_1,
 		Byte_2,
 		Byte_3,
@@ -28,8 +29,11 @@ public:
 		int32_t num_elements;
 	};
 
+	Image();
 	Image(const Description& description);
 	virtual ~Image();
+
+	void resize(const Description& description);
 
 	const Description& description() const;
 

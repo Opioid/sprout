@@ -6,6 +6,10 @@
 namespace image {
 
 template<typename T>
+Typed_image<T>::Typed_image() :
+	data_(nullptr) {}
+
+template<typename T>
 Typed_image<T>::Typed_image(const Image::Description& description) :
 	Image(description),
 	data_(memory::allocate_aligned<T>(description.dimensions.x *
@@ -16,6 +20,17 @@ Typed_image<T>::Typed_image(const Image::Description& description) :
 template<typename T>
 Typed_image<T>::~Typed_image() {
 	memory::free_aligned(data_);
+}
+
+template<typename T>
+void Typed_image<T>::resize(const Image::Description& description) {
+	memory::free_aligned(data_);
+
+	Image::resize(description);
+	data_ = memory::allocate_aligned<T>(description.dimensions.x *
+										description.dimensions.y *
+										description.dimensions.z *
+										description.num_elements);
 }
 
 template<typename T>

@@ -18,7 +18,7 @@ Driver_finalframe::Driver_finalframe(Surface_integrator_factory surface_integrat
 									 Volume_integrator_factory volume_integrator_factory,
 									 std::shared_ptr<sampler::Factory> sampler_factory,
 									 scene::Scene& scene,
-									 const take::View& view,
+									 take::View& view,
 									 thread::Pool& thread_pool) :
 	Driver(surface_integrator_factory, volume_integrator_factory,
 		   sampler_factory, scene, view, thread_pool) {}

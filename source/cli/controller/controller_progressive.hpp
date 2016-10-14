@@ -10,7 +10,8 @@ namespace thread { class Pool; }
 
 namespace controller {
 
-void progressive(const take::Take& take, scene::Scene& scene,
-				 resource::Manager& resource_manager, thread::Pool& thread_pool);
+void progressive(take::Take& take, scene::Scene& scene,
+				 resource::Manager& resource_manager,
+				 thread::Pool& thread_pool);
 
 }

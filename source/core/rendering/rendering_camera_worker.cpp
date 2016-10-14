@@ -48,7 +48,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 					float4 color = li(ray);
 					sensor.add_sample(sample, color, tile, bounds);
 				} else {
-					sensor.add_sample(sample, float4(0.f, 0.f, 0.f, 0.f), view_tile, bounds);
+					sensor.add_sample(sample, float4(0.f), view_tile, bounds);
 				}
 			}
 		}

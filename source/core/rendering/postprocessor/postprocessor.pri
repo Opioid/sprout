@@ -1,4 +1,5 @@
 SOURCES += \
+	rendering/postprocessor/postprocessor.cpp \
     rendering/postprocessor/postprocessor_glare.cpp \
 	rendering/postprocessor/postprocessor_pipeline.cpp \
 

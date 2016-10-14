@@ -16,7 +16,7 @@ Driver_progressive::Driver_progressive(Surface_integrator_factory surface_integr
 									   Volume_integrator_factory volume_integrator_factory,
 									   std::shared_ptr<sampler::Factory> sampler_factory,
 									   scene::Scene& scene,
-									   const take::View& view,
+									   take::View& view,
 									   thread::Pool& thread_pool) :
 	Driver(surface_integrator_factory, volume_integrator_factory,
 		   sampler_factory, scene, view, thread_pool),

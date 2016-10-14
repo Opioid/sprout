@@ -120,7 +120,7 @@ void Loader::load_entities(const json::Value& entities_value,
 	}
 
 	for (auto& e : entities_value.GetArray()) {
-		const json::Value::ConstMemberIterator type_node = e.FindMember("type");
+		const auto type_node = e.FindMember("type");
 		if (e.MemberEnd() == type_node) {
 			continue;
 		}
@@ -168,15 +168,13 @@ void Loader::load_entities(const json::Value& entities_value,
 		const json::Value* visibility = nullptr;
 
 		for (auto& n : e.GetObject()) {
-			const std::string node_name = n.name.GetString();
-
-			if ("transformation" == node_name) {
+			if ("transformation" == n.name) {
 				json::read_transformation(n.value, transformation);
-			} else if ("animation" == node_name) {
+			} else if ("animation" == n.name) {
 				animation_value = &n.value;
-			} else if ("entities" == node_name) {
+			} else if ("entities" == n.name) {
 				children = &n.value;
-			} else if ("visibility" == node_name) {
+			} else if ("visibility" == n.name) {
 				visibility = &n.value;
 			}
 		}

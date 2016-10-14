@@ -45,7 +45,7 @@ class Loader {
 
 public:
 
-	std::shared_ptr<Take> load(std::istream& stream);
+	static std::shared_ptr<Take> load(std::istream& stream);
 
 private:
 
@@ -53,35 +53,38 @@ private:
 		float interpupillary_distance = 0.f;
 	};
 
-	void load_camera(const json::Value& camera_value, bool alpha_transparency, Take& take) const;
+	static void load_camera(const json::Value& camera_value, bool alpha_transparency, Take& take);
 
-	rendering::sensor::Sensor* load_sensor(const json::Value& sensor_value,
-										   int2 dimensions,
-										   bool alpha_transparency) const;
+	static rendering::sensor::Sensor*
+	load_sensor(const json::Value& sensor_value, int2 dimensions, bool alpha_transparency);
 
-	const rendering::sensor::tonemapping::Tonemapper*
-	load_tonemapper(const json::Value& tonemapper_value) const;
+	static const rendering::sensor::tonemapping::Tonemapper*
+	load_tonemapper(const json::Value& tonemapper_value);
 
-	const rendering::sensor::filter::Filter*
-	load_filter(const rapidjson::Value& filter_value) const;
+	static const rendering::sensor::filter::Filter*
+	load_filter(const rapidjson::Value& filter_value);
 
-	std::shared_ptr<sampler::Factory> load_sampler_factory(const json::Value& sampler_value) const;
+	static std::shared_ptr<sampler::Factory>
+	load_sampler_factory(const json::Value& sampler_value);
 
-	void load_integrator_factories(const json::Value& integrator_value, Take& take) const;
+	static void load_integrator_factories(const json::Value& integrator_value, Take& take);
 
-	std::shared_ptr<rendering::integrator::surface::Factory>
+	static std::shared_ptr<rendering::integrator::surface::Factory>
 	load_surface_integrator_factory(const json::Value& integrator_value,
-									const Settings& settings) const;
+									const Settings& settings);
 
-	std::shared_ptr<rendering::integrator::volume::Factory>
+	static std::shared_ptr<rendering::integrator::volume::Factory>
 	load_volume_integrator_factory(const json::Value& integrator_value,
-								   const Settings& settings) const;
+								   const Settings& settings);
+
+	static void load_postprocessors(const json::Value& pp_value, Take& take);
 
 	static bool peek_alpha_transparency(const json::Value& take_value);
+
 	static bool peek_stereoscopic(const json::Value& parameters_value);
 
-	static std::unique_ptr<exporting::Sink> load_exporter(const json::Value& exporter_value,
-														  scene::camera::Camera& camera);
+	static std::unique_ptr<exporting::Sink>
+	load_exporter(const json::Value& exporter_value, scene::camera::Camera& camera);
 
 	static void load_settings(const json::Value& settings_value, Settings& settings);
 

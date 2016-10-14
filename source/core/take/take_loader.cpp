@@ -7,6 +7,15 @@
 #include "image/encoding/png/png_writer.hpp"
 #include "image/encoding/rgbe/rgbe_writer.hpp"
 #include "logging/logging.hpp"
+#include "rendering/integrator/surface/ao.hpp"
+#include "rendering/integrator/surface/normal.hpp"
+#include "rendering/integrator/surface/whitted.hpp"
+#include "rendering/integrator/surface/pathtracer.hpp"
+#include "rendering/integrator/surface/pathtracer_dl.hpp"
+#include "rendering/integrator/surface/pathtracer_mis.hpp"
+#include "rendering/integrator/volume/attenuation.hpp"
+#include "rendering/integrator/volume/single_scattering.hpp"
+#include "rendering/postprocessor/postprocessor_glare.hpp"
 #include "rendering/sensor/opaque.hpp"
 #include "rendering/sensor/transparent.hpp"
 #include "rendering/sensor/clamp.inl"
@@ -17,14 +26,6 @@
 #include "rendering/sensor/tonemapping/generic.hpp"
 #include "rendering/sensor/tonemapping/identity.hpp"
 #include "rendering/sensor/tonemapping/uncharted.hpp"
-#include "rendering/integrator/surface/ao.hpp"
-#include "rendering/integrator/surface/normal.hpp"
-#include "rendering/integrator/surface/whitted.hpp"
-#include "rendering/integrator/surface/pathtracer.hpp"
-#include "rendering/integrator/surface/pathtracer_dl.hpp"
-#include "rendering/integrator/surface/pathtracer_mis.hpp"
-#include "rendering/integrator/volume/attenuation.hpp"
-#include "rendering/integrator/volume/single_scattering.hpp"
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_ld.hpp"
 #include "sampler/sampler_random.hpp"
@@ -65,6 +66,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 			take->view.num_frames = json::read_uint(n.value);
 		} else if ("integrator" == n.name) {
 			load_integrator_factories(n.value, *take);
+		} else if ("postprocessors" == n.name) {
+			load_postprocessors(n.value, *take);
 		} else if ("sampler" == n.name) {
 			take->sampler_factory = load_sampler_factory(n.value);
 		} else if ("scene" == n.name) {
@@ -109,11 +112,13 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 				rendering::integrator::volume::Attenuation_factory>(take->settings);
 	}
 
+	take->view.init();
+
 	return take;
 }
 
 void Loader::load_camera(const json::Value& camera_value, bool alpha_transparency,
-						 Take& take) const {
+						 Take& take) {
 	using namespace scene::camera;
 
 	std::string type_name = "Perspective";
@@ -224,7 +229,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 
 rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 											   int2 dimensions,
-											   bool alpha_transparency) const {
+											   bool alpha_transparency) {
 	using namespace rendering::sensor;
 
 	float exposure = 0.f;
@@ -293,7 +298,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 }
 
 const rendering::sensor::tonemapping::Tonemapper*
-Loader::load_tonemapper(const json::Value& tonemapper_value) const {
+Loader::load_tonemapper(const json::Value& tonemapper_value) {
 	for (auto& n : tonemapper_value.GetObject()) {
 		if ("ACES" == n.name) {
 			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
@@ -321,7 +326,7 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) const {
 }
 
 const rendering::sensor::filter::Filter*
-Loader::load_filter(const json::Value& filter_value) const {
+Loader::load_filter(const json::Value& filter_value) {
 	for (auto& n : filter_value.GetObject()) {
 		if ("Gaussian" == n.name) {
 			float radius = json::read_float(n.value, "radius", 0.8f);
@@ -337,8 +342,8 @@ Loader::load_filter(const json::Value& filter_value) const {
 	return nullptr;
 }
 
-std::shared_ptr<sampler::Factory> Loader::load_sampler_factory(
-		const json::Value& sampler_value) const {
+std::shared_ptr<sampler::Factory>
+Loader::load_sampler_factory(const json::Value& sampler_value) {
 	for (auto& n : sampler_value.GetObject()) {
 		if ("Uniform" == n.name) {
 		   // uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
@@ -361,7 +366,7 @@ std::shared_ptr<sampler::Factory> Loader::load_sampler_factory(
 	return nullptr;
 }
 
-void Loader::load_integrator_factories(const json::Value& integrator_value, Take& take) const {
+void Loader::load_integrator_factories(const json::Value& integrator_value, Take& take) {
 	for (auto& n : integrator_value.GetObject()) {
 		if ("surface" == n.name) {
 			take.surface_integrator_factory = load_surface_integrator_factory(n.value,
@@ -375,7 +380,7 @@ void Loader::load_integrator_factories(const json::Value& integrator_value, Take
 
 std::shared_ptr<rendering::integrator::surface::Factory>
 Loader::load_surface_integrator_factory(const json::Value& integrator_value,
-										const Settings& settings) const {
+										const Settings& settings) {
 	using namespace rendering::integrator::surface;
 
 	uint32_t default_min_bounces = 4;
@@ -469,21 +474,42 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 std::shared_ptr<rendering::integrator::volume::Factory>
 Loader::load_volume_integrator_factory(const json::Value& integrator_value,
-									   const Settings& settings) const {
+									   const Settings& settings) {
 	using namespace rendering::integrator::volume;
 
 	for (auto& n : integrator_value.GetObject()) {
-		const std::string node_name = n.name.GetString();
-
-		if ("Attenuation" == node_name) {
+		if ("Attenuation" == n.name) {
 			return std::make_shared<Attenuation_factory>(settings);
-		} else if ("Single_scattering" == node_name) {
+		} else if ("Single_scattering" == n.name) {
 			float step_size = json::read_float(n.value, "step_size", 1.f);
 			return std::make_shared<Single_scattering_factory>(settings, step_size);
 		}
 	}
 
 	return nullptr;
+}
+
+void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
+	if (!pp_value.IsArray()) {
+		return;
+	}
+
+	auto& pipeline = take.view.pipeline;
+
+	pipeline.reserve(pp_value.Size());
+
+	for (auto& pp : pp_value.GetArray()) {
+		const auto n = pp.MemberBegin();
+
+		std::string type_name = n->name.GetString();
+
+		if ("tonemapper" == type_name) {
+			// return std::make_shared<Attenuation_factory>(settings);
+		} else if ("Glare" == type_name) {
+
+			pipeline.add(new rendering::postprocessor::Glare);
+		}
+	}
 }
 
 bool Loader::peek_alpha_transparency(const json::Value& take_value) {

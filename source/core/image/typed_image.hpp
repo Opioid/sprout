@@ -9,8 +9,11 @@ class Typed_image : public Image {
 
 public:
 
+	Typed_image();
 	Typed_image(const Image::Description& description);
 	~Typed_image();
+
+	void resize(const Image::Description& description);
 
 	const T& at(int32_t index) const;
 	T& at(int32_t index);
