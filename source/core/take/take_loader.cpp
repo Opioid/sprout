@@ -330,7 +330,7 @@ Loader::load_filter(const json::Value& filter_value) {
 	for (auto& n : filter_value.GetObject()) {
 		if ("Gaussian" == n.name) {
 			float radius = json::read_float(n.value, "radius", 0.8f);
-			float alpha  = json::read_float(n.value, "alpha", 0.3f);
+			float alpha  = json::read_float(n.value, "alpha",  0.3f);
 
 			return new rendering::sensor::filter::Gaussian(radius, alpha);
 		}

@@ -45,4 +45,20 @@ int32_t Image::volume() const {
 	return volume_;
 }
 
+int2 Image::coordinates_2(int32_t index) const {
+	int2 c;
+	c.y = index / description_.dimensions.x;
+	c.x = index - c.y * description_.dimensions.x;
+	return c;
+}
+
+int Image::checked_index(int2 xy) const {
+	if (xy.x < 0 || xy.x > description_.dimensions.x - 1
+	||  xy.y < 0 || xy.y > description_.dimensions.y - 1) {
+		return -1;
+	}
+
+	return xy.y * description_.dimensions.x + xy.x;
+}
+
 }

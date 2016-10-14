@@ -5,7 +5,8 @@ namespace math {
 
 template<typename T>
 template<typename F>
-Interpolated_function<T>::Interpolated_function(float range_begin, float range_end, size_t num_samples, F f) :
+Interpolated_function<T>::Interpolated_function(float range_begin, float range_end,
+												size_t num_samples, F f) :
 	range_end_(range_end), samples_(new T[num_samples + 1]) {
 	float range = range_end - range_begin;
 
