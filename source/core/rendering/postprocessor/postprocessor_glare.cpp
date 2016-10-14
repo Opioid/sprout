@@ -1,4 +1,6 @@
 #include "postprocessor_glare.hpp"
+#include "image/typed_image.inl"
+#include "base/math/vector.inl"
 
 namespace rendering { namespace postprocessor {
 
