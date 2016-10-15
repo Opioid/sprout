@@ -1,19 +1,15 @@
 #include "sensor.hpp"
 #include "image/typed_image.inl"
-#include "tonemapping/tonemapper.hpp"
 #include "base/math/vector.inl"
 #include "base/thread/thread_pool.hpp"
 
 namespace rendering { namespace sensor {
 
-Sensor::Sensor(int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper) :
+Sensor::Sensor(int2 dimensions, float exposure) :
 	dimensions_(dimensions),
-	exposure_factor_(std::exp2(exposure)),
-	tonemapper_(tonemapper) {}
+	exposure_factor_(std::exp2(exposure)) {}
 
-Sensor::~Sensor() {
-	delete tonemapper_;
-}
+Sensor::~Sensor() {}
 
 int2 Sensor::dimensions() const {
 	return dimensions_;

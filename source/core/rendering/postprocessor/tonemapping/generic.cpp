@@ -1,7 +1,7 @@
 #include "generic.hpp"
 #include "base/math/vector.inl"
 
-namespace rendering { namespace sensor { namespace tonemapping {
+namespace rendering { namespace postprocessor { namespace tonemapping {
 
 Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, float hdr_max) :
 	a_(contrast),

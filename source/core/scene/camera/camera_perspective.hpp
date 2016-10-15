@@ -23,6 +23,8 @@ public:
 
 	virtual math::Recti view_bounds(uint32_t view) const final override;
 
+	virtual float pixel_solid_angle() const final override;
+
 	virtual void update_focus(rendering::Worker& worker) final override;
 
 	virtual bool generate_ray(const sampler::Camera_sample& sample,
@@ -41,14 +43,15 @@ private:
 
 	static void load_focus(const json::Value& focus_value, Focus& focus);
 
-	float lens_radius_;
-	Focus focus_;
-
 	float3 left_top_;
 	float3 d_x_;
 	float3 d_y_;
 
+	Focus focus_;
 	float focal_distance_;
+	float lens_radius_;
+
+	float fov_;
 };
 
 }}

@@ -15,4 +15,3 @@ HEADERS += \
 	rendering/sensor/unfiltered.inl \
 
 include(filter/filter.pri)
-include(tonemapping/tonemapping.pri)

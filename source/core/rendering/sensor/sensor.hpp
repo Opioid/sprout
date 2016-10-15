@@ -9,13 +9,11 @@ namespace sampler { struct Camera_sample; }
 
 namespace rendering { namespace sensor {
 
-namespace tonemapping { class Tonemapper; }
-
 class Sensor {
 
 public:
 
-	Sensor(int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper);
+	Sensor(int2 dimensions, float exposure);
 	virtual ~Sensor();
 
 	int2 dimensions() const;
@@ -40,8 +38,6 @@ protected:
 	int2 dimensions_;
 
 	float exposure_factor_;
-
-	const tonemapping::Tonemapper* tonemapper_;
 };
 
 }}

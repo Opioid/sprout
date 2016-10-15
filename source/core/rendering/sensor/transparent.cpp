@@ -1,14 +1,12 @@
 #include "transparent.hpp"
 #include "image/typed_image.inl"
-#include "tonemapping/tonemapper.hpp"
 #include "base/atomic/atomic.hpp"
 #include "base/math/vector.inl"
 
 namespace rendering { namespace sensor {
 
-Transparent::Transparent(int2 dimensions, float exposure,
-						 const tonemapping::Tonemapper* tonemapper) :
-	Sensor(dimensions, exposure, tonemapper),
+Transparent::Transparent(int2 dimensions, float exposure) :
+	Sensor(dimensions, exposure),
 	pixels_(new Pixel[dimensions.x * dimensions.y]) {}
 
 Transparent::~Transparent() {
@@ -50,9 +48,7 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Image_float_4& targ
 
 		float4 color = value.color / value.weight_sum;
 
-		float3 tonemapped = tonemapper_->tonemap(exposure_factor * color.xyz);
-
-		target.at(i) = float4(tonemapped, std::min(color.w, 1.f));
+		target.at(i) = float4(exposure_factor * color.xyz, std::min(color.w, 1.f));
 	}
 }
 

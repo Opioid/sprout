@@ -19,7 +19,9 @@ void Pipeline::reserve(size_t num_pps) {
 }
 
 void Pipeline::add(Postprocessor* pp) {
-	postprocessors_.push_back(pp);
+	if (pp) {
+		postprocessors_.push_back(pp);
+	}
 }
 
 void Pipeline::init(const scene::camera::Camera& camera) {
@@ -40,10 +42,21 @@ void Pipeline::apply(const sensor::Sensor& sensor, image::Image_float_4& target,
 	if (postprocessors_.empty()) {
 		sensor.resolve(pool, target);
 	} else {
-		sensor.resolve(pool, scratch_);
+		image::Image_float_4* targets[2];
+
+		if (0 == postprocessors_.size() % 2) {
+			targets[0] = &target;
+			targets[1] = &scratch_;
+		} else {
+			targets[0] = &scratch_;
+			targets[1] = &target;
+		}
+
+		sensor.resolve(pool, *targets[0]);
 
 		for (auto pp : postprocessors_) {
-			pp->apply(scratch_, target, pool);
+			pp->apply(*targets[0], *targets[1], pool);
+			std::swap(targets[0], targets[1]);
 		}
 	}
 }

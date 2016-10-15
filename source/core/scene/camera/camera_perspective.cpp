@@ -31,6 +31,10 @@ math::Recti Perspective::view_bounds(uint32_t /*view*/) const {
 	return math::Recti{int2(0, 0), resolution_};
 }
 
+float Perspective::pixel_solid_angle() const {
+	return fov_ / static_cast<float>(resolution_.x);
+}
+
 void Perspective::update_focus(rendering::Worker& worker) {
 	if (focus_.use_point) {
 		float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
@@ -95,12 +99,14 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 }
 
 void Perspective::set_fov(float fov) {
+	fov_ = fov;
+
 	float2 fr(resolution_);
 	float ratio = fr.x / fr.y;
 
 	float z = ratio * math::Pi / fov * 0.5f;
 
-	left_top_ = float3(-ratio,  1.f, z);
+	left_top_ = float3(-ratio, 1.f, z);
 
 	float3 right_top(ratio, 1.f, z);
 	float3 left_bottom(-ratio, -1.f, z);

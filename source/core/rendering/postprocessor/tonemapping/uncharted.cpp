@@ -1,7 +1,7 @@
 #include "uncharted.hpp"
 #include "base/math/vector.inl"
 
-namespace rendering { namespace sensor { namespace tonemapping {
+namespace rendering { namespace postprocessor { namespace tonemapping {
 
 Uncharted::Uncharted(float hdr_max) :
 	normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}

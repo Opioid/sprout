@@ -72,6 +72,10 @@ math::Recti Cubic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 
+float Cubic::pixel_solid_angle() const {
+	return 1.f;
+}
+
 void Cubic::update_focus(rendering::Worker& /*worker*/) {}
 
 bool Cubic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,

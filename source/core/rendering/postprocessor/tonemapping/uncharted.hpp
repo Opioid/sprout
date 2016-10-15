@@ -2,13 +2,13 @@
 
 #include "tonemapper.hpp"
 
-namespace rendering { namespace sensor { namespace tonemapping {
+namespace rendering { namespace postprocessor { namespace tonemapping {
 
-class Aces : public Tonemapper {
+class Uncharted : public Tonemapper {
 
 public:
 
-	Aces(float hdr_max);
+	Uncharted(float hdr_max);
 
 	virtual float3 tonemap(float3_p color) const final override;
 

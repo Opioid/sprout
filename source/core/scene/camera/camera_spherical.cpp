@@ -28,6 +28,10 @@ math::Recti Spherical::view_bounds(uint32_t /*view*/) const {
 	return math::Recti{int2(0, 0), resolution_};
 }
 
+float Spherical::pixel_solid_angle() const {
+	return 1.f;
+}
+
 void Spherical::update_focus(rendering::Worker& /*worker*/) {}
 
 bool Spherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/,

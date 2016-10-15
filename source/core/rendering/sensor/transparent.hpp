@@ -8,7 +8,7 @@ class Transparent : public Sensor {
 
 public:
 
-	Transparent(int2 dimensions, float exposure, const tonemapping::Tonemapper* tonemapper);
+	Transparent(int2 dimensions, float exposure);
 	virtual ~Transparent();
 
 	virtual void clear() final override;

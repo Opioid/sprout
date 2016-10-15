@@ -29,6 +29,10 @@ math::Recti Hemispherical::view_bounds(uint32_t /*view*/) const {
 	return math::Recti{int2(0, 0), resolution_};
 }
 
+float Hemispherical::pixel_solid_angle() const {
+	return 1.f;
+}
+
 void Hemispherical::update_focus(rendering::Worker& /*worker*/) {}
 
 bool Hemispherical::generate_ray(const sampler::Camera_sample& sample, uint32_t /*view*/,

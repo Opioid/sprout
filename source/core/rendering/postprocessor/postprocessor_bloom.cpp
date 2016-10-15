@@ -1,4 +1,4 @@
-#include "postprocessor_glare.hpp"
+#include "postprocessor_bloom.hpp"
 #include "image/typed_image.inl"
 #include "base/math/vector.inl"
 #include "base/spectrum/rgb.inl"
@@ -23,8 +23,14 @@ private:
 	float alpha_;
 };
 
-void Glare::init(const scene::camera::Camera& /*camera*/) {
-	int32_t radius = 16;
+Bloom::Bloom(float threshold, float intensity) : threshold_(threshold), intensity_(intensity) {}
+
+void Bloom::init(const scene::camera::Camera& camera) {
+	float blur_angle = 0.016f * math::Pi;
+
+	float solid_angle = camera.pixel_solid_angle();
+
+	int32_t radius = static_cast<int32_t>(blur_angle / solid_angle + 0.5f);
 
 	int32_t width = 2 * radius + 1;
 
@@ -34,8 +40,6 @@ void Glare::init(const scene::camera::Camera& /*camera*/) {
 
 	for (int32_t y = 0; y < width; ++y) {
 		for (int32_t x = 0; x < width; ++x) {
-		//	int32_t i = y * width + x;
-
 			int2 p(-radius + x, -radius + y);
 
 			float2 fp(p);
@@ -48,9 +52,12 @@ void Glare::init(const scene::camera::Camera& /*camera*/) {
 	}
 }
 
-void Glare::apply(int32_t begin, int32_t end,
+void Bloom::apply(int32_t begin, int32_t end,
 				  const image::Image_float_4& source,
 				  image::Image_float_4& destination) const {
+	float threshold = threshold_;
+	float intensity = intensity_;
+
 	for (int32_t i = begin; i < end; ++i) {
 		int2 c = source.coordinates_2(i);
 
@@ -64,7 +71,7 @@ void Glare::apply(int32_t begin, int32_t end,
 
 				float l = spectrum::luminance(color);
 
-				if (l > 0.75f) {
+				if (l > threshold) {
 					accum += k.w * color;
 				}
 
@@ -75,14 +82,11 @@ void Glare::apply(int32_t begin, int32_t end,
 		const float4& s = source.at(i);
 
 		if (weight_sum > 0.f) {
-			destination.at(i) = float4(s.xyz + (accum / weight_sum), s.w);
+			float3 bloom = accum / weight_sum;
+			destination.at(i) = float4(s.xyz + intensity * bloom, s.w);
 		} else {
 			destination.at(i) = s;
 		}
-
-//		if (weight_sum > 0.f) {
-//			destination.at(i) = float4(accum / weight_sum, 1.f);
-//		}
 	}
 }
 

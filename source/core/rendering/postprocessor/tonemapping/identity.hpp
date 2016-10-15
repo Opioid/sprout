@@ -2,7 +2,7 @@
 
 #include "tonemapper.hpp"
 
-namespace rendering { namespace sensor { namespace tonemapping {
+namespace rendering { namespace postprocessor { namespace tonemapping {
 
 class Identity : public Tonemapper {
 public:

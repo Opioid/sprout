@@ -34,6 +34,8 @@ public:
 
 	virtual math::Recti view_bounds(uint32_t view) const = 0;
 
+	virtual float pixel_solid_angle() const = 0;
+
 	virtual void update_focus(rendering::Worker& worker) = 0;
 
 	virtual bool generate_ray(const sampler::Camera_sample& sample,

@@ -69,6 +69,10 @@ math::Recti Cubic_stereoscopic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 
+float Cubic_stereoscopic::pixel_solid_angle() const {
+	return 1.f;
+}
+
 void Cubic_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
 bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,

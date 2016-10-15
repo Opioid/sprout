@@ -32,6 +32,10 @@ math::Recti Perspective_stereoscopic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 
+float Perspective_stereoscopic::pixel_solid_angle() const {
+	return 1.f;
+}
+
 void Perspective_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
 
 bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample,

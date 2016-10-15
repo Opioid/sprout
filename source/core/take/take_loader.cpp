@@ -15,17 +15,17 @@
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
-#include "rendering/postprocessor/postprocessor_glare.hpp"
+#include "rendering/postprocessor/postprocessor_bloom.hpp"
 #include "rendering/sensor/opaque.hpp"
 #include "rendering/sensor/transparent.hpp"
 #include "rendering/sensor/clamp.inl"
 #include "rendering/sensor/filtered.inl"
 #include "rendering/sensor/unfiltered.inl"
 #include "rendering/sensor/filter/gaussian.hpp"
-#include "rendering/sensor/tonemapping/aces.hpp"
-#include "rendering/sensor/tonemapping/generic.hpp"
-#include "rendering/sensor/tonemapping/identity.hpp"
-#include "rendering/sensor/tonemapping/uncharted.hpp"
+#include "rendering/postprocessor/tonemapping/aces.hpp"
+#include "rendering/postprocessor/tonemapping/generic.hpp"
+#include "rendering/postprocessor/tonemapping/identity.hpp"
+#include "rendering/postprocessor/tonemapping/uncharted.hpp"
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_ld.hpp"
 #include "sampler/sampler_random.hpp"
@@ -234,7 +234,6 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 
 	float exposure = 0.f;
 	float3 clamp_max(-1.f, -1.f, -1.f);
-	const tonemapping::Tonemapper* tonemapper = nullptr;
 	const filter::Filter* filter = nullptr;
 
 	for (auto& n : sensor_value.GetObject()) {
@@ -242,18 +241,9 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 			exposure = json::read_float(n.value);
 		} else if ("clamp" == n.name) {
 			clamp_max = json::read_float3(n.value);
-		} else if ("tonemapper" == n.name) {
-			tonemapper = load_tonemapper(n.value);
 		} else if ("filter" == n.name) {
 			filter = load_filter(n.value);
 		}
-	}
-
-	if (!tonemapper) {		
-		logging::warning("A tonemapper with unknonw type was declared. "
-						 "Using identity tonemapper.");
-
-		tonemapper = new tonemapping::Identity();
 	}
 
 	bool clamp = !math::contains_negative(clamp_max);
@@ -261,68 +251,39 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 	if (filter) {
 		if (alpha_transparency) {
 			if (clamp) {
-				return new Filtered<Transparent, clamp::Clamp>(dimensions, exposure, tonemapper,
+				return new Filtered<Transparent, clamp::Clamp>(dimensions, exposure,
 															   clamp::Clamp(clamp_max), filter);
 			} else {
-				return new Filtered<Transparent, clamp::Identity>(dimensions, exposure, tonemapper,
+				return new Filtered<Transparent, clamp::Identity>(dimensions, exposure,
 																  clamp::Identity(), filter);
 			}
 		}
 
 		if (clamp) {
-			return new Filtered<Opaque, clamp::Clamp>( dimensions, exposure, tonemapper,
-													   clamp::Clamp(clamp_max), filter);
+			return new Filtered<Opaque, clamp::Clamp>(dimensions, exposure,
+													  clamp::Clamp(clamp_max), filter);
 		} else {
-			return new Filtered<Opaque, clamp::Identity>(dimensions, exposure, tonemapper,
+			return new Filtered<Opaque, clamp::Identity>(dimensions, exposure,
 														 clamp::Identity(), filter);
 		}
 	}
 
 	if (alpha_transparency) {
 		if (clamp) {
-			return new Unfiltered<Transparent, clamp::Clamp>(dimensions, exposure, tonemapper,
+			return new Unfiltered<Transparent, clamp::Clamp>(dimensions, exposure,
 															 clamp::Clamp(clamp_max));
 		} else {
-			return new Unfiltered<Transparent, clamp::Identity>(dimensions, exposure, tonemapper,
+			return new Unfiltered<Transparent, clamp::Identity>(dimensions, exposure,
 																clamp::Identity());
 		}
 	}
 
 	if (clamp) {
-		return new Unfiltered<Opaque, clamp::Clamp> (dimensions, exposure, tonemapper,
+		return new Unfiltered<Opaque, clamp::Clamp> (dimensions, exposure,
 													 clamp::Clamp(clamp_max));
 	}
 
-	return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, tonemapper,
-												   clamp::Identity());
-}
-
-const rendering::sensor::tonemapping::Tonemapper*
-Loader::load_tonemapper(const json::Value& tonemapper_value) {
-	for (auto& n : tonemapper_value.GetObject()) {
-		if ("ACES" == n.name) {
-			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
-
-			return new rendering::sensor::tonemapping::Aces(hdr_max);
-		} else if ("Generic" == n.name) {
-			float contrast = json::read_float(n.value, "contrast", 1.f);
-			float shoulder = json::read_float(n.value, "shoulder", 1.f);
-			float mid_in   = json::read_float(n.value, "mid_in",   0.18f);
-			float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
-			float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
-
-			return new rendering::sensor::tonemapping::Generic(contrast, shoulder, mid_in,
-															   mid_out, hdr_max);
-		} else if ("Identity" == n.name) {
-			return new rendering::sensor::tonemapping::Identity();
-		} else if ("Uncharted" == n.name) {
-			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
-
-			return new rendering::sensor::tonemapping::Uncharted(hdr_max);
-		}
-	}
-
-	return nullptr;
+	return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, clamp::Identity());
 }
 
 const rendering::sensor::filter::Filter*
@@ -504,12 +465,41 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 		std::string type_name = n->name.GetString();
 
 		if ("tonemapper" == type_name) {
-			// return std::make_shared<Attenuation_factory>(settings);
-		} else if ("Glare" == type_name) {
-
-			pipeline.add(new rendering::postprocessor::Glare);
+			pipeline.add(load_tonemapper(n->value));
+		} else if ("Bloom" == type_name) {
+			float threshold = json::read_float(n->value, "threshold", 4.f);
+			float intensity = json::read_float(n->value, "intensity", 0.01f);
+			pipeline.add(new rendering::postprocessor::Bloom(threshold, intensity));
 		}
 	}
+}
+
+rendering::postprocessor::tonemapping::Tonemapper*
+Loader::load_tonemapper(const json::Value& tonemapper_value) {
+	for (auto& n : tonemapper_value.GetObject()) {
+		if ("ACES" == n.name) {
+			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
+
+			return new rendering::postprocessor::tonemapping::Aces(hdr_max);
+		} else if ("Generic" == n.name) {
+			float contrast = json::read_float(n.value, "contrast", 1.f);
+			float shoulder = json::read_float(n.value, "shoulder", 1.f);
+			float mid_in   = json::read_float(n.value, "mid_in",   0.18f);
+			float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
+			float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
+
+			return new rendering::postprocessor::tonemapping::Generic(contrast, shoulder, mid_in,
+															   mid_out, hdr_max);
+		} else if ("Identity" == n.name) {
+			return new rendering::postprocessor::tonemapping::Identity();
+		} else if ("Uncharted" == n.name) {
+			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
+
+			return new rendering::postprocessor::tonemapping::Uncharted(hdr_max);
+		}
+	}
+
+	return nullptr;
 }
 
 bool Loader::peek_alpha_transparency(const json::Value& take_value) {

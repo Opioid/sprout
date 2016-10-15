@@ -23,8 +23,6 @@ namespace sensor {
 
 class Sensor;
 
-namespace tonemapping { class Tonemapper; }
-
 namespace filter { class Filter; }
 
 }
@@ -34,7 +32,11 @@ namespace integrator {
 namespace surface { class Factory; }
 namespace volume  { class Factory; }
 
-}}
+}
+
+namespace postprocessor {  namespace tonemapping { class Tonemapper; } }
+
+}
 
 namespace take {
 
@@ -58,9 +60,6 @@ private:
 	static rendering::sensor::Sensor*
 	load_sensor(const json::Value& sensor_value, int2 dimensions, bool alpha_transparency);
 
-	static const rendering::sensor::tonemapping::Tonemapper*
-	load_tonemapper(const json::Value& tonemapper_value);
-
 	static const rendering::sensor::filter::Filter*
 	load_filter(const rapidjson::Value& filter_value);
 
@@ -78,6 +77,9 @@ private:
 								   const Settings& settings);
 
 	static void load_postprocessors(const json::Value& pp_value, Take& take);
+
+	static rendering::postprocessor::tonemapping::Tonemapper*
+	load_tonemapper(const json::Value& tonemapper_value);
 
 	static bool peek_alpha_transparency(const json::Value& take_value);
 

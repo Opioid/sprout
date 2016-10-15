@@ -15,6 +15,8 @@ public:
 
 	virtual math::Recti view_bounds(uint32_t view) const final override;
 
+	virtual float pixel_solid_angle() const final override;
+
 	virtual void update_focus(rendering::Worker& worker) final override;
 
 	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,

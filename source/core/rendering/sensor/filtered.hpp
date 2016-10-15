@@ -7,8 +7,6 @@ namespace sampler { struct Camera_sample; }
 
 namespace rendering { namespace sensor {
 
-namespace tonemapping { class Tonemapper; }
-
 namespace filter { class Filter; }
 
 template<class Base, class Clamp>
@@ -16,11 +14,7 @@ class Filtered : public Base {
 
 public:
 
-	Filtered(int2 dimensions,
-			 float exposure,
-			 const tonemapping::Tonemapper* tonemapper,
-			 const Clamp& clamp,
-			 const filter::Filter* filter);
+	Filtered(int2 dimensions, float exposure, const Clamp& clamp, const filter::Filter* filter);
 
 	~Filtered();
 
