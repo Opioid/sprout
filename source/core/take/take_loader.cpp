@@ -16,16 +16,16 @@
 #include "rendering/integrator/volume/attenuation.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
+#include "rendering/postprocessor/tonemapping/aces.hpp"
+#include "rendering/postprocessor/tonemapping/generic.hpp"
+#include "rendering/postprocessor/tonemapping/identity.hpp"
+#include "rendering/postprocessor/tonemapping/uncharted.hpp"
 #include "rendering/sensor/opaque.hpp"
 #include "rendering/sensor/transparent.hpp"
 #include "rendering/sensor/clamp.inl"
 #include "rendering/sensor/filtered.inl"
 #include "rendering/sensor/unfiltered.inl"
 #include "rendering/sensor/filter/gaussian.hpp"
-#include "rendering/postprocessor/tonemapping/aces.hpp"
-#include "rendering/postprocessor/tonemapping/generic.hpp"
-#include "rendering/postprocessor/tonemapping/identity.hpp"
-#include "rendering/postprocessor/tonemapping/uncharted.hpp"
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_ld.hpp"
 #include "sampler/sampler_random.hpp"
@@ -467,9 +467,11 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 		if ("tonemapper" == type_name) {
 			pipeline.add(load_tonemapper(n->value));
 		} else if ("Bloom" == type_name) {
-			float threshold = json::read_float(n->value, "threshold", 4.f);
-			float intensity = json::read_float(n->value, "intensity", 0.01f);
-			pipeline.add(new rendering::postprocessor::Bloom(threshold, intensity));
+			float angle		= json::read_float(n->value, "angle", 0.015f);
+			float alpha		= json::read_float(n->value, "alpha", 0.005f);
+			float threshold = json::read_float(n->value, "threshold", 2.f);
+			float intensity = json::read_float(n->value, "intensity", 0.1f);
+			pipeline.add(new rendering::postprocessor::Bloom(angle, alpha, threshold, intensity));
 		}
 	}
 }

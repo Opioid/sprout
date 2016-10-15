@@ -8,21 +8,25 @@ class Bloom : public Postprocessor {
 
 public:
 
-	Bloom(float threshold, float intensity);
+	Bloom(float angle, float alpha, float threshold, float intensity);
 
 	virtual void init(const scene::camera::Camera& camera) final override;
 
 private:
 
-	virtual void apply(int32_t begin, int32_t end,
+	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
 					   const image::Image_float_4& source,
-					   image::Image_float_4& destination) const final override;
+					   image::Image_float_4& destination) final override;
 
+	float angle_;
+	float alpha_;
 	float threshold_;
 	float intensity_;
 
+	image::Image_float_4 scratch_;
+
 	struct K {
-		int2 p;
+		int32_t o;
 		float w;
 	};
 

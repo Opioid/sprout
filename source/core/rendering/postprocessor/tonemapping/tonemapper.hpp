@@ -16,9 +16,9 @@ public:
 
 private:
 
-	virtual void apply(int32_t begin, int32_t end,
+	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
 					   const image::Image_float_4& source,
-					   image::Image_float_4& destination) const final override;
+					   image::Image_float_4& destination) final override;
 
 protected:
 

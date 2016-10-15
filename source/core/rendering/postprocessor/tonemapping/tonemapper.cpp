@@ -8,9 +8,9 @@ Tonemapper::~Tonemapper() {}
 
 void Tonemapper::init(const scene::camera::Camera& /*camera*/) {}
 
-void Tonemapper::apply(int32_t begin, int32_t end,
+void Tonemapper::apply(int32_t begin, int32_t end, uint32_t /*pass*/,
 					   const image::Image_float_4& source,
-					   image::Image_float_4& destination) const {
+					   image::Image_float_4& destination) {
 	for (int32_t i = begin; i < end; ++i) {
 		const float4& color = source.at(i);
 

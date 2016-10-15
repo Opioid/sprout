@@ -23,10 +23,15 @@ private:
 	float alpha_;
 };
 
-Bloom::Bloom(float threshold, float intensity) : threshold_(threshold), intensity_(intensity) {}
+Bloom::Bloom(float angle, float alpha, float threshold, float intensity) :
+	Postprocessor(2),
+	angle_(angle), alpha_(alpha), threshold_(threshold), intensity_(intensity) {}
 
 void Bloom::init(const scene::camera::Camera& camera) {
-	float blur_angle = 0.016f * math::Pi;
+	image::Image::Description description(image::Image::Type::Float_4, camera.sensor_dimensions());
+	scratch_.resize(description);
+
+	float blur_angle = angle_ * math::Pi;
 
 	float solid_angle = camera.pixel_solid_angle();
 
@@ -34,58 +39,82 @@ void Bloom::init(const scene::camera::Camera& camera) {
 
 	int32_t width = 2 * radius + 1;
 
-//	kernel_.resize(width * width);
+	kernel_.resize(width);
 
-	Gaussian_functor gauss(static_cast<float>(radius * radius), 0.0025f);
+	float fr = static_cast<float>(radius) + 0.5f;
+	Gaussian_functor gauss(static_cast<float>(fr * fr), alpha_);
 
-	for (int32_t y = 0; y < width; ++y) {
-		for (int32_t x = 0; x < width; ++x) {
-			int2 p(-radius + x, -radius + y);
+	for (int32_t x = 0; x < width; ++x) {
+		int32_t o = -radius + x;
 
-			float2 fp(p);
-			float w = gauss(fp.x * fp.x) * gauss(fp.y * fp.y);
+		float fo = static_cast<float>(o);
+		float w = gauss(fo * fo);
 
-			if (w > 0.f) {
-				kernel_.push_back(K{p, w});
-			}
-		}
+		kernel_[x] = K{o, w};
 	}
 }
 
-void Bloom::apply(int32_t begin, int32_t end,
+void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 				  const image::Image_float_4& source,
-				  image::Image_float_4& destination) const {
+				  image::Image_float_4& destination) {
 	float threshold = threshold_;
 	float intensity = intensity_;
 
-	for (int32_t i = begin; i < end; ++i) {
-		int2 c = source.coordinates_2(i);
+	if (0 == pass) {
+		for (int32_t i = begin; i < end; ++i) {
+			int2 c = source.coordinates_2(i);
 
-		float3 accum(0.f);
-		float  weight_sum = 0.f;
-		for (auto& k : kernel_) {
-			int32_t ci = source.checked_index(c + k.p);
+			float3 accum(0.f);
+			float  weight_sum = 0.f;
+			for (auto& k : kernel_) {
+				int32_t ci = source.checked_index(c + int2(0, k.o));
 
-			if (ci > 0) {
-				float3 color = source.at(ci).xyz;
+				if (ci > 0) {
+					float3 color = source.at(ci).xyz;
 
-				float l = spectrum::luminance(color);
+					float l = spectrum::luminance(color);
 
-				if (l > threshold) {
-					accum += k.w * color;
+					if (l > threshold) {
+						accum += k.w * color;
+					}
+
+					weight_sum += k.w;
 				}
+			}
 
-				weight_sum += k.w;
+			if (weight_sum > 0.f) {
+				float3 bloom = accum / weight_sum;
+				scratch_.at(i) = float4(bloom);
+			} else {
+				scratch_.at(i) = float4(0.f);
 			}
 		}
+	} else {
+		for (int32_t i = begin; i < end; ++i) {
+			int2 c = source.coordinates_2(i);
 
-		const float4& s = source.at(i);
+			float3 accum(0.f);
+			float  weight_sum = 0.f;
+			for (auto& k : kernel_) {
+				int32_t ci = source.checked_index(c + int2(k.o, 0));
 
-		if (weight_sum > 0.f) {
-			float3 bloom = accum / weight_sum;
-			destination.at(i) = float4(s.xyz + intensity * bloom, s.w);
-		} else {
-			destination.at(i) = s;
+				if (ci > 0) {
+					float3 bloom = scratch_.at(ci).xyz;
+
+					accum += k.w * bloom;
+
+					weight_sum += k.w;
+				}
+			}
+
+			const float4& s = source.at(i);
+
+			if (weight_sum > 0.f) {
+				float3 bloom = accum / weight_sum;
+				destination.at(i) = float4(s.xyz + intensity * bloom, s.w);
+			} else {
+				destination.at(i) = s;
+			}
 		}
 	}
 }
