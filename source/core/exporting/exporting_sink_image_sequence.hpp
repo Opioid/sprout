@@ -8,6 +8,7 @@ namespace image { class Writer; }
 namespace exporting {
 
 class Image_sequence : public Sink {
+
 public:
 
 	Image_sequence(const std::string& filename, image::Writer* writer);

@@ -54,6 +54,10 @@ void Bloom::init(const scene::camera::Camera& camera) {
 	}
 }
 
+size_t Bloom::num_bytes() const {
+	return sizeof(*this) + scratch_.num_bytes() + kernel_.size() * sizeof(K);
+}
+
 void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 				  const image::Image_float_4& source,
 				  image::Image_float_4& destination) {

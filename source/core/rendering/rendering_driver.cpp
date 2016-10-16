@@ -43,4 +43,8 @@ const scene::Scene& Driver::scene() const {
 	return scene_;
 }
 
+size_t Driver::num_bytes() const {
+	return target_.num_bytes();
+}
+
 }

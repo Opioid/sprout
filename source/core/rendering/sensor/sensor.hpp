@@ -27,6 +27,8 @@ public:
 	virtual void add_sample(const sampler::Camera_sample& sample, const float4& color,
 							const math::Recti& tile, const math::Recti& bounds) = 0;
 
+	virtual size_t num_bytes() const = 0;
+
 protected:
 
 	virtual void add_pixel(int2 pixel, const float4& color, float weight) = 0;

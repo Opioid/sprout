@@ -8,6 +8,10 @@ Tonemapper::~Tonemapper() {}
 
 void Tonemapper::init(const scene::camera::Camera& /*camera*/) {}
 
+size_t Tonemapper::num_bytes() const {
+	return 0;
+}
+
 void Tonemapper::apply(int32_t begin, int32_t end, uint32_t /*pass*/,
 					   const image::Image_float_4& source,
 					   image::Image_float_4& destination) {

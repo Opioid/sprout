@@ -14,6 +14,8 @@ public:
 
 	virtual void init(const scene::camera::Camera& camera) final override;
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	virtual void apply(int32_t begin, int32_t end, uint32_t pass,

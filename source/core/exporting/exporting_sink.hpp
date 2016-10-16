@@ -7,6 +7,7 @@ namespace thread { class Pool; }
 namespace exporting {
 
 class Sink {
+
 public:
 
 	virtual ~Sink() {}

@@ -37,6 +37,15 @@ void Pipeline::init(const scene::camera::Camera& camera) {
 	}
 }
 
+size_t Pipeline::num_bytes() const {
+	size_t num_bytes = 0;
+	for (auto pp : postprocessors_) {
+		num_bytes += pp->num_bytes();
+	}
+
+	return num_bytes;
+}
+
 void Pipeline::apply(const sensor::Sensor& sensor, image::Image_float_4& target,
 					 thread::Pool& pool) {
 	if (postprocessors_.empty()) {

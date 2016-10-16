@@ -14,13 +14,13 @@
 
 namespace controller {
 
-void progressive(take::Take& take, scene::Scene& scene,
-				 resource::Manager& resource_manager,
-				 thread::Pool& thread_pool) {
+size_t progressive(take::Take& take, scene::Scene& scene,
+				   resource::Manager& resource_manager,
+				   thread::Pool& thread_pool) {
 	logging::info("Progressive mode... type stuff to interact");
 
 	if (!take.view.camera) {
-		return;
+		return 0;
 	}
 
 	rendering::Driver_progressive driver(take.surface_integrator_factory,
@@ -60,6 +60,8 @@ void progressive(take::Take& take, scene::Scene& scene,
 	driver.abort();
 
 	server.shutdown();
+
+	return driver.num_bytes();
 }
 
 

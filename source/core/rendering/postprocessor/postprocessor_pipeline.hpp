@@ -34,6 +34,8 @@ public:
 
 	void init(const scene::camera::Camera& camera);
 
+	size_t num_bytes() const;
+
 	void apply(const sensor::Sensor& sensor, image::Image_float_4& target,
 			   thread::Pool& pool);
 

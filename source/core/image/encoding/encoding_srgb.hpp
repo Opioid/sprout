@@ -10,7 +10,7 @@ class Srgb {
 public:
 
 	Srgb(int2 dimensions);
-	virtual ~Srgb();
+	~Srgb();
 
 	const math::byte3* data() const;
 
@@ -30,7 +30,7 @@ class Srgb_alpha {
 public:
 
 	Srgb_alpha(int2 dimensions);
-	virtual ~Srgb_alpha();
+	~Srgb_alpha();
 
 	const math::byte4* data() const;
 

@@ -7,6 +7,7 @@ namespace image { class Writer; }
 namespace exporting {
 
 class Statistics : public Sink {
+
 public:
 
 	Statistics();

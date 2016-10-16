@@ -16,6 +16,8 @@ public:
 
 	virtual void init(const scene::camera::Camera& camera) = 0;
 
+	virtual size_t num_bytes() const = 0;
+
 	void apply(const image::Image_float_4& source,
 			   image::Image_float_4& destination,
 			   thread::Pool& pool);

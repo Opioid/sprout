@@ -43,6 +43,8 @@ public:
 
 	const scene::Scene& scene() const;
 
+	size_t num_bytes() const;
+
 protected:
 
 	Surface_integrator_factory surface_integrator_factory_;

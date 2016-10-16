@@ -1,14 +1,15 @@
 #include "controller/controller_progressive.hpp"
 #include "options/options.hpp"
+#include "core/baking/baking_driver.hpp"
 #include "core/file/file_system.hpp"
 #include "core/logging/logging.hpp"
-#include "core/baking/baking_driver.hpp"
+#include "core/image/image_provider.hpp"
+#include "core/image/texture/texture_provider.hpp"
 #include "core/progress/progress_sink_null.hpp"
 #include "core/progress/progress_sink_stdout.hpp"
 #include "core/rendering/rendering_driver_finalframe.hpp"
+#include "core/rendering/sensor/sensor.hpp"
 #include "core/resource/resource_manager.inl"
-#include "core/image/image_provider.hpp"
-#include "core/image/texture/texture_provider.hpp"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "core/scene/scene.hpp"
@@ -24,7 +25,9 @@
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 
-void log_resource_memory(const resource::Manager& manager);
+void log_memory_consumption(const resource::Manager& manager,
+							const take::Take& take,
+							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
 	logging::init(logging::Type::Stdout);
@@ -118,8 +121,10 @@ int main(int argc, char* argv[]) {
 
 	logging::info("Rendering...");
 
+	size_t rendering_num_bytes = 0;
+
 	if (args.progressive) {
-		controller::progressive(*take, scene, resource_manager, thread_pool);
+		rendering_num_bytes = controller::progressive(*take, scene, resource_manager, thread_pool);
 	} else {
 		progress::Stdout progressor;
 
@@ -132,6 +137,8 @@ int main(int argc, char* argv[]) {
 												scene,
 												take->view,
 												thread_pool);
+
+			rendering_num_bytes += driver.num_bytes();
 
 			driver.render(*take->exporter, progressor);
 		} else {
@@ -149,14 +156,16 @@ int main(int argc, char* argv[]) {
 					  string::to_string(chrono::seconds_since(total_start)) + " s");
 	}
 
-	log_resource_memory(resource_manager);
+	log_memory_consumption(resource_manager, *take, rendering_num_bytes);
 
 	logging::release();
 
 	return 0;
 }
 
-void log_resource_memory(const resource::Manager& manager) {
+void log_memory_consumption(const resource::Manager& manager,
+							const take::Take& take,
+							size_t rendering_num_bytes) {
 	logging::info("Memory consumption:");
 
 	size_t image_num_bytes = manager.num_bytes<image::Image>();
@@ -168,6 +177,12 @@ void log_resource_memory(const resource::Manager& manager) {
 	size_t mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
 	logging::info("Meshes: " + string::print_bytes(mesh_num_bytes));
 
-	size_t total_num_bytes = image_num_bytes + material_num_bytes + mesh_num_bytes;
+	size_t buffers_num_bytes = take.view.pipeline.num_bytes()
+							 + take.view.camera->sensor().num_bytes()
+							 + rendering_num_bytes;
+	logging::info("Buffers: " + string::print_bytes(buffers_num_bytes));
+
+	size_t total_num_bytes = image_num_bytes + material_num_bytes
+						   + mesh_num_bytes + buffers_num_bytes;
 	logging::info("Total: " + string::print_bytes(total_num_bytes));
 }

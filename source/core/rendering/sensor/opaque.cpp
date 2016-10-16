@@ -22,6 +22,11 @@ void Opaque::clear() {
 	}
 }
 
+size_t Opaque::num_bytes() const {
+	auto d = dimensions();
+	return d.x * d.y * sizeof(float4);
+}
+
 void Opaque::add_pixel(int2 pixel, const float4& color, float weight) {
 	auto d = dimensions();
 

@@ -13,6 +13,8 @@ public:
 
 	virtual void clear() final override;
 
+	virtual size_t num_bytes() const final override;
+
 protected:
 
 	virtual void add_pixel(int2 pixel, const float4& color, float weight) final override;
