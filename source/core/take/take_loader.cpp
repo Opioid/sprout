@@ -16,6 +16,7 @@
 #include "rendering/integrator/volume/attenuation.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
+#include "rendering/postprocessor/postprocessor_glare.hpp"
 #include "rendering/postprocessor/tonemapping/aces.hpp"
 #include "rendering/postprocessor/tonemapping/generic.hpp"
 #include "rendering/postprocessor/tonemapping/identity.hpp"
@@ -472,6 +473,10 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 			float threshold = json::read_float(n->value, "threshold", 2.f);
 			float intensity = json::read_float(n->value, "intensity", 0.1f);
 			pipeline.add(new rendering::postprocessor::Bloom(angle, alpha, threshold, intensity));
+		} else if ("Glare" == type_name) {
+			float threshold = json::read_float(n->value, "threshold", 2.f);
+			float intensity = json::read_float(n->value, "intensity", 0.1f);
+			pipeline.add(new rendering::postprocessor::Glare(threshold, intensity));
 		}
 	}
 }
