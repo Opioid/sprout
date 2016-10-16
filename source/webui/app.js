@@ -39,7 +39,8 @@ FpsCounter.prototype.update = function() {
 	this.frameCounter++;
 
 	if (this.frameTimeCounter > 1.0) {
-		this.label.innerHTML = this.frameCounter + ' FPS';
+		var fps = Math.floor((this.frameCounter / this.frameTimeCounter) * 10.0) / 10.0;
+		this.label.innerHTML = fps + ' FPS';
 
 		this.frameTimeCounter = 0.0;
 		this.frameCounter = 0;
