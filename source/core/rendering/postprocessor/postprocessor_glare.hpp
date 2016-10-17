@@ -1,6 +1,7 @@
 #pragma once
 
 #include "postprocessor.hpp"
+#include <vector>
 
 namespace rendering { namespace postprocessor {
 
