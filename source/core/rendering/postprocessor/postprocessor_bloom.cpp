@@ -31,11 +31,9 @@ void Bloom::init(const scene::camera::Camera& camera) {
 	image::Image::Description description(image::Image::Type::Float_4, camera.sensor_dimensions());
 	scratch_.resize(description);
 
-	float blur_angle = angle_ * math::Pi;
-
 	float solid_angle = camera.pixel_solid_angle();
 
-	int32_t radius = static_cast<int32_t>(blur_angle / solid_angle + 0.5f);
+	int32_t radius = static_cast<int32_t>(angle_ / solid_angle + 0.5f);
 
 	int32_t width = 2 * radius + 1;
 

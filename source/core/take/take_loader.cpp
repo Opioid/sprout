@@ -468,7 +468,7 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 		if ("tonemapper" == type_name) {
 			pipeline.add(load_tonemapper(n->value));
 		} else if ("Bloom" == type_name) {
-			float angle		= json::read_float(n->value, "angle", 0.015f);
+			float angle		= json::read_float(n->value, "angle", 0.05f);
 			float alpha		= json::read_float(n->value, "alpha", 0.005f);
 			float threshold = json::read_float(n->value, "threshold", 2.f);
 			float intensity = json::read_float(n->value, "intensity", 0.1f);
