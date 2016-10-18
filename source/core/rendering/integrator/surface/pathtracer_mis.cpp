@@ -36,8 +36,8 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 	Sampler_filter filter = Sampler_filter::Unknown;
 	scene::material::bxdf::Result sample_result;
 
-	float3 throughput = float3(1.f, 1.f, 1.f);
-	float3 result = math::float3_identity;
+	float3 throughput(1.f);
+	float3 result(0.f);
 	float opacity = 0.f;
 	bool primary_ray = 0 == ray.depth;
 	bool requires_bounce = false;
@@ -142,7 +142,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 											 const scene::material::Sample& material_sample,
 											 Sampler_filter filter,
 											 Bxdf_result& sample_result) {
-	float3 result = math::float3_identity;
+	float3 result(0.f);
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	scene::Ray secondary_ray;
@@ -238,7 +238,7 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 									  const scene::Intersection& intersection,
 									  const scene::material::Sample& material_sample,
 									  Sampler_filter filter) {
-	float3 result = math::float3_identity;
+	float3 result(0.f);
 
 	// Light source importance sample
 	scene::light::Sample light_sample;
