@@ -53,7 +53,7 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result)
 		if (p < 0.5f) {
 			float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color,
 														 layer_, sampler, result);
-			result.wi *= -1.f;
+			result.wi  *= -1.f;
 			result.pdf *= 0.5f;
 			float approximated_distance = thickness_ / n_dot_wi;
 			float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
@@ -91,6 +91,8 @@ bool Sample_translucent::is_translucent() const {
 }
 
 void Sample_translucent::set(float3_p diffuse_color, float thickness, float attenuation_distance) {
+	thickness_ = thickness;
+
 	if (thickness > 0.f) {
 		attenuation_ = material::Sample::attenuation(diffuse_color, attenuation_distance);
 	}

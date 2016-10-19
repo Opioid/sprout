@@ -49,7 +49,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 
 	math::random::Generator rng(0, 1, 2, 3);
 
-	uint32_t num_blades = 196 * 1024;
+	uint32_t num_blades = 128 * 1024;
 
 	float2 start(-1.f,  1.f);
 	float2 end  ( 1.f, -1.f);
@@ -60,7 +60,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 		float2 s = math::ems(i, 3, 4);
 
 	//	float2 p = start + s * range;
-		float2 p = 6.f * math::sample_disk_concentric(s);
+		float2 p = 4.f * math::sample_disk_concentric(s);
 
 		float randomness = 1.f;//sampler.sample_1(*mask, s);
 
@@ -68,9 +68,9 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 
 		rotation_y = math::lerp(0.25f * math::Pi, rotation_y, randomness);
 
-		float l = 0.05f + 0.1f * rng.random_float();//- (0.15f * randomness);
-		float w = 0.1f;
-		float h = 0.2f + 0.1f * rng.random_float();// + 0.15f - (0.15f * randomness);
+		float l = 0.05f + 0.1f  * rng.random_float();//- (0.15f * randomness);
+		float w = 0.15f + 0.05f * rng.random_float();
+		float h = 0.2f  + 0.15f * rng.random_float();// + 0.15f - (0.15f * randomness);
 
 		add_blade(float3(p.x, 0.f, p.y),
 				  rotation_y, l, w, h, i * num_vertices, triangles, vertices);

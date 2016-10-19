@@ -774,32 +774,29 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	float attenuation_distance = 0.f;
 	Coating_description coating;
 
-	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("color" == node_name) {
-			color = json::read_float3(node_value);
-		} else if ("ior" == node_name) {
-			ior = json::read_float(node_value);
-		} else if ("roughness" == node_name) {
-			roughness = json::read_float(node_value);
-		} else if ("metallic" == node_name) {
-			metallic = json::read_float(node_value);
-		} else if ("emission_factor" == node_name) {
-			emission_factor = json::read_float(node_value);
-		} else if ("thickness" == node_name) {
-			thickness = json::read_float(node_value);
-		} else if ("attenuation_distance" == node_name) {
-			attenuation_distance = json::read_float(node_value);
-		} else if ("two_sided" == node_name) {
-			two_sided = json::read_bool(node_value);
-		} else if ("coating" == node_name) {
-			read_coating_description(node_value, coating);
-		} else if ("textures" == node_name) {
-			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+	for (auto& n : substitute_value.GetObject()) {
+		if ("color" == n.name) {
+			color = json::read_float3(n.value);
+		} else if ("ior" == n.name) {
+			ior = json::read_float(n.value);
+		} else if ("roughness" == n.name) {
+			roughness = json::read_float(n.value);
+		} else if ("metallic" == n.name) {
+			metallic = json::read_float(n.value);
+		} else if ("emission_factor" == n.name) {
+			emission_factor = json::read_float(n.value);
+		} else if ("thickness" == n.name) {
+			thickness = json::read_float(n.value);
+		} else if ("attenuation_distance" == n.name) {
+			attenuation_distance = json::read_float(n.value);
+		} else if ("two_sided" == n.name) {
+			two_sided = json::read_bool(n.value);
+		} else if ("coating" == n.name) {
+			read_coating_description(n.value, coating);
+		} else if ("textures" == n.name) {
+			for (auto& tn : n.value.GetArray()) {
 				Texture_description texture_description;
-				read_texture_description(*tn, texture_description);
+				read_texture_description(tn, texture_description);
 
 				if (texture_description.filename.empty()) {
 					continue;
@@ -823,8 +820,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
-		} else if ("sampler" == node_name) {
-			read_sampler_settings(node_value, sampler_settings);
+		} else if ("sampler" == n.name) {
+			read_sampler_settings(n.value, sampler_settings);
 		}
 	}
 
