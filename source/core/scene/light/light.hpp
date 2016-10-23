@@ -4,7 +4,7 @@
 #include "base/math/vector.hpp"
 #include "base/math/bounding/aabb.hpp"
 
-namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
+namespace image { namespace texture { namespace sampler { class Sampler_2d; }}}
 
 namespace sampler { class Sampler; }
 

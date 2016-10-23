@@ -10,11 +10,11 @@ namespace scene { namespace material {
 Sampler_cache::Sampler_cache() {
 	using namespace image::texture::sampler;
 
-	samplers_2D_[0] = new Sampler_2D_nearest<Address_mode_repeat>;
-	samplers_2D_[1] = new Sampler_2D_linear <Address_mode_repeat>;
+	samplers_2D_[0] = new Sampler_2d_nearest<Address_mode_repeat>;
+	samplers_2D_[1] = new Sampler_2d_linear <Address_mode_repeat>;
 
-	samplers_3D_[0] = new Sampler_3D_nearest<Address_mode_clamp>;
-	samplers_3D_[1] = new Sampler_3D_linear <Address_mode_clamp>;
+	samplers_3D_[0] = new Sampler_3d_nearest<Address_mode_clamp>;
+	samplers_3D_[1] = new Sampler_3d_linear <Address_mode_clamp>;
 }
 
 Sampler_cache::~Sampler_cache() {
@@ -25,7 +25,7 @@ Sampler_cache::~Sampler_cache() {
 	delete samplers_2D_[1];
 }
 
-const image::texture::sampler::Sampler_2D&
+const image::texture::sampler::Sampler_2d&
 Sampler_cache::sampler_2D(uint32_t key, Sampler_settings::Filter filter) const {
 	if (Sampler_settings::Filter::Unknown == filter) {
 		return *samplers_2D_[key];
@@ -34,7 +34,7 @@ Sampler_cache::sampler_2D(uint32_t key, Sampler_settings::Filter filter) const {
 	}
 }
 
-const image::texture::sampler::Sampler_3D&
+const image::texture::sampler::Sampler_3d&
 Sampler_cache::sampler_3D(uint32_t key, Sampler_settings::Filter filter) const {
 	if (Sampler_settings::Filter::Unknown == filter) {
 		return *samplers_3D_[key];

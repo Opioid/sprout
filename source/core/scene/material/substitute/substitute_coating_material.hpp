@@ -22,7 +22,7 @@ public:
 
 protected:
 
-	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
+	using Texture_sampler_2D = image::texture::sampler::Sampler_2d;
 
 	void set_coating_basis(const Renderstate& rs, const Texture_sampler_2D& sampler,
 						   Sample& sample);

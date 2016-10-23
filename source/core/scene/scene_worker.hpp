@@ -3,7 +3,7 @@
 #include "shape/node_stack.hpp"
 #include "material/sampler_cache.hpp"
 
-namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
+namespace image { namespace texture { namespace sampler { class Sampler_2d; }}}
 
 namespace scene {
 
@@ -35,10 +35,10 @@ public:
 
 	shape::Node_stack& node_stack();
 
-	const image::texture::sampler::Sampler_2D&
+	const image::texture::sampler::Sampler_2d&
 	sampler_2D(uint32_t key, Sampler_filter filter) const;
 
-	const image::texture::sampler::Sampler_3D&
+	const image::texture::sampler::Sampler_3d&
 	sampler_3D(uint32_t key, Sampler_filter filter) const;
 
 private:

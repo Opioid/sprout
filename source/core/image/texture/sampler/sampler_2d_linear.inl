@@ -8,7 +8,7 @@
 namespace image { namespace texture { namespace sampler {
 
 template<typename Address_mode>
-float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 uv) const {
+float Sampler_2d_linear<Address_mode>::sample_1(const Texture& texture, float2 uv) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
@@ -21,7 +21,7 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 u
 }
 
 template<typename Address_mode>
-float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 uv) const {
+float2 Sampler_2d_linear<Address_mode>::sample_2(const Texture& texture, float2 uv) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
@@ -34,7 +34,7 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 
 }
 
 template<typename Address_mode>
-float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 uv) const {
+float3 Sampler_2d_linear<Address_mode>::sample_3(const Texture& texture, float2 uv) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
@@ -47,7 +47,7 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 
 }
 
 template<typename Address_mode>
-float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 uv,
+float Sampler_2d_linear<Address_mode>::sample_1(const Texture& texture, float2 uv,
 												int32_t element) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
@@ -63,7 +63,7 @@ float Sampler_2D_linear<Address_mode>::sample_1(const Texture& texture, float2 u
 }
 
 template<typename Address_mode>
-float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 uv,
+float2 Sampler_2d_linear<Address_mode>::sample_2(const Texture& texture, float2 uv,
 												 int32_t element) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
@@ -79,7 +79,7 @@ float2 Sampler_2D_linear<Address_mode>::sample_2(const Texture& texture, float2 
 }
 
 template<typename Address_mode>
-float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 uv,
+float3 Sampler_2d_linear<Address_mode>::sample_3(const Texture& texture, float2 uv,
 												 int32_t element) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
@@ -95,12 +95,12 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 
 }
 
 template<typename Address_mode>
-float2 Sampler_2D_linear<Address_mode>::address(float2 uv) const {
+float2 Sampler_2d_linear<Address_mode>::address(float2 uv) const {
 	return Address_mode::f(uv);
 }
 
 template<typename Address_mode>
-float2 Sampler_2D_linear<Address_mode>::map(const Texture& texture, float2 uv, int4& xy_xy1) {
+float2 Sampler_2d_linear<Address_mode>::map(const Texture& texture, float2 uv, int4& xy_xy1) {
 	auto b = texture.back_2();
 	auto d = texture.dimensions_float2();
 

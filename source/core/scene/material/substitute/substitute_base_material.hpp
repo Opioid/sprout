@@ -3,7 +3,7 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample_cache.hpp"
 
-namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
+namespace image { namespace texture { namespace sampler { class Sampler_2d; }}}
 
 namespace scene { namespace material { namespace substitute {
 
@@ -40,7 +40,7 @@ public:
 
 protected:
 
-	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
+	using Texture_sampler_2D = image::texture::sampler::Sampler_2d;
 
 	void set_sample(float3_p wo, const shape::Hitpoint& hp,
 					const Texture_sampler_2D& sampler, Sample& sample);
