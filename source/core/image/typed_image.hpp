@@ -22,6 +22,8 @@ public:
 
 	T load_element(int32_t x, int32_t y, int32_t element) const;
 
+	void store(int32_t x, int32_t y, T v);
+
 	const T& at(int32_t x, int32_t y) const;
 	T& at(int32_t x, int32_t y);
 

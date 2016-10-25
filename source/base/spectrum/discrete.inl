@@ -31,6 +31,13 @@ void Discrete_spectral_power_distribution<N>::set_bin(uint32_t bin, float value)
 }
 
 template<uint32_t N>
+void Discrete_spectral_power_distribution<N>::clear(float s) {
+	for (uint32_t i = 0; i < N; ++i) {
+		values_[i] = s;
+	}
+}
+
+template<uint32_t N>
 float3 Discrete_spectral_power_distribution<N>::XYZ() const {
 	float3 xyz(0.f);
 	for (uint32_t i = 0; i < N; ++i) {

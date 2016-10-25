@@ -9,6 +9,9 @@ template<typename T>
 Vector2<T>::Vector2() {}
 
 template<typename T>
+Vector2<T>::Vector2(T s) : x(s), y(s) {}
+
+template<typename T>
 Vector2<T>::Vector2(T x, T y) : x(x), y(y) {}
 
 template<typename T>

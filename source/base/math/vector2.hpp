@@ -14,6 +14,8 @@ struct Vector2 {
 
 	Vector2();
 
+	Vector2(T x);
+
 	Vector2(T x, T y);
 
 	template<typename U>

@@ -25,45 +25,14 @@
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 
-
-#include "base/math/fourier/dft.hpp"
-#include <iostream>
-
-void print(const std::vector<float>& v) {
-	std::cout << "[";
-
-	for (size_t i = 0, len = v.size(); i < len; ++i) {
-		std::cout << v[i];
-
-		if (i < len - 1) {
-			std::cout << ", ";
-		}
-	}
-
-	std::cout << "]" << std::endl;
-}
+#include "extension/procedural/starburst/starburst.hpp"
 
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
-
-
-	std::vector<float> y = { 1.f, 2.f, 3.f, 4.f };
-
-	print(y);
-
-	std::vector<float> y_dft(math::dft_size(y.size()));
-
-
-	math::dft_1d(y_dft.data(), y.data(), y.size());
-
-	print(y_dft);
-
-	math::idft_1d(y.data(), y_dft.data(), y.size());
-
-	print(y);
+	procedural::starburst::create();
 
 	return 0;
 

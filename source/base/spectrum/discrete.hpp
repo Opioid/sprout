@@ -16,6 +16,8 @@ public:
 
 	void set_bin(uint32_t bin, float value);
 
+	void clear(float s);
+
 	float3 XYZ() const;
 
 	static void init(float start_wavelength = 380.f, float end_wavelength = 720.f);
