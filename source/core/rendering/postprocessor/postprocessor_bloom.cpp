@@ -1,27 +1,10 @@
 #include "postprocessor_bloom.hpp"
 #include "image/typed_image.inl"
 #include "base/math/vector.inl"
+#include "base/math/filter/gaussian.hpp"
 #include "base/spectrum/rgb.inl"
 
 namespace rendering { namespace postprocessor {
-
-class Gaussian_functor {
-
-public:
-
-	Gaussian_functor(float radius_square, float alpha) :
-		exp_(std::exp(-alpha * radius_square)),
-		alpha_(alpha) {}
-
-	float operator()(float x) {
-		return std::max(0.f, std::exp(-alpha_ * x) - exp_);
-	}
-
-private:
-
-	float exp_;
-	float alpha_;
-};
 
 Bloom::Bloom(float angle, float alpha, float threshold, float intensity) :
 	Postprocessor(2),
@@ -40,7 +23,7 @@ void Bloom::init(const scene::camera::Camera& camera) {
 	kernel_.resize(width);
 
 	float fr = static_cast<float>(radius) + 0.5f;
-	Gaussian_functor gauss(static_cast<float>(fr * fr), alpha_);
+	math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr), alpha_);
 
 	for (int32_t x = 0; x < width; ++x) {
 		int32_t o = -radius + x;
@@ -72,7 +55,7 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 				int32_t ci = source.checked_index(c + int2(0, k.o));
 
 				if (ci > 0) {
-					float3 color = source.at(ci).xyz;
+					float3 color = source.load(ci).xyz;
 
 					float l = spectrum::luminance(color);
 
@@ -86,9 +69,9 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 
 			if (weight_sum > 0.f) {
 				float3 bloom = accum / weight_sum;
-				scratch_.at(i) = float4(bloom);
+				scratch_.store(i, float4(bloom));
 			} else {
-				scratch_.at(i) = float4(0.f);
+				scratch_.store(i, float4(0.f));
 			}
 		}
 	} else {
@@ -101,7 +84,7 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 				int32_t ci = source.checked_index(c + int2(k.o, 0));
 
 				if (ci > 0) {
-					float3 bloom = scratch_.at(ci).xyz;
+					float3 bloom = scratch_.load(ci).xyz;
 
 					accum += k.w * bloom;
 
@@ -109,13 +92,13 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 				}
 			}
 
-			const float4& s = source.at(i);
+			float4 s = source.load(i);
 
 			if (weight_sum > 0.f) {
 				float3 bloom = accum / weight_sum;
-				destination.at(i) = float4(s.xyz + intensity * bloom, s.w);
+				destination.store(i, float4(s.xyz + intensity * bloom, s.w));
 			} else {
-				destination.at(i) = s;
+				destination.store(i, s);
 			}
 		}
 	}

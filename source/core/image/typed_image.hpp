@@ -13,16 +13,22 @@ public:
 	Typed_image(const Image::Description& description);
 	~Typed_image();
 
+	Typed_image<T> clone() const;
+
 	void resize(const Image::Description& description);
+
+	T load(int32_t index) const;
+
+	void store(int32_t index, T v);
 
 	const T& at(int32_t index) const;
 	T& at(int32_t index);
 
 	T load(int32_t x, int32_t y) const;
 
-	T load_element(int32_t x, int32_t y, int32_t element) const;
-
 	void store(int32_t x, int32_t y, T v);
+
+	T load_element(int32_t x, int32_t y, int32_t element) const;
 
 	const T& at(int32_t x, int32_t y) const;
 	T& at(int32_t x, int32_t y);

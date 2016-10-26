@@ -23,6 +23,11 @@ Typed_image<T>::~Typed_image() {
 }
 
 template<typename T>
+Typed_image<T> Typed_image<T>::clone() const {
+	return Typed_image<T>(description_);
+}
+
+template<typename T>
 void Typed_image<T>::resize(const Image::Description& description) {
 	memory::free_aligned(data_);
 
@@ -31,6 +36,16 @@ void Typed_image<T>::resize(const Image::Description& description) {
 										description.dimensions.y *
 										description.dimensions.z *
 										description.num_elements);
+}
+
+template<typename T>
+T Typed_image<T>::load(int32_t index) const {
+	return data_[index];
+}
+
+template<typename T>
+void Typed_image<T>::store(int32_t index, T v) {
+	data_[index] = v;
 }
 
 template<typename T>
@@ -50,15 +65,15 @@ T Typed_image<T>::load(int32_t x, int32_t y) const {
 }
 
 template<typename T>
-T Typed_image<T>::load_element(int32_t x, int32_t y, int32_t element) const {
-	int32_t i = element * area_ + y * description_.dimensions.x + x;
-	return data_[i];
-}
-
-template<typename T>
 void Typed_image<T>::store(int32_t x, int32_t y, T v) {
 	int32_t i = y * description_.dimensions.x + x;
 	data_[i] = v;
+}
+
+template<typename T>
+T Typed_image<T>::load_element(int32_t x, int32_t y, int32_t element) const {
+	int32_t i = element * area_ + y * description_.dimensions.x + x;
+	return data_[i];
 }
 
 template<typename T>

@@ -2,6 +2,7 @@
 #include "aperture.hpp"
 #include "core/image/typed_image.inl"
 #include "core/image/encoding/png/png_writer.hpp"
+#include "core/image/filter/image_gaussian.inl"
 #include "base/math/vector.inl"
 #include "base/math/fourier/dft.hpp"
 #include "base/spectrum/discrete.inl"
@@ -37,7 +38,14 @@ void create(thread::Pool& pool) {
 
 	std::vector<float2> signal_f(resolution * math::dft_size(resolution));
 
-	image::Image_byte_3 image(image::Image::Description(image::Image::Type::Byte_3, dimensions));
+	image::Image_float_3 float_image_a(image::Image::Description(image::Image::Type::Float_3,
+																 dimensions));
+
+	image::Image_float_3 float_image_b(image::Image::Description(image::Image::Type::Float_3,
+																 dimensions));
+
+	image::Image_byte_3 byte_image(image::Image::Description(image::Image::Type::Byte_3,
+															 dimensions));
 
 	Spectrum* spectral_data = new Spectrum[resolution * resolution];
 
@@ -45,6 +53,7 @@ void create(thread::Pool& pool) {
 
 	Aperture aperture(5);
 
+	image::filter::Gaussian<math::packed_float3> gaussian(2.f, 0.001f);
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
@@ -67,7 +76,8 @@ void create(thread::Pool& pool) {
 	float d = 1.f / 720.f;
 
 	pool.run_range([spectral_data, &signal, d, resolution](int32_t begin, int32_t end) {
-		starbursts(begin, end, spectral_data, signal.data(), d, resolution); }, 0, Num_bands);
+		starbursts(begin, end, spectral_data, signal.data(), d, resolution); },
+		0, Spectrum::num_bands());
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
@@ -81,15 +91,26 @@ void create(thread::Pool& pool) {
 
 			float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
 
-			byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
+		//	byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
 
-			image.at(x, y) = srgb;
+		//	byte_image.store(x, y, srgb);
+
+			float_image_a.store(x, y, math::packed_float3(linear_rgb));
 		}
 	}
 
+	gaussian.apply(float_image_a, float_image_b);
+
+	for (int32_t i = 0, len = resolution * resolution; i < len; ++i) {
+		float3 linear_rgb = float3(float_image_b.load(i));
+		byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
+		byte_image.store(i, srgb);
+	}
+
+
 	delete [] spectral_data;
 
-	image::encoding::png::Writer::write("starburst.png", image);
+	image::encoding::png::Writer::write("starburst.png", byte_image);
 }
 
 void centered_magnitude(float* result, const float2* source, size_t width, size_t height) {
