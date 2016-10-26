@@ -20,6 +20,8 @@ public:
 
 	float3 XYZ() const;
 
+	float3 normalized_XYZ() const;
+
 	static void init(float start_wavelength = 380.f, float end_wavelength = 720.f);
 
 	static constexpr uint32_t num_bands();

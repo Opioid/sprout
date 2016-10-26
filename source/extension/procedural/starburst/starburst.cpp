@@ -7,6 +7,7 @@
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.hpp"
+#include "base/thread/thread_pool.hpp"
 
 #include <iostream>
 
@@ -18,14 +19,17 @@ using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
 void centered_magnitude(float* result, const float2* source, size_t width, size_t height);
 
-void starburst(Spectrum* result, const float* source, int32_t bin, float d, int resolution);
+void starburst(Spectrum* result, const float* source, int32_t bin, float d, int32_t resolution);
 
-void create() {
+void starbursts(int32_t begin, int32_t end, Spectrum* result, const float* source,
+				float d, int32_t resolution);
+
+void create(thread::Pool& pool) {
 	std::cout << "Starburst experiment" << std::endl;
 
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 256;
+	int32_t resolution = 512;
 
 	int2 dimensions(resolution, resolution);
 
@@ -39,7 +43,7 @@ void create() {
 
 	float fr = static_cast<float>(resolution);
 
-	Aperture aperture(8);
+	Aperture aperture(5);
 
 
 	for (int32_t y = 0; y < resolution; ++y) {
@@ -62,9 +66,8 @@ void create() {
 
 	float d = 1.f / 720.f;
 
-	for (int32_t b = 0; b < Num_bands; ++b) {
-		starburst(spectral_data, signal.data(), b, d, resolution);
-	}
+	pool.run_range([spectral_data, &signal, d, resolution](int32_t begin, int32_t end) {
+		starbursts(begin, end, spectral_data, signal.data(), d, resolution); }, 0, Num_bands);
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
@@ -76,7 +79,7 @@ void create() {
 
 			auto& s = spectral_data[i];
 
-			float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.XYZ());
+			float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
 
 			byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
 
@@ -111,7 +114,7 @@ void centered_magnitude(float* result, const float2* source, size_t width, size_
 	}
 }
 
-void starburst(Spectrum* result, const float* source, int32_t bin, float d, int resolution) {
+void starburst(Spectrum* result, const float* source, int32_t bin, float d, int32_t resolution) {
 	float scale = 4.f / (resolution * resolution);
 
 	float fr = static_cast<float>(resolution);
@@ -132,13 +135,20 @@ void starburst(Spectrum* result, const float* source, int32_t bin, float d, int 
 			int32_t i = sy * resolution + sx;
 			float mag = source[i];
 
-			float v = 1.f - math::dot(p, p);
+			float v = std::max(1.f - math::dot(p, p), 0.f);
 
 			float r = v * scale * (mag * mag);
 
 			int32_t o = y * resolution + x;
 			result[o].set_bin(bin, r);
 		}
+	}
+}
+
+void starbursts(int32_t begin, int32_t end, Spectrum* result, const float* source,
+				float d, int32_t resolution) {
+	for (int32_t i = begin; i < end; ++i) {
+		starburst(result, source, i, d, resolution);
 	}
 }
 

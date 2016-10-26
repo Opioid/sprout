@@ -1,7 +1,7 @@
 #pragma once
 
 #include "filtered.hpp"
-#include "filter/filter.hpp"
+#include "filter/sensor_filter.hpp"
 #include "sampler/camera_sample.hpp"
 
 namespace rendering { namespace sensor {

@@ -32,10 +32,6 @@ void log_memory_consumption(const resource::Manager& manager,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
-	procedural::starburst::create();
-
-	return 0;
-
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout!");
 
@@ -67,6 +63,22 @@ int main(int argc, char* argv[]) {
 	logging::info("#Threads " + string::to_string(num_workers));
 
 	thread::Pool thread_pool(num_workers);
+
+
+
+
+	auto starburst_start = std::chrono::high_resolution_clock::now();
+	procedural::starburst::create(thread_pool);
+	logging::info("Starburst time " +
+				  string::to_string(chrono::seconds_since(starburst_start)) + " s");
+
+	return 0;
+
+
+
+
+
+
 
 	logging::info("Loading...");
 

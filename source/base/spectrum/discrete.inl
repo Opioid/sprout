@@ -44,17 +44,17 @@ float3 Discrete_spectral_power_distribution<N>::XYZ() const {
 		xyz.x += cie_x_.values_[i] * values_[i];
 		xyz.y += cie_y_.values_[i] * values_[i];
 		xyz.z += cie_z_.values_[i] * values_[i];
-
-
-//		std::cout << "cie_x_.values_[" << i << "] " << cie_x_.values_[i] << std::endl;
-//		std::cout << "values_[" << i << "] " << values_[i] << std::endl;
-//		std::cout << "xyz " << xyz.x << ", " << xyz.y << ", " << xyz.z << std::endl;
-
 	}
 
 	xyz *= (end_wavelength() - start_wavelength()) / static_cast<float>(N);
 
 	return xyz;
+}
+
+template<uint32_t N>
+float3 Discrete_spectral_power_distribution<N>::normalized_XYZ() const {
+	constexpr float normalization = 1.f / 106.856895f;
+	return normalization * XYZ();
 }
 
 template<uint32_t N>

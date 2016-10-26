@@ -1,7 +1,9 @@
 #pragma once
 
+namespace thread { class Pool; }
+
 namespace procedural { namespace starburst {
 
-void create();
+void create(thread::Pool& pool);
 
 }}

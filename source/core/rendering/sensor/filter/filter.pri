@@ -1,7 +1,7 @@
 SOURCES += \
-	rendering/sensor/filter/gaussian.cpp \
+	rendering/sensor/filter/sensor_gaussian.cpp \
 
 HEADERS += \
-	rendering/sensor/filter/filter.hpp \
-	rendering/sensor/filter/gaussian.hpp \
+	rendering/sensor/filter/sensor_filter.hpp \
+	rendering/sensor/filter/sensor_gaussian.hpp \
 

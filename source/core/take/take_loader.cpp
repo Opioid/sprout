@@ -26,7 +26,7 @@
 #include "rendering/sensor/clamp.inl"
 #include "rendering/sensor/filtered.inl"
 #include "rendering/sensor/unfiltered.inl"
-#include "rendering/sensor/filter/gaussian.hpp"
+#include "rendering/sensor/filter/sensor_gaussian.hpp"
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_ld.hpp"
 #include "sampler/sampler_random.hpp"
