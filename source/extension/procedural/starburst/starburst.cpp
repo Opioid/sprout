@@ -7,8 +7,8 @@
 #include "base/math/vector.inl"
 #include "base/math/fourier/dft.hpp"
 #include "base/spectrum/discrete.inl"
-#include "base/spectrum/rgb.hpp"
-#include "base/spectrum/xyz.hpp"
+#include "base/spectrum/rgb.inl"
+#include "base/spectrum/xyz.inl"
 #include "base/thread/thread_pool.hpp"
 
 #include <iostream>
