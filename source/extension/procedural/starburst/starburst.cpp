@@ -22,9 +22,6 @@ void centered_magnitude(float* result, const float2* source, size_t width, size_
 
 void starburst(Spectrum* result, const float* source, int32_t bin, float d, int32_t resolution);
 
-void starbursts(int32_t begin, int32_t end, Spectrum* result, const float* source,
-				float d, int32_t resolution);
-
 void create(thread::Pool& pool) {
 	std::cout << "Starburst experiment" << std::endl;
 
@@ -53,7 +50,8 @@ void create(thread::Pool& pool) {
 
 	Aperture aperture(5);
 
-	image::filter::Gaussian<math::packed_float3> gaussian(2.f, 0.001f);
+	float radius = static_cast<float>(resolution) * 0.00390625f;
+	image::filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
@@ -69,15 +67,17 @@ void create(thread::Pool& pool) {
 		}
 	}
 
-	math::dft_2d(signal_f.data(), signal.data(), resolution, resolution);
+	math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
 
 	centered_magnitude(signal.data(), signal_f.data(), resolution, resolution);
 
 	float d = 1.f / 720.f;
 
 	pool.run_range([spectral_data, &signal, d, resolution](int32_t begin, int32_t end) {
-		starbursts(begin, end, spectral_data, signal.data(), d, resolution); },
-		0, Spectrum::num_bands());
+		for (int32_t bin = begin; bin < end; ++bin) {
+			starburst(spectral_data, signal.data(), bin, d, resolution);
+		}
+	}, 0, Spectrum::num_bands());
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
@@ -106,7 +106,6 @@ void create(thread::Pool& pool) {
 		byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
 		byte_image.store(i, srgb);
 	}
-
 
 	delete [] spectral_data;
 
@@ -163,13 +162,6 @@ void starburst(Spectrum* result, const float* source, int32_t bin, float d, int3
 			int32_t o = y * resolution + x;
 			result[o].set_bin(bin, r);
 		}
-	}
-}
-
-void starbursts(int32_t begin, int32_t end, Spectrum* result, const float* source,
-				float d, int32_t resolution) {
-	for (int32_t i = begin; i < end; ++i) {
-		starburst(result, source, i, d, resolution);
 	}
 }
 

@@ -1,6 +1,7 @@
 #include "dft.hpp"
 #include "math/math.hpp"
 #include "math/vector.inl"
+#include "thread/thread_pool.hpp"
 
 namespace math {
 
@@ -83,6 +84,46 @@ void dft_2d(float2* result, const float* source, size_t width, size_t height) {
 			result[c] = sum;
 		}
 	}
+
+	delete [] tmp;
+}
+
+void dft_2d(float2* result, const float* source, size_t width, size_t height, thread::Pool& pool) {
+	size_t row_size = dft_size(width);
+
+	float2* tmp = new float2[height * row_size];
+
+	pool.run_range([source, tmp, row_size, width](int32_t begin, int32_t end) {
+		for (int32_t y = begin; y < end; ++y) {
+			dft_1d(tmp + y * row_size, source + y * width, width);
+		}
+	}, 0, static_cast<int32_t>(height));
+
+	pool.run_range([tmp, result, row_size, height](int32_t begin, int32_t end) {
+		float fn = static_cast<float>(height);
+		for (size_t x = begin; x < end; ++x) {
+			for (size_t k = 0; k < height; ++k) {
+				float2 sum(0.f);
+
+				float a = 2.f * Pi * static_cast<float>(k) / fn;
+
+				for (size_t t = 0; t < height; ++t) {
+					size_t g = t * row_size + x;
+
+					float angle = a * static_cast<float>(t);
+
+					float cos_a = std::cos(angle);
+					float sin_a = std::sin(angle);
+
+					sum.x +=  tmp[g].x * cos_a + tmp[g].y * sin_a;
+					sum.y += -tmp[g].x * sin_a + tmp[g].y * cos_a;
+				}
+
+				size_t c = k * row_size + x;
+				result[c] = sum;
+			}
+		}
+	}, 0, static_cast<int32_t>(row_size));
 
 	delete [] tmp;
 }
