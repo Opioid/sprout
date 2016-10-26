@@ -31,7 +31,7 @@ void create(thread::Pool& pool) {
 
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 16;
+	int32_t resolution = 512;
 
 	int2 dimensions(resolution, resolution);
 
@@ -62,7 +62,7 @@ void create(thread::Pool& pool) {
 	renderer.set_brush(0.4f);
 	renderer.draw_circle(float2(0.4f, 0.3f), 0.2f);
 
-	Aperture aperture(5);
+	Aperture aperture(8);
 
 	float fr = static_cast<float>(resolution);
 
@@ -91,6 +91,8 @@ void create(thread::Pool& pool) {
 	math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
 
 	centered_magnitude(signal.data(), signal_f.data(), resolution, resolution);
+
+	write_signal("signal_after.png", signal);
 
 	pool.run_range([spectral_data, &signal, resolution](int32_t begin, int32_t end) {
 		float d = 1.f / 720.f;
@@ -121,8 +123,8 @@ void create(thread::Pool& pool) {
 void centered_magnitude(float* result, const float2* source, size_t width, size_t height) {
 	size_t row_size = math::dft_size(width);
 
-	for (size_t y = 0; y < width; ++y) {
-		size_t ro;
+	for (size_t y = 0; y < height; ++y) {
+		size_t ro = y;
 
 		if (y < height / 2) {
 			ro = y + height / 2;
@@ -130,12 +132,29 @@ void centered_magnitude(float* result, const float2* source, size_t width, size_
 			ro = y - height / 2;
 		}
 
-		for (size_t x = 0; x < row_size; ++x) {
-			size_t o = y * row_size + x;
-			float mag = math::length(source[o]);
 
-			result[ro * height + x + row_size - 2] = mag;
-			result[ro * height - x + row_size - 1] = mag;
+//		size_t o = y * row_size;
+//		float mag = /*0.001f **/ math::length(source[o]);
+
+//		result[ro * width + row_size - 1] = mag;
+
+
+		for (size_t x = 0, len = row_size - 1; x < len; ++x) {
+			size_t o = y * row_size + x;
+			float mag = /*0.001f **/ math::length(source[o]);
+
+			size_t a = ro * width + x + len;
+
+			result[ro * width + x + len] = mag;
+		}
+
+		for (size_t x = 0, len = row_size - 1; x < len; ++x) {
+			size_t o = y * row_size + x;
+			float mag = /*0.001f **/ math::length(source[o]);
+
+			size_t a = ro * width - x + len - 1;
+
+			result[ro * width - x + len - 1] = mag;
 		}
 	}
 }
@@ -157,8 +176,8 @@ void starburst(Spectrum* result, const float* source, int32_t bin, float d, int3
 			q.x =  0.5f * (q.x + 1.f);
 			q.y = -0.5f * (q.y - 1.f);
 
-			int32_t sx = static_cast<int32_t>(q.x * fr - 0.5f);
-			int32_t sy = static_cast<int32_t>(q.y * fr - 0.5f);
+			int32_t sx = static_cast<int32_t>(q.x * fr);
+			int32_t sy = static_cast<int32_t>(q.y * fr);
 
 			int32_t i = sy * resolution + sx;
 			float mag = source[i];

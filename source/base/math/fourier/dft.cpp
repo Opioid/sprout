@@ -101,7 +101,7 @@ void dft_2d(float2* result, const float* source, size_t width, size_t height, th
 
 	pool.run_range([tmp, result, row_size, height](int32_t begin, int32_t end) {
 		float fn = static_cast<float>(height);
-		for (size_t x = begin; x < end; ++x) {
+		for (int32_t x = begin; x < end; ++x) {
 			for (size_t k = 0; k < height; ++k) {
 				float2 sum(0.f);
 

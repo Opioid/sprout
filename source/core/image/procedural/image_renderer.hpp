@@ -56,9 +56,9 @@ private:
 	void set_sample(int32_t x, int32_t y, float color);
 	void set_row(int32_t start_x, int32_t end_x, int32_t y, float color);
 
-	float2 dimensions_f_;
-
 	Image_float_1& target_;
+
+	float2 dimensions_f_;
 
 	float brush_;
 };

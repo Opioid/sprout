@@ -5,8 +5,9 @@
 
 namespace scene { namespace volume {
 
-Volume::Volume() : absorption_(0.f), scattering_(0.f), anisotropy_(0.f),
-	local_aabb_(float3(-1.f), float3(1.f)) {}
+Volume::Volume() :
+	local_aabb_(float3(-1.f), float3(1.f)),
+	absorption_(0.f), scattering_(0.f), anisotropy_(0.f) {}
 
 float Volume::phase(float3_p w, float3_p wp) const {
 	float g = anisotropy_;
