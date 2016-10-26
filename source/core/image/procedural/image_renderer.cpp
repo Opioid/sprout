@@ -45,15 +45,6 @@ void Renderer::draw_circle(float2 pos, float radius) {
 		set_row(sample.x - x, sample.x + x, sample.y - y, brush_);
 		set_row(sample.x - y, sample.x + y, sample.y - x, brush_);
 
-	//	set_sample(sample.x + x, sample.y + y, brush_);
-	//	set_sample(sample.x + y, sample.y + x, brush_);
-	//	set_sample(sample.x - y, sample.y + x, brush_);
-	//	set_sample(sample.x - x, sample.y + y, brush_);
-	//	set_sample(sample.x - x, sample.y - y, brush_);
-	//	set_sample(sample.x - y, sample.y - x, brush_);
-	//	set_sample(sample.x + y, sample.y - x, brush_);
-	//	set_sample(sample.x + x, sample.y - y, brush_);
-
 		y += 1;
 		err += 1 + 2 * y;
 
@@ -142,7 +133,61 @@ void Renderer::set_sample(int32_t x, int32_t y, const float4& color) {
 }
 
 void Renderer::set_row(int32_t start_x, int32_t end_x, int32_t y, const float4& color) {
-	for (int x = start_x; x < end_x; ++x) {
+	for (int32_t x = start_x; x < end_x; ++x) {
+		set_sample(x, y, color);
+	}
+}
+
+Mini_renderer::Mini_renderer(Image_float_1& target) :
+	target_(target),
+	dimensions_f_(target.description().dimensions.xy) {}
+
+Mini_renderer::~Mini_renderer() {}
+
+void Mini_renderer::set_brush(float b) {
+	brush_ = b;
+}
+
+void Mini_renderer::clear() {
+	for (int32_t i = 0, len = target_.area(); i < len; ++i) {
+		target_.store(i, brush_);
+	}
+}
+
+void Mini_renderer::draw_circle(float2 pos, float radius) {
+	int2 sample(pos * dimensions_f_);
+
+	int32_t x = static_cast<int>(radius * dimensions_f_.x);
+	int32_t y = 0;
+	int32_t err = 0;
+
+	while (x >= y) {
+		set_row(sample.x - x, sample.x + x, sample.y + y, brush_);
+		set_row(sample.x - y, sample.x + y, sample.y + x, brush_);
+		set_row(sample.x - x, sample.x + x, sample.y - y, brush_);
+		set_row(sample.x - y, sample.x + y, sample.y - x, brush_);
+
+		y += 1;
+		err += 1 + 2 * y;
+
+		if (2 * (err - x) + 1 > 0) {
+			x -= 1;
+			err += 1 - 2 * x;
+		}
+	}
+}
+
+void Mini_renderer::set_sample(int32_t x, int32_t y, float color) {
+	auto d = target_.description().dimensions;
+
+	x = math::mod(x, d.x);
+	y = math::mod(y, d.y);
+
+	target_.store(x, y, color);
+}
+
+void Mini_renderer::set_row(int32_t start_x, int32_t end_x, int32_t y, float color) {
+	for (int32_t x = start_x; x < end_x; ++x) {
 		set_sample(x, y, color);
 	}
 }

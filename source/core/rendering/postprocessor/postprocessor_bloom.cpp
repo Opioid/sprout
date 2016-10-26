@@ -45,6 +45,8 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 	float threshold = threshold_;
 	float intensity = intensity_;
 
+	auto d = destination.description().dimensions;
+
 	if (0 == pass) {
 		for (int32_t i = begin; i < end; ++i) {
 			int2 c = source.coordinates_2(i);
@@ -52,11 +54,10 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 			float3 accum(0.f);
 			float  weight_sum = 0.f;
 			for (auto& k : kernel_) {
-				int32_t ci = source.checked_index(c + int2(0, k.o));
+				int32_t kx = c.x + k.o;
 
-				if (ci > 0) {
-					float3 color = source.load(ci).xyz;
-
+				if (kx >= 0 && kx < d.x) {
+					float3 color = source.load(kx, c.y).xyz;
 					float l = spectrum::luminance(color);
 
 					if (l > threshold) {
@@ -81,13 +82,11 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 			float3 accum(0.f);
 			float  weight_sum = 0.f;
 			for (auto& k : kernel_) {
-				int32_t ci = source.checked_index(c + int2(k.o, 0));
+				int32_t ky = c.y + k.o;
 
-				if (ci > 0) {
-					float3 bloom = scratch_.load(ci).xyz;
-
+				if (ky >= 0 && ky < d.y) {
+					float3 bloom = scratch_.load(c.x, ky).xyz;
 					accum += k.w * bloom;
-
 					weight_sum += k.w;
 				}
 			}
