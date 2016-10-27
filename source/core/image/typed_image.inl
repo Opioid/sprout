@@ -39,6 +39,13 @@ void Typed_image<T>::resize(const Image::Description& description) {
 }
 
 template<typename T>
+void Typed_image<T>::clear(T v) {
+	for (int32_t i = 0; i < volume_; ++i) {
+		data_[i] = v;
+	}
+}
+
+template<typename T>
 T Typed_image<T>::load(int32_t index) const {
 	return data_[index];
 }

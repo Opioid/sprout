@@ -6,6 +6,8 @@
 #include "core/image/procedural/image_renderer.hpp"
 #include "base/math/vector.inl"
 #include "base/math/fourier/dft.hpp"
+#include "base/math/random/generator.inl"
+#include "base/math/sampling/sample_distribution.inl"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/rgb.inl"
 #include "base/spectrum/xyz.inl"
@@ -20,9 +22,11 @@ static constexpr uint32_t Num_bands = 64;
 
 using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
+void dirt(image::Image_float_1& signal);
+
 void centered_magnitude(float* result, const float2* source, size_t width, size_t height);
 
-void starburst(Spectrum* result, const float* source, int32_t bin, float d, int32_t resolution);
+void starburst(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
 
 void write_signal(const std::string& name, const image::Image_float_1& signal);
 
@@ -53,14 +57,8 @@ void create(thread::Pool& pool) {
 	float radius = static_cast<float>(resolution) * 0.00390625f;
 	image::filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
 
-
-	image::procedural::Mini_renderer renderer(signal);
-
-	renderer.set_brush(0.f);
-	renderer.clear();
-
-	renderer.set_brush(0.4f);
-	renderer.draw_circle(float2(0.4f, 0.3f), 0.2f);
+	signal.clear(1.f);
+//	dirt(signal);
 
 	Aperture aperture(8);
 
@@ -70,17 +68,10 @@ void create(thread::Pool& pool) {
 		for (int32_t x = 0; x < resolution; ++x) {
 			float2 p(-1.f + 2.f * ((static_cast<float>(x) + 0.5f) / fr),
 					  1.f - 2.f * ((static_cast<float>(y) + 0.5f) / fr));
-
-
-		//	std::cout << p << std::endl;
-
-		//	float s = signal.load(x, y);
-
+			float s = signal.load(x, y);
 			float a = aperture.evaluate(p, fr);
 
-
-
-			signal.store(x, y, a);
+			signal.store(x, y, s * a);
 		}
 	}
 
@@ -95,9 +86,8 @@ void create(thread::Pool& pool) {
 	write_signal("signal_after.png", signal);
 
 	pool.run_range([spectral_data, &signal, resolution](int32_t begin, int32_t end) {
-		float d = 1.f / 720.f;
 		for (int32_t bin = begin; bin < end; ++bin) {
-			starburst(spectral_data, signal.data(), bin, d, resolution);
+			starburst(spectral_data, signal.data(), bin, resolution);
 		}
 	}, 0, Spectrum::num_bands());
 
@@ -118,6 +108,43 @@ void create(thread::Pool& pool) {
 	delete [] spectral_data;
 
 	image::encoding::png::Writer::write("starburst.png", byte_image);
+}
+
+void dirt(image::Image_float_1& signal) {
+	image::procedural::Mini_renderer renderer(signal);
+
+//	renderer.set_brush(1.f);
+//	renderer.clear();
+
+
+	renderer.set_brush(0.9f);
+	renderer.draw_circle(float2(0.5f), 0.4f);
+	renderer.set_brush(1.f);
+	renderer.draw_circle(float2(0.5f), 0.38f);
+
+	renderer.set_brush(0.9f);
+	renderer.draw_circle(float2(0.5f), 0.36f);
+	renderer.set_brush(1.f);
+	renderer.draw_circle(float2(0.5f), 0.34f);
+
+	renderer.set_brush(0.9f);
+	renderer.draw_circle(float2(0.5f), 0.32f);
+	renderer.set_brush(1.f);
+	renderer.draw_circle(float2(0.5f), 0.3f);
+
+	math::random::Generator rng(0, 1, 2, 3);
+
+	uint32_t num_dirt = 128 * 1024;
+
+	for (uint32_t i = 0; i < num_dirt; ++i) {
+		float2 p = math::hammersley(i, num_dirt);
+
+		float rc = rng.random_float();
+		renderer.set_brush(0.7f + 0.3f * rc);
+
+		float rs = rng.random_float();
+		renderer.draw_circle(p, 0.0025f + rs * 0.0025f);
+	}
 }
 
 void centered_magnitude(float* result, const float2* source, size_t width, size_t height) {
@@ -143,7 +170,8 @@ void centered_magnitude(float* result, const float2* source, size_t width, size_
 			size_t o = y * row_size + x;
 			float mag = /*0.001f **/ math::length(source[o]);
 
-			size_t a = ro * width + x + len;
+	//		size_t a = ro * width + x + len;
+	//		std::cout << a << std::endl;
 
 			result[ro * width + x + len] = mag;
 		}
@@ -152,26 +180,31 @@ void centered_magnitude(float* result, const float2* source, size_t width, size_
 			size_t o = y * row_size + x;
 			float mag = /*0.001f **/ math::length(source[o]);
 
-			size_t a = ro * width - x + len - 1;
+	//		size_t a = ro * width - x + len - 1;
+	//		std::cout << a << std::endl;
 
 			result[ro * width - x + len - 1] = mag;
 		}
+
+	//	std::cout << "row end" << std::endl;
 	}
 }
 
-void starburst(Spectrum* result, const float* source, int32_t bin, float d, int32_t resolution) {
+void starburst(Spectrum* result, const float* source, int32_t bin, int32_t resolution) {
 	float scale = 4.f / (resolution * resolution);
 
 	float fr = static_cast<float>(resolution);
 
 	float wavelength = Spectrum::wavelength_center(bin);
 
+	float d = wavelength * (1.f / Spectrum::wavelength_center(Spectrum::num_bands() - 1));
+
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
 			float2 p(-1.f + 2.f * ((static_cast<float>(x) + 0.5f) / fr),
 					  1.f - 2.f * ((static_cast<float>(y) + 0.5f) / fr));
 
-			float2 q = p * (wavelength * d);
+			float2 q = d * p;
 
 			q.x =  0.5f * (q.x + 1.f);
 			q.y = -0.5f * (q.y - 1.f);

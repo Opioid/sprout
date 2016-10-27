@@ -12,19 +12,30 @@ size_t dft_size(size_t num) {
 void dft_1d(float2* result, const float* source, size_t num) {
 	float fn = static_cast<float>(num);
 
+	bool even = true;
+
 	for (size_t k = 0, len = num / 2; k <= len; ++k) {
 		float2 sum(0.f);
 
 		float a = -2.f * Pi / fn * static_cast<float>(k);
 
-		for (size_t x = 0; x < num; ++x) {
-			float b = a * static_cast<float>(x);
-			sum.x += source[x] * std::cos(b);
-			sum.y += source[x] * std::sin(b);
+		if (even) {
+			for (size_t x = 0; x < num; ++x) {
+				float b = a * static_cast<float>(x);
+				sum.x += source[x] * std::cos(b);
+		//		sum.y += source[x] * std::sin(b);
+			}
+		} else {
+			for (size_t x = 0; x < num; ++x) {
+				float b = a * static_cast<float>(x);
+				sum.x += source[x] * std::cos(b);
+				sum.y += source[x] * std::sin(b);
+			}
 		}
 
 		result[k] = sum;
 
+		even = !even;
 		// normalization
 //		result[k].x *= (k == 0 || k == len) ? 1.f / fn : 2.f / fn;
 //		result[k].y *= 2.f / fn;

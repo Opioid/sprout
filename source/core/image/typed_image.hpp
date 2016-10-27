@@ -17,6 +17,8 @@ public:
 
 	void resize(const Image::Description& description);
 
+	void clear(T v);
+
 	T load(int32_t index) const;
 
 	void store(int32_t index, T v);
