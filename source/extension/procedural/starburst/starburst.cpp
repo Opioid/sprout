@@ -58,23 +58,44 @@ void create(thread::Pool& pool) {
 	image::filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
 
 	signal.clear(1.f);
-//	dirt(signal);
+	dirt(signal);
 
-	Aperture aperture(8);
+	Aperture aperture(8, 0.25f);
 
 	float fr = static_cast<float>(resolution);
 
+	int32_t num_sqrt_samples = 4;
+	std::vector<float2> kernel(num_sqrt_samples * num_sqrt_samples);
+
+	float kd = 1.f / static_cast<float>(num_sqrt_samples);
+
+	for (int32_t y = 0; y < num_sqrt_samples; ++y) {
+		for (int32_t x = 0; x < num_sqrt_samples; ++x) {
+			float2 k(0.5f * kd + static_cast<float>(x) * kd,
+					 0.5f * kd + static_cast<float>(y) * kd);
+
+			kernel[y * num_sqrt_samples + x] = k;
+		}
+	}
+
+	float kn = 1.f / static_cast<float>(kernel.size());
+
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
-			float2 p(-1.f + 2.f * ((static_cast<float>(x) + 0.5f) / fr),
-					  1.f - 2.f * ((static_cast<float>(y) + 0.5f) / fr));
 			float s = signal.load(x, y);
-			float a = aperture.evaluate(p, fr);
+
+			float a = 0.f;
+
+			for (auto k : kernel) {
+				float2 p(-1.f + 2.f * ((static_cast<float>(x) + k.x) / fr),
+						  1.f - 2.f * ((static_cast<float>(y) + k.y) / fr));
+
+				a += kn * aperture.evaluate(p);
+			}
 
 			signal.store(x, y, s * a);
 		}
 	}
-
 
 
 	write_signal("signal.png", signal);
@@ -132,18 +153,21 @@ void dirt(image::Image_float_1& signal) {
 	renderer.set_brush(1.f);
 	renderer.draw_circle(float2(0.5f), 0.3f);
 
+
 	math::random::Generator rng(0, 1, 2, 3);
 
-	uint32_t num_dirt = 128 * 1024;
+	uint32_t num_dirt = 256;//1 * 1024;
+
+	float dirt_radius = 0.005f;
 
 	for (uint32_t i = 0; i < num_dirt; ++i) {
 		float2 p = math::hammersley(i, num_dirt);
 
 		float rc = rng.random_float();
-		renderer.set_brush(0.7f + 0.3f * rc);
+		renderer.set_brush(0.6f + 0.4f * rc);
 
 		float rs = rng.random_float();
-		renderer.draw_circle(p, 0.0025f + rs * 0.0025f);
+		renderer.draw_circle(p, dirt_radius + rs * dirt_radius);
 	}
 }
 
@@ -192,6 +216,8 @@ void centered_magnitude(float* result, const float2* source, size_t width, size_
 
 void starburst(Spectrum* result, const float* source, int32_t bin, int32_t resolution) {
 	float scale = 4.f / (resolution * resolution);
+
+//	scale *= 0.1f;
 
 	float fr = static_cast<float>(resolution);
 

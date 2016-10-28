@@ -9,13 +9,15 @@ class Aperture {
 
 public:
 
-	Aperture(uint32_t num_blades);
+	Aperture(uint32_t num_blades, float roundness);
 
-	float evaluate(float2 xy, float resolution);
+	float evaluate(float2 p);
 
 private:
 
 	std::vector<float3> blades_;
+
+	float roundness_;
 };
 
 }}
