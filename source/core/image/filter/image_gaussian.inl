@@ -27,20 +27,18 @@ Gaussian<T>::Gaussian(float radius, float alpha) {
 }
 
 template<typename T>
-void Gaussian<T>::apply(const Typed_image<T>& source,
-						Typed_image<T>& destination) {
+void Gaussian<T>::apply(Typed_image<T>& target) {
+	scratch_.resize(target.description());
 
-	scratch_.resize(destination.description());
-
-	auto d = destination.description().dimensions;
+	auto d = target.description().dimensions;
 
 	// vertical
 
 	int32_t begin = 0;
-	int32_t end   = destination.area();
+	int32_t end   = target.area();
 
 	for (int32_t i = begin; i < end; ++i) {
-		int2 c = source.coordinates_2(i);
+		int2 c = target.coordinates_2(i);
 
 		T accum(0.f);
 		float weight_sum = 0.f;
@@ -48,7 +46,7 @@ void Gaussian<T>::apply(const Typed_image<T>& source,
 			int32_t kx = c.x + k.o;
 
 			if (kx >= 0 && kx < d.x) {
-				T v = source.load(kx, c.y);
+				T v = target.load(kx, c.y);
 				accum += k.w * v;
 				weight_sum += k.w;
 			}
@@ -60,7 +58,7 @@ void Gaussian<T>::apply(const Typed_image<T>& source,
 	// horizontal
 
 	for (int32_t i = begin; i < end; ++i) {
-		int2 c = source.coordinates_2(i);
+		int2 c = target.coordinates_2(i);
 
 		T accum(0.f);
 		float weight_sum = 0.f;
@@ -74,7 +72,7 @@ void Gaussian<T>::apply(const Typed_image<T>& source,
 			}
 		}
 
-		destination.store(i, accum / weight_sum);
+		target.store(i, accum / weight_sum);
 	}
 }
 

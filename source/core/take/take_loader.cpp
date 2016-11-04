@@ -475,7 +475,7 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 			pipeline.add(new rendering::postprocessor::Bloom(angle, alpha, threshold, intensity));
 		} else if ("Glare" == type_name) {
 			float threshold = json::read_float(n->value, "threshold", 2.f);
-			float intensity = json::read_float(n->value, "intensity", 0.1f);
+			float intensity = json::read_float(n->value, "intensity", 1.f);
 			pipeline.add(new rendering::postprocessor::Glare(threshold, intensity));
 		}
 	}

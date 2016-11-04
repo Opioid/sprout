@@ -24,19 +24,7 @@ Aperture::Aperture(uint32_t num_blades, float roundness) : roundness_(roundness)
 	}
 }
 
-float smin(float a, float b, float k) {
-	float diff = b - a;
-	float h = math::saturate(0.5f + 0.5f * diff / k);
-	return b - h * (diff + k * (1.f - h));
-}
-
-float smax(float a, float b, float k) {
-	float diff = a - b;
-	float h = math::saturate(0.5f + 0.5f * diff / k);
-	return b + h * (diff + k * (1.f - h));
-}
-
-float Aperture::evaluate(float2 p) {
+float Aperture::evaluate(float2 p) const {
 //	float radius = 1.f;
 
 	float d = 0.f;

@@ -53,8 +53,8 @@ int2 Image::coordinates_2(int32_t index) const {
 }
 
 int Image::checked_index(int2 xy) const {
-	if (xy.x < 0 || xy.x > description_.dimensions.x - 1
-	||  xy.y < 0 || xy.y > description_.dimensions.y - 1) {
+	if (xy.x < 0 || xy.x >= description_.dimensions.x
+	||  xy.y < 0 || xy.y >= description_.dimensions.y) {
 		return -1;
 	}
 

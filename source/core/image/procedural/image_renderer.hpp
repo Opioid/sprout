@@ -4,11 +4,43 @@
 
 namespace image { namespace procedural {
 
+template<typename T>
+class Typed_renderer {
+
+public:
+
+	Typed_renderer(int2 dimensions, int32_t sqrt_num_samples = 1);
+	~Typed_renderer();
+
+	void set_brush(T color);
+
+	void clear();
+
+	void draw_circle(float2 pos, float radius);
+
+	void resolve(Typed_image<T>& target) const;
+
+private:
+
+	void set_sample(int32_t x, int32_t y, T color);
+	void set_row(int32_t start_x, int32_t end_x, int32_t y, T color);
+
+	int32_t sqrt_num_samples_;
+
+	int2 dimensions_;
+
+	float2 dimensions_f_;
+
+	T* samples_;
+
+	T brush_;
+};
+
 class Renderer {
 
 public:
 
-	Renderer(int2 dimensions, int32_t num_sqrt_samples = 1);
+	Renderer(int2 dimensions, int32_t sqrt_num_samples = 1);
 	~Renderer();
 
 	void set_brush(float3_p color);
@@ -27,7 +59,7 @@ private:
 	void set_sample(int32_t x, int32_t y, const float4& color);
 	void set_row(int32_t start_x, int32_t end_x, int32_t y, const float4& color);
 
-	int num_sqrt_samples_;
+	int32_t sqrt_num_samples_;
 
 	int2 dimensions_;
 
@@ -36,31 +68,6 @@ private:
 	float4* samples_;
 
 	float4 brush_;
-};
-
-class Mini_renderer {
-
-public:
-
-	Mini_renderer(Image_float_1& target);
-	~Mini_renderer();
-
-	void set_brush(float b);
-
-	void clear();
-
-	void draw_circle(float2 pos, float radius);
-
-private:
-
-	void set_sample(int32_t x, int32_t y, float color);
-	void set_row(int32_t start_x, int32_t end_x, int32_t y, float color);
-
-	Image_float_1& target_;
-
-	float2 dimensions_f_;
-
-	float brush_;
 };
 
 }}

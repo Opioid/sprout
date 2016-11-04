@@ -27,6 +27,12 @@ float Interpolated::get_end() const {
 	return 0.f;
 }
 
+float Interpolated::evaluate(float wl) const {
+	size_t index = std::max((size_t) (std::lower_bound(wavelengths_.begin(), wavelengths_.end(), wl) - wavelengths_.begin()), (size_t) 1) - 1;
+
+	return intensities_[index];
+}
+
 float Interpolated::integrate(float a, float b) const {
 	const size_t len = wavelengths_.size();
 	if (len < 2) {

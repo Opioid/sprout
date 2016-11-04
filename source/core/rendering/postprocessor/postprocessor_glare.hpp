@@ -24,12 +24,12 @@ private:
 	float threshold_;
 	float intensity_;
 
-	struct K {
-		int2 p;
-		float w;
-	};
+//	image::Image_float_3 high_pass_;
+	std::vector<float3> high_pass_;
 
-	std::vector<K> kernel_;
+	std::vector<float3> kernel_;
+
+	int2 kernel_dimensions_;
 };
 
 }}

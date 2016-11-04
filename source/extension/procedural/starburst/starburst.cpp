@@ -1,9 +1,10 @@
 #include "starburst.hpp"
 #include "aperture.hpp"
+#include "dirt.hpp"
 #include "core/image/typed_image.inl"
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/filter/image_gaussian.inl"
-#include "core/image/procedural/image_renderer.hpp"
+#include "core/image/procedural/image_renderer.inl"
 #include "base/math/vector.inl"
 #include "base/math/fourier/dft.hpp"
 #include "base/math/random/generator.inl"
@@ -22,9 +23,11 @@ static constexpr uint32_t Num_bands = 64;
 
 using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
-void dirt(image::Image_float_1& signal);
+void render_dirt(image::Image_float_1& signal);
 
-void centered_magnitude(float* result, const float2* source, size_t width, size_t height);
+void render_aperture(const Aperture& aperture, image::Image_float_1& signal);
+
+void centered_squared_magnitude(float* result, const float2* source, size_t width, size_t height);
 
 void starburst(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
 
@@ -46,21 +49,114 @@ void create(thread::Pool& pool) {
 	image::Image_float_3 float_image_a(image::Image::Description(image::Image::Type::Float_3,
 																 dimensions));
 
-	image::Image_float_3 float_image_b(image::Image::Description(image::Image::Type::Float_3,
-																 dimensions));
+	bool dirt = true;
+	if (dirt) {
+		render_dirt(signal);
+	} else {
+		signal.clear(1.f);
+	}
+
+	Aperture aperture(8, 0.25f);
+	render_aperture(aperture, signal);
+
+	write_signal("signal.png", signal);
+
+	math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
+
+	centered_squared_magnitude(signal.data(), signal_f.data(), resolution, resolution);
+
+//	write_signal("signal_after.png", signal);
+
+	Spectrum* spectral_data = new Spectrum[resolution * resolution];
+
+	pool.run_range([spectral_data, &signal, resolution](int32_t begin, int32_t end) {
+		for (int32_t bin = begin; bin < end; ++bin) {
+			starburst(spectral_data, signal.data(), bin, resolution);
+		}
+	}, 0, Spectrum::num_bands());
+
+	pool.run_range([spectral_data, &float_image_a](int32_t begin, int32_t end) {
+		for (int32_t i = begin; i < end; ++i) {
+			auto& s = spectral_data[i];
+			float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
+			float_image_a.store(i, math::packed_float3(linear_rgb));
+		}
+	}, 0, resolution * resolution);
+
+	delete [] spectral_data;
+
+	float radius = static_cast<float>(resolution) * 0.00390625f;
+	image::filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
+	gaussian.apply(float_image_a);
 
 	image::Image_byte_3 byte_image(image::Image::Description(image::Image::Type::Byte_3,
 															 dimensions));
 
-	Spectrum* spectral_data = new Spectrum[resolution * resolution];
+	pool.run_range([&float_image_a, &byte_image](int32_t begin, int32_t end) {
+		for (int32_t i = begin; i < end; ++i) {
+			float3 linear_rgb = float3(float_image_a.load(i));
+			byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
+			byte_image.store(i, srgb);
+		}
+	}, 0, resolution * resolution);
 
-	float radius = static_cast<float>(resolution) * 0.00390625f;
-	image::filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
+	image::encoding::png::Writer::write("starburst.png", byte_image);
+}
 
-	signal.clear(1.f);
-	dirt(signal);
+void render_dirt(image::Image_float_1& signal) {
+	Dirt dirt(signal.description().dimensions.xy, 4);
 
-	Aperture aperture(8, 0.25f);
+	dirt.set_brush(1.f);
+	dirt.clear();
+
+	math::random::Generator rng(0, 1, 2, 3);
+
+	float dirt_radius = 0.003f;
+
+	uint32_t num_base_dirt = 128;
+
+	uint32_t base_scramble = rng.random_uint();
+
+	for (uint32_t i = 0; i < num_base_dirt; ++i) {
+		float2 p = math::scrambled_hammersley(i, num_base_dirt, base_scramble);
+
+		float rc = rng.random_float();
+		dirt.set_brush(0.9f + 0.1f * rc);
+
+		float rs = rng.random_float();
+		dirt.draw_circle(p, dirt_radius + 32.f * rs * dirt_radius);
+	}
+
+	uint32_t num_detail_dirt = 2 * 1024;
+
+	uint32_t detail_scramble = rng.random_uint();
+
+	for (uint32_t i = 0; i < num_detail_dirt; ++i) {
+		float2 p = math::scrambled_hammersley(i, num_detail_dirt, detail_scramble);
+
+		float rc = rng.random_float();
+		dirt.set_brush(0.8f + 0.2f * rc);
+
+		float rs = rng.random_float();
+		dirt.draw_circle(p, dirt_radius + 2.f * rs * dirt_radius);
+	}
+
+	float inner = 1.f;
+	float outer = 0.85f;
+
+	dirt.draw_concentric_circles(float2(0.7f, 0.25f), 12, 0.005f, inner, outer);
+	dirt.draw_concentric_circles(float2(0.4f, 0.6f), 12, 0.005f, inner, outer);
+	dirt.draw_concentric_circles(float2(0.6f, 0.8f), 12, 0.005f, inner, outer);
+
+	dirt.resolve(signal);
+
+//	float radius = static_cast<float>(signal.description().dimensions.x) * 0.00390625f;
+//	image::filter::Gaussian<float> gaussian(radius, radius * 0.0005f);
+//	gaussian.apply(signal);
+}
+
+void render_aperture(const Aperture& aperture, image::Image_float_1& signal) {
+	int32_t resolution = signal.description().dimensions.x;
 
 	float fr = static_cast<float>(resolution);
 
@@ -96,82 +192,9 @@ void create(thread::Pool& pool) {
 			signal.store(x, y, s * a);
 		}
 	}
-
-
-	write_signal("signal.png", signal);
-
-	math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
-
-	centered_magnitude(signal.data(), signal_f.data(), resolution, resolution);
-
-	write_signal("signal_after.png", signal);
-
-	pool.run_range([spectral_data, &signal, resolution](int32_t begin, int32_t end) {
-		for (int32_t bin = begin; bin < end; ++bin) {
-			starburst(spectral_data, signal.data(), bin, resolution);
-		}
-	}, 0, Spectrum::num_bands());
-
-	for (int32_t i = 0, len = resolution * resolution; i < len; ++i) {
-		auto& s = spectral_data[i];
-		float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
-		float_image_a.store(i, math::packed_float3(linear_rgb));
-	}
-
-	gaussian.apply(float_image_a, float_image_b);
-
-	for (int32_t i = 0, len = resolution * resolution; i < len; ++i) {
-		float3 linear_rgb = float3(float_image_b.load(i));
-		byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
-		byte_image.store(i, srgb);
-	}
-
-	delete [] spectral_data;
-
-	image::encoding::png::Writer::write("starburst.png", byte_image);
 }
 
-void dirt(image::Image_float_1& signal) {
-	image::procedural::Mini_renderer renderer(signal);
-
-//	renderer.set_brush(1.f);
-//	renderer.clear();
-
-
-	renderer.set_brush(0.9f);
-	renderer.draw_circle(float2(0.5f), 0.4f);
-	renderer.set_brush(1.f);
-	renderer.draw_circle(float2(0.5f), 0.38f);
-
-	renderer.set_brush(0.9f);
-	renderer.draw_circle(float2(0.5f), 0.36f);
-	renderer.set_brush(1.f);
-	renderer.draw_circle(float2(0.5f), 0.34f);
-
-	renderer.set_brush(0.9f);
-	renderer.draw_circle(float2(0.5f), 0.32f);
-	renderer.set_brush(1.f);
-	renderer.draw_circle(float2(0.5f), 0.3f);
-
-
-	math::random::Generator rng(0, 1, 2, 3);
-
-	uint32_t num_dirt = 256;//1 * 1024;
-
-	float dirt_radius = 0.005f;
-
-	for (uint32_t i = 0; i < num_dirt; ++i) {
-		float2 p = math::hammersley(i, num_dirt);
-
-		float rc = rng.random_float();
-		renderer.set_brush(0.6f + 0.4f * rc);
-
-		float rs = rng.random_float();
-		renderer.draw_circle(p, dirt_radius + rs * dirt_radius);
-	}
-}
-
-void centered_magnitude(float* result, const float2* source, size_t width, size_t height) {
+void centered_squared_magnitude(float* result, const float2* source, size_t width, size_t height) {
 	size_t row_size = math::dft_size(width);
 
 	for (size_t y = 0; y < height; ++y) {
@@ -192,7 +215,7 @@ void centered_magnitude(float* result, const float2* source, size_t width, size_
 
 		for (size_t x = 0, len = row_size - 1; x < len; ++x) {
 			size_t o = y * row_size + x;
-			float mag = /*0.001f **/ math::length(source[o]);
+			float mag = /*0.001f **/ math::squared_length(source[o]);
 
 	//		size_t a = ro * width + x + len;
 	//		std::cout << a << std::endl;
@@ -202,7 +225,7 @@ void centered_magnitude(float* result, const float2* source, size_t width, size_
 
 		for (size_t x = 0, len = row_size - 1; x < len; ++x) {
 			size_t o = y * row_size + x;
-			float mag = /*0.001f **/ math::length(source[o]);
+			float mag = /*0.001f **/ math::squared_length(source[o]);
 
 	//		size_t a = ro * width - x + len - 1;
 	//		std::cout << a << std::endl;
@@ -214,36 +237,44 @@ void centered_magnitude(float* result, const float2* source, size_t width, size_
 	}
 }
 
-void starburst(Spectrum* result, const float* source, int32_t bin, int32_t resolution) {
-	float scale = 4.f / (resolution * resolution);
-
-//	scale *= 0.1f;
-
+void starburst(Spectrum* result, const float* squared_magnitude, int32_t bin, int32_t resolution) {
 	float fr = static_cast<float>(resolution);
 
-	float wavelength = Spectrum::wavelength_center(bin);
+//	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() - 1);
+	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() / 2);
 
-	float d = wavelength * (1.f / Spectrum::wavelength_center(Spectrum::num_bands() - 1));
+	float wl = Spectrum::wavelength_center(bin);
+
+	float i_s = wl / wl_0;
+
+	float normalization = (i_s * i_s) * (2.f / (fr * fr));
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
 			float2 p(-1.f + 2.f * ((static_cast<float>(x) + 0.5f) / fr),
 					  1.f - 2.f * ((static_cast<float>(y) + 0.5f) / fr));
 
-			float2 q = d * p;
+			float2 q = i_s * p;
 
 			q.x =  0.5f * (q.x + 1.f);
 			q.y = -0.5f * (q.y - 1.f);
 
-			int32_t sx = static_cast<int32_t>(q.x * fr);
-			int32_t sy = static_cast<int32_t>(q.y * fr);
+		//	q = math::saturate(q);
 
-			int32_t i = sy * resolution + sx;
-			float mag = source[i];
+			float r;
 
-			float v = std::max(1.f - math::dot(p, p), 0.f);
+			if (q.x < 0.f || q.x >= 1.f
+			||  q.y < 0.f || q.y >= 1.f) {
+				r = 0.f;
+			} else {
+				float dp = math::dot(p, p);
+				float v = std::max(1.f - dp * dp, 0.f);
 
-			float r = v * scale * (mag * mag);
+				int32_t sx = static_cast<int32_t>(q.x * fr);
+				int32_t sy = static_cast<int32_t>(q.y * fr);
+				int32_t i = sy * resolution + sx;
+				r = v * normalization * squared_magnitude[i];
+			}
 
 			int32_t o = y * resolution + x;
 			result[o].set_bin(bin, r);

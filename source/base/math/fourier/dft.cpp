@@ -14,7 +14,7 @@ void dft_1d(float2* result, const float* source, size_t num) {
 
 	bool even = true;
 
-	for (size_t k = 0, len = num / 2; k <= len; ++k) {
+	for (size_t k = 0, len = num / 2; k <= len; ++k, even = !even) {
 		float2 sum(0.f);
 
 		float a = -2.f * Pi / fn * static_cast<float>(k);
@@ -35,7 +35,6 @@ void dft_1d(float2* result, const float* source, size_t num) {
 
 		result[k] = sum;
 
-		even = !even;
 		// normalization
 //		result[k].x *= (k == 0 || k == len) ? 1.f / fn : 2.f / fn;
 //		result[k].y *= 2.f / fn;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "image/typed_image.hpp"
+#include <vector>
 
 namespace image { namespace filter {
 
@@ -11,8 +12,7 @@ public:
 
 	Gaussian(float radius, float alpha);
 
-	void apply(const Typed_image<T>& source,
-			   Typed_image<T>& destination);
+	void apply(Typed_image<T>& target);
 
 private:
 

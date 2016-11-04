@@ -11,7 +11,7 @@ public:
 
 	Aperture(uint32_t num_blades, float roundness);
 
-	float evaluate(float2 p);
+	float evaluate(float2 p) const;
 
 private:
 

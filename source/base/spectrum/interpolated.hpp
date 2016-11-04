@@ -16,6 +16,8 @@ public:
 	float get_start() const;
 	float get_end() const;
 
+	float evaluate(float wl) const;
+
 	float integrate(float a, float b) const;
 
 private:
