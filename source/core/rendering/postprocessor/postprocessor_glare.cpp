@@ -38,34 +38,23 @@ float f3(float theta, float lambda) {
 void Glare::init(const scene::camera::Camera& camera) {
 	auto d = camera.sensor_dimensions();
 
-//	image::Image::Description description(image::Image::Type::Float_3, d);
 	high_pass_.resize(d.x * d.y);
 
-	float sensorHeight = 24.0f;
-	float apertureAngle = 60.0f;
-	float pixelTheta = apertureAngle/sensorHeight * math::Pi / 180.0f;
+	// This seems a bit arbitrary
+	float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
-	float solid_angle = 20.f * camera.pixel_solid_angle();
-
-	std::cout << pixelTheta << " " << solid_angle << std::endl;
-
-	int32_t width = 2 * d.x;
-	int32_t height = 2 * d.y;
-
-	kernel_dimensions_ = int2(width, height);
-	kernel_.resize(width * height);
-
+	kernel_dimensions_ = 2 * d;
+	kernel_.resize(kernel_dimensions_.x * kernel_dimensions_.y);
 
 	const spectrum::Interpolated CIE_X(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
 	const spectrum::Interpolated CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
 	const spectrum::Interpolated CIE_Z(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Z_360_830_1nm, spectrum::CIE_XYZ_Num);
 
-	float wl_start = 400.f;
-	float wl_end = 700.f;
-	int32_t wl_num_samples = 64;
+	constexpr float wl_start = 400.f;
+	constexpr float wl_end = 700.f;
+	constexpr int32_t wl_num_samples = 64;
 	float wl_norm = 1.f / CIE_Y.integrate(wl_start, wl_end);
-	float wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
-
+	constexpr float wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
 
 	float a_sum = 0.f;
 	float b_sum = 0.f;
@@ -79,14 +68,11 @@ void Glare::init(const scene::camera::Camera& camera) {
 		float3 d;
 	};
 
-	std::vector<F> f;
-	f.reserve(width * height);
+	std::vector<F> f(kernel_.size());
 
-	for (int32_t y = 0; y < height; ++y) {
-		for (int32_t x = 0; x < width; ++x) {
+	for (int32_t y = 0; y < kernel_dimensions_.y; ++y) {
+		for (int32_t x = 0; x < kernel_dimensions_.x; ++x) {
 			int2 p(-d.x + x, -d.y + y);
-
-		//	std::cout << p << std::endl;
 
 			float theta = math::length(float2(p)) * solid_angle;
 
@@ -111,29 +97,23 @@ void Glare::init(const scene::camera::Camera& camera) {
 			c_sum += c;
 			d_sum += d;
 
-			f.push_back(F{a, b, c, d});
+			int32_t i = y * kernel_dimensions_.x + x;
+			f[i] = F{ a, b, c, d };
 		}
 	}
 
-//	std::cout << "init done" << std::endl;
+	float scotopic[4] = { 0.282f, 0.478f, 0.207f, 0.033f };
+	float mesopic[4] = { 0.368f, 0.478f, 0.138f, 0.016f };
 
-	float scotopic[4] = {0.282f, 0.478f, 0.207f, 0.033f};
-	float mesopic[4] = {0.368f, 0.478f, 0.138f, 0.016f};
+	float* scale = mesopic;
 
-	float* scale = scotopic;
-
-	float  a_n = 1.f / a_sum;
-	float  b_n = 1.f / b_sum;
-	float  c_n = 1.f / c_sum;
-	float3 d_n = 1.f / d_sum;
+	float  a_n = scale[0] / a_sum;
+	float  b_n = scale[1] / b_sum;
+	float  c_n = scale[2] / c_sum;
+	float3 d_n = scale[3] / d_sum;
 
 	for (size_t i = 0, len = kernel_.size(); i < len; ++i) {
-		kernel_[i] = float3((scale[0] * a_n * f[i].a)  +
-							(scale[1] * b_n * f[i].b)  +
-							(scale[2] * c_n * f[i].c)) +
-							 scale[3] * d_n * f[i].d;
-
-	//	kernel_[i].f = scale[3] * d_n * f[i].d;
+		kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d;
 	}
 }
 
@@ -168,22 +148,20 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 		int2 hkd = kernel_dimensions_ / 2;
 
 		for (int32_t i = begin; i < end; ++i) {
-			int2 c = source.coordinates_2(i);
+			int2 c = destination.coordinates_2(i);
 
 			int2 kb = hkd - c;
+			int2 ke = kb + d;
 
 			float3 glare(0.f);
+			for (int32_t ky = kb.y; ky < ke.y; ++ky) {
+				int32_t krow = ky * kernel_dimensions_.x;
+				int32_t srow = (c.y - d.y + ky) * d.x;
+				for (int32_t kx = kb.x; kx < ke.x; ++kx) {
+					float3 k = kernel_[krow + kx];
 
-			for (int32_t ky = kb.y, key = kb.y + d.y; ky < key; ++ky) {
-				for (int32_t kx = kb.x, kex = kb.x + d.x; kx < kex; ++kx) {
-					int32_t ki = ky * kernel_dimensions_.x + kx;
-					float3 k = kernel_[ki];
-
-					int2 kp(-d.x + kx, -d.y + ky);
-					int2 o = c + kp;
-					int32_t si = o.y * d.x + o.x;
-
-					glare += k * high_pass_[si];
+					int32_t sx = c.x - d.x + kx;
+					glare += k * high_pass_[srow + sx];
 				}
 			}
 
