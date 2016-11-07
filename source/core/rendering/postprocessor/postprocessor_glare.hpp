@@ -9,7 +9,13 @@ class Glare : public Postprocessor {
 
 public:
 
-	Glare(float threshold, float intensity);
+	enum class Adaption {
+		Scotopic,
+		Mesopic,
+		Photopic
+	};
+
+	Glare(Adaption adaption, float threshold, float intensity);
 
 	virtual void init(const scene::camera::Camera& camera, thread::Pool& pool) final override;
 
@@ -30,6 +36,7 @@ private:
 					   const image::Image_float_4& source,
 					   image::Image_float_4& destination) final override;
 
+	Adaption adaption_;
 	float threshold_;
 	float intensity_;
 

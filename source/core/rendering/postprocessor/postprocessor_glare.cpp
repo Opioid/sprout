@@ -12,8 +12,9 @@
 
 namespace rendering { namespace postprocessor {
 
-Glare::Glare(float threshold, float intensity) :
+Glare::Glare(Adaption adaption, float threshold, float intensity) :
 	Postprocessor(2),
+	adaption_(adaption),
 	threshold_(threshold), intensity_(intensity) {}
 
 float f0(float theta) {
@@ -85,40 +86,69 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 			float b = f1(theta);
 			float c = f2(theta);
 
-			float3 xyz(0.f);
-			for (int32_t k = 0; k < wl_num_samples; ++k) {
-				float lambda = wl_start + static_cast<float>(k) * wl_step;
-				float val = wl_norm * f3(theta , lambda);
-				xyz.x += CIE_X.evaluate(lambda) * val;
-				xyz.y += CIE_Y.evaluate(lambda) * val;
-				xyz.z += CIE_Z.evaluate(lambda) * val;
-			}
-
-			float3 d = spectrum::XYZ_to_linear_RGB(xyz);
-			d = math::max(float3(0.f), d);
-
 			a_sum += a;
 			b_sum += b;
 			c_sum += c;
-			d_sum += d;
+
+			float3 d(0.f);
+
+			if (Adaption::Photopic != adaption_) {
+				float3 xyz(0.f);
+				for (int32_t k = 0; k < wl_num_samples; ++k) {
+					float lambda = wl_start + static_cast<float>(k) * wl_step;
+					float val = wl_norm * f3(theta , lambda);
+					xyz.x += CIE_X.evaluate(lambda) * val;
+					xyz.y += CIE_Y.evaluate(lambda) * val;
+					xyz.z += CIE_Z.evaluate(lambda) * val;
+				}
+
+				d = math::max(spectrum::XYZ_to_linear_RGB(xyz), float3(0.f));
+
+				d_sum += d;
+			}
 
 			int32_t i = y * kernel_dimensions_.x + x;
 			f[i] = F{ a, b, c, d };
 		}
 	}
 
-	float scotopic[4] = { 0.282f, 0.478f, 0.207f, 0.033f };
-	float mesopic[4] = { 0.368f, 0.478f, 0.138f, 0.016f };
+	float scale[4];
 
-	float* scale = mesopic;
+	switch (adaption_) {
+	case Adaption::Scotopic:
+		scale[0] = 0.282f;
+		scale[1] = 0.478f;
+		scale[2] = 0.207f;
+		scale[3] = 0.033f;
+		break;
+	case Adaption::Mesopic:
+		scale[0] = 0.368f;
+		scale[1] = 0.478f;
+		scale[2] = 0.138f;
+		scale[3] = 0.016f;
+		break;
+	case Adaption::Photopic:
+		scale[0] = 0.383f;
+		scale[1] = 0.478f;
+		scale[2] = 0.138f;
+		scale[3] = 0.f;
+		break;
+	}
 
 	float  a_n = scale[0] / a_sum;
 	float  b_n = scale[1] / b_sum;
 	float  c_n = scale[2] / c_sum;
-	float3 d_n = scale[3] / d_sum;
 
-	for (size_t i = 0, len = kernel_.size(); i < len; ++i) {
-		kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d;
+	if (Adaption::Photopic == adaption_) {
+		for (size_t i = 0, len = kernel_.size(); i < len; ++i) {
+			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c);
+		}
+	} else {
+		float3 d_n = scale[3] / d_sum;
+
+		for (size_t i = 0, len = kernel_.size(); i < len; ++i) {
+			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d;
+		}
 	}
 }
 
