@@ -1,6 +1,8 @@
 #include "interpolated.hpp"
 #include "math/math.hpp"
 
+#include <iostream>
+
 namespace spectrum {
 
 Interpolated::Interpolated() {}
@@ -28,9 +30,22 @@ float Interpolated::get_end() const {
 }
 
 float Interpolated::evaluate(float wl) const {
-	size_t index = std::max((size_t) (std::lower_bound(wavelengths_.begin(), wavelengths_.end(), wl) - wavelengths_.begin()), (size_t) 1) - 1;
+	auto result = std::equal_range(wavelengths_.begin(), wavelengths_.end(), wl);
 
-	return intensities_[index];
+//	size_t index0 = static_cast<size_t>(result.first  - wavelengths_.begin());
+//	size_t index1 = static_cast<size_t>(result.second - wavelengths_.begin());
+
+	size_t index = static_cast<size_t>(result.first  - wavelengths_.begin());
+
+	if (result.first == result.second) {
+		float wl0 = wavelengths_[index - 1];
+		float intensity0 = intensities_[index - 1];
+		float wl1 = wavelengths_[index];
+		float intensity1 = intensities_[index];
+		return math::lerp((wl - wl0) / (wl1 - wl0), intensity0, intensity1);
+	} else /*if (index0 + 1 == index1)*/ {
+		return intensities_[index];
+	}
 }
 
 float Interpolated::integrate(float a, float b) const {
@@ -47,7 +62,11 @@ float Interpolated::integrate(float a, float b) const {
 
 	// this integration is only correct for a linearly interpolated function
 	// and clamps to zero outside the given range
-	size_t index = std::max((size_t) (std::lower_bound(wavelengths_.begin(), wavelengths_.end(), start) - wavelengths_.begin()), (size_t) 1) - 1;
+
+	auto it = std::lower_bound(wavelengths_.begin(), wavelengths_.end(), start);
+
+	size_t index = std::max(static_cast<size_t>(it - wavelengths_.begin()),
+							static_cast<size_t>(1)) - 1;
 
 	float integral = 0.f;
 	for (; index + 1 < len && end >= wavelengths_[index]; ++index) {
