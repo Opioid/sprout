@@ -11,7 +11,7 @@ public:
 
 	Bloom(float angle, float alpha, float threshold, float intensity);
 
-	virtual void init(const scene::camera::Camera& camera) final override;
+	virtual void init(const scene::camera::Camera& camera, thread::Pool& pool) final override;
 
 	virtual size_t num_bytes() const final override;
 

@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
 	std::shared_ptr<take::Take> take;
 
 	try {
-		take = take::Loader::load(*file_system.read_stream(args.take));
+		take = take::Loader::load(*file_system.read_stream(args.take), thread_pool);
 	} catch (const std::exception& e) {
 		logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
 		return 1;

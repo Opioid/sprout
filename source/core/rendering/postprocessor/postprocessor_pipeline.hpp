@@ -32,7 +32,7 @@ public:
 
 	void add(Postprocessor* pp);
 
-	void init(const scene::camera::Camera& camera);
+	void init(const scene::camera::Camera& camera, thread::Pool& pool);
 
 	size_t num_bytes() const;
 

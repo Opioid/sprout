@@ -6,7 +6,7 @@ namespace rendering { namespace postprocessor { namespace tonemapping {
 
 Tonemapper::~Tonemapper() {}
 
-void Tonemapper::init(const scene::camera::Camera& /*camera*/) {}
+void Tonemapper::init(const scene::camera::Camera& /*camera*/, thread::Pool& /*pool*/) {}
 
 size_t Tonemapper::num_bytes() const {
 	return 0;

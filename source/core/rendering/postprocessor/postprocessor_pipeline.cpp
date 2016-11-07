@@ -24,7 +24,7 @@ void Pipeline::add(Postprocessor* pp) {
 	}
 }
 
-void Pipeline::init(const scene::camera::Camera& camera) {
+void Pipeline::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	if (postprocessors_.empty()) {
 		return;
 	}
@@ -33,7 +33,7 @@ void Pipeline::init(const scene::camera::Camera& camera) {
 	scratch_.resize(description);
 
 	for (auto pp : postprocessors_) {
-		pp->init(camera);
+		pp->init(camera, pool);
 	}
 }
 

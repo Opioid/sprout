@@ -5,6 +5,7 @@
 #include "base/spectrum/interpolated.hpp"
 #include "base/spectrum/rgb.inl"
 #include "base/spectrum/xyz.inl"
+#include "base/thread/thread_pool.hpp"
 
 #include "base/math/print.hpp"
 #include <iostream>
@@ -35,7 +36,7 @@ float f3(float theta, float lambda) {
 	return 436.9f * (568.f / lambda) * std::exp(-(b * b));
 }
 
-void Glare::init(const scene::camera::Camera& camera) {
+void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	auto d = camera.sensor_dimensions();
 
 	high_pass_.resize(d.x * d.y);
@@ -69,6 +70,10 @@ void Glare::init(const scene::camera::Camera& camera) {
 	};
 
 	std::vector<F> f(kernel_.size());
+
+	Init* inits = new Init[pool.num_threads()];
+
+	pool.run([inits](uint32_t id) { inits[id].init(id); });
 
 	for (int32_t y = 0; y < kernel_dimensions_.y; ++y) {
 		for (int32_t x = 0; x < kernel_dimensions_.x; ++x) {
@@ -121,6 +126,15 @@ size_t Glare::num_bytes() const {
 	return sizeof(*this) +
 			high_pass_.size() * sizeof(float3) +
 			kernel_.size() * sizeof(float3);
+}
+
+void Glare::Init::init(uint32_t id) {
+	std::cout << "init(" << id << ")" << std::endl;
+
+	a_sum = 0.f;
+	b_sum = 0.f;
+	c_sum = 0.f;
+	d_sum = float3(0.f);
 }
 
 void Glare::apply(int32_t begin, int32_t end, uint32_t pass,

@@ -14,7 +14,7 @@ public:
 	Postprocessor(uint32_t num_passes = 1);
 	virtual ~Postprocessor();
 
-	virtual void init(const scene::camera::Camera& camera) = 0;
+	virtual void init(const scene::camera::Camera& camera, thread::Pool& pool) = 0;
 
 	virtual size_t num_bytes() const = 0;
 

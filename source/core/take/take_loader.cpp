@@ -48,7 +48,7 @@
 
 namespace take {
 
-std::shared_ptr<Take> Loader::load(std::istream& stream) {
+std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_pool) {
 	auto root = json::parse(stream);
 
 	auto take = std::make_shared<Take>();
@@ -113,7 +113,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream) {
 				rendering::integrator::volume::Attenuation_factory>(take->settings);
 	}
 
-	take->view.init();
+	take->view.init(thread_pool);
 
 	return take;
 }

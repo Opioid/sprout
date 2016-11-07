@@ -15,6 +15,8 @@ namespace scene { namespace camera { class Camera; } }
 
 namespace sampler { class Factory; }
 
+namespace thread { class Pool; }
+
 namespace rendering {
 
 struct Focus;
@@ -47,7 +49,7 @@ class Loader {
 
 public:
 
-	static std::shared_ptr<Take> load(std::istream& stream);
+	static std::shared_ptr<Take> load(std::istream& stream, thread::Pool& thread_pool);
 
 private:
 

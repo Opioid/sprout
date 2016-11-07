@@ -10,9 +10,9 @@ namespace take {
 struct View {
 	View() {};
 
-	void init() {
+	void init(thread::Pool& pool) {
 		if (camera) {
-			pipeline.init(*camera);
+			pipeline.init(*camera, pool);
 		}
 	}
 
