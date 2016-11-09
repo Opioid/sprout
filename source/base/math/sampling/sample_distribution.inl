@@ -66,4 +66,71 @@ inline float2 thing(uint32_t i, uint32_t num_samples, uint32_t r) {
 				  scrambled_radical_inverse_LP(i, r));
 }
 
+inline void golden_ratio(float2* samples, uint32_t num_samples, float2 r) {
+	// set the initial first coordinate
+	float x = r.x;
+	float min = x;
+	uint32_t idx = 0;
+	// set the first coordinates
+	for (uint32_t i = 0; i < num_samples; ++i) {
+		samples[i].y = x;
+		// keep the minimum
+		if (x < min) {
+			min = x;
+			idx = i;
+		}
+
+		// increment the coordinate
+		x += 0.618033988749894f;
+		if (x >= 1.f) {
+			--x;
+		}
+	}
+
+	// find the first Fibonacci >= N
+	uint32_t f = 1;
+	uint32_t fp = 1;
+	uint32_t parity = 0;
+	for (; f + fp < num_samples; ++parity) {
+		uint32_t tmp = f;
+		f += fp;
+		fp = tmp;
+	}
+
+	// set the increment and decrement
+	uint32_t inc = fp;
+	uint32_t dec = f;
+	if (parity & 1) {
+		inc = f;
+		dec = fp;
+	}
+
+	// permute the first coordinates
+	samples[0].x = samples[idx].y;
+	for (uint32_t i = 1; i < num_samples; ++i) {
+		if (idx < dec) {
+			idx += inc;
+			if (idx >= num_samples) {
+				idx -= dec;
+			}
+		} else {
+			idx -= dec;
+		}
+		samples[i].x = samples[idx].y;
+	}
+
+	// set the initial second coordinate
+	float y = r.y;
+	// set the second coordinates
+	for (uint32_t i = 0; i < num_samples; ++i) {
+		samples[i].y = y;
+
+		// increment the coordinate
+		y += 0.618033988749894f;
+		if (y >= 1.f) {
+			--y;
+		}
+	}
+}
+
 }

@@ -6,15 +6,11 @@
 
 namespace sampler {
 
-Sobol::Sobol(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
-	Sampler(rng, num_samples_per_iteration) {}
-
-math::uint2 Sobol::seed() const {
-	return math::uint2(rng_.random_uint(), rng_.random_uint());
-}
+Sobol::Sobol(math::random::Generator& rng, uint32_t num_samples) :
+	Sampler(rng, num_samples) {}
 
 void Sobol::generate_camera_sample(int2 pixel, uint32_t index,
-									Camera_sample& sample) {
+								   Camera_sample& sample) {
 	float2 s2d(sobol::sample(index, 0), sobol::sample(index, 1));
 
 	sample.pixel = pixel;
@@ -36,11 +32,11 @@ float Sobol::generate_sample_1D() {
 	return rng_.random_float();
 }
 
-Sobol_factory::Sobol_factory(uint32_t num_samples_per_iteration) :
-	Factory(num_samples_per_iteration) {}
+Sobol_factory::Sobol_factory(uint32_t num_samples) :
+	Factory(num_samples) {}
 
 Sampler* Sobol_factory::create(math::random::Generator& rng) const {
-	return new Sobol(rng, num_samples_per_iteration_);
+	return new Sobol(rng, num_samples_);
 }
 
 }

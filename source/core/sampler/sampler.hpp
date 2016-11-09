@@ -12,19 +12,14 @@ class Sampler {
 
 public:
 
-	Sampler(math::random::Generator& rng, uint32_t num_samples_per_iteration);
+	Sampler(math::random::Generator& rng, uint32_t num_samples);
 	virtual ~Sampler();
 
 	math::random::Generator& rng();
 
-	uint32_t num_samples_per_iteration() const;
+	uint32_t num_samples() const;
 
-	void restart(uint32_t num_iterations);
-	void restart_and_seed(uint32_t num_iterations);
-
-	virtual math::uint2 seed() const = 0;
-
-	void set_seed(math::uint2 seed);
+	void resume_pixel(uint32_t sample, uint2 seed);
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) = 0;
 
@@ -34,18 +29,19 @@ public:
 
 protected:
 
+	virtual void on_resume_pixel();
+
 	math::random::Generator& rng_;
-	math::uint2 seed_;
-	uint32_t num_iterations_;
-	uint32_t num_samples_per_iteration_;
+	uint32_t num_samples_;
 	uint32_t current_sample_;
+	math::uint2 seed_;
 };
 
 class Factory {
 
 public:
 
-	Factory(uint32_t num_samples_per_iteration);
+	Factory(uint32_t num_samples);
 
 	virtual Sampler* create(math::random::Generator& rng) const = 0;
 
@@ -53,7 +49,7 @@ public:
 
 protected:
 
-	uint32_t num_samples_per_iteration_;
+	uint32_t num_samples_;
 };
 
 }

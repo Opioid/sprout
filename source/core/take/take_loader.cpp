@@ -28,6 +28,7 @@
 #include "rendering/sensor/unfiltered.inl"
 #include "rendering/sensor/filter/sensor_gaussian.hpp"
 #include "sampler/sampler_ems.hpp"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_ld.hpp"
 #include "sampler/sampler_random.hpp"
 #include "sampler/sampler_scrambled_hammersley.hpp"
@@ -99,18 +100,18 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 		take->sampler_factory = std::make_shared<sampler::Random_factory>(1);
 	}
 
+	using namespace rendering::integrator;
+
 	if (!take->surface_integrator_factory) {
-		rendering::integrator::Light_sampling light_sampling{
-			rendering::integrator::Light_sampling::Strategy::One, 1};
+		Light_sampling light_sampling{Light_sampling::Strategy::One, 1};
 		take->surface_integrator_factory = std::make_unique<
-				rendering::integrator::surface::Pathtracer_MIS_factory>(
-					take->settings, 4, 8, 0.5f, light_sampling, false);
+				surface::Pathtracer_MIS_factory>(take->settings, 4, 8, 0.5f, light_sampling, false);
 		logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
 	}
 
 	if (!take->volume_integrator_factory) {
 		take->volume_integrator_factory = std::make_shared<
-				rendering::integrator::volume::Attenuation_factory>(take->settings);
+				volume::Attenuation_factory>(take->settings);
 	}
 
 	take->view.init(thread_pool);
@@ -314,15 +315,18 @@ Loader::load_sampler_factory(const json::Value& sampler_value) {
 			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
 			return std::make_shared<sampler::Random_factory>(num_samples);
 		} else if ("Scrambled_hammersley" == n.name) {
-			 uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
-			 return std::make_shared<sampler::Scrambled_hammersley_factory>(num_samples);
-		 } else if ("EMS" == n.name) {
-			 uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
-			 return std::make_shared<sampler::EMS_factory>(num_samples);
-		 } else if ("LD" == n.name) {
-			 uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
-			 return std::make_shared<sampler::LD_factory>(num_samples);
-		 }
+			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
+			return std::make_shared<sampler::Scrambled_hammersley_factory>(num_samples);
+		} else if ("EMS" == n.name) {
+			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
+			return std::make_shared<sampler::EMS_factory>(num_samples);
+		} else if ("Golden_ratio" == n.name) {
+			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
+			return std::make_shared<sampler::Golden_ratio_factory>(num_samples);
+		} else if ("LD" == n.name) {
+			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
+			return std::make_shared<sampler::LD_factory>(num_samples);
+		}
 	}
 
 	return nullptr;

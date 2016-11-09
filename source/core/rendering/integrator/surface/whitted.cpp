@@ -14,14 +14,16 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Whitted::Whitted(const take::Settings& take_settings,
-				 math::random::Generator& rng, const Settings& settings) :
-	Integrator(take_settings, rng),
+Whitted::Whitted(uint32_t num_samples_per_pixel,
+				 const take::Settings& take_settings,
+				 math::random::Generator& rng,
+				 const Settings& settings) :
+	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
 	sampler_(rng, 1) {}
 
-void Whitted::start_new_pixel(uint32_t num_samples) {
-	sampler_.restart_and_seed(num_samples);
+void Whitted::resume_pixel(uint32_t sample, uint2 seed) {
+	sampler_.resume_pixel(sample, seed);
 }
 
 float4 Whitted::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
@@ -120,8 +122,9 @@ Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t n
 	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
 }
 
-Integrator* Whitted_factory::create(math::random::Generator& rng) const {
-	return new Whitted(take_settings_, rng, settings_);
+Integrator* Whitted_factory::create(uint32_t num_samples_per_pixel,
+									math::random::Generator& rng) const {
+	return new Whitted(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 
 }}}

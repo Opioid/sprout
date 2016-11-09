@@ -32,8 +32,11 @@ void Worker::init(uint32_t id, const scene::Scene& scene,
 	scene::Worker::init(id, scene);
 
 	rng_ = rng;
-	surface_integrator_ = surface_integrator_factory.create(rng_);
-	volume_integrator_  = volume_integrator_factory.create(rng_);
+
+	uint32_t num_samples_per_pixel = sampler_factory.num_samples_per_iteration();
+
+	surface_integrator_ = surface_integrator_factory.create(num_samples_per_pixel, rng_);
+	volume_integrator_  = volume_integrator_factory.create(num_samples_per_pixel, rng_);
 	sampler_ = sampler_factory.create(rng_);
 }
 

@@ -14,10 +14,15 @@
 
 namespace rendering { namespace integrator { namespace volume {
 
-Single_scattering::Single_scattering(const take::Settings& take_settings,
+Single_scattering::Single_scattering(uint32_t num_samples_per_pixel,
+									 const take::Settings& take_settings,
 									 math::random::Generator& rng,
 									 const Settings& settings) :
-	Integrator(take_settings, rng), settings_(settings), sampler_(rng, 1) {}
+	Integrator(num_samples_per_pixel, take_settings, rng),
+	settings_(settings),
+	sampler_(rng, 1) {}
+
+void Single_scattering::resume_pixel(uint32_t /*sample*/, uint2 /*seed*/) {}
 
 float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume& volume,
 										const scene::Ray& ray) {
@@ -132,8 +137,9 @@ Single_scattering_factory::Single_scattering_factory(const take::Settings& take_
 	settings_.step_size = step_size;
 }
 
-Integrator* Single_scattering_factory::create(math::random::Generator& rng) const {
-	return new Single_scattering(take_settings_, rng, settings_);
+Integrator* Single_scattering_factory::create(uint32_t num_samples_per_pixel,
+											  math::random::Generator& rng) const {
+	return new Single_scattering(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 
 }}}

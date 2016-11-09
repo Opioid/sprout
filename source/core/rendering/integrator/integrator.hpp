@@ -1,6 +1,8 @@
 #pragma once
 
-#include "base/math/random/generator.hpp"
+#include "base/math/vector.hpp"
+
+namespace math { namespace random { class Generator; } }
 
 namespace take { struct Settings; }
 
@@ -20,10 +22,13 @@ class Integrator {
 
 public:
 
-	Integrator(const take::Settings& settings, math::random::Generator& rng);
+	Integrator(uint32_t samples_per_pixel,
+			   const take::Settings& settings,
+			   math::random::Generator& rng);
+
 	virtual ~Integrator();
 
-	virtual void start_new_pixel(uint32_t num_samples);
+	virtual void resume_pixel(uint32_t sample, uint2 seed) = 0;
 
 	const take::Settings& take_settings() const;
 

@@ -8,9 +8,7 @@ class Random : public Sampler {
 
 public:
 
-	Random(math::random::Generator& rng, uint32_t num_samples_per_iteration);
-
-	virtual math::uint2 seed() const final override;
+	Random(math::random::Generator& rng, uint32_t num_samples);
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) final override;
@@ -24,7 +22,7 @@ class Random_factory : public Factory {
 
 public:
 
-	Random_factory(uint32_t num_samples_per_iteration);
+	Random_factory(uint32_t num_samples);
 
 	virtual Sampler* create(math::random::Generator& rng) const final override;
 };

@@ -16,8 +16,12 @@ public:
 		float step_size;
 	};
 
-	Single_scattering(const take::Settings& take_settings, math::random::Generator& rng,
+	Single_scattering(uint32_t num_samples_per_pixel,
+					  const take::Settings& take_settings,
+					  math::random::Generator& rng,
 					  const Settings& settings);
+
+	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
 	virtual float3 transmittance(Worker& worker, const scene::volume::Volume& volume,
 								 const scene::Ray& ray) final override;
@@ -40,7 +44,8 @@ public:
 
 	Single_scattering_factory(const take::Settings& take_settings, float step_size);
 
-	virtual Integrator* create(math::random::Generator& rng) const;
+	virtual Integrator* create(uint32_t num_samples_per_pixel,
+							   math::random::Generator& rng) const;
 
 private:
 

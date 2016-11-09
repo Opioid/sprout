@@ -1,5 +1,6 @@
 SOURCES += \
 	sampler/sampler_ems.cpp \
+	sampler/sampler_golden_ratio.cpp \
 	sampler/sampler_halton.cpp \
 	sampler/sampler_ld.cpp \
 	sampler/sampler_random.cpp \
@@ -11,6 +12,7 @@ SOURCES += \
 HEADERS += \
 	sampler/camera_sample.hpp \
 	sampler/sampler_ems.hpp \
+	sampler/sampler_golden_ratio.hpp \
 	sampler/sampler_halton.hpp \
 	sampler/sampler_ld.hpp \
 	sampler/sampler_random.hpp \

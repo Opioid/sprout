@@ -25,8 +25,12 @@ class Open : public integrator::Integrator {
 
 public:
 
-	Open(const take::Settings& take_settings, math::random::Generator& rng,
+	Open(uint32_t num_samples_per_pixel,
+		 const take::Settings& take_settings,
+		 math::random::Generator& rng,
 		 uint32_t max_bounces);
+
+	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 	using Bxdf_result    = scene::material::bxdf::Result;

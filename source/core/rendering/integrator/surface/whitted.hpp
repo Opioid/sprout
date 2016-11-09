@@ -17,13 +17,15 @@ public:
 		float    num_light_samples_reciprocal;
 	};
 
-	Whitted(const take::Settings& take_settings,
-			math::random::Generator& rng, const Settings& settings);
+	Whitted(uint32_t num_samples_per_pixel,
+			const take::Settings& take_settings,
+			math::random::Generator& rng, const
+			Settings& settings);
 
-	virtual void start_new_pixel(uint32_t num_samples);
+	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
 	virtual float4 li(Worker& worker, scene::Ray& ray,
-					  bool volume, scene::Intersection& intersection);
+					  bool volume, scene::Intersection& intersection) final override;
 
 private:
 
@@ -45,7 +47,8 @@ public:
 
 	Whitted_factory(const take::Settings& take_settings, uint32_t num_light_samples);
 
-	virtual Integrator* create(math::random::Generator& rng) const;
+	virtual Integrator* create(uint32_t num_samples_per_pixel,
+							   math::random::Generator& rng) const;
 
 private:
 

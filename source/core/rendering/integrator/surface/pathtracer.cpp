@@ -19,15 +19,19 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Pathtracer::Pathtracer(const take::Settings& take_settings,
-					   math::random::Generator& rng, const Settings& settings) :
-	Integrator(take_settings, rng),
+Pathtracer::Pathtracer(uint32_t num_samples_per_pixel,
+					   const take::Settings& take_settings,
+					   math::random::Generator& rng,
+					   const Settings& settings) :
+	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
-	sampler_(rng, 1),
-	transmittance_(take_settings, rng) {}
+	primary_sampler_(rng, num_samples_per_pixel),
+	secondary_sampler_(rng, num_samples_per_pixel),
+	transmittance_(num_samples_per_pixel, take_settings, rng) {}
 
-void Pathtracer::start_new_pixel(uint32_t num_samples) {
-	sampler_.restart_and_seed(num_samples);
+void Pathtracer::resume_pixel(uint32_t sample, uint2 seed) {
+	primary_sampler_.resume_pixel(sample, seed);
+	secondary_sampler_.resume_pixel(sample, seed);
 }
 
 float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
@@ -84,14 +88,22 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 			float q = std::min(spectrum::luminance(throughput),
 							   settings_.path_continuation_probability);
 
-			if (sampler_.generate_sample_1D() >= q) {
+			if (secondary_sampler_.generate_sample_1D() >= q) {
 				break;
 			}
 
 			throughput /= q;
 		}
 
-		material_sample.sample(sampler_, sample_result);
+		sampler::Sampler* sampler;// = &secondary_sampler_;
+
+		if (0 == i) {
+			sampler = &primary_sampler_;
+		} else {
+			sampler = &secondary_sampler_;
+		}
+
+		material_sample.sample(*sampler, sample_result);
 		if (0.f == sample_result.pdf) {
 			break;
 		}
@@ -104,7 +116,7 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
 			throughput *= transmittance_.resolve(worker, ray, intersection,
 												 material_sample.attenuation(),
-												 sampler_, Sampler_filter::Nearest,
+												 secondary_sampler_, Sampler_filter::Nearest,
 												 sample_result);
 
 			if (0.f == sample_result.pdf) {
@@ -142,8 +154,9 @@ Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 	settings_.disable_caustics = disable_caustics;
 }
 
-Integrator* Pathtracer_factory::create(math::random::Generator& rng) const {
-	return new Pathtracer(take_settings_, rng, settings_);
+Integrator* Pathtracer_factory::create(uint32_t num_samples_per_pixel,
+									   math::random::Generator& rng) const {
+	return new Pathtracer(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 
 }}}

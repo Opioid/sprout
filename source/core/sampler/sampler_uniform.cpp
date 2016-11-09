@@ -8,10 +8,6 @@ namespace sampler {
 Uniform::Uniform(math::random::Generator& rng) :
 	Sampler(rng, 1) {}
 
-math::uint2 Uniform::seed() const {
-	return math::uint2::identity;
-}
-
 void Uniform::generate_camera_sample(int2 pixel, uint32_t /*index*/, Camera_sample& sample) {
 	float2 s2d(0.5f, 0.5f);
 

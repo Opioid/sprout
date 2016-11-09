@@ -5,13 +5,9 @@
 
 namespace sampler {
 
-Halton::Halton(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
-	Sampler(rng, num_samples_per_iteration) {
+Halton::Halton(math::random::Generator& rng, uint32_t num_samples) :
+	Sampler(rng, num_samples) {
 	halton_sampler_.init_faure();
-}
-
-math::uint2 Halton::seed() const {
-	return math::uint2::identity;
 }
 
 void Halton::generate_camera_sample(int2 pixel, uint32_t index,
@@ -34,11 +30,11 @@ float Halton::generate_sample_1D() {
 	return rng_.random_float();
 }
 
-Halton_factory::Halton_factory(uint32_t num_samples_per_iteration) :
-	Factory(num_samples_per_iteration) {}
+Halton_factory::Halton_factory(uint32_t num_samples) :
+	Factory(num_samples) {}
 
 Sampler* Halton_factory::create(math::random::Generator& rng) const {
-	return new Halton(rng, num_samples_per_iteration_);
+	return new Halton(rng, num_samples_);
 }
 
 }

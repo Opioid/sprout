@@ -6,12 +6,8 @@
 
 namespace sampler {
 
-EMS::EMS(math::random::Generator& rng, uint32_t num_samples_per_iteration) :
-	Sampler(rng, num_samples_per_iteration) {}
-
-math::uint2 EMS::seed() const {
-	return math::uint2(rng_.random_uint(), rng_.random_uint());
-}
+EMS::EMS(math::random::Generator& rng, uint32_t num_samples) :
+	Sampler(rng, num_samples) {}
 
 void EMS::generate_camera_sample(int2 pixel, uint32_t index,
 								 Camera_sample& sample) {
@@ -36,7 +32,7 @@ EMS_factory::EMS_factory(uint32_t num_samples_per_iteration) :
 	Factory(num_samples_per_iteration) {}
 
 Sampler* EMS_factory::create(math::random::Generator& rng) const {
-	return new EMS(rng, num_samples_per_iteration_);
+	return new EMS(rng, num_samples_);
 }
 
 }

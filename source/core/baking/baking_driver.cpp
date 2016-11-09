@@ -51,7 +51,7 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 	for (int32_t y = 0; y < dimensions.y; ++y) {
 		for (int32_t x = 0; x < dimensions.x; ++x) {
 
-			worker.sampler()->restart_and_seed(num_samples);
+			worker.sampler()->resume_pixel(0, uint2(0, 0));
 
 			float3 offset((static_cast<float>(x) + 0.5f) *
 						   (bake_quad_range.x / static_cast<float>(dimensions.x)),

@@ -56,9 +56,6 @@ protected:
 	integrator::surface::Integrator* surface_integrator_;
 	integrator::volume::Integrator*  volume_integrator_;
 	sampler::Sampler* sampler_;
-
-private:
-
 	math::random::Generator rng_;
 };
 

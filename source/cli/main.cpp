@@ -30,27 +30,13 @@
 #include "base/math/fourier/dft.hpp"
 #include <iostream>
 
+void golden_ratio(float2* samples, uint32_t num_samples, float2 r);
+
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
-/*
-	std::vector<float> y = { 0.25f, 0.6f, 1.1f, 3.4f };
-
-	std::vector<float2> y_dft(3);
-	math::dft_1d(y_dft.data(), y.data(), y.size());
-
-//	std::vector<float2> y_dft_2(4);
-//	math::dft_1d_2(y_dft_2.data(), y.data(), y.size());
-
-	for (auto c : y_dft) {
-		std::cout << c;
-	}
-
-	return 0;
-*/
-
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout!");
 

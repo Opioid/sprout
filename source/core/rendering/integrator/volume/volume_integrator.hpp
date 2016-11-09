@@ -24,7 +24,10 @@ public:
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 
-	Integrator(const take::Settings& settings, math::random::Generator& rng);
+	Integrator(uint32_t num_samples_per_pixel,
+			   const take::Settings& settings,
+			   math::random::Generator& rng);
+
 	virtual ~Integrator();
 
 	virtual float3 transmittance(Worker& worker, const scene::volume::Volume& volume,
@@ -40,7 +43,8 @@ public:
 
 	Factory(const take::Settings& settings);
 
-	virtual Integrator* create(math::random::Generator& rng) const = 0;
+	virtual Integrator* create(uint32_t num_samples_per_pixel,
+							   math::random::Generator& rng) const = 0;
 
 protected:
 

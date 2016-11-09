@@ -10,8 +10,6 @@ public:
 
 	Uniform(math::random::Generator& rng);
 
-	virtual math::uint2 seed() const final override;
-
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) final override;
 

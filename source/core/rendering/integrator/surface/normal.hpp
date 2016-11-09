@@ -21,11 +21,12 @@ public:
 		Vector vector;
 	};
 
-	Normal(const take::Settings& take_settings,
+	Normal(uint32_t num_samples_per_pixel,
+		   const take::Settings& take_settings,
 		   math::random::Generator& rng,
 		   const Settings& settings);
 
-	virtual void start_new_pixel(uint32_t num_samples) final override;
+	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
 	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
 					  scene::Intersection& intersection) final override;
@@ -42,7 +43,8 @@ public:
 	Normal_factory(const take::Settings& take_settings,
 				   Normal::Settings::Vector vector);
 
-	virtual Integrator* create(math::random::Generator& rng) const final override;
+	virtual Integrator* create(uint32_t num_samples_per_pixel,
+							   math::random::Generator& rng) const final override;
 
 private:
 

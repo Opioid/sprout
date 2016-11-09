@@ -25,7 +25,11 @@ class Closed : public integrator::Integrator {
 
 public:
 
-	Closed(const take::Settings& take_settings, math::random::Generator& rng);
+	Closed(uint32_t num_samples_per_pixel,
+		   const take::Settings& take_settings,
+		   math::random::Generator& rng);
+
+	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 	using Bxdf_result = scene::material::bxdf::Result;

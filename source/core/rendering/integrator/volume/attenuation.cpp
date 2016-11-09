@@ -9,8 +9,12 @@
 
 namespace rendering { namespace integrator { namespace volume {
 
-Attenuation::Attenuation(const take::Settings& take_settings, math::random::Generator& rng) :
-	Integrator(take_settings, rng) {}
+Attenuation::Attenuation(uint32_t num_samples_per_pixel,
+						 const take::Settings& take_settings,
+						 math::random::Generator& rng) :
+	Integrator(num_samples_per_pixel, take_settings, rng) {}
+
+void Attenuation::resume_pixel(uint32_t /*sample*/, uint2 /*seed*/) {}
 
 float3 Attenuation::transmittance(Worker& worker,
 								  const scene::volume::Volume& volume,
@@ -47,8 +51,9 @@ float4 Attenuation::li(Worker& worker, const scene::volume::Volume& volume,
 Attenuation_factory::Attenuation_factory(const take::Settings& settings) :
 	Factory(settings) {}
 
-Integrator* Attenuation_factory::create(math::random::Generator& rng) const {
-	return new Attenuation(take_settings_, rng);
+Integrator* Attenuation_factory::create(uint32_t num_samples_per_pixel,
+										math::random::Generator& rng) const {
+	return new Attenuation(num_samples_per_pixel, take_settings_, rng);
 }
 
 }}}

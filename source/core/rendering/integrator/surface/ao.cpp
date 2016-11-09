@@ -12,15 +12,16 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Ao::Ao(const take::Settings& take_settings,
+Ao::Ao(uint32_t samples_per_pixel,
+	   const take::Settings& take_settings,
 	   math::random::Generator& rng,
 	   const Settings& settings) :
-	Integrator(take_settings, rng),
+	Integrator(samples_per_pixel, take_settings, rng),
 	settings_(settings),
-	sampler_(rng, settings.num_samples) {}
+	sampler_(rng, samples_per_pixel * settings.num_samples) {}
 
-void Ao::start_new_pixel(uint32_t num_samples) {
-	sampler_.restart_and_seed(num_samples);
+void Ao::resume_pixel(uint32_t sample, uint2 seed) {
+	sampler_.resume_pixel(sample, seed);
 }
 
 float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
@@ -59,8 +60,9 @@ Ao_factory::Ao_factory(const take::Settings& settings, uint32_t num_samples, flo
 	settings_.radius = radius;
 }
 
-Integrator* Ao_factory::create(math::random::Generator& rng) const {
-	return new Ao(take_settings_, rng, settings_);
+Integrator* Ao_factory::create(uint32_t num_samples_per_pixel,
+							   math::random::Generator& rng) const {
+	return new Ao(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 
 }}}

@@ -64,7 +64,7 @@ void Camera::set_sensor(rendering::sensor::Sensor* sensor) {
 	}
 }
 
-math::uint2 Camera::seed(int2 pixel) const {
+uint2 Camera::seed(int2 pixel) const {
 	return seeds_[seed_dimensions_.x * (pixel.y + filter_radius_) + pixel.x + filter_radius_];
 }
 

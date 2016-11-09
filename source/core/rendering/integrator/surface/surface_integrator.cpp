@@ -9,8 +9,10 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Integrator::Integrator(const take::Settings& settings, math::random::Generator& rng) :
-	integrator::Integrator(settings, rng) {}
+Integrator::Integrator(uint32_t num_samples_per_pixel,
+					   const take::Settings& settings,
+					   math::random::Generator& rng) :
+	integrator::Integrator(num_samples_per_pixel, settings, rng) {}
 
 Integrator::~Integrator() {}
 
