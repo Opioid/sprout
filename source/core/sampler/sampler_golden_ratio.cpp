@@ -35,6 +35,10 @@ void Golden_ratio::on_resume_pixel() {
 
 	float2 r(rng_.cast(seed_.x), rng_.cast(seed_.y));
 	math::golden_ratio(samples_.data(), num_samples_, r);
+
+//	std::random_device rd;
+	std::mt19937 g(/*rd()*/seed_.x);
+	std::shuffle(samples_.begin(), samples_.end(), g);
 }
 
 Golden_ratio_factory::Golden_ratio_factory(uint32_t num_samples) :

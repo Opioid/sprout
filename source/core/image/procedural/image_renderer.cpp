@@ -55,6 +55,43 @@ void Renderer::draw_circle(float2 pos, float radius) {
 	}
 }
 
+void Renderer::resolve_sRGB(Image_byte_3& image) const {
+	if (1 == sqrt_num_samples_) {
+		for (int32_t i = 0, len = image.area(); i < len; ++i) {
+			auto s = samples_[i];
+
+			byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(s.xyz));
+			image.store(i, srgb);
+		}
+	} else {
+		int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
+
+		float n = 1.f / static_cast<float>(num_samples);
+
+		auto i_d = image.description().dimensions;
+
+		for (int32_t i_y = 0; i_y < i_d.y; ++i_y) {
+			int32_t b_y = sqrt_num_samples_ * i_y;
+			for (int32_t i_x = 0; i_x < i_d.x; ++i_x) {
+				int32_t b_x = sqrt_num_samples_ * i_x;
+
+				float3 result(0.f);
+
+				for (int32_t y = 0; y < sqrt_num_samples_; ++y) {
+					int32_t b_o = dimensions_.x * (b_y + y) + b_x;
+					for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
+						int32_t s = b_o + x;
+						result += samples_[s].xyz;
+					}
+				}
+
+				byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(n * result));
+				image.store(i_x, i_y, srgb);
+			}
+		}
+	}
+}
+
 void Renderer::resolve(Image_byte_3& image) const {
 	if (1 == sqrt_num_samples_) {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {

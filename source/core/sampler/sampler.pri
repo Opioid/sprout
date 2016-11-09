@@ -7,6 +7,7 @@ SOURCES += \
 	sampler/sampler.cpp \
 	sampler/sampler_scrambled_hammersley.cpp \
     sampler/sampler_sobol.cpp \
+	sampler/sampler_test.cpp \
 	sampler/sampler_uniform.cpp \	
 
 HEADERS += \
@@ -19,6 +20,7 @@ HEADERS += \
 	sampler/sampler.hpp \
 	sampler/sampler_scrambled_hammersley.hpp \
     sampler/sampler_sobol.hpp \
+	sampler/sampler_test.hpp \
 	sampler/sampler_uniform.hpp \
 
 include(halton/halton.pri)

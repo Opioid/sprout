@@ -46,7 +46,7 @@ private:
 
 	const Settings& settings_;
 
-	sampler::EMS primary_sampler_;
+	sampler::Golden_ratio primary_sampler_;
 	sampler::Random secondary_sampler_;
 
 	transmittance::Closed transmittance_;

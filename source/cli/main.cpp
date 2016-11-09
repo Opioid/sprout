@@ -26,7 +26,7 @@
 #include "base/thread/thread_pool.hpp"
 
 #include "extension/procedural/starburst/starburst.hpp"
-
+#include "core/sampler/sampler_test.hpp"
 #include "base/math/fourier/dft.hpp"
 #include <iostream>
 
@@ -37,6 +37,9 @@ void log_memory_consumption(const resource::Manager& manager,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
+//	sampler::testing::test();
+//	return 1;
+
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout!");
 

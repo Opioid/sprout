@@ -23,8 +23,8 @@ float2 Sobol::generate_sample_2D() {
 //	return float2(halton_sampler_.sample(0, current_sample_++),
 //				  halton_sampler_.sample(1, current_sample_++));
 
-	float x = sobol::sample(current_sample_++, 0, seed_.x);
-	float y = sobol::sample(current_sample_++, 1, seed_.y);
+	float x = sobol::sample(current_sample_++, 1, seed_.x);
+	float y = sobol::sample(current_sample_++, 2, seed_.y);
 	return float2(x, y);
 }
 
