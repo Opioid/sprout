@@ -3,6 +3,7 @@
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "transmittance/transmittance_closed.hpp"
 #include "transmittance/transmittance_open.hpp"
+#include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 
 namespace scene {
@@ -36,8 +37,8 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
-	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
-					  scene::Intersection& intersection) final override;
+	virtual float4 li(Worker& worker, scene::Ray& ray, uint32_t sample,
+					  bool volume, scene::Intersection& intersection) final override;
 
 private:
 
@@ -61,7 +62,8 @@ private:
 
 	const Settings& settings_;
 
-	sampler::Random sampler_;
+	sampler::Golden_ratio primary_sampler_;
+	sampler::Random secondary_sampler_;
 
 	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;

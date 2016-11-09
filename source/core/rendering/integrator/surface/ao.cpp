@@ -24,8 +24,8 @@ void Ao::resume_pixel(uint32_t sample, uint2 seed) {
 	sampler_.resume_pixel(sample, seed);
 }
 
-float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-			  scene::Intersection& intersection) {
+float4 Ao::li(Worker& worker, scene::Ray& ray, uint32_t sample,
+			  bool /*volume*/, scene::Intersection& intersection) {
 	scene::Ray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t	 = take_settings_.ray_offset_factor * intersection.geo.epsilon;

@@ -25,6 +25,10 @@ void Sampler::resume_pixel(uint32_t sample, uint2 seed) {
 	on_resume_pixel();
 }
 
+void Sampler::set_current_sample(uint32_t sample) {
+	current_sample_ = sample;
+}
+
 void Sampler::on_resume_pixel() {}
 
 Factory::Factory(uint32_t num_samples) :

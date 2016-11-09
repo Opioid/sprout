@@ -2,7 +2,6 @@
 
 #include "surface_integrator.hpp"
 #include "sampler/sampler_random.hpp"
-#include "sampler/sampler_ems.hpp"
 
 namespace scene { namespace material { class Sample; } }
 
@@ -24,7 +23,7 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
-	virtual float4 li(Worker& worker, scene::Ray& ray,
+	virtual float4 li(Worker& worker, scene::Ray& ray, uint32_t sample,
 					  bool volume, scene::Intersection& intersection) final override;
 
 private:

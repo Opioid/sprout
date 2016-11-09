@@ -20,8 +20,8 @@ Normal::Normal(uint32_t num_samples_per_pixel,
 
 void Normal::resume_pixel(uint32_t /*sample*/, uint2 /*seed*/) {}
 
-float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-				  scene::Intersection& intersection) {
+float4 Normal::li(Worker& worker, scene::Ray& ray, uint32_t sample,
+				  bool /*volume*/, scene::Intersection& intersection) {
 	float3 vector;
 
 	if (Settings::Vector::Tangent == settings_.vector) {

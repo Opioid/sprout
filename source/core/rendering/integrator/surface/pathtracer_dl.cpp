@@ -25,7 +25,7 @@ Pathtracer_DL::Pathtracer_DL(uint32_t num_samples_per_pixel,
 							 const Settings& settings) :
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
-	sampler_(rng, 1),
+	sampler_(rng, num_samples_per_pixel),
 	transmittance_(num_samples_per_pixel, take_settings, rng)
 {}
 
@@ -33,14 +33,14 @@ void Pathtracer_DL::resume_pixel(uint32_t sample, uint2 seed) {
 	sampler_.resume_pixel(sample, seed);
 }
 
-float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-						 scene::Intersection& intersection) {
+float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, uint32_t sample,
+						 bool /*volume*/, scene::Intersection& intersection) {
 	scene::material::Sampler_settings::Filter filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
 
-	float3 throughput = float3(1.f, 1.f, 1.f);
-	float3 result = math::float3_identity;
+	float3 throughput(1.f);
+	float3 result(0.f);
 	float opacity = 0.f;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {

@@ -39,14 +39,14 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
-	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
-					  scene::Intersection& intersection) final override;
+	virtual float4 li(Worker& worker, scene::Ray& ray, uint32_t sample,
+					  bool volume, scene::Intersection& intersection) final override;
 
 private:
 
 	const Settings& settings_;
 
-	sampler::Golden_ratio primary_sampler_;
+	sampler::EMS primary_sampler_;
 	sampler::Random secondary_sampler_;
 
 	transmittance::Closed transmittance_;

@@ -20,14 +20,16 @@ Whitted::Whitted(uint32_t num_samples_per_pixel,
 				 const Settings& settings) :
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
-	sampler_(rng, 1) {}
+	sampler_(rng, num_samples_per_pixel) {}
 
 void Whitted::resume_pixel(uint32_t sample, uint2 seed) {
 	sampler_.resume_pixel(sample, seed);
 }
 
-float4 Whitted::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-				   scene::Intersection& intersection) {
+float4 Whitted::li(Worker& worker, scene::Ray& ray, uint32_t sample,
+				   bool /*volume*/, scene::Intersection& intersection) {
+	sampler_.set_current_sample(sample);
+
 	float3 result = math::float3_identity;
 
 	float opacity = intersection.opacity(worker, ray.time, Sampler_filter::Unknown);

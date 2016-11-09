@@ -217,7 +217,8 @@ float Mesh::uv_weight(float2 /*uv*/) const {
 }
 
 float Mesh::area(uint32_t part, float3_p scale) const {
-	return distributions_[part].distribution.integral() * scale.x * scale.x;
+	// HACK: This only really works for uniform scales!
+	return distributions_[part].distribution.integral() * scale.x * scale.y;
 }
 
 bool Mesh::is_complex() const {

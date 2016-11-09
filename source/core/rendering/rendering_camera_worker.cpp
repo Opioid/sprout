@@ -25,15 +25,13 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 		for (int32_t x = tile.start.x; x < tile.end.x; ++x) {
 			int2 pixel(x, y);
 
-			if (0 == sample_begin) {
-				if (0 == view) {
-					camera.set_seed(pixel, uint2(rng_.random_uint(), rng_.random_uint()));
-				}
+			if (0 == sample_begin && 0 == view) {
+				camera.set_seed(pixel, uint2(rng_.random_uint(), rng_.random_uint()));
 			}
 
 			uint2 seed = camera.seed(pixel);
 			sampler_->resume_pixel(sample_begin, seed);
-			surface_integrator_->resume_pixel(sample_begin, seed);
+			surface_integrator_->resume_pixel(sample_begin, seed.yx());
 
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);
@@ -41,7 +39,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 				sample.time = normalized_tick_offset + sample.time * normalized_tick_slice;
 
 				if (camera.generate_ray(sample, view, ray)) {
-					float4 color = li(ray);
+					float4 color = li(ray, i);
 					sensor.add_sample(sample, color, view_tile, bounds);
 				} else {
 					sensor.add_sample(sample, float4(0.f), view_tile, bounds);

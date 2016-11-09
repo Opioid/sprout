@@ -34,14 +34,16 @@ void Pathtracer::resume_pixel(uint32_t sample, uint2 seed) {
 	secondary_sampler_.resume_pixel(sample, seed);
 }
 
-float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-					  scene::Intersection& intersection) {
+float4 Pathtracer::li(Worker& worker, scene::Ray& ray, uint32_t sample,
+					  bool /*volume*/, scene::Intersection& intersection) {
+	secondary_sampler_.set_current_sample(sample);
+
 	Sampler_filter filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
 
-	float3 throughput = float3(1.f, 1.f, 1.f);
-	float3 result = math::float3_identity;
+	float3 throughput(1.f);
+	float3 result(0.f);
 	float opacity = 0.f;
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
