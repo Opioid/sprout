@@ -44,26 +44,26 @@ void test() {
 
 	uint32_t num_samples = 64;
 
-	{
-		sampler::EMS sampler(rng, num_samples);
-		render_set("ems", sampler, seed, renderer, target);
-	}
-	{
-		sampler::Golden_ratio sampler(rng, num_samples);
-		render_set("golden_ratio", sampler, seed, renderer, target);
-	}
-	{
-		sampler::Halton sampler(rng, num_samples);
-		render_set("halton", sampler, seed, renderer, target);
-	}
-	{
-		sampler::Random sampler(rng, num_samples);
-		render_set("random_disk", sampler, seed, renderer, target);
-	}
-	{
-		sampler::Scrambled_hammersley sampler(rng, num_samples);
-		render_set("scrambled_hammersley", sampler, seed, renderer, target);
-	}
+//	{
+//		sampler::EMS sampler(rng, num_samples);
+//		render_set("ems", sampler, seed, renderer, target);
+//	}
+//	{
+//		sampler::Golden_ratio sampler(rng, num_samples);
+//		render_set("golden_ratio", sampler, seed, renderer, target);
+//	}
+//	{
+//		sampler::Halton sampler(rng, num_samples);
+//		render_set("halton", sampler, seed, renderer, target);
+//	}
+//	{
+//		sampler::Random sampler(rng, num_samples);
+//		render_set("random_disk", sampler, seed, renderer, target);
+//	}
+//	{
+//		sampler::Scrambled_hammersley sampler(rng, num_samples);
+//		render_set("scrambled_hammersley", sampler, seed, renderer, target);
+//	}
 	{
 		sampler::Sobol sampler(rng, num_samples);
 		render_set("sobol_disk", sampler, seed, renderer, target);

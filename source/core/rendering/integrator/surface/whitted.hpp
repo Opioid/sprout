@@ -39,7 +39,7 @@ private:
 
 	Settings settings_;
 
-	sampler::Random sampler_;
+	sampler::Sobol sampler_;
 };
 
 class Whitted_factory : public Factory {

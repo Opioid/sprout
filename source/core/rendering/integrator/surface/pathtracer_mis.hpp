@@ -46,7 +46,7 @@ private:
 	float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 								 scene::Intersection& intersection,
 								 const scene::material::Sample& material_sample,
-								 Sampler_filter filter, bool primary_ray,
+								 Sampler_filter filter,
 								 Bxdf_result& sample_result);
 
 	float3 evaluate_light(const scene::light::Light* light, float light_weight,
@@ -65,6 +65,8 @@ private:
 
 	sampler::Random sampler_;
 	sampler::Golden_ratio hemisphere_sampler_;
+
+	sampler::Sobol light_sampler_;
 
 	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;

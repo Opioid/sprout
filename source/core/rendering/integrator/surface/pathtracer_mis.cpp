@@ -26,12 +26,14 @@ Pathtracer_MIS::Pathtracer_MIS(uint32_t num_samples_per_pixel,
 	settings_(settings),
 	sampler_(rng, num_samples_per_pixel),
 	hemisphere_sampler_(rng, num_samples_per_pixel),
+	light_sampler_(rng, num_samples_per_pixel),
 	transmittance_open_(num_samples_per_pixel, take_settings, rng, settings.max_bounces),
 	transmittance_closed_(num_samples_per_pixel, take_settings, rng) {}
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, uint2 seed) {
 	sampler_.resume_pixel(sample, seed);
 	hemisphere_sampler_.resume_pixel(sample, seed);
+	light_sampler_.resume_pixel(sample, seed);
 }
 
 float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
@@ -75,7 +77,7 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 
 		result += throughput * estimate_direct_light(worker, ray, intersection,
 													 material_sample, filter,
-													 primary_ray, sample_result);
+													 sample_result);
 
 		requires_bounce = sample_result.type.test_either(Bxdf_type::Specular,
 														 Bxdf_type::Transmission);
@@ -144,14 +146,14 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 											 scene::Intersection& intersection,
 											 const scene::material::Sample& material_sample,
-											 Sampler_filter filter, bool primary_ray,
+											 Sampler_filter filter,
 											 Bxdf_result& sample_result) {
 	float3 result(0.f);
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	scene::Ray secondary_ray;
 	secondary_ray.origin = intersection.geo.p;
-	secondary_ray.depth  = ray.depth + 1;
+	secondary_ray.depth  = ray.depth;
 	secondary_ray.time   = ray.time;
 
 	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
@@ -187,8 +189,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 	}
 
 	// Material BSDF importance sample
-//	if (0 == ray.depth) {
-	if (primary_ray) {
+	if (0 == ray.depth) {
 		material_sample.sample(hemisphere_sampler_, sample_result);
 	} else {
 		material_sample.sample(sampler_, sample_result);
@@ -203,6 +204,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 	secondary_ray.set_direction(sample_result.wi);
 	secondary_ray.min_t = ray_offset;
 	secondary_ray.max_t = take_settings_.ray_max_t;
+	++secondary_ray.depth;
 
 	if (intersect_and_resolve_mask(worker, secondary_ray, intersection, filter)) {
 		float light_pdf = 0.f;
@@ -248,11 +250,19 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 									  Sampler_filter filter) {
 	float3 result(0.f);
 
+
+	sampler::Sampler* sampler;// = &sampler_;
+	if (0 == ray.depth) {
+		sampler = &light_sampler_;
+	} else {
+		sampler = &sampler_;
+	}
+
 	// Light source importance sample
 	scene::light::Sample light_sample;
 	light->sample(ray.time, intersection.geo.p,
 				  material_sample.geometric_normal(), material_sample.is_translucent(),
-				  sampler_, worker, Sampler_filter::Nearest, light_sample);
+				  *sampler, worker, Sampler_filter::Nearest, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
 		ray.set_direction(light_sample.shape.wi);
