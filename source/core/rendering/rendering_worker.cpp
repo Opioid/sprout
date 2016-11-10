@@ -25,7 +25,7 @@ Worker::~Worker() {
 }
 
 void Worker::init(uint32_t id, const scene::Scene& scene,
-				  const random::Generator& rng,
+				  const rnd::Generator& rng,
 				  integrator::surface::Factory& surface_integrator_factory,
 				  integrator::volume::Factory& volume_integrator_factory,
 				  sampler::Factory& sampler_factory) {

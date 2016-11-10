@@ -10,7 +10,7 @@ public:
 
 	Attenuation(uint32_t num_samples_per_pixel,
 				const take::Settings& take_settings,
-				random::Generator& rng);
+				rnd::Generator& rng);
 
 	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
@@ -28,7 +28,7 @@ public:
 	Attenuation_factory(const take::Settings& settings);
 
 	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   random::Generator& rng) const;
+							   rnd::Generator& rng) const;
 };
 
 }}}

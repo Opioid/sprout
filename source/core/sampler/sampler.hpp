@@ -2,7 +2,7 @@
 
 #include "base/math/vector.hpp"
 
-namespace random { class Generator; }
+namespace rnd { class Generator; }
 
 namespace sampler {
 
@@ -12,10 +12,10 @@ class Sampler {
 
 public:
 
-	Sampler(random::Generator& rng, uint32_t num_samples);
+	Sampler(rnd::Generator& rng, uint32_t num_samples);
 	virtual ~Sampler();
 
-	random::Generator& rng();
+	rnd::Generator& rng();
 
 	uint32_t num_samples() const;
 
@@ -31,7 +31,7 @@ protected:
 
 	virtual void on_resume_pixel();
 
-	random::Generator& rng_;
+	rnd::Generator& rng_;
 	uint32_t num_samples_;
 	uint32_t current_sample_;
 	math::uint2 seed_;
@@ -43,7 +43,7 @@ public:
 
 	Factory(uint32_t num_samples);
 
-	virtual Sampler* create(random::Generator& rng) const = 0;
+	virtual Sampler* create(rnd::Generator& rng) const = 0;
 
 	uint32_t num_samples_per_iteration() const;
 

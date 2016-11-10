@@ -1,6 +1,6 @@
 #pragma once
 
-namespace random {
+namespace rnd {
 
 class Generator;
 

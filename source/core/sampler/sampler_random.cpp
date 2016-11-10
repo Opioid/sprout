@@ -5,7 +5,7 @@
 
 namespace sampler {
 
-Random::Random(random::Generator& rng, uint32_t num_samples) :
+Random::Random(rnd::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
 void Random::generate_camera_sample(int2 pixel, uint32_t /*index*/,
@@ -29,7 +29,7 @@ float Random::generate_sample_1D() {
 Random_factory::Random_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Random_factory::create(random::Generator& rng) const {
+Sampler* Random_factory::create(rnd::Generator& rng) const {
 	return new Random(rng, num_samples_);
 }
 

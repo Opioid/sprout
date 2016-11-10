@@ -6,7 +6,7 @@
 #include "base/math/ray.hpp"
 #include <string>
 
-namespace random { class Generator; }
+namespace rnd { class Generator; }
 
 namespace scene {
 
@@ -23,7 +23,7 @@ public:
 	Volume();
 
 	virtual float3 optical_depth(const math::Oray& ray, float step_size,
-								 random::Generator& rng, Worker& worker,
+								 rnd::Generator& rng, Worker& worker,
 								 Sampler_filter filter) const = 0;
 
 	virtual float3 scattering(float3_p p, Worker& worker,

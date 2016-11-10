@@ -38,7 +38,7 @@ void test() {
 	image::procedural::Renderer renderer(dimensions, 4);
 	image::Image_byte_3 target(image::Image::Description(image::Image::Type::Byte_3, dimensions));
 
-	random::Generator rng(6783452, 456679345, 347834, 56745234);
+	rnd::Generator rng(6783452, 456679345, 347834, 56745234);
 
 	uint2 seed(rng.random_uint(), rng.random_uint());
 

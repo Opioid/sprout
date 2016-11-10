@@ -8,7 +8,7 @@ namespace rendering { namespace integrator { namespace volume {
 
 Integrator::Integrator(uint32_t num_samples_per_pixel,
 					   const take::Settings& settings,
-					   random::Generator& rng) :
+					   rnd::Generator& rng) :
 	integrator::Integrator(num_samples_per_pixel, settings, rng) {}
 
 Integrator::~Integrator() {}

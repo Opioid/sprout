@@ -9,7 +9,7 @@
 
 namespace sampler {
 
-Golden_ratio::Golden_ratio(random::Generator& rng,
+Golden_ratio::Golden_ratio(rnd::Generator& rng,
 						   uint32_t num_samples) :
 	Sampler(rng, num_samples),
 	samples_(new float2[num_samples]) {}
@@ -46,14 +46,14 @@ void Golden_ratio::on_resume_pixel() {
 //	std::mt19937 g(seed_.x);
 //	std::shuffle(samples_.begin(), samples_.end(), g);
 
-	random::Generator rng(seed_.x + 0, seed_.x + 1, seed_.y + 2, seed_.y + 3);
-	random::shuffle(samples_, num_samples_, rng);
+	rnd::Generator rng(seed_.x + 0, seed_.x + 1, seed_.y + 2, seed_.y + 3);
+	rnd::shuffle(samples_, num_samples_, rng);
 }
 
 Golden_ratio_factory::Golden_ratio_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Golden_ratio_factory::create(random::Generator& rng) const {
+Sampler* Golden_ratio_factory::create(rnd::Generator& rng) const {
 	return new Golden_ratio(rng, num_samples_);
 }
 

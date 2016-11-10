@@ -2,7 +2,7 @@
 
 #include "base/math/vector.hpp"
 
-namespace random { class Generator; }
+namespace rnd { class Generator; }
 
 namespace take { struct Settings; }
 
@@ -24,7 +24,7 @@ public:
 
 	Integrator(uint32_t samples_per_pixel,
 			   const take::Settings& settings,
-			   random::Generator& rng);
+			   rnd::Generator& rng);
 
 	virtual ~Integrator();
 
@@ -35,7 +35,7 @@ public:
 protected:
 
 	const take::Settings& take_settings_;
-	random::Generator& rng_;
+	rnd::Generator& rng_;
 };
 
 }}

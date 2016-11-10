@@ -25,7 +25,7 @@ public:
 
 	Integrator(uint32_t num_samples_per_pixel,
 			   const take::Settings& settings,
-			   random::Generator& rng);
+			   rnd::Generator& rng);
 
 	virtual ~Integrator();
 
@@ -54,7 +54,7 @@ public:
 	Factory(const take::Settings& settings);
 
 	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   random::Generator& rng) const = 0;
+							   rnd::Generator& rng) const = 0;
 
 protected:
 

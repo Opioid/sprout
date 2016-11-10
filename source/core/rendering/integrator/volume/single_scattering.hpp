@@ -18,7 +18,7 @@ public:
 
 	Single_scattering(uint32_t num_samples_per_pixel,
 					  const take::Settings& take_settings,
-					  random::Generator& rng,
+					  rnd::Generator& rng,
 					  const Settings& settings);
 
 	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
@@ -45,7 +45,7 @@ public:
 	Single_scattering_factory(const take::Settings& take_settings, float step_size);
 
 	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   random::Generator& rng) const;
+							   rnd::Generator& rng) const;
 
 private:
 

@@ -6,7 +6,7 @@
 
 namespace sampler {
 
-Sobol::Sobol(random::Generator& rng, uint32_t num_samples) :
+Sobol::Sobol(rnd::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
 void Sobol::generate_camera_sample(int2 pixel, uint32_t index,
@@ -36,7 +36,7 @@ float Sobol::generate_sample_1D() {
 Sobol_factory::Sobol_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Sobol_factory::create(random::Generator& rng) const {
+Sampler* Sobol_factory::create(rnd::Generator& rng) const {
 	return new Sobol(rng, num_samples_);
 }
 

@@ -9,7 +9,7 @@ class Halton : public Sampler {
 
 public:
 
-	Halton(random::Generator& rng, uint32_t num_samples);
+	Halton(rnd::Generator& rng, uint32_t num_samples);
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) final override;
@@ -29,7 +29,7 @@ public:
 
 	Halton_factory(uint32_t num_samples);
 
-	virtual Sampler* create(random::Generator& rng) const final override;
+	virtual Sampler* create(rnd::Generator& rng) const final override;
 };
 
 }

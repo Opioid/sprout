@@ -16,7 +16,7 @@ namespace rendering { namespace integrator { namespace surface { namespace trans
 
 Open::Open(uint32_t num_samples_per_pixel,
 		   const take::Settings &take_settings,
-		   random::Generator &rng,
+		   rnd::Generator &rng,
 		   uint32_t max_bounces) :
 	integrator::Integrator(num_samples_per_pixel, take_settings, rng),
 	max_bounces_(max_bounces) {}

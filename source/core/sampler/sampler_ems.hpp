@@ -8,7 +8,7 @@ class EMS : public Sampler {
 
 public:
 
-	EMS(random::Generator& rng, uint32_t num_samples);
+	EMS(rnd::Generator& rng, uint32_t num_samples);
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) final override;
@@ -24,7 +24,7 @@ public:
 
 	EMS_factory(uint32_t num_samples);
 
-	virtual Sampler* create(random::Generator& rng) const final override;
+	virtual Sampler* create(rnd::Generator& rng) const final override;
 };
 
 }

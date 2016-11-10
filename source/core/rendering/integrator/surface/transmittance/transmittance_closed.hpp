@@ -27,7 +27,7 @@ public:
 
 	Closed(uint32_t num_samples_per_pixel,
 		   const take::Settings& take_settings,
-		   random::Generator& rng);
+		   rnd::Generator& rng);
 
 	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 

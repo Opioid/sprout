@@ -2,7 +2,7 @@
 
 #include "generator.hpp"
 
-namespace random {
+namespace rnd {
 
 inline Generator::Generator() {}
 

@@ -20,7 +20,7 @@ namespace rendering { namespace integrator { namespace surface {
 
 Pathtracer_MIS::Pathtracer_MIS(uint32_t num_samples_per_pixel,
 							   const take::Settings& take_settings,
-							   random::Generator& rng,
+							   rnd::Generator& rng,
 							   const Settings& settings) :
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
@@ -316,7 +316,7 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 }
 
 Integrator* Pathtracer_MIS_factory::create(uint32_t num_samples_per_pixel,
-										   random::Generator& rng) const {
+										   rnd::Generator& rng) const {
 	return new Pathtracer_MIS(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 

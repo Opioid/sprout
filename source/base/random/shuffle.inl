@@ -3,7 +3,7 @@
 #include "shuffle.hpp"
 #include "generator.inl"
 
-namespace random {
+namespace rnd {
 
 template<typename T>
 void shuffle(T* data, uint32_t count, Generator& rng) {

@@ -6,7 +6,7 @@
 
 namespace sampler {
 
-Scrambled_hammersley::Scrambled_hammersley(random::Generator& rng,
+Scrambled_hammersley::Scrambled_hammersley(rnd::Generator& rng,
 										   uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
@@ -33,7 +33,7 @@ float Scrambled_hammersley::generate_sample_1D() {
 Scrambled_hammersley_factory::Scrambled_hammersley_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Scrambled_hammersley_factory::create(random::Generator& rng) const {
+Sampler* Scrambled_hammersley_factory::create(rnd::Generator& rng) const {
 	return new Scrambled_hammersley(rng, num_samples_);
 }
 

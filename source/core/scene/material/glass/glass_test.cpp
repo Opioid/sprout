@@ -9,7 +9,7 @@ namespace scene { namespace material { namespace glass {
 namespace testing {
 
 void test() {
-	random::Generator rng;
+	rnd::Generator rng;
 	sampler::Random sampler(rng, 0);
 
 	bxdf::Result result;

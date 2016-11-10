@@ -9,7 +9,7 @@ class Homogeneous : public Volume {
 public:
 
 	virtual float3 optical_depth(const math::Oray& ray, float step_size,
-								 random::Generator& rng, Worker& worker,
+								 rnd::Generator& rng, Worker& worker,
 								 Sampler_filter filter) const final override;
 
 	virtual float3 scattering(float3_p p, Worker& worker,

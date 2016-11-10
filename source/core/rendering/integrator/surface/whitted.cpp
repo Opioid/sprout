@@ -16,7 +16,7 @@ namespace rendering { namespace integrator { namespace surface {
 
 Whitted::Whitted(uint32_t num_samples_per_pixel,
 				 const take::Settings& take_settings,
-				 random::Generator& rng,
+				 rnd::Generator& rng,
 				 const Settings& settings) :
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
@@ -123,7 +123,7 @@ Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t n
 }
 
 Integrator* Whitted_factory::create(uint32_t num_samples_per_pixel,
-									random::Generator& rng) const {
+									rnd::Generator& rng) const {
 	return new Whitted(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 

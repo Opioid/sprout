@@ -47,7 +47,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 //	auto mask = manager.load<image::texture::Texture>("textures/how.png", options);;
 //	image::texture::sampler::Sampler_2d_linear<image::texture::sampler::Address_mode_repeat> sampler;
 
-	random::Generator rng(0, 1, 2, 3);
+	rnd::Generator rng(0, 1, 2, 3);
 
 	uint32_t num_blades = 160 * 1024;
 

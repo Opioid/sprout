@@ -11,7 +11,7 @@ inline float2 ld(uint32_t i, uint32_t r0, uint32_t r1) {
 				  math::scrambled_radical_inverse_S(i, r1));
 }
 
-LD::LD(random::Generator& rng, uint32_t num_samples) :
+LD::LD(rnd::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
 void LD::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
@@ -34,7 +34,7 @@ float LD::generate_sample_1D() {
 LD_factory::LD_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* LD_factory::create(random::Generator& rng) const {
+Sampler* LD_factory::create(rnd::Generator& rng) const {
 	return new LD(rng, num_samples_);
 }
 

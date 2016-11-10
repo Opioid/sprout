@@ -5,7 +5,7 @@
 
 namespace sampler {
 
-Uniform::Uniform(random::Generator& rng) :
+Uniform::Uniform(rnd::Generator& rng) :
 	Sampler(rng, 1) {}
 
 void Uniform::generate_camera_sample(int2 pixel, uint32_t /*index*/, Camera_sample& sample) {
@@ -28,7 +28,7 @@ float Uniform::generate_sample_1D() {
 Uniform_factory::Uniform_factory(uint32_t num_samples_per_iteration) :
 	Factory(num_samples_per_iteration) {}
 
-Sampler* Uniform_factory::create(random::Generator& rng) const {
+Sampler* Uniform_factory::create(rnd::Generator& rng) const {
 	return new Uniform(rng);
 }
 

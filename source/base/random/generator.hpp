@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace random {
+namespace rnd {
 
 class Generator {
 

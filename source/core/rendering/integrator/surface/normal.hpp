@@ -23,7 +23,7 @@ public:
 
 	Normal(uint32_t num_samples_per_pixel,
 		   const take::Settings& take_settings,
-		   random::Generator& rng,
+		   rnd::Generator& rng,
 		   const Settings& settings);
 
 	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
@@ -44,7 +44,7 @@ public:
 				   Normal::Settings::Vector vector);
 
 	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   random::Generator& rng) const final override;
+							   rnd::Generator& rng) const final override;
 
 private:
 

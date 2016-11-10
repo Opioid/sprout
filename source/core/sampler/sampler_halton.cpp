@@ -5,7 +5,7 @@
 
 namespace sampler {
 
-Halton::Halton(random::Generator& rng, uint32_t num_samples) :
+Halton::Halton(rnd::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples) {
 	halton_sampler_.init_faure();
 }
@@ -33,7 +33,7 @@ float Halton::generate_sample_1D() {
 Halton_factory::Halton_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Halton_factory::create(random::Generator& rng) const {
+Sampler* Halton_factory::create(rnd::Generator& rng) const {
 	return new Halton(rng, num_samples_);
 }
 
