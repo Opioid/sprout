@@ -9,7 +9,8 @@ namespace sampler {
 
 Golden_ratio::Golden_ratio(random::Generator& rng,
 						   uint32_t num_samples) :
-	Sampler(rng, num_samples) {}
+	Sampler(rng, num_samples),
+	samples_(num_samples) {}
 
 void Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index,
 										  Camera_sample& sample) {
@@ -30,10 +31,6 @@ float Golden_ratio::generate_sample_1D() {
 }
 
 void Golden_ratio::on_resume_pixel() {
-	uint32_t num_samples = num_samples_;
-
-	samples_.resize(num_samples);
-
 	float2 r(rng_.cast(seed_.x), rng_.cast(seed_.y));
 	math::golden_ratio(samples_.data(), num_samples_, r);
 

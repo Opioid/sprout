@@ -106,6 +106,11 @@ Vector2<T> reciprocal(Vector2<T> v) {
 }
 
 template<typename T>
+T distance(Vector2<T> a, Vector2<T> b) {
+	return length(a - b);
+}
+
+template<typename T>
 Vector2<T> saturate(Vector2<T> v) {
 	return Vector2<T>(std::min(std::max(v.x, T(0)), T(1)),
 					  std::min(std::max(v.y, T(0)), T(1)));
