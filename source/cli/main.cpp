@@ -37,8 +37,8 @@ void log_memory_consumption(const resource::Manager& manager,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
-//	sampler::testing::test();
-//	return 1;
+	sampler::testing::test();
+	return 1;
 
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout!");
