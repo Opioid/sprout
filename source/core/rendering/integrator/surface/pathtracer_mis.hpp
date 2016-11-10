@@ -46,7 +46,7 @@ private:
 	float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
 								 scene::Intersection& intersection,
 								 const scene::material::Sample& material_sample,
-								 Sampler_filter filter,
+								 Sampler_filter filter, bool primary_ray,
 								 Bxdf_result& sample_result);
 
 	float3 evaluate_light(const scene::light::Light* light, float light_weight,

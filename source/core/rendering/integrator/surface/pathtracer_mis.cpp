@@ -74,7 +74,8 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 		}
 
 		result += throughput * estimate_direct_light(worker, ray, intersection,
-													 material_sample, filter, sample_result);
+													 material_sample, filter,
+													 primary_ray, sample_result);
 
 		requires_bounce = sample_result.type.test_either(Bxdf_type::Specular,
 														 Bxdf_type::Transmission);
@@ -143,7 +144,7 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 											 scene::Intersection& intersection,
 											 const scene::material::Sample& material_sample,
-											 Sampler_filter filter,
+											 Sampler_filter filter, bool primary_ray,
 											 Bxdf_result& sample_result) {
 	float3 result(0.f);
 
@@ -185,21 +186,17 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 		result *= settings_.num_light_samples_reciprocal / light_weight;
 	}
 
-	sampler::Sampler* sampler;// = &sampler_;
-
-	if (0 == ray.depth) {
-		sampler = &hemisphere_sampler_;
-	} else {
-		sampler = &sampler_;
-	}
-
 	// Material BSDF importance sample
-	material_sample.sample(*sampler, sample_result);
+//	if (0 == ray.depth) {
+	if (primary_ray) {
+		material_sample.sample(hemisphere_sampler_, sample_result);
+	} else {
+		material_sample.sample(sampler_, sample_result);
+	}
 
 	// Those cases are handled outside at the moment
 	if (0.f == sample_result.pdf
-	||  sample_result.type.test(Bxdf_type::Specular)
-	||  sample_result.type.test(Bxdf_type::Transmission)) {
+	||  sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission)) {
 		return result;
 	}
 

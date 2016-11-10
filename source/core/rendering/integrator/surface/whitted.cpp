@@ -20,7 +20,7 @@ Whitted::Whitted(uint32_t num_samples_per_pixel,
 				 const Settings& settings) :
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
-	sampler_(rng, num_samples_per_pixel) {}
+	sampler_(rng, num_samples_per_pixel * 2) {}
 
 void Whitted::resume_pixel(uint32_t sample, uint2 seed) {
 	sampler_.resume_pixel(sample, seed);

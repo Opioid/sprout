@@ -9,8 +9,8 @@ class Golden_ratio : public Sampler {
 
 public:
 
-	Golden_ratio(random::Generator& rng,
-				 uint32_t num_samples);
+	Golden_ratio(random::Generator& rng, uint32_t num_samples);
+	~Golden_ratio();
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) final override;
@@ -23,7 +23,7 @@ private:
 
 	virtual void on_resume_pixel() final override;
 
-	std::vector<float2> samples_;
+	float2* samples_;
 };
 
 class Golden_ratio_factory : public Factory {
