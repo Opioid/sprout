@@ -24,21 +24,18 @@ Pathtracer_MIS::Pathtracer_MIS(uint32_t num_samples_per_pixel,
 							   const Settings& settings) :
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
-	primary_sampler_(rng, num_samples_per_pixel),
-	secondary_sampler_(rng, num_samples_per_pixel),
+	sampler_(rng, num_samples_per_pixel),
+	hemisphere_sampler_(rng, num_samples_per_pixel),
 	transmittance_open_(num_samples_per_pixel, take_settings, rng, settings.max_bounces),
 	transmittance_closed_(num_samples_per_pixel, take_settings, rng) {}
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, uint2 seed) {
-	primary_sampler_.resume_pixel(sample, seed);
-	secondary_sampler_.resume_pixel(sample, seed);
+	sampler_.resume_pixel(sample, seed);
+	hemisphere_sampler_.resume_pixel(sample, seed);
 }
 
-float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, uint32_t sample,
-						  bool volume, scene::Intersection& intersection) {
-	// This seems to improve the quality you get from the golden ratio sampler
-	primary_sampler_.set_current_sample(sample);
-
+float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
+						  scene::Intersection& intersection) {
 	Sampler_filter filter = Sampler_filter::Unknown;
 	scene::material::bxdf::Result sample_result;
 
@@ -94,7 +91,7 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, uint32_t sample,
 			float q = std::min(spectrum::luminance(throughput),
 							   settings_.path_continuation_probability);
 
-			if (secondary_sampler_.generate_sample_1D() >= q) {
+			if (sampler_.generate_sample_1D() >= q) {
 				break;
 			}
 
@@ -188,12 +185,12 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 		result *= settings_.num_light_samples_reciprocal / light_weight;
 	}
 
-	sampler::Sampler* sampler;// = &secondary_sampler_;
+	sampler::Sampler* sampler;// = &sampler_;
 
 	if (0 == ray.depth) {
-		sampler = &primary_sampler_;
+		sampler = &hemisphere_sampler_;
 	} else {
-		sampler = &secondary_sampler_;
+		sampler = &sampler_;
 	}
 
 	// Material BSDF importance sample
@@ -258,7 +255,7 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 	scene::light::Sample light_sample;
 	light->sample(ray.time, intersection.geo.p,
 				  material_sample.geometric_normal(), material_sample.is_translucent(),
-				  secondary_sampler_, worker, Sampler_filter::Nearest, light_sample);
+				  sampler_, worker, Sampler_filter::Nearest, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
 		ray.set_direction(light_sample.shape.wi);
@@ -290,10 +287,10 @@ float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
 											Bxdf_result& sample_result) {
 	if (intersection.prop->is_open()) {
 		return transmittance_open_.resolve(worker, ray, intersection, attenuation,
-										   secondary_sampler_, filter, sample_result);
+										   sampler_, filter, sample_result);
 	} else {
 		return transmittance_closed_.resolve(worker, ray, intersection, attenuation,
-											 secondary_sampler_, filter, sample_result);
+											 sampler_, filter, sample_result);
 	}
 }
 

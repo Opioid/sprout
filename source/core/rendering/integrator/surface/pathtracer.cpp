@@ -25,19 +25,17 @@ Pathtracer::Pathtracer(uint32_t num_samples_per_pixel,
 					   const Settings& settings) :
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
-	primary_sampler_(rng, num_samples_per_pixel),
-	secondary_sampler_(rng, num_samples_per_pixel),
+	sampler_(rng, num_samples_per_pixel),
+	hemisphere_sampler_(rng, num_samples_per_pixel),
 	transmittance_(num_samples_per_pixel, take_settings, rng) {}
 
 void Pathtracer::resume_pixel(uint32_t sample, uint2 seed) {
-	primary_sampler_.resume_pixel(sample, seed);
-	secondary_sampler_.resume_pixel(sample, seed);
+	sampler_.resume_pixel(sample, seed);
+	hemisphere_sampler_.resume_pixel(sample, seed);
 }
 
-float4 Pathtracer::li(Worker& worker, scene::Ray& ray, uint32_t sample,
-					  bool /*volume*/, scene::Intersection& intersection) {
-	secondary_sampler_.set_current_sample(sample);
-
+float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
+					  scene::Intersection& intersection) {
 	Sampler_filter filter;
 	scene::material::bxdf::Result sample_result;
 	scene::material::bxdf::Result::Type_flag previous_sample_type;
@@ -90,19 +88,19 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, uint32_t sample,
 			float q = std::min(spectrum::luminance(throughput),
 							   settings_.path_continuation_probability);
 
-			if (secondary_sampler_.generate_sample_1D() >= q) {
+			if (sampler_.generate_sample_1D() >= q) {
 				break;
 			}
 
 			throughput /= q;
 		}
 
-		sampler::Sampler* sampler;// = &secondary_sampler_;
+		sampler::Sampler* sampler;// = &sampler_;
 
 		if (0 == i) {
-			sampler = &primary_sampler_;
+			sampler = &hemisphere_sampler_;
 		} else {
-			sampler = &secondary_sampler_;
+			sampler = &sampler_;
 		}
 
 		material_sample.sample(*sampler, sample_result);
@@ -115,10 +113,10 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, uint32_t sample,
 			break;
 		}
 
-		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
+		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			throughput *= transmittance_.resolve(worker, ray, intersection,
 												 material_sample.attenuation(),
-												 secondary_sampler_, Sampler_filter::Nearest,
+												 sampler_, Sampler_filter::Nearest,
 												 sample_result);
 
 			if (0.f == sample_result.pdf) {

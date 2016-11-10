@@ -3,6 +3,7 @@
 #include "base/math/vector.inl"
 #include "base/math/random/generator.inl"
 #include "base/math/sampling/sample_distribution.inl"
+#include <random>
 
 namespace sampler {
 

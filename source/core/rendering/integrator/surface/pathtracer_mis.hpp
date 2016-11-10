@@ -5,6 +5,7 @@
 #include "transmittance/transmittance_open.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
+#include "sampler/sampler_sobol.hpp"
 
 namespace scene {
 
@@ -37,8 +38,8 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
 
-	virtual float4 li(Worker& worker, scene::Ray& ray, uint32_t sample,
-					  bool volume, scene::Intersection& intersection) final override;
+	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
+					  scene::Intersection& intersection) final override;
 
 private:
 
@@ -62,8 +63,8 @@ private:
 
 	const Settings& settings_;
 
-	sampler::Golden_ratio primary_sampler_;
-	sampler::Random secondary_sampler_;
+	sampler::Random sampler_;
+	sampler::Golden_ratio hemisphere_sampler_;
 
 	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;

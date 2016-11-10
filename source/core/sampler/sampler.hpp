@@ -21,8 +21,6 @@ public:
 
 	void resume_pixel(uint32_t sample, uint2 seed);
 
-	void set_current_sample(uint32_t sample);
-
 	virtual void generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) = 0;
 
 	virtual float2 generate_sample_2D() = 0;

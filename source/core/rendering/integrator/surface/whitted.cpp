@@ -26,11 +26,9 @@ void Whitted::resume_pixel(uint32_t sample, uint2 seed) {
 	sampler_.resume_pixel(sample, seed);
 }
 
-float4 Whitted::li(Worker& worker, scene::Ray& ray, uint32_t sample,
-				   bool /*volume*/, scene::Intersection& intersection) {
-	sampler_.set_current_sample(sample);
-
-	float3 result = math::float3_identity;
+float4 Whitted::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
+				   scene::Intersection& intersection) {
+	float3 result(0.f);
 
 	float opacity = intersection.opacity(worker, ray.time, Sampler_filter::Unknown);
 	float throughput = opacity;
@@ -58,7 +56,7 @@ float4 Whitted::li(Worker& worker, scene::Ray& ray, uint32_t sample,
 
 float3 Whitted::shade(Worker& worker, const scene::Ray& ray,
 					  const scene::Intersection& intersection) {
-	float3 result = math::float3_identity;
+	float3 result(0.f);
 
 	float3 wo = -ray.direction;
 	auto& material_sample = intersection.sample(worker, wo, ray.time,
@@ -80,7 +78,7 @@ float3 Whitted::shade(Worker& worker, const scene::Ray& ray,
 float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 									  const scene::Intersection& intersection,
 									  const scene::material::Sample& material_sample) {
-	float3 result = math::float3_identity;
+	float3 result(0.f);
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 

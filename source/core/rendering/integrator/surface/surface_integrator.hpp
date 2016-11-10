@@ -29,8 +29,8 @@ public:
 
 	virtual ~Integrator();
 
-	virtual float4 li(Worker& worker, scene::Ray& ray, uint32_t sample,
-					  bool volume, scene::Intersection& intersection) = 0;
+	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
+					  scene::Intersection& intersection) = 0;
 
 protected:
 

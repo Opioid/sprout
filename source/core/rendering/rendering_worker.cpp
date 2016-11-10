@@ -40,7 +40,7 @@ void Worker::init(uint32_t id, const scene::Scene& scene,
 	sampler_ = sampler_factory.create(rng_);
 }
 
-float4 Worker::li(scene::Ray& ray, uint32_t sample) {
+float4 Worker::li(scene::Ray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 
@@ -51,27 +51,27 @@ float4 Worker::li(scene::Ray& ray, uint32_t sample) {
 		float4 vli = volume_integrator_->li(*this, *volume, ray, vtr);
 
 		if (hit) {
-			float4 li = surface_integrator_->li(*this, ray, sample, false, intersection);
+			float4 li = surface_integrator_->li(*this, ray, false, intersection);
 			return float4(vtr * li.xyz, li.w) + vli;
 		} else {
 			return vli;
 		}
 	} else {
 		if (hit) {
-			return surface_integrator_->li(*this, ray, sample, false, intersection);
+			return surface_integrator_->li(*this, ray, false, intersection);
 		} else {
 			return math::float4_identity;
 		}
 	}
 }
 
-float3 Worker::surface_li(scene::Ray& ray, uint32_t sample) {
+float3 Worker::surface_li(scene::Ray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);
 
 	if (hit) {
 		scene::Ray tray = ray;
-		return surface_integrator_->li(*this, tray, sample, false, intersection).xyz;
+		return surface_integrator_->li(*this, tray, false, intersection).xyz;
 	} else {
 		return float3(0.f);
 	}
