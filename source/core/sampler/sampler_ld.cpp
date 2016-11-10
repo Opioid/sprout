@@ -24,7 +24,7 @@ void LD::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sampl
 }
 
 float2 LD::generate_sample_2D() {
-	return ld(current_sample_++, seed_.x, seed_.y);
+	return ld(current_sample_2D_++, seed_.x, seed_.y);
 }
 
 float LD::generate_sample_1D() {

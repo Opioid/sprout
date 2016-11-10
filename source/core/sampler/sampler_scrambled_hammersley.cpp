@@ -21,7 +21,7 @@ void Scrambled_hammersley::generate_camera_sample(int2 pixel, uint32_t index,
 }
 
 float2 Scrambled_hammersley::generate_sample_2D() {
-	return math::scrambled_hammersley(current_sample_++,
+	return math::scrambled_hammersley(current_sample_2D_++,
 									  num_samples_,
 									  seed_.x);
 }

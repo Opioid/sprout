@@ -6,7 +6,8 @@ namespace sampler {
 Sampler::Sampler(rnd::Generator& rng, uint32_t num_samples) :
 	rng_(rng),
 	num_samples_(num_samples),
-	current_sample_(0) {}
+	current_sample_2D_(0),
+	current_sample_1D_(0) {}
 
 Sampler::~Sampler() {}
 
@@ -19,7 +20,8 @@ uint32_t Sampler::num_samples() const {
 }
 
 void Sampler::resume_pixel(uint32_t sample, uint2 seed) {
-	current_sample_ = sample;
+	current_sample_2D_ = sample;
+	current_sample_1D_ = sample;
 	seed_ = seed;
 
 	on_resume_pixel();

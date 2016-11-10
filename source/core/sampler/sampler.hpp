@@ -33,7 +33,8 @@ protected:
 
 	rnd::Generator& rng_;
 	uint32_t num_samples_;
-	uint32_t current_sample_;
+	uint32_t current_sample_2D_;
+	uint32_t current_sample_1D_;
 	math::uint2 seed_;
 };
 

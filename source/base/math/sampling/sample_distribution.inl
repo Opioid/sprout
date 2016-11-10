@@ -66,6 +66,21 @@ inline float2 thing(uint32_t i, uint32_t num_samples, uint32_t r) {
 				  scrambled_radical_inverse_LP(i, r));
 }
 
+inline void golden_ratio(float* samples, uint32_t num_samples, float r) {
+	// set the initial second coordinate
+	float x = r;
+	// set the second coordinates
+	for (uint32_t i = 0; i < num_samples; ++i) {
+		samples[i] = x;
+
+		// increment the coordinate
+		x += 0.618033988749894f;
+		if (x >= 1.f) {
+			--x;
+		}
+	}
+}
+
 inline void golden_ratio(float2* samples, uint32_t num_samples, float2 r) {
 	// set the initial first coordinate
 	float x = r.x;

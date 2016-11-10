@@ -23,7 +23,8 @@ private:
 
 	virtual void on_resume_pixel() final override;
 
-	float2* samples_;
+	float2* samples_2D_;
+	float*  samples_1D_;
 };
 
 class Golden_ratio_factory : public Factory {

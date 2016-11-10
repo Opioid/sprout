@@ -20,7 +20,7 @@ void EMS::generate_camera_sample(int2 pixel, uint32_t index,
 }
 
 float2 EMS::generate_sample_2D() {
-	return math::ems(current_sample_++, seed_.x, seed_.y);
+	return math::ems(current_sample_2D_++, seed_.x, seed_.y);
 }
 
 float EMS::generate_sample_1D() {
