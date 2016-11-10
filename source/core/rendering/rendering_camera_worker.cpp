@@ -6,7 +6,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/camera/camera.hpp"
 #include "base/math/vector.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace rendering {
 

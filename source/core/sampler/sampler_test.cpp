@@ -9,8 +9,8 @@
 #include "image/encoding/png/png_writer.hpp"
 #include "image/procedural/image_renderer.hpp"
 #include "base/math/vector.inl"
-#include "base/math/random/generator.inl"
 #include "base/math/sampling/sampling.inl"
+#include "base/random/generator.inl"
 #include "base/spectrum/rgb.inl"
 
 #include <iostream>
@@ -37,7 +37,7 @@ void test() {
 	image::procedural::Renderer renderer(dimensions, 4);
 	image::Image_byte_3 target(image::Image::Description(image::Image::Type::Byte_3, dimensions));
 
-	math::random::Generator rng(6783452, 456679345, 347834, 56745234);
+	random::Generator rng(6783452, 456679345, 347834, 56745234);
 
 	uint2 seed(rng.random_uint(), rng.random_uint());
 
@@ -67,7 +67,6 @@ void test() {
 		sampler::Sobol sampler(rng, num_samples);
 		render_set("sobol_disk", sampler, seed, renderer, target);
 	}
-
 }
 
 void render_set(const std::string name, sampler::Sampler& sampler, uint2 seed,

@@ -5,13 +5,13 @@
 #include "scene/scene_intersection.inl"
 #include "take/take_settings.hpp"
 #include "base/math/vector.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
 Integrator::Integrator(uint32_t num_samples_per_pixel,
 					   const take::Settings& settings,
-					   math::random::Generator& rng) :
+					   random::Generator& rng) :
 	integrator::Integrator(num_samples_per_pixel, settings, rng) {}
 
 Integrator::~Integrator() {}

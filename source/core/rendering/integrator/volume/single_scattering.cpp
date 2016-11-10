@@ -8,15 +8,15 @@
 #include "base/math/ray.inl"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
-#include "base/math/random/generator.inl"
 #include "base/math/sampling/sampling.inl"
+#include "base/random/generator.inl"
 #include "base/spectrum/rgb.inl"
 
 namespace rendering { namespace integrator { namespace volume {
 
 Single_scattering::Single_scattering(uint32_t num_samples_per_pixel,
 									 const take::Settings& take_settings,
-									 math::random::Generator& rng,
+									 random::Generator& rng,
 									 const Settings& settings) :
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
@@ -138,7 +138,7 @@ Single_scattering_factory::Single_scattering_factory(const take::Settings& take_
 }
 
 Integrator* Single_scattering_factory::create(uint32_t num_samples_per_pixel,
-											  math::random::Generator& rng) const {
+											  random::Generator& rng) const {
 	return new Single_scattering(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 

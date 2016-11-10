@@ -27,18 +27,15 @@
 
 #include "extension/procedural/starburst/starburst.hpp"
 #include "core/sampler/sampler_test.hpp"
-#include "base/math/fourier/dft.hpp"
 #include <iostream>
-
-void golden_ratio(float2* samples, uint32_t num_samples, float2 r);
 
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
-	sampler::testing::test();
-	return 1;
+//	sampler::testing::test();
+//	return 1;
 
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout!");

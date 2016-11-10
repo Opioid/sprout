@@ -3,12 +3,12 @@
 #include "base/math/matrix.inl"
 #include "base/math/vector.inl"
 #include "base/math/bounding/aabb.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace scene { namespace volume {
 
 float3 Density::optical_depth(const math::Oray& ray, float step_size,
-							  math::random::Generator& rng, Worker& worker,
+							  random::Generator& rng, Worker& worker,
 							  Sampler_filter filter) const {
 	float length = math::length(ray.direction);
 

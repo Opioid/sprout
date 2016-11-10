@@ -4,9 +4,9 @@
 #include "scene/material/material_print.hpp"
 #include "scene/material/ggx/ggx.inl"
 #include "sampler/sampler_random.hpp"
-#include "base/math/random/generator.inl"
 #include "base/math/vector.inl"
 #include "base/math/print.hpp"
+#include "base/random/generator.inl"
 #include <iostream>
 
 namespace scene { namespace material { namespace substitute {
@@ -27,7 +27,7 @@ struct Setup {
 };
 
 void test() {
-	math::random::Generator rng;
+	random::Generator rng;
 	sampler::Random sampler(rng, 0);
 
 	std::cout << "substitute::testing::test()" << std::endl;

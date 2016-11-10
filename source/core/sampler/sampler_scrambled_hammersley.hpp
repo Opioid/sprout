@@ -8,7 +8,7 @@ class Scrambled_hammersley : public Sampler {
 
 public:
 
-	Scrambled_hammersley(math::random::Generator& rng,
+	Scrambled_hammersley(random::Generator& rng,
 						 uint32_t num_samples);
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
@@ -25,7 +25,7 @@ public:
 
 	Scrambled_hammersley_factory(uint32_t num_samples);
 
-	virtual Sampler* create(math::random::Generator& rng) const final override;
+	virtual Sampler* create(random::Generator& rng) const final override;
 };
 
 }

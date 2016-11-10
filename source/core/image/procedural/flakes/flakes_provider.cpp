@@ -5,8 +5,8 @@
 #include "base/math/vector.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/math/sampling/sampling.inl"
-#include "base/math/random/generator.inl"
 #include "base/memory/variant_map.inl"
+#include "base/random/generator.inl"
 #include <iostream>
 
 namespace image { namespace procedural { namespace flakes {
@@ -22,7 +22,7 @@ std::shared_ptr<Image> Provider::create_normal_map(const memory::Variant_map& op
 	renderer.set_brush(float3(0.f, 0.f, 1.f));
 	renderer.clear();
 
-	math::random::Generator rng(1, 2, 3, 4);
+	random::Generator rng(1, 2, 3, 4);
 
 	uint32_t r_0 = rng.random_uint();
 
@@ -62,7 +62,7 @@ std::shared_ptr<Image> Provider::create_mask(const memory::Variant_map& options)
 	renderer.set_brush(float3(0.f, 0.f, 0.f));
 	renderer.clear();
 
-	math::random::Generator rng(1, 2, 3, 4);
+	random::Generator rng(1, 2, 3, 4);
 
 	uint32_t r_0 = rng.random_uint();
 

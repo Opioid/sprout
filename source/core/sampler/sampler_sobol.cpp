@@ -2,11 +2,11 @@
 #include "camera_sample.hpp"
 #include "sobol/sobol.h"
 #include "base/math/vector.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace sampler {
 
-Sobol::Sobol(math::random::Generator& rng, uint32_t num_samples) :
+Sobol::Sobol(random::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
 void Sobol::generate_camera_sample(int2 pixel, uint32_t index,
@@ -35,7 +35,7 @@ float Sobol::generate_sample_1D() {
 Sobol_factory::Sobol_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Sobol_factory::create(math::random::Generator& rng) const {
+Sampler* Sobol_factory::create(random::Generator& rng) const {
 	return new Sobol(rng, num_samples_);
 }
 

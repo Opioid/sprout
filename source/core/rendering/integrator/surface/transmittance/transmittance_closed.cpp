@@ -15,7 +15,7 @@ namespace rendering { namespace integrator { namespace surface { namespace trans
 
 Closed::Closed(uint32_t num_samples_per_pixel,
 			   const take::Settings &take_settings,
-			   math::random::Generator &rng) :
+			   random::Generator &rng) :
 	integrator::Integrator(num_samples_per_pixel, take_settings, rng) {}
 
 void Closed::resume_pixel(uint32_t /*sample*/, uint2 /*seed*/) {}

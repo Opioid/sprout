@@ -1,11 +1,11 @@
 #include "sampler_uniform.hpp"
 #include "camera_sample.hpp"
 #include "base/math/vector.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace sampler {
 
-Uniform::Uniform(math::random::Generator& rng) :
+Uniform::Uniform(random::Generator& rng) :
 	Sampler(rng, 1) {}
 
 void Uniform::generate_camera_sample(int2 pixel, uint32_t /*index*/, Camera_sample& sample) {
@@ -28,7 +28,7 @@ float Uniform::generate_sample_1D() {
 Uniform_factory::Uniform_factory(uint32_t num_samples_per_iteration) :
 	Factory(num_samples_per_iteration) {}
 
-Sampler* Uniform_factory::create(math::random::Generator& rng) const {
+Sampler* Uniform_factory::create(random::Generator& rng) const {
 	return new Uniform(rng);
 }
 

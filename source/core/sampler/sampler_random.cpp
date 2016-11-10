@@ -1,11 +1,11 @@
 #include "sampler_random.hpp"
 #include "camera_sample.hpp"
 #include "base/math/vector.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace sampler {
 
-Random::Random(math::random::Generator& rng, uint32_t num_samples) :
+Random::Random(random::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
 void Random::generate_camera_sample(int2 pixel, uint32_t /*index*/,
@@ -29,7 +29,7 @@ float Random::generate_sample_1D() {
 Random_factory::Random_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Random_factory::create(math::random::Generator& rng) const {
+Sampler* Random_factory::create(random::Generator& rng) const {
 	return new Random(rng, num_samples_);
 }
 

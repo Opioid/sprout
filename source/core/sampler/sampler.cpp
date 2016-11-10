@@ -3,14 +3,14 @@
 
 namespace sampler {
 
-Sampler::Sampler(math::random::Generator& rng, uint32_t num_samples) :
+Sampler::Sampler(random::Generator& rng, uint32_t num_samples) :
 	rng_(rng),
 	num_samples_(num_samples),
 	current_sample_(0) {}
 
 Sampler::~Sampler() {}
 
-math::random::Generator& Sampler::rng() {
+random::Generator& Sampler::rng() {
 	return rng_;
 }
 

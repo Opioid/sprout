@@ -37,7 +37,6 @@ include(distribution/distribution.pri)
 include(filter/filter.pri)
 include(fourier/fourier.pri)
 include(function/function.pri)
-include(random/random.pri)
 include(sampling/sampling.pri)
 include(simd/simd.pri)
 

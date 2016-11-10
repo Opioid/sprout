@@ -8,10 +8,10 @@
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/random/generator.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/math/sampling/sampling.inl"
 #include "base/memory/variant_map.hpp"
+#include "base/random/generator.inl"
 
 namespace procedural { namespace mesh {
 
@@ -47,7 +47,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 //	auto mask = manager.load<image::texture::Texture>("textures/how.png", options);;
 //	image::texture::sampler::Sampler_2d_linear<image::texture::sampler::Address_mode_repeat> sampler;
 
-	math::random::Generator rng(0, 1, 2, 3);
+	random::Generator rng(0, 1, 2, 3);
 
 	uint32_t num_blades = 160 * 1024;
 

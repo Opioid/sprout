@@ -7,10 +7,10 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
-#include "base/math/random/generator.inl"
 #include "base/math/sampling/sampling.inl"
 #include "base/math/matrix.inl"
 #include "base/math/vector.inl"
+#include "base/random/generator.inl"
 #include <fstream>
 
 namespace baking {
@@ -30,7 +30,7 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 
 	image::Image_float_4 target(image::Image::Description(image::Image::Type::Float_4, dimensions));
 
-	math::random::Generator rng(0, 1, 2, 3);
+	random::Generator rng(0, 1, 2, 3);
 	baking::Baking_worker worker;
 	worker.init(0, scene, rng, *surface_integrator_factory_,
 				*volume_integrator_factory_, *sampler_factory_);

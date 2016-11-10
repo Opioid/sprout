@@ -1,12 +1,12 @@
 #include "sampler_scrambled_hammersley.hpp"
 #include "camera_sample.hpp"
 #include "base/math/vector.inl"
-#include "base/math/random/generator.inl"
 #include "base/math/sampling/sample_distribution.inl"
+#include "base/random/generator.inl"
 
 namespace sampler {
 
-Scrambled_hammersley::Scrambled_hammersley(math::random::Generator& rng,
+Scrambled_hammersley::Scrambled_hammersley(random::Generator& rng,
 										   uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
@@ -33,7 +33,7 @@ float Scrambled_hammersley::generate_sample_1D() {
 Scrambled_hammersley_factory::Scrambled_hammersley_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Scrambled_hammersley_factory::create(math::random::Generator& rng) const {
+Sampler* Scrambled_hammersley_factory::create(random::Generator& rng) const {
 	return new Scrambled_hammersley(rng, num_samples_);
 }
 

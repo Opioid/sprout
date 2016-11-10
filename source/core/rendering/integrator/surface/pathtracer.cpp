@@ -15,13 +15,13 @@
 #include "base/spectrum/rgb.inl"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
 Pathtracer::Pathtracer(uint32_t num_samples_per_pixel,
 					   const take::Settings& take_settings,
-					   math::random::Generator& rng,
+					   random::Generator& rng,
 					   const Settings& settings) :
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
@@ -155,7 +155,7 @@ Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 }
 
 Integrator* Pathtracer_factory::create(uint32_t num_samples_per_pixel,
-									   math::random::Generator& rng) const {
+									   random::Generator& rng) const {
 	return new Pathtracer(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 

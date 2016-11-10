@@ -34,7 +34,7 @@ public:
 
 	Pathtracer_DL(uint32_t num_samples_per_pixel,
 				  const take::Settings& take_settings,
-				  math::random::Generator& rng,
+				  random::Generator& rng,
 				  const Settings& settings);
 
 	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
@@ -66,7 +66,7 @@ public:
 						  uint32_t num_light_samples, bool disable_caustics);
 
 	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   math::random::Generator& rng) const final override;
+							   random::Generator& rng) const final override;
 
 private:
 

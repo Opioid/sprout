@@ -11,7 +11,7 @@ namespace rendering { namespace integrator { namespace volume {
 
 Attenuation::Attenuation(uint32_t num_samples_per_pixel,
 						 const take::Settings& take_settings,
-						 math::random::Generator& rng) :
+						 random::Generator& rng) :
 	Integrator(num_samples_per_pixel, take_settings, rng) {}
 
 void Attenuation::resume_pixel(uint32_t /*sample*/, uint2 /*seed*/) {}
@@ -52,7 +52,7 @@ Attenuation_factory::Attenuation_factory(const take::Settings& settings) :
 	Factory(settings) {}
 
 Integrator* Attenuation_factory::create(uint32_t num_samples_per_pixel,
-										math::random::Generator& rng) const {
+										random::Generator& rng) const {
 	return new Attenuation(num_samples_per_pixel, take_settings_, rng);
 }
 

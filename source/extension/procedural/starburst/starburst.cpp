@@ -7,8 +7,8 @@
 #include "core/image/procedural/image_renderer.inl"
 #include "base/math/vector.inl"
 #include "base/math/fourier/dft.hpp"
-#include "base/math/random/generator.inl"
 #include "base/math/sampling/sample_distribution.inl"
+#include "base/random/generator.inl"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/rgb.inl"
 #include "base/spectrum/xyz.inl"
@@ -109,7 +109,7 @@ void render_dirt(image::Image_float_1& signal) {
 	dirt.set_brush(1.f);
 	dirt.clear();
 
-	math::random::Generator rng(0, 1, 2, 3);
+	random::Generator rng(0, 1, 2, 3);
 
 	float dirt_radius = 0.003f;
 

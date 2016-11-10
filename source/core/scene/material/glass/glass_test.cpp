@@ -2,14 +2,14 @@
 #include "glass_sample.hpp"
 #include "scene/material/material_print.hpp"
 #include "sampler/sampler_random.hpp"
-#include "base/math/random/generator.hpp"
+#include "base/random/generator.hpp"
 
 namespace scene { namespace material { namespace glass {
 
 namespace testing {
 
 void test() {
-	math::random::Generator rng;
+	random::Generator rng;
 	sampler::Random sampler(rng, 0);
 
 	bxdf::Result result;

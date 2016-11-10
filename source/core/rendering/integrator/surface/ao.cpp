@@ -8,13 +8,13 @@
 #include "base/math/sampling/sampling.inl"
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
 Ao::Ao(uint32_t samples_per_pixel,
 	   const take::Settings& take_settings,
-	   math::random::Generator& rng,
+	   random::Generator& rng,
 	   const Settings& settings) :
 	Integrator(samples_per_pixel, take_settings, rng),
 	settings_(settings),
@@ -61,7 +61,7 @@ Ao_factory::Ao_factory(const take::Settings& settings, uint32_t num_samples, flo
 }
 
 Integrator* Ao_factory::create(uint32_t num_samples_per_pixel,
-							   math::random::Generator& rng) const {
+							   random::Generator& rng) const {
 	return new Ao(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 

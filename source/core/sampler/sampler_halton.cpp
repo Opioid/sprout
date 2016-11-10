@@ -1,11 +1,11 @@
 #include "sampler_halton.hpp"
 #include "camera_sample.hpp"
 #include "base/math/vector.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace sampler {
 
-Halton::Halton(math::random::Generator& rng, uint32_t num_samples) :
+Halton::Halton(random::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples) {
 	halton_sampler_.init_faure();
 }
@@ -33,7 +33,7 @@ float Halton::generate_sample_1D() {
 Halton_factory::Halton_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Halton_factory::create(math::random::Generator& rng) const {
+Sampler* Halton_factory::create(random::Generator& rng) const {
 	return new Halton(rng, num_samples_);
 }
 

@@ -3,7 +3,7 @@
 #include "scene/scene_worker.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/rectangle.hpp"
-#include "base/math/random/generator.hpp"
+#include "base/random/generator.hpp"
 
 namespace sampler {
 
@@ -38,7 +38,7 @@ public:
 	~Worker();
 
 	void init(uint32_t id, const scene::Scene& scene,
-			  const math::random::Generator& rng,
+			  const random::Generator& rng,
 			  integrator::surface::Factory& surface_integrator_factory,
 			  integrator::volume::Factory& volume_integrator_factory,
 			  sampler::Factory& sampler_factory);
@@ -56,7 +56,7 @@ protected:
 	integrator::surface::Integrator* surface_integrator_;
 	integrator::volume::Integrator*  volume_integrator_;
 	sampler::Sampler* sampler_;
-	math::random::Generator rng_;
+	random::Generator rng_;
 };
 
 }

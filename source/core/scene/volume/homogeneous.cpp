@@ -6,7 +6,7 @@
 namespace scene { namespace volume {
 
 float3 Homogeneous::optical_depth(const math::Oray& ray, float /*step_size*/,
-								  math::random::Generator& /*rng*/, Worker& /*worker*/,
+								  random::Generator& /*rng*/, Worker& /*worker*/,
 								  Sampler_filter /*filter*/) const {
 	return ray.length() * (absorption_ + scattering_);
 }

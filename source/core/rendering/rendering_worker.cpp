@@ -9,7 +9,7 @@
 #include "scene/material/material.hpp"
 #include "base/math/vector.inl"
 #include "base/math/sampling/sample_distribution.inl"
-#include "base/math/random/generator.inl"
+#include "base/random/generator.inl"
 
 namespace rendering {
 
@@ -25,7 +25,7 @@ Worker::~Worker() {
 }
 
 void Worker::init(uint32_t id, const scene::Scene& scene,
-				  const math::random::Generator& rng,
+				  const random::Generator& rng,
 				  integrator::surface::Factory& surface_integrator_factory,
 				  integrator::volume::Factory& volume_integrator_factory,
 				  sampler::Factory& sampler_factory) {

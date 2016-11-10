@@ -1,13 +1,13 @@
 #include "sampler_golden_ratio.hpp"
 #include "camera_sample.hpp"
 #include "base/math/vector.inl"
-#include "base/math/random/generator.inl"
 #include "base/math/sampling/sample_distribution.inl"
+#include "base/random/generator.inl"
 #include <random>
 
 namespace sampler {
 
-Golden_ratio::Golden_ratio(math::random::Generator& rng,
+Golden_ratio::Golden_ratio(random::Generator& rng,
 						   uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
@@ -45,7 +45,7 @@ void Golden_ratio::on_resume_pixel() {
 Golden_ratio_factory::Golden_ratio_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 
-Sampler* Golden_ratio_factory::create(math::random::Generator& rng) const {
+Sampler* Golden_ratio_factory::create(random::Generator& rng) const {
 	return new Golden_ratio(rng, num_samples_);
 }
 

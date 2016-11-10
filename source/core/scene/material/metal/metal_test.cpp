@@ -5,9 +5,9 @@
 #include "scene/material/material_print.hpp"
 #include "scene/material/ggx/ggx.inl"
 #include "sampler/sampler_random.hpp"
-#include "base/math/random/generator.inl"
 #include "base/math/vector.inl"
 #include "base/math/print.hpp"
+#include "base/random/generator.inl"
 #include <iostream>
 
 namespace scene { namespace material { namespace metal {
@@ -22,11 +22,10 @@ struct Setup {
 	float3 ior;
 	float3 absorption;
 	float roughness = 0.01f;
-
 };
 
 void test() {
-	math::random::Generator rng;
+	random::Generator rng;
 	sampler::Random sampler(rng, 0);
 
 	std::cout << "metal::testing::test()" << std::endl;
