@@ -20,8 +20,8 @@ struct Clearcoat : public Coating_base {
 
 	template<typename Layer>
 	void sample(float3_p wo, float internal_ior,
-						   const Layer& layer, sampler::Sampler& sampler,
-						   float3& attenuation, bxdf::Result& result) const;
+				const Layer& layer, sampler::Sampler& sampler,
+				float3& attenuation, bxdf::Result& result) const;
 
 	float f0;
 	float a2;
@@ -36,8 +36,8 @@ struct Thinfilm : public Coating_base {
 
 	template<typename Layer>
 	void sample(float3_p wo, float internal_ior,
-						   const Layer& layer, sampler::Sampler& sampler,
-						   float3& attenuation, bxdf::Result& result) const;
+				const Layer& layer, sampler::Sampler& sampler,
+				float3& attenuation, bxdf::Result& result) const;
 
 	float ior;
 	float a2;
@@ -50,8 +50,8 @@ struct Coating_layer : Sample::Layer, Coating {
 					float3& attenuation, float& pdf) const;
 
 	void sample(float3_p wo, float internal_ior,
-						   sampler::Sampler& sampler,
-						   float3& attenuation, bxdf::Result& result) const;
+				sampler::Sampler& sampler,
+				float3& attenuation, bxdf::Result& result) const;
 };
 
 using Clearcoat_layer = Coating_layer<Clearcoat>;

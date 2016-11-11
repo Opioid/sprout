@@ -27,7 +27,7 @@ const material::Sample& Material_clearcoat::sample(float3_p wo, const Renderstat
 
 void Material_clearcoat::set_clearcoat(float ior, float roughness) {
 	coating_.f0 = fresnel::schlick_f0(1.f, ior);
-	coating_.a2 = math::pow4(roughness);
+	coating_.a2 = math::pow4(ggx::clamp_roughness(roughness));
 }
 
 Material_thinfilm::Material_thinfilm(Sample_cache<Sample_thinfilm>& cache,
@@ -52,7 +52,7 @@ const material::Sample& Material_thinfilm::sample(float3_p wo, const Renderstate
 
 void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness) {
 	coating_.ior = ior;
-	coating_.a2  = math::pow4(roughness);
+	coating_.a2  = math::pow4(ggx::clamp_roughness(roughness));
 	coating_.thickness = thickness;
 }
 

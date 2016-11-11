@@ -35,8 +35,8 @@ float3 Clearcoat::evaluate(float3_p wi, float3_p wo, float /*internal_ior*/,
 
 template<typename Layer>
 void Clearcoat::sample(float3_p wo, float /*internal_ior*/,
-								  const Layer& layer, sampler::Sampler& sampler,
-								  float3& attenuation, bxdf::Result& result) const {
+					   const Layer& layer, sampler::Sampler& sampler,
+					   float3& attenuation, bxdf::Result& result) const {
 	float n_dot_wo = layer.clamped_n_dot(wo);
 
 	fresnel::Schlick_weighted schlick(f0, weight);
@@ -73,8 +73,8 @@ float3 Thinfilm::evaluate(float3_p wi, float3_p wo, float internal_ior,
 
 template<typename Layer>
 void Thinfilm::sample(float3_p wo, float internal_ior,
-								 const Layer& layer, sampler::Sampler& sampler,
-								 float3& attenuation, bxdf::Result& result) const {
+					  const Layer& layer, sampler::Sampler& sampler,
+					  float3& attenuation, bxdf::Result& result) const {
 	float n_dot_wo = layer.clamped_n_dot(wo);
 
 	fresnel::Thinfilm_weighted thinfilm(1.f, ior, internal_ior, thickness, weight);
