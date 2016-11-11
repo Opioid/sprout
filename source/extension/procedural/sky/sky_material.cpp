@@ -128,7 +128,7 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 	int2 d(256, 256);
 
 	image::Image::Description description(image::Image::Type::Float_3, d);
-	auto cache = std::make_shared<image::Image_float_3>(description);
+	auto cache = std::make_shared<image::Float_3>(description);
 
 	for (int y = 0; y < d.y; ++y) {
 		for (int x = 0; x < d.x; ++x) {

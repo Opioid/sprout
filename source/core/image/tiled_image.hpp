@@ -21,6 +21,6 @@ private:
 	memory::Tiled_array<T, Log_tile_size> data_;
 };
 
-// using Image_byte_3 = Tiled_image<spectrum::Color3c, 1> Image_byte_3;
+// using Byte_3 = Tiled_image<spectrum::Color3c, 1> Byte_3;
 
 }

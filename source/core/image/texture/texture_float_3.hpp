@@ -28,7 +28,7 @@ public:
 
 private:
 
-	const Image_float_3& image_;
+	const Float_3& image_;
 };
 
 }}

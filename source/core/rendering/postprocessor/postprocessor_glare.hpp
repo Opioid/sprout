@@ -33,14 +33,14 @@ private:
 	};
 
 	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
-					   const image::Image_float_4& source,
-					   image::Image_float_4& destination) final override;
+					   const image::Float_4& source,
+					   image::Float_4& destination) final override;
 
 	Adaption adaption_;
 	float threshold_;
 	float intensity_;
 
-//	image::Image_float_3 high_pass_;
+//	image::Float_3 high_pass_;
 	std::vector<float3> high_pass_;
 
 	std::vector<float3> kernel_;

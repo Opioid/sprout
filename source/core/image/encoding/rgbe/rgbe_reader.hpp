@@ -24,9 +24,9 @@ private:
 	static Header read_header(std::istream& stream);
 
 	static void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
-								Image_float_3& image);
+								Float_3& image);
 
-	static void read_pixels(std::istream& stream, uint32_t num_pixels, Image_float_3& image, uint32_t offset);
+	static void read_pixels(std::istream& stream, uint32_t num_pixels, Float_3& image, uint32_t offset);
 
 	using image_float3 = math::packed_float3;
 

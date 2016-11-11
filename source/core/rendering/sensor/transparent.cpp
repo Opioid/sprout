@@ -45,7 +45,7 @@ void Transparent::add_pixel_atomic(int2 pixel, const float4& color, float weight
 	atomic::add_assign(value.weight_sum, weight);
 }
 
-void Transparent::resolve(int32_t begin, int32_t end, image::Image_float_4& target) const {
+void Transparent::resolve(int32_t begin, int32_t end, image::Float_4& target) const {
 	float exposure_factor = exposure_factor_;
 
 	for (int32_t i = begin; i < end; ++i) {

@@ -21,22 +21,22 @@ namespace sampler { namespace testing {
 
 void render_set(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 				image::procedural::Renderer& renderer,
-				image::Image_byte_3& target);
+				image::Byte_3& target);
 
 void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 				 image::procedural::Renderer& renderer,
-				 image::Image_byte_3& target);
+				 image::Byte_3& target);
 
 void render_quad(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 				 image::procedural::Renderer& renderer,
-				 image::Image_byte_3& target);
+				 image::Byte_3& target);
 
 void test() {
 	std::cout << "sampler::testing::test()" << std::endl;
 
 	int2 dimensions(512, 512);
 	image::procedural::Renderer renderer(dimensions, 4);
-	image::Image_byte_3 target(image::Image::Description(image::Image::Type::Byte_3, dimensions));
+	image::Byte_3 target(image::Image::Description(image::Image::Type::Byte_3, dimensions));
 
 	rnd::Generator rng(6783452, 456679345, 347834, 56745234);
 
@@ -72,7 +72,7 @@ void test() {
 
 void render_set(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 				image::procedural::Renderer& renderer,
-				image::Image_byte_3& target) {
+				image::Byte_3& target) {
 	render_disk(name + "_disk_0.png", sampler, uint2(0, 0), renderer, target);
 	render_disk(name + "_disk_1.png", sampler, seed, renderer, target);
 
@@ -82,7 +82,7 @@ void render_set(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 
 void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 				 image::procedural::Renderer& renderer,
-				 image::Image_byte_3& target) {
+				 image::Byte_3& target) {
 
 	std::cout << name << ": ";
 
@@ -154,7 +154,7 @@ void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 
 void render_quad(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 				 image::procedural::Renderer& renderer,
-				 image::Image_byte_3& target) {
+				 image::Byte_3& target) {
 	renderer.set_brush(float3(0.18f));
 	renderer.clear();
 

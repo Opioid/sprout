@@ -28,7 +28,7 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 
 	scene.tick(thread_pool);
 
-	image::Image_float_4 target(image::Image::Description(image::Image::Type::Float_4, dimensions));
+	image::Float_4 target(image::Image::Description(image::Image::Type::Float_4, dimensions));
 
 	rnd::Generator rng(0, 1, 2, 3);
 	baking::Baking_worker worker;

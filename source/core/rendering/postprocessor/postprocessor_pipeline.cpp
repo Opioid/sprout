@@ -46,12 +46,12 @@ size_t Pipeline::num_bytes() const {
 	return num_bytes;
 }
 
-void Pipeline::apply(const sensor::Sensor& sensor, image::Image_float_4& target,
+void Pipeline::apply(const sensor::Sensor& sensor, image::Float_4& target,
 					 thread::Pool& pool) {
 	if (postprocessors_.empty()) {
 		sensor.resolve(pool, target);
 	} else {
-		image::Image_float_4* targets[2];
+		image::Float_4* targets[2];
 
 		if (0 == postprocessors_.size() % 2) {
 			targets[0] = &target;

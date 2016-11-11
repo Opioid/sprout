@@ -40,7 +40,7 @@ Ffmpeg::~Ffmpeg() {
 	}
 }
 
-void Ffmpeg::write(const image::Image_float_4& image, uint32_t /*frame*/, thread::Pool& pool) {
+void Ffmpeg::write(const image::Float_4& image, uint32_t /*frame*/, thread::Pool& pool) {
 	if (!stream_) {
 		return;
 	}

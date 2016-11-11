@@ -23,15 +23,15 @@ static constexpr uint32_t Num_bands = 64;
 
 using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
-void render_dirt(image::Image_float_1& signal);
+void render_dirt(image::Float_1& signal);
 
-void render_aperture(const Aperture& aperture, image::Image_float_1& signal);
+void render_aperture(const Aperture& aperture, image::Float_1& signal);
 
 void centered_squared_magnitude(float* result, const float2* source, size_t width, size_t height);
 
 void starburst(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
 
-void write_signal(const std::string& name, const image::Image_float_1& signal);
+void write_signal(const std::string& name, const image::Float_1& signal);
 
 void create(thread::Pool& pool) {
 	std::cout << "Starburst experiment" << std::endl;
@@ -42,11 +42,11 @@ void create(thread::Pool& pool) {
 
 	int2 dimensions(resolution, resolution);
 
-	image::Image_float_1 signal(image::Image::Description(image::Image::Type::Float_1, dimensions));
+	image::Float_1 signal(image::Image::Description(image::Image::Type::Float_1, dimensions));
 
 	std::vector<float2> signal_f(resolution * math::dft_size(resolution));
 
-	image::Image_float_3 float_image_a(image::Image::Description(image::Image::Type::Float_3,
+	image::Float_3 float_image_a(image::Image::Description(image::Image::Type::Float_3,
 																 dimensions));
 
 	bool dirt = true;
@@ -89,7 +89,7 @@ void create(thread::Pool& pool) {
 	image::filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
 	gaussian.apply(float_image_a);
 
-	image::Image_byte_3 byte_image(image::Image::Description(image::Image::Type::Byte_3,
+	image::Byte_3 byte_image(image::Image::Description(image::Image::Type::Byte_3,
 															 dimensions));
 
 	pool.run_range([&float_image_a, &byte_image](int32_t begin, int32_t end) {
@@ -103,7 +103,7 @@ void create(thread::Pool& pool) {
 	image::encoding::png::Writer::write("starburst.png", byte_image);
 }
 
-void render_dirt(image::Image_float_1& signal) {
+void render_dirt(image::Float_1& signal) {
 	Dirt dirt(signal.description().dimensions.xy, 4);
 
 	dirt.set_brush(1.f);
@@ -155,7 +155,7 @@ void render_dirt(image::Image_float_1& signal) {
 //	gaussian.apply(signal);
 }
 
-void render_aperture(const Aperture& aperture, image::Image_float_1& signal) {
+void render_aperture(const Aperture& aperture, image::Float_1& signal) {
 	int32_t resolution = signal.description().dimensions.x;
 
 	float fr = static_cast<float>(resolution);
@@ -282,10 +282,10 @@ void starburst(Spectrum* result, const float* squared_magnitude, int32_t bin, in
 	}
 }
 
-void write_signal(const std::string& name, const image::Image_float_1& signal) {
+void write_signal(const std::string& name, const image::Float_1& signal) {
 	auto d = signal.description().dimensions;
 
-	image::Image_byte_1 image(image::Image::Description(image::Image::Type::Byte_1, d));
+	image::Byte_1 image(image::Image::Description(image::Image::Type::Byte_1, d));
 
 	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
 		float s = signal.load(i);

@@ -28,7 +28,7 @@ public:
 
 private:
 
-	const Image_byte_1& image_;
+	const Byte_1& image_;
 };
 
 }}

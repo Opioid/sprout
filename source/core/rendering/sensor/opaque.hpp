@@ -24,7 +24,7 @@ protected:
 								  float weight) final override;
 
 	virtual void resolve(int32_t begin, int32_t end,
-						 image::Image_float_4& target) const final override;
+						 image::Float_4& target) const final override;
 
 	// weight_sum is saved in pixel.w
 	float4* pixels_;

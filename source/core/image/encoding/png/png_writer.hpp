@@ -13,14 +13,14 @@ public:
 
 	virtual std::string file_extension() const final override;
 
-	bool write(std::ostream& stream, const Image_float_3& image, thread::Pool& pool);
+	bool write(std::ostream& stream, const Float_3& image, thread::Pool& pool);
 
-	virtual bool write(std::ostream& stream, const Image_float_4& image,
+	virtual bool write(std::ostream& stream, const Float_4& image,
 					   thread::Pool& pool) final override;
 
-	static bool write(const std::string& name, const Image_byte_3& image);
+	static bool write(const std::string& name, const Byte_3& image);
 
-	static bool write(const std::string& name, const Image_byte_1& image);
+	static bool write(const std::string& name, const Byte_1& image);
 };
 
 }}}

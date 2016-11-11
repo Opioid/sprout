@@ -40,8 +40,8 @@ size_t Bloom::num_bytes() const {
 }
 
 void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
-				  const image::Image_float_4& source,
-				  image::Image_float_4& destination) {
+				  const image::Float_4& source,
+				  image::Float_4& destination) {
 	float threshold = threshold_;
 	float intensity = intensity_;
 

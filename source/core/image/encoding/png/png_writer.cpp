@@ -13,7 +13,7 @@ std::string Writer::file_extension() const {
 	return "png";
 }
 
-bool Writer::write(std::ostream& stream, const Image_float_3& image, thread::Pool& pool) {
+bool Writer::write(std::ostream& stream, const Float_3& image, thread::Pool& pool) {
 	auto d = image.description().dimensions;
 	pool.run_range([this, &image](uint32_t begin, uint32_t end) {
 		to_sRGB(image, begin, end); }, 0, d.x * d.y);
@@ -32,7 +32,7 @@ bool Writer::write(std::ostream& stream, const Image_float_3& image, thread::Poo
 	return true;
 }
 
-bool Writer::write(std::ostream& stream, const Image_float_4& image, thread::Pool& pool) {
+bool Writer::write(std::ostream& stream, const Float_4& image, thread::Pool& pool) {
 	auto d = image.description().dimensions;
 	pool.run_range([this, &image](uint32_t begin, uint32_t end) {
 		to_sRGB(image, begin, end); }, 0, d.x * d.y);
@@ -51,7 +51,7 @@ bool Writer::write(std::ostream& stream, const Image_float_4& image, thread::Poo
 	return true;
 }
 
-bool Writer::write(const std::string& name, const Image_byte_3& image) {
+bool Writer::write(const std::string& name, const Byte_3& image) {
 	std::ofstream stream(name, std::ios::binary);
 	if (!stream) {
 		return false;
@@ -74,7 +74,7 @@ bool Writer::write(const std::string& name, const Image_byte_3& image) {
 	return true;
 }
 
-bool Writer::write(const std::string& name, const Image_byte_1& image) {
+bool Writer::write(const std::string& name, const Byte_1& image) {
 	std::ofstream stream(name, std::ios::binary);
 	if (!stream) {
 		return false;

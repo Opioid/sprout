@@ -71,7 +71,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 	}
 
 	if (1 == num_channels) {
-		std::shared_ptr<Image_byte_1> image = std::make_shared<Image_byte_1>(
+		std::shared_ptr<Byte_1> image = std::make_shared<Byte_1>(
 					Image::Description(Image::Type::Byte_1, dimensions, num_elements));
 
 		int32_t c;
@@ -104,7 +104,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 
 		return image;
 	} else if (2 == num_channels) {
-		std::shared_ptr<Image_byte_2> image = std::make_shared<Image_byte_2>(
+		std::shared_ptr<Byte_2> image = std::make_shared<Byte_2>(
 					Image::Description(Image::Type::Byte_2, dimensions, num_elements));
 
 		math::byte2 color(0, 0);
@@ -122,7 +122,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 
 		return image;
 	} else if (3 == num_channels) {
-		std::shared_ptr<Image_byte_3> image = std::make_shared<Image_byte_3>(
+		std::shared_ptr<Byte_3> image = std::make_shared<Byte_3>(
 					Image::Description(Image::Type::Byte_3, dimensions, num_elements));
 
 		math::byte3 color(0, 0, 0);

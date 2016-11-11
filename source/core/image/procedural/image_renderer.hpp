@@ -50,10 +50,10 @@ public:
 
 	void draw_circle(float2 pos, float radius);
 
-	void resolve_sRGB(Image_byte_3& target) const;
-	void resolve(Image_byte_3& target) const;
+	void resolve_sRGB(Byte_3& target) const;
+	void resolve(Byte_3& target) const;
 
-	void resolve(Image_byte_1& target) const;
+	void resolve(Byte_1& target) const;
 
 private:
 

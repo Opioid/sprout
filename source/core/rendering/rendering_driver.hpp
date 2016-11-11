@@ -58,7 +58,7 @@ protected:
 	std::vector<Camera_worker> workers_;
 	Tile_queue tiles_;
 
-	image::Image_float_4 target_;
+	image::Float_4 target_;
 };
 
 }

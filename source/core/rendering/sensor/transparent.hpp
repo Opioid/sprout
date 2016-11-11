@@ -22,7 +22,7 @@ protected:
 	virtual void add_pixel_atomic(int2 pixel, const float4& color, float weight) final override;
 
 	virtual void resolve(int32_t begin, int32_t end,
-						 image::Image_float_4& target) const final override;
+						 image::Float_4& target) const final override;
 
 	struct Pixel {
 		float4 color;

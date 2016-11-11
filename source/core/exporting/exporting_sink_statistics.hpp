@@ -13,7 +13,7 @@ public:
 	Statistics();
 	~Statistics();
 
-	virtual void write(const image::Image_float_4& image, uint32_t frame,
+	virtual void write(const image::Float_4& image, uint32_t frame,
 					   thread::Pool& pool) final override;
 };
 
