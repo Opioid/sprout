@@ -16,13 +16,17 @@ Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_rad
 
 		if (0 == start.y) {
 			start.y -= filter_radius;
-		} else if (resolution.y == end.y) {
+		}
+
+		if (resolution.y == end.y) {
 			end.y += filter_radius;
 		}
 
 		if (0 == start.x) {
 			start.x -= filter_radius;
-		} else if (resolution.x == end.x) {
+		}
+
+		if (resolution.x == end.x) {
 			end.x += filter_radius;
 		}
 

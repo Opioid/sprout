@@ -4,6 +4,8 @@
 
 namespace math {
 
+uint32_t radical_inverse_vdC_uint(uint32_t bits);
+
 float radical_inverse_vdC(uint32_t bits, uint32_t r);
 
 float2 hammersley(uint32_t i, uint32_t num_samples, uint32_t r);

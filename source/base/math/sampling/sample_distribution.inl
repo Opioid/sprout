@@ -4,6 +4,16 @@
 
 namespace math {
 
+inline uint32_t radical_inverse_vdC_uint(uint32_t bits) {
+	bits = (bits << 16) | (bits >> 16);
+	bits = ((bits & 0x55555555) << 1) | ((bits & 0xAAAAAAAA) >> 1);
+	bits = ((bits & 0x33333333) << 2) | ((bits & 0xCCCCCCCC) >> 2);
+	bits = ((bits & 0x0F0F0F0F) << 4) | ((bits & 0xF0F0F0F0) >> 4);
+	bits = ((bits & 0x00FF00FF) << 8) | ((bits & 0xFF00FF00) >> 8);
+
+	return bits; // / 0x100000000
+}
+
 inline float radical_inverse_vdC(uint32_t bits, uint32_t r) {
 	bits = (bits << 16) | (bits >> 16);
 	bits = ((bits & 0x55555555) << 1) | ((bits & 0xAAAAAAAA) >> 1);

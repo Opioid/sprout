@@ -20,16 +20,13 @@
 namespace sampler { namespace testing {
 
 void render_set(const std::string& name, sampler::Sampler& sampler, uint2 seed,
-				image::procedural::Renderer& renderer,
-				image::Byte_3& target);
+				image::procedural::Renderer& renderer, image::Byte_3& target);
 
 void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
-				 image::procedural::Renderer& renderer,
-				 image::Byte_3& target);
+				 image::procedural::Renderer& renderer, image::Byte_3& target);
 
 void render_quad(const std::string& name, sampler::Sampler& sampler, uint2 seed,
-				 image::procedural::Renderer& renderer,
-				 image::Byte_3& target);
+				 image::procedural::Renderer& renderer, image::Byte_3& target);
 
 void test() {
 	std::cout << "sampler::testing::test()" << std::endl;
@@ -71,8 +68,7 @@ void test() {
 }
 
 void render_set(const std::string& name, sampler::Sampler& sampler, uint2 seed,
-				image::procedural::Renderer& renderer,
-				image::Byte_3& target) {
+				image::procedural::Renderer& renderer, image::Byte_3& target) {
 	render_disk(name + "_disk_0.png", sampler, uint2(0, 0), renderer, target);
 	render_disk(name + "_disk_1.png", sampler, seed, renderer, target);
 
@@ -81,8 +77,7 @@ void render_set(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 }
 
 void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
-				 image::procedural::Renderer& renderer,
-				 image::Byte_3& target) {
+				 image::procedural::Renderer& renderer, image::Byte_3& target) {
 
 	std::cout << name << ": ";
 
@@ -153,8 +148,7 @@ void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 }
 
 void render_quad(const std::string& name, sampler::Sampler& sampler, uint2 seed,
-				 image::procedural::Renderer& renderer,
-				 image::Byte_3& target) {
+				 image::procedural::Renderer& renderer, image::Byte_3& target) {
 	renderer.set_brush(float3(0.18f));
 	renderer.clear();
 

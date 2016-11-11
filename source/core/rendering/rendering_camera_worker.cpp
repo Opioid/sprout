@@ -6,7 +6,11 @@
 #include "scene/scene_ray.inl"
 #include "scene/camera/camera.hpp"
 #include "base/math/vector.inl"
+#include "base/math/sampling/sample_distribution.inl"
 #include "base/random/generator.inl"
+
+#include <iostream>
+#include "base/math/print.hpp"
 
 namespace rendering {
 
@@ -15,12 +19,16 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 						   float normalized_tick_offset, float normalized_tick_slice) {
 	auto& sensor = camera.sensor();
 
+//	auto d = sensor.dimensions();
+
 	math::Recti bounds = camera.view_bounds(view);
 
 	math::Recti view_tile{bounds.start + tile.start, bounds.start + tile.end};
 
 	sampler::Camera_sample sample;
 	scene::Ray ray;
+
+//	rnd::Generator rng(tile.start.x, tile.start.y, tile.end.x, tile.end.y);
 
 	for (int32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (int32_t x = tile.start.x; x < tile.end.x; ++x) {
@@ -30,9 +38,17 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 				camera.set_seed(pixel, uint2(rng_.random_uint(), rng_.random_uint()));
 			}
 
-			uint2 seed = /*uint2(pixel);//*/camera.seed(pixel);
+			uint2 seed = camera.seed(pixel);
 			sampler_->resume_pixel(sample_begin, seed);
 			surface_integrator_->resume_pixel(sample_begin, seed.yx());
+
+//			uint32_t i = (y * d.x + x) * (d.x * d.y);
+//			rnd::Generator rng(i, 0xFFFFFFFF - i, 0xFFFF7777 - i, 0x77770000 + i);
+//			sampler_->resume_pixel(sample_begin, uint2(rng.random_uint(), rng.random_uint()));
+//			surface_integrator_->resume_pixel(sample_begin, uint2(rng.random_uint(), rng.random_uint()));
+
+//			sampler_->resume_pixel(sample_begin, uint2(rng_.random_uint(), rng_.random_uint()));
+//			surface_integrator_->resume_pixel(sample_begin, uint2(rng_.random_uint(), rng_.random_uint()));
 
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);
