@@ -26,14 +26,14 @@ Pathtracer_MIS::Pathtracer_MIS(uint32_t num_samples_per_pixel,
 	settings_(settings),
 	sampler_(rng, num_samples_per_pixel),
 	hemisphere_sampler_(rng, num_samples_per_pixel),
-	light_sampler_(rng, num_samples_per_pixel),
+//	light_sampler_(rng, num_samples_per_pixel),
 	transmittance_open_(num_samples_per_pixel, take_settings, rng, settings.max_bounces),
 	transmittance_closed_(num_samples_per_pixel, take_settings, rng) {}
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, uint2 seed) {
 	sampler_.resume_pixel(sample, seed);
 	hemisphere_sampler_.resume_pixel(sample, seed);
-	light_sampler_.resume_pixel(sample, seed);
+//	light_sampler_.resume_pixel(sample, seed);
 }
 
 float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
@@ -250,19 +250,18 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 									  Sampler_filter filter) {
 	float3 result(0.f);
 
-
-	sampler::Sampler* sampler;// = &sampler_;
-	if (0 == ray.depth) {
-		sampler = &light_sampler_;
-	} else {
-		sampler = &sampler_;
-	}
+//	sampler::Sampler* sampler;// = &sampler_;
+//	if (0 == ray.depth) {
+//		sampler = &light_sampler_;
+//	} else {
+//		sampler = &sampler_;
+//	}
 
 	// Light source importance sample
 	scene::light::Sample light_sample;
 	light->sample(ray.time, intersection.geo.p,
 				  material_sample.geometric_normal(), material_sample.is_translucent(),
-				  *sampler, worker, Sampler_filter::Nearest, light_sample);
+				  sampler_, worker, Sampler_filter::Nearest, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
 		ray.set_direction(light_sample.shape.wi);

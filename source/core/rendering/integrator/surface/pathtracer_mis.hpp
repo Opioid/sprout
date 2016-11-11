@@ -66,7 +66,7 @@ private:
 	sampler::Random sampler_;
 	sampler::Golden_ratio hemisphere_sampler_;
 
-	sampler::Sobol light_sampler_;
+//	sampler::Sobol light_sampler_;
 
 	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;

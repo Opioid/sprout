@@ -37,8 +37,8 @@ float2 Golden_ratio::generate_sample_2D() {
 }
 
 float Golden_ratio::generate_sample_1D() {
-//	return samples_1D_[current_sample_1D_++];
-	return rng_.random_float();
+	return samples_1D_[current_sample_1D_++];
+//	return rng_.random_float();
 }
 
 void Golden_ratio::on_resume_pixel() {

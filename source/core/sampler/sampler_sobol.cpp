@@ -20,10 +20,10 @@ void Sobol::generate_camera_sample(int2 pixel, uint32_t index,
 }
 
 float2 Sobol::generate_sample_2D() {
-	float x = sobol::sample(current_sample_2D_++, 1, seed_.x);
-	float y = sobol::sample(current_sample_2D_++, 2, seed_.y);
+	float x = sobol::sample(current_sample_2D_, 1, seed_.x);
+	float y = sobol::sample(current_sample_2D_, 2, seed_.x);
 
-//	++current_sample_2D_;
+	++current_sample_2D_;
 
 	return float2(x, y);
 }
