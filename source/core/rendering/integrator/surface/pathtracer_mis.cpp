@@ -25,14 +25,14 @@ Pathtracer_MIS::Pathtracer_MIS(uint32_t num_samples_per_pixel,
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
 	sampler_(rng, num_samples_per_pixel),
-	hemisphere_sampler_(rng, num_samples_per_pixel),
+	material_sampler_(rng, num_samples_per_pixel),
 //	light_sampler_(rng, num_samples_per_pixel),
 	transmittance_open_(num_samples_per_pixel, take_settings, rng, settings.max_bounces),
 	transmittance_closed_(num_samples_per_pixel, take_settings, rng) {}
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, uint2 seed) {
 	sampler_.resume_pixel(sample, seed);
-	hemisphere_sampler_.resume_pixel(sample, seed);
+	material_sampler_.resume_pixel(sample, seed);
 //	light_sampler_.resume_pixel(sample, seed);
 }
 
@@ -190,7 +190,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 
 	// Material BSDF importance sample
 	if (0 == ray.depth) {
-		material_sample.sample(hemisphere_sampler_, sample_result);
+		material_sample.sample(material_sampler_, sample_result);
 	} else {
 		material_sample.sample(sampler_, sample_result);
 	}

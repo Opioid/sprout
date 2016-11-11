@@ -31,7 +31,7 @@
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_ld.hpp"
 #include "sampler/sampler_random.hpp"
-#include "sampler/sampler_scrambled_hammersley.hpp"
+#include "sampler/sampler_hammersley.hpp"
 #include "sampler/sampler_uniform.hpp"
 #include "scene/animation/animation_loader.hpp"
 #include "scene/camera/camera_cubic.hpp"
@@ -314,9 +314,9 @@ Loader::load_sampler_factory(const json::Value& sampler_value) {
 		} else if ("Random" == n.name) {
 			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
 			return std::make_shared<sampler::Random_factory>(num_samples);
-		} else if ("Scrambled_hammersley" == n.name) {
+		} else if ("Hammersley" == n.name) {
 			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
-			return std::make_shared<sampler::Scrambled_hammersley_factory>(num_samples);
+			return std::make_shared<sampler::Hammersley_factory>(num_samples);
 		} else if ("EMS" == n.name) {
 			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
 			return std::make_shared<sampler::EMS_factory>(num_samples);

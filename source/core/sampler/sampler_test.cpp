@@ -3,7 +3,7 @@
 #include "sampler_golden_ratio.hpp"
 #include "sampler_halton.hpp"
 #include "sampler_random.hpp"
-#include "sampler_scrambled_hammersley.hpp"
+#include "sampler_hammersley.hpp"
 #include "sampler_sobol.hpp"
 #include "image/typed_image.inl"
 #include "image/encoding/png/png_writer.hpp"
@@ -61,8 +61,8 @@ void test() {
 //		render_set("random_disk", sampler, seed, renderer, target);
 //	}
 //	{
-//		sampler::Scrambled_hammersley sampler(rng, num_samples);
-//		render_set("scrambled_hammersley", sampler, seed, renderer, target);
+//		sampler::Hammersley sampler(rng, num_samples);
+//		render_set("hammersley", sampler, seed, renderer, target);
 //	}
 	{
 		sampler::Sobol sampler(rng, num_samples);

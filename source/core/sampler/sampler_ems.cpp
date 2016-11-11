@@ -16,7 +16,7 @@ void EMS::generate_camera_sample(int2 pixel, uint32_t index,
 	sample.pixel = pixel;
 	sample.pixel_uv = s2d;
 	sample.lens_uv = s2d.yx();
-	sample.time = math::scrambled_radical_inverse_vdC(index, seed_.y);
+	sample.time = math::radical_inverse_vdC(index, seed_.y);
 }
 
 float2 EMS::generate_sample_2D() {

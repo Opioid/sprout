@@ -26,12 +26,12 @@ Pathtracer::Pathtracer(uint32_t num_samples_per_pixel,
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
 	sampler_(rng, num_samples_per_pixel),
-	hemisphere_sampler_(rng, num_samples_per_pixel),
+	material_sampler_(rng, num_samples_per_pixel),
 	transmittance_(num_samples_per_pixel, take_settings, rng) {}
 
 void Pathtracer::resume_pixel(uint32_t sample, uint2 seed) {
 	sampler_.resume_pixel(sample, seed);
-	hemisphere_sampler_.resume_pixel(sample, seed);
+	material_sampler_.resume_pixel(sample, seed);
 }
 
 float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
@@ -98,7 +98,7 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 		sampler::Sampler* sampler;// = &sampler_;
 
 		if (0 == i) {
-			sampler = &hemisphere_sampler_;
+			sampler = &material_sampler_;
 		} else {
 			sampler = &sampler_;
 		}

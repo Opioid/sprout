@@ -20,7 +20,7 @@ inline void Generator::seed(uint32_t seed0, uint32_t seed1, uint32_t seed2, uint
 inline float Generator::random_float() {
 	uint32_t bits = advance_lfsr113();
 
-	return 2.3283064365387e-10f * static_cast<float>(bits);
+	return 2.3283064365386963e-10f * static_cast<float>(bits);
 }
 
 inline uint32_t Generator::random_uint() {
@@ -28,7 +28,7 @@ inline uint32_t Generator::random_uint() {
 }
 
 inline float Generator::cast(uint32_t r) {
-	return 2.3283064365387e-10f * static_cast<float>(r);
+	return 2.3283064365386963e-10f * static_cast<float>(r);
 }
 
 inline uint32_t Generator::advance_lfsr113() {

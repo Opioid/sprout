@@ -7,8 +7,8 @@
 namespace sampler {
 
 inline float2 ld(uint32_t i, uint32_t r0, uint32_t r1) {
-	return float2(math::scrambled_radical_inverse_vdC(i, r0),
-				  math::scrambled_radical_inverse_S(i, r1));
+	return float2(math::radical_inverse_vdC(i, r0),
+				  math::radical_inverse_S(i, r1));
 }
 
 LD::LD(rnd::Generator& rng, uint32_t num_samples) :

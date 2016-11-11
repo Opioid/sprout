@@ -43,7 +43,7 @@ private:
 	const Settings& settings_;
 
 	sampler::Random sampler_;
-	sampler::Golden_ratio hemisphere_sampler_;
+	sampler::Golden_ratio material_sampler_;
 
 	transmittance::Closed transmittance_;
 };

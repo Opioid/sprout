@@ -118,7 +118,7 @@ void render_dirt(image::Image_float_1& signal) {
 	uint32_t base_scramble = rng.random_uint();
 
 	for (uint32_t i = 0; i < num_base_dirt; ++i) {
-		float2 p = math::scrambled_hammersley(i, num_base_dirt, base_scramble);
+		float2 p = math::hammersley(i, num_base_dirt, base_scramble);
 
 		float rc = rng.random_float();
 		dirt.set_brush(0.9f + 0.1f * rc);
@@ -132,7 +132,7 @@ void render_dirt(image::Image_float_1& signal) {
 	uint32_t detail_scramble = rng.random_uint();
 
 	for (uint32_t i = 0; i < num_detail_dirt; ++i) {
-		float2 p = math::scrambled_hammersley(i, num_detail_dirt, detail_scramble);
+		float2 p = math::hammersley(i, num_detail_dirt, detail_scramble);
 
 		float rc = rng.random_float();
 		dirt.set_brush(0.8f + 0.2f * rc);

@@ -30,7 +30,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 				camera.set_seed(pixel, uint2(rng_.random_uint(), rng_.random_uint()));
 			}
 
-			uint2 seed = camera.seed(pixel);
+			uint2 seed = /*uint2(pixel);//*/camera.seed(pixel);
 			sampler_->resume_pixel(sample_begin, seed);
 			surface_integrator_->resume_pixel(sample_begin, seed.yx());
 
