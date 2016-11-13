@@ -10,11 +10,9 @@ Random::Random(rnd::Generator& rng, uint32_t num_samples) :
 
 void Random::generate_camera_sample(int2 pixel, uint32_t /*index*/,
 									Camera_sample& sample) {
-	float2 s2d(rng_.random_float(), rng_.random_float());
-
 	sample.pixel = pixel;
-	sample.pixel_uv = s2d;
-	sample.lens_uv = s2d.yx();
+	sample.pixel_uv = float2(rng_.random_float(), rng_.random_float());
+	sample.lens_uv = float2(rng_.random_float(), rng_.random_float());
 	sample.time = rng_.random_float();
 }
 

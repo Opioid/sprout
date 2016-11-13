@@ -11,7 +11,7 @@ Sobol::Sobol(rnd::Generator& rng, uint32_t num_samples) :
 
 void Sobol::generate_camera_sample(int2 pixel, uint32_t index,
 								   Camera_sample& sample) {
-	float2 s2d(sobol::sample(index, 1), sobol::sample(index, 2));
+	float2 s2d(sobol::sample(index, 2), sobol::sample(index, 3));
 
 	sample.pixel = pixel;
 	sample.pixel_uv = s2d;
@@ -20,8 +20,8 @@ void Sobol::generate_camera_sample(int2 pixel, uint32_t index,
 }
 
 float2 Sobol::generate_sample_2D() {
-	float x = sobol::sample(current_sample_2D_, 1, seed_.x);
-	float y = sobol::sample(current_sample_2D_, 2, seed_.x);
+	float x = sobol::sample(current_sample_2D_, 2, seed_.x);
+	float y = sobol::sample(current_sample_2D_, 3, seed_.x);
 
 	++current_sample_2D_;
 
@@ -30,7 +30,7 @@ float2 Sobol::generate_sample_2D() {
 
 float Sobol::generate_sample_1D() {
 //	return rng_.random_float();
-	return sobol::sample(current_sample_1D_++, 3, seed_.x);
+	return sobol::sample(current_sample_1D_++, 5, seed_.x);
 }
 
 Sobol_factory::Sobol_factory(uint32_t num_samples) :

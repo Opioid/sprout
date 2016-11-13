@@ -9,8 +9,7 @@
 
 namespace sampler {
 
-Golden_ratio::Golden_ratio(rnd::Generator& rng,
-						   uint32_t num_samples) :
+Golden_ratio::Golden_ratio(rnd::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples),
 	samples_2D_(new float2[num_samples]),
 	samples_1D_(new float[num_samples]) {}
@@ -22,12 +21,10 @@ Golden_ratio::~Golden_ratio() {
 
 void Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index,
 										  Camera_sample& sample) {
-	float2 s2d = samples_2D_[index];
-
 	sample.pixel = pixel;
-	sample.pixel_uv = s2d;
-	sample.lens_uv = s2d.yx();
-	sample.time = rng_.random_float();
+	sample.pixel_uv = samples_2D_[index];
+	sample.lens_uv = samples_2D_[num_samples_ - 1 - index].yx();
+	sample.time = samples_1D_[index];
 }
 
 float2 Golden_ratio::generate_sample_2D() {
@@ -37,8 +34,9 @@ float2 Golden_ratio::generate_sample_2D() {
 }
 
 float Golden_ratio::generate_sample_1D() {
+	SOFT_ASSERT(current_sample_2D_ < num_samples_);
+
 	return samples_1D_[current_sample_1D_++];
-//	return rng_.random_float();
 }
 
 void Golden_ratio::on_resume_pixel() {
