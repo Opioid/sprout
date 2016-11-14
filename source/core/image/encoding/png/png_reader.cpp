@@ -37,7 +37,7 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels, int
 }
 
 std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
-											int32_t num_elements) const {
+											int32_t num_elements) {
 	if (0 == info.num_channels || Channels::None == channels) {
 		return nullptr;
 	}

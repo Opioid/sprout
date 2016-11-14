@@ -2,6 +2,7 @@
 #include "aperture.hpp"
 #include "dirt.hpp"
 #include "core/image/typed_image.inl"
+#include "core/image/encoding/png/png_reader.hpp"
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/filter/image_gaussian.inl"
 #include "core/image/procedural/image_renderer.inl"
@@ -15,6 +16,7 @@
 #include "base/thread/thread_pool.hpp"
 
 #include <iostream>
+#include <fstream>
 #include "base/math/print.hpp"
 
 namespace procedural { namespace starburst {
@@ -47,7 +49,7 @@ void create(thread::Pool& pool) {
 	std::vector<float2> signal_f(resolution * math::dft_size(resolution));
 
 	image::Float_3 float_image_a(image::Image::Description(image::Image::Type::Float_3,
-																 dimensions));
+														   dimensions));
 
 	bool dirt = true;
 	if (dirt) {
@@ -90,7 +92,7 @@ void create(thread::Pool& pool) {
 	gaussian.apply(float_image_a);
 
 	image::Byte_3 byte_image(image::Image::Description(image::Image::Type::Byte_3,
-															 dimensions));
+													   dimensions));
 
 	pool.run_range([&float_image_a, &byte_image](int32_t begin, int32_t end) {
 		for (int32_t i = begin; i < end; ++i) {
@@ -104,6 +106,34 @@ void create(thread::Pool& pool) {
 }
 
 void render_dirt(image::Float_1& signal) {
+//	std::ifstream stream("lens_dirt.png", std::ios::binary);
+
+//	try {
+//		auto image = image::encoding::png::Reader::read(stream, image::Channels::X, 1);
+
+//		if (image::Image::Type::Byte_1 != image->description().type) {
+//			std::cout << "wrong type" << std::endl;
+//		}
+
+//		const image::Byte_1* byte_image = dynamic_cast<const image::Byte_1*>(image.get());
+
+//		if (signal.description().dimensions != image->description().dimensions) {
+//			std::cout << "dimensions not matching" << std::endl;
+//			return;
+//		}
+
+//		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
+//			uint8_t byte = byte_image->load(i);
+//			float linear = spectrum::unorm_to_float(byte);
+//			signal.store(i, std::pow(linear, 4.f));
+//		}
+
+//	} catch (std::exception& e) {
+//		std::cout << e.what() << std::endl;
+//	}
+
+//	return;
+
 	Dirt dirt(signal.description().dimensions.xy, 4);
 
 	dirt.set_brush(1.f);
@@ -121,7 +151,7 @@ void render_dirt(image::Float_1& signal) {
 		float2 p = math::hammersley(i, num_base_dirt, base_scramble);
 
 		float rc = rng.random_float();
-		dirt.set_brush(0.9f + 0.1f * rc);
+		dirt.set_brush(0.8f + 0.2f * rc);
 
 		float rs = rng.random_float();
 		dirt.draw_circle(p, dirt_radius + 32.f * rs * dirt_radius);
@@ -135,14 +165,14 @@ void render_dirt(image::Float_1& signal) {
 		float2 p = math::hammersley(i, num_detail_dirt, detail_scramble);
 
 		float rc = rng.random_float();
-		dirt.set_brush(0.8f + 0.2f * rc);
+		dirt.set_brush(0.9f + 0.1f * rc);
 
 		float rs = rng.random_float();
 		dirt.draw_circle(p, dirt_radius + 2.f * rs * dirt_radius);
 	}
 
 	float inner = 1.f;
-	float outer = 0.85f;
+	float outer = 0.75f;
 
 	dirt.draw_concentric_circles(float2(0.7f, 0.25f), 12, 0.005f, inner, outer);
 	dirt.draw_concentric_circles(float2(0.4f, 0.6f), 12, 0.005f, inner, outer);
@@ -156,10 +186,6 @@ void render_dirt(image::Float_1& signal) {
 }
 
 void render_aperture(const Aperture& aperture, image::Float_1& signal) {
-	int32_t resolution = signal.description().dimensions.x;
-
-	float fr = static_cast<float>(resolution);
-
 	int32_t num_sqrt_samples = 4;
 	std::vector<float2> kernel(num_sqrt_samples * num_sqrt_samples);
 
@@ -174,19 +200,25 @@ void render_aperture(const Aperture& aperture, image::Float_1& signal) {
 		}
 	}
 
+	int32_t resolution = signal.description().dimensions.x;
+	float fr = static_cast<float>(resolution);
 	float kn = 1.f / static_cast<float>(kernel.size());
+
+	float radius = static_cast<float>(resolution - 2) / fr;
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
 			float s = signal.load(x, y);
 
+			float fx = static_cast<float>(x);
+			float fy = static_cast<float>(y);
+
 			float a = 0.f;
-
 			for (auto k : kernel) {
-				float2 p(-1.f + 2.f * ((static_cast<float>(x) + k.x) / fr),
-						  1.f - 2.f * ((static_cast<float>(y) + k.y) / fr));
+				float2 p(-1.f + 2.f * ((fx + k.x) / fr),
+						  1.f - 2.f * ((fy + k.y) / fr));
 
-				a += kn * aperture.evaluate(p);
+				a += kn * aperture.evaluate(p, radius);
 			}
 
 			signal.store(x, y, s * a);
@@ -217,8 +249,8 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 			size_t o = y * row_size + x;
 			float mag = /*0.001f **/ math::squared_length(source[o]);
 
-	//		size_t a = ro * width + x + len;
-	//		std::cout << a << std::endl;
+//			size_t a = ro * width + x + len;
+//			std::cout << a << std::endl;
 
 			result[ro * width + x + len] = mag;
 		}
@@ -227,8 +259,8 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 			size_t o = y * row_size + x;
 			float mag = /*0.001f **/ math::squared_length(source[o]);
 
-	//		size_t a = ro * width - x + len - 1;
-	//		std::cout << a << std::endl;
+//			size_t a = ro * width - x + len - 1;
+//			std::cout << a << std::endl;
 
 			result[ro * width - x + len - 1] = mag;
 		}
@@ -240,8 +272,8 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 void starburst(Spectrum* result, const float* squared_magnitude, int32_t bin, int32_t resolution) {
 	float fr = static_cast<float>(resolution);
 
-//	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() - 1);
-	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() / 2);
+	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() - 1);
+//	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() / 2);
 
 	float wl = Spectrum::wavelength_center(bin);
 

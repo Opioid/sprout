@@ -24,20 +24,18 @@ Aperture::Aperture(uint32_t num_blades, float roundness) : roundness_(roundness)
 	}
 }
 
-float Aperture::evaluate(float2 p) const {
-//	float radius = 1.f;
-
+float Aperture::evaluate(float2 p, float radius) const {
 	float d = 0.f;
 
 	for (auto& b : blades_) {
-		float t = b.x * p.x + b.y * p.y;// + radius * b.z;
+		float t = (b.x * p.x + b.y * p.y);// / radius;// + radius * b.z;
 
 		t /= b.z;
 
 		d = std::max(d, t);
 	}
 
-	d = math::lerp(d, math::length(p), roundness_);
+	d = math::lerp(d, math::length(p), roundness_) / radius;
 
 	if (d > 1.f) {
 		d = 0.f;
