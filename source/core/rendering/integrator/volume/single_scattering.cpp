@@ -22,7 +22,7 @@ Single_scattering::Single_scattering(uint32_t num_samples_per_pixel,
 	settings_(settings),
 	sampler_(rng, 1) {}
 
-void Single_scattering::resume_pixel(uint32_t /*sample*/, uint2 /*seed*/) {}
+void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume& volume,
 										const scene::Ray& ray) {

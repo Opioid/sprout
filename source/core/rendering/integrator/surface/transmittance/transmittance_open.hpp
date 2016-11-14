@@ -30,7 +30,7 @@ public:
 		 rnd::Generator& rng,
 		 uint32_t max_bounces);
 
-	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
+	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 	using Bxdf_result    = scene::material::bxdf::Result;

@@ -48,9 +48,6 @@ public:
 	rendering::sensor::Sensor& sensor() const;
 	void set_sensor(rendering::sensor::Sensor* sensor);
 
-	math::uint2 seed(int2 pixel) const;
-	void set_seed(int2 pixel, uint2 seed);
-
 	float frame_duration() const;
 	void set_frame_duration(float frame_duration);
 
@@ -67,8 +64,6 @@ protected:
 	int2 resolution_;
 	rendering::sensor::Sensor* sensor_;
 
-	int2 seed_dimensions_;
-	uint2* seeds_;
 	int32_t filter_radius_;
 
 	float ray_max_t_;

@@ -11,21 +11,25 @@ EMS::EMS(rnd::Generator& rng, uint32_t num_samples) :
 
 void EMS::generate_camera_sample(int2 pixel, uint32_t index,
 								 Camera_sample& sample) {
-	float2 s2d = math::ems(index, seed_.x, seed_.y);
+	float2 s2d = math::ems(index, scramble_.x, scramble_.y);
 
 	sample.pixel = pixel;
 	sample.pixel_uv = s2d;
 	sample.lens_uv = s2d.yx();
-	sample.time = math::radical_inverse_vdC(index, seed_.y);
+	sample.time = math::radical_inverse_vdC(index, scramble_.y);
 }
 
 float2 EMS::generate_sample_2D() {
-	return math::ems(current_sample_2D_++, seed_.x, seed_.y);
+	return math::ems(current_sample_2D_++, scramble_.x, scramble_.y);
 }
 
 float EMS::generate_sample_1D() {
 	return rng_.random_float();
 //	return math::scrambled_radical_inverse_vdC(current_sample_++, seed_.y);
+}
+
+void EMS::on_resume_pixel(rnd::Generator& scramble) {
+	scramble_ = uint2(scramble.random_uint(), scramble.random_uint());
 }
 
 EMS_factory::EMS_factory(uint32_t num_samples_per_iteration) :

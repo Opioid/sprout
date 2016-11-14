@@ -28,7 +28,7 @@ public:
 
 	virtual ~Integrator();
 
-	virtual void resume_pixel(uint32_t sample, uint2 seed) = 0;
+	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) = 0;
 
 	const take::Settings& take_settings() const;
 

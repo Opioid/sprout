@@ -21,7 +21,7 @@ public:
 
 private:
 
-	virtual void on_resume_pixel() final override;
+	virtual void on_resume_pixel(rnd::Generator& scramble) final override;
 
 	float2* samples_2D_;
 	float*  samples_1D_;

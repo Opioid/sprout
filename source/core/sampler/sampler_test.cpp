@@ -19,13 +19,13 @@
 
 namespace sampler { namespace testing {
 
-void render_set(const std::string& name, sampler::Sampler& sampler, uint2 seed,
+void render_set(const std::string& name, sampler::Sampler& sampler,
 				image::procedural::Renderer& renderer, image::Byte_3& target);
 
-void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
+void render_disk(const std::string& name, sampler::Sampler& sampler, rnd::Generator& scramble,
 				 image::procedural::Renderer& renderer, image::Byte_3& target);
 
-void render_quad(const std::string& name, sampler::Sampler& sampler, uint2 seed,
+void render_quad(const std::string& name, sampler::Sampler& sampler, rnd::Generator& scramble,
 				 image::procedural::Renderer& renderer, image::Byte_3& target);
 
 void test() {
@@ -35,48 +35,52 @@ void test() {
 	image::procedural::Renderer renderer(dimensions, 4);
 	image::Byte_3 target(image::Image::Description(image::Image::Type::Byte_3, dimensions));
 
-	rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-
-	uint2 seed(rng.random_uint(), rng.random_uint());
-
 	uint32_t num_samples = 64;
 
 //	{
+//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
 //		sampler::EMS sampler(rng, num_samples);
-//		render_set("ems", sampler, seed, renderer, target);
+//		render_set("ems", sampler, renderer, target);
 //	}
 //	{
+//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
 //		sampler::Golden_ratio sampler(rng, num_samples);
-//		render_set("golden_ratio", sampler, seed, renderer, target);
+//		render_set("golden_ratio", sampler, renderer, target);
 //	}
 //	{
+//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
 //		sampler::Halton sampler(rng, num_samples);
-//		render_set("halton", sampler, seed, renderer, target);
+//		render_set("halton", sampler, renderer, target);
 //	}
 //	{
+//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
 //		sampler::Random sampler(rng, num_samples);
-//		render_set("random_disk", sampler, seed, renderer, target);
+//		render_set("random_disk", sampler, renderer, target);
 //	}
 //	{
+//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
 //		sampler::Hammersley sampler(rng, num_samples);
-//		render_set("hammersley", sampler, seed, renderer, target);
+//		render_set("hammersley", sampler, renderer, target);
 //	}
 	{
+		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
 		sampler::Sobol sampler(rng, num_samples);
-		render_set("sobol_disk", sampler, seed, renderer, target);
+		render_set("sobol_disk", sampler, renderer, target);
 	}
 }
 
-void render_set(const std::string& name, sampler::Sampler& sampler, uint2 seed,
+void render_set(const std::string& name, sampler::Sampler& sampler,
 				image::procedural::Renderer& renderer, image::Byte_3& target) {
-	render_disk(name + "_disk_0.png", sampler, uint2(0, 0), renderer, target);
-	render_disk(name + "_disk_1.png", sampler, seed, renderer, target);
+	rnd::Generator rng(68413684, 523489461, 318743219, 98765123);
 
-	render_quad(name + "_quad_0.png", sampler, uint2(0, 0), renderer, target);
-	render_quad(name + "_quad_1.png", sampler, seed, renderer, target);
+	render_disk(name + "_disk_0.png", sampler, rng, renderer, target);
+	render_disk(name + "_disk_1.png", sampler, rng, renderer, target);
+
+	render_quad(name + "_quad_0.png", sampler, rng, renderer, target);
+	render_quad(name + "_quad_1.png", sampler, rng, renderer, target);
 }
 
-void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
+void render_disk(const std::string& name, sampler::Sampler& sampler, rnd::Generator& scramble,
 				 image::procedural::Renderer& renderer, image::Byte_3& target) {
 
 	std::cout << name << ": ";
@@ -92,7 +96,8 @@ void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 
 	float n = 1.f / static_cast<float>(segment_len);
 
-	sampler.resume_pixel(0, seed);
+
+	sampler.resume_pixel(0, scramble);
 
 	renderer.set_brush(float3(1.f, 0.f, 0.f));
 
@@ -147,7 +152,7 @@ void render_disk(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 	image::encoding::png::Writer::write(name, target);
 }
 
-void render_quad(const std::string& name, sampler::Sampler& sampler, uint2 seed,
+void render_quad(const std::string& name, sampler::Sampler& sampler, rnd::Generator& scramble,
 				 image::procedural::Renderer& renderer, image::Byte_3& target) {
 	renderer.set_brush(float3(0.18f));
 	renderer.clear();
@@ -156,7 +161,7 @@ void render_quad(const std::string& name, sampler::Sampler& sampler, uint2 seed,
 
 	uint32_t segment_len = num_samples / 4;
 
-	sampler.resume_pixel(0, seed);
+	sampler.resume_pixel(0, scramble);
 
 	renderer.set_brush(float3(1.f, 0.f, 0.f));
 	for (uint32_t i = 0; i < segment_len; ++i) {

@@ -18,7 +18,7 @@ Normal::Normal(uint32_t num_samples_per_pixel,
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings) {}
 
-void Normal::resume_pixel(uint32_t /*sample*/, uint2 /*seed*/) {}
+void Normal::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 				  scene::Intersection& intersection) {

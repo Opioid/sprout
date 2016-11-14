@@ -19,7 +19,7 @@ public:
 
 	uint32_t num_samples() const;
 
-	void resume_pixel(uint32_t sample, uint2 seed);
+	void resume_pixel(uint32_t sample, rnd::Generator& scramble);
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) = 0;
 
@@ -29,13 +29,12 @@ public:
 
 protected:
 
-	virtual void on_resume_pixel();
+	virtual void on_resume_pixel(rnd::Generator& scramble);
 
 	rnd::Generator& rng_;
 	uint32_t num_samples_;
 	uint32_t current_sample_2D_;
 	uint32_t current_sample_1D_;
-	math::uint2 seed_;
 };
 
 class Factory {

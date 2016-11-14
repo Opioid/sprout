@@ -10,7 +10,7 @@ Hammersley::Hammersley(rnd::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
 void Hammersley::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
-	float2 s2d = math::hammersley(index, num_samples_, seed_.x);
+	float2 s2d = math::hammersley(index, num_samples_, scramble_);
 
 	sample.pixel = pixel;
 	sample.pixel_uv = s2d;
@@ -19,11 +19,15 @@ void Hammersley::generate_camera_sample(int2 pixel, uint32_t index, Camera_sampl
 }
 
 float2 Hammersley::generate_sample_2D() {
-	return math::hammersley(current_sample_2D_++, num_samples_, seed_.x);
+	return math::hammersley(current_sample_2D_++, num_samples_, scramble_);
 }
 
 float Hammersley::generate_sample_1D() {
 	return rng_.random_float();
+}
+
+void Hammersley::on_resume_pixel(rnd::Generator& scramble) {
+	scramble_ = scramble.random_uint();
 }
 
 Hammersley_factory::Hammersley_factory(uint32_t num_samples) :

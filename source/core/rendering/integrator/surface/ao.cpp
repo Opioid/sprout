@@ -20,8 +20,8 @@ Ao::Ao(uint32_t samples_per_pixel,
 	settings_(settings),
 	sampler_(rng, samples_per_pixel * settings.num_samples) {}
 
-void Ao::resume_pixel(uint32_t sample, uint2 seed) {
-	sampler_.resume_pixel(sample, seed);
+void Ao::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
+	sampler_.resume_pixel(sample, scramble);
 }
 
 float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,

@@ -28,7 +28,7 @@ public:
 	   rnd::Generator& rng,
 	   const Settings& settings);
 
-	virtual void resume_pixel(uint32_t sample, uint2 seed) final override;
+	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
 	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
 					  scene::Intersection& intersection) final override;

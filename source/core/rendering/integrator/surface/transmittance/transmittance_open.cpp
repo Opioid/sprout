@@ -21,7 +21,7 @@ Open::Open(uint32_t num_samples_per_pixel,
 	integrator::Integrator(num_samples_per_pixel, take_settings, rng),
 	max_bounces_(max_bounces) {}
 
-void Open::resume_pixel(uint32_t /*sample*/, uint2 /*seed*/) {}
+void Open::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 					 float3_p attenuation, sampler::Sampler& sampler,

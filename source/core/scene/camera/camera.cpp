@@ -10,16 +10,12 @@ namespace scene { namespace camera {
 Camera::Camera(int2 resolution, float ray_max_t) :
 	resolution_(resolution),
 	sensor_(nullptr),
-	seed_dimensions_(0, 0),
-	seeds_(nullptr),
 	filter_radius_(0),
 	ray_max_t_(ray_max_t),
 	frame_duration_(0.f),
 	motion_blur_(true) {}
 
 Camera::~Camera() {
-	delete [] seeds_;
-
 	delete sensor_;
 }
 
@@ -53,23 +49,6 @@ rendering::sensor::Sensor& Camera::sensor() const {
 void Camera::set_sensor(rendering::sensor::Sensor* sensor) {
 	delete sensor_;
 	sensor_ = sensor;
-
-	filter_radius_ = sensor->filter_radius_int();
-	const int2 seed_dimensions = resolution_ + int2(2 * filter_radius_, 2 * filter_radius_);
-
-	if (seed_dimensions != seed_dimensions_) {
-		seed_dimensions_ = seed_dimensions;
-		delete [] seeds_;
-		seeds_ = new uint2[seed_dimensions.x * seed_dimensions.y];
-	}
-}
-
-uint2 Camera::seed(int2 pixel) const {
-	return seeds_[seed_dimensions_.x * (pixel.y + filter_radius_) + pixel.x + filter_radius_];
-}
-
-void Camera::set_seed(int2 pixel, uint2 seed) {
-	seeds_[seed_dimensions_.x * (pixel.y + filter_radius_) + pixel.x + filter_radius_] = seed;
 }
 
 float Camera::frame_duration() const {

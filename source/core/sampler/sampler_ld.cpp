@@ -15,7 +15,7 @@ LD::LD(rnd::Generator& rng, uint32_t num_samples) :
 	Sampler(rng, num_samples) {}
 
 void LD::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
-	float2 s2d = ld(index, seed_.x, seed_.y);
+	float2 s2d = ld(index, scramble_.x, scramble_.y);
 
 	sample.pixel = pixel;
 	sample.pixel_uv = s2d;
@@ -24,11 +24,15 @@ void LD::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sampl
 }
 
 float2 LD::generate_sample_2D() {
-	return ld(current_sample_2D_++, seed_.x, seed_.y);
+	return ld(current_sample_2D_++, scramble_.x, scramble_.y);
 }
 
 float LD::generate_sample_1D() {
 	return rng_.random_float();
+}
+
+void LD::on_resume_pixel(rnd::Generator& scramble) {
+	scramble_ = uint2(scramble.random_uint(), scramble.random_uint());
 }
 
 LD_factory::LD_factory(uint32_t num_samples) :

@@ -19,15 +19,14 @@ uint32_t Sampler::num_samples() const {
 	return num_samples_;
 }
 
-void Sampler::resume_pixel(uint32_t sample, uint2 seed) {
+void Sampler::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	current_sample_2D_ = sample;
 	current_sample_1D_ = sample;
-	seed_ = seed;
 
-	on_resume_pixel();
+	on_resume_pixel(scramble);
 }
 
-void Sampler::on_resume_pixel() {}
+void Sampler::on_resume_pixel(rnd::Generator& /*scramble*/) {}
 
 Factory::Factory(uint32_t num_samples) :
 	num_samples_(num_samples) {}

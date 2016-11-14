@@ -39,19 +39,13 @@ float Golden_ratio::generate_sample_1D() {
 	return samples_1D_[current_sample_1D_++];
 }
 
-void Golden_ratio::on_resume_pixel() {
-	float2 r(rng_.cast(seed_.x), rng_.cast(seed_.y));
+void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {
+	float2 r(scramble.random_float(), scramble.random_float());
 	math::golden_ratio(samples_2D_, num_samples_, r);
+	rnd::shuffle(samples_2D_, num_samples_, scramble);
 
-//	std::random_device rd;
-//	std::mt19937 g(seed_.x);
-//	std::shuffle(samples_.begin(), samples_.end(), g);
-
-	rnd::Generator rng(seed_.x + 0, seed_.x + 1, seed_.y + 2, seed_.y + 3);
-	rnd::shuffle(samples_2D_, num_samples_, rng);
-
-	math::golden_ratio(samples_1D_, num_samples_, r.x);
-	rnd::shuffle(samples_1D_, num_samples_, rng);
+	math::golden_ratio(samples_1D_, num_samples_, scramble.random_float());
+	rnd::shuffle(samples_1D_, num_samples_, scramble);
 }
 
 Golden_ratio_factory::Golden_ratio_factory(uint32_t num_samples) :

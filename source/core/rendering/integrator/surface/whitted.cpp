@@ -22,8 +22,8 @@ Whitted::Whitted(uint32_t num_samples_per_pixel,
 	settings_(settings),
 	sampler_(rng, num_samples_per_pixel * 2) {}
 
-void Whitted::resume_pixel(uint32_t sample, uint2 seed) {
-	sampler_.resume_pixel(sample, seed);
+void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
+	sampler_.resume_pixel(sample, scramble);
 }
 
 float4 Whitted::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
