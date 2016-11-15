@@ -16,7 +16,7 @@ public:
 
 	virtual float2 generate_sample_2D() final override;
 
-	virtual float generate_sample_1D() final override;
+	virtual float generate_sample_1D(uint32_t dimension = 0) final override;
 
 private:
 

@@ -61,6 +61,12 @@ inline float2 thing(uint32_t i, uint32_t num_samples, uint32_t r) {
 				  radical_inverse_LP(i, r));
 }
 
+inline void vdC(float* samples, uint32_t num_samples, uint32_t r) {
+	for (uint32_t i = 0; i < num_samples; ++i) {
+		samples[i] = radical_inverse_vdC(i, r);
+	}
+}
+
 inline void golden_ratio(float* samples, uint32_t num_samples, float r) {
 	// set the initial second coordinate
 	float x = r;

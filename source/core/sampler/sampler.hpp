@@ -25,7 +25,7 @@ public:
 
 	virtual float2 generate_sample_2D() = 0;
 
-	virtual float generate_sample_1D() = 0;
+	virtual float generate_sample_1D(uint32_t dimension = 0) = 0;
 
 protected:
 

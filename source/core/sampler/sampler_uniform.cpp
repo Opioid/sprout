@@ -21,7 +21,7 @@ float2 Uniform::generate_sample_2D() {
 	return float2(rng_.random_float(), rng_.random_float());
 }
 
-float Uniform::generate_sample_1D() {
+float Uniform::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 }
 

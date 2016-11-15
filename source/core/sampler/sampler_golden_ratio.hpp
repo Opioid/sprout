@@ -17,7 +17,7 @@ public:
 
 	virtual float2 generate_sample_2D() final override;
 
-	virtual float generate_sample_1D() final override;
+	virtual float generate_sample_1D(uint32_t dimension = 0) final override;
 
 private:
 
@@ -25,6 +25,9 @@ private:
 
 	float2* samples_2D_;
 	float*  samples_1D_;
+
+	uint32_t current_test_sample_;
+	float*  test_samples_;
 };
 
 class Golden_ratio_factory : public Factory {

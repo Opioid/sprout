@@ -20,7 +20,7 @@ float2 Random::generate_sample_2D() {
 	return float2(rng_.random_float(), rng_.random_float());
 }
 
-float Random::generate_sample_1D() {
+float Random::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 }
 

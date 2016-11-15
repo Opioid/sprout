@@ -28,7 +28,7 @@ float2 Sobol::generate_sample_2D() {
 	return float2(x, y);
 }
 
-float Sobol::generate_sample_1D() {
+float Sobol::generate_sample_1D(uint32_t /*dimension*/) {
 //	return rng_.random_float();
 	return sobol::sample(current_sample_1D_++, 5, scramble_);
 }

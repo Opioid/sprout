@@ -26,14 +26,14 @@ Pathtracer_MIS::Pathtracer_MIS(uint32_t num_samples_per_pixel,
 	settings_(settings),
 	sampler_(rng, num_samples_per_pixel),
 	material_sampler_(rng, num_samples_per_pixel),
-//	light_sampler_(rng, num_samples_per_pixel),
+	light_sampler_(rng, num_samples_per_pixel),
 	transmittance_open_(num_samples_per_pixel, take_settings, rng, settings.max_bounces),
 	transmittance_closed_(num_samples_per_pixel, take_settings, rng) {}
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 	material_sampler_.resume_pixel(sample, scramble);
-//	light_sampler_.resume_pixel(sample, scramble);
+	light_sampler_.resume_pixel(sample, scramble);
 }
 
 float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
@@ -156,10 +156,17 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 	secondary_ray.depth  = ray.depth;
 	secondary_ray.time   = ray.time;
 
+	sampler::Sampler* sampler;// = &sampler_;
+	if (0 == ray.depth) {
+		sampler = &light_sampler_;
+	} else {
+		sampler = &sampler_;
+	}
+
 	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
 		for (uint32_t i = 0; i < settings_.light_sampling.num_samples; ++i) {
 			float light_pdf;
-			const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(),
+			const scene::light::Light* light = worker.scene().montecarlo_light(/*rng_.random_float()*/sampler->generate_sample_1D(1),
 																			   light_pdf);
 			if (!light) {
 				continue;
@@ -250,18 +257,18 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 									  Sampler_filter filter) {
 	float3 result(0.f);
 
-//	sampler::Sampler* sampler;// = &sampler_;
-//	if (0 == ray.depth) {
-//		sampler = &light_sampler_;
-//	} else {
-//		sampler = &sampler_;
-//	}
+	sampler::Sampler* sampler;// = &sampler_;
+	if (0 == ray.depth) {
+		sampler = &light_sampler_;
+	} else {
+		sampler = &sampler_;
+	}
 
 	// Light source importance sample
 	scene::light::Sample light_sample;
 	light->sample(ray.time, intersection.geo.p,
 				  material_sample.geometric_normal(), material_sample.is_translucent(),
-				  sampler_, worker, Sampler_filter::Nearest, light_sample);
+				  *sampler, worker, Sampler_filter::Nearest, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
 		ray.set_direction(light_sample.shape.wi);

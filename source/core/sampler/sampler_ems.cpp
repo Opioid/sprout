@@ -23,7 +23,7 @@ float2 EMS::generate_sample_2D() {
 	return math::ems(current_sample_2D_++, scramble_.x, scramble_.y);
 }
 
-float EMS::generate_sample_1D() {
+float EMS::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 //	return math::scrambled_radical_inverse_vdC(current_sample_++, seed_.y);
 }
