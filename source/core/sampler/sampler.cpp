@@ -3,11 +3,12 @@
 
 namespace sampler {
 
-Sampler::Sampler(rnd::Generator& rng, uint32_t num_samples) :
+Sampler::Sampler(rnd::Generator& rng, uint32_t num_samples, uint32_t num_dimensions_1D) :
 	rng_(rng),
 	num_samples_(num_samples),
 	current_sample_2D_(0),
-	current_sample_1D_(0) {}
+	num_dimensions_1D_(num_dimensions_1D),
+	current_sample_1D_(new uint32_t[num_dimensions_1D]) {}
 
 Sampler::~Sampler() {}
 
@@ -21,7 +22,10 @@ uint32_t Sampler::num_samples() const {
 
 void Sampler::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	current_sample_2D_ = sample;
-	current_sample_1D_ = sample;
+
+	for (uint32_t i = 0; i < num_dimensions_1D_; ++i) {
+		current_sample_1D_[i] = sample;
+	}
 
 	on_resume_pixel(scramble);
 }

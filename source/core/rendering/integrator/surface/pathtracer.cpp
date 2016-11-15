@@ -26,7 +26,7 @@ Pathtracer::Pathtracer(uint32_t num_samples_per_pixel,
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
 	sampler_(rng, num_samples_per_pixel),
-	material_sampler_(rng, num_samples_per_pixel),
+	material_sampler_(rng, num_samples_per_pixel, 1),
 	transmittance_(num_samples_per_pixel, take_settings, rng) {}
 
 void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {

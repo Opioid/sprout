@@ -40,7 +40,7 @@ private:
 
 	Settings settings_;
 
-	sampler::Golden_ratio sampler_;
+	sampler::Random sampler_;
 };
 
 class Whitted_factory : public Factory {

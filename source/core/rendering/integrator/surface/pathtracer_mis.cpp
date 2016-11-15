@@ -25,8 +25,8 @@ Pathtracer_MIS::Pathtracer_MIS(uint32_t num_samples_per_pixel,
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings),
 	sampler_(rng, num_samples_per_pixel),
-	material_sampler_(rng, num_samples_per_pixel),
-	light_sampler_(rng, num_samples_per_pixel),
+	material_sampler_(rng, num_samples_per_pixel, 1),
+	light_sampler_(rng, num_samples_per_pixel, 2),
 	transmittance_open_(num_samples_per_pixel, take_settings, rng, settings.max_bounces),
 	transmittance_closed_(num_samples_per_pixel, take_settings, rng) {}
 
@@ -156,18 +156,12 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 	secondary_ray.depth  = ray.depth;
 	secondary_ray.time   = ray.time;
 
-	sampler::Sampler* sampler;// = &sampler_;
-	if (0 == ray.depth) {
-		sampler = &light_sampler_;
-	} else {
-		sampler = &sampler_;
-	}
-
 	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
 		for (uint32_t i = 0; i < settings_.light_sampling.num_samples; ++i) {
+			float select = light_sampler(ray.depth).generate_sample_1D(1);
+
 			float light_pdf;
-			const scene::light::Light* light = worker.scene().montecarlo_light(/*rng_.random_float()*/sampler->generate_sample_1D(1),
-																			   light_pdf);
+			const scene::light::Light* light = worker.scene().montecarlo_light(select, light_pdf);
 			if (!light) {
 				continue;
 			}
@@ -196,11 +190,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 	}
 
 	// Material BSDF importance sample
-	if (0 == ray.depth) {
-		material_sample.sample(material_sampler_, sample_result);
-	} else {
-		material_sample.sample(sampler_, sample_result);
-	}
+	material_sample.sample(material_sampler(ray.depth), sample_result);
 
 	// Those cases are handled outside at the moment
 	if (0.f == sample_result.pdf
@@ -257,18 +247,11 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 									  Sampler_filter filter) {
 	float3 result(0.f);
 
-	sampler::Sampler* sampler;// = &sampler_;
-	if (0 == ray.depth) {
-		sampler = &light_sampler_;
-	} else {
-		sampler = &sampler_;
-	}
-
 	// Light source importance sample
 	scene::light::Sample light_sample;
 	light->sample(ray.time, intersection.geo.p,
 				  material_sample.geometric_normal(), material_sample.is_translucent(),
-				  *sampler, worker, Sampler_filter::Nearest, light_sample);
+				  light_sampler(ray.depth), worker, Sampler_filter::Nearest, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
 		ray.set_direction(light_sample.shape.wi);
@@ -305,6 +288,22 @@ float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
 		return transmittance_closed_.resolve(worker, ray, intersection, attenuation,
 											 sampler_, filter, sample_result);
 	}
+}
+
+sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) {
+	if (0 == bounce) {
+		return material_sampler_;
+	}
+
+	return sampler_;
+}
+
+sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) {
+	if (0 == bounce) {
+		return light_sampler_;
+	}
+
+	return sampler_;
 }
 
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,

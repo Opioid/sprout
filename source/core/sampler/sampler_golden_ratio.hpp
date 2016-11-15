@@ -9,7 +9,7 @@ class Golden_ratio : public Sampler {
 
 public:
 
-	Golden_ratio(rnd::Generator& rng, uint32_t num_samples);
+	Golden_ratio(rnd::Generator& rng, uint32_t num_samples, uint32_t num_dimensions_1D);
 	~Golden_ratio();
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
@@ -25,9 +25,6 @@ private:
 
 	float2* samples_2D_;
 	float*  samples_1D_;
-
-	uint32_t current_test_sample_;
-	float*  test_samples_;
 };
 
 class Golden_ratio_factory : public Factory {

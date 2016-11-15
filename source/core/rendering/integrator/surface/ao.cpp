@@ -18,7 +18,7 @@ Ao::Ao(uint32_t samples_per_pixel,
 	   const Settings& settings) :
 	Integrator(samples_per_pixel, take_settings, rng),
 	settings_(settings),
-	sampler_(rng, samples_per_pixel * settings.num_samples) {}
+	sampler_(rng, samples_per_pixel * settings.num_samples, 1) {}
 
 void Ao::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);

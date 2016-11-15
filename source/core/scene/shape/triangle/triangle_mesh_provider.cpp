@@ -172,25 +172,25 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 				v.bitangent_sign = 1.f;
 			}
 		}
-/*
+
 		// The idea is to have one identical set of indices for all morph targets
 		if (collection->triangles().empty()) {
-			auto& indices = handler.indices();
+			auto& triangles = handler.triangles();
 
 			for (auto& p : handler.parts()) {
 				uint32_t triangles_start = p.start_index / 3;
 				uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
 
 				for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-					uint32_t a = indices[i * 3 + 0];
-					uint32_t b = indices[i * 3 + 1];
-					uint32_t c = indices[i * 3 + 2];
+					uint32_t a = triangles[i].a;
+					uint32_t b = triangles[i].b;
+					uint32_t c = triangles[i].c;
 
 					collection->triangles().push_back(Index_triangle{a, b, c, p.material_index});
 				}
 			}
 		}
-*/
+
 		collection->add_swap_vertices(handler.vertices());
 	}
 

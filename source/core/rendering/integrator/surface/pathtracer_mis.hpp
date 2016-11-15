@@ -61,6 +61,9 @@ private:
 								Sampler_filter filter,
 								Bxdf_result& sample_result);
 
+	sampler::Sampler& material_sampler(uint32_t bounce);
+	sampler::Sampler& light_sampler(uint32_t bounce);
+
 	const Settings& settings_;
 
 	sampler::Random sampler_;

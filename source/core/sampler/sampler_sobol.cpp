@@ -30,7 +30,7 @@ float2 Sobol::generate_sample_2D() {
 
 float Sobol::generate_sample_1D(uint32_t /*dimension*/) {
 //	return rng_.random_float();
-	return sobol::sample(current_sample_1D_++, 5, scramble_);
+	return sobol::sample(current_sample_1D_[0]++, 5, scramble_);
 }
 
 void Sobol::on_resume_pixel(rnd::Generator& scramble) {

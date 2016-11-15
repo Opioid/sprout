@@ -8,7 +8,7 @@ class Random : public Sampler {
 
 public:
 
-	Random(rnd::Generator& rng, uint32_t num_samples);
+	Random(rnd::Generator& rng, uint32_t num_samples, uint32_t num_dimensions_1D = 1);
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) final override;

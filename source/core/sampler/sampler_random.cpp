@@ -5,8 +5,8 @@
 
 namespace sampler {
 
-Random::Random(rnd::Generator& rng, uint32_t num_samples) :
-	Sampler(rng, num_samples) {}
+Random::Random(rnd::Generator& rng, uint32_t num_samples, uint32_t num_dimensions_1D) :
+	Sampler(rng, num_samples, num_dimensions_1D) {}
 
 void Random::generate_camera_sample(int2 pixel, uint32_t /*index*/,
 									Camera_sample& sample) {
