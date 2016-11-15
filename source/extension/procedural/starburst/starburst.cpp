@@ -31,9 +31,111 @@ void render_aperture(const Aperture& aperture, image::Float_1& signal);
 
 void centered_squared_magnitude(float* result, const float2* source, size_t width, size_t height);
 
+void squared_magnitude(float* result, const float2* source, size_t width, size_t height);
+
 void starburst(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
 
 void write_signal(const std::string& name, const image::Float_1& signal);
+
+
+float2 sqrtc(float2 c) {
+	float l = math::length(c);
+	return 0.7071067f * float2(std::sqrt(l + c.x), std::sqrt(l - c.x) * math::sign(c.y));
+}
+
+float2 mulc(float2 a, float2 b) {
+	return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
+
+float2 mulc(float2 a, float t) {
+	float c = std::cos(t);
+	float s = std::sin(t);
+
+	return float2(a.x * c - a.y * s, a.x * s + a.y * c);
+}
+
+void experiment_x(std::vector<float2>& destination, const image::Float_1& source) {
+	auto d = source.description().dimensions;
+
+	float sqrt_m = std::sqrt(static_cast<float>(d.x));
+
+
+
+	float alpha = 0.3f;
+
+	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
+	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
+
+	for (int32_t y = 0; y < d.y; ++y) {
+		for (int32_t x = 0; x < d.x; ++x) {
+
+			float u = (static_cast<float>(x) / static_cast<float>(d.x)) / sqrt_m;
+
+
+			float2 integration(0.f);
+
+			for (int32_t sx = 0; sx < d.x; ++sx) {
+
+
+				int32_t i = y * d.x + sx;
+				float v = source.load(i);
+
+				float2 g(v, 0.f);
+				float y = static_cast<float>(sx) * sqrt_m;
+				float t = math::Pi * (cot * y * y - 2.f * csc * u * y);
+				integration += mulc(g, t);
+			}
+
+			float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
+
+
+			int32_t i = y * d.x + x;
+			destination[i] = mulc(s, integration) / sqrt_m;
+
+		}
+	}
+}
+
+void experiment_y(std::vector<float2>& destination, const std::vector<float2>& source) {
+	int2 d(512, 512);
+
+	float sqrt_m = std::sqrt(static_cast<float>(d.x));
+
+
+
+	float alpha = 0.3f;
+
+	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
+	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
+
+	for (int32_t y = 0; y < d.y; ++y) {
+		for (int32_t x = 0; x < d.x; ++x) {
+
+			float u = (static_cast<float>(y) / static_cast<float>(d.x)) / sqrt_m;
+
+
+			float2 integration(0.f);
+
+			for (int32_t sy = 0; sy < d.y; ++sy) {
+
+
+				int32_t i = sy * d.x + x;
+				float2 g = source[i];
+
+				float y = static_cast<float>(sy) * sqrt_m;
+				float t = math::Pi * (cot * y * y - 2.f * csc * u * y);
+				integration += mulc(g, t);
+			}
+
+			float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
+
+
+			int32_t i = y * d.x + x;
+			destination[i] = mulc(s, integration) / sqrt_m;
+
+		}
+	}
+}
 
 void create(thread::Pool& pool) {
 	std::cout << "Starburst experiment" << std::endl;
@@ -51,7 +153,7 @@ void create(thread::Pool& pool) {
 	image::Float_3 float_image_a(image::Image::Description(image::Image::Type::Float_3,
 														   dimensions));
 
-	bool dirt = true;
+	bool dirt = false;
 	if (dirt) {
 		render_dirt(signal);
 	} else {
@@ -62,6 +164,18 @@ void create(thread::Pool& pool) {
 	render_aperture(aperture, signal);
 
 	write_signal("signal.png", signal);
+
+	std::vector<float2> signal_e(resolution * resolution);
+	std::vector<float2> signal_t(resolution * resolution);
+
+	experiment_x(signal_e, signal);
+	experiment_y(signal_t, signal_e);
+
+	squared_magnitude(signal.data(), signal_t.data(), resolution, resolution);
+
+	write_signal("signal_after.png", signal);
+
+	return;
 
 	math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
 
@@ -266,6 +380,16 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 		}
 
 	//	std::cout << "row end" << std::endl;
+	}
+}
+
+void squared_magnitude(float* result, const float2* source, size_t width, size_t height) {
+	for (size_t y = 0; y < height; ++y) {
+		for (size_t x = 0; x < width; ++x) {
+			size_t i = y * width + x;
+			float mag = math::squared_length(source[i]);
+			result[i] = mag;
+		}
 	}
 }
 
