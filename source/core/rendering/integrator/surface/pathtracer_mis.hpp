@@ -68,8 +68,7 @@ private:
 
 	sampler::Random sampler_;
 	sampler::Golden_ratio material_sampler_;
-
-	sampler::Golden_ratio light_sampler_;
+	sampler::Random light_sampler_;
 
 	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;
@@ -80,10 +79,10 @@ class Pathtracer_MIS_factory : public Factory {
 public:
 
 	Pathtracer_MIS_factory(const take::Settings& take_settings,
-							uint32_t min_bounces, uint32_t max_bounces,
-							float path_termination_probability,
-							Light_sampling light_sampling,
-							bool disable_caustics);
+						   uint32_t min_bounces, uint32_t max_bounces,
+						   float path_termination_probability,
+						   Light_sampling light_sampling,
+						   bool disable_caustics);
 
 	virtual Integrator* create(uint32_t num_samples_per_pixel,
 							   rnd::Generator& rng) const final override;
