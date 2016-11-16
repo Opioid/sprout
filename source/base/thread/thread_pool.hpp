@@ -8,6 +8,7 @@
 namespace thread {
 
 class Pool {
+
 public:
 
 	using Parallel_program = std::function<void(uint32_t)>;
