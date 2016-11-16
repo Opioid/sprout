@@ -5,7 +5,7 @@
 namespace image { namespace texture { namespace sampler {
 
 template<typename Address_mode>
-class Sampler_2d_nearest : public Sampler_2d {
+class Sampler_2D_nearest : public Sampler_2D {
 
 public:
 

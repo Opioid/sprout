@@ -4,8 +4,8 @@
 #include <cstdint>
 
 namespace image { namespace texture { namespace sampler {
-	class Sampler_2d;
-	class Sampler_3d;
+	class Sampler_2D;
+	class Sampler_3D;
 }}}
 
 namespace scene { namespace material {
@@ -17,18 +17,18 @@ public:
 	Sampler_cache();
 	~Sampler_cache();
 
-	using Sampler_2d = image::texture::sampler::Sampler_2d;
+	using Sampler_2D = image::texture::sampler::Sampler_2D;
 
-	using Sampler_3d = image::texture::sampler::Sampler_3d;
+	using Sampler_3D = image::texture::sampler::Sampler_3D;
 
-	const Sampler_2d& sampler_2D(uint32_t key, Sampler_settings::Filter filter) const;
+	const Sampler_2D& sampler_2D(uint32_t key, Sampler_settings::Filter filter) const;
 
-	const Sampler_3d& sampler_3D(uint32_t key, Sampler_settings::Filter filter) const;
+	const Sampler_3D& sampler_3D(uint32_t key, Sampler_settings::Filter filter) const;
 
 private:
 
-	Sampler_2d* samplers_2D_[2];
-	Sampler_3d* samplers_3D_[2];
+	Sampler_2D* samplers_2D_[2];
+	Sampler_3D* samplers_3D_[2];
 };
 
 }}

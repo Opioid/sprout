@@ -151,7 +151,7 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 		}
 	}
 
-	auto cache_texture = std::make_shared<image::texture::Texture_float_3>(cache);
+	auto cache_texture = std::make_shared<image::texture::Float_3>(cache);
 	emission_map_ = Texture_adapter(cache_texture);
 
 //	std::ofstream stream("sky.png", std::ios::binary);

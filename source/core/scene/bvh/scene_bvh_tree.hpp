@@ -8,7 +8,7 @@
 
 namespace image { namespace texture { namespace sampler {
 
-class Sampler_2d;
+class Sampler_2D;
 
 }}}
 

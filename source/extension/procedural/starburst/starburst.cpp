@@ -6,6 +6,8 @@
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/filter/image_gaussian.inl"
 #include "core/image/procedural/image_renderer.inl"
+#include "core/image/texture/texture_float_2.hpp"
+#include "core/image/texture/sampler/sampler_2d_linear.inl"
 #include "base/math/vector.inl"
 #include "base/math/fourier/dft.hpp"
 #include "base/math/sampling/sample_distribution.inl"
@@ -18,6 +20,8 @@
 #include <iostream>
 #include <fstream>
 #include "base/math/print.hpp"
+
+// http://onlinelibrary.wiley.com/store/10.1111/cgf.12953/asset/supinfo/cgf12953-sup-0002-S1.pdf?v=1&s=e3aaf53493a15c5111513bf1dbe1a6ee549ee804
 
 namespace procedural { namespace starburst {
 
@@ -40,7 +44,7 @@ void write_signal(const std::string& name, const image::Float_1& signal);
 
 float2 sqrtc(float2 c) {
 	float l = math::length(c);
-	return 0.7071067f * float2(std::sqrt(l + c.x), std::sqrt(l - c.x) * math::sign(c.y));
+	return 0.7071067f * float2(std::sqrt(l + c.x), std::sqrt(l - c.x) * static_cast<float>(math::sign(c.y)));
 }
 
 float2 mulc(float2 a, float2 b) {
@@ -54,85 +58,45 @@ float2 mulc(float2 a, float t) {
 	return float2(a.x * c - a.y * s, a.x * s + a.y * c);
 }
 
-void experiment_x(std::vector<float2>& destination, const image::Float_1& source) {
-	auto d = source.description().dimensions;
+void experiment(image::Float_2& destination, std::shared_ptr<image::Float_2> source, float alpha, uint32_t mode) {
+	using namespace image::texture::sampler;
+	Sampler_2D_linear<Address_mode_repeat> sampler;
 
-	float sqrt_m = std::sqrt(static_cast<float>(d.x));
+	image::texture::Float_2 texture(source);
 
+	auto d = source->description().dimensions;
 
-
-	float alpha = 0.3f;
-
-	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
-	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
-
-	for (int32_t y = 0; y < d.y; ++y) {
-		for (int32_t x = 0; x < d.x; ++x) {
-
-			float u = (static_cast<float>(x) / static_cast<float>(d.x)) / sqrt_m;
-
-
-			float2 integration(0.f);
-
-			for (int32_t sx = 0; sx < d.x; ++sx) {
-
-
-				int32_t i = y * d.x + sx;
-				float v = source.load(i);
-
-				float2 g(v, 0.f);
-				float y = static_cast<float>(sx) * sqrt_m;
-				float t = math::Pi * (cot * y * y - 2.f * csc * u * y);
-				integration += mulc(g, t);
-			}
-
-			float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
-
-
-			int32_t i = y * d.x + x;
-			destination[i] = mulc(s, integration) / sqrt_m;
-
-		}
-	}
-}
-
-void experiment_y(std::vector<float2>& destination, const std::vector<float2>& source) {
-	int2 d(512, 512);
-
-	float sqrt_m = std::sqrt(static_cast<float>(d.x));
-
-
-
-	float alpha = 0.3f;
+	float m = static_cast<float>(d.x);
+	float sqrt_m = std::sqrt(m);
+	float ss = 8.f;
 
 	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
 	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
 
 	for (int32_t y = 0; y < d.y; ++y) {
 		for (int32_t x = 0; x < d.x; ++x) {
+			float2 c((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x),
+					 (static_cast<float>(y) + 0.5f) / static_cast<float>(d.y));
 
-			float u = (static_cast<float>(y) / static_cast<float>(d.x)) / sqrt_m;
-
+			float u = (c.v[mode] - 0.5f - m / 2.f) / sqrt_m;
 
 			float2 integration(0.f);
 
-			for (int32_t sy = 0; sy < d.y; ++sy) {
+			for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
+		//	for (float sx = 0.f, dx = 1.f / (m * ss); sx <= 1.f; sx += dx) {
+				float2 tex = c;
+				tex.v[mode] = k + 0.5f;
+				float2 g = sampler.sample_2(texture, tex);
 
-
-				int32_t i = sy * d.x + x;
-				float2 g = source[i];
-
-				float y = static_cast<float>(sy) * sqrt_m;
+				float y = k * sqrt_m;
 				float t = math::Pi * (cot * y * y - 2.f * csc * u * y);
 				integration += mulc(g, t);
 			}
 
 			float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
 
-
 			int32_t i = y * d.x + x;
-			destination[i] = mulc(s, integration) / sqrt_m;
-
+			destination.store(i, mulc(s, integration) / (ss * sqrt_m));
 		}
 	}
 }
@@ -142,7 +106,7 @@ void create(thread::Pool& pool) {
 
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 512;
+	int32_t resolution = 256;
 
 	int2 dimensions(resolution, resolution);
 
@@ -160,18 +124,28 @@ void create(thread::Pool& pool) {
 		signal.clear(1.f);
 	}
 
-	Aperture aperture(8, 0.25f);
+//	Aperture aperture(8, 0.25f);
+	Aperture aperture(5, 0.f);
 	render_aperture(aperture, signal);
 
 	write_signal("signal.png", signal);
 
-	std::vector<float2> signal_e(resolution * resolution);
-	std::vector<float2> signal_t(resolution * resolution);
+//	image::Float_2 signal_a(image::Image::Description(image::Image::Type::Float_2, dimensions));
+//	image::Float_2 signal_b(image::Image::Description(image::Image::Type::Float_2, dimensions));
 
-	experiment_x(signal_e, signal);
-	experiment_y(signal_t, signal_e);
+	auto signal_a = std::make_shared<image::Float_2>(image::Image::Description(image::Image::Type::Float_2, dimensions));
+	auto signal_b = std::make_shared<image::Float_2>(image::Image::Description(image::Image::Type::Float_2, dimensions));
 
-	squared_magnitude(signal.data(), signal_t.data(), resolution, resolution);
+	for (int32_t i = 0, len = signal.area(); i < len; ++i) {
+		signal_a->store(i, float2(signal.load(i), 1.f));
+	}
+
+	float alpha = 0.1f;
+
+	experiment(*signal_b.get(), signal_a, alpha, 0);
+	experiment(*signal_a.get(), signal_b, alpha, 1);
+
+	squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
 
 	write_signal("signal_after.png", signal);
 
@@ -388,7 +362,26 @@ void squared_magnitude(float* result, const float2* source, size_t width, size_t
 		for (size_t x = 0; x < width; ++x) {
 			size_t i = y * width + x;
 			float mag = math::squared_length(source[i]);
-			result[i] = mag;
+
+			size_t o;// = y * width + (width - x);
+
+			size_t r;
+
+			if (y >= height / 2) {
+				r = y - (height / 2);
+			} else {
+				r = y + (height / 2);
+			}
+
+			if (x >= width / 2) {
+				o = r * width + x - (width / 2);
+			} else {
+				o = r * width + x + (width / 2);
+			}
+
+		//	o = i;
+
+			result[o] = std::min(0.5f * mag, 1.f);
 		}
 	}
 }

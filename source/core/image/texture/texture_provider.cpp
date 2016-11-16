@@ -55,10 +55,10 @@ std::shared_ptr<Texture> Provider::load(const std::string& filename,
 		}
 
 		if (Image::Type::Byte_1 == image->description().type) {
-			return std::make_shared<Texture_byte_1_unorm>(image);
+			return std::make_shared<Byte_1_unorm>(image);
 		} else if (Image::Type::Byte_2 == image->description().type) {
 			if (Usage::Anisotropy == usage) {
-				return std::make_shared<Texture_byte_2_snorm>(image);
+				return std::make_shared<Byte_2_snorm>(image);
 			} else {
 				return std::make_shared<Texture_byte_2_unorm>(image);
 			}
@@ -67,16 +67,16 @@ std::shared_ptr<Texture> Provider::load(const std::string& filename,
 
 				SOFT_ASSERT(testing::is_valid_normal_map(*image.get(), filename));
 
-				return std::make_shared<Texture_byte_3_snorm>(image);
+				return std::make_shared<Byte_3_snorm>(image);
 			} else if (Usage::Surface == usage) {
-				return std::make_shared<Texture_byte_3_unorm>(image);
+				return std::make_shared<Byte_3_unorm>(image);
 			} else {
-				return std::make_shared<Texture_byte_3_sRGB>(image);
+				return std::make_shared<Byte_3_sRGB>(image);
 			}
 		} else if (Image::Type::Float_1 == image->description().type) {
-			return std::make_shared<Texture_float_1>(image);
+			return std::make_shared<Float_1>(image);
 		} else if (Image::Type::Float_3 == image->description().type) {
-			return std::make_shared<Texture_float_3>(image);
+			return std::make_shared<Float_3>(image);
 		}
 	} catch (const std::exception& e) {
 		logging::error("Loading texture \"" + filename + "\": " + e.what() + ".");

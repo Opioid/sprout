@@ -14,6 +14,7 @@ public:
 		Byte_2,
 		Byte_3,
 		Float_1,
+		Float_2,
 		Float_3,
 		Float_4
 	};

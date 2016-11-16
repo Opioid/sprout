@@ -8,11 +8,11 @@ class Texture;
 
 namespace sampler {
 
-class Sampler_2d {
+class Sampler_2D {
 
 public:
 
-	virtual ~Sampler_2d() {}
+	virtual ~Sampler_2D() {}
 
 	virtual float  sample_1(const Texture& texture, float2 uv) const = 0;
 	virtual float2 sample_2(const Texture& texture, float2 uv) const = 0;

@@ -36,6 +36,7 @@ using byte3  = math::byte3;
 using float2 = math::float2;
 using int2   = math::int2;
 using uint2  = math::uint2;
+using byte2  = math::byte2;
 
 using float3 = math::float3;
 using int3	 = math::int3;
