@@ -14,6 +14,9 @@ Attenuation::Attenuation(uint32_t num_samples_per_pixel,
 						 rnd::Generator& rng) :
 	Integrator(num_samples_per_pixel, take_settings, rng) {}
 
+void Attenuation::prepare(const scene::Scene& /*scene*/,
+						  uint32_t /*num_samples_per_pixel*/) {}
+
 void Attenuation::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Attenuation::transmittance(Worker& worker,

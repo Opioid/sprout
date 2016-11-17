@@ -30,6 +30,9 @@ Pathtracer_MIS::Pathtracer_MIS(uint32_t num_samples_per_pixel,
 	transmittance_open_(num_samples_per_pixel, take_settings, rng, settings.max_bounces),
 	transmittance_closed_(num_samples_per_pixel, take_settings, rng) {}
 
+void Pathtracer_MIS::prepare(const scene::Scene& /*scene*/,
+							 uint32_t /*num_samples_per_pixel*/) {}
+
 void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 	material_sampler_.resume_pixel(sample, scramble);

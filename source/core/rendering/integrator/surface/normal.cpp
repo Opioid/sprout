@@ -18,6 +18,8 @@ Normal::Normal(uint32_t num_samples_per_pixel,
 	Integrator(num_samples_per_pixel, take_settings, rng),
 	settings_(settings) {}
 
+void Normal::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+
 void Normal::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/,

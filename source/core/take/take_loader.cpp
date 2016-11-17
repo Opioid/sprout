@@ -347,12 +347,12 @@ void Loader::load_integrator_factories(const json::Value& integrator_value, Take
 std::shared_ptr<rendering::integrator::surface::Factory>
 Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 										const Settings& settings) {
+	using namespace rendering::integrator;
 	using namespace rendering::integrator::surface;
 
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
-	rendering::integrator::Light_sampling light_sampling{
-		rendering::integrator::Light_sampling::Strategy::One, 1};
+	Light_sampling light_sampling{Light_sampling::Strategy::One, 1};
 	float default_path_termination_probability = 0.5f;
 	bool default_caustics = true;
 
@@ -360,7 +360,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 		if ("AO" == n.name) {
 			uint32_t num_samples = json::read_uint(n.value, "num_samples", 1);
 			float radius = json::read_float(n.value, "radius", 1.f);
-			return std::make_shared<Ao_factory>(
+			return std::make_shared<AO_factory>(
 						settings, num_samples, radius);
 		} else if ("Whitted" == n.name) {
 			uint32_t num_light_samples = json::read_uint(

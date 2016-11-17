@@ -13,7 +13,7 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-class Ao : public Integrator {
+class AO : public Integrator {
 
 public:
 
@@ -23,10 +23,12 @@ public:
 		float radius;
 	};
 
-	Ao(uint32_t num_samples_per_pixel,
+	AO(uint32_t num_samples_per_pixel,
 	   const take::Settings& take_settings,
 	   rnd::Generator& rng,
 	   const Settings& settings);
+
+	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
@@ -40,18 +42,18 @@ private:
 	sampler::Golden_ratio sampler_;
 };
 
-class Ao_factory : public Factory {
+class AO_factory : public Factory {
 
 public:
 
-	Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius);
+	AO_factory(const take::Settings& settings, uint32_t num_samples, float radius);
 
 	virtual Integrator* create(uint32_t num_samples_per_pixel,
 							   rnd::Generator& rng) const;
 
 private:
 
-	Ao::Settings settings_;
+	AO::Settings settings_;
 };
 
 }}}

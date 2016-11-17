@@ -29,6 +29,9 @@ Pathtracer_DL::Pathtracer_DL(uint32_t num_samples_per_pixel,
 	transmittance_(num_samples_per_pixel, take_settings, rng)
 {}
 
+void Pathtracer_DL::prepare(const scene::Scene& /*scene*/,
+							uint32_t /*num_samples_per_pixel*/) {}
+
 void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }

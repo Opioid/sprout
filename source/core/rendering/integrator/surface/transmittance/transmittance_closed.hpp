@@ -29,6 +29,8 @@ public:
 		   const take::Settings& take_settings,
 		   rnd::Generator& rng);
 
+	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
+
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;

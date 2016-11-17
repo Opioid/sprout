@@ -12,7 +12,7 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Ao::Ao(uint32_t samples_per_pixel,
+AO::AO(uint32_t samples_per_pixel,
 	   const take::Settings& take_settings,
 	   rnd::Generator& rng,
 	   const Settings& settings) :
@@ -20,11 +20,14 @@ Ao::Ao(uint32_t samples_per_pixel,
 	settings_(settings),
 	sampler_(rng, samples_per_pixel * settings.num_samples, 1) {}
 
-void Ao::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
+void AO::prepare(const scene::Scene& /*scene*/,
+				 uint32_t /*num_samples_per_pixel*/) {}
+
+void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
+float4 AO::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 			  scene::Intersection& intersection) {
 	scene::Ray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
@@ -53,16 +56,16 @@ float4 Ao::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 	return float4(result, result, result, 1.f);
 }
 
-Ao_factory::Ao_factory(const take::Settings& settings, uint32_t num_samples, float radius) :
+AO_factory::AO_factory(const take::Settings& settings, uint32_t num_samples, float radius) :
 	Factory(settings) {
 	settings_.num_samples = num_samples;
 	settings_.num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
 	settings_.radius = radius;
 }
 
-Integrator* Ao_factory::create(uint32_t num_samples_per_pixel,
+Integrator* AO_factory::create(uint32_t num_samples_per_pixel,
 							   rnd::Generator& rng) const {
-	return new Ao(num_samples_per_pixel, take_settings_, rng, settings_);
+	return new AO(num_samples_per_pixel, take_settings_, rng, settings_);
 }
 
 }}}
