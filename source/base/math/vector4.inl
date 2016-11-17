@@ -134,21 +134,21 @@ inline Vector4i_a::Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w) :
 inline Vector4i_a::Vector4i_a(int32_t s) :
 	x(s), y(s), z(s), w(s) {}
 
-inline Vector4i_a Vector4i_a::operator+(const Vector4i_a& v) const {
-	return Vector4i_a(x + v.x, y + v.y, z + v.z, w + v.w);
+inline Vector4i_a Vector4i_a::operator+(const Vector4i_a& a) const {
+	return Vector4i_a(x + a.x, y + a.y, z + a.z, w + a.w);
 }
 
-inline Vector4i_a Vector4i_a::operator*(const Vector4i_a& v) const {
-	return Vector4i_a(x * v.x, y * v.y, z * v.z, w * v.w);
+inline Vector4i_a Vector4i_a::operator*(const Vector4i_a& a) const {
+	return Vector4i_a(x * a.x, y * a.y, z * a.z, w * a.w);
 }
 
-inline Vector4i_a& Vector4i_a::operator+=(const Vector4i_a& v) {
-	x += v.x; y += v.y; z += v.z; w += v.w;
+inline Vector4i_a& Vector4i_a::operator+=(const Vector4i_a& a) {
+	x += a.x; y += a.y; z += a.z; w += a.w;
 	return *this;
 }
 
-inline Vector4i_a& Vector4i_a::operator-=(const Vector4i_a& v) {
-	x -= v.x; y -= v.y; z -= v.z; w -= v.w;
+inline Vector4i_a& Vector4i_a::operator-=(const Vector4i_a& a) {
+	x -= a.x; y -= a.y; z -= a.z; w -= a.w;
 	return *this;
 }
 

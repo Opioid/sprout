@@ -297,18 +297,18 @@ inline Matrix3x3f_a::Matrix3x3f_a(float m00, float m01, float m02,
 	m10(m10), m11(m11), m12(m12),
 	m20(m20), m21(m21), m22(m22) {}
 
-inline Matrix3x3f_a Matrix3x3f_a::operator*(const Matrix3x3f_a& m) const {
-	return Matrix3x3f_a(m00 * m.m00 + m01 * m.m10 + m02 * m.m20,
-						m00 * m.m01 + m01 * m.m11 + m02 * m.m21,
-						m00 * m.m02 + m01 * m.m12 + m02 * m.m22,
+inline Matrix3x3f_a Matrix3x3f_a::operator*(const Matrix3x3f_a& a) const {
+	return Matrix3x3f_a(m00 * a.m00 + m01 * a.m10 + m02 * a.m20,
+						m00 * a.m01 + m01 * a.m11 + m02 * a.m21,
+						m00 * a.m02 + m01 * a.m12 + m02 * a.m22,
 
-						m10 * m.m00 + m11 * m.m10 + m12 * m.m20,
-						m10 * m.m01 + m11 * m.m11 + m12 * m.m21,
-						m10 * m.m02 + m11 * m.m12 + m12 * m.m22,
+						m10 * a.m00 + m11 * a.m10 + m12 * a.m20,
+						m10 * a.m01 + m11 * a.m11 + m12 * a.m21,
+						m10 * a.m02 + m11 * a.m12 + m12 * a.m22,
 
-						m20 * m.m00 + m21 * m.m10 + m22 * m.m20,
-						m20 * m.m01 + m21 * m.m11 + m22 * m.m21,
-						m20 * m.m02 + m21 * m.m12 + m22 * m.m22);
+						m20 * a.m00 + m21 * a.m10 + m22 * a.m20,
+						m20 * a.m01 + m21 * a.m11 + m22 * a.m21,
+						m20 * a.m02 + m21 * a.m12 + m22 * a.m22);
 }
 
 inline Matrix3x3f_a Matrix3x3f_a::identity() {

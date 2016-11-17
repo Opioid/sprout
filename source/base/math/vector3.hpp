@@ -157,7 +157,8 @@ struct alignas(16) Vector3f_a {
 
 		Vector2<float> xy;
 
-		float v[3];
+		// 4 instead of 3 in order to hide pad warning
+		float v[4];
 	};
 
 	Vector3f_a();
