@@ -66,9 +66,9 @@ void experiment(image::Float_2& destination, std::shared_ptr<image::Float_2> sou
 
 	auto d = source->description().dimensions;
 
-	float m = static_cast<float>(d.x);
+	float m = 128;//static_cast<float>(d.x);
 	float sqrt_m = std::sqrt(m);
-	float ss = 8.f;
+	float ss = 1.f;
 
 	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
 	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
@@ -78,14 +78,23 @@ void experiment(image::Float_2& destination, std::shared_ptr<image::Float_2> sou
 			float2 c((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x),
 					 (static_cast<float>(y) + 0.5f) / static_cast<float>(d.y));
 
-			float u = (c.v[mode] - 0.5f - m / 2.f) / sqrt_m;
+	//		float u = (c.v[mode] /*- 0.5f *//*- m / 2.f*//*-0.5f*/) / sqrt_m;
+
+			// alpha 0.005f
+			// float u = (c.v[mode] - 0.25f) / sqrt_m;
+
+			// alpha 0.01f
+			// float u = (c.v[mode] + 0.25f) / sqrt_m;
+
+			// alpha 0.05f
+			float u = (c.v[mode] + 0.125f) / sqrt_m;
 
 			float2 integration(0.f);
 
-			for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
-		//	for (float sx = 0.f, dx = 1.f / (m * ss); sx <= 1.f; sx += dx) {
+		//	for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
+			for (float k = 0.f, dk = 1.f / (m * ss); k < 1.f; k += dk) {
 				float2 tex = c;
-				tex.v[mode] = k + 0.5f;
+				tex.v[mode] = k;// + 0.5f;
 				float2 g = sampler.sample_2(texture, tex);
 
 				float y = k * sqrt_m;
@@ -106,7 +115,7 @@ void create(thread::Pool& pool) {
 
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 256;
+	int32_t resolution = 512;
 
 	int2 dimensions(resolution, resolution);
 
@@ -125,7 +134,7 @@ void create(thread::Pool& pool) {
 	}
 
 //	Aperture aperture(8, 0.25f);
-	Aperture aperture(5, 0.f);
+	Aperture aperture(8, 0.f);
 	render_aperture(aperture, signal);
 
 	write_signal("signal.png", signal);
@@ -137,17 +146,26 @@ void create(thread::Pool& pool) {
 	auto signal_b = std::make_shared<image::Float_2>(image::Image::Description(image::Image::Type::Float_2, dimensions));
 
 	for (int32_t i = 0, len = signal.area(); i < len; ++i) {
-		signal_a->store(i, float2(signal.load(i), 1.f));
+		signal_a->store(i, float2(signal.load(i), 0.f));
 	}
 
-	float alpha = 0.1f;
+	float alpha = 0.05f;
 
 	experiment(*signal_b.get(), signal_a, alpha, 0);
+	squared_magnitude(signal.data(), signal_b->data(), resolution, resolution);
+	write_signal("signal_x.png", signal);
+
 	experiment(*signal_a.get(), signal_b, alpha, 1);
-
 	squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
+	write_signal("signal_xy.png", signal);
 
-	write_signal("signal_after.png", signal);
+
+//	experiment(*signal_b.get(), signal_a, alpha, 0);
+//	experiment(*signal_a.get(), signal_b, alpha, 1);
+
+//	squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
+
+//	write_signal("signal_after.png", signal);
 
 	return;
 
@@ -358,6 +376,11 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 }
 
 void squared_magnitude(float* result, const float2* source, size_t width, size_t height) {
+	float max = 0.f;
+	for (size_t i = 0, len = width * height; i < len; ++i) {
+		max = std::max(max, math::squared_length(source[i]));
+	}
+
 	for (size_t y = 0; y < height; ++y) {
 		for (size_t x = 0; x < width; ++x) {
 			size_t i = y * width + x;
@@ -365,23 +388,24 @@ void squared_magnitude(float* result, const float2* source, size_t width, size_t
 
 			size_t o;// = y * width + (width - x);
 
-			size_t r;
+//			size_t r;
 
-			if (y >= height / 2) {
-				r = y - (height / 2);
-			} else {
-				r = y + (height / 2);
-			}
+//			if (y >= height / 2) {
+//				r = y - (height / 2);
+//			} else {
+//				r = y + (height / 2);
+//			}
 
-			if (x >= width / 2) {
-				o = r * width + x - (width / 2);
-			} else {
-				o = r * width + x + (width / 2);
-			}
+//			if (x >= width / 2) {
+//				o = r * width + x - (width / 2);
+//			} else {
+//				o = r * width + x + (width / 2);
+//			}
 
-		//	o = i;
+			o = i;
 
-			result[o] = std::min(0.5f * mag, 1.f);
+			result[o] = mag / max;//std::min(0.5f * mag, 1.f);
+		//	result[o] = std::min(0.000025f * mag, 1.f);
 		}
 	}
 }

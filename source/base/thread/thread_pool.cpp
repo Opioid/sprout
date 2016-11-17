@@ -1,4 +1,5 @@
 #include "thread_pool.hpp"
+#include <algorithm>
 #include <cmath>
 
 namespace thread {
