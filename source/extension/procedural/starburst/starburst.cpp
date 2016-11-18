@@ -66,9 +66,9 @@ void experiment(image::Float_2& destination, std::shared_ptr<image::Float_2> sou
 
 	auto d = source->description().dimensions;
 
-	float m = 128;//static_cast<float>(d.x);
+	float m = static_cast<float>(d.x);
 	float sqrt_m = std::sqrt(m);
-	float ss = 1.f;
+	float ss = 2.f;
 
 	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
 	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
@@ -87,14 +87,17 @@ void experiment(image::Float_2& destination, std::shared_ptr<image::Float_2> sou
 			// float u = (c.v[mode] + 0.25f) / sqrt_m;
 
 			// alpha 0.05f
-			float u = (c.v[mode] + 0.125f) / sqrt_m;
+			//float u = (c.v[mode] + 0.125f) / sqrt_m;
+
+			float2 frag_coord(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
+			float u = (frag_coord.v[mode] - m / 2.f) / sqrt_m;
 
 			float2 integration(0.f);
 
-		//	for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
-			for (float k = 0.f, dk = 1.f / (m * ss); k < 1.f; k += dk) {
+			for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
+		//	for (float k = 0.f, dk = 1.f / (m * ss); k < 1.f; k += dk) {
 				float2 tex = c;
-				tex.v[mode] = k;// + 0.5f;
+				tex.v[mode] = k + 0.5f;
 				float2 g = sampler.sample_2(texture, tex);
 
 				float v = k * sqrt_m;
@@ -115,7 +118,7 @@ void create(thread::Pool& pool) {
 
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 512;
+	int32_t resolution = 256;
 
 	int2 dimensions(resolution, resolution);
 
@@ -149,7 +152,7 @@ void create(thread::Pool& pool) {
 		signal_a->store(i, float2(signal.load(i), 0.f));
 	}
 
-	float alpha = 0.05f;
+	float alpha = 0.5f;
 
 	experiment(*signal_b.get(), signal_a, alpha, 0);
 	squared_magnitude(signal.data(), signal_b->data(), resolution, resolution);
@@ -310,7 +313,7 @@ void render_aperture(const Aperture& aperture, image::Float_1& signal) {
 	float fr = static_cast<float>(resolution);
 	float kn = 1.f / static_cast<float>(kernel.size());
 
-	float radius = static_cast<float>(resolution - 2) / fr;
+	float radius = 0.5f;//static_cast<float>(resolution - 2) / fr;
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
