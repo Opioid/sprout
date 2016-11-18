@@ -69,7 +69,7 @@ void create(thread::Pool& pool) {
 	}
 
 	Aperture aperture(8, 0.25f);
-//	Aperture aperture(8, 0.f);
+//	Aperture aperture(5, 0.f);
 	render_aperture(aperture, signal);
 
 	write_signal("signal.png", signal);
@@ -85,7 +85,7 @@ void create(thread::Pool& pool) {
 			signal_a->store(i, float2(signal.load(i), 0.f));
 		}
 
-		float alpha = 0.2f;
+		float alpha = 1.f;
 
 		fdft(*signal_b.get(), signal_a, alpha, 0, pool);
 		fdft(*signal_a.get(), signal_b, alpha, 1, pool);
@@ -122,7 +122,7 @@ void create(thread::Pool& pool) {
 		delete [] spectral_data;
 	}
 
-//	write_signal("signal_after.png", signal);
+	write_signal("signal_after.png", signal);
 
 	float radius = static_cast<float>(resolution) * 0.00390625f;
 	filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
@@ -266,7 +266,7 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 	size_t row_size = math::dft_size(width);
 
 	float fr = static_cast<float>(width);
-	float normalization = (2.f / (fr * fr));
+	float normalization = 2.f / fr;
 
 	for (size_t y = 0; y < height; ++y) {
 		size_t ro = y;
@@ -283,10 +283,10 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 
 //		result[ro * width + row_size - 1] = mag;
 
-
+/*
 		for (size_t x = 0, len = row_size - 1; x < len; ++x) {
 			size_t o = y * row_size + x;
-			float mag = normalization * math::squared_length(source[o]);
+			float mag = math::squared_length(normalization * source[o]);
 
 //			size_t a = ro * width + x + len;
 //			std::cout << a << std::endl;
@@ -296,15 +296,44 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 
 		for (size_t x = 0, len = row_size - 1; x < len; ++x) {
 			size_t o = y * row_size + x;
-			float mag = normalization * math::squared_length(source[o]);
+			float mag = math::squared_length(normalization * source[o]);
 
 //			size_t a = ro * width - x + len - 1;
 //			std::cout << a << std::endl;
 
 			result[ro * width - x + len - 1] = mag;
 		}
+*/
 
-	//	std::cout << "row end" << std::endl;
+		for (size_t x = 0, len = row_size; x < len; ++x) {
+			size_t o = y * row_size + x;
+
+		//	float2 normalization = (0 == x || len - 1 == x) ? float2(1.f / fr, 2.f / fr) : float2(2.f / fr);
+
+			float mag = math::squared_length(normalization * source[o]);
+
+//			size_t a = ro * width + x + len - 1;
+//			std::cout << o << ": " << a << std::endl;
+
+			result[ro * width + x + len - 1] = mag;
+		}
+
+		for (size_t x = 1, len = row_size; x < len; ++x) {
+			size_t o = y * row_size + x;
+
+		//	float2 normalization(2.f / fr);
+
+		//	float2 normalization = (len - 1 == x) ? float2(1.f / fr, 2.f / fr) : float2(2.f / fr);
+
+			float mag = math::squared_length(normalization * source[o]);
+
+//			size_t a = ro * width - x + len - 1;
+//			std::cout << o << ": " << a << std::endl;
+
+			result[ro * width - x + len - 1] = mag;
+		}
+
+//		std::cout << "row end" << std::endl;
 	}
 }
 
