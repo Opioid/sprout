@@ -17,6 +17,8 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
+	virtual size_t num_bytes() const final override;
+
 	void set_thickness(float thickness);
 	void set_attenuation_distance(float attenuation_distance);
 

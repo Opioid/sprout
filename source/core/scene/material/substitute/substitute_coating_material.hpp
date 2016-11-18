@@ -14,6 +14,8 @@ public:
 	Material_coating(Sample_cache<Sample>& cache,
 					 const Sampler_settings& sampler_settings, bool two_sided);
 
+	virtual size_t num_bytes() const final override;
+
 	void set_coating_weight_map(const Texture_adapter& weight_map);
 	void set_coating_normal_map(const Texture_adapter& normal_map);
 

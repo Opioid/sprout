@@ -97,8 +97,8 @@ void experiment(image::Float_2& destination, std::shared_ptr<image::Float_2> sou
 				tex.v[mode] = k;// + 0.5f;
 				float2 g = sampler.sample_2(texture, tex);
 
-				float y = k * sqrt_m;
-				float t = math::Pi * (cot * y * y - 2.f * csc * u * y);
+				float v = k * sqrt_m;
+				float t = math::Pi * (cot * v * v - 2.f * csc * u * v);
 				integration += mulc(g, t);
 			}
 

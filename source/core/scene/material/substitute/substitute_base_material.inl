@@ -49,11 +49,6 @@ bool Material_base<Sample>::has_emission_map() const {
 }
 
 template<typename Sample>
-size_t Material_base<Sample>::num_bytes() const {
-	return sizeof(*this);
-}
-
-template<typename Sample>
 void Material_base<Sample>::set_color_map(const Texture_adapter& color_map) {
 	color_map_ = color_map;
 }

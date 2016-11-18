@@ -13,6 +13,10 @@ Material_coating<Coating, Sample>::Material_coating(
 		const Sampler_settings& sampler_settings, bool two_sided) :
 	Material_base<Sample>(cache, sampler_settings, two_sided) {}
 
+template<typename Coating, typename Sample>
+size_t Material_coating<Coating, Sample>::num_bytes() const {
+	return sizeof(*this);
+}
 
 template<typename Coating, typename Sample>
 void Material_coating<Coating, Sample>::set_coating_weight_map(const Texture_adapter& weight_map) {

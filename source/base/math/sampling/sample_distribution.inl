@@ -27,7 +27,7 @@ inline float radical_inverse_vdC(uint32_t bits, uint32_t r) {
 }
 
 inline float radical_inverse_S(uint32_t i, uint32_t r) {
-	for (uint32_t v = 1 << 31; i; i >>= 1, v ^= v >> 1) {
+	for (uint32_t v = 1u << 31; i; i >>= 1, v ^= v >> 1) {
 		if (i & 1) {
 			r ^= v;
 		}
@@ -37,7 +37,7 @@ inline float radical_inverse_S(uint32_t i, uint32_t r) {
 }
 
 inline float radical_inverse_LP(uint32_t i, uint32_t r) {
-	for (uint32_t v = 1 << 31; i; i >>= 1, v |= v >> 1) {
+	for (uint32_t v = 1u << 31; i; i >>= 1, v |= v >> 1) {
 		if (i & 1) {
 			r ^= v;
 		}

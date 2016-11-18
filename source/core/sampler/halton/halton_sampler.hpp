@@ -577,22 +577,22 @@ inline void Halton_sampler::init_faure()
 	for (unsigned short k = 1; k <= 3; ++k) // Keep identity permutations for base 1, 2, 3.
     {
         perms[k].resize(k);
-        for (unsigned i = 0; i < k; ++i)
+		for (unsigned short i = 0; i < k; ++i)
             perms[k][i] = i;
     }
 	for (unsigned short base = 4; base <= max_base; ++base)
     {
         perms[base].resize(base);
-        const unsigned b = base / 2;
+		const unsigned short b = base / 2;
         if (base & 1) // odd
         {
-            for (unsigned i = 0; i < base - 1; ++i)
+			for (unsigned short i = 0; i < base - 1; ++i)
                 perms[base][i + (i >= b)] = perms[base - 1][i] + (perms[base - 1][i] >= b);
             perms[base][b] = b;
         }
         else // even
         {
-            for (unsigned i = 0; i < b; ++i)
+			for (unsigned short i = 0; i < b; ++i)
             {
                 perms[base][i] = 2 * perms[b][i];
                 perms[base][b + i] = 2 * perms[b][i] + 1;
@@ -607,16 +607,16 @@ void Halton_sampler::init_random(Random_number_generator& rand)
 {
 	const unsigned short max_base = 1619u;
     std::vector<std::vector<unsigned short> > perms(max_base + 1);
-    for (unsigned k = 1; k <= 3; ++k) // Keep identity permutations for base 1, 2, 3.
+	for (unsigned short k = 1; k <= 3; ++k) // Keep identity permutations for base 1, 2, 3.
     {
         perms[k].resize(k);
-        for (unsigned i = 0; i < k; ++i)
+		for (unsigned short i = 0; i < k; ++i)
             perms[k][i] = i;
     }
 	for (unsigned short base = 4; base <= max_base; ++base)
     {
         perms[base].resize(base);
-        for (unsigned i = 0; i < base; ++i)
+		for (unsigned short i = 0; i < base; ++i)
             perms[base][i] = i;
         std::random_shuffle(perms[base].begin(), perms[base].end(), rand);
     }

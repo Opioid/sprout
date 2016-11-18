@@ -20,4 +20,8 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 	return sample;
 }
 
+size_t Material::num_bytes() const {
+	return sizeof(*this);
+}
+
 }}}

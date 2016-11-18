@@ -28,6 +28,10 @@ const material::Sample& Material_translucent::sample(float3_p wo, const Renderst
 	return sample;
 }
 
+size_t Material_translucent::num_bytes() const {
+	return sizeof(*this);
+}
+
 void Material_translucent::set_thickness(float thickness) {
 	thickness_ = thickness;
 }
