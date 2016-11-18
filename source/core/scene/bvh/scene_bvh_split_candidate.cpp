@@ -8,7 +8,7 @@ namespace scene { namespace bvh {
 Split_candidate::Split_candidate(const math::plane& plane, uint8_t axis) :
 	plane_(plane), axis_(axis) {}
 
-Split_candidate::Split_candidate(uint8_t split_axis, float3_p p,
+Split_candidate::Split_candidate(uint8_t split_axis, float3_p pos,
 								 const std::vector<Prop*>& props) :
 	axis_(split_axis) {
 	key_ = 0;
@@ -22,7 +22,7 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3_p p,
 	case 2: n = float3(0.f, 0.f, 1.f); break;
 	}
 
-	plane_ = math::create_plane(n, p);
+	plane_ = math::create_plane(n, pos);
 
 	int num_side_0 = 0;
 	int num_side_1 = 0;
@@ -50,7 +50,7 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3_p p,
 	}
 }
 
-Split_candidate::Split_candidate(uint8_t split_axis, float3_p p,
+Split_candidate::Split_candidate(uint8_t split_axis, float3_p pos,
 								 index begin, index end) :
 	axis_(split_axis) {
 	key_ = 0;
@@ -64,7 +64,7 @@ Split_candidate::Split_candidate(uint8_t split_axis, float3_p p,
 	case 2: n = float3(0.f, 0.f, 1.f); break;
 	}
 
-	plane_ = math::create_plane(n, p);
+	plane_ = math::create_plane(n, pos);
 
 	int num_side_0 = 0;
 	int num_side_1 = 0;

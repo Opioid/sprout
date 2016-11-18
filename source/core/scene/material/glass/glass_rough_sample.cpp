@@ -26,7 +26,7 @@ float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-	float sint2 = (layer_.eta_i * layer_.eta_i) * (1.f - n_dot_wo * n_dot_wo);
+	float sint2 = (layer_.eta_i_ * layer_.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
 	if (sint2 > 1.f) {
@@ -35,7 +35,7 @@ float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
 		float n_dot_t = std::sqrt(1.f - sint2);
 
 		// fresnel has to be the same value that would have been computed by BRDF
-		f = fresnel::dielectric(n_dot_wo, n_dot_t, layer_.eta_i, layer_.eta_t);
+		f = fresnel::dielectric(n_dot_wo, n_dot_t, layer_.eta_i_, layer_.eta_t_);
 	}
 
 	float3 f3(f);
@@ -72,11 +72,11 @@ float3 Sample_rough::radiance() const {
 }
 
 float3 Sample_rough::attenuation() const {
-	return layer_.attenuation;
+	return layer_.attenuation_;
 }
 
 float Sample_rough::ior() const {
-	return layer_.ior_i;
+	return layer_.ior_i_;
 }
 
 bool Sample_rough::is_pure_emissive() const {
@@ -92,14 +92,15 @@ bool Sample_rough::is_translucent() const {
 }
 
 void Sample_rough::Layer::set(float3_p refraction_color, float3_p absorbtion_color,
-							  float attenuation_distance, float ior, float ior_outside, float a2) {
-	this->color = refraction_color;
-	this->attenuation = material::Sample::attenuation(absorbtion_color, attenuation_distance);
-	this->ior_i = ior;
-	this->ior_o = ior_outside;
-	this->eta_i = ior_outside / ior;
-	this->eta_t = ior / ior_outside;
-	this->a2 = a2;
+							  float attenuation_distance, float ior,
+							  float ior_outside, float a_a2) {
+	color_ = refraction_color;
+	attenuation_ = material::Sample::attenuation(absorbtion_color, attenuation_distance);
+	ior_i_ = ior;
+	ior_o_ = ior_outside;
+	eta_i_ = ior_outside / ior;
+	eta_t_ = ior / ior_outside;
+	a2_ = a_a2;
 }
 
 float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
@@ -107,16 +108,16 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 	Layer tmp = layer;
 
 	if (!sample.same_hemisphere(sample.wo_)) {
-		tmp.n *= -1.f;
-		tmp.ior_i = layer.ior_o;
-		tmp.ior_o = layer.ior_i;
-		tmp.eta_i = layer.eta_t;
-		tmp.eta_t = layer.eta_i;
+		tmp.n_ *= -1.f;
+		tmp.ior_i_ = layer.ior_o_;
+		tmp.ior_o_ = layer.ior_i_;
+		tmp.eta_i_ = layer.eta_t_;
+		tmp.eta_t_ = layer.eta_i_;
 	}
 
 	float n_dot_wo = tmp.clamped_n_dot(sample.wo_);
 
-	float sint2 = (tmp.eta_i * tmp.eta_i) * (1.f - n_dot_wo * n_dot_wo);
+	float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
 	if (sint2 > 1.f) {
@@ -125,7 +126,7 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 		float n_dot_t = std::sqrt(1.f - sint2);
 
 		// fresnel has to be the same value that would have been computed by BRDF
-		f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i, tmp.eta_t);
+		f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
 	}
 
 	float3 f3(f);
@@ -143,16 +144,16 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 	Layer tmp = layer;
 
 	if (!sample.same_hemisphere(sample.wo_)) {
-		tmp.n *= -1.f;
-		tmp.ior_i = layer.ior_o;
-		tmp.ior_o = layer.ior_i;
-		tmp.eta_i = layer.eta_t;
-		tmp.eta_t = layer.eta_i;
+		tmp.n_ *= -1.f;
+		tmp.ior_i_ = layer.ior_o_;
+		tmp.ior_o_ = layer.ior_i_;
+		tmp.eta_i_ = layer.eta_t_;
+		tmp.eta_t_ = layer.eta_i_;
 	}
 
 	float n_dot_wo = tmp.clamped_n_dot(sample.wo_);
 
-	float sint2 = (tmp.eta_i * tmp.eta_i) * (1.f - n_dot_wo * n_dot_wo);
+	float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
 	if (sint2 > 1.f) {
 		result.pdf = 0.f;
@@ -162,7 +163,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 	float n_dot_t = std::sqrt(1.f - sint2);
 
 	// fresnel has to be the same value that would have been computed by BRDF
-	float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i, tmp.eta_t);
+	float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
 
 	float3 f3(1.f - f);
 	fresnel::Constant constant(f3);

@@ -11,7 +11,7 @@ float3 Sample_base::base_evaluate_and_coating(float3_p wi, const Coating& coatin
 											  float& pdf) const {
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating.evaluate(wi, wo_, layer_.ior,
+	float3 coating_reflection = coating.evaluate(wi, wo_, layer_.ior_,
 												 coating_attenuation, coating_pdf);
 
 	float base_pdf;
@@ -29,7 +29,7 @@ void Sample_base::base_sample_and_coating(const Coating& coating,
 
 	if (p < 0.5f) {
 		float3 coating_attenuation;
-		coating.sample(wo_, layer_.ior, sampler, coating_attenuation, result);
+		coating.sample(wo_, layer_.ior_, sampler, coating_attenuation, result);
 
 		float base_pdf;
 		float3 base_reflection = layer_.base_evaluate(result.wi, wo_, base_pdf);
@@ -37,7 +37,7 @@ void Sample_base::base_sample_and_coating(const Coating& coating,
 		result.pdf = (result.pdf + 2.f * base_pdf) / 3.f;
 		result.reflection = result.reflection + coating_attenuation * base_reflection;
 	} else {
-		if (1.f == layer_.metallic) {
+		if (1.f == layer_.metallic_) {
 			pure_specular_sample_and_coating(coating, sampler, result);
 		} else {
 			if (p < 0.75f) {
@@ -57,7 +57,7 @@ void Sample_base::diffuse_sample_and_coating(const Coating& coating,
 
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating.evaluate(result.wi, wo_, layer_.ior,
+	float3 coating_reflection = coating.evaluate(result.wi, wo_, layer_.ior_,
 												 coating_attenuation, coating_pdf);
 
 	result.pdf = (2.f * result.pdf + coating_pdf) / 3.f;
@@ -72,7 +72,7 @@ void Sample_base::specular_sample_and_coating(const Coating& coating,
 
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating.evaluate(result.wi, wo_, layer_.ior,
+	float3 coating_reflection = coating.evaluate(result.wi, wo_, layer_.ior_,
 												 coating_attenuation, coating_pdf);
 
 	result.pdf = (2.f * result.pdf + coating_pdf) / 3.f;
@@ -87,7 +87,7 @@ void Sample_base::pure_specular_sample_and_coating(const Coating& coating,
 
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating.evaluate(result.wi, wo_, layer_.ior,
+	float3 coating_reflection = coating.evaluate(result.wi, wo_, layer_.ior_,
 												 coating_attenuation, coating_pdf);
 
 	result.pdf = 0.5f * (result.pdf + coating_pdf);

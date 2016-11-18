@@ -37,13 +37,13 @@ public:
 		void set(float3_p refraction_color, float3_p absorbtion_color,
 				 float attenuation_distance, float ior, float ior_outside, float a2);
 
-		float3 color;
-		float3 attenuation;
-		float ior_i;
-		float ior_o;
-		float eta_i;
-		float eta_t;
-		float a2;
+		float3 color_;
+		float3 attenuation_;
+		float ior_i_;
+		float ior_o_;
+		float eta_i_;
+		float eta_t_;
+		float a2_;
 	};
 
 	Layer layer_;

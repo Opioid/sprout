@@ -7,29 +7,29 @@
 namespace scene { namespace material {
 
 inline void Sample::Layer::set_basis(float3_p t, float3_p b, float3_p n) {
-	this->t = t;
-	this->b = b;
-	this->n = n;
+	t_ = t;
+	b_ = b;
+	n_ = n;
 }
 
 inline float Sample::Layer::clamped_n_dot(float3_p v) const {
 	// return std::max(math::dot(n, v), 0.00001f);
-	return math::clamp(math::dot(n, v), 0.00001f, 1.f);
+	return math::clamp(math::dot(n_, v), 0.00001f, 1.f);
 }
 
 inline float Sample::Layer::reversed_clamped_n_dot(float3_p v) const {
 	// return std::max(-math::dot(n, v), 0.00001f);
-	return math::clamp(-math::dot(n, v), 0.00001f, 1.f);
+	return math::clamp(-math::dot(n_, v), 0.00001f, 1.f);
 }
 
 inline float3_p Sample::Layer::shading_normal() const {
-	return n;
+	return n_;
 }
 
 inline float3 Sample::Layer::tangent_to_world(float3_p v) const {
-	return float3(v.x * t.x + v.y * b.x + v.z * n.x,
-				  v.x * t.y + v.y * b.y + v.z * n.y,
-				  v.x * t.z + v.y * b.z + v.z * n.z);
+	return float3(v.x * t_.x + v.y * b_.x + v.z * n_.x,
+				  v.x * t_.y + v.y * b_.y + v.z * n_.y,
+				  v.x * t_.z + v.y * b_.z + v.z * n_.z);
 }
 
 inline float3_p Sample::geometric_normal() const {

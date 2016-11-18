@@ -22,7 +22,9 @@ public:
 
 		float3 tangent_to_world(float3_p v) const;
 
-		float3 t, b, n;
+		float3 t_;
+		float3 b_;
+		float3 n_;
 	};
 
 	virtual const Layer& base_layer() const = 0;

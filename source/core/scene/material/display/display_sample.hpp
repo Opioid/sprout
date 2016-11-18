@@ -31,9 +31,9 @@ public:
 	struct Layer : material::Sample::Layer {
 		void set(float3_p radiance, float f0, float roughness);
 
-		float3 emission;
-		float3 f0;
-		float a2;
+		float3 emission_;
+		float3 f0_;
+		float a2_;
 	};
 
 	Layer layer_;

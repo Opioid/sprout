@@ -36,8 +36,8 @@ Vector3<T> Vector3<T>::operator+(T s) const {
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator+(const Vector3& v) const {
-	return Vector3(x + v.x, y + v.y, z + v.z);
+Vector3<T> Vector3<T>::operator+(const Vector3& a) const {
+	return Vector3(x + a.x, y + a.y, z + a.z);
 }
 
 template<typename T>
@@ -46,13 +46,13 @@ Vector3<T> Vector3<T>::operator-(T s) const {
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator-(const Vector3& v) const {
-	return Vector3(x - v.x, y - v.y, z - v.z);
+Vector3<T> Vector3<T>::operator-(const Vector3& a) const {
+	return Vector3(x - a.x, y - a.y, z - a.z);
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator*(const Vector3& v) const {
-	return Vector3(x * v.x, y * v.y, z * v.z);
+Vector3<T> Vector3<T>::operator*(const Vector3& a) const {
+	return Vector3(x * a.x, y * a.y, z * a.z);
 }
 
 template<typename T>
@@ -62,8 +62,8 @@ Vector3<T> Vector3<T>::operator/(T s) const {
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::operator/(const Vector3& v) const {
-	return Vector3(x / v.x, y / v.y, z / v.z);
+Vector3<T> Vector3<T>::operator/(const Vector3& a) const {
+	return Vector3(x / a.x, y / a.y, z / a.z);
 }
 
 template<typename T>
@@ -72,26 +72,26 @@ Vector3<T> Vector3<T>::operator-() const {
 }
 
 template<typename T>
-Vector3<T>& Vector3<T>::operator+=(const Vector3& v) {
-	x += v.x;
-	y += v.y;
-	z += v.z;
+Vector3<T>& Vector3<T>::operator+=(const Vector3& a) {
+	x += a.x;
+	y += a.y;
+	z += a.z;
 	return *this;
 }
 
 template<typename T>
-Vector3<T>& Vector3<T>::operator-=(const Vector3& v) {
-	x -= v.x;
-	y -= v.y;
-	z -= v.z;
+Vector3<T>& Vector3<T>::operator-=(const Vector3& a) {
+	x -= a.x;
+	y -= a.y;
+	z -= a.z;
 	return *this;
 }
 
 template<typename T>
-Vector3<T>& Vector3<T>::operator*=(const Vector3& v) {
-	x *= v.x;
-	y *= v.y;
-	z *= v.z;
+Vector3<T>& Vector3<T>::operator*=(const Vector3& a) {
+	x *= a.x;
+	y *= a.y;
+	z *= a.z;
 	return *this;
 }
 
@@ -113,13 +113,13 @@ Vector3<T>& Vector3<T>::operator/=(T s) {
 }
 
 template<typename T>
-bool Vector3<T>::operator==(const Vector3& v) const {
-	return x == v.x && y == v.y && z == v.z;
+bool Vector3<T>::operator==(const Vector3& a) const {
+	return x == a.x && y == a.y && z == a.z;
 }
 
 template<typename T>
-bool Vector3<T>::operator!=(const Vector3& v) const {
-	return x != v.x || y != v.y || z != v.z;
+bool Vector3<T>::operator!=(const Vector3& a) const {
+	return x != a.x || y != a.y || z != a.z;
 }
 
 /*
@@ -319,20 +319,20 @@ inline Vector3f_a Vector3f_a::operator+(float s) const {
 	return Vector3f_a(x + s, y + s, z + s);
 }
 
-inline Vector3f_a Vector3f_a::operator+(FVector3f_a v) const {
-	return Vector3f_a(x + v.x, y + v.y, z + v.z);
+inline Vector3f_a Vector3f_a::operator+(FVector3f_a a) const {
+	return Vector3f_a(x + a.x, y + a.y, z + a.z);
 }
 
 inline Vector3f_a Vector3f_a::operator-(float s) const {
 	return Vector3f_a(x - s, y - s, z - s);
 }
 
-inline Vector3f_a Vector3f_a::operator-(FVector3f_a v) const {
-	return Vector3f_a(x - v.x, y - v.y, z - v.z);
+inline Vector3f_a Vector3f_a::operator-(FVector3f_a a) const {
+	return Vector3f_a(x - a.x, y - a.y, z - a.z);
 }
 
-inline Vector3f_a Vector3f_a::operator*(FVector3f_a v) const {
-	return Vector3f_a(x * v.x, y * v.y, z * v.z);
+inline Vector3f_a Vector3f_a::operator*(FVector3f_a a) const {
+	return Vector3f_a(x * a.x, y * a.y, z * a.z);
 }
 
 inline Vector3f_a Vector3f_a::operator/(float s) const {
@@ -340,32 +340,32 @@ inline Vector3f_a Vector3f_a::operator/(float s) const {
 	return Vector3f_a(is * x, is * y, is * z);
 }
 
-inline Vector3f_a Vector3f_a::operator/(FVector3f_a v) const {
-	return Vector3f_a(x / v.x, y / v.y, z / v.z);
+inline Vector3f_a Vector3f_a::operator/(FVector3f_a a) const {
+	return Vector3f_a(x / a.x, y / a.y, z / a.z);
 }
 
 inline Vector3f_a Vector3f_a::operator-() const {
 	return Vector3f_a(-x, -y, -z);
 }
 
-inline Vector3f_a& Vector3f_a::operator+=(FVector3f_a v) {
-	x += v.x;
-	y += v.y;
-	z += v.z;
+inline Vector3f_a& Vector3f_a::operator+=(FVector3f_a a) {
+	x += a.x;
+	y += a.y;
+	z += a.z;
 	return *this;
 }
 
-inline Vector3f_a& Vector3f_a::operator-=(FVector3f_a v) {
-	x -= v.x;
-	y -= v.y;
-	z -= v.z;
+inline Vector3f_a& Vector3f_a::operator-=(FVector3f_a a) {
+	x -= a.x;
+	y -= a.y;
+	z -= a.z;
 	return *this;
 }
 
-inline Vector3f_a& Vector3f_a::operator*=(FVector3f_a v) {
-	x *= v.x;
-	y *= v.y;
-	z *= v.z;
+inline Vector3f_a& Vector3f_a::operator*=(FVector3f_a a) {
+	x *= a.x;
+	y *= a.y;
+	z *= a.z;
 	return *this;
 }
 
@@ -384,12 +384,12 @@ inline Vector3f_a& Vector3f_a::operator/=(float s) {
 	return *this;
 }
 
-inline bool Vector3f_a::operator==(FVector3f_a v) const {
-	return x == v.x && y == v.y && z == v.z;
+inline bool Vector3f_a::operator==(FVector3f_a a) const {
+	return x == a.x && y == a.y && z == a.z;
 }
 
-inline bool Vector3f_a::operator!=(FVector3f_a v) const {
-	return x != v.x || y != v.y || z != v.z;
+inline bool Vector3f_a::operator!=(FVector3f_a a) const {
+	return x != a.x || y != a.y || z != a.z;
 }
 
 inline float Vector3f_a::absolute_max(uint32_t& i) const {

@@ -89,12 +89,12 @@ inline Vector4f_a::Vector4f_a(FVector3f_a xyz, float w) :
 inline Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) :
 	x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
 
-inline Vector4f_a Vector4f_a::operator+(const Vector4f_a& v) const {
-	return Vector4f_a(x + v.x, y + v.y, z + v.z, w + v.w);
+inline Vector4f_a Vector4f_a::operator+(const Vector4f_a& a) const {
+	return Vector4f_a(x + a.x, y + a.y, z + a.z, w + a.w);
 }
 
-inline Vector4f_a Vector4f_a::operator*(const Vector4f_a& v) const {
-	return Vector4f_a(x * v.x, y * v.y, z * v.z, w * v.w);
+inline Vector4f_a Vector4f_a::operator*(const Vector4f_a& a) const {
+	return Vector4f_a(x * a.x, y * a.y, z * a.z, w * a.w);
 }
 
 inline Vector4f_a Vector4f_a::operator/(float s) const {
@@ -102,18 +102,18 @@ inline Vector4f_a Vector4f_a::operator/(float s) const {
 	return Vector4f_a(is * x, is * y, is * z, is * w);
 }
 
-inline Vector4f_a& Vector4f_a::operator+=(const Vector4f_a& v) {
-	x += v.x; y += v.y; z += v.z; w += v.w;
+inline Vector4f_a& Vector4f_a::operator+=(const Vector4f_a& a) {
+	x += a.x; y += a.y; z += a.z; w += a.w;
 	return *this;
 }
 
-inline Vector4f_a& Vector4f_a::operator-=(const Vector4f_a& v) {
-	x -= v.x; y -= v.y; z -= v.z; w -= v.w;
+inline Vector4f_a& Vector4f_a::operator-=(const Vector4f_a& a) {
+	x -= a.x; y -= a.y; z -= a.z; w -= a.w;
 	return *this;
 }
 
-inline Vector4f_a operator*(float s, const Vector4f_a& v) {
-	return Vector4f_a(s * v.x, s * v.y, s * v.z, s * v.w);
+inline Vector4f_a operator*(float s, const Vector4f_a& a) {
+	return Vector4f_a(s * a.x, s * a.y, s * a.z, s * a.w);
 }
 
 inline float dot(const Vector4f_a& a, const Vector4f_a& b) {

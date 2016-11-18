@@ -24,7 +24,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 		return;
 	}
 
-	if (1.f == layer_.metallic) {
+	if (1.f == layer_.metallic_) {
 		layer_.pure_specular_sample(wo_, sampler, result);
 	} else {
 		float p = sampler.generate_sample_1D();

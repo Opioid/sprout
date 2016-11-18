@@ -15,7 +15,7 @@ namespace scene { namespace material { namespace oren_nayar {
 template<typename Layer>
 float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
 							 const Layer& layer, float& pdf) {
-	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.a2);
+	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.a2_);
 
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = on * layer.diffuse_color;
@@ -35,7 +35,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer,
 
 	float n_dot_wi = layer.clamped_n_dot(wi);
 
-	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.a2);
+	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.a2_);
 
 	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = on * layer.diffuse_color;

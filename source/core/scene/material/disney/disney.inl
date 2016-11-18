@@ -50,12 +50,12 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer,
 template<typename Layer>
 float3 Isotropic::evaluate(float3_p wi, float3_p h, float n_dot_wi,
 						   float n_dot_wo, const Layer& layer) {
-	float fmo = f_D90(wi, h, layer.roughness) - 1.f;
+	float fmo = f_D90(wi, h, layer.roughness_) - 1.f;
 
 	float a = 1.f + fmo * std::pow(1.f - n_dot_wi, 5.f);
 	float b = 1.f + fmo * std::pow(1.f - n_dot_wo, 5.f);
 
-	return a * b * (math::Pi_inv * layer.diffuse_color);
+	return a * b * (math::Pi_inv * layer.diffuse_color_);
 }
 
 inline float Isotropic::f_D90(float3_p wi, float3_p h, float roughness) {

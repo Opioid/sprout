@@ -52,8 +52,8 @@ void Writer::write_pixels_rle(std::ostream& stream, const Float_4& image) {
 		math::byte4 rgbe;
 		rgbe.x = 2;
 		rgbe.y = 2;
-		rgbe.z = scanline_width >> 8;
-		rgbe.w = scanline_width & 0xFF;
+		rgbe.z = static_cast<uint8_t>(scanline_width >> 8);
+		rgbe.w = static_cast<uint8_t>(scanline_width & 0xFF);
 
 		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(math::byte4));
 
@@ -108,7 +108,7 @@ void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t
 
 		// if data before next big run is a short run then write it as such
 		if (old_run_count > 1 && old_run_count == begin_run - current) {
-			buffer[0] = 128 + old_run_count;   // write short run
+			buffer[0] = static_cast<uint8_t>(128 + old_run_count);   // write short run
 			buffer[1] = data[current];
 
 			stream.write(reinterpret_cast<char*>(&buffer), sizeof(uint8_t) * 2);
@@ -136,7 +136,7 @@ void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t
 
 		// write out next run if one was found
 		if (run_count >= min_run_length) {
-			buffer[0] = 128 + run_count;
+			buffer[0] = static_cast<uint8_t>(128 + run_count);
 			buffer[1] = data[begin_run];
 
 			stream.write(reinterpret_cast<char*>(&buffer), sizeof(uint8_t) * 2);

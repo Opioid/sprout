@@ -6,8 +6,7 @@ CONFIG += staticlib
 CONFIG += c++14
 CONFIG(debug, release|debug):DEFINES += _DEBUG
 
-win32:QMAKE_CXXFLAGS_WARN_ON -= -W3
-win32:QMAKE_CXXFLAGS_WARN_ON += -W4
+include(../compiler_options.pri)
 
 #QMAKE_CFLAGS_RELEASE += -Zi
 #QMAKE_CXXFLAGS_RELEASE += -Zi

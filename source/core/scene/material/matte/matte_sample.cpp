@@ -60,9 +60,9 @@ bool Sample::is_translucent() const {
 }
 
 void Sample::Layer::set(float3_p color) {
-	this->diffuse_color = color;
-	this->roughness = 1.f;
-	this->a2 = math::pow4(this->roughness);
+	diffuse_color_ = color;
+	roughness_ = 1.f;
+	a2_ = math::pow4(roughness_);
 }
 
 }}}

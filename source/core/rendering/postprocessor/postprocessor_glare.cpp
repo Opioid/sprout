@@ -38,14 +38,14 @@ float f3(float theta, float lambda) {
 }
 
 void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
-	auto d = camera.sensor_dimensions();
+	auto dim = camera.sensor_dimensions();
 
-	high_pass_.resize(d.x * d.y);
+	high_pass_.resize(dim.x * dim.y);
 
 	// This seems a bit arbitrary
 	float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
-	kernel_dimensions_ = 2 * d;
+	kernel_dimensions_ = 2 * dim;
 	kernel_.resize(kernel_dimensions_.x * kernel_dimensions_.y);
 
 	const spectrum::Interpolated CIE_X(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
@@ -78,7 +78,7 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
 	for (int32_t y = 0; y < kernel_dimensions_.y; ++y) {
 		for (int32_t x = 0; x < kernel_dimensions_.x; ++x) {
-			int2 p(-d.x + x, -d.y + y);
+			int2 p(-dim.x + x, -dim.y + y);
 
 			float theta = math::length(float2(p)) * solid_angle;
 

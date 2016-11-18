@@ -572,15 +572,15 @@ private:
 
 inline void Halton_sampler::init_faure()
 {
-    const unsigned max_base = 1619u;
+	const unsigned short max_base = 1619u;
     std::vector<std::vector<unsigned short> > perms(max_base + 1);
-    for (unsigned k = 1; k <= 3; ++k) // Keep identity permutations for base 1, 2, 3.
+	for (unsigned short k = 1; k <= 3; ++k) // Keep identity permutations for base 1, 2, 3.
     {
         perms[k].resize(k);
         for (unsigned i = 0; i < k; ++i)
             perms[k][i] = i;
     }
-    for (unsigned base = 4; base <= max_base; ++base)
+	for (unsigned short base = 4; base <= max_base; ++base)
     {
         perms[base].resize(base);
         const unsigned b = base / 2;
@@ -605,7 +605,7 @@ inline void Halton_sampler::init_faure()
 template <typename Random_number_generator>
 void Halton_sampler::init_random(Random_number_generator& rand)
 {
-    const unsigned max_base = 1619u;
+	const unsigned short max_base = 1619u;
     std::vector<std::vector<unsigned short> > perms(max_base + 1);
     for (unsigned k = 1; k <= 3; ++k) // Keep identity permutations for base 1, 2, 3.
     {
@@ -613,7 +613,7 @@ void Halton_sampler::init_random(Random_number_generator& rand)
         for (unsigned i = 0; i < k; ++i)
             perms[k][i] = i;
     }
-    for (unsigned base = 4; base <= max_base; ++base)
+	for (unsigned short base = 4; base <= max_base; ++base)
     {
         perms[base].resize(base);
         for (unsigned i = 0; i < base; ++i)

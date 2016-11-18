@@ -24,18 +24,18 @@ Vector2<T> Vector2<T>::yx() const {
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator+(Vector2 v) const {
-	return Vector2(x + v.x, y + v.y);
+Vector2<T> Vector2<T>::operator+(Vector2 a) const {
+	return Vector2(x + a.x, y + a.y);
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator-(Vector2 v) const {
-	return Vector2(x - v.x, y - v.y);
+Vector2<T> Vector2<T>::operator-(Vector2 a) const {
+	return Vector2(x - a.x, y - a.y);
 }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator*(Vector2 v) const {
-	return Vector2(x * v.x, y * v.y);
+Vector2<T> Vector2<T>::operator*(Vector2 a) const {
+	return Vector2(x * a.x, y * a.y);
 }
 
 template<typename T>
@@ -44,9 +44,9 @@ Vector2<T> Vector2<T>::operator/(T s) const {
 }
 
 template<typename T>
-Vector2<T>& Vector2<T>::operator+=(Vector2 v) {
-	x += v.x;
-	y += v.y;
+Vector2<T>& Vector2<T>::operator+=(Vector2 a) {
+	x += a.x;
+	y += a.y;
 	return *this;
 }
 
@@ -58,8 +58,8 @@ Vector2<T>& Vector2<T>::operator/=(T s) {
 }
 
 template<typename T>
-bool Vector2<T>::operator==(Vector2 v) const {
-	return x == v.x && y == v.y;
+bool Vector2<T>::operator==(Vector2 a) const {
+	return x == a.x && y == a.y;
 }
 
 template<typename T>

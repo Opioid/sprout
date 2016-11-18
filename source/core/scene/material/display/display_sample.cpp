@@ -20,7 +20,7 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-	fresnel::Schlick schlick(layer_.f0);
+	fresnel::Schlick schlick(layer_.f0_);
 	float3 ggx_reflection = ggx::Isotropic::reflection(wi, wo_, n_dot_wi, n_dot_wo,
 													   layer_, schlick, pdf);
 
@@ -28,7 +28,7 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 }
 
 float3 Sample::radiance() const {
-	return layer_.emission;
+	return layer_.emission_;
 }
 
 float3 Sample::attenuation() const {
@@ -46,7 +46,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	}
 
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
-	fresnel::Schlick schlick(layer_.f0);
+	fresnel::Schlick schlick(layer_.f0_);
 	float n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_,
 											 schlick, sampler, result);
 
@@ -66,9 +66,9 @@ bool Sample::is_translucent() const {
 }
 
 void Sample::Layer::set(float3_p radiance, float f0, float roughness) {
-	this->emission = radiance;
-	this->f0 = float3(f0);
-	this->a2 = math::pow4(roughness);
+	emission_ = radiance;
+	f0_ = float3(f0);
+	a2_ = math::pow4(roughness);
 }
 
 }}}

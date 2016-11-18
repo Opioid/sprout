@@ -75,7 +75,7 @@ void Message_handler::handle(const std::string& message) {
 					handle_entity(entity, value, parameters, true);
 				} catch (...) {}
 			}
-		} else if ("materials") {
+		} else if ("materials" == assignee.substr(0, 9)) {
 			if ('\"' == index.front() && '\"' == index.back()) {
 				std::string index_string = index.substr(1, index.size() - 2);
 				scene::material::Material* material = resource_manager_.

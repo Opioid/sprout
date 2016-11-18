@@ -30,7 +30,7 @@ public:
 	struct Layer : public material::Sample::Layer {
 		void set(float3_p radiance);
 
-		float3 radiance;
+		float3 radiance_;
 	};
 
 	Layer layer_;

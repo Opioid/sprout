@@ -57,9 +57,9 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_a2_, flakes_weight);
 
-	sample.coating_.set_color_and_weight(coating_.color, coating_.weight);
+	sample.coating_.set_color_and_weight(coating_.color_, coating_.weight_);
 
-	sample.coating_.set(coating_.f0, coating_.a2);
+	sample.coating_.set(coating_.f0_, coating_.a2_);
 
 	return sample;
 }
@@ -99,16 +99,16 @@ void Material::set_flakes_roughness(float roughness) {
 }
 
 void Material::set_coating_weight(float weight) {
-	coating_.weight = weight;
+	coating_.weight_ = weight;
 }
 
 void Material::set_coating_color(float3_p color) {
-	coating_.color = color;
+	coating_.color_ = color;
 }
 
 void Material::set_clearcoat(float ior, float roughness) {
-	coating_.f0 = fresnel::schlick_f0(1.f, ior);
-	coating_.a2 = math::pow4(roughness);
+	coating_.f0_ = fresnel::schlick_f0(1.f, ior);
+	coating_.a2_ = math::pow4(roughness);
 }
 
 }}}

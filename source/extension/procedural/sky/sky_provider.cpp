@@ -30,8 +30,8 @@ void Provider::set_scene_loader(scene::Loader& loader) {
 	scene_loader_ = &loader;
 }
 
-void Provider::set_material_provider(scene::material::Provider& provider) {
-	material_provider_ = &provider;
+void Provider::set_material_provider(scene::material::Provider& material_provider) {
+	material_provider_ = &material_provider;
 }
 
 scene::entity::Entity* Provider::create_extension(const json::Value& extension_value,

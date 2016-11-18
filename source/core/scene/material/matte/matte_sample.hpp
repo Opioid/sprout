@@ -31,9 +31,9 @@ public:
 	struct Layer : public material::Sample::Layer {
 		void set(float3_p color);
 
-		float3 diffuse_color;
-		float  roughness;
-		float  a2;
+		float3 diffuse_color_;
+		float  roughness_;
+		float  a2_;
 	};
 
 	Layer layer_;

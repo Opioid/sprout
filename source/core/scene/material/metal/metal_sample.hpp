@@ -29,10 +29,9 @@ public:
 
 	struct Layer : material::Sample::Layer {
 		void set(float3_p ior, float3_p absorption, float roughness);
-		float3 ior;
-		float3 absorption;
-
-		float a2;
+		float3 ior_;
+		float3 absorption_;
+		float a2_;
 	};
 
 	Layer layer_;
@@ -64,11 +63,11 @@ public:
 	struct Layer : material::Sample::Layer {
 		void set(float3_p ior, float3_p absorption, float2 roughness);
 
-		float3 ior;
-		float3 absorption;
-		float2 a;
-		float2 a2;
-		float axy;
+		float3 ior_;
+		float3 absorption_;
+		float2 a_;
+		float2 a2_;
+		float axy_;
 	};
 
 	Layer layer_;

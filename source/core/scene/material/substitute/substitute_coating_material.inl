@@ -26,12 +26,12 @@ void Material_coating<Coating, Sample>::set_coating_normal_map(const Texture_ada
 
 template<typename Coating, typename Sample>
 void Material_coating<Coating, Sample>::set_coating_weight(float weight) {
-	coating_.weight = weight;
+	coating_.weight_ = weight;
 }
 
 template<typename Coating, typename Sample>
 void Material_coating<Coating, Sample>::set_coating_color(float3_p color) {
-	coating_.color = color;
+	coating_.color_ = color;
 }
 
 template<typename Coating, typename Sample>
@@ -39,7 +39,7 @@ void Material_coating<Coating, Sample>::set_coating_basis(const Renderstate& rs,
 														  const Texture_sampler_2D& sampler,
 														  Sample& sample) {
 	if (Material_base<Sample>::normal_map_ == coating_normal_map_) {
-		sample.coating_.set_basis(rs.t, rs.b, sample.layer_.n);
+		sample.coating_.set_basis(rs.t, rs.b, sample.layer_.n_);
 	} else if (coating_normal_map_.is_valid()) {
 		float3 nm = coating_normal_map_.sample_3(sampler, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
@@ -51,9 +51,9 @@ void Material_coating<Coating, Sample>::set_coating_basis(const Renderstate& rs,
 
 	if (coating_weight_map_.is_valid()) {
 		float weight = coating_weight_map_.sample_1(sampler, rs.uv);
-		sample.coating_.set_color_and_weight(coating_.color, weight);
+		sample.coating_.set_color_and_weight(coating_.color_, weight);
 	} else {
-		sample.coating_.set_color_and_weight(coating_.color, coating_.weight);
+		sample.coating_.set_color_and_weight(coating_.color_, coating_.weight_);
 	}
 }
 

@@ -65,14 +65,14 @@ public:
 		void pure_specular_sample(float3_p wo, sampler::Sampler& sampler,
 								  bxdf::Result& result) const;
 
-		float3 diffuse_color;
-		float3 f0;
-		float3 emission;
+		float3 diffuse_color_;
+		float3 f0_;
+		float3 emission_;
 
-		float ior;
-		float roughness;
-		float a2;
-		float metallic;
+		float ior_;
+		float roughness_;
+		float a2_;
+		float metallic_;
 	};
 
 	Layer layer_;

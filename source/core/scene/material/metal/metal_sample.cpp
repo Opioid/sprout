@@ -20,7 +20,7 @@ float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
+	fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
 	return n_dot_wi * ggx::Isotropic::reflection(wi, wo_, n_dot_wi, n_dot_wo,
 												 layer_, conductor, pdf);
 }
@@ -45,7 +45,7 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Result& result) c
 
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
+	fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
 	float n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_,
 											 conductor, sampler, result);
 	result.reflection *= n_dot_wi;
@@ -64,9 +64,9 @@ bool Sample_isotropic::is_translucent() const {
 }
 
 void Sample_isotropic::Layer::set(float3_p ior, float3_p absorption, float roughness) {
-	this->ior = ior;
-	this->absorption = absorption;
-	this->a2 = math::pow4(roughness);
+	ior_ = ior;
+	absorption_ = absorption;
+	a2_ = math::pow4(roughness);
 }
 
 const material::Sample::Layer& Sample_anisotropic::base_layer() const {
@@ -82,7 +82,7 @@ float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
+	fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
 	return n_dot_wi * ggx::Anisotropic::reflection(wi, wo_, n_dot_wi, n_dot_wo,
 												   layer_, conductor, pdf);
 }
@@ -107,7 +107,7 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Result& result)
 
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-	fresnel::Conductor conductor(layer_.ior, layer_.absorption);
+	fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
 	float n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_,
 											   conductor, sampler, result);
 	result.reflection *= n_dot_wi;
@@ -126,13 +126,13 @@ bool Sample_anisotropic::is_translucent() const {
 }
 
 void Sample_anisotropic::Layer::set(float3_p ior, float3_p absorption, float2 roughness) {
-	this->ior = ior;
-	this->absorption = absorption;
+	ior_ = ior;
+	absorption_ = absorption;
 
 	float2 a = roughness * roughness;
-	this->a  = a;
-	this->a2 = a * a;
-	this->axy = a.x * a.y;
+	a_   = a;
+	a2_  = a * a;
+	axy_ = a.x * a.y;
 }
 
 }}}
