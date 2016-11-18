@@ -74,7 +74,7 @@ void create(thread::Pool& pool) {
 
 	write_signal("signal.png", signal);
 
-	bool near_field = true;
+	bool near_field = false;
 
 	if (near_field) {
 		Image::Description description(Image::Type::Float_2, dimensions);
@@ -265,6 +265,9 @@ void render_aperture(const Aperture& aperture, image::Float_1& signal) {
 void centered_squared_magnitude(float* result, const float2* source, size_t width, size_t height) {
 	size_t row_size = math::dft_size(width);
 
+	float fr = static_cast<float>(width);
+	float normalization = (2.f / (fr * fr));
+
 	for (size_t y = 0; y < height; ++y) {
 		size_t ro = y;
 
@@ -283,7 +286,7 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 
 		for (size_t x = 0, len = row_size - 1; x < len; ++x) {
 			size_t o = y * row_size + x;
-			float mag = /*0.001f **/ math::squared_length(source[o]);
+			float mag = normalization * math::squared_length(source[o]);
 
 //			size_t a = ro * width + x + len;
 //			std::cout << a << std::endl;
@@ -293,7 +296,7 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 
 		for (size_t x = 0, len = row_size - 1; x < len; ++x) {
 			size_t o = y * row_size + x;
-			float mag = /*0.001f **/ math::squared_length(source[o]);
+			float mag = normalization * math::squared_length(source[o]);
 
 //			size_t a = ro * width - x + len - 1;
 //			std::cout << a << std::endl;
@@ -323,7 +326,7 @@ void diffraction(Spectrum* result, const float* squared_magnitude,
 
 	float i_s = wl / wl_0;
 
-	float normalization = (i_s * i_s) * (2.f / (fr * fr));
+	float normalization = (i_s * i_s);
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
