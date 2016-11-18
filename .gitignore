@@ -1,4 +1,4 @@
-build/
+build-*/
 data/
 system/
 *.pro.user*
