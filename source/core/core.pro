@@ -8,10 +8,6 @@ CONFIG(debug, release|debug):DEFINES += _DEBUG
 
 include(../compiler_options.pri)
 
-#QMAKE_CFLAGS_RELEASE += -Zi
-#QMAKE_CXXFLAGS_RELEASE += -Zi
-#QMAKE_LFLAGS_RELEASE += /DEBUG /OPT:REF
-
 SOURCES += \
 	$$PWD/../../thirdparty/include/miniz/miniz.cpp
 
