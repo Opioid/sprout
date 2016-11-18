@@ -23,21 +23,23 @@ struct Vector2 {
 
 	Vector2 yx() const;
 
-	Vector2 operator+(Vector2 v) const;
+	Vector2 operator+(Vector2 a) const;
 
-	Vector2 operator-(Vector2 v) const;
+	Vector2 operator-(Vector2 a) const;
 
-	Vector2 operator*(Vector2 v) const;
+	Vector2 operator*(Vector2 a) const;
 
 	Vector2 operator/(T s) const;
 
-	Vector2 &operator+=(Vector2 v);
+	Vector2 operator/(Vector2 a) const;
+
+	Vector2 &operator+=(Vector2 a);
 
 	Vector2 &operator/=(T s);
 
-	bool operator==(Vector2 v) const;
+	bool operator==(Vector2 a) const;
 
-	bool operator!=(Vector2 v) const;
+	bool operator!=(Vector2 a) const;
 
 	static const Vector2 identity;
 };

@@ -33,101 +33,33 @@ void render_dirt(image::Float_1& signal);
 
 void render_aperture(const Aperture& aperture, image::Float_1& signal);
 
+void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
+		  float alpha, uint32_t mode, thread::Pool& pool);
+
 void centered_squared_magnitude(float* result, const float2* source, size_t width, size_t height);
 
 void squared_magnitude(float* result, const float2* source, size_t width, size_t height);
 
-void starburst(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
+void diffraction(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
 
 void write_signal(const std::string& name, const image::Float_1& signal);
-
-
-float2 sqrtc(float2 c) {
-	float l = math::length(c);
-	return 0.7071067f * float2(std::sqrt(l + c.x), std::sqrt(l - c.x) * static_cast<float>(math::sign(c.y)));
-}
-
-float2 mulc(float2 a, float2 b) {
-	return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
-}
-
-float2 mulc(float2 a, float t) {
-	float c = std::cos(t);
-	float s = std::sin(t);
-
-	return float2(a.x * c - a.y * s, a.x * s + a.y * c);
-}
-
-void experiment(image::Float_2& destination, std::shared_ptr<image::Float_2> source, float alpha, uint32_t mode) {
-	using namespace image::texture::sampler;
-	Sampler_2D_linear<Address_mode_repeat> sampler;
-
-	image::texture::Float_2 texture(source);
-
-	auto d = source->description().dimensions;
-
-	float m = static_cast<float>(d.x);
-	float sqrt_m = std::sqrt(m);
-	float ss = 2.f;
-
-	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
-	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
-
-	for (int32_t y = 0; y < d.y; ++y) {
-		for (int32_t x = 0; x < d.x; ++x) {
-			float2 c((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x),
-					 (static_cast<float>(y) + 0.5f) / static_cast<float>(d.y));
-
-	//		float u = (c.v[mode] /*- 0.5f *//*- m / 2.f*//*-0.5f*/) / sqrt_m;
-
-			// alpha 0.005f
-			// float u = (c.v[mode] - 0.25f) / sqrt_m;
-
-			// alpha 0.01f
-			// float u = (c.v[mode] + 0.25f) / sqrt_m;
-
-			// alpha 0.05f
-			//float u = (c.v[mode] + 0.125f) / sqrt_m;
-
-			float2 frag_coord(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
-			float u = (frag_coord.v[mode] - m / 2.f) / sqrt_m;
-
-			float2 integration(0.f);
-
-			for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
-		//	for (float k = 0.f, dk = 1.f / (m * ss); k < 1.f; k += dk) {
-				float2 tex = c;
-				tex.v[mode] = k + 0.5f;
-				float2 g = sampler.sample_2(texture, tex);
-
-				float v = k * sqrt_m;
-				float t = math::Pi * (cot * v * v - 2.f * csc * u * v);
-				integration += mulc(g, t);
-			}
-
-			float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
-
-			int32_t i = y * d.x + x;
-			destination.store(i, mulc(s, integration) / (ss * sqrt_m));
-		}
-	}
-}
 
 void create(thread::Pool& pool) {
 	std::cout << "Starburst experiment" << std::endl;
 
+	using namespace image;
+
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 256;
+	int32_t resolution = 512;
 
 	int2 dimensions(resolution, resolution);
 
-	image::Float_1 signal(image::Image::Description(image::Image::Type::Float_1, dimensions));
+	Float_1 signal(Image::Description(Image::Type::Float_1, dimensions));
 
 	std::vector<float2> signal_f(resolution * math::dft_size(resolution));
 
-	image::Float_3 float_image_a(image::Image::Description(image::Image::Type::Float_3,
-														   dimensions));
+	Float_3 float_image_a(Image::Description(Image::Type::Float_3, dimensions));
 
 	bool dirt = false;
 	if (dirt) {
@@ -136,72 +68,67 @@ void create(thread::Pool& pool) {
 		signal.clear(1.f);
 	}
 
-//	Aperture aperture(8, 0.25f);
-	Aperture aperture(8, 0.f);
+	Aperture aperture(8, 0.25f);
+//	Aperture aperture(8, 0.f);
 	render_aperture(aperture, signal);
 
 	write_signal("signal.png", signal);
 
-//	image::Float_2 signal_a(image::Image::Description(image::Image::Type::Float_2, dimensions));
-//	image::Float_2 signal_b(image::Image::Description(image::Image::Type::Float_2, dimensions));
+	bool near_field = true;
 
-	auto signal_a = std::make_shared<image::Float_2>(image::Image::Description(image::Image::Type::Float_2, dimensions));
-	auto signal_b = std::make_shared<image::Float_2>(image::Image::Description(image::Image::Type::Float_2, dimensions));
+	if (near_field) {
+		Image::Description description(Image::Type::Float_2, dimensions);
+		auto signal_a = std::make_shared<Float_2>(description);
+		auto signal_b = std::make_shared<Float_2>(description);
 
-	for (int32_t i = 0, len = signal.area(); i < len; ++i) {
-		signal_a->store(i, float2(signal.load(i), 0.f));
+		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
+			signal_a->store(i, float2(signal.load(i), 0.f));
+		}
+
+		float alpha = 0.2f;
+
+		fdft(*signal_b.get(), signal_a, alpha, 0, pool);
+		fdft(*signal_a.get(), signal_b, alpha, 1, pool);
+		squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
+
+		pool.run_range([&float_image_a, &signal](int32_t begin, int32_t end) {
+			for (int32_t i = begin; i < end; ++i) {
+				float s = 0.75f * signal.load(i);
+				float_image_a.store(i, math::packed_float3(s));
+			}
+		}, 0, resolution * resolution);
+
+	} else {
+		math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
+
+		centered_squared_magnitude(signal.data(), signal_f.data(), resolution, resolution);
+
+		Spectrum* spectral_data = new Spectrum[resolution * resolution];
+
+		pool.run_range([spectral_data, &signal, resolution](int32_t begin, int32_t end) {
+			for (int32_t bin = begin; bin < end; ++bin) {
+				diffraction(spectral_data, signal.data(), bin, resolution);
+			}
+		}, 0, Spectrum::num_bands());
+
+		pool.run_range([spectral_data, &float_image_a](int32_t begin, int32_t end) {
+			for (int32_t i = begin; i < end; ++i) {
+				auto& s = spectral_data[i];
+				float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
+				float_image_a.store(i, math::packed_float3(linear_rgb));
+			}
+		}, 0, resolution * resolution);
+
+		delete [] spectral_data;
 	}
 
-	float alpha = 0.5f;
-
-	experiment(*signal_b.get(), signal_a, alpha, 0);
-	squared_magnitude(signal.data(), signal_b->data(), resolution, resolution);
-	write_signal("signal_x.png", signal);
-
-	experiment(*signal_a.get(), signal_b, alpha, 1);
-	squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
-	write_signal("signal_xy.png", signal);
-
-
-//	experiment(*signal_b.get(), signal_a, alpha, 0);
-//	experiment(*signal_a.get(), signal_b, alpha, 1);
-
-//	squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
-
 //	write_signal("signal_after.png", signal);
-
-	return;
-
-	math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
-
-	centered_squared_magnitude(signal.data(), signal_f.data(), resolution, resolution);
-
-//	write_signal("signal_after.png", signal);
-
-	Spectrum* spectral_data = new Spectrum[resolution * resolution];
-
-	pool.run_range([spectral_data, &signal, resolution](int32_t begin, int32_t end) {
-		for (int32_t bin = begin; bin < end; ++bin) {
-			starburst(spectral_data, signal.data(), bin, resolution);
-		}
-	}, 0, Spectrum::num_bands());
-
-	pool.run_range([spectral_data, &float_image_a](int32_t begin, int32_t end) {
-		for (int32_t i = begin; i < end; ++i) {
-			auto& s = spectral_data[i];
-			float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
-			float_image_a.store(i, math::packed_float3(linear_rgb));
-		}
-	}, 0, resolution * resolution);
-
-	delete [] spectral_data;
 
 	float radius = static_cast<float>(resolution) * 0.00390625f;
-	image::filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
+	filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
 	gaussian.apply(float_image_a);
 
-	image::Byte_3 byte_image(image::Image::Description(image::Image::Type::Byte_3,
-													   dimensions));
+	Byte_3 byte_image(Image::Description(Image::Type::Byte_3, dimensions));
 
 	pool.run_range([&float_image_a, &byte_image](int32_t begin, int32_t end) {
 		for (int32_t i = begin; i < end; ++i) {
@@ -211,7 +138,7 @@ void create(thread::Pool& pool) {
 		}
 	}, 0, resolution * resolution);
 
-	image::encoding::png::Writer::write("starburst.png", byte_image);
+	encoding::png::Writer::write(near_field ? "near_field.png" : "far_field.png", byte_image);
 }
 
 void render_dirt(image::Float_1& signal) {
@@ -313,7 +240,7 @@ void render_aperture(const Aperture& aperture, image::Float_1& signal) {
 	float fr = static_cast<float>(resolution);
 	float kn = 1.f / static_cast<float>(kernel.size());
 
-	float radius = 0.5f;//static_cast<float>(resolution - 2) / fr;
+	float radius = static_cast<float>(resolution - 2) / fr;
 
 	for (int32_t y = 0; y < resolution; ++y) {
 		for (int32_t x = 0; x < resolution; ++x) {
@@ -379,41 +306,14 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 }
 
 void squared_magnitude(float* result, const float2* source, size_t width, size_t height) {
-	float max = 0.f;
 	for (size_t i = 0, len = width * height; i < len; ++i) {
-		max = std::max(max, math::squared_length(source[i]));
-	}
-
-	for (size_t y = 0; y < height; ++y) {
-		for (size_t x = 0; x < width; ++x) {
-			size_t i = y * width + x;
-			float mag = math::squared_length(source[i]);
-
-			size_t o;// = y * width + (width - x);
-
-//			size_t r;
-
-//			if (y >= height / 2) {
-//				r = y - (height / 2);
-//			} else {
-//				r = y + (height / 2);
-//			}
-
-//			if (x >= width / 2) {
-//				o = r * width + x - (width / 2);
-//			} else {
-//				o = r * width + x + (width / 2);
-//			}
-
-			o = i;
-
-			result[o] = mag / max;//std::min(0.5f * mag, 1.f);
-		//	result[o] = std::min(0.000025f * mag, 1.f);
-		}
+		float mag = math::squared_length(source[i]);
+		result[i] = mag;
 	}
 }
 
-void starburst(Spectrum* result, const float* squared_magnitude, int32_t bin, int32_t resolution) {
+void diffraction(Spectrum* result, const float* squared_magnitude,
+				 int32_t bin, int32_t resolution) {
 	float fr = static_cast<float>(resolution);
 
 	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() - 1);
@@ -470,6 +370,73 @@ void write_signal(const std::string& name, const image::Float_1& signal) {
 	}
 
 	image::encoding::png::Writer::write(name, image);
+}
+
+float2 sqrtc(float2 c) {
+	float l = math::length(c);
+	return 0.7071067f * float2(std::sqrt(l + c.x), std::sqrt(l - c.x) * static_cast<float>(math::sign(c.y)));
+}
+
+float2 mulc(float2 a, float2 b) {
+	return float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
+
+float2 mulc(float2 a, float t) {
+	float c = std::cos(t);
+	float s = std::sin(t);
+
+	return float2(a.x * c - a.y * s, a.x * s + a.y * c);
+}
+
+void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
+		  float alpha, uint32_t mode, int32_t begin, int32_t end) {
+	using namespace image::texture::sampler;
+	Sampler_2D_linear<Address_mode_repeat> sampler;
+
+	image::texture::Float_2 texture(source);
+
+	auto d = source->description().dimensions;
+	float2 df(d.xy);
+
+	float m = static_cast<float>(d.x);
+	float half_m = 0.5f * m;
+	float sqrt_m = std::sqrt(m);
+	float ss = 4.f;
+
+	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
+	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
+
+	for (int32_t i = begin; i < end; ++i) {
+		float2 coordinates = float2(source->coordinates_2(i)) + float2(0.5f, 0.5f);
+
+		float2 uv = coordinates / df;
+
+		float u = (coordinates.v[mode] - half_m) / sqrt_m;
+
+		float2 integration(0.f);
+
+		for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
+			float2 kuv = uv;
+			kuv.v[mode] = k + 0.5f;
+			float2 g = sampler.sample_2(texture, kuv);
+
+			float v = k * sqrt_m;
+			float t = math::Pi * (cot * v * v - 2.f * csc * u * v);
+			integration += mulc(g, t);
+		}
+
+		float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
+
+		destination.store(i, mulc(s, integration) / (ss * sqrt_m));
+	}
+}
+
+void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
+		  float alpha, uint32_t mode, thread::Pool& pool) {
+	auto d = destination.description().dimensions;
+	pool.run_range([&destination, source, alpha, mode](int32_t begin, int32_t end) {
+		fdft(destination, source, alpha, mode, begin, end);
+	}, 0, d.x * d.y);
 }
 
 }}
