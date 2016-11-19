@@ -40,6 +40,12 @@ void Worker::init(uint32_t id, const scene::Scene& scene,
 	sampler_ = sampler_factory.create(rng_);
 }
 
+void Worker::prepare(uint32_t num_samples_per_pixel) {
+	surface_integrator_->prepare(*scene_, num_samples_per_pixel);
+	volume_integrator_->prepare(*scene_, num_samples_per_pixel);
+//	sampler_->resize(num_samples_per_pixel, 1);
+}
+
 float4 Worker::li(scene::Ray& ray) {
 	scene::Intersection intersection;
 	bool hit = intersect(ray, intersection);

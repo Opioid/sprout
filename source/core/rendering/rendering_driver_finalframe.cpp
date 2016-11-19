@@ -27,6 +27,10 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 	auto& camera = *view_.camera;
 	auto& sensor = camera.sensor();
 
+	for (auto& worker : workers_) {
+		worker.prepare(view_.num_samples_per_pixel);
+	}
+
 	const uint32_t num_samples_per_iteration = sampler_factory_->num_samples_per_iteration();
 	const uint32_t progress_range = calculate_progress_range(scene_, camera, tiles_.size(),
 															 num_samples_per_iteration);

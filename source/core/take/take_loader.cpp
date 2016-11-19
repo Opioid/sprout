@@ -71,7 +71,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 		} else if ("postprocessors" == n.name) {
 			load_postprocessors(n.value, *take);
 		} else if ("sampler" == n.name) {
-			take->sampler_factory = load_sampler_factory(n.value);
+			take->sampler_factory = load_sampler_factory(n.value, take->view.num_samples_per_pixel);
 		} else if ("scene" == n.name) {
 			take->scene_filename = n.value.GetString();
 		} else if ("settings" == n.name) {
@@ -306,7 +306,7 @@ Loader::load_filter(const json::Value& filter_value) {
 }
 
 std::shared_ptr<sampler::Factory>
-Loader::load_sampler_factory(const json::Value& sampler_value) {
+Loader::load_sampler_factory(const json::Value& sampler_value, uint32_t& num_samples_per_pixel) {
 	for (auto& n : sampler_value.GetObject()) {
 		if ("Uniform" == n.name) {
 		   // uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");

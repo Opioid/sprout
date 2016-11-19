@@ -66,7 +66,7 @@ private:
 	load_filter(const rapidjson::Value& filter_value);
 
 	static std::shared_ptr<sampler::Factory>
-	load_sampler_factory(const json::Value& sampler_value);
+	load_sampler_factory(const json::Value& sampler_value, uint32_t& num_samples_per_pixel);
 
 	static void load_integrator_factories(const json::Value& integrator_value, Take& take);
 

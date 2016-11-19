@@ -43,6 +43,8 @@ public:
 			  integrator::volume::Factory& volume_integrator_factory,
 			  sampler::Factory& sampler_factory);
 
+	void prepare(uint32_t num_samples_per_pixel);
+
 	float4 li(scene::Ray& ray);
 	float3 surface_li(scene::Ray& ray);
 	float4 volume_li(const scene::Ray& ray, float3& transmittance);
