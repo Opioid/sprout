@@ -24,6 +24,8 @@ float Random::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 }
 
+void Random::on_resume_pixel(rnd::Generator& /*scramble*/) {}
+
 Random_factory::Random_factory(uint32_t num_samples) :
 	Factory(num_samples) {}
 

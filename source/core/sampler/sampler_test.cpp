@@ -1,10 +1,8 @@
 #include "sampler_test.hpp"
 #include "sampler_ems.hpp"
 #include "sampler_golden_ratio.hpp"
-#include "sampler_halton.hpp"
 #include "sampler_random.hpp"
 #include "sampler_hammersley.hpp"
-#include "sampler_sobol.hpp"
 #include "image/typed_image.inl"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/procedural/image_renderer.hpp"
@@ -37,35 +35,25 @@ void test() {
 
 	uint32_t num_samples = 64;
 
-//	{
-//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-//		sampler::EMS sampler(rng, num_samples);
-//		render_set("ems", sampler, renderer, target);
-//	}
-//	{
-//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-//		sampler::Golden_ratio sampler(rng, num_samples);
-//		render_set("golden_ratio", sampler, renderer, target);
-//	}
-//	{
-//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-//		sampler::Halton sampler(rng, num_samples);
-//		render_set("halton", sampler, renderer, target);
-//	}
-//	{
-//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-//		sampler::Random sampler(rng, num_samples);
-//		render_set("random_disk", sampler, renderer, target);
-//	}
-//	{
-//		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-//		sampler::Hammersley sampler(rng, num_samples);
-//		render_set("hammersley", sampler, renderer, target);
-//	}
 	{
 		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-		sampler::Sobol sampler(rng, num_samples);
-		render_set("sobol_disk", sampler, renderer, target);
+		sampler::EMS sampler(rng, num_samples);
+		render_set("ems", sampler, renderer, target);
+	}
+	{
+		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
+		sampler::Golden_ratio sampler(rng, num_samples, 1);
+		render_set("golden_ratio", sampler, renderer, target);
+	}
+	{
+		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
+		sampler::Random sampler(rng, num_samples);
+		render_set("random_disk", sampler, renderer, target);
+	}
+	{
+		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
+		sampler::Hammersley sampler(rng, num_samples);
+		render_set("hammersley", sampler, renderer, target);
 	}
 }
 

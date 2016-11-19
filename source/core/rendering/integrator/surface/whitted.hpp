@@ -4,7 +4,6 @@
 #include "surface_integrator.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
-#include "sampler/sampler_sobol.hpp"
 
 namespace scene { namespace material { class Sample; } }
 

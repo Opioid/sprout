@@ -15,6 +15,8 @@ public:
 	Sampler(rnd::Generator& rng, uint32_t num_samples, uint32_t num_dimensions_1D = 1);
 	virtual ~Sampler();
 
+	void resize(uint32_t num_samples, uint32_t num_dimensions_1D);
+
 	rnd::Generator& rng();
 
 	uint32_t num_samples() const;
@@ -29,7 +31,9 @@ public:
 
 protected:
 
-	virtual void on_resume_pixel(rnd::Generator& scramble);
+//	virtual void on_resize() = 0;
+
+	virtual void on_resume_pixel(rnd::Generator& scramble) = 0;
 
 	rnd::Generator& rng_;
 	uint32_t num_samples_;

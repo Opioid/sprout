@@ -5,7 +5,6 @@
 #include "transmittance/transmittance_open.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
-#include "sampler/sampler_sobol.hpp"
 
 namespace scene {
 

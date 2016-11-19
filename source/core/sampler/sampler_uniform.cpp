@@ -25,6 +25,8 @@ float Uniform::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 }
 
+void Uniform::on_resume_pixel(rnd::Generator& /*scramble*/) {}
+
 Uniform_factory::Uniform_factory(uint32_t num_samples_per_iteration) :
 	Factory(num_samples_per_iteration) {}
 

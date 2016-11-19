@@ -4,8 +4,6 @@
 #include "transmittance/transmittance_closed.hpp"
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
-#include "sampler/sampler_halton.hpp"
-#include "sampler/sampler_sobol.hpp"
 #include "sampler/sampler_random.hpp"
 
 namespace scene { namespace light {
