@@ -8,7 +8,7 @@ class Hammersley : public Sampler {
 
 public:
 
-	Hammersley(rnd::Generator& rng, uint32_t num_samples);
+	Hammersley(rnd::Generator& rng);
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) final override;
@@ -19,6 +19,8 @@ public:
 
 private:
 
+	virtual void on_resize() final override;
+
 	virtual void on_resume_pixel(rnd::Generator& scramble) final override;
 
 	uint32_t scramble_;
@@ -27,8 +29,6 @@ private:
 class Hammersley_factory : public Factory {
 
 public:
-
-	Hammersley_factory(uint32_t num_samples);
 
 	virtual Sampler* create(rnd::Generator& rng) const final override;
 };

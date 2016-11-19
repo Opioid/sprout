@@ -14,16 +14,16 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Whitted::Whitted(uint32_t num_samples_per_pixel,
-				 const take::Settings& take_settings,
+Whitted::Whitted(const take::Settings& take_settings,
 				 rnd::Generator& rng,
 				 const Settings& settings) :
-	Integrator(num_samples_per_pixel, take_settings, rng),
+	Integrator(take_settings, rng),
 	settings_(settings),
-	sampler_(rng, num_samples_per_pixel, 1) {}
+	sampler_(rng) {}
 
-void Whitted::prepare(const scene::Scene& /*scene*/,
-					  uint32_t /*num_samples_per_pixel*/) {}
+void Whitted::prepare(const scene::Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+	sampler_.resize(num_samples_per_pixel, 1);
+}
 
 void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
@@ -125,9 +125,8 @@ Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t n
 	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
 }
 
-Integrator* Whitted_factory::create(uint32_t num_samples_per_pixel,
-									rnd::Generator& rng) const {
-	return new Whitted(num_samples_per_pixel, take_settings_, rng, settings_);
+Integrator* Whitted_factory::create(rnd::Generator& rng) const {
+	return new Whitted(take_settings_, rng, settings_);
 }
 
 }}}

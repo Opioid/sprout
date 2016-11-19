@@ -14,16 +14,17 @@
 
 namespace rendering { namespace integrator { namespace volume {
 
-Single_scattering::Single_scattering(uint32_t num_samples_per_pixel,
-									 const take::Settings& take_settings,
+Single_scattering::Single_scattering(const take::Settings& take_settings,
 									 rnd::Generator& rng,
 									 const Settings& settings) :
-	Integrator(num_samples_per_pixel, take_settings, rng),
+	Integrator(take_settings, rng),
 	settings_(settings),
-	sampler_(rng, 1) {}
+	sampler_(rng) {}
 
 void Single_scattering::prepare(const scene::Scene& /*scene*/,
-								uint32_t /*num_samples_per_pixel*/) {}
+								uint32_t num_samples_per_pixel) {
+	sampler_.resize(num_samples_per_pixel, 1);
+}
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
@@ -140,9 +141,8 @@ Single_scattering_factory::Single_scattering_factory(const take::Settings& take_
 	settings_.step_size = step_size;
 }
 
-Integrator* Single_scattering_factory::create(uint32_t num_samples_per_pixel,
-											  rnd::Generator& rng) const {
-	return new Single_scattering(num_samples_per_pixel, take_settings_, rng, settings_);
+Integrator* Single_scattering_factory::create(rnd::Generator& rng) const {
+	return new Single_scattering(take_settings_, rng, settings_);
 }
 
 }}}

@@ -19,14 +19,14 @@ public:
 
 private:
 
+	virtual void on_resize() final override;
+
 	virtual void on_resume_pixel(rnd::Generator& scramble) final override;
 };
 
 class Uniform_factory : public Factory {
 
 public:
-
-	Uniform_factory(uint32_t num_samples_per_iteration);
 
 	virtual Sampler* create(rnd::Generator& rng) const final override;
 };

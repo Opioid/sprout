@@ -18,20 +18,22 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Pathtracer_MIS::Pathtracer_MIS(uint32_t num_samples_per_pixel,
-							   const take::Settings& take_settings,
-							   rnd::Generator& rng,
+Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, rnd::Generator& rng,
 							   const Settings& settings) :
-	Integrator(num_samples_per_pixel, take_settings, rng),
+	Integrator(take_settings, rng),
 	settings_(settings),
-	sampler_(rng, num_samples_per_pixel),
-	material_sampler_(rng, num_samples_per_pixel, 1),
-	light_sampler_(rng, num_samples_per_pixel, 2),
-	transmittance_open_(num_samples_per_pixel, take_settings, rng, settings.max_bounces),
-	transmittance_closed_(num_samples_per_pixel, take_settings, rng) {}
+	sampler_(rng),
+	material_sampler_(rng),
+	light_sampler_(rng),
+	transmittance_open_(take_settings, rng, settings.max_bounces),
+	transmittance_closed_(take_settings, rng) {}
 
 void Pathtracer_MIS::prepare(const scene::Scene& /*scene*/,
-							 uint32_t /*num_samples_per_pixel*/) {}
+							 uint32_t num_samples_per_pixel) {
+	sampler_.resize(num_samples_per_pixel, 1);
+	material_sampler_.resize(num_samples_per_pixel, 1);
+	light_sampler_.resize(num_samples_per_pixel, 2);
+}
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
@@ -323,9 +325,8 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 	settings_.disable_caustics = disable_caustics;
 }
 
-Integrator* Pathtracer_MIS_factory::create(uint32_t num_samples_per_pixel,
-										   rnd::Generator& rng) const {
-	return new Pathtracer_MIS(num_samples_per_pixel, take_settings_, rng, settings_);
+Integrator* Pathtracer_MIS_factory::create(rnd::Generator& rng) const {
+	return new Pathtracer_MIS(take_settings_, rng, settings_);
 }
 
 }}}

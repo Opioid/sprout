@@ -9,10 +9,10 @@
 
 namespace sampler {
 
-Golden_ratio::Golden_ratio(rnd::Generator& rng, uint32_t num_samples, uint32_t num_dimensions_1D) :
-	Sampler(rng, num_samples, num_dimensions_1D),
-	samples_2D_(new float2[num_samples]),
-	samples_1D_(new float[num_samples * num_dimensions_1D]) {}
+Golden_ratio::Golden_ratio(rnd::Generator& rng) :
+	Sampler(rng),
+	samples_2D_(nullptr),
+	samples_1D_(nullptr) {}
 
 Golden_ratio::~Golden_ratio() {
 	delete [] samples_1D_;
@@ -41,6 +41,14 @@ float Golden_ratio::generate_sample_1D(uint32_t dimension) {
 	return samples_1D_[dimension * num_samples_ + current];
 }
 
+void Golden_ratio::on_resize() {
+	delete [] samples_1D_;
+	delete [] samples_2D_;
+
+	samples_2D_ = new float2[num_samples_];
+	samples_1D_ = new float[num_samples_ * num_dimensions_1D_];
+}
+
 void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {
 	float2 r(scramble.random_float(), scramble.random_float());
 	math::golden_ratio(samples_2D_, num_samples_, r);
@@ -53,11 +61,8 @@ void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {
 	}
 }
 
-Golden_ratio_factory::Golden_ratio_factory(uint32_t num_samples) :
-	Factory(num_samples) {}
-
 Sampler* Golden_ratio_factory::create(rnd::Generator& rng) const {
-	return new Golden_ratio(rng, num_samples_, 1);
+	return new Golden_ratio(rng);
 }
 
 }

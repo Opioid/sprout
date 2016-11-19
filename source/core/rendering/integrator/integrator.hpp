@@ -24,10 +24,7 @@ class Integrator {
 
 public:
 
-	Integrator(uint32_t samples_per_pixel,
-			   const take::Settings& settings,
-			   rnd::Generator& rng);
-
+	Integrator(const take::Settings& settings, rnd::Generator& rng);
 	virtual ~Integrator();
 
 	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) = 0;

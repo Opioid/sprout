@@ -6,8 +6,7 @@
 
 namespace sampler {
 
-Hammersley::Hammersley(rnd::Generator& rng, uint32_t num_samples) :
-	Sampler(rng, num_samples) {}
+Hammersley::Hammersley(rnd::Generator& rng) : Sampler(rng) {}
 
 void Hammersley::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
 	float2 s2d = math::hammersley(index, num_samples_, scramble_);
@@ -26,15 +25,14 @@ float Hammersley::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 }
 
+void Hammersley::on_resize() {}
+
 void Hammersley::on_resume_pixel(rnd::Generator& scramble) {
 	scramble_ = scramble.random_uint();
 }
 
-Hammersley_factory::Hammersley_factory(uint32_t num_samples) :
-	Factory(num_samples) {}
-
 Sampler* Hammersley_factory::create(rnd::Generator& rng) const {
-	return new Hammersley(rng, num_samples_);
+	return new Hammersley(rng);
 }
 
 }

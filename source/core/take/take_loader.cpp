@@ -89,15 +89,15 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 		}
 
 		if (!take->exporter) {
-			image::Writer* writer = new image::encoding::png::Writer(
-						take->view.camera->sensor().dimensions());
+			auto d = take->view.camera->sensor().dimensions();
+			image::Writer* writer = new image::encoding::png::Writer(d);
 			take->exporter = std::make_unique<exporting::Image_sequence>("output_", writer);
 			logging::warning("No exporter was specified, defaulting to PNG writer.");
 		}
 	}
 
 	if (!take->sampler_factory) {
-		take->sampler_factory = std::make_shared<sampler::Random_factory>(1);
+		take->sampler_factory = std::make_shared<sampler::Random_factory>();
 	}
 
 	using namespace rendering::integrator;
@@ -309,23 +309,23 @@ std::shared_ptr<sampler::Factory>
 Loader::load_sampler_factory(const json::Value& sampler_value, uint32_t& num_samples_per_pixel) {
 	for (auto& n : sampler_value.GetObject()) {
 		if ("Uniform" == n.name) {
-		   // uint32_t num_samples = json::read_uint(node_value, "samples_per_pixel");
-		   return std::make_shared<sampler::Uniform_factory>(1);
+			num_samples_per_pixel = 1;
+			return std::make_shared<sampler::Uniform_factory>();
 		} else if ("Random" == n.name) {
-			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
-			return std::make_shared<sampler::Random_factory>(num_samples);
+			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
+			return std::make_shared<sampler::Random_factory>();
 		} else if ("Hammersley" == n.name) {
-			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
-			return std::make_shared<sampler::Hammersley_factory>(num_samples);
+			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
+			return std::make_shared<sampler::Hammersley_factory>();
 		} else if ("EMS" == n.name) {
-			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
-			return std::make_shared<sampler::EMS_factory>(num_samples);
+			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
+			return std::make_shared<sampler::EMS_factory>();
 		} else if ("Golden_ratio" == n.name) {
-			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
-			return std::make_shared<sampler::Golden_ratio_factory>(num_samples);
+			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
+			return std::make_shared<sampler::Golden_ratio_factory>();
 		} else if ("LD" == n.name) {
-			uint32_t num_samples = json::read_uint(n.value, "samples_per_pixel");
-			return std::make_shared<sampler::LD_factory>(num_samples);
+			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
+			return std::make_shared<sampler::LD_factory>();
 		}
 	}
 

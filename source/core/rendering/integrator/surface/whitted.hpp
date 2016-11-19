@@ -18,10 +18,7 @@ public:
 		float    num_light_samples_reciprocal;
 	};
 
-	Whitted(uint32_t num_samples_per_pixel,
-			const take::Settings& take_settings,
-			rnd::Generator& rng, const
-			Settings& settings);
+	Whitted(const take::Settings& take_settings, rnd::Generator& rng, const Settings& settings);
 
 	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
 
@@ -50,8 +47,7 @@ public:
 
 	Whitted_factory(const take::Settings& take_settings, uint32_t num_light_samples);
 
-	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   rnd::Generator& rng) const;
+	virtual Integrator* create(rnd::Generator& rng) const;
 
 private:
 

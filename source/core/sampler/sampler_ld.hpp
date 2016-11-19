@@ -8,7 +8,7 @@ class LD : public Sampler {
 
 public:
 
-	LD(rnd::Generator& rng, uint32_t num_samples);
+	LD(rnd::Generator& rng);
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) final override;
@@ -19,6 +19,8 @@ public:
 
 private:
 
+	virtual void on_resize() final override;
+
 	virtual void on_resume_pixel(rnd::Generator& scramble) final override;
 
 	uint2 scramble_;
@@ -27,8 +29,6 @@ private:
 class LD_factory : public Factory {
 
 public:
-
-	LD_factory(uint32_t num_samples);
 
 	virtual Sampler* create(rnd::Generator& rng) const final override;
 };

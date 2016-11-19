@@ -31,9 +31,8 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 		worker.prepare(view_.num_samples_per_pixel);
 	}
 
-	const uint32_t num_samples_per_iteration = sampler_factory_->num_samples_per_iteration();
 	const uint32_t progress_range = calculate_progress_range(scene_, camera, tiles_.size(),
-															 num_samples_per_iteration);
+															 view_.num_samples_per_pixel);
 
 	float tick_offset = scene_.seek(static_cast<float>(view_.start_frame) * camera.frame_duration(),
 									thread_pool_);
@@ -133,13 +132,12 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset,
 										float normalized_tick_slice,
 										float normalized_frame_slice,
 										progress::Sink& progressor) {
-	float num_samples = static_cast<float>(sampler_factory_->num_samples_per_iteration());
+	float num_samples = static_cast<float>(view_.num_samples_per_pixel);
 	float samples_per_slice = normalized_frame_slice * num_samples;
 
 	uint32_t sample_begin = current_sample_;
 	uint32_t sample_range = std::max(static_cast<uint32_t>(samples_per_slice + 0.5f), 1u);
-	uint32_t sample_end   = std::min(sample_begin + sample_range,
-									 sampler_factory_->num_samples_per_iteration());
+	uint32_t sample_end   = std::min(sample_begin + sample_range, view_.num_samples_per_pixel);
 
 	if (sample_begin == sample_end) {
 		return;

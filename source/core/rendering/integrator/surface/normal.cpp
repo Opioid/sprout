@@ -11,11 +11,10 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Normal::Normal(uint32_t num_samples_per_pixel,
-			   const take::Settings& take_settings,
+Normal::Normal(const take::Settings& take_settings,
 			   rnd::Generator& rng,
 			   const Settings& settings) :
-	Integrator(num_samples_per_pixel, take_settings, rng),
+	Integrator(take_settings, rng),
 	settings_(settings) {}
 
 void Normal::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
@@ -55,9 +54,8 @@ Normal_factory::Normal_factory(const take::Settings& take_settings,
 	settings_.vector = vector;
 }
 
-Integrator* Normal_factory::create(uint32_t num_samples_per_pixel,
-								   rnd::Generator& rng) const {
-	return new Normal(num_samples_per_pixel, take_settings_, rng, settings_);
+Integrator* Normal_factory::create(rnd::Generator& rng) const {
+	return new Normal(take_settings_, rng, settings_);
 }
 
 }}}

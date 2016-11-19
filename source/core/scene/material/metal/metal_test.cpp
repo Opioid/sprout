@@ -26,7 +26,8 @@ struct Setup {
 
 void test() {
 	rnd::Generator rng;
-	sampler::Random sampler(rng, 0);
+	sampler::Random sampler(rng);
+	sampler.resize(0, 1);
 
 	std::cout << "metal::testing::test()" << std::endl;
 

@@ -23,8 +23,7 @@ public:
 		float radius;
 	};
 
-	AO(uint32_t num_samples_per_pixel,
-	   const take::Settings& take_settings,
+	AO(const take::Settings& take_settings,
 	   rnd::Generator& rng,
 	   const Settings& settings);
 
@@ -48,8 +47,7 @@ public:
 
 	AO_factory(const take::Settings& settings, uint32_t num_samples, float radius);
 
-	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   rnd::Generator& rng) const;
+	virtual Integrator* create(rnd::Generator& rng) const;
 
 private:
 

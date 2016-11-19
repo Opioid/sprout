@@ -37,22 +37,26 @@ void test() {
 
 	{
 		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-		sampler::EMS sampler(rng, num_samples);
+		sampler::EMS sampler(rng);
+		sampler.resize(num_samples, 1);
 		render_set("ems", sampler, renderer, target);
 	}
 	{
 		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-		sampler::Golden_ratio sampler(rng, num_samples, 1);
+		sampler::Golden_ratio sampler(rng);
+		sampler.resize(num_samples, 1);
 		render_set("golden_ratio", sampler, renderer, target);
 	}
 	{
 		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-		sampler::Random sampler(rng, num_samples);
+		sampler::Random sampler(rng);
+		sampler.resize(num_samples, 1);
 		render_set("random_disk", sampler, renderer, target);
 	}
 	{
 		rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-		sampler::Hammersley sampler(rng, num_samples);
+		sampler::Hammersley sampler(rng);
+		sampler.resize(num_samples, 1);
 		render_set("hammersley", sampler, renderer, target);
 	}
 }

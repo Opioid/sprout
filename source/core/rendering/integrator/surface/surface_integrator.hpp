@@ -23,10 +23,7 @@ class Integrator : public integrator::Integrator {
 
 public:
 
-	Integrator(uint32_t num_samples_per_pixel,
-			   const take::Settings& settings,
-			   rnd::Generator& rng);
-
+	Integrator(const take::Settings& settings, rnd::Generator& rng);
 	virtual ~Integrator();
 
 	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
@@ -53,8 +50,7 @@ public:
 
 	Factory(const take::Settings& settings);
 
-	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   rnd::Generator& rng) const = 0;
+	virtual Integrator* create(rnd::Generator& rng) const = 0;
 
 protected:
 

@@ -16,8 +16,7 @@ public:
 		float step_size;
 	};
 
-	Single_scattering(uint32_t num_samples_per_pixel,
-					  const take::Settings& take_settings,
+	Single_scattering(const take::Settings& take_settings,
 					  rnd::Generator& rng,
 					  const Settings& settings);
 
@@ -46,8 +45,7 @@ public:
 
 	Single_scattering_factory(const take::Settings& take_settings, float step_size);
 
-	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   rnd::Generator& rng) const;
+	virtual Integrator* create(rnd::Generator& rng) const;
 
 private:
 

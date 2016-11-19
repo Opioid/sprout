@@ -19,18 +19,18 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Pathtracer_DL::Pathtracer_DL(uint32_t num_samples_per_pixel,
-							 const take::Settings& take_settings,
+Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings,
 							 rnd::Generator& rng,
 							 const Settings& settings) :
-	Integrator(num_samples_per_pixel, take_settings, rng),
+	Integrator(take_settings, rng),
 	settings_(settings),
-	sampler_(rng, num_samples_per_pixel),
-	transmittance_(num_samples_per_pixel, take_settings, rng)
+	sampler_(rng),
+	transmittance_(take_settings, rng)
 {}
 
-void Pathtracer_DL::prepare(const scene::Scene& /*scene*/,
-							uint32_t /*num_samples_per_pixel*/) {}
+void Pathtracer_DL::prepare(const scene::Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+	sampler_.resize(num_samples_per_pixel, 1);
+}
 
 void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
@@ -201,9 +201,8 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings
 	settings_.disable_caustics = disable_caustics;
 }
 
-Integrator* Pathtracer_DL_factory::create(uint32_t num_samples_per_pixel,
-										  rnd::Generator& rng) const {
-	return new Pathtracer_DL(num_samples_per_pixel, take_settings_, rng, settings_);
+Integrator* Pathtracer_DL_factory::create(rnd::Generator& rng) const {
+	return new Pathtracer_DL(take_settings_, rng, settings_);
 }
 
 }}}

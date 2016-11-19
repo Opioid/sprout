@@ -3,14 +3,29 @@
 
 namespace sampler {
 
-Sampler::Sampler(rnd::Generator& rng, uint32_t num_samples, uint32_t num_dimensions_1D) :
+Sampler::Sampler(rnd::Generator& rng) :
 	rng_(rng),
-	num_samples_(num_samples),
+	num_samples_(0),
 	current_sample_2D_(0),
-	num_dimensions_1D_(num_dimensions_1D),
-	current_sample_1D_(new uint32_t[num_dimensions_1D]) {}
+	num_dimensions_1D_(0),
+	current_sample_1D_(nullptr) {}
 
-Sampler::~Sampler() {}
+Sampler::~Sampler() {
+	delete [] current_sample_1D_;
+}
+
+void Sampler::resize(uint32_t num_samples, uint32_t num_dimensions_1D) {
+	if (num_samples != num_samples_ || num_dimensions_1D != num_dimensions_1D_) {
+		delete [] current_sample_1D_;
+
+		num_samples_ = num_samples;
+
+		num_dimensions_1D_ = num_dimensions_1D;
+		current_sample_1D_ = new uint32_t[num_dimensions_1D];
+
+		on_resize();
+	}
+}
 
 rnd::Generator& Sampler::rng() {
 	return rng_;
@@ -28,15 +43,6 @@ void Sampler::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	}
 
 	on_resume_pixel(scramble);
-}
-
-void Sampler::on_resume_pixel(rnd::Generator& /*scramble*/) {}
-
-Factory::Factory(uint32_t num_samples) :
-	num_samples_(num_samples) {}
-
-uint32_t Factory::num_samples_per_iteration() const {
-	return num_samples_;
 }
 
 }

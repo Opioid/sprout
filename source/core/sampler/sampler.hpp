@@ -12,7 +12,7 @@ class Sampler {
 
 public:
 
-	Sampler(rnd::Generator& rng, uint32_t num_samples, uint32_t num_dimensions_1D = 1);
+	Sampler(rnd::Generator& rng);
 	virtual ~Sampler();
 
 	void resize(uint32_t num_samples, uint32_t num_dimensions_1D);
@@ -31,7 +31,7 @@ public:
 
 protected:
 
-//	virtual void on_resize() = 0;
+	virtual void on_resize() = 0;
 
 	virtual void on_resume_pixel(rnd::Generator& scramble) = 0;
 
@@ -49,15 +49,7 @@ class Factory {
 
 public:
 
-	Factory(uint32_t num_samples);
-
 	virtual Sampler* create(rnd::Generator& rng) const = 0;
-
-	uint32_t num_samples_per_iteration() const;
-
-protected:
-
-	uint32_t num_samples_;
 };
 
 }

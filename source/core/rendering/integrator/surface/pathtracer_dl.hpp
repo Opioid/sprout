@@ -32,9 +32,7 @@ public:
 		bool	 disable_caustics;
 	};
 
-	Pathtracer_DL(uint32_t num_samples_per_pixel,
-				  const take::Settings& take_settings,
-				  rnd::Generator& rng,
+	Pathtracer_DL(const take::Settings& take_settings, rnd::Generator& rng,
 				  const Settings& settings);
 
 	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
@@ -67,8 +65,7 @@ public:
 						  float path_termination_probability,
 						  uint32_t num_light_samples, bool disable_caustics);
 
-	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   rnd::Generator& rng) const final override;
+	virtual Integrator* create(rnd::Generator& rng) const final override;
 
 private:
 

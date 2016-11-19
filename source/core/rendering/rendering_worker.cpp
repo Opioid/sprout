@@ -33,17 +33,15 @@ void Worker::init(uint32_t id, const scene::Scene& scene,
 
 	rng_ = rng;
 
-	uint32_t num_samples_per_pixel = sampler_factory.num_samples_per_iteration();
-
-	surface_integrator_ = surface_integrator_factory.create(num_samples_per_pixel, rng_);
-	volume_integrator_  = volume_integrator_factory.create(num_samples_per_pixel, rng_);
+	surface_integrator_ = surface_integrator_factory.create(rng_);
+	volume_integrator_  = volume_integrator_factory.create(rng_);
 	sampler_ = sampler_factory.create(rng_);
 }
 
 void Worker::prepare(uint32_t num_samples_per_pixel) {
 	surface_integrator_->prepare(*scene_, num_samples_per_pixel);
 	volume_integrator_->prepare(*scene_, num_samples_per_pixel);
-//	sampler_->resize(num_samples_per_pixel, 1);
+	sampler_->resize(num_samples_per_pixel, 1);
 }
 
 float4 Worker::li(scene::Ray& ray) {

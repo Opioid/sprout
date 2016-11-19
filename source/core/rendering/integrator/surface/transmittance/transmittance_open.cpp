@@ -14,15 +14,13 @@
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
-Open::Open(uint32_t num_samples_per_pixel,
-		   const take::Settings &take_settings,
+Open::Open(const take::Settings &take_settings,
 		   rnd::Generator &rng,
 		   uint32_t max_bounces) :
-	integrator::Integrator(num_samples_per_pixel, take_settings, rng),
+	integrator::Integrator(take_settings, rng),
 	max_bounces_(max_bounces) {}
 
-void Open::prepare(const scene::Scene& /*scene*/,
-				   uint32_t /*num_samples_per_pixel*/) {}
+void Open::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
 void Open::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 

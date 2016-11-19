@@ -30,9 +30,7 @@ public:
 		bool	 disable_caustics;
 	};
 
-	Pathtracer_MIS(uint32_t num_samples_per_pixel,
-				   const take::Settings& take_settings,
-				   rnd::Generator& rng,
+	Pathtracer_MIS(const take::Settings& take_settings, rnd::Generator& rng,
 				   const Settings& settings);
 
 	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
@@ -85,8 +83,7 @@ public:
 						   Light_sampling light_sampling,
 						   bool disable_caustics);
 
-	virtual Integrator* create(uint32_t num_samples_per_pixel,
-							   rnd::Generator& rng) const final override;
+	virtual Integrator* create(rnd::Generator& rng) const final override;
 
 private:
 
