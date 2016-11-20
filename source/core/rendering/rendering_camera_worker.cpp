@@ -9,17 +9,12 @@
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/random/generator.inl"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace rendering {
 
 void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const math::Recti& tile,
 						   uint32_t sample_begin, uint32_t sample_end,
 						   float normalized_tick_offset, float normalized_tick_slice) {
 	auto& sensor = camera.sensor();
-
-//	auto d = sensor.dimensions();
 
 	math::Recti bounds = camera.view_bounds(view);
 
@@ -32,10 +27,10 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 
 	for (int32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (int32_t x = tile.start.x; x < tile.end.x; ++x) {
-			int2 pixel(x, y);
-
 			sampler_->resume_pixel(sample_begin, rng);
 			surface_integrator_->resume_pixel(sample_begin, rng);
+
+			int2 pixel(x, y);
 
 			for (uint32_t i = sample_begin; i < sample_end; ++i) {
 				sampler_->generate_camera_sample(pixel, i, sample);

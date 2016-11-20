@@ -28,11 +28,18 @@ Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, rnd::Generat
 	transmittance_open_(take_settings, rng, settings.max_bounces),
 	transmittance_closed_(take_settings, rng) {}
 
-void Pathtracer_MIS::prepare(const scene::Scene& /*scene*/,
-							 uint32_t num_samples_per_pixel) {
+void Pathtracer_MIS::prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1);
 	material_sampler_.resize(num_samples_per_pixel, 1);
-	light_sampler_.resize(num_samples_per_pixel, 2);
+
+	uint32_t num_light_samples = settings_.light_sampling.num_samples;
+
+	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
+		light_sampler_.resize(num_samples_per_pixel * num_light_samples, 2);
+	} else {
+		uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
+		light_sampler_.resize(num_samples_per_pixel * num_light_samples * num_lights, 1);
+	}
 }
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
@@ -44,7 +51,7 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 						  scene::Intersection& intersection) {
 	Sampler_filter filter = Sampler_filter::Unknown;
-	scene::material::bxdf::Result sample_result;
+	Bxdf_result sample_result;
 
 	float3 throughput(1.f);
 	float3 result(0.f);

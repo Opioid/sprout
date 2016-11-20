@@ -14,15 +14,15 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Whitted::Whitted(const take::Settings& take_settings,
-				 rnd::Generator& rng,
+Whitted::Whitted(const take::Settings& take_settings, rnd::Generator& rng,
 				 const Settings& settings) :
 	Integrator(take_settings, rng),
 	settings_(settings),
 	sampler_(rng) {}
 
-void Whitted::prepare(const scene::Scene& /*scene*/, uint32_t num_samples_per_pixel) {
-	sampler_.resize(num_samples_per_pixel, 1);
+void Whitted::prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) {
+	uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
+	sampler_.resize(num_samples_per_pixel * num_lights * settings_.num_light_samples, 1);
 }
 
 void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
