@@ -4,10 +4,10 @@
 
 namespace procedural { namespace starburst {
 
-Aperture::Aperture(uint32_t num_blades, float roundness) : roundness_(roundness) {
+Aperture::Aperture(uint32_t num_blades, float roundness, float rotation) : roundness_(roundness) {
 	blades_.resize(num_blades);
 
-	float angle = 0.f;
+	float angle = rotation;
 
 	for (uint32_t i = 0; i < num_blades; ++i) {
 		float delta = (2.f * math::Pi) / static_cast<float>(num_blades);

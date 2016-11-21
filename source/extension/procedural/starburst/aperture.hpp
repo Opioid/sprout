@@ -9,7 +9,7 @@ class Aperture {
 
 public:
 
-	Aperture(uint32_t num_blades, float roundness);
+	Aperture(uint32_t num_blades, float roundness, float rotation);
 
 	float evaluate(float2 p, float radius) const;
 

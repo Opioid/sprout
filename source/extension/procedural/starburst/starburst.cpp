@@ -68,8 +68,8 @@ void create(thread::Pool& pool) {
 		signal.clear(1.f);
 	}
 
-	Aperture aperture(8, 0.25f);
-//	Aperture aperture(5, 0.f);
+	Aperture aperture(8, 0.25f, 0.015f);
+//	Aperture aperture(5, 0.f, 0.f);
 	render_aperture(aperture, signal);
 
 	write_signal("signal.png", signal);
@@ -122,7 +122,7 @@ void create(thread::Pool& pool) {
 		delete [] spectral_data;
 	}
 
-	write_signal("signal_after.png", signal);
+//	write_signal("signal_after.png", signal);
 
 	float radius = static_cast<float>(resolution) * 0.00390625f;
 	filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
