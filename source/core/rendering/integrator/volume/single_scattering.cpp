@@ -23,7 +23,7 @@ Single_scattering::Single_scattering(const take::Settings& take_settings,
 
 void Single_scattering::prepare(const scene::Scene& /*scene*/,
 								uint32_t num_samples_per_pixel) {
-	sampler_.resize(num_samples_per_pixel, 1);
+	sampler_.resize(num_samples_per_pixel, 1, 1);
 }
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}

@@ -29,16 +29,16 @@ Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, rnd::Generat
 	transmittance_closed_(take_settings, rng) {}
 
 void Pathtracer_MIS::prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) {
-	sampler_.resize(num_samples_per_pixel, 1);
-	material_sampler_.resize(num_samples_per_pixel, 1);
+	sampler_.resize(num_samples_per_pixel, 1, 1);
+	material_sampler_.resize(num_samples_per_pixel, 1, 1);
 
 	uint32_t num_light_samples = settings_.light_sampling.num_samples;
 
 	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
-		light_sampler_.resize(num_samples_per_pixel * num_light_samples, 2);
+		light_sampler_.resize(num_samples_per_pixel, num_light_samples, 2);
 	} else {
 		uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
-		light_sampler_.resize(num_samples_per_pixel * num_light_samples * num_lights, 1);
+		light_sampler_.resize(num_samples_per_pixel, num_light_samples * num_lights, 1);
 	}
 }
 

@@ -18,8 +18,8 @@ struct Setup {
 			  float3_p t, float3_p b, float3_p n,
 			  sampler::Sampler& sampler);
 
-	float3 color = float3(1.f, 1.f, 1.f);
-	float3 radiance = math::float3_identity;
+	float3 color	  = float3(1.f);
+	float3 radiance	  = float3(0.f);
 	float ior         = 1.47f;
 	float constant_f0 = fresnel::schlick_f0(1.f, ior);
 	float roughness   = 0.0001f;
@@ -29,7 +29,7 @@ struct Setup {
 void test() {
 	rnd::Generator rng;
 	sampler::Random sampler(rng);
-	sampler.resize(0, 1);
+	sampler.resize(0, 1, 1);
 
 	std::cout << "substitute::testing::test()" << std::endl;
 

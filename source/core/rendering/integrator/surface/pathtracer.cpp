@@ -29,8 +29,8 @@ Pathtracer::Pathtracer(const take::Settings& take_settings,
 	transmittance_(take_settings, rng) {}
 
 void Pathtracer::prepare(const scene::Scene& /*scene*/, uint32_t num_samples_per_pixel) {
-	sampler_.resize(num_samples_per_pixel, 1);
-	material_sampler_.resize(num_samples_per_pixel, 1);
+	sampler_.resize(num_samples_per_pixel, 1, 1);
+	material_sampler_.resize(num_samples_per_pixel, 1, 1);
 }
 
 void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {

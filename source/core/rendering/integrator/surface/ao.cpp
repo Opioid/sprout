@@ -21,7 +21,7 @@ AO::AO(const take::Settings& take_settings,
 
 void AO::prepare(const scene::Scene& /*scene*/,
 				 uint32_t num_samples_per_pixel) {
-	sampler_.resize(num_samples_per_pixel * settings_.num_samples, 1);
+	sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1);
 }
 
 void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
