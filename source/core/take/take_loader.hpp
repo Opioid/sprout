@@ -9,7 +9,7 @@
 
 namespace exporting { class Sink; }
 
-namespace math { namespace random { class Generator; }}
+namespace math { namespace random { class Generator; } }
 
 namespace scene { namespace camera { class Camera; } }
 

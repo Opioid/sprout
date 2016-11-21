@@ -16,7 +16,7 @@ public:
 	virtual ~Sampler();
 
 	void resize(uint32_t num_iterations, uint32_t num_samples_per_iteration,
-				uint32_t num_dimensions_1D);
+				uint32_t num_dimensions_2D, uint32_t num_dimensions_1D);
 
 	void resume_pixel(uint32_t iteration, rnd::Generator& scramble);
 
@@ -26,7 +26,7 @@ public:
 
 	virtual void generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) = 0;
 
-	virtual float2 generate_sample_2D() = 0;
+	virtual float2 generate_sample_2D(uint32_t dimension = 0) = 0;
 
 	virtual float generate_sample_1D(uint32_t dimension = 0) = 0;
 
@@ -40,7 +40,8 @@ protected:
 	uint32_t num_samples_;
 	uint32_t num_samples_per_iteration_;
 
-	uint32_t current_sample_2D_;
+	uint32_t  num_dimensions_2D_;
+	uint32_t* current_sample_2D_;
 
 	uint32_t  num_dimensions_1D_;
 	uint32_t* current_sample_1D_;

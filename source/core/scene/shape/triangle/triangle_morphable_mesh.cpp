@@ -92,14 +92,14 @@ float Morphable_mesh::opacity(const Transformation& transformation, const Ray& r
 }
 
 void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-							float3_p /*p*/, float3_p /*n*/, float /*area*/,
-							bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+							float3_p /*p*/, float3_p /*n*/, float /*area*/, bool /*two_sided*/,
+							sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
 							Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
 
 void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							float3_p /*p*/, float /*area*/, bool /*two_sided*/,
-							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/,
-							Sample& /*sample*/) const {}
+							sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+							Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
 
 float Morphable_mesh::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 						  float3_p /*p*/, float3_p /*wi*/, float /*area*/,

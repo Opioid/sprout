@@ -16,7 +16,7 @@ void Uniform::generate_camera_sample(int2 pixel, uint32_t /*index*/, Camera_samp
 	sample.time = rng_.random_float();
 }
 
-float2 Uniform::generate_sample_2D() {
+float2 Uniform::generate_sample_2D(uint32_t /*dimension*/) {
 	return float2(rng_.random_float(), rng_.random_float());
 }
 

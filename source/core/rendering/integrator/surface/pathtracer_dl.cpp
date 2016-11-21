@@ -29,7 +29,7 @@ Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings,
 {}
 
 void Pathtracer_DL::prepare(const scene::Scene& /*scene*/, uint32_t num_samples_per_pixel) {
-	sampler_.resize(num_samples_per_pixel, 1, 1);
+	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
 void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
@@ -157,16 +157,14 @@ float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::Ray& ra
 
 	for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 		float light_pdf;
-		const scene::light::Light* light = worker.scene().montecarlo_light(rng_.random_float(),
-																		   light_pdf);
+		const auto light = worker.scene().random_light(rng_.random_float(),light_pdf);
 		if (!light) {
 			continue;
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(ray.time,
-					  intersection.geo.p, material_sample.geometric_normal(),
-					  material_sample.is_translucent(), sampler_,
+		light->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
+					  material_sample.is_translucent(), sampler_, 0,
 					  worker, Sampler_filter::Nearest, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {

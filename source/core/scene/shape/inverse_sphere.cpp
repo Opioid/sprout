@@ -104,8 +104,8 @@ float Inverse_sphere::opacity(const Transformation& transformation,
 }
 
 void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							float3_p p, float3_p n, float /*area*/,
-							bool /*two_sided*/, sampler::Sampler& sampler,
+							float3_p p, float3_p n, float /*area*/, bool /*two_sided*/,
+							sampler::Sampler& sampler, uint32_t sampler_dimension,
 							Node_stack& /*node_stack*/, Sample& sample) const {
 	float3 dir = n;
 
@@ -152,7 +152,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 	float3 x, y;
 	math::coordinate_system(z, x, y);
 
-	float2 r2 = sampler.generate_sample_2D();
+	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
 	float3 tdir = -math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
 	sample.wi = tdir;
@@ -166,8 +166,8 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 
 void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							float3_p /*p*/, float /*area*/, bool /*two_sided*/,
-							sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/,
-							Sample& /*sample*/) const {
+							sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+							Node_stack& /*node_stack*/, Sample& /*sample*/) const {
 	// TODO
 }
 

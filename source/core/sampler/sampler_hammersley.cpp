@@ -17,8 +17,8 @@ void Hammersley::generate_camera_sample(int2 pixel, uint32_t index, Camera_sampl
 	sample.time = rng_.random_float();
 }
 
-float2 Hammersley::generate_sample_2D() {
-	return math::hammersley(current_sample_2D_++, num_samples_, scramble_);
+float2 Hammersley::generate_sample_2D(uint32_t /*dimension*/) {
+	return math::hammersley(current_sample_2D_[0]++, num_samples_, scramble_);
 }
 
 float Hammersley::generate_sample_1D(uint32_t /*dimension*/) {

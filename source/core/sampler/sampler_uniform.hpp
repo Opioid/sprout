@@ -13,7 +13,7 @@ public:
 	virtual void generate_camera_sample(int2 pixel, uint32_t index,
 										Camera_sample& sample) final override;
 
-	virtual float2 generate_sample_2D() final override;
+	virtual float2 generate_sample_2D(uint32_t dimension = 0) final override;
 
 	virtual float generate_sample_1D(uint32_t dimension = 0) final override;
 

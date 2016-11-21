@@ -23,7 +23,7 @@ Single_scattering::Single_scattering(const take::Settings& take_settings,
 
 void Single_scattering::prepare(const scene::Scene& /*scene*/,
 								uint32_t num_samples_per_pixel) {
-	sampler_.resize(num_samples_per_pixel, 1, 1);
+	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
@@ -86,13 +86,14 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume& volume
 
 		// Direct light scattering
 		float light_pdf;
-		const auto light = worker.scene().montecarlo_light(rng_.random_float(), light_pdf);
+		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
 		if (!light) {
 			continue;
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(ray.time, current, sampler_, worker, Sampler_filter::Nearest, light_sample);
+		light->sample(ray.time, current, sampler_, 0, worker,
+					  Sampler_filter::Nearest, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
 			scene::Ray shadow_ray(current, light_sample.shape.wi, 0.f,

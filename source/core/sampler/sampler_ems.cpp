@@ -18,8 +18,8 @@ void EMS::generate_camera_sample(int2 pixel, uint32_t index,
 	sample.time = math::radical_inverse_vdC(index, scramble_.y);
 }
 
-float2 EMS::generate_sample_2D() {
-	return math::ems(current_sample_2D_++, scramble_.x, scramble_.y);
+float2 EMS::generate_sample_2D(uint32_t /*dimension*/) {
+	return math::ems(current_sample_2D_[0]++, scramble_.x, scramble_.y);
 }
 
 float EMS::generate_sample_1D(uint32_t /*dimension*/) {

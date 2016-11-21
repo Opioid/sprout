@@ -65,10 +65,10 @@ float Canopy::opacity(const Transformation& /*transformation*/,
 }
 
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
-					float3_p /*p*/, float3_p /*n*/, float /*area*/,
-					bool /*two_sided*/, sampler::Sampler& sampler,
+					float3_p /*p*/, float3_p /*n*/, float /*area*/, bool /*two_sided*/,
+					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& /*node_stack*/, Sample& sample) const {
-	float2 uv = sampler.generate_sample_2D();
+	float2 uv = sampler.generate_sample_2D(sampler_dimension);
 	float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
 	sample.wi = dir;
@@ -85,9 +85,9 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					float3_p /*p*/, float /*area*/, bool /*two_sided*/,
-					sampler::Sampler& sampler, Node_stack& /*node_stack*/,
-					Sample& sample) const {
-	float2 uv = sampler.generate_sample_2D();
+					sampler::Sampler& sampler, uint32_t sampler_dimension,
+					Node_stack& /*node_stack*/, Sample& sample) const {
+	float2 uv = sampler.generate_sample_2D(sampler_dimension);
 	float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
 	sample.wi = dir;

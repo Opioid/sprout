@@ -32,14 +32,14 @@ public:
 						  Worker& worker, Sampler_filter filter) const final override;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float3_p n, float area,
-						bool two_sided, sampler::Sampler& sampler,
+						float3_p p, float3_p n, float area, bool two_sided,
+						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const final override;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
 						float3_p p, float area, bool two_sided,
-						sampler::Sampler& sampler, Node_stack& node_stack,
-						Sample& sample) const final override;
+						sampler::Sampler& sampler, uint32_t sampler_dimension,
+						Node_stack& node_stack, Sample& sample) const final override;
 
 	virtual float pdf(uint32_t part, const Transformation& transformation,
 					  float3_p p, float3_p wi, float area, bool two_sided,

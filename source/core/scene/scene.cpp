@@ -112,7 +112,7 @@ const light::Light* Scene::light(uint32_t id, float& pdf) const {
 	return lights_[id];
 }
 
-const light::Light* Scene::montecarlo_light(float random, float& pdf) const {
+const light::Light* Scene::random_light(float random, float& pdf) const {
 	if (lights_.empty()) {
 		return nullptr;
 	}

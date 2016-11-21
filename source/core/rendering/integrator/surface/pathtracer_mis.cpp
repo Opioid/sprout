@@ -29,16 +29,16 @@ Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, rnd::Generat
 	transmittance_closed_(take_settings, rng) {}
 
 void Pathtracer_MIS::prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) {
-	sampler_.resize(num_samples_per_pixel, 1, 1);
-	material_sampler_.resize(num_samples_per_pixel, 1, 1);
+	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+	material_sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
 	uint32_t num_light_samples = settings_.light_sampling.num_samples;
 
 	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
-		light_sampler_.resize(num_samples_per_pixel, num_light_samples, 2);
+		light_sampler_.resize(num_samples_per_pixel, num_light_samples, 1, 2);
 	} else {
 		uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
-		light_sampler_.resize(num_samples_per_pixel, num_light_samples * num_lights, 1);
+		light_sampler_.resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
 	}
 }
 
@@ -173,7 +173,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 			float select = light_sampler(ray.depth).generate_sample_1D(1);
 
 			float light_pdf;
-			const scene::light::Light* light = worker.scene().montecarlo_light(select, light_pdf);
+			const auto light = worker.scene().random_light(select, light_pdf);
 			if (!light) {
 				continue;
 			}
@@ -182,18 +182,21 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 
 			secondary_ray.min_t = ray_offset;
 
-			result += evaluate_light(light, light_pdf_reciprocal, worker, secondary_ray,
+			result += evaluate_light(light, 0, light_pdf_reciprocal,
+									 worker, secondary_ray,
 									 intersection, material_sample, filter);
 		}
 
 		result *= settings_.num_light_samples_reciprocal;
 	} else {
-		float light_weight = static_cast<float>(worker.scene().lights().size());
-		for (const auto light : worker.scene().lights()) {
+		const auto& lights = worker.scene().lights();
+		float light_weight = static_cast<float>(lights.size());
+		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
+			const auto light = lights[l];
 			for (uint32_t i = 0; i < settings_.light_sampling.num_samples; ++i) {
 				secondary_ray.min_t = ray_offset;
 
-				result += evaluate_light(light, light_weight, worker, secondary_ray,
+				result += evaluate_light(light, l, light_weight, worker, secondary_ray,
 										 intersection, material_sample, filter);
 			}
 		}
@@ -252,7 +255,8 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& r
 	return result;
 }
 
-float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float light_weight,
+float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light,
+									  uint32_t sampler_dimension, float light_weight,
 									  Worker& worker, scene::Ray& ray,
 									  const scene::Intersection& intersection,
 									  const scene::material::Sample& material_sample,
@@ -263,7 +267,8 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 	scene::light::Sample light_sample;
 	light->sample(ray.time, intersection.geo.p,
 				  material_sample.geometric_normal(), material_sample.is_translucent(),
-				  light_sampler(ray.depth), worker, Sampler_filter::Nearest, light_sample);
+				  light_sampler(ray.depth), sampler_dimension,
+				  worker, Sampler_filter::Nearest, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
 		ray.set_direction(light_sample.shape.wi);

@@ -127,15 +127,18 @@ float Mesh::opacity(const Transformation& transformation, const Ray& ray,
 
 void Mesh::sample(uint32_t part, const Transformation& transformation,
 				  float3_p p, float3_p /*n*/, float area, bool two_sided,
-				  sampler::Sampler& sampler, Node_stack& node_stack, Sample& sample) const {
-	Mesh::sample(part, transformation, p, area, two_sided, sampler, node_stack, sample);
+				  sampler::Sampler& sampler, uint32_t sampler_dimension,
+				  Node_stack& node_stack, Sample& sample) const {
+	Mesh::sample(part, transformation, p, area, two_sided,
+				 sampler, sampler_dimension, node_stack, sample);
 }
 
 void Mesh::sample(uint32_t part, const Transformation& transformation,
-				  float3_p p, float area, bool two_sided, sampler::Sampler& sampler,
+				  float3_p p, float area, bool two_sided,
+				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
-	float r = sampler.generate_sample_1D();
-	float2 r2 = sampler.generate_sample_2D();
+	float r = sampler.generate_sample_1D(sampler_dimension);
+	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
 
 	uint32_t index = distributions_[part].sample(r);
 

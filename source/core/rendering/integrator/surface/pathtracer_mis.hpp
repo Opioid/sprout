@@ -48,7 +48,8 @@ private:
 								 Sampler_filter filter,
 								 Bxdf_result& sample_result);
 
-	float3 evaluate_light(const scene::light::Light* light, float light_weight,
+	float3 evaluate_light(const scene::light::Light* light,
+						  uint32_t sampler_dimension, float light_weight,
 						  Worker& worker, scene::Ray& ray,
 						  const scene::Intersection& intersection,
 						  const scene::material::Sample& material_sample,

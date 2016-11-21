@@ -59,17 +59,18 @@ float Celestial_disk::opacity(const Transformation& /*transformation*/,
 }
 
 void Celestial_disk::sample(uint32_t part, const Transformation& transformation,
-							float3_p p, float3_p /*n*/, float area,
-							bool two_sided, sampler::Sampler& sampler,
+							float3_p p, float3_p /*n*/, float area, bool two_sided,
+							sampler::Sampler& sampler, uint32_t sampler_dimension,
 							Node_stack& node_stack, Sample& sample) const {
-	Celestial_disk::sample(part, transformation, p, area, two_sided, sampler, node_stack, sample);
+	Celestial_disk::sample(part, transformation, p, area, two_sided,
+						   sampler, sampler_dimension, node_stack, sample);
 }
 
 void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformation,
 							float3_p /*p*/, float area, bool /*two_sided*/,
-							sampler::Sampler& sampler, Node_stack& /*node_stack*/,
-							Sample& sample) const {
-	float2 r2 = sampler.generate_sample_2D();
+							sampler::Sampler& sampler, uint32_t sampler_dimension,
+							Node_stack& /*node_stack*/, Sample& sample) const {
+	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
 	float2 xy = math::sample_disk_concentric(r2);
 
 	float3 ls = float3(xy, 0.f);

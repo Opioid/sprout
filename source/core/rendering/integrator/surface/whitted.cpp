@@ -22,7 +22,8 @@ Whitted::Whitted(const take::Settings& take_settings, rnd::Generator& rng,
 
 void Whitted::prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) {
 	uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
-	sampler_.resize(num_samples_per_pixel, num_lights * settings_.num_light_samples, 1);
+	sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
+//	sampler_.resize(num_samples_per_pixel, settings_.num_light_samples * num_lights, 1, 1);
 }
 
 void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
@@ -88,16 +89,17 @@ float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 	scene::Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
-	shadow_ray.depth  = ray.depth + 1;
+	shadow_ray.depth  = ray.depth;
 	shadow_ray.time   = ray.time;
 
-	for (auto l : worker.scene().lights()) {
+	const auto& lights = worker.scene().lights();
+	for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
+		const auto light = lights[l];
 		for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 			scene::light::Sample light_sample;
-			l->sample(ray.time,
-					  intersection.geo.p, material_sample.geometric_normal(),
-					  material_sample.is_translucent(), sampler_, worker,
-					  Sampler_filter::Linear, light_sample);
+			light->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
+						  material_sample.is_translucent(), sampler_, l, worker,
+						  Sampler_filter::Linear, light_sample);
 
 			if (light_sample.shape.pdf > 0.f) {
 				shadow_ray.set_direction(light_sample.shape.wi);

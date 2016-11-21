@@ -15,12 +15,13 @@ namespace scene { namespace light {
 
 void Prop_image_light::sample(const Transformation& transformation, float time,
 							  float3_p p, float3_p n, bool total_sphere,
-							  sampler::Sampler& sampler, Worker& worker,
-							  Sampler_filter filter, Sample& result) const {
+							  sampler::Sampler& sampler, uint32_t sampler_dimension,
+							  Worker& worker, Sampler_filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
 
 	float material_pdf;
-	float2 uv = material->radiance_sample(sampler.generate_sample_2D(), material_pdf);
+	float2 s2d = sampler.generate_sample_2D(sampler_dimension);
+	float2 uv = material->radiance_sample(s2d, material_pdf);
 
 	float area = prop_->area(part_);
 

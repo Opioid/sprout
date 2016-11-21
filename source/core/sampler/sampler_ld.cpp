@@ -22,8 +22,8 @@ void LD::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sampl
 	sample.time = rng_.random_float();
 }
 
-float2 LD::generate_sample_2D() {
-	return ld(current_sample_2D_++, scramble_.x, scramble_.y);
+float2 LD::generate_sample_2D(uint32_t /*dimension*/) {
+	return ld(current_sample_2D_[0]++, scramble_.x, scramble_.y);
 }
 
 float LD::generate_sample_1D(uint32_t /*dimension*/) {

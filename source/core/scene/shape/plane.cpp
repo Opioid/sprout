@@ -121,16 +121,16 @@ float Plane::opacity(const Transformation& transformation, const Ray& ray,
 }
 
 void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float3_p /*p*/, float3_p /*n*/, float /*area*/,
-				   bool /*two_sided*/, sampler::Sampler& /*sampler*/,
+				   float3_p /*p*/, float3_p /*n*/, float /*area*/, bool /*two_sided*/,
+				   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
 				   Node_stack& /*node_stack*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
 
 void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				   float3_p /*p*/, float /*area*/, bool /*two_sided*/,
-				   sampler::Sampler& /*sampler*/, Node_stack& /*node_stack*/,
-				   Sample& sample) const {
+				   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
+				   Node_stack& /*node_stack*/, Sample& sample) const {
 	sample.pdf = 0.f;
 }
 

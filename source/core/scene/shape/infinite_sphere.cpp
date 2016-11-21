@@ -59,13 +59,13 @@ float Infinite_sphere::opacity(const Transformation& /*transformation*/,
 }
 
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							 float3_p /*p*/, float3_p n, float /*area*/,
-							 bool /*two_sided*/, sampler::Sampler& sampler,
+							 float3_p /*p*/, float3_p n, float /*area*/, bool /*two_sided*/,
+							 sampler::Sampler& sampler, uint32_t sampler_dimension,
 							 Node_stack& /*node_stack*/, Sample& sample) const {
 	float3 x, y;
 	math::coordinate_system(n, x, y);
 
-	float2 uv = sampler.generate_sample_2D();
+	float2 uv = sampler.generate_sample_2D(sampler_dimension);
 	float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);
 
 	sample.wi = dir;
@@ -81,9 +81,9 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							 float3_p /*p*/, float /*area*/, bool /*two_sided*/,
-							 sampler::Sampler& sampler, Node_stack& /*node_stack*/,
-							 Sample& sample) const {
-	float2 uv = sampler.generate_sample_2D();
+							 sampler::Sampler& sampler, uint32_t sampler_dimension,
+							 Node_stack& /*node_stack*/, Sample& sample) const {
+	float2 uv = sampler.generate_sample_2D(sampler_dimension);
 	float3 dir = math::sample_sphere_uniform(uv);
 
 	sample.wi = dir;

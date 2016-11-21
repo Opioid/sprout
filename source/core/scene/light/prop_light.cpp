@@ -23,7 +23,7 @@ const Light::Transformation& Prop_light::transformation_at(
 
 void Prop_light::sample(const Transformation& transformation, float time,
 						float3_p p, float3_p n, bool total_sphere,
-						sampler::Sampler& sampler, Worker& worker,
+						sampler::Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
 						Sampler_filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
 
@@ -33,10 +33,12 @@ void Prop_light::sample(const Transformation& transformation, float time,
 
 	if (total_sphere) {
 		prop_->shape()->sample(part_, transformation, p, area, two_sided,
-							   sampler, worker.node_stack(), result.shape);
+							   sampler, sampler_dimension,
+							   worker.node_stack(), result.shape);
 	} else {
 		prop_->shape()->sample(part_, transformation, p, n, area, two_sided,
-							   sampler, worker.node_stack(), result.shape);
+							   sampler, sampler_dimension,
+							   worker.node_stack(), result.shape);
 
 		if (math::dot(result.shape.wi, n) <= 0.f) {
 			result.shape.pdf = 0.f;
