@@ -37,10 +37,14 @@ public:
 
 private:
 
+	sampler::Sampler& material_sampler(uint32_t bounce);
+
 	const Settings& settings_;
 
 	sampler::Random sampler_;
-	sampler::Golden_ratio material_sampler_;
+
+	static constexpr uint32_t Num_material_samplers = 3;
+	sampler::Golden_ratio material_samplers_[Num_material_samplers];
 
 	transmittance::Closed transmittance_;
 };

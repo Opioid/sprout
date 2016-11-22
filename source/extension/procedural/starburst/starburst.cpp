@@ -61,7 +61,7 @@ void create(thread::Pool& pool) {
 
 	Float_3 float_image_a(Image::Description(Image::Type::Float_3, dimensions));
 
-	bool dirt = false;
+	bool dirt = true;
 	if (dirt) {
 		render_dirt(signal);
 	} else {
@@ -74,18 +74,19 @@ void create(thread::Pool& pool) {
 
 	write_signal("signal.png", signal);
 
-	bool near_field = false;
+	bool near_field = true;
 
 	if (near_field) {
 		Image::Description description(Image::Type::Float_2, dimensions);
 		auto signal_a = std::make_shared<Float_2>(description);
 		auto signal_b = std::make_shared<Float_2>(description);
 
+
 		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
 			signal_a->store(i, float2(signal.load(i), 0.f));
 		}
 
-		float alpha = 1.f;
+		float alpha = 0.18f;
 
 		fdft(*signal_b.get(), signal_a, alpha, 0, pool);
 		fdft(*signal_a.get(), signal_b, alpha, 1, pool);
@@ -93,11 +94,61 @@ void create(thread::Pool& pool) {
 
 		pool.run_range([&float_image_a, &signal](int32_t begin, int32_t end) {
 			for (int32_t i = begin; i < end; ++i) {
-				float s = 0.75f * signal.load(i);
+				float s = 0.6f * signal.load(i);
 				float_image_a.store(i, math::packed_float3(s));
 			}
 		}, 0, resolution * resolution);
 
+
+
+/*
+		Float_1 signal_t(Image::Description(Image::Type::Float_1, dimensions));
+
+		Spectrum* spectral_data = new Spectrum[resolution * resolution];
+
+
+		for (uint32_t b = 0; b < Num_bands; ++b) {
+
+
+
+			for (int32_t i = 0, len = signal.area(); i < len; ++i) {
+				signal_a->store(i, float2(signal.load(i), 0.f));
+			}
+
+		//	float alpha = 0.2f + 0.5f * (static_cast<float>(b) / static_cast<float>(Num_bands));
+
+			float wl = static_cast<float>(spectral_data->wavelength_center(b));
+
+			float f = 12.f;
+			float alpha = 0.15f * (wl / 400.f) * (f / 18.f);
+
+			fdft(*signal_b.get(), signal_a, alpha, 0, pool);
+			fdft(*signal_a.get(), signal_b, alpha, 1, pool);
+			squared_magnitude(signal_t.data(), signal_a->data(), resolution, resolution);
+
+			float i_s = wl / 400.f;
+
+			float normalization = (i_s * i_s);
+
+			for (int32_t i = 0, len = signal.area(); i < len; ++i) {
+				float s = 0.25f * normalization * signal_t.load(i);
+				spectral_data[i].set_bin(b, s);
+			}
+
+			std::cout << b << "/" << Num_bands << " done" << std::endl;
+
+		}
+
+		pool.run_range([spectral_data, &float_image_a](int32_t begin, int32_t end) {
+			for (int32_t i = begin; i < end; ++i) {
+				auto& s = spectral_data[i];
+				float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
+				float_image_a.store(i, math::packed_float3(linear_rgb));
+			}
+		}, 0, resolution * resolution);
+
+		delete [] spectral_data;
+		*/
 	} else {
 		math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
 
@@ -433,7 +484,7 @@ void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
 	float m = static_cast<float>(d.x);
 	float half_m = 0.5f * m;
 	float sqrt_m = std::sqrt(m);
-	float ss = 4.f;
+	float ss = 6.f;
 
 	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
 	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);

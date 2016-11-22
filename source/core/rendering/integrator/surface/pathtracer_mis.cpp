@@ -23,29 +23,42 @@ Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, rnd::Generat
 	Integrator(take_settings, rng),
 	settings_(settings),
 	sampler_(rng),
-	material_sampler_(rng),
-	light_sampler_(rng),
+	material_samplers_{rng, rng, rng},
+	light_samplers_{rng, rng, rng},
 	transmittance_open_(take_settings, rng, settings.max_bounces),
 	transmittance_closed_(take_settings, rng) {}
 
 void Pathtracer_MIS::prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
-	material_sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+
+	for (auto& s : material_samplers_) {
+		s.resize(num_samples_per_pixel, 1, 1, 1);
+	}
 
 	uint32_t num_light_samples = settings_.light_sampling.num_samples;
 
 	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
-		light_sampler_.resize(num_samples_per_pixel, num_light_samples, 1, 2);
+		for (auto& s : light_samplers_) {
+			s.resize(num_samples_per_pixel, num_light_samples, 1, 2);
+		}
 	} else {
 		uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
-		light_sampler_.resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
+		for (auto& s : light_samplers_) {
+			s.resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
+		}
 	}
 }
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
-	material_sampler_.resume_pixel(sample, scramble);
-	light_sampler_.resume_pixel(sample, scramble);
+
+	for (auto& s : material_samplers_) {
+		s.resume_pixel(sample, scramble);
+	}
+
+	for (auto& s : light_samplers_) {
+		s.resume_pixel(sample, scramble);
+	}
 }
 
 float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
@@ -308,16 +321,16 @@ float3 Pathtracer_MIS::resolve_transmission(Worker& worker, scene::Ray& ray,
 }
 
 sampler::Sampler& Pathtracer_MIS::material_sampler(uint32_t bounce) {
-	if (0 == bounce) {
-		return material_sampler_;
+	if (Num_material_samplers > bounce) {
+		return material_samplers_[bounce];
 	}
 
 	return sampler_;
 }
 
 sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) {
-	if (0 == bounce) {
-		return light_sampler_;
+	if (Num_light_samplers > bounce) {
+		return light_samplers_[bounce];
 	}
 
 	return sampler_;

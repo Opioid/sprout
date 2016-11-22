@@ -67,8 +67,12 @@ private:
 	const Settings& settings_;
 
 	sampler::Random sampler_;
-	sampler::Golden_ratio material_sampler_;
-	sampler::Golden_ratio light_sampler_;
+
+	static constexpr uint32_t Num_material_samplers = 3;
+	sampler::Golden_ratio material_samplers_[Num_material_samplers];
+
+	static constexpr uint32_t Num_light_samplers = 3;
+	sampler::Golden_ratio light_samplers_[Num_light_samplers];
 
 	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;

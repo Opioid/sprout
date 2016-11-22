@@ -25,17 +25,23 @@ Pathtracer::Pathtracer(const take::Settings& take_settings,
 	Integrator(take_settings, rng),
 	settings_(settings),
 	sampler_(rng),
-	material_sampler_(rng),
+	material_samplers_{rng, rng, rng},
 	transmittance_(take_settings, rng) {}
 
 void Pathtracer::prepare(const scene::Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
-	material_sampler_.resize(num_samples_per_pixel, 1, 1, 1);
+
+	for (auto& s : material_samplers_) {
+		s.resize(num_samples_per_pixel, 1, 1, 1);
+	}
 }
 
 void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
-	material_sampler_.resume_pixel(sample, scramble);
+
+	for (auto& s : material_samplers_) {
+		s.resume_pixel(sample, scramble);
+	}
 }
 
 float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
@@ -99,15 +105,7 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 			throughput /= q;
 		}
 
-		sampler::Sampler* sampler;// = &sampler_;
-
-		if (0 == i) {
-			sampler = &material_sampler_;
-		} else {
-			sampler = &sampler_;
-		}
-
-		material_sample.sample(*sampler, sample_result);
+		material_sample.sample(material_sampler(i), sample_result);
 		if (0.f == sample_result.pdf) {
 			break;
 		}
@@ -145,6 +143,14 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 	}
 
 	return float4(result, opacity);
+}
+
+sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) {
+	if (Num_material_samplers > bounce) {
+		return material_samplers_[bounce];
+	}
+
+	return sampler_;
 }
 
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
