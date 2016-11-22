@@ -23,7 +23,7 @@ void Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index,
 										  Camera_sample& sample) {
 	sample.pixel = pixel;
 	sample.pixel_uv = samples_2D_[index];
-	sample.lens_uv = samples_2D_[num_samples_ - 1 - index].yx();
+	sample.lens_uv  = samples_2D_[num_samples_ + index];
 	sample.time = samples_1D_[index];
 }
 
@@ -48,7 +48,7 @@ void Golden_ratio::on_resize() {
 	delete [] samples_2D_;
 
 	samples_2D_ = new float2[num_samples_ * num_dimensions_2D_];
-	samples_1D_ = new float[num_samples_ * num_dimensions_1D_];
+	samples_1D_ = new float [num_samples_ * num_dimensions_1D_];
 }
 
 void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {
