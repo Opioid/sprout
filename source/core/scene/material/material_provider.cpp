@@ -460,7 +460,7 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_value,
+std::shared_ptr<Material> Provider::load_matte(const json::Value& matte_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -469,7 +469,7 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_val
 	bool two_sided = false;
 	float3 color(0.6f, 0.6f, 0.6f);
 
-	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
+	for (auto n = matte_value.MemberBegin(); n != matte_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const json::Value& node_value = n->value;
 
@@ -511,7 +511,7 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& substitute_val
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_value,
+std::shared_ptr<Material> Provider::load_metal(const json::Value& metal_value,
 											   resource::Manager& manager) {
 	scene::material::Sampler_settings sampler_settings;
 
@@ -525,28 +525,25 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 	float roughness = 0.9f;
 	float2 roughness_aniso(0.f, 0.f);
 
-	for (auto n = substitute_value.MemberBegin(); n != substitute_value.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("ior" == node_name) {
-			ior = json::read_float3(node_value);
-		} else if ("absorption" == node_name) {
-			absorption = json::read_float3(node_value);
-		} else if ("preset" == node_name) {
-			metal::ior_and_absorption(node_value.GetString(), ior, absorption);
-		} else if ("roughness" == node_name) {
-			if (node_value.IsArray()) {
-				roughness_aniso = json::read_float2(node_value);
+	for (auto& n : metal_value.GetObject()) {
+		if ("ior" == n.name) {
+			ior = json::read_float3(n.value);
+		} else if ("absorption" == n.name) {
+			absorption = json::read_float3(n.value);
+		} else if ("preset" == n.name) {
+			metal::ior_and_absorption(n.value.GetString(), ior, absorption);
+		} else if ("roughness" == n.name) {
+			if (n.value.IsArray()) {
+				roughness_aniso = json::read_float2(n.value);
 			} else {
-				roughness = json::read_float(node_value);
+				roughness = json::read_float(n.value);
 			}
-		} else if ("two_sided" == node_name) {
-			two_sided = json::read_bool(node_value);
-		} else if ("textures" == node_name) {
-			for (auto tn = node_value.Begin(); tn != node_value.End(); ++tn) {
+		} else if ("two_sided" == n.name) {
+			two_sided = json::read_bool(n.value);
+		} else if ("textures" == n.name) {
+			for (auto& tn : n.value.GetArray()) {
 				Texture_description texture_description;
-				read_texture_description(*tn, texture_description);
+				read_texture_description(tn, texture_description);
 
 				if (texture_description.filename.empty()) {
 					continue;
@@ -568,8 +565,8 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& substitute_val
 					mask = create_texture(texture_description, options, manager);
 				}
 			}
-		} else if ("sampler" == node_name) {
-			read_sampler_settings(node_value, sampler_settings);
+		} else if ("sampler" == n.name) {
+			read_sampler_settings(n.value, sampler_settings);
 		}
 	}
 
@@ -765,7 +762,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	Texture_adapter emission_map;
 	Texture_adapter mask;
 	bool two_sided = false;
-	float3 color(0.4f, 0.4f, 0.4f);
+	float3 color(0.6f, 0.6f, 0.6f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float ior = 1.46f;
