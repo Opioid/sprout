@@ -12,10 +12,7 @@ Typed_image<T>::Typed_image() :
 template<typename T>
 Typed_image<T>::Typed_image(const Image::Description& description) :
 	Image(description),
-	data_(memory::allocate_aligned<T>(description.dimensions.x *
-									  description.dimensions.y *
-									  description.dimensions.z *
-									  description.num_elements)) {}
+	data_(memory::allocate_aligned<T>(description.num_bytes())) {}
 
 template<typename T>
 Typed_image<T>::~Typed_image() {
@@ -32,10 +29,8 @@ void Typed_image<T>::resize(const Image::Description& description) {
 	memory::free_aligned(data_);
 
 	Image::resize(description);
-	data_ = memory::allocate_aligned<T>(description.dimensions.x *
-										description.dimensions.y *
-										description.dimensions.z *
-										description.num_elements);
+
+	data_ = memory::allocate_aligned<T>(description.num_bytes());
 }
 
 template<typename T>

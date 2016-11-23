@@ -1,6 +1,6 @@
 #include "celestial_disk.hpp"
 #include "shape_sample.hpp"
-#include "geometry/shape_intersection.hpp"
+#include "shape_intersection.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"

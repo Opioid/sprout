@@ -19,8 +19,9 @@ HEADERS += \
 	scene/shape/node_stack.inl \
 	scene/shape/plane.hpp \
 	scene/shape/shape.hpp \
+	scene/shape/shape_intersection.hpp \
 	scene/shape/shape_sample.hpp \
+	scene/shape/shape_vertex.hpp \
 	scene/shape/sphere.hpp \
 
-include(geometry/geometry.pri)
 include(triangle/triangle.pri)

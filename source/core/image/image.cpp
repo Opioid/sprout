@@ -18,6 +18,13 @@ Image::Description::Description(Type type, const int3& dimensions, int32_t num_e
 	dimensions(dimensions),
 	num_elements(num_elements) {}
 
+size_t Image::Description::num_bytes() const {
+	return static_cast<size_t>(dimensions.x *
+							   dimensions.y *
+							   dimensions.z *
+							   num_elements);
+}
+
 Image::Image() : area_(0), volume_(0) {}
 
 Image::Image(const Description& description) :

@@ -1,11 +1,10 @@
 #include "matte_material.hpp"
 #include "matte_sample.hpp"
-#include "scene/scene_renderstate.hpp"
+#include "scene/scene_renderstate.inl"
 #include "scene/scene_worker.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
-#include "scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
 
 namespace scene { namespace material { namespace matte {

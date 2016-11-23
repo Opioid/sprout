@@ -21,12 +21,12 @@ uint32_t Data_interleaved<Triangle>::current_triangle() const {
 }
 
 template<typename Triangle>
-bool Data_interleaved<Triangle>::intersect(uint32_t index, math::Oray& ray, float2& uv) const {
+bool Data_interleaved<Triangle>::intersect(uint32_t index, math::Ray& ray, float2& uv) const {
     return triangles_[index].intersect(ray, uv);
 }
 
 template<typename Triangle>
-bool Data_interleaved<Triangle>::intersect_p(uint32_t index, const math::Oray& ray) const {
+bool Data_interleaved<Triangle>::intersect_p(uint32_t index, const math::Ray& ray) const {
     return triangles_[index].intersect_p(ray);
 }
 

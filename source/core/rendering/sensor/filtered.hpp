@@ -15,7 +15,6 @@ class Filtered : public Base {
 public:
 
 	Filtered(int2 dimensions, float exposure, const Clamp& clamp, const filter::Filter* filter);
-
 	~Filtered();
 
 	virtual int32_t filter_radius_int() const final override;

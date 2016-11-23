@@ -13,7 +13,10 @@ Typed_renderer<T>::Typed_renderer(int2 dimensions, int32_t sqrt_num_samples) :
 	sqrt_num_samples_(sqrt_num_samples),
 	dimensions_(sqrt_num_samples * dimensions),
 	dimensions_f_(sqrt_num_samples * dimensions),
-	samples_(new T[sqrt_num_samples * dimensions.x * sqrt_num_samples * dimensions.y]),
+	samples_(new T[static_cast<size_t>(sqrt_num_samples *
+									   dimensions.x *
+									   sqrt_num_samples *
+									   dimensions.y)]),
 	brush_(T(0))
 {}
 

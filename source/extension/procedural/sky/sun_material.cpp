@@ -1,13 +1,12 @@
 #include "sun_material.hpp"
 #include "sky_model.hpp"
 #include "core/scene/prop.hpp"
-#include "core/scene/scene_renderstate.hpp"
+#include "core/scene/scene_renderstate.inl"
 #include "core/scene/scene_worker.hpp"
 #include "core/scene/shape/shape_sample.hpp"
 #include "core/scene/shape/shape.hpp"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/material/material_sample_cache.inl"
-#include "core/scene/shape/geometry/hitpoint.inl"
 #include "base/math/vector.inl"
 
 namespace procedural { namespace sky {

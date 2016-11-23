@@ -41,9 +41,9 @@ protected:
 	uint32_t num_samples_per_iteration_;
 
 	uint32_t  num_dimensions_2D_;
-	uint32_t* current_sample_2D_;
-
 	uint32_t  num_dimensions_1D_;
+
+	uint32_t* current_sample_2D_;
 	uint32_t* current_sample_1D_;
 };
 

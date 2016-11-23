@@ -6,7 +6,7 @@
 namespace image { namespace encoding {
 
 Srgb::Srgb(int2 dimensions) :
-	rgb_(new math::byte3[dimensions.x * dimensions.y]) {}
+	rgb_(new math::byte3[static_cast<size_t>(dimensions.x * dimensions.y)]) {}
 
 Srgb::~Srgb() {
 	delete [] rgb_;

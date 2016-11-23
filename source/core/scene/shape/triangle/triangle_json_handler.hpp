@@ -2,7 +2,7 @@
 
 #include "triangle_bvh_preset.hpp"
 #include "triangle_primitive.hpp"
-#include "scene/shape/geometry/vertex.hpp"
+#include "scene/shape/shape_vertex.hpp"
 #include "rapidjson/reader.h"
 #include <vector>
 #include <string>

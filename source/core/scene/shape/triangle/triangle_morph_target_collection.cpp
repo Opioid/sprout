@@ -1,6 +1,6 @@
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_primitive.hpp"
-#include "scene/shape/geometry/vertex.hpp"
+#include "scene/shape/shape_vertex.hpp"
 #include "base/math/vector.inl"
 #include "base/thread/thread_pool.hpp"
 

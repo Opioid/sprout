@@ -8,8 +8,8 @@ Sampler::Sampler(rnd::Generator& rng) :
 	num_samples_(0),
 	num_samples_per_iteration_(0),
 	num_dimensions_2D_(0),
-	current_sample_2D_(nullptr),
 	num_dimensions_1D_(0),
+	current_sample_2D_(nullptr),
 	current_sample_1D_(nullptr) {}
 
 Sampler::~Sampler() {

@@ -16,7 +16,7 @@ class Worker;
 
 namespace entity { struct Composed_transformation; }
 
-namespace shape { struct Hitpoint; class Shape; }
+namespace shape { class Shape; }
 
 namespace material {
 

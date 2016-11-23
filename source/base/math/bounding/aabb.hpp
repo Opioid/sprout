@@ -24,8 +24,8 @@ public:
 
 	bool intersect(FVector3f_a p) const;
 
-	bool intersect_p(const math::Oray& ray) const;
-	bool intersect_p(const math::Oray& ray, float& min_t, float& max_t) const;
+	bool intersect_p(const math::Ray& ray) const;
+	bool intersect_p(const math::Ray& ray, float& min_t, float& max_t) const;
 
 	void set_min_max(FVector3f_a min, FVector3f_a max);
 

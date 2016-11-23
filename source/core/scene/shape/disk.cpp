@@ -1,6 +1,6 @@
 #include "disk.hpp"
 #include "shape_sample.hpp"
-#include "geometry/shape_intersection.hpp"
+#include "shape_intersection.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
@@ -42,9 +42,9 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 			float3 sk = k / radius;
 
 			intersection.uv.x = (math::dot(intersection.t, sk) + 1.f)
-							  * 0.5f * transformation.scale.z;
+								 * 0.5f * transformation.scale.z;
 			intersection.uv.y = (math::dot(intersection.b, sk) + 1.f)
-							  * 0.5f * transformation.scale.z;
+								 * 0.5f * transformation.scale.z;
 
 			intersection.part = 0;
 

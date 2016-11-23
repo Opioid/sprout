@@ -40,7 +40,7 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 
 void squared_magnitude(float* result, const float2* source, size_t width, size_t height);
 
-void diffraction(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
+void diffraction(Spectrum* result, const float* source, uint32_t bin, int32_t resolution);
 
 void write_signal(const std::string& name, const image::Float_1& signal);
 
@@ -398,7 +398,7 @@ void squared_magnitude(float* result, const float2* source, size_t width, size_t
 }
 
 void diffraction(Spectrum* result, const float* squared_magnitude,
-				 int32_t bin, int32_t resolution) {
+				 uint32_t bin, int32_t resolution) {
 	float fr = static_cast<float>(resolution);
 
 	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() - 1);

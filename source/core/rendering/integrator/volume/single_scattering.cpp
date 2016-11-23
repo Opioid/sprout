@@ -117,7 +117,7 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume& volume
 		float2 uv(rng_.random_float(), rng_.random_float());
 		float3 dir = math::sample_sphere_uniform(uv);
 
-		math::Oray scatter_ray(current, dir, 0.f, 10000.f, ray.time);
+		math::Ray scatter_ray(current, dir, 0.f, 10000.f, ray.time);
 
 		float3 li = worker.surface_li(scatter_ray);
 

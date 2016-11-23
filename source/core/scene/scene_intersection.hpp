@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shape/geometry/shape_intersection.hpp"
+#include "shape/shape_intersection.hpp"
 #include "material/sampler_settings.hpp"
 
 namespace scene {
@@ -32,8 +32,10 @@ struct Intersection {
 	const material::Sample& sample(Worker& worker, float3_p wo, float time,
 								   Sampler_filter filter) const;
 
-	const Prop* prop;
+	bool same_hemisphere(float3_p v) const;
+
 	shape::Intersection geo;
+	const Prop* prop;
 };
 
 }

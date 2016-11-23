@@ -1,6 +1,6 @@
 #include "inverse_sphere.hpp"
 #include "shape_sample.hpp"
-#include "geometry/shape_intersection.hpp"
+#include "shape_intersection.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
@@ -109,7 +109,7 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 							Node_stack& /*node_stack*/, Sample& sample) const {
 	float3 dir = n;
 
-	math::Oray ray;
+	math::Ray ray;
 	ray.origin = p;
 	ray.set_direction(dir);
 	ray.min_t  = 0.1f;

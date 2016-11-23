@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene/shape/geometry/vertex.hpp"
+#include "scene/shape/shape_vertex.hpp"
 #include "base/math/ray.hpp"
 
 namespace scene { namespace shape { namespace triangle {
@@ -16,8 +16,8 @@ struct Triangle_MTE {
 	float bitangent_sign;
 	uint32_t material_index;
 
-	bool intersect(math::Oray& ray, float2& uv) const;
-	bool intersect_p(const math::Oray& ray) const;
+	bool intersect(math::Ray& ray, float2& uv) const;
+	bool intersect_p(const math::Ray& ray) const;
 
 	void interpolate(float2 uv, float3& p, float2& tc) const;
 	void interpolate_data(float2 uv, float3& n,
@@ -41,8 +41,8 @@ struct alignas(16) Intersection_triangle_MTE {
 	float3 e2;
 	float3 n;
 
-	bool intersect(math::Oray& ray, float2& uv) const;
-	bool intersect_p(const math::Oray& ray) const;
+	bool intersect(math::Ray& ray, float2& uv) const;
+	bool intersect_p(const math::Ray& ray) const;
 
 	void interpolate(float2 uv, float3& p) const;
 

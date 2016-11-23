@@ -24,6 +24,8 @@ public:
 		Description(Type type, int2 dimensions, int32_t num_elements = 1);
 		Description(Type type, const int3& dimensions, int32_t num_elements = 1);
 
+		size_t num_bytes() const;
+
 		Type type;
 		int3 dimensions;
 

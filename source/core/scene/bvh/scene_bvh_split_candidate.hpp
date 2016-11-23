@@ -12,6 +12,7 @@ class Prop;
 namespace bvh {
 
 class Split_candidate {
+
 public:
 
 	Split_candidate(const math::plane& plane, uint8_t axis);
@@ -29,9 +30,9 @@ public:
 
 private:
 
-	uint64_t key_;
-
 	math::plane plane_;
+
+	uint64_t key_;
 
 	uint8_t axis_;
 };

@@ -24,7 +24,7 @@ Triangle_YF::Triangle_YF(const Vertex& a, const Vertex& b, const Vertex& c,
 	d2 = -math::dot(n2, a.p);
 }
 
-inline bool Triangle_YF::intersect(math::Oray& ray, float2& uv) const {
+inline bool Triangle_YF::intersect(math::Ray& ray, float2& uv) const {
 	float det = math::dot(ray.direction, n);
 
 	float t = d - math::dot(ray.origin, n);
@@ -62,7 +62,7 @@ inline bool Triangle_YF::intersect(math::Oray& ray, float2& uv) const {
 	return false;
 }
 
-inline bool Triangle_YF::intersect_p(const math::Oray& ray) const {
+inline bool Triangle_YF::intersect_p(const math::Ray& ray) const {
 	float det = math::dot(ray.direction, n);
 
 	float t = d - math::dot(ray.origin, n);

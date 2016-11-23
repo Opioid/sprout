@@ -8,7 +8,7 @@ class Homogeneous : public Volume {
 
 public:
 
-	virtual float3 optical_depth(const math::Oray& ray, float step_size,
+	virtual float3 optical_depth(const math::Ray& ray, float step_size,
 								 rnd::Generator& rng, Worker& worker,
 								 Sampler_filter filter) const final override;
 

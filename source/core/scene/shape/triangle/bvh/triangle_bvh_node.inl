@@ -30,7 +30,7 @@ inline uint32_t Node::primitive_end() const {
 // This test is presented in the paper
 // "An Efficient and Robust Ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
-inline bool Node::intersect_p(const math::Oray& ray) const {
+inline bool Node::intersect_p(const math::Ray& ray) const {
 	int8_t sign_0 = ray.sign[0];
 	float min_t = (bounds[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
 	float max_t = (bounds[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;
@@ -70,7 +70,7 @@ inline bool Node::intersect_p(const math::Oray& ray) const {
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
 
-inline bool Node::intersect_p(const math::Oray& ray, float& min_out, float& max_out) const {
+inline bool Node::intersect_p(const math::Ray& ray, float& min_out, float& max_out) const {
 	int8_t sign_0 = ray.sign[0];
 	float min_t = (bounds[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
 	float max_t = (bounds[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;

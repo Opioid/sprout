@@ -14,8 +14,8 @@ struct Triangle_YF {
 
 	Triangle_YF(const Vertex& a, const Vertex& b, const Vertex& c, uint32_t material_index);
 
-	bool intersect(math::Oray& ray, float2& uv) const;
-	bool intersect_p(const math::Oray& ray) const;
+	bool intersect(math::Ray& ray, float2& uv) const;
+	bool intersect_p(const math::Ray& ray) const;
 
 	void interpolate(float2 uv, float3& p, float3& n, float2& tc) const;
 	void interpolate_data(float2 uv, float3& n,

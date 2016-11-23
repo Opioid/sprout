@@ -3,7 +3,6 @@
 #include "scene_intersection.hpp"
 #include "scene_renderstate.hpp"
 #include "prop.hpp"
-#include "shape/geometry/hitpoint.inl"
 
 namespace scene {
 
@@ -36,7 +35,7 @@ inline const material::Sample& Intersection::sample(Worker& worker, float3_p wo,
 	rs.t = geo.t;
 	rs.b = geo.b;
 
-	if (material->is_two_sided() && !geo.same_hemisphere(wo)) {
+	if (material->is_two_sided() && !same_hemisphere(wo)) {
 		rs.n     = -geo.n;
 		rs.geo_n = -geo.geo_n;
 	} else {
@@ -51,6 +50,10 @@ inline const material::Sample& Intersection::sample(Worker& worker, float3_p wo,
 	rs.ior  = 1.f;
 
 	return material->sample(wo, rs, worker, filter);
+}
+
+inline bool Intersection::same_hemisphere(float3_p v) const {
+	return math::dot(geo.geo_n, v) > 0.f;
 }
 
 }

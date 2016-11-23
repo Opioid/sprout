@@ -5,7 +5,7 @@
 
 namespace scene {
 
-struct Ray : public math::Oray {
+struct Ray : public math::Ray {
 	Ray();
 	Ray(float3_p origin, float3_p direction,
 		float min_t = 0.f, float max_t = 1.f,

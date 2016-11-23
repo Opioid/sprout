@@ -45,11 +45,11 @@ public:
 
 	uint32_t current_triangle() const;
 
-	bool intersect(math::Oray& ray, Node_stack& node_stack, Intersection& intersection) const;
+	bool intersect(math::Ray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect_p(const math::Oray& ray, Node_stack& node_stack) const;
+	bool intersect_p(const math::Ray& ray, Node_stack& node_stack) const;
 
-	float opacity(math::Oray& ray, float time, const material::Materials& materials,
+	float opacity(math::Ray& ray, float time, const material::Materials& materials,
 				  Worker& worker, material::Sampler_settings::Filter filter) const;
 
 	void interpolate_triangle_data(uint32_t index, float2 uv,

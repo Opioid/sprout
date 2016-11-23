@@ -1,7 +1,11 @@
 #include "testing_size.hpp"
 #include "image/texture/texture_adapter.hpp"
+#include "scene/scene_renderstate.inl"
+#include "scene/bvh/scene_bvh_split_candidate.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "scene/scene_intersection.hpp"
+#include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/triangle/triangle_primitive_mte.hpp"
 #include "scene/shape/triangle/bvh/triangle_bvh_node.inl"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
@@ -13,6 +17,10 @@ namespace testing {
 
 template<typename T>
 void print_size(const std::string& name, size_t expected_size) {
+	if (sizeof(T) != expected_size) {
+		std::cout << "ALARM: ";
+	}
+
 	std::cout << "sizeof(" << name << ") == " << sizeof(T)
 			  << " (" << expected_size << ")" << std::endl;
 }
@@ -34,6 +42,12 @@ void size() {
 
 	print_size<scene::entity::Composed_transformation>("Composed_transformation", 208);
 
+	print_size<scene::shape::Intersection>("shape::Intersection", 96);
+
+	print_size<scene::Intersection>("scene::Intersection", 112);
+
+	print_size<scene::Renderstate>("Renderstate", 112);
+
 	print_size<scene::shape::triangle::Intersection_triangle_MTE>("Intersection_triangle_MTE", 64);
 
 	print_size<scene::shape::triangle::Shading_triangle_MTE>("Shading_triangle_MTE", 128);
@@ -45,6 +59,8 @@ void size() {
 	print_size<scene::shape::triangle::Shading_vertex_MT>("Shading_vertex_MT", 48);
 
 	print_size<image::texture::Adapter>("texture::Adapter", 24);
+
+	print_size<scene::bvh::Split_candidate>("Split_candidate", 32);
 }
 
 }

@@ -61,7 +61,7 @@ uint32_t Tree<Data>::current_triangle() const {
 }
 
 template<typename Data>
-bool Tree<Data>::intersect(math::Oray& ray, Node_stack& node_stack,
+bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 						   Intersection& intersection) const {
 	node_stack.clear();
 	node_stack.push(0);
@@ -103,7 +103,7 @@ bool Tree<Data>::intersect(math::Oray& ray, Node_stack& node_stack,
 }
 
 template<typename Data>
-bool Tree<Data>::intersect_p(const math::Oray& ray, Node_stack& node_stack) const {
+bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const {
 	node_stack.clear();
 	node_stack.push(0);
 	uint32_t n = 0;
@@ -138,7 +138,7 @@ bool Tree<Data>::intersect_p(const math::Oray& ray, Node_stack& node_stack) cons
 }
 
 template<typename Data>
-float Tree<Data>::opacity(math::Oray& ray, float time, const material::Materials& materials,
+float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials& materials,
 						  Worker& worker, material::Sampler_settings::Filter filter) const {
 	auto& node_stack = worker.node_stack();
 	node_stack.clear();

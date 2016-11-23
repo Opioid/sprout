@@ -32,7 +32,7 @@ uint32_t Indexed_data<Intersection_vertex, Shading_vertex>::current_triangle() c
 
 template<typename Intersection_vertex, typename Shading_vertex>
 bool Indexed_data<Intersection_vertex, Shading_vertex>::intersect(uint32_t index,
-																  math::Oray& ray,
+																  math::Ray& ray,
 																  float2& uv) const {
 	const auto& t = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[t.a];
@@ -44,7 +44,7 @@ bool Indexed_data<Intersection_vertex, Shading_vertex>::intersect(uint32_t index
 
 template<typename Intersection_vertex, typename Shading_vertex>
 bool Indexed_data<Intersection_vertex, Shading_vertex>::intersect_p(uint32_t index,
-																	const math::Oray& ray) const {
+																	const math::Ray& ray) const {
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[tri.a];
 	const Intersection_vertex& b = intersection_vertices_[tri.b];
@@ -210,7 +210,7 @@ uint32_t Indexed_data1<Intersection_vertex, Shading_vertex>::current_triangle() 
 
 template<typename Intersection_vertex, typename Shading_vertex>
 bool Indexed_data1<Intersection_vertex, Shading_vertex>::intersect(uint32_t index,
-																  math::Oray& ray,
+																  math::Ray& ray,
 																  float2& uv) const {
 	const auto& t = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[t.a];
@@ -222,7 +222,7 @@ bool Indexed_data1<Intersection_vertex, Shading_vertex>::intersect(uint32_t inde
 
 template<typename Intersection_vertex, typename Shading_vertex>
 bool Indexed_data1<Intersection_vertex, Shading_vertex>::intersect_p(uint32_t index,
-																	 const math::Oray& ray) const {
+																	 const math::Ray& ray) const {
 	const auto& tri = triangles_[index];
 	const Intersection_vertex& a = intersection_vertices_[tri.a];
 	const Intersection_vertex& b = intersection_vertices_[tri.b];

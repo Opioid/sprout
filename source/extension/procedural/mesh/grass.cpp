@@ -3,7 +3,7 @@
 #include "core/image/texture/sampler/address_mode.hpp"
 #include "core/image/texture/sampler/sampler_2d_linear.inl"
 #include "core/resource/resource_manager.hpp"
-#include "core/scene/shape/geometry/vertex.hpp"
+#include "core/scene/shape/shape_vertex.hpp"
 #include "core/scene/shape/triangle/triangle_primitive.hpp"
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "base/math/vector.inl"

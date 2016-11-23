@@ -12,7 +12,7 @@ inline Triangle_MT::Triangle_MT(const shape::Vertex& a,
 
 inline Triangle_MT::Vertex::Vertex(const shape::Vertex& v) : p(v.p), n(v.n), t(v.t), uv(v.uv) {}
 
-inline bool Triangle_MT::intersect(math::Oray& ray, float2& uv) const {
+inline bool Triangle_MT::intersect(math::Ray& ray, float2& uv) const {
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
@@ -47,7 +47,7 @@ inline bool Triangle_MT::intersect(math::Oray& ray, float2& uv) const {
 	return false;
 }
 
-inline bool Triangle_MT::intersect_p(const math::Oray& ray) const {
+inline bool Triangle_MT::intersect_p(const math::Ray& ray) const {
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
@@ -138,7 +138,7 @@ inline float Triangle_MT::area(float3_p scale) const {
 inline bool intersect(const Intersection_vertex_MT& a,
 					  const Intersection_vertex_MT& b,
 					  const Intersection_vertex_MT& c,
-					  math::Oray& ray, float2& uv) {
+					  math::Ray& ray, float2& uv) {
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
@@ -176,7 +176,7 @@ inline bool intersect(const Intersection_vertex_MT& a,
 inline bool intersect_p(const Intersection_vertex_MT& a,
 						const Intersection_vertex_MT& b,
 						const Intersection_vertex_MT& c,
-						const math::Oray& ray) {
+						const math::Ray& ray) {
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 

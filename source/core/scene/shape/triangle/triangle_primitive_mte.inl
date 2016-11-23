@@ -14,7 +14,7 @@ inline Triangle_MTE::Triangle_MTE(const shape::Vertex& a,
 	auv(a.uv), buv(b.uv), cuv(c.uv),
 	bitangent_sign(a.bitangent_sign), material_index(material_index) {}
 
-inline bool Triangle_MTE::intersect(math::Oray& ray, float2& uv) const {
+inline bool Triangle_MTE::intersect(math::Ray& ray, float2& uv) const {
 	float3 pvec = math::cross(ray.direction, e2);
 
 	float det = math::dot(e1, pvec);
@@ -46,7 +46,7 @@ inline bool Triangle_MTE::intersect(math::Oray& ray, float2& uv) const {
 	return false;
 }
 
-inline bool Triangle_MTE::intersect_p(const math::Oray& ray) const {
+inline bool Triangle_MTE::intersect_p(const math::Ray& ray) const {
 	float3 pvec = math::cross(ray.direction, e2);
 
 	float det = math::dot(e1, pvec);
@@ -120,7 +120,7 @@ inline Intersection_triangle_MTE::Intersection_triangle_MTE(const shape::Vertex&
 	e2(c.p - a.p),
 	n(math::normalized(math::cross(e1, e2))) {}
 
-inline bool Intersection_triangle_MTE::intersect(math::Oray& ray, float2& uv) const {
+inline bool Intersection_triangle_MTE::intersect(math::Ray& ray, float2& uv) const {
 	float3 pvec = math::cross(ray.direction, e2);
 
 	float det = math::dot(e1, pvec);
@@ -152,7 +152,7 @@ inline bool Intersection_triangle_MTE::intersect(math::Oray& ray, float2& uv) co
 	return false;
 }
 
-inline bool Intersection_triangle_MTE::intersect_p(const math::Oray& ray) const {
+inline bool Intersection_triangle_MTE::intersect_p(const math::Ray& ray) const {
 	float3 pvec = math::cross(ray.direction, e2);
 
 	float det = math::dot(e1, pvec);

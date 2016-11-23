@@ -32,8 +32,8 @@ struct Node {
 
 	uint32_t primitive_end() const;
 
-	bool intersect_p(const math::Oray& ray) const;
-	bool intersect_p(const math::Oray& ray, float& min_t, float& max_t) const;
+	bool intersect_p(const math::Ray& ray) const;
+	bool intersect_p(const math::Ray& ray, float& min_t, float& max_t) const;
 
 	union {
 		float3 bounds[2];

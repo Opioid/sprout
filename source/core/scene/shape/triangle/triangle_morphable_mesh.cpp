@@ -7,8 +7,8 @@
 #include "bvh/triangle_bvh_tree.inl"
 #include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
+#include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
-#include "scene/shape/geometry/shape_intersection.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
@@ -32,7 +32,7 @@ uint32_t Morphable_mesh::num_parts() const {
 
 bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
 							   Node_stack& node_stack, shape::Intersection& intersection) const {
-	math::Oray tray;
+	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
 	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
@@ -70,7 +70,7 @@ bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
 
 bool Morphable_mesh::intersect_p(const Transformation& transformation,
 								 const Ray& ray, Node_stack& node_stack) const {
-	math::Oray tray;
+	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
 	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
@@ -82,7 +82,7 @@ bool Morphable_mesh::intersect_p(const Transformation& transformation,
 float Morphable_mesh::opacity(const Transformation& transformation, const Ray& ray,
 							  const material::Materials& materials,
 							  Worker& worker, Sampler_filter filter) const {
-	math::Oray tray;
+	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
 	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
 	tray.min_t = ray.min_t;
