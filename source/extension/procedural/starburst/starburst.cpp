@@ -68,13 +68,15 @@ void create(thread::Pool& pool) {
 		signal.clear(1.f);
 	}
 
+//	write_signal("signal.png", signal);
+
 	Aperture aperture(8, 0.25f, 0.015f);
 //	Aperture aperture(5, 0.f, 0.f);
 	render_aperture(aperture, signal);
 
 	write_signal("signal.png", signal);
 
-	bool near_field = true;
+	bool near_field = false;
 
 	if (near_field) {
 		Image::Description description(Image::Type::Float_2, dimensions);
@@ -175,9 +177,9 @@ void create(thread::Pool& pool) {
 
 //	write_signal("signal_after.png", signal);
 
-	float radius = static_cast<float>(resolution) * 0.00390625f;
-	filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
-	gaussian.apply(float_image_a);
+//	float radius = static_cast<float>(resolution) * 0.00390625f;
+//	filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
+//	gaussian.apply(float_image_a);
 
 	Byte_3 byte_image(Image::Description(Image::Type::Byte_3, dimensions));
 
