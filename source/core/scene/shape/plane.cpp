@@ -15,7 +15,7 @@ Plane::Plane() {
 
 bool Plane::intersect(const Transformation& transformation, Ray& ray,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -87,7 +87,7 @@ bool Plane::intersect(const Transformation& transformation, Ray& ray,
 
 bool Plane::intersect_p(const Transformation& transformation, const Ray& ray,
 						Node_stack& /*node_stack*/) const {
-	const float3& normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;
@@ -103,7 +103,7 @@ bool Plane::intersect_p(const Transformation& transformation, const Ray& ray,
 float Plane::opacity(const Transformation& transformation, const Ray& ray,
 					 const material::Materials& materials,
 					 Worker& worker, Sampler_filter filter) const {
-	const float3& normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.v3.z;
 	float d = -math::dot(normal, transformation.position);
 	float denom = math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) + d;

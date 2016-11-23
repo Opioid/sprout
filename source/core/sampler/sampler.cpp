@@ -22,7 +22,7 @@ void Sampler::resize(uint32_t num_iterations, uint32_t num_samples_per_iteration
 	uint32_t num_samples = num_iterations * num_samples_per_iteration;
 
 	if (num_samples != num_samples_
-	||  num_samples_per_iteration != num_samples_per_iteration
+	||  num_samples_per_iteration != num_samples_per_iteration_
 	||  num_dimensions_1D != num_dimensions_1D_) {
 		delete [] current_sample_1D_;
 		delete [] current_sample_2D_;

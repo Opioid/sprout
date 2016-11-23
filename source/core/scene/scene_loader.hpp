@@ -93,6 +93,7 @@ private:
 	std::shared_ptr<shape::Shape> infinite_sphere_;
 	std::shared_ptr<shape::Shape> inverse_sphere_;
 	std::shared_ptr<shape::Shape> plane_;
+	std::shared_ptr<shape::Shape> rectangle_;
 	std::shared_ptr<shape::Shape> sphere_;
 
 	std::shared_ptr<material::Material> fallback_material_;

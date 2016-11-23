@@ -5,6 +5,7 @@ SOURCES += \
 	scene/shape/infinite_sphere.cpp \
 	scene/shape/inverse_sphere.cpp \
 	scene/shape/plane.cpp \
+    scene/shape/rectangle.cpp \
 	scene/shape/shape.cpp \
 	scene/shape/sphere.cpp \
 
@@ -18,6 +19,7 @@ HEADERS += \
 	scene/shape/node_stack.hpp \
 	scene/shape/node_stack.inl \
 	scene/shape/plane.hpp \
+    scene/shape/rectangle.hpp \
 	scene/shape/shape.hpp \
 	scene/shape/shape_intersection.hpp \
 	scene/shape/shape_sample.hpp \
