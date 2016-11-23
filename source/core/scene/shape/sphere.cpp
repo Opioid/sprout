@@ -30,19 +30,15 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 		if (t0 > ray.min_t && t0 < ray.max_t) {
 			intersection.epsilon = 5e-4f * t0;
 
-			intersection.p = ray.point(t0);
-			intersection.n = math::normalized(intersection.p - transformation.position);
-			math::coordinate_system(intersection.n, intersection.t, intersection.b);
-			intersection.geo_n = intersection.n;
+			float3 p = ray.point(t0);
+			float3 n = math::normalized(p - transformation.position);
 
-			float3 xyz = math::transform_vector_transposed(
-						intersection.n, transformation.rotation);
+			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
 			intersection.uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 									  std::acos(xyz.y) * math::Pi_inv);
 
-			float3 n = xyz;//intersection.n;
-			float2 uv = float2(-std::atan2(n.x, n.z) + math::Pi, std::acos(n.y));
+			float2 uv = float2(-std::atan2(xyz.x, xyz.z) + math::Pi, std::acos(xyz.y));
 
 			float phi   = uv.x;
 			float theta = std::max(uv.y, 0.99999f);
@@ -55,8 +51,11 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 
 			t = math::normalized(math::transform_vector(t, transformation.rotation));
 
+			intersection.p = p;
 			intersection.t = t;
-			intersection.b = -math::cross(t, n);
+			intersection.b = -math::cross(t, xyz);
+			intersection.n = n;
+			intersection.geo_n = n;
 
 			intersection.part = 0;
 
