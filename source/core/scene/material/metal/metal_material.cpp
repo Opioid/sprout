@@ -24,7 +24,7 @@ const material::Sample& Material_isotropic::sample(float3_p wo, const Renderstat
 	sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_.is_valid()) {
-		auto& sampler = worker.sampler_2D(sampler_key_, filter);
+		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 		float3 nm = normal_map_.sample_3(sampler, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
@@ -70,7 +70,7 @@ const material::Sample& Material_anisotropic::sample(float3_p wo, const Renderst
 													 Sampler_settings::Filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	auto& sampler = worker.sampler_2D(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	sample.set_basis(rs.geo_n, wo);
 

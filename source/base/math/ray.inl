@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ray.hpp"
-#include "math.hpp"
 #include "vector3.inl"
 
 namespace math {

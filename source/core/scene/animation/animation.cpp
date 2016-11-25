@@ -8,7 +8,7 @@
 
 namespace scene { namespace animation {
 
-void Animation::init(size_t count) {
+void Animation::init(uint32_t count) {
     current_time_ = 0.f;
     current_frame_ = 0;
 	keyframes_.clear();
@@ -22,7 +22,7 @@ void Animation::push_back(const entity::Keyframe& keyframe) {
 void Animation::tick(float time_slice) {
 	current_time_ += time_slice;
 
-	size_t max_frame = keyframes_.size() - 1;
+	uint32_t max_frame = static_cast<uint32_t>(keyframes_.size() - 1);
 	float next_frame_time = keyframes_[std::min(current_frame_ + 1, max_frame)].time;
 
 	if (current_time_ > next_frame_time) {

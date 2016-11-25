@@ -32,7 +32,7 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 		sample.coating_.set_basis(rs.t, rs.b, rs.n);
 //	}
 
-	auto& sampler = worker.sampler_2D(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	if (flakes_normal_map_.is_valid()) {
 		float3 nm = flakes_normal_map_.sample_3(sampler, rs.uv);

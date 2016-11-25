@@ -78,6 +78,8 @@ protected:
 
 	Texture_adapter mask_;
 
+private:
+
 	uint32_t sampler_key_;
 
 	bool two_sided_;

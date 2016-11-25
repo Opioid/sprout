@@ -16,84 +16,44 @@ Plane::Plane() {
 bool Plane::intersect(const Transformation& transformation, Ray& ray,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
 	float3_p normal = transformation.rotation.v3.z;
-	float d = -math::dot(normal, transformation.position);
-	float denom = math::dot(normal, ray.direction);
-	float numer = math::dot(normal, ray.origin) + d;
-	float t = -(numer / denom);
+	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) - d;
+	float hit_t = numer / denom;
 
-	if (t > ray.min_t && t < ray.max_t) {
-		intersection.epsilon = 5e-4f * t;
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		intersection.epsilon = 5e-4f * hit_t;
 
-		intersection.p = ray.point(t);
-		intersection.t = -transformation.rotation.v3.x;
-		intersection.b = -transformation.rotation.v3.y;
+		float3 p = ray.point(hit_t);
+		float3 t = -transformation.rotation.v3.x;
+		float3 b = -transformation.rotation.v3.y;
+
+		intersection.p = p;
+		intersection.t = t;
+		intersection.b = b;
 		intersection.n = normal;
 		intersection.geo_n = normal;
-		intersection.uv.x = math::dot(intersection.t, intersection.p) * transformation.scale.x;
-		intersection.uv.y = math::dot(intersection.b, intersection.p) * transformation.scale.y;
+		intersection.uv.x = math::dot(t, p) * transformation.scale.x;
+		intersection.uv.y = math::dot(b, p) * transformation.scale.y;
 
 		intersection.part = 0;
 
-		ray.max_t = t;
+		ray.max_t = hit_t;
 		return true;
 	}
 
 	return false;
-
-
-/*
-	math::float3a vn(transformation.rotation.z);
-	math::float3a vp(transformation.position);
-	math::float3a vd(ray.direction);
-	math::float3a vo(ray.origin);
-
-	math::simd::Vector normal = math::simd::load_float3(vn);
-	math::simd::Vector position = math::simd::load_float3(vp);
-	math::simd::Vector direction = math::simd::load_float3(vd);
-	math::simd::Vector origin = math::simd::load_float3(vo);
-
-	math::simd::Vector d = math::simd::dot3(normal, position);
-	math::simd::Vector denom = math::simd::dot3(normal, direction);
-	math::simd::Vector numer = math::simd::dot3(normal, origin);
-	numer = math::simd::sub3(numer, d);
-
-	math::simd::Vector ttt = math::simd::div3(numer, denom);
-
-	math::float3a tt;
-	math::simd::store_float3(tt, ttt);
-
-	float t = -tt.x;
-
-	if (t > ray.min_t && t < ray.max_t) {
-		intersection.epsilon = 5e-4f * t;
-
-		intersection.p = ray.point(t);
-		intersection.t = -transformation.rotation.x;
-		intersection.b = -transformation.rotation.y;
-		intersection.n = transformation.rotation.z;
-		intersection.geo_n = transformation.rotation.z;
-		intersection.uv.x = math::dot(intersection.t, intersection.p) * transformation.scale.x;
-		intersection.uv.y = math::dot(intersection.b, intersection.p) * transformation.scale.y;
-
-		intersection.part = 0;
-
-		ray.max_t = t;
-		return true;
-	}
-
-	return false;
-*/
 }
 
 bool Plane::intersect_p(const Transformation& transformation, const Ray& ray,
 						Node_stack& /*node_stack*/) const {
 	float3_p normal = transformation.rotation.v3.z;
-	float d = -math::dot(normal, transformation.position);
-	float denom = math::dot(normal, ray.direction);
-	float numer = math::dot(normal, ray.origin) + d;
-	float t = -(numer / denom);
+	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) - d;
+	float hit_t = numer / denom;
 
-	if (t > ray.min_t && t < ray.max_t) {
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
 		return true;
 	}
 
@@ -104,13 +64,13 @@ float Plane::opacity(const Transformation& transformation, const Ray& ray,
 					 const material::Materials& materials,
 					 Worker& worker, Sampler_filter filter) const {
 	float3_p normal = transformation.rotation.v3.z;
-	float d = -math::dot(normal, transformation.position);
-	float denom = math::dot(normal, ray.direction);
-	float numer = math::dot(normal, ray.origin) + d;
-	float t = -(numer / denom);
+	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) - d;
+	float hit_t = numer / denom;
 
-	if (t > ray.min_t && t < ray.max_t) {
-		float3 p = ray.point(t);
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		float3 p = ray.point(hit_t);
 		float2 uv(math::dot(transformation.rotation.v3.x, p),
 				  math::dot(transformation.rotation.v3.y, p));
 

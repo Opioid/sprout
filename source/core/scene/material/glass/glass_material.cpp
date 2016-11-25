@@ -20,7 +20,7 @@ const material::Sample& Glass::sample(float3_p wo, const Renderstate& rs,
 	sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_.is_valid()) {
-		auto& sampler = worker.sampler_2D(sampler_key_, filter);
+		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 		float3 nm = normal_map_.sample_3(sampler, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));

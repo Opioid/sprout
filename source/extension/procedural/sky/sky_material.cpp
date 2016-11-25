@@ -71,7 +71,7 @@ const scene::material::Sample& Sky_baked_material::sample(float3_p wo, const sce
 														  Sampler_filter filter) {
 	auto& sample = cache_.get(worker.id());
 
-	auto& sampler = worker.sampler_2D(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	sample.set_basis(rs.geo_n, wo);
 
@@ -87,7 +87,7 @@ float3 Sky_baked_material::sample_radiance(float3_p /*wi*/, float2 uv,
 										   float /*area*/, float /*time*/,
 										   const scene::Worker& worker,
 										   Sampler_filter filter) const {
-	auto& sampler = worker.sampler_2D(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 	return emission_map_.sample_3(sampler, uv);
 }
 
@@ -109,7 +109,7 @@ float2 Sky_baked_material::radiance_sample(float2 r2, float& pdf) const {
 
 float Sky_baked_material::emission_pdf(float2 uv, const scene::Worker& worker,
 									   Sampler_filter filter) const {
-	auto& sampler = worker.sampler_2D(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }

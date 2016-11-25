@@ -118,9 +118,9 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 					  const material::Materials& materials,
 					  Worker& worker, Sampler_filter filter) const {
 	float3 v = transformation.position - ray.origin;
-	float b = dot(v, ray.direction);
+	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale.x;
-	float det = (b * b) - dot(v, v) + (radius * radius);
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
 	if (det > 0.f) {
 		float dist = std::sqrt(det);
@@ -231,7 +231,7 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 wn = math::normalized(ws - transformation.position);
 
-	float c = math::dot(wn, -dir);
+	float c = -math::dot(wn, dir);
 
 	if (c <= 0.f) {
 		sample.pdf = 0.f;
@@ -266,7 +266,7 @@ float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 		float sin_theta = std::sqrt(1.f - xyz.y * xyz.y);
 
 		float sl = t * t;
-		float c = math::dot(wn, -wi);
+		float c = -math::dot(wn, wi);
 		return sl / (c * area * sin_theta);
 	}
 

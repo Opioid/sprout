@@ -44,6 +44,7 @@ struct Build_node {
 };
 
 class Tree {
+
 public:
 
 	void clear();

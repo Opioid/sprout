@@ -20,35 +20,37 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 					 Node_stack& /*node_stack*/, Intersection& intersection) const {
 	float3_p normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
-	float denom = math::dot(normal, ray.direction);
+	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
-	float t = -(numer / denom);
+	float hit_t = numer / denom;
 
-	if (t > ray.min_t && t < ray.max_t) {
-		float3 p = ray.point(t);
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		float3 p = ray.point(hit_t);
 		float3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
 		float radius = transformation.scale.x;
 
 		if (l <= radius * radius) {
-			intersection.epsilon = 5e-4f * t;
+			intersection.epsilon = 5e-4f * hit_t;
 
 			intersection.p = p;
-			intersection.t = -transformation.rotation.v3.x;
-			intersection.b = -transformation.rotation.v3.y;
+
+			float3 t = -transformation.rotation.v3.x;
+			float3 b = -transformation.rotation.v3.y;
+			intersection.t = t;
+			intersection.b = b;
 			intersection.n = normal;
 			intersection.geo_n = normal;
-			float3 sk = k / radius;
 
-			intersection.uv.x = (math::dot(intersection.t, sk) + 1.f)
-								 * 0.5f * transformation.scale.z;
-			intersection.uv.y = (math::dot(intersection.b, sk) + 1.f)
-								 * 0.5f * transformation.scale.z;
+			float3 sk = k / radius;
+			float uv_scale = 0.5f * transformation.scale.z;
+			intersection.uv.x = (math::dot(t, sk) + 1.f) * uv_scale;
+			intersection.uv.y = (math::dot(b, sk) + 1.f) * uv_scale;
 
 			intersection.part = 0;
 
-			ray.max_t = t;
+			ray.max_t = hit_t;
 			return true;
 		}
 	}
@@ -60,12 +62,12 @@ bool Disk::intersect_p(const Transformation& transformation,
 					   const Ray& ray, Node_stack& /*node_stack*/) const {
 	float3_p normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
-	float denom = math::dot(normal, ray.direction);
+	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
-	float t = -(numer / denom);
+	float hit_t = numer / denom;
 
-	if (t > ray.min_t && t < ray.max_t) {
-		float3 p = ray.point(t);
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		float3 p = ray.point(hit_t);
 		float3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
@@ -84,12 +86,12 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 					Worker& worker, Sampler_filter filter) const {
 	float3_p normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
-	float denom = math::dot(normal, ray.direction);
+	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
-	float t = -(numer / denom);
+	float hit_t = numer / denom;
 
-	if (t > ray.min_t && t < ray.max_t) {
-		float3 p = ray.point(t);
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		float3 p = ray.point(hit_t);
 		float3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
@@ -97,8 +99,9 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 
 		if (l <= radius * radius) {
 			float3 sk = k / radius;
-			float2 uv((math::dot(transformation.rotation.v3.x, sk) + 1.f) * 0.5f,
-					  (math::dot(transformation.rotation.v3.y, sk) + 1.f) * 0.5f);
+			float uv_scale = 0.5f * transformation.scale.z;
+			float2 uv((math::dot(transformation.rotation.v3.x, sk) + 1.f) * uv_scale,
+					  (math::dot(transformation.rotation.v3.y, sk) + 1.f) * uv_scale);
 
 			return materials[0]->opacity(uv, ray.time, worker, filter);
 		}
@@ -133,7 +136,7 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 wi = axis / t;
 
-	float c = math::dot(transformation.rotation.v3.z, -wi);
+	float c = -math::dot(transformation.rotation.v3.z, wi);
 
 	if (two_sided) {
 		c = std::abs(c);
@@ -153,7 +156,7 @@ float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
 				bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
 	float3 normal = transformation.rotation.v3.z;
 
-	float c = math::dot(normal, -wi);
+	float c = -math::dot(normal, wi);
 
 	if (two_sided) {
 		c = std::abs(c);
@@ -164,18 +167,18 @@ float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
 	}
 
 	float d = math::dot(normal, transformation.position);
-	float denom = math::dot(normal, wi);
+	float denom = -math::dot(normal, wi);
 	float numer = math::dot(normal, p) - d;
-	float t = -(numer / denom);
+	float hit_t = numer / denom;
 
-	float3 ws = p + t * wi; // ray.point(t);
+	float3 ws = p + hit_t * wi; // ray.point(t);
 	float3 k = ws - transformation.position;
 	float l = math::dot(k, k);
 
 	float radius = transformation.scale.x;
 
 	if (l <= radius * radius) {
-		float sl = t * t;
+		float sl = hit_t * hit_t;
 		return sl / (c * area);
 	}
 

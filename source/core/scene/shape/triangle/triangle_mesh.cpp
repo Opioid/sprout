@@ -155,7 +155,7 @@ void Mesh::sample(uint32_t part, const Transformation& transformation,
 	float d  = std::sqrt(sl);
 	float3 dir = axis / d;
 
-	float c = math::dot(wn, -dir);
+	float c = -math::dot(wn, dir);
 
 	if (two_sided) {
 		c = std::abs(c);
@@ -190,7 +190,7 @@ float Mesh::pdf(uint32_t part, const Transformation& transformation,
 		float3 sn = tree_.triangle_normal(pi.index);
 		float3 wn = math::transform_vector(sn, transformation.rotation);
 
-		float c = math::dot(wn, -wi);
+		float c = -math::dot(wn, wi);
 
 		if (two_sided) {
 			c = std::abs(c);

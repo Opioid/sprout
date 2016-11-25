@@ -41,7 +41,7 @@ const material::Sample& Material_animated::sample(float3_p wo, const Renderstate
 	sample.layer_.set_basis(rs.t, rs.b, rs.n);
 
 	if (emission_map_.is_valid()) {
-		auto& sampler = worker.sampler_2D(sampler_key_, filter);
+		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 		float3 radiance = emission_map_.sample_3(sampler, rs.uv, element_);
 		sample.layer_.set(emission_factor_ * radiance, f0_, roughness_);
@@ -55,7 +55,7 @@ const material::Sample& Material_animated::sample(float3_p wo, const Renderstate
 float3 Material_animated::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
 										  float /*time*/, const Worker& worker,
 										  Sampler_filter filter) const {
-	auto& sampler = worker.sampler_2D(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 	return emission_factor_ * emission_map_.sample_3(sampler, uv, element_);
 }
 
@@ -77,7 +77,7 @@ float2 Material_animated::radiance_sample(float2 r2, float& pdf) const {
 
 float Material_animated::emission_pdf(float2 uv, const Worker& worker,
 									  Sampler_filter filter) const {
-	auto& sampler = worker.sampler_2D(sampler_key_, filter);
+	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
@@ -85,7 +85,7 @@ float Material_animated::emission_pdf(float2 uv, const Worker& worker,
 float Material_animated::opacity(float2 uv, float /*time*/,
 								 const Worker& worker, Sampler_filter filter) const {
 	if (mask_.is_valid()) {
-		auto& sampler = worker.sampler_2D(sampler_key_, filter);
+		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 		return mask_.sample_1(sampler, uv, element_);
 	} else {
 		return 1.f;
