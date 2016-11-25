@@ -213,12 +213,69 @@ float Rectangle::pdf(uint32_t /*part*/, const Transformation& transformation,
 	return sl / (c * area);
 }
 
-void Rectangle::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-					   float3_p /*p*/, float2 /*uv*/, float /*area*/, Sample& /*sample*/) const {}
+void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
+					   float3_p p, float2 uv, float area, Sample& sample) const {
+//	std::cout << "Rectangle::sample()" << std::endl;
+	/*
+	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
+	float theta = uv.y * math::Pi;
+
+	float sin_theta = std::sin(theta);
+	float cos_theta = std::cos(theta);
+	float sin_phi   = std::sin(phi);
+	float cos_phi   = std::cos(phi);
+
+	float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+	float3 ws = math::transform_point(ls, transformation.object_to_world);
+
+	float3 axis = ws - p;
+	float sl = math::squared_length(axis);
+	float d = std::sqrt(sl);
+
+	float3 dir = axis / d;
+
+	float3 wn = math::normalized(ws - transformation.position);
+
+	float c = -math::dot(wn, dir);
+
+	if (c <= 0.f) {
+		sample.pdf = 0.f;
+	} else {
+		sample.wi = dir;
+		sample.uv = uv;
+		sample.t  = d;
+		// sin_theta because of the uv weight
+		sample.pdf = sl / (c * area * sin_theta);
+	}*/
+
+	float3 ls(2.f * uv.x - 1.f, 2.f * uv.y - 1.f, 0.f);
+	float3 ws = math::transform_point(ls, transformation.object_to_world);
+
+	float3 axis = ws - p;
+	float sl = math::squared_length(axis);
+	float d = std::sqrt(sl);
+
+	float3 dir = axis / d;
+
+	float3 wn = math::normalized(ws - transformation.position);
+
+	float c = -math::dot(wn, dir);
+
+	if (c <= 0.f) {
+		sample.pdf = 0.f;
+	} else {
+		sample.wi = dir;
+		sample.uv = uv;
+		sample.t  = d;
+		// sin_theta because of the uv weight
+		sample.pdf = sl / (c * area /** sin_theta*/);
+	}
+}
 
 float Rectangle::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
 						float3_p /*p*/, float3_p /*wi*/, float /*area*/,
 						float2& /*uv*/) const {
+	std::cout << "Rectangle::pdf_uv()" << std::endl;
 	return 1.f;
 }
 

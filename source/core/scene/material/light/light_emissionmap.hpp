@@ -47,11 +47,11 @@ private:
 
 	float emission_factor_;
 
-	float3 average_emission_;
-
 	float total_weight_;
 
 	math::Distribution_2D distribution_;
+
+	float3 average_emission_;
 };
 
 }}}

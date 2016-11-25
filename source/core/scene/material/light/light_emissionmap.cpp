@@ -14,7 +14,7 @@ namespace scene { namespace material { namespace light {
 Emissionmap::Emissionmap(Sample_cache<Sample>& cache,
 						 const Sampler_settings& sampler_settings, bool two_sided) :
 	Material(cache, sampler_settings, two_sided),
-	average_emission_(float3(-1.f, -1.f, -1.f)) {}
+	average_emission_(float3(-1.f)) {}
 
 const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,
 											const Worker& worker, Sampler_filter filter) {
@@ -82,11 +82,13 @@ void Emissionmap::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*par
 
 		float my = 1.f / static_cast<float>(d.y) * math::Pi;
 
+		auto texture = emission_map_.texture();
+
 		for (int32_t y = 0, l = 0; y < d.y; ++y) {
 			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				float3 radiance = emission_factor_ * emission_map_.texture()->at_3(x, y);
+				float3 radiance = emission_factor_ * texture->at_3(x, y);
 
 				average_radiance += sin_theta * radiance;
 

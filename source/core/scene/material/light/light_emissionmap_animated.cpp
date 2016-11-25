@@ -19,17 +19,19 @@ Emissionmap_animated::Emissionmap_animated(Sample_cache<Sample>& cache,
 	Material(cache, sampler_settings, two_sided),
 	emission_map_(emission_map),
 	emission_factor_(emission_factor),
-	average_emissions_(emission_map.texture()->num_elements()),
+	average_emission_(float3(-1.f)),
 	frame_length_(animation_duration / static_cast<float>(emission_map_.texture()->num_elements())),
-	element_(0) {
-	for (auto& ae : average_emissions_) {
-		ae = float3(-1.f, -1.f, -1.f);
-	}
-}
+	element_(0) {}
 
 void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
-	element_ = static_cast<int32_t>(absolute_time / frame_length_) %
-									emission_map_.texture()->num_elements();
+	int32_t element = static_cast<int32_t>(absolute_time / frame_length_) %
+										   emission_map_.texture()->num_elements();
+
+
+	if (element != element_) {
+		element_ = element;
+		average_emission_ = float3(-1.f);
+	}
 }
 
 const material::Sample& Emissionmap_animated::sample(float3_p wo, const Renderstate& rs,
@@ -56,7 +58,7 @@ float3 Emissionmap_animated::sample_radiance(float3_p /*wi*/, float2 uv, float /
 }
 
 float3 Emissionmap_animated::average_radiance(float /*area*/) const {
-	return average_emissions_[element_];
+	return average_emission_;
 }
 
 bool Emissionmap_animated::has_emission_map() const {
@@ -90,18 +92,51 @@ float Emissionmap_animated::opacity(float2 uv, float /*time*/,
 
 void Emissionmap_animated::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 											const Transformation& /*transformation*/,
-											float /*area*/, bool /*importance_sampling*/,
+											float /*area*/, bool importance_sampling,
 											thread::Pool& /*pool*/) {
-	if (average_emissions_[element_].x >= 0.f) {
+	if (average_emission_.x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
 		return;
 	}
 
-	average_emissions_[element_] = emission_factor_ * emission_map_.texture()->average_3(element_);
+	if (importance_sampling) {
+		float3 average_radiance = float3(0.f);
+
+		float total_weight = 0.f;
+
+		auto d = emission_map_.texture()->dimensions_2();
+		std::vector<float> luminance(d.x * d.y);
+
+		float my = 1.f / static_cast<float>(d.y) * math::Pi;
+
+		auto texture = emission_map_.texture();
+
+		for (int32_t y = 0, l = 0; y < d.y; ++y) {
+			float sin_theta = 1.f;//std::sin((static_cast<float>(y) + 0.5f) * my);
+
+			for (int32_t x = 0; x < d.x; ++x, ++l) {
+				float3 radiance = emission_factor_ * texture->at_element_3(x, y, element_);
+
+				average_radiance += sin_theta * radiance;
+
+				total_weight += sin_theta;
+
+				luminance[l] = sin_theta;// * spectrum::luminance(radiance);
+			}
+		}
+
+		average_emission_ = average_radiance / total_weight;
+
+		total_weight_ = total_weight;
+
+		distribution_.init(luminance.data(), d);
+	} else {
+		average_emission_ = emission_factor_ * emission_map_.texture()->average_3(element_);
+	}
 
 	if (is_two_sided()) {
-		average_emissions_[element_] *= 2.f;
+		average_emission_ *= 2.f;
 	}
 }
 
