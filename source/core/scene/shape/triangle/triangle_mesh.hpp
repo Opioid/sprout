@@ -54,11 +54,11 @@ public:
 					  bool total_sphere, Node_stack& node_stack) const final override;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float2 uv, float area,
+						float3_p p, float2 uv, float area, bool two_sided,
 						Sample& sample) const final override;
 
 	virtual float pdf_uv(uint32_t part, const Transformation& transformation,
-						 float3_p p, float3_p wi, float area,
+						 float3_p p, float3_p wi, float area, bool two_sided,
 						 float2& uv) const final override;
 
 	virtual float uv_weight(float2 uv) const final override;

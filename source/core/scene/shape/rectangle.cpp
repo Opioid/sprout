@@ -10,8 +10,6 @@
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
 
-#include <iostream>
-
 namespace scene { namespace shape {
 
 Rectangle::Rectangle() {
@@ -214,18 +212,9 @@ float Rectangle::pdf(uint32_t /*part*/, const Transformation& transformation,
 }
 
 void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
-					   float3_p p, float2 uv, float area, Sample& sample) const {
-//	std::cout << "Rectangle::sample()" << std::endl;
-	/*
-	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
-	float theta = uv.y * math::Pi;
-
-	float sin_theta = std::sin(theta);
-	float cos_theta = std::cos(theta);
-	float sin_phi   = std::sin(phi);
-	float cos_phi   = std::cos(phi);
-
-	float3 ls(sin_theta * cos_phi, cos_theta, sin_theta * sin_phi);
+					   float3_p p, float2 uv, float area, bool two_sided,
+					   Sample& sample) const {
+	float3 ls(-2.f * uv.x + 1.f, -2.f * uv.y + 1.f, 0.f);
 	float3 ws = math::transform_point(ls, transformation.object_to_world);
 
 	float3 axis = ws - p;
@@ -234,32 +223,13 @@ void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 dir = axis / d;
 
-	float3 wn = math::normalized(ws - transformation.position);
+	float3 wn = transformation.rotation.v3.z;
 
 	float c = -math::dot(wn, dir);
 
-	if (c <= 0.f) {
-		sample.pdf = 0.f;
-	} else {
-		sample.wi = dir;
-		sample.uv = uv;
-		sample.t  = d;
-		// sin_theta because of the uv weight
-		sample.pdf = sl / (c * area * sin_theta);
-	}*/
-
-	float3 ls(2.f * uv.x - 1.f, 2.f * uv.y - 1.f, 0.f);
-	float3 ws = math::transform_point(ls, transformation.object_to_world);
-
-	float3 axis = ws - p;
-	float sl = math::squared_length(axis);
-	float d = std::sqrt(sl);
-
-	float3 dir = axis / d;
-
-	float3 wn = math::normalized(ws - transformation.position);
-
-	float c = -math::dot(wn, dir);
+	if (two_sided) {
+		c = std::abs(c);
+	}
 
 	if (c <= 0.f) {
 		sample.pdf = 0.f;
@@ -272,11 +242,47 @@ void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 }
 
-float Rectangle::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
-						float3_p /*p*/, float3_p /*wi*/, float /*area*/,
-						float2& /*uv*/) const {
-	std::cout << "Rectangle::pdf_uv()" << std::endl;
-	return 1.f;
+float Rectangle::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
+						float3_p p, float3_p wi, float area, bool two_sided,
+						float2& uv) const {
+	float3 normal = transformation.rotation.v3.z;
+
+	float denom = -math::dot(normal, wi);
+	float c = denom;
+
+	if (two_sided) {
+		c = std::abs(c);
+	}
+
+	if (c <= 0.f) {
+		return 0.f;
+	}
+
+	float d = math::dot(normal, transformation.position);
+	float numer = math::dot(normal, p) - d;
+	float hit_t = numer / denom;
+
+	float3 ws = p + hit_t * wi; // ray.point(t);
+	float3 k = ws - transformation.position;
+
+	float3 t = -transformation.rotation.v3.x;
+
+	float u = math::dot(t, k / transformation.scale.x);
+	if (u > 1.f || u < -1.f) {
+		return 0.f;
+	}
+
+	float3 b = -transformation.rotation.v3.y;
+
+	float v = math::dot(b, k / transformation.scale.y);
+	if (v > 1.f || v < -1.f) {
+		return 0.f;
+	}
+
+	uv = float2(0.5f * (u + 1.f), 0.5f * (v + 1.f));
+
+	float sl = hit_t * hit_t;
+	return sl / (c * area);
 }
 
 float Rectangle::uv_weight(float2 /*uv*/) const {

@@ -5,6 +5,7 @@
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
+#include "scene/shape/shape.hpp"
 #include "base/spectrum/rgb.inl"
 #include "base/math/math.hpp"
 #include "base/math/distribution/distribution_2d.inl"
@@ -13,8 +14,7 @@ namespace scene { namespace material { namespace light {
 
 Emissionmap_animated::Emissionmap_animated(Sample_cache<Sample>& cache,
 										   const Sampler_settings& sampler_settings,
-										   bool two_sided,
-										   const Texture_adapter& emission_map,
+										   bool two_sided, const Texture_adapter& emission_map,
 										   float emission_factor, float animation_duration) :
 	Material(cache, sampler_settings, two_sided),
 	emission_map_(emission_map),
@@ -26,7 +26,6 @@ Emissionmap_animated::Emissionmap_animated(Sample_cache<Sample>& cache,
 void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 	int32_t element = static_cast<int32_t>(absolute_time / frame_length_) %
 										   emission_map_.texture()->num_elements();
-
 
 	if (element != element_) {
 		element_ = element;
@@ -90,7 +89,7 @@ float Emissionmap_animated::opacity(float2 uv, float /*time*/,
 	}
 }
 
-void Emissionmap_animated::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
+void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 											const Transformation& /*transformation*/,
 											float /*area*/, bool importance_sampling,
 											thread::Pool& /*pool*/) {
@@ -108,21 +107,25 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& /*shape*/, uint3
 		auto d = emission_map_.texture()->dimensions_2();
 		std::vector<float> luminance(d.x * d.y);
 
-		float my = 1.f / static_cast<float>(d.y) * math::Pi;
+		float2 id(1.f / static_cast<float>(d.x), 1.f / static_cast<float>(d.y));
 
 		auto texture = emission_map_.texture();
 
 		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			float sin_theta = 1.f;//std::sin((static_cast<float>(y) + 0.5f) * my);
+			float v = id.y * (static_cast<float>(y) + 0.5f);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
+				float u = id.x * (static_cast<float>(x) + 0.5f);
+
+				float uv_weight = shape.uv_weight(float2(u, v));
+
 				float3 radiance = emission_factor_ * texture->at_element_3(x, y, element_);
 
-				average_radiance += sin_theta * radiance;
+				average_radiance += uv_weight * radiance;
 
-				total_weight += sin_theta;
+				total_weight += uv_weight;
 
-				luminance[l] = sin_theta;// * spectrum::luminance(radiance);
+				luminance[l] = uv_weight * spectrum::luminance(radiance);
 			}
 		}
 
@@ -132,7 +135,7 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& /*shape*/, uint3
 
 		distribution_.init(luminance.data(), d);
 	} else {
-		average_emission_ = emission_factor_ * emission_map_.texture()->average_3(element_);
+		average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
 	}
 
 	if (is_two_sided()) {

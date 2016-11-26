@@ -59,10 +59,12 @@ public:
 	// The following two functions are used for textured lights
 	// and should have the uv weight baked in!
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float2 uv, float area, Sample& sample) const = 0;
+						float3_p p, float2 uv, float area, bool two_sided,
+						Sample& sample) const = 0;
 
 	virtual float pdf_uv(uint32_t part, const Transformation& transformation,
-						 float3_p p, float3_p wi, float area, float2& uv) const = 0;
+						 float3_p p, float3_p wi, float area, bool two_sided,
+						 float2& uv) const = 0;
 
 	virtual float uv_weight(float2 uv) const = 0;
 

@@ -109,7 +109,8 @@ float Infinite_sphere::pdf(uint32_t /*part*/, const Transformation& /*transforma
 }
 
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							 float3_p /*p*/, float2 uv, float /*area*/, Sample& sample) const {
+							 float3_p /*p*/, float2 uv, float /*area*/, bool /*two_sided*/,
+							 Sample& sample) const {
 	float phi   = (uv.x - 0.5f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
@@ -128,7 +129,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 }
 
 float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-							  float3_p /*p*/, float3_p wi, float /*area*/, float2& uv) const {
+							  float3_p /*p*/, float3_p wi, float /*area*/, bool /*two_sided*/,
+							  float2& uv) const {
 	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
 	xyz = math::normalized(xyz);
 	uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
@@ -142,11 +144,6 @@ float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transform
 
 float Infinite_sphere::uv_weight(float2 uv) const {
 	float sin_theta = std::sin(uv.y * math::Pi);
-
-	if (0.f == sin_theta) {
-		// this case never seemed to be an issue?!
-		return 0.f;
-	}
 
 	return sin_theta;
 }

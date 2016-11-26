@@ -19,14 +19,17 @@ void Prop_image_light::sample(const Transformation& transformation, float time,
 							  Worker& worker, Sampler_filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
 
-	float material_pdf;
 	float2 s2d = sampler.generate_sample_2D(sampler_dimension);
+
+	float material_pdf;
 	float2 uv = material->radiance_sample(s2d, material_pdf);
 
 	float area = prop_->area(part_);
 
+	bool two_sided = material->is_two_sided();
+
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
-	prop_->shape()->sample(part_, transformation, p, uv, area, result.shape);
+	prop_->shape()->sample(part_, transformation, p, uv, area, two_sided, result.shape);
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
 		result.shape.pdf *= material_pdf;
@@ -42,11 +45,15 @@ float Prop_image_light::pdf(const Transformation& transformation,
 							Worker& worker, Sampler_filter filter) const {
 	float area = prop_->area(part_);
 
+	auto material = prop_->material(part_);
+
+	bool two_sided = material->is_two_sided();
+
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
 	float2 uv;
-	float shape_pdf = prop_->shape()->pdf_uv(part_, transformation, p, wi, area, uv);
+	float shape_pdf = prop_->shape()->pdf_uv(part_, transformation, p, wi, area, two_sided, uv);
 
-	float material_pdf = prop_->material(part_)->emission_pdf(uv, worker, filter);
+	float material_pdf = material->emission_pdf(uv, worker, filter);
 
 	return shape_pdf * material_pdf;
 }

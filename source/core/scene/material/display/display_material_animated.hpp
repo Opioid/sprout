@@ -66,11 +66,11 @@ private:
 
 	float f0_;
 
-	std::vector<float3> average_emissions_;
-
 	float total_weight_;
 
 	math::Distribution_2D distribution_;
+
+	float3 average_emission_;
 
 	const float frame_length_;
 

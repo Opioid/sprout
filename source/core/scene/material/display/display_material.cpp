@@ -6,6 +6,7 @@
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
+#include "scene/shape/shape.hpp"
 #include "base/spectrum/rgb.inl"
 #include "base/math/math.hpp"
 #include "base/math/distribution/distribution_2d.inl"
@@ -15,7 +16,7 @@ namespace scene { namespace material { namespace display {
 Material::Material(Sample_cache<Sample>& cache,
 				   const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Typed_material<Sample_cache<Sample>>(cache, sampler_settings, two_sided),
-	average_emission_(float3(-1.f, -1.f, -1.f)) {}
+	average_emission_(float3(-1.f)) {}
 
 const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter filter) {
@@ -68,7 +69,7 @@ float Material::emission_pdf(float2 uv, const Worker& worker,
 	return distribution_.pdf(sampler.address(uv)) * total_weight_ ;
 }
 
-void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
+void Material::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 								const Transformation& /*transformation*/,
 								float /*area*/, bool importance_sampling,
 								thread::Pool& /*pool*/) {
@@ -86,19 +87,25 @@ void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/
 		auto d = emission_map_.texture()->dimensions_2();
 		std::vector<float> luminance(d.x * d.y);
 
-		float my = 1.f / static_cast<float>(d.y) * math::Pi;
+		float2 id(1.f / static_cast<float>(d.x), 1.f / static_cast<float>(d.y));
+
+		auto texture = emission_map_.texture();
 
 		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
+			float v = id.y * (static_cast<float>(y) + 0.5f);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				float3 radiance = emission_factor_ * emission_map_.texture()->at_3(x, y);
+				float u = id.x * (static_cast<float>(x) + 0.5f);
 
-				average_radiance += sin_theta * radiance;
+				float uv_weight = shape.uv_weight(float2(u, v));
 
-				total_weight += sin_theta;
+				float3 radiance = emission_factor_ * texture->at_3(x, y);
 
-				luminance[l] = sin_theta * spectrum::luminance(radiance);
+				average_radiance += uv_weight * radiance;
+
+				total_weight += uv_weight;
+
+				luminance[l] = uv_weight * spectrum::luminance(radiance);
 			}
 		}
 

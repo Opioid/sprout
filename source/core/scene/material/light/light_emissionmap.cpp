@@ -5,6 +5,7 @@
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
+#include "scene/shape/shape.hpp"
 #include "base/math/math.hpp"
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.inl"
@@ -62,7 +63,7 @@ float Emissionmap::emission_pdf(float2 uv, const Worker& worker,
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Emissionmap::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
+void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 								   const Transformation& /*transformation*/,
 								   float /*area*/, bool importance_sampling,
 								   thread::Pool& /*pool*/) {
@@ -80,21 +81,25 @@ void Emissionmap::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*par
 		auto d = emission_map_.texture()->dimensions_2();
 		std::vector<float> luminance(d.x * d.y);
 
-		float my = 1.f / static_cast<float>(d.y) * math::Pi;
+		float2 id(1.f / static_cast<float>(d.x), 1.f / static_cast<float>(d.y));
 
 		auto texture = emission_map_.texture();
 
 		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			float sin_theta = std::sin((static_cast<float>(y) + 0.5f) * my);
+			float v = id.y * (static_cast<float>(y) + 0.5f);
 
 			for (int32_t x = 0; x < d.x; ++x, ++l) {
+				float u = id.x * (static_cast<float>(x) + 0.5f);
+
+				float uv_weight = shape.uv_weight(float2(u, v));
+
 				float3 radiance = emission_factor_ * texture->at_3(x, y);
 
-				average_radiance += sin_theta * radiance;
+				average_radiance += uv_weight * radiance;
 
-				total_weight += sin_theta;
+				total_weight += uv_weight;
 
-				luminance[l] = sin_theta * spectrum::luminance(radiance);
+				luminance[l] = uv_weight * spectrum::luminance(radiance);
 			}
 		}
 

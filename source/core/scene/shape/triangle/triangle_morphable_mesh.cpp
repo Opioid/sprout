@@ -109,11 +109,11 @@ float Morphable_mesh::pdf(uint32_t /*part*/, const Transformation& /*transformat
 }
 
 void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-							float3_p /*p*/, float2 /*uv*/, float /*area*/,
+							float3_p /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
 							Sample& /*sample*/) const {}
 
 float Morphable_mesh::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
-							 float3_p /*p*/, float3_p /*wi*/, float /*area*/,
+							 float3_p /*p*/, float3_p /*wi*/, float /*area*/, bool /*two_sided*/,
 							 float2& /*uv*/) const {
 	return 1.f;
 }

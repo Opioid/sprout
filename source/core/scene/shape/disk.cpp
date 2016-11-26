@@ -186,10 +186,11 @@ float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
 }
 
 void Disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float3_p /*p*/, float2 /*uv*/, float /*area*/, Sample& /*sample*/) const {}
+				  float3_p /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
+				  Sample& /*sample*/) const {}
 
 float Disk::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float3_p /*p*/, float3_p /*wi*/, float /*area*/,
+				   float3_p /*p*/, float3_p /*wi*/, float /*area*/, bool /*two_sided*/,
 				   float2& /*uv*/) const {
 	return 1.f;
 }

@@ -211,7 +211,8 @@ float Sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
 }
 
 void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-					float3_p p, float2 uv, float area, Sample& sample) const {
+					float3_p p, float2 uv, float area, bool /*two_sided*/,
+					Sample& sample) const {
 	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
 	float theta = uv.y * math::Pi;
 
@@ -245,7 +246,7 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-					 float3_p p, float3_p wi, float area, float2& uv) const {
+					 float3_p p, float3_p wi, float area, bool /*two_sided*/, float2& uv) const {
 	float3 v = transformation.position - p;
 	float b = math::dot(v, wi);
 	float radius = transformation.scale.x;

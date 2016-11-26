@@ -14,8 +14,7 @@ public:
 
 	Emissionmap_animated(Sample_cache<Sample>& cache,
 						 const Sampler_settings& sampler_settings,
-						 bool two_sided,
-						 const Texture_adapter& emission_map,
+						 bool two_sided, const Texture_adapter& emission_map,
 						 float emission_factor, float animation_duration);
 
 	virtual void tick(float absolute_time, float time_slice) final override;

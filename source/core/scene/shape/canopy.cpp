@@ -109,7 +109,8 @@ float Canopy::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 }
 
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
-					float3_p /*p*/, float2 uv, float /*area*/, Sample& sample) const {
+					float3_p /*p*/, float2 uv, float /*area*/, bool /*two_sided*/,
+					Sample& sample) const {
 	float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
 
 	float z = math::dot(disk, disk);
@@ -141,7 +142,8 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Canopy::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-					 float3_p /*p*/, float3_p wi, float /*area*/, float2& uv) const {
+					 float3_p /*p*/, float3_p wi, float /*area*/, bool /*two_sided*/,
+					 float2& uv) const {
 	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
 	xyz = math::normalized(xyz);
 	float2 disk = math::hemisphere_to_disk_equidistant(xyz);
