@@ -102,7 +102,7 @@ void Driver_progressive::render_loop(exporting::Sink& exporter) {
 }
 
 void Driver_progressive::restart() {
-	view_.camera->update_focus(workers_[0]);
+	view_.camera->update(workers_[0]);
 
 	view_.camera->sensor().clear();
 	iteration_ = 0;

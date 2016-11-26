@@ -56,6 +56,13 @@ Vector2<T>& Vector2<T>::operator+=(Vector2 a) {
 }
 
 template<typename T>
+Vector2<T>& Vector2<T>::operator*=(Vector2 a) {
+	x *= a.x;
+	y *= a.y;
+	return *this;
+}
+
+template<typename T>
 Vector2<T>& Vector2<T>::operator/=(T s) {
 	x /= s;
 	y /= s;

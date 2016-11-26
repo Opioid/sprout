@@ -40,10 +40,10 @@ float Spherical_stereoscopic::pixel_solid_angle() const {
 	return 1.f;
 }
 
-void Spherical_stereoscopic::update_focus(rendering::Worker& /*worker*/) {}
+void Spherical_stereoscopic::update(rendering::Worker& /*worker*/) {}
 
-bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample, uint32_t view,
-										  scene::Ray& ray) const {
+bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
+										  uint32_t view, scene::Ray& ray) const {
 	float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
 
 	float x = d_x_ * coordinates.x;

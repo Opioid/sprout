@@ -8,6 +8,12 @@ class Perspective : public Camera {
 
 public:
 
+	struct Lens {
+		float2 shift = float2(0.f, 0.f);
+
+		float radius = 0.f;
+	};
+
 	struct Focus {
 		float3 point = float3(0.5f, 0.5f, 0.f);
 		bool use_point = true;
@@ -25,21 +31,24 @@ public:
 
 	virtual float pixel_solid_angle() const final override;
 
-	virtual void update_focus(rendering::Worker& worker) final override;
+	virtual void update(rendering::Worker& worker) final override;
 
-	virtual bool generate_ray(const sampler::Camera_sample& sample,
-							  uint32_t view, scene::Ray& ray) const final override;
+	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
+							  scene::Ray& ray) const final override;
 
 	void set_fov(float fov);
 
-	void set_lens_radius(float lens_radius);
+	void set_lens(const Lens& lens);
 
 	void set_focus(const Focus& focus);
 
 private:
 
-	virtual void set_parameter(const std::string& name,
-							   const json::Value& value) final override;
+	void update_focus(rendering::Worker& worker);
+
+	virtual void set_parameter(const std::string& name, const json::Value& value) final override;
+
+	static void load_lens(const json::Value& lens_value, Lens& lens);
 
 	static void load_focus(const json::Value& focus_value, Focus& focus);
 
@@ -49,7 +58,8 @@ private:
 
 	Focus focus_;
 	float focal_distance_;
-	float lens_radius_;
+
+	Lens lens_;
 
 	float fov_;
 };

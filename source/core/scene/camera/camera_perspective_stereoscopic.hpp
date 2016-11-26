@@ -18,7 +18,7 @@ public:
 
 	virtual float pixel_solid_angle() const final override;
 
-	virtual void update_focus(rendering::Worker& worker) final override;
+	virtual void update(rendering::Worker& worker) final override;
 
 	virtual bool generate_ray(const sampler::Camera_sample& sample,
 							  uint32_t view,

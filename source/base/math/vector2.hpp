@@ -33,9 +33,11 @@ struct Vector2 {
 
 	Vector2 operator/(Vector2 a) const;
 
-	Vector2 &operator+=(Vector2 a);
+	Vector2& operator+=(Vector2 a);
 
-	Vector2 &operator/=(T s);
+	Vector2& operator*=(Vector2 a);
+
+	Vector2& operator/=(T s);
 
 	bool operator==(Vector2 a) const;
 

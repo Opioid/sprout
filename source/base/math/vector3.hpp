@@ -37,17 +37,17 @@ struct Vector3 {
 
 	explicit Vector3(const T* v);
 
-	explicit Vector3(FVector3f_a v);
+	explicit Vector3(FVector3f_a a);
 
 	Vector3 operator+(T s) const;
 
-	Vector3 operator+(const Vector3& v) const;
+	Vector3 operator+(const Vector3& a) const;
 
 	Vector3 operator-(T s) const;
 
 	Vector3 operator-(const Vector3& v) const;
 		
-	Vector3 operator*(const Vector3& v) const;
+	Vector3 operator*(const Vector3& a) const;
 		
 	Vector3 operator/(T s) const;
 
@@ -55,19 +55,19 @@ struct Vector3 {
 
 	Vector3 operator-() const;
 
-	Vector3& operator+=(const Vector3& v);
+	Vector3& operator+=(const Vector3& a);
 
-	Vector3& operator-=(const Vector3& v);
+	Vector3& operator-=(const Vector3& a);
 
-	Vector3& operator*=(const Vector3& v);
+	Vector3& operator*=(const Vector3& a);
 
 	Vector3& operator*=(T s);
 
 	Vector3& operator/=(T s);
 
-	bool operator==(const Vector3& v) const;
+	bool operator==(const Vector3& a) const;
 
-	bool operator!=(const Vector3& v) const;
+	bool operator!=(const Vector3& a) const;
 
 //	explicit operator unsigned int() const;
 
