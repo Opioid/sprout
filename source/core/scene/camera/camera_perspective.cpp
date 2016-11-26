@@ -106,13 +106,15 @@ void Perspective::set_fov(float fov) {
 
 	float z = ratio * math::Pi / fov * 0.5f;
 
-	left_top_ = float3(-ratio, 1.f, z);
-
-	float3 right_top(ratio, 1.f, z);
+	float3 left_top   (-ratio,  1.f, z);
+	float3 right_top  ( ratio,  1.f, z);
 	float3 left_bottom(-ratio, -1.f, z);
 
-	d_x_ = (right_top   - left_top_) / fr.x;
-	d_y_ = (left_bottom - left_top_) / fr.y;
+	float2 lens_shift(0.f);
+
+	left_top_ = left_top + float3(lens_shift, 0.f);
+	d_x_ = (right_top   - left_top) / fr.x;
+	d_y_ = (left_bottom - left_top) / fr.y;
 }
 
 void Perspective::set_lens_radius(float lens_radius) {
