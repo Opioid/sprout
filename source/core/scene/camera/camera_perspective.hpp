@@ -9,7 +9,8 @@ class Perspective : public Camera {
 public:
 
 	struct Lens {
-		float2 shift = float2(0.f, 0.f);
+		float shift = 0.f;
+		float angle = 0.f;
 
 		float radius = 0.f;
 	};
@@ -59,7 +60,8 @@ private:
 	Focus focus_;
 	float focal_distance_;
 
-	Lens lens_;
+	float2 lens_shift_;
+	float  lens_radius_;
 
 	float fov_;
 };

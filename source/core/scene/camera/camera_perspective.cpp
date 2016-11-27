@@ -14,6 +14,8 @@ namespace scene { namespace camera {
 
 Perspective::Perspective(int2 resolution, float ray_max_t) :
 	Camera(resolution, ray_max_t),
+	lens_shift_(0.f, 0.f),
+	lens_radius_(0.f),
 	fov_(math::degrees_to_radians(60.f)) {}
 
 uint32_t Perspective::num_views() const {
@@ -42,7 +44,7 @@ void Perspective::update(rendering::Worker& worker) {
 	float3 right_top  ( ratio,  1.f, z);
 	float3 left_bottom(-ratio, -1.f, z);
 
-	left_top_ = left_top + float3(lens_.shift, 0.f);
+	left_top_ = left_top + float3(lens_shift_, 0.f);
 	d_x_ = (right_top   - left_top) / fr.x;
 	d_y_ = (left_bottom - left_top) / fr.y;
 
@@ -57,13 +59,13 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 
 	float3 origin;
 
-	if (lens_.radius > 0.f) {
+	if (lens_radius_ > 0.f) {
 		float2 lens = math::sample_disk_concentric(sample.lens_uv);
 
 		float t = focal_distance_ / direction.z;
 		float3 focus = t * direction;
 
-		origin = float3(lens_.radius * lens, 0.f);
+		origin = float3(lens_radius_ * lens, 0.f);
 		direction = focus - origin;
 	} else {
 		origin = math::float3_identity;
@@ -92,7 +94,17 @@ void Perspective::set_fov(float fov) {
 }
 
 void Perspective::set_lens(const Lens& lens) {
-	lens_ = lens;
+	float a = math::degrees_to_radians(lens.angle);
+	float c = std::cos(a);
+	float s = std::sin(a);
+
+//	m.m00 = c;    m.m01 = -s;    m.m02 = T(0);
+//	m.m10 = s;    m.m11 =  c;    m.m12 = T(0);
+
+	float shift = 2.f * lens.shift;
+
+	lens_shift_  = float2(-s * shift, c * shift);
+	lens_radius_ = lens.radius;
 }
 
 void Perspective::set_focus(const Focus& focus) {
@@ -130,9 +142,11 @@ void Perspective::update_focus(rendering::Worker& worker) {
 
 void Perspective::set_parameter(const std::string& name, const json::Value& value) {
 	if ("fov" == name) {
-		fov_ = math::degrees_to_radians(json::read_float(value));
+		set_fov(math::degrees_to_radians(json::read_float(value)));
 	} else if ("lens" == name) {
-		load_lens(value, lens_);
+		Lens lens;
+		load_lens(value, lens);
+		set_lens(lens);
 	} else if ("focus" == name) {
 		Focus focus;
 		load_focus(value, focus);
@@ -145,7 +159,9 @@ void Perspective::load_lens(const json::Value& lens_value, Lens& lens) {
 		if ("radius" == n.name) {
 			lens.radius = json::read_float(n.value);
 		} else if ("shift" == n.name) {
-			lens.shift = json::read_float2(n.value);
+			lens.shift = json::read_float(n.value);
+		} else if ("angle" == n.name) {
+			lens.angle = json::read_float(n.value);
 		}
 	}
 }
