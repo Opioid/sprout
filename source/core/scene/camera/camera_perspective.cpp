@@ -40,9 +40,13 @@ void Perspective::update(rendering::Worker& worker) {
 
 	float z = ratio * math::Pi / fov_ * 0.5f;
 
-	float3 left_top   (-ratio,  1.f, z);
-	float3 right_top  ( ratio,  1.f, z);
-	float3 left_bottom(-ratio, -1.f, z);
+//	float3 left_top   (-ratio,  1.f, z);
+//	float3 right_top  ( ratio,  1.f, z);
+//	float3 left_bottom(-ratio, -1.f, z);
+
+	float3 left_top    = float3(-ratio,  1.f, z) * lens_tilt_;
+	float3 right_top   = float3( ratio,  1.f, z) * lens_tilt_;
+	float3 left_bottom = float3(-ratio, -1.f, z) * lens_tilt_;
 
 	left_top_ = left_top + float3(lens_shift_, 0.f);
 	d_x_ = (right_top   - left_top) / fr.x;
@@ -98,8 +102,9 @@ void Perspective::set_lens(const Lens& lens) {
 	float c = std::cos(a);
 	float s = std::sin(a);
 
-//	m.m00 = c;    m.m01 = -s;    m.m02 = T(0);
-//	m.m10 = s;    m.m11 =  c;    m.m12 = T(0);
+	float3 axis(c, s, 0.f);
+	float tilt = math::degrees_to_radians(lens.tilt);
+	math::set_rotation(lens_tilt_, axis, tilt);
 
 	float shift = 2.f * lens.shift;
 
@@ -156,12 +161,14 @@ void Perspective::set_parameter(const std::string& name, const json::Value& valu
 
 void Perspective::load_lens(const json::Value& lens_value, Lens& lens) {
 	for (auto& n : lens_value.GetObject()) {
-		if ("radius" == n.name) {
-			lens.radius = json::read_float(n.value);
+		if ("angle" == n.name) {
+			lens.angle = json::read_float(n.value);
 		} else if ("shift" == n.name) {
 			lens.shift = json::read_float(n.value);
-		} else if ("angle" == n.name) {
-			lens.angle = json::read_float(n.value);
+		} else if ("tilt" == n.name) {
+			lens.tilt = json::read_float(n.value);
+		} else if ("radius" == n.name) {
+			lens.radius = json::read_float(n.value);
 		}
 	}
 }

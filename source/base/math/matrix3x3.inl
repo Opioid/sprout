@@ -311,6 +311,22 @@ inline Matrix3x3f_a Matrix3x3f_a::operator*(const Matrix3x3f_a& a) const {
 						m20 * a.m02 + m21 * a.m12 + m22 * a.m22);
 }
 
+inline Matrix3x3f_a& Matrix3x3f_a::operator*=(const Matrix3x3f_a& a) {
+	Matrix3x3f_a temp(m00 * a.m00 + m01 * a.m10 + m02 * a.m20,
+					  m00 * a.m01 + m01 * a.m11 + m02 * a.m21,
+					  m00 * a.m02 + m01 * a.m12 + m02 * a.m22,
+
+					  m10 * a.m00 + m11 * a.m10 + m12 * a.m20,
+					  m10 * a.m01 + m11 * a.m11 + m12 * a.m21,
+					  m10 * a.m02 + m11 * a.m12 + m12 * a.m22,
+
+					  m20 * a.m00 + m21 * a.m10 + m22 * a.m20,
+					  m20 * a.m01 + m21 * a.m11 + m22 * a.m21,
+					  m20 * a.m02 + m21 * a.m12 + m22 * a.m22);
+
+	return *this = temp;
+}
+
 inline Matrix3x3f_a Matrix3x3f_a::identity() {
 	return Matrix3x3f_a(1.f, 0.f, 0.f,
 						0.f, 1.f, 0.f,

@@ -158,7 +158,9 @@ struct alignas(16) Matrix3x3f_a {
 
 	explicit Matrix3x3f_a(const Vector4f_a& q);
 
-	Matrix3x3f_a operator*(const Matrix3x3f_a& m) const;
+	Matrix3x3f_a operator*(const Matrix3x3f_a& a) const;
+
+	Matrix3x3f_a& operator*=(const Matrix3x3f_a& a);
 
 	static Matrix3x3f_a identity();
 };
