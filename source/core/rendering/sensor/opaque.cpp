@@ -27,14 +27,14 @@ size_t Opaque::num_bytes() const {
 	return d.x * d.y * sizeof(float4);
 }
 
-void Opaque::add_pixel(int2 pixel, const float4& color, float weight) {
+void Opaque::add_pixel(int2 pixel, float4_p color, float weight) {
 	auto d = dimensions();
 
 	auto& value = pixels_[d.x * pixel.y + pixel.x];
 	value += float4(weight * color.xyz, weight);
 }
 
-void Opaque::add_pixel_atomic(int2 pixel, const float4& color, float weight) {
+void Opaque::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
 	auto d = dimensions();
 
 	auto& value = pixels_[d.x * pixel.y + pixel.x];

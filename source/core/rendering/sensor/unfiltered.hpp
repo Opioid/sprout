@@ -16,7 +16,7 @@ public:
 
 	virtual int32_t filter_radius_int() const final override;
 
-	virtual void add_sample(const sampler::Camera_sample& sample, const float4& color,
+	virtual void add_sample(const sampler::Camera_sample& sample, float4_p color,
 							const math::Recti& tile, const math::Recti& bounds) final override;
 
 private:

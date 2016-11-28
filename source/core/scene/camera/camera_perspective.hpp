@@ -17,9 +17,9 @@ public:
 
 	struct Focus {
 		float3 point = float3(0.5f, 0.5f, 0.f);
-		bool use_point = true;
-
 		float distance;
+
+		bool use_point = true;
 	};
 
 	Perspective(int2 resolution, float ray_max_t);
@@ -57,14 +57,14 @@ private:
 	float3 d_x_;
 	float3 d_y_;
 
-	Focus focus_;
-	float focal_distance_;
-
 	float3x3 lens_tilt_;
 	float2	 lens_shift_;
 	float	 lens_radius_;
 
 	float fov_;
+
+	Focus focus_;
+	float focal_distance_;
 };
 
 }}

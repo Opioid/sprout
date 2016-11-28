@@ -17,14 +17,11 @@ public:
 
 protected:
 
-	virtual void add_pixel(int2 pixel, const float4& color,
-						   float weight) final override;
+	virtual void add_pixel(int2 pixel, float4_p, float weight) final override;
 
-	virtual void add_pixel_atomic(int2 pixel, const float4& color,
-								  float weight) final override;
+	virtual void add_pixel_atomic(int2 pixel, float4_p, float weight) final override;
 
-	virtual void resolve(int32_t begin, int32_t end,
-						 image::Float_4& target) const final override;
+	virtual void resolve(int32_t begin, int32_t end, image::Float_4& target) const final override;
 
 	// weight_sum is saved in pixel.w
 	float4* pixels_;

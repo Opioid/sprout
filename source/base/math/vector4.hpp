@@ -6,6 +6,10 @@ template<typename T> struct Vector2;
 template<typename T> struct Vector3;
 struct Vector3f_a;
 
+struct Vector4f_a;
+
+using FVector4f_a = const Vector4f_a&;
+
 /****************************************************************************
  *
  * Generic 4D vector

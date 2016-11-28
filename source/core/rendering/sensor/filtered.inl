@@ -22,7 +22,7 @@ int32_t Filtered<Base, Clamp>::filter_radius_int() const {
 }
 
 template<class Base, class Clamp>
-void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, const float4& color,
+void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, float4_p color,
 									   const math::Recti& tile, const math::Recti& bounds) {
 	float4 clamped_color = clamp_.clamp(color);
 
@@ -63,7 +63,7 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, con
 
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
-												 const float4& color,
+												 float4_p color,
 												 const math::Recti& tile,
 												 const math::Recti& bounds) {
 	if (pixel.x < bounds.start.x || pixel.x >= bounds.end.x
