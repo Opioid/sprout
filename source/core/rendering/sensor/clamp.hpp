@@ -5,17 +5,19 @@
 namespace rendering { namespace sensor { namespace clamp {
 
 class Identity {
+
 public:
 
-	float4 clamp(const float4& color) const;
+	float4 clamp(float4_p color) const;
 };
 
 class Clamp {
+
 public:
 
-	Clamp(const float3& max);
+	Clamp(float3_p max);
 
-	float4 clamp(const float4& color) const;
+	float4 clamp(float4_p color) const;
 
 private:
 

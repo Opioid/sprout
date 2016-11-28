@@ -22,7 +22,7 @@ void Renderer::set_brush(float3_p color) {
 	brush_ = float4(color, 1.f);
 }
 
-void Renderer::set_brush(const float4& color) {
+void Renderer::set_brush(float4_p color) {
 	brush_ = color;
 }
 
@@ -161,14 +161,14 @@ void Renderer::resolve(Byte_1& image) const {
 	}
 }
 
-void Renderer::set_sample(int32_t x, int32_t y, const float4& color) {
+void Renderer::set_sample(int32_t x, int32_t y, float4_p color) {
 	x = math::mod(x, dimensions_.x);
 	y = math::mod(y, dimensions_.y);
 
 	samples_[dimensions_.x * y + x] = color;
 }
 
-void Renderer::set_row(int32_t start_x, int32_t end_x, int32_t y, const float4& color) {
+void Renderer::set_row(int32_t start_x, int32_t end_x, int32_t y, float4_p color) {
 	for (int32_t x = start_x; x < end_x; ++x) {
 		set_sample(x, y, color);
 	}

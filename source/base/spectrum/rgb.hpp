@@ -9,12 +9,12 @@ SU_GLOBALCONST(float) CIE_constant = 683.002f;
 
 // convert sRGB linear color to sRGB gamma color
 float3 linear_RGB_to_sRGB(float3_p c);
-float4 linear_RGB_to_sRGB(const float4& c);
+float4 linear_RGB_to_sRGB(float4_p c);
 
 // convert sRGB gamma color to sRGB linear color
 float sRGB_to_linear(float c);
 
-float3 sRGB_to_linear_RGB(math::byte3 c);
+float3 sRGB_to_linear_RGB(byte3 c);
 float3 sRGB_to_linear_RGB(float3_p c);
 
 float4 sRGB_to_linear_RGB(math::byte4 c);
@@ -25,13 +25,13 @@ float3 linear_to_gamma(float3_p c, float gamma);
 // convert gamma color to linear color
 float3 gamma_to_linear_RGB(float3_p c, float gamma);
 
-float3 unorm_to_float(math::byte3 c);
+float3 unorm_to_float(byte3 c);
 float4 unorm_to_float(math::byte4 c);
 
 byte3 float_to_unorm(float3_p c);
-math::byte4 float_to_unorm(const float4& c);
+math::byte4 float_to_unorm(float4_p c);
 
-uint32_t to_uint(const float4& c);
+uint32_t to_uint(float4_p c);
 
 float unorm_to_float(uint8_t byte);
 float snorm_to_float(uint8_t byte);

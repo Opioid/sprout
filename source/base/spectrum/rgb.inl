@@ -26,7 +26,7 @@ inline float3 linear_RGB_to_sRGB(float3_p c) {
 }
 
 // convert sRGB linear color to sRGB gamma color
-inline float4 linear_RGB_to_sRGB(const float4& c) {
+inline float4 linear_RGB_to_sRGB(float4_p c) {
 	return float4(linear_to_sRGB(c.x),
 				  linear_to_sRGB(c.y),
 				  linear_to_sRGB(c.z),
@@ -47,7 +47,7 @@ inline float sRGB_to_linear(float c) {
 }
 
 // convert sRGB gamma color to sRGB linear color
-inline float3 sRGB_to_linear_RGB(math::byte3 c) {
+inline float3 sRGB_to_linear_RGB(byte3 c) {
 	return float3(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c.z) / 255.f));
@@ -83,7 +83,7 @@ inline float3 gamma_to_linear(float3_p c, float gamma) {
 				  std::pow(c.z, gamma));
 }
 
-inline float3 unorm_to_float(math::byte3 c) {
+inline float3 unorm_to_float(byte3 c) {
 	return float3(static_cast<float>(c.x) / 255.f,
 				  static_cast<float>(c.y) / 255.f,
 				  static_cast<float>(c.z) / 255.f);
@@ -102,7 +102,7 @@ inline math::byte3 float_to_unorm(float3_p c) {
 					   static_cast<uint8_t>(c.z * 255.f));
 }
 
-inline math::byte4 float_to_unorm(const float4& c) {
+inline math::byte4 float_to_unorm(float4_p c) {
 	return math::byte4(static_cast<uint8_t>(c.x * 255.f),
 					   static_cast<uint8_t>(c.y * 255.f),
 					   static_cast<uint8_t>(c.z * 255.f),
