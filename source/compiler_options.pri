@@ -1,6 +1,8 @@
 win32 {
+    # optimization level
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE += -Ox
+    # warning level
     QMAKE_CXXFLAGS_WARN_ON -= -W3
     QMAKE_CXXFLAGS_WARN_ON += -Wall
     # disable warnings

@@ -45,9 +45,17 @@ void Perspective::update(rendering::Worker& worker) {
 //	float3 right_top  ( ratio,  1.f, z);
 //	float3 left_bottom(-ratio, -1.f, z);
 
-	float3 left_top    = float3(-ratio,  1.f, z) * lens_tilt_;
-	float3 right_top   = float3( ratio,  1.f, z) * lens_tilt_;
-	float3 left_bottom = float3(-ratio, -1.f, z) * lens_tilt_;
+//	float3 left_top    = float3(-ratio,  1.f, z) * lens_tilt_;
+//	float3 right_top   = float3( ratio,  1.f, z) * lens_tilt_;
+//	float3 left_bottom = float3(-ratio, -1.f, z) * lens_tilt_;
+
+	float3 left_top    = float3(-ratio,  1.f, 0.f) * lens_tilt_;
+	float3 right_top   = float3( ratio,  1.f, 0.f) * lens_tilt_;
+	float3 left_bottom = float3(-ratio, -1.f, 0.f) * lens_tilt_;
+
+	left_top.z += z;
+	right_top.z += z;
+	left_bottom.z += z;
 
 	left_top_ = left_top + float3(lens_shift_, 0.f);
 	d_x_ = (right_top   - left_top) / fr.x;
