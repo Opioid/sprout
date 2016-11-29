@@ -75,7 +75,7 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 	if (lens_radius_ > 0.f) {
 		float2 lens = math::sample_disk_concentric(sample.lens_uv);
 
-		float t = focal_distance_ / direction.z;
+		float t = focus_distance_ / direction.z;
 		float3 focus = t * direction;
 
 		origin = float3(lens_radius_ * lens, 0.f);
@@ -126,7 +126,7 @@ void Perspective::set_focus(const Focus& focus) {
 
 	focus_.point.xy *= float2(resolution_);
 
-	focal_distance_ = focus_.distance;
+	focus_distance_ = focus_.distance;
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {
@@ -147,9 +147,9 @@ void Perspective::update_focus(rendering::Worker& worker) {
 
 		Intersection intersection;
 		if (worker.intersect(ray, intersection)) {
-			focal_distance_ = ray.max_t + focus_.point.z;
+			focus_distance_ = ray.max_t + focus_.point.z;
 		} else {
-			focal_distance_ = focus_.distance;
+			focus_distance_ = focus_.distance;
 		}
 	}
 }

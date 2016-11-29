@@ -64,7 +64,7 @@ private:
 	float fov_;
 
 	Focus focus_;
-	float focal_distance_;
+	float focus_distance_;
 };
 
 }}
