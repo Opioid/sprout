@@ -45,10 +45,6 @@ void Perspective::update(rendering::Worker& worker) {
 //	float3 right_top  ( ratio,  1.f, z);
 //	float3 left_bottom(-ratio, -1.f, z);
 
-//	float3 left_top    = float3(-ratio,  1.f, z) * lens_tilt_;
-//	float3 right_top   = float3( ratio,  1.f, z) * lens_tilt_;
-//	float3 left_bottom = float3(-ratio, -1.f, z) * lens_tilt_;
-
 	float3 left_top    = float3(-ratio,  1.f, 0.f) * lens_tilt_;
 	float3 right_top   = float3( ratio,  1.f, 0.f) * lens_tilt_;
 	float3 left_bottom = float3(-ratio, -1.f, 0.f) * lens_tilt_;
@@ -56,6 +52,8 @@ void Perspective::update(rendering::Worker& worker) {
 	left_top.z += z;
 	right_top.z += z;
 	left_bottom.z += z;
+
+	z_ = z;
 
 	left_top_ = left_top + float3(lens_shift_, 0.f);
 	d_x_ = (right_top   - left_top) / fr.x;
@@ -70,12 +68,14 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 
 	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
+//	direction.z += z_;
+
 	float3 origin;
 
 	if (lens_radius_ > 0.f) {
 		float2 lens = math::sample_disk_concentric(sample.lens_uv);
 
-		float t = focus_distance_ / direction.z;
+		float t = focus_distance_ / direction.z;//z_;
 		float3 focus = t * direction;
 
 		origin = float3(lens_radius_ * lens, 0.f);

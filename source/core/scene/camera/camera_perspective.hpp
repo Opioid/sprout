@@ -65,6 +65,8 @@ private:
 
 	Focus focus_;
 	float focus_distance_;
+
+	float z_;
 };
 
 }}
