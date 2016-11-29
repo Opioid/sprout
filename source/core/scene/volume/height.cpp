@@ -19,8 +19,7 @@ float Height::density(float3_p p, Worker& /*worker*/, Sampler_filter /*filter*/)
 	return a_ * std::exp(-b_ * height);
 }
 
-void Height::set_parameter(const std::string& name,
-						   const json::Value& value) {
+void Height::set_parameter(const std::string& name, const json::Value& value) {
 	if ("a" == name) {
 		a_ = json::read_float(value);
 	} else if ("b" == name) {
