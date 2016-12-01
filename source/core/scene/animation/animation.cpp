@@ -4,8 +4,6 @@
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
 
-#include <iostream>
-
 namespace scene { namespace animation {
 
 void Animation::init(uint32_t count) {
@@ -29,16 +27,23 @@ void Animation::tick(float time_slice) {
 		++current_frame_;
 	}
 
-	auto& current_frame = keyframes_[std::min(current_frame_,     max_frame)];
-	auto& next_frame	= keyframes_[std::min(current_frame_ + 1, max_frame)];
+	uint32_t current_frame_id = std::min(current_frame_,     max_frame);
+	uint32_t next_frame_id	  = std::min(current_frame_ + 1, max_frame);
+
+	auto& current_frame = keyframes_[current_frame_id];
+	auto& next_frame	= keyframes_[next_frame_id];
 
 	float range = next_frame.time - current_frame.time;
 
 	float delta = current_time_ - current_frame.time;
 
-	float t = delta / range;
+	if (range <= 0.f) {
+		current_frame.interpolate(next_frame, delta, interpolated_frame_);
+	} else {
+		float t = delta / range;
 
-	current_frame.interpolate(next_frame, t, interpolated_frame_);
+		current_frame.interpolate(next_frame, t, interpolated_frame_);
+	}
 }
 
 void Animation::seek(float time) {

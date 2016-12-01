@@ -14,6 +14,7 @@ namespace triangle {
 struct Index_triangle;
 
 class Morph_target_collection {
+
 public:
 
 	std::vector<Index_triangle>& triangles();
