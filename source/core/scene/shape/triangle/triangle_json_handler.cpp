@@ -7,7 +7,8 @@ Json_handler::Json_handler () {
 	clear();
 }
 
-void Json_handler::clear() {
+void Json_handler::clear(bool read_indices) {
+	read_indices_ = read_indices;
 	object_level_ = 0;
 	top_object_ = Object::Unknown;
 	vertices_.clear();
@@ -58,6 +59,8 @@ bool Json_handler::Uint(unsigned i) {
 		break;
 	case Number::Index:
 		add_index(i);
+		break;
+	case Number::Ignore:
 		break;
 	default:
 		handle_vertex(static_cast<float>(i));
@@ -145,11 +148,15 @@ bool Json_handler::Key(const char* str, rapidjson::SizeType /*length*/, bool /*c
 		} else if ("num_indices" == name && Object::Part == expected_object_) {
 			expected_number_ = Number::Num_indices;
 		} else if ("indices" == name) {
-			expected_number_ = Number::Index;
+			if (read_indices_) {
+				expected_number_ = Number::Index;
 
-			if (!parts_.empty()) {
-				auto& p = parts_.back();
-				triangles_.reserve(p.start_index + p.num_indices);
+				if (!parts_.empty()) {
+					auto& p = parts_.back();
+					triangles_.reserve(p.start_index + p.num_indices);
+				}
+			} else {
+				expected_number_ = Number::Ignore;
 			}
 		}
 

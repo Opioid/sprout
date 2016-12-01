@@ -22,7 +22,7 @@ public:
 
 	Json_handler();
 
-	void clear();
+	void clear(bool read_indices = true);
 	void create_part();
 
 	bool Null();
@@ -80,7 +80,8 @@ private:
 		Position,
 		Texture_coordinate_0,
 		Normal,
-		Tangent
+		Tangent,
+		Ignore
 	};
 
 	enum class String_type {
@@ -96,6 +97,8 @@ private:
 		Part,
 		Vertices
 	};
+
+	bool read_indices_;
 
 	uint32_t object_level_;
 	Object top_object_;
