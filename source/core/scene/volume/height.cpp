@@ -1,11 +1,12 @@
 #include "height.hpp"
 #include "base/json/json.hpp"
+#include "base/math/ray.inl"
 #include "base/math/vector.inl"
+#include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
 
 #include <iostream>
 #include "base/math/print.hpp"
-
 
 namespace scene { namespace volume {
 
@@ -24,28 +25,48 @@ float3 Height::optical_depth(const math::Ray& ray, float step_size,
 		return float3(0.f);
 	}
 
-	float3 a = math::transform_point(rn.point(min_t), world_transformation_.world_to_object);
-	float3 b = math::transform_point(rn.point(max_t), world_transformation_.world_to_object);
+	// This is an optimization of the generic stochastic method
+	// implemented in Density::opptical_depth.
+	// Because everything happens in world space there could be differences
+	// when the volume is rotated because the local aabb is never checked.
 
-	float ha = 0.5f * (1.f + a.y);
-	float hb = 0.5f * (1.f + b.y);
+//	float3 a = math::transform_point(rn.point(min_t), world_transformation_.world_to_object);
+//	float3 b = math::transform_point(rn.point(max_t), world_transformation_.world_to_object);
+
+	float3 a = rn.point(min_t);
+	float3 b = rn.point(max_t);
+
+	float min_y = aabb_.min().y;
+	float ha = a.y - min_y;
+	float hb = b.y - min_y;
 
 	float3 attenuation = absorption_ + scattering_;
 
-	float3 fa = -((a_ * std::exp(-b_ * ha) * attenuation) / b_);
-	float3 fb = -((a_ * std::exp(-b_ * hb) * attenuation) / b_);
+	float d = max_t - min_t;
 
-	float3 result = (fb - fa) / (hb - ha);
-
+	// should check against some epsilon instead
 	if (0.f == hb - ha) {
-		result = fb;
+		// special case where density stays exactly the same along the ray
+		return d * (a_ * std::exp(-b_ * ha)) * attenuation;
 	}
 
-//	float3 old_result = Density::optical_depth(ray, 0.001f, rng, worker, filter);
+	// calculate the integral of the exponential density function
+//	float fa = -((a_ * std::exp(-b_ * ha)) / b_);
+//	float fb = -((a_ * std::exp(-b_ * hb)) / b_);
 
-//	std::cout << result << " : " << old_result << std::endl;
+//	float3 result = d * ((fb - fa) / (hb - ha)) * attenuation;
 
-	return length * result;
+	float fa = -std::exp(-b_ * ha);
+	float fb = -std::exp(-b_ * hb);
+
+	float3 result = d * ((a_ * (fb - fa) / b_) / (hb - ha)) * attenuation;
+
+//	float3 old_result = Density::optical_depth(ray, step_size, rng, worker, filter);
+//	return old_result;
+
+//	std::cout << math::distance(result, old_result) << std::endl;
+
+	return result;
 }
 
 float Height::density(float3_p p, Worker& /*worker*/, Sampler_filter /*filter*/) const {
@@ -55,7 +76,10 @@ float Height::density(float3_p p, Worker& /*worker*/, Sampler_filter /*filter*/)
 		return 0.f;
 	}
 
-	float height = 0.5f * (1.f + p.y);
+//	float height = 0.5f * (1.f + p.y);
+
+	// calculate height in world space
+	float height = aabb_.min().y + world_transformation_.scale.y * (1.f + p.y);
 
 	return a_ * std::exp(-b_ * height);
 }

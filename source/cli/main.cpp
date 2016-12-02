@@ -29,64 +29,11 @@
 #include "core/sampler/sampler_test.hpp"
 #include <iostream>
 
-
-
-struct Exponential {
-	Exponential(float pa, float pb) : a(pa), b(pb), attenuation(0.845f, 0.634f, 0.95986f) {}
-
-	float density(float3_p p) {
-		float height = 0.5f * (1.f + p.y);
-		return a * std::exp(-b * height);
-	}
-
-	float3 optical_depth(const math::Ray& r) {
-		float3 p_o = r.point(r.max_t);
-
-		float ha = 0.5f * (1.f + r.origin.y);
-		float hb = 0.5f * (1.f + p_o.y);
-
-		float3 fa = -((a * std::exp(-b * ha) * attenuation) / b);
-		float3 fb = -((a * std::exp(-b * hb) * attenuation) / b);
-
-		return (fb - fa) / (hb - ha);
-	}
-
-	float3 attenuation;
-
-	float a;
-	float b;
-};
-
-
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
-//	Exponential exponential(4.f, 8.f);
-
-//	float3 v(math::normalized(float3(1.f, 1.f, 1.f)));
-//	math::Ray rn(float3(0.f), v, 0.f, 1.f);
-
-//	float min_t = 0.f;
-//	float max_t = 1.f;
-//	float step_size = 0.001f;
-
-//	float3 tau(0.f);
-
-//	for (; min_t < max_t; min_t += step_size) {
-//		float3 p_o = rn.point(min_t);
-//		tau += exponential.density(p_o) * exponential.attenuation;
-//	}
-
-//	float3 result = step_size * tau;
-
-
-//	std::cout << result << std::endl;
-
-//	std::cout << exponential.optical_depth(rn) /** attenuation*/ << std::endl;
-
-//	return 1;
 //	sampler::testing::test();
 //	return 1;
 
