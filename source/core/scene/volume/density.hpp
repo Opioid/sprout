@@ -10,7 +10,7 @@ public:
 
 	virtual float3 optical_depth(const math::Ray& ray, float step_size,
 								 rnd::Generator& rng, Worker& worker,
-								 Sampler_filter filter) const final override;
+								 Sampler_filter filter) const override;
 
 	virtual float3 scattering(float3_p p, Worker& worker,
 							  Sampler_filter filter) const final override;
