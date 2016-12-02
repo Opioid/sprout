@@ -30,7 +30,6 @@ float Grid::density(float3_p p, Worker& worker, Sampler_filter filter) const {
 	return density;
 }
 
-void Grid::set_parameter(const std::string& /*name*/,
-						 const json::Value& /*value*/) {}
+void Grid::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
 }}

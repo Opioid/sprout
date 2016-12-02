@@ -22,16 +22,23 @@ float3 Density::optical_depth(const math::Ray& ray, float step_size,
 
 	min_t += rng.random_float() * step_size;
 
-	float3 attenuation = absorption_ + scattering_;
+	float tau = 0.f;
 
-	float3 tau(0.f);
+//	math::Ray r_o(math::transform_point(rn.origin, world_transformation_.world_to_object),
+//				  math::transform_vector(rn.direction, world_transformation_.world_to_object),
+//				  rn.min_t, rn.max_t);
+
+	float3 rp_o = math::transform_point(rn.origin, world_transformation_.world_to_object);
+	float3 rd_o = math::transform_vector(rn.direction, world_transformation_.world_to_object);
 
 	for (; min_t < max_t; min_t += step_size) {
-		float3 p_o = math::transform_point(rn.point(min_t), world_transformation_.world_to_object);
-		tau += density(p_o, worker, filter) * attenuation;
+		float3 p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
+		tau += density(p_o, worker, filter);
 	}
 
-	return step_size * tau;
+	float3 attenuation = absorption_ + scattering_;
+
+	return step_size * tau * attenuation;
 }
 
 float3 Density::scattering(float3_p p, Worker& worker, Sampler_filter filter) const {
