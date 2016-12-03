@@ -13,7 +13,7 @@
 namespace scene { namespace shape {
 
 Sphere::Sphere() {
-	aabb_.set_min_max(float3(-1.f, -1.f, -1.f), float3(1.f, 1.f, 1.f));
+	aabb_.set_min_max(float3(-1.f), float3(1.f));
 }
 
 bool Sphere::intersect(const Transformation& transformation, Ray& ray,
@@ -38,17 +38,14 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 			intersection.uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 									  std::acos(xyz.y) * math::Pi_inv);
 
-			float2 uv = float2(-std::atan2(xyz.x, xyz.z) + math::Pi, std::acos(xyz.y));
-
-			float phi   = uv.x;
-			float theta = std::max(uv.y, 0.99999f);
+			float phi   = -std::atan2(xyz.x, xyz.z) + math::Pi;
+			float theta =  std::acos(std::min(xyz.y, 0.99999f));
 
 			float sin_theta = std::sin(theta);
 			float sin_phi   = std::sin(phi);
 			float cos_phi   = std::cos(phi);
 
 			float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-
 			t = math::normalized(math::transform_vector(t, transformation.rotation));
 
 			intersection.p = p;
@@ -68,16 +65,29 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 		if (t1 > ray.min_t && t1 < ray.max_t) {
 			intersection.epsilon = 5e-4f * t1;
 
-			intersection.p = ray.point(t1);
-			intersection.n = math::normalized(intersection.p - transformation.position);
-			math::coordinate_system(intersection.n, intersection.t, intersection.b);
-			intersection.geo_n = intersection.n;
+			float3 p = ray.point(t1);
+			float3 n = math::normalized(p - transformation.position);
 
-			float3 xyz = math::transform_vector_transposed(
-						intersection.n, transformation.rotation);
+			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
 			intersection.uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 									  std::acos(xyz.y) * math::Pi_inv);
+
+			float phi   = -std::atan2(xyz.x, xyz.z) + math::Pi;
+			float theta =  std::acos(std::min(xyz.y, 0.99999f));
+
+			float sin_theta = std::sin(theta);
+			float sin_phi   = std::sin(phi);
+			float cos_phi   = std::cos(phi);
+
+			float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
+			t = math::normalized(math::transform_vector(t, transformation.rotation));
+
+			intersection.p = p;
+			intersection.t = t;
+			intersection.b = -math::cross(t, xyz);
+			intersection.n = n;
+			intersection.geo_n = n;
 
 			intersection.part = 0;
 

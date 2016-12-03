@@ -20,9 +20,9 @@ bool Inverse_sphere::intersect(const Transformation& transformation,
 							   Ray& ray, Node_stack& /*node_stack*/,
 							   Intersection& intersection) const {
 	float3 v = ray.origin - transformation.position;
-	float b = -dot(v, ray.direction);
+	float b = -math::dot(v, ray.direction);
 	float radius = transformation.scale.x;
-	float det = (b * b) - dot(v, v) + (radius * radius);
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
 	if (det > 0.f) {
 		float dist = std::sqrt(det);
@@ -37,7 +37,7 @@ bool Inverse_sphere::intersect(const Transformation& transformation,
 			intersection.geo_n = intersection.n;
 
 			float3 xyz = math::transform_vector_transposed(-intersection.n,
-															transformation.rotation);
+														   transformation.rotation);
 			intersection.uv = float2(std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 									 std::acos(xyz.y) * math::Pi_inv);
 
@@ -75,9 +75,9 @@ bool Inverse_sphere::intersect(const Transformation& transformation,
 bool Inverse_sphere::intersect_p(const Transformation& transformation,
 								 const Ray& ray, Node_stack& /*node_stack*/) const {
 	float3 v = ray.origin - transformation.position;
-	float b = -dot(v, ray.direction);
+	float b = -math::dot(v, ray.direction);
 	float radius = transformation.scale.x;
-	float det = (b * b) - dot(v, v) + (radius * radius);
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
 	if (det > 0.f) {
 		float dist = std::sqrt(det);
@@ -118,9 +118,9 @@ void Inverse_sphere::sample(uint32_t /*part*/, const Transformation& transformat
 	Intersection intersection;
 
 	float3 v = ray.origin - transformation.position;
-	float b = -dot(v, ray.direction);
+	float b = -math::dot(v, ray.direction);
 	float radius = transformation.scale.x;
-	float det = (b * b) - dot(v, v) + (radius * radius);
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
 
 	if (det > 0.f) {
 		float dist = std::sqrt(det);

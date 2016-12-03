@@ -37,8 +37,7 @@ bool Canopy::intersect(const Transformation& transformation, Ray& ray,
 		intersection.part = 0;
 
 		// paraboloid, so doesn't match hemispherical camera
-		float3 xyz = math::transform_vector_transposed(ray.direction,
-													   transformation.rotation);
+		float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
 		xyz = math::normalized(xyz);
 		float2 disk = math::hemisphere_to_disk_equidistant(xyz);
 		intersection.uv.x = 0.5f * disk.x + 0.5f;

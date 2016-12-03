@@ -7,6 +7,7 @@ SOURCES += \
 	scene/shape/plane.cpp \
     scene/shape/rectangle.cpp \
 	scene/shape/shape.cpp \
+	scene/shape/shape_test.cpp \
 	scene/shape/sphere.cpp \
 
 HEADERS += \
@@ -23,6 +24,7 @@ HEADERS += \
 	scene/shape/shape.hpp \
 	scene/shape/shape_intersection.hpp \
 	scene/shape/shape_sample.hpp \
+    scene/shape/shape_test.hpp \
 	scene/shape/shape_vertex.hpp \
 	scene/shape/sphere.hpp \
 

@@ -23,20 +23,20 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 	if (ray.max_t >= 1000000.f) {
 		intersection.epsilon = 5e-4f;
 
-		intersection.p = ray.point(1000000.f);
+		// This is nonsense
 		intersection.t = transformation.rotation.v3.x;
 		intersection.b = transformation.rotation.v3.y;
 
+		float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
+		xyz = math::normalized(xyz);
+		intersection.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
+		intersection.uv.y = std::acos(xyz.y) * math::Pi_inv;
+
+		intersection.p = ray.point(1000000.f);
 		float3 n = -ray.direction;
 		intersection.n = n;
 		intersection.geo_n = n;
 		intersection.part = 0;
-
-		float3 xyz = math::transform_vector_transposed(ray.direction,
-													   transformation.rotation);
-		xyz = math::normalized(xyz);
-		intersection.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
-		intersection.uv.y = std::acos(xyz.y) * math::Pi_inv;
 
 		ray.max_t = 1000000.f;
 		return true;

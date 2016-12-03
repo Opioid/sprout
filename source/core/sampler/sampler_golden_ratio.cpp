@@ -28,7 +28,7 @@ void Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index,
 }
 
 float2 Golden_ratio::generate_sample_2D(uint32_t dimension) {
-	SOFT_ASSERT(current_sample_2D_ < num_samples_);
+	SOFT_ASSERT(current_sample_2D_[dimension] < num_samples_);
 
 	uint32_t current = current_sample_2D_[dimension]++;
 

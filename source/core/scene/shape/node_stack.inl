@@ -1,5 +1,7 @@
 #pragma once
 
+#include "node_stack.hpp"
+
 namespace scene { namespace shape {
 
 inline Node_stack::Node_stack(size_t size) : stack_(size) {}

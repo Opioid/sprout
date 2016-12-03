@@ -26,15 +26,14 @@
 #include "base/thread/thread_pool.hpp"
 
 #include "extension/procedural/starburst/starburst.hpp"
-#include "core/sampler/sampler_test.hpp"
-#include <iostream>
+#include "core/scene/shape/shape_test.hpp"
 
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
-//	sampler::testing::test();
+//	scene::shape::testing::test();
 //	return 1;
 
 	logging::init(logging::Type::Stdout);
