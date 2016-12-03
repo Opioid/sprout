@@ -34,8 +34,8 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 	const uint32_t progress_range = calculate_progress_range(scene_, camera, tiles_.size(),
 															 view_.num_samples_per_pixel);
 
-	float tick_offset = scene_.seek(static_cast<float>(view_.start_frame) * camera.frame_duration(),
-									thread_pool_);
+	float start_frame = static_cast<float>(view_.start_frame);
+	float tick_offset = scene_.seek(start_frame * camera.frame_duration(), thread_pool_);
 	float tick_rest   = scene_.tick_duration() - tick_offset;
 
 	camera.update(workers_[0]);
@@ -74,8 +74,7 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 				if (!rendered) {
 					float normalized_tick_offset = tick_offset / scene_.tick_duration();
 
-					render_subframe(normalized_tick_offset, 0.f, 1.f,
-									progressor);
+					render_subframe(normalized_tick_offset, 0.f, 1.f, progressor);
 
 					rendered = true;
 				}

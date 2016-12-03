@@ -107,8 +107,8 @@ private:
 
 	void add_named_entity(entity::Entity* entity, const std::string& name);
 
-	float tick_duration_;
-	float simulation_time_;
+	double tick_duration_;
+	double simulation_time_;
 
     bvh::Builder builder_;
 	bvh::Tree bvh_;

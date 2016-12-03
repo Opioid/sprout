@@ -19,7 +19,7 @@
 
 namespace scene {
 
-Scene::Scene() : tick_duration_(1.f / 60.f), simulation_time_(0.f), volume_region_(nullptr) {
+Scene::Scene() : tick_duration_(1.0 / 60.0), simulation_time_(0.0), volume_region_(nullptr) {
 	dummies_.reserve(16);
 	finite_props_.reserve(16);
 	infinite_props_.reserve(16);
@@ -127,12 +127,15 @@ const volume::Volume* Scene::volume_region() const {
 }
 
 void Scene::tick(thread::Pool& thread_pool) {
+	float simulation_time = static_cast<float>(simulation_time_);
+	float tick_duration	  = static_cast<float>(tick_duration_);
+
 	for (auto m : materials_) {
-		m->tick(simulation_time_, tick_duration_);
+		m->tick(simulation_time, tick_duration);
 	}
 
 	for (auto a : animations_) {
-		a->tick(tick_duration_);
+		a->tick(tick_duration);
 	}
 
 	for (auto& s : animation_stages_) {
@@ -149,14 +152,25 @@ void Scene::tick(thread::Pool& thread_pool) {
 }
 
 float Scene::seek(float time, thread::Pool& thread_pool) {
+	// TODO: think about time precision
+	// Using double for tick_duration_ specifically solved a particular bug.
+	// But it did not particulary boost confidence in the entire timing thing.
+
 //	float tick_offset = std::fmod(time, tick_duration_);
 
 	// see http://stackoverflow.com/questions/4218961/why-fmod1-0-0-1-1
 	// for explanation why std::floor() variant
 	// seems to give results more in line with my expectations
-	float tick_offset = time - std::floor(time / tick_duration_) * tick_duration_;
 
-	float first_tick = time - tick_offset;
+	double time_d = static_cast<double>(time);
+
+	double tick_offset_d = time_d - std::floor(time_d / tick_duration_) * tick_duration_;
+
+//	float tick_offset =  static_cast<float>(tick_offset_d);// time - std::floor(time / tick_duration_) * tick_duration_;
+
+	double first_tick_d = time_d - tick_offset_d;
+
+	float first_tick = static_cast<float>(first_tick_d);
 
 	for (auto a : animations_) {
 		a->seek(first_tick);
@@ -166,11 +180,11 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 		s.update();
 	}
 
-	simulation_time_ = first_tick;
+	simulation_time_ = first_tick_d;
 
 	tick(thread_pool);
 
-	return tick_offset;
+	return static_cast<float>(tick_offset_d);
 }
 
 void Scene::compile(thread::Pool& pool) {
