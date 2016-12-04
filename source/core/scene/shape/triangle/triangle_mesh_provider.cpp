@@ -186,7 +186,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 					uint32_t b = triangles[i].b;
 					uint32_t c = triangles[i].c;
 
-					collection->triangles().push_back(Index_triangle{a, b, c, p.material_index});
+					collection->triangles().push_back(Index_triangle(a, b, c, p.material_index));
 				}
 			}
 		}
