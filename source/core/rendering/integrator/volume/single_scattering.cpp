@@ -67,7 +67,6 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume& volume
 	float3 w = -ray.direction;
 
 	float3 radiance(0.f);
-
 	float3 tr(1.f);
 
 	float3 current = ray.point(min_t);

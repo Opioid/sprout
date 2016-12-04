@@ -12,9 +12,9 @@ namespace scene { namespace volume {
 
 Height::Height() : a_(1.f), b_(1.f) {}
 
-float3 Height::optical_depth(const math::Ray& ray, float step_size,
-							 rnd::Generator& rng, Worker& worker,
-							 Sampler_filter filter) const {
+float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/,
+							 rnd::Generator& /*rng*/, Worker& /*worker*/,
+							 Sampler_filter /*filter*/) const {
 	float length = math::length(ray.direction);
 
 	math::Ray rn(ray.origin, ray.direction / length, ray.min_t * length, ray.max_t * length);
@@ -30,9 +30,6 @@ float3 Height::optical_depth(const math::Ray& ray, float step_size,
 	// Because everything happens in world space there could be differences
 	// when the volume is rotated because the local aabb is never checked.
 
-//	float3 a = math::transform_point(rn.point(min_t), world_transformation_.world_to_object);
-//	float3 b = math::transform_point(rn.point(max_t), world_transformation_.world_to_object);
-
 	float3 a = rn.point(min_t);
 	float3 b = rn.point(max_t);
 
@@ -44,8 +41,7 @@ float3 Height::optical_depth(const math::Ray& ray, float step_size,
 
 	float d = max_t - min_t;
 
-	// should check against some epsilon instead
-	if (0.f == hb - ha) {
+	if (ha == hb) {
 		// special case where density stays exactly the same along the ray
 		return d * (a_ * std::exp(-b_ * ha)) * attenuation;
 	}
@@ -60,13 +56,10 @@ float3 Height::optical_depth(const math::Ray& ray, float step_size,
 	float fb = -std::exp(-b_ * hb);
 
 	float3 result = d * ((a_ * (fb - fa) / b_) / (hb - ha)) * attenuation;
+	return result;
 
 //	float3 old_result = Density::optical_depth(ray, step_size, rng, worker, filter);
 //	return old_result;
-
-//	std::cout << math::distance(result, old_result) << std::endl;
-
-	return result;
 }
 
 float Height::density(float3_p p, Worker& /*worker*/, Sampler_filter /*filter*/) const {
@@ -76,10 +69,8 @@ float Height::density(float3_p p, Worker& /*worker*/, Sampler_filter /*filter*/)
 		return 0.f;
 	}
 
-//	float height = 0.5f * (1.f + p.y);
-
-	// calculate height in world space
-	float height = aabb_.min().y + world_transformation_.scale.y * (1.f + p.y);
+	// calculate height, relative to volume, in world space
+	float height = world_transformation_.scale.y * (1.f + p.y);
 
 	return a_ * std::exp(-b_ * height);
 }
