@@ -23,7 +23,6 @@ Whitted::Whitted(const take::Settings& take_settings, rnd::Generator& rng,
 void Whitted::prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) {
 	uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
 	sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
-//	sampler_.resize(num_samples_per_pixel, settings_.num_light_samples * num_lights, 1, 1);
 }
 
 void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {

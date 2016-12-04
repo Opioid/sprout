@@ -10,6 +10,8 @@
 #include "base/math/matrix.inl"
 #include "base/math/sampling/sampling.inl"
 
+#include <iostream>
+
 namespace scene { namespace camera {
 
 Perspective::Perspective(int2 resolution, float ray_max_t) :
@@ -60,6 +62,18 @@ void Perspective::update(rendering::Worker& worker) {
 	d_y_ = (left_bottom - left_top) / fr.y;
 
 	update_focus(worker);
+
+	float3 gleft_top    = 500.f * float3(-ratio,  1.f, 0.f) * lens_tilt_;
+	float3 gright_top   = 500.f * float3( ratio,  1.f, 0.f) * lens_tilt_;
+	float3 gleft_bottom = 500.f * float3(-ratio, -1.f, 0.f) * lens_tilt_;
+
+	gleft_top.z += focus_distance_;
+	gright_top.z += focus_distance_;
+	gleft_bottom.z += focus_distance_;
+
+	gleft_top_ = gleft_top;// + float3(lens_shift_, 0.f);
+	gd_x_ = (gright_top   - gleft_top) / fr.x;
+	gd_y_ = (gleft_bottom - gleft_top) / fr.y;
 }
 
 bool Perspective::generate_ray(const sampler::Camera_sample& sample,
@@ -75,7 +89,17 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 	if (lens_radius_ > 0.f) {
 		float2 lens = math::sample_disk_concentric(sample.lens_uv);
 
-		float t = focus_distance_ / direction.z;//z_;
+		float3 thing = gleft_top_ + coordinates.x * gd_x_ + coordinates.y * gd_y_;
+	//	float3 thing = float3(0.f, 0.f, focus_distance_) * lens_tilt_;
+
+		float t = focus_distance_ / /*direction.z;//*/z_;
+
+
+		float degdeg = std::max(thing.z, 0.125f) / z_;
+		t = degdeg;
+	//	std::cout << t << " : " << degdeg << std::endl;
+
+	//	float t = thing.z / direction.z;//z_;
 		float3 focus = t * direction;
 
 		origin = float3(lens_radius_ * lens, 0.f);

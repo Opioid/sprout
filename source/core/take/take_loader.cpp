@@ -119,8 +119,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 	return take;
 }
 
-void Loader::load_camera(const json::Value& camera_value, bool alpha_transparency,
-						 Take& take) {
+void Loader::load_camera(const json::Value& camera_value, bool alpha_transparency, Take& take) {
 	using namespace scene::camera;
 
 	std::string type_name = "Perspective";

@@ -57,6 +57,11 @@ private:
 	float3 d_x_;
 	float3 d_y_;
 
+	float3 gleft_top_;
+	float3 gd_x_;
+	float3 gd_y_;
+
+
 	float3x3 lens_tilt_;
 	float2	 lens_shift_;
 	float	 lens_radius_;
