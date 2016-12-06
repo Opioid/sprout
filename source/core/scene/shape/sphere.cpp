@@ -10,9 +10,6 @@
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace scene { namespace shape {
 
 Sphere::Sphere() {
