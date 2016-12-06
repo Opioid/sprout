@@ -10,6 +10,9 @@
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene { namespace shape {
 
 Sphere::Sphere() {
@@ -35,13 +38,12 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			intersection.uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-									  std::acos(xyz.y) * math::Pi_inv);
 
 			float phi   = -std::atan2(xyz.x, xyz.z) + math::Pi;
-			float theta =  std::acos(std::min(xyz.y, 0.99999f));
+			float theta = std::acos(xyz.y);
 
-			float sin_theta = std::sin(theta);
+			// avoid singularity at poles
+			float sin_theta = std::max(std::sin(theta), 0.00001f);
 			float sin_phi   = std::sin(phi);
 			float cos_phi   = std::cos(phi);
 
@@ -50,10 +52,10 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 
 			intersection.p = p;
 			intersection.t = t;
-			intersection.b = -math::cross(t, xyz);
+			intersection.b = -math::cross(t, n);
 			intersection.n = n;
 			intersection.geo_n = n;
-
+			intersection.uv = float2(phi * 0.5f * math::Pi_inv, theta * math::Pi_inv);
 			intersection.part = 0;
 
 			ray.max_t = t0;
@@ -70,13 +72,12 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			intersection.uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
-									  std::acos(xyz.y) * math::Pi_inv);
 
 			float phi   = -std::atan2(xyz.x, xyz.z) + math::Pi;
-			float theta =  std::acos(std::min(xyz.y, 0.99999f));
+			float theta = std::acos(xyz.y);
 
-			float sin_theta = std::sin(theta);
+			// avoid singularity at poles
+			float sin_theta = std::max(std::sin(theta), 0.00001f);
 			float sin_phi   = std::sin(phi);
 			float cos_phi   = std::cos(phi);
 
@@ -85,10 +86,10 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 
 			intersection.p = p;
 			intersection.t = t;
-			intersection.b = -math::cross(t, xyz);
+			intersection.b = -math::cross(t, n);
 			intersection.n = n;
 			intersection.geo_n = n;
-
+			intersection.uv = float2(phi * 0.5f * math::Pi_inv, theta * math::Pi_inv);
 			intersection.part = 0;
 
 			ray.max_t = t1;

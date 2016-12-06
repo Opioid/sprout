@@ -42,18 +42,8 @@ void test() {
 //		}
 //	}
 
-//	{
-//		ray.origin = float3(0.f, 4.f, 0.f);
-//		ray.set_direction(float3(0.f, -1.f, 0.f));
-
-//		Sphere sphere;
-//		if (sphere.intersect(composed_transformation, ray, node_stack, intersection)) {
-//			print(intersection);
-//		}
-//	}
-
 	{
-		ray.origin = float3(0.f, 0.f, 0.f);
+		ray.origin = float3(0.f, 4.f, 0.f);
 		ray.set_direction(float3(0.f, -1.f, 0.f));
 
 		Sphere sphere;
@@ -61,6 +51,16 @@ void test() {
 			print(intersection);
 		}
 	}
+
+//	{
+//		ray.origin = float3(0.f, 0.f, 0.f);
+//		ray.set_direction(float3(0.f, -1.f, 0.f));
+
+//		Sphere sphere;
+//		if (sphere.intersect(composed_transformation, ray, node_stack, intersection)) {
+//			print(intersection);
+//		}
+//	}
 }
 
 void print(const Intersection& intersection) {
