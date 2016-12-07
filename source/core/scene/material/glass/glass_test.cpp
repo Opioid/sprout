@@ -25,7 +25,7 @@ void test() {
 
 	wo = t;
 	sample.set_basis(n, wo);
-	sample.layer_.set_basis(t, b, n);
+	sample.layer_.set_tangent_frame(t, b, n);
 
 	float3 refraction_color(1.f, 1.f, 1.f);
 	float3 absorbtion_color(1.f, 1.f, 1.f);

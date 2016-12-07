@@ -24,7 +24,7 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	sample.set_basis(rs.geo_n, wo);
 
-	sample.layer_.set_basis(rs.t, rs.b, rs.n);
+	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
 	if (emission_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);

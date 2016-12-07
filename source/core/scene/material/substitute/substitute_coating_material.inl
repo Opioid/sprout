@@ -43,14 +43,14 @@ void Material_coating<Coating, Sample>::set_coating_basis(const Renderstate& rs,
 														  const Texture_sampler_2D& sampler,
 														  Sample& sample) {
 	if (Material_base<Sample>::normal_map_ == coating_normal_map_) {
-		sample.coating_.set_basis(rs.t, rs.b, sample.layer_.n_);
+		sample.coating_.set_tangent_frame(sample.layer_.t_, sample.layer_.b_, sample.layer_.n_);
 	} else if (coating_normal_map_.is_valid()) {
 		float3 nm = coating_normal_map_.sample_3(sampler, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
 
-		sample.coating_.set_basis(rs.t, rs.b, n);
+		sample.coating_.set_tangent_frame(n);
 	} else {
-		sample.coating_.set_basis(rs.t, rs.b, rs.n);
+		sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
 
 	if (coating_weight_map_.is_valid()) {

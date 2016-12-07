@@ -22,7 +22,7 @@ const scene::material::Sample& Sun_material::sample(float3_p wo, const scene::Re
 
 	sample.set_basis(rs.geo_n, wo);
 
-	sample.layer_.set_basis(rs.t, rs.b, rs.n);
+	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
 	sample.layer_.set(model_.evaluate_sky_and_sun(-wo));
 

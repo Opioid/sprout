@@ -25,11 +25,11 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 		float3 nm = sampler.sample_3(*normal_map_, rs.uv);
 		float3 n  = math::normalized(rs.tangent_to_world(nm));
-		sample.layer_.set_basis(rs.t, rs.b, n);
+		sample.layer_.set_tangent_frame(rs.t, rs.b, n);
 	} else {*/
-		sample.base_.set_basis(rs.t, rs.b, rs.n);
+		sample.base_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-		sample.coating_.set_basis(rs.t, rs.b, rs.n);
+		sample.coating_.set_tangent_frame(rs.t, rs.b, rs.n);
 //	}
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -38,9 +38,9 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 		float3 nm = flakes_normal_map_.sample_3(sampler, rs.uv);
 		float3 n = math::normalized(rs.tangent_to_world(nm));
 
-		sample.flakes_.set_basis(rs.t, rs.b, n);
+		sample.flakes_.set_tangent_frame(n);
 	} else {
-		sample.flakes_.set_basis(rs.t, rs.b, rs.n);
+		sample.flakes_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
 
 	sample.base_.set(color_a_, color_b_, a2_);

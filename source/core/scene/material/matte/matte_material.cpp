@@ -21,7 +21,7 @@ const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 
 	sample.set_basis(rs.geo_n, wo);
 
-	sample.layer_.set_basis(rs.t, rs.b, rs.n);
+	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
 	sample.layer_.set(color_);
 

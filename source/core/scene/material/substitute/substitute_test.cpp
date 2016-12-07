@@ -86,8 +86,8 @@ void test() {
 
 	float3 wo = n;
 
-	sample.set_basis(n, wo);
-	sample.layer_.set_basis(t, b, n);
+	sample.set_tangent_frame(n, wo);
+	sample.layer_.set_tangent_frame(t, b, n);
 
 	float3 wi = arbitrary;//n;
 	float pdf;
@@ -125,7 +125,7 @@ void Setup::test(float3_p wi, float3_p wo,
 	sample.layer_.set(color, radiance, ior, constant_f0, roughness, metallic);
 
 	sample.set_basis(n, wo);
-	sample.layer_.set_basis(t, b, n);
+	sample.layer_.set_tangent_frame(t, b, n);
 
 	float pdf;
 	float3 reflection = sample.evaluate(wi, pdf);

@@ -25,7 +25,7 @@ const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,
 
 	sample.set_basis(rs.geo_n, wo);
 
-	sample.layer_.set_basis(rs.t, rs.b, rs.n);
+	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
 	float3 radiance = emission_map_.sample_3(sampler, rs.uv);
 	sample.layer_.set(emission_factor_ * radiance);

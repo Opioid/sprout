@@ -19,7 +19,16 @@
 #include "base/memory/variant_map.inl"
 #include "rapidjson/istreamwrapper.h"
 
+#include "base/debug/assert.hpp"
+#ifdef SU_DEBUG
+#	include <iostream>
+#endif
+
 namespace scene { namespace shape { namespace triangle {
+
+#ifdef SU_DEBUG
+bool check(const std::vector<Vertex>& vertices, const std::string& filename);
+#endif
 
 Provider::Provider() : resource::Provider<Shape>("Mesh") {}
 
@@ -99,6 +108,8 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 		}
 	}
 
+	SOFT_ASSERT(check(vertices, filename));
+
     return create_mesh(triangles, vertices, num_parts, bvh_preset, manager.thread_pool());
 }
 
@@ -134,7 +145,7 @@ std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& 
     return mesh;
 }
 
-std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filename*/,
+std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename,
 													 const std::vector<std::string>& morph_targets,
 													 resource::Manager& manager) {
 	auto collection = std::make_shared<Morph_target_collection>();
@@ -191,6 +202,8 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 			}
 		}
 
+		SOFT_ASSERT(check(handler.vertices(), filename));
+
 		collection->add_swap_vertices(handler.vertices());
 	}
 
@@ -203,6 +216,26 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& /*filena
 
 	return mesh;
 }
+
+#ifdef SU_DEBUG
+bool check(const std::vector<Vertex>& vertices, const std::string& filename) {
+	bool valid = true;
+
+	for (auto& v : vertices) {
+		if (math::squared_length(v.n) < 0.1f ||
+			math::squared_length(v.t) < 0.1f) {
+			valid = false;
+			break;
+		}
+	}
+
+	if (!valid) {
+		std::cout << filename << std::endl;
+	}
+
+	return valid;
+}
+#endif
 
 }}}
 

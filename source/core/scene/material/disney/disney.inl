@@ -42,7 +42,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer,
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
-	SOFT_ASSERT(testing::check(result, wo, layer));
+	SOFT_ASSERT(testing::check(result, wo, h, layer));
 
 	return n_dot_wi;
 }

@@ -6,9 +6,14 @@
 
 namespace scene { namespace material {
 
-inline void Sample::Layer::set_basis(float3_p t, float3_p b, float3_p n) {
+inline void Sample::Layer::set_tangent_frame(float3_p t, float3_p b, float3_p n) {
 	t_ = t;
 	b_ = b;
+	n_ = n;
+}
+
+inline void Sample::Layer::set_tangent_frame(float3_p n) {
+	math::coordinate_system(n, t_, b_);
 	n_ = n;
 }
 

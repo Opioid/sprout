@@ -10,6 +10,9 @@
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
 
+#include "shape_test.hpp"
+#include "base/debug/assert.hpp"
+
 namespace scene { namespace shape {
 
 Disk::Disk() {
@@ -49,6 +52,8 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 			intersection.uv.y = (math::dot(b, sk) + 1.f) * uv_scale;
 
 			intersection.part = 0;
+
+			SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
 			ray.max_t = hit_t;
 			return true;

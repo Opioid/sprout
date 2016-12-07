@@ -17,7 +17,7 @@ const material::Sample& Material_overcast::sample(float3_p wo, const Renderstate
 	auto& sample = cache_.get(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
-	sample.layer_.set_basis(rs.t, rs.b, rs.n);
+	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
 	sample.layer_.set(overcast(-wo));
 

@@ -491,7 +491,7 @@ inline Vector3f_a reflect(FVector3f_a normal, FVector3f_a v) {
 }
 
 inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
-	Vector3f_a r1;
+/*	Vector3f_a r1;
 
 	if (n.x < 0.6f && n.x > -0.6f) {
 		r1 = Vector3f_a(1.f, 0.f, 0.f);
@@ -505,8 +505,22 @@ inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
 
 	t = r0;
 	b = cross(r0, n);
+*/
 
-	// http://orbit.dtu.dk/files/57573287/onb_frisvad_jgt2012.pdf
+	// https://gist.github.com/roxlu/3082114
+
+	// Handle the singularity
+	if (n.z < -0.9999999f)
+	{
+		t = Vector3f_a( 0.f, -1.f, 0.f);
+		b = Vector3f_a(-1.f,  0.f, 0.f);
+		return;
+	}
+
+	const float c = 1.f / (1.f + n.z);
+	const float d = -n.x * n.y * c;
+	t = Vector3f_a(1.f - n.x * n.x * c, d, -n.x);
+	b = Vector3f_a(d, 1.f - n.y * n.y * c, -n.y);
 }
 
 inline Vector3f_a tangent(FVector3f_a n) {

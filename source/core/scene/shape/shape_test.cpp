@@ -14,6 +14,20 @@ namespace scene { namespace shape { namespace testing {
 
 void print(const Intersection& intersection);
 
+void print_vector(float3_p v);
+
+bool check(const Intersection& intersection,
+		   const entity::Composed_transformation& /*transformation*/, const Ray& /*ray*/) {
+	if (!std::isfinite(math::length(intersection.b))) {
+
+		print(intersection);
+
+		return false;
+	}
+
+	return true;
+}
+
 void test() {
 	std::cout << "scene::shape::testing::test()" << std::endl;
 
@@ -64,10 +78,14 @@ void test() {
 }
 
 void print(const Intersection& intersection) {
-	std::cout << "n: " << intersection.n << std::endl;
-	std::cout << "t: " << intersection.t << std::endl;
-	std::cout << "b: " << intersection.b << std::endl;
+	std::cout << "n: "; print_vector(intersection.n);
+	std::cout << "t: "; print_vector(intersection.t);
+	std::cout << "b: "; print_vector(intersection.b);
 	std::cout << "uv: " << intersection.uv << std::endl;
+}
+
+void print_vector(float3_p v) {
+	std::cout << v << " |" << math::length(v) << "|" << std::endl;
 }
 
 }}}

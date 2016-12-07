@@ -10,6 +10,9 @@
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
 
+#include "shape_test.hpp"
+#include "base/debug/assert.hpp"
+
 namespace scene { namespace shape {
 
 Sphere::Sphere() {
@@ -55,6 +58,8 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 			intersection.uv = float2(phi * 0.5f * math::Pi_inv, theta * math::Pi_inv);
 			intersection.part = 0;
 
+			SOFT_ASSERT(testing::check(intersection, transformation, ray));
+
 			ray.max_t = t0;
 			return true;
 		}
@@ -88,6 +93,8 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 			intersection.geo_n = n;
 			intersection.uv = float2(phi * 0.5f * math::Pi_inv, theta * math::Pi_inv);
 			intersection.part = 0;
+
+			SOFT_ASSERT(testing::check(intersection, transformation, ray));
 
 			ray.max_t = t1;
 			return true;

@@ -13,7 +13,8 @@ class Sample {
 public:
 
 	struct Layer {
-		void set_basis(float3_p t, float3_p b, float3_p n);
+		void set_tangent_frame(float3_p t, float3_p b, float3_p n);
+		void set_tangent_frame(float3_p n);
 
 		float clamped_n_dot(float3_p v) const;
 		float reversed_clamped_n_dot(float3_p v) const;

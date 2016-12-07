@@ -190,8 +190,6 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 	float denom = layer.ior_i_ * wo_dot_h + layer.ior_o_ * wo_dot_h;
 	denom = denom * denom;
 
-//		float thing = ((layer.ior_o * layer.ior_o) * wo_dot_h / denom);
-
 	result.pdf = (d * n_dot_h / (4.f * wo_dot_h));// * thing;
 
 	float ior_o_2 = layer.ior_o_ * layer.ior_o_;
@@ -267,7 +265,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
-	SOFT_ASSERT(testing::check(result, wo, layer));
+	SOFT_ASSERT(testing::check(result, wo, h, layer));
 
 	return n_dot_wi;
 }
