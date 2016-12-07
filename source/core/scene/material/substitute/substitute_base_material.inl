@@ -105,6 +105,7 @@ void Material_base<Sample>::set_sample(float3_p wo, const Renderstate& rs,
 
 		SOFT_ASSERT(testing::check_normal_map(n, nm, rs.uv));
 
+		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
