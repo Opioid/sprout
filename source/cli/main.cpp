@@ -22,6 +22,7 @@
 #include "extension/procedural/mesh/mesh.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector.inl"
+#include "base/platform/platform.hpp"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 
@@ -37,7 +38,7 @@ int main(int argc, char* argv[]) {
 //	return 1;
 
 	logging::init(logging::Type::Stdout);
-	logging::info("Welcome to sprout!");
+	logging::info("Welcome to sprout (" + platform::build() +  ")!");
 
 	options::init(argc, argv);
 
