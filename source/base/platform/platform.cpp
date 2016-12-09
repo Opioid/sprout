@@ -26,11 +26,14 @@ std::string build() {
 
 	// Compiler
 #ifdef _MSC_VER
-	std::stringstream version;
-	version << _MSC_VER;
-	stream << "VS " << (_MSC_VER / 100) << "." << version.str().substr(2, 2);
+	stream << "MSVC++ ";
+	switch(_MSC_VER) {
+	case 1800: stream << "12.0"; break;
+	case 1900: stream << "14.0"; break;
+	default: stream << _MSC_VER; break;
+	}
 #elif defined(__clang__)
-	stream << "clang " << __clang_major__ << "." << __clang_minor__;
+	stream << "clang " << __clang_major__ << "." << __clang_minor__ << "." << __clang_patchlevel__;
 #endif
 
 	return stream.str();
