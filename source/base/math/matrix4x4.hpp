@@ -54,7 +54,7 @@ struct Matrix4x4 {
 
 	explicit Matrix4x4(const Transformationf_a& t);
 
-	Matrix4x4 operator*(const Matrix4x4& m) const;
+	Matrix4x4 operator*(const Matrix4x4& o) const;
 
 	Matrix4x4 operator/(T s) const;
 
@@ -185,7 +185,7 @@ struct alignas(16) Matrix4x4f_a {
 
 	explicit Matrix4x4f_a(const Transformationf_a& t);
 
-	Matrix4x4f_a operator*(const Matrix4x4f_a& m) const;
+	Matrix4x4f_a operator*(const Matrix4x4f_a& o) const;
 };
 
 Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m);
@@ -212,5 +212,9 @@ void set_basis_scale_origin(Matrix4x4f_a& m,
 							const Matrix4x4f_a& basis,
 							const Vector3f_a& scale,
 							const Vector3f_a& origin);
+
+void set_translation(Matrix4x4f_a& m, const Vector3f_a& v);
+
+void set_rotation_x(Matrix4x4f_a& m, float a);
 
 }

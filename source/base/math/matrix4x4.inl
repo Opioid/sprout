@@ -50,26 +50,26 @@ Matrix4x4<T>::Matrix4x4(const Transformationf_a& t) {
 }
 
 template<typename T>
-Matrix4x4<T> Matrix4x4<T>::operator*(const Matrix4x4& m) const {
-	return Matrix4x4(m00 * m.m00 + m01 * m.m10 + m02 * m.m20 + m03 * m.m30,
-					 m00 * m.m01 + m01 * m.m11 + m02 * m.m21 + m03 * m.m31,
-					 m00 * m.m02 + m01 * m.m12 + m02 * m.m22 + m03 * m.m32,
-					 m00 * m.m03 + m01 * m.m13 + m02 * m.m23 + m03 * m.m33,
+Matrix4x4<T> Matrix4x4<T>::operator*(const Matrix4x4& o) const {
+	return Matrix4x4(m00 * o.m00 + m01 * o.m10 + m02 * o.m20 + m03 * o.m30,
+					 m00 * o.m01 + m01 * o.m11 + m02 * o.m21 + m03 * o.m31,
+					 m00 * o.m02 + m01 * o.m12 + m02 * o.m22 + m03 * o.m32,
+					 m00 * o.m03 + m01 * o.m13 + m02 * o.m23 + m03 * o.m33,
 
-					 m10 * m.m00 + m11 * m.m10 + m12 * m.m20 + m13 * m.m30,
-					 m10 * m.m01 + m11 * m.m11 + m12 * m.m21 + m13 * m.m31,
-					 m10 * m.m02 + m11 * m.m12 + m12 * m.m22 + m13 * m.m32,
-					 m10 * m.m03 + m11 * m.m13 + m12 * m.m23 + m13 * m.m33,
+					 m10 * o.m00 + m11 * o.m10 + m12 * o.m20 + m13 * o.m30,
+					 m10 * o.m01 + m11 * o.m11 + m12 * o.m21 + m13 * o.m31,
+					 m10 * o.m02 + m11 * o.m12 + m12 * o.m22 + m13 * o.m32,
+					 m10 * o.m03 + m11 * o.m13 + m12 * o.m23 + m13 * o.m33,
 
-					 m20 * m.m00 + m21 * m.m10 + m22 * m.m20 + m23 * m.m30,
-					 m20 * m.m01 + m21 * m.m11 + m22 * m.m21 + m23 * m.m31,
-					 m20 * m.m02 + m21 * m.m12 + m22 * m.m22 + m23 * m.m32,
-					 m20 * m.m03 + m21 * m.m13 + m22 * m.m23 + m23 * m.m33,
+					 m20 * o.m00 + m21 * o.m10 + m22 * o.m20 + m23 * o.m30,
+					 m20 * o.m01 + m21 * o.m11 + m22 * o.m21 + m23 * o.m31,
+					 m20 * o.m02 + m21 * o.m12 + m22 * o.m22 + m23 * o.m32,
+					 m20 * o.m03 + m21 * o.m13 + m22 * o.m23 + m23 * o.m33,
 
-					 m30 * m.m00 + m31 * m.m10 + m32 * m.m20 + m33 * m.m30,
-					 m30 * m.m01 + m31 * m.m11 + m32 * m.m21 + m33 * m.m31,
-					 m30 * m.m02 + m31 * m.m12 + m32 * m.m22 + m33 * m.m32,
-					 m30 * m.m03 + m31 * m.m13 + m32 * m.m23 + m33 * m.m33);
+					 m30 * o.m00 + m31 * o.m10 + m32 * o.m20 + m33 * o.m30,
+					 m30 * o.m01 + m31 * o.m11 + m32 * o.m21 + m33 * o.m31,
+					 m30 * o.m02 + m31 * o.m12 + m32 * o.m22 + m33 * o.m32,
+					 m30 * o.m03 + m31 * o.m13 + m32 * o.m23 + m33 * o.m33);
 }
 
 template<typename T>
@@ -423,6 +423,28 @@ inline Matrix4x4f_a::Matrix4x4f_a(const Transformationf_a& t) {
 	set_basis_scale_origin(*this, math::create_matrix3x3(t.rotation), t.scale, t.position);
 }
 
+inline Matrix4x4f_a Matrix4x4f_a::operator*(const Matrix4x4f_a& o) const {
+	return Matrix4x4f_a(m00 * o.m00 + m01 * o.m10 + m02 * o.m20 + m03 * o.m30,
+						m00 * o.m01 + m01 * o.m11 + m02 * o.m21 + m03 * o.m31,
+						m00 * o.m02 + m01 * o.m12 + m02 * o.m22 + m03 * o.m32,
+						m00 * o.m03 + m01 * o.m13 + m02 * o.m23 + m03 * o.m33,
+
+						m10 * o.m00 + m11 * o.m10 + m12 * o.m20 + m13 * o.m30,
+						m10 * o.m01 + m11 * o.m11 + m12 * o.m21 + m13 * o.m31,
+						m10 * o.m02 + m11 * o.m12 + m12 * o.m22 + m13 * o.m32,
+						m10 * o.m03 + m11 * o.m13 + m12 * o.m23 + m13 * o.m33,
+
+						m20 * o.m00 + m21 * o.m10 + m22 * o.m20 + m23 * o.m30,
+						m20 * o.m01 + m21 * o.m11 + m22 * o.m21 + m23 * o.m31,
+						m20 * o.m02 + m21 * o.m12 + m22 * o.m22 + m23 * o.m32,
+						m20 * o.m03 + m21 * o.m13 + m22 * o.m23 + m23 * o.m33,
+
+						m30 * o.m00 + m31 * o.m10 + m32 * o.m20 + m33 * o.m30,
+						m30 * o.m01 + m31 * o.m11 + m32 * o.m21 + m33 * o.m31,
+						m30 * o.m02 + m31 * o.m12 + m32 * o.m22 + m33 * o.m32,
+						m30 * o.m03 + m31 * o.m13 + m32 * o.m23 + m33 * o.m33);
+}
+
 inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a(
 				v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
@@ -535,6 +557,23 @@ inline void set_basis_scale_origin(Matrix4x4f_a& m,
 	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
 	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
 	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 0.f;
+}
+
+inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
+	m.m00 = 1.f; m.m01 = 0.f; m.m02 = 0.f; m.m03 = 0.f;
+	m.m10 = 0.f; m.m11 = 1.f; m.m12 = 0.f; m.m13 = 0.f;
+	m.m20 = 0.f; m.m21 = 0.f; m.m22 = 1.f; m.m23 = 0.f;
+	m.m30 = v.x;  m.m31 = v.y;  m.m32 = v.z;  m.m33 = 1.f;
+}
+
+inline void set_rotation_x(Matrix4x4f_a& m, float a) {
+	float c = std::cos(a);
+	float s = std::sin(a);
+
+	m.m00 = 1.f; m.m01 = 0.f; m.m02 =  0.f; m.m03 = 0.f;
+	m.m10 = 0.f; m.m11 = c;   m.m12 = -s;   m.m13 = 0.f;
+	m.m20 = 0.f; m.m21 = s;   m.m22 =  c;   m.m23 = 0.f;
+	m.m30 = 0.f; m.m31 = 0.f; m.m32 =  0.f; m.m33 = 1.f;
 }
 
 }

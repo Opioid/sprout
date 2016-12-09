@@ -51,8 +51,8 @@ plane create_plane(FVector3f_a normal, float d);
 plane create_plane(FVector3f_a normal, FVector3f_a point);
 plane create_plane(FVector3f_a v0, FVector3f_a v1, FVector3f_a v2);
 
-float dot(const plane& p, FVector3f_a v);
+float dot(FVector4f_a p, FVector3f_a v);
 
-bool behind(const plane& p, FVector3f_a point);
+bool behind(FVector4f_a p, FVector3f_a point);
 
 }

@@ -24,8 +24,14 @@ public:
 
 private:
 
+	void add_pixel(int2 pixel, float weight, float4_p color,
+				   const math::Recti& tile, const math::Recti& bounds);
+
 	void weight_and_add_pixel(int2 pixel, float2 relative_offset, float4_p color,
 							  const math::Recti& tile, const math::Recti& bounds);
+
+	void weight_and_add_pixel2(int2 pixel, float2 relative_offset, float4_p color,
+							   const math::Recti& tile, const math::Recti& bounds);
 
 	Clamp clamp_;
 

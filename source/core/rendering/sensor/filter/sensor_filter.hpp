@@ -12,6 +12,7 @@ public:
 
 	virtual float radius() const = 0;
 
+	virtual float evaluate(float d) const = 0;
 	virtual float evaluate(float2 p) const = 0;
 };
 

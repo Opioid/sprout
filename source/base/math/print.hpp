@@ -24,6 +24,10 @@ inline std::ostream& operator<<(std::ostream& stream, const math::Vector3f_a& v)
 	return stream << "[" << v.x << ", " << v.y << ", " << v.z << "]";
 }
 
+inline std::ostream& operator<<(std::ostream& stream, const math::Vector4f_a& v) {
+	return stream << "[" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << "]";
+}
+
 template<typename T>
 std::ostream& operator<<(std::ostream& stream, const math::Matrix3x3<T>& m) {
 	return stream << "[" << m.m00 << ", " << m.m01 << ", " << m.m02 << ",\n"

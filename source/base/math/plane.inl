@@ -65,11 +65,11 @@ inline plane create_plane(FVector3f_a v0, FVector3f_a v1, FVector3f_a v2) {
 	return create_plane(n, v0);
 }
 
-inline float dot(const plane& p, FVector3f_a v) {
+inline float dot(FVector4f_a p, FVector3f_a v) {
 	return p.x * v.x + p.y * v.y + p.z * v.z + p.w;
 }
 
-inline bool behind(const plane& p, FVector3f_a point) {
+inline bool behind(FVector4f_a p, FVector3f_a point) {
 	return dot(p, point) < 0.f;
 }
 

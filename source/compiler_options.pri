@@ -1,10 +1,11 @@
 win32 {
     # optimization level
-    QMAKE_CXXFLAGS_RELEASE -= -O2
-    QMAKE_CXXFLAGS_RELEASE += -Ox
+#    QMAKE_CXXFLAGS_RELEASE -= -O2
+#    QMAKE_CXXFLAGS_RELEASE += -Ox
     # warning level
     QMAKE_CXXFLAGS_WARN_ON -= -W3
-    QMAKE_CXXFLAGS_WARN_ON += -Wall
+    QMAKE_CXXFLAGS_WARN_ON += -W4
+#    QMAKE_CXXFLAGS_WARN_ON += -Wall
     # disable warnings
     QMAKE_CXXFLAGS += /wd4201 #nameless struct/union extension
     QMAKE_CXXFLAGS += /wd4324 #pad due to alignment specifier

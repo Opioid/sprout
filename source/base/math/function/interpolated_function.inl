@@ -32,7 +32,7 @@ T Interpolated_function<T>::operator()(float x) const {
 	x = std::min(x, range_end_);
 
 	float o = x * inverse_range_;
-	size_t offset = static_cast<size_t>(o);
+	uint32_t offset = static_cast<uint32_t>(o);
 
 	float t = o - static_cast<float>(offset);
 

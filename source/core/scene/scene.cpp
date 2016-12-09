@@ -75,11 +75,11 @@ float Scene::opacity(const scene::Ray& ray, Worker& worker,
 }
 
 float Scene::tick_duration() const {
-	return tick_duration_;
+	return static_cast<float>(tick_duration_);
 }
 
 float Scene::simulation_time() const {
-	return simulation_time_;
+	return static_cast<float>(simulation_time_);
 }
 
 entity::Entity* Scene::entity(size_t index) const {
