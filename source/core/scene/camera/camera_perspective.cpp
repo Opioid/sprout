@@ -8,9 +8,29 @@
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
+#include "base/math/plane.inl"
 #include "base/math/sampling/sampling.inl"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene { namespace camera {
+
+bool intersect(float4_p plane, float3_p org, float3_p dir, float3& intersection) {
+//	float3_p normal = transformation.rotation.v3.z;
+//	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(plane.xyz, dir);
+	float numer =  math::dot(plane.xyz, org) + plane.w;
+	float hit_t = numer / denom;
+
+	if (hit_t > 0.f) {
+		intersection = org + hit_t * dir; // ray.point(hit_t);
+
+		return true;
+	}
+
+	return false;
+}
 
 Perspective::Perspective(int2 resolution, float ray_max_t) :
 	Camera(resolution, ray_max_t),
@@ -45,9 +65,9 @@ void Perspective::update(rendering::Worker& worker) {
 //	float3 right_top  ( ratio,  1.f, z);
 //	float3 left_bottom(-ratio, -1.f, z);
 
-	float3 left_top    = float3(-ratio,  1.f, 0.f) * lens_tilt_;
-	float3 right_top   = float3( ratio,  1.f, 0.f) * lens_tilt_;
-	float3 left_bottom = float3(-ratio, -1.f, 0.f) * lens_tilt_;
+	float3 left_top    = float3(-ratio,  1.f, 0.f);// * lens_tilt_;
+	float3 right_top   = float3( ratio,  1.f, 0.f);// * lens_tilt_;
+	float3 left_bottom = float3(-ratio, -1.f, 0.f);// * lens_tilt_;
 
 	left_top.z += z;
 	right_top.z += z;
@@ -60,6 +80,78 @@ void Perspective::update(rendering::Worker& worker) {
 	d_y_ = (left_bottom - left_top) / fr.y;
 
 	update_focus(worker);
+
+
+	float j = -z / std::sin(lens_tilt_a_);
+
+	float4x4 translation;
+	math::set_translation(translation, float3(0.f, j, 0.f));
+
+	float w = 0.4f * math::Pi;// 0.f;
+
+	float4x4 rotation;
+	math::set_rotation_x(rotation, w);
+
+	float3 durum(0.f, 0.f, 1.f);
+
+	{
+		float4x4 trafo = translation * rotation;
+
+	float3 dir = math::transform_vector(durum, trafo);
+	float3 org = math::transform_point(float3(0.f, 0.f, 0.f), translation);
+
+	math::plane stuff = math::create_plane(dir, org);
+
+
+	float3 fleft_top;
+	float3 fright_top;
+	float3 fleft_bottom;
+
+	if (!intersect(stuff, float3(0.f, 0.f, 0.f), left_top, fleft_top)) {
+		fleft_top = left_top;
+		fleft_top.z -= z;
+	}
+
+	if (!intersect(stuff, float3(0.f, 0.f, 0.f), right_top, fright_top)) {
+		fright_top = right_top;
+		fright_top.z -= z;
+	}
+
+	if (!intersect(stuff, float3(0.f, 0.f, 0.f), left_bottom, fleft_bottom)) {
+		fleft_bottom = left_bottom;
+		fleft_bottom.z -= z;
+	}
+
+	fleft_top_ = fleft_top + float3(lens_shift_, 0.f);
+	fd_x_	   = (fright_top   - fleft_top) / fr.x;
+	fd_y_	   = (fleft_bottom - fleft_top) / fr.y;
+
+//	std::cout << stuff << std::endl;
+
+	}
+
+	return;
+/*
+//	float3 fleft_top    = float3(focus_distance_ * -ratio,  focus_distance_, 0.f) * lens_tilt_;
+//	float3 fright_top   = float3(focus_distance_ *  ratio,  focus_distance_, 0.f) * lens_tilt_;
+//	float3 fleft_bottom = float3(focus_distance_ * -ratio, -focus_distance_, 0.f) * lens_tilt_;
+
+//	fleft_top.z += focus_distance_;
+//	fright_top.z += focus_distance_;
+//	fleft_bottom.z += focus_distance_;
+
+	float3 fleft_top    = focus_distance_ * math::normalized(left_top_) * lens_tilt_;
+	float3 fright_top   = focus_distance_ * math::normalized(right_top) * lens_tilt_;
+	float3 fleft_bottom = focus_distance_ * math::normalized(left_bottom) * lens_tilt_;
+
+//	fleft_top.z += focus_distance_;
+//	fright_top.z += focus_distance_;
+//	fleft_bottom.z += focus_distance_;
+
+	fleft_top_ = fleft_top + float3(lens_shift_, 0.f);
+	fd_x_ = (fright_top   - fleft_top) / fr.x;
+	fd_y_ = (fleft_bottom - fleft_top) / fr.y;
+*/
 }
 
 bool Perspective::generate_ray(const sampler::Camera_sample& sample,
@@ -73,13 +165,28 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 	float3 origin;
 
 	if (lens_radius_ > 0.f) {
+//		float2 lens = math::sample_disk_concentric(sample.lens_uv);
+
+//		origin = float3(lens_radius_ * lens, 0.f);
+
+//		float t = focus_distance_ / direction.z;//z_;
+//		float3 focus = t * direction;
+
+//		direction = focus - origin;
+
+
 		float2 lens = math::sample_disk_concentric(sample.lens_uv);
 
-		float t = focus_distance_ / direction.z;//z_;
+		origin = float3(lens_radius_ * lens, 0.f);
+
+		float3 fdirection = fleft_top_ + coordinates.x * fd_x_ + coordinates.y * fd_y_;
+
+		float t = (focus_distance_ + fdirection.z) / z_;
 		float3 focus = t * direction;
 
-		origin = float3(lens_radius_ * lens, 0.f);
+
 		direction = focus - origin;
+
 	} else {
 		origin = math::float3_identity;
 	}
@@ -119,6 +226,8 @@ void Perspective::set_lens(const Lens& lens) {
 
 	lens_shift_  = float2(-s * shift, c * shift);
 	lens_radius_ = lens.radius;
+
+	lens_tilt_a_ = tilt;
 }
 
 void Perspective::set_focus(const Focus& focus) {
@@ -130,7 +239,7 @@ void Perspective::set_focus(const Focus& focus) {
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {
-	if (focus_.use_point) {
+	if (focus_.use_point && lens_radius_ > 0.f) {
 		float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
 		direction = math::normalized(direction);
 
@@ -148,6 +257,9 @@ void Perspective::update_focus(rendering::Worker& worker) {
 		Intersection intersection;
 		if (worker.intersect(ray, intersection)) {
 			focus_distance_ = ray.max_t + focus_.point.z;
+
+			std::cout << focus_distance_ << std::endl;
+
 		} else {
 			focus_distance_ = focus_.distance;
 		}

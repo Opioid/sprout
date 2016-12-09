@@ -19,7 +19,7 @@ public:
 		float3 point = float3(0.5f, 0.5f, 0.f);
 		float distance;
 
-		bool use_point = true;
+		bool use_point = false;
 	};
 
 	Perspective(int2 resolution, float ray_max_t);
@@ -60,6 +60,7 @@ private:
 	float3x3 lens_tilt_;
 	float2	 lens_shift_;
 	float	 lens_radius_;
+	float lens_tilt_a_;
 
 	float fov_;
 
@@ -67,6 +68,13 @@ private:
 	float focus_distance_;
 
 	float z_;
+
+
+
+
+	float3 fleft_top_;
+	float3 fd_x_;
+	float3 fd_y_;
 };
 
 }}
