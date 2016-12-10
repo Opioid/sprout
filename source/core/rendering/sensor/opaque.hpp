@@ -17,9 +17,9 @@ public:
 
 protected:
 
-	virtual void add_pixel(int2 pixel, float4_p, float weight) final override;
+	virtual void add_pixel(int2 pixel, float4_p color, float weight) final override;
 
-	virtual void add_pixel_atomic(int2 pixel, float4_p, float weight) final override;
+	virtual void add_pixel_atomic(int2 pixel, float4_p color, float weight) final override;
 
 	virtual void resolve(int32_t begin, int32_t end, image::Float_4& target) const final override;
 

@@ -31,5 +31,4 @@ protected:
 	Pixel* pixels_;
 };
 
-
 }}

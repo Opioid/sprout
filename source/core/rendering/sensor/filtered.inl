@@ -41,19 +41,19 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, flo
 	float wy2 = filter_->evaluate(oy - 1.f);
 
 	// 1. rwo
-	add_pixel(int2(x - 1, y - 1), wx0 * wy0, clamped_color, tile, bounds);
-	add_pixel(int2(x, y - 1),	  wx1 * wy0, clamped_color, tile, bounds);
-	add_pixel(int2(x + 1, y - 1), wx2 * wy0, clamped_color, tile, bounds);
+	add_weighted_pixel(int2(x - 1, y - 1), wx0 * wy0, clamped_color, tile, bounds);
+	add_weighted_pixel(int2(x, y - 1),	   wx1 * wy0, clamped_color, tile, bounds);
+	add_weighted_pixel(int2(x + 1, y - 1), wx2 * wy0, clamped_color, tile, bounds);
 
 	// 2. row
-	add_pixel(int2(x - 1, y), wx0 * wy1, clamped_color, tile, bounds);
-	add_pixel(int2(x, y),	  wx1 * wy1, clamped_color, tile, bounds);
-	add_pixel(int2(x + 1, y), wx2 * wy1, clamped_color, tile, bounds);
+	add_weighted_pixel(int2(x - 1, y), wx0 * wy1, clamped_color, tile, bounds);
+	add_weighted_pixel(int2(x, y),	   wx1 * wy1, clamped_color, tile, bounds);
+	add_weighted_pixel(int2(x + 1, y), wx2 * wy1, clamped_color, tile, bounds);
 
 	// 3. row
-	add_pixel(int2(x - 1, y + 1), wx0 * wy2, clamped_color, tile, bounds);
-	add_pixel(int2(x, y + 1),	  wx1 * wy2, clamped_color, tile, bounds);
-	add_pixel(int2(x + 1, y + 1), wx2 * wy2, clamped_color, tile, bounds);
+	add_weighted_pixel(int2(x - 1, y + 1), wx0 * wy2, clamped_color, tile, bounds);
+	add_weighted_pixel(int2(x, y + 1),	   wx1 * wy2, clamped_color, tile, bounds);
+	add_weighted_pixel(int2(x + 1, y + 1), wx2 * wy2, clamped_color, tile, bounds);
 
 
 	/*
@@ -90,9 +90,9 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, flo
 }
 
 template<class Base, class Clamp>
-void Filtered<Base, Clamp>::add_pixel(int2 pixel, float weight, float4_p color,
-									  const math::Recti& tile,
-									  const math::Recti& bounds) {
+void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4_p color,
+											   const math::Recti& tile,
+											   const math::Recti& bounds) {
 	if (pixel.x < bounds.start.x || pixel.x >= bounds.end.x
 	||  pixel.y < bounds.start.y || pixel.y >= bounds.end.y) {
 		return;
