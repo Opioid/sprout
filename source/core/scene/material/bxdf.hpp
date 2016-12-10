@@ -28,6 +28,11 @@ struct Result {
 
 	using Type_flag = flags::Flags<Type>;
 	Type_flag type;
+
+	// HACK: This is only used for one specific combination:
+	// ggx importance sampling + disney diffuse evaluation
+	// Solves the issue where ggx produces wi == -wo?!
+	float h_dot_wi;
 };
 
 }}}

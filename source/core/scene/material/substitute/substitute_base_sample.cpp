@@ -54,8 +54,11 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) c
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
 
+	float3 h = math::normalized(wo + wi);
+	float h_dot_wi = math::saturate(math::dot(h, wi));
+
 	float d_pdf;
-	float3 d_reflection = disney::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo, *this, d_pdf);
+	float3 d_reflection = disney::Isotropic::reflection(h_dot_wi, n_dot_wi, n_dot_wo, *this, d_pdf);
 
 	fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
@@ -93,7 +96,7 @@ void Sample_base::Layer::specular_sample(float3_p wo, sampler::Sampler& sampler,
 											 sampler, ggx_fresnel, result);
 
 	float d_pdf;
-	float3 d_reflection = disney::Isotropic::reflection(result.wi, wo, n_dot_wi,
+	float3 d_reflection = disney::Isotropic::reflection(result.h_dot_wi, n_dot_wi,
 														n_dot_wo, *this, d_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + (1.f - ggx_fresnel) * d_reflection);

@@ -127,6 +127,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
+	result.h_dot_wi = wo_dot_h;
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
@@ -200,6 +201,7 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 	result.reflection = factor * ((ior_o_2 * refraction) / denom) * layer.color_;
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Glossy_transmission);
+	result.h_dot_wi = wo_dot_h;
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
@@ -269,6 +271,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
+	result.h_dot_wi = wo_dot_h;
 
 	SOFT_ASSERT(testing::check(result, wo, h, layer));
 
@@ -331,6 +334,7 @@ float Anisotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, cons
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
+	result.h_dot_wi = wo_dot_h;
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 

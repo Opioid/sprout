@@ -17,7 +17,7 @@ class Isotropic {
 public:
 
 	template<typename Layer>
-	static float3 reflection(float3_p wi, float3_p wo, float n_dot_wi,
+	static float3 reflection(float h_dot_wi, float n_dot_wi,
 							 float n_dot_wo, const Layer& layer, float& pdf);
 
 	template<typename Layer>

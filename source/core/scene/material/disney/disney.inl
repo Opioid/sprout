@@ -13,15 +13,15 @@
 namespace scene { namespace material { namespace disney {
 
 template<typename Layer>
-float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi,
+float3 Isotropic::reflection(float h_dot_wi, float n_dot_wi,
 							 float n_dot_wo, const Layer& layer, float& pdf) {
-	float3 h = math::normalized(wo + wi);
-	float h_dot_wi = math::saturate(math::dot(h, wi));
+//	float3 h = math::normalized(wo + wi);
+//	float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
 
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
+	SOFT_ASSERT(testing::check(result, pdf, layer));
 
 	return result;
 }
@@ -35,7 +35,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer,
 	float3 wi = math::normalized(layer.tangent_to_world(is));
 
 	float3 h = math::normalized(wo + wi);
-	float h_dot_wi = math::saturate(math::dot(h, wi));
+	float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
 
 	float n_dot_wi = layer.clamped_n_dot(wi);
 
@@ -43,6 +43,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer,
 	result.reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
+	result.h_dot_wi = h_dot_wi;
 
 	SOFT_ASSERT(testing::check(result, wo, h, layer));
 

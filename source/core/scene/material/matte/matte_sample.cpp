@@ -16,9 +16,12 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 
 //	float3 brdf = lambert::Isotropic::reflection(layer_.diffuse_color, n_dot_wi, layer_, pdf);
 
+	float3 h = math::normalized(wo_ + wi);
+	float h_dot_wi = math::saturate(math::dot(h, wi));
+
 	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-	float3 brdf = disney::Isotropic::reflection(wi, wo_, n_dot_wi, n_dot_wo, layer_, pdf);
+	float3 brdf = disney::Isotropic::reflection(h_dot_wi, n_dot_wi, n_dot_wo, layer_, pdf);
 
 //	float3 brdf = oren_nayar::Isotropic::reflection(wi, wo_, n_dot_wi, n_dot_wo, layer_, pdf);
 

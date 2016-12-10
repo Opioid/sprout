@@ -8,6 +8,20 @@ namespace scene { namespace material { namespace testing {
 
 void print_vector(float3_p v);
 
+bool check(float3_p result, float pdf, const Sample::Layer& layer) {
+	if (!std::isfinite(pdf)
+	||  !math::contains_only_finite(result)) {
+		std::cout << "pdf: " << pdf << std::endl;
+		std::cout << "reflection " << result << std::endl;
+		std::cout << "t "; print_vector(layer.t_);
+		std::cout << "b "; print_vector(layer.b_);
+		std::cout << "n "; print_vector(layer.n_);
+		return false;
+	}
+
+	return true;
+}
+
 bool check(float3_p result, float3_p wi, float3_p wo, float pdf, const Sample::Layer& layer) {
 	if (!std::isfinite(pdf)
 	||	!math::contains_only_finite(wi)
