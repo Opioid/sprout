@@ -76,11 +76,12 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 
 	float3 h = math::normalized(wo + wi);
 
+	float a2 = layer.a2_;
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
-	float d = distribution_isotropic(n_dot_h, layer.a2_);
-	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2_);
+	float d = distribution_isotropic(n_dot_h, a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -101,7 +102,8 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 	float2 xi = sampler.generate_sample_2D();
 
-	float n_dot_h = std::sqrt((1.f - xi.y) / ((layer.a2_ - 1.f) * xi.y + 1.f));
+	float a2 = layer.a2_;
+	float n_dot_h = std::sqrt((1.f - xi.y) / ((a2 - 1.f) * xi.y + 1.f));
 
 	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 	float phi = 2.f * math::Pi * xi.x;
@@ -117,8 +119,8 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 	float n_dot_wi = layer.clamped_n_dot(wi);
 
-	float d = distribution_isotropic(n_dot_h, layer.a2_);
-	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2_);
+	float d = distribution_isotropic(n_dot_h, a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	float3 f = fresnel(wo_dot_h);
 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -141,10 +143,11 @@ float3 Isotropic::refraction(float3_p wi, float3_p wo, float n_dot_wi,
 	float3 h = math::normalized(wo + wi);
 
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
-	float n_dot_h  = math::saturate(math::dot(layer.n, h));
+	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
-	float d = distribution_isotropic(n_dot_h, layer.a2_);
-	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2_);
+	float a2 = layer.a2_;
+	float d = distribution_isotropic(n_dot_h, a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	float3 f = fresnel(wo_dot_h);
 
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
@@ -163,7 +166,8 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 
 	float2 xi = sampler.generate_sample_2D();
 
-	float n_dot_h = std::sqrt((1.f - xi.y) / ((layer.a2_ - 1.f) * xi.y + 1.f));
+	float a2 = layer.a2_;
+	float n_dot_h = std::sqrt((1.f - xi.y) / ((a2 - 1.f) * xi.y + 1.f));
 
 	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 	float phi = 2.f * math::Pi * xi.x;
@@ -179,8 +183,8 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 
 	float n_dot_wi = layer.reversed_clamped_n_dot(wi);
 
-	float d = distribution_isotropic(n_dot_h, layer.a2_);
-	float g = G_smith(n_dot_wi, n_dot_wo, layer.a2_);
+	float d = distribution_isotropic(n_dot_h, a2);
+	float g = G_smith(n_dot_wi, n_dot_wo, a2);
 	float3 f = fresnel(wo_dot_h);
 
 	float3 refraction = d * g * f;
@@ -215,8 +219,9 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
-	float d = distribution_isotropic(n_dot_h, layer.a2_);
-	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2_);
+	float a2 = layer.a2_;
+	float d = distribution_isotropic(n_dot_h, a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
@@ -238,7 +243,8 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 	float2 xi = sampler.generate_sample_2D();
 
-	float n_dot_h = std::sqrt((1.f - xi.y) / ((layer.a2_ - 1.f) * xi.y + 1.f));
+	float a2 = layer.a2_;
+	float n_dot_h = std::sqrt((1.f - xi.y) / ((a2 - 1.f) * xi.y + 1.f));
 
 	float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 	float phi = 2.f * math::Pi * xi.x;
@@ -254,8 +260,8 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 	float n_dot_wi = layer.clamped_n_dot(wi);
 
-	float d = distribution_isotropic(n_dot_h, layer.a2_);
-	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.a2_);
+	float d = distribution_isotropic(n_dot_h, a2);
+	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
@@ -312,9 +318,9 @@ float Anisotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, cons
 	float y_dot_h = math::dot(layer.b_, h);
 	float n_dot_h = math::dot(layer.n_, h);
 
-	float wo_dot_h = std::max(math::dot(wo, h), 0.00001f);
+	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
-	float3 wi = math::normalized((2.f * wo_dot_h) * h - wo);
+	float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
 
 	float n_dot_wi = layer.clamped_n_dot(wi);
 
