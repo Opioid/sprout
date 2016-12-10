@@ -76,10 +76,10 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 
 	float3 h = math::normalized(wo + wi);
 
-	float a2 = layer.a2_;
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
+	float a2 = layer.a2_;
 	float d = distribution_isotropic(n_dot_h, a2);
 	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	float3 f = fresnel(wo_dot_h);
@@ -210,13 +210,12 @@ template<typename Layer, typename Fresnel>
 float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
 							 const Layer& layer, const Fresnel& fresnel,
 							 float3& fresnel_result, float& pdf) {
-	float3 h = math::normalized(wo + wi);
-
-	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
-
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
+	float3 h = math::normalized(wo + wi);
+
+	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
 	float a2 = layer.a2_;

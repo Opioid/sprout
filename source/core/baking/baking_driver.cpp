@@ -69,9 +69,9 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 
 				float2 sample = worker.sampler()->generate_sample_2D();
 				float3 hs = math::sample_oriented_hemisphere_cosine(sample,
-																		  bake_space_x,
-																		  bake_space_y,
-																		  bake_space_z);
+																	bake_space_x,
+																	bake_space_y,
+																	bake_space_z);
 
 				ray.set_direction(hs);
 				ray.depth = 1;

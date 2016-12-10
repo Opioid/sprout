@@ -81,7 +81,7 @@ void Perspective::update(rendering::Worker& worker) {
 
 	update_focus(worker);
 
-
+/*
 	float j = -z / std::sin(lens_tilt_a_);
 
 	float4x4 translation;
@@ -131,6 +131,7 @@ void Perspective::update(rendering::Worker& worker) {
 	}
 
 	return;
+	*/
 /*
 //	float3 fleft_top    = float3(focus_distance_ * -ratio,  focus_distance_, 0.f) * lens_tilt_;
 //	float3 fright_top   = float3(focus_distance_ *  ratio,  focus_distance_, 0.f) * lens_tilt_;
@@ -165,27 +166,26 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 	float3 origin;
 
 	if (lens_radius_ > 0.f) {
-//		float2 lens = math::sample_disk_concentric(sample.lens_uv);
-
-//		origin = float3(lens_radius_ * lens, 0.f);
-
-//		float t = focus_distance_ / direction.z;//z_;
-//		float3 focus = t * direction;
-
-//		direction = focus - origin;
-
-
 		float2 lens = math::sample_disk_concentric(sample.lens_uv);
 
 		origin = float3(lens_radius_ * lens, 0.f);
 
-		float3 fdirection = fleft_top_ + coordinates.x * fd_x_ + coordinates.y * fd_y_;
-
-		float t = (focus_distance_ + fdirection.z) / z_;
+		float t = focus_distance_ / direction.z;//z_;
 		float3 focus = t * direction;
 
-
 		direction = focus - origin;
+
+
+//		float2 lens = math::sample_disk_concentric(sample.lens_uv);
+
+//		origin = float3(lens_radius_ * lens, 0.f);
+
+//		float3 fdirection = fleft_top_ + coordinates.x * fd_x_ + coordinates.y * fd_y_;
+
+//		float t = (focus_distance_ + fdirection.z) / z_;
+//		float3 focus = t * direction;
+
+//		direction = focus - origin;
 
 	} else {
 		origin = math::float3_identity;
