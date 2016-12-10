@@ -75,7 +75,6 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
 	float3 h = math::normalized(wo + wi);
-
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
@@ -142,7 +141,6 @@ float3 Isotropic::refraction(float3_p wi, float3_p wo, float n_dot_wi,
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
 	float3 h = math::normalized(wo + wi);
-
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
@@ -216,7 +214,6 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_d
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
 	float3 h = math::normalized(wo + wi);
-
 	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
