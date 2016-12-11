@@ -38,9 +38,12 @@ float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
 		f = fresnel::dielectric(n_dot_wo, n_dot_t, layer_.eta_i_, layer_.eta_t_);
 	}
 
+	float3 h = math::normalized(wo_ + wi);
+	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+
 	float3 f3(f);
 	fresnel::Constant constant(f3);
-	float3 reflection = ggx::Isotropic::reflection(wi, wo_, n_dot_wi, n_dot_wo,
+	float3 reflection = ggx::Isotropic::reflection(wi, wo_, h, n_dot_wi, n_dot_wo, wo_dot_h,
 												   layer_, constant, pdf);
 
 	return n_dot_wi * reflection;

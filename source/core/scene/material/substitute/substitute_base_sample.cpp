@@ -50,21 +50,19 @@ void Sample_base::Layer::set(float3_p color, float3_p radiance, float ior,
 	metallic_ = metallic;
 }
 
-float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) const {
+float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float3_p h,
+										 float wo_dot_h, float& pdf) const {
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
 
-	float3 h = math::normalized(wo + wi);
-	float h_dot_wi = math::saturate(math::dot(h, wi));
-
 	float d_pdf;
-	float3 d_reflection = disney::Isotropic::reflection(h_dot_wi, n_dot_wi, n_dot_wo, *this, d_pdf);
+	float3 d_reflection = disney::Isotropic::reflection(wo_dot_h, n_dot_wi, n_dot_wo, *this, d_pdf);
 
 	fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	float3 ggx_reflection = ggx::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo, *this,
-													   schlick, ggx_fresnel, ggx_pdf);
+	float3 ggx_reflection = ggx::Isotropic::reflection(wi, wo, h, n_dot_wi, n_dot_wo, wo_dot_h,
+													   *this, schlick, ggx_fresnel, ggx_pdf);
 
 	pdf = 0.5f * (d_pdf + ggx_pdf);
 
@@ -79,7 +77,8 @@ void Sample_base::Layer::diffuse_sample(float3_p wo, sampler::Sampler& sampler,
 	fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	float3 ggx_reflection = ggx::Isotropic::reflection(result.wi, wo, n_dot_wi, n_dot_wo,
+	float3 ggx_reflection = ggx::Isotropic::reflection(result.wi, wo, result.h,
+													   n_dot_wi, n_dot_wo, result.h_dot_wi,
 													   *this, schlick, ggx_fresnel, ggx_pdf);
 
 	result.reflection = n_dot_wi * ((1.f - ggx_fresnel) * result.reflection + ggx_reflection);

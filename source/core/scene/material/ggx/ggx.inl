@@ -69,13 +69,14 @@ inline float G_smith(float n_dot_wi, float n_dot_wo, float a2) {
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+float3 Isotropic::reflection(float3_p wi, float3_p wo, float3_p h,
+							 float n_dot_wi, float n_dot_wo, float wo_dot_h,
 							 const Layer& layer, const Fresnel& fresnel, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
-	float3 h = math::normalized(wo + wi);
-	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+//	float3 h = math::normalized(wo + wi);
+//	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
 	float a2 = layer.a2_;
@@ -125,8 +126,9 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
 	result.wi = wi;
-	result.type.clear_set(bxdf::Type::Glossy_reflection);
+	result.h = h;
 	result.h_dot_wi = wo_dot_h;
+	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
@@ -193,13 +195,14 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 	float denom = layer.ior_i_ * wo_dot_h + layer.ior_o_ * wo_dot_h;
 	denom = denom * denom;
 
-	result.pdf = (d * n_dot_h / (4.f * wo_dot_h));// * thing;
+	result.pdf = (d * n_dot_h / (4.f * wo_dot_h));
 
 	float ior_o_2 = layer.ior_o_ * layer.ior_o_;
 	result.reflection = factor * ((ior_o_2 * refraction) / denom) * layer.color_;
 	result.wi = wi;
-	result.type.clear_set(bxdf::Type::Glossy_transmission);
+	result.h = h;
 	result.h_dot_wi = wo_dot_h;
+	result.type.clear_set(bxdf::Type::Glossy_transmission);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
@@ -207,14 +210,15 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+float3 Isotropic::reflection(float3_p wi, float3_p wo, float3_p h,
+							 float n_dot_wi, float n_dot_wo, float wo_dot_h,
 							 const Layer& layer, const Fresnel& fresnel,
 							 float3& fresnel_result, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
-	float3 h = math::normalized(wo + wi);
-	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+//	float3 h = math::normalized(wo + wi);
+//	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
 	float a2 = layer.a2_;
@@ -267,8 +271,9 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
 	result.wi = wi;
-	result.type.clear_set(bxdf::Type::Glossy_reflection);
+	result.h = h;
 	result.h_dot_wi = wo_dot_h;
+	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
 	SOFT_ASSERT(testing::check(result, wo, h, layer));
 
@@ -276,16 +281,17 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 }
 
 template<typename Layer, typename Fresnel>
-float3 Anisotropic::reflection(float3_p wi, float3_p wo, float n_dot_wi, float n_dot_wo,
+float3 Anisotropic::reflection(float3_p wi, float3_p wo, float3_p h,
+							   float n_dot_wi, float n_dot_wo, float wo_dot_h,
 							   const Layer& layer, const Fresnel& fresnel, float &pdf) {
-	float3 h = math::normalized(wo + wi);
+//	float3 h = math::normalized(wo + wi);
 
 	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
 	float x_dot_h  = math::dot(layer.t_, h);
 	float y_dot_h  = math::dot(layer.b_, h);
 
-	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+//	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.a2_, layer.axy_);
 	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
@@ -330,8 +336,9 @@ float Anisotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, cons
 	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
 	result.wi = wi;
-	result.type.clear_set(bxdf::Type::Glossy_reflection);
+	result.h = h;
 	result.h_dot_wi = wo_dot_h;
+	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 

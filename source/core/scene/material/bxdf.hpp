@@ -24,15 +24,12 @@ enum class Type {
 struct Result {
 	float3 reflection;
 	float3 wi;
+	float3 h;			// intermediate result, convenient to store here
 	float  pdf;
+	float  h_dot_wi;	// intermediate result, convenient to store here
 
 	using Type_flag = flags::Flags<Type>;
 	Type_flag type;
-
-	// HACK: This is only used for one specific combination:
-	// ggx importance sampling + disney diffuse evaluation
-	// Solves the issue where ggx produces wi == -wo?!
-	float h_dot_wi;
 };
 
 }}}

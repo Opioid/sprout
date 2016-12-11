@@ -19,16 +19,22 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 		return math::float3_identity;
 	}
 
+	float3 h = math::normalized(wo_ + wi);
+	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating_.evaluate(wi, wo_, 1.f, coating_attenuation, coating_pdf);
+	float3 coating_reflection = coating_.evaluate(wi, wo_, h, wo_dot_h, 1.f,
+												  coating_attenuation, coating_pdf);
 
 	float3 flakes_fresnel;
 	float  flakes_pdf;
-	float3 flakes_reflection = flakes_.evaluate(wi, wo_, flakes_fresnel, flakes_pdf);
+	float3 flakes_reflection = flakes_.evaluate(wi, wo_, h, wo_dot_h,
+												flakes_fresnel, flakes_pdf);
 
 	float  base_pdf;
-	float3 base_reflection = (1.f - flakes_fresnel) * base_.evaluate(wi, wo_, base_pdf);
+	float3 base_reflection = (1.f - flakes_fresnel) * base_.evaluate(wi, wo_, h,
+																	 wo_dot_h, base_pdf);
 
 	pdf = (coating_pdf + flakes_pdf + base_pdf) / 3.f;
 
@@ -49,10 +55,12 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 
 		float3 flakes_fresnel;
 		float  flakes_pdf;
-		float3 flakes_reflection = flakes_.evaluate(result.wi, wo_, flakes_fresnel, flakes_pdf);
+		float3 flakes_reflection = flakes_.evaluate(result.wi, wo_, result.h,
+													result.h_dot_wi, flakes_fresnel, flakes_pdf);
 
 		float  base_pdf;
-		float3 base_reflection = (1.f - flakes_fresnel) * base_.evaluate(result.wi, wo_, base_pdf);
+		float3 base_reflection = (1.f - flakes_fresnel) * base_.evaluate(result.wi, wo_, result.h,
+																		 result.h_dot_wi, base_pdf);
 
 		result.pdf = (result.pdf + base_pdf + flakes_pdf) / 3.f;
 		result.reflection = result.reflection
@@ -62,12 +70,13 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 
 		float3 coating_attenuation;
 		float  coating_pdf;
-		float3 coating_reflection = coating_.evaluate(result.wi, wo_, 1.f,
-													  coating_attenuation, coating_pdf);
+		float3 coating_reflection = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+													  1.f, coating_attenuation, coating_pdf);
 
 		float3 flakes_fresnel;
 		float  flakes_pdf;
-		float3 flakes_reflection = flakes_.evaluate(result.wi, wo_, flakes_fresnel, flakes_pdf);
+		float3 flakes_reflection = flakes_.evaluate(result.wi, wo_, result.h,
+													result.h_dot_wi, flakes_fresnel, flakes_pdf);
 
 		float3 base_reflection = (1.f - flakes_fresnel) * result.reflection;
 
@@ -80,17 +89,17 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 
 		float3 coating_attenuation;
 		float  coating_pdf;
-		float3 coating_reflection = coating_.evaluate(result.wi, wo_, 1.f,
-													  coating_attenuation, coating_pdf);
+		float3 coating_reflection = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
+													  1.f, coating_attenuation, coating_pdf);
 
 		float  base_pdf;
-		float3 base_reflection = (1.f - flakes_fresnel) * base_.evaluate(result.wi, wo_, base_pdf);
+		float3 base_reflection = (1.f - flakes_fresnel) * base_.evaluate(result.wi, wo_, result.h,
+																		 result.h_dot_wi, base_pdf);
 
 		result.pdf = (result.pdf + base_pdf + coating_pdf) / 3.f;
 		result.reflection = coating_reflection
 						  + coating_attenuation * (base_reflection + result.reflection);
 	}
-
 }
 
 float3 Sample::radiance() const {
@@ -123,7 +132,8 @@ void Sample::Base_layer::set(float3_p color_a, float3_p color_b, float a2) {
 	a2_ = a2;
 }
 
-float3 Sample::Base_layer::evaluate(float3_p wi, float3_p wo, float& pdf) const {
+float3 Sample::Base_layer::evaluate(float3_p wi, float3_p wo, float3_p h,
+									float wo_dot_h, float& pdf) const {
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
 
@@ -132,7 +142,7 @@ float3 Sample::Base_layer::evaluate(float3_p wi, float3_p wo, float& pdf) const 
 	float3 color = math::lerp(color_b_, color_a_, f);
 
 	fresnel::Schlick fresnel(color);
-	float3 ggx_reflection = ggx::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo,
+	float3 ggx_reflection = ggx::Isotropic::reflection(wi, wo, h, n_dot_wi, n_dot_wo, wo_dot_h,
 													   *this, fresnel, pdf);
 
 	return n_dot_wi * ggx_reflection;
@@ -147,8 +157,8 @@ void Sample::Base_layer::sample(float3_p wo, sampler::Sampler& sampler,
 	float3 color = math::lerp(color_b_, color_a_, f);
 
 	fresnel::Schlick fresnel(color);
-	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this,
-											 fresnel, sampler, result);
+	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, fresnel,
+											 sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -159,14 +169,14 @@ void Sample::Flakes_layer::set(float3_p ior, float3_p absorption, float a2, floa
 	weight_ = weight;
 }
 
-float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo,
+float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
 									  float3& fresnel_result, float& pdf) const {
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
 
 	fresnel::Conductor_weighted conductor(ior_, absorption_, weight_);
-	return n_dot_wi * ggx::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo, *this,
-												 conductor, fresnel_result, pdf);
+	return n_dot_wi * ggx::Isotropic::reflection(wi, wo, h, n_dot_wi, n_dot_wo, wo_dot_h,
+												 *this, conductor, fresnel_result, pdf);
 }
 
 void Sample::Flakes_layer::sample(float3_p wo, sampler::Sampler& sampler,
@@ -174,8 +184,8 @@ void Sample::Flakes_layer::sample(float3_p wo, sampler::Sampler& sampler,
 	float n_dot_wo = clamped_n_dot(wo);
 
 	fresnel::Conductor_weighted conductor(ior_, absorption_, weight_);
-	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor,
-											 sampler, fresnel_result, result);
+	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor, sampler,
+											 fresnel_result, result);
 	result.reflection *= n_dot_wi;
 }
 
