@@ -24,7 +24,7 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
 
 	fresnel::Schlick schlick(layer_.f0_);
-	float3 ggx_reflection = ggx::Isotropic::reflection(wi, wo_, h, n_dot_wi, n_dot_wo, wo_dot_h,
+	float3 ggx_reflection = ggx::Isotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
 													   layer_, schlick, pdf);
 
 	return n_dot_wi * ggx_reflection;

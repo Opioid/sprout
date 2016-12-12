@@ -21,7 +21,8 @@ float3 Isotropic::reflection(float h_dot_wi, float n_dot_wi,
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 
-	SOFT_ASSERT(testing::check(result, pdf, layer));
+	SOFT_ASSERT(testing::check(result, float3(0.f, 0.f, 0.f),
+							   n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
 
 	return result;
 }
@@ -46,7 +47,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer,
 	result.h_dot_wi = h_dot_wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
-	SOFT_ASSERT(testing::check(result, wo, h, layer));
+	SOFT_ASSERT(testing::check(result, wo, layer));
 
 	return n_dot_wi;
 }

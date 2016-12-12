@@ -61,7 +61,7 @@ float3 Sample_base::Layer::base_evaluate(float3_p wi, float3_p wo, float3_p h,
 	fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	float3 ggx_reflection = ggx::Isotropic::reflection(wi, wo, h, n_dot_wi, n_dot_wo, wo_dot_h,
+	float3 ggx_reflection = ggx::Isotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
 													   *this, schlick, ggx_fresnel, ggx_pdf);
 
 	pdf = 0.5f * (d_pdf + ggx_pdf);
@@ -77,7 +77,7 @@ void Sample_base::Layer::diffuse_sample(float3_p wo, sampler::Sampler& sampler,
 	fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	float3 ggx_reflection = ggx::Isotropic::reflection(result.wi, wo, result.h,
+	float3 ggx_reflection = ggx::Isotropic::reflection(result.h,
 													   n_dot_wi, n_dot_wo, result.h_dot_wi,
 													   *this, schlick, ggx_fresnel, ggx_pdf);
 

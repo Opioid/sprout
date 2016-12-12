@@ -24,7 +24,7 @@ float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
 	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
 
 	fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-	return n_dot_wi * ggx::Isotropic::reflection(wi, wo_, h, n_dot_wi, n_dot_wo, wo_dot_h,
+	return n_dot_wi * ggx::Isotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
 												 layer_, conductor, pdf);
 }
 
@@ -89,7 +89,7 @@ float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
 	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
 
 	fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-	return n_dot_wi * ggx::Anisotropic::reflection(wi, wo_, h, n_dot_wi, n_dot_wo, wo_dot_h,
+	return n_dot_wi * ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
 												   layer_, conductor, pdf);
 }
 

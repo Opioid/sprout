@@ -257,9 +257,6 @@ void Perspective::update_focus(rendering::Worker& worker) {
 		Intersection intersection;
 		if (worker.intersect(ray, intersection)) {
 			focus_distance_ = ray.max_t + focus_.point.z;
-
-			std::cout << focus_distance_ << std::endl;
-
 		} else {
 			focus_distance_ = focus_.distance;
 		}

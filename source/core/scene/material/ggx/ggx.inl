@@ -69,15 +69,12 @@ inline float G_smith(float n_dot_wi, float n_dot_wo, float a2) {
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::reflection(float3_p wi, float3_p wo, float3_p h,
-							 float n_dot_wi, float n_dot_wo, float wo_dot_h,
+float3 Isotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
 							 const Layer& layer, const Fresnel& fresnel, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
-//	float3 h = math::normalized(wo + wi);
-//	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
-	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
+	float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	float a2 = layer.a2_;
 	float d = distribution_isotropic(n_dot_h, a2);
@@ -87,7 +84,7 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float3_p h,
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	float3 result = d * g * f;
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
+	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
 
 	return result;
 }
@@ -154,7 +151,7 @@ float3 Isotropic::refraction(float3_p wi, float3_p wo, float n_dot_wi,
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	float3 result = d * g * f * layer.color;
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
+	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
 
 	return result;
 }
@@ -210,16 +207,13 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::reflection(float3_p wi, float3_p wo, float3_p h,
-							 float n_dot_wi, float n_dot_wo, float wo_dot_h,
+float3 Isotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
 							 const Layer& layer, const Fresnel& fresnel,
 							 float3& fresnel_result, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
-//	float3 h = math::normalized(wo + wi);
-//	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
-	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
+	float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	float a2 = layer.a2_;
 	float d = distribution_isotropic(n_dot_h, a2);
@@ -230,7 +224,7 @@ float3 Isotropic::reflection(float3_p wi, float3_p wo, float3_p h,
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	float3 result = d * g * f;
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
+	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
 
 	return result;
 }
@@ -275,23 +269,18 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
-	SOFT_ASSERT(testing::check(result, wo, h, layer));
+	SOFT_ASSERT(testing::check(result, wo, layer));
 
 	return n_dot_wi;
 }
 
 template<typename Layer, typename Fresnel>
-float3 Anisotropic::reflection(float3_p wi, float3_p wo, float3_p h,
-							   float n_dot_wi, float n_dot_wo, float wo_dot_h,
+float3 Anisotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
 							   const Layer& layer, const Fresnel& fresnel, float &pdf) {
-//	float3 h = math::normalized(wo + wi);
-
-	float n_dot_h  = math::saturate(math::dot(layer.n_, h));
+	float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	float x_dot_h  = math::dot(layer.t_, h);
 	float y_dot_h  = math::dot(layer.b_, h);
-
-//	float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
 
 	float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.a2_, layer.axy_);
 	float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
@@ -300,7 +289,7 @@ float3 Anisotropic::reflection(float3_p wi, float3_p wo, float3_p h,
 	pdf = d * n_dot_h / (4.f * wo_dot_h);
 	float3 result = d * g * f;
 
-	SOFT_ASSERT(testing::check(result, wi, wo, pdf, layer));
+	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
 
 	return result;
 }
