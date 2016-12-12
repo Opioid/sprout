@@ -18,15 +18,16 @@ inline void Clearcoat::set(float f0, float a2) {
 }
 
 template<typename Layer>
-float3 Clearcoat::evaluate(float3_p wi, float3_p wo, float /*internal_ior*/,
+float3 Clearcoat::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
+						   float /*internal_ior*/,
 						   const Layer& layer, float3& attenuation, float& pdf) const {
 	float n_dot_wi = layer.clamped_n_dot(wi);
 	float n_dot_wo = layer.clamped_n_dot(wo);
 
 	fresnel::Schlick_weighted schlick(f0_, weight_);
 
-	float3 result = n_dot_wi * ggx::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo, layer,
-														  schlick, attenuation, pdf);
+	float3 result = n_dot_wi * ggx::Isotropic::reflection(wi, wo, h, n_dot_wi, n_dot_wo, wo_dot_h,
+														  layer, schlick, attenuation, pdf);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f), color_, weight_);
 
@@ -56,15 +57,15 @@ inline void Thinfilm::set(float ior, float a2, float thickness) {
 }
 
 template<typename Layer>
-float3 Thinfilm::evaluate(float3_p wi, float3_p wo, float internal_ior,
+float3 Thinfilm::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h, float internal_ior,
 						  const Layer& layer, float3& attenuation, float& pdf) const {
 	float n_dot_wi = layer.clamped_n_dot(wi);
 	float n_dot_wo = layer.clamped_n_dot(wo);
 
 	fresnel::Thinfilm_weighted thinfilm(1.f, ior_, internal_ior, thickness_, weight_);
 
-	float3 result = n_dot_wi * ggx::Isotropic::reflection(wi, wo, n_dot_wi, n_dot_wo, layer,
-														  thinfilm, attenuation, pdf);
+	float3 result = n_dot_wi * ggx::Isotropic::reflection(wi, wo, h, n_dot_wi, n_dot_wo, wo_dot_h,
+														  layer, thinfilm, attenuation, pdf);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f), color_, weight_);
 
@@ -88,9 +89,9 @@ void Thinfilm::sample(float3_p wo, float internal_ior,
 }
 
 template<typename Coating>
-float3 Coating_layer<Coating>::evaluate(float3_p wi, float3_p wo, float internal_ior,
-										float3& attenuation, float& pdf) const {
-	return Coating::evaluate(wi, wo, internal_ior, *this, attenuation, pdf);
+float3 Coating_layer<Coating>::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
+										float internal_ior, float3& attenuation, float& pdf) const {
+	return Coating::evaluate(wi, wo, h, wo_dot_h, internal_ior, *this, attenuation, pdf);
 }
 
 template<typename Coating>

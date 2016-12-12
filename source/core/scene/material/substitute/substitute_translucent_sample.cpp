@@ -32,7 +32,10 @@ float3 Sample_translucent::evaluate(float3_p wi, float& pdf) const {
 		return n_dot_wi * (math::Pi_inv * attenuation * layer_.diffuse_color_);
 	}
 
-	float3 result = layer_.base_evaluate(wi, wo_, pdf);
+	float3 h = math::normalized(wo_ + wi);
+	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+
+	float3 result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
 
 	if (thickness_ > 0.f) {
 		pdf *= 0.5f;

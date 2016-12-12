@@ -19,8 +19,7 @@ float3 Sample_coating<Coating_layer>::evaluate(float3_p wi, float& pdf) const {
 }
 
 template<typename Coating_layer>
-void Sample_coating<Coating_layer>::sample(sampler::Sampler& sampler,
-										   bxdf::Result& result) const {
+void Sample_coating<Coating_layer>::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 		return;
