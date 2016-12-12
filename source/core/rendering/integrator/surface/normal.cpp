@@ -48,6 +48,10 @@ float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 	return float4(0.5f * (vector + float3(1.f, 1.f, 1.f)), 1.f);
 }
 
+size_t Normal::num_bytes() const {
+	return sizeof(*this);
+}
+
 Normal_factory::Normal_factory(const take::Settings& take_settings,
 							   Normal::Settings::Vector vector) :
 	Factory(take_settings) {

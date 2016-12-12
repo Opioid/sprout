@@ -135,6 +135,10 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume& volume
 	return float4(color, spectrum::luminance(color));
 }
 
+size_t Single_scattering::num_bytes() const {
+	return sizeof(*this) + sampler_.num_bytes();
+}
+
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
 													 float step_size) :
 	Factory(take_settings) {

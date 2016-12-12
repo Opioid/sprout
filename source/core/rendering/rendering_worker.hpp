@@ -53,6 +53,8 @@ public:
 
 	sampler::Sampler* sampler();
 
+	virtual size_t num_bytes() const final override;
+
 protected:
 
 	integrator::surface::Integrator* surface_integrator_;

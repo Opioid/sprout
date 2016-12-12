@@ -22,4 +22,8 @@ inline uint32_t Node_stack::pop() {
 	return stack_[--end_];
 }
 
+inline size_t Node_stack::num_bytes() const {
+	return sizeof(this) + stack_.size() * sizeof(uint32_t);
+}
+
 }}

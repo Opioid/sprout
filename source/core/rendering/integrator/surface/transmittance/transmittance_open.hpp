@@ -38,6 +38,8 @@ public:
 				   float3_p attenuation, sampler::Sampler& sampler,
 				   Sampler_filter filter, Bxdf_result& sample_result);
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	uint32_t max_bounces_;

@@ -44,7 +44,12 @@ const scene::Scene& Driver::scene() const {
 }
 
 size_t Driver::num_bytes() const {
-	return target_.num_bytes();
+	size_t worker_num_bytes = 0;
+	for (uint32_t i = 0, len = static_cast<uint32_t>(workers_.size()); i < len; ++i) {
+		worker_num_bytes += workers_[i].num_bytes();
+	}
+
+	return worker_num_bytes + target_.num_bytes();
 }
 
 }

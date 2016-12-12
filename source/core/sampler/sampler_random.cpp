@@ -23,6 +23,10 @@ float Random::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 }
 
+size_t Random::num_bytes() const {
+	return sizeof(*this);
+}
+
 void Random::on_resize() {}
 
 void Random::on_resume_pixel(rnd::Generator& /*scramble*/) {}

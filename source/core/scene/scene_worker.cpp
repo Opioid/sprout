@@ -65,4 +65,8 @@ Worker::sampler_3D(uint32_t key, Sampler_filter filter) const {
 	return sampler_cache_.sampler_3D(key, filter);
 }
 
+size_t Worker::num_bytes() const {
+	return node_stack_.num_bytes();
+}
+
 }

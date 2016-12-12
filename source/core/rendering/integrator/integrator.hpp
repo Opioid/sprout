@@ -33,6 +33,8 @@ public:
 
 	const take::Settings& take_settings() const;
 
+	virtual size_t num_bytes() const = 0;
+
 protected:
 
 	const take::Settings& take_settings_;

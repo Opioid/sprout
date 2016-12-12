@@ -30,6 +30,8 @@ public:
 
 	virtual float generate_sample_1D(uint32_t dimension = 0) = 0;
 
+	virtual size_t num_bytes() const = 0;
+
 protected:
 
 	virtual void on_resize() = 0;

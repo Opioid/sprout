@@ -41,6 +41,8 @@ public:
 	const image::texture::sampler::Sampler_3D&
 	sampler_3D(uint32_t key, Sampler_filter filter) const;
 
+	virtual size_t num_bytes() const;
+
 private:
 
 	uint32_t id_;

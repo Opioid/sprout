@@ -19,6 +19,8 @@ public:
 
 	virtual float generate_sample_1D(uint32_t dimension = 0) final override;
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	virtual void on_resize() final override;

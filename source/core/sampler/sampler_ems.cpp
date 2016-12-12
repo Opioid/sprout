@@ -8,8 +8,7 @@ namespace sampler {
 
 EMS::EMS(rnd::Generator& rng) : Sampler(rng) {}
 
-void EMS::generate_camera_sample(int2 pixel, uint32_t index,
-								 Camera_sample& sample) {
+void EMS::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
 	float2 s2d = math::ems(index, scramble_.x, scramble_.y);
 
 	sample.pixel = pixel;
@@ -25,6 +24,10 @@ float2 EMS::generate_sample_2D(uint32_t /*dimension*/) {
 float EMS::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 //	return math::scrambled_radical_inverse_vdC(current_sample_++, seed_.y);
+}
+
+size_t EMS::num_bytes() const {
+	return sizeof(*this);
 }
 
 void EMS::on_resize() {}

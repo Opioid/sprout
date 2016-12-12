@@ -34,6 +34,8 @@ public:
 	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
 					  scene::Intersection& intersection) final override;
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	Settings settings_;

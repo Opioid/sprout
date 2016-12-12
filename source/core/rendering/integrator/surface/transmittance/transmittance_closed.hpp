@@ -37,6 +37,8 @@ public:
 	float3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 				   float3_p attenuation, sampler::Sampler& sampler,
 				   Sampler_filter filter, Bxdf_result& sample_result);
+
+	virtual size_t num_bytes() const final override;
 };
 
 }}}}

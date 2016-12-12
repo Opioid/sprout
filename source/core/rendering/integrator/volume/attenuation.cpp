@@ -49,6 +49,10 @@ float4 Attenuation::li(Worker& worker, const scene::volume::Volume& volume,
 	return float4(0.f);
 }
 
+size_t Attenuation::num_bytes() const {
+	return sizeof(*this);
+}
+
 Attenuation_factory::Attenuation_factory(const take::Settings& settings) :
 	Factory(settings) {}
 

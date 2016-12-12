@@ -200,12 +200,12 @@ void log_memory_consumption(const resource::Manager& manager,
 	size_t mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
 	logging::info("Meshes: " + string::print_bytes(mesh_num_bytes));
 
-	size_t buffers_num_bytes = take.view.pipeline.num_bytes()
-							 + take.view.camera->sensor().num_bytes()
-							 + rendering_num_bytes;
-	logging::info("Buffers: " + string::print_bytes(buffers_num_bytes));
+	size_t renderer_num_bytes = take.view.pipeline.num_bytes()
+							  + take.view.camera->sensor().num_bytes()
+							  + rendering_num_bytes;
+	logging::info("Renderer: " + string::print_bytes(renderer_num_bytes));
 
 	size_t total_num_bytes = image_num_bytes + material_num_bytes
-						   + mesh_num_bytes + buffers_num_bytes;
+						   + mesh_num_bytes + renderer_num_bytes;
 	logging::info("Total: " + string::print_bytes(total_num_bytes));
 }

@@ -24,6 +24,10 @@ float Uniform::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 }
 
+size_t Uniform::num_bytes() const {
+	return sizeof(*this);
+}
+
 void Uniform::on_resize() {}
 
 void Uniform::on_resume_pixel(rnd::Generator& /*scramble*/) {}

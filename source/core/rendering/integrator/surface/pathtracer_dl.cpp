@@ -186,6 +186,10 @@ float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::Ray& ra
 	return settings_.num_light_samples_reciprocal * result;
 }
 
+size_t Pathtracer_DL::num_bytes() const {
+	return sizeof(*this) + sampler_.num_bytes();
+}
+
 Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings,
 											 uint32_t min_bounces, uint32_t max_bounces,
 											 float path_termination_probability,

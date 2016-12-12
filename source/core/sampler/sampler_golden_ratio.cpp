@@ -43,6 +43,11 @@ float Golden_ratio::generate_sample_1D(uint32_t dimension) {
 	return samples_1D_[dimension * num_samples_ + current];
 }
 
+size_t Golden_ratio::num_bytes() const {
+	return num_samples_ * num_dimensions_2D_ * sizeof(float2)
+		 + num_samples_ * num_dimensions_1D_ * sizeof(float);
+}
+
 void Golden_ratio::on_resize() {
 	delete [] samples_1D_;
 	delete [] samples_2D_;

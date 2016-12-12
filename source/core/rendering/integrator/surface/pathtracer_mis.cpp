@@ -168,6 +168,20 @@ float4 Pathtracer_MIS::li(Worker& worker, scene::Ray& ray, bool volume,
 	return float4(result, opacity);
 }
 
+size_t Pathtracer_MIS::num_bytes() const {
+	size_t sampler_bytes = 0;
+
+	for (auto& s : material_samplers_) {
+		sampler_bytes += s.num_bytes();
+	}
+
+	for (auto& s : light_samplers_) {
+		sampler_bytes += s.num_bytes();
+	}
+
+	return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
+}
+
 float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 											 scene::Intersection& intersection,
 											 const scene::material::Sample& material_sample,

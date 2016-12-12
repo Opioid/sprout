@@ -57,6 +57,10 @@ float4 AO::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 	return float4(result, result, result, 1.f);
 }
 
+size_t AO::num_bytes() const {
+	return sizeof(*this) + sampler_.num_bytes();
+}
+
 AO_factory::AO_factory(const take::Settings& settings, uint32_t num_samples, float radius) :
 	Factory(settings) {
 	settings_.num_samples = num_samples;

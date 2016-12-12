@@ -30,6 +30,10 @@ float LD::generate_sample_1D(uint32_t /*dimension*/) {
 	return rng_.random_float();
 }
 
+size_t LD::num_bytes() const {
+	return sizeof(*this);
+}
+
 void LD::on_resize() {}
 
 void LD::on_resume_pixel(rnd::Generator& scramble) {

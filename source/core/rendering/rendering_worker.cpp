@@ -102,9 +102,15 @@ float3 Worker::transmittance(const scene::Ray& ray) {
 	return volume_integrator_->transmittance(*this, *volume, ray);
 }
 
-
 sampler::Sampler* Worker::sampler() {
 	return sampler_;
+}
+
+size_t Worker::num_bytes() const {
+	return scene::Worker::num_bytes()
+		 + surface_integrator_->num_bytes()
+		 + volume_integrator_->num_bytes()
+		 + sampler_->num_bytes();
 }
 
 }

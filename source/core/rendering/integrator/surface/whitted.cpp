@@ -120,6 +120,10 @@ float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ray,
 	return settings_.num_light_samples_reciprocal * result;
 }
 
+size_t Whitted::num_bytes() const {
+	return sizeof(*this) + sampler_.num_bytes();
+}
+
 Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t num_light_samples) :
 	Factory(take_settings) {
 	settings_.num_light_samples = num_light_samples;

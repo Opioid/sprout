@@ -19,6 +19,8 @@ public:
 
 	virtual float4 li(Worker& worker, const scene::volume::Volume& volume,
 					  const scene::Ray& ray, float3& transmittance) final override;
+
+	virtual size_t num_bytes() const final override;
 };
 
 class Attenuation_factory : public Factory {

@@ -63,4 +63,8 @@ float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& int
 	return throughput;
 }
 
+size_t Closed::num_bytes() const {
+	return sizeof(*this);
+}
+
 }}}}

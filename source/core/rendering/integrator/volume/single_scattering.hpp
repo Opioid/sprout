@@ -30,6 +30,8 @@ public:
 	virtual float4 li(Worker& worker, const scene::volume::Volume& volume,
 					  const scene::Ray& ray, float3& transmittance) final override;
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;

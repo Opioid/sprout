@@ -20,6 +20,8 @@ public:
 
 	uint32_t pop();
 
+	size_t num_bytes() const;
+
 private:
 
 	size_t end_;

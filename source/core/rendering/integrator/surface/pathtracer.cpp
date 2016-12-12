@@ -153,6 +153,16 @@ sampler::Sampler& Pathtracer::material_sampler(uint32_t bounce) {
 	return sampler_;
 }
 
+size_t Pathtracer::num_bytes() const {
+	size_t sampler_bytes = 0;
+
+	for (auto& s : material_samplers_) {
+		sampler_bytes += s.num_bytes();
+	}
+
+	return sizeof(*this) + sampler_.num_bytes() + sampler_bytes;
+}
+
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 									   uint32_t min_bounces, uint32_t max_bounces,
 									   float path_termination_probability,

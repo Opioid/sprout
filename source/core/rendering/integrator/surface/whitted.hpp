@@ -26,6 +26,8 @@ public:
 	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
 					  scene::Intersection& intersection) final override;
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	float3 shade(Worker& worker, const scene::Ray& ray,
