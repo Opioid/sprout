@@ -21,6 +21,7 @@
 
 #include "base/debug/assert.hpp"
 #ifdef SU_DEBUG
+#	include "base/math/print.hpp"
 #	include <iostream>
 #endif
 
@@ -219,21 +220,21 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 
 #ifdef SU_DEBUG
 bool check(const std::vector<Vertex>& vertices, const std::string& filename) {
-	bool valid = true;
-
-	for (auto& v : vertices) {
+	for (size_t i = 0, len = vertices.size(); i < len; ++i) {
+		const auto& v = vertices[i];
 		if (math::squared_length(v.n) < 0.1f ||
 			math::squared_length(v.t) < 0.1f) {
-			valid = false;
-			break;
+
+			std::cout << filename << " vertex " << i << std::endl;
+
+			std::cout << "n: " << v.n << std::endl;
+			std::cout << "t: " << v.t << std::endl;
+
+			return false;
 		}
 	}
 
-	if (!valid) {
-		std::cout << filename << std::endl;
-	}
-
-	return valid;
+	return true;
 }
 #endif
 
