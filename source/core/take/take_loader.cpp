@@ -234,7 +234,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 	using namespace rendering::sensor;
 
 	float exposure = 0.f;
-	float3 clamp_max(-1.f, -1.f, -1.f);
+	float3 clamp_max(-1.f);
 	const filter::Filter* filter = nullptr;
 
 	for (auto& n : sensor_value.GetObject()) {
@@ -280,8 +280,8 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 	}
 
 	if (clamp) {
-		return new Unfiltered<Opaque, clamp::Clamp> (dimensions, exposure,
-													 clamp::Clamp(clamp_max));
+		return new Unfiltered<Opaque, clamp::Clamp>(dimensions, exposure,
+													clamp::Clamp(clamp_max));
 	}
 
 	return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, clamp::Identity());
@@ -291,8 +291,8 @@ const rendering::sensor::filter::Filter*
 Loader::load_filter(const json::Value& filter_value) {
 	for (auto& n : filter_value.GetObject()) {
 		if ("Gaussian" == n.name) {
-			float radius = json::read_float(n.value, "radius", 0.8f);
-			float alpha  = json::read_float(n.value, "alpha",  0.3f);
+			float radius = json::read_float(n.value, "radius", 1.f);
+			float alpha  = json::read_float(n.value, "alpha",  1.8f);
 
 			return new rendering::sensor::filter::Gaussian(radius, alpha);
 		}
@@ -359,8 +359,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 		if ("AO" == n.name) {
 			uint32_t num_samples = json::read_uint(n.value, "num_samples", 1);
 			float radius = json::read_float(n.value, "radius", 1.f);
-			return std::make_shared<AO_factory>(
-						settings, num_samples, radius);
+			return std::make_shared<AO_factory>(settings, num_samples, radius);
 		} else if ("Whitted" == n.name) {
 			uint32_t num_light_samples = json::read_uint(
 						n.value, "num_light_samples", light_sampling.num_samples);
@@ -387,7 +386,6 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			float path_termination_probability = json::read_float(
 						n.value, "path_termination_probability",
 						default_path_termination_probability);
-
 
 			uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
 														 light_sampling.num_samples);
@@ -468,17 +466,15 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 	for (auto& pp : pp_value.GetArray()) {
 		const auto n = pp.MemberBegin();
 
-		std::string type_name = n->name.GetString();
-
-		if ("tonemapper" == type_name) {
+		if ("tonemapper" == n->name) {
 			pipeline.add(load_tonemapper(n->value));
-		} else if ("Bloom" == type_name) {
+		} else if ("Bloom" == n->name) {
 			float angle		= json::read_float(n->value, "angle", 0.05f);
 			float alpha		= json::read_float(n->value, "alpha", 0.005f);
 			float threshold = json::read_float(n->value, "threshold", 2.f);
 			float intensity = json::read_float(n->value, "intensity", 0.1f);
 			pipeline.add(new Bloom(angle, alpha, threshold, intensity));
-		} else if ("Glare" == type_name) {
+		} else if ("Glare" == n->name) {
 			Glare::Adaption adaption = Glare::Adaption::Mesopic;
 
 			std::string adaption_name = json::read_string(n->value, "adaption");
@@ -512,7 +508,7 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 			float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
 
 			return new rendering::postprocessor::tonemapping::Generic(contrast, shoulder, mid_in,
-															   mid_out, hdr_max);
+																	  mid_out, hdr_max);
 		} else if ("Identity" == n.name) {
 			return new rendering::postprocessor::tonemapping::Identity();
 		} else if ("Uncharted" == n.name) {
@@ -551,9 +547,7 @@ bool Loader::peek_stereoscopic(const json::Value& parameters_value) {
 std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& exporter_value,
 													   scene::camera::Camera& camera) {
 	for (auto& n : exporter_value.GetObject()) {
-		const std::string node_name = n.name.GetString();
-
-		if ("Image" == node_name) {
+		if ("Image" == n.name) {
 			const std::string format = json::read_string(n.value, "format", "PNG");
 
 			image::Writer* writer;
@@ -565,7 +559,7 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& export
 			}
 
 			return std::make_unique<exporting::Image_sequence>("output_", writer);
-		} else if ("Movie" == node_name) {
+		} else if ("Movie" == n.name) {
 			uint32_t framerate = json::read_uint(n.value, "framerate");
 
 			if (0 == framerate) {
@@ -574,9 +568,9 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& export
 
 			return std::make_unique<exporting::Ffmpeg>("output", camera.sensor().dimensions(),
 													   framerate);
-		} else if ("Null" == node_name) {
+		} else if ("Null" == n.name) {
 			return std::make_unique<exporting::Null>();
-		} else if ("Statistics" == node_name) {
+		} else if ("Statistics" == n.name) {
 			return std::make_unique<exporting::Statistics>();
 		}
 	}
@@ -586,9 +580,7 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& export
 
 void Loader::load_settings(const json::Value& settings_value, Settings& settings) {
 	for (auto& n : settings_value.GetObject()) {
-		const std::string node_name = n.name.GetString();
-
-		if ("ray_offset_factor" == node_name) {
+		if ("ray_offset_factor" == n.name) {
 			settings.ray_offset_factor = json::read_float(n.value);
 		}
 	}
@@ -597,8 +589,6 @@ void Loader::load_settings(const json::Value& settings_value, Settings& settings
 void Loader::load_light_sampling(const json::Value& sampling_value,
 								 rendering::integrator::Light_sampling& sampling) {
 	for (auto& n : sampling_value.GetObject()) {
-		const std::string node_name = n.name.GetString();
-
 		if ("strategy" == n.name) {
 			std::string strategy = json::read_string(n.value);
 
@@ -607,7 +597,7 @@ void Loader::load_light_sampling(const json::Value& sampling_value,
 			} else if ("All" == strategy) {
 				sampling.strategy = rendering::integrator::Light_sampling::Strategy::All;
 			}
-		} else if ("num_samples" == node_name) {
+		} else if ("num_samples" == n.name) {
 			sampling.num_samples = json::read_uint(n.value);
 		}
 	}
