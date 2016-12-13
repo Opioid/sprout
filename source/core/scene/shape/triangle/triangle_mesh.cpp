@@ -52,15 +52,14 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		float2 uv;
 		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
 
-		float3 geo_n = tree_.triangle_normal(pi.index);
-
-		float bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
+		float3	 geo_n			= tree_.triangle_normal(pi.index);
+		float	 bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
 		uint32_t material_index = tree_.triangle_material_index(pi.index);
 
 		float3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
-		float3 n_w	 = math::transform_vector(n, transformation.rotation);
-		float3 t_w	 = math::transform_vector(t, transformation.rotation);
-		float3 b_w	 = bitangent_sign * math::cross(n_w, t_w);
+		float3 n_w	   = math::transform_vector(n, transformation.rotation);
+		float3 t_w	   = math::transform_vector(t, transformation.rotation);
+		float3 b_w	   = bitangent_sign * math::cross(n_w, t_w);
 
 
 

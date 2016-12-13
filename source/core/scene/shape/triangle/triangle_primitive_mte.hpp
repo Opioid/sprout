@@ -31,7 +31,7 @@ struct Triangle_MTE {
 };
 
 struct alignas(16) Intersection_triangle_MTE {
-	Intersection_triangle_MTE();
+	Intersection_triangle_MTE() = default;
 	Intersection_triangle_MTE(const shape::Vertex& a,
 							  const shape::Vertex& b,
 							  const shape::Vertex& c);
@@ -53,7 +53,7 @@ struct alignas(16) Intersection_triangle_MTE {
 };
 
 struct alignas(16) Shading_triangle_MTE {
-	Shading_triangle_MTE();
+	Shading_triangle_MTE() = default;
 	Shading_triangle_MTE(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c,
 						 uint32_t material_index);
 

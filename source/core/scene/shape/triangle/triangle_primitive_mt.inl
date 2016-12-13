@@ -79,8 +79,7 @@ inline bool Triangle_MT::intersect_p(const math::Ray& ray) const {
 	return false;
 }
 
-inline void Triangle_MT::interpolate(float2 uv, float3& p, float3& n,
-									 float2& tc) const {
+inline void Triangle_MT::interpolate(float2 uv, float3& p, float3& n, float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	p  = w * a.p + uv.x * b.p + uv.y * c.p;
@@ -101,9 +100,7 @@ inline void Triangle_MT::interpolate(float2 uv, float3& p) const {
 	p = w * a.p + uv.x * b.p + uv.y * c.p;
 }
 
-inline void Triangle_MT::interpolate_data(float2 uv,
-										  float3& n, float3& t,
-										  float2& tc) const {
+inline void Triangle_MT::interpolate_data(float2 uv, float3& n, float3& t, float2& tc) const {
 	float w = 1.f - uv.x - uv.y;
 
 	n  = math::normalized(w * a.n + uv.x * b.n + uv.y * c.n);
@@ -218,9 +215,9 @@ inline void interpolate_p(const Intersection_vertex_MT& a,
 }
 
 inline float2 interpolate_uv(const Shading_vertex_MT& a,
-								   const Shading_vertex_MT& b,
-								   const Shading_vertex_MT& c,
-								   float2 uv) {
+							 const Shading_vertex_MT& b,
+							 const Shading_vertex_MT& c,
+							 float2 uv) {
 	float w = 1.f - uv.x - uv.y;
 
 	return w * a.uv + uv.x * b.uv + uv.y * c.uv;
@@ -261,7 +258,7 @@ inline float2 interpolate_uv(const Shading_vertex_MTC& a,
 	float w = 1.f - uv.x - uv.y;
 
 	return float2(w * a.n_u.w + uv.x * b.n_u.w + uv.y * c.n_u.w,
-						w * a.t_v.w + uv.x * b.t_v.w + uv.y * c.t_v.w);
+				  w * a.t_v.w + uv.x * b.t_v.w + uv.y * c.t_v.w);
 }
 
 inline void interpolate_data(const Shading_vertex_MTC& a,
@@ -271,11 +268,13 @@ inline void interpolate_data(const Shading_vertex_MTC& a,
 							 float3& n, float3& t, float2& tc) {
 	float w = 1.f - uv.x - uv.y;
 
-	n  = math::normalized(w * a.n_u.xyz + uv.x * b.n_u.xyz + uv.y * c.n_u.xyz);
-	t  = math::normalized(w * a.t_v.xyz + uv.x * b.t_v.xyz + uv.y * c.t_v.xyz);
+	float4 n_u = w * a.n_u + uv.x * b.n_u + uv.y * c.n_u;
+	float4 t_v = w * a.t_v + uv.x * b.t_v + uv.y * c.t_v;
 
-	tc = float2(w * a.n_u.w + uv.x * b.n_u.w + uv.y * c.n_u.w,
-					  w * a.t_v.w + uv.x * b.t_v.w + uv.y * c.t_v.w);
+	n  = math::normalized(n_u.xyz);
+	t  = math::normalized(t_v.xyz);
+
+	tc = float2(n_u.w, t_v.w);
 }
 
 }}}

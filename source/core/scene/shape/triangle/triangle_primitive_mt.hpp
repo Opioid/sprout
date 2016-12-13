@@ -63,9 +63,9 @@ void interpolate_p(const Intersection_vertex_MT& a,
 				   float2 uv, float3& p);
 
 float2 interpolate_uv(const Shading_vertex_MT& a,
-							const Shading_vertex_MT& b,
-							const Shading_vertex_MT& c,
-							float2 uv);
+					  const Shading_vertex_MT& b,
+					  const Shading_vertex_MT& c,
+					  float2 uv);
 
 void interpolate_data(const Shading_vertex_MT& a,
 					  const Shading_vertex_MT& b,

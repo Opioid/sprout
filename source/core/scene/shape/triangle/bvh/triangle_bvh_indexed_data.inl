@@ -333,10 +333,9 @@ void Indexed_data1<Intersection_vertex, Shading_vertex>::allocate_triangles(
 	memory::free_aligned(intersection_vertices_);
 	memory::free_aligned(shading_vertices_);
 
-	triangles_ = memory::allocate_aligned<Index_triangle>(num_triangles);
-
-	intersection_vertices_ = memory::allocate_aligned<Intersection_vertex>(num_vertices_);
 	shading_vertices_      = memory::allocate_aligned<Shading_vertex>(num_vertices_);
+	intersection_vertices_ = memory::allocate_aligned<Intersection_vertex>(num_vertices_);
+	triangles_			   = memory::allocate_aligned<Index_triangle>(num_triangles);
 
 	for (uint32_t i = 0, len = num_vertices_; i < len; ++i) {
 		intersection_vertices_[i].p = float3(vertices[i].p);
@@ -380,9 +379,7 @@ template<typename Intersection_vertex, typename Shading_vertex>
 Indexed_data1<Intersection_vertex, Shading_vertex>::
 Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
 							   uint32_t material_index, float bitangent_sign) :
-	a(a),
-	b(b),
-	c(c),
+	a(a), b(b), c(c),
 	bts_material_index(bitangent_sign < 0.f ? BTS_mask | material_index : material_index) {}
 
 }}}}

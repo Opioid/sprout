@@ -190,8 +190,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 template<typename Data>
 void Tree<Data>::interpolate_triangle_data(uint32_t index, float2 uv,
-										   float3& n, float3& t,
-										   float2& tc) const {
+										   float3& n, float3& t, float2& tc) const {
 	data_.interpolate_data(index, uv, n, t, tc);
 }
 

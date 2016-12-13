@@ -110,8 +110,6 @@ inline float Triangle_MTE::area(float3_p scale) const {
 	return 0.5f * math::length(math::cross(scale * e1, scale * e2));
 }
 
-inline Intersection_triangle_MTE::Intersection_triangle_MTE() {}
-
 inline Intersection_triangle_MTE::Intersection_triangle_MTE(const shape::Vertex& a,
 															const shape::Vertex& b,
 															const shape::Vertex& c) :
@@ -198,8 +196,6 @@ inline float Intersection_triangle_MTE::area() const {
 inline float Intersection_triangle_MTE::area(float3_p scale) const {
 	return 0.5f * math::length(math::cross(scale * e1, scale * e2));
 }
-
-inline Shading_triangle_MTE::Shading_triangle_MTE() {}
 
 inline Shading_triangle_MTE::Shading_triangle_MTE(const shape::Vertex& a,
 												  const shape::Vertex& b,

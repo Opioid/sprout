@@ -103,7 +103,7 @@ private:
 	uint32_t current_triangle_;
 	uint32_t num_vertices_;
 
-	struct Index_triangle {
+	struct alignas(16) Index_triangle {
 		Index_triangle(uint32_t a, uint32_t b, uint32_t c,
 					   uint32_t material_index, float bitangent_sign);
 

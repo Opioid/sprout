@@ -8,7 +8,7 @@ namespace scene { namespace camera { class Camera; } }
 namespace take {
 
 struct View {
-	View() {};
+	View() = default;
 
 	void init(thread::Pool& pool) {
 		if (camera) {

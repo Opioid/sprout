@@ -510,8 +510,7 @@ inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
 	// https://gist.github.com/roxlu/3082114
 
 	// Handle the singularity
-	if (n.z < -0.9999999f)
-	{
+	if (n.z < -0.9999999f) {
 		t = Vector3f_a( 0.f, -1.f, 0.f);
 		b = Vector3f_a(-1.f,  0.f, 0.f);
 		return;
@@ -524,7 +523,7 @@ inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
 }
 
 inline Vector3f_a tangent(FVector3f_a n) {
-	Vector3f_a r1;
+/*	Vector3f_a r1;
 
 	if (n.x < 0.6f && n.x > -0.6f) {
 		r1 = Vector3f_a(1.f, 0.f, 0.f);
@@ -535,6 +534,16 @@ inline Vector3f_a tangent(FVector3f_a n) {
 	}
 
 	return normalized(cross(n, r1));
+	*/
+
+	// Handle the singularity
+	if (n.z < -0.9999999f) {
+		return Vector3f_a( 0.f, -1.f, 0.f);
+	}
+
+	const float c = 1.f / (1.f + n.z);
+	const float d = -n.x * n.y * c;
+	return Vector3f_a(1.f - n.x * n.x * c, d, -n.x);
 }
 
 inline Vector3f_a min(FVector3f_a a, FVector3f_a b) {
