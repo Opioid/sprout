@@ -1,7 +1,7 @@
 #include "testing_simd.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector.inl"
-#include "base/random/generator.hpp"
+#include "base/random/generator.inl"
 #include "base/math/simd/simd_math.inl"
 #include "base/math/simd/simd_vector.inl"
 #include "base/string/string.inl"
@@ -168,7 +168,7 @@ void normalize() {
 		for (size_t i = 0; i < num_values; ++i) {
 			float3 x = vectors[i];
 			float3 r = math::normalized(x);
-			results[i] = r;
+			vectors[i] = r;
 		}
 
 		auto duration = chrono::seconds_since(start);
@@ -183,7 +183,7 @@ void normalize() {
 		for (size_t i = 0; i < num_values; ++i) {
 			float3 x = vectors[i];
 			float3 r = simd_normalized_1(x);
-			results[i] = r;
+			vectors[i] = r;
 		}
 
 		auto duration = chrono::seconds_since(start);
@@ -198,7 +198,7 @@ void normalize() {
 		for (size_t i = 0; i < num_values; ++i) {
 			float3 x = vectors[i];
 			float3 r = simd_normalized_0(x);
-			results[i] = r;
+			vectors[i] = r;
 		}
 
 		auto duration = chrono::seconds_since(start);
@@ -213,7 +213,7 @@ void normalize() {
 		for (size_t i = 0; i < num_values; ++i) {
 			float3 x = vectors[i];
 			float3 r = math::normalized(x);
-			results[i] = r;
+			vectors[i] = r;
 		}
 
 		auto duration = chrono::seconds_since(start);
