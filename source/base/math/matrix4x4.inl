@@ -76,9 +76,9 @@ template<typename T>
 Matrix4x4<T> Matrix4x4<T>::operator/(T s) const {
 	T is = T(1) / s;
 	return Matrix4x4(is * m00, is * m01, is * m02, is * m03,
-					   is * m10, is * m11, is * m12, is * m13,
-					   is * m20, is * m21, is * m22, is * m23,
-					   is * m30, is * m31, is * m32, is * m33);
+					 is * m10, is * m11, is * m12, is * m13,
+					 is * m20, is * m21, is * m22, is * m23,
+					 is * m30, is * m31, is * m32, is * m33);
 }
 
 template<typename T>

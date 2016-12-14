@@ -43,6 +43,8 @@ using CMatrix = const Matrix&;
  *
  ****************************************************************************/
 
+Matrix SU_CALLCONV load_float3x3(const Matrix3x3f_a& source);
+
 Matrix SU_CALLCONV load_float4x4(const Matrix4x4f_a& source);
 
 /****************************************************************************
@@ -51,6 +53,6 @@ Matrix SU_CALLCONV load_float4x4(const Matrix4x4f_a& source);
  *
  ****************************************************************************/
 
- Vector SU_CALLCONV transform_vector(FMatrix m, FVector v);
+ Vector SU_CALLCONV transform_vector(FMatrix m, HVector v);
 
 }}

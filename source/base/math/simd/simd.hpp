@@ -47,3 +47,50 @@
 #	endif
 #	define SU_PERMUTE_PS(v, c) _mm_shuffle_ps(v, v, c)
 #endif // _SU_SSE_INTRINSICS_ && !_SU_NO_INTRINSICS_
+
+#if defined(_SU_NO_INTRINSICS_)
+// The __vector4 structure is an intrinsic on Xbox but must be separately defined
+// for x86/x64
+struct __vector4 {
+	union {
+		float       vector4_f32[4];
+		uint32_t    vector4_u32[4];
+	};
+};
+#endif // _SU_NO_INTRINSICS_
+
+namespace math { namespace simd {
+
+// Vector intrinsic: Four 32 bit floating point components aligned on a 16 byte
+// boundary and mapped to hardware vector registers
+#if defined(_SU_SSE_INTRINSICS_) && !defined(_SU_NO_INTRINSICS_)
+	using Vector = __m128;
+#else
+	using Vector = __vector4;
+#endif
+
+// Fix-up for (1st-3rd) Vector parameters that are pass-in-register for x86 and vector call; by reference otherwise
+#if (defined(_M_IX86) || _SU_VECTORCALL_ ) && !defined(_SU_NO_INTRINSICS_)
+	using FVector = const Vector;
+#else
+	using FVector = const Vector&;
+#endif
+
+// Fix-up for (4th) Vector parameter to pass in-register for x64 vector call; by reference otherwise
+#if ((_SU_VECTORCALL_ && !defined(_M_IX86))) && !defined(_SU_NO_INTRINSICS_)
+	using GVector = const Vector;
+#else
+	using GVector = const Vector&;
+#endif
+
+// Fix-up for (5th & 6th) Vector parameter to pass in-register for vector call; by reference otherwise
+#if ( _SU_VECTORCALL_ ) && !defined(_SU_NO_INTRINSICS_)
+	using HVector = const Vector;
+#else
+	using HVector = const Vector&;
+#endif
+
+// Fix-up for (7th+) Vector parameters to pass by reference
+using CVector = const Vector&;
+
+}}

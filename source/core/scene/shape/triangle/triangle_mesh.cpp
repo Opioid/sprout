@@ -61,31 +61,6 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		float3 t_w	   = math::transform_vector(t, transformation.rotation);
 		float3 b_w	   = bitangent_sign * math::cross(n_w, t_w);
 
-
-
-/*
-		math::simd::Matrix rotation = math::simd::load_float4x4(transformation.rotation);
-
-		math::simd::Vector simd_t = math::simd::load_float3(t);
-		math::simd::Vector t_w = math::simd::transform_vector(rotation, simd_t);
-		math::simd::store_float3(intersection.t, t_w);
-
-		math::simd::Vector simd_n = math::simd::load_float3(n);
-		math::simd::Vector n_w = math::simd::transform_vector(rotation, simd_n);
-		math::simd::store_float3(intersection.n, n_w);
-
-		math::simd::Vector simd_geo_n = math::simd::load_float3(geo_n);
-		math::simd::Vector geo_n_w = math::simd::transform_vector(rotation, simd_geo_n);
-		math::simd::store_float3(intersection.geo_n, geo_n_w);
-
-		math::simd::Vector b_w = math::simd::cross3(n_w, t_w);
-		float3 ub_w;
-		math::simd::store_float3(ub_w, b_w);
-		intersection.b = bitangent_sign * ub_w;
-*/
-
-
-
 		intersection.p = p_w;
 		intersection.t = t_w;
 		intersection.b = b_w;

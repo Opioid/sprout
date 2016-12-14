@@ -12,7 +12,7 @@ namespace math { namespace simd {
  *
  ****************************************************************************/
 
-inline Matrix SU_CALLCONV load_float4x4(const Matrix4x4f_a& source) {
+inline Matrix SU_CALLCONV load_float3x3(const Matrix3x3f_a& source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Matrix M;
 	M.r[0].vector4_f32[0] = pSource->m[0][0];
@@ -40,7 +40,39 @@ inline Matrix SU_CALLCONV load_float4x4(const Matrix4x4f_a& source) {
 	m.r[0] = _mm_load_ps(&source.x.x);
 	m.r[1] = _mm_load_ps(&source.y.x);
 	m.r[2] = _mm_load_ps(&source.z.x);
-	m.r[3] = _mm_load_ps(&source.w.x);
+	return m;
+#endif
+}
+
+inline Matrix SU_CALLCONV load_float4x4(const Matrix4x4f_a& source) {
+#if defined(_SU_NO_INTRINSICS_)
+	Matrix M;
+	M.r[0].vector4_f32[0] = pSource->m[0][0];
+	M.r[0].vector4_f32[1] = pSource->m[0][1];
+	M.r[0].vector4_f32[2] = pSource->m[0][2];
+	M.r[0].vector4_f32[3] = pSource->m[0][3];
+
+	M.r[1].vector4_f32[0] = pSource->m[1][0];
+	M.r[1].vector4_f32[1] = pSource->m[1][1];
+	M.r[1].vector4_f32[2] = pSource->m[1][2];
+	M.r[1].vector4_f32[3] = pSource->m[1][3];
+
+	M.r[2].vector4_f32[0] = pSource->m[2][0];
+	M.r[2].vector4_f32[1] = pSource->m[2][1];
+	M.r[2].vector4_f32[2] = pSource->m[2][2];
+	M.r[2].vector4_f32[3] = pSource->m[2][3];
+
+	M.r[3].vector4_f32[0] = pSource->m[3][0];
+	M.r[3].vector4_f32[1] = pSource->m[3][1];
+	M.r[3].vector4_f32[2] = pSource->m[3][2];
+	M.r[3].vector4_f32[3] = pSource->m[3][3];
+	return M;
+#elif defined(_SU_SSE_INTRINSICS_)
+	Matrix m;
+	m.r[0] = _mm_load_ps(&source.v.x.x);
+	m.r[1] = _mm_load_ps(&source.v.y.x);
+	m.r[2] = _mm_load_ps(&source.v.z.x);
+	m.r[3] = _mm_load_ps(&source.v.w.x);
 	return m;
 #endif
 }
@@ -51,7 +83,7 @@ inline Matrix SU_CALLCONV load_float4x4(const Matrix4x4f_a& source) {
  *
  ****************************************************************************/
 
-inline Vector SU_CALLCONV transform_vector(FMatrix m, FVector v) {
+inline Vector SU_CALLCONV transform_vector(FMatrix m, HVector v) {
 #if defined(_SU_NO_INTRINSICS_)
 	XMVECTOR Z = XMVectorSplatZ(V);
 	XMVECTOR Y = XMVectorSplatY(V);

@@ -27,14 +27,15 @@
 #include "base/thread/thread_pool.hpp"
 
 #include "extension/procedural/starburst/starburst.hpp"
-#include "core/scene/shape/shape_test.hpp"
+#include "core/testing/testing_simd.hpp"
 
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
-//	scene::shape::testing::test();
+//	testing::simd::rsqrt();
+//	testing::simd::normalize();
 //	return 1;
 
 	logging::init(logging::Type::Stdout);
