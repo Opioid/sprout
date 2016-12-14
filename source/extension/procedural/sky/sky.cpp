@@ -34,17 +34,14 @@ void Sky::init(scene::Prop* sky, scene::Prop* sun) {
 }
 
 void Sky::set_parameters(const json::Value& parameters) {
-	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		if ("sun" == node_name) {
-			float3 angles = json::read_float3(node_value, "rotation");
+	for (auto& n : parameters.GetObject()) {
+		if ("sun" == n.name) {
+			float3 angles = json::read_float3(n.value, "rotation");
 			sun_rotation_ = json::create_rotation_matrix(angles);
-		} else if ("ground_albedo" == node_name) {
-			ground_albedo_ = json::read_float3(node_value);
-		} else if ("turbidity" == node_name) {
-			turbidity_ = json::read_float(node_value);
+		} else if ("ground_albedo" == n.name) {
+			ground_albedo_ = json::read_float3(n.value);
+		} else if ("turbidity" == n.name) {
+			turbidity_ = json::read_float(n.value);
 		}
 	}
 
@@ -56,7 +53,7 @@ Model& Sky::model() {
 }
 
 void Sky::update() {
-	model_.set_sun_direction(float3(sun_rotation_.z));
+	model_.set_sun_direction(sun_rotation_.v3.z);
 	model_.set_ground_albedo(ground_albedo_);
 	model_.set_turbidity(turbidity_);
 

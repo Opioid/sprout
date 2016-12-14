@@ -141,7 +141,7 @@ struct alignas(16) Matrix3x3f_a {
 
 		struct {
 			Vector3f_a x, y, z;
-		};
+		} v;
 
 		struct {
 			Vector3f_a x, y, z;

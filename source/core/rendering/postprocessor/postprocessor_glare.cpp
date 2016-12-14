@@ -121,6 +121,7 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		scale[2] = 0.207f;
 		scale[3] = 0.033f;
 		break;
+	default:
 	case Adaption::Mesopic:
 		scale[0] = 0.368f;
 		scale[1] = 0.478f;

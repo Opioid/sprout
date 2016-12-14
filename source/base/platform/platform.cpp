@@ -34,6 +34,8 @@ std::string build() {
 	}
 #elif defined(__clang__)
 	stream << "clang " << __clang_major__ << "." << __clang_minor__ << "." << __clang_patchlevel__;
+#elif defined(__GNUC__)
+	stream << "GCC " << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__;
 #endif
 
 	return stream.str();

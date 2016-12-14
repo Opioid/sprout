@@ -27,10 +27,12 @@
 
 #define _SU_VECTORCALL_ 1
 
-#ifdef __GNUG__
+#ifdef __clang__
 #	define SU_CALLCONV __attribute__((vectorcall))
 #elif defined(_MSC_VER)
 #	define SU_CALLCONV __vectorcall
+#else
+#	define SU_CALLCONV
 #endif
 
 /****************************************************************************
