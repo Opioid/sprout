@@ -49,7 +49,9 @@ public:
 protected:
 
 	void propagate_transformation() const;
-	void inherit_transformation(const math::transformation& a, const math::transformation& b);
+	void inherit_transformation(const math::transformation& a,
+								const math::transformation& b,
+								bool animated);
 
 	void add_sibling(Entity* node);
 	void detach(Entity* node);

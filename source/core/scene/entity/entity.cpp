@@ -113,16 +113,21 @@ const Entity* Entity::parent() const {
 
 void Entity::propagate_transformation() const {
 	if (child_) {
-		child_->inherit_transformation(world_frame_a_, world_frame_b_);
+		child_->inherit_transformation(world_frame_a_, world_frame_b_,
+									   properties_.test(Properties::Animated));
 	}
 }
 
-void Entity::inherit_transformation(const math::transformation& a, const math::transformation& b) {
+void Entity::inherit_transformation(const math::transformation& a,
+									const math::transformation& b,
+									bool animated) {
 	if (next_) {
-		next_->inherit_transformation(a, b);
+		next_->inherit_transformation(a, b, animated);
 	}
 
-	properties_.set(Properties::Animated);
+	if (animated) {
+		properties_.set(Properties::Animated);
+	}
 
 	float4x4 transformation;
 	math::set_basis_scale_origin(transformation, math::create_matrix3x3(a.rotation),

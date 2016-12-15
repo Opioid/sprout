@@ -102,7 +102,7 @@ the model.
 
 // uses Aug 23 dataset
 
-double datasetRGB1[] = 
+hk_real datasetRGB1[] =
 {
 	// albedo 0, turbidity 1
 	-1.099459e+000,
@@ -1206,7 +1206,7 @@ double datasetRGB1[] =
 	6.658012e-001,
 };
 
-double datasetRGBRad1[] = 
+hk_real datasetRGBRad1[] =
 {
 	// albedo 0, turbidity 1
 	1.962684e+000,
@@ -1350,7 +1350,7 @@ double datasetRGBRad1[] =
 	2.574284e+001,
 };
 
-double datasetRGB2[] = 
+hk_real datasetRGB2[] =
 {
 	// albedo 0, turbidity 1
 	-1.140530e+000,
@@ -2454,7 +2454,7 @@ double datasetRGB2[] =
 	6.588427e-001,
 };
 
-double datasetRGBRad2[] = 
+hk_real datasetRGBRad2[] =
 {
 	// albedo 0, turbidity 1
 	1.590330e+000,
@@ -2598,7 +2598,7 @@ double datasetRGBRad2[] =
 	2.643066e+001,
 };
 
-double datasetRGB3[] = 
+hk_real datasetRGB3[] =
 {
 	// albedo 0, turbidity 1
 	-1.372629e+000,
@@ -3702,7 +3702,7 @@ double datasetRGB3[] =
 	6.966285e-001,
 };
 
-double datasetRGBRad3[] = 
+hk_real datasetRGBRad3[] =
 {
 	// albedo 0, turbidity 1
 	9.926518e-001,
@@ -3846,14 +3846,14 @@ double datasetRGBRad3[] =
 	2.893432e+001,
 };
 
-double* datasetsRGB[] =
+hk_real* datasetsRGB[] =
 {
 	datasetRGB1,
 	datasetRGB2,
 	datasetRGB3
 };
 
-double* datasetsRGBRad[] =
+hk_real* datasetsRGBRad[] =
 {
 	datasetRGBRad1,
 	datasetRGBRad2,

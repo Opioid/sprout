@@ -104,7 +104,7 @@ All instructions on how to use this code are in the accompanying header file.
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <cmath>
 
 //   Some macro definitions that occur elsewhere in ART, and that have to be
 //   replicated to make this a stand-alone module.
@@ -139,25 +139,25 @@ All instructions on how to use this code are in the accompanying header file.
 
 // internal definitions
 
-typedef double *ArHosekSkyModel_Dataset;
-typedef double *ArHosekSkyModel_Radiance_Dataset;
+typedef hk_real *ArHosekSkyModel_Dataset;
+typedef hk_real *ArHosekSkyModel_Radiance_Dataset;
 
 // internal functions
 
 void ArHosekSkyModel_CookConfiguration(
         ArHosekSkyModel_Dataset       dataset, 
         ArHosekSkyModelConfiguration  config, 
-        double                        turbidity, 
-        double                        albedo, 
-        double                        solar_elevation
+		hk_real                        turbidity,
+		hk_real                        albedo,
+		hk_real                        solar_elevation
         )
 {
-    double  * elev_matrix;
+	hk_real  * elev_matrix;
 
     int     int_turbidity = (int)turbidity;
-    double  turbidity_rem = turbidity - (double)int_turbidity;
+	hk_real  turbidity_rem = turbidity - (hk_real)int_turbidity;
 
-    solar_elevation = pow(solar_elevation / (MATH_PI / 2.0), (1.0 / 3.0));
+	solar_elevation = std::pow(solar_elevation / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
 
     // alb 0 low turb
 
@@ -226,18 +226,18 @@ void ArHosekSkyModel_CookConfiguration(
     }
 }
 
-double ArHosekSkyModel_CookRadianceConfiguration(
+hk_real ArHosekSkyModel_CookRadianceConfiguration(
         ArHosekSkyModel_Radiance_Dataset  dataset, 
-        double                            turbidity, 
-        double                            albedo, 
-        double                            solar_elevation
+		hk_real                            turbidity,
+		hk_real                            albedo,
+		hk_real                            solar_elevation
         )
 {
-    double* elev_matrix;
+	hk_real* elev_matrix;
 
     int int_turbidity = (int)turbidity;
-    double turbidity_rem = turbidity - (double)int_turbidity;
-    double res;
+	hk_real turbidity_rem = turbidity - (hk_real)int_turbidity;
+	hk_real res;
     solar_elevation = pow(solar_elevation / (MATH_PI / 2.0), (1.0 / 3.0));
 
     // alb 0 low turb
@@ -279,36 +279,36 @@ double ArHosekSkyModel_CookRadianceConfiguration(
     elev_matrix = dataset + (6*10 + 6*(int_turbidity));
     //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
     res += (albedo) * (turbidity_rem) *
-        ( pow(1.0-solar_elevation, 5.0) * elev_matrix[0] +
-         5.0*pow(1.0-solar_elevation, 4.0)*solar_elevation * elev_matrix[1] +
-         10.0*pow(1.0-solar_elevation, 3.0)*pow(solar_elevation, 2.0) * elev_matrix[2] +
-         10.0*pow(1.0-solar_elevation, 2.0)*pow(solar_elevation, 3.0) * elev_matrix[3] +
-         5.0*(1.0-solar_elevation)*pow(solar_elevation, 4.0) * elev_matrix[4] +
-         pow(solar_elevation, 5.0) * elev_matrix[5]);
+		( std::pow(1.0-solar_elevation, 5.0) * elev_matrix[0] +
+		 5.0*std::pow(1.0-solar_elevation, 4.0)*solar_elevation * elev_matrix[1] +
+		 10.0*std::pow(1.0-solar_elevation, 3.0)*std::pow(solar_elevation, hk_real(2)) * elev_matrix[2] +
+		 10.0*std::pow(1.0-solar_elevation, 2.0)*std::pow(solar_elevation, hk_real(3)) * elev_matrix[3] +
+		 5.0*(1.0-solar_elevation)*std::pow(solar_elevation, 4.0) * elev_matrix[4] +
+		 std::pow(solar_elevation, 5.0) * elev_matrix[5]);
     return res;
 }
 
-double ArHosekSkyModel_GetRadianceInternal(
+hk_real ArHosekSkyModel_GetRadianceInternal(
         ArHosekSkyModelConfiguration  configuration, 
-        double                        theta, 
-        double                        gamma
+		hk_real                        theta,
+		hk_real                        gamma
         )
 {
-    const double expM = exp(configuration[4] * gamma);
-    const double rayM = cos(gamma)*cos(gamma);
-    const double mieM = (1.0 + cos(gamma)*cos(gamma)) / pow((1.0 + configuration[8]*configuration[8] - 2.0*configuration[8]*cos(gamma)), 1.5);
-    const double zenith = sqrt(cos(theta));
+	const hk_real expM = std::exp(configuration[4] * gamma);
+	const hk_real rayM = std::cos(gamma)*std::cos(gamma);
+	const hk_real mieM = (hk_real(1.0) + std::cos(gamma)*std::cos(gamma)) / std::pow((hk_real(1.0) + configuration[8]*configuration[8] - hk_real(2.0)*configuration[8]*std::cos(gamma)), hk_real(1.5));
+	const hk_real zenith = std::sqrt(cos(theta));
 
-    return (1.0 + configuration[0] * exp(configuration[1] / (cos(theta) + 0.01))) *
+	return (hk_real(1.0) + configuration[0] * std::exp(configuration[1] / (std::cos(theta) + hk_real(0.01)))) *
             (configuration[2] + configuration[3] * expM + configuration[5] * rayM + configuration[6] * mieM + configuration[7] * zenith);
 }
 
 // spectral version
 
 ArHosekSkyModelState  * arhosekskymodelstate_alloc_init(
-        const double  solar_elevation,
-        const double  atmospheric_turbidity,
-        const double  ground_albedo
+		const hk_real  solar_elevation,
+		const hk_real  atmospheric_turbidity,
+		const hk_real  ground_albedo
         )
 {
     ArHosekSkyModelState  * state = ALLOC(ArHosekSkyModelState);
@@ -354,23 +354,23 @@ ArHosekSkyModelState  * arhosekskymodelstate_alloc_init(
 //   blackbody radiation curve if the ultra-violet part of the spectrum is
 //   also considered. But the visible brightness should be very similar.
 
-const double blackbody_scaling_factor = 3.19992 * 10E-11;
+const hk_real blackbody_scaling_factor = 3.19992 * 10E-11;
 
 //   'art_blackbody_dd_value()' function
 //
 //   Blackbody radiance, Planck's formula
 
-double art_blackbody_dd_value(
-        const double  temperature,
-        const double  lambda
+hk_real art_blackbody_dd_value(
+		const hk_real  temperature,
+		const hk_real  lambda
         )
 {
-    double  c1 = 3.74177 * 10E-17;
-    double  c2 = 0.0143878;
-    double  value;
+	hk_real  c1 = 3.74177 * 10E-17;
+	hk_real  c2 = 0.0143878;
+	hk_real  value;
     
-    value =   ( c1 / ( pow( lambda, 5.0 ) ) )
-            * ( 1.0 / ( exp( c2 / ( lambda * temperature ) ) - 1.0 ) );
+	value =   ( c1 / ( std::pow( lambda, hk_real(5) ) ) )
+			* ( hk_real(1) / ( std::exp( c2 / ( lambda * temperature ) ) - hk_real(1) ) );
 
     return value;
 }
@@ -384,7 +384,7 @@ double art_blackbody_dd_value(
 
 //   This is just the data from the Preetham paper, extended into the UV range.
 
-const double originalSolarRadianceTable[] =
+const hk_real originalSolarRadianceTable[] =
 {
      7500.0,
     12500.0,
@@ -400,11 +400,11 @@ const double originalSolarRadianceTable[] =
 };
 
 ArHosekSkyModelState  * arhosekskymodelstate_alienworld_alloc_init(
-        const double  solar_elevation,
-        const double  solar_intensity,
-        const double  solar_surface_temperature_kelvin,
-        const double  atmospheric_turbidity,
-        const double  ground_albedo
+		const hk_real  solar_elevation,
+		const hk_real  solar_intensity,
+		const hk_real  solar_surface_temperature_kelvin,
+		const hk_real  atmospheric_turbidity,
+		const hk_real  ground_albedo
         )
 {
     ArHosekSkyModelState  * state = ALLOC(ArHosekSkyModelState);
@@ -435,18 +435,18 @@ ArHosekSkyModelState  * arhosekskymodelstate_alienworld_alloc_init(
         
         //   The wavelength of this band in nanometers
         
-        double  owl = ( 320.0 + 40.0 * wl ) * 10E-10;
+		hk_real  owl = ( 320.0 + 40.0 * wl ) * 10E-10;
         
         //   The original intensity we just computed
         
-        double  osr = originalSolarRadianceTable[wl];
+		hk_real  osr = originalSolarRadianceTable[wl];
         
         //   The intensity of a blackbody with the desired temperature
         //   The fudge factor described above is used to make sure the BB
         //   function matches the used radiance data reasonably well
         //   in magnitude.
         
-        double  nsr =
+		hk_real  nsr =
               art_blackbody_dd_value(solar_surface_temperature_kelvin, owl)
             * blackbody_scaling_factor;
 
@@ -465,7 +465,7 @@ ArHosekSkyModelState  * arhosekskymodelstate_alienworld_alloc_init(
     //   averaging over the visible wavelenghts (! - this is why we start at
     //   WL #2, and only use 2-11) seems like a sane first approximation.
     
-    double  correctionFactor = 0.0;
+	hk_real  correctionFactor = hk_real(0);
     
     for ( unsigned int i = 2; i < 11; i++ )
     {
@@ -479,15 +479,15 @@ ArHosekSkyModelState  * arhosekskymodelstate_alienworld_alloc_init(
     //   Division by 9 because we only used 9 of the 11 wavelengths for this
     //   (see above).
     
-    double  ratio = correctionFactor / 9.0;
+	hk_real  ratio = correctionFactor / hk_real(9);
 
     //   This ratio is then used to determine the radius of the alien sun
     //   on the sky dome. The additional factor 'solar_intensity' can be used
     //   to make the alien sun brighter or dimmer compared to our sun.
     
     state->solar_radius =
-          ( sqrt( solar_intensity ) * TERRESTRIAL_SOLAR_RADIUS )
-        / sqrt( ratio );
+		  ( std::sqrt( solar_intensity ) * TERRESTRIAL_SOLAR_RADIUS )
+		/ std::sqrt( ratio );
 
     //   Finally, we have to reduce the scaling factor of the sky by the
     //   ratio used to scale the solar disc size. The rationale behind this is 
@@ -516,11 +516,11 @@ void arhosekskymodelstate_free(
     free(state);
 }
 
-double arhosekskymodel_radiance(
+hk_real arhosekskymodel_radiance(
         ArHosekSkyModelState  * state,
-        double                  theta, 
-        double                  gamma, 
-        double                  wavelength
+		hk_real                  theta,
+		hk_real                  gamma,
+		hk_real                  wavelength
         )
 {
     int low_wl = (wavelength - 320.0 ) / 40.0;
@@ -528,9 +528,9 @@ double arhosekskymodel_radiance(
     if ( low_wl < 0 || low_wl >= 11 )
         return 0.0f;
 
-    double interp = fmod((wavelength - 320.0 ) / 40.0, 1.0);
+	hk_real interp = std::fmod((wavelength - hk_real(320) ) / hk_real(40), hk_real(1));
 
-    double val_low = 
+	hk_real val_low =
           ArHosekSkyModel_GetRadianceInternal(
                 state->configs[low_wl],
                 theta,
@@ -542,7 +542,7 @@ double arhosekskymodel_radiance(
     if ( interp < 1e-6 )
         return val_low;
 
-    double result = ( 1.0 - interp ) * val_low;
+	hk_real result = ( 1.0 - interp ) * val_low;
 
     if ( low_wl+1 < 11 )
     {
@@ -564,9 +564,9 @@ double arhosekskymodel_radiance(
 // xyz and rgb versions
 
 ArHosekSkyModelState  * arhosek_xyz_skymodelstate_alloc_init(
-        const double  turbidity, 
-        const double  albedo, 
-        const double  elevation
+		const hk_real  turbidity,
+		const hk_real  albedo,
+		const hk_real  elevation
         )
 {
     ArHosekSkyModelState  * state = ALLOC(ArHosekSkyModelState);
@@ -600,9 +600,9 @@ ArHosekSkyModelState  * arhosek_xyz_skymodelstate_alloc_init(
 
 
 ArHosekSkyModelState  * arhosek_rgb_skymodelstate_alloc_init(
-        const double  turbidity, 
-        const double  albedo, 
-        const double  elevation
+		const hk_real  turbidity,
+		const hk_real  albedo,
+		const hk_real  elevation
         )
 {
     ArHosekSkyModelState* state = ALLOC(ArHosekSkyModelState);
@@ -634,10 +634,10 @@ ArHosekSkyModelState  * arhosek_rgb_skymodelstate_alloc_init(
     return state;
 }
 
-double arhosek_tristim_skymodel_radiance(
+hk_real arhosek_tristim_skymodel_radiance(
     ArHosekSkyModelState  * state,
-    double                  theta, 
-    double                  gamma, 
+	hk_real                  theta,
+	hk_real                  gamma,
     int                     channel
     )
 {
@@ -653,27 +653,27 @@ double arhosek_tristim_skymodel_radiance(
 const int pieces = 45;
 const int order = 4;
 
-double arhosekskymodel_sr_internal(
+hk_real arhosekskymodel_sr_internal(
         ArHosekSkyModelState  * state,
         int                     turbidity,
         int                     wl,
-        double                  elevation
+		hk_real                  elevation
         )
 {
     int pos =
-        (int) (pow(2.0*elevation / MATH_PI, 1.0/3.0) * pieces); // floor
+		(int) (std::pow(hk_real(2)*elevation / hk_real(MATH_PI), hk_real(1)/hk_real(3)) * pieces); // floor
     
     if ( pos > 44 ) pos = 44;
     
-    const double break_x =
-        pow(((double) pos / (double) pieces), 3.0) * (MATH_PI * 0.5);
+	const hk_real break_x =
+		std::pow(((hk_real) pos / (hk_real) pieces), hk_real(3)) * (hk_real(MATH_PI) * hk_real(0.5));
 
-    const double  * coefs =
+	const hk_real  * coefs =
         solarDatasets[wl] + (order * pieces * turbidity + order * (pos+1) - 1);
 
-    double res = 0.0;
-    const double x = elevation - break_x;
-    double x_exp = 1.0;
+	hk_real res = 0.0;
+	const hk_real x = elevation - break_x;
+	hk_real x_exp = 1.0;
 
     for (int i = 0; i < order; ++i)
     {
@@ -684,11 +684,11 @@ double arhosekskymodel_sr_internal(
     return res * state->emission_correction_factor_sun[wl];
 }
 
-double arhosekskymodel_solar_radiance_internal2(
+hk_real arhosekskymodel_solar_radiance_internal2(
         ArHosekSkyModelState  * state,
-        double                  wavelength,
-        double                  elevation,
-        double                  gamma
+		hk_real                  wavelength,
+		hk_real                  elevation,
+		hk_real                  gamma
         )
 {
     assert(
@@ -700,7 +700,7 @@ double arhosekskymodel_solar_radiance_internal2(
             
     
     int     turb_low  = (int) state->turbidity - 1;
-    double  turb_frac = state->turbidity - (double) (turb_low + 1);
+	hk_real  turb_frac = state->turbidity - (hk_real) (turb_low + 1);
     
     if ( turb_low == 9 )
     {
@@ -709,7 +709,7 @@ double arhosekskymodel_solar_radiance_internal2(
     }
 
     int    wl_low  = (int) ((wavelength - 320.0) / 40.0);
-    double wl_frac = fmod(wavelength, 40.0) / 40.0;
+	hk_real wl_frac = std::fmod(wavelength, hk_real(40)) / hk_real(40);
     
     if ( wl_low == 10 )
     {
@@ -717,7 +717,7 @@ double arhosekskymodel_solar_radiance_internal2(
         wl_frac = 1.0;
     }
 
-    double direct_radiance =
+	hk_real direct_radiance =
           ( 1.0 - turb_frac )
         * (    (1.0 - wl_frac)
              * arhosekskymodel_sr_internal(
@@ -751,7 +751,7 @@ double arhosekskymodel_solar_radiance_internal2(
                    )
           );
 
-    double ldCoefficient[6];
+	hk_real ldCoefficient[6];
     
     for ( int i = 0; i < 6; i++ )
         ldCoefficient[i] =
@@ -760,12 +760,12 @@ double arhosekskymodel_solar_radiance_internal2(
     
     // sun distance to diameter ratio, squared
 
-    const double sol_rad_sin = sin(state->solar_radius);
-    const double ar2 = 1 / ( sol_rad_sin * sol_rad_sin );
-    const double singamma = sin(gamma);
-    double sc2 = 1.0 - ar2 * singamma * singamma;
+	const hk_real sol_rad_sin = std::sin(state->solar_radius);
+	const hk_real ar2 = 1 / ( sol_rad_sin * sol_rad_sin );
+	const hk_real singamma = std::sin(gamma);
+	hk_real sc2 = 1.0 - ar2 * singamma * singamma;
     if (sc2 < 0.0 ) sc2 = 0.0;
-    double sampleCosine = sqrt (sc2);
+	hk_real sampleCosine = std::sqrt (sc2);
     
     //   The following will be improved in future versions of the model:
     //   here, we directly use fitted 5th order polynomials provided by the
@@ -775,27 +775,27 @@ double arhosekskymodel_solar_radiance_internal2(
     //   dataset based on quadratic polynomials will be provided in a future
     //   release.
 
-    double  darkeningFactor =
+	hk_real  darkeningFactor =
           ldCoefficient[0]
         + ldCoefficient[1] * sampleCosine
-        + ldCoefficient[2] * pow( sampleCosine, 2.0 )
-        + ldCoefficient[3] * pow( sampleCosine, 3.0 )
-        + ldCoefficient[4] * pow( sampleCosine, 4.0 )
-        + ldCoefficient[5] * pow( sampleCosine, 5.0 );
+		+ ldCoefficient[2] * std::pow( sampleCosine, hk_real(2) )
+		+ ldCoefficient[3] * std::pow( sampleCosine, hk_real(3) )
+		+ ldCoefficient[4] * std::pow( sampleCosine, hk_real(4) )
+		+ ldCoefficient[5] * std::pow( sampleCosine, hk_real(5) );
 
     direct_radiance *= darkeningFactor;
 
     return direct_radiance;
 }
 
-double arhosekskymodel_solar_radiance(
+hk_real arhosekskymodel_solar_radiance(
         ArHosekSkyModelState  * state,
-        double                  theta, 
-        double                  gamma, 
-        double                  wavelength
+		hk_real                  theta,
+		hk_real                  gamma,
+		hk_real                  wavelength
         )
 {
-    double  direct_radiance =
+	hk_real  direct_radiance =
         arhosekskymodel_solar_radiance_internal2(
             state,
             wavelength,
@@ -803,7 +803,7 @@ double arhosekskymodel_solar_radiance(
             gamma
             );
 
-    double  inscattered_radiance =
+	hk_real  inscattered_radiance =
         arhosekskymodel_radiance(
             state,
             theta,

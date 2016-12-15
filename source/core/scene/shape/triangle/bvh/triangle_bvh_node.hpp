@@ -26,7 +26,7 @@ struct Node {
 */
 
 struct Node {
-	Node();
+	Node() = default;
 
 	void set_aabb(const math::aabb& aabb);
 

@@ -16,8 +16,6 @@ inline uint32_t Node::primitive_end() const {
 }
 */
 
-inline Node::Node() {}
-
 inline void Node::set_aabb(const math::aabb& aabb) {
 	bounds[0] = aabb.min();
 	bounds[1] = aabb.max();

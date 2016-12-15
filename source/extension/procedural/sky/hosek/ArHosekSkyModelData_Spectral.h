@@ -99,9 +99,11 @@ This file contains the coefficient data for the spectral version of the model.
 
 */
 
+#include "ArHosekSkyModelReal.hpp"
+
 // uses Apr 26 dataset
 
-double dataset320[] = 
+hk_real dataset320[] =
 {
 	// albedo 0, turbidity 1
 	-1.341049e+001,
@@ -1205,7 +1207,7 @@ double dataset320[] =
 	6.227585e-001,
 };
 
-double datasetRad320[] = 
+hk_real datasetRad320[] =
 {
 	// albedo 0, turbidity 1
 	9.282016e-004,
@@ -1349,7 +1351,7 @@ double datasetRad320[] =
 	8.244103e-002,
 };
 
-double dataset360[] = 
+hk_real dataset360[] =
 {
 	// albedo 0, turbidity 1
 	-2.974290e+000,
@@ -2453,7 +2455,7 @@ double dataset360[] =
 	7.279518e-001,
 };
 
-double datasetRad360[] = 
+hk_real datasetRad360[] =
 {
 	// albedo 0, turbidity 1
 	2.494129e-003,
@@ -2597,7 +2599,7 @@ double datasetRad360[] =
 	1.427310e-001,
 };
 
-double dataset400[] = 
+hk_real dataset400[] =
 {
 	// albedo 0, turbidity 1
 	-1.869600e+000,
@@ -3701,7 +3703,7 @@ double dataset400[] =
 	7.086504e-001,
 };
 
-double datasetRad400[] = 
+hk_real datasetRad400[] =
 {
 	// albedo 0, turbidity 1
 	5.767645e-003,
@@ -3845,7 +3847,7 @@ double datasetRad400[] =
 	2.328116e-001,
 };
 
-double dataset440[] = 
+hk_real dataset440[] =
 {
 	// albedo 0, turbidity 1
 	-1.397312e+000,
@@ -4949,7 +4951,7 @@ double dataset440[] =
 	6.840186e-001,
 };
 
-double datasetRad440[] = 
+hk_real datasetRad440[] =
 {
 	// albedo 0, turbidity 1
 	9.406889e-003,
@@ -5093,7 +5095,7 @@ double datasetRad440[] =
 	2.803810e-001,
 };
 
-double dataset480[] = 
+hk_real dataset480[] =
 {
 	// albedo 0, turbidity 1
 	-1.255072e+000,
@@ -6197,7 +6199,7 @@ double dataset480[] =
 	6.747408e-001,
 };
 
-double datasetRad480[] = 
+hk_real datasetRad480[] =
 {
 	// albedo 0, turbidity 1
 	1.367487e-002,
@@ -6341,7 +6343,7 @@ double datasetRad480[] =
 	3.053035e-001,
 };
 
-double dataset520[] = 
+hk_real dataset520[] =
 {
 	// albedo 0, turbidity 1
 	-1.171338e+000,
@@ -7445,7 +7447,7 @@ double dataset520[] =
 	6.713422e-001,
 };
 
-double datasetRad520[] = 
+hk_real datasetRad520[] =
 {
 	// albedo 0, turbidity 1
 	1.459826e-002,
@@ -7589,7 +7591,7 @@ double datasetRad520[] =
 	2.692918e-001,
 };
 
-double dataset560[] = 
+hk_real dataset560[] =
 {
 	// albedo 0, turbidity 1
 	-1.121223e+000,
@@ -8693,7 +8695,7 @@ double dataset560[] =
 	5.872694e-001,
 };
 
-double datasetRad560[] = 
+hk_real datasetRad560[] =
 {
 	// albedo 0, turbidity 1
 	1.518543e-002,
@@ -8837,7 +8839,7 @@ double datasetRad560[] =
 	2.394514e-001,
 };
 
-double dataset600[] = 
+hk_real dataset600[] =
 {
 	// albedo 0, turbidity 1
 	-1.120756e+000,
@@ -9941,7 +9943,7 @@ double dataset600[] =
 	6.545784e-001,
 };
 
-double datasetRad600[] = 
+hk_real datasetRad600[] =
 {
 	// albedo 0, turbidity 1
 	1.605147e-002,
@@ -10085,7 +10087,7 @@ double datasetRad600[] =
 	2.260782e-001,
 };
 
-double dataset640[] = 
+hk_real dataset640[] =
 {
 	// albedo 0, turbidity 1
 	-1.113346e+000,
@@ -11189,7 +11191,7 @@ double dataset640[] =
 	6.650112e-001,
 };
 
-double datasetRad640[] = 
+hk_real datasetRad640[] =
 {
 	// albedo 0, turbidity 1
 	1.479989e-002,
@@ -11333,7 +11335,7 @@ double datasetRad640[] =
 	2.043633e-001,
 };
 
-double dataset680[] = 
+hk_real dataset680[] =
 {
 	// albedo 0, turbidity 1
 	-1.112655e+000,
@@ -12437,7 +12439,7 @@ double dataset680[] =
 	6.710888e-001,
 };
 
-double datasetRad680[] = 
+hk_real datasetRad680[] =
 {
 	// albedo 0, turbidity 1
 	1.320908e-002,
@@ -12581,7 +12583,7 @@ double datasetRad680[] =
 	1.851691e-001,
 };
 
-double dataset720[] = 
+hk_real dataset720[] =
 {
 	// albedo 0, turbidity 1
 	-1.110553e+000,
@@ -13685,7 +13687,7 @@ double dataset720[] =
 	6.917938e-001,
 };
 
-double datasetRad720[] = 
+hk_real datasetRad720[] =
 {
 	// albedo 0, turbidity 1
 	1.130152e-002,
@@ -13829,7 +13831,7 @@ double datasetRad720[] =
 	1.639884e-001,
 };
 
-double* datasets[] =
+hk_real* datasets[] =
 {
 	dataset320,
 	dataset360,
@@ -13844,7 +13846,7 @@ double* datasets[] =
     dataset720
 };
 
-double* datasetsRad[] =
+hk_real* datasetsRad[] =
 {
 	datasetRad320,
 	datasetRad360,
@@ -13860,7 +13862,7 @@ double* datasetsRad[] =
 };
 
 // Uses Feb 9 dataset
-double solarDataset320[] = 
+hk_real solarDataset320[] =
 {
 	0,
 	0,
@@ -15664,7 +15666,7 @@ double solarDataset320[] =
 	1.715997e+03,
 };
 
-double solarDataset360[] = 
+hk_real solarDataset360[] =
 {
 	0,
 	0,
@@ -17468,7 +17470,7 @@ double solarDataset360[] =
 	4.337093e+03,
 };
 
-double solarDataset400[] = 
+hk_real solarDataset400[] =
 {
 	1.117129e+12,
 	-1.629427e+07,
@@ -19272,7 +19274,7 @@ double solarDataset400[] =
 	8.894396e+03,
 };
 
-double solarDataset440[] = 
+hk_real solarDataset440[] =
 {
 	-6.439155e+11,
 	7.682264e+06,
@@ -21076,7 +21078,7 @@ double solarDataset440[] =
 	1.258462e+04,
 };
 
-double solarDataset480[] = 
+hk_real solarDataset480[] =
 {
 	-2.547404e+13,
 	3.635631e+08,
@@ -22880,7 +22882,7 @@ double solarDataset480[] =
 	1.549771e+04,
 };
 
-double solarDataset520[] = 
+hk_real solarDataset520[] =
 {
 	3.441260e+12,
 	4.257012e+05,
@@ -24684,7 +24686,7 @@ double solarDataset520[] =
 	1.483566e+04,
 };
 
-double solarDataset560[] = 
+hk_real solarDataset560[] =
 {
 	9.427478e+12,
 	-2.974054e+07,
@@ -26488,7 +26490,7 @@ double solarDataset560[] =
 	1.425796e+04,
 };
 
-double solarDataset600[] = 
+hk_real solarDataset600[] =
 {
 	1.454828e+13,
 	-1.753873e+07,
@@ -28292,7 +28294,7 @@ double solarDataset600[] =
 	1.483525e+04,
 };
 
-double solarDataset640[] = 
+hk_real solarDataset640[] =
 {
 	-4.439940e+13,
 	4.727269e+08,
@@ -30096,7 +30098,7 @@ double solarDataset640[] =
 	1.419677e+04,
 };
 
-double solarDataset680[] = 
+hk_real solarDataset680[] =
 {
 	-352468042275216,
 	4.565228e+09,
@@ -31900,7 +31902,7 @@ double solarDataset680[] =
 	1.371823e+04,
 };
 
-double solarDataset720[] = 
+hk_real solarDataset720[] =
 {
 	2.525918e+14,
 	-2.554558e+09,
@@ -33704,7 +33706,7 @@ double solarDataset720[] =
 	1.313697e+04,
 };
 
-double* solarDatasets[] =
+hk_real* solarDatasets[] =
 {
 	solarDataset320,
 	solarDataset360,
@@ -33719,40 +33721,40 @@ double* solarDatasets[] =
 	solarDataset720
 };
 
-double limbDarkeningDataset320[] =
+hk_real limbDarkeningDataset320[] =
 { 0.087657, 0.767174, 0.658123, -1.02953, 0.703297, -0.186735 };
 
-double limbDarkeningDataset360[] =
+hk_real limbDarkeningDataset360[] =
 { 0.122953, 1.01278, 0.238687, -1.12208, 1.17087, -0.424947 };
 
-double limbDarkeningDataset400[] =
+hk_real limbDarkeningDataset400[] =
 { 0.123511, 1.08444, -0.405598, 0.370629, -0.240567, 0.0674778 };
 
-double limbDarkeningDataset440[] =
+hk_real limbDarkeningDataset440[] =
 { 0.158489, 1.23346, -0.875754, 0.857812, -0.484919, 0.110895 };
 
-double limbDarkeningDataset480[] =
+hk_real limbDarkeningDataset480[] =
 { 0.198587, 1.30507, -1.25998, 1.49727, -1.04047, 0.299516 };
 
-double limbDarkeningDataset520[] =
+hk_real limbDarkeningDataset520[] =
 { 0.23695, 1.29927, -1.28034, 1.37760, -0.85054, 0.21706 };
 
-double limbDarkeningDataset560[] =
+hk_real limbDarkeningDataset560[] =
 { 0.26892, 1.34319, -1.58427, 1.91271, -1.31350, 0.37295 };
 
-double limbDarkeningDataset600[] =
+hk_real limbDarkeningDataset600[] =
 { 0.299804, 1.36718, -1.80884, 2.29294, -1.60595, 0.454874 };
 
-double limbDarkeningDataset640[] =
+hk_real limbDarkeningDataset640[] =
 { 0.33551, 1.30791, -1.79382, 2.44646, -1.89082, 0.594769 };
 
-double limbDarkeningDataset680[] =
+hk_real limbDarkeningDataset680[] =
 { 0.364007, 1.27316, -1.73824, 2.28535, -1.70203, 0.517758 };
 
-double limbDarkeningDataset720[] =
+hk_real limbDarkeningDataset720[] =
 { 0.389704, 1.2448, -1.69708, 2.14061, -1.51803, 0.440004 };
 
-double * limbDarkeningDatasets[] =
+hk_real * limbDarkeningDatasets[] =
 {
 	limbDarkeningDataset320,
 	limbDarkeningDataset360,

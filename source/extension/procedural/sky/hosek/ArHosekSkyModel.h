@@ -304,7 +304,9 @@ HINT #1:   if you want to model the sky of an earth-like planet that orbits
 #ifndef _ARHOSEK_SKYMODEL_H_
 #define _ARHOSEK_SKYMODEL_H_
 
-typedef double ArHosekSkyModelConfiguration[9];
+#include "ArHosekSkyModelReal.hpp"
+
+typedef hk_real ArHosekSkyModelConfiguration[9];
 
 
 //   Spectral version of the model
@@ -337,14 +339,14 @@ typedef double ArHosekSkyModelConfiguration[9];
 
 typedef struct ArHosekSkyModelState
 {
-    ArHosekSkyModelConfiguration  configs[11];
-    double                        radiances[11];
-    double                        turbidity;
-    double                        solar_radius;
-    double                        emission_correction_factor_sky[11];
-    double                        emission_correction_factor_sun[11];
-    double                        albedo;
-    double                        elevation;
+	ArHosekSkyModelConfiguration configs[11];
+	hk_real                      radiances[11];
+	hk_real                      turbidity;
+	hk_real                      solar_radius;
+	hk_real                      emission_correction_factor_sky[11];
+	hk_real                      emission_correction_factor_sun[11];
+	hk_real                      albedo;
+	hk_real                      elevation;
 } 
 ArHosekSkyModelState;
 
@@ -358,9 +360,9 @@ ArHosekSkyModelState;
 ---------------------------------------------------------------------------- */
 
 ArHosekSkyModelState  * arhosekskymodelstate_alloc_init(
-        const double  solar_elevation,
-        const double  atmospheric_turbidity,
-        const double  ground_albedo
+		const hk_real  solar_elevation,
+		const hk_real  atmospheric_turbidity,
+		const hk_real  ground_albedo
         );
 
 
@@ -394,45 +396,45 @@ ArHosekSkyModelState  * arhosekskymodelstate_alloc_init(
 ---------------------------------------------------------------------------- */
 
 ArHosekSkyModelState  * arhosekskymodelstate_alienworld_alloc_init(
-        const double  solar_elevation,
-        const double  solar_intensity,
-        const double  solar_surface_temperature_kelvin,
-        const double  atmospheric_turbidity,
-        const double  ground_albedo
+		const hk_real  solar_elevation,
+		const hk_real  solar_intensity,
+		const hk_real  solar_surface_temperature_kelvin,
+		const hk_real  atmospheric_turbidity,
+		const hk_real  ground_albedo
         );
 
 void arhosekskymodelstate_free(
         ArHosekSkyModelState  * state
         );
 
-double arhosekskymodel_radiance(
+hk_real arhosekskymodel_radiance(
         ArHosekSkyModelState  * state,
-        double                  theta, 
-        double                  gamma, 
-        double                  wavelength
+		hk_real                  theta,
+		hk_real                  gamma,
+		hk_real                  wavelength
         );
 
 // CIE XYZ and RGB versions
 
 
 ArHosekSkyModelState  * arhosek_xyz_skymodelstate_alloc_init(
-        const double  turbidity, 
-        const double  albedo, 
-        const double  elevation
+		const hk_real  turbidity,
+		const hk_real  albedo,
+		const hk_real  elevation
         );
 
 
 ArHosekSkyModelState  * arhosek_rgb_skymodelstate_alloc_init(
-        const double  turbidity, 
-        const double  albedo, 
-        const double  elevation
+		const hk_real  turbidity,
+		const hk_real  albedo,
+		const hk_real  elevation
         );
 
 
-double arhosek_tristim_skymodel_radiance(
+hk_real arhosek_tristim_skymodel_radiance(
         ArHosekSkyModelState  * state,
-        double                  theta,
-        double                  gamma, 
+		hk_real                  theta,
+		hk_real                  gamma,
         int                     channel
         );
 
@@ -440,11 +442,11 @@ double arhosek_tristim_skymodel_radiance(
 //   Please read the above description before using this - there are several
 //   caveats!
 
-double arhosekskymodel_solar_radiance(
+hk_real arhosekskymodel_solar_radiance(
         ArHosekSkyModelState      * state,
-        double                      theta,
-        double                      gamma,
-        double                      wavelength
+		hk_real                      theta,
+		hk_real                      gamma,
+		hk_real                      wavelength
         );
 
 
