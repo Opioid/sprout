@@ -6,7 +6,7 @@
 namespace math {
 
 struct Ray {
-	Ray();
+	Ray() = default;
 	Ray(FVector3f_a origin, FVector3f_a direction,
 		float min_t = 0.f, float max_t = 1.f);
 
@@ -22,7 +22,6 @@ struct Ray {
 	float min_t;
 	float max_t;
 	int8_t sign[3];
-	int8_t pad;
 };
 
 }

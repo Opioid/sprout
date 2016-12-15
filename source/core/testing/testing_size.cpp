@@ -5,6 +5,7 @@
 #include "scene/entity/keyframe.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/scene_intersection.hpp"
+#include "scene/scene_ray.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/triangle/triangle_primitive_mte.hpp"
@@ -42,6 +43,9 @@ void size() {
 	print_size<scene::entity::Keyframe>("Keyframe", 64);
 
 	print_size<scene::entity::Composed_transformation>("Composed_transformation", 208);
+
+	print_size<math::Ray>("math::Ray", 64);
+	print_size<scene::Ray>("scene::Ray", 80);
 
 	print_size<scene::shape::Intersection>("shape::Intersection", 96);
 

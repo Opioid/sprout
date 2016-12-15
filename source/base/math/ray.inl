@@ -5,8 +5,6 @@
 
 namespace math {
 
-inline Ray::Ray() {}
-
 inline Ray::Ray(FVector3f_a origin, FVector3f_a direction, float min_t, float max_t) :
 	origin(origin),
 	direction(direction),

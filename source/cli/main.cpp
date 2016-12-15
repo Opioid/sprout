@@ -28,12 +28,14 @@
 
 #include "extension/procedural/starburst/starburst.hpp"
 #include "core/testing/testing_simd.hpp"
+#include "core/testing/testing_size.hpp"
 
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
 
 int main(int argc, char* argv[]) {
+//	testing::size();
 //	testing::simd::rsqrt();
 //	testing::simd::normalize();
 //	return 1;
