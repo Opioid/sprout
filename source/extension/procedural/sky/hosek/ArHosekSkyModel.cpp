@@ -149,7 +149,7 @@ void ArHosekSkyModel_CookConfiguration(
         ArHosekSkyModelConfiguration  config, 
 		hk_real                        turbidity,
 		hk_real                        albedo,
-		hk_real                        solar_elevationa
+		hk_real                        solar_elevation
         )
 {
 	hk_real  * elev_matrix;
@@ -157,9 +157,7 @@ void ArHosekSkyModel_CookConfiguration(
     int     int_turbidity = (int)turbidity;
 	hk_real  turbidity_rem = turbidity - (hk_real)int_turbidity;
 
-	hk_real solar_elevation = std::pow(solar_elevationa / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
-
-	hk_real se  = std::pow(solar_elevationa / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
+	hk_real se  = std::pow(solar_elevation / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
 	hk_real se2 = se  * se;
 	hk_real se3 = se2 * se;
 	hk_real se4 = se3 * se;

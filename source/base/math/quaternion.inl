@@ -236,35 +236,31 @@ inline quaternion create_quaternion(const Matrix3x3f_a& m) {
 }
 
 inline quaternion create_quaternion_rotation_x(float a) {
-	return quaternion(
-				std::sin(a * 0.5f),
-				0.f,
-				0.f,
-				std::cos(a * 0.5f));
+	return quaternion(std::sin(a * 0.5f),
+					  0.f,
+					  0.f,
+					  std::cos(a * 0.5f));
 }
 
 inline quaternion create_quaternion_rotation_y(float a) {
-	return quaternion(
-				0.f,
-				std::sin(a * 0.5f),
-				0.f,
-				std::cos(a * 0.5f));
+	return quaternion(0.f,
+					  std::sin(a * 0.5f),
+					  0.f,
+					  std::cos(a * 0.5f));
 }
 
 inline quaternion create_quaternion_rotation_z(float a) {
-	return quaternion(
-				0.f,
-				0.f,
-				std::sin(a * 0.5f),
-				std::cos(a * 0.5f));
+	return quaternion(0.f,
+					  0.f,
+					  std::sin(a * 0.5f),
+					  std::cos(a * 0.5f));
 }
 
 inline quaternion mul_quaternion(const quaternion& a, const quaternion& b) {
-	return quaternion(
-				a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
-				a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z,
-				a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x,
-				a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z);
+	return quaternion(a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+					  a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z,
+					  a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x,
+					  a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z);
 }
 
 inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, float t) {
@@ -299,11 +295,10 @@ inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, flo
 		sclq = t;
 	}
 
-	return quaternion(
-				sclp * a.x + sclq * end.x,
-				sclp * a.y + sclq * end.y,
-				sclp * a.z + sclq * end.z,
-				sclp * a.w + sclq * end.w);
+	return quaternion(sclp * a.x + sclq * end.x,
+					  sclp * a.y + sclq * end.y,
+					  sclp * a.z + sclq * end.z,
+					  sclp * a.w + sclq * end.w);
 }
 
 }

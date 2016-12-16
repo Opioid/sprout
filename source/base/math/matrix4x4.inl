@@ -466,16 +466,6 @@ inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
 				v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
 }
 
-inline void set_basis_scale_origin(Matrix4x4f_a& m,
-								   const Matrix3x3<float>& basis,
-								   const Vector3f_a& scale,
-								   const Vector3f_a& origin) {
-	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
-	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
-	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
-	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 0.f;
-}
-
 inline Matrix4x4f_a create_matrix4x4(const Vector4f_a& q) {
 	float d = dot(q, q);
 
@@ -546,7 +536,7 @@ inline void set_basis_scale_origin(Matrix4x4f_a& m,
 	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
 	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
 	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
-	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 0.f;
+	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 1.f;
 }
 
 inline void set_basis_scale_origin(Matrix4x4f_a& m,
@@ -556,14 +546,14 @@ inline void set_basis_scale_origin(Matrix4x4f_a& m,
 	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
 	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
 	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
-	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 0.f;
+	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 1.f;
 }
 
 inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
 	m.m00 = 1.f; m.m01 = 0.f; m.m02 = 0.f; m.m03 = 0.f;
 	m.m10 = 0.f; m.m11 = 1.f; m.m12 = 0.f; m.m13 = 0.f;
 	m.m20 = 0.f; m.m21 = 0.f; m.m22 = 1.f; m.m23 = 0.f;
-	m.m30 = v.x;  m.m31 = v.y;  m.m32 = v.z;  m.m33 = 1.f;
+	m.m30 = v.x; m.m31 = v.y; m.m32 = v.z; m.m33 = 1.f;
 }
 
 inline void set_rotation_x(Matrix4x4f_a& m, float a) {
