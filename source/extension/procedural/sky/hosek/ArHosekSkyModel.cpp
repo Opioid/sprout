@@ -149,7 +149,7 @@ void ArHosekSkyModel_CookConfiguration(
         ArHosekSkyModelConfiguration  config, 
 		hk_real                        turbidity,
 		hk_real                        albedo,
-		hk_real                        solar_elevation
+		hk_real                        solar_elevationa
         )
 {
 	hk_real  * elev_matrix;
@@ -157,7 +157,24 @@ void ArHosekSkyModel_CookConfiguration(
     int     int_turbidity = (int)turbidity;
 	hk_real  turbidity_rem = turbidity - (hk_real)int_turbidity;
 
-	solar_elevation = std::pow(solar_elevation / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
+	hk_real solar_elevation = std::pow(solar_elevationa / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
+
+	hk_real se  = std::pow(solar_elevationa / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
+	hk_real se2 = se  * se;
+	hk_real se3 = se2 * se;
+	hk_real se4 = se3 * se;
+	hk_real se5 = se4 * se;
+
+	hk_real omse  = hk_real(1) - se;
+	hk_real omse2 = omse  * omse;
+	hk_real omse3 = omse2 * omse;
+	hk_real omse4 = omse3 * omse;
+	hk_real omse5 = omse4 * omse;
+
+	hk_real a = hk_real(5)  * omse4 * se;
+	hk_real b = hk_real(10) * omse3 * se2;
+	hk_real c = hk_real(10) * omse2 * se3;
+	hk_real d = hk_real(5)  * omse  * se4;
 
     // alb 0 low turb
 
@@ -169,12 +186,12 @@ void ArHosekSkyModel_CookConfiguration(
         //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
         config[i] = 
         (1.0-albedo) * (1.0 - turbidity_rem) 
-        * ( pow(1.0-solar_elevation, 5.0) * elev_matrix[i]  + 
-           5.0  * pow(1.0-solar_elevation, 4.0) * solar_elevation * elev_matrix[i+9] +
-           10.0*pow(1.0-solar_elevation, 3.0)*pow(solar_elevation, 2.0) * elev_matrix[i+18] +
-           10.0*pow(1.0-solar_elevation, 2.0)*pow(solar_elevation, 3.0) * elev_matrix[i+27] +
-           5.0*(1.0-solar_elevation)*pow(solar_elevation, 4.0) * elev_matrix[i+36] +
-           pow(solar_elevation, 5.0)  * elev_matrix[i+45]);
+		* ( omse5 * elev_matrix[i]  +
+		   a * elev_matrix[i+9] +
+		   b * elev_matrix[i+18] +
+		   c * elev_matrix[i+27] +
+		   d * elev_matrix[i+36] +
+		   se5  * elev_matrix[i+45]);
     }
 
     // alb 1 low turb
@@ -184,12 +201,12 @@ void ArHosekSkyModel_CookConfiguration(
         //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
         config[i] += 
         (albedo) * (1.0 - turbidity_rem)
-        * ( pow(1.0-solar_elevation, 5.0) * elev_matrix[i]  + 
-           5.0  * pow(1.0-solar_elevation, 4.0) * solar_elevation * elev_matrix[i+9] +
-           10.0*pow(1.0-solar_elevation, 3.0)*pow(solar_elevation, 2.0) * elev_matrix[i+18] +
-           10.0*pow(1.0-solar_elevation, 2.0)*pow(solar_elevation, 3.0) * elev_matrix[i+27] +
-           5.0*(1.0-solar_elevation)*pow(solar_elevation, 4.0) * elev_matrix[i+36] +
-           pow(solar_elevation, 5.0)  * elev_matrix[i+45]);
+		* ( omse5 * elev_matrix[i]  +
+		   a * elev_matrix[i+9] +
+		   b * elev_matrix[i+18] +
+		   c * elev_matrix[i+27] +
+		   d * elev_matrix[i+36] +
+		   se5  * elev_matrix[i+45]);
     }
 
     if(int_turbidity == 10)
@@ -202,12 +219,12 @@ void ArHosekSkyModel_CookConfiguration(
         //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
         config[i] += 
         (1.0-albedo) * (turbidity_rem)
-        * ( pow(1.0-solar_elevation, 5.0) * elev_matrix[i]  + 
-           5.0  * pow(1.0-solar_elevation, 4.0) * solar_elevation * elev_matrix[i+9] +
-           10.0*pow(1.0-solar_elevation, 3.0)*pow(solar_elevation, 2.0) * elev_matrix[i+18] +
-           10.0*pow(1.0-solar_elevation, 2.0)*pow(solar_elevation, 3.0) * elev_matrix[i+27] +
-           5.0*(1.0-solar_elevation)*pow(solar_elevation, 4.0) * elev_matrix[i+36] +
-           pow(solar_elevation, 5.0)  * elev_matrix[i+45]);
+		* ( omse5 * elev_matrix[i]  +
+		   a * elev_matrix[i+9] +
+		   b * elev_matrix[i+18] +
+		   c * elev_matrix[i+27] +
+		   d * elev_matrix[i+36] +
+		   se5  * elev_matrix[i+45]);
     }
 
     // alb 1 high turb
@@ -217,12 +234,12 @@ void ArHosekSkyModel_CookConfiguration(
         //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
         config[i] += 
         (albedo) * (turbidity_rem)
-        * ( pow(1.0-solar_elevation, 5.0) * elev_matrix[i]  + 
-           5.0  * pow(1.0-solar_elevation, 4.0) * solar_elevation * elev_matrix[i+9] +
-           10.0*pow(1.0-solar_elevation, 3.0)*pow(solar_elevation, 2.0) * elev_matrix[i+18] +
-           10.0*pow(1.0-solar_elevation, 2.0)*pow(solar_elevation, 3.0) * elev_matrix[i+27] +
-           5.0*(1.0-solar_elevation)*pow(solar_elevation, 4.0) * elev_matrix[i+36] +
-           pow(solar_elevation, 5.0)  * elev_matrix[i+45]);
+		* ( omse5 * elev_matrix[i]  +
+		   a * elev_matrix[i+9] +
+		   b * elev_matrix[i+18] +
+		   c * elev_matrix[i+27] +
+		   d * elev_matrix[i+36] +
+		   se5  * elev_matrix[i+45]);
     }
 }
 
@@ -238,29 +255,45 @@ hk_real ArHosekSkyModel_CookRadianceConfiguration(
     int int_turbidity = (int)turbidity;
 	hk_real turbidity_rem = turbidity - (hk_real)int_turbidity;
 	hk_real res;
-    solar_elevation = pow(solar_elevation / (MATH_PI / 2.0), (1.0 / 3.0));
+
+	hk_real se  = std::pow(solar_elevation / (hk_real(MATH_PI) / hk_real(2)), (hk_real(1) / hk_real(3)));
+	hk_real se2 = se  * se;
+	hk_real se3 = se2 * se;
+	hk_real se4 = se3 * se;
+	hk_real se5 = se4 * se;
+
+	hk_real omse  = hk_real(1) - se;
+	hk_real omse2 = omse  * omse;
+	hk_real omse3 = omse2 * omse;
+	hk_real omse4 = omse3 * omse;
+	hk_real omse5 = omse4 * omse;
+
+	hk_real a = hk_real(5)  * omse4 * se;
+	hk_real b = hk_real(10) * omse3 * se2;
+	hk_real c = hk_real(10) * omse2 * se3;
+	hk_real d = hk_real(5)  * omse  * se4;
 
     // alb 0 low turb
     elev_matrix = dataset + (6*(int_turbidity-1));
     //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
     res = (1.0-albedo) * (1.0 - turbidity_rem) *
-        ( pow(1.0-solar_elevation, 5.0) * elev_matrix[0] +
-         5.0*pow(1.0-solar_elevation, 4.0)*solar_elevation * elev_matrix[1] +
-         10.0*pow(1.0-solar_elevation, 3.0)*pow(solar_elevation, 2.0) * elev_matrix[2] +
-         10.0*pow(1.0-solar_elevation, 2.0)*pow(solar_elevation, 3.0) * elev_matrix[3] +
-         5.0*(1.0-solar_elevation)*pow(solar_elevation, 4.0) * elev_matrix[4] +
-         pow(solar_elevation, 5.0) * elev_matrix[5]);
+		( omse5 * elev_matrix[0] +
+		 a * elev_matrix[1] +
+		 b * elev_matrix[2] +
+		 c * elev_matrix[3] +
+		 d * elev_matrix[4] +
+		 se5 * elev_matrix[5]);
 
     // alb 1 low turb
     elev_matrix = dataset + (6*10 + 6*(int_turbidity-1));
     //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
     res += (albedo) * (1.0 - turbidity_rem) *
-        ( pow(1.0-solar_elevation, 5.0) * elev_matrix[0] +
-         5.0*pow(1.0-solar_elevation, 4.0)*solar_elevation * elev_matrix[1] +
-         10.0*pow(1.0-solar_elevation, 3.0)*pow(solar_elevation, 2.0) * elev_matrix[2] +
-         10.0*pow(1.0-solar_elevation, 2.0)*pow(solar_elevation, 3.0) * elev_matrix[3] +
-         5.0*(1.0-solar_elevation)*pow(solar_elevation, 4.0) * elev_matrix[4] +
-         pow(solar_elevation, 5.0) * elev_matrix[5]);
+		( omse5 * elev_matrix[0] +
+		 a * elev_matrix[1] +
+		 b * elev_matrix[2] +
+		 c * elev_matrix[3] +
+		 d * elev_matrix[4] +
+		 se5 * elev_matrix[5]);
     if(int_turbidity == 10)
         return res;
 
@@ -268,23 +301,23 @@ hk_real ArHosekSkyModel_CookRadianceConfiguration(
     elev_matrix = dataset + (6*(int_turbidity));
     //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
     res += (1.0-albedo) * (turbidity_rem) *
-        ( pow(1.0-solar_elevation, 5.0) * elev_matrix[0] +
-         5.0*pow(1.0-solar_elevation, 4.0)*solar_elevation * elev_matrix[1] +
-         10.0*pow(1.0-solar_elevation, 3.0)*pow(solar_elevation, 2.0) * elev_matrix[2] +
-         10.0*pow(1.0-solar_elevation, 2.0)*pow(solar_elevation, 3.0) * elev_matrix[3] +
-         5.0*(1.0-solar_elevation)*pow(solar_elevation, 4.0) * elev_matrix[4] +
-         pow(solar_elevation, 5.0) * elev_matrix[5]);
+		( omse5 * elev_matrix[0] +
+		 a * elev_matrix[1] +
+		 b * elev_matrix[2] +
+		 c * elev_matrix[3] +
+		 d * elev_matrix[4] +
+		 se5 * elev_matrix[5]);
 
     // alb 1 high turb
     elev_matrix = dataset + (6*10 + 6*(int_turbidity));
     //(1-t).^3* A1 + 3*(1-t).^2.*t * A2 + 3*(1-t) .* t .^ 2 * A3 + t.^3 * A4;
     res += (albedo) * (turbidity_rem) *
-		( std::pow(1.0-solar_elevation, 5.0) * elev_matrix[0] +
-		 5.0*std::pow(1.0-solar_elevation, 4.0)*solar_elevation * elev_matrix[1] +
-		 10.0*std::pow(1.0-solar_elevation, 3.0)*std::pow(solar_elevation, hk_real(2)) * elev_matrix[2] +
-		 10.0*std::pow(1.0-solar_elevation, 2.0)*std::pow(solar_elevation, hk_real(3)) * elev_matrix[3] +
-		 5.0*(1.0-solar_elevation)*std::pow(solar_elevation, 4.0) * elev_matrix[4] +
-		 std::pow(solar_elevation, 5.0) * elev_matrix[5]);
+		( omse5 * elev_matrix[0] +
+		 a * elev_matrix[1] +
+		 b * elev_matrix[2] +
+		 c * elev_matrix[3] +
+		 d * elev_matrix[4] +
+		 se5 * elev_matrix[5]);
     return res;
 }
 
@@ -313,7 +346,7 @@ ArHosekSkyModelState  * arhosekskymodelstate_alloc_init(
 {
     ArHosekSkyModelState  * state = ALLOC(ArHosekSkyModelState);
 
-    state->solar_radius = ( 0.51 DEGREES ) / 2.0;
+	state->solar_radius = (hk_real(0.51 DEGREES)) / hk_real(2);
     state->turbidity    = atmospheric_turbidity;
     state->albedo       = ground_albedo;
     state->elevation    = solar_elevation;
@@ -336,8 +369,8 @@ ArHosekSkyModelState  * arhosekskymodelstate_alloc_init(
                 solar_elevation
                 );
 
-        state->emission_correction_factor_sun[wl] = 1.0;
-        state->emission_correction_factor_sky[wl] = 1.0;
+		state->emission_correction_factor_sun[wl] = hk_real(1);
+		state->emission_correction_factor_sky[wl] = hk_real(1);
     }
 
     return state;
@@ -354,7 +387,7 @@ ArHosekSkyModelState  * arhosekskymodelstate_alloc_init(
 //   blackbody radiation curve if the ultra-violet part of the spectrum is
 //   also considered. But the visible brightness should be very similar.
 
-const hk_real blackbody_scaling_factor = 3.19992 * 10E-11;
+const hk_real blackbody_scaling_factor = hk_real(3.19992 * 10E-11);
 
 //   'art_blackbody_dd_value()' function
 //
@@ -365,8 +398,8 @@ hk_real art_blackbody_dd_value(
 		const hk_real  lambda
         )
 {
-	hk_real  c1 = 3.74177 * 10E-17;
-	hk_real  c2 = 0.0143878;
+	hk_real  c1 = hk_real(3.74177 * 10E-17);
+	hk_real  c2 = hk_real(0.0143878);
 	hk_real  value;
     
 	value =   ( c1 / ( std::pow( lambda, hk_real(5) ) ) )
@@ -435,7 +468,7 @@ ArHosekSkyModelState  * arhosekskymodelstate_alienworld_alloc_init(
         
         //   The wavelength of this band in nanometers
         
-		hk_real  owl = ( 320.0 + 40.0 * wl ) * 10E-10;
+		hk_real  owl = ( hk_real(320) + hk_real(40) * wl ) * hk_real(10E-10);
         
         //   The original intensity we just computed
         
@@ -486,7 +519,7 @@ ArHosekSkyModelState  * arhosekskymodelstate_alienworld_alloc_init(
     //   to make the alien sun brighter or dimmer compared to our sun.
     
     state->solar_radius =
-		  ( std::sqrt( solar_intensity ) * TERRESTRIAL_SOLAR_RADIUS )
+		  ( std::sqrt( solar_intensity ) * hk_real(TERRESTRIAL_SOLAR_RADIUS))
 		/ std::sqrt( ratio );
 
     //   Finally, we have to reduce the scaling factor of the sky by the
@@ -775,13 +808,18 @@ hk_real arhosekskymodel_solar_radiance_internal2(
     //   dataset based on quadratic polynomials will be provided in a future
     //   release.
 
+	hk_real sampleCosine2 = sampleCosine  * sampleCosine;
+	hk_real sampleCosine3 = sampleCosine2 * sampleCosine;
+	hk_real sampleCosine4 = sampleCosine3 * sampleCosine;
+	hk_real sampleCosine5 = sampleCosine4 * sampleCosine;
+
 	hk_real  darkeningFactor =
-          ldCoefficient[0]
-        + ldCoefficient[1] * sampleCosine
-		+ ldCoefficient[2] * std::pow( sampleCosine, hk_real(2) )
-		+ ldCoefficient[3] * std::pow( sampleCosine, hk_real(3) )
-		+ ldCoefficient[4] * std::pow( sampleCosine, hk_real(4) )
-		+ ldCoefficient[5] * std::pow( sampleCosine, hk_real(5) );
+		  ldCoefficient[0]
+		+ ldCoefficient[1] * sampleCosine
+		+ ldCoefficient[2] * sampleCosine2
+		+ ldCoefficient[3] * sampleCosine3
+		+ ldCoefficient[4] * sampleCosine4
+		+ ldCoefficient[5] * sampleCosine5;
 
     direct_radiance *= darkeningFactor;
 
