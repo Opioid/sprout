@@ -1,13 +1,12 @@
 #pragma once
 
 #include "vector3.hpp"
+#include "vector4.hpp"
 
 namespace math {
 
-template<typename T> struct Vector3;
 template<typename T> struct Matrix4x4;
 template<typename T> struct Quaternion;
-struct Vector4f_a;
 
 /****************************************************************************
  *
@@ -154,9 +153,9 @@ struct alignas(16) Matrix3x3f_a {
 				 float m10, float m11, float m12,
 				 float m20, float m21, float m22);
 
-	Matrix3x3f_a(const Vector3f_a& x, const Vector3f_a& y, const Vector3f_a& z);
+	Matrix3x3f_a(FVector3f_a x, FVector3f_a y, FVector3f_a z);
 
-	explicit Matrix3x3f_a(const Vector4f_a& q);
+	explicit Matrix3x3f_a(FVector4f_a q);
 
 	Matrix3x3f_a operator*(const Matrix3x3f_a& a) const;
 
@@ -165,7 +164,7 @@ struct alignas(16) Matrix3x3f_a {
 	static Matrix3x3f_a identity();
 };
 
-Matrix3x3f_a create_matrix3x3(const Vector4f_a& q);
+Matrix3x3f_a create_matrix3x3(FVector4f_a q);
 
 Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m);
 

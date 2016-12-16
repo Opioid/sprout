@@ -445,24 +445,21 @@ inline Vector3f_a normalized(FVector3f_a v) {
 	// This is slowest on both machines
 //	return v / length(v);
 
-	// This seems to give the best performance on MSVC & Intel
-//	simd::Vector x = simd::load_float3(v);
-
-//	simd::Vector d = simd::dot3(x, x);
-
-//	simd::Vector il = simd::rsqrt(d);
-
-//	Vector3f_a result;
-//	simd::store_float3(result, _mm_mul_ps(il, x));
-
-//	return result;
-
 	// This seems to give the best performance on clang & AMD
 	return math::simd::rsqrt(math::dot(v, v)) * v;
 }
 
 inline Vector3f_a reciprocal(FVector3f_a v) {
 	return Vector3f_a(1.f / v.x, 1.f / v.y, 1.f / v.z);
+
+//	math::simd::Vector sx = math::simd::load_float3(v);
+
+//	math::simd::Vector rcp = _mm_rcp_ps(sx);
+//	math::simd::Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
+
+//	Vector3f_a result;
+//	math::simd::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+//	return result;
 }
 
 inline Vector3f_a cross(FVector3f_a a, FVector3f_a b) {

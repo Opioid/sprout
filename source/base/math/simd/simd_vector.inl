@@ -29,7 +29,7 @@ inline Vector SU_CALLCONV load_float3(const Vector3<float>& source) {
 #endif
 }
 
-inline Vector SU_CALLCONV load_float3(const Vector3f_a& source) {
+inline Vector SU_CALLCONV load_float3(FVector3f_a source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector v;
 	v.vector4_f32[0] = source.x;

@@ -37,8 +37,11 @@ void log_memory_consumption(const resource::Manager& manager,
 int main(int argc, char* argv[]) {
 //	testing::size();
 //	testing::simd::rsqrt();
-//	testing::simd::normalize();
-//	return 1;
+//	testing::simd::rcp();
+	testing::simd::normalize();
+	testing::simd::reciprocal();
+//	testing::simd::dot();
+	return 1;
 
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");

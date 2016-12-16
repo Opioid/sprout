@@ -333,7 +333,7 @@ inline Matrix3x3f_a Matrix3x3f_a::identity() {
 						0.f, 0.f, 1.f);
 }
 
-inline Matrix3x3f_a create_matrix3x3(const Vector4f_a& q) {
+inline Matrix3x3f_a create_matrix3x3(FVector4f_a q) {
 	float d = dot(q, q);
 
 	float s = 2.f / d;
