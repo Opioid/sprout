@@ -450,16 +450,16 @@ inline Vector3f_a normalized(FVector3f_a v) {
 }
 
 inline Vector3f_a reciprocal(FVector3f_a v) {
-	return Vector3f_a(1.f / v.x, 1.f / v.y, 1.f / v.z);
+//	return Vector3f_a(1.f / v.x, 1.f / v.y, 1.f / v.z);
 
-//	math::simd::Vector sx = math::simd::load_float3(v);
+	math::simd::Vector sx = math::simd::load_float3(v);
 
-//	math::simd::Vector rcp = _mm_rcp_ps(sx);
-//	math::simd::Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
+	math::simd::Vector rcp = _mm_rcp_ps(sx);
+	math::simd::Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
-//	Vector3f_a result;
-//	math::simd::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
-//	return result;
+	Vector3f_a result;
+	math::simd::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	return result;
 }
 
 inline Vector3f_a cross(FVector3f_a a, FVector3f_a b) {

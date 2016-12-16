@@ -38,10 +38,10 @@ int main(int argc, char* argv[]) {
 //	testing::size();
 //	testing::simd::rsqrt();
 //	testing::simd::rcp();
-	testing::simd::normalize();
-	testing::simd::reciprocal();
+//	testing::simd::normalize();
+//	testing::simd::reciprocal();
 //	testing::simd::dot();
-	return 1;
+//	return 1;
 
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");
