@@ -10,6 +10,11 @@ public:
 
 	Sphere();
 
+	virtual math::aabb transformed_aabb(const float4x4& m,
+										const math::transformation& t) const final override;
+
+	virtual math::aabb transformed_aabb(const math::transformation& t) const final override;
+
 	virtual bool intersect(const Transformation& transformation,
 						   Ray& ray, Node_stack& node_stack,
 						   Intersection& intersection) const final override;

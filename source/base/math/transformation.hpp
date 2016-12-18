@@ -30,6 +30,10 @@ Transformation<T> lerp(const Transformation<T>& a, const Transformation<T>& b, T
  ****************************************************************************/
 
 struct alignas(16) Transformationf_a {
+	bool operator==(const Transformationf_a& o) const;
+
+	bool operator!=(const Transformationf_a& o) const;
+
 	Vector3f_a position;
 	Vector3f_a scale;
 	quaternion rotation;

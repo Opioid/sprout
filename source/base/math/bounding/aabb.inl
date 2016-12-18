@@ -6,8 +6,6 @@
 
 namespace math {
 
-inline AABB::AABB() {}
-
 inline AABB::AABB(FVector3f_a min, FVector3f_a max) {
 	bounds_[0] = min;
 	bounds_[1] = max;
@@ -179,12 +177,12 @@ inline void AABB::merge_assign(const AABB& other) {
 
 inline AABB AABB::empty() {
 	float max = std::numeric_limits<float>::max();
-	return AABB(Vector3f_a(max, max, max), Vector3f_a(-max, -max, -max));
+	return AABB(Vector3f_a(max), Vector3f_a(-max));
 }
 
 inline AABB AABB::infinite() {
 	float max = 1000000.f;
-	return AABB(Vector3f_a(-max, -max, -max), Vector3f_a(max, max, max));
+	return AABB(Vector3f_a(-max), Vector3f_a(max));
 }
 
 }

@@ -28,6 +28,14 @@ Transformation<T> lerp(const Transformation<T>& a, const Transformation<T>& b, T
  *
  ****************************************************************************/
 
+inline bool Transformationf_a::operator==(const Transformationf_a& o) const {
+	return position == o.position && scale == o.scale && rotation == o.rotation;
+}
+
+inline bool Transformationf_a::operator!=(const Transformationf_a& o) const {
+	return position != o.position || scale != o.scale || rotation != o.rotation;
+}
+
 inline Transformationf_a lerp(const Transformationf_a& a, const Transformationf_a& b, float t) {
 	return Transformationf_a{
 		lerp(a.position, b.position, t),

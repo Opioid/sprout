@@ -10,7 +10,7 @@ class AABB {
 
 public:
 
-	AABB();
+	AABB() = default;
 	AABB(FVector3f_a min, FVector3f_a max);
 
 	FVector3f_a min() const;

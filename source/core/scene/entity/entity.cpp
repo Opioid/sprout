@@ -43,7 +43,11 @@ void Entity::tick(const Keyframe& frame) {
 	local_frame_a_ = local_frame_b_;
 	local_frame_b_ = frame;
 
-	properties_.set(Properties::Animated);
+	// In the current implementation
+	// "animation" means "transformation changes during simulation frame"
+	bool changed_transformation = local_frame_a_.transformation != local_frame_b_.transformation;
+
+	properties_.set(Properties::Animated, changed_transformation);
 }
 
 void Entity::calculate_world_transformation() {

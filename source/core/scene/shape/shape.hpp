@@ -1,6 +1,8 @@
 #pragma once
 
 #include "scene/material/material.hpp"
+#include "base/math/matrix.hpp"
+#include "base/math/transformation.hpp"
 #include "base/math/bounding/aabb.hpp"
 
 namespace sampler { class Sampler; }
@@ -29,6 +31,9 @@ public:
 	virtual ~Shape();
 
 	const math::aabb& aabb() const;
+
+	virtual math::aabb transformed_aabb(const float4x4& m, const math::transformation& t) const;
+	virtual math::aabb transformed_aabb(const math::transformation& t) const;
 
 	virtual uint32_t num_parts() const;
 

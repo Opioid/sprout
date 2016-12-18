@@ -19,6 +19,15 @@ Sphere::Sphere() {
 	aabb_.set_min_max(float3(-1.f), float3(1.f));
 }
 
+math::aabb Sphere::transformed_aabb(const float4x4& /*m*/, const math::transformation& t) const {
+	return transformed_aabb(t);
+}
+
+math::aabb Sphere::transformed_aabb(const math::transformation& t) const {
+	float3 halfsize(t.scale.x);
+	return math::aabb(t.position - halfsize, t.position + halfsize);
+}
+
 bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	float3 v = transformation.position - ray.origin;

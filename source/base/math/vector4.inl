@@ -112,6 +112,14 @@ inline Vector4f_a& Vector4f_a::operator-=(const Vector4f_a& a) {
 	return *this;
 }
 
+inline bool Vector4f_a::operator==(FVector4f_a a) const {
+	return x == a.x && y == a.y && z == a.z && w == a.z;
+}
+
+inline bool Vector4f_a::operator!=(FVector4f_a a) const {
+	return x != a.x || y != a.y || z != a.z || w != a.w;
+}
+
 inline Vector4f_a operator*(float s, const Vector4f_a& a) {
 	return Vector4f_a(s * a.x, s * a.y, s * a.z, s * a.w);
 }

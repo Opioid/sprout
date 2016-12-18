@@ -95,6 +95,10 @@ struct alignas(16) Vector4f_a {
 	Vector4f_a& operator+=(const Vector4f_a& v);
 
 	Vector4f_a& operator-=(const Vector4f_a& v);
+
+	bool operator==(FVector4f_a v) const;
+
+	bool operator!=(FVector4f_a v) const;
 };
 
 Vector4f_a operator*(float s, const Vector4f_a& v);

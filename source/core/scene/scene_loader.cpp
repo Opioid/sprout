@@ -195,7 +195,7 @@ void Loader::load_entities(const json::Value& entities_value,
 				scene.add_animation(animation);
 				scene.create_animation_stage(entity, animation.get());
 			}
-		} else {
+		} /*else*/ {
 			entity->set_transformation(transformation);
 		}
 
