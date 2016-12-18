@@ -129,27 +129,17 @@ void Entity::inherit_transformation(const math::transformation& a,
 		properties_.set(Properties::Animated);
 	}
 
-	float4x4 transformation;
-	math::set_basis_scale_origin(transformation, math::create_matrix3x3(a.rotation),
-								 a.scale, a.position);
-
 	world_frame_a_.position = math::transform_point(local_frame_a_.transformation.position,
-													transformation);
-
-	world_frame_a_.rotation = math::mul_quaternion(local_frame_a_.transformation.rotation,
-												   a.rotation);
-
+													float4x4(a));
+	world_frame_a_.rotation = math::mul_quaternion (local_frame_a_.transformation.rotation,
+													a.rotation);
 	world_frame_a_.scale = local_frame_a_.transformation.scale;
 
-	math::set_basis_scale_origin(transformation, math::create_matrix3x3(b.rotation),
-								 b.scale, b.position);
 
 	world_frame_b_.position = math::transform_point(local_frame_b_.transformation.position,
-													transformation);
-
-	world_frame_b_.rotation = math::mul_quaternion(local_frame_b_.transformation.rotation,
-												   b.rotation);
-
+													float4x4(b));
+	world_frame_b_.rotation = math::mul_quaternion (local_frame_b_.transformation.rotation,
+													b.rotation);
 	world_frame_b_.scale = local_frame_b_.transformation.scale;
 
 	on_set_transformation();
