@@ -25,7 +25,6 @@ inline uint32_t Node::primitive_end() const {
 	return primitive_offset + static_cast<uint32_t>(num_primitives);
 }
 
-
 // This test is presented in the paper
 // "An Efficient and Robust Ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
@@ -68,6 +67,9 @@ inline bool Node::intersect_p(const math::Ray& ray) const {
 
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
+
+// I found this SSE optimized version here
+// http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
 
 inline bool Node::intersect_p(math::simd::FVector origin,
 							  math::simd::FVector inv_direction,
