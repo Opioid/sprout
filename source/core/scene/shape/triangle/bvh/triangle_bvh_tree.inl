@@ -72,16 +72,19 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
 	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
 	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
+	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
-	//	if (node.intersect_p(ray)) {
-		if (node.intersect_p(ray_origin, ray_inv_direction, ray.min_t, ray.max_t)) {
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (node.num_primitives > 0) {
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						index = i;
+						// ray.max_t has changed if intersect() returns true!
+						ray_max_t = _mm_set1_ps(ray.max_t);
 					}
 				}
 
@@ -114,12 +117,13 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 
 	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
 	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
+	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
-	//	if (node.intersect_p(ray)) {
-		if (node.intersect_p(ray_origin, ray_inv_direction, ray.min_t, ray.max_t)) {
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (node.num_primitives > 0) {
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect_p(i, ray)) {
@@ -160,12 +164,13 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
 	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
+	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
 
-	//	if (node.intersect_p(ray)) {
-		if (node.intersect_p(ray_origin, ray_inv_direction, ray.min_t, ray.max_t)) {
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
 			if (node.num_primitives > 0) {
 				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
@@ -179,6 +184,8 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 						}
 
 						ray.max_t = max_t;
+						// ray.max_t has changed if intersect() returns true!
+						ray_max_t = _mm_set1_ps(max_t);
 					}
 				}
 

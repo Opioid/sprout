@@ -68,12 +68,12 @@ inline bool Node::intersect_p(const math::Ray& ray) const {
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
 
-// I found this SSE optimized version here
+// I found this SSE optimized version here:
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
-
 inline bool Node::intersect_p(math::simd::FVector origin,
 							  math::simd::FVector inv_direction,
-							  float min_t, float max_t) const {
+							  math::simd::FVector min_t,
+							  math::simd::FVector max_t) const {
 	using namespace math;
 
 	const simd::Vector box_min = simd::load_float3(bounds[0]);
@@ -106,11 +106,11 @@ inline bool Node::intersect_p(math::simd::FVector origin,
 	lmax = simd::min1(lmax, lmax1);
 	lmin = simd::max1(lmin, lmin1);
 
-	const simd::Vector ray_min_t = _mm_set1_ps(min_t);
-	const simd::Vector ray_max_t = _mm_set1_ps(max_t);
+//	const simd::Vector ray_min_t = _mm_set1_ps(min_t);
+//	const simd::Vector ray_max_t = _mm_set1_ps(max_t);
 
-	return 0 != (_mm_comige_ss(lmax, ray_min_t) &
-				 _mm_comige_ss(ray_max_t, lmin) &
+	return 0 != (_mm_comige_ss(lmax, min_t) &
+				 _mm_comige_ss(max_t, lmin) &
 				 _mm_comige_ss(lmax, lmin));
 }
 

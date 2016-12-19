@@ -37,7 +37,8 @@ struct Node {
 
 	bool intersect_p(math::simd::FVector origin,
 					 math::simd::FVector inv_direction,
-					 float  min_t, float  max_t) const;
+					 math::simd::FVector min_t,
+					 math::simd::FVector max_t) const;
 
 	union {
 		float3 bounds[2];
