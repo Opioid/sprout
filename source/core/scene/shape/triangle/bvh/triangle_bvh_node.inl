@@ -83,11 +83,11 @@ inline bool Node::intersect_p(math::simd::FVector origin,
 	// the order we use for those min/max is vital to filter out
 	// NaNs that happens when an inv_dir is +/- inf and
 	// (box_min - pos) is 0. inf * 0 = NaN
-	const simd::Vector filtered_l1a = simd::min3(l1, math::simd::Infinity);
-	const simd::Vector filtered_l2a = simd::min3(l2, math::simd::Infinity);
+	const simd::Vector filtered_l1a = simd::min3(l1, simd::Infinity);
+	const simd::Vector filtered_l2a = simd::min3(l2, simd::Infinity);
 
-	const simd::Vector filtered_l1b = simd::max3(l1, math::simd::NegInfinity);
-	const simd::Vector filtered_l2b = simd::max3(l2, math::simd::NegInfinity);
+	const simd::Vector filtered_l1b = simd::max3(l1, simd::NegInfinity);
+	const simd::Vector filtered_l2b = simd::max3(l2, simd::NegInfinity);
 
 	// now that we're back on our feet, test those slabs.
 	simd::Vector lmax = simd::max3(filtered_l1a, filtered_l2a);
