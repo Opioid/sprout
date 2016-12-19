@@ -48,6 +48,12 @@
 #		define SU_STREAM_PS(p, a) _mm_stream_ps(p, a)
 #	endif
 #	define SU_PERMUTE_PS(v, c) _mm_shuffle_ps(v, v, c)
+
+	// a,b,c,d -> b,c,d,a
+#	define SU_ROTATE_LEFT(v) _mm_shuffle_ps(v, v, 0x39)
+
+	// low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
+#	define SU_MUX_HIGH(low, high) _mm_movehl_ps(low, high)
 #endif // _SU_SSE_INTRINSICS_ && !_SU_NO_INTRINSICS_
 
 #if defined(_SU_NO_INTRINSICS_)

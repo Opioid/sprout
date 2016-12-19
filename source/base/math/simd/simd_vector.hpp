@@ -12,6 +12,19 @@ namespace math { namespace simd {
 //------------------------------------------------------------------------------
 // Conversion types for constants
 
+struct alignas(16) Vector_i32 {
+	union {
+		int32_t i[4];
+		Vector v;
+	};
+
+	inline operator Vector() const { return v; }
+#if !defined(_SU_NO_INTRINSICS_) && defined(_SU_SSE_INTRINSICS_)
+	inline operator __m128i() const { return _mm_castps_si128(v); }
+	inline operator __m128d() const { return _mm_castps_pd(v); }
+#endif
+};
+
 struct alignas(16) Vector_u32 {
 	union {
 		uint32_t u[4];
@@ -57,6 +70,13 @@ Vector SU_CALLCONV div3(FVector a, FVector b);
 
 Vector SU_CALLCONV dot3(FVector a, FVector b);
 
+
+Vector SU_CALLCONV min1(FVector a, FVector b);
+Vector SU_CALLCONV max1(FVector a, FVector b);
+
+Vector SU_CALLCONV min3(FVector a, FVector b);
+Vector SU_CALLCONV max3(FVector a, FVector b);
+
 /****************************************************************************
  *
  * Globals
@@ -89,7 +109,7 @@ Vector SU_CALLCONV dot3(FVector a, FVector b);
 //XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR3       = {0.0f, 0.0f, 0.0f,-1.0f};
 //XMGLOBALCONST XMVECTORU32 g_XMNegativeZero      = {0x80000000, 0x80000000, 0x80000000, 0x80000000};
 //XMGLOBALCONST XMVECTORU32 g_XMNegate3           = {0x80000000, 0x80000000, 0x80000000, 0x00000000};
-SU_GLOBALCONST(Vector_u32) g_SUMask3			= {{{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 }}};
+SU_GLOBALCONST(Vector_u32) Mask3				= {{{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 }}};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskX             = {0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskY             = {0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskZ             = {0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000};
@@ -111,7 +131,7 @@ SU_GLOBALCONST(Vector_u32) g_SUMask3			= {{{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
 //XMGLOBALCONST XMVECTORF32 g_XMTwoPi             = {XM_2PI, XM_2PI, XM_2PI, XM_2PI};
 //XMGLOBALCONST XMVECTORF32 g_XMReciprocalTwoPi   = {XM_1DIV2PI, XM_1DIV2PI, XM_1DIV2PI, XM_1DIV2PI};
 //XMGLOBALCONST XMVECTORF32 g_XMEpsilon           = {1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f};
-//XMGLOBALCONST XMVECTORI32 g_XMInfinity          = {0x7F800000, 0x7F800000, 0x7F800000, 0x7F800000};
+SU_GLOBALCONST(Vector_i32) Infinity				= {0x7F800000, 0x7F800000, 0x7F800000, 0x7F800000};
 //XMGLOBALCONST XMVECTORI32 g_XMQNaN              = {0x7FC00000, 0x7FC00000, 0x7FC00000, 0x7FC00000};
 //XMGLOBALCONST XMVECTORI32 g_XMQNaNTest          = {0x007FFFFF, 0x007FFFFF, 0x007FFFFF, 0x007FFFFF};
 //XMGLOBALCONST XMVECTORI32 g_XMAbsMask           = {0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF};
@@ -174,7 +194,7 @@ SU_GLOBALCONST(Vector_u32) g_SUMask3			= {{{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
 //XMGLOBALCONST XMVECTORI32 g_XMSubnormalExponent = {-126, -126, -126, -126};
 //XMGLOBALCONST XMVECTORI32 g_XMNumTrailing       = {23, 23, 23, 23};
 //XMGLOBALCONST XMVECTORI32 g_XMMinNormal         = {0x00800000, 0x00800000, 0x00800000, 0x00800000};
-//XMGLOBALCONST XMVECTORU32 g_XMNegInfinity       = {0xFF800000, 0xFF800000, 0xFF800000, 0xFF800000};
+SU_GLOBALCONST(Vector_u32) NegInfinity			= {0xFF800000, 0xFF800000, 0xFF800000, 0xFF800000};
 //XMGLOBALCONST XMVECTORU32 g_XMNegQNaN           = {0xFFC00000, 0xFFC00000, 0xFFC00000, 0xFFC00000};
 //XMGLOBALCONST XMVECTORI32 g_XMBin128            = {0x43000000, 0x43000000, 0x43000000, 0x43000000};
 //XMGLOBALCONST XMVECTORU32 g_XMBinNeg150         = {0xC3160000, 0xC3160000, 0xC3160000, 0xC3160000};

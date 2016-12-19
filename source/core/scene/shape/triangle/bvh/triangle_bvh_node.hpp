@@ -3,6 +3,7 @@
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/bounding/aabb.hpp"
+#include "base/math/simd/simd.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -33,7 +34,10 @@ struct Node {
 	uint32_t primitive_end() const;
 
 	bool intersect_p(const math::Ray& ray) const;
-	bool intersect_p(const math::Ray& ray, float& min_t, float& max_t) const;
+
+	bool intersect_p(math::simd::FVector origin,
+					 math::simd::FVector inv_direction,
+					 float  min_t, float  max_t) const;
 
 	union {
 		float3 bounds[2];

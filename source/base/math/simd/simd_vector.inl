@@ -40,7 +40,7 @@ inline Vector SU_CALLCONV load_float3(FVector3f_a source) {
 #elif defined(_SU_SSE_INTRINSICS_)
 	// Reads an extra float which is zero'd
 	__m128 v = _mm_load_ps(&source.x);
-	return _mm_and_ps(v, g_SUMask3);
+	return _mm_and_ps(v, Mask3);
 #endif
 }
 
@@ -188,7 +188,51 @@ inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
 	// Subract the right from left, and return answer
 	result = _mm_sub_ps(result, temp0);
 	// Set w to zero
-	return _mm_and_ps(result, g_SUMask3);
+	return _mm_and_ps(result, Mask3);
+#endif
+}
+
+inline Vector SU_CALLCONV min1(FVector a, FVector b) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector result;
+	result.vector4_f32[0] = std::min(a.vector4_f32[0], a.vector4_f32[0]);
+	return result;
+#elif defined(_SU_SSE_INTRINSICS_)
+	return _mm_min_ss(a, b);
+#endif
+}
+
+inline Vector SU_CALLCONV max1(FVector a, FVector b) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector result;
+	result.vector4_f32[0] = std::max(a.vector4_f32[0], a.vector4_f32[0]);
+	return result;
+#elif defined(_SU_SSE_INTRINSICS_)
+	return _mm_max_ss(a, b);
+#endif
+}
+
+inline Vector SU_CALLCONV min3(FVector a, FVector b) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector result;
+	result.vector4_f32[0] = std::min(a.vector4_f32[0], a.vector4_f32[0]);
+	result.vector4_f32[1] = std::min(b.vector4_f32[1], b.vector4_f32[1]);
+	result.vector4_f32[2] = std::min(c.vector4_f32[2], c.vector4_f32[2]);
+	return result;
+#elif defined(_SU_SSE_INTRINSICS_)
+	return _mm_min_ps(a, b);
+#endif
+}
+
+inline Vector SU_CALLCONV max3(FVector a, FVector b) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector result;
+	result.vector4_f32[0] = std::max(a.vector4_f32[0], a.vector4_f32[0]);
+	result.vector4_f32[1] = std::max(b.vector4_f32[1], b.vector4_f32[1]);
+	result.vector4_f32[2] = std::max(c.vector4_f32[2], c.vector4_f32[2]);
+	return result;
+#elif defined(_SU_SSE_INTRINSICS_)
+	return _mm_max_ps(a, b);
 #endif
 }
 
