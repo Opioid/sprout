@@ -117,7 +117,7 @@ private:
 		uint32_t a, b, c;
 		uint32_t bts_material_index;
 
-		static constexpr uint32_t Material_index_mask = 0x7fffffff;
+		static constexpr uint32_t Material_index_mask = 0x7FFFFFFF;
 		static constexpr uint32_t BTS_mask = ~Material_index_mask;
 	};
 

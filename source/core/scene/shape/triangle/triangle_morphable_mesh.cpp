@@ -2,7 +2,7 @@
 #include "triangle_intersection.hpp"
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_primitive_mt.hpp"
-#include "bvh/triangle_bvh_builder_suh.inl"
+#include "bvh/triangle_bvh_builder_sah.inl"
 #include "bvh/triangle_bvh_data_interleaved.inl"
 #include "bvh/triangle_bvh_tree.inl"
 #include "scene/scene_ray.inl"
@@ -40,28 +40,35 @@ bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
 
 	Intersection pi;
 	if (tree_.intersect(tray, node_stack, pi)) {
-		intersection.epsilon = 3e-3f * tray.max_t;
+		ray.max_t = tray.max_t;
 
-		intersection.p = ray.point(tray.max_t);
+		float epsilon = 3e-3f * tray.max_t;
+
+		float3 p_w = ray.point(tray.max_t);
 
 		float3 n;
 		float3 t;
 		float2 uv;
 		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
 
-		intersection.geo_n = math::transform_vector(tree_.triangle_normal(pi.index),
-													transformation.rotation);
-		intersection.n = math::transform_vector(n, transformation.rotation);
-		intersection.t = math::transform_vector(t, transformation.rotation);
+		float3	 geo_n			= tree_.triangle_normal(pi.index);
+		float	 bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
+		uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-	//	math::transform_vectors(transformation.rotation, n, t, intersection.n, intersection.t);
+		float3 geo_n_w = math::transform_vector(geo_n, transformation.rotation);
+		float3 n_w	   = math::transform_vector(n, transformation.rotation);
+		float3 t_w	   = math::transform_vector(t, transformation.rotation);
+		float3 b_w	   = bitangent_sign * math::cross(n_w, t_w);
 
-		float bitangent_sign = tree_.triangle_bitangent_sign(pi.index);
-		intersection.b = bitangent_sign * math::cross(intersection.n, intersection.t);
+		intersection.p = p_w;
+		intersection.t = t_w;
+		intersection.b = b_w;
+		intersection.n = n_w;
+		intersection.geo_n = geo_n_w;
 		intersection.uv = uv;
-		intersection.part = tree_.triangle_material_index(pi.index);
+		intersection.epsilon = epsilon;
+		intersection.part = material_index;
 
-		ray.max_t = tray.max_t;
 		return true;
 	}
 
@@ -143,8 +150,11 @@ Morphable_shape* Morphable_mesh::morphable_shape() {
 void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& pool) {
 	collection_->morph(a, b, weight, pool, vertices_);
 
-	bvh::Builder_SUH builder;
-	builder.build(tree_, collection_->triangles(), vertices_, 0, 8);
+//	bvh::Builder_SUH builder;
+//	builder.build(tree_, collection_->triangles(), vertices_, 0, 8);
+
+	bvh::Builder_SAH builder(16, 64);
+	builder.build(tree_, collection_->triangles(), vertices_, num_parts_, 4, pool);
 
 	init();
 }

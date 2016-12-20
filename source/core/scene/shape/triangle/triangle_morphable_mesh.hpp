@@ -1,9 +1,11 @@
 #pragma once
 
+#include "triangle_type.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/morphable_shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
-#include "bvh/triangle_bvh_data_interleaved.hpp"
+#include "bvh/triangle_bvh_indexed_data.hpp"
+//#include "bvh/triangle_bvh_data_interleaved.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {
@@ -71,7 +73,9 @@ public:
 
 private:
 
-	using Tree = bvh::Tree<bvh::Data_interleaved<Triangle_MT>>;
+//	using Tree = bvh::Tree<bvh::Data_interleaved<Triangle_MT>>;
+
+	using Tree = bvh::Tree<bvh::Indexed_data1<Intersection_vertex_type, Shading_vertex_type>>;
 
 	Tree tree_;
 
