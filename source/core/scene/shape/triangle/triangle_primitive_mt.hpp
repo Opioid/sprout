@@ -2,6 +2,7 @@
 
 #include "scene/shape/shape_vertex.hpp"
 #include "base/math/ray.hpp"
+#include "base/math/simd/simd_vector.hpp"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -56,6 +57,14 @@ bool intersect_p(const Intersection_vertex_MT& a,
 				 const Intersection_vertex_MT& b,
 				 const Intersection_vertex_MT& c,
 				 const math::Ray& ray);
+
+bool intersect_p(math::simd::FVector origin,
+				 math::simd::FVector direction,
+				 math::simd::FVector min_t,
+				 math::simd::FVector max_t,
+				 const Intersection_vertex_MT& a,
+				 const Intersection_vertex_MT& b,
+				 const Intersection_vertex_MT& c);
 
 void interpolate_p(const Intersection_vertex_MT& a,
 				   const Intersection_vertex_MT& b,

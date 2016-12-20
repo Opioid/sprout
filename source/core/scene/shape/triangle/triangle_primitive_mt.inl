@@ -1,6 +1,7 @@
 #pragma once
 
 #include "triangle_primitive_mt.hpp"
+#include "base/math/simd/simd_vector.inl"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -203,6 +204,82 @@ inline bool intersect_p(const Intersection_vertex_MT& a,
 	}
 
 	return false;
+}
+
+inline bool intersect_p(math::simd::FVector origin,
+						math::simd::FVector direction,
+						math::simd::FVector min_t,
+						math::simd::FVector max_t,
+						const Intersection_vertex_MT& a,
+						const Intersection_vertex_MT& b,
+						const Intersection_vertex_MT& c) {
+	/*
+	float3 e1 = b.p - a.p;
+	float3 e2 = c.p - a.p;
+
+	float3 pvec = math::cross(ray.direction, e2);
+
+	float det = math::dot(e1, pvec);
+	float inv_det = 1.f / det;
+
+	float3 tvec = ray.origin - a.p;
+	float u = math::dot(tvec, pvec) * inv_det;
+
+	if (u < 0.f || u > 1.f) {
+		return false;
+	}
+
+	float3 qvec = math::cross(tvec, e1);
+	float v = math::dot(ray.direction, qvec) * inv_det;
+
+	if (v < 0.f || u + v > 1.f) {
+		return false;
+	}
+
+	float hit_t = math::dot(e2, qvec) * inv_det;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		return true;
+	}
+
+	return false;
+	*/
+
+	using namespace math;
+
+	simd::Vector ap = simd::load_float3(a.p);
+	simd::Vector bp = simd::load_float3(b.p);
+	simd::Vector cp = simd::load_float3(c.p);
+
+	simd::Vector e1 = simd::sub3(bp, ap);
+	simd::Vector e2 = simd::sub3(cp, ap);
+
+	simd::Vector pvec = simd::cross3(direction, e2);
+
+	simd::Vector inv_det = simd::rcp1(simd::dot3(e1, pvec));
+
+	simd::Vector tvec = simd::sub3(origin, ap);
+	simd::Vector u = simd::mul1(simd::dot3(tvec, pvec), inv_det);
+
+	bool ur = 0 != (_mm_comige_ss(u, simd::Zero) &
+					_mm_comige_ss(simd::One, u));
+
+	if (!ur) {
+		return false;
+	}
+
+	simd::Vector qvec = simd::cross3(tvec, e1);
+	simd::Vector v = simd::mul1(simd::dot3(direction, qvec), inv_det);
+
+	simd::Vector hit_t = simd::mul1(simd::dot3(e2, qvec), inv_det);
+
+	simd::Vector uv = simd::add1(u, v);
+
+	return 0 != (/*_mm_comige_ss(u, simd::Zero) &*/
+				 _mm_comige_ss(v, simd::Zero) &
+				 _mm_comige_ss(simd::One, uv) &
+				 _mm_comige_ss(hit_t, min_t) &
+				 _mm_comige_ss(max_t, hit_t));
 }
 
 inline void interpolate_p(const Intersection_vertex_MT& a,

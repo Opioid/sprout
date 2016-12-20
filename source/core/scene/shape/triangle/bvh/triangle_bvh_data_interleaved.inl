@@ -31,6 +31,15 @@ bool Data_interleaved<Triangle>::intersect_p(uint32_t index, const math::Ray& ra
 }
 
 template<typename Triangle>
+bool Data_interleaved<Triangle>::intersect_p(math::simd::FVector origin,
+											 math::simd::FVector direction,
+											 math::simd::FVector min_t,
+											 math::simd::FVector max_t,
+											 uint32_t index) const {
+	return false;
+}
+
+template<typename Triangle>
 void Data_interleaved<Triangle>::interpolate_data(uint32_t index, float2 uv,
 												  float3& n, float3& t, float2& tc) const {
 	triangles_[index].interpolate_data(uv, n, t, tc);

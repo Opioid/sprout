@@ -5,7 +5,7 @@
 #include "bvh/triangle_bvh_tree.hpp"
 #include "bvh/triangle_bvh_data.hpp"
 #include "bvh/triangle_bvh_indexed_data.hpp"
-#include "bvh/triangle_bvh_data_interleaved.hpp"
+// #include "bvh/triangle_bvh_data_interleaved.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 
 namespace scene { namespace shape { namespace triangle {

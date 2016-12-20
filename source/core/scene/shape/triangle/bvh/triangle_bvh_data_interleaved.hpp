@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/math/vector.hpp"
+#include "base/math/simd/simd_vector.hpp"
 #include <vector>
 
 namespace scene { namespace shape {
@@ -22,6 +23,12 @@ public:
 
 	bool intersect_p(uint32_t index, const math::Ray& ray) const;
 
+	bool intersect_p(math::simd::FVector origin,
+					 math::simd::FVector direction,
+					 math::simd::FVector min_t,
+					 math::simd::FVector max_t,
+					 uint32_t index) const;
+
 	void interpolate_data(uint32_t index, float2 uv,
 						  float3& n, float3& t, float2& tc) const;
 
@@ -41,7 +48,8 @@ public:
 
 	void allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& vertices);
 
-	void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index, const std::vector<Vertex>& vertices);
+	void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+					  const std::vector<Vertex>& vertices);
 
 private:
 

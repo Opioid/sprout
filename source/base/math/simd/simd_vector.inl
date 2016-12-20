@@ -78,6 +78,53 @@ inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
 
 /****************************************************************************
  *
+ * Scalar operations
+ *
+ ****************************************************************************/
+
+inline Vector SU_CALLCONV add1(FVector a, FVector b) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector result;
+	result.vector4_f32[0] = a.vector4_f32[0] + a.vector4_f32[0];
+	return result;
+#elif defined(_SU_SSE_INTRINSICS_)
+	return _mm_add_ss(a, b);
+#endif
+}
+
+
+inline Vector SU_CALLCONV mul1(FVector a, FVector b) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector result;
+	result.vector4_f32[0] = a.vector4_f32[0] * a.vector4_f32[0];
+	return result;
+#elif defined(_SU_SSE_INTRINSICS_)
+	return _mm_mul_ss(a, b);
+#endif
+}
+
+inline Vector SU_CALLCONV min1(FVector a, FVector b) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector result;
+	result.vector4_f32[0] = std::min(a.vector4_f32[0], a.vector4_f32[0]);
+	return result;
+#elif defined(_SU_SSE_INTRINSICS_)
+	return _mm_min_ss(a, b);
+#endif
+}
+
+inline Vector SU_CALLCONV max1(FVector a, FVector b) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector result;
+	result.vector4_f32[0] = std::max(a.vector4_f32[0], a.vector4_f32[0]);
+	return result;
+#elif defined(_SU_SSE_INTRINSICS_)
+	return _mm_max_ss(a, b);
+#endif
+}
+
+/****************************************************************************
+ *
  * 3D vector operations
  *
  ****************************************************************************/
@@ -189,26 +236,6 @@ inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
 	result = _mm_sub_ps(result, temp0);
 	// Set w to zero
 	return _mm_and_ps(result, Mask3);
-#endif
-}
-
-inline Vector SU_CALLCONV min1(FVector a, FVector b) {
-#if defined(_SU_NO_INTRINSICS_)
-	Vector result;
-	result.vector4_f32[0] = std::min(a.vector4_f32[0], a.vector4_f32[0]);
-	return result;
-#elif defined(_SU_SSE_INTRINSICS_)
-	return _mm_min_ss(a, b);
-#endif
-}
-
-inline Vector SU_CALLCONV max1(FVector a, FVector b) {
-#if defined(_SU_NO_INTRINSICS_)
-	Vector result;
-	result.vector4_f32[0] = std::max(a.vector4_f32[0], a.vector4_f32[0]);
-	return result;
-#elif defined(_SU_SSE_INTRINSICS_)
-	return _mm_max_ss(a, b);
 #endif
 }
 

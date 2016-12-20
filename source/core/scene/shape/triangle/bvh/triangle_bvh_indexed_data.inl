@@ -231,6 +231,21 @@ bool Indexed_data1<Intersection_vertex, Shading_vertex>::intersect_p(uint32_t in
 	return triangle::intersect_p(a, b, c, ray);
 }
 
+
+template<typename Intersection_vertex, typename Shading_vertex>
+bool Indexed_data1<Intersection_vertex, Shading_vertex>::intersect_p(math::simd::FVector origin,
+																	 math::simd::FVector direction,
+																	 math::simd::FVector min_t,
+																	 math::simd::FVector max_t,
+																	 uint32_t index) const {
+	const auto& tri = triangles_[index];
+	const Intersection_vertex& a = intersection_vertices_[tri.a];
+	const Intersection_vertex& b = intersection_vertices_[tri.b];
+	const Intersection_vertex& c = intersection_vertices_[tri.c];
+
+	return triangle::intersect_p(origin, direction, min_t, max_t, a, b, c);
+}
+
 template<typename Intersection_vertex, typename Shading_vertex>
 void Indexed_data1<Intersection_vertex, Shading_vertex>::interpolate_data(uint32_t index,
 																		  float2 uv,

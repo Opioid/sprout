@@ -12,6 +12,19 @@ namespace math { namespace simd {
 //------------------------------------------------------------------------------
 // Conversion types for constants
 
+struct alignas(16) Vector_f32 {
+	union {
+		float f[4];
+		Vector v;
+	};
+
+	inline operator Vector() const { return v; }
+#if !defined(_SU_NO_INTRINSICS_) && defined(_SU_SSE_INTRINSICS_)
+	inline operator __m128i() const { return _mm_castps_si128(v); }
+	inline operator __m128d() const { return _mm_castps_pd(v); }
+#endif
+};
+
 struct alignas(16) Vector_i32 {
 	union {
 		int32_t i[4];
@@ -58,6 +71,19 @@ void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v);
 
 /****************************************************************************
  *
+ * Scalar operations
+ *
+ ****************************************************************************/
+
+Vector SU_CALLCONV add1(FVector a, FVector b);
+
+Vector SU_CALLCONV mul1(FVector a, FVector b);
+
+Vector SU_CALLCONV min1(FVector a, FVector b);
+Vector SU_CALLCONV max1(FVector a, FVector b);
+
+/****************************************************************************
+ *
  * 3D vector operations
  *
  ****************************************************************************/
@@ -69,10 +95,8 @@ Vector SU_CALLCONV mul3(FVector a, FVector b);
 Vector SU_CALLCONV div3(FVector a, FVector b);
 
 Vector SU_CALLCONV dot3(FVector a, FVector b);
+Vector SU_CALLCONV cross3(FVector a, FVector b);
 
-
-Vector SU_CALLCONV min1(FVector a, FVector b);
-Vector SU_CALLCONV max1(FVector a, FVector b);
 
 Vector SU_CALLCONV min3(FVector a, FVector b);
 Vector SU_CALLCONV max3(FVector a, FVector b);
@@ -114,9 +138,9 @@ SU_GLOBALCONST(Vector_u32) Mask3				= {{{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x
 //XMGLOBALCONST XMVECTORU32 g_XMMaskY             = {0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskZ             = {0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000};
 //XMGLOBALCONST XMVECTORU32 g_XMMaskW             = {0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF};
-//XMGLOBALCONST XMVECTORF32 g_XMOne               = { 1.0f, 1.0f, 1.0f, 1.0f};
+SU_GLOBALCONST(Vector_f32) One					= {{{ 1.f, 1.f, 1.f, 1.f }}};
 //XMGLOBALCONST XMVECTORF32 g_XMOne3              = { 1.0f, 1.0f, 1.0f, 0.0f};
-//XMGLOBALCONST XMVECTORF32 g_XMZero              = { 0.0f, 0.0f, 0.0f, 0.0f};
+SU_GLOBALCONST(Vector_f32) Zero					= {{{ 0.f, 0.f, 0.f, 0.f }}};
 //XMGLOBALCONST XMVECTORF32 g_XMTwo               = { 2.f, 2.f, 2.f, 2.f };
 //XMGLOBALCONST XMVECTORF32 g_XMFour              = { 4.f, 4.f, 4.f, 4.f };
 //XMGLOBALCONST XMVECTORF32 g_XMSix               = { 6.f, 6.f, 6.f, 6.f };

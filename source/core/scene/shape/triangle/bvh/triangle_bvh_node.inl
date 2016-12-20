@@ -68,46 +68,39 @@ inline bool Node::intersect_p(const math::Ray& ray) const {
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
 
-// I found this SSE optimized version here:
+// I found this SSE optimized AABB/ray test here:
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
 inline bool Node::intersect_p(math::simd::FVector origin,
 							  math::simd::FVector inv_direction,
 							  math::simd::FVector min_t,
 							  math::simd::FVector max_t) const {
-	using namespace math;
+	using namespace math::simd;
 
-	const simd::Vector box_min = simd::load_float3(bounds[0]);
-	const simd::Vector box_max = simd::load_float3(bounds[1]);
+	const Vector box_min = load_float3(bounds[0]);
+	const Vector box_max = load_float3(bounds[1]);
 
-	const simd::Vector l1 = simd::mul3(simd::sub3(box_min, origin), inv_direction);
-	const simd::Vector l2 = simd::mul3(simd::sub3(box_max, origin), inv_direction);
+	const Vector l1 = mul3(sub3(box_min, origin), inv_direction);
+	const Vector l2 = mul3(sub3(box_max, origin), inv_direction);
 
 	// the order we use for those min/max is vital to filter out
 	// NaNs that happens when an inv_dir is +/- inf and
 	// (box_min - pos) is 0. inf * 0 = NaN
-	const simd::Vector filtered_l1a = simd::min3(l1, simd::Infinity);
-	const simd::Vector filtered_l2a = simd::min3(l2, simd::Infinity);
+	const Vector filtered_l1a = min3(l1, Infinity);
+	const Vector filtered_l2a = min3(l2, Infinity);
 
-	const simd::Vector filtered_l1b = simd::max3(l1, simd::NegInfinity);
-	const simd::Vector filtered_l2b = simd::max3(l2, simd::NegInfinity);
+	const Vector filtered_l1b = max3(l1, NegInfinity);
+	const Vector filtered_l2b = max3(l2, NegInfinity);
 
 	// now that we're back on our feet, test those slabs.
-	simd::Vector lmax = simd::max3(filtered_l1a, filtered_l2a);
-	simd::Vector lmin = simd::min3(filtered_l1b, filtered_l2b);
+	Vector lmax = max3(filtered_l1a, filtered_l2a);
+	Vector lmin = min3(filtered_l1b, filtered_l2b);
 
 	// unfold back. try to hide the latency of the shufps & co.
-	const simd::Vector lmax0 = SU_ROTATE_LEFT(lmax);
-	const simd::Vector lmin0 = SU_ROTATE_LEFT(lmin);
-	lmax = simd::min1(lmax, lmax0);
-	lmin = simd::max1(lmin, lmin0);
+	lmax = min1(lmax, SU_ROTATE_LEFT(lmax));
+	lmin = max1(lmin, SU_ROTATE_LEFT(lmin));
 
-	const simd::Vector lmax1 = SU_MUX_HIGH(lmax, lmax);
-	const simd::Vector lmin1 = SU_MUX_HIGH(lmin, lmin);
-	lmax = simd::min1(lmax, lmax1);
-	lmin = simd::max1(lmin, lmin1);
-
-//	const simd::Vector ray_min_t = _mm_set1_ps(min_t);
-//	const simd::Vector ray_max_t = _mm_set1_ps(max_t);
+	lmax = min1(lmax, SU_MUX_HIGH(lmax, lmax));
+	lmin = max1(lmin, SU_MUX_HIGH(lmin, lmin));
 
 	return 0 != (_mm_comige_ss(lmax, min_t) &
 				 _mm_comige_ss(max_t, lmin) &
