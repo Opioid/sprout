@@ -8,8 +8,9 @@ namespace scene { namespace shape { namespace triangle {
 inline Triangle_MT::Triangle_MT(const shape::Vertex& a,
 								const shape::Vertex& b,
 								const shape::Vertex& c,
+								float bitangent_sign,
 								uint32_t material_index) :
-	a(a), b(b), c(c), bitangent_sign(a.bitangent_sign), material_index(material_index) {}
+	a(a), b(b), c(c), bitangent_sign(bitangent_sign), material_index(material_index) {}
 
 inline Triangle_MT::Vertex::Vertex(const shape::Vertex& v) : p(v.p), n(v.n), t(v.t), uv(v.uv) {}
 

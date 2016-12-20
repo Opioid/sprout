@@ -112,7 +112,7 @@ private:
 
 	struct alignas(16) Index_triangle {
 		Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-					   uint32_t material_index, float bitangent_sign);
+					   float bitangent_sign, uint32_t material_index);
 
 		uint32_t a, b, c;
 		uint32_t bts_material_index;

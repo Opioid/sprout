@@ -100,9 +100,19 @@ void Data_interleaved<Triangle>::allocate_triangles(uint32_t num_triangles, cons
 }
 
 template<typename Triangle>
-void Data_interleaved<Triangle>::add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+void Data_interleaved<Triangle>::add_triangle(uint32_t a, uint32_t b, uint32_t c,
+											  uint32_t material_index,
 											  const std::vector<Vertex>& vertices) {
-	triangles_.push_back(Triangle(vertices[a], vertices[b], vertices[c], material_index));
+	float bitanget_sign = 1.f;
+
+	if ((vertices[a].bitangent_sign < 0.f && vertices[b].bitangent_sign < 0.f)
+	||  (vertices[b].bitangent_sign < 0.f && vertices[c].bitangent_sign < 0.f)
+	||  (vertices[c].bitangent_sign < 0.f && vertices[a].bitangent_sign < 0.f)) {
+		bitanget_sign = -1.f;
+	}
+
+	triangles_.push_back(Triangle(vertices[a], vertices[b], vertices[c],
+								  bitanget_sign, material_index));
 }
 
 }}}}

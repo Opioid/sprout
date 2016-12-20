@@ -8,7 +8,7 @@ namespace scene { namespace shape { namespace triangle {
 
 struct Triangle_MT {
 	Triangle_MT(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c,
-				uint32_t material_index);
+				float bitangent_sign, uint32_t material_index);
 
 	struct Vertex {
 		Vertex(const shape::Vertex& v);

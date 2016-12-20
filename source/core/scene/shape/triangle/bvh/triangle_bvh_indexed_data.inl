@@ -379,7 +379,7 @@ void Indexed_data1<Intersection_vertex, Shading_vertex>::add_triangle(
 		bitanget_sign = -1.f;
 	}
 
-	triangles_[current_triangle_] = Index_triangle(a, b, c, material_index, bitanget_sign);
+	triangles_[current_triangle_] = Index_triangle(a, b, c, bitanget_sign, material_index);
 	++current_triangle_;
 }
 
@@ -393,7 +393,7 @@ size_t Indexed_data1<Intersection_vertex, Shading_vertex>::num_bytes() const {
 template<typename Intersection_vertex, typename Shading_vertex>
 Indexed_data1<Intersection_vertex, Shading_vertex>::
 Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
-							   uint32_t material_index, float bitangent_sign) :
+							   float bitangent_sign, uint32_t material_index) :
 	a(a), b(b), c(c),
 	bts_material_index(bitangent_sign < 0.f ? BTS_mask | material_index : material_index) {}
 
