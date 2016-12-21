@@ -200,6 +200,30 @@ inline float3 simd_normalized_1(const float3& v) {
 	return result;
 }
 
+inline float simd_dotlly(const float3& a, const float3& b) {
+	math::simd::Vector sa = math::simd::load_float4(a);
+	math::simd::Vector sb = math::simd::load_float4(b);
+
+	math::simd::Vector d = _mm_dp_ps(sa, sb, 0x77);
+
+	float x;
+	_mm_store_ss(&x, d);
+	return x;
+}
+
+inline float3 simd_normalized_2(const float3& v) {
+	math::simd::Vector sx = math::simd::load_float3(v);
+
+	math::simd::Vector d = _mm_dp_ps(sx, sx, 0x77);
+
+	math::simd::Vector il = math::simd::rsqrt(d);
+
+	float3 result;
+	math::simd::store_float3(result, _mm_mul_ps(il, sx));
+
+	return result;
+}
+
 void normalize() {
 	std::cout << "testing::simd::normalize()" << std::endl;
 
@@ -216,6 +240,7 @@ void normalize() {
 	}
 
 	{
+		std::cout << "math::normalized()" << std::endl;
 		std::cout << vectors[0] << " : " << math::normalized(vectors[0]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
@@ -230,9 +255,11 @@ void normalize() {
 
 		auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
 	}
 
 	{
+		std::cout << "simd_normalized_0()" << std::endl;
 		std::cout << vectors[0] << " : " << simd_normalized_0(vectors[0]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
@@ -247,9 +274,11 @@ void normalize() {
 
 		auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
 	}
 
 	{
+		std::cout << "simd_normalized_1()" << std::endl;
 		std::cout << vectors[0] << " : " << simd_normalized_1(vectors[0]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
@@ -264,9 +293,30 @@ void normalize() {
 
 		auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
 	}
 
 	{
+		std::cout << "simd_normalized_2()" << std::endl;
+		std::cout << vectors[0] << " : " << simd_normalized_2(vectors[0]) << std::endl;
+
+		auto start = std::chrono::high_resolution_clock::now();
+
+		float3 result(0.f);
+
+		for (size_t i = 0; i < num_values; ++i) {
+			float3 x = vectors[i];
+			float3 r = simd_normalized_2(x);
+			result = simd_normalized_2(r + result);
+		}
+
+		auto duration = chrono::seconds_since(start);
+		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
+	}
+
+	{
+		std::cout << "math::normalized()" << std::endl;
 		std::cout << vectors[0] << " : " << math::normalized(vectors[0]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
@@ -281,6 +331,7 @@ void normalize() {
 
 		auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
 	}
 
 	delete [] vectors;
@@ -412,10 +463,9 @@ inline float simd_dot_0(const float3& a, const float3& b) {
 
 	math::simd::Vector d = math::simd::dot3(sa, sb);
 
-	float3 result;
-	math::simd::store_float3(result, d);
-
-	return result.x;
+	float x;
+	_mm_store_ss(&x, d);
+	return x;
 }
 
 inline float simd_dot_1(const float3 a, const float3 b) {
@@ -441,6 +491,17 @@ inline float simd_dot_1(const float3 a, const float3 b) {
 //	return SU_PERMUTE_PS(vDot, _MM_SHUFFLE(0, 0, 0, 0));
 }
 
+inline float simd_dot_2(const float3& a, const float3& b) {
+	math::simd::Vector sa = math::simd::load_float4(a);
+	math::simd::Vector sb = math::simd::load_float4(b);
+
+	math::simd::Vector d = _mm_dp_ps(sa, sb, 0x77);
+
+	float x;
+	_mm_store_ss(&x, d);
+	return x;
+}
+
 void dot() {
 	std::cout << "testing::simd::dot()" << std::endl;
 
@@ -457,6 +518,7 @@ void dot() {
 	}
 
 	{
+		std::cout << "math::dot()" << std::endl;
 		std::cout << vectors[0] << " : " << math::dot(vectors[0], vectors[1]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
@@ -472,9 +534,11 @@ void dot() {
 
 		auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
 	}
 
 	{
+		std::cout << "simd_dot_0()" << std::endl;
 		std::cout << vectors[0] << " : " << simd_dot_0(vectors[0], vectors[1]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
@@ -490,9 +554,11 @@ void dot() {
 
 		auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
 	}
 
 	{
+		std::cout << "simd_dot_1()" << std::endl;
 		std::cout << vectors[0] << " : " << simd_dot_1(vectors[0], vectors[1]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
@@ -508,10 +574,32 @@ void dot() {
 
 		auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
 	}
 
 	{
-		std::cout << vectors[0] << " : " << math::dot(vectors[0], vectors[1]) << std::endl;
+		std::cout << "simd_dot_2()" << std::endl;
+		std::cout << vectors[0] << " : " << simd_dot_2(vectors[0], vectors[1]) << std::endl;
+
+		auto start = std::chrono::high_resolution_clock::now();
+
+		float result = 0.f;
+
+		for (size_t i = 0, len = num_values - 1; i < len; ++i) {
+			float3 a = vectors[i];
+			float3 b = vectors[i + 1];
+			float r = simd_dot_2(a, b);
+			result += r;
+		}
+
+		auto duration = chrono::seconds_since(start);
+		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
+	}
+
+	{
+		std::cout << "dotly()" << std::endl;
+		std::cout << vectors[0] << " : " << dotly(vectors[0], vectors[1]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
 
@@ -526,6 +614,7 @@ void dot() {
 
 		auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
 	}
 }
 

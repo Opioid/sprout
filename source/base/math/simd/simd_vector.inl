@@ -44,6 +44,20 @@ inline Vector SU_CALLCONV load_float3(FVector3f_a source) {
 #endif
 }
 
+inline Vector SU_CALLCONV load_float4(FVector3f_a source) {
+#if defined(_SU_NO_INTRINSICS_)
+	Vector v;
+	v.vector4_f32[0] = source.x;
+	v.vector4_f32[1] = source.y;
+	v.vector4_f32[2] = source.z;
+	v.vector4_f32[3] = source.w;
+	return v;
+#elif defined(_SU_SSE_INTRINSICS_)
+	// Reads an extra float!!!
+	return _mm_load_ps(&source.x);
+#endif
+}
+
 /****************************************************************************
  *
  * Store operations
