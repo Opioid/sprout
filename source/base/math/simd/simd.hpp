@@ -8,6 +8,7 @@
 #ifndef _SU_NO_INTRINSICS_
 #	include <xmmintrin.h>
 #	include <emmintrin.h>
+#	//include <smmintrin.h> // SSE 4.1 intrinsics
 #endif
 #endif
 

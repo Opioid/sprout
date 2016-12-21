@@ -201,27 +201,30 @@ inline float3 simd_normalized_1(const float3& v) {
 }
 
 inline float simd_dotlly(const float3& a, const float3& b) {
-	math::simd::Vector sa = math::simd::load_float4(a);
-	math::simd::Vector sb = math::simd::load_float4(b);
+//	math::simd::Vector sa = math::simd::load_float4(a);
+//	math::simd::Vector sb = math::simd::load_float4(b);
 
-	math::simd::Vector d = _mm_dp_ps(sa, sb, 0x77);
+//	math::simd::Vector d = _mm_dp_ps(sa, sb, 0x77);
 
-	float x;
-	_mm_store_ss(&x, d);
-	return x;
+//	float x;
+//	_mm_store_ss(&x, d);
+//	return x;
+	return math::dot(a, b);
 }
 
 inline float3 simd_normalized_2(const float3& v) {
-	math::simd::Vector sx = math::simd::load_float3(v);
+//	math::simd::Vector sx = math::simd::load_float3(v);
 
-	math::simd::Vector d = _mm_dp_ps(sx, sx, 0x77);
+//	math::simd::Vector d = _mm_dp_ps(sx, sx, 0x77);
 
-	math::simd::Vector il = math::simd::rsqrt(d);
+//	math::simd::Vector il = math::simd::rsqrt(d);
 
-	float3 result;
-	math::simd::store_float3(result, _mm_mul_ps(il, sx));
+//	float3 result;
+//	math::simd::store_float3(result, _mm_mul_ps(il, sx));
 
-	return result;
+//	return result;
+
+	return math::normalized(v);
 }
 
 void normalize() {
@@ -492,14 +495,15 @@ inline float simd_dot_1(const float3 a, const float3 b) {
 }
 
 inline float simd_dot_2(const float3& a, const float3& b) {
-	math::simd::Vector sa = math::simd::load_float4(a);
-	math::simd::Vector sb = math::simd::load_float4(b);
+//	math::simd::Vector sa = math::simd::load_float4(a);
+//	math::simd::Vector sb = math::simd::load_float4(b);
 
-	math::simd::Vector d = _mm_dp_ps(sa, sb, 0x77);
+//	math::simd::Vector d = _mm_dp_ps(sa, sb, 0x77);
 
-	float x;
-	_mm_store_ss(&x, d);
-	return x;
+//	float x;
+//	_mm_store_ss(&x, d);
+//	return x;
+	return math::dot(a, b);
 }
 
 void dot() {
