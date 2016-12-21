@@ -417,17 +417,17 @@ hk_real art_blackbody_dd_value(
 
 const hk_real originalSolarRadianceTable[] =
 {
-     7500.0,
-    12500.0,
-    21127.5,
-    26760.5,
-    30663.7,
-    27825.0,
-    25503.8,
-    25134.2,
-    23212.1,
-    21526.7,
-    19870.8
+	hk_real( 7500.0),
+	hk_real(12500.0),
+	hk_real(21127.5),
+	hk_real(26760.5),
+	hk_real(30663.7),
+	hk_real(27825.0),
+	hk_real(25503.8),
+	hk_real(25134.2),
+	hk_real(23212.1),
+	hk_real(21526.7),
+	hk_real(19870.8)
 };
 
 ArHosekSkyModelState  * arhosekskymodelstate_alienworld_alloc_init(

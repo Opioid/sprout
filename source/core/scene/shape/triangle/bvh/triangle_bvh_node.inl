@@ -70,17 +70,17 @@ inline bool Node::intersect_p(const math::Ray& ray) const {
 
 // I found this SSE optimized AABB/ray test here:
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
-inline bool Node::intersect_p(math::simd::FVector origin,
-							  math::simd::FVector inv_direction,
-							  math::simd::FVector min_t,
-							  math::simd::FVector max_t) const {
+inline bool Node::intersect_p(math::simd::FVector ray_origin,
+							  math::simd::FVector ray_inv_direction,
+							  math::simd::FVector ray_min_t,
+							  math::simd::FVector ray_max_t) const {
 	using namespace math::simd;
 
-	const Vector box_min = load_float3(bounds[0]);
-	const Vector box_max = load_float3(bounds[1]);
+	const Vector bb_min = load_float3(bounds[0]);
+	const Vector bb_max = load_float3(bounds[1]);
 
-	const Vector l1 = mul3(sub3(box_min, origin), inv_direction);
-	const Vector l2 = mul3(sub3(box_max, origin), inv_direction);
+	const Vector l1 = mul3(sub3(bb_min, ray_origin), ray_inv_direction);
+	const Vector l2 = mul3(sub3(bb_max, ray_origin), ray_inv_direction);
 
 	// the order we use for those min/max is vital to filter out
 	// NaNs that happens when an inv_dir is +/- inf and
@@ -92,19 +92,19 @@ inline bool Node::intersect_p(math::simd::FVector origin,
 	const Vector filtered_l2b = max3(l2, NegInfinity);
 
 	// now that we're back on our feet, test those slabs.
-	Vector lmax = max3(filtered_l1a, filtered_l2a);
-	Vector lmin = min3(filtered_l1b, filtered_l2b);
+	Vector max_t = max3(filtered_l1a, filtered_l2a);
+	Vector min_t = min3(filtered_l1b, filtered_l2b);
 
 	// unfold back. try to hide the latency of the shufps & co.
-	lmax = min1(lmax, SU_ROTATE_LEFT(lmax));
-	lmin = max1(lmin, SU_ROTATE_LEFT(lmin));
+	max_t = min1(max_t, SU_ROTATE_LEFT(max_t));
+	min_t = max1(min_t, SU_ROTATE_LEFT(min_t));
 
-	lmax = min1(lmax, SU_MUX_HIGH(lmax, lmax));
-	lmin = max1(lmin, SU_MUX_HIGH(lmin, lmin));
+	max_t = min1(max_t, SU_MUX_HIGH(max_t, max_t));
+	min_t = max1(min_t, SU_MUX_HIGH(min_t, min_t));
 
-	return 0 != (_mm_comige_ss(lmax, min_t) &
-				 _mm_comige_ss(max_t, lmin) &
-				 _mm_comige_ss(lmax, lmin));
+	return 0 != (_mm_comige_ss(max_t, ray_min_t) &
+				 _mm_comige_ss(ray_max_t, min_t) &
+				 _mm_comige_ss(max_t, min_t));
 }
 
 }}}}
