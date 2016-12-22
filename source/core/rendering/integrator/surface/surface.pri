@@ -17,4 +17,5 @@ HEADERS += \
 	rendering/integrator/surface/surface_integrator.hpp \
 	rendering/integrator/surface/whitted.hpp \
 
+include(sub/sub.pri)
 include(transmittance/transmittance.pri)
