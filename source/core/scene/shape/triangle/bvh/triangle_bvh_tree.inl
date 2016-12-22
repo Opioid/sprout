@@ -92,7 +92,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 			} else {
 				if (0 == ray.sign[node.axis]) {
 					node_stack.push(node.second_child_index);
-					n = n + 1;
+					++n;
 				} else {
 					node_stack.push(n + 1);
 					n = node.second_child_index;
@@ -137,7 +137,7 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 			} else {
 				if (0 == ray.sign[node.axis]) {
 					node_stack.push(node.second_child_index);
-					n = n + 1;
+					++n;
 				} else {
 					node_stack.push(n + 1);
 					n = node.second_child_index;
@@ -195,7 +195,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 			} else {
 				if (0 == ray.sign[node.axis]) {
 					node_stack.push(node.second_child_index);
-					n = n + 1;
+					++n;
 				} else {
 					node_stack.push(n + 1);
 					n = node.second_child_index;
