@@ -13,7 +13,6 @@
 #include "shape/celestial_disk.hpp"
 #include "shape/disk.hpp"
 #include "shape/infinite_sphere.hpp"
-#include "shape/inverse_sphere.hpp"
 #include "shape/plane.hpp"
 #include "shape/rectangle.hpp"
 #include "shape/sphere.hpp"
@@ -31,8 +30,6 @@
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 
-#include <iostream>
-
 namespace scene {
 
 Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material) :
@@ -41,7 +38,6 @@ Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> f
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
 	infinite_sphere_(std::make_shared<shape::Infinite_sphere>()),
-	inverse_sphere_(std::make_shared<shape::Inverse_sphere>()),
 	plane_(std::make_shared<shape::Plane>()),
 	rectangle_(std::make_shared<shape::Rectangle>()),
 	sphere_(std::make_shared<shape::Sphere>()),
@@ -368,8 +364,6 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
 		return disk_;
 	} else if ("Infinite_sphere" == type) {
 		return infinite_sphere_;
-	} else if ("Inverse_sphere" == type) {
-		return inverse_sphere_;
 	} else if ("Plane" == type) {
 		return plane_;
 	} else if ("Rectangle" == type) {

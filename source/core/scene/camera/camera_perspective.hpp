@@ -60,21 +60,11 @@ private:
 	float3x3 lens_tilt_;
 	float2	 lens_shift_;
 	float	 lens_radius_;
-	float lens_tilt_a_;
 
 	float fov_;
 
 	Focus focus_;
 	float focus_distance_;
-
-	float z_;
-
-
-
-
-	float3 fleft_top_;
-	float3 fd_x_;
-	float3 fd_y_;
 };
 
 }}

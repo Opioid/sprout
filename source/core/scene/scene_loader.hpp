@@ -91,7 +91,6 @@ private:
 	std::shared_ptr<shape::Shape> celestial_disk_;
 	std::shared_ptr<shape::Shape> disk_;
 	std::shared_ptr<shape::Shape> infinite_sphere_;
-	std::shared_ptr<shape::Shape> inverse_sphere_;
 	std::shared_ptr<shape::Shape> plane_;
 	std::shared_ptr<shape::Shape> rectangle_;
 	std::shared_ptr<shape::Shape> sphere_;
