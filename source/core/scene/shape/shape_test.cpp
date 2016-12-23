@@ -3,6 +3,7 @@
 #include "sphere.hpp"
 #include "shape_intersection.hpp"
 #include "node_stack.inl"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "base/math/vector.inl"
@@ -44,7 +45,7 @@ void test() {
 	scene::Ray ray;
 	ray.origin = float3(0.f, 4.f, 0.f);
 	ray.set_direction(float3(0.f, -1.f, 0.f));
-	ray.max_t = 1000000.f;
+	ray.max_t = scene::Ray_max_t;
 	ray.min_t = 0.f;
 
 	Intersection intersection;

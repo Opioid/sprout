@@ -176,12 +176,12 @@ inline void AABB::merge_assign(const AABB& other) {
 }
 
 inline AABB AABB::empty() {
-	float max = std::numeric_limits<float>::max();
+	constexpr float max = std::numeric_limits<float>::max();
 	return AABB(Vector3f_a(max), Vector3f_a(-max));
 }
 
 inline AABB AABB::infinite() {
-	float max = 1000000.f;
+	constexpr float max = std::numeric_limits<float>::max();
 	return AABB(Vector3f_a(-max), Vector3f_a(max));
 }
 

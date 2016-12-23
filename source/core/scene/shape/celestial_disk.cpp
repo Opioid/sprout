@@ -1,6 +1,7 @@
 #include "celestial_disk.hpp"
 #include "shape_sample.hpp"
 #include "shape_intersection.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
@@ -17,7 +18,7 @@ Celestial_disk::Celestial_disk() {
 
 bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	const float3& v = transformation.rotation.v3.z;
+	float3_p v = transformation.rotation.v3.z;
 	float b = math::dot(v, ray.direction);
 
 	if (b > 0.f) {
@@ -26,28 +27,42 @@ bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 
 	float radius = math::degrees_to_radians(transformation.scale.x);
 	float det = (b * b) - math::dot(v, v) + (radius * radius);
-//	float det = -b - std::cos(radius);
 
-	if (det > 0.f && ray.max_t >= 1000000.f) {
+	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		intersection.epsilon = 5e-4f;
 
-		intersection.p = ray.point(999999.9f);
+		constexpr float hit_t = Ray_max_t - 3.e31f;
+
+		intersection.p = ray.point(hit_t);
 		intersection.t = transformation.rotation.v3.x;
 		intersection.b = transformation.rotation.v3.y;
 		intersection.n = transformation.rotation.v3.z;
 		intersection.geo_n = transformation.rotation.v3.z;
 		intersection.part = 0;
 
-		ray.max_t = 999999.9f;
+		ray.max_t = hit_t;
 		return true;
 	}
 
 	return false;
 }
 
-bool Celestial_disk::intersect_p(const Transformation& /*transformation*/,
-								 const Ray& /*ray*/, Node_stack& /*node_stack*/) const {
-	// Implementation for this is not really needed, so just skip it
+bool Celestial_disk::intersect_p(const Transformation& transformation,
+								 const Ray& ray, Node_stack& /*node_stack*/) const {
+	float3_p v = transformation.rotation.v3.z;
+	float b = math::dot(v, ray.direction);
+
+	if (b > 0.f) {
+		return false;
+	}
+
+	float radius = math::degrees_to_radians(transformation.scale.x);
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
+
+	if (det > 0.f && ray.max_t >= Ray_max_t) {
+		return true;
+	}
+
 	return false;
 }
 
@@ -78,7 +93,12 @@ void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformat
 	float3 ws = radius * math::transform_vector(ls, transformation.rotation);
 
 	sample.wi = math::normalized(ws - transformation.rotation.v3.z);
-	sample.t = 1000000.f;
+
+//	float a = Ray_max_t - 1.e32f;
+//	float b = Ray_max_t - 3.e31f;
+//	float c = std::nexttoward(Ray_max_t, 0.f);
+
+	sample.t = Ray_max_t - 3.e31f;//std::nexttoward(Ray_max_t, 0.f);
 	sample.pdf = 1.f / area;
 }
 

@@ -1,6 +1,7 @@
 #include "camera_perspective_stereoscopic.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "base/json/json.hpp"
 #include "base/math/math.hpp"
@@ -11,8 +12,8 @@
 
 namespace scene { namespace camera {
 
-Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution, float ray_max_t) :
-	Stereoscopic(resolution, ray_max_t) {
+Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) :
+	Stereoscopic(resolution) {
 	set_fov(90.f);
 
 	view_bounds_[0] = math::Recti{int2(0, 0), resolution};
@@ -51,7 +52,7 @@ bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 	ray.origin = math::transform_point(eye_offsets_[view], transformation.object_to_world);
 	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
 	ray.min_t = 0.f;
-	ray.max_t = ray_max_t_;
+	ray.max_t = Ray_max_t;
 	ray.time  = sample.time;
 	ray.depth = 0;
 

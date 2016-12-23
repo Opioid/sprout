@@ -1,6 +1,7 @@
 #include "camera_spherical.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -9,8 +10,8 @@
 
 namespace scene { namespace camera {
 
-Spherical::Spherical(int2 resolution, float ray_max_t) :
-	Camera(resolution, ray_max_t) {
+Spherical::Spherical(int2 resolution) :
+	Camera(resolution) {
 	float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;
@@ -57,7 +58,7 @@ bool Spherical::generate_ray(const sampler::Camera_sample& sample,
 	ray.origin = transformation.position;
 	ray.set_direction(math::transform_vector(dir, transformation.rotation));
 	ray.min_t = 0.f;
-	ray.max_t = ray_max_t_;
+	ray.max_t = Ray_max_t;
 	ray.time  = sample.time;
 	ray.depth = 0;
 

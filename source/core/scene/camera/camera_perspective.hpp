@@ -22,7 +22,7 @@ public:
 		bool use_point = false;
 	};
 
-	Perspective(int2 resolution, float ray_max_t);
+	Perspective(int2 resolution);
 
 	virtual uint32_t num_views() const final override;
 

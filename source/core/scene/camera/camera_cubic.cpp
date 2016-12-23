@@ -1,4 +1,5 @@
 #include "camera_cubic.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
@@ -10,8 +11,8 @@
 
 namespace scene { namespace camera {
 
-Cubic::Cubic(Layout layout, int2 resolution, float ray_max_t) :
-	Camera(int2(resolution.x, resolution.x), ray_max_t) {
+Cubic::Cubic(Layout layout, int2 resolution) :
+	Camera(int2(resolution.x, resolution.x)) {
 	float f = static_cast<float>(resolution.x);
 
 	left_top_ = float3(-1.f, 1.f, 1.f);
@@ -92,7 +93,7 @@ bool Cubic::generate_ray(const sampler::Camera_sample& sample,
 	ray.origin = math::transform_point(float3(0.f), transformation.object_to_world);
 	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
 	ray.min_t = 0.f;
-	ray.max_t = ray_max_t_;
+	ray.max_t = Ray_max_t;
 	ray.time  = sample.time;
 	ray.depth = 0;
 

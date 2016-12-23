@@ -8,7 +8,7 @@ class Perspective_stereoscopic : public Stereoscopic {
 
 public:
 
-	Perspective_stereoscopic(int2 resolution, float ray_max_t);
+	Perspective_stereoscopic(int2 resolution);
 
 	virtual uint32_t num_views() const final override;
 

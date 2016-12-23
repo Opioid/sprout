@@ -2,6 +2,7 @@
 #include "integrator_helper.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
@@ -155,7 +156,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, bool volume, Intersection& i
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
-		ray.max_t = take_settings_.ray_max_t;
+		ray.max_t = Ray_max_t;
 		++ray.depth;
 
 		// For these cases we fallback to plain pathtracing
@@ -242,7 +243,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 
 	secondary_ray.set_direction(sample_result.wi);
 	secondary_ray.min_t = ray_offset;
-	secondary_ray.max_t = take_settings_.ray_max_t;
+	secondary_ray.max_t = Ray_max_t;
 	++secondary_ray.depth;
 
 	if (intersect_and_resolve_mask(worker, secondary_ray, intersection, filter)) {

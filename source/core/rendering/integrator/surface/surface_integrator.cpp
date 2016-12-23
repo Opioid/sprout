@@ -1,6 +1,7 @@
 #include "surface_integrator.hpp"
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_intersection.inl"
 #include "take/take_settings.hpp"
@@ -29,7 +30,7 @@ bool Integrator::resolve_mask(Worker& worker, scene::Ray& ray,
 		// Possible indicator of imprecision issues in other parts of the code,
 		// but this seems to work well enough.
 		ray.min_t = ray.max_t;
-		ray.max_t = take_settings_.ray_max_t;
+		ray.max_t = scene::Ray_max_t;
 		if (!worker.intersect(ray, intersection)) {
 			return false;
 		}

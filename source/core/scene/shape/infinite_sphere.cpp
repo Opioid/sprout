@@ -1,6 +1,7 @@
 #include "infinite_sphere.hpp"
 #include "shape_sample.hpp"
 #include "shape_intersection.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
@@ -20,7 +21,7 @@ Infinite_sphere::Infinite_sphere() {
 bool Infinite_sphere::intersect(const Transformation& transformation,
 								Ray& ray, Node_stack& /*node_stack*/,
 								Intersection& intersection) const {
-	if (ray.max_t >= 1000000.f) {
+	if (ray.max_t >= Ray_max_t) {
 		intersection.epsilon = 5e-4f;
 
 		// This is nonsense
@@ -32,13 +33,13 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 		intersection.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 		intersection.uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-		intersection.p = ray.point(1000000.f);
+		intersection.p = ray.point(Ray_max_t);
 		float3 n = -ray.direction;
 		intersection.n = n;
 		intersection.geo_n = n;
 		intersection.part = 0;
 
-		ray.max_t = 1000000.f;
+		ray.max_t = Ray_max_t;
 		return true;
 	}
 
@@ -75,7 +76,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 	sample.uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-	sample.t   = 1000000.f;
+	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
@@ -93,7 +94,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.uv.x = std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
 	sample.uv.y = std::acos(xyz.y) * math::Pi_inv;
 
-	sample.t   = 1000000.f;
+	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (4.f * math::Pi);
 }
 
@@ -123,7 +124,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 
 	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;
-	sample.t  = 1000000.f;
+	sample.t  = Ray_max_t;
 	// sin_theta because of the uv weight
 	sample.pdf = 1.f / (4.f * math::Pi * sin_theta);
 }

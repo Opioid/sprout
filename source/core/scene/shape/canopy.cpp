@@ -1,6 +1,7 @@
 #include "canopy.hpp"
 #include "shape_sample.hpp"
 #include "shape_intersection.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
@@ -20,14 +21,14 @@ Canopy::Canopy() {
 
 bool Canopy::intersect(const Transformation& transformation, Ray& ray,
 					   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	if (ray.max_t >= 1000000.f) {
+	if (ray.max_t >= Ray_max_t) {
 		if (math::dot(ray.direction, transformation.rotation.v3.z) < 0.f) {
 			return false;
 		}
 
 		intersection.epsilon = 5e-4f;
 
-		intersection.p = ray.point(1000000.f);
+		intersection.p = ray.point(Ray_max_t);
 		intersection.t = transformation.rotation.v3.x;
 		intersection.b = transformation.rotation.v3.y;
 
@@ -43,7 +44,7 @@ bool Canopy::intersect(const Transformation& transformation, Ray& ray,
 		intersection.uv.x = 0.5f * disk.x + 0.5f;
 		intersection.uv.y = 0.5f * disk.y + 0.5f;
 
-		ray.max_t = 1000000.f;
+		ray.max_t = Ray_max_t;
 		return true;
 	}
 
@@ -78,7 +79,7 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	sample.uv.x = 0.5f * disk.x + 0.5f;
 	sample.uv.y = 0.5f * disk.y + 0.5f;
 
-	sample.t   = 1000000.f;
+	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
@@ -97,7 +98,7 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	sample.uv.x = 0.5f * disk.x + 0.5f;
 	sample.uv.y = 0.5f * disk.y + 0.5f;
 
-	sample.t   = 1000000.f;
+	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
@@ -122,7 +123,7 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;
-	sample.t  = 1000000.f;
+	sample.t  = Ray_max_t;
 
 
 

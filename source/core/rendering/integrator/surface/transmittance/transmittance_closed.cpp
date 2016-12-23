@@ -1,6 +1,7 @@
 #include "transmittance_closed.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/surface/integrator_helper.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
@@ -32,7 +33,7 @@ float3 Closed::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& int
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
-		ray.max_t = take_settings_.ray_max_t;
+		ray.max_t = scene::Ray_max_t;
 
 		if (!worker.intersect(intersection.prop, ray, intersection)) {
 			break;

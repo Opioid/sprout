@@ -1,6 +1,7 @@
 #include "whitted.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_intersection.inl"
 #include "scene/light/light.hpp"
@@ -42,7 +43,7 @@ float4 Whitted::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 		}
 
 		ray.min_t = ray.max_t;
-		ray.max_t = take_settings_.ray_max_t;
+		ray.max_t = scene::Ray_max_t;
 		if (!worker.intersect(ray, intersection)) {
 			return float4(result, opacity);
 		}

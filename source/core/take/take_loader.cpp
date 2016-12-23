@@ -183,8 +183,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 				layout = Cubic_stereoscopic::Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz;
 			}
 
-			camera = std::make_shared<Cubic_stereoscopic>(layout, resolution,
-														  take.settings.ray_max_t);
+			camera = std::make_shared<Cubic_stereoscopic>(layout, resolution);
 		} else {
 			Cubic::Layout layout = Cubic::Layout::xmxymyzmz;
 
@@ -192,23 +191,22 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 				layout = Cubic::Layout::xmxy_myzmz;
 			}
 
-			camera = std::make_shared<Cubic>(layout, resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Cubic>(layout, resolution);
 		}
 	} else if ("Perspective" == type_name) {
 		if (stereo) {
-			camera = std::make_shared<Perspective_stereoscopic>(resolution,
-																take.settings.ray_max_t);
+			camera = std::make_shared<Perspective_stereoscopic>(resolution);
 		} else {
-			camera = std::make_shared<Perspective>(resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Perspective>(resolution);
 		}
 	} else if ("Spherical" == type_name) {
 		if (stereo) {
-			camera = std::make_shared<Spherical_stereoscopic>(resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Spherical_stereoscopic>(resolution);
 		} else {
-			camera = std::make_shared<Spherical>(resolution, take.settings.ray_max_t);
+			camera = std::make_shared<Spherical>(resolution);
 		}
 	} else if ("Hemispherical" == type_name) {
-		camera = std::make_shared<Hemispherical>(resolution, take.settings.ray_max_t);
+		camera = std::make_shared<Hemispherical>(resolution);
 	} else {
 		throw std::runtime_error("Camera type \"" + type_name + "\" not recognized");
 	}

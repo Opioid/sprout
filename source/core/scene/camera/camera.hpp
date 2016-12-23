@@ -24,8 +24,7 @@ class Camera : public entity::Entity {
 
 public:
 
-	Camera(int2 resolution, float ray_max_t);
-
+	Camera(int2 resolution);
 	virtual ~Camera();
 
 	virtual uint32_t num_views() const = 0;
@@ -66,7 +65,6 @@ protected:
 
 	int32_t filter_radius_;
 
-	float ray_max_t_;
 	float frame_duration_;
 	bool motion_blur_;
 };

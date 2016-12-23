@@ -7,6 +7,7 @@ SOURCES += \
 HEADERS += \
 	scene/prop.hpp \
 	scene/scene.hpp \
+	scene/scene_constants.hpp \
 	scene/scene_intersection.hpp \
 	scene/scene_intersection.inl \
 	scene/scene_loader.hpp \

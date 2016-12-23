@@ -1,6 +1,7 @@
 #include "camera_spherical_stereoscopic.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "base/json/json.hpp"
 #include "base/math/math.hpp"
@@ -13,8 +14,8 @@
 
 namespace scene { namespace camera {
 
-Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution, float ray_max_t) :
-	Stereoscopic(resolution, ray_max_t) {
+Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) :
+	Stereoscopic(resolution) {
 	float2 fr(resolution);
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;
@@ -69,7 +70,7 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 	ray.origin = math::transform_point(eye_pos, transformation.object_to_world);
 	ray.set_direction(math::transform_vector(dir, transformation.rotation));
 	ray.min_t = 0.f;
-	ray.max_t = ray_max_t_;
+	ray.max_t = Ray_max_t;
 	ray.time  = sample.time;
 	ray.depth = 0;
 

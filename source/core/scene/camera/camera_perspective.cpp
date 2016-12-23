@@ -1,6 +1,7 @@
 #include "camera_perspective.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "rendering/rendering_worker.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_intersection.hpp"
 #include "sampler/camera_sample.hpp"
@@ -13,8 +14,8 @@
 
 namespace scene { namespace camera {
 
-Perspective::Perspective(int2 resolution, float ray_max_t) :
-	Camera(resolution, ray_max_t),
+Perspective::Perspective(int2 resolution) :
+	Camera(resolution),
 	lens_tilt_(float3x3::identity()),
 	lens_shift_(0.f, 0.f),
 	lens_radius_(0.f),
@@ -53,7 +54,6 @@ void Perspective::update(rendering::Worker& worker) {
 	left_top.z    += z;
 	right_top.z   += z;
 	left_bottom.z += z;
-
 
 	left_top_ = left_top + float3(lens_shift_, 0.f);
 	d_x_ = (right_top   - left_top) / fr.x;
@@ -94,7 +94,7 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 	ray.origin = origin_w;
 	ray.set_direction(direction_w);
 	ray.min_t = 0.f;
-	ray.max_t = ray_max_t_;
+	ray.max_t = Ray_max_t;
 	ray.time  = sample.time;
 	ray.depth = 0;
 
@@ -140,7 +140,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 		ray.origin = transformation.position;
 		ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
 		ray.min_t = 0.f;
-		ray.max_t = ray_max_t_;
+		ray.max_t = Ray_max_t;
 		ray.time = 0.f;
 		ray.depth = 0;
 

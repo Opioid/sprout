@@ -7,11 +7,10 @@
 
 namespace scene { namespace camera {
 
-Camera::Camera(int2 resolution, float ray_max_t) :
+Camera::Camera(int2 resolution) :
 	resolution_(resolution),
 	sensor_(nullptr),
 	filter_radius_(0),
-	ray_max_t_(ray_max_t),
 	frame_duration_(0.f),
 	motion_blur_(true) {}
 

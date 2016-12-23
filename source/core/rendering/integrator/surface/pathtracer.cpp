@@ -4,6 +4,7 @@
 #include "image/texture/sampler/sampler_2d_linear.inl"
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_intersection.inl"
 #include "scene/light/light.hpp"
@@ -134,7 +135,7 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
-		ray.max_t = take_settings_.ray_max_t;
+		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
 
 		if (!worker.intersect(ray, intersection)) {

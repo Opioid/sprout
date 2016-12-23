@@ -8,7 +8,7 @@ class Hemispherical : public Camera {
 
 public:
 
-	Hemispherical(int2 resolution, float ray_max_t);
+	Hemispherical(int2 resolution);
 
 	virtual uint32_t num_views() const final override;
 

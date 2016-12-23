@@ -8,7 +8,7 @@ class Spherical_stereoscopic : public Stereoscopic {
 
 public:
 
-	Spherical_stereoscopic(int2 resolution, float ray_max_t);
+	Spherical_stereoscopic(int2 resolution);
 
 	virtual uint32_t num_views() const final override;
 
