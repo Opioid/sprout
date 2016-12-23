@@ -60,9 +60,9 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume& volume
 		return float4(0.f);
 	}
 
-	uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 
-	float step = range / static_cast<float>(num_samples);
+	const float step = range / static_cast<float>(num_samples);
 
 	float3 w = -ray.direction;
 

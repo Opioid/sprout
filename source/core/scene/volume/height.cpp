@@ -5,6 +5,8 @@
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
 
+#include "base/debug/assert.hpp"
+
 #include <iostream>
 #include "base/math/print.hpp"
 
@@ -43,7 +45,11 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/,
 
 	if (ha == hb) {
 		// special case where density stays exactly the same along the ray
-		return d * (a_ * std::exp(-b_ * ha)) * attenuation;
+		float3 result = d * (a_ * std::exp(-b_ * ha)) * attenuation;
+
+		SOFT_ASSERT(math::contains_only_finite(result));
+
+		return result;
 	}
 
 	// calculate the integral of the exponential density function
@@ -56,6 +62,9 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/,
 	float fb = -std::exp(-b_ * hb);
 
 	float3 result = d * ((a_ * (fb - fa) / b_) / (hb - ha)) * attenuation;
+
+	SOFT_ASSERT(math::contains_only_finite(result));
+
 	return result;
 
 //	float3 old_result = Density::optical_depth(ray, step_size, rng, worker, filter);

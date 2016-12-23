@@ -31,7 +31,7 @@ bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		intersection.epsilon = 5e-4f;
 
-		constexpr float hit_t = Ray_max_t - 3.e31f;
+		constexpr float hit_t = Almost_ray_max_t;
 
 		intersection.p = ray.point(hit_t);
 		intersection.t = transformation.rotation.v3.x;
@@ -94,7 +94,7 @@ void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformat
 
 	sample.wi = math::normalized(ws - transformation.rotation.v3.z);
 
-	sample.t = Ray_max_t - 3.e31f;
+	sample.t = Almost_ray_max_t;
 	sample.pdf = 1.f / area;
 }
 
