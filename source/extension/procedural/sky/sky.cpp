@@ -59,7 +59,7 @@ void Sky::update() {
 
 	math::transformation transformation {
 		math::float3_identity,
-		float3(0.26f, 0.26f, 0.26f),
+		float3(math::degrees_to_radians(0.26f)),
 		math::create_quaternion(sun_rotation_)
 	};
 

@@ -18,15 +18,15 @@ Celestial_disk::Celestial_disk() {
 
 bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
-	float3_p v = transformation.rotation.v3.z;
-	float b = math::dot(v, ray.direction);
+	float3_p n = transformation.rotation.v3.z;
+	float b = math::dot(n, ray.direction);
 
 	if (b > 0.f) {
 		return false;
 	}
 
-	float radius = math::degrees_to_radians(transformation.scale.x);
-	float det = (b * b) - math::dot(v, v) + (radius * radius);
+	float radius = transformation.scale.x;
+	float det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		intersection.epsilon = 5e-4f;
@@ -36,8 +36,8 @@ bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 		intersection.p = ray.point(hit_t);
 		intersection.t = transformation.rotation.v3.x;
 		intersection.b = transformation.rotation.v3.y;
-		intersection.n = transformation.rotation.v3.z;
-		intersection.geo_n = transformation.rotation.v3.z;
+		intersection.n = n;
+		intersection.geo_n = n;
 		intersection.part = 0;
 
 		ray.max_t = hit_t;
@@ -49,15 +49,15 @@ bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 
 bool Celestial_disk::intersect_p(const Transformation& transformation,
 								 const Ray& ray, Node_stack& /*node_stack*/) const {
-	float3_p v = transformation.rotation.v3.z;
-	float b = math::dot(v, ray.direction);
+	float3_p n = transformation.rotation.v3.z;
+	float b = math::dot(n, ray.direction);
 
 	if (b > 0.f) {
 		return false;
 	}
 
-	float radius = math::degrees_to_radians(transformation.scale.x);
-	float det = (b * b) - math::dot(v, v) + (radius * radius);
+	float radius = transformation.scale.x;
+	float det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		return true;
@@ -89,16 +89,12 @@ void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformat
 	float2 xy = math::sample_disk_concentric(r2);
 
 	float3 ls = float3(xy, 0.f);
-	float radius = math::degrees_to_radians(transformation.scale.x);
+	float radius = transformation.scale.x;
 	float3 ws = radius * math::transform_vector(ls, transformation.rotation);
 
 	sample.wi = math::normalized(ws - transformation.rotation.v3.z);
 
-//	float a = Ray_max_t - 1.e32f;
-//	float b = Ray_max_t - 3.e31f;
-//	float c = std::nexttoward(Ray_max_t, 0.f);
-
-	sample.t = Ray_max_t - 3.e31f;//std::nexttoward(Ray_max_t, 0.f);
+	sample.t = Ray_max_t - 3.e31f;
 	sample.pdf = 1.f / area;
 }
 
@@ -124,7 +120,7 @@ float Celestial_disk::uv_weight(float2 /*uv*/) const {
 }
 
 float Celestial_disk::area(uint32_t /*part*/, float3_p scale) const {
-	float radius = math::degrees_to_radians(scale.x);
+	float radius = scale.x;
 	return math::Pi * radius * radius;
 }
 
