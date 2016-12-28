@@ -30,13 +30,17 @@ void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 
 float4 AO::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 			  scene::Intersection& intersection) {
+	float result = 0.f;
+
+	if (!resolve_mask(worker, ray, intersection, Sampler_filter::Unknown)) {
+		return float4(result, result, result, 1.f);
+	}
+
 	scene::Ray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t	 = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	occlusion_ray.max_t	 = settings_.radius;
 	occlusion_ray.time   = ray.time;
-
-	float result = 0.f;
 
 	float3 wo = -ray.direction;
 	auto& material_sample = intersection.sample(worker, wo, ray.time, Sampler_filter::Unknown);
@@ -49,7 +53,8 @@ float4 AO::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 
 		occlusion_ray.set_direction(ws);
 
-		if (worker.visibility(occlusion_ray)) {
+//		if (worker.visibility(occlusion_ray)) {
+		if (worker.masked_visibility(occlusion_ray, Sampler_filter::Unknown)) {
 			result += settings_.num_samples_reciprocal;
 		}
 	}

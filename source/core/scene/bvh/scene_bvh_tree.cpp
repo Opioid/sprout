@@ -162,7 +162,8 @@ bool Tree::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 	return false;
 }
 
-float Tree::opacity(const scene::Ray& ray, Worker& worker, material::Sampler_settings::Filter filter) const {
+float Tree::opacity(const scene::Ray& ray, Worker& worker,
+					material::Sampler_settings::Filter filter) const {
 	float opacity = root_.opacity(ray, props_, worker, filter);
 
 	if (opacity < 1.f) {
