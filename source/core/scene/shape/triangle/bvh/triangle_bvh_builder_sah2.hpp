@@ -1,18 +1,32 @@
 #pragma once
 
-#include "triangle_bvh_builder_base.hpp"
+//#include "triangle_bvh_builder_base.hpp"
 #include "base/math/plane.hpp"
 #include "base/math/vector.hpp"
+#include "base/math/bounding/aabb.hpp"
+#include <vector>
 
 namespace thread { class Pool; }
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene { namespace shape {
 
-class Builder_SAH : private Builder_base  {
+struct Vertex;
+
+namespace triangle {
+
+struct Index_triangle;
+struct Triangle;
+
+namespace bvh {
+
+template<typename Data> class Tree;
+struct Node;
+
+class Builder_SAH2 /*: private Builder_base*/  {
 
 public:
 
-	Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold);
+	Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold);
 
 	template<typename Data>
 	void build(Tree<Data>& tree,
@@ -24,7 +38,14 @@ public:
 
 private:
 
+	using index = std::vector<uint32_t>::iterator;
+
 	using aabbs = const std::vector<math::aabb>&;
+
+	struct Reference {
+		math::aabb aabb;
+		uint32_t   primitive;
+	};
 
 	class Split_candidate {
 
@@ -32,7 +53,7 @@ private:
 
 		using index = std::vector<uint32_t>::iterator;
 
-		Split_candidate(uint8_t split_axis, float3_p p);
+		Split_candidate(uint8_t split_axis, float3_p p, bool spatial);
 
 		void evaluate(index begin, index end, float aabb_surface_area,
 					  aabbs triangle_bounds);
@@ -56,7 +77,28 @@ private:
 		float cost_;
 
 		uint8_t axis_;
+
+		bool spatial_;
 	};
+
+	struct Build_node {
+		Build_node();
+		~Build_node();
+
+		void num_sub_nodes(uint32_t& count);
+
+		math::aabb aabb;
+
+		std::vector<Reference> references;
+
+		uint32_t start_index;
+		uint32_t end_index;
+
+		uint8_t axis;
+
+		Build_node* children[2];
+	};
+
 
 	template<typename Data>
 	void split(Build_node* node,
@@ -69,10 +111,33 @@ private:
 			   thread::Pool& thread_pool,
 			   Tree<Data>& tree);
 
+	void split(Build_node* node, const std::vector<Reference>& references,
+			   const math::aabb& aabb, uint32_t max_primitives);
+
 	Split_candidate splitting_plane(index begin, index end, const math::aabb& aabb,
 									aabbs triangle_bounds, thread::Pool& thread_pool);
 
+	void serialize(Build_node* node);
+
+	Node& new_node();
+
+	uint32_t current_node_index() const;
+
+	template<typename Data>
+	static void assign(Build_node* node,
+					   index begin, index end,
+					   const std::vector<Index_triangle>& triangles,
+					   const std::vector<Vertex>& vertices,
+					   Tree<Data>& tree);
+
+	static void assign(Build_node* node, const std::vector<Reference>& references);
+
 	std::vector<Split_candidate> split_candidates_;
+
+	uint32_t num_nodes_;
+	uint32_t current_node_;
+
+	Node* nodes_;
 
 	const uint32_t num_slices_;
 	const uint32_t sweep_threshold_;

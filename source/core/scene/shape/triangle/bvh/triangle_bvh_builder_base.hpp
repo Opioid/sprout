@@ -36,6 +36,7 @@ struct Build_node {
 };
 
 class Builder_base  {
+
 protected:
 
 	using index = std::vector<uint32_t>::iterator;

@@ -68,8 +68,8 @@ void Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_data(uint32_
 }
 
 template<typename Intersection_vertex, typename Shading_vertex>
-float2 Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_uv(
-		uint32_t index, float2 uv) const {
+float2 Indexed_data<Intersection_vertex, Shading_vertex>::interpolate_uv(uint32_t index,
+																		 float2 uv) const {
 	const auto& tri = triangles_[index];
 	const Shading_vertex& sa = shading_vertices_[tri.a];
 	const Shading_vertex& sb = shading_vertices_[tri.b];

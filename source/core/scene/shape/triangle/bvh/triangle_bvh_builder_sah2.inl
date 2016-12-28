@@ -1,6 +1,6 @@
 #pragma once
 
-#include "triangle_bvh_builder_sah.hpp"
+#include "triangle_bvh_builder_sah2.hpp"
 #include "triangle_bvh_builder_base.inl"
 #include "triangle_bvh_tree.inl"
 #include "triangle_bvh_helper.hpp"
@@ -13,7 +13,7 @@
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
-void Builder_SAH::build(Tree<Data>& tree,
+void Builder_SAH2::build(Tree<Data>& tree,
 						const std::vector<Index_triangle>& triangles,
 						const std::vector<Vertex>& vertices,
 						uint32_t num_parts,
@@ -21,6 +21,8 @@ void Builder_SAH::build(Tree<Data>& tree,
 						thread::Pool& thread_pool) {
 	std::vector<uint32_t> primitive_indices(triangles.size());
 	std::vector<math::aabb> primitive_bounds(triangles.size());
+
+	std::vector<Reference> references(triangles.size());
 
 	math::aabb aabb = math::aabb::empty();
 
@@ -35,6 +37,9 @@ void Builder_SAH::build(Tree<Data>& tree,
 		float3 max = triangle_max(a, b, c);
 
 		primitive_bounds[i] = math::aabb(min, max);
+
+		references[i].aabb = primitive_bounds[i];
+		references[i].primitive = i;
 
 		aabb.merge_assign(primitive_bounds[i]);
 	}
@@ -56,7 +61,7 @@ void Builder_SAH::build(Tree<Data>& tree,
 }
 
 template<typename Data>
-void Builder_SAH::split(Build_node* node,
+void Builder_SAH2::split(Build_node* node,
 						index begin, index end,
 						const math::aabb& aabb,
 						const std::vector<Index_triangle>& triangles,
@@ -101,6 +106,22 @@ void Builder_SAH::split(Build_node* node,
 			}
 		}
 	}
+}
+
+template<typename Data>
+void Builder_SAH2::assign(Build_node* node,
+						  index begin, index end,
+						  const std::vector<Index_triangle>& triangles,
+						  const std::vector<Vertex>& vertices,
+						  Tree<Data>& tree) {
+	node->start_index = tree.current_triangle();
+
+	for (index i = begin; i != end; ++i) {
+		const auto& t = triangles[*i];
+		tree.add_triangle(t.a, t.b, t.c, t.material_index, vertices);
+	}
+
+	node->end_index = tree.current_triangle();
 }
 
 }}}}

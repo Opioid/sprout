@@ -1,6 +1,7 @@
 SOURCES += \
 	scene/shape/triangle/bvh/triangle_bvh_builder_base.cpp \
 	scene/shape/triangle/bvh/triangle_bvh_builder_sah.cpp \
+    scene/shape/triangle/bvh/triangle_bvh_builder_sah2.cpp \
 	scene/shape/triangle/bvh/triangle_bvh_builder_suh.cpp \
 	scene/shape/triangle/bvh/triangle_bvh_helper.cpp \
 
@@ -9,6 +10,8 @@ HEADERS += \
 	scene/shape/triangle/bvh/triangle_bvh_builder_base.inl \
 	scene/shape/triangle/bvh/triangle_bvh_builder_sah.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_builder_sah.inl \
+    scene/shape/triangle/bvh/triangle_bvh_builder_sah2.hpp \
+    scene/shape/triangle/bvh/triangle_bvh_builder_sah2.inl \
 	scene/shape/triangle/bvh/triangle_bvh_builder_suh.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_builder_suh.inl \
 	scene/shape/triangle/bvh/triangle_bvh_data.hpp \

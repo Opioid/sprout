@@ -10,7 +10,7 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, const float3& p) :
+Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, float3_p p) :
 	aabb_0_(math::aabb::empty()),
 	aabb_1_(math::aabb::empty()),
 	d_(p.v[split_axis]),
@@ -18,12 +18,12 @@ Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, const float3& 
 
 void Builder_SAH::Split_candidate::evaluate(index begin, index end,
 											float aabb_surface_area,
-											const std::vector<math::aabb>& triangle_bounds) {
+											aabbs triangle_bounds) {
 	uint32_t num_side_0 = 0;
 	uint32_t num_side_1 = 0;
 
 	for (index i = begin; i != end; ++i) {
-		auto& bounds = triangle_bounds[*i];
+		const auto& bounds = triangle_bounds[*i];
 
 		if (behind(bounds.max())) {
 			++num_side_0;
@@ -48,7 +48,7 @@ float Builder_SAH::Split_candidate::cost() const {
 	return cost_;
 }
 
-bool Builder_SAH::Split_candidate::behind(const float3& point) const {
+bool Builder_SAH::Split_candidate::behind(float3_p point) const {
 	return point.v[axis_] < d_;
 }
 
@@ -69,7 +69,7 @@ Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold) :
 
 Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
 		index begin, index end, const math::aabb& aabb,
-		const std::vector<math::aabb>& triangle_bounds, thread::Pool& thread_pool) {
+		aabbs triangle_bounds, thread::Pool& thread_pool) {
 	split_candidates_.clear();
 
 	uint32_t num_triangles = static_cast<uint32_t>(std::distance(begin, end));
@@ -86,7 +86,7 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
 		float3 position = aabb.position();
 
 		float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
-		for (uint32_t i = 1; i < num_slices_; ++i) {
+		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
 			float fi = static_cast<float>(i);
 
 			float3 slice_x(aabb.min().x + fi * step.x, position.y, position.z);

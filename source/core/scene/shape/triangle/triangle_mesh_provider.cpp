@@ -8,6 +8,7 @@
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
 #include "bvh/triangle_bvh_builder_sah.inl"
+#include "bvh/triangle_bvh_builder_sah2.inl"
 #include "bvh/triangle_bvh_builder_suh.inl"
 #include "bvh/triangle_bvh_data.inl"
 #include "bvh/triangle_bvh_data_interleaved.inl"
@@ -137,6 +138,9 @@ std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& 
 	} else {
 		bvh::Builder_SAH builder(16, 64);
 		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
+
+//		bvh::Builder_SAH2 builder(16, 64);
+//		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
 	}
 
     if (!mesh->init()) {

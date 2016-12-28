@@ -7,6 +7,7 @@
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 class Builder_SUH : private Builder_base  {
+
 public:
 
 	template<typename Data>
@@ -19,6 +20,7 @@ public:
 private:
 
 	class Split_candidate {
+
 	public:
 
 		using index = std::vector<uint32_t>::iterator;
