@@ -175,6 +175,14 @@ inline void AABB::merge_assign(const AABB& other) {
 	bounds_[1] = math::max(bounds_[1], other.bounds_[1]);
 }
 
+inline void AABB::clip_min(float d, uint8_t axis) {
+	bounds_[0].v[axis] = std::max(d, bounds_[0].v[axis]);
+}
+
+inline void AABB::clip_max(float d, uint8_t axis) {
+	bounds_[1].v[axis] = std::min(d, bounds_[1].v[axis]);
+}
+
 inline AABB AABB::empty() {
 	constexpr float max = std::numeric_limits<float>::max();
 	return AABB(Vector3f_a(max), Vector3f_a(-max));

@@ -10,6 +10,8 @@
 #include "base/math/plane.inl"
 #include "base/math/bounding/aabb.inl"
 
+#include <iostream>
+
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
@@ -44,12 +46,14 @@ void Builder_SAH2::build(Tree<Data>& tree,
 		aabb.merge_assign(primitive_bounds[i]);
 	}
 
-	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), num_parts, vertices);
+	num_references_ = 0;
+
+//	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), num_parts, vertices);
 
 	Build_node root;
-	split(&root,
-		  primitive_indices.begin(), primitive_indices.end(),
-		  aabb, triangles, vertices, primitive_bounds, max_primitives, thread_pool, tree);
+	split(&root, references, aabb, max_primitives, thread_pool);
+
+	tree.allocate_triangles(num_references_, num_parts, vertices);
 
 	num_nodes_ = 1;
 	root.num_sub_nodes(num_nodes_);
@@ -57,71 +61,35 @@ void Builder_SAH2::build(Tree<Data>& tree,
 	nodes_ = tree.allocate_nodes(num_nodes_);
 
 	current_node_ = 0;
-	serialize(&root);
+	serialize(&root, triangles, vertices, tree);
 }
 
 template<typename Data>
-void Builder_SAH2::split(Build_node* node,
-						index begin, index end,
-						const math::aabb& aabb,
-						const std::vector<Index_triangle>& triangles,
-						const std::vector<Vertex>& vertices,
-						aabbs triangle_bounds,
-						uint32_t max_primitives,
-						thread::Pool& thread_pool,
-						Tree<Data>& tree) {
-	node->aabb = aabb;
+void Builder_SAH2::serialize(Build_node* node,
+							 const std::vector<Index_triangle>& triangles,
+							 const std::vector<Vertex>& vertices,
+							 Tree<Data>& tree) {
+	auto& n = new_node();
+	n.set_aabb(node->aabb);
 
-	uint32_t num_primitives = static_cast<uint32_t>(std::distance(begin, end));
+	if (node->children[0]) {
+		serialize(node->children[0], triangles, vertices, tree);
 
-	if (num_primitives <= max_primitives) {
-		assign(node, begin, end, triangles, vertices, tree);
+		n.second_child_index = current_node_index();
+
+		serialize(node->children[1], triangles, vertices, tree);
+
+		n.axis = node->axis;
+		n.num_primitives = 0;
 	} else {
-		Split_candidate sp = splitting_plane(begin, end, aabb, triangle_bounds, thread_pool);
+		n.primitive_offset = node->start_index;
+		n.num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
 
-		if (static_cast<float>(num_primitives) <= sp.cost()) {
-			assign(node, begin, end, triangles, vertices, tree);
-		} else {
-			node->axis = sp.axis();
-
-			index pids1_begin = std::partition(begin, end,
-				[&sp, &triangle_bounds](uint32_t pi) {
-					return sp.behind(triangle_bounds[pi].max()); });
-
-			if (begin == pids1_begin || end == pids1_begin) {
-				// This can happen if we didn't find a good splitting plane.
-				// It means every triangle was (partially) on the same side of the plane.
-
-				assign(node, begin, end, triangles, vertices, tree);
-			} else {
-				node->children[0] = new Build_node;
-				split(node->children[0], begin, pids1_begin, sp.aabb_0(),
-					  triangles, vertices, triangle_bounds,
-					  max_primitives, thread_pool, tree);
-
-				node->children[1] = new Build_node;
-				split(node->children[1], pids1_begin, end, sp.aabb_1(),
-					  triangles, vertices, triangle_bounds,
-					  max_primitives, thread_pool, tree);
-			}
+		for (const auto& r : node->references) {
+			const auto& t = triangles[r.primitive];
+			tree.add_triangle(t.a, t.b, t.c, t.material_index, vertices);
 		}
 	}
-}
-
-template<typename Data>
-void Builder_SAH2::assign(Build_node* node,
-						  index begin, index end,
-						  const std::vector<Index_triangle>& triangles,
-						  const std::vector<Vertex>& vertices,
-						  Tree<Data>& tree) {
-	node->start_index = tree.current_triangle();
-
-	for (index i = begin; i != end; ++i) {
-		const auto& t = triangles[*i];
-		tree.add_triangle(t.a, t.b, t.c, t.material_index, vertices);
-	}
-
-	node->end_index = tree.current_triangle();
 }
 
 }}}}

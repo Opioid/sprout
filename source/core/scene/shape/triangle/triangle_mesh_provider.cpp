@@ -136,11 +136,11 @@ std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& 
 		bvh::Builder_SUH builder;
 		builder.build(mesh->tree(), triangles, vertices, num_parts, 8);
 	} else {
-		bvh::Builder_SAH builder(16, 64);
-		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
-
-//		bvh::Builder_SAH2 builder(16, 64);
+//		bvh::Builder_SAH builder(16, 64);
 //		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
+
+		bvh::Builder_SAH2 builder(16, 64);
+		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
 	}
 
     if (!mesh->init()) {

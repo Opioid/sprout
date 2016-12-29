@@ -55,14 +55,18 @@ private:
 
 		Split_candidate(uint8_t split_axis, float3_p p, bool spatial);
 
-		void evaluate(index begin, index end, float aabb_surface_area,
-					  aabbs triangle_bounds);
+		void evaluate(const std::vector<Reference>& references, float aabb_surface_area);
+
+		void distribute(const std::vector<Reference>& references,
+						std::vector<Reference>& references0,
+						std::vector<Reference>& references1) const;
 
 		float cost() const;
 
 		bool behind(float3_p point) const;
 
 		uint8_t axis() const;
+		bool spatial() const;
 
 		const math::aabb& aabb_0() const;
 		const math::aabb& aabb_1() const;
@@ -99,43 +103,32 @@ private:
 		Build_node* children[2];
 	};
 
+	void split(Build_node* node, const std::vector<Reference>& references,
+			   const math::aabb& aabb, uint32_t max_primitives,
+			   thread::Pool& thread_pool);
+
+	Split_candidate splitting_plane(const std::vector<Reference>& references,
+									const math::aabb& aabb,
+									thread::Pool& thread_pool);
 
 	template<typename Data>
-	void split(Build_node* node,
-			   index begin, index end,
-			   const math::aabb& aabb,
-			   const std::vector<Index_triangle>& triangles,
-			   const std::vector<Vertex>& vertices,
-			   aabbs triangle_bounds,
-			   uint32_t max_primitives,
-			   thread::Pool& thread_pool,
-			   Tree<Data>& tree);
-
-	void split(Build_node* node, const std::vector<Reference>& references,
-			   const math::aabb& aabb, uint32_t max_primitives);
-
-	Split_candidate splitting_plane(index begin, index end, const math::aabb& aabb,
-									aabbs triangle_bounds, thread::Pool& thread_pool);
-
-	void serialize(Build_node* node);
+	void serialize(Build_node* node,
+				   const std::vector<Index_triangle>& triangles,
+				   const std::vector<Vertex>& vertices,
+				   Tree<Data>& tree);
 
 	Node& new_node();
 
 	uint32_t current_node_index() const;
 
-	template<typename Data>
-	static void assign(Build_node* node,
-					   index begin, index end,
-					   const std::vector<Index_triangle>& triangles,
-					   const std::vector<Vertex>& vertices,
-					   Tree<Data>& tree);
-
-	static void assign(Build_node* node, const std::vector<Reference>& references);
+	void assign(Build_node* node, const std::vector<Reference>& references);
 
 	std::vector<Split_candidate> split_candidates_;
 
 	uint32_t num_nodes_;
 	uint32_t current_node_;
+
+	uint32_t num_references_;
 
 	Node* nodes_;
 
