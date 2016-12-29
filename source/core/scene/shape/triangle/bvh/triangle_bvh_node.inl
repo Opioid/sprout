@@ -107,4 +107,15 @@ inline bool Node::intersect_p(math::simd::FVector ray_origin,
 				 _mm_comige_ss(max_t, min_t));
 }
 
+inline bool Node::operator!=(const Node& other) const {
+	return pad0[0] != other.pad0[0] ||
+		   pad0[1] != other.pad0[1] ||
+		   pad0[2] != other.pad0[2] ||
+		   pad1[0] != other.pad1[0] ||
+		   pad1[1] != other.pad1[1] ||
+		   pad1[2] != other.pad1[2] ||
+
+		   primitive_offset != other.primitive_offset;
+}
+
 }}}}

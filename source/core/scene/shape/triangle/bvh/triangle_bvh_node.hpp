@@ -40,6 +40,8 @@ struct Node {
 					 math::simd::FVector min_t,
 					 math::simd::FVector max_t) const;
 
+	bool operator!=(const Node& other) const;
+
 	union {
 		float3 bounds[2];
 

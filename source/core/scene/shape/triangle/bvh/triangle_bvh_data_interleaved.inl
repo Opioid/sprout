@@ -94,7 +94,8 @@ void Data_interleaved<Triangle>::sample(uint32_t index, float2 r2, float3& p) co
 }
 */
 template<typename Triangle>
-void Data_interleaved<Triangle>::allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& /*vertices*/) {
+void Data_interleaved<Triangle>::allocate_triangles(uint32_t num_triangles,
+													const std::vector<Vertex>& /*vertices*/) {
     triangles_.clear();
     triangles_.reserve(num_triangles);
 }

@@ -76,7 +76,7 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
 
 	if (num_triangles <= sweep_threshold_) {
 		for (index i = begin; i != end; ++i) {
-			const float3& max = triangle_bounds[*i].max();
+			float3_p max = triangle_bounds[*i].max();
 			split_candidates_.push_back(Split_candidate(0, max));
 			split_candidates_.push_back(Split_candidate(1, max));
 			split_candidates_.push_back(Split_candidate(2, max));
@@ -85,17 +85,19 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
 		float3 halfsize = aabb.halfsize();
 		float3 position = aabb.position();
 
+		float3_p min = aabb.min();
+
 		float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
 			float fi = static_cast<float>(i);
 
-			float3 slice_x(aabb.min().x + fi * step.x, position.y, position.z);
+			float3 slice_x(min.x + fi * step.x, position.y, position.z);
 			split_candidates_.push_back(Split_candidate(0, slice_x));
 
-			float3 slice_y(position.x, aabb.min().y + fi * step.y, position.z);
+			float3 slice_y(position.x, min.y + fi * step.y, position.z);
 			split_candidates_.push_back(Split_candidate(1, slice_y));
 
-			float3 slice_z(position.x, position.y, aabb.min().z + fi * step.z);
+			float3 slice_z(position.x, position.y, min.z + fi * step.z);
 			split_candidates_.push_back(Split_candidate(2, slice_z));
 		}
 	}

@@ -155,13 +155,13 @@ void Builder_SAH2::split(Build_node* node, const References& references,
 
 			References references0;
 			References references1;
-
 			sp.distribute(references, references0, references1);
 
-			if (references0.empty()) {
-				assign(node, references1);
-			} else if (references1.empty()) {
-				assign(node, references0);
+			if (references0.empty() || references1.empty()) {
+				// This can happen if we didn't find a good splitting plane.
+				// It means every triangle was (partially) on the same side of the plane.
+
+				assign(node, references);
 			} else {
 				node->children[0] = new Build_node;
 				split(node->children[0], references0, sp.aabb_0(),
@@ -200,9 +200,10 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 			split_candidates_.push_back(Split_candidate(2, max, false));
 		}
 	} else {
+		float3_p min = aabb.min();
+
 		float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
-			float3_p min = aabb.min();
 			float fi = static_cast<float>(i);
 
 			float3 slice_x(min.x + fi * step.x, position.y, position.z);
