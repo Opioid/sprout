@@ -8,8 +8,6 @@
 #include "base/math/bounding/aabb.inl"
 #include "base/thread/thread_pool.hpp"
 
-#include <iostream>
-
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 Builder_SAH2::Build_node::Build_node() : start_index(0), end_index(0) {
@@ -22,15 +20,6 @@ Builder_SAH2::Build_node::~Build_node() {
 	delete children[1];
 }
 
-void Builder_SAH2::Build_node::num_sub_nodes(uint32_t& count) {
-	if (children[0]) {
-		count += 2;
-
-		children[0]->num_sub_nodes(count);
-		children[1]->num_sub_nodes(count);
-	}
-}
-
 Builder_SAH2::Split_candidate::Split_candidate(uint8_t split_axis, float3_p p, bool spatial) :
 	aabb_0_(math::aabb::empty()),
 	aabb_1_(math::aabb::empty()),
@@ -38,7 +27,7 @@ Builder_SAH2::Split_candidate::Split_candidate(uint8_t split_axis, float3_p p, b
 	axis_(split_axis),
 	spatial_(spatial) {}
 
-void Builder_SAH2::Split_candidate::evaluate(const std::vector<Reference>& references,
+void Builder_SAH2::Split_candidate::evaluate(const References& references,
 											 float aabb_surface_area) {
 	uint32_t num_side_0 = 0;
 	uint32_t num_side_1 = 0;
@@ -90,9 +79,9 @@ void Builder_SAH2::Split_candidate::evaluate(const std::vector<Reference>& refer
 	}
 }
 
-void Builder_SAH2::Split_candidate::distribute(const std::vector<Reference>& references,
-											   std::vector<Reference>& references0,
-											   std::vector<Reference>& references1) const {
+void Builder_SAH2::Split_candidate::distribute(const References& references,
+											   References& references0,
+											   References& references1) const {
 	if (spatial_) {
 		for (const auto& r : references) {
 			if (behind(r.aabb.max())) {
@@ -147,7 +136,7 @@ const math::aabb& Builder_SAH2::Split_candidate::aabb_1() const {
 Builder_SAH2::Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold) :
 	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
-void Builder_SAH2::split(Build_node* node, const std::vector<Reference>& references,
+void Builder_SAH2::split(Build_node* node, const References& references,
 						 const math::aabb& aabb, uint32_t max_primitives,
 						 thread::Pool& thread_pool) {
 	node->aabb = aabb;
@@ -164,8 +153,8 @@ void Builder_SAH2::split(Build_node* node, const std::vector<Reference>& referen
 		} else {
 			node->axis = sp.axis();
 
-			std::vector<Reference> references0;
-			std::vector<Reference> references1;
+			References references0;
+			References references1;
 
 			sp.distribute(references, references0, references1);
 
@@ -181,13 +170,15 @@ void Builder_SAH2::split(Build_node* node, const std::vector<Reference>& referen
 				node->children[1] = new Build_node;
 				split(node->children[1], references1, sp.aabb_1(),
 					  max_primitives, thread_pool);
+
+				num_nodes_ += 2;
 			}
 		}
 	}
 
 }
 
-Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const std::vector<Reference>& references,
+Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& references,
 															const math::aabb& aabb,
 															thread::Pool& thread_pool) {
 	split_candidates_.clear();
@@ -203,7 +194,7 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const std::vector<Re
 
 	if (num_triangles <= sweep_threshold_) {
 		for (const auto& r : references) {
-			const float3& max = r.aabb.max();
+			float3_p max = r.aabb.max();
 			split_candidates_.push_back(Split_candidate(0, max, false));
 			split_candidates_.push_back(Split_candidate(1, max, false));
 			split_candidates_.push_back(Split_candidate(2, max, false));
@@ -211,15 +202,16 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const std::vector<Re
 	} else {
 		float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
+			float3_p min = aabb.min();
 			float fi = static_cast<float>(i);
 
-			float3 slice_x(aabb.min().x + fi * step.x, position.y, position.z);
+			float3 slice_x(min.x + fi * step.x, position.y, position.z);
 			split_candidates_.push_back(Split_candidate(0, slice_x, false));
 
-			float3 slice_y(position.x, aabb.min().y + fi * step.y, position.z);
+			float3 slice_y(position.x, min.y + fi * step.y, position.z);
 			split_candidates_.push_back(Split_candidate(1, slice_y, false));
 
-			float3 slice_z(position.x, position.y, aabb.min().z + fi * step.z);
+			float3 slice_z(position.x, position.y, min.z + fi * step.z);
 			split_candidates_.push_back(Split_candidate(2, slice_z, false));
 		}
 	}
@@ -257,7 +249,7 @@ uint32_t Builder_SAH2::current_node_index() const {
 	return current_node_;
 }
 
-void Builder_SAH2::assign(Build_node* node, const std::vector<Reference>& references) {
+void Builder_SAH2::assign(Build_node* node, const References& references) {
 	node->references = references;
 	node->start_index = num_references_;
 	num_references_ += static_cast<uint32_t>(references.size());

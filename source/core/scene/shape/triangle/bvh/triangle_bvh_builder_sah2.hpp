@@ -38,28 +38,24 @@ public:
 
 private:
 
-	using index = std::vector<uint32_t>::iterator;
-
-	using aabbs = const std::vector<math::aabb>&;
-
 	struct Reference {
 		math::aabb aabb;
 		uint32_t   primitive;
 	};
 
+	using References = std::vector<Reference>;
+
 	class Split_candidate {
 
 	public:
 
-		using index = std::vector<uint32_t>::iterator;
-
 		Split_candidate(uint8_t split_axis, float3_p p, bool spatial);
 
-		void evaluate(const std::vector<Reference>& references, float aabb_surface_area);
+		void evaluate(const References& references, float aabb_surface_area);
 
-		void distribute(const std::vector<Reference>& references,
-						std::vector<Reference>& references0,
-						std::vector<Reference>& references1) const;
+		void distribute(const References& references,
+						References& references0,
+						References& references1) const;
 
 		float cost() const;
 
@@ -89,8 +85,6 @@ private:
 		Build_node();
 		~Build_node();
 
-		void num_sub_nodes(uint32_t& count);
-
 		math::aabb aabb;
 
 		std::vector<Reference> references;
@@ -103,11 +97,11 @@ private:
 		Build_node* children[2];
 	};
 
-	void split(Build_node* node, const std::vector<Reference>& references,
+	void split(Build_node* node, const References& references,
 			   const math::aabb& aabb, uint32_t max_primitives,
 			   thread::Pool& thread_pool);
 
-	Split_candidate splitting_plane(const std::vector<Reference>& references,
+	Split_candidate splitting_plane(const References& references,
 									const math::aabb& aabb,
 									thread::Pool& thread_pool);
 
@@ -121,7 +115,7 @@ private:
 
 	uint32_t current_node_index() const;
 
-	void assign(Build_node* node, const std::vector<Reference>& references);
+	void assign(Build_node* node, const References& references);
 
 	std::vector<Split_candidate> split_candidates_;
 
