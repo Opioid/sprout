@@ -87,7 +87,7 @@ private:
 
 		math::aabb aabb;
 
-		std::vector<Reference> references;
+		std::vector<uint32_t> primitives;
 
 		uint32_t start_index;
 		uint32_t end_index;

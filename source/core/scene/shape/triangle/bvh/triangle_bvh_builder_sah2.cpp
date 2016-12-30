@@ -251,9 +251,14 @@ uint32_t Builder_SAH2::current_node_index() const {
 }
 
 void Builder_SAH2::assign(Build_node* node, const References& references) {
-	node->references = references;
+	size_t num_references = references.size();
+	node->primitives.resize(num_references);
+	for (size_t i = 0; i < num_references; ++i) {
+		node->primitives[i] = references[i].primitive;
+	}
+
 	node->start_index = num_references_;
-	num_references_ += static_cast<uint32_t>(references.size());
+	num_references_ += static_cast<uint32_t>(num_references);
 	node->end_index = num_references_;
 }
 

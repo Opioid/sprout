@@ -74,8 +74,8 @@ void Builder_SAH2::serialize(Build_node* node,
 		n.primitive_offset = node->start_index;
 		n.num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
 
-		for (const auto& r : node->references) {
-			const auto& t = triangles[r.primitive];
+		for (auto p : node->primitives) {
+			const auto& t = triangles[p];
 			tree.add_triangle(t.a, t.b, t.c, t.material_index, vertices);
 		}
 	}
