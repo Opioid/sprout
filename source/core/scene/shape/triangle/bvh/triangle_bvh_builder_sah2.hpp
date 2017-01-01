@@ -39,8 +39,17 @@ public:
 private:
 
 	struct Reference {
-		math::aabb aabb;
-		uint32_t   primitive;
+		Reference() {};
+
+		union {
+			math::aabb aabb;
+
+			struct {
+				float pad0[3];
+				uint32_t primitive;
+				float pad1[4];
+			};
+		};
 	};
 
 	using References = std::vector<Reference>;
@@ -71,6 +80,9 @@ private:
 
 		math::aabb aabb_0_;
 		math::aabb aabb_1_;
+
+		uint32_t num_side_0_;
+		uint32_t num_side_1_;
 
 		float d_;
 

@@ -77,11 +77,17 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 		cost_ = 2.f + (static_cast<float>(num_side_0) * aabb_0_.surface_area() +
 					   static_cast<float>(num_side_1) * aabb_1_.surface_area()) / aabb_surface_area;
 	}
+
+	num_side_0_ = num_side_0;
+	num_side_1_ = num_side_1;
 }
 
 void Builder_SAH2::Split_candidate::distribute(const References& references,
 											   References& references0,
 											   References& references1) const {
+	references0.reserve(num_side_0_);
+	references1.reserve(num_side_1_);
+
 	if (spatial_) {
 		for (const auto& r : references) {
 			if (behind(r.aabb.max())) {
