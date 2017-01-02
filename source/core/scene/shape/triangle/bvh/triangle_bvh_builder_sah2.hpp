@@ -109,7 +109,7 @@ private:
 		Build_node* children[2];
 	};
 
-	void split(Build_node* node, const References& references,
+	void split(Build_node* node, References& references,
 			   const math::aabb& aabb, uint32_t max_primitives,
 			   thread::Pool& thread_pool);
 

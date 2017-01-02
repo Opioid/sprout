@@ -142,7 +142,7 @@ const math::aabb& Builder_SAH2::Split_candidate::aabb_1() const {
 Builder_SAH2::Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold) :
 	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
-void Builder_SAH2::split(Build_node* node, const References& references,
+void Builder_SAH2::split(Build_node* node, References& references,
 						 const math::aabb& aabb, uint32_t max_primitives,
 						 thread::Pool& thread_pool) {
 	node->aabb = aabb;
@@ -169,9 +169,13 @@ void Builder_SAH2::split(Build_node* node, const References& references,
 
 				assign(node, references);
 			} else {
+				references = References();
+
 				node->children[0] = new Build_node;
 				split(node->children[0], references0, sp.aabb_0(),
 					  max_primitives, thread_pool);
+
+				references0 = References();
 
 				node->children[1] = new Build_node;
 				split(node->children[1], references1, sp.aabb_1(),

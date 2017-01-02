@@ -19,31 +19,34 @@ void Builder_SAH2::build(Tree<Data>& tree,
 						uint32_t num_parts,
 						uint32_t max_primitives,
 						thread::Pool& thread_pool) {
-	std::vector<Reference> references(triangles.size());
-
-	math::aabb aabb = math::aabb::empty();
-
-	for (uint32_t i = 0, len = static_cast<uint32_t>(triangles.size()); i < len; ++i) {
-		auto a = float3(vertices[triangles[i].a].p);
-		auto b = float3(vertices[triangles[i].b].p);
-		auto c = float3(vertices[triangles[i].c].p);
-
-		float3 min = triangle_min(a, b, c);
-		float3 max = triangle_max(a, b, c);
-
-		math::aabb primitive_bounds = math::aabb(min, max);
-
-		references[i].aabb = primitive_bounds;
-		references[i].primitive = i;
-
-		aabb.merge_assign(primitive_bounds);
-	}
-
-	num_nodes_ = 1;
-	num_references_ = 0;
-
 	Build_node root;
-	split(&root, references, aabb, max_primitives, thread_pool);
+
+	{
+		std::vector<Reference> references(triangles.size());
+
+		math::aabb aabb = math::aabb::empty();
+
+		for (uint32_t i = 0, len = static_cast<uint32_t>(triangles.size()); i < len; ++i) {
+			auto a = float3(vertices[triangles[i].a].p);
+			auto b = float3(vertices[triangles[i].b].p);
+			auto c = float3(vertices[triangles[i].c].p);
+
+			float3 min = triangle_min(a, b, c);
+			float3 max = triangle_max(a, b, c);
+
+			math::aabb primitive_bounds = math::aabb(min, max);
+
+			references[i].aabb = primitive_bounds;
+			references[i].primitive = i;
+
+			aabb.merge_assign(primitive_bounds);
+		}
+
+		num_nodes_ = 1;
+		num_references_ = 0;
+
+		split(&root, references, aabb, max_primitives, thread_pool);
+	}
 
 	tree.allocate_triangles(num_references_, num_parts, vertices);
 
