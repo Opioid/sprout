@@ -259,6 +259,8 @@ Vector3f_a cos(FVector3f_a v);
 
 bool contains_negative(FVector3f_a v);
 
+bool contains_greater_zero(FVector3f_a v);
+
 bool contains_greater_one(FVector3f_a v);
 
 bool contains_nan(FVector3f_a v);

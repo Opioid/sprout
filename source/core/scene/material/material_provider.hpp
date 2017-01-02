@@ -21,6 +21,7 @@ namespace metallic_paint	{ class Sample; }
 namespace substitute {
 
 class Sample;
+class Sample_subsurface;
 class Sample_translucent;
 
 }
@@ -101,7 +102,7 @@ private:
 										  resource::Manager& manager);
 
 	struct Coating_description {
-		float3 color = float3(1.f, 1.f, 1.f);
+		float3 color = float3(1.f);
 		float  ior = 1.f;
 		float  roughness = 0.f;
 		float  thickness = 0.f;
@@ -126,6 +127,7 @@ private:
 	Sample_cache<metallic_paint::Sample>			metallic_paint_cache_;
 	Sample_cache<substitute::Sample>				substitute_cache_;
 	Sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
+	Sample_cache<substitute::Sample_subsurface>		substitute_subsurface_cache_;
 	Sample_cache<substitute::Sample_thinfilm>		substitute_thinfilm_cache_;
 	Sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;
 

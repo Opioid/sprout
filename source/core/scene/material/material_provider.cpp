@@ -31,6 +31,8 @@
 #include "substitute/substitute_coating_sample.inl"
 #include "substitute/substitute_material.hpp"
 #include "substitute/substitute_sample.hpp"
+#include "substitute/substitute_subsurface_material.hpp"
+#include "substitute/substitute_subsurface_sample.hpp"
 #include "substitute/substitute_translucent_material.hpp"
 #include "substitute/substitute_translucent_sample.hpp"
 #include "base/json/json.hpp"
@@ -56,6 +58,7 @@ Provider::Provider(uint32_t num_threads) :
 	metallic_paint_cache_(num_threads),
 	substitute_cache_(num_threads),
 	substitute_clearcoat_cache_(num_threads),
+	substitute_subsurface_cache_(num_threads),
 	substitute_thinfilm_cache_(num_threads),
 	substitute_translucent_cache_(num_threads) {
 	auto material = std::make_shared<substitute::Material>(
@@ -739,6 +742,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	Texture_adapter mask;
 	bool two_sided = false;
 	float3 color(0.6f, 0.6f, 0.6f);
+	float3 scattering(0.f);
+	float3 absorption(0.f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float ior = 1.46f;
@@ -750,6 +755,10 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	for (auto& n : substitute_value.GetObject()) {
 		if ("color" == n.name) {
 			color = json::read_float3(n.value);
+		} else if ("scattering" == n.name) {
+			scattering = json::read_float3(n.value);
+		} else if ("absorption" == n.name) {
+			absorption = json::read_float3(n.value);
 		} else if ("ior" == n.name) {
 			ior = json::read_float(n.value);
 		} else if ("roughness" == n.name) {
@@ -881,6 +890,24 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 
 			return material;
 		}
+	} else if (math::contains_greater_zero(scattering)) {
+		auto material = std::make_shared<substitute::Material_subsurface>(
+					substitute_subsurface_cache_, sampler_settings, two_sided);
+
+		material->set_mask(mask);
+		material->set_color_map(color_map);
+		material->set_normal_map(normal_map);
+		material->set_surface_map(surface_map);
+		material->set_emission_map(emission_map);
+
+		material->set_color(color);
+		material->set_scattering(scattering);
+		material->set_ior(ior);
+		material->set_roughness(roughness);
+		material->set_metallic(metallic);
+		material->set_emission_factor(emission_factor);
+
+		return material;
 	}
 
 	auto material = std::make_shared<substitute::Material>(

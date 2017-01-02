@@ -17,11 +17,8 @@ void Material::set_mask(const Texture_adapter& mask) {
 }
 
 void Material::set_parameters(const json::Value& parameters) {
-	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		set_parameter(node_name, node_value);
+	for (auto& n : parameters.GetObject()) {
+		set_parameter(n.name.GetString(), n.value);
 	}
 }
 
@@ -66,6 +63,10 @@ void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/
 								thread::Pool& /*pool*/) {}
 
 bool Material::is_animated() const {
+	return false;
+}
+
+bool Material::is_subsurface() const {
 	return false;
 }
 

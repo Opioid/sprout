@@ -63,6 +63,8 @@ public:
 
 	virtual bool is_animated() const;
 
+	virtual bool is_subsurface() const;
+
 	virtual size_t num_bytes() const = 0;
 
 	uint32_t sampler_key() const;

@@ -585,6 +585,10 @@ inline bool contains_negative(FVector3f_a v) {
 	return v.x < 0.f || v.y < 0.f || v.z < 0.f;
 }
 
+inline bool contains_greater_zero(FVector3f_a v) {
+	return v.x > 0.f || v.y > 0.f || v.z > 0.f;
+}
+
 inline bool contains_greater_one(FVector3f_a v) {
 	return v.x > 1.f || v.y > 1.f || v.z > 1.f;
 }
