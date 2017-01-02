@@ -224,6 +224,10 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 			float3 slice_z(position.x, position.y, min.z + fi * step.z);
 			split_candidates_.push_back(Split_candidate(2, slice_z, false));
+
+//			split_candidates_.push_back(Split_candidate(0, slice_x, true));
+//			split_candidates_.push_back(Split_candidate(1, slice_y, true));
+//			split_candidates_.push_back(Split_candidate(2, slice_z, true));
 		}
 	}
 

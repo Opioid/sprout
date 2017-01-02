@@ -7,7 +7,7 @@
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
-#include "bvh/triangle_bvh_builder_sah.inl"
+// #include "bvh/triangle_bvh_builder_sah.inl"
 #include "bvh/triangle_bvh_builder_sah2.inl"
 #include "bvh/triangle_bvh_builder_suh.inl"
 #include "bvh/triangle_bvh_data.inl"
