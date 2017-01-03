@@ -64,7 +64,7 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	}
 }
 
-float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, bool volume, Intersection& intersection) {
+float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	Sampler_filter filter = Sampler_filter::Unknown;
 	Bxdf_result sample_result;
 
@@ -79,13 +79,6 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, bool volume, Intersection& i
 	}
 
 	for (uint32_t i = 0; ; ++i) {
-		if (volume && i > 0) {
-			float3 tr;
-			float4 vli = worker.volume_li(ray, tr);
-			result += throughput * vli.xyz;
-			throughput *= tr;
-		}
-
 		float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 

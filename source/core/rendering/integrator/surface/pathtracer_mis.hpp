@@ -37,28 +37,27 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
-	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
-					  scene::Intersection& intersection) final override;
+	virtual float4 li(Worker& worker, Ray& ray, Intersection& intersection) final override;
 
 	virtual size_t num_bytes() const final override;
 
 private:
 
-	float3 estimate_direct_light(Worker& worker, const scene::Ray& ray,
-								 scene::Intersection& intersection,
+	float3 estimate_direct_light(Worker& worker, const Ray& ray,
+								 Intersection& intersection,
 								 const scene::material::Sample& material_sample,
 								 Sampler_filter filter,
 								 Bxdf_result& sample_result);
 
 	float3 evaluate_light(const scene::light::Light* light,
 						  uint32_t sampler_dimension, float light_weight,
-						  Worker& worker, scene::Ray& ray,
-						  const scene::Intersection& intersection,
+						  Worker& worker, Ray& ray,
+						  const Intersection& intersection,
 						  const scene::material::Sample& material_sample,
 						  Sampler_filter filter);
 
-	float3 resolve_transmission(Worker& worker, scene::Ray& ray,
-								scene::Intersection& intersection,
+	float3 resolve_transmission(Worker& worker, Ray& ray,
+								Intersection& intersection,
 								float3_p attenuation,
 								Sampler_filter filter,
 								Bxdf_result& sample_result);

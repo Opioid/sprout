@@ -1,5 +1,4 @@
 #include "volume_integrator.hpp"
-#include "rendering/rendering_worker.hpp"
 #include "take/take_settings.hpp"
 #include "base/math/vector.inl"
 #include "base/random/generator.inl"

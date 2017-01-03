@@ -17,9 +17,7 @@ void Attenuation::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_
 
 void Attenuation::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Attenuation::transmittance(Worker& worker,
-								  const scene::volume::Volume& volume,
-								  const scene::Ray& ray) {
+float3 Attenuation::transmittance(Worker& worker, const Ray& ray, const Volume& volume) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
@@ -32,8 +30,8 @@ float3 Attenuation::transmittance(Worker& worker,
 	return math::exp(-tau);
 }
 
-float4 Attenuation::li(Worker& worker, const scene::volume::Volume& volume,
-					   const scene::Ray& ray, float3& transmittance) {
+float4 Attenuation::li(Worker& worker, const Ray& ray, const Volume& volume,
+					   float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {

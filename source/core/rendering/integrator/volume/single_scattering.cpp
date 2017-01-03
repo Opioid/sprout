@@ -21,30 +21,28 @@ Single_scattering::Single_scattering(const take::Settings& take_settings,
 	settings_(settings),
 	sampler_(rng) {}
 
-void Single_scattering::prepare(const scene::Scene& /*scene*/,
-								uint32_t num_samples_per_pixel) {
+void Single_scattering::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Single_scattering::transmittance(Worker& worker, const scene::volume::Volume& volume,
-										const scene::Ray& ray) {
+float3 Single_scattering::transmittance(Worker& worker, const Ray& ray, const Volume& volume) {
 	float min_t;
 	float max_t;
 	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
 		return float3(1.f);
 	}
 
-	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
+	Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
 	float3 tau = volume.optical_depth(tray, settings_.step_size, rng_,
 									  worker, Sampler_filter::Nearest);
 	return math::exp(-tau);
 }
 
-float4 Single_scattering::li(Worker& worker, const scene::volume::Volume& volume,
-							 const scene::Ray& ray, float3& transmittance) {
+float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volume,
+							 float3& transmittance) {
 	float min_t;
 	float max_t;
 //	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
@@ -95,7 +93,7 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume& volume
 					  Sampler_filter::Nearest, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
-			scene::Ray shadow_ray(current, light_sample.shape.wi, 0.f,
+			Ray shadow_ray(current, light_sample.shape.wi, 0.f,
 								  light_sample.shape.t, ray.time);
 
 			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
@@ -104,7 +102,7 @@ float4 Single_scattering::li(Worker& worker, const scene::volume::Volume& volume
 
 				float3 scattering = volume.scattering(current, worker, Sampler_filter::Unknown);
 
-				float3 l = Single_scattering::transmittance(worker, volume, shadow_ray)
+				float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
 							   * light_sample.radiance;
 
 				radiance += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);

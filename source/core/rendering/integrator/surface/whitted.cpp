@@ -30,8 +30,7 @@ void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 Whitted::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-				   scene::Intersection& intersection) {
+float4 Whitted::li(Worker& worker, scene::Ray& ray, scene::Intersection& intersection) {
 	float3 result(0.f);
 
 	float opacity = intersection.opacity(worker, ray.time, Sampler_filter::Unknown);
