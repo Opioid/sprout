@@ -82,6 +82,13 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 		float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
+		if (i > 0) {
+			float3 tr;
+			float4 vli = worker.volume_li(ray, tr);
+			result += throughput * vli.xyz;
+			throughput *= tr;
+		}
+
 		if ((primary_ray || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 
