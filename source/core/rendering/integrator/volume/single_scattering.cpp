@@ -76,7 +76,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 		previous = current;
 		current  = ray.point(min_t);
 
-		scene::Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
+		Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
 		float3 tau = volume.optical_depth(tau_ray, settings_.step_size, rng_,
 										  worker, Sampler_filter::Unknown);
 		tr *= math::exp(-tau);
@@ -94,7 +94,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 
 		if (light_sample.shape.pdf > 0.f) {
 			Ray shadow_ray(current, light_sample.shape.wi, 0.f,
-								  light_sample.shape.t, ray.time);
+						   light_sample.shape.t, ray.time);
 
 			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
 			if (mv > 0.f) {

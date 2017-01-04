@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
-#include "rendering/integrator/surface/sub/sub_pathtracer.hpp"
+#include "rendering/integrator/surface/sub/bruteforce.hpp"
 #include "transmittance/transmittance_closed.hpp"
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -51,7 +51,7 @@ private:
 
 	transmittance::Closed transmittance_;
 
-	sub::Pathtracer subsurface_;
+	sub::Bruteforce subsurface_;
 };
 
 class Pathtracer_factory : public Factory {

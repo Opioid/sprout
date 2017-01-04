@@ -5,8 +5,8 @@
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_ray.inl"
 #include "scene/scene_intersection.inl"
+#include "scene/scene_ray.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"
@@ -70,7 +70,6 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, scene::Intersection& inte
 		}
 
 		if (i > 0) {
-		//	throughput *= worker.transmittance(ray);
 			float3 tr;
 			float4 vli = worker.volume_li(ray, tr);
 			result += throughput * vli.xyz;
@@ -83,7 +82,7 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, scene::Intersection& inte
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)) {
-			result += throughput * material_sample.radiance();
+			if (0 == i)	result += throughput * material_sample.radiance();
 		}
 
 		if (i == settings_.max_bounces) {
@@ -126,6 +125,11 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, scene::Intersection& inte
 				break;
 			}
 		} else {
+			if (intersection.material()->is_subsurface()) {
+				float3 sss = subsurface_.li(worker, ray, intersection);
+				result += throughput * sss;
+			}
+
 			throughput *= sample_result.reflection / sample_result.pdf;
 		}
 
