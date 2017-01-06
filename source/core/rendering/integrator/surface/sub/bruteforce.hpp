@@ -5,9 +5,11 @@
 
 namespace scene {
 
-class Prop;
+namespace material { class BSSRDF; }
 
 namespace light { class Light; }
+
+class Prop;
 
 }
 
@@ -31,6 +33,7 @@ public:
 private:
 
 	float3 transmittance(Worker& worker, Ray& ray, const scene::Prop* prop,
+						 const scene::material::BSSRDF& bssrdf,
 						 const scene::light::Light& light) const;
 
 	sampler::Random sampler_;

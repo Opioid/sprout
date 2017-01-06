@@ -755,8 +755,8 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	Texture_adapter mask;
 	bool two_sided = false;
 	float3 color(0.6f, 0.6f, 0.6f);
-	float3 scattering(0.f);
 	float3 absorption(0.f);
+	float3 scattering(0.f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float ior = 1.46f;
@@ -914,6 +914,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 		material->set_emission_map(emission_map);
 
 		material->set_color(color);
+		material->set_absorption(absorption);
 		material->set_scattering(scattering);
 		material->set_ior(ior);
 		material->set_roughness(roughness);
@@ -980,7 +981,7 @@ Texture_adapter Provider::create_texture(const Texture_description& description,
 										 const memory::Variant_map& options,
 										 resource::Manager& manager) {
 	return Texture_adapter(manager.load<image::texture::Texture>(description.filename, options),
-					  description.scale);
+						   description.scale);
 }
 
 void Provider::read_coating_description(const json::Value& coating_value,

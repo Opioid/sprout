@@ -17,14 +17,18 @@ public:
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
+	virtual const BSSRDF& bssrdf(const Worker& worker) final override;
+
 	virtual bool is_subsurface() const final override;
 
 	virtual size_t num_bytes() const final override;
 
+	void set_absorption(float3_p absorption);
 	void set_scattering(float3_p scattering);
 
 private:
 
+	float3 absorption_;
 	float3 scattering_;
 };
 

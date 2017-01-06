@@ -6,6 +6,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
+#include "scene/material/bssrdf.hpp"
 #include "take/take_settings.hpp"
 #include "base/math/vector.inl"
 #include "base/random/generator.inl"
@@ -34,6 +35,8 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 		return float3(0.f);
 	}
 
+	const auto& bssrdf = intersection.bssrdf(worker);
+
 	float step_size = 1.f;
 
 	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / step_size));
@@ -51,9 +54,6 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 	min_t += rng_.random_float() * step;
 
-	float3 material_scattering(0.01f);
-	float3 material_absorption(0.9f);
-
 	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
 		previous = current;
 		current  = tray.point(min_t);
@@ -62,7 +62,7 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 //		float3 tau = volume.optical_depth(tau_ray, step_size, rng_,
 //										  worker, Sampler_filter::Unknown);
 
-		float3 tau = tau_ray.length() * (material_absorption + material_scattering);
+		float3 tau = bssrdf.optical_depth(tau_ray.length());
 
 		tr *= math::exp(-tau);
 
@@ -83,12 +83,10 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 			float p = 1.f;//volume.phase(w, -light_sample.shape.wi);
 
-			float3 scattering = material_scattering;//volume.scattering(current, worker, Sampler_filter::Unknown);
-
-			float3 l = transmittance(worker, shadow_ray, intersection.prop, *light)
+			float3 l = transmittance(worker, shadow_ray, intersection.prop, bssrdf, *light)
 							* light_sample.radiance;
 
-			radiance += p * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
+			radiance += p * tr * bssrdf.scattering() * l / (light_pdf * light_sample.shape.pdf);
 
 	//		radiance += tr * transmittance(worker, shadow_ray, intersection.prop, *light);
 		}
@@ -103,6 +101,7 @@ size_t Bruteforce::num_bytes() const {
 }
 
 float3 Bruteforce::transmittance(Worker& worker, Ray& ray, const scene::Prop* prop,
+								 const scene::material::BSSRDF& bssrdf,
 								 const scene::light::Light& light) const {
 	Intersection intersection;
 	if (!worker.intersect(prop, ray, intersection)) {
@@ -114,10 +113,7 @@ float3 Bruteforce::transmittance(Worker& worker, Ray& ray, const scene::Prop* pr
 
 	if (worker.intersect(shadow_ray, intersection)) {
 		if (light.equals(intersection.prop, intersection.geo.part)) {
-			float3 material_scattering(0.01f);
-			float3 material_absorption(0.9f);
-
-			float3 tau = ray.length() * (material_absorption + material_scattering);
+			float3 tau = bssrdf.optical_depth(ray.length());
 
 			return math::exp(-tau);
 		//	return float3(0.f, 1.f, 0.f);

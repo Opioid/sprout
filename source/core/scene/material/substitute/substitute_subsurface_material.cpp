@@ -2,6 +2,7 @@
 #include "substitute_subsurface_sample.hpp"
 #include "substitute_base_material.inl"
 #include "scene/scene_renderstate.hpp"
+#include "scene/material/bssrdf.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
@@ -21,12 +22,24 @@ const material::Sample& Material_subsurface::sample(float3_p wo, const Rendersta
 	return sample;
 }
 
+const BSSRDF& Material_subsurface::bssrdf(const Worker& worker) {
+	auto& bssrdf = bssrdf_cache_.get(worker.id());
+
+	bssrdf.set(absorption_, scattering_);
+
+	return bssrdf;
+}
+
 bool Material_subsurface::is_subsurface() const {
 	return true;
 }
 
 size_t Material_subsurface::num_bytes() const {
 	return sizeof(*this);
+}
+
+void Material_subsurface::set_absorption(float3_p absorption) {
+	absorption_ = absorption;
 }
 
 void Material_subsurface::set_scattering(float3_p scattering) {

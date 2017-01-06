@@ -26,8 +26,7 @@ public:
 								 rnd::Generator& rng, Worker& worker,
 								 Sampler_filter filter) const = 0;
 
-	virtual float3 scattering(float3_p p, Worker& worker,
-							  Sampler_filter filter) const = 0;
+	virtual float3 scattering(float3_p p, Worker& worker, Sampler_filter filter) const = 0;
 
 	float phase(float3_p w, float3_p wp) const;
 
