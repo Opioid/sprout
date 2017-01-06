@@ -48,6 +48,8 @@ public:
 	virtual const Sample& sample(float3_p wo, const Renderstate& rs,
 								 const Worker& worker, Sampler_filter filter) = 0;
 
+	virtual const BSSRDF& bssrdf(const Worker& worker);
+
 	virtual float3 sample_radiance(float3_p wi, float2 uv, float area, float time,
 								   const Worker& worker, Sampler_filter filter) const;
 

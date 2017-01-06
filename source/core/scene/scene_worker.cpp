@@ -55,13 +55,11 @@ scene::shape::Node_stack& Worker::node_stack() {
 	return node_stack_;
 }
 
-const image::texture::sampler::Sampler_2D&
-Worker::sampler_2D(uint32_t key, Sampler_filter filter) const {
+const Texture_sampler_2D& Worker::sampler_2D(uint32_t key, Sampler_filter filter) const {
 	return sampler_cache_.sampler_2D(key, filter);
 }
 
-const image::texture::sampler::Sampler_3D&
-Worker::sampler_3D(uint32_t key, Sampler_filter filter) const {
+const Texture_sampler_3D& Worker::sampler_3D(uint32_t key, Sampler_filter filter) const {
 	return sampler_cache_.sampler_3D(key, filter);
 }
 

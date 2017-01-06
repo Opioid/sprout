@@ -22,11 +22,11 @@ inline uint32_t Intersection::light_id() const {
 	return prop->light_id(geo.part);
 }
 
-inline float Intersection::opacity(Worker& worker, float time, Sampler_filter filter) const {
+inline float Intersection::opacity(const Worker& worker, float time, Sampler_filter filter) const {
 	return material()->opacity(geo.uv, time, worker, filter);
 }
 
-inline const material::Sample& Intersection::sample(Worker& worker, float3_p wo, float time,
+inline const material::Sample& Intersection::sample(const Worker& worker, float3_p wo, float time,
 													Sampler_filter filter) const {
 	material::Material* material = Intersection::material();
 
@@ -50,6 +50,10 @@ inline const material::Sample& Intersection::sample(Worker& worker, float3_p wo,
 	rs.ior  = 1.f;
 
 	return material->sample(wo, rs, worker, filter);
+}
+
+inline const material::BSSRDF& Intersection::bssrdf(const Worker& worker) const {
+	return material()->bssrdf(worker);
 }
 
 inline bool Intersection::same_hemisphere(float3_p v) const {

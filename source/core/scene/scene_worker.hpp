@@ -35,11 +35,9 @@ public:
 
 	shape::Node_stack& node_stack();
 
-	const image::texture::sampler::Sampler_2D&
-	sampler_2D(uint32_t key, Sampler_filter filter) const;
+	const Texture_sampler_2D& sampler_2D(uint32_t key, Sampler_filter filter) const;
 
-	const image::texture::sampler::Sampler_3D&
-	sampler_3D(uint32_t key, Sampler_filter filter) const;
+	const Texture_sampler_3D& sampler_3D(uint32_t key, Sampler_filter filter) const;
 
 	virtual size_t num_bytes() const;
 

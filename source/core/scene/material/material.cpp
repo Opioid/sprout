@@ -1,4 +1,6 @@
 #include "material.hpp"
+#include "bssrdf.hpp"
+#include "material_sample_cache.inl"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_worker.hpp"
 #include "base/json/json.hpp"
@@ -25,6 +27,10 @@ void Material::set_parameters(const json::Value& parameters) {
 }
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
+
+const BSSRDF& Material::bssrdf(const Worker& worker) {
+	return bssrdf_cache_.get(worker.id());
+}
 
 float3 Material::sample_radiance(float3_p /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
 								 const Worker& /*worker*/, Sampler_filter /*filter*/) const {

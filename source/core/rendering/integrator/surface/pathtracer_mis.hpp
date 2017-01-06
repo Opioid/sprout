@@ -33,7 +33,7 @@ public:
 	Pathtracer_MIS(const take::Settings& take_settings, rnd::Generator& rng,
 				   const Settings& settings);
 
-	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
+	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
