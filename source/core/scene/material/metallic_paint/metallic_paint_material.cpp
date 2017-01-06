@@ -10,9 +10,9 @@
 
 namespace scene { namespace material { namespace metallic_paint {
 
-Material::Material(Sample_cache<Sample>& cache,
-				   const Sampler_settings& sampler_settings, bool two_sided) :
-	material::Typed_material<Sample_cache<Sample>>(cache, sampler_settings, two_sided) {}
+Material::Material(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+				   bool two_sided, Sample_cache<Sample>& cache) :
+	Typed_material<Sample_cache<Sample>>(bssrdf_cache, sampler_settings, two_sided, cache) {}
 
 const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter filter) {

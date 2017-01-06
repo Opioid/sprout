@@ -10,9 +10,9 @@
 
 namespace scene { namespace material { namespace glass {
 
-Glass_rough::Glass_rough(Sample_cache<Sample_rough>& cache,
-						 const Sampler_settings& sampler_settings) :
-	Typed_material(cache, sampler_settings, false) {}
+Glass_rough::Glass_rough(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+						 Sample_cache<Sample_rough>& cache) :
+	Typed_material(bssrdf_cache, sampler_settings, false, cache) {}
 
 const material::Sample& Glass_rough::sample(float3_p wo, const Renderstate& rs,
 											const Worker& worker, Sampler_filter filter) {

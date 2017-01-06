@@ -12,8 +12,8 @@ class Glass_rough : public Typed_material<Sample_cache<Sample_rough>> {
 
 public:
 
-	Glass_rough(Sample_cache<Sample_rough>& cache,
-				const Sampler_settings& sampler_settings);
+	Glass_rough(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+				Sample_cache<Sample_rough>& cache);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,

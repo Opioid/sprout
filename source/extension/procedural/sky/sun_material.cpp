@@ -12,8 +12,9 @@
 namespace procedural { namespace sky {
 
 Sun_material::Sun_material(
+		scene::material::BSSRDF_cache& bssrdf_cache,
 		scene::material::Sample_cache<scene::material::light::Sample>& cache,
-		Model& model) : Material(cache, model) {}
+		Model& model) : Material(bssrdf_cache, cache, model) {}
 
 const scene::material::Sample& Sun_material::sample(float3_p wo, const scene::Renderstate& rs,
 													const scene::Worker& worker,

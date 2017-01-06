@@ -15,7 +15,8 @@ public:
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 
-	Material(scene::material::Sample_cache<scene::material::light::Sample>& cache,
+	Material(scene::material::BSSRDF_cache& bssrdf_cache,
+			 scene::material::Sample_cache<scene::material::light::Sample>& cache,
 			 Model& model);
 
 protected:

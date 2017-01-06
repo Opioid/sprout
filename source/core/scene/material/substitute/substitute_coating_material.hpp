@@ -11,8 +11,8 @@ class Material_coating : public Material_base<Sample> {
 
 public:
 
-	Material_coating(Sample_cache<Sample>& cache,
-					 const Sampler_settings& sampler_settings, bool two_sided);
+	Material_coating(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+					 bool two_sided, Sample_cache<Sample>& cache);
 
 	virtual size_t num_bytes() const final override;
 
@@ -39,8 +39,8 @@ class Material_clearcoat : public Material_coating<coating::Clearcoat, Sample_cl
 
 public:
 
-	Material_clearcoat(Sample_cache<Sample_clearcoat>& cache,
-					   const Sampler_settings& sampler_settings, bool two_sided);
+	Material_clearcoat(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+					   bool two_sided, Sample_cache<Sample_clearcoat>& cache);
 
 	using Sampler_filter = material::Sampler_settings::Filter;
 
@@ -55,8 +55,8 @@ class Material_thinfilm : public Material_coating<coating::Thinfilm, Sample_thin
 
 public:
 
-	Material_thinfilm(Sample_cache<Sample_thinfilm>& cache,
-					  const Sampler_settings& sampler_settings, bool two_sided);
+	Material_thinfilm(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+					  bool two_sided, Sample_cache<Sample_thinfilm>& cache);
 
 	using Sampler_filter = material::Sampler_settings::Filter;
 

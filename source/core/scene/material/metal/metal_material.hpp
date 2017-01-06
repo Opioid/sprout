@@ -7,12 +7,12 @@ namespace scene { namespace material { namespace metal {
 
 class Sample_isotropic;
 
-class Material_isotropic : public material::Typed_material<Sample_cache<Sample_isotropic>> {
+class Material_isotropic : public Typed_material<Sample_cache<Sample_isotropic>> {
 
 public:
 
-	Material_isotropic(Sample_cache<Sample_isotropic>& cache,
-					   const Sampler_settings& sampler_settings, bool two_sided);
+	Material_isotropic(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+					   bool two_sided, Sample_cache<Sample_isotropic>& cache);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,
@@ -38,13 +38,12 @@ protected:
 
 class Sample_anisotropic;
 
-class Material_anisotropic : public material::Typed_material<
-		Sample_cache<Sample_anisotropic>> {
+class Material_anisotropic : public Typed_material<Sample_cache<Sample_anisotropic>> {
 
 public:
 
-	Material_anisotropic(Sample_cache<Sample_anisotropic>& cache,
-						 const Sampler_settings& sampler_settings, bool two_sided);
+	Material_anisotropic(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+						 bool two_sided, Sample_cache<Sample_anisotropic>& cache);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,

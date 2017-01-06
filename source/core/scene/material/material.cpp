@@ -6,7 +6,9 @@
 
 namespace scene { namespace material {
 
-Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
+Material::Material(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+				   bool two_sided) :
+	bssrdf_cache_(bssrdf_cache),
 	sampler_key_(static_cast<uint32_t>(sampler_settings.filter)),
 	two_sided_(two_sided) {}
 

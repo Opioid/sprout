@@ -8,14 +8,14 @@ namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 namespace scene { namespace material { namespace substitute {
 
 template<typename Sample>
-class Material_base : public material::Typed_material<Sample_cache<Sample>> {
+class Material_base : public Typed_material<Sample_cache<Sample>> {
 
 public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;
 
-	Material_base(Sample_cache<Sample>& cache,
-				  const Sampler_settings& sampler_settings, bool two_sided);
+	Material_base(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+				  bool two_sided, Sample_cache<Sample>& cache);
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv, float area, float time,
 								   const Worker& worker,

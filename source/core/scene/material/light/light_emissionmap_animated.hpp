@@ -1,6 +1,7 @@
 #pragma once
 
-#include "light_material.hpp"
+#include "scene/material/material.hpp"
+#include "scene/material/material_sample_cache.hpp"
 #include "image/texture/texture.hpp"
 #include "base/math/distribution/distribution_2d.hpp"
 
@@ -8,13 +9,14 @@ namespace scene { namespace material { namespace light {
 
 class Sample;
 
-class Emissionmap_animated : public Material {
+class Emissionmap_animated : public Typed_material<Sample_cache<Sample>> {
 
 public:
 
-	Emissionmap_animated(Sample_cache<Sample>& cache,
+	Emissionmap_animated(BSSRDF_cache& bssrdf_cache,
 						 const Sampler_settings& sampler_settings,
-						 bool two_sided, const Texture_adapter& emission_map,
+						 bool two_sided, Sample_cache<Sample>& cache,
+						 const Texture_adapter& emission_map,
 						 float emission_factor, float animation_duration);
 
 	virtual void tick(float absolute_time, float time_slice) final override;
