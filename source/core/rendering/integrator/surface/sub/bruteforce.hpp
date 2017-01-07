@@ -32,9 +32,6 @@ public:
 
 private:
 
-	float3 transmittance(Worker& worker, Ray& ray, const scene::Prop* prop,
-						 const scene::material::BSSRDF& bssrdf) const;
-
 	sampler::Random sampler_;
 };
 
