@@ -49,21 +49,15 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 	float3 tr(1.f);
 
 	float min_t = tray.min_t;
-	float3 current = tray.point(min_t);
-	float3 previous;
+	float tau_ray_length = rng_.random_float() * step;
 
-	min_t += rng_.random_float() * step;
+	min_t += tau_ray_length;
 
 	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
-		previous = current;
-		current  = tray.point(min_t);
-
-		Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
-//		float3 tau = volume.optical_depth(tau_ray, step_size, rng_,
-//										  worker, Sampler_filter::Unknown);
-
-		float3 tau = bssrdf.optical_depth(tau_ray.length());
+		float3 tau = bssrdf.optical_depth(tau_ray_length);
 		tr *= math::exp(-tau);
+
+		tau_ray_length = step;
 
 		// Direct light scattering
 		float light_pdf;
@@ -71,6 +65,8 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 		if (!light) {
 			continue;
 		}
+
+		float3 current = tray.point(min_t);
 
 		scene::light::Sample light_sample;
 		light->sample(ray.time, current, sampler_, 0, worker,
