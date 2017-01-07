@@ -1,10 +1,20 @@
 #pragma once
 
-#include "base/math/vector.hpp"
+#include "scene/material/sampler_settings.hpp"
+#include <cstddef>
+#include <cstdint>
 
 namespace rnd { class Generator; }
 
-namespace scene { class Scene; }
+namespace scene {
+
+namespace material { namespace bxdf { struct Result; enum class Type; } }
+
+struct Intersection;
+struct Ray;
+class Scene;
+
+}
 
 namespace take { struct Settings; }
 
@@ -24,10 +34,18 @@ class Integrator {
 
 public:
 
+	using Intersection	= scene::Intersection;
+	using Ray			= scene::Ray;
+	using Scene			= scene::Scene;
+
+	using Sampler_filter = scene::material::Sampler_settings::Filter;
+	using Bxdf_result    = scene::material::bxdf::Result;
+	using Bxdf_type		 = scene::material::bxdf::Type;
+
 	Integrator(const take::Settings& settings, rnd::Generator& rng);
 	virtual ~Integrator();
 
-	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) = 0;
+	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) = 0;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) = 0;
 

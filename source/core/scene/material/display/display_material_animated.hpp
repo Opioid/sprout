@@ -9,13 +9,14 @@ namespace scene { namespace material { namespace display {
 
 class Sample;
 
-class Material_animated : public material::Typed_material<Sample_cache<Sample>> {
+class Material_animated : public Typed_material<Sample_cache<Sample>> {
 
 public:
 
-	Material_animated(Sample_cache<Sample>& cache,
+	Material_animated(BSSRDF_cache bssrdf_cache,
 					  const Sampler_settings& sampler_settings,
 					  bool two_sided,
+					  Sample_cache<Sample>& cache,
 					  const Texture_adapter& emission_map,
 					  float animation_duration);
 

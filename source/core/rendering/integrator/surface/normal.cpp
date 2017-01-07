@@ -21,8 +21,7 @@ void Normal::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_p
 
 void Normal::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float4 Normal::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-				  scene::Intersection& intersection) {
+float4 Normal::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	float3 vector;
 
 	if (Settings::Vector::Tangent == settings_.vector) {

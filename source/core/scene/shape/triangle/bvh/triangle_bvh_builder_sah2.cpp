@@ -77,11 +77,17 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 		cost_ = 2.f + (static_cast<float>(num_side_0) * aabb_0_.surface_area() +
 					   static_cast<float>(num_side_1) * aabb_1_.surface_area()) / aabb_surface_area;
 	}
+
+	num_side_0_ = num_side_0;
+	num_side_1_ = num_side_1;
 }
 
 void Builder_SAH2::Split_candidate::distribute(const References& references,
 											   References& references0,
 											   References& references1) const {
+	references0.reserve(num_side_0_);
+	references1.reserve(num_side_1_);
+
 	if (spatial_) {
 		for (const auto& r : references) {
 			if (behind(r.aabb.max())) {
@@ -136,7 +142,7 @@ const math::aabb& Builder_SAH2::Split_candidate::aabb_1() const {
 Builder_SAH2::Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold) :
 	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
-void Builder_SAH2::split(Build_node* node, const References& references,
+void Builder_SAH2::split(Build_node* node, References& references,
 						 const math::aabb& aabb, uint32_t max_primitives,
 						 thread::Pool& thread_pool) {
 	node->aabb = aabb;
@@ -163,9 +169,13 @@ void Builder_SAH2::split(Build_node* node, const References& references,
 
 				assign(node, references);
 			} else {
+				references = References();
+
 				node->children[0] = new Build_node;
 				split(node->children[0], references0, sp.aabb_0(),
 					  max_primitives, thread_pool);
+
+				references0 = References();
 
 				node->children[1] = new Build_node;
 				split(node->children[1], references1, sp.aabb_1(),
@@ -214,6 +224,10 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 			float3 slice_z(position.x, position.y, min.z + fi * step.z);
 			split_candidates_.push_back(Split_candidate(2, slice_z, false));
+
+//			split_candidates_.push_back(Split_candidate(0, slice_x, true));
+//			split_candidates_.push_back(Split_candidate(1, slice_y, true));
+//			split_candidates_.push_back(Split_candidate(2, slice_z, true));
 		}
 	}
 

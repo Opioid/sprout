@@ -5,8 +5,8 @@
 #include "image/texture/sampler/sampler_2d_nearest.inl"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_ray.inl"
 #include "scene/scene_intersection.inl"
+#include "scene/scene_ray.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"
@@ -27,7 +27,8 @@ Pathtracer::Pathtracer(const take::Settings& take_settings,
 	settings_(settings),
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
-	transmittance_(take_settings, rng) {}
+	transmittance_(take_settings, rng),
+	subsurface_(take_settings, rng) {}
 
 void Pathtracer::prepare(const scene::Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -45,11 +46,10 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	}
 }
 
-float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-					  scene::Intersection& intersection) {
+float4 Pathtracer::li(Worker& worker, scene::Ray& ray, scene::Intersection& intersection) {
 	Sampler_filter filter;
-	scene::material::bxdf::Result sample_result;
-	scene::material::bxdf::Result::Type_flag previous_sample_type;
+	Bxdf_result sample_result;
+	Bxdf_result::Type_flag previous_sample_type;
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -70,7 +70,6 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 		}
 
 		if (i > 0) {
-		//	throughput *= worker.transmittance(ray);
 			float3 tr;
 			float4 vli = worker.volume_li(ray, tr);
 			result += throughput * vli.xyz;
@@ -83,7 +82,7 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)) {
-			result += throughput * material_sample.radiance();
+			if (0 == i)	result += throughput * material_sample.radiance();
 		}
 
 		if (i == settings_.max_bounces) {
@@ -126,6 +125,11 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 				break;
 			}
 		} else {
+			if (intersection.material()->is_subsurface()) {
+				float3 sss = subsurface_.li(worker, ray, intersection);
+				result += throughput * sss;
+			}
+
 			throughput *= sample_result.reflection / sample_result.pdf;
 		}
 

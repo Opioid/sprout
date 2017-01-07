@@ -1,4 +1,6 @@
 #include "material.hpp"
+#include "bssrdf.hpp"
+#include "material_sample_cache.inl"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_worker.hpp"
 #include "base/json/json.hpp"
@@ -6,7 +8,9 @@
 
 namespace scene { namespace material {
 
-Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
+Material::Material(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+				   bool two_sided) :
+	bssrdf_cache_(bssrdf_cache),
 	sampler_key_(static_cast<uint32_t>(sampler_settings.filter)),
 	two_sided_(two_sided) {}
 
@@ -17,15 +21,16 @@ void Material::set_mask(const Texture_adapter& mask) {
 }
 
 void Material::set_parameters(const json::Value& parameters) {
-	for (auto n = parameters.MemberBegin(); n != parameters.MemberEnd(); ++n) {
-		const std::string node_name = n->name.GetString();
-		const json::Value& node_value = n->value;
-
-		set_parameter(node_name, node_value);
+	for (auto& n : parameters.GetObject()) {
+		set_parameter(n.name.GetString(), n.value);
 	}
 }
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
+
+const BSSRDF& Material::bssrdf(const Worker& worker) {
+	return bssrdf_cache_.get(worker.id());
+}
 
 float3 Material::sample_radiance(float3_p /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
 								 const Worker& /*worker*/, Sampler_filter /*filter*/) const {
@@ -66,6 +71,10 @@ void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/
 								thread::Pool& /*pool*/) {}
 
 bool Material::is_animated() const {
+	return false;
+}
+
+bool Material::is_subsurface() const {
 	return false;
 }
 

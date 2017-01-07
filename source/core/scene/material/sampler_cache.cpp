@@ -25,18 +25,16 @@ Sampler_cache::~Sampler_cache() {
 	delete samplers_2D_[1];
 }
 
-const image::texture::sampler::Sampler_2D&
-Sampler_cache::sampler_2D(uint32_t key, Sampler_settings::Filter filter) const {
-	if (Sampler_settings::Filter::Unknown == filter) {
+const Texture_sampler_2D& Sampler_cache::sampler_2D(uint32_t key, Sampler_filter filter) const {
+	if (Sampler_filter::Unknown == filter) {
 		return *samplers_2D_[key];
 	} else {
 		return *samplers_2D_[static_cast<uint32_t>(filter)];
 	}
 }
 
-const image::texture::sampler::Sampler_3D&
-Sampler_cache::sampler_3D(uint32_t key, Sampler_settings::Filter filter) const {
-	if (Sampler_settings::Filter::Unknown == filter) {
+const Texture_sampler_3D& Sampler_cache::sampler_3D(uint32_t key, Sampler_filter filter) const {
+	if (Sampler_filter::Unknown == filter) {
 		return *samplers_3D_[key];
 	} else {
 		return *samplers_3D_[static_cast<uint32_t>(filter)];

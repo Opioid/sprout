@@ -10,6 +10,10 @@
 
 namespace scene { namespace material {
 
+class BSSRDF;
+
+using BSSRDF_cache = Sample_cache<BSSRDF>;
+
 namespace cloth				{ class Sample; }
 namespace display			{ class Sample; }
 namespace glass				{ class Sample; class Sample_rough; }
@@ -21,6 +25,7 @@ namespace metallic_paint	{ class Sample; }
 namespace substitute {
 
 class Sample;
+class Sample_subsurface;
 class Sample_translucent;
 
 }
@@ -47,6 +52,7 @@ public:
 
 	std::shared_ptr<Material> fallback_material() const;
 
+	BSSRDF_cache&				 bssrdf_cache();
 	Sample_cache<light::Sample>& light_cache();
 
 private:
@@ -101,7 +107,7 @@ private:
 										  resource::Manager& manager);
 
 	struct Coating_description {
-		float3 color = float3(1.f, 1.f, 1.f);
+		float3 color = float3(1.f);
 		float  ior = 1.f;
 		float  roughness = 0.f;
 		float  thickness = 0.f;
@@ -115,6 +121,7 @@ private:
 
 	static float3 read_spectrum(const json::Value& spectrum_value);
 
+	BSSRDF_cache									bssrdf_cache_;
 	Sample_cache<cloth::Sample>						cloth_cache_;
 	Sample_cache<display::Sample>					display_cache_;
 	Sample_cache<glass::Sample>						glass_cache_;
@@ -126,6 +133,7 @@ private:
 	Sample_cache<metallic_paint::Sample>			metallic_paint_cache_;
 	Sample_cache<substitute::Sample>				substitute_cache_;
 	Sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
+	Sample_cache<substitute::Sample_subsurface>		substitute_subsurface_cache_;
 	Sample_cache<substitute::Sample_thinfilm>		substitute_thinfilm_cache_;
 	Sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;
 

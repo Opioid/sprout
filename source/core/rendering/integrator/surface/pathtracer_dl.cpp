@@ -29,7 +29,7 @@ Pathtracer_DL::Pathtracer_DL(const take::Settings& take_settings,
 	transmittance_(take_settings, rng)
 {}
 
-void Pathtracer_DL::prepare(const scene::Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void Pathtracer_DL::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 }
 
@@ -37,11 +37,10 @@ void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-						 scene::Intersection& intersection) {
-	scene::material::Sampler_settings::Filter filter;
-	scene::material::bxdf::Result sample_result;
-	scene::material::bxdf::Result::Type_flag previous_sample_type;
+float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
+	Sampler_filter filter;
+	Bxdf_result sample_result;
+	Bxdf_result::Type_flag previous_sample_type;
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -143,14 +142,14 @@ float4 Pathtracer_DL::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 	return float4(result, opacity);
 }
 
-float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const scene::Ray& ray,
-											const scene::Intersection& intersection,
+float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
+											const Intersection& intersection,
 											const scene::material::Sample& material_sample,
 											Sampler_filter filter) {
 	float3 result = math::float3_identity;
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	scene::Ray shadow_ray;
+	Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
+#include "rendering/integrator/surface/sub/bruteforce.hpp"
 #include "transmittance/transmittance_closed.hpp"
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -32,7 +33,7 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
-	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
+	virtual float4 li(Worker& worker, scene::Ray& ray,
 					  scene::Intersection& intersection) final override;
 
 	virtual size_t num_bytes() const final override;
@@ -49,6 +50,8 @@ private:
 	sampler::Golden_ratio material_samplers_[Num_material_samplers];
 
 	transmittance::Closed transmittance_;
+
+	sub::Bruteforce subsurface_;
 };
 
 class Pathtracer_factory : public Factory {

@@ -1,4 +1,5 @@
 SOURCES += \
+	scene/material/bssrdf.cpp \
 	scene/material/material.cpp \
 	scene/material/material_provider.cpp \
 	scene/material/material_test.cpp \
@@ -6,6 +7,7 @@ SOURCES += \
 	scene/material/sampler_settings.cpp \
 
 HEADERS += \
+	scene/material/bssrdf.hpp \
 	scene/material/bxdf.hpp \
 	scene/material/material.hpp \
 	scene/material/material_print.hpp \

@@ -22,6 +22,12 @@ namespace material {
 
 class Sample;
 
+template<typename T> class Sample_cache;
+
+class BSSRDF;
+
+using BSSRDF_cache = Sample_cache<BSSRDF>;
+
 class Material {
 
 public:
@@ -29,7 +35,7 @@ public:
 	using Transformation = entity::Composed_transformation;
 	using Sampler_filter = material::Sampler_settings::Filter;
 
-	Material(const Sampler_settings& sampler_settings, bool two_sided);
+	Material(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual ~Material();
 
@@ -41,6 +47,8 @@ public:
 
 	virtual const Sample& sample(float3_p wo, const Renderstate& rs,
 								 const Worker& worker, Sampler_filter filter) = 0;
+
+	virtual const BSSRDF& bssrdf(const Worker& worker);
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv, float area, float time,
 								   const Worker& worker, Sampler_filter filter) const;
@@ -63,6 +71,8 @@ public:
 
 	virtual bool is_animated() const;
 
+	virtual bool is_subsurface() const;
+
 	virtual size_t num_bytes() const = 0;
 
 	uint32_t sampler_key() const;
@@ -75,6 +85,8 @@ protected:
 
 	virtual void set_parameter(const std::string& name,
 							   const json::Value& value);
+
+	BSSRDF_cache& bssrdf_cache_;
 
 	Texture_adapter mask_;
 
@@ -90,8 +102,9 @@ class Typed_material : public Material {
 
 public:
 
-	Typed_material(Sample_cache& cache, const Sampler_settings& sampler_settings, bool two_sided) :
-		Material(sampler_settings, two_sided), cache_(cache) {}
+	Typed_material(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+				   bool two_sided, Sample_cache& cache) :
+		Material(bssrdf_cache, sampler_settings, two_sided), cache_(cache) {}
 
 protected:
 

@@ -19,8 +19,7 @@ AO::AO(const take::Settings& take_settings,
 	settings_(settings),
 	sampler_(rng) {}
 
-void AO::prepare(const scene::Scene& /*scene*/,
-				 uint32_t num_samples_per_pixel) {
+void AO::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, settings_.num_samples, 1, 1);
 }
 
@@ -28,15 +27,14 @@ void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 AO::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-			  scene::Intersection& intersection) {
+float4 AO::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	float result = 0.f;
 
 	if (!resolve_mask(worker, ray, intersection, Sampler_filter::Unknown)) {
 		return float4(result, result, result, 1.f);
 	}
 
-	scene::Ray occlusion_ray;
+	Ray occlusion_ray;
 	occlusion_ray.origin = intersection.geo.p;
 	occlusion_ray.min_t	 = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	occlusion_ray.max_t	 = settings_.radius;

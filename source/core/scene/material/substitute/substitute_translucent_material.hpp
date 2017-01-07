@@ -10,8 +10,8 @@ class Material_translucent : public Material_base<Sample_translucent> {
 
 public:
 
-	Material_translucent(Sample_cache<Sample_translucent>& cache,
-						 const Sampler_settings& sampler_settings, bool two_sided);
+	Material_translucent(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+						 bool two_sided, Sample_cache<Sample_translucent>& cache);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,

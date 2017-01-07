@@ -21,7 +21,7 @@ Whitted::Whitted(const take::Settings& take_settings, rnd::Generator& rng,
 	settings_(settings),
 	sampler_(rng) {}
 
-void Whitted::prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) {
+void Whitted::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
 	uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
 	sampler_.resize(num_samples_per_pixel, settings_.num_light_samples, num_lights, num_lights);
 }
@@ -30,8 +30,7 @@ void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 Whitted::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
-				   scene::Intersection& intersection) {
+float4 Whitted::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	float3 result(0.f);
 
 	float opacity = intersection.opacity(worker, ray.time, Sampler_filter::Unknown);
@@ -58,8 +57,7 @@ float4 Whitted::li(Worker& worker, scene::Ray& ray, bool /*volume*/,
 	return float4(result, opacity);
 }
 
-float3 Whitted::shade(Worker& worker, const scene::Ray& ray,
-					  const scene::Intersection& intersection) {
+float3 Whitted::shade(Worker& worker, const Ray& ray, const Intersection& intersection) {
 	float3 result(0.f);
 
 	float3 wo = -ray.direction;
@@ -79,8 +77,8 @@ float3 Whitted::shade(Worker& worker, const scene::Ray& ray,
 	return result;
 }
 
-float3 Whitted::estimate_direct_light(Worker& worker, const scene::Ray& ray,
-									  const scene::Intersection& intersection,
+float3 Whitted::estimate_direct_light(Worker& worker, const Ray& ray,
+									  const Intersection& intersection,
 									  const scene::material::Sample& material_sample) {
 	float3 result(0.f);
 

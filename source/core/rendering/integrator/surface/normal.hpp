@@ -27,7 +27,7 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
-	virtual float4 li(Worker& worker, scene::Ray& ray, bool volume,
+	virtual float4 li(Worker& worker, scene::Ray& ray,
 					  scene::Intersection& intersection) final override;
 
 	virtual size_t num_bytes() const final override;

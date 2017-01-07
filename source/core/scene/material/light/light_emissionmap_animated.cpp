@@ -12,11 +12,12 @@
 
 namespace scene { namespace material { namespace light {
 
-Emissionmap_animated::Emissionmap_animated(Sample_cache<Sample>& cache,
+Emissionmap_animated::Emissionmap_animated(BSSRDF_cache& bssrdf_cache,
 										   const Sampler_settings& sampler_settings,
-										   bool two_sided, const Texture_adapter& emission_map,
+										   bool two_sided, Sample_cache<Sample>& cache,
+										   const Texture_adapter& emission_map,
 										   float emission_factor, float animation_duration) :
-	Material(cache, sampler_settings, two_sided),
+	Typed_material<Sample_cache<Sample>>(bssrdf_cache, sampler_settings, two_sided, cache),
 	emission_map_(emission_map),
 	emission_factor_(emission_factor),
 	average_emission_(float3(-1.f)),
