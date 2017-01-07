@@ -45,7 +45,6 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 							 float3& transmittance) {
 	float min_t;
 	float max_t;
-//	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
 	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
 		transmittance = float3(1.f);
 		return float4(0.f);
@@ -61,6 +60,8 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 
 	const float step = range / static_cast<float>(num_samples);
+
+	constexpr float epsilon = 5e-5f;
 
 	float3 w = -ray.direction;
 
@@ -94,7 +95,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 
 		if (light_sample.shape.pdf > 0.f) {
 			Ray shadow_ray(current, light_sample.shape.wi, 0.f,
-						   light_sample.shape.t, ray.time);
+						   light_sample.shape.t - epsilon, ray.time);
 
 			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
 			if (mv > 0.f) {

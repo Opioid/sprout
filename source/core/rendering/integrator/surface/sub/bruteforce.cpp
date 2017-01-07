@@ -29,6 +29,13 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 		return float3(0.f);
 	}
 
+//	Ray oray(intersection.geo.p, ray.direction, ray_offset, scene::Ray_max_t);
+//	float smin_t;
+//	float smax_t;
+//	if (!intersection.prop->aabb().intersect_p(oray, smin_t, smax_t)) {
+//		return float3(1.f);
+//	}
+
 	float range = tray.max_t - tray.min_t;
 
 	if (range < 0.0001f) {
@@ -81,19 +88,25 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 			Ray shadow_ray(current, light_sample.shape.wi, 0.f,
 						   light_sample.shape.t, ray.time);
 
-			float p = 1.f;//volume.phase(w, -light_sample.shape.wi);
+	//		float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
+			float mv = 1.f;
+			if (mv > 0.f) {
+			//	float p = volume.phase(w, -light_sample.shape.wi);
+				float p = 1.f / (4.f * math::Pi);
 
-			float3 l = transmittance(worker, shadow_ray, intersection.prop, bssrdf, *light)
-							* light_sample.radiance;
+		//		float3 scattering = volume.scattering(current, worker, Sampler_filter::Unknown);
+				float3 scattering = bssrdf.scattering();
 
-			radiance += p * tr * bssrdf.scattering() * l / (light_pdf * light_sample.shape.pdf);
+				float3 l = transmittance(worker, shadow_ray, intersection.prop, bssrdf)
+							   * light_sample.radiance;
 
-	//		radiance += tr * transmittance(worker, shadow_ray, intersection.prop, *light);
+				radiance += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
+			}
 		}
 	}
 
-//	return radiance;
-	return step * radiance;
+	float3 color = step * radiance;
+	return color;
 }
 
 size_t Bruteforce::num_bytes() const {
@@ -101,26 +114,18 @@ size_t Bruteforce::num_bytes() const {
 }
 
 float3 Bruteforce::transmittance(Worker& worker, Ray& ray, const scene::Prop* prop,
-								 const scene::material::BSSRDF& bssrdf,
-								 const scene::light::Light& light) const {
+								 const scene::material::BSSRDF& bssrdf) const {
 	Intersection intersection;
 	if (!worker.intersect(prop, ray, intersection)) {
-		return float3(1.f, 0.f, 0.f);
+		return float3(0.f);
 	}
 
-	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	Ray shadow_ray(intersection.geo.p, ray.direction, ray_offset, scene::Ray_max_t, ray.time);
+	float3 tau = bssrdf.optical_depth(ray.length());
 
-	if (worker.intersect(shadow_ray, intersection)) {
-		if (light.equals(intersection.prop, intersection.geo.part)) {
-			float3 tau = bssrdf.optical_depth(ray.length());
+	return math::exp(-tau);
 
-			return math::exp(-tau);
-		//	return float3(0.f, 1.f, 0.f);
-		}
-	}
 
-	return float3(0.f);
+//	return float3(0.f);
 //	return float3(0.f, 0.f, 1.f);
 }
 
