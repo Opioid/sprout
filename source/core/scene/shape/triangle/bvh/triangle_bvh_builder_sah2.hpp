@@ -15,7 +15,6 @@ struct Vertex;
 namespace triangle {
 
 struct Index_triangle;
-struct Triangle;
 
 namespace bvh {
 
