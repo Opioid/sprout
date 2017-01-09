@@ -1,6 +1,7 @@
 #include "substitute_translucent_material.hpp"
 #include "substitute_translucent_sample.hpp"
 #include "substitute_base_material.inl"
+#include "substitute_base_sample.inl"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 

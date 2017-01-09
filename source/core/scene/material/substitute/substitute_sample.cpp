@@ -1,4 +1,5 @@
 #include "substitute_sample.hpp"
+#include "substitute_base_sample.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "sampler/sampler.hpp"

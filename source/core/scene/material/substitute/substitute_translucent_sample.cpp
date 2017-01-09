@@ -1,4 +1,5 @@
 #include "substitute_translucent_sample.hpp"
+#include "substitute_base_sample.inl"
 #include "rendering/integrator/surface/integrator_helper.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
