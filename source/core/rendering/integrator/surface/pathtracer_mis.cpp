@@ -29,7 +29,8 @@ Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, rnd::Generat
 	material_samplers_{rng, rng, rng},
 	light_samplers_{rng, rng, rng},
 	transmittance_open_(take_settings, rng, settings.max_bounces),
-	transmittance_closed_(take_settings, rng) {}
+	transmittance_closed_(take_settings, rng),
+	subsurface_(take_settings, rng) {}
 
 void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -104,10 +105,8 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 
 		result += throughput * estimate_direct_light(worker, ray, intersection,
 													 material_sample, filter,
-													 sample_result);
-
-		requires_bounce = sample_result.type.test_either(Bxdf_type::Specular,
-														 Bxdf_type::Transmission);
+													 sample_result,
+													 requires_bounce);
 
 		if (!intersection.hit()
 		||  (!requires_bounce && i == settings_.max_bounces - 1)
@@ -188,7 +187,8 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 											 Intersection& intersection,
 											 const material::Sample& material_sample,
 											 Sampler_filter filter,
-											 Bxdf_result& sample_result) {
+											 Bxdf_result& sample_result,
+											 bool requires_bounce) {
 	float3 result(0.f);
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -232,12 +232,17 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 		result *= settings_.num_light_samples_reciprocal / light_weight;
 	}
 
+	if (intersection.material()->is_subsurface()) {
+		result += subsurface_.li(worker, ray, intersection);
+	}
+
 	// Material BSDF importance sample
 	material_sample.sample(material_sampler(ray.depth), sample_result);
 
 	// Those cases are handled outside at the moment
-	if (0.f == sample_result.pdf
-	||  sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission)) {
+	requires_bounce = sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission);
+
+	if (0.f == sample_result.pdf || requires_bounce) {
 		return result;
 	}
 

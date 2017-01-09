@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
+#include "rendering/integrator/surface/sub/bruteforce.hpp"
 #include "transmittance/transmittance_closed.hpp"
 #include "transmittance/transmittance_open.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -47,7 +48,8 @@ private:
 								 Intersection& intersection,
 								 const scene::material::Sample& material_sample,
 								 Sampler_filter filter,
-								 Bxdf_result& sample_result);
+								 Bxdf_result& sample_result,
+								 bool requires_bounce);
 
 	float3 evaluate_light(const scene::light::Light* light,
 						  uint32_t sampler_dimension, float light_weight,
@@ -77,6 +79,8 @@ private:
 
 	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;
+
+	sub::Bruteforce subsurface_;
 };
 
 class Pathtracer_MIS_factory : public Factory {

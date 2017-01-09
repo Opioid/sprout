@@ -82,7 +82,7 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, scene::Intersection& inte
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)) {
-			/*if (0 == i)*/	result += throughput * material_sample.radiance();
+			result += throughput * material_sample.radiance();
 		}
 
 		if (i == settings_.max_bounces) {
@@ -105,6 +105,10 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, scene::Intersection& inte
 			throughput /= q;
 		}
 
+		if (intersection.material()->is_subsurface()) {
+			result += throughput * subsurface_.li(worker, ray, intersection);
+		}
+
 		material_sample.sample(material_sampler(i), sample_result);
 		if (0.f == sample_result.pdf) {
 			break;
@@ -125,11 +129,6 @@ float4 Pathtracer::li(Worker& worker, scene::Ray& ray, scene::Intersection& inte
 				break;
 			}
 		} else {
-			if (intersection.material()->is_subsurface()) {
-				float3 sss = subsurface_.li(worker, ray, intersection);
-				result += throughput * sss;
-			}
-
 			throughput *= sample_result.reflection / sample_result.pdf;
 		}
 
