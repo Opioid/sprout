@@ -82,12 +82,11 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 			float prop_length = shadow_ray.length();
 
-			float ray_offset = take_settings_.ray_offset_factor * tintersection.geo.epsilon;
+			ray_offset = take_settings_.ray_offset_factor * tintersection.geo.epsilon;
 			shadow_ray.min_t = shadow_ray.max_t + ray_offset;
 			shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
 			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
-		//	float mv = 1.f;
 			if (mv > 0.f) {
 			//	float p = volume.phase(w, -light_sample.shape.wi);
 				float p = 1.f / (4.f * math::Pi);
