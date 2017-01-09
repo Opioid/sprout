@@ -1,6 +1,8 @@
 #include "substitute_subsurface_sample.hpp"
+#include "substitute_base_sample.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
+#include "scene/material/disney/disney.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/vector.inl"
 #include "base/math/math.hpp"

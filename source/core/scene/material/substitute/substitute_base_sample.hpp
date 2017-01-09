@@ -4,6 +4,7 @@
 
 namespace scene { namespace material { namespace substitute {
 
+template<typename Diffuse>
 class Sample_base : public material::Sample {
 
 public:

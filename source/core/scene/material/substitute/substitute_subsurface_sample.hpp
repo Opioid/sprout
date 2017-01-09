@@ -1,10 +1,11 @@
 #pragma once
 
 #include "substitute_base_sample.hpp"
+#include "scene/material/disney/disney.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
-class Sample_subsurface : public Sample_base {
+class Sample_subsurface : public Sample_base<disney::Isotropic_no_lambert> {
 
 public:
 

@@ -8,6 +8,7 @@
 #include "image/texture/texture_provider.hpp"
 #include "cloth/cloth_material.hpp"
 #include "cloth/cloth_sample.hpp"
+#include "disney/disney.inl"
 #include "display/display_material.hpp"
 #include "display/display_material_animated.hpp"
 #include "display/display_sample.hpp"

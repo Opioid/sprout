@@ -1,5 +1,4 @@
 SOURCES += \
-	scene/material/substitute/substitute_base_sample.cpp \
 	scene/material/substitute/substitute_coating_material.cpp \
 	scene/material/substitute/substitute_material.cpp \
 	scene/material/substitute/substitute_sample.cpp \

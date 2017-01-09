@@ -2,11 +2,12 @@
 
 #include "substitute_base_sample.hpp"
 #include "scene/material/coating/coating.hpp"
+#include "scene/material/disney/disney.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
 template<typename Coating_layer>
-class Sample_coating : public Sample_base {
+class Sample_coating : public Sample_base<disney::Isotropic> {
 
 public:
 

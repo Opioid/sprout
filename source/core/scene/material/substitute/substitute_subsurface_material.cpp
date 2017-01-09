@@ -1,5 +1,6 @@
 #include "substitute_subsurface_material.hpp"
 #include "substitute_subsurface_sample.hpp"
+#include "substitute_base_sample.inl"
 #include "substitute_base_material.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/material/bssrdf.hpp"
