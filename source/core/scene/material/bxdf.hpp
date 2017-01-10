@@ -3,8 +3,6 @@
 #include "base/math/vector.hpp"
 #include "base/flags/flags.hpp"
 
-namespace sampler { class Sampler; }
-
 namespace scene { namespace material { namespace bxdf {
 
 enum class Type {
