@@ -103,10 +103,8 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 			break;
 		}
 
-		result += throughput * estimate_direct_light(worker, ray, intersection,
-													 material_sample, filter,
-													 sample_result,
-													 requires_bounce);
+		result += throughput * estimate_direct_light(worker, ray, intersection, material_sample,
+													 filter, sample_result, requires_bounce);
 
 		if (!intersection.hit()
 		||  (!requires_bounce && i == settings_.max_bounces - 1)
@@ -221,7 +219,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 		float light_weight = static_cast<float>(lights.size());
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
 			const auto light = lights[l];
-			for (uint32_t i = 0, n_s = settings_.light_sampling.num_samples; i < n_s; ++i) {
+			for (uint32_t i = 0, nls = settings_.light_sampling.num_samples; i < nls; ++i) {
 				secondary_ray.min_t = ray_offset;
 
 				result += evaluate_light(light, l, light_weight, worker, secondary_ray,
