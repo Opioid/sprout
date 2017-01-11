@@ -83,8 +83,7 @@ public:
 
 protected:
 
-	virtual void set_parameter(const std::string& name,
-							   const json::Value& value);
+	virtual void set_parameter(const std::string& name, const json::Value& value);
 
 	Sample_cache2& sample_cache_;
 
