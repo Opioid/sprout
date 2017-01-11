@@ -10,7 +10,7 @@ class Material_subsurface : public Material_base<Sample_subsurface> {
 
 public:
 
-	Material_subsurface(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+	Material_subsurface(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
 						bool two_sided, Sample_cache<Sample_subsurface>& cache);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
