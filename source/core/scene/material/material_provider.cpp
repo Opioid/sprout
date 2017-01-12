@@ -47,6 +47,8 @@
 
 namespace scene { namespace material {
 
+using Material_ptr = std::shared_ptr<Material>;
+
 Provider::Provider(uint32_t num_threads) :
 	resource::Provider<Material>("Material"),
 	bssrdf_cache_(num_threads),
@@ -76,9 +78,9 @@ Provider::Provider(uint32_t num_threads) :
 
 Provider::~Provider() {}
 
-std::shared_ptr<Material> Provider::load(const std::string& filename,
-										 const memory::Variant_map& /*options*/,
-										 resource::Manager& manager) {
+Material_ptr Provider::load(const std::string& filename,
+							const memory::Variant_map& /*options*/,
+							resource::Manager& manager) {
 	std::string resolved_name;
 	auto stream_pointer = manager.file_system().read_stream(filename, resolved_name);
 
@@ -87,18 +89,17 @@ std::shared_ptr<Material> Provider::load(const std::string& filename,
 	return load(*root, string::parent_directory(resolved_name), manager);
 }
 
-std::shared_ptr<Material> Provider::load(const void* data,
-										 const std::string& mount_folder,
-										 const memory::Variant_map& /*options*/,
-										 resource::Manager& manager) {
+Material_ptr Provider::load(const void* data,
+							const std::string& mount_folder,
+							const memory::Variant_map& /*options*/,
+							resource::Manager& manager) {
 	const json::Value* value = reinterpret_cast<const json::Value*>(data);
 
 	return load(*value, mount_folder, manager);
 }
 
-std::shared_ptr<Material> Provider::load(const json::Value& value,
-										 const std::string& mount_folder,
-										 resource::Manager& manager) {
+Material_ptr Provider::load(const json::Value& value, const std::string& mount_folder,
+							resource::Manager& manager) {
 	const json::Value::ConstMemberIterator rendering_node = value.FindMember("rendering");
 	if (value.MemberEnd() == rendering_node) {
 		throw std::runtime_error("Material has no render node");
@@ -141,7 +142,7 @@ std::shared_ptr<Material> Provider::load(const json::Value& value,
 	return material;
 }
 
-std::shared_ptr<Material> Provider::fallback_material() const {
+Material_ptr Provider::fallback_material() const {
 	return fallback_material_;
 }
 
@@ -153,9 +154,8 @@ Sample_cache<light::Sample>& Provider::light_cache() {
 	return light_cache_;
 }
 
-std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
-											   resource::Manager& manager) {
-	scene::material::Sampler_settings sampler_settings;
+Material_ptr Provider::load_cloth(const json::Value& cloth_value, resource::Manager& manager) {
+	Sampler_settings sampler_settings;
 
 	Texture_adapter color_map;
 	Texture_adapter normal_map;
@@ -206,9 +206,8 @@ std::shared_ptr<Material> Provider::load_cloth(const json::Value& cloth_value,
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_display(const json::Value& display_value,
-												 resource::Manager& manager) {
-	scene::material::Sampler_settings sampler_settings;
+Material_ptr Provider::load_display(const json::Value& display_value, resource::Manager& manager) {
+	Sampler_settings sampler_settings;
 
 	Texture_adapter mask;
 	Texture_adapter emission_map;
@@ -284,9 +283,8 @@ std::shared_ptr<Material> Provider::load_display(const json::Value& display_valu
 	}
 }
 
-std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
-											   resource::Manager& manager) {
-	scene::material::Sampler_settings sampler_settings;
+Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Manager& manager) {
+	Sampler_settings sampler_settings;
 
 	Texture_adapter normal_map;
 	Texture_adapter roughness_map;
@@ -357,9 +355,8 @@ std::shared_ptr<Material> Provider::load_glass(const json::Value& glass_value,
 	}
 }
 
-std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
-											   resource::Manager& manager) {
-	scene::material::Sampler_settings sampler_settings;
+Material_ptr Provider::load_light(const json::Value& light_value, resource::Manager& manager) {
+	Sampler_settings sampler_settings;
 
 	std::string quantity;
 	float3 color(1.f, 1.f, 1.f);
@@ -460,9 +457,8 @@ std::shared_ptr<Material> Provider::load_light(const json::Value& light_value,
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_matte(const json::Value& matte_value,
-											   resource::Manager& manager) {
-	scene::material::Sampler_settings sampler_settings;
+Material_ptr Provider::load_matte(const json::Value& matte_value, resource::Manager& manager) {
+	Sampler_settings sampler_settings;
 
 //	Texture_ptr normal_map;
 	Texture_adapter mask;
@@ -509,9 +505,8 @@ std::shared_ptr<Material> Provider::load_matte(const json::Value& matte_value,
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_metal(const json::Value& metal_value,
-											   resource::Manager& manager) {
-	scene::material::Sampler_settings sampler_settings;
+Material_ptr Provider::load_metal(const json::Value& metal_value, resource::Manager& manager) {
+	Sampler_settings sampler_settings;
 
 	Texture_adapter normal_map;
 //	Texture_ptr surface_map;
@@ -598,9 +593,9 @@ std::shared_ptr<Material> Provider::load_metal(const json::Value& metal_value,
 	}
 }
 
-std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& paint_value,
-														resource::Manager& manager) {
-	scene::material::Sampler_settings sampler_settings;
+Material_ptr Provider::load_metallic_paint(const json::Value& paint_value,
+										   resource::Manager& manager) {
+	Sampler_settings sampler_settings;
 
 	Texture_adapter mask;
 	Texture_adapter flakes_normal_map;
@@ -701,9 +696,8 @@ std::shared_ptr<Material> Provider::load_metallic_paint(const json::Value& paint
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
-											 resource::Manager& manager) {
-	scene::material::Sampler_settings sampler_settings;
+Material_ptr Provider::load_sky(const json::Value& sky_value, resource::Manager& manager) {
+	Sampler_settings sampler_settings;
 
 	Texture_adapter mask;
 
@@ -745,9 +739,9 @@ std::shared_ptr<Material> Provider::load_sky(const json::Value& sky_value,
 	return material;
 }
 
-std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitute_value,
-													resource::Manager& manager) {
-	scene::material::Sampler_settings sampler_settings;
+Material_ptr Provider::load_substitute(const json::Value& substitute_value,
+									   resource::Manager& manager) {
+	Sampler_settings sampler_settings;
 
 	Texture_adapter color_map;
 	Texture_adapter normal_map;
@@ -943,8 +937,7 @@ std::shared_ptr<Material> Provider::load_substitute(const json::Value& substitut
 	return material;
 }
 
-void Provider::read_sampler_settings(const json::Value& sampler_value,
-									 Sampler_settings& settings) {
+void Provider::read_sampler_settings(const json::Value& sampler_value, Sampler_settings& settings) {
 	for (auto& n : sampler_value.GetObject()) {
 		if ("filter" == n.name) {
 			std::string filter = json::read_string(n.value);

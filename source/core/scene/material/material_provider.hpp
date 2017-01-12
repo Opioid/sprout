@@ -38,56 +38,45 @@ class Provider : public resource::Provider<Material> {
 
 public:
 
+	using Material_ptr = std::shared_ptr<Material>;
+
 	Provider(uint32_t num_threads);
 	~Provider();
 
-	virtual std::shared_ptr<Material> load(const std::string& filename,
-										   const memory::Variant_map& options,
-										   resource::Manager& manager) final override;
+	virtual Material_ptr load(const std::string& filename, const memory::Variant_map& options,
+							  resource::Manager& manager) final override;
 
-	virtual std::shared_ptr<Material> load(const void* data,
-										   const std::string& mount_folder,
-										   const memory::Variant_map& options,
-										   resource::Manager& manager) final override;
+	virtual Material_ptr load(const void* data, const std::string& mount_folder,
+							  const memory::Variant_map& options,
+							  resource::Manager& manager) final override;
 
-	std::shared_ptr<Material> fallback_material() const;
+	Material_ptr fallback_material() const;
 
 	BSSRDF_cache&				 bssrdf_cache();
 	Sample_cache<light::Sample>& light_cache();
 
 private:
 
-	std::shared_ptr<Material> load(const json::Value& value,
-								   const std::string& mount_folder,
-								   resource::Manager& manager);
+	Material_ptr load(const json::Value& value, const std::string& mount_folder,
+					  resource::Manager& manager);
 
+	Material_ptr load_cloth(const json::Value& cloth_value, resource::Manager& manager);
 
-	std::shared_ptr<Material> load_cloth(const json::Value& cloth_value,
-										 resource::Manager& manager);
+	Material_ptr load_display(const json::Value& display_value, resource::Manager& manager);
 
-	std::shared_ptr<Material> load_display(const json::Value& display_value,
-										   resource::Manager& manager);
+	Material_ptr load_glass(const json::Value& glass_value, resource::Manager& manager);
 
-	std::shared_ptr<Material> load_glass(const json::Value& glass_value,
-										 resource::Manager& manager);
+	Material_ptr load_light(const json::Value& light_value, resource::Manager& manager);
 
-	std::shared_ptr<Material> load_light(const json::Value& light_value,
-										 resource::Manager& manager);
+	Material_ptr load_matte(const json::Value& metal_value, resource::Manager& manager);
 
-	std::shared_ptr<Material> load_matte(const json::Value& metal_value,
-										 resource::Manager& manager);
+	Material_ptr load_metal(const json::Value& metal_value, resource::Manager& manager);
 
-	std::shared_ptr<Material> load_metal(const json::Value& metal_value,
-										 resource::Manager& manager);
+	Material_ptr load_metallic_paint(const json::Value& paint_value, resource::Manager& manager);
 
-	std::shared_ptr<Material> load_metallic_paint(const json::Value& metal_value,
-												  resource::Manager& manager);
+	Material_ptr load_sky(const json::Value& sky_value, resource::Manager& manager);
 
-	std::shared_ptr<Material> load_sky(const json::Value& sky_value,
-									   resource::Manager& manager);
-
-	std::shared_ptr<Material> load_substitute(const json::Value& substitute_value,
-											  resource::Manager& manager);
+	Material_ptr load_substitute(const json::Value& substitute_value, resource::Manager& manager);
 
 	struct Texture_description {
 		std::string filename;
@@ -137,7 +126,7 @@ private:
 	Sample_cache<substitute::Sample_thinfilm>		substitute_thinfilm_cache_;
 	Sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;
 
-	std::shared_ptr<material::Material> fallback_material_;
+	Material_ptr fallback_material_;
 };
 
 }}
