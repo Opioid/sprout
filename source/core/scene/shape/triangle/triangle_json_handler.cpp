@@ -98,7 +98,7 @@ bool Json_handler::String(const char* str, rapidjson::SizeType /*length*/, bool 
 			bvh_preset_ = shape::triangle::BVH_preset::Slow;
 		}
 	} else if (String_type::Morph_target == expected_string_) {
-		morph_targets_.push_back(str);
+		morph_targets_.emplace_back(str);
 	}
 
 	return true;
@@ -249,7 +249,7 @@ const std::vector<std::string>& Json_handler::morph_targets() const {
 
 void Json_handler::add_index(uint32_t i) {
 	if (current_triangle_ == triangles_.size()) {
-		triangles_.push_back(Index_triangle());
+		triangles_.emplace_back();
 	}
 
 	triangles_[current_triangle_].i[current_triangle_element_] = i;
@@ -286,7 +286,7 @@ void Json_handler::handle_vertex(float v) {
 
 void Json_handler::add_position(float v) {
 	if (vertices_.size() == current_vertex_) {
-		vertices_.push_back(Vertex());
+		vertices_.emplace_back();
 	}
 
 	vertices_[current_vertex_].p.v[current_vertex_element_] = v;
@@ -296,7 +296,7 @@ void Json_handler::add_position(float v) {
 
 void Json_handler::add_normal(float v) {
 	if (vertices_.size() == current_vertex_) {
-		vertices_.push_back(Vertex());
+		vertices_.emplace_back();
 	}
 
 	vertices_[current_vertex_].n.v[current_vertex_element_] = v;
@@ -306,7 +306,7 @@ void Json_handler::add_normal(float v) {
 
 void Json_handler::add_tangent(float v) {
 	if (vertices_.size() == current_vertex_) {
-		vertices_.push_back(Vertex());
+		vertices_.emplace_back();
 	}
 
 	if (current_vertex_element_ < 3) {
@@ -320,7 +320,7 @@ void Json_handler::add_tangent(float v) {
 
 void Json_handler::add_texture_coordinate(float v) {
 	if (vertices_.size() == current_vertex_) {
-		vertices_.push_back(Vertex());
+		vertices_.emplace_back();
 	}
 
 	vertices_[current_vertex_].uv.v[current_vertex_element_] = v;

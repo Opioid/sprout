@@ -198,16 +198,16 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 	float3 halfsize = aabb.halfsize();
 	float3 position = aabb.position();
 
-	split_candidates_.push_back(Split_candidate(0, position, true));
-	split_candidates_.push_back(Split_candidate(1, position, true));
-	split_candidates_.push_back(Split_candidate(2, position, true));
+	split_candidates_.emplace_back(0, position, true);
+	split_candidates_.emplace_back(1, position, true);
+	split_candidates_.emplace_back(2, position, true);
 
 	if (num_triangles <= sweep_threshold_) {
 		for (const auto& r : references) {
 			float3_p max = r.aabb.max();
-			split_candidates_.push_back(Split_candidate(0, max, false));
-			split_candidates_.push_back(Split_candidate(1, max, false));
-			split_candidates_.push_back(Split_candidate(2, max, false));
+			split_candidates_.emplace_back(0, max, false);
+			split_candidates_.emplace_back(1, max, false);
+			split_candidates_.emplace_back(2, max, false);
 		}
 	} else {
 		float3_p min = aabb.min();
@@ -217,13 +217,13 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 			float fi = static_cast<float>(i);
 
 			float3 slice_x(min.x + fi * step.x, position.y, position.z);
-			split_candidates_.push_back(Split_candidate(0, slice_x, false));
+			split_candidates_.emplace_back(0, slice_x, false);
 
 			float3 slice_y(position.x, min.y + fi * step.y, position.z);
-			split_candidates_.push_back(Split_candidate(1, slice_y, false));
+			split_candidates_.emplace_back(1, slice_y, false);
 
 			float3 slice_z(position.x, position.y, min.z + fi * step.z);
-			split_candidates_.push_back(Split_candidate(2, slice_z, false));
+			split_candidates_.emplace_back(2, slice_z, false);
 
 //			split_candidates_.push_back(Split_candidate(0, slice_x, true));
 //			split_candidates_.push_back(Split_candidate(1, slice_y, true));
