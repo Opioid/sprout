@@ -9,7 +9,7 @@ class Sky_material : public Material {
 
 public:
 
-	Sky_material(scene::material::Sample_cache2& sample_cache,
+	Sky_material(scene::material::BSSRDF_cache& bssrdf_cache,
 				 scene::material::Sample_cache<scene::material::light::Sample>& cache,
 				 Model& model);
 
@@ -35,7 +35,7 @@ class Sky_baked_material : public Material {
 
 public:
 
-	Sky_baked_material(scene::material::Sample_cache2& sample_cache,
+	Sky_baked_material(scene::material::BSSRDF_cache& bssrdf_cache,
 					   scene::material::Sample_cache<scene::material::light::Sample>& cache,
 					   Model& model);
 

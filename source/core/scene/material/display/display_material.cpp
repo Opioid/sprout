@@ -13,9 +13,9 @@
 
 namespace scene { namespace material { namespace display {
 
-Material::Material(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
+Material::Material(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
 				   bool two_sided, Sample_cache<Sample>& cache) :
-	material::Typed_material<Sample_cache<Sample>>(sample_cache, sampler_settings,
+	material::Typed_material<Sample_cache<Sample>>(bssrdf_cache, sampler_settings,
 												   two_sided, cache),
 	average_emission_(float3(-1.f)) {}
 

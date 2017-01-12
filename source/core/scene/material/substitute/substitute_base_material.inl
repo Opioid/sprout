@@ -17,10 +17,10 @@
 namespace scene { namespace material { namespace substitute {
 
 template<typename Sample>
-Material_base<Sample>::Material_base(Sample_cache2& sample_cache,
+Material_base<Sample>::Material_base(BSSRDF_cache& bssrdf_cache,
 									 const Sampler_settings& sampler_settings,
 									 bool two_sided, Sample_cache<Sample>& cache) :
-	Typed_material<Sample_cache<Sample>>(sample_cache, sampler_settings, two_sided, cache) {}
+	Typed_material<Sample_cache<Sample>>(bssrdf_cache, sampler_settings, two_sided, cache) {}
 
 template<typename Sample>
 float3 Material_base<Sample>::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,

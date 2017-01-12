@@ -5,10 +5,10 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Material_clearcoat::Material_clearcoat(Sample_cache2& sample_cache,
+Material_clearcoat::Material_clearcoat(BSSRDF_cache& bssrdf_cache,
 									   const Sampler_settings& sampler_settings,
 									   bool two_sided, Sample_cache<Sample_clearcoat>& cache) :
-	Material_coating<coating::Clearcoat, Sample_clearcoat>(sample_cache, sampler_settings,
+	Material_coating<coating::Clearcoat, Sample_clearcoat>(bssrdf_cache, sampler_settings,
 														   two_sided, cache) {}
 
 const material::Sample& Material_clearcoat::sample(float3_p wo, const Renderstate& rs,
@@ -31,10 +31,10 @@ void Material_clearcoat::set_clearcoat(float ior, float roughness) {
 	coating_.a2_ = math::pow4(ggx::clamp_roughness(roughness));
 }
 
-Material_thinfilm::Material_thinfilm(Sample_cache2& sample_cache,
+Material_thinfilm::Material_thinfilm(BSSRDF_cache& bssrdf_cache,
 									 const Sampler_settings& sampler_settings,
 									 bool two_sided, Sample_cache<Sample_thinfilm>& cache) :
-	Material_coating<coating::Thinfilm, Sample_thinfilm>(sample_cache, sampler_settings,
+	Material_coating<coating::Thinfilm, Sample_thinfilm>(bssrdf_cache, sampler_settings,
 														 two_sided, cache) {}
 
 const material::Sample& Material_thinfilm::sample(float3_p wo, const Renderstate& rs,

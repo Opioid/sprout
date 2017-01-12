@@ -11,7 +11,7 @@ class Material_isotropic : public Typed_material<Sample_cache<Sample_isotropic>>
 
 public:
 
-	Material_isotropic(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
+	Material_isotropic(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
 					   bool two_sided, Sample_cache<Sample_isotropic>& cache);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
@@ -42,7 +42,7 @@ class Material_anisotropic : public Typed_material<Sample_cache<Sample_anisotrop
 
 public:
 
-	Material_anisotropic(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
+	Material_anisotropic(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
 						 bool two_sided, Sample_cache<Sample_anisotropic>& cache);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,

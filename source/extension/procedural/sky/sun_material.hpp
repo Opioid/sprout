@@ -8,7 +8,7 @@ class Sun_material : public Material {
 
 public:
 
-	Sun_material(scene::material::Sample_cache2& sample_cache,
+	Sun_material(scene::material::BSSRDF_cache& bssrdf_cache,
 				 scene::material::Sample_cache<scene::material::light::Sample>& cache,
 				 Model& model);
 

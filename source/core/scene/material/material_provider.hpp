@@ -12,7 +12,7 @@ namespace scene { namespace material {
 
 class BSSRDF;
 
-using sample_cache = Sample_cache<BSSRDF>;
+using BSSRDF_cache = Sample_cache<BSSRDF>;
 
 namespace cloth				{ class Sample; }
 namespace display			{ class Sample; }
@@ -52,7 +52,7 @@ public:
 
 	std::shared_ptr<Material> fallback_material() const;
 
-	Sample_cache2&				 sample_cache();
+	BSSRDF_cache&				 bssrdf_cache();
 	Sample_cache<light::Sample>& light_cache();
 
 private:
@@ -121,7 +121,7 @@ private:
 
 	static float3 read_spectrum(const json::Value& spectrum_value);
 
-	Sample_cache2									sample_cache_;
+	BSSRDF_cache									bssrdf_cache_;
 	Sample_cache<cloth::Sample>						cloth_cache_;
 	Sample_cache<display::Sample>					display_cache_;
 	Sample_cache<glass::Sample>						glass_cache_;

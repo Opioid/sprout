@@ -13,7 +13,7 @@ class Emissionmap_animated : public Typed_material<Sample_cache<Sample>> {
 
 public:
 
-	Emissionmap_animated(Sample_cache2& sample_cache,
+	Emissionmap_animated(BSSRDF_cache& bssrdf_cache,
 						 const Sampler_settings& sampler_settings,
 						 bool two_sided, Sample_cache<Sample>& cache,
 						 const Texture_adapter& emission_map,

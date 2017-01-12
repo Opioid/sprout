@@ -13,13 +13,13 @@
 
 namespace scene { namespace material { namespace display {
 
-Material_animated::Material_animated(Sample_cache2& sample_cache,
+Material_animated::Material_animated(BSSRDF_cache bssrdf_cache,
 									 const Sampler_settings& sampler_settings,
 									 bool two_sided,
 									 Sample_cache<Sample>& cache,
 									 const Texture_adapter& emission_map,
 									 float animation_duration) :
-	Typed_material<Sample_cache<Sample>>(sample_cache, sampler_settings, two_sided, cache),
+	Typed_material<Sample_cache<Sample>>(bssrdf_cache, sampler_settings, two_sided, cache),
 	emission_map_(emission_map),
 	average_emission_(float3(-1.f)),
 	frame_length_(animation_duration / static_cast<float>(emission_map_.texture()->num_elements())),

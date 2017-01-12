@@ -7,10 +7,10 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Material_subsurface::Material_subsurface(Sample_cache2& sample_cache,
+Material_subsurface::Material_subsurface(BSSRDF_cache& bssrdf_cache,
 										 const Sampler_settings& sampler_settings,
 										 bool two_sided, Sample_cache<Sample_subsurface>& cache) :
-	Material_base<Sample_subsurface>(sample_cache, sampler_settings, two_sided, cache) {}
+	Material_base<Sample_subsurface>(bssrdf_cache, sampler_settings, two_sided, cache) {}
 
 const material::Sample& Material_subsurface::sample(float3_p wo, const Renderstate& rs,
 													const Worker& worker, Sampler_filter filter) {
@@ -24,7 +24,7 @@ const material::Sample& Material_subsurface::sample(float3_p wo, const Rendersta
 }
 
 const BSSRDF& Material_subsurface::bssrdf(const Worker& worker) {
-	auto& bssrdf = sample_cache_.bssrdf(worker.id());
+	auto& bssrdf = bssrdf_cache_.get(worker.id());
 
 	bssrdf.set(absorption_, scattering_);
 
