@@ -17,4 +17,9 @@ T& Sample_cache<T>::get(uint32_t id) {
 	return samples_[id];
 }
 
+template<typename T>
+T& Sample_cache2::get(uint32_t id) {
+	return *reinterpret_cast<T*>(buffer_[bin_size_ * id]);
+}
+
 }}

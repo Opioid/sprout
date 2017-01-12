@@ -23,9 +23,9 @@
 namespace procedural { namespace sky {
 
 Sky_material::Sky_material(
-		scene::material::BSSRDF_cache& bssrdf_cache,
+		scene::material::Sample_cache2& sample_cache,
 		scene::material::Sample_cache<scene::material::light::Sample>& cache,
-		Model& model) : Material(bssrdf_cache, cache, model) {}
+		Model& model) : Material(sample_cache, cache, model) {}
 
 const scene::material::Sample& Sky_material::sample(float3_p wo, const scene::Renderstate& rs,
 													const scene::Worker& worker,
@@ -64,9 +64,9 @@ size_t Sky_material::num_bytes() const {
 }
 
 Sky_baked_material::Sky_baked_material(
-		scene::material::BSSRDF_cache& bssrdf_cache,
+		scene::material::Sample_cache2& sample_cache,
 		scene::material::Sample_cache<scene::material::light::Sample>& cache,
-		Model& model) : Material(bssrdf_cache, cache, model) {}
+		Model& model) : Material(sample_cache, cache, model) {}
 
 const scene::material::Sample& Sky_baked_material::sample(float3_p wo, const scene::Renderstate& rs,
 														  const scene::Worker& worker,

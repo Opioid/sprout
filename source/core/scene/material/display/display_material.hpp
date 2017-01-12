@@ -12,7 +12,7 @@ class Material : public material::Typed_material<Sample_cache<Sample>> {
 
 public:
 
-	Material(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+	Material(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
 			 bool two_sided, Sample_cache<Sample>& cache);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,

@@ -2,6 +2,7 @@ SOURCES += \
 	scene/material/bssrdf.cpp \
 	scene/material/material.cpp \
 	scene/material/material_provider.cpp \
+	scene/material/material_sample_cache.cpp \
 	scene/material/material_test.cpp \
 	scene/material/sampler_cache.cpp \
 	scene/material/sampler_settings.cpp \

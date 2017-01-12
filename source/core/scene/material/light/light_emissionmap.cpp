@@ -12,9 +12,9 @@
 
 namespace scene { namespace material { namespace light {
 
-Emissionmap::Emissionmap(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+Emissionmap::Emissionmap(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
 						 bool two_sided, Sample_cache<Sample>& cache) :
-	Typed_material<Sample_cache<Sample>>(bssrdf_cache, sampler_settings, two_sided, cache),
+	Typed_material<Sample_cache<Sample>>(sample_cache, sampler_settings, two_sided, cache),
 	average_emission_(float3(-1.f)) {}
 
 const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,

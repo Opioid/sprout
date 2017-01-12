@@ -7,11 +7,11 @@
 
 namespace scene { namespace material { namespace sky {
 
-Material_overcast::Material_overcast(BSSRDF_cache& bssrdf_cache,
+Material_overcast::Material_overcast(Sample_cache2& sample_cache,
 									 const Sampler_settings& sampler_settings,
 									 bool two_sided, Sample_cache<light::Sample>& cache) :
 	material::Typed_material<Sample_cache<light::Sample>>(
-		bssrdf_cache, sampler_settings, two_sided, cache) {}
+		sample_cache, sampler_settings, two_sided, cache) {}
 
 const material::Sample& Material_overcast::sample(float3_p wo, const Renderstate& rs,
 												  const Worker& worker, Sampler_filter /*filter*/) {

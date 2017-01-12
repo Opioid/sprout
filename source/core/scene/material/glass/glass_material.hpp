@@ -12,7 +12,7 @@ class Glass : public Typed_material<Sample_cache<Sample>> {
 
 public:
 
-	Glass(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+	Glass(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
 		  Sample_cache<Sample>& cache);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,

@@ -8,9 +8,9 @@
 
 namespace scene { namespace material {
 
-Material::Material(BSSRDF_cache& bssrdf_cache, const Sampler_settings& sampler_settings,
+Material::Material(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
 				   bool two_sided) :
-	bssrdf_cache_(bssrdf_cache),
+	sample_cache_(sample_cache),
 	sampler_key_(static_cast<uint32_t>(sampler_settings.filter)),
 	two_sided_(two_sided) {}
 
@@ -29,7 +29,7 @@ void Material::set_parameters(const json::Value& parameters) {
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
 const BSSRDF& Material::bssrdf(const Worker& worker) {
-	return bssrdf_cache_.get(worker.id());
+	return sample_cache_.bssrdf(worker.id());
 }
 
 float3 Material::sample_radiance(float3_p /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
@@ -103,7 +103,6 @@ bool Material::is_two_sided() const {
 	return two_sided_;
 }
 
-void Material::set_parameter(const std::string& /*name*/,
-							 const json::Value& /*value*/) {}
+void Material::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
 }}
