@@ -53,8 +53,7 @@ Provider::Provider(uint32_t num_threads) :
 	resource::Provider<Material>("Material"),
 	sample_cache_(max_sample_size(), num_threads) {
 	auto material = std::make_shared<substitute::Material>(
-				sample_cache_, Sampler_settings(Sampler_settings::Filter::Linear),
-				false);
+				sample_cache_, Sampler_settings(Sampler_settings::Filter::Linear), false);
 	material->set_color(float3(1.f, 0.f, 0.f)),
 	material->set_ior(1.45f),
 	material->set_roughness(1.f);
