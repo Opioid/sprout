@@ -1,22 +1,18 @@
 #pragma once
 
 #include "scene/material/material.hpp"
-#include "scene/material/material_sample_cache.hpp"
 #include "image/texture/texture.hpp"
 #include "base/math/distribution/distribution_2d.hpp"
 
 namespace scene { namespace material { namespace display {
 
-class Sample;
-
-class Material_animated : public Typed_material<Sample_cache<Sample>> {
+class Material_animated : public material::Material {
 
 public:
 
-	Material_animated(Sample_cache2& sample_cache,
+	Material_animated(Sample_cache& sample_cache,
 					  const Sampler_settings& sampler_settings,
 					  bool two_sided,
-					  Sample_cache<Sample>& cache,
 					  const Texture_adapter& emission_map,
 					  float animation_duration);
 

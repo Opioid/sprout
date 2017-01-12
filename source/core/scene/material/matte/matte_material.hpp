@@ -1,18 +1,15 @@
 #pragma once
 
 #include "scene/material/material.hpp"
-#include "scene/material/material_sample_cache.hpp"
 
 namespace scene { namespace material { namespace matte {
 
-class Sample;
-
-class Material : public Typed_material<Sample_cache<Sample>> {
+class Material : public material::Material {
 
 public:
 
-	Material(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-			 bool two_sided, Sample_cache<Sample>& cache);
+	Material(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+			 bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,

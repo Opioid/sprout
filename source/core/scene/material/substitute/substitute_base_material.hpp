@@ -1,21 +1,17 @@
 #pragma once
 
 #include "scene/material/material.hpp"
-#include "scene/material/material_sample_cache.hpp"
 
 namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 
 namespace scene { namespace material { namespace substitute {
 
-template<typename Sample>
-class Material_base : public Typed_material<Sample_cache<Sample>> {
+class Material_base : public material::Material {
 
 public:
 
-	using Sampler_filter = material::Sampler_settings::Filter;
-
-	Material_base(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-				  bool two_sided, Sample_cache<Sample>& cache);
+	Material_base(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+				  bool two_sided);
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv, float area, float time,
 								   const Worker& worker,
@@ -40,6 +36,7 @@ protected:
 
 	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
 
+	template<typename Sample>
 	void set_sample(float3_p wo, const Renderstate& rs,
 					const Texture_sampler_2D& sampler, Sample& sample);
 

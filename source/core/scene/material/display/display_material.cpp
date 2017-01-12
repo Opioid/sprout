@@ -13,15 +13,14 @@
 
 namespace scene { namespace material { namespace display {
 
-Material::Material(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-				   bool two_sided, Sample_cache<Sample>& cache) :
-	material::Typed_material<Sample_cache<Sample>>(sample_cache, sampler_settings,
-												   two_sided, cache),
+Material::Material(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+				   bool two_sided) :
+	material::Material(sample_cache, sampler_settings, two_sided),
 	average_emission_(float3(-1.f)) {}
 
 const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter filter) {
-	auto& sample = cache_.get(worker.id());
+	auto& sample = sample_cache_.get<Sample>(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
 

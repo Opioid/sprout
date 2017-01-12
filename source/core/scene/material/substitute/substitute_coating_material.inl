@@ -7,42 +7,43 @@
 
 namespace scene { namespace material { namespace substitute {
 
-template<typename Coating, typename Sample>
-Material_coating<Coating, Sample>::Material_coating(
-		Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-		bool two_sided, Sample_cache<Sample>& cache) :
-	Material_base<Sample>(sample_cache, sampler_settings, two_sided, cache) {}
+template<typename Coating>
+Material_coating<Coating>::Material_coating(Sample_cache& sample_cache,
+											const Sampler_settings& sampler_settings,
+											bool two_sided) :
+	Material_base(sample_cache, sampler_settings, two_sided) {}
 
-template<typename Coating, typename Sample>
-size_t Material_coating<Coating, Sample>::num_bytes() const {
+template<typename Coating>
+size_t Material_coating<Coating>::num_bytes() const {
 	return sizeof(*this);
 }
 
-template<typename Coating, typename Sample>
-void Material_coating<Coating, Sample>::set_coating_weight_map(const Texture_adapter& weight_map) {
+template<typename Coating>
+void Material_coating<Coating>::set_coating_weight_map(const Texture_adapter& weight_map) {
 	coating_weight_map_ = weight_map;
 }
 
-template<typename Coating, typename Sample>
-void Material_coating<Coating, Sample>::set_coating_normal_map(const Texture_adapter& normal_map) {
+template<typename Coating>
+void Material_coating<Coating>::set_coating_normal_map(const Texture_adapter& normal_map) {
 	coating_normal_map_ = normal_map;
 }
 
-template<typename Coating, typename Sample>
-void Material_coating<Coating, Sample>::set_coating_weight(float weight) {
+template<typename Coating>
+void Material_coating<Coating>::set_coating_weight(float weight) {
 	coating_.weight_ = weight;
 }
 
-template<typename Coating, typename Sample>
-void Material_coating<Coating, Sample>::set_coating_color(float3_p color) {
+template<typename Coating>
+void Material_coating<Coating>::set_coating_color(float3_p color) {
 	coating_.color_ = color;
 }
 
-template<typename Coating, typename Sample>
-void Material_coating<Coating, Sample>::set_coating_basis(const Renderstate& rs,
-														  const Texture_sampler_2D& sampler,
-														  Sample& sample) {
-	if (Material_base<Sample>::normal_map_ == coating_normal_map_) {
+template<typename Coating>
+template<typename Sample>
+void Material_coating<Coating>::set_coating_basis(const Renderstate& rs,
+												  const Texture_sampler_2D& sampler,
+												  Sample& sample) {
+	if (Material_base::normal_map_ == coating_normal_map_) {
 		sample.coating_.set_tangent_frame(sample.layer_.t_, sample.layer_.b_, sample.layer_.n_);
 	} else if (coating_normal_map_.is_valid()) {
 		float3 nm = coating_normal_map_.sample_3(sampler, rs.uv);

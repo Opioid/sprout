@@ -4,12 +4,8 @@
 
 namespace procedural { namespace sky {
 
-Material::Material(scene::material::Sample_cache2& sample_cache,
-				   scene::material::Sample_cache<scene::material::light::Sample>& cache,
-				   Model& model) :
-	scene::material::Typed_material<
-		scene::material::Sample_cache<scene::material::light::Sample>>(
-			sample_cache, scene::material::Sampler_settings(), false, cache),
+Material::Material(scene::material::Sample_cache& sample_cache, Model& model) :
+	scene::material::Material(sample_cache, scene::material::Sampler_settings(), false),
 	model_(model) {}
 
 }}

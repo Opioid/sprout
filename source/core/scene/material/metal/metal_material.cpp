@@ -10,17 +10,15 @@
 
 namespace scene { namespace material { namespace metal {
 
-Material_isotropic::Material_isotropic(Sample_cache2& sample_cache,
+Material_isotropic::Material_isotropic(Sample_cache& sample_cache,
 									   const Sampler_settings& sampler_settings,
-									   bool two_sided,
-									   Sample_cache<Sample_isotropic>& cache) :
-	Typed_material<Sample_cache<Sample_isotropic>>(sample_cache, sampler_settings,
-												   two_sided, cache) {}
+									   bool two_sided) :
+	Material(sample_cache, sampler_settings, two_sided) {}
 
 const material::Sample& Material_isotropic::sample(float3_p wo, const Renderstate& rs,
 												   const Worker& worker,
 												   Sampler_settings::Filter filter) {
-	auto& sample = cache_.get(worker.id());
+	auto& sample = sample_cache_.get<Sample_isotropic>(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
 
@@ -59,17 +57,15 @@ void Material_isotropic::set_roughness(float roughness) {
 	roughness_ = ggx::clamp_roughness(roughness);
 }
 
-Material_anisotropic::Material_anisotropic(Sample_cache2& sample_cache,
+Material_anisotropic::Material_anisotropic(Sample_cache& sample_cache,
 										   const Sampler_settings& sampler_settings,
-										   bool two_sided,
-										   Sample_cache<Sample_anisotropic>& cache) :
-	Typed_material<Sample_cache<Sample_anisotropic>>(sample_cache, sampler_settings,
-													 two_sided, cache) {}
+										   bool two_sided) :
+	Material(sample_cache, sampler_settings, two_sided) {}
 
 const material::Sample& Material_anisotropic::sample(float3_p wo, const Renderstate& rs,
 													 const Worker& worker,
 													 Sampler_settings::Filter filter) {
-	auto& sample = cache_.get(worker.id());
+	auto& sample = sample_cache_.get<Sample_anisotropic>(worker.id());
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

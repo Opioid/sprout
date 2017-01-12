@@ -5,18 +5,18 @@
 
 namespace scene { namespace material {
 
-Sample_cache2::Sample_cache2(uint32_t bin_size, uint32_t num_bins) :
+Sample_cache::Sample_cache(uint32_t bin_size, uint32_t num_bins) :
 	bin_size_(bin_size),
 	buffer_(memory::allocate_aligned<char>(bin_size * num_bins)),
 	bssrdfs_(new BSSRDF[num_bins]) {}
 
-Sample_cache2::~Sample_cache2() {
+Sample_cache::~Sample_cache() {
 	delete [] bssrdfs_;
 
 	memory::free_aligned(buffer_);
 }
 
-BSSRDF& Sample_cache2::bssrdf(uint32_t id) {
+BSSRDF& Sample_cache::bssrdf(uint32_t id) {
 	return bssrdfs_[id];
 }
 

@@ -1,19 +1,16 @@
 #pragma once
 
 #include "scene/material/material.hpp"
-#include "scene/material/material_sample_cache.hpp"
 #include "base/math/distribution/distribution_2d.hpp"
 
 namespace scene { namespace material { namespace light {
 
-class Sample;
-
-class Emissionmap : public Typed_material<Sample_cache<Sample>> {
+class Emissionmap : public Material {
 
 public:
 
-	Emissionmap(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-				bool two_sided, Sample_cache<Sample>& cache);
+	Emissionmap(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+				bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,

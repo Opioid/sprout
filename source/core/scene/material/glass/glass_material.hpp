@@ -1,19 +1,15 @@
 #pragma once
 
 #include "scene/material/material.hpp"
-#include "scene/material/material_sample_cache.hpp"
 #include "image/texture/texture.hpp"
 
 namespace scene { namespace material { namespace glass {
 
-class Sample;
-
-class Glass : public Typed_material<Sample_cache<Sample>> {
+class Glass : public Material {
 
 public:
 
-	Glass(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-		  Sample_cache<Sample>& cache);
+	Glass(Sample_cache& sample_cache, const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,

@@ -7,15 +7,14 @@
 
 namespace scene { namespace material { namespace sky {
 
-Material_overcast::Material_overcast(Sample_cache2& sample_cache,
+Material_overcast::Material_overcast(Sample_cache& sample_cache,
 									 const Sampler_settings& sampler_settings,
-									 bool two_sided, Sample_cache<light::Sample>& cache) :
-	material::Typed_material<Sample_cache<light::Sample>>(
-		sample_cache, sampler_settings, two_sided, cache) {}
+									 bool two_sided) :
+	Material(sample_cache, sampler_settings, two_sided) {}
 
 const material::Sample& Material_overcast::sample(float3_p wo, const Renderstate& rs,
 												  const Worker& worker, Sampler_filter /*filter*/) {
-	auto& sample = cache_.get(worker.id());
+	auto& sample = sample_cache_.get<light::Sample>(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
 	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

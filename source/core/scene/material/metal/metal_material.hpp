@@ -1,18 +1,15 @@
 #pragma once
 
 #include "scene/material/material.hpp"
-#include "scene/material/material_sample_cache.hpp"
 
 namespace scene { namespace material { namespace metal {
 
-class Sample_isotropic;
-
-class Material_isotropic : public Typed_material<Sample_cache<Sample_isotropic>> {
+class Material_isotropic : public Material {
 
 public:
 
-	Material_isotropic(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-					   bool two_sided, Sample_cache<Sample_isotropic>& cache);
+	Material_isotropic(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+					   bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,
@@ -36,14 +33,12 @@ protected:
 	float roughness_;
 };
 
-class Sample_anisotropic;
-
-class Material_anisotropic : public Typed_material<Sample_cache<Sample_anisotropic>> {
+class Material_anisotropic : public Material {
 
 public:
 
-	Material_anisotropic(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-						 bool two_sided, Sample_cache<Sample_anisotropic>& cache);
+	Material_anisotropic(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+						 bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,

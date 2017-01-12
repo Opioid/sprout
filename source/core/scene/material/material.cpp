@@ -8,7 +8,7 @@
 
 namespace scene { namespace material {
 
-Material::Material(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
+Material::Material(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
 				   bool two_sided) :
 	sample_cache_(sample_cache),
 	sampler_key_(static_cast<uint32_t>(sampler_settings.filter)),

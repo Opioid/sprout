@@ -10,26 +10,6 @@
 
 namespace scene { namespace material {
 
-class BSSRDF;
-
-using sample_cache = Sample_cache<BSSRDF>;
-
-namespace cloth				{ class Sample; }
-namespace display			{ class Sample; }
-namespace glass				{ class Sample; class Sample_rough; }
-namespace light				{ class Sample; }
-namespace matte				{ class Sample; }
-namespace metal				{ class Sample_isotropic; class Sample_anisotropic; }
-namespace metallic_paint	{ class Sample; }
-
-namespace substitute {
-
-class Sample;
-class Sample_subsurface;
-class Sample_translucent;
-
-}
-
 class Material;
 
 struct Sampler_settings;
@@ -52,8 +32,7 @@ public:
 
 	Material_ptr fallback_material() const;
 
-	Sample_cache2&				 sample_cache();
-	Sample_cache<light::Sample>& light_cache();
+	Sample_cache& sample_cache();
 
 private:
 
@@ -110,21 +89,9 @@ private:
 
 	static float3 read_spectrum(const json::Value& spectrum_value);
 
-	Sample_cache2									sample_cache_;
-	Sample_cache<cloth::Sample>						cloth_cache_;
-	Sample_cache<display::Sample>					display_cache_;
-	Sample_cache<glass::Sample>						glass_cache_;
-	Sample_cache<glass::Sample_rough>				glass_rough_cache_;
-	Sample_cache<light::Sample>						light_cache_;
-	Sample_cache<matte::Sample>						matte_cache_;
-	Sample_cache<metal::Sample_isotropic>			metal_iso_cache_;
-	Sample_cache<metal::Sample_anisotropic>			metal_aniso_cache_;
-	Sample_cache<metallic_paint::Sample>			metallic_paint_cache_;
-	Sample_cache<substitute::Sample>				substitute_cache_;
-	Sample_cache<substitute::Sample_clearcoat>		substitute_clearcoat_cache_;
-	Sample_cache<substitute::Sample_subsurface>		substitute_subsurface_cache_;
-	Sample_cache<substitute::Sample_thinfilm>		substitute_thinfilm_cache_;
-	Sample_cache<substitute::Sample_translucent>	substitute_translucent_cache_;
+	static uint32_t max_sample_size();
+
+	Sample_cache sample_cache_;
 
 	Material_ptr fallback_material_;
 };

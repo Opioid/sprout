@@ -45,18 +45,15 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 
 	if (bake) {
 		sky_material = std::make_shared<Sky_baked_material>(material_provider_->sample_cache(),
-															material_provider_->light_cache(),
 															sky->model());
 	} else {
 		sky_material = std::make_shared<Sky_material>(material_provider_->sample_cache(),
-													  material_provider_->light_cache(),
 													  sky->model());
 	}
 
 	manager.store<scene::material::Material>("proc:sky", memory::Variant_map(), sky_material);
 
 	auto sun_material = std::make_shared<Sun_material>(material_provider_->sample_cache(),
-													   material_provider_->light_cache(),
 													   sky->model());
 
 	manager.store<scene::material::Material>("proc:sun", memory::Variant_map(), sun_material);

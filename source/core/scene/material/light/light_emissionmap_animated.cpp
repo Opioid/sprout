@@ -12,12 +12,12 @@
 
 namespace scene { namespace material { namespace light {
 
-Emissionmap_animated::Emissionmap_animated(Sample_cache2& sample_cache,
+Emissionmap_animated::Emissionmap_animated(Sample_cache& sample_cache,
 										   const Sampler_settings& sampler_settings,
-										   bool two_sided, Sample_cache<Sample>& cache,
+										   bool two_sided,
 										   const Texture_adapter& emission_map,
 										   float emission_factor, float animation_duration) :
-	Typed_material<Sample_cache<Sample>>(sample_cache, sampler_settings, two_sided, cache),
+	Material(sample_cache, sampler_settings, two_sided),
 	emission_map_(emission_map),
 	emission_factor_(emission_factor),
 	average_emission_(float3(-1.f)),
@@ -36,7 +36,7 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 
 const material::Sample& Emissionmap_animated::sample(float3_p wo, const Renderstate& rs,
 													 const Worker& worker, Sampler_filter filter) {
-	auto& sample = cache_.get(worker.id());
+	auto& sample = sample_cache_.get<Sample>(worker.id());
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

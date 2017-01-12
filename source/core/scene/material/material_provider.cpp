@@ -51,24 +51,10 @@ using Material_ptr = std::shared_ptr<Material>;
 
 Provider::Provider(uint32_t num_threads) :
 	resource::Provider<Material>("Material"),
-	sample_cache_(512, num_threads),
-	cloth_cache_(num_threads),
-	display_cache_(num_threads),
-	glass_cache_(num_threads),
-	glass_rough_cache_(num_threads),
-	light_cache_(num_threads),
-	matte_cache_(num_threads),
-	metal_iso_cache_(num_threads),
-	metal_aniso_cache_(num_threads),
-	metallic_paint_cache_(num_threads),
-	substitute_cache_(num_threads),
-	substitute_clearcoat_cache_(num_threads),
-	substitute_subsurface_cache_(num_threads),
-	substitute_thinfilm_cache_(num_threads),
-	substitute_translucent_cache_(num_threads) {
+	sample_cache_(max_sample_size(), num_threads) {
 	auto material = std::make_shared<substitute::Material>(
 				sample_cache_, Sampler_settings(Sampler_settings::Filter::Linear),
-				false, substitute_cache_);
+				false);
 	material->set_color(float3(1.f, 0.f, 0.f)),
 	material->set_ior(1.45f),
 	material->set_roughness(1.f);
@@ -78,8 +64,7 @@ Provider::Provider(uint32_t num_threads) :
 
 Provider::~Provider() {}
 
-Material_ptr Provider::load(const std::string& filename,
-							const memory::Variant_map& /*options*/,
+Material_ptr Provider::load(const std::string& filename, const memory::Variant_map& /*options*/,
 							resource::Manager& manager) {
 	std::string resolved_name;
 	auto stream_pointer = manager.file_system().read_stream(filename, resolved_name);
@@ -89,10 +74,8 @@ Material_ptr Provider::load(const std::string& filename,
 	return load(*root, string::parent_directory(resolved_name), manager);
 }
 
-Material_ptr Provider::load(const void* data,
-							const std::string& mount_folder,
-							const memory::Variant_map& /*options*/,
-							resource::Manager& manager) {
+Material_ptr Provider::load(const void* data, const std::string& mount_folder,
+							const memory::Variant_map& /*options*/, resource::Manager& manager) {
 	const json::Value* value = reinterpret_cast<const json::Value*>(data);
 
 	return load(*value, mount_folder, manager);
@@ -146,12 +129,8 @@ Material_ptr Provider::fallback_material() const {
 	return fallback_material_;
 }
 
-Sample_cache2& Provider::sample_cache() {
+Sample_cache& Provider::sample_cache() {
 	return sample_cache_;
-}
-
-Sample_cache<light::Sample>& Provider::light_cache() {
-	return light_cache_;
 }
 
 Material_ptr Provider::load_cloth(const json::Value& cloth_value, resource::Manager& manager) {
@@ -194,8 +173,7 @@ Material_ptr Provider::load_cloth(const json::Value& cloth_value, resource::Mana
 		}
 	}
 
-	auto material = std::make_shared<cloth::Material>(sample_cache_, sampler_settings,
-													  two_sided, cloth_cache_);
+	auto material = std::make_shared<cloth::Material>(sample_cache_, sampler_settings, two_sided);
 
 	material->set_mask(mask);
 	material->set_color_map(color_map);
@@ -263,15 +241,15 @@ Material_ptr Provider::load_display(const json::Value& display_value, resource::
 	if (animation_duration > 0.f) {
 		auto material = std::make_shared<display::Material_animated>(
 					sample_cache_, sampler_settings, two_sided,
-					display_cache_, emission_map, animation_duration);
+					emission_map, animation_duration);
 		material->set_mask(mask);
 		material->set_emission_factor(emission_factor);
 		material->set_roughness(roughness);
 		material->set_ior(ior);
 		return material;
 	} else {
-		auto material = std::make_shared<display::Material>(
-					sample_cache_, sampler_settings, two_sided, display_cache_);
+		auto material = std::make_shared<display::Material>(sample_cache_, sampler_settings,
+															two_sided);
 
 		material->set_mask(mask);
 		material->set_emission_map(emission_map);
@@ -332,8 +310,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 	}
 
 	if (roughness > 0.f || roughness_map.is_valid()) {
-		auto material = std::make_shared<glass::Glass_rough>(sample_cache_, sampler_settings,
-															 glass_rough_cache_);
+		auto material = std::make_shared<glass::Glass_rough>(sample_cache_, sampler_settings);
 		material->set_normal_map(normal_map);
 		material->set_roughness_map(roughness_map);
 		material->set_refraction_color(refraction_color);
@@ -343,8 +320,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 		material->set_roughness(roughness);
 		return material;
 	} else {
-		auto material = std::make_shared<glass::Glass>(sample_cache_, sampler_settings,
-													   glass_cache_);
+		auto material = std::make_shared<glass::Glass>(sample_cache_, sampler_settings);
 
 		material->set_normal_map(normal_map);
 		material->set_refraction_color(refraction_color);
@@ -419,14 +395,14 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 	if (emission_map.is_valid()) {
 		if (animation_duration > 0.f) {
 			auto material = std::make_shared<light::Emissionmap_animated>(
-						sample_cache_, sampler_settings, two_sided, light_cache_,
+						sample_cache_, sampler_settings, two_sided,
 						emission_map, emission_factor, animation_duration);
 
 			material->set_mask(mask);
 			return material;
 		} else {
-			auto material = std::make_shared<light::Emissionmap>(
-						sample_cache_, sampler_settings, two_sided, light_cache_);
+			auto material = std::make_shared<light::Emissionmap>(sample_cache_, sampler_settings,
+																 two_sided);
 
 			material->set_mask(mask);
 			material->set_emission_map(emission_map);
@@ -436,7 +412,7 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 	}
 
 	auto material = std::make_shared<light::Constant>(sample_cache_, sampler_settings,
-													  two_sided, light_cache_);
+													  two_sided);
 
 	material->set_mask(mask);
 
@@ -495,7 +471,7 @@ Material_ptr Provider::load_matte(const json::Value& matte_value, resource::Mana
 	}
 
 	auto material = std::make_shared<matte::Material>(sample_cache_, sampler_settings,
-													  two_sided, matte_cache_);
+													  two_sided);
 
 	material->set_mask(mask);
 //	material->set_normal_map(normal_map);
@@ -565,7 +541,7 @@ Material_ptr Provider::load_metal(const json::Value& metal_value, resource::Mana
 
 	if (roughness_aniso.x > 0.f && roughness_aniso.y > 0.f) {
 		auto material = std::make_shared<metal::Material_anisotropic>(
-					sample_cache_, sampler_settings, two_sided, metal_aniso_cache_);
+					sample_cache_, sampler_settings, two_sided);
 
 		material->set_mask(mask);
 		material->set_normal_map(normal_map);
@@ -579,7 +555,7 @@ Material_ptr Provider::load_metal(const json::Value& metal_value, resource::Mana
 		return material;
 	} else {
 		auto material = std::make_shared<metal::Material_isotropic>(
-					sample_cache_, sampler_settings, two_sided, metal_iso_cache_);
+					sample_cache_, sampler_settings, two_sided);
 
 		material->set_mask(mask);
 		material->set_normal_map(normal_map);
@@ -673,10 +649,8 @@ Material_ptr Provider::load_metallic_paint(const json::Value& paint_value,
 	options.set("usage", image::texture::Provider::Usage::Mask);
 	flakes_mask = create_texture(texture_description, options, manager);
 
-	auto material = std::make_shared<metallic_paint::Material>(sample_cache_,
-															   sampler_settings,
-															   two_sided,
-															   metallic_paint_cache_);
+	auto material = std::make_shared<metallic_paint::Material>(sample_cache_, sampler_settings,
+															   two_sided);
 
 	material->set_mask(mask);
 
@@ -731,7 +705,7 @@ Material_ptr Provider::load_sky(const json::Value& sky_value, resource::Manager&
 	}
 
 	auto material = std::make_shared<sky::Material_overcast>(sample_cache_, sampler_settings,
-															 two_sided, light_cache_);
+															 two_sided);
 
 	material->set_mask(mask);
 	material->set_emission(radiance);
@@ -817,7 +791,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 
 	if (thickness > 0.f) {
 		auto material = std::make_shared<substitute::Material_translucent>(
-					sample_cache_, sampler_settings, two_sided, substitute_translucent_cache_);
+					sample_cache_, sampler_settings, two_sided);
 
 		material->set_mask(mask);
 		material->set_color_map(color_map);
@@ -852,7 +826,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 
 		if (coating.thickness > 0.f) {
 			auto material = std::make_shared<substitute::Material_thinfilm>(
-						sample_cache_, sampler_settings, two_sided, substitute_thinfilm_cache_);
+						sample_cache_, sampler_settings, two_sided);
 
 			material->set_mask(mask);
 			material->set_color_map(color_map);
@@ -876,7 +850,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 			return material;
 		} else {
 			auto material = std::make_shared<substitute::Material_clearcoat>(
-						sample_cache_, sampler_settings, two_sided, substitute_clearcoat_cache_);
+						sample_cache_, sampler_settings, two_sided);
 
 			material->set_mask(mask);
 			material->set_color_map(color_map);
@@ -900,7 +874,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 		}
 	} else if (math::contains_greater_zero(scattering)) {
 		auto material = std::make_shared<substitute::Material_subsurface>(
-					sample_cache_, sampler_settings, two_sided, substitute_subsurface_cache_);
+					sample_cache_, sampler_settings, two_sided);
 
 		material->set_mask(mask);
 		material->set_color_map(color_map);
@@ -919,8 +893,8 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 		return material;
 	}
 
-	auto material = std::make_shared<substitute::Material>(
-				sample_cache_, sampler_settings, two_sided, substitute_cache_);
+	auto material = std::make_shared<substitute::Material>(sample_cache_, sampler_settings,
+														   two_sided);
 
 	material->set_mask(mask);
 	material->set_color_map(color_map);
@@ -1033,6 +1007,27 @@ float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 	}
 
 	return float3(0.f);
+}
+
+uint32_t Provider::max_sample_size() {
+	size_t num_bytes = 0;
+
+	num_bytes = std::max(sizeof(cloth::Sample), num_bytes);
+	num_bytes = std::max(sizeof(display::Sample), num_bytes);
+	num_bytes = std::max(sizeof(glass::Sample), num_bytes);
+	num_bytes = std::max(sizeof(glass::Sample_rough), num_bytes);
+	num_bytes = std::max(sizeof(light::Sample), num_bytes);
+	num_bytes = std::max(sizeof(matte::Sample), num_bytes);
+	num_bytes = std::max(sizeof(metal::Sample_anisotropic), num_bytes);
+	num_bytes = std::max(sizeof(metal::Sample_isotropic), num_bytes);
+	num_bytes = std::max(sizeof(metallic_paint::Sample), num_bytes);
+	num_bytes = std::max(sizeof(substitute::Sample), num_bytes);
+	num_bytes = std::max(sizeof(substitute::Sample_clearcoat), num_bytes);
+	num_bytes = std::max(sizeof(substitute::Sample_subsurface), num_bytes);
+	num_bytes = std::max(sizeof(substitute::Sample_thinfilm), num_bytes);
+	num_bytes = std::max(sizeof(substitute::Sample_translucent), num_bytes);
+
+	return static_cast<uint32_t>(num_bytes);
 }
 
 }}

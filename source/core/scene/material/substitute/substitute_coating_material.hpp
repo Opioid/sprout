@@ -1,18 +1,17 @@
 #pragma once
 
 #include "substitute_base_material.hpp"
-#include "substitute_coating_sample.hpp"
 #include "scene/material/coating/coating.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
-template<typename Coating, typename Sample>
-class Material_coating : public Material_base<Sample> {
+template<typename Coating>
+class Material_coating : public Material_base {
 
 public:
 
-	Material_coating(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-					 bool two_sided, Sample_cache<Sample>& cache);
+	Material_coating(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+					 bool two_sided);
 
 	virtual size_t num_bytes() const final override;
 
@@ -24,8 +23,7 @@ public:
 
 protected:
 
-	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
-
+	template<typename Sample>
 	void set_coating_basis(const Renderstate& rs, const Texture_sampler_2D& sampler,
 						   Sample& sample);
 
@@ -35,14 +33,12 @@ protected:
 	Coating coating_;
 };
 
-class Material_clearcoat : public Material_coating<coating::Clearcoat, Sample_clearcoat> {
+class Material_clearcoat : public Material_coating<coating::Clearcoat> {
 
 public:
 
-	Material_clearcoat(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-					   bool two_sided, Sample_cache<Sample_clearcoat>& cache);
-
-	using Sampler_filter = material::Sampler_settings::Filter;
+	Material_clearcoat(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+					   bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,
@@ -51,14 +47,12 @@ public:
 	void set_clearcoat(float ior, float roughness);
 };
 
-class Material_thinfilm : public Material_coating<coating::Thinfilm, Sample_thinfilm> {
+class Material_thinfilm : public Material_coating<coating::Thinfilm> {
 
 public:
 
-	Material_thinfilm(Sample_cache2& sample_cache, const Sampler_settings& sampler_settings,
-					  bool two_sided, Sample_cache<Sample_thinfilm>& cache);
-
-	using Sampler_filter = material::Sampler_settings::Filter;
+	Material_thinfilm(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+					  bool two_sided);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,

@@ -13,13 +13,12 @@
 
 namespace scene { namespace material { namespace display {
 
-Material_animated::Material_animated(Sample_cache2& sample_cache,
+Material_animated::Material_animated(Sample_cache& sample_cache,
 									 const Sampler_settings& sampler_settings,
 									 bool two_sided,
-									 Sample_cache<Sample>& cache,
 									 const Texture_adapter& emission_map,
 									 float animation_duration) :
-	Typed_material<Sample_cache<Sample>>(sample_cache, sampler_settings, two_sided, cache),
+	material::Material(sample_cache, sampler_settings, two_sided),
 	emission_map_(emission_map),
 	average_emission_(float3(-1.f)),
 	frame_length_(animation_duration / static_cast<float>(emission_map_.texture()->num_elements())),
@@ -37,7 +36,7 @@ void Material_animated::tick(float absolute_time, float /*time_slice*/) {
 
 const material::Sample& Material_animated::sample(float3_p wo, const Renderstate& rs,
 												  const Worker& worker, Sampler_filter filter) {
-	auto& sample = cache_.get(worker.id());
+	auto& sample = sample_cache_.get<Sample>(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
 

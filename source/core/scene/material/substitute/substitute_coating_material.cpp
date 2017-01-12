@@ -1,19 +1,19 @@
 #include "substitute_coating_material.inl"
 #include "substitute_coating_sample.inl"
 #include "scene/scene_renderstate.inl"
+#include "scene/scene_worker.hpp"
 #include "scene/material/coating/coating.inl"
 
 namespace scene { namespace material { namespace substitute {
 
-Material_clearcoat::Material_clearcoat(Sample_cache2& sample_cache,
+Material_clearcoat::Material_clearcoat(Sample_cache& sample_cache,
 									   const Sampler_settings& sampler_settings,
-									   bool two_sided, Sample_cache<Sample_clearcoat>& cache) :
-	Material_coating<coating::Clearcoat, Sample_clearcoat>(sample_cache, sampler_settings,
-														   two_sided, cache) {}
+									   bool two_sided) :
+	Material_coating<coating::Clearcoat>(sample_cache, sampler_settings, two_sided) {}
 
 const material::Sample& Material_clearcoat::sample(float3_p wo, const Renderstate& rs,
 												   const Worker& worker, Sampler_filter filter) {
-	auto& sample = cache_.get(worker.id());
+	auto& sample = sample_cache_.get<Sample_clearcoat>(worker.id());
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -31,15 +31,14 @@ void Material_clearcoat::set_clearcoat(float ior, float roughness) {
 	coating_.a2_ = math::pow4(ggx::clamp_roughness(roughness));
 }
 
-Material_thinfilm::Material_thinfilm(Sample_cache2& sample_cache,
+Material_thinfilm::Material_thinfilm(Sample_cache& sample_cache,
 									 const Sampler_settings& sampler_settings,
-									 bool two_sided, Sample_cache<Sample_thinfilm>& cache) :
-	Material_coating<coating::Thinfilm, Sample_thinfilm>(sample_cache, sampler_settings,
-														 two_sided, cache) {}
+									 bool two_sided) :
+	Material_coating<coating::Thinfilm>(sample_cache, sampler_settings, two_sided) {}
 
 const material::Sample& Material_thinfilm::sample(float3_p wo, const Renderstate& rs,
 												  const Worker& worker, Sampler_filter filter) {
-	auto& sample = cache_.get(worker.id());
+	auto& sample = sample_cache_.get<Sample_thinfilm>(worker.id());
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

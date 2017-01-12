@@ -11,15 +11,13 @@
 
 namespace procedural { namespace sky {
 
-Sun_material::Sun_material(
-		scene::material::Sample_cache2& sample_cache,
-		scene::material::Sample_cache<scene::material::light::Sample>& cache,
-		Model& model) : Material(sample_cache, cache, model) {}
+Sun_material::Sun_material(scene::material::Sample_cache& sample_cache, Model& model) :
+	Material(sample_cache, model) {}
 
 const scene::material::Sample& Sun_material::sample(float3_p wo, const scene::Renderstate& rs,
 													const scene::Worker& worker,
 													Sampler_filter /*filter*/) {
-	auto& sample = cache_.get(worker.id());
+	auto& sample = sample_cache_.get<scene::material::light::Sample>(worker.id());
 
 	sample.set_basis(rs.geo_n, wo);
 

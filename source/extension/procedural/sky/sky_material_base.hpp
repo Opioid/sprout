@@ -8,16 +8,13 @@ namespace procedural { namespace sky {
 
 class Model;
 
-class Material : public scene::material::Typed_material<
-		scene::material::Sample_cache<scene::material::light::Sample>> {
+class Material : public scene::material::Material {
 
 public:
 
 	using Sampler_filter = scene::material::Sampler_settings::Filter;
 
-	Material(scene::material::Sample_cache2& sample_cache,
-			 scene::material::Sample_cache<scene::material::light::Sample>& cache,
-			 Model& model);
+	Material(scene::material::Sample_cache& sample_cache, Model& model);
 
 protected:
 
