@@ -5,8 +5,6 @@
 #include "image/texture/texture.hpp"
 #include <algorithm>
 
-#include <iostream>
-
 namespace image { namespace texture { namespace sampler {
 
 template<typename Address_mode>
@@ -48,8 +46,6 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 
 
 	return bilinear(c00, c01, c10, c11, st.x, st.y);
 	*/
-
-	std::cout << "we got here" << std::endl;
 
 	float3 c[4];
 
