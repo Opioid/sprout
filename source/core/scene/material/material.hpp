@@ -94,6 +94,7 @@ private:
 	bool two_sided_;
 };
 
-using Materials = std::vector<std::shared_ptr<material::Material>>;
+using Material_ptr = std::shared_ptr<material::Material>;
+using Materials = std::vector<Material_ptr>;
 
 }}

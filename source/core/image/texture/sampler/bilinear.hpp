@@ -27,6 +27,13 @@ inline float3 bilinear(float3_p c00, float3_p c01, float3_p c10, float3_p c11,
 	return _s * (_t * c00 + t * c01) + s * (_t * c10 + t * c11);
 }
 
+inline float3 bilinear(float3 c[4], float s, float t) {
+	float _s = 1.f - s;
+	float _t = 1.f - t;
+
+	return _s * (_t * c[0] + t * c[1]) + s * (_t * c[2] + t * c[3]);
+}
+
 inline float4 bilinear(float4_p c00, float4_p c01, float4_p c10, float4_p c11,
 					   float s, float t) {
 	float _s = 1.f - s;

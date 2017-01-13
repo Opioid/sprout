@@ -8,7 +8,7 @@
 #include "image/texture/texture_provider.hpp"
 #include "cloth/cloth_material.hpp"
 #include "cloth/cloth_sample.hpp"
-#include "disney/disney.inl"
+//#include "disney/disney.inl"
 #include "display/display_material.hpp"
 #include "display/display_material_animated.hpp"
 #include "display/display_sample.hpp"
@@ -46,8 +46,6 @@
 #include "base/thread/thread_pool.hpp"
 
 namespace scene { namespace material {
-
-using Material_ptr = std::shared_ptr<Material>;
 
 Provider::Provider(uint32_t num_threads) :
 	resource::Provider<Material>("Material"),

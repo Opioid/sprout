@@ -5,6 +5,8 @@
 #include "image/texture/texture.hpp"
 #include <algorithm>
 
+#include <iostream>
+
 namespace image { namespace texture { namespace sampler {
 
 template<typename Address_mode>
@@ -38,12 +40,22 @@ float3 Sampler_2D_linear<Address_mode>::sample_3(const Texture& texture, float2 
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
+	/*
 	float3 c00 = texture.at_3(xy_xy1.x, xy_xy1.y);
 	float3 c01 = texture.at_3(xy_xy1.x, xy_xy1.w);
 	float3 c10 = texture.at_3(xy_xy1.z, xy_xy1.y);
 	float3 c11 = texture.at_3(xy_xy1.z, xy_xy1.w);
 
 	return bilinear(c00, c01, c10, c11, st.x, st.y);
+	*/
+
+	std::cout << "we got here" << std::endl;
+
+	float3 c[4];
+
+	texture.gather_3(xy_xy1, c);
+
+	return bilinear(c, st.x, st.y);
 }
 
 template<typename Address_mode>

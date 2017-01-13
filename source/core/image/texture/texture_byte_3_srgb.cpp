@@ -35,6 +35,29 @@ float4 Byte_3_sRGB::at_4(int32_t x, int32_t y) const {
 				  1.f);
 }
 
+void Byte_3_sRGB::gather_3(int4 xy_xy1, float3 c[4]) const {
+	auto v00 = image_.load(xy_xy1.x, xy_xy1.y);
+	auto v01 = image_.load(xy_xy1.x, xy_xy1.w);
+	auto v10 = image_.load(xy_xy1.z, xy_xy1.y);
+	auto v11 = image_.load(xy_xy1.z, xy_xy1.w);
+
+	c[0] = float3(encoding::srgb_to_float(v00.x),
+				  encoding::srgb_to_float(v00.y),
+				  encoding::srgb_to_float(v00.z));
+
+	c[1] = float3(encoding::srgb_to_float(v01.x),
+				  encoding::srgb_to_float(v01.y),
+				  encoding::srgb_to_float(v01.z));
+
+	c[2] = float3(encoding::srgb_to_float(v10.x),
+				  encoding::srgb_to_float(v10.y),
+				  encoding::srgb_to_float(v10.z));
+
+	c[3] = float3(encoding::srgb_to_float(v11.x),
+				  encoding::srgb_to_float(v11.y),
+				  encoding::srgb_to_float(v11.z));
+}
+
 float Byte_3_sRGB::at_element_1(int32_t x, int32_t y, int32_t element) const {
 	auto value = image_.load_element(x, y, element);
 	return encoding::srgb_to_float(value.x);

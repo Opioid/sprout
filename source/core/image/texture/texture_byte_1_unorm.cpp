@@ -29,6 +29,18 @@ float4 Byte_1_unorm::at_4(int32_t x, int32_t y) const {
 	return float4(encoding::unorm_to_float(value), 0.f, 0.f, 1.f);
 }
 
+void Byte_1_unorm::gather_3(int4 xy_xy1, float3 c[4]) const {
+	auto v00 = image_.load(xy_xy1.x, xy_xy1.y);
+	auto v01 = image_.load(xy_xy1.x, xy_xy1.w);
+	auto v10 = image_.load(xy_xy1.z, xy_xy1.y);
+	auto v11 = image_.load(xy_xy1.z, xy_xy1.w);
+
+	c[0] = float3(encoding::unorm_to_float(v00), 0.f, 0.f);
+	c[1] = float3(encoding::unorm_to_float(v01), 0.f, 0.f);
+	c[2] = float3(encoding::unorm_to_float(v10), 0.f, 0.f);
+	c[3] = float3(encoding::unorm_to_float(v11), 0.f, 0.f);
+}
+
 float Byte_1_unorm::at_element_1(int32_t x, int32_t y, int32_t element) const {
 	uint8_t value = image_.load_element(x, y, element);
 	return encoding::unorm_to_float(value);

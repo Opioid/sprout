@@ -32,7 +32,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material) :
+Loader::Loader(resource::Manager& manager, material::Material_ptr fallback_material) :
 	resource_manager_(manager),
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),

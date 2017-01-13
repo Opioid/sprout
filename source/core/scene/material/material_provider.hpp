@@ -3,7 +3,6 @@
 #include "resource/resource_provider.hpp"
 #include "material_sample_cache.hpp"
 #include "image/texture/texture_types.hpp"
-#include "substitute/substitute_coating_sample.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/vector.hpp"
 #include <vector>
@@ -12,13 +11,13 @@ namespace scene { namespace material {
 
 class Material;
 
+using Material_ptr = std::shared_ptr<Material>;
+
 struct Sampler_settings;
 
 class Provider : public resource::Provider<Material> {
 
 public:
-
-	using Material_ptr = std::shared_ptr<Material>;
 
 	Provider(uint32_t num_threads);
 	~Provider();

@@ -35,6 +35,29 @@ float4 Byte_2_snorm::at_4(int32_t x, int32_t y) const {
 				  1.f);
 }
 
+void Byte_2_snorm::gather_3(int4 xy_xy1, float3 c[4]) const {
+	auto v00 = image_.load(xy_xy1.x, xy_xy1.y);
+	auto v01 = image_.load(xy_xy1.x, xy_xy1.w);
+	auto v10 = image_.load(xy_xy1.z, xy_xy1.y);
+	auto v11 = image_.load(xy_xy1.z, xy_xy1.w);
+
+	c[0] = float3(encoding::snorm_to_float(v00.x),
+				  encoding::snorm_to_float(v00.y),
+				  0.f);
+
+	c[1] = float3(encoding::snorm_to_float(v01.x),
+				  encoding::snorm_to_float(v01.y),
+				  0.f);
+
+	c[2] = float3(encoding::snorm_to_float(v10.x),
+				  encoding::snorm_to_float(v10.y),
+				  0.f);
+
+	c[3] = float3(encoding::snorm_to_float(v11.x),
+				  encoding::snorm_to_float(v11.y),
+				  0.f);
+}
+
 float Byte_2_snorm::at_element_1(int32_t x, int32_t y, int32_t element) const {
 	auto value = image_.load_element(x, y, element);
 	return encoding::snorm_to_float(value.x);

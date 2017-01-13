@@ -44,7 +44,7 @@ class Loader {
 
 public:
 
-	Loader(resource::Manager& manager, std::shared_ptr<material::Material> fallback_material);
+	Loader(resource::Manager& manager, material::Material_ptr fallback_material);
     ~Loader();
 
 	void load(const std::string& filename, Scene& scene);
@@ -95,7 +95,7 @@ private:
 	std::shared_ptr<shape::Shape> rectangle_;
 	std::shared_ptr<shape::Shape> sphere_;
 
-	std::shared_ptr<material::Material> fallback_material_;
+	material::Material_ptr fallback_material_;
 
 	std::map<std::string, entity::Extension_provider*> extension_providers_;
     std::map<std::string, shape::triangle::Generator*> mesh_generators_;
