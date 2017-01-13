@@ -26,6 +26,27 @@ float4 Float_3::at_4(int32_t x, int32_t y) const {
 	return float4(image_.load(x, y), 1.f);
 }
 
+float4 Float_3::gather_1(int4 xy_xy1) const {
+	auto v00 = image_.load(xy_xy1.x, xy_xy1.y);
+	auto v01 = image_.load(xy_xy1.x, xy_xy1.w);
+	auto v10 = image_.load(xy_xy1.z, xy_xy1.y);
+	auto v11 = image_.load(xy_xy1.z, xy_xy1.w);
+
+	return float4(v00.x, v01.x, v10.x, v11.x);
+}
+
+void Float_3::gather_2(int4 xy_xy1, float2 c[4]) const {
+	auto v00 = image_.load(xy_xy1.x, xy_xy1.y);
+	auto v01 = image_.load(xy_xy1.x, xy_xy1.w);
+	auto v10 = image_.load(xy_xy1.z, xy_xy1.y);
+	auto v11 = image_.load(xy_xy1.z, xy_xy1.w);
+
+	c[0] = v00.xy;
+	c[1] = v01.xy;
+	c[2] = v10.xy;
+	c[3] = v11.xy;
+}
+
 void Float_3::gather_3(int4 xy_xy1, float3 c[4]) const {
 	auto v00 = image_.load(xy_xy1.x, xy_xy1.y);
 	auto v01 = image_.load(xy_xy1.x, xy_xy1.w);
