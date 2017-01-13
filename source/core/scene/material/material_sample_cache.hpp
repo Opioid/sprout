@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 namespace scene { namespace material {
@@ -17,6 +18,8 @@ public:
 	T& get(uint32_t id);
 
 	BSSRDF& bssrdf(uint32_t id);
+
+	size_t num_bytes() const;
 
 private:
 

@@ -20,4 +20,10 @@ BSSRDF& Sample_cache::bssrdf(uint32_t id) {
 	return bssrdfs_[id];
 }
 
+size_t Sample_cache::num_bytes() const {
+	return sizeof(*this) +
+			/*num_bins_ **/ sizeof(char) +
+			/*num_bins_ **/ sizeof(BSSRDF);
+}
+
 }}

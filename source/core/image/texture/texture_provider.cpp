@@ -92,4 +92,8 @@ std::shared_ptr<Texture> Provider::load(const void* /*data*/,
 	return nullptr;
 }
 
+size_t Provider::num_bytes() const {
+	return sizeof(*this);
+}
+
 }}

@@ -29,6 +29,8 @@ public:
 							  const memory::Variant_map& options,
 							  resource::Manager& manager) final override;
 
+	virtual size_t num_bytes() const final override;
+
 	Material_ptr fallback_material() const;
 
 	Sample_cache& sample_cache();

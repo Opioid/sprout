@@ -34,6 +34,8 @@ public:
 										  const std::string& mount_folder,
 										  const memory::Variant_map& options,
 										  resource::Manager& manager) final override;
+
+	virtual size_t num_bytes() const final override;
 };
 
 }}

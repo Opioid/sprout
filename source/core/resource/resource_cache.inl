@@ -83,6 +83,8 @@ size_t Typed_cache<T>::num_bytes() const {
 		num_bytes += r.second->num_bytes();
 	}
 
+	num_bytes += provider_.num_bytes();
+
 	return num_bytes;
 }
 

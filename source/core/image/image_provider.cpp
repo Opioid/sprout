@@ -55,4 +55,8 @@ std::shared_ptr<Image> Provider::load(const void* /*data*/,
 	return nullptr;
 }
 
+size_t Provider::num_bytes() const {
+	return sizeof(*this);
+}
+
 }

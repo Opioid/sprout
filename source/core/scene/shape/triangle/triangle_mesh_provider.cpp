@@ -122,6 +122,10 @@ std::shared_ptr<Shape> Provider::load(const void* /*data*/,
 	return nullptr;
 }
 
+size_t Provider::num_bytes() const {
+	return sizeof(*this);
+}
+
 std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& triangles,
                                              const std::vector<Vertex>& vertices,
                                              uint32_t num_parts, BVH_preset bvh_preset,

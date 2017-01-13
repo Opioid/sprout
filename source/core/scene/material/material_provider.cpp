@@ -79,6 +79,18 @@ Material_ptr Provider::load(const void* data, const std::string& mount_folder,
 	return load(*value, mount_folder, manager);
 }
 
+size_t Provider::num_bytes() const {
+	return sizeof(*this) + sample_cache_.num_bytes();
+}
+
+Material_ptr Provider::fallback_material() const {
+	return fallback_material_;
+}
+
+Sample_cache& Provider::sample_cache() {
+	return sample_cache_;
+}
+
 Material_ptr Provider::load(const json::Value& value, const std::string& mount_folder,
 							resource::Manager& manager) {
 	const json::Value::ConstMemberIterator rendering_node = value.FindMember("rendering");
@@ -121,14 +133,6 @@ Material_ptr Provider::load(const json::Value& value, const std::string& mount_f
 	}
 
 	return material;
-}
-
-Material_ptr Provider::fallback_material() const {
-	return fallback_material_;
-}
-
-Sample_cache& Provider::sample_cache() {
-	return sample_cache_;
 }
 
 Material_ptr Provider::load_cloth(const json::Value& cloth_value, resource::Manager& manager) {
