@@ -8,7 +8,6 @@
 #include "image/texture/texture_provider.hpp"
 #include "cloth/cloth_material.hpp"
 #include "cloth/cloth_sample.hpp"
-//#include "disney/disney.inl"
 #include "display/display_material.hpp"
 #include "display/display_material_animated.hpp"
 #include "display/display_sample.hpp"
@@ -16,6 +15,8 @@
 #include "glass/glass_sample.hpp"
 #include "glass/glass_rough_material.hpp"
 #include "glass/glass_rough_sample.hpp"
+#include "glass/thinglass_material.hpp"
+#include "glass/thinglass_sample.hpp"
 #include "light/light_constant.hpp"
 #include "light/light_emissionmap.hpp"
 #include "light/light_emissionmap_animated.hpp"
@@ -268,6 +269,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
 	float roughness = 0.f;
+	float thickness = 0.f;
 
 	for (auto& n : glass_value.GetObject()) {
 		if ("color" == n.name) {
@@ -283,6 +285,8 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 			ior = json::read_float(n.value);
 		} else if ("roughness" == n.name) {
 			roughness = json::read_float(n.value);
+		} else if ("thickness" == n.name) {
+			thickness = json::read_float(n.value);
 		} else if ("textures" == n.name) {
 			for (auto& tn : n.value.GetArray()) {
 				Texture_description texture_description;
@@ -317,14 +321,24 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 		material->set_roughness(roughness);
 		return material;
 	} else {
-		auto material = std::make_shared<glass::Glass>(sample_cache_, sampler_settings);
-
-		material->set_normal_map(normal_map);
-		material->set_refraction_color(refraction_color);
-		material->set_absorbtion_color(absorbtion_color);
-		material->set_attenuation_distance(attenuation_distance);
-		material->set_ior(ior);
-		return material;
+		if (thickness > 0.f) {
+			auto material = std::make_shared<glass::Thinglass>(sample_cache_, sampler_settings);
+			material->set_normal_map(normal_map);
+			material->set_refraction_color(refraction_color);
+			material->set_absorbtion_color(absorbtion_color);
+			material->set_attenuation_distance(attenuation_distance);
+			material->set_ior(ior);
+			material->set_thickness(thickness);
+			return material;
+		} else {
+			auto material = std::make_shared<glass::Glass>(sample_cache_, sampler_settings);
+			material->set_normal_map(normal_map);
+			material->set_refraction_color(refraction_color);
+			material->set_absorbtion_color(absorbtion_color);
+			material->set_attenuation_distance(attenuation_distance);
+			material->set_ior(ior);
+			return material;
+		}
 	}
 }
 
@@ -408,9 +422,7 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 		}
 	}
 
-	auto material = std::make_shared<light::Constant>(sample_cache_, sampler_settings,
-													  two_sided);
-
+	auto material = std::make_shared<light::Constant>(sample_cache_, sampler_settings, two_sided);
 	material->set_mask(mask);
 
 	if ("Flux" == quantity) {
@@ -467,9 +479,7 @@ Material_ptr Provider::load_matte(const json::Value& matte_value, resource::Mana
 		}
 	}
 
-	auto material = std::make_shared<matte::Material>(sample_cache_, sampler_settings,
-													  two_sided);
-
+	auto material = std::make_shared<matte::Material>(sample_cache_, sampler_settings, two_sided);
 	material->set_mask(mask);
 //	material->set_normal_map(normal_map);
 
@@ -1013,6 +1023,7 @@ uint32_t Provider::max_sample_size() {
 	num_bytes = std::max(sizeof(display::Sample), num_bytes);
 	num_bytes = std::max(sizeof(glass::Sample), num_bytes);
 	num_bytes = std::max(sizeof(glass::Sample_rough), num_bytes);
+	num_bytes = std::max(sizeof(glass::Sample_thin), num_bytes);
 	num_bytes = std::max(sizeof(light::Sample), num_bytes);
 	num_bytes = std::max(sizeof(matte::Sample), num_bytes);
 	num_bytes = std::max(sizeof(metal::Sample_anisotropic), num_bytes);

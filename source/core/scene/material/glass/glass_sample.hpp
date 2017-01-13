@@ -2,11 +2,7 @@
 
 #include "scene/material/material_sample.hpp"
 
-namespace scene { namespace material {
-
-namespace bxdf { struct Result; }
-
-namespace glass {
+namespace scene { namespace material { namespace glass {
 
 class Sample : public material::Sample {
 
