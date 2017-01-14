@@ -2,6 +2,7 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/fresnel/fresnel.inl"
+#include "rendering/integrator/surface/integrator_helper.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
@@ -128,10 +129,15 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 	// fresnel has to be the same value that would have been computed by BRDF
 	float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
-	result.reflection = (1.f - f) * layer.color_;
-	result.wi = math::normalized((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
+	float n_dot_wi = layer.clamped_n_dot(sample.wo_);
+	float approximated_distance = layer.thickness_ / n_dot_wi;
+	float3 attenuation = rendering::attenuation(approximated_distance, layer.attenuation_);
+
+	result.reflection = (1.f - f) * layer.color_ * attenuation;
+	result.wi = -sample.wo_;
 	result.pdf = 1.f;
-	result.type.clear_set(bxdf::Type::Specular_transmission);
+	// The integrator should not handle this like a proper transmission
+	result.type.clear_set(bxdf::Type::Reflection);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 

@@ -2,6 +2,7 @@
 
 #include "shape/node_stack.hpp"
 #include "material/sampler_cache.hpp"
+#include "base/math/vector.hpp"
 
 namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 
@@ -30,6 +31,8 @@ public:
 	bool visibility(const Ray& ray);
 
 	float masked_visibility(const Ray& ray, Sampler_filter filter);
+
+	float3 tinted_visibility(const Ray& ray, Sampler_filter filter);
 
 	const Scene& scene() const;
 

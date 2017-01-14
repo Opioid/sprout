@@ -127,6 +127,40 @@ float Rectangle::opacity(const Transformation& transformation, const Ray& ray,
 	return 0.f;
 }
 
+float3 Rectangle::absorption(const Transformation& transformation, const Ray& ray,
+							 const material::Materials& materials,
+							 Worker& worker, Sampler_filter filter) const {
+	float3_p normal = transformation.rotation.v3.z;
+	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) - d;
+	float hit_t = numer / denom;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		float3 p = ray.point(hit_t);
+		float3 k = p - transformation.position;
+
+		float3 t = -transformation.rotation.v3.x;
+
+		float u = math::dot(t, k / transformation.scale.x);
+		if (u > 1.f || u < -1.f) {
+			return float3(0.f);
+		}
+
+		float3 b = -transformation.rotation.v3.y;
+
+		float v = math::dot(b, k / transformation.scale.y);
+		if (v > 1.f || v < -1.f) {
+			return float3(0.f);
+		}
+
+		float2 uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
+		return materials[0]->absorption(ray.direction, normal, uv, ray.time, worker, filter);
+	}
+
+	return float3(0.f);
+}
+
 void Rectangle::sample(uint32_t part, const Transformation& transformation,
 					   float3_p p, float3_p /*n*/, float area, bool two_sided,
 					   sampler::Sampler& sampler, uint32_t sampler_dimension,

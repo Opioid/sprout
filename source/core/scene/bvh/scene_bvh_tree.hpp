@@ -33,6 +33,9 @@ struct Build_node {
 	float opacity(const scene::Ray& ray, const std::vector<Prop*>& props, Worker& worker,
 				  material::Sampler_settings::Filter filter) const;
 
+	float3 absorption(const scene::Ray& ray, const std::vector<Prop*>& props, Worker& worker,
+					  material::Sampler_settings::Filter filter) const;
+
 	math::aabb aabb;
 
 	uint8_t axis;
@@ -58,6 +61,9 @@ public:
 
 	float opacity(const scene::Ray& ray, Worker& worker,
 				  material::Sampler_settings::Filter filter) const;
+
+	float3 absorption(const scene::Ray& ray, Worker& worker,
+					  material::Sampler_settings::Filter filter) const;
 
 private:
 

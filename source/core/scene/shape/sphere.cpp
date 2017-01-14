@@ -176,6 +176,44 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 	return 0.f;
 }
 
+float3 Sphere::absorption(const Transformation& transformation, const Ray& ray,
+						  const material::Materials& materials,
+						  Worker& worker, Sampler_filter filter) const {
+	float3 v = transformation.position - ray.origin;
+	float b = math::dot(v, ray.direction);
+	float radius = transformation.scale.x;
+	float det = (b * b) - math::dot(v, v) + (radius * radius);
+
+	if (det > 0.f) {
+		float dist = std::sqrt(det);
+		float t0 = b - dist;
+
+		if (t0 > ray.min_t && t0 < ray.max_t) {
+			float3 n = math::normalized(ray.point(t0) - transformation.position);
+			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+			xyz = math::normalized(xyz);
+			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+								std::acos(xyz.y) * math::Pi_inv);
+
+			return materials[0]->absorption(ray.direction, n, uv, ray.time, worker, filter);
+		}
+
+		float t1 = b + dist;
+
+		if (t1 > ray.min_t && t1 < ray.max_t) {
+			float3 n = math::normalized(ray.point(t1) - transformation.position);
+			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
+			xyz = math::normalized(xyz);
+			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+								std::acos(xyz.y) * math::Pi_inv);
+
+			return materials[0]->absorption(ray.direction, n, uv, ray.time, worker, filter);
+		}
+	}
+
+	return float3(0.f);
+}
+
 void Sphere::sample(uint32_t part, const Transformation& transformation,
 					float3_p p, float3_p /*n*/, float area, bool two_sided,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,

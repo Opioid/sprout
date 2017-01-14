@@ -47,6 +47,10 @@ float Worker::masked_visibility(const Ray& ray, Sampler_filter filter) {
 	return 1.f - scene_->opacity(ray, *this, filter);
 }
 
+float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) {
+	return float3(1.f) - scene_->absorption(ray, *this, filter);
+}
+
 const scene::Scene& Worker::scene() const {
 	return *scene_;
 }

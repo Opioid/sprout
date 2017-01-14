@@ -9,8 +9,9 @@
 
 namespace scene { namespace material { namespace glass {
 
-Thinglass::Thinglass(Sample_cache& sample_cache, const Sampler_settings& sampler_settings) :
-	Material(sample_cache, sampler_settings, false) {}
+Thinglass::Thinglass(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
+					 bool two_sided) :
+	Material(sample_cache, sampler_settings, two_sided) {}
 
 const material::Sample& Thinglass::sample(float3_p wo, const Renderstate& rs,
 										  const Worker& worker, Sampler_filter filter) {
@@ -33,6 +34,15 @@ const material::Sample& Thinglass::sample(float3_p wo, const Renderstate& rs,
 					  attenuation_distance_, ior_, rs.ior, thickness_);
 
 	return sample;
+}
+
+float3 Thinglass::absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, float time,
+							 const Worker& worker, Sampler_filter filter) const {
+	return opacity(uv, time, worker, filter) * (1.f - refraction_color_);
+}
+
+bool Thinglass::is_tinted() const {
+	return true;
 }
 
 size_t Thinglass::num_bytes() const {

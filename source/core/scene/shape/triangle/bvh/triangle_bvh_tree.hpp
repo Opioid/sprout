@@ -52,6 +52,9 @@ public:
 	float opacity(math::Ray& ray, float time, const material::Materials& materials,
 				  Worker& worker, material::Sampler_settings::Filter filter) const;
 
+	float3 absorption(math::Ray& ray, float time, const material::Materials& materials,
+					  Worker& worker, material::Sampler_settings::Filter filter) const;
+
 	void interpolate_triangle_data(uint32_t index, float2 uv,
 								   float3& n, float3& t, float2& tc) const;
 

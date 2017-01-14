@@ -115,6 +115,35 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 	return 0.f;
 }
 
+float3 Disk::absorption(const Transformation& transformation, const Ray& ray,
+						const material::Materials& materials,
+						Worker& worker, Sampler_filter filter) const {
+	float3_p normal = transformation.rotation.v3.z;
+	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) - d;
+	float hit_t = numer / denom;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		float3 p = ray.point(hit_t);
+		float3 k = p - transformation.position;
+		float l = math::dot(k, k);
+
+		float radius = transformation.scale.x;
+
+		if (l <= radius * radius) {
+			float3 sk = k / radius;
+			float uv_scale = 0.5f * transformation.scale.z;
+			float2 uv((math::dot(transformation.rotation.v3.x, sk) + 1.f) * uv_scale,
+					  (math::dot(transformation.rotation.v3.y, sk) + 1.f) * uv_scale);
+
+			return materials[0]->absorption(ray.direction, normal, uv, ray.time, worker, filter);
+		}
+	}
+
+	return float3(0.f);
+}
+
 void Disk::sample(uint32_t part, const Transformation& transformation,
 				  float3_p p, float3_p /*n*/, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
