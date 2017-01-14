@@ -49,7 +49,7 @@ private:
 								 const scene::material::Sample& material_sample,
 								 Sampler_filter filter,
 								 Bxdf_result& sample_result,
-								 bool requires_bounce);
+								 bool& requires_bounce);
 
 	float3 evaluate_light(const scene::light::Light* light,
 						  uint32_t sampler_dimension, float light_weight,

@@ -186,7 +186,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 											 const material::Sample& material_sample,
 											 Sampler_filter filter,
 											 Bxdf_result& sample_result,
-											 bool requires_bounce) {
+											 bool& requires_bounce) {
 	float3 result(0.f);
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
