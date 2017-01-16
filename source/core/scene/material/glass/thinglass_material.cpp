@@ -9,9 +9,8 @@
 
 namespace scene { namespace material { namespace glass {
 
-Thinglass::Thinglass(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
-					 bool two_sided) :
-	Material(sample_cache, sampler_settings, two_sided) {}
+Thinglass::Thinglass(Sample_cache& sample_cache, const Sampler_settings& sampler_settings) :
+	Material(sample_cache, sampler_settings, true) {}
 
 const material::Sample& Thinglass::sample(float3_p wo, const Renderstate& rs,
 										  const Worker& worker, Sampler_filter filter) {

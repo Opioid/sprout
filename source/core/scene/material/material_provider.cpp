@@ -269,8 +269,6 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 	Texture_adapter normal_map;
 	Texture_adapter roughness_map;
 
-	bool two_sided = false;
-
 	float3 refraction_color(1.f, 1.f, 1.f);
 	float3 absorbtion_color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
@@ -294,8 +292,6 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 			roughness = json::read_float(n.value);
 		} else if ("thickness" == n.name) {
 			thickness = json::read_float(n.value);
-		} else if ("two_sided" == n.name) {
-			two_sided = json::read_bool(n.value);
 		} else if ("textures" == n.name) {
 			for (auto& tn : n.value.GetArray()) {
 				Texture_description texture_description;
@@ -331,8 +327,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 		return material;
 	} else {
 		if (thickness > 0.f) {
-			auto material = std::make_shared<glass::Thinglass>(sample_cache_, sampler_settings,
-															   two_sided);
+			auto material = std::make_shared<glass::Thinglass>(sample_cache_, sampler_settings);
 
 			material->set_normal_map(normal_map);
 			material->set_refraction_color(refraction_color);
