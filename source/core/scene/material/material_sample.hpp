@@ -57,6 +57,10 @@ public:
 
 	static float3 attenuation(float3_p color, float distance);
 
+	static float clamped_dot(float3_p a, float3_p b);
+
+	static float reversed_clamped_dot(float3_p a, float3_p b);
+
 // protected:
 
 	float3 geo_n_;

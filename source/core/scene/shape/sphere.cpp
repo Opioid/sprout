@@ -195,7 +195,8 @@ float3 Sphere::absorption(const Transformation& transformation, const Ray& ray,
 			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 								std::acos(xyz.y) * math::Pi_inv);
 
-			return materials[0]->absorption(ray.direction, n, uv, ray.time, worker, filter);
+			return materials[0]->thin_absorption(ray.direction, n, uv,
+												 ray.time, worker, filter);
 		}
 
 		float t1 = b + dist;
@@ -207,7 +208,8 @@ float3 Sphere::absorption(const Transformation& transformation, const Ray& ray,
 			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
 								std::acos(xyz.y) * math::Pi_inv);
 
-			return materials[0]->absorption(ray.direction, n, uv, ray.time, worker, filter);
+			return materials[0]->thin_absorption(ray.direction, n, uv,
+												 ray.time, worker, filter);
 		}
 	}
 

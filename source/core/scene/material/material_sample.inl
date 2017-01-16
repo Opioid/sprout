@@ -6,6 +6,9 @@
 
 namespace scene { namespace material {
 
+constexpr float Dot_min = 0.00001f;
+
+
 inline void Sample::Layer::set_tangent_frame(float3_p t, float3_p b, float3_p n) {
 	t_ = t;
 	b_ = b;
@@ -19,12 +22,12 @@ inline void Sample::Layer::set_tangent_frame(float3_p n) {
 
 inline float Sample::Layer::clamped_n_dot(float3_p v) const {
 	// return std::max(math::dot(n, v), 0.00001f);
-	return math::clamp(math::dot(n_, v), 0.00001f, 1.f);
+	return math::clamp(math::dot(n_, v), Dot_min, 1.f);
 }
 
 inline float Sample::Layer::reversed_clamped_n_dot(float3_p v) const {
 	// return std::max(-math::dot(n, v), 0.00001f);
-	return math::clamp(-math::dot(n_, v), 0.00001f, 1.f);
+	return math::clamp(-math::dot(n_, v), Dot_min, 1.f);
 }
 
 inline float3_p Sample::Layer::shading_normal() const {
@@ -38,11 +41,11 @@ inline float3 Sample::Layer::tangent_to_world(float3_p v) const {
 }
 
 inline float Sample::clamped_geo_n_dot(float3_p v) const {
-	return math::clamp(math::dot(geo_n_, v), 0.00001f, 1.f);
+	return math::clamp(math::dot(geo_n_, v), Dot_min, 1.f);
 }
 
 inline float Sample::reversed_clamped_geo_n_dot(float3_p v) const {
-	return math::clamp(-math::dot(geo_n_, v), 0.00001f, 1.f);
+	return math::clamp(-math::dot(geo_n_, v), Dot_min, 1.f);
 }
 
 inline float3_p Sample::geometric_normal() const {
@@ -63,6 +66,14 @@ inline float3 Sample::attenuation(float3_p color, float distance) {
 	return float3(1.f / (pushed.x * distance),
 				  1.f / (pushed.y * distance),
 				  1.f / (pushed.z * distance));
+}
+
+inline float Sample::clamped_dot(float3_p a, float3_p b) {
+	return math::clamp(math::dot(a, b), Dot_min, 1.f);
+}
+
+inline float Sample::reversed_clamped_dot(float3_p a, float3_p b) {
+	return math::clamp(-math::dot(a, b), Dot_min, 1.f);
 }
 
 }}

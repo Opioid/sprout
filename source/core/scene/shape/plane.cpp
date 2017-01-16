@@ -94,7 +94,8 @@ float3 Plane::absorption(const Transformation& transformation, const Ray& ray,
 		float2 uv(math::dot(transformation.rotation.v3.x, p),
 				  math::dot(transformation.rotation.v3.y, p));
 
-		return materials[0]->absorption(ray.direction, normal, uv, ray.time, worker, filter);
+		return materials[0]->thin_absorption(ray.direction, normal, uv,
+											 ray.time, worker, filter);
 	}
 
 	return float3(0.f);

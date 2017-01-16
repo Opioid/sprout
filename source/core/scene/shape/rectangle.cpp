@@ -155,7 +155,8 @@ float3 Rectangle::absorption(const Transformation& transformation, const Ray& ra
 		}
 
 		float2 uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
-		return materials[0]->absorption(ray.direction, normal, uv, ray.time, worker, filter);
+		return materials[0]->thin_absorption(ray.direction, normal, uv,
+											 ray.time, worker, filter);
 	}
 
 	return float3(0.f);

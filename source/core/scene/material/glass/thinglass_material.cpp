@@ -1,6 +1,7 @@
 #include "thinglass_material.hpp"
 #include "thinglass_sample.hpp"
 #include "image/texture/texture_adapter.inl"
+#include "rendering/integrator/surface/integrator_helper.hpp"
 #include "scene/scene_renderstate.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
@@ -35,9 +36,15 @@ const material::Sample& Thinglass::sample(float3_p wo, const Renderstate& rs,
 	return sample;
 }
 
-float3 Thinglass::absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, float time,
-							 const Worker& worker, Sampler_filter filter) const {
-	return opacity(uv, time, worker, filter) * (1.f - refraction_color_);
+float3 Thinglass::thin_absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, float time,
+								  const Worker& worker, Sampler_filter filter) const {
+//	float3 a = material::Sample::attenuation(absorbtion_color_, attenuation_distance_);
+
+//	float n_dot_wi = material::Sample::clamped_dot(wo, n);
+//	float approximated_distance = thickness_ / n_dot_wi;
+//	float3 attenuation = rendering::attenuation(approximated_distance, a);
+
+	return opacity(uv, time, worker, filter) * (1.f - refraction_color_ /** attenuation*/);
 }
 
 bool Thinglass::is_translucent() const {

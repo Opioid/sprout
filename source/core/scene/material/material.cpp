@@ -66,8 +66,8 @@ float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
 	}
 }
 
-float3 Material::absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, float time,
-							const Worker& worker, Sampler_filter filter) const {
+float3 Material::thin_absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, float time,
+								 const Worker& worker, Sampler_filter filter) const {
 	return float3(opacity(uv, time, worker, filter));
 }
 
