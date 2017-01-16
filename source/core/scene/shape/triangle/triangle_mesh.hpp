@@ -39,6 +39,10 @@ public:
 						  const Ray& ray, const material::Materials& materials,
 						  Worker& worker, Sampler_filter filter) const final override;
 
+	virtual float3 absorption(const Transformation& transformation, const Ray& ray,
+							  const material::Materials& materials,
+							  Worker& worker, Sampler_filter filter) const final override;
+
 	virtual void sample(uint32_t part, const Transformation& transformation,
 						float3_p p, float3_p n, float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,

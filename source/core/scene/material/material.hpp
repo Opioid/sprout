@@ -62,6 +62,9 @@ public:
 	virtual float opacity(float2 uv, float time, const Worker& worker,
 						  Sampler_filter filter) const;
 
+	virtual float3 absorption(float3_p wo, float3_p n, float2 uv, float time,
+							  const Worker& worker, Sampler_filter filter) const;
+
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation,
 								  float area, bool importance_sampling,
@@ -70,6 +73,8 @@ public:
 	virtual bool is_animated() const;
 
 	virtual bool is_subsurface() const;
+
+	virtual bool is_tinted() const;
 
 	virtual size_t num_bytes() const = 0;
 

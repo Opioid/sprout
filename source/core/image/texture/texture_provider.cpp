@@ -60,7 +60,7 @@ std::shared_ptr<Texture> Provider::load(const std::string& filename,
 			if (Usage::Anisotropy == usage) {
 				return std::make_shared<Byte_2_snorm>(image);
 			} else {
-				return std::make_shared<Texture_byte_2_unorm>(image);
+				return std::make_shared<Byte_2_unorm>(image);
 			}
 		} else if (Image::Type::Byte_3 == image->description().type) {
 			if (Usage::Normal == usage) {
@@ -90,6 +90,10 @@ std::shared_ptr<Texture> Provider::load(const void* /*data*/,
 										const memory::Variant_map& /*options*/,
 										resource::Manager& /*manager*/) {
 	return nullptr;
+}
+
+size_t Provider::num_bytes() const {
+	return sizeof(*this);
 }
 
 }}

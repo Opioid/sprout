@@ -578,7 +578,15 @@ inline Vector3f_a abs(FVector3f_a v) {
 }
 
 inline Vector3f_a cos(FVector3f_a v) {
-		return Vector3f_a(std::cos(v.x), std::cos(v.y), std::cos(v.z));
+	return Vector3f_a(std::cos(v.x), std::cos(v.y), std::cos(v.z));
+}
+
+inline bool all_lesser(FVector3f_a v, float s) {
+	return v.x < s && v.y < s && v.z < s;
+}
+
+inline bool all_greater_equal(FVector3f_a v, float s) {
+	return v.x >= s && v.y >= s && v.z >= s;
 }
 
 inline bool contains_negative(FVector3f_a v) {

@@ -187,7 +187,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 						ray.max_t = max_t;
 						// ray.max_t has changed if intersect() returns true!
-						ray_max_t = _mm_set1_ps(max_t);
+						// ray_max_t = _mm_set1_ps(max_t);
 					}
 				}
 
@@ -207,6 +207,68 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 	}
 
 	return opacity;
+}
+
+template<typename Data>
+float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materials& materials,
+							  Worker& worker, material::Sampler_settings::Filter filter) const {
+	auto& node_stack = worker.node_stack();
+	node_stack.clear();
+	node_stack.push(0);
+	uint32_t n = 0;
+
+	float3 absorption(0.f);
+
+	float2 uv;
+	float max_t = ray.max_t;
+
+	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
+	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
+	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
+
+	while (!node_stack.empty()) {
+		auto& node = nodes_[n];
+
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
+			if (node.num_primitives > 0) {
+				for (uint32_t i = node.primitive_offset, len = node.primitive_end(); i < len; ++i) {
+					if (data_.intersect(i, ray, uv)) {
+						uv = data_.interpolate_uv(i, uv);
+
+						float3 normal = data_.normal(i);
+
+						auto material = materials[data_.material_index(i)];
+
+						absorption += (1.f - absorption) * material->absorption(ray.direction,
+																				normal, uv, time,
+																				worker, filter);
+						if (math::all_greater_equal(absorption, 1.f)) {
+							return float3(1.f);
+						}
+
+						ray.max_t = max_t;
+						// ray.max_t has changed if intersect() returns true!
+						// ray_max_t = _mm_set1_ps(max_t);
+					}
+				}
+
+				n = node_stack.pop();
+			} else {
+				if (0 == ray.sign[node.axis]) {
+					node_stack.push(node.second_child_index);
+					++n;
+				} else {
+					node_stack.push(n + 1);
+					n = node.second_child_index;
+				}
+			}
+		} else {
+			n = node_stack.pop();
+		}
+	}
+
+	return absorption;
 }
 
 template<typename Data>

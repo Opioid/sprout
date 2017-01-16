@@ -8,6 +8,8 @@ namespace spectrum {
 SU_GLOBALCONST(float) CIE_constant = 683.002f;
 
 // convert sRGB linear color to sRGB gamma color
+float linear_to_sRGB(float c);
+
 float3 linear_RGB_to_sRGB(float3_p c);
 float4 linear_RGB_to_sRGB(float4_p c);
 

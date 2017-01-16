@@ -80,6 +80,26 @@ float Plane::opacity(const Transformation& transformation, const Ray& ray,
 	return 0.f;
 }
 
+float3 Plane::absorption(const Transformation& transformation, const Ray& ray,
+						 const material::Materials& materials,
+						 Worker& worker, Sampler_filter filter) const {
+	float3_p normal = transformation.rotation.v3.z;
+	float d = math::dot(normal, transformation.position);
+	float denom = -math::dot(normal, ray.direction);
+	float numer = math::dot(normal, ray.origin) - d;
+	float hit_t = numer / denom;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		float3 p = ray.point(hit_t);
+		float2 uv(math::dot(transformation.rotation.v3.x, p),
+				  math::dot(transformation.rotation.v3.y, p));
+
+		return materials[0]->absorption(ray.direction, normal, uv, ray.time, worker, filter);
+	}
+
+	return float3(0.f);
+}
+
 void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				   float3_p /*p*/, float3_p /*n*/, float /*area*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,

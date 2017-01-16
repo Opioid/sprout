@@ -46,6 +46,8 @@ public:
 
 	float opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const;
 
+	float3 absorption(const Ray& ray, Worker& worker, Sampler_filter filter) const;
+
 	const shape::Shape* shape() const;
 	shape::Shape* shape();
 
@@ -56,6 +58,7 @@ public:
 	material::Material* material(uint32_t part) const;
 
 	bool has_masked_material() const;
+	bool has_tinted_material() const;
 
 	bool is_open() const;
 	void set_open(bool open);

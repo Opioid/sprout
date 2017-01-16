@@ -186,7 +186,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 											 const material::Sample& material_sample,
 											 Sampler_filter filter,
 											 Bxdf_result& sample_result,
-											 bool requires_bounce) {
+											 bool& requires_bounce) {
 	float3 result(0.f);
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -237,7 +237,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 	// Material BSDF importance sample
 	material_sample.sample(material_sampler(ray.depth), sample_result);
 
-	// Those cases are handled outside at the moment
+	// Those cases are handled outside
 	requires_bounce = sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission);
 
 	if (0.f == sample_result.pdf || requires_bounce) {
@@ -304,6 +304,7 @@ float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sample
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.max_t = light_sample.shape.t - ray_offset;
 
+		/*
 		float mv = worker.masked_visibility(ray, filter);
 		if (mv > 0.f) {
 			float3 t = worker.transmittance(ray);
@@ -315,6 +316,20 @@ float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sample
 
 			result += (weight / light_sample.shape.pdf * light_weight)
 				   * mv * t * light_sample.radiance * f;
+		}
+		*/
+
+		float3 tv = worker.tinted_visibility(ray, filter);
+		if (math::contains_greater_zero(tv)) {
+			float3 t = worker.transmittance(ray);
+
+			float bxdf_pdf;
+			float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+
+			float weight = power_heuristic(light_sample.shape.pdf / light_weight, bxdf_pdf);
+
+			result += (weight / light_sample.shape.pdf * light_weight)
+				   * tv * t * light_sample.radiance * f;
 		}
 	}
 

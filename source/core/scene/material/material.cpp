@@ -2,6 +2,7 @@
 #include "bssrdf.hpp"
 #include "material_sample_cache.inl"
 #include "image/texture/texture_adapter.inl"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector.inl"
@@ -65,6 +66,11 @@ float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
 	}
 }
 
+float3 Material::absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, float time,
+							const Worker& worker, Sampler_filter filter) const {
+	return float3(opacity(uv, time, worker, filter));
+}
+
 void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 								const Transformation& /*transformation*/,
 								float /*area*/, bool /*importance_sampling*/,
@@ -75,6 +81,10 @@ bool Material::is_animated() const {
 }
 
 bool Material::is_subsurface() const {
+	return false;
+}
+
+bool Material::is_tinted() const {
 	return false;
 }
 

@@ -11,18 +11,16 @@ Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution() 
 template<uint32_t N>
 Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
 		const Interpolated& interpolated) {
-/*	DiscreteSpectralPowerDistribution ret;
-	_FORN
-	{
-		ret.v[i] = i_Spectrum.integrate(ms_pWavelengths[i], ms_pWavelengths[i + 1]) / (ms_pWavelengths[i + 1] - ms_pWavelengths[i]);
-	}
-	return ret;*/
-
 	for (uint32_t i = 0; i < N; ++i) {
 		float a = wavelengths_[i];
 		float b = wavelengths_[i + 1];
 		values_[i] = interpolated.integrate(a, b) / (b - a);
 	}
+}
+
+template<uint32_t N>
+float Discrete_spectral_power_distribution<N>::value(uint32_t bin) const {
+	return values_[bin];
 }
 
 template<uint32_t N>

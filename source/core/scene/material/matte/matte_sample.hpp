@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene/material/material_sample.hpp"
-#include "scene/material/lambert/lambert.hpp"
 
 namespace scene { namespace material { namespace matte {
 
@@ -13,8 +12,7 @@ public:
 
 	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
 
-	virtual void sample(sampler::Sampler& sampler,
-						bxdf::Result& result) const final override;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
 	virtual float3 radiance() const final override;
 

@@ -74,6 +74,11 @@ float Scene::opacity(const scene::Ray& ray, Worker& worker,
 	return bvh_.opacity(ray, worker, filter);
 }
 
+float3 Scene::absorption(const scene::Ray& ray, Worker& worker,
+						 material::Sampler_settings::Filter filter) const {
+	return bvh_.absorption(ray, worker, filter);
+}
+
 float Scene::tick_duration() const {
 	return static_cast<float>(tick_duration_);
 }

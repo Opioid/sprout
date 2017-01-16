@@ -25,6 +25,8 @@ public:
 									const std::string& mount_folder,
 									const memory::Variant_map& options,
 									Manager& manager) = 0;
+
+	virtual size_t num_bytes() const = 0;
 };
 
 }

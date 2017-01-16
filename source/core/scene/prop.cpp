@@ -34,7 +34,11 @@ void Prop::set_shape_and_materials(std::shared_ptr<shape::Shape> shape,
 	for (auto m : materials_) {
 		if (m->is_masked()) {
 			properties_.set(Properties::Masked_material);
-			break;
+		//	break;
+		}
+
+		if (m->is_tinted()) {
+			properties_.set(Properties::Tinted_material);
 		}
 	}
 }
@@ -109,13 +113,32 @@ float Prop::opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const
 	}
 
 	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
-		return false;
+		return 0.f;
 	}
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(ray.time, temp);
 
 	return shape_->opacity(transformation, ray, materials_, worker, filter);
+}
+
+float3 Prop::absorption(const Ray& ray, Worker& worker, Sampler_filter filter) const {
+	if (!has_tinted_material()) {
+		return float3(opacity(ray, worker, filter));
+	}
+
+	if (!visible_in_shadow()) {
+		return float3(0.f);
+	}
+
+	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+		return float3(0.f);
+	}
+
+	entity::Composed_transformation temp;
+	auto& transformation = transformation_at(ray.time, temp);
+
+	return shape_->absorption(transformation, ray, materials_, worker, filter);
 }
 
 const shape::Shape* Prop::shape() const {
@@ -144,6 +167,10 @@ material::Material* Prop::material(uint32_t part) const {
 
 bool Prop::has_masked_material() const {
 	return properties_.test(Properties::Masked_material);
+}
+
+bool Prop::has_tinted_material() const {
+	return properties_.test(Properties::Tinted_material);
 }
 
 bool Prop::is_open() const {

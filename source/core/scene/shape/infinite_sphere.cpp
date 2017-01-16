@@ -59,6 +59,13 @@ float Infinite_sphere::opacity(const Transformation& /*transformation*/,
 	return 0.f;
 }
 
+float3 Infinite_sphere::absorption(const Transformation& /*transformation*/,
+								   const Ray& /*ray*/, const material::Materials& /*materials*/,
+								   Worker& /*worker*/, Sampler_filter /*filter*/) const {
+	// Implementation for this is not really needed, so just skip it
+	return float3(0.f);
+}
+
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							 float3_p /*p*/, float3_p n, float /*area*/, bool /*two_sided*/,
 							 sampler::Sampler& sampler, uint32_t sampler_dimension,

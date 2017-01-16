@@ -257,6 +257,10 @@ Vector3f_a abs(FVector3f_a v);
 
 Vector3f_a cos(FVector3f_a v);
 
+bool all_lesser(FVector3f_a v, float s);
+
+bool all_greater_equal(FVector3f_a v, float s);
+
 bool contains_negative(FVector3f_a v);
 
 bool contains_greater_zero(FVector3f_a v);

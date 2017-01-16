@@ -24,6 +24,8 @@ public:
 										const memory::Variant_map& options,
 										resource::Manager& manager) final override;
 
+	virtual size_t num_bytes() const final override;
+
 private:
 
 	encoding::png::Reader png_reader_;

@@ -14,6 +14,8 @@ public:
 
 	Discrete_spectral_power_distribution(const Interpolated& interpolated);
 
+	float value(uint32_t bin) const;
+
 	void set_bin(uint32_t bin, float value);
 
 	void clear(float s);
