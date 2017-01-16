@@ -36,15 +36,15 @@ const material::Sample& Thinglass::sample(float3_p wo, const Renderstate& rs,
 	return sample;
 }
 
-float3 Thinglass::thin_absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, float time,
+float3 Thinglass::thin_absorption(float3_p wo, float3_p n, float2 uv, float time,
 								  const Worker& worker, Sampler_filter filter) const {
-//	float3 a = material::Sample::attenuation(absorbtion_color_, attenuation_distance_);
+	float3 a = material::Sample::attenuation(absorbtion_color_, attenuation_distance_);
 
-//	float n_dot_wi = material::Sample::clamped_dot(wo, n);
-//	float approximated_distance = thickness_ / n_dot_wi;
-//	float3 attenuation = rendering::attenuation(approximated_distance, a);
+	float n_dot_wi = material::Sample::reversed_clamped_dot(wo, n);
+	float approximated_distance = /*thickness_*/10.f / n_dot_wi;
+	float3 attenuation = rendering::attenuation(approximated_distance, a);
 
-	return opacity(uv, time, worker, filter) * (1.f - refraction_color_ /** attenuation*/);
+	return opacity(uv, time, worker, filter) * (1.f - refraction_color_ * attenuation);
 }
 
 bool Thinglass::is_translucent() const {
