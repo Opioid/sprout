@@ -176,9 +176,9 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 	return 0.f;
 }
 
-float3 Sphere::absorption(const Transformation& transformation, const Ray& ray,
-						  const material::Materials& materials,
-						  Worker& worker, Sampler_filter filter) const {
+float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& ray,
+							   const material::Materials& materials,
+							   Worker& worker, Sampler_filter filter) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale.x;

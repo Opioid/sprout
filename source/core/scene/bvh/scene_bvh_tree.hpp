@@ -21,6 +21,8 @@ struct Ray;
 namespace bvh {
 
 struct Build_node {
+	using Sampler_filter = material::Sampler_settings::Filter;
+
 	Build_node();
 	~Build_node();
 
@@ -30,11 +32,11 @@ struct Build_node {
 	bool intersect_p(const scene::Ray& ray, const std::vector<Prop*>& props,
 					 shape::Node_stack& node_stack) const;
 
-	float opacity(const scene::Ray& ray, const std::vector<Prop*>& props, Worker& worker,
-				  material::Sampler_settings::Filter filter) const;
+	float opacity(const scene::Ray& ray, const std::vector<Prop*>& props,
+				  Worker& worker, Sampler_filter filter) const;
 
-	float3 absorption(const scene::Ray& ray, const std::vector<Prop*>& props, Worker& worker,
-					  material::Sampler_settings::Filter filter) const;
+	float3 thin_absorption(const scene::Ray& ray, const std::vector<Prop*>& props,
+						   Worker& worker, Sampler_filter filter) const;
 
 	math::aabb aabb;
 

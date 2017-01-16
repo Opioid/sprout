@@ -99,9 +99,9 @@ float Morphable_mesh::opacity(const Transformation& transformation, const Ray& r
 	return tree_.opacity(tray, ray.time, materials, worker, filter);
 }
 
-float3 Morphable_mesh::absorption(const Transformation& transformation, const Ray& ray,
-								  const material::Materials& materials,
-								  Worker& worker, Sampler_filter filter) const {
+float3 Morphable_mesh::thin_absorption(const Transformation& transformation, const Ray& ray,
+									   const material::Materials& materials,
+									   Worker& worker, Sampler_filter filter) const {
 	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
 	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));

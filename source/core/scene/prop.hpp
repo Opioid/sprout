@@ -46,7 +46,7 @@ public:
 
 	float opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const;
 
-	float3 absorption(const Ray& ray, Worker& worker, Sampler_filter filter) const;
+	float3 thin_absorption(const Ray& ray, Worker& worker, Sampler_filter filter) const;
 
 	const shape::Shape* shape() const;
 	shape::Shape* shape();

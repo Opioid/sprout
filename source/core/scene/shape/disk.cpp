@@ -115,9 +115,9 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 	return 0.f;
 }
 
-float3 Disk::absorption(const Transformation& transformation, const Ray& ray,
-						const material::Materials& materials,
-						Worker& worker, Sampler_filter filter) const {
+float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ray,
+							 const material::Materials& materials,
+							 Worker& worker, Sampler_filter filter) const {
 	float3_p normal = transformation.rotation.v3.z;
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);

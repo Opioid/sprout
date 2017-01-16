@@ -72,8 +72,8 @@ bool Build_node::intersect_p(const scene::Ray& ray, const std::vector<Prop*>& pr
 	return false;
 }
 
-float Build_node::opacity(const scene::Ray& ray, const std::vector<Prop*>& props, Worker& worker,
-						  material::Sampler_settings::Filter filter) const {
+float Build_node::opacity(const scene::Ray& ray, const std::vector<Prop*>& props,
+						  Worker& worker, Sampler_filter filter) const {
 	if (!aabb.intersect_p(ray)) {
 		return 0.f;
 	}
@@ -105,8 +105,8 @@ float Build_node::opacity(const scene::Ray& ray, const std::vector<Prop*>& props
 	return opacity;
 }
 
-float3 Build_node::absorption(const scene::Ray& ray, const std::vector<Prop*>& props,
-							  Worker& worker, material::Sampler_settings::Filter filter) const {
+float3 Build_node::thin_absorption(const scene::Ray& ray, const std::vector<Prop*>& props,
+								   Worker& worker, Sampler_filter filter) const {
 	if (!aabb.intersect_p(ray)) {
 		return float3(0.f);
 	}
@@ -116,19 +116,21 @@ float3 Build_node::absorption(const scene::Ray& ray, const std::vector<Prop*>& p
 	if (children[0]) {
 		uint8_t c = ray.sign[axis];
 
-		absorption += (1.f - absorption) * children[c]->absorption(ray, props, worker, filter);
+		float3 ta = children[c]->thin_absorption(ray, props, worker, filter);
+		absorption += (1.f - absorption) * ta;
 		if (math::all_greater_equal(absorption, 1.f)) {
 			return float3(1.f);
 		}
 
-		absorption += (1.f - absorption) * children[1 - c]->absorption(ray, props, worker, filter);
+		ta = children[1 - c]->thin_absorption(ray, props, worker, filter);
+		absorption += (1.f - absorption) * ta;
 		if (math::all_greater_equal(absorption, 1.f)) {
 			return float3(1.f);
 		}
 	} else {
 		for (uint32_t i = offset; i < props_end; ++i) {
 			auto p = props[i];
-			absorption += (1.f - absorption) * p->absorption(ray, worker, filter);
+			absorption += (1.f - absorption) * p->thin_absorption(ray, worker, filter);
 			if (math::all_greater_equal(absorption, 1.f)) {
 				return float3(1.f);
 			}
@@ -214,12 +216,12 @@ float Tree::opacity(const scene::Ray& ray, Worker& worker,
 
 float3 Tree::absorption(const scene::Ray& ray, Worker& worker,
 						material::Sampler_settings::Filter filter) const {
-	float3 absorption = root_.absorption(ray, props_, worker, filter);
+	float3 absorption = root_.thin_absorption(ray, props_, worker, filter);
 
 	if (math::all_lesser(absorption, 1.f)) {
 		for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
 			auto p = props_[i];
-			absorption += (1.f - absorption) * p->absorption(ray, worker, filter);
+			absorption += (1.f - absorption) * p->thin_absorption(ray, worker, filter);
 			if (math::all_greater_equal(absorption, 1.f)) {
 				return float3(1.f);
 			}

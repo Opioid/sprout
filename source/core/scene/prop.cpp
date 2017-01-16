@@ -122,7 +122,7 @@ float Prop::opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const
 	return shape_->opacity(transformation, ray, materials_, worker, filter);
 }
 
-float3 Prop::absorption(const Ray& ray, Worker& worker, Sampler_filter filter) const {
+float3 Prop::thin_absorption(const Ray& ray, Worker& worker, Sampler_filter filter) const {
 	if (!has_translucent_shadow()) {
 		return float3(opacity(ray, worker, filter));
 	}
@@ -138,7 +138,7 @@ float3 Prop::absorption(const Ray& ray, Worker& worker, Sampler_filter filter) c
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->absorption(transformation, ray, materials_, worker, filter);
+	return shape_->thin_absorption(transformation, ray, materials_, worker, filter);
 }
 
 const shape::Shape* Prop::shape() const {

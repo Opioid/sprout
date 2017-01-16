@@ -64,9 +64,9 @@ float Canopy::opacity(const Transformation& /*transformation*/,
 	return 0.f;
 }
 
-float3 Canopy::absorption(const Transformation& /*transformation*/,
-						  const Ray& /*ray*/, const material::Materials& /*materials*/,
-						  Worker& /*worker*/, Sampler_filter /*filter*/) const {
+float3 Canopy::thin_absorption(const Transformation& /*transformation*/,
+							   const Ray& /*ray*/, const material::Materials& /*materials*/,
+							   Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return float3(0.f);
 }
