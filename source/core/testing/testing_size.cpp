@@ -2,11 +2,12 @@
 #include "image/texture/texture_adapter.hpp"
 #include "scene/scene_renderstate.inl"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
-#include "scene/entity/keyframe.hpp"
-#include "scene/entity/composed_transformation.hpp"
 #include "scene/scene_intersection.hpp"
 #include "scene/scene_ray.hpp"
 #include "scene/bvh/scene_bvh_builder.hpp"
+#include "scene/entity/entity.hpp"
+#include "scene/entity/keyframe.hpp"
+#include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/triangle/triangle_primitive_mte.hpp"
 #include "scene/shape/triangle/bvh/triangle_bvh_node.inl"
@@ -51,6 +52,8 @@ void size() {
 
 	print_size<scene::Intersection>("scene::Intersection", 112);
 
+	print_size<scene::entity::Entity>("Entity", 496);
+
 	print_size<scene::Renderstate>("Renderstate", 112);
 
 	print_size<scene::shape::triangle::Intersection_triangle_MTE>("Intersection_triangle_MTE", 64);
@@ -61,7 +64,9 @@ void size() {
 
 	print_size<scene::shape::triangle::Intersection_vertex_MT>("Intersection_vertex_MT", 16);
 
-	print_size<scene::shape::triangle::Shading_vertex_MT>("Shading_vertex_MT", 48);
+//	print_size<scene::shape::triangle::Shading_vertex_MT>("Shading_vertex_MT", 48);
+
+	print_size<scene::shape::triangle::Shading_vertex_MTC>("Shading_vertex_MTC", 32);
 
 	print_size<scene::bvh::Build_node>("bvh::Build_node", 64);
 

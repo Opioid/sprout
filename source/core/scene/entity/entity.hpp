@@ -59,18 +59,6 @@ protected:
 
 	virtual void on_set_transformation() = 0;
 
-	Composed_transformation world_transformation_;
-
-	Keyframe local_frame_a_;
-	Keyframe local_frame_b_;
-
-	math::transformation world_frame_a_;
-	math::transformation world_frame_b_;
-
-	Entity* parent_;
-	Entity* next_;
-	Entity* child_;
-
 	enum class Properties {
 		Animated				= 1 << 0,
 		Visible_in_camera		= 1 << 1,
@@ -83,6 +71,18 @@ protected:
 	};
 
 	flags::Flags<Properties> properties_;
+
+	Composed_transformation world_transformation_;
+
+	math::transformation world_frame_a_;
+	math::transformation world_frame_b_;
+
+	Keyframe local_frame_a_;
+	Keyframe local_frame_b_;
+
+	Entity* parent_;
+	Entity* next_;
+	Entity* child_;
 };
 
 }}
