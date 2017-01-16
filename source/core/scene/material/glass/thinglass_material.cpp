@@ -40,7 +40,7 @@ float3 Thinglass::absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, float t
 	return opacity(uv, time, worker, filter) * (1.f - refraction_color_);
 }
 
-bool Thinglass::is_tinted() const {
+bool Thinglass::is_translucent() const {
 	return true;
 }
 

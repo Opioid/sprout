@@ -37,6 +37,14 @@ inline float3 Sample::Layer::tangent_to_world(float3_p v) const {
 				  v.x * t_.z + v.y * b_.z + v.z * n_.z);
 }
 
+inline float Sample::clamped_geo_n_dot(float3_p v) const {
+	return math::clamp(math::dot(geo_n_, v), 0.00001f, 1.f);
+}
+
+inline float Sample::reversed_clamped_geo_n_dot(float3_p v) const {
+	return math::clamp(-math::dot(geo_n_, v), 0.00001f, 1.f);
+}
+
 inline float3_p Sample::geometric_normal() const {
 	return geo_n_;
 }

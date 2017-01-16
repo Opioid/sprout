@@ -58,7 +58,7 @@ public:
 	material::Material* material(uint32_t part) const;
 
 	bool has_masked_material() const;
-	bool has_tinted_material() const;
+	bool has_translucent_shadow() const;
 
 	bool is_open() const;
 	void set_open(bool open);

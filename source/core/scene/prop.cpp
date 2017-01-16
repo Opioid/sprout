@@ -37,8 +37,8 @@ void Prop::set_shape_and_materials(std::shared_ptr<shape::Shape> shape,
 		//	break;
 		}
 
-		if (m->is_tinted()) {
-			properties_.set(Properties::Tinted_material);
+		if (m->is_translucent()) {
+			properties_.set(Properties::Translucent_shadow);
 		}
 	}
 }
@@ -123,7 +123,7 @@ float Prop::opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const
 }
 
 float3 Prop::absorption(const Ray& ray, Worker& worker, Sampler_filter filter) const {
-	if (!has_tinted_material()) {
+	if (!has_translucent_shadow()) {
 		return float3(opacity(ray, worker, filter));
 	}
 
@@ -169,8 +169,8 @@ bool Prop::has_masked_material() const {
 	return properties_.test(Properties::Masked_material);
 }
 
-bool Prop::has_tinted_material() const {
-	return properties_.test(Properties::Tinted_material);
+bool Prop::has_translucent_shadow() const {
+	return properties_.test(Properties::Translucent_shadow);
 }
 
 bool Prop::is_open() const {

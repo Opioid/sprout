@@ -74,7 +74,7 @@ public:
 
 	virtual bool is_subsurface() const;
 
-	virtual bool is_tinted() const;
+	virtual bool is_translucent() const;
 
 	virtual size_t num_bytes() const = 0;
 

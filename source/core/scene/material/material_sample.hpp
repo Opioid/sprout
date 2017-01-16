@@ -46,6 +46,9 @@ public:
 
 	virtual bool is_translucent() const = 0;
 
+	float clamped_geo_n_dot(float3_p v) const;
+	float reversed_clamped_geo_n_dot(float3_p v) const;
+
 	float3_p geometric_normal() const;
 
 	bool same_hemisphere(float3_p v) const;

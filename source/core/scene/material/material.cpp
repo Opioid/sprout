@@ -84,7 +84,7 @@ bool Material::is_subsurface() const {
 	return false;
 }
 
-bool Material::is_tinted() const {
+bool Material::is_translucent() const {
 	return false;
 }
 

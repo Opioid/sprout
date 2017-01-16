@@ -18,7 +18,7 @@ public:
 	virtual float3 absorption(float3_p wo, float3_p n, float2 uv, float time,
 							  const Worker& worker, Sampler_filter filter) const final override;
 
-	virtual bool is_tinted() const final override;
+	virtual bool is_translucent() const final override;
 
 	virtual size_t num_bytes() const final override;
 
