@@ -9,7 +9,7 @@ class Interpolated {
 
 public:
 
-	Interpolated();
+	Interpolated() = default;
 
 	Interpolated(const float* wavelengths, const float* intensities, size_t len);
 

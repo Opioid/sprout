@@ -6,9 +6,6 @@
 namespace spectrum {
 
 template<uint32_t N>
-Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution() {}
-
-template<uint32_t N>
 Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
 		const Interpolated& interpolated) {
 	for (uint32_t i = 0; i < N; ++i) {

@@ -10,7 +10,7 @@ class Discrete_spectral_power_distribution {
 
 public:
 
-	Discrete_spectral_power_distribution();
+	Discrete_spectral_power_distribution() = default;
 
 	Discrete_spectral_power_distribution(const Interpolated& interpolated);
 
