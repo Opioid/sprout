@@ -41,7 +41,7 @@ float3 Thinglass::thin_absorption(float3_p wo, float3_p n, float2 uv, float time
 	float3 a = material::Sample::attenuation(absorbtion_color_, attenuation_distance_);
 
 	float n_dot_wi = material::Sample::reversed_clamped_dot(wo, n);
-	float approximated_distance = /*thickness_*/10.f / n_dot_wi;
+	float approximated_distance = thickness_ / n_dot_wi;
 	float3 attenuation = rendering::attenuation(approximated_distance, a);
 
 	return opacity(uv, time, worker, filter) * (1.f - refraction_color_ * attenuation);

@@ -355,15 +355,7 @@ void Indexed_data1<Intersection_vertex, Shading_vertex>::allocate_triangles(
 	for (uint32_t i = 0, len = num_vertices_; i < len; ++i) {
 		intersection_vertices_[i].p = float3(vertices[i].p);
 
-		shading_vertices_[i].n_u = float4(vertices[i].n, vertices[i].uv.x);
-		shading_vertices_[i].t_v = float4(vertices[i].t, vertices[i].uv.y);
-
-		// Not too happy about handling degenerate tangents here (only one very special case even)
-		if (0.f == shading_vertices_[i].t_v.x
-		&&  0.f == shading_vertices_[i].t_v.y
-		&&  0.f == shading_vertices_[i].t_v.z) {
-			shading_vertices_[i].t_v.xyz = math::tangent(shading_vertices_[i].n_u.xyz);
-		}
+		shading_vertices_[i] = Shading_vertex(vertices[i].n, vertices[i].t, vertices[i].uv);
 	}
 }
 

@@ -292,6 +292,22 @@ inline void interpolate_p(const Intersection_vertex_MT& a,
 	p = w * a.p + uv.x * b.p + uv.y * c.p;
 }
 
+inline float area(const Intersection_vertex_MT& a,
+				  const Intersection_vertex_MT& b,
+				  const Intersection_vertex_MT& c) {
+	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
+}
+
+inline float area(const Intersection_vertex_MT& a,
+				  const Intersection_vertex_MT& b,
+				  const Intersection_vertex_MT& c,
+				  float3_p scale) {
+	float3 sa = scale * a.p;
+	float3 sb = scale * b.p;
+	float3 sc = scale * c.p;
+	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
+}
+
 inline float2 interpolate_uv(const Shading_vertex_MT& a,
 							 const Shading_vertex_MT& b,
 							 const Shading_vertex_MT& c,
@@ -313,20 +329,14 @@ inline void interpolate_data(const Shading_vertex_MT& a,
 	tc = w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
 
-inline float area(const Intersection_vertex_MT& a,
-				  const Intersection_vertex_MT& b,
-				  const Intersection_vertex_MT& c) {
-	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
-}
-
-inline float area(const Intersection_vertex_MT& a,
-				  const Intersection_vertex_MT& b,
-				  const Intersection_vertex_MT& c,
-				  float3_p scale) {
-	float3 sa = scale * a.p;
-	float3 sb = scale * b.p;
-	float3 sc = scale * c.p;
-	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
+inline Shading_vertex_MTC::Shading_vertex_MTC(const math::packed_float3& n,
+											  const math::packed_float3& t,
+											  float2 uv) :
+	n_u(n, uv.x), t_v(t, uv.y) {
+	// Not too happy about handling degenerate tangents here (only one very special case even)
+	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
+		t_v = float4(math::tangent(n_u.xyz), uv.y);
+	}
 }
 
 inline float2 interpolate_uv(const Shading_vertex_MTC& a,
@@ -348,6 +358,72 @@ inline void interpolate_data(const Shading_vertex_MTC& a,
 
 	float4 n_u = w * a.n_u + uv.x * b.n_u + uv.y * c.n_u;
 	float4 t_v = w * a.t_v + uv.x * b.t_v + uv.y * c.t_v;
+
+	n  = math::normalized(n_u.xyz);
+	t  = math::normalized(t_v.xyz);
+
+	tc = float2(n_u.w, t_v.w);
+}
+
+inline float snorm16_to_float(int16_t snorm) {
+	return static_cast<float>(snorm) / 32767.f;
+}
+
+inline int16_t float_to_snorm16(float x) {
+	return static_cast<int16_t>(x * 32767.f);
+}
+
+inline float4 snorm16_to_float(short4 v) {
+	return float4(snorm16_to_float(v.x),
+				  snorm16_to_float(v.y),
+				  snorm16_to_float(v.z),
+				  snorm16_to_float(v.w));
+}
+
+inline Shading_vertex_MTCC::Shading_vertex_MTCC(const math::packed_float3& n,
+												const math::packed_float3& t,
+												float2 uv) :
+	n_u(float_to_snorm16(n.x), float_to_snorm16(n.y), float_to_snorm16(n.z), float_to_snorm16(uv.x)),
+	t_v(float_to_snorm16(t.x), float_to_snorm16(t.y), float_to_snorm16(t.z), float_to_snorm16(uv.y)) {
+	// Not too happy about handling degenerate tangents here (only one very special case even)
+//	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
+//		t_v = float4(math::tangent(n_u.xyz), uv.y);
+//	}
+}
+
+inline float2 interpolate_uv(const Shading_vertex_MTCC& a,
+							 const Shading_vertex_MTCC& b,
+							 const Shading_vertex_MTCC& c,
+							 float2 uv) {
+	float w = 1.f - uv.x - uv.y;
+
+	float au = snorm16_to_float(a.n_u.w);
+	float av = snorm16_to_float(a.t_v.w);
+	float bu = snorm16_to_float(b.n_u.w);
+	float bv = snorm16_to_float(b.t_v.w);
+	float cu = snorm16_to_float(c.n_u.w);
+	float cv = snorm16_to_float(c.t_v.w);
+
+	return float2(w * au + uv.x * bu + uv.y * cu,
+				  w * av + uv.x * bv + uv.y * cv);
+}
+
+inline void interpolate_data(const Shading_vertex_MTCC& a,
+							 const Shading_vertex_MTCC& b,
+							 const Shading_vertex_MTCC& c,
+							 float2 uv,
+							 float3& n, float3& t, float2& tc) {
+	float w = 1.f - uv.x - uv.y;
+
+	float4 an_u = snorm16_to_float(a.n_u);
+	float4 at_v = snorm16_to_float(a.t_v);
+	float4 bn_u = snorm16_to_float(b.n_u);
+	float4 bt_v = snorm16_to_float(b.t_v);
+	float4 cn_u = snorm16_to_float(c.n_u);
+	float4 ct_v = snorm16_to_float(c.t_v);
+
+	float4 n_u = w * an_u + uv.x * bn_u + uv.y * cn_u;
+	float4 t_v = w * at_v + uv.x * bt_v + uv.y * ct_v;
 
 	n  = math::normalized(n_u.xyz);
 	t  = math::normalized(t_v.xyz);
