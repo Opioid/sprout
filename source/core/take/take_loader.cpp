@@ -8,7 +8,7 @@
 #include "image/encoding/rgbe/rgbe_writer.hpp"
 #include "logging/logging.hpp"
 #include "rendering/integrator/surface/ao.hpp"
-#include "rendering/integrator/surface/normal.hpp"
+#include "rendering/integrator/surface/debug.hpp"
 #include "rendering/integrator/surface/whitted.hpp"
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
@@ -411,22 +411,24 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			return std::make_shared<Pathtracer_MIS_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
 						light_sampling, disable_caustics);
-		} else if ("Normal" == n.name) {
-			auto vector = Normal::Settings::Vector::Shading_normal;
+		} else if ("Debug" == n.name) {
+			auto vector = Debug::Settings::Vector::Shading_normal;
 
 			std::string vector_type = json::read_string(n.value, "vector");
 
 			if ("Tangent" == vector_type) {
-				vector = Normal::Settings::Vector::Tangent;
+				vector = Debug::Settings::Vector::Tangent;
 			} else if ("Bitangent" == vector_type) {
-				vector = Normal::Settings::Vector::Bitangent;
+				vector = Debug::Settings::Vector::Bitangent;
 			} else if ("Geometric_normal" == vector_type) {
-				vector = Normal::Settings::Vector::Geometric_normal;
+				vector = Debug::Settings::Vector::Geometric_normal;
 			} else if ("Shading_normal" == vector_type) {
-				vector = Normal::Settings::Vector::Shading_normal;
+				vector = Debug::Settings::Vector::Shading_normal;
+			} else if ("UV" == vector_type) {
+				vector = Debug::Settings::Vector::UV;
 			}
 
-			return std::make_shared<Normal_factory>(settings, vector);
+			return std::make_shared<Debug_factory>(settings, vector);
 		}
 	}
 

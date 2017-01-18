@@ -1,8 +1,6 @@
 #include "interpolated.hpp"
 #include "math/math.hpp"
 
-#include <iostream>
-
 namespace spectrum {
 
 Interpolated::Interpolated(const float* wavelengths, const float* intensities, size_t len) {

@@ -24,7 +24,6 @@ private:
 	};
 
 	std::vector<K> kernel_;
-
 };
 
 }}
