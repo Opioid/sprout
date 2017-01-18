@@ -373,22 +373,44 @@ inline int16_t float_to_snorm16(float x) {
 	return static_cast<int16_t>(x * 32767.f);
 }
 
+inline float xnorm_to_float(int16_t xnorm) {
+	return static_cast<float>(xnorm) / 4095.f;
+}
+
+inline int16_t float_to_xnorm(float x) {
+	return static_cast<int16_t>(x * 4095.f);
+}
+
 inline float4 snorm16_to_float(short4 v) {
 	return float4(snorm16_to_float(v.x),
 				  snorm16_to_float(v.y),
 				  snorm16_to_float(v.z),
-				  snorm16_to_float(v.w));
+				  xnorm_to_float(v.w));
+}
+
+inline short4 float_to_snorm16(float3_p v, float s) {
+	return short4(float_to_snorm16(v.x),
+				  float_to_snorm16(v.y),
+				  float_to_snorm16(v.z),
+				  float_to_xnorm(s));
+}
+
+inline short4 float_to_snorm16(const math::packed_float3& v, float s) {
+	return short4(float_to_snorm16(v.x),
+				  float_to_snorm16(v.y),
+				  float_to_snorm16(v.z),
+				  float_to_xnorm(s));
 }
 
 inline Shading_vertex_MTCC::Shading_vertex_MTCC(const math::packed_float3& n,
 												const math::packed_float3& t,
 												float2 uv) :
-	n_u(float_to_snorm16(n.x), float_to_snorm16(n.y), float_to_snorm16(n.z), float_to_snorm16(uv.x)),
-	t_v(float_to_snorm16(t.x), float_to_snorm16(t.y), float_to_snorm16(t.z), float_to_snorm16(uv.y)) {
+	n_u(float_to_snorm16(n, uv.x)),
+	t_v(float_to_snorm16(t, uv.y)) {
 	// Not too happy about handling degenerate tangents here (only one very special case even)
-//	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
-//		t_v = float4(math::tangent(n_u.xyz), uv.y);
-//	}
+	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
+		t_v = float_to_snorm16(math::tangent(float3(n)), uv.y);
+	}
 }
 
 inline float2 interpolate_uv(const Shading_vertex_MTCC& a,
@@ -397,12 +419,12 @@ inline float2 interpolate_uv(const Shading_vertex_MTCC& a,
 							 float2 uv) {
 	float w = 1.f - uv.x - uv.y;
 
-	float au = snorm16_to_float(a.n_u.w);
-	float av = snorm16_to_float(a.t_v.w);
-	float bu = snorm16_to_float(b.n_u.w);
-	float bv = snorm16_to_float(b.t_v.w);
-	float cu = snorm16_to_float(c.n_u.w);
-	float cv = snorm16_to_float(c.t_v.w);
+	float au = xnorm_to_float(a.n_u.w);
+	float av = xnorm_to_float(a.t_v.w);
+	float bu = xnorm_to_float(b.n_u.w);
+	float bv = xnorm_to_float(b.t_v.w);
+	float cu = xnorm_to_float(c.n_u.w);
+	float cv = xnorm_to_float(c.t_v.w);
 
 	return float2(w * au + uv.x * bu + uv.y * cu,
 				  w * av + uv.x * bv + uv.y * cv);
