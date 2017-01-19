@@ -12,6 +12,7 @@ namespace triangle { namespace bvh {
 
 template<typename Triangle>
 class Data_interleaved {
+
 public:
 
 	~Data_interleaved();
