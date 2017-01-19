@@ -7,12 +7,13 @@ namespace scene { namespace shape { namespace triangle {
 inline Triangle_MTE::Triangle_MTE(const shape::Vertex& a,
 								  const shape::Vertex& b,
 								  const shape::Vertex& c,
+								  float bitangent_sign,
 								  uint32_t material_index) :
 	ap(a.p), e1(b.p - a.p), e2(c.p - a.p),
 	an(a.n), bn(b.n), cn(c.n),
 	at(a.t), bt(b.t), ct(c.t),
 	auv(a.uv), buv(b.uv), cuv(c.uv),
-	bitangent_sign(a.bitangent_sign), material_index(material_index) {}
+	bitangent_sign(bitangent_sign), material_index(material_index) {}
 
 inline bool Triangle_MTE::intersect(math::Ray& ray, float2& uv) const {
 	float3 pvec = math::cross(ray.direction, e2);

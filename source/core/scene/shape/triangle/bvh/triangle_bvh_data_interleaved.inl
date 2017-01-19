@@ -116,4 +116,9 @@ void Data_interleaved<Triangle>::add_triangle(uint32_t a, uint32_t b, uint32_t c
 								  bitanget_sign, material_index));
 }
 
+template<typename Triangle>
+size_t Data_interleaved<Triangle>::num_bytes() const {
+	return triangles_.size() * sizeof(Triangle);
+}
+
 }}}}

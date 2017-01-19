@@ -51,6 +51,8 @@ public:
 	void add_triangle(uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
 					  const std::vector<Vertex>& vertices);
 
+	size_t num_bytes() const;
+
 private:
 
 	std::vector<Triangle> triangles_;
