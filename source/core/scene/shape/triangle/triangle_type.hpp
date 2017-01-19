@@ -9,7 +9,7 @@ using Shading_triangle_type = struct Shading_triangle_MTE;
 
 using Intersection_vertex_type = struct Intersection_vertex_MT;
 // using Shading_vertex_type = struct Shading_vertex_MT;
-// using Shading_vertex_type = struct Shading_vertex_MTC;
-using Shading_vertex_type = struct Shading_vertex_MTCC;
+using Shading_vertex_type = struct Shading_vertex_MTC;
+// using Shading_vertex_type = struct Shading_vertex_MTCC;
 
 }}}

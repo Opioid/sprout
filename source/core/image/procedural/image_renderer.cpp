@@ -1,6 +1,7 @@
 #include "image_renderer.hpp"
 #include "image/typed_image.inl"
 #include "image/texture/sampler/address_mode.hpp"
+#include "base/encoding/encoding.inl"
 #include "base/math/vector.inl"
 #include "base/spectrum/rgb.inl"
 
@@ -60,7 +61,7 @@ void Renderer::resolve_sRGB(Byte_3& image) const {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto s = samples_[i];
 
-			byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(s.xyz));
+			byte3 srgb = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(s.xyz));
 			image.store(i, srgb);
 		}
 	} else {
@@ -85,7 +86,7 @@ void Renderer::resolve_sRGB(Byte_3& image) const {
 					}
 				}
 
-				byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(n * result));
+				byte3 srgb = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(n * result));
 				image.store(i_x, i_y, srgb);
 			}
 		}
@@ -96,7 +97,7 @@ void Renderer::resolve(Byte_3& image) const {
 	if (1 == sqrt_num_samples_) {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto s = samples_[i];
-			image.at(i) = spectrum::float_to_snorm(s.xyz);
+			image.at(i) = encoding::float_to_snorm(s.xyz);
 		}
 	} else {
 		int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
@@ -120,7 +121,7 @@ void Renderer::resolve(Byte_3& image) const {
 					}
 				}
 
-				image.at(i_x, i_y) = spectrum::float_to_snorm(n * result);
+				image.at(i_x, i_y) = encoding::float_to_snorm(n * result);
 			}
 		}
 	}
@@ -131,7 +132,7 @@ void Renderer::resolve(Byte_1& image) const {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto& s = samples_[i];
 
-			image.at(i) = spectrum::float_to_unorm(s.x);
+			image.at(i) = encoding::float_to_unorm(s.x);
 		}
 	} else {
 		int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
@@ -155,7 +156,7 @@ void Renderer::resolve(Byte_1& image) const {
 					}
 				}
 
-				image.at(i_x, i_y) = spectrum::float_to_unorm(n * result);
+				image.at(i_x, i_y) = encoding::float_to_unorm(n * result);
 			}
 		}
 	}

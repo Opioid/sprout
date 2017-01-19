@@ -29,12 +29,11 @@ public:
 
 	Pathtracer(const take::Settings& take_settings, rnd::Generator& rng, const Settings& settings);
 
-	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
+	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
-	virtual float4 li(Worker& worker, scene::Ray& ray,
-					  scene::Intersection& intersection) final override;
+	virtual float4 li(Worker& worker, scene::Ray& ray, Intersection& intersection) final override;
 
 	virtual size_t num_bytes() const final override;
 

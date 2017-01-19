@@ -8,7 +8,13 @@ namespace rnd { class Generator; }
 
 namespace scene {
 
-namespace material { namespace bxdf { struct Result; enum class Type; } }
+namespace material {
+
+namespace bxdf { struct Result; enum class Type; }
+
+class Sample;
+
+}
 
 struct Intersection;
 struct Ray;
@@ -38,9 +44,10 @@ public:
 	using Ray			= scene::Ray;
 	using Scene			= scene::Scene;
 
-	using Sampler_filter = scene::material::Sampler_settings::Filter;
-	using Bxdf_result    = scene::material::bxdf::Result;
-	using Bxdf_type		 = scene::material::bxdf::Type;
+	using Material_sample = scene::material::Sample;
+	using Sampler_filter  = scene::material::Sampler_settings::Filter;
+	using Bxdf_result	  = scene::material::bxdf::Result;
+	using Bxdf_type		  = scene::material::bxdf::Type;
 
 	Integrator(const take::Settings& settings, rnd::Generator& rng);
 	virtual ~Integrator();

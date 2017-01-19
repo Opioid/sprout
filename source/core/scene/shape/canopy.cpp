@@ -11,7 +11,8 @@
 #include "base/math/matrix.inl"
 #include "base/math/bounding/aabb.inl"
 
-#include <iostream>
+#include "shape_test.hpp"
+#include "base/debug/assert.hpp"
 
 namespace scene { namespace shape {
 
@@ -71,23 +72,12 @@ float3 Canopy::thin_absorption(const Transformation& /*transformation*/,
 	return float3(0.f);
 }
 
-void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
-					float3_p /*p*/, float3_p /*n*/, float /*area*/, bool /*two_sided*/,
+void Canopy::sample(uint32_t part, const Transformation& transformation,
+					float3_p p, float3_p /*n*/, float area, bool two_sided,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
-					Node_stack& /*node_stack*/, Sample& sample) const {
-	float2 uv = sampler.generate_sample_2D(sampler_dimension);
-	float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
-
-	sample.wi = dir;
-
-	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
-	xyz = math::normalized(xyz);
-	float2 disk = math::hemisphere_to_disk_equidistant(xyz);
-	sample.uv.x = 0.5f * disk.x + 0.5f;
-	sample.uv.y = 0.5f * disk.y + 0.5f;
-
-	sample.t   = Ray_max_t;
-	sample.pdf = 1.f / (2.f * math::Pi);
+					Node_stack& node_stack, Sample& sample) const {
+	Canopy::sample(part, transformation, p, area, two_sided,
+				   sampler, sampler_dimension, node_stack, sample);
 }
 
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
@@ -107,6 +97,8 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
+
+	SOFT_ASSERT(testing::check(sample));
 }
 
 float Canopy::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
@@ -146,6 +138,8 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 //	float cos_lon = std::cos(longitude);
 
 	sample.pdf = 1.f / (2.f * math::Pi /** std::cos(std::asin(r))*/);
+
+
 }
 
 float Canopy::pdf_uv(uint32_t /*part*/, const Transformation& transformation,

@@ -12,7 +12,7 @@ public:
 	Srgb(int2 dimensions);
 	~Srgb();
 
-	const math::byte3* data() const;
+	const byte3* data() const;
 
 	void to_sRGB(const image::Float_3& image, int32_t begin, int32_t end);
 	void to_sRGB(const image::Float_4& image, int32_t begin, int32_t end);
@@ -32,7 +32,7 @@ public:
 	Srgb_alpha(int2 dimensions);
 	~Srgb_alpha();
 
-	const math::byte4* data() const;
+	const byte4* data() const;
 
 	void to_sRGB(const image::Float_3& image, int32_t begin, int32_t end);
 	void to_sRGB(const image::Float_4& image, int32_t begin, int32_t end);
@@ -42,7 +42,7 @@ public:
 
 protected:
 
-	math::byte4* rgba_;
+	byte4* rgba_;
 };
 
 }}

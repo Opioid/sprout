@@ -83,54 +83,6 @@ inline float3 gamma_to_linear(float3_p c, float gamma) {
 				  std::pow(c.z, gamma));
 }
 
-inline float3 unorm_to_float(byte3 c) {
-	return float3(static_cast<float>(c.x) / 255.f,
-				  static_cast<float>(c.y) / 255.f,
-				  static_cast<float>(c.z) / 255.f);
-}
-
-inline float4 unorm_to_float(math::byte4 c) {
-	return float4(static_cast<float>(c.x) / 255.f,
-				  static_cast<float>(c.y) / 255.f,
-				  static_cast<float>(c.z) / 255.f,
-				  static_cast<float>(c.w) / 255.f);
-}
-
-inline math::byte3 float_to_unorm(float3_p c) {
-	return math::byte3(static_cast<uint8_t>(c.x * 255.f),
-					   static_cast<uint8_t>(c.y * 255.f),
-					   static_cast<uint8_t>(c.z * 255.f));
-}
-
-inline math::byte4 float_to_unorm(float4_p c) {
-	return math::byte4(static_cast<uint8_t>(c.x * 255.f),
-					   static_cast<uint8_t>(c.y * 255.f),
-					   static_cast<uint8_t>(c.z * 255.f),
-					   static_cast<uint8_t>(c.w * 255.f));
-}
-
-inline float unorm_to_float(uint8_t byte) {
-	return static_cast<float>(byte) / 255.f;
-}
-
-inline float snorm_to_float(uint8_t byte) {
-	return static_cast<float>(byte) / 128.f - 1.f;
-}
-
-inline uint8_t float_to_unorm(float x) {
-	return static_cast<uint8_t>(x * 255.f);
-}
-
-inline uint8_t float_to_snorm(float x) {
-	return static_cast<uint8_t>((x + 1.f) * 0.5f * 255.f);
-}
-
-inline byte3 float_to_snorm(float3_p c) {
-	return math::byte3(static_cast<uint8_t>((c.x + 1.f) * 0.5f * 255.f),
-					   static_cast<uint8_t>((c.y + 1.f) * 0.5f * 255.f),
-					   static_cast<uint8_t>((c.z + 1.f) * 0.5f * 255.f));
-}
-
 inline float luminance(float3_p c) {
 	return 0.212671f * c.x + 0.715160f * c.y + 0.072169f * c.z;
 }

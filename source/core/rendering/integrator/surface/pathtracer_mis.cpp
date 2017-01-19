@@ -288,7 +288,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sampler_dimension,
 									  float light_weight, Worker& worker, Ray& ray,
 									  const Intersection& intersection,
-									  const material::Sample& material_sample,
+									  const Material_sample& material_sample,
 									  Sampler_filter filter) {
 	float3 result(0.f);
 

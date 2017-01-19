@@ -32,11 +32,11 @@ private:
 	float3 shade(Worker& worker, const Ray& ray, const Intersection& intersection);
 
 	float3 estimate_direct_light(Worker& worker, const Ray& ray, const Intersection& intersection,
-								 const scene::material::Sample& material_sample);
+								 const Material_sample& material_sample);
 
 	Settings settings_;
 
-	sampler::Golden_ratio sampler_;
+	sampler::Random sampler_;
 };
 
 class Whitted_factory : public Factory {

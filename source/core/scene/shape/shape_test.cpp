@@ -2,6 +2,7 @@
 #include "infinite_sphere.hpp"
 #include "sphere.hpp"
 #include "shape_intersection.hpp"
+#include "shape_sample.hpp"
 #include "node_stack.inl"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
@@ -18,11 +19,19 @@ void print(const Intersection& intersection);
 void print_vector(float3_p v);
 
 bool check(const Intersection& intersection,
-		   const entity::Composed_transformation& /*transformation*/, const Ray& /*ray*/) {
+		   const entity::Composed_transformation& /*transformation*/,
+		   const Ray& /*ray*/) {
 	if (!std::isfinite(math::length(intersection.b))) {
-
 		print(intersection);
 
+		return false;
+	}
+
+	return true;
+}
+
+bool check(const Sample& sample) {
+	if (!math::contains_only_finite(sample.uv)) {
 		return false;
 	}
 

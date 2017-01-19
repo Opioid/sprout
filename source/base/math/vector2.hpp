@@ -91,4 +91,7 @@ bool contains_nan(const Vector2<T> v);
 template<typename T>
 bool contains_inf(const Vector2<T> v);
 
+template<typename T>
+bool contains_only_finite(const Vector2<T> v);
+
 }

@@ -78,7 +78,7 @@ float3 Whitted::shade(Worker& worker, const Ray& ray, const Intersection& inters
 
 float3 Whitted::estimate_direct_light(Worker& worker, const Ray& ray,
 									  const Intersection& intersection,
-									  const scene::material::Sample& material_sample) {
+									  const Material_sample& material_sample) {
 	float3 result(0.f);
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;

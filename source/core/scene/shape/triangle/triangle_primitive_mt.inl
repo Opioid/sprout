@@ -1,7 +1,10 @@
 #pragma once
 
 #include "triangle_primitive_mt.hpp"
+#include "base/encoding/encoding.inl"
 #include "base/math/simd/simd_vector.inl"
+
+#include <iostream>
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -365,40 +368,32 @@ inline void interpolate_data(const Shading_vertex_MTC& a,
 	tc = float2(n_u.w, t_v.w);
 }
 
-inline float snorm16_to_float(int16_t snorm) {
-	return static_cast<float>(snorm) / 32767.f;
-}
-
-inline int16_t float_to_snorm16(float x) {
-	return static_cast<int16_t>(x * 32767.f);
-}
-
 inline float xnorm_to_float(int16_t xnorm) {
-	return static_cast<float>(xnorm) / 4095.f;
+	return static_cast<float>(xnorm) / 511.f;
 }
 
 inline int16_t float_to_xnorm(float x) {
-	return static_cast<int16_t>(x * 4095.f);
+	return static_cast<int16_t>(x * 511.f);
 }
 
 inline float4 snorm16_to_float(short4 v) {
-	return float4(snorm16_to_float(v.x),
-				  snorm16_to_float(v.y),
-				  snorm16_to_float(v.z),
+	return float4(encoding::snorm16_to_float(v.x),
+				  encoding::snorm16_to_float(v.y),
+				  encoding::snorm16_to_float(v.z),
 				  xnorm_to_float(v.w));
 }
 
 inline short4 float_to_snorm16(float3_p v, float s) {
-	return short4(float_to_snorm16(v.x),
-				  float_to_snorm16(v.y),
-				  float_to_snorm16(v.z),
+	return short4(encoding::float_to_snorm16(v.x),
+				  encoding::float_to_snorm16(v.y),
+				  encoding::float_to_snorm16(v.z),
 				  float_to_xnorm(s));
 }
 
 inline short4 float_to_snorm16(const math::packed_float3& v, float s) {
-	return short4(float_to_snorm16(v.x),
-				  float_to_snorm16(v.y),
-				  float_to_snorm16(v.z),
+	return short4(encoding::float_to_snorm16(v.x),
+				  encoding::float_to_snorm16(v.y),
+				  encoding::float_to_snorm16(v.z),
 				  float_to_xnorm(s));
 }
 
@@ -407,6 +402,15 @@ inline Shading_vertex_MTCC::Shading_vertex_MTCC(const math::packed_float3& n,
 												float2 uv) :
 	n_u(float_to_snorm16(n, uv.x)),
 	t_v(float_to_snorm16(t, uv.y)) {
+
+
+	float u = xnorm_to_float(n_u.w);
+	float du = std::abs(uv.x - u);
+
+	if (du > 0.1f) {
+		std::cout << uv.x << " vs " << u << std::endl;
+	}
+
 	// Not too happy about handling degenerate tangents here (only one very special case even)
 	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
 		t_v = float_to_snorm16(math::tangent(float3(n)), uv.y);

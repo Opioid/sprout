@@ -8,6 +8,7 @@
 #include "core/image/procedural/image_renderer.inl"
 #include "core/image/texture/texture_float_2.hpp"
 #include "core/image/texture/sampler/sampler_2d_linear.inl"
+#include "base/encoding/encoding.inl"
 #include "base/math/vector.inl"
 #include "base/math/fourier/dft.hpp"
 #include "base/math/sampling/sample_distribution.inl"
@@ -188,12 +189,12 @@ void create(thread::Pool& pool) {
 	pool.run_range([&float_image_a, &byte_image](int32_t begin, int32_t end) {
 		for (int32_t i = begin; i < end; ++i) {
 			float3 linear_rgb = float3(float_image_a.load(i));
-			byte3 srgb = spectrum::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
+			byte3 srgb = ::encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
 			byte_image.store(i, srgb);
 		}
 	}, 0, resolution * resolution);
 
-	encoding::png::Writer::write(near_field ? "near_field.png" : "far_field.png", byte_image);
+	image::encoding::png::Writer::write(near_field ? "near_field.png" : "far_field.png", byte_image);
 }
 
 void render_dirt(image::Float_1& signal) {
@@ -453,7 +454,7 @@ void write_signal(const std::string& name, const image::Float_1& signal) {
 
 	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
 		float s = signal.load(i);
-		uint8_t b = spectrum::float_to_unorm(s);
+		uint8_t b = encoding::float_to_unorm(s);
 		image.store(i, b);
 	}
 

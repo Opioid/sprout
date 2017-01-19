@@ -26,9 +26,9 @@ bool is_valid_normal_map(const Image& image, const std::string& filename) {
 				return false;
 			}
 
-			float3 n(encoding::snorm_to_float(value.x),
-					 encoding::snorm_to_float(value.y),
-					 encoding::snorm_to_float(value.z));
+			float3 n(encoding::cached_snorm_to_float(value.x),
+					 encoding::cached_snorm_to_float(value.y),
+					 encoding::cached_snorm_to_float(value.z));
 
 			if (0.f == n.x && 0.f == n.y && 0.f == n.z) {
 				std::cout << "\"" << filename << "\" [" << x << ", "

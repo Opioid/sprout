@@ -7,7 +7,7 @@ namespace scene { namespace light {
 
 struct Sample {
 	shape::Sample shape;
-	float3  radiance;
+	float3		  radiance;
 };
 
 }}

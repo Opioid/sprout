@@ -33,15 +33,16 @@ SU_GLOBALCONST(Vector4f_a) float4_identity(0.f, 0.f, 0.f, 0.f);
 
 }
 
+using byte2  = math::byte2;
 using float2 = math::float2;
 using int2   = math::int2;
 using uint2  = math::uint2;
-using byte2  = math::byte2;
 
+using byte3  = math::byte3;
 using float3 = math::float3;
 using int3	 = math::int3;
-using byte3  = math::byte3;
 
+using byte4  = math::byte4;
 using short4 = math::short4;
 using float4 = math::float4;
 using int4   = math::int4;

@@ -30,7 +30,7 @@ Pathtracer::Pathtracer(const take::Settings& take_settings,
 	transmittance_(take_settings, rng),
 	subsurface_(take_settings, rng) {}
 
-void Pathtracer::prepare(const scene::Scene& /*scene*/, uint32_t num_samples_per_pixel) {
+void Pathtracer::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
 	for (auto& s : material_samplers_) {
@@ -46,7 +46,7 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	}
 }
 
-float4 Pathtracer::li(Worker& worker, scene::Ray& ray, scene::Intersection& intersection) {
+float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	Sampler_filter filter;
 	Bxdf_result sample_result;
 	Bxdf_result::Type_flag previous_sample_type;

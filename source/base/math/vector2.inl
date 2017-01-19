@@ -160,4 +160,9 @@ bool contains_inf(const Vector2<T> v) {
 	return std::isinf(v.x) || std::isinf(v.y);
 }
 
+template<typename T>
+bool contains_only_finite(const Vector2<T> v) {
+	return std::isfinite(v.x) && std::isfinite(v.y);
+}
+
 }

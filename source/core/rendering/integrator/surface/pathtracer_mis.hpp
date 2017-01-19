@@ -55,7 +55,7 @@ private:
 						  uint32_t sampler_dimension, float light_weight,
 						  Worker& worker, Ray& ray,
 						  const Intersection& intersection,
-						  const scene::material::Sample& material_sample,
+						  const Material_sample& material_sample,
 						  Sampler_filter filter);
 
 	float3 resolve_transmission(Worker& worker, Ray& ray,
