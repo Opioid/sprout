@@ -2,6 +2,7 @@
 
 #include "image_gaussian.hpp"
 #include "base/math/filter/gaussian.hpp"
+#include "thread/thread_pool.hpp"
 
 namespace image { namespace filter {
 
@@ -27,53 +28,54 @@ Gaussian<T>::Gaussian(float radius, float alpha) {
 }
 
 template<typename T>
-void Gaussian<T>::apply(Typed_image<T>& target) {
+void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) {
 	scratch_.resize(target.description());
 
 	auto d = target.description().dimensions;
 
 	// vertical
 
-	int32_t begin = 0;
-	int32_t end   = target.area();
+	pool.run_range([&target, d, this](int32_t begin, int32_t end) {
+		for (int32_t i = begin; i < end; ++i) {
+			int2 c = target.coordinates_2(i);
 
-	for (int32_t i = begin; i < end; ++i) {
-		int2 c = target.coordinates_2(i);
+			T accum(0.f);
+			float weight_sum = 0.f;
+			for (auto& k : kernel_) {
+				int32_t kx = c.x + k.o;
 
-		T accum(0.f);
-		float weight_sum = 0.f;
-		for (auto& k : kernel_) {
-			int32_t kx = c.x + k.o;
-
-			if (kx >= 0 && kx < d.x) {
-				T v = target.load(kx, c.y);
-				accum += k.w * v;
-				weight_sum += k.w;
+				if (kx >= 0 && kx < d.x) {
+					T v = target.load(kx, c.y);
+					accum += k.w * v;
+					weight_sum += k.w;
+				}
 			}
-		}
 
-		scratch_.store(i, accum / weight_sum);
-	}
+			scratch_.store(i, accum / weight_sum);
+		}
+	}, 0, target.area());
 
 	// horizontal
 
-	for (int32_t i = begin; i < end; ++i) {
-		int2 c = target.coordinates_2(i);
+	pool.run_range([&target, d, this](int32_t begin, int32_t end) {
+		for (int32_t i = begin; i < end; ++i) {
+			int2 c = target.coordinates_2(i);
 
-		T accum(0.f);
-		float weight_sum = 0.f;
-		for (auto& k : kernel_) {
-			int32_t ky = c.y + k.o;
+			T accum(0.f);
+			float weight_sum = 0.f;
+			for (auto& k : kernel_) {
+				int32_t ky = c.y + k.o;
 
-			if (ky >= 0 && ky < d.y) {
-				T v = scratch_.load(c.x, ky);
-				accum += k.w * v;
-				weight_sum += k.w;
+				if (ky >= 0 && ky < d.y) {
+					T v = scratch_.load(c.x, ky);
+					accum += k.w * v;
+					weight_sum += k.w;
+				}
 			}
-		}
 
-		target.store(i, accum / weight_sum);
-	}
+			target.store(i, accum / weight_sum);
+		}
+	}, 0, target.area());
 }
 
 }}

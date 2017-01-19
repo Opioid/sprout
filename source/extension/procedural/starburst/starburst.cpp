@@ -61,7 +61,7 @@ void create(thread::Pool& pool) {
 
 	Float_3 float_image_a(Image::Description(Image::Type::Float_3, dimensions));
 
-	bool dirt = true;
+	bool dirt = false;
 	if (dirt) {
 		render_dirt(signal);
 	} else {
@@ -74,7 +74,7 @@ void create(thread::Pool& pool) {
 //	Aperture aperture(5, 0.f, 0.f);
 	render_aperture(aperture, signal);
 
-	write_signal("signal.png", signal);
+//	write_signal("signal.png", signal);
 
 	bool near_field = false;
 
@@ -177,9 +177,9 @@ void create(thread::Pool& pool) {
 
 //	write_signal("signal_after.png", signal);
 
-//	float radius = static_cast<float>(resolution) * 0.00390625f;
-//	filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
-//	gaussian.apply(float_image_a);
+	float radius = static_cast<float>(resolution) * 0.00390625f;
+	filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
+	gaussian.apply(float_image_a, pool);
 
 	Byte_3 byte_image(Image::Description(Image::Type::Byte_3, dimensions));
 
