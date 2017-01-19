@@ -3,7 +3,7 @@
 #include "triangle_type.hpp"
 #include "scene/shape/shape.hpp"
 #include "bvh/triangle_bvh_tree.hpp"
-#include "bvh/triangle_bvh_data.hpp"
+// #include "bvh/triangle_bvh_data.hpp"
 #include "bvh/triangle_bvh_indexed_data.hpp"
 // #include "bvh/triangle_bvh_data_interleaved.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
@@ -18,9 +18,7 @@ public:
 
 //	using Tree = bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>>;
 
-//	using Tree = bvh::Tree<bvh::Indexed_data<Intersection_vertex_type, Shading_vertex_type>>;
-
-	using Tree = bvh::Tree<bvh::Indexed_data1<Intersection_vertex_type, Shading_vertex_type>>;
+	using Tree = bvh::Tree<bvh::Indexed_data<Intersection_vertex_type, Shading_vertex_type>>;
 
 	bool init();
 

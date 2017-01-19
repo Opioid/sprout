@@ -80,7 +80,7 @@ private:
 
 //	using Tree = bvh::Tree<bvh::Data_interleaved<Triangle_MT>>;
 
-	using Tree = bvh::Tree<bvh::Indexed_data1<Intersection_vertex_type, Shading_vertex_type>>;
+	using Tree = bvh::Tree<bvh::Indexed_data<Intersection_vertex_type, Shading_vertex_type>>;
 
 	Tree tree_;
 
