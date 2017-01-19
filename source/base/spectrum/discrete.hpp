@@ -5,7 +5,7 @@
 
 namespace spectrum {
 
-template<uint32_t N>
+template<int32_t N>
 class Discrete_spectral_power_distribution {
 
 public:
@@ -14,9 +14,9 @@ public:
 
 	Discrete_spectral_power_distribution(const Interpolated& interpolated);
 
-	float value(uint32_t bin) const;
+	float value(int32_t bin) const;
 
-	void set_bin(uint32_t bin, float value);
+	void set_bin(int32_t bin, float value);
 
 	void clear(float s);
 
@@ -26,9 +26,9 @@ public:
 
 	static void init(float start_wavelength = 380.f, float end_wavelength = 720.f);
 
-	static constexpr uint32_t num_bands();
+	static constexpr int32_t num_bands();
 
-	static float wavelength_center(uint32_t bin);
+	static float wavelength_center(int32_t bin);
 
 private:
 

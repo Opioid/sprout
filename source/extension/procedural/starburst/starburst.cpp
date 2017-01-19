@@ -25,7 +25,7 @@
 
 namespace procedural { namespace starburst {
 
-static constexpr uint32_t Num_bands = 64;
+static constexpr int32_t Num_bands = 64;
 
 using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
@@ -36,11 +36,13 @@ void render_aperture(const Aperture& aperture, image::Float_1& signal);
 void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
 		  float alpha, uint32_t mode, thread::Pool& pool);
 
-void centered_squared_magnitude(float* result, const float2* source, size_t width, size_t height);
+void centered_squared_magnitude(float* result, const float2* source,
+								int32_t width, int32_t height);
 
-void squared_magnitude(float* result, const float2* source, size_t width, size_t height);
+void squared_magnitude(float* result, const float2* source,
+					   int32_t width, int32_t height);
 
-void diffraction(Spectrum* result, const float* source, uint32_t bin, int32_t resolution);
+void diffraction(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
 
 void write_signal(const std::string& name, const image::Float_1& signal);
 
@@ -315,14 +317,15 @@ void render_aperture(const Aperture& aperture, image::Float_1& signal) {
 	}
 }
 
-void centered_squared_magnitude(float* result, const float2* source, size_t width, size_t height) {
-	size_t row_size = math::dft_size(width);
+void centered_squared_magnitude(float* result, const float2* source,
+								int32_t width, int32_t height) {
+	int32_t row_size = math::dft_size(width);
 
 	float fr = static_cast<float>(width);
 	float normalization = 2.f / fr;
 
-	for (size_t y = 0; y < height; ++y) {
-		size_t ro = y;
+	for (int32_t y = 0; y < height; ++y) {
+		int32_t ro = y;
 
 		if (y < height / 2) {
 			ro = y + height / 2;
@@ -358,8 +361,8 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 		}
 */
 
-		for (size_t x = 0, len = row_size; x < len; ++x) {
-			size_t o = y * row_size + x;
+		for (int32_t x = 0, len = row_size; x < len; ++x) {
+			int32_t o = y * row_size + x;
 
 		//	float2 normalization = (0 == x || len - 1 == x) ? float2(1.f / fr, 2.f / fr) : float2(2.f / fr);
 
@@ -371,8 +374,8 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 			result[ro * width + x + len - 1] = mag;
 		}
 
-		for (size_t x = 1, len = row_size; x < len; ++x) {
-			size_t o = y * row_size + x;
+		for (int32_t x = 1, len = row_size; x < len; ++x) {
+			int32_t o = y * row_size + x;
 
 		//	float2 normalization(2.f / fr);
 
@@ -390,15 +393,15 @@ void centered_squared_magnitude(float* result, const float2* source, size_t widt
 	}
 }
 
-void squared_magnitude(float* result, const float2* source, size_t width, size_t height) {
-	for (size_t i = 0, len = width * height; i < len; ++i) {
+void squared_magnitude(float* result, const float2* source, int32_t width, int32_t height) {
+	for (int32_t i = 0, len = width * height; i < len; ++i) {
 		float mag = math::squared_length(source[i]);
 		result[i] = mag;
 	}
 }
 
 void diffraction(Spectrum* result, const float* squared_magnitude,
-				 uint32_t bin, int32_t resolution) {
+				 int32_t bin, int32_t resolution) {
 	float fr = static_cast<float>(resolution);
 
 	float wl_0 = Spectrum::wavelength_center(Spectrum::num_bands() - 1);
@@ -459,7 +462,8 @@ void write_signal(const std::string& name, const image::Float_1& signal) {
 
 float2 sqrtc(float2 c) {
 	float l = math::length(c);
-	return 0.7071067f * float2(std::sqrt(l + c.x), std::sqrt(l - c.x) * static_cast<float>(math::sign(c.y)));
+	return 0.7071067f * float2(std::sqrt(l + c.x),
+							   std::sqrt(l - c.x) * static_cast<float>(math::sign(c.y)));
 }
 
 float2 mulc(float2 a, float2 b) {
