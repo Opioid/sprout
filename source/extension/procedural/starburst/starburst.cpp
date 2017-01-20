@@ -7,7 +7,7 @@
 #include "core/image/filter/image_gaussian.inl"
 #include "core/image/procedural/image_renderer.inl"
 #include "core/image/texture/texture_float_2.hpp"
-#include "core/image/texture/sampler/sampler_2d_linear.inl"
+#include "core/image/texture/sampler/sampler_linear_2d.inl"
 #include "base/encoding/encoding.inl"
 #include "base/math/vector.inl"
 #include "base/math/fourier/dft.hpp"
@@ -481,7 +481,7 @@ float2 mulc(float2 a, float t) {
 void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
 		  float alpha, uint32_t mode, int32_t begin, int32_t end) {
 	using namespace image::texture::sampler;
-	Sampler_2D_linear<Address_mode_repeat> sampler;
+	Linear_2D<Address_mode_repeat> sampler;
 
 	image::texture::Float_2 texture(source);
 
