@@ -13,8 +13,8 @@ public:
 
 	Interpolated(const float* wavelengths, const float* intensities, size_t len);
 
-	float get_start() const;
-	float get_end() const;
+	float start_wavelength() const;
+	float end_wavelength() const;
 
 	float evaluate(float wl) const;
 

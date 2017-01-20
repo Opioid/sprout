@@ -8,7 +8,7 @@ Interpolated::Interpolated(const float* wavelengths, const float* intensities, s
 	intensities_.assign(intensities, intensities + len);
 }
 
-float Interpolated::get_start() const {
+float Interpolated::start_wavelength() const {
 	if (!wavelengths_.empty()) {
 		return wavelengths_[0];
 	}
@@ -16,7 +16,7 @@ float Interpolated::get_start() const {
 	return 0.f;
 }
 
-float Interpolated::get_end() const {
+float Interpolated::end_wavelength() const {
 	const size_t len = wavelengths_.size();
 	if (len > 0) {
 		return wavelengths_[len - 1];
@@ -50,8 +50,8 @@ float Interpolated::integrate(float a, float b) const {
 		return 0.f;
 	}
 
-	float start = std::max(a, get_start());
-	float end   = std::min(b, get_end());
+	float start = std::max(a, start_wavelength());
+	float end   = std::min(b, end_wavelength());
 	if (end <= start) {
 		return 0.f;
 	}
