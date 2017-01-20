@@ -5,6 +5,34 @@
 
 namespace image { namespace texture { namespace sampler {
 
+struct Address_mode_identity {
+	static float2 f(float2 uv) {
+	//	return math::saturate(uv);
+		return uv;
+	}
+
+	static float3 f(float3_p uvw) {
+	//	return math::saturate(uvw);
+		return uvw;
+	}
+
+	static int32_t increment(int32_t v, int32_t /*max*/) {
+//		if (v >= max) {
+//			return max;
+//		}
+
+		return v + 1;
+	}
+
+	static int32_t lower_bound(int32_t v, int32_t /*max*/) {
+//		if (v < 0) {
+//			return 0;
+//		}
+
+		return v;
+	}
+};
+
 struct Address_mode_clamp {
 	static float2 f(float2 uv) {
 		return math::saturate(uv);

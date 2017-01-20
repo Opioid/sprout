@@ -1,9 +1,8 @@
 #pragma once
 
-#include "rendering/integrator/surface/surface_integrator.hpp"
+#include "surface_integrator.hpp"
 #include "rendering/integrator/surface/sub/bruteforce.hpp"
 #include "transmittance/transmittance_closed.hpp"
-#include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 

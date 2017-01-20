@@ -1,7 +1,7 @@
 #include "grass.hpp"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/image/texture/sampler/address_mode.hpp"
-#include "core/image/texture/sampler/sampler_2d_linear.inl"
+#include "core/image/texture/sampler/sampler_linear_2d.inl"
 #include "core/resource/resource_manager.hpp"
 #include "core/scene/shape/shape_vertex.hpp"
 #include "core/scene/shape/triangle/triangle_primitive.hpp"
@@ -45,7 +45,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 //	memory::Variant_map options;
 //	options.insert("usage", image::texture::Provider::Usage::Mask);
 //	auto mask = manager.load<image::texture::Texture>("textures/how.png", options);;
-//	image::texture::sampler::Sampler_2D_linear<image::texture::sampler::Address_mode_repeat> sampler;
+//	image::texture::sampler::Linear_2D<image::texture::sampler::Address_mode_repeat> sampler;
 
 	rnd::Generator rng(0, 1, 2, 3);
 

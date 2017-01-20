@@ -8,6 +8,9 @@
 
 namespace scene {
 
+using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
+using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
+
 Worker::Worker() : node_stack_(128) {}
 
 void Worker::init(uint32_t id, const Scene& scene) {

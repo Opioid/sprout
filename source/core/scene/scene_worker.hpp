@@ -18,6 +18,8 @@ class Worker {
 public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;
+	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
+	using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
 
 	Worker();
 

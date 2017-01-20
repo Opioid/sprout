@@ -1,9 +1,7 @@
 #pragma once
 
-#include "rendering/integrator/volume/volume_integrator.hpp"
+#include "volume_integrator.hpp"
 #include "sampler/sampler_random.hpp"
-#include "image/texture/sampler/sampler_2d_nearest.hpp"
-#include "image/texture/sampler/address_mode.hpp"
 #include "scene/material/sampler_settings.hpp"
 
 namespace rendering { namespace integrator { namespace volume {

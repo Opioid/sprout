@@ -48,6 +48,8 @@ public:
 
 	T* data() const;
 
+	T unsafe_sample(float2 uv, int2 dimensions) const;
+
 	virtual size_t num_bytes() const final override;
 
 private:

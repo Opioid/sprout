@@ -36,46 +36,46 @@ void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) {
 	// vertical
 
 	pool.run_range([&target, d, this](int32_t begin, int32_t end) {
-		for (int32_t i = begin; i < end; ++i) {
-			int2 c = target.coordinates_2(i);
+		for (int32_t y = begin; y < end; ++y) {
+			for (int32_t x = 0; x < d.x; ++x) {
+				T accum(0.f);
+				float weight_sum = 0.f;
+				for (auto k : kernel_) {
+					int32_t kx = x + k.o;
 
-			T accum(0.f);
-			float weight_sum = 0.f;
-			for (auto& k : kernel_) {
-				int32_t kx = c.x + k.o;
-
-				if (kx >= 0 && kx < d.x) {
-					T v = target.load(kx, c.y);
-					accum += k.w * v;
-					weight_sum += k.w;
+					if (kx >= 0 && kx < d.x) {
+						T v = target.load(kx, y);
+						accum += k.w * v;
+						weight_sum += k.w;
+					}
 				}
-			}
 
-			scratch_.store(i, accum / weight_sum);
+				scratch_.store(x, y, accum / weight_sum);
+			}
 		}
-	}, 0, target.area());
+	}, 0, d.y);
 
 	// horizontal
 
 	pool.run_range([&target, d, this](int32_t begin, int32_t end) {
-		for (int32_t i = begin; i < end; ++i) {
-			int2 c = target.coordinates_2(i);
+		for (int32_t y = begin; y < end; ++y) {
+			for (int32_t x = 0; x < d.x; ++x) {
+				T accum(0.f);
+				float weight_sum = 0.f;
+				for (auto k : kernel_) {
+					int32_t ky = y + k.o;
 
-			T accum(0.f);
-			float weight_sum = 0.f;
-			for (auto& k : kernel_) {
-				int32_t ky = c.y + k.o;
-
-				if (ky >= 0 && ky < d.y) {
-					T v = scratch_.load(c.x, ky);
-					accum += k.w * v;
-					weight_sum += k.w;
+					if (ky >= 0 && ky < d.y) {
+						T v = scratch_.load(x, ky);
+						accum += k.w * v;
+						weight_sum += k.w;
+					}
 				}
-			}
 
-			target.store(i, accum / weight_sum);
+				target.store(x, y, accum / weight_sum);
+			}
 		}
-	}, 0, target.area());
+	}, 0, d.y);
 }
 
 }}

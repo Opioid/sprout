@@ -1,20 +1,23 @@
 #include "sampler_cache.hpp"
-#include "image/texture/sampler/sampler_2d_nearest.inl"
-#include "image/texture/sampler/sampler_2d_linear.inl"
-#include "image/texture/sampler/sampler_3d_nearest.inl"
-#include "image/texture/sampler/sampler_3d_linear.inl"
+#include "image/texture/sampler/sampler_linear_2d.inl"
+#include "image/texture/sampler/sampler_nearest_2d.inl"
+#include "image/texture/sampler/sampler_linear_3d.inl"
+#include "image/texture/sampler/sampler_nearest_3d.inl"
 #include "image/texture/sampler/address_mode.hpp"
 
 namespace scene { namespace material {
 
+using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
+using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
+
 Sampler_cache::Sampler_cache() {
 	using namespace image::texture::sampler;
 
-	samplers_2D_[0] = new Sampler_2D_nearest<Address_mode_repeat>;
-	samplers_2D_[1] = new Sampler_2D_linear <Address_mode_repeat>;
+	samplers_2D_[0] = new Nearest_2D<Address_mode_repeat>;
+	samplers_2D_[1] = new Linear_2D <Address_mode_repeat>;
 
-	samplers_3D_[0] = new Sampler_3D_nearest<Address_mode_clamp>;
-	samplers_3D_[1] = new Sampler_3D_linear <Address_mode_clamp>;
+	samplers_3D_[0] = new Nearest_3D<Address_mode_clamp>;
+	samplers_3D_[1] = new Linear_3D <Address_mode_clamp>;
 }
 
 Sampler_cache::~Sampler_cache() {
