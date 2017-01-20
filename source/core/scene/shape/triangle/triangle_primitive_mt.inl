@@ -457,4 +457,143 @@ inline void interpolate_data(const Shading_vertex_MTCC& a,
 	tc = float2(n_u.w, t_v.w);
 }
 
+inline Vertex_MTC::Vertex_MTC(const math::packed_float3& p,
+							  const math::packed_float3& n,
+							  const math::packed_float3& t,
+							  float2 uv) :
+	p(p), n_u(n, uv.x), t_v(t, uv.y) {
+	// Not too happy about handling degenerate tangents here (only one very special case even)
+	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
+		t_v = float4(math::tangent(n_u.xyz), uv.y);
+	}
+}
+
+inline bool intersect(const Vertex_MTC& a,
+					  const Vertex_MTC& b,
+					  const Vertex_MTC& c,
+					  math::Ray& ray, float2& uv) {
+	float3 e1 = b.p - a.p;
+	float3 e2 = c.p - a.p;
+
+	float3 pvec = math::cross(ray.direction, e2);
+
+	float det = math::dot(e1, pvec);
+	float inv_det = 1.f / det;
+
+	float3 tvec = ray.origin - a.p;
+	float u = math::dot(tvec, pvec) * inv_det;
+
+	if (u < 0.f || u > 1.f) {
+		return false;
+	}
+
+	float3 qvec = math::cross(tvec, e1);
+	float v = math::dot(ray.direction, qvec) * inv_det;
+
+	if (v < 0.f || u + v > 1.f) {
+		return false;
+	}
+
+	float hit_t = math::dot(e2, qvec) * inv_det;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		ray.max_t = hit_t;
+		uv.x = u;
+		uv.y = v;
+		return true;
+	}
+
+	return false;
+}
+
+inline bool intersect_p(const Vertex_MTC& a,
+						const Vertex_MTC& b,
+						const Vertex_MTC& c,
+						const math::Ray& ray) {
+	float3 e1 = b.p - a.p;
+	float3 e2 = c.p - a.p;
+
+	float3 pvec = math::cross(ray.direction, e2);
+
+	float det = math::dot(e1, pvec);
+	float inv_det = 1.f / det;
+
+	float3 tvec = ray.origin - a.p;
+	float u = math::dot(tvec, pvec) * inv_det;
+
+	if (u < 0.f || u > 1.f) {
+		return false;
+	}
+
+	float3 qvec = math::cross(tvec, e1);
+	float v = math::dot(ray.direction, qvec) * inv_det;
+
+	if (v < 0.f || u + v > 1.f) {
+		return false;
+	}
+
+	float hit_t = math::dot(e2, qvec) * inv_det;
+
+	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+		return true;
+	}
+
+	return false;
+}
+
+inline float2 interpolate_uv(const Vertex_MTC& a,
+							 const Vertex_MTC& b,
+							 const Vertex_MTC& c,
+							 float2 uv) {
+	float w = 1.f - uv.x - uv.y;
+
+	return float2(w * a.n_u.w + uv.x * b.n_u.w + uv.y * c.n_u.w,
+				  w * a.t_v.w + uv.x * b.t_v.w + uv.y * c.t_v.w);
+}
+
+inline void interpolate_p_uv(const Vertex_MTC& a,
+							 const Vertex_MTC& b,
+							 const Vertex_MTC& c,
+							 float2 uv,
+							 float3& p, float2& tc) {
+	float w = 1.f - uv.x - uv.y;
+
+	p = w * a.p + uv.x * b.p + uv.y * c.p;
+
+	tc.x = w * a.n_u.w + uv.x * b.n_u.w + uv.y * c.n_u.w;
+	tc.y = w * a.t_v.w + uv.x * b.t_v.w + uv.y * c.t_v.w;
+}
+
+inline void interpolate_data(const Vertex_MTC& a,
+							 const Vertex_MTC& b,
+							 const Vertex_MTC& c,
+							 float2 uv,
+							 float3& n, float3& t, float2& tc) {
+	float w = 1.f - uv.x - uv.y;
+
+	float4 n_u = w * a.n_u + uv.x * b.n_u + uv.y * c.n_u;
+	float4 t_v = w * a.t_v + uv.x * b.t_v + uv.y * c.t_v;
+
+	n  = math::normalized(n_u.xyz);
+	t  = math::normalized(t_v.xyz);
+
+	tc = float2(n_u.w, t_v.w);
+}
+
+inline float area(const Vertex_MTC& a,
+				  const Vertex_MTC& b,
+				  const Vertex_MTC& c) {
+	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
+}
+
+inline float area(const Vertex_MTC& a,
+				  const Vertex_MTC& b,
+				  const Vertex_MTC& c,
+				  float3_p scale) {
+	float3 sa = scale * a.p;
+	float3 sb = scale * b.p;
+	float3 sc = scale * c.p;
+	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
+}
+
 }}}

@@ -14,9 +14,9 @@ Indexed_data<IV, SV>::Indexed_data() :
 
 template<typename IV, typename SV>
 Indexed_data<IV, SV>::~Indexed_data() {
-	memory::free_aligned(triangles_);
-	memory::free_aligned(intersection_vertices_);
 	memory::free_aligned(shading_vertices_);
+	memory::free_aligned(intersection_vertices_);
+	memory::free_aligned(triangles_);
 }
 
 template<typename IV, typename SV>
@@ -48,7 +48,6 @@ bool Indexed_data<IV, SV>::intersect_p(uint32_t index, const math::Ray& ray) con
 
 	return triangle::intersect_p(a, b, c, ray);
 }
-
 
 template<typename IV, typename SV>
 bool Indexed_data<IV, SV>::intersect_p(math::simd::FVector origin,
@@ -153,13 +152,13 @@ void Indexed_data<IV, SV>::allocate_triangles(uint32_t num_triangles, const Vert
 	current_triangle_ = 0;
 	num_vertices_ = static_cast<uint32_t>(vertices.size());
 
-	memory::free_aligned(triangles_);
-	memory::free_aligned(intersection_vertices_);
 	memory::free_aligned(shading_vertices_);
+	memory::free_aligned(intersection_vertices_);
+	memory::free_aligned(triangles_);
 
-	shading_vertices_      = memory::allocate_aligned<SV>(num_vertices_);
-	intersection_vertices_ = memory::allocate_aligned<IV>(num_vertices_);
 	triangles_			   = memory::allocate_aligned<Index_triangle>(num_triangles);
+	intersection_vertices_ = memory::allocate_aligned<IV>(num_vertices_);
+	shading_vertices_      = memory::allocate_aligned<SV>(num_vertices_);
 
 	for (uint32_t i = 0, len = num_vertices_; i < len; ++i) {
 		intersection_vertices_[i].p = float3(vertices[i].p);
@@ -192,6 +191,171 @@ size_t Indexed_data<IV, SV>::num_bytes() const {
 
 template<typename IV, typename SV>
 Indexed_data<IV, SV>::
+Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
+							   float bitangent_sign, uint32_t material_index) :
+	a(a), b(b), c(c),
+	bts_material_index(bitangent_sign < 0.f ? BTS_mask | material_index : material_index) {}
+
+template<typename V>
+Indexed_data_interleaved<V>::Indexed_data_interleaved() :
+	num_triangles_(0), current_triangle_(0), num_vertices_(0),
+	triangles_(nullptr), vertices_(nullptr) {}
+
+template<typename V>
+Indexed_data_interleaved<V>::~Indexed_data_interleaved() {
+	memory::free_aligned(vertices_);
+	memory::free_aligned(triangles_);
+}
+
+template<typename V>
+uint32_t Indexed_data_interleaved<V>::num_triangles() const {
+	return num_triangles_;
+}
+
+template<typename V>
+uint32_t Indexed_data_interleaved<V>::current_triangle() const {
+	return current_triangle_;
+}
+
+template<typename V>
+bool Indexed_data_interleaved<V>::intersect(uint32_t index, math::Ray& ray, float2& uv) const {
+	const auto& t = triangles_[index];
+	const V& a = vertices_[t.a];
+	const V& b = vertices_[t.b];
+	const V& c = vertices_[t.c];
+
+	return triangle::intersect(a, b, c, ray, uv);
+}
+
+template<typename V>
+bool Indexed_data_interleaved<V>::intersect_p(uint32_t index, const math::Ray& ray) const {
+	const auto& tri = triangles_[index];
+	const V& a = vertices_[tri.a];
+	const V& b = vertices_[tri.b];
+	const V& c = vertices_[tri.c];
+
+	return triangle::intersect_p(a, b, c, ray);
+}
+
+template<typename V>
+void Indexed_data_interleaved<V>::interpolate_data(uint32_t index, float2 uv,
+												   float3& n, float3& t, float2& tc) const {
+	const auto& tri = triangles_[index];
+	const V& a = vertices_[tri.a];
+	const V& b = vertices_[tri.b];
+	const V& c = vertices_[tri.c];
+
+	triangle::interpolate_data(a, b, c, uv, n, t, tc);
+}
+
+template<typename V>
+float2 Indexed_data_interleaved<V>::interpolate_uv(uint32_t index, float2 uv) const {
+	const auto& tri = triangles_[index];
+	const V& sa = vertices_[tri.a];
+	const V& sb = vertices_[tri.b];
+	const V& sc = vertices_[tri.c];
+
+	return triangle::interpolate_uv(sa, sb, sc, uv);
+}
+
+template<typename V>
+float Indexed_data_interleaved<V>::bitangent_sign(uint32_t index) const {
+	constexpr float sign[2] = { 1.f, -1.f };
+
+	return sign[(Index_triangle::BTS_mask & triangles_[index].bts_material_index) >> 31];
+}
+
+template<typename V>
+uint32_t Indexed_data_interleaved<V>::material_index(uint32_t index) const {
+	return Index_triangle::Material_index_mask & triangles_[index].bts_material_index;
+}
+
+template<typename V>
+float3 Indexed_data_interleaved<V>::normal(uint32_t index) const {
+	const auto& tri = triangles_[index];
+	const V& a = vertices_[tri.a];
+	const V& b = vertices_[tri.b];
+	const V& c = vertices_[tri.c];
+
+	float3 e1 = b.p - a.p;
+	float3 e2 = c.p - a.p;
+	return math::normalized(math::cross(e1, e2));
+}
+
+template<typename V>
+float Indexed_data_interleaved<V>::area(uint32_t index) const {
+	const auto& tri = triangles_[index];
+	const V& a = vertices_[tri.a];
+	const V& b = vertices_[tri.b];
+	const V& c = vertices_[tri.c];
+
+	return triangle::area(a, b, c);
+}
+
+template<typename V>
+float Indexed_data_interleaved<V>::area(uint32_t index, float3_p scale) const {
+	const auto& tri = triangles_[index];
+	const V& a = vertices_[tri.a];
+	const V& b = vertices_[tri.b];
+	const V& c = vertices_[tri.c];
+
+	return triangle::area(a, b, c, scale);
+}
+
+template<typename V>
+void Indexed_data_interleaved<V>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
+	float2 uv = math::sample_triangle_uniform(r2);
+
+	const auto& tri = triangles_[index];
+	const V& ia = vertices_[tri.a];
+	const V& ib = vertices_[tri.b];
+	const V& ic = vertices_[tri.c];
+
+	triangle::interpolate_p_uv(ia, ib, ic, uv, p, tc);
+}
+
+template<typename V>
+void Indexed_data_interleaved<V>::allocate_triangles(uint32_t num_triangles,
+													 const Vertices& vertices) {
+	num_triangles_ = num_triangles;
+	current_triangle_ = 0;
+	num_vertices_ = static_cast<uint32_t>(vertices.size());
+
+	memory::free_aligned(vertices_);
+	memory::free_aligned(triangles_);
+
+	triangles_ = memory::allocate_aligned<Index_triangle>(num_triangles);
+	vertices_  = memory::allocate_aligned<V>(num_vertices_);
+
+	for (uint32_t i = 0, len = num_vertices_; i < len; ++i) {
+		vertices_[i] = V(vertices[i].p, vertices[i].n, vertices[i].t, vertices[i].uv);
+	}
+}
+
+template<typename V>
+void Indexed_data_interleaved<V>::add_triangle(uint32_t a, uint32_t b, uint32_t c,
+											   uint32_t material_index, const Vertices& vertices) {
+	float bitanget_sign = 1.f;
+
+	if ((vertices[a].bitangent_sign < 0.f && vertices[b].bitangent_sign < 0.f)
+	||  (vertices[b].bitangent_sign < 0.f && vertices[c].bitangent_sign < 0.f)
+	||  (vertices[c].bitangent_sign < 0.f && vertices[a].bitangent_sign < 0.f)) {
+		bitanget_sign = -1.f;
+	}
+
+	triangles_[current_triangle_] = Index_triangle(a, b, c, bitanget_sign, material_index);
+	++current_triangle_;
+}
+
+template<typename V>
+size_t Indexed_data_interleaved<V>::num_bytes() const {
+	return sizeof(*this) +
+		   num_triangles_ * sizeof(Index_triangle) +
+		   num_vertices_ * sizeof(V);
+}
+
+template<typename V>
+Indexed_data_interleaved<V>::
 Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
 							   float bitangent_sign, uint32_t material_index) :
 	a(a), b(b), c(c),
