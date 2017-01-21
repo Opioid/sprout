@@ -36,12 +36,10 @@ template<int32_t N>
 float3 Discrete_spectral_power_distribution<N>::XYZ() const {
 	float3 xyz(0.f);
 	for (int32_t i = 0; i < N; ++i) {
-		xyz.x += cie_x_.values_[i] * values_[i];
-		xyz.y += cie_y_.values_[i] * values_[i];
-		xyz.z += cie_z_.values_[i] * values_[i];
+		xyz += values_[i] * cie_[i];
 	}
 
-	xyz *= (end_wavelength() - start_wavelength()) / static_cast<float>(N);
+	xyz *= step_;
 
 	return xyz;
 }
@@ -61,13 +59,21 @@ void Discrete_spectral_power_distribution<N>::init(float start_wavelength, float
 		wavelengths_[i] = start_wavelength + static_cast<float>(i) * step;
 	}
 
+	step_ = step;
+
 	const Interpolated CIE_X(CIE_Wavelengths_360_830_1nm, CIE_X_360_830_1nm, CIE_XYZ_Num);
 	const Interpolated CIE_Y(CIE_Wavelengths_360_830_1nm, CIE_Y_360_830_1nm, CIE_XYZ_Num);
 	const Interpolated CIE_Z(CIE_Wavelengths_360_830_1nm, CIE_Z_360_830_1nm, CIE_XYZ_Num);
 
-	cie_x_ = Discrete_spectral_power_distribution<N>(CIE_X);
-	cie_y_ = Discrete_spectral_power_distribution<N>(CIE_Y);
-	cie_z_ = Discrete_spectral_power_distribution<N>(CIE_Z);
+	const Discrete_spectral_power_distribution<N> cie_x(CIE_X);
+	const Discrete_spectral_power_distribution<N> cie_y(CIE_Y);
+	const Discrete_spectral_power_distribution<N> cie_z(CIE_Z);
+
+	for (int32_t i = 0; i < N; ++i) {
+		cie_[i].x = cie_x.values_[i];
+		cie_[i].y = cie_y.values_[i];
+		cie_[i].z = cie_z.values_[i];
+	}
 }
 
 template<int32_t N>
@@ -92,15 +98,12 @@ float Discrete_spectral_power_distribution<N>::end_wavelength() {
 }
 
 template<int32_t N>
+float3 Discrete_spectral_power_distribution<N>::cie_[N];
+
+template<int32_t N>
 float Discrete_spectral_power_distribution<N>::wavelengths_[N  + 1];
 
 template<int32_t N>
-Discrete_spectral_power_distribution<N> Discrete_spectral_power_distribution<N>::cie_x_;
-
-template<int32_t N>
-Discrete_spectral_power_distribution<N> Discrete_spectral_power_distribution<N>::cie_y_;
-
-template<int32_t N>
-Discrete_spectral_power_distribution<N> Discrete_spectral_power_distribution<N>::cie_z_;
+float Discrete_spectral_power_distribution<N>::step_;
 
 }

@@ -37,11 +37,11 @@ private:
 
 	float values_[N];
 
+	static float3 cie_[N];
+
 	static float wavelengths_[N  + 1];
 
-	static Discrete_spectral_power_distribution cie_x_;
-	static Discrete_spectral_power_distribution cie_y_;
-	static Discrete_spectral_power_distribution cie_z_;
+	static float step_;
 };
 
 }

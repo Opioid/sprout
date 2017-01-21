@@ -29,6 +29,7 @@
 #include "extension/procedural/starburst/starburst.hpp"
 #include "core/testing/testing_simd.hpp"
 #include "core/testing/testing_size.hpp"
+#include "core/testing/testing_spectrum.hpp"
 
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
@@ -41,6 +42,7 @@ int main(int argc, char* argv[]) {
 //	testing::simd::normalize();
 //	testing::simd::reciprocal();
 //	testing::simd::dot();
+//	testing::spectrum();
 //	return 1;
 
 	logging::init(logging::Type::Stdout);
@@ -78,12 +80,12 @@ int main(int argc, char* argv[]) {
 
 
 
-//	auto starburst_start = std::chrono::high_resolution_clock::now();
-//	procedural::starburst::create(thread_pool);
-//	logging::info("Starburst time " +
-//				  string::to_string(chrono::seconds_since(starburst_start)) + " s");
+	auto starburst_start = std::chrono::high_resolution_clock::now();
+	procedural::starburst::create(thread_pool);
+	logging::info("Starburst time " +
+				  string::to_string(chrono::seconds_since(starburst_start)) + " s");
 
-//	return 0;
+	return 0;
 
 
 
