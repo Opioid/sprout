@@ -7,7 +7,7 @@
 #include "core/image/filter/image_gaussian.inl"
 #include "core/image/procedural/image_renderer.inl"
 #include "core/image/texture/texture_float_2.hpp"
-#include "core/image/texture/sampler/sampler_2d_linear.inl"
+#include "core/image/texture/sampler/sampler_linear_2d.inl"
 #include "base/encoding/encoding.inl"
 #include "base/math/vector.inl"
 #include "base/math/fourier/dft.hpp"
@@ -26,15 +26,20 @@
 
 namespace procedural { namespace starburst {
 
+	using namespace image;
+
 static constexpr int32_t Num_bands = 64;
 
 using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
 void render_dirt(image::Float_1& signal);
 
-void render_aperture(const Aperture& aperture, image::Float_1& signal);
+void render_aperture(const Aperture& aperture, Float_1& signal);
 
-void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
+void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
+		  float alpha, uint32_t mode, thread::Pool& pool);
+
+void fdft(Float_2& destination, const Float_2& source,
 		  float alpha, uint32_t mode, thread::Pool& pool);
 
 void centered_squared_magnitude(float* result, const float2* source,
@@ -45,12 +50,10 @@ void squared_magnitude(float* result, const float2* source,
 
 void diffraction(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
 
-void write_signal(const std::string& name, const image::Float_1& signal);
+void write_signal(const std::string& name, const Float_1& signal);
 
 void create(thread::Pool& pool) {
 	std::cout << "Starburst experiment" << std::endl;
-
-	using namespace image;
 
 	Spectrum::init(380.f, 720.f);
 
@@ -79,23 +82,34 @@ void create(thread::Pool& pool) {
 
 //	write_signal("signal.png", signal);
 
-	bool near_field = false;
+	bool near_field = true;
 
 	if (near_field) {
+		float alpha = 0.18f;
+
 		Image::Description description(Image::Type::Float_2, dimensions);
+
 		auto signal_a = std::make_shared<Float_2>(description);
 		auto signal_b = std::make_shared<Float_2>(description);
-
 
 		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
 			signal_a->store(i, float2(signal.load(i), 0.f));
 		}
 
-		float alpha = 0.18f;
-
 		fdft(*signal_b.get(), signal_a, alpha, 0, pool);
 		fdft(*signal_a.get(), signal_b, alpha, 1, pool);
 		squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
+
+//		Float_2 signal_a(description);
+//		Float_2 signal_b(description);
+
+//		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
+//			signal_a.store(i, float2(signal.load(i), 0.f));
+//		}
+
+//		fdft(signal_b, signal_a, alpha, 0, pool);
+//		fdft(signal_a, signal_b, alpha, 1, pool);
+//		squared_magnitude(signal.data(), signal_a.data(), resolution, resolution);
 
 		pool.run_range([&float_image_a, &signal](int32_t begin, int32_t end) {
 			for (int32_t i = begin; i < end; ++i) {
@@ -277,7 +291,7 @@ void render_dirt(image::Float_1& signal) {
 //	gaussian.apply(signal);
 }
 
-void render_aperture(const Aperture& aperture, image::Float_1& signal) {
+void render_aperture(const Aperture& aperture, Float_1& signal) {
 	int32_t num_sqrt_samples = 4;
 	std::vector<float2> kernel(num_sqrt_samples * num_sqrt_samples);
 
@@ -447,24 +461,27 @@ void diffraction(Spectrum* result, const float* squared_magnitude,
 	}
 }
 
-void write_signal(const std::string& name, const image::Float_1& signal) {
+void write_signal(const std::string& name, const Float_1& signal) {
 	auto d = signal.description().dimensions;
 
-	image::Byte_1 image(image::Image::Description(image::Image::Type::Byte_1, d));
+	Byte_1 image(Image::Description(Image::Type::Byte_1, d));
 
 	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
 		float s = signal.load(i);
-		uint8_t b = encoding::float_to_unorm(s);
+		uint8_t b = ::encoding::float_to_unorm(s);
 		image.store(i, b);
 	}
 
 	image::encoding::png::Writer::write(name, image);
 }
 
+float sign(float x) {
+	return x >= 0.f ? 1.f : -1.f;
+}
+
 float2 sqrtc(float2 c) {
 	float l = math::length(c);
-	return 0.7071067f * float2(std::sqrt(l + c.x),
-							   std::sqrt(l - c.x) * static_cast<float>(math::sign(c.y)));
+	return 0.7071067f * float2(std::sqrt(l + c.x), std::sqrt(l - c.x) * sign(c.y));
 }
 
 float2 mulc(float2 a, float2 b) {
@@ -478,17 +495,15 @@ float2 mulc(float2 a, float t) {
 	return float2(a.x * c - a.y * s, a.x * s + a.y * c);
 }
 
-void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
+void fdft(Float_2& destination, const texture::Float_2& texture,
 		  float alpha, uint32_t mode, int32_t begin, int32_t end) {
 	using namespace image::texture::sampler;
-	Sampler_2D_linear<Address_mode_repeat> sampler;
+	Linear_2D<Address_mode_clamp> sampler;
 
-	image::texture::Float_2 texture(source);
+	int2 d = texture.dimensions_2();
+	float2 df(d);
 
-	auto d = source->description().dimensions;
-	float2 df(d.xy);
-
-	float m = static_cast<float>(d.x);
+	float m = df.x;
 	float half_m = 0.5f * m;
 	float sqrt_m = std::sqrt(m);
 	float ss = 6.f;
@@ -496,37 +511,89 @@ void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
 	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
 	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
 
-	for (int32_t i = begin; i < end; ++i) {
-		float2 coordinates = float2(source->coordinates_2(i)) + float2(0.5f, 0.5f);
+	for (int32_t y = begin; y < end; ++y) {
+		for (int32_t x = 0; x < d.x; ++x) {
+			float2 coordinates = float2(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
 
-		float2 uv = coordinates / df;
+			float2 uv = coordinates / df;
 
-		float u = (coordinates.v[mode] - half_m) / sqrt_m;
+			float u = (coordinates.v[mode] - half_m) / sqrt_m;
 
-		float2 integration(0.f);
+			float2 integration(0.f);
 
-		for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
-			float2 kuv = uv;
-			kuv.v[mode] = k + 0.5f;
-			float2 g = sampler.sample_2(texture, kuv);
+			for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
+				float2 kuv = uv;
+				kuv.v[mode] = k + 0.5f;
+				float2 g = sampler.sample_2(texture, kuv);
 
-			float v = k * sqrt_m;
-			float t = math::Pi * (cot * v * v - 2.f * csc * u * v);
-			integration += mulc(g, t);
+				float v = k * sqrt_m;
+				float t = math::Pi * (cot * v * v - 2.f * csc * u * v);
+				integration += mulc(g, t);
+			}
+
+			float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
+
+			destination.store(x, y, mulc(s, integration) / (ss * sqrt_m));
 		}
-
-		float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
-
-		destination.store(i, mulc(s, integration) / (ss * sqrt_m));
 	}
 }
 
-void fdft(image::Float_2& destination, std::shared_ptr<image::Float_2> source,
+void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
 		  float alpha, uint32_t mode, thread::Pool& pool) {
 	auto d = destination.description().dimensions;
-	pool.run_range([&destination, source, alpha, mode](int32_t begin, int32_t end) {
+	texture::Float_2 texture(source);
+	pool.run_range([&destination, &texture, alpha, mode](int32_t begin, int32_t end) {
+		fdft(destination, texture, alpha, mode, begin, end);
+	}, 0, d.y);
+}
+
+void fdft(Float_2& destination, const Float_2& source,
+		  float alpha, uint32_t mode, int32_t begin, int32_t end) {
+	int2 d = source.description().dimensions.xy;
+	float2 df(d);
+
+	float m = df.x;
+	float half_m = 0.5f * m;
+	float sqrt_m = std::sqrt(m);
+	float ss = 6.f;
+
+	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
+	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
+
+	for (int32_t y = begin; y < end; ++y) {
+		for (int32_t x = 0; x < d.x; ++x) {
+			float2 coordinates = float2(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
+
+			float2 uv = coordinates / df;
+
+			float u = (coordinates.v[mode] - half_m) / sqrt_m;
+
+			float2 integration(0.f);
+
+			for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
+				float2 kuv = uv;
+				kuv.v[mode] = k + 0.5f;
+
+				float2 g = source.unsafe_sample(kuv, d);
+
+				float v = k * sqrt_m;
+				float t = math::Pi * (cot * v * v - 2.f * csc * u * v);
+				integration += mulc(g, t);
+			}
+
+			float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
+
+			destination.store(x, y, mulc(s, integration) / (ss * sqrt_m));
+		}
+	}
+}
+
+void fdft(Float_2& destination, const Float_2& source,
+		  float alpha, uint32_t mode, thread::Pool& pool) {
+	auto d = destination.description().dimensions;
+	pool.run_range([&destination, &source, alpha, mode](int32_t begin, int32_t end) {
 		fdft(destination, source, alpha, mode, begin, end);
-	}, 0, d.x * d.y);
+	}, 0, d.y);
 }
 
 }}
