@@ -8,8 +8,7 @@ class Material_subsurface : public Material_base {
 
 public:
 
-	Material_subsurface(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
-						bool two_sided);
+	Material_subsurface(Sample_cache& sample_cache, const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,

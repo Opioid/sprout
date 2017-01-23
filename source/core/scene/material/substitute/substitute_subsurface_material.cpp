@@ -9,9 +9,8 @@
 namespace scene { namespace material { namespace substitute {
 
 Material_subsurface::Material_subsurface(Sample_cache& sample_cache,
-										 const Sampler_settings& sampler_settings,
-										 bool two_sided) :
-	Material_base(sample_cache, sampler_settings, two_sided) {}
+										 const Sampler_settings& sampler_settings) :
+	Material_base(sample_cache, sampler_settings, false) {}
 
 const material::Sample& Material_subsurface::sample(float3_p wo, const Renderstate& rs,
 													const Worker& worker, Sampler_filter filter) {

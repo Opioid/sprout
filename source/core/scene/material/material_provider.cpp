@@ -803,8 +803,8 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 	}
 
 	if (thickness > 0.f) {
-		auto material = std::make_shared<substitute::Material_translucent>(
-					sample_cache_, sampler_settings, two_sided);
+		auto material = std::make_shared<substitute::Material_translucent>(sample_cache_,
+																		   sampler_settings);
 
 		material->set_mask(mask);
 		material->set_color_map(color_map);
@@ -857,8 +857,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 			material->set_coating_weight_map(coating_weight_map);
 			material->set_coating_weight(coating.weight);
 			material->set_coating_color(coating.color);
-			material->set_thinfilm(coating.ior, coating.roughness,
-								   coating.thickness);
+			material->set_thinfilm(coating.ior, coating.roughness, coating.thickness);
 
 			return material;
 		} else {
@@ -886,8 +885,8 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 			return material;
 		}
 	} else if (math::contains_greater_zero(scattering)) {
-		auto material = std::make_shared<substitute::Material_subsurface>(
-					sample_cache_, sampler_settings, two_sided);
+		auto material = std::make_shared<substitute::Material_subsurface>(sample_cache_,
+																		  sampler_settings);
 
 		material->set_mask(mask);
 		material->set_color_map(color_map);
