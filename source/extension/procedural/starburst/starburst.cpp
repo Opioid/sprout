@@ -498,6 +498,7 @@ float2 mulc(float2 a, float t) {
 void fdft(Float_2& destination, const texture::Float_2& texture,
 		  float alpha, uint32_t mode, int32_t begin, int32_t end) {
 	using namespace image::texture::sampler;
+
 	Linear_2D<Address_mode_clamp> sampler;
 
 	int2 d = texture.dimensions_2();

@@ -128,4 +128,51 @@ void interpolate_data(const Shading_vertex_MTCC& a,
 					  float2 uv,
 					  float3& n, float3& t, float2& tc);
 
+struct Vertex_MTC {
+	Vertex_MTC(const math::packed_float3& p,
+			   const math::packed_float3& n,
+			   const math::packed_float3& t,
+			   float2 uv);
+
+	float3 p;
+	float4 n_u;
+	float4 t_v;
+};
+
+bool intersect(const Vertex_MTC& a,
+			   const Vertex_MTC& b,
+			   const Vertex_MTC& c,
+			   math::Ray& ray, float2& uv);
+
+bool intersect_p(const Vertex_MTC& a,
+				 const Vertex_MTC& b,
+				 const Vertex_MTC& c,
+				 const math::Ray& ray);
+
+float2 interpolate_uv(const Vertex_MTC& a,
+					  const Vertex_MTC& b,
+					  const Vertex_MTC& c,
+					  float2 uv);
+
+void interpolate_p_uv(const Vertex_MTC& a,
+					  const Vertex_MTC& b,
+					  const Vertex_MTC& c,
+					  float2 uv,
+					  float3& p, float2& tc);
+
+void interpolate_data(const Vertex_MTC& a,
+					  const Vertex_MTC& b,
+					  const Vertex_MTC& c,
+					  float2 uv,
+					  float3& n, float3& t, float2& tc);
+
+float area(const Vertex_MTC& a,
+		   const Vertex_MTC& b,
+		   const Vertex_MTC& c);
+
+float area(const Vertex_MTC& a,
+		   const Vertex_MTC& b,
+		   const Vertex_MTC& c,
+		   float3_p scale);
+
 }}}
