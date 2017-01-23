@@ -76,4 +76,8 @@ inline float Sample::reversed_clamped_dot(float3_p a, float3_p b) {
 	return math::clamp(-math::dot(a, b), Dot_min, 1.f);
 }
 
+inline float Sample::absolute_clamped_dot(float3_p a, float3_p b) {
+	return math::clamp(std::abs(math::dot(a, b)), Dot_min, 1.f);
+}
+
 }}

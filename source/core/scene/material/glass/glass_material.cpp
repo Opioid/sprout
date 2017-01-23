@@ -29,7 +29,7 @@ const material::Sample& Glass::sample(float3_p wo, const Renderstate& rs,
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
 
-	sample.layer_.set(refraction_color_, absorbtion_color_, attenuation_distance_, ior_, rs.ior);
+	sample.layer_.set(refraction_color_, absorption_color_, attenuation_distance_, ior_, rs.ior);
 
 	return sample;
 }
@@ -46,8 +46,8 @@ void Glass::set_refraction_color(float3_p color) {
 	refraction_color_ = color;
 }
 
-void Glass::set_absorbtion_color(float3_p color) {
-	absorbtion_color_ = color;
+void Glass::set_absorption_color(float3_p color) {
+	absorption_color_ = color;
 }
 
 void Glass::set_attenuation_distance(float attenuation_distance) {

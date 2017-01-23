@@ -206,6 +206,7 @@ void Loader::set_visibility(entity::Entity* entity, const json::Value& visibilit
 	bool in_reflection = true;
 	bool in_shadow	   = true;
 //	bool propagate	   = false;
+	bool translucent_shadow = false;
 
 	for (auto& n : visibility_value.GetObject()) {
 		if ("in_camera" == n.name) {
@@ -214,6 +215,8 @@ void Loader::set_visibility(entity::Entity* entity, const json::Value& visibilit
 			in_reflection = json::read_bool(n.value);
 		} else if ("in_shadow" == n.name) {
 			in_shadow = json::read_bool(n.value);
+		} else if ("translucent" == n.name) {
+			translucent_shadow = json::read_bool(n.value);
 		} /*else if ("propagate" == n.name) {
 				propagate = json::read_bool(n.value);
 		}*/
@@ -221,6 +224,7 @@ void Loader::set_visibility(entity::Entity* entity, const json::Value& visibilit
 
 	entity->set_visibility(in_camera, in_reflection, in_shadow);
 //	entity->set_propagate_visibility(propagate);
+	entity->set_translucent_shadow(translucent_shadow);
 }
 
 Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, Scene& scene) {
@@ -251,7 +255,7 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 
 	Prop* prop = scene.create_prop(shape, materials, name);
 
-	// Bit annoying that is done again in load_entities(),
+	// Bit annoying that this is done again in load_entities(),
 	// but visibility information is already used when creating lights.
 	// Should be improved at some point.
 	if (visibility) {

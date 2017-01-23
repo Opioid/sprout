@@ -21,7 +21,7 @@ public:
 	void set_roughness_map(const Texture_adapter& roughness_map);
 
 	void set_refraction_color(float3_p color);
-	void set_absorbtion_color(float3_p color);
+	void set_absorption_color(float3_p color);
 	void set_attenuation_distance(float attenuation_distance);
 	void set_ior(float ior);
 	void set_roughness(float roughness);
@@ -32,7 +32,7 @@ protected:
 	Texture_adapter roughness_map_;
 
 	float3 refraction_color_;
-	float3 absorbtion_color_;
+	float3 absorption_color_;
 	float attenuation_distance_;
 	float ior_;
 	float a2_;

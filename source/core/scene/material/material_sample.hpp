@@ -61,6 +61,8 @@ public:
 
 	static float reversed_clamped_dot(float3_p a, float3_p b);
 
+	static float absolute_clamped_dot(float3_p a, float3_p b);
+
 // protected:
 
 	float3 geo_n_;

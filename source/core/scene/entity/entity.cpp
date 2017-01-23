@@ -93,6 +93,11 @@ void Entity::set_propagate_visibility(bool enable) {
 	properties_.set(Properties::Propagate_visibility, enable);
 }
 
+void Entity::set_translucent_shadow(bool translucent) {
+	translucent = properties_.test(Properties::Translucent_material) && translucent;
+	properties_.set(Properties::Translucent_shadow, translucent);
+}
+
 void Entity::attach(Entity* node) {
 	node->detach();
 

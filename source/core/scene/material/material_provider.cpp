@@ -270,7 +270,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 	Texture_adapter roughness_map;
 
 	float3 refraction_color(1.f, 1.f, 1.f);
-	float3 absorbtion_color(1.f, 1.f, 1.f);
+	float3 absorption_color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
 	float roughness = 0.f;
@@ -279,11 +279,11 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 	for (auto& n : glass_value.GetObject()) {
 		if ("color" == n.name) {
 			refraction_color = json::read_float3(n.value);
-			absorbtion_color = refraction_color;
+			absorption_color = refraction_color;
 		} else if ("refraction_color" == n.name) {
 			refraction_color = json::read_float3(n.value);
-		} else if ("absorbtion_color" == n.name) {
-			absorbtion_color = json::read_float3(n.value);
+		} else if ("absorption_color" == n.name) {
+			absorption_color = json::read_float3(n.value);
 		} else if ("attenuation_distance" == n.name) {
 			attenuation_distance = json::read_float(n.value);
 		} else if ("ior" == n.name) {
@@ -320,7 +320,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 		material->set_normal_map(normal_map);
 		material->set_roughness_map(roughness_map);
 		material->set_refraction_color(refraction_color);
-		material->set_absorbtion_color(absorbtion_color);
+		material->set_absorption_color(absorption_color);
 		material->set_attenuation_distance(attenuation_distance);
 		material->set_ior(ior);
 		material->set_roughness(roughness);
@@ -331,7 +331,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 
 			material->set_normal_map(normal_map);
 			material->set_refraction_color(refraction_color);
-			material->set_absorbtion_color(absorbtion_color);
+			material->set_absorption_color(absorption_color);
 			material->set_attenuation_distance(attenuation_distance);
 			material->set_ior(ior);
 			material->set_thickness(thickness);
@@ -340,7 +340,7 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 			auto material = std::make_shared<glass::Glass>(sample_cache_, sampler_settings);
 			material->set_normal_map(normal_map);
 			material->set_refraction_color(refraction_color);
-			material->set_absorbtion_color(absorbtion_color);
+			material->set_absorption_color(absorption_color);
 			material->set_attenuation_distance(attenuation_distance);
 			material->set_ior(ior);
 			return material;

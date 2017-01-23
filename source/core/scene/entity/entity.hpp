@@ -40,6 +40,7 @@ public:
 
 	void set_visibility(bool in_camera, bool in_reflection, bool in_shadow);
 	void set_propagate_visibility(bool enable);
+	void set_translucent_shadow(bool translucent);
 
 	void attach(Entity* node);
 	void detach();
@@ -66,8 +67,9 @@ protected:
 		Visible_in_shadow		= 1 << 3,
 		Propagate_visibility	= 1 << 4,
 		Masked_material			= 1 << 5,
-		Translucent_shadow		= 1 << 6,
-		Open					= 1 << 7
+		Translucent_material	= 1 << 6,
+		Translucent_shadow		= 1 << 7,
+		Open					= 1 << 8
 	};
 
 	flags::Flags<Properties> properties_;

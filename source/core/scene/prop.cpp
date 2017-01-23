@@ -34,11 +34,10 @@ void Prop::set_shape_and_materials(std::shared_ptr<shape::Shape> shape,
 	for (auto m : materials_) {
 		if (m->is_masked()) {
 			properties_.set(Properties::Masked_material);
-		//	break;
 		}
 
 		if (m->is_translucent()) {
-			properties_.set(Properties::Translucent_shadow);
+			properties_.set(Properties::Translucent_material);
 		}
 	}
 }

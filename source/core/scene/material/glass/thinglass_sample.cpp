@@ -54,14 +54,14 @@ bool Sample_thin::is_transmissive() const {
 }
 
 bool Sample_thin::is_translucent() const {
-	return false;
+	return true;
 }
 
-void Sample_thin::Layer::set(float3_p refraction_color, float3_p absorbtion_color,
-						float attenuation_distance, float ior, float ior_outside,
-						float thickness) {
+void Sample_thin::Layer::set(float3_p refraction_color, float3_p absorption_color,
+							 float attenuation_distance, float ior, float ior_outside,
+							 float thickness) {
 	color_ = refraction_color;
-	attenuation_ = material::Sample::attenuation(absorbtion_color, attenuation_distance);
+	attenuation_ = material::Sample::attenuation(absorption_color, attenuation_distance);
 	ior_ = ior;
 	ior_outside_ = ior_outside;
 	thickness_ = thickness;

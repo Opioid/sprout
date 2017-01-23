@@ -28,11 +28,11 @@ void test() {
 	sample.layer_.set_tangent_frame(t, b, n);
 
 	float3 refraction_color(1.f, 1.f, 1.f);
-	float3 absorbtion_color(1.f, 1.f, 1.f);
+	float3 absorption_color(1.f, 1.f, 1.f);
 	float attenuation_distance = 1.f;
 	float ior = 1.5f;
 
-	sample.layer_.set(refraction_color, absorbtion_color, attenuation_distance, ior, 1.f);
+	sample.layer_.set(refraction_color, absorption_color, attenuation_distance, ior, 1.f);
 
 
 	result.wi = math::float3_identity;

@@ -30,7 +30,7 @@ const material::Sample& Thinglass::sample(float3_p wo, const Renderstate& rs,
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
 
-	sample.layer_.set(refraction_color_, absorbtion_color_,
+	sample.layer_.set(refraction_color_, absorption_color_,
 					  attenuation_distance_, ior_, rs.ior, thickness_);
 
 	return sample;
@@ -38,9 +38,9 @@ const material::Sample& Thinglass::sample(float3_p wo, const Renderstate& rs,
 
 float3 Thinglass::thin_absorption(float3_p wo, float3_p n, float2 uv, float time,
 								  const Worker& worker, Sampler_filter filter) const {
-	float3 a = material::Sample::attenuation(absorbtion_color_, attenuation_distance_);
+	float3 a = material::Sample::attenuation(absorption_color_, attenuation_distance_);
 
-	float n_dot_wi = material::Sample::reversed_clamped_dot(wo, n);
+	float n_dot_wi = material::Sample::absolute_clamped_dot(wo, n);
 	float approximated_distance = thickness_ / n_dot_wi;
 	float3 attenuation = rendering::attenuation(approximated_distance, a);
 
@@ -63,8 +63,8 @@ void Thinglass::set_refraction_color(float3_p color) {
 	refraction_color_ = color;
 }
 
-void Thinglass::set_absorbtion_color(float3_p color) {
-	absorbtion_color_ = color;
+void Thinglass::set_absorption_color(float3_p color) {
+	absorption_color_ = color;
 }
 
 void Thinglass::set_attenuation_distance(float attenuation_distance) {
