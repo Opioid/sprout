@@ -169,7 +169,7 @@ bool Prop::has_masked_material() const {
 }
 
 bool Prop::has_translucent_shadow() const {
-	return properties_.test(Properties::Translucent_shadow);
+	return properties_.test(Properties::Translucent_material);
 }
 
 bool Prop::is_open() const {
