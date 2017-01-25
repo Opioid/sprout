@@ -85,12 +85,14 @@ void create(thread::Pool& pool) {
 	bool near_field = true;
 
 	if (near_field) {
-		float alpha = 0.18f;
+
 
 		Image::Description description(Image::Type::Float_2, dimensions);
 
 		auto signal_a = std::make_shared<Float_2>(description);
 		auto signal_b = std::make_shared<Float_2>(description);
+
+		float alpha = 0.1f;
 
 		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
 			signal_a->store(i, float2(signal.load(i), 0.f));
@@ -113,7 +115,7 @@ void create(thread::Pool& pool) {
 
 		pool.run_range([&float_image_a, &signal](int32_t begin, int32_t end) {
 			for (int32_t i = begin; i < end; ++i) {
-				float s = 0.6f * signal.load(i);
+				float s = 0.75f * signal.load(i);
 				float_image_a.store(i, math::packed_float3(s));
 			}
 		}, 0, resolution * resolution);
@@ -507,7 +509,7 @@ void fdft(Float_2& destination, const texture::Float_2& texture,
 	float m = df.x;
 	float half_m = 0.5f * m;
 	float sqrt_m = std::sqrt(m);
-	float ss = 6.f;
+	float ss = 1.f / alpha;// 8.f;
 
 	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
 	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);

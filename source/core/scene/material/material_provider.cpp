@@ -933,6 +933,14 @@ void Provider::read_sampler_settings(const json::Value& sampler_value, Sampler_s
 			} else if ("Linear" == filter) {
 				settings.filter = Sampler_settings::Filter::Linear;
 			}
+		} else if ("address" == n.name) {
+			std::string address = json::read_string(n.value);
+
+			if ("Clamp" == address) {
+				settings.address = Sampler_settings::Address::Clamp;
+			} else if ("Repeat" == address) {
+				settings.address = Sampler_settings::Address::Repeat;
+			}
 		}
 	}
 }

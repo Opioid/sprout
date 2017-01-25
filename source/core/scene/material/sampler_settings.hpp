@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace scene { namespace material {
 
 struct Sampler_settings {
@@ -10,9 +12,18 @@ struct Sampler_settings {
 		Unknown
 	};
 
-	Sampler_settings(Filter filter = Filter::Linear);
+	enum class Address {
+		Clamp,
+		Repeat,
+		Unknown
+	};
+
+	Sampler_settings(Filter filter = Filter::Linear, Address address = Address::Repeat);
+
+	uint32_t key() const;
 
 	Filter filter;
+	Address address;
 };
 
 }}

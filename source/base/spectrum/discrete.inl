@@ -39,9 +39,7 @@ float3 Discrete_spectral_power_distribution<N>::XYZ() const {
 		xyz += values_[i] * cie_[i];
 	}
 
-	xyz *= step_;
-
-	return xyz;
+	return step_ * xyz;
 }
 
 template<int32_t N>

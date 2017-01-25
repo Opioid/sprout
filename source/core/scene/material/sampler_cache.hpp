@@ -27,7 +27,7 @@ public:
 
 private:
 
-	Texture_sampler_2D* samplers_2D_[2];
+	Texture_sampler_2D* samplers_2D_[4];
 	Texture_sampler_3D* samplers_3D_[2];
 };
 
