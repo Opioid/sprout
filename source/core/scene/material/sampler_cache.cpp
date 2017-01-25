@@ -46,7 +46,8 @@ const Texture_sampler_3D& Sampler_cache::sampler_3D(uint32_t key, Sampler_filter
 	if (Sampler_filter::Unknown == filter) {
 		return *samplers_3D_[key];
 	} else {
-		return *samplers_3D_[static_cast<uint32_t>(filter)];
+		uint32_t override_key = static_cast<uint32_t>(filter) << 1;
+		return *samplers_3D_[override_key];
 	}
 }
 

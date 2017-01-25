@@ -25,11 +25,17 @@ struct Address_mode_identity {
 
 struct Address_mode_clamp {
 	static float2 f(float2 uv) {
-		return math::saturate(uv);
+	//	return math::saturate(uv);
+
+		// We can do this because we know the samplers don't access >= 1
+		return float2(std::max(uv.x, 0.f), std::max(uv.y, 0.f));
 	}
 
 	static float3 f(float3_p uvw) {
-		return math::saturate(uvw);
+	//	return math::saturate(uvw);
+
+		// We can do this because we know the samplers don't access >= 1
+		return float3(std::max(uvw.x, 0.f), std::max(uvw.y, 0.f), std::max(uvw.z, 0.f));
 	}
 
 	static int32_t increment(int32_t v, int32_t max) {
