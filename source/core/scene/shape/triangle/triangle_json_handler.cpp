@@ -141,6 +141,13 @@ bool Json_handler::Key(const char* str, rapidjson::SizeType /*length*/, bool /*c
 		} else if ("vertices" == name) {
 			top_object_ = Object::Vertices;
 			expected_object_ = Object::Unknown;
+
+			if (!parts_.empty()) {
+				auto& p = parts_.back();
+				uint32_t num_triangles = (p.start_index + p.num_indices) / 3;
+				vertices_.reserve(static_cast<size_t>(0.7f * static_cast<float>(num_triangles)));
+			}
+
 		} else if ("material_index" == name && Object::Part == expected_object_) {
 			expected_number_ = Number::Material_index;
 		} else if ("start_index" == name && Object::Part == expected_object_) {
@@ -153,7 +160,8 @@ bool Json_handler::Key(const char* str, rapidjson::SizeType /*length*/, bool /*c
 
 				if (!parts_.empty()) {
 					auto& p = parts_.back();
-					triangles_.reserve(p.start_index + p.num_indices);
+					uint32_t num_triangles = (p.start_index + p.num_indices) / 3;
+					triangles_.reserve(num_triangles);
 				}
 			} else {
 				expected_number_ = Number::Ignore;
