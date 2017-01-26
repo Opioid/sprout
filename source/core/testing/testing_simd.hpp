@@ -7,5 +7,6 @@ void rcp();
 void normalize();
 void reciprocal();
 void dot();
+void minmax();
 
 }}

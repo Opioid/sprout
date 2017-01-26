@@ -1,7 +1,7 @@
 #include "scene_bvh_builder.hpp"
 #include "scene/prop.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/plane.inl"
-#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace bvh {
 

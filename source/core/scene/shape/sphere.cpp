@@ -5,10 +5,10 @@
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
-#include "base/math/sampling/sampling.inl"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/bounding/aabb.inl"
+#include "base/math/sampling/sampling.inl"
 
 #include "shape_test.hpp"
 #include "base/debug/assert.hpp"

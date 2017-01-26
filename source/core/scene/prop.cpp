@@ -4,11 +4,11 @@
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/morphable_shape.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
-#include "base/math/bounding/aabb.inl"
 
 namespace scene {
 

@@ -42,6 +42,7 @@ int main(int argc, char* argv[]) {
 //	testing::simd::normalize();
 //	testing::simd::reciprocal();
 //	testing::simd::dot();
+//	testing::simd::minmax();
 //	testing::spectrum();
 //	return 1;
 

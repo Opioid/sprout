@@ -1,8 +1,8 @@
 #pragma once
 
 #include "triangle_bvh_node.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
-#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 

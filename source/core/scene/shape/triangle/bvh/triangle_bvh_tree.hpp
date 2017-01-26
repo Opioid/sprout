@@ -1,9 +1,9 @@
 #pragma once
 
 #include "scene/material/material.hpp"
+#include "base/math/aabb.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
-#include "base/math/bounding/aabb.hpp"
 
 namespace scene {
 

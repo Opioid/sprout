@@ -6,8 +6,8 @@
 #include "image/texture/sampler/sampler_linear_3d.inl"
 #include "scene/scene_worker.hpp"
 #include "base/json/json.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
-#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace volume {
 

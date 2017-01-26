@@ -6,10 +6,10 @@
 #include "scene/shape/shape.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/material/material.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
-#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace light {
 

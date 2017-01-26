@@ -1,8 +1,8 @@
 #include "density.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/ray.inl"
 #include "base/math/matrix.inl"
 #include "base/math/vector.inl"
-#include "base/math/bounding/aabb.inl"
 #include "base/random/generator.inl"
 
 namespace scene { namespace volume {

@@ -23,7 +23,7 @@ void spectrum() {
 	Spectrum* spectra = new Spectrum[num];
 
 	for (size_t i = 0; i < num; ++i) {
-		for (size_t b = 0, len = Spectrum::num_bands(); b < len; ++b) {
+		for (int32_t b = 0, len = Spectrum::num_bands(); b < len; ++b) {
 			spectra[i].set_bin(b, rng.random_float());
 		}
 	}

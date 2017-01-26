@@ -15,8 +15,8 @@
 #include "bvh/triangle_bvh_indexed_data.inl"
 #include "file/file_system.hpp"
 #include "base/json/json.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
-#include "base/math/bounding/aabb.inl"
 #include "base/memory/variant_map.inl"
 #include "rapidjson/istreamwrapper.h"
 

@@ -3,9 +3,9 @@
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/volume/volume.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/ray.inl"
 #include "base/math/vector.inl"
-#include "base/math/bounding/aabb.inl"
 
 namespace rendering { namespace integrator { namespace volume {
 

@@ -10,12 +10,12 @@
 #include "scene/volume/grid.hpp"
 #include "scene/volume/height.hpp"
 #include "scene/volume/homogeneous.hpp"
-#include "base/spectrum/rgb.inl"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/quaternion.inl"
-#include "base/math/bounding/aabb.inl"
 #include "base/math/distribution/distribution_1d.inl"
+#include "base/spectrum/rgb.inl"
 
 namespace scene {
 

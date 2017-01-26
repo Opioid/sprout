@@ -1,8 +1,8 @@
 #include "scene_bvh_tree.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/prop.hpp"
-#include "base/math/vector4.inl"
-#include "base/math/bounding/aabb.inl"
+#include "base/math/aabb.inl"
+#include "base/math/vector.inl"
 
 namespace scene { namespace bvh {
 

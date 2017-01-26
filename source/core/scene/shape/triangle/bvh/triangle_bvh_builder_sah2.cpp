@@ -3,9 +3,10 @@
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
-#include "base/math/bounding/aabb.inl"
+#include "base/math/simd/simd_aabb.inl"
 #include "base/thread/thread_pool.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
@@ -32,26 +33,38 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 	uint32_t num_side_0 = 0;
 	uint32_t num_side_1 = 0;
 
+	math::simd::AABB box_0(aabb_0_);
+	math::simd::AABB box_1(aabb_1_);
+
 	if (spatial_) {
 		for (const auto& r : references) {
 			const auto& bounds = r.aabb;
 
+			math::simd::AABB b(bounds);
+
 			if (behind(bounds.max())) {
 				++num_side_0;
 
-				aabb_0_.merge_assign(bounds);
+			//	aabb_0_.merge_assign(bounds);
+				box_0.merge_assign(b);
 			} else if (!behind(bounds.min())) {
 				++num_side_1;
 
-				aabb_1_.merge_assign(bounds);
+			//	aabb_1_.merge_assign(bounds);
+				box_1.merge_assign(b);
 			} else {
 				++num_side_0;
 				++num_side_1;
 
-				aabb_0_.merge_assign(bounds);
-				aabb_1_.merge_assign(bounds);
+			//	aabb_0_.merge_assign(bounds);
+			//	aabb_1_.merge_assign(bounds);
+				box_0.merge_assign(b);
+				box_1.merge_assign(b);
 			}
 		}
+
+		aabb_0_.set_min_max(box_0.min, box_0.max);
+		aabb_1_.set_min_max(box_1.min, box_1.max);
 
 		aabb_0_.clip_max(d_, axis_);
 		aabb_1_.clip_min(d_, axis_);
@@ -59,16 +72,23 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 		for (const auto& r : references) {
 			const auto& bounds = r.aabb;
 
+			math::simd::AABB b(bounds);
+
 			if (behind(bounds.max())) {
 				++num_side_0;
 
-				aabb_0_.merge_assign(bounds);
+			//	aabb_0_.merge_assign(bounds);
+				box_0.merge_assign(b);
 			} else {
 				++num_side_1;
 
-				aabb_1_.merge_assign(bounds);
+			//	aabb_1_.merge_assign(bounds);
+				box_1.merge_assign(b);
 			}
 		}
+
+		aabb_0_.set_min_max(box_0.min, box_0.max);
+		aabb_1_.set_min_max(box_1.min, box_1.max);
 	}
 
 	if (0 == num_side_0 || 0 == num_side_1) {

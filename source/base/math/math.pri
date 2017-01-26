@@ -2,6 +2,8 @@ SOURCES += \
 	math/math.cpp \
 
 HEADERS += \
+	math/aabb.hpp \
+	math/aabb.inl \
 	math/mapping.hpp \
 	math/mapping.inl \
 	math/math.hpp \
@@ -32,7 +34,6 @@ HEADERS += \
 	math/vector4.hpp \
 	math/vector4.inl \
 
-include(bounding/bounding.pri)
 include(distribution/distribution.pri)
 include(filter/filter.pri)
 include(fourier/fourier.pri)

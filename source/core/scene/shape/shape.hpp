@@ -1,9 +1,9 @@
 #pragma once
 
 #include "scene/material/material.hpp"
+#include "base/math/aabb.hpp"
 #include "base/math/matrix.hpp"
 #include "base/math/transformation.hpp"
-#include "base/math/bounding/aabb.hpp"
 
 namespace sampler { class Sampler; }
 

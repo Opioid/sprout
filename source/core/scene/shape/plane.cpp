@@ -4,8 +4,8 @@
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
-#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace shape {
 

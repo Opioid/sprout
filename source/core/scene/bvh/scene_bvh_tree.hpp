@@ -3,7 +3,7 @@
 #include "scene/material/sampler_settings.hpp"
 #include "scene/scene_intersection.hpp"
 #include "scene/shape/node_stack.hpp"
-#include "base/math/bounding/aabb.hpp"
+#include "base/math/aabb.hpp"
 #include <vector>
 
 namespace image { namespace texture { namespace sampler {

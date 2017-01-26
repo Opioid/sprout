@@ -90,6 +90,16 @@ inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
 #endif
 }
 
+inline void SU_CALLCONV store_float3_unsafe(Vector3f_a& destination, FVector v) {
+#if defined(_SU_NO_INTRINSICS_)
+	destination.x = v.vector4_f32[0];
+	destination.y = v.vector4_f32[1];
+	destination.z = v.vector4_f32[2];
+#elif defined(_SU_SSE_INTRINSICS_)
+	_mm_store_ps(&destination.x, v);
+#endif
+}
+
 /****************************************************************************
  *
  * Scalar operations

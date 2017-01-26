@@ -620,6 +620,106 @@ void dot() {
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
+
+	delete[] vectors;
+}
+
+inline float3 simd_min(float3_p a, float3_p b) {
+	math::simd::Vector sa = math::simd::load_float3(a);
+	math::simd::Vector sb = math::simd::load_float3(b);
+
+	float3 result;
+	math::simd::store_float3_unsafe(result, _mm_min_ps(sa, sb));
+	return result;
+}
+
+inline void simd_min2(float3& a, float3_p b) {
+	math::simd::Vector sa = math::simd::load_float3(a);
+	math::simd::Vector sb = math::simd::load_float3(b);
+
+	math::simd::store_float3_unsafe(a, _mm_min_ps(sa, sb));
+}
+
+void minmax() {
+	std::cout << "testing::simd::minmax()" << std::endl;
+
+	rnd::Generator rng(456, 90, 2123, 4598743);
+
+	size_t num_values = 1024 * 1024 * (128 + 64);
+
+	float3* vectors = new float3[num_values];
+
+	for (size_t i = 0; i < num_values; ++i) {
+		vectors[i] = float3(5.f - (10.f * rng.random_float()),
+							5.f - (10.f * rng.random_float()),
+							5.f - (10.f * rng.random_float()));
+	}
+
+	{
+		std::cout << "math::min()" << std::endl;
+
+		auto start = std::chrono::high_resolution_clock::now();
+
+		float3 result(1000.f, 1000.f, 1000.f);
+
+		for (size_t i = 0, len = num_values; i < len; ++i) {
+			result = math::min(result, vectors[i]);
+		}
+
+		auto duration = chrono::seconds_since(start);
+		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
+	}
+
+	{
+		std::cout << "simd_min()" << std::endl;
+
+		auto start = std::chrono::high_resolution_clock::now();
+
+		float3 result(1000.f, 1000.f, 1000.f);
+
+		for (size_t i = 0, len = num_values; i < len; ++i) {
+			result = simd_min(result, vectors[i]);
+		}
+
+		auto duration = chrono::seconds_since(start);
+		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
+	}
+
+	{
+		std::cout << "simd_min2()" << std::endl;
+
+		auto start = std::chrono::high_resolution_clock::now();
+
+		float3 result(1000.f, 1000.f, 1000.f);
+
+		for (size_t i = 0, len = num_values; i < len; ++i) {
+			simd_min2(result, vectors[i]);
+		}
+
+		auto duration = chrono::seconds_since(start);
+		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
+	}
+
+	{
+		std::cout << "math::min()" << std::endl;
+
+		auto start = std::chrono::high_resolution_clock::now();
+
+		float3 result(1000.f, 1000.f, 1000.f);
+
+		for (size_t i = 0, len = num_values; i < len; ++i) {
+			result = math::min(result, vectors[i]);
+		}
+
+		auto duration = chrono::seconds_since(start);
+		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
+	}
+
+	delete[] vectors;
 }
 
 }}

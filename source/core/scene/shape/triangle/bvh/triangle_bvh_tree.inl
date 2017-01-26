@@ -5,8 +5,8 @@
 #include "scene/scene_worker.hpp"
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_intersection.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
-#include "base/math/bounding/aabb.inl"
 #include "base/memory/align.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {

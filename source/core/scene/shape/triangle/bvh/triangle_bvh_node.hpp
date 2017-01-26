@@ -1,8 +1,8 @@
 #pragma once
 
+#include "base/math/aabb.hpp"
 #include "base/math/vector.hpp"
 #include "base/math/ray.hpp"
-#include "base/math/bounding/aabb.hpp"
 #include "base/math/simd/simd.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {

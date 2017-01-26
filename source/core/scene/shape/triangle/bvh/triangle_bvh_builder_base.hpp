@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/math/bounding/aabb.hpp"
+#include "base/math/aabb.hpp"
 #include <cstdint>
 #include <cstddef>
 #include <vector>

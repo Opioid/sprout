@@ -2,7 +2,7 @@
 
 #include "scene/entity/entity.hpp"
 #include "scene/material/sampler_settings.hpp"
-#include "base/math/bounding/aabb.hpp"
+#include "base/math/aabb.hpp"
 #include "base/math/ray.hpp"
 #include <string>
 
