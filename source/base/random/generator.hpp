@@ -16,8 +16,6 @@ public:
 	float random_float();
 	uint32_t random_uint();
 
-	float cast(uint32_t r);
-
 private:
 
 	uint32_t advance_lfsr113();

@@ -25,10 +25,6 @@ inline uint32_t Generator::random_uint() {
 	return advance_lfsr113();
 }
 
-inline float Generator::cast(uint32_t r) {
-	return 2.3283064365386963e-10f * static_cast<float>(r);
-}
-
 inline uint32_t Generator::advance_lfsr113() {
 	uint32_t b;
 	b  = ((z0 << 6) ^ z0) >> 13;

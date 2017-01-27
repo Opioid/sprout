@@ -252,8 +252,7 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 	float aabb_surface_area = aabb.surface_area();
 
-	thread_pool.run_range(
-		[this, &references, aabb_surface_area]
+	thread_pool.run_range([this, &references, aabb_surface_area]
 		(uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) {
 			for (int32_t i = sc_begin; i < sc_end; ++i) {
 				split_candidates_[i].evaluate(references, aabb_surface_area);

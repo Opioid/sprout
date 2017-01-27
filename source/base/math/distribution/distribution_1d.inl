@@ -328,13 +328,14 @@ inline void Distribution_implicit_pdf_lut_1D::precompute_1D_pdf_cdf(const float*
 		return;
 	}
 
-	cdf_.resize(len + 1);
+	cdf_.resize(len + 2);
 
 	cdf_[0] = 0.f;
-	for (uint32_t i = 1; i < len; ++i) {
+	for (uint32_t i = 1; i <= len; ++i) {
 		cdf_[i] = cdf_[i - 1] + data[i - 1] / integral;
 	}
-	cdf_[len] = 1.f;
+//	cdf_[len] = 1.f;
+	cdf_[len + 1] = 1.f;
 
 	integral_ = integral;
 

@@ -40,7 +40,7 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, flo
 	float wy1 = filter_->evaluate(oy);
 	float wy2 = filter_->evaluate(oy - 1.f);
 
-	// 1. rwo
+	// 1. row
 	add_weighted_pixel(int2(x - 1, y - 1), wx0 * wy0, clamped_color, tile, bounds);
 	add_weighted_pixel(int2(x, y - 1),	   wx1 * wy0, clamped_color, tile, bounds);
 	add_weighted_pixel(int2(x + 1, y - 1), wx2 * wy0, clamped_color, tile, bounds);
