@@ -113,7 +113,7 @@ void create(thread::Pool& pool) {
 //		fdft(signal_a, signal_b, alpha, 1, pool);
 //		squared_magnitude(signal.data(), signal_a.data(), resolution, resolution);
 
-		pool.run_range([&float_image_a, &signal](int32_t begin, int32_t end) {
+		pool.run_range([&float_image_a, &signal](uint32_t /*id*/, int32_t begin, int32_t end) {
 			for (int32_t i = begin; i < end; ++i) {
 				float s = 0.75f * signal.load(i);
 				float_image_a.store(i, math::packed_float3(s));
@@ -177,19 +177,21 @@ void create(thread::Pool& pool) {
 
 		Spectrum* spectral_data = new Spectrum[resolution * resolution];
 
-		pool.run_range([spectral_data, &signal, resolution](int32_t begin, int32_t end) {
-			for (int32_t bin = begin; bin < end; ++bin) {
-				diffraction(spectral_data, signal.data(), bin, resolution);
-			}
-		}, 0, Spectrum::num_bands());
+		pool.run_range([spectral_data, &signal, resolution]
+			(uint32_t /*id*/, int32_t begin, int32_t end) {
+				for (int32_t bin = begin; bin < end; ++bin) {
+					diffraction(spectral_data, signal.data(), bin, resolution);
+				}
+			}, 0, Spectrum::num_bands());
 
-		pool.run_range([spectral_data, &float_image_a](int32_t begin, int32_t end) {
-			for (int32_t i = begin; i < end; ++i) {
-				auto& s = spectral_data[i];
-				float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
-				float_image_a.store(i, math::packed_float3(linear_rgb));
-			}
-		}, 0, resolution * resolution);
+		pool.run_range([spectral_data, &float_image_a]
+			(uint32_t /*id*/, int32_t begin, int32_t end) {
+				for (int32_t i = begin; i < end; ++i) {
+					auto& s = spectral_data[i];
+					float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
+					float_image_a.store(i, math::packed_float3(linear_rgb));
+				}
+			}, 0, resolution * resolution);
 
 		delete [] spectral_data;
 	}
@@ -202,7 +204,7 @@ void create(thread::Pool& pool) {
 
 	Byte_3 byte_image(Image::Description(Image::Type::Byte_3, dimensions));
 
-	pool.run_range([&float_image_a, &byte_image](int32_t begin, int32_t end) {
+	pool.run_range([&float_image_a, &byte_image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		for (int32_t i = begin; i < end; ++i) {
 			float3 linear_rgb = float3(float_image_a.load(i));
 			byte3 srgb = ::encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(linear_rgb));
@@ -545,9 +547,10 @@ void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
 		  float alpha, uint32_t mode, thread::Pool& pool) {
 	auto d = destination.description().dimensions;
 	texture::Float_2 texture(source);
-	pool.run_range([&destination, &texture, alpha, mode](int32_t begin, int32_t end) {
-		fdft(destination, texture, alpha, mode, begin, end);
-	}, 0, d.y);
+	pool.run_range([&destination, &texture, alpha, mode]
+		(uint32_t /*id*/, int32_t begin, int32_t end) {
+			fdft(destination, texture, alpha, mode, begin, end);
+		}, 0, d.y);
 }
 
 void fdft(Float_2& destination, const Float_2& source,
@@ -594,9 +597,10 @@ void fdft(Float_2& destination, const Float_2& source,
 void fdft(Float_2& destination, const Float_2& source,
 		  float alpha, uint32_t mode, thread::Pool& pool) {
 	auto d = destination.description().dimensions;
-	pool.run_range([&destination, &source, alpha, mode](int32_t begin, int32_t end) {
-		fdft(destination, source, alpha, mode, begin, end);
-	}, 0, d.y);
+	pool.run_range([&destination, &source, alpha, mode]
+		(uint32_t /*id*/, int32_t begin, int32_t end) {
+			fdft(destination, source, alpha, mode, begin, end);
+		}, 0, d.y);
 }
 
 }}

@@ -162,9 +162,8 @@ const math::aabb& Builder_SAH2::Split_candidate::aabb_1() const {
 Builder_SAH2::Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold) :
 	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
-void Builder_SAH2::split(Build_node* node, References& references,
-						 const math::aabb& aabb, uint32_t max_primitives,
-						 thread::Pool& thread_pool) {
+void Builder_SAH2::split(Build_node* node, References& references, const math::aabb& aabb,
+						 uint32_t max_primitives, thread::Pool& thread_pool) {
 	node->aabb = aabb;
 
 	uint32_t num_primitives = static_cast<uint32_t>(references.size());
@@ -255,12 +254,11 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 	thread_pool.run_range(
 		[this, &references, aabb_surface_area]
-		(int32_t sc_begin, int32_t sc_end) {
+		(uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) {
 			for (int32_t i = sc_begin; i < sc_end; ++i) {
 				split_candidates_[i].evaluate(references, aabb_surface_area);
 			}
-		},
-		0, static_cast<int32_t>(split_candidates_.size()));
+		}, 0, static_cast<int32_t>(split_candidates_.size()));
 
 	size_t sc = 0;
 	float  min_cost = split_candidates_[0].cost();

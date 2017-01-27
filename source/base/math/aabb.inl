@@ -12,6 +12,11 @@ inline AABB::AABB(FVector3f_a min, FVector3f_a max) {
 	bounds_[1] = max;
 }
 
+inline AABB::AABB(simd::FVector min, simd::FVector max) {
+	simd::store_float3_unsafe(bounds_[0], min);
+	simd::store_float3_unsafe(bounds_[1], max);
+}
+
 inline FVector3f_a AABB::min() const {
 	return bounds_[0];
 }
@@ -148,8 +153,8 @@ inline void AABB::set_min_max(FVector3f_a min, FVector3f_a max) {
 }
 
 inline void AABB::set_min_max(simd::FVector min, simd::FVector max) {
-	simd::store_float3(bounds_[0], min);
-	simd::store_float3(bounds_[1], max);
+	simd::store_float3_unsafe(bounds_[0], min);
+	simd::store_float3_unsafe(bounds_[1], max);
 }
 
 inline void AABB::insert(FVector3f_a p) {

@@ -25,15 +25,14 @@ class Builder_SAH2 /*: private Builder_base*/  {
 
 public:
 
+	using Triangles = std::vector<Index_triangle>;
+	using Vertices = std::vector<Vertex>;
+
 	Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold);
 
 	template<typename Data>
-	void build(Tree<Data>& tree,
-			   const std::vector<Index_triangle>& triangles,
-			   const std::vector<Vertex>& vertices,
-			   uint32_t num_parts,
-			   uint32_t max_primitives,
-			   thread::Pool& thread_pool);
+	void build(Tree<Data>& tree, const Triangles& triangles, const Vertices& vertices,
+			   uint32_t num_parts, uint32_t max_primitives, thread::Pool& thread_pool);
 
 private:
 
@@ -62,8 +61,7 @@ private:
 		void evaluate(const References& references, float aabb_surface_area);
 
 		void distribute(const References& references,
-						References& references0,
-						References& references1) const;
+						References& references0, References& references1) const;
 
 		float cost() const;
 
@@ -108,19 +106,15 @@ private:
 		Build_node* children[2];
 	};
 
-	void split(Build_node* node, References& references,
-			   const math::aabb& aabb, uint32_t max_primitives,
-			   thread::Pool& thread_pool);
+	void split(Build_node* node, References& references, const math::aabb& aabb,
+			   uint32_t max_primitives, thread::Pool& thread_pool);
 
-	Split_candidate splitting_plane(const References& references,
-									const math::aabb& aabb,
+	Split_candidate splitting_plane(const References& references, const math::aabb& aabb,
 									thread::Pool& thread_pool);
 
 	template<typename Data>
-	void serialize(Build_node* node,
-				   const std::vector<Index_triangle>& triangles,
-				   const std::vector<Vertex>& vertices,
-				   Tree<Data>& tree);
+	void serialize(Build_node* node, const Triangles& triangles,
+				   const Vertices& vertices, Tree<Data>& tree);
 
 	Node& new_node();
 

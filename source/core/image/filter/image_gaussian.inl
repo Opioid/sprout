@@ -35,7 +35,7 @@ void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) {
 
 	// vertical
 
-	pool.run_range([&target, d, this](int32_t begin, int32_t end) {
+	pool.run_range([&target, d, this](uint32_t /*id*/, int32_t begin, int32_t end) {
 		for (int32_t y = begin; y < end; ++y) {
 			for (int32_t x = 0; x < d.x; ++x) {
 				T accum(0.f);
@@ -57,7 +57,7 @@ void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) {
 
 	// horizontal
 
-	pool.run_range([&target, d, this](int32_t begin, int32_t end) {
+	pool.run_range([&target, d, this](uint32_t /*id*/, int32_t begin, int32_t end) {
 		for (int32_t y = begin; y < end; ++y) {
 			for (int32_t x = 0; x < d.x; ++x) {
 				T accum(0.f);

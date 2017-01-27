@@ -15,7 +15,7 @@ std::string Writer::file_extension() const {
 
 bool Writer::write(std::ostream& stream, const Float_3& image, thread::Pool& pool) {
 	auto d = image.description().dimensions;
-	pool.run_range([this, &image](uint32_t begin, uint32_t end) {
+	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		to_sRGB(image, begin, end); }, 0, d.x * d.y);
 
 	size_t buffer_len = 0;
@@ -34,7 +34,7 @@ bool Writer::write(std::ostream& stream, const Float_3& image, thread::Pool& poo
 
 bool Writer::write(std::ostream& stream, const Float_4& image, thread::Pool& pool) {
 	auto d = image.description().dimensions;
-	pool.run_range([this, &image](uint32_t begin, uint32_t end) {
+	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		to_sRGB(image, begin, end); }, 0, d.x * d.y);
 
 	size_t buffer_len = 0;

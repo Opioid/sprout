@@ -13,6 +13,7 @@ public:
 
 	AABB() = default;
 	AABB(FVector3f_a min, FVector3f_a max);
+	AABB(simd::FVector min, simd::FVector max);
 
 	FVector3f_a min() const;
 	FVector3f_a max() const;

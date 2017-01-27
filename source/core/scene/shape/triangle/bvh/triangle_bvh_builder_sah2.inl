@@ -9,43 +9,48 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
+#include "base/math/simd/simd_aabb.inl"
+#include "base/thread/thread_pool.hpp"
+#include <vector>
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
-void Builder_SAH2::build(Tree<Data>& tree,
-						 const std::vector<Index_triangle>& triangles,
-						 const std::vector<Vertex>& vertices,
-						 uint32_t num_parts,
-						 uint32_t max_primitives,
-						 thread::Pool& thread_pool) {
+void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Vertices& vertices,
+						 uint32_t num_parts, uint32_t max_primitives, thread::Pool& thread_pool) {
 	Build_node root;
 
 	{
 		std::vector<Reference> references(triangles.size());
 
-		math::aabb aabb = math::aabb::empty();
+		std::vector<math::simd::AABB> aabbs(thread_pool.num_threads(), math::aabb::empty());
 
-		for (uint32_t i = 0, len = static_cast<uint32_t>(triangles.size()); i < len; ++i) {
-			auto a = float3(vertices[triangles[i].a].p);
-			auto b = float3(vertices[triangles[i].b].p);
-			auto c = float3(vertices[triangles[i].c].p);
+		thread_pool.run_range([&triangles, &vertices, &references, &aabbs]
+			(uint32_t id, int32_t begin, int32_t end) {
+				for (int32_t i = begin; i < end; ++i) {
+					auto a = math::simd::load_float3(vertices[triangles[i].a].p);
+					auto b = math::simd::load_float3(vertices[triangles[i].b].p);
+					auto c = math::simd::load_float3(vertices[triangles[i].c].p);
 
-			float3 min = triangle_min(a, b, c);
-			float3 max = triangle_max(a, b, c);
+					auto min = triangle_min(a, b, c);
+					auto max = triangle_max(a, b, c);
 
-			math::aabb primitive_bounds = math::aabb(min, max);
+					references[i].aabb.set_min_max(min, max);
+					references[i].primitive = i;
 
-			references[i].aabb = primitive_bounds;
-			references[i].primitive = i;
+					aabbs[id].merge_assign(min, max);
+				}
+			}, 0, static_cast<int32_t>(triangles.size()));
 
-			aabb.merge_assign(primitive_bounds);
+		math::simd::AABB aabb(math::aabb::empty());
+		for (auto& b : aabbs) {
+			aabb.merge_assign(b);
 		}
 
 		num_nodes_ = 1;
 		num_references_ = 0;
 
-		split(&root, references, aabb, max_primitives, thread_pool);
+		split(&root, references, math::aabb(aabb.min, aabb.max), max_primitives, thread_pool);
 	}
 
 	tree.allocate_triangles(num_references_, num_parts, vertices);
@@ -57,10 +62,8 @@ void Builder_SAH2::build(Tree<Data>& tree,
 }
 
 template<typename Data>
-void Builder_SAH2::serialize(Build_node* node,
-							 const std::vector<Index_triangle>& triangles,
-							 const std::vector<Vertex>& vertices,
-							 Tree<Data>& tree) {
+void Builder_SAH2::serialize(Build_node* node, const Triangles& triangles,
+							 const Vertices& vertices, Tree<Data>& tree) {
 	auto& n = new_node();
 	n.set_aabb(node->aabb);
 

@@ -98,7 +98,7 @@ void Pool::loop(uint32_t id, Unique& unique, const Shared& shared) {
 		}
 
 		if (shared.range_program) {
-			shared.range_program(unique.begin, unique.end);
+			shared.range_program(id, unique.begin, unique.end);
 		} else if (shared.parallel_program) {
 			shared.parallel_program(id);
 		}

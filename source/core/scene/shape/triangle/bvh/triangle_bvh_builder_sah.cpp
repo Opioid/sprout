@@ -106,12 +106,11 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
 
 	thread_pool.run_range(
 		[this, begin, end, aabb_surface_area, &triangle_bounds]
-		(int32_t sc_begin, int32_t sc_end) {
+		(uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) {
 			for (int32_t i = sc_begin; i < sc_end; ++i) {
 				split_candidates_[i].evaluate(begin, end, aabb_surface_area, triangle_bounds);
 			}
-		},
-		0, static_cast<int32_t>(split_candidates_.size()));
+		}, 0, static_cast<int32_t>(split_candidates_.size()));
 
 	size_t sc = 0;
 	float  min_cost = split_candidates_[0].cost();

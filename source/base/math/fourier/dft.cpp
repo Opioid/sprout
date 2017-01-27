@@ -104,13 +104,13 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 
 	float2* tmp = new float2[height * row_size];
 
-	pool.run_range([source, tmp, row_size, width](int32_t begin, int32_t end) {
+	pool.run_range([source, tmp, row_size, width](uint32_t /*id*/, int32_t begin, int32_t end) {
 		for (int32_t y = begin; y < end; ++y) {
 			dft_1d(tmp + y * row_size, source + y * width, width);
 		}
 	}, 0, height);
 
-	pool.run_range([tmp, result, row_size, height](int32_t begin, int32_t end) {
+	pool.run_range([tmp, result, row_size, height](uint32_t /*id*/, int32_t begin, int32_t end) {
 		float fn = static_cast<float>(height);
 		for (int32_t x = begin; x < end; ++x) {
 			for (int32_t k = 0; k < height; ++k) {

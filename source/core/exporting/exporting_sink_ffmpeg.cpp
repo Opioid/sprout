@@ -48,7 +48,7 @@ void Ffmpeg::write(const image::Float_4& image, uint32_t /*frame*/, thread::Pool
 	std::cout << "Ffmpeg before pool" << std::endl;
 
 	auto d = image.description().dimensions;
-	pool.run_range([this, &image](uint32_t begin, uint32_t end) {
+	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		to_sRGB(image, begin, end); }, 0, d.x * d.y);
 
 	std::cout << "Ffmpeg after pool" << std::endl;
