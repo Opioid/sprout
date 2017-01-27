@@ -93,7 +93,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 		if ((primary_ray || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 
-			if (i == settings_.max_bounces) {
+			if (requires_bounce ? i == settings_.max_bounces + 1 : i == settings_.max_bounces) {
 				break;
 			}
 		}
@@ -107,9 +107,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 													 filter, sample_result, requires_bounce);
 
 		if (!intersection.hit()
-		// TODO: the requires_bounce check can cause infinite loop!!!
-	//	||  (!requires_bounce && i == settings_.max_bounces - 1)
-		||  (requires_bounce ? i == settings_.max_bounces : i == settings_.max_bounces - 1)
+		||  (requires_bounce ? i == settings_.max_bounces : i >= settings_.max_bounces - 1)
 		||  0.f == sample_result.pdf
 		||  math::float3_identity == sample_result.reflection) {
 			break;

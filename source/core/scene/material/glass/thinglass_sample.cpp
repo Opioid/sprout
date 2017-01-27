@@ -137,9 +137,7 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 	result.wi = -sample.wo_;
 	result.pdf = 1.f;
 	// The integrator should not handle this like a proper transmission.
-	// We also don't want to get any "specular treatment" from the integrator.
-	// Basically, the ray should pick up some color and continue straight on.
-	result.type.clear_set(bxdf::Type::Reflection);
+	result.type.clear_set(bxdf::Type::Specular_reflection);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
