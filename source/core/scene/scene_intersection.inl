@@ -26,8 +26,13 @@ inline float Intersection::opacity(const Worker& worker, float time, Sampler_fil
 	return material()->opacity(geo.uv, time, worker, filter);
 }
 
-inline const material::Sample& Intersection::sample(const Worker& worker, float3_p wo, float time,
-													Sampler_filter filter) const {
+inline float3 Intersection::thin_absorption(const Worker& worker, float3_p wo,
+											float time, Sampler_filter filter) const {
+	return material()->thin_absorption(wo, geo.geo_n, geo.uv, time, worker, filter);
+}
+
+inline const material::Sample& Intersection::sample(const Worker& worker, float3_p wo,
+													float time, Sampler_filter filter) const {
 	material::Material* material = Intersection::material();
 
 	Renderstate rs;

@@ -171,14 +171,14 @@ float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
 			shadow_ray.set_direction(light_sample.shape.wi);
 			shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
-			float mv = worker.masked_visibility(shadow_ray, filter);
-			if (mv > 0.f) {
+			float3 tv = worker.tinted_visibility(shadow_ray, filter);
+			if (math::any_greater_zero(tv)) {
 				float3 t = worker.transmittance(shadow_ray);
 
 				float bxdf_pdf;
 				float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-				result += mv * t * light_sample.radiance * f / (light_pdf * light_sample.shape.pdf);
+				result += tv * t * light_sample.radiance * f / (light_pdf * light_sample.shape.pdf);
 			}
 		}
 	}

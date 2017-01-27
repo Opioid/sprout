@@ -884,7 +884,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 
 			return material;
 		}
-	} else if (math::contains_greater_zero(scattering)) {
+	} else if (math::any_greater_zero(scattering)) {
 		auto material = std::make_shared<substitute::Material_subsurface>(sample_cache_,
 																		  sampler_settings);
 

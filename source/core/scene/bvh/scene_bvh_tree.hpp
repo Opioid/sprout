@@ -64,8 +64,8 @@ public:
 	float opacity(const scene::Ray& ray, Worker& worker,
 				  material::Sampler_settings::Filter filter) const;
 
-	float3 absorption(const scene::Ray& ray, Worker& worker,
-					  material::Sampler_settings::Filter filter) const;
+	float3 thin_absorption(const scene::Ray& ray, Worker& worker,
+						   material::Sampler_settings::Filter filter) const;
 
 private:
 

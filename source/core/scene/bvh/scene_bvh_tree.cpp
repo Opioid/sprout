@@ -214,8 +214,8 @@ float Tree::opacity(const scene::Ray& ray, Worker& worker,
 	return opacity;
 }
 
-float3 Tree::absorption(const scene::Ray& ray, Worker& worker,
-						material::Sampler_settings::Filter filter) const {
+float3 Tree::thin_absorption(const scene::Ray& ray, Worker& worker,
+							 material::Sampler_settings::Filter filter) const {
 	float3 absorption = root_.thin_absorption(ray, props_, worker, filter);
 
 	if (math::all_lesser(absorption, 1.f)) {

@@ -11,11 +11,11 @@
 #include "scene/material/material_sample.inl"
 #include "scene/scene_intersection.inl"
 #include "take/take_settings.hpp"
-#include "base/spectrum/rgb.inl"
 #include "base/math/vector.inl"
 #include "base/math/matrix.inl"
 #include "base/math/ray.inl"
 #include "base/random/generator.inl"
+#include "base/spectrum/rgb.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
@@ -107,7 +107,9 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 													 filter, sample_result, requires_bounce);
 
 		if (!intersection.hit()
-		||  (!requires_bounce && i == settings_.max_bounces - 1)
+		// TODO: the requires_bounce check can cause infinite loop!!!
+	//	||  (!requires_bounce && i == settings_.max_bounces - 1)
+		||  (requires_bounce ? i == settings_.max_bounces : i == settings_.max_bounces - 1)
 		||  0.f == sample_result.pdf
 		||  math::float3_identity == sample_result.reflection) {
 			break;
@@ -238,7 +240,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 	material_sample.sample(material_sampler(ray.depth), sample_result);
 
 	// Those cases are handled outside
-	requires_bounce = sample_result.type.test_either(Bxdf_type::Specular, Bxdf_type::Transmission);
+	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
 
 	if (0.f == sample_result.pdf || requires_bounce) {
 		return result;
@@ -304,23 +306,8 @@ float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sample
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.max_t = light_sample.shape.t - ray_offset;
 
-		/*
-		float mv = worker.masked_visibility(ray, filter);
-		if (mv > 0.f) {
-			float3 t = worker.transmittance(ray);
-
-			float bxdf_pdf;
-			float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
-
-			float weight = power_heuristic(light_sample.shape.pdf / light_weight, bxdf_pdf);
-
-			result += (weight / light_sample.shape.pdf * light_weight)
-				   * mv * t * light_sample.radiance * f;
-		}
-		*/
-
 		float3 tv = worker.tinted_visibility(ray, filter);
-		if (math::contains_greater_zero(tv)) {
+		if (math::any_greater_zero(tv)) {
 			float3 t = worker.transmittance(ray);
 
 			float bxdf_pdf;

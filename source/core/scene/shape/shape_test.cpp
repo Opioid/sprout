@@ -31,7 +31,7 @@ bool check(const Intersection& intersection,
 }
 
 bool check(const Sample& sample) {
-	if (!math::contains_only_finite(sample.uv)) {
+	if (!math::all_finite(sample.uv)) {
 		return false;
 	}
 

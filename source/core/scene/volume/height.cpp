@@ -44,7 +44,7 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/,
 		// special case where density stays exactly the same along the ray
 		float3 result = d * (a_ * std::exp(-b_ * ha)) * attenuation;
 
-		SOFT_ASSERT(math::contains_only_finite(result));
+		SOFT_ASSERT(math::all_finite(result));
 
 		return result;
 	}
@@ -60,7 +60,7 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/,
 
 	float3 result = d * ((a_ * (fb - fa) / b_) / (hb - ha)) * attenuation;
 
-	SOFT_ASSERT(math::contains_only_finite(result));
+	SOFT_ASSERT(math::all_finite(result));
 
 	return result;
 

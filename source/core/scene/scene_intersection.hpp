@@ -30,8 +30,11 @@ struct Intersection {
 
 	float opacity(const Worker& worker, float time, Sampler_filter filter) const;
 
-	const material::Sample& sample(const Worker& worker, float3_p wo, float time,
-								   Sampler_filter filter) const;
+	float3 thin_absorption(const Worker& worker, float3_p wo,
+						   float time, Sampler_filter filter) const;
+
+	const material::Sample& sample(const Worker& worker, float3_p wo,
+								   float time, Sampler_filter filter) const;
 
 	const material::BSSRDF& bssrdf(const Worker& worker) const;
 

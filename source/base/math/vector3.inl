@@ -281,22 +281,22 @@ Vector3<T> abs(const Vector3<T>& v) {
 }
 
 template<typename T>
-bool contains_negative(const Vector3<T>& v) {
+bool any_negative(const Vector3<T>& v) {
 	return v.x < T(0) || v.y < T(0) || v.z < T(0);
 }
 
 template<typename T>
-bool contains_greater_one(const Vector3<T>& v) {
+bool any_greater_one(const Vector3<T>& v) {
 	return v.x > T(1) || v.y > T(1) || v.z > T(1);
 }
 
 template<typename T>
-bool contains_nan(const Vector3<T>& v) {
+bool any_nan(const Vector3<T>& v) {
 	return std::isnan(v.x) || std::isnan(v.y) || std::isnan(v.z);
 }
 
 template<typename T>
-bool contains_inf(const Vector3<T>& v) {
+bool any_inf(const Vector3<T>& v) {
 	return std::isinf(v.x) || std::isinf(v.y) || std::isinf(v.z);
 }
 
@@ -589,27 +589,31 @@ inline bool all_greater_equal(FVector3f_a v, float s) {
 	return v.x >= s && v.y >= s && v.z >= s;
 }
 
-inline bool contains_negative(FVector3f_a v) {
+inline bool any_negative(FVector3f_a v) {
 	return v.x < 0.f || v.y < 0.f || v.z < 0.f;
 }
 
-inline bool contains_greater_zero(FVector3f_a v) {
+inline bool any_greater_zero(FVector3f_a v) {
 	return v.x > 0.f || v.y > 0.f || v.z > 0.f;
 }
 
-inline bool contains_greater_one(FVector3f_a v) {
+inline bool any_greater_one(FVector3f_a v) {
 	return v.x > 1.f || v.y > 1.f || v.z > 1.f;
 }
 
-inline bool contains_nan(FVector3f_a v) {
+inline bool any_lesser_one(FVector3f_a v) {
+	return v.x < 1.f || v.y < 1.f || v.z < 1.f;
+}
+
+inline bool any_nan(FVector3f_a v) {
 	return std::isnan(v.x) || std::isnan(v.y) || std::isnan(v.z);
 }
 
-inline bool contains_inf(FVector3f_a v) {
+inline bool any_inf(FVector3f_a v) {
 	return std::isinf(v.x) || std::isinf(v.y) || std::isinf(v.z);
 }
 
-inline bool contains_only_finite(FVector3f_a v) {
+inline bool all_finite(FVector3f_a v) {
 	return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z);
 }
 

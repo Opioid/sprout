@@ -86,12 +86,12 @@ template<typename T>
 Vector2<T> max(Vector2<T> a, Vector2<T> b);
 
 template<typename T>
-bool contains_nan(const Vector2<T> v);
+bool any_nan(const Vector2<T> v);
 
 template<typename T>
-bool contains_inf(const Vector2<T> v);
+bool any_inf(const Vector2<T> v);
 
 template<typename T>
-bool contains_only_finite(const Vector2<T> v);
+bool all_finite(const Vector2<T> v);
 
 }

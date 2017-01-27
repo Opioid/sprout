@@ -8,6 +8,7 @@ namespace math {
 struct Vector3f_a;
 
 using FVector3f_a = const Vector3f_a&;
+//using FVector3f_a = Vector3f_a;
 
 /****************************************************************************
  *
@@ -132,16 +133,16 @@ template<typename T>
 Vector3<T> abs(const Vector3<T>& v);
 
 template<typename T>
-bool contains_negative(const Vector3<T>& v);
+bool any_negative(const Vector3<T>& v);
 
 template<typename T>
-bool contains_greater_one(const Vector3<T>& v);
+bool any_greater_one(const Vector3<T>& v);
 
 template<typename T>
-bool contains_nan(const Vector3<T>& v);
+bool any_nan(const Vector3<T>& v);
 
 template<typename T>
-bool contains_inf(const Vector3<T>& v);
+bool any_inf(const Vector3<T>& v);
 
 /****************************************************************************
  *
@@ -261,16 +262,18 @@ bool all_lesser(FVector3f_a v, float s);
 
 bool all_greater_equal(FVector3f_a v, float s);
 
-bool contains_negative(FVector3f_a v);
+bool any_negative(FVector3f_a v);
 
-bool contains_greater_zero(FVector3f_a v);
+bool any_greater_zero(FVector3f_a v);
 
-bool contains_greater_one(FVector3f_a v);
+bool any_greater_one(FVector3f_a v);
 
-bool contains_nan(FVector3f_a v);
+bool any_lesser_one(FVector3f_a v);
 
-bool contains_inf(FVector3f_a v);
+bool any_nan(FVector3f_a v);
 
-bool contains_only_finite(FVector3f_a v);
+bool any_inf(FVector3f_a v);
+
+bool all_finite(FVector3f_a v);
 
 }

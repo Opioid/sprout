@@ -245,7 +245,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 		}
 	}
 
-	bool clamp = !math::contains_negative(clamp_max);
+	bool clamp = !math::any_negative(clamp_max);
 
 	if (filter) {
 		if (alpha_transparency) {

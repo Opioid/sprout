@@ -12,6 +12,7 @@
 #include "base/math/vector.inl"
 #include "base/math/ray.inl"
 #include "base/random/generator.inl"
+#include "base/spectrum/rgb.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
@@ -33,28 +34,30 @@ void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float4 Whitted::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	float3 result(0.f);
 
-	float opacity = intersection.opacity(worker, ray.time, Sampler_filter::Unknown);
-	float throughput = opacity;
+	float3 wo = -ray.direction;
 
-	while (opacity < 1.f) {
-		if (opacity > 0.f) {
+	float3 opacity = intersection.thin_absorption(worker, wo, ray.time, Sampler_filter::Unknown);
+	float3 throughput = opacity;
+
+	while (math::any_lesser_one(opacity)) {
+		if (math::any_greater_zero(opacity)) {
 			result += throughput * shade(worker, ray, intersection);
 		}
 
 		ray.min_t = ray.max_t;
 		ray.max_t = scene::Ray_max_t;
 		if (!worker.intersect(ray, intersection)) {
-			return float4(result, opacity);
+			return float4(result, spectrum::luminance(opacity));
 		}
 
-		throughput = (1.f - opacity) * intersection.opacity(worker, ray.time,
-															Sampler_filter::Unknown);
+		throughput = (1.f - opacity) * intersection.thin_absorption(worker, wo, ray.time,
+																	Sampler_filter::Unknown);
 		opacity += throughput;
 	}
 
 	result += throughput * shade(worker, ray, intersection);
 
-	return float4(result, opacity);
+	return float4(result, spectrum::luminance(opacity));
 }
 
 float3 Whitted::shade(Worker& worker, const Ray& ray, const Intersection& intersection) {
@@ -96,20 +99,20 @@ float3 Whitted::estimate_direct_light(Worker& worker, const Ray& ray,
 			scene::light::Sample light_sample;
 			light->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
 						  material_sample.is_translucent(), sampler_, l, worker,
-						  Sampler_filter::Linear, light_sample);
+						  Sampler_filter::Nearest, light_sample);
 
 			if (light_sample.shape.pdf > 0.f) {
 				shadow_ray.set_direction(light_sample.shape.wi);
 				shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
-				float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Unknown);
-				if (mv > 0.f) {
+				float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Unknown);
+				if (math::any_greater_zero(tv)) {
 					float3 tr = worker.transmittance(shadow_ray);
 
 					float bxdf_pdf;
 					float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-					result += mv * tr * light_sample.radiance * f / light_sample.shape.pdf;
+					result += tv * tr * light_sample.radiance * f / light_sample.shape.pdf;
 				}
 			}
 		}
