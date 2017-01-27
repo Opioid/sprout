@@ -27,7 +27,7 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 	target_(image::Image::Description(image::Image::Type::Float_4,
 									  view.camera->sensor_dimensions())) {
 	for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
-		rnd::Generator rng(i + 0, i + 1, i + 2, i + 3);
+		rnd::Generator rng(i + 2, i + 8, i + 16, i + 128);
 		workers_[i].init(i, scene, rng, *surface_integrator_factory,
 						 *volume_integrator_factory, *sampler_factory_);
 	}

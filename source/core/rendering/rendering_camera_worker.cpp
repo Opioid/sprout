@@ -11,8 +11,8 @@
 
 namespace rendering {
 
-void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const math::Recti& tile,
-						   uint32_t sample_begin, uint32_t sample_end,
+void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
+						   const math::Recti& tile, uint32_t sample_begin, uint32_t sample_end,
 						   float normalized_tick_offset, float normalized_tick_slice) {
 	auto& sensor = camera.sensor();
 
@@ -23,7 +23,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view, const m
 	sampler::Camera_sample sample;
 	scene::Ray ray;
 
-	rnd::Generator rng(tile.start.x, tile.start.y, tile.end.x, tile.end.y);
+	rnd::Generator rng(tile.start.x + 2, tile.start.y + 8, tile.end.x + 16, tile.end.y + 128);
 
 	for (int32_t y = tile.start.y; y < tile.end.y; ++y) {
 		for (int32_t x = tile.start.x; x < tile.end.x; ++x) {
