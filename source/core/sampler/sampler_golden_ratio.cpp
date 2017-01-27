@@ -15,12 +15,11 @@ Golden_ratio::Golden_ratio(rnd::Generator& rng) :
 	samples_1D_(nullptr) {}
 
 Golden_ratio::~Golden_ratio() {
-	delete [] samples_1D_;
-	delete [] samples_2D_;
+	delete[] samples_1D_;
+	delete[] samples_2D_;
 }
 
-void Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index,
-										  Camera_sample& sample) {
+void Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
 	sample.pixel = pixel;
 	sample.pixel_uv = samples_2D_[index];
 	sample.lens_uv  = samples_2D_[num_samples_ + index];
@@ -57,14 +56,14 @@ void Golden_ratio::on_resize() {
 }
 
 void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {
-	for (uint32_t i = 0; i < num_dimensions_2D_; ++i) {
+	for (uint32_t i = 0, len = num_dimensions_2D_; i < len; ++i) {
 		float2* begin = samples_2D_ + i * num_samples_;
 		float2 r(scramble.random_float(), scramble.random_float());
 		math::golden_ratio(begin, num_samples_, r);
 		rnd::shuffle(begin, num_samples_, scramble);
 	}
 
-	for (uint32_t i = 0; i < num_dimensions_1D_; ++i) {
+	for (uint32_t i = 0, len = num_dimensions_1D_; i < len; ++i) {
 		float* begin = samples_1D_ + i * num_samples_;
 		math::golden_ratio(begin, num_samples_, scramble.random_float());
 		rnd::shuffle(begin, num_samples_, scramble);

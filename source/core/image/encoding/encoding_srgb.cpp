@@ -10,7 +10,7 @@ Srgb::Srgb(int2 dimensions) :
 	rgb_(new math::byte3[static_cast<size_t>(dimensions.x * dimensions.y)]) {}
 
 Srgb::~Srgb() {
-	delete [] rgb_;
+	delete[] rgb_;
 }
 
 const byte3* Srgb::data() const {
@@ -52,7 +52,7 @@ Srgb_alpha::Srgb_alpha(int2 dimensions) :
 {}
 
 Srgb_alpha::~Srgb_alpha() {
-	delete [] rgba_;
+	delete[] rgba_;
 }
 
 const math::byte4* Srgb_alpha::data() const {
