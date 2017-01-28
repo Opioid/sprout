@@ -17,8 +17,8 @@ class Isotropic {
 public:
 
 	template<typename Layer>
-	static float3 reflection(float h_dot_wi, float n_dot_wi,
-							 float n_dot_wo, const Layer& layer, float& pdf);
+	static float3 reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+							 const Layer& layer, float& pdf);
 
 	template<typename Layer>
 	static float reflect(float3_p wo, float n_dot_wo, const Layer& layer,
@@ -27,8 +27,8 @@ public:
 private:
 
 	template<typename Layer>
-	static float3 evaluate(float h_dot_wi, float n_dot_wi,
-						   float n_dot_wo, const Layer& layer);
+	static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+						   const Layer& layer);
 };
 
 class Isotropic_no_lambert {
@@ -36,8 +36,8 @@ class Isotropic_no_lambert {
 public:
 
 	template<typename Layer>
-	static float3 reflection(float h_dot_wi, float n_dot_wi,
-							 float n_dot_wo, const Layer& layer, float& pdf);
+	static float3 reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+							 const Layer& layer, float& pdf);
 
 	template<typename Layer>
 	static float reflect(float3_p wo, float n_dot_wo, const Layer& layer,
@@ -46,8 +46,8 @@ public:
 private:
 
 	template<typename Layer>
-	static float3 evaluate(float h_dot_wi, float n_dot_wi,
-						   float n_dot_wo, const Layer& layer);
+	static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+						   const Layer& layer);
 };
 
 }}}

@@ -1,19 +1,20 @@
 #pragma once
 
 #include "fresnel.hpp"
+#include "base/math/math.hpp"
 #include "base/math/vector.inl"
 
 namespace scene { namespace material { namespace fresnel {
 
 inline float schlick(float wo_dot_h, float f0) {
-	return f0 + std::pow(1.f - wo_dot_h, 5.f) * (1.f - f0);
+	return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
 
 	// Gaussian approximation
 	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
 inline float3 schlick(float wo_dot_h, float3_p f0) {
-	return f0 + std::pow(1.f - wo_dot_h, 5.f) * (1.f - f0);
+	return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
 
 	// Gaussian approximation
 	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
@@ -174,7 +175,7 @@ inline float3 Conductor::operator()(float wo_dot_h) const {
 
 inline Conductor_weighted::Conductor_weighted(float3_p eta, float3_p k, float weight) :
 	conductor_(eta, k),
-	weight_(weight){}
+	weight_(weight) {}
 
 inline float3 Conductor_weighted::operator()(float wo_dot_h) const {
 	return weight_ * conductor_(wo_dot_h);

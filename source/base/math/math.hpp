@@ -69,6 +69,11 @@ T pow4(T x) {
 }
 
 template<typename T>
+T pow5(T x) {
+	return pow4(x) * x;
+}
+
+template<typename T>
 T inverse_sqrt(T x) {
 	return T(1) / std::sqrt(x);
 }

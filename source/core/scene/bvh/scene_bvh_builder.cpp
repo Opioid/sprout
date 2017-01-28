@@ -12,7 +12,7 @@ void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
 	tree.props_.reserve(finite_props.size() + infite_props.size());
 
 	if (finite_props.empty()) {
-		tree.root_.aabb = math::aabb::infinite();
+		tree.root_.aabb.set_min_max(float3(-1.f), float3(1.f));
 	} else {
 		split(&tree.root_, finite_props.begin(), finite_props.end(), 4, tree.props_);
 	}

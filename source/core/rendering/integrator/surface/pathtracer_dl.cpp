@@ -144,7 +144,7 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 
 float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
 											const Intersection& intersection,
-											const scene::material::Sample& material_sample,
+											const Material_sample& material_sample,
 											Sampler_filter filter) {
 	float3 result = math::float3_identity;
 
@@ -157,7 +157,7 @@ float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
 
 	for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
 		float light_pdf;
-		const auto light = worker.scene().random_light(rng_.random_float(),light_pdf);
+		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
 		if (!light) {
 			continue;
 		}

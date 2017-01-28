@@ -13,16 +13,16 @@
 namespace scene { namespace material { namespace disney {
 
 template<typename Layer>
-float3 Isotropic::reflection(float h_dot_wi, float n_dot_wi,
-							 float n_dot_wo, const Layer& layer, float& pdf) {
+float3 Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+							 const Layer& layer, float& pdf) {
 //	float3 h = math::normalized(wo + wi);
 //	float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
 
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 
-	SOFT_ASSERT(testing::check(result, float3(0.f, 0.f, 0.f),
-							   n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
+	SOFT_ASSERT(testing::check(result, float3(0.f), n_dot_wi,
+							   n_dot_wo, h_dot_wi, pdf, layer));
 
 	return result;
 }
@@ -57,23 +57,23 @@ float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, const
 	float f_D90 = 0.5f + 2.f * layer.roughness_ * (h_dot_wi * h_dot_wi);
 	float fmo = f_D90 - 1.f;
 
-	float a = 1.f + fmo * std::pow(1.f - n_dot_wi, 5.f);
-	float b = 1.f + fmo * std::pow(1.f - n_dot_wo, 5.f);
+	float a = 1.f + fmo * math::pow5(1.f - n_dot_wi);
+	float b = 1.f + fmo * math::pow5(1.f - n_dot_wo);
 
 	return a * b * (math::Pi_inv * layer.diffuse_color_);
 }
 
 template<typename Layer>
-float3 Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi,
-										float n_dot_wo, const Layer& layer, float& pdf) {
+float3 Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+										const Layer& layer, float& pdf) {
 //	float3 h = math::normalized(wo + wi);
 //	float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
 
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 
-	SOFT_ASSERT(testing::check(result, float3(0.f, 0.f, 0.f),
-							   n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
+	SOFT_ASSERT(testing::check(result, float3(0.f), n_dot_wi,
+							   n_dot_wo, h_dot_wi, pdf, layer));
 
 	return result;
 }
@@ -104,10 +104,10 @@ float Isotropic_no_lambert::reflect(float3_p wo, float n_dot_wo, const Layer& la
 }
 
 template<typename Layer>
-float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi,
-									  float n_dot_wo, const Layer& layer) {
-	float fl = std::pow(1.f - n_dot_wi, 5.f);
-	float fv = std::pow(1.f - n_dot_wo, 5.f);
+float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+									  const Layer& layer) {
+	float fl = math::pow5(1.f - n_dot_wi);
+	float fv = math::pow5(1.f - n_dot_wo);
 	float rr = 2.f * layer.roughness_ * (h_dot_wi * h_dot_wi);
 
 	return rr * (fl + fv + fl * fv * (rr - 1.f)) * (math::Pi_inv * layer.diffuse_color_);
