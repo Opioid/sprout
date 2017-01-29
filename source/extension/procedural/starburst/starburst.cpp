@@ -216,34 +216,6 @@ void create(thread::Pool& pool) {
 }
 
 void render_dirt(image::Float_1& signal) {
-//	std::ifstream stream("lens_dirt.png", std::ios::binary);
-
-//	try {
-//		auto image = image::encoding::png::Reader::read(stream, image::Channels::X, 1);
-
-//		if (image::Image::Type::Byte_1 != image->description().type) {
-//			std::cout << "wrong type" << std::endl;
-//		}
-
-//		const image::Byte_1* byte_image = dynamic_cast<const image::Byte_1*>(image.get());
-
-//		if (signal.description().dimensions != image->description().dimensions) {
-//			std::cout << "dimensions not matching" << std::endl;
-//			return;
-//		}
-
-//		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
-//			uint8_t byte = byte_image->load(i);
-//			float linear = spectrum::unorm_to_float(byte);
-//			signal.store(i, std::pow(linear, 4.f));
-//		}
-
-//	} catch (std::exception& e) {
-//		std::cout << e.what() << std::endl;
-//	}
-
-//	return;
-
 	Dirt dirt(signal.description().dimensions.xy, 4);
 
 	dirt.set_brush(1.f);

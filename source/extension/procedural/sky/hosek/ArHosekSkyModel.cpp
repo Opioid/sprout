@@ -319,6 +319,10 @@ hk_real ArHosekSkyModel_CookRadianceConfiguration(
     return res;
 }
 
+hk_real pow1_5(hk_real x) {
+	return x * std::sqrt(x);
+}
+
 hk_real ArHosekSkyModel_GetRadianceInternal(
         ArHosekSkyModelConfiguration  configuration, 
 		hk_real                        theta,
@@ -327,8 +331,9 @@ hk_real ArHosekSkyModel_GetRadianceInternal(
 {
 	const hk_real expM = std::exp(configuration[4] * gamma);
 	const hk_real rayM = std::cos(gamma)*std::cos(gamma);
-	const hk_real mieM = (hk_real(1.0) + std::cos(gamma)*std::cos(gamma)) / std::pow((hk_real(1.0) + configuration[8]*configuration[8] - hk_real(2.0)*configuration[8]*std::cos(gamma)), hk_real(1.5));
-	const hk_real zenith = std::sqrt(cos(theta));
+//	const hk_real mieM = (hk_real(1.0) + std::cos(gamma)*std::cos(gamma)) / std::pow((hk_real(1.0) + configuration[8]*configuration[8] - hk_real(2.0)*configuration[8]*std::cos(gamma)), hk_real(1.5));
+	const hk_real mieM = (hk_real(1.0) + std::cos(gamma)*std::cos(gamma)) / pow1_5((hk_real(1.0) + configuration[8]*configuration[8] - hk_real(2.0)*configuration[8]*std::cos(gamma)));
+	const hk_real zenith = std::sqrt(std::cos(theta));
 
 	return (hk_real(1.0) + configuration[0] * std::exp(configuration[1] / (std::cos(theta) + hk_real(0.01)))) *
             (configuration[2] + configuration[3] * expM + configuration[5] * rayM + configuration[6] * mieM + configuration[7] * zenith);
@@ -684,20 +689,30 @@ hk_real arhosek_tristim_skymodel_radiance(
 const int pieces = 45;
 const int order = 4;
 
+hk_real pow3(hk_real x) {
+	return x * x * x;
+}
+
 hk_real arhosekskymodel_sr_internal(
         ArHosekSkyModelState  * state,
         int                     turbidity,
         int                     wl,
-		hk_real                  elevation
+		hk_real                 elevation
         )
 {
-    int pos =
-		(int) (std::pow(hk_real(2)*elevation / hk_real(MATH_PI), hk_real(1)/hk_real(3)) * pieces); // floor
+//    int pos =
+//		(int) (std::pow(hk_real(2)*elevation / hk_real(MATH_PI), hk_real(1)/hk_real(3)) * pieces); // floor
     
+	int pos =
+		(int) (std::cbrt(hk_real(2)*elevation / hk_real(MATH_PI)) * pieces); // floor
+
     if ( pos > 44 ) pos = 44;
-    
+
+//	const hk_real break_x =
+//		std::pow(((hk_real) pos / (hk_real) pieces), hk_real(3)) * (hk_real(MATH_PI) * hk_real(0.5));
+
 	const hk_real break_x =
-		std::pow(((hk_real) pos / (hk_real) pieces), hk_real(3)) * (hk_real(MATH_PI) * hk_real(0.5));
+		pow3(((hk_real) pos / (hk_real) pieces)) * (hk_real(MATH_PI) * hk_real(0.5));
 
 	const hk_real  * coefs =
         solarDatasets[wl] + (order * pieces * turbidity + order * (pos+1) - 1);
