@@ -6,9 +6,9 @@
 #include "triangle_bvh_helper.hpp"
 #include "scene/shape/node_stack.inl"
 #include "scene/shape/triangle/triangle_primitive.hpp"
+#include "base/math/aabb.inl"
 #include "base/math/vector.inl"
 #include "base/math/plane.inl"
-#include "base/math/bounding/aabb.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
