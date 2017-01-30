@@ -452,13 +452,13 @@ inline Vector3f_a normalized(FVector3f_a v) {
 inline Vector3f_a reciprocal(FVector3f_a v) {
 //	return Vector3f_a(1.f / v.x, 1.f / v.y, 1.f / v.z);
 
-	simd::Vector sx = simd::load_float3(v);
+	simd::Vector sx = simd::load_float3_unsafe(v);
 
 	simd::Vector rcp = _mm_rcp_ps(sx);
 	simd::Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
 	Vector3f_a result;
-	simd::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	simd::store_float3_unsafe(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 	return result;
 }
 
