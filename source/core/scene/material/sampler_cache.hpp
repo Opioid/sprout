@@ -27,8 +27,10 @@ public:
 
 private:
 
-	Texture_sampler_2D* samplers_2D_[4];
-	Texture_sampler_3D* samplers_3D_[2];
+	static constexpr size_t Num_samplers = 4;
+
+	Texture_sampler_2D* samplers_2D_[Num_samplers];
+	Texture_sampler_3D* samplers_3D_[Num_samplers];
 };
 
 }}
