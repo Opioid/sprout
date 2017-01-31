@@ -56,6 +56,7 @@ struct alignas(16) Vector_u32 {
  * Load operations
  *
  ****************************************************************************/
+Vector SU_CALLCONV load_float(float x);
 
 Vector SU_CALLCONV load_float3(const Vector3<float>& source);
 Vector SU_CALLCONV load_float3(FVector3f_a source);

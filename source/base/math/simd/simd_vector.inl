@@ -12,6 +12,11 @@ namespace math { namespace simd {
  *
  ****************************************************************************/
 
+inline Vector SU_CALLCONV load_float(float x) {
+	return _mm_set1_ps(x);
+}
+
+
 inline Vector SU_CALLCONV load_float3(const Vector3<float>& source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector v;

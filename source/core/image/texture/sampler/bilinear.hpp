@@ -46,6 +46,36 @@ inline float3 bilinear(float3 c[4], float s, float t) {
 	float _t = 1.f - t;
 
 	return _s * (_t * c[0] + t * c[1]) + s * (_t * c[2] + t * c[3]);
+/*
+	using namespace math::simd;
+	Vector mm00 = load_float3_unsafe(c[0]);
+	Vector mm01 = load_float3_unsafe(c[1]);
+	Vector mm10 = load_float3_unsafe(c[2]);
+	Vector mm11 = load_float3_unsafe(c[3]);
+
+	Vector mmo = load_float(1.f);
+	Vector mmt = load_float(t);
+	Vector mms = load_float(s);
+
+	Vector mmot = sub3(mmo, mmt);
+	Vector mmos = sub3(mmo, mms);
+
+	mm01 = mul3(mmt, mm01);
+	mm11 = mul3(mmt, mm11);
+	mm00 = mul3(mmot, mm00);
+	mm10 = mul3(mmot, mm10);
+
+	Vector mmb = add3(mm10, mm11);
+	Vector mma = add3(mm00, mm01);
+
+	mmb = mul3(mms, mmb);
+	mma = mul3(mmos, mma);
+
+	float3 result;
+	store_float3_unsafe(result, add3(mma, mmb));
+
+	return result;
+	*/
 }
 
 inline float4 bilinear(float4_p c00, float4_p c01, float4_p c10, float4_p c11,
