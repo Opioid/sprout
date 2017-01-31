@@ -66,9 +66,8 @@ public:
 								   const Worker& worker, Sampler_filter filter) const;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
-								  const Transformation& transformation,
-								  float area, bool importance_sampling,
-								  thread::Pool& pool);
+								  const Transformation& transformation, float area,
+								  bool importance_sampling, thread::Pool& pool);
 
 	virtual bool is_animated() const;
 

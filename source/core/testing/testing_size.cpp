@@ -56,7 +56,7 @@ void size() {
 
 	print_size<scene::Renderstate>("Renderstate", 112);
 
-	print_size<scene::shape::triangle::Intersection_triangle_MTE>("Intersection_triangle_MTE", 64);
+	print_size<scene::shape::triangle::Intersection_triangle_MTE>("Intersection_triangle_MTE", 48);
 
 	print_size<scene::shape::triangle::Shading_triangle_MTE>("Shading_triangle_MTE", 128);
 
@@ -70,7 +70,7 @@ void size() {
 
 	print_size<scene::bvh::Build_node>("bvh::Build_node", 64);
 
-	print_size<image::texture::Adapter>("texture::Adapter", 24);
+	print_size<image::texture::Adapter>("texture::Adapter", 32);
 
 	print_size<scene::bvh::Split_candidate>("Split_candidate", 32);
 }

@@ -72,9 +72,8 @@ float3 Material::thin_absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, flo
 }
 
 void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
-								const Transformation& /*transformation*/,
-								float /*area*/, bool /*importance_sampling*/,
-								thread::Pool& /*pool*/) {}
+								const Transformation& /*transformation*/, float /*area*/,
+								bool /*importance_sampling*/, thread::Pool& /*pool*/) {}
 
 bool Material::is_animated() const {
 	return false;
