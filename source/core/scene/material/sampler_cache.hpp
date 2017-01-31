@@ -27,7 +27,7 @@ public:
 
 private:
 
-	static constexpr size_t Num_samplers = 8;
+	static constexpr uint32_t Num_samplers = 8;
 
 	Texture_sampler_2D* samplers_2D_[Num_samplers];
 	Texture_sampler_3D* samplers_3D_[Num_samplers];

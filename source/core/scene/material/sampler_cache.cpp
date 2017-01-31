@@ -33,7 +33,7 @@ Sampler_cache::Sampler_cache() {
 }
 
 Sampler_cache::~Sampler_cache() {
-	for (size_t i = 0; i < Num_samplers; ++i) {
+	for (uint32_t i = 0; i < Num_samplers; ++i) {
 		delete samplers_2D_[i];
 		delete samplers_3D_[i];
 	}
