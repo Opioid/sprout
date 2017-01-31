@@ -923,6 +923,18 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 	return material;
 }
 
+Sampler_settings::Address read_address(const json::Value& address_value) {
+	std::string address = json::read_string(address_value);
+
+	if ("Clamp" == address) {
+		return Sampler_settings::Address::Clamp;
+	} else if ("Repeat" == address) {
+		return Sampler_settings::Address::Repeat;
+	}
+
+	return Sampler_settings::Address::Unknown;
+}
+
 void Provider::read_sampler_settings(const json::Value& sampler_value, Sampler_settings& settings) {
 	for (auto& n : sampler_value.GetObject()) {
 		if ("filter" == n.name) {
@@ -934,12 +946,17 @@ void Provider::read_sampler_settings(const json::Value& sampler_value, Sampler_s
 				settings.filter = Sampler_settings::Filter::Linear;
 			}
 		} else if ("address" == n.name) {
-			std::string address = json::read_string(n.value);
+			if (n.value.IsArray()) {
+				auto address_u = read_address(n.value[0]);
+				auto address_v = read_address(n.value[1]);
 
-			if ("Clamp" == address) {
-				settings.address = Sampler_settings::Address::Clamp;
-			} else if ("Repeat" == address) {
-				settings.address = Sampler_settings::Address::Repeat;
+				settings.address_u = address_u;
+				settings.address_v = address_v;
+			} else {
+				auto address = read_address(n.value);
+
+				settings.address_u = address;
+				settings.address_v = address;
 			}
 		}
 	}
