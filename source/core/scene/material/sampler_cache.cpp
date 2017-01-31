@@ -13,10 +13,10 @@ using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
 Sampler_cache::Sampler_cache() {
 	using namespace image::texture::sampler;
 
-	samplers_2D_[0] = new Nearest_2D<Address_mode_clamp>;
-	samplers_2D_[1] = new Nearest_2D<Address_mode_repeat>;
-	samplers_2D_[2] = new Linear_2D <Address_mode_clamp>;
-	samplers_2D_[3] = new Linear_2D <Address_mode_repeat>;
+	samplers_2D_[0] = new Nearest_2D<Address_mode_clamp, Address_mode_clamp>;
+	samplers_2D_[1] = new Nearest_2D<Address_mode_repeat, Address_mode_repeat>;
+	samplers_2D_[2] = new Linear_2D <Address_mode_clamp, Address_mode_clamp>;
+	samplers_2D_[3] = new Linear_2D <Address_mode_repeat, Address_mode_repeat>;
 
 	samplers_3D_[0] = new Nearest_3D<Address_mode_clamp>;
 	samplers_3D_[1] = new Linear_3D <Address_mode_clamp>;

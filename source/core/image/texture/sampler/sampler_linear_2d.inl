@@ -7,8 +7,9 @@
 
 namespace image { namespace texture { namespace sampler {
 
-template<typename Address_mode>
-float Linear_2D<Address_mode>::sample_1(const Texture& texture, float2 uv) const {
+template<typename Address_mode_U, typename Address_mode_V>
+float Linear_2D<Address_mode_U, Address_mode_V>::sample_1(const Texture& texture,
+														  float2 uv) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
@@ -17,8 +18,9 @@ float Linear_2D<Address_mode>::sample_1(const Texture& texture, float2 uv) const
 	return bilinear(c, st.x, st.y);
 }
 
-template<typename Address_mode>
-float2 Linear_2D<Address_mode>::sample_2(const Texture& texture, float2 uv) const {
+template<typename Address_mode_U, typename Address_mode_V>
+float2 Linear_2D<Address_mode_U, Address_mode_V>::sample_2(const Texture& texture,
+														   float2 uv) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
@@ -28,8 +30,9 @@ float2 Linear_2D<Address_mode>::sample_2(const Texture& texture, float2 uv) cons
 	return bilinear(c, st.x, st.y);
 }
 
-template<typename Address_mode>
-float3 Linear_2D<Address_mode>::sample_3(const Texture& texture, float2 uv) const {
+template<typename Address_mode_U, typename Address_mode_V>
+float3 Linear_2D<Address_mode_U, Address_mode_V>::sample_3(const Texture& texture,
+														   float2 uv) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
@@ -39,8 +42,9 @@ float3 Linear_2D<Address_mode>::sample_3(const Texture& texture, float2 uv) cons
 	return bilinear(c, st.x, st.y);
 }
 
-template<typename Address_mode>
-float Linear_2D<Address_mode>::sample_1(const Texture& texture, float2 uv, int32_t element) const {
+template<typename Address_mode_U, typename Address_mode_V>
+float Linear_2D<Address_mode_U, Address_mode_V>::sample_1(const Texture& texture,
+														  float2 uv, int32_t element) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
@@ -54,8 +58,9 @@ float Linear_2D<Address_mode>::sample_1(const Texture& texture, float2 uv, int32
 	return bilinear(c00, c01, c10, c11, st.x, st.y);
 }
 
-template<typename Address_mode>
-float2 Linear_2D<Address_mode>::sample_2(const Texture& texture, float2 uv, int32_t element) const {
+template<typename Address_mode_U, typename Address_mode_V>
+float2 Linear_2D<Address_mode_U, Address_mode_V>::sample_2(const Texture& texture, float2 uv,
+														   int32_t element) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
@@ -69,8 +74,9 @@ float2 Linear_2D<Address_mode>::sample_2(const Texture& texture, float2 uv, int3
 	return bilinear(c00, c01, c10, c11, st.x, st.y);
 }
 
-template<typename Address_mode>
-float3 Linear_2D<Address_mode>::sample_3(const Texture& texture, float2 uv, int32_t element) const {
+template<typename Address_mode_U, typename Address_mode_V>
+float3 Linear_2D<Address_mode_U, Address_mode_V>::sample_3(const Texture& texture, float2 uv,
+														   int32_t element) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
 
@@ -84,20 +90,19 @@ float3 Linear_2D<Address_mode>::sample_3(const Texture& texture, float2 uv, int3
 	return bilinear(c00, c01, c10, c11, st.x, st.y);
 }
 
-template<typename Address_mode>
-float2 Linear_2D<Address_mode>::address(float2 uv) const {
-	return Address_mode::f(uv);
+template<typename Address_mode_U, typename Address_mode_V>
+float2 Linear_2D<Address_mode_U, Address_mode_V>::address(float2 uv) const {
+	return float2(Address_mode_U::f(uv.x), Address_mode_V::f(uv.y));
 }
 
-template<typename Address_mode>
-float2 Linear_2D<Address_mode>::map(const Texture& texture, float2 uv, int4& xy_xy1) {
+template<typename Address_mode_U, typename Address_mode_V>
+float2 Linear_2D<Address_mode_U, Address_mode_V>::map(const Texture& texture,
+													  float2 uv, int4& xy_xy1) {
 	auto b = texture.back_2();
 	auto d = texture.dimensions_float2();
 
-	uv = Address_mode::f(uv);
-
-	float u = uv.x * d.x - 0.5f;
-	float v = uv.y * d.y - 0.5f;
+	float u = Address_mode_U::f(uv.x) * d.x - 0.5f;
+	float v = Address_mode_V::f(uv.y) * d.y - 0.5f;
 
 	float fu = std::floor(u);
 	float fv = std::floor(v);
@@ -105,10 +110,10 @@ float2 Linear_2D<Address_mode>::map(const Texture& texture, float2 uv, int4& xy_
 	int32_t x = static_cast<int32_t>(fu);
 	int32_t y = static_cast<int32_t>(fv);
 
-	xy_xy1.x = Address_mode::lower_bound(x, b.x);
-	xy_xy1.y = Address_mode::lower_bound(y, b.y);
-	xy_xy1.z = Address_mode::increment(x, b.x);
-	xy_xy1.w = Address_mode::increment(y, b.y);
+	xy_xy1.x = Address_mode_U::lower_bound(x, b.x);
+	xy_xy1.y = Address_mode_V::lower_bound(y, b.y);
+	xy_xy1.z = Address_mode_U::increment(x, b.x);
+	xy_xy1.w = Address_mode_V::increment(y, b.y);
 
 	return float2(u - fu, v - fv);
 }

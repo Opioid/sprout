@@ -6,12 +6,8 @@
 namespace image { namespace texture { namespace sampler {
 
 struct Address_mode_identity {
-	static float2 f(float2 uv) {
-		return uv;
-	}
-
-	static float3 f(float3_p uvw) {
-		return uvw;
+	static float f(float x) {
+		return x;
 	}
 
 	static int32_t increment(int32_t v, int32_t /*max*/) {
@@ -24,18 +20,11 @@ struct Address_mode_identity {
 };
 
 struct Address_mode_clamp {
-	static float2 f(float2 uv) {
+	static float f(float x) {
 	//	return math::saturate(uv);
 
 		// We can do this because we know the samplers don't access >= 1
-		return float2(std::max(uv.x, 0.f), std::max(uv.y, 0.f));
-	}
-
-	static float3 f(float3_p uvw) {
-	//	return math::saturate(uvw);
-
-		// We can do this because we know the samplers don't access >= 1
-		return float3(std::max(uvw.x, 0.f), std::max(uvw.y, 0.f), std::max(uvw.z, 0.f));
+		return std::max(x, 0.f);
 	}
 
 	static int32_t increment(int32_t v, int32_t max) {
@@ -56,12 +45,8 @@ struct Address_mode_clamp {
 };
 
 struct Address_mode_repeat {
-	static float2 f(float2 uv) {
-		return float2(math::frac(uv.x), math::frac(uv.y));
-	}
-
-	static float3 f(float3_p uvw) {
-		return float3(math::frac(uvw.x), math::frac(uvw.y), math::frac(uvw.z));
+	static float f(float x) {
+		return math::frac(x);
 	}
 
 	static int32_t increment(int32_t v, int32_t max) {

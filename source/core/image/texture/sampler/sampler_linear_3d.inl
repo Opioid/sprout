@@ -69,7 +69,9 @@ float3 Linear_3D<Address_mode>::sample_3(const Texture& texture, float3_p uvw) c
 
 template<typename Address_mode>
 float3 Linear_3D<Address_mode>::address(float3_p uvw) const {
-	return Address_mode::f(uvw);
+	return float3(Address_mode::f(uvw.x),
+				  Address_mode::f(uvw.y),
+				  Address_mode::f(uvw.z));
 }
 
 template<typename Address_mode>
@@ -78,11 +80,9 @@ float3 Linear_3D<Address_mode>::map(const Texture& texture, float3_p uvw,
 	auto b = texture.back_3();
 	auto d = texture.dimensions_float3();
 
-	float3 muvw = Address_mode::f(uvw);
-
-	float u = muvw.x * d.x - 0.5f;
-	float v = muvw.y * d.y - 0.5f;
-	float w = muvw.z * d.z - 0.5f;
+	float u = Address_mode::f(uvw.x) * d.x - 0.5f;
+	float v = Address_mode::f(uvw.y) * d.y - 0.5f;
+	float w = Address_mode::f(uvw.z) * d.z - 0.5f;
 
 	float fu = std::floor(u);
 	float fv = std::floor(v);
