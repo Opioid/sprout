@@ -37,9 +37,9 @@ I try to keep the dependencies reasonably low in this project.
 At the moment there are three of them.
 All of them are header-only libraries and included in the repository.
 
-.Dependencies
-. [[https://code.google.com/p/miniz/][Miniz]] for encoding/decoding PNG images and decompressing gz archives
-. [[https://github.com/miloyip/rapidjson][RapidJSON]] for parsing json files
-. [[http://tclap.sourceforge.net/][TCLAP]] for parsing command line arguments
+Dependencies
+1. [[https://code.google.com/p/miniz/][Miniz]] for encoding/decoding PNG images and decompressing gz archives
+2. [[https://github.com/miloyip/rapidjson][RapidJSON]] for parsing json files
+3. [[http://tclap.sourceforge.net/][TCLAP]] for parsing command line arguments
 
 If you have [[https://www.ffmpeg.org/][FFmpeg]] installed you can export animations to mp4, but it is neither required to build nor to run.
