@@ -1,8 +1,7 @@
 * sprout
 
-[[][file:doc/images/dragon_720.jpg]]
-.[[http://graphics.stanford.edu/data/3Dscanrep/][Asian Dragon]] in [[https://www.hdri-hub.com/hdrishop/freesamples/freehdri/item/115-hdr-112-river-road-free][River Road]] environment
-image::doc/images/dragon_720.jpg[]
+[[doc/images/dragon_720.jpg][file:doc/images/dragon_720.jpg]]
+[[http://graphics.stanford.edu/data/3Dscanrep/][Asian Dragon]] in [[https://www.hdri-hub.com/hdrishop/freesamples/freehdri/item/115-hdr-112-river-road-free][River Road]] environment
 
 ** Brief
 
