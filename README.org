@@ -1,33 +1,41 @@
 * sprout
 
-[[doc/images/dragon_720.jpg][file:doc/images/dragon_720.jpg]]
+[[file:doc/images/dragon_720.jpg]]
 [[http://graphics.stanford.edu/data/3Dscanrep/][Asian Dragon]] in [[https://www.hdri-hub.com/hdrishop/freesamples/freehdri/item/115-hdr-112-river-road-free][River Road]] environment
 
 ** Brief
 
-sprout is a small raytracing renderer written in C++. I work on it mainly for fun and to learn about physically based rendering and global illumination.
+sprout is a small raytracing renderer written in C++. 
+I work on it mainly for fun and to learn about physically based rendering and global illumination.
 
-The overall architecture is heavily inspired by [[http://www.pbrt.org/][PBRT]] while the implementation details differ more or less strongly in various places.
+The overall architecture is heavily inspired by [[http://www.pbrt.org/][PBRT]] 
+while the implementation details differ more or less strongly in various places.
 
-At the moment the most advanced integrator is a uni-directional path tracer with forward prediction and multiple importance sampling.
+At the moment the most advanced integrator is a uni-directional path tracer 
+with forward prediction and multiple importance sampling.
 Area lights and HDRI lights are supported.
 The default material is inspired by the [[https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf][Disney]] and [[http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf][Unreal 4]] material models.
-It uses a combination of the Disney Diffuse BRDF and GGX with adjustable roughness and metallic parameters, as well as texture mapping.
+It uses a combination of the Disney Diffuse BRDF and GGX 
+with adjustable roughness and metallic parameters, as well as texture mapping.
 Specialized materials for metal and glass are also available.
 There is support for a few built in shapes (sphere, disk, plane...) as well as triangle meshes.
 
-A render is configurable by various json files that describe the different parts of the scene (shapes, lights, material parameters etc.) as well as the camera settings.
+A render is configurable by various json files 
+that describe the different parts of the scene (shapes, lights, material parameters etc.) 
+as well as the camera settings.
 
 ** Installation
 
 All source files needed to build the project are included in the repository.
-In order to build the project Qt Creator is needed. Unfortunately there doesn't exist a cmake project yet.
+In order to build the project Qt Creator is needed. 
+Unfortunately there doesn't exist a cmake project yet.
 
 sprout needs a c++14 compiler.
 
 On Linux it might be be neccessary to persuade Qt Creator to use the c++14 flag for the compiler.
 I've had trouble with this in the [[https://forum.qt.io/topic/52334/qmake-substituting-c-14-with-c-1][past]].
-Generally it should work with Clang 3.5 and libstdc++ 4.9 or higher. It should also build with GCC 4.9 or higher.
+Generally it should work with Clang 3.5 and libstdc++ 4.9 or higher. 
+It should also build with GCC 4.9 or higher.
 
 On Windows it should work out of the box with the Visual Studio 2013 and 2015 compilers.
 
@@ -42,4 +50,5 @@ Dependencies
 2. [[https://github.com/miloyip/rapidjson][RapidJSON]] for parsing json files
 3. [[http://tclap.sourceforge.net/][TCLAP]] for parsing command line arguments
 
-If you have [[https://www.ffmpeg.org/][FFmpeg]] installed you can export animations to mp4, but it is neither required to build nor to run.
+If you have [[https://www.ffmpeg.org/][FFmpeg]] installed you can export animations to mp4, 
+but it is neither required to build nor to run.
