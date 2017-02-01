@@ -16,7 +16,8 @@ with forward prediction and multiple importance sampling.
 Area lights and HDRI lights are supported.
 The default material is inspired by the [[https://disney-animation.s3.amazonaws.com/library/s2012_pbs_disney_brdf_notes_v2.pdf][Disney]] and [[http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf][Unreal 4]] material models.
 It uses a combination of the Disney Diffuse BRDF and GGX 
-with adjustable roughness and metallic parameters, as well as texture mapping.
+with adjustable roughness and metallic parameters.
+Additional parameters like color and normals can be controlled via texture mapping as well.
 Specialized materials for metal and glass are also available.
 There is support for a few built in shapes (sphere, disk, plane...) as well as triangle meshes.
 
