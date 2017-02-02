@@ -1,7 +1,25 @@
 * Backlog
 
-** Subsurface scattering
+** Integrators
+
+*** Subsurface scattering
 - [X] Implement single scattering 
 - [ ] Implement multiple scattering
   - [ ] Monte-carlo integrator
   - [ ] Next event estimation
+
+** Materials
+
+*** Cloth material
+- [ ] Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin)
+
+*** Separate samplers
+- [ ] Consider adding support for separate samplers per texture
+
+** Shapes
+
+Consider adding/improving support analytical shapes
+- [-] Canopy/Half-sphere
+  - [X] Intersection
+  - [ ] UV sampling
+- [ ] Cylinder
