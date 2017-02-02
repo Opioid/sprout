@@ -33,7 +33,7 @@ Unfortunately there doesn't exist a cmake project yet.
 
 sprout needs a c++14 compiler.
 
-On Linux it might be be neccessary to persuade Qt Creator to use the c++14 flag for the compiler.
+On Linux it might be be necessary to persuade Qt Creator to use the c++14 flag for the compiler.
 I've had trouble with this in the [[https://forum.qt.io/topic/52334/qmake-substituting-c-14-with-c-1][past]].
 Generally it should work with Clang 3.5 and libstdc++ 4.9 or higher. 
 It should also build with GCC 4.9 or higher.
