@@ -22,11 +22,12 @@
 #include <fstream>
 #include "base/math/print.hpp"
 
+// Code for fractional DFT implementation
 // http://onlinelibrary.wiley.com/store/10.1111/cgf.12953/asset/supinfo/cgf12953-sup-0002-S1.pdf?v=1&s=e3aaf53493a15c5111513bf1dbe1a6ee549ee804
 
 namespace procedural { namespace starburst {
 
-	using namespace image;
+using namespace image;
 
 static constexpr int32_t Num_bands = 64;
 
