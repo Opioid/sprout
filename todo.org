@@ -23,3 +23,6 @@ Consider adding/improving support analytical shapes
   - [X] Intersection
   - [ ] UV sampling
 - [ ] Cylinder
+
+** Build system
+Consider a cmake-based build system
