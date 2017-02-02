@@ -1,0 +1,7 @@
+* Backlog
+
+** Subsurface scattering
+- [X] Implement single scattering 
+- [ ] Implement multiple scattering
+  - [ ] Monte-carlo integrator
+  - [ ] Next event estimation
