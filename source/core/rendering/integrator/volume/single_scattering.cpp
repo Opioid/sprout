@@ -97,8 +97,8 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 			Ray shadow_ray(current, light_sample.shape.wi, 0.f,
 						   light_sample.shape.t - epsilon, ray.time);
 
-			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
-			if (mv > 0.f) {
+			float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+			if (math::any_greater_zero(tv)) {
 				float p = volume.phase(w, -light_sample.shape.wi);
 
 				float3 scattering = volume.scattering(current, worker, Sampler_filter::Unknown);
@@ -106,7 +106,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 				float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
 							   * light_sample.radiance;
 
-				radiance += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
+				radiance += p * tv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
 		}
 
