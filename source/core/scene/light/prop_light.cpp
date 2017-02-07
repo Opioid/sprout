@@ -23,8 +23,8 @@ const Light::Transformation& Prop_light::transformation_at(
 
 void Prop_light::sample(const Transformation& transformation, float time,
 						float3_p p, float3_p n, bool total_sphere,
-						sampler::Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
-						Sampler_filter filter, Sample& result) const {
+						sampler::Sampler& sampler, uint32_t sampler_dimension,
+						Worker& worker, Sampler_filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
 
 	float area = prop_->area(part_);

@@ -19,8 +19,8 @@ public:
 
 	virtual void sample(const Transformation& transformation, float time,
 						float3_p p, float3_p n, bool total_sphere,
-						sampler::Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
-						Sampler_filter filter, Sample& result) const override;
+						sampler::Sampler& sampler, uint32_t sampler_dimension,
+						Worker& worker, Sampler_filter filter, Sample& result) const override;
 
 	virtual float pdf(const Transformation& transformation,
 					  float3_p p, float3_p wi, bool total_sphere,
