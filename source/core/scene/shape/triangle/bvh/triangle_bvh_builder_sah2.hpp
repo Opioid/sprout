@@ -26,7 +26,7 @@ class Builder_SAH2 /*: private Builder_base*/  {
 public:
 
 	using Triangles = std::vector<Index_triangle>;
-	using Vertices = std::vector<Vertex>;
+	using Vertices  = std::vector<Vertex>;
 
 	Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold);
 

@@ -21,7 +21,7 @@ void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Ver
 	Build_node root;
 
 	{
-		std::vector<Reference> references(triangles.size());
+		References references(triangles.size());
 
 		std::vector<math::simd::AABB> aabbs(thread_pool.num_threads(), math::aabb::empty());
 

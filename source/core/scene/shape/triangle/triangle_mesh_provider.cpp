@@ -42,8 +42,8 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 	BVH_preset bvh_preset = BVH_preset::Unknown;
 	options.query("bvh_preset", bvh_preset);
 
-	std::vector<Index_triangle> triangles;
-	std::vector<Vertex> vertices;
+	Triangles triangles;
+	Vertices vertices;
 	uint32_t num_parts = 0;
 
 	{
@@ -126,8 +126,8 @@ size_t Provider::num_bytes() const {
 	return sizeof(*this);
 }
 
-std::shared_ptr<Shape> Provider::create_mesh(const std::vector<Index_triangle>& triangles,
-                                             const std::vector<Vertex>& vertices,
+std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles,
+											 const Vertices& vertices,
                                              uint32_t num_parts, BVH_preset bvh_preset,
                                              thread::Pool& thread_pool) {
 	if (triangles.empty() || vertices.empty()) {
@@ -206,7 +206,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 					uint32_t b = triangles[i].b;
 					uint32_t c = triangles[i].c;
 
-					collection->triangles().push_back(Index_triangle(a, b, c, p.material_index));
+					collection->triangles().emplace_back(a, b, c, p.material_index);
 				}
 			}
 		}

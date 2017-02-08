@@ -25,4 +25,9 @@ Consider adding/improving support analytical shapes
 - [ ] Cylinder
 
 ** Build system
+
 Consider a cmake-based build system
+
+** Renderer
+
+- [ ] Experiment with different tile enumeration schemes and their impact on performance

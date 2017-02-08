@@ -20,6 +20,9 @@ class Provider : public resource::Provider<Shape> {
 
 public:
 
+	using Triangles = std::vector<Index_triangle>;
+	using Vertices  = std::vector<Vertex>;
+
 	Provider();
 	~Provider();
 
@@ -34,8 +37,8 @@ public:
 
 	virtual size_t num_bytes() const final override;
 
-	static std::shared_ptr<Shape> create_mesh(const std::vector<Index_triangle>& triangles,
-											  const std::vector<Vertex>& vertices,
+	static std::shared_ptr<Shape> create_mesh(const Triangles& triangles,
+											  const Vertices& vertices,
 											  uint32_t num_parts, BVH_preset bvh_preset,
 											  thread::Pool& thread_pool);
 

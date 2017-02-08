@@ -210,6 +210,10 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::a
 Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& references,
 															const math::aabb& aabb,
 															thread::Pool& thread_pool) {
+	static constexpr uint8_t X = 0;
+	static constexpr uint8_t Y = 1;
+	static constexpr uint8_t Z = 2;
+
 	split_candidates_.clear();
 
 	uint32_t num_triangles = static_cast<uint32_t>(references.size());
@@ -217,16 +221,16 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 	float3 halfsize = aabb.halfsize();
 	float3 position = aabb.position();
 
-	split_candidates_.emplace_back(0, position, true);
-	split_candidates_.emplace_back(1, position, true);
-	split_candidates_.emplace_back(2, position, true);
+	split_candidates_.emplace_back(X, position, true);
+	split_candidates_.emplace_back(Y, position, true);
+	split_candidates_.emplace_back(Z, position, true);
 
 	if (num_triangles <= sweep_threshold_) {
 		for (const auto& r : references) {
 			float3_p max = r.aabb.max();
-			split_candidates_.emplace_back(0, max, false);
-			split_candidates_.emplace_back(1, max, false);
-			split_candidates_.emplace_back(2, max, false);
+			split_candidates_.emplace_back(X, max, false);
+			split_candidates_.emplace_back(Y, max, false);
+			split_candidates_.emplace_back(Z, max, false);
 		}
 	} else {
 		float3_p min = aabb.min();
@@ -236,13 +240,13 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 			float fi = static_cast<float>(i);
 
 			float3 slice_x(min.x + fi * step.x, position.y, position.z);
-			split_candidates_.emplace_back(0, slice_x, false);
+			split_candidates_.emplace_back(X, slice_x, false);
 
 			float3 slice_y(position.x, min.y + fi * step.y, position.z);
-			split_candidates_.emplace_back(1, slice_y, false);
+			split_candidates_.emplace_back(Y, slice_y, false);
 
 			float3 slice_z(position.x, position.y, min.z + fi * step.z);
-			split_candidates_.emplace_back(2, slice_z, false);
+			split_candidates_.emplace_back(Z, slice_z, false);
 
 //			split_candidates_.push_back(Split_candidate(0, slice_x, true));
 //			split_candidates_.push_back(Split_candidate(1, slice_y, true));
