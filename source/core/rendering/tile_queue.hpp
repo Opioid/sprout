@@ -8,6 +8,7 @@
 namespace rendering {
 
 class Tile_queue {
+
 public:
 
 	Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius);
@@ -28,5 +29,34 @@ private:
 
 	std::mutex mutex_;
 };
+
+class Tile_queue_lockfree {
+
+public:
+
+	Tile_queue_lockfree(int2 resolution, int2 tile_dimensions,
+						int32_t filter_radius, uint32_t num_workers);
+
+	~Tile_queue_lockfree();
+
+	uint32_t size() const;
+
+	void restart();
+
+	bool pop(uint32_t id, math::Recti& tile);
+
+private:
+
+	void push(uint32_t id, const math::Recti& tile);
+
+	struct Bin {
+		std::vector<math::Recti> tiles;
+		size_t current_consume;
+	};
+
+	uint32_t num_bins_;
+	Bin* bins_;
+};
+
 
 }
