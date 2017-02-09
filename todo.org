@@ -31,5 +31,5 @@ Consider a cmake-based build system
 ** Renderer
 
 - [-] Experiment with lock-free tile enumeration
-  - [X] "Tiled scanline"
-  - [ ] Ensure that successive scanlines don't have same layout
+  - [X] "Tiled scanline" with inital offset (slower)
+  - [ ] Space filling curve (e.g. z-curve or hilbert-curve)
