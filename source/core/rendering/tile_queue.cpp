@@ -74,7 +74,10 @@ Tile_queue_lockfree::Tile_queue_lockfree(int2 resolution, int2 tile_dimensions,
 	num_bins_(num_workers),
 	bins_(new Bin[num_workers]) {
 	int2 current_pixel(0, 0);
-	uint32_t bin = 0;
+	uint32_t tiles_per_row = static_cast<uint32_t>(
+				std::ceil(static_cast<float>(resolution.x) /
+				static_cast<float>(tile_dimensions.x)));
+	uint32_t bin = (num_workers % tiles_per_row + 1) % num_workers;
 	for (;;) {
 		int2 start = current_pixel;
 		int2 end   = math::min(current_pixel + tile_dimensions, resolution);
