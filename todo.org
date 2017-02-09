@@ -30,4 +30,6 @@ Consider a cmake-based build system
 
 ** Renderer
 
-- [ ] Experiment with different tile enumeration schemes and their impact on performance
+- [-] Experiment with lock-free tile enumeration
+  - [X] "Tiled scanline"
+  - [ ] Ensure that successive scanlines don't have same layout
