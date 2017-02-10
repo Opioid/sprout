@@ -28,6 +28,12 @@
 
 *** TODO cmake-based build system
 
+** Resources
+
+*** TODO Faster file loading
+- [ ] Consider concurrent loading during lengthy processing steps (e.g. building BVH)
+- [ ] Consider embedding json and binary data in single file
+
 ** Renderer
 
 *** TODO Lock-free tile enumeration
