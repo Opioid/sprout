@@ -30,7 +30,7 @@
 - [X] Consider concurrent loading during lengthy processing steps (e.g. building BVH)
 - [ ] Consider embedding json and binary data in single file
 
-There is very simple mechanism for asynchronous BVH construction now. 
+There is a very simple mechanism for asynchronous BVH construction now. 
 It seems to work quite well in cases where BVH construction is followed by lengthy reads from disks.
 In those cases the time required for BVH construction can be hidden to a certain degree.
 
