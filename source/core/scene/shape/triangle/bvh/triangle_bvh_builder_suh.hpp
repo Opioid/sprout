@@ -14,7 +14,6 @@ public:
 	void build(Tree<Data>& tree,
 			   const std::vector<Index_triangle>& triangles,
 			   const std::vector<Vertex>& vertices,
-			   uint32_t num_parts,
 			   uint32_t max_primitives);
 
 private:

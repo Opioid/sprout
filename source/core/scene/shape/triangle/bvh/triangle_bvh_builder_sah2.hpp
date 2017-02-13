@@ -32,7 +32,7 @@ public:
 
 	template<typename Data>
 	void build(Tree<Data>& tree, const Triangles& triangles, const Vertices& vertices,
-			   uint32_t num_parts, uint32_t max_primitives, thread::Pool& thread_pool);
+			   uint32_t max_primitives, thread::Pool& thread_pool);
 
 private:
 

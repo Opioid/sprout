@@ -19,7 +19,8 @@ namespace scene { namespace shape { namespace triangle {
 
 Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection,
 							   uint32_t num_parts) :
-	collection_(collection), num_parts_(num_parts) {
+	collection_(collection) {
+	tree_.allocate_parts(num_parts);
 	vertices_.resize(collection_->vertices(0).size());
 }
 
@@ -28,7 +29,7 @@ void Morphable_mesh::init() {
 }
 
 uint32_t Morphable_mesh::num_parts() const {
-	return num_parts_;
+	return tree_.num_parts();
 }
 
 bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
@@ -167,7 +168,7 @@ void Morphable_mesh::morph(uint32_t a, uint32_t b, float weight, thread::Pool& p
 //	builder.build(tree_, collection_->triangles(), vertices_, 0, 8);
 
 	bvh::Builder_SAH2 builder(16, 64);
-	builder.build(tree_, collection_->triangles(), vertices_, num_parts_, 4, pool);
+	builder.build(tree_, collection_->triangles(), vertices_, 4, pool);
 
 	init();
 }

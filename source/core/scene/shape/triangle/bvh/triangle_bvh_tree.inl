@@ -324,17 +324,20 @@ void Tree<Data>::sample(uint32_t index, float2 r2, float3& p) const {
 }
 
 template<typename Data>
-void Tree<Data>::allocate_triangles(uint32_t num_triangles, uint32_t num_parts,
-									const std::vector<Vertex>& vertices) {
-	num_parts_ = num_parts;
-
-	delete [] num_part_triangles_;
-	num_part_triangles_ = new uint32_t[num_parts];
+void Tree<Data>::allocate_parts(uint32_t num_parts) {
+	if (num_parts != num_parts_) {
+		num_parts_ = num_parts;
+		delete [] num_part_triangles_;
+		num_part_triangles_ = new uint32_t[num_parts];
+	}
 
 	for (uint32_t i = 0; i < num_parts; ++i) {
 		num_part_triangles_[i] = 0;
 	}
+}
 
+template<typename Data>
+void Tree<Data>::allocate_triangles(uint32_t num_triangles, const std::vector<Vertex>& vertices) {
 	data_.allocate_triangles(num_triangles, vertices);
 }
 

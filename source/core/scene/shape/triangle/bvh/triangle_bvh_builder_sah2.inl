@@ -17,7 +17,7 @@ namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
 void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Vertices& vertices,
-						 uint32_t num_parts, uint32_t max_primitives, thread::Pool& thread_pool) {
+						 uint32_t max_primitives, thread::Pool& thread_pool) {
 	Build_node root;
 
 	{
@@ -53,7 +53,7 @@ void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Ver
 		split(&root, references, math::aabb(aabb.min, aabb.max), max_primitives, thread_pool);
 	}
 
-	tree.allocate_triangles(num_references_, num_parts, vertices);
+	tree.allocate_triangles(num_references_, vertices);
 
 	nodes_ = tree.allocate_nodes(num_nodes_);
 

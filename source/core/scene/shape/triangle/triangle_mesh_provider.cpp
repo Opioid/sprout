@@ -126,8 +126,7 @@ size_t Provider::num_bytes() const {
 	return sizeof(*this);
 }
 
-std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles,
-											 const Vertices& vertices,
+std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles, const Vertices& vertices,
                                              uint32_t num_parts, BVH_preset bvh_preset,
                                              thread::Pool& thread_pool) {
 	if (triangles.empty() || vertices.empty()) {
@@ -136,15 +135,17 @@ std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles,
 
     auto mesh = std::make_shared<Mesh>();
 
+	mesh->tree().allocate_parts(num_parts);
+
 	if (BVH_preset::Fast == bvh_preset) {
 		bvh::Builder_SUH builder;
-		builder.build(mesh->tree(), triangles, vertices, num_parts, 8);
+		builder.build(mesh->tree(), triangles, vertices, 8);
 	} else {
 //		bvh::Builder_SAH builder(16, 64);
-//		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
+//		builder.build(mesh->tree(), triangles, vertices, 4, thread_pool);
 
 		bvh::Builder_SAH2 builder(16, 64);
-		builder.build(mesh->tree(), triangles, vertices, num_parts, 4, thread_pool);
+		builder.build(mesh->tree(), triangles, vertices, 4, thread_pool);
 	}
 
     if (!mesh->init()) {
@@ -155,7 +156,7 @@ std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles,
 }
 
 std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename,
-													 const std::vector<std::string>& morph_targets,
+													 const Strings& morph_targets,
 													 resource::Manager& manager) {
 	auto collection = std::make_shared<Morph_target_collection>();
 

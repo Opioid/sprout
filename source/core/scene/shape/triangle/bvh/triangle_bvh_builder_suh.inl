@@ -16,14 +16,13 @@ template<typename Data>
 void Builder_SUH::build(Tree<Data>& tree,
 						const std::vector<Index_triangle>& triangles,
 						const std::vector<Vertex>& vertices,
-						uint32_t num_parts,
 						uint32_t max_primitives) {
 	std::vector<uint32_t> primitive_indices(triangles.size());
 	for (uint32_t i = 0, len = static_cast<uint32_t>(primitive_indices.size()); i < len; ++i) {
 		primitive_indices[i] = i;
 	}
 
-	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), num_parts, vertices);
+	tree.allocate_triangles(static_cast<uint32_t>(triangles.size()), vertices);
 
 	Build_node root;
 	split(&root,

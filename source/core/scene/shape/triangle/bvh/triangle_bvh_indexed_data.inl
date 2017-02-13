@@ -148,23 +148,28 @@ void Indexed_data<IV, SV>::sample(uint32_t index, float2 r2, float3& p, float2& 
 
 template<typename IV, typename SV>
 void Indexed_data<IV, SV>::allocate_triangles(uint32_t num_triangles, const Vertices& vertices) {
-	num_triangles_ = num_triangles;
-	current_triangle_ = 0;
-	num_vertices_ = static_cast<uint32_t>(vertices.size());
+	uint32_t num_vertices = static_cast<uint32_t>(vertices.size());
 
-	memory::free_aligned(shading_vertices_);
-	memory::free_aligned(intersection_vertices_);
-	memory::free_aligned(triangles_);
+	if (num_triangles != num_triangles_ || num_vertices != num_vertices_) {
+		num_triangles_ = num_triangles;
+		num_vertices_  = num_vertices;
 
-	triangles_			   = memory::allocate_aligned<Index_triangle>(num_triangles);
-	intersection_vertices_ = memory::allocate_aligned<IV>(num_vertices_);
-	shading_vertices_      = memory::allocate_aligned<SV>(num_vertices_);
+		memory::free_aligned(shading_vertices_);
+		memory::free_aligned(intersection_vertices_);
+		memory::free_aligned(triangles_);
 
-	for (uint32_t i = 0, len = num_vertices_; i < len; ++i) {
+		triangles_			   = memory::allocate_aligned<Index_triangle>(num_triangles);
+		intersection_vertices_ = memory::allocate_aligned<IV>(num_vertices);
+		shading_vertices_      = memory::allocate_aligned<SV>(num_vertices);
+	}
+
+	for (uint32_t i = 0; i < num_vertices; ++i) {
 		intersection_vertices_[i].p = float3(vertices[i].p);
 
 		shading_vertices_[i] = SV(vertices[i].n, vertices[i].t, vertices[i].uv);
 	}
+
+	current_triangle_ = 0;
 }
 
 template<typename IV, typename SV>

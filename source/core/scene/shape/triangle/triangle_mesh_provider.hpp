@@ -22,6 +22,7 @@ public:
 
 	using Triangles = std::vector<Index_triangle>;
 	using Vertices  = std::vector<Vertex>;
+	using Strings   = std::vector<std::string>;
 
 	Provider();
 	~Provider();
@@ -37,15 +38,14 @@ public:
 
 	virtual size_t num_bytes() const final override;
 
-	static std::shared_ptr<Shape> create_mesh(const Triangles& triangles,
-											  const Vertices& vertices,
+	static std::shared_ptr<Shape> create_mesh(const Triangles& triangles, const Vertices& vertices,
 											  uint32_t num_parts, BVH_preset bvh_preset,
 											  thread::Pool& thread_pool);
 
 private:
 
 	std::shared_ptr<Shape> load_morphable_mesh(const std::string& filename,
-											   const std::vector<std::string>& morph_targets,
+											   const Strings& morph_targets,
 											   resource::Manager& manager);
 };
 
