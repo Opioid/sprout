@@ -15,6 +15,7 @@ struct Vertex;
 namespace triangle {
 
 struct Index_triangle;
+class Mesh;
 
 class Provider : public resource::Provider<Shape> {
 
@@ -47,6 +48,9 @@ private:
 	std::shared_ptr<Shape> load_morphable_mesh(const std::string& filename,
 											   const Strings& morph_targets,
 											   resource::Manager& manager);
+
+	static void build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
+						  BVH_preset bvh_preset, thread::Pool& thread_pool);
 };
 
 }}}

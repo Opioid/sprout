@@ -112,7 +112,19 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 	SOFT_ASSERT(check(vertices, filename));
 
-    return create_mesh(triangles, vertices, num_parts, bvh_preset, manager.thread_pool());
+	if (triangles.empty() || vertices.empty() || !num_parts) {
+		throw std::runtime_error("No mesh data");
+	}
+
+	auto mesh = std::make_shared<Mesh>();
+
+	mesh->tree().allocate_parts(num_parts);
+
+	build_bvh(*mesh, triangles, vertices, bvh_preset, manager.thread_pool());
+
+ //   return create_mesh(triangles, vertices, num_parts, bvh_preset, manager.thread_pool());
+
+	return mesh;
 }
 
 std::shared_ptr<Shape> Provider::load(const void* /*data*/,
@@ -129,7 +141,7 @@ size_t Provider::num_bytes() const {
 std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles, const Vertices& vertices,
                                              uint32_t num_parts, BVH_preset bvh_preset,
                                              thread::Pool& thread_pool) {
-	if (triangles.empty() || vertices.empty()) {
+	if (triangles.empty() || vertices.empty() || !num_parts) {
 		throw std::runtime_error("No mesh data");
 	}
 
@@ -137,20 +149,7 @@ std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles, const V
 
 	mesh->tree().allocate_parts(num_parts);
 
-	if (BVH_preset::Fast == bvh_preset) {
-		bvh::Builder_SUH builder;
-		builder.build(mesh->tree(), triangles, vertices, 8);
-	} else {
-//		bvh::Builder_SAH builder(16, 64);
-//		builder.build(mesh->tree(), triangles, vertices, 4, thread_pool);
-
-		bvh::Builder_SAH2 builder(16, 64);
-		builder.build(mesh->tree(), triangles, vertices, 4, thread_pool);
-	}
-
-    if (!mesh->init()) {
-        throw std::runtime_error("Mesh could not be initialized");
-    }
+	build_bvh(*mesh, triangles, vertices, bvh_preset, thread_pool);
 
     return mesh;
 }
@@ -225,6 +224,22 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 	auto mesh = std::make_shared<Morphable_mesh>(collection, num_parts);
 
 	return mesh;
+}
+
+void Provider::build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
+						 BVH_preset bvh_preset, thread::Pool& thread_pool) {
+	if (BVH_preset::Fast == bvh_preset) {
+		bvh::Builder_SUH builder;
+		builder.build(mesh.tree(), triangles, vertices, 8);
+	} else {
+//		bvh::Builder_SAH builder(16, 64);
+//		builder.build(mesh->tree(), triangles, vertices, 4, thread_pool);
+
+		bvh::Builder_SAH2 builder(16, 64);
+		builder.build(mesh.tree(), triangles, vertices, 4, thread_pool);
+	}
+
+	mesh.init();
 }
 
 #ifdef SU_DEBUG
