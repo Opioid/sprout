@@ -10,15 +10,15 @@
 
 namespace scene { namespace shape { namespace triangle {
 
+struct Part {
+	uint32_t material_index;
+	uint32_t start_index;
+	uint32_t num_indices;
+};
+
 class Json_handler {
 
 public:
-
-	struct Part {
-		uint32_t material_index;
-		uint32_t start_index;
-		uint32_t num_indices;
-	};
 
 	Json_handler();
 
@@ -47,11 +47,10 @@ public:
 	bool has_tangents() const;
 	bool has_texture_coordinates() const;
 
-	const std::vector<Part>& parts() const;
+	std::vector<Part>& parts();
 
 	std::vector<Index_triangle>& triangles();
 
-	const std::vector<Vertex>& vertices() const;
 	std::vector<Vertex>& vertices();
 
 	const std::vector<std::string>& morph_targets() const;

@@ -42,95 +42,78 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 	BVH_preset bvh_preset = BVH_preset::Unknown;
 	options.query("bvh_preset", bvh_preset);
 
-	Triangles triangles;
-	Vertices vertices;
-	uint32_t num_parts = 0;
+	auto stream_pointer = manager.file_system().read_stream(filename);
+	rapidjson::IStreamWrapper json_stream(*stream_pointer);
 
-	{
-		auto stream_pointer = manager.file_system().read_stream(filename);
-		rapidjson::IStreamWrapper json_stream(*stream_pointer);
+	Json_handler handler;
 
-		Json_handler handler;
+	rapidjson::Reader reader;
 
-		rapidjson::Reader reader;
+	reader.Parse(json_stream, handler);
 
-		reader.Parse(json_stream, handler);
+	if (!handler.morph_targets().empty()) {
+		return load_morphable_mesh(filename, handler.morph_targets(), manager);
+	}
 
-		if (!handler.morph_targets().empty()) {
-			return load_morphable_mesh(filename, handler.morph_targets(), manager);
-		}
+	if (handler.vertices().empty()) {
+		throw std::runtime_error("Mesh does not contain vertices");
+	}
 
-		if (handler.parts().empty()) {
-			handler.create_part();
-		}
+	if (!handler.has_positions()) {
+		throw std::runtime_error("Mesh does not contain vertex positions");
+	}
 
-		if (!handler.has_positions()) {
-			throw std::runtime_error("Mesh does not contain vertex positions");
-		}
+	if (handler.triangles().empty()) {
+		throw std::runtime_error("Mesh does not contain indices");
+	}
 
-		if (handler.triangles().empty()) {
-			throw std::runtime_error("Mesh does not contain indices");
-		}
+	if (handler.parts().empty()) {
+		handler.create_part();
+	}
 
-		if (!handler.has_normals()) {
-			// If no normals were loaded assign something.
-			// Might be smarter to throw an exception,
-			// or just go ahead and actually compute the geometry normal...
-			for (auto& v : handler.vertices()) {
-				v.n = math::packed_float3(0.f, 1.f, 0.f);
-			}
-		}
-
-		if (!handler.has_tangents()) {
-			// If no tangents were loaded, compute the tangent space manually
-			for (auto& v : handler.vertices()) {
-				math::packed_float3 b;
-				math::coordinate_system(v.n, v.t, b);
-				v.bitangent_sign = 1.f;
-			}
-		}
-
-		triangles.swap(handler.triangles());
-
-		for (auto& p : handler.parts()) {
-			uint32_t triangles_start = p.start_index / 3;
-			uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
-
-			for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-				triangles[i].material_index = p.material_index;
-			}
-		}
-
-		vertices.swap(handler.vertices());
-
-		num_parts = static_cast<uint32_t>(handler.parts().size());
-
-		if (BVH_preset::Unknown == bvh_preset) {
-			bvh_preset = handler.bvh_preset();
+	if (!handler.has_normals()) {
+		// If no normals were loaded assign something.
+		// Might be smarter to throw an exception,
+		// or just go ahead and actually compute the geometry normal...
+		for (auto& v : handler.vertices()) {
+			v.n = math::packed_float3(0.f, 1.f, 0.f);
 		}
 	}
 
-	if (triangles.empty() || vertices.empty() || !num_parts) {
-		throw std::runtime_error("No mesh data");
+	if (!handler.has_tangents()) {
+		// If no tangents were loaded, compute the tangent space manually
+		for (auto& v : handler.vertices()) {
+			math::packed_float3 b;
+			math::coordinate_system(v.n, v.t, b);
+			v.bitangent_sign = 1.f;
+		}
 	}
 
-	SOFT_ASSERT(check(vertices, filename));
+	if (BVH_preset::Unknown == bvh_preset) {
+		bvh_preset = handler.bvh_preset();
+	}
+
+	SOFT_ASSERT(check(handler.vertices(), filename));
 
 	auto mesh = std::make_shared<Mesh>();
 
-	mesh->tree().allocate_parts(num_parts);
+	mesh->tree().allocate_parts(static_cast<uint32_t>(handler.parts().size()));
 
 	manager.thread_pool().run_async(
-		[mesh, captured_triangles = std::move(triangles),
-		 captured_vertices = std::move(vertices), bvh_preset, &manager]() {
-			build_bvh(*mesh, captured_triangles, captured_vertices,
-					  bvh_preset, manager.thread_pool());
+		[mesh, parts = std::move(handler.parts()), triangles = std::move(handler.triangles()),
+		 vertices = std::move(handler.vertices()), bvh_preset, &manager]() mutable {
+			for (auto& p : parts) {
+				uint32_t triangles_start = p.start_index / 3;
+				uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
+
+				for (uint32_t i = triangles_start; i < triangles_end; ++i) {
+					triangles[i].material_index = p.material_index;
+				}
+			}
+
+			build_bvh(*mesh, triangles, vertices, bvh_preset, manager.thread_pool());
 		}
 	);
-
-//	build_bvh(*mesh, triangles, vertices, bvh_preset, manager.thread_pool());
-
- //   return create_mesh(triangles, vertices, num_parts, bvh_preset, manager.thread_pool());
 
 	return mesh;
 }

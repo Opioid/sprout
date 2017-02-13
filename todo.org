@@ -24,15 +24,19 @@
   - [ ] UV sampling
 - [ ] Cylinder
 
-** Build system
-
-*** TODO cmake-based build system
-
 ** Resources
 
 *** TODO Faster file loading
-- [ ] Consider concurrent loading during lengthy processing steps (e.g. building BVH)
+- [X] Consider concurrent loading during lengthy processing steps (e.g. building BVH)
 - [ ] Consider embedding json and binary data in single file
+
+There is very simple mechanism for asynchronous BVH construction now. 
+It seems to work quite well in cases where BVH construction is followed by lengthy reads from disks.
+In those cases the time required for BVH construction can be hidden to a certain degree.
+
+** Build system
+
+*** TODO cmake-based build system
 
 ** Renderer
 
@@ -43,3 +47,10 @@
 
 It seems that the mutex communication is not the bottleneck in this scenario. 
 Something with atomics might be interesting, but will probably not affect overall performance.
+
+** Scene
+
+*** TODO Faster scene update
+- [ ] Investigate opportunities to parallelize some parts of scene update
+  - [ ] Calculation of distribution LUTs for light sources
+  - [ ] Updating of entity transformations

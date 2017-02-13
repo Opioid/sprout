@@ -235,16 +235,12 @@ bool Json_handler::has_texture_coordinates() const {
 	return has_texture_coordinates_;
 }
 
-const std::vector<Json_handler::Part>& Json_handler::parts() const {
+std::vector<Part>& Json_handler::parts() {
 	return parts_;
 }
 
 std::vector<Index_triangle>& Json_handler::triangles() {
 	return triangles_;
-}
-
-const std::vector<Vertex>& Json_handler::vertices() const {
-	return vertices_;
 }
 
 std::vector<Vertex>& Json_handler::vertices() {
