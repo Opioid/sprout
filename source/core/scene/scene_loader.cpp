@@ -62,6 +62,8 @@ void Loader::load(const std::string& filename, Scene& scene) {
 			load_entities(n.value, nullptr, scene);
 		}
 	}
+
+	resource_manager_.thread_pool().wait_async();
 }
 
 void Loader::register_extension_provider(const std::string& name,

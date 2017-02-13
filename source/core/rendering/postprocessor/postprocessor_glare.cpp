@@ -74,7 +74,7 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
 	Init* inits = new Init[pool.num_threads()];
 
-	pool.run([inits](uint32_t id) { inits[id].init(id); });
+	pool.run_parallel([inits](uint32_t id) { inits[id].init(id); });
 
 	for (int32_t y = 0; y < kernel_dimensions_.y; ++y) {
 		for (int32_t x = 0; x < kernel_dimensions_.x; ++x) {

@@ -120,7 +120,15 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 	mesh->tree().allocate_parts(num_parts);
 
-	build_bvh(*mesh, triangles, vertices, bvh_preset, manager.thread_pool());
+	manager.thread_pool().run_async(
+		[mesh, captured_triangles = std::move(triangles),
+		 captured_vertices = std::move(vertices), bvh_preset, &manager]() {
+			build_bvh(*mesh, captured_triangles, captured_vertices,
+					  bvh_preset, manager.thread_pool());
+		}
+	);
+
+//	build_bvh(*mesh, triangles, vertices, bvh_preset, manager.thread_pool());
 
  //   return create_mesh(triangles, vertices, num_parts, bvh_preset, manager.thread_pool());
 

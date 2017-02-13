@@ -51,6 +51,9 @@ private:
 
 	static void build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
 						  BVH_preset bvh_preset, thread::Pool& thread_pool);
+
+//	static void build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
+//						  BVH_preset bvh_preset, thread::Pool& thread_pool);
 };
 
 }}}

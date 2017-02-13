@@ -13,19 +13,25 @@ public:
 
 	using Parallel_program = std::function<void(uint32_t)>;
 	using Range_program	   = std::function<void(uint32_t, int32_t, int32_t)>;
+	using Async_program	   = std::function<void()>;
 
 	Pool(uint32_t num_threads);
 	~Pool();
 
 	uint32_t num_threads() const;
 
-	void run(Parallel_program program);
+	void run_parallel(Parallel_program program);
 	void run_range(Range_program program, int32_t begin, int32_t end);
+
+	void run_async(Async_program program);
+	void wait_async();
 
 private:
 
 	void wake_all();
 	void wake_all(int32_t begin, int32_t end);
+
+	void wake_async();
 
 	void wait_all();
 
@@ -41,7 +47,16 @@ private:
 	struct Shared {
 		Parallel_program parallel_program;
 		Range_program    range_program;
-		bool end;
+		bool quit;
+	};
+
+	struct Async {
+		Async_program program;
+		std::condition_variable wake_signal;
+		std::condition_variable done_signal;
+		std::mutex mutex;
+		bool wake;
+		bool quit;
 	};
 
 	uint32_t num_threads_;
@@ -51,7 +66,12 @@ private:
 	std::vector<Unique> uniques_;
 	std::vector<std::thread> threads_;
 
+	Async async_;
+	std::thread async_thread_;
+
 	static void loop(uint32_t id, Unique& unique, const Shared& shared);
+
+	static void async_loop(Async& async);
 };
 
 }

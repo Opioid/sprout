@@ -8,7 +8,7 @@ Pool::Pool(uint32_t num_threads) :
 	num_threads_(num_threads),
 	uniques_(num_threads),
 	threads_(num_threads) {
-	shared_.end  = false;
+	shared_.quit  = false;
 
 	for (uint32_t i = 0; i < num_threads; ++i) {
 		uniques_[i].wake = false;
@@ -17,23 +17,33 @@ Pool::Pool(uint32_t num_threads) :
 	for (uint32_t i = 0; i < num_threads; ++i) {
 		threads_[i] = std::thread(loop, i, std::ref(uniques_[i]), std::cref(shared_));
 	}
+
+	async_.quit = false;
+	async_.wake = false;
+	async_thread_ = std::thread(async_loop, std::ref(async_));
 }
 
 Pool::~Pool() {
-	shared_.end = true;
+	shared_.quit = true;
 
 	wake_all();
 
 	for (auto& t : threads_) {
 		t.join();
 	}
+
+	async_.quit = true;
+
+	wake_async();
+
+	async_thread_.join();
 }
 
 uint32_t Pool::num_threads() const {
 	return num_threads_;
 }
 
-void Pool::run(Parallel_program program) {
+void Pool::run_parallel(Parallel_program program) {
 	shared_.parallel_program = program;
 	shared_.range_program = nullptr;
 
@@ -49,6 +59,19 @@ void Pool::run_range(Range_program program, int32_t begin, int32_t end) {
 	wake_all(begin, end);
 
 	wait_all();
+}
+
+void Pool::run_async(Async_program program) {
+	wait_async();
+
+	async_.program = program;
+
+	wake_async();
+}
+
+void Pool::wait_async() {
+	std::unique_lock<std::mutex> lock(async_.mutex);
+	async_.done_signal.wait(lock, [this]{ return !async_.wake; });
 }
 
 void Pool::wake_all() {
@@ -81,6 +104,13 @@ void Pool::wake_all(int32_t begin, int32_t end) {
 	}
 }
 
+void Pool::wake_async() {
+	std::unique_lock<std::mutex> lock(async_.mutex);
+	async_.wake = true;
+	lock.unlock();
+	async_.wake_signal.notify_one();
+}
+
 void Pool::wait_all() {
 	for (auto& u : uniques_) {
 		std::unique_lock<std::mutex> lock(u.mutex);
@@ -93,7 +123,7 @@ void Pool::loop(uint32_t id, Unique& unique, const Shared& shared) {
 		std::unique_lock<std::mutex> lock(unique.mutex);
 		unique.wake_signal.wait(lock, [&unique]{ return unique.wake; });
 
-		if (shared.end) {
+		if (shared.quit) {
 			break;
 		}
 
@@ -106,6 +136,23 @@ void Pool::loop(uint32_t id, Unique& unique, const Shared& shared) {
 		unique.wake = false;
 		lock.unlock();
 		unique.done_signal.notify_one();
+	}
+}
+
+void Pool::async_loop(Async& async) {
+	for (;;) {
+		std::unique_lock<std::mutex> lock(async.mutex);
+		async.wake_signal.wait(lock, [&async]{ return async.wake; });
+
+		if (async.quit) {
+			break;
+		}
+
+		async.program();
+
+		async.wake = false;
+		lock.unlock();
+		async.done_signal.notify_one();
 	}
 }
 
