@@ -56,12 +56,12 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 		reader.Parse(json_stream, handler);
 
-		if (handler.parts().empty()) {
-			handler.create_part();
-		}
-
 		if (!handler.morph_targets().empty()) {
 			return load_morphable_mesh(filename, handler.morph_targets(), manager);
+		}
+
+		if (handler.parts().empty()) {
+			handler.create_part();
 		}
 
 		if (!handler.has_positions()) {
@@ -110,11 +110,11 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 		}
 	}
 
-	SOFT_ASSERT(check(vertices, filename));
-
 	if (triangles.empty() || vertices.empty() || !num_parts) {
 		throw std::runtime_error("No mesh data");
 	}
+
+	SOFT_ASSERT(check(vertices, filename));
 
 	auto mesh = std::make_shared<Mesh>();
 
