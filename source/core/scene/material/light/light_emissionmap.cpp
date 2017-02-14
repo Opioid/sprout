@@ -9,6 +9,7 @@
 #include "base/math/math.hpp"
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.inl"
+#include "base/thread/thread_pool.hpp"
 
 namespace scene { namespace material { namespace light {
 
@@ -66,7 +67,7 @@ float Emissionmap::emission_pdf(float2 uv, const Worker& worker,
 void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 								   const Transformation& /*transformation*/,
 								   float /*area*/, bool importance_sampling,
-								   thread::Pool& /*pool*/) {
+								   thread::Pool& pool) {
 	if (average_emission_.x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
@@ -74,38 +75,46 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 	}
 
 	if (importance_sampling) {
-		float3 average_radiance = float3(0.f);
-
-		float total_weight = 0.f;
-
 		auto d = emission_map_.texture()->dimensions_2();
 		std::vector<float> luminance(d.x * d.y);
 
-		float2 id(1.f / static_cast<float>(d.x), 1.f / static_cast<float>(d.y));
+		float2 rd(1.f / static_cast<float>(d.x), 1.f / static_cast<float>(d.y));
 
 		auto texture = emission_map_.texture();
 
-		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			float v = id.y * (static_cast<float>(y) + 0.5f);
+		std::vector<float4> artws(pool.num_threads(), float4(0.f));
 
-			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				float u = id.x * (static_cast<float>(x) + 0.5f);
+		float ef = emission_factor_;
 
-				float uv_weight = shape.uv_weight(float2(u, v));
+		pool.run_range([&luminance, &artws, &shape, texture, d, rd, ef]
+			(uint32_t id, int32_t begin, int32_t end) {
+				for (int32_t y = begin; y < end; ++y) {
+					float v = rd.y * (static_cast<float>(y) + 0.5f);
 
-				float3 radiance = emission_factor_ * texture->at_3(x, y);
+					for (int32_t x = 0; x < d.x; ++x) {
+						float u = rd.x * (static_cast<float>(x) + 0.5f);
 
-				average_radiance += uv_weight * radiance;
+						float uv_weight = shape.uv_weight(float2(u, v));
 
-				total_weight += uv_weight;
+						float3 radiance = ef * texture->at_3(x, y);
 
-				luminance[l] = uv_weight * spectrum::luminance(radiance);
-			}
+						int32_t l = y * d.x + x;
+						luminance[l] = uv_weight * spectrum::luminance(radiance);
+
+						artws[id] += float4(uv_weight * radiance, uv_weight);
+					}
+				}
+			}, 0, d.y);
+
+		// artw: (float3(averave_radiance), total_weight)
+		float4 artw(0.f);
+		for (auto& a : artws) {
+			artw += a;
 		}
 
-		average_emission_ = average_radiance / total_weight;
+		average_emission_ = artw.xyz / artw.w;
 
-		total_weight_ = total_weight;
+		total_weight_ = artw.w;
 
 		distribution_.init(luminance.data(), d);
 	} else {

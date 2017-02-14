@@ -51,8 +51,10 @@ Something with atomics might be interesting, but will probably not noticeably af
 ** Scene
 
 *** TODO Faster scene update
-- [ ] Investigate opportunities to parallelize some parts of scene update
-  - [ ] Calculation of distribution LUTs for light sources
-	- [ ] Image
+- [-] Investigate opportunities to parallelize some parts of scene update
+  - [-] Calculation of distribution LUTs for light sources
+	- [X] Image
 	- [ ] Mesh
   - [ ] Updating of entity transformations
+
+The results are disappointing so far (e.g. less than 2x speedup for 12 threads).
