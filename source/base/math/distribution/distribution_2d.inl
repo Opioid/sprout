@@ -2,6 +2,7 @@
 
 #include "distribution_2d.hpp"
 #include "distribution_1d.inl"
+#include "thread/thread_pool.hpp"
 
 namespace math {
 
@@ -15,6 +16,26 @@ inline void Distribution_2D::init(const float* data, int2 dimensions) {
 
 		integrals[i] = conditional_[i].integral();
 	}
+
+	marginal_.init(integrals.data(), dimensions.y);
+
+	conditional_size_ = static_cast<float>(conditional_.size());
+	conditional_max_  = static_cast<uint32_t>(conditional_.size() - 1);
+}
+
+inline void Distribution_2D::init(const float* data, int2 dimensions, thread::Pool& pool) {
+	conditional_.resize(dimensions.y);
+
+	std::vector<float> integrals(dimensions.y);
+
+	pool.run_range([this, data, &integrals, dimensions]
+		(uint32_t /*id*/, int32_t begin, int32_t end) {
+			for (int32_t i = begin; i < end; ++i) {
+				conditional_[i].init(data + i * dimensions.x, dimensions.x);
+
+				integrals[i] = conditional_[i].integral();
+			}
+	}, 0, dimensions.y);
 
 	marginal_.init(integrals.data(), dimensions.y);
 

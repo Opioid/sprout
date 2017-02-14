@@ -3,6 +3,8 @@
 #include "distribution_1d.hpp"
 #include "math/vector.hpp"
 
+namespace thread { class Pool; }
+
 namespace math {
 
 class Distribution_2D {
@@ -10,6 +12,7 @@ class Distribution_2D {
 public:
 
 	void init(const float* data, int2 dimensions);
+	void init(const float* data, int2 dimensions, thread::Pool& pool);
 
 	float2 sample_continuous(float2 r2, float& pdf) const;
 

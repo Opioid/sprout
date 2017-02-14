@@ -82,9 +82,9 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 
 		auto texture = emission_map_.texture();
 
-		std::vector<float4> artws(pool.num_threads(), float4(0.f));
-
 		float ef = emission_factor_;
+
+		std::vector<float4> artws(pool.num_threads(), float4(0.f));
 
 		pool.run_range([&luminance, &artws, &shape, texture, d, rd, ef]
 			(uint32_t id, int32_t begin, int32_t end) {
@@ -116,7 +116,7 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 
 		total_weight_ = artw.w;
 
-		distribution_.init(luminance.data(), d);
+		distribution_.init(luminance.data(), d, pool);
 	} else {
 		average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
 	}
