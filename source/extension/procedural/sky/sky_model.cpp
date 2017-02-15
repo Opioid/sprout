@@ -1,5 +1,5 @@
 #include "sky_model.hpp"
-#include "hosek/ArHosekSkyModel.h"
+#include "hosek/ArHosekSkyModel.hpp"
 #include "base/math/vector.inl"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.inl"

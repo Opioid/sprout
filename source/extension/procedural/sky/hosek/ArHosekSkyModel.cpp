@@ -97,10 +97,10 @@ All instructions on how to use this code are in the accompanying header file.
 
 */
 
-#include "ArHosekSkyModel.h"
-#include "ArHosekSkyModelData_Spectral.h"
-#include "ArHosekSkyModelData_CIEXYZ.h"
-#include "ArHosekSkyModelData_RGB.h"
+#include "ArHosekSkyModel.hpp"
+#include "ArHosekSkyModelData_Spectral.hpp"
+#include "ArHosekSkyModelData_CIEXYZ.hpp"
+#include "ArHosekSkyModelData_RGB.hpp"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
