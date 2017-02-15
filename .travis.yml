@@ -4,5 +4,5 @@ script:
  - cd source
  - mkdir build
  - cd build
- - qmake ..
+ - qmake .. "QMAKE_CXX=g++-49"
  - make
