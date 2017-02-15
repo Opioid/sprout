@@ -1,8 +1,10 @@
 language: cpp
 
+install:
+ - sudo apt-get -y install g++-49
+
 script:
- - cd source
  - mkdir build
  - cd build
- - qmake .. "QMAKE_CXX=g++-49"
+ - qmake ..\source "QMAKE_CXX=g++-49"
  - make
