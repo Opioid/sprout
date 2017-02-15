@@ -1,0 +1,4 @@
+script:
+ - qmake -project
+ - qmake sprout.pro
+ - make
