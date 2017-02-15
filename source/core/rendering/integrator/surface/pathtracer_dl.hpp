@@ -5,7 +5,6 @@
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_random.hpp"
 #include "sampler/sampler_hammersley.hpp"
-#include "image/texture/sampler/address_mode.hpp"
 #include "scene/material/sampler_settings.hpp"
 
 namespace scene {

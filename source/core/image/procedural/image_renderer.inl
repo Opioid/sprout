@@ -2,7 +2,6 @@
 
 #include "image_renderer.hpp"
 #include "image/typed_image.inl"
-#include "image/texture/sampler/address_mode.hpp"
 #include "base/math/vector.inl"
 #include "base/spectrum/rgb.inl"
 

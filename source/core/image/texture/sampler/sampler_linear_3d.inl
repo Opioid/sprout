@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sampler_linear_3d.hpp"
+#include "address_mode.hpp"
 #include "bilinear.hpp"
 #include "image/texture/texture.hpp"
 #include <algorithm>

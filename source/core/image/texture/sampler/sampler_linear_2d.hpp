@@ -4,7 +4,7 @@
 
 namespace image { namespace texture { namespace sampler {
 
-template<typename Address_mode_U, typename Address_mode_V>
+template<typename Address_U, typename Address_V>
 class Linear_2D : public Sampler_2D {
 
 public:

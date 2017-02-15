@@ -76,7 +76,6 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 				  rotation_y, l, w, h, i * num_vertices, triangles, vertices);
 	}
 
-
 	calculate_normals(triangles, vertices);
 
 	return scene::shape::triangle::Provider::create_mesh(triangles, vertices,

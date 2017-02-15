@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sampler_nearest_3d.hpp"
+#include "address_mode.hpp"
 #include "image/texture/texture.hpp"
 #include <algorithm>
 
