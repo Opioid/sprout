@@ -25,23 +25,27 @@ A render is configurable by various json files
 that describe the different parts of the scene (shapes, lights, material parameters etc.) 
 as well as the camera settings.
 
-** Installation
+** Build
+
+#+BEGIN_EXAMPLE
+mkdir build
+cd build
+qmake ../source "QMAKE_CXX = g++-4.9" "QMAKE_CXXFLAGS += -std=c++14"
+make
+#+END_EXAMPLE
 
 [[https://travis-ci.org/Opioid/sprout][https://api.travis-ci.org/Opioid/sprout.svg?branch%3Dmaster]]
-
 
 All source files needed to build the project are included in the repository.
 In order to build the project qmake is needed. 
 Unfortunately there doesn't exist a cmake project yet.
+Personally I use Qt Creator on both Linux and Windows.
 
 sprout needs a c++14 compiler.
 
-On Linux it might be necessary to persuade Qt Creator to use the c++14 flag for the compiler.
-I've had trouble with this in the [[https://forum.qt.io/topic/52334/qmake-substituting-c-14-with-c-1][past]].
-Generally it should work with Clang 3.5 and libstdc++ 4.9 or higher. 
+On Linux it should work with Clang 3.5 and libstdc++ 4.9 or higher. 
 It should also build with GCC 4.9 or higher.
-
-On Windows it should work out of the box with the Visual Studio 2013 and 2015 compilers.
+On Windows it should work out of the box with the Visual Studio 2013 or a newer version.
 
 ** Dependencies
 
