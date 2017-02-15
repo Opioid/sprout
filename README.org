@@ -49,7 +49,7 @@ On Windows it should work out of the box with the Visual Studio 2013 or a newer 
 
 ** Dependencies
 
-I try to keep the dependencies reasonably low in this project.
+I try to keep the required dependencies reasonably low in this project.
 At the moment there are three of them.
 All of them are header-only libraries and included in the repository.
 
@@ -60,3 +60,9 @@ Dependencies
 
 If you have [[https://www.ffmpeg.org/][FFmpeg]] installed you can export animations to mp4, 
 but it is neither required to build nor to run.
+
+Additionally, the repository includes a slightly modified copy of the [[http://cgg.mff.cuni.cz/projects/SkylightModelling/][Hosek]] sky model.
+I list this code separately from the other third-party dependencies,
+because it can easily be removed without impairing the overall functionality of the renderer. 
+The main changes are a conversion from double to float type 
+and some optimizations regarding pow() with a constant exponent.
