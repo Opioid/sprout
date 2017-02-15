@@ -34,7 +34,7 @@ Image::Image(const Description& description) :
 
 Image::~Image() {}
 
-void Image::resize(const Description &description) {
+void Image::resize(const Description& description) {
 	description_ = description;
 	area_ = description.dimensions.x * description.dimensions.y;
 	volume_ = description.dimensions.x * description.dimensions.y * description.dimensions.z;
@@ -57,15 +57,6 @@ int2 Image::coordinates_2(int32_t index) const {
 	c.y = index / description_.dimensions.x;
 	c.x = index - c.y * description_.dimensions.x;
 	return c;
-}
-
-int Image::checked_index(int2 xy) const {
-	if (xy.x < 0 || xy.x >= description_.dimensions.x
-	||  xy.y < 0 || xy.y >= description_.dimensions.y) {
-		return -1;
-	}
-
-	return xy.y * description_.dimensions.x + xy.x;
 }
 
 }

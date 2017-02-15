@@ -44,7 +44,6 @@ public:
 	int32_t volume() const;
 
 	int2 coordinates_2(int32_t index) const;
-	int  checked_index(int2 xy) const;
 
 	virtual size_t num_bytes() const = 0;
 

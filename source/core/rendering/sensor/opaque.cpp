@@ -18,7 +18,7 @@ Opaque::~Opaque() {
 void Opaque::clear() {
 	auto d = dimensions();
 	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
-		pixels_[i] = float4(0.f, 0.f, 0.f, 0.f);
+		pixels_[i] = float4(0.f);
 	}
 }
 
