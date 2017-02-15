@@ -10,6 +10,5 @@ install:
 script:
  - mkdir build
  - cd build
- - qmake --version
- - qmake ../source "QMAKE_CXX=g++-4.9" "QMAKE_CXXFLAGS += -std=gnu++11"
+ - qmake ../source "QMAKE_CXX=g++-4.9" "QMAKE_CXXFLAGS += -std=c++14"
  - make
