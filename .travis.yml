@@ -1,4 +1,4 @@
 script:
  - qmake -project
  - qmake source/sprout.pro
- - make
+ - make -C source
