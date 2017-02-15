@@ -1,4 +1,8 @@
+language: cpp
+
 script:
- - qmake -project
- - qmake source/sprout.pro
- - make -C source
+ - cd source
+ - mkdir build
+ - cd build
+ - qmake ..
+ - make
