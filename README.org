@@ -27,7 +27,8 @@ as well as the camera settings.
 
 ** Installation
 
-[[https://api.travis-ci.org/Opioid/sprout.svg?branch%3Dmaster]]
+[[https://travis-ci.org/Opioid/sprout][https://api.travis-ci.org/Opioid/sprout.svg?branch%3Dmaster]]
+
 
 All source files needed to build the project are included in the repository.
 In order to build the project qmake is needed. 
