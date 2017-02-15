@@ -18,8 +18,6 @@ HEADERS += \
 	math/print.hpp \
 	math/quaternion.hpp \
 	math/quaternion.inl \
-	math/sampling.hpp \
-	math/sampling.inl \	
 	math/ray.hpp \
 	math/ray.inl \
 	math/rectangle.hpp \

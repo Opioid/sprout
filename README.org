@@ -27,8 +27,10 @@ as well as the camera settings.
 
 ** Installation
 
+[[https://api.travis-ci.org/Opioid/sprout.svg?branch%3Dmaster][https://travis-ci.org/Opioid/sprout]]
+
 All source files needed to build the project are included in the repository.
-In order to build the project Qt Creator is needed. 
+In order to build the project qmake is needed. 
 Unfortunately there doesn't exist a cmake project yet.
 
 sprout needs a c++14 compiler.
