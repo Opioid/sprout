@@ -9,5 +9,6 @@ install:
 script:
  - mkdir build
  - cd build
+ - qmake --version
  - qmake ../source "QMAKE_CXX=g++-4.9"
  - make
