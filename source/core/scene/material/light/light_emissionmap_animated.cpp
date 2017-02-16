@@ -93,7 +93,7 @@ float Emissionmap_animated::opacity(float2 uv, float /*time*/,
 void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 											const Transformation& /*transformation*/,
 											float /*area*/, bool importance_sampling,
-											thread::Pool& /*pool*/) {
+											thread::Pool& pool) {
 	if (average_emission_.x >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
@@ -101,7 +101,7 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 	}
 
 	if (importance_sampling) {
-		float3 average_radiance = float3(0.f);
+	/*	float3 average_radiance = float3(0.f);
 
 		float total_weight = 0.f;
 
@@ -135,6 +135,54 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 		total_weight_ = total_weight;
 
 		distribution_.init(luminance.data(), d);
+		*/
+		auto texture = emission_map_.texture();
+		auto d = texture->dimensions_2();
+
+		std::vector<math::Distribution_2D::Distribution_impl> conditional(d.y);
+
+		std::vector<float4> artws(pool.num_threads(), float4(0.f));
+
+		float2 rd(1.f / static_cast<float>(d.x), 1.f / static_cast<float>(d.y));
+
+		int32_t element = element_;
+
+		float ef = emission_factor_;
+
+		pool.run_range([&conditional, &artws, &shape, texture, d, rd, element, ef]
+			(uint32_t id, int32_t begin, int32_t end) {
+				std::vector<float> luminance(d.x);
+
+				for (int32_t y = begin; y < end; ++y) {
+					float v = rd.y * (static_cast<float>(y) + 0.5f);
+
+					for (int32_t x = 0; x < d.x; ++x) {
+						float u = rd.x * (static_cast<float>(x) + 0.5f);
+
+						float uv_weight = shape.uv_weight(float2(u, v));
+
+						float3 radiance = ef * texture->at_element_3(x, y, element);
+
+						luminance[x] = uv_weight * spectrum::luminance(radiance);
+
+						artws[id] += float4(uv_weight * radiance, uv_weight);
+					}
+
+					conditional[y].init(luminance.data(), d.x);
+				}
+			}, 0, d.y);
+
+		// artw: (float3(averave_radiance), total_weight)
+		float4 artw(0.f);
+		for (auto& a : artws) {
+			artw += a;
+		}
+
+		average_emission_ = artw.xyz / artw.w;
+
+		total_weight_ = artw.w;
+
+		distribution_.init(conditional);
 	} else {
 		average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
 	}
