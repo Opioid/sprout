@@ -43,13 +43,13 @@ private:
 
 	Texture_adapter emission_map_;
 
-	float emission_factor_;
-
-	float total_weight_;
-
 	math::Distribution_2D distribution_;
 
 	float3 average_emission_;
+
+	float emission_factor_;
+
+	float total_weight_;
 };
 
 }}}

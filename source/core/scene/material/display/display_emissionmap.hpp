@@ -45,17 +45,17 @@ private:
 
 	Texture_adapter emission_map_;
 
+	math::Distribution_2D distribution_;
+
+	float3 average_emission_;
+
 	float emission_factor_;
+
+	float total_weight_;
 
 	float roughness_;
 
 	float f0_;
-
-	float3 average_emission_;
-
-	float total_weight_;
-
-	math::Distribution_2D distribution_;
 };
 
 }}}

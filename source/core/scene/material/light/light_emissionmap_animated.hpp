@@ -12,8 +12,7 @@ public:
 
 	Emissionmap_animated(Sample_cache& sample_cache,
 						 const Sampler_settings& sampler_settings,
-						 bool two_sided,
-						 const Texture_adapter& emission_map,
+						 bool two_sided, const Texture_adapter& emission_map,
 						 float emission_factor, float animation_duration);
 
 	virtual void tick(float absolute_time, float time_slice) final override;
@@ -51,13 +50,13 @@ private:
 
 	Texture_adapter emission_map_;
 
-	float emission_factor_;
-
-	float total_weight_;
-
 	math::Distribution_2D distribution_;
 
 	float3 average_emission_;
+
+	float emission_factor_;
+
+	float total_weight_;
 
 	const float frame_length_;
 

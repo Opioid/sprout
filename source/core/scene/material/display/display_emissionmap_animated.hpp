@@ -12,9 +12,8 @@ public:
 
 	Emissionmap_animated(Sample_cache& sample_cache,
 						 const Sampler_settings& sampler_settings,
-						 bool two_sided,
-						 const Texture_adapter& emission_map,
-						 float animation_duration);
+						 bool two_sided, const Texture_adapter& emission_map,
+						 float emission_factor, float animation_duration);
 
 	virtual void tick(float absolute_time, float time_slice) final override;
 
@@ -47,7 +46,6 @@ public:
 
 	virtual size_t num_bytes() const final override;
 
-	void set_emission_factor(float emission_factor);
 	void set_roughness(float roughness);
 	void set_ior(float ior);
 
@@ -55,21 +53,21 @@ private:
 
 	Texture_adapter emission_map_;
 
-	float emission_factor_;
-
-	float roughness_;
-
-	float f0_;
-
-	float total_weight_;
-
 	math::Distribution_2D distribution_;
 
 	float3 average_emission_;
 
+	float emission_factor_;
+
+	float total_weight_;
+
 	const float frame_length_;
 
 	int32_t element_;
+
+	float roughness_;
+
+	float f0_;
 };
 
 }}}

@@ -14,14 +14,13 @@ namespace scene { namespace material { namespace light {
 
 Emissionmap_animated::Emissionmap_animated(Sample_cache& sample_cache,
 										   const Sampler_settings& sampler_settings,
-										   bool two_sided,
-										   const Texture_adapter& emission_map,
+										   bool two_sided, const Texture_adapter& emission_map,
 										   float emission_factor, float animation_duration) :
 	Material(sample_cache, sampler_settings, two_sided),
 	emission_map_(emission_map),
-	emission_factor_(emission_factor),
 	average_emission_(float3(-1.f)),
-	frame_length_(animation_duration / static_cast<float>(emission_map_.texture()->num_elements())),
+	emission_factor_(emission_factor),
+	frame_length_(animation_duration / static_cast<float>(emission_map.texture()->num_elements())),
 	element_(0) {}
 
 void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {

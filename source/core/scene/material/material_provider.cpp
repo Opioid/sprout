@@ -245,9 +245,8 @@ Material_ptr Provider::load_display(const json::Value& display_value, resource::
 		if (animation_duration > 0.f) {
 			auto material = std::make_shared<display::Emissionmap_animated>(
 						sample_cache_, sampler_settings, two_sided,
-						emission_map, animation_duration);
+						emission_map, emission_factor, animation_duration);
 			material->set_mask(mask);
-			material->set_emission_factor(emission_factor);
 			material->set_roughness(roughness);
 			material->set_ior(ior);
 			return material;

@@ -15,13 +15,13 @@ namespace scene { namespace material { namespace display {
 
 Emissionmap_animated::Emissionmap_animated(Sample_cache& sample_cache,
 										   const Sampler_settings& sampler_settings,
-										   bool two_sided,
-										   const Texture_adapter& emission_map,
-										   float animation_duration) :
+										   bool two_sided, const Texture_adapter& emission_map,
+										   float emission_factor, float animation_duration) :
 	material::Material(sample_cache, sampler_settings, two_sided),
 	emission_map_(emission_map),
 	average_emission_(float3(-1.f)),
-	frame_length_(animation_duration / static_cast<float>(emission_map_.texture()->num_elements())),
+	emission_factor_(emission_factor),
+	frame_length_(animation_duration / static_cast<float>(emission_map.texture()->num_elements())),
 	element_(0) {}
 
 void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
@@ -150,10 +150,6 @@ bool Emissionmap_animated::is_animated() const {
 
 size_t Emissionmap_animated::num_bytes() const {
 	return sizeof(*this);
-}
-
-void Emissionmap_animated::set_emission_factor(float emission_factor) {
-	emission_factor_ = emission_factor;
 }
 
 void Emissionmap_animated::set_roughness(float roughness) {
