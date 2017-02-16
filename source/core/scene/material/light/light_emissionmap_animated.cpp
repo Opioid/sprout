@@ -101,41 +101,6 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 	}
 
 	if (importance_sampling) {
-	/*	float3 average_radiance = float3(0.f);
-
-		float total_weight = 0.f;
-
-		auto d = emission_map_.texture()->dimensions_2();
-		std::vector<float> luminance(d.x * d.y);
-
-		float2 id(1.f / static_cast<float>(d.x), 1.f / static_cast<float>(d.y));
-
-		auto texture = emission_map_.texture();
-
-		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			float v = id.y * (static_cast<float>(y) + 0.5f);
-
-			for (int32_t x = 0; x < d.x; ++x, ++l) {
-				float u = id.x * (static_cast<float>(x) + 0.5f);
-
-				float uv_weight = shape.uv_weight(float2(u, v));
-
-				float3 radiance = emission_factor_ * texture->at_element_3(x, y, element_);
-
-				average_radiance += uv_weight * radiance;
-
-				total_weight += uv_weight;
-
-				luminance[l] = uv_weight * spectrum::luminance(radiance);
-			}
-		}
-
-		average_emission_ = average_radiance / total_weight;
-
-		total_weight_ = total_weight;
-
-		distribution_.init(luminance.data(), d);
-		*/
 		auto texture = emission_map_.texture();
 		auto d = texture->dimensions_2();
 

@@ -8,8 +8,9 @@
 #include "image/texture/texture_provider.hpp"
 #include "cloth/cloth_material.hpp"
 #include "cloth/cloth_sample.hpp"
-#include "display/display_material.hpp"
-#include "display/display_material_animated.hpp"
+#include "display/display_constant.hpp"
+#include "display/display_emissionmap.hpp"
+#include "display/display_emissionmap_animated.hpp"
 #include "display/display_sample.hpp"
 #include "glass/glass_material.hpp"
 #include "glass/glass_sample.hpp"
@@ -240,27 +241,35 @@ Material_ptr Provider::load_display(const json::Value& display_value, resource::
 		}
 	}
 
-	if (animation_duration > 0.f) {
-		auto material = std::make_shared<display::Material_animated>(
-					sample_cache_, sampler_settings, two_sided,
-					emission_map, animation_duration);
-		material->set_mask(mask);
-		material->set_emission_factor(emission_factor);
-		material->set_roughness(roughness);
-		material->set_ior(ior);
-		return material;
-	} else {
-		auto material = std::make_shared<display::Material>(sample_cache_, sampler_settings,
-															two_sided);
-
-		material->set_mask(mask);
-		material->set_emission_map(emission_map);
-		material->set_emission(radiance);
-		material->set_emission_factor(emission_factor);
-		material->set_roughness(roughness);
-		material->set_ior(ior);
-		return material;
+	if (emission_map.is_valid()) {
+		if (animation_duration > 0.f) {
+			auto material = std::make_shared<display::Emissionmap_animated>(
+						sample_cache_, sampler_settings, two_sided,
+						emission_map, animation_duration);
+			material->set_mask(mask);
+			material->set_emission_factor(emission_factor);
+			material->set_roughness(roughness);
+			material->set_ior(ior);
+			return material;
+		} else {
+			auto material = std::make_shared<display::Emissionmap>(sample_cache_, sampler_settings,
+																   two_sided);
+			material->set_mask(mask);
+			material->set_emission_map(emission_map);
+			material->set_emission_factor(emission_factor);
+			material->set_roughness(roughness);
+			material->set_ior(ior);
+			return material;
+		}
 	}
+
+	auto material = std::make_shared<display::Constant>(sample_cache_, sampler_settings,
+														two_sided);
+	material->set_mask(mask);
+	material->set_emission(radiance);
+	material->set_roughness(roughness);
+	material->set_ior(ior);
+	return material;
 }
 
 Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Manager& manager) {
@@ -328,7 +337,6 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 	} else {
 		if (thickness > 0.f) {
 			auto material = std::make_shared<glass::Thinglass>(sample_cache_, sampler_settings);
-
 			material->set_normal_map(normal_map);
 			material->set_refraction_color(refraction_color);
 			material->set_absorption_color(absorption_color);
@@ -414,13 +422,11 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 			auto material = std::make_shared<light::Emissionmap_animated>(
 						sample_cache_, sampler_settings, two_sided,
 						emission_map, emission_factor, animation_duration);
-
 			material->set_mask(mask);
 			return material;
 		} else {
 			auto material = std::make_shared<light::Emissionmap>(sample_cache_, sampler_settings,
 																 two_sided);
-
 			material->set_mask(mask);
 			material->set_emission_map(emission_map);
 			material->set_emission_factor(emission_factor);
