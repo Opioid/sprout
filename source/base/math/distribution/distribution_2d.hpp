@@ -11,8 +11,13 @@ class Distribution_2D {
 
 public:
 
+//	using Distribution_impl = Distribution_1D;
+//	using Distribution_impl = Distribution_lut_1D;
+	using Distribution_impl = Distribution_implicit_pdf_lut_1D;
+
 	void init(const float* data, int2 dimensions);
 	void init(const float* data, int2 dimensions, thread::Pool& pool);
+	void init(std::vector<Distribution_impl>& conditional);
 
 	float2 sample_continuous(float2 r2, float& pdf) const;
 
@@ -21,10 +26,6 @@ public:
 	size_t num_bytes() const;
 
 private:
-
-//	using Distribution_impl = Distribution_1D;
-//	using Distribution_impl = Distribution_lut_1D;
-	using Distribution_impl = Distribution_implicit_pdf_lut_1D;
 
 	Distribution_impl marginal_;
 

@@ -96,6 +96,8 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(const float* data, size_t len
 	size_ = static_cast<float>(len);
 }
 
+//==================================================================================================
+
 inline void Distribution_lut_1D::init(const float* data, uint32_t len, uint32_t lut_size) {
 	precompute_1D_pdf_cdf(data, len);
 

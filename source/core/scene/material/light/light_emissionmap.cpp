@@ -75,19 +75,21 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 	}
 
 	if (importance_sampling) {
-		auto d = emission_map_.texture()->dimensions_2();
-		std::vector<float> luminance(d.x * d.y);
-
-		float2 rd(1.f / static_cast<float>(d.x), 1.f / static_cast<float>(d.y));
-
 		auto texture = emission_map_.texture();
+		auto d = texture->dimensions_2();
 
-		float ef = emission_factor_;
+		std::vector<math::Distribution_2D::Distribution_impl> conditional(d.y);
 
 		std::vector<float4> artws(pool.num_threads(), float4(0.f));
 
-		pool.run_range([&luminance, &artws, &shape, texture, d, rd, ef]
+		float2 rd(1.f / static_cast<float>(d.x), 1.f / static_cast<float>(d.y));
+
+		float ef = emission_factor_;
+
+		pool.run_range([&conditional, &artws, &shape, texture, d, rd, ef]
 			(uint32_t id, int32_t begin, int32_t end) {
+				std::vector<float> luminance(d.x);
+
 				for (int32_t y = begin; y < end; ++y) {
 					float v = rd.y * (static_cast<float>(y) + 0.5f);
 
@@ -98,11 +100,12 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 
 						float3 radiance = ef * texture->at_3(x, y);
 
-						int32_t l = y * d.x + x;
-						luminance[l] = uv_weight * spectrum::luminance(radiance);
+						luminance[x] = uv_weight * spectrum::luminance(radiance);
 
 						artws[id] += float4(uv_weight * radiance, uv_weight);
 					}
+
+					conditional[y].init(luminance.data(), d.x);
 				}
 			}, 0, d.y);
 
@@ -116,7 +119,7 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 
 		total_weight_ = artw.w;
 
-		distribution_.init(luminance.data(), d, pool);
+		distribution_.init(conditional);
 	} else {
 		average_emission_ = emission_factor_ * emission_map_.texture()->average_3();
 	}

@@ -43,6 +43,23 @@ inline void Distribution_2D::init(const float* data, int2 dimensions, thread::Po
 	conditional_max_  = static_cast<uint32_t>(conditional_.size() - 1);
 }
 
+inline void Distribution_2D::init(std::vector<Distribution_impl>& conditional) {
+	conditional_ = std::move(conditional);
+
+	std::vector<float> integrals(conditional_.size());
+
+	uint32_t num_conditional = static_cast<uint32_t>(conditional_.size());
+
+	for (uint32_t i = 0; i < num_conditional; ++i) {
+		integrals[i] = conditional_[i].integral();
+	}
+
+	marginal_.init(integrals.data(), num_conditional);
+
+	conditional_size_ = static_cast<float>(num_conditional);
+	conditional_max_  = num_conditional - 1;
+}
+
 inline float2 Distribution_2D::sample_continuous(float2 r2, float& pdf) const {
 	float2 result;
 
