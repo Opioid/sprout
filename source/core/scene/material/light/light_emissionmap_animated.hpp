@@ -19,7 +19,7 @@ public:
 
 	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
 										   const Worker& worker,
-										   Sampler_filter filter) final override;
+										   Sampler_filter filter) override;
 
 	virtual float3 sample_radiance(float3_p wi, float2 uv,
 								   float area, float time, const Worker& worker,
@@ -44,9 +44,9 @@ public:
 
 	virtual bool is_animated() const final override;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override;
 
-private:
+protected:
 
 	Texture_adapter emission_map_;
 

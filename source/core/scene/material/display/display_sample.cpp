@@ -53,7 +53,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	float n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_,
 											 schlick, sampler, result);
 
-	result.reflection = n_dot_wi * result.reflection;
+	result.reflection *= n_dot_wi;
 }
 
 bool Sample::is_pure_emissive() const {
