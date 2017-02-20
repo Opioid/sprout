@@ -24,6 +24,8 @@
   - [ ] UV sampling
 - [ ] Cylinder
 
+*** TODO Consider visibility settings per part
+
 ** Resources
 
 *** TODO Faster file loading
