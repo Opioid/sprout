@@ -1,5 +1,6 @@
 #include "triangle_mesh_exporter.hpp"
 #include "triangle_json_handler.hpp"
+#include "base/math/vector.inl"
 #include <fstream>
 #include <iostream>
 
