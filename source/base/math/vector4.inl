@@ -139,6 +139,9 @@ inline Vector4i_a::Vector4i_a() {}
 inline Vector4i_a::Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w) :
 	x(x), y(y), z(z), w(w) {}
 
+inline Vector4i_a::Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw) :
+	x(xy.x), y(xy.y), z(zw.x), w(zw.y) {}
+
 inline Vector4i_a::Vector4i_a(int32_t s) :
 	x(s), y(s), z(s), w(s) {}
 

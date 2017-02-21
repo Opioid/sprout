@@ -20,9 +20,8 @@ Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) :
 	d_x_ = 1.f / fr.x;
 	d_y_ = 1.f / fr.y;
 
-	view_bounds_[0] = math::Recti{int2(0, 0), resolution};
-	view_bounds_[1] = math::Recti{int2(0, resolution.y),
-								  int2(resolution.x, resolution.y * 2)};
+	view_bounds_[0] = int4(int2(0, 0), resolution);
+	view_bounds_[1] = int4(int2(0, resolution.y), int2(resolution.x, resolution.y * 2));
 }
 
 uint32_t Spherical_stereoscopic::num_views() const {
@@ -30,10 +29,10 @@ uint32_t Spherical_stereoscopic::num_views() const {
 }
 
 int2 Spherical_stereoscopic::sensor_dimensions() const {
-	return view_bounds_[1].end;
+	return view_bounds_[1].zw;
 }
 
-math::Recti Spherical_stereoscopic::view_bounds(uint32_t view) const {
+int4 Spherical_stereoscopic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 

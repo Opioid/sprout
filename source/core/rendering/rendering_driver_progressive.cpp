@@ -75,7 +75,7 @@ void Driver_progressive::render_loop(exporting::Sink& exporter) {
 				auto& worker = workers_[index];
 
 				for (;;) {
-					math::Recti tile;
+					int4 tile;
 					if (!tiles_.pop(tile)) {
 						break;
 					}

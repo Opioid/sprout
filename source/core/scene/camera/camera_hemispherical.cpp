@@ -26,8 +26,8 @@ int2 Hemispherical::sensor_dimensions() const {
 	return resolution_;
 }
 
-math::Recti Hemispherical::view_bounds(uint32_t /*view*/) const {
-	return math::Recti{int2(0, 0), resolution_};
+int4 Hemispherical::view_bounds(uint32_t /*view*/) const {
+	return int4{int2(0, 0), resolution_};
 }
 
 float Hemispherical::pixel_solid_angle() const {

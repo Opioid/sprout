@@ -23,11 +23,11 @@ int32_t Filtered<Base, Clamp>::filter_radius_int() const {
 
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, float4_p color,
-									   const math::Recti& tile, const math::Recti& bounds) {
+									   const int4& tile, const int4& bounds) {
 	float4 clamped_color = clamp_.clamp(color);
 
-	int32_t x = bounds.start.x + sample.pixel.x;
-	int32_t y = bounds.start.y + sample.pixel.y;
+	int32_t x = bounds.x + sample.pixel.x;
+	int32_t y = bounds.y + sample.pixel.y;
 
 	float ox = sample.pixel_uv.x - 0.5f;
 	float oy = sample.pixel_uv.y - 0.5f;
@@ -91,17 +91,17 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, flo
 
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4_p color,
-											   const math::Recti& tile,
-											   const math::Recti& bounds) {
-	if (pixel.x < bounds.start.x || pixel.x >= bounds.end.x
-	||  pixel.y < bounds.start.y || pixel.y >= bounds.end.y) {
+											   const int4& tile,
+											   const int4& bounds) {
+	if (pixel.x < bounds.x || pixel.x >= bounds.z
+	||  pixel.y < bounds.y || pixel.y >= bounds.w) {
 		return;
 	}
 
-	if ((pixel.x >= tile.end.x - 1 && pixel.x < bounds.end.x - 1)
-	||  (pixel.y >= tile.end.y - 1 && pixel.y < bounds.end.y - 1)
-	||  (pixel.x <= tile.start.x   && pixel.x > bounds.start.x)
-	||  (pixel.y <= tile.start.y   && pixel.y > bounds.start.y)) {
+	if ((pixel.x >= tile.z - 1 && pixel.x < bounds.z - 1)
+	||  (pixel.y >= tile.w - 1 && pixel.y < bounds.w - 1)
+	||  (pixel.x <= tile.x	   && pixel.x > bounds.x)
+	||  (pixel.y <= tile.y     && pixel.y > bounds.y)) {
 		Base::add_pixel_atomic(pixel, color, weight);
 	} else {
 		Base::add_pixel(pixel, color, weight);
@@ -111,19 +111,19 @@ void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4_
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
 												 float4_p color,
-												 const math::Recti& tile,
-												 const math::Recti& bounds) {
-	if (pixel.x < bounds.start.x || pixel.x >= bounds.end.x
-	||  pixel.y < bounds.start.y || pixel.y >= bounds.end.y) {
+												 const int4& tile,
+												 const int4& bounds) {
+	if (pixel.x < bounds.start.x || pixel.x >= bounds.z
+	||  pixel.y < bounds.start.y || pixel.y >= bounds.w) {
 		return;
 	}
 
 	float weight = filter_->evaluate(relative_offset);
 
-	if ((pixel.x >= tile.end.x - 1 && pixel.x < bounds.end.x - 1)
-	||  (pixel.y >= tile.end.y - 1 && pixel.y < bounds.end.y - 1)
-	||  (pixel.x <= tile.start.x   && pixel.x > bounds.start.x)
-	||  (pixel.y <= tile.start.y   && pixel.y > bounds.start.y)) {
+	if ((pixel.x >= tile.z - 1 && pixel.x < bounds.z - 1)
+	||  (pixel.y >= tile.w - 1 && pixel.y < bounds.w - 1)
+	||  (pixel.x <= tile.x     && pixel.x > bounds.x)
+	||  (pixel.y <= tile.y     && pixel.y > bounds.y)) {
 		Base::add_pixel_atomic(pixel, color, weight);
 	} else {
 		Base::add_pixel(pixel, color, weight);
@@ -133,44 +133,42 @@ void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_off
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel2(int2 pixel, float2 relative_offset,
 												  float4_p color,
-												  const math::Recti& tile,
-												  const math::Recti& bounds) {
+												  const int4& tile,
+												  const int4& bounds) {
 	int32_t y = pixel.y - 1;
 
 	float ry = relative_offset.y + 1.f;
 
 	for (int32_t h = y + 3; y < h; ++y, --ry) {
-		if (y < bounds.start.y || y >= bounds.end.y) {
+		if (y < bounds.y || y >= bounds.w) {
 			continue;
 		}
 
 		float weight_y = filter_->evaluate(ry);
 
-		bool atomic_y = (y >= tile.end.y - 1 && y < bounds.end.y - 1) ||
-						(y <= tile.start.y   && y > bounds.start.y);
+		bool atomic_y = (y >= tile.w - 1 && y < bounds.w - 1) ||
+						(y <= tile.y   && y > bounds.y);
 
 		int32_t x = pixel.x - 1;
 
 		float rx = relative_offset.x + 1.f;
 
 		for (int32_t w = x + 3; x < w; ++x, --rx) {
-			if (x < bounds.start.x || x >= bounds.end.x) {
+			if (x < bounds.x || x >= bounds.z) {
 				continue;
 			}
 
 			float weight = weight_y * filter_->evaluate(rx);
 
 			if (atomic_y
-			||	(x >= tile.end.x - 1 && x < bounds.end.x - 1)
-			||  (x <= tile.start.x   && x > bounds.start.x)) {
+			||	(x >= tile.z - 1 && x < bounds.z - 1)
+			||  (x <= tile.x     && x > bounds.x)) {
 				Base::add_pixel_atomic(int2(x, y), color, weight);
 			} else {
 				Base::add_pixel(int2(x, y), color, weight);
 			}
 		}
 	}
-
-
 }
 
 }}

@@ -2,7 +2,6 @@
 
 #include "scene/scene_worker.hpp"
 #include "base/math/vector.hpp"
-#include "base/math/rectangle.hpp"
 #include "base/random/generator.hpp"
 
 namespace sampler {

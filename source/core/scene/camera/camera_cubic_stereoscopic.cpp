@@ -28,7 +28,7 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
 		for (uint32_t i = 0; i < 12; ++i) {
 			int2 offset = int2(resolution.x * i, 0);
 
-			view_bounds_[i] = math::Recti{offset, offset + resolution_};
+			view_bounds_[i] = int4{offset, offset + resolution_};
 		}
 
 		sensor_dimensions_ = int2(resolution_.x * 12, resolution_.x);
@@ -36,13 +36,13 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
 		for (uint32_t i = 0; i < 6; ++i) {
 			int2 offset = int2(resolution.x * (i + 6), 0);
 
-			view_bounds_[i] = math::Recti{offset, offset + resolution_};
+			view_bounds_[i] = int4{offset, offset + resolution_};
 		}
 
 		for (uint32_t i = 6; i < 12; ++i) {
 			int2 offset = int2(resolution.x * (i - 6), 0);
 
-			view_bounds_[i] = math::Recti{offset, offset + resolution_};
+			view_bounds_[i] = int4{offset, offset + resolution_};
 		}
 
 		sensor_dimensions_ = int2(resolution_.x * 12, resolution_.x);
@@ -66,7 +66,7 @@ int2 Cubic_stereoscopic::sensor_dimensions() const {
 	return sensor_dimensions_;
 }
 
-math::Recti Cubic_stereoscopic::view_bounds(uint32_t view) const {
+int4 Cubic_stereoscopic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 

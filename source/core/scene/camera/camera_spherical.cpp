@@ -25,8 +25,8 @@ int2 Spherical::sensor_dimensions() const {
 	return resolution_;
 }
 
-math::Recti Spherical::view_bounds(uint32_t /*view*/) const {
-	return math::Recti{int2(0, 0), resolution_};
+int4 Spherical::view_bounds(uint32_t /*view*/) const {
+	return int4{int2(0, 0), resolution_};
 }
 
 float Spherical::pixel_solid_angle() const {

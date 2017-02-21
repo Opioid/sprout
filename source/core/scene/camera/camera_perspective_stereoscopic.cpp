@@ -16,8 +16,8 @@ Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) :
 	Stereoscopic(resolution) {
 	set_fov(90.f);
 
-	view_bounds_[0] = math::Recti{int2(0, 0), resolution};
-	view_bounds_[1] = math::Recti{int2(resolution.x, 0),
+	view_bounds_[0] = int4{int2(0, 0), resolution};
+	view_bounds_[1] = int4{int2(resolution.x, 0),
 								  int2(resolution.x * 2, resolution.y)};
 }
 
@@ -29,7 +29,7 @@ int2 Perspective_stereoscopic::sensor_dimensions() const {
 	return int2(resolution_.x * 2, resolution_.y);
 }
 
-math::Recti Perspective_stereoscopic::view_bounds(uint32_t view) const {
+int4 Perspective_stereoscopic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 

@@ -12,21 +12,21 @@
 namespace rendering {
 
 void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
-						   const math::Recti& tile, uint32_t sample_begin, uint32_t sample_end,
+						   const int4& tile, uint32_t sample_begin, uint32_t sample_end,
 						   float normalized_tick_offset, float normalized_tick_slice) {
 	auto& sensor = camera.sensor();
 
-	math::Recti bounds = camera.view_bounds(view);
+	int4 bounds = camera.view_bounds(view);
 
-	math::Recti view_tile{bounds.start + tile.start, bounds.start + tile.end};
+	int4 view_tile(bounds.xy + tile.xy, bounds.xy + tile.zw);
 
 	sampler::Camera_sample sample;
 	scene::Ray ray;
 
-	rnd::Generator rng(tile.start.x + 2, tile.start.y + 8, tile.end.x + 16, tile.end.y + 128);
+	rnd::Generator rng(tile.x + 2, tile.y + 8, tile.z + 16, tile.w + 128);
 
-	for (int32_t y = tile.start.y; y < tile.end.y; ++y) {
-		for (int32_t x = tile.start.x; x < tile.end.x; ++x) {
+	for (int32_t y = tile.y; y < tile.w; ++y) {
+		for (int32_t x = tile.x; x < tile.z; ++x) {
 			sampler_->resume_pixel(sample_begin, rng);
 			surface_integrator_->resume_pixel(sample_begin, rng);
 

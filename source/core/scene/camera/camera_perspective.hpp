@@ -28,7 +28,7 @@ public:
 
 	virtual int2 sensor_dimensions() const final override;
 
-	virtual math::Recti view_bounds(uint32_t view) const final override;
+	virtual int4 view_bounds(uint32_t view) const final override;
 
 	virtual float pixel_solid_angle() const final override;
 

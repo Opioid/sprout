@@ -152,7 +152,7 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset,
 				auto& worker = workers_[index];
 
 				for (;;) {
-					math::Recti tile;
+					int4 tile;
 					if (!tiles_.pop(tile)) {
 						break;
 					}

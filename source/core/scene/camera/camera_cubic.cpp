@@ -27,28 +27,28 @@ Cubic::Cubic(Layout layout, int2 resolution) :
 		for (uint32_t i = 0; i < 6; ++i) {
 			int2 offset = int2(resolution.x * i, 0);
 
-			view_bounds_[i] = math::Recti{offset, offset + resolution_};
+			view_bounds_[i] = int4{offset, offset + resolution_};
 		}
 
 		sensor_dimensions_ = int2(resolution_.x * 6, resolution_.x);
 	} else if (Layout::xmxy_myzmz == layout) {
 		int2 offset = int2(resolution.x * 0, 0);
-		view_bounds_[0] = math::Recti{offset, offset + resolution_};
+		view_bounds_[0] = int4{offset, offset + resolution_};
 
 		offset = int2(resolution.x * 1, 0);
-		view_bounds_[1] = math::Recti{offset, offset + resolution_};
+		view_bounds_[1] = int4{offset, offset + resolution_};
 
 		offset = int2(resolution.x * 2, 0);
-		view_bounds_[2] = math::Recti{offset, offset + resolution_};
+		view_bounds_[2] = int4{offset, offset + resolution_};
 
 		offset = int2(resolution.x * 0, resolution.x);
-		view_bounds_[3] = math::Recti{offset, offset + resolution_};
+		view_bounds_[3] = int4{offset, offset + resolution_};
 
 		offset = int2(resolution.x * 1, resolution.x);
-		view_bounds_[4] = math::Recti{offset, offset + resolution_};
+		view_bounds_[4] = int4{offset, offset + resolution_};
 
 		offset = int2(resolution.x * 2, resolution.x);
-		view_bounds_[5] = math::Recti{offset, offset + resolution_};
+		view_bounds_[5] = int4{offset, offset + resolution_};
 
 		sensor_dimensions_ = int2(resolution_.x * 3, resolution_.x * 2);
 	}
@@ -69,7 +69,7 @@ int2 Cubic::sensor_dimensions() const {
 	return sensor_dimensions_;
 }
 
-math::Recti Cubic::view_bounds(uint32_t view) const {
+int4 Cubic::view_bounds(uint32_t view) const {
 	return view_bounds_[view];
 }
 

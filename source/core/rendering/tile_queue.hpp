@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base/math/vector.hpp"
-#include "base/math/rectangle.hpp"
 #include <condition_variable>
 #include <vector>
 
@@ -17,13 +16,13 @@ public:
 
 	void restart();
 
-	bool pop(math::Recti& tile);
+	bool pop(int4& tile);
 
 private:
 
-	void push(const math::Recti& tile);
+	void push(const int4& tile);
 
-	std::vector<math::Recti> tiles_;
+	std::vector<int4> tiles_;
 	size_t current_consume_;
 
 	std::mutex mutex_;

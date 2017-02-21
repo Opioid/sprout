@@ -30,7 +30,7 @@ Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_rad
 			end.x += filter_radius;
 		}
 
-		push(math::Recti{start, end});
+		push(int4(start, end));
 
 		current_pixel.x += tile_dimensions.x;
 
@@ -53,7 +53,7 @@ void Tile_queue::restart() {
 	current_consume_ = 0;
 }
 
-bool Tile_queue::pop(math::Recti& tile) {
+bool Tile_queue::pop(int4& tile) {
 	std::lock_guard<std::mutex> lock(mutex_);
 
 	if (current_consume_ < tiles_.size()) {
@@ -64,7 +64,7 @@ bool Tile_queue::pop(math::Recti& tile) {
 	return false;
 }
 
-void Tile_queue::push(const math::Recti& tile) {
+void Tile_queue::push(const int4& tile) {
 	size_t current = tiles_.size() - current_consume_--;
 
 	tiles_[current] = tile;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene/entity/entity.hpp"
-#include "base/math/rectangle.hpp"
 #include <string>
 
 namespace sampler { struct Camera_sample; }
@@ -31,7 +30,7 @@ public:
 
 	virtual int2 sensor_dimensions() const = 0;
 
-	virtual math::Recti view_bounds(uint32_t view) const = 0;
+	virtual int4 view_bounds(uint32_t view) const = 0;
 
 	virtual float pixel_solid_angle() const = 0;
 
@@ -55,8 +54,7 @@ public:
 
 protected:
 
-	virtual void set_parameter(const std::string& name,
-							   const json::Value& value) = 0;
+	virtual void set_parameter(const std::string& name, const json::Value& value) = 0;
 
 	virtual void on_set_transformation() final override;
 

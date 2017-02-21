@@ -117,12 +117,18 @@ struct alignas(16) Vector4i_a {
 			int32_t x, y, z, w;
 		};
 
+		struct {
+			Vector2<int32_t> xy, zw;
+		};
+
 		int32_t v[4];
 	};
 
 	Vector4i_a();
 
 	Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w);
+
+	Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw);
 
 	explicit Vector4i_a(int32_t s);
 

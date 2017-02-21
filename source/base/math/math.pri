@@ -20,7 +20,6 @@ HEADERS += \
 	math/quaternion.inl \
 	math/ray.hpp \
 	math/ray.inl \
-	math/rectangle.hpp \
 	math/transformation.hpp \
 	math/transformation.inl \
 	math/vector.hpp \
