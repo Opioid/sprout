@@ -91,8 +91,7 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, flo
 
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4_p color,
-											   const int4& tile,
-											   const int4& bounds) {
+											   const int4& tile, const int4& bounds) {
 	if (pixel.x < bounds.x || pixel.x >= bounds.z
 	||  pixel.y < bounds.y || pixel.y >= bounds.w) {
 		return;
@@ -111,8 +110,7 @@ void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4_
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
 												 float4_p color,
-												 const int4& tile,
-												 const int4& bounds) {
+												 const int4& tile, const int4& bounds) {
 	if (pixel.x < bounds.start.x || pixel.x >= bounds.z
 	||  pixel.y < bounds.start.y || pixel.y >= bounds.w) {
 		return;
@@ -133,8 +131,7 @@ void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_off
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel2(int2 pixel, float2 relative_offset,
 												  float4_p color,
-												  const int4& tile,
-												  const int4& bounds) {
+												  const int4& tile, const int4& bounds) {
 	int32_t y = pixel.y - 1;
 
 	float ry = relative_offset.y + 1.f;
@@ -147,7 +144,7 @@ void Filtered<Base, Clamp>::weight_and_add_pixel2(int2 pixel, float2 relative_of
 		float weight_y = filter_->evaluate(ry);
 
 		bool atomic_y = (y >= tile.w - 1 && y < bounds.w - 1) ||
-						(y <= tile.y   && y > bounds.y);
+						(y <= tile.y     && y > bounds.y);
 
 		int32_t x = pixel.x - 1;
 

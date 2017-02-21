@@ -119,7 +119,7 @@ struct alignas(16) Vector4i_a {
 
 		struct {
 			Vector2<int32_t> xy, zw;
-		};
+		} v2;
 
 		int32_t v[4];
 	};

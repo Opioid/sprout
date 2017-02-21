@@ -18,7 +18,7 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
 
 	int4 bounds = camera.view_bounds(view);
 
-	int4 view_tile(bounds.xy + tile.xy, bounds.xy + tile.zw);
+	int4 view_tile(bounds.v2.xy + tile.v2.xy, bounds.v2.xy + tile.v2.zw);
 
 	sampler::Camera_sample sample;
 	scene::Ray ray;

@@ -29,7 +29,7 @@ uint32_t Spherical_stereoscopic::num_views() const {
 }
 
 int2 Spherical_stereoscopic::sensor_dimensions() const {
-	return view_bounds_[1].zw;
+	return view_bounds_[1].v2.zw;
 }
 
 int4 Spherical_stereoscopic::view_bounds(uint32_t view) const {
