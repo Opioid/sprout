@@ -235,6 +235,10 @@ bool Json_handler::has_texture_coordinates() const {
 	return has_texture_coordinates_;
 }
 
+const std::vector<Part>& Json_handler::parts() const {
+	return parts_;
+}
+
 std::vector<Part>& Json_handler::parts() {
 	return parts_;
 }

@@ -7,6 +7,9 @@
 #include "triangle_morph_target_collection.hpp"
 #include "triangle_mesh.hpp"
 #include "triangle_primitive.hpp"
+
+#include "triangle_mesh_exporter.hpp"
+
 // #include "bvh/triangle_bvh_builder_sah.inl"
 #include "bvh/triangle_bvh_builder_sah2.inl"
 #include "bvh/triangle_bvh_builder_suh.inl"
@@ -94,6 +97,8 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 	}
 
 	SOFT_ASSERT(check(handler.vertices(), filename));
+
+	Exporter::write(filename, handler);
 
 	auto mesh = std::make_shared<Mesh>();
 

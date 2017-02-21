@@ -47,6 +47,7 @@ public:
 	bool has_tangents() const;
 	bool has_texture_coordinates() const;
 
+	const std::vector<Part>& parts() const;
 	std::vector<Part>& parts();
 
 	std::vector<Index_triangle>& triangles();
