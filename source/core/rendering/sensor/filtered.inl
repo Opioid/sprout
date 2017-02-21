@@ -111,8 +111,8 @@ template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
 												 float4_p color,
 												 const int4& tile, const int4& bounds) {
-	if (pixel.x < bounds.start.x || pixel.x >= bounds.z
-	||  pixel.y < bounds.start.y || pixel.y >= bounds.w) {
+	if (pixel.x < bounds.x || pixel.x >= bounds.z
+	||  pixel.y < bounds.y || pixel.y >= bounds.w) {
 		return;
 	}
 
