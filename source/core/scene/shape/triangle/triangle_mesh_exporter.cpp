@@ -33,11 +33,9 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 	stream << "{";
 
 	newline(stream, 1);
-
 	stream << "\"geometry\":{";
 
 	newline(stream, 2);
-
 	stream << "\"parts\":[";
 
 	const auto& parts = handler.parts();
@@ -57,9 +55,24 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 		}
 	}
 
+
 	// close parts
 	newline(stream, 2);
-	stream << "]";
+	stream << "],";
+
+	newline(stream, 2);
+	stream << "\"vertices\":{";
+
+	// close vertices
+	newline(stream, 2);
+	stream << "},";
+
+	newline(stream, 2);
+	stream << "\"indices\":{";
+
+	// close vertices
+	newline(stream, 2);
+	stream << "}";
 
 	// close geometry
 	newline(stream, 1);
