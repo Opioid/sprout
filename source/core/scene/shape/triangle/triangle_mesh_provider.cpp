@@ -105,7 +105,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 	SOFT_ASSERT(check(handler.vertices(), filename));
 
-//	Exporter::write(filename, handler);
+	// Exporter::write(filename, handler);
 
 	auto mesh = std::make_shared<Mesh>();
 
@@ -275,6 +275,7 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
 	size_t indices_offset = 0;
 	size_t indices_size = 0;
+	size_t index_bytes = 0;
 
 	for (auto& n : geometry_value.GetObject()) {
 		if ("parts" == n.name) {
@@ -293,10 +294,16 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 				}
 			}
 		} else if ("indices" == n.name) {
-			for (auto& vn : n.value.GetObject()) {
-				if ("binary" == vn.name) {
-					indices_offset = json::read_uint(vn.value, "offset");
-					indices_size = json::read_uint(vn.value, "size");
+			for (auto& in : n.value.GetObject()) {
+				if ("binary" == in.name) {
+					indices_offset = json::read_uint(in.value, "offset");
+					indices_size = json::read_uint(in.value, "size");
+				} else if ("encoding" == in.name) {
+					if ("uint32" == json::read_string(in.value)) {
+						index_bytes = 4;
+					} else {
+						index_bytes = 2;
+					}
 				}
 			}
 		}
@@ -311,12 +318,18 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 	stream.seekg(binary_start + vertices_offset);
 	stream.read(reinterpret_cast<char*>(vertices.data()), vertices_size);
 
-	std::vector<uint32_t> indices(indices_size / sizeof(uint32_t));
+	size_t num_indices = indices_size / index_bytes;
+	void* indices = nullptr;
+	if (4 == index_bytes) {
+		indices = new uint32_t[num_indices];
+	} else {
+		indices = new uint16_t[num_indices];
+	}
+
+//	std::vector<uint32_t> indices(indices_size / sizeof(uint32_t));
 	stream.seekg(binary_start + indices_offset);
-	stream.read(reinterpret_cast<char*>(indices.data()), indices_size);
+	stream.read(reinterpret_cast<char*>(indices), indices_size);
 
-
-	std::vector<Index_triangle> triangles(indices.size() / 3);
 
 	BVH_preset bvh_preset = BVH_preset::Slow;
 
@@ -324,26 +337,50 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
 	mesh->tree().allocate_parts(static_cast<uint32_t>(parts.size()));
 
-//	manager.thread_pool().run_async(
-	//	[mesh, parts = std::move(handler.parts()), triangles = std::move(handler.triangles()),
-	//	 vertices = std::move(handler.vertices()), bvh_preset, &manager]() mutable {
+	thread_pool.run_async(
+		[mesh, local_parts = std::move(parts), local_indices = std::move(indices), num_indices,
+		 local_vertices = std::move(vertices), bvh_preset, index_bytes, &thread_pool]() mutable {
 
-			for (auto& p : parts) {
-				uint32_t triangles_start = p.start_index / 3;
-				uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
+			std::vector<Index_triangle> triangles(num_indices / 3);
 
-				for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-					triangles[i].a = indices[i * 3 + 0];
-					triangles[i].b = indices[i * 3 + 1];
-					triangles[i].c = indices[i * 3 + 2];
+			if (4 == index_bytes) {
+				uint32_t* indices32 = reinterpret_cast<uint32_t*>(local_indices);
 
-					triangles[i].material_index = p.material_index;
+				for (auto& p : local_parts) {
+					uint32_t triangles_start = p.start_index / 3;
+					uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
+
+					for (uint32_t i = triangles_start; i < triangles_end; ++i) {
+						triangles[i].a = indices32[i * 3 + 0];
+						triangles[i].b = indices32[i * 3 + 1];
+						triangles[i].c = indices32[i * 3 + 2];
+
+						triangles[i].material_index = p.material_index;
+					}
+				}
+			} else {
+				uint16_t* indices16 = reinterpret_cast<uint16_t*>(local_indices);
+
+				for (auto& p : local_parts) {
+					uint32_t triangles_start = p.start_index / 3;
+					uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
+
+					for (uint32_t i = triangles_start; i < triangles_end; ++i) {
+						triangles[i].a = static_cast<uint32_t>(indices16[i * 3 + 0]);
+						triangles[i].b = static_cast<uint32_t>(indices16[i * 3 + 1]);
+						triangles[i].c = static_cast<uint32_t>(indices16[i * 3 + 2]);
+
+						triangles[i].material_index = p.material_index;
+					}
 				}
 			}
 
-			build_bvh(*mesh, triangles, vertices, bvh_preset, thread_pool);
-	//	}
-//	);
+			delete[] local_indices;
+
+			build_bvh(*mesh, triangles, local_vertices, bvh_preset, thread_pool);
+		}
+	);
+
 
 	return mesh;
 }

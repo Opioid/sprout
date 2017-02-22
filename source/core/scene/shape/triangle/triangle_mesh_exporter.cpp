@@ -97,13 +97,24 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 	newline(jstream, 2);
 	jstream << "\"indices\":{";
 
+	size_t index_bytes = 4;
+	if (num_vertices <= 0x000000000000FFFF) {
+		index_bytes = 2;
+	}
+
 	newline(jstream, 3);
 	size_t num_indices = handler.triangles().size() * 3;
-	binary_tag(jstream, vertices_size, num_indices * sizeof(uint32_t));
+	binary_tag(jstream, vertices_size, num_indices * index_bytes);
 	jstream << ",";
 
 	newline(jstream, 3);
-	jstream << "\"encoding\":\"uint32\"";
+	jstream << "\"encoding\":";
+
+	if (4 == index_bytes) {
+		jstream << "\"uint32\"";
+	} else {
+		jstream << "\"uint16\"";
+	}
 
 	// close vertices
 	newline(jstream, 2);
@@ -129,10 +140,21 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 
 	const auto& triangles = handler.triangles();
 
-	for (const auto& t : triangles) {
-		stream.write(reinterpret_cast<const char*>(&t.a), sizeof(uint32_t));
-		stream.write(reinterpret_cast<const char*>(&t.b), sizeof(uint32_t));
-		stream.write(reinterpret_cast<const char*>(&t.c), sizeof(uint32_t));
+	if (4 == index_bytes) {
+		for (const auto& t : triangles) {
+			stream.write(reinterpret_cast<const char*>(&t.a), sizeof(uint32_t));
+			stream.write(reinterpret_cast<const char*>(&t.b), sizeof(uint32_t));
+			stream.write(reinterpret_cast<const char*>(&t.c), sizeof(uint32_t));
+		}
+	} else {
+		for (const auto& t : triangles) {
+			uint16_t a = static_cast<uint16_t>(t.a);
+			stream.write(reinterpret_cast<const char*>(&a), sizeof(uint16_t));
+			uint16_t b = static_cast<uint16_t>(t.b);
+			stream.write(reinterpret_cast<const char*>(&b), sizeof(uint16_t));
+			uint16_t c = static_cast<uint16_t>(t.c);
+			stream.write(reinterpret_cast<const char*>(&c), sizeof(uint16_t));
+		}
 	}
 }
 
