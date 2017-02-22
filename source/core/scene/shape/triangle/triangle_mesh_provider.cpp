@@ -319,17 +319,10 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 	stream.read(reinterpret_cast<char*>(vertices.data()), vertices_size);
 
 	size_t num_indices = indices_size / index_bytes;
-	void* indices = nullptr;
-	if (4 == index_bytes) {
-		indices = new uint32_t[num_indices];
-	} else {
-		indices = new uint16_t[num_indices];
-	}
+	char* indices = new char[indices_size];
 
-//	std::vector<uint32_t> indices(indices_size / sizeof(uint32_t));
 	stream.seekg(binary_start + indices_offset);
-	stream.read(reinterpret_cast<char*>(indices), indices_size);
-
+	stream.read(indices, indices_size);
 
 	BVH_preset bvh_preset = BVH_preset::Slow;
 
@@ -380,7 +373,6 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 			build_bvh(*mesh, triangles, local_vertices, bvh_preset, thread_pool);
 		}
 	);
-
 
 	return mesh;
 }
