@@ -30,11 +30,16 @@
 
 *** TODO Faster file loading
 - [X] Consider concurrent loading during lengthy processing steps (e.g. building BVH)
-- [ ] Consider embedding json and binary data in single file
+- [-] Consider embedding json and binary data in single file
+  - [X] Proof of concept
+  - [ ] Support different vertex layouts
 
 There is a very simple mechanism for asynchronous BVH construction now. 
 It seems to work quite well in cases where BVH construction is followed by lengthy reads from disk.
 In those cases the time required for BVH construction can be hidden to a certain degree.
+
+Proof of concept for binary files showed good improvements in loading time.
+File size on disk generally seems to be higher, though.
 
 ** Build system
 
