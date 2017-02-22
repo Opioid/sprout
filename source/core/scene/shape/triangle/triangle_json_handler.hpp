@@ -50,8 +50,10 @@ public:
 	const std::vector<Part>& parts() const;
 	std::vector<Part>& parts();
 
+	const std::vector<Index_triangle>& triangles() const;
 	std::vector<Index_triangle>& triangles();
 
+	const std::vector<Vertex>& vertices() const;
 	std::vector<Vertex>& vertices();
 
 	const std::vector<std::string>& morph_targets() const;

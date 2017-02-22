@@ -10,7 +10,8 @@ enum class Type {
 	Unknown,
 	GZIP,
 	PNG,
-	RGBE
+	RGBE,
+	SUM
 };
 
 Type query_type(std::istream& stream);

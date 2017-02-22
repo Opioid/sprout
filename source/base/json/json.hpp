@@ -15,6 +15,7 @@
 
 namespace json {
 
+std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer);
 std::unique_ptr<rapidjson::Document> parse(const std::string& buffer);
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream);
 

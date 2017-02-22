@@ -11,9 +11,10 @@
 namespace json {
 
 // get the 0-based line number
-size_t calculate_line_number(std::istream& stream, size_t offset) {
+size_t calculate_line_number(std::istream& stream, size_t offset, size_t& column) {
 	size_t line = 0;
 	size_t count = 0;
+	size_t local_column = 0;
 
 	stream.clear();
 	stream.seekg(0, std::ios_base::beg);
@@ -24,24 +25,40 @@ size_t calculate_line_number(std::istream& stream, size_t offset) {
 		stream.get(c);
 
 		++count;
+		++local_column;
 
 		if ('\n' == c) {
 			++line;
+			local_column = 0;
 		}
 	}
 
+	column = local_column;
 	return line;
 }
 
 std::string read_error(rapidjson::Document& document, std::istream& stream) {
-	size_t line = calculate_line_number(stream, document.GetErrorOffset());
+	size_t column;
+	size_t line = calculate_line_number(stream, document.GetErrorOffset(), column);
 
 	std::stringstream sstream;
 	sstream << rapidjson::GetParseError_En(document.GetParseError());
 	// line number is 0-based, so + 1
-	sstream << " (line " << line + 1 << ")";
+	sstream << " (line " << line + 1 << ", column " << column + 1 << ")";
 
 	return sstream.str();
+}
+
+std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer) {
+	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
+
+	document->ParseInsitu(buffer);
+
+	if (document->HasParseError()) {
+		throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
+	}
+
+	return document;
 }
 
 std::unique_ptr<rapidjson::Document> parse(const std::string& buffer) {

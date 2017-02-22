@@ -243,8 +243,16 @@ std::vector<Part>& Json_handler::parts() {
 	return parts_;
 }
 
+const std::vector<Index_triangle>& Json_handler::triangles() const {
+	return triangles_;
+}
+
 std::vector<Index_triangle>& Json_handler::triangles() {
 	return triangles_;
+}
+
+const std::vector<Vertex>& Json_handler::vertices() const {
+	return vertices_;
 }
 
 std::vector<Vertex>& Json_handler::vertices() {

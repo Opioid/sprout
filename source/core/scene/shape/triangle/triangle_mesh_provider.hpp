@@ -54,6 +54,8 @@ private:
 
 //	static void build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices& vertices,
 //						  BVH_preset bvh_preset, thread::Pool& thread_pool);
+
+	static std::shared_ptr<Shape> load_binary(std::istream& stream, thread::Pool& thread_pool);
 };
 
 }}}

@@ -2,6 +2,7 @@
 #include "triangle_json_handler.hpp"
 #include "base/math/vector.inl"
 #include <fstream>
+#include <sstream>
 #include <iostream>
 
 namespace scene { namespace shape { namespace triangle {
@@ -11,7 +12,7 @@ std::string extract_filename(const std::string& filename) {
 	return filename.substr(i, filename.find_first_of('.') - i);
 }
 
-void newline(std::ofstream& stream, uint32_t num_tabs) {
+void newline(std::ostream& stream, uint32_t num_tabs) {
 	stream << std::endl;
 
 	for (uint32_t i = 0; i < num_tabs; ++i) {
@@ -19,69 +20,120 @@ void newline(std::ofstream& stream, uint32_t num_tabs) {
 	}
 }
 
+void binary_tag(std::ostream& stream, size_t offset, size_t size) {
+	stream << "\"binary\":{\"offset\":" << offset <<",\"size\":" << size << "}";
+}
+
 void Exporter::write(const std::string& filename, const Json_handler& handler) {
 	std::string out_name = extract_filename(filename) + ".json";
 
 	std::cout << "Export " << out_name << std::endl;
 
-	std::ofstream stream(out_name);
+	std::ofstream stream(out_name, std::ios::binary);
 
 	if (!stream) {
 		return;
 	}
 
-	stream << "{";
+	static char const header[] = "SUM\005";
+	stream.write(header, sizeof(char) * 4);
 
-	newline(stream, 1);
-	stream << "\"geometry\":{";
+	std::stringstream jstream;
 
-	newline(stream, 2);
-	stream << "\"parts\":[";
+	newline(jstream, 0);
+	jstream << "{";
+
+	newline(jstream, 1);
+	jstream << "\"geometry\":{";
+
+	newline(jstream, 2);
+	jstream << "\"parts\":[";
 
 	const auto& parts = handler.parts();
 
 	for (size_t i = 0, len = parts.size(); i < len; ++i) {
-		newline(stream, 3);
+		newline(jstream, 3);
 
 		const auto& p = parts[i];
-		stream << "{";
-		stream << "\"material_index\":" << p.material_index << ",";
-		stream << "\"start_index\":" << p.start_index << ",";
-		stream << "\"num_indices\":" << p.num_indices;
-		stream << "}";
+		jstream << "{";
+		jstream << "\"material_index\":" << p.material_index << ",";
+		jstream << "\"start_index\":" << p.start_index << ",";
+		jstream << "\"num_indices\":" << p.num_indices;
+		jstream << "}";
 
 		if (i < len - 1) {
-			stream << ",";
+			jstream << ",";
 		}
 	}
 
 
 	// close parts
-	newline(stream, 2);
-	stream << "],";
+	newline(jstream, 2);
+	jstream << "],";
 
-	newline(stream, 2);
-	stream << "\"vertices\":{";
+	// vertices
+	newline(jstream, 2);
+	jstream << "\"vertices\":{";
+
+	newline(jstream, 3);
+	const auto& vertices = handler.vertices();
+	size_t num_vertices = static_cast<uint32_t>(vertices.size());
+	size_t vertices_size = num_vertices * sizeof(Vertex);
+	binary_tag(jstream, 0, vertices_size);
+	jstream << ",";
+
+	newline(jstream, 3);
+	jstream << "\"layout\":[";
+
+	// close layout
+	newline(jstream, 3);
+	jstream << "]";
 
 	// close vertices
-	newline(stream, 2);
-	stream << "},";
+	newline(jstream, 2);
+	jstream << "},";
 
-	newline(stream, 2);
-	stream << "\"indices\":{";
+	// indices
+	newline(jstream, 2);
+	jstream << "\"indices\":{";
+
+	newline(jstream, 3);
+	size_t num_indices = handler.triangles().size() * 3;
+	binary_tag(jstream, vertices_size, num_indices * sizeof(uint32_t));
+	jstream << ",";
+
+	newline(jstream, 3);
+	jstream << "\"encoding\":\"uint32\"";
 
 	// close vertices
-	newline(stream, 2);
-	stream << "}";
+	newline(jstream, 2);
+	jstream << "}";
 
 	// close geometry
-	newline(stream, 1);
-	stream << "}";
+	newline(jstream, 1);
+	jstream << "}";
 
 	// close start
-	newline(stream, 0);
-	stream << "}";
+	newline(jstream, 0);
+	jstream << "}";
 
+	newline(jstream, 0);
+
+	std::string json_string = jstream.str();
+	uint64_t json_size = json_string.size() - 1;
+	stream.write(reinterpret_cast<const char*>(&json_size), sizeof(uint64_t));
+	stream.write(reinterpret_cast<const char*>(json_string.data()), json_size * sizeof(char));
+
+	// binary stuff
+	stream.write(reinterpret_cast<const char*>(vertices.data()), vertices_size);
+
+	const auto& triangles = handler.triangles();
+
+	for (const auto& t : triangles) {
+		stream.write(reinterpret_cast<const char*>(&t.a), sizeof(uint32_t));
+		stream.write(reinterpret_cast<const char*>(&t.b), sizeof(uint32_t));
+		stream.write(reinterpret_cast<const char*>(&t.c), sizeof(uint32_t));
+	}
 }
 
 }}}

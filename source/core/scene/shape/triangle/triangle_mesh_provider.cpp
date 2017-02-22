@@ -16,6 +16,7 @@
 #include "bvh/triangle_bvh_data.inl"
 #include "bvh/triangle_bvh_data_interleaved.inl"
 #include "bvh/triangle_bvh_indexed_data.inl"
+#include "file/file.hpp"
 #include "file/file_system.hpp"
 #include "base/json/json.hpp"
 #include "base/math/aabb.inl"
@@ -46,6 +47,12 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 	options.query("bvh_preset", bvh_preset);
 
 	auto stream_pointer = manager.file_system().read_stream(filename);
+
+	file::Type type = file::query_type(*stream_pointer);
+	if (file::Type::SUM == type) {
+		return load_binary(*stream_pointer, manager.thread_pool());
+	}
+
 	rapidjson::IStreamWrapper json_stream(*stream_pointer);
 
 	Json_handler handler;
@@ -98,7 +105,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 	SOFT_ASSERT(check(handler.vertices(), filename));
 
-	Exporter::write(filename, handler);
+//	Exporter::write(filename, handler);
 
 	auto mesh = std::make_shared<Mesh>();
 
@@ -236,6 +243,109 @@ void Provider::build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices&
 	}
 
 	mesh.init();
+}
+
+std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) {
+	std::cout << "Load binary" << std::endl;
+
+	stream.seekg(4);
+
+	uint64_t json_size = 0;
+	stream.read(reinterpret_cast<char*>(&json_size), sizeof(uint64_t));
+
+	char* json_string = new char[json_size + 1];
+	stream.read(json_string, json_size * sizeof(char));
+	json_string[json_size] = 0;
+
+//	auto root = json::parse(stream);
+	auto root = json::parse_insitu(json_string);
+
+	const json::Value::ConstMemberIterator geometry_node = root->FindMember("geometry");
+	if (root->MemberEnd() == geometry_node) {
+		delete[] json_string;
+		throw std::runtime_error("Model has no geometry node");
+	}
+
+	const json::Value& geometry_value = geometry_node->value;
+
+	std::vector<Part> parts;
+
+	size_t vertices_offset = 0;
+	size_t vertices_size = 0;
+
+	size_t indices_offset = 0;
+	size_t indices_size = 0;
+
+	for (auto& n : geometry_value.GetObject()) {
+		if ("parts" == n.name) {
+			for (auto& pn : n.value.GetArray()) {
+				Part part;
+				part.start_index = json::read_uint(pn, "start_index");
+				part.num_indices = json::read_uint(pn, "num_indices");
+				part.material_index = json::read_uint(pn, "material_index");
+				parts.emplace_back(part);
+			}
+		} else if ("vertices" == n.name) {
+			for (auto& vn : n.value.GetObject()) {
+				if ("binary" == vn.name) {
+					vertices_offset = json::read_uint(vn.value, "offset");
+					vertices_size = json::read_uint(vn.value, "size");
+				}
+			}
+		} else if ("indices" == n.name) {
+			for (auto& vn : n.value.GetObject()) {
+				if ("binary" == vn.name) {
+					indices_offset = json::read_uint(vn.value, "offset");
+					indices_size = json::read_uint(vn.value, "size");
+				}
+			}
+		}
+	}
+
+	delete[] json_string;
+
+	int64_t binary_start = json_size + 4 + sizeof(uint64_t);
+
+	std::vector<Vertex> vertices(vertices_size / sizeof(Vertex));
+
+	stream.seekg(binary_start + vertices_offset);
+	stream.read(reinterpret_cast<char*>(vertices.data()), vertices_size);
+
+	std::vector<uint32_t> indices(indices_size / sizeof(uint32_t));
+	stream.seekg(binary_start + indices_offset);
+	stream.read(reinterpret_cast<char*>(indices.data()), indices_size);
+
+
+	std::vector<Index_triangle> triangles(indices.size() / 3);
+
+	BVH_preset bvh_preset = BVH_preset::Slow;
+
+	auto mesh = std::make_shared<Mesh>();
+
+	mesh->tree().allocate_parts(static_cast<uint32_t>(parts.size()));
+
+//	manager.thread_pool().run_async(
+	//	[mesh, parts = std::move(handler.parts()), triangles = std::move(handler.triangles()),
+	//	 vertices = std::move(handler.vertices()), bvh_preset, &manager]() mutable {
+
+			for (auto& p : parts) {
+				uint32_t triangles_start = p.start_index / 3;
+				uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
+
+				for (uint32_t i = triangles_start; i < triangles_end; ++i) {
+					triangles[i].a = indices[i * 3 + 0];
+					triangles[i].b = indices[i * 3 + 1];
+					triangles[i].c = indices[i * 3 + 2];
+
+					triangles[i].material_index = p.material_index;
+				}
+			}
+
+			build_bvh(*mesh, triangles, vertices, bvh_preset, thread_pool);
+	//	}
+//	);
+
+	return mesh;
 }
 
 #ifdef SU_DEBUG
