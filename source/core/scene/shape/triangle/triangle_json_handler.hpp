@@ -11,9 +11,13 @@
 namespace scene { namespace shape { namespace triangle {
 
 struct Part {
-	uint32_t material_index;
+	Part() = default;
+	Part(uint32_t start_index, uint32_t num_indices, uint32_t material_index) :
+		 start_index(start_index), num_indices(num_indices), material_index(material_index) {}
+
 	uint32_t start_index;
 	uint32_t num_indices;
+	uint32_t material_index;
 };
 
 class Json_handler {

@@ -245,6 +245,23 @@ void Provider::build_bvh(Mesh& mesh, const Triangles& triangles, const Vertices&
 	mesh.init();
 }
 
+template<typename Index>
+void fill_triangles(const std::vector<Part>& parts, const Index* indices,
+					std::vector<Index_triangle>& triangles) {
+	for (auto& p : parts) {
+		uint32_t triangles_start = p.start_index / 3;
+		uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
+
+		for (uint32_t i = triangles_start; i < triangles_end; ++i) {
+			triangles[i].a = static_cast<uint32_t>(indices[i * 3 + 0]);
+			triangles[i].b = static_cast<uint32_t>(indices[i * 3 + 1]);
+			triangles[i].c = static_cast<uint32_t>(indices[i * 3 + 2]);
+
+			triangles[i].material_index = p.material_index;
+		}
+	}
+}
+
 std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) {
 	std::cout << "Load binary" << std::endl;
 
@@ -280,11 +297,9 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 	for (auto& n : geometry_value.GetObject()) {
 		if ("parts" == n.name) {
 			for (auto& pn : n.value.GetArray()) {
-				Part part;
-				part.start_index = json::read_uint(pn, "start_index");
-				part.num_indices = json::read_uint(pn, "num_indices");
-				part.material_index = json::read_uint(pn, "material_index");
-				parts.emplace_back(part);
+				parts.emplace_back(json::read_uint(pn, "start_index"),
+								   json::read_uint(pn, "num_indices"),
+								   json::read_uint(pn, "material_index"));
 			}
 		} else if ("vertices" == n.name) {
 			for (auto& vn : n.value.GetObject()) {
@@ -299,10 +314,10 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 					indices_offset = json::read_uint(in.value, "offset");
 					indices_size = json::read_uint(in.value, "size");
 				} else if ("encoding" == in.name) {
-					if ("uint32" == json::read_string(in.value)) {
-						index_bytes = 4;
-					} else {
+					if ("uint16" == json::read_string(in.value)) {
 						index_bytes = 2;
+					} else {
+						index_bytes = 4;
 					}
 				}
 			}
@@ -338,34 +353,10 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
 			if (4 == index_bytes) {
 				uint32_t* indices32 = reinterpret_cast<uint32_t*>(local_indices);
-
-				for (auto& p : local_parts) {
-					uint32_t triangles_start = p.start_index / 3;
-					uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
-
-					for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-						triangles[i].a = indices32[i * 3 + 0];
-						triangles[i].b = indices32[i * 3 + 1];
-						triangles[i].c = indices32[i * 3 + 2];
-
-						triangles[i].material_index = p.material_index;
-					}
-				}
+				fill_triangles(local_parts, indices32, triangles);
 			} else {
 				uint16_t* indices16 = reinterpret_cast<uint16_t*>(local_indices);
-
-				for (auto& p : local_parts) {
-					uint32_t triangles_start = p.start_index / 3;
-					uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
-
-					for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-						triangles[i].a = static_cast<uint32_t>(indices16[i * 3 + 0]);
-						triangles[i].b = static_cast<uint32_t>(indices16[i * 3 + 1]);
-						triangles[i].c = static_cast<uint32_t>(indices16[i * 3 + 2]);
-
-						triangles[i].material_index = p.material_index;
-					}
-				}
+				fill_triangles(local_parts, indices16, triangles);
 			}
 
 			delete[] local_indices;
