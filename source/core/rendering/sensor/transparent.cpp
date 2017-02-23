@@ -10,7 +10,7 @@ Transparent::Transparent(int2 dimensions, float exposure) :
 	pixels_(new Pixel[dimensions.x * dimensions.y]) {}
 
 Transparent::~Transparent() {
-	delete [] pixels_;
+	delete[] pixels_;
 }
 
 void Transparent::clear() {

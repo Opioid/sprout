@@ -16,7 +16,7 @@ Tree<Data>::Tree() : num_nodes_(0), nodes_(nullptr), num_parts_(0), num_part_tri
 
 template<typename Data>
 Tree<Data>::~Tree() {
-	delete [] num_part_triangles_;
+	delete[] num_part_triangles_;
 
 	memory::free_aligned(nodes_);
 }
@@ -327,7 +327,7 @@ template<typename Data>
 void Tree<Data>::allocate_parts(uint32_t num_parts) {
 	if (num_parts != num_parts_) {
 		num_parts_ = num_parts;
-		delete [] num_part_triangles_;
+		delete[] num_part_triangles_;
 		num_part_triangles_ = new uint32_t[num_parts];
 	}
 

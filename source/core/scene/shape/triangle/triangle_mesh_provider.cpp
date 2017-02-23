@@ -347,8 +347,7 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
 	thread_pool.run_async(
 		[mesh, local_parts = std::move(parts), local_indices = std::move(indices), num_indices,
-		 local_vertices = std::move(vertices), bvh_preset, index_bytes, &thread_pool]() mutable {
-
+		 local_vertices = std::move(vertices), bvh_preset, index_bytes, &thread_pool]() {
 			std::vector<Index_triangle> triangles(num_indices / 3);
 
 			if (4 == index_bytes) {

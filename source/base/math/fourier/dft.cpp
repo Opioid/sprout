@@ -95,7 +95,7 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height) 
 		}
 	}
 
-	delete [] tmp;
+	delete[] tmp;
 }
 
 void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
@@ -136,7 +136,7 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 		}
 	}, 0, row_size);
 
-	delete [] tmp;
+	delete[] tmp;
 }
 
 }

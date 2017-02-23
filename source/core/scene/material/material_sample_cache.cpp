@@ -11,7 +11,7 @@ Sample_cache::Sample_cache(uint32_t bin_size, uint32_t num_bins) :
 	bssrdfs_(new BSSRDF[num_bins]) {}
 
 Sample_cache::~Sample_cache() {
-	delete [] bssrdfs_;
+	delete[] bssrdfs_;
 
 	memory::free_aligned(buffer_);
 }

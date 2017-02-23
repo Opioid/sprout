@@ -21,7 +21,7 @@ Typed_renderer<T>::Typed_renderer(int2 dimensions, int32_t sqrt_num_samples) :
 
 template<typename T>
 Typed_renderer<T>::~Typed_renderer() {
-	delete [] samples_;
+	delete[] samples_;
 }
 
 template<typename T>

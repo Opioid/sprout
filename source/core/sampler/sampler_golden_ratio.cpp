@@ -48,8 +48,8 @@ size_t Golden_ratio::num_bytes() const {
 }
 
 void Golden_ratio::on_resize() {
-	delete [] samples_1D_;
-	delete [] samples_2D_;
+	delete[] samples_1D_;
+	delete[] samples_2D_;
 
 	samples_2D_ = new float2[num_samples_ * num_dimensions_2D_];
 	samples_1D_ = new float [num_samples_ * num_dimensions_1D_];

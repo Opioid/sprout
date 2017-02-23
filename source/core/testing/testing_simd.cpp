@@ -94,7 +94,7 @@ void rsqrt() {
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
-	delete [] values;
+	delete[] values;
 }
 
 inline float SSE_rcp(float x) {
@@ -179,7 +179,7 @@ void rcp() {
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
-	delete [] values;
+	delete[] values;
 }
 
 inline float3 simd_normalized_0(const float3& v) {
@@ -337,7 +337,7 @@ void normalize() {
 		std::cout << std::endl;
 	}
 
-	delete [] vectors;
+	delete[] vectors;
 }
 
 
@@ -453,7 +453,7 @@ void reciprocal() {
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
-	delete [] vectors;
+	delete[] vectors;
 }
 
 inline float dotly(float3 a, float3 b) {

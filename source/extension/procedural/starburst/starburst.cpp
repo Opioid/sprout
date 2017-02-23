@@ -169,7 +169,7 @@ void create(thread::Pool& pool) {
 			}
 		}, 0, resolution * resolution);
 
-		delete [] spectral_data;
+		delete[] spectral_data;
 		*/
 	} else {
 		math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
@@ -194,7 +194,7 @@ void create(thread::Pool& pool) {
 				}
 			}, 0, resolution * resolution);
 
-		delete [] spectral_data;
+		delete[] spectral_data;
 	}
 
 //	write_signal("signal_after.png", signal);

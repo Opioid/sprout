@@ -75,7 +75,7 @@ void Writer::write_pixels_rle(std::ostream& stream, const Float_4& image) {
 		}
 	}
 
-	delete [] buffer;
+	delete[] buffer;
 }
 
 // The code below is only needed for the run-length encoded files.

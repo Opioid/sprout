@@ -24,7 +24,7 @@ Interpolated_function<T>::Interpolated_function(float range_begin, float range_e
 
 template<typename T>
 Interpolated_function<T>::~Interpolated_function() {
-	delete [] samples_;
+	delete[] samples_;
 }
 
 template<typename T>

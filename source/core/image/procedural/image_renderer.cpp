@@ -16,7 +16,7 @@ Renderer::Renderer(int2 dimensions, int32_t sqrt_num_samples) :
 {}
 
 Renderer::~Renderer() {
-	delete [] samples_;
+	delete[] samples_;
 }
 
 void Renderer::set_brush(float3_p color) {

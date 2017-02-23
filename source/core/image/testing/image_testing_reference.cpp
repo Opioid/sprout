@@ -96,7 +96,7 @@ void create_reference_normal_map(int2 dimensions) {
 															   3, &buffer_len);
 
 	if (!png_buffer) {
-		delete [] rgb;
+		delete[] rgb;
 		return;
 	}
 
@@ -104,7 +104,7 @@ void create_reference_normal_map(int2 dimensions) {
 
 	mz_free(png_buffer);
 
-	delete [] rgb;
+	delete[] rgb;
 }
 
 }}
