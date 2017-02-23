@@ -105,7 +105,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 	SOFT_ASSERT(check(handler.vertices(), filename));
 
-	// Exporter::write(filename, handler);
+	Exporter::write(filename, handler);
 
 	auto mesh = std::make_shared<Mesh>();
 
@@ -305,14 +305,14 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 			for (auto& vn : n.value.GetObject()) {
 				if ("binary" == vn.name) {
 					vertices_offset = json::read_uint(vn.value, "offset");
-					vertices_size = json::read_uint(vn.value, "size");
+					vertices_size   = json::read_uint(vn.value, "size");
 				}
 			}
 		} else if ("indices" == n.name) {
 			for (auto& in : n.value.GetObject()) {
 				if ("binary" == in.name) {
 					indices_offset = json::read_uint(in.value, "offset");
-					indices_size = json::read_uint(in.value, "size");
+					indices_size   = json::read_uint(in.value, "size");
 				} else if ("encoding" == in.name) {
 					if ("uint16" == json::read_string(in.value)) {
 						index_bytes = 2;

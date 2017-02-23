@@ -1,5 +1,6 @@
 #include "triangle_mesh_exporter.hpp"
 #include "triangle_json_handler.hpp"
+#include "vertex_layout_description.hpp"
 #include "base/math/vector.inl"
 #include <fstream>
 #include <sstream>
@@ -84,6 +85,33 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 
 	newline(jstream, 3);
 	jstream << "\"layout\":[";
+
+	Vertex_layout_description::Element element;
+
+	using Encoding = scene::shape::triangle::Vertex_layout_description::Encoding;
+
+	newline(jstream, 4);
+	element.semantic_name = "Position";
+	element.encoding = Encoding::Float32x3;
+	jstream << element << ",";
+
+	newline(jstream, 4);
+	element.semantic_name = "Normal";
+	jstream << element << ",";
+
+	newline(jstream, 4);
+	element.semantic_name = "Tangent";
+	jstream << element << ",";
+
+	newline(jstream, 4);
+	element.semantic_name = "Texture_coordinate";
+	element.encoding = Encoding::Float32x2;
+	jstream << element << ",";
+
+	newline(jstream, 4);
+	element.semantic_name = "Bitangent_sign";
+	element.encoding = Encoding::Float32x1;
+	jstream << element;
 
 	// close layout
 	newline(jstream, 3);

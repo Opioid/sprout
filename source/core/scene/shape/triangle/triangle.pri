@@ -5,6 +5,7 @@ SOURCES += \
 	scene/shape/triangle/triangle_mesh_provider.cpp \
 	scene/shape/triangle/triangle_morph_target_collection.cpp \
 	scene/shape/triangle/triangle_morphable_mesh.cpp \
+	scene/shape/triangle/vertex_layout_description.cpp \
 
 HEADERS += \
 	scene/shape/triangle/triangle_bvh_preset.hpp \
@@ -24,5 +25,6 @@ HEADERS += \
 	scene/shape/triangle/triangle_primitive_yf.hpp \
 	scene/shape/triangle/triangle_primitive_yf.inl \
 	scene/shape/triangle/triangle_type.hpp \
+	scene/shape/triangle/vertex_layout_description.hpp \
 
 include(bvh/bvh.pri)
