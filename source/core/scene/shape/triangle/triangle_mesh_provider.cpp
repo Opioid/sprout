@@ -314,7 +314,7 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 					indices_offset = json::read_uint(in.value, "offset");
 					indices_size   = json::read_uint(in.value, "size");
 				} else if ("encoding" == in.name) {
-					if ("uint16" == json::read_string(in.value)) {
+					if ("UInt16" == json::read_string(in.value)) {
 						index_bytes = 2;
 					} else {
 						index_bytes = 4;

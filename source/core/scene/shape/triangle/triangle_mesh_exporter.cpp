@@ -97,20 +97,24 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 
 	newline(jstream, 4);
 	element.semantic_name = "Normal";
+	element.byte_offset = 12;
 	jstream << element << ",";
 
 	newline(jstream, 4);
 	element.semantic_name = "Tangent";
+	element.byte_offset = 24;
 	jstream << element << ",";
 
 	newline(jstream, 4);
 	element.semantic_name = "Texture_coordinate";
 	element.encoding = Encoding::Float32x2;
+	element.byte_offset = 36;
 	jstream << element << ",";
 
 	newline(jstream, 4);
 	element.semantic_name = "Bitangent_sign";
-	element.encoding = Encoding::Float32x1;
+	element.encoding = Encoding::Float32;
+	element.byte_offset = 44;
 	jstream << element;
 
 	// close layout
@@ -139,9 +143,9 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 	jstream << "\"encoding\":";
 
 	if (4 == index_bytes) {
-		jstream << "\"uint32\"";
+		jstream << "\"UInt32\"";
 	} else {
-		jstream << "\"uint16\"";
+		jstream << "\"UInt16\"";
 	}
 
 	// close vertices

@@ -10,7 +10,9 @@ class Vertex_layout_description {
 public:
 
 	enum class Encoding {
-		Float32x1,
+		UInt16,
+		UInt32,
+		Float32,
 		Float32x2,
 		Float32x3
 	};

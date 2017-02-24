@@ -12,7 +12,7 @@ using Encoding = scene::shape::triangle::Vertex_layout_description::Encoding;
 // Why does this not work?
 std::stringstream& operator<<(std::stringstream& stream, Encoding encoding) {
 	switch (encoding) {
-	case Encoding::Float32x1:
+	case Encoding::Float32:
 		stream << "float32";
 		break;
 	case Encoding::Float32x2:
@@ -30,17 +30,17 @@ std::stringstream& operator<<(std::stringstream& stream, Encoding encoding) {
 
 void print(std::stringstream& stream, Encoding encoding) {
 	switch (encoding) {
-	case Encoding::Float32x1:
-		stream << "float32";
+	case Encoding::Float32:
+		stream << "Float32";
 		break;
 	case Encoding::Float32x2:
-		stream << "float32x2";
+		stream << "Float32x2";
 		break;
 	case Encoding::Float32x3:
-		stream << "float32x3";
+		stream << "Float32x3";
 		break;
 	default:
-		stream << "unknown";
+		stream << "Unknown";
 	}
 }
 
