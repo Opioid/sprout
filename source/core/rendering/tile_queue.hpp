@@ -2,7 +2,6 @@
 
 #include "base/math/vector.hpp"
 #include <condition_variable>
-#include <vector>
 
 namespace rendering {
 
@@ -11,6 +10,7 @@ class Tile_queue {
 public:
 
 	Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius);
+	~Tile_queue();
 
 	uint32_t size() const;
 
@@ -22,8 +22,10 @@ private:
 
 	void push(const int4& tile);
 
-	std::vector<int4> tiles_;
-	size_t current_consume_;
+	uint32_t num_tiles_;
+	int4* tiles_;
+
+	uint32_t current_consume_;
 
 	std::mutex mutex_;
 };
