@@ -57,9 +57,9 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 
 		const auto& p = parts[i];
 		jstream << "{";
-		jstream << "\"material_index\":" << p.material_index << ",";
 		jstream << "\"start_index\":" << p.start_index << ",";
-		jstream << "\"num_indices\":" << p.num_indices;
+		jstream << "\"num_indices\":" << p.num_indices << ",";
+		jstream << "\"material_index\":" << p.material_index;
 		jstream << "}";
 
 		if (i < len - 1) {
