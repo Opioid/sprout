@@ -16,9 +16,9 @@ Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) :
 	Stereoscopic(resolution) {
 	set_fov(90.f);
 
-	view_bounds_[0] = int4{int2(0, 0), resolution};
-	view_bounds_[1] = int4{int2(resolution.x, 0),
-								  int2(resolution.x * 2, resolution.y)};
+    view_bounds_[0] = int4(int2(0, 0), resolution - int2(1, 1));
+    view_bounds_[1] = int4(int2(resolution.x, 0),
+                           int2(resolution.x * 2, resolution.y) - int2(1, 1));
 }
 
 uint32_t Perspective_stereoscopic::num_views() const {
