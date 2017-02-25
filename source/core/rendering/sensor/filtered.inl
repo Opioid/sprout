@@ -87,8 +87,6 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, flo
 	weight_and_add_pixel(int2(x + 1, y + 1), float2(ox - 1.f, oy - 1.f),
 						 clamped_color, tile, bounds);
 */
-
-//	weight_and_add_pixel2(int2(x, y), float2(ox, oy), clamped_color, tile, bounds);
 }
 
 template<class Base, class Clamp>
