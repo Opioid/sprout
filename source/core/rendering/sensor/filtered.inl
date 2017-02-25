@@ -4,8 +4,6 @@
 #include "filter/sensor_filter.hpp"
 #include "sampler/camera_sample.hpp"
 
-#include <iostream>
-
 namespace rendering { namespace sensor {
 
 template<class Base, class Clamp>
@@ -96,6 +94,15 @@ void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4_
     ||  bounds.z < pixel.x || bounds.w < pixel.y) {
         return;
     }
+
+//    bool a = pixel.x < bounds.x;
+//    bool b = pixel.y < bounds.y;
+//    bool c = bounds.z < pixel.x;
+//    bool d = bounds.w < pixel.y;
+
+//    if (a | b | c | d) {
+//        return;
+//    }
 
     if ((pixel.x >= tile.z - 1 && pixel.x < bounds.z)
     ||  (pixel.y >= tile.w - 1 && pixel.y < bounds.w)
