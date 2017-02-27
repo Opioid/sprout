@@ -95,17 +95,17 @@ float2 Linear_2D<Address_U, Address_V>::address(float2 uv) const {
 
 template<typename Address_U, typename Address_V>
 float2 Linear_2D<Address_U, Address_V>::map(const Texture& texture, float2 uv, int4& xy_xy1) {
-	auto b = texture.back_2();
-	auto d = texture.dimensions_float2();
+	const auto b = texture.back_2();
+	const auto d = texture.dimensions_float2();
 
-	float u = Address_U::f(uv.x) * d.x - 0.5f;
-	float v = Address_V::f(uv.y) * d.y - 0.5f;
+	const float u = Address_U::f(uv.x) * d.x - 0.5f;
+	const float v = Address_V::f(uv.y) * d.y - 0.5f;
 
-	float fu = std::floor(u);
-	float fv = std::floor(v);
+	const float fu = std::floor(u);
+	const float fv = std::floor(v);
 
-	int32_t x = static_cast<int32_t>(fu);
-	int32_t y = static_cast<int32_t>(fv);
+	const int32_t x = static_cast<int32_t>(fu);
+	const int32_t y = static_cast<int32_t>(fv);
 
 	xy_xy1.x = Address_U::lower_bound(x, b.x);
 	xy_xy1.y = Address_V::lower_bound(y, b.y);

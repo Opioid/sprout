@@ -6,23 +6,13 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-/*
-inline void Node::set_aabb(const math::aabb& aabb) {
-	this->aabb = aabb;
-}
-
-inline uint32_t Node::primitive_end() const {
-	return primitive_offset + static_cast<uint32_t>(num_primitives);
-}
-*/
-
 inline void Node::set_aabb(const math::aabb& aabb) {
 	bounds[0] = aabb.min();
 	bounds[1] = aabb.max();
 }
 
 inline uint32_t Node::primitive_end() const {
-	return primitive_offset + static_cast<uint32_t>(num_primitives);
+	return next_or_data + static_cast<uint32_t>(num_primitives);
 }
 
 // This test is presented in the paper
@@ -105,17 +95,6 @@ inline bool Node::intersect_p(math::simd::FVector ray_origin,
 	return 0 != (_mm_comige_ss(max_t, ray_min_t) &
 				 _mm_comige_ss(ray_max_t, min_t) &
 				 _mm_comige_ss(max_t, min_t));
-}
-
-inline bool Node::operator!=(const Node& other) const {
-	return pad0[0] != other.pad0[0] ||
-		   pad0[1] != other.pad0[1] ||
-		   pad0[2] != other.pad0[2] ||
-		   pad1[0] != other.pad1[0] ||
-		   pad1[1] != other.pad1[1] ||
-		   pad1[2] != other.pad1[2] ||
-
-		   primitive_offset != other.primitive_offset;
 }
 
 }}}}

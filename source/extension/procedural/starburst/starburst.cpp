@@ -86,14 +86,12 @@ void create(thread::Pool& pool) {
 	bool near_field = true;
 
 	if (near_field) {
-
-
 		Image::Description description(Image::Type::Float_2, dimensions);
 
 		auto signal_a = std::make_shared<Float_2>(description);
 		auto signal_b = std::make_shared<Float_2>(description);
 
-		float alpha = 0.1f;
+		float alpha = 0.12f;
 
 		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
 			signal_a->store(i, float2(signal.load(i), 0.f));
@@ -102,17 +100,6 @@ void create(thread::Pool& pool) {
 		fdft(*signal_b.get(), signal_a, alpha, 0, pool);
 		fdft(*signal_a.get(), signal_b, alpha, 1, pool);
 		squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
-
-//		Float_2 signal_a(description);
-//		Float_2 signal_b(description);
-
-//		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
-//			signal_a.store(i, float2(signal.load(i), 0.f));
-//		}
-
-//		fdft(signal_b, signal_a, alpha, 0, pool);
-//		fdft(signal_a, signal_b, alpha, 1, pool);
-//		squared_magnitude(signal.data(), signal_a.data(), resolution, resolution);
 
 		pool.run_range([&float_image_a, &signal](uint32_t /*id*/, int32_t begin, int32_t end) {
 			for (int32_t i = begin; i < end; ++i) {
@@ -478,40 +465,48 @@ void fdft(Float_2& destination, const texture::Float_2& texture,
 
 	Linear_2D<Address_mode_clamp, Address_mode_clamp> sampler;
 
-	int2 d = texture.dimensions_2();
-	float2 df(d);
+	const int2 d = texture.dimensions_2();
+	const float2 df(d);
 
-	float m = df.x;
-	float half_m = 0.5f * m;
-	float sqrt_m = std::sqrt(m);
-	float ss = 1.f / alpha;// 8.f;
+	const float m = df.x;
+	const float half_m = 0.5f * m;
+	const float sqrt_m = std::sqrt(m);
+	const float i_sqrt_m = 1.f / sqrt_m;
+	const float ss = 1.f / alpha;// 8.f;
+	const float norm = 1.f / (ss * sqrt_m);
 
-	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
-	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
+	const float ucot = 1.f / std::tan(alpha * (math::Pi * 0.5f));
+	const float cot = math::Pi * ucot;
+	const float csc = (2.f * math::Pi) / std::sin(alpha * (math::Pi * 0.5f));
 
-	for (int32_t y = begin; y < end; ++y) {
-		for (int32_t x = 0; x < d.x; ++x) {
-			float2 coordinates = float2(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
+	const float2 sx = sqrtc(float2(1.f, -ucot));
 
-			float2 uv = coordinates / df;
+	float2 coordinates = float2(0.5f, static_cast<float>(begin) + 0.5f);
+	float2 uv;
 
-			float u = (coordinates.v[mode] - half_m) / sqrt_m;
+	for (int32_t y = begin; y < end; ++y, ++coordinates.y) {
+		coordinates.x = 0.5f;
+		uv.y = coordinates.y / df.y;
+		for (int32_t x = 0; x < d.x; ++x, ++coordinates.x) {
+			uv.x = coordinates.x / df.x;
+
+			const float u = (coordinates.v[mode] - half_m) * i_sqrt_m;
 
 			float2 integration(0.f);
 
 			for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
 				float2 kuv = uv;
 				kuv.v[mode] = k + 0.5f;
-				float2 g = sampler.sample_2(texture, kuv);
+				const float2 g = sampler.sample_2(texture, kuv);
 
-				float v = k * sqrt_m;
-				float t = math::Pi * (cot * v * v - 2.f * csc * u * v);
+				const float v = k * sqrt_m;
+				const float t = cot * v * v - csc * u * v;
 				integration += mulc(g, t);
 			}
 
-			float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
+			const float2 s = mulc(sx, cot * u * u);
 
-			destination.store(x, y, mulc(s, integration) / (ss * sqrt_m));
+			destination.store(x, y, mulc(s, integration) * norm);
 		}
 	}
 }
@@ -523,56 +518,6 @@ void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
 	pool.run_range([&destination, &texture, alpha, mode]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
 			fdft(destination, texture, alpha, mode, begin, end);
-		}, 0, d.y);
-}
-
-void fdft(Float_2& destination, const Float_2& source,
-		  float alpha, uint32_t mode, int32_t begin, int32_t end) {
-	int2 d = source.description().dimensions.xy;
-	float2 df(d);
-
-	float m = df.x;
-	float half_m = 0.5f * m;
-	float sqrt_m = std::sqrt(m);
-	float ss = 6.f;
-
-	float cot = 1.f / std::tan(alpha * math::Pi * 0.5f);
-	float csc = 1.f / std::sin(alpha * math::Pi * 0.5f);
-
-	for (int32_t y = begin; y < end; ++y) {
-		for (int32_t x = 0; x < d.x; ++x) {
-			float2 coordinates = float2(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
-
-			float2 uv = coordinates / df;
-
-			float u = (coordinates.v[mode] - half_m) / sqrt_m;
-
-			float2 integration(0.f);
-
-			for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
-				float2 kuv = uv;
-				kuv.v[mode] = k + 0.5f;
-
-				float2 g = source.unsafe_sample(kuv, d);
-
-				float v = k * sqrt_m;
-				float t = math::Pi * (cot * v * v - 2.f * csc * u * v);
-				integration += mulc(g, t);
-			}
-
-			float2 s = mulc(sqrtc(float2(1.f, -cot)), math::Pi * cot * u * u);
-
-			destination.store(x, y, mulc(s, integration) / (ss * sqrt_m));
-		}
-	}
-}
-
-void fdft(Float_2& destination, const Float_2& source,
-		  float alpha, uint32_t mode, thread::Pool& pool) {
-	auto d = destination.description().dimensions;
-	pool.run_range([&destination, &source, alpha, mode]
-		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			fdft(destination, source, alpha, mode, begin, end);
 		}, 0, d.y);
 }
 

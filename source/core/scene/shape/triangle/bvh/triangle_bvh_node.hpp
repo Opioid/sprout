@@ -7,25 +7,6 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-/*
-struct Node {
-	void set_aabb(const math::aabb& aabb);
-
-	uint32_t primitive_end() const;
-
-	math::aabb aabb;
-
-	union {
-		uint32_t second_child_index;
-		uint32_t primitive_offset;
-	};
-
-	uint8_t axis;
-	uint8_t num_primitives;
-	uint8_t pad[2];
-};
-*/
-
 struct Node {
 	Node() = default;
 
@@ -40,18 +21,13 @@ struct Node {
 					 math::simd::FVector min_t,
 					 math::simd::FVector max_t) const;
 
-	bool operator!=(const Node& other) const;
-
 	union {
 		float3 bounds[2];
 
 		struct {
 			float pad0[3];
 
-			union {
-				uint32_t second_child_index;
-				uint32_t primitive_offset;
-			};
+			uint32_t next_or_data;
 
 			float pad1[3];
 

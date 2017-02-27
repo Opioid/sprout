@@ -70,14 +70,14 @@ void Builder_SAH2::serialize(Build_node* node, const Triangles& triangles,
 	if (node->children[0]) {
 		serialize(node->children[0], triangles, vertices, tree);
 
-		n.second_child_index = current_node_index();
+		n.next_or_data = current_node_index();
 
 		serialize(node->children[1], triangles, vertices, tree);
 
 		n.axis = node->axis;
 		n.num_primitives = 0;
 	} else {
-		n.primitive_offset = node->start_index;
+		n.next_or_data = node->start_index;
 		n.num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
 
 		for (auto p : node->primitives) {
