@@ -30,7 +30,7 @@ int2 Perspective::sensor_dimensions() const {
 }
 
 int4 Perspective::view_bounds(uint32_t /*view*/) const {
-    return int4(int2(0, 0), resolution_ - int2(1, 1));
+	return int4(int2(0, 0), resolution_ - int2(1));
 }
 
 float Perspective::pixel_solid_angle() const {

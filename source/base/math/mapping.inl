@@ -11,7 +11,7 @@ inline float3 disk_to_hemisphere_equidistant(float2 uv) {
 	float r = std::sqrt(uv.x * uv.x + uv.y * uv.y);
 
 	// Equidistant projection
-	float colatitude = r * math::Pi_div_2;
+	float colatitude = r * (math::Pi / 2.f);
 
 	// Equal-area projection
 	// float colatitude = /*2.f **/ std::asin(r);

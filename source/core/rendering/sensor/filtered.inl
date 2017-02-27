@@ -24,21 +24,21 @@ int32_t Filtered<Base, Clamp>::filter_radius_int() const {
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, float4_p color,
 									   const int4& tile, const int4& bounds) {
-	float4 clamped_color = clamp_.clamp(color);
+	const float4 clamped_color = clamp_.clamp(color);
 
-	int32_t x = bounds.x + sample.pixel.x;
-	int32_t y = bounds.y + sample.pixel.y;
+	const int32_t x = bounds.x + sample.pixel.x;
+	const int32_t y = bounds.y + sample.pixel.y;
 
-	float ox = sample.pixel_uv.x - 0.5f;
-	float oy = sample.pixel_uv.y - 0.5f;
+	const float ox = sample.pixel_uv.x - 0.5f;
+	const float oy = sample.pixel_uv.y - 0.5f;
 
-	float wx0 = filter_->evaluate(ox + 1.f);
-	float wx1 = filter_->evaluate(ox);
-	float wx2 = filter_->evaluate(ox - 1.f);
+	const float wx0 = filter_->evaluate(ox + 1.f);
+	const float wx1 = filter_->evaluate(ox);
+	const float wx2 = filter_->evaluate(ox - 1.f);
 
-	float wy0 = filter_->evaluate(oy + 1.f);
-	float wy1 = filter_->evaluate(oy);
-	float wy2 = filter_->evaluate(oy - 1.f);
+	const float wy0 = filter_->evaluate(oy + 1.f);
+	const float wy1 = filter_->evaluate(oy);
+	const float wy2 = filter_->evaluate(oy - 1.f);
 
 	const int4 isolated_tile = tile + int4(1, 1, -1, -1);
 
@@ -56,7 +56,6 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, flo
 	add_weighted_pixel(int2(x - 1, y + 1), wx0 * wy2, clamped_color, isolated_tile, bounds);
 	add_weighted_pixel(int2(x, y + 1),	   wx1 * wy2, clamped_color, isolated_tile, bounds);
 	add_weighted_pixel(int2(x + 1, y + 1), wx2 * wy2, clamped_color, isolated_tile, bounds);
-
 
 	/*
 	weight_and_add_pixel(int2(x - 1, y - 1), float2(ox + 1.f, oy + 1.f),

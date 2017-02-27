@@ -8,22 +8,19 @@
 namespace math {
 
 SU_GLOBALCONST(float) Pi = 3.14159265358979323846f;
-SU_GLOBALCONST(float) Pi_div_2 = 1.57079632679489661923f;
-SU_GLOBALCONST(float) Pi_div_180 = Pi / 180.f;
-SU_GLOBALCONST(float) _180_div_pi = 180.f / Pi;
 SU_GLOBALCONST(float) Pi_inv = 0.318309886183790671538f;
 
 inline float degrees_to_radians(float degrees) {
-	return degrees * Pi_div_180;
+	return degrees * (Pi / 180.f);
 }
 
 inline float radians_to_degrees(float radians) {
-	return radians * _180_div_pi;
+	return radians * (180.f / Pi);
 }
 
 template <typename T>
 T cot(T x) {
-	return std::tan(Pi_div_2 - x);
+	return std::tan((Pi / 2.f) - x);
 }
 
 template <typename T>

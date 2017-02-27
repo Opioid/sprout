@@ -181,7 +181,7 @@ void Prop::set_open(bool open) {
 }
 
 bool Prop::visible(uint32_t ray_depth) const {
-	if (ray_depth < 1) {
+	if (0 == ray_depth) {
 		if (!properties_.test(Properties::Visible_in_camera)) {
 			return false;
 		}
@@ -201,7 +201,7 @@ void Prop::on_set_transformation() {
 		constexpr uint32_t num_steps = 3;
 		constexpr float interval = 1.f / static_cast<float>(num_steps + 1);
 		float t = interval;
-		for (uint32_t i = 0; i < num_steps; ++i, t += interval) {
+		for (uint32_t i = num_steps; i > 0; --i, t += interval) {
 			math::transformation interpolated = math::lerp(world_frame_a_, world_frame_b_, t);
 			math::aabb tmp = shape_->transformed_aabb(interpolated);
 			aabb.merge_assign(tmp);

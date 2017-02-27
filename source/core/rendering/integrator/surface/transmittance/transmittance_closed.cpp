@@ -28,7 +28,7 @@ float3 Closed::resolve(Worker& worker, Ray& ray, Intersection& intersection,
 	float3 used_attenuation = attenuation;
 
 	for (;;) {
-		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
@@ -38,7 +38,7 @@ float3 Closed::resolve(Worker& worker, Ray& ray, Intersection& intersection,
 			break;
 		}
 
-		float3 wo = -ray.direction;
+		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		material_sample.sample(sampler, sample_result);

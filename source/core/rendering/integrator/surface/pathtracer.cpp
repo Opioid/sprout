@@ -114,7 +114,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			break;
 		}
 
-		if (ray.depth > 0 && settings_.disable_caustics
+		if (settings_.disable_caustics && ray.depth > 0
 		&&  sample_result.type.test(Bxdf_type::Specular)) {
 			break;
 		}
