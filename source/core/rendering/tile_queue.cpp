@@ -32,7 +32,7 @@ Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_rad
 			end.x += filter_radius;
 		}
 
-		push(int4(start, end));
+		push(int4(start, end - int2(1)));
 
 		current_pixel.x += tile_dimensions.x;
 

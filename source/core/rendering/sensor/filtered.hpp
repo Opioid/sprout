@@ -24,10 +24,10 @@ public:
 private:
 
 	void add_weighted_pixel(int2 pixel, float weight, float4_p color,
-							const int4& tile, const int4& bounds);
+							const int4& isolated_tile, const int4& bounds);
 
 	void weight_and_add_pixel(int2 pixel, float2 relative_offset, float4_p color,
-							  const int4& tile, const int4& bounds);
+							  const int4& isolated_tile, const int4& bounds);
 
 	Clamp clamp_;
 

@@ -25,8 +25,8 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
 
 	rnd::Generator rng(tile.x + 2, tile.y + 8, tile.z + 16, tile.w + 128);
 
-	for (int32_t y = tile.y; y < tile.w; ++y) {
-		for (int32_t x = tile.x; x < tile.z; ++x) {
+	for (int32_t y = tile.y, y_len = tile.w + 1; y < y_len; ++y) {
+		for (int32_t x = tile.x, x_len = tile.z + 1; x < x_len; ++x) {
 			sampler_->resume_pixel(sample_begin, rng);
 			surface_integrator_->resume_pixel(sample_begin, rng);
 
