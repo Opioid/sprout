@@ -24,7 +24,7 @@ math::aabb Sphere::transformed_aabb(const float4x4& /*m*/, const math::transform
 }
 
 math::aabb Sphere::transformed_aabb(const math::transformation& t) const {
-	float3 halfsize(t.scale.x);
+	const float3 halfsize(t.scale.x);
 	return math::aabb(t.position - halfsize, t.position + halfsize);
 }
 
@@ -64,7 +64,7 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 			intersection.b = -math::cross(t, n);
 			intersection.n = n;
 			intersection.geo_n = n;
-			intersection.uv = float2(phi * 0.5f * math::Pi_inv, theta * math::Pi_inv);
+			intersection.uv = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
 			intersection.part = 0;
 
 			SOFT_ASSERT(testing::check(intersection, transformation, ray));
@@ -100,7 +100,7 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 			intersection.b = -math::cross(t, n);
 			intersection.n = n;
 			intersection.geo_n = n;
-			intersection.uv = float2(phi * 0.5f * math::Pi_inv, theta * math::Pi_inv);
+			intersection.uv = float2(phi * (0.5f * math::Pi_inv), theta * math::Pi_inv);
 			intersection.part = 0;
 
 			SOFT_ASSERT(testing::check(intersection, transformation, ray));
@@ -154,7 +154,7 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 			float3 n = math::normalized(ray.point(t0) - transformation.position);
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz.y) * math::Pi_inv);
 
 			return materials[0]->opacity(uv, ray.time, worker, filter);
@@ -166,7 +166,7 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 			float3 n = math::normalized(ray.point(t1) - transformation.position);
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz.y) * math::Pi_inv);
 
 			return materials[0]->opacity(uv, ray.time, worker, filter);
@@ -192,7 +192,7 @@ float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& 
 			float3 n = math::normalized(ray.point(t0) - transformation.position);
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz.y) * math::Pi_inv);
 
 			return materials[0]->thin_absorption(ray.direction, n, uv,
@@ -205,7 +205,7 @@ float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& 
 			float3 n = math::normalized(ray.point(t1) - transformation.position);
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
 			xyz = math::normalized(xyz);
-			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f,
+			float2 uv = float2(-std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz.y) * math::Pi_inv);
 
 			return materials[0]->thin_absorption(ray.direction, n, uv,
@@ -277,7 +277,7 @@ float Sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
 void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 					float3_p p, float2 uv, float area, bool /*two_sided*/,
 					Sample& sample) const {
-	float phi   = (uv.x + 0.75f) * 2.f * math::Pi;
+	float phi   = (uv.x + 0.75f) * (2.f * math::Pi);
 	float theta = uv.y * math::Pi;
 
 	float sin_theta = std::sin(theta);
@@ -324,7 +324,7 @@ float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 		float3 wn = math::normalized(hit - transformation.position);
 
 		float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
-		uv.x = -std::atan2(xyz.x, xyz.z) * math::Pi_inv * 0.5f + 0.5f;
+		uv.x = -std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f;
 		uv.y =  std::acos(xyz.y) * math::Pi_inv;
 
 		// sin_theta because of the uv weight
@@ -350,7 +350,7 @@ float Sphere::uv_weight(float2 uv) const {
 }
 
 float Sphere::area(uint32_t /*part*/, float3_p scale) const {
-	return 4.f * math::Pi * scale.x * scale.x;
+	return (4.f * math::Pi) * scale.x * scale.x;
 }
 
 size_t Sphere::num_bytes() const {

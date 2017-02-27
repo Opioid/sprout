@@ -7,7 +7,7 @@ namespace image { namespace texture {
 
 Byte_3_snorm::Byte_3_snorm(std::shared_ptr<Image> image) :
 	Texture(image),
-	image_(*dynamic_cast<const Byte_3*>(image.get())) {}
+	image_(*static_cast<const Byte_3*>(image.get())) {}
 
 float Byte_3_snorm::at_1(int32_t x, int32_t y) const {
 	auto value = image_.load(x, y);

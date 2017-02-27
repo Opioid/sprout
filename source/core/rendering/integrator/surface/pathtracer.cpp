@@ -71,14 +71,14 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 
 		if (i > 0) {
 			float3 tr;
-			float4 vli = worker.volume_li(ray, tr);
+			const float4 vli = worker.volume_li(ray, tr);
 			result += throughput * vli.xyz;
 			throughput *= tr;
 		}
 
 		opacity = 1.f;
 
-		float3 wo = -ray.direction;
+		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (material_sample.same_hemisphere(wo)) {
@@ -134,7 +134,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 
 		previous_sample_type = sample_result.type;
 
-		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;

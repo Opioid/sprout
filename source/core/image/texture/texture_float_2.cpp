@@ -6,7 +6,7 @@ namespace image { namespace texture {
 
 Float_2::Float_2(std::shared_ptr<Image> image) :
 	Texture(image),
-	image_(*reinterpret_cast<const image::Float_2*>(image.get())) {}
+	image_(*static_cast<const image::Float_2*>(image.get())) {}
 
 float Float_2::at_1(int32_t x, int32_t y) const {
 	return image_.load(x, y).x;

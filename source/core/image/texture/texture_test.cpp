@@ -13,7 +13,7 @@ bool is_valid_normal_map(const Image& image, const std::string& filename) {
 		return false;
 	}
 
-	const Byte_3& typed_image = dynamic_cast<const Byte_3&>(image);
+	const Byte_3& typed_image = static_cast<const Byte_3&>(image);
 
 	int2 d = image.description().dimensions.xy;
 	for (int32_t y = 0; y < d.y; ++y) {

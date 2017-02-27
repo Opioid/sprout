@@ -5,6 +5,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++14
+CONFIG += no-rtti
 unix: CONFIG += pthread
 CONFIG(debug, release|debug):DEFINES += _DEBUG
 

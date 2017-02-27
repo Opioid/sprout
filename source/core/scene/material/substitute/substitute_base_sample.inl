@@ -46,16 +46,16 @@ template<typename Diffuse>
 template<typename Coating>
 float3 Sample_base<Diffuse>::base_evaluate_and_coating(float3_p wi, const Coating& coating,
 													   float& pdf) const {
-	float3 h = math::normalized(wo_ + wi);
-	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+	const float3 h = math::normalized(wo_ + wi);
+	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
 
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_,
-												 coating_attenuation, coating_pdf);
+	const float3 coating_reflection = coating.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_,
+													   coating_attenuation, coating_pdf);
 
 	float base_pdf;
-	float3 base_reflection = layer_.base_evaluate(wi, wo_, h, wo_dot_h, base_pdf);
+	const float3 base_reflection = layer_.base_evaluate(wi, wo_, h, wo_dot_h, base_pdf);
 
 	pdf = (coating_pdf + 2.f * base_pdf) / 3.f;
 	return coating_reflection + coating_attenuation * base_reflection;
@@ -66,15 +66,15 @@ template<typename Coating>
 void Sample_base<Diffuse>::base_sample_and_coating(const Coating& coating,
 												   sampler::Sampler& sampler,
 												   bxdf::Result& result) const {
-	float p = sampler.generate_sample_1D();
+	const float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
 		float3 coating_attenuation;
 		coating.sample(wo_, layer_.ior_, sampler, coating_attenuation, result);
 
 		float base_pdf;
-		float3 base_reflection = layer_.base_evaluate(result.wi, wo_, result.h,
-													  result.h_dot_wi, base_pdf);
+		const float3 base_reflection = layer_.base_evaluate(result.wi, wo_, result.h,
+															result.h_dot_wi, base_pdf);
 
 		result.pdf = (result.pdf + 2.f * base_pdf) / 3.f;
 		result.reflection = result.reflection + coating_attenuation * base_reflection;
@@ -100,8 +100,9 @@ void Sample_base<Diffuse>::diffuse_sample_and_coating(const Coating& coating,
 
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-												 layer_.ior_, coating_attenuation, coating_pdf);
+	const float3 coating_reflection = coating.evaluate(result.wi, wo_, result.h,
+													   result.h_dot_wi, layer_.ior_,
+													   coating_attenuation, coating_pdf);
 
 	result.pdf = (2.f * result.pdf + coating_pdf) / 3.f;
 	result.reflection = coating_attenuation * result.reflection + coating_reflection;
@@ -116,8 +117,9 @@ void Sample_base<Diffuse>::specular_sample_and_coating(const Coating& coating,
 
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-												 layer_.ior_, coating_attenuation, coating_pdf);
+	const float3 coating_reflection = coating.evaluate(result.wi, wo_, result.h,
+													   result.h_dot_wi, layer_.ior_,
+													   coating_attenuation, coating_pdf);
 
 	result.pdf = (2.f * result.pdf + coating_pdf) / 3.f;
 	result.reflection = coating_attenuation * result.reflection + coating_reflection;
@@ -132,8 +134,9 @@ void Sample_base<Diffuse>::pure_specular_sample_and_coating(const Coating& coati
 
 	float3 coating_attenuation;
 	float  coating_pdf;
-	float3 coating_reflection = coating.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-												 layer_.ior_, coating_attenuation, coating_pdf);
+	const float3 coating_reflection = coating.evaluate(result.wi, wo_, result.h,
+													   result.h_dot_wi, layer_.ior_,
+													   coating_attenuation, coating_pdf);
 
 	result.pdf = 0.5f * (result.pdf + coating_pdf);
 	result.reflection = coating_attenuation * result.reflection + coating_reflection;
@@ -154,17 +157,18 @@ void Sample_base<Diffuse>::Layer::set(float3_p color, float3_p radiance, float i
 template<typename Diffuse>
 float3 Sample_base<Diffuse>::Layer::base_evaluate(float3_p wi, float3_p wo, float3_p h,
 												  float wo_dot_h, float& pdf) const {
-	float n_dot_wi = clamped_n_dot(wi);
-	float n_dot_wo = clamped_n_dot(wo);
+	const float n_dot_wi = clamped_n_dot(wi);
+	const float n_dot_wo = clamped_n_dot(wo);
 
 	float d_pdf;
-	float3 d_reflection = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, *this, d_pdf);
+	const float3 d_reflection = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, *this, d_pdf);
 
 	fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	float3 ggx_reflection = ggx::Isotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
-													   *this, schlick, ggx_fresnel, ggx_pdf);
+	const float3 ggx_reflection = ggx::Isotropic::reflection(h, n_dot_wi, n_dot_wo,
+															 wo_dot_h, *this, schlick,
+															 ggx_fresnel, ggx_pdf);
 
 	pdf = 0.5f * (d_pdf + ggx_pdf);
 
@@ -174,15 +178,15 @@ float3 Sample_base<Diffuse>::Layer::base_evaluate(float3_p wi, float3_p wo, floa
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::diffuse_sample(float3_p wo, sampler::Sampler& sampler,
 												 bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot(wo);
-	float n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
+	const float n_dot_wo = clamped_n_dot(wo);
+	const float n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
 
-	fresnel::Schlick schlick(f0_);
+	const fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	float3 ggx_reflection = ggx::Isotropic::reflection(result.h,
-													   n_dot_wi, n_dot_wo, result.h_dot_wi,
-													   *this, schlick, ggx_fresnel, ggx_pdf);
+	const float3 ggx_reflection = ggx::Isotropic::reflection(result.h, n_dot_wi, n_dot_wo,
+															 result.h_dot_wi, *this, schlick,
+															 ggx_fresnel, ggx_pdf);
 
 	result.reflection = n_dot_wi * ((1.f - ggx_fresnel) * result.reflection + ggx_reflection);
 	result.pdf = 0.5f * (result.pdf + ggx_pdf);
@@ -191,16 +195,16 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(float3_p wo, sampler::Sampler& 
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::specular_sample(float3_p wo, sampler::Sampler& sampler,
 												  bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot(wo);
+	const float n_dot_wo = clamped_n_dot(wo);
 
-	fresnel::Schlick schlick(f0_);
+	const fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick,
 											 sampler, ggx_fresnel, result);
 
 	float d_pdf;
-	float3 d_reflection = Diffuse::reflection(result.h_dot_wi, n_dot_wi,
-											  n_dot_wo, *this, d_pdf);
+	const float3 d_reflection = Diffuse::reflection(result.h_dot_wi, n_dot_wi,
+													n_dot_wo, *this, d_pdf);
 
 	result.reflection = n_dot_wi * (result.reflection + (1.f - ggx_fresnel) * d_reflection);
 	result.pdf = 0.5f * (result.pdf + d_pdf);
@@ -209,10 +213,10 @@ void Sample_base<Diffuse>::Layer::specular_sample(float3_p wo, sampler::Sampler&
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::pure_specular_sample(float3_p wo, sampler::Sampler& sampler,
 													   bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot(wo);
+	const float n_dot_wo = clamped_n_dot(wo);
 
-	fresnel::Schlick schlick(f0_);
-	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);
+	const fresnel::Schlick schlick(f0_);
+	const float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 

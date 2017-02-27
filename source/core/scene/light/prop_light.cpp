@@ -27,9 +27,9 @@ void Prop_light::sample(const Transformation& transformation, float time,
 						Worker& worker, Sampler_filter filter, Sample& result) const {
 	auto material = prop_->material(part_);
 
-	float area = prop_->area(part_);
+	const float area = prop_->area(part_);
 
-	bool two_sided = material->is_two_sided();
+	const bool two_sided = material->is_two_sided();
 
 	if (total_sphere) {
 		prop_->shape()->sample(part_, transformation, p, area, two_sided,
@@ -53,18 +53,18 @@ void Prop_light::sample(const Transformation& transformation, float time,
 float Prop_light::pdf(const Transformation& transformation,
 					  float3_p p, float3_p wi, bool total_sphere,
 					  Worker& worker, Sampler_filter /*filter*/) const {
-	float area = prop_->area(part_);
+	const float area = prop_->area(part_);
 
-	bool two_sided = prop_->material(part_)->is_two_sided();
+	const bool two_sided = prop_->material(part_)->is_two_sided();
 
 	return prop_->shape()->pdf(part_, transformation, p, wi, area,
 							   two_sided, total_sphere, worker.node_stack());
 }
 
 float3 Prop_light::power(const math::aabb& scene_bb) const {
-	float area = prop_->area(part_);
+	const float area = prop_->area(part_);
 
-	float3 radiance = prop_->material(part_)->average_radiance(area);
+	const float3 radiance = prop_->material(part_)->average_radiance(area);
 
 	if (prop_->shape()->is_finite()) {
 		return area * radiance;

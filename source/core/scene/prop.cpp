@@ -49,9 +49,9 @@ void Prop::prepare_sampling(uint32_t part, uint32_t light_id,
 	shape_->prepare_sampling(part);
 
 	entity::Composed_transformation temp;
-	auto& transformation = transformation_at(0.f, temp);
+	const auto& transformation = transformation_at(0.f, temp);
 
-	float area = shape_->area(part, transformation.scale);
+	const float area = shape_->area(part, transformation.scale);
 	parts_[part].area = area;
 
 	parts_[part].light_id = light_id;
@@ -82,7 +82,7 @@ bool Prop::intersect(Ray& ray, shape::Node_stack& node_stack,
 	}
 
 	entity::Composed_transformation temp;
-	auto& transformation = transformation_at(ray.time, temp);
+	const auto& transformation = transformation_at(ray.time, temp);
 
 	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
@@ -97,7 +97,7 @@ bool Prop::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {
 	}
 
 	entity::Composed_transformation temp;
-	auto& transformation = transformation_at(ray.time, temp);
+	const auto& transformation = transformation_at(ray.time, temp);
 
 	return shape_->intersect_p(transformation, ray, node_stack);
 }
@@ -116,7 +116,7 @@ float Prop::opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const
 	}
 
 	entity::Composed_transformation temp;
-	auto& transformation = transformation_at(ray.time, temp);
+	const auto& transformation = transformation_at(ray.time, temp);
 
 	return shape_->opacity(transformation, ray, materials_, worker, filter);
 }
@@ -135,7 +135,7 @@ float3 Prop::thin_absorption(const Ray& ray, Worker& worker, Sampler_filter filt
 	}
 
 	entity::Composed_transformation temp;
-	auto& transformation = transformation_at(ray.time, temp);
+	const auto& transformation = transformation_at(ray.time, temp);
 
 	return shape_->thin_absorption(transformation, ray, materials_, worker, filter);
 }
@@ -202,12 +202,12 @@ void Prop::on_set_transformation() {
 		constexpr float interval = 1.f / static_cast<float>(num_steps + 1);
 		float t = interval;
 		for (uint32_t i = num_steps; i > 0; --i, t += interval) {
-			math::transformation interpolated = math::lerp(world_frame_a_, world_frame_b_, t);
-			math::aabb tmp = shape_->transformed_aabb(interpolated);
+			const math::transformation interpolated = math::lerp(world_frame_a_, world_frame_b_, t);
+			const math::aabb tmp = shape_->transformed_aabb(interpolated);
 			aabb.merge_assign(tmp);
 		}
 
-		math::aabb tmp = shape_->transformed_aabb(world_frame_b_);
+		const math::aabb tmp = shape_->transformed_aabb(world_frame_b_);
 		aabb_ = aabb.merge(tmp);
 	} else {
 		aabb_ = shape_->transformed_aabb(world_transformation_.object_to_world, world_frame_a_);
