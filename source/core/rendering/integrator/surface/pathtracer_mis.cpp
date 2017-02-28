@@ -276,7 +276,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 				float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
 
 				result += (weight / sample_result.pdf)
-					   * ls_energy * sample_result.reflection;
+					   * (ls_energy * sample_result.reflection);
 			}
 		}
 	}
@@ -313,7 +313,7 @@ float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sample
 			const float weight = power_heuristic(light_sample.shape.pdf / light_weight, bxdf_pdf);
 
 			result += (weight / light_sample.shape.pdf * light_weight)
-				   * tv * t * light_sample.radiance * f;
+				   * (tv * t) * (light_sample.radiance * f);
 		}
 	}
 

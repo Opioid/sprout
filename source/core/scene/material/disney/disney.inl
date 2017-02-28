@@ -54,13 +54,13 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer,
 
 template<typename Layer>
 float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, const Layer& layer) {
-	const float f_D90 = 0.5f + 2.f * layer.roughness_ * (h_dot_wi * h_dot_wi);
+	const float f_D90 = 0.5f + (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
 	const float fmo = f_D90 - 1.f;
 
 	const float a = 1.f + fmo * math::pow5(1.f - n_dot_wi);
 	const float b = 1.f + fmo * math::pow5(1.f - n_dot_wo);
 
-	return a * b * (math::Pi_inv * layer.diffuse_color_);
+	return (a * b) * (math::Pi_inv * layer.diffuse_color_);
 }
 
 template<typename Layer>
@@ -110,7 +110,7 @@ float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi, float n_do
 	const float fv = math::pow5(1.f - n_dot_wo);
 	const float rr = 2.f * layer.roughness_ * (h_dot_wi * h_dot_wi);
 
-	return rr * (fl + fv + fl * fv * (rr - 1.f)) * (math::Pi_inv * layer.diffuse_color_);
+	return rr * ((fl + fv) + (fl * fv) * (rr - 1.f)) * (math::Pi_inv * layer.diffuse_color_);
 }
 
 }}}

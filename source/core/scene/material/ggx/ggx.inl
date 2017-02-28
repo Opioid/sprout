@@ -31,7 +31,7 @@ inline float clamp_a2(float a2) {
 }
 
 inline float distribution_isotropic(float n_dot_h, float a2) {
-	const float d = n_dot_h * n_dot_h * (a2 - 1.f) + 1.f;
+	const float d = (n_dot_h * n_dot_h) * (a2 - 1.f) + 1.f;
 	return a2 / (math::Pi * d * d);
 }
 
@@ -39,9 +39,9 @@ inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_
 									  float2 a2, float axy) {
 	const float x = (x_dot_h * x_dot_h) / a2.x;
 	const float y = (y_dot_h * y_dot_h) / a2.y;
-	const float d = (x + y + n_dot_h * n_dot_h);
+	const float d = (x + y) + (n_dot_h * n_dot_h);
 
-	return 1.f / (math::Pi * axy * d * d);
+	return 1.f / ((math::Pi * axy) * (d * d));
 }
 
 inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo, float a2) {
@@ -81,7 +81,7 @@ float3 Isotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float w
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	const float3 f = fresnel(wo_dot_h);
 
-	pdf = d * n_dot_h / (4.f * wo_dot_h);
+	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	const float3 result = d * g * f;
 
 	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
@@ -120,7 +120,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	const float3 f = fresnel(wo_dot_h);
 
-	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.h = h;
@@ -148,8 +148,8 @@ float3 Isotropic::refraction(float3_p wi, float3_p wo, float n_dot_wi,
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	const float3 f = fresnel(wo_dot_h);
 
-	pdf = d * n_dot_h / (4.f * wo_dot_h);
-	const float3 result = d * g * f * layer.color;
+	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+	const float3 result = (d * g) * (f * layer.color);
 
 	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
 
@@ -192,7 +192,7 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 	float denom = layer.ior_i_ * wo_dot_h + layer.ior_o_ * wo_dot_h;
 	denom = denom * denom;
 
-	result.pdf = (d * n_dot_h / (4.f * wo_dot_h));
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 
 	const float ior_o_2 = layer.ior_o_ * layer.ior_o_;
 	result.reflection = factor * ((ior_o_2 * refraction) / denom) * layer.color_;
@@ -221,7 +221,7 @@ float3 Isotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float w
 	const float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
-	pdf = d * n_dot_h / (4.f * wo_dot_h);
+	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	const float3 result = d * g * f;
 
 	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
@@ -262,7 +262,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 
 	fresnel_result = f;
 
-	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.h = h;
@@ -286,7 +286,7 @@ float3 Anisotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
 	const float3 f = fresnel(wo_dot_h);
 
-	pdf = d * n_dot_h / (4.f * wo_dot_h);
+	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	const float3 result = d * g * f;
 
 	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
@@ -322,7 +322,7 @@ float Anisotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, cons
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
 	const float3 f = fresnel(wo_dot_h);
 
-	result.pdf = d * n_dot_h / (4.f * wo_dot_h);
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.h = h;
