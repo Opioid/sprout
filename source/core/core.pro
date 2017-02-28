@@ -4,7 +4,7 @@ TARGET = core
 TEMPLATE = lib
 CONFIG += staticlib
 CONFIG += c++14
-CONFIG += no-rtti
+CONFIG += rtti_off
 CONFIG(debug, release|debug):DEFINES += _DEBUG
 
 include(../compiler_options.pri)
