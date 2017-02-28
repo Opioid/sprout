@@ -38,7 +38,7 @@ void spectrum() {
 			xyz = math::normalized(xyz);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 
 		std::cout << xyz << " in " << duration << " s" << std::endl;
 	}

@@ -31,7 +31,7 @@ template<typename T>
 void Gaussian<T>::apply(Typed_image<T>& target, thread::Pool& pool) {
 	scratch_.resize(target.description());
 
-	auto d = target.description().dimensions;
+	const auto d = target.description().dimensions;
 
 	// vertical
 

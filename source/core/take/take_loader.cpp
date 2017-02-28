@@ -89,7 +89,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 		}
 
 		if (!take->exporter) {
-			auto d = take->view.camera->sensor().dimensions();
+			const auto d = take->view.camera->sensor().dimensions();
 			image::Writer* writer = new image::encoding::png::Writer(d);
 			take->exporter = std::make_unique<exporting::Image_sequence>("output_", writer);
 			logging::warning("No exporter was specified, defaulting to PNG writer.");

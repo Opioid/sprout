@@ -38,7 +38,7 @@ float3 Nearest_3D<Address_mode>::address(float3_p uvw) const {
 template<typename Address_mode>
 int3 Nearest_3D<Address_mode>::map(const Texture& texture, float3_p uvw) {
 	auto b = texture.back_3();
-	auto d = texture.dimensions_float3();
+	const auto d = texture.dimensions_float3();
 
 	float u = Address_mode::f(uvw.x);
 	float v = Address_mode::f(uvw.y);

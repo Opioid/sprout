@@ -290,7 +290,7 @@ inline void interpolate_p(const Intersection_vertex_MT& a,
 						  const Intersection_vertex_MT& b,
 						  const Intersection_vertex_MT& c,
 						  float2 uv, float3& p) {
-	float w = 1.f - uv.x - uv.y;
+	const float w = 1.f - uv.x - uv.y;
 
 	p = w * a.p + uv.x * b.p + uv.y * c.p;
 }
@@ -305,9 +305,9 @@ inline float area(const Intersection_vertex_MT& a,
 				  const Intersection_vertex_MT& b,
 				  const Intersection_vertex_MT& c,
 				  float3_p scale) {
-	float3 sa = scale * a.p;
-	float3 sb = scale * b.p;
-	float3 sc = scale * c.p;
+	const float3 sa = scale * a.p;
+	const float3 sb = scale * b.p;
+	const float3 sc = scale * c.p;
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 
@@ -315,7 +315,7 @@ inline float2 interpolate_uv(const Shading_vertex_MT& a,
 							 const Shading_vertex_MT& b,
 							 const Shading_vertex_MT& c,
 							 float2 uv) {
-	float w = 1.f - uv.x - uv.y;
+	const float w = 1.f - uv.x - uv.y;
 
 	return w * a.uv + uv.x * b.uv + uv.y * c.uv;
 }
@@ -325,7 +325,7 @@ inline void interpolate_data(const Shading_vertex_MT& a,
 							 const Shading_vertex_MT& c,
 							 float2 uv,
 							 float3& n, float3& t, float2& tc) {
-	float w = 1.f - uv.x - uv.y;
+	const float w = 1.f - uv.x - uv.y;
 
 	n  = math::normalized(w * a.n + uv.x * b.n + uv.y * c.n);
 	t  = math::normalized(w * a.t + uv.x * b.t + uv.y * c.t);
@@ -346,7 +346,7 @@ inline float2 interpolate_uv(const Shading_vertex_MTC& a,
 							 const Shading_vertex_MTC& b,
 							 const Shading_vertex_MTC& c,
 							 float2 uv) {
-	float w = 1.f - uv.x - uv.y;
+	const float w = 1.f - uv.x - uv.y;
 
 	return float2(w * a.n_u.w + uv.x * b.n_u.w + uv.y * c.n_u.w,
 				  w * a.t_v.w + uv.x * b.t_v.w + uv.y * c.t_v.w);
@@ -357,10 +357,10 @@ inline void interpolate_data(const Shading_vertex_MTC& a,
 							 const Shading_vertex_MTC& c,
 							 float2 uv,
 							 float3& n, float3& t, float2& tc) {
-	float w = 1.f - uv.x - uv.y;
+	const float w = 1.f - uv.x - uv.y;
 
-	float4 n_u = w * a.n_u + uv.x * b.n_u + uv.y * c.n_u;
-	float4 t_v = w * a.t_v + uv.x * b.t_v + uv.y * c.t_v;
+	const float4 n_u = w * a.n_u + uv.x * b.n_u + uv.y * c.n_u;
+	const float4 t_v = w * a.t_v + uv.x * b.t_v + uv.y * c.t_v;
 
 	n  = math::normalized(n_u.xyz);
 	t  = math::normalized(t_v.xyz);
@@ -404,8 +404,8 @@ inline Shading_vertex_MTCC::Shading_vertex_MTCC(const math::packed_float3& n,
 	t_v(float_to_snorm16(t, uv.y)) {
 
 
-	float u = xnorm_to_float(n_u.w);
-	float du = std::abs(uv.x - u);
+	const float u = xnorm_to_float(n_u.w);
+	const float du = std::abs(uv.x - u);
 
 	if (du > 0.1f) {
 		std::cout << uv.x << " vs " << u << std::endl;

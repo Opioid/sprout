@@ -69,7 +69,7 @@ float2 Nearest_2D<Address_mode_U, Address_mode_V>::address(float2 uv) const {
 template<typename Address_mode_U, typename Address_mode_V>
 int2 Nearest_2D<Address_mode_U, Address_mode_V>::map(const Texture& texture, float2 uv) {
 	auto b = texture.back_2();
-	auto d = texture.dimensions_float2();
+	const auto d = texture.dimensions_float2();
 
 	float u = Address_mode_U::f(uv.x);
 	float v = Address_mode_V::f(uv.y);

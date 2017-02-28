@@ -93,7 +93,7 @@ std::string Message_handler::introduction() const {
 	std::ostringstream stream;
 	stream << "{";
 
-	auto d = driver_.camera().sensor_dimensions();
+	const auto d = driver_.camera().sensor_dimensions();
 	stream << "\"resolution\":" << d << ",";
 
 	stream << "\"iteration\":" << driver_.iteration();
