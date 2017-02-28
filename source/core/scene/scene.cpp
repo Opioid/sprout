@@ -51,7 +51,7 @@ Scene::~Scene() {
 		delete p;
 	}
 
-	for (auto d : dummies_) {
+	for (const auto d : dummies_) {
 		delete d;
 	}
 }
@@ -194,7 +194,7 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 
 void Scene::compile(thread::Pool& pool) {
 	// handle changed transformations
-	for (auto d : dummies_) {
+	for (const auto d : dummies_) {
 		d->calculate_world_transformation();
 	}
 

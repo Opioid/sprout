@@ -16,26 +16,26 @@ Opaque::~Opaque() {
 }
 
 void Opaque::clear() {
-	auto d = dimensions();
+	const auto d = dimensions();
 	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
 		pixels_[i] = float4(0.f);
 	}
 }
 
 size_t Opaque::num_bytes() const {
-	auto d = dimensions();
+	const auto d = dimensions();
 	return d.x * d.y * sizeof(float4);
 }
 
 void Opaque::add_pixel(int2 pixel, float4_p color, float weight) {
-	auto d = dimensions();
+	const auto d = dimensions();
 
 	auto& value = pixels_[d.x * pixel.y + pixel.x];
 	value += float4(weight * color.xyz, weight);
 }
 
 void Opaque::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
-	auto d = dimensions();
+	const auto d = dimensions();
 
 	auto& value = pixels_[d.x * pixel.y + pixel.x];
 	atomic::add_assign(value.x, weight * color.x);

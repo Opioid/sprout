@@ -34,7 +34,7 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 	const uint32_t progress_range = calculate_progress_range(scene_, camera, tiles_.size(),
 															 view_.num_samples_per_pixel);
 
-	float start_frame = static_cast<float>(view_.start_frame);
+	const float start_frame = static_cast<float>(view_.start_frame);
 	float tick_offset = scene_.seek(start_frame * camera.frame_duration(), thread_pool_);
 	float tick_rest   = scene_.tick_duration() - tick_offset;
 
@@ -44,7 +44,7 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 		uint32_t current_frame = view_.start_frame + f;
 		logging::info("Frame " + string::to_string(current_frame));
 
-		auto render_start = std::chrono::high_resolution_clock::now();
+		const auto render_start = std::chrono::high_resolution_clock::now();
 
 		sensor.clear();
 		current_sample_ = 0;
@@ -69,10 +69,10 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 					tick_rest = scene_.tick_duration();
 				}
 
-				float subframe_slice = std::min(tick_rest, frame_rest);
+				const float subframe_slice = std::min(tick_rest, frame_rest);
 
 				if (!rendered) {
-					float normalized_tick_offset = tick_offset / scene_.tick_duration();
+					const float normalized_tick_offset = tick_offset / scene_.tick_duration();
 
 					render_subframe(normalized_tick_offset, 0.f, 1.f, progressor);
 
@@ -97,11 +97,11 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 					tick_rest = scene_.tick_duration();
 				}
 
-				float subframe_slice = std::min(tick_rest, frame_rest);
+				const float subframe_slice = std::min(tick_rest, frame_rest);
 
-				float normalized_tick_offset = tick_offset / scene_.tick_duration();
-				float normalized_tick_slice  = subframe_slice / scene_.tick_duration();
-				float normalized_frame_slice = subframe_slice / camera.frame_duration();
+				const float normalized_tick_offset = tick_offset / scene_.tick_duration();
+				const float normalized_tick_slice  = subframe_slice / scene_.tick_duration();
+				const float normalized_frame_slice = subframe_slice / camera.frame_duration();
 
 				render_subframe(normalized_tick_offset, normalized_tick_slice,
 								normalized_frame_slice, progressor);
@@ -131,12 +131,13 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset,
 										float normalized_tick_slice,
 										float normalized_frame_slice,
 										progress::Sink& progressor) {
-	float num_samples = static_cast<float>(view_.num_samples_per_pixel);
-	float samples_per_slice = normalized_frame_slice * num_samples;
+	const float num_samples = static_cast<float>(view_.num_samples_per_pixel);
+	const float samples_per_slice = normalized_frame_slice * num_samples;
 
-	uint32_t sample_begin = current_sample_;
-	uint32_t sample_range = std::max(static_cast<uint32_t>(samples_per_slice + 0.5f), 1u);
-	uint32_t sample_end   = std::min(sample_begin + sample_range, view_.num_samples_per_pixel);
+	const uint32_t sample_begin = current_sample_;
+	const uint32_t sample_range = std::max(static_cast<uint32_t>(samples_per_slice + 0.5f), 1u);
+	const uint32_t sample_end   = std::min(sample_begin + sample_range,
+										   view_.num_samples_per_pixel);
 
 	if (sample_begin == sample_end) {
 		return;

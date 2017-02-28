@@ -48,7 +48,7 @@ void rsqrt() {
 			a = (1.f / std::sqrt(a));
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -62,7 +62,7 @@ void rsqrt() {
 			a = math::simd::rsqrt(a);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -76,7 +76,7 @@ void rsqrt() {
 			a = SSE_rsqrt(a);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -90,7 +90,7 @@ void rsqrt() {
 			a = (1.f / std::sqrt(a));
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -133,7 +133,7 @@ void rcp() {
 			a = (1.f / a);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -147,7 +147,7 @@ void rcp() {
 			a = SSE_rcp(a);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -161,7 +161,7 @@ void rcp() {
 			a = SSE_rcp_1N(a);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -175,7 +175,7 @@ void rcp() {
 			a = (1.f / a);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << a << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -256,7 +256,7 @@ void normalize() {
 			result = math::normalized(r + result);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -275,7 +275,7 @@ void normalize() {
 			result = simd_normalized_0(r + result);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -294,7 +294,7 @@ void normalize() {
 			result = simd_normalized_1(r + result);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -313,7 +313,7 @@ void normalize() {
 			result = simd_normalized_2(r + result);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -332,7 +332,7 @@ void normalize() {
 			result = math::normalized(r + result);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -397,7 +397,7 @@ void reciprocal() {
 			result = math::reciprocal(r + result);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -414,7 +414,7 @@ void reciprocal() {
 			result = simd_reciprocal(r + result);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -432,7 +432,7 @@ void reciprocal() {
 			simd_reciprocal(result, r + result);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -449,7 +449,7 @@ void reciprocal() {
 			result = math::reciprocal(r + result);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 	}
 
@@ -536,7 +536,7 @@ void dot() {
 			result += r;
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -556,7 +556,7 @@ void dot() {
 			result += r;
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -576,7 +576,7 @@ void dot() {
 			result += r;
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -596,7 +596,7 @@ void dot() {
 			result += r;
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -616,7 +616,7 @@ void dot() {
 			result += r;
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -666,7 +666,7 @@ void minmax() {
 			result = math::min(result, vectors[i]);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -682,7 +682,7 @@ void minmax() {
 			result = simd_min(result, vectors[i]);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -698,7 +698,7 @@ void minmax() {
 			simd_min2(result, vectors[i]);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}
@@ -714,7 +714,7 @@ void minmax() {
 			result = math::min(result, vectors[i]);
 		}
 
-		auto duration = chrono::seconds_since(start);
+		const auto duration = chrono::seconds_since(start);
 		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
 		std::cout << std::endl;
 	}

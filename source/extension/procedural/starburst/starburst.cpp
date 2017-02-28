@@ -426,7 +426,7 @@ void diffraction(Spectrum* result, const float* squared_magnitude,
 }
 
 void write_signal(const std::string& name, const Float_1& signal) {
-	auto d = signal.description().dimensions;
+	const auto d = signal.description().dimensions;
 
 	Byte_1 image(Image::Description(Image::Type::Byte_1, d));
 
@@ -513,7 +513,7 @@ void fdft(Float_2& destination, const texture::Float_2& texture,
 
 void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
 		  float alpha, uint32_t mode, thread::Pool& pool) {
-	auto d = destination.description().dimensions;
+	const auto d = destination.description().dimensions;
 	texture::Float_2 texture(source);
 	pool.run_range([&destination, &texture, alpha, mode]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {

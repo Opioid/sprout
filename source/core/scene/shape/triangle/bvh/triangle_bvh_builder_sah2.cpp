@@ -204,7 +204,6 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::a
 			}
 		}
 	}
-
 }
 
 Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& references,
@@ -216,10 +215,10 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 	split_candidates_.clear();
 
-	uint32_t num_triangles = static_cast<uint32_t>(references.size());
+	const uint32_t num_triangles = static_cast<uint32_t>(references.size());
 
-	float3 halfsize = aabb.halfsize();
-	float3 position = aabb.position();
+	const float3 halfsize = aabb.halfsize();
+	const float3 position = aabb.position();
 
 	split_candidates_.emplace_back(X, position, true);
 	split_candidates_.emplace_back(Y, position, true);
@@ -237,15 +236,15 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 		float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
-			float fi = static_cast<float>(i);
+			const float fi = static_cast<float>(i);
 
-			float3 slice_x(min.x + fi * step.x, position.y, position.z);
+			const float3 slice_x(min.x + fi * step.x, position.y, position.z);
 			split_candidates_.emplace_back(X, slice_x, false);
 
-			float3 slice_y(position.x, min.y + fi * step.y, position.z);
+			const float3 slice_y(position.x, min.y + fi * step.y, position.z);
 			split_candidates_.emplace_back(Y, slice_y, false);
 
-			float3 slice_z(position.x, position.y, min.z + fi * step.z);
+			const float3 slice_z(position.x, position.y, min.z + fi * step.z);
 			split_candidates_.emplace_back(Z, slice_z, false);
 
 //			split_candidates_.push_back(Split_candidate(0, slice_x, true));
@@ -256,18 +255,25 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 	float aabb_surface_area = aabb.surface_area();
 
-	thread_pool.run_range([this, &references, aabb_surface_area]
-		(uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) {
-			for (int32_t i = sc_begin; i < sc_end; ++i) {
-				split_candidates_[i].evaluate(references, aabb_surface_area);
-			}
-		}, 0, static_cast<int32_t>(split_candidates_.size()));
+	// Arbitrary heuristic for starting the thread pool
+	if (num_triangles < 1024) {
+		for (auto& sc : split_candidates_) {
+			sc.evaluate(references, aabb_surface_area);
+		}
+	} else {
+		thread_pool.run_range([this, &references, aabb_surface_area]
+			(uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) {
+				for (int32_t i = sc_begin; i < sc_end; ++i) {
+					split_candidates_[i].evaluate(references, aabb_surface_area);
+				}
+			}, 0, static_cast<int32_t>(split_candidates_.size()));
+	}
 
 	size_t sc = 0;
 	float  min_cost = split_candidates_[0].cost();
 
 	for (size_t i = 1, len = split_candidates_.size(); i < len; ++i) {
-		float cost = split_candidates_[i].cost();
+		const float cost = split_candidates_[i].cost();
 		if (cost < min_cost) {
 			sc = i;
 			min_cost = cost;

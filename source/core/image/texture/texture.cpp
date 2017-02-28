@@ -48,42 +48,42 @@ int32_t Texture::num_elements() const {
 float3 Texture::average_3() const {
 	float3 average(0.f);
 
-	auto d = dimensions_2();
+	const auto d = dimensions_2();
 	for (int32_t y = 0; y < d.y; ++y) {
 		for (int32_t x = 0; x < d.x; ++x) {
 			average += at_3(x, y);
 		}
 	}
 
-	auto df = dimensions_float2();
+	const auto df = dimensions_float2();
 	return average / (df.x * df.y);
 }
 
 float3 Texture::average_3(int32_t element) const {
 	float3 average(0.f);
 
-	auto d = dimensions_2();
+	const auto d = dimensions_2();
 	for (int32_t y = 0; y < d.y; ++y) {
 		for (int32_t x = 0; x < d.x; ++x) {
 			average += at_element_3(x, y, element);
 		}
 	}
 
-	auto df = dimensions_float2();
+	const auto df = dimensions_float2();
 	return average / (df.x * df.y);
 }
 
 float4 Texture::average_4() const {
 	float4 average(0.f);
 
-	auto d = dimensions_2();
+	const auto d = dimensions_2();
 	for (int32_t y = 0; y < d.y; ++y) {
 		for (int32_t x = 0; x < d.x; ++x) {
 			average += at_4(x, y);
 		}
 	}
 
-	auto df = dimensions_float2();
+	const auto df = dimensions_float2();
 	return average / (df.x * df.y);
 }
 

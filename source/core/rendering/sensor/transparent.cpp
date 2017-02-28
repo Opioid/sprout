@@ -14,7 +14,7 @@ Transparent::~Transparent() {
 }
 
 void Transparent::clear() {
-	auto d = dimensions();
+	const auto d = dimensions();
 	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
 		pixels_[i].color = float4(0.f);
 		pixels_[i].weight_sum = 0.f;
@@ -22,12 +22,12 @@ void Transparent::clear() {
 }
 
 size_t Transparent::num_bytes() const {
-	auto d = dimensions();
+	const auto d = dimensions();
 	return d.x * d.y * sizeof(Pixel);
 }
 
 void Transparent::add_pixel(int2 pixel, float4_p color, float weight) {
-	auto d = dimensions();
+	const auto d = dimensions();
 
 	auto& value = pixels_[d.x * pixel.y + pixel.x];
 	value.color += weight * color;
@@ -35,7 +35,7 @@ void Transparent::add_pixel(int2 pixel, float4_p color, float weight) {
 }
 
 void Transparent::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
-	auto d = dimensions();
+	const auto d = dimensions();
 
 	auto& value = pixels_[d.x * pixel.y + pixel.x];
 	atomic::add_assign(value.color.x, weight * color.x);

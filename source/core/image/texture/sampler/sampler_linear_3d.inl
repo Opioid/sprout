@@ -79,7 +79,7 @@ template<typename Address_mode>
 float3 Linear_3D<Address_mode>::map(const Texture& texture, float3_p uvw,
 									int3& xyz, int3& xyz1) {
 	auto b = texture.back_3();
-	auto d = texture.dimensions_float3();
+	const auto d = texture.dimensions_float3();
 
 	float u = Address_mode::f(uvw.x) * d.x - 0.5f;
 	float v = Address_mode::f(uvw.y) * d.y - 0.5f;

@@ -103,8 +103,8 @@ float3 Indexed_data<IV, SV>::normal(uint32_t index) const {
 	const IV& b = intersection_vertices_[tri.b];
 	const IV& c = intersection_vertices_[tri.c];
 
-	float3 e1 = b.p - a.p;
-	float3 e2 = c.p - a.p;
+	const float3 e1 = b.p - a.p;
+	const float3 e2 = c.p - a.p;
 	return math::normalized(math::cross(e1, e2));
 }
 

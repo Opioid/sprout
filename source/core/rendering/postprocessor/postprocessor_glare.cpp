@@ -38,7 +38,7 @@ float f3(float theta, float lambda) {
 }
 
 void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
-	auto dim = camera.sensor_dimensions();
+	const auto dim = camera.sensor_dimensions();
 
 	high_pass_.resize(dim.x * dim.y);
 
@@ -188,7 +188,7 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 	} else {
 		float intensity = intensity_;
 
-		auto d = destination.description().dimensions.xy;
+		const auto d = destination.description().dimensions.xy;
 
 		int2 hkd = kernel_dimensions_ / 2;
 
