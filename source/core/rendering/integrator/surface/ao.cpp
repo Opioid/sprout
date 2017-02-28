@@ -40,14 +40,14 @@ float4 AO::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	occlusion_ray.max_t	 = settings_.radius;
 	occlusion_ray.time   = ray.time;
 
-	float3 wo = -ray.direction;
-	auto& material_sample = intersection.sample(worker, wo, ray.time, Sampler_filter::Unknown);
+	const float3 wo = -ray.direction;
+	const auto& material_sample = intersection.sample(worker, wo, ray.time, Sampler_filter::Unknown);
 
-	for (uint32_t i = 0; i < settings_.num_samples; ++i) {
-		float2 sample = sampler_.generate_sample_2D();
-		float3 hs = math::sample_hemisphere_cosine(sample);
+	for (uint32_t i = settings_.num_samples; i > 0; --i) {
+		const float2 sample = sampler_.generate_sample_2D();
+		const float3 hs = math::sample_hemisphere_cosine(sample);
 //		float3 ws = intersection.geo.tangent_to_world(hs);
-		float3 ws = material_sample.base_layer().tangent_to_world(hs);
+		const float3 ws = material_sample.base_layer().tangent_to_world(hs);
 
 		occlusion_ray.set_direction(ws);
 

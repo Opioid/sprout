@@ -81,7 +81,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 
 	for (uint32_t i = 0; ; ++i) {
 		const float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
+		const auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if (i > 0) {
 			float3 tr;
@@ -169,11 +169,11 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 size_t Pathtracer_MIS::num_bytes() const {
 	size_t sampler_bytes = 0;
 
-	for (auto& s : material_samplers_) {
+	for (const auto& s : material_samplers_) {
 		sampler_bytes += s.num_bytes();
 	}
 
-	for (auto& s : light_samplers_) {
+	for (const auto& s : light_samplers_) {
 		sampler_bytes += s.num_bytes();
 	}
 
@@ -215,7 +215,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 		result *= settings_.num_light_samples_reciprocal;
 	} else {
 		const auto& lights = worker.scene().lights();
-		float light_weight = static_cast<float>(lights.size());
+		const float light_weight = static_cast<float>(lights.size());
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
 			const auto light = lights[l];
 			for (uint32_t i = 0, nls = settings_.light_sampling.num_samples; i < nls; ++i) {
@@ -273,7 +273,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 
 				const float3 ls_energy = t * light_material_sample.radiance();
 
-				float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
+				const float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
 
 				result += (weight / sample_result.pdf)
 					   * (ls_energy * sample_result.reflection);
@@ -303,7 +303,7 @@ float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sample
 		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.max_t = light_sample.shape.t - ray_offset;
 
-		float3 tv = worker.tinted_visibility(ray, filter);
+		const float3 tv = worker.tinted_visibility(ray, filter);
 		if (math::any_greater_zero(tv)) {
 			const float3 t = worker.transmittance(ray);
 

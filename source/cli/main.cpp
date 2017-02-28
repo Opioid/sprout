@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 
 	options::init(argc, argv);
 
-	auto& args = options::options();
+	const auto& args = options::options();
 
 	file::System file_system;
 
@@ -63,9 +63,9 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	auto total_start = std::chrono::high_resolution_clock::now();
+	const auto total_start = std::chrono::high_resolution_clock::now();
 
-	uint32_t available_threads = std::max(std::thread::hardware_concurrency(), 1u);
+	const uint32_t available_threads = std::max(std::thread::hardware_concurrency(), 1u);
 	uint32_t num_workers;
 	if (args.threads <= 0) {
 		num_workers = static_cast<uint32_t>(
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
 
 	logging::info("Loading...");
 
-	auto loading_start = std::chrono::high_resolution_clock::now();
+	const auto loading_start = std::chrono::high_resolution_clock::now();
 
 	std::shared_ptr<take::Take> take;
 
@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
 	} else {
 		progress::Stdout progressor;
 
-		auto rendering_start = std::chrono::high_resolution_clock::now();
+		const auto rendering_start = std::chrono::high_resolution_clock::now();
 
 		if (take->view.camera) {
 			rendering::Driver_finalframe driver(take->surface_integrator_factory,
