@@ -204,7 +204,6 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::a
 			}
 		}
 	}
-
 }
 
 Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& references,
@@ -256,12 +255,19 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 	float aabb_surface_area = aabb.surface_area();
 
-	thread_pool.run_range([this, &references, aabb_surface_area]
-		(uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) {
-			for (int32_t i = sc_begin; i < sc_end; ++i) {
-				split_candidates_[i].evaluate(references, aabb_surface_area);
-			}
-		}, 0, static_cast<int32_t>(split_candidates_.size()));
+	// Arbitrary heuristic for starting the thread pool
+	if (num_triangles < 1024 || split_candidates_.size() < thread_pool.num_threads()) {
+		for (auto& sc : split_candidates_) {
+			sc.evaluate(references, aabb_surface_area);
+		}
+	} else {
+		thread_pool.run_range([this, &references, aabb_surface_area]
+			(uint32_t /*id*/, int32_t sc_begin, int32_t sc_end) {
+				for (int32_t i = sc_begin; i < sc_end; ++i) {
+					split_candidates_[i].evaluate(references, aabb_surface_area);
+				}
+			}, 0, static_cast<int32_t>(split_candidates_.size()));
+	}
 
 	size_t sc = 0;
 	float  min_cost = split_candidates_[0].cost();

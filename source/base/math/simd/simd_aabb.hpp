@@ -6,6 +6,7 @@
 namespace math { namespace simd {
 
 struct AABB {
+	AABB() = default;
 	AABB(const math::AABB& box);
 	AABB(FVector min, FVector max);
 
