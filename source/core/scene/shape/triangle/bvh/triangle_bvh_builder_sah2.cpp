@@ -256,7 +256,7 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 	float aabb_surface_area = aabb.surface_area();
 
 	// Arbitrary heuristic for starting the thread pool
-	if (num_triangles < 1024 || split_candidates_.size() < thread_pool.num_threads()) {
+	if (num_triangles < 1024) {
 		for (auto& sc : split_candidates_) {
 			sc.evaluate(references, aabb_surface_area);
 		}
