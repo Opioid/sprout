@@ -11,8 +11,7 @@ std::string Writer::file_extension() const {
 	return "hdr";
 }
 
-bool Writer::write(std::ostream& stream, const image::Float_4& image,
-				   thread::Pool& /*pool*/) {
+bool Writer::write(std::ostream& stream, const image::Float_4& image, thread::Pool& /*pool*/) {
 	write_header(stream, image.description().dimensions.xy);
 
 	write_pixels_rle(stream, image);
@@ -165,11 +164,10 @@ math::byte4 Writer::float_to_rgbe(float3_p c) {
 
 		v = f * 256.f / v;
 
-		return math::byte4(
-					static_cast<uint8_t>(c.x * v),
-					static_cast<uint8_t>(c.y * v),
-					static_cast<uint8_t>(c.z * v),
-					static_cast<uint8_t>(e + 128));
+		return math::byte4(static_cast<uint8_t>(c.x * v),
+						   static_cast<uint8_t>(c.y * v),
+						   static_cast<uint8_t>(c.z * v),
+						   static_cast<uint8_t>(e + 128));
 	}
 }
 

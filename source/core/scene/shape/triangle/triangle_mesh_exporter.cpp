@@ -1,10 +1,13 @@
 #include "triangle_mesh_exporter.hpp"
 #include "triangle_json_handler.hpp"
+#include "vertex_encoding.inl"
 #include "vertex_layout_description.hpp"
 #include "base/math/vector.inl"
 #include <fstream>
 #include <sstream>
+
 #include <iostream>
+#include "base/math/print.hpp"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -168,6 +171,22 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 	stream.write(reinterpret_cast<const char*>(json_string.data()), json_size * sizeof(char));
 
 	// binary stuff
+
+/*
+	Compressed_vertex* cvs = new Compressed_vertex[vertices.size()];
+
+	for (size_t i = 0, len = vertices.size(); i < len; ++i) {
+		const auto& v = vertices[i];
+		auto& cv = cvs[i];
+
+		cv.p = v.p;
+		cv.n.encode(v.n, 0.f);
+		cv.t.encode(v.t, v.bitangent_sign);
+		cv.uv = v.uv;
+	}
+
+	stream.write(reinterpret_cast<const char*>(cvs), vertices.size() * sizeof(Compressed_vertex));
+*/
 	stream.write(reinterpret_cast<const char*>(vertices.data()), vertices_size);
 
 	const auto& triangles = handler.triangles();

@@ -78,25 +78,25 @@ void Cubic_stereoscopic::update(rendering::Worker& /*worker*/) {}
 
 bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 									  uint32_t view, scene::Ray& ray) const {
-	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
+	const float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
 	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
 
-	uint32_t face = view % 6;
+	const uint32_t face = view % 6;
 	direction = math::normalized(direction * view_rotations_[face]);
 
-	float a = -std::atan2(direction.x, direction.z);
+	const float a = -std::atan2(direction.x, direction.z);
 
 	math::float3x3 rotation;
 	math::set_rotation_y(rotation, a);
 
-	float ipd_scale = 1.f - std::pow(std::abs(direction.y), 12.f - ipd_falloff_ * 10.f);
+	const float ipd_scale = 1.f - std::pow(std::abs(direction.y), 12.f - ipd_falloff_ * 10.f);
 
-	uint32_t eye = view < 6 ? 0 : 1;
-	float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
+	const uint32_t eye = view < 6 ? 0 : 1;
+	const float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;
 
 	entity::Composed_transformation temp;
-	auto& transformation = transformation_at(sample.time, temp);
+	const auto& transformation = transformation_at(sample.time, temp);
 
 	ray.origin = math::transform_point(eye_offset, transformation.object_to_world);
 	ray.set_direction(math::transform_vector(direction, transformation.object_to_world));

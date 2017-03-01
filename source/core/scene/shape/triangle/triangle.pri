@@ -25,6 +25,8 @@ HEADERS += \
 	scene/shape/triangle/triangle_primitive_yf.hpp \
 	scene/shape/triangle/triangle_primitive_yf.inl \
 	scene/shape/triangle/triangle_type.hpp \
+	scene/shape/triangle/vertex_encoding.hpp \
+	scene/shape/triangle/vertex_encoding.inl \
 	scene/shape/triangle/vertex_layout_description.hpp \
 
 include(bvh/bvh.pri)

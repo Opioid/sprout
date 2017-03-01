@@ -105,7 +105,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 
 	SOFT_ASSERT(check(handler.vertices(), filename));
 
-//	Exporter::write(filename, handler);
+	Exporter::write(filename, handler);
 
 	auto mesh = std::make_shared<Mesh>();
 
@@ -274,7 +274,6 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 	stream.read(json_string, json_size * sizeof(char));
 	json_string[json_size] = 0;
 
-//	auto root = json::parse(stream);
 	auto root = json::parse_insitu(json_string);
 
 	const json::Value::ConstMemberIterator geometry_node = root->FindMember("geometry");
