@@ -26,14 +26,16 @@ inline void Norm23x2_Sign1x2::decode(math::packed_float3& v, float& s) const {
 	const float fx = (2.f * (static_cast<float>(x) / FN)) - 1.f;
 	const float fy = (2.f * (static_cast<float>(y) / FN)) - 1.f;
 
-	const float sz = 0 == d ? 1.f : -1.f;
+	const float signs[2] = { 1.f, -1.f };
+
+	const float sz = signs[d];
 	const float fz = sz * std::sqrt(1.f - (fx * fx + fy * fy));
 
 	v.x = fx;
 	v.y = fy;
 	v.z = fz;
 
-	s = 0 == e ? 1.f : -1.f;
+	s = signs[e];
 }
 
 inline void Norm23x2_Sign1x2::encode(const math::packed_float3& v, float s) {

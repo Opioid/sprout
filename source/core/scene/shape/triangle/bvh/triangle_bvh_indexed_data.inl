@@ -86,9 +86,9 @@ float2 Indexed_data<IV, SV>::interpolate_uv(uint32_t index, float2 uv) const {
 
 template<typename IV, typename SV>
 float Indexed_data<IV, SV>::bitangent_sign(uint32_t index) const {
-	constexpr float sign[2] = { 1.f, -1.f };
+	const float signs[2] = { 1.f, -1.f };
 
-	return sign[(Index_triangle::BTS_mask & triangles_[index].bts_material_index) >> 31];
+	return signs[(Index_triangle::BTS_mask & triangles_[index].bts_material_index) >> 31];
 }
 
 template<typename IV, typename SV>
