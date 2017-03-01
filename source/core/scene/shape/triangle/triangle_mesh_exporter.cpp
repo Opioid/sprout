@@ -26,7 +26,7 @@ void binary_tag(std::ostream& stream, size_t offset, size_t size) {
 }
 
 void Exporter::write(const std::string& filename, const Json_handler& handler) {
-	std::string out_name = extract_filename(filename) + ".json";
+	std::string out_name = extract_filename(filename) + ".sum";
 
 	std::cout << "Export " << out_name << std::endl;
 
@@ -36,7 +36,7 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 		return;
 	}
 
-	static char const header[] = "SUM\005";
+	const char header[] = "SUM\005";
 	stream.write(header, sizeof(char) * 4);
 
 	std::stringstream jstream;
