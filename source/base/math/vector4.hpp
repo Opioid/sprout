@@ -1,10 +1,9 @@
 #pragma once
 
-namespace math {
+#include "vector3.hpp"
+#include "memory/const.hpp"
 
-template<typename T> struct Vector2;
-template<typename T> struct Vector3;
-struct Vector3f_a;
+namespace math {
 
 struct Vector4f_a;
 
@@ -104,6 +103,8 @@ struct alignas(16) Vector4f_a {
 Vector4f_a operator*(float s, const Vector4f_a& v);
 
 float dot(const Vector4f_a& a, const Vector4f_a& b);
+
+SU_GLOBALCONST(Vector4f_a) float4_identity(0.f);
 
 /****************************************************************************
  *

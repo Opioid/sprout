@@ -10,7 +10,7 @@ float planck(float temperature, float wavelength) {
 	constexpr float h = 6.62606896e-34f;   // Plank constant
 	constexpr float c = 2.99792458e+8f;    // Speed of light
 	constexpr float k = 1.38064880e-23f;   // Boltzmann constant
-	const     float a = 2.f * math::Pi * h * c * c;
+	constexpr float a = ((2.f * math::Pi) * h) * (c * c);
 	constexpr float b = (h * c) / k;
 	return (a * std::pow(wavelength, -5.f)) /
 		   (std::exp(b / (wavelength * temperature)) - 1.f);

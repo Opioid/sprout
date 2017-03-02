@@ -2,6 +2,7 @@
 
 #include "math.hpp"
 #include "vector4.hpp"
+#include "memory/const.hpp"
 
 namespace math {
 

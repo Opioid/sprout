@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vector2.hpp"
+#include "memory/const.hpp"
 #include <cstdint>
 
 namespace math {
@@ -275,5 +276,7 @@ bool any_nan(FVector3f_a v);
 bool any_inf(FVector3f_a v);
 
 bool all_finite(FVector3f_a v);
+
+SU_GLOBALCONST(Vector3f_a) float3_identity(0.f);
 
 }

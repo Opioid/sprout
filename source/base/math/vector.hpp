@@ -28,9 +28,6 @@ using int4   = Vector4i_a;
 using float3_p = FVector3f_a;
 using float4_p = FVector4f_a;
 
-SU_GLOBALCONST(Vector3f_a) float3_identity(0.f, 0.f, 0.f);
-SU_GLOBALCONST(Vector4f_a) float4_identity(0.f, 0.f, 0.f, 0.f);
-
 }
 
 using byte2  = math::byte2;

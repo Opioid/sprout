@@ -1,26 +1,27 @@
 #pragma once
 
-#include "memory/const.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <algorithm>
 
 namespace math {
 
-SU_GLOBALCONST(float) Pi = 3.14159265358979323846f;
-SU_GLOBALCONST(float) Pi_inv = 0.318309886183790671538f;
+template<typename T> constexpr T Pi_t	  = T(3.14159265358979323846);
+template<typename T> constexpr T Pi_inv_t = T(0.318309886183790671538);
 
-inline float degrees_to_radians(float degrees) {
-	return degrees * (Pi / 180.f);
+constexpr float Pi	   = Pi_t<float>;
+constexpr float Pi_inv = Pi_inv_t<float>;
+
+template <typename T>
+T degrees_to_radians(T degrees) {
 }
 
-inline float radians_to_degrees(float radians) {
-	return radians * (180.f / Pi);
+template <typename T>
+T radians_to_degrees(T radians) {
 }
 
 template <typename T>
 T cot(T x) {
-	return std::tan((Pi / 2.f) - x);
 }
 
 template <typename T>
