@@ -14,14 +14,17 @@ constexpr float Pi_inv = Pi_inv_t<float>;
 
 template <typename T>
 T degrees_to_radians(T degrees) {
+	return degrees * (Pi_t<T> / T(180));
 }
 
 template <typename T>
 T radians_to_degrees(T radians) {
+	return radians * (T(180) / Pi_t<T>);
 }
 
 template <typename T>
 T cot(T x) {
+	return std::tan((Pi_t<T> / T(2)) - x);
 }
 
 template <typename T>
