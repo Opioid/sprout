@@ -5,10 +5,10 @@ language: cpp
 install:
  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
  - sudo apt-get update -qq
- - sudo apt-get -y install g++-4.9
+ - sudo apt-get -y install g++-5
 
 script:
  - mkdir build
  - cd build
- - qmake ../source "QMAKE_CXX = g++-4.9" "QMAKE_CXXFLAGS += -std=c++14"
+ - qmake ../source "QMAKE_CXX = g++-5" "QMAKE_CXXFLAGS += -std=c++14"
  - make
