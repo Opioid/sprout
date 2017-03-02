@@ -25,7 +25,7 @@ bool Build_node::intersect(scene::Ray& ray, const std::vector<Prop*>& props,
 	bool hit = false;
 
 	if (children[0]) {
-		int8_t c = ray.sign[axis];
+		const int8_t c = ray.signs[axis];
 
 		if (children[c]->intersect(ray, props, node_stack, intersection)) {
 			hit = true;
@@ -36,7 +36,7 @@ bool Build_node::intersect(scene::Ray& ray, const std::vector<Prop*>& props,
 		}
 	} else {
 		for (uint32_t i = offset; i < props_end; ++i) {
-			auto p = props[i];
+			const auto p = props[i];
 			if (p->intersect(ray, node_stack, intersection.geo)) {
 				intersection.prop = p;
 				hit = true;
@@ -54,7 +54,7 @@ bool Build_node::intersect_p(const scene::Ray& ray, const std::vector<Prop*>& pr
 	}
 
 	if (children[0]) {
-		uint8_t c = ray.sign[axis];
+		const uint8_t c = ray.signs[axis];
 
 		if (children[c]->intersect_p(ray, props, node_stack)) {
 			return true;
@@ -81,7 +81,7 @@ float Build_node::opacity(const scene::Ray& ray, const std::vector<Prop*>& props
 	float opacity = 0.f;
 
 	if (children[0]) {
-		uint8_t c = ray.sign[axis];
+		const uint8_t c = ray.signs[axis];
 
 		opacity += (1.f - opacity) * children[c]->opacity(ray, props, worker, filter);
 		if (opacity >= 1.f) {
@@ -114,7 +114,7 @@ float3 Build_node::thin_absorption(const scene::Ray& ray, const std::vector<Prop
 	float3 absorption(0.f);
 
 	if (children[0]) {
-		uint8_t c = ray.sign[axis];
+		const uint8_t c = ray.signs[axis];
 
 		float3 ta = children[c]->thin_absorption(ray, props, worker, filter);
 		absorption += (1.f - absorption) * ta;
@@ -129,7 +129,7 @@ float3 Build_node::thin_absorption(const scene::Ray& ray, const std::vector<Prop
 		}
 	} else {
 		for (uint32_t i = offset; i < props_end; ++i) {
-			auto p = props[i];
+			const auto p = props[i];
 			absorption += (1.f - absorption) * p->thin_absorption(ray, worker, filter);
 			if (math::all_greater_equal(absorption, 1.f)) {
 				return float3(1.f);
@@ -172,7 +172,7 @@ bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 	const Prop* prop = intersection.prop;
 
 	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
-		auto p = props_[i];
+		const auto p = props_[i];
 		if (p->intersect(ray, node_stack, intersection.geo)) {
 			prop = p;
 			hit = true;

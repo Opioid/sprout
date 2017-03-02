@@ -57,11 +57,11 @@ inline bool AABB::intersect(FVector3f_a p) const {
 // "An Efficient and Robust Ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
 inline bool AABB::intersect_p(const Ray& ray) const {
-	int8_t sign_0 = ray.sign[0];
+	int8_t sign_0 = ray.signs[0];
 	float min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
 	float max_t = (bounds_[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;
 
-	int8_t sign_1 = ray.sign[1];
+	int8_t sign_1 = ray.signs[1];
 	float min_ty = (bounds_[    sign_1].y - ray.origin.y) * ray.inv_direction.y;
 	float max_ty = (bounds_[1 - sign_1].y - ray.origin.y) * ray.inv_direction.y;
 
@@ -77,7 +77,7 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 		max_t = max_ty;
 	}
 
-	int8_t sign_2 = ray.sign[2];
+	int8_t sign_2 = ray.signs[2];
 	float min_tz = (bounds_[    sign_2].z - ray.origin.z) * ray.inv_direction.z;
 	float max_tz = (bounds_[1 - sign_2].z - ray.origin.z) * ray.inv_direction.z;
 
@@ -97,11 +97,11 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 }
 
 inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) const {
-	int8_t sign_0 = ray.sign[0];
+	int8_t sign_0 = ray.signs[0];
 	float min_t = (bounds_[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
 	float max_t = (bounds_[1 - sign_0].x - ray.origin.x) * ray.inv_direction.x;
 
-	int8_t sign_1 = ray.sign[1];
+	int8_t sign_1 = ray.signs[1];
 	float min_ty = (bounds_[    sign_1].y - ray.origin.y) * ray.inv_direction.y;
 	float max_ty = (bounds_[1 - sign_1].y - ray.origin.y) * ray.inv_direction.y;
 
@@ -117,7 +117,7 @@ inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) co
 		max_t = max_ty;
 	}
 
-	int8_t sign_2 = ray.sign[2];
+	int8_t sign_2 = ray.signs[2];
 	float min_tz = (bounds_[    sign_2].z - ray.origin.z) * ray.inv_direction.z;
 	float max_tz = (bounds_[1 - sign_2].z - ray.origin.z) * ray.inv_direction.z;
 

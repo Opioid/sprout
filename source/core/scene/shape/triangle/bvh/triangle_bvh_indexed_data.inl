@@ -265,9 +265,9 @@ float2 Indexed_data_interleaved<V>::interpolate_uv(uint32_t index, float2 uv) co
 
 template<typename V>
 float Indexed_data_interleaved<V>::bitangent_sign(uint32_t index) const {
-	constexpr float sign[2] = { 1.f, -1.f };
+	constexpr float signs[2] = { 1.f, -1.f };
 
-	return sign[(Index_triangle::BTS_mask & triangles_[index].bts_material_index) >> 31];
+	return signs[(Index_triangle::BTS_mask & triangles_[index].bts_material_index) >> 31];
 }
 
 template<typename V>

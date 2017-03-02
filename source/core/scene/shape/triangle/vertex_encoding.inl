@@ -40,8 +40,8 @@ inline void Norm23x2_Sign1x2::encode(const math::packed_float3& v, float s) {
 	const uint32_t x = static_cast<uint32_t>((v.x + 1.f) * (0.5f * FN));
 	const uint32_t y = static_cast<uint32_t>((v.y + 1.f) * (0.5f * FN));
 
-	const uint32_t zs = v.z >= 0.f ? 0 : 1;
-	const uint32_t is = s   >= 0.f ? 0 : 1;
+	const uint32_t zs = v.z < 0.f ? 1 : 0;
+	const uint32_t is = s   < 0.f ? 1 : 0;
 
 	data[0] = static_cast<uint16_t>(x);
 	data[1] = static_cast<uint16_t>((x >> 16) | (y << 7));
