@@ -30,7 +30,7 @@ as well as the camera settings.
 #+BEGIN_EXAMPLE
 mkdir build
 cd build
-qmake ../source "QMAKE_CXX = g++-4.9" "QMAKE_CXXFLAGS += -std=c++14"
+qmake ../source "QMAKE_CXX = g++-5" "QMAKE_CXXFLAGS += -std=c++14"
 make
 #+END_EXAMPLE
 
@@ -41,11 +41,12 @@ In order to build the project qmake is needed.
 Unfortunately there doesn't exist a cmake project yet.
 Personally I use Qt Creator on both Linux and Windows.
 
-sprout needs a c++14 compiler.
+sprout needs a compiler with c++14 support.
 
-On Linux it should work with Clang 3.5 and libstdc++ 4.9 or higher. 
-It should also build with GCC 4.9 or higher.
-On Windows it should work out of the box with the Visual Studio 2013 or a newer version.
+On Linux it should work with Clang 3.5 and libstdc++ 5 or higher. 
+It should also build with GCC 5 or higher.
+On Windows it should work out of the box with Visual Studio 2015 Update 2 (MSVC 14.2) 
+or a newer version.
 
 ** Dependencies
 
