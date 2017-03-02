@@ -424,129 +424,141 @@ inline Matrix4x4f_a::Matrix4x4f_a(const Transformationf_a& t) {
 }
 
 inline Matrix4x4f_a Matrix4x4f_a::operator*(const Matrix4x4f_a& o) const {
-	return Matrix4x4f_a(m00 * o.m00 + m01 * o.m10 + m02 * o.m20 + m03 * o.m30,
-						m00 * o.m01 + m01 * o.m11 + m02 * o.m21 + m03 * o.m31,
-						m00 * o.m02 + m01 * o.m12 + m02 * o.m22 + m03 * o.m32,
-						m00 * o.m03 + m01 * o.m13 + m02 * o.m23 + m03 * o.m33,
+	return Matrix4x4f_a((m00 * o.m00 + m01 * o.m10) + (m02 * o.m20 + m03 * o.m30),
+						(m00 * o.m01 + m01 * o.m11) + (m02 * o.m21 + m03 * o.m31),
+						(m00 * o.m02 + m01 * o.m12) + (m02 * o.m22 + m03 * o.m32),
+						(m00 * o.m03 + m01 * o.m13) + (m02 * o.m23 + m03 * o.m33),
 
-						m10 * o.m00 + m11 * o.m10 + m12 * o.m20 + m13 * o.m30,
-						m10 * o.m01 + m11 * o.m11 + m12 * o.m21 + m13 * o.m31,
-						m10 * o.m02 + m11 * o.m12 + m12 * o.m22 + m13 * o.m32,
-						m10 * o.m03 + m11 * o.m13 + m12 * o.m23 + m13 * o.m33,
+						(m10 * o.m00 + m11 * o.m10) + (m12 * o.m20 + m13 * o.m30),
+						(m10 * o.m01 + m11 * o.m11) + (m12 * o.m21 + m13 * o.m31),
+						(m10 * o.m02 + m11 * o.m12) + (m12 * o.m22 + m13 * o.m32),
+						(m10 * o.m03 + m11 * o.m13) + (m12 * o.m23 + m13 * o.m33),
 
-						m20 * o.m00 + m21 * o.m10 + m22 * o.m20 + m23 * o.m30,
-						m20 * o.m01 + m21 * o.m11 + m22 * o.m21 + m23 * o.m31,
-						m20 * o.m02 + m21 * o.m12 + m22 * o.m22 + m23 * o.m32,
-						m20 * o.m03 + m21 * o.m13 + m22 * o.m23 + m23 * o.m33,
+						(m20 * o.m00 + m21 * o.m10) + (m22 * o.m20 + m23 * o.m30),
+						(m20 * o.m01 + m21 * o.m11) + (m22 * o.m21 + m23 * o.m31),
+						(m20 * o.m02 + m21 * o.m12) + (m22 * o.m22 + m23 * o.m32),
+						(m20 * o.m03 + m21 * o.m13) + (m22 * o.m23 + m23 * o.m33),
 
-						m30 * o.m00 + m31 * o.m10 + m32 * o.m20 + m33 * o.m30,
-						m30 * o.m01 + m31 * o.m11 + m32 * o.m21 + m33 * o.m31,
-						m30 * o.m02 + m31 * o.m12 + m32 * o.m22 + m33 * o.m32,
-						m30 * o.m03 + m31 * o.m13 + m32 * o.m23 + m33 * o.m33);
+						(m30 * o.m00 + m31 * o.m10) + (m32 * o.m20 + m33 * o.m30),
+						(m30 * o.m01 + m31 * o.m11) + (m32 * o.m21 + m33 * o.m31),
+						(m30 * o.m02 + m31 * o.m12) + (m32 * o.m22 + m33 * o.m32),
+						(m30 * o.m03 + m31 * o.m13) + (m32 * o.m23 + m33 * o.m33));
 }
 
 inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a(
-				v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
-				v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
-				v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
+					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
+					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
 inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a(
-				v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
-				v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
-				v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
+	return Vector3f_a(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
+					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
+					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
 }
 
 inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a(
-				v.x * m.m00 + v.y * m.m10 + v.z * m.m20 + m.m30,
-				v.x * m.m01 + v.y * m.m11 + v.z * m.m21 + m.m31,
-				v.x * m.m02 + v.y * m.m12 + v.z * m.m22 + m.m32);
+	return Vector3f_a((v.x * m.m00 + v.y * m.m10) + (v.z * m.m20 + m.m30),
+					  (v.x * m.m01 + v.y * m.m11) + (v.z * m.m21 + m.m31),
+					  (v.x * m.m02 + v.y * m.m12) + (v.z * m.m22 + m.m32));
 }
 
 inline Matrix4x4f_a create_matrix4x4(const Vector4f_a& q) {
-	float d = dot(q, q);
+	const float d = dot(q, q);
 
-	float s = 2.f / d;
+	const float s = 2.f / d;
 
-	float xs = q.x * s,  ys = q.y * s,  zs = q.z * s;
-	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
-	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
-	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+	const float xs = q.x * s,  ys = q.y * s,  zs = q.z * s;
+	const float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
+	const float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
+	const float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
 
-	return Matrix4x4f_a(
-				1.f - (yy + zz), xy - wz,         xz + wy,			0.f,
-				xy + wz,         1.f - (xx + zz), yz - wx,			0.f,
-				xz - wy,         yz + wx,         1.f - (xx + yy),	0.f,
-				0.f,			 0.f,			  0.f,				1.f);
+	return Matrix4x4f_a(1.f - (yy + zz), xy - wz,         xz + wy,			0.f,
+						xy + wz,         1.f - (xx + zz), yz - wx,			0.f,
+						xz - wy,         yz + wx,         1.f - (xx + yy),	0.f,
+						0.f,			 0.f,			  0.f,				1.f);
 }
 
 inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
-	float m00_11 = m.m00 * m.m11;
-	float m01_12 = m.m01 * m.m12;
-	float m02_10 = m.m02 * m.m10;
-	float m00_12 = m.m00 * m.m12;
-	float m01_10 = m.m01 * m.m10;
-	float m02_11 = m.m02 * m.m11;
+	const float m00_11 = m.m00 * m.m11;
+	const float m01_12 = m.m01 * m.m12;
+	const float m02_10 = m.m02 * m.m10;
+	const float m00_12 = m.m00 * m.m12;
+	const float m01_10 = m.m01 * m.m10;
+	const float m02_11 = m.m02 * m.m11;
 
-	float id = 1.f / (m00_11 * m.m22 + m01_12 * m.m20 + m02_10 * m.m21
-					- m00_12 * m.m21 - m01_10 * m.m22 - m02_11 * m.m20);
+	const float id = 1.f / ((m00_11 * m.m22 + m01_12 * m.m20 + m02_10 * m.m21) -
+							(m00_12 * m.m21 + m01_10 * m.m22 + m02_11 * m.m20));
 
-	float m11_22 = m.m11 * m.m22;
-	float m12_21 = m.m12 * m.m21;
-	float m02_21 = m.m02 * m.m21;
-	float m01_22 = m.m01 * m.m22;
-	float m12_20 = m.m12 * m.m20;
-	float m10_22 = m.m10 * m.m22;
-	float m00_22 = m.m00 * m.m22;
-	float m02_20 = m.m02 * m.m20;
-	float m10_21 = m.m10 * m.m21;
-	float m11_20 = m.m11 * m.m20;
-	float m01_20 = m.m01 * m.m20;
-	float m00_21 = m.m00 * m.m21;
+	const float m11_22 = m.m11 * m.m22;
+	const float m12_21 = m.m12 * m.m21;
+	const float m02_21 = m.m02 * m.m21;
+	const float m01_22 = m.m01 * m.m22;
+	const float m12_20 = m.m12 * m.m20;
+	const float m10_22 = m.m10 * m.m22;
+	const float m00_22 = m.m00 * m.m22;
+	const float m02_20 = m.m02 * m.m20;
+	const float m10_21 = m.m10 * m.m21;
+	const float m11_20 = m.m11 * m.m20;
+	const float m01_20 = m.m01 * m.m20;
+	const float m00_21 = m.m00 * m.m21;
 
-	return Matrix4x4f_a(
-		(m11_22 - m12_21) * id,
-		(m02_21 - m01_22) * id,
-		(m01_12 - m02_11) * id,
-		0.f,
+	return Matrix4x4f_a((m11_22 - m12_21) * id,
+						(m02_21 - m01_22) * id,
+						(m01_12 - m02_11) * id,
+						0.f,
 
-		(m12_20 - m10_22) * id,
-		(m00_22 - m02_20) * id,
-		(m02_10 - m00_12) * id,
-		0.f,
+						(m12_20 - m10_22) * id,
+						(m00_22 - m02_20) * id,
+						(m02_10 - m00_12) * id,
+						0.f,
 
-		(m10_21 - m11_20) * id,
-		(m01_20 - m00_21) * id,
-		(m00_11 - m01_10) * id,
-		0.f,
+						(m10_21 - m11_20) * id,
+						(m01_20 - m00_21) * id,
+						(m00_11 - m01_10) * id,
+						0.f,
 
-		(m10_22 * m.m31 + m11_20 * m.m32 + m12_21 * m.m30 - m10_21 * m.m32 - m11_22 * m.m30 - m12_20 * m.m31) * id,
-		(m00_21 * m.m32 + m01_22 * m.m30 + m02_20 * m.m31 - m00_22 * m.m31 - m01_20 * m.m32 - m02_21 * m.m30) * id,
-		(m00_12 * m.m31 + m01_10 * m.m32 + m02_11 * m.m30 - m00_11 * m.m32 - m01_12 * m.m30 - m02_10 * m.m31) * id,
-		1.f);
+						((m10_22 * m.m31 + m11_20 * m.m32 + m12_21 * m.m30) -
+						 (m10_21 * m.m32 + m11_22 * m.m30 + m12_20 * m.m31)) * id,
+						((m00_21 * m.m32 + m01_22 * m.m30 + m02_20 * m.m31) -
+						 (m00_22 * m.m31 + m01_20 * m.m32 + m02_21 * m.m30)) * id,
+						((m00_12 * m.m31 + m01_10 * m.m32 + m02_11 * m.m30) -
+						 (m00_11 * m.m32 + m01_12 * m.m30 + m02_10 * m.m31)) * id,
+						1.f);
 }
 
 inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix3x3f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
-	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
-	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
-	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
-	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 1.f;
+	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x;
+	m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
+
+	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y;
+	m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
+
+	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z;
+	m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
+
+	m.m30 = origin.x;			 m.m31 = origin.y;
+	m.m32 = origin.z;			 m.m33 = 1.f;
 }
 
 inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix4x4f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
-	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x; m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
-	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y; m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
-	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z; m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
-	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = 1.f;
+	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x;
+	m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
+
+	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y;
+	m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
+
+	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z;
+	m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
+
+	m.m30 = origin.x;			 m.m31 = origin.y;
+	m.m32 = origin.z;			 m.m33 = 1.f;
 }
 
 inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
@@ -557,8 +569,8 @@ inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
 }
 
 inline void set_rotation_x(Matrix4x4f_a& m, float a) {
-	float c = std::cos(a);
-	float s = std::sin(a);
+	const float c = std::cos(a);
+	const float s = std::sin(a);
 
 	m.m00 = 1.f; m.m01 = 0.f; m.m02 =  0.f; m.m03 = 0.f;
 	m.m10 = 0.f; m.m11 = c;   m.m12 = -s;   m.m13 = 0.f;
