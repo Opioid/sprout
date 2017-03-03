@@ -759,36 +759,69 @@ float dot(FUnion_vector a, FUnion_vector b) {
 	return a.x * b.x + a.y * b.y + a.z + b.z;
 }
 
-struct Vector;
-using FVector = /*Vector;//*/const Vector&;
+struct Struct_vector;
+using FStruct_vector = /*Union_vector;//*/const Struct_vector&;
 
-struct alignas(16) Vector {
-	// 4 instead of 3 in order to hide pad warning
-	float v[4];
+struct alignas(16) Struct_vector {
+	float x, y, z, w;
 
-	Vector() {}
-	Vector(float x, float y, float z) : v{x, y, z, 0.f}
-	{}
 
-	Vector operator+(const FVector a) const {
-		return Vector(v[0] + a.v[0], v[1] + a.v[1], v[2] + a.v[2]);
+	Struct_vector() {}
+	Struct_vector(float x, float y, float z) : x(x), y(y), z(z), w(0.f)
+	{
+	//	v[3] = 0.f;
 	}
 
-	Vector operator/(float s) const {
+	Struct_vector operator+(FStruct_vector a) const {
+		return Struct_vector(x + a.x, y + a.y, z + a.z);
+	}
+
+	Struct_vector operator/(float s) const {
 		float is = 1.f / s;
-		return Vector(v[0] * is, v[1] * is, v[2] * is);
+		return Struct_vector(x * is, y * is, z * is);
 	}
 };
 
-Vector operator*(float s, FVector v) {
-	return Vector(s * v.v[0], s * v.v[1], s * v.v[2]);
+Struct_vector operator*(float s, FStruct_vector v) {
+	return Struct_vector(s * v.x, s * v.y, s * v.z);
 }
 
-float dot(FVector a, FVector b) {
+float dot(Struct_vector a, Struct_vector b) {
+	return a.x * b.x + a.y * b.y + a.z + b.z;
+}
+
+struct Array_vector;
+using FArray_vector = /*Vector;//*/const Array_vector&;
+
+struct alignas(16) Array_vector {
+	// 4 instead of 3 in order to hide pad warning
+	float v[4];
+
+	Array_vector() {}
+	Array_vector(float x, float y, float z) : v{x, y, z, 0.f}
+	{}
+
+	Array_vector operator+(const FArray_vector a) const {
+		return Array_vector(v[0] + a.v[0], v[1] + a.v[1], v[2] + a.v[2]);
+	}
+
+	Array_vector operator/(float s) const {
+		float is = 1.f / s;
+		return Array_vector(v[0] * is, v[1] * is, v[2] * is);
+	}
+};
+
+Array_vector operator*(float s, FArray_vector v) {
+	return Array_vector(s * v.v[0], s * v.v[1], s * v.v[2]);
+}
+
+float dot(FArray_vector a, FArray_vector b) {
 	return a.v[0] * b.v[0] + a.v[1] * b.v[1] + a.v[2] + b.v[2];
 }
 
 void test_union_vector(Union_vector* uvecs, size_t num_values) {
+	std::cout << "Union vector" << std::endl;
+
 	auto start = std::chrono::high_resolution_clock::now();
 
 	Union_vector result(0.f, 0.f, 0.f);
@@ -797,31 +830,50 @@ void test_union_vector(Union_vector* uvecs, size_t num_values) {
 		Union_vector v = uvecs[i];
 		float d = dot(v, v);
 		Union_vector t = (v.y * (result + v)) / (d + 0.1f);
-	//	Union_vector w = (v.x * (result + v)) / (d + 0.3f);
-		result = (v + t) + ((d * v) + (d * t));// + ((w + t) + (d * w));
-	}
-
-	const auto duration = chrono::seconds_since(start);
-	std::cout << "[" << result.x << ", " << result.y<< ", " << result.z << "] in " << string::to_string(duration) << " s" << std::endl;
-	std::cout << std::endl;
-}
-
-void test_vector(Vector* vecs, size_t num_values) {
-	auto start = std::chrono::high_resolution_clock::now();
-
-	Vector result(0.f, 0.f, 0.f);
-
-	for (size_t i = 0; i < num_values; ++i) {
-		FVector v = vecs[i];
-		float d = dot(v, v);
-		Vector t = (v.v[1] * (result + v)) / (d + 0.1f);
-	//	Vector w = (v.v[0] * (result + v)) / (d + 0.3f);
-		result = (v + t) + ((d * v) + (d * t));// + ((w + t) + (d * w));
+		Union_vector w = (v.x * (result + v)) / (d + 0.3f);
+		result = (v + t) + ((d * v) + (d * t)) + ((w + t) + (d * w));
 	}
 
 	const auto duration = chrono::seconds_since(start);
 	std::cout << "[" << result.v[0] << ", " << result.v[1] << ", " << result.v[2] << "] in " << string::to_string(duration) << " s" << std::endl;
-	std::cout << std::endl;
+}
+
+void test_struct_vector(Struct_vector* svecs, size_t num_values) {
+	std::cout << "Struct vector" << std::endl;
+
+	auto start = std::chrono::high_resolution_clock::now();
+
+	Struct_vector result(0.f, 0.f, 0.f);
+
+	for (size_t i = 0; i < num_values; ++i) {
+		Struct_vector v = svecs[i];
+		float d = dot(v, v);
+		Struct_vector t = (v.y * (result + v)) / (d + 0.1f);
+		Struct_vector w = (v.x * (result + v)) / (d + 0.3f);
+		result = (v + t) + ((d * v) + (d * t)) + ((w + t) + (d * w));
+	}
+
+	const auto duration = chrono::seconds_since(start);
+	std::cout << "[" << result.x << ", " << result.y << ", " << result.z << "] in " << string::to_string(duration) << " s" << std::endl;
+}
+
+void test_array_vector(Array_vector* vecs, size_t num_values) {
+	std::cout << "Array vector" << std::endl;
+
+	auto start = std::chrono::high_resolution_clock::now();
+
+	Array_vector result(0.f, 0.f, 0.f);
+
+	for (size_t i = 0; i < num_values; ++i) {
+		Array_vector v = vecs[i];
+		float d = dot(v, v);
+		Array_vector t = (v.v[1] * (result + v)) / (d + 0.1f);
+		Array_vector w = (v.v[0] * (result + v)) / (d + 0.3f);
+		result = (v + t) + ((d * v) + (d * t)) + ((w + t) + (d * w));
+	}
+
+	const auto duration = chrono::seconds_since(start);
+	std::cout << "[" << result.v[0] << ", " << result.v[1] << ", " << result.v[2] << "] in " << string::to_string(duration) << " s" << std::endl;
 }
 
 void unions() {
@@ -831,8 +883,9 @@ void unions() {
 
 	size_t num_values = 1024 * 1024 * 128;// * (128 + 32);
 
-	Union_vector* uvecs = new Union_vector[num_values];
-	Vector*		  vecs	= new Vector[num_values];
+	Union_vector*  uvecs = new Union_vector[num_values];
+	Struct_vector* svecs = new Struct_vector[num_values];
+	Array_vector*  avecs = new Array_vector[num_values];
 
 	for (size_t i = 0; i < num_values; ++i) {
 		float x = 0.000025f * rng.random_float();
@@ -840,13 +893,20 @@ void unions() {
 		float z = 0.000025f * rng.random_float();
 
 		uvecs[i] = Union_vector(x, y, z);
-		vecs[i] = Vector(x, y, z);
+		svecs[i] = Struct_vector(x, y, z);
+		avecs[i] = Array_vector(x, y, z);
 	}
 
 	test_union_vector(uvecs, num_values);
-	test_vector(vecs, num_values);
+	test_struct_vector(svecs, num_values);
+	test_array_vector(avecs, num_values);
 	test_union_vector(uvecs, num_values);
-	test_vector(vecs, num_values);
+	test_struct_vector(svecs, num_values);
+	test_array_vector(avecs, num_values);
+
+	delete[] avecs;
+	delete[] svecs;
+	delete[] uvecs;
 }
 
 }}
