@@ -6,6 +6,7 @@
 #include "base/math/simd/simd_vector.inl"
 #include "base/string/string.inl"
 #include "base/math/print.hpp"
+#include "base/math/simd/simd_math.inl"
 #include <iostream>
 
 namespace testing { namespace simd {
@@ -723,7 +724,7 @@ void minmax() {
 }
 
 struct Union_vector;
-using FUnion_vector = /*Union_vector;//*/const Union_vector&;
+using FUnion_vector = Union_vector;//*/const Union_vector&;
 
 struct alignas(16) Union_vector {
 	union {
@@ -736,7 +737,7 @@ struct alignas(16) Union_vector {
 	};
 
 	Union_vector() {}
-	Union_vector(float x, float y, float z) : x(x), y(y), z(z)//, w(0.f)
+	Union_vector(float x, float y, float z) : x(x), y(y), z(z), w(0.f)
 	{
 	//	v[3] = 0.f;
 	}
@@ -759,17 +760,20 @@ float dot(FUnion_vector a, FUnion_vector b) {
 	return a.x * b.x + a.y * b.y + a.z + b.z;
 }
 
+Union_vector normalized(FUnion_vector v) {
+	return math::simd::rsqrt(dot(v, v)) * v;
+}
+
 struct Struct_vector;
-using FStruct_vector = /*Union_vector;//*/const Struct_vector&;
+using FStruct_vector = Struct_vector;//*/const Struct_vector&;
 
 struct alignas(16) Struct_vector {
 	float x, y, z, w;
 
-
 	Struct_vector() {}
-	Struct_vector(float x, float y, float z) : x(x), y(y), z(z), w(0.f)
+	Struct_vector(float x, float y, float z) : x(x), y(y), z(z)//, w(0.f)
 	{
-	//	v[3] = 0.f;
+		w = 0.f;
 	}
 
 	Struct_vector operator+(FStruct_vector a) const {
@@ -790,8 +794,12 @@ float dot(Struct_vector a, Struct_vector b) {
 	return a.x * b.x + a.y * b.y + a.z + b.z;
 }
 
+Struct_vector normalized(FStruct_vector v) {
+	return math::simd::rsqrt(dot(v, v)) * v;
+}
+
 struct Array_vector;
-using FArray_vector = /*Vector;//*/const Array_vector&;
+using FArray_vector = /*Array_vector;//*/const Array_vector&;
 
 struct alignas(16) Array_vector {
 	// 4 instead of 3 in order to hide pad warning
@@ -819,6 +827,10 @@ float dot(FArray_vector a, FArray_vector b) {
 	return a.v[0] * b.v[0] + a.v[1] * b.v[1] + a.v[2] + b.v[2];
 }
 
+Array_vector normalized(FArray_vector v) {
+	return math::simd::rsqrt(dot(v, v)) * v;
+}
+
 void test_union_vector(Union_vector* uvecs, size_t num_values) {
 	std::cout << "Union vector" << std::endl;
 
@@ -830,8 +842,9 @@ void test_union_vector(Union_vector* uvecs, size_t num_values) {
 		Union_vector v = uvecs[i];
 		float d = dot(v, v);
 		Union_vector t = (v.y * (result + v)) / (d + 0.1f);
-		Union_vector w = (v.x * (result + v)) / (d + 0.3f);
-		result = (v + t) + ((d * v) + (d * t)) + ((w + t) + (d * w));
+	//	Union_vector w = (v.x * (result + v)) / (d + 0.3f);
+		Union_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
+		result = n;// + ((w + t) + (d * w));
 	}
 
 	const auto duration = chrono::seconds_since(start);
@@ -849,8 +862,9 @@ void test_struct_vector(Struct_vector* svecs, size_t num_values) {
 		Struct_vector v = svecs[i];
 		float d = dot(v, v);
 		Struct_vector t = (v.y * (result + v)) / (d + 0.1f);
-		Struct_vector w = (v.x * (result + v)) / (d + 0.3f);
-		result = (v + t) + ((d * v) + (d * t)) + ((w + t) + (d * w));
+	//	Struct_vector w = (v.x * (result + v)) / (d + 0.3f);
+		Struct_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
+		result = n;// + ((w + t) + (d * w));
 	}
 
 	const auto duration = chrono::seconds_since(start);
@@ -868,8 +882,9 @@ void test_array_vector(Array_vector* vecs, size_t num_values) {
 		Array_vector v = vecs[i];
 		float d = dot(v, v);
 		Array_vector t = (v.v[1] * (result + v)) / (d + 0.1f);
-		Array_vector w = (v.v[0] * (result + v)) / (d + 0.3f);
-		result = (v + t) + ((d * v) + (d * t)) + ((w + t) + (d * w));
+	//	Array_vector w = (v.v[0] * (result + v)) / (d + 0.3f);
+		Array_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
+		result = n;// + ((w + t) + (d * w));
 	}
 
 	const auto duration = chrono::seconds_since(start);
