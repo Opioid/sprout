@@ -9,4 +9,7 @@ void reciprocal();
 void dot();
 void minmax();
 
+
+void unions();
+
 }}

@@ -125,7 +125,7 @@ inline Vector4f_a operator*(float s, const Vector4f_a& a) {
 }
 
 inline float dot(const Vector4f_a& a, const Vector4f_a& b) {
-	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+	return (a.x * b.x + a.y * b.y) + (a.z * b.z + a.w * b.w);
 }
 
 /****************************************************************************

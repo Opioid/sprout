@@ -722,4 +722,131 @@ void minmax() {
 	delete[] vectors;
 }
 
+struct Union_vector;
+using FUnion_vector = /*Union_vector;//*/const Union_vector&;
+
+struct alignas(16) Union_vector {
+	union {
+		struct {
+			float x, y, z, w;
+		};
+
+		// 4 instead of 3 in order to hide pad warning
+		float v[4];
+	};
+
+	Union_vector() {}
+	Union_vector(float x, float y, float z) : x(x), y(y), z(z)//, w(0.f)
+	{
+	//	v[3] = 0.f;
+	}
+
+	Union_vector operator+(FUnion_vector a) const {
+		return Union_vector(x + a.x, y + a.y, z + a.z);
+	}
+
+	Union_vector operator/(float s) const {
+		float is = 1.f / s;
+		return Union_vector(x * is, y * is, z * is);
+	}
+};
+
+Union_vector operator*(float s, FUnion_vector v) {
+	return Union_vector(s * v.x, s * v.y, s * v.z);
+}
+
+float dot(FUnion_vector a, FUnion_vector b) {
+	return a.x * b.x + a.y * b.y + a.z + b.z;
+}
+
+struct Vector;
+using FVector = /*Vector;//*/const Vector&;
+
+struct alignas(16) Vector {
+	// 4 instead of 3 in order to hide pad warning
+	float v[4];
+
+	Vector() {}
+	Vector(float x, float y, float z) : v{x, y, z, 0.f}
+	{}
+
+	Vector operator+(const FVector a) const {
+		return Vector(v[0] + a.v[0], v[1] + a.v[1], v[2] + a.v[2]);
+	}
+
+	Vector operator/(float s) const {
+		float is = 1.f / s;
+		return Vector(v[0] * is, v[1] * is, v[2] * is);
+	}
+};
+
+Vector operator*(float s, FVector v) {
+	return Vector(s * v.v[0], s * v.v[1], s * v.v[2]);
+}
+
+float dot(FVector a, FVector b) {
+	return a.v[0] * b.v[0] + a.v[1] * b.v[1] + a.v[2] + b.v[2];
+}
+
+void test_union_vector(Union_vector* uvecs, size_t num_values) {
+	auto start = std::chrono::high_resolution_clock::now();
+
+	Union_vector result(0.f, 0.f, 0.f);
+
+	for (size_t i = 0; i < num_values; ++i) {
+		Union_vector v = uvecs[i];
+		float d = dot(v, v);
+		Union_vector t = (v.y * (result + v)) / (d + 0.1f);
+	//	Union_vector w = (v.x * (result + v)) / (d + 0.3f);
+		result = (v + t) + ((d * v) + (d * t));// + ((w + t) + (d * w));
+	}
+
+	const auto duration = chrono::seconds_since(start);
+	std::cout << "[" << result.x << ", " << result.y<< ", " << result.z << "] in " << string::to_string(duration) << " s" << std::endl;
+	std::cout << std::endl;
+}
+
+void test_vector(Vector* vecs, size_t num_values) {
+	auto start = std::chrono::high_resolution_clock::now();
+
+	Vector result(0.f, 0.f, 0.f);
+
+	for (size_t i = 0; i < num_values; ++i) {
+		FVector v = vecs[i];
+		float d = dot(v, v);
+		Vector t = (v.v[1] * (result + v)) / (d + 0.1f);
+	//	Vector w = (v.v[0] * (result + v)) / (d + 0.3f);
+		result = (v + t) + ((d * v) + (d * t));// + ((w + t) + (d * w));
+	}
+
+	const auto duration = chrono::seconds_since(start);
+	std::cout << "[" << result.v[0] << ", " << result.v[1] << ", " << result.v[2] << "] in " << string::to_string(duration) << " s" << std::endl;
+	std::cout << std::endl;
+}
+
+void unions() {
+	std::cout << "testing::simd::unions()" << std::endl;
+
+	rnd::Generator rng(456, 90, 2123, 4598743);
+
+	size_t num_values = 1024 * 1024 * 128;// * (128 + 32);
+
+	Union_vector* uvecs = new Union_vector[num_values];
+	Vector*		  vecs	= new Vector[num_values];
+
+	for (size_t i = 0; i < num_values; ++i) {
+		float x = 0.000025f * rng.random_float();
+		float y = 0.000025f * rng.random_float();
+		float z = 0.000025f * rng.random_float();
+
+		uvecs[i] = Union_vector(x, y, z);
+		vecs[i] = Vector(x, y, z);
+	}
+
+	test_union_vector(uvecs, num_values);
+	test_vector(vecs, num_values);
+	test_union_vector(uvecs, num_values);
+	test_vector(vecs, num_values);
+}
+
 }}

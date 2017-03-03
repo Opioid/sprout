@@ -43,8 +43,9 @@ int main(int argc, char* argv[]) {
 //	testing::simd::reciprocal();
 //	testing::simd::dot();
 //	testing::simd::minmax();
+	testing::simd::unions();
 //	testing::spectrum();
-//	return 1;
+	return 1;
 
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");

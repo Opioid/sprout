@@ -63,7 +63,7 @@ const Quaternion<T> Quaternion<T>::identity(T(0), T(0), T(0), T(1));
 
 template<typename T>
 T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
-	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+	return (a.x * b.x + a.y * b.y) + (a.z * b.z + a.w * b.w);
 }
 
 template<typename T>
@@ -257,15 +257,15 @@ inline quaternion create_quaternion_rotation_z(float a) {
 }
 
 inline quaternion mul_quaternion(const quaternion& a, const quaternion& b) {
-	return quaternion(a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
-					  a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z,
-					  a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x,
-					  a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z);
+	return quaternion((a.w * b.x + a.x * b.w) + (a.y * b.z - a.z * b.y),
+					  (a.w * b.y + a.y * b.w) + (a.z * b.x - a.x * b.z),
+					  (a.w * b.z + a.z * b.w) + (a.x * b.y - a.y * b.x),
+					  (a.w * b.w - a.x * b.x) - (a.y * b.y + a.z * b.z));
 }
 
 inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, float t) {
 	// calc cosine theta
-	float cosom = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+	float cosom = (a.x * b.x + a.y * b.y) + (a.z * b.z + a.w * b.w);
 
 	// adjust signs (if necessary)
 	quaternion end = b;
