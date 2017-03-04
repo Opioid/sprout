@@ -724,7 +724,7 @@ void minmax() {
 }
 
 struct Union_vector;
-using FUnion_vector = Union_vector;//*/const Union_vector&;
+using FUnion_vector = /*Union_vector;//*/const Union_vector&;
 
 struct alignas(16) Union_vector {
 	union {
@@ -765,7 +765,7 @@ Union_vector normalized(FUnion_vector v) {
 }
 
 struct Struct_vector;
-using FStruct_vector = Struct_vector;//*/const Struct_vector&;
+using FStruct_vector = /*Struct_vector;//*/const Struct_vector&;
 
 struct alignas(16) Struct_vector {
 	float x, y, z, w;
@@ -799,7 +799,7 @@ Struct_vector normalized(FStruct_vector v) {
 }
 
 struct Array_vector;
-using FArray_vector = /*Array_vector;//*/const Array_vector&;
+using FArray_vector = Array_vector;//*/const Array_vector&;
 
 struct alignas(16) Array_vector {
 	// 4 instead of 3 in order to hide pad warning
@@ -809,7 +809,7 @@ struct alignas(16) Array_vector {
 	Array_vector(float x, float y, float z) : v{x, y, z, 0.f}
 	{}
 
-	Array_vector operator+(const FArray_vector a) const {
+	Array_vector operator+(FArray_vector a) const {
 		return Array_vector(v[0] + a.v[0], v[1] + a.v[1], v[2] + a.v[2]);
 	}
 
@@ -842,9 +842,9 @@ void test_union_vector(Union_vector* uvecs, size_t num_values) {
 		Union_vector v = uvecs[i];
 		float d = dot(v, v);
 		Union_vector t = (v.y * (result + v)) / (d + 0.1f);
-	//	Union_vector w = (v.x * (result + v)) / (d + 0.3f);
+		Union_vector w = (v.x * (result + v)) / (d + 0.3f);
 		Union_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
-		result = n;// + ((w + t) + (d * w));
+		result = n + ((w + t) + (d * w));
 	}
 
 	const auto duration = chrono::seconds_since(start);
@@ -862,9 +862,9 @@ void test_struct_vector(Struct_vector* svecs, size_t num_values) {
 		Struct_vector v = svecs[i];
 		float d = dot(v, v);
 		Struct_vector t = (v.y * (result + v)) / (d + 0.1f);
-	//	Struct_vector w = (v.x * (result + v)) / (d + 0.3f);
+		Struct_vector w = (v.x * (result + v)) / (d + 0.3f);
 		Struct_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
-		result = n;// + ((w + t) + (d * w));
+		result = n + ((w + t) + (d * w));
 	}
 
 	const auto duration = chrono::seconds_since(start);
@@ -882,9 +882,9 @@ void test_array_vector(Array_vector* vecs, size_t num_values) {
 		Array_vector v = vecs[i];
 		float d = dot(v, v);
 		Array_vector t = (v.v[1] * (result + v)) / (d + 0.1f);
-	//	Array_vector w = (v.v[0] * (result + v)) / (d + 0.3f);
+		Array_vector w = (v.v[0] * (result + v)) / (d + 0.3f);
 		Array_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
-		result = n;// + ((w + t) + (d * w));
+		result = n + ((w + t) + (d * w));
 	}
 
 	const auto duration = chrono::seconds_since(start);
