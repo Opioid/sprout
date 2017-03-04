@@ -6,7 +6,7 @@
 
 namespace scene { namespace entity {
 
-struct alignas(16) Composed_transformation {
+struct Composed_transformation {
 	void set(const math::transformation& t);
 
 	math::Matrix4x4f_a world_to_object;

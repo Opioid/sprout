@@ -123,7 +123,8 @@ void Perspective::set_lens(const Lens& lens) {
 void Perspective::set_focus(const Focus& focus) {
 	focus_ = focus;
 
-	focus_.point.xy() *= float2(resolution_);
+	focus_.point.v[0] *= static_cast<float>(resolution_.v[0]);
+	focus_.point.v[1] *= static_cast<float>(resolution_.v[1]);
 
 	focus_distance_ = focus_.distance;
 }
