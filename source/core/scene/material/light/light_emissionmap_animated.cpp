@@ -145,9 +145,9 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 			artw += a;
 		}
 
-		average_emission_ = artw.xyz / artw.w;
+		average_emission_ = artw.xyz() / artw.v[3];
 
-		total_weight_ = artw.w;
+		total_weight_ = artw.v[3];
 
 		distribution_.init(conditional);
 	} else {

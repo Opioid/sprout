@@ -57,7 +57,7 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 				int32_t kx = c.v[0] + k.o;
 
 				if (kx >= 0 && kx < d.v[0]) {
-					float3 color = source.load(kx, c.v[1]).xyz;
+					float3 color = source.load(kx, c.v[1]).xyz();
 					float l = spectrum::luminance(color);
 
 					if (l > threshold) {
@@ -85,7 +85,7 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 				int32_t ky = c.v[1] + k.o;
 
 				if (ky >= 0 && ky < d.v[1]) {
-					float3 bloom = scratch_.load(c.v[0], ky).xyz;
+					float3 bloom = scratch_.load(c.v[0], ky).xyz();
 					accum += k.w * bloom;
 					weight_sum += k.w;
 				}
@@ -95,7 +95,7 @@ void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
 
 			if (weight_sum > 0.f) {
 				float3 bloom = accum / weight_sum;
-				destination.store(i, float4(s.xyz + intensity * bloom, s.w));
+				destination.store(i, float4(s.xyz() + intensity * bloom, s.v[3]));
 			} else {
 				destination.store(i, s);
 			}

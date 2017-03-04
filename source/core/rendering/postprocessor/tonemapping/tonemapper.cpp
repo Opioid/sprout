@@ -18,9 +18,9 @@ void Tonemapper::apply(int32_t begin, int32_t end, uint32_t /*pass*/,
 	for (int32_t i = begin; i < end; ++i) {
 		const float4& color = source.at(i);
 
-		float3 tonemapped = tonemap(color.xyz);
+		float3 tonemapped = tonemap(color.xyz());
 
-		destination.at(i) = float4(tonemapped, color.w);
+		destination.at(i) = float4(tonemapped, color.v[3]);
 	}
 }
 

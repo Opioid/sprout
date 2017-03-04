@@ -72,7 +72,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		if (i > 0) {
 			float3 tr;
 			const float4 vli = worker.volume_li(ray, tr);
-			result += throughput * vli.xyz;
+			result += throughput * vli.xyz();
 			throughput *= tr;
 		}
 

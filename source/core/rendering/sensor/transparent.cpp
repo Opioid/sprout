@@ -38,10 +38,10 @@ void Transparent::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
 	const auto d = dimensions();
 
 	auto& value = pixels_[d.v[0] * pixel.v[1] + pixel.v[0]];
-	atomic::add_assign(value.color.x, weight * color.x);
-	atomic::add_assign(value.color.y, weight * color.y);
-	atomic::add_assign(value.color.z, weight * color.z);
-	atomic::add_assign(value.color.w, weight * color.w);
+	atomic::add_assign(value.color.v[0], weight * color.v[0]);
+	atomic::add_assign(value.color.v[1], weight * color.v[1]);
+	atomic::add_assign(value.color.v[2], weight * color.v[2]);
+	atomic::add_assign(value.color.v[3], weight * color.v[3]);
 	atomic::add_assign(value.weight_sum, weight);
 }
 
@@ -53,7 +53,7 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Float_4& target) co
 
 		float4 color = value.color / value.weight_sum;
 
-		target.at(i) = float4(exposure_factor * color.xyz, std::min(color.w, 1.f));
+		target.at(i) = float4(exposure_factor * color.xyz(), std::min(color.v[3], 1.f));
 	}
 }
 

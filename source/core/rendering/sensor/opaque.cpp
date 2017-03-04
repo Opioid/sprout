@@ -31,17 +31,17 @@ void Opaque::add_pixel(int2 pixel, float4_p color, float weight) {
 	const auto d = dimensions();
 
 	auto& value = pixels_[d.v[0] * pixel.v[1] + pixel.v[0]];
-	value += float4(weight * color.xyz, weight);
+	value += float4(weight * color.xyz(), weight);
 }
 
 void Opaque::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
 	const auto d = dimensions();
 
 	auto& value = pixels_[d.v[0] * pixel.v[1] + pixel.v[0]];
-	atomic::add_assign(value.x, weight * color.x);
-	atomic::add_assign(value.y, weight * color.y);
-	atomic::add_assign(value.z, weight * color.z);
-	atomic::add_assign(value.w, weight);
+	atomic::add_assign(value.v[0], weight * color.v[0]);
+	atomic::add_assign(value.v[1], weight * color.v[1]);
+	atomic::add_assign(value.v[2], weight * color.v[2]);
+	atomic::add_assign(value.v[3], weight);
 }
 
 void Opaque::resolve(int32_t begin, int32_t end, image::Float_4& target) const {
@@ -50,7 +50,7 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Float_4& target) const {
 	for (int32_t i = begin; i < end; ++i) {
 		auto& value = pixels_[i];
 
-		float3 color = value.xyz / value.w;
+		float3 color = value.xyz() / value.v[3];
 
 		target.at(i) = float4(exposure_factor * color, 1.f);
 	}

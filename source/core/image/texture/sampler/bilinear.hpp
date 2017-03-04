@@ -15,7 +15,7 @@ inline float bilinear(float4_p c, float s, float t) {
 	const float _s = 1.f - s;
 	const float _t = 1.f - t;
 
-	return _s * (_t * c.x + t * c.y) + s * (_t * c.z + t * c.w);
+	return _s * (_t * c.v[0] + t * c.v[1]) + s * (_t * c.v[2] + t * c.v[3]);
 }
 
 inline float2 bilinear(float2 c00, float2 c01, float2 c10, float2 c11,

@@ -27,10 +27,10 @@ inline float3 linear_RGB_to_sRGB(float3_p c) {
 
 // convert sRGB linear color to sRGB gamma color
 inline float4 linear_RGB_to_sRGB(float4_p c) {
-	return float4(linear_to_sRGB(c.x),
-				  linear_to_sRGB(c.y),
-				  linear_to_sRGB(c.z),
-				  c.w);
+	return float4(linear_to_sRGB(c.v[0]),
+				  linear_to_sRGB(c.v[1]),
+				  linear_to_sRGB(c.v[2]),
+				  c.v[3]);
 }
 
 // convert sRGB gamma value to sRGB linear value

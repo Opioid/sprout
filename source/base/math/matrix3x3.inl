@@ -338,10 +338,10 @@ inline Matrix3x3f_a create_matrix3x3(FVector4f_a q) {
 
 	float s = 2.f / d;
 
-	float xs = q.x * s,  ys = q.y * s,  zs = q.z * s;
-	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
-	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
-	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+	float xs = q.v[0] * s,  ys = q.v[1] * s,  zs = q.v[2] * s;
+	float wx = q.v[3] * xs, wy = q.v[3] * ys, wz = q.v[3] * zs;
+	float xx = q.v[0] * xs, xy = q.v[0] * ys, xz = q.v[0] * zs;
+	float yy = q.v[1] * ys, yz = q.v[1] * zs, zz = q.v[2] * zs;
 
 	return Matrix3x3f_a(1.f - (yy + zz), xy - wz,         xz + wy,
 						xy + wz,         1.f - (xx + zz), yz - wx,

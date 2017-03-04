@@ -28,7 +28,7 @@ void Writer::write_header(std::ostream& stream, int2 dimensions) {
 void Writer::write_pixels(std::ostream& stream, const Float_4& image) {
 	const auto& d = image.description().dimensions;
 	for (uint32_t i = 0, len = d.x * d.y; i < len; ++i) {
-		math::byte4 rgbe = float_to_rgbe(image.at(i).xyz);
+		math::byte4 rgbe = float_to_rgbe(image.at(i));
 
 		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(math::byte4));
 	}
@@ -59,7 +59,7 @@ void Writer::write_pixels_rle(std::ostream& stream, const Float_4& image) {
 		for (uint32_t i = 0; i < scanline_width; ++i, ++current_pixel) {
 			const auto& pixel = image.at(current_pixel);
 
-			rgbe = float_to_rgbe(pixel.xyz);
+			rgbe = float_to_rgbe(pixel);
 
 			buffer[i]					   = rgbe.v[0];
 			buffer[i + scanline_width]     = rgbe.v[1];
@@ -145,15 +145,15 @@ void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t
 	}
 }
 
-math::byte4 Writer::float_to_rgbe(float3_p c) {
-	float v = c.x;
+math::byte4 Writer::float_to_rgbe(float4_p c) {
+	float v = c.v[0];
 
-	if (c.y > v) {
-		v = c.y;
+	if (c.v[1] > v) {
+		v = c.v[1];
 	}
 
-	if (c.z > v) {
-		v = c.z;
+	if (c.v[2] > v) {
+		v = c.v[2];
 	}
 
 	if (v < 1e-32) {
@@ -164,9 +164,9 @@ math::byte4 Writer::float_to_rgbe(float3_p c) {
 
 		v = f * 256.f / v;
 
-		return math::byte4(static_cast<uint8_t>(c.x * v),
-						   static_cast<uint8_t>(c.y * v),
-						   static_cast<uint8_t>(c.z * v),
+		return math::byte4(static_cast<uint8_t>(c.v[0] * v),
+						   static_cast<uint8_t>(c.v[1] * v),
+						   static_cast<uint8_t>(c.v[2] * v),
 						   static_cast<uint8_t>(e + 128));
 	}
 }

@@ -24,10 +24,10 @@ inline byte3 float_to_unorm(float3_p c) {
 }
 
 inline byte4 float_to_unorm(float4_p c) {
-	return byte4(static_cast<uint8_t>(c.x * 255.f),
-				 static_cast<uint8_t>(c.y * 255.f),
-				 static_cast<uint8_t>(c.z * 255.f),
-				 static_cast<uint8_t>(c.w * 255.f));
+	return byte4(static_cast<uint8_t>(c.v[0] * 255.f),
+				 static_cast<uint8_t>(c.v[1] * 255.f),
+				 static_cast<uint8_t>(c.v[2] * 255.f),
+				 static_cast<uint8_t>(c.v[3] * 255.f));
 }
 
 inline float unorm_to_float(uint8_t byte) {

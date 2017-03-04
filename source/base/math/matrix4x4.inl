@@ -468,10 +468,10 @@ inline Matrix4x4f_a create_matrix4x4(const Vector4f_a& q) {
 
 	const float s = 2.f / d;
 
-	const float xs = q.x * s,  ys = q.y * s,  zs = q.z * s;
-	const float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
-	const float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
-	const float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+	const float xs = q.v[0] * s,  ys = q.v[1] * s,  zs = q.v[2] * s;
+	const float wx = q.v[3] * xs, wy = q.v[3] * ys, wz = q.v[3] * zs;
+	const float xx = q.v[0] * xs, xy = q.v[0] * ys, xz = q.v[0] * zs;
+	const float yy = q.v[1] * ys, yz = q.v[1] * zs, zz = q.v[2] * zs;
 
 	return Matrix4x4f_a(1.f - (yy + zz), xy - wz,         xz + wy,			0.f,
 						xy + wz,         1.f - (xx + zz), yz - wx,			0.f,

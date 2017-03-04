@@ -257,25 +257,25 @@ inline quaternion create_quaternion_rotation_z(float a) {
 }
 
 inline quaternion mul_quaternion(const quaternion& a, const quaternion& b) {
-	return quaternion((a.w * b.x + a.x * b.w) + (a.y * b.z - a.z * b.y),
-					  (a.w * b.y + a.y * b.w) + (a.z * b.x - a.x * b.z),
-					  (a.w * b.z + a.z * b.w) + (a.x * b.y - a.y * b.x),
-					  (a.w * b.w - a.x * b.x) - (a.y * b.y + a.z * b.z));
+	return quaternion((a.v[3] * b.v[0] + a.v[0] * b.v[3]) + (a.v[1] * b.v[2] - a.v[2] * b.v[1]),
+					  (a.v[3] * b.v[1] + a.v[1] * b.v[3]) + (a.v[2] * b.v[0] - a.v[0] * b.v[2]),
+					  (a.v[3] * b.v[2] + a.v[2] * b.v[3]) + (a.v[0] * b.v[1] - a.v[1] * b.v[0]),
+					  (a.v[3] * b.v[3] - a.v[0] * b.v[3]) - (a.v[1] * b.v[1] + a.v[2] * b.v[2]));
 }
 
 inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, float t) {
 	// calc cosine theta
-	float cosom = (a.x * b.x + a.y * b.y) + (a.z * b.z + a.w * b.w);
+	float cosom = (a.v[0] * b.v[0] + a.v[1] * b.v[1]) + (a.v[2] * b.v[2] + a.v[3] * b.v[3]);
 
 	// adjust signs (if necessary)
 	quaternion end = b;
 
 	if (cosom < 0.f) {
 		cosom = -cosom;
-		end.x = -end.x;   // Reverse all signs
-		end.y = -end.y;
-		end.z = -end.z;
-		end.w = -end.w;
+		end.v[0] = -end.v[0];   // Reverse all signs
+		end.v[1] = -end.v[1];
+		end.v[2] = -end.v[2];
+		end.v[3] = -end.v[3];
 	}
 
 	// Calculate coefficients
@@ -295,10 +295,10 @@ inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, flo
 		sclq = t;
 	}
 
-	return quaternion(sclp * a.x + sclq * end.x,
-					  sclp * a.y + sclq * end.y,
-					  sclp * a.z + sclq * end.z,
-					  sclp * a.w + sclq * end.w);
+	return quaternion(sclp * a.v[0] + sclq * end.v[0],
+					  sclp * a.v[1] + sclq * end.v[1],
+					  sclp * a.v[2] + sclq * end.v[2],
+					  sclp * a.v[3] + sclq * end.v[3]);
 }
 
 }

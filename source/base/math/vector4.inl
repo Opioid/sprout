@@ -75,57 +75,60 @@ T dot(const Vector4<T>& a, const Vector4<T>& b) {
 inline Vector4f_a::Vector4f_a() {}
 
 inline Vector4f_a::Vector4f_a(float x, float y, float z, float w) :
-	x(x), y(y), z(z), w(w) {}
+	v{x, y, z, w} {}
 
-inline Vector4f_a::Vector4f_a(float s) :
-	x(s), y(s), z(s), w(s) {}
+inline Vector4f_a::Vector4f_a(float s) : v{s, s, s, s} {}
 
 inline Vector4f_a::Vector4f_a(Vector2<float> xy, float z, float w) :
-	x(xy.v[0]), y(xy.v[1]), z(z), w(w) {}
+	v{xy.v[0], xy.v[1], z, w} {}
 
 inline Vector4f_a::Vector4f_a(FVector3f_a xyz, float w) :
-	x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+	v{xyz.x, xyz.y, xyz.z, w} {}
 
 inline Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) :
-	x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+	v{xyz.x, xyz.y, xyz.z, w} {}
+
+inline Vector3f_a Vector4f_a::xyz() const {
+	return Vector3f_a(v);
+}
 
 inline Vector4f_a Vector4f_a::operator+(const Vector4f_a& a) const {
-	return Vector4f_a(x + a.x, y + a.y, z + a.z, w + a.w);
+	return Vector4f_a(v[0] + a.v[0], v[1] + a.v[1], v[2] + a.v[2], v[3] + a.v[3]);
 }
 
 inline Vector4f_a Vector4f_a::operator*(const Vector4f_a& a) const {
-	return Vector4f_a(x * a.x, y * a.y, z * a.z, w * a.w);
+	return Vector4f_a(v[0] * a.v[0], v[1] * a.v[1], v[2] * a.v[2], v[3] * a.v[3]);
 }
 
 inline Vector4f_a Vector4f_a::operator/(float s) const {
 	float is = 1.f / s;
-	return Vector4f_a(is * x, is * y, is * z, is * w);
+	return Vector4f_a(is * v[0], is * v[1], is * v[2], is * v[3]);
 }
 
 inline Vector4f_a& Vector4f_a::operator+=(const Vector4f_a& a) {
-	x += a.x; y += a.y; z += a.z; w += a.w;
+	v[0] += a.v[0]; v[1] += a.v[1]; v[2] += a.v[2]; v[3] += a.v[3];
 	return *this;
 }
 
 inline Vector4f_a& Vector4f_a::operator-=(const Vector4f_a& a) {
-	x -= a.x; y -= a.y; z -= a.z; w -= a.w;
+	v[0] -= a.v[0]; v[1] -= a.v[1]; v[2] -= a.v[2]; v[3] -= a.v[3];
 	return *this;
 }
 
 inline bool Vector4f_a::operator==(FVector4f_a a) const {
-	return x == a.x && y == a.y && z == a.z && w == a.z;
+	return v[0] == a.v[0] && v[1] == a.v[1] && v[2] == a.v[2] && v[3] == a.v[3];
 }
 
 inline bool Vector4f_a::operator!=(FVector4f_a a) const {
-	return x != a.x || y != a.y || z != a.z || w != a.w;
+	return v[0] != a.v[0] || v[1] != a.v[1] || v[2] != a.v[2] || v[3] != a.v[3];
 }
 
 inline Vector4f_a operator*(float s, const Vector4f_a& a) {
-	return Vector4f_a(s * a.x, s * a.y, s * a.z, s * a.w);
+	return Vector4f_a(s * a.v[0], s * a.v[1], s * a.v[2], s * a.v[3]);
 }
 
 inline float dot(const Vector4f_a& a, const Vector4f_a& b) {
-	return (a.x * b.x + a.y * b.y) + (a.z * b.z + a.w * b.w);
+	return (a.v[0] * b.v[0] + a.v[1] * b.v[1]) + (a.v[2] * b.v[2] + a.v[3] * b.v[3]);
 }
 
 /****************************************************************************

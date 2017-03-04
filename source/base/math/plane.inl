@@ -66,7 +66,7 @@ inline plane create_plane(FVector3f_a v0, FVector3f_a v1, FVector3f_a v2) {
 }
 
 inline float dot(FVector4f_a p, FVector3f_a v) {
-	return p.x * v.x + p.y * v.y + p.z * v.z + p.w;
+	return p.v[0] * v.v[0] + p.v[1] * v.v[1] + p.v[2] * v.v[2] + p.v[3];
 }
 
 inline bool behind(FVector4f_a p, FVector3f_a point) {

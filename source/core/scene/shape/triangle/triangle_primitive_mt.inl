@@ -338,7 +338,7 @@ inline Shading_vertex_MTC::Shading_vertex_MTC(const math::packed_float3& n,
 	n_u(n, uv.v[0]), t_v(t, uv.v[1]) {
 	// Not too happy about handling degenerate tangents here (only one very special case even)
 	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
-		t_v = float4(math::tangent(n_u.xyz), uv.v[1]);
+		t_v = float4(math::tangent(n_u.xyz()), uv.v[1]);
 	}
 }
 
@@ -348,8 +348,8 @@ inline float2 interpolate_uv(const Shading_vertex_MTC& a,
 							 float2 uv) {
 	const float w = 1.f - uv.v[0] - uv.v[1];
 
-	return float2(w * a.n_u.w + uv.v[0] * b.n_u.w + uv.v[1] * c.n_u.w,
-				  w * a.t_v.w + uv.v[0] * b.t_v.w + uv.v[1] * c.t_v.w);
+	return float2(w * a.n_u.v[3] + uv.v[0] * b.n_u.v[3] + uv.v[1] * c.n_u.v[3],
+				  w * a.t_v.v[3] + uv.v[0] * b.t_v.v[3] + uv.v[1] * c.t_v.v[3]);
 }
 
 inline void interpolate_data(const Shading_vertex_MTC& a,
@@ -362,10 +362,10 @@ inline void interpolate_data(const Shading_vertex_MTC& a,
 	const float4 n_u = w * a.n_u + uv.v[0] * b.n_u + uv.v[1] * c.n_u;
 	const float4 t_v = w * a.t_v + uv.v[0] * b.t_v + uv.v[1] * c.t_v;
 
-	n  = math::normalized(n_u.xyz);
-	t  = math::normalized(t_v.xyz);
+	n  = math::normalized(n_u.xyz());
+	t  = math::normalized(t_v.xyz());
 
-	tc = float2(n_u.w, t_v.w);
+	tc = float2(n_u.v[3], t_v.v[3]);
 }
 
 inline float xnorm_to_float(int16_t xnorm) {
@@ -451,10 +451,10 @@ inline void interpolate_data(const Shading_vertex_MTCC& a,
 	float4 n_u = w * an_u + uv.v[0] * bn_u + uv.v[1] * cn_u;
 	float4 t_v = w * at_v + uv.v[0] * bt_v + uv.v[1] * ct_v;
 
-	n  = math::normalized(n_u.xyz);
-	t  = math::normalized(t_v.xyz);
+	n  = math::normalized(n_u.xyz());
+	t  = math::normalized(t_v.xyz());
 
-	tc = float2(n_u.w, t_v.w);
+	tc = float2(n_u.v[3], t_v.v[3]);
 }
 
 inline Vertex_MTC::Vertex_MTC(const math::packed_float3& p,
@@ -464,7 +464,7 @@ inline Vertex_MTC::Vertex_MTC(const math::packed_float3& p,
 	p(p), n_u(n, uv.v[0]), t_v(t, uv.v[1]) {
 	// Not too happy about handling degenerate tangents here (only one very special case even)
 	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
-		t_v = float4(math::tangent(n_u.xyz), uv.v[1]);
+		t_v = float4(math::tangent(n_u.xyz()), uv.v[1]);
 	}
 }
 
@@ -547,8 +547,8 @@ inline float2 interpolate_uv(const Vertex_MTC& a,
 							 float2 uv) {
 	float w = 1.f - uv.v[0] - uv.v[1];
 
-	return float2(w * a.n_u.w + uv.v[0] * b.n_u.w + uv.v[1] * c.n_u.w,
-				  w * a.t_v.w + uv.v[0] * b.t_v.w + uv.v[1] * c.t_v.w);
+	return float2(w * a.n_u.v[3] + uv.v[0] * b.n_u.v[3] + uv.v[1] * c.n_u.v[3],
+				  w * a.t_v.v[3] + uv.v[0] * b.t_v.v[3] + uv.v[1] * c.t_v.v[3]);
 }
 
 inline void interpolate_p_uv(const Vertex_MTC& a,
@@ -560,8 +560,8 @@ inline void interpolate_p_uv(const Vertex_MTC& a,
 
 	p = w * a.p + uv.v[0] * b.p + uv.v[1] * c.p;
 
-	tc.v[0] = w * a.n_u.w + uv.v[0] * b.n_u.w + uv.v[1] * c.n_u.w;
-	tc.v[1] = w * a.t_v.w + uv.v[0] * b.t_v.w + uv.v[1] * c.t_v.w;
+	tc.v[0] = w * a.n_u.v[3] + uv.v[0] * b.n_u.v[3] + uv.v[1] * c.n_u.v[3];
+	tc.v[1] = w * a.t_v.v[3] + uv.v[0] * b.t_v.v[3] + uv.v[1] * c.t_v.v[3];
 }
 
 inline void interpolate_data(const Vertex_MTC& a,
@@ -574,10 +574,10 @@ inline void interpolate_data(const Vertex_MTC& a,
 	float4 n_u = w * a.n_u + uv.v[0] * b.n_u + uv.v[1] * c.n_u;
 	float4 t_v = w * a.t_v + uv.v[0] * b.t_v + uv.v[1] * c.t_v;
 
-	n  = math::normalized(n_u.xyz);
-	t  = math::normalized(t_v.xyz);
+	n  = math::normalized(n_u.xyz());
+	t  = math::normalized(t_v.xyz());
 
-	tc = float2(n_u.w, t_v.w);
+	tc = float2(n_u.v[3], t_v.v[3]);
 }
 
 inline float area(const Vertex_MTC& a,

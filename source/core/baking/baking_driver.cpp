@@ -77,17 +77,17 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 				ray.min_t = 0.01f;
 				ray.max_t = 10000.f;
 
-				irradiance += worker.li(ray).xyz;
+				irradiance += worker.li(ray).xyz();
 			}
 
 			irradiance /= static_cast<float>(num_samples);
 
 			auto& pixel = target.at(x, y);
 
-			pixel.x = irradiance.x;
-			pixel.y = irradiance.y;
-			pixel.z = irradiance.z;
-			pixel.w = 1.f;
+			pixel.v[0] = irradiance.x;
+			pixel.v[1] = irradiance.y;
+			pixel.v[2] = irradiance.z;
+			pixel.v[3] = 1.f;
 		}
 	}
 

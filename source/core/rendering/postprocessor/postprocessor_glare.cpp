@@ -175,7 +175,7 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 		float threshold = threshold_;
 
 		for (int32_t i = begin; i < end; ++i) {
-			float3 color = source.at(i).xyz;
+			float3 color = source.at(i).xyz();
 
 			float l = spectrum::luminance(color);
 
@@ -212,7 +212,7 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 
 			float4 s = source.load(i);
 
-			destination.at(i) = float4(s.xyz + intensity * glare, s.w);
+			destination.at(i) = float4(s.xyz() + intensity * glare, s.v[3]);
 		}
 	}
 }

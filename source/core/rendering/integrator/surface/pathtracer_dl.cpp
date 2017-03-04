@@ -63,7 +63,7 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		//	throughput *= worker.transmittance(ray);
 			float3 tr;
 			float4 vli = worker.volume_li(ray, tr);
-			result += throughput * vli.xyz;
+			result += throughput * vli.xyz();
 			throughput *= tr;
 		}
 

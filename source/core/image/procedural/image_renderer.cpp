@@ -61,7 +61,7 @@ void Renderer::resolve_sRGB(Byte_3& image) const {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto s = samples_[i];
 
-			byte3 srgb = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(s.xyz));
+			byte3 srgb = encoding::float_to_unorm(spectrum::linear_RGB_to_sRGB(s.xyz()));
 			image.store(i, srgb);
 		}
 	} else {
@@ -82,7 +82,7 @@ void Renderer::resolve_sRGB(Byte_3& image) const {
 					int32_t b_o = dimensions_.v[0] * (b_y + y) + b_x;
 					for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
 						int32_t s = b_o + x;
-						result += samples_[s].xyz;
+						result += samples_[s].xyz();
 					}
 				}
 
@@ -97,7 +97,7 @@ void Renderer::resolve(Byte_3& image) const {
 	if (1 == sqrt_num_samples_) {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto s = samples_[i];
-			image.at(i) = encoding::float_to_snorm(s.xyz);
+			image.at(i) = encoding::float_to_snorm(s.xyz());
 		}
 	} else {
 		int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
@@ -117,7 +117,7 @@ void Renderer::resolve(Byte_3& image) const {
 					int32_t b_o = dimensions_.v[0] * (b_y + y) + b_x;
 					for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
 						int32_t s = b_o + x;
-						result += samples_[s].xyz;
+						result += samples_[s].xyz();
 					}
 				}
 
@@ -132,7 +132,7 @@ void Renderer::resolve(Byte_1& image) const {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto& s = samples_[i];
 
-			image.at(i) = encoding::float_to_unorm(s.x);
+			image.at(i) = encoding::float_to_unorm(s.v[0]);
 		}
 	} else {
 		int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
@@ -152,7 +152,7 @@ void Renderer::resolve(Byte_1& image) const {
 					for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
 						int32_t s = dimensions_.v[0] * (b_y + y) + b_x + x;
 
-						result += samples_[s].x;
+						result += samples_[s].v[0];
 					}
 				}
 

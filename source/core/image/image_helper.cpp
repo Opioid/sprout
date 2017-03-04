@@ -14,10 +14,11 @@ float3 average_and_max_3(const Float_4& image, float3& max) {
 
 	for (uint32_t i = 0; i < len; ++i) {
 		const float4& pixel = image.at(i);
-		average += ilen * pixel.xyz;
-		max = float3(std::max(pixel.x, max.x),
-					 std::max(pixel.y, max.y),
-					 std::max(pixel.z, max.z));
+		float3 pixel3 = pixel.xyz();
+		average += ilen * pixel3;
+		max = float3(std::max(pixel3.x, max.x),
+					 std::max(pixel3.y, max.y),
+					 std::max(pixel3.z, max.z));
 	}
 
 	return average;
@@ -32,7 +33,7 @@ float average_and_max_luminance(const Float_4& image, float& max) {
 	max = 0.f;
 
 	for (uint32_t i = 0; i < len; ++i) {
-		float luminance = spectrum::luminance(image.at(i).xyz);
+		float luminance = spectrum::luminance(image.at(i).xyz());
 		average += ilen * luminance;
 		max = std::max(luminance, max);
 	}

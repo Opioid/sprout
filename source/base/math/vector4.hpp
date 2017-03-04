@@ -55,15 +55,7 @@ T dot(const Vector4<T>& a, const Vector4<T>& b);
  ****************************************************************************/
 
 struct alignas(16) Vector4f_a {
-	union {
-		struct {
-			float x, y, z, w;
-		};
-
-		Vector3f_a xyz;
-
-		float v[4];
-	};
+	float v[4];
 
 	Vector4f_a();
 
@@ -76,6 +68,8 @@ struct alignas(16) Vector4f_a {
 	explicit Vector4f_a(FVector3f_a xyz, float w = 1.f);
 
 	explicit Vector4f_a(const Vector3<float>& xyz, float w = 1.f);
+
+	Vector3f_a xyz() const;
 
 	Vector4f_a operator+(const Vector4f_a& v) const;
 
