@@ -57,7 +57,9 @@ void Builder_SUH::split(Build_node* node,
 		index pids1_begin = std::partition(begin, end,
 			[&sp, &triangles, &vertices](uint32_t pi) {
 				auto& t = triangles[pi];
-				return sp.completely_behind(vertices[t.a].p, vertices[t.b].p, vertices[t.c].p);
+				return sp.completely_behind(vertices[t.i[0]].p,
+											vertices[t.i[1]].p,
+											vertices[t.i[2]].p);
 			});
 
 		if (begin == pids1_begin || end == pids1_begin) {

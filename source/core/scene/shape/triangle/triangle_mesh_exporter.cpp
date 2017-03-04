@@ -193,17 +193,15 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 
 	if (4 == index_bytes) {
 		for (const auto& t : triangles) {
-			stream.write(reinterpret_cast<const char*>(&t.a), sizeof(uint32_t));
-			stream.write(reinterpret_cast<const char*>(&t.b), sizeof(uint32_t));
-			stream.write(reinterpret_cast<const char*>(&t.c), sizeof(uint32_t));
+			stream.write(reinterpret_cast<const char*>(t.i), 3 * sizeof(uint32_t));
 		}
 	} else {
 		for (const auto& t : triangles) {
-			uint16_t a = static_cast<uint16_t>(t.a);
+			uint16_t a = static_cast<uint16_t>(t.i[0]);
 			stream.write(reinterpret_cast<const char*>(&a), sizeof(uint16_t));
-			uint16_t b = static_cast<uint16_t>(t.b);
+			uint16_t b = static_cast<uint16_t>(t.i[1]);
 			stream.write(reinterpret_cast<const char*>(&b), sizeof(uint16_t));
-			uint16_t c = static_cast<uint16_t>(t.c);
+			uint16_t c = static_cast<uint16_t>(t.i[2]);
 			stream.write(reinterpret_cast<const char*>(&c), sizeof(uint16_t));
 		}
 	}

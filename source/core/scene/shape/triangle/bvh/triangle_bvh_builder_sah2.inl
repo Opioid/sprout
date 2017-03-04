@@ -29,9 +29,9 @@ void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Ver
 			(uint32_t id, int32_t begin, int32_t end) {
 				math::simd::AABB aabb(math::aabb::empty());
 				for (int32_t i = begin; i < end; ++i) {
-					auto a = math::simd::load_float3(vertices[triangles[i].a].p);
-					auto b = math::simd::load_float3(vertices[triangles[i].b].p);
-					auto c = math::simd::load_float3(vertices[triangles[i].c].p);
+					auto a = math::simd::load_float3(vertices[triangles[i].i[0]].p);
+					auto b = math::simd::load_float3(vertices[triangles[i].i[1]].p);
+					auto c = math::simd::load_float3(vertices[triangles[i].i[2]].p);
 
 					auto min = triangle_min(a, b, c);
 					auto max = triangle_max(a, b, c);
@@ -84,7 +84,7 @@ void Builder_SAH2::serialize(Build_node* node, const Triangles& triangles,
 
 		for (const auto p : node->primitives) {
 			const auto& t = triangles[p];
-			tree.add_triangle(t.a, t.b, t.c, t.material_index, vertices);
+			tree.add_triangle(t.i[0], t.i[1], t.i[2], t.material_index, vertices);
 		}
 	}
 }

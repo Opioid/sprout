@@ -96,37 +96,37 @@ void Grass::add_blade(float3_p offset,
 	uint32_t vertices_per_segment = 3;
 
 	for (uint32_t i = 0; i < num_segments; ++i) {
-		tri.a = vertex_offset + 0;
-		tri.b = vertex_offset + 3;
-		tri.c = vertex_offset + 1;
+		tri.i[0] = vertex_offset + 0;
+		tri.i[1] = vertex_offset + 3;
+		tri.i[2] = vertex_offset + 1;
 		triangles.push_back(tri);
 
-		tri.a = vertex_offset + 3;
-		tri.b = vertex_offset + 4;
-		tri.c = vertex_offset + 1;
+		tri.i[0] = vertex_offset + 3;
+		tri.i[1] = vertex_offset + 4;
+		tri.i[2] = vertex_offset + 1;
 		triangles.push_back(tri);
 
-		tri.a = vertex_offset + 1;
-		tri.b = vertex_offset + 4;
-		tri.c = vertex_offset + 2;
+		tri.i[0] = vertex_offset + 1;
+		tri.i[1] = vertex_offset + 4;
+		tri.i[2] = vertex_offset + 2;
 		triangles.push_back(tri);
 
-		tri.a = vertex_offset + 4;
-		tri.b = vertex_offset + 5;
-		tri.c = vertex_offset + 2;
+		tri.i[0] = vertex_offset + 4;
+		tri.i[1] = vertex_offset + 5;
+		tri.i[2] = vertex_offset + 2;
 		triangles.push_back(tri);
 
 		vertex_offset += vertices_per_segment;
 	}
 
-	tri.a = vertex_offset + 0;
-	tri.b = vertex_offset + 3;
-	tri.c = vertex_offset + 1;
+	tri.i[0] = vertex_offset + 0;
+	tri.i[1] = vertex_offset + 3;
+	tri.i[2] = vertex_offset + 1;
 	triangles.push_back(tri);
 
-	tri.a = vertex_offset + 3;
-	tri.b = vertex_offset + 2;
-	tri.c = vertex_offset + 1;
+	tri.i[0] = vertex_offset + 3;
+	tri.i[1] = vertex_offset + 2;
+	tri.i[2] = vertex_offset + 1;
 	triangles.push_back(tri);
 
 
@@ -232,12 +232,12 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
 	for (size_t i = 0, len = triangles.size(); i < len; ++i) {
 		const auto& tri = triangles[i];
 
-		const auto& a = vertices[tri.a].p;
-		const auto& b = vertices[tri.b].p;
-		const auto& c = vertices[tri.c].p;
+		const auto& a = vertices[tri.i[0]].p;
+		const auto& b = vertices[tri.i[1]].p;
+		const auto& c = vertices[tri.i[2]].p;
 
-		auto e1 = b - a;
-		auto e2 = c - a;
+		const auto e1 = b - a;
+		const auto e2 = c - a;
 
 		triangle_normals[i] = math::normalized(math::cross(e1, e2));
 	}
@@ -254,14 +254,14 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
 	for (size_t i = 0, len = triangles.size(); i < len; ++i) {
 		const auto& tri = triangles[i];
 
-		normals[tri.a].sum += triangle_normals[i];
-		++normals[tri.a].num;
+		normals[tri.i[0]].sum += triangle_normals[i];
+		++normals[tri.i[0]].num;
 
-		normals[tri.b].sum += triangle_normals[i];
-		++normals[tri.b].num;
+		normals[tri.i[1]].sum += triangle_normals[i];
+		++normals[tri.i[1]].num;
 
-		normals[tri.c].sum += triangle_normals[i];
-		++normals[tri.c].num;
+		normals[tri.i[2]].sum += triangle_normals[i];
+		++normals[tri.i[2]].num;
 	}
 
 	for (size_t i = 0, len = vertices.size(); i < len; ++i) {

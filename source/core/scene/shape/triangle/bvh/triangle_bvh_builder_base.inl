@@ -17,7 +17,7 @@ void Builder_base::assign(Build_node* node,
 
 	for (index i = begin; i != end; ++i) {
 		const auto& t = triangles[*i];
-		tree.add_triangle(t.a, t.b, t.c, t.material_index, vertices);
+		tree.add_triangle(t.i[0], t.i[1], t.i[2], t.material_index, vertices);
 	}
 
 	node->end_index = tree.current_triangle();

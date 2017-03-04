@@ -32,10 +32,10 @@ Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axi
 	int num_side_1 = 0;
 	uint32_t split = 0;
 	for (index i = begin; i != end; ++i) {
-		auto pi = *i;
-		auto& a = vertices[triangles[pi].a].p;
-		auto& b = vertices[triangles[pi].b].p;
-		auto& c = vertices[triangles[pi].c].p;
+		const auto pi = *i;
+		const auto& a = vertices[triangles[pi].i[0]].p;
+		const auto& b = vertices[triangles[pi].i[1]].p;
+		const auto& c = vertices[triangles[pi].i[2]].p;
 		uint32_t s = side(a, b, c);
 
 		if (0 == s) {
@@ -112,10 +112,10 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 	float3 average = math::float3_identity;
 
 	for (index i = begin; i != end; ++i) {
-		auto& t = triangles[*i];
-		auto a = float3(vertices[t.a].p);
-		auto b = float3(vertices[t.b].p);
-		auto c = float3(vertices[t.c].p);
+		const auto& t = triangles[*i];
+		const auto a = float3(vertices[t.i[0]].p);
+		const auto b = float3(vertices[t.i[1]].p);
+		const auto c = float3(vertices[t.i[2]].p);
 		average += a + b + c;
 	}
 
@@ -150,10 +150,10 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 		positions.reserve(std::distance(begin, end));
 
 		for (index i = begin; i != end; ++i) {
-			auto& t = triangles[*i];
-			positions.push_back(vertices[t.a].p);
-			positions.push_back(vertices[t.b].p);
-			positions.push_back(vertices[t.c].p);
+			const auto& t = triangles[*i];
+			positions.push_back(vertices[t.i[0]].p);
+			positions.push_back(vertices[t.i[1]].p);
+			positions.push_back(vertices[t.i[2]].p);
 		}
 
 		size_t middle = positions.size() / 2;

@@ -205,9 +205,9 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 				uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
 
 				for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-					uint32_t a = triangles[i].a;
-					uint32_t b = triangles[i].b;
-					uint32_t c = triangles[i].c;
+					uint32_t a = triangles[i].i[0];
+					uint32_t b = triangles[i].i[1];
+					uint32_t c = triangles[i].i[2];
 
 					collection->triangles().emplace_back(a, b, c, p.material_index);
 				}
@@ -253,9 +253,9 @@ void fill_triangles(const std::vector<Part>& parts, const Index* indices,
 		uint32_t triangles_end = (p.start_index + p.num_indices) / 3;
 
 		for (uint32_t i = triangles_start; i < triangles_end; ++i) {
-			triangles[i].a = static_cast<uint32_t>(indices[i * 3 + 0]);
-			triangles[i].b = static_cast<uint32_t>(indices[i * 3 + 1]);
-			triangles[i].c = static_cast<uint32_t>(indices[i * 3 + 2]);
+			triangles[i].i[0] = static_cast<uint32_t>(indices[i * 3 + 0]);
+			triangles[i].i[1] = static_cast<uint32_t>(indices[i * 3 + 1]);
+			triangles[i].i[2] = static_cast<uint32_t>(indices[i * 3 + 2]);
 
 			triangles[i].material_index = p.material_index;
 		}
