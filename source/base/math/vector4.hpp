@@ -17,15 +17,7 @@ using FVector4f_a = const Vector4f_a&;
 
 template<typename T>
 struct Vector4 {
-	union {
-		struct {
-			T x, y, z, w;
-		};
-
-		Vector3<T> xyz;
-
-		T v[4];
-	};
+	T v[4];
 
 	Vector4();
 

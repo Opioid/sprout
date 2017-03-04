@@ -49,10 +49,10 @@ void Writer::write_pixels_rle(std::ostream& stream, const Float_4& image) {
 
 	while (num_scanlines-- > 0) {
 		math::byte4 rgbe;
-		rgbe.x = 2;
-		rgbe.y = 2;
-		rgbe.z = static_cast<uint8_t>(scanline_width >> 8);
-		rgbe.w = static_cast<uint8_t>(scanline_width & 0xFF);
+		rgbe.v[0] = 2;
+		rgbe.v[1] = 2;
+		rgbe.v[2] = static_cast<uint8_t>(scanline_width >> 8);
+		rgbe.v[3] = static_cast<uint8_t>(scanline_width & 0xFF);
 
 		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(math::byte4));
 
@@ -61,10 +61,10 @@ void Writer::write_pixels_rle(std::ostream& stream, const Float_4& image) {
 
 			rgbe = float_to_rgbe(pixel.xyz);
 
-			buffer[i]					   = rgbe.x;
-			buffer[i + scanline_width]     = rgbe.y;
-			buffer[i + scanline_width * 2] = rgbe.z;
-			buffer[i + scanline_width * 3] = rgbe.w;
+			buffer[i]					   = rgbe.v[0];
+			buffer[i + scanline_width]     = rgbe.v[1];
+			buffer[i + scanline_width * 2] = rgbe.v[2];
+			buffer[i + scanline_width * 3] = rgbe.v[3];
 		}
 
 		// write out each of the four channels separately run length encoded

@@ -11,10 +11,10 @@ inline float3 unorm_to_float(byte3 c) {
 }
 
 inline float4 unorm_to_float(math::byte4 c) {
-	return float4(static_cast<float>(c.x) / 255.f,
-				  static_cast<float>(c.y) / 255.f,
-				  static_cast<float>(c.z) / 255.f,
-				  static_cast<float>(c.w) / 255.f);
+	return float4(static_cast<float>(c.v[0]) / 255.f,
+				  static_cast<float>(c.v[1]) / 255.f,
+				  static_cast<float>(c.v[2]) / 255.f,
+				  static_cast<float>(c.v[3]) / 255.f);
 }
 
 inline byte3 float_to_unorm(float3_p c) {

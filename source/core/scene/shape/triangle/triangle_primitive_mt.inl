@@ -377,10 +377,10 @@ inline int16_t float_to_xnorm(float x) {
 }
 
 inline float4 snorm16_to_float(short4 v) {
-	return float4(encoding::snorm16_to_float(v.x),
-				  encoding::snorm16_to_float(v.y),
-				  encoding::snorm16_to_float(v.z),
-				  xnorm_to_float(v.w));
+	return float4(encoding::snorm16_to_float(v.v[0]),
+				  encoding::snorm16_to_float(v.v[1]),
+				  encoding::snorm16_to_float(v.v[2]),
+				  xnorm_to_float(v.v[3]));
 }
 
 inline short4 float_to_snorm16(float3_p v, float s) {
@@ -404,7 +404,7 @@ inline Shading_vertex_MTCC::Shading_vertex_MTCC(const math::packed_float3& n,
 	t_v(float_to_snorm16(t, uv.v[1])) {
 
 
-	const float u = xnorm_to_float(n_u.w);
+	const float u = xnorm_to_float(n_u.v[3]);
 	const float du = std::abs(uv.v[0] - u);
 
 	if (du > 0.1f) {
@@ -423,12 +423,12 @@ inline float2 interpolate_uv(const Shading_vertex_MTCC& a,
 							 float2 uv) {
 	float w = 1.f - uv.v[0] - uv.v[1];
 
-	float au = xnorm_to_float(a.n_u.w);
-	float av = xnorm_to_float(a.t_v.w);
-	float bu = xnorm_to_float(b.n_u.w);
-	float bv = xnorm_to_float(b.t_v.w);
-	float cu = xnorm_to_float(c.n_u.w);
-	float cv = xnorm_to_float(c.t_v.w);
+	float au = xnorm_to_float(a.n_u.v[3]);
+	float av = xnorm_to_float(a.t_v.v[3]);
+	float bu = xnorm_to_float(b.n_u.v[3]);
+	float bv = xnorm_to_float(b.t_v.v[3]);
+	float cu = xnorm_to_float(c.n_u.v[3]);
+	float cv = xnorm_to_float(c.t_v.v[3]);
 
 	return float2(w * au + uv.v[0] * bu + uv.v[1] * cu,
 				  w * av + uv.v[0] * bv + uv.v[1] * cv);

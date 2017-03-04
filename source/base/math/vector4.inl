@@ -14,42 +14,42 @@ template<typename T>
 Vector4<T>::Vector4() {}
 
 template<typename T>
-Vector4<T>::Vector4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
+Vector4<T>::Vector4(T x, T y, T z, T w) : v{x, y, z, w} {}
 
 template<typename T>
-Vector4<T>::Vector4(T s) : x(s), y(s), z(s), w(s) {}
+Vector4<T>::Vector4(T s) : v{s, s, s, s} {}
 
 template<typename T>
-Vector4<T>::Vector4(Vector2<T> xy, T z, T w) : x(xy.x), y(xy.y), z(z), w(w) {}
+Vector4<T>::Vector4(Vector2<T> xy, T z, T w) : v{xy.v[0], xy.v[1], z, w} {}
 
 template<typename T>
-Vector4<T>::Vector4(const Vector3<T>& xyz, T w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+Vector4<T>::Vector4(const Vector3<T>& xyz, T w) : v{xyz.v[0], xyz.v[1], xyz.v[2], w} {}
 
 template<typename T>
 Vector4<T> Vector4<T>::operator+(const Vector4& v) const {
-	return Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
+	return Vector4(v[0] + v.v[0], v[1] + v.v[1], v[2] + v.v[2], v[3] + v.v[3]);
 }
 
 template<typename T>
 Vector4<T> Vector4<T>::operator*(const Vector4& v) const {
-	return Vector4(x * v.x, y * v.y, z * v.z, w * v.w);
+	return Vector4(v[0] * v.v[0], v[1] * v.v[1], v[2] * v.v[2], v[3] * v.v[3]);
 }
 
 template<typename T>
 Vector4<T> Vector4<T>::operator/(T s) const {
 	T is = T(1) / s;
-	return Vector4(is * x, is * y, is * z, is * w);
+	return Vector4(is * v[0], is * v[1], is * v[2], is * v[2]);
 }
 
 template<typename T>
 Vector4<T>& Vector4<T>::operator+=(const Vector4& v) {
-	x += v.x; y += v.y; z += v.z; w += v.w;
+	v[0] += v.v[0]; v[1] += v.v[1]; v[2] += v.v[2]; v[3] += v.v[3];
 	return *this;
 }
 
 template<typename T>
 Vector4<T>& Vector4<T>::operator-=(const Vector4& v) {
-	x -= v.x; y -= v.y; z -= v.z; w -= v.w;
+	v[0] -= v.v[0]; v[1] -= v.v[1]; v[2] -= v.v[2]; v[3] -= v.v[3];
 	return *this;
 }
 
@@ -58,12 +58,12 @@ const Vector4<T> Vector4<T>::identity(T(0), T(0), T(0), T(0));
 
 template<typename T>
 Vector4<T> operator*(T s, const Vector4<T> &v) {
-	return Vector4<T>(s * v.x, s * v.y, s * v.z, s * v.w);
+	return Vector4<T>(s * v.v[0], s * v.v[1], s * v.v[2], s * v.v[3]);
 }
 
 template<typename T>
 T dot(const Vector4<T>& a, const Vector4<T>& b) {
-	return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+	return a.v[0] * b.v[0] + a.v[1] * b.v[1] + a.v[2] * b.v[2] + a.v[3] * b.v[3];
 }
 
 /****************************************************************************
