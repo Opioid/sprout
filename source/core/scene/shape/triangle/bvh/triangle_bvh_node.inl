@@ -7,17 +7,36 @@
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 inline void Node::set_aabb(const math::aabb& aabb) {
-	bounds[0] = aabb.min();
-	bounds[1] = aabb.max();
+//	bounds[0] = aabb.min();
+//	bounds[1] = aabb.max();
+
+	const auto& mi = aabb.min();
+	min.v[0] = mi.v[0];
+	min.v[1] = mi.v[1];
+	min.v[2] = mi.v[2];
+
+	const auto& ma = aabb.max();
+	max.v[0] = ma.v[0];
+	max.v[1] = ma.v[1];
+	max.v[2] = ma.v[2];
 }
 
-inline uint32_t Node::primitive_end() const {
-	return next_or_data + static_cast<uint32_t>(num_primitives);
+inline uint32_t Node::next() const {
+	return min.next_or_data;
+}
+
+inline uint32_t Node::indices_start() const {
+	return min.next_or_data;
+}
+
+inline uint32_t Node::indices_end() const {
+	return min.next_or_data + static_cast<uint32_t>(max.num_primitives);
 }
 
 // This test is presented in the paper
 // "An Efficient and Robust Ray–Box Intersection Algorithm"
 // http://www.cs.utah.edu/~awilliam/box/box.pdf
+/*
 inline bool Node::intersect_p(const math::Ray& ray) const {
 	int8_t sign_0 = ray.signs[0];
 	float min_t = (bounds[    sign_0].x - ray.origin.x) * ray.inv_direction.x;
@@ -56,7 +75,7 @@ inline bool Node::intersect_p(const math::Ray& ray) const {
 	}
 
 	return min_t < ray.max_t && max_t > ray.min_t;
-}
+}*/
 
 // I found this SSE optimized AABB/ray test here:
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
@@ -66,8 +85,8 @@ inline bool Node::intersect_p(math::simd::FVector ray_origin,
 							  math::simd::FVector ray_max_t) const {
 	using namespace math::simd;
 
-	const Vector bb_min = load_float3(bounds[0]);
-	const Vector bb_max = load_float3(bounds[1]);
+	const Vector bb_min = load_float3(min.v/*bounds[0]*/);
+	const Vector bb_max = load_float3(max.v/*bounds[1]*/);
 
 	const Vector l1 = mul3(sub3(bb_min, ray_origin), ray_inv_direction);
 	const Vector l2 = mul3(sub3(bb_max, ray_origin), ray_inv_direction);

@@ -310,6 +310,8 @@ inline Vector3f_a::Vector3f_a() {}
 
 inline Vector3f_a::Vector3f_a(float x, float y, float z) : x(x), y(y), z(z)  {}
 
+inline Vector3f_a::Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {}
+
 inline Vector3f_a::Vector3f_a(float s) : x(s), y(s), z(s) {}
 
 inline Vector3f_a::Vector3f_a(Vector2<float> xy, float z) : x(xy.x), y(xy.y), z(z) {}

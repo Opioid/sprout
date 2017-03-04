@@ -34,7 +34,8 @@ Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
 template<typename Data>
 math::aabb Tree<Data>::aabb() const {
 	if (nodes_) {
-		return math::aabb(nodes_[0].bounds[0], nodes_[0].bounds[1]);
+//		return math::aabb(nodes_[0].bounds[0], nodes_[0].bounds[1]);
+		return math::aabb(float3(nodes_[0].min.v), float3(nodes_[0].max.v));
 	} else {
 		return math::aabb::empty();
 	}
@@ -79,8 +80,8 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 		const auto& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-			if (node.num_primitives > 0) {
-				for (uint32_t i = node.next_or_data, len = node.primitive_end(); i < len; ++i) {
+			if (node.max.num_primitives > 0) {
+				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						index = i;
 						// ray.max_t has changed if intersect() returns true!
@@ -90,12 +91,12 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
 				n = node_stack.pop();
 			} else {
-				if (0 == ray.signs[node.axis]) {
-					node_stack.push(node.next_or_data);
+				if (0 == ray.signs[node.max.axis]) {
+					node_stack.push(node.next());
 					++n;
 				} else {
 					node_stack.push(n + 1);
-					n = node.next_or_data;
+					n = node.next();
 				}
 			}
 		} else {
@@ -125,8 +126,8 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 		const auto& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-			if (node.num_primitives > 0) {
-				for (uint32_t i = node.next_or_data, len = node.primitive_end(); i < len; ++i) {
+			if (node.max.num_primitives > 0) {
+				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 					if (data_.intersect_p(i, ray)) {
 				//	if (data_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
 						return true;
@@ -135,12 +136,12 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 
 				n = node_stack.pop();
 			} else {
-				if (0 == ray.signs[node.axis]) {
-					node_stack.push(node.next_or_data);
+				if (0 == ray.signs[node.max.axis]) {
+					node_stack.push(node.next());
 					++n;
 				} else {
 					node_stack.push(n + 1);
-					n = node.next_or_data;
+					n = node.next();
 				}
 			}
 		} else {
@@ -173,8 +174,8 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 		auto& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-			if (node.num_primitives > 0) {
-				for (uint32_t i = node.next_or_data, len = node.primitive_end(); i < len; ++i) {
+			if (node.max.num_primitives > 0) {
+				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						uv = data_.interpolate_uv(i, uv);
 
@@ -193,12 +194,12 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 				n = node_stack.pop();
 			} else {
-				if (0 == ray.signs[node.axis]) {
-					node_stack.push(node.next_or_data);
+				if (0 == ray.signs[node.max.axis]) {
+					node_stack.push(node.next());
 					++n;
 				} else {
 					node_stack.push(n + 1);
-					n = node.next_or_data;
+					n = node.next();
 				}
 			}
 		} else {
@@ -231,8 +232,8 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 		auto& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-			if (node.num_primitives > 0) {
-				for (uint32_t i = node.next_or_data, len = node.primitive_end(); i < len; ++i) {
+			if (node.max.num_primitives > 0) {
+				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						uv = data_.interpolate_uv(i, uv);
 
@@ -255,12 +256,12 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 
 				n = node_stack.pop();
 			} else {
-				if (0 == ray.signs[node.axis]) {
-					node_stack.push(node.next_or_data);
+				if (0 == ray.signs[node.max.axis]) {
+					node_stack.push(node.next());
 					++n;
 				} else {
 					node_stack.push(n + 1);
-					n = node.next_or_data;
+					n = node.next();
 				}
 			}
 		} else {

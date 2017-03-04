@@ -34,15 +34,15 @@ void Builder_base::serialize(Build_node* node) {
 	if (node->children[0]) {
 		serialize(node->children[0]);
 
-		n.next_or_data = current_node_index();
+		n.min.next_or_data = current_node_index();
 
 		serialize(node->children[1]);
 
-		n.axis = node->axis;
-		n.num_primitives = 0;
+		n.max.axis = node->axis;
+		n.max.num_primitives = 0;
 	} else {
-		n.next_or_data = node->start_index;
-		n.num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
+		n.min.next_or_data = node->start_index;
+		n.max.num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
 	}
 }
 
