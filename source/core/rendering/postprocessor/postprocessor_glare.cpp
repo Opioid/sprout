@@ -97,9 +97,9 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 				for (int32_t k = 0; k < wl_num_samples; ++k) {
 					float lambda = wl_start + static_cast<float>(k) * wl_step;
 					float val = wl_norm * f3(theta , lambda);
-					xyz.x += CIE_X.evaluate(lambda) * val;
-					xyz.y += CIE_Y.evaluate(lambda) * val;
-					xyz.z += CIE_Z.evaluate(lambda) * val;
+					xyz.v[0] += CIE_X.evaluate(lambda) * val;
+					xyz.v[1] += CIE_Y.evaluate(lambda) * val;
+					xyz.v[2] += CIE_Z.evaluate(lambda) * val;
 				}
 
 				d = math::max(spectrum::XYZ_to_linear_RGB(xyz), float3(0.f));

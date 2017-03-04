@@ -32,9 +32,9 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/,
 	float3 a = rn.point(min_t);
 	float3 b = rn.point(max_t);
 
-	float min_y = aabb_.min().y;
-	float ha = a.y - min_y;
-	float hb = b.y - min_y;
+	float min_y = aabb_.min().v[1];
+	float ha = a.v[1] - min_y;
+	float hb = b.v[1] - min_y;
 
 	float3 attenuation = absorption_ + scattering_;
 
@@ -75,7 +75,7 @@ float Height::density(float3_p p, Worker& /*worker*/, Sampler_filter /*filter*/)
 	}
 
 	// calculate height, relative to volume, in world space
-	float height = world_transformation_.scale.y * (1.f + p.y);
+	float height = world_transformation_.scale.v[1] * (1.f + p.v[1]);
 
 	return a_ * std::exp(-b_ * height);
 }

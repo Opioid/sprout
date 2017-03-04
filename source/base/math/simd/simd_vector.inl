@@ -59,7 +59,7 @@ inline Vector SU_CALLCONV load_float3(FVector3f_a source) {
 	return v;
 #elif defined(_SU_SSE_INTRINSICS_)
 	// Reads an extra float which is zero'd
-	__m128 v = _mm_load_ps(&source.x);
+	__m128 v = _mm_load_ps(source.v);
 	return _mm_and_ps(v, Mask3);
 #endif
 }
@@ -74,7 +74,7 @@ inline Vector SU_CALLCONV load_float3_unsafe(FVector3f_a source) {
 	return v;
 #elif defined(_SU_SSE_INTRINSICS_)
 	// Reads an extra float!!!
-	return _mm_load_ps(&source.x);
+	return _mm_load_ps(source.v);
 #endif
 }
 
@@ -106,7 +106,7 @@ inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
 #elif defined(_SU_SSE_INTRINSICS_)
 	Vector t = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
 	_mm_storel_epi64(reinterpret_cast<__m128i*>(&destination), _mm_castps_si128(v));
-	_mm_store_ss(&destination.z, t);
+	_mm_store_ss(&destination.v[2], t);
 #endif
 }
 
@@ -116,7 +116,7 @@ inline void SU_CALLCONV store_float3_unsafe(Vector3f_a& destination, FVector v) 
 	destination.y = v.vector4_f32[1];
 	destination.z = v.vector4_f32[2];
 #elif defined(_SU_SSE_INTRINSICS_)
-	_mm_store_ps(&destination.x, v);
+	_mm_store_ps(destination.v, v);
 #endif
 }
 

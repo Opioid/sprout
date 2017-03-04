@@ -458,7 +458,7 @@ void reciprocal() {
 }
 
 inline float dotly(float3 a, float3 b) {
-	return a.x * b.x + a.y * b.y + a.z * b.z;
+	return a.v[0] * b.v[0] + a.v[1] * b.v[1] + a.v[2] * b.v[2];
 }
 
 inline float simd_dot_0(const float3& a, const float3& b) {

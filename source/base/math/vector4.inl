@@ -83,7 +83,7 @@ inline Vector4f_a::Vector4f_a(Vector2<float> xy, float z, float w) :
 	v{xy.v[0], xy.v[1], z, w} {}
 
 inline Vector4f_a::Vector4f_a(FVector3f_a xyz, float w) :
-	v{xyz.x, xyz.y, xyz.z, w} {}
+	v{xyz.v[0], xyz.v[1], xyz.v[2], w} {}
 
 inline Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) :
 	v{xyz.x, xyz.y, xyz.z, w} {}

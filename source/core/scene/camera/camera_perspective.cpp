@@ -51,9 +51,9 @@ void Perspective::update(rendering::Worker& worker) {
 	float3 right_top   = float3( ratio,  1.f, 0.f) * lens_tilt_;
 	float3 left_bottom = float3(-ratio, -1.f, 0.f) * lens_tilt_;
 
-	left_top.z    += z;
-	right_top.z   += z;
-	left_bottom.z += z;
+	left_top.v[2]    += z;
+	right_top.v[2]   += z;
+	left_bottom.v[2] += z;
 
 	left_top_ = left_top + float3(lens_shift_, 0.f);
 	d_x_ = (right_top   - left_top) / fr.v[0];
@@ -75,7 +75,7 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 
 		origin = float3(lens_radius_ * lens, 0.f);
 
-		const float t = focus_distance_ / direction.z;
+		const float t = focus_distance_ / direction.v[2];
 		const float3 focus = t * direction;
 
 		direction = focus - origin;
@@ -123,14 +123,14 @@ void Perspective::set_lens(const Lens& lens) {
 void Perspective::set_focus(const Focus& focus) {
 	focus_ = focus;
 
-	focus_.point.xy *= float2(resolution_);
+	focus_.point.xy() *= float2(resolution_);
 
 	focus_distance_ = focus_.distance;
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {
 	if (focus_.use_point && lens_radius_ > 0.f) {
-		float3 direction = left_top_ + focus_.point.x * d_x_ + focus_.point.y * d_y_;
+		float3 direction = left_top_ + focus_.point.v[0] * d_x_ + focus_.point.v[1] * d_y_;
 		direction = math::normalized(direction);
 
 		entity::Composed_transformation temp;
@@ -146,7 +146,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 
 		Intersection intersection;
 		if (worker.intersect(ray, intersection)) {
-			focus_distance_ = ray.max_t + focus_.point.z;
+			focus_distance_ = ray.max_t + focus_.point.v[2];
 		} else {
 			focus_distance_ = focus_.distance;
 		}

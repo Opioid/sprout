@@ -12,9 +12,9 @@ namespace spectrum {
 
 inline float3 XYZ_to_linear_RGB(float3_p xyz) {
 	return float3(
-		2.3706743f * xyz.x - 0.9000405f * xyz.y - 0.4706338f * xyz.z,
-	   -0.5138850f * xyz.x + 1.4253036f * xyz.y + 0.0885814f * xyz.z,
-		0.0052982f * xyz.x - 0.0146949f * xyz.y + 1.0093968f * xyz.z);
+		2.3706743f * xyz.v[0] - 0.9000405f * xyz.v[1] - 0.4706338f * xyz.v[2],
+	   -0.5138850f * xyz.v[0] + 1.4253036f * xyz.v[1] + 0.0885814f * xyz.v[2],
+		0.0052982f * xyz.v[0] - 0.0146949f * xyz.v[1] + 1.0093968f * xyz.v[2]);
 }
 
 }

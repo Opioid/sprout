@@ -152,16 +152,8 @@ bool any_inf(const Vector3<T>& v);
  ****************************************************************************/
 
 struct alignas(16) Vector3f_a {
-	union {
-		struct {
-			float x, y, z;
-		};
-
-		Vector2<float> xy;
-
-		// 4 instead of 3 in order to hide pad warning
-		float v[4];
-	};
+	// 4 instead of 3 in order to hide pad warning
+	float v[4];
 
 	Vector3f_a();
 
@@ -175,6 +167,8 @@ struct alignas(16) Vector3f_a {
 
 	template<typename T>
 	explicit Vector3f_a(const Vector3<T>& v);
+
+	Vector2<float> xy() const;
 
 	Vector3f_a operator+(float s) const;
 

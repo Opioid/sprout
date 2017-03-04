@@ -25,7 +25,7 @@ bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 		return false;
 	}
 
-	float radius = transformation.scale.x;
+	float radius = transformation.scale.v[0];
 	float det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
@@ -56,7 +56,7 @@ bool Celestial_disk::intersect_p(const Transformation& transformation,
 		return false;
 	}
 
-	float radius = transformation.scale.x;
+	float radius = transformation.scale.v[0];
 	float det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
@@ -96,7 +96,7 @@ void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformat
 	float2 xy = math::sample_disk_concentric(r2);
 
 	float3 ls = float3(xy, 0.f);
-	float radius = transformation.scale.x;
+	float radius = transformation.scale.v[0];
 	float3 ws = radius * math::transform_vector(ls, transformation.rotation);
 
 	sample.wi = math::normalized(ws - transformation.rotation.v3.z);
@@ -127,7 +127,7 @@ float Celestial_disk::uv_weight(float2 /*uv*/) const {
 }
 
 float Celestial_disk::area(uint32_t /*part*/, float3_p scale) const {
-	float radius = scale.x;
+	float radius = scale.v[0];
 	return math::Pi * radius * radius;
 }
 

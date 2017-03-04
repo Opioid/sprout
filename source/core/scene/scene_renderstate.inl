@@ -6,15 +6,15 @@
 namespace scene {
 
 inline float3 Renderstate::tangent_to_world(float3_p v) const{
-	return float3(v.x * t.x + v.y * b.x + v.z * n.x,
-				  v.x * t.y + v.y * b.y + v.z * n.y,
-				  v.x * t.z + v.y * b.z + v.z * n.z);
+	return float3(v.v[0] * t.v[0] + v.v[1] * b.v[0] + v.v[2] * n.v[0],
+				  v.v[0] * t.v[1] + v.v[1] * b.v[1] + v.v[2] * n.v[1],
+				  v.v[0] * t.v[2] + v.v[1] * b.v[2] + v.v[2] * n.v[2]);
 }
 
 inline float3 Renderstate::tangent_to_world(float2 v) const{
-	return float3(v.v[0] * t.x + v.v[1] * b.x,
-				  v.v[0] * t.y + v.v[1] * b.y,
-				  v.v[0] * t.z + v.v[1] * b.z);
+	return float3(v.v[0] * t.v[0] + v.v[1] * b.v[0],
+				  v.v[0] * t.v[1] + v.v[1] * b.v[1],
+				  v.v[0] * t.v[2] + v.v[1] * b.v[2]);
 }
 
 }

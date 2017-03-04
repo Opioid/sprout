@@ -68,9 +68,9 @@ void Discrete_spectral_power_distribution<N>::init(float start_wavelength, float
 	const Discrete_spectral_power_distribution<N> cie_z(CIE_Z);
 
 	for (int32_t i = 0; i < N; ++i) {
-		cie_[i].x = cie_x.values_[i];
-		cie_[i].y = cie_y.values_[i];
-		cie_[i].z = cie_z.values_[i];
+		cie_[i].v[0] = cie_x.values_[i];
+		cie_[i].v[1] = cie_y.values_[i];
+		cie_[i].v[2] = cie_z.values_[i];
 	}
 }
 

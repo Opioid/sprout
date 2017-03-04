@@ -30,8 +30,8 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 
 		float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
 		xyz = math::normalized(xyz);
-		intersection.uv.v[0] = std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f;
-		intersection.uv.v[1] = std::acos(xyz.y) * math::Pi_inv;
+		intersection.uv.v[0] = std::atan2(xyz.v[0], xyz.v[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+		intersection.uv.v[1] = std::acos(xyz.v[1]) * math::Pi_inv;
 
 		intersection.p = ray.point(Ray_max_t);
 		const float3 n = -ray.direction;
@@ -81,8 +81,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 
 	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	xyz = math::normalized(xyz);
-	sample.uv.v[0] = std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f;
-	sample.uv.v[1] = std::acos(xyz.y) * math::Pi_inv;
+	sample.uv.v[0] = std::atan2(xyz.v[0], xyz.v[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+	sample.uv.v[1] = std::acos(xyz.v[1]) * math::Pi_inv;
 
 	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
@@ -99,8 +99,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 
 	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	xyz = math::normalized(xyz);
-	sample.uv.v[0] = std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f;
-	sample.uv.v[1] = std::acos(xyz.y) * math::Pi_inv;
+	sample.uv.v[0] = std::atan2(xyz.v[0], xyz.v[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+	sample.uv.v[1] = std::acos(xyz.v[1]) * math::Pi_inv;
 
 	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (4.f * math::Pi);
@@ -142,11 +142,11 @@ float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transform
 							  float2& uv) const {
 	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
 	xyz = math::normalized(xyz);
-	uv.v[0] = std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f;
-	uv.v[1] = std::acos(xyz.y) * math::Pi_inv;
+	uv.v[0] = std::atan2(xyz.v[0], xyz.v[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+	uv.v[1] = std::acos(xyz.v[1]) * math::Pi_inv;
 
 	// sin_theta because of the uv weight
-	const float sin_theta = std::sqrt(1.f - xyz.y * xyz.y);
+	const float sin_theta = std::sqrt(1.f - xyz.v[1] * xyz.v[1]);
 
 	return 1.f / ((4.f * math::Pi) * sin_theta);
 }

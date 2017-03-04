@@ -7,9 +7,9 @@ Uncharted::Uncharted(float hdr_max) :
 	normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
 
 float3 Uncharted::tonemap(float3_p color) const {
-	return normalization_factor_ * float3(tonemap_function(color.x),
-										  tonemap_function(color.y),
-										  tonemap_function(color.z));
+	return normalization_factor_ * float3(tonemap_function(color.v[0]),
+										  tonemap_function(color.v[1]),
+										  tonemap_function(color.v[2]));
 }
 
 float Uncharted::tonemap_function(float x) {

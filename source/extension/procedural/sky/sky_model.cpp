@@ -67,7 +67,7 @@ void Model::set_turbidity(float turbidity) {
 }
 
 float3 Model::evaluate_sky(float3_p wi) const {
-	float wi_dot_z = std::max(wi.y, 0.00001f);
+	float wi_dot_z = std::max(wi.v[1], 0.00001f);
 	float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
 	float theta = std::acos(wi_dot_z);
@@ -93,7 +93,7 @@ float3 Model::evaluate_sky(float3_p wi) const {
 }
 
 float3 Model::evaluate_sky_and_sun(float3_p wi) const {
-	float wi_dot_z = std::max(wi.y, 0.00001f);
+	float wi_dot_z = std::max(wi.v[1], 0.00001f);
 	float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
 	float theta = std::acos(wi_dot_z);

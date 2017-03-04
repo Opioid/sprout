@@ -20,9 +20,9 @@ inline float linear_to_sRGB(float c) {
 
 // convert sRGB linear color to sRGB gamma color
 inline float3 linear_RGB_to_sRGB(float3_p c) {
-	return float3(linear_to_sRGB(c.x),
-				  linear_to_sRGB(c.y),
-				  linear_to_sRGB(c.z));
+	return float3(linear_to_sRGB(c.v[0]),
+				  linear_to_sRGB(c.v[1]),
+				  linear_to_sRGB(c.v[2]));
 }
 
 // convert sRGB linear color to sRGB gamma color
@@ -55,9 +55,9 @@ inline float3 sRGB_to_linear_RGB(byte3 c) {
 
 // convert sRGB gamma color to sRGB linear color
 inline float3 sRGB_to_linear_RGB(float3_p c) {
-	return float3(sRGB_to_linear(c.x),
-				  sRGB_to_linear(c.y),
-				  sRGB_to_linear(c.z));
+	return float3(sRGB_to_linear(c.v[0]),
+				  sRGB_to_linear(c.v[1]),
+				  sRGB_to_linear(c.v[1]));
 }
 
 inline float4 sRGB_to_linear_RGB(math::byte4 c) {
@@ -71,20 +71,20 @@ inline float4 sRGB_to_linear_RGB(math::byte4 c) {
 inline float3 linear_to_gamma(float3_p c, float gamma) {
 	float p = 1.f / gamma;
 
-	return float3(std::pow(c.x, p),
-				  std::pow(c.y, p),
-				  std::pow(c.z, p));
+	return float3(std::pow(c.v[0], p),
+				  std::pow(c.v[1], p),
+				  std::pow(c.v[2], p));
 }
 
 // convert gamma color to linear color
 inline float3 gamma_to_linear(float3_p c, float gamma) {
-	return float3(std::pow(c.x, gamma),
-				  std::pow(c.y, gamma),
-				  std::pow(c.z, gamma));
+	return float3(std::pow(c.v[0], gamma),
+				  std::pow(c.v[1], gamma),
+				  std::pow(c.v[2], gamma));
 }
 
 inline float luminance(float3_p c) {
-	return 0.212671f * c.x + 0.715160f * c.y + 0.072169f * c.z;
+	return 0.212671f * c.v[0] + 0.715160f * c.v[1] + 0.072169f * c.v[2];
 }
 
 inline float watt_to_lumen(float3_p c) {

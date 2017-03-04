@@ -238,13 +238,13 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
 			const float fi = static_cast<float>(i);
 
-			const float3 slice_x(min.x + fi * step.x, position.y, position.z);
+			const float3 slice_x(min.v[0] + fi * step.v[0], position.v[1], position.v[2]);
 			split_candidates_.emplace_back(X, slice_x, false);
 
-			const float3 slice_y(position.x, min.y + fi * step.y, position.z);
+			const float3 slice_y(position.v[0], min.v[1] + fi * step.v[1], position.v[2]);
 			split_candidates_.emplace_back(Y, slice_y, false);
 
-			const float3 slice_z(position.x, position.y, min.z + fi * step.z);
+			const float3 slice_z(position.v[0], position.v[1], min.v[2] + fi * step.v[2]);
 			split_candidates_.emplace_back(Z, slice_z, false);
 
 //			split_candidates_.push_back(Split_candidate(0, slice_x, true));

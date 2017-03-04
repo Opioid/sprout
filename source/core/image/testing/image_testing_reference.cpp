@@ -40,7 +40,7 @@ float3 reference_normal(float2 p, float2 range) {
 
 	v = math::normalized(v);
 
-	return 0.5f * float3(v.x + 1.f, v.y + 1.f, v.z + 1.f);
+	return 0.5f * float3(v.v[0] + 1.f, v.v[1] + 1.f, v.v[2] + 1.f);
 }
 
 void create_reference_normal_map(int2 dimensions) {
@@ -80,9 +80,9 @@ void create_reference_normal_map(int2 dimensions) {
 
 			v = v / static_cast<float>(aa.v[0] * aa.v[1]);
 
-			pixel.x = static_cast<uint8_t>(v.x * 255.f);
-			pixel.y = static_cast<uint8_t>(v.y * 255.f);
-			pixel.z = static_cast<uint8_t>(v.z * 255.f);
+			pixel.v[0] = static_cast<uint8_t>(v.v[0] * 255.f);
+			pixel.v[1] = static_cast<uint8_t>(v.v[1] * 255.f);
+			pixel.v[2] = static_cast<uint8_t>(v.v[2] * 255.f);
 		}
 	}
 

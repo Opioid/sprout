@@ -18,9 +18,9 @@ inline float4 unorm_to_float(math::byte4 c) {
 }
 
 inline byte3 float_to_unorm(float3_p c) {
-	return byte3(static_cast<uint8_t>(c.x * 255.f),
-				 static_cast<uint8_t>(c.y * 255.f),
-				 static_cast<uint8_t>(c.z * 255.f));
+	return byte3(static_cast<uint8_t>(c.v[0] * 255.f),
+				 static_cast<uint8_t>(c.v[1] * 255.f),
+				 static_cast<uint8_t>(c.v[2] * 255.f));
 }
 
 inline byte4 float_to_unorm(float4_p c) {
@@ -47,9 +47,9 @@ inline uint8_t float_to_snorm(float x) {
 }
 
 inline byte3 float_to_snorm(float3_p c) {
-	return byte3(static_cast<uint8_t>((c.x + 1.f) * 0.5f * 255.f),
-				 static_cast<uint8_t>((c.y + 1.f) * 0.5f * 255.f),
-				 static_cast<uint8_t>((c.z + 1.f) * 0.5f * 255.f));
+	return byte3(static_cast<uint8_t>((c.v[0] + 1.f) * 0.5f * 255.f),
+				 static_cast<uint8_t>((c.v[1] + 1.f) * 0.5f * 255.f),
+				 static_cast<uint8_t>((c.v[2] + 1.f) * 0.5f * 255.f));
 }
 
 inline float snorm16_to_float(int16_t snorm) {

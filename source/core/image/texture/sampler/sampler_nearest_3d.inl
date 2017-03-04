@@ -30,9 +30,9 @@ float3 Nearest_3D<Address_mode>::sample_3(const Texture& texture, float3_p uvw) 
 
 template<typename Address_mode>
 float3 Nearest_3D<Address_mode>::address(float3_p uvw) const {
-	return float3(Address_mode::f(uvw.x),
-				  Address_mode::f(uvw.y),
-				  Address_mode::f(uvw.z));
+	return float3(Address_mode::f(uvw.v[0]),
+				  Address_mode::f(uvw.v[1]),
+				  Address_mode::f(uvw.v[2]));
 }
 
 template<typename Address_mode>
@@ -40,13 +40,13 @@ int3 Nearest_3D<Address_mode>::map(const Texture& texture, float3_p uvw) {
 	auto b = texture.back_3();
 	const auto d = texture.dimensions_float3();
 
-	float u = Address_mode::f(uvw.x);
-	float v = Address_mode::f(uvw.y);
-	float w = Address_mode::f(uvw.z);
+	float u = Address_mode::f(uvw.v[0]);
+	float v = Address_mode::f(uvw.v[1]);
+	float w = Address_mode::f(uvw.v[2]);
 
-	return int3(std::min(static_cast<int32_t>(u * d.x), b.x),
-				std::min(static_cast<int32_t>(v * d.y), b.y),
-				std::min(static_cast<int32_t>(w * d.z), b.z));
+	return int3(std::min(static_cast<int32_t>(u * d.v[0]), b.x),
+				std::min(static_cast<int32_t>(v * d.v[1]), b.y),
+				std::min(static_cast<int32_t>(w * d.v[2]), b.z));
 }
 
 }}}

@@ -8,9 +8,9 @@ namespace rendering {
 inline float3 attenuation(float distance, float3_p c) {
 	constexpr float e = 2.f;
 
-	return float3(std::pow(e, -c.x * distance),
-				  std::pow(e, -c.y * distance),
-				  std::pow(e, -c.z * distance));
+	return float3(std::pow(e, -c.v[0] * distance),
+				  std::pow(e, -c.v[1] * distance),
+				  std::pow(e, -c.v[2] * distance));
 }
 
 inline float3 attenuation(float3_p start, float3_p end, float3_p c) {

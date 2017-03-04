@@ -56,7 +56,7 @@ inline plane create_plane(FVector3f_a normal, float d) {
 }
 
 inline plane create_plane(FVector3f_a normal, FVector3f_a point) {
-	return plane(normal.x, normal.y, normal.z, -dot(normal, point));
+	return plane(normal.v[0], normal.v[1], normal.v[2], -dot(normal, point));
 }
 
 inline plane create_plane(FVector3f_a v0, FVector3f_a v1, FVector3f_a v2) {

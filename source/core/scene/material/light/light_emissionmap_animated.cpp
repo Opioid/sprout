@@ -93,7 +93,7 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 											const Transformation& /*transformation*/,
 											float /*area*/, bool importance_sampling,
 											thread::Pool& pool) {
-	if (average_emission_.x >= 0.f) {
+	if (average_emission_.v[0] >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
 		return;

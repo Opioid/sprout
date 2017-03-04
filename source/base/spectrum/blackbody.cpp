@@ -59,13 +59,13 @@ float3 blackbody(float temperature) {
 		float wl = (wl_min + static_cast<float>(k) * wl_step) * 1e-9f;
 		float p = planck(temperature, wl);
 
-		xyz.x += p * color_matching[k][0];
-		xyz.y += p * color_matching[k][1];
-		xyz.z += p * color_matching[k][2];
+		xyz.v[0] += p * color_matching[k][0];
+		xyz.v[1] += p * color_matching[k][1];
+		xyz.v[2] += p * color_matching[k][2];
 	}
 
 	// normalize the result
-	xyz /= std::max(xyz.x, std::max(xyz.y, xyz.z));
+	xyz /= std::max(xyz.v[0], std::max(xyz.v[1], xyz.v[2]));
 
 	return spectrum::XYZ_to_linear_RGB(xyz);
 //  return math::normalized(spectrum::XYZ_to_linear_RGB(xyz));
@@ -97,7 +97,7 @@ float3 blackbody_fast(float temperature) {
 
 	float3 xyz(xc / yc, 1.f, (1.f - xc - yc) / yc);
 
-	xyz /= std::max(xyz.x, std::max(xyz.y, xyz.z));
+	xyz /= std::max(xyz.v[0], std::max(xyz.v[1], xyz.v[2]));
 
 	return /*math::normalized*/(spectrum::XYZ_to_linear_RGB(xyz));
 }

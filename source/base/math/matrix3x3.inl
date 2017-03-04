@@ -98,9 +98,9 @@ Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) {
 }
 
 inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3<float>& m) {
-	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
-					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
-					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+	return Vector3f_a(v.v[0] * m.m00 + v.v[1] * m.m10 + v.v[2] * m.m20,
+					  v.v[0] * m.m01 + v.v[1] * m.m11 + v.v[2] * m.m21,
+					  v.v[0] * m.m02 + v.v[1] * m.m12 + v.v[2] * m.m22);
 }
 
 template<typename T>
@@ -349,21 +349,21 @@ inline Matrix3x3f_a create_matrix3x3(FVector4f_a q) {
 }
 
 inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m) {
-	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
-					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
-					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+	return Vector3f_a(v.v[0] * m.m00 + v.v[1] * m.m10 + v.v[2] * m.m20,
+					  v.v[0] * m.m01 + v.v[1] * m.m11 + v.v[2] * m.m21,
+					  v.v[0] * m.m02 + v.v[1] * m.m12 + v.v[2] * m.m22);
 }
 
 inline Vector3f_a transform_vector(FVector3f_a v, const Matrix3x3f_a& m) {
-	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
-					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
-					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+	return Vector3f_a(v.v[0] * m.m00 + v.v[1] * m.m10 + v.v[2] * m.m20,
+					  v.v[0] * m.m01 + v.v[1] * m.m11 + v.v[2] * m.m21,
+					  v.v[0] * m.m02 + v.v[1] * m.m12 + v.v[2] * m.m22);
 }
 
 inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix3x3f_a& m) {
-	return Vector3f_a(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
-					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
-					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
+	return Vector3f_a(v.v[0] * m.m00 + v.v[1] * m.m01 + v.v[2] * m.m02,
+					  v.v[0] * m.m10 + v.v[1] * m.m11 + v.v[2] * m.m12,
+					  v.v[0] * m.m20 + v.v[1] * m.m21 + v.v[2] * m.m22);
 }
 
 inline void set_rotation_x(Matrix3x3f_a& m, float a) {
@@ -398,24 +398,24 @@ inline void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a) {
 	float s = std::sin(a);
 	float t = 1.f - c;
 
-	m.m00 = c + v.x * v.x * t;
-	m.m11 = c + v.y * v.y * t;
-	m.m22 = c + v.z * v.z * t;
+	m.m00 = c + v.v[0] * v.v[0] * t;
+	m.m11 = c + v.v[1] * v.v[1] * t;
+	m.m22 = c + v.v[2] * v.v[2] * t;
 
-	float tmp1 = v.x * v.y * t;
-	float tmp2 = v.z * s;
+	float tmp1 = v.v[0] * v.v[1] * t;
+	float tmp2 = v.v[2] * s;
 
 	m.m10 = tmp1 + tmp2;
 	m.m01 = tmp1 - tmp2;
 
-	tmp1 = v.x * v.z * t;
-	tmp2 = v.y * s;
+	tmp1 = v.v[0] * v.v[2] * t;
+	tmp2 = v.v[1] * s;
 
 	m.m20 = tmp1 - tmp2;
 	m.m02 = tmp1 + tmp2;
 
-	tmp1 = v.y * v.z * t;
-	tmp2 = v.x * s;
+	tmp1 = v.v[1] * v.v[2] * t;
+	tmp2 = v.v[0] * s;
 
 	m.m21 = tmp1 + tmp2;
 	m.m12 = tmp1 - tmp2;

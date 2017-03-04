@@ -30,14 +30,14 @@ bool Rectangle::intersect(const Transformation& transformation, Ray& ray,
 
 		float3 t = -transformation.rotation.v3.x;
 
-		float u = math::dot(t, k / transformation.scale.x);
+		float u = math::dot(t, k / transformation.scale.v[0]);
 		if (u > 1.f || u < -1.f) {
 			return false;
 		}
 
 		float3 b = -transformation.rotation.v3.y;
 
-		float v = math::dot(b, k / transformation.scale.y);
+		float v = math::dot(b, k / transformation.scale.v[1]);
 		if (v > 1.f || v < -1.f) {
 			return false;
 		}
@@ -75,14 +75,14 @@ bool Rectangle::intersect_p(const Transformation& transformation,
 
 		float3 t = -transformation.rotation.v3.x;
 
-		float u = math::dot(t, k / transformation.scale.x);
+		float u = math::dot(t, k / transformation.scale.v[0]);
 		if (u > 1.f || u < -1.f) {
 			return false;
 		}
 
 		float3 b = -transformation.rotation.v3.y;
 
-		float v = math::dot(b, k / transformation.scale.y);
+		float v = math::dot(b, k / transformation.scale.v[1]);
 		if (v > 1.f || v < -1.f) {
 			return false;
 		}
@@ -108,14 +108,14 @@ float Rectangle::opacity(const Transformation& transformation, const Ray& ray,
 
 		float3 t = -transformation.rotation.v3.x;
 
-		float u = math::dot(t, k / transformation.scale.x);
+		float u = math::dot(t, k / transformation.scale.v[0]);
 		if (u > 1.f || u < -1.f) {
 			return 0.f;
 		}
 
 		float3 b = -transformation.rotation.v3.y;
 
-		float v = math::dot(b, k / transformation.scale.y);
+		float v = math::dot(b, k / transformation.scale.v[1]);
 		if (v > 1.f || v < -1.f) {
 			return 0.f;
 		}
@@ -142,14 +142,14 @@ float3 Rectangle::thin_absorption(const Transformation& transformation, const Ra
 
 		float3 t = -transformation.rotation.v3.x;
 
-		float u = math::dot(t, k / transformation.scale.x);
+		float u = math::dot(t, k / transformation.scale.v[0]);
 		if (u > 1.f || u < -1.f) {
 			return float3(0.f);
 		}
 
 		float3 b = -transformation.rotation.v3.y;
 
-		float v = math::dot(b, k / transformation.scale.y);
+		float v = math::dot(b, k / transformation.scale.v[1]);
 		if (v > 1.f || v < -1.f) {
 			return float3(0.f);
 		}
@@ -177,7 +177,7 @@ void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
 	float2 xy = float2(2.f * r2 - 1.f);
 
-	float3 scale(transformation.scale.xy, 1.f);
+	float3 scale(transformation.scale.xy(), 1.f);
 
 	float3 ls = float3(xy, 0.f);
 	float3 ws = transformation.position
@@ -230,14 +230,14 @@ float Rectangle::pdf(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 t = -transformation.rotation.v3.x;
 
-	float u = math::dot(t, k / transformation.scale.x);
+	float u = math::dot(t, k / transformation.scale.v[0]);
 	if (u > 1.f || u < -1.f) {
 		return 0.f;
 	}
 
 	float3 b = -transformation.rotation.v3.y;
 
-	float v = math::dot(b, k / transformation.scale.y);
+	float v = math::dot(b, k / transformation.scale.v[1]);
 	if (v > 1.f || v < -1.f) {
 		return 0.f;
 	}
@@ -302,14 +302,14 @@ float Rectangle::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 t = -transformation.rotation.v3.x;
 
-	float u = math::dot(t, k / transformation.scale.x);
+	float u = math::dot(t, k / transformation.scale.v[0]);
 	if (u > 1.f || u < -1.f) {
 		return 0.f;
 	}
 
 	float3 b = -transformation.rotation.v3.y;
 
-	float v = math::dot(b, k / transformation.scale.y);
+	float v = math::dot(b, k / transformation.scale.v[1]);
 	if (v > 1.f || v < -1.f) {
 		return 0.f;
 	}
@@ -325,7 +325,7 @@ float Rectangle::uv_weight(float2 /*uv*/) const {
 }
 
 float Rectangle::area(uint32_t /*part*/, float3_p scale) const {
-	return 4.f * scale.x * scale.y;
+	return 4.f * scale.v[0] * scale.v[1];
 }
 
 size_t Rectangle::num_bytes() const {

@@ -54,10 +54,10 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 			worker.sampler()->resume_pixel(0, rng);
 
 			float3 offset((static_cast<float>(x) + 0.5f) *
-						   (bake_quad_range.x / static_cast<float>(dimensions.v[0])),
+						   (bake_quad_range.v[0] / static_cast<float>(dimensions.v[0])),
 							0.f,
 							(static_cast<float>(y) + 0.5f) *
-							(bake_quad_range.z / static_cast<float>(dimensions.v[1])));
+							(bake_quad_range.v[2] / static_cast<float>(dimensions.v[1])));
 
 			float3 origin = bake_quad_origin + offset;
 
@@ -84,9 +84,9 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 
 			auto& pixel = target.at(x, y);
 
-			pixel.v[0] = irradiance.x;
-			pixel.v[1] = irradiance.y;
-			pixel.v[2] = irradiance.z;
+			pixel.v[0] = irradiance.v[0];
+			pixel.v[1] = irradiance.v[1];
+			pixel.v[2] = irradiance.v[2];
 			pixel.v[3] = 1.f;
 		}
 	}

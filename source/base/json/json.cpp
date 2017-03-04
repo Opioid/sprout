@@ -205,13 +205,13 @@ math::uint3 read_uint3(const rapidjson::Value& value) {
 
 math::float3x3 create_rotation_matrix(float3_p xyz) {
 	math::float3x3 rot_x;
-	math::set_rotation_x(rot_x, math::degrees_to_radians(xyz.x));
+	math::set_rotation_x(rot_x, math::degrees_to_radians(xyz.v[0]));
 
 	math::float3x3 rot_y;
-	math::set_rotation_y(rot_y, math::degrees_to_radians(xyz.y));
+	math::set_rotation_y(rot_y, math::degrees_to_radians(xyz.v[1]));
 
 	math::float3x3 rot_z;
-	math::set_rotation_z(rot_z, math::degrees_to_radians(xyz.z));
+	math::set_rotation_z(rot_z, math::degrees_to_radians(xyz.v[2]));
 
 	return rot_z * rot_x * rot_y;
 }

@@ -446,21 +446,21 @@ inline Matrix4x4f_a Matrix4x4f_a::operator*(const Matrix4x4f_a& o) const {
 }
 
 inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
-					  v.x * m.m01 + v.y * m.m11 + v.z * m.m21,
-					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
+	return Vector3f_a(v.v[0] * m.m00 + v.v[1] * m.m10 + v.v[2] * m.m20,
+					  v.v[0] * m.m01 + v.v[1] * m.m11 + v.v[2] * m.m21,
+					  v.v[0] * m.m02 + v.v[1] * m.m12 + v.v[2] * m.m22);
 }
 
 inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a(v.x * m.m00 + v.y * m.m01 + v.z * m.m02,
-					  v.x * m.m10 + v.y * m.m11 + v.z * m.m12,
-					  v.x * m.m20 + v.y * m.m21 + v.z * m.m22);
+	return Vector3f_a(v.v[0] * m.m00 + v.v[1] * m.m01 + v.v[2] * m.m02,
+					  v.v[0] * m.m10 + v.v[1] * m.m11 + v.v[2] * m.m12,
+					  v.v[0] * m.m20 + v.v[1] * m.m21 + v.v[2] * m.m22);
 }
 
 inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a((v.x * m.m00 + v.y * m.m10) + (v.z * m.m20 + m.m30),
-					  (v.x * m.m01 + v.y * m.m11) + (v.z * m.m21 + m.m31),
-					  (v.x * m.m02 + v.y * m.m12) + (v.z * m.m22 + m.m32));
+	return Vector3f_a((v.v[0] * m.m00 + v.v[1] * m.m10) + (v.v[2] * m.m20 + m.m30),
+					  (v.v[0] * m.m01 + v.v[1] * m.m11) + (v.v[2] * m.m21 + m.m31),
+					  (v.v[0] * m.m02 + v.v[1] * m.m12) + (v.v[2] * m.m22 + m.m32));
 }
 
 inline Matrix4x4f_a create_matrix4x4(const Vector4f_a& q) {
@@ -531,41 +531,41 @@ inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix3x3f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
-	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x;
-	m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
+	m.m00 = basis.m00 * scale.v[0]; m.m01 = basis.m01 * scale.v[0];
+	m.m02 = basis.m02 * scale.v[0]; m.m03 = 0.f;
 
-	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y;
-	m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
+	m.m10 = basis.m10 * scale.v[1]; m.m11 = basis.m11 * scale.v[1];
+	m.m12 = basis.m12 * scale.v[1]; m.m13 = 0.f;
 
-	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z;
-	m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
+	m.m20 = basis.m20 * scale.v[2]; m.m21 = basis.m21 * scale.v[2];
+	m.m22 = basis.m22 * scale.v[2]; m.m23 = 0.f;
 
-	m.m30 = origin.x;			 m.m31 = origin.y;
-	m.m32 = origin.z;			 m.m33 = 1.f;
+	m.m30 = origin.v[0];			m.m31 = origin.v[1];
+	m.m32 = origin.v[2];			m.m33 = 1.f;
 }
 
 inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix4x4f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
-	m.m00 = basis.m00 * scale.x; m.m01 = basis.m01 * scale.x;
-	m.m02 = basis.m02 * scale.x; m.m03 = 0.f;
+	m.m00 = basis.m00 * scale.v[0]; m.m01 = basis.m01 * scale.v[0];
+	m.m02 = basis.m02 * scale.v[0]; m.m03 = 0.f;
 
-	m.m10 = basis.m10 * scale.y; m.m11 = basis.m11 * scale.y;
-	m.m12 = basis.m12 * scale.y; m.m13 = 0.f;
+	m.m10 = basis.m10 * scale.v[1]; m.m11 = basis.m11 * scale.v[1];
+	m.m12 = basis.m12 * scale.v[1]; m.m13 = 0.f;
 
-	m.m20 = basis.m20 * scale.z; m.m21 = basis.m21 * scale.z;
-	m.m22 = basis.m22 * scale.z; m.m23 = 0.f;
+	m.m20 = basis.m20 * scale.v[2]; m.m21 = basis.m21 * scale.v[2];
+	m.m22 = basis.m22 * scale.v[2]; m.m23 = 0.f;
 
-	m.m30 = origin.x;			 m.m31 = origin.y;
-	m.m32 = origin.z;			 m.m33 = 1.f;
+	m.m30 = origin.v[0];			m.m31 = origin.v[1];
+	m.m32 = origin.v[2];			m.m33 = 1.f;
 }
 
 inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
 	m.m00 = 1.f; m.m01 = 0.f; m.m02 = 0.f; m.m03 = 0.f;
 	m.m10 = 0.f; m.m11 = 1.f; m.m12 = 0.f; m.m13 = 0.f;
 	m.m20 = 0.f; m.m21 = 0.f; m.m22 = 1.f; m.m23 = 0.f;
-	m.m30 = v.x; m.m31 = v.y; m.m32 = v.z; m.m33 = 1.f;
+	m.m30 = v.v[0]; m.m31 = v.v[1]; m.m32 = v.v[2]; m.m33 = 1.f;
 }
 
 inline void set_rotation_x(Matrix4x4f_a& m, float a) {

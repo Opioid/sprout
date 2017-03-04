@@ -43,9 +43,9 @@ float3 Generic::tonemap(float3_p color) const {
 
 //	return tonemapped_peak * ratio;
 
-	return float3(tonemap_function(color.x),
-				  tonemap_function(color.y),
-				  tonemap_function(color.z));
+	return float3(tonemap_function(color.v[0]),
+				  tonemap_function(color.v[1]),
+				  tonemap_function(color.v[2]));
 }
 
 float Generic::tonemap_function(float x) const {

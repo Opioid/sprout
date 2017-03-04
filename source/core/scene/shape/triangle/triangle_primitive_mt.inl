@@ -384,9 +384,9 @@ inline float4 snorm16_to_float(short4 v) {
 }
 
 inline short4 float_to_snorm16(float3_p v, float s) {
-	return short4(encoding::float_to_snorm16(v.x),
-				  encoding::float_to_snorm16(v.y),
-				  encoding::float_to_snorm16(v.z),
+	return short4(encoding::float_to_snorm16(v.v[0]),
+				  encoding::float_to_snorm16(v.v[1]),
+				  encoding::float_to_snorm16(v.v[2]),
 				  float_to_xnorm(s));
 }
 
