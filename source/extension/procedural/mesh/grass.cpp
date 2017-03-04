@@ -72,7 +72,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 		float w = 0.1f  + 0.05f * rng.random_float();
 		float h = 0.2f  + 0.15f * rng.random_float();// + 0.15f - (0.15f * randomness);
 
-		add_blade(float3(p.x, 0.f, p.y),
+		add_blade(float3(p.v[0], 0.f, p.v[1]),
 				  rotation_y, l, w, h, i * num_vertices, triangles, vertices);
 	}
 
@@ -153,7 +153,7 @@ void Grass::add_blade(float3_p offset,
 	for (uint32_t i = 0, len = num_segments + 2; i < len; ++i) {
 		temp += segment_controls[i].xy;
 
-		segment_uvs[i] = float2(temp.x / (width * max_width), 1.f - temp.y);
+		segment_uvs[i] = float2(temp.v[0] / (width * max_width), 1.f - temp.v[1]);
 	}
 
 	struct Segment {
@@ -205,11 +205,11 @@ void Grass::add_blade(float3_p offset,
 								   segments[i].a.y,
 								   segments[i].a.z) * rotation + offset);
 
-		v.uv = float2(1.f - segment_uvs[i].x, segment_uvs[i].y);
+		v.uv = float2(1.f - segment_uvs[i].v[0], segment_uvs[i].v[1]);
 		vertices.push_back(v);
 
 		v.p = math::packed_float3(float3(0.f, segments[i].b.y, segments[i].b.z) * rotation + offset);
-		v.uv = float2(0.5f, segment_uvs[i].y);
+		v.uv = float2(0.5f, segment_uvs[i].v[1]);
 		vertices.push_back(v);
 
 		v.p = math::packed_float3(float3(segments[i].a.x,
@@ -221,7 +221,7 @@ void Grass::add_blade(float3_p offset,
 
 	uint32_t i = num_segments + 1;
 	v.p = math::packed_float3(float3(0.f, segments[i].a.y, segments[i].a.z) * rotation + offset);
-	v.uv = float2(0.5f, segment_uvs[i].y);
+	v.uv = float2(0.5f, segment_uvs[i].v[1]);
 	vertices.push_back(v);
 }
 

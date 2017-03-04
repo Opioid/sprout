@@ -7,7 +7,7 @@
 namespace image { namespace encoding {
 
 Srgb::Srgb(int2 dimensions) :
-	rgb_(new math::byte3[static_cast<size_t>(dimensions.x * dimensions.y)]) {}
+	rgb_(new math::byte3[static_cast<size_t>(dimensions.v[0] * dimensions.v[1])]) {}
 
 Srgb::~Srgb() {
 	delete[] rgb_;
@@ -48,7 +48,7 @@ void Srgb::to_byte(const image::Float_4& image, int32_t begin, int32_t end) {
 }
 
 Srgb_alpha::Srgb_alpha(int2 dimensions) :
-	rgba_(new byte4[dimensions.x * dimensions.y])
+	rgba_(new byte4[dimensions.v[0] * dimensions.v[1]])
 {}
 
 Srgb_alpha::~Srgb_alpha() {

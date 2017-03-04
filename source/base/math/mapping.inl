@@ -6,9 +6,9 @@
 namespace math {
 
 inline float3 disk_to_hemisphere_equidistant(float2 uv) {
-	float longitude = std::atan2(-uv.y, uv.x);
+	float longitude = std::atan2(-uv.v[1], uv.v[0]);
 
-	float r = std::sqrt(uv.x * uv.x + uv.y * uv.y);
+	float r = std::sqrt(uv.v[0] * uv.v[0] + uv.v[1] * uv.v[1]);
 
 	// Equidistant projection
 	float colatitude = r * (math::Pi / 2.f);

@@ -33,8 +33,8 @@ bool Plane::intersect(const Transformation& transformation, Ray& ray,
 		intersection.b = b;
 		intersection.n = normal;
 		intersection.geo_n = normal;
-		intersection.uv.x = math::dot(t, p) * transformation.scale.x;
-		intersection.uv.y = math::dot(b, p) * transformation.scale.y;
+		intersection.uv.v[0] = math::dot(t, p) * transformation.scale.x;
+		intersection.uv.v[1] = math::dot(b, p) * transformation.scale.y;
 
 		intersection.part = 0;
 

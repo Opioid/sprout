@@ -24,7 +24,7 @@ template<typename T>
 Vector3<T>::Vector3(T s) : x(s), y(s), z(s)  {}
 
 template<typename T>
-Vector3<T>::Vector3(Vector2<T> xy, T z) : x(xy.x), y(xy.y), z(z) {}
+Vector3<T>::Vector3(Vector2<T> xy, T z) : x(xy.v[0]), y(xy.v[1]), z(z) {}
 
 template<typename T>
 Vector3<T>::Vector3(const T* v) : x(v[0]), y(v[1]), z(v[2]) {}
@@ -314,7 +314,7 @@ inline Vector3f_a::Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {}
 
 inline Vector3f_a::Vector3f_a(float s) : x(s), y(s), z(s) {}
 
-inline Vector3f_a::Vector3f_a(Vector2<float> xy, float z) : x(xy.x), y(xy.y), z(z) {}
+inline Vector3f_a::Vector3f_a(Vector2<float> xy, float z) : x(xy.v[0]), y(xy.v[1]), z(z) {}
 
 template<typename T>
 Vector3f_a::Vector3f_a(const Vector3<T>& v) : x(float(v.x)), y(float(v.y)), z(float(v.z)) {}

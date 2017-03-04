@@ -5,10 +5,10 @@
 namespace rendering {
 
 Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_radius) :
-	num_tiles_(static_cast<uint32_t>(std::ceil(static_cast<float>(resolution.x) /
-			   static_cast<float>(tile_dimensions.x))) *
-			   static_cast<uint32_t>(std::ceil(static_cast<float>(resolution.y) /
-			   static_cast<float>(tile_dimensions.y)))),
+	num_tiles_(static_cast<uint32_t>(std::ceil(static_cast<float>(resolution.v[0]) /
+			   static_cast<float>(tile_dimensions.v[0]))) *
+			   static_cast<uint32_t>(std::ceil(static_cast<float>(resolution.v[1]) /
+			   static_cast<float>(tile_dimensions.v[1])))),
 	tiles_(memory::allocate_aligned<int4>(num_tiles_)),
 	current_consume_(num_tiles_) {
 	int2 current_pixel(0, 0);
@@ -16,32 +16,32 @@ Tile_queue::Tile_queue(int2 resolution, int2 tile_dimensions, int32_t filter_rad
 		int2 start = current_pixel;
 		int2 end   = math::min(current_pixel + tile_dimensions, resolution);
 
-		if (0 == start.y) {
-			start.y -= filter_radius;
+		if (0 == start.v[1]) {
+			start.v[1] -= filter_radius;
 		}
 
-		if (resolution.y == end.y) {
-			end.y += filter_radius;
+		if (resolution.v[1] == end.v[1]) {
+			end.v[1] += filter_radius;
 		}
 
-		if (0 == start.x) {
-			start.x -= filter_radius;
+		if (0 == start.v[0]) {
+			start.v[0] -= filter_radius;
 		}
 
-		if (resolution.x == end.x) {
-			end.x += filter_radius;
+		if (resolution.v[0] == end.v[0]) {
+			end.v[0] += filter_radius;
 		}
 
 		push(int4(start, end - int2(1)));
 
-		current_pixel.x += tile_dimensions.x;
+		current_pixel.v[0] += tile_dimensions.v[0];
 
-		if (current_pixel.x >= resolution.x) {
-			current_pixel.x = 0;
-			current_pixel.y += tile_dimensions.y;
+		if (current_pixel.v[0] >= resolution.v[0]) {
+			current_pixel.v[0] = 0;
+			current_pixel.v[1] += tile_dimensions.v[1];
 		}
 
-		if (current_pixel.y >= resolution.y) {
+		if (current_pixel.v[1] >= resolution.v[1]) {
 			break;
 		}
 	}

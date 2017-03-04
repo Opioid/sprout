@@ -8,7 +8,7 @@ namespace rendering { namespace sensor {
 
 Opaque::Opaque(int2 dimensions, float exposure) :
 	Sensor(dimensions, exposure) {
-	pixels_ = memory::allocate_aligned<float4>(dimensions.x * dimensions.y);
+	pixels_ = memory::allocate_aligned<float4>(dimensions.v[0] * dimensions.v[1]);
 }
 
 Opaque::~Opaque() {
@@ -17,27 +17,27 @@ Opaque::~Opaque() {
 
 void Opaque::clear() {
 	const auto d = dimensions();
-	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
+	for (int32_t i = 0, len = d.v[0] * d.v[1]; i < len; ++i) {
 		pixels_[i] = float4(0.f);
 	}
 }
 
 size_t Opaque::num_bytes() const {
 	const auto d = dimensions();
-	return d.x * d.y * sizeof(float4);
+	return d.v[0] * d.v[1] * sizeof(float4);
 }
 
 void Opaque::add_pixel(int2 pixel, float4_p color, float weight) {
 	const auto d = dimensions();
 
-	auto& value = pixels_[d.x * pixel.y + pixel.x];
+	auto& value = pixels_[d.v[0] * pixel.v[1] + pixel.v[0]];
 	value += float4(weight * color.xyz, weight);
 }
 
 void Opaque::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
 	const auto d = dimensions();
 
-	auto& value = pixels_[d.x * pixel.y + pixel.x];
+	auto& value = pixels_[d.v[0] * pixel.v[1] + pixel.v[0]];
 	atomic::add_assign(value.x, weight * color.x);
 	atomic::add_assign(value.y, weight * color.y);
 	atomic::add_assign(value.z, weight * color.z);

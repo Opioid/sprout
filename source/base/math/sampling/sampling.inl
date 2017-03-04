@@ -7,8 +7,8 @@
 namespace math {
 
 inline float2 sample_disk_concentric(float2 uv) {
-	const float sx = 2.f * uv.x - 1.f;
-	const float sy = 2.f * uv.y - 1.f;
+	const float sx = 2.f * uv.v[0] - 1.f;
+	const float sy = 2.f * uv.v[1] - 1.f;
 
 	if (0.f == sx && 0.f == sy) {
 		return float2(0.f);
@@ -52,14 +52,14 @@ inline float2 sample_disk_concentric(float2 uv) {
 }
 
 inline float2 sample_triangle_uniform(float2 uv) {
-	const float su = std::sqrt(uv.x);
-	return float2(1.f - su, uv.y * su);
+	const float su = std::sqrt(uv.v[0]);
+	return float2(1.f - su, uv.v[1] * su);
 }
 
 inline float3 sample_hemisphere_uniform(float2 uv) {
-	const float z = 1.f - uv.x;
+	const float z = 1.f - uv.v[0];
 	const float r = std::sqrt(1.f - z * z);
-	const float phi = uv.y * (2.f * Pi);
+	const float phi = uv.v[1] * (2.f * Pi);
 
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
@@ -68,9 +68,9 @@ inline float3 sample_hemisphere_uniform(float2 uv) {
 }
 
 inline float3 sample_oriented_hemisphere_uniform(float2 uv, float3_p x, float3_p y, float3_p z) {
-	const float za = 1.f - uv.x;
+	const float za = 1.f - uv.v[0];
 	const float r = std::sqrt(1.f - za * za);
-	const float phi = uv.y * (2.f * Pi);
+	const float phi = uv.v[1] * (2.f * Pi);
 
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
@@ -79,9 +79,9 @@ inline float3 sample_oriented_hemisphere_uniform(float2 uv, float3_p x, float3_p
 }
 
 inline float3 sample_oriented_hemisphere_uniform(float2 uv, const float3x3& m) {
-	const float za = 1.f - uv.x;
+	const float za = 1.f - uv.v[0];
 	const float r = std::sqrt(1.f - za * za);
-	const float phi = uv.y * (2.f * Pi);
+	const float phi = uv.v[1] * (2.f * Pi);
 
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
@@ -90,9 +90,9 @@ inline float3 sample_oriented_hemisphere_uniform(float2 uv, const float3x3& m) {
 }
 
 inline float3 sample_oriented_hemisphere_uniform(float2 uv, const float4x4& m) {
-	const float za = 1.f - uv.x;
+	const float za = 1.f - uv.v[0];
 	const float r = std::sqrt(1.f - za * za);
-	const float phi = uv.y * (2.f * Pi);
+	const float phi = uv.v[1] * (2.f * Pi);
 
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
@@ -102,22 +102,22 @@ inline float3 sample_oriented_hemisphere_uniform(float2 uv, const float4x4& m) {
 
 inline float3 sample_hemisphere_cosine(float2 uv) {
 	const float2 xy = sample_disk_concentric(uv);
-	const float  z  = std::sqrt(std::max(0.f, 1.f - xy.x * xy.x - xy.y * xy.y));
+	const float  z  = std::sqrt(std::max(0.f, 1.f - xy.v[0] * xy.v[0] - xy.v[1] * xy.v[1]));
 
-	return float3(xy.x, xy.y, z);
+	return float3(xy.v[0], xy.v[1], z);
 }
 
 inline float3 sample_oriented_hemisphere_cosine(float2 uv, float3_p x, float3_p y, float3_p z) {
 	const float2 xy = sample_disk_concentric(uv);
-	const float  za = std::sqrt(std::max(0.f, 1.f - xy.x * xy.x - xy.y * xy.y));
+	const float  za = std::sqrt(std::max(0.f, 1.f - xy.v[0] * xy.v[0] - xy.v[1] * xy.v[1]));
 
-	return  xy.x * x + xy.y * y + za * z;
+	return  xy.v[0] * x + xy.v[1] * y + za * z;
 }
 
 inline float3 sample_sphere_uniform(float2 uv) {
-	const float z = 1.f - 2.f * uv.x;
+	const float z = 1.f - 2.f * uv.v[0];
 	const float r = std::sqrt(std::max(0.f, 1.f - z * z));
-	const float phi = uv.y * (2.f * Pi);
+	const float phi = uv.v[1] * (2.f * Pi);
 
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
@@ -127,9 +127,9 @@ inline float3 sample_sphere_uniform(float2 uv) {
 
 inline float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max,
 										   float3_p x, float3_p y, float3_p z) {
-	const float cos_theta = (1.f - uv.x) + uv.x * cos_theta_max;
+	const float cos_theta = (1.f - uv.v[0]) + uv.v[0] * cos_theta_max;
 	const float sin_theta = std::sqrt(1.f - cos_theta * cos_theta);
-	const float phi = uv.y * (2.f * Pi);
+	const float phi = uv.v[1] * (2.f * Pi);
 
 	float sin_phi = std::sin(phi);
 	float cos_phi = std::cos(phi);

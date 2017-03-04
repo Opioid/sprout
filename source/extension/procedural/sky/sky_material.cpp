@@ -127,11 +127,11 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 	image::Image::Description description(image::Image::Type::Float_3, d);
 	auto cache = std::make_shared<image::Float_3>(description);
 
-	for (int y = 0; y < d.y; ++y) {
-		for (int x = 0; x < d.x; ++x) {
+	for (int y = 0; y < d.v[1]; ++y) {
+		for (int x = 0; x < d.v[0]; ++x) {
 
-			float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x),
-					  (static_cast<float>(y) + 0.5f) / static_cast<float>(d.y));
+			float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d.v[0]),
+					  (static_cast<float>(y) + 0.5f) / static_cast<float>(d.v[1]));
 
 //			scene::shape::Sample sample;
 //			shape.sample(part, transformation, math::float3_identity,
@@ -162,14 +162,14 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 
 		float total_weight = 0.f;
 
-		std::vector<float> luminance(d.x * d.y);
+		std::vector<float> luminance(d.v[0] * d.v[1]);
 
-		for (int32_t y = 0, l = 0; y < d.y; ++y) {
-			for (int32_t x = 0; x < d.x; ++x, ++l) {
+		for (int32_t y = 0, l = 0; y < d.v[1]; ++y) {
+			for (int32_t x = 0; x < d.v[0]; ++x, ++l) {
 				float3 radiance = float3(cache->at(x, y));
 
-				float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d.x),
-						  (static_cast<float>(y) + 0.5f) / static_cast<float>(d.y));
+				float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d.v[0]),
+						  (static_cast<float>(y) + 0.5f) / static_cast<float>(d.v[1]));
 
 				float weight = shape.uv_weight(uv);
 
@@ -201,7 +201,7 @@ size_t Sky_baked_material::num_bytes() const {
 
 float3 Sky_baked_material::unclipped_canopy_mapping(const Transformation& transformation,
 													float2 uv) {
-	float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
+	float2 disk(2.f * uv.v[0] - 1.f, 2.f * uv.v[1] - 1.f);
 
 	float3 dir = math::disk_to_hemisphere_equidistant(disk);
 

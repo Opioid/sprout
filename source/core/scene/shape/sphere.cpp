@@ -277,8 +277,8 @@ float Sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
 void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 					float3_p p, float2 uv, float area, bool /*two_sided*/,
 					Sample& sample) const {
-	float phi   = (uv.x + 0.75f) * (2.f * math::Pi);
-	float theta = uv.y * math::Pi;
+	float phi   = (uv.v[0] + 0.75f) * (2.f * math::Pi);
+	float theta = uv.v[1] * math::Pi;
 
 	float sin_theta = std::sin(theta);
 	float cos_theta = std::cos(theta);
@@ -324,8 +324,8 @@ float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 		float3 wn = math::normalized(hit - transformation.position);
 
 		float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
-		uv.x = -std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f;
-		uv.y =  std::acos(xyz.y) * math::Pi_inv;
+		uv.v[0] = -std::atan2(xyz.x, xyz.z) * (math::Pi_inv * 0.5f) + 0.5f;
+		uv.v[1] =  std::acos(xyz.y) * math::Pi_inv;
 
 		// sin_theta because of the uv weight
 		float sin_theta = std::sqrt(1.f - xyz.y * xyz.y);
@@ -339,7 +339,7 @@ float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Sphere::uv_weight(float2 uv) const {
-	float sin_theta = std::sin(uv.y * math::Pi);
+	float sin_theta = std::sin(uv.v[1] * math::Pi);
 
 	if (0.f == sin_theta) {
 		// this case never seemed to be an issue?!

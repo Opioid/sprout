@@ -48,8 +48,8 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 
 			float3 sk = k / radius;
 			float uv_scale = 0.5f * transformation.scale.z;
-			intersection.uv.x = (math::dot(t, sk) + 1.f) * uv_scale;
-			intersection.uv.y = (math::dot(b, sk) + 1.f) * uv_scale;
+			intersection.uv.v[0] = (math::dot(t, sk) + 1.f) * uv_scale;
+			intersection.uv.v[1] = (math::dot(b, sk) + 1.f) * uv_scale;
 
 			intersection.part = 0;
 

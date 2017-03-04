@@ -40,13 +40,13 @@ float f3(float theta, float lambda) {
 void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	const auto dim = camera.sensor_dimensions();
 
-	high_pass_.resize(dim.x * dim.y);
+	high_pass_.resize(dim.v[0] * dim.v[1]);
 
 	// This seems a bit arbitrary
 	float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
 	kernel_dimensions_ = 2 * dim;
-	kernel_.resize(kernel_dimensions_.x * kernel_dimensions_.y);
+	kernel_.resize(kernel_dimensions_.v[0] * kernel_dimensions_.v[1]);
 
 	const spectrum::Interpolated CIE_X(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
 	const spectrum::Interpolated CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
@@ -76,9 +76,9 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
 	pool.run_parallel([inits](uint32_t id) { inits[id].init(id); });
 
-	for (int32_t y = 0; y < kernel_dimensions_.y; ++y) {
-		for (int32_t x = 0; x < kernel_dimensions_.x; ++x) {
-			int2 p(-dim.x + x, -dim.y + y);
+	for (int32_t y = 0; y < kernel_dimensions_.v[1]; ++y) {
+		for (int32_t x = 0; x < kernel_dimensions_.v[0]; ++x) {
+			int2 p(-dim.v[0] + x, -dim.v[1] + y);
 
 			float theta = math::length(float2(p)) * solid_angle;
 
@@ -107,7 +107,7 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 				d_sum += d;
 			}
 
-			int32_t i = y * kernel_dimensions_.x + x;
+			int32_t i = y * kernel_dimensions_.v[0] + x;
 			f[i] = F{ a, b, c, d };
 		}
 	}
@@ -199,13 +199,13 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 			int2 ke = kb + d;
 
 			float3 glare(0.f);
-			for (int32_t ky = kb.y; ky < ke.y; ++ky) {
-				int32_t krow = ky * kernel_dimensions_.x;
-				int32_t srow = (c.y - d.y + ky) * d.x;
-				for (int32_t kx = kb.x; kx < ke.x; ++kx) {
+			for (int32_t ky = kb.v[1]; ky < ke.v[1]; ++ky) {
+				int32_t krow = ky * kernel_dimensions_.v[0];
+				int32_t srow = (c.v[1] - d.v[1] + ky) * d.v[0];
+				for (int32_t kx = kb.v[0]; kx < ke.v[0]; ++kx) {
 					float3 k = kernel_[krow + kx];
 
-					int32_t sx = c.x - d.x + kx;
+					int32_t sx = c.v[0] - d.v[0] + kx;
 					glare += k * high_pass_[srow + sx];
 				}
 			}

@@ -42,8 +42,8 @@ bool Canopy::intersect(const Transformation& transformation, Ray& ray,
 		float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
 		xyz = math::normalized(xyz);
 		float2 disk = math::hemisphere_to_disk_equidistant(xyz);
-		intersection.uv.x = 0.5f * disk.x + 0.5f;
-		intersection.uv.y = 0.5f * disk.y + 0.5f;
+		intersection.uv.v[0] = 0.5f * disk.v[0] + 0.5f;
+		intersection.uv.v[1] = 0.5f * disk.v[1] + 0.5f;
 
 		ray.max_t = Ray_max_t;
 		return true;
@@ -92,8 +92,8 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	xyz = math::normalized(xyz);
 	float2 disk = math::hemisphere_to_disk_equidistant(xyz);
-	sample.uv.x = 0.5f * disk.x + 0.5f;
-	sample.uv.y = 0.5f * disk.y + 0.5f;
+	sample.uv.v[0] = 0.5f * disk.v[0] + 0.5f;
+	sample.uv.v[1] = 0.5f * disk.v[1] + 0.5f;
 
 	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
@@ -110,7 +110,7 @@ float Canopy::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					float3_p /*p*/, float2 uv, float /*area*/, bool /*two_sided*/,
 					Sample& sample) const {
-	float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
+	float2 disk(2.f * uv.v[0] - 1.f, 2.f * uv.v[1] - 1.f);
 
 	float z = math::dot(disk, disk);
 	if (z > 1.f) {
@@ -148,8 +148,8 @@ float Canopy::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
 	xyz = math::normalized(xyz);
 	float2 disk = math::hemisphere_to_disk_equidistant(xyz);
-	uv.x = 0.5f * disk.x + 0.5f;
-	uv.y = 0.5f * disk.y + 0.5f;
+	uv.v[0] = 0.5f * disk.v[0] + 0.5f;
+	uv.v[1] = 0.5f * disk.v[1] + 0.5f;
 
 
 //	float r = std::sqrt(disk.x * disk.x + disk.y * disk.y);
@@ -167,7 +167,7 @@ float Canopy::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Canopy::uv_weight(float2 uv) const {
-	float2 disk(2.f * uv.x - 1.f, 2.f * uv.y - 1.f);
+	float2 disk(2.f * uv.v[0] - 1.f, 2.f * uv.v[1] - 1.f);
 
 	float z = math::dot(disk, disk);
 	if (z > 1.f) {

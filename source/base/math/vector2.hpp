@@ -4,13 +4,7 @@ namespace math {
 
 template<typename T>
 struct Vector2 {
-	union {
-		struct {
-			T x, y;
-		};
-
-		T v[2];
-	};
+	T v[2];
 
 	Vector2();
 

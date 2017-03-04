@@ -14,8 +14,8 @@ namespace scene { namespace camera {
 Hemispherical::Hemispherical(int2 resolution) :
 	Camera(resolution) {
 	float2 fr(resolution);
-	d_x_ = 1.f / fr.x;
-	d_y_ = 1.f / fr.y;
+	d_x_ = 1.f / fr.v[0];
+	d_y_ = 1.f / fr.v[1];
 }
 
 uint32_t Hemispherical::num_views() const {
@@ -40,8 +40,8 @@ bool Hemispherical::generate_ray(const sampler::Camera_sample& sample,
 								 uint32_t /*view*/, scene::Ray& ray) const {
 	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
-	float x = d_x_ * coordinates.x;
-	float y = d_y_ * coordinates.y;
+	float x = d_x_ * coordinates.v[0];
+	float y = d_y_ * coordinates.v[1];
 
 	x = 2.f * x - 1.f;
 	y = 2.f * y - 1.f;

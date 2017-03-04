@@ -63,11 +63,11 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 	int2 dimensions;
 
 	if (1 == num_elements) {
-		dimensions.x = info.width;
-		dimensions.y = info.height;
+		dimensions.v[0] = info.width;
+		dimensions.v[1] = info.height;
 	} else {
-		dimensions.x = info.width;
-		dimensions.y = info.height / num_elements;
+		dimensions.v[0] = info.width;
+		dimensions.v[1] = info.height / num_elements;
 	}
 
 	if (1 == num_channels) {

@@ -22,7 +22,7 @@ bool Writer::write(std::ostream& stream, const image::Float_4& image, thread::Po
 void Writer::write_header(std::ostream& stream, int2 dimensions) {
 	stream << "#?RGBE\n";
 	stream << "FORMAT=32-bit_rle_rgbe\n\n";
-	stream << "-Y " << dimensions.y << " +X " << dimensions.x << "\n";
+	stream << "-Y " << dimensions.v[1] << " +X " << dimensions.v[0] << "\n";
 }
 
 void Writer::write_pixels(std::ostream& stream, const Float_4& image) {

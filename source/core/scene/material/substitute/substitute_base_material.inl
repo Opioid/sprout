@@ -41,10 +41,10 @@ void Material_base::set_sample(float3_p wo, const Renderstate& rs,
 	float2 surface;
 	if (surface_map_.is_valid()) {
 		surface = surface_map_.sample_2(sampler, rs.uv);
-		surface.x = ggx::map_roughness(surface.x);
+		surface.v[0] = ggx::map_roughness(surface.v[0]);
 	} else {
-		surface.x = roughness_;
-		surface.y = metallic_;
+		surface.v[0] = roughness_;
+		surface.v[1] = metallic_;
 	}
 
 	float3 radiance;
@@ -54,7 +54,7 @@ void Material_base::set_sample(float3_p wo, const Renderstate& rs,
 		radiance = math::float3_identity;
 	}
 
-	sample.layer_.set(color, radiance, ior_, constant_f0_, surface.x, surface.y);
+	sample.layer_.set(color, radiance, ior_, constant_f0_, surface.v[0], surface.v[1]);
 }
 
 }}}

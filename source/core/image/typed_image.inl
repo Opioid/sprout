@@ -139,9 +139,9 @@ T* Typed_image<T>::data() const {
 
 template<typename T>
 T Typed_image<T>::unsafe_sample(float2 uv, int2 dimensions) const {
-	int32_t x = static_cast<int32_t>(uv.x * dimensions.x);
-	int32_t y = static_cast<int32_t>(uv.y * dimensions.y);
-	int32_t i = y * dimensions.x + x;
+	int32_t x = static_cast<int32_t>(uv.v[0] * dimensions.v[0]);
+	int32_t y = static_cast<int32_t>(uv.v[1] * dimensions.v[1]);
+	int32_t i = y * dimensions.v[0] + x;
 	return data_[i];
 }
 

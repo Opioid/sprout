@@ -12,8 +12,8 @@
 namespace scene { namespace camera {
 
 Cubic::Cubic(Layout layout, int2 resolution) :
-	Camera(int2(resolution.x, resolution.x)) {
-	float f = static_cast<float>(resolution.x);
+	Camera(int2(resolution.v[0], resolution.v[1])) {
+	float f = static_cast<float>(resolution.v[0]);
 
 	left_top_ = float3(-1.f, 1.f, 1.f);
 
@@ -25,32 +25,32 @@ Cubic::Cubic(Layout layout, int2 resolution) :
 
 	if (Layout::xmxymyzmz == layout) {
 		for (uint32_t i = 0; i < 6; ++i) {
-			int2 offset = int2(resolution.x * i, 0);
+			int2 offset = int2(resolution.v[0] * i, 0);
 
 			view_bounds_[i] = int4{offset, offset + resolution_};
 		}
 
-		sensor_dimensions_ = int2(resolution_.x * 6, resolution_.x);
+		sensor_dimensions_ = int2(resolution_.v[0] * 6, resolution_.v[0]);
 	} else if (Layout::xmxy_myzmz == layout) {
-		int2 offset = int2(resolution.x * 0, 0);
+		int2 offset = int2(resolution.v[0] * 0, 0);
 		view_bounds_[0] = int4{offset, offset + resolution_};
 
-		offset = int2(resolution.x * 1, 0);
+		offset = int2(resolution.v[0] * 1, 0);
 		view_bounds_[1] = int4{offset, offset + resolution_};
 
-		offset = int2(resolution.x * 2, 0);
+		offset = int2(resolution.v[0] * 2, 0);
 		view_bounds_[2] = int4{offset, offset + resolution_};
 
-		offset = int2(resolution.x * 0, resolution.x);
+		offset = int2(resolution.v[0] * 0, resolution.v[0]);
 		view_bounds_[3] = int4{offset, offset + resolution_};
 
-		offset = int2(resolution.x * 1, resolution.x);
+		offset = int2(resolution.v[0] * 1, resolution.v[0]);
 		view_bounds_[4] = int4{offset, offset + resolution_};
 
-		offset = int2(resolution.x * 2, resolution.x);
+		offset = int2(resolution.v[0] * 2, resolution.v[0]);
 		view_bounds_[5] = int4{offset, offset + resolution_};
 
-		sensor_dimensions_ = int2(resolution_.x * 3, resolution_.x * 2);
+		sensor_dimensions_ = int2(resolution_.v[0] * 3, resolution_.v[0] * 2);
 	}
 
 	math::set_rotation_y(view_rotations_[0], math::degrees_to_radians(-90.f));
@@ -83,7 +83,7 @@ bool Cubic::generate_ray(const sampler::Camera_sample& sample,
 						 uint32_t view, scene::Ray& ray) const {
 	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
-	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
+	float3 direction = left_top_ + coordinates.v[0] * d_x_ + coordinates.v[1] * d_y_;
 
 	direction = math::normalized(direction * view_rotations_[view]);
 

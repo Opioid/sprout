@@ -13,9 +13,9 @@ Typed_renderer<T>::Typed_renderer(int2 dimensions, int32_t sqrt_num_samples) :
 	dimensions_(sqrt_num_samples * dimensions),
 	dimensions_f_(sqrt_num_samples * dimensions),
 	samples_(new T[static_cast<size_t>(sqrt_num_samples *
-									   dimensions.x *
+									   dimensions.v[0] *
 									   sqrt_num_samples *
-									   dimensions.y)]),
+									   dimensions.v[1])]),
 	brush_(T(0))
 {}
 
@@ -31,7 +31,7 @@ void Typed_renderer<T>::set_brush(T color) {
 
 template<typename T>
 void Typed_renderer<T>::clear() {
-	for (int32_t i = 0, len = dimensions_.x * dimensions_.y; i < len; ++i) {
+	for (int32_t i = 0, len = dimensions_.v[0] * dimensions_.v[1]; i < len; ++i) {
 		samples_[i] = brush_;
 	}
 }
@@ -40,15 +40,15 @@ template<typename T>
 void Typed_renderer<T>::draw_circle(float2 pos, float radius) {
 	int2 sample(pos * dimensions_f_);
 
-	int32_t x = static_cast<int>(radius * dimensions_f_.x);
+	int32_t x = static_cast<int>(radius * dimensions_f_.v[0]);
 	int32_t y = 0;
 	int32_t err = 0;
 
 	while (x >= y) {
-		set_row(sample.x - x, sample.x + x, sample.y + y, brush_);
-		set_row(sample.x - y, sample.x + y, sample.y + x, brush_);
-		set_row(sample.x - x, sample.x + x, sample.y - y, brush_);
-		set_row(sample.x - y, sample.x + y, sample.y - x, brush_);
+		set_row(sample.v[0] - x, sample.v[0] + x, sample.v[1] + y, brush_);
+		set_row(sample.v[0] - y, sample.v[0] + y, sample.v[1] + x, brush_);
+		set_row(sample.v[0] - x, sample.v[0] + x, sample.v[1] - y, brush_);
+		set_row(sample.v[0] - y, sample.v[0] + y, sample.v[1] - x, brush_);
 
 		y += 1;
 		err += 1 + 2 * y;
@@ -82,7 +82,7 @@ void Typed_renderer<T>::resolve(Typed_image<T>& image) const {
 				T result(0);
 
 				for (int32_t y = 0; y < sqrt_num_samples_; ++y) {
-					int32_t b_o = dimensions_.x * (b_y + y) + b_x;
+					int32_t b_o = dimensions_.v[0] * (b_y + y) + b_x;
 					for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
 						int32_t s = b_o + x;
 						result += samples_[s];
@@ -97,10 +97,10 @@ void Typed_renderer<T>::resolve(Typed_image<T>& image) const {
 
 template<typename T>
 void Typed_renderer<T>::set_sample(int32_t x, int32_t y, T color) {
-	x = math::mod(x, dimensions_.x);
-	y = math::mod(y, dimensions_.y);
+	x = math::mod(x, dimensions_.v[0]);
+	y = math::mod(y, dimensions_.v[1]);
 
-	samples_[dimensions_.x * y + x] = color;
+	samples_[dimensions_.v[0] * y + x] = color;
 }
 
 template<typename T>

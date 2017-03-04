@@ -26,11 +26,11 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, flo
 									   const int4& tile, const int4& bounds) {
 	const float4 clamped_color = clamp_.clamp(color);
 
-	const int32_t x = bounds.x + sample.pixel.x;
-	const int32_t y = bounds.y + sample.pixel.y;
+	const int32_t x = bounds.x + sample.pixel.v[0];
+	const int32_t y = bounds.y + sample.pixel.v[1];
 
-	const float ox = sample.pixel_uv.x - 0.5f;
-	const float oy = sample.pixel_uv.y - 0.5f;
+	const float ox = sample.pixel_uv.v[0] - 0.5f;
+	const float oy = sample.pixel_uv.v[1] - 0.5f;
 
 	const float wx0 = filter_->evaluate(ox + 1.f);
 	const float wx1 = filter_->evaluate(ox);
@@ -91,15 +91,15 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, flo
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, float4_p color,
 											   const int4& isolated_tile, const int4& bounds) {
-	if (pixel.x < bounds.x || pixel.y < bounds.y
-	||  bounds.z < pixel.x || bounds.w < pixel.y) {
+	if (pixel.v[0] < bounds.x || pixel.v[1] < bounds.y
+	||  bounds.z < pixel.v[0] || bounds.w < pixel.v[1]) {
 		return;
 	}
 
-	if ((pixel.x < isolated_tile.x && pixel.x > bounds.x)
-	||  (pixel.y < isolated_tile.y && pixel.y > bounds.y)
-	||	(pixel.x > isolated_tile.z && pixel.x < bounds.z)
-	||  (pixel.y > isolated_tile.w && pixel.y < bounds.w)) {
+	if ((pixel.v[0] < isolated_tile.x && pixel.v[0] > bounds.x)
+	||  (pixel.v[1] < isolated_tile.y && pixel.v[1] > bounds.y)
+	||	(pixel.v[0] > isolated_tile.z && pixel.v[0] < bounds.z)
+	||  (pixel.v[1] > isolated_tile.w && pixel.v[1] < bounds.w)) {
 		Base::add_pixel_atomic(pixel, color, weight);
 	} else {
 		Base::add_pixel(pixel, color, weight);
@@ -110,17 +110,17 @@ template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
 												 float4_p color,
 												 const int4& isolated_tile, const int4& bounds) {
-    if (pixel.x < bounds.x || pixel.y < bounds.y
-    ||  bounds.z < pixel.x || bounds.w < pixel.y) {
+	if (pixel.v[0] < bounds.x || pixel.v[1] < bounds.y
+	||  bounds.z < pixel.v[0] || bounds.w < pixel.v[1]) {
         return;
     }
 
 	float weight = filter_->evaluate(relative_offset);
 
-	if ((pixel.x < isolated_tile.x && pixel.x > bounds.x)
-	||  (pixel.y < isolated_tile.y && pixel.y > bounds.y)
-	||	(pixel.x > isolated_tile.z && pixel.x < bounds.z)
-	||  (pixel.y > isolated_tile.w && pixel.y < bounds.w)) {
+	if ((pixel.v[0] < isolated_tile.x && pixel.v[0] > bounds.x)
+	||  (pixel.v[1] < isolated_tile.y && pixel.v[1] > bounds.y)
+	||	(pixel.v[0] > isolated_tile.z && pixel.v[0] < bounds.z)
+	||  (pixel.v[1] > isolated_tile.w && pixel.v[1] < bounds.w)) {
 		Base::add_pixel_atomic(pixel, color, weight);
 	} else {
 		Base::add_pixel(pixel, color, weight);

@@ -23,7 +23,7 @@ float Gaussian::evaluate(float d) const {
 }
 
 float Gaussian::evaluate(float2 p) const {
-	return gaussian_(p.x * p.x) * gaussian_(p.y * p.y);
+	return gaussian_(p.v[0] * p.v[0]) * gaussian_(p.v[1] * p.v[1]);
 
 //	return gaussian(p.x) * gaussian(p.y);
 }

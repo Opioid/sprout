@@ -112,8 +112,8 @@ void Material_anisotropic::set_absorption(float3_p absorption) {
 }
 
 void Material_anisotropic::set_roughness(float2 roughness) {
-	roughness_ = float2(ggx::clamp_roughness(roughness.x),
-						ggx::clamp_roughness(roughness.y));
+	roughness_ = float2(ggx::clamp_roughness(roughness.v[0]),
+						ggx::clamp_roughness(roughness.v[1]));
 }
 
 }}}

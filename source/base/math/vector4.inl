@@ -81,7 +81,7 @@ inline Vector4f_a::Vector4f_a(float s) :
 	x(s), y(s), z(s), w(s) {}
 
 inline Vector4f_a::Vector4f_a(Vector2<float> xy, float z, float w) :
-	x(xy.x), y(xy.y), z(z), w(w) {}
+	x(xy.v[0]), y(xy.v[1]), z(z), w(w) {}
 
 inline Vector4f_a::Vector4f_a(FVector3f_a xyz, float w) :
 	x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
@@ -140,7 +140,7 @@ inline Vector4i_a::Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w) :
 	x(x), y(y), z(z), w(w) {}
 
 inline Vector4i_a::Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw) :
-	x(xy.x), y(xy.y), z(zw.x), w(zw.y) {}
+	x(xy.v[0]), y(xy.v[1]), z(zw.v[0]), w(zw.v[1]) {}
 
 inline Vector4i_a::Vector4i_a(int32_t s) :
 	x(s), y(s), z(s), w(s) {}

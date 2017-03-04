@@ -28,7 +28,7 @@ float Aperture::evaluate(float2 p, float radius) const {
 	float d = 0.f;
 
 	for (auto& b : blades_) {
-		float t = (b.x * p.x + b.y * p.y);// / radius;// + radius * b.z;
+		float t = (b.x * p.v[0] + b.y * p.v[1]);// / radius;// + radius * b.z;
 
 		t /= b.z;
 

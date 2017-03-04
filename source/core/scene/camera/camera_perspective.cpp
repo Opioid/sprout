@@ -34,12 +34,12 @@ int4 Perspective::view_bounds(uint32_t /*view*/) const {
 }
 
 float Perspective::pixel_solid_angle() const {
-	return fov_ / static_cast<float>(resolution_.x);
+	return fov_ / static_cast<float>(resolution_.v[0]);
 }
 
 void Perspective::update(rendering::Worker& worker) {
 	const float2 fr(resolution_);
-	const float ratio = fr.x / fr.y;
+	const float ratio = fr.v[0] / fr.v[1];
 
 	const float z = ratio * math::Pi / fov_ * 0.5f;
 
@@ -56,8 +56,8 @@ void Perspective::update(rendering::Worker& worker) {
 	left_bottom.z += z;
 
 	left_top_ = left_top + float3(lens_shift_, 0.f);
-	d_x_ = (right_top   - left_top) / fr.x;
-	d_y_ = (left_bottom - left_top) / fr.y;
+	d_x_ = (right_top   - left_top) / fr.v[0];
+	d_y_ = (left_bottom - left_top) / fr.v[1];
 
 	update_focus(worker);
 }
@@ -66,7 +66,7 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 							   uint32_t /*view*/, scene::Ray& ray) const {
 	const float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
-	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
+	float3 direction = left_top_ + coordinates.v[0] * d_x_ + coordinates.v[1] * d_y_;
 
 	float3 origin;
 

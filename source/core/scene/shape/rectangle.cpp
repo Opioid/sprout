@@ -49,8 +49,8 @@ bool Rectangle::intersect(const Transformation& transformation, Ray& ray,
 		intersection.b = b;
 		intersection.n = normal;
 		intersection.geo_n = normal;
-		intersection.uv.x = 0.5f * (u + 1.f);
-		intersection.uv.y = 0.5f * (v + 1.f);
+		intersection.uv.v[0] = 0.5f * (u + 1.f);
+		intersection.uv.v[1] = 0.5f * (v + 1.f);
 
 		intersection.part = 0;
 
@@ -249,7 +249,7 @@ float Rectangle::pdf(uint32_t /*part*/, const Transformation& transformation,
 void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 					   float3_p p, float2 uv, float area, bool two_sided,
 					   Sample& sample) const {
-	float3 ls(-2.f * uv.x + 1.f, -2.f * uv.y + 1.f, 0.f);
+	float3 ls(-2.f * uv.v[0] + 1.f, -2.f * uv.v[1] + 1.f, 0.f);
 	float3 ws = math::transform_point(ls, transformation.object_to_world);
 
 	float3 axis = ws - p;

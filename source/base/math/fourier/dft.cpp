@@ -22,14 +22,14 @@ void dft_1d(float2* result, const float* source, int32_t num) {
 		if (even) {
 			for (int32_t x = 0; x < num; ++x) {
 				float b = a * static_cast<float>(x);
-				sum.x += source[x] * std::cos(b);
+				sum.v[0] += source[x] * std::cos(b);
 		//		sum.y += source[x] * std::sin(b);
 			}
 		} else {
 			for (int32_t x = 0; x < num; ++x) {
 				float b = a * static_cast<float>(x);
-				sum.x += source[x] * std::cos(b);
-				sum.y += source[x] * std::sin(b);
+				sum.v[0] += source[x] * std::cos(b);
+				sum.v[1] += source[x] * std::sin(b);
 			}
 		}
 
@@ -45,14 +45,14 @@ void idft_1d(float* result, const float2* source, int32_t num) {
 	float fn = static_cast<float>(num);
 
 	for (int32_t x = 0; x < num; ++x) {
-		float sum = source[0].x;
+		float sum = source[0].v[0];
 
 		float a = -2.f * Pi * static_cast<float>(x) / fn;
 
 		for (int32_t k = 1, len = num / 2; k <= len; ++k) {
 			float b = a * static_cast<float>(k);
 
-			sum += source[k].x * std::cos(b) + source[k].y * std::sin(b);
+			sum += source[k].v[0] * std::cos(b) + source[k].v[1] * std::sin(b);
 		}
 
 		result[x] = sum;
@@ -86,8 +86,8 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height) 
 				float cos_a = std::cos(angle);
 				float sin_a = std::sin(angle);
 
-				sum.x +=  tmp[g].x * cos_a + tmp[g].y * sin_a;
-				sum.y += -tmp[g].x * sin_a + tmp[g].y * cos_a;
+				sum.v[0] +=  tmp[g].v[0] * cos_a + tmp[g].v[1] * sin_a;
+				sum.v[1] += -tmp[g].v[0] * sin_a + tmp[g].v[1] * cos_a;
 			}
 
 			int32_t c = k * row_size + x;
@@ -126,8 +126,8 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 					float cos_a = std::cos(angle);
 					float sin_a = std::sin(angle);
 
-					sum.x +=  tmp[g].x * cos_a + tmp[g].y * sin_a;
-					sum.y += -tmp[g].x * sin_a + tmp[g].y * cos_a;
+					sum.v[0] +=  tmp[g].v[0] * cos_a + tmp[g].v[1] * sin_a;
+					sum.v[1] += -tmp[g].v[0] * sin_a + tmp[g].v[1] * cos_a;
 				}
 
 				int32_t c = k * row_size + x;

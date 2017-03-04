@@ -9,74 +9,74 @@ template<typename T>
 Vector2<T>::Vector2() {}
 
 template<typename T>
-Vector2<T>::Vector2(T s) : x(s), y(s) {}
+Vector2<T>::Vector2(T s) : v{s, s} {}
 
 template<typename T>
-Vector2<T>::Vector2(T x, T y) : x(x), y(y) {}
+Vector2<T>::Vector2(T x, T y) : v{x, y} {}
 
 template<typename T>
 template<typename U>
-Vector2<T>::Vector2(Vector2<U> v) : x(static_cast<T>(v.x)), y(static_cast<T>(v.y)) {}
+Vector2<T>::Vector2(Vector2<U> v) : v{static_cast<T>(v.v[0]), static_cast<T>(v.v[1])} {}
 
 template<typename T>
 Vector2<T> Vector2<T>::yx() const {
-	return Vector2(y, x);
+	return Vector2(v[1], v[0]);
 }
 
 template<typename T>
 Vector2<T> Vector2<T>::operator+(Vector2 a) const {
-	return Vector2(x + a.x, y + a.y);
+	return Vector2(v[0] + a.v[0], v[1] + a.v[1]);
 }
 
 template<typename T>
 Vector2<T> Vector2<T>::operator-(Vector2 a) const {
-	return Vector2(x - a.x, y - a.y);
+	return Vector2(v[0] - a.v[0], v[1] - a.v[1]);
 }
 
 template<typename T>
 Vector2<T> Vector2<T>::operator*(Vector2 a) const {
-	return Vector2(x * a.x, y * a.y);
+	return Vector2(v[0] * a.v[0], v[1] * a.v[1]);
 }
 
 template<typename T>
 Vector2<T> Vector2<T>::operator/(T s) const {
-	return Vector2(x / s, y / s);
+	return Vector2(v[0] / s, v[1] / s);
 }
 
 template<typename T>
 Vector2<T> Vector2<T>::operator/(Vector2 a) const {
-	return Vector2(x / a.x, y / a.y);
+	return Vector2(v[0] / a.v[0], v[1] / a.v[1]);
 }
 
 template<typename T>
 Vector2<T>& Vector2<T>::operator+=(Vector2 a) {
-	x += a.x;
-	y += a.y;
+	v[0] += a.v[0];
+	v[1] += a.v[1];
 	return *this;
 }
 
 template<typename T>
 Vector2<T>& Vector2<T>::operator*=(Vector2 a) {
-	x *= a.x;
-	y *= a.y;
+	v[0] *= a.v[0];
+	v[1] *= a.v[1];
 	return *this;
 }
 
 template<typename T>
 Vector2<T>& Vector2<T>::operator/=(T s) {
-	x /= s;
-	y /= s;
+	v[0] /= s;
+	v[1] /= s;
 	return *this;
 }
 
 template<typename T>
 bool Vector2<T>::operator==(Vector2 a) const {
-	return x == a.x && y == a.y;
+	return v[0] == a.v[0] && v[1] == a.v[1];
 }
 
 template<typename T>
-bool Vector2<T>::operator!=( Vector2 a) const {
-	return x != a.x || y != a.y;
+bool Vector2<T>::operator!=(Vector2 a) const {
+	return v[0] != a.v[0] || v[1] != a.v[1];
 }
 
 template<typename T>
@@ -84,17 +84,17 @@ const Vector2<T> Vector2<T>::identity(T(0), T(0));
 
 template<typename T>
 Vector2<T> operator*(T s, Vector2<T> v) {
-	return Vector2<T>(s * v.x, s * v.y);
+	return Vector2<T>(s * v.v[0], s * v.v[1]);
 }
 
 template<typename T>
 Vector2<T> operator/(T s, Vector2<T> v) {
-	return Vector2<T>(s / v.x, s / v.y);
+	return Vector2<T>(s / v.v[0], s / v.v[1]);
 }
 
 template<typename T>
 T dot(Vector2<T> a, Vector2<T> b) {
-	return a.x * b.x + a.y * b.y;
+	return a.v[0] * b.v[0] + a.v[1] * b.v[1];
 }
 
 template<typename T>
@@ -114,7 +114,7 @@ Vector2<T> normalized(Vector2<T> v) {
 
 template<typename T>
 Vector2<T> reciprocal(Vector2<T> v) {
-	return Vector2<T>(T(1) / v.x, T(1) / v.y);
+	return Vector2<T>(T(1) / v.v[0], T(1) / v.v[1]);
 }
 
 template<typename T>
@@ -124,8 +124,8 @@ T distance(Vector2<T> a, Vector2<T> b) {
 
 template<typename T>
 Vector2<T> saturate(Vector2<T> v) {
-	return Vector2<T>(std::min(std::max(v.x, T(0)), T(1)),
-					  std::min(std::max(v.y, T(0)), T(1)));
+	return Vector2<T>(std::min(std::max(v.v[0], T(0)), T(1)),
+					  std::min(std::max(v.v[1], T(0)), T(1)));
 }
 
 template<typename T>
@@ -136,33 +136,33 @@ Vector2<T> lerp(Vector2<T> a, Vector2<T> b, T t) {
 
 template<typename T>
 Vector2<T> round(Vector2<T> v){
-	return Vector2<T>(std::floor(v.x >= T(0) ? v.x + T(0.5) : v.x - T(0.5)),
-					  std::floor(v.y >= T(0) ? v.y + T(0.5) : v.y - T(0.5)));
+	return Vector2<T>(std::floor(v.v[0] >= T(0) ? v.v[0] + T(0.5) : v.v[0] - T(0.5)),
+					  std::floor(v.v[1] >= T(0) ? v.v[1] + T(0.5) : v.v[1] - T(0.5)));
 }
 
 template<typename T>
 Vector2<T> min(Vector2<T> a, Vector2<T> b) {
-	return Vector2<T>(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y);
+	return Vector2<T>(a.v[0] < b.v[0] ? a.v[0] : b.v[0], a.v[1] < b.v[1] ? a.v[1] : b.v[1]);
 }
 
 template<typename T>
 Vector2<T> max(Vector2<T> a, Vector2<T> b) {
-	return Vector2<T>(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y);
+	return Vector2<T>(a.v[0] > b.v[0] ? a.v[0] : b.v[0], a.v[1] > b.v[1] ? a.v[1] : b.v[1]);
 }
 
 template<typename T>
 bool any_nan(const Vector2<T> v) {
-	return std::isnan(v.x) || std::isnan(v.y);
+	return std::isnan(v.v[0]) || std::isnan(v.v[1]);
 }
 
 template<typename T>
 bool any_inf(const Vector2<T> v) {
-	return std::isinf(v.x) || std::isinf(v.y);
+	return std::isinf(v.v[0]) || std::isinf(v.v[1]);
 }
 
 template<typename T>
 bool all_finite(const Vector2<T> v) {
-	return std::isfinite(v.x) && std::isfinite(v.y);
+	return std::isfinite(v.v[0]) && std::isfinite(v.v[1]);
 }
 
 }

@@ -13,8 +13,8 @@
 namespace scene { namespace camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
-	Stereoscopic(int2(resolution.x, resolution.x)) {
-	float f = static_cast<float>(resolution.x);
+	Stereoscopic(int2(resolution.v[0], resolution.v[0])) {
+	float f = static_cast<float>(resolution.v[0]);
 
 	left_top_ = float3(-1.f, 1.f, 1.f);
 
@@ -26,26 +26,26 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
 
 	if (Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz == layout) {
 		for (uint32_t i = 0; i < 12; ++i) {
-			int2 offset = int2(resolution.x * i, 0);
+			int2 offset = int2(resolution.v[0] * i, 0);
 
 			view_bounds_[i] = int4(offset, offset + resolution_);
 		}
 
-		sensor_dimensions_ = int2(resolution_.x * 12, resolution_.x);
+		sensor_dimensions_ = int2(resolution_.v[0] * 12, resolution_.v[0]);
 	} else if (Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz == layout) {
 		for (uint32_t i = 0; i < 6; ++i) {
-			int2 offset = int2(resolution.x * (i + 6), 0);
+			int2 offset = int2(resolution.v[0] * (i + 6), 0);
 
 			view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
 		}
 
 		for (uint32_t i = 6; i < 12; ++i) {
-			int2 offset = int2(resolution.x * (i - 6), 0);
+			int2 offset = int2(resolution.v[0] * (i - 6), 0);
 
 			view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
 		}
 
-		sensor_dimensions_ = int2(resolution_.x * 12, resolution_.x);
+		sensor_dimensions_ = int2(resolution_.v[0] * 12, resolution_.v[0]);
 	}
 
 	math::set_rotation_y(view_rotations_[0], math::degrees_to_radians(-90.f));
@@ -80,7 +80,7 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 									  uint32_t view, scene::Ray& ray) const {
 	const float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
-	float3 direction = left_top_ + coordinates.x * d_x_ + coordinates.y * d_y_;
+	float3 direction = left_top_ + coordinates.v[0] * d_x_ + coordinates.v[1] * d_y_;
 
 	const uint32_t face = view % 6;
 	direction = math::normalized(direction * view_rotations_[face]);

@@ -17,12 +17,12 @@ namespace scene { namespace camera {
 Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) :
 	Stereoscopic(resolution) {
 	float2 fr(resolution);
-	d_x_ = 1.f / fr.x;
-	d_y_ = 1.f / fr.y;
+	d_x_ = 1.f / fr.v[0];
+	d_y_ = 1.f / fr.v[1];
 
     view_bounds_[0] = int4(int2(0, 0), resolution - int2(1, 1));
-    view_bounds_[1] = int4(int2(0, resolution.y),
-						   int2(resolution.x, resolution.y * 2) - int2(1));
+	view_bounds_[1] = int4(int2(0, resolution.v[1]),
+						   int2(resolution.v[0], resolution.v[1] * 2) - int2(1));
 }
 
 uint32_t Spherical_stereoscopic::num_views() const {
@@ -47,8 +47,8 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 										  uint32_t view, scene::Ray& ray) const {
 	const float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
 
-	const float x = d_x_ * coordinates.x;
-	const float y = d_y_ * coordinates.y;
+	const float x = d_x_ * coordinates.v[0];
+	const float y = d_y_ * coordinates.v[1];
 
 	const float phi   = (x - 0.5f) * (2.f * math::Pi);
 	const float theta = y * math::Pi;

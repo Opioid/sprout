@@ -48,23 +48,22 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 	float3 bake_space_y(0.f, 0.f, -1.f);
 	float3 bake_space_z(0.f, 1.f, 0.f);
 
-	for (int32_t y = 0; y < dimensions.y; ++y) {
-		for (int32_t x = 0; x < dimensions.x; ++x) {
+	for (int32_t y = 0; y < dimensions.v[1]; ++y) {
+		for (int32_t x = 0; x < dimensions.v[0]; ++x) {
 
 			worker.sampler()->resume_pixel(0, rng);
 
 			float3 offset((static_cast<float>(x) + 0.5f) *
-						   (bake_quad_range.x / static_cast<float>(dimensions.x)),
+						   (bake_quad_range.x / static_cast<float>(dimensions.v[0])),
 							0.f,
 							(static_cast<float>(y) + 0.5f) *
-							(bake_quad_range.z / static_cast<float>(dimensions.y)));
+							(bake_quad_range.z / static_cast<float>(dimensions.v[1])));
 
 			float3 origin = bake_quad_origin + offset;
 
 			float3 irradiance = math::float3_identity;
 
 			for (uint32_t s = 0; s < num_samples; ++s) {
-
 				ray.origin = origin;
 
 				float2 sample = worker.sampler()->generate_sample_2D();

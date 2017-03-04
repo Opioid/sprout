@@ -557,7 +557,7 @@ Material_ptr Provider::load_metal(const json::Value& metal_value, resource::Mana
 		}
 	}
 
-	if (roughness_aniso.x > 0.f && roughness_aniso.y > 0.f) {
+	if (roughness_aniso.v[0] > 0.f && roughness_aniso.v[1] > 0.f) {
 		auto material = std::make_shared<metal::Material_anisotropic>(
 					sample_cache_, sampler_settings, two_sided);
 

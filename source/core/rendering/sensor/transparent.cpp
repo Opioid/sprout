@@ -7,7 +7,7 @@ namespace rendering { namespace sensor {
 
 Transparent::Transparent(int2 dimensions, float exposure) :
 	Sensor(dimensions, exposure),
-	pixels_(new Pixel[dimensions.x * dimensions.y]) {}
+	pixels_(new Pixel[dimensions.v[0] * dimensions.v[1]]) {}
 
 Transparent::~Transparent() {
 	delete[] pixels_;
@@ -15,7 +15,7 @@ Transparent::~Transparent() {
 
 void Transparent::clear() {
 	const auto d = dimensions();
-	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
+	for (int32_t i = 0, len = d.v[0] * d.v[1]; i < len; ++i) {
 		pixels_[i].color = float4(0.f);
 		pixels_[i].weight_sum = 0.f;
 	}
@@ -23,13 +23,13 @@ void Transparent::clear() {
 
 size_t Transparent::num_bytes() const {
 	const auto d = dimensions();
-	return d.x * d.y * sizeof(Pixel);
+	return d.v[0] * d.v[1] * sizeof(Pixel);
 }
 
 void Transparent::add_pixel(int2 pixel, float4_p color, float weight) {
 	const auto d = dimensions();
 
-	auto& value = pixels_[d.x * pixel.y + pixel.x];
+	auto& value = pixels_[d.v[0] * pixel.v[1] + pixel.v[0]];
 	value.color += weight * color;
 	value.weight_sum += weight;
 }
@@ -37,7 +37,7 @@ void Transparent::add_pixel(int2 pixel, float4_p color, float weight) {
 void Transparent::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
 	const auto d = dimensions();
 
-	auto& value = pixels_[d.x * pixel.y + pixel.x];
+	auto& value = pixels_[d.v[0] * pixel.v[1] + pixel.v[0]];
 	atomic::add_assign(value.color.x, weight * color.x);
 	atomic::add_assign(value.color.y, weight * color.y);
 	atomic::add_assign(value.color.z, weight * color.z);
