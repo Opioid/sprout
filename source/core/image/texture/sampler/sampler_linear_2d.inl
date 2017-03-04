@@ -48,10 +48,10 @@ float Linear_2D<Address_U, Address_V>::sample_1(const Texture& texture, float2 u
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float c00 = texture.at_element_1(xy_xy1.x, xy_xy1.y, min_element);
-	float c01 = texture.at_element_1(xy_xy1.x, xy_xy1.w, min_element);
-	float c10 = texture.at_element_1(xy_xy1.z, xy_xy1.y, min_element);
-	float c11 = texture.at_element_1(xy_xy1.z, xy_xy1.w, min_element);
+	float c00 = texture.at_element_1(xy_xy1.v[0], xy_xy1.v[1], min_element);
+	float c01 = texture.at_element_1(xy_xy1.v[0], xy_xy1.v[3], min_element);
+	float c10 = texture.at_element_1(xy_xy1.v[2], xy_xy1.v[1], min_element);
+	float c11 = texture.at_element_1(xy_xy1.v[2], xy_xy1.v[3], min_element);
 
 	return bilinear(c00, c01, c10, c11, st.v[0], st.v[1]);
 }
@@ -64,10 +64,10 @@ float2 Linear_2D<Address_U, Address_V>::sample_2(const Texture& texture, float2 
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float2 c00 = texture.at_element_2(xy_xy1.x, xy_xy1.y, min_element);
-	float2 c01 = texture.at_element_2(xy_xy1.x, xy_xy1.w, min_element);
-	float2 c10 = texture.at_element_2(xy_xy1.z, xy_xy1.y, min_element);
-	float2 c11 = texture.at_element_2(xy_xy1.z, xy_xy1.w, min_element);
+	float2 c00 = texture.at_element_2(xy_xy1.v[0], xy_xy1.v[1], min_element);
+	float2 c01 = texture.at_element_2(xy_xy1.v[0], xy_xy1.v[3], min_element);
+	float2 c10 = texture.at_element_2(xy_xy1.v[2], xy_xy1.v[1], min_element);
+	float2 c11 = texture.at_element_2(xy_xy1.v[2], xy_xy1.v[3], min_element);
 
 	return bilinear(c00, c01, c10, c11, st.v[0], st.v[1]);
 }
@@ -80,10 +80,10 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(const Texture& texture, float2 
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float3 c00 = texture.at_element_3(xy_xy1.x, xy_xy1.y, min_element);
-	float3 c01 = texture.at_element_3(xy_xy1.x, xy_xy1.w, min_element);
-	float3 c10 = texture.at_element_3(xy_xy1.z, xy_xy1.y, min_element);
-	float3 c11 = texture.at_element_3(xy_xy1.z, xy_xy1.w, min_element);
+	float3 c00 = texture.at_element_3(xy_xy1.v[0], xy_xy1.v[1], min_element);
+	float3 c01 = texture.at_element_3(xy_xy1.v[0], xy_xy1.v[3], min_element);
+	float3 c10 = texture.at_element_3(xy_xy1.v[2], xy_xy1.v[1], min_element);
+	float3 c11 = texture.at_element_3(xy_xy1.v[2], xy_xy1.v[3], min_element);
 
 	return bilinear(c00, c01, c10, c11, st.v[0], st.v[1]);
 }
@@ -107,10 +107,10 @@ float2 Linear_2D<Address_U, Address_V>::map(const Texture& texture, float2 uv, i
 	const int32_t x = static_cast<int32_t>(fu);
 	const int32_t y = static_cast<int32_t>(fv);
 
-	xy_xy1.x = Address_U::lower_bound(x, b.v[0]);
-	xy_xy1.y = Address_V::lower_bound(y, b.v[1]);
-	xy_xy1.z = Address_U::increment(x, b.v[0]);
-	xy_xy1.w = Address_V::increment(y, b.v[1]);
+	xy_xy1.v[0] = Address_U::lower_bound(x, b.v[0]);
+	xy_xy1.v[1] = Address_V::lower_bound(y, b.v[1]);
+	xy_xy1.v[2] = Address_U::increment(x, b.v[0]);
+	xy_xy1.v[3] = Address_V::increment(y, b.v[1]);
 
 	return float2(u - fu, v - fv);
 }

@@ -105,17 +105,7 @@ SU_GLOBALCONST(Vector4f_a) float4_identity(0.f);
  ****************************************************************************/
 
 struct alignas(16) Vector4i_a {
-	union {
-		struct {
-			int32_t x, y, z, w;
-		};
-
-		struct {
-			Vector2<int32_t> xy, zw;
-		} v2;
-
-		int32_t v[4];
-	};
+	int32_t v[4];
 
 	Vector4i_a();
 
@@ -124,6 +114,9 @@ struct alignas(16) Vector4i_a {
 	Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw);
 
 	explicit Vector4i_a(int32_t s);
+
+	const Vector2<int32_t> xy() const;
+	const Vector2<int32_t> zw() const;
 
 	Vector4i_a operator+(const Vector4i_a& v) const;
 

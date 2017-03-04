@@ -137,29 +137,36 @@ inline float dot(const Vector4f_a& a, const Vector4f_a& b) {
 inline Vector4i_a::Vector4i_a() {}
 
 inline Vector4i_a::Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w) :
-	x(x), y(y), z(z), w(w) {}
+	v{x, y, z, w} {}
 
 inline Vector4i_a::Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw) :
-	x(xy.v[0]), y(xy.v[1]), z(zw.v[0]), w(zw.v[1]) {}
+	v{xy.v[0], xy.v[1], zw.v[0], zw.v[1]} {}
 
-inline Vector4i_a::Vector4i_a(int32_t s) :
-	x(s), y(s), z(s), w(s) {}
+inline Vector4i_a::Vector4i_a(int32_t s) : v{s, s, s, s} {}
+
+inline const Vector2<int32_t> Vector4i_a::xy() const {
+	return Vector2<int32_t>(v[0], v[1]);
+}
+
+inline const Vector2<int32_t> Vector4i_a::zw() const {
+	return Vector2<int32_t>(v[2], v[3]);
+}
 
 inline Vector4i_a Vector4i_a::operator+(const Vector4i_a& a) const {
-	return Vector4i_a(x + a.x, y + a.y, z + a.z, w + a.w);
+	return Vector4i_a(v[0] + a.v[0], v[1] + a.v[1], v[2] + a.v[2], v[3] + a.v[3]);
 }
 
 inline Vector4i_a Vector4i_a::operator*(const Vector4i_a& a) const {
-	return Vector4i_a(x * a.x, y * a.y, z * a.z, w * a.w);
+	return Vector4i_a(v[0] * a.v[0], v[1] * a.v[1], v[2] * a.v[2], v[3] * a.v[3]);
 }
 
 inline Vector4i_a& Vector4i_a::operator+=(const Vector4i_a& a) {
-	x += a.x; y += a.y; z += a.z; w += a.w;
+	v[0] += a.v[0]; v[1] += a.v[1]; v[2] += a.v[2]; v[3] += a.v[3];
 	return *this;
 }
 
 inline Vector4i_a& Vector4i_a::operator-=(const Vector4i_a& a) {
-	x -= a.x; y -= a.y; z -= a.z; w -= a.w;
+	v[0] -= a.v[0]; v[1] -= a.v[1]; v[2] -= a.v[2]; v[3] -= a.v[3];
 	return *this;
 }
 
