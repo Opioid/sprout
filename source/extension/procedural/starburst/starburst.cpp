@@ -200,7 +200,8 @@ void create(thread::Pool& pool) {
 		}
 	}, 0, resolution * resolution);
 
-	image::encoding::png::Writer::write(near_field ? "near_field.png" : "far_field.png", byte_image);
+	image::encoding::png::Writer::write(near_field ? "near_field.png" : "far_field.png",
+										byte_image);
 }
 
 void render_dirt(image::Float_1& signal) {
