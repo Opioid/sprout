@@ -290,12 +290,12 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m) {
 
 inline Matrix3x3f_a::Matrix3x3f_a() {}
 
-inline Matrix3x3f_a::Matrix3x3f_a(float m00, float m01, float m02,
-								  float m10, float m11, float m12,
-								  float m20, float m21, float m22) :
-	r{{m00, m01, m02},
-	  {m10, m11, m12},
-	  {m20, m21, m22}} {}
+inline constexpr Matrix3x3f_a::Matrix3x3f_a(float m00, float m01, float m02,
+											float m10, float m11, float m12,
+											float m20, float m21, float m22) :
+	r{Vector3f_a(m00, m01, m02),
+	  Vector3f_a(m10, m11, m12),
+	  Vector3f_a(m20, m21, m22)} {}
 
 inline Matrix3x3f_a Matrix3x3f_a::operator*(const Matrix3x3f_a& a) const {
 	return Matrix3x3f_a(r[0].v[0] * a.r[0].v[0] + r[0].v[1] * a.r[1].v[0] + r[0].v[2] * a.r[2].v[0],
@@ -327,7 +327,7 @@ inline Matrix3x3f_a& Matrix3x3f_a::operator*=(const Matrix3x3f_a& a) {
 	return *this = temp;
 }
 
-inline Matrix3x3f_a Matrix3x3f_a::identity() {
+inline constexpr Matrix3x3f_a Matrix3x3f_a::identity() {
 	return Matrix3x3f_a(1.f, 0.f, 0.f,
 						0.f, 1.f, 0.f,
 						0.f, 0.f, 1.f);

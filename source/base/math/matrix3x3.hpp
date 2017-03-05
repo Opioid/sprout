@@ -131,9 +131,9 @@ struct alignas(16) Matrix3x3f_a {
 
 	Matrix3x3f_a();
 
-	Matrix3x3f_a(float m00, float m01, float m02,
-				 float m10, float m11, float m12,
-				 float m20, float m21, float m22);
+	constexpr Matrix3x3f_a(float m00, float m01, float m02,
+						   float m10, float m11, float m12,
+						   float m20, float m21, float m22);
 
 	Matrix3x3f_a(FVector3f_a x, FVector3f_a y, FVector3f_a z);
 
@@ -143,7 +143,7 @@ struct alignas(16) Matrix3x3f_a {
 
 	Matrix3x3f_a& operator*=(const Matrix3x3f_a& a);
 
-	static Matrix3x3f_a identity();
+	static constexpr Matrix3x3f_a identity();
 };
 
 Matrix3x3f_a create_matrix3x3(FVector4f_a q);

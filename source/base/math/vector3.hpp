@@ -157,7 +157,7 @@ struct alignas(16) Vector3f_a {
 
 	Vector3f_a();
 
-	Vector3f_a(float x, float y, float z);
+	constexpr Vector3f_a(float x, float y, float z);
 
 	Vector3f_a(const float* v);
 

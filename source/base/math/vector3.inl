@@ -308,7 +308,7 @@ bool any_inf(const Vector3<T>& v) {
 
 inline Vector3f_a::Vector3f_a() {}
 
-inline Vector3f_a::Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {}
+inline constexpr Vector3f_a::Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {}
 
 inline Vector3f_a::Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {}
 
