@@ -100,12 +100,12 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	const float2 xi = sampler.generate_sample_2D();
 
 	const float a2 = layer.a2_;
-	const float n_dot_h = std::sqrt((1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f));
-
-	const float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+	const float n_dot_h_squared = std::sqrt((1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f));
+	const float sin_theta = std::sqrt(1.f - n_dot_h_squared);
 	const float phi = (2.f * math::Pi) * xi[0];
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
+	const float n_dot_h = std::sqrt(n_dot_h_squared);
 
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalized(layer.tangent_to_world(is));
@@ -165,12 +165,12 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 	const float2 xi = sampler.generate_sample_2D();
 
 	const float a2 = layer.a2_;
-	const float n_dot_h = std::sqrt((1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f));
-
-	const float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+	const float n_dot_h_squared = std::sqrt((1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f));
+	const float sin_theta = std::sqrt(1.f - n_dot_h_squared);
 	const float phi = (2.f * math::Pi) * xi[0];
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
+	const float n_dot_h = std::sqrt(n_dot_h_squared);
 
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalized(layer.tangent_to_world(is));
@@ -240,12 +240,12 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	const float2 xi = sampler.generate_sample_2D();
 
 	const float a2 = layer.a2_;
-	const float n_dot_h = std::sqrt((1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f));
-
-	const float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
+	const float n_dot_h_squared = std::sqrt((1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f));
+	const float sin_theta = std::sqrt(1.f - n_dot_h_squared);
 	const float phi = (2.f * math::Pi) * xi[0];
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
+	const float n_dot_h = std::sqrt(n_dot_h_squared);
 
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalized(layer.tangent_to_world(is));
