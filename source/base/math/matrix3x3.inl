@@ -288,6 +288,12 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m) {
 						m.m02, m.m12, m.m22);
 }
 
+/****************************************************************************
+ *
+ * Aligned 3x3 float matrix
+ *
+ ****************************************************************************/
+
 inline Matrix3x3f_a::Matrix3x3f_a() {}
 
 inline constexpr Matrix3x3f_a::Matrix3x3f_a(float m00, float m01, float m02,

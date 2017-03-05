@@ -414,56 +414,72 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03,
 								  float m10, float m11, float m12, float m13,
 								  float m20, float m21, float m22, float m23,
 								  float m30, float m31, float m32, float m33) :
-	m00(m00), m01(m01), m02(m02), m03(m03),
-	m10(m10), m11(m11), m12(m12), m13(m13),
-	m20(m20), m21(m21), m22(m22), m23(m23),
-	m30(m30), m31(m31), m32(m32), m33(m33) {}
+	r{Vector4f_a(m00, m01, m02, m03),
+	  Vector4f_a(m10, m11, m12, m13),
+	  Vector4f_a(m20, m21, m22, m23),
+	  Vector4f_a(m30, m31, m32, m33)} {}
 
 inline Matrix4x4f_a::Matrix4x4f_a(const Transformationf_a& t) {
 	set_basis_scale_origin(*this, math::create_matrix3x3(t.rotation), t.scale, t.position);
 }
 
+inline Vector3f_a Matrix4x4f_a::x() const{
+	return r[0].xyz();
+}
+
+inline Vector3f_a Matrix4x4f_a::y() const {
+	return r[1].xyz();
+}
+
+inline Vector3f_a Matrix4x4f_a::z() const {
+	return r[2].xyz();
+}
+
+inline Vector3f_a Matrix4x4f_a::w() const {
+	return r[3].xyz();
+}
+
 inline Matrix4x4f_a Matrix4x4f_a::operator*(const Matrix4x4f_a& o) const {
-	return Matrix4x4f_a((m00 * o.m00 + m01 * o.m10) + (m02 * o.m20 + m03 * o.m30),
-						(m00 * o.m01 + m01 * o.m11) + (m02 * o.m21 + m03 * o.m31),
-						(m00 * o.m02 + m01 * o.m12) + (m02 * o.m22 + m03 * o.m32),
-						(m00 * o.m03 + m01 * o.m13) + (m02 * o.m23 + m03 * o.m33),
+	return Matrix4x4f_a((r[0].v[0] * o.r[0].v[0] + r[0].v[1] * o.r[1].v[0]) + (r[0].v[2] * o.r[2].v[0] + r[0].v[3] * o.r[3].v[0]),
+						(r[0].v[0] * o.r[0].v[1] + r[0].v[1] * o.r[1].v[1]) + (r[0].v[2] * o.r[2].v[1] + r[0].v[3] * o.r[3].v[1]),
+						(r[0].v[0] * o.r[0].v[2] + r[0].v[1] * o.r[1].v[2]) + (r[0].v[2] * o.r[2].v[2] + r[0].v[3] * o.r[3].v[2]),
+						(r[0].v[0] * o.r[0].v[3] + r[0].v[1] * o.r[1].v[3]) + (r[0].v[2] * o.r[2].v[3] + r[0].v[3] * o.r[3].v[3]),
 
-						(m10 * o.m00 + m11 * o.m10) + (m12 * o.m20 + m13 * o.m30),
-						(m10 * o.m01 + m11 * o.m11) + (m12 * o.m21 + m13 * o.m31),
-						(m10 * o.m02 + m11 * o.m12) + (m12 * o.m22 + m13 * o.m32),
-						(m10 * o.m03 + m11 * o.m13) + (m12 * o.m23 + m13 * o.m33),
+						(r[1].v[0] * o.r[0].v[0] + r[1].v[1] * o.r[1].v[0]) + (r[1].v[2] * o.r[2].v[0] + r[1].v[3] * o.r[3].v[0]),
+						(r[1].v[0] * o.r[0].v[1] + r[1].v[1] * o.r[1].v[1]) + (r[1].v[2] * o.r[2].v[1] + r[1].v[3] * o.r[3].v[1]),
+						(r[1].v[0] * o.r[0].v[2] + r[1].v[1] * o.r[1].v[2]) + (r[1].v[2] * o.r[2].v[2] + r[1].v[3] * o.r[3].v[2]),
+						(r[1].v[0] * o.r[0].v[3] + r[1].v[1] * o.r[1].v[3]) + (r[1].v[2] * o.r[2].v[3] + r[1].v[3] * o.r[3].v[3]),
 
-						(m20 * o.m00 + m21 * o.m10) + (m22 * o.m20 + m23 * o.m30),
-						(m20 * o.m01 + m21 * o.m11) + (m22 * o.m21 + m23 * o.m31),
-						(m20 * o.m02 + m21 * o.m12) + (m22 * o.m22 + m23 * o.m32),
-						(m20 * o.m03 + m21 * o.m13) + (m22 * o.m23 + m23 * o.m33),
+						(r[2].v[0] * o.r[0].v[0] + r[2].v[1] * o.r[1].v[0]) + (r[2].v[2] * o.r[2].v[0] + r[2].v[3] * o.r[3].v[0]),
+						(r[2].v[0] * o.r[0].v[1] + r[2].v[1] * o.r[1].v[1]) + (r[2].v[2] * o.r[2].v[1] + r[2].v[3] * o.r[3].v[1]),
+						(r[2].v[0] * o.r[0].v[2] + r[2].v[1] * o.r[1].v[2]) + (r[2].v[2] * o.r[2].v[2] + r[2].v[3] * o.r[3].v[2]),
+						(r[2].v[0] * o.r[0].v[3] + r[2].v[1] * o.r[1].v[3]) + (r[2].v[2] * o.r[2].v[3] + r[2].v[3] * o.r[3].v[3]),
 
-						(m30 * o.m00 + m31 * o.m10) + (m32 * o.m20 + m33 * o.m30),
-						(m30 * o.m01 + m31 * o.m11) + (m32 * o.m21 + m33 * o.m31),
-						(m30 * o.m02 + m31 * o.m12) + (m32 * o.m22 + m33 * o.m32),
-						(m30 * o.m03 + m31 * o.m13) + (m32 * o.m23 + m33 * o.m33));
+						(r[3].v[0] * o.r[0].v[0] + r[3].v[1] * o.r[1].v[0]) + (r[3].v[2] * o.r[2].v[0] + r[3].v[3] * o.r[3].v[0]),
+						(r[3].v[0] * o.r[0].v[1] + r[3].v[1] * o.r[1].v[1]) + (r[3].v[2] * o.r[2].v[1] + r[3].v[3] * o.r[3].v[1]),
+						(r[3].v[0] * o.r[0].v[2] + r[3].v[1] * o.r[1].v[2]) + (r[3].v[2] * o.r[2].v[2] + r[3].v[3] * o.r[3].v[2]),
+						(r[3].v[0] * o.r[0].v[3] + r[3].v[1] * o.r[1].v[3]) + (r[3].v[2] * o.r[2].v[3] + r[3].v[3] * o.r[3].v[3]));
 }
 
 inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a(v.v[0] * m.m00 + v.v[1] * m.m10 + v.v[2] * m.m20,
-					  v.v[0] * m.m01 + v.v[1] * m.m11 + v.v[2] * m.m21,
-					  v.v[0] * m.m02 + v.v[1] * m.m12 + v.v[2] * m.m22);
+	return Vector3f_a(v.v[0] * m.r[0].v[0] + v.v[1] * m.r[1].v[0] + v.v[2] * m.r[2].v[0],
+					  v.v[0] * m.r[0].v[1] + v.v[1] * m.r[1].v[1] + v.v[2] * m.r[2].v[1],
+					  v.v[0] * m.r[0].v[2] + v.v[1] * m.r[1].v[2] + v.v[2] * m.r[2].v[2]);
 }
 
 inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a(v.v[0] * m.m00 + v.v[1] * m.m01 + v.v[2] * m.m02,
-					  v.v[0] * m.m10 + v.v[1] * m.m11 + v.v[2] * m.m12,
-					  v.v[0] * m.m20 + v.v[1] * m.m21 + v.v[2] * m.m22);
+	return Vector3f_a(v.v[0] * m.r[0].v[0] + v.v[1] * m.r[0].v[1] + v.v[2] * m.r[0].v[2],
+					  v.v[0] * m.r[1].v[0] + v.v[1] * m.r[1].v[1] + v.v[2] * m.r[1].v[2],
+					  v.v[0] * m.r[2].v[0] + v.v[1] * m.r[2].v[1] + v.v[2] * m.r[2].v[2]);
 }
 
 inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a((v.v[0] * m.m00 + v.v[1] * m.m10) + (v.v[2] * m.m20 + m.m30),
-					  (v.v[0] * m.m01 + v.v[1] * m.m11) + (v.v[2] * m.m21 + m.m31),
-					  (v.v[0] * m.m02 + v.v[1] * m.m12) + (v.v[2] * m.m22 + m.m32));
+	return Vector3f_a((v.v[0] * m.r[0].v[0] + v.v[1] * m.r[1].v[0]) + (v.v[2] * m.r[2].v[0] + m.r[3].v[0]),
+					  (v.v[0] * m.r[0].v[1] + v.v[1] * m.r[1].v[1]) + (v.v[2] * m.r[2].v[1] + m.r[3].v[1]),
+					  (v.v[0] * m.r[0].v[2] + v.v[1] * m.r[1].v[2]) + (v.v[2] * m.r[2].v[2] + m.r[3].v[2]));
 }
 
-inline Matrix4x4f_a create_matrix4x4(const Vector4f_a& q) {
+inline Matrix4x4f_a create_matrix4x4(FVector4f_a q) {
 	const float d = dot(q, q);
 
 	const float s = 2.f / d;
@@ -480,28 +496,28 @@ inline Matrix4x4f_a create_matrix4x4(const Vector4f_a& q) {
 }
 
 inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
-	const float m00_11 = m.m00 * m.m11;
-	const float m01_12 = m.m01 * m.m12;
-	const float m02_10 = m.m02 * m.m10;
-	const float m00_12 = m.m00 * m.m12;
-	const float m01_10 = m.m01 * m.m10;
-	const float m02_11 = m.m02 * m.m11;
+	const float m00_11 = m.r[0].v[0] * m.r[1].v[1];
+	const float m01_12 = m.r[0].v[1] * m.r[1].v[2];
+	const float m02_10 = m.r[0].v[2] * m.r[1].v[0];
+	const float m00_12 = m.r[0].v[0] * m.r[1].v[2];
+	const float m01_10 = m.r[0].v[1] * m.r[1].v[0];
+	const float m02_11 = m.r[0].v[2] * m.r[1].v[1];
 
-	const float id = 1.f / ((m00_11 * m.m22 + m01_12 * m.m20 + m02_10 * m.m21) -
-							(m00_12 * m.m21 + m01_10 * m.m22 + m02_11 * m.m20));
+	const float id = 1.f / ((m00_11 * m.r[2].v[2] + m01_12 * m.r[2].v[0] + m02_10 * m.r[2].v[1]) -
+							(m00_12 * m.r[2].v[1] + m01_10 * m.r[2].v[2] + m02_11 * m.r[2].v[0]));
 
-	const float m11_22 = m.m11 * m.m22;
-	const float m12_21 = m.m12 * m.m21;
-	const float m02_21 = m.m02 * m.m21;
-	const float m01_22 = m.m01 * m.m22;
-	const float m12_20 = m.m12 * m.m20;
-	const float m10_22 = m.m10 * m.m22;
-	const float m00_22 = m.m00 * m.m22;
-	const float m02_20 = m.m02 * m.m20;
-	const float m10_21 = m.m10 * m.m21;
-	const float m11_20 = m.m11 * m.m20;
-	const float m01_20 = m.m01 * m.m20;
-	const float m00_21 = m.m00 * m.m21;
+	const float m11_22 = m.r[1].v[1] * m.r[2].v[2];
+	const float m12_21 = m.r[1].v[2] * m.r[2].v[1];
+	const float m02_21 = m.r[0].v[2] * m.r[2].v[1];
+	const float m01_22 = m.r[0].v[1] * m.r[2].v[2];
+	const float m12_20 = m.r[1].v[2] * m.r[2].v[0];
+	const float m10_22 = m.r[1].v[0] * m.r[2].v[2];
+	const float m00_22 = m.r[0].v[0] * m.r[2].v[2];
+	const float m02_20 = m.r[0].v[2] * m.r[2].v[0];
+	const float m10_21 = m.r[1].v[0] * m.r[2].v[1];
+	const float m11_20 = m.r[1].v[1] * m.r[2].v[0];
+	const float m01_20 = m.r[0].v[1] * m.r[2].v[0];
+	const float m00_21 = m.r[0].v[0] * m.r[2].v[1];
 
 	return Matrix4x4f_a((m11_22 - m12_21) * id,
 						(m02_21 - m01_22) * id,
@@ -518,12 +534,12 @@ inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 						(m00_11 - m01_10) * id,
 						0.f,
 
-						((m10_22 * m.m31 + m11_20 * m.m32 + m12_21 * m.m30) -
-						 (m10_21 * m.m32 + m11_22 * m.m30 + m12_20 * m.m31)) * id,
-						((m00_21 * m.m32 + m01_22 * m.m30 + m02_20 * m.m31) -
-						 (m00_22 * m.m31 + m01_20 * m.m32 + m02_21 * m.m30)) * id,
-						((m00_12 * m.m31 + m01_10 * m.m32 + m02_11 * m.m30) -
-						 (m00_11 * m.m32 + m01_12 * m.m30 + m02_10 * m.m31)) * id,
+						((m10_22 * m.r[3].v[1] + m11_20 * m.r[3].v[2] + m12_21 * m.r[3].v[0]) -
+						 (m10_21 * m.r[3].v[2] + m11_22 * m.r[3].v[0] + m12_20 * m.r[3].v[1])) * id,
+						((m00_21 * m.r[3].v[2] + m01_22 * m.r[3].v[0] + m02_20 * m.r[3].v[1]) -
+						 (m00_22 * m.r[3].v[1] + m01_20 * m.r[3].v[2] + m02_21 * m.r[3].v[0])) * id,
+						((m00_12 * m.r[3].v[1] + m01_10 * m.r[3].v[2] + m02_11 * m.r[3].v[0]) -
+						 (m00_11 * m.r[3].v[2] + m01_12 * m.r[3].v[0] + m02_10 * m.r[3].v[1])) * id,
 						1.f);
 }
 
@@ -531,51 +547,51 @@ inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix3x3f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
-	m.m00 = basis.r[0].v[0] * scale.v[0]; m.m01 = basis.r[0].v[1] * scale.v[0];
-	m.m02 = basis.r[0].v[2] * scale.v[0]; m.m03 = 0.f;
+	m.r[0].v[0] = basis.r[0].v[0] * scale.v[0]; m.r[0].v[1] = basis.r[0].v[1] * scale.v[0];
+	m.r[0].v[2] = basis.r[0].v[2] * scale.v[0]; m.r[0].v[3] = 0.f;
 
-	m.m10 = basis.r[1].v[0] * scale.v[1]; m.m11 = basis.r[1].v[1] * scale.v[1];
-	m.m12 = basis.r[1].v[2] * scale.v[1]; m.m13 = 0.f;
+	m.r[1].v[0] = basis.r[1].v[0] * scale.v[1]; m.r[1].v[1] = basis.r[1].v[1] * scale.v[1];
+	m.r[1].v[2] = basis.r[1].v[2] * scale.v[1]; m.r[1].v[3] = 0.f;
 
-	m.m20 = basis.r[2].v[0] * scale.v[2]; m.m21 = basis.r[2].v[1] * scale.v[2];
-	m.m22 = basis.r[2].v[2] * scale.v[2]; m.m23 = 0.f;
+	m.r[2].v[0] = basis.r[2].v[0] * scale.v[2]; m.r[2].v[1] = basis.r[2].v[1] * scale.v[2];
+	m.r[2].v[2] = basis.r[2].v[2] * scale.v[2]; m.r[2].v[3] = 0.f;
 
-	m.m30 = origin.v[0];			m.m31 = origin.v[1];
-	m.m32 = origin.v[2];			m.m33 = 1.f;
+	m.r[3].v[0] = origin.v[0];					m.r[3].v[1] = origin.v[1];
+	m.r[3].v[2] = origin.v[2];					m.r[3].v[3] = 1.f;
 }
 
 inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix4x4f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
-	m.m00 = basis.m00 * scale.v[0]; m.m01 = basis.m01 * scale.v[0];
-	m.m02 = basis.m02 * scale.v[0]; m.m03 = 0.f;
+	m.r[0].v[0] = basis.r[0].v[0] * scale.v[0]; m.r[0].v[1] = basis.r[0].v[1] * scale.v[0];
+	m.r[0].v[2] = basis.r[0].v[2] * scale.v[0]; m.r[0].v[3] = 0.f;
 
-	m.m10 = basis.m10 * scale.v[1]; m.m11 = basis.m11 * scale.v[1];
-	m.m12 = basis.m12 * scale.v[1]; m.m13 = 0.f;
+	m.r[1].v[0] = basis.r[1].v[0] * scale.v[1]; m.r[1].v[1] = basis.r[1].v[1] * scale.v[1];
+	m.r[1].v[2] = basis.r[1].v[2] * scale.v[1]; m.r[1].v[3] = 0.f;
 
-	m.m20 = basis.m20 * scale.v[2]; m.m21 = basis.m21 * scale.v[2];
-	m.m22 = basis.m22 * scale.v[2]; m.m23 = 0.f;
+	m.r[2].v[0] = basis.r[2].v[0] * scale.v[2]; m.r[2].v[1] = basis.r[2].v[1] * scale.v[2];
+	m.r[2].v[2] = basis.r[2].v[2] * scale.v[2]; m.r[2].v[3] = 0.f;
 
-	m.m30 = origin.v[0];			m.m31 = origin.v[1];
-	m.m32 = origin.v[2];			m.m33 = 1.f;
+	m.r[3].v[0] = origin.v[0];					m.r[3].v[1] = origin.v[1];
+	m.r[3].v[2] = origin.v[2];					m.r[3].v[3] = 1.f;
 }
 
 inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
-	m.m00 = 1.f; m.m01 = 0.f; m.m02 = 0.f; m.m03 = 0.f;
-	m.m10 = 0.f; m.m11 = 1.f; m.m12 = 0.f; m.m13 = 0.f;
-	m.m20 = 0.f; m.m21 = 0.f; m.m22 = 1.f; m.m23 = 0.f;
-	m.m30 = v.v[0]; m.m31 = v.v[1]; m.m32 = v.v[2]; m.m33 = 1.f;
+	m.r[0].v[0] = 1.f;		m.r[0].v[1] = 0.f;		m.r[0].v[2] = 0.f;		m.r[0].v[3] = 0.f;
+	m.r[1].v[0] = 0.f;		m.r[1].v[1] = 1.f;		m.r[1].v[2] = 0.f;		m.r[1].v[3] = 0.f;
+	m.r[2].v[0] = 0.f;		m.r[2].v[1] = 0.f;		m.r[2].v[2] = 1.f;		m.r[2].v[3] = 0.f;
+	m.r[3].v[0] = v.v[0];	m.r[3].v[1] = v.v[1];	m.r[3].v[2] = v.v[2];	m.r[3].v[3] = 1.f;
 }
 
 inline void set_rotation_x(Matrix4x4f_a& m, float a) {
 	const float c = std::cos(a);
 	const float s = std::sin(a);
 
-	m.m00 = 1.f; m.m01 = 0.f; m.m02 =  0.f; m.m03 = 0.f;
-	m.m10 = 0.f; m.m11 = c;   m.m12 = -s;   m.m13 = 0.f;
-	m.m20 = 0.f; m.m21 = s;   m.m22 =  c;   m.m23 = 0.f;
-	m.m30 = 0.f; m.m31 = 0.f; m.m32 =  0.f; m.m33 = 1.f;
+	m.r[0].v[0] = 1.f; m.r[0].v[1] = 0.f; m.r[0].v[2] =  0.f; m.r[0].v[3] = 0.f;
+	m.r[1].v[0] = 0.f; m.r[1].v[1] = c;   m.r[1].v[2] = -s;   m.r[1].v[3] = 0.f;
+	m.r[2].v[0] = 0.f; m.r[2].v[1] = s;   m.r[2].v[2] =  c;   m.r[2].v[3] = 0.f;
+	m.r[3].v[0] = 0.f; m.r[3].v[1] = 0.f; m.r[3].v[2] =  0.f; m.r[3].v[3] = 1.f;
 }
 
 }

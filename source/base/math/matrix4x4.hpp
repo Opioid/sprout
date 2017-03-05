@@ -151,30 +151,7 @@ void set_basis_scale_origin(Matrix4x4<T>& m,
  ****************************************************************************/
 
 struct alignas(16) Matrix4x4f_a {
-	union {
-		struct {
-			float m00, m01, m02, m03,
-				  m10, m11, m12, m13,
-				  m20, m21, m22, m23,
-				  m30, m31, m32, m33;
-		};
-
-		struct {
-			float m[16];
-		};
-
-		struct {
-			Vector4f_a x, y, z, w;
-		} v;
-
-		struct {
-			Vector4f_a rows[4];
-		};
-
-		struct {
-			Vector3f_a x, y, z, w;
-		} v3;
-	};
+	Vector4f_a r[4];
 
 	Matrix4x4f_a();
 
@@ -185,6 +162,11 @@ struct alignas(16) Matrix4x4f_a {
 
 	explicit Matrix4x4f_a(const Transformationf_a& t);
 
+	Vector3f_a x() const;
+	Vector3f_a y() const;
+	Vector3f_a z() const;
+	Vector3f_a w() const;
+
 	Matrix4x4f_a operator*(const Matrix4x4f_a& o) const;
 };
 
@@ -194,7 +176,7 @@ Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m);
 
 Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m);
 
-Matrix4x4f_a create_matrix4x4(const Vector4f_a& q);
+Matrix4x4f_a create_matrix4x4(FVector4f_a q);
 
 Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m);
 

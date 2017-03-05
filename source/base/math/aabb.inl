@@ -2,6 +2,7 @@
 
 #include "aabb.hpp"
 #include "math/vector3.inl"
+#include "math/matrix4x4.inl"
 #include "math/simd/simd_vector.inl"
 #include <limits>
 
@@ -163,17 +164,22 @@ inline void AABB::insert(FVector3f_a p) {
 }
 
 inline AABB AABB::transform(const Matrix4x4f_a& m) const {
-	Vector3f_a xa = bounds_[0].v[0] * m.v3.x;
-	Vector3f_a xb = bounds_[1].v[0] * m.v3.x;
+	Vector3f_a mx = m.x();
+	Vector3f_a xa = bounds_[0].v[0] * mx;
+	Vector3f_a xb = bounds_[1].v[0] * mx;
 
-	Vector3f_a ya = bounds_[0].v[1] * m.v3.y;
-	Vector3f_a yb = bounds_[1].v[1] * m.v3.y;
+	Vector3f_a my = m.y();
+	Vector3f_a ya = bounds_[0].v[1] * my;
+	Vector3f_a yb = bounds_[1].v[1] * my;
 
-	Vector3f_a za = bounds_[0].v[2] * m.v3.z;
-	Vector3f_a zb = bounds_[1].v[2] * m.v3.z;
+	Vector3f_a mz = m.z();
+	Vector3f_a za = bounds_[0].v[2] * mz;
+	Vector3f_a zb = bounds_[1].v[2] * mz;
 
-	return AABB(math::min(xa, xb) + math::min(ya, yb) + math::min(za, zb) + m.v3.w,
-				math::max(xa, xb) + math::max(ya, yb) + math::max(za, zb) + m.v3.w);
+	Vector3f_a mw = m.w();
+
+	return AABB((math::min(xa, xb) + math::min(ya, yb)) + (math::min(za, zb) + mw),
+				(math::max(xa, xb) + math::max(ya, yb)) + (math::max(za, zb) + mw));
 }
 
 inline AABB AABB::merge(const AABB& other) const {
