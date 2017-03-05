@@ -35,9 +35,9 @@ inline float3_p Sample::Layer::shading_normal() const {
 }
 
 inline float3 Sample::Layer::tangent_to_world(float3_p v) const {
-	return float3(v.v[0] * t_.v[0] + v.v[1] * b_.v[0] + v.v[2] * n_.v[0],
-				  v.v[0] * t_.v[1] + v.v[1] * b_.v[1] + v.v[2] * n_.v[1],
-				  v.v[0] * t_.v[2] + v.v[1] * b_.v[2] + v.v[2] * n_.v[2]);
+	return float3(v[0] * t_[0] + v[1] * b_[0] + v[2] * n_[0],
+				  v[0] * t_[1] + v[1] * b_[1] + v[2] * n_[1],
+				  v[0] * t_[2] + v[1] * b_[2] + v[2] * n_[2]);
 }
 
 inline float Sample::clamped_geo_n_dot(float3_p v) const {
@@ -63,9 +63,9 @@ inline void Sample::set_basis(float3_p geo_n, float3_p wo) {
 
 inline float3 Sample::attenuation(float3_p color, float distance) {
 	float3 pushed = color + float3(0.01f, 0.01f, 0.01f);
-	return float3(1.f / (pushed.v[0] * distance),
-				  1.f / (pushed.v[1] * distance),
-				  1.f / (pushed.v[2] * distance));
+	return float3(1.f / (pushed[0] * distance),
+				  1.f / (pushed[1] * distance),
+				  1.f / (pushed[2] * distance));
 }
 
 inline float Sample::clamped_dot(float3_p a, float3_p b) {

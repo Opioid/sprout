@@ -22,7 +22,7 @@ bool Writer::write(std::ostream& stream, const image::Float_4& image, thread::Po
 void Writer::write_header(std::ostream& stream, int2 dimensions) {
 	stream << "#?RGBE\n";
 	stream << "FORMAT=32-bit_rle_rgbe\n\n";
-	stream << "-Y " << dimensions.v[1] << " +X " << dimensions.v[0] << "\n";
+	stream << "-Y " << dimensions[1] << " +X " << dimensions[0] << "\n";
 }
 
 void Writer::write_pixels(std::ostream& stream, const Float_4& image) {
@@ -49,10 +49,10 @@ void Writer::write_pixels_rle(std::ostream& stream, const Float_4& image) {
 
 	while (num_scanlines-- > 0) {
 		math::byte4 rgbe;
-		rgbe.v[0] = 2;
-		rgbe.v[1] = 2;
-		rgbe.v[2] = static_cast<uint8_t>(scanline_width >> 8);
-		rgbe.v[3] = static_cast<uint8_t>(scanline_width & 0xFF);
+		rgbe[0] = 2;
+		rgbe[1] = 2;
+		rgbe[2] = static_cast<uint8_t>(scanline_width >> 8);
+		rgbe[3] = static_cast<uint8_t>(scanline_width & 0xFF);
 
 		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(math::byte4));
 
@@ -61,10 +61,10 @@ void Writer::write_pixels_rle(std::ostream& stream, const Float_4& image) {
 
 			rgbe = float_to_rgbe(pixel);
 
-			buffer[i]					   = rgbe.v[0];
-			buffer[i + scanline_width]     = rgbe.v[1];
-			buffer[i + scanline_width * 2] = rgbe.v[2];
-			buffer[i + scanline_width * 3] = rgbe.v[3];
+			buffer[i]					   = rgbe[0];
+			buffer[i + scanline_width]     = rgbe[1];
+			buffer[i + scanline_width * 2] = rgbe[2];
+			buffer[i + scanline_width * 3] = rgbe[3];
 		}
 
 		// write out each of the four channels separately run length encoded
@@ -146,14 +146,14 @@ void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t
 }
 
 math::byte4 Writer::float_to_rgbe(float4_p c) {
-	float v = c.v[0];
+	float v = c[0];
 
-	if (c.v[1] > v) {
-		v = c.v[1];
+	if (c[1] > v) {
+		v = c[1];
 	}
 
-	if (c.v[2] > v) {
-		v = c.v[2];
+	if (c[2] > v) {
+		v = c[2];
 	}
 
 	if (v < 1e-32) {
@@ -164,9 +164,9 @@ math::byte4 Writer::float_to_rgbe(float4_p c) {
 
 		v = f * 256.f / v;
 
-		return math::byte4(static_cast<uint8_t>(c.v[0] * v),
-						   static_cast<uint8_t>(c.v[1] * v),
-						   static_cast<uint8_t>(c.v[2] * v),
+		return math::byte4(static_cast<uint8_t>(c[0] * v),
+						   static_cast<uint8_t>(c[1] * v),
+						   static_cast<uint8_t>(c[2] * v),
 						   static_cast<uint8_t>(e + 128));
 	}
 }

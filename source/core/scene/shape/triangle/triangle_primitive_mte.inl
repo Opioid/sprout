@@ -39,8 +39,8 @@ inline bool Triangle_MTE::intersect(math::Ray& ray, float2& uv) const {
 
 	if (hit_t > ray.min_t && hit_t < ray.max_t) {
 		ray.max_t = hit_t;
-		uv.v[0] = u;
-		uv.v[1] = v;
+		uv[0] = u;
+		uv[1] = v;
 		return true;
 	}
 
@@ -77,25 +77,25 @@ inline bool Triangle_MTE::intersect_p(const math::Ray& ray) const {
 }
 
 inline void Triangle_MTE::interpolate(float2 uv, float3& p, float2& tc) const {
-	float w = 1.f - uv.v[0] - uv.v[1];
+	float w = 1.f - uv[0] - uv[1];
 
-	p  = w * ap + uv.v[0] * (ap + e1)  + uv.v[1] * (ap + e2);
-	tc = w * auv + uv.v[0] * buv + uv.v[1] * cuv;
+	p  = w * ap + uv[0] * (ap + e1)  + uv[1] * (ap + e2);
+	tc = w * auv + uv[0] * buv + uv[1] * cuv;
 }
 
 inline void Triangle_MTE::interpolate_data(float2 uv,
 										   float3& n, float3& t, float2& tc) const {
-	float w = 1.f - uv.v[0] - uv.v[1];
+	float w = 1.f - uv[0] - uv[1];
 
-	n  = math::normalized(w * an + uv.v[0] * bn + uv.v[1] * cn);
-	t  = math::normalized(w * at + uv.v[0] * bt + uv.v[1] * ct);
-	tc = w * auv + uv.v[0] * buv + uv.v[1] * cuv;
+	n  = math::normalized(w * an + uv[0] * bn + uv[1] * cn);
+	t  = math::normalized(w * at + uv[0] * bt + uv[1] * ct);
+	tc = w * auv + uv[0] * buv + uv[1] * cuv;
 }
 
 inline float2 Triangle_MTE::interpolate_uv(float2 uv) const {
-	float w = 1.f - uv.v[0] - uv.v[1];
+	float w = 1.f - uv[0] - uv[1];
 
-	return w * auv + uv.v[0] * buv + uv.v[1] * cuv;
+	return w * auv + uv[0] * buv + uv[1] * cuv;
 }
 
 inline float3 Triangle_MTE::normal() const {
@@ -141,8 +141,8 @@ inline bool Intersection_triangle_MTE::intersect(math::Ray& ray, float2& uv) con
 
 	if (hit_t > ray.min_t && hit_t < ray.max_t) {
 		ray.max_t = hit_t;
-		uv.v[0] = u;
-		uv.v[1] = v;
+		uv[0] = u;
+		uv[1] = v;
 		return true;
 	}
 
@@ -179,9 +179,9 @@ inline bool Intersection_triangle_MTE::intersect_p(const math::Ray& ray) const {
 }
 
 inline void Intersection_triangle_MTE::interpolate(float2 uv, float3& p) const {
-	float w = 1.f - uv.v[0] - uv.v[1];
+	float w = 1.f - uv[0] - uv[1];
 
-	p  = w * ap + uv.v[0] * (ap + e1)  + uv.v[1] * (ap + e2);
+	p  = w * ap + uv[0] * (ap + e1)  + uv[1] * (ap + e2);
 }
 
 inline float3 Intersection_triangle_MTE::normal() const {
@@ -208,17 +208,17 @@ inline Shading_triangle_MTE::Shading_triangle_MTE(const shape::Vertex& a,
 
 inline void Shading_triangle_MTE::interpolate_data(float2 uv,
 												   float3& n, float3& t, float2& tc) const {
-	float w = 1.f - uv.v[0] - uv.v[1];
+	float w = 1.f - uv[0] - uv[1];
 
-	n  = math::normalized(w * an + uv.v[0] * bn + uv.v[1] * cn);
-	t  = math::normalized(w * at + uv.v[0] * bt + uv.v[1] * ct);
-	tc = w * auv + uv.v[0] * buv + uv.v[1] * cuv;
+	n  = math::normalized(w * an + uv[0] * bn + uv[1] * cn);
+	t  = math::normalized(w * at + uv[0] * bt + uv[1] * ct);
+	tc = w * auv + uv[0] * buv + uv[1] * cuv;
 }
 
 inline float2 Shading_triangle_MTE::interpolate_uv(float2 uv) const {
-	float w = 1.f - uv.v[0] - uv.v[1];
+	float w = 1.f - uv[0] - uv[1];
 
-	return w * auv + uv.v[0] * buv + uv.v[1] * cuv;
+	return w * auv + uv[0] * buv + uv[1] * cuv;
 }
 
 }}}

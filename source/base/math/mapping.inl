@@ -6,9 +6,9 @@
 namespace math {
 
 inline float3 disk_to_hemisphere_equidistant(float2 uv) {
-	float longitude = std::atan2(-uv.v[1], uv.v[0]);
+	float longitude = std::atan2(-uv[1], uv[0]);
 
-	float r = std::sqrt(uv.v[0] * uv.v[0] + uv.v[1] * uv.v[1]);
+	float r = std::sqrt(uv[0] * uv[0] + uv[1] * uv[1]);
 
 	// Equidistant projection
 	float colatitude = r * (math::Pi / 2.f);
@@ -30,9 +30,9 @@ inline float3 disk_to_hemisphere_equidistant(float2 uv) {
 
 inline float2 hemisphere_to_disk_equidistant(float3_p dir) {
 	// cartesian to spherical
-	float colatitude = std::acos(dir.v[2]);
+	float colatitude = std::acos(dir[2]);
 
-	float longitude = std::atan2(-dir.v[1], dir.v[0]);
+	float longitude = std::atan2(-dir[1], dir[0]);
 
 	float r = colatitude * (math::Pi_inv * 2.f);
 
@@ -43,8 +43,8 @@ inline float2 hemisphere_to_disk_equidistant(float3_p dir) {
 }
 
 inline float2 hemisphere_to_disk_paraboloid(float3_p dir) {
-	float zoi = 1.f / (dir.v[2] + 1.f);
-	return float2(dir.v[0] * zoi, dir.v[1] * -zoi);
+	float zoi = 1.f / (dir[2] + 1.f);
+	return float2(dir[0] * zoi, dir[1] * -zoi);
 }
 
 }

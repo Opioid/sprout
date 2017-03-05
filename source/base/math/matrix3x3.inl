@@ -98,9 +98,9 @@ Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) {
 }
 
 inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3<float>& m) {
-	return Vector3f_a(v.v[0] * m.m00 + v.v[1] * m.m10 + v.v[2] * m.m20,
-					  v.v[0] * m.m01 + v.v[1] * m.m11 + v.v[2] * m.m21,
-					  v.v[0] * m.m02 + v.v[1] * m.m12 + v.v[2] * m.m22);
+	return Vector3f_a(v[0] * m.m00 + v[1] * m.m10 + v[2] * m.m20,
+					  v[0] * m.m01 + v[1] * m.m11 + v[2] * m.m21,
+					  v[0] * m.m02 + v[1] * m.m12 + v[2] * m.m22);
 }
 
 template<typename T>
@@ -304,31 +304,31 @@ inline constexpr Matrix3x3f_a::Matrix3x3f_a(float m00, float m01, float m02,
 	  Vector3f_a(m20, m21, m22)} {}
 
 inline Matrix3x3f_a Matrix3x3f_a::operator*(const Matrix3x3f_a& a) const {
-	return Matrix3x3f_a(r[0].v[0] * a.r[0].v[0] + r[0].v[1] * a.r[1].v[0] + r[0].v[2] * a.r[2].v[0],
-						r[0].v[0] * a.r[0].v[1] + r[0].v[1] * a.r[1].v[1] + r[0].v[2] * a.r[2].v[1],
-						r[0].v[0] * a.r[0].v[2] + r[0].v[1] * a.r[1].v[2] + r[0].v[2] * a.r[2].v[2],
+	return Matrix3x3f_a(r[0][0] * a.r[0][0] + r[0][1] * a.r[1][0] + r[0][2] * a.r[2][0],
+						r[0][0] * a.r[0][1] + r[0][1] * a.r[1][1] + r[0][2] * a.r[2][1],
+						r[0][0] * a.r[0][2] + r[0][1] * a.r[1][2] + r[0][2] * a.r[2][2],
 
-						r[1].v[0] * a.r[0].v[0] + r[1].v[1] * a.r[1].v[0] + r[1].v[2] * a.r[2].v[0],
-						r[1].v[0] * a.r[0].v[1] + r[1].v[1] * a.r[1].v[1] + r[1].v[2] * a.r[2].v[1],
-						r[1].v[0] * a.r[0].v[2] + r[1].v[1] * a.r[1].v[2] + r[1].v[2] * a.r[2].v[2],
+						r[1][0] * a.r[0][0] + r[1][1] * a.r[1][0] + r[1][2] * a.r[2][0],
+						r[1][0] * a.r[0][1] + r[1][1] * a.r[1][1] + r[1][2] * a.r[2][1],
+						r[1][0] * a.r[0][2] + r[1][1] * a.r[1][2] + r[1][2] * a.r[2][2],
 
-						r[2].v[0] * a.r[0].v[0] + r[2].v[1] * a.r[1].v[0] + r[2].v[2] * a.r[2].v[0],
-						r[2].v[0] * a.r[0].v[1] + r[2].v[1] * a.r[1].v[1] + r[2].v[2] * a.r[2].v[1],
-						r[2].v[0] * a.r[0].v[2] + r[2].v[1] * a.r[1].v[2] + r[2].v[2] * a.r[2].v[2]);
+						r[2][0] * a.r[0][0] + r[2][1] * a.r[1][0] + r[2][2] * a.r[2][0],
+						r[2][0] * a.r[0][1] + r[2][1] * a.r[1][1] + r[2][2] * a.r[2][1],
+						r[2][0] * a.r[0][2] + r[2][1] * a.r[1][2] + r[2][2] * a.r[2][2]);
 }
 
 inline Matrix3x3f_a& Matrix3x3f_a::operator*=(const Matrix3x3f_a& a) {
-	Matrix3x3f_a temp(r[0].v[0] * a.r[0].v[0] + r[0].v[1] * a.r[1].v[0] + r[0].v[2] * a.r[2].v[0],
-					  r[0].v[0] * a.r[0].v[1] + r[0].v[1] * a.r[1].v[1] + r[0].v[2] * a.r[2].v[1],
-					  r[0].v[0] * a.r[0].v[2] + r[0].v[1] * a.r[1].v[2] + r[0].v[2] * a.r[2].v[2],
+	Matrix3x3f_a temp(r[0][0] * a.r[0][0] + r[0][1] * a.r[1][0] + r[0][2] * a.r[2][0],
+					  r[0][0] * a.r[0][1] + r[0][1] * a.r[1][1] + r[0][2] * a.r[2][1],
+					  r[0][0] * a.r[0][2] + r[0][1] * a.r[1][2] + r[0][2] * a.r[2][2],
 
-					  r[1].v[0] * a.r[0].v[0] + r[1].v[1] * a.r[1].v[0] + r[1].v[2] * a.r[2].v[0],
-					  r[1].v[0] * a.r[0].v[1] + r[1].v[1] * a.r[1].v[1] + r[1].v[2] * a.r[2].v[1],
-					  r[1].v[0] * a.r[0].v[2] + r[1].v[1] * a.r[1].v[2] + r[1].v[2] * a.r[2].v[2],
+					  r[1][0] * a.r[0][0] + r[1][1] * a.r[1][0] + r[1][2] * a.r[2][0],
+					  r[1][0] * a.r[0][1] + r[1][1] * a.r[1][1] + r[1][2] * a.r[2][1],
+					  r[1][0] * a.r[0][2] + r[1][1] * a.r[1][2] + r[1][2] * a.r[2][2],
 
-					  r[2].v[0] * a.r[0].v[0] + r[2].v[1] * a.r[1].v[0] + r[2].v[2] * a.r[2].v[0],
-					  r[2].v[0] * a.r[0].v[1] + r[2].v[1] * a.r[1].v[1] + r[2].v[2] * a.r[2].v[1],
-					  r[2].v[0] * a.r[0].v[2] + r[2].v[1] * a.r[1].v[2] + r[2].v[2] * a.r[2].v[2]);
+					  r[2][0] * a.r[0][0] + r[2][1] * a.r[1][0] + r[2][2] * a.r[2][0],
+					  r[2][0] * a.r[0][1] + r[2][1] * a.r[1][1] + r[2][2] * a.r[2][1],
+					  r[2][0] * a.r[0][2] + r[2][1] * a.r[1][2] + r[2][2] * a.r[2][2]);
 
 	return *this = temp;
 }
@@ -344,10 +344,10 @@ inline Matrix3x3f_a create_matrix3x3(FVector4f_a q) {
 
 	float s = 2.f / d;
 
-	float xs = q.v[0] * s,  ys = q.v[1] * s,  zs = q.v[2] * s;
-	float wx = q.v[3] * xs, wy = q.v[3] * ys, wz = q.v[3] * zs;
-	float xx = q.v[0] * xs, xy = q.v[0] * ys, xz = q.v[0] * zs;
-	float yy = q.v[1] * ys, yz = q.v[1] * zs, zz = q.v[2] * zs;
+	float xs = q[0] * s,  ys = q[1] * s,  zs = q[2] * s;
+	float wx = q[3] * xs, wy = q[3] * ys, wz = q[3] * zs;
+	float xx = q[0] * xs, xy = q[0] * ys, xz = q[0] * zs;
+	float yy = q[1] * ys, yz = q[1] * zs, zz = q[2] * zs;
 
 	return Matrix3x3f_a(1.f - (yy + zz), xy - wz,         xz + wy,
 						xy + wz,         1.f - (xx + zz), yz - wx,
@@ -355,48 +355,48 @@ inline Matrix3x3f_a create_matrix3x3(FVector4f_a q) {
 }
 
 inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m) {
-	return Vector3f_a(v.v[0] * m.r[0].v[0] + v.v[1] * m.r[1].v[0] + v.v[2] * m.r[2].v[0],
-					  v.v[0] * m.r[0].v[1] + v.v[1] * m.r[1].v[1] + v.v[2] * m.r[2].v[1],
-					  v.v[0] * m.r[0].v[2] + v.v[1] * m.r[1].v[2] + v.v[2] * m.r[2].v[2]);
+	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
+					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
+					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
 inline Vector3f_a transform_vector(FVector3f_a v, const Matrix3x3f_a& m) {
-	return Vector3f_a(v.v[0] * m.r[0].v[0] + v.v[1] * m.r[1].v[0] + v.v[2] * m.r[2].v[0],
-					  v.v[0] * m.r[0].v[1] + v.v[1] * m.r[1].v[1] + v.v[2] * m.r[2].v[1],
-					  v.v[0] * m.r[0].v[2] + v.v[1] * m.r[1].v[2] + v.v[2] * m.r[2].v[2]);
+	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
+					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
+					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
 inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix3x3f_a& m) {
-	return Vector3f_a(v.v[0] * m.r[0].v[0] + v.v[1] * m.r[0].v[1] + v.v[2] * m.r[0].v[2],
-					  v.v[0] * m.r[1].v[0] + v.v[1] * m.r[1].v[1] + v.v[2] * m.r[1].v[2],
-					  v.v[0] * m.r[2].v[0] + v.v[1] * m.r[2].v[1] + v.v[2] * m.r[2].v[2]);
+	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
+					  v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
+					  v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);
 }
 
 inline void set_rotation_x(Matrix3x3f_a& m, float a) {
 	float c = std::cos(a);
 	float s = std::sin(a);
 
-	m.r[0].v[0] = 1.f; m.r[0].v[1] = 0.f; m.r[0].v[2] = 0.f;
-	m.r[1].v[0] = 0.f; m.r[1].v[1] = c;    m.r[1].v[2] = -s;
-	m.r[2].v[0] = 0.f; m.r[2].v[1] = s;    m.r[2].v[2] =  c;
+	m.r[0][0] = 1.f; m.r[0][1] = 0.f; m.r[0][2] = 0.f;
+	m.r[1][0] = 0.f; m.r[1][1] = c;    m.r[1][2] = -s;
+	m.r[2][0] = 0.f; m.r[2][1] = s;    m.r[2][2] =  c;
 }
 
 inline void set_rotation_y(Matrix3x3f_a& m, float a) {
 	float c = std::cos(a);
 	float s = std::sin(a);
 
-	m.r[0].v[0] =  c;   m.r[0].v[1] = 0.f; m.r[0].v[2] = s;
-	m.r[1].v[0] =  0.f; m.r[1].v[1] = 1.f; m.r[1].v[2] = 0.f;
-	m.r[2].v[0] = -s;   m.r[2].v[1] = 0.f; m.r[2].v[2] = c;
+	m.r[0][0] =  c;   m.r[0][1] = 0.f; m.r[0][2] = s;
+	m.r[1][0] =  0.f; m.r[1][1] = 1.f; m.r[1][2] = 0.f;
+	m.r[2][0] = -s;   m.r[2][1] = 0.f; m.r[2][2] = c;
 }
 
 inline void set_rotation_z(Matrix3x3f_a& m, float a) {
 	float c = std::cos(a);
 	float s = std::sin(a);
 
-	m.r[0].v[0] = c;   m.r[0].v[1] = -s;   m.r[0].v[2] = 0.f;
-	m.r[1].v[0] = s;   m.r[1].v[1] =  c;   m.r[1].v[2] = 0.f;
-	m.r[2].v[0] = 0.f; m.r[2].v[1] =  0.f; m.r[2].v[2] = 1.f;
+	m.r[0][0] = c;   m.r[0][1] = -s;   m.r[0][2] = 0.f;
+	m.r[1][0] = s;   m.r[1][1] =  c;   m.r[1][2] = 0.f;
+	m.r[2][0] = 0.f; m.r[2][1] =  0.f; m.r[2][2] = 1.f;
 }
 
 inline void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a) {
@@ -404,27 +404,27 @@ inline void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a) {
 	float s = std::sin(a);
 	float t = 1.f - c;
 
-	m.r[0].v[0] = c + v.v[0] * v.v[0] * t;
-	m.r[1].v[1] = c + v.v[1] * v.v[1] * t;
-	m.r[2].v[2] = c + v.v[2] * v.v[2] * t;
+	m.r[0][0] = c + v[0] * v[0] * t;
+	m.r[1][1] = c + v[1] * v[1] * t;
+	m.r[2][2] = c + v[2] * v[2] * t;
 
-	float tmp1 = v.v[0] * v.v[1] * t;
-	float tmp2 = v.v[2] * s;
+	float tmp1 = v[0] * v[1] * t;
+	float tmp2 = v[2] * s;
 
-	m.r[1].v[0] = tmp1 + tmp2;
-	m.r[0].v[1] = tmp1 - tmp2;
+	m.r[1][0] = tmp1 + tmp2;
+	m.r[0][1] = tmp1 - tmp2;
 
-	tmp1 = v.v[0] * v.v[2] * t;
-	tmp2 = v.v[1] * s;
+	tmp1 = v[0] * v[2] * t;
+	tmp2 = v[1] * s;
 
-	m.r[2].v[0] = tmp1 - tmp2;
-	m.r[0].v[2] = tmp1 + tmp2;
+	m.r[2][0] = tmp1 - tmp2;
+	m.r[0][2] = tmp1 + tmp2;
 
-	tmp1 = v.v[1] * v.v[2] * t;
-	tmp2 = v.v[0] * s;
+	tmp1 = v[1] * v[2] * t;
+	tmp2 = v[0] * s;
 
-	m.r[2].v[1] = tmp1 + tmp2;
-	m.r[1].v[2] = tmp1 - tmp2;
+	m.r[2][1] = tmp1 + tmp2;
+	m.r[1][2] = tmp1 - tmp2;
 }
 
 }

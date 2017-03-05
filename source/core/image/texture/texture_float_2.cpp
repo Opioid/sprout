@@ -9,7 +9,7 @@ Float_2::Float_2(std::shared_ptr<Image> image) :
 	image_(*static_cast<const image::Float_2*>(image.get())) {}
 
 float Float_2::at_1(int32_t x, int32_t y) const {
-	return image_.load(x, y).v[0];
+	return image_.load(x, y)[0];
 }
 
 float2 Float_2::at_2(int32_t x, int32_t y) const {
@@ -25,19 +25,19 @@ float4 Float_2::at_4(int32_t x, int32_t y) const {
 }
 
 float4 Float_2::gather_1(int4 xy_xy1) const {
-	auto v00 = image_.load(xy_xy1.v[0], xy_xy1.v[1]);
-	auto v01 = image_.load(xy_xy1.v[0], xy_xy1.v[3]);
-	auto v10 = image_.load(xy_xy1.v[2], xy_xy1.v[1]);
-	auto v11 = image_.load(xy_xy1.v[2], xy_xy1.v[3]);
+	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
+	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
+	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
+	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
-	return float4(v00.v[0], v01.v[0], v10.v[0], v11.v[0]);
+	return float4(v00[0], v01[0], v10[0], v11[0]);
 }
 
 void Float_2::gather_2(int4 xy_xy1, float2 c[4]) const {
-	auto v00 = image_.load(xy_xy1.v[0], xy_xy1.v[1]);
-	auto v01 = image_.load(xy_xy1.v[0], xy_xy1.v[3]);
-	auto v10 = image_.load(xy_xy1.v[2], xy_xy1.v[1]);
-	auto v11 = image_.load(xy_xy1.v[2], xy_xy1.v[3]);
+	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
+	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
+	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
+	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
 	c[0] = v00;
 	c[1] = v01;
@@ -46,10 +46,10 @@ void Float_2::gather_2(int4 xy_xy1, float2 c[4]) const {
 }
 
 void Float_2::gather_3(int4 xy_xy1, float3 c[4]) const {
-	auto v00 = image_.load(xy_xy1.v[0], xy_xy1.v[1]);
-	auto v01 = image_.load(xy_xy1.v[0], xy_xy1.v[3]);
-	auto v10 = image_.load(xy_xy1.v[2], xy_xy1.v[1]);
-	auto v11 = image_.load(xy_xy1.v[2], xy_xy1.v[3]);
+	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
+	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
+	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
+	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
 	c[0] = float3(v00, 0.f);
 	c[1] = float3(v01, 0.f);
@@ -58,7 +58,7 @@ void Float_2::gather_3(int4 xy_xy1, float3 c[4]) const {
 }
 
 float Float_2::at_element_1(int32_t x, int32_t y, int32_t element) const {
-	return image_.at_element(x, y, element).v[0];
+	return image_.at_element(x, y, element)[0];
 }
 
 float2 Float_2::at_element_2(int32_t x, int32_t y, int32_t element) const {
@@ -74,7 +74,7 @@ float4 Float_2::at_element_4(int32_t x, int32_t y, int32_t element) const {
 }
 
 float Float_2::at_1(int32_t x, int32_t y, int32_t z) const {
-	return image_.load(x, y, z).v[0];
+	return image_.load(x, y, z)[0];
 }
 
 float2 Float_2::at_2(int32_t x, int32_t y, int32_t z) const {

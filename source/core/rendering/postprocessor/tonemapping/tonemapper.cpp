@@ -20,7 +20,7 @@ void Tonemapper::apply(int32_t begin, int32_t end, uint32_t /*pass*/,
 
 		float3 tonemapped = tonemap(color.xyz());
 
-		destination.at(i) = float4(tonemapped, color.v[3]);
+		destination.at(i) = float4(tonemapped, color[3]);
 	}
 }
 

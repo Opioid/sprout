@@ -72,7 +72,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 		float w = 0.1f  + 0.05f * rng.random_float();
 		float h = 0.2f  + 0.15f * rng.random_float();// + 0.15f - (0.15f * randomness);
 
-		add_blade(float3(p.v[0], 0.f, p.v[1]),
+		add_blade(float3(p[0], 0.f, p[1]),
 				  rotation_y, l, w, h, i * num_vertices, triangles, vertices);
 	}
 
@@ -153,7 +153,7 @@ void Grass::add_blade(float3_p offset,
 	for (uint32_t i = 0, len = num_segments + 2; i < len; ++i) {
 		temp += segment_controls[i].xy();
 
-		segment_uvs[i] = float2(temp.v[0] / (width * max_width), 1.f - temp.v[1]);
+		segment_uvs[i] = float2(temp[0] / (width * max_width), 1.f - temp[1]);
 	}
 
 	struct Segment {
@@ -166,62 +166,62 @@ void Grass::add_blade(float3_p offset,
 	float ax = -0.4f * math::Pi;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[0].a = segment_controls[0] * rx;
-	segments[0].b = float3(0.f, segment_controls[0].v[1], -segment_controls[0].v[2]) * rx;
+	segments[0].b = float3(0.f, segment_controls[0][1], -segment_controls[0][2]) * rx;
 
 	ax += -0.1f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[1].a = segments[0].a + segment_controls[1] * rx;
 	segments[1].b = segments[0].b + float3(0.f,
-										   segment_controls[1].v[1],
-										   -segment_controls[1].v[2]) * rx;
+										   segment_controls[1][1],
+										   -segment_controls[1][2]) * rx;
 
 	ax += -0.5f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[2].a = segments[1].a + segment_controls[2] * rx;
 	segments[2].b = segments[1].b + float3(0.f,
-										   segment_controls[2].v[1],
-										   -segment_controls[2].v[2]) * rx;
+										   segment_controls[2][1],
+										   -segment_controls[2][2]) * rx;
 
 	ax += -0.6f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[3].a = segments[2].a + segment_controls[3] * rx;
 	segments[3].b = segments[2].b + float3(0.f,
-										   segment_controls[3].v[1],
-										   -segment_controls[3].v[2]) * rx;
+										   segment_controls[3][1],
+										   -segment_controls[3][2]) * rx;
 
 	ax += -0.8f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[4].a = segments[3].a + segment_controls[4] * rx;
 	segments[4].b = segments[3].b + float3(0.f,
-										   segment_controls[4].v[1],
-										   -segment_controls[4].v[2]) * rx;
+										   segment_controls[4][1],
+										   -segment_controls[4][2]) * rx;
 
 	ax += -0.4f;
 	math::set_rotation_x(rx, lean_factor * ax);
 	segments[5].a = segments[4].a + segment_controls[5] * rx;
 
 	for (uint32_t i = 0, len = num_segments + 1; i < len; ++i) {
-		v.p = math::packed_float3(float3(-segments[i].a.v[0],
-								   segments[i].a.v[1],
-								   segments[i].a.v[2]) * rotation + offset);
+		v.p = math::packed_float3(float3(-segments[i].a[0],
+								   segments[i].a[1],
+								   segments[i].a[2]) * rotation + offset);
 
-		v.uv = float2(1.f - segment_uvs[i].v[0], segment_uvs[i].v[1]);
+		v.uv = float2(1.f - segment_uvs[i][0], segment_uvs[i][1]);
 		vertices.push_back(v);
 
-		v.p = math::packed_float3(float3(0.f, segments[i].b.v[1], segments[i].b.v[2]) * rotation + offset);
-		v.uv = float2(0.5f, segment_uvs[i].v[1]);
+		v.p = math::packed_float3(float3(0.f, segments[i].b[1], segments[i].b[2]) * rotation + offset);
+		v.uv = float2(0.5f, segment_uvs[i][1]);
 		vertices.push_back(v);
 
-		v.p = math::packed_float3(float3(segments[i].a.v[0],
-								  segments[i].a.v[1],
-								  segments[i].a.v[2]) * rotation + offset);
+		v.p = math::packed_float3(float3(segments[i].a[0],
+								  segments[i].a[1],
+								  segments[i].a[2]) * rotation + offset);
 		v.uv = segment_uvs[i];
 		vertices.push_back(v);
 	}
 
 	uint32_t i = num_segments + 1;
-	v.p = math::packed_float3(float3(0.f, segments[i].a.v[1], segments[i].a.v[2]) * rotation + offset);
-	v.uv = float2(0.5f, segment_uvs[i].v[1]);
+	v.p = math::packed_float3(float3(0.f, segments[i].a[1], segments[i].a[2]) * rotation + offset);
+	v.uv = float2(0.5f, segment_uvs[i][1]);
 	vertices.push_back(v);
 }
 

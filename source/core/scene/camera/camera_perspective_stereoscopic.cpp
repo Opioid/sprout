@@ -17,8 +17,8 @@ Perspective_stereoscopic::Perspective_stereoscopic(int2 resolution) :
 	set_fov(90.f);
 
     view_bounds_[0] = int4(int2(0, 0), resolution - int2(1, 1));
-	view_bounds_[1] = int4(int2(resolution.v[0], 0),
-						   int2(resolution.v[0] * 2, resolution.v[1]) - int2(1));
+	view_bounds_[1] = int4(int2(resolution[0], 0),
+						   int2(resolution[0] * 2, resolution[1]) - int2(1));
 }
 
 uint32_t Perspective_stereoscopic::num_views() const {
@@ -26,7 +26,7 @@ uint32_t Perspective_stereoscopic::num_views() const {
 }
 
 int2 Perspective_stereoscopic::sensor_dimensions() const {
-	return int2(resolution_.v[0] * 2, resolution_.v[1]);
+	return int2(resolution_[0] * 2, resolution_[1]);
 }
 
 int4 Perspective_stereoscopic::view_bounds(uint32_t view) const {
@@ -43,7 +43,7 @@ bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 											uint32_t view, scene::Ray& ray) const {
 	float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
 
-	float3 direction = left_top_ + coordinates.v[0] * d_x_ + coordinates.v[1] * d_y_;
+	float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 	direction = math::normalized(direction);
 
 	entity::Composed_transformation temp;
@@ -61,7 +61,7 @@ bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 
 void Perspective_stereoscopic::set_fov(float fov) {
 	float2 fr(resolution_);
-	float ratio = fr.v[0] / fr.v[1];
+	float ratio = fr[0] / fr[1];
 
 	float z = ratio * math::Pi / fov * 0.5f;
 
@@ -69,8 +69,8 @@ void Perspective_stereoscopic::set_fov(float fov) {
 	float3 right_top  ( ratio,  1.f, z);
 	float3 left_bottom(-ratio, -1.f, z);
 
-	d_x_ = (right_top   - left_top_) / fr.v[0];
-	d_y_ = (left_bottom - left_top_) / fr.v[1];
+	d_x_ = (right_top   - left_top_) / fr[0];
+	d_y_ = (left_bottom - left_top_) / fr[1];
 }
 
 void Perspective_stereoscopic::set_parameter(const std::string& name,

@@ -14,7 +14,7 @@ inline float2 ld(uint32_t i, uint32_t r0, uint32_t r1) {
 LD::LD(rnd::Generator& rng) : Sampler(rng) {}
 
 void LD::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
-	float2 s2d = ld(index, scramble_.v[0], scramble_.v[1]);
+	float2 s2d = ld(index, scramble_[0], scramble_[1]);
 
 	sample.pixel = pixel;
 	sample.pixel_uv = s2d;
@@ -23,7 +23,7 @@ void LD::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sampl
 }
 
 float2 LD::generate_sample_2D(uint32_t /*dimension*/) {
-	return ld(current_sample_2D_[0]++, scramble_.v[0], scramble_.v[1]);
+	return ld(current_sample_2D_[0]++, scramble_[0], scramble_[1]);
 }
 
 float LD::generate_sample_1D(uint32_t /*dimension*/) {

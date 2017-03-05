@@ -183,12 +183,12 @@ inline quaternion create_quaternion(const Matrix3x3<float>& m) {
 
 	if (trace > 0.f) {
 		float s = std::sqrt(trace + 1.f);
-		temp.v[3] = s * 0.5f;
+		temp[3] = s * 0.5f;
 		s = 0.5f / s;
 
-		temp.v[0] = (m.m21 - m.m12) * s;
-		temp.v[1] = (m.m02 - m.m20) * s;
-		temp.v[2] = (m.m10 - m.m01) * s;
+		temp[0] = (m.m21 - m.m12) * s;
+		temp[1] = (m.m02 - m.m20) * s;
+		temp[2] = (m.m10 - m.m01) * s;
 	} else {
 		int i = m.m00 < m.m11 ? (m.m11 < m.m22 ? 2 : 1) : (m.m00 < m.m22 ? 2 : 0);
 		int j = (i + 1) % 3;
@@ -198,7 +198,7 @@ inline quaternion create_quaternion(const Matrix3x3<float>& m) {
 		temp.v[i] = s * 0.5f;
 		s = 0.5f / s;
 
-		temp.v[3] = (m.m[k * 3 + j] - m.m[j * 3 + k]) * s;
+		temp[3] = (m.m[k * 3 + j] - m.m[j * 3 + k]) * s;
 		temp.v[j] = (m.m[j * 3 + i] + m.m[i * 3 + j]) * s;
 		temp.v[k] = (m.m[k * 3 + i] + m.m[i * 3 + k]) * s;
 	}
@@ -207,19 +207,19 @@ inline quaternion create_quaternion(const Matrix3x3<float>& m) {
 }
 
 inline quaternion create_quaternion(const Matrix3x3f_a& m) {
-	float trace = m.r[0].v[0] + m.r[1].v[1] + m.r[2].v[2];
+	float trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
 	quaternion temp;
 
 	if (trace > 0.f) {
 		float s = std::sqrt(trace + 1.f);
-		temp.v[3] = s * 0.5f;
+		temp[3] = s * 0.5f;
 		s = 0.5f / s;
 
-		temp.v[0] = (m.r[2].v[1] - m.r[1].v[2]) * s;
-		temp.v[1] = (m.r[0].v[2] - m.r[2].v[0]) * s;
-		temp.v[2] = (m.r[1].v[0] - m.r[0].v[1]) * s;
+		temp[0] = (m.r[2][1] - m.r[1][2]) * s;
+		temp[1] = (m.r[0][2] - m.r[2][0]) * s;
+		temp[2] = (m.r[1][0] - m.r[0][1]) * s;
 	} else {
-		int i = m.r[0].v[0] < m.r[1].v[1] ? (m.r[1].v[1] < m.r[2].v[2] ? 2 : 1) : (m.r[0].v[0] < m.r[2].v[2] ? 2 : 0);
+		int i = m.r[0][0] < m.r[1][1] ? (m.r[1][1] < m.r[2][2] ? 2 : 1) : (m.r[0][0] < m.r[2][2] ? 2 : 0);
 		int j = (i + 1) % 3;
 		int k = (i + 2) % 3;
 
@@ -227,7 +227,7 @@ inline quaternion create_quaternion(const Matrix3x3f_a& m) {
 		temp.v[i] = s * 0.5f;
 		s = 0.5f / s;
 
-		temp.v[3] = (m.r[k].v[j] - m.r[j].v[k]) * s;
+		temp[3] = (m.r[k].v[j] - m.r[j].v[k]) * s;
 		temp.v[j] = (m.r[j].v[i] + m.r[i].v[j]) * s;
 		temp.v[k] = (m.r[k].v[i] + m.r[i].v[k]) * s;
 	}
@@ -257,25 +257,25 @@ inline quaternion create_quaternion_rotation_z(float a) {
 }
 
 inline quaternion mul_quaternion(const quaternion& a, const quaternion& b) {
-	return quaternion((a.v[3] * b.v[0] + a.v[0] * b.v[3]) + (a.v[1] * b.v[2] - a.v[2] * b.v[1]),
-					  (a.v[3] * b.v[1] + a.v[1] * b.v[3]) + (a.v[2] * b.v[0] - a.v[0] * b.v[2]),
-					  (a.v[3] * b.v[2] + a.v[2] * b.v[3]) + (a.v[0] * b.v[1] - a.v[1] * b.v[0]),
-					  (a.v[3] * b.v[3] - a.v[0] * b.v[0]) - (a.v[1] * b.v[1] + a.v[2] * b.v[2]));
+	return quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
+					  (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
+					  (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
+					  (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
 }
 
 inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, float t) {
 	// calc cosine theta
-	float cosom = (a.v[0] * b.v[0] + a.v[1] * b.v[1]) + (a.v[2] * b.v[2] + a.v[3] * b.v[3]);
+	float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 
 	// adjust signs (if necessary)
 	quaternion end = b;
 
 	if (cosom < 0.f) {
 		cosom = -cosom;
-		end.v[0] = -end.v[0];   // Reverse all signs
-		end.v[1] = -end.v[1];
-		end.v[2] = -end.v[2];
-		end.v[3] = -end.v[3];
+		end[0] = -end[0];   // Reverse all signs
+		end[1] = -end[1];
+		end[2] = -end[2];
+		end[3] = -end[3];
 	}
 
 	// Calculate coefficients
@@ -295,10 +295,10 @@ inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, flo
 		sclq = t;
 	}
 
-	return quaternion(sclp * a.v[0] + sclq * end.v[0],
-					  sclp * a.v[1] + sclq * end.v[1],
-					  sclp * a.v[2] + sclq * end.v[2],
-					  sclp * a.v[3] + sclq * end.v[3]);
+	return quaternion(sclp * a[0] + sclq * end[0],
+					  sclp * a[1] + sclq * end[1],
+					  sclp * a[2] + sclq * end[2],
+					  sclp * a[3] + sclq * end[3]);
 }
 
 }

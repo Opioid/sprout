@@ -34,12 +34,12 @@ int4 Perspective::view_bounds(uint32_t /*view*/) const {
 }
 
 float Perspective::pixel_solid_angle() const {
-	return fov_ / static_cast<float>(resolution_.v[0]);
+	return fov_ / static_cast<float>(resolution_[0]);
 }
 
 void Perspective::update(rendering::Worker& worker) {
 	const float2 fr(resolution_);
-	const float ratio = fr.v[0] / fr.v[1];
+	const float ratio = fr[0] / fr[1];
 
 	const float z = ratio * math::Pi / fov_ * 0.5f;
 
@@ -51,13 +51,13 @@ void Perspective::update(rendering::Worker& worker) {
 	float3 right_top   = float3( ratio,  1.f, 0.f) * lens_tilt_;
 	float3 left_bottom = float3(-ratio, -1.f, 0.f) * lens_tilt_;
 
-	left_top.v[2]    += z;
-	right_top.v[2]   += z;
-	left_bottom.v[2] += z;
+	left_top[2]    += z;
+	right_top[2]   += z;
+	left_bottom[2] += z;
 
 	left_top_ = left_top + float3(lens_shift_, 0.f);
-	d_x_ = (right_top   - left_top) / fr.v[0];
-	d_y_ = (left_bottom - left_top) / fr.v[1];
+	d_x_ = (right_top   - left_top) / fr[0];
+	d_y_ = (left_bottom - left_top) / fr[1];
 
 	update_focus(worker);
 }
@@ -66,7 +66,7 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 							   uint32_t /*view*/, scene::Ray& ray) const {
 	const float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
-	float3 direction = left_top_ + coordinates.v[0] * d_x_ + coordinates.v[1] * d_y_;
+	float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
 	float3 origin;
 
@@ -75,7 +75,7 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 
 		origin = float3(lens_radius_ * lens, 0.f);
 
-		const float t = focus_distance_ / direction.v[2];
+		const float t = focus_distance_ / direction[2];
 		const float3 focus = t * direction;
 
 		direction = focus - origin;
@@ -123,15 +123,15 @@ void Perspective::set_lens(const Lens& lens) {
 void Perspective::set_focus(const Focus& focus) {
 	focus_ = focus;
 
-	focus_.point.v[0] *= static_cast<float>(resolution_.v[0]);
-	focus_.point.v[1] *= static_cast<float>(resolution_.v[1]);
+	focus_.point[0] *= static_cast<float>(resolution_[0]);
+	focus_.point[1] *= static_cast<float>(resolution_[1]);
 
 	focus_distance_ = focus_.distance;
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {
 	if (focus_.use_point && lens_radius_ > 0.f) {
-		float3 direction = left_top_ + focus_.point.v[0] * d_x_ + focus_.point.v[1] * d_y_;
+		float3 direction = left_top_ + focus_.point[0] * d_x_ + focus_.point[1] * d_y_;
 		direction = math::normalized(direction);
 
 		entity::Composed_transformation temp;
@@ -147,7 +147,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 
 		Intersection intersection;
 		if (worker.intersect(ray, intersection)) {
-			focus_distance_ = ray.max_t + focus_.point.v[2];
+			focus_distance_ = ray.max_t + focus_.point[2];
 		} else {
 			focus_distance_ = focus_.distance;
 		}

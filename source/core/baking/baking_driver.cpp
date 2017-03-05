@@ -48,16 +48,16 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 	float3 bake_space_y(0.f, 0.f, -1.f);
 	float3 bake_space_z(0.f, 1.f, 0.f);
 
-	for (int32_t y = 0; y < dimensions.v[1]; ++y) {
-		for (int32_t x = 0; x < dimensions.v[0]; ++x) {
+	for (int32_t y = 0; y < dimensions[1]; ++y) {
+		for (int32_t x = 0; x < dimensions[0]; ++x) {
 
 			worker.sampler()->resume_pixel(0, rng);
 
 			float3 offset((static_cast<float>(x) + 0.5f) *
-						   (bake_quad_range.v[0] / static_cast<float>(dimensions.v[0])),
+						   (bake_quad_range[0] / static_cast<float>(dimensions[0])),
 							0.f,
 							(static_cast<float>(y) + 0.5f) *
-							(bake_quad_range.v[2] / static_cast<float>(dimensions.v[1])));
+							(bake_quad_range[2] / static_cast<float>(dimensions[1])));
 
 			float3 origin = bake_quad_origin + offset;
 
@@ -84,10 +84,10 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/, thread::Poo
 
 			auto& pixel = target.at(x, y);
 
-			pixel.v[0] = irradiance.v[0];
-			pixel.v[1] = irradiance.v[1];
-			pixel.v[2] = irradiance.v[2];
-			pixel.v[3] = 1.f;
+			pixel[0] = irradiance[0];
+			pixel[1] = irradiance[1];
+			pixel[2] = irradiance[2];
+			pixel[3] = 1.f;
 		}
 	}
 

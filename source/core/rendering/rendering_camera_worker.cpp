@@ -23,10 +23,10 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
 	sampler::Camera_sample sample;
 	scene::Ray ray;
 
-	rnd::Generator rng(tile.v[0] + 2, tile.v[1] + 8, tile.v[2] + 16, tile.v[3] + 128);
+	rnd::Generator rng(tile[0] + 2, tile[1] + 8, tile[2] + 16, tile[3] + 128);
 
-	for (int32_t y = tile.v[1], y_len = tile.v[3] + 1; y < y_len; ++y) {
-		for (int32_t x = tile.v[0], x_len = tile.v[2] + 1; x < x_len; ++x) {
+	for (int32_t y = tile[1], y_len = tile[3] + 1; y < y_len; ++y) {
+		for (int32_t x = tile[0], x_len = tile[2] + 1; x < x_len; ++x) {
 			sampler_->resume_pixel(sample_begin, rng);
 			surface_integrator_->resume_pixel(sample_begin, rng);
 

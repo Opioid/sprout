@@ -49,42 +49,42 @@ float3 Texture::average_3() const {
 	float3 average(0.f);
 
 	const auto d = dimensions_2();
-	for (int32_t y = 0; y < d.v[1]; ++y) {
-		for (int32_t x = 0; x < d.v[0]; ++x) {
+	for (int32_t y = 0; y < d[1]; ++y) {
+		for (int32_t x = 0; x < d[0]; ++x) {
 			average += at_3(x, y);
 		}
 	}
 
 	const auto df = dimensions_float2();
-	return average / (df.v[0] * df.v[1]);
+	return average / (df[0] * df[1]);
 }
 
 float3 Texture::average_3(int32_t element) const {
 	float3 average(0.f);
 
 	const auto d = dimensions_2();
-	for (int32_t y = 0; y < d.v[1]; ++y) {
-		for (int32_t x = 0; x < d.v[0]; ++x) {
+	for (int32_t y = 0; y < d[1]; ++y) {
+		for (int32_t x = 0; x < d[0]; ++x) {
 			average += at_element_3(x, y, element);
 		}
 	}
 
 	const auto df = dimensions_float2();
-	return average / (df.v[0] * df.v[1]);
+	return average / (df[0] * df[1]);
 }
 
 float4 Texture::average_4() const {
 	float4 average(0.f);
 
 	const auto d = dimensions_2();
-	for (int32_t y = 0; y < d.v[1]; ++y) {
-		for (int32_t x = 0; x < d.v[0]; ++x) {
+	for (int32_t y = 0; y < d[1]; ++y) {
+		for (int32_t x = 0; x < d[0]; ++x) {
 			average += at_4(x, y);
 		}
 	}
 
 	const auto df = dimensions_float2();
-	return average / (df.v[0] * df.v[1]);
+	return average / (df[0] * df[1]);
 }
 
 }}

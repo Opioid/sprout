@@ -11,7 +11,7 @@ Renderer::Renderer(int2 dimensions, int32_t sqrt_num_samples) :
 	sqrt_num_samples_(sqrt_num_samples),
 	dimensions_(sqrt_num_samples * dimensions),
 	dimensions_f_(sqrt_num_samples * dimensions),
-	samples_(new float4[sqrt_num_samples * dimensions.v[0] * sqrt_num_samples * dimensions.v[1]]),
+	samples_(new float4[sqrt_num_samples * dimensions[0] * sqrt_num_samples * dimensions[1]]),
 	brush_(float4(0.f, 0.f, 0.f, 1.f))
 {}
 
@@ -28,7 +28,7 @@ void Renderer::set_brush(float4_p color) {
 }
 
 void Renderer::clear() {
-	for (int32_t i = 0, len = dimensions_.v[0] * dimensions_.v[1]; i < len; ++i) {
+	for (int32_t i = 0, len = dimensions_[0] * dimensions_[1]; i < len; ++i) {
 		samples_[i] = brush_;
 	}
 }
@@ -36,15 +36,15 @@ void Renderer::clear() {
 void Renderer::draw_circle(float2 pos, float radius) {
 	int2 sample(pos * dimensions_f_);
 
-	int32_t x = static_cast<int>(radius * dimensions_f_.v[0]);
+	int32_t x = static_cast<int>(radius * dimensions_f_[0]);
 	int32_t y = 0;
 	int32_t err = 0;
 
 	while (x >= y) {
-		set_row(sample.v[0] - x, sample.v[0] + x, sample.v[1] + y, brush_);
-		set_row(sample.v[0] - y, sample.v[0] + y, sample.v[1] + x, brush_);
-		set_row(sample.v[0] - x, sample.v[0] + x, sample.v[1] - y, brush_);
-		set_row(sample.v[0] - y, sample.v[0] + y, sample.v[1] - x, brush_);
+		set_row(sample[0] - x, sample[0] + x, sample[1] + y, brush_);
+		set_row(sample[0] - y, sample[0] + y, sample[1] + x, brush_);
+		set_row(sample[0] - x, sample[0] + x, sample[1] - y, brush_);
+		set_row(sample[0] - y, sample[0] + y, sample[1] - x, brush_);
 
 		y += 1;
 		err += 1 + 2 * y;
@@ -79,7 +79,7 @@ void Renderer::resolve_sRGB(Byte_3& image) const {
 				float3 result(0.f);
 
 				for (int32_t y = 0; y < sqrt_num_samples_; ++y) {
-					int32_t b_o = dimensions_.v[0] * (b_y + y) + b_x;
+					int32_t b_o = dimensions_[0] * (b_y + y) + b_x;
 					for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
 						int32_t s = b_o + x;
 						result += samples_[s].xyz();
@@ -114,7 +114,7 @@ void Renderer::resolve(Byte_3& image) const {
 				float3 result(0.f);
 
 				for (int32_t y = 0; y < sqrt_num_samples_; ++y) {
-					int32_t b_o = dimensions_.v[0] * (b_y + y) + b_x;
+					int32_t b_o = dimensions_[0] * (b_y + y) + b_x;
 					for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
 						int32_t s = b_o + x;
 						result += samples_[s].xyz();
@@ -132,7 +132,7 @@ void Renderer::resolve(Byte_1& image) const {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto& s = samples_[i];
 
-			image.at(i) = encoding::float_to_unorm(s.v[0]);
+			image.at(i) = encoding::float_to_unorm(s[0]);
 		}
 	} else {
 		int32_t num_samples = sqrt_num_samples_ * sqrt_num_samples_;
@@ -150,9 +150,9 @@ void Renderer::resolve(Byte_1& image) const {
 
 				for (int32_t y = 0; y < sqrt_num_samples_; ++y) {
 					for (int32_t x = 0; x < sqrt_num_samples_; ++x) {
-						int32_t s = dimensions_.v[0] * (b_y + y) + b_x + x;
+						int32_t s = dimensions_[0] * (b_y + y) + b_x + x;
 
-						result += samples_[s].v[0];
+						result += samples_[s][0];
 					}
 				}
 
@@ -163,10 +163,10 @@ void Renderer::resolve(Byte_1& image) const {
 }
 
 void Renderer::set_sample(int32_t x, int32_t y, float4_p color) {
-	x = math::mod(x, dimensions_.v[0]);
-	y = math::mod(y, dimensions_.v[1]);
+	x = math::mod(x, dimensions_[0]);
+	y = math::mod(y, dimensions_[1]);
 
-	samples_[dimensions_.v[0] * y + x] = color;
+	samples_[dimensions_[0] * y + x] = color;
 }
 
 void Renderer::set_row(int32_t start_x, int32_t end_x, int32_t y, float4_p color) {

@@ -41,6 +41,9 @@ struct Vector3 {
 
 	explicit Vector3(FVector3f_a a);
 
+	T operator[](uint32_t i) const;
+	T& operator[](uint32_t i);
+
 	Vector3 operator+(T s) const;
 
 	Vector3 operator+(const Vector3& a) const;
@@ -169,6 +172,9 @@ struct alignas(16) Vector3f_a {
 	explicit Vector3f_a(const Vector3<T>& v);
 
 	Vector2<float> xy() const;
+
+	float operator[](uint32_t i) const;
+	float& operator[](uint32_t i);
 
 	Vector3f_a operator+(float s) const;
 

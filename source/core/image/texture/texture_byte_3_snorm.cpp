@@ -36,10 +36,10 @@ float4 Byte_3_snorm::at_4(int32_t x, int32_t y) const {
 }
 
 float4 Byte_3_snorm::gather_1(int4 xy_xy1) const {
-	auto v00 = image_.load(xy_xy1.v[0], xy_xy1.v[1]);
-	auto v01 = image_.load(xy_xy1.v[0], xy_xy1.v[3]);
-	auto v10 = image_.load(xy_xy1.v[2], xy_xy1.v[1]);
-	auto v11 = image_.load(xy_xy1.v[2], xy_xy1.v[3]);
+	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
+	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
+	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
+	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
 	return float4(encoding::cached_snorm_to_float(v00.x),
 				  encoding::cached_snorm_to_float(v01.x),
@@ -48,10 +48,10 @@ float4 Byte_3_snorm::gather_1(int4 xy_xy1) const {
 }
 
 void Byte_3_snorm::gather_2(int4 xy_xy1, float2 c[4]) const {
-	auto v00 = image_.load(xy_xy1.v[0], xy_xy1.v[1]);
-	auto v01 = image_.load(xy_xy1.v[0], xy_xy1.v[3]);
-	auto v10 = image_.load(xy_xy1.v[2], xy_xy1.v[1]);
-	auto v11 = image_.load(xy_xy1.v[2], xy_xy1.v[3]);
+	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
+	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
+	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
+	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
 	c[0] = float2(encoding::cached_snorm_to_float(v00.x),
 				  encoding::cached_snorm_to_float(v00.y));
@@ -67,10 +67,10 @@ void Byte_3_snorm::gather_2(int4 xy_xy1, float2 c[4]) const {
 }
 
 void Byte_3_snorm::gather_3(int4 xy_xy1, float3 c[4]) const {
-	auto v00 = image_.load(xy_xy1.v[0], xy_xy1.v[1]);
-	auto v01 = image_.load(xy_xy1.v[0], xy_xy1.v[3]);
-	auto v10 = image_.load(xy_xy1.v[2], xy_xy1.v[1]);
-	auto v11 = image_.load(xy_xy1.v[2], xy_xy1.v[3]);
+	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
+	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
+	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
+	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
 	c[0] = float3(encoding::cached_snorm_to_float(v00.x),
 				  encoding::cached_snorm_to_float(v00.y),

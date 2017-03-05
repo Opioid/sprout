@@ -458,7 +458,7 @@ void reciprocal() {
 }
 
 inline float dotly(float3 a, float3 b) {
-	return a.v[0] * b.v[0] + a.v[1] * b.v[1] + a.v[2] * b.v[2];
+	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
 inline float simd_dot_0(const float3& a, const float3& b) {
@@ -809,8 +809,16 @@ struct alignas(16) Array_vector {
 	Array_vector(float x, float y, float z) : v{x, y, z, 0.f}
 	{}
 
+	float operator[](uint32_t i) const {
+		return v[i];
+	}
+
+	float& operator[](uint32_t i) {
+		return v[i];
+	}
+
 	Array_vector operator+(FArray_vector a) const {
-		return Array_vector(v[0] + a.v[0], v[1] + a.v[1], v[2] + a.v[2]);
+		return Array_vector(v[0] + a[0], v[1] + a[1], v[2] + a[2]);
 	}
 
 	Array_vector operator/(float s) const {
@@ -820,11 +828,11 @@ struct alignas(16) Array_vector {
 };
 
 Array_vector operator*(float s, FArray_vector v) {
-	return Array_vector(s * v.v[0], s * v.v[1], s * v.v[2]);
+	return Array_vector(s * v[0], s * v[1], s * v[2]);
 }
 
 float dot(FArray_vector a, FArray_vector b) {
-	return a.v[0] * b.v[0] + a.v[1] * b.v[1] + a.v[2] + b.v[2];
+	return a[0] * b[0] + a[1] * b[1] + a[2] + b[2];
 }
 
 Array_vector normalized(FArray_vector v) {
@@ -848,7 +856,7 @@ void test_union_vector(Union_vector* uvecs, size_t num_values) {
 	}
 
 	const auto duration = chrono::seconds_since(start);
-	std::cout << "[" << result.v[0] << ", " << result.v[1] << ", " << result.v[2] << "] in " << string::to_string(duration) << " s" << std::endl;
+	std::cout << "[" << result.x << ", " << result.y << ", " << result.z << "] in " << string::to_string(duration) << " s" << std::endl;
 }
 
 void test_struct_vector(Struct_vector* svecs, size_t num_values) {
@@ -881,14 +889,14 @@ void test_array_vector(Array_vector* vecs, size_t num_values) {
 	for (size_t i = 0; i < num_values; ++i) {
 		Array_vector v = vecs[i];
 		float d = dot(v, v);
-		Array_vector t = (v.v[1] * (result + v)) / (d + 0.1f);
-		Array_vector w = (v.v[0] * (result + v)) / (d + 0.3f);
+		Array_vector t = (v[1] * (result + v)) / (d + 0.1f);
+		Array_vector w = (v[0] * (result + v)) / (d + 0.3f);
 		Array_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
 		result = n + ((w + t) + (d * w));
 	}
 
 	const auto duration = chrono::seconds_since(start);
-	std::cout << "[" << result.v[0] << ", " << result.v[1] << ", " << result.v[2] << "] in " << string::to_string(duration) << " s" << std::endl;
+	std::cout << "[" << result[0] << ", " << result[1] << ", " << result[2] << "] in " << string::to_string(duration) << " s" << std::endl;
 }
 
 void unions() {

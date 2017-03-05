@@ -19,7 +19,7 @@ Ffmpeg::Ffmpeg(const std::string& filename, int2 dimensions, uint32_t framerate)
 	cmd << "ffmpeg";
 	cmd << " -r " << framerate;
 	cmd << " -f rawvideo -pix_fmt rgba";
-	cmd << " -s " << dimensions.v[0] << "x" << dimensions.v[1];
+	cmd << " -s " << dimensions[0] << "x" << dimensions[1];
 	cmd << " -i - -threads 0 -preset veryslow -y -pix_fmt yuv420p -crf 18 ";
 	cmd << filename << ".mp4";
 

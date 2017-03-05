@@ -16,9 +16,9 @@ float3 average_and_max_3(const Float_4& image, float3& max) {
 		const float4& pixel = image.at(i);
 		float3 pixel3 = pixel.xyz();
 		average += ilen * pixel3;
-		max = float3(std::max(pixel3.v[0], max.v[0]),
-					 std::max(pixel3.v[1], max.v[1]),
-					 std::max(pixel3.v[2], max.v[2]));
+		max = float3(std::max(pixel3[0], max[0]),
+					 std::max(pixel3[1], max[1]),
+					 std::max(pixel3[2], max[2]));
 	}
 
 	return average;

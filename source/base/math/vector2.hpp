@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace math {
 
 template<typename T>
@@ -16,6 +18,9 @@ struct Vector2 {
 	explicit Vector2(Vector2<U> v);
 
 	Vector2 yx() const;
+
+	T operator[](uint32_t i) const;
+	T& operator[](uint32_t i);
 
 	Vector2 operator+(Vector2 a) const;
 

@@ -32,7 +32,7 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 		float3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
-		float radius = transformation.scale.v[0];
+		float radius = transformation.scale[0];
 
 		if (l <= radius * radius) {
 			intersection.epsilon = 5e-4f * hit_t;
@@ -47,9 +47,9 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 			intersection.geo_n = normal;
 
 			float3 sk = k / radius;
-			float uv_scale = 0.5f * transformation.scale.v[2];
-			intersection.uv.v[0] = (math::dot(t, sk) + 1.f) * uv_scale;
-			intersection.uv.v[1] = (math::dot(b, sk) + 1.f) * uv_scale;
+			float uv_scale = 0.5f * transformation.scale[2];
+			intersection.uv[0] = (math::dot(t, sk) + 1.f) * uv_scale;
+			intersection.uv[1] = (math::dot(b, sk) + 1.f) * uv_scale;
 
 			intersection.part = 0;
 
@@ -76,7 +76,7 @@ bool Disk::intersect_p(const Transformation& transformation,
 		float3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
-		float radius = transformation.scale.v[0];
+		float radius = transformation.scale[0];
 
 		if (l <= radius * radius) {
 			return true;
@@ -100,11 +100,11 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 		float3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
-		float radius = transformation.scale.v[0];
+		float radius = transformation.scale[0];
 
 		if (l <= radius * radius) {
 			float3 sk = k / radius;
-			float uv_scale = 0.5f * transformation.scale.v[2];
+			float uv_scale = 0.5f * transformation.scale[2];
 			float2 uv((math::dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
 					  (math::dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
@@ -129,11 +129,11 @@ float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ra
 		float3 k = p - transformation.position;
 		float l = math::dot(k, k);
 
-		float radius = transformation.scale.v[0];
+		float radius = transformation.scale[0];
 
 		if (l <= radius * radius) {
 			float3 sk = k / radius;
-			float uv_scale = 0.5f * transformation.scale.v[2];
+			float uv_scale = 0.5f * transformation.scale[2];
 			float2 uv((math::dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
 					  (math::dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
@@ -162,7 +162,7 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 ls = float3(xy, 0.f);
 	float3 ws = transformation.position
-			  + transformation.scale.v[0] * math::transform_vector(ls, transformation.rotation);
+			  + transformation.scale[0] * math::transform_vector(ls, transformation.rotation);
 
 	float3 axis = ws - p;
 
@@ -210,7 +210,7 @@ float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
 	float3 k = ws - transformation.position;
 	float l = math::dot(k, k);
 
-	float radius = transformation.scale.v[0];
+	float radius = transformation.scale[0];
 
 	if (l <= radius * radius) {
 		float sl = hit_t * hit_t;
@@ -235,7 +235,7 @@ float Disk::uv_weight(float2 /*uv*/) const {
 }
 
 float Disk::area(uint32_t /*part*/, float3_p scale) const {
-	return math::Pi * scale.v[0] * scale.v[0];
+	return math::Pi * scale[0] * scale[0];
 }
 
 size_t Disk::num_bytes() const {

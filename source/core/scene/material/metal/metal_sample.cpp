@@ -138,7 +138,7 @@ void Sample_anisotropic::Layer::set(float3_p ior, float3_p absorption, float2 ro
 	float2 a = roughness * roughness;
 	a_   = a;
 	a2_  = a * a;
-	axy_ = a.v[0] * a.v[1];
+	axy_ = a[0] * a[1];
 }
 
 }}}

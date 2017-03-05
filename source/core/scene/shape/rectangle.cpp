@@ -30,14 +30,14 @@ bool Rectangle::intersect(const Transformation& transformation, Ray& ray,
 
 		float3 t = -transformation.rotation.r[0];
 
-		float u = math::dot(t, k / transformation.scale.v[0]);
+		float u = math::dot(t, k / transformation.scale[0]);
 		if (u > 1.f || u < -1.f) {
 			return false;
 		}
 
 		float3 b = -transformation.rotation.r[1];
 
-		float v = math::dot(b, k / transformation.scale.v[1]);
+		float v = math::dot(b, k / transformation.scale[1]);
 		if (v > 1.f || v < -1.f) {
 			return false;
 		}
@@ -49,8 +49,8 @@ bool Rectangle::intersect(const Transformation& transformation, Ray& ray,
 		intersection.b = b;
 		intersection.n = normal;
 		intersection.geo_n = normal;
-		intersection.uv.v[0] = 0.5f * (u + 1.f);
-		intersection.uv.v[1] = 0.5f * (v + 1.f);
+		intersection.uv[0] = 0.5f * (u + 1.f);
+		intersection.uv[1] = 0.5f * (v + 1.f);
 
 		intersection.part = 0;
 
@@ -75,14 +75,14 @@ bool Rectangle::intersect_p(const Transformation& transformation,
 
 		float3 t = -transformation.rotation.r[0];
 
-		float u = math::dot(t, k / transformation.scale.v[0]);
+		float u = math::dot(t, k / transformation.scale[0]);
 		if (u > 1.f || u < -1.f) {
 			return false;
 		}
 
 		float3 b = -transformation.rotation.r[1];
 
-		float v = math::dot(b, k / transformation.scale.v[1]);
+		float v = math::dot(b, k / transformation.scale[1]);
 		if (v > 1.f || v < -1.f) {
 			return false;
 		}
@@ -108,14 +108,14 @@ float Rectangle::opacity(const Transformation& transformation, const Ray& ray,
 
 		float3 t = -transformation.rotation.r[0];
 
-		float u = math::dot(t, k / transformation.scale.v[0]);
+		float u = math::dot(t, k / transformation.scale[0]);
 		if (u > 1.f || u < -1.f) {
 			return 0.f;
 		}
 
 		float3 b = -transformation.rotation.r[1];
 
-		float v = math::dot(b, k / transformation.scale.v[1]);
+		float v = math::dot(b, k / transformation.scale[1]);
 		if (v > 1.f || v < -1.f) {
 			return 0.f;
 		}
@@ -142,14 +142,14 @@ float3 Rectangle::thin_absorption(const Transformation& transformation, const Ra
 
 		float3 t = -transformation.rotation.r[0];
 
-		float u = math::dot(t, k / transformation.scale.v[0]);
+		float u = math::dot(t, k / transformation.scale[0]);
 		if (u > 1.f || u < -1.f) {
 			return float3(0.f);
 		}
 
 		float3 b = -transformation.rotation.r[1];
 
-		float v = math::dot(b, k / transformation.scale.v[1]);
+		float v = math::dot(b, k / transformation.scale[1]);
 		if (v > 1.f || v < -1.f) {
 			return float3(0.f);
 		}
@@ -230,14 +230,14 @@ float Rectangle::pdf(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 t = -transformation.rotation.r[0];
 
-	float u = math::dot(t, k / transformation.scale.v[0]);
+	float u = math::dot(t, k / transformation.scale[0]);
 	if (u > 1.f || u < -1.f) {
 		return 0.f;
 	}
 
 	float3 b = -transformation.rotation.r[1];
 
-	float v = math::dot(b, k / transformation.scale.v[1]);
+	float v = math::dot(b, k / transformation.scale[1]);
 	if (v > 1.f || v < -1.f) {
 		return 0.f;
 	}
@@ -249,7 +249,7 @@ float Rectangle::pdf(uint32_t /*part*/, const Transformation& transformation,
 void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 					   float3_p p, float2 uv, float area, bool two_sided,
 					   Sample& sample) const {
-	float3 ls(-2.f * uv.v[0] + 1.f, -2.f * uv.v[1] + 1.f, 0.f);
+	float3 ls(-2.f * uv[0] + 1.f, -2.f * uv[1] + 1.f, 0.f);
 	float3 ws = math::transform_point(ls, transformation.object_to_world);
 
 	float3 axis = ws - p;
@@ -302,14 +302,14 @@ float Rectangle::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 t = -transformation.rotation.r[0];
 
-	float u = math::dot(t, k / transformation.scale.v[0]);
+	float u = math::dot(t, k / transformation.scale[0]);
 	if (u > 1.f || u < -1.f) {
 		return 0.f;
 	}
 
 	float3 b = -transformation.rotation.r[1];
 
-	float v = math::dot(b, k / transformation.scale.v[1]);
+	float v = math::dot(b, k / transformation.scale[1]);
 	if (v > 1.f || v < -1.f) {
 		return 0.f;
 	}
@@ -325,7 +325,7 @@ float Rectangle::uv_weight(float2 /*uv*/) const {
 }
 
 float Rectangle::area(uint32_t /*part*/, float3_p scale) const {
-	return 4.f * scale.v[0] * scale.v[1];
+	return 4.f * scale[0] * scale[1];
 }
 
 size_t Rectangle::num_bytes() const {

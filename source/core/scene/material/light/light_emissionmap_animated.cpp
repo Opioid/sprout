@@ -93,7 +93,7 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 											const Transformation& /*transformation*/,
 											float /*area*/, bool importance_sampling,
 											thread::Pool& pool) {
-	if (average_emission_.v[0] >= 0.f) {
+	if (average_emission_[0] >= 0.f) {
 		// Hacky way to check whether prepare_sampling has been called before
 		// average_emission_ is initialized with negative values...
 		return;
@@ -103,11 +103,11 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 		const auto texture = emission_map_.texture();
 		const auto d = texture->dimensions_2();
 
-		std::vector<math::Distribution_2D::Distribution_impl> conditional(d.v[1]);
+		std::vector<math::Distribution_2D::Distribution_impl> conditional(d[1]);
 
 		std::vector<float4> artws(pool.num_threads());
 
-		const float2 rd(1.f / static_cast<float>(d.v[0]), 1.f / static_cast<float>(d.v[1]));
+		const float2 rd(1.f / static_cast<float>(d[0]), 1.f / static_cast<float>(d[1]));
 
 		const int32_t element = element_;
 
@@ -115,14 +115,14 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 
 		pool.run_range([&conditional, &artws, &shape, texture, d, rd, element, ef]
 			(uint32_t id, int32_t begin, int32_t end) {
-				std::vector<float> luminance(d.v[0]);
+				std::vector<float> luminance(d[0]);
 				float4 artw(0.f);
 
 				for (int32_t y = begin; y < end; ++y) {
-					const float v = rd.v[1] * (static_cast<float>(y) + 0.5f);
+					const float v = rd[1] * (static_cast<float>(y) + 0.5f);
 
-					for (int32_t x = 0; x < d.v[0]; ++x) {
-						const float u = rd.v[0] * (static_cast<float>(x) + 0.5f);
+					for (int32_t x = 0; x < d[0]; ++x) {
+						const float u = rd[0] * (static_cast<float>(x) + 0.5f);
 
 						const float uv_weight = shape.uv_weight(float2(u, v));
 
@@ -133,11 +133,11 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 						artw += float4(uv_weight * radiance, uv_weight);
 					}
 
-					conditional[y].init(luminance.data(), d.v[0]);
+					conditional[y].init(luminance.data(), d[0]);
 				}
 
 				artws[id] = artw;
-			}, 0, d.v[1]);
+			}, 0, d[1]);
 
 		// arw: (float3(averave_radiance), total_weight)
 		float4 artw(0.f);
@@ -145,9 +145,9 @@ void Emissionmap_animated::prepare_sampling(const shape::Shape& shape, uint32_t 
 			artw += a;
 		}
 
-		average_emission_ = artw.xyz() / artw.v[3];
+		average_emission_ = artw.xyz() / artw[3];
 
-		total_weight_ = artw.v[3];
+		total_weight_ = artw[3];
 
 		distribution_.init(conditional);
 	} else {

@@ -6,7 +6,7 @@
 
 template<typename T>
 std::ostream& operator<<(std::ostream& stream, const math::Vector2<T>& v) {
-	return stream << "[" << v.v[0] << ", " << v.v[1] << "]";
+	return stream << "[" << v[0] << ", " << v[1] << "]";
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const math::Vector3<uint8_t>& v) {
@@ -21,11 +21,11 @@ std::ostream& operator<<(std::ostream& stream, const math::Vector3<T>& v) {
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const math::Vector3f_a& v) {
-	return stream << "[" << v.v[0] << ", " << v.v[1] << ", " << v.v[2] << "]";
+	return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << "]";
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const math::Vector4f_a& v) {
-	return stream << "[" << v.v[0] << ", " << v.v[1] << ", " << v.v[2] << ", " << v.v[3] << "]";
+	return stream << "[" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3] << "]";
 }
 
 template<typename T>

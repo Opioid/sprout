@@ -54,8 +54,8 @@ int32_t Image::volume() const {
 
 int2 Image::coordinates_2(int32_t index) const {
 	int2 c;
-	c.v[1] = index / description_.dimensions.x;
-	c.v[0] = index - c.v[1] * description_.dimensions.x;
+	c[1] = index / description_.dimensions.x;
+	c[0] = index - c[1] * description_.dimensions.x;
 	return c;
 }
 

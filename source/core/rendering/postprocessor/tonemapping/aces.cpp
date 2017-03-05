@@ -7,9 +7,9 @@ Aces::Aces(float hdr_max) :
 	normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
 
 float3 Aces::tonemap(float3_p color) const {
-	return normalization_factor_ * float3(tonemap_function(color.v[0]),
-										  tonemap_function(color.v[1]),
-										  tonemap_function(color.v[2]));
+	return normalization_factor_ * float3(tonemap_function(color[0]),
+										  tonemap_function(color[1]),
+										  tonemap_function(color[2]));
 }
 
 float Aces::tonemap_function(float x) {

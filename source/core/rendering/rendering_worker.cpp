@@ -56,7 +56,7 @@ float4 Worker::li(scene::Ray& ray) {
 
 		if (hit) {
 			float4 li = surface_integrator_->li(*this, ray, intersection);
-			return float4(vtr * li.xyz(), li.v[3]) + vli;
+			return float4(vtr * li.xyz(), li[3]) + vli;
 		} else {
 			return vli;
 		}

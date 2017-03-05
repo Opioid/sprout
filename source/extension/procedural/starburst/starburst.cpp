@@ -285,8 +285,8 @@ void render_aperture(const Aperture& aperture, Float_1& signal) {
 
 			float a = 0.f;
 			for (auto k : kernel) {
-				float2 p(-1.f + 2.f * ((fx + k.v[0]) / fr),
-						  1.f - 2.f * ((fy + k.v[1]) / fr));
+				float2 p(-1.f + 2.f * ((fx + k[0]) / fr),
+						  1.f - 2.f * ((fy + k[1]) / fr));
 
 				a += kn * aperture.evaluate(p, radius);
 			}
@@ -399,22 +399,22 @@ void diffraction(Spectrum* result, const float* squared_magnitude,
 
 			float2 q = i_s * p;
 
-			q.v[0] =  0.5f * (q.v[0] + 1.f);
-			q.v[1] = -0.5f * (q.v[1] - 1.f);
+			q[0] =  0.5f * (q[0] + 1.f);
+			q[1] = -0.5f * (q[1] - 1.f);
 
 		//	q = math::saturate(q);
 
 			float r;
 
-			if (q.v[0] < 0.f || q.v[0] >= 1.f
-			||  q.v[1] < 0.f || q.v[1] >= 1.f) {
+			if (q[0] < 0.f || q[0] >= 1.f
+			||  q[1] < 0.f || q[1] >= 1.f) {
 				r = 0.f;
 			} else {
 				float dp = math::dot(p, p);
 				float v = std::max(1.f - dp * dp, 0.f);
 
-				int32_t sx = static_cast<int32_t>(q.v[0] * fr);
-				int32_t sy = static_cast<int32_t>(q.v[1] * fr);
+				int32_t sx = static_cast<int32_t>(q[0] * fr);
+				int32_t sy = static_cast<int32_t>(q[1] * fr);
 				int32_t i = sy * resolution + sx;
 				r = v * normalization * squared_magnitude[i];
 			}
@@ -445,18 +445,18 @@ float sign(float x) {
 
 float2 sqrtc(float2 c) {
 	float l = math::length(c);
-	return 0.7071067f * float2(std::sqrt(l + c.v[0]), std::sqrt(l - c.v[0]) * sign(c.v[1]));
+	return 0.7071067f * float2(std::sqrt(l + c[0]), std::sqrt(l - c[0]) * sign(c[1]));
 }
 
 float2 mulc(float2 a, float2 b) {
-	return float2(a.v[0] * b.v[0] - a.v[1] * b.v[1], a.v[0] * b.v[1] + a.v[1] * b.v[0]);
+	return float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
 }
 
 float2 mulc(float2 a, float t) {
 	float c = std::cos(t);
 	float s = std::sin(t);
 
-	return float2(a.v[0] * c - a.v[1] * s, a.v[0] * s + a.v[1] * c);
+	return float2(a[0] * c - a[1] * s, a[0] * s + a[1] * c);
 }
 
 void fdft(Float_2& destination, const texture::Float_2& texture,
@@ -468,7 +468,7 @@ void fdft(Float_2& destination, const texture::Float_2& texture,
 	const int2 d = texture.dimensions_2();
 	const float2 df(d);
 
-	const float m = df.v[0];
+	const float m = df[0];
 	const float half_m = 0.5f * m;
 	const float sqrt_m = std::sqrt(m);
 	const float i_sqrt_m = 1.f / sqrt_m;
@@ -484,11 +484,11 @@ void fdft(Float_2& destination, const texture::Float_2& texture,
 	float2 coordinates = float2(0.5f, static_cast<float>(begin) + 0.5f);
 	float2 uv;
 
-	for (int32_t y = begin; y < end; ++y, ++coordinates.v[1]) {
-		coordinates.v[0] = 0.5f;
-		uv.v[1] = coordinates.v[1] / df.v[1];
-		for (int32_t x = 0; x < d.v[0]; ++x, ++coordinates.v[0]) {
-			uv.v[0] = coordinates.v[0] / df.v[0];
+	for (int32_t y = begin; y < end; ++y, ++coordinates[1]) {
+		coordinates[0] = 0.5f;
+		uv[1] = coordinates[1] / df[1];
+		for (int32_t x = 0; x < d[0]; ++x, ++coordinates[0]) {
+			uv[0] = coordinates[0] / df[0];
 
 			const float u = (coordinates.v[mode] - half_m) * i_sqrt_m;
 

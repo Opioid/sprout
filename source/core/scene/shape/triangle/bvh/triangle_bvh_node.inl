@@ -11,14 +11,14 @@ inline void Node::set_aabb(const math::aabb& aabb) {
 //	bounds[1] = aabb.max();
 
 	const auto& mi = aabb.min();
-	min.v[0] = mi.v[0];
-	min.v[1] = mi.v[1];
-	min.v[2] = mi.v[2];
+	min.v[0] = mi[0];
+	min.v[1] = mi[1];
+	min.v[2] = mi[2];
 
 	const auto& ma = aabb.max();
-	max.v[0] = ma.v[0];
-	max.v[1] = ma.v[1];
-	max.v[2] = ma.v[2];
+	max.v[0] = ma[0];
+	max.v[1] = ma[1];
+	max.v[2] = ma[2];
 }
 
 inline uint32_t Node::next() const {

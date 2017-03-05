@@ -37,8 +37,8 @@ inline float distribution_isotropic(float n_dot_h, float a2) {
 
 inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
 									  float2 a2, float axy) {
-	const float x = (x_dot_h * x_dot_h) / a2.v[0];
-	const float y = (y_dot_h * y_dot_h) / a2.v[1];
+	const float x = (x_dot_h * x_dot_h) / a2[0];
+	const float y = (y_dot_h * y_dot_h) / a2[1];
 	const float d = (x + y) + (n_dot_h * n_dot_h);
 
 	return 1.f / ((math::Pi * axy) * (d * d));
@@ -100,10 +100,10 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	const float2 xi = sampler.generate_sample_2D();
 
 	const float a2 = layer.a2_;
-	const float n_dot_h = std::sqrt((1.f - xi.v[1]) / ((a2 - 1.f) * xi.v[1] + 1.f));
+	const float n_dot_h = std::sqrt((1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f));
 
 	const float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-	const float phi = (2.f * math::Pi) * xi.v[0];
+	const float phi = (2.f * math::Pi) * xi[0];
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
 
@@ -165,10 +165,10 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 	const float2 xi = sampler.generate_sample_2D();
 
 	const float a2 = layer.a2_;
-	const float n_dot_h = std::sqrt((1.f - xi.v[1]) / ((a2 - 1.f) * xi.v[1] + 1.f));
+	const float n_dot_h = std::sqrt((1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f));
 
 	const float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-	const float phi = (2.f * math::Pi) * xi.v[0];
+	const float phi = (2.f * math::Pi) * xi[0];
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
 
@@ -240,10 +240,10 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	const float2 xi = sampler.generate_sample_2D();
 
 	const float a2 = layer.a2_;
-	const float n_dot_h = std::sqrt((1.f - xi.v[1]) / ((a2 - 1.f) * xi.v[1] + 1.f));
+	const float n_dot_h = std::sqrt((1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f));
 
 	const float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
-	const float phi = (2.f * math::Pi) * xi.v[0];
+	const float phi = (2.f * math::Pi) * xi[0];
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
 
@@ -299,12 +299,12 @@ float Anisotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, cons
 						   sampler::Sampler& sampler, bxdf::Result& result) {
 	const float2 xi = sampler.generate_sample_2D();
 
-	const float phi = (2.f * math::Pi) * xi.v[0];
+	const float phi = (2.f * math::Pi) * xi[0];
 	const float sin_phi = std::sin(phi);
 	const float cos_phi = std::cos(phi);
 
-	const float t0 = std::sqrt(xi.v[1] / (1.f - xi.v[1]));
-	const float3 t1 = layer.a_.v[0] * cos_phi * layer.t_ + layer.a_.v[1] * sin_phi * layer.b_;
+	const float t0 = std::sqrt(xi[1] / (1.f - xi[1]));
+	const float3 t1 = layer.a_[0] * cos_phi * layer.t_ + layer.a_[1] * sin_phi * layer.b_;
 
 	const float3 h = math::normalized(t0 * t1 + layer.n_);
 

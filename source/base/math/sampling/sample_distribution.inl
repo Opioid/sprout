@@ -84,12 +84,12 @@ inline void golden_ratio(float* samples, uint32_t num_samples, float r) {
 
 inline void golden_ratio(float2* samples, uint32_t num_samples, float2 r) {
 	// set the initial first coordinate
-	float x = r.v[0];
+	float x = r[0];
 	float min = x;
 	uint32_t idx = 0;
 	// set the first coordinates
 	for (uint32_t i = 0; i < num_samples; ++i) {
-		samples[i].v[1] = x;
+		samples[i][1] = x;
 		// keep the minimum
 		if (x < min) {
 			min = x;
@@ -122,7 +122,7 @@ inline void golden_ratio(float2* samples, uint32_t num_samples, float2 r) {
 	}
 
 	// permute the first coordinates
-	samples[0].v[0] = samples[idx].v[1];
+	samples[0][0] = samples[idx][1];
 	for (uint32_t i = 1; i < num_samples; ++i) {
 		if (idx < dec) {
 			idx += inc;
@@ -132,14 +132,14 @@ inline void golden_ratio(float2* samples, uint32_t num_samples, float2 r) {
 		} else {
 			idx -= dec;
 		}
-		samples[i].v[0] = samples[idx].v[1];
+		samples[i][0] = samples[idx][1];
 	}
 
 	// set the initial second coordinate
-	float y = r.v[1];
+	float y = r[1];
 	// set the second coordinates
 	for (uint32_t i = 0; i < num_samples; ++i) {
-		samples[i].v[1] = y;
+		samples[i][1] = y;
 
 		// increment the coordinate
 		y += 0.618033988749894f;

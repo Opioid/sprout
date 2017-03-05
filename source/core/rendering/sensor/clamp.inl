@@ -12,10 +12,10 @@ inline float4 Identity::clamp(float4_p color) const {
 inline Clamp::Clamp(float3_p max) : max_(max) {}
 
 inline float4 Clamp::clamp(float4_p color) const {
-	return float4(std::min(color.v[0], max_.v[0]),
-				  std::min(color.v[1], max_.v[1]),
-				  std::min(color.v[2], max_.v[2]),
-				  color.v[3]);
+	return float4(std::min(color[0], max_[0]),
+				  std::min(color[1], max_[1]),
+				  std::min(color[2], max_[2]),
+				  color[3]);
 }
 
 }}}

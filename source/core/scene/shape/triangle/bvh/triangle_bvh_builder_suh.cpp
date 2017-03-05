@@ -125,9 +125,9 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 
 	uint8_t bb_axis;
 
-	if (halfsize.v[0] >= halfsize.v[1] && halfsize.v[0] >= halfsize.v[2]) {
+	if (halfsize[0] >= halfsize[1] && halfsize[0] >= halfsize[2]) {
 		bb_axis = 0;
-	} else if (halfsize.v[1] >= halfsize.v[0] && halfsize.v[1] >= halfsize.v[2]) {
+	} else if (halfsize[1] >= halfsize[0] && halfsize[1] >= halfsize[2]) {
 		bb_axis = 1;
 	} else {
 		bb_axis = 2;

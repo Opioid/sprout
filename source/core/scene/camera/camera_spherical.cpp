@@ -13,8 +13,8 @@ namespace scene { namespace camera {
 Spherical::Spherical(int2 resolution) :
 	Camera(resolution) {
 	float2 fr(resolution);
-	d_x_ = 1.f / fr.v[0];
-	d_y_ = 1.f / fr.v[1];
+	d_x_ = 1.f / fr[0];
+	d_y_ = 1.f / fr[1];
 }
 
 uint32_t Spherical::num_views() const {
@@ -39,8 +39,8 @@ bool Spherical::generate_ray(const sampler::Camera_sample& sample,
 							 uint32_t /*view*/, scene::Ray& ray) const {
 	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
-	float x = d_x_ * coordinates.v[0];
-	float y = d_y_ * coordinates.v[1];
+	float x = d_x_ * coordinates[0];
+	float y = d_y_ * coordinates[1];
 
 	float phi   = (x - 0.5f) * (2.f * math::Pi);
 	float theta = y * math::Pi;

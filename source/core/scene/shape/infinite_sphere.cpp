@@ -31,8 +31,8 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 
 		float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
 		xyz = math::normalized(xyz);
-		intersection.uv.v[0] = std::atan2(xyz.v[0], xyz.v[2]) * (math::Pi_inv * 0.5f) + 0.5f;
-		intersection.uv.v[1] = std::acos(xyz.v[1]) * math::Pi_inv;
+		intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+		intersection.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
 		intersection.p = ray.point(Ray_max_t);
 		const float3 n = -ray.direction;
@@ -85,8 +85,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 
 	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	xyz = math::normalized(xyz);
-	sample.uv.v[0] = std::atan2(xyz.v[0], xyz.v[2]) * (math::Pi_inv * 0.5f) + 0.5f;
-	sample.uv.v[1] = std::acos(xyz.v[1]) * math::Pi_inv;
+	sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+	sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
 	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
@@ -105,8 +105,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 
 	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	xyz = math::normalized(xyz);
-	sample.uv.v[0] = std::atan2(xyz.v[0], xyz.v[2]) * (math::Pi_inv * 0.5f) + 0.5f;
-	sample.uv.v[1] = std::acos(xyz.v[1]) * math::Pi_inv;
+	sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+	sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
 	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (4.f * math::Pi);
@@ -128,8 +128,8 @@ float Infinite_sphere::pdf(uint32_t /*part*/, const Transformation& /*transforma
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							 float3_p /*p*/, float2 uv, float /*area*/, bool /*two_sided*/,
 							 Sample& sample) const {
-	const float phi   = (uv.v[0] - 0.5f) * (2.f * math::Pi);
-	const float theta = uv.v[1] * math::Pi;
+	const float phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
+	const float theta = uv[1] * math::Pi;
 
 	const float sin_phi   = std::sin(phi);
 	const float cos_phi   = std::cos(phi);
@@ -152,17 +152,17 @@ float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transform
 							  float2& uv) const {
 	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
 	xyz = math::normalized(xyz);
-	uv.v[0] = std::atan2(xyz.v[0], xyz.v[2]) * (math::Pi_inv * 0.5f) + 0.5f;
-	uv.v[1] = std::acos(xyz.v[1]) * math::Pi_inv;
+	uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+	uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
 	// sin_theta because of the uv weight
-	const float sin_theta = std::sqrt(1.f - xyz.v[1] * xyz.v[1]);
+	const float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
 
 	return 1.f / ((4.f * math::Pi) * sin_theta);
 }
 
 float Infinite_sphere::uv_weight(float2 uv) const {
-	float sin_theta = std::sin(uv.v[1] * math::Pi);
+	float sin_theta = std::sin(uv[1] * math::Pi);
 
 	return sin_theta;
 }

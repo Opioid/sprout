@@ -106,7 +106,7 @@ inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
 #elif defined(_SU_SSE_INTRINSICS_)
 	Vector t = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
 	_mm_storel_epi64(reinterpret_cast<__m128i*>(&destination), _mm_castps_si128(v));
-	_mm_store_ss(&destination.v[2], t);
+	_mm_store_ss(&destination[2], t);
 #endif
 }
 

@@ -440,43 +440,43 @@ inline Vector3f_a Matrix4x4f_a::w() const {
 }
 
 inline Matrix4x4f_a Matrix4x4f_a::operator*(const Matrix4x4f_a& o) const {
-	return Matrix4x4f_a((r[0].v[0] * o.r[0].v[0] + r[0].v[1] * o.r[1].v[0]) + (r[0].v[2] * o.r[2].v[0] + r[0].v[3] * o.r[3].v[0]),
-						(r[0].v[0] * o.r[0].v[1] + r[0].v[1] * o.r[1].v[1]) + (r[0].v[2] * o.r[2].v[1] + r[0].v[3] * o.r[3].v[1]),
-						(r[0].v[0] * o.r[0].v[2] + r[0].v[1] * o.r[1].v[2]) + (r[0].v[2] * o.r[2].v[2] + r[0].v[3] * o.r[3].v[2]),
-						(r[0].v[0] * o.r[0].v[3] + r[0].v[1] * o.r[1].v[3]) + (r[0].v[2] * o.r[2].v[3] + r[0].v[3] * o.r[3].v[3]),
+	return Matrix4x4f_a((r[0][0] * o.r[0][0] + r[0][1] * o.r[1][0]) + (r[0][2] * o.r[2][0] + r[0][3] * o.r[3][0]),
+						(r[0][0] * o.r[0][1] + r[0][1] * o.r[1][1]) + (r[0][2] * o.r[2][1] + r[0][3] * o.r[3][1]),
+						(r[0][0] * o.r[0][2] + r[0][1] * o.r[1][2]) + (r[0][2] * o.r[2][2] + r[0][3] * o.r[3][2]),
+						(r[0][0] * o.r[0][3] + r[0][1] * o.r[1][3]) + (r[0][2] * o.r[2][3] + r[0][3] * o.r[3][3]),
 
-						(r[1].v[0] * o.r[0].v[0] + r[1].v[1] * o.r[1].v[0]) + (r[1].v[2] * o.r[2].v[0] + r[1].v[3] * o.r[3].v[0]),
-						(r[1].v[0] * o.r[0].v[1] + r[1].v[1] * o.r[1].v[1]) + (r[1].v[2] * o.r[2].v[1] + r[1].v[3] * o.r[3].v[1]),
-						(r[1].v[0] * o.r[0].v[2] + r[1].v[1] * o.r[1].v[2]) + (r[1].v[2] * o.r[2].v[2] + r[1].v[3] * o.r[3].v[2]),
-						(r[1].v[0] * o.r[0].v[3] + r[1].v[1] * o.r[1].v[3]) + (r[1].v[2] * o.r[2].v[3] + r[1].v[3] * o.r[3].v[3]),
+						(r[1][0] * o.r[0][0] + r[1][1] * o.r[1][0]) + (r[1][2] * o.r[2][0] + r[1][3] * o.r[3][0]),
+						(r[1][0] * o.r[0][1] + r[1][1] * o.r[1][1]) + (r[1][2] * o.r[2][1] + r[1][3] * o.r[3][1]),
+						(r[1][0] * o.r[0][2] + r[1][1] * o.r[1][2]) + (r[1][2] * o.r[2][2] + r[1][3] * o.r[3][2]),
+						(r[1][0] * o.r[0][3] + r[1][1] * o.r[1][3]) + (r[1][2] * o.r[2][3] + r[1][3] * o.r[3][3]),
 
-						(r[2].v[0] * o.r[0].v[0] + r[2].v[1] * o.r[1].v[0]) + (r[2].v[2] * o.r[2].v[0] + r[2].v[3] * o.r[3].v[0]),
-						(r[2].v[0] * o.r[0].v[1] + r[2].v[1] * o.r[1].v[1]) + (r[2].v[2] * o.r[2].v[1] + r[2].v[3] * o.r[3].v[1]),
-						(r[2].v[0] * o.r[0].v[2] + r[2].v[1] * o.r[1].v[2]) + (r[2].v[2] * o.r[2].v[2] + r[2].v[3] * o.r[3].v[2]),
-						(r[2].v[0] * o.r[0].v[3] + r[2].v[1] * o.r[1].v[3]) + (r[2].v[2] * o.r[2].v[3] + r[2].v[3] * o.r[3].v[3]),
+						(r[2][0] * o.r[0][0] + r[2][1] * o.r[1][0]) + (r[2][2] * o.r[2][0] + r[2][3] * o.r[3][0]),
+						(r[2][0] * o.r[0][1] + r[2][1] * o.r[1][1]) + (r[2][2] * o.r[2][1] + r[2][3] * o.r[3][1]),
+						(r[2][0] * o.r[0][2] + r[2][1] * o.r[1][2]) + (r[2][2] * o.r[2][2] + r[2][3] * o.r[3][2]),
+						(r[2][0] * o.r[0][3] + r[2][1] * o.r[1][3]) + (r[2][2] * o.r[2][3] + r[2][3] * o.r[3][3]),
 
-						(r[3].v[0] * o.r[0].v[0] + r[3].v[1] * o.r[1].v[0]) + (r[3].v[2] * o.r[2].v[0] + r[3].v[3] * o.r[3].v[0]),
-						(r[3].v[0] * o.r[0].v[1] + r[3].v[1] * o.r[1].v[1]) + (r[3].v[2] * o.r[2].v[1] + r[3].v[3] * o.r[3].v[1]),
-						(r[3].v[0] * o.r[0].v[2] + r[3].v[1] * o.r[1].v[2]) + (r[3].v[2] * o.r[2].v[2] + r[3].v[3] * o.r[3].v[2]),
-						(r[3].v[0] * o.r[0].v[3] + r[3].v[1] * o.r[1].v[3]) + (r[3].v[2] * o.r[2].v[3] + r[3].v[3] * o.r[3].v[3]));
+						(r[3][0] * o.r[0][0] + r[3][1] * o.r[1][0]) + (r[3][2] * o.r[2][0] + r[3][3] * o.r[3][0]),
+						(r[3][0] * o.r[0][1] + r[3][1] * o.r[1][1]) + (r[3][2] * o.r[2][1] + r[3][3] * o.r[3][1]),
+						(r[3][0] * o.r[0][2] + r[3][1] * o.r[1][2]) + (r[3][2] * o.r[2][2] + r[3][3] * o.r[3][2]),
+						(r[3][0] * o.r[0][3] + r[3][1] * o.r[1][3]) + (r[3][2] * o.r[2][3] + r[3][3] * o.r[3][3]));
 }
 
 inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a(v.v[0] * m.r[0].v[0] + v.v[1] * m.r[1].v[0] + v.v[2] * m.r[2].v[0],
-					  v.v[0] * m.r[0].v[1] + v.v[1] * m.r[1].v[1] + v.v[2] * m.r[2].v[1],
-					  v.v[0] * m.r[0].v[2] + v.v[1] * m.r[1].v[2] + v.v[2] * m.r[2].v[2]);
+	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
+					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
+					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
 inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a(v.v[0] * m.r[0].v[0] + v.v[1] * m.r[0].v[1] + v.v[2] * m.r[0].v[2],
-					  v.v[0] * m.r[1].v[0] + v.v[1] * m.r[1].v[1] + v.v[2] * m.r[1].v[2],
-					  v.v[0] * m.r[2].v[0] + v.v[1] * m.r[2].v[1] + v.v[2] * m.r[2].v[2]);
+	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
+					  v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
+					  v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);
 }
 
 inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
-	return Vector3f_a((v.v[0] * m.r[0].v[0] + v.v[1] * m.r[1].v[0]) + (v.v[2] * m.r[2].v[0] + m.r[3].v[0]),
-					  (v.v[0] * m.r[0].v[1] + v.v[1] * m.r[1].v[1]) + (v.v[2] * m.r[2].v[1] + m.r[3].v[1]),
-					  (v.v[0] * m.r[0].v[2] + v.v[1] * m.r[1].v[2]) + (v.v[2] * m.r[2].v[2] + m.r[3].v[2]));
+	return Vector3f_a((v[0] * m.r[0][0] + v[1] * m.r[1][0]) + (v[2] * m.r[2][0] + m.r[3][0]),
+					  (v[0] * m.r[0][1] + v[1] * m.r[1][1]) + (v[2] * m.r[2][1] + m.r[3][1]),
+					  (v[0] * m.r[0][2] + v[1] * m.r[1][2]) + (v[2] * m.r[2][2] + m.r[3][2]));
 }
 
 inline Matrix4x4f_a create_matrix4x4(FVector4f_a q) {
@@ -484,10 +484,10 @@ inline Matrix4x4f_a create_matrix4x4(FVector4f_a q) {
 
 	const float s = 2.f / d;
 
-	const float xs = q.v[0] * s,  ys = q.v[1] * s,  zs = q.v[2] * s;
-	const float wx = q.v[3] * xs, wy = q.v[3] * ys, wz = q.v[3] * zs;
-	const float xx = q.v[0] * xs, xy = q.v[0] * ys, xz = q.v[0] * zs;
-	const float yy = q.v[1] * ys, yz = q.v[1] * zs, zz = q.v[2] * zs;
+	const float xs = q[0] * s,  ys = q[1] * s,  zs = q[2] * s;
+	const float wx = q[3] * xs, wy = q[3] * ys, wz = q[3] * zs;
+	const float xx = q[0] * xs, xy = q[0] * ys, xz = q[0] * zs;
+	const float yy = q[1] * ys, yz = q[1] * zs, zz = q[2] * zs;
 
 	return Matrix4x4f_a(1.f - (yy + zz), xy - wz,         xz + wy,			0.f,
 						xy + wz,         1.f - (xx + zz), yz - wx,			0.f,
@@ -496,28 +496,28 @@ inline Matrix4x4f_a create_matrix4x4(FVector4f_a q) {
 }
 
 inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
-	const float m00_11 = m.r[0].v[0] * m.r[1].v[1];
-	const float m01_12 = m.r[0].v[1] * m.r[1].v[2];
-	const float m02_10 = m.r[0].v[2] * m.r[1].v[0];
-	const float m00_12 = m.r[0].v[0] * m.r[1].v[2];
-	const float m01_10 = m.r[0].v[1] * m.r[1].v[0];
-	const float m02_11 = m.r[0].v[2] * m.r[1].v[1];
+	const float m00_11 = m.r[0][0] * m.r[1][1];
+	const float m01_12 = m.r[0][1] * m.r[1][2];
+	const float m02_10 = m.r[0][2] * m.r[1][0];
+	const float m00_12 = m.r[0][0] * m.r[1][2];
+	const float m01_10 = m.r[0][1] * m.r[1][0];
+	const float m02_11 = m.r[0][2] * m.r[1][1];
 
-	const float id = 1.f / ((m00_11 * m.r[2].v[2] + m01_12 * m.r[2].v[0] + m02_10 * m.r[2].v[1]) -
-							(m00_12 * m.r[2].v[1] + m01_10 * m.r[2].v[2] + m02_11 * m.r[2].v[0]));
+	const float id = 1.f / ((m00_11 * m.r[2][2] + m01_12 * m.r[2][0] + m02_10 * m.r[2][1]) -
+							(m00_12 * m.r[2][1] + m01_10 * m.r[2][2] + m02_11 * m.r[2][0]));
 
-	const float m11_22 = m.r[1].v[1] * m.r[2].v[2];
-	const float m12_21 = m.r[1].v[2] * m.r[2].v[1];
-	const float m02_21 = m.r[0].v[2] * m.r[2].v[1];
-	const float m01_22 = m.r[0].v[1] * m.r[2].v[2];
-	const float m12_20 = m.r[1].v[2] * m.r[2].v[0];
-	const float m10_22 = m.r[1].v[0] * m.r[2].v[2];
-	const float m00_22 = m.r[0].v[0] * m.r[2].v[2];
-	const float m02_20 = m.r[0].v[2] * m.r[2].v[0];
-	const float m10_21 = m.r[1].v[0] * m.r[2].v[1];
-	const float m11_20 = m.r[1].v[1] * m.r[2].v[0];
-	const float m01_20 = m.r[0].v[1] * m.r[2].v[0];
-	const float m00_21 = m.r[0].v[0] * m.r[2].v[1];
+	const float m11_22 = m.r[1][1] * m.r[2][2];
+	const float m12_21 = m.r[1][2] * m.r[2][1];
+	const float m02_21 = m.r[0][2] * m.r[2][1];
+	const float m01_22 = m.r[0][1] * m.r[2][2];
+	const float m12_20 = m.r[1][2] * m.r[2][0];
+	const float m10_22 = m.r[1][0] * m.r[2][2];
+	const float m00_22 = m.r[0][0] * m.r[2][2];
+	const float m02_20 = m.r[0][2] * m.r[2][0];
+	const float m10_21 = m.r[1][0] * m.r[2][1];
+	const float m11_20 = m.r[1][1] * m.r[2][0];
+	const float m01_20 = m.r[0][1] * m.r[2][0];
+	const float m00_21 = m.r[0][0] * m.r[2][1];
 
 	return Matrix4x4f_a((m11_22 - m12_21) * id,
 						(m02_21 - m01_22) * id,
@@ -534,12 +534,12 @@ inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 						(m00_11 - m01_10) * id,
 						0.f,
 
-						((m10_22 * m.r[3].v[1] + m11_20 * m.r[3].v[2] + m12_21 * m.r[3].v[0]) -
-						 (m10_21 * m.r[3].v[2] + m11_22 * m.r[3].v[0] + m12_20 * m.r[3].v[1])) * id,
-						((m00_21 * m.r[3].v[2] + m01_22 * m.r[3].v[0] + m02_20 * m.r[3].v[1]) -
-						 (m00_22 * m.r[3].v[1] + m01_20 * m.r[3].v[2] + m02_21 * m.r[3].v[0])) * id,
-						((m00_12 * m.r[3].v[1] + m01_10 * m.r[3].v[2] + m02_11 * m.r[3].v[0]) -
-						 (m00_11 * m.r[3].v[2] + m01_12 * m.r[3].v[0] + m02_10 * m.r[3].v[1])) * id,
+						((m10_22 * m.r[3][1] + m11_20 * m.r[3][2] + m12_21 * m.r[3][0]) -
+						 (m10_21 * m.r[3][2] + m11_22 * m.r[3][0] + m12_20 * m.r[3][1])) * id,
+						((m00_21 * m.r[3][2] + m01_22 * m.r[3][0] + m02_20 * m.r[3][1]) -
+						 (m00_22 * m.r[3][1] + m01_20 * m.r[3][2] + m02_21 * m.r[3][0])) * id,
+						((m00_12 * m.r[3][1] + m01_10 * m.r[3][2] + m02_11 * m.r[3][0]) -
+						 (m00_11 * m.r[3][2] + m01_12 * m.r[3][0] + m02_10 * m.r[3][1])) * id,
 						1.f);
 }
 
@@ -547,51 +547,51 @@ inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix3x3f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
-	m.r[0].v[0] = basis.r[0].v[0] * scale.v[0]; m.r[0].v[1] = basis.r[0].v[1] * scale.v[0];
-	m.r[0].v[2] = basis.r[0].v[2] * scale.v[0]; m.r[0].v[3] = 0.f;
+	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
+	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
 
-	m.r[1].v[0] = basis.r[1].v[0] * scale.v[1]; m.r[1].v[1] = basis.r[1].v[1] * scale.v[1];
-	m.r[1].v[2] = basis.r[1].v[2] * scale.v[1]; m.r[1].v[3] = 0.f;
+	m.r[1][0] = basis.r[1][0] * scale[1]; m.r[1][1] = basis.r[1][1] * scale[1];
+	m.r[1][2] = basis.r[1][2] * scale[1]; m.r[1][3] = 0.f;
 
-	m.r[2].v[0] = basis.r[2].v[0] * scale.v[2]; m.r[2].v[1] = basis.r[2].v[1] * scale.v[2];
-	m.r[2].v[2] = basis.r[2].v[2] * scale.v[2]; m.r[2].v[3] = 0.f;
+	m.r[2][0] = basis.r[2][0] * scale[2]; m.r[2][1] = basis.r[2][1] * scale[2];
+	m.r[2][2] = basis.r[2][2] * scale[2]; m.r[2][3] = 0.f;
 
-	m.r[3].v[0] = origin.v[0];					m.r[3].v[1] = origin.v[1];
-	m.r[3].v[2] = origin.v[2];					m.r[3].v[3] = 1.f;
+	m.r[3][0] = origin[0];					m.r[3][1] = origin[1];
+	m.r[3][2] = origin[2];					m.r[3][3] = 1.f;
 }
 
 inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix4x4f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
-	m.r[0].v[0] = basis.r[0].v[0] * scale.v[0]; m.r[0].v[1] = basis.r[0].v[1] * scale.v[0];
-	m.r[0].v[2] = basis.r[0].v[2] * scale.v[0]; m.r[0].v[3] = 0.f;
+	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
+	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
 
-	m.r[1].v[0] = basis.r[1].v[0] * scale.v[1]; m.r[1].v[1] = basis.r[1].v[1] * scale.v[1];
-	m.r[1].v[2] = basis.r[1].v[2] * scale.v[1]; m.r[1].v[3] = 0.f;
+	m.r[1][0] = basis.r[1][0] * scale[1]; m.r[1][1] = basis.r[1][1] * scale[1];
+	m.r[1][2] = basis.r[1][2] * scale[1]; m.r[1][3] = 0.f;
 
-	m.r[2].v[0] = basis.r[2].v[0] * scale.v[2]; m.r[2].v[1] = basis.r[2].v[1] * scale.v[2];
-	m.r[2].v[2] = basis.r[2].v[2] * scale.v[2]; m.r[2].v[3] = 0.f;
+	m.r[2][0] = basis.r[2][0] * scale[2]; m.r[2][1] = basis.r[2][1] * scale[2];
+	m.r[2][2] = basis.r[2][2] * scale[2]; m.r[2][3] = 0.f;
 
-	m.r[3].v[0] = origin.v[0];					m.r[3].v[1] = origin.v[1];
-	m.r[3].v[2] = origin.v[2];					m.r[3].v[3] = 1.f;
+	m.r[3][0] = origin[0];					m.r[3][1] = origin[1];
+	m.r[3][2] = origin[2];					m.r[3][3] = 1.f;
 }
 
 inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
-	m.r[0].v[0] = 1.f;		m.r[0].v[1] = 0.f;		m.r[0].v[2] = 0.f;		m.r[0].v[3] = 0.f;
-	m.r[1].v[0] = 0.f;		m.r[1].v[1] = 1.f;		m.r[1].v[2] = 0.f;		m.r[1].v[3] = 0.f;
-	m.r[2].v[0] = 0.f;		m.r[2].v[1] = 0.f;		m.r[2].v[2] = 1.f;		m.r[2].v[3] = 0.f;
-	m.r[3].v[0] = v.v[0];	m.r[3].v[1] = v.v[1];	m.r[3].v[2] = v.v[2];	m.r[3].v[3] = 1.f;
+	m.r[0][0] = 1.f;		m.r[0][1] = 0.f;		m.r[0][2] = 0.f;		m.r[0][3] = 0.f;
+	m.r[1][0] = 0.f;		m.r[1][1] = 1.f;		m.r[1][2] = 0.f;		m.r[1][3] = 0.f;
+	m.r[2][0] = 0.f;		m.r[2][1] = 0.f;		m.r[2][2] = 1.f;		m.r[2][3] = 0.f;
+	m.r[3][0] = v[0];	m.r[3][1] = v[1];	m.r[3][2] = v[2];	m.r[3][3] = 1.f;
 }
 
 inline void set_rotation_x(Matrix4x4f_a& m, float a) {
 	const float c = std::cos(a);
 	const float s = std::sin(a);
 
-	m.r[0].v[0] = 1.f; m.r[0].v[1] = 0.f; m.r[0].v[2] =  0.f; m.r[0].v[3] = 0.f;
-	m.r[1].v[0] = 0.f; m.r[1].v[1] = c;   m.r[1].v[2] = -s;   m.r[1].v[3] = 0.f;
-	m.r[2].v[0] = 0.f; m.r[2].v[1] = s;   m.r[2].v[2] =  c;   m.r[2].v[3] = 0.f;
-	m.r[3].v[0] = 0.f; m.r[3].v[1] = 0.f; m.r[3].v[2] =  0.f; m.r[3].v[3] = 1.f;
+	m.r[0][0] = 1.f; m.r[0][1] = 0.f; m.r[0][2] =  0.f; m.r[0][3] = 0.f;
+	m.r[1][0] = 0.f; m.r[1][1] = c;   m.r[1][2] = -s;   m.r[1][3] = 0.f;
+	m.r[2][0] = 0.f; m.r[2][1] = s;   m.r[2][2] =  c;   m.r[2][3] = 0.f;
+	m.r[3][0] = 0.f; m.r[3][1] = 0.f; m.r[3][2] =  0.f; m.r[3][3] = 1.f;
 }
 
 }

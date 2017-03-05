@@ -13,8 +13,8 @@
 namespace scene { namespace camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
-	Stereoscopic(int2(resolution.v[0], resolution.v[0])) {
-	float f = static_cast<float>(resolution.v[0]);
+	Stereoscopic(int2(resolution[0], resolution[0])) {
+	float f = static_cast<float>(resolution[0]);
 
 	left_top_ = float3(-1.f, 1.f, 1.f);
 
@@ -26,26 +26,26 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
 
 	if (Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz == layout) {
 		for (uint32_t i = 0; i < 12; ++i) {
-			int2 offset = int2(resolution.v[0] * i, 0);
+			int2 offset = int2(resolution[0] * i, 0);
 
 			view_bounds_[i] = int4(offset, offset + resolution_);
 		}
 
-		sensor_dimensions_ = int2(resolution_.v[0] * 12, resolution_.v[0]);
+		sensor_dimensions_ = int2(resolution_[0] * 12, resolution_[0]);
 	} else if (Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz == layout) {
 		for (uint32_t i = 0; i < 6; ++i) {
-			int2 offset = int2(resolution.v[0] * (i + 6), 0);
+			int2 offset = int2(resolution[0] * (i + 6), 0);
 
 			view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
 		}
 
 		for (uint32_t i = 6; i < 12; ++i) {
-			int2 offset = int2(resolution.v[0] * (i - 6), 0);
+			int2 offset = int2(resolution[0] * (i - 6), 0);
 
 			view_bounds_[i] = int4(offset, offset + resolution_ - int2(1));
 		}
 
-		sensor_dimensions_ = int2(resolution_.v[0] * 12, resolution_.v[0]);
+		sensor_dimensions_ = int2(resolution_[0] * 12, resolution_[0]);
 	}
 
 	math::set_rotation_y(view_rotations_[0], math::degrees_to_radians(-90.f));
@@ -80,17 +80,17 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 									  uint32_t view, scene::Ray& ray) const {
 	const float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
 
-	float3 direction = left_top_ + coordinates.v[0] * d_x_ + coordinates.v[1] * d_y_;
+	float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
 	const uint32_t face = view % 6;
 	direction = math::normalized(direction * view_rotations_[face]);
 
-	const float a = -std::atan2(direction.v[0], direction.v[2]);
+	const float a = -std::atan2(direction[0], direction[2]);
 
 	math::float3x3 rotation;
 	math::set_rotation_y(rotation, a);
 
-	const float ipd_scale = 1.f - std::pow(std::abs(direction.v[1]), 12.f - ipd_falloff_ * 10.f);
+	const float ipd_scale = 1.f - std::pow(std::abs(direction[1]), 12.f - ipd_falloff_ * 10.f);
 
 	const uint32_t eye = view < 6 ? 0 : 1;
 	const float3 eye_offset = (ipd_scale * eye_offsets_[eye]) * rotation;

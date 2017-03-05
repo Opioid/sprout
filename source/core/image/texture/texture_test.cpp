@@ -16,8 +16,8 @@ bool is_valid_normal_map(const Image& image, const std::string& filename) {
 	const Byte_3& typed_image = static_cast<const Byte_3&>(image);
 
 	int2 d = image.description().dimensions.xy;
-	for (int32_t y = 0; y < d.v[1]; ++y) {
-		for (int32_t x = 0; x < d.v[0]; ++x) {
+	for (int32_t y = 0; y < d[1]; ++y) {
+		for (int32_t x = 0; x < d[0]; ++x) {
 			auto value = typed_image.at(x, y);
 
 			if (0 == value.x + value.y + value.z) {
@@ -30,7 +30,7 @@ bool is_valid_normal_map(const Image& image, const std::string& filename) {
 					 encoding::cached_snorm_to_float(value.y),
 					 encoding::cached_snorm_to_float(value.z));
 
-			if (0.f == n.v[0] && 0.f == n.v[1] && 0.f == n.v[2]) {
+			if (0.f == n[0] && 0.f == n[1] && 0.f == n[2]) {
 				std::cout << "\"" << filename << "\" [" << x << ", "
 						  << y << "] is [0, 0, 0]." << std::endl;
 

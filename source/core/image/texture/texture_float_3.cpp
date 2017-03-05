@@ -27,19 +27,19 @@ float4 Float_3::at_4(int32_t x, int32_t y) const {
 }
 
 float4 Float_3::gather_1(int4 xy_xy1) const {
-	auto v00 = image_.load(xy_xy1.v[0], xy_xy1.v[1]);
-	auto v01 = image_.load(xy_xy1.v[0], xy_xy1.v[3]);
-	auto v10 = image_.load(xy_xy1.v[2], xy_xy1.v[1]);
-	auto v11 = image_.load(xy_xy1.v[2], xy_xy1.v[3]);
+	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
+	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
+	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
+	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
 	return float4(v00.x, v01.x, v10.x, v11.x);
 }
 
 void Float_3::gather_2(int4 xy_xy1, float2 c[4]) const {
-	auto v00 = image_.load(xy_xy1.v[0], xy_xy1.v[1]);
-	auto v01 = image_.load(xy_xy1.v[0], xy_xy1.v[3]);
-	auto v10 = image_.load(xy_xy1.v[2], xy_xy1.v[1]);
-	auto v11 = image_.load(xy_xy1.v[2], xy_xy1.v[3]);
+	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
+	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
+	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
+	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
 	c[0] = v00.xy;
 	c[1] = v01.xy;
@@ -48,10 +48,10 @@ void Float_3::gather_2(int4 xy_xy1, float2 c[4]) const {
 }
 
 void Float_3::gather_3(int4 xy_xy1, float3 c[4]) const {
-	auto v00 = image_.load(xy_xy1.v[0], xy_xy1.v[1]);
-	auto v01 = image_.load(xy_xy1.v[0], xy_xy1.v[3]);
-	auto v10 = image_.load(xy_xy1.v[2], xy_xy1.v[1]);
-	auto v11 = image_.load(xy_xy1.v[2], xy_xy1.v[3]);
+	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
+	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
+	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
+	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
 	c[0] = float3(v00);
 	c[1] = float3(v01);

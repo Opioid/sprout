@@ -101,7 +101,7 @@ bool Material::is_emissive() const {
 	}
 
 	float3 e = average_radiance(1.f);
-	if (e.v[0] > 0.f || e.v[1] > 0.f || e.v[2] > 0.f) {
+	if (e[0] > 0.f || e[1] > 0.f || e[2] > 0.f) {
 		return true;
 	}
 

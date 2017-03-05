@@ -91,13 +91,13 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
 			float fi = static_cast<float>(i);
 
-			float3 slice_x(min.v[0] + fi * step.v[0], position.v[1], position.v[2]);
+			float3 slice_x(min[0] + fi * step[0], position[1], position[2]);
 			split_candidates_.push_back(Split_candidate(0, slice_x));
 
-			float3 slice_y(position.v[0], min.v[1] + fi * step.v[1], position.v[2]);
+			float3 slice_y(position[0], min[1] + fi * step[1], position[2]);
 			split_candidates_.push_back(Split_candidate(1, slice_y));
 
-			float3 slice_z(position.v[0], position.v[1], min.v[2] + fi * step.v[2]);
+			float3 slice_z(position[0], position[1], min[2] + fi * step[2]);
 			split_candidates_.push_back(Split_candidate(2, slice_z));
 		}
 	}

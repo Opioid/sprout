@@ -21,7 +21,7 @@ float Grid::density(float3_p p, Worker& worker, Sampler_filter filter) const {
 	}
 
 	float3 p_g = 0.5f * (float3(1.f) + p);
-	p_g.v[1] = 1.f - p_g.v[1];
+	p_g[1] = 1.f - p_g[1];
 
 	auto& sampler = worker.sampler_3D(static_cast<uint32_t>(Sampler_filter::Linear), filter);
 
