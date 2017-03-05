@@ -204,7 +204,7 @@ void create(thread::Pool& pool) {
 }
 
 void render_dirt(image::Float_1& signal) {
-	Dirt dirt(signal.description().dimensions.xy, 4);
+	Dirt dirt(signal.description().dimensions.xy(), 4);
 
 	dirt.set_brush(1.f);
 	dirt.clear();
@@ -250,7 +250,7 @@ void render_dirt(image::Float_1& signal) {
 
 	dirt.resolve(signal);
 
-//	float radius = static_cast<float>(signal.description().dimensions.x) * 0.00390625f;
+//	float radius = static_cast<float>(signal.description().dimensions[0]) * 0.00390625f;
 //	image::filter::Gaussian<float> gaussian(radius, radius * 0.0005f);
 //	gaussian.apply(signal);
 }
@@ -270,7 +270,7 @@ void render_aperture(const Aperture& aperture, Float_1& signal) {
 		}
 	}
 
-	int32_t resolution = signal.description().dimensions.x;
+	int32_t resolution = signal.description().dimensions[0];
 	float fr = static_cast<float>(resolution);
 	float kn = 1.f / static_cast<float>(kernel.size());
 
@@ -430,7 +430,7 @@ void write_signal(const std::string& name, const Float_1& signal) {
 
 	Byte_1 image(Image::Description(Image::Type::Byte_1, d));
 
-	for (int32_t i = 0, len = d.x * d.y; i < len; ++i) {
+	for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
 		float s = signal.load(i);
 		uint8_t b = ::encoding::float_to_unorm(s);
 		image.store(i, b);
@@ -518,7 +518,7 @@ void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
 	pool.run_range([&destination, &texture, alpha, mode]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
 			fdft(destination, texture, alpha, mode, begin, end);
-		}, 0, d.y);
+		}, 0, d[1]);
 }
 
 }}

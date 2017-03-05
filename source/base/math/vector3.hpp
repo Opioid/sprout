@@ -19,15 +19,7 @@ using FVector3f_a = const Vector3f_a&;
 
 template<typename T>
 struct Vector3 {
-	union {
-		struct {
-			T x, y, z;
-		};
-
-		Vector2<T> xy;
-
-		T v[3];
-	};
+	T v[3];
 
 	Vector3();
 
@@ -40,6 +32,8 @@ struct Vector3 {
 	explicit Vector3(const T* v);
 
 	explicit Vector3(FVector3f_a a);
+
+	Vector2<T> xy() const;
 
 	T operator[](uint32_t i) const;
 	T& operator[](uint32_t i);

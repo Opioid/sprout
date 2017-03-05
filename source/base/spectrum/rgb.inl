@@ -48,9 +48,9 @@ inline float sRGB_to_linear(float c) {
 
 // convert sRGB gamma color to sRGB linear color
 inline float3 sRGB_to_linear_RGB(byte3 c) {
-	return float3(sRGB_to_linear(static_cast<float>(c.x) / 255.f),
-				  sRGB_to_linear(static_cast<float>(c.y) / 255.f),
-				  sRGB_to_linear(static_cast<float>(c.z) / 255.f));
+	return float3(sRGB_to_linear(static_cast<float>(c[0]) / 255.f),
+				  sRGB_to_linear(static_cast<float>(c[1]) / 255.f),
+				  sRGB_to_linear(static_cast<float>(c[2]) / 255.f));
 }
 
 // convert sRGB gamma color to sRGB linear color

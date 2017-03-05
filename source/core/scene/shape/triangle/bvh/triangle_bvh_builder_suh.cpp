@@ -159,17 +159,17 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 		size_t middle = positions.size() / 2;
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
 						 [](const math::packed_float3& a, const math::packed_float3& b) {
-								return a.x < b.x; });
+								return a[0] < b[0]; });
 		float3 x_median = float3(positions[middle]);
 
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
 						 [](const math::packed_float3& a, const math::packed_float3& b) {
-								return a.y < b.y; });
+								return a[1] < b[1]; });
 		float3 y_median = float3(positions[middle]);
 
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
 						 [](const math::packed_float3& a, const math::packed_float3& b) {
-								return a.z < b.z; });
+								return a[2] < b[2]; });
 		float3 z_median = float3(positions[middle]);
 
 		split_candidates_.clear();

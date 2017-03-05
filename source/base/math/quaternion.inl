@@ -142,8 +142,8 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 
 	if (cosom < T(0)) {
 		cosom = -cosom;
-		end.x = -end.x;   // Reverse all signs
-		end.y = -end.y;
+		end[0] = -end[0];   // Reverse all signs
+		end[1] = -end[1];
 		end.z = -end.z;
 		end.w = -end.w;
 	}
@@ -165,8 +165,8 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 		sclq = t;
 	}
 
-	return Quaternion<T>(sclp * a.x + sclq * end.x,
-						 sclp * a.y + sclq * end.y,
+	return Quaternion<T>(sclp * a.x + sclq * end[0],
+						 sclp * a.y + sclq * end[1],
 						 sclp * a.z + sclq * end.z,
 						 sclp * a.w + sclq * end.w);
 }

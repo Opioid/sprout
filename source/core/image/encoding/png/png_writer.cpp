@@ -16,10 +16,10 @@ std::string Writer::file_extension() const {
 bool Writer::write(std::ostream& stream, const Float_3& image, thread::Pool& pool) {
 	const auto d = image.description().dimensions;
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
-		to_sRGB(image, begin, end); }, 0, d.x * d.y);
+		to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
 
 	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgba_, d.x, d.y, 4, &buffer_len);
+	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgba_, d[0], d[1], 4, &buffer_len);
 
 	if (!png_buffer) {
 		return false;
@@ -35,10 +35,10 @@ bool Writer::write(std::ostream& stream, const Float_3& image, thread::Pool& poo
 bool Writer::write(std::ostream& stream, const Float_4& image, thread::Pool& pool) {
 	const auto d = image.description().dimensions;
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
-		to_sRGB(image, begin, end); }, 0, d.x * d.y);
+		to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
 
 	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgba_, d.x, d.y, 4, &buffer_len);
+	void* png_buffer = tdefl_write_image_to_png_file_in_memory(rgba_, d[0], d[1], 4, &buffer_len);
 
 	if (!png_buffer) {
 		return false;
@@ -60,7 +60,7 @@ bool Writer::write(const std::string& name, const Byte_3& image) {
 	const auto d = image.description().dimensions;
 
 	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d.x, d.y,
+	void* png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1],
 															   3, &buffer_len);
 
 	if (!png_buffer) {
@@ -83,7 +83,7 @@ bool Writer::write(const std::string& name, const Byte_1& image) {
 	const auto d = image.description().dimensions;
 
 	size_t buffer_len = 0;
-	void* png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d.x, d.y,
+	void* png_buffer = tdefl_write_image_to_png_file_in_memory(image.data(), d[0], d[1],
 															   1, &buffer_len);
 
 	if (!png_buffer) {

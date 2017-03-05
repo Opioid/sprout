@@ -8,7 +8,7 @@ namespace image {
 template<typename T, uint32_t Log_tile_size>
 Tiled_image<T, Log_tile_size>::Tiled_image(const Image::Description& description) :
 	Image(description),
-	data_(description.dimensions.x, description.dimensions.y) {}
+	data_(description.dimensions[0], description.dimensions[1]) {}
 
 template<typename T, uint32_t Log_tile_size>
 Tiled_image<T, Log_tile_size>::~Tiled_image() {}

@@ -96,7 +96,7 @@ inline Vector4f_a::Vector4f_a(FVector3f_a xyz, float w) :
 	v{xyz[0], xyz[1], xyz[2], w} {}
 
 inline Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) :
-	v{xyz.x, xyz.y, xyz.z, w} {}
+	v{xyz[0], xyz[1], xyz[2], w} {}
 
 inline Vector3f_a Vector4f_a::xyz() const {
 	return Vector3f_a(v);

@@ -19,9 +19,9 @@ Image::Description::Description(Type type, const int3& dimensions, int32_t num_e
 	num_elements(num_elements) {}
 
 size_t Image::Description::num_bytes() const {
-	return static_cast<size_t>(dimensions.x *
-							   dimensions.y *
-							   dimensions.z *
+	return static_cast<size_t>(dimensions[0] *
+							   dimensions[1] *
+							   dimensions[2] *
 							   num_elements);
 }
 
@@ -29,15 +29,15 @@ Image::Image() : area_(0), volume_(0) {}
 
 Image::Image(const Description& description) :
 	description_(description),
-	area_(description.dimensions.x * description.dimensions.y),
-	volume_(description.dimensions.x * description.dimensions.y * description.dimensions.z) {}
+	area_(description.dimensions[0] * description.dimensions[1]),
+	volume_(description.dimensions[0] * description.dimensions[1] * description.dimensions[2]) {}
 
 Image::~Image() {}
 
 void Image::resize(const Description& description) {
 	description_ = description;
-	area_ = description.dimensions.x * description.dimensions.y;
-	volume_ = description.dimensions.x * description.dimensions.y * description.dimensions.z;
+	area_ = description.dimensions[0] * description.dimensions[1];
+	volume_ = description.dimensions[0] * description.dimensions[1] * description.dimensions[2];
 }
 
 const Image::Description& Image::description() const {
@@ -54,8 +54,8 @@ int32_t Image::volume() const {
 
 int2 Image::coordinates_2(int32_t index) const {
 	int2 c;
-	c[1] = index / description_.dimensions.x;
-	c[0] = index - c[1] * description_.dimensions.x;
+	c[1] = index / description_.dimensions[0];
+	c[0] = index - c[1] * description_.dimensions[0];
 	return c;
 }
 

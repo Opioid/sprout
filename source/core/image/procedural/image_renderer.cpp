@@ -71,9 +71,9 @@ void Renderer::resolve_sRGB(Byte_3& image) const {
 
 		auto i_d = image.description().dimensions;
 
-		for (int32_t i_y = 0; i_y < i_d.y; ++i_y) {
+		for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
 			int32_t b_y = sqrt_num_samples_ * i_y;
-			for (int32_t i_x = 0; i_x < i_d.x; ++i_x) {
+			for (int32_t i_x = 0; i_x < i_d[0]; ++i_x) {
 				int32_t b_x = sqrt_num_samples_ * i_x;
 
 				float3 result(0.f);
@@ -106,9 +106,9 @@ void Renderer::resolve(Byte_3& image) const {
 
 		auto i_d = image.description().dimensions;
 
-		for (int32_t i_y = 0; i_y < i_d.y; ++i_y) {
+		for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
 			int32_t b_y = sqrt_num_samples_ * i_y;
-			for (int32_t i_x = 0; i_x < i_d.x; ++i_x) {
+			for (int32_t i_x = 0; i_x < i_d[0]; ++i_x) {
 				int32_t b_x = sqrt_num_samples_ * i_x;
 
 				float3 result(0.f);
@@ -141,9 +141,9 @@ void Renderer::resolve(Byte_1& image) const {
 
 		auto i_d = image.description().dimensions;
 
-		for (int32_t i_y = 0; i_y < i_d.y; ++i_y) {
+		for (int32_t i_y = 0; i_y < i_d[1]; ++i_y) {
 			int32_t b_y = sqrt_num_samples_ * i_y;
-			for (int32_t i_x = 0; i_x < i_d.x; ++i_x) {
+			for (int32_t i_x = 0; i_x < i_d[0]; ++i_x) {
 				int32_t b_x = sqrt_num_samples_ * i_x;
 
 				float result = 0.f;

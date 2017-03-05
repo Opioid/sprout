@@ -9,11 +9,11 @@ Float_3::Float_3(std::shared_ptr<Image> image) :
 	image_(*static_cast<const image::Float_3*>(image.get())) {}
 
 float Float_3::at_1(int32_t x, int32_t y) const {
-	return image_.load(x, y).x;
+	return image_.load(x, y)[0];
 }
 
 float2 Float_3::at_2(int32_t x, int32_t y) const {
-	return image_.load(x, y).xy;
+	return image_.load(x, y).xy();
 }
 
 float3 Float_3::at_3(int32_t x, int32_t y) const {
@@ -32,7 +32,7 @@ float4 Float_3::gather_1(int4 xy_xy1) const {
 	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
 	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
-	return float4(v00.x, v01.x, v10.x, v11.x);
+	return float4(v00[0], v01[0], v10[0], v11[0]);
 }
 
 void Float_3::gather_2(int4 xy_xy1, float2 c[4]) const {
@@ -41,10 +41,10 @@ void Float_3::gather_2(int4 xy_xy1, float2 c[4]) const {
 	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
 	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
 
-	c[0] = v00.xy;
-	c[1] = v01.xy;
-	c[2] = v10.xy;
-	c[3] = v11.xy;
+	c[0] = v00.xy();
+	c[1] = v01.xy();
+	c[2] = v10.xy();
+	c[3] = v11.xy();
 }
 
 void Float_3::gather_3(int4 xy_xy1, float3 c[4]) const {
@@ -60,11 +60,11 @@ void Float_3::gather_3(int4 xy_xy1, float3 c[4]) const {
 }
 
 float Float_3::at_element_1(int32_t x, int32_t y, int32_t element) const {
-	return image_.at_element(x, y, element).x;
+	return image_.at_element(x, y, element)[0];
 }
 
 float2 Float_3::at_element_2(int32_t x, int32_t y, int32_t element) const {
-	return image_.at_element(x, y, element).xy;
+	return image_.at_element(x, y, element).xy();
 }
 
 float3 Float_3::at_element_3(int32_t x, int32_t y, int32_t element) const {
@@ -78,11 +78,11 @@ float4 Float_3::at_element_4(int32_t x, int32_t y, int32_t element) const {
 }
 
 float Float_3::at_1(int32_t x, int32_t y, int32_t z) const {
-	return image_.load(x, y, z).x;
+	return image_.load(x, y, z)[0];
 }
 
 float2 Float_3::at_2(int32_t x, int32_t y, int32_t z) const {
-	return image_.load(x, y, z).xy;
+	return image_.load(x, y, z).xy();
 }
 
 float3 Float_3::at_3(int32_t x, int32_t y, int32_t z) const {

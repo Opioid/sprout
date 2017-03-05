@@ -5,9 +5,9 @@
 namespace encoding {
 
 inline float3 unorm_to_float(byte3 c) {
-	return float3(static_cast<float>(c.x) / 255.f,
-				  static_cast<float>(c.y) / 255.f,
-				  static_cast<float>(c.z) / 255.f);
+	return float3(static_cast<float>(c[0]) / 255.f,
+				  static_cast<float>(c[1]) / 255.f,
+				  static_cast<float>(c[2]) / 255.f);
 }
 
 inline float4 unorm_to_float(math::byte4 c) {

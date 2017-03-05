@@ -49,11 +49,11 @@ void Ffmpeg::write(const image::Float_4& image, uint32_t /*frame*/, thread::Pool
 
 	const auto d = image.description().dimensions;
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
-		to_sRGB(image, begin, end); }, 0, d.x * d.y);
+		to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
 
 	std::cout << "Ffmpeg after pool" << std::endl;
 
-	fwrite(rgba_, sizeof(math::byte4) * d.x * d.y, 1, stream_);
+	fwrite(rgba_, sizeof(math::byte4) * d[0] * d[1], 1, stream_);
 
 	std::cout << "Ffmpeg after write" << std::endl;
 }

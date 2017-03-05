@@ -26,9 +26,9 @@ inline Vector SU_CALLCONV load_float3(const Vector3<float>& source) {
 	v.vector4_f32[3] = 0.f;
 	return v;
 #elif defined(_SU_SSE_INTRINSICS_)
-	__m128 x = _mm_load_ss(&source.x);
-	__m128 y = _mm_load_ss(&source.y);
-	__m128 z = _mm_load_ss(&source.z);
+	__m128 x = _mm_load_ss(&source.v[0]);
+	__m128 y = _mm_load_ss(&source.v[1]);
+	__m128 z = _mm_load_ss(&source.v[2]);
 	__m128 xy = _mm_unpacklo_ps(x, y);
 	return _mm_movelh_ps(xy, z);
 #endif
@@ -92,9 +92,9 @@ inline void SU_CALLCONV store_float3(Vector3<float>& destination, FVector v) {
 #elif defined(_SU_SSE_INTRINSICS_)
 	Vector t1 = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
 	Vector t2 = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
-	_mm_store_ss(&destination.x, v);
-	_mm_store_ss(&destination.y, t1);
-	_mm_store_ss(&destination.z, t2);
+	_mm_store_ss(&destination.v[0], v);
+	_mm_store_ss(&destination.v[1], t1);
+	_mm_store_ss(&destination.v[2], t2);
 #endif
 }
 

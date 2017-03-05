@@ -15,20 +15,20 @@ bool is_valid_normal_map(const Image& image, const std::string& filename) {
 
 	const Byte_3& typed_image = static_cast<const Byte_3&>(image);
 
-	int2 d = image.description().dimensions.xy;
+	int2 d = image.description().dimensions.xy();
 	for (int32_t y = 0; y < d[1]; ++y) {
 		for (int32_t x = 0; x < d[0]; ++x) {
 			auto value = typed_image.at(x, y);
 
-			if (0 == value.x + value.y + value.z) {
+			if (0 == value[0] + value[1] + value[2]) {
 				std::cout << "\"" << filename << "\" [" << x << ", "
 						  << y << "] is zero." << std::endl;
 				return false;
 			}
 
-			float3 n(encoding::cached_snorm_to_float(value.x),
-					 encoding::cached_snorm_to_float(value.y),
-					 encoding::cached_snorm_to_float(value.z));
+			float3 n(encoding::cached_snorm_to_float(value[0]),
+					 encoding::cached_snorm_to_float(value[1]),
+					 encoding::cached_snorm_to_float(value[2]));
 
 			if (0.f == n[0] && 0.f == n[1] && 0.f == n[2]) {
 				std::cout << "\"" << filename << "\" [" << x << ", "

@@ -337,7 +337,7 @@ inline Shading_vertex_MTC::Shading_vertex_MTC(const math::packed_float3& n,
 											  float2 uv) :
 	n_u(n, uv[0]), t_v(t, uv[1]) {
 	// Not too happy about handling degenerate tangents here (only one very special case even)
-	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
+	if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
 		t_v = float4(math::tangent(n_u.xyz()), uv[1]);
 	}
 }
@@ -391,9 +391,9 @@ inline short4 float_to_snorm16(float3_p v, float s) {
 }
 
 inline short4 float_to_snorm16(const math::packed_float3& v, float s) {
-	return short4(encoding::float_to_snorm16(v.x),
-				  encoding::float_to_snorm16(v.y),
-				  encoding::float_to_snorm16(v.z),
+	return short4(encoding::float_to_snorm16(v[0]),
+				  encoding::float_to_snorm16(v[1]),
+				  encoding::float_to_snorm16(v[2]),
 				  float_to_xnorm(s));
 }
 
@@ -412,7 +412,7 @@ inline Shading_vertex_MTCC::Shading_vertex_MTCC(const math::packed_float3& n,
 	}
 
 	// Not too happy about handling degenerate tangents here (only one very special case even)
-	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
+	if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
 		t_v = float_to_snorm16(math::tangent(float3(n)), uv[1]);
 	}
 }
@@ -463,7 +463,7 @@ inline Vertex_MTC::Vertex_MTC(const math::packed_float3& p,
 							  float2 uv) :
 	p(p), n_u(n, uv[0]), t_v(t, uv[1]) {
 	// Not too happy about handling degenerate tangents here (only one very special case even)
-	if (0.f == t.x &&  0.f == t.y &&  0.f == t.z) {
+	if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
 		t_v = float4(math::tangent(n_u.xyz()), uv[1]);
 	}
 }
