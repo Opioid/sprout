@@ -15,9 +15,6 @@ namespace scene { namespace material { namespace disney {
 template<typename Layer>
 float3 Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
 							 const Layer& layer, float& pdf) {
-//	float3 h = math::normalized(wo + wi);
-//	float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
-
 	pdf = n_dot_wi * math::Pi_inv;
 	const float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 
@@ -66,9 +63,6 @@ float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, const
 template<typename Layer>
 float3 Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
 										const Layer& layer, float& pdf) {
-//	float3 h = math::normalized(wo + wi);
-//	float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
-
 	pdf = n_dot_wi * math::Pi_inv;
 	const float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 
@@ -108,7 +102,7 @@ float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi, float n_do
 									  const Layer& layer) {
 	const float fl = math::pow5(1.f - n_dot_wi);
 	const float fv = math::pow5(1.f - n_dot_wo);
-	const float rr = 2.f * layer.roughness_ * (h_dot_wi * h_dot_wi);
+	const float rr = (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
 
 	return rr * ((fl + fv) + (fl * fv) * (rr - 1.f)) * (math::Pi_inv * layer.diffuse_color_);
 }
