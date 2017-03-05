@@ -223,7 +223,6 @@ math::float3x3 read_rotation_matrix(const rapidjson::Value& value) {
 }
 
 math::quaternion read_local_rotation(const rapidjson::Value& value) {
-//	return math::quaternion(read_rotation_matrix(value));
 	return math::create_quaternion(read_rotation_matrix(value));
 }
 

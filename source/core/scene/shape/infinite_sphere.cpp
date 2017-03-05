@@ -10,7 +10,8 @@
 #include "base/math/matrix.inl"
 #include "base/math/sampling/sampling.inl"
 
-#include <iostream>
+#include "shape_test.hpp"
+#include "base/debug/assert.hpp"
 
 namespace scene { namespace shape {
 
@@ -25,8 +26,8 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 		intersection.epsilon = 5e-4f;
 
 		// This is nonsense
-		intersection.t = transformation.rotation.v3.x;
-		intersection.b = transformation.rotation.v3.y;
+		intersection.t = transformation.rotation.r[0];
+		intersection.b = transformation.rotation.r[1];
 
 		float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
 		xyz = math::normalized(xyz);
@@ -40,6 +41,9 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 		intersection.part = 0;
 
 		ray.max_t = Ray_max_t;
+
+		SOFT_ASSERT(testing::check(intersection, transformation, ray));
+
 		return true;
 	}
 
@@ -86,6 +90,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 
 	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
+
+	SOFT_ASSERT(testing::check(sample));
 }
 
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
@@ -104,6 +110,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 
 	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (4.f * math::Pi);
+
+	SOFT_ASSERT(testing::check(sample));
 }
 
 float Infinite_sphere::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
@@ -135,6 +143,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.t  = Ray_max_t;
 	// sin_theta because of the uv weight
 	sample.pdf = 1.f / ((4.f * math::Pi) * sin_theta);
+
+	SOFT_ASSERT(testing::check(sample));
 }
 
 float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,

@@ -30,7 +30,7 @@ bool is_valid_normal_map(const Image& image, const std::string& filename) {
 					 encoding::cached_snorm_to_float(value.y),
 					 encoding::cached_snorm_to_float(value.z));
 
-			if (0.f == n.v[0] && 0.f == n.v[1] && 0.f == n.v[1]) {
+			if (0.f == n.v[0] && 0.f == n.v[1] && 0.f == n.v[2]) {
 				std::cout << "\"" << filename << "\" [" << x << ", "
 						  << y << "] is [0, 0, 0]." << std::endl;
 

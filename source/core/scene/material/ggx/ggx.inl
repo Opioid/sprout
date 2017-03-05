@@ -100,7 +100,7 @@ float Isotropic::reflect(float3_p wo, float n_dot_wo, const Layer& layer, const 
 	const float2 xi = sampler.generate_sample_2D();
 
 	const float a2 = layer.a2_;
-	const float n_dot_h = std::sqrt((1.f - xi.v[1]) / ((a2 - 1.f) * xi.v[0] + 1.f));
+	const float n_dot_h = std::sqrt((1.f - xi.v[1]) / ((a2 - 1.f) * xi.v[1] + 1.f));
 
 	const float sin_theta = std::sqrt(1.f - n_dot_h * n_dot_h);
 	const float phi = (2.f * math::Pi) * xi.v[0];

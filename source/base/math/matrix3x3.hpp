@@ -127,25 +127,7 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m);
 struct Vector4f_a;
 
 struct alignas(16) Matrix3x3f_a {
-	union {
-		struct {
-			float m00, m01, m02, pad0,
-				  m10, m11, m12, pad1,
-				  m20, m21, m22, pad2;
-		};
-
-		struct {
-			float m[12];
-		};
-
-		struct {
-			Vector3f_a x, y, z;
-		} v;
-
-		struct {
-			Vector3f_a x, y, z;
-		} v3;
-	};
+	Vector3f_a r[3];
 
 	Matrix3x3f_a();
 

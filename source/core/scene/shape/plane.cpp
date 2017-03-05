@@ -15,7 +15,7 @@ Plane::Plane() {
 
 bool Plane::intersect(const Transformation& transformation, Ray& ray,
 					  Node_stack& /*node_stack*/, Intersection& intersection) const {
-	float3_p normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -25,8 +25,8 @@ bool Plane::intersect(const Transformation& transformation, Ray& ray,
 		intersection.epsilon = 5e-4f * hit_t;
 
 		float3 p = ray.point(hit_t);
-		float3 t = -transformation.rotation.v3.x;
-		float3 b = -transformation.rotation.v3.y;
+		float3 t = -transformation.rotation.r[0];
+		float3 b = -transformation.rotation.r[1];
 
 		intersection.p = p;
 		intersection.t = t;
@@ -47,7 +47,7 @@ bool Plane::intersect(const Transformation& transformation, Ray& ray,
 
 bool Plane::intersect_p(const Transformation& transformation, const Ray& ray,
 						Node_stack& /*node_stack*/) const {
-	float3_p normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -63,7 +63,7 @@ bool Plane::intersect_p(const Transformation& transformation, const Ray& ray,
 float Plane::opacity(const Transformation& transformation, const Ray& ray,
 					 const material::Materials& materials,
 					 Worker& worker, Sampler_filter filter) const {
-	float3_p normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -71,8 +71,8 @@ float Plane::opacity(const Transformation& transformation, const Ray& ray,
 
 	if (hit_t > ray.min_t && hit_t < ray.max_t) {
 		float3 p = ray.point(hit_t);
-		float2 uv(math::dot(transformation.rotation.v3.x, p),
-				  math::dot(transformation.rotation.v3.y, p));
+		float2 uv(math::dot(transformation.rotation.r[0], p),
+				  math::dot(transformation.rotation.r[1], p));
 
 		return materials[0]->opacity(uv, ray.time, worker, filter);
 	}
@@ -83,7 +83,7 @@ float Plane::opacity(const Transformation& transformation, const Ray& ray,
 float3 Plane::thin_absorption(const Transformation& transformation, const Ray& ray,
 							  const material::Materials& materials,
 							  Worker& worker, Sampler_filter filter) const {
-	float3_p normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -91,8 +91,8 @@ float3 Plane::thin_absorption(const Transformation& transformation, const Ray& r
 
 	if (hit_t > ray.min_t && hit_t < ray.max_t) {
 		float3 p = ray.point(hit_t);
-		float2 uv(math::dot(transformation.rotation.v3.x, p),
-				  math::dot(transformation.rotation.v3.y, p));
+		float2 uv(math::dot(transformation.rotation.r[0], p),
+				  math::dot(transformation.rotation.r[1], p));
 
 		return materials[0]->thin_absorption(ray.direction, normal, uv,
 											 ray.time, worker, filter);

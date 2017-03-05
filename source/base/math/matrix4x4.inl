@@ -531,14 +531,14 @@ inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix3x3f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
-	m.m00 = basis.m00 * scale.v[0]; m.m01 = basis.m01 * scale.v[0];
-	m.m02 = basis.m02 * scale.v[0]; m.m03 = 0.f;
+	m.m00 = basis.r[0].v[0] * scale.v[0]; m.m01 = basis.r[0].v[1] * scale.v[0];
+	m.m02 = basis.r[0].v[2] * scale.v[0]; m.m03 = 0.f;
 
-	m.m10 = basis.m10 * scale.v[1]; m.m11 = basis.m11 * scale.v[1];
-	m.m12 = basis.m12 * scale.v[1]; m.m13 = 0.f;
+	m.m10 = basis.r[1].v[0] * scale.v[1]; m.m11 = basis.r[1].v[1] * scale.v[1];
+	m.m12 = basis.r[1].v[2] * scale.v[1]; m.m13 = 0.f;
 
-	m.m20 = basis.m20 * scale.v[2]; m.m21 = basis.m21 * scale.v[2];
-	m.m22 = basis.m22 * scale.v[2]; m.m23 = 0.f;
+	m.m20 = basis.r[2].v[0] * scale.v[2]; m.m21 = basis.r[2].v[1] * scale.v[2];
+	m.m22 = basis.r[2].v[2] * scale.v[2]; m.m23 = 0.f;
 
 	m.m30 = origin.v[0];			m.m31 = origin.v[1];
 	m.m32 = origin.v[2];			m.m33 = 1.f;

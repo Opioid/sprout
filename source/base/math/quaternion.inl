@@ -207,7 +207,7 @@ inline quaternion create_quaternion(const Matrix3x3<float>& m) {
 }
 
 inline quaternion create_quaternion(const Matrix3x3f_a& m) {
-	float trace = m.m00 + m.m11 + m.m22;
+	float trace = m.r[0].v[0] + m.r[1].v[1] + m.r[2].v[2];
 	quaternion temp;
 
 	if (trace > 0.f) {
@@ -215,21 +215,21 @@ inline quaternion create_quaternion(const Matrix3x3f_a& m) {
 		temp.v[3] = s * 0.5f;
 		s = 0.5f / s;
 
-		temp.v[0] = (m.m21 - m.m12) * s;
-		temp.v[1] = (m.m02 - m.m20) * s;
-		temp.v[2] = (m.m10 - m.m01) * s;
+		temp.v[0] = (m.r[2].v[1] - m.r[1].v[2]) * s;
+		temp.v[1] = (m.r[0].v[2] - m.r[2].v[0]) * s;
+		temp.v[2] = (m.r[1].v[0] - m.r[0].v[1]) * s;
 	} else {
-		int i = m.m00 < m.m11 ? (m.m11 < m.m22 ? 2 : 1) : (m.m00 < m.m22 ? 2 : 0);
+		int i = m.r[0].v[0] < m.r[1].v[1] ? (m.r[1].v[1] < m.r[2].v[2] ? 2 : 1) : (m.r[0].v[0] < m.r[2].v[2] ? 2 : 0);
 		int j = (i + 1) % 3;
 		int k = (i + 2) % 3;
 
-		float s = std::sqrt(m.m[i * 4 + i] - m.m[j * 4 + j] - m.m[k * 4 + k] + 1.f);
+		float s = std::sqrt(m.r[i].v[i] - m.r[j].v[j] - m.r[k].v[k] + 1.f);
 		temp.v[i] = s * 0.5f;
 		s = 0.5f / s;
 
-		temp.v[3] = (m.m[k * 4 + j] - m.m[j * 4 + k]) * s;
-		temp.v[j] = (m.m[j * 4 + i] + m.m[i * 4 + j]) * s;
-		temp.v[k] = (m.m[k * 4 + i] + m.m[i * 4 + k]) * s;
+		temp.v[3] = (m.r[k].v[j] - m.r[j].v[k]) * s;
+		temp.v[j] = (m.r[j].v[i] + m.r[i].v[j]) * s;
+		temp.v[k] = (m.r[k].v[i] + m.r[i].v[k]) * s;
 	}
 
 	return temp;
@@ -260,7 +260,7 @@ inline quaternion mul_quaternion(const quaternion& a, const quaternion& b) {
 	return quaternion((a.v[3] * b.v[0] + a.v[0] * b.v[3]) + (a.v[1] * b.v[2] - a.v[2] * b.v[1]),
 					  (a.v[3] * b.v[1] + a.v[1] * b.v[3]) + (a.v[2] * b.v[0] - a.v[0] * b.v[2]),
 					  (a.v[3] * b.v[2] + a.v[2] * b.v[3]) + (a.v[0] * b.v[1] - a.v[1] * b.v[0]),
-					  (a.v[3] * b.v[3] - a.v[0] * b.v[3]) - (a.v[1] * b.v[1] + a.v[2] * b.v[2]));
+					  (a.v[3] * b.v[3] - a.v[0] * b.v[0]) - (a.v[1] * b.v[1] + a.v[2] * b.v[2]));
 }
 
 inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, float t) {

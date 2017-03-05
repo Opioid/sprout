@@ -21,7 +21,7 @@ Disk::Disk() {
 
 bool Disk::intersect(const Transformation& transformation, Ray& ray,
 					 Node_stack& /*node_stack*/, Intersection& intersection) const {
-	float3_p normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -39,8 +39,8 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 
 			intersection.p = p;
 
-			float3 t = -transformation.rotation.v3.x;
-			float3 b = -transformation.rotation.v3.y;
+			float3 t = -transformation.rotation.r[0];
+			float3 b = -transformation.rotation.r[1];
 			intersection.t = t;
 			intersection.b = b;
 			intersection.n = normal;
@@ -65,7 +65,7 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 
 bool Disk::intersect_p(const Transformation& transformation,
 					   const Ray& ray, Node_stack& /*node_stack*/) const {
-	float3_p normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -89,7 +89,7 @@ bool Disk::intersect_p(const Transformation& transformation,
 float Disk::opacity(const Transformation& transformation, const Ray& ray,
 					const material::Materials& materials,
 					Worker& worker, Sampler_filter filter) const {
-	float3_p normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -105,8 +105,8 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 		if (l <= radius * radius) {
 			float3 sk = k / radius;
 			float uv_scale = 0.5f * transformation.scale.v[2];
-			float2 uv((math::dot(transformation.rotation.v3.x, sk) + 1.f) * uv_scale,
-					  (math::dot(transformation.rotation.v3.y, sk) + 1.f) * uv_scale);
+			float2 uv((math::dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
+					  (math::dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
 			return materials[0]->opacity(uv, ray.time, worker, filter);
 		}
@@ -118,7 +118,7 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ray,
 							 const material::Materials& materials,
 							 Worker& worker, Sampler_filter filter) const {
-	float3_p normal = transformation.rotation.v3.z;
+	float3_p normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -134,8 +134,8 @@ float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ra
 		if (l <= radius * radius) {
 			float3 sk = k / radius;
 			float uv_scale = 0.5f * transformation.scale.v[2];
-			float2 uv((math::dot(transformation.rotation.v3.x, sk) + 1.f) * uv_scale,
-					  (math::dot(transformation.rotation.v3.y, sk) + 1.f) * uv_scale);
+			float2 uv((math::dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
+					  (math::dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
 			return materials[0]->thin_absorption(ray.direction, normal, uv,
 												 ray.time, worker, filter);
@@ -171,7 +171,7 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 wi = axis / t;
 
-	float c = -math::dot(transformation.rotation.v3.z, wi);
+	float c = -math::dot(transformation.rotation.r[2], wi);
 
 	if (two_sided) {
 		c = std::abs(c);
@@ -189,7 +189,7 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
 				float3_p p, float3_p wi, float area, bool two_sided,
 				bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
-	float3 normal = transformation.rotation.v3.z;
+	float3 normal = transformation.rotation.r[2];
 
 	float c = -math::dot(normal, wi);
 

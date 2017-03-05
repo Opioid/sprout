@@ -53,7 +53,7 @@ Model& Sky::model() {
 }
 
 void Sky::update() {
-	model_.set_sun_direction(sun_rotation_.v3.z);
+	model_.set_sun_direction(sun_rotation_.r[2]);
 	model_.set_ground_albedo(ground_albedo_);
 	model_.set_turbidity(turbidity_);
 
