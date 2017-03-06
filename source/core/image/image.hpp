@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/math/vector3.hpp"
+#include <cstddef>
 
 namespace image {
 
