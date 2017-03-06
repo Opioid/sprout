@@ -1,7 +1,7 @@
 #include "sub_integrator.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "take/take_settings.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface { namespace sub {

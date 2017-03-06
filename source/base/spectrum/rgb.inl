@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rgb.hpp"
-#include "math/vector3.inl"
+#include "math/vector4.inl"
 
 namespace spectrum {
 
