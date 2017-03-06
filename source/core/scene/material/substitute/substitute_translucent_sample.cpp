@@ -5,8 +5,8 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/lambert/lambert.inl"
-#include "base/math/vector3.inl"
 #include "base/math/math.hpp"
+#include "base/math/vector4.inl"
 #include "base/math/sampling/sampling.inl"
 
 namespace scene { namespace material { namespace substitute {
