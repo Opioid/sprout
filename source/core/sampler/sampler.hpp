@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/math/vector2.hpp"
+#include <cstddef>
 
 namespace rnd { class Generator; }
 
