@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/vector.hpp"
+#include "math/vector3.hpp"
 
 namespace spectrum {
 

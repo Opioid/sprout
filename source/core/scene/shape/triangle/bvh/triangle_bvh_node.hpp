@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base/math/aabb.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 #include "base/math/ray.hpp"
 #include "base/math/simd/simd.hpp"
 

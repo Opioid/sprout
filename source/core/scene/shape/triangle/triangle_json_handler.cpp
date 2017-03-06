@@ -1,5 +1,5 @@
 #include "triangle_json_handler.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace shape { namespace triangle {
 

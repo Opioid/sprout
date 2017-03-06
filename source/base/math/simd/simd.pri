@@ -7,6 +7,6 @@ HEADERS += \
 	math/simd/simd_math.hpp \
 	math/simd/simd_math.inl \
 	math/simd/simd_matrix.hpp \
-	math/simd/simd_matrix.inl \	
+	math/simd/simd_matrix3x3.inl \	
 	math/simd/simd_vector.hpp \
 	math/simd/simd_vector.inl \

@@ -1,6 +1,6 @@
 #include "material_test.hpp"
 #include "bxdf.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/print.hpp"
 #include <iostream>
 

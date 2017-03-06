@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base/math/ray.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 
 namespace scene {
 

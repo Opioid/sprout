@@ -1,6 +1,6 @@
 #include "grass.hpp"
 #include "core/scene/scene_loader.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace procedural { namespace mesh {
 

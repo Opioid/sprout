@@ -5,7 +5,7 @@
 #include "encoding/rgbe/rgbe_reader.hpp"
 #include "file/file.hpp"
 #include "file/file_system.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/memory/variant_map.inl"
 
 namespace image  {

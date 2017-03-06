@@ -6,8 +6,8 @@
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/sampling/sampling.inl"
 
 #include "shape_test.hpp"
@@ -19,11 +19,11 @@ Sphere::Sphere() {
 	aabb_.set_min_max(float3(-1.f), float3(1.f));
 }
 
-math::aabb Sphere::transformed_aabb(const float4x4& /*m*/, const math::transformation& t) const {
+math::aabb Sphere::transformed_aabb(const float4x4& /*m*/, const math::Transformation& t) const {
 	return transformed_aabb(t);
 }
 
-math::aabb Sphere::transformed_aabb(const math::transformation& t) const {
+math::aabb Sphere::transformed_aabb(const math::Transformation& t) const {
 	const float3 halfsize(t.scale[0]);
 	return math::aabb(t.position - halfsize, t.position + halfsize);
 }

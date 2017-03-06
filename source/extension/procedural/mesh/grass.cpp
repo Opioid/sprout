@@ -6,8 +6,8 @@
 #include "core/scene/shape/shape_vertex.hpp"
 #include "core/scene/shape/triangle/triangle_primitive.hpp"
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/math/sampling/sampling.inl"
 #include "base/memory/variant_map.hpp"
@@ -30,13 +30,13 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 	float l = 0.f;
 	float w = 1.5f;
 	float h = 1.f;
-	add_blade(math::packed_float3(0.2f, 0.f, 0.f), r, l, w, h, 0, triangles, vertices);
+	add_blade(packed_float3(0.2f, 0.f, 0.f), r, l, w, h, 0, triangles, vertices);
 
 	r = math::degrees_to_radians(90.f);
 
 	for (uint32_t i = 0; i < 10; ++i) {
 		l = 0.1f * static_cast<float>(i);
-		add_blade(math::packed_float3(-0.1f, 0.f, 0.f),
+		add_blade(packed_float3(-0.1f, 0.f, 0.f),
 				  r, l, w, h, i * num_vertices, triangles, vertices);
 	}
 */
@@ -131,10 +131,10 @@ void Grass::add_blade(float3_p offset,
 
 
 	scene::shape::Vertex v;
-	v.t = math::packed_float3(1.f, 0.f, 0.f);
+	v.t = packed_float3(1.f, 0.f, 0.f);
 	v.bitangent_sign = 1.f;
 
-	math::float3x3 rotation;
+	float3x3 rotation;
 	math::set_rotation_y(rotation, rotation_y);
 
 	float max_width = 0.035f;
@@ -201,18 +201,18 @@ void Grass::add_blade(float3_p offset,
 	segments[5].a = segments[4].a + segment_controls[5] * rx;
 
 	for (uint32_t i = 0, len = num_segments + 1; i < len; ++i) {
-		v.p = math::packed_float3(float3(-segments[i].a[0],
+		v.p = packed_float3(float3(-segments[i].a[0],
 								   segments[i].a[1],
 								   segments[i].a[2]) * rotation + offset);
 
 		v.uv = float2(1.f - segment_uvs[i][0], segment_uvs[i][1]);
 		vertices.push_back(v);
 
-		v.p = math::packed_float3(float3(0.f, segments[i].b[1], segments[i].b[2]) * rotation + offset);
+		v.p = packed_float3(float3(0.f, segments[i].b[1], segments[i].b[2]) * rotation + offset);
 		v.uv = float2(0.5f, segment_uvs[i][1]);
 		vertices.push_back(v);
 
-		v.p = math::packed_float3(float3(segments[i].a[0],
+		v.p = packed_float3(float3(segments[i].a[0],
 								  segments[i].a[1],
 								  segments[i].a[2]) * rotation + offset);
 		v.uv = segment_uvs[i];
@@ -220,14 +220,14 @@ void Grass::add_blade(float3_p offset,
 	}
 
 	uint32_t i = num_segments + 1;
-	v.p = math::packed_float3(float3(0.f, segments[i].a[1], segments[i].a[2]) * rotation + offset);
+	v.p = packed_float3(float3(0.f, segments[i].a[1], segments[i].a[2]) * rotation + offset);
 	v.uv = float2(0.5f, segment_uvs[i][1]);
 	vertices.push_back(v);
 }
 
 void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle>& triangles,
 							  std::vector<scene::shape::Vertex>& vertices) {
-	std::vector<math::packed_float3> triangle_normals(triangles.size());
+	std::vector<packed_float3> triangle_normals(triangles.size());
 
 	for (size_t i = 0, len = triangles.size(); i < len; ++i) {
 		const auto& tri = triangles[i];
@@ -245,7 +245,7 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
 	struct Shading_normal {
 		Shading_normal() : sum(0.f, 0.f, 0.f), num(0) {}
 
-		math::packed_float3 sum;
+		packed_float3 sum;
 		uint32_t num;
 	};
 

@@ -5,7 +5,7 @@
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "base/json/json.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace material {
 

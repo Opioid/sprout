@@ -4,7 +4,7 @@
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/plane.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
@@ -60,9 +60,9 @@ uint64_t Builder_SUH::Split_candidate::key() const {
 	return key_;
 }
 
-uint32_t Builder_SUH::Split_candidate::side(const math::packed_float3& a,
-											const math::packed_float3& b,
-											const math::packed_float3& c) const {
+uint32_t Builder_SUH::Split_candidate::side(const packed_float3& a,
+											const packed_float3& b,
+											const packed_float3& c) const {
 	uint32_t behind = 0;
 
 	if (a.v[axis_] < d_) {
@@ -86,9 +86,9 @@ uint32_t Builder_SUH::Split_candidate::side(const math::packed_float3& a,
 	}
 }
 
-bool Builder_SUH::Split_candidate::completely_behind(const math::packed_float3& a,
-													 const math::packed_float3& b,
-													 const math::packed_float3& c) const {
+bool Builder_SUH::Split_candidate::completely_behind(const packed_float3& a,
+													 const packed_float3& b,
+													 const packed_float3& c) const {
 	if (a.v[axis_] < d_ && b.v[axis_] < d_ && c.v[axis_] < d_) {
 		return true;
 	}
@@ -146,7 +146,7 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 		[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
 	if (split_candidates_[0].key() >= 0x1000000000000000) {
-		std::vector<math::packed_float3> positions;
+		std::vector<packed_float3> positions;
 		positions.reserve(std::distance(begin, end));
 
 		for (index i = begin; i != end; ++i) {
@@ -158,17 +158,17 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 
 		size_t middle = positions.size() / 2;
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
-						 [](const math::packed_float3& a, const math::packed_float3& b) {
+						 [](const packed_float3& a, const packed_float3& b) {
 								return a[0] < b[0]; });
 		float3 x_median = float3(positions[middle]);
 
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
-						 [](const math::packed_float3& a, const math::packed_float3& b) {
+						 [](const packed_float3& a, const packed_float3& b) {
 								return a[1] < b[1]; });
 		float3 y_median = float3(positions[middle]);
 
 		std::nth_element(positions.begin(), positions.begin() + middle, positions.end(),
-						 [](const math::packed_float3& a, const math::packed_float3& b) {
+						 [](const packed_float3& a, const packed_float3& b) {
 								return a[2] < b[2]; });
 		float3 z_median = float3(positions[middle]);
 

@@ -9,7 +9,7 @@
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/material/light/light_constant.hpp"
 #include "base/json/json.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/quaternion.inl"
 #include <iostream>
 

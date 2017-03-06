@@ -2,7 +2,7 @@
 
 #include "fresnel.hpp"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace material { namespace fresnel {
 

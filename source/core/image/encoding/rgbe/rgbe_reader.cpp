@@ -1,6 +1,6 @@
 #include "rgbe_reader.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include <cmath>
 #include <istream>
 #include <string>
@@ -58,7 +58,8 @@ Reader::Header Reader::read_header(std::istream& stream) {
 	return header;
 }
 
-void Reader::read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
+void Reader::read_pixels_RLE(std::istream& stream,
+							 uint32_t scanline_width, uint32_t num_scanlines,
 							 Float_3& image) {
 	if (scanline_width < 8 || scanline_width > 0x7fff) {
 		return read_pixels(stream, scanline_width * num_scanlines, image, 0);

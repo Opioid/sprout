@@ -2,7 +2,7 @@
 
 #include "triangle_bvh_node.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 

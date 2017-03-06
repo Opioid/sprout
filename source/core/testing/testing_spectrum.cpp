@@ -2,7 +2,7 @@
 #include "base/chrono/chrono.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/discrete.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/print.hpp"
 #include <iostream>
 

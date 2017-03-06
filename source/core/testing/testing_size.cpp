@@ -12,7 +12,7 @@
 #include "scene/shape/triangle/triangle_primitive_mte.hpp"
 #include "scene/shape/triangle/bvh/triangle_bvh_node.inl"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include <string>
 #include <iostream>
 
@@ -37,9 +37,9 @@ void size() {
 
 	print_size<math::Matrix3x3f_a>("float3x3", 48);
 
-	print_size<math::float4x4>("float4x4", 64);
+	print_size<float4x4>("float4x4", 64);
 
-	print_size<math::transformation>("transformation", 48);
+	print_size<math::Transformation>("transformation", 48);
 
 	print_size<scene::entity::Keyframe>("Keyframe", 64);
 

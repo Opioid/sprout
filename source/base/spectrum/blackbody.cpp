@@ -1,6 +1,6 @@
 #include "blackbody.hpp"
 #include "xyz.inl"
-#include "math/vector.inl"
+#include "math/vector3.inl"
 
 // http://www.scratchapixel.com/old/lessons/3d-advanced-lessons/blackbody/spectrum-of-blackbodies/
 

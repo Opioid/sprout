@@ -1,7 +1,7 @@
 #include "json.hpp"
 #include "math/math.hpp"
-#include "math/vector.inl"
-#include "math/matrix.inl"
+#include "math/vector3.inl"
+#include "math/matrix3x3.inl"
 #include "math/quaternion.inl"
 //#include "rapidjson/document.h"
 #include "rapidjson/istreamwrapper.h"
@@ -182,13 +182,12 @@ int2 read_int2(const rapidjson::Value& value, const std::string& name,
 	return read_int2(node->value);
 }
 
-math::uint2 read_uint2(const rapidjson::Value& value) {
-	return math::uint2(value[0].GetUint(),
-					   value[1].GetUint());
+uint2 read_uint2(const rapidjson::Value& value) {
+	return uint2(value[0].GetUint(), value[1].GetUint());
 }
 
-math::uint2 read_uint2(const rapidjson::Value& value, const std::string& name,
-					   math::uint2 default_value) {
+uint2 read_uint2(const rapidjson::Value& value, const std::string& name,
+				 uint2 default_value) {
 	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
 	if (value.MemberEnd() == node) {
 		return default_value;
@@ -197,20 +196,20 @@ math::uint2 read_uint2(const rapidjson::Value& value, const std::string& name,
 	return read_uint2(node->value);
 }
 
-math::uint3 read_uint3(const rapidjson::Value& value) {
-	return math::uint3(value[0].GetUint(),
-					   value[1].GetUint(),
-					   value[2].GetUint());
+uint3 read_uint3(const rapidjson::Value& value) {
+	return uint3(value[0].GetUint(),
+				 value[1].GetUint(),
+				 value[2].GetUint());
 }
 
 float3x3 create_rotation_matrix(float3_p xyz) {
-	math::float3x3 rot_x;
+	float3x3 rot_x;
 	math::set_rotation_x(rot_x, math::degrees_to_radians(xyz[0]));
 
-	math::float3x3 rot_y;
+	float3x3 rot_y;
 	math::set_rotation_y(rot_y, math::degrees_to_radians(xyz[1]));
 
-	math::float3x3 rot_z;
+	float3x3 rot_z;
 	math::set_rotation_z(rot_z, math::degrees_to_radians(xyz[2]));
 
 	return rot_z * rot_x * rot_y;
@@ -240,7 +239,7 @@ std::string read_string(const rapidjson::Value& value, const std::string& name,
 	return std::string(node->value.GetString(), node->value.GetStringLength());
 }
 
-void read_transformation(const rapidjson::Value& value, math::transformation& transformation) {
+void read_transformation(const rapidjson::Value& value, math::Transformation& transformation) {
 	for (auto& n : value.GetObject()) {
 		const std::string node_name = n.name.GetString();
 

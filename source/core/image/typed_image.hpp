@@ -1,6 +1,7 @@
 #pragma once
 
 #include "image.hpp"
+#include "base/math/vector4.hpp"
 
 namespace image {
 
@@ -63,7 +64,7 @@ using Byte_3 = Typed_image<byte3>;
 // using Float_3 = Typed_image<float3>;
 using Float_1 = Typed_image<float>;
 using Float_2 = Typed_image<float2>;
-using Float_3 = Typed_image<math::packed_float3>;
+using Float_3 = Typed_image<packed_float3>;
 using Float_4 = Typed_image<float4>;
 
 }

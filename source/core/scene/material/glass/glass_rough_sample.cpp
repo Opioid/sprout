@@ -5,7 +5,7 @@
 #include "scene/material/ggx/ggx.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"

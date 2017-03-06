@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/vector.hpp"
-#include "math/matrix.hpp"
+#include "math/vector3.hpp"
+#include "math/matrix3x3.hpp"
 
 namespace math {
 

@@ -2,7 +2,7 @@
 #include "scene/scene_ray.inl"
 #include "scene/prop.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace bvh {
 

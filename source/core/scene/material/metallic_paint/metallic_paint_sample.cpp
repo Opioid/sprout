@@ -5,7 +5,7 @@
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace material { namespace metallic_paint {
 

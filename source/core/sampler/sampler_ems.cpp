@@ -1,6 +1,6 @@
 #include "sampler_ems.hpp"
 #include "camera_sample.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/random/generator.inl"
 

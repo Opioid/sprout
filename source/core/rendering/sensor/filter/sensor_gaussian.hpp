@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sensor_filter.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 #include "base/math/function/interpolated_function.hpp"
 
 namespace rendering { namespace sensor { namespace filter {

@@ -7,8 +7,8 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/print.hpp"
 #include <iostream>
 
@@ -43,7 +43,7 @@ void test() {
 
 	Node_stack node_stack(0);
 
-	math::transformation transformation;
+	math::Transformation transformation;
 	transformation.position = float3(0.f);
 	transformation.scale = float3(1.f);
 	transformation.rotation = math::quaternion::identity;

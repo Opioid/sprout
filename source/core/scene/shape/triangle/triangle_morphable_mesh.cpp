@@ -11,8 +11,8 @@
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "sampler/sampler.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
 namespace scene { namespace shape { namespace triangle {

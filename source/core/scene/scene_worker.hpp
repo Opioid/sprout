@@ -2,7 +2,7 @@
 
 #include "shape/node_stack.hpp"
 #include "material/sampler_cache.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 
 namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
 

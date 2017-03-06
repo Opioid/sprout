@@ -1,6 +1,6 @@
 #include "animation.hpp"
 #include "scene/entity/keyframe.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
 

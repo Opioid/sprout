@@ -3,7 +3,7 @@
 #include "substitute_base_sample.hpp"
 #include "scene/material/coating/coating.inl"
 #include "scene/material/disney/disney.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace material { namespace substitute {
 

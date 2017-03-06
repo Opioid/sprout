@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sampling.hpp"
-#include "math/vector.inl"
+#include "math/vector3.inl"
 #include "math/math.hpp"
 
 namespace math {

@@ -2,7 +2,7 @@
 
 #include "rendering/integrator/integrator.hpp"
 #include "base/json/json_types.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 #include <istream>
 #include <string>
 #include <memory>

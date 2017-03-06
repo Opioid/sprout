@@ -1,7 +1,7 @@
 #include "exporting_sink_statistics.hpp"
 #include "image/image_helper.hpp"
 #include "logging/logging.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/string/string.inl"
 
 namespace exporting {

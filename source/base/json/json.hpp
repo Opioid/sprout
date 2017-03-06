@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/vector.hpp"
-#include "math/matrix.hpp"
+#include "math/vector3.hpp"
+#include "math/matrix3x3.hpp"
 #include "math/quaternion.hpp"
 #include "math/transformation.hpp"
 
@@ -45,11 +45,11 @@ int2 read_int2(const rapidjson::Value& value);
 int2 read_int2(const rapidjson::Value& value, const std::string& name,
 			   int2 default_value = int2::identity);
 
-math::uint2 read_uint2(const rapidjson::Value& value);
-math::uint2 read_uint2(const rapidjson::Value& value, const std::string& name,
-					   math::uint2 default_value = math::uint2::identity);
+uint2 read_uint2(const rapidjson::Value& value);
+uint2 read_uint2(const rapidjson::Value& value, const std::string& name,
+				 uint2 default_value = uint2::identity);
 
-math::uint3 read_uint3(const rapidjson::Value& value);
+uint3 read_uint3(const rapidjson::Value& value);
 
 // math::quaternion read_quaternion(const rapidjson::Value& value);
 
@@ -61,6 +61,6 @@ std::string read_string(const rapidjson::Value& value);
 std::string read_string(const rapidjson::Value& value, const std::string& name,
 						const std::string& default_value = "");
 
-void read_transformation(const rapidjson::Value& value, math::transformation& transformation);
+void read_transformation(const rapidjson::Value& value, math::Transformation& transformation);
 
 }

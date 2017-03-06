@@ -11,8 +11,8 @@
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/material/material_sample_cache.inl"
 #include "base/math/mapping.inl"
-#include "base/math/matrix.inl"
-#include "base/math/vector.inl"
+#include "base/math/matrix3x3.inl"
+#include "base/math/vector3.inl"
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.inl"
 
@@ -140,10 +140,10 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 			float3 wi = unclipped_canopy_mapping(transformation, uv);
 
 			/*if (0.f == sample.pdf) {
-				cache->at(x, y) = math::packed_float3::identity;
+				cache->at(x, y) = packed_float3::identity;
 			} else*/ {
 				float3 radiance = model_.evaluate_sky(/*sample.*/wi);
-				cache->at(x, y) = math::packed_float3(radiance);
+				cache->at(x, y) = packed_float3(radiance);
 			}
 		}
 	}

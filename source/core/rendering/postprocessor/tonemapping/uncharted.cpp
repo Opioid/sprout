@@ -1,5 +1,5 @@
 #include "uncharted.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace rendering { namespace postprocessor { namespace tonemapping {
 

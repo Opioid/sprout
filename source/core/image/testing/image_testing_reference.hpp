@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/math/vector.hpp"
+#include "base/math/vector2.hpp"
 
 namespace image { namespace testing {
 

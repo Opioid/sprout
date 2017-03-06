@@ -1,8 +1,7 @@
 #pragma once
 
 #include "core/scene/shape/triangle/triangle_mesh_generator.hpp"
-#include "base/math/vector.hpp"
-#include "base/math/matrix.hpp"
+#include "base/math/vector3.hpp"
 #include <vector>
 
 namespace scene { namespace shape {

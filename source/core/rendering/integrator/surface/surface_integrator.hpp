@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector4.hpp"
 
 namespace rendering {
 

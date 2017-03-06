@@ -1,21 +1,21 @@
 #include "animation_loader.hpp"
 #include "animation.hpp"
 #include "base/json/json.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/quaternion.inl"
 
 namespace scene { namespace animation {
 
 std::shared_ptr<animation::Animation> load_keyframes(
-		const json::Value& keyframes_value, const math::transformation& default_transformation);
+		const json::Value& keyframes_value, const math::Transformation& default_transformation);
 
 std::shared_ptr<animation::Animation> load_sequence(
-		const json::Value& keyframes_value, const math::transformation& default_transformation);
+		const json::Value& keyframes_value, const math::Transformation& default_transformation);
 
 void read_morphing(const json::Value& value, entity::Keyframe::Morphing& morphing);
 
 std::shared_ptr<animation::Animation> load(const json::Value& animation_value,
-										   const math::transformation& default_transformation) {
+										   const math::Transformation& default_transformation) {
 	for (auto n = animation_value.MemberBegin(); n != animation_value.MemberEnd(); ++n) {
 		const std::string node_name = n->name.GetString();
 		const rapidjson::Value& node_value = n->value;
@@ -31,7 +31,7 @@ std::shared_ptr<animation::Animation> load(const json::Value& animation_value,
 }
 
 std::shared_ptr<animation::Animation> load_keyframes(
-		const json::Value& keyframes_value, const math::transformation& default_transformation) {
+		const json::Value& keyframes_value, const math::Transformation& default_transformation) {
 	if (!keyframes_value.IsArray()) {
 		return nullptr;
 	}
@@ -67,7 +67,7 @@ std::shared_ptr<animation::Animation> load_keyframes(
 }
 
 std::shared_ptr<animation::Animation> load_sequence(
-		const json::Value& sequence_value, const math::transformation& default_transformation) {
+		const json::Value& sequence_value, const math::Transformation& default_transformation) {
 	uint32_t start_frame = 0;
 	uint32_t num_frames = 0;
 	uint32_t frames_per_second = 0;

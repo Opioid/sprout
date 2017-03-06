@@ -4,7 +4,7 @@
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/plane.inl"
 #include "base/thread/thread_pool.hpp"
 

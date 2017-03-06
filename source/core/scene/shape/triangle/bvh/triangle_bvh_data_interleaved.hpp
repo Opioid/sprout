@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 #include "base/math/simd/simd_vector.hpp"
 #include <vector>
 

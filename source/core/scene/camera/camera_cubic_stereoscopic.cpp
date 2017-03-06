@@ -5,8 +5,8 @@
 #include "sampler/camera_sample.hpp"
 #include "base/json/json.hpp"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/ray.inl"
 #include "base/math/sampling/sampling.inl"
 
@@ -52,7 +52,7 @@ Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
 	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians( 90.f));
 	math::set_rotation_x(view_rotations_[2], math::degrees_to_radians( 90.f));
 	math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
-	view_rotations_[4] = math::float3x3::identity();
+	view_rotations_[4] = float3x3::identity();
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 
 	set_interpupillary_distance_falloff(0.36f);
@@ -87,7 +87,7 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 
 	const float a = -std::atan2(direction[0], direction[2]);
 
-	math::float3x3 rotation;
+	float3x3 rotation;
 	math::set_rotation_y(rotation, a);
 
 	const float ipd_scale = 1.f - std::pow(std::abs(direction[1]), 12.f - ipd_falloff_ * 10.f);

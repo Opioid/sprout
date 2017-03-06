@@ -1,7 +1,7 @@
 #pragma once
 
 #include "distribution_1d.hpp"
-#include "math/vector.hpp"
+#include "math/vector3.hpp"
 
 namespace thread { class Pool; }
 

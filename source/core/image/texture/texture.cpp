@@ -1,6 +1,6 @@
 #include "texture.hpp"
 #include "image/image.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector4.inl"
 
 namespace image { namespace texture {
 

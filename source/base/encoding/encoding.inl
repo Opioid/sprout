@@ -1,6 +1,7 @@
 #pragma once
 
-#include "math/vector.inl"
+#include "math/vector3.inl"
+#include "math/vector4.inl"
 
 namespace encoding {
 
@@ -10,7 +11,7 @@ inline float3 unorm_to_float(byte3 c) {
 				  static_cast<float>(c[2]) / 255.f);
 }
 
-inline float4 unorm_to_float(math::byte4 c) {
+inline float4 unorm_to_float(byte4 c) {
 	return float4(static_cast<float>(c[0]) / 255.f,
 				  static_cast<float>(c[1]) / 255.f,
 				  static_cast<float>(c[2]) / 255.f,

@@ -1,6 +1,6 @@
 #include "testing_simd.hpp"
 #include "base/chrono/chrono.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "base/math/simd/simd_math.inl"
 #include "base/math/simd/simd_vector.inl"

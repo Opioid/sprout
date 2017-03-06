@@ -24,7 +24,7 @@
 #include "resource/resource_manager.inl"
 #include "resource/resource_provider.inl"
 #include "base/json/json.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/quaternion.inl"
 #include "base/memory/variant_map.inl"
 #include "base/string/string.inl"
@@ -157,7 +157,7 @@ void Loader::load_entities(const json::Value& entities_value,
 			continue;
 		}
 
-		math::transformation transformation {
+		math::Transformation transformation {
 			float3::identity(),
 			float3(1.f),
 			math::quaternion::identity

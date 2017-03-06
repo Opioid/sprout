@@ -1,6 +1,6 @@
 #include "sky_material_base.hpp"
 #include "sky_model.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace procedural { namespace sky {
 

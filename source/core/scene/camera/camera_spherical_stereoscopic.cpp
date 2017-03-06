@@ -5,8 +5,8 @@
 #include "scene/scene_ray.inl"
 #include "base/json/json.hpp"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/sampling/sampling.inl"
 
 // the layout should match
@@ -60,7 +60,7 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 
 	const float3 dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
-	math::float3x3 rotation;
+	float3x3 rotation;
 	math::set_rotation_y(rotation, phi);
 	const float3 eye_pos = eye_offsets_[view] * rotation;
 

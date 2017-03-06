@@ -1,7 +1,7 @@
 #include "png_reader.hpp"
 #include "image/typed_image.inl"
 #include "image/tiled_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector4.inl"
 #include "base/spectrum/rgb.inl"
 #include "base/string/string.inl"
 #include <cstring>
@@ -107,7 +107,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 		std::shared_ptr<Byte_2> image = std::make_shared<Byte_2>(
 					Image::Description(Image::Type::Byte_2, dimensions, num_elements));
 
-		math::byte2 color(0, 0);
+		byte2 color(0, 0);
 
 		int32_t max_channels = std::min(2, info.num_channels);
 
@@ -125,7 +125,7 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 		std::shared_ptr<Byte_3> image = std::make_shared<Byte_3>(
 					Image::Description(Image::Type::Byte_3, dimensions, num_elements));
 
-		math::byte3 color(0, 0, 0);
+		byte3 color(0, 0, 0);
 
 		int32_t max_channels = std::min(3, info.num_channels);
 

@@ -1,7 +1,7 @@
 #include "animation_stage.hpp"
 #include "animation.hpp"
 #include "scene/entity/entity.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace animation {
 

@@ -14,7 +14,7 @@
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
 #include "base/spectrum/rgb.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/ray.inl"
 #include "base/random/generator.inl"
 

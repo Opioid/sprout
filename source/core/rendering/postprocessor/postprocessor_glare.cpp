@@ -1,6 +1,6 @@
 #include "postprocessor_glare.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/filter/gaussian.hpp"
 #include "base/spectrum/interpolated.hpp"
 #include "base/spectrum/rgb.inl"

@@ -160,3 +160,6 @@ void set_rotation_z(Matrix3x3f_a& m, float a);
 void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a);
 
 }
+
+// using float3x3 = Matrix3x3<float>;
+using float3x3 = math::Matrix3x3f_a;

@@ -131,3 +131,11 @@ struct alignas(16) Vector4i_a {
 };
 
 }
+
+using byte4  = math::Vector4<uint8_t>;
+using short4 = math::Vector4<int16_t>;
+// using float4 = Vector4<float>;
+using float4 = math::Vector4f_a;
+using int4   = math::Vector4i_a;
+
+using float4_p = math::FVector4f_a;

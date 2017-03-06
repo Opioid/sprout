@@ -1,5 +1,5 @@
 #include "camera_stereoscopic.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace camera {
 

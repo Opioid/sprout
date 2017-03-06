@@ -8,7 +8,7 @@ HEADERS += \
 	math/mapping.inl \
 	math/math.hpp \
 	math/matrix.hpp \
-	math/matrix.inl \
+	math/matrix3x3.inl \
     math/matrix3x3.hpp \
     math/matrix3x3.inl \
 	math/matrix4x4.hpp \
@@ -22,8 +22,8 @@ HEADERS += \
 	math/ray.inl \
 	math/transformation.hpp \
 	math/transformation.inl \
-	math/vector.hpp \
-	math/vector.inl \
+	math/vector3.hpp \
+	math/vector3.inl \
 	math/vector2.hpp \
 	math/vector2.inl \
 	math/vector3.hpp \

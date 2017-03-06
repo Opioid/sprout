@@ -2,7 +2,7 @@
 #include "glass_sample.hpp"
 #include "scene/material/material_print.hpp"
 #include "sampler/sampler_random.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/random/generator.hpp"
 
 namespace scene { namespace material { namespace glass {

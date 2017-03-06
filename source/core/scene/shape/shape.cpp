@@ -1,7 +1,7 @@
 #include "shape.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 
 namespace scene { namespace shape {
 
@@ -11,11 +11,11 @@ const math::aabb& Shape::aabb() const {
 	return aabb_;
 }
 
-math::aabb Shape::transformed_aabb(const float4x4& m, const math::transformation& /*t*/) const {
+math::aabb Shape::transformed_aabb(const float4x4& m, const math::Transformation& /*t*/) const {
 	return aabb_.transform(m);
 }
 
-math::aabb Shape::transformed_aabb(const math::transformation& t) const {
+math::aabb Shape::transformed_aabb(const math::Transformation& t) const {
 	return transformed_aabb(float4x4(t), t);
 }
 

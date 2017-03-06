@@ -1,7 +1,7 @@
 #pragma once
 
-#include "vector.hpp"
-#include "matrix.hpp"
+#include "vector4.hpp"
+#include "matrix4x4.hpp"
 #include <ostream>
 
 template<typename T>

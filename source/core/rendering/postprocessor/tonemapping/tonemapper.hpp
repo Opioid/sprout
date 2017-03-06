@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rendering/postprocessor/postprocessor.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 
 namespace rendering { namespace postprocessor { namespace tonemapping {
 

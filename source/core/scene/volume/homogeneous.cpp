@@ -1,7 +1,7 @@
 #include "homogeneous.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/ray.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace volume {
 

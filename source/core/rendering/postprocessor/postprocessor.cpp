@@ -1,5 +1,5 @@
 #include "postprocessor.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/thread/thread_pool.hpp"
 
 namespace rendering { namespace postprocessor {

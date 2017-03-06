@@ -8,7 +8,7 @@
 #include "scene/camera/camera.hpp"
 #include "take/take_view.hpp"
 #include "base/chrono/chrono.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"
 

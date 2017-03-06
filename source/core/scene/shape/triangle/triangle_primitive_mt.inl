@@ -332,8 +332,8 @@ inline void interpolate_data(const Shading_vertex_MT& a,
 	tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline Shading_vertex_MTC::Shading_vertex_MTC(const math::packed_float3& n,
-											  const math::packed_float3& t,
+inline Shading_vertex_MTC::Shading_vertex_MTC(const packed_float3& n,
+											  const packed_float3& t,
 											  float2 uv) :
 	n_u(n, uv[0]), t_v(t, uv[1]) {
 	// Not too happy about handling degenerate tangents here (only one very special case even)
@@ -390,15 +390,15 @@ inline short4 float_to_snorm16(float3_p v, float s) {
 				  float_to_xnorm(s));
 }
 
-inline short4 float_to_snorm16(const math::packed_float3& v, float s) {
+inline short4 float_to_snorm16(const packed_float3& v, float s) {
 	return short4(encoding::float_to_snorm16(v[0]),
 				  encoding::float_to_snorm16(v[1]),
 				  encoding::float_to_snorm16(v[2]),
 				  float_to_xnorm(s));
 }
 
-inline Shading_vertex_MTCC::Shading_vertex_MTCC(const math::packed_float3& n,
-												const math::packed_float3& t,
+inline Shading_vertex_MTCC::Shading_vertex_MTCC(const packed_float3& n,
+												const packed_float3& t,
 												float2 uv) :
 	n_u(float_to_snorm16(n, uv[0])),
 	t_v(float_to_snorm16(t, uv[1])) {
@@ -457,9 +457,9 @@ inline void interpolate_data(const Shading_vertex_MTCC& a,
 	tc = float2(n_u[3], t_v[3]);
 }
 
-inline Vertex_MTC::Vertex_MTC(const math::packed_float3& p,
-							  const math::packed_float3& n,
-							  const math::packed_float3& t,
+inline Vertex_MTC::Vertex_MTC(const packed_float3& p,
+							  const packed_float3& n,
+							  const packed_float3& t,
 							  float2 uv) :
 	p(p), n_u(n, uv[0]), t_v(t, uv[1]) {
 	// Not too happy about handling degenerate tangents here (only one very special case even)

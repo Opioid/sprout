@@ -7,7 +7,7 @@ namespace math {
 
 template<typename T> struct Matrix3x3;
 struct Matrix3x3f_a;
-struct Transformationf_a;
+struct Transformation;
 
 /****************************************************************************
  *
@@ -49,7 +49,7 @@ struct Matrix4x4 {
 
 	explicit Matrix4x4(const Matrix3x3<T>& m);
 
-	explicit Matrix4x4(const Transformationf_a& t);
+	explicit Matrix4x4(const Transformation& t);
 
 	Matrix4x4 operator*(const Matrix4x4& o) const;
 
@@ -157,7 +157,7 @@ struct alignas(16) Matrix4x4f_a {
 				 float m20, float m21, float m22, float m23,
 				 float m30, float m31, float m32, float m33);
 
-	explicit Matrix4x4f_a(const Transformationf_a& t);
+	explicit Matrix4x4f_a(const Transformation& t);
 
 	Vector3f_a x() const;
 	Vector3f_a y() const;
@@ -192,3 +192,5 @@ void set_translation(Matrix4x4f_a& m, const Vector3f_a& v);
 void set_rotation_x(Matrix4x4f_a& m, float a);
 
 }
+
+using float4x4 = math::Matrix4x4f_a;

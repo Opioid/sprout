@@ -9,7 +9,7 @@
 #include "core/image/texture/texture_float_2.hpp"
 #include "core/image/texture/sampler/sampler_linear_2d.inl"
 #include "base/encoding/encoding.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/fourier/dft.hpp"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/random/generator.inl"
@@ -104,7 +104,7 @@ void create(thread::Pool& pool) {
 		pool.run_range([&float_image_a, &signal](uint32_t /*id*/, int32_t begin, int32_t end) {
 			for (int32_t i = begin; i < end; ++i) {
 				float s = 0.75f * signal.load(i);
-				float_image_a.store(i, math::packed_float3(s));
+				float_image_a.store(i, packed_float3(s));
 			}
 		}, 0, resolution * resolution);
 
@@ -152,7 +152,7 @@ void create(thread::Pool& pool) {
 			for (int32_t i = begin; i < end; ++i) {
 				auto& s = spectral_data[i];
 				float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
-				float_image_a.store(i, math::packed_float3(linear_rgb));
+				float_image_a.store(i, packed_float3(linear_rgb));
 			}
 		}, 0, resolution * resolution);
 
@@ -177,7 +177,7 @@ void create(thread::Pool& pool) {
 				for (int32_t i = begin; i < end; ++i) {
 					auto& s = spectral_data[i];
 					float3 linear_rgb = spectrum::XYZ_to_linear_RGB(s.normalized_XYZ());
-					float_image_a.store(i, math::packed_float3(linear_rgb));
+					float_image_a.store(i, packed_float3(linear_rgb));
 				}
 			}, 0, resolution * resolution);
 
@@ -187,7 +187,7 @@ void create(thread::Pool& pool) {
 //	write_signal("signal_after.png", signal);
 
 	float radius = static_cast<float>(resolution) * 0.00390625f;
-	filter::Gaussian<math::packed_float3> gaussian(radius, radius * 0.0005f);
+	filter::Gaussian<packed_float3> gaussian(radius, radius * 0.0005f);
 	gaussian.apply(float_image_a, pool);
 
 	Byte_3 byte_image(Image::Description(Image::Type::Byte_3, dimensions));

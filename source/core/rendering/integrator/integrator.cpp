@@ -1,5 +1,4 @@
 #include "integrator.hpp"
-#include "base/math/vector.inl"
 
 namespace rendering { namespace integrator {
 

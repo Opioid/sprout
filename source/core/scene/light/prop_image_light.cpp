@@ -8,8 +8,8 @@
 #include "scene/material/material.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix4x4.inl"
 
 namespace scene { namespace light {
 

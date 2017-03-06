@@ -4,8 +4,8 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/ray.inl"
 #include "base/math/sampling/sampling.inl"
 
@@ -57,7 +57,7 @@ Cubic::Cubic(Layout layout, int2 resolution) :
 	math::set_rotation_y(view_rotations_[1], math::degrees_to_radians( 90.f));
 	math::set_rotation_x(view_rotations_[2], math::degrees_to_radians( 90.f));
 	math::set_rotation_x(view_rotations_[3], math::degrees_to_radians(-90.f));
-	view_rotations_[4] = math::float3x3::identity();
+	view_rotations_[4] = float3x3::identity();
 	math::set_rotation_y(view_rotations_[5], math::degrees_to_radians(180.f));
 }
 

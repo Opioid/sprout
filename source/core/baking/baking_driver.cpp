@@ -8,8 +8,7 @@
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
 #include "base/math/sampling/sampling.inl"
-#include "base/math/matrix.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include <fstream>
 

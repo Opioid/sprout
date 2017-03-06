@@ -1,6 +1,5 @@
 #pragma once
 
-#include "base/math/vector.hpp"
 #include "base/math/plane.hpp"
 #include <cstdint>
 #include <vector>

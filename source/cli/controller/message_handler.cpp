@@ -5,7 +5,7 @@
 #include "core/scene/scene.hpp"
 #include "core/scene/camera/camera.hpp"
 #include "base/json/json.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/memory/variant_map.hpp"
 #include "base/string/string.inl"
 #include <sstream>
@@ -114,7 +114,7 @@ void Message_handler::handle_entity(scene::entity::Entity* entity, const std::st
 		if ("parameters" == value) {
 			entity->set_parameters(*root);
 		} else if ("transformation" == value) {
-			math::transformation t = entity->local_frame_a();
+			math::Transformation t = entity->local_frame_a();
 			json::read_transformation(*root, t);
 			entity->set_transformation(t);
 		} else {

@@ -40,7 +40,7 @@
 #include "substitute/substitute_translucent_material.hpp"
 #include "substitute/substitute_translucent_sample.hpp"
 #include "base/json/json.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/memory/variant_map.inl"
 #include "base/spectrum/blackbody.hpp"
 #include "base/spectrum/rgb.inl"

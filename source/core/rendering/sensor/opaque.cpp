@@ -2,7 +2,7 @@
 #include "image/typed_image.inl"
 #include "base/atomic/atomic.hpp"
 #include "base/memory/align.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace rendering { namespace sensor {
 

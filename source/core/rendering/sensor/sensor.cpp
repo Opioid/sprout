@@ -1,6 +1,6 @@
 #include "sensor.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/thread/thread_pool.hpp"
 
 namespace rendering { namespace sensor {

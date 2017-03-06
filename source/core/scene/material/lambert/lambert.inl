@@ -4,7 +4,7 @@
 #include "scene/material/bxdf.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sampling/sampling.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/math.hpp"
 
 #include "scene/material/material_test.hpp"

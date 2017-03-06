@@ -1,6 +1,6 @@
 #include "raw_reader.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include <istream>
 #include <string>
 

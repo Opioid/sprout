@@ -1,7 +1,7 @@
 #pragma once
 
 #include "clamp.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace rendering { namespace sensor { namespace clamp {
 

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "math/vector.hpp"
+#include "math/vector3.hpp"
+#include "math/vector4.hpp"
 #include "memory/const.hpp"
 
 namespace spectrum {
@@ -19,7 +20,7 @@ float sRGB_to_linear(float c);
 float3 sRGB_to_linear_RGB(byte3 c);
 float3 sRGB_to_linear_RGB(float3_p c);
 
-float4 sRGB_to_linear_RGB(math::byte4 c);
+float4 sRGB_to_linear_RGB(byte4 c);
 
 // convert linear color to gamma color
 float3 linear_to_gamma(float3_p c, float gamma);

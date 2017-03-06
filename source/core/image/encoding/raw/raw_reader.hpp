@@ -1,7 +1,6 @@
 #pragma once
 
 #include "image/typed_image.hpp"
-#include "base/math/vector.hpp"
 #include <cstdint>
 #include <iosfwd>
 #include <memory>

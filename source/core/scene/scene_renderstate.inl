@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scene_renderstate.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene {
 

@@ -1,5 +1,5 @@
 #include "entity.hpp"
-#include "base/math/matrix.inl"
+#include "base/math/matrix4x4.inl"
 #include "base/math/transformation.inl"
 
 namespace scene { namespace entity {
@@ -8,7 +8,7 @@ Entity::Entity() : parent_(nullptr), next_(nullptr), child_(nullptr) {}
 
 Entity::~Entity() {}
 
-const math::transformation& Entity::local_frame_a() const {
+const math::Transformation& Entity::local_frame_a() const {
 	return local_frame_a_.transformation;
 }
 
@@ -23,7 +23,7 @@ const Composed_transformation& Entity::transformation_at(
 	return transformation;
 }
 
-void Entity::set_transformation(const math::transformation& t) {
+void Entity::set_transformation(const math::Transformation& t) {
 	world_transformation_.set(t);
 
 	local_frame_a_.transformation = t;
@@ -122,8 +122,8 @@ void Entity::propagate_transformation() const {
 	}
 }
 
-void Entity::inherit_transformation(const math::transformation& a,
-									const math::transformation& b,
+void Entity::inherit_transformation(const math::Transformation& a,
+									const math::Transformation& b,
 									bool animated) {
 	if (next_) {
 		next_->inherit_transformation(a, b, animated);

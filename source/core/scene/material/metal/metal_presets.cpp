@@ -1,5 +1,5 @@
 #include "metal_presets.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace material { namespace metal {
 

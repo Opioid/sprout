@@ -1,7 +1,7 @@
 #include "texture_test.hpp"
 #include "texture_encoding.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/print.hpp"
 #include <iostream>
 

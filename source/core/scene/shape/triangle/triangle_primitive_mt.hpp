@@ -93,7 +93,7 @@ void interpolate_data(const Shading_vertex_MT& a,
 					  float3& n, float3& t, float2& tc);
 
 struct Shading_vertex_MTC {
-	Shading_vertex_MTC(const math::packed_float3& n, const math::packed_float3& t, float2 uv);
+	Shading_vertex_MTC(const packed_float3& n, const packed_float3& t, float2 uv);
 
 	float4 n_u;
 	float4 t_v;
@@ -111,7 +111,7 @@ void interpolate_data(const Shading_vertex_MTC& a,
 					  float3& n, float3& t, float2& tc);
 
 struct alignas(16) Shading_vertex_MTCC {
-	Shading_vertex_MTCC(const math::packed_float3& n, const math::packed_float3& t, float2 uv);
+	Shading_vertex_MTCC(const packed_float3& n, const packed_float3& t, float2 uv);
 
 	short4 n_u;
 	short4 t_v;
@@ -129,9 +129,9 @@ void interpolate_data(const Shading_vertex_MTCC& a,
 					  float3& n, float3& t, float2& tc);
 
 struct Vertex_MTC {
-	Vertex_MTC(const math::packed_float3& p,
-			   const math::packed_float3& n,
-			   const math::packed_float3& t,
+	Vertex_MTC(const packed_float3& p,
+			   const packed_float3& n,
+			   const packed_float3& t,
 			   float2 uv);
 
 	float3 p;

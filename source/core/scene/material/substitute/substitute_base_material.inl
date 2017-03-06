@@ -8,7 +8,7 @@
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"

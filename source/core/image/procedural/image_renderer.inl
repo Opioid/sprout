@@ -2,7 +2,7 @@
 
 #include "image_renderer.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/spectrum/rgb.inl"
 
 namespace image { namespace procedural {

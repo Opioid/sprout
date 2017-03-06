@@ -1,7 +1,6 @@
 #pragma once
 
 #include "camera.hpp"
-#include "base/math/matrix.hpp"
 
 namespace scene { namespace camera {
 
@@ -41,7 +40,7 @@ private:
 
 	int4 view_bounds_[6];
 
-	math::float3x3 view_rotations_[6];
+	float3x3 view_rotations_[6];
 };
 
 }}

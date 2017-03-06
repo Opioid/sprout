@@ -2,7 +2,7 @@
 #include "client.hpp"
 #include "message_handler.hpp"
 #include "core/logging/logging.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/thread/thread_pool.hpp"
 
 namespace server {
@@ -55,7 +55,7 @@ void Server::write(const image::Float_4& image, uint32_t /*frame*/, thread::Pool
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		srgb_.to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
 
-	size_t buffer_len = d[0] * d[1] * sizeof(math::byte4);
+	size_t buffer_len = d[0] * d[1] * sizeof(byte4);
 
 	std::string message;
 

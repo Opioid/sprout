@@ -2,7 +2,7 @@
 
 #include "triangle_bvh_builder_base.hpp"
 #include "base/math/plane.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 
 namespace thread { class Pool; }
 

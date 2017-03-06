@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scene/scene_worker.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector4.hpp"
 #include "base/random/generator.hpp"
 
 namespace sampler {

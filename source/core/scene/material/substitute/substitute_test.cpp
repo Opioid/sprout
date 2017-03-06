@@ -4,7 +4,7 @@
 #include "scene/material/material_print.hpp"
 #include "scene/material/ggx/ggx.inl"
 #include "sampler/sampler_random.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/print.hpp"
 #include "base/random/generator.inl"
 #include <iostream>

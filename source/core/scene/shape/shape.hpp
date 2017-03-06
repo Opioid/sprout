@@ -2,7 +2,7 @@
 
 #include "scene/material/material.hpp"
 #include "base/math/aabb.hpp"
-#include "base/math/matrix.hpp"
+#include "base/math/matrix4x4.hpp"
 #include "base/math/transformation.hpp"
 
 namespace sampler { class Sampler; }
@@ -32,8 +32,8 @@ public:
 
 	const math::aabb& aabb() const;
 
-	virtual math::aabb transformed_aabb(const float4x4& m, const math::transformation& t) const;
-	virtual math::aabb transformed_aabb(const math::transformation& t) const;
+	virtual math::aabb transformed_aabb(const float4x4& m, const math::Transformation& t) const;
+	virtual math::aabb transformed_aabb(const math::Transformation& t) const;
 
 	virtual uint32_t num_parts() const;
 

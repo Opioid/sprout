@@ -1,7 +1,7 @@
 #pragma once
 
 #include "image/typed_image.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 #include <cstdint>
 #include <iosfwd>
 #include <memory>
@@ -23,12 +23,14 @@ private:
 
 	static Header read_header(std::istream& stream);
 
-	static void read_pixels_RLE(std::istream& stream, uint32_t scanline_width, uint32_t num_scanlines,
+	static void read_pixels_RLE(std::istream& stream,
+								uint32_t scanline_width, uint32_t num_scanlines,
 								Float_3& image);
 
-	static void read_pixels(std::istream& stream, uint32_t num_pixels, Float_3& image, uint32_t offset);
+	static void read_pixels(std::istream& stream, uint32_t num_pixels,
+							Float_3& image, uint32_t offset);
 
-	using image_float3 = math::packed_float3;
+	using image_float3 = packed_float3;
 
 	static image_float3 rgbe_to_float3(uint8_t rgbe[4]);
 };

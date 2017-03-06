@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sampler_2d.hpp"
+#include "base/math/vector4.hpp"
 
 namespace image { namespace texture { namespace sampler {
 

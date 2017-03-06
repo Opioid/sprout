@@ -1,5 +1,5 @@
 #include "bssrdf.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace material {
 

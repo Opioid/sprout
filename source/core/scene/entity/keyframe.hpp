@@ -1,7 +1,5 @@
 #pragma once
 
-#include "base/math/vector.hpp"
-#include "base/math/quaternion.hpp"
 #include "base/math/transformation.hpp"
 
 namespace scene { namespace entity {
@@ -9,7 +7,7 @@ namespace scene { namespace entity {
 struct alignas(16) Keyframe {
 	void interpolate(const Keyframe& other, float t, Keyframe& result) const;
 
-	math::transformation transformation;
+	math::Transformation transformation;
 
 	struct Morphing {
 		uint32_t targets[2];

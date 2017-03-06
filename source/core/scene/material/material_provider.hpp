@@ -4,7 +4,7 @@
 #include "material_sample_cache.hpp"
 #include "image/texture/texture_types.hpp"
 #include "base/json/json_types.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 #include <vector>
 
 namespace scene { namespace material {

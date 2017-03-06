@@ -1,7 +1,6 @@
 #pragma once
 
 #include "image/typed_image.hpp"
-#include "base/math/vector.hpp"
 
 namespace image { namespace encoding {
 
@@ -22,7 +21,7 @@ public:
 
 protected:
 
-	math::byte3* rgb_;
+	byte3* rgb_;
 };
 
 class Srgb_alpha {

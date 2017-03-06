@@ -1,8 +1,8 @@
 #include "camera.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "base/json/json.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/quaternion.inl"
 
 namespace scene { namespace camera {

@@ -1,6 +1,6 @@
 #include "texture_float_2.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector4.inl"
 
 namespace image { namespace texture {
 

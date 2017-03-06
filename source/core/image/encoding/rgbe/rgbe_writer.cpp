@@ -1,6 +1,6 @@
 #include "rgbe_writer.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector4.inl"
 #include <cmath>
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
@@ -28,9 +28,9 @@ void Writer::write_header(std::ostream& stream, int2 dimensions) {
 void Writer::write_pixels(std::ostream& stream, const Float_4& image) {
 	const auto& d = image.description().dimensions;
 	for (uint32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
-		math::byte4 rgbe = float_to_rgbe(image.at(i));
+		byte4 rgbe = float_to_rgbe(image.at(i));
 
-		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(math::byte4));
+		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(byte4));
 	}
 }
 
@@ -48,13 +48,13 @@ void Writer::write_pixels_rle(std::ostream& stream, const Float_4& image) {
 	uint32_t current_pixel = 0;
 
 	while (num_scanlines-- > 0) {
-		math::byte4 rgbe;
+		byte4 rgbe;
 		rgbe[0] = 2;
 		rgbe[1] = 2;
 		rgbe[2] = static_cast<uint8_t>(scanline_width >> 8);
 		rgbe[3] = static_cast<uint8_t>(scanline_width & 0xFF);
 
-		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(math::byte4));
+		stream.write(reinterpret_cast<char*>(&rgbe), sizeof(byte4));
 
 		for (uint32_t i = 0; i < scanline_width; ++i, ++current_pixel) {
 			const auto& pixel = image.at(current_pixel);
@@ -145,7 +145,7 @@ void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t
 	}
 }
 
-math::byte4 Writer::float_to_rgbe(float4_p c) {
+byte4 Writer::float_to_rgbe(float4_p c) {
 	float v = c[0];
 
 	if (c[1] > v) {
@@ -157,14 +157,14 @@ math::byte4 Writer::float_to_rgbe(float4_p c) {
 	}
 
 	if (v < 1e-32) {
-		return math::byte4(0, 0, 0, 0);
+		return byte4(0, 0, 0, 0);
 	} else {
 		int e;
 		float f = std::frexp(v, &e);
 
 		v = f * 256.f / v;
 
-		return math::byte4(static_cast<uint8_t>(c[0] * v),
+		return byte4(static_cast<uint8_t>(c[0] * v),
 						   static_cast<uint8_t>(c[1] * v),
 						   static_cast<uint8_t>(c[2] * v),
 						   static_cast<uint8_t>(e + 128));

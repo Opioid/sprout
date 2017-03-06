@@ -20,7 +20,7 @@
 #include "file/file_system.hpp"
 #include "base/json/json.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/memory/variant_map.inl"
 #include "rapidjson/istreamwrapper.h"
 
@@ -86,14 +86,14 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 		// Might be smarter to throw an exception,
 		// or just go ahead and actually compute the geometry normal...
 		for (auto& v : handler.vertices()) {
-			v.n = math::packed_float3(0.f, 1.f, 0.f);
+			v.n = packed_float3(0.f, 1.f, 0.f);
 		}
 	}
 
 	if (!handler.has_tangents()) {
 		// If no tangents were loaded, compute the tangent space manually
 		for (auto& v : handler.vertices()) {
-			math::packed_float3 b;
+			packed_float3 b;
 			math::coordinate_system(v.n, v.t, b);
 			v.bitangent_sign = 1.f;
 		}
@@ -183,14 +183,14 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 			// If no normals were loaded assign identity
 			// Might be smarter to throw an exception
 			for (auto& v : handler.vertices()) {
-				v.n = math::packed_float3(0.f, 0.f, 1.f);
+				v.n = packed_float3(0.f, 0.f, 1.f);
 			}
 		}
 
 		if (!handler.has_tangents()) {
 			// If no tangents were loaded, compute the tangent space manually
 			for (auto& v : handler.vertices()) {
-				math::packed_float3 b;
+				packed_float3 b;
 				math::coordinate_system(v.n, v.t, b);
 				v.bitangent_sign = 1.f;
 			}

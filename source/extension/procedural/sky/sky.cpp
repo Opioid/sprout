@@ -1,8 +1,9 @@
 #include "sky.hpp"
 #include "core/scene/prop.hpp"
 #include "base/json/json.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
+#include "base/math/quaternion.inl"
 
 namespace procedural { namespace sky {
 
@@ -24,7 +25,7 @@ void Sky::init(scene::Prop* sky, scene::Prop* sun) {
 
 	update();
 
-	math::transformation transformation {
+	math::Transformation transformation {
 		float3::identity(),
 		float3(1.f),
 		math::quaternion::create_rotation_x(math::degrees_to_radians(90.f))
@@ -57,7 +58,7 @@ void Sky::update() {
 	model_.set_ground_albedo(ground_albedo_);
 	model_.set_turbidity(turbidity_);
 
-	math::transformation transformation {
+	math::Transformation transformation {
 		float3::identity(),
 		float3(math::degrees_to_radians(0.26f)),
 		math::quaternion::create(sun_rotation_)

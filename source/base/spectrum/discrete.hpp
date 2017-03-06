@@ -1,7 +1,7 @@
 #pragma once
 
 #include "interpolated.hpp"
-#include "math/vector.hpp"
+#include "math/vector3.hpp"
 
 namespace spectrum {
 

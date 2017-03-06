@@ -2,7 +2,7 @@
 #include "postprocessor.hpp"
 #include "image/typed_image.inl"
 #include "rendering/sensor/sensor.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace rendering { namespace postprocessor {
 

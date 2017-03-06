@@ -5,7 +5,7 @@
 #include "scene/camera/camera.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "take/take_view.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "base/thread/thread_pool.hpp"
 

@@ -2,7 +2,7 @@
 
 #include "rendering/integrator/integrator.hpp"
 #include "scene/material/sampler_settings.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 
 namespace sampler { class Sampler; }
 

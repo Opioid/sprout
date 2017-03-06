@@ -3,7 +3,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace material { namespace display {
 

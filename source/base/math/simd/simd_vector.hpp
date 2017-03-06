@@ -5,6 +5,7 @@
 #include "simd.hpp"
 #include "math/math.hpp"
 #include "math/vector3.hpp"
+#include "memory/const.hpp"
 #include <cmath>
 
 namespace math { namespace simd {

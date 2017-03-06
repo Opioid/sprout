@@ -40,7 +40,7 @@ Matrix4x4<T>::Matrix4x4(const Matrix3x3<T>& m) :
 	m30(T(0)),  m31(T(0)),  m32(T(0)),  m33(T(1)) {}
 
 template<typename T>
-Matrix4x4<T>::Matrix4x4(const Transformationf_a& t) {
+Matrix4x4<T>::Matrix4x4(const Transformation& t) {
 	set_basis_scale_origin(*this, create_matrix3x3(t.rotation), t.scale, t.position);
 }
 
@@ -414,7 +414,7 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03,
 	  Vector4f_a(m20, m21, m22, m23),
 	  Vector4f_a(m30, m31, m32, m33)} {}
 
-inline Matrix4x4f_a::Matrix4x4f_a(const Transformationf_a& t) {
+inline Matrix4x4f_a::Matrix4x4f_a(const Transformation& t) {
 	set_basis_scale_origin(*this, math::create_matrix3x3(t.rotation), t.scale, t.position);
 }
 

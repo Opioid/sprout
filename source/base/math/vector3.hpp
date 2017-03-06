@@ -275,3 +275,15 @@ bool any_inf(FVector3f_a v);
 bool all_finite(FVector3f_a v);
 
 }
+
+
+using byte3  = math::Vector3<uint8_t>;
+// using float3 = Vector3<float>;
+using float3 = math::Vector3f_a;
+using int3  = math::Vector3<int32_t>;
+using uint3  = math::Vector3<uint32_t>;
+using packed_float3 = math::Vector3<float>;
+
+using float3_p = math::FVector3f_a;
+
+

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 
 namespace sampler { struct Camera_sample; }
 

@@ -5,8 +5,8 @@
 #include "scene/scene_ray.inl"
 #include "base/math/mapping.inl"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/sampling/sampling.inl"
 
 namespace scene { namespace camera {

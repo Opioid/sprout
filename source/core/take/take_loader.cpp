@@ -42,8 +42,8 @@
 #include "scene/camera/camera_spherical.hpp"
 #include "scene/camera/camera_spherical_stereoscopic.hpp"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix3x3.inl"
 #include "base/math/quaternion.inl"
 #include "base/json/json.hpp"
 
@@ -130,7 +130,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 		type_value = &n.value;
 	}
 
-	math::transformation transformation {
+	math::Transformation transformation {
 		float3::identity(),
 		float3(1.f, 1.f, 1.f),
 		math::quaternion::identity

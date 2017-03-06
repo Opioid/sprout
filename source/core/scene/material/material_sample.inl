@@ -1,7 +1,7 @@
 #pragma once
 
 #include "material_sample.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include <cmath>
 
 namespace scene { namespace material {

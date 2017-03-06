@@ -1,7 +1,7 @@
 #include "texture_byte_2_unorm.hpp"
 #include "texture_encoding.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector4.inl"
 
 namespace image { namespace texture {
 

@@ -2,12 +2,12 @@
 #include "image/typed_image.inl"
 #include "base/encoding/encoding.inl"
 #include "base/spectrum/rgb.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace image { namespace encoding {
 
 Srgb::Srgb(int2 dimensions) :
-	rgb_(new math::byte3[static_cast<size_t>(dimensions[0] * dimensions[1])]) {}
+	rgb_(new byte3[static_cast<size_t>(dimensions[0] * dimensions[1])]) {}
 
 Srgb::~Srgb() {
 	delete[] rgb_;
@@ -55,7 +55,7 @@ Srgb_alpha::~Srgb_alpha() {
 	delete[] rgba_;
 }
 
-const math::byte4* Srgb_alpha::data() const {
+const byte4* Srgb_alpha::data() const {
 	return rgba_;
 }
 

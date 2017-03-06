@@ -2,7 +2,7 @@
 
 #include "triangle_bvh_builder_base.hpp"
 #include "base/math/plane.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -31,13 +31,13 @@ private:
 
 		uint64_t key() const;
 
-		uint32_t side(const math::packed_float3& a,
-					  const math::packed_float3& b,
-					  const math::packed_float3& c) const;
+		uint32_t side(const packed_float3& a,
+					  const packed_float3& b,
+					  const packed_float3& c) const;
 
-		bool completely_behind(const math::packed_float3& a,
-							   const math::packed_float3& b,
-							   const math::packed_float3& c) const;
+		bool completely_behind(const packed_float3& a,
+							   const packed_float3& b,
+							   const packed_float3& c) const;
 
 		const math::Plane& plane() const;
 

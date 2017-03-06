@@ -4,7 +4,7 @@
 #include "scene_intersection.hpp"
 #include "material/sampler_cache.hpp"
 #include "shape/node_stack.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace scene {
 

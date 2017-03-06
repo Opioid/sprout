@@ -44,7 +44,7 @@ float3 reference_normal(float2 p, float2 range) {
 }
 
 void create_reference_normal_map(int2 dimensions) {
-	math::byte3* rgb = new math::byte3[dimensions[0] * dimensions[1]];
+	byte3* rgb = new byte3[dimensions[0] * dimensions[1]];
 
 	float2 range(2.f / static_cast<float>(dimensions[0]),
 				 2.f / static_cast<float>(dimensions[1]));

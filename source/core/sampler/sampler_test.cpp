@@ -6,7 +6,7 @@
 #include "image/typed_image.inl"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/procedural/image_renderer.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/math/sampling/sampling.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.inl"

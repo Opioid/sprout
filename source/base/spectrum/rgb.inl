@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rgb.hpp"
-#include "math/vector.inl"
+#include "math/vector3.inl"
 
 namespace spectrum {
 
@@ -60,7 +60,7 @@ inline float3 sRGB_to_linear_RGB(float3_p c) {
 				  sRGB_to_linear(c[1]));
 }
 
-inline float4 sRGB_to_linear_RGB(math::byte4 c) {
+inline float4 sRGB_to_linear_RGB(byte4 c) {
 	return float4(sRGB_to_linear(static_cast<float>(c[0]) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c[1]) / 255.f),
 				  sRGB_to_linear(static_cast<float>(c[2]) / 255.f),

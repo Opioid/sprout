@@ -1,6 +1,6 @@
 #include "aperture.hpp"
 #include "base/math/math.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 
 namespace procedural { namespace starburst {
 

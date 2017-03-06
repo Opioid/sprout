@@ -5,8 +5,8 @@
 #include "scene/shape/shape.hpp"
 #include "scene/shape/morphable_shape.hpp"
 #include "base/math/aabb.inl"
-#include "base/math/vector.inl"
-#include "base/math/matrix.inl"
+#include "base/math/vector3.inl"
+#include "base/math/matrix4x4.inl"
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
 
@@ -202,7 +202,7 @@ void Prop::on_set_transformation() {
 		constexpr float interval = 1.f / static_cast<float>(num_steps + 1);
 		float t = interval;
 		for (uint32_t i = num_steps; i > 0; --i, t += interval) {
-			const math::transformation interpolated = math::lerp(world_frame_a_, world_frame_b_, t);
+			const math::Transformation interpolated = math::lerp(world_frame_a_, world_frame_b_, t);
 			const math::aabb tmp = shape_->transformed_aabb(interpolated);
 			aabb.merge_assign(tmp);
 		}

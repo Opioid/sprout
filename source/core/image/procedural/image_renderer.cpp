@@ -2,7 +2,7 @@
 #include "image/typed_image.inl"
 #include "image/texture/sampler/address_mode.hpp"
 #include "base/encoding/encoding.inl"
-#include "base/math/vector.inl"
+#include "base/math/vector4.inl"
 #include "base/spectrum/rgb.inl"
 
 namespace image { namespace procedural {

@@ -21,7 +21,7 @@
 #include "extension/procedural/sky/sky_provider.hpp"
 #include "extension/procedural/mesh/mesh.hpp"
 #include "base/chrono/chrono.hpp"
-#include "base/math/vector.inl"
+#include "base/math/vector3.inl"
 #include "base/platform/platform.hpp"
 #include "base/string/string.inl"
 #include "base/thread/thread_pool.hpp"

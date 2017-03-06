@@ -94,3 +94,8 @@ template<typename T>
 bool all_finite(const Vector2<T> v);
 
 }
+
+using byte2  = math::Vector2<uint8_t>;
+using float2 = math::Vector2<float>;
+using int2   = math::Vector2<int32_t>;
+using uint2  = math::Vector2<uint32_t>;

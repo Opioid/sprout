@@ -2,7 +2,7 @@
 
 #include "scene/material/material.hpp"
 #include "base/math/aabb.hpp"
-#include "base/math/vector.hpp"
+#include "base/math/vector3.hpp"
 #include "base/math/ray.hpp"
 
 namespace scene {

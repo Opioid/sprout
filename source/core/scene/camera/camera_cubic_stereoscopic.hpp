@@ -1,7 +1,7 @@
 #pragma once
 
 #include "camera_stereoscopic.hpp"
-#include "base/math/matrix.hpp"
+#include "base/math/matrix3x3.hpp"
 
 namespace scene { namespace camera {
 
@@ -46,7 +46,7 @@ private:
 
 	int4 view_bounds_[12];
 
-	math::float3x3 view_rotations_[6];
+	float3x3 view_rotations_[6];
 };
 
 }}

@@ -9,6 +9,6 @@ namespace scene { namespace animation {
 class Animation;
 
 std::shared_ptr<animation::Animation> load(const json::Value& animation_value,
-										   const math::transformation& default_transformation);
+										   const math::Transformation& default_transformation);
 
 }}

@@ -18,7 +18,7 @@ public:
 
 	virtual void set_parameters(const json::Value& parameters) = 0;
 
-	const math::transformation& local_frame_a() const;
+	const math::Transformation& local_frame_a() const;
 
 	// Only the returned reference is guaranteed to contain the actual transformation data.
 	// This might or might not be the same reference which is passed as a parameter,
@@ -28,7 +28,7 @@ public:
 	const Composed_transformation& transformation_at(float tick_delta,
 													 Composed_transformation& transformation) const;
 
-	void set_transformation(const math::transformation& t);
+	void set_transformation(const math::Transformation& t);
 
 	void tick(const Keyframe& frame);
 
@@ -49,8 +49,8 @@ public:
 protected:
 
 	void propagate_transformation() const;
-	void inherit_transformation(const math::transformation& a,
-								const math::transformation& b,
+	void inherit_transformation(const math::Transformation& a,
+								const math::Transformation& b,
 								bool animated);
 
 	void add_sibling(Entity* node);
@@ -74,8 +74,8 @@ protected:
 
 	Composed_transformation world_transformation_;
 
-	math::transformation world_frame_a_;
-	math::transformation world_frame_b_;
+	math::Transformation world_frame_a_;
+	math::Transformation world_frame_b_;
 
 	Keyframe local_frame_a_;
 	Keyframe local_frame_b_;
