@@ -7,7 +7,6 @@ namespace math {
 
 template<typename T> struct Matrix3x3;
 struct Matrix3x3f_a;
-template<typename T> struct Transformation;
 struct Transformationf_a;
 
 /****************************************************************************
@@ -49,8 +48,6 @@ struct Matrix4x4 {
 	Matrix4x4(const T m[16]);
 
 	explicit Matrix4x4(const Matrix3x3<T>& m);
-
-	explicit Matrix4x4(const Transformation<T>& t);
 
 	explicit Matrix4x4(const Transformationf_a& t);
 

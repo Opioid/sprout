@@ -159,8 +159,8 @@ void Loader::load_entities(const json::Value& entities_value,
 
 		math::transformation transformation {
 			math::float3_identity,
-			float3(1.f, 1.f, 1.f),
-			math::quat::identity
+			float3(1.f),
+			math::quaternion::identity
 		};
 
 		const json::Value* animation_value = nullptr;

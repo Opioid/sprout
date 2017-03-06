@@ -28,22 +28,6 @@ Matrix3x3<T>::Matrix3x3(const Matrix4x4<T>& m) :
 	m20(m.m20), m21(m.m21), m22(m.m22) {}
 
 template<typename T>
-Matrix3x3<T>::Matrix3x3(const Quaternion<T>& q) {
-	T d = dot(q, q);
-
-	T s = T(2) / d;
-
-	T xs = q.x * s,  ys = q.y * s,  zs = q.z * s;
-	T wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
-	T xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
-	T yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
-
-	m00 = T(1) - (yy + zz); m01 = xy - wz;          m02 = xz + wy;
-	m10 = xy + wz;          m11 = T(1) - (xx + zz); m12 = yz - wx;
-	m20 = xz - wy;          m21 = yz + wx,          m22 = T(1) - (xx + yy);
-}
-
-template<typename T>
 Matrix3x3<T> Matrix3x3<T>::operator*(const Matrix3x3& m) const {
 	return Matrix3x3(m00 * m.m00 + m01 * m.m10 + m02 * m.m20,
 					 m00 * m.m01 + m01 * m.m11 + m02 * m.m21,

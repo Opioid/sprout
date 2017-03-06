@@ -40,11 +40,6 @@ Matrix4x4<T>::Matrix4x4(const Matrix3x3<T>& m) :
 	m30(T(0)),  m31(T(0)),  m32(T(0)),  m33(T(1)) {}
 
 template<typename T>
-Matrix4x4<T>::Matrix4x4(const Transformation<T>& t) {
-	set_basis_scale_origin(*this, float3x3(t.rotation), t.scale, t.position);
-}
-
-template<typename T>
 Matrix4x4<T>::Matrix4x4(const Transformationf_a& t) {
 	set_basis_scale_origin(*this, create_matrix3x3(t.rotation), t.scale, t.position);
 }

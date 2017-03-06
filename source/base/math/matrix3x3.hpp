@@ -6,7 +6,6 @@
 namespace math {
 
 template<typename T> struct Matrix4x4;
-template<typename T> struct Quaternion;
 
 /****************************************************************************
  *
@@ -49,8 +48,6 @@ struct Matrix3x3 {
 	Matrix3x3(const Vector3<T>& x, const Vector3<T>& y, const Vector3<T>& z);
 	
 	explicit Matrix3x3(const Matrix4x4<T>& m);
-
-	explicit Matrix3x3(const Quaternion<T>& q);
 
 	Matrix3x3 operator*(const Matrix3x3& m) const;
 

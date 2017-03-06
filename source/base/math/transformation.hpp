@@ -5,30 +5,6 @@
 
 namespace math {
 
-/****************************************************************************
- *
- * Generic 3D transformation
- *
- ****************************************************************************/
-
-template<typename T>
-struct Transformation {
-	Vector3<T>    position;
-	Vector3<T>    scale;
-	Quaternion<T> rotation;
-};
-
-template<typename T>
-Transformation<T> lerp(const Transformation<T>& a, const Transformation<T>& b, T t);
-
-// using transformation = Transformation<float>;
-
-/****************************************************************************
- *
- * Aligned 3D float transformation
- *
- ****************************************************************************/
-
 struct alignas(16) Transformationf_a {
 	bool operator==(const Transformationf_a& o) const;
 
@@ -36,7 +12,7 @@ struct alignas(16) Transformationf_a {
 
 	Vector3f_a position;
 	Vector3f_a scale;
-	quaternion rotation;
+	Quaternion rotation;
 };
 
 Transformationf_a lerp(const Transformationf_a& a, const Transformationf_a& b, float t);
