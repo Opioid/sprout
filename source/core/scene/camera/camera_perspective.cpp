@@ -80,7 +80,7 @@ bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 
 		direction = focus - origin;
 	} else {
-		origin = math::float3_identity;
+		origin = float3::identity();
 	}
 
 	entity::Composed_transformation temp;

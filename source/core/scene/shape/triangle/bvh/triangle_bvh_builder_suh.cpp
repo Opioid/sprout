@@ -109,7 +109,7 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 		const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {
 	split_candidates_.clear();
 
-	float3 average = math::float3_identity;
+	float3 average = float3::identity();
 
 	for (index i = begin; i != end; ++i) {
 		const auto& t = triangles[*i];

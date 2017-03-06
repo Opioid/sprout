@@ -108,7 +108,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 
 		if (!intersection.hit()
 		||  (requires_bounce ? i == settings_.max_bounces : i >= settings_.max_bounces - 1)
-		||  ((0.f == sample_result.pdf) | (math::float3_identity == sample_result.reflection))) {
+		||  ((0.f == sample_result.pdf) | (float3::identity() == sample_result.reflection))) {
 			break;
 		}
 

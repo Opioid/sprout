@@ -61,7 +61,7 @@ void test() {
 	Sample sample;
 
 	float3 color(1.f, 1.f, 1.f);
-	float3 radiance = math::float3_identity;
+	float3 radiance = float3::identity();
 	float ior         = 1.47f;
 	float constant_f0 = fresnel::schlick_f0(1.f, ior);
 	float roughness   = 0.f;

@@ -36,29 +36,29 @@ void test() {
 	sample.layer_.set(refraction_color, absorption_color, attenuation_distance, ior, 1.f);
 
 
-	result.wi = math::float3_identity;
-	result.reflection = math::float3_identity;
+	result.wi = float3::identity();
+	result.reflection = float3::identity();
 	Sample::BSDF::reflect(sample, sample.layer_, sampler, result);
 	print(result);
-	result.reflection = math::float3_identity;
+	result.reflection = float3::identity();
 	Sample::BSDF::refract(sample, sample.layer_, sampler, result);
 	print(result);
 
 	wo = b;
 	sample.set_basis(n, wo);
-	result.reflection = math::float3_identity;
+	result.reflection = float3::identity();
 	Sample::BSDF::reflect(sample, sample.layer_, sampler, result);
 	print(result);
-	result.reflection = math::float3_identity;
+	result.reflection = float3::identity();
 	Sample::BSDF::refract(sample, sample.layer_, sampler, result);
 	print(result);
 
 	wo = n;
 	sample.set_basis(n, wo);
-	result.reflection = math::float3_identity;
+	result.reflection = float3::identity();
 	Sample::BSDF::reflect(sample, sample.layer_, sampler, result);
 	print(result);
-	result.reflection = math::float3_identity;
+	result.reflection = float3::identity();
 	Sample::BSDF::refract(sample, sample.layer_, sampler, result);
 	print(result);
 }

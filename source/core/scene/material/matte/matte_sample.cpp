@@ -39,7 +39,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 }
 
 float3 Sample::radiance() const {
-	return math::float3_identity;
+	return float3::identity();
 }
 
 float3 Sample::attenuation() const {

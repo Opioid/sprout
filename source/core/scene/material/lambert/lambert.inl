@@ -17,7 +17,7 @@ float3 Isotropic::reflection(float3_p color, float n_dot_wi, const Layer& layer,
 	pdf = n_dot_wi * math::Pi_inv;
 	float3 result = math::Pi_inv * color;
 
-	SOFT_ASSERT(testing::check(result, math::float3_identity, math::float3_identity, pdf, layer));
+	SOFT_ASSERT(testing::check(result, float3::identity(), float3::identity(), pdf, layer));
 
 	return result;
 }
@@ -38,7 +38,7 @@ float Isotropic::reflect(float3_p color, const Layer& layer,
 	result.wi = wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
-	SOFT_ASSERT(testing::check(result, math::float3_identity, layer));
+	SOFT_ASSERT(testing::check(result, float3::identity(), layer));
 
 	return n_dot_wi;
 }

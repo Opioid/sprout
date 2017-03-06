@@ -16,7 +16,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
-		return math::float3_identity;
+		return float3::identity();
 	}
 
 	float3 h = math::normalized(wo_ + wi);
@@ -103,7 +103,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 }
 
 float3 Sample::radiance() const {
-	return math::float3_identity;
+	return float3::identity();
 }
 
 float3 Sample::attenuation() const {

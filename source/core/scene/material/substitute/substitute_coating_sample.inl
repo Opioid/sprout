@@ -12,7 +12,7 @@ template<typename Coating_layer>
 float3 Sample_coating<Coating_layer>::evaluate(float3_p wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
-		return math::float3_identity;
+		return float3::identity();
 	}
 
 	return base_evaluate_and_coating(wi, coating_, pdf);

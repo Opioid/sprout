@@ -17,11 +17,11 @@ const material::Sample::Layer& Sample::base_layer() const {
 
 float3 Sample::evaluate(float3_p /*wi*/, float& pdf) const {
 	pdf = 0.f;
-	return math::float3_identity;
+	return float3::identity();
 }
 
 float3 Sample::radiance() const {
-	return math::float3_identity;
+	return float3::identity();
 }
 
 float3 Sample::attenuation() const {

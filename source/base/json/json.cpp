@@ -119,7 +119,7 @@ float2 read_float2(const rapidjson::Value& value) {
 }
 
 float2 read_float2(const rapidjson::Value& value, const std::string& name,
-				   const float2& default_value) {
+				   float2 default_value) {
 	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
 	if (value.MemberEnd() == node) {
 		return default_value;

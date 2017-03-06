@@ -27,11 +27,11 @@ float read_float(const rapidjson::Value& value, const std::string& name, float d
 
 float2 read_float2(const rapidjson::Value& value);
 float2 read_float2(const rapidjson::Value& value, const std::string& name,
-				   const float2& default_value = math::float2::identity);
+				   float2 default_value = float2::identity);
 
 float3 read_float3(const rapidjson::Value& value);
 float3 read_float3(const rapidjson::Value& value, const std::string& name,
-				   float3_p default_value = math::float3_identity);
+				   float3_p default_value = float3::identity());
 
 float4 read_float4(const rapidjson::Value& value);
 

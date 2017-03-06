@@ -25,7 +25,7 @@ void Sky::init(scene::Prop* sky, scene::Prop* sun) {
 	update();
 
 	math::transformation transformation {
-		math::float3_identity,
+		float3::identity(),
 		float3(1.f),
 		math::quaternion::create_rotation_x(math::degrees_to_radians(90.f))
 	};
@@ -58,7 +58,7 @@ void Sky::update() {
 	model_.set_turbidity(turbidity_);
 
 	math::transformation transformation {
-		math::float3_identity,
+		float3::identity(),
 		float3(math::degrees_to_radians(0.26f)),
 		math::quaternion::create(sun_rotation_)
 	};

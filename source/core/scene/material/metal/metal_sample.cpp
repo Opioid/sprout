@@ -14,7 +14,7 @@ const material::Sample::Layer& Sample_isotropic::base_layer() const {
 float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
-		return math::float3_identity;
+		return float3::identity();
 	}
 
 	float n_dot_wi = layer_.clamped_n_dot(wi);
@@ -29,7 +29,7 @@ float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
 }
 
 float3 Sample_isotropic::radiance() const {
-	return math::float3_identity;
+	return float3::identity();
 }
 
 float3 Sample_isotropic::attenuation() const {
@@ -79,7 +79,7 @@ const material::Sample::Layer& Sample_anisotropic::base_layer() const {
 float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
-		return math::float3_identity;
+		return float3::identity();
 	}
 
 	float n_dot_wi = layer_.clamped_n_dot(wi);
@@ -94,7 +94,7 @@ float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
 }
 
 float3 Sample_anisotropic::radiance() const {
-	return math::float3_identity;
+	return float3::identity();
 }
 
 float3 Sample_anisotropic::attenuation() const {

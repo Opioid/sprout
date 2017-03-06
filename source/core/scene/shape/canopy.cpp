@@ -17,7 +17,7 @@
 namespace scene { namespace shape {
 
 Canopy::Canopy() {
-	aabb_.set_min_max(math::float3_identity, math::float3_identity);
+	aabb_.set_min_max(float3::identity(), float3::identity());
 }
 
 bool Canopy::intersect(const Transformation& transformation, Ray& ray,

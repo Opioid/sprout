@@ -51,7 +51,7 @@ void Material_base::set_sample(float3_p wo, const Renderstate& rs,
 	if (emission_map_.is_valid()) {
 		radiance = emission_factor_ * emission_map_.sample_3(sampler, rs.uv);
 	} else {
-		radiance = math::float3_identity;
+		radiance = float3::identity();
 	}
 
 	sample.layer_.set(color, radiance, ior_, constant_f0_, surface[0], surface[1]);

@@ -18,7 +18,7 @@ void Light::sample(float time, float3_p p, float3_p n, bool total_sphere,
 void Light::sample(float time, float3_p p,
 				   sampler::Sampler& sampler, uint32_t sampler_dimension,
 				   Worker& worker, Sampler_filter filter, Sample& result) const {
-	sample(time, p, math::float3_identity, true,
+	sample(time, p, float3::identity(), true,
 		   sampler, sampler_dimension, worker, filter, result);
 }
 

@@ -146,7 +146,7 @@ float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
 											const Intersection& intersection,
 											const Material_sample& material_sample,
 											Sampler_filter filter) {
-	float3 result = math::float3_identity;
+	float3 result = float3::identity();
 
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	Ray shadow_ray;

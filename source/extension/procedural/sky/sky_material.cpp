@@ -134,7 +134,7 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 					  (static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
 
 //			scene::shape::Sample sample;
-//			shape.sample(part, transformation, math::float3_identity,
+//			shape.sample(part, transformation, float3::identity(),
 //						 uv, area, sample);
 
 			float3 wi = unclipped_canopy_mapping(transformation, uv);
@@ -158,7 +158,7 @@ void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint
 //	}
 
 	if (importance_sampling) {
-		float3 average_radiance = math::float3_identity;
+		float3 average_radiance = float3::identity();
 
 		float total_weight = 0.f;
 

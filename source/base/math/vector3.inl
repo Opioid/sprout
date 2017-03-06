@@ -417,6 +417,10 @@ inline float Vector3f_a::absolute_max(uint32_t& i) const {
 	return az;
 }
 
+inline constexpr Vector3f_a Vector3f_a::identity() {
+	return Vector3f_a(0.f, 0.f, 0.f);
+}
+
 inline Vector3f_a operator+(float s, FVector3f_a v) {
 	return Vector3f_a(s + v[0], s + v[1], s + v[2]);
 }
