@@ -4,6 +4,7 @@
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
+#include "base/math/vector4.inl"
 #include "base/spectrum/rgb.inl"
 
 namespace scene { namespace material { namespace light {

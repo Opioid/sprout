@@ -3,6 +3,7 @@
 #include "scene/scene_renderstate.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/material/coating/coating.inl"
+#include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace substitute {
 

@@ -3,7 +3,7 @@
 #include "scene/material/disney/disney.inl"
 // #include "scene/material/lambert/lambert.inl"
 // #include "scene/material/oren_nayar/oren_nayar.inl"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace matte {
 

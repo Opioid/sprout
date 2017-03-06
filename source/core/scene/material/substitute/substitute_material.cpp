@@ -4,6 +4,7 @@
 #include "substitute_base_sample.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
+#include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace substitute {
 
