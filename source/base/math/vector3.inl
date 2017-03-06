@@ -4,8 +4,8 @@
 #include "vector2.inl"
 #include "simd/simd_math.inl"
 #include "simd/simd_vector.inl"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 namespace math {
 
