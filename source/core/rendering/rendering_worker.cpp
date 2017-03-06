@@ -7,7 +7,7 @@
 #include "scene/prop.hpp"
 #include "scene/scene_intersection.hpp"
 #include "scene/material/material.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/random/generator.inl"
 

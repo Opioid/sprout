@@ -8,7 +8,7 @@
 #include "scene/material/material_sample.hpp"
 #include "scene/scene_intersection.inl"
 #include "take/take_settings.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 #include "base/math/ray.inl"
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {

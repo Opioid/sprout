@@ -2,7 +2,7 @@
 #include "image/typed_image.inl"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/procedural/image_renderer.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/math/sampling/sampling.inl"
 #include "base/memory/variant_map.inl"
