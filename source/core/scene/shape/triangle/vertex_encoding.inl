@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vertex_encoding.hpp"
+#include "base/math/vector3.inl"
 
 namespace scene { namespace shape { namespace triangle {
 
