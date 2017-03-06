@@ -1,6 +1,6 @@
 #include "tonemapper.hpp"
 #include "image/typed_image.inl"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 
 namespace rendering { namespace postprocessor { namespace tonemapping {
 

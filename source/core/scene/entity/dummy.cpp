@@ -1,5 +1,5 @@
 #include "dummy.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 
 namespace scene { namespace entity {
 

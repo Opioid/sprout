@@ -5,7 +5,7 @@
 #include "core/scene/scene.hpp"
 #include "core/scene/camera/camera.hpp"
 #include "base/json/json.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 #include "base/memory/variant_map.hpp"
 #include "base/string/string.inl"
 #include <sstream>

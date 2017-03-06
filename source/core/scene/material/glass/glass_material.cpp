@@ -5,7 +5,7 @@
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace glass {
 

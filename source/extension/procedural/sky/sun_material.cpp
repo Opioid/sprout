@@ -7,7 +7,7 @@
 #include "core/scene/shape/shape.hpp"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/material/material_sample_cache.inl"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 
 namespace procedural { namespace sky {
 

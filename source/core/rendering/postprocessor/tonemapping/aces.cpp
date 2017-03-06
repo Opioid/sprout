@@ -1,5 +1,5 @@
 #include "aces.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 
 namespace rendering { namespace postprocessor { namespace tonemapping {
 

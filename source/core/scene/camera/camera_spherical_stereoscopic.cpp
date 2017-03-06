@@ -5,8 +5,8 @@
 #include "scene/scene_ray.inl"
 #include "base/json/json.hpp"
 #include "base/math/math.hpp"
-#include "base/math/vector3.inl"
-#include "base/math/matrix3x3.inl"
+#include "base/math/vector4.inl"
+#include "base/math/matrix4x4.inl"
 #include "base/math/sampling/sampling.inl"
 
 // the layout should match

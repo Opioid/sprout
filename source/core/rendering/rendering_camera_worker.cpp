@@ -5,7 +5,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/camera/camera.hpp"
-#include "base/math/vector3.inl"
+#include "base/math/vector4.inl"
 #include "base/math/sampling/sample_distribution.inl"
 #include "base/random/generator.inl"
 

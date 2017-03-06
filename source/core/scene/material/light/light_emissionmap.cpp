@@ -7,6 +7,7 @@
 #include "scene/material/material_sample_cache.inl"
 #include "scene/shape/shape.hpp"
 #include "base/math/math.hpp"
+#include "base/math/vector4.inl"
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.inl"
 #include "base/thread/thread_pool.hpp"
