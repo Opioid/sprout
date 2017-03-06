@@ -40,7 +40,7 @@ inline Transformationf_a lerp(const Transformationf_a& a, const Transformationf_
 	return Transformationf_a{
 		lerp(a.position, b.position, t),
 		lerp(a.scale, b.scale, t),
-		slerp_quaternion(a.rotation, b.rotation, t)
+		quat::slerp(a.rotation, b.rotation, t)
 	};
 }
 

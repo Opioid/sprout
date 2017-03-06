@@ -26,8 +26,8 @@ void Sky::init(scene::Prop* sky, scene::Prop* sun) {
 
 	math::transformation transformation {
 		math::float3_identity,
-		float3(1.f, 1.f, 1.f),
-		math::create_quaternion_rotation_x(math::degrees_to_radians(90.f))
+		float3(1.f),
+		math::quat::create_rotation_x(math::degrees_to_radians(90.f))
 	};
 
 	sky->set_transformation(transformation);
@@ -60,7 +60,7 @@ void Sky::update() {
 	math::transformation transformation {
 		math::float3_identity,
 		float3(math::degrees_to_radians(0.26f)),
-		math::create_quaternion(sun_rotation_)
+		math::quat::create(sun_rotation_)
 	};
 
 	sun_->set_transformation(transformation);

@@ -135,15 +135,15 @@ void Entity::inherit_transformation(const math::transformation& a,
 
 	world_frame_a_.position = math::transform_point(local_frame_a_.transformation.position,
 													float4x4(a));
-	world_frame_a_.rotation = math::mul_quaternion (local_frame_a_.transformation.rotation,
-													a.rotation);
+	world_frame_a_.rotation = math::quat::mul(local_frame_a_.transformation.rotation,
+											  a.rotation);
 	world_frame_a_.scale = local_frame_a_.transformation.scale;
 
 
 	world_frame_b_.position = math::transform_point(local_frame_b_.transformation.position,
 													float4x4(b));
-	world_frame_b_.rotation = math::mul_quaternion (local_frame_b_.transformation.rotation,
-													b.rotation);
+	world_frame_b_.rotation = math::quat::mul(local_frame_b_.transformation.rotation,
+											  b.rotation);
 	world_frame_b_.scale = local_frame_b_.transformation.scale;
 
 	on_set_transformation();

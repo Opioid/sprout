@@ -177,7 +177,9 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
  *
  ****************************************************************************/
 
-inline quaternion create_quaternion(const Matrix3x3<float>& m) {
+namespace quat {
+
+inline quaternion create(const Matrix3x3<float>& m) {
 	float trace = m.m00 + m.m11 + m.m22;
 	quaternion temp;
 
@@ -206,7 +208,7 @@ inline quaternion create_quaternion(const Matrix3x3<float>& m) {
 	return temp;
 }
 
-inline quaternion create_quaternion(const Matrix3x3f_a& m) {
+inline quaternion create(const Matrix3x3f_a& m) {
 	float trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
 	quaternion temp;
 
@@ -235,35 +237,35 @@ inline quaternion create_quaternion(const Matrix3x3f_a& m) {
 	return temp;
 }
 
-inline quaternion create_quaternion_rotation_x(float a) {
+inline quaternion create_rotation_x(float a) {
 	return quaternion(std::sin(a * 0.5f),
 					  0.f,
 					  0.f,
 					  std::cos(a * 0.5f));
 }
 
-inline quaternion create_quaternion_rotation_y(float a) {
+inline quaternion create_rotation_y(float a) {
 	return quaternion(0.f,
 					  std::sin(a * 0.5f),
 					  0.f,
 					  std::cos(a * 0.5f));
 }
 
-inline quaternion create_quaternion_rotation_z(float a) {
+inline quaternion create_rotation_z(float a) {
 	return quaternion(0.f,
 					  0.f,
 					  std::sin(a * 0.5f),
 					  std::cos(a * 0.5f));
 }
 
-inline quaternion mul_quaternion(const quaternion& a, const quaternion& b) {
+inline quaternion mul(const quaternion& a, const quaternion& b) {
 	return quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
 					  (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
 					  (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
 					  (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
 }
 
-inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, float t) {
+inline quaternion slerp(const quaternion& a, const quaternion& b, float t) {
 	// calc cosine theta
 	float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 
@@ -299,6 +301,8 @@ inline quaternion slerp_quaternion(const quaternion& a, const quaternion& b, flo
 					  sclp * a[1] + sclq * end[1],
 					  sclp * a[2] + sclq * end[2],
 					  sclp * a[3] + sclq * end[3]);
+}
+
 }
 
 }

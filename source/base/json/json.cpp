@@ -203,7 +203,7 @@ math::uint3 read_uint3(const rapidjson::Value& value) {
 					   value[2].GetUint());
 }
 
-math::float3x3 create_rotation_matrix(float3_p xyz) {
+float3x3 create_rotation_matrix(float3_p xyz) {
 	math::float3x3 rot_x;
 	math::set_rotation_x(rot_x, math::degrees_to_radians(xyz[0]));
 
@@ -216,14 +216,14 @@ math::float3x3 create_rotation_matrix(float3_p xyz) {
 	return rot_z * rot_x * rot_y;
 }
 
-math::float3x3 read_rotation_matrix(const rapidjson::Value& value) {
+float3x3 read_rotation_matrix(const rapidjson::Value& value) {
 	float3 rot = read_float3(value);
 
 	return create_rotation_matrix(rot);
 }
 
-math::quaternion read_local_rotation(const rapidjson::Value& value) {
-	return math::create_quaternion(read_rotation_matrix(value));
+quaternion read_local_rotation(const rapidjson::Value& value) {
+	return math::quat::create(read_rotation_matrix(value));
 }
 
 std::string read_string(const rapidjson::Value& value) {
