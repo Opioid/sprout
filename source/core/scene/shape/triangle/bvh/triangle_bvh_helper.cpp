@@ -37,18 +37,18 @@ float triangle_area(float3_p a, float3_p b, float3_p c) {
 	return 0.5f * math::length(math::cross(b - a, c - a));
 }
 
-uint32_t triangle_side(float3_p a, float3_p b, float3_p c, const math::plane& p) {
+uint32_t triangle_side(float3_p a, float3_p b, float3_p c, const math::Plane& p) {
 	uint32_t behind = 0;
 
-	if (math::behind(p, a)) {
+	if (math::plane::behind(p, a)) {
 		++behind;
 	}
 
-	if (math::behind(p, b)) {
+	if (math::plane::behind(p, b)) {
 		++behind;
 	}
 
-	if (math::behind(p, c)) {
+	if (math::plane::behind(p, c)) {
 		++behind;
 	}
 
@@ -61,8 +61,8 @@ uint32_t triangle_side(float3_p a, float3_p b, float3_p c, const math::plane& p)
 	}
 }
 
-bool triangle_completely_behind(float3_p a, float3_p b, float3_p c, const math::plane& p) {
-	if (math::behind(p, a) && math::behind(p, b) && math::behind(p, c)) {
+bool triangle_completely_behind(float3_p a, float3_p b, float3_p c, const math::Plane& p) {
+	if (math::plane::behind(p, a) && math::plane::behind(p, b) && math::plane::behind(p, c)) {
 		return true;
 	}
 

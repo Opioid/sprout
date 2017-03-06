@@ -24,7 +24,7 @@ Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axi
 	case 2: n = float3(0.f, 0.f, 1.f); break;
 	}
 
-	plane_ = math::create_plane(n, p);
+	plane_ = math::plane::create(n, p);
 
 	key_ = std::abs(static_cast<int>(bb_axis) - static_cast<int>(split_axis));
 
@@ -96,7 +96,7 @@ bool Builder_SUH::Split_candidate::completely_behind(const math::packed_float3& 
 	return false;
 }
 
-const math::plane& Builder_SUH::Split_candidate::plane() const {
+const math::Plane& Builder_SUH::Split_candidate::plane() const {
 	return plane_;
 }
 

@@ -38,8 +38,8 @@ void Builder::split(Build_node* node, index begin, index end, uint32_t max_shape
 
 		index props1_begin = std::partition(begin, end,
 			[&sp](Prop* p) {
-				bool mib = math::behind(sp.plane(), p->aabb().min());
-				bool mab = math::behind(sp.plane(), p->aabb().max());
+				bool mib = math::plane::behind(sp.plane(), p->aabb().min());
+				bool mab = math::plane::behind(sp.plane(), p->aabb().max());
 
 				return mib && mab;
 			});

@@ -39,7 +39,7 @@ private:
 							   const math::packed_float3& b,
 							   const math::packed_float3& c) const;
 
-		const math::plane& plane() const;
+		const math::Plane& plane() const;
 
 		uint8_t axis() const;
 
@@ -47,7 +47,7 @@ private:
 
 		uint64_t key_;
 
-		math::plane plane_;
+		math::Plane plane_;
 
 		float d_;
 
