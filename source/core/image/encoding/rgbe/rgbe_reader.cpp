@@ -158,7 +158,7 @@ Reader::image_float3 Reader::rgbe_to_float3(uint8_t rgbe[4]) {
 							static_cast<float>(rgbe[1]) * f,
 							static_cast<float>(rgbe[2]) * f);
 	} else {
-		return image_float3(0.f, 0.f, 0.f);
+		return image_float3(0.f);
 	}
 }
 

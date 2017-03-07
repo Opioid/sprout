@@ -61,10 +61,11 @@ private:
 using Byte_1 = Typed_image<uint8_t>;
 using Byte_2 = Typed_image<byte2>;
 using Byte_3 = Typed_image<byte3>;
-// using Float_3 = Typed_image<float3>;
+
 using Float_1 = Typed_image<float>;
 using Float_2 = Typed_image<float2>;
 using Float_3 = Typed_image<packed_float3>;
+// using Float_3 = Typed_image<float3>;
 using Float_4 = Typed_image<float4>;
 
 }
