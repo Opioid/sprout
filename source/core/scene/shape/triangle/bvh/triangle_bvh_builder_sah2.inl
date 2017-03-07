@@ -66,20 +66,17 @@ template<typename Data>
 void Builder_SAH2::serialize(Build_node* node, const Triangles& triangles,
 							 const Vertices& vertices, Tree<Data>& tree) {
 	auto& n = new_node();
-	n.set_aabb(node->aabb);
+	n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 
 	if (node->children[0]) {
 		serialize(node->children[0], triangles, vertices, tree);
 
-		n.min.next_or_data = current_node_index();
+		n.set_split_node(current_node_index(), node->axis);
 
 		serialize(node->children[1], triangles, vertices, tree);
-
-		n.max.axis = node->axis;
-		n.max.num_primitives = 0;
 	} else {
-		n.min.next_or_data = node->start_index;
-		n.max.num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
+		uint8_t num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
+		n.set_leaf_node(node->start_index, num_primitives);
 
 		for (const auto p : node->primitives) {
 			const auto& t = triangles[p];

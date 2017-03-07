@@ -34,8 +34,7 @@ Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
 template<typename Data>
 math::AABB Tree<Data>::aabb() const {
 	if (nodes_) {
-//		return math::AABB(nodes_[0].bounds[0], nodes_[0].bounds[1]);
-		return math::AABB(float3(nodes_[0].min.v), float3(nodes_[0].max.v));
+		return math::AABB(float3(nodes_[0].min()), float3(nodes_[0].max()));
 	} else {
 		return math::AABB::empty();
 	}
@@ -80,7 +79,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 		const auto& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-			if (node.max.num_primitives > 0) {
+			if (node.num_primitives() > 0) {
 				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						index = i;
@@ -91,7 +90,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
 				n = node_stack.pop();
 			} else {
-				if (0 == ray.signs[node.max.axis]) {
+				if (0 == ray.signs[node.axis()]) {
 					node_stack.push(node.next());
 					++n;
 				} else {
@@ -126,7 +125,7 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 		const auto& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-			if (node.max.num_primitives > 0) {
+			if (node.num_primitives() > 0) {
 				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 					if (data_.intersect_p(i, ray)) {
 				//	if (data_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
@@ -136,7 +135,7 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 
 				n = node_stack.pop();
 			} else {
-				if (0 == ray.signs[node.max.axis]) {
+				if (0 == ray.signs[node.axis()]) {
 					node_stack.push(node.next());
 					++n;
 				} else {
@@ -174,7 +173,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 		auto& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-			if (node.max.num_primitives > 0) {
+			if (node.num_primitives() > 0) {
 				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						uv = data_.interpolate_uv(i, uv);
@@ -194,7 +193,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 				n = node_stack.pop();
 			} else {
-				if (0 == ray.signs[node.max.axis]) {
+				if (0 == ray.signs[node.axis()]) {
 					node_stack.push(node.next());
 					++n;
 				} else {
@@ -232,7 +231,7 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 		auto& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-			if (node.max.num_primitives > 0) {
+			if (node.num_primitives() > 0) {
 				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 					if (data_.intersect(i, ray, uv)) {
 						uv = data_.interpolate_uv(i, uv);
@@ -256,7 +255,7 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 
 				n = node_stack.pop();
 			} else {
-				if (0 == ray.signs[node.max.axis]) {
+				if (0 == ray.signs[node.axis()]) {
 					node_stack.push(node.next());
 					++n;
 				} else {

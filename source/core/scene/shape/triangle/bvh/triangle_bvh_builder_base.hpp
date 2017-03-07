@@ -17,7 +17,7 @@ struct Triangle;
 namespace bvh {
 
 template<typename Data> class Tree;
-struct Node;
+class Node;
 
 struct Build_node {
 	Build_node();

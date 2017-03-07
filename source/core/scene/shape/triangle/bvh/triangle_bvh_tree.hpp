@@ -24,7 +24,7 @@ struct Data_triangle;
 
 namespace bvh {
 
-struct Node;
+class Node;
 
 template<typename Data>
 class Tree  {

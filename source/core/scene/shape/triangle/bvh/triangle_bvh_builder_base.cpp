@@ -29,20 +29,17 @@ void Build_node::num_sub_nodes(uint32_t& count) {
 
 void Builder_base::serialize(Build_node* node) {
 	auto& n = new_node();
-	n.set_aabb(node->aabb);
+	n.set_aabb(node->aabb.min().v, node->aabb.max().v);
 
 	if (node->children[0]) {
 		serialize(node->children[0]);
 
-		n.min.next_or_data = current_node_index();
+		n.set_split_node(current_node_index(), node->axis);
 
 		serialize(node->children[1]);
-
-		n.max.axis = node->axis;
-		n.max.num_primitives = 0;
 	} else {
-		n.min.next_or_data = node->start_index;
-		n.max.num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
+		uint8_t num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
+		n.set_leaf_node(node->start_index, num_primitives);
 	}
 }
 

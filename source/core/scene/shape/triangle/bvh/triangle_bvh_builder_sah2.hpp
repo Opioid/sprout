@@ -19,7 +19,7 @@ struct Index_triangle;
 namespace bvh {
 
 template<typename Data> class Tree;
-struct Node;
+class Node;
 
 class Builder_SAH2 /*: private Builder_base*/  {
 

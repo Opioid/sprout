@@ -1,36 +1,57 @@
 #pragma once
 
 #include "triangle_bvh_node.hpp"
-#include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-inline void Node::set_aabb(const math::AABB& aabb) {
-//	bounds[0] = aabb.min();
-//	bounds[1] = aabb.max();
+inline float3 Node::min() const {
+	return float3(min_.v);
+}
 
-	const auto& mi = aabb.min();
-	min.v[0] = mi[0];
-	min.v[1] = mi[1];
-	min.v[2] = mi[2];
-
-	const auto& ma = aabb.max();
-	max.v[0] = ma[0];
-	max.v[1] = ma[1];
-	max.v[2] = ma[2];
+inline float3 Node::max() const {
+	return float3(max_.v);
 }
 
 inline uint32_t Node::next() const {
-	return min.next_or_data;
+	return min_.next_or_data;
+}
+
+inline uint8_t Node::axis() const {
+	return max_.axis;
+}
+
+inline uint8_t Node::num_primitives() const {
+	return max_.num_primitives;
 }
 
 inline uint32_t Node::indices_start() const {
-	return min.next_or_data;
+	return min_.next_or_data;
 }
 
 inline uint32_t Node::indices_end() const {
-	return min.next_or_data + static_cast<uint32_t>(max.num_primitives);
+	return min_.next_or_data + static_cast<uint32_t>(max_.num_primitives);
+}
+
+inline void Node::set_aabb(const float* min, const float* max) {
+	min_.v[0] = min[0];
+	min_.v[1] = min[1];
+	min_.v[2] = min[2];
+
+	max_.v[0] = max[0];
+	max_.v[1] = max[1];
+	max_.v[2] = max[2];
+}
+
+inline void Node::set_split_node(uint32_t next_node, uint8_t axis) {
+	min_.next_or_data = next_node;
+	max_.axis = axis;
+	max_.num_primitives = 0;
+}
+
+inline void Node::set_leaf_node(uint32_t start_primitive, uint8_t num_primitives) {
+	min_.next_or_data = start_primitive;
+	max_.num_primitives = num_primitives;
 }
 
 // This test is presented in the paper
@@ -85,8 +106,8 @@ inline bool Node::intersect_p(math::simd::FVector ray_origin,
 							  math::simd::FVector ray_max_t) const {
 	using namespace math::simd;
 
-	const Vector bb_min = load_float3(min.v/*bounds[0]*/);
-	const Vector bb_max = load_float3(max.v/*bounds[1]*/);
+	const Vector bb_min = load_float3(min_.v/*bounds[0]*/);
+	const Vector bb_max = load_float3(max_.v/*bounds[1]*/);
 
 	const Vector l1 = mul3(sub3(bb_min, ray_origin), ray_inv_direction);
 	const Vector l2 = mul3(sub3(bb_max, ray_origin), ray_inv_direction);
