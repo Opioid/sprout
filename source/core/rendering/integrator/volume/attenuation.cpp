@@ -36,7 +36,7 @@ float4 Attenuation::li(Worker& worker, const Ray& ray, const Volume& volume,
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
 		transmittance = float3(1.f);
-		return math::float4_identity;
+		return float4::identity();
 	}
 
 	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);

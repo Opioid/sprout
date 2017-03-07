@@ -190,11 +190,11 @@ inline void AABB::merge_assign(const AABB& other) {
 }
 
 inline void AABB::clip_min(float d, uint8_t axis) {
-	bounds_[0].v[axis] = std::max(d, bounds_[0].v[axis]);
+	bounds_[0].v[axis] = std::max(d, bounds_[0][axis]);
 }
 
 inline void AABB::clip_max(float d, uint8_t axis) {
-	bounds_[1].v[axis] = std::min(d, bounds_[1].v[axis]);
+	bounds_[1].v[axis] = std::min(d, bounds_[1][axis]);
 }
 
 inline constexpr AABB AABB::empty() {

@@ -65,7 +65,9 @@ Vector4<T>& Vector4<T>::operator-=(const Vector4& v) {
 }
 
 template<typename T>
-const Vector4<T> Vector4<T>::identity(T(0), T(0), T(0), T(0));
+constexpr Vector4<T> Vector4<T>::identity() {
+	return Vector4(T(0), T(0), T(0), T(0));
+}
 
 template<typename T>
 Vector4<T> operator*(T s, const Vector4<T> &v) {
@@ -74,7 +76,7 @@ Vector4<T> operator*(T s, const Vector4<T> &v) {
 
 template<typename T>
 T dot(const Vector4<T>& a, const Vector4<T>& b) {
-	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+	return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 }
 
 /****************************************************************************
@@ -85,7 +87,7 @@ T dot(const Vector4<T>& a, const Vector4<T>& b) {
 
 inline Vector4f_a::Vector4f_a() {}
 
-inline Vector4f_a::Vector4f_a(float x, float y, float z, float w) :
+inline constexpr Vector4f_a::Vector4f_a(float x, float y, float z, float w) :
 	v{x, y, z, w} {}
 
 inline Vector4f_a::Vector4f_a(float s) : v{s, s, s, s} {}
@@ -148,6 +150,10 @@ inline Vector4f_a operator*(float s, const Vector4f_a& a) {
 
 inline float dot(const Vector4f_a& a, const Vector4f_a& b) {
 	return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
+}
+
+inline constexpr Vector4f_a Vector4f_a::identity() {
+	return Vector4f_a(0.f, 0.f, 0.f, 0.f);
 }
 
 /****************************************************************************

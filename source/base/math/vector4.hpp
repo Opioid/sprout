@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vector3.hpp"
-#include "memory/const.hpp"
+#include <cstdint>
 
 namespace math {
 
@@ -42,7 +42,7 @@ struct Vector4 {
 
 	Vector4& operator-=(const Vector4& v);
 
-	static const Vector4 identity;
+	static constexpr Vector4 identity();
 };
 
 template<typename T>
@@ -62,7 +62,7 @@ struct alignas(16) Vector4f_a {
 
 	Vector4f_a();
 
-	Vector4f_a(float x, float y, float z, float w = 1.f);
+	constexpr Vector4f_a(float x, float y, float z, float w = 1.f);
 
 	explicit Vector4f_a(float s);
 
@@ -90,13 +90,13 @@ struct alignas(16) Vector4f_a {
 	bool operator==(FVector4f_a v) const;
 
 	bool operator!=(FVector4f_a v) const;
+
+	static constexpr Vector4f_a identity();
 };
 
 Vector4f_a operator*(float s, const Vector4f_a& v);
 
 float dot(const Vector4f_a& a, const Vector4f_a& b);
-
-SU_GLOBALCONST(Vector4f_a) float4_identity(0.f);
 
 /****************************************************************************
  *

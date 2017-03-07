@@ -46,7 +46,7 @@ void test() {
 	math::Transformation transformation;
 	transformation.position = float3(0.f);
 	transformation.scale = float3(1.f);
-	transformation.rotation = math::quaternion::identity;
+	transformation.rotation = math::quaternion::identity();
 
 	entity::Composed_transformation composed_transformation;
 	composed_transformation.set(transformation);

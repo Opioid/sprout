@@ -64,7 +64,7 @@ float4 Worker::li(scene::Ray& ray) {
 		if (hit) {
 			return surface_integrator_->li(*this, ray, intersection);
 		} else {
-			return math::float4_identity;
+			return float4::identity();
 		}
 	}
 }

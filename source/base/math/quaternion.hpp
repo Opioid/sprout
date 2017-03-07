@@ -1,15 +1,12 @@
 #pragma once
 
-#include "math.hpp"
 #include "vector4.hpp"
-#include "memory/const.hpp"
 
 namespace math {
 
 template<typename T> struct Vector3;
 template<typename T> struct Matrix3x3;
 struct Matrix3x3f_a;
-struct Vector4f_a;
 
 /****************************************************************************
  *
@@ -91,7 +88,7 @@ Quaternion mul(const Quaternion& a, const Quaternion& b);
 
 Quaternion slerp(const Quaternion& a, const Quaternion& b, float t);
 
-SU_GLOBALCONST(Quaternion) identity(0.f, 0.f, 0.f, 1.f);
+constexpr Quaternion identity();
 
 }
 

@@ -41,7 +41,7 @@ private:
 
 		uint32_t primitive() const;
 
-		void set_min_max_primitive(math::simd::FVector mi, math::simd::FVector ma,
+		void set_min_max_primitive(math::simd::FVector min, math::simd::FVector max,
 								   uint32_t primitive);
 
 		void clip_min(float d, uint8_t axis);
@@ -52,8 +52,7 @@ private:
 			uint32_t index;
 		};
 
-		Vector min;
-		Vector max;
+		Vector bounds[2];
 	};
 
 	using References = std::vector<Reference>;
