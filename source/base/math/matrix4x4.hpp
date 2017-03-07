@@ -14,7 +14,7 @@ struct Transformation;
  * Generic 4x4 matrix
  *
  ****************************************************************************/
-
+/*
 template<typename T>
 struct Matrix4x4 {
 	union {
@@ -140,7 +140,7 @@ void set_basis_scale_origin(Matrix4x4<T>& m,
 							const Matrix3x3<T>& basis,
 							const Vector3<T>& scale,
 							const Vector3<T>& origin);
-
+*/
 /****************************************************************************
  *
  * Aligned 4x4 float matrix

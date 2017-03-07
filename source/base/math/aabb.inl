@@ -8,10 +8,7 @@
 
 namespace math {
 
-inline AABB::AABB(FVector3f_a min, FVector3f_a max) {
-	bounds_[0] = min;
-	bounds_[1] = max;
-}
+inline constexpr AABB::AABB(FVector3f_a min, FVector3f_a max) : bounds_{min, max} {}
 
 inline AABB::AABB(simd::FVector min, simd::FVector max) {
 	simd::store_float3_unsafe(bounds_[0], min);
@@ -200,12 +197,12 @@ inline void AABB::clip_max(float d, uint8_t axis) {
 	bounds_[1].v[axis] = std::min(d, bounds_[1].v[axis]);
 }
 
-inline AABB AABB::empty() {
+inline constexpr AABB AABB::empty() {
 	constexpr float max = std::numeric_limits<float>::max();
 	return AABB(Vector3f_a(max), Vector3f_a(-max));
 }
 
-inline AABB AABB::infinite() {
+inline constexpr AABB AABB::infinite() {
 	constexpr float max = std::numeric_limits<float>::max();
 	return AABB(Vector3f_a(-max), Vector3f_a(max));
 }

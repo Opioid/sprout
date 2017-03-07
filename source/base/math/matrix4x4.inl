@@ -10,7 +10,7 @@ namespace math {
  * Generic 4x4 matrix
  *
  ****************************************************************************/
-
+/*
 template<typename T>
 Matrix4x4<T>::Matrix4x4() {}
 
@@ -396,7 +396,7 @@ void set_basis_scale_origin(Matrix4x4<T>& m,
 	m.m30 = origin.x;			 m.m31 = origin.y;			  m.m32 = origin.z;			   m.m33 = T(1);
 
 }
-
+*/
 /****************************************************************************
  *
  * Aligned 4x4 float matrix

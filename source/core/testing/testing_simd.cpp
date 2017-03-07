@@ -799,7 +799,7 @@ Struct_vector normalized(FStruct_vector v) {
 }
 
 struct Array_vector;
-using FArray_vector = Array_vector;//*/const Array_vector&;
+using FArray_vector = /*Array_vector;//*/const Array_vector&;
 
 struct alignas(16) Array_vector {
 	// 4 instead of 3 in order to hide pad warning
@@ -835,7 +835,54 @@ float dot(FArray_vector a, FArray_vector b) {
 	return a[0] * b[0] + a[1] * b[1] + a[2] + b[2];
 }
 
-Array_vector normalized(FArray_vector v) {
+template<typename T, uint32_t N> struct Array_vector_t;
+//using FArray_vector_t = /*Array_vector;//*/const Array_vector_t&;
+
+template<typename T, uint32_t N>
+struct alignas(16) Array_vector_t {
+	T v[N];
+
+	Array_vector_t() {}
+	Array_vector_t(float x, float y, float z) : v{x, y, z}
+	{}
+
+	T operator[](uint32_t i) const {
+		return v[i];
+	}
+
+	T& operator[](uint32_t i) {
+		return v[i];
+	}
+
+	Array_vector_t operator+(const Array_vector_t& a) const {
+		return Array_vector_t(v[0] + a[0], v[1] + a[1], v[2] + a[2]);
+	}
+
+	Array_vector_t operator/(float s) const {
+		float is = 1.f / s;
+		return Array_vector_t(v[0] * is, v[1] * is, v[2] * is);
+	}
+};
+
+template<typename T, uint32_t N>
+Array_vector_t<T, N> operator*(T s, const Array_vector_t<T, N>& v) {
+	return Array_vector_t<T, N>(s * v[0], s * v[1], s * v[2]);
+}
+
+template<typename T, uint32_t N>
+T dot(const Array_vector_t<T, N>& a, const Array_vector_t<T, N>& b) {
+//	return a[0] * b[0] + a[1] * b[1] + a[2] + b[2];
+
+	T r(0);
+	for (uint32_t i = 0; i < N; ++i) {
+		r += a[i] * b[i];
+	}
+
+	return r;
+}
+
+template<typename T, uint32_t N>
+Array_vector_t<T, N> normalized(const Array_vector_t<T, N>& v) {
 	return math::simd::rsqrt(dot(v, v)) * v;
 }
 
@@ -899,6 +946,26 @@ void test_array_vector(Array_vector* vecs, size_t num_values) {
 	std::cout << "[" << result[0] << ", " << result[1] << ", " << result[2] << "] in " << string::to_string(duration) << " s" << std::endl;
 }
 
+void test_array_vector_t(Array_vector_t<float, 3>* vecs, size_t num_values) {
+	std::cout << "Array_t vector" << std::endl;
+
+	auto start = std::chrono::high_resolution_clock::now();
+
+	Array_vector_t<float, 3> result(0.f, 0.f, 0.f);
+
+	for (size_t i = 0; i < num_values; ++i) {
+		Array_vector_t<float, 3> v = vecs[i];
+		float d = dot(v, v);
+		Array_vector_t<float, 3> t = (v[1] * (result + v)) / (d + 0.1f);
+		Array_vector_t<float, 3> w = (v[0] * (result + v)) / (d + 0.3f);
+		Array_vector_t<float, 3> n = /*normalized*/((v + t) + ((d * v) + (d * t)));
+		result = n + ((w + t) + (d * w));
+	}
+
+	const auto duration = chrono::seconds_since(start);
+	std::cout << "[" << result[0] << ", " << result[1] << ", " << result[2] << "] in " << string::to_string(duration) << " s" << std::endl;
+}
+
 void unions() {
 	std::cout << "testing::simd::unions()" << std::endl;
 
@@ -906,9 +973,10 @@ void unions() {
 
 	size_t num_values = 1024 * 1024 * 128;// * (128 + 32);
 
-	Union_vector*  uvecs = new Union_vector[num_values];
-	Struct_vector* svecs = new Struct_vector[num_values];
-	Array_vector*  avecs = new Array_vector[num_values];
+	Union_vector*			  uvecs  = new Union_vector[num_values];
+	Struct_vector*			  svecs  = new Struct_vector[num_values];
+	Array_vector*			  avecs  = new Array_vector[num_values];
+	Array_vector_t<float, 3>* atvecs = new Array_vector_t<float, 3>[num_values];
 
 	for (size_t i = 0; i < num_values; ++i) {
 		float x = 0.000025f * rng.random_float();
@@ -918,15 +986,19 @@ void unions() {
 		uvecs[i] = Union_vector(x, y, z);
 		svecs[i] = Struct_vector(x, y, z);
 		avecs[i] = Array_vector(x, y, z);
+		atvecs[i] = Array_vector_t<float, 3>(x, y, z);
 	}
 
 	test_union_vector(uvecs, num_values);
 	test_struct_vector(svecs, num_values);
 	test_array_vector(avecs, num_values);
+	test_array_vector_t(atvecs, num_values);
 	test_union_vector(uvecs, num_values);
 	test_struct_vector(svecs, num_values);
 	test_array_vector(avecs, num_values);
+	test_array_vector_t(atvecs, num_values);
 
+	delete[] atvecs;
 	delete[] avecs;
 	delete[] svecs;
 	delete[] uvecs;

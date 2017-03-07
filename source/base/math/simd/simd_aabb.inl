@@ -9,6 +9,10 @@ inline AABB::AABB(const math::AABB& box) :
 	min(load_float3(box.min())),
 	max(load_float3(box.max())) {}
 
+inline AABB::AABB(const float* min, const float* max) :
+	min(load_float3(min)),
+	max(load_float3(max)) {}
+
 inline AABB::AABB(FVector min, FVector max) : min(min), max(max) {}
 
 inline void AABB::merge_assign(const AABB& other) {

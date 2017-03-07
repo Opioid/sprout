@@ -11,6 +11,27 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
+uint32_t Builder_SAH2::Reference::primitive() const {
+	return min.index;
+}
+
+void Builder_SAH2::Reference::set_min_max_primitive(math::simd::FVector mi, math::simd::FVector ma,
+													uint32_t primitive) {
+	float3 tmp;
+	math::simd::store_float3_unsafe(tmp, mi);
+	min.v[0] = tmp[0]; min.v[1] = tmp[1]; min.v[2] = tmp[2];
+	min.index = primitive;
+	math::simd::store_float3_unsafe(max.v, ma);
+}
+
+void Builder_SAH2::Reference::clip_min(float d, uint8_t axis) {
+	min.v[axis] = std::max(d, min.v[axis]);
+}
+
+void Builder_SAH2::Reference::clip_max(float d, uint8_t axis) {
+	max.v[axis] = std::min(d, max.v[axis]);
+}
+
 Builder_SAH2::Build_node::Build_node() : start_index(0), end_index(0) {
 	children[0] = nullptr;
 	children[1] = nullptr;
@@ -38,16 +59,16 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 
 	if (spatial_) {
 		for (const auto& r : references) {
-			const auto& bounds = r.aabb;
+		//	const auto& bounds = r.aabb;
 
-			math::simd::AABB b(bounds);
+			math::simd::AABB b(r.min.v, r.max.v);
 
-			if (behind(bounds.max())) {
+			if (behind(r.max.v)) {
 				++num_side_0;
 
 			//	aabb_0_.merge_assign(bounds);
 				box_0.merge_assign(b);
-			} else if (!behind(bounds.min())) {
+			} else if (!behind(r.min.v)) {
 				++num_side_1;
 
 			//	aabb_1_.merge_assign(bounds);
@@ -70,11 +91,11 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 		aabb_1_.clip_min(d_, axis_);
 	} else {
 		for (const auto& r : references) {
-			const auto& bounds = r.aabb;
+		//	const auto& bounds = r.aabb;
 
-			math::simd::AABB b(bounds);
+			math::simd::AABB b(r.min.v, r.max.v);
 
-			if (behind(bounds.max())) {
+			if (behind(r.max.v)) {
 				++num_side_0;
 
 			//	aabb_0_.merge_assign(bounds);
@@ -110,23 +131,23 @@ void Builder_SAH2::Split_candidate::distribute(const References& references,
 
 	if (spatial_) {
 		for (const auto& r : references) {
-			if (behind(r.aabb.max())) {
+			if (behind(r.max.v)) {
 				references0.push_back(r);
-			} else if (!behind(r.aabb.min())) {
+			} else if (!behind(r.min.v)) {
 				references1.push_back(r);
 			} else {
 				Reference r0 = r;
-				r0.aabb.clip_max(d_, axis_);
+				r0.clip_max(d_, axis_);
 				references0.push_back(r0);
 
 				Reference r1 = r;
-				r1.aabb.clip_min(d_, axis_);
+				r1.clip_min(d_, axis_);
 				references1.push_back(r1);
 			}
 		}
 	} else {
 		for (const auto& r : references) {
-			if (behind(r.aabb.max())) {
+			if (behind(r.max.v)) {
 				references0.push_back(r);
 			} else {
 				references1.push_back(r);
@@ -139,8 +160,8 @@ float Builder_SAH2::Split_candidate::cost() const {
 	return cost_;
 }
 
-bool Builder_SAH2::Split_candidate::behind(float3_p point) const {
-	return point.v[axis_] < d_;
+bool Builder_SAH2::Split_candidate::behind(const float* point) const {
+	return point[axis_] < d_;
 }
 
 uint8_t Builder_SAH2::Split_candidate::axis() const {
@@ -226,7 +247,7 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 	if (num_triangles <= sweep_threshold_) {
 		for (const auto& r : references) {
-			float3_p max = r.aabb.max();
+			float3_p max(r.max.v);
 			split_candidates_.emplace_back(X, max, false);
 			split_candidates_.emplace_back(Y, max, false);
 			split_candidates_.emplace_back(Z, max, false);
@@ -295,7 +316,7 @@ void Builder_SAH2::assign(Build_node* node, const References& references) {
 	size_t num_references = references.size();
 	node->primitives.resize(num_references);
 	for (size_t i = 0; i < num_references; ++i) {
-		node->primitives[i] = references[i].primitive;
+		node->primitives[i] = references[i].primitive();
 	}
 
 	node->start_index = num_references_;

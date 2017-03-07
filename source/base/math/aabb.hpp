@@ -12,7 +12,7 @@ class AABB {
 public:
 
 	AABB() = default;
-	AABB(FVector3f_a min, FVector3f_a max);
+	constexpr AABB(FVector3f_a min, FVector3f_a max);
 	AABB(simd::FVector min, simd::FVector max);
 
 	FVector3f_a min() const;
@@ -42,8 +42,8 @@ public:
 	void clip_min(float d, uint8_t axis);
 	void clip_max(float d, uint8_t axis);
 
-	static AABB empty();
-	static AABB infinite();
+	static constexpr AABB empty();
+	static constexpr AABB infinite();
 
 private:
 

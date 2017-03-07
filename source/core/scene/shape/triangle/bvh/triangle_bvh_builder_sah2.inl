@@ -36,8 +36,7 @@ void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Ver
 					auto min = triangle_min(a, b, c);
 					auto max = triangle_max(a, b, c);
 
-					references[i].aabb.set_min_max(min, max);
-					references[i].primitive = i;
+					references[i].set_min_max_primitive(min, max, i);
 
 					aabb.merge_assign(min, max);
 				}

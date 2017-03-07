@@ -39,15 +39,21 @@ private:
 	struct Reference {
 		Reference() {};
 
-		union {
-			math::aabb aabb;
+		uint32_t primitive() const;
 
-			struct {
-				float pad0[3];
-				uint32_t primitive;
-				float pad1[4];
-			};
+		void set_min_max_primitive(math::simd::FVector mi, math::simd::FVector ma,
+								   uint32_t primitive);
+
+		void clip_min(float d, uint8_t axis);
+		void clip_max(float d, uint8_t axis);
+
+		struct alignas(16) Vector {
+			float v[3];
+			uint32_t index;
 		};
+
+		Vector min;
+		Vector max;
 	};
 
 	using References = std::vector<Reference>;
@@ -65,7 +71,7 @@ private:
 
 		float cost() const;
 
-		bool behind(float3_p point) const;
+		bool behind(const float* point) const;
 
 		uint8_t axis() const;
 		bool spatial() const;
