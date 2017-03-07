@@ -303,7 +303,7 @@ inline constexpr Vector3f_a::Vector3f_a(float x, float y, float z) : v{x, y, z, 
 
 inline Vector3f_a::Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {}
 
-inline Vector3f_a::Vector3f_a(float s) : v{s, s, s, 0.f} {}
+inline constexpr Vector3f_a::Vector3f_a(float s) : v{s, s, s, 0.f} {}
 
 inline Vector3f_a::Vector3f_a(Vector2<float> xy, float z) : v{xy[0], xy[1], z, 0.f} {}
 
