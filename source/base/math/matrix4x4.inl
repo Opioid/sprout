@@ -415,7 +415,8 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03,
 	  Vector4f_a(m30, m31, m32, m33)} {}
 
 inline Matrix4x4f_a::Matrix4x4f_a(const Transformation& t) {
-	set_basis_scale_origin(*this, math::create_matrix3x3(t.rotation), t.scale, t.position);
+	set_basis_scale_origin(*this, quaternion::create_matrix3x3(t.rotation),
+						   t.scale, t.position);
 }
 
 inline Vector3f_a Matrix4x4f_a::x() const{

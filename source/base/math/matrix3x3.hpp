@@ -143,8 +143,6 @@ struct alignas(16) Matrix3x3f_a {
 	static constexpr Matrix3x3f_a identity();
 };
 
-Matrix3x3f_a create_matrix3x3(FVector4f_a q);
-
 Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m);
 
 Vector3f_a transform_vector(FVector3f_a v, const Matrix3x3f_a& m);

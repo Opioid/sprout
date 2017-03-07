@@ -323,21 +323,6 @@ inline constexpr Matrix3x3f_a Matrix3x3f_a::identity() {
 						0.f, 0.f, 1.f);
 }
 
-inline Matrix3x3f_a create_matrix3x3(FVector4f_a q) {
-	float d = dot(q, q);
-
-	float s = 2.f / d;
-
-	float xs = q[0] * s,  ys = q[1] * s,  zs = q[2] * s;
-	float wx = q[3] * xs, wy = q[3] * ys, wz = q[3] * zs;
-	float xx = q[0] * xs, xy = q[0] * ys, xz = q[0] * zs;
-	float yy = q[1] * ys, yz = q[1] * zs, zz = q[2] * zs;
-
-	return Matrix3x3f_a(1.f - (yy + zz), xy - wz,         xz + wy,
-						xy + wz,         1.f - (xx + zz), yz - wx,
-						xz - wy,         yz + wx,         1.f - (xx + yy));
-}
-
 inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
 					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],

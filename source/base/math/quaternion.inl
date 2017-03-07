@@ -237,6 +237,21 @@ inline Quaternion create(const Matrix3x3f_a& m) {
 	return temp;
 }
 
+inline Matrix3x3f_a create_matrix3x3(FQuaternion q) {
+	float d = dot(q, q);
+
+	float s = 2.f / d;
+
+	float xs = q[0] * s,  ys = q[1] * s,  zs = q[2] * s;
+	float wx = q[3] * xs, wy = q[3] * ys, wz = q[3] * zs;
+	float xx = q[0] * xs, xy = q[0] * ys, xz = q[0] * zs;
+	float yy = q[1] * ys, yz = q[1] * zs, zz = q[2] * zs;
+
+	return Matrix3x3f_a(1.f - (yy + zz), xy - wz,         xz + wy,
+						xy + wz,         1.f - (xx + zz), yz - wx,
+						xz - wy,         yz + wx,         1.f - (xx + yy));
+}
+
 inline Quaternion create_rotation_x(float a) {
 	return Quaternion(std::sin(a * 0.5f),
 					  0.f,
