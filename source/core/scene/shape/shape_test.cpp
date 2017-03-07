@@ -9,6 +9,7 @@
 #include "scene/entity/composed_transformation.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
+#include "base/math/quaternion.inl"
 #include "base/math/print.hpp"
 #include <iostream>
 
