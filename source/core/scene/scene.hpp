@@ -53,7 +53,7 @@ public:
 	Scene();
 	~Scene();
 
-	const math::aabb& aabb() const;
+	const math::AABB& aabb() const;
 
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 				   Intersection& intersection) const;

@@ -24,7 +24,7 @@ public:
 
 private:
 
-	using aabbs = const std::vector<math::aabb>&;
+	using aabbs = const std::vector<math::AABB>&;
 
 	class Split_candidate {
 
@@ -43,13 +43,13 @@ private:
 
 		uint8_t axis() const;
 
-		const math::aabb& aabb_0() const;
-		const math::aabb& aabb_1() const;
+		const math::AABB& aabb_0() const;
+		const math::AABB& aabb_1() const;
 
 	private:
 
-		math::aabb aabb_0_;
-		math::aabb aabb_1_;
+		math::AABB aabb_0_;
+		math::AABB aabb_1_;
 
 		float d_;
 
@@ -61,7 +61,7 @@ private:
 	template<typename Data>
 	void split(Build_node* node,
 			   index begin, index end,
-			   const math::aabb& aabb,
+			   const math::AABB& aabb,
 			   const std::vector<Index_triangle>& triangles,
 			   const std::vector<Vertex>& vertices,
 			   aabbs triangle_bounds,
@@ -69,7 +69,7 @@ private:
 			   thread::Pool& thread_pool,
 			   Tree<Data>& tree);
 
-	Split_candidate splitting_plane(index begin, index end, const math::aabb& aabb,
+	Split_candidate splitting_plane(index begin, index end, const math::AABB& aabb,
 									aabbs triangle_bounds, thread::Pool& thread_pool);
 
 	std::vector<Split_candidate> split_candidates_;

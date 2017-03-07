@@ -54,7 +54,7 @@ uint32_t Builder_base::current_node_index() const {
 	return current_node_;
 }
 
-math::aabb Builder_base::submesh_aabb(index begin, index end,
+math::AABB Builder_base::submesh_aabb(index begin, index end,
 									  const std::vector<Index_triangle>& triangles,
 									  const std::vector<Vertex>& vertices) {
 
@@ -79,7 +79,7 @@ math::aabb Builder_base::submesh_aabb(index begin, index end,
 //	max.y += epsilon;
 //	max.z += epsilon;
 
-	return math::aabb(min, max);
+	return math::AABB(min, max);
 }
 
 }}}}

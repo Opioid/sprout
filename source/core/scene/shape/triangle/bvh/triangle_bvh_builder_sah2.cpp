@@ -43,8 +43,8 @@ Builder_SAH2::Build_node::~Build_node() {
 }
 
 Builder_SAH2::Split_candidate::Split_candidate(uint8_t split_axis, float3_p p, bool spatial) :
-	aabb_0_(math::aabb::empty()),
-	aabb_1_(math::aabb::empty()),
+	aabb_0_(math::AABB::empty()),
+	aabb_1_(math::AABB::empty()),
 	d_(p.v[split_axis]),
 	axis_(split_axis),
 	spatial_(spatial) {}
@@ -172,18 +172,18 @@ bool Builder_SAH2::Split_candidate::spatial() const {
 	return spatial_;
 }
 
-const math::aabb& Builder_SAH2::Split_candidate::aabb_0() const {
+const math::AABB& Builder_SAH2::Split_candidate::aabb_0() const {
 	return aabb_0_;
 }
 
-const math::aabb& Builder_SAH2::Split_candidate::aabb_1() const {
+const math::AABB& Builder_SAH2::Split_candidate::aabb_1() const {
 	return aabb_1_;
 }
 
 Builder_SAH2::Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold) :
 	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
-void Builder_SAH2::split(Build_node* node, References& references, const math::aabb& aabb,
+void Builder_SAH2::split(Build_node* node, References& references, const math::AABB& aabb,
 						 uint32_t max_primitives, thread::Pool& thread_pool) {
 	node->aabb = aabb;
 
@@ -228,7 +228,7 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::a
 }
 
 Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& references,
-															const math::aabb& aabb,
+															const math::AABB& aabb,
 															thread::Pool& thread_pool) {
 	static constexpr uint8_t X = 0;
 	static constexpr uint8_t Y = 1;

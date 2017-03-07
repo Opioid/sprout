@@ -29,11 +29,11 @@ void Volume::set_parameters(const json::Value& parameters) {
 	}
 }
 
-void Volume::set_scene_aabb(const math::aabb& aabb) {
+void Volume::set_scene_aabb(const math::AABB& aabb) {
 	scene_bb_ = aabb;
 }
 
-const math::aabb& Volume::aabb() const {
+const math::AABB& Volume::aabb() const {
 	return aabb_;
 }
 

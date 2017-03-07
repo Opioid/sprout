@@ -61,7 +61,7 @@ float Prop_light::pdf(const Transformation& transformation,
 							   two_sided, total_sphere, worker.node_stack());
 }
 
-float3 Prop_light::power(const math::aabb& scene_bb) const {
+float3 Prop_light::power(const math::AABB& scene_bb) const {
 	const float area = prop_->area(part_);
 
 	const float3 radiance = prop_->material(part_)->average_radiance(area);

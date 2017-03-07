@@ -32,12 +32,12 @@ Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
 }
 
 template<typename Data>
-math::aabb Tree<Data>::aabb() const {
+math::AABB Tree<Data>::aabb() const {
 	if (nodes_) {
-//		return math::aabb(nodes_[0].bounds[0], nodes_[0].bounds[1]);
-		return math::aabb(float3(nodes_[0].min.v), float3(nodes_[0].max.v));
+//		return math::AABB(nodes_[0].bounds[0], nodes_[0].bounds[1]);
+		return math::AABB(float3(nodes_[0].min.v), float3(nodes_[0].max.v));
 	} else {
-		return math::aabb::empty();
+		return math::AABB::empty();
 	}
 }
 

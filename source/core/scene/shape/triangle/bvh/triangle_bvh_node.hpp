@@ -10,7 +10,7 @@ namespace scene { namespace shape { namespace triangle { namespace bvh {
 struct Node {
 	Node() = default;
 
-	void set_aabb(const math::aabb& aabb);
+	void set_aabb(const math::AABB& aabb);
 
 	uint32_t next() const;
 

@@ -6,7 +6,7 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-inline void Node::set_aabb(const math::aabb& aabb) {
+inline void Node::set_aabb(const math::AABB& aabb) {
 //	bounds[0] = aabb.min();
 //	bounds[1] = aabb.max();
 

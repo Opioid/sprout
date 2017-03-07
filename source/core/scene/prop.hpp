@@ -51,7 +51,7 @@ public:
 	const shape::Shape* shape() const;
 	shape::Shape* shape();
 
-	const math::aabb& aabb() const;
+	const math::AABB& aabb() const;
 
 	float area(uint32_t part) const;
 	uint32_t light_id(uint32_t part) const;
@@ -71,7 +71,7 @@ private:
 
 	// Pre-transformed AABB in world space.
 	// For moving objects it must cover the entire area occupied by the object during the tick.
-	math::aabb aabb_;
+	math::AABB aabb_;
 
 	std::shared_ptr<shape::Shape> shape_;
 

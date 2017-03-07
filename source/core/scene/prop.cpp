@@ -148,7 +148,7 @@ shape::Shape* Prop::shape() {
 	return shape_.get();
 }
 
-const math::aabb& Prop::aabb() const {
+const math::AABB& Prop::aabb() const {
 	return aabb_;
 }
 
@@ -196,18 +196,18 @@ bool Prop::visible(uint32_t ray_depth) const {
 
 void Prop::on_set_transformation() {
 	if (properties_.test(Properties::Animated)) {
-		math::aabb aabb = shape_->transformed_aabb(world_frame_a_);
+		math::AABB aabb = shape_->transformed_aabb(world_frame_a_);
 
 		constexpr uint32_t num_steps = 3;
 		constexpr float interval = 1.f / static_cast<float>(num_steps + 1);
 		float t = interval;
 		for (uint32_t i = num_steps; i > 0; --i, t += interval) {
 			const math::Transformation interpolated = math::lerp(world_frame_a_, world_frame_b_, t);
-			const math::aabb tmp = shape_->transformed_aabb(interpolated);
+			const math::AABB tmp = shape_->transformed_aabb(interpolated);
 			aabb.merge_assign(tmp);
 		}
 
-		const math::aabb tmp = shape_->transformed_aabb(world_frame_b_);
+		const math::AABB tmp = shape_->transformed_aabb(world_frame_b_);
 		aabb_ = aabb.merge(tmp);
 	} else {
 		aabb_ = shape_->transformed_aabb(world_transformation_.object_to_world, world_frame_a_);

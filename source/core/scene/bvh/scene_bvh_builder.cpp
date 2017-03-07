@@ -66,8 +66,8 @@ void Builder::assign(Build_node* node, index begin, index end, std::vector<Prop*
 	node->props_end = static_cast<uint32_t>(out_props.size());
 }
 
-math::aabb Builder::aabb(index begin, index end) {
-	math::aabb aabb = math::aabb::empty();
+math::AABB Builder::aabb(index begin, index end) {
+	math::AABB aabb = math::AABB::empty();
 
 	for (index i = begin; i != end; ++i) {
 		aabb = aabb.merge((*i)->aabb());
@@ -76,7 +76,7 @@ math::aabb Builder::aabb(index begin, index end) {
 	return aabb;
 }
 
-Split_candidate Builder::splitting_plane(const math::aabb& /*aabb*/, index begin, index end) {
+Split_candidate Builder::splitting_plane(const math::AABB& /*aabb*/, index begin, index end) {
 	split_candidates_.clear();
 
 	float3 average = float3::identity();

@@ -105,7 +105,7 @@ uint8_t Builder_SUH::Split_candidate::axis() const {
 }
 
 Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
-		const math::aabb& aabb, index begin, index end,
+		const math::AABB& aabb, index begin, index end,
 		const std::vector<Index_triangle>& triangles, const std::vector<Vertex>& vertices) {
 	split_candidates_.clear();
 

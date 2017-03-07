@@ -50,6 +50,4 @@ private:
 	Vector3f_a bounds_[2];
 };
 
-using aabb = AABB;
-
 }

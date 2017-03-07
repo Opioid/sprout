@@ -26,7 +26,7 @@ public:
 					  float3_p p, float3_p wi, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const override;
 
-	virtual float3 power(const math::aabb& scene_bb) const final override;
+	virtual float3 power(const math::AABB& scene_bb) const final override;
 
 	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) override;
 

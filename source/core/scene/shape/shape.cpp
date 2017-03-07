@@ -7,15 +7,15 @@ namespace scene { namespace shape {
 
 Shape::~Shape() {}
 
-const math::aabb& Shape::aabb() const {
+const math::AABB& Shape::aabb() const {
 	return aabb_;
 }
 
-math::aabb Shape::transformed_aabb(const float4x4& m, const math::Transformation& /*t*/) const {
+math::AABB Shape::transformed_aabb(const float4x4& m, const math::Transformation& /*t*/) const {
 	return aabb_.transform(m);
 }
 
-math::aabb Shape::transformed_aabb(const math::Transformation& t) const {
+math::AABB Shape::transformed_aabb(const math::Transformation& t) const {
 	return transformed_aabb(float4x4(t), t);
 }
 

@@ -38,7 +38,7 @@ struct Build_node {
 	float3 thin_absorption(const scene::Ray& ray, const std::vector<Prop*>& props,
 						   Worker& worker, Sampler_filter filter) const;
 
-	math::aabb aabb;
+	math::AABB aabb;
 
 	uint8_t axis;
 
@@ -54,7 +54,7 @@ public:
 
 	void clear();
 
-	const math::aabb& aabb() const;
+	const math::AABB& aabb() const;
 
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 				   Intersection& intersection) const;

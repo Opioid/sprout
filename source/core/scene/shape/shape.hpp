@@ -30,10 +30,10 @@ public:
 
 	virtual ~Shape();
 
-	const math::aabb& aabb() const;
+	const math::AABB& aabb() const;
 
-	virtual math::aabb transformed_aabb(const float4x4& m, const math::Transformation& t) const;
-	virtual math::aabb transformed_aabb(const math::Transformation& t) const;
+	virtual math::AABB transformed_aabb(const float4x4& m, const math::Transformation& t) const;
+	virtual math::AABB transformed_aabb(const math::Transformation& t) const;
 
 	virtual uint32_t num_parts() const;
 
@@ -91,7 +91,7 @@ public:
 
 protected:
 
-	math::aabb aabb_;
+	math::AABB aabb_;
 };
 
 }}

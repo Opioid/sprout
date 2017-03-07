@@ -32,9 +32,9 @@ public:
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 
-	void set_scene_aabb(const math::aabb& aabb);
+	void set_scene_aabb(const math::AABB& aabb);
 
-	const math::aabb& aabb() const;
+	const math::AABB& aabb() const;
 
 private:
 
@@ -46,9 +46,9 @@ protected:
 
 	static float phase_schlick(float3_p w, float3_p wp, float k);
 
-	math::aabb scene_bb_;
-	math::aabb aabb_;
-	math::aabb local_aabb_;
+	math::AABB scene_bb_;
+	math::AABB aabb_;
+	math::AABB local_aabb_;
 
 	float3 absorption_;
 	float3 scattering_;

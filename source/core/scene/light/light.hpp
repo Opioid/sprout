@@ -53,7 +53,7 @@ public:
 	float pdf(float time, float3_p p, float3_p wi, bool total_sphere,
 			  Worker& worker, Sampler_filter filter) const;
 
-	virtual float3 power(const math::aabb& scene_bb) const = 0;
+	virtual float3 power(const math::AABB& scene_bb) const = 0;
 
 	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) = 0;
 

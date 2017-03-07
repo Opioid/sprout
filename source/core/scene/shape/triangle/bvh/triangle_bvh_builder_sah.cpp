@@ -11,8 +11,8 @@
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, float3_p p) :
-	aabb_0_(math::aabb::empty()),
-	aabb_1_(math::aabb::empty()),
+	aabb_0_(math::AABB::empty()),
+	aabb_1_(math::AABB::empty()),
 	d_(p.v[split_axis]),
 	axis_(split_axis) {}
 
@@ -56,11 +56,11 @@ uint8_t Builder_SAH::Split_candidate::axis() const {
 	return axis_;
 }
 
-const math::aabb& Builder_SAH::Split_candidate::aabb_0() const {
+const math::AABB& Builder_SAH::Split_candidate::aabb_0() const {
 	return aabb_0_;
 }
 
-const math::aabb& Builder_SAH::Split_candidate::aabb_1() const {
+const math::AABB& Builder_SAH::Split_candidate::aabb_1() const {
 	return aabb_1_;
 }
 
@@ -68,7 +68,7 @@ Builder_SAH::Builder_SAH(uint32_t num_slices, uint32_t sweep_threshold) :
 	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
 Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
-		index begin, index end, const math::aabb& aabb,
+		index begin, index end, const math::AABB& aabb,
 		aabbs triangle_bounds, thread::Pool& thread_pool) {
 	split_candidates_.clear();
 

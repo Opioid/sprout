@@ -156,7 +156,7 @@ void Tree::clear() {
 	props_.clear();
 }
 
-const math::aabb& Tree::aabb() const {
+const math::AABB& Tree::aabb() const {
 	return root_.aabb;
 }
 

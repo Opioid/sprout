@@ -27,9 +27,9 @@ private:
 
 	static void assign(Build_node* node, index begin, index end, std::vector<Prop*>& out_props);
 
-	static math::aabb aabb(index begin, index end);
+	static math::AABB aabb(index begin, index end);
 
-	Split_candidate splitting_plane(const math::aabb& aabb, index begin, index end);
+	Split_candidate splitting_plane(const math::AABB& aabb, index begin, index end);
 
 	std::vector<Split_candidate> split_candidates_;
 };

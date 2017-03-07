@@ -36,7 +36,7 @@ public:
 
 	Node* allocate_nodes(uint32_t num_nodes);
 
-	math::aabb aabb() const;
+	math::AABB aabb() const;
 
 	uint32_t num_parts() const;
 

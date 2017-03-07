@@ -64,7 +64,7 @@ private:
 			   uint32_t max_primitives, uint32_t depth,
 			   Tree<Data>& tree);
 
-	Split_candidate splitting_plane(const math::aabb& aabb,
+	Split_candidate splitting_plane(const math::AABB& aabb,
 									index begin, index end,
 									const std::vector<Index_triangle>& triangles,
 									const std::vector<Vertex>& vertices);

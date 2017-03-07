@@ -56,7 +56,7 @@ Scene::~Scene() {
 	}
 }
 
-const math::aabb& Scene::aabb() const {
+const math::AABB& Scene::aabb() const {
 	return bvh_.aabb();
 }
 
