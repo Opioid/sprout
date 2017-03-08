@@ -152,20 +152,36 @@ inline bool intersect(const Intersection_vertex_MT& a,
 	float3 tvec = ray.origin - a.p;
 	float u = math::dot(tvec, pvec) * inv_det;
 
-	if (u < 0.f || u > 1.f) {
-		return false;
-	}
+//	if (u < 0.f || u > 1.f) {
+//		return false;
+//	}
 
 	float3 qvec = math::cross(tvec, e1);
 	float v = math::dot(ray.direction, qvec) * inv_det;
 
-	if (v < 0.f || u + v > 1.f) {
-		return false;
-	}
+//	if (v < 0.f || u + v > 1.f) {
+//		return false;
+//	}
 
 	float hit_t = math::dot(e2, qvec) * inv_det;
 
-	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+//	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+//		ray.max_t = hit_t;
+//		uv[0] = u;
+//		uv[1] = v;
+//		return true;
+//	}
+
+//	return false;
+
+	uint8_t ca = static_cast<uint8_t>(u > 0.f);
+	uint8_t cb = static_cast<uint8_t>(u < 1.f);
+	uint8_t cc = static_cast<uint8_t>(v > 0.f);
+	uint8_t cd = static_cast<uint8_t>(u + v < 1.f);
+	uint8_t ce = static_cast<uint8_t>(hit_t > ray.min_t);
+	uint8_t cf = static_cast<uint8_t>(hit_t < ray.max_t);
+
+	if (0 != (ca & cb & cc & cd & ce & cf)) {
 		ray.max_t = hit_t;
 		uv[0] = u;
 		uv[1] = v;
@@ -190,24 +206,33 @@ inline bool intersect_p(const Intersection_vertex_MT& a,
 	float3 tvec = ray.origin - a.p;
 	float u = math::dot(tvec, pvec) * inv_det;
 
-	if (u < 0.f || u > 1.f) {
-		return false;
-	}
+//	if (u < 0.f || u > 1.f) {
+//		return false;
+//	}
 
 	float3 qvec = math::cross(tvec, e1);
 	float v = math::dot(ray.direction, qvec) * inv_det;
 
-	if (v < 0.f || u + v > 1.f) {
-		return false;
-	}
+//	if (v < 0.f || u + v > 1.f) {
+//		return false;
+//	}
 
 	float hit_t = math::dot(e2, qvec) * inv_det;
 
-	if (hit_t > ray.min_t && hit_t < ray.max_t) {
-		return true;
-	}
+//	if (hit_t > ray.min_t && hit_t < ray.max_t) {
+//		return true;
+//	}
 
-	return false;
+	uint8_t ca = static_cast<uint8_t>(u > 0.f);
+	uint8_t cb = static_cast<uint8_t>(u < 1.f);
+	uint8_t cc = static_cast<uint8_t>(v > 0.f);
+	uint8_t cd = static_cast<uint8_t>(u + v < 1.f);
+	uint8_t ce = static_cast<uint8_t>(hit_t > ray.min_t);
+	uint8_t cf = static_cast<uint8_t>(hit_t < ray.max_t);
+
+	return 0 != (ca & cb & cc & cd & ce & cf);
+
+//	return false;
 }
 
 inline bool intersect_p(math::simd::FVector origin,
