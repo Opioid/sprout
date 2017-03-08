@@ -25,7 +25,7 @@ bool Build_node::intersect(scene::Ray& ray, const std::vector<Prop*>& props,
 	bool hit = false;
 
 	if (children[0]) {
-		const uint8_t c = ray.signs[axis];
+		const int8_t c = ray.signs[axis];
 
 		if (children[c]->intersect(ray, props, node_stack, intersection)) {
 			hit = true;
