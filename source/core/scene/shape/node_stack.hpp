@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <cstddef>
-#include <vector>
 
 namespace scene { namespace shape {
 
@@ -10,7 +9,8 @@ class Node_stack {
 
 public:
 
-	Node_stack(size_t size);
+	Node_stack(uint32_t size);
+	~Node_stack();
 
 	bool empty() const;
 
@@ -24,8 +24,9 @@ public:
 
 private:
 
-	size_t end_;
-	std::vector<uint32_t> stack_;
+	uint32_t num_elements_;
+	uint32_t end_;
+	uint32_t* stack_;
 };
 
 }}

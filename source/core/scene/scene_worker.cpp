@@ -18,6 +18,8 @@ void Worker::init(uint32_t id, const Scene& scene) {
 	scene_ = &scene;
 }
 
+Worker::~Worker() {}
+
 uint32_t Worker::id() const {
 	return id_;
 }

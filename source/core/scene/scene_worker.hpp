@@ -22,6 +22,7 @@ public:
 	using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
 
 	Worker();
+	~Worker();
 
 	void init(uint32_t id, const Scene& scene);
 
