@@ -84,20 +84,19 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 				const uint8_t s = ray.signs[node.axis()];
 				node_stack.push(nn[s]);
 				n = nn[s ^ 0x01];
-			} else {
-				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-					if (data_.intersect(i, ray, uv)) {
-						index = i;
-						// ray.max_t has changed if intersect() returns true!
-						ray_max_t = _mm_set1_ps(ray.max_t);
-					}
-				}
-
-				n = node_stack.pop();
+				continue;
 			}
-		} else {
-			n = node_stack.pop();
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				if (data_.intersect(i, ray, uv)) {
+					index = i;
+					// ray.max_t has changed if intersect() returns true!
+					ray_max_t = _mm_set1_ps(ray.max_t);
+				}
+			}
 		}
+
+		n = node_stack.pop();
 	}
 
 	intersection.uv = uv;
@@ -127,19 +126,18 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 				const uint8_t s = ray.signs[node.axis()];
 				node_stack.push(nn[s]);
 				n = nn[s ^ 0x01];
-			} else {
-				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-					if (data_.intersect_p(i, ray)) {
-				//	if (data_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
-						return true;
-					}
-				}
-
-				n = node_stack.pop();
+				continue;
 			}
-		} else {
-			n = node_stack.pop();
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				if (data_.intersect_p(i, ray)) {
+			//	if (data_.intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t, i)) {
+					return true;
+				}
+			}
 		}
+
+		n = node_stack.pop();
 	}
 
 	return false;
@@ -172,29 +170,28 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 				const uint8_t s = ray.signs[node.axis()];
 				node_stack.push(nn[s]);
 				n = nn[s ^ 0x01];
-			} else {
-				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-					if (data_.intersect(i, ray, uv)) {
-						uv = data_.interpolate_uv(i, uv);
-
-						const auto material = materials[data_.material_index(i)];
-
-						opacity += (1.f - opacity) * material->opacity(uv, time, worker, filter);
-						if (opacity >= 1.f) {
-							return 1.f;
-						}
-
-						ray.max_t = max_t;
-						// ray.max_t has changed if intersect() returns true!
-						// ray_max_t = _mm_set1_ps(max_t);
-					}
-				}
-
-				n = node_stack.pop();
+				continue;
 			}
-		} else {
-			n = node_stack.pop();
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				if (data_.intersect(i, ray, uv)) {
+					uv = data_.interpolate_uv(i, uv);
+
+					const auto material = materials[data_.material_index(i)];
+
+					opacity += (1.f - opacity) * material->opacity(uv, time, worker, filter);
+					if (opacity >= 1.f) {
+						return 1.f;
+					}
+
+					ray.max_t = max_t;
+					// ray.max_t has changed if intersect() returns true!
+					// ray_max_t = _mm_set1_ps(max_t);
+				}
+			}
 		}
+
+		n = node_stack.pop();
 	}
 
 	return opacity;
@@ -227,33 +224,32 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 				const uint8_t s = ray.signs[node.axis()];
 				node_stack.push(nn[s]);
 				n = nn[s ^ 0x01];
-			} else {
-				for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-					if (data_.intersect(i, ray, uv)) {
-						uv = data_.interpolate_uv(i, uv);
-
-						const float3 normal = data_.normal(i);
-
-						const auto material = materials[data_.material_index(i)];
-
-						const float3 ta = material->thin_absorption(ray.direction, normal, uv,
-																	time, worker, filter);
-						absorption += (1.f - absorption) * ta;
-						if (math::all_greater_equal(absorption, 1.f)) {
-							return float3(1.f);
-						}
-
-						ray.max_t = max_t;
-						// ray.max_t has changed if intersect() returns true!
-						// ray_max_t = _mm_set1_ps(max_t);
-					}
-				}
-
-				n = node_stack.pop();
+				continue;
 			}
-		} else {
-			n = node_stack.pop();
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				if (data_.intersect(i, ray, uv)) {
+					uv = data_.interpolate_uv(i, uv);
+
+					const float3 normal = data_.normal(i);
+
+					const auto material = materials[data_.material_index(i)];
+
+					const float3 ta = material->thin_absorption(ray.direction, normal, uv,
+																	time, worker, filter);
+					absorption += (1.f - absorption) * ta;
+					if (math::all_greater_equal(absorption, 1.f)) {
+						return float3(1.f);
+					}
+
+					ray.max_t = max_t;
+					// ray.max_t has changed if intersect() returns true!
+					// ray_max_t = _mm_set1_ps(max_t);
+				}
+			}
 		}
+
+		n = node_stack.pop();
 	}
 
 	return absorption;
