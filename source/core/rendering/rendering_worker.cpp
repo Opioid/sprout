@@ -5,6 +5,7 @@
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/prop.hpp"
+#include "scene/shape/node_stack.inl"
 #include "scene/scene_intersection.hpp"
 #include "scene/material/material.hpp"
 #include "base/math/vector4.inl"
