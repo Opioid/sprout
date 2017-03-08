@@ -21,7 +21,7 @@ struct Ray {
 	Vector3f_a inv_direction;
 	float min_t;
 	float max_t;
-	int8_t signs[3];
+	uint8_t signs[3];
 };
 
 }
