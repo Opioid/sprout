@@ -2,6 +2,7 @@
 
 #include "sampling.hpp"
 #include "math/vector3.inl"
+#include "math/matrix3x3.inl"
 #include "math/math.hpp"
 
 namespace math {

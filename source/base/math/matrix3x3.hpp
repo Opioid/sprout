@@ -126,17 +126,20 @@ struct Vector4f_a;
 struct alignas(16) Matrix3x3f_a {
 	Vector3f_a r[3];
 
-	Matrix3x3f_a();
+	Matrix3x3f_a() = default;
 
 	constexpr Matrix3x3f_a(float m00, float m01, float m02,
 						   float m10, float m11, float m12,
-						   float m20, float m21, float m22);
+						   float m20, float m21, float m22) :
+		r{Vector3f_a(m00, m01, m02),
+		  Vector3f_a(m10, m11, m12),
+		  Vector3f_a(m20, m21, m22)} {}
 
-	Matrix3x3f_a(FVector3f_a x, FVector3f_a y, FVector3f_a z);
-
-	Matrix3x3f_a& operator*=(const Matrix3x3f_a& a);
-
-	static constexpr Matrix3x3f_a identity();
+	static constexpr Matrix3x3f_a identity() {
+		return Matrix3x3f_a(1.f, 0.f, 0.f,
+							0.f, 1.f, 0.f,
+							0.f, 0.f, 1.f);
+	}
 };
 
 }

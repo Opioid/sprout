@@ -10,7 +10,6 @@
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
-#include "base/math/ray.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.inl"
 

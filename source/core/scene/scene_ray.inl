@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene_ray.hpp"
-#include "base/math/ray.inl"
 
 namespace scene {
 

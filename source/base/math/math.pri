@@ -19,7 +19,6 @@ HEADERS += \
 	math/quaternion.hpp \
 	math/quaternion.inl \
 	math/ray.hpp \
-	math/ray.inl \
 	math/transformation.hpp \
 	math/transformation.inl \
 	math/vector3.hpp \

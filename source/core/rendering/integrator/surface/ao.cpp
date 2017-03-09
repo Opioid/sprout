@@ -7,7 +7,6 @@
 #include "take/take_settings.hpp"
 #include "base/math/sampling/sampling.inl"
 #include "base/math/vector4.inl"
-#include "base/math/ray.inl"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {

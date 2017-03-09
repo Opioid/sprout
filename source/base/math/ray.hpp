@@ -1,20 +1,39 @@
 #pragma once
 
-#include "vector3.hpp"
-#include <cstdint>
+#include "vector3.inl"
 
 namespace math {
 
 struct Ray {
 	Ray() = default;
 	Ray(FVector3f_a origin, FVector3f_a direction,
-		float min_t = 0.f, float max_t = 1.f);
+		float min_t = 0.f, float max_t = 1.f) :
+		origin(origin),
+		direction(direction),
+		inv_direction(reciprocal(direction)),
+		min_t(min_t),
+		max_t(max_t) {
+		signs[0] = inv_direction[0] < 0.f ? 1 : 0;
+		signs[1] = inv_direction[1] < 0.f ? 1 : 0;
+		signs[2] = inv_direction[2] < 0.f ? 1 : 0;
+	}
 
-	void set_direction(FVector3f_a v);
+	void set_direction(FVector3f_a v) {
+		direction = v;
+		inv_direction = reciprocal(v);
 
-	Vector3f_a point(float t) const;
+		signs[0] = inv_direction[0] < 0.f ? 1 : 0;
+		signs[1] = inv_direction[1] < 0.f ? 1 : 0;
+		signs[2] = inv_direction[2] < 0.f ? 1 : 0;
+	}
 
-	float length() const;
+	Vector3f_a point(float t) const {
+		return origin + t * direction;
+	}
+
+	float length() const {
+		return math::length((min_t - max_t) * direction);
+	}
 
 	Vector3f_a origin;
 	Vector3f_a direction;
