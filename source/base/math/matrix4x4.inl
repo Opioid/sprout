@@ -415,9 +415,9 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03,
 	  Vector4f_a(m30, m31, m32, m33)} {}
 
 static inline void set_basis_scale_origin(Matrix4x4f_a& m,
-								   const Matrix3x3f_a& basis,
-								   const Vector3f_a& scale,
-								   const Vector3f_a& origin) {
+										  const Matrix3x3f_a& basis,
+										  const Vector3f_a& scale,
+										  const Vector3f_a& origin) {
 	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
 	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
 
@@ -427,14 +427,14 @@ static inline void set_basis_scale_origin(Matrix4x4f_a& m,
 	m.r[2][0] = basis.r[2][0] * scale[2]; m.r[2][1] = basis.r[2][1] * scale[2];
 	m.r[2][2] = basis.r[2][2] * scale[2]; m.r[2][3] = 0.f;
 
-	m.r[3][0] = origin[0];					m.r[3][1] = origin[1];
-	m.r[3][2] = origin[2];					m.r[3][3] = 1.f;
+	m.r[3][0] = origin[0];				  m.r[3][1] = origin[1];
+	m.r[3][2] = origin[2];				  m.r[3][3] = 1.f;
 }
 
 static inline void set_basis_scale_origin(Matrix4x4f_a& m,
-								   const Matrix4x4f_a& basis,
-								   const Vector3f_a& scale,
-								   const Vector3f_a& origin) {
+										  const Matrix4x4f_a& basis,
+										  const Vector3f_a& scale,
+										  const Vector3f_a& origin) {
 	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
 	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
 
@@ -444,8 +444,8 @@ static inline void set_basis_scale_origin(Matrix4x4f_a& m,
 	m.r[2][0] = basis.r[2][0] * scale[2]; m.r[2][1] = basis.r[2][1] * scale[2];
 	m.r[2][2] = basis.r[2][2] * scale[2]; m.r[2][3] = 0.f;
 
-	m.r[3][0] = origin[0];					m.r[3][1] = origin[1];
-	m.r[3][2] = origin[2];					m.r[3][3] = 1.f;
+	m.r[3][0] = origin[0];				  m.r[3][1] = origin[1];
+	m.r[3][2] = origin[2];				  m.r[3][3] = 1.f;
 }
 
 inline Matrix4x4f_a::Matrix4x4f_a(const Transformation& t) {
