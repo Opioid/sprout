@@ -81,12 +81,6 @@ Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) {
 					  v.x * m.m02 + v.y * m.m12 + v.z * m.m22);
 }
 
-inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3<float>& m) {
-	return Vector3f_a(v[0] * m.m00 + v[1] * m.m10 + v[2] * m.m20,
-					  v[0] * m.m01 + v[1] * m.m11 + v[2] * m.m21,
-					  v[0] * m.m02 + v[1] * m.m12 + v[2] * m.m22);
-}
-
 template<typename T>
 Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m) {
 	Vector3<T> temp(v.x * m.m00 + v.y * m.m10 + v.z * m.m20,
@@ -278,7 +272,7 @@ Matrix3x3<T> transposed(const Matrix3x3<T>& m) {
  *
  ****************************************************************************/
 
-inline Matrix3x3f_a operator*(const Matrix3x3f_a& a, const Matrix3x3f_a& b) {
+static inline Matrix3x3f_a operator*(const Matrix3x3f_a& a, const Matrix3x3f_a& b) {
 	return Matrix3x3f_a(a.r[0][0] * b.r[0][0] + a.r[0][1] * b.r[1][0] + a.r[0][2] * b.r[2][0],
 						a.r[0][0] * b.r[0][1] + a.r[0][1] * b.r[1][1] + a.r[0][2] * b.r[2][1],
 						a.r[0][0] * b.r[0][2] + a.r[0][1] * b.r[1][2] + a.r[0][2] * b.r[2][2],
@@ -292,25 +286,25 @@ inline Matrix3x3f_a operator*(const Matrix3x3f_a& a, const Matrix3x3f_a& b) {
 						a.r[2][0] * b.r[0][2] + a.r[2][1] * b.r[1][2] + a.r[2][2] * b.r[2][2]);
 }
 
-inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m) {
+static inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
 					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
 					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-inline Vector3f_a transform_vector(FVector3f_a v, const Matrix3x3f_a& m) {
+static inline Vector3f_a transform_vector(FVector3f_a v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
 					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
 					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix3x3f_a& m) {
+static inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
 					  v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
 					  v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);
 }
 
-inline void set_rotation_x(Matrix3x3f_a& m, float a) {
+static inline void set_rotation_x(Matrix3x3f_a& m, float a) {
 	float c = std::cos(a);
 	float s = std::sin(a);
 
@@ -319,7 +313,7 @@ inline void set_rotation_x(Matrix3x3f_a& m, float a) {
 	m.r[2][0] = 0.f; m.r[2][1] = s;    m.r[2][2] =  c;
 }
 
-inline void set_rotation_y(Matrix3x3f_a& m, float a) {
+static inline void set_rotation_y(Matrix3x3f_a& m, float a) {
 	float c = std::cos(a);
 	float s = std::sin(a);
 
@@ -328,7 +322,7 @@ inline void set_rotation_y(Matrix3x3f_a& m, float a) {
 	m.r[2][0] = -s;   m.r[2][1] = 0.f; m.r[2][2] = c;
 }
 
-inline void set_rotation_z(Matrix3x3f_a& m, float a) {
+static inline void set_rotation_z(Matrix3x3f_a& m, float a) {
 	float c = std::cos(a);
 	float s = std::sin(a);
 
@@ -337,7 +331,7 @@ inline void set_rotation_z(Matrix3x3f_a& m, float a) {
 	m.r[2][0] = 0.f; m.r[2][1] =  0.f; m.r[2][2] = 1.f;
 }
 
-inline void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a) {
+static inline void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a) {
 	float c = std::cos(a);
 	float s = std::sin(a);
 	float t = 1.f - c;

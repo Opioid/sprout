@@ -1,5 +1,4 @@
 SOURCES += \
-	math/math.cpp \
 
 HEADERS += \
 	math/aabb.hpp \

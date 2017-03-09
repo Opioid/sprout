@@ -138,10 +138,10 @@ inline float Triangle_MT::area(float3_p scale) const {
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 
-inline bool intersect(const Intersection_vertex_MT& a,
-					  const Intersection_vertex_MT& b,
-					  const Intersection_vertex_MT& c,
-					  math::Ray& ray, float2& uv) {
+static inline bool intersect(const Intersection_vertex_MT& a,
+							 const Intersection_vertex_MT& b,
+							 const Intersection_vertex_MT& c,
+							 math::Ray& ray, float2& uv) {
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
@@ -192,10 +192,10 @@ inline bool intersect(const Intersection_vertex_MT& a,
 	return false;
 }
 
-inline bool intersect_p(const Intersection_vertex_MT& a,
-						const Intersection_vertex_MT& b,
-						const Intersection_vertex_MT& c,
-						const math::Ray& ray) {
+static inline bool intersect_p(const Intersection_vertex_MT& a,
+							   const Intersection_vertex_MT& b,
+							   const Intersection_vertex_MT& c,
+							   const math::Ray& ray) {
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
@@ -312,45 +312,45 @@ inline bool intersect_p(math::simd::FVector origin,
 				 _mm_comige_ss(max_t, hit_t));
 }
 
-inline void interpolate_p(const Intersection_vertex_MT& a,
-						  const Intersection_vertex_MT& b,
-						  const Intersection_vertex_MT& c,
-						  float2 uv, float3& p) {
+static inline void interpolate_p(const Intersection_vertex_MT& a,
+								 const Intersection_vertex_MT& b,
+								 const Intersection_vertex_MT& c,
+								 float2 uv, float3& p) {
 	const float w = 1.f - uv[0] - uv[1];
 
 	p = w * a.p + uv[0] * b.p + uv[1] * c.p;
 }
 
-inline float area(const Intersection_vertex_MT& a,
-				  const Intersection_vertex_MT& b,
-				  const Intersection_vertex_MT& c) {
+static inline float area(const Intersection_vertex_MT& a,
+						 const Intersection_vertex_MT& b,
+						 const Intersection_vertex_MT& c) {
 	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
 }
 
-inline float area(const Intersection_vertex_MT& a,
-				  const Intersection_vertex_MT& b,
-				  const Intersection_vertex_MT& c,
-				  float3_p scale) {
+static inline float area(const Intersection_vertex_MT& a,
+						 const Intersection_vertex_MT& b,
+						 const Intersection_vertex_MT& c,
+						 float3_p scale) {
 	const float3 sa = scale * a.p;
 	const float3 sb = scale * b.p;
 	const float3 sc = scale * c.p;
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 
-inline float2 interpolate_uv(const Shading_vertex_MT& a,
-							 const Shading_vertex_MT& b,
-							 const Shading_vertex_MT& c,
-							 float2 uv) {
+static inline float2 interpolate_uv(const Shading_vertex_MT& a,
+									const Shading_vertex_MT& b,
+									const Shading_vertex_MT& c,
+									float2 uv) {
 	const float w = 1.f - uv[0] - uv[1];
 
 	return w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
-inline void interpolate_data(const Shading_vertex_MT& a,
-							 const Shading_vertex_MT& b,
-							 const Shading_vertex_MT& c,
-							 float2 uv,
-							 float3& n, float3& t, float2& tc) {
+static inline void interpolate_data(const Shading_vertex_MT& a,
+									const Shading_vertex_MT& b,
+									const Shading_vertex_MT& c,
+									float2 uv,
+									float3& n, float3& t, float2& tc) {
 	const float w = 1.f - uv[0] - uv[1];
 
 	n  = math::normalized(w * a.n + uv[0] * b.n + uv[1] * c.n);
@@ -368,21 +368,21 @@ inline Shading_vertex_MTC::Shading_vertex_MTC(const packed_float3& n,
 	}
 }
 
-inline float2 interpolate_uv(const Shading_vertex_MTC& a,
-							 const Shading_vertex_MTC& b,
-							 const Shading_vertex_MTC& c,
-							 float2 uv) {
+static inline float2 interpolate_uv(const Shading_vertex_MTC& a,
+									const Shading_vertex_MTC& b,
+									const Shading_vertex_MTC& c,
+									float2 uv) {
 	const float w = 1.f - uv[0] - uv[1];
 
 	return float2(w * a.n_u[3] + uv[0] * b.n_u[3] + uv[1] * c.n_u[3],
 				  w * a.t_v[3] + uv[0] * b.t_v[3] + uv[1] * c.t_v[3]);
 }
 
-inline void interpolate_data(const Shading_vertex_MTC& a,
-							 const Shading_vertex_MTC& b,
-							 const Shading_vertex_MTC& c,
-							 float2 uv,
-							 float3& n, float3& t, float2& tc) {
+static inline void interpolate_data(const Shading_vertex_MTC& a,
+									const Shading_vertex_MTC& b,
+									const Shading_vertex_MTC& c,
+									float2 uv,
+									float3& n, float3& t, float2& tc) {
 	const float w = 1.f - uv[0] - uv[1];
 
 	const float4 n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;

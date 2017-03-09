@@ -13,42 +13,42 @@ constexpr float Pi	   = Pi_t<float>;
 constexpr float Pi_inv = Pi_inv_t<float>;
 
 template <typename T>
-T degrees_to_radians(T degrees) {
+static T degrees_to_radians(T degrees) {
 	return degrees * (Pi_t<T> / T(180));
 }
 
 template <typename T>
-T radians_to_degrees(T radians) {
+static T radians_to_degrees(T radians) {
 	return radians * (T(180) / Pi_t<T>);
 }
 
 template <typename T>
-T cot(T x) {
+static T cot(T x) {
 	return std::tan((Pi_t<T> / T(2)) - x);
 }
 
 template <typename T>
-int sign(T val) {
+static int sign(T val) {
 	return (T(0) < val) - (val < T(0));
 }
 
 template<typename T>
-T frac(T x) {
+static T frac(T x) {
 	return x - std::floor(x);
 }
 
 template<typename T>
-T round(T x) {
+static T round(T x) {
 	return std::floor(x >= T(0) ? x + T(0.5) : x - T(0.5));
 }
 
 template<typename T>
-T clamp(T a, T mi, T ma) {
+static T clamp(T a, T mi, T ma) {
 	return std::min(std::max(a, mi), ma);
 }
 
 template<typename T>
-T saturate(T a) {
+static T saturate(T a) {
 	return std::min(std::max(a, T(0)), T(1));
 }
 
@@ -59,28 +59,28 @@ T lerp(T a, T b, T t) {
 }
 
 template<typename T>
-T exp2(T x) {
+static T exp2(T x) {
 	return std::pow(T(2), x);
 }
 
 template<typename T>
-T pow4(T x) {
+static T pow4(T x) {
 	T x2 = x * x;
 	return x2 * x2;
 }
 
 template<typename T>
-T pow5(T x) {
+static T pow5(T x) {
 	return pow4(x) * x;
 }
 
 template<typename T>
-T inverse_sqrt(T x) {
+static T inverse_sqrt(T x) {
 	return T(1) / std::sqrt(x);
 }
 
 template<typename T>
-T mod(T k, T n) {
+static T mod(T k, T n) {
 	// Works for negative k; apparently % is the reminder, not really modulo
 	return (k %= n) < T(0) ? k + n : k;
 }

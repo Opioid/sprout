@@ -295,84 +295,84 @@ bool any_inf(const Vector3<T>& v) {
  *
  ****************************************************************************/
 
-inline Vector3f_a operator+(FVector3f_a a, float s) {
+static inline Vector3f_a operator+(FVector3f_a a, float s) {
 	return Vector3f_a(a[0] + s, a[1] + s, a[2] + s);
 }
 
-inline Vector3f_a operator+(FVector3f_a a, FVector3f_a b) {
+static inline Vector3f_a operator+(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
 }
 
-inline Vector3f_a operator-(FVector3f_a a, float s) {
+static inline Vector3f_a operator-(FVector3f_a a, float s) {
 	return Vector3f_a(a[0] - s, a[1] - s, a[2] - s);
 }
 
-inline Vector3f_a operator-(FVector3f_a a, FVector3f_a b) {
+static inline Vector3f_a operator-(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
 
-inline Vector3f_a operator*(FVector3f_a a, FVector3f_a b) {
+static inline Vector3f_a operator*(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(a[0] * b[0], a[1] * b[1], a[2] * b[2]);
 }
 
-inline Vector3f_a operator/(FVector3f_a a, float s) {
+static inline Vector3f_a operator/(FVector3f_a a, float s) {
 	float is = 1.f / s;
 	return Vector3f_a(is * a[0], is * a[1], is * a[2]);
 }
 
-inline Vector3f_a operator/(FVector3f_a a, FVector3f_a b) {
+static inline Vector3f_a operator/(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(a[0] / b[0], a[1] / b[1], a[2] / b[2]);
 }
 
-inline Vector3f_a operator+(float s, FVector3f_a v) {
+static inline Vector3f_a operator+(float s, FVector3f_a v) {
 	return Vector3f_a(s + v[0], s + v[1], s + v[2]);
 }
 
-inline Vector3f_a operator-(float s, FVector3f_a v) {
+static inline Vector3f_a operator-(float s, FVector3f_a v) {
 	return Vector3f_a(s - v[0], s - v[1], s - v[2]);
 }
 
-inline Vector3f_a operator*(float s, FVector3f_a v) {
+static inline Vector3f_a operator*(float s, FVector3f_a v) {
 	return Vector3f_a(s * v[0], s * v[1], s * v[2]);
 }
 
-inline Vector3f_a operator/(float s, FVector3f_a v) {
+static inline Vector3f_a operator/(float s, FVector3f_a v) {
 	return Vector3f_a(s / v[0], s / v[1], s / v[2]);
 }
 
-inline Vector3f_a operator-(FVector3f_a v) {
+static inline Vector3f_a operator-(FVector3f_a v) {
 	return Vector3f_a(-v[0], -v[1], -v[2]);
 }
 
-inline Vector3f_a& operator+=(Vector3f_a& a, FVector3f_a b) {
+static inline Vector3f_a& operator+=(Vector3f_a& a, FVector3f_a b) {
 	a[0] += b[0];
 	a[1] += b[1];
 	a[2] += b[2];
 	return a;
 }
 
-inline Vector3f_a& operator-=(Vector3f_a& a, FVector3f_a b) {
+static inline Vector3f_a& operator-=(Vector3f_a& a, FVector3f_a b) {
 	a[0] -= b[0];
 	a[1] -= b[1];
 	a[1] -= b[2];
 	return a;
 }
 
-inline Vector3f_a& operator*=(Vector3f_a& a, FVector3f_a b) {
+static inline Vector3f_a& operator*=(Vector3f_a& a, FVector3f_a b) {
 	a[0] *= b[0];
 	a[1] *= b[1];
 	a[2] *= b[2];
 	return a;
 }
 
-inline Vector3f_a& operator*=(Vector3f_a& a, float s) {
+static inline Vector3f_a& operator*=(Vector3f_a& a, float s) {
 	a[0] *= s;
 	a[1] *= s;
 	a[2] *= s;
 	return a;
 }
 
-inline Vector3f_a& operator/=(Vector3f_a& a, float s) {
+static inline Vector3f_a& operator/=(Vector3f_a& a, float s) {
 	float is = 1.f / s;
 	a[0] *= is;
 	a[1] *= is;
@@ -380,19 +380,19 @@ inline Vector3f_a& operator/=(Vector3f_a& a, float s) {
 	return a;
 }
 
-inline float dot(FVector3f_a a, FVector3f_a b) {
+static inline float dot(FVector3f_a a, FVector3f_a b) {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-inline float length(FVector3f_a v) {
+static inline float length(FVector3f_a v) {
 	return std::sqrt(dot(v, v));
 }
 
-inline float squared_length(FVector3f_a v) {
+static inline float squared_length(FVector3f_a v) {
 	return dot(v, v);
 }
 
-inline Vector3f_a normalized(FVector3f_a v) {
+static inline Vector3f_a normalized(FVector3f_a v) {
 	// This is slowest on both machines
 //	return v / length(v);
 
@@ -400,7 +400,7 @@ inline Vector3f_a normalized(FVector3f_a v) {
 	return simd::rsqrt(dot(v, v)) * v;
 }
 
-inline Vector3f_a reciprocal(FVector3f_a v) {
+static inline Vector3f_a reciprocal(FVector3f_a v) {
 //	return Vector3f_a(1.f / vv[0], 1.f / v[1], 1.f / v[2]);
 
 	simd::Vector sx = simd::load_float3_unsafe(v);
@@ -413,50 +413,50 @@ inline Vector3f_a reciprocal(FVector3f_a v) {
 	return result;
 }
 
-inline Vector3f_a cross(FVector3f_a a, FVector3f_a b) {
+static inline Vector3f_a cross(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(a[1] * b[2] - a[2] * b[1],
 					  a[2] * b[0] - a[0] * b[2],
 					  a[0] * b[1] - a[1] * b[0]);
 }
 
-inline Vector3f_a project(FVector3f_a a, FVector3f_a b) {
+static inline Vector3f_a project(FVector3f_a a, FVector3f_a b) {
 	return dot(b, a) * b;
 }
 
-inline float distance(FVector3f_a a, FVector3f_a b) {
+static inline float distance(FVector3f_a a, FVector3f_a b) {
 	return length(a - b);
 }
 
-inline float squared_distance(FVector3f_a a, FVector3f_a b) {
+static inline float squared_distance(FVector3f_a a, FVector3f_a b) {
 	return squared_length(a - b);
 }
 
-inline Vector3f_a saturate(FVector3f_a v) {
+static inline Vector3f_a saturate(FVector3f_a v) {
 	return Vector3f_a(std::min(std::max(v[0], 0.f), 1.f),
 					  std::min(std::max(v[1], 0.f), 1.f),
 					  std::min(std::max(v[2], 0.f), 1.f));
 }
 
-inline Vector3f_a exp(FVector3f_a v) {
+static inline Vector3f_a exp(FVector3f_a v) {
 	return Vector3f_a(std::exp(v[0]), std::exp(v[1]), std::exp(v[2]));
 }
 
-inline Vector3f_a pow(FVector3f_a v, float e) {
+static inline Vector3f_a pow(FVector3f_a v, float e) {
 	return Vector3f_a(std::pow(v[0], e),
 					  std::pow(v[1], e),
 					  std::pow(v[2], e));
 }
 
-inline Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t) {
+static inline Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t) {
 	float u = 1.f - t;
 	return u * a + t * b;
 }
 
-inline Vector3f_a reflect(FVector3f_a normal, FVector3f_a v) {
+static inline Vector3f_a reflect(FVector3f_a normal, FVector3f_a v) {
 	return 2.f * dot(v, normal) * normal - v;
 }
 
-inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
+static inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
 /*	Vector3f_a r1;
 
 	if (nv[0] < 0.6f && nv[0] > -0.6f) {
@@ -488,7 +488,7 @@ inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
 	b = Vector3f_a(d, 1.f - n[1] * n[1] * c, -n[1]);
 }
 
-inline Vector3f_a tangent(FVector3f_a n) {
+static inline Vector3f_a tangent(FVector3f_a n) {
 /*	Vector3f_a r1;
 
 	if (nv[0] < 0.6f && nv[0] > -0.6f) {
@@ -512,59 +512,59 @@ inline Vector3f_a tangent(FVector3f_a n) {
 	return Vector3f_a(1.f - n[0] * n[0] * c, d, -n[0]);
 }
 
-inline Vector3f_a min(FVector3f_a a, FVector3f_a b) {
+static inline Vector3f_a min(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]));
 }
 
-inline Vector3f_a max(FVector3f_a a, FVector3f_a b) {
+static inline Vector3f_a max(FVector3f_a a, FVector3f_a b) {
 	return Vector3f_a(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }
 
-inline float max_element(FVector3f_a v) {
+static inline float max_element(FVector3f_a v) {
 	return std::max(std::max(v[0], v[1]), v[2]);
 }
 
-inline Vector3f_a abs(FVector3f_a v) {
+static inline Vector3f_a abs(FVector3f_a v) {
 	return Vector3f_a(std::abs(v[0]), std::abs(v[1]), std::abs(v[2]));
 }
 
-inline Vector3f_a cos(FVector3f_a v) {
+static inline Vector3f_a cos(FVector3f_a v) {
 	return Vector3f_a(std::cos(v[0]), std::cos(v[1]), std::cos(v[2]));
 }
 
-inline bool all_lesser(FVector3f_a v, float s) {
+static inline bool all_lesser(FVector3f_a v, float s) {
 	return v[0] < s && v[1] < s && v[2] < s;
 }
 
-inline bool all_greater_equal(FVector3f_a v, float s) {
+static inline bool all_greater_equal(FVector3f_a v, float s) {
 	return v[0] >= s && v[1] >= s && v[2] >= s;
 }
 
-inline bool any_negative(FVector3f_a v) {
+static inline bool any_negative(FVector3f_a v) {
 	return v[0] < 0.f || v[1] < 0.f || v[2] < 0.f;
 }
 
-inline bool any_greater_zero(FVector3f_a v) {
+static inline bool any_greater_zero(FVector3f_a v) {
 	return v[0] > 0.f || v[1] > 0.f || v[2] > 0.f;
 }
 
-inline bool any_greater_one(FVector3f_a v) {
+static inline bool any_greater_one(FVector3f_a v) {
 	return v[0] > 1.f || v[1] > 1.f || v[2] > 1.f;
 }
 
-inline bool any_lesser_one(FVector3f_a v) {
+static inline bool any_lesser_one(FVector3f_a v) {
 	return v[0] < 1.f || v[1] < 1.f || v[2] < 1.f;
 }
 
-inline bool any_nan(FVector3f_a v) {
+static inline bool any_nan(FVector3f_a v) {
 	return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]);
 }
 
-inline bool any_inf(FVector3f_a v) {
+static inline bool any_inf(FVector3f_a v) {
 	return std::isinf(v[0]) || std::isinf(v[1]) || std::isinf(v[2]);
 }
 
-inline bool all_finite(FVector3f_a v) {
+static inline bool all_finite(FVector3f_a v) {
 	return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]);
 }
 

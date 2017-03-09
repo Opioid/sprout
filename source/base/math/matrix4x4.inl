@@ -414,7 +414,7 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03,
 	  Vector4f_a(m20, m21, m22, m23),
 	  Vector4f_a(m30, m31, m32, m33)} {}
 
-inline void set_basis_scale_origin(Matrix4x4f_a& m,
+static inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix3x3f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
@@ -431,7 +431,7 @@ inline void set_basis_scale_origin(Matrix4x4f_a& m,
 	m.r[3][2] = origin[2];					m.r[3][3] = 1.f;
 }
 
-inline void set_basis_scale_origin(Matrix4x4f_a& m,
+static inline void set_basis_scale_origin(Matrix4x4f_a& m,
 								   const Matrix4x4f_a& basis,
 								   const Vector3f_a& scale,
 								   const Vector3f_a& origin) {
@@ -469,7 +469,7 @@ inline Vector3f_a Matrix4x4f_a::w() const {
 	return r[3].xyz();
 }
 
-inline Matrix4x4f_a operator*(const Matrix4x4f_a& a, const Matrix4x4f_a& b) {
+static inline Matrix4x4f_a operator*(const Matrix4x4f_a& a, const Matrix4x4f_a& b) {
 	return Matrix4x4f_a((a.r[0][0] * b.r[0][0] + a.r[0][1] * b.r[1][0]) + (a.r[0][2] * b.r[2][0] + a.r[0][3] * b.r[3][0]),
 						(a.r[0][0] * b.r[0][1] + a.r[0][1] * b.r[1][1]) + (a.r[0][2] * b.r[2][1] + a.r[0][3] * b.r[3][1]),
 						(a.r[0][0] * b.r[0][2] + a.r[0][1] * b.r[1][2]) + (a.r[0][2] * b.r[2][2] + a.r[0][3] * b.r[3][2]),
@@ -491,25 +491,25 @@ inline Matrix4x4f_a operator*(const Matrix4x4f_a& a, const Matrix4x4f_a& b) {
 						(a.r[3][0] * b.r[0][3] + a.r[3][1] * b.r[1][3]) + (a.r[3][2] * b.r[2][3] + a.r[3][3] * b.r[3][3]));
 }
 
-inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
+static inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
 					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
 					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m) {
+static inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
 					  v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
 					  v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);
 }
 
-inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
+static inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
 	return Vector3f_a((v[0] * m.r[0][0] + v[1] * m.r[1][0]) + (v[2] * m.r[2][0] + m.r[3][0]),
 					  (v[0] * m.r[0][1] + v[1] * m.r[1][1]) + (v[2] * m.r[2][1] + m.r[3][1]),
 					  (v[0] * m.r[0][2] + v[1] * m.r[1][2]) + (v[2] * m.r[2][2] + m.r[3][2]));
 }
 
-inline Matrix4x4f_a create_matrix4x4(FVector4f_a q) {
+static inline Matrix4x4f_a create_matrix4x4(FVector4f_a q) {
 	const float d = dot(q, q);
 
 	const float s = 2.f / d;
@@ -525,7 +525,7 @@ inline Matrix4x4f_a create_matrix4x4(FVector4f_a q) {
 						0.f,			 0.f,			  0.f,				1.f);
 }
 
-inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
+static inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 	const float m00_11 = m.r[0][0] * m.r[1][1];
 	const float m01_12 = m.r[0][1] * m.r[1][2];
 	const float m02_10 = m.r[0][2] * m.r[1][0];
@@ -573,14 +573,14 @@ inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 						1.f);
 }
 
-inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
+static inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
 	m.r[0][0] = 1.f;		m.r[0][1] = 0.f;		m.r[0][2] = 0.f;		m.r[0][3] = 0.f;
 	m.r[1][0] = 0.f;		m.r[1][1] = 1.f;		m.r[1][2] = 0.f;		m.r[1][3] = 0.f;
 	m.r[2][0] = 0.f;		m.r[2][1] = 0.f;		m.r[2][2] = 1.f;		m.r[2][3] = 0.f;
 	m.r[3][0] = v[0];	m.r[3][1] = v[1];	m.r[3][2] = v[2];	m.r[3][3] = 1.f;
 }
 
-inline void set_rotation_x(Matrix4x4f_a& m, float a) {
+static inline void set_rotation_x(Matrix4x4f_a& m, float a) {
 	const float c = std::cos(a);
 	const float s = std::sin(a);
 

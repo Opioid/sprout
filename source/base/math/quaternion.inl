@@ -179,7 +179,7 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 
 namespace quaternion {
 
-inline Quaternion create(const Matrix3x3<float>& m) {
+static inline Quaternion create(const Matrix3x3<float>& m) {
 	float trace = m.m00 + m.m11 + m.m22;
 	Quaternion temp;
 
@@ -208,7 +208,7 @@ inline Quaternion create(const Matrix3x3<float>& m) {
 	return temp;
 }
 
-inline Quaternion create(const Matrix3x3f_a& m) {
+static inline Quaternion create(const Matrix3x3f_a& m) {
 	float trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
 	Quaternion temp;
 
@@ -221,7 +221,8 @@ inline Quaternion create(const Matrix3x3f_a& m) {
 		temp[1] = (m.r[0][2] - m.r[2][0]) * s;
 		temp[2] = (m.r[1][0] - m.r[0][1]) * s;
 	} else {
-		int i = m.r[0][0] < m.r[1][1] ? (m.r[1][1] < m.r[2][2] ? 2 : 1) : (m.r[0][0] < m.r[2][2] ? 2 : 0);
+		int i = m.r[0][0] < m.r[1][1] ? (m.r[1][1] < m.r[2][2] ? 2 : 1)
+									  : (m.r[0][0] < m.r[2][2] ? 2 : 0);
 		int j = (i + 1) % 3;
 		int k = (i + 2) % 3;
 
@@ -237,7 +238,7 @@ inline Quaternion create(const Matrix3x3f_a& m) {
 	return temp;
 }
 
-inline Matrix3x3f_a create_matrix3x3(FQuaternion q) {
+static inline Matrix3x3f_a create_matrix3x3(FQuaternion q) {
 	float d = dot(q, q);
 
 	float s = 2.f / d;
@@ -252,35 +253,35 @@ inline Matrix3x3f_a create_matrix3x3(FQuaternion q) {
 						xz - wy,         yz + wx,         1.f - (xx + yy));
 }
 
-inline Quaternion create_rotation_x(float a) {
+static inline Quaternion create_rotation_x(float a) {
 	return Quaternion(std::sin(a * 0.5f),
 					  0.f,
 					  0.f,
 					  std::cos(a * 0.5f));
 }
 
-inline Quaternion create_rotation_y(float a) {
+static inline Quaternion create_rotation_y(float a) {
 	return Quaternion(0.f,
 					  std::sin(a * 0.5f),
 					  0.f,
 					  std::cos(a * 0.5f));
 }
 
-inline Quaternion create_rotation_z(float a) {
+static inline Quaternion create_rotation_z(float a) {
 	return Quaternion(0.f,
 					  0.f,
 					  std::sin(a * 0.5f),
 					  std::cos(a * 0.5f));
 }
 
-inline Quaternion mul(const Quaternion& a, const Quaternion& b) {
+static inline Quaternion mul(const Quaternion& a, const Quaternion& b) {
 	return Quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
 					  (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
 					  (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
 					  (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
 }
 
-inline Quaternion slerp(const Quaternion& a, const Quaternion& b, float t) {
+static inline Quaternion slerp(const Quaternion& a, const Quaternion& b, float t) {
 	// calc cosine theta
 	float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 

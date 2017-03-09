@@ -61,8 +61,6 @@ struct Matrix3x3 {
 template<typename T>
 Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m);
 
-Vector3f_a operator*(FVector3f_a v, const Matrix3x3<float>& m);
-
 template<typename T>
 Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m);
 
