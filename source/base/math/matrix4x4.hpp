@@ -163,8 +163,6 @@ struct alignas(16) Matrix4x4f_a {
 	Vector3f_a y() const;
 	Vector3f_a z() const;
 	Vector3f_a w() const;
-
-	Matrix4x4f_a operator*(const Matrix4x4f_a& o) const;
 };
 
 }
