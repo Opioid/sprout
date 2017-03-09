@@ -300,16 +300,7 @@ inline Vector3f_a operator+(FVector3f_a a, float s) {
 }
 
 inline Vector3f_a operator+(FVector3f_a a, FVector3f_a b) {
-//	return Vector3f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
-
-	simd::Vector va = simd::load_float3(a);
-	simd::Vector vb = simd::load_float3(b);
-
-	simd::Vector vr = simd::add3(va, vb);
-
-	Vector3f_a r;
-	simd::store_float3(r, vr);
-	return r;
+	return Vector3f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
 }
 
 inline Vector3f_a operator-(FVector3f_a a, float s) {
