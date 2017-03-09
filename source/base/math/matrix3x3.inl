@@ -287,18 +287,18 @@ inline constexpr Matrix3x3f_a::Matrix3x3f_a(float m00, float m01, float m02,
 	  Vector3f_a(m10, m11, m12),
 	  Vector3f_a(m20, m21, m22)} {}
 
-inline Matrix3x3f_a Matrix3x3f_a::operator*(const Matrix3x3f_a& a) const {
-	return Matrix3x3f_a(r[0][0] * a.r[0][0] + r[0][1] * a.r[1][0] + r[0][2] * a.r[2][0],
-						r[0][0] * a.r[0][1] + r[0][1] * a.r[1][1] + r[0][2] * a.r[2][1],
-						r[0][0] * a.r[0][2] + r[0][1] * a.r[1][2] + r[0][2] * a.r[2][2],
+inline Matrix3x3f_a operator*(const Matrix3x3f_a& a, const Matrix3x3f_a& b) {
+	return Matrix3x3f_a(a.r[0][0] * b.r[0][0] + a.r[0][1] * b.r[1][0] + a.r[0][2] * b.r[2][0],
+						a.r[0][0] * b.r[0][1] + a.r[0][1] * b.r[1][1] + a.r[0][2] * b.r[2][1],
+						a.r[0][0] * b.r[0][2] + a.r[0][1] * b.r[1][2] + a.r[0][2] * b.r[2][2],
 
-						r[1][0] * a.r[0][0] + r[1][1] * a.r[1][0] + r[1][2] * a.r[2][0],
-						r[1][0] * a.r[0][1] + r[1][1] * a.r[1][1] + r[1][2] * a.r[2][1],
-						r[1][0] * a.r[0][2] + r[1][1] * a.r[1][2] + r[1][2] * a.r[2][2],
+						a.r[1][0] * b.r[0][0] + a.r[1][1] * b.r[1][0] + a.r[1][2] * b.r[2][0],
+						a.r[1][0] * b.r[0][1] + a.r[1][1] * b.r[1][1] + a.r[1][2] * b.r[2][1],
+						a.r[1][0] * b.r[0][2] + a.r[1][1] * b.r[1][2] + a.r[1][2] * b.r[2][2],
 
-						r[2][0] * a.r[0][0] + r[2][1] * a.r[1][0] + r[2][2] * a.r[2][0],
-						r[2][0] * a.r[0][1] + r[2][1] * a.r[1][1] + r[2][2] * a.r[2][1],
-						r[2][0] * a.r[0][2] + r[2][1] * a.r[1][2] + r[2][2] * a.r[2][2]);
+						a.r[2][0] * b.r[0][0] + a.r[2][1] * b.r[1][0] + a.r[2][2] * b.r[2][0],
+						a.r[2][0] * b.r[0][1] + a.r[2][1] * b.r[1][1] + a.r[2][2] * b.r[2][1],
+						a.r[2][0] * b.r[0][2] + a.r[2][1] * b.r[1][2] + a.r[2][2] * b.r[2][2]);
 }
 
 inline Matrix3x3f_a& Matrix3x3f_a::operator*=(const Matrix3x3f_a& a) {

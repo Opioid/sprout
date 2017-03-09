@@ -134,28 +134,10 @@ struct alignas(16) Matrix3x3f_a {
 
 	Matrix3x3f_a(FVector3f_a x, FVector3f_a y, FVector3f_a z);
 
-	explicit Matrix3x3f_a(FVector4f_a q);
-
-	Matrix3x3f_a operator*(const Matrix3x3f_a& a) const;
-
 	Matrix3x3f_a& operator*=(const Matrix3x3f_a& a);
 
 	static constexpr Matrix3x3f_a identity();
 };
-
-Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m);
-
-Vector3f_a transform_vector(FVector3f_a v, const Matrix3x3f_a& m);
-
-Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix3x3f_a& m);
-
-void set_rotation_x(Matrix3x3f_a& m, float a);
-
-void set_rotation_y(Matrix3x3f_a& m, float a);
-
-void set_rotation_z(Matrix3x3f_a& m, float a);
-
-void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a);
 
 }
 

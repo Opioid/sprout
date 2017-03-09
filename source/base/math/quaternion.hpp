@@ -73,26 +73,4 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t);
 using Quaternion = Vector4f_a;
 using FQuaternion = FVector4f_a;
 
-namespace quaternion {
-
-Quaternion create(const Matrix3x3<float>& m);
-
-Quaternion create(const Matrix3x3f_a& m);
-
-Matrix3x3f_a create_matrix3x3(FQuaternion q);
-
-Quaternion create_rotation_x(float a);
-
-Quaternion create_rotation_y(float a);
-
-Quaternion create_rotation_z(float a);
-
-Quaternion mul(const Quaternion& a, const Quaternion& b);
-
-Quaternion slerp(const Quaternion& a, const Quaternion& b, float t);
-
-constexpr Quaternion identity();
-
-}
-
 }

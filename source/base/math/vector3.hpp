@@ -2,6 +2,8 @@
 
 #include "vector2.hpp"
 #include <cstdint>
+#include <algorithm>
+#include <cmath>
 
 namespace math {
 
@@ -151,131 +153,64 @@ struct alignas(16) Vector3f_a {
 	// 4 instead of 3 in order to hide pad warning
 	float v[4];
 
-	Vector3f_a();
+	Vector3f_a() = default;
 
-	constexpr Vector3f_a(float x, float y, float z);
+	constexpr Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {};
 
-	Vector3f_a(const float* v);
+	Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {};
 
-	explicit constexpr Vector3f_a(float s);
+	explicit constexpr Vector3f_a(float s) : v{s, s, s, 0.f} {};
 
-	explicit Vector3f_a(Vector2<float> xy, float z);
+	explicit Vector3f_a(Vector2<float> xy, float z) : v{xy[0], xy[1], z, 0.f} {}
 
 	template<typename T>
-	explicit Vector3f_a(const Vector3<T>& v);
+	explicit Vector3f_a(const Vector3<T>& v) : v{float(v[0]), float(v[1]), float(v[2]), 0.f} {};
 
-	Vector2<float> xy() const;
+	Vector2<float> xy() const {
+		return Vector2<float>(v[0], v[1]);
+	}
 
-	float operator[](uint32_t i) const;
-	float& operator[](uint32_t i);
+	float operator[](uint32_t i) const{
+		return v[i];
+	}
 
-	Vector3f_a operator+(float s) const;
+	float& operator[](uint32_t i) {
+		return v[i];
+	}
 
-	Vector3f_a operator+(FVector3f_a v) const;
+	bool operator==(FVector3f_a a) const {
+		return v[0] == a[0] && v[1] == a[1] && v[2] == a[2];
+	}
 
-	Vector3f_a operator-(float s) const;
+	bool operator!=(FVector3f_a a) const {
+		return v[0] != a[0] || v[1] != a[1] || v[2] != a[2];
+	}
 
-	Vector3f_a operator-(FVector3f_a v) const;
+	float absolute_max(uint32_t& i) const {
+		float ax = std::abs(v[0]);
+		float ay = std::abs(v[1]);
+		float az = std::abs(v[2]);
 
-	Vector3f_a operator*(FVector3f_a v) const;
+		if (ax >= ay && ax >= az) {
+			i = 0;
+			return ax;
+		}
 
-	Vector3f_a operator/(float s) const;
+		if (ay >= ax && ay >= az) {
+			i = 1;
+			return ay;
+		}
 
-	Vector3f_a operator/(FVector3f_a v) const;
+		i = 2;
+		return az;
+	}
 
-	Vector3f_a operator-() const;
-
-	Vector3f_a& operator+=(FVector3f_a v);
-
-	Vector3f_a& operator-=(FVector3f_a v);
-
-	Vector3f_a& operator*=(FVector3f_a v);
-
-	Vector3f_a& operator*=(float s);
-
-	Vector3f_a& operator/=(float s);
-
-	bool operator==(FVector3f_a v) const;
-
-	bool operator!=(FVector3f_a v) const;
-
-	float absolute_max(uint32_t& i) const;
-
-	static constexpr Vector3f_a identity();
+	static constexpr Vector3f_a identity() {
+		return Vector3f_a(0.f, 0.f, 0.f);
+	}
 };
 
-Vector3f_a operator+(float s, FVector3f_a v);
-
-Vector3f_a operator-(float s, FVector3f_a v);
-
-Vector3f_a operator*(float s, FVector3f_a v);
-
-Vector3f_a operator/(float s, FVector3f_a v);
-
-Vector3f_a mul(FVector3f_a v, float s);
-
-float dot(FVector3f_a a, FVector3f_a b);
-
-float length(FVector3f_a v);
-
-float squared_length(FVector3f_a v);
-
-Vector3f_a normalized(FVector3f_a v);
-
-Vector3f_a reciprocal(FVector3f_a v);
-
-Vector3f_a cross(FVector3f_a a, FVector3f_a b);
-
-Vector3f_a project(FVector3f_a a, FVector3f_a b);
-
-float distance(FVector3f_a a, FVector3f_a b);
-
-float squared_distance(FVector3f_a a, FVector3f_a b);
-
-Vector3f_a saturate(FVector3f_a v);
-
-Vector3f_a exp(FVector3f_a v);
-
-Vector3f_a pow(FVector3f_a v, float e);
-
-Vector3f_a lerp(FVector3f_a a, FVector3f_a b, float t);
-
-Vector3f_a reflect(FVector3f_a normal, FVector3f_a v);
-
-// Assuming n is unit length
-void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b);
-Vector3f_a tangent(FVector3f_a n);
-
-Vector3f_a min(FVector3f_a a, FVector3f_a b);
-
-Vector3f_a max(FVector3f_a a, FVector3f_a b);
-
-float max_element(FVector3f_a v);
-
-Vector3f_a abs(FVector3f_a v);
-
-Vector3f_a cos(FVector3f_a v);
-
-bool all_lesser(FVector3f_a v, float s);
-
-bool all_greater_equal(FVector3f_a v, float s);
-
-bool any_negative(FVector3f_a v);
-
-bool any_greater_zero(FVector3f_a v);
-
-bool any_greater_one(FVector3f_a v);
-
-bool any_lesser_one(FVector3f_a v);
-
-bool any_nan(FVector3f_a v);
-
-bool any_inf(FVector3f_a v);
-
-bool all_finite(FVector3f_a v);
-
 }
-
 
 using byte3  = math::Vector3<uint8_t>;
 // using float3 = Vector3<float>;
@@ -285,5 +220,3 @@ using uint3  = math::Vector3<uint32_t>;
 using packed_float3 = math::Vector3<float>;
 
 using float3_p = math::FVector3f_a;
-
-

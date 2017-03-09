@@ -414,6 +414,40 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03,
 	  Vector4f_a(m20, m21, m22, m23),
 	  Vector4f_a(m30, m31, m32, m33)} {}
 
+inline void set_basis_scale_origin(Matrix4x4f_a& m,
+								   const Matrix3x3f_a& basis,
+								   const Vector3f_a& scale,
+								   const Vector3f_a& origin) {
+	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
+	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
+
+	m.r[1][0] = basis.r[1][0] * scale[1]; m.r[1][1] = basis.r[1][1] * scale[1];
+	m.r[1][2] = basis.r[1][2] * scale[1]; m.r[1][3] = 0.f;
+
+	m.r[2][0] = basis.r[2][0] * scale[2]; m.r[2][1] = basis.r[2][1] * scale[2];
+	m.r[2][2] = basis.r[2][2] * scale[2]; m.r[2][3] = 0.f;
+
+	m.r[3][0] = origin[0];					m.r[3][1] = origin[1];
+	m.r[3][2] = origin[2];					m.r[3][3] = 1.f;
+}
+
+inline void set_basis_scale_origin(Matrix4x4f_a& m,
+								   const Matrix4x4f_a& basis,
+								   const Vector3f_a& scale,
+								   const Vector3f_a& origin) {
+	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
+	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
+
+	m.r[1][0] = basis.r[1][0] * scale[1]; m.r[1][1] = basis.r[1][1] * scale[1];
+	m.r[1][2] = basis.r[1][2] * scale[1]; m.r[1][3] = 0.f;
+
+	m.r[2][0] = basis.r[2][0] * scale[2]; m.r[2][1] = basis.r[2][1] * scale[2];
+	m.r[2][2] = basis.r[2][2] * scale[2]; m.r[2][3] = 0.f;
+
+	m.r[3][0] = origin[0];					m.r[3][1] = origin[1];
+	m.r[3][2] = origin[2];					m.r[3][3] = 1.f;
+}
+
 inline Matrix4x4f_a::Matrix4x4f_a(const Transformation& t) {
 	set_basis_scale_origin(*this, quaternion::create_matrix3x3(t.rotation),
 						   t.scale, t.position);
@@ -435,26 +469,26 @@ inline Vector3f_a Matrix4x4f_a::w() const {
 	return r[3].xyz();
 }
 
-inline Matrix4x4f_a Matrix4x4f_a::operator*(const Matrix4x4f_a& o) const {
-	return Matrix4x4f_a((r[0][0] * o.r[0][0] + r[0][1] * o.r[1][0]) + (r[0][2] * o.r[2][0] + r[0][3] * o.r[3][0]),
-						(r[0][0] * o.r[0][1] + r[0][1] * o.r[1][1]) + (r[0][2] * o.r[2][1] + r[0][3] * o.r[3][1]),
-						(r[0][0] * o.r[0][2] + r[0][1] * o.r[1][2]) + (r[0][2] * o.r[2][2] + r[0][3] * o.r[3][2]),
-						(r[0][0] * o.r[0][3] + r[0][1] * o.r[1][3]) + (r[0][2] * o.r[2][3] + r[0][3] * o.r[3][3]),
+inline Matrix4x4f_a operator*(const Matrix4x4f_a& a, const Matrix4x4f_a& b) {
+	return Matrix4x4f_a((a.r[0][0] * b.r[0][0] + a.r[0][1] * b.r[1][0]) + (a.r[0][2] * b.r[2][0] + a.r[0][3] * b.r[3][0]),
+						(a.r[0][0] * b.r[0][1] + a.r[0][1] * b.r[1][1]) + (a.r[0][2] * b.r[2][1] + a.r[0][3] * b.r[3][1]),
+						(a.r[0][0] * b.r[0][2] + a.r[0][1] * b.r[1][2]) + (a.r[0][2] * b.r[2][2] + a.r[0][3] * b.r[3][2]),
+						(a.r[0][0] * b.r[0][3] + a.r[0][1] * b.r[1][3]) + (a.r[0][2] * b.r[2][3] + a.r[0][3] * b.r[3][3]),
 
-						(r[1][0] * o.r[0][0] + r[1][1] * o.r[1][0]) + (r[1][2] * o.r[2][0] + r[1][3] * o.r[3][0]),
-						(r[1][0] * o.r[0][1] + r[1][1] * o.r[1][1]) + (r[1][2] * o.r[2][1] + r[1][3] * o.r[3][1]),
-						(r[1][0] * o.r[0][2] + r[1][1] * o.r[1][2]) + (r[1][2] * o.r[2][2] + r[1][3] * o.r[3][2]),
-						(r[1][0] * o.r[0][3] + r[1][1] * o.r[1][3]) + (r[1][2] * o.r[2][3] + r[1][3] * o.r[3][3]),
+						(a.r[1][0] * b.r[0][0] + a.r[1][1] * b.r[1][0]) + (a.r[1][2] * b.r[2][0] + a.r[1][3] * b.r[3][0]),
+						(a.r[1][0] * b.r[0][1] + a.r[1][1] * b.r[1][1]) + (a.r[1][2] * b.r[2][1] + a.r[1][3] * b.r[3][1]),
+						(a.r[1][0] * b.r[0][2] + a.r[1][1] * b.r[1][2]) + (a.r[1][2] * b.r[2][2] + a.r[1][3] * b.r[3][2]),
+						(a.r[1][0] * b.r[0][3] + a.r[1][1] * b.r[1][3]) + (a.r[1][2] * b.r[2][3] + a.r[1][3] * b.r[3][3]),
 
-						(r[2][0] * o.r[0][0] + r[2][1] * o.r[1][0]) + (r[2][2] * o.r[2][0] + r[2][3] * o.r[3][0]),
-						(r[2][0] * o.r[0][1] + r[2][1] * o.r[1][1]) + (r[2][2] * o.r[2][1] + r[2][3] * o.r[3][1]),
-						(r[2][0] * o.r[0][2] + r[2][1] * o.r[1][2]) + (r[2][2] * o.r[2][2] + r[2][3] * o.r[3][2]),
-						(r[2][0] * o.r[0][3] + r[2][1] * o.r[1][3]) + (r[2][2] * o.r[2][3] + r[2][3] * o.r[3][3]),
+						(a.r[2][0] * b.r[0][0] + a.r[2][1] * b.r[1][0]) + (a.r[2][2] * b.r[2][0] + a.r[2][3] * b.r[3][0]),
+						(a.r[2][0] * b.r[0][1] + a.r[2][1] * b.r[1][1]) + (a.r[2][2] * b.r[2][1] + a.r[2][3] * b.r[3][1]),
+						(a.r[2][0] * b.r[0][2] + a.r[2][1] * b.r[1][2]) + (a.r[2][2] * b.r[2][2] + a.r[2][3] * b.r[3][2]),
+						(a.r[2][0] * b.r[0][3] + a.r[2][1] * b.r[1][3]) + (a.r[2][2] * b.r[2][3] + a.r[2][3] * b.r[3][3]),
 
-						(r[3][0] * o.r[0][0] + r[3][1] * o.r[1][0]) + (r[3][2] * o.r[2][0] + r[3][3] * o.r[3][0]),
-						(r[3][0] * o.r[0][1] + r[3][1] * o.r[1][1]) + (r[3][2] * o.r[2][1] + r[3][3] * o.r[3][1]),
-						(r[3][0] * o.r[0][2] + r[3][1] * o.r[1][2]) + (r[3][2] * o.r[2][2] + r[3][3] * o.r[3][2]),
-						(r[3][0] * o.r[0][3] + r[3][1] * o.r[1][3]) + (r[3][2] * o.r[2][3] + r[3][3] * o.r[3][3]));
+						(a.r[3][0] * b.r[0][0] + a.r[3][1] * b.r[1][0]) + (a.r[3][2] * b.r[2][0] + a.r[3][3] * b.r[3][0]),
+						(a.r[3][0] * b.r[0][1] + a.r[3][1] * b.r[1][1]) + (a.r[3][2] * b.r[2][1] + a.r[3][3] * b.r[3][1]),
+						(a.r[3][0] * b.r[0][2] + a.r[3][1] * b.r[1][2]) + (a.r[3][2] * b.r[2][2] + a.r[3][3] * b.r[3][2]),
+						(a.r[3][0] * b.r[0][3] + a.r[3][1] * b.r[1][3]) + (a.r[3][2] * b.r[2][3] + a.r[3][3] * b.r[3][3]));
 }
 
 inline Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m) {
@@ -537,40 +571,6 @@ inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 						((m00_12 * m.r[3][1] + m01_10 * m.r[3][2] + m02_11 * m.r[3][0]) -
 						 (m00_11 * m.r[3][2] + m01_12 * m.r[3][0] + m02_10 * m.r[3][1])) * id,
 						1.f);
-}
-
-inline void set_basis_scale_origin(Matrix4x4f_a& m,
-								   const Matrix3x3f_a& basis,
-								   const Vector3f_a& scale,
-								   const Vector3f_a& origin) {
-	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
-	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
-
-	m.r[1][0] = basis.r[1][0] * scale[1]; m.r[1][1] = basis.r[1][1] * scale[1];
-	m.r[1][2] = basis.r[1][2] * scale[1]; m.r[1][3] = 0.f;
-
-	m.r[2][0] = basis.r[2][0] * scale[2]; m.r[2][1] = basis.r[2][1] * scale[2];
-	m.r[2][2] = basis.r[2][2] * scale[2]; m.r[2][3] = 0.f;
-
-	m.r[3][0] = origin[0];					m.r[3][1] = origin[1];
-	m.r[3][2] = origin[2];					m.r[3][3] = 1.f;
-}
-
-inline void set_basis_scale_origin(Matrix4x4f_a& m,
-								   const Matrix4x4f_a& basis,
-								   const Vector3f_a& scale,
-								   const Vector3f_a& origin) {
-	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
-	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
-
-	m.r[1][0] = basis.r[1][0] * scale[1]; m.r[1][1] = basis.r[1][1] * scale[1];
-	m.r[1][2] = basis.r[1][2] * scale[1]; m.r[1][3] = 0.f;
-
-	m.r[2][0] = basis.r[2][0] * scale[2]; m.r[2][1] = basis.r[2][1] * scale[2];
-	m.r[2][2] = basis.r[2][2] * scale[2]; m.r[2][3] = 0.f;
-
-	m.r[3][0] = origin[0];					m.r[3][1] = origin[1];
-	m.r[3][2] = origin[2];					m.r[3][3] = 1.f;
 }
 
 inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {

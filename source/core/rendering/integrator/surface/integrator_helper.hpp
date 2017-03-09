@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/math/vector3.hpp"
+#include "base/math/vector3.inl"
 #include <cmath>
 
 namespace rendering {

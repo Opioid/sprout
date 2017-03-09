@@ -167,30 +167,6 @@ struct alignas(16) Matrix4x4f_a {
 	Matrix4x4f_a operator*(const Matrix4x4f_a& o) const;
 };
 
-Vector3f_a transform_vector(FVector3f_a v, const Matrix4x4f_a& m);
-
-Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix4x4f_a& m);
-
-Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m);
-
-Matrix4x4f_a create_matrix4x4(FVector4f_a q);
-
-Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m);
-
-void set_basis_scale_origin(Matrix4x4f_a& m,
-							const Matrix3x3f_a& basis,
-							const Vector3f_a& scale,
-							const Vector3f_a& origin);
-
-void set_basis_scale_origin(Matrix4x4f_a& m,
-							const Matrix4x4f_a& basis,
-							const Vector3f_a& scale,
-							const Vector3f_a& origin);
-
-void set_translation(Matrix4x4f_a& m, const Vector3f_a& v);
-
-void set_rotation_x(Matrix4x4f_a& m, float a);
-
 }
 
 using float4x4 = math::Matrix4x4f_a;

@@ -54,59 +54,6 @@ struct alignas(16) Vector_u32 {
 
 /****************************************************************************
  *
- * Load operations
- *
- ****************************************************************************/
-Vector SU_CALLCONV load_float(float x);
-
-Vector SU_CALLCONV load_float3(const Vector3<float>& source);
-Vector SU_CALLCONV load_float3(const float* source);
-Vector SU_CALLCONV load_float3(FVector3f_a source);
-Vector SU_CALLCONV load_float4(FVector3f_a source);
-
-/****************************************************************************
- *
- * Store operations
- *
- ****************************************************************************/
-
-void SU_CALLCONV store_float3(Vector3<float>& destination, FVector v);
-void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v);
-
-/****************************************************************************
- *
- * Scalar operations
- *
- ****************************************************************************/
-
-Vector SU_CALLCONV add1(FVector a, FVector b);
-
-Vector SU_CALLCONV mul1(FVector a, FVector b);
-
-Vector SU_CALLCONV min1(FVector a, FVector b);
-Vector SU_CALLCONV max1(FVector a, FVector b);
-
-/****************************************************************************
- *
- * 3D vector operations
- *
- ****************************************************************************/
-
-Vector SU_CALLCONV add3(FVector a, FVector b);
-Vector SU_CALLCONV sub3(FVector a, FVector b);
-
-Vector SU_CALLCONV mul3(FVector a, FVector b);
-Vector SU_CALLCONV div3(FVector a, FVector b);
-
-Vector SU_CALLCONV dot3(FVector a, FVector b);
-Vector SU_CALLCONV cross3(FVector a, FVector b);
-
-
-Vector SU_CALLCONV min3(FVector a, FVector b);
-Vector SU_CALLCONV max3(FVector a, FVector b);
-
-/****************************************************************************
- *
  * Globals
  *
  ****************************************************************************/

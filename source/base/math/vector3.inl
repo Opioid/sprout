@@ -4,8 +4,6 @@
 #include "vector2.inl"
 #include "simd/simd_math.inl"
 #include "simd/simd_vector.inl"
-#include <algorithm>
-#include <cmath>
 
 namespace math {
 
@@ -297,129 +295,42 @@ bool any_inf(const Vector3<T>& v) {
  *
  ****************************************************************************/
 
-inline Vector3f_a::Vector3f_a() {}
-
-inline constexpr Vector3f_a::Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {}
-
-inline Vector3f_a::Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {}
-
-inline constexpr Vector3f_a::Vector3f_a(float s) : v{s, s, s, 0.f} {}
-
-inline Vector3f_a::Vector3f_a(Vector2<float> xy, float z) : v{xy[0], xy[1], z, 0.f} {}
-
-template<typename T>
-Vector3f_a::Vector3f_a(const Vector3<T>& v) : v{float(v[0]), float(v[1]), float(v[2]), 0.f} {}
-
-inline Vector2<float> Vector3f_a::xy() const {
-	return Vector2<float>(v[0], v[1]);
+inline Vector3f_a operator+(FVector3f_a a, float s) {
+	return Vector3f_a(a[0] + s, a[1] + s, a[2] + s);
 }
 
-inline float Vector3f_a::operator[](uint32_t i) const{
-	return v[i];
+inline Vector3f_a operator+(FVector3f_a a, FVector3f_a b) {
+//	return Vector3f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
+
+	simd::Vector va = simd::load_float3(a);
+	simd::Vector vb = simd::load_float3(b);
+
+	simd::Vector vr = simd::add3(va, vb);
+
+	Vector3f_a r;
+	simd::store_float3(r, vr);
+	return r;
 }
 
-inline float& Vector3f_a::operator[](uint32_t i) {
-	return v[i];
+inline Vector3f_a operator-(FVector3f_a a, float s) {
+	return Vector3f_a(a[0] - s, a[1] - s, a[2] - s);
 }
 
-inline Vector3f_a Vector3f_a::operator+(float s) const {
-	return Vector3f_a(v[0] + s, v[1] + s, v[2] + s);
+inline Vector3f_a operator-(FVector3f_a a, FVector3f_a b) {
+	return Vector3f_a(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
 
-inline Vector3f_a Vector3f_a::operator+(FVector3f_a a) const {
-	return Vector3f_a(v[0] + a[0], v[1] + a[1], v[2] + a[2]);
+inline Vector3f_a operator*(FVector3f_a a, FVector3f_a b) {
+	return Vector3f_a(a[0] * b[0], a[1] * b[1], a[2] * b[2]);
 }
 
-inline Vector3f_a Vector3f_a::operator-(float s) const {
-	return Vector3f_a(v[0] - s, v[1] - s, v[2] - s);
-}
-
-inline Vector3f_a Vector3f_a::operator-(FVector3f_a a) const {
-	return Vector3f_a(v[0] - a[0], v[1] - a[1], v[2] - a[2]);
-}
-
-inline Vector3f_a Vector3f_a::operator*(FVector3f_a a) const {
-	return Vector3f_a(v[0] * a[0], v[1] * a[1], v[2] * a[2]);
-}
-
-inline Vector3f_a Vector3f_a::operator/(float s) const {
+inline Vector3f_a operator/(FVector3f_a a, float s) {
 	float is = 1.f / s;
-	return Vector3f_a(is * v[0], is * v[1], is * v[2]);
+	return Vector3f_a(is * a[0], is * a[1], is * a[2]);
 }
 
-inline Vector3f_a Vector3f_a::operator/(FVector3f_a a) const {
-	return Vector3f_a(v[0] / a[0], v[1] / a[1], v[2] / a[2]);
-}
-
-inline Vector3f_a Vector3f_a::operator-() const {
-	return Vector3f_a(-v[0], -v[1], -v[2]);
-}
-
-inline Vector3f_a& Vector3f_a::operator+=(FVector3f_a a) {
-	v[0] += a[0];
-	v[1] += a[1];
-	v[2] += a[2];
-	return *this;
-}
-
-inline Vector3f_a& Vector3f_a::operator-=(FVector3f_a a) {
-	v[0] -= a[0];
-	v[1] -= a[1];
-	v[1] -= a[2];
-	return *this;
-}
-
-inline Vector3f_a& Vector3f_a::operator*=(FVector3f_a a) {
-	v[0] *= a[0];
-	v[1] *= a[1];
-	v[2] *= a[2];
-	return *this;
-}
-
-inline Vector3f_a& Vector3f_a::operator*=(float s) {
-	v[0] *= s;
-	v[1] *= s;
-	v[2] *= s;
-	return *this;
-}
-
-inline Vector3f_a& Vector3f_a::operator/=(float s) {
-	float is = 1.f / s;
-	v[0] *= is;
-	v[1] *= is;
-	v[2] *= is;
-	return *this;
-}
-
-inline bool Vector3f_a::operator==(FVector3f_a a) const {
-	return v[0] == a[0] && v[1] == a[1] && v[2] == a[2];
-}
-
-inline bool Vector3f_a::operator!=(FVector3f_a a) const {
-	return v[0] != a[0] || v[1] != a[1] || v[2] != a[2];
-}
-
-inline float Vector3f_a::absolute_max(uint32_t& i) const {
-	float ax = std::abs(v[0]);
-	float ay = std::abs(v[1]);
-	float az = std::abs(v[2]);
-
-	if (ax >= ay && ax >= az) {
-		i = 0;
-		return ax;
-	}
-
-	if (ay >= ax && ay >= az) {
-		i = 1;
-		return ay;
-	}
-
-	i = 2;
-	return az;
-}
-
-inline constexpr Vector3f_a Vector3f_a::identity() {
-	return Vector3f_a(0.f, 0.f, 0.f);
+inline Vector3f_a operator/(FVector3f_a a, FVector3f_a b) {
+	return Vector3f_a(a[0] / b[0], a[1] / b[1], a[2] / b[2]);
 }
 
 inline Vector3f_a operator+(float s, FVector3f_a v) {
@@ -436,6 +347,46 @@ inline Vector3f_a operator*(float s, FVector3f_a v) {
 
 inline Vector3f_a operator/(float s, FVector3f_a v) {
 	return Vector3f_a(s / v[0], s / v[1], s / v[2]);
+}
+
+inline Vector3f_a operator-(FVector3f_a v) {
+	return Vector3f_a(-v[0], -v[1], -v[2]);
+}
+
+inline Vector3f_a& operator+=(Vector3f_a& a, FVector3f_a b) {
+	a[0] += b[0];
+	a[1] += b[1];
+	a[2] += b[2];
+	return a;
+}
+
+inline Vector3f_a& operator-=(Vector3f_a& a, FVector3f_a b) {
+	a[0] -= b[0];
+	a[1] -= b[1];
+	a[1] -= b[2];
+	return a;
+}
+
+inline Vector3f_a& operator*=(Vector3f_a& a, FVector3f_a b) {
+	a[0] *= b[0];
+	a[1] *= b[1];
+	a[2] *= b[2];
+	return a;
+}
+
+inline Vector3f_a& operator*=(Vector3f_a& a, float s) {
+	a[0] *= s;
+	a[1] *= s;
+	a[2] *= s;
+	return a;
+}
+
+inline Vector3f_a& operator/=(Vector3f_a& a, float s) {
+	float is = 1.f / s;
+	a[0] *= is;
+	a[1] *= is;
+	a[2] *= is;
+	return a;
 }
 
 inline float dot(FVector3f_a a, FVector3f_a b) {

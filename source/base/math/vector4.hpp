@@ -94,10 +94,6 @@ struct alignas(16) Vector4f_a {
 	static constexpr Vector4f_a identity();
 };
 
-Vector4f_a operator*(float s, const Vector4f_a& v);
-
-float dot(const Vector4f_a& a, const Vector4f_a& b);
-
 /****************************************************************************
  *
  * Aligned 4D int vector
