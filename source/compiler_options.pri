@@ -1,6 +1,7 @@
 win32 {
     # disable RTTI (CONFIG += rtti_off is needed as well, otherwise the setting is overwritten)
     QMAKE_CXXFLAGS += /GR-
+    QMAKE_CXXFLAGS += /FAs
     # optimization level
 #    QMAKE_CXXFLAGS_RELEASE -= -O2
 #    QMAKE_CXXFLAGS_RELEASE += -Ox
