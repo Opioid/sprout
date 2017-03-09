@@ -2,6 +2,7 @@
 
 #include "triangle_primitive_mt.hpp"
 #include "base/encoding/encoding.inl"
+#include "base/math/ray.hpp"
 #include "base/math/simd/simd_vector.inl"
 
 #include <iostream>

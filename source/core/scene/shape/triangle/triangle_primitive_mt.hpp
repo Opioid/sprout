@@ -1,8 +1,9 @@
 #pragma once
 
 #include "scene/shape/shape_vertex.hpp"
-#include "base/math/ray.hpp"
-#include "base/math/simd/simd_vector.hpp"
+#include "base/math/vector4.hpp"
+
+namespace math { struct Ray; }
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -41,56 +42,12 @@ struct Intersection_vertex_MT {
 	float3 p;
 };
 
-bool intersect(const Intersection_vertex_MT& a,
-			   const Intersection_vertex_MT& b,
-			   const Intersection_vertex_MT& c,
-			   math::Ray& ray, float2& uv);
-
-bool intersect_p(const Intersection_vertex_MT& a,
-				 const Intersection_vertex_MT& b,
-				 const Intersection_vertex_MT& c,
-				 const math::Ray& ray);
-
-bool intersect_p(math::simd::FVector origin,
-				 math::simd::FVector direction,
-				 math::simd::FVector min_t,
-				 math::simd::FVector max_t,
-				 const Intersection_vertex_MT& a,
-				 const Intersection_vertex_MT& b,
-				 const Intersection_vertex_MT& c);
-
-void interpolate_p(const Intersection_vertex_MT& a,
-				   const Intersection_vertex_MT& b,
-				   const Intersection_vertex_MT& c,
-				   float2 uv, float3& p);
-
-float area(const Intersection_vertex_MT& a,
-		   const Intersection_vertex_MT& b,
-		   const Intersection_vertex_MT& c);
-
-float area(const Intersection_vertex_MT& a,
-		   const Intersection_vertex_MT& b,
-		   const Intersection_vertex_MT& c,
-		   float3_p scale);
-
-
 struct Shading_vertex_MT {
 	float3 n, t;
 	float2 uv;
 	float bitangent_sign;
 	uint32_t material_index;
 };
-
-float2 interpolate_uv(const Shading_vertex_MT& a,
-					  const Shading_vertex_MT& b,
-					  const Shading_vertex_MT& c,
-					  float2 uv);
-
-void interpolate_data(const Shading_vertex_MT& a,
-					  const Shading_vertex_MT& b,
-					  const Shading_vertex_MT& c,
-					  float2 uv,
-					  float3& n, float3& t, float2& tc);
 
 struct Shading_vertex_MTC {
 	Shading_vertex_MTC(const packed_float3& n, const packed_float3& t, float2 uv);
@@ -99,34 +56,12 @@ struct Shading_vertex_MTC {
 	float4 t_v;
 };
 
-float2 interpolate_uv(const Shading_vertex_MTC& a,
-					  const Shading_vertex_MTC& b,
-					  const Shading_vertex_MTC& c,
-					  float2 uv);
-
-void interpolate_data(const Shading_vertex_MTC& a,
-					  const Shading_vertex_MTC& b,
-					  const Shading_vertex_MTC& c,
-					  float2 uv,
-					  float3& n, float3& t, float2& tc);
-
 struct alignas(16) Shading_vertex_MTCC {
 	Shading_vertex_MTCC(const packed_float3& n, const packed_float3& t, float2 uv);
 
 	short4 n_u;
 	short4 t_v;
 };
-
-float2 interpolate_uv(const Shading_vertex_MTCC& a,
-					  const Shading_vertex_MTCC& b,
-					  const Shading_vertex_MTCC& c,
-					  float2 uv);
-
-void interpolate_data(const Shading_vertex_MTCC& a,
-					  const Shading_vertex_MTCC& b,
-					  const Shading_vertex_MTCC& c,
-					  float2 uv,
-					  float3& n, float3& t, float2& tc);
 
 struct Vertex_MTC {
 	Vertex_MTC(const packed_float3& p,
@@ -138,41 +73,5 @@ struct Vertex_MTC {
 	float4 n_u;
 	float4 t_v;
 };
-
-bool intersect(const Vertex_MTC& a,
-			   const Vertex_MTC& b,
-			   const Vertex_MTC& c,
-			   math::Ray& ray, float2& uv);
-
-bool intersect_p(const Vertex_MTC& a,
-				 const Vertex_MTC& b,
-				 const Vertex_MTC& c,
-				 const math::Ray& ray);
-
-float2 interpolate_uv(const Vertex_MTC& a,
-					  const Vertex_MTC& b,
-					  const Vertex_MTC& c,
-					  float2 uv);
-
-void interpolate_p_uv(const Vertex_MTC& a,
-					  const Vertex_MTC& b,
-					  const Vertex_MTC& c,
-					  float2 uv,
-					  float3& p, float2& tc);
-
-void interpolate_data(const Vertex_MTC& a,
-					  const Vertex_MTC& b,
-					  const Vertex_MTC& c,
-					  float2 uv,
-					  float3& n, float3& t, float2& tc);
-
-float area(const Vertex_MTC& a,
-		   const Vertex_MTC& b,
-		   const Vertex_MTC& c);
-
-float area(const Vertex_MTC& a,
-		   const Vertex_MTC& b,
-		   const Vertex_MTC& c,
-		   float3_p scale);
 
 }}}
