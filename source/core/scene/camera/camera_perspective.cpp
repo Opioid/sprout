@@ -2,7 +2,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_ray.inl"
+#include "scene/scene_ray.hpp"
 #include "scene/scene_intersection.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/json/json.hpp"

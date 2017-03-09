@@ -5,34 +5,6 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-inline float3 Node::min() const {
-	return float3(min_.v);
-}
-
-inline float3 Node::max() const {
-	return float3(max_.v);
-}
-
-inline uint32_t Node::next() const {
-	return min_.next_or_data;
-}
-
-inline uint8_t Node::axis() const {
-	return max_.axis;
-}
-
-inline uint8_t Node::num_primitives() const {
-	return max_.num_primitives;
-}
-
-inline uint32_t Node::indices_start() const {
-	return min_.next_or_data;
-}
-
-inline uint32_t Node::indices_end() const {
-	return min_.next_or_data + static_cast<uint32_t>(max_.num_primitives);
-}
-
 inline void Node::set_aabb(const float* min, const float* max) {
 	min_.v[0] = min[0];
 	min_.v[1] = min[1];

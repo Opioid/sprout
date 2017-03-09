@@ -12,9 +12,7 @@ HEADERS += \
 	scene/scene_intersection.inl \
 	scene/scene_loader.hpp \
 	scene/scene_ray.hpp \
-	scene/scene_ray.inl \
 	scene/scene_renderstate.hpp \
-	scene/scene_renderstate.inl \
 	scene/scene_worker.hpp \
 
 include(animation/animation.pri)

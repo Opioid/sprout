@@ -1,7 +1,7 @@
 #include "camera_cubic_stereoscopic.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_ray.inl"
+#include "scene/scene_ray.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/json/json.hpp"
 #include "base/math/math.hpp"

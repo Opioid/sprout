@@ -1,6 +1,6 @@
 #include "testing_size.hpp"
 #include "image/texture/texture_adapter.hpp"
-#include "scene/scene_renderstate.inl"
+#include "scene/scene_renderstate.hpp"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
 #include "scene/scene_intersection.hpp"
 #include "scene/scene_ray.hpp"

@@ -1,6 +1,6 @@
 #include "substitute_coating_material.inl"
 #include "substitute_coating_sample.inl"
-#include "scene/scene_renderstate.inl"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/coating/coating.inl"
 #include "base/math/vector4.inl"

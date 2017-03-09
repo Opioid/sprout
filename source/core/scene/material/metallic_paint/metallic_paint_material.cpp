@@ -1,6 +1,6 @@
 #include "metallic_paint_material.hpp"
 #include "metallic_paint_sample.hpp"
-#include "scene/scene_renderstate.inl"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/material/material_sample.inl"

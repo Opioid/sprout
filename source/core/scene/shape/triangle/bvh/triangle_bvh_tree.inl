@@ -3,7 +3,7 @@
 #include "triangle_bvh_tree.hpp"
 #include "triangle_bvh_node.inl"
 #include "scene/scene_worker.hpp"
-#include "scene/shape/node_stack.inl"
+#include "scene/shape/node_stack.hpp"
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"

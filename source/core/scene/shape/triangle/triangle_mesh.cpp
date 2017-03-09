@@ -4,7 +4,7 @@
 // #include "bvh/triangle_bvh_data.inl"
 #include "bvh/triangle_bvh_indexed_data.inl"
 // #include "bvh/triangle_bvh_data_interleaved.inl"
-#include "scene/scene_ray.inl"
+#include "scene/scene_ray.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"

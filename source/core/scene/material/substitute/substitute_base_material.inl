@@ -3,7 +3,7 @@
 #include "substitute_base_material.hpp"
 #include "substitute_sample.hpp"
 #include "image/texture/texture_adapter.inl"
-#include "scene/scene_renderstate.inl"
+#include "scene/scene_renderstate.hpp"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"

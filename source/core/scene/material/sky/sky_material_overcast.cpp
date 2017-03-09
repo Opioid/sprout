@@ -1,5 +1,5 @@
 #include "sky_material_overcast.hpp"
-#include "scene/scene_renderstate.inl"
+#include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"

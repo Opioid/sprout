@@ -12,16 +12,33 @@ public:
 
 	Node() = default;
 
-	float3 min() const;
-	float3 max() const;
+	float3 min() const{
+		return float3(min_.v);
+	}
 
-	uint32_t next() const;
+	float3 max() const {
+		return float3(max_.v);
+	}
 
-	uint8_t axis() const;
-	uint8_t num_primitives() const;
+	uint32_t next() const {
+		return min_.next_or_data;
+	}
 
-	uint32_t indices_start() const;
-	uint32_t indices_end() const;
+	uint8_t axis() const {
+		return max_.axis;
+	}
+
+	uint8_t num_primitives() const {
+		return max_.num_primitives;
+	}
+
+	uint32_t indices_start() const {
+		return min_.next_or_data;
+	}
+
+	uint32_t indices_end() const {
+		return min_.next_or_data + static_cast<uint32_t>(max_.num_primitives);
+	}
 
 	void set_aabb(const float* min, const float* max);
 

@@ -4,7 +4,7 @@
 #include "core/image/texture/texture_adapter.inl"
 #include "core/image/texture/texture_float_3.hpp"
 #include "core/scene/prop.hpp"
-#include "core/scene/scene_renderstate.inl"
+#include "core/scene/scene_renderstate.hpp"
 #include "core/scene/scene_worker.hpp"
 #include "core/scene/shape/shape_sample.hpp"
 #include "core/scene/shape/shape.hpp"

@@ -15,6 +15,4 @@ struct Transformation {
 	Quaternion rotation;
 };
 
-Transformation lerp(const Transformation& a, const Transformation& b, float t);
-
 }

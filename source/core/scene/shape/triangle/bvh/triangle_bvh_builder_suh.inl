@@ -4,7 +4,7 @@
 #include "triangle_bvh_builder_base.inl"
 #include "triangle_bvh_tree.inl"
 #include "triangle_bvh_helper.hpp"
-#include "scene/shape/node_stack.inl"
+#include "scene/shape/node_stack.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"

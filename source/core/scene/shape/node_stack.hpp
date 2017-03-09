@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/memory/align.inl"
 #include <cstdint>
 #include <cstddef>
 
@@ -9,18 +10,33 @@ class Node_stack {
 
 public:
 
-	Node_stack(uint32_t size);
-	~Node_stack();
+	Node_stack(uint32_t size) :
+		num_elements_(size),
+		stack_(memory::allocate_aligned<uint32_t>(size)) {}
 
-	bool empty() const;
+	~Node_stack() {
+		memory::free_aligned(stack_);
+	}
 
-	void clear();
+	bool empty() const{
+		return 0 == end_;
+	}
 
-	void push(uint32_t value);
+	void clear() {
+		end_ = 0;
+	}
 
-	uint32_t pop();
+	void push(uint32_t value) {
+		stack_[end_++] = value;
+	}
 
-	size_t num_bytes() const;
+	uint32_t pop() {
+		return stack_[--end_];
+	}
+
+	size_t num_bytes() const {
+		return sizeof(this) + static_cast<size_t>(num_elements_) * sizeof(uint32_t);
+	}
 
 private:
 

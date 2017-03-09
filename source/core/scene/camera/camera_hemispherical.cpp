@@ -2,7 +2,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/camera_sample.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_ray.inl"
+#include "scene/scene_ray.hpp"
 #include "base/math/mapping.inl"
 #include "base/math/math.hpp"
 #include "base/math/vector4.inl"
