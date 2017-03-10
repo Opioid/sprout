@@ -43,7 +43,7 @@ float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
 
 	float3 f3(f);
 	fresnel::Constant constant(f3);
-	float3 reflection = ggx::isotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
+	float3 reflection = ggx::Isotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
 												   layer_, constant, pdf);
 
 	return n_dot_wi * reflection;
@@ -134,7 +134,7 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 
 	float3 f3(f);
 	fresnel::Constant constant(f3);
-	float n_dot_wi = ggx::isotropic::reflect(sample.wo_, n_dot_wo, tmp,
+	float n_dot_wi = ggx::Isotropic::reflect(sample.wo_, n_dot_wo, tmp,
 											 constant, sampler, result);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
@@ -170,7 +170,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 
 	float3 f3(1.f - f);
 	fresnel::Constant constant(f3);
-	float n_dot_wi = ggx::isotropic::refract(sample.wo_, n_dot_wo, n_dot_t, tmp,
+	float n_dot_wi = ggx::Isotropic::refract(sample.wo_, n_dot_wo, n_dot_t, tmp,
 											 constant, sampler, result);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
