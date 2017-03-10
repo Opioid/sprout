@@ -8,6 +8,7 @@
 namespace string {
 
 template<typename T>
+static std::string to_string(T value, int num_padded_zeros = 0) {
 	std::ostringstream stream;
 
 	if (num_padded_zeros) {
