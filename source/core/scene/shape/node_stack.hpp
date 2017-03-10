@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/memory/align.inl"
+#include "base/memory/align.hpp"
 #include <cstdint>
 #include <cstddef>
 

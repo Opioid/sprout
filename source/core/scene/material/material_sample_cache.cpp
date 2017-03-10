@@ -1,7 +1,7 @@
 #include "material_sample_cache.hpp"
 #include "bssrdf.hpp"
 #include "base/math/vector3.inl"
-#include "base/memory/align.inl"
+#include "base/memory/align.hpp"
 
 namespace scene { namespace material {
 

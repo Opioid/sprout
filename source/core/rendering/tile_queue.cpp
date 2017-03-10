@@ -1,6 +1,6 @@
 #include "tile_queue.hpp"
 #include "base/math/vector4.inl"
-#include "base/memory/align.inl"
+#include "base/memory/align.hpp"
 
 namespace rendering {
 

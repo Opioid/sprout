@@ -7,7 +7,7 @@
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
-#include "base/memory/align.inl"
+#include "base/memory/align.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 

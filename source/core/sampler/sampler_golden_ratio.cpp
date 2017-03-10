@@ -2,7 +2,7 @@
 #include "camera_sample.hpp"
 #include "base/math/vector2.inl"
 #include "base/math/sampling/sample_distribution.hpp"
-#include "base/memory/align.inl"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/random/shuffle.hpp"
 

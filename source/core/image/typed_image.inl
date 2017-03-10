@@ -1,7 +1,7 @@
 #pragma once
 
 #include "typed_image.hpp"
-#include "base/memory/align.inl"
+#include "base/memory/align.hpp"
 
 namespace image {
 

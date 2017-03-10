@@ -1,7 +1,7 @@
 #include "opaque.hpp"
 #include "image/typed_image.inl"
 #include "base/atomic/atomic.hpp"
-#include "base/memory/align.inl"
+#include "base/memory/align.hpp"
 #include "base/math/vector4.inl"
 
 namespace rendering { namespace sensor {

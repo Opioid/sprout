@@ -4,7 +4,6 @@ SOURCES += \
 
 HEADERS += \
 	memory/align.hpp \
-	memory/align.inl \
 	memory/const.hpp \
 	memory/tiled_array.hpp \
 	memory/tiled_array.inl \
