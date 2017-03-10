@@ -49,6 +49,7 @@ static inline Vector SU_CALLCONV load_float3(const float* source) {
 #endif
 }
 
+static inline Vector SU_CALLCONV load_float3(const Vector3f_a& source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector v;
 	v.vector4_f32[0] = source.x;
@@ -63,6 +64,7 @@ static inline Vector SU_CALLCONV load_float3(const float* source) {
 #endif
 }
 
+static inline Vector SU_CALLCONV load_float3_unsafe(const Vector3f_a& source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector v;
 	v.vector4_f32[0] = source.x;
