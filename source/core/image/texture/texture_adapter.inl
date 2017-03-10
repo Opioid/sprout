@@ -4,6 +4,7 @@
 #include "texture.hpp"
 #include "sampler/sampler_2d.hpp"
 #include "sampler/sampler_3d.hpp"
+#include "base/math/vector3.inl"
 
 namespace image { namespace texture {
 
@@ -41,7 +42,7 @@ inline float3 Adapter::sample_3(const Sampler_2D& sampler, float2 uv) const {
 	return sampler.sample_3(*texture_, scale_ * uv);
 }
 
-inline float  Adapter::sample_1(const Sampler_2D& sampler, float2 uv, int32_t element) const {
+inline float Adapter::sample_1(const Sampler_2D& sampler, float2 uv, int32_t element) const {
 	return sampler.sample_1(*texture_, scale_ * uv, element);
 }
 

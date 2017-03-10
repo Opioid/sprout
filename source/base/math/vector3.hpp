@@ -76,73 +76,6 @@ struct Vector3 {
 	static const Vector3 identity;
 };
 
-template<typename T>
-Vector3<T> operator*(T s, const Vector3<T>& v);
-
-template<typename T>
-T dot(const Vector3<T>& a, const Vector3<T>& b);
-
-template<typename T>
-T length(const Vector3<T>& v);
-
-template<typename T>
-T squared_length(const Vector3<T>& v);
-
-template<typename T>
-Vector3<T> normalized(const Vector3<T>& v);
-
-template<typename T>
-Vector3<T> reciprocal(const Vector3<T>& v);
-
-template<typename T>
-Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b);
-
-template<typename T>
-Vector3<T> project(const Vector3<T>& a, const Vector3<T>& b);
-
-template<typename T>
-T distance(const Vector3<T>& a, const Vector3<T>& b);
-
-template<typename T>
-T squared_distance(const Vector3<T>& a, const Vector3<T>& b);
-
-template<typename T>
-Vector3<T> saturate(const Vector3<T>& v);
-
-template<typename T>
-Vector3<T> exp(const Vector3<T>& v);
-
-template<typename T>
-Vector3<T> lerp(const Vector3<T>& a, const Vector3<T>& b, T t);
-
-template<typename T>
-Vector3<T> reflect(const Vector3<T>& normal, const Vector3<T>& v);
-
-// Assuming n is unit length
-template<typename T>
-void coordinate_system(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b);
-
-template<typename T>
-Vector3<T> min(const Vector3<T>& a, const Vector3<T>& b);
-
-template<typename T>
-Vector3<T> max(const Vector3<T>& a, const Vector3<T>& b);
-
-template<typename T>
-Vector3<T> abs(const Vector3<T>& v);
-
-template<typename T>
-bool any_negative(const Vector3<T>& v);
-
-template<typename T>
-bool any_greater_one(const Vector3<T>& v);
-
-template<typename T>
-bool any_nan(const Vector3<T>& v);
-
-template<typename T>
-bool any_inf(const Vector3<T>& v);
-
 /****************************************************************************
  *
  * Aligned 3D float vector
@@ -176,14 +109,6 @@ struct alignas(16) Vector3f_a {
 
 	float& operator[](uint32_t i) {
 		return v[i];
-	}
-
-	bool operator==(FVector3f_a a) const {
-		return v[0] == a[0] && v[1] == a[1] && v[2] == a[2];
-	}
-
-	bool operator!=(FVector3f_a a) const {
-		return v[0] != a[0] || v[1] != a[1] || v[2] != a[2];
 	}
 
 	float absolute_max(uint32_t& i) const {

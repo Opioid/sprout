@@ -6,8 +6,10 @@
 namespace math {
 
 struct Vector4f_a;
-
 using FVector4f_a = const Vector4f_a&;
+
+struct Vector4i_a;
+using FVector4i_a = const Vector4i_a&;
 
 /****************************************************************************
  *
@@ -60,38 +62,37 @@ T dot(const Vector4<T>& a, const Vector4<T>& b);
 struct alignas(16) Vector4f_a {
 	float v[4];
 
-	Vector4f_a();
+	Vector4f_a() = default;
 
-	constexpr Vector4f_a(float x, float y, float z, float w = 1.f);
+	constexpr Vector4f_a(float x, float y, float z, float w = 1.f) :
+		v{x, y, z, w} {}
 
-	explicit Vector4f_a(float s);
+	explicit Vector4f_a(float s) : v{s, s, s, s} {}
 
-	explicit Vector4f_a(Vector2<float> xy, float z, float w = 1.f);
+	explicit Vector4f_a(Vector2<float> xy, float z, float w = 1.f) :
+		v{xy[0], xy[1], z, w} {}
 
-	explicit Vector4f_a(FVector3f_a xyz, float w = 1.f);
+	explicit Vector4f_a(FVector3f_a xyz, float w = 1.f) :
+		v{xyz[0], xyz[1], xyz[2], w} {}
 
-	explicit Vector4f_a(const Vector3<float>& xyz, float w = 1.f);
+	explicit Vector4f_a(const Vector3<float>& xyz, float w = 1.f) :
+		v{xyz[0], xyz[1], xyz[2], w} {}
 
-	Vector3f_a xyz() const;
+	Vector3f_a xyz() const {
+		return Vector3f_a(v);
+	}
 
-	float operator[](uint32_t i) const;
-	float& operator[](uint32_t i);
+	float operator[](uint32_t i) const {
+		return v[i];
+	}
 
-	Vector4f_a operator+(const Vector4f_a& v) const;
+	float& operator[](uint32_t i) {
+		return v[i];
+	}
 
-	Vector4f_a operator*(const Vector4f_a& v) const;
-
-	Vector4f_a operator/(float s) const;
-
-	Vector4f_a& operator+=(const Vector4f_a& v);
-
-	Vector4f_a& operator-=(const Vector4f_a& v);
-
-	bool operator==(FVector4f_a v) const;
-
-	bool operator!=(FVector4f_a v) const;
-
-	static constexpr Vector4f_a identity();
+	static constexpr Vector4f_a identity() {
+		return Vector4f_a(0.f, 0.f, 0.f, 0.f);
+	}
 };
 
 /****************************************************************************
@@ -103,27 +104,31 @@ struct alignas(16) Vector4f_a {
 struct alignas(16) Vector4i_a {
 	int32_t v[4];
 
-	Vector4i_a();
+	Vector4i_a() = default;
 
-	Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w);
+	Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w) :
+		v{x, y, z, w} {}
 
-	Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw);
+	Vector4i_a(Vector2<int32_t> xy, Vector2<int32_t> zw) :
+		v{xy[0], xy[1], zw[0], zw[1]} {}
 
-	explicit Vector4i_a(int32_t s);
+	explicit Vector4i_a(int32_t s) : v{s, s, s, s} {}
 
-	const Vector2<int32_t> xy() const;
-	const Vector2<int32_t> zw() const;
+	const Vector2<int32_t> xy() const {
+		return Vector2<int32_t>(v[0], v[1]);
+	}
 
-	int32_t operator[](uint32_t i) const;
-	int32_t& operator[](uint32_t i);
+	const Vector2<int32_t> zw() const {
+		return Vector2<int32_t>(v[2], v[3]);
+	}
 
-	Vector4i_a operator+(const Vector4i_a& v) const;
+	int32_t operator[](uint32_t i) const {
+		return v[i];
+	}
 
-	Vector4i_a operator*(const Vector4i_a& v) const;
-
-	Vector4i_a& operator+=(const Vector4i_a& v);
-
-	Vector4i_a& operator-=(const Vector4i_a& v);
+	int32_t& operator[](uint32_t i) {
+		return v[i];
+	}
 };
 
 }

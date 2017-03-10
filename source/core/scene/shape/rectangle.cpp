@@ -175,7 +175,7 @@ void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 					   sampler::Sampler& sampler, uint32_t sampler_dimension,
 					   Node_stack& /*node_stack*/, Sample& sample) const {
 	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-	float2 xy = float2(2.f * r2 - 1.f);
+	float2 xy = 2.f * r2 - float2(1.f);
 
 	float3 scale(transformation.scale.xy(), 1.f);
 

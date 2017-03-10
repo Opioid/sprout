@@ -3,6 +3,7 @@
 #include "filtered.hpp"
 #include "filter/sensor_filter.hpp"
 #include "sampler/camera_sample.hpp"
+#include "base/math/vector4.inl"
 
 namespace rendering { namespace sensor {
 

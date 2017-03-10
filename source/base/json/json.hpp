@@ -27,7 +27,7 @@ float read_float(const rapidjson::Value& value, const std::string& name, float d
 
 float2 read_float2(const rapidjson::Value& value);
 float2 read_float2(const rapidjson::Value& value, const std::string& name,
-				   float2 default_value = float2::identity);
+				   float2 default_value = float2::identity());
 
 float3 read_float3(const rapidjson::Value& value);
 float3 read_float3(const rapidjson::Value& value, const std::string& name,
@@ -43,11 +43,11 @@ uint32_t read_uint(const rapidjson::Value& value, const std::string& name,
 
 int2 read_int2(const rapidjson::Value& value);
 int2 read_int2(const rapidjson::Value& value, const std::string& name,
-			   int2 default_value = int2::identity);
+			   int2 default_value = int2::identity());
 
 uint2 read_uint2(const rapidjson::Value& value);
 uint2 read_uint2(const rapidjson::Value& value, const std::string& name,
-				 uint2 default_value = uint2::identity);
+				 uint2 default_value = uint2::identity());
 
 uint3 read_uint3(const rapidjson::Value& value);
 

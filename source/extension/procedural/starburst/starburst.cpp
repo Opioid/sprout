@@ -507,7 +507,7 @@ void fdft(Float_2& destination, const texture::Float_2& texture,
 
 			const float2 s = mulc(sx, cot * u * u);
 
-			destination.store(x, y, mulc(s, integration) * norm);
+			destination.store(x, y, norm * mulc(s, integration));
 		}
 	}
 }
