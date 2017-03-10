@@ -3,7 +3,7 @@
 #include "image_renderer.hpp"
 #include "image/typed_image.inl"
 #include "base/math/vector3.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace image { namespace procedural {
 

@@ -14,7 +14,7 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector3.inl"
 #include "base/math/distribution/distribution_2d.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 
 #include "core/image/encoding/png/png_writer.hpp"
 #include <fstream>

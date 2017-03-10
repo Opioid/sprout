@@ -2,7 +2,7 @@
 #include "image/typed_image.inl"
 #include "base/math/vector4.inl"
 #include "base/math/filter/gaussian.hpp"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace rendering { namespace postprocessor {
 

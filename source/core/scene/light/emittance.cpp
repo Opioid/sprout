@@ -1,6 +1,6 @@
 #include "emittance.hpp"
 #include "base/math/vector3.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace light {
 

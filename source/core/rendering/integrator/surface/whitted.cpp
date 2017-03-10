@@ -11,7 +11,7 @@
 #include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace rendering { namespace integrator { namespace surface {
 

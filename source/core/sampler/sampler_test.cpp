@@ -9,7 +9,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/sampling/sampling.hpp"
 #include "base/random/generator.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 
 #include <iostream>
 #include <string>

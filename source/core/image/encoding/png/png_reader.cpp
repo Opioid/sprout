@@ -2,7 +2,7 @@
 #include "image/typed_image.inl"
 #include "image/tiled_image.inl"
 #include "base/math/vector4.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 #include "base/string/string.inl"
 #include <cstring>
 #include <istream>

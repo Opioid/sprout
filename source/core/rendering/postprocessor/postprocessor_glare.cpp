@@ -3,7 +3,7 @@
 #include "base/math/vector4.inl"
 #include "base/math/filter/gaussian.hpp"
 #include "base/spectrum/interpolated.hpp"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.inl"
 #include "base/thread/thread_pool.hpp"
 

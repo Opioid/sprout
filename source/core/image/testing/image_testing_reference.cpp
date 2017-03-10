@@ -1,5 +1,5 @@
 #include "image_testing_reference.hpp"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 #include "miniz/miniz.hpp"
 #include <fstream>
 

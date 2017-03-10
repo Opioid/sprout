@@ -1,6 +1,6 @@
 #include "texture_encoding.hpp"
 #include "base/encoding/encoding.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace image { namespace texture { namespace encoding {
 

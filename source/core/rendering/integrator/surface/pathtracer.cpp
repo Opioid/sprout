@@ -13,7 +13,7 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 

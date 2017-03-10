@@ -1,7 +1,7 @@
 #include "encoding_srgb.hpp"
 #include "image/typed_image.inl"
 #include "base/encoding/encoding.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 #include "base/math/vector3.inl"
 
 namespace image { namespace encoding {

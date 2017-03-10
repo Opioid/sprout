@@ -14,7 +14,7 @@
 #include "base/math/sampling/sample_distribution.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/discrete.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.inl"
 #include "base/thread/thread_pool.hpp"
 

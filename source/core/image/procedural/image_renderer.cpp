@@ -3,7 +3,7 @@
 #include "image/texture/sampler/address_mode.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/vector4.inl"
-#include "base/spectrum/rgb.inl"
+#include "base/spectrum/rgb.hpp"
 
 namespace image { namespace procedural {
 

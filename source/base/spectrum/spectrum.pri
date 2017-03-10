@@ -9,6 +9,5 @@ HEADERS += \
 	spectrum/discrete.inl \	
 	spectrum/interpolated.hpp \
 	spectrum/rgb.hpp \
-	spectrum/rgb.inl \
 	spectrum/xyz.hpp \
 	spectrum/xyz.inl \	
