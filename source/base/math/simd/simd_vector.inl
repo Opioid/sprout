@@ -12,12 +12,12 @@ namespace math { namespace simd {
  *
  ****************************************************************************/
 
-inline Vector SU_CALLCONV load_float(float x) {
+static inline Vector SU_CALLCONV load_float(float x) {
 	return _mm_set1_ps(x);
 }
 
 
-inline Vector SU_CALLCONV load_float3(const Vector3<float>& source) {
+static inline Vector SU_CALLCONV load_float3(const Vector3<float>& source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector v;
 	v.vector4_f32[0] = source.x;
@@ -34,7 +34,7 @@ inline Vector SU_CALLCONV load_float3(const Vector3<float>& source) {
 #endif
 }
 
-inline Vector SU_CALLCONV load_float3(const float* source) {
+static inline Vector SU_CALLCONV load_float3(const float* source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector v;
 	v.vector4_f32[0] = source[0];
@@ -49,7 +49,6 @@ inline Vector SU_CALLCONV load_float3(const float* source) {
 #endif
 }
 
-inline Vector SU_CALLCONV load_float3(FVector3f_a source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector v;
 	v.vector4_f32[0] = source.x;
@@ -64,7 +63,6 @@ inline Vector SU_CALLCONV load_float3(FVector3f_a source) {
 #endif
 }
 
-inline Vector SU_CALLCONV load_float3_unsafe(FVector3f_a source) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector v;
 	v.vector4_f32[0] = source.x;
@@ -84,7 +82,7 @@ inline Vector SU_CALLCONV load_float3_unsafe(FVector3f_a source) {
  *
  ****************************************************************************/
 
-inline void SU_CALLCONV store_float3(Vector3<float>& destination, FVector v) {
+static inline void SU_CALLCONV store_float3(Vector3<float>& destination, FVector v) {
 #if defined(_SU_NO_INTRINSICS_)
 	destination.x = v.vector4_f32[0];
 	destination.y = v.vector4_f32[1];
@@ -98,7 +96,7 @@ inline void SU_CALLCONV store_float3(Vector3<float>& destination, FVector v) {
 #endif
 }
 
-inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
+static inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
 #if defined(_SU_NO_INTRINSICS_)
 	destination.x = v.vector4_f32[0];
 	destination.y = v.vector4_f32[1];
@@ -110,7 +108,7 @@ inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
 #endif
 }
 
-inline void SU_CALLCONV store_float3_unsafe(Vector3f_a& destination, FVector v) {
+static inline void SU_CALLCONV store_float3_unsafe(Vector3f_a& destination, FVector v) {
 #if defined(_SU_NO_INTRINSICS_)
 	destination.x = v.vector4_f32[0];
 	destination.y = v.vector4_f32[1];
@@ -120,7 +118,7 @@ inline void SU_CALLCONV store_float3_unsafe(Vector3f_a& destination, FVector v) 
 #endif
 }
 
-inline void SU_CALLCONV store_float3_unsafe(float* destination, FVector v) {
+static inline void SU_CALLCONV store_float3_unsafe(float* destination, FVector v) {
 #if defined(_SU_NO_INTRINSICS_)
 	destination[0] = v.vector4_f32[0];
 	destination[1] = v.vector4_f32[1];
@@ -136,7 +134,7 @@ inline void SU_CALLCONV store_float3_unsafe(float* destination, FVector v) {
  *
  ****************************************************************************/
 
-inline Vector SU_CALLCONV add1(FVector a, FVector b) {
+static inline Vector SU_CALLCONV add1(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = a.vector4_f32[0] + a.vector4_f32[0];
@@ -147,7 +145,7 @@ inline Vector SU_CALLCONV add1(FVector a, FVector b) {
 }
 
 
-inline Vector SU_CALLCONV mul1(FVector a, FVector b) {
+static inline Vector SU_CALLCONV mul1(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = a.vector4_f32[0] * a.vector4_f32[0];
@@ -157,7 +155,7 @@ inline Vector SU_CALLCONV mul1(FVector a, FVector b) {
 #endif
 }
 
-inline Vector SU_CALLCONV min1(FVector a, FVector b) {
+static inline Vector SU_CALLCONV min1(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = std::min(a.vector4_f32[0], a.vector4_f32[0]);
@@ -167,7 +165,7 @@ inline Vector SU_CALLCONV min1(FVector a, FVector b) {
 #endif
 }
 
-inline Vector SU_CALLCONV max1(FVector a, FVector b) {
+static inline Vector SU_CALLCONV max1(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = std::max(a.vector4_f32[0], a.vector4_f32[0]);
@@ -183,7 +181,7 @@ inline Vector SU_CALLCONV max1(FVector a, FVector b) {
  *
  ****************************************************************************/
 
-inline Vector SU_CALLCONV add3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV add3(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = a.vector4_f32[0] + a.vector4_f32[0];
@@ -196,7 +194,7 @@ inline Vector SU_CALLCONV add3(FVector a, FVector b) {
 #endif
 }
 
-inline Vector SU_CALLCONV sub3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV sub3(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = a.vector4_f32[0] - a.vector4_f32[0];
@@ -209,7 +207,7 @@ inline Vector SU_CALLCONV sub3(FVector a, FVector b) {
 #endif
 }
 
-inline Vector SU_CALLCONV mul3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV mul3(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = a.vector4_f32[0] * a.vector4_f32[0];
@@ -222,7 +220,7 @@ inline Vector SU_CALLCONV mul3(FVector a, FVector b) {
 #endif
 }
 
-inline Vector SU_CALLCONV div3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV div3(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = a.vector4_f32[0] / a.vector4_f32[0];
@@ -235,7 +233,7 @@ inline Vector SU_CALLCONV div3(FVector a, FVector b) {
 #endif
 }
 
-inline Vector SU_CALLCONV dot3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV dot3(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	float value = V1.vector4_f32[0] * V2.vector4_f32[0]
 				+ V1.vector4_f32[1] * V2.vector4_f32[1]
@@ -262,7 +260,7 @@ inline Vector SU_CALLCONV dot3(FVector a, FVector b) {
 #endif
 }
 
-inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
 	// [ a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x ]
 
 #if defined(_SU_NO_INTRINSICS_)
@@ -293,7 +291,7 @@ inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
 #endif
 }
 
-inline Vector SU_CALLCONV min3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV min3(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = std::min(a.vector4_f32[0], a.vector4_f32[0]);
@@ -305,7 +303,7 @@ inline Vector SU_CALLCONV min3(FVector a, FVector b) {
 #endif
 }
 
-inline Vector SU_CALLCONV max3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV max3(FVector a, FVector b) {
 #if defined(_SU_NO_INTRINSICS_)
 	Vector result;
 	result.vector4_f32[0] = std::max(a.vector4_f32[0], a.vector4_f32[0]);
