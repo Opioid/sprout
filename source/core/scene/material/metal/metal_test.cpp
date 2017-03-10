@@ -97,7 +97,7 @@ void test() {
 	std::cout << "n_dot_h == " << n_dot_h << std::endl;
 
 	n_dot_h = 1.f;
-	float d = ggx::distribution_isotropic(n_dot_h, ggx::Min_a2);
+	float d = ggx::distribution(n_dot_h, ggx::Min_a2);
 
 	std::cout << "d == " << d << std::endl;
 

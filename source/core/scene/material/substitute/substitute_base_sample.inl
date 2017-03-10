@@ -166,7 +166,7 @@ float3 Sample_base<Diffuse>::Layer::base_evaluate(float3_p wi, float3_p wo, floa
 	fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	const float3 ggx_reflection = ggx::Isotropic::reflection(h, n_dot_wi, n_dot_wo,
+	const float3 ggx_reflection = ggx::isotropic::reflection(h, n_dot_wi, n_dot_wo,
 															 wo_dot_h, *this, schlick,
 															 ggx_fresnel, ggx_pdf);
 
@@ -184,7 +184,7 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(float3_p wo, sampler::Sampler& 
 	const fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	const float3 ggx_reflection = ggx::Isotropic::reflection(result.h, n_dot_wi, n_dot_wo,
+	const float3 ggx_reflection = ggx::isotropic::reflection(result.h, n_dot_wi, n_dot_wo,
 															 result.h_dot_wi, *this, schlick,
 															 ggx_fresnel, ggx_pdf);
 
@@ -199,7 +199,7 @@ void Sample_base<Diffuse>::Layer::specular_sample(float3_p wo, sampler::Sampler&
 
 	const fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
-	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick,
+	float n_dot_wi = ggx::isotropic::reflect(wo, n_dot_wo, *this, schlick,
 											 sampler, ggx_fresnel, result);
 
 	float d_pdf;
@@ -216,7 +216,7 @@ void Sample_base<Diffuse>::Layer::pure_specular_sample(float3_p wo, sampler::Sam
 	const float n_dot_wo = clamped_n_dot(wo);
 
 	const fresnel::Schlick schlick(f0_);
-	const float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);
+	const float n_dot_wi = ggx::isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
