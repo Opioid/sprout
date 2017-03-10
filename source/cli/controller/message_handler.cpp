@@ -7,7 +7,7 @@
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
 #include "base/memory/variant_map.hpp"
-#include "base/string/string.inl"
+#include "base/string/string.hpp"
 #include <sstream>
 
 namespace controller {

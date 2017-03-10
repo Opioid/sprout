@@ -22,7 +22,7 @@
 #include "extension/procedural/mesh/mesh.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/platform/platform.hpp"
-#include "base/string/string.inl"
+#include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 
 #include "extension/procedural/starburst/starburst.hpp"

@@ -2,7 +2,7 @@
 #include "image/image_helper.hpp"
 #include "logging/logging.hpp"
 #include "base/math/vector4.inl"
-#include "base/string/string.inl"
+#include "base/string/string.hpp"
 
 namespace exporting {
 

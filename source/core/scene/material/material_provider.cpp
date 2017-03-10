@@ -44,7 +44,7 @@
 #include "base/memory/variant_map.inl"
 #include "base/spectrum/blackbody.hpp"
 #include "base/spectrum/rgb.hpp"
-#include "base/string/string.inl"
+#include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 
 namespace scene { namespace material {

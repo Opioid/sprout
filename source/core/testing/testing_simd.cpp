@@ -4,7 +4,7 @@
 #include "base/random/generator.inl"
 #include "base/math/simd/simd_math.inl"
 #include "base/math/simd/simd_vector.inl"
-#include "base/string/string.inl"
+#include "base/string/string.hpp"
 #include "base/math/print.hpp"
 #include "base/math/simd/simd_math.inl"
 #include <iostream>

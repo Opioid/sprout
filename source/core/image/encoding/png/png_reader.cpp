@@ -3,7 +3,7 @@
 #include "image/tiled_image.inl"
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
-#include "base/string/string.inl"
+#include "base/string/string.hpp"
 #include <cstring>
 #include <istream>
 

@@ -8,7 +8,7 @@
 #include "core/take/take.hpp"
 #include "core/progress/progress_sink.hpp"
 #include "base/math/vector4.inl"
-#include "base/string/string.inl"
+#include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 #include <iostream>
 

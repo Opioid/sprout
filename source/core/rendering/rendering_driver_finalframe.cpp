@@ -9,7 +9,7 @@
 #include "take/take_view.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector4.inl"
-#include "base/string/string.inl"
+#include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 
 namespace rendering {
