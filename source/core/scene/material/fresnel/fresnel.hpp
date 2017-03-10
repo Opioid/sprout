@@ -4,21 +4,6 @@
 
 namespace scene { namespace material { namespace fresnel {
 
-float schlick(float wo_dot_h, float f0);
-
-float3 schlick(float wo_dot_h, float3_p f0);
-
-float schlick_f0(float n0, float n1);
-
-float3 conductor(float wo_dot_h, float3_p eta, float3_p k);
-
-float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t);
-
-float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
-				float internal_ior, float thickness);
-
-float3 schlick_blending(float wo_dot_h, float3_p a, float3_p b, float f0);
-
 class Schlick {
 
 public:
@@ -30,7 +15,7 @@ public:
 
 private:
 
-	float3 f0_;
+	const float3 f0_;
 };
 
 class Schlick_weighted {
@@ -44,8 +29,8 @@ public:
 
 private:
 
-	Schlick schlick_;
-	float weight_;
+	const Schlick schlick_;
+	const float weight_;
 };
 
 class Schlick_blending {
@@ -58,9 +43,9 @@ public:
 
 private:
 
-	float3 a_;
-	float3 b_;
-	float f0_;
+	const float3 a_;
+	const float3 b_;
+	const float f0_;
 };
 
 class Thinfilm {
@@ -74,10 +59,10 @@ public:
 
 private:
 
-	float external_ior_;
-	float thinfilm_ior_;
-	float internal_ior_;
-	float thickness_;
+	const float external_ior_;
+	const float thinfilm_ior_;
+	const float internal_ior_;
+	const float thickness_;
 };
 
 class Thinfilm_weighted {
@@ -91,8 +76,8 @@ public:
 
 private:
 
-	Thinfilm thinfilm_;
-	float weight_;
+	const Thinfilm thinfilm_;
+	const float weight_;
 };
 
 class Conductor {
@@ -105,8 +90,8 @@ public:
 
 private:
 
-	float3 eta_;
-	float3 k_;
+	const float3 eta_;
+	const float3 k_;
 };
 
 class Conductor_weighted {
@@ -119,8 +104,8 @@ public:
 
 private:
 
-	Conductor conductor_;
-	float weight_;
+	const Conductor conductor_;
+	const float weight_;
 };
 
 class Constant {
@@ -133,7 +118,7 @@ public:
 
 private:
 
-	float3 f_;
+	const float3 f_;
 };
 
 }}}

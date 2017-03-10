@@ -8,7 +8,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
-#include "base/math/sampling/sampling.inl"
+#include "base/math/sampling/sampling.hpp"
 
 namespace scene { namespace shape {
 

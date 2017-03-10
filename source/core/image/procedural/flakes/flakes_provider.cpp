@@ -3,8 +3,8 @@
 #include "image/encoding/png/png_writer.hpp"
 #include "image/procedural/image_renderer.hpp"
 #include "base/math/vector4.inl"
-#include "base/math/sampling/sample_distribution.inl"
-#include "base/math/sampling/sampling.inl"
+#include "base/math/sampling/sample_distribution.hpp"
+#include "base/math/sampling/sampling.hpp"
 #include "base/memory/variant_map.inl"
 #include "base/random/generator.inl"
 #include <iostream>

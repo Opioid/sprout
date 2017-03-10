@@ -1,9 +1,10 @@
 #include "sampler_golden_ratio.hpp"
 #include "camera_sample.hpp"
-#include "base/math/vector3.inl"
-#include "base/math/sampling/sample_distribution.inl"
+#include "base/math/vector2.inl"
+#include "base/math/sampling/sample_distribution.hpp"
+#include "base/memory/align.inl"
 #include "base/random/generator.inl"
-#include "base/random/shuffle.inl"
+#include "base/random/shuffle.hpp"
 
 #include "base/debug/assert.hpp"
 
@@ -15,8 +16,8 @@ Golden_ratio::Golden_ratio(rnd::Generator& rng) :
 	samples_1D_(nullptr) {}
 
 Golden_ratio::~Golden_ratio() {
-	delete[] samples_1D_;
-	delete[] samples_2D_;
+	memory::free_aligned(samples_1D_);
+	memory::free_aligned(samples_2D_);
 }
 
 void Golden_ratio::generate_camera_sample(int2 pixel, uint32_t index, Camera_sample& sample) {
@@ -48,11 +49,11 @@ size_t Golden_ratio::num_bytes() const {
 }
 
 void Golden_ratio::on_resize() {
-	delete[] samples_1D_;
-	delete[] samples_2D_;
+	memory::free_aligned(samples_1D_);
+	memory::free_aligned(samples_2D_);
 
-	samples_2D_ = new float2[num_samples_ * num_dimensions_2D_];
-	samples_1D_ = new float [num_samples_ * num_dimensions_1D_];
+	samples_2D_ = memory::allocate_aligned<float2>(num_samples_ * num_dimensions_2D_);
+	samples_1D_ = memory::allocate_aligned<float> (num_samples_ * num_dimensions_1D_);
 }
 
 void Golden_ratio::on_resume_pixel(rnd::Generator& scramble) {

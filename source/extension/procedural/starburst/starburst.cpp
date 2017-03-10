@@ -11,7 +11,7 @@
 #include "base/encoding/encoding.inl"
 #include "base/math/vector3.inl"
 #include "base/math/fourier/dft.hpp"
-#include "base/math/sampling/sample_distribution.inl"
+#include "base/math/sampling/sample_distribution.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/rgb.inl"

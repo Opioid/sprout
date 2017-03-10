@@ -7,7 +7,7 @@
 #include "base/math/math.hpp"
 #include "base/math/vector4.inl"
 #include "base/math/matrix4x4.inl"
-#include "base/math/sampling/sampling.inl"
+#include "base/math/sampling/sampling.hpp"
 
 // the layout should match
 // https://developers.google.com/vr/jump/rendering-ods-content.pdf

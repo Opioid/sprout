@@ -7,7 +7,7 @@
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.hpp"
-#include "base/math/sampling/sampling.inl"
+#include "base/math/sampling/sampling.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 #include <fstream>

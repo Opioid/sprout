@@ -1,7 +1,7 @@
 #include "sampler_hammersley.hpp"
 #include "camera_sample.hpp"
 #include "base/math/vector3.inl"
-#include "base/math/sampling/sample_distribution.inl"
+#include "base/math/sampling/sample_distribution.hpp"
 #include "base/random/generator.inl"
 
 namespace sampler {

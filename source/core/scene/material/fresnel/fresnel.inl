@@ -6,26 +6,26 @@
 
 namespace scene { namespace material { namespace fresnel {
 
-inline float schlick(float wo_dot_h, float f0) {
+static inline float schlick(float wo_dot_h, float f0) {
 	return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
 
 	// Gaussian approximation
 	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
-inline float3 schlick(float wo_dot_h, float3_p f0) {
+static inline float3 schlick(float wo_dot_h, float3_p f0) {
 	return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
 
 	// Gaussian approximation
 	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
-inline float schlick_f0(float n0, float n1) {
+static inline float schlick_f0(float n0, float n1) {
 	float t = (n0 - n1) / (n0 + n1);
 	return t * t;
 }
 
-inline float3 conductor(float wo_dot_h, float3_p eta, float3_p k) {
+static inline float3 conductor(float wo_dot_h, float3_p eta, float3_p k) {
 	float3 tmp_f = eta * eta + k * k;
 
 	float wo_dot_h2 = wo_dot_h * wo_dot_h;
@@ -41,7 +41,7 @@ inline float3 conductor(float wo_dot_h, float3_p eta, float3_p k) {
 	return 0.5f * (r_p + r_o);
 }
 
-inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
+static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
 	float r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t)
 			  / (eta_t * cos_theta_i + eta_i * cos_theta_t);
 
@@ -52,27 +52,27 @@ inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float
 }
 
 // Amplitude reflection coefficient (s-polarized)
-inline float rs(float n1, float n2, float cosI, float cosT) {
+static inline float rs(float n1, float n2, float cosI, float cosT) {
 	return (n1 * cosI - n2 * cosT) / (n1 * cosI + n2 * cosT);
 }
 
 // Amplitude reflection coefficient (p-polarized)
-inline float rp(float n1, float n2, float cosI, float cosT) {
+static inline float rp(float n1, float n2, float cosI, float cosT) {
 	return (n2 * cosI - n1 * cosT) / (n1 * cosT + n2 * cosI);
 }
 
 // Amplitude transmission coefficient (s-polarized)
-inline float ts(float n1, float n2, float cosI, float cosT) {
+static inline float ts(float n1, float n2, float cosI, float cosT) {
 	return 2.f * n1 * cosI / (n1 * cosI + n2 * cosT);
 }
 
 // Amplitude transmission coefficient (p-polarized)
-inline float tp(float n1, float n2, float cosI, float cosT) {
+static inline float tp(float n1, float n2, float cosI, float cosT) {
 	return 2.f * n1 * cosI / (n1 * cosT + n2 * cosI);
 }
 
-inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
-					   float internal_ior, float thickness) {
+static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
+							  float internal_ior, float thickness) {
 	// Precompute the reflection phase changes (depends on IOR)
 	float delta10 = (thinfilm_ior < external_ior) ? math::Pi : 0.f;
 	float delta12 = (thinfilm_ior < internal_ior) ? math::Pi : 0.f;
@@ -121,7 +121,7 @@ inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm_ior,
 	return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
-inline float3 schlick_blending(float wo_dot_h, float3_p a, float3_p b, float f0) {
+static inline float3 schlick_blending(float wo_dot_h, float3_p a, float3_p b, float f0) {
 	return math::lerp(a, b, schlick(wo_dot_h, f0));
 }
 

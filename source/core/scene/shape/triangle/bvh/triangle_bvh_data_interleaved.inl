@@ -3,7 +3,7 @@
 #include "triangle_bvh_data_interleaved.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
 #include "scene/shape/triangle/triangle_primitive_mte.inl"
-#include "base/math/sampling/sampling.inl"
+#include "base/math/sampling/sampling.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 

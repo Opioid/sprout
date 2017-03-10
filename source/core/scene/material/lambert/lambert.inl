@@ -3,7 +3,7 @@
 #include "lambert.hpp"
 #include "scene/material/bxdf.hpp"
 #include "sampler/sampler.hpp"
-#include "base/math/sampling/sampling.inl"
+#include "base/math/sampling/sampling.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/math.hpp"
 

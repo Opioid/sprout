@@ -6,7 +6,7 @@
 #include "scene/camera/camera.hpp"
 #include "scene/scene_ray.hpp"
 #include "base/math/vector4.inl"
-#include "base/math/sampling/sample_distribution.inl"
+#include "base/math/sampling/sample_distribution.hpp"
 #include "base/random/generator.inl"
 
 namespace rendering {

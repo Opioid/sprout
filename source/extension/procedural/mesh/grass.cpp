@@ -8,8 +8,8 @@
 #include "core/scene/shape/triangle/triangle_mesh_provider.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
-#include "base/math/sampling/sample_distribution.inl"
-#include "base/math/sampling/sampling.inl"
+#include "base/math/sampling/sample_distribution.hpp"
+#include "base/math/sampling/sampling.hpp"
 #include "base/memory/variant_map.hpp"
 #include "base/random/generator.inl"
 
