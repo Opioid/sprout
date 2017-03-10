@@ -28,6 +28,7 @@ HEADERS += \
 	math/vector3.inl \
 	math/vector4.hpp \
 	math/vector4.inl \
+	math/vector8.hpp \
 
 include(distribution/distribution.pri)
 include(filter/filter.pri)
