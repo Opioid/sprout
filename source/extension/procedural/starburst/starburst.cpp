@@ -37,11 +37,9 @@ void render_dirt(image::Float_1& signal);
 
 void render_aperture(const Aperture& aperture, Float_1& signal);
 
-void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
-		  float alpha, uint32_t mode, thread::Pool& pool);
-
-void fdft(Float_2& destination, const Float_2& source,
-		  float alpha, uint32_t mode, thread::Pool& pool);
+template<uint32_t Mode>
+static void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
+				 float alpha, thread::Pool& pool);
 
 void centered_squared_magnitude(float* result, const float2* source,
 								int32_t width, int32_t height);
@@ -97,8 +95,8 @@ void create(thread::Pool& pool) {
 			signal_a->store(i, float2(signal.load(i), 0.f));
 		}
 
-		fdft(*signal_b.get(), signal_a, alpha, 0, pool);
-		fdft(*signal_a.get(), signal_b, alpha, 1, pool);
+		fdft<0>(*signal_b.get(), signal_a, alpha, pool);
+		fdft<1>(*signal_a.get(), signal_b, alpha, pool);
 		squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
 
 		pool.run_range([&float_image_a, &signal](uint32_t /*id*/, int32_t begin, int32_t end) {
@@ -440,34 +438,36 @@ void write_signal(const std::string& name, const Float_1& signal) {
 	image::encoding::png::Writer::write(name, image);
 }
 
-float sign(float x) {
+static inline float sign(float x) {
 	return x >= 0.f ? 1.f : -1.f;
 }
 
-float2 sqrtc(float2 c) {
+static inline float2 sqrtc(float2 c) {
 	float l = math::length(c);
 	return 0.7071067f * float2(std::sqrt(l + c[0]), std::sqrt(l - c[0]) * sign(c[1]));
 }
 
-float2 mulc(float2 a, float2 b) {
+static inline float2 mulc(float2 a, float2 b) {
 	return float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
 }
 
-float2 mulc(float2 a, float t) {
+static inline float2 mulc(float2 a, float t) {
 	float c = std::cos(t);
 	float s = std::sin(t);
 
 	return float2(a[0] * c - a[1] * s, a[0] * s + a[1] * c);
 }
 
-void fdft(Float_2& destination, const texture::Float_2& texture,
-		  float alpha, uint32_t mode, int32_t begin, int32_t end) {
+template<uint32_t Mode>
+static void fdft(Float_2& destination, const texture::Float_2& texture,
+				 float alpha, int32_t begin, int32_t end) {
 	using namespace image::texture::sampler;
 
 	Linear_2D<Address_mode_clamp, Address_mode_clamp> sampler;
 
 	const int2 d = texture.dimensions_2();
 	const float2 df(d);
+	const float2 idf(1.f / df);
 
 	const float m = df[0];
 	const float half_m = 0.5f * m;
@@ -475,6 +475,7 @@ void fdft(Float_2& destination, const texture::Float_2& texture,
 	const float i_sqrt_m = 1.f / sqrt_m;
 	const float ss = 1.f / alpha;// 8.f;
 	const float norm = 1.f / (ss * sqrt_m);
+	const float dk = 1.f / (m * ss);
 
 	const float ucot = 1.f / std::tan(alpha * (math::Pi * 0.5f));
 	const float cot = math::Pi * ucot;
@@ -485,20 +486,32 @@ void fdft(Float_2& destination, const texture::Float_2& texture,
 	float2 coordinates = float2(0.5f, static_cast<float>(begin) + 0.5f);
 	float2 uv;
 
+	float filter_weight;
+	int2  filter_c;
+
 	for (int32_t y = begin; y < end; ++y, ++coordinates[1]) {
 		coordinates[0] = 0.5f;
-		uv[1] = coordinates[1] / df[1];
-		for (int32_t x = 0; x < d[0]; ++x, ++coordinates[0]) {
-			uv[0] = coordinates[0] / df[0];
 
-			const float u = (coordinates.v[mode] - half_m) * i_sqrt_m;
+		if (0 == Mode) {
+			uv[1] = coordinates[1] * idf[1];
+
+			filter_weight = sampler.map<1>(texture, uv[1], filter_c);
+		}
+
+		for (int32_t x = 0; x < d[0]; ++x, ++coordinates[0]) {
+			if (1 == Mode) {
+				uv[0] = coordinates[0] * idf[0];
+
+				filter_weight = sampler.map<0>(texture, uv[0], filter_c);
+			}
+
+			const float u = (coordinates[Mode] - half_m) * i_sqrt_m;
 
 			float2 integration(0.f);
 
-			for (float k = -0.5f, dk = 1.f / (m * ss); k <= 0.5f; k += dk) {
-				float2 kuv = uv;
-				kuv.v[mode] = k + 0.5f;
-				const float2 g = sampler.sample_2(texture, kuv);
+			for (float k = -0.5f; k <= 0.5f; k += dk) {
+				uv[Mode] = k + 0.5f;
+				const float2 g = sampler.sample_2<Mode>(texture, uv, filter_weight, filter_c);
 
 				const float v = k * sqrt_m;
 				const float t = cot * v * v - csc * u * v;
@@ -512,13 +525,14 @@ void fdft(Float_2& destination, const texture::Float_2& texture,
 	}
 }
 
-void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
-		  float alpha, uint32_t mode, thread::Pool& pool) {
+template<uint32_t Mode>
+static void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
+				 float alpha, thread::Pool& pool) {
 	const auto d = destination.description().dimensions;
 	texture::Float_2 texture(source);
-	pool.run_range([&destination, &texture, alpha, mode]
+	pool.run_range([&destination, &texture, alpha]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			fdft(destination, texture, alpha, mode, begin, end);
+			fdft<Mode>(destination, texture, alpha, begin, end);
 		}, 0, d[1]);
 }
 
