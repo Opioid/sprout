@@ -463,7 +463,7 @@ static void fdft(Float_2& destination, const texture::Float_2& texture,
 				 float alpha, int32_t begin, int32_t end) {
 	using namespace image::texture::sampler;
 
-	Linear_2D<Address_mode_clamp, Address_mode_clamp> sampler;
+	Linear_2D<Address_mode_hack, Address_mode_hack> sampler;
 
 	const int2 d = texture.dimensions_2();
 	const float2 df(d);
@@ -493,16 +493,16 @@ static void fdft(Float_2& destination, const texture::Float_2& texture,
 		coordinates[0] = 0.5f;
 
 		if (0 == Mode) {
-			uv[1] = coordinates[1] * idf[1];
+			uv[1] = coordinates[1];// * idf[1];
 
-			filter_weight = sampler.map<1>(texture, uv[1], filter_c);
+			filter_weight = sampler.hack_map<1>(texture, uv[1], filter_c);
 		}
 
 		for (int32_t x = 0; x < d[0]; ++x, ++coordinates[0]) {
 			if (1 == Mode) {
-				uv[0] = coordinates[0] * idf[0];
+				uv[0] = coordinates[0];// * idf[0];
 
-				filter_weight = sampler.map<0>(texture, uv[0], filter_c);
+				filter_weight = sampler.hack_map<0>(texture, uv[0], filter_c);
 			}
 
 			const float u = (coordinates[Mode] - half_m) * i_sqrt_m;
@@ -510,8 +510,8 @@ static void fdft(Float_2& destination, const texture::Float_2& texture,
 			float2 integration(0.f);
 
 			for (float k = -0.5f; k <= 0.5f; k += dk) {
-				uv[Mode] = k + 0.5f;
-				const float2 g = sampler.sample_2<Mode>(texture, uv, filter_weight, filter_c);
+				uv[Mode] = (k + 0.5f) * df[Mode];
+				const float2 g = sampler.hack_sample_2<Mode>(texture, uv, filter_weight, filter_c);
 
 				const float v = k * sqrt_m;
 				const float t = cot * v * v - csc * u * v;

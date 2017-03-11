@@ -15,7 +15,7 @@ public:
 	virtual float2 sample_2(const Texture& texture, float2 uv) const final override;
 
 	template<uint32_t Axis>
-	float2 sample_2(const Texture& texture, float2 uv, float weight, int2 x_x1) const;
+	float2 hack_sample_2(const Texture& texture, float2 uv, float weight, int2 x_x1) const;
 
 	virtual float3 sample_3(const Texture& texture, float2 uv) const final override;
 
@@ -31,7 +31,7 @@ public:
 	virtual float2 address(float2 uv) const final override;
 
 	template<uint32_t Axis>
-	static float map(const Texture& texture, float tc, int2& x_x1);
+	static float hack_map(const Texture& texture, float tc, int2& x_x1);
 
 private:
 
