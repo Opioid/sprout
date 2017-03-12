@@ -133,16 +133,16 @@ T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) 
 }
 
 template<typename T>
-T* Typed_image<T>::data() const {
-	return data_;
+void Typed_image<T>::gather(int4 xy_xy1, T c[4]) const {
+	c[0] = load(xy_xy1[0], xy_xy1[1]);
+	c[1] = load(xy_xy1[0], xy_xy1[3]);
+	c[2] = load(xy_xy1[2], xy_xy1[1]);
+	c[3] = load(xy_xy1[2], xy_xy1[3]);
 }
 
 template<typename T>
-T Typed_image<T>::unsafe_sample(float2 uv, int2 dimensions) const {
-	int32_t x = static_cast<int32_t>(uv[0] * dimensions[0]);
-	int32_t y = static_cast<int32_t>(uv[1] * dimensions[1]);
-	int32_t i = y * dimensions[0] + x;
-	return data_[i];
+T* Typed_image<T>::data() const {
+	return data_;
 }
 
 template<typename T>

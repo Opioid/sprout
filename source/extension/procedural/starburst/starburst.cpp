@@ -8,6 +8,7 @@
 #include "core/image/procedural/image_renderer.inl"
 #include "core/image/texture/texture_float_2.hpp"
 #include "core/image/texture/sampler/sampler_linear_2d.inl"
+#include "core/image/texture/sampler/bilinear.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/vector3.inl"
 #include "base/math/fourier/dft.hpp"
@@ -38,7 +39,7 @@ void render_dirt(image::Float_1& signal);
 void render_aperture(const Aperture& aperture, Float_1& signal);
 
 template<uint32_t Mode>
-static void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
+static void fdft(Float_2& destination, const Float_2& source,
 				 float alpha, thread::Pool& pool);
 
 void centered_squared_magnitude(float* result, const float2* source,
@@ -56,7 +57,7 @@ void create(thread::Pool& pool) {
 
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 512;
+	int32_t resolution = 256;
 
 	int2 dimensions(resolution, resolution);
 
@@ -86,18 +87,18 @@ void create(thread::Pool& pool) {
 	if (near_field) {
 		Image::Description description(Image::Type::Float_2, dimensions);
 
-		auto signal_a = std::make_shared<Float_2>(description);
-		auto signal_b = std::make_shared<Float_2>(description);
+		Float_2 signal_a(description);
+		Float_2 signal_b(description);
 
 		float alpha = 0.12f;
 
 		for (int32_t i = 0, len = signal.area(); i < len; ++i) {
-			signal_a->store(i, float2(signal.load(i), 0.f));
+			signal_a.store(i, float2(signal.load(i), 0.f));
 		}
 
-		fdft<0>(*signal_b.get(), signal_a, alpha, pool);
-		fdft<1>(*signal_a.get(), signal_b, alpha, pool);
-		squared_magnitude(signal.data(), signal_a->data(), resolution, resolution);
+		fdft<0>(signal_b, signal_a, alpha, pool);
+		fdft<1>(signal_a, signal_b, alpha, pool);
+		squared_magnitude(signal.data(), signal_a.data(), resolution, resolution);
 
 		pool.run_range([&float_image_a, &signal](uint32_t /*id*/, int32_t begin, int32_t end) {
 			for (int32_t i = begin; i < end; ++i) {
@@ -458,18 +459,49 @@ static inline float2 mulc(float2 a, float t) {
 	return float2(a[0] * c - a[1] * s, a[0] * s + a[1] * c);
 }
 
+template<uint32_t Axis>
+static float map(int32_t b, float tc, int2& x_x1) {
+	const float u = tc - 0.5f;
+
+	const float fu = std::floor(u);
+
+	const int32_t x = static_cast<int32_t>(fu);
+
+	x_x1[0] = x < 0 ? 0 : x;
+	x_x1[1] = x >= b ? b : x + 1;
+
+	return u - fu;
+}
+
+template<uint32_t Axis>
+static float2 sample_2(const Float_2& source, uint32_t b, float tc,
+					   float weight, int2 x_x1) {
+	constexpr uint32_t IAxis = 1 - Axis;
+	float2 st;
+	st[IAxis]  = weight;
+
+	int2 y_y1;
+	st[Axis] = map<Axis>(b, tc, y_y1);
+
+	int4 xy_xy1;
+	xy_xy1[IAxis]	  = x_x1[0];
+	xy_xy1[Axis]	  = y_y1[0];
+	xy_xy1[IAxis + 2] = x_x1[1];
+	xy_xy1[Axis  + 2] = y_y1[1];
+
+	float2 c[4];
+	source.gather(xy_xy1, c);
+
+	return texture::sampler::bilinear(c, st[0], st[1]);
+}
+
 template<uint32_t Mode>
-static void fdft(Float_2& destination, const texture::Float_2& texture,
+static void fdft(Float_2& destination, const Float_2& source,
 				 float alpha, int32_t begin, int32_t end) {
-	using namespace image::texture::sampler;
+	const int2 d = destination.description().dimensions.xy();
+	const int2 b = d - int2(1);
 
-	Linear_2D<Address_mode_hack, Address_mode_hack> sampler;
-
-	const int2 d = texture.dimensions_2();
-	const float2 df(d);
-	const float2 idf(1.f / df);
-
-	const float m = df[0];
+	const float m = float(d[Mode]);
 	const float half_m = 0.5f * m;
 	const float sqrt_m = std::sqrt(m);
 	const float i_sqrt_m = 1.f / sqrt_m;
@@ -484,7 +516,6 @@ static void fdft(Float_2& destination, const texture::Float_2& texture,
 	const float2 sx = sqrtc(float2(1.f, -ucot));
 
 	float2 coordinates = float2(0.5f, static_cast<float>(begin) + 0.5f);
-	float2 uv;
 
 	float filter_weight;
 	int2  filter_c;
@@ -493,16 +524,12 @@ static void fdft(Float_2& destination, const texture::Float_2& texture,
 		coordinates[0] = 0.5f;
 
 		if (0 == Mode) {
-			uv[1] = coordinates[1];// * idf[1];
-
-			filter_weight = sampler.hack_map<1>(texture, uv[1], filter_c);
+			filter_weight = map<1>(b[1], coordinates[1], filter_c);
 		}
 
 		for (int32_t x = 0; x < d[0]; ++x, ++coordinates[0]) {
 			if (1 == Mode) {
-				uv[0] = coordinates[0];// * idf[0];
-
-				filter_weight = sampler.hack_map<0>(texture, uv[0], filter_c);
+				filter_weight = map<0>(b[0], coordinates[0], filter_c);
 			}
 
 			const float u = (coordinates[Mode] - half_m) * i_sqrt_m;
@@ -510,8 +537,8 @@ static void fdft(Float_2& destination, const texture::Float_2& texture,
 			float2 integration(0.f);
 
 			for (float k = -0.5f; k <= 0.5f; k += dk) {
-				uv[Mode] = (k + 0.5f) * df[Mode];
-				const float2 g = sampler.hack_sample_2<Mode>(texture, uv, filter_weight, filter_c);
+				const float tc = (k + 0.5f) * m;
+				const float2 g = sample_2<Mode>(source, b[Mode], tc, filter_weight, filter_c);
 
 				const float v = k * sqrt_m;
 				const float t = cot * v * v - csc * u * v;
@@ -526,13 +553,12 @@ static void fdft(Float_2& destination, const texture::Float_2& texture,
 }
 
 template<uint32_t Mode>
-static void fdft(Float_2& destination, std::shared_ptr<Float_2> source,
+static void fdft(Float_2& destination, const Float_2& source,
 				 float alpha, thread::Pool& pool) {
 	const auto d = destination.description().dimensions;
-	texture::Float_2 texture(source);
-	pool.run_range([&destination, &texture, alpha]
+	pool.run_range([&destination, &source, alpha]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			fdft<Mode>(destination, texture, alpha, begin, end);
+			fdft<Mode>(destination, source, alpha, begin, end);
 		}, 0, d[1]);
 }
 

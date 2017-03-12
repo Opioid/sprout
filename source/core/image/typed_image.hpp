@@ -47,9 +47,9 @@ public:
 	const T& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 	T& at_element(int32_t x, int32_t y, int32_t z, int32_t element);
 
-	T* data() const;
+	void gather(int4 xy_xy1, T c[4]) const;
 
-	T unsafe_sample(float2 uv, int2 dimensions) const;
+	T* data() const;
 
 	virtual size_t num_bytes() const final override;
 

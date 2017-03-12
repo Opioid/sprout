@@ -30,29 +30,6 @@ float2 Linear_2D<Address_U, Address_V>::sample_2(const Texture& texture, float2 
 }
 
 template<typename Address_U, typename Address_V>
-template<uint32_t Axis>
-float2 Linear_2D<Address_U, Address_V>::hack_sample_2(const Texture& texture, float2 uv,
-													  float weight, int2 x_x1) const {
-	constexpr uint32_t IAxis = 1 - Axis;
-	float2 st;
-	st[IAxis]  = weight;
-
-	int2 y_y1;
-	st[Axis] = hack_map<Axis>(texture, uv[Axis], y_y1);
-
-	int4 xy_xy1;
-	xy_xy1[IAxis]	  = x_x1[0];
-	xy_xy1[Axis]	  = y_y1[0];
-	xy_xy1[IAxis + 2] = x_x1[1];
-	xy_xy1[Axis  + 2] = y_y1[1];
-
-	float2 c[4];
-	texture.gather_2(xy_xy1, c);
-
-	return bilinear(c, st[0], st[1]);
-}
-
-template<typename Address_U, typename Address_V>
 float3 Linear_2D<Address_U, Address_V>::sample_3(const Texture& texture, float2 uv) const {
 	int4 xy_xy1;
 	float2 st = map(texture, uv, xy_xy1);
@@ -114,25 +91,6 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(const Texture& texture, float2 
 template<typename Address_U, typename Address_V>
 float2 Linear_2D<Address_U, Address_V>::address(float2 uv) const {
 	return float2(Address_U::f(uv[0]), Address_V::f(uv[1]));
-}
-
-
-template<typename Address_U, typename Address_V>
-template<uint32_t Axis>
-float Linear_2D<Address_U, Address_V>::hack_map(const Texture& texture, float tc, int2& x_x1) {
-	const auto b = texture.back_2();
-//	const auto d = texture.dimensions_float2();
-
-	const float u = tc - 0.5f;//Address_U::f(tc) * d[Axis] - 0.5f;
-
-	const float fu = std::floor(u);
-
-	const int32_t x = static_cast<int32_t>(fu);
-
-	x_x1[0] = Address_U::lower_bound(x);
-	x_x1[1] = Address_U::increment(x, b[Axis]);
-
-	return u - fu;
 }
 
 template<typename Address_U, typename Address_V>
