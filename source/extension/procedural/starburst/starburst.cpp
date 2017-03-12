@@ -42,11 +42,15 @@ template<uint32_t Mode>
 static void fdft(Float_2& destination, const Float_2& source,
 				 float alpha, thread::Pool& pool);
 
+static void fdft(Float_2& destination, const Float_2& source,
+				 float alpha, thread::Pool& pool);
+
 void centered_squared_magnitude(float* result, const float2* source,
 								int32_t width, int32_t height);
 
-void squared_magnitude(float* result, const float2* source,
-					   int32_t width, int32_t height);
+void squared_magnitude(float* result, const float2* source, int32_t width, int32_t height);
+
+void squared_magnitude_transposed(float* result, const float2* source, int32_t dimension);
 
 void diffraction(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
 
@@ -99,6 +103,13 @@ void create(thread::Pool& pool) {
 		fdft<0>(signal_b, signal_a, alpha, pool);
 		fdft<1>(signal_a, signal_b, alpha, pool);
 		squared_magnitude(signal.data(), signal_a.data(), resolution, resolution);
+
+	//	fdft(signal_b, signal_a, alpha, pool);
+	//	signal_b.square_transpose();
+	//	fdft(signal_a, signal_b, alpha, pool);
+	//	signal_a.square_transpose();
+	//	squared_magnitude(signal.data(), signal_a.data(), resolution, resolution);
+	//	squared_magnitude_transposed(signal.data(), signal_a.data(), resolution);
 
 		pool.run_range([&float_image_a, &signal](uint32_t /*id*/, int32_t begin, int32_t end) {
 			for (int32_t i = begin; i < end; ++i) {
@@ -379,6 +390,17 @@ void squared_magnitude(float* result, const float2* source, int32_t width, int32
 	}
 }
 
+void squared_magnitude_transposed(float* result, const float2* source, int32_t dimension) {
+	int32_t i = 0;
+	for (int32_t y = 0; y < dimension; ++y) {
+		for (int32_t x = 0; x < dimension; ++x, ++i) {
+			float mag = math::squared_length(source[i]);
+			int32_t o = x * dimension + y;
+			result[o] = mag;
+		}
+	}
+}
+
 void diffraction(Spectrum* result, const float* squared_magnitude,
 				 int32_t bin, int32_t resolution) {
 	float fr = static_cast<float>(resolution);
@@ -459,7 +481,6 @@ static inline float2 mulc(float2 a, float t) {
 	return float2(a[0] * c - a[1] * s, a[0] * s + a[1] * c);
 }
 
-template<uint32_t Axis>
 static float map(int32_t b, float tc, int2& x_x1) {
 	const float u = tc - 0.5f;
 
@@ -473,25 +494,20 @@ static float map(int32_t b, float tc, int2& x_x1) {
 	return u - fu;
 }
 
+static inline float2 linear(float2 c[2], float s) {
+	const float _s = 1.f - s;
+
+	return _s * c[0] + s * c[1];
+}
+
 template<uint32_t Axis>
-static float2 sample_2(const Float_2& source, uint32_t b, float tc, float weight, int2 x_x1) {
-	constexpr uint32_t IAxis = 1 - Axis;
-	float2 st;
-	st[IAxis]  = weight;
+static float2 sample_2(const Float_2& source, int32_t b, float tc, int32_t y) {
+	int2 x_x1;
+	float s = map(b, tc, x_x1);
 
-	int2 y_y1;
-	st[Axis] = map<Axis>(b, tc, y_y1);
-
-	int4 xy_xy1;
-	xy_xy1[IAxis]	  = x_x1[0];
-	xy_xy1[Axis]	  = y_y1[0];
-	xy_xy1[IAxis + 2] = x_x1[1];
-	xy_xy1[Axis  + 2] = y_y1[1];
-
-	float2 c[4];
-	source.gather(xy_xy1, c);
-
-	return texture::sampler::bilinear(c, st[0], st[1]);
+	float2 c[2];
+	source.pair<Axis>(x_x1, y, c);
+	return linear(c, s);
 }
 
 template<uint32_t Mode>
@@ -516,19 +532,18 @@ static void fdft(Float_2& destination, const Float_2& source,
 
 	float2 coordinates = float2(0.5f, static_cast<float>(begin) + 0.5f);
 
-	float filter_weight;
-	int2  filter_c;
+	int32_t  filter_y;
 
 	for (int32_t y = begin; y < end; ++y, ++coordinates[1]) {
 		coordinates[0] = 0.5f;
 
 		if (0 == Mode) {
-			filter_weight = map<1>(b[1], coordinates[1], filter_c);
+			filter_y = y;
 		}
 
 		for (int32_t x = 0; x < d[0]; ++x, ++coordinates[0]) {
 			if (1 == Mode) {
-				filter_weight = map<0>(b[0], coordinates[0], filter_c);
+				filter_y = x;
 			}
 
 			const float u = (coordinates[Mode] - half_m) * i_sqrt_m;
@@ -537,7 +552,7 @@ static void fdft(Float_2& destination, const Float_2& source,
 
 			for (float k = -0.5f; k <= 0.5f; k += dk) {
 				const float tc = (k + 0.5f) * m;
-				const float2 g = sample_2<Mode>(source, b[Mode], tc, filter_weight, filter_c);
+				const float2 g = sample_2<Mode>(source, b[Mode], tc, filter_y);
 
 				const float v = k * sqrt_m;
 				const float t = cot * v * v - csc * u * v;
@@ -558,6 +573,58 @@ static void fdft(Float_2& destination, const Float_2& source,
 	pool.run_range([&destination, &source, alpha]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
 			fdft<Mode>(destination, source, alpha, begin, end);
+		}, 0, d[1]);
+}
+
+static void fdft(Float_2& destination, const Float_2& source,
+				 float alpha, int32_t begin, int32_t end) {
+	const int2 d = destination.description().dimensions.xy();
+	const int32_t b = d[0] - 1;
+
+	const float m = float(d[0]);
+	const float half_m = 0.5f * m;
+	const float sqrt_m = std::sqrt(m);
+	const float i_sqrt_m = 1.f / sqrt_m;
+	const float ss = 1.f / alpha;// 8.f;
+	const float norm = 1.f / (ss * sqrt_m);
+	const float dk = 1.f / (m * ss);
+
+	const float ucot = 1.f / std::tan(alpha * (math::Pi * 0.5f));
+	const float cot = math::Pi * ucot;
+	const float csc = (2.f * math::Pi) / std::sin(alpha * (math::Pi * 0.5f));
+
+	const float2 sx = sqrtc(float2(1.f, -ucot));
+
+	for (int32_t y = begin; y < end; ++y) {
+		float coordinates = 0.5f;
+
+		for (int32_t x = 0; x < d[0]; ++x, ++coordinates) {
+			const float u = (coordinates - half_m) * i_sqrt_m;
+
+			float2 integration(0.f);
+
+			for (float k = -0.5f; k <= 0.5f; k += dk) {
+				const float tc = (k + 0.5f) * m;
+				const float2 g = sample_2<0>(source, b, tc, y);
+
+				const float v = k * sqrt_m;
+				const float t = cot * v * v - csc * u * v;
+				integration += mulc(g, t);
+			}
+
+			const float2 s = mulc(sx, cot * u * u);
+
+			destination.store(x, y, norm * mulc(s, integration));
+		}
+	}
+}
+
+static void fdft(Float_2& destination, const Float_2& source,
+				 float alpha, thread::Pool& pool) {
+	const auto d = destination.description().dimensions;
+	pool.run_range([&destination, &source, alpha]
+		(uint32_t /*id*/, int32_t begin, int32_t end) {
+			fdft(destination, source, alpha, begin, end);
 		}, 0, d[1]);
 }
 

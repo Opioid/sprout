@@ -141,6 +141,30 @@ void Typed_image<T>::gather(int4 xy_xy1, T c[4]) const {
 }
 
 template<typename T>
+template<uint32_t Axis>
+void Typed_image<T>::pair(int2 x_x1, uint32_t y, T c[2]) const {
+	if (0 == Axis) {
+		c[0] = load(x_x1[0], y);
+		c[1] = load(x_x1[1], y);
+	} else {
+		c[0] = load(y, x_x1[0]);
+		c[1] = load(y, x_x1[1]);
+	}
+}
+
+template<typename T>
+void Typed_image<T>::square_transpose() {
+	const int32_t n = description_.dimensions[0];
+	for (int32_t y = 0, height = n - 2; y < height; ++y) {
+		for (int32_t x = y + 1, width = n -1; x < width; ++x) {
+			int32_t a = y * n + x;
+			int32_t b = x * n + y;
+			std::swap(data_[a], data_[b]);
+		}
+	}
+}
+
+template<typename T>
 T* Typed_image<T>::data() const {
 	return data_;
 }
