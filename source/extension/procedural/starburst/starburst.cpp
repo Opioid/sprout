@@ -518,7 +518,7 @@ static void fdft(Float_2& destination, const Float_2& source,
 
 	float filter_weight;
 	int2  filter_c;
-const int32_t bm = b[Mode];
+
 	for (int32_t y = begin; y < end; ++y, ++coordinates[1]) {
 		coordinates[0] = 0.5f;
 
@@ -537,7 +537,7 @@ const int32_t bm = b[Mode];
 
 			for (float k = -0.5f; k <= 0.5f; k += dk) {
 				const float tc = (k + 0.5f) * m;
-				const float2 g = sample_2<Mode>(source, bm, tc, filter_weight, filter_c);
+				const float2 g = sample_2<Mode>(source, b[Mode], tc, filter_weight, filter_c);
 
 				const float v = k * sqrt_m;
 				const float t = cot * v * v - csc * u * v;
