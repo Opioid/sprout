@@ -575,9 +575,14 @@ static void fdft(Float_2& destination, const Source& source,
 			delete[] cos_sin_;
 		}
 
-		void init(float half_m, float dk, float csc,
+		void init(float dk, float csc,
 				  float cot, float sqrt_m, float i_sqrt_m,
 				  float2 sx) {
+			const float m = float(width_);
+			const float half_m = 0.5f * m;
+
+
+
 			float coordinates = 0.5f;
 			for (uint32_t x = 0, len = width_; x < len; ++x, ++coordinates)	{
 				const float u = (coordinates - half_m) * i_sqrt_m;
@@ -590,15 +595,7 @@ static void fdft(Float_2& destination, const Source& source,
 					const uint32_t i = x * num_samples_ + ss;
 					cos_sin_[i][0] = std::cos(t);
 					cos_sin_[i][1] = std::sin(t);
-
-//					if (ss >= num_samples_) {
-//				//		std::cout << "alarmio" << std::endl;
-
-//						std::cout << ss << " of " << num_samples_ << std::endl;
-//					}
 				}
-
-		//		if (0 == x) std::cout << ss << std::endl;
 
 				s_[x] = mulc(sx, cot * u * u);
 			}
@@ -626,7 +623,7 @@ static void fdft(Float_2& destination, const Source& source,
 //	std::cout << "provide: " << num_samples << std::endl;
 
 	Row row(d, num_samples);
-	row.init(half_m, dk, csc, cot, sqrt_m, i_sqrt_m, sx);
+	row.init(dk, csc, cot, sqrt_m, i_sqrt_m, sx);
 
 	T* row_samples = new T[num_samples];
 
