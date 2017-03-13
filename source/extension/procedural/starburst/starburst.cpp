@@ -478,13 +478,6 @@ static inline float2 mulc(float2 a, float2 b) {
 	return float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
 }
 
-static inline float2 mulc(float a, float t) {
-	float c = std::cos(t);
-	float s = std::sin(t);
-
-	return float2(a * c, a * s);
-}
-
 static inline float2 mulc_cos_sin(float a, float2 cos_sin) {
 	return float2(a * cos_sin[0], a * cos_sin[1]);
 }
@@ -514,7 +507,7 @@ static float map(int32_t b, float tc, int2& x_x1) {
 }
 
 template<typename T>
-static inline T linear(T c[2], float s) {
+static T linear(T c[2], float s) {
 	const float _s = 1.f - s;
 
 	return _s * c[0] + s * c[1];
@@ -526,7 +519,7 @@ static T sample(const Source& source, int32_t b, float tc, int32_t y) {
 	float s = map(b, tc, x_x1);
 
 	T c[2];
-	source.pair<0>(x_x1, y, c);
+	source.template pair<0>(x_x1, y, c);
 	return linear(c, s);
 }
 
@@ -584,15 +577,16 @@ static void fdft(Float_2& destination, const Source& source,
 
 
 			float coordinates = 0.5f;
-			for (uint32_t x = 0, len = width_; x < len; ++x, ++coordinates)	{
+			for (uint32_t x = 0, block = 0, len = width_, num_samples = num_samples_;
+				 x < len;
+				 ++x, ++coordinates, block += num_samples) {
 				const float u = (coordinates - half_m) * i_sqrt_m;
 				const float cscu = csc * u;
-
 				uint32_t ss = 0;
 				for (float k = -0.5f; k <= 0.5f; k += dk, ++ss) {
 					const float v = k * sqrt_m;
 					const float t = v * (cot * v - cscu);
-					const uint32_t i = x * num_samples_ + ss;
+					const uint32_t i = block + ss;
 					cos_sin_[i][0] = std::cos(t);
 					cos_sin_[i][1] = std::sin(t);
 				}
