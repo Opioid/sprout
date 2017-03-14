@@ -6,4 +6,5 @@ SOURCES += \
 HEADERS += \
 	procedural/starburst/aperture.hpp \
     procedural/starburst/dirt.hpp \
+    procedural/starburst/fdft.hpp \
 	procedural/starburst/starburst.hpp \

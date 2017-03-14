@@ -49,6 +49,8 @@ public:
 
 	void gather(int4 xy_xy1, T c[4]) const;
 
+	void pair_x(int2 x_x1, uint32_t y, T c[2]) const;
+
 	template<uint32_t Axis>
 	void pair(int2 x_x1, uint32_t y, T c[2]) const;
 

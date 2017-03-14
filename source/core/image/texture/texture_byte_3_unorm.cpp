@@ -36,57 +36,51 @@ float4 Byte_3_unorm::at_4(int32_t x, int32_t y) const {
 }
 
 float4 Byte_3_unorm::gather_1(int4 xy_xy1) const {
-	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
-	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
-	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
-	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
+	byte3 v[4];
+	image_.gather(xy_xy1, v);
 
-	return float4(encoding::cached_unorm_to_float(v00[0]),
-				  encoding::cached_unorm_to_float(v01[0]),
-				  encoding::cached_unorm_to_float(v10[0]),
-				  encoding::cached_unorm_to_float(v11[0]));
+	return float4(encoding::cached_unorm_to_float(v[0][0]),
+				  encoding::cached_unorm_to_float(v[1][0]),
+				  encoding::cached_unorm_to_float(v[2][0]),
+				  encoding::cached_unorm_to_float(v[3][0]));
 }
 
 void Byte_3_unorm::gather_2(int4 xy_xy1, float2 c[4]) const {
-	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
-	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
-	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
-	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
+	byte3 v[4];
+	image_.gather(xy_xy1, v);
 
-	c[0] = float2(encoding::cached_unorm_to_float(v00[0]),
-				  encoding::cached_unorm_to_float(v00[1]));
+	c[0] = float2(encoding::cached_unorm_to_float(v[0][0]),
+				  encoding::cached_unorm_to_float(v[0][1]));
 
-	c[1] = float2(encoding::cached_unorm_to_float(v01[0]),
-				  encoding::cached_unorm_to_float(v01[1]));
+	c[1] = float2(encoding::cached_unorm_to_float(v[1][0]),
+				  encoding::cached_unorm_to_float(v[1][1]));
 
-	c[2] = float2(encoding::cached_unorm_to_float(v10[0]),
-				  encoding::cached_unorm_to_float(v10[1]));
+	c[2] = float2(encoding::cached_unorm_to_float(v[2][0]),
+				  encoding::cached_unorm_to_float(v[2][1]));
 
-	c[3] = float2(encoding::cached_unorm_to_float(v11[0]),
-				  encoding::cached_unorm_to_float(v11[1]));
+	c[3] = float2(encoding::cached_unorm_to_float(v[3][0]),
+				  encoding::cached_unorm_to_float(v[3][1]));
 }
 
 void Byte_3_unorm::gather_3(int4 xy_xy1, float3 c[4]) const {
-	auto v00 = image_.load(xy_xy1[0], xy_xy1[1]);
-	auto v01 = image_.load(xy_xy1[0], xy_xy1[3]);
-	auto v10 = image_.load(xy_xy1[2], xy_xy1[1]);
-	auto v11 = image_.load(xy_xy1[2], xy_xy1[3]);
+	byte3 v[4];
+	image_.gather(xy_xy1, v);
 
-	c[0] = float3(encoding::cached_unorm_to_float(v00[0]),
-				  encoding::cached_unorm_to_float(v00[1]),
-				  encoding::cached_unorm_to_float(v00[2]));
+	c[0] = float3(encoding::cached_unorm_to_float(v[0][0]),
+				  encoding::cached_unorm_to_float(v[0][1]),
+				  encoding::cached_unorm_to_float(v[0][2]));
 
-	c[1] = float3(encoding::cached_unorm_to_float(v01[0]),
-				  encoding::cached_unorm_to_float(v01[1]),
-				  encoding::cached_unorm_to_float(v01[2]));
+	c[1] = float3(encoding::cached_unorm_to_float(v[1][0]),
+				  encoding::cached_unorm_to_float(v[1][1]),
+				  encoding::cached_unorm_to_float(v[1][2]));
 
-	c[2] = float3(encoding::cached_unorm_to_float(v10[0]),
-				  encoding::cached_unorm_to_float(v10[1]),
-				  encoding::cached_unorm_to_float(v10[2]));
+	c[2] = float3(encoding::cached_unorm_to_float(v[2][0]),
+				  encoding::cached_unorm_to_float(v[2][1]),
+				  encoding::cached_unorm_to_float(v[2][2]));
 
-	c[3] = float3(encoding::cached_unorm_to_float(v11[0]),
-				  encoding::cached_unorm_to_float(v11[1]),
-				  encoding::cached_unorm_to_float(v11[2]));
+	c[3] = float3(encoding::cached_unorm_to_float(v[3][0]),
+				  encoding::cached_unorm_to_float(v[3][1]),
+				  encoding::cached_unorm_to_float(v[3][2]));
 }
 
 float Byte_3_unorm::at_element_1(int32_t x, int32_t y, int32_t element) const {

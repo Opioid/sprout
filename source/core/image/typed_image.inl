@@ -134,10 +134,24 @@ T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) 
 
 template<typename T>
 void Typed_image<T>::gather(int4 xy_xy1, T c[4]) const {
-	c[0] = load(xy_xy1[0], xy_xy1[1]);
-	c[1] = load(xy_xy1[0], xy_xy1[3]);
-	c[2] = load(xy_xy1[2], xy_xy1[1]);
-	c[3] = load(xy_xy1[2], xy_xy1[3]);
+	const int32_t width = description_.dimensions[0];
+
+	const int32_t y0 = width * xy_xy1[1];
+
+	c[0] = data_[y0 + xy_xy1[0]];
+	c[1] = data_[y0 + xy_xy1[2]];
+
+	const int32_t y1 = width * xy_xy1[3];
+
+	c[2] = data_[y1 + xy_xy1[0]];
+	c[3] = data_[y1 + xy_xy1[2]];
+}
+
+template<typename T>
+void Typed_image<T>::pair_x(int2 x_x1, uint32_t y, T c[2]) const {
+	const int32_t y0 = description_.dimensions[0] * y;
+	c[0] = data_[y0 + x_x1[0]];
+	c[1] = data_[y0 + x_x1[1]];
 }
 
 template<typename T>
