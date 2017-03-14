@@ -81,12 +81,12 @@ int main(int argc, char* argv[]) {
 
 
 
-	auto starburst_start = std::chrono::high_resolution_clock::now();
-	procedural::starburst::create(thread_pool);
-	logging::info("Starburst time " +
-				  string::to_string(chrono::seconds_since(starburst_start)) + " s");
+//	auto starburst_start = std::chrono::high_resolution_clock::now();
+//	procedural::starburst::create(thread_pool);
+//	logging::info("Starburst time " +
+//				  string::to_string(chrono::seconds_since(starburst_start)) + " s");
 
-	return 0;
+//	return 0;
 
 
 
