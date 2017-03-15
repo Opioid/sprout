@@ -52,10 +52,10 @@ Quaternion<T>::Quaternion(const Matrix3x3<T>& m) {
 
 template<typename T>
 Quaternion<T> Quaternion<T>::operator*(const Quaternion<T>& q) const {
-	return Quaternion<T>(w * q.x + x * q.w + y * q.z - z * q.y,
-						 w * q.y + y * q.w + z * q.x - x * q.z,
-						 w * q.z + z * q.w + x * q.y - y * q.x,
-						 w * q.w - x * q.x - y * q.y - z * q.z);
+	return Quaternion<T>(w * q[0] + x * q[3] + y * q[2] - z * q[1],
+						 w * q[1] + y * q[3] + z * q[0] - x * q[2],
+						 w * q[2] + z * q[3] + x * q[1] - y * q[0],
+						 w * q[3] - x * q[0] - y * q[1] - z * q[2]);
 }
 
 template<typename T>
@@ -63,7 +63,7 @@ const Quaternion<T> Quaternion<T>::identity(T(0), T(0), T(0), T(1));
 
 template<typename T>
 T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
-	return (a.x * b.x + a.y * b.y) + (a.z * b.z + a.w * b.w);
+	return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 }
 
 template<typename T>
@@ -79,26 +79,26 @@ T angle(const Quaternion<T>& a, const Quaternion<T>& b) {
 
 template<typename T>
 void set_rotation_x(Quaternion<T>& q, T a) {
-	q.x = std::sin(a * T(0.5));
-	q.y = T(0);
-	q.z = T(0);
-	q.w = std::cos(a * T(0.5));
+	q[0] = std::sin(a * T(0.5));
+	q[1] = T(0);
+	q[2] = T(0);
+	q[3] = std::cos(a * T(0.5));
 }
 
 template<typename T>
 void set_rotation_y(Quaternion<T>& q, T a) {
-	q.x = T(0);
-	q.y = std::sin(a * T(0.5));
-	q.z = T(0);
-	q.w = std::cos(a * T(0.5));
+	q[0] = T(0);
+	q[1] = std::sin(a * T(0.5));
+	q[2] = T(0);
+	q[3] = std::cos(a * T(0.5));
 }
 
 template<typename T>
 void set_rotation_z(Quaternion<T>& q, T a) {
-	q.x = T(0);
-	q.y = T(0);
-	q.z = std::sin(a * T(0.5));
-	q.w = std::cos(a * T(0.5));
+	q[0] = T(0);
+	q[1] = T(0);
+	q[2] = std::sin(a * T(0.5));
+	q[3] = std::cos(a * T(0.5));
 }
 
 template<typename T>
@@ -107,10 +107,10 @@ void set_rotation(Quaternion<T>& q, const Vector3<T>& v, T a) {
 
 	const T s = std::sin(a * T(0.5)) / d;
 
-	q.x = v.x * s;
-	q.y = v.y * s;
-	q.z = v.z * s;
-	q.w = cos(a * T(0.5));
+	q[0] = v[0] * s;
+	q[1] = v[1] * s;
+	q[2] = v[2] * s;
+	q[3] = cos(a * T(0.5));
 }
 
 template<typename T>
@@ -126,16 +126,16 @@ void set_rotation(Quaternion<T>& q, T yaw, T pitch, T roll) {
 	const T cos_roll  = std::cos(half_roll);
 	const T sin_roll  = std::sin(half_roll);
 
-	q.x = cos_roll * sin_pitch * cos_yaw + sin_roll * cos_pitch * sin_yaw;
-	q.y = cos_roll * cos_pitch * sin_yaw - sin_roll * sin_pitch * cos_yaw;
-	q.z = sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw;
-	q.w = cos_roll * cos_pitch * cos_yaw + sin_roll * sin_pitch * sin_yaw;
+	q[0] = cos_roll * sin_pitch * cos_yaw + sin_roll * cos_pitch * sin_yaw;
+	q[1] = cos_roll * cos_pitch * sin_yaw - sin_roll * sin_pitch * cos_yaw;
+	q[2] = sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw;
+	q[3] = cos_roll * cos_pitch * cos_yaw + sin_roll * sin_pitch * sin_yaw;
 }
 
 template<typename T>
 Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 	// calc cosine theta
-	T cosom = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+	T cosom = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
 
 	// adjust signs (if necessary)
 	Quaternion<T> end = b;
@@ -144,8 +144,8 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 		cosom = -cosom;
 		end[0] = -end[0];   // Reverse all signs
 		end[1] = -end[1];
-		end.z = -end.z;
-		end.w = -end.w;
+		end[2] = -end[2];
+		end[3] = -end[3];
 	}
 
 	// Calculate coefficients
@@ -165,10 +165,10 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 		sclq = t;
 	}
 
-	return Quaternion<T>(sclp * a.x + sclq * end[0],
-						 sclp * a.y + sclq * end[1],
-						 sclp * a.z + sclq * end.z,
-						 sclp * a.w + sclq * end.w);
+	return Quaternion<T>(sclp * a[0] + sclq * end[0],
+						 sclp * a[1] + sclq * end[1],
+						 sclp * a[2] + sclq * end[2],
+						 sclp * a[3] + sclq * end[3]);
 }
 */
 /****************************************************************************
@@ -209,7 +209,7 @@ static inline Quaternion create(const Matrix3x3<float>& m) {
 }
 
 static inline Quaternion create(const Matrix3x3f_a& m) {
-	float trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
+	const float trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
 	Quaternion temp;
 
 	if (trace > 0.f) {
@@ -221,18 +221,18 @@ static inline Quaternion create(const Matrix3x3f_a& m) {
 		temp[1] = (m.r[0][2] - m.r[2][0]) * s;
 		temp[2] = (m.r[1][0] - m.r[0][1]) * s;
 	} else {
-		int i = m.r[0][0] < m.r[1][1] ? (m.r[1][1] < m.r[2][2] ? 2 : 1)
-									  : (m.r[0][0] < m.r[2][2] ? 2 : 0);
-		int j = (i + 1) % 3;
-		int k = (i + 2) % 3;
+		const uint32_t i = m.r[0][0] < m.r[1][1] ? (m.r[1][1] < m.r[2][2] ? 2 : 1)
+												 : (m.r[0][0] < m.r[2][2] ? 2 : 0);
+		const uint32_t j = (i + 1) % 3;
+		const uint32_t k = (i + 2) % 3;
 
-		float s = std::sqrt(m.r[i].v[i] - m.r[j].v[j] - m.r[k].v[k] + 1.f);
-		temp.v[i] = s * 0.5f;
+		float s = std::sqrt(m.r[i][i] - m.r[j][j] - m.r[k][k] + 1.f);
+		temp[i] = s * 0.5f;
 		s = 0.5f / s;
 
-		temp[3] = (m.r[k].v[j] - m.r[j].v[k]) * s;
-		temp.v[j] = (m.r[j].v[i] + m.r[i].v[j]) * s;
-		temp.v[k] = (m.r[k].v[i] + m.r[i].v[k]) * s;
+		temp[3]	= (m.r[k][j] - m.r[j][k]) * s;
+		temp[j] = (m.r[j][i] + m.r[i][j]) * s;
+		temp[k] = (m.r[k][i] + m.r[i][k]) * s;
 	}
 
 	return temp;

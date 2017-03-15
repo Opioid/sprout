@@ -170,12 +170,13 @@ float3 Sample_base<Diffuse>::Layer::base_evaluate(float3_p wi, float3_p wo, floa
 	float d_pdf;
 	const float3 d_reflection = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, *this, d_pdf);
 
-	fresnel::Schlick schlick(f0_);
+	const float n_dot_h = math::saturate(math::dot(n_, h));
+
+	const fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	const float3 ggx_reflection = ggx::Isotropic::reflection(h, n_dot_wi, n_dot_wo,
-															 wo_dot_h, *this, schlick,
-															 ggx_fresnel, ggx_pdf);
+	const float3 ggx_reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+															 *this, schlick, ggx_fresnel, ggx_pdf);
 
 	pdf = 0.5f * (d_pdf + ggx_pdf);
 
@@ -188,11 +189,13 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(float3_p wo, sampler::Sampler& 
 	const float n_dot_wo = clamped_n_dot(wo);
 	const float n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
 
+	const float n_dot_h = math::saturate(math::dot(n_, result.h));
+
 	const fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
 	float  ggx_pdf;
-	const float3 ggx_reflection = ggx::Isotropic::reflection(result.h, n_dot_wi, n_dot_wo,
-															 result.h_dot_wi, *this, schlick,
+	const float3 ggx_reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, result.h_dot_wi,
+															 n_dot_h, *this, schlick,
 															 ggx_fresnel, ggx_pdf);
 
 	result.reflection = n_dot_wi * ((1.f - ggx_fresnel) * result.reflection + ggx_reflection);

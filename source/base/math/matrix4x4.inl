@@ -509,22 +509,6 @@ static inline Vector3f_a transform_point(FVector3f_a v, const Matrix4x4f_a& m) {
 					  (v[0] * m.r[0][2] + v[1] * m.r[1][2]) + (v[2] * m.r[2][2] + m.r[3][2]));
 }
 
-static inline Matrix4x4f_a create_matrix4x4(FVector4f_a q) {
-	const float d = dot(q, q);
-
-	const float s = 2.f / d;
-
-	const float xs = q[0] * s,  ys = q[1] * s,  zs = q[2] * s;
-	const float wx = q[3] * xs, wy = q[3] * ys, wz = q[3] * zs;
-	const float xx = q[0] * xs, xy = q[0] * ys, xz = q[0] * zs;
-	const float yy = q[1] * ys, yz = q[1] * zs, zz = q[2] * zs;
-
-	return Matrix4x4f_a(1.f - (yy + zz), xy - wz,         xz + wy,			0.f,
-						xy + wz,         1.f - (xx + zz), yz - wx,			0.f,
-						xz - wy,         yz + wx,         1.f - (xx + yy),	0.f,
-						0.f,			 0.f,			  0.f,				1.f);
-}
-
 static inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 	const float m00_11 = m.r[0][0] * m.r[1][1];
 	const float m01_12 = m.r[0][1] * m.r[1][2];

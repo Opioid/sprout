@@ -41,9 +41,11 @@ float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
 	float3 h = math::normalized(wo_ + wi);
 	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
 
+	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
+
 	float3 f3(f);
 	fresnel::Constant constant(f3);
-	float3 reflection = ggx::Isotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
+	float3 reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
 												   layer_, constant, pdf);
 
 	return n_dot_wi * reflection;

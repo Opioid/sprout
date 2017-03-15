@@ -544,7 +544,7 @@ static inline bool operator==(FVector3f_a a, FVector3f_a b) {
 }
 
 static inline bool operator!=(FVector3f_a a, FVector3f_a b) {
-	return a[0] != b[0] && a[1] != b[1] && a[2] != b[2];
+	return a[0] != b[0] || a[1] != b[1] || a[2] != b[2];
 }
 
 static inline bool all_lesser(FVector3f_a v, float s) {

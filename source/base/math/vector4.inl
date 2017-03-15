@@ -113,7 +113,7 @@ static inline bool operator==(FVector4f_a a, FVector4f_a b) {
 }
 
 static inline bool operator!=(FVector4f_a a, FVector4f_a b) {
-	return a[0] != b[0] && a[1] != b[1] && a[2] != b[2] && a[3] != b[3];
+	return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];
 }
 
 static inline Vector4f_a operator*(float s, FVector4f_a a) {

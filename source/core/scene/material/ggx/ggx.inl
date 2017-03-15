@@ -69,12 +69,10 @@ inline float G_smith(float n_dot_wi, float n_dot_wo, float a2) {
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
+float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
 							 const Layer& layer, const Fresnel& fresnel, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
-
-	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	const float a2 = layer.a2_;
 	const float d = distribution_isotropic(n_dot_h, a2);
@@ -207,13 +205,11 @@ float Isotropic::refract(float3_p wo, float n_dot_wo, float n_dot_t, const Layer
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::reflection(float3_p h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
+float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
 							 const Layer& layer, const Fresnel& fresnel,
 							 float3& fresnel_result, float& pdf) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
-
-	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	const float a2 = layer.a2_;
 	const float d = distribution_isotropic(n_dot_h, a2);
