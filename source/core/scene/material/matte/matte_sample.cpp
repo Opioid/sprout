@@ -1,4 +1,4 @@
-#include "matte_sample.hpp"
+ #include "matte_sample.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/disney/disney.inl"
 // #include "scene/material/lambert/lambert.inl"
@@ -13,13 +13,17 @@ const material::Sample::Layer& Sample::base_layer() const {
 
 float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	float n_dot_wi = layer_.clamped_n_dot(wi);
+	float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 //	float3 brdf = lambert::Isotropic::reflection(layer_.diffuse_color, n_dot_wi, layer_, pdf);
 
 	float3 h = math::normalized(wo_ + wi);
 	float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
 
-	float n_dot_wo = layer_.clamped_n_dot(wo_);
+//	const float wi_dot_wo = math::dot(wi, wo_);
+//	const float sl_wi_wo = 2.f + 2.f * wi_dot_wo;
+//	const float rcpl_wi_wo = math::simd::rsqrt(sl_wi_wo);
+//	const float h_dot_wi = math::clamp(rcpl_wi_wo + rcpl_wi_wo * wi_dot_wo, 0.00001f, 1.f);
 
 	float3 brdf = disney::Isotropic::reflection(h_dot_wi, n_dot_wi, n_dot_wo, layer_, pdf);
 
