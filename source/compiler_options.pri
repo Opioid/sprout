@@ -25,6 +25,9 @@ win32 {
     QMAKE_CXXFLAGS += /wd5027 #move assignment operator implicitly deleted
 } else {
     QMAKE_CXXFLAGS += -fno-rtti
+#    QMAKE_CXXFLAGS_RELEASE -= -O2
+#    QMAKE_CXXFLAGS_RELEASE += -O3
+#    QMAKE_CXXFLAGS_RELEASE += -march=native
 #	QMAKE_CXXFLAGS += -msse4.1
 }
 

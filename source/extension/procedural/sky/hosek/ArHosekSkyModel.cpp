@@ -561,8 +561,9 @@ hk_real arhosekskymodel_radiance(
 {
     int low_wl = static_cast<int>((wavelength - hk_real(320)) / hk_real(40));
 
-    if ( low_wl < 0 || low_wl >= 11 )
-        return 0.0f;
+	if ( low_wl < 0 || low_wl >= 11 ) {
+		return 0.0f;
+	}
 
 	hk_real interp = std::fmod((wavelength - hk_real(320) ) / hk_real(40), hk_real(1));
 
