@@ -26,10 +26,10 @@ public:
 protected:
 
 	template<typename Coating>
-	float3 base_evaluate_and_coating(float3_p wi, const Coating& coating, float& pdf) const;
+	float3 base_and_coating_evaluate(float3_p wi, const Coating& coating, float& pdf) const;
 
 	template<typename Coating>
-	void base_sample_and_coating(const Coating& coating,
+	void base_and_coating_sample(const Coating& coating,
 								 sampler::Sampler& sampler,
 								 bxdf::Result& result) const;
 

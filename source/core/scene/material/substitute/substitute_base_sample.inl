@@ -44,7 +44,7 @@ bool Sample_base<Diffuse>::is_translucent() const {
 
 template<typename Diffuse>
 template<typename Coating>
-float3 Sample_base<Diffuse>::base_evaluate_and_coating(float3_p wi, const Coating& coating,
+float3 Sample_base<Diffuse>::base_and_coating_evaluate(float3_p wi, const Coating& coating,
 													   float& pdf) const {
 	const float3 h = math::normalized(wo_ + wi);
 	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
@@ -63,7 +63,7 @@ float3 Sample_base<Diffuse>::base_evaluate_and_coating(float3_p wi, const Coatin
 
 template<typename Diffuse>
 template<typename Coating>
-void Sample_base<Diffuse>::base_sample_and_coating(const Coating& coating,
+void Sample_base<Diffuse>::base_and_coating_sample(const Coating& coating,
 												   sampler::Sampler& sampler,
 												   bxdf::Result& result) const {
 	const float p = sampler.generate_sample_1D();

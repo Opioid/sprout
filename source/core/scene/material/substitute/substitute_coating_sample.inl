@@ -15,7 +15,7 @@ float3 Sample_coating<Coating_layer>::evaluate(float3_p wi, float& pdf) const {
 		return float3::identity();
 	}
 
-	return base_evaluate_and_coating(wi, coating_, pdf);
+	return base_and_coating_evaluate(wi, coating_, pdf);
 }
 
 template<typename Coating_layer>
@@ -25,7 +25,7 @@ void Sample_coating<Coating_layer>::sample(sampler::Sampler& sampler, bxdf::Resu
 		return;
 	}
 
-	base_sample_and_coating(coating_, sampler, result);
+	base_and_coating_sample(coating_, sampler, result);
 }
 
 }}}
