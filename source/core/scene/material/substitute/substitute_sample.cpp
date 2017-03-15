@@ -16,7 +16,7 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 	}
 
 	float3 h = math::normalized(wo_ + wi);
-	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+	float wo_dot_h = clamped_dot(wo_, h);
 
 	return layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
 }
