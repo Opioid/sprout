@@ -18,8 +18,7 @@ float3 Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
 	pdf = n_dot_wi * math::Pi_inv;
 	const float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 
-	SOFT_ASSERT(testing::check(result, float3(0.f), n_dot_wi,
-							   n_dot_wo, h_dot_wi, pdf, layer));
+	SOFT_ASSERT(testing::check(result, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
 
 	return result;
 }
@@ -66,8 +65,7 @@ float3 Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi, float n_
 	pdf = n_dot_wi * math::Pi_inv;
 	const float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 
-	SOFT_ASSERT(testing::check(result, float3(0.f), n_dot_wi,
-							   n_dot_wo, h_dot_wi, pdf, layer));
+	SOFT_ASSERT(testing::check(result, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
 
 	return result;
 }
