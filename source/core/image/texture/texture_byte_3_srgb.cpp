@@ -88,7 +88,7 @@ void Byte_3_sRGB::gather_3(int4 xy_xy1, float3 c[4]) const {
 	c[3] = float3(encoding::cached_srgb_to_float(v[3][0]),
 				  encoding::cached_srgb_to_float(v[3][1]),
 				  encoding::cached_srgb_to_float(v[3][2]));
-				  */
+*/
 
 	const int32_t width = image_.description().dimensions[0];
 
