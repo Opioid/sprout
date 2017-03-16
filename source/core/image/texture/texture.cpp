@@ -17,6 +17,10 @@ const Image* Texture::image() const {
 	return untyped_image_.get();
 }
 
+int32_t Texture::width() const {
+	return untyped_image_->description().dimensions[0];
+}
+
 int2 Texture::dimensions_2() const {
 	return untyped_image_->description().dimensions.xy();
 }

@@ -148,13 +148,6 @@ void Typed_image<T>::gather(int4 xy_xy1, T c[4]) const {
 }
 
 template<typename T>
-void Typed_image<T>::pair_x(int2 x_x1, uint32_t y, T c[2]) const {
-	const int32_t y0 = description_.dimensions[0] * y;
-	c[0] = data_[y0 + x_x1[0]];
-	c[1] = data_[y0 + x_x1[1]];
-}
-
-template<typename T>
 template<uint32_t Axis>
 void Typed_image<T>::pair(int2 x_x1, uint32_t y, T c[2]) const {
 	if (0 == Axis) {

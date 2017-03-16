@@ -32,12 +32,26 @@ float2 Linear_2D<Address_U, Address_V>::sample_2(const Texture& texture, float2 
 template<typename Address_U, typename Address_V>
 float3 Linear_2D<Address_U, Address_V>::sample_3(const Texture& texture, float2 uv) const {
 	int4 xy_xy1;
-	float2 st = map(texture, uv, xy_xy1);
+	const float2 st = map(texture, uv, xy_xy1);
 
 	float3 c[4];
 	texture.gather_3(xy_xy1, c);
 
 	return bilinear(c, st[0], st[1]);
+
+//	const int32_t width = texture.width();
+
+//	const int32_t y0 = width * xy_xy1[1];
+
+//	const float3 c0 = texture.at_3(y0 + xy_xy1[0]);
+//	const float3 c1 = texture.at_3(y0 + xy_xy1[2]);
+
+//	const int32_t y1 = width * xy_xy1[3];
+
+//	const float3 c2 = texture.at_3(y1 + xy_xy1[0]);
+//	const float3 c3 = texture.at_3(y1 + xy_xy1[2]);
+
+//	return bilinear(c0, c1, c2, c3, st[0], st[1]);
 }
 
 template<typename Address_U, typename Address_V>

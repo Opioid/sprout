@@ -51,20 +51,16 @@ static float map(int32_t b, float tc, int2& x_x1) {
 }
 
 template<typename T>
-static T linear(T c[2], float s) {
+static T sample(const T* source, int32_t w, int32_t b, float tc, int32_t y) {
+	int2 x_x1;
+	const float s  = map(b, tc, x_x1);
 	const float _s = 1.f - s;
 
-	return _s * c[0] + s * c[1];
-}
+	const int32_t y0 = w * y;
+	T c0 = source[y0 + x_x1[0]];
+	T c1 = source[y0 + x_x1[1]];
 
-template<typename Source, typename T>
-static T sample(const Source& source, int32_t b, float tc, int32_t y) {
-	int2 x_x1;
-	float s = map(b, tc, x_x1);
-
-	T c[2];
-	source.pair_x(x_x1, y, c);
-	return linear(c, s);
+	return _s * c0 + s * c1;
 }
 
 template<uint32_t Axis>
@@ -195,7 +191,7 @@ static void fdft(image::Float_2& destination, const Source& source, const Row& r
 		uint32_t ss = 0;
 		for (float k = -0.5f; k <= 0.5f; k += dk, ++ss) {
 			const float tc = (k + 0.5f) * m;
-			row_samples[ss] = sample<Source, T>(source, b, tc, y);
+			row_samples[ss] = sample<T>(source.data(), d, b, tc, y);
 		}
 
 		float coordinates = 0.5f;

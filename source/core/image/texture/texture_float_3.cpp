@@ -8,6 +8,10 @@ Float_3::Float_3(std::shared_ptr<Image> image) :
 	Texture(image),
 	image_(*static_cast<const image::Float_3*>(image.get())) {}
 
+float3 Float_3::at_3(int32_t i) const {
+	return float3(image_.load(i));
+}
+
 float Float_3::at_1(int32_t x, int32_t y) const {
 	return image_.load(x, y)[0];
 }

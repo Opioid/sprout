@@ -18,6 +18,7 @@ public:
 
 	const Image* image() const;
 
+	int32_t width() const;
 	int2 dimensions_2() const;
 	int3 dimensions_3() const;
 	int2 back_2() const;
@@ -26,6 +27,8 @@ public:
 	float3 dimensions_float3() const;
 
 	int32_t num_elements() const;
+
+	virtual float3 at_3(int32_t i) const = 0;
 
 	virtual float  at_1(int32_t x, int32_t y) const = 0;
 	virtual float2 at_2(int32_t x, int32_t y) const = 0;
