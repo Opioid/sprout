@@ -66,11 +66,13 @@ static T sample(const T* source, int32_t w, int32_t b, float tc, int32_t y) {
 template<uint32_t Axis>
 static float2 sample_2(const image::Float_2& source, int32_t b, float tc, int32_t y) {
 	int2 x_x1;
-	float s = map(b, tc, x_x1);
+	const float s  = map(b, tc, x_x1);
+	const float _s = 1.f - s;
 
 	float2 c[2];
 	source.pair<Axis>(x_x1, y, c);
-	return linear(c, s);
+
+	return _s * c[0] + s * c[1];
 }
 
 class Row {
