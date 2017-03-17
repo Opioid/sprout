@@ -197,7 +197,7 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 							   const Intersection_vertex_MT& c,
 							   const math::Ray& ray) {
 	// Implementation A
-	float3 e1 = b.p - a.p;
+/*	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
 	float3 pvec = math::cross(ray.direction, e2);
@@ -226,9 +226,9 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 	}
 
 	return false;
-
+*/
 	// Implementation B
-	/*
+
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
@@ -253,7 +253,7 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 	uint8_t cf = static_cast<uint8_t>(hit_t < ray.max_t);
 
 	return 0 != (ca & cb & cc & cd & ce & cf);
-	*/
+
 }
 
 static inline bool intersect_p(math::simd::FVector origin,
@@ -266,24 +266,24 @@ static inline bool intersect_p(math::simd::FVector origin,
 	// Implementation C
 	using namespace math;
 
-	simd::Vector ap = simd::load_float3(a.p);
-	simd::Vector bp = simd::load_float3(b.p);
-	simd::Vector cp = simd::load_float3(c.p);
+	simd::Vector ap = simd::load_float3_unsafe(a.p);
+	simd::Vector bp = simd::load_float3_unsafe(b.p);
+	simd::Vector cp = simd::load_float3_unsafe(c.p);
 
 	simd::Vector e1 = simd::sub3(bp, ap);
 	simd::Vector e2 = simd::sub3(cp, ap);
 
 	simd::Vector pvec = simd::cross3(direction, e2);
 
-	simd::Vector inv_det = simd::rcp1(simd::dot3(e1, pvec));
+	simd::Vector inv_det = simd::rcp1(simd::dot3_1(e1, pvec));
 
 	simd::Vector tvec = simd::sub3(origin, ap);
-	simd::Vector u = simd::mul1(simd::dot3(tvec, pvec), inv_det);
+	simd::Vector u = simd::mul1(simd::dot3_1(tvec, pvec), inv_det);
 
 	simd::Vector qvec = simd::cross3(tvec, e1);
-	simd::Vector v = simd::mul1(simd::dot3(direction, qvec), inv_det);
+	simd::Vector v = simd::mul1(simd::dot3_1(direction, qvec), inv_det);
 
-	simd::Vector hit_t = simd::mul1(simd::dot3(e2, qvec), inv_det);
+	simd::Vector hit_t = simd::mul1(simd::dot3_1(e2, qvec), inv_det);
 
 	simd::Vector uv = simd::add1(u, v);
 

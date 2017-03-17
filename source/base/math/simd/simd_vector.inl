@@ -262,6 +262,19 @@ static inline Vector SU_CALLCONV dot3(FVector a, FVector b) {
 #endif
 }
 
+static inline Vector SU_CALLCONV dot3_1(FVector a, FVector b) {
+	// Perform the dot product
+	Vector vDot = _mm_mul_ps(a, b);
+	// x=Dot.vector4_f32[1], y=Dot.vector4_f32[2]
+	Vector vTemp = SU_PERMUTE_PS(vDot, _MM_SHUFFLE(2, 1, 2, 1));
+	// Result.vector4_f32[0] = x+y
+	vDot = _mm_add_ss(vDot, vTemp);
+	// x=Dot.vector4_f32[2]
+	vTemp = SU_PERMUTE_PS(vTemp, _MM_SHUFFLE(1, 1, 1, 1));
+	// Result.vector4_f32[0] = (x+y)+z
+	return _mm_add_ss(vDot, vTemp);
+}
+
 static inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
 	// [ a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x ]
 

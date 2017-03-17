@@ -116,7 +116,7 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 	uint32_t n = 0;
 
 	math::simd::Vector ray_origin	 = math::simd::load_float3(ray.origin);
-//	math::simd::Vector ray_direction = math::simd::load_float3(ray.direction);
+	math::simd::Vector ray_direction = math::simd::load_float3(ray.direction);
 	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
 	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
 	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
@@ -138,8 +138,8 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 			}
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-				if (data_.intersect_p(i, ray)) {
-			//	if (data_.intersect_p(i, ray_origin, ray_direction, ray_min_t, ray_max_t)) {
+			//	if (data_.intersect_p(i, ray)) {
+				if (data_.intersect_p(i, ray_origin, ray_direction, ray_min_t, ray_max_t)) {
 					return true;
 				}
 			}
