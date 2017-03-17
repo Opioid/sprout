@@ -50,11 +50,11 @@ bool Indexed_data<IV, SV>::intersect_p(uint32_t index, const math::Ray& ray) con
 }
 
 template<typename IV, typename SV>
-bool Indexed_data<IV, SV>::intersect_p(math::simd::FVector origin,
+bool Indexed_data<IV, SV>::intersect_p(uint32_t index,
+									   math::simd::FVector origin,
 									   math::simd::FVector direction,
 									   math::simd::FVector min_t,
-									   math::simd::FVector max_t,
-									   uint32_t index) const {
+									   math::simd::FVector max_t) const {
 	const auto& tri = triangles_[index];
 	const IV& a = intersection_vertices_[tri.a];
 	const IV& b = intersection_vertices_[tri.b];

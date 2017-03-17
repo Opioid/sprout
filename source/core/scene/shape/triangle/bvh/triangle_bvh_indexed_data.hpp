@@ -28,11 +28,11 @@ public:
 
 	bool intersect_p(uint32_t index, const math::Ray& ray) const;
 
-	bool intersect_p(math::simd::FVector origin,
+	bool intersect_p(uint32_t index,
+					 math::simd::FVector origin,
 					 math::simd::FVector direction,
 					 math::simd::FVector min_t,
-					 math::simd::FVector max_t,
-					 uint32_t index) const;
+					 math::simd::FVector max_t) const;
 
 	void interpolate_data(uint32_t index, float2 uv,
 						  float3& n, float3& t, float2& tc) const;

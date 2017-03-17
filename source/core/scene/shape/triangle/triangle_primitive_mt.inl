@@ -207,54 +207,6 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 	float3 tvec = ray.origin - a.p;
 	float u = math::dot(tvec, pvec) * inv_det;
 
-//	if (u < 0.f || u > 1.f) {
-//		return false;
-//	}
-
-	float3 qvec = math::cross(tvec, e1);
-	float v = math::dot(ray.direction, qvec) * inv_det;
-
-//	if (v < 0.f || u + v > 1.f) {
-//		return false;
-//	}
-
-	float hit_t = math::dot(e2, qvec) * inv_det;
-
-//	if (hit_t > ray.min_t && hit_t < ray.max_t) {
-//		return true;
-//	}
-
-	uint8_t ca = static_cast<uint8_t>(u > 0.f);
-	uint8_t cb = static_cast<uint8_t>(u < 1.f);
-	uint8_t cc = static_cast<uint8_t>(v > 0.f);
-	uint8_t cd = static_cast<uint8_t>(u + v < 1.f);
-	uint8_t ce = static_cast<uint8_t>(hit_t > ray.min_t);
-	uint8_t cf = static_cast<uint8_t>(hit_t < ray.max_t);
-
-	return 0 != (ca & cb & cc & cd & ce & cf);
-
-//	return false;
-}
-
-inline bool intersect_p(math::simd::FVector origin,
-						math::simd::FVector direction,
-						math::simd::FVector min_t,
-						math::simd::FVector max_t,
-						const Intersection_vertex_MT& a,
-						const Intersection_vertex_MT& b,
-						const Intersection_vertex_MT& c) {
-	/*
-	float3 e1 = b.p - a.p;
-	float3 e2 = c.p - a.p;
-
-	float3 pvec = math::cross(ray.direction, e2);
-
-	float det = math::dot(e1, pvec);
-	float inv_det = 1.f / det;
-
-	float3 tvec = ray.origin - a.p;
-	float u = math::dot(tvec, pvec) * inv_det;
-
 	if (u < 0.f || u > 1.f) {
 		return false;
 	}
@@ -272,9 +224,25 @@ inline bool intersect_p(math::simd::FVector origin,
 		return true;
 	}
 
-	return false;
-	*/
+//	uint8_t ca = static_cast<uint8_t>(u > 0.f);
+//	uint8_t cb = static_cast<uint8_t>(u < 1.f);
+//	uint8_t cc = static_cast<uint8_t>(v > 0.f);
+//	uint8_t cd = static_cast<uint8_t>(u + v < 1.f);
+//	uint8_t ce = static_cast<uint8_t>(hit_t > ray.min_t);
+//	uint8_t cf = static_cast<uint8_t>(hit_t < ray.max_t);
 
+//	return 0 != (ca & cb & cc & cd & ce & cf);
+
+	return false;
+}
+
+inline bool intersect_p(math::simd::FVector origin,
+						math::simd::FVector direction,
+						math::simd::FVector min_t,
+						math::simd::FVector max_t,
+						const Intersection_vertex_MT& a,
+						const Intersection_vertex_MT& b,
+						const Intersection_vertex_MT& c) {
 	using namespace math;
 
 	simd::Vector ap = simd::load_float3(a.p);
@@ -291,13 +259,6 @@ inline bool intersect_p(math::simd::FVector origin,
 	simd::Vector tvec = simd::sub3(origin, ap);
 	simd::Vector u = simd::mul1(simd::dot3(tvec, pvec), inv_det);
 
-	bool ur = 0 != (_mm_comige_ss(u, simd::Zero) &
-					_mm_comige_ss(simd::One, u));
-
-	if (!ur) {
-		return false;
-	}
-
 	simd::Vector qvec = simd::cross3(tvec, e1);
 	simd::Vector v = simd::mul1(simd::dot3(direction, qvec), inv_det);
 
@@ -305,7 +266,8 @@ inline bool intersect_p(math::simd::FVector origin,
 
 	simd::Vector uv = simd::add1(u, v);
 
-	return 0 != (/*_mm_comige_ss(u, simd::Zero) &*/
+	return 0 != (_mm_comige_ss(u, simd::Zero) &
+				 _mm_comige_ss(simd::One, u) &
 				 _mm_comige_ss(v, simd::Zero) &
 				 _mm_comige_ss(simd::One, uv) &
 				 _mm_comige_ss(hit_t, min_t) &
