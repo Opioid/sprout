@@ -196,6 +196,7 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 							   const Intersection_vertex_MT& b,
 							   const Intersection_vertex_MT& c,
 							   const math::Ray& ray) {
+	// Implementation A
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
@@ -224,25 +225,45 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 		return true;
 	}
 
-//	uint8_t ca = static_cast<uint8_t>(u > 0.f);
-//	uint8_t cb = static_cast<uint8_t>(u < 1.f);
-//	uint8_t cc = static_cast<uint8_t>(v > 0.f);
-//	uint8_t cd = static_cast<uint8_t>(u + v < 1.f);
-//	uint8_t ce = static_cast<uint8_t>(hit_t > ray.min_t);
-//	uint8_t cf = static_cast<uint8_t>(hit_t < ray.max_t);
-
-//	return 0 != (ca & cb & cc & cd & ce & cf);
-
 	return false;
+
+	// Implementation B
+	/*
+	float3 e1 = b.p - a.p;
+	float3 e2 = c.p - a.p;
+
+	float3 pvec = math::cross(ray.direction, e2);
+
+	float det = math::dot(e1, pvec);
+	float inv_det = 1.f / det;
+
+	float3 tvec = ray.origin - a.p;
+	float u = math::dot(tvec, pvec) * inv_det;
+
+	float3 qvec = math::cross(tvec, e1);
+	float v = math::dot(ray.direction, qvec) * inv_det;
+
+	float hit_t = math::dot(e2, qvec) * inv_det;
+
+	uint8_t ca = static_cast<uint8_t>(u > 0.f);
+	uint8_t cb = static_cast<uint8_t>(u < 1.f);
+	uint8_t cc = static_cast<uint8_t>(v > 0.f);
+	uint8_t cd = static_cast<uint8_t>(u + v < 1.f);
+	uint8_t ce = static_cast<uint8_t>(hit_t > ray.min_t);
+	uint8_t cf = static_cast<uint8_t>(hit_t < ray.max_t);
+
+	return 0 != (ca & cb & cc & cd & ce & cf);
+	*/
 }
 
-inline bool intersect_p(math::simd::FVector origin,
-						math::simd::FVector direction,
-						math::simd::FVector min_t,
-						math::simd::FVector max_t,
-						const Intersection_vertex_MT& a,
-						const Intersection_vertex_MT& b,
-						const Intersection_vertex_MT& c) {
+static inline bool intersect_p(math::simd::FVector origin,
+							   math::simd::FVector direction,
+							   math::simd::FVector min_t,
+							   math::simd::FVector max_t,
+							   const Intersection_vertex_MT& a,
+							   const Intersection_vertex_MT& b,
+							   const Intersection_vertex_MT& c) {
+	// Implementation C
 	using namespace math;
 
 	simd::Vector ap = simd::load_float3(a.p);
