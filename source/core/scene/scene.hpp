@@ -116,6 +116,8 @@ private:
     bvh::Builder builder_;
 	bvh::Tree bvh_;
 
+	bool has_masked_material_;
+
 	std::vector<entity::Dummy*> dummies_;
 
 	std::vector<Prop*> finite_props_;

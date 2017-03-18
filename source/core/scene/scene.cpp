@@ -71,7 +71,11 @@ bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) co
 
 float Scene::opacity(const scene::Ray& ray, Worker& worker,
 					 material::Sampler_settings::Filter filter) const {
-	return bvh_.opacity(ray, worker, filter);
+	if (has_masked_material_) {
+		return bvh_.opacity(ray, worker, filter);
+	} else {
+		return bvh_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
+	}
 }
 
 float3 Scene::thin_absorption(const scene::Ray& ray, Worker& worker,
@@ -193,6 +197,8 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 }
 
 void Scene::compile(thread::Pool& pool) {
+	has_masked_material_ = false;
+
 	// handle changed transformations
 	for (const auto d : dummies_) {
 		d->calculate_world_transformation();
@@ -204,10 +210,12 @@ void Scene::compile(thread::Pool& pool) {
 
 	for (auto p : finite_props_) {
 		p->calculate_world_transformation();
+		has_masked_material_ = has_masked_material_ || p->has_masked_material();
 	}
 
 	for (auto p : infinite_props_) {
 		p->calculate_world_transformation();
+		has_masked_material_ = has_masked_material_ || p->has_masked_material();
 	}
 
 	// rebuild the BVH
