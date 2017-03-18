@@ -96,7 +96,8 @@ static inline float3 sample_hemisphere_cosine(float2 uv) {
 	return float3(xy[0], xy[1], z);
 }
 
-static inline float3 sample_oriented_hemisphere_cosine(float2 uv, float3_p x, float3_p y, float3_p z) {
+static inline float3 sample_oriented_hemisphere_cosine(float2 uv,
+													   float3_p x, float3_p y, float3_p z) {
 	const float2 xy = sample_disk_concentric(uv);
 	const float  za = std::sqrt(std::max(0.f, 1.f - xy[0] * xy[0] - xy[1] * xy[1]));
 

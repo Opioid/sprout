@@ -28,6 +28,13 @@ public:
 
 	bool intersect_p(uint32_t index, const math::Ray& ray) const;
 
+	bool intersect(uint32_t index,
+				   math::simd::FVector origin,
+				   math::simd::FVector direction,
+				   math::simd::FVector min_t,
+				   math::simd::Vector& max_t,
+				   float2& uv) const;
+
 	bool intersect_p(uint32_t index,
 					 math::simd::FVector origin,
 					 math::simd::FVector direction,

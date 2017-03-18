@@ -63,7 +63,7 @@ uint32_t Tree<Data>::current_triangle() const {
 template<typename Data>
 bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 						   Intersection& intersection) const {
-	node_stack.clear();
+/*	node_stack.clear();
 	node_stack.push(0);
 	uint32_t n = 0;
 
@@ -106,7 +106,55 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 	intersection.uv = uv;
 	intersection.index = index;
 
-	return index != 0xFFFFFFFF;
+	return index != 0xFFFFFFFF;*/
+
+	node_stack.clear();
+	node_stack.push(0);
+	uint32_t n = 0;
+
+	float2 uv;
+	uint32_t index = 0xFFFFFFFF;
+
+	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
+	math::simd::Vector ray_direction	 = math::simd::load_float3(ray.direction);
+	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
+	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
+
+	while (!node_stack.empty()) {
+		const auto& node = nodes_[n];
+
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
+			if (0 == node.num_primitives()) {
+				if (0 == ray.signs[node.axis()]) {
+					node_stack.push(node.next());
+					++n;
+				} else {
+					node_stack.push(n + 1);
+					n = node.next();
+				}
+
+				continue;
+			}
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				if (data_.intersect(i, ray_origin, ray_direction, ray_min_t, ray_max_t, uv)) {
+					index = i;
+				}
+			}
+		}
+
+		n = node_stack.pop();
+	}
+
+	if (index != 0xFFFFFFFF) {
+		_mm_store_ss(&ray.max_t, ray_max_t);
+		intersection.uv = uv;
+		intersection.index = index;
+		return true;
+	}
+
+	return false;
 }
 
 template<typename Data>

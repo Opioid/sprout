@@ -50,6 +50,21 @@ bool Indexed_data<IV, SV>::intersect_p(uint32_t index, const math::Ray& ray) con
 }
 
 template<typename IV, typename SV>
+bool Indexed_data<IV, SV>::intersect(uint32_t index,
+									 math::simd::FVector origin,
+									 math::simd::FVector direction,
+									 math::simd::FVector min_t,
+									 math::simd::Vector& max_t,
+									 float2& uv) const {
+	const auto& tri = triangles_[index];
+	const IV& a = intersection_vertices_[tri.a];
+	const IV& b = intersection_vertices_[tri.b];
+	const IV& c = intersection_vertices_[tri.c];
+
+	return triangle::intersect(origin, direction, min_t, max_t, a, b, c, uv);
+}
+
+template<typename IV, typename SV>
 bool Indexed_data<IV, SV>::intersect_p(uint32_t index,
 									   math::simd::FVector origin,
 									   math::simd::FVector direction,

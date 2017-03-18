@@ -192,6 +192,53 @@ static inline bool intersect(const Intersection_vertex_MT& a,
 	return false;
 }
 
+static inline bool intersect(math::simd::FVector origin,
+							 math::simd::FVector direction,
+							 math::simd::FVector min_t,
+							 math::simd::Vector& max_t,
+							 const Intersection_vertex_MT& a,
+							 const Intersection_vertex_MT& b,
+							 const Intersection_vertex_MT& c,
+							 float2& uv_out) {
+	using namespace math;
+
+	simd::Vector ap = simd::load_float3_unsafe(a.p);
+	simd::Vector bp = simd::load_float3_unsafe(b.p);
+	simd::Vector cp = simd::load_float3_unsafe(c.p);
+
+	simd::Vector e1 = simd::sub3(bp, ap);
+	simd::Vector e2 = simd::sub3(cp, ap);
+
+	simd::Vector pvec = simd::cross3(direction, e2);
+
+	simd::Vector inv_det = simd::rcp1(simd::dot3_1(e1, pvec));
+
+	simd::Vector tvec = simd::sub3(origin, ap);
+	simd::Vector u = simd::mul1(simd::dot3_1(tvec, pvec), inv_det);
+
+	simd::Vector qvec = simd::cross3(tvec, e1);
+	simd::Vector v = simd::mul1(simd::dot3_1(direction, qvec), inv_det);
+
+	simd::Vector hit_t = simd::mul1(simd::dot3_1(e2, qvec), inv_det);
+
+	simd::Vector uv = simd::add1(u, v);
+
+	if (0 != (_mm_comige_ss(u, simd::Zero) &
+			  _mm_comige_ss(simd::One, u) &
+			  _mm_comige_ss(v, simd::Zero) &
+			  _mm_comige_ss(simd::One, uv) &
+			  _mm_comige_ss(hit_t, min_t) &
+			  _mm_comige_ss(max_t, hit_t))) {
+		max_t = hit_t;
+
+		_mm_store_ss(&uv_out.v[0], u);
+		_mm_store_ss(&uv_out.v[1], v);
+		return true;
+	}
+
+	return false;
+}
+
 static inline bool intersect_p(const Intersection_vertex_MT& a,
 							   const Intersection_vertex_MT& b,
 							   const Intersection_vertex_MT& c,
