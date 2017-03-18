@@ -155,32 +155,6 @@ void Sample_base<Diffuse>::Layer::set(float3_p color, float3_p radiance, float i
 }
 
 template<typename Diffuse>
-float3 Sample_base<Diffuse>::Layer::base_evaluate(float3_p wi, float3_p wo, float& pdf) const {
-	const float n_dot_wi = clamped_n_dot(wi);
-	const float n_dot_wo = clamped_n_dot(wo);
-
-	const float wi_dot_wo = math::dot(wi, wo);
-	const float sl_wi_wo = 2.f + 2.f * wi_dot_wo;
-	const float rcpl_wi_wo = math::simd::rsqrt(sl_wi_wo);
-	const float wo_dot_h = math::clamp(rcpl_wi_wo + rcpl_wi_wo * wi_dot_wo, 0.00001f, 1.f);
-
-	float d_pdf;
-	const float3 d_reflection = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, *this, d_pdf);
-
-	const float n_dot_h  = (n_dot_wi + n_dot_wo) * rcpl_wi_wo;
-
-	const fresnel::Schlick schlick(f0_);
-	float3 ggx_fresnel;
-	float  ggx_pdf;
-	const float3 ggx_reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-															 *this, schlick, ggx_fresnel, ggx_pdf);
-
-	pdf = 0.5f * (d_pdf + ggx_pdf);
-
-	return n_dot_wi * ((1.f - ggx_fresnel) * d_reflection + ggx_reflection);
-}
-
-template<typename Diffuse>
 float3 Sample_base<Diffuse>::Layer::base_evaluate(float3_p wi, float3_p wo, float3_p h,
 												  float wo_dot_h, float& pdf) const {
 	const float n_dot_wi = clamped_n_dot(wi);

@@ -51,7 +51,6 @@ float4 AO::li(Worker& worker, Ray& ray, Intersection& intersection) {
 
 		occlusion_ray.set_direction(ws);
 
-//		if (worker.visibility(occlusion_ray)) {
 		if (worker.masked_visibility(occlusion_ray, Sampler_filter::Unknown)) {
 			result += settings_.num_samples_reciprocal;
 		}

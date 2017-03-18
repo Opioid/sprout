@@ -2,11 +2,10 @@
 #include "base/chrono/chrono.hpp"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
-#include "base/math/simd/simd_math.inl"
-#include "base/math/simd/simd_vector.inl"
 #include "base/string/string.hpp"
 #include "base/math/print.hpp"
-#include "base/math/simd/simd_math.inl"
+#include "base/math/simd/simd_math.hpp"
+#include "base/math/simd/simd_vector.inl"
 #include <iostream>
 
 namespace testing { namespace simd {

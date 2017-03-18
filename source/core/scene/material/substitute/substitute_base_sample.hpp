@@ -54,8 +54,6 @@ public:
 		void set(float3_p color, float3_p radiance, float ior,
 				 float constant_f0, float roughness, float metallic);
 
-		float3 base_evaluate(float3_p wi, float3_p wo, float& pdf) const;
-
 		float3 base_evaluate(float3_p wi, float3_p wo, float3_p h,
 							 float wo_dot_h, float& pdf) const;
 

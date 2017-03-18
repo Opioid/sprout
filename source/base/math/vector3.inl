@@ -2,7 +2,7 @@
 
 #include "vector3.hpp"
 #include "vector2.inl"
-#include "simd/simd_math.inl"
+#include "simd/simd_math.hpp"
 #include "simd/simd_vector.inl"
 
 namespace math {
