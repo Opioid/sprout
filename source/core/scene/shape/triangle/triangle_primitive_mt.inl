@@ -196,10 +196,11 @@ static inline bool intersect(math::simd::FVector origin,
 							 math::simd::FVector direction,
 							 math::simd::FVector min_t,
 							 math::simd::Vector& max_t,
+							 math::simd::Vector& u_out,
+							 math::simd::Vector& v_out,
 							 const Intersection_vertex_MT& a,
 							 const Intersection_vertex_MT& b,
-							 const Intersection_vertex_MT& c,
-							 float2& uv_out) {
+							 const Intersection_vertex_MT& c) {
 	using namespace math;
 
 	simd::Vector ap = simd::load_float3_unsafe(a.p);
@@ -230,9 +231,8 @@ static inline bool intersect(math::simd::FVector origin,
 			  _mm_comige_ss(hit_t, min_t) &
 			  _mm_comige_ss(max_t, hit_t))) {
 		max_t = hit_t;
-
-		_mm_store_ss(&uv_out.v[0], u);
-		_mm_store_ss(&uv_out.v[1], v);
+		u_out = u;
+		v_out = v;
 		return true;
 	}
 

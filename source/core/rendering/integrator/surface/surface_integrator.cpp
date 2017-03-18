@@ -25,7 +25,7 @@ bool Integrator::resolve_mask(Worker& worker, Ray& ray, Intersection& intersecti
 		}
 
 		// Slide along ray until opaque surface is found
-		ray.min_t = ray.max_t;
+		ray.min_t = ray.max_t + take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.max_t = scene::Ray_max_t;
 		if (!worker.intersect(ray, intersection)) {
 			return false;
