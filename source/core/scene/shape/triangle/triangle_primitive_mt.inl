@@ -408,6 +408,32 @@ static inline float2 interpolate_uv(const Shading_vertex_MTC& a,
 				  w * a.t_v[3] + uv[0] * b.t_v[3] + uv[1] * c.t_v[3]);
 }
 
+static inline float2 interpolate_uv(const Shading_vertex_MTC& a,
+									const Shading_vertex_MTC& b,
+									const Shading_vertex_MTC& c,
+									math::simd::FVector u,
+									math::simd::FVector v) {
+	const float3 auv(a.n_u[3], a.t_v[3], 0.f);
+	math::simd::Vector va = math::simd::load_float3_unsafe(auv);
+
+	const float3 buv(b.n_u[3], b.t_v[3], 0.f);
+	math::simd::Vector vb = math::simd::load_float3_unsafe(buv);
+
+	const float3 cuv(c.n_u[3], c.t_v[3], 0.f);
+	math::simd::Vector vc = math::simd::load_float3_unsafe(cuv);
+
+	const math::simd::Vector w = math::simd::sub3(math::simd::sub3(math::simd::One, u), v);
+
+	vc = math::simd::mul3(v, vc);
+	vb = math::simd::mul3(u, vb);
+	va = math::simd::mul3(w, va);
+
+	math::simd::Vector uv = math::simd::add3(math::simd::add3(vc, vb), va);
+	float3 r;
+	math::simd::store_float3_unsafe(r.v, uv);
+	return r.xy();
+}
+
 static inline void interpolate_data(const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,

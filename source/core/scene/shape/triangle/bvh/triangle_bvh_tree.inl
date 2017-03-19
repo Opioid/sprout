@@ -298,9 +298,14 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, u, v, i)) {
-					_mm_store_ss(&uv.v[0], u);
-					_mm_store_ss(&uv.v[1], v);
-					uv = data_.interpolate_uv(i, uv);
+//					_mm_store_ss(&uv.v[0], u);
+//					_mm_store_ss(&uv.v[1], v);
+//					uv = data_.interpolate_uv(i, uv);
+
+					// Splat x
+					u = SU_PERMUTE_PS(u, _MM_SHUFFLE(0, 0, 0, 0));
+					v = SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
+					uv = data_.interpolate_uv(u, v, i);
 
 					const auto material = materials[data_.material_index(i)];
 

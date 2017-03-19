@@ -46,6 +46,7 @@ public:
 						  float3& n, float3& t, float2& tc) const;
 
 	float2 interpolate_uv(uint32_t index, float2 uv) const;
+	float2 interpolate_uv(math::simd::FVector u, math::simd::FVector v, uint32_t index) const;
 
 	float    bitangent_sign(uint32_t index) const;
 	uint32_t material_index(uint32_t index) const;

@@ -101,6 +101,18 @@ float2 Indexed_data<IV, SV>::interpolate_uv(uint32_t index, float2 uv) const {
 }
 
 template<typename IV, typename SV>
+float2 Indexed_data<IV, SV>::interpolate_uv(math::simd::FVector u,
+											math::simd::FVector v,
+											uint32_t index) const {
+	const auto& tri = triangles_[index];
+	const SV& sa = shading_vertices_[tri.a];
+	const SV& sb = shading_vertices_[tri.b];
+	const SV& sc = shading_vertices_[tri.c];
+
+	return triangle::interpolate_uv(sa, sb, sc, u, v);
+}
+
+template<typename IV, typename SV>
 float Indexed_data<IV, SV>::bitangent_sign(uint32_t index) const {
 	const float signs[2] = { 1.f, -1.f };
 
