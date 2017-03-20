@@ -6,7 +6,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/plane.inl"
-#include "base/math/simd/simd_aabb.inl"
+#include "base/math/simd_aabb.inl"
 #include "base/thread/thread_pool.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
@@ -15,14 +15,14 @@ uint32_t Builder_SAH2::Reference::primitive() const {
 	return bounds[0].index;
 }
 
-void Builder_SAH2::Reference::set_min_max_primitive(math::simd::FVector min,
-													math::simd::FVector max,
+void Builder_SAH2::Reference::set_min_max_primitive(FVector min,
+													FVector max,
 													uint32_t primitive) {
 	float3 tmp;
-	math::simd::store_float3_unsafe(tmp, min);
+	math::store_float3_unsafe(tmp, min);
 	bounds[0].v[0] = tmp[0]; bounds[0].v[1] = tmp[1]; bounds[0].v[2] = tmp[2];
 	bounds[0].index = primitive;
-	math::simd::store_float3_unsafe(bounds[1].v, max);
+	math::store_float3_unsafe(bounds[1].v, max);
 }
 
 void Builder_SAH2::Reference::clip_min(float d, uint8_t axis) {
@@ -33,10 +33,7 @@ void Builder_SAH2::Reference::clip_max(float d, uint8_t axis) {
 	bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
 }
 
-Builder_SAH2::Build_node::Build_node() : start_index(0), end_index(0) {
-	children[0] = nullptr;
-	children[1] = nullptr;
-}
+Builder_SAH2::Build_node::Build_node() : start_index(0), end_index(0), children{nullptr, nullptr} {}
 
 Builder_SAH2::Build_node::~Build_node() {
 	delete children[0];
@@ -55,14 +52,14 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 	uint32_t num_side_0 = 0;
 	uint32_t num_side_1 = 0;
 
-	math::simd::AABB box_0(aabb_0_);
-	math::simd::AABB box_1(aabb_1_);
+	math::Simd_AABB box_0(aabb_0_);
+	math::Simd_AABB box_1(aabb_1_);
 
 	if (spatial_) {
 		for (const auto& r : references) {
 		//	const auto& bounds = r.aabb;
 
-			math::simd::AABB b(r.bounds[0].v, r.bounds[1].v);
+			math::Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
 			if (behind(r.bounds[1].v)) {
 				++num_side_0;
@@ -94,7 +91,7 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 		for (const auto& r : references) {
 		//	const auto& bounds = r.aabb;
 
-			math::simd::AABB b(r.bounds[0].v, r.bounds[1].v);
+			math::Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
 			if (behind(r.bounds[1].v)) {
 				++num_side_0;

@@ -2,8 +2,8 @@
 
 #include "vector3.hpp"
 #include "vector2.inl"
-#include "simd/simd_math.hpp"
-#include "simd/simd_vector.inl"
+#include "simd.hpp"
+#include "vector.inl"
 
 namespace math {
 
@@ -304,7 +304,7 @@ static inline Vector3f_a operator+(FVector3f_a a, FVector3f_a b) {
 //	__m128 mb = simd::load_float3(b.v);
 //	__m128 mr = _mm_add_ps(ma, mb);
 //	Vector3f_a r;
-//	simd::store_float3_unsafe(r.v, mr);
+//	store_float3_unsafe(r.v, mr);
 //	return r;
 
 	return Vector3f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
@@ -404,19 +404,19 @@ static inline Vector3f_a normalized(FVector3f_a v) {
 //	return v / length(v);
 
 	// This seems to give the best performance on clang & AMD
-	return simd::rsqrt(dot(v, v)) * v;
+	return rsqrt(dot(v, v)) * v;
 }
 
 static inline Vector3f_a reciprocal(FVector3f_a v) {
 //	return Vector3f_a(1.f / v[0], 1.f / v[1], 1.f / v[2]);
 
-	simd::Vector sx = simd::load_float3_unsafe(v);
+	Vector sx = load_float3_unsafe(v);
 
-	simd::Vector rcp = _mm_rcp_ps(sx);
-	simd::Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
+	Vector rcp = _mm_rcp_ps(sx);
+	Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
 	Vector3f_a result;
-	simd::store_float3_unsafe(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	store_float3_unsafe(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 	return result;
 }
 

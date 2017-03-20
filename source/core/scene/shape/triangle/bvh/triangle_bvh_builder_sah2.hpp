@@ -41,7 +41,7 @@ private:
 
 		uint32_t primitive() const;
 
-		void set_min_max_primitive(math::simd::FVector min, math::simd::FVector max,
+		void set_min_max_primitive(FVector min, FVector max,
 								   uint32_t primitive);
 
 		void clip_min(float d, uint8_t axis);

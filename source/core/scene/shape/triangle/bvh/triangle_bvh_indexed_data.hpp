@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.hpp"
 #include "base/math/ray.hpp"
-#include "base/math/simd/simd_vector.hpp"
+#include "base/math/vector.hpp"
 #include <vector>
 
 namespace scene { namespace shape {
@@ -28,25 +28,17 @@ public:
 
 	bool intersect_p(uint32_t index, const math::Ray& ray) const;
 
-	bool intersect(math::simd::FVector origin,
-				   math::simd::FVector direction,
-				   math::simd::FVector min_t,
-				   math::simd::Vector& max_t,
-				   math::simd::Vector& u,
-				   math::simd::Vector& v,
-				   uint32_t index) const;
+	bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
+				   uint32_t index, Vector& u, Vector& v) const;
 
-	bool intersect_p(math::simd::FVector origin,
-					 math::simd::FVector direction,
-					 math::simd::FVector min_t,
-					 math::simd::FVector max_t,
+	bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
 					 uint32_t index) const;
 
 	void interpolate_data(uint32_t index, float2 uv,
 						  float3& n, float3& t, float2& tc) const;
 
 	float2 interpolate_uv(uint32_t index, float2 uv) const;
-	float2 interpolate_uv(math::simd::FVector u, math::simd::FVector v, uint32_t index) const;
+	float2 interpolate_uv(FVector u, FVector v, uint32_t index) const;
 
 	float    bitangent_sign(uint32_t index) const;
 	uint32_t material_index(uint32_t index) const;

@@ -3,7 +3,7 @@
 #include "triangle_primitive_mt.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/ray.hpp"
-#include "base/math/simd/simd_vector.inl"
+#include "base/math/vector.inl"
 
 #include <iostream>
 
@@ -192,42 +192,38 @@ static inline bool intersect(const Intersection_vertex_MT& a,
 	return false;
 }
 
-static inline bool intersect(math::simd::FVector origin,
-							 math::simd::FVector direction,
-							 math::simd::FVector min_t,
-							 math::simd::Vector& max_t,
-							 math::simd::Vector& u_out,
-							 math::simd::Vector& v_out,
+static inline bool intersect(FVector origin, FVector direction, FVector min_t, Vector& max_t,
 							 const Intersection_vertex_MT& a,
 							 const Intersection_vertex_MT& b,
-							 const Intersection_vertex_MT& c) {
+							 const Intersection_vertex_MT& c,
+							 Vector& u_out, Vector& v_out) {
 	using namespace math;
 
-	simd::Vector ap = simd::load_float3_unsafe(a.p);
-	simd::Vector bp = simd::load_float3_unsafe(b.p);
-	simd::Vector cp = simd::load_float3_unsafe(c.p);
+	Vector ap = load_float3_unsafe(a.p);
+	Vector bp = load_float3_unsafe(b.p);
+	Vector cp = load_float3_unsafe(c.p);
 
-	simd::Vector e1 = simd::sub3(bp, ap);
-	simd::Vector e2 = simd::sub3(cp, ap);
+	Vector e1 = sub3(bp, ap);
+	Vector e2 = sub3(cp, ap);
 
-	simd::Vector pvec = simd::cross3(direction, e2);
+	Vector pvec = cross3(direction, e2);
 
-	simd::Vector inv_det = simd::rcp1(simd::dot3_1(e1, pvec));
+	Vector inv_det = rcp1(dot3_1(e1, pvec));
 
-	simd::Vector tvec = simd::sub3(origin, ap);
-	simd::Vector u = simd::mul1(simd::dot3_1(tvec, pvec), inv_det);
+	Vector tvec = sub3(origin, ap);
+	Vector u = mul1(dot3_1(tvec, pvec), inv_det);
 
-	simd::Vector qvec = simd::cross3(tvec, e1);
-	simd::Vector v = simd::mul1(simd::dot3_1(direction, qvec), inv_det);
+	Vector qvec = cross3(tvec, e1);
+	Vector v = mul1(dot3_1(direction, qvec), inv_det);
 
-	simd::Vector hit_t = simd::mul1(simd::dot3_1(e2, qvec), inv_det);
+	Vector hit_t = mul1(dot3_1(e2, qvec), inv_det);
 
-	simd::Vector uv = simd::add1(u, v);
+	Vector uv = add1(u, v);
 
-	if (0 != (_mm_comige_ss(u, simd::Zero) &
-			  _mm_comige_ss(simd::One, u) &
-			  _mm_comige_ss(v, simd::Zero) &
-			  _mm_comige_ss(simd::One, uv) &
+	if (0 != (_mm_comige_ss(u, Zero) &
+			  _mm_comige_ss(One, u) &
+			  _mm_comige_ss(v, Zero) &
+			  _mm_comige_ss(One, uv) &
 			  _mm_comige_ss(hit_t, min_t) &
 			  _mm_comige_ss(max_t, hit_t))) {
 		max_t = hit_t;
@@ -303,41 +299,39 @@ static inline bool intersect_p(const Intersection_vertex_MT& a,
 
 }
 
-static inline bool intersect_p(math::simd::FVector origin,
-							   math::simd::FVector direction,
-							   math::simd::FVector min_t,
-							   math::simd::FVector max_t,
+static inline bool intersect_p(FVector origin, FVector direction,
+							   FVector min_t, FVector max_t,
 							   const Intersection_vertex_MT& a,
 							   const Intersection_vertex_MT& b,
 							   const Intersection_vertex_MT& c) {
 	// Implementation C
 	using namespace math;
 
-	simd::Vector ap = simd::load_float3_unsafe(a.p);
-	simd::Vector bp = simd::load_float3_unsafe(b.p);
-	simd::Vector cp = simd::load_float3_unsafe(c.p);
+	Vector ap = load_float3_unsafe(a.p);
+	Vector bp = load_float3_unsafe(b.p);
+	Vector cp = load_float3_unsafe(c.p);
 
-	simd::Vector e1 = simd::sub3(bp, ap);
-	simd::Vector e2 = simd::sub3(cp, ap);
+	Vector e1 = sub3(bp, ap);
+	Vector e2 = sub3(cp, ap);
 
-	simd::Vector pvec = simd::cross3(direction, e2);
+	Vector pvec = cross3(direction, e2);
 
-	simd::Vector inv_det = simd::rcp1(simd::dot3_1(e1, pvec));
+	Vector inv_det = rcp1(dot3_1(e1, pvec));
 
-	simd::Vector tvec = simd::sub3(origin, ap);
-	simd::Vector u = simd::mul1(simd::dot3_1(tvec, pvec), inv_det);
+	Vector tvec = sub3(origin, ap);
+	Vector u = mul1(dot3_1(tvec, pvec), inv_det);
 
-	simd::Vector qvec = simd::cross3(tvec, e1);
-	simd::Vector v = simd::mul1(simd::dot3_1(direction, qvec), inv_det);
+	Vector qvec = cross3(tvec, e1);
+	Vector v = mul1(dot3_1(direction, qvec), inv_det);
 
-	simd::Vector hit_t = simd::mul1(simd::dot3_1(e2, qvec), inv_det);
+	Vector hit_t = mul1(dot3_1(e2, qvec), inv_det);
 
-	simd::Vector uv = simd::add1(u, v);
+	Vector uv = add1(u, v);
 
-	return 0 != (_mm_comige_ss(u, simd::Zero) &
-				 _mm_comige_ss(simd::One, u) &
-				 _mm_comige_ss(v, simd::Zero) &
-				 _mm_comige_ss(simd::One, uv) &
+	return 0 != (_mm_comige_ss(u, Zero) &
+				 _mm_comige_ss(One, u) &
+				 _mm_comige_ss(v, Zero) &
+				 _mm_comige_ss(One, uv) &
 				 _mm_comige_ss(hit_t, min_t) &
 				 _mm_comige_ss(max_t, hit_t));
 }
@@ -408,29 +402,28 @@ static inline float2 interpolate_uv(const Shading_vertex_MTC& a,
 				  w * a.t_v[3] + uv[0] * b.t_v[3] + uv[1] * c.t_v[3]);
 }
 
-static inline float2 interpolate_uv(const Shading_vertex_MTC& a,
+static inline float2 interpolate_uv(FVector u, FVector v,
+									const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& b,
-									const Shading_vertex_MTC& c,
-									math::simd::FVector u,
-									math::simd::FVector v) {
+									const Shading_vertex_MTC& c) {
 	const float3 auv(a.n_u[3], a.t_v[3], 0.f);
-	math::simd::Vector va = math::simd::load_float3_unsafe(auv);
+	Vector va = math::load_float3_unsafe(auv);
 
 	const float3 buv(b.n_u[3], b.t_v[3], 0.f);
-	math::simd::Vector vb = math::simd::load_float3_unsafe(buv);
+	Vector vb = math::load_float3_unsafe(buv);
 
 	const float3 cuv(c.n_u[3], c.t_v[3], 0.f);
-	math::simd::Vector vc = math::simd::load_float3_unsafe(cuv);
+	Vector vc = math::load_float3_unsafe(cuv);
 
-	const math::simd::Vector w = math::simd::sub3(math::simd::sub3(math::simd::One, u), v);
+	const Vector w = math::sub3(math::sub3(math::One, u), v);
 
-	vc = math::simd::mul3(v, vc);
-	vb = math::simd::mul3(u, vb);
-	va = math::simd::mul3(w, va);
+	vc = math::mul3(v, vc);
+	vb = math::mul3(u, vb);
+	va = math::mul3(w, va);
 
-	math::simd::Vector uv = math::simd::add3(math::simd::add3(vc, vb), va);
+	Vector uv = math::add3(math::add3(vc, vb), va);
 	float3 r;
-	math::simd::store_float3_unsafe(r.v, uv);
+	math::store_float3_unsafe(r.v, uv);
 	return r.xy();
 }
 

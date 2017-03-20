@@ -3,7 +3,7 @@
 #include "math/vector3.hpp"
 #include "math/matrix4x4.hpp"
 #include "math/ray.hpp"
-#include "math/simd/simd_vector.hpp"
+#include "math/vector.hpp"
 
 namespace math {
 
@@ -13,7 +13,7 @@ public:
 
 	AABB() = default;
 	constexpr AABB(FVector3f_a min, FVector3f_a max);
-	AABB(simd::FVector min, simd::FVector max);
+	AABB(FVector min, FVector max);
 
 	FVector3f_a min() const;
 	FVector3f_a max() const;
@@ -30,7 +30,7 @@ public:
 	bool intersect_p(const Ray& ray, float& min_t, float& max_t) const;
 
 	void set_min_max(FVector3f_a min, FVector3f_a max);
-	void set_min_max(simd::FVector min, simd::FVector max);
+	void set_min_max(FVector min, FVector max);
 
 	void insert(FVector3f_a p);
 

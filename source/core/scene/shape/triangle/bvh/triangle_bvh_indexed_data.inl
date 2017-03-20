@@ -50,27 +50,19 @@ bool Indexed_data<IV, SV>::intersect_p(uint32_t index, const math::Ray& ray) con
 }
 
 template<typename IV, typename SV>
-bool Indexed_data<IV, SV>::intersect(math::simd::FVector origin,
-									 math::simd::FVector direction,
-									 math::simd::FVector min_t,
-									 math::simd::Vector& max_t,
-									 math::simd::Vector& u,
-									 math::simd::Vector& v,
-									 uint32_t index) const {
+bool Indexed_data<IV, SV>::intersect(FVector origin, FVector direction, FVector min_t,
+									 Vector& max_t, uint32_t index, Vector& u, Vector& v) const {
 	const auto& tri = triangles_[index];
 	const IV& a = intersection_vertices_[tri.a];
 	const IV& b = intersection_vertices_[tri.b];
 	const IV& c = intersection_vertices_[tri.c];
 
-	return triangle::intersect(origin, direction, min_t, max_t, u, v, a, b, c);
+	return triangle::intersect(origin, direction, min_t, max_t, a, b, c, u, v);
 }
 
 template<typename IV, typename SV>
-bool Indexed_data<IV, SV>::intersect_p(math::simd::FVector origin,
-									   math::simd::FVector direction,
-									   math::simd::FVector min_t,
-									   math::simd::FVector max_t,
-									   uint32_t index) const {
+bool Indexed_data<IV, SV>::intersect_p(FVector origin, FVector direction,
+									   FVector min_t, FVector max_t, uint32_t index) const {
 	const auto& tri = triangles_[index];
 	const IV& a = intersection_vertices_[tri.a];
 	const IV& b = intersection_vertices_[tri.b];
@@ -101,15 +93,13 @@ float2 Indexed_data<IV, SV>::interpolate_uv(uint32_t index, float2 uv) const {
 }
 
 template<typename IV, typename SV>
-float2 Indexed_data<IV, SV>::interpolate_uv(math::simd::FVector u,
-											math::simd::FVector v,
-											uint32_t index) const {
+float2 Indexed_data<IV, SV>::interpolate_uv(FVector u, FVector v, uint32_t index) const {
 	const auto& tri = triangles_[index];
 	const SV& sa = shading_vertices_[tri.a];
 	const SV& sb = shading_vertices_[tri.b];
 	const SV& sc = shading_vertices_[tri.c];
 
-	return triangle::interpolate_uv(sa, sb, sc, u, v);
+	return triangle::interpolate_uv(u, v, sa, sb, sc);
 }
 
 template<typename IV, typename SV>

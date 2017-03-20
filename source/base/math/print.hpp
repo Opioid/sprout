@@ -16,7 +16,7 @@ inline std::ostream& operator<<(std::ostream& stream, const math::Vector3<uint8_
 }
 
 template<typename T>
-std::ostream& operator<<(std::ostream& stream, const math::Vector3<T>& v) {
+std::ostream& operator<<(std::ostream& stream, const math:: Vector3<T>& v) {
 	return stream << "[" << v.x << ", " << v.y << ", " << v.z << "]";
 }
 

@@ -3,16 +3,16 @@
 #include "aabb.hpp"
 #include "math/vector3.inl"
 #include "math/matrix4x4.inl"
-#include "math/simd/simd_vector.inl"
+#include "math/vector.inl"
 #include <limits>
 
 namespace math {
 
 inline constexpr AABB::AABB(FVector3f_a min, FVector3f_a max) : bounds_{min, max} {}
 
-inline AABB::AABB(simd::FVector min, simd::FVector max) {
-	simd::store_float3_unsafe(bounds_[0], min);
-	simd::store_float3_unsafe(bounds_[1], max);
+inline AABB::AABB(FVector min, FVector max) {
+	store_float3_unsafe(bounds_[0], min);
+	store_float3_unsafe(bounds_[1], max);
 }
 
 inline FVector3f_a AABB::min() const {
@@ -92,8 +92,6 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 	}
 
 	return min_t < ray.max_t && max_t > ray.min_t;*/
-
-	using namespace math::simd;
 
 	Vector ray_origin		 = load_float3(ray.origin);
 	Vector ray_inv_direction = load_float3(ray.inv_direction);
@@ -187,9 +185,9 @@ inline void AABB::set_min_max(FVector3f_a min, FVector3f_a max) {
 	bounds_[1] = max;
 }
 
-inline void AABB::set_min_max(simd::FVector min, simd::FVector max) {
-	simd::store_float3_unsafe(bounds_[0], min);
-	simd::store_float3_unsafe(bounds_[1], max);
+inline void AABB::set_min_max(FVector min, FVector max) {
+	store_float3_unsafe(bounds_[0], min);
+	store_float3_unsafe(bounds_[1], max);
 }
 
 inline void AABB::insert(FVector3f_a p) {

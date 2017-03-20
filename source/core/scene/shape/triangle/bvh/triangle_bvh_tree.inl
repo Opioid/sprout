@@ -70,10 +70,10 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 	float2 uv;
 	uint32_t index = 0xFFFFFFFF;
 
-	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
-	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
-	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
+	Vector ray_origin		 = math::load_float3(ray.origin);
+	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes_[n];
@@ -115,13 +115,13 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
 	uint32_t index = 0xFFFFFFFF;
 
-	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
-	math::simd::Vector ray_direction	 = math::simd::load_float3(ray.direction);
-	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
-	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
-	math::simd::Vector u;
-	math::simd::Vector v;
+	Vector ray_origin		 = math::load_float3(ray.origin);
+	Vector ray_direction	 = math::load_float3(ray.direction);
+	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	Vector ray_max_t = _mm_set1_ps(ray.max_t);
+	Vector u;
+	Vector v;
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes_[n];
@@ -140,7 +140,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 			}
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, u, v, i)) {
+				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
 					index = i;
 				}
 			}
@@ -168,11 +168,11 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 	node_stack.push(0);
 	uint32_t n = 0;
 
-	math::simd::Vector ray_origin	 = math::simd::load_float3(ray.origin);
-	math::simd::Vector ray_direction = math::simd::load_float3(ray.direction);
-	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
-	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
+	Vector ray_origin	 = math::load_float3(ray.origin);
+	Vector ray_direction = math::load_float3(ray.direction);
+	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes_[n];
@@ -217,10 +217,10 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 	float2 uv;
 	float max_t = ray.max_t;
 
-	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
-	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
-	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
+	Vector ray_origin		 = math::load_float3(ray.origin);
+	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
@@ -271,14 +271,14 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 	float2 uv;
 
-	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
-	math::simd::Vector ray_direction	 = math::simd::load_float3(ray.direction);
-	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
-	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
-	math::simd::Vector max_t = ray_max_t;
-	math::simd::Vector u;
-	math::simd::Vector v;
+	Vector ray_origin		 = math::load_float3(ray.origin);
+	Vector ray_direction	 = math::load_float3(ray.direction);
+	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	Vector ray_max_t = _mm_set1_ps(ray.max_t);
+	Vector max_t = ray_max_t;
+	Vector u;
+	Vector v;
 
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
@@ -297,7 +297,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 			}
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, u, v, i)) {
+				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
 //					_mm_store_ss(&uv.v[0], u);
 //					_mm_store_ss(&uv.v[1], v);
 //					uv = data_.interpolate_uv(i, uv);
@@ -340,10 +340,10 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 	float2 uv;
 	float max_t = ray.max_t;
 
-	math::simd::Vector ray_origin		 = math::simd::load_float3(ray.origin);
-	math::simd::Vector ray_inv_direction = math::simd::load_float3(ray.inv_direction);
-	math::simd::Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	math::simd::Vector ray_max_t = _mm_set1_ps(ray.max_t);
+	Vector ray_origin		 = math::load_float3(ray.origin);
+	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	Vector ray_min_t = _mm_set1_ps(ray.min_t);
+	Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];

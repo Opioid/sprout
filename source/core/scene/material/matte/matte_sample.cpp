@@ -22,7 +22,7 @@ float3 Sample::evaluate(float3_p wi, float& pdf) const {
 
 //	const float wi_dot_wo = math::dot(wi, wo_);
 //	const float sl_wi_wo = 2.f + 2.f * wi_dot_wo;
-//	const float rcpl_wi_wo = math::simd::rsqrt(sl_wi_wo);
+//	const float rcpl_wi_wo = math::rsqrt(sl_wi_wo);
 //	const float h_dot_wi = math::clamp(rcpl_wi_wo + rcpl_wi_wo * wi_dot_wo, 0.00001f, 1.f);
 
 	float3 brdf = disney::Isotropic::reflection(h_dot_wi, n_dot_wi, n_dot_wo, layer_, pdf);

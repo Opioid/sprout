@@ -9,7 +9,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/plane.inl"
-#include "base/math/simd/simd_aabb.inl"
+#include "base/math/simd_aabb.inl"
 #include "base/thread/thread_pool.hpp"
 #include <vector>
 
@@ -23,15 +23,13 @@ void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Ver
 	{
 		References references(triangles.size());
 
-		std::vector<math::simd::AABB> aabbs(thread_pool.num_threads());
 
 		thread_pool.run_range([&triangles, &vertices, &references, &aabbs]
 			(uint32_t id, int32_t begin, int32_t end) {
-				math::simd::AABB aabb(math::AABB::empty());
 				for (int32_t i = begin; i < end; ++i) {
-					auto a = math::simd::load_float3(vertices[triangles[i].i[0]].p);
-					auto b = math::simd::load_float3(vertices[triangles[i].i[1]].p);
-					auto c = math::simd::load_float3(vertices[triangles[i].i[2]].p);
+					auto a = math::load_float3(vertices[triangles[i].i[0]].p);
+					auto b = math::load_float3(vertices[triangles[i].i[1]].p);
+					auto c = math::load_float3(vertices[triangles[i].i[2]].p);
 
 					auto min = triangle_min(a, b, c);
 					auto max = triangle_max(a, b, c);
@@ -43,7 +41,6 @@ void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Ver
 				aabbs[id] = aabb;
 			}, 0, static_cast<int32_t>(triangles.size()));
 
-		math::simd::AABB aabb(math::AABB::empty());
 		for (auto& b : aabbs) {
 			aabb.merge_assign(b);
 		}

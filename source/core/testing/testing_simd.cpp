@@ -4,8 +4,8 @@
 #include "base/random/generator.inl"
 #include "base/string/string.hpp"
 #include "base/math/print.hpp"
-#include "base/math/simd/simd_math.hpp"
-#include "base/math/simd/simd_vector.inl"
+#include "base/simd.hpp"
+#include "base/math/vector.inl"
 #include <iostream>
 
 namespace testing { namespace simd {
@@ -58,8 +58,8 @@ void rsqrt() {
 
 		for (size_t i = 0; i < num_values; ++i) {
 			float x = values[i];
-			a += math::simd::rsqrt(x);
-			a = math::simd::rsqrt(a);
+			a += math::rsqrt(x);
+			a = math::rsqrt(a);
 		}
 
 		const auto duration = chrono::seconds_since(start);
@@ -183,28 +183,28 @@ void rcp() {
 }
 
 inline float3 simd_normalized_0(const float3& v) {
-	float il = math::simd::rsqrt(math::dot(v, v));
+	float il = math::rsqrt(math::dot(v, v));
 	return il * v;
 }
 
 inline float3 simd_normalized_1(const float3& v) {
-	math::simd::Vector sx = math::simd::load_float3(v);
+	Vector sx = math::load_float3(v);
 
-	math::simd::Vector d = math::simd::dot3(sx, sx);
+	Vector d = math::dot3(sx, sx);
 
-	math::simd::Vector il = math::simd::rsqrt(d);
+	Vector il = math::rsqrt(d);
 
 	float3 result;
-	math::simd::store_float3(result, _mm_mul_ps(il, sx));
+	math::store_float3(result, _mm_mul_ps(il, sx));
 
 	return result;
 }
 
 inline float simd_dotlly(const float3& a, const float3& b) {
-//	math::simd::Vector sa = math::simd::load_float4(a);
-//	math::simd::Vector sb = math::simd::load_float4(b);
+//	Vector sa = math::load_float4(a);
+//	Vector sb = math::load_float4(b);
 
-//	math::simd::Vector d = _mm_dp_ps(sa, sb, 0x77);
+//	Vector d = _mm_dp_ps(sa, sb, 0x77);
 
 //	float x;
 //	_mm_store_ss(&x, d);
@@ -213,14 +213,14 @@ inline float simd_dotlly(const float3& a, const float3& b) {
 }
 
 inline float3 simd_normalized_2(const float3& v) {
-//	math::simd::Vector sx = math::simd::load_float3(v);
+//	Vector sx = math::load_float3(v);
 
-//	math::simd::Vector d = _mm_dp_ps(sx, sx, 0x77);
+//	Vector d = _mm_dp_ps(sx, sx, 0x77);
 
-//	math::simd::Vector il = math::simd::rsqrt(d);
+//	Vector il = math::rsqrt(d);
 
 //	float3 result;
-//	math::simd::store_float3(result, _mm_mul_ps(il, sx));
+//	math::store_float3(result, _mm_mul_ps(il, sx));
 
 //	return result;
 
@@ -350,23 +350,23 @@ void normalize() {
 //}
 
 inline float3 simd_reciprocal(const float3& v) {
-	math::simd::Vector sx = math::simd::load_float3(v);
+	Vector sx = math::load_float3(v);
 
 	__m128 rcp = _mm_rcp_ps(sx);
 	__m128 mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
 	float3 result;
-	math::simd::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	math::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 	return result;
 }
 
 inline void simd_reciprocal(float3& result, const float3& v) {
-	math::simd::Vector sx = math::simd::load_float3(v);
+	Vector sx = math::load_float3(v);
 
 	__m128 rcp = _mm_rcp_ps(sx);
 	__m128 mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
-	math::simd::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	math::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 }
 
 void reciprocal() {
@@ -461,10 +461,10 @@ inline float dotly(float3 a, float3 b) {
 }
 
 inline float simd_dot_0(const float3& a, const float3& b) {
-	math::simd::Vector sa = math::simd::load_float3(a);
-	math::simd::Vector sb = math::simd::load_float3(b);
+	Vector sa = math::load_float3(a);
+	Vector sb = math::load_float3(b);
 
-	math::simd::Vector d = math::simd::dot3(sa, sb);
+	Vector d = math::dot3(sa, sb);
 
 	float x;
 	_mm_store_ss(&x, d);
@@ -472,13 +472,13 @@ inline float simd_dot_0(const float3& a, const float3& b) {
 }
 
 inline float simd_dot_1(const float3 a, const float3 b) {
-	math::simd::Vector sa = math::simd::load_float3(a);
-	math::simd::Vector sb = math::simd::load_float3(b);
+	Vector sa = math::load_float3(a);
+	Vector sb = math::load_float3(b);
 
 	// Perform the dot product
-	math::simd::Vector vDot = _mm_mul_ps(sa, sb);
+	Vector vDot = _mm_mul_ps(sa, sb);
 	// x=Dot.vector4_f32[1], y=Dot.vector4_f32[2]
-	math::simd::Vector vTemp = SU_PERMUTE_PS(vDot, _MM_SHUFFLE(2, 1, 2, 1));
+	Vector vTemp = SU_PERMUTE_PS(vDot, _MM_SHUFFLE(2, 1, 2, 1));
 	// Result.vector4_f32[0] = x+y
 	vDot = _mm_add_ss(vDot, vTemp);
 	// x=Dot.vector4_f32[2]
@@ -495,10 +495,10 @@ inline float simd_dot_1(const float3 a, const float3 b) {
 }
 
 inline float simd_dot_2(const float3& a, const float3& b) {
-//	math::simd::Vector sa = math::simd::load_float4(a);
-//	math::simd::Vector sb = math::simd::load_float4(b);
+//	Vector sa = math::load_float4(a);
+//	Vector sb = math::load_float4(b);
 
-//	math::simd::Vector d = _mm_dp_ps(sa, sb, 0x77);
+//	Vector d = _mm_dp_ps(sa, sb, 0x77);
 
 //	float x;
 //	_mm_store_ss(&x, d);
@@ -625,19 +625,19 @@ void dot() {
 }
 
 inline float3 simd_min(float3_p a, float3_p b) {
-	math::simd::Vector sa = math::simd::load_float3(a);
-	math::simd::Vector sb = math::simd::load_float3(b);
+	Vector sa = math::load_float3(a);
+	Vector sb = math::load_float3(b);
 
 	float3 result;
-	math::simd::store_float3_unsafe(result, _mm_min_ps(sa, sb));
+	math::store_float3_unsafe(result, _mm_min_ps(sa, sb));
 	return result;
 }
 
 inline void simd_min2(float3& a, float3_p b) {
-	math::simd::Vector sa = math::simd::load_float3(a);
-	math::simd::Vector sb = math::simd::load_float3(b);
+	Vector sa = math::load_float3(a);
+	Vector sb = math::load_float3(b);
 
-	math::simd::store_float3_unsafe(a, _mm_min_ps(sa, sb));
+	math::store_float3_unsafe(a, _mm_min_ps(sa, sb));
 }
 
 void minmax() {
@@ -760,7 +760,7 @@ float dot(FUnion_vector a, FUnion_vector b) {
 }
 
 Union_vector normalized(FUnion_vector v) {
-	return math::simd::rsqrt(dot(v, v)) * v;
+	return math::rsqrt(dot(v, v)) * v;
 }
 
 struct Struct_vector;
@@ -794,7 +794,7 @@ float dot(Struct_vector a, Struct_vector b) {
 }
 
 Struct_vector normalized(FStruct_vector v) {
-	return math::simd::rsqrt(dot(v, v)) * v;
+	return math::rsqrt(dot(v, v)) * v;
 }
 
 struct Array_vector;
@@ -882,7 +882,7 @@ T dot(const Array_vector_t<T, N>& a, const Array_vector_t<T, N>& b) {
 
 template<typename T, uint32_t N>
 Array_vector_t<T, N> normalized(const Array_vector_t<T, N>& v) {
-	return math::simd::rsqrt(dot(v, v)) * v;
+	return math::rsqrt(dot(v, v)) * v;
 }
 
 void test_union_vector(Union_vector* uvecs, size_t num_values) {

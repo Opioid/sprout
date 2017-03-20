@@ -11,7 +11,8 @@ include(../compiler_options.pri)
 
 SOURCES +=
 
-HEADERS +=
+HEADERS += \
+    simd.hpp \
 
 include(atomic/atomic.pri)
 include(chrono/chrono.pri)

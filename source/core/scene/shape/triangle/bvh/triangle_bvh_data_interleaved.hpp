@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base/math/vector3.hpp"
-#include "base/math/simd/simd_vector.hpp"
+#include "base/math/vector.hpp"
 #include <vector>
 
 namespace scene { namespace shape {
@@ -24,10 +24,10 @@ public:
 
 	bool intersect_p(uint32_t index, const math::Ray& ray) const;
 
-	bool intersect_p(math::simd::FVector origin,
-					 math::simd::FVector direction,
-					 math::simd::FVector min_t,
-					 math::simd::FVector max_t,
+	bool intersect_p(FVector origin,
+					 FVector direction,
+					 FVector min_t,
+					 FVector max_t,
 					 uint32_t index) const;
 
 	void interpolate_data(uint32_t index, float2 uv,

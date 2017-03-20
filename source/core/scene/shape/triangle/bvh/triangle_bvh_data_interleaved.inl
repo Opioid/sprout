@@ -31,10 +31,10 @@ bool Data_interleaved<Triangle>::intersect_p(uint32_t index, const math::Ray& ra
 }
 
 template<typename Triangle>
-bool Data_interleaved<Triangle>::intersect_p(math::simd::FVector /*origin*/,
-											 math::simd::FVector /*direction*/,
-											 math::simd::FVector /*min_t*/,
-											 math::simd::FVector /*max_t*/,
+bool Data_interleaved<Triangle>::intersect_p(FVector /*origin*/,
+											 FVector /*direction*/,
+											 FVector /*min_t*/,
+											 FVector /*max_t*/,
 											 uint32_t /*index*/) const {
 	return false;
 }

@@ -26,5 +26,5 @@ struct alignas(16) Vector8us_a {
 
 }
 
-using ushort8 = math::Vector8us_a;
+using ushort8 = Vector8us_a;
 

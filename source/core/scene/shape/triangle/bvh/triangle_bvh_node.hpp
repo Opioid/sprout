@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.hpp"
 //#include "base/math/ray.hpp"
-#include "base/math/simd/simd.hpp"
+#include "base/simd.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -47,10 +47,8 @@ public:
 
 //	bool intersect_p(const math::Ray& ray) const;
 
-	bool intersect_p(math::simd::FVector origin,
-					 math::simd::FVector inv_direction,
-					 math::simd::FVector min_t,
-					 math::simd::FVector max_t) const;
+	bool intersect_p(FVector origin, FVector inv_direction,
+					 FVector min_t, FVector max_t) const;
 
 private:
 
