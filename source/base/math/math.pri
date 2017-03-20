@@ -40,5 +40,3 @@ include(filter/filter.pri)
 include(fourier/fourier.pri)
 include(function/function.pri)
 include(sampling/sampling.pri)
-include(simd/simd.pri)
-
