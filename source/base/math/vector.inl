@@ -180,7 +180,8 @@ static inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
 	// Subract the right from left, and return answer
 	result = _mm_sub_ps(result, temp0);
 	// Set w to zero
-	return _mm_and_ps(result, Mask3);
+//	return _mm_and_ps(result, Mask3);
+	return result;
 }
 
 static inline Vector SU_CALLCONV min3(FVector a, FVector b) {
