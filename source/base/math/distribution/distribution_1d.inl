@@ -282,14 +282,16 @@ inline uint32_t Distribution_implicit_pdf_lut_1D::sample_discrete(float r, float
 }
 
 inline float Distribution_implicit_pdf_lut_1D::sample_continuous(float r, float& pdf) const {
-	uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample_discrete(r);
 
-	pdf = cdf_[offset + 1] - cdf_[offset];
+	const float c = cdf_[offset + 1];
+	const float t = (c - r) / (c - cdf_[offset]);
 
-	float c = cdf_[offset + 1];
-	float t = (c - r) / (c - cdf_[offset]);
+	const float result = (static_cast<float>(offset) + t) / size_;
 
-	return (static_cast<float>(offset) + t) / size_;
+	pdf = c - cdf_[offset];
+
+	return result;
 }
 
 inline float Distribution_implicit_pdf_lut_1D::pdf(uint32_t index) const {
@@ -322,7 +324,7 @@ inline void Distribution_implicit_pdf_lut_1D::precompute_1D_pdf_cdf(const float*
 	if (0.f == integral) {
 		cdf_.resize(2);
 		cdf_[0] = 0.f;
-		cdf_[1] = 0.f;
+		cdf_[1] = 1.f;
 
 		integral_ = 0.f;
 		size_ = 1.f;

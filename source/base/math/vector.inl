@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vector.hpp"
-#include "vector3.inl"
+#include "vector4.inl"
 
 namespace math {
 
@@ -36,10 +36,15 @@ static inline Vector SU_CALLCONV load_float3(const Vector3f_a& source) {
 	return _mm_and_ps(v, Mask3);
 }
 
-static inline Vector SU_CALLCONV load_float3_unsafe(const Vector3f_a& source) {
+static inline Vector SU_CALLCONV load_float4(const Vector3f_a& source) {
 	// Reads an extra float!!!
 	return _mm_load_ps(source.v);
 }
+
+static inline Vector SU_CALLCONV load_float4(const Vector4f_a& source) {
+	return _mm_load_ps(source.v);
+}
+
 
 /****************************************************************************
  *
@@ -65,6 +70,10 @@ static inline void SU_CALLCONV store_float3_unsafe(Vector3f_a& destination, FVec
 	_mm_store_ps(destination.v, v);
 }
 
+static inline void SU_CALLCONV store_float4(Vector4f_a& destination, FVector v) {
+	_mm_store_ps(destination.v, v);
+}
+
 static inline void SU_CALLCONV store_float3_unsafe(float* destination, FVector v) {
 	_mm_store_ps(destination, v);
 }
@@ -78,7 +87,6 @@ static inline void SU_CALLCONV store_float3_unsafe(float* destination, FVector v
 static inline Vector SU_CALLCONV add1(FVector a, FVector b) {
 	return _mm_add_ss(a, b);
 }
-
 
 static inline Vector SU_CALLCONV mul1(FVector a, FVector b) {
 	return _mm_mul_ss(a, b);
@@ -142,6 +150,18 @@ static inline Vector SU_CALLCONV dot3_1(FVector a, FVector b) {
 	return _mm_add_ss(vDot, vTemp);
 }
 
+static inline Vector rsqrt(FVector x) {
+	Vector three = _mm_set1_ps(3.f);
+	Vector half	 = _mm_set1_ps(0.5f);
+	Vector res	 = _mm_rsqrt_ps(x);
+	Vector muls	 = _mm_mul_ps(_mm_mul_ps(x, res), res);
+	return _mm_mul_ps(_mm_mul_ps(half, res), _mm_sub_ps(three, muls));
+}
+
+static inline Vector normalized3(FVector v) {
+	return mul3(rsqrt(dot3(v, v)), v);
+}
+
 static inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
 	// [ a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x ]
 
@@ -169,6 +189,10 @@ static inline Vector SU_CALLCONV min3(FVector a, FVector b) {
 
 static inline Vector SU_CALLCONV max3(FVector a, FVector b) {
 	return _mm_max_ps(a, b);
+}
+
+static inline Vector SU_CALLCONV splat_x(FVector v) {
+	return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
 }
 
 }

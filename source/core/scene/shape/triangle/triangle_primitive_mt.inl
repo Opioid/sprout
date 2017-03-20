@@ -199,9 +199,9 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 							 Vector& u_out, Vector& v_out) {
 	using namespace math;
 
-	Vector ap = load_float3_unsafe(a.p);
-	Vector bp = load_float3_unsafe(b.p);
-	Vector cp = load_float3_unsafe(c.p);
+	Vector ap = load_float4(a.p);
+	Vector bp = load_float4(b.p);
+	Vector cp = load_float4(c.p);
 
 	Vector e1 = sub3(bp, ap);
 	Vector e2 = sub3(cp, ap);
@@ -307,9 +307,9 @@ static inline bool intersect_p(FVector origin, FVector direction,
 	// Implementation C
 	using namespace math;
 
-	Vector ap = load_float3_unsafe(a.p);
-	Vector bp = load_float3_unsafe(b.p);
-	Vector cp = load_float3_unsafe(c.p);
+	Vector ap = load_float4(a.p);
+	Vector bp = load_float4(b.p);
+	Vector cp = load_float4(c.p);
 
 	Vector e1 = sub3(bp, ap);
 	Vector e2 = sub3(cp, ap);
@@ -407,13 +407,13 @@ static inline float2 interpolate_uv(FVector u, FVector v,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c) {
 	const float3 auv(a.n_u[3], a.t_v[3], 0.f);
-	Vector va = math::load_float3_unsafe(auv);
+	Vector va = math::load_float4(auv);
 
 	const float3 buv(b.n_u[3], b.t_v[3], 0.f);
-	Vector vb = math::load_float3_unsafe(buv);
+	Vector vb = math::load_float4(buv);
 
 	const float3 cuv(c.n_u[3], c.t_v[3], 0.f);
-	Vector vc = math::load_float3_unsafe(cuv);
+	Vector vc = math::load_float4(cuv);
 
 	const Vector w = math::sub3(math::sub3(math::One, u), v);
 
@@ -441,6 +441,57 @@ static inline void interpolate_data(const Shading_vertex_MTC& a,
 	t  = math::normalized(t_v.xyz());
 
 	tc = float2(n_u[3], t_v[3]);
+}
+
+static inline void interpolate_data(FVector u, FVector v,
+									const Shading_vertex_MTC& a,
+									const Shading_vertex_MTC& b,
+									const Shading_vertex_MTC& c,
+									float3& n, float3& t, float2& tc) {
+/*	const float w = 1.f - uv[0] - uv[1];
+
+	const float4 n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
+	const float4 t_v = w * a.t_v + uv[0] * b.t_v + uv[1] * c.t_v;
+
+	n  = math::normalized(n_u.xyz());
+	t  = math::normalized(t_v.xyz());
+
+	tc = float2(n_u[3], t_v[3]);
+	*/
+
+	Vector va = math::load_float4(a.n_u);
+	Vector vb = math::load_float4(b.n_u);
+	Vector vc = math::load_float4(c.n_u);
+
+	const Vector w = math::sub3(math::sub3(math::One, u), v);
+
+	vc = math::mul3(v, vc);
+	vb = math::mul3(u, vb);
+	vb = math::add3(vc, vb);
+	va = math::mul3(w, va);
+	Vector v0 = math::add3(vb, va);
+
+	Vector vn = math::normalized3(v0);
+	math::store_float3_unsafe(n, vn);
+
+	va = math::load_float4(a.t_v);
+	vb = math::load_float4(b.t_v);
+	vc = math::load_float4(c.t_v);
+
+	vc = math::mul3(v, vc);
+	vb = math::mul3(u, vb);
+	vb = math::add3(vc, vb);
+	va = math::mul3(w, va);
+	Vector v1 = math::add3(vb, va);
+
+	Vector vt = math::normalized3(v1);
+	math::store_float3_unsafe(t, vt);
+
+	v0 = SU_MUX_HIGH(v0, v1);
+	float4 r;
+	math::store_float4(r, v0);
+	tc[0] = r[3];
+	tc[1] = r[1];
 }
 
 inline float xnorm_to_float(int16_t xnorm) {

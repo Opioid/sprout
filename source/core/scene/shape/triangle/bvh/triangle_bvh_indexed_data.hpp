@@ -34,7 +34,8 @@ public:
 	bool intersect_p(FVector origin, FVector direction, FVector min_t, FVector max_t,
 					 uint32_t index) const;
 
-	void interpolate_data(uint32_t index, float2 uv,
+	void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const;
+	void interpolate_data(FVector u, FVector v, uint32_t index,
 						  float3& n, float3& t, float2& tc) const;
 
 	float2 interpolate_uv(uint32_t index, float2 uv) const;

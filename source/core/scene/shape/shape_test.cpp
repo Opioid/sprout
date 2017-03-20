@@ -39,6 +39,15 @@ bool check(const Sample& sample) {
 	return true;
 }
 
+bool check(const Sample& sample, float2 uv) {
+	if (!math::all_finite(sample.uv)) {
+		std::cout << "uv " << uv << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
 void test() {
 	std::cout << "scene::shape::testing::test()" << std::endl;
 

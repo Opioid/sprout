@@ -82,7 +82,7 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	const float3 result = d * g * f;
 
-	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
+	SOFT_ASSERT(testing::check(result, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
 
 	return result;
 }
@@ -220,7 +220,7 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	const float3 result = d * g * f;
 
-	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
+	SOFT_ASSERT(testing::check(result, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
 
 	return result;
 }

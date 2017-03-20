@@ -151,8 +151,10 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
 	if (index != 0xFFFFFFFF) {
 		_mm_store_ss(&ray.max_t, ray_max_t);
-		_mm_store_ss(&intersection.uv.v[0], u);
-		_mm_store_ss(&intersection.uv.v[1], v);
+	//	_mm_store_ss(&intersection.uv.v[0], u);
+	//	_mm_store_ss(&intersection.uv.v[1], v);
+		intersection.u = math::splat_x(u);
+		intersection.v = math::splat_x(v);
 
 		intersection.index = index;
 		return true;
@@ -302,9 +304,8 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 //					_mm_store_ss(&uv.v[1], v);
 //					uv = data_.interpolate_uv(i, uv);
 
-					// Splat x
-					u = SU_PERMUTE_PS(u, _MM_SHUFFLE(0, 0, 0, 0));
-					v = SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
+					u = math::splat_x(u);
+					v = math::splat_x(v);
 					uv = data_.interpolate_uv(u, v, i);
 
 					const auto material = materials[data_.material_index(i)];
@@ -393,6 +394,12 @@ template<typename Data>
 void Tree<Data>::interpolate_triangle_data(uint32_t index, float2 uv,
 										   float3& n, float3& t, float2& tc) const {
 	data_.interpolate_data(index, uv, n, t, tc);
+}
+
+template<typename Data>
+void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index,
+										   float3& n, float3& t, float2& tc) const {
+	data_.interpolate_data(u, v, index, n, t, tc);
 }
 
 template<typename Data>

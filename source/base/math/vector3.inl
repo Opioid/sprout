@@ -410,7 +410,7 @@ static inline Vector3f_a normalized(FVector3f_a v) {
 static inline Vector3f_a reciprocal(FVector3f_a v) {
 //	return Vector3f_a(1.f / v[0], 1.f / v[1], 1.f / v[2]);
 
-	Vector sx = load_float3_unsafe(v);
+	Vector sx = load_float4(v);
 
 	Vector rcp = _mm_rcp_ps(sx);
 	Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));

@@ -58,6 +58,10 @@ public:
 	void interpolate_triangle_data(uint32_t index, float2 uv,
 								   float3& n, float3& t, float2& tc) const;
 
+	void interpolate_triangle_data(FVector u, FVector v, uint32_t index,
+								   float3& n, float3& t, float2& tc) const;
+
+
     float2 interpolate_triangle_uv(uint32_t index, float2 uv) const;
 
 	float    triangle_bitangent_sign(uint32_t index) const;

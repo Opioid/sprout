@@ -50,7 +50,8 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		float3 n;
 		float3 t;
 		float2 uv;
-		tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
+	//	tree_.interpolate_triangle_data(pi.index, pi.uv, n, t, uv);
+		tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n, t, uv);
 
 		float3	 geo_n			= tree_.triangle_normal(pi.index);
 		float	 bitangent_sign = tree_.triangle_bitangent_sign(pi.index);

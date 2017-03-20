@@ -107,14 +107,6 @@ static inline float rsqrt(float x) {
 	return x;
 }
 
-static inline Vector rsqrt(FVector x) {
-	Vector three = _mm_set1_ps(3.f);
-	Vector half	 = _mm_set1_ps(0.5f);
-	Vector res	 = _mm_rsqrt_ps(x);
-	Vector muls	 = _mm_mul_ps(_mm_mul_ps(x, res), res);
-	return _mm_mul_ps(_mm_mul_ps(half, res), _mm_sub_ps(three, muls));
-}
-
 static inline float rcp(float x) {
 	Vector xs	= _mm_load_ss(&x);
 	Vector rcp  = _mm_rcp_ss(xs);
@@ -127,6 +119,12 @@ static inline Vector rcp1(FVector x) {
 	Vector rcp  = _mm_rcp_ss(x);
 	Vector muls = _mm_mul_ss(_mm_mul_ss(rcp, rcp), x);
 	return _mm_sub_ss(_mm_add_ss(rcp, rcp), muls);
+}
+
+static inline Vector rcp(FVector x) {
+	Vector rcp  = _mm_rcp_ps(x);
+	Vector muls = _mm_mul_ps(_mm_mul_ps(rcp, rcp), x);
+	return _mm_sub_ps(_mm_add_ps(rcp, rcp), muls);
 }
 
 }

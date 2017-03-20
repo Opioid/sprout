@@ -5,7 +5,10 @@
 namespace scene { namespace shape { namespace triangle {
 
 struct Intersection {
-	float2 uv;
+	Vector u;
+	Vector v;
+
+//	float2 uv;
 	uint32_t index;
 };
 

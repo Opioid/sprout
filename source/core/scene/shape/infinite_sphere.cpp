@@ -144,7 +144,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	// sin_theta because of the uv weight
 	sample.pdf = 1.f / ((4.f * math::Pi) * sin_theta);
 
-	SOFT_ASSERT(testing::check(sample));
+	SOFT_ASSERT(testing::check(sample, uv));
 }
 
 float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,

@@ -43,7 +43,7 @@ float4 Whitted::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			result += throughput * shade(worker, ray, intersection);
 		}
 
-		ray.min_t = ray.max_t;
+		ray.min_t = ray.max_t + take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.max_t = scene::Ray_max_t;
 		if (!worker.intersect(ray, intersection)) {
 			return float4(result, spectrum::luminance(opacity));

@@ -83,6 +83,17 @@ void Indexed_data<IV, SV>::interpolate_data(uint32_t index, float2 uv,
 }
 
 template<typename IV, typename SV>
+void Indexed_data<IV, SV>::interpolate_data(FVector u, FVector v, uint32_t index,
+											float3& n, float3& t, float2& tc) const {
+	const auto& tri = triangles_[index];
+	const SV& a = shading_vertices_[tri.a];
+	const SV& b = shading_vertices_[tri.b];
+	const SV& c = shading_vertices_[tri.c];
+
+	triangle::interpolate_data(u, v, a, b, c, n, t, tc);
+}
+
+template<typename IV, typename SV>
 float2 Indexed_data<IV, SV>::interpolate_uv(uint32_t index, float2 uv) const {
 	const auto& tri = triangles_[index];
 	const SV& sa = shading_vertices_[tri.a];
