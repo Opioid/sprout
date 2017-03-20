@@ -115,11 +115,11 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
 	uint32_t index = 0xFFFFFFFF;
 
-	Vector ray_origin		 = math::load_float3(ray.origin);
-	Vector ray_direction	 = math::load_float3(ray.direction);
-	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
-	Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	Vector ray_max_t = _mm_set1_ps(ray.max_t);
+	const Vector ray_origin		   = math::load_float3(ray.origin);
+	const Vector ray_direction	   = math::load_float3(ray.direction);
+	const Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	const Vector ray_min_t		   = math::load_float(ray.min_t);
+		  Vector ray_max_t		   = math::load_float(ray.max_t);
 	Vector u;
 	Vector v;
 
@@ -170,11 +170,11 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 	node_stack.push(0);
 	uint32_t n = 0;
 
-	Vector ray_origin	 = math::load_float3(ray.origin);
-	Vector ray_direction = math::load_float3(ray.direction);
-	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
-	Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	Vector ray_max_t = _mm_set1_ps(ray.max_t);
+	const Vector ray_origin		   = math::load_float3(ray.origin);
+	const Vector ray_direction	   = math::load_float3(ray.direction);
+	const Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	const Vector ray_min_t		   = math::load_float(ray.min_t);
+		  Vector ray_max_t		   = math::load_float(ray.max_t);
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes_[n];
@@ -271,14 +271,13 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 	float opacity = 0.f;
 
-	float2 uv;
+	const Vector ray_origin		   = math::load_float3(ray.origin);
+	const Vector ray_direction	   = math::load_float3(ray.direction);
+	const Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	const Vector ray_min_t		   = math::load_float(ray.min_t);
+		  Vector ray_max_t		   = math::load_float(ray.max_t);
+	const Vector max_t = ray_max_t;
 
-	Vector ray_origin		 = math::load_float3(ray.origin);
-	Vector ray_direction	 = math::load_float3(ray.direction);
-	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
-	Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	Vector ray_max_t = _mm_set1_ps(ray.max_t);
-	Vector max_t = ray_max_t;
 	Vector u;
 	Vector v;
 
@@ -300,13 +299,9 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-//					_mm_store_ss(&uv.v[0], u);
-//					_mm_store_ss(&uv.v[1], v);
-//					uv = data_.interpolate_uv(i, uv);
-
 					u = math::splat_x(u);
 					v = math::splat_x(v);
-					uv = data_.interpolate_uv(u, v, i);
+					float2 uv = data_.interpolate_uv(u, v, i);
 
 					const auto material = materials[data_.material_index(i)];
 
@@ -315,9 +310,8 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 						return 1.f;
 					}
 
+					// ray_max_t has changed if intersect() returns true!
 					ray_max_t = max_t;
-					// ray.max_t has changed if intersect() returns true!
-					// ray_max_t = _mm_set1_ps(max_t);
 				}
 			}
 		}
@@ -331,7 +325,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 template<typename Data>
 float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materials& materials,
 							  Worker& worker, material::Sampler_settings::Filter filter) const {
-	auto& node_stack = worker.node_stack();
+/*	auto& node_stack = worker.node_stack();
 	node_stack.clear();
 	node_stack.push(0);
 	uint32_t n = 0;
@@ -380,6 +374,68 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 					ray.max_t = max_t;
 					// ray.max_t has changed if intersect() returns true!
 					// ray_max_t = _mm_set1_ps(max_t);
+				}
+			}
+		}
+
+		n = node_stack.pop();
+	}
+
+	return absorption;
+	*/
+
+	auto& node_stack = worker.node_stack();
+	node_stack.clear();
+	node_stack.push(0);
+	uint32_t n = 0;
+
+	float3 absorption(0.f);
+
+	const Vector ray_origin		   = math::load_float3(ray.origin);
+	const Vector ray_direction	   = math::load_float3(ray.direction);
+	const Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	const Vector ray_min_t		   = math::load_float(ray.min_t);
+		  Vector ray_max_t		   = math::load_float(ray.max_t);
+	const Vector max_t = ray_max_t;
+
+	Vector u;
+	Vector v;
+
+	while (!node_stack.empty()) {
+		auto& node = nodes_[n];
+
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
+			if (0 == node.num_primitives()) {
+				if (0 == ray.signs[node.axis()]) {
+					node_stack.push(node.next());
+					++n;
+				} else {
+					node_stack.push(n + 1);
+					n = node.next();
+				}
+
+				continue;
+			}
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
+					u = math::splat_x(u);
+					v = math::splat_x(v);
+					float2 uv = data_.interpolate_uv(u, v, i);
+
+					const float3 normal = data_.normal(i);
+
+					const auto material = materials[data_.material_index(i)];
+
+					const float3 ta = material->thin_absorption(ray.direction, normal, uv,
+																time, worker, filter);
+					absorption += (1.f - absorption) * ta;
+					if (math::all_greater_equal(absorption, 1.f)) {
+						return float3(1.f);
+					}
+
+					// ray_max_t has changed if intersect() returns true!
+					ray_max_t = max_t;
 				}
 			}
 		}

@@ -62,6 +62,11 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		float3 t_w	   = math::transform_vector(t, transformation.rotation);
 		float3 b_w	   = bitangent_sign * math::cross(n_w, t_w);
 
+//		Vector bt_s = math::load_float(bitangent_sign);
+//		Vector b = math::mul3(bt_s, math::cross3(math::load_float4(n_w), math::load_float4(t_w)));
+//		float3 b_w;
+//		math::store_float3_unsafe(b_w, b);
+
 		intersection.p = p_w;
 		intersection.t = t_w;
 		intersection.b = b_w;
