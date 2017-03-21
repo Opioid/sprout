@@ -1,9 +1,6 @@
 #pragma once
 
-#include "simd.hpp"
 #include "vector.hpp"
-
-namespace math {
 
 #if (defined(_M_IX86) || defined(_M_X64)) && defined(_SU_NO_INTRINSICS_)
 	struct Matrix {
@@ -36,23 +33,3 @@ namespace math {
 
 // Fix-up for (2nd+) XMMATRIX parameters to pass by reference
 using CMatrix = const Matrix&;
-
-/****************************************************************************
- *
- * Load operations
- *
- ****************************************************************************/
-
-Matrix SU_CALLCONV load_float3x3(const Matrix3x3f_a& source);
-
-Matrix SU_CALLCONV load_float4x4(const Matrix4x4f_a& source);
-
-/****************************************************************************
- *
- * 4x4 matrix operations
- *
- ****************************************************************************/
-
- Vector SU_CALLCONV transform_vector(FMatrix m, HVector v);
-
-}
