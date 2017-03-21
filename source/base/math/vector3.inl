@@ -304,7 +304,7 @@ static inline Vector3f_a operator+(FVector3f_a a, FVector3f_a b) {
 //	__m128 mb = simd::load_float3(b.v);
 //	__m128 mr = _mm_add_ps(ma, mb);
 //	Vector3f_a r;
-//	store_float3_unsafe(r.v, mr);
+//	store_float4(r.v, mr);
 //	return r;
 
 	return Vector3f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
@@ -416,7 +416,7 @@ static inline Vector3f_a reciprocal(FVector3f_a v) {
 	Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
 	Vector3f_a result;
-	store_float3_unsafe(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 	return result;
 }
 

@@ -11,8 +11,8 @@ namespace math {
 inline constexpr AABB::AABB(FVector3f_a min, FVector3f_a max) : bounds_{min, max} {}
 
 inline AABB::AABB(FVector min, FVector max) {
-	store_float3_unsafe(bounds_[0], min);
-	store_float3_unsafe(bounds_[1], max);
+	store_float4(bounds_[0], min);
+	store_float4(bounds_[1], max);
 }
 
 inline FVector3f_a AABB::min() const {
@@ -93,13 +93,13 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 
 	return min_t < ray.max_t && max_t > ray.min_t;*/
 
-	Vector ray_origin		 = load_float3(ray.origin);
-	Vector ray_inv_direction = load_float3(ray.inv_direction);
-	Vector ray_min_t = _mm_set1_ps(ray.min_t);
-	Vector ray_max_t = _mm_set1_ps(ray.max_t);
+	Vector ray_origin		 = load_float4(ray.origin);
+	Vector ray_inv_direction = load_float4(ray.inv_direction);
+	Vector ray_min_t		 = load_float(ray.min_t);
+	Vector ray_max_t		 = load_float(ray.max_t);
 
-	const Vector bb_min = load_float3(bounds_[0]);
-	const Vector bb_max = load_float3(bounds_[1]);
+	const Vector bb_min = load_float4(bounds_[0]);
+	const Vector bb_max = load_float4(bounds_[1]);
 
 	const Vector l1 = mul3(sub3(bb_min, ray_origin), ray_inv_direction);
 	const Vector l2 = mul3(sub3(bb_max, ray_origin), ray_inv_direction);
@@ -186,8 +186,8 @@ inline void AABB::set_min_max(FVector3f_a min, FVector3f_a max) {
 }
 
 inline void AABB::set_min_max(FVector min, FVector max) {
-	store_float3_unsafe(bounds_[0], min);
-	store_float3_unsafe(bounds_[1], max);
+	store_float4(bounds_[0], min);
+	store_float4(bounds_[1], max);
 }
 
 inline void AABB::insert(FVector3f_a p) {

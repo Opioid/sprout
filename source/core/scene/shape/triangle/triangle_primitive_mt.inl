@@ -425,7 +425,7 @@ static inline float2 interpolate_uv(FVector u, FVector v,
 	Vector uv = math::add3(va, vc);
 
 	float3 r;
-	math::store_float3_unsafe(r.v, uv);
+	math::store_float4(r.v, uv);
 	return r.xy();
 }
 
@@ -459,7 +459,7 @@ static inline void interpolate_data(FVector u, FVector v,
 	Vector v0 = math::add3(va, vc);
 
 	Vector vn = math::normalized3(v0);
-	math::store_float3_unsafe(n, vn);
+	math::store_float4(n, vn);
 
 	va = math::mul3(w, math::load_float4(a.t_v));
 	vb = math::mul3(u, math::load_float4(b.t_v));
@@ -468,7 +468,7 @@ static inline void interpolate_data(FVector u, FVector v,
 	Vector v1 = math::add3(va, vc);
 
 	Vector vt = math::normalized3(v1);
-	math::store_float3_unsafe(t, vt);
+	math::store_float4(t, vt);
 
 	v0 = SU_MUX_HIGH(v0, v1);
 	float4 r;

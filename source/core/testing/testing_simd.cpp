@@ -195,7 +195,7 @@ inline float3 simd_normalized_1(const float3& v) {
 	Vector il = math::rsqrt(d);
 
 	float3 result;
-	math::store_float3(result, _mm_mul_ps(il, sx));
+	math::store_float4(result, _mm_mul_ps(il, sx));
 
 	return result;
 }
@@ -356,7 +356,7 @@ inline float3 simd_reciprocal(const float3& v) {
 	__m128 mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
 	float3 result;
-	math::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	math::store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 	return result;
 }
 
@@ -366,7 +366,7 @@ inline void simd_reciprocal(float3& result, const float3& v) {
 	__m128 rcp = _mm_rcp_ps(sx);
 	__m128 mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
-	math::store_float3(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	math::store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 }
 
 void reciprocal() {
@@ -629,7 +629,7 @@ inline float3 simd_min(float3_p a, float3_p b) {
 	Vector sb = math::load_float3(b);
 
 	float3 result;
-	math::store_float3_unsafe(result, _mm_min_ps(sa, sb));
+	math::store_float4(result, _mm_min_ps(sa, sb));
 	return result;
 }
 
@@ -637,7 +637,7 @@ inline void simd_min2(float3& a, float3_p b) {
 	Vector sa = math::load_float3(a);
 	Vector sb = math::load_float3(b);
 
-	math::store_float3_unsafe(a, _mm_min_ps(sa, sb));
+	math::store_float4(a, _mm_min_ps(sa, sb));
 }
 
 void minmax() {

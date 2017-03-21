@@ -65,7 +65,7 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 //		Vector bt_s = math::load_float(bitangent_sign);
 //		Vector b = math::mul3(bt_s, math::cross3(math::load_float4(n_w), math::load_float4(t_w)));
 //		float3 b_w;
-//		math::store_float3_unsafe(b_w, b);
+//		math::store_float4(b_w, b);
 
 		intersection.p = p_w;
 		intersection.t = t_w;
