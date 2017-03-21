@@ -82,7 +82,7 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		Vector	 bitangent_sign = math::load_float(tree_.triangle_bitangent_sign(pi.index));
 		uint32_t material_index = tree_.triangle_material_index(pi.index);
 
-		Matrix rotation = math::load_float3x3(transformation.rotation);
+		Matrix3 rotation = math::load_float3x3(transformation.rotation);
 
 		Vector geo_n_w = math::transform_vector(rotation, geo_n);
 		Vector n_w	   = math::transform_vector(rotation, n);

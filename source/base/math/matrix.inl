@@ -12,30 +12,42 @@ namespace math {
  *
  ****************************************************************************/
 
-inline Matrix SU_CALLCONV load_float3x3(const Matrix3x3f_a& source) {
-	Matrix m;
-	m.r[0] = _mm_load_ps(source.r[0].v);
-	m.r[1] = _mm_load_ps(source.r[1].v);
-	m.r[2] = _mm_load_ps(source.r[2].v);
-	return m;
+inline Matrix3 SU_CALLCONV load_float3x3(const Matrix3x3f_a& source) {
+	return Matrix3 {
+		_mm_load_ps(source.r[0].v),
+		_mm_load_ps(source.r[1].v),
+		_mm_load_ps(source.r[2].v)
+	};
 }
 
-inline Matrix SU_CALLCONV load_float4x4(const Matrix4x4f_a& source) {
-	Matrix m;
-	m.r[0] = _mm_load_ps(source.r[0].v);
-	m.r[1] = _mm_load_ps(source.r[1].v);
-	m.r[2] = _mm_load_ps(source.r[2].v);
-	m.r[3] = _mm_load_ps(source.r[3].v);
-	return m;
+inline Matrix4 SU_CALLCONV load_float4x4(const Matrix4x4f_a& source) {
+	return Matrix4 {
+		_mm_load_ps(source.r[0].v),
+		_mm_load_ps(source.r[1].v),
+		_mm_load_ps(source.r[2].v),
+		_mm_load_ps(source.r[3].v)
+	};
 }
 
 /****************************************************************************
  *
- * 4x4 matrix operations
+ * Matrix operations
  *
  ****************************************************************************/
 
-inline Vector SU_CALLCONV transform_vector(FMatrix m, HVector v) {
+inline Vector SU_CALLCONV transform_vector(FMatrix3 m, GVector v) {
+	Vector result = SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
+	result = _mm_mul_ps(result, m.r[0]);
+	Vector temp = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
+	temp = _mm_mul_ps(temp, m.r[1]);
+	result = _mm_add_ps(result, temp);
+	temp = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
+	temp = _mm_mul_ps(temp, m.r[2]);
+	result = _mm_add_ps(result, temp);
+	return result;
+}
+
+inline Vector SU_CALLCONV transform_vector(FMatrix4 m, HVector v) {
 	Vector result = SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
 	result = _mm_mul_ps(result, m.r[0]);
 	Vector temp = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
