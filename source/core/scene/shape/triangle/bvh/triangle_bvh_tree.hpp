@@ -61,6 +61,9 @@ public:
 	void interpolate_triangle_data(FVector u, FVector v, uint32_t index,
 								   float3& n, float3& t, float2& tc) const;
 
+	void interpolate_triangle_data(FVector u, FVector v, uint32_t index,
+								   Vector& n, Vector& t, float2& tc) const;
+
 
     float2 interpolate_triangle_uv(uint32_t index, float2 uv) const;
 
@@ -68,6 +71,7 @@ public:
     uint32_t triangle_material_index(uint32_t index) const;
 
 	float3 triangle_normal(uint32_t index) const;
+	Vector triangle_normal_v(uint32_t index) const;
 
 	float triangle_area(uint32_t index) const;
 	float triangle_area(uint32_t index, float3_p scale) const;

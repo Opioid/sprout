@@ -37,6 +37,9 @@ public:
 	void interpolate_data(uint32_t index, float2 uv, float3& n, float3& t, float2& tc) const;
 	void interpolate_data(FVector u, FVector v, uint32_t index,
 						  float3& n, float3& t, float2& tc) const;
+	void interpolate_data(FVector u, FVector v, uint32_t index,
+						  Vector& n, Vector& t, float2& tc) const;
+
 
 	float2 interpolate_uv(uint32_t index, float2 uv) const;
 	float2 interpolate_uv(FVector u, FVector v, uint32_t index) const;
@@ -45,6 +48,7 @@ public:
 	uint32_t material_index(uint32_t index) const;
 
 	float3 normal(uint32_t index) const;
+	Vector normal_v(uint32_t index) const;
 
 	float area(uint32_t index) const;
 	float area(uint32_t index, float3_p scale) const;

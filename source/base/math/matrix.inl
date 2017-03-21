@@ -14,18 +14,18 @@ namespace math {
 
 inline Matrix SU_CALLCONV load_float3x3(const Matrix3x3f_a& source) {
 	Matrix m;
-	m.r[0] = _mm_load_ps(&source.x.x);
-	m.r[1] = _mm_load_ps(&source.y.x);
-	m.r[2] = _mm_load_ps(&source.z.x);
+	m.r[0] = _mm_load_ps(source.r[0].v);
+	m.r[1] = _mm_load_ps(source.r[1].v);
+	m.r[2] = _mm_load_ps(source.r[2].v);
 	return m;
 }
 
 inline Matrix SU_CALLCONV load_float4x4(const Matrix4x4f_a& source) {
 	Matrix m;
-	m.r[0] = _mm_load_ps(&source.v.x.x);
-	m.r[1] = _mm_load_ps(&source.v.y.x);
-	m.r[2] = _mm_load_ps(&source.v.z.x);
-	m.r[3] = _mm_load_ps(&source.v.w.x);
+	m.r[0] = _mm_load_ps(source.r[0].v);
+	m.r[1] = _mm_load_ps(source.r[1].v);
+	m.r[2] = _mm_load_ps(source.r[2].v);
+	m.r[3] = _mm_load_ps(source.r[3].v);
 	return m;
 }
 

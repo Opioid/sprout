@@ -477,6 +477,36 @@ static inline void interpolate_data(FVector u, FVector v,
 	tc[1] = r[1];
 }
 
+static inline void interpolate_data(FVector u, FVector v,
+									const Shading_vertex_MTC& a,
+									const Shading_vertex_MTC& b,
+									const Shading_vertex_MTC& c,
+									Vector& n, Vector& t, float2& tc) {
+	const Vector w = math::sub3(math::sub3(math::One, u), v);
+
+	Vector va = math::mul3(w, math::load_float4(a.n_u));
+	Vector vb = math::mul3(u, math::load_float4(b.n_u));
+	va = math::add3(va, vb);
+	Vector vc = math::mul3(v, math::load_float4(c.n_u));
+	Vector v0 = math::add3(va, vc);
+
+	n = math::normalized3(v0);
+
+	va = math::mul3(w, math::load_float4(a.t_v));
+	vb = math::mul3(u, math::load_float4(b.t_v));
+	va = math::add3(va, vb);
+	vc = math::mul3(v, math::load_float4(c.t_v));
+	Vector v1 = math::add3(va, vc);
+
+	t = math::normalized3(v1);
+
+	v0 = SU_MUX_HIGH(v0, v1);
+	float4 r;
+	math::store_float4(r, v0);
+	tc[0] = r[3];
+	tc[1] = r[1];
+}
+
 inline float xnorm_to_float(int16_t xnorm) {
 	return static_cast<float>(xnorm) / 511.f;
 }

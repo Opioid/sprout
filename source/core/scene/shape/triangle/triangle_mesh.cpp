@@ -9,6 +9,7 @@
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "sampler/sampler.hpp"
+#include "base/math/matrix.inl"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/distribution/distribution_1d.inl"
@@ -46,7 +47,7 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		float epsilon = 3e-3f * tray.max_t;
 
 		float3 p_w = ray.point(tray.max_t);
-
+/*
 		float3 n;
 		float3 t;
 		float2 uv;
@@ -62,11 +63,6 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		float3 t_w	   = math::transform_vector(t, transformation.rotation);
 		float3 b_w	   = bitangent_sign * math::cross(n_w, t_w);
 
-//		Vector bt_s = math::load_float(bitangent_sign);
-//		Vector b = math::mul3(bt_s, math::cross3(math::load_float4(n_w), math::load_float4(t_w)));
-//		float3 b_w;
-//		math::store_float4(b_w, b);
-
 		intersection.p = p_w;
 		intersection.t = t_w;
 		intersection.b = b_w;
@@ -75,6 +71,33 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		intersection.uv = uv;
 		intersection.epsilon = epsilon;
 		intersection.part = material_index;
+*/
+
+		Vector n;
+		Vector t;
+		float2 uv;
+		tree_.interpolate_triangle_data(pi.u, pi.v, pi.index, n, t, uv);
+
+		Vector	 geo_n			= tree_.triangle_normal_v(pi.index);
+		Vector	 bitangent_sign = math::load_float(tree_.triangle_bitangent_sign(pi.index));
+		uint32_t material_index = tree_.triangle_material_index(pi.index);
+
+		Matrix rotation = math::load_float3x3(transformation.rotation);
+
+		Vector geo_n_w = math::transform_vector(rotation, geo_n);
+		Vector n_w	   = math::transform_vector(rotation, n);
+		Vector t_w	   = math::transform_vector(rotation, t);
+		Vector b_w	   = math::mul3(bitangent_sign, math::cross3(n_w, t_w));
+
+		intersection.p = p_w;
+		math::store_float4(intersection.t, t_w);
+		math::store_float4(intersection.b, b_w);
+		math::store_float4(intersection.n, n_w);
+		math::store_float4(intersection.geo_n, geo_n_w);
+		intersection.uv = uv;
+		intersection.epsilon = epsilon;
+		intersection.part = material_index;
+
 
 		return true;
 	}

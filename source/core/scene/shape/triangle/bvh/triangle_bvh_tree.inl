@@ -459,6 +459,12 @@ void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index,
 }
 
 template<typename Data>
+void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index,
+										   Vector& n, Vector& t, float2& tc) const {
+	data_.interpolate_data(u, v, index, n, t, tc);
+}
+
+template<typename Data>
 float2 Tree<Data>::interpolate_triangle_uv(uint32_t index, float2 uv) const {
     return data_.interpolate_uv(index, uv);
 }
@@ -476,6 +482,11 @@ uint32_t Tree<Data>::triangle_material_index(uint32_t index) const {
 template<typename Data>
 float3 Tree<Data>::triangle_normal(uint32_t index) const {
     return data_.normal(index);
+}
+
+template<typename Data>
+Vector Tree<Data>::triangle_normal_v(uint32_t index) const {
+	return data_.normal_v(index);
 }
 
 template<typename Data>

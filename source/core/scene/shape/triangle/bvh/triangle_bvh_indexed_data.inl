@@ -94,6 +94,17 @@ void Indexed_data<IV, SV>::interpolate_data(FVector u, FVector v, uint32_t index
 }
 
 template<typename IV, typename SV>
+void Indexed_data<IV, SV>::interpolate_data(FVector u, FVector v, uint32_t index,
+											Vector& n, Vector& t, float2& tc) const {
+	const auto& tri = triangles_[index];
+	const SV& a = shading_vertices_[tri.a];
+	const SV& b = shading_vertices_[tri.b];
+	const SV& c = shading_vertices_[tri.c];
+
+	triangle::interpolate_data(u, v, a, b, c, n, t, tc);
+}
+
+template<typename IV, typename SV>
 float2 Indexed_data<IV, SV>::interpolate_uv(uint32_t index, float2 uv) const {
 	const auto& tri = triangles_[index];
 	const SV& sa = shading_vertices_[tri.a];
@@ -135,6 +146,23 @@ float3 Indexed_data<IV, SV>::normal(uint32_t index) const {
 	const float3 e1 = b.p - a.p;
 	const float3 e2 = c.p - a.p;
 	return math::normalized(math::cross(e1, e2));
+}
+
+template<typename IV, typename SV>
+Vector Indexed_data<IV, SV>::normal_v(uint32_t index) const {
+	const auto& tri = triangles_[index];
+	const IV& a = intersection_vertices_[tri.a];
+	const IV& b = intersection_vertices_[tri.b];
+	const IV& c = intersection_vertices_[tri.c];
+
+	const Vector ap = math::load_float4(a.p);
+	const Vector bp = math::load_float4(b.p);
+	const Vector cp = math::load_float4(c.p);
+
+	const Vector e1 = math::sub3(bp, ap);
+	const Vector e2 = math::sub3(cp, ap);
+
+	return math::normalized3(math::cross3(e1, e2));
 }
 
 template<typename IV, typename SV>
