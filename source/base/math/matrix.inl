@@ -13,20 +13,20 @@ namespace math {
  ****************************************************************************/
 
 inline Matrix3 SU_CALLCONV load_float3x3(const Matrix3x3f_a& source) {
-	return Matrix3 {
+	return Matrix3 {{
 		_mm_load_ps(source.r[0].v),
 		_mm_load_ps(source.r[1].v),
 		_mm_load_ps(source.r[2].v)
-	};
+	}};
 }
 
 inline Matrix4 SU_CALLCONV load_float4x4(const Matrix4x4f_a& source) {
-	return Matrix4 {
+	return Matrix4 {{
 		_mm_load_ps(source.r[0].v),
 		_mm_load_ps(source.r[1].v),
 		_mm_load_ps(source.r[2].v),
 		_mm_load_ps(source.r[3].v)
-	};
+	}};
 }
 
 /****************************************************************************
