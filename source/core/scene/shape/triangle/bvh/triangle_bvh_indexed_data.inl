@@ -155,9 +155,9 @@ Vector Indexed_data<IV, SV>::normal_v(uint32_t index) const {
 	const IV& b = intersection_vertices_[tri.b];
 	const IV& c = intersection_vertices_[tri.c];
 
-	const Vector ap = math::load_float4(a.p);
-	const Vector bp = math::load_float4(b.p);
-	const Vector cp = math::load_float4(c.p);
+	const Vector ap = load_float4(a.p);
+	const Vector bp = load_float4(b.p);
+	const Vector cp = load_float4(c.p);
 
 	const Vector e1 = math::sub3(bp, ap);
 	const Vector e2 = math::sub3(cp, ap);

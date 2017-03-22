@@ -115,16 +115,4 @@ static inline float rcp(float x) {
 	return x;
 }
 
-static inline Vector rcp1(FVector x) {
-	Vector rcp  = _mm_rcp_ss(x);
-	Vector muls = _mm_mul_ss(_mm_mul_ss(rcp, rcp), x);
-	return _mm_sub_ss(_mm_add_ss(rcp, rcp), muls);
-}
-
-static inline Vector rcp(FVector x) {
-	Vector rcp  = _mm_rcp_ps(x);
-	Vector muls = _mm_mul_ps(_mm_mul_ps(rcp, rcp), x);
-	return _mm_sub_ps(_mm_add_ps(rcp, rcp), muls);
-}
-
 }

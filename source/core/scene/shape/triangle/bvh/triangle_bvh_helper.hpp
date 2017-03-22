@@ -2,20 +2,16 @@
 
 #include "base/math/vector3.hpp"
 #include "base/math/plane.hpp"
-#include "base/math/vector.hpp"
+#include "base/simd.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 float3 triangle_min(float3_p a, float3_p b, float3_p c);
 float3 triangle_max(float3_p a, float3_p b, float3_p c);
 
-Vector triangle_min(FVector a,
-								FVector b,
-								FVector c);
+Vector triangle_min(FVector a, FVector b, FVector c);
 
-Vector triangle_max(FVector a,
-								FVector b,
-								FVector c);
+Vector triangle_max(FVector a, FVector b, FVector c);
 
 float3 triangle_min(float3_p a, float3_p b, float3_p c, float3_p x);
 float3 triangle_max(float3_p a, float3_p b, float3_p c, float3_p x);

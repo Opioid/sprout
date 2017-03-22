@@ -2,8 +2,8 @@
 
 #include "vector3.hpp"
 #include "vector2.inl"
-#include "simd.hpp"
 #include "vector.inl"
+#include "math.hpp"
 
 namespace math {
 

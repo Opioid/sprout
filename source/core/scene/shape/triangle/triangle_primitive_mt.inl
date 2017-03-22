@@ -220,10 +220,10 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 
 	Vector uv = add1(u, v);
 
-	if (0 != (_mm_comige_ss(u, Zero) &
-			  _mm_comige_ss(One, u) &
-			  _mm_comige_ss(v, Zero) &
-			  _mm_comige_ss(One, uv) &
+	if (0 != (_mm_comige_ss(u, simd::Zero) &
+			  _mm_comige_ss(simd::One, u) &
+			  _mm_comige_ss(v, simd::Zero) &
+			  _mm_comige_ss(simd::One, uv) &
 			  _mm_comige_ss(hit_t, min_t) &
 			  _mm_comige_ss(max_t, hit_t))) {
 		max_t = hit_t;
@@ -328,10 +328,10 @@ static inline bool intersect_p(FVector origin, FVector direction,
 
 	Vector uv = add1(u, v);
 
-	return 0 != (_mm_comige_ss(u, Zero) &
-				 _mm_comige_ss(One, u) &
-				 _mm_comige_ss(v, Zero) &
-				 _mm_comige_ss(One, uv) &
+	return 0 != (_mm_comige_ss(u, simd::Zero) &
+				 _mm_comige_ss(simd::One, u) &
+				 _mm_comige_ss(v, simd::Zero) &
+				 _mm_comige_ss(simd::One, uv) &
 				 _mm_comige_ss(hit_t, min_t) &
 				 _mm_comige_ss(max_t, hit_t));
 }
@@ -406,26 +406,26 @@ static inline float2 interpolate_uv(FVector u, FVector v,
 									const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c) {
-	const Vector w = math::sub3(math::sub3(math::One, u), v);
+	const Vector w = math::sub3(math::sub3(simd::One, u), v);
 
 	const float3 auv(a.n_u[3], a.t_v[3], 0.f);
-	Vector va = math::load_float4(auv);
+	Vector va = load_float4(auv);
 
 	const float3 buv(b.n_u[3], b.t_v[3], 0.f);
-	Vector vb = math::load_float4(buv);
+	Vector vb = load_float4(buv);
 
 	va = math::mul3(w, va);
 	vb = math::mul3(u, vb);
 	va = math::add3(va, vb);
 
 	const float3 cuv(c.n_u[3], c.t_v[3], 0.f);
-	Vector vc = math::load_float4(cuv);
+	Vector vc = load_float4(cuv);
 
 	vc = math::mul3(v, vc);
 	Vector uv = math::add3(va, vc);
 
 	float3 r;
-	math::store_float4(r.v, uv);
+	store_float4(r.v, uv);
 	return r.xy();
 }
 
@@ -450,29 +450,29 @@ static inline void interpolate_data(FVector u, FVector v,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,
 									float3& n, float3& t, float2& tc) {
-	const Vector w = math::sub3(math::sub3(math::One, u), v);
+	const Vector w = math::sub3(math::sub3(simd::One, u), v);
 
-	Vector va = math::mul3(w, math::load_float4(a.n_u));
-	Vector vb = math::mul3(u, math::load_float4(b.n_u));
+	Vector va = math::mul3(w, load_float4(a.n_u));
+	Vector vb = math::mul3(u, load_float4(b.n_u));
 	va = math::add3(va, vb);
-	Vector vc = math::mul3(v, math::load_float4(c.n_u));
+	Vector vc = math::mul3(v, load_float4(c.n_u));
 	Vector v0 = math::add3(va, vc);
 
 	Vector vn = math::normalized3(v0);
-	math::store_float4(n, vn);
+	store_float4(n, vn);
 
-	va = math::mul3(w, math::load_float4(a.t_v));
-	vb = math::mul3(u, math::load_float4(b.t_v));
+	va = math::mul3(w, load_float4(a.t_v));
+	vb = math::mul3(u, load_float4(b.t_v));
 	va = math::add3(va, vb);
-	vc = math::mul3(v, math::load_float4(c.t_v));
+	vc = math::mul3(v, load_float4(c.t_v));
 	Vector v1 = math::add3(va, vc);
 
 	Vector vt = math::normalized3(v1);
-	math::store_float4(t, vt);
+	store_float4(t, vt);
 
 	v0 = SU_MUX_HIGH(v0, v1);
 	float4 r;
-	math::store_float4(r, v0);
+	store_float4(r, v0);
 	tc[0] = r[3];
 	tc[1] = r[1];
 }
@@ -482,27 +482,27 @@ static inline void interpolate_data(FVector u, FVector v,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,
 									Vector& n, Vector& t, float2& tc) {
-	const Vector w = math::sub3(math::sub3(math::One, u), v);
+	const Vector w = math::sub3(math::sub3(simd::One, u), v);
 
-	Vector va = math::mul3(w, math::load_float4(a.n_u));
-	Vector vb = math::mul3(u, math::load_float4(b.n_u));
+	Vector va = math::mul3(w, load_float4(a.n_u));
+	Vector vb = math::mul3(u, load_float4(b.n_u));
 	va = math::add3(va, vb);
-	Vector vc = math::mul3(v, math::load_float4(c.n_u));
+	Vector vc = math::mul3(v, load_float4(c.n_u));
 	Vector v0 = math::add3(va, vc);
 
 	n = math::normalized3(v0);
 
-	va = math::mul3(w, math::load_float4(a.t_v));
-	vb = math::mul3(u, math::load_float4(b.t_v));
+	va = math::mul3(w, load_float4(a.t_v));
+	vb = math::mul3(u, load_float4(b.t_v));
 	va = math::add3(va, vb);
-	vc = math::mul3(v, math::load_float4(c.t_v));
+	vc = math::mul3(v, load_float4(c.t_v));
 	Vector v1 = math::add3(va, vc);
 
 	t = math::normalized3(v1);
 
 	v0 = SU_MUX_HIGH(v0, v1);
 	float4 r;
-	math::store_float4(r, v0);
+	store_float4(r, v0);
 	tc[0] = r[3];
 	tc[1] = r[1];
 }

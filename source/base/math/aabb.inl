@@ -107,11 +107,11 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 	// the order we use for those min/max is vital to filter out
 	// NaNs that happens when an inv_dir is +/- inf and
 	// (box_min - pos) is 0. inf * 0 = NaN
-	const Vector filtered_l1a = min3(l1, Infinity);
-	const Vector filtered_l2a = min3(l2, Infinity);
+	const Vector filtered_l1a = min3(l1, simd::Infinity);
+	const Vector filtered_l2a = min3(l2, simd::Infinity);
 
-	const Vector filtered_l1b = max3(l1, NegInfinity);
-	const Vector filtered_l2b = max3(l2, NegInfinity);
+	const Vector filtered_l1b = max3(l1, simd::NegInfinity);
+	const Vector filtered_l2b = max3(l2, simd::NegInfinity);
 
 	// now that we're back on our feet, test those slabs.
 	Vector max_t = max3(filtered_l1a, filtered_l2a);

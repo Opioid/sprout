@@ -70,8 +70,8 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 	float2 uv;
 	uint32_t index = 0xFFFFFFFF;
 
-	Vector ray_origin		 = math::load_float3(ray.origin);
-	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	Vector ray_origin		 = load_float3(ray.origin);
+	Vector ray_inv_direction = load_float3(ray.inv_direction);
 	Vector ray_min_t = _mm_set1_ps(ray.min_t);
 	Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
@@ -115,11 +115,11 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
 	uint32_t index = 0xFFFFFFFF;
 
-	const Vector ray_origin		   = math::load_float4(ray.origin);
-	const Vector ray_direction	   = math::load_float4(ray.direction);
-	const Vector ray_inv_direction = math::load_float4(ray.inv_direction);
-	const Vector ray_min_t		   = math::load_float(ray.min_t);
-		  Vector ray_max_t		   = math::load_float(ray.max_t);
+	const Vector ray_origin		   = load_float4(ray.origin);
+	const Vector ray_direction	   = load_float4(ray.direction);
+	const Vector ray_inv_direction = load_float4(ray.inv_direction);
+	const Vector ray_min_t		   = load_float(ray.min_t);
+		  Vector ray_max_t		   = load_float(ray.max_t);
 	Vector u;
 	Vector v;
 
@@ -170,11 +170,11 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 	node_stack.push(0);
 	uint32_t n = 0;
 
-	const Vector ray_origin		   = math::load_float4(ray.origin);
-	const Vector ray_direction	   = math::load_float4(ray.direction);
-	const Vector ray_inv_direction = math::load_float4(ray.inv_direction);
-	const Vector ray_min_t		   = math::load_float(ray.min_t);
-		  Vector ray_max_t		   = math::load_float(ray.max_t);
+	const Vector ray_origin		   = load_float4(ray.origin);
+	const Vector ray_direction	   = load_float4(ray.direction);
+	const Vector ray_inv_direction = load_float4(ray.inv_direction);
+	const Vector ray_min_t		   = load_float(ray.min_t);
+		  Vector ray_max_t		   = load_float(ray.max_t);
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes_[n];
@@ -219,8 +219,8 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 	float2 uv;
 	float max_t = ray.max_t;
 
-	Vector ray_origin		 = math::load_float3(ray.origin);
-	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	Vector ray_origin		 = load_float3(ray.origin);
+	Vector ray_inv_direction = load_float3(ray.inv_direction);
 	Vector ray_min_t = _mm_set1_ps(ray.min_t);
 	Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
@@ -271,11 +271,11 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 	float opacity = 0.f;
 
-	const Vector ray_origin		   = math::load_float4(ray.origin);
-	const Vector ray_direction	   = math::load_float4(ray.direction);
-	const Vector ray_inv_direction = math::load_float4(ray.inv_direction);
-	const Vector ray_min_t		   = math::load_float(ray.min_t);
-		  Vector ray_max_t		   = math::load_float(ray.max_t);
+	const Vector ray_origin		   = load_float4(ray.origin);
+	const Vector ray_direction	   = load_float4(ray.direction);
+	const Vector ray_inv_direction = load_float4(ray.inv_direction);
+	const Vector ray_min_t		   = load_float(ray.min_t);
+		  Vector ray_max_t		   = load_float(ray.max_t);
 	const Vector max_t = ray_max_t;
 
 	Vector u;
@@ -335,8 +335,8 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 	float2 uv;
 	float max_t = ray.max_t;
 
-	Vector ray_origin		 = math::load_float3(ray.origin);
-	Vector ray_inv_direction = math::load_float3(ray.inv_direction);
+	Vector ray_origin		 = load_float3(ray.origin);
+	Vector ray_inv_direction = load_float3(ray.inv_direction);
 	Vector ray_min_t = _mm_set1_ps(ray.min_t);
 	Vector ray_max_t = _mm_set1_ps(ray.max_t);
 
@@ -391,11 +391,11 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 
 	float3 absorption(0.f);
 
-	const Vector ray_origin		   = math::load_float3(ray.origin);
-	const Vector ray_direction	   = math::load_float3(ray.direction);
-	const Vector ray_inv_direction = math::load_float3(ray.inv_direction);
-	const Vector ray_min_t		   = math::load_float(ray.min_t);
-		  Vector ray_max_t		   = math::load_float(ray.max_t);
+	const Vector ray_origin		   = load_float3(ray.origin);
+	const Vector ray_direction	   = load_float3(ray.direction);
+	const Vector ray_inv_direction = load_float3(ray.inv_direction);
+	const Vector ray_min_t		   = load_float(ray.min_t);
+		  Vector ray_max_t		   = load_float(ray.max_t);
 	const Vector max_t = ray_max_t;
 
 	Vector u;

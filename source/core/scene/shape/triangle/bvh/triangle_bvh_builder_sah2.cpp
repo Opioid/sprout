@@ -19,10 +19,10 @@ void Builder_SAH2::Reference::set_min_max_primitive(FVector min,
 													FVector max,
 													uint32_t primitive) {
 	float3 tmp;
-	math::store_float4(tmp, min);
+	store_float4(tmp, min);
 	bounds[0].v[0] = tmp[0]; bounds[0].v[1] = tmp[1]; bounds[0].v[2] = tmp[2];
 	bounds[0].index = primitive;
-	math::store_float4(bounds[1].v, max);
+	store_float4(bounds[1].v, max);
 }
 
 void Builder_SAH2::Reference::clip_min(float d, uint8_t axis) {

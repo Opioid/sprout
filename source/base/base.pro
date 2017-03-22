@@ -13,6 +13,7 @@ SOURCES +=
 
 HEADERS += \
     simd.hpp \
+    simd.inl \
 
 include(atomic/atomic.pri)
 include(chrono/chrono.pri)

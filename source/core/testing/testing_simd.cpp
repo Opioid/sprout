@@ -188,21 +188,21 @@ inline float3 simd_normalized_0(const float3& v) {
 }
 
 inline float3 simd_normalized_1(const float3& v) {
-	Vector sx = math::load_float3(v);
+	Vector sx = load_float3(v);
 
 	Vector d = math::dot3(sx, sx);
 
 	Vector il = math::rsqrt(d);
 
 	float3 result;
-	math::store_float4(result, _mm_mul_ps(il, sx));
+	store_float4(result, _mm_mul_ps(il, sx));
 
 	return result;
 }
 
 inline float simd_dotlly(const float3& a, const float3& b) {
-//	Vector sa = math::load_float4(a);
-//	Vector sb = math::load_float4(b);
+//	Vector sa = load_float4(a);
+//	Vector sb = load_float4(b);
 
 //	Vector d = _mm_dp_ps(sa, sb, 0x77);
 
@@ -213,7 +213,7 @@ inline float simd_dotlly(const float3& a, const float3& b) {
 }
 
 inline float3 simd_normalized_2(const float3& v) {
-//	Vector sx = math::load_float3(v);
+//	Vector sx = load_float3(v);
 
 //	Vector d = _mm_dp_ps(sx, sx, 0x77);
 
@@ -350,23 +350,23 @@ void normalize() {
 //}
 
 inline float3 simd_reciprocal(const float3& v) {
-	Vector sx = math::load_float3(v);
+	Vector sx = load_float3(v);
 
 	__m128 rcp = _mm_rcp_ps(sx);
 	__m128 mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
 	float3 result;
-	math::store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 	return result;
 }
 
 inline void simd_reciprocal(float3& result, const float3& v) {
-	Vector sx = math::load_float3(v);
+	Vector sx = load_float3(v);
 
 	__m128 rcp = _mm_rcp_ps(sx);
 	__m128 mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
-	math::store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 }
 
 void reciprocal() {
@@ -461,8 +461,8 @@ inline float dotly(float3 a, float3 b) {
 }
 
 inline float simd_dot_0(const float3& a, const float3& b) {
-	Vector sa = math::load_float3(a);
-	Vector sb = math::load_float3(b);
+	Vector sa = load_float3(a);
+	Vector sb = load_float3(b);
 
 	Vector d = math::dot3(sa, sb);
 
@@ -472,8 +472,8 @@ inline float simd_dot_0(const float3& a, const float3& b) {
 }
 
 inline float simd_dot_1(const float3 a, const float3 b) {
-	Vector sa = math::load_float3(a);
-	Vector sb = math::load_float3(b);
+	Vector sa = load_float3(a);
+	Vector sb = load_float3(b);
 
 	// Perform the dot product
 	Vector vDot = _mm_mul_ps(sa, sb);
@@ -495,8 +495,8 @@ inline float simd_dot_1(const float3 a, const float3 b) {
 }
 
 inline float simd_dot_2(const float3& a, const float3& b) {
-//	Vector sa = math::load_float4(a);
-//	Vector sb = math::load_float4(b);
+//	Vector sa = load_float4(a);
+//	Vector sb = load_float4(b);
 
 //	Vector d = _mm_dp_ps(sa, sb, 0x77);
 
@@ -625,19 +625,19 @@ void dot() {
 }
 
 inline float3 simd_min(float3_p a, float3_p b) {
-	Vector sa = math::load_float3(a);
-	Vector sb = math::load_float3(b);
+	Vector sa = load_float3(a);
+	Vector sb = load_float3(b);
 
 	float3 result;
-	math::store_float4(result, _mm_min_ps(sa, sb));
+	store_float4(result, _mm_min_ps(sa, sb));
 	return result;
 }
 
 inline void simd_min2(float3& a, float3_p b) {
-	Vector sa = math::load_float3(a);
-	Vector sb = math::load_float3(b);
+	Vector sa = load_float3(a);
+	Vector sb = load_float3(b);
 
-	math::store_float4(a, _mm_min_ps(sa, sb));
+	store_float4(a, _mm_min_ps(sa, sb));
 }
 
 void minmax() {

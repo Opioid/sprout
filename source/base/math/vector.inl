@@ -1,85 +1,12 @@
 #pragma once
 
+// This is basically a subset of DirectXMath!
+
 #include "vector.hpp"
+#include "simd.inl"
 #include "vector4.inl"
 
 namespace math {
-
-
-/****************************************************************************
- *
- * Load operations
- *
- ****************************************************************************/
-
-static inline Vector SU_CALLCONV load_float(float x) {
-	return _mm_set1_ps(x);
-}
-
-static inline Vector SU_CALLCONV load_float3(const Vector3<float>& source) {
-	__m128 x = _mm_load_ss(&source.v[0]);
-	__m128 y = _mm_load_ss(&source.v[1]);
-	__m128 z = _mm_load_ss(&source.v[2]);
-	__m128 xy = _mm_unpacklo_ps(x, y);
-	return _mm_movelh_ps(xy, z);
-}
-
-static inline Vector SU_CALLCONV load_float3(const float* source) {
-	// Reads an extra float which is zero'd
-	__m128 v = _mm_load_ps(source);
-	return _mm_and_ps(v, Mask3);
-}
-
-static inline Vector SU_CALLCONV load_float3(const Vector3f_a& source) {
-	// Reads an extra float which is zero'd
-	__m128 v = _mm_load_ps(source.v);
-	return _mm_and_ps(v, Mask3);
-}
-
-static inline Vector SU_CALLCONV load_float4(const Vector3f_a& source) {
-	// Reads an extra float!!!
-	return _mm_load_ps(source.v);
-}
-
-static inline Vector SU_CALLCONV load_float4(const Vector4f_a& source) {
-	return _mm_load_ps(source.v);
-}
-
-static inline Vector SU_CALLCONV load_float4(const float* source) {
-	return _mm_load_ps(source);
-}
-
-/****************************************************************************
- *
- * Store operations
- *
- ****************************************************************************/
-
-static inline void SU_CALLCONV store_float3(Vector3<float>& destination, FVector v) {
-	Vector t1 = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
-	Vector t2 = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
-	_mm_store_ss(&destination.v[0], v);
-	_mm_store_ss(&destination.v[1], t1);
-	_mm_store_ss(&destination.v[2], t2);
-}
-
-//static inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
-//	Vector t = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
-//	_mm_storel_epi64(reinterpret_cast<__m128i*>(&destination), _mm_castps_si128(v));
-//	_mm_store_ss(&destination[2], t);
-//}
-
-static inline void SU_CALLCONV store_float4(Vector3f_a& destination, FVector v) {
-	_mm_store_ps(destination.v, v);
-}
-
-static inline void SU_CALLCONV store_float4(Vector4f_a& destination, FVector v) {
-	_mm_store_ps(destination.v, v);
-}
-
-static inline void SU_CALLCONV store_float4(float* destination, FVector v) {
-	_mm_store_ps(destination, v);
-}
 
 /****************************************************************************
  *
@@ -101,6 +28,12 @@ static inline Vector SU_CALLCONV min1(FVector a, FVector b) {
 
 static inline Vector SU_CALLCONV max1(FVector a, FVector b) {
 	return _mm_max_ss(a, b);
+}
+
+static inline Vector SU_CALLCONV rcp1(FVector x) {
+	Vector rcp  = _mm_rcp_ss(x);
+	Vector muls = _mm_mul_ss(_mm_mul_ss(rcp, rcp), x);
+	return _mm_sub_ss(_mm_add_ss(rcp, rcp), muls);
 }
 
 /****************************************************************************
@@ -185,6 +118,12 @@ static inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
 	// Set w to zero
 //	return _mm_and_ps(result, Mask3);
 	return result;
+}
+
+static inline Vector SU_CALLCONV rcp3(FVector x) {
+	Vector rcp  = _mm_rcp_ps(x);
+	Vector muls = _mm_mul_ps(_mm_mul_ps(rcp, rcp), x);
+	return _mm_sub_ps(_mm_add_ps(rcp, rcp), muls);
 }
 
 static inline Vector SU_CALLCONV min3(FVector a, FVector b) {
