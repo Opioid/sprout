@@ -5,12 +5,6 @@
 //#include <smmintrin.h> // SSE 4.1 intrinsics
 
 /*
-#if defined(_MSC_VER) && !defined(_M_ARM) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
-#	if ((_MSC_FULL_VER >= 170065501) && (_MSC_VER < 1800)) || (_MSC_FULL_VER >= 180020418)
-#		define _XM_VECTORCALL_ 1
-#	endif
-#endif
-
 #if _SU_VECTORCALL_
 #	define SU_CALLCONV __vectorcall
 #else

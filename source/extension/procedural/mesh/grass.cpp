@@ -92,7 +92,7 @@ void Grass::add_blade(float3_p offset,
 	scene::shape::triangle::Index_triangle tri;
 	tri.material_index = 0;
 
-	const uint32_t num_segments = 4;
+	constexpr uint32_t num_segments = 4;
 	uint32_t vertices_per_segment = 3;
 
 	for (uint32_t i = 0; i < num_segments; ++i) {
@@ -140,12 +140,12 @@ void Grass::add_blade(float3_p offset,
 	float max_width = 0.035f;
 
 	float3 segment_controls[num_segments + 2];
-	segment_controls[0] = float3(width *  max_width, 0.f,			  width *  0.01f);
-	segment_controls[1] = float3(width * -0.006f,	  height * 0.46f, width * -0.001f);
-	segment_controls[2] = float3(width * -0.005f,	  height * 0.28f, width * -0.0015f);
-	segment_controls[3] = float3(width * -0.004f,	  height * 0.13f, width * -0.002f);
-	segment_controls[4] = float3(width * -0.006f,	  height * 0.08f, width * -0.001f);
-	segment_controls[5] = float3(0.f,				  height * 0.05f,  0.f);
+	segment_controls[0] = float3(width *  max_width, 0.f,			 width *  0.01f);
+	segment_controls[1] = float3(width * -0.006f,	 height * 0.46f, width * -0.001f);
+	segment_controls[2] = float3(width * -0.005f,	 height * 0.28f, width * -0.0015f);
+	segment_controls[3] = float3(width * -0.004f,	 height * 0.13f, width * -0.002f);
+	segment_controls[4] = float3(width * -0.006f,	 height * 0.08f, width * -0.001f);
+	segment_controls[5] = float3(0.f,				 height * 0.05f, 0.f);
 
 	float2 segment_uvs[num_segments + 2];
 
