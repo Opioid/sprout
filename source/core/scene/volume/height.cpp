@@ -10,9 +10,8 @@ namespace scene { namespace volume {
 
 Height::Height() : a_(1.f), b_(1.f) {}
 
-float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/,
-							 rnd::Generator& /*rng*/, Worker& /*worker*/,
-							 Sampler_filter /*filter*/) const {
+float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Generator& /*rng*/,
+							 Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	float length = math::length(ray.direction);
 
 	math::Ray rn(ray.origin, ray.direction / length, ray.min_t * length, ray.max_t * length);
@@ -28,12 +27,12 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/,
 	// Because everything happens in world space there could be differences
 	// when the volume is rotated because the local aabb is never checked.
 
-	float3 a = rn.point(min_t);
-	float3 b = rn.point(max_t);
+	float ay = rn.origin[1] + min_t * rn.direction[1];
+	float by = rn.origin[1] + max_t * rn.direction[1];
 
 	float min_y = aabb_.min()[1];
-	float ha = a[1] - min_y;
-	float hb = b[1] - min_y;
+	float ha = ay - min_y;
+	float hb = by - min_y;
 
 	float3 attenuation = absorption_ + scattering_;
 
