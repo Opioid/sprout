@@ -3,6 +3,7 @@ SOURCES += \
 HEADERS += \
 	math/aabb.hpp \
 	math/aabb.inl \
+	math/exp.hpp \
 	math/mapping.hpp \
 	math/mapping.inl \
 	math/math.hpp \

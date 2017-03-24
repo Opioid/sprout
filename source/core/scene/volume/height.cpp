@@ -1,6 +1,7 @@
 #include "height.hpp"
 #include "base/json/json.hpp"
 #include "base/math/aabb.inl"
+#include "base/math/exp.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
 
@@ -40,7 +41,7 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 
 	if (ha == hb) {
 		// special case where density stays exactly the same along the ray
-		float3 result = d * (a_ * std::exp(-b_ * ha)) * attenuation;
+		float3 result = d * (a_ * math::exp(-b_ * ha)) * attenuation;
 
 		SOFT_ASSERT(math::all_finite(result));
 
@@ -53,8 +54,16 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 
 //	float3 result = d * ((fb - fa) / (hb - ha)) * attenuation;
 
-	float fa = -std::exp(-b_ * ha);
-	float fb = -std::exp(-b_ * hb);
+	float fa = -/*std::exp*/math::exp(-b_ * ha);
+	float fb = -/*std::exp*/math::exp(-b_ * hb);
+
+//	float3 e(-b_ * ha, -b_ * hb, 0.f);
+//	Vector se = math::exp(load_float4(e));
+//	float3 f;
+//	store_float4(f, se);
+//	float fa = -f[0];
+//	float fb = -f[1];
+
 
 	float3 result = d * ((a_ * (fb - fa) / b_) / (hb - ha)) * attenuation;
 
@@ -75,7 +84,7 @@ float Height::density(float3_p p, Worker& /*worker*/, Sampler_filter /*filter*/)
 	// calculate height, relative to volume, in world space
 	float height = world_transformation_.scale[1] * (1.f + p[1]);
 
-	return a_ * std::exp(-b_ * height);
+	return a_ * /*std::exp*/math::exp(-b_ * height);
 }
 
 void Height::set_parameter(const std::string& name, const json::Value& value) {

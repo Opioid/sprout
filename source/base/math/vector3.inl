@@ -4,6 +4,7 @@
 #include "vector2.inl"
 #include "vector.inl"
 #include "math.hpp"
+#include "exp.hpp"
 
 namespace math {
 
@@ -445,7 +446,13 @@ static inline Vector3f_a saturate(FVector3f_a v) {
 }
 
 static inline Vector3f_a exp(FVector3f_a v) {
-	return Vector3f_a(std::exp(v[0]), std::exp(v[1]), std::exp(v[2]));
+//	return Vector3f_a(math::exp(v[0]), math::exp(v[1]), math::exp(v[2]));
+	Vector x = load_float4(v);
+	x = exp(x);
+
+	Vector3f_a r;
+	store_float4(r, x);
+	return r;
 }
 
 static inline Vector3f_a pow(FVector3f_a v, float e) {

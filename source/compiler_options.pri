@@ -24,6 +24,7 @@ win32 {
     QMAKE_CXXFLAGS += /wd5026 #move constructor operator implicitly deleted
     QMAKE_CXXFLAGS += /wd5027 #move assignment operator implicitly deleted
 } else {
+    # disable RTTI (CONFIG += rtti_off is needed as well, otherwise the setting is overwritten)
     QMAKE_CXXFLAGS += -fno-rtti
 #    QMAKE_CXXFLAGS_RELEASE -= -O2
 #    QMAKE_CXXFLAGS_RELEASE += -O3
