@@ -30,6 +30,10 @@ void Driver_progressive::render(exporting::Sink& exporter) {
 		return;
 	}
 
+	for (auto& worker : workers_) {
+		worker.prepare(view_.num_samples_per_pixel);
+	}
+
 	scene_.tick(thread_pool_);
 
 	restart();
