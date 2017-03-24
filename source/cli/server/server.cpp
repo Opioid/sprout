@@ -50,7 +50,7 @@ void Server::shutdown() {
 	}
 }
 
-void Server::write(const image::Float_4& image, uint32_t /*frame*/, thread::Pool& pool) {
+void Server::write(const image::Float_4& image, uint32_t frame, thread::Pool& pool) {
 	const auto d = image.description().dimensions;
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		srgb_.to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
@@ -64,6 +64,11 @@ void Server::write(const image::Float_4& image, uint32_t /*frame*/, thread::Pool
 
 		// Here we are assuming that the client disconnected if the send fails.
 		// The nice solution probably is listening for a close message.
+
+		if (0 == frame) {
+			client->send(message_handler_.iteration());
+		}
+
 		if (!client->send(reinterpret_cast<const char*>(srgb_.data()), buffer_len)) {
 			client->shutdown();
 			delete client;

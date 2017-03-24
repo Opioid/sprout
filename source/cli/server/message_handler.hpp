@@ -11,6 +11,8 @@ public:
 	virtual void handle(const std::string& message) = 0;
 
 	virtual std::string introduction() const = 0;
+
+	virtual std::string iteration() const = 0;
 };
 
 }

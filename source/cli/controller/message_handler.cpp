@@ -20,7 +20,6 @@ void Message_handler::handle(const std::string& message) {
 	if ("restart" == message) {
 		driver_.schedule_restart(false);
 	} else {
-
 		size_t op = message.find_first_of("=");
 		if (std::string::npos == op) {
 			return;
@@ -98,6 +97,14 @@ std::string Message_handler::introduction() const {
 
 	stream << "\"iteration\":" << driver_.iteration();
 
+	stream << "}";
+	return stream.str();
+}
+
+std::string Message_handler::iteration() const {
+	std::ostringstream stream;
+	stream << "{";
+	stream << "\"iteration\":" << driver_.iteration();
 	stream << "}";
 	return stream.str();
 }

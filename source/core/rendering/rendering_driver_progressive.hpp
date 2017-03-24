@@ -36,7 +36,7 @@ public:
 
 private:
 
-	void render_loop(exporting::Sink& exporter);
+	bool render_loop(exporting::Sink& exporter);
 
 	void restart();
 

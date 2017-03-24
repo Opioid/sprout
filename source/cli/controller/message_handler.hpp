@@ -25,6 +25,8 @@ public:
 
 	virtual std::string introduction() const final override;
 
+	virtual std::string iteration() const final override;
+
 private:
 
 	void handle_entity(scene::entity::Entity* entity, const std::string& value,

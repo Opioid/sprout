@@ -16,6 +16,7 @@ public:
 	bool run(const std::string& introduction);
 	void shutdown();
 
+	bool send(const std::string& text);
 	bool send(const char* data, size_t size);
 
 	bool pop_message(std::string& message);

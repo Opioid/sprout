@@ -24,6 +24,10 @@ void Client::shutdown() {
 	thread_.join();
 }
 
+bool Client::send(const std::string& text) {
+	return websocket_.send(text);
+}
+
 bool Client::send(const char* data, size_t size) {
 	return websocket_.send(data, size);
 }
