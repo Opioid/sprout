@@ -12,9 +12,10 @@ Camera::Camera(std::shared_ptr<scene::camera::Camera> camera) : camera_(camera) 
 	position_ = transformation.position;
 }
 
-void Camera::mouse_delta(int2 delta) {
-	position_.v[0] += 0.01f * static_cast<float>(delta[0]);
-	position_.v[1] += 0.01f * static_cast<float>(delta[1]);
+void Camera::mouse_delta(float3 delta) {
+	position_.v[0] += 0.01f * delta[0];
+	position_.v[1] += 0.01f * delta[1];
+	position_.v[2] -= 0.0005f * delta[2];
 
 	math::Transformation transformation {
 		position_,

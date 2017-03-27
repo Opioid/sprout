@@ -64,7 +64,7 @@ window.onload = function() {
 		}
 	});
 
-	let mouseAxis = [0, 0];
+	let mouseAxis = [0.0, 0.0, 0.0];
 	
 	viewerImage.addEventListener("mousemove", function(event) {
 		if (this === document.pointerLockElement) {
@@ -73,7 +73,12 @@ window.onload = function() {
 		}		
 	});
 
-	
+	viewerImage.addEventListener("wheel", function(event) {
+		if (this === document.pointerLockElement) {
+			mouseAxis[2] += event.deltaY;
+		}
+	});
+
 	let context = viewerImage.getContext("2d");
 	let imageData = context.getImageData(0, 0, 1, 1); // only do this once per page
 	let target  = imageData.data; 
@@ -110,11 +115,12 @@ window.onload = function() {
 			context.putImageData(imageData, 0, 0);
 
 			// Send back accumulated mouse axis delta
-			if (0 !== mouseAxis[0] || 0 !== mouseAxis[1]) {
+			if (0.0 !== mouseAxis[0] || 0.0 !== mouseAxis[1] || 0.0 !== mouseAxis[2]) {
 				socket.send("md:[" + mouseAxis + "]");
 
-				mouseAxis[0] = 0;
-				mouseAxis[1] = 0;
+				mouseAxis[0] = 0.0;
+				mouseAxis[1] = 0.0;
+				mouseAxis[2] = 0.0;
 			}
 		} else {
  			let messageObject = JSON.parse(event.data);

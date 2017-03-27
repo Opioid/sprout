@@ -13,7 +13,7 @@ public:
 
 	Camera(std::shared_ptr<scene::camera::Camera> camera);
 
-	void mouse_delta(int2 delta);
+	void mouse_delta(float3 delta);
 
 private:
 

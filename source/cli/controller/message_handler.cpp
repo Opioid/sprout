@@ -22,8 +22,8 @@ void Message_handler::handle(const std::string& message) {
 	if ("restart" == message) {
 		driver_.schedule_restart(false);
 	} else if ("md:[" == message.substr(0, 4)) {
-		int2 delta;
-		sscanf(message.c_str(), "md:[%d,%d]", &delta.v[0], &delta.v[1]);
+		float3 delta;
+		sscanf(message.c_str(), "md:[%f,%f,%f]", &delta.v[0], &delta.v[1], &delta.v[2]);
 		camera_.mouse_delta(delta);
 		driver_.schedule_restart(false);
 	} else {
