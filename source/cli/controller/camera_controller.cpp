@@ -1,5 +1,6 @@
 #include "camera_controller.hpp"
 #include "core/scene/camera/camera.hpp"
+#include "base/math/matrix4x4.inl"
 #include "base/math/quaternion.inl"
 
 namespace controller {
