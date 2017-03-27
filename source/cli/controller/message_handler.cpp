@@ -1,4 +1,5 @@
 #include "message_handler.hpp"
+#include "camera_controller.hpp"
 #include "core/logging/logging.hpp"
 #include "core/rendering/rendering_driver_progressive.hpp"
 #include "core/resource/resource_manager.inl"
@@ -13,11 +14,17 @@
 namespace controller {
 
 Message_handler::Message_handler(rendering::Driver_progressive& driver,
-								 resource::Manager& resource_manager) :
-	driver_(driver), resource_manager_(resource_manager) {}
+								 resource::Manager& resource_manager,
+								 Camera& camera) :
+	driver_(driver), resource_manager_(resource_manager), camera_(camera) {}
 
 void Message_handler::handle(const std::string& message) {
 	if ("restart" == message) {
+		driver_.schedule_restart(false);
+	} else if ("md:[" == message.substr(0, 4)) {
+		int2 delta;
+		sscanf(message.c_str(), "md:[%d,%d]", &delta.v[0], &delta.v[1]);
+		camera_.mouse_delta(delta);
 		driver_.schedule_restart(false);
 	} else {
 		size_t op = message.find_first_of("=");

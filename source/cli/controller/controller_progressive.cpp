@@ -1,4 +1,5 @@
 #include "controller_progressive.hpp"
+#include "camera_controller.hpp"
 #include "message_handler.hpp"
 #include "server/server.hpp"
 #include "core/logging/logging.hpp"
@@ -31,7 +32,9 @@ size_t progressive(take::Take& take, scene::Scene& scene, resource::Manager& res
 
 //	driver.set_force_statistics(true);
 
-	Message_handler handler(driver, resource_manager);
+	Camera camera(take.view.camera);
+
+	Message_handler handler(driver, resource_manager, camera);
 	server::Server server(take.view.camera->sensor_dimensions(), handler);
 
 	server.run();

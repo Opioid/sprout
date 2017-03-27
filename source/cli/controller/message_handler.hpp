@@ -15,11 +15,15 @@ namespace material { class Material; }
 
 namespace controller {
 
+class Camera;
+
 class Message_handler : public server::Message_handler {
 
 public:
 
-	Message_handler(rendering::Driver_progressive& driver, resource::Manager& resource_manager);
+	Message_handler(rendering::Driver_progressive& driver,
+					resource::Manager& resource_manager,
+					Camera& camera);
 
 	virtual void handle(const std::string& message) final override;
 
@@ -37,6 +41,7 @@ private:
 
 	rendering::Driver_progressive& driver_;
 	resource::Manager& resource_manager_;
+	Camera& camera_;
 };
 
 }
