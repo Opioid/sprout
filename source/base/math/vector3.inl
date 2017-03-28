@@ -238,21 +238,12 @@ static Vector3<T> reflect(const Vector3<T>& normal, const Vector3<T>& v) {
 }
 
 template<typename T>
-static void coordinate_system(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b) {
-	Vector3<T> r1;
-
-	if (n[0] < T(0.6) && n[0] > T(-0.6)) {
-		r1 = Vector3<T>(T(1), T(0), T(0));
-	} else if (n[1] < T(0.6) && n[1] > T(-0.6)) {
-		r1 = Vector3<T>(T(0), T(1), T(0));
-	} else {
-		r1 = Vector3<T>(T(0), T(0), T(1));
-	}
-
-	Vector3<T> r0 = normalized(cross(n, r1));
-
-	t = r0;
-	b = cross(r0, n);
+static void orthonormal_basis(const Vector3<T>& n, Vector3<T>& t, Vector3<T>& b) {
+	const T sign = std::copysign(T(1), n[2]);
+	const T c = -T(1) / (sign + n[2]);
+	const T d = n[0] * n[1] * c;
+	t = Vector3<T>(T(1) + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
+	b = Vector3<T>(d, sign + n[1] * n[1] * c, -n[1]);
 }
 
 template<typename T>
@@ -470,25 +461,9 @@ static inline Vector3f_a reflect(FVector3f_a normal, FVector3f_a v) {
 	return 2.f * dot(v, normal) * normal - v;
 }
 
-static inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
-/*	Vector3f_a r1;
-
-	if (nv[0] < 0.6f && nv[0] > -0.6f) {
-		r1 = Vector3f_a(1.f, 0.f, 0.f);
-	} else if (n[1] < 0.6f && n[1] > -0.6f) {
-		r1 = Vector3f_a(0.f, 1.f, 0.f);
-	} else {
-		r1 = Vector3f_a(0.f, 0.f, 1.f);
-	}
-
-	Vector3f_a r0 = normalized(cross(n, r1));
-
-	t = r0;
-	b = cross(r0, n);
-*/
-
+static inline void orthonormal_basis(FVector3f_a n, Vector3f_a& t, Vector3f_a& b) {
 	// https://gist.github.com/roxlu/3082114
-
+/*
 	// Handle the singularity
 	if (n[2] < -0.9999999f) {
 		t = Vector3f_a( 0.f, -1.f, 0.f);
@@ -500,30 +475,23 @@ static inline void coordinate_system(FVector3f_a n, Vector3f_a& t, Vector3f_a& b
 	const float d = -n[0] * n[1] * c;
 	t = Vector3f_a(1.f - n[0] * n[0] * c, d, -n[0]);
 	b = Vector3f_a(d, 1.f - n[1] * n[1] * c, -n[1]);
+	*/
+
+	// Building an Orthonormal Basis, Revisited
+	// http://jcgt.org/published/0006/01/01/
+
+	const float sign = std::copysign(1.f, n[2]);
+	const float c = -1.f / (sign + n[2]);
+	const float d = n[0] * n[1] * c;
+	t = Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
+	b = Vector3f_a(d, sign + n[1] * n[1] * c, -n[1]);
 }
 
 static inline Vector3f_a tangent(FVector3f_a n) {
-/*	Vector3f_a r1;
-
-	if (nv[0] < 0.6f && nv[0] > -0.6f) {
-		r1 = Vector3f_a(1.f, 0.f, 0.f);
-	} else if (n[1] < 0.6f && n[1] > -0.6f) {
-		r1 = Vector3f_a(0.f, 1.f, 0.f);
-	} else {
-		r1 = Vector3f_a(0.f, 0.f, 1.f);
-	}
-
-	return normalized(cross(n, r1));
-	*/
-
-	// Handle the singularity
-	if (n[2] < -0.9999999f) {
-		return Vector3f_a(0.f, -1.f, 0.f);
-	}
-
-	const float c = 1.f / (1.f + n[2]);
-	const float d = -n[0] * n[1] * c;
-	return Vector3f_a(1.f - n[0] * n[0] * c, d, -n[0]);
+	const float sign = std::copysign(1.f, n[2]);
+	const float c = -1.f / (sign + n[2]);
+	const float d = n[0] * n[1] * c;
+	return Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
 }
 
 static inline Vector3f_a min(FVector3f_a a, FVector3f_a b) {

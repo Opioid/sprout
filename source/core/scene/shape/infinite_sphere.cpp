@@ -76,7 +76,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 							 sampler::Sampler& sampler, uint32_t sampler_dimension,
 							 Node_stack& /*node_stack*/, Sample& sample) const {
 	float3 x, y;
-	math::coordinate_system(n, x, y);
+	math::orthonormal_basis(n, x, y);
 
 	const float2 uv = sampler.generate_sample_2D(sampler_dimension);
 	const float3 dir = math::sample_oriented_hemisphere_uniform(uv, x, y, n);

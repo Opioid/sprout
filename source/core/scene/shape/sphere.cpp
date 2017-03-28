@@ -239,7 +239,7 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 	float axis_length = std::sqrt(axis_squared_length);
 	float3 z = axis / axis_length;
 	float3 x, y;
-	math::coordinate_system(z, x, y);
+	math::orthonormal_basis(z, x, y);
 
 	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
 	float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);

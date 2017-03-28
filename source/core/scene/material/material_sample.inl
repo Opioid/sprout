@@ -16,7 +16,7 @@ inline void Sample::Layer::set_tangent_frame(float3_p t, float3_p b, float3_p n)
 }
 
 inline void Sample::Layer::set_tangent_frame(float3_p n) {
-	math::coordinate_system(n, t_, b_);
+	math::orthonormal_basis(n, t_, b_);
 	n_ = n;
 }
 

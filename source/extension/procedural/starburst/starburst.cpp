@@ -55,7 +55,7 @@ void create(thread::Pool& pool) {
 
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 512;
+	int32_t resolution = 1024;
 
 	int2 dimensions(resolution, resolution);
 
@@ -88,26 +88,14 @@ void create(thread::Pool& pool) {
 		Float_2 signal_a(description);
 		Float_2 signal_b(description);
 
-		float alpha = 0.12f;
+		float alpha = 0.1f;
 
-		{
-			Row row(resolution, alpha, pool);
-			fdft<Float_1, float>(signal_b, signal, row, alpha, pool);
-			signal_b.square_transpose();
-			fdft<Float_2, float2>(signal_a, signal_b, row, alpha, pool);
+		Row row(resolution, alpha, pool);
+		fdft<Float_1, float>(signal_b, signal, row, alpha, pool);
+		signal_b.square_transpose();
+		fdft<Float_2, float2>(signal_a, signal_b, row, alpha, pool);
 		//	squared_magnitude(signal.data(), signal_a.data(), resolution, resolution);
-			squared_magnitude_transposed(signal.data(), signal_a.data(), resolution);
-		}
-
-		{
-//			for (int32_t i = 0, len = signal.area(); i < len; ++i) {
-//				signal_a.store(i, float2(signal.load(i), 0.f));
-//			}
-
-//			fdft<0>(signal_b, signal_a, alpha, pool);
-//			fdft<1>(signal_a, signal_b, alpha, pool);
-//			squared_magnitude(signal.data(), signal_a.data(), resolution, resolution);
-		}
+		squared_magnitude_transposed(signal.data(), signal_a.data(), resolution);
 
 		pool.run_range([&float_image_a, &signal](uint32_t /*id*/, int32_t begin, int32_t end) {
 			for (int32_t i = begin; i < end; ++i) {

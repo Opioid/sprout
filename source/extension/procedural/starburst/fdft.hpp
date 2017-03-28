@@ -5,17 +5,11 @@
 #include "base/math/vector2.inl"
 #include "base/thread/thread_pool.hpp"
 
-#include <iostream>
-
 namespace procedural { namespace starburst {
-
-static inline float sign(float x) {
-	return x >= 0.f ? 1.f : -1.f;
-}
 
 static inline float2 sqrtc(float2 c) {
 	float l = math::length(c);
-	return 0.7071067f * float2(std::sqrt(l + c[0]), std::sqrt(l - c[0]) * sign(c[1]));
+	return 0.7071067f * float2(std::sqrt(l + c[0]), std::sqrt(l - c[0]) * std::copysign(1.f, c[1]));
 }
 
 static inline float2 mulc(float2 a, float2 b) {
@@ -61,18 +55,6 @@ static T sample(const T* source, int32_t w, int32_t b, float tc, int32_t y) {
 	T c1 = source[y0 + x_x1[1]];
 
 	return _s * c0 + s * c1;
-}
-
-template<uint32_t Axis>
-static float2 sample_2(const image::Float_2& source, int32_t b, float tc, int32_t y) {
-	int2 x_x1;
-	const float s  = map(b, tc, x_x1);
-	const float _s = 1.f - s;
-
-	float2 c[2];
-	source.pair<Axis>(x_x1, y, c);
-
-	return _s * c[0] + s * c[1];
 }
 
 class Row {
@@ -223,75 +205,6 @@ static void fdft(image::Float_2& destination, const Source& source, const Row& r
 	pool.run_range([&destination, &source, &row, alpha]
 		(uint32_t id, int32_t begin, int32_t end) {
 			fdft<Source, T>(destination, source, row, alpha, id, begin, end);
-		}, 0, d[1]);
-}
-
-
-template<uint32_t Mode>
-static void fdft(image::Float_2& destination, const image::Float_2& source,
-				 float alpha, int32_t begin, int32_t end) {
-	const int2 d = destination.description().dimensions.xy();
-	const int2 b = d - int2(1);
-
-	const float m = float(d[Mode]);
-	const float half_m = 0.5f * m;
-	const float sqrt_m = std::sqrt(m);
-	const float i_sqrt_m = 1.f / sqrt_m;
-	const float ss = std::floor(1.f / alpha);// 8.f;
-	const float norm = 1.f / (ss * sqrt_m);
-	const float dk = 1.f / (m * ss);
-
-	const float ucot = 1.f / std::tan(alpha * (math::Pi * 0.5f));
-	const float cot = math::Pi * ucot;
-	const float csc = (2.f * math::Pi) / std::sin(alpha * (math::Pi * 0.5f));
-
-	const float2 sx = sqrtc(float2(1.f, -ucot));
-
-	float2 coordinates = float2(0.5f, static_cast<float>(begin) + 0.5f);
-
-	int32_t  filter_y;
-
-	for (int32_t y = begin; y < end; ++y, ++coordinates[1]) {
-		coordinates[0] = 0.5f;
-
-		if (0 == Mode) {
-			filter_y = y;
-		}
-
-		for (int32_t x = 0; x < d[0]; ++x, ++coordinates[0]) {
-			if (1 == Mode) {
-				filter_y = x;
-			}
-
-			const float u = (coordinates[Mode] - half_m) * i_sqrt_m;
-			const float cscu = csc * u;
-
-			float2 integration(0.f);
-
-			for (float k = -0.5f; k <= 0.5f; k += dk) {
-				const float tc = (k + 0.5f) * m;
-				const float2 g = sample_2<Mode>(source, b[Mode], tc, filter_y);
-
-				const float v = k * sqrt_m;
-				const float t = v * (cot * v - cscu);
-
-				integration += mulc(g, t);
-			}
-
-			const float2 s = mulc(sx, cot * u * u);
-
-			destination.store(x, y, norm * mulc(s, integration));
-		}
-	}
-}
-
-template<uint32_t Mode>
-static void fdft(image::Float_2& destination, const image::Float_2& source,
-				 float alpha, thread::Pool& pool) {
-	const auto d = destination.description().dimensions;
-	pool.run_range([&destination, &source, alpha]
-		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			fdft<Mode>(destination, source, alpha, begin, end);
 		}, 0, d[1]);
 }
 
