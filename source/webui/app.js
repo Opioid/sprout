@@ -1,30 +1,30 @@
 IterationCounter = function() {
 	this.count = 0;
 	this.label = document.getElementById("iterationLabel");
-}
+};
 
 IterationCounter.prototype.constructor = IterationCounter;
 
 IterationCounter.prototype.init = function(iteration) {
 	this.count = iteration;
 	this.display();
-}
+};
 
 IterationCounter.prototype.update = function() {
 	++this.count;
 	this.display();
-}
+};
 
 IterationCounter.prototype.display = function() {
 	this.label.innerHTML = "# " + this.count; 
-}
+};
 
 FpsCounter = function() {
 	this.previousTime = 0.0;
 	this.frameTimeCounter = 0.0;
 	this.frameCounter = 0;
 	this.label = document.getElementById("fpsLabel");
-}
+};
 
 FpsCounter.prototype.constructor = FpsCounter;
 
@@ -45,7 +45,7 @@ FpsCounter.prototype.update = function() {
 		this.frameTimeCounter = 0.0;
 		this.frameCounter = 0;
 	}
-}
+};
 
 window.onload = function() {
 	let consoleForm = document.getElementById("consoleForm");
