@@ -558,9 +558,9 @@ static inline Matrix4x4f_a affine_inverted(const Matrix4x4f_a& m) {
 }
 
 static inline void set_translation(Matrix4x4f_a& m, const Vector3f_a& v) {
-	m.r[0][0] = 1.f;		m.r[0][1] = 0.f;		m.r[0][2] = 0.f;		m.r[0][3] = 0.f;
-	m.r[1][0] = 0.f;		m.r[1][1] = 1.f;		m.r[1][2] = 0.f;		m.r[1][3] = 0.f;
-	m.r[2][0] = 0.f;		m.r[2][1] = 0.f;		m.r[2][2] = 1.f;		m.r[2][3] = 0.f;
+	m.r[0][0] = 1.f;	m.r[0][1] = 0.f;	m.r[0][2] = 0.f;	m.r[0][3] = 0.f;
+	m.r[1][0] = 0.f;	m.r[1][1] = 1.f;	m.r[1][2] = 0.f;	m.r[1][3] = 0.f;
+	m.r[2][0] = 0.f;	m.r[2][1] = 0.f;	m.r[2][2] = 1.f;	m.r[2][3] = 0.f;
 	m.r[3][0] = v[0];	m.r[3][1] = v[1];	m.r[3][2] = v[2];	m.r[3][3] = 1.f;
 }
 
