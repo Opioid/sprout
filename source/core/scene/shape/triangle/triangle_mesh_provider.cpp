@@ -152,7 +152,15 @@ std::shared_ptr<Shape> Provider::create_mesh(const Triangles& triangles, const V
 
 	mesh->tree().allocate_parts(num_parts);
 
-	build_bvh(*mesh, triangles, vertices, bvh_preset, thread_pool);
+	thread_pool.run_async(
+		[mesh, triangles_in = std::move(triangles), vertices_in = std::move(vertices),
+		 bvh_preset, &thread_pool]()  {
+			build_bvh(*mesh, triangles_in, vertices_in, bvh_preset, thread_pool);
+		}
+	);
+
+
+//	build_bvh(*mesh, triangles, vertices, bvh_preset, thread_pool);
 
     return mesh;
 }
