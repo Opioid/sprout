@@ -372,11 +372,11 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						n.value, "path_termination_probability",
 						default_path_termination_probability);
 
-			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
+			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<Pathtracer_factory>(
 						settings, min_bounces, max_bounces,
-						path_termination_probability, disable_caustics);
+						path_termination_probability, enable_caustics);
 		} else if ("PTDL" == n.name) {
 			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(n.value, "max_bounces", default_max_bounces);
@@ -388,11 +388,11 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			uint32_t num_light_samples = json::read_uint(n.value, "num_light_samples",
 														 light_sampling.num_samples);
 
-			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
+			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<Pathtracer_DL_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
-						num_light_samples, disable_caustics);
+						num_light_samples, enable_caustics);
 		} else if ("PTMIS" == n.name) {
 			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
 			uint32_t max_bounces = json::read_uint(n.value, "max_bounces", default_max_bounces);
@@ -406,11 +406,11 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 				load_light_sampling(light_sampling_node->value, light_sampling);
 			}
 
-			bool disable_caustics = !json::read_bool(n.value, "caustics", default_caustics);
+			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			return std::make_shared<Pathtracer_MIS_factory>(
 						settings, min_bounces, max_bounces, path_termination_probability,
-						light_sampling, disable_caustics);
+						light_sampling, enable_caustics);
 		} else if ("Debug" == n.name) {
 			auto vector = Debug::Settings::Vector::Shading_normal;
 

@@ -26,7 +26,7 @@ public:
 
 		uint32_t num_light_samples;
 		float    num_light_samples_reciprocal;
-		bool	 disable_caustics;
+		bool	 enable_caustics;
 	};
 
 	Pathtracer_DL(const take::Settings& take_settings, rnd::Generator& rng,
@@ -61,7 +61,7 @@ public:
 	Pathtracer_DL_factory(const take::Settings& take_settings,
 						  uint32_t min_bounces, uint32_t max_bounces,
 						  float path_termination_probability,
-						  uint32_t num_light_samples, bool disable_caustics);
+						  uint32_t num_light_samples, bool enable_caustics);
 
 	virtual Integrator* create(rnd::Generator& rng) const final override;
 

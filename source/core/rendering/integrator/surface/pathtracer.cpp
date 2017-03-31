@@ -113,7 +113,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			break;
 		}
 
-		if (settings_.disable_caustics && ray.depth > 0
+		if (!settings_.enable_caustics && ray.depth > 0
 		&&  sample_result.type.test(Bxdf_type::Specular)) {
 			break;
 		}
@@ -169,12 +169,12 @@ size_t Pathtracer::num_bytes() const {
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 									   uint32_t min_bounces, uint32_t max_bounces,
 									   float path_termination_probability,
-									   bool disable_caustics) :
+									   bool enable_caustics) :
 	Factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
 	settings_.path_continuation_probability = 1.f - path_termination_probability;
-	settings_.disable_caustics = disable_caustics;
+	settings_.enable_caustics = enable_caustics;
 }
 
 Integrator* Pathtracer_factory::create(rnd::Generator& rng) const {

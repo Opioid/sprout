@@ -123,7 +123,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 		}
 
 		if (sample_result.type.test(Bxdf_type::Specular)) {
-			if (settings_.disable_caustics && !primary_ray) {
+			if (!settings_.enable_caustics && !primary_ray) {
 				break;
 			}
 		} else {
@@ -350,14 +350,14 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 											   uint32_t min_bounces, uint32_t max_bounces,
 											   float path_termination_probability,
 											   Light_sampling light_sampling,
-											   bool disable_caustics) :
+											   bool enable_caustics) :
 	Factory(take_settings) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
 	settings_.path_continuation_probability = 1.f - path_termination_probability;
 	settings_.light_sampling = light_sampling;
 	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(light_sampling.num_samples);
-	settings_.disable_caustics = disable_caustics;
+	settings_.enable_caustics = enable_caustics;
 }
 
 Integrator* Pathtracer_MIS_factory::create(rnd::Generator& rng) const {
