@@ -146,6 +146,10 @@ void Entity::inherit_transformation(const math::Transformation& a,
 													b.rotation);
 	world_frame_b_.scale = local_frame_b_.transformation.scale;
 
+	if (!properties_.test(Properties::Animated)) {
+		world_transformation_.set(world_frame_a_);
+	}
+
 	on_set_transformation();
 
 	propagate_transformation();
