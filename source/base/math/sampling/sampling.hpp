@@ -1,5 +1,6 @@
 #pragma once
 
+#include "math/sincos.hpp"
 #include "math/math.hpp"
 #include "math/vector3.inl"
 #include "math/matrix3x3.inl"
@@ -45,8 +46,12 @@ static inline float2 sample_disk_concentric(float2 uv) {
 
 	theta *= Pi / 4.f;
 
-	const float sin_theta = std::sin(theta);
-	const float cos_theta = std::cos(theta);
+//	const float sin_theta = std::sin(theta);
+//	const float cos_theta = std::cos(theta);
+	float sin_theta;
+	float cos_theta;
+	math::sincos(theta, sin_theta, cos_theta);
+
 
 	return float2(cos_theta * r, sin_theta * r);
 }

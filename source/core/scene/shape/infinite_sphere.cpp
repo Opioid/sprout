@@ -5,6 +5,7 @@
 #include "scene/scene_ray.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
+#include "base/math/sincos.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
@@ -131,10 +132,16 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	const float phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
 	const float theta = uv[1] * math::Pi;
 
-	const float sin_phi   = std::sin(phi);
-	const float cos_phi   = std::cos(phi);
-	const float sin_theta = std::sin(theta);
-	const float cos_theta = std::cos(theta);
+//	const float sin_phi   = std::sin(phi);
+//	const float cos_phi   = std::cos(phi);
+//	const float sin_theta = std::sin(theta);
+//	const float cos_theta = std::cos(theta);
+	float sin_phi;
+	float cos_phi;
+	math::sincos(phi, sin_phi, cos_phi);
+	float sin_theta;
+	float cos_theta;
+	math::sincos(theta, sin_theta, cos_theta);
 
 	const float3 dir(sin_phi * sin_theta, cos_theta, cos_phi * sin_theta);
 
