@@ -135,7 +135,7 @@ Vector cos(Vector x) { // any x
 	Vector poly_mask = _mm_castsi128_ps(emm2);
 
 	// The magic pass: "Extended precision modular arithmetic"
-	x = ((x - y * DP1) - y * DP2) - y * DP3;
+	// x = ((x - y * DP1) - y * DP2) - y * DP3;
 	xmm1 = simd::Minus_cephes_DP1;
 	xmm2 = simd::Minus_cephes_DP2;
 	xmm3 = simd::Minus_cephes_DP3;
@@ -218,7 +218,7 @@ void sincos(Vector x, Vector& s, Vector& c) {
 
 
 	// The magic pass: "Extended precision modular arithmetic"
-	x = ((x - y * DP1) - y * DP2) - y * DP3;
+	// x = ((x - y * DP1) - y * DP2) - y * DP3;
 	xmm1 = simd::Minus_cephes_DP1;
 	xmm2 = simd::Minus_cephes_DP2;
 	xmm3 = simd::Minus_cephes_DP3;
