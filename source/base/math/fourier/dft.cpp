@@ -1,4 +1,5 @@
 #include "dft.hpp"
+#include "math/sincos.hpp"
 #include "math/math.hpp"
 #include "math/vector2.inl"
 #include "thread/thread_pool.hpp"

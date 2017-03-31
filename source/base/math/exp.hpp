@@ -2,10 +2,27 @@
 
 #include "simd.inl"
 
+namespace simd {
+
+SU_GLOBALCONST(Vector_f32) Exp_hi			= {{{ 88.3762626647949f,  88.3762626647949f,  88.3762626647949f,  88.3762626647949f }}};
+SU_GLOBALCONST(Vector_f32) Exp_lo			= {{{-88.3762626647949f, -88.3762626647949f, -88.3762626647949f, -88.3762626647949f }}};
+SU_GLOBALCONST(Vector_f32) Cephes_exp_C1	= {{{ 0.693359375f, 0.693359375f, 0.693359375f, 0.693359375f }}};
+SU_GLOBALCONST(Vector_f32) Cephes_exp_C2	= {{{-2.12194440e-4f, -2.12194440e-4f, -2.12194440e-4f, -2.12194440e-4f }}};
+SU_GLOBALCONST(Vector_f32) Cephes_exp_p0	= {{{ 1.9875691500E-4f, 1.9875691500E-4f, 1.9875691500E-4f, 1.9875691500E-4f }}};
+SU_GLOBALCONST(Vector_f32) Cephes_exp_p1	= {{{ 1.3981999507E-3f, 1.3981999507E-3f, 1.3981999507E-3f, 1.3981999507E-3f }}};
+SU_GLOBALCONST(Vector_f32) Cephes_exp_p2	= {{{ 8.3334519073E-3f, 8.3334519073E-3f, 8.3334519073E-3f, 8.3334519073E-3f }}};
+SU_GLOBALCONST(Vector_f32) Cephes_exp_p3	= {{{ 4.1665795894E-2f, 4.1665795894E-2f, 4.1665795894E-2f, 4.1665795894E-2f }}};
+SU_GLOBALCONST(Vector_f32) Cephes_exp_p4	= {{{ 1.6666665459E-1f, 1.6666665459E-1f, 1.6666665459E-1f, 1.6666665459E-1f }}};
+SU_GLOBALCONST(Vector_f32) Cephes_exp_p5	= {{{ 5.0000001201E-1f, 5.0000001201E-1f, 5.0000001201E-1f, 5.0000001201E-1f }}};
+SU_GLOBALCONST(Vector_f32) LogEst0			= {{{ 1.44269504088896341f, 1.44269504088896341f, 1.44269504088896341f, 1.44269504088896341f }}};
+
+}
+
 namespace math {
 
-// This is
+// This is exp from
 // http://gruntthepeon.free.fr/ssemath/sse_mathfun.h
+
 
 static inline Vector exp(Vector x) {
   Vector tmp = _mm_setzero_ps();

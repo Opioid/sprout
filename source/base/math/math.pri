@@ -22,6 +22,7 @@ HEADERS += \
 	math/ray.hpp \
 	math/simd_aabb.hpp \
 	math/simd_aabb.inl \
+	math/sincos.hpp \
 	math/transformation.hpp \
 	math/transformation.inl \
 	math/vector.hpp \
