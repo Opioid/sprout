@@ -236,6 +236,10 @@ static inline Vector SU_CALLCONV load_float4(const float* source) {
 	return _mm_load_ps(source);
 }
 
+static inline Vector SU_CALLCONV load_unaligned_float4(const float* source) {
+	return _mm_loadu_ps(source);
+}
+
 /****************************************************************************
  *
  * Store operations

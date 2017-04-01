@@ -75,12 +75,11 @@ void create(thread::Pool& pool) {
 //	write_signal("signal.png", signal);
 
 	Aperture aperture(8, 0.25f, 0.015f);
-//	Aperture aperture(5, 0.f, 0.f);
 	render_aperture(aperture, signal);
 
 //	write_signal("signal.png", signal);
 
-	bool near_field = true;
+	bool near_field = false;
 
 	if (near_field) {
 		Image::Description description(Image::Type::Float_2, dimensions);
@@ -155,9 +154,13 @@ void create(thread::Pool& pool) {
 		delete[] spectral_data;
 		*/
 	} else {
-		math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
+		math::dft_2d(signal_f.data(), signal.data(), resolution, resolution/*, pool*/);
 
 		centered_squared_magnitude(signal.data(), signal_f.data(), resolution, resolution);
+
+		write_signal("signal_after.png", signal);
+
+		return;
 
 		Spectrum* spectral_data = new Spectrum[resolution * resolution];
 

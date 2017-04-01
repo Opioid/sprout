@@ -18,7 +18,7 @@ Image::Description::Description(Type type, const int3& dimensions, int32_t num_e
 	dimensions(dimensions),
 	num_elements(num_elements) {}
 
-size_t Image::Description::num_bytes() const {
+size_t Image::Description::num_pixels() const {
 	return static_cast<size_t>(dimensions[0] *
 							   dimensions[1] *
 							   dimensions[2] *

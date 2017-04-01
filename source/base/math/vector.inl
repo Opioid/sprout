@@ -134,6 +134,24 @@ static inline Vector SU_CALLCONV max3(FVector a, FVector b) {
 	return _mm_max_ps(a, b);
 }
 
+/****************************************************************************
+ *
+ * 4D vector operations
+ *
+ ****************************************************************************/
+
+static inline Vector SU_CALLCONV add4(FVector a, FVector b) {
+	return _mm_add_ps(a, b);
+}
+
+static inline Vector SU_CALLCONV sub4(FVector a, FVector b) {
+	return _mm_sub_ps(a, b);
+}
+
+static inline Vector SU_CALLCONV mul4(FVector a, FVector b) {
+	return _mm_mul_ps(a, b);
+}
+
 static inline Vector SU_CALLCONV splat_x(FVector v) {
 	return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
 }
