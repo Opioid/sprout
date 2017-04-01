@@ -55,7 +55,7 @@ void create(thread::Pool& pool) {
 
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 1024;
+	int32_t resolution = 512;
 
 	int2 dimensions(resolution, resolution);
 
