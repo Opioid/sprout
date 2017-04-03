@@ -1,7 +1,5 @@
 #pragma once
 
-// This is basically a subset of DirectXMath!
-
 #include "vector.hpp"
 #include "simd.inl"
 #include "vector4.inl"
@@ -67,31 +65,21 @@ static inline Vector SU_CALLCONV div(FVector a, FVector b) {
 }
 
 static inline Vector SU_CALLCONV dot3(FVector a, FVector b) {
-	// Perform the dot product
-	Vector vDot = _mm_mul_ps(a, b);
-	// x=Dot.vector4_f32[1], y=Dot.vector4_f32[2]
-	Vector vTemp = SU_PERMUTE_PS(vDot, _MM_SHUFFLE(2, 1, 2, 1));
-	// Result.vector4_f32[0] = x+y
-	vDot = _mm_add_ss(vDot, vTemp);
-	// x=Dot.vector4_f32[2]
-	vTemp = SU_PERMUTE_PS(vTemp, _MM_SHUFFLE(1, 1, 1, 1));
-	// Result.vector4_f32[0] = (x+y)+z
-	vDot = _mm_add_ss(vDot, vTemp);
+	Vector mul  = _mm_mul_ps(a, b);
+	Vector shuf = _mm_movehdup_ps(mul);
+	Vector sums = _mm_add_ss(mul, shuf);
+	shuf        = _mm_movehl_ps(shuf, sums);
+	Vector dot  = _mm_add_ss(sums, shuf);
 	// Splat x
-	return SU_PERMUTE_PS(vDot, _MM_SHUFFLE(0, 0, 0, 0));
+	return SU_PERMUTE_PS(dot, _MM_SHUFFLE(0, 0, 0, 0));
 }
 
 static inline Vector SU_CALLCONV dot3_1(FVector a, FVector b) {
-	// Perform the dot product
-	Vector vDot = _mm_mul_ps(a, b);
-	// x=Dot.vector4_f32[1], y=Dot.vector4_f32[2]
-	Vector vTemp = SU_PERMUTE_PS(vDot, _MM_SHUFFLE(2, 1, 2, 1));
-	// Result.vector4_f32[0] = x+y
-	vDot = _mm_add_ss(vDot, vTemp);
-	// x=Dot.vector4_f32[2]
-	vTemp = SU_PERMUTE_PS(vTemp, _MM_SHUFFLE(1, 1, 1, 1));
-	// Result.vector4_f32[0] = (x+y)+z
-	return _mm_add_ss(vDot, vTemp);
+	Vector mul  = _mm_mul_ps(a, b);
+	Vector shuf = _mm_movehdup_ps(mul);
+	Vector sums = _mm_add_ss(mul, shuf);
+	shuf        = _mm_movehl_ps(shuf, sums);
+	return _mm_add_ss(sums, shuf);
 }
 
 static inline Vector rsqrt(FVector x) {
