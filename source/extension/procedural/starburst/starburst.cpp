@@ -55,7 +55,7 @@ void create(thread::Pool& pool) {
 
 	Spectrum::init(380.f, 720.f);
 
-	int32_t resolution = 512;
+	int32_t resolution = 1024;
 
 	int2 dimensions(resolution, resolution);
 
@@ -154,7 +154,7 @@ void create(thread::Pool& pool) {
 		delete[] spectral_data;
 		*/
 	} else {
-		math::dft_2d(signal_f.data(), signal.data(), resolution, resolution/*, pool*/);
+		math::dft_2d(signal_f.data(), signal.data(), resolution, resolution, pool);
 
 		centered_squared_magnitude(signal.data(), signal_f.data(), resolution, resolution);
 

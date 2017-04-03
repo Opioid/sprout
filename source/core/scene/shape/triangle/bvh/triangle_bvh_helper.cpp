@@ -16,13 +16,13 @@ float3 triangle_max(float3_p a, float3_p b, float3_p c) {
 Vector triangle_min(FVector a,
 								FVector b,
 								FVector c) {
-	return math::min3(a, math::min3(b, c));
+	return math::min(a, math::min(b, c));
 }
 
 Vector triangle_max(FVector a,
 								FVector b,
 								FVector c) {
-	return math::max3(a, math::max3(b, c));
+	return math::max(a, math::max(b, c));
 }
 
 float3 triangle_min(float3_p a, float3_p b, float3_p c, float3_p x) {

@@ -38,23 +38,23 @@ static inline Vector SU_CALLCONV rcp1(FVector x) {
 
 /****************************************************************************
  *
- * 3D vector operations
+ * Vector operations
  *
  ****************************************************************************/
 
-static inline Vector SU_CALLCONV add3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV add(FVector a, FVector b) {
 	return _mm_add_ps(a, b);
 }
 
-static inline Vector SU_CALLCONV sub3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV sub(FVector a, FVector b) {
 	return _mm_sub_ps(a, b);
 }
 
-static inline Vector SU_CALLCONV mul3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV mul(FVector a, FVector b) {
 	return _mm_mul_ps(a, b);
 }
 
-static inline Vector SU_CALLCONV div3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV div(FVector a, FVector b) {
 	return _mm_div_ps(a, b);
 }
 
@@ -95,7 +95,7 @@ static inline Vector rsqrt(FVector x) {
 }
 
 static inline Vector normalized3(FVector v) {
-	return mul3(rsqrt(dot3(v, v)), v);
+	return mul(rsqrt(dot3(v, v)), v);
 }
 
 static inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
@@ -120,36 +120,18 @@ static inline Vector SU_CALLCONV cross3(FVector a, FVector b) {
 	return result;
 }
 
-static inline Vector SU_CALLCONV rcp3(FVector x) {
+static inline Vector SU_CALLCONV rcp(FVector x) {
 	Vector rcp  = _mm_rcp_ps(x);
 	Vector muls = _mm_mul_ps(_mm_mul_ps(rcp, rcp), x);
 	return _mm_sub_ps(_mm_add_ps(rcp, rcp), muls);
 }
 
-static inline Vector SU_CALLCONV min3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV min(FVector a, FVector b) {
 	return _mm_min_ps(a, b);
 }
 
-static inline Vector SU_CALLCONV max3(FVector a, FVector b) {
+static inline Vector SU_CALLCONV max(FVector a, FVector b) {
 	return _mm_max_ps(a, b);
-}
-
-/****************************************************************************
- *
- * 4D vector operations
- *
- ****************************************************************************/
-
-static inline Vector SU_CALLCONV add4(FVector a, FVector b) {
-	return _mm_add_ps(a, b);
-}
-
-static inline Vector SU_CALLCONV sub4(FVector a, FVector b) {
-	return _mm_sub_ps(a, b);
-}
-
-static inline Vector SU_CALLCONV mul4(FVector a, FVector b) {
-	return _mm_mul_ps(a, b);
 }
 
 static inline Vector SU_CALLCONV splat_x(FVector v) {

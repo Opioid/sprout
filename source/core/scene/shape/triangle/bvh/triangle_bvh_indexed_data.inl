@@ -159,8 +159,8 @@ Vector Indexed_data<IV, SV>::normal_v(uint32_t index) const {
 	const Vector bp = load_float4(b.p);
 	const Vector cp = load_float4(c.p);
 
-	const Vector e1 = math::sub3(bp, ap);
-	const Vector e2 = math::sub3(cp, ap);
+	const Vector e1 = math::sub(bp, ap);
+	const Vector e2 = math::sub(cp, ap);
 
 	return math::normalized3(math::cross3(e1, e2));
 }

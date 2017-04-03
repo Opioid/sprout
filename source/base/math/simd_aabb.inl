@@ -16,13 +16,13 @@ inline Simd_AABB::Simd_AABB(const float* min, const float* max) :
 inline Simd_AABB::Simd_AABB(FVector min, FVector max) : min(min), max(max) {}
 
 inline void Simd_AABB::merge_assign(const Simd_AABB& other) {
-	min = min3(min, other.min);
-	max = max3(max, other.max);
+	min = math::min(min, other.min);
+	max = math::max(max, other.max);
 }
 
 inline void Simd_AABB::merge_assign(FVector other_min, FVector other_max) {
-	min = min3(min, other_min);
-	max = max3(max, other_max);
+	min = math::min(min, other_min);
+	max = math::max(max, other_max);
 }
 
 }
