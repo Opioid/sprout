@@ -88,8 +88,7 @@ static inline float sqrt(float x) {
 	Vector res   = _mm_rsqrt_ss(xs);
 	Vector muls  = _mm_mul_ss(_mm_mul_ss(xs, res), res);
 	Vector sqrtx = _mm_mul_ss(xs, _mm_mul_ss(_mm_mul_ss(half, res), _mm_sub_ss(three, muls)));
-	_mm_store_ss(&x, sqrtx);
-	return x;
+	return _mm_cvtss_f32(sqrtx);
 }
 
 static inline float rsqrt(float x) {
@@ -98,16 +97,14 @@ static inline float rsqrt(float x) {
 	Vector xs	 = _mm_load_ss(&x);
 	Vector res   = _mm_rsqrt_ss(xs);
 	Vector muls  = _mm_mul_ss(_mm_mul_ss(xs, res), res);
-	_mm_store_ss(&x, _mm_mul_ss(_mm_mul_ss(half, res), _mm_sub_ss(three, muls)));
-	return x;
+	return _mm_cvtss_f32(_mm_mul_ss(_mm_mul_ss(half, res), _mm_sub_ss(three, muls)));
 }
 
 static inline float rcp(float x) {
 	Vector xs	= _mm_load_ss(&x);
 	Vector rcp  = _mm_rcp_ss(xs);
 	Vector muls = _mm_mul_ss(_mm_mul_ss(rcp, rcp), xs);
-	_mm_store_ss(&x, _mm_sub_ss(_mm_add_ss(rcp, rcp), muls));
-	return x;
+	return _mm_cvtss_f32(_mm_sub_ss(_mm_add_ss(rcp, rcp), muls));
 }
 
 }
