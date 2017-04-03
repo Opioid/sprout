@@ -15,31 +15,6 @@ int32_t dft_size(int32_t num) {
 void dft_1d(float2* result, const float* source, int32_t num) {
 	const float af = (-2.f * Pi) / static_cast<float>(num);
 
-	for (int32_t k = 0, len = num / 2; k <= len; ++k) {
-		float2 sum(0.f);
-
-		const float a = af * static_cast<float>(k);
-
-		for (int32_t x = 0; x < num; ++x) {
-			const float b = a * static_cast<float>(x);
-			float sin_b;
-			float cos_b;
-			math::sincos(b, sin_b, cos_b);
-			sum[0] += source[x] * cos_b;
-			sum[1] += source[x] * sin_b;
-		}
-
-		result[k] = sum;
-
-		// normalization
-//		result[k].x *= (k == 0 || k == len) ? 1.f / fn : 2.f / fn;
-//		result[k].y *= 2.f / fn;
-	}
-}
-
-void dft_1d_v(float2* result, const float* source, int32_t num) {
-	const float af = (-2.f * Pi) / static_cast<float>(num);
-
 	const int32_t r  = num % 4;
 	const int32_t m4 = num - r;
 
@@ -67,13 +42,13 @@ void dft_1d_v(float2* result, const float* source, int32_t num) {
 			sum_y = math::add(sum_y, math::mul(sv, sin_b));
 		}
 
-		float4 sx;
-		store_float4(sx, sum_x);
-		float4 sy;
-		store_float4(sy, sum_y);
+//		float4 sx;
+//		store_float4(sx, sum_x);
+//		float4 sy;
+//		store_float4(sy, sum_y);
 
-		float2 sum(sx[0] + sx[1] + sx[2] + sx[3],
-				   sy[0] + sy[1] + sy[2] + sy[3]);
+		float2 sum(math::horizontal_sum(sum_x)/*sx[0] + sx[1] + sx[2] + sx[3]*/,
+				   math::horizontal_sum(sum_y)/*sy[0] + sy[1] + sy[2] + sy[3]*/);
 
 		// Use scalar operations to handle the rest
 		for (int32_t x = m4; x < num; ++x) {
@@ -115,7 +90,7 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height) 
 	float2* tmp = memory::allocate_aligned<float2>(height * row_size);
 
 	for (int32_t y = 0; y < height; ++y) {
-		dft_1d_v(tmp + y * row_size, source + y * width, width);
+		dft_1d(tmp + y * row_size, source + y * width, width);
 	}
 
 	const float af = (2.f * Pi) / static_cast<float>(height);
@@ -154,7 +129,7 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 
 	pool.run_range([source, tmp, row_size, width](uint32_t /*id*/, int32_t begin, int32_t end) {
 		for (int32_t y = begin; y < end; ++y) {
-			dft_1d_v(tmp + y * row_size, source + y * width, width);
+			dft_1d(tmp + y * row_size, source + y * width, width);
 		}
 	}, 0, height);
 

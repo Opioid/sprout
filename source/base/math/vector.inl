@@ -46,6 +46,14 @@ static inline Vector SU_CALLCONV add(FVector a, FVector b) {
 	return _mm_add_ps(a, b);
 }
 
+static inline float SU_CALLCONV horizontal_sum(FVector a) {
+	Vector t = _mm_hadd_ps(a, a);
+	t = _mm_hadd_ps(t, t);
+	float r;
+	_mm_store_ss(&r, t);
+	return r;
+}
+
 static inline Vector SU_CALLCONV sub(FVector a, FVector b) {
 	return _mm_sub_ps(a, b);
 }

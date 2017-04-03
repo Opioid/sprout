@@ -1,8 +1,10 @@
 #pragma once
 
-#include <xmmintrin.h>
-#include <emmintrin.h>
-//#include <smmintrin.h> // SSE 4.1 intrinsics
+#if defined(_MSC_VER)
+#	include <intrin.h>
+#else
+#	include <x86intrin.h>
+#endif
 
 /*
 #if _SU_VECTORCALL_
