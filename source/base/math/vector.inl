@@ -45,11 +45,17 @@ static inline Vector SU_CALLCONV add(FVector a, FVector b) {
 }
 
 static inline float SU_CALLCONV horizontal_sum(FVector a) {
-	Vector t = _mm_hadd_ps(a, a);
-	t = _mm_hadd_ps(t, t);
-	float r;
-	_mm_store_ss(&r, t);
-	return r;
+//	Vector t = _mm_hadd_ps(a, a);
+//	t = _mm_hadd_ps(t, t);
+//	float r;
+//	_mm_store_ss(&r, t);
+//	return r;
+
+	Vector shuf = _mm_movehdup_ps(a);
+	Vector sums = _mm_add_ps(a, shuf);
+	shuf        = _mm_movehl_ps(shuf, sums);
+	sums        = _mm_add_ss(sums, shuf);
+	return        _mm_cvtss_f32(sums);
 }
 
 static inline Vector SU_CALLCONV sub(FVector a, FVector b) {
