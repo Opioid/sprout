@@ -77,7 +77,7 @@ static T pow5(T x) {
 
 template<typename T>
 static T mod(T k, T n) {
-	// Works for negative k: % is the remainder, not really modulo
+	// Works for negative k: % is the remainder, not modulo
 	return (k %= n) < T(0) ? k + n : k;
 }
 
