@@ -28,14 +28,14 @@ float4 Float_1::at_4(int32_t x, int32_t y) const {
 	return float4(image_.load(x, y), 0.f, 0.f, 1.f);
 }
 
-float4 Float_1::gather_1(int4 xy_xy1) const {
+float4 Float_1::gather_1(const int4& xy_xy1) const {
 	float v[4];
 	image_.gather(xy_xy1, v);
 
 	return float4(v[0], v[1], v[2], v[3]);
 }
 
-void Float_1::gather_2(int4 xy_xy1, float2 c[4]) const {
+void Float_1::gather_2(const int4& xy_xy1, float2 c[4]) const {
 	float v[4];
 	image_.gather(xy_xy1, v);
 
@@ -45,7 +45,7 @@ void Float_1::gather_2(int4 xy_xy1, float2 c[4]) const {
 	c[3] = float2(v[3], 0.f);
 }
 
-void Float_1::gather_3(int4 xy_xy1, float3 c[4]) const {
+void Float_1::gather_3(const int4& xy_xy1, float3 c[4]) const {
 	float v[4];
 	image_.gather(xy_xy1, v);
 

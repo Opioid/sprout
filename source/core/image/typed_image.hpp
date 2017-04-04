@@ -47,7 +47,7 @@ public:
 	const T& at_element(int32_t x, int32_t y, int32_t z, int32_t element) const;
 	T& at_element(int32_t x, int32_t y, int32_t z, int32_t element);
 
-	void gather(int4 xy_xy1, T c[4]) const;
+	void gather(const int4& xy_xy1, T c[4]) const;
 
 	void square_transpose();
 

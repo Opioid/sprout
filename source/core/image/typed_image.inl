@@ -133,7 +133,7 @@ T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) 
 }
 
 template<typename T>
-void Typed_image<T>::gather(int4 xy_xy1, T c[4]) const {
+void Typed_image<T>::gather(const int4& xy_xy1, T c[4]) const {
 	const int32_t width = description_.dimensions[0];
 
 	const int32_t y0 = width * xy_xy1[1];

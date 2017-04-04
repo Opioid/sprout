@@ -35,9 +35,9 @@ private:
 	static float start_wavelength();
 	static float end_wavelength();
 
-	float values_[N];
+	alignas(16) float values_[N];
 
-	static float3 cie_[N];
+	static alignas(16) float3 cie_[N];
 
 	static float wavelengths_[N  + 1];
 

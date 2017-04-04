@@ -1,5 +1,4 @@
 #include "xyz.hpp"
-#include "math/vector3.inl"
 
 namespace spectrum {
 

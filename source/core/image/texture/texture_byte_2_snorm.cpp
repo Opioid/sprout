@@ -42,7 +42,7 @@ float4 Byte_2_snorm::at_4(int32_t x, int32_t y) const {
 				  1.f);
 }
 
-float4 Byte_2_snorm::gather_1(int4 xy_xy1) const {
+float4 Byte_2_snorm::gather_1(const int4& xy_xy1) const {
 	byte2 v[4];
 	image_.gather(xy_xy1, v);
 
@@ -52,7 +52,7 @@ float4 Byte_2_snorm::gather_1(int4 xy_xy1) const {
 				  encoding::cached_snorm_to_float(v[3][0]));
 }
 
-void Byte_2_snorm::gather_2(int4 xy_xy1, float2 c[4]) const {
+void Byte_2_snorm::gather_2(const int4& xy_xy1, float2 c[4]) const {
 	byte2 v[4];
 	image_.gather(xy_xy1, v);
 
@@ -69,7 +69,7 @@ void Byte_2_snorm::gather_2(int4 xy_xy1, float2 c[4]) const {
 				  encoding::cached_snorm_to_float(v[2][1]));
 }
 
-void Byte_2_snorm::gather_3(int4 xy_xy1, float3 c[4]) const {
+void Byte_2_snorm::gather_3(const int4& xy_xy1, float3 c[4]) const {
 	byte2 v[4];
 	image_.gather(xy_xy1, v);
 

@@ -17,12 +17,14 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/rgb.hpp"
-#include "base/spectrum/xyz.inl"
+#include "base/spectrum/xyz.hpp"
 #include "base/thread/thread_pool.hpp"
 
 #include <iostream>
 #include <fstream>
 #include "base/math/print.hpp"
+#include "base/chrono/chrono.hpp"
+#include <chrono>
 
 // Code for fractional DFT implementation
 // http://onlinelibrary.wiley.com/store/10.1111/cgf.12953/asset/supinfo/cgf12953-sup-0002-S1.pdf?v=1&s=e3aaf53493a15c5111513bf1dbe1a6ee549ee804
@@ -171,6 +173,8 @@ void create(thread::Pool& pool) {
 				}
 			}, 0, Spectrum::num_bands());
 
+		auto spectrum_start = std::chrono::high_resolution_clock::now();
+
 		pool.run_range([spectral_data, &float_image_a]
 			(uint32_t /*id*/, int32_t begin, int32_t end) {
 				for (int32_t i = begin; i < end; ++i) {
@@ -179,6 +183,8 @@ void create(thread::Pool& pool) {
 					float_image_a.store(i, packed_float3(linear_rgb));
 				}
 			}, 0, resolution * resolution);
+
+		std::cout << chrono::seconds_since(spectrum_start) << " s" << std::endl;
 
 		delete[] spectral_data;
 	}
