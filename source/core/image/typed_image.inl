@@ -46,6 +46,11 @@ T Typed_image<T>::load(int32_t index) const {
 }
 
 template<typename T>
+T* Typed_image<T>::address(int32_t index) const {
+	return data_ + index;
+}
+
+template<typename T>
 void Typed_image<T>::store(int32_t index, T v) {
 	data_[index] = v;
 }

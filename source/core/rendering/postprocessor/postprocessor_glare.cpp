@@ -205,34 +205,58 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 			}
 		}
 	} else {
-		float intensity = intensity_;
+		//float intensity = intensity_;
+		Vector intensity = load_float(intensity_);
 
 		const auto d = destination.description().dimensions.xy();
 
-		int2 kd = kernel_dimensions_;
-		int2 hkd = kd / 2;
+		int32_t kd0 = kernel_dimensions_[0];
 
 		for (int32_t i = begin; i < end; ++i) {
 			int2 c = destination.coordinates_2(i);
-			int2 cd = c - d;
-			int2 kb = hkd - c;
+			int32_t cd1 = c[1] - d[1];
+			int2 kb = d - c;
 			int2 ke = kb + d;
-
+/*
 			float3 glare(0.f);
-			for (int32_t ky = kb[1]; ky < ke[1]; ++ky) {
-				int32_t krow = ky * kd[0];
-				int32_t srow = (cd[1] + ky) * d[0];
-				for (int32_t kx = kb[0]; kx < ke[0]; ++kx) {
-					float3 k = kernel_[krow + kx];
+			for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0) {
+				int32_t si = (cd1 + ky) * d[0];
+				for (int32_t ki = kb[0] + krow, kl = ke[0] + krow; ki < kl; ++ki, ++si) {
+					float3 k = kernel_[ki];
 
-					int32_t sx = cd[0] + kx;
-					glare += k * high_pass_[srow + sx];
+					glare += k * high_pass_[si];
 				}
 			}
 
 			float4 s = source.load(i);
 
 			destination.at(i) = float4(s.xyz() + intensity * glare, s[3]);
+*/
+
+
+			Vector glare = simd::Zero;
+			for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0) {
+				int32_t si = (cd1 + ky) * d[0];
+				for (int32_t ki = kb[0] + krow, kl = ke[0] + krow; ki < kl; ++ki, ++si) {
+					Vector k = load_float4(kernel_[ki]);
+					Vector h = load_float4(high_pass_[si]);
+
+					glare = math::add(glare, math::mul(k, h));
+				}
+			}
+
+			glare = math::mul(glare, intensity);
+		//	float3 r;
+		//	store_float4(r, glare);
+
+		//	float4 s = source.load(i);
+			Vector s = load_float4(reinterpret_cast<float*>(source.address(i)));
+			s = math::add(s, glare);
+
+			store_float4(reinterpret_cast<float*>(destination.address(i)), s);
+
+		//	destination.at(i) = float4(s.xyz() + r, s[3]);
+
 		}
 	}
 }
