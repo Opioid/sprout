@@ -158,9 +158,9 @@ void create(thread::Pool& pool) {
 
 		centered_squared_magnitude(signal.data(), signal_f.data(), resolution, resolution);
 
-		write_signal("signal_after.png", signal);
+	//	write_signal("signal_after.png", signal);
 
-		return;
+	//	return;
 
 		Spectrum* spectral_data = new Spectrum[resolution * resolution];
 
@@ -185,7 +185,7 @@ void create(thread::Pool& pool) {
 
 //	write_signal("signal_after.png", signal);
 
-	float radius = static_cast<float>(resolution) * 0.00390625f;
+	float radius = static_cast<float>(resolution) * 0.0029296875f;// 0.00390625f;
 	filter::Gaussian<packed_float3> gaussian(radius, radius * 0.0005f);
 	gaussian.apply(float_image_a, pool);
 
