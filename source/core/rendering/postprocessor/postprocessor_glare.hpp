@@ -1,7 +1,6 @@
 #pragma once
 
 #include "postprocessor.hpp"
-#include <vector>
 
 namespace rendering { namespace postprocessor {
 
@@ -16,6 +15,7 @@ public:
 	};
 
 	Glare(Adaption adaption, float threshold, float intensity);
+	~Glare();
 
 	virtual void init(const scene::camera::Camera& camera, thread::Pool& pool) final override;
 
@@ -32,11 +32,11 @@ private:
 	float intensity_;
 
 //	image::Float_3 high_pass_;
-	std::vector<float3> high_pass_;
-
-	std::vector<float3> kernel_;
+	int2 dimensions_;
+	float3* high_pass_;
 
 	int2 kernel_dimensions_;
+	float3* kernel_;
 };
 
 }}

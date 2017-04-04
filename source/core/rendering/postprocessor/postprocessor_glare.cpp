@@ -1,5 +1,6 @@
 #include "postprocessor_glare.hpp"
 #include "image/typed_image.inl"
+#include "base/memory/align.hpp"
 #include "base/math/exp.hpp"
 #include "base/math/vector4.inl"
 #include "base/math/filter/gaussian.hpp"
@@ -7,6 +8,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.hpp"
 #include "base/thread/thread_pool.hpp"
+#include <vector>
 
 #include "base/math/print.hpp"
 #include <iostream>
@@ -16,7 +18,14 @@ namespace rendering { namespace postprocessor {
 Glare::Glare(Adaption adaption, float threshold, float intensity) :
 	Postprocessor(2),
 	adaption_(adaption),
-	threshold_(threshold), intensity_(intensity) {}
+	threshold_(threshold), intensity_(intensity),
+	high_pass_(nullptr),
+	kernel_(nullptr) {}
+
+Glare::~Glare() {
+	memory::free_aligned(kernel_);
+	memory::free_aligned(high_pass_);
+}
 
 float f0(float theta) {
 	float b = theta / 0.02f;
@@ -40,14 +49,15 @@ float f3(float theta, float lambda) {
 
 void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	const auto dim = camera.sensor_dimensions();
-
-	high_pass_.resize(dim[0] * dim[1]);
+	dimensions_ = dim;
+	high_pass_ = memory::allocate_aligned<float3>(dim[0] * dim[1]);
 
 	// This seems a bit arbitrary
 	const float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
 	kernel_dimensions_ = 2 * dim;
-	kernel_.resize(kernel_dimensions_[0] * kernel_dimensions_[1]);
+	int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
+	kernel_ = memory::allocate_aligned<float3>(kernel_size);
 
 	const spectrum::Interpolated CIE_X(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
 	const spectrum::Interpolated CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
@@ -66,7 +76,7 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		float3 d;
 	};
 
-	std::vector<F> f(kernel_.size());
+	std::vector<F> f(kernel_size);
 
 	struct Init {
 		float  a_sum = 0.f;
@@ -160,13 +170,13 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	float c_n = scale[2] / c_sum;
 
 	if (Adaption::Photopic == adaption_) {
-		for (size_t i = 0, len = kernel_.size(); i < len; ++i) {
+		for (int32_t i = 0, len = kernel_size; i < len; ++i) {
 			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c);
 		}
 	} else {
 		float3 d_n = scale[3] / d_sum;
 
-		for (size_t i = 0, len = kernel_.size(); i < len; ++i) {
+		for (int32_t i = 0, len = kernel_size; i < len; ++i) {
 			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d;
 		}
 	}
@@ -174,8 +184,8 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
 size_t Glare::num_bytes() const {
 	return sizeof(*this) +
-			high_pass_.size() * sizeof(float3) +
-			kernel_.size() * sizeof(float3);
+			(dimensions_[0] * dimensions_[1]) * sizeof(float3) +
+			(kernel_dimensions_[0] * kernel_dimensions_[1]) * sizeof(float3);
 }
 
 void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
@@ -204,18 +214,18 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 
 		for (int32_t i = begin; i < end; ++i) {
 			int2 c = destination.coordinates_2(i);
-
+			int2 cd = c - d;
 			int2 kb = hkd - c;
 			int2 ke = kb + d;
 
 			float3 glare(0.f);
 			for (int32_t ky = kb[1]; ky < ke[1]; ++ky) {
 				int32_t krow = ky * kd[0];
-				int32_t srow = (c[1] - d[1] + ky) * d[0];
+				int32_t srow = (cd[1] + ky) * d[0];
 				for (int32_t kx = kb[0]; kx < ke[0]; ++kx) {
 					float3 k = kernel_[krow + kx];
 
-					int32_t sx = c[0] - d[0] + kx;
+					int32_t sx = cd[0] + kx;
 					glare += k * high_pass_[srow + sx];
 				}
 			}
