@@ -16,6 +16,21 @@
 *** TODO Separate samplers
 - [ ] Consider adding support for separate samplers per texture
 
+** Renderer
+
+*** TODO Lock-free tile enumeration
+- [X] Pre-determined "Tiled scanline" with initial offset (slower)
+- [ ] +Space filling curve (e.g. z-curve or hilbert-curve)+
+- [ ] Atomics for access to next tile
+
+It seems that the mutex communication is not the bottleneck in this scenario. 
+Something with atomics might be interesting, but will probably not noticeably affect overall performance.
+
+** Postprocessors
+
+*** TODO Glare filter
+- [ ] Implement in Fourier domain to increase performance
+
 ** Shapes
 
 *** TODO Adding/improving analytical shapes
@@ -45,16 +60,6 @@ File size on disk generally seems to be higher, though.
 ** Build system
 
 *** TODO cmake-based build system
-
-** Renderer
-
-*** TODO Lock-free tile enumeration
-- [X] Pre-determined "Tiled scanline" with initial offset (slower)
-- [ ] +Space filling curve (e.g. z-curve or hilbert-curve)+
-- [ ] Atomics for access to next tile
-
-It seems that the mutex communication is not the bottleneck in this scenario. 
-Something with atomics might be interesting, but will probably not noticeably affect overall performance.
 
 ** Scene
 
