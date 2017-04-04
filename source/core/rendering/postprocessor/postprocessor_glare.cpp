@@ -44,7 +44,7 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	high_pass_.resize(dim[0] * dim[1]);
 
 	// This seems a bit arbitrary
-	float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
+	const float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
 	kernel_dimensions_ = 2 * dim;
 	kernel_.resize(kernel_dimensions_[0] * kernel_dimensions_[1]);
@@ -56,13 +56,8 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	constexpr float wl_start = 400.f;
 	constexpr float wl_end = 700.f;
 	constexpr int32_t wl_num_samples = 64;
-	float wl_norm = 1.f / CIE_Y.integrate(wl_start, wl_end);
 	constexpr float wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
-
-	float a_sum = 0.f;
-	float b_sum = 0.f;
-	float c_sum = 0.f;
-	float3 d_sum(0.f);
+	const	  float wl_norm = 1.f / CIE_Y.integrate(wl_start, wl_end);
 
 	struct F {
 		float  a;
@@ -73,44 +68,67 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
 	std::vector<F> f(kernel_.size());
 
-	Init* inits = new Init[pool.num_threads()];
+	struct Init {
+		float  a_sum = 0.f;
+		float  b_sum = 0.f;
+		float  c_sum = 0.f;
+		float3 d_sum = float3(0.f);
+	};
 
-	pool.run_parallel([inits](uint32_t id) { inits[id].init(id); });
+	std::vector<Init> inits(pool.num_threads());
 
-	for (int32_t y = 0; y < kernel_dimensions_[1]; ++y) {
-		for (int32_t x = 0; x < kernel_dimensions_[0]; ++x) {
-			int2 p(-dim[0] + x, -dim[1] + y);
+	pool.run_range([this, dim, solid_angle,  wl_start, wl_step, wl_norm,
+				   wl_num_samples, &CIE_X, &CIE_Y, &CIE_Z, &f, &inits]
+				   (uint32_t id, int32_t begin, int32_t end) {
+		Init& init = inits[id];
 
-			float theta = math::length(float2(p)) * solid_angle;
+		for (int32_t y = begin; y < end; ++y) {
+			for (int32_t x = 0; x < kernel_dimensions_[0]; ++x) {
+				int2 p(-dim[0] + x, -dim[1] + y);
 
-			float a = f0(theta);
-			float b = f1(theta);
-			float c = f2(theta);
+				float theta = math::length(float2(p)) * solid_angle;
 
-			a_sum += a;
-			b_sum += b;
-			c_sum += c;
+				float a = f0(theta);
+				float b = f1(theta);
+				float c = f2(theta);
 
-			float3 d(0.f);
+				init.a_sum += a;
+				init.b_sum += b;
+				init.c_sum += c;
 
-			if (Adaption::Photopic != adaption_) {
-				float3 xyz(0.f);
-				for (int32_t k = 0; k < wl_num_samples; ++k) {
-					float lambda = wl_start + static_cast<float>(k) * wl_step;
-					float val = wl_norm * f3(theta , lambda);
-					xyz[0] += CIE_X.evaluate(lambda) * val;
-					xyz[1] += CIE_Y.evaluate(lambda) * val;
-					xyz[2] += CIE_Z.evaluate(lambda) * val;
+				float3 d(0.f);
+
+				if (Adaption::Photopic != adaption_) {
+					float3 xyz(0.f);
+					for (int32_t k = 0; k < wl_num_samples; ++k) {
+						float lambda = wl_start + static_cast<float>(k) * wl_step;
+						float val = wl_norm * f3(theta , lambda);
+						xyz[0] += CIE_X.evaluate(lambda) * val;
+						xyz[1] += CIE_Y.evaluate(lambda) * val;
+						xyz[2] += CIE_Z.evaluate(lambda) * val;
+					}
+
+					d = math::max(spectrum::XYZ_to_linear_RGB(xyz), float3(0.f));
+
+					init.d_sum += d;
 				}
 
-				d = math::max(spectrum::XYZ_to_linear_RGB(xyz), float3(0.f));
-
-				d_sum += d;
+				int32_t i = y * kernel_dimensions_[0] + x;
+				f[i] = F{ a, b, c, d };
 			}
-
-			int32_t i = y * kernel_dimensions_[0] + x;
-			f[i] = F{ a, b, c, d };
 		}
+	}, 0, kernel_dimensions_[1]);
+
+	float a_sum = 0.f;
+	float b_sum = 0.f;
+	float c_sum = 0.f;
+	float3 d_sum(0.f);
+
+	for (auto i : inits) {
+		a_sum += i.a_sum;
+		b_sum += i.b_sum;
+		c_sum += i.c_sum;
+		d_sum += i.d_sum;
 	}
 
 	float scale[4];
@@ -137,9 +155,9 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		break;
 	}
 
-	float  a_n = scale[0] / a_sum;
-	float  b_n = scale[1] / b_sum;
-	float  c_n = scale[2] / c_sum;
+	float a_n = scale[0] / a_sum;
+	float b_n = scale[1] / b_sum;
+	float c_n = scale[2] / c_sum;
 
 	if (Adaption::Photopic == adaption_) {
 		for (size_t i = 0, len = kernel_.size(); i < len; ++i) {
@@ -160,18 +178,8 @@ size_t Glare::num_bytes() const {
 			kernel_.size() * sizeof(float3);
 }
 
-void Glare::Init::init(uint32_t id) {
-	std::cout << "init(" << id << ")" << std::endl;
-
-	a_sum = 0.f;
-	b_sum = 0.f;
-	c_sum = 0.f;
-	d_sum = float3(0.f);
-}
-
 void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
-				  const image::Float_4& source,
-				  image::Float_4& destination) {
+				  const image::Float_4& source, image::Float_4& destination) {
 	if (0 == pass) {
 		float threshold = threshold_;
 
@@ -191,7 +199,8 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 
 		const auto d = destination.description().dimensions.xy();
 
-		int2 hkd = kernel_dimensions_ / 2;
+		int2 kd = kernel_dimensions_;
+		int2 hkd = kd / 2;
 
 		for (int32_t i = begin; i < end; ++i) {
 			int2 c = destination.coordinates_2(i);
@@ -201,7 +210,7 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 
 			float3 glare(0.f);
 			for (int32_t ky = kb[1]; ky < ke[1]; ++ky) {
-				int32_t krow = ky * kernel_dimensions_[0];
+				int32_t krow = ky * kd[0];
 				int32_t srow = (c[1] - d[1] + ky) * d[0];
 				for (int32_t kx = kb[0]; kx < ke[0]; ++kx) {
 					float3 k = kernel_[krow + kx];

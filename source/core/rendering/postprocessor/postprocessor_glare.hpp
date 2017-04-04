@@ -23,15 +23,6 @@ public:
 
 private:
 
-	struct Init {
-		void init(uint32_t id);
-
-		float  a_sum;
-		float  b_sum;
-		float  c_sum;
-		float3 d_sum;
-	};
-
 	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
 					   const image::Float_4& source,
 					   image::Float_4& destination) final override;
