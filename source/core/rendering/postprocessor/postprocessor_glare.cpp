@@ -1,5 +1,6 @@
 #include "postprocessor_glare.hpp"
 #include "image/typed_image.inl"
+#include "base/math/exp.hpp"
 #include "base/math/vector4.inl"
 #include "base/math/filter/gaussian.hpp"
 #include "base/spectrum/interpolated.hpp"
@@ -19,7 +20,7 @@ Glare::Glare(Adaption adaption, float threshold, float intensity) :
 
 float f0(float theta) {
 	float b = theta / 0.02f;
-	return 2.61f * 10e6f * std::exp(-(b * b));
+	return 2.61f * 10e6f * math::exp(-(b * b));
 }
 
 float f1(float theta) {
@@ -34,7 +35,7 @@ float f2(float theta) {
 
 float f3(float theta, float lambda) {
 	float b = theta - 3.f * (lambda / 568.f);
-	return 436.9f * (568.f / lambda) * std::exp(-(b * b));
+	return 436.9f * (568.f / lambda) * math::exp(-(b * b));
 }
 
 void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
