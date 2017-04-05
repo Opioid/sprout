@@ -26,7 +26,7 @@ size_t Transparent::num_bytes() const {
 	return d[0] * d[1] * sizeof(Pixel);
 }
 
-void Transparent::add_pixel(int2 pixel, float4_p color, float weight) {
+void Transparent::add_pixel(int2 pixel, const float4& color, float weight) {
 	const auto d = dimensions();
 
 	auto& value = pixels_[d[0] * pixel[1] + pixel[0]];
@@ -34,7 +34,7 @@ void Transparent::add_pixel(int2 pixel, float4_p color, float weight) {
 	value.weight_sum += weight;
 }
 
-void Transparent::add_pixel_atomic(int2 pixel, float4_p color, float weight) {
+void Transparent::add_pixel_atomic(int2 pixel, const float4& color, float weight) {
 	const auto d = dimensions();
 
 	auto& value = pixels_[d[0] * pixel[1] + pixel[0]];

@@ -24,7 +24,7 @@ inline byte3 float_to_unorm(const float3& c) {
 				 static_cast<uint8_t>(c[2] * 255.f));
 }
 
-inline byte4 float_to_unorm(float4_p c) {
+inline byte4 float_to_unorm(const float4& c) {
 	return byte4(static_cast<uint8_t>(c[0] * 255.f),
 				 static_cast<uint8_t>(c[1] * 255.f),
 				 static_cast<uint8_t>(c[2] * 255.f),

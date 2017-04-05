@@ -145,7 +145,7 @@ void Writer::write_bytes_rle(std::ostream& stream, const uint8_t* data, uint32_t
 	}
 }
 
-byte4 Writer::float_to_rgbe(float4_p c) {
+byte4 Writer::float_to_rgbe(const float4& c) {
 	float v = c[0];
 
 	if (c[1] > v) {

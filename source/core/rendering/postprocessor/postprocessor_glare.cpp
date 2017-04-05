@@ -242,14 +242,14 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 					Vector k = load_float4(kernel_[ki]);
 					Vector h = load_float4(high_pass_[si]);
 
-					glare += k * h;
+					glare = add(glare, mul(k, h));
 				}
 			}
 
-			glare *= intensity;
+			glare = mul(glare, intensity);
 
 			Vector s = load_float4(reinterpret_cast<float*>(source.address(i)));
-			s += glare;
+			s = add(s, glare);
 			store_float4(reinterpret_cast<float*>(destination.address(i)), s);
 		}
 	}

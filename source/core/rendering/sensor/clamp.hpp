@@ -8,7 +8,7 @@ class Identity {
 
 public:
 
-	float4 clamp(float4_p color) const;
+	float4 clamp(const float4& color) const;
 };
 
 class Clamp {
@@ -17,7 +17,7 @@ public:
 
 	Clamp(const float3& max);
 
-	float4 clamp(float4_p color) const;
+	float4 clamp(const float4& color) const;
 
 private:
 

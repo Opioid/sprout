@@ -6,10 +6,7 @@
 namespace math {
 
 struct Vector4f_a;
-using FVector4f_a = const Vector4f_a&;
-
 struct Vector4i_a;
-using FVector4i_a = const Vector4i_a&;
 
 /****************************************************************************
  *
@@ -138,5 +135,3 @@ using short4 = math::Vector4<int16_t>;
 // using float4 = Vector4<float>;
 using float4 = math::Vector4f_a;
 using int4   = math::Vector4i_a;
-
-using float4_p = math::FVector4f_a;

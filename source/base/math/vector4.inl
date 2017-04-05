@@ -85,42 +85,42 @@ T dot(const Vector4<T>& a, const Vector4<T>& b) {
  *
  ****************************************************************************/
 
-static inline Vector4f_a operator+(FVector4f_a a, FVector4f_a b) {
+static inline Vector4f_a operator+(const Vector4f_a& a, const Vector4f_a& b) {
 	return Vector4f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);
 }
 
-static inline Vector4f_a operator*(FVector4f_a a, FVector4f_a b) {
+static inline Vector4f_a operator*(const Vector4f_a& a, const Vector4f_a& b) {
 	return Vector4f_a(a[0] * b[0], a[1] * b[1], a[2] * b[2], a[3] * b[3]);
 }
 
-static inline Vector4f_a operator/(FVector4f_a a, float s) {
+static inline Vector4f_a operator/(const Vector4f_a& a, float s) {
 	float is = 1.f / s;
 	return Vector4f_a(is * a[0], is * a[1], is * a[2], is * a[3]);
 }
 
-static inline Vector4f_a& operator+=(Vector4f_a& a, FVector4f_a b) {
+static inline Vector4f_a& operator+=(Vector4f_a& a, const Vector4f_a& b) {
 	a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; a[3] += b[3];
 	return a;
 }
 
-static inline Vector4f_a& operator-=(Vector4f_a& a, FVector4f_a b) {
+static inline Vector4f_a& operator-=(Vector4f_a& a, const Vector4f_a& b) {
 	a[0] -= b[0]; a[1] -= b[1]; a[2] -= b[2]; a[3] -= b[3];
 	return a;
 }
 
-static inline bool operator==(FVector4f_a a, FVector4f_a b) {
+static inline bool operator==(const Vector4f_a& a, const Vector4f_a& b) {
 	return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
 }
 
-static inline bool operator!=(FVector4f_a a, FVector4f_a b) {
+static inline bool operator!=(const Vector4f_a& a, const Vector4f_a& b) {
 	return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];
 }
 
-static inline Vector4f_a operator*(float s, FVector4f_a a) {
+static inline Vector4f_a operator*(float s, const Vector4f_a& a) {
 	return Vector4f_a(s * a[0], s * a[1], s * a[2], s * a[3]);
 }
 
-static inline float dot(FVector4f_a a, FVector4f_a b) {
+static inline float dot(const Vector4f_a& a, const Vector4f_a& b) {
 	return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 }
 
@@ -130,20 +130,20 @@ static inline float dot(FVector4f_a a, FVector4f_a b) {
  *
  ****************************************************************************/
 
-static inline Vector4i_a operator+(FVector4i_a a, FVector4i_a b) {
+static inline Vector4i_a operator+(const Vector4i_a& a, const Vector4i_a& b) {
 	return Vector4i_a(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);
 }
 
-static inline Vector4i_a operator*(FVector4i_a a, FVector4i_a b) {
+static inline Vector4i_a operator*(const Vector4i_a& a, const Vector4i_a& b) {
 	return Vector4i_a(a[0] * b[0], a[1] * b[1], a[2] * b[2], a[3] * b[3]);
 }
 
-static inline Vector4i_a& operator+=(Vector4i_a& a, FVector4i_a b) {
+static inline Vector4i_a& operator+=(Vector4i_a& a, const Vector4i_a& b) {
 	a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; a[3] += b[3];
 	return a;
 }
 
-static inline Vector4i_a& operator-=(Vector4i_a& a, FVector4i_a b) {
+static inline Vector4i_a& operator-=(Vector4i_a& a, const Vector4i_a& b) {
 	a[0] -= b[0]; a[1] -= b[1]; a[2] -= b[2]; a[3] -= b[3];
 	return a;
 }

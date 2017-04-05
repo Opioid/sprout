@@ -78,8 +78,8 @@ inline bool Node::intersect_p(FVector ray_origin, FVector ray_inv_direction,
 	const Vector bb_min = load_float3(min_.v/*bounds[0]*/);
 	const Vector bb_max = load_float3(max_.v/*bounds[1]*/);
 
-	const Vector l1 = (bb_min - ray_origin) * ray_inv_direction;
-	const Vector l2 = (bb_max - ray_origin) * ray_inv_direction;
+	const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
+	const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
 
 	// the order we use for those min/max is vital to filter out
 	// NaNs that happens when an inv_dir is +/- inf and

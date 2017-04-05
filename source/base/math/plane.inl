@@ -20,11 +20,11 @@ static inline Plane create(const Vector3f_a& v0, const Vector3f_a& v1, const Vec
 	return create(n, v0);
 }
 
-static inline float dot(FVector4f_a p, const Vector3f_a& v) {
+static inline float dot(const Vector4f_a& p, const Vector3f_a& v) {
 	return (p[0] * v[0] + p[1] * v[1]) + (p[2] * v[2] + p[3]);
 }
 
-static inline bool behind(FVector4f_a p, const Vector3f_a& point) {
+static inline bool behind(const Vector4f_a& p, const Vector3f_a& point) {
 	return dot(p, point) < 0.f;
 }
 

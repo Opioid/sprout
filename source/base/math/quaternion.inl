@@ -238,7 +238,7 @@ static inline Quaternion create(const Matrix3x3f_a& m) {
 	return temp;
 }
 
-static inline Matrix3x3f_a create_matrix3x3(FQuaternion q) {
+static inline Matrix3x3f_a create_matrix3x3(const Quaternion& q) {
 	float d = dot(q, q);
 
 	float s = 2.f / d;

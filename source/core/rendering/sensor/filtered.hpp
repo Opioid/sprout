@@ -18,15 +18,15 @@ public:
 
 	virtual int32_t filter_radius_int() const final override;
 
-	virtual void add_sample(const sampler::Camera_sample& sample, float4_p,
+	virtual void add_sample(const sampler::Camera_sample& sample, const float4&,
 							const int4& tile, const int4& bounds) final override;
 
 private:
 
-	void add_weighted_pixel(int2 pixel, float weight, float4_p color,
+	void add_weighted_pixel(int2 pixel, float weight, const float4& color,
 							const int4& isolated_tile, const int4& bounds);
 
-	void weight_and_add_pixel(int2 pixel, float2 relative_offset, float4_p color,
+	void weight_and_add_pixel(int2 pixel, float2 relative_offset, const float4& color,
 							  const int4& isolated_tile, const int4& bounds);
 
 	Clamp clamp_;

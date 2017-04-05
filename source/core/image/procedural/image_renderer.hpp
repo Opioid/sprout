@@ -44,7 +44,7 @@ public:
 	~Renderer();
 
 	void set_brush(const float3& color);
-	void set_brush(float4_p color);
+	void set_brush(const float4& color);
 
 	void clear();
 
@@ -57,8 +57,8 @@ public:
 
 private:
 
-	void set_sample(int32_t x, int32_t y, float4_p color);
-	void set_row(int32_t start_x, int32_t end_x, int32_t y, float4_p color);
+	void set_sample(int32_t x, int32_t y, const float4& color);
+	void set_row(int32_t start_x, int32_t end_x, int32_t y, const float4& color);
 
 	int32_t sqrt_num_samples_;
 

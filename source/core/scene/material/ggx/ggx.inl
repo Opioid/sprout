@@ -89,7 +89,8 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
+float Isotropic::reflect(const float3& wo, float n_dot_wo,
+						 const Layer& layer, const Fresnel& fresnel,
 						 sampler::Sampler& sampler, bxdf::Result& result) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	// For reflections we could do a perfect mirror,
@@ -233,8 +234,9 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
-						 sampler::Sampler& sampler, float3& fresnel_result, bxdf::Result& result) {
+float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+						 const Fresnel& fresnel, sampler::Sampler& sampler,
+						 float3& fresnel_result, bxdf::Result& result) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	// For reflections we could do a perfect mirror,
 	// but the decision is to always use a minimum roughness instead
@@ -285,8 +287,8 @@ float3 Anisotropic::reflection(const float3& h, float n_dot_wi, float n_dot_wo, 
 							   const Layer& layer, const Fresnel& fresnel, float &pdf) {
 	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
-	const float x_dot_h  = math::dot(layer.t_, h);
-	const float y_dot_h  = math::dot(layer.b_, h);
+	const float x_dot_h = math::dot(layer.t_, h);
+	const float y_dot_h = math::dot(layer.b_, h);
 
 	const float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.a2_, layer.axy_);
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
@@ -301,7 +303,8 @@ float3 Anisotropic::reflection(const float3& h, float n_dot_wi, float n_dot_wo, 
 }
 
 template<typename Layer, typename Fresnel>
-float Anisotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer, const Fresnel& fresnel,
+float Anisotropic::reflect(const float3& wo, float n_dot_wo,
+						   const Layer& layer, const Fresnel& fresnel,
 						   sampler::Sampler& sampler, bxdf::Result& result) {
 	const float2 xi = sampler.generate_sample_2D();
 

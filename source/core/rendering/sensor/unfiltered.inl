@@ -15,7 +15,7 @@ int32_t Unfiltered<Base, Clamp>::filter_radius_int() const {
 }
 
 template<class Base, class Clamp>
-void Unfiltered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, float4_p color,
+void Unfiltered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, const float4& color,
 										 const int4& /*tile*/, const int4& bounds) {
 	Base::add_pixel(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
 }

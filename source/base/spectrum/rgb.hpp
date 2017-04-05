@@ -27,7 +27,7 @@ static inline float3 linear_RGB_to_sRGB(const float3& c) {
 }
 
 // convert sRGB linear color to sRGB gamma color
-static inline float4 linear_RGB_to_sRGB(float4_p c) {
+static inline float4 linear_RGB_to_sRGB(const float4& c) {
 	return float4(linear_to_sRGB(c[0]),
 				  linear_to_sRGB(c[1]),
 				  linear_to_sRGB(c[2]),
