@@ -37,7 +37,7 @@ private:
 
 	alignas(16) float values_[N];
 
-	static alignas(16) float3 cie_[N];
+	static float3 cie_[N];
 
 	static float wavelengths_[N  + 1];
 
