@@ -2,8 +2,8 @@
 #include "memory/align.hpp"
 #include "math/sincos.hpp"
 #include "math/math.hpp"
+#include "math/vector.inl"
 #include "math/vector2.inl"
-#include "simd/vector.inl"
 #include "thread/thread_pool.hpp"
 
 namespace math {
@@ -19,27 +19,27 @@ void dft_1d(float2* result, const float* source, int32_t num) {
 	const int32_t m4 = num - r;
 
 	float4 zott = float4(0.f, 1.f, 2.f, 3.f);
-	const Vector zv = load_float4(zott);
+	const Vector zv = simd::load_float4(zott);
 
 	for (int32_t k = 0, len = num / 2; k <= len; ++k) {
 		const float as = af * static_cast<float>(k);
 
 		// Use SSE to work on blocks of 4
-		const Vector a = load_float(as);
+		const Vector a = simd::load_float(as);
 
 		Vector sum_x = simd::Zero;
 		Vector sum_y = simd::Zero;
 
 		for (int32_t x = 0; x < m4; x += 4) {
-			Vector xf = load_float(static_cast<float>(x));
-			Vector xv = add(xf, zv);
-			Vector b = mul(a, xv);
+			Vector xf = simd::load_float(static_cast<float>(x));
+			Vector xv = math::add(xf, zv);
+			Vector b = math::mul(a, xv);
 			Vector sin_b;
 			Vector cos_b;
 			math::sincos(b, sin_b, cos_b);
-			Vector sv = load_unaligned_float4(&source[x]);
-			sum_x = add(sum_x, mul(sv, cos_b));
-			sum_y = add(sum_y, mul(sv, sin_b));
+			Vector sv = simd::load_unaligned_float4(&source[x]);
+			sum_x = math::add(sum_x, mul(sv, cos_b));
+			sum_y = math::add(sum_y, mul(sv, sin_b));
 		}
 
 //		float4 sx;

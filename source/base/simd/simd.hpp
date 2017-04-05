@@ -44,6 +44,8 @@
 	// low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
 #define SU_MUX_HIGH(low, high) _mm_movehl_ps(low, high)
 
+namespace simd {
+
 using Vector = __m128;
 
 // Fix-up for (1st-3rd) Vector parameters that are pass-in-register for x86 and vector call; by reference otherwise
@@ -69,3 +71,10 @@ using Vector = __m128;
 
 // Fix-up for (7th+) Vector parameters to pass by reference
 using CVector = const Vector&;
+
+}
+
+using Vector  = simd::Vector;
+using FVector = simd::FVector;
+using GVector = simd::GVector;
+using HVector = simd::HVector;

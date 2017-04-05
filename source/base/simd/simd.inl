@@ -191,8 +191,6 @@ SU_GLOBALCONST(Vector_u32) NegInfinity			= {{{ 0xFF800000, 0xFF800000, 0xFF80000
 //XMGLOBALCONST XMVECTORF32 g_XMLgE               = {+1.442695f, +1.442695f, +1.442695f, +1.442695f};
 //XMGLOBALCONST XMVECTORF32 g_XMInvLgE            = {+6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f};
 
-}
-
 /****************************************************************************
  *
  * Load operations
@@ -270,4 +268,6 @@ static inline void SU_CALLCONV store_float4(math::Vector4f_a& destination, FVect
 
 static inline void SU_CALLCONV store_float4(float* destination, FVector v) {
 	_mm_store_ps(destination, v);
+}
+
 }

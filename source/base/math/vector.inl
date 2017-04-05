@@ -1,7 +1,9 @@
 #pragma once
 
 #include "vector.hpp"
-#include "simd.inl"
+#include "simd/simd.inl"
+
+namespace math {
 
 /****************************************************************************
  *
@@ -135,4 +137,6 @@ static inline Vector SU_CALLCONV max(FVector a, FVector b) {
 
 static inline Vector SU_CALLCONV splat_x(FVector v) {
 	return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
+}
+
 }

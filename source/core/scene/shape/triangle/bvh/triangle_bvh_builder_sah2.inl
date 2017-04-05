@@ -29,9 +29,9 @@ void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Ver
 			(uint32_t id, int32_t begin, int32_t end) {
 				math::Simd_AABB aabb(math::AABB::empty());
 				for (int32_t i = begin; i < end; ++i) {
-					auto a = load_float3(vertices[triangles[i].i[0]].p);
-					auto b = load_float3(vertices[triangles[i].i[1]].p);
-					auto c = load_float3(vertices[triangles[i].i[2]].p);
+					auto a = simd::load_float3(vertices[triangles[i].i[0]].p);
+					auto b = simd::load_float3(vertices[triangles[i].i[1]].p);
+					auto c = simd::load_float3(vertices[triangles[i].i[2]].p);
 
 					auto min = triangle_min(a, b, c);
 					auto max = triangle_max(a, b, c);

@@ -94,7 +94,7 @@ public:
 					cos_sin_[i][1] = std::sin(t);
 				}
 
-				s_[x] = mulc(sx, cot * u * u);
+				s_[x] = math::mulc(sx, cot * u * u);
 			}
 			*/
 
@@ -189,7 +189,7 @@ static void fdft(image::Float_2& destination, const Source& source, const Row& r
 			}
 
 	//		const float  u = (coordinates - half_m) * i_sqrt_m;
-	//		const float2 s = mulc(sx, cot * u * u);
+	//		const float2 s = math::mulc(sx, cot * u * u);
 
 			const float2 s = row.s(x);
 

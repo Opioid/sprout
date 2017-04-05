@@ -3,7 +3,7 @@
 #include "triangle_primitive_mt.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/ray.hpp"
-#include "base/simd/vector.inl"
+#include "base/math/vector.inl"
 
 #include <iostream>
 
@@ -199,26 +199,26 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 							 Vector& u_out, Vector& v_out) {
 	using namespace math;
 
-	Vector ap = load_float4(a.p);
-	Vector bp = load_float4(b.p);
-	Vector cp = load_float4(c.p);
+	Vector ap = simd::load_float4(a.p);
+	Vector bp = simd::load_float4(b.p);
+	Vector cp = simd::load_float4(c.p);
 
-	Vector e1 = sub(bp, ap);
-	Vector e2 = sub(cp, ap);
+	Vector e1 = math::sub(bp, ap);
+	Vector e2 = math::sub(cp, ap);
 
 	Vector pvec = cross3(direction, e2);
 
 	Vector inv_det = rcp1(dot3_1(e1, pvec));
 
-	Vector tvec = sub(origin, ap);
-	Vector u = mul1(dot3_1(tvec, pvec), inv_det);
+	Vector tvec = math::sub(origin, ap);
+	Vector u = math::mul1(dot3_1(tvec, pvec), inv_det);
 
 	Vector qvec = cross3(tvec, e1);
-	Vector v = mul1(dot3_1(direction, qvec), inv_det);
+	Vector v = math::mul1(dot3_1(direction, qvec), inv_det);
 
-	Vector hit_t = mul1(dot3_1(e2, qvec), inv_det);
+	Vector hit_t = math::mul1(dot3_1(e2, qvec), inv_det);
 
-	Vector uv = add1(u, v);
+	Vector uv = math::add1(u, v);
 
 	if (0 != (_mm_comige_ss(u, simd::Zero) &
 			  _mm_comige_ss(simd::One, u) &
@@ -307,26 +307,26 @@ static inline bool intersect_p(FVector origin, FVector direction,
 	// Implementation C
 	using namespace math;
 
-	Vector ap = load_float4(a.p);
-	Vector bp = load_float4(b.p);
-	Vector cp = load_float4(c.p);
+	Vector ap = simd::load_float4(a.p);
+	Vector bp = simd::load_float4(b.p);
+	Vector cp = simd::load_float4(c.p);
 
-	Vector e1 = sub(bp, ap);
-	Vector e2 = sub(cp, ap);
+	Vector e1 = math::sub(bp, ap);
+	Vector e2 = math::sub(cp, ap);
 
 	Vector pvec = cross3(direction, e2);
 
 	Vector inv_det = rcp1(dot3_1(e1, pvec));
 
-	Vector tvec = sub(origin, ap);
-	Vector u = mul1(dot3_1(tvec, pvec), inv_det);
+	Vector tvec = math::sub(origin, ap);
+	Vector u = math::mul1(dot3_1(tvec, pvec), inv_det);
 
 	Vector qvec = cross3(tvec, e1);
-	Vector v = mul1(dot3_1(direction, qvec), inv_det);
+	Vector v = math::mul1(dot3_1(direction, qvec), inv_det);
 
-	Vector hit_t = mul1(dot3_1(e2, qvec), inv_det);
+	Vector hit_t = math::mul1(dot3_1(e2, qvec), inv_det);
 
-	Vector uv = add1(u, v);
+	Vector uv = math::add1(u, v);
 
 	return 0 != (_mm_comige_ss(u, simd::Zero) &
 				 _mm_comige_ss(simd::One, u) &
@@ -406,26 +406,26 @@ static inline float2 interpolate_uv(FVector u, FVector v,
 									const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c) {
-	const Vector w = sub(sub(simd::One, u), v);
+	const Vector w = math::sub(math::sub(simd::One, u), v);
 
 	const float3 auv(a.n_u[3], a.t_v[3], 0.f);
-	Vector va = load_float4(auv);
+	Vector va = simd::load_float4(auv);
 
 	const float3 buv(b.n_u[3], b.t_v[3], 0.f);
-	Vector vb = load_float4(buv);
+	Vector vb = simd::load_float4(buv);
 
-	va = mul(w, va);
-	vb = mul(u, vb);
-	va = add(va, vb);
+	va = math::mul(w, va);
+	vb = math::mul(u, vb);
+	va = math::add(va, vb);
 
 	const float3 cuv(c.n_u[3], c.t_v[3], 0.f);
-	Vector vc = load_float4(cuv);
+	Vector vc = simd::load_float4(cuv);
 
-	vc = mul(v, vc);
-	Vector uv = add(va, vc);
+	vc = math::mul(v, vc);
+	Vector uv = math::add(va, vc);
 
 	float3 r;
-	store_float4(r.v, uv);
+	simd::store_float4(r.v, uv);
 	return r.xy();
 }
 
@@ -450,29 +450,29 @@ static inline void interpolate_data(FVector u, FVector v,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,
 									float3& n, float3& t, float2& tc) {
-	const Vector w = sub(sub(simd::One, u), v);
+	const Vector w = math::sub(math::sub(simd::One, u), v);
 
-	Vector va = mul(w, load_float4(a.n_u));
-	Vector vb = mul(u, load_float4(b.n_u));
-	va = add(va, vb);
-	Vector vc = mul(v, load_float4(c.n_u));
-	Vector v0 = add(va, vc);
+	Vector va = math::mul(w, simd::load_float4(a.n_u));
+	Vector vb = math::mul(u, simd::load_float4(b.n_u));
+	va = math::add(va, vb);
+	Vector vc = math::mul(v, simd::load_float4(c.n_u));
+	Vector v0 = math::add(va, vc);
 
-	Vector vn = normalized3(v0);
-	store_float4(n, vn);
+	Vector vn = math::normalized3(v0);
+	simd::store_float4(n, vn);
 
-	va = mul(w, load_float4(a.t_v));
-	vb = mul(u, load_float4(b.t_v));
-	va = add(va, vb);
-	vc = mul(v, load_float4(c.t_v));
-	Vector v1 = add(va, vc);
+	va = math::mul(w, simd::load_float4(a.t_v));
+	vb = math::mul(u, simd::load_float4(b.t_v));
+	va = math::add(va, vb);
+	vc = math::mul(v, simd::load_float4(c.t_v));
+	Vector v1 = math::add(va, vc);
 
-	Vector vt = normalized3(v1);
-	store_float4(t, vt);
+	Vector vt = math::normalized3(v1);
+	simd::store_float4(t, vt);
 
 	v0 = SU_MUX_HIGH(v0, v1);
 	float4 r;
-	store_float4(r, v0);
+	simd::store_float4(r, v0);
 	tc[0] = r[3];
 	tc[1] = r[1];
 }
@@ -482,27 +482,27 @@ static inline void interpolate_data(FVector u, FVector v,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,
 									Vector& n, Vector& t, float2& tc) {
-	const Vector w = sub(sub(simd::One, u), v);
+	const Vector w = math::sub(math::sub(simd::One, u), v);
 
-	Vector va = mul(w, load_float4(a.n_u));
-	Vector vb = mul(u, load_float4(b.n_u));
-	va = add(va, vb);
-	Vector vc = mul(v, load_float4(c.n_u));
-	Vector v0 = add(va, vc);
+	Vector va = math::mul(w, simd::load_float4(a.n_u));
+	Vector vb = math::mul(u, simd::load_float4(b.n_u));
+	va = math::add(va, vb);
+	Vector vc = math::mul(v, simd::load_float4(c.n_u));
+	Vector v0 = math::add(va, vc);
 
-	n = normalized3(v0);
+	n = math::normalized3(v0);
 
-	va = mul(w, load_float4(a.t_v));
-	vb = mul(u, load_float4(b.t_v));
-	va = add(va, vb);
-	vc = mul(v, load_float4(c.t_v));
-	Vector v1 = add(va, vc);
+	va = math::mul(w, simd::load_float4(a.t_v));
+	vb = math::mul(u, simd::load_float4(b.t_v));
+	va = math::add(va, vb);
+	vc = math::mul(v, simd::load_float4(c.t_v));
+	Vector v1 = math::add(va, vc);
 
-	t = normalized3(v1);
+	t = math::normalized3(v1);
 
 	v0 = SU_MUX_HIGH(v0, v1);
 	float4 r;
-	store_float4(r, v0);
+	simd::store_float4(r, v0);
 	tc[0] = r[3];
 	tc[1] = r[1];
 }

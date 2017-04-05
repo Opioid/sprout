@@ -1,7 +1,7 @@
 #include "triangle_bvh_helper.hpp"
+#include "base/math/vector.inl"
 #include "base/math/vector3.inl"
 #include "base/math/plane.inl"
-#include "base/simd/vector.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -14,11 +14,11 @@ float3 triangle_max(const float3& a, const float3& b, const float3& c) {
 }
 
 Vector triangle_min(FVector a, FVector b, FVector c) {
-	return min(a, min(b, c));
+	return math::min(a, math::min(b, c));
 }
 
 Vector triangle_max(FVector a, FVector b, FVector c) {
-	return max(a, max(b, c));
+	return math::max(a, math::max(b, c));
 }
 
 float3 triangle_min(const float3& a, const float3& b, const float3& c, const float3& x) {

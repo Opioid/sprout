@@ -1,9 +1,9 @@
 #pragma once
 
 #include "aabb.hpp"
+#include "math/vector.inl"
 #include "math/vector3.inl"
 #include "math/matrix4x4.inl"
-#include "simd/vector.inl"
 #include <limits>
 
 namespace math {
@@ -11,8 +11,8 @@ namespace math {
 inline constexpr AABB::AABB(const Vector3f_a& min, const Vector3f_a& max) : bounds_{min, max} {}
 
 inline AABB::AABB(FVector min, FVector max) {
-	store_float4(bounds_[0], min);
-	store_float4(bounds_[1], max);
+	simd::store_float4(bounds_[0], min);
+	simd::store_float4(bounds_[1], max);
 }
 
 inline const Vector3f_a& AABB::min() const {
@@ -93,36 +93,36 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 
 	return min_t < ray.max_t && max_t > ray.min_t;*/
 
-	Vector ray_origin		 = load_float4(ray.origin);
-	Vector ray_inv_direction = load_float4(ray.inv_direction);
-	Vector ray_min_t		 = load_float(ray.min_t);
-	Vector ray_max_t		 = load_float(ray.max_t);
+	Vector ray_origin		 = simd::load_float4(ray.origin);
+	Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
+	Vector ray_min_t		 = simd::load_float(ray.min_t);
+	Vector ray_max_t		 = simd::load_float(ray.max_t);
 
-	const Vector bb_min = load_float4(bounds_[0]);
-	const Vector bb_max = load_float4(bounds_[1]);
+	const Vector bb_min = simd::load_float4(bounds_[0]);
+	const Vector bb_max = simd::load_float4(bounds_[1]);
 
-	const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
-	const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
+	const Vector l1 = math::mul(sub(bb_min, ray_origin), ray_inv_direction);
+	const Vector l2 = math::mul(sub(bb_max, ray_origin), ray_inv_direction);
 
 	// the order we use for those min/max is vital to filter out
 	// NaNs that happens when an inv_dir is +/- inf and
 	// (box_min - pos) is 0. inf * 0 = NaN
-	const Vector filtered_l1a = ::min(l1, simd::Infinity);
-	const Vector filtered_l2a = ::min(l2, simd::Infinity);
+	const Vector filtered_l1a = math::min(l1, simd::Infinity);
+	const Vector filtered_l2a = math::min(l2, simd::Infinity);
 
-	const Vector filtered_l1b = ::max(l1, simd::NegInfinity);
-	const Vector filtered_l2b = ::max(l2, simd::NegInfinity);
+	const Vector filtered_l1b = math::max(l1, simd::NegInfinity);
+	const Vector filtered_l2b = math::max(l2, simd::NegInfinity);
 
 	// now that we're back on our feet, test those slabs.
-	Vector max_t = ::max(filtered_l1a, filtered_l2a);
-	Vector min_t = ::min(filtered_l1b, filtered_l2b);
+	Vector max_t = math::max(filtered_l1a, filtered_l2a);
+	Vector min_t = math::min(filtered_l1b, filtered_l2b);
 
 	// unfold back. try to hide the latency of the shufps & co.
-	max_t = min1(max_t, SU_ROTATE_LEFT(max_t));
-	min_t = max1(min_t, SU_ROTATE_LEFT(min_t));
+	max_t = math::min1(max_t, SU_ROTATE_LEFT(max_t));
+	min_t = math::max1(min_t, SU_ROTATE_LEFT(min_t));
 
-	max_t = min1(max_t, SU_MUX_HIGH(max_t, max_t));
-	min_t = max1(min_t, SU_MUX_HIGH(min_t, min_t));
+	max_t = math::min1(max_t, SU_MUX_HIGH(max_t, max_t));
+	min_t = math::max1(min_t, SU_MUX_HIGH(min_t, min_t));
 
 	return 0 != (_mm_comige_ss(max_t, ray_min_t) &
 				 _mm_comige_ss(ray_max_t, min_t) &
@@ -186,8 +186,8 @@ inline void AABB::set_min_max(const Vector3f_a& min, const Vector3f_a& max) {
 }
 
 inline void AABB::set_min_max(FVector min, FVector max) {
-	store_float4(bounds_[0], min);
-	store_float4(bounds_[1], max);
+	simd::store_float4(bounds_[0], min);
+	simd::store_float4(bounds_[1], max);
 }
 
 inline void AABB::insert(const Vector3f_a& p) {

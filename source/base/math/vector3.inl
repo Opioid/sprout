@@ -401,13 +401,13 @@ static inline Vector3f_a normalized(const Vector3f_a& v) {
 static inline Vector3f_a reciprocal(const Vector3f_a& v) {
 //	return Vector3f_a(1.f / v[0], 1.f / v[1], 1.f / v[2]);
 
-	Vector sx = load_float4(v);
+	Vector sx = simd::load_float4(v);
 
 	Vector rcp = _mm_rcp_ps(sx);
 	Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
 	Vector3f_a result;
-	store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	simd::store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 	return result;
 }
 
@@ -437,11 +437,11 @@ static inline Vector3f_a saturate(const Vector3f_a& v) {
 
 static inline Vector3f_a exp(const Vector3f_a& v) {
 //	return Vector3f_a(math::exp(v[0]), math::exp(v[1]), math::exp(v[2]));
-	Vector x = load_float4(v);
+	Vector x = simd::load_float4(v);
 	x = exp(x);
 
 	Vector3f_a r;
-	store_float4(r, x);
+	simd::store_float4(r, x);
 	return r;
 }
 

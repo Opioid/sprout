@@ -1,10 +1,10 @@
 #include "testing_simd.hpp"
 #include "base/chrono/chrono.hpp"
+#include "base/math/vector.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 #include "base/string/string.hpp"
 #include "base/math/print.hpp"
-#include "base/simd/vector.inl"
 #include <iostream>
 
 namespace testing { namespace simd {
@@ -187,21 +187,21 @@ inline float3 simd_normalized_0(const float3& v) {
 }
 
 inline float3 simd_normalized_1(const float3& v) {
-	Vector sx = load_float4(v);
+	Vector sx = ::simd::load_float4(v);
 
-	Vector d = dot3(sx, sx);
+	Vector d = math::dot3(sx, sx);
 
-	Vector il = rsqrt(d);
+	Vector il = math::rsqrt(d);
 
 	float3 result;
-	store_float4(result, _mm_mul_ps(il, sx));
+	::simd::store_float4(result, _mm_mul_ps(il, sx));
 
 	return result;
 }
 
 inline float simd_dotlly(const float3& a, const float3& b) {
-//	Vector sa = load_float4(a);
-//	Vector sb = load_float4(b);
+//	Vector sa = ::simd::load_float4(a);
+//	Vector sb = ::simd::load_float4(b);
 
 //	Vector d = _mm_dp_ps(sa, sb, 0x77);
 
@@ -212,14 +212,14 @@ inline float simd_dotlly(const float3& a, const float3& b) {
 }
 
 inline float3 simd_normalized_2(const float3& v) {
-	Vector sx = load_float4(v);
+	Vector sx = ::simd::load_float4(v);
 
 	Vector d = _mm_dp_ps(sx, sx, 0x77);
 
-	Vector il = rsqrt(d);
+	Vector il = math::rsqrt(d);
 
 	float3 result;
-	store_float4(result, _mm_mul_ps(il, sx));
+	::simd::store_float4(result, _mm_mul_ps(il, sx));
 
 	return result;
 
@@ -349,23 +349,23 @@ void normalize() {
 //}
 
 inline float3 simd_reciprocal(const float3& v) {
-	Vector sx = load_float3(v);
+	Vector sx = ::simd::load_float3(v);
 
 	__m128 rcp = _mm_rcp_ps(sx);
 	__m128 mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
 	float3 result;
-	store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	::simd::store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 	return result;
 }
 
 inline void simd_reciprocal(float3& result, const float3& v) {
-	Vector sx = load_float3(v);
+	Vector sx = ::simd::load_float3(v);
 
 	__m128 rcp = _mm_rcp_ps(sx);
 	__m128 mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
-	store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
+	::simd::store_float4(result, _mm_sub_ps(_mm_add_ps(rcp, rcp), mul));
 }
 
 void reciprocal() {
@@ -460,10 +460,10 @@ inline float dotly(float3 a, float3 b) {
 }
 
 inline float simd_dot_0(const float3& a, const float3& b) {
-	Vector sa = load_float3(a);
-	Vector sb = load_float3(b);
+	Vector sa = ::simd::load_float3(a);
+	Vector sb = ::simd::load_float3(b);
 
-	Vector d = dot3(sa, sb);
+	Vector d = math::dot3(sa, sb);
 
 	float x;
 	_mm_store_ss(&x, d);
@@ -471,17 +471,17 @@ inline float simd_dot_0(const float3& a, const float3& b) {
 }
 
 inline float simd_dot_1(const float3& a, const float3& b) {
-	Vector sa = load_float4(a);
-	Vector sb = load_float4(b);
+	Vector sa = ::simd::load_float4(a);
+	Vector sb = ::simd::load_float4(b);
 
-	Vector d = dot3_1(sa, sb);
+	Vector d = math::dot3_1(sa, sb);
 
 	return _mm_cvtss_f32(d);
 }
 
 inline float simd_dot_2(const float3& a, const float3& b) {
-	Vector sa = load_float4(a);
-	Vector sb = load_float4(b);
+	Vector sa = ::simd::load_float4(a);
+	Vector sb = ::simd::load_float4(b);
 
 
 	Vector mul  = _mm_mul_ps(sa, sb);
@@ -612,19 +612,19 @@ void dot() {
 }
 
 inline float3 simd_min(const float3& a, const float3& b) {
-	Vector sa = load_float3(a);
-	Vector sb = load_float3(b);
+	Vector sa = ::simd::load_float3(a);
+	Vector sb = ::simd::load_float3(b);
 
 	float3 result;
-	store_float4(result, _mm_min_ps(sa, sb));
+	::simd::store_float4(result, _mm_min_ps(sa, sb));
 	return result;
 }
 
 inline void simd_min2(float3& a, const float3& b) {
-	Vector sa = load_float3(a);
-	Vector sb = load_float3(b);
+	Vector sa = ::simd::load_float3(a);
+	Vector sb = ::simd::load_float3(b);
 
-	store_float4(a, _mm_min_ps(sa, sb));
+	::simd::store_float4(a, _mm_min_ps(sa, sb));
 }
 
 void minmax() {
