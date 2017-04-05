@@ -2,7 +2,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "rendering/integrator/surface/integrator_helper.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"

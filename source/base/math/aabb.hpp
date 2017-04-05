@@ -1,9 +1,9 @@
 #pragma once
 
-#include "math/vector.hpp"
 #include "math/vector3.hpp"
 #include "math/matrix4x4.hpp"
 #include "math/ray.hpp"
+#include "simd/simd.hpp"
 
 namespace math {
 

@@ -20,6 +20,7 @@ HEADERS += \
 	math/quaternion.hpp \
 	math/quaternion.inl \
 	math/ray.hpp \
+	math/ray.inl \
 	math/simd_aabb.hpp \
 	math/simd_aabb.inl \
 	math/sincos.hpp \

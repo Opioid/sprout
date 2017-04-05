@@ -4,6 +4,7 @@
 #include "base/math/exp.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
+#include "base/math/ray.inl"
 
 #include "base/debug/assert.hpp"
 

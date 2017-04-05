@@ -1,15 +1,14 @@
 #include "attenuation.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 
 namespace rendering { namespace integrator { namespace volume {
 
-Attenuation::Attenuation(const take::Settings& take_settings,
-						 rnd::Generator& rng) :
+Attenuation::Attenuation(const take::Settings& take_settings, rnd::Generator& rng) :
 	Integrator(take_settings, rng) {}
 
 void Attenuation::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
