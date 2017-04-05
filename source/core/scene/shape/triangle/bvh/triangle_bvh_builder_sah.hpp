@@ -32,14 +32,14 @@ private:
 
 		using index = std::vector<uint32_t>::iterator;
 
-		Split_candidate(uint8_t split_axis, float3_p p);
+		Split_candidate(uint8_t split_axis, const float3& p);
 
 		void evaluate(index begin, index end, float aabb_surface_area,
 					  aabbs triangle_bounds);
 
 		float cost() const;
 
-		bool behind(float3_p point) const;
+		bool behind(const float3& point) const;
 
 		uint8_t axis() const;
 

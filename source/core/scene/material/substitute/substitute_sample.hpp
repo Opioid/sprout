@@ -9,7 +9,7 @@ class Sample : public Sample_base<disney::Isotropic> {
 
 public:
 
-	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 };

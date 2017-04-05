@@ -18,14 +18,14 @@ public:
 	bool init();
 
 	float3 sun_direction() const;
-	void set_sun_direction(float3_p direction);
+	void set_sun_direction(const float3& direction);
 
-	void set_ground_albedo(float3_p albedo);
+	void set_ground_albedo(const float3& albedo);
 	void set_turbidity(float turbidity);
 
-	float3 evaluate_sky(float3_p wi) const;
+	float3 evaluate_sky(const float3& wi) const;
 
-	float3 evaluate_sky_and_sun(float3_p wi) const;
+	float3 evaluate_sky_and_sun(const float3& wi) const;
 
 	static float3 zenith();
 

@@ -286,19 +286,19 @@ static inline Matrix3x3f_a operator*(const Matrix3x3f_a& a, const Matrix3x3f_a& 
 						a.r[2][0] * b.r[0][2] + a.r[2][1] * b.r[1][2] + a.r[2][2] * b.r[2][2]);
 }
 
-static inline Vector3f_a operator*(FVector3f_a v, const Matrix3x3f_a& m) {
+static inline Vector3f_a operator*(const Vector3f_a& v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
 					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
 					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_vector(FVector3f_a v, const Matrix3x3f_a& m) {
+static inline Vector3f_a transform_vector(const Vector3f_a& v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[1][0] + v[2] * m.r[2][0],
 					  v[0] * m.r[0][1] + v[1] * m.r[1][1] + v[2] * m.r[2][1],
 					  v[0] * m.r[0][2] + v[1] * m.r[1][2] + v[2] * m.r[2][2]);
 }
 
-static inline Vector3f_a transform_vector_transposed(FVector3f_a v, const Matrix3x3f_a& m) {
+static inline Vector3f_a transform_vector_transposed(const Vector3f_a& v, const Matrix3x3f_a& m) {
 	return Vector3f_a(v[0] * m.r[0][0] + v[1] * m.r[0][1] + v[2] * m.r[0][2],
 					  v[0] * m.r[1][0] + v[1] * m.r[1][1] + v[2] * m.r[1][2],
 					  v[0] * m.r[2][0] + v[1] * m.r[2][1] + v[2] * m.r[2][2]);

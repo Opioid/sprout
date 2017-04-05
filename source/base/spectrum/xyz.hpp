@@ -9,7 +9,7 @@
 
 namespace spectrum {
 
-static inline float3 XYZ_to_linear_RGB(float3_p xyz) {
+static inline float3 XYZ_to_linear_RGB(const float3& xyz) {
 	return float3( 2.3706743f * xyz[0] - 0.9000405f * xyz[1] - 0.4706338f * xyz[2],
 				  -0.5138850f * xyz[0] + 1.4253036f * xyz[1] + 0.0885814f * xyz[2],
 				   0.0052982f * xyz[0] - 0.0146949f * xyz[1] + 1.0093968f * xyz[2]);

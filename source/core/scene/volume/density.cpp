@@ -40,7 +40,7 @@ float3 Density::optical_depth(const math::Ray& ray, float step_size,
 	return step_size * tau * attenuation;
 }
 
-float3 Density::scattering(float3_p p, Worker& worker, Sampler_filter filter) const {
+float3 Density::scattering(const float3& p, Worker& worker, Sampler_filter filter) const {
 	float3 p_o = math::transform_point(p, world_transformation_.world_to_object);
 	return density(p_o, worker, filter) * scattering_;
 }

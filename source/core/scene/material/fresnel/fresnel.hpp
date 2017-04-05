@@ -9,7 +9,7 @@ class Schlick {
 public:
 
 	Schlick(float f0);
-	Schlick(float3_p f0);
+	Schlick(const float3& f0);
 
 	float3 operator()(float wo_dot_h) const;
 
@@ -23,7 +23,7 @@ class Schlick_weighted {
 public:
 
 	Schlick_weighted(float f0, float weight);
-	Schlick_weighted(float3_p f0, float weight);
+	Schlick_weighted(const float3& f0, float weight);
 
 	float3 operator()(float wo_dot_h) const;
 
@@ -37,7 +37,7 @@ class Schlick_blending {
 
 public:
 
-	Schlick_blending(float3_p a, float3_p b, float f0);
+	Schlick_blending(const float3& a, const float3& b, float f0);
 
 	float3 operator()(float wo_dot_h) const;
 
@@ -84,7 +84,7 @@ class Conductor {
 
 public:
 
-	Conductor(float3_p eta, float3_p k);
+	Conductor(const float3& eta, const float3& k);
 
 	float3 operator()(float wo_dot_h) const;
 
@@ -98,7 +98,7 @@ class Conductor_weighted {
 
 public:
 
-	Conductor_weighted(float3_p eta, float3_p k, float weight);
+	Conductor_weighted(const float3& eta, const float3& k, float weight);
 
 	float3 operator()(float wo_dot_h) const;
 
@@ -112,7 +112,7 @@ class Constant {
 
 public:
 
-	Constant(float3_p f);
+	Constant(const float3& f);
 
 	float3 operator()(float wo_dot_h) const;
 

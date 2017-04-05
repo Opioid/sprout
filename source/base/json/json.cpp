@@ -135,7 +135,7 @@ float3 read_float3(const rapidjson::Value& value) {
 }
 
 float3 read_float3(const rapidjson::Value& value, const std::string& name,
-				   float3_p default_value) {
+				   const float3& default_value) {
 	const rapidjson::Value::ConstMemberIterator node = value.FindMember(name);
 	if (value.MemberEnd() == node) {
 		return default_value;
@@ -202,7 +202,7 @@ uint3 read_uint3(const rapidjson::Value& value) {
 				 value[2].GetUint());
 }
 
-float3x3 create_rotation_matrix(float3_p xyz) {
+float3x3 create_rotation_matrix(const float3& xyz) {
 	float3x3 rot_x;
 	math::set_rotation_x(rot_x, math::degrees_to_radians(xyz[0]));
 

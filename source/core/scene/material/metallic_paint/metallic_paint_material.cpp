@@ -14,7 +14,7 @@ Material::Material(Sample_cache& sample_cache, const Sampler_settings& sampler_s
 				   bool two_sided) :
 	material::Material(sample_cache, sampler_settings, two_sided) {}
 
-const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = sample_cache_.get<Sample>(worker.id());
 
@@ -67,7 +67,7 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material::set_color(float3_p a, float3_p b) {
+void Material::set_color(const float3& a, const float3& b) {
 	color_a_ = a;
 	color_b_ = b;
 }
@@ -85,11 +85,11 @@ void Material::set_flakes_normal_map(const Texture_adapter& normal_map) {
 	flakes_normal_map_ = normal_map;
 }
 
-void Material::set_flakes_ior(float3_p ior) {
+void Material::set_flakes_ior(const float3& ior) {
 	flakes_ior_ = ior;
 }
 
-void Material::set_flakes_absorption(float3_p absorption) {
+void Material::set_flakes_absorption(const float3& absorption) {
 	flakes_absorption_ = absorption;
 }
 
@@ -101,7 +101,7 @@ void Material::set_coating_weight(float weight) {
 	coating_.weight_ = weight;
 }
 
-void Material::set_coating_color(float3_p color) {
+void Material::set_coating_color(const float3& color) {
 	coating_.color_ = color;
 }
 

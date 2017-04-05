@@ -24,7 +24,7 @@ private:
 
 protected:
 
-	virtual float3 tonemap(float3_p color) const = 0;
+	virtual float3 tonemap(const float3& color) const = 0;
 
 	static float normalization_factor(float hdr_max, float tonemapped_max);
 };

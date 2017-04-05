@@ -34,7 +34,7 @@ void Material_coating<Coating>::set_coating_weight(float weight) {
 }
 
 template<typename Coating>
-void Material_coating<Coating>::set_coating_color(float3_p color) {
+void Material_coating<Coating>::set_coating_color(const float3& color) {
 	coating_.color_ = color;
 }
 

@@ -10,7 +10,7 @@
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis,
-											  float3_p p,
+											  const float3& p,
 											  index begin, index end,
 											  const std::vector<Index_triangle>& triangles,
 											  const std::vector<Vertex>& vertices) :

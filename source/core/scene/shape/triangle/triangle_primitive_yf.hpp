@@ -24,7 +24,7 @@ struct Triangle_YF {
 
 	float3 normal() const;
 
-	float area(float3_p scale) const;
+	float area(const float3& scale) const;
 };
 
 }}}

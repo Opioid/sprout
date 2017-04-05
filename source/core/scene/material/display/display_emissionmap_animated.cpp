@@ -22,7 +22,7 @@ Emissionmap_animated::Emissionmap_animated(Sample_cache& sample_cache,
 								emission_map, emission_factor, animation_duration)
 {}
 
-const material::Sample& Emissionmap_animated::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Emissionmap_animated::sample(const float3& wo, const Renderstate& rs,
 													 const Worker& worker, Sampler_filter filter) {
 	auto& sample = sample_cache_.get<Sample>(worker.id());
 

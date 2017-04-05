@@ -15,7 +15,7 @@ class Clamp {
 
 public:
 
-	Clamp(float3_p max);
+	Clamp(const float3& max);
 
 	float4 clamp(float4_p color) const;
 

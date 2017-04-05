@@ -22,9 +22,9 @@ public:
 	int2 dimensions_2() const;
 	int3 dimensions_3() const;
 	int2 back_2() const;
-	int3 back_3() const;
+	const int3& back_3() const;
 	float2 dimensions_float2() const;
-	float3 dimensions_float3() const;
+	const float3& dimensions_float3() const;
 
 	int32_t num_elements() const;
 

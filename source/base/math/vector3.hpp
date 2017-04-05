@@ -9,9 +9,6 @@ namespace math {
 
 struct Vector3f_a;
 
-using FVector3f_a = const Vector3f_a&;
-//using FVector3f_a = Vector3f_a;
-
 /****************************************************************************
  *
  * Generic 3D vector
@@ -32,7 +29,7 @@ struct Vector3 {
 
 	explicit Vector3(const T* v);
 
-	explicit Vector3(FVector3f_a a);
+	explicit Vector3(const Vector3f_a& a);
 
 	Vector2<T> xy() const;
 
@@ -143,5 +140,3 @@ using float3 = math::Vector3f_a;
 using int3  = math::Vector3<int32_t>;
 using uint3  = math::Vector3<uint32_t>;
 using packed_float3 = math::Vector3<float>;
-
-using float3_p = math::FVector3f_a;

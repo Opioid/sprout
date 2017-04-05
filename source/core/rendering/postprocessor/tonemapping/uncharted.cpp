@@ -6,7 +6,7 @@ namespace rendering { namespace postprocessor { namespace tonemapping {
 Uncharted::Uncharted(float hdr_max) :
 	normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
 
-float3 Uncharted::tonemap(float3_p color) const {
+float3 Uncharted::tonemap(const float3& color) const {
 	return normalization_factor_ * float3(tonemap_function(color[0]),
 										  tonemap_function(color[1]),
 										  tonemap_function(color[2]));

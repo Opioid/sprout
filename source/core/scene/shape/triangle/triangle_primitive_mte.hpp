@@ -26,7 +26,7 @@ struct Triangle_MTE {
 	float3 normal() const;
 
 	float area() const;
-	float area(float3_p scale) const;
+	float area(const float3& scale) const;
 };
 
 struct alignas(16) Intersection_triangle_MTE {
@@ -47,7 +47,7 @@ struct alignas(16) Intersection_triangle_MTE {
 	float3 normal() const;
 
 	float area() const;
-	float area(float3_p scale) const;
+	float area(const float3& scale) const;
 };
 
 struct alignas(16) Shading_triangle_MTE {

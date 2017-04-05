@@ -11,7 +11,7 @@ public:
 
 	virtual const Layer& base_layer() const final override;
 
-	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
 
 	virtual void sample(sampler::Sampler& sampler,
 						bxdf::Result& result) const final override;
@@ -29,12 +29,12 @@ public:
 	virtual bool is_translucent() const final override;
 
 	struct Base_layer : material::Sample::Layer {
-		void set(float3_p color_a, float3_p color_b, float a2);
+		void set(const float3& color_a, const float3& color_b, float a2);
 
-		float3 evaluate(float3_p wi, float3_p wo, float3_p h,
+		float3 evaluate(const float3& wi, const float3& wo, const float3& h,
 						float wo_dot_h, float& pdf) const;
 
-		void sample(float3_p wo, sampler::Sampler& sampler, bxdf::Result& result) const;
+		void sample(const float3& wo, sampler::Sampler& sampler, bxdf::Result& result) const;
 
 		float3 color_a_;
 		float3 color_b_;
@@ -43,12 +43,12 @@ public:
 	};
 
 	struct Flakes_layer : material::Sample::Layer {
-		void set(float3_p ior, float3_p absorption, float a2, float weight);
+		void set(const float3& ior, const float3& absorption, float a2, float weight);
 
-		float3 evaluate(float3_p wi, float3_p wo, float3_p h,
+		float3 evaluate(const float3& wi, const float3& wo, const float3& h,
 						float wo_dot_h, float3& fresnel_result, float& pdf) const;
 
-		void sample(float3_p wo, sampler::Sampler& sampler,
+		void sample(const float3& wo, sampler::Sampler& sampler,
 					float3& fresnel_result, bxdf::Result& result) const;
 
 		float3 ior_;

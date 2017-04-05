@@ -10,9 +10,9 @@ public:
 
 	float3 optical_depth(float length) const;
 
-	float3_p scattering() const;
+	const float3& scattering() const;
 
-	void set(float3_p absorption, float3_p scattering);
+	void set(const float3& absorption, const float3& scattering);
 
 private:
 

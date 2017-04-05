@@ -18,7 +18,7 @@ Emissionmap::Emissionmap(Sample_cache& sample_cache, const Sampler_settings& sam
 						 bool two_sided) :
 	light::Emissionmap(sample_cache, sampler_settings, two_sided) {}
 
-const material::Sample& Emissionmap::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Emissionmap::sample(const float3& wo, const Renderstate& rs,
 											const Worker& worker, Sampler_filter filter) {
 	auto& sample = sample_cache_.get<Sample>(worker.id());
 

@@ -4,8 +4,7 @@
 #include "base/random/generator.inl"
 #include "base/string/string.hpp"
 #include "base/math/print.hpp"
-#include "base/simd.hpp"
-#include "base/math/vector.inl"
+#include "base/simd/vector.inl"
 #include <iostream>
 
 namespace testing { namespace simd {
@@ -190,9 +189,9 @@ inline float3 simd_normalized_0(const float3& v) {
 inline float3 simd_normalized_1(const float3& v) {
 	Vector sx = load_float4(v);
 
-	Vector d = math::dot3(sx, sx);
+	Vector d = dot3(sx, sx);
 
-	Vector il = math::rsqrt(d);
+	Vector il = rsqrt(d);
 
 	float3 result;
 	store_float4(result, _mm_mul_ps(il, sx));
@@ -217,7 +216,7 @@ inline float3 simd_normalized_2(const float3& v) {
 
 	Vector d = _mm_dp_ps(sx, sx, 0x77);
 
-	Vector il = math::rsqrt(d);
+	Vector il = rsqrt(d);
 
 	float3 result;
 	store_float4(result, _mm_mul_ps(il, sx));
@@ -464,7 +463,7 @@ inline float simd_dot_0(const float3& a, const float3& b) {
 	Vector sa = load_float3(a);
 	Vector sb = load_float3(b);
 
-	Vector d = math::dot3(sa, sb);
+	Vector d = dot3(sa, sb);
 
 	float x;
 	_mm_store_ss(&x, d);
@@ -475,7 +474,7 @@ inline float simd_dot_1(const float3& a, const float3& b) {
 	Vector sa = load_float4(a);
 	Vector sb = load_float4(b);
 
-	Vector d = math::dot3_1(sa, sb);
+	Vector d = dot3_1(sa, sb);
 
 	return _mm_cvtss_f32(d);
 }
@@ -612,7 +611,7 @@ void dot() {
 	delete[] vectors;
 }
 
-inline float3 simd_min(float3_p a, float3_p b) {
+inline float3 simd_min(const float3& a, const float3& b) {
 	Vector sa = load_float3(a);
 	Vector sb = load_float3(b);
 
@@ -621,7 +620,7 @@ inline float3 simd_min(float3_p a, float3_p b) {
 	return result;
 }
 
-inline void simd_min2(float3& a, float3_p b) {
+inline void simd_min2(float3& a, const float3& b) {
 	Vector sa = load_float3(a);
 	Vector sb = load_float3(b);
 
@@ -629,7 +628,7 @@ inline void simd_min2(float3& a, float3_p b) {
 }
 
 void minmax() {
-	std::cout << "testing::simd::minmax()" << std::endl;
+	std::cout << "testing::minmax()" << std::endl;
 
 	rnd::Generator rng(456, 90, 2123, 4598743);
 

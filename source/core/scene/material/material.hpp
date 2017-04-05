@@ -43,12 +43,12 @@ public:
 
 	virtual void tick(float absolute_time, float time_slice);
 
-	virtual const Sample& sample(float3_p wo, const Renderstate& rs,
+	virtual const Sample& sample(const float3& wo, const Renderstate& rs,
 								 const Worker& worker, Sampler_filter filter) = 0;
 
 	virtual const BSSRDF& bssrdf(const Worker& worker);
 
-	virtual float3 sample_radiance(float3_p wi, float2 uv, float area, float time,
+	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
 								   const Worker& worker, Sampler_filter filter) const;
 
 	virtual float3 average_radiance(float area) const;
@@ -62,7 +62,7 @@ public:
 	virtual float opacity(float2 uv, float time, const Worker& worker,
 						  Sampler_filter filter) const;
 
-	virtual float3 thin_absorption(float3_p wo, float3_p n, float2 uv, float time,
+	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
 								   const Worker& worker, Sampler_filter filter) const;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,

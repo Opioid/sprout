@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base/math/vector3.hpp"
-#include "base/math/vector.hpp"
+#include "base/simd/simd.hpp"
 #include <vector>
 
 namespace scene { namespace shape {

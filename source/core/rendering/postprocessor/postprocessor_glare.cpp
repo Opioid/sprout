@@ -4,6 +4,7 @@
 #include "base/math/exp.hpp"
 #include "base/math/vector4.inl"
 #include "base/math/filter/gaussian.hpp"
+#include "base/simd/vector.inl"
 #include "base/spectrum/interpolated.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.hpp"
@@ -241,22 +242,15 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 					Vector k = load_float4(kernel_[ki]);
 					Vector h = load_float4(high_pass_[si]);
 
-					glare = math::add(glare, math::mul(k, h));
+					glare += k * h;
 				}
 			}
 
-			glare = math::mul(glare, intensity);
-		//	float3 r;
-		//	store_float4(r, glare);
+			glare *= intensity;
 
-		//	float4 s = source.load(i);
 			Vector s = load_float4(reinterpret_cast<float*>(source.address(i)));
-			s = math::add(s, glare);
-
+			s += glare;
 			store_float4(reinterpret_cast<float*>(destination.address(i)), s);
-
-		//	destination.at(i) = float4(s.xyz() + r, s[3]);
-
 		}
 	}
 }

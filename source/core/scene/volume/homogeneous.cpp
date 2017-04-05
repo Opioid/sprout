@@ -10,7 +10,7 @@ float3 Homogeneous::optical_depth(const math::Ray& ray, float /*step_size*/,
 	return ray.length() * (absorption_ + scattering_);
 }
 
-float3 Homogeneous::scattering(float3_p /*p*/, Worker& /*worker*/,
+float3 Homogeneous::scattering(const float3& /*p*/, Worker& /*worker*/,
 							   Sampler_filter /*filter*/) const {
 	return scattering_;
 }

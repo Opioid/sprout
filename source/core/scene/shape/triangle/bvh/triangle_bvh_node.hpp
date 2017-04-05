@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.hpp"
 //#include "base/math/ray.hpp"
-#include "base/simd.hpp"
+#include "base/simd/simd.hpp"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 

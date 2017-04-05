@@ -11,11 +11,11 @@ public:
 
 	Sky_material(scene::material::Sample_cache& sample_cache, Model& model);
 
-	virtual const scene::material::Sample& sample(float3_p wo, const scene::Renderstate& rs,
+	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
 												  const scene::Worker& worker,
 												  Sampler_filter filter) final override;
 
-	virtual float3 sample_radiance(float3_p wi, float2 uv, float area,
+	virtual float3 sample_radiance(const float3& wi, float2 uv, float area,
 								   float time, const scene::Worker& worker,
 								   Sampler_filter filter) const final override;
 
@@ -35,11 +35,11 @@ public:
 
 	Sky_baked_material(scene::material::Sample_cache& sample_cache, Model& model);
 
-	virtual const scene::material::Sample& sample(float3_p wo, const scene::Renderstate& rs,
+	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
 												  const scene::Worker& worker,
 												  Sampler_filter filter) final override;
 
-	virtual float3 sample_radiance(float3_p wi, float2 uv, float area,
+	virtual float3 sample_radiance(const float3& wi, float2 uv, float area,
 								   float time, const scene::Worker& worker,
 								   Sampler_filter filter) const final override;
 

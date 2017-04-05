@@ -60,7 +60,7 @@ private:
 
 	float3 resolve_transmission(Worker& worker, Ray& ray,
 								Intersection& intersection,
-								float3_p attenuation,
+								const float3& attenuation,
 								Sampler_filter filter,
 								Bxdf_result& sample_result);
 

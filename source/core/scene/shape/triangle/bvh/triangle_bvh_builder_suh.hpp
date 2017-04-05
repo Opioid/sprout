@@ -24,7 +24,7 @@ private:
 
 		using index = std::vector<uint32_t>::iterator;
 
-		Split_candidate(uint8_t bb_axis, uint8_t split_axis, float3_p p,
+		Split_candidate(uint8_t bb_axis, uint8_t split_axis, const float3& p,
 						index begin, index end,
 						const std::vector<Index_triangle>& triangles,
 						const std::vector<Vertex>& vertices);

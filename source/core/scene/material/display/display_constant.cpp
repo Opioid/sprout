@@ -18,7 +18,7 @@ Constant::Constant(Sample_cache& sample_cache, const Sampler_settings& sampler_s
 				   bool two_sided) :
 	material::Material(sample_cache, sampler_settings, two_sided) {}
 
-const material::Sample& Constant::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Constant::sample(const float3& wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter /*filter*/) {
 	auto& sample = sample_cache_.get<Sample>(worker.id());
 
@@ -31,7 +31,7 @@ const material::Sample& Constant::sample(float3_p wo, const Renderstate& rs,
 	return sample;
 }
 
-float3 Constant::sample_radiance(float3_p /*wi*/, float2 /*uv*/, float /*area*/,
+float3 Constant::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/,
 								 float /*time*/, const Worker& /*worker*/,
 								 Sampler_filter /*filter*/) const {
 	return emission_;
@@ -45,7 +45,7 @@ size_t Constant::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Constant::set_emission(float3_p radiance) {
+void Constant::set_emission(const float3& radiance) {
 	emission_ = radiance;
 }
 

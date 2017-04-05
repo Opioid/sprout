@@ -40,7 +40,7 @@ Builder_SAH2::Build_node::~Build_node() {
 	delete children[1];
 }
 
-Builder_SAH2::Split_candidate::Split_candidate(uint8_t split_axis, float3_p p, bool spatial) :
+Builder_SAH2::Split_candidate::Split_candidate(uint8_t split_axis, const float3& p, bool spatial) :
 	aabb_0_(math::AABB::empty()),
 	aabb_1_(math::AABB::empty()),
 	d_(p.v[split_axis]),
@@ -245,13 +245,13 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 	if (num_triangles <= sweep_threshold_) {
 		for (const auto& r : references) {
-			float3_p max(r.bounds[1].v);
+			const float3& max(r.bounds[1].v);
 			split_candidates_.emplace_back(X, max, false);
 			split_candidates_.emplace_back(Y, max, false);
 			split_candidates_.emplace_back(Z, max, false);
 		}
 	} else {
-		float3_p min = aabb.min();
+		const float3& min = aabb.min();
 
 		float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {

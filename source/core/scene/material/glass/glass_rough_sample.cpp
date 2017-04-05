@@ -16,7 +16,7 @@ const material::Sample::Layer& Sample_rough::base_layer() const {
 	return layer_;
 }
 
-float3 Sample_rough::evaluate(float3_p wi, float& pdf) const {
+float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		// only handling reflection for now
 		pdf = 0.f;
@@ -96,7 +96,7 @@ bool Sample_rough::is_translucent() const {
 	return false;
 }
 
-void Sample_rough::Layer::set(float3_p refraction_color, float3_p absorption_color,
+void Sample_rough::Layer::set(const float3& refraction_color, const float3& absorption_color,
 							  float attenuation_distance, float ior,
 							  float ior_outside, float a_a2) {
 	color_ = refraction_color;

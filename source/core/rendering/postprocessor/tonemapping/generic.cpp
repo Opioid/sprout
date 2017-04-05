@@ -21,7 +21,7 @@ Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, fl
 	c_ = (hdrm_pow_ad * midi_pow_a - hdrm_pow_a * v) / u;
 }
 
-float3 Generic::tonemap(float3_p color) const {
+float3 Generic::tonemap(const float3& color) const {
 //	float peak = math::max_element(color);
 
 //	float3 ratio = color / peak;

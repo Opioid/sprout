@@ -2,6 +2,7 @@
 
 #include "triangle_bvh_node.hpp"
 #include "base/math/vector3.inl"
+#include "base/simd/vector.inl"
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -74,26 +75,24 @@ inline bool Node::intersect_p(const math::Ray& ray) const {
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
 inline bool Node::intersect_p(FVector ray_origin, FVector ray_inv_direction,
 							  FVector ray_min_t, FVector ray_max_t) const {
-	using namespace math;
-
 	const Vector bb_min = load_float3(min_.v/*bounds[0]*/);
 	const Vector bb_max = load_float3(max_.v/*bounds[1]*/);
 
-	const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
-	const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
+	const Vector l1 = (bb_min - ray_origin) * ray_inv_direction;
+	const Vector l2 = (bb_max - ray_origin) * ray_inv_direction;
 
 	// the order we use for those min/max is vital to filter out
 	// NaNs that happens when an inv_dir is +/- inf and
 	// (box_min - pos) is 0. inf * 0 = NaN
-	const Vector filtered_l1a = math::min(l1, simd::Infinity);
-	const Vector filtered_l2a = math::min(l2, simd::Infinity);
+	const Vector filtered_l1a = ::min(l1, simd::Infinity);
+	const Vector filtered_l2a = ::min(l2, simd::Infinity);
 
-	const Vector filtered_l1b = math::max(l1, simd::NegInfinity);
-	const Vector filtered_l2b = math::max(l2, simd::NegInfinity);
+	const Vector filtered_l1b = ::max(l1, simd::NegInfinity);
+	const Vector filtered_l2b = ::max(l2, simd::NegInfinity);
 
 	// now that we're back on our feet, test those slabs.
-	Vector max_t = math::max(filtered_l1a, filtered_l2a);
-	Vector min_t = math::min(filtered_l1b, filtered_l2b);
+	Vector max_t = ::max(filtered_l1a, filtered_l2a);
+	Vector min_t = ::min(filtered_l1b, filtered_l2b);
 
 	// unfold back. try to hide the latency of the shufps & co.
 	max_t = min1(max_t, SU_ROTATE_LEFT(max_t));

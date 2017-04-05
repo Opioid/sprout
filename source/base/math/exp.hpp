@@ -1,6 +1,6 @@
 #pragma once
 
-#include "simd.inl"
+#include "simd/simd.inl"
 
 namespace simd {
 

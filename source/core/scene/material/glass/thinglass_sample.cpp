@@ -16,7 +16,7 @@ const material::Sample::Layer& Sample_thin::base_layer() const {
 	return layer_;
 }
 
-float3 Sample_thin::evaluate(float3_p /*wi*/, float& pdf) const {
+float3 Sample_thin::evaluate(const float3& /*wi*/, float& pdf) const {
 	pdf = 0.f;
 	return float3::identity();
 }
@@ -57,7 +57,7 @@ bool Sample_thin::is_translucent() const {
 	return true;
 }
 
-void Sample_thin::Layer::set(float3_p refraction_color, float3_p absorption_color,
+void Sample_thin::Layer::set(const float3& refraction_color, const float3& absorption_color,
 							 float attenuation_distance, float ior, float ior_outside,
 							 float thickness) {
 	color_ = refraction_color;

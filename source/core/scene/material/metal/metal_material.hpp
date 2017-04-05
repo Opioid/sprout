@@ -11,7 +11,7 @@ public:
 	Material_isotropic(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
 					   bool two_sided);
 
-	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
+	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
@@ -19,8 +19,8 @@ public:
 
 	void set_normal_map(const Texture_adapter& normal_map);
 
-	void set_ior(float3_p ior);
-	void set_absorption(float3_p absorption);
+	void set_ior(const float3& ior);
+	void set_absorption(const float3& absorption);
 	void set_roughness(float roughness);
 
 protected:
@@ -40,7 +40,7 @@ public:
 	Material_anisotropic(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
 						 bool two_sided);
 
-	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
+	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_settings::Filter filter) final override;
 
@@ -49,8 +49,8 @@ public:
 	void set_normal_map(const Texture_adapter& normal_map);
 	void set_direction_map(const Texture_adapter& direction_map);
 
-	void set_ior(float3_p ior);
-	void set_absorption(float3_p absorption);
+	void set_ior(const float3& ior);
+	void set_absorption(const float3& absorption);
 	void set_roughness(float2 roughness);
 
 protected:

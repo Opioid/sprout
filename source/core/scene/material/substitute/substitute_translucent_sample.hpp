@@ -9,14 +9,14 @@ class Sample_translucent : public Sample_base<disney::Isotropic> {
 
 public:
 
-	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
 
 	virtual void sample(sampler::Sampler& sampler,
 						bxdf::Result& result) const final override;
 
 	virtual bool is_translucent() const final override;
 
-	void set(float3_p diffuse_color, float thickness, float attenuation_distance);
+	void set(const float3& diffuse_color, float thickness, float attenuation_distance);
 
 private:
 

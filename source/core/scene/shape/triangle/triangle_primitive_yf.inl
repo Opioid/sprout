@@ -122,7 +122,7 @@ inline float3 Triangle_YF::normal() const {
 	return math::normalized(n);
 }
 
-inline float Triangle_YF::area(float3_p scale) const {
+inline float Triangle_YF::area(const float3& scale) const {
 	float3 sa = scale * a.p;
 	float3 sb = scale * b.p;
 	float3 sc = scale * c.p;

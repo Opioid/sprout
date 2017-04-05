@@ -15,7 +15,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
 }
 
-float3 Sample::evaluate(float3_p /*wi*/, float& pdf) const {
+float3 Sample::evaluate(const float3& /*wi*/, float& pdf) const {
 	pdf = 0.f;
 	return float3::identity();
 }
@@ -56,7 +56,7 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::Layer::set(float3_p refraction_color, float3_p absorption_color,
+void Sample::Layer::set(const float3& refraction_color, const float3& absorption_color,
 						float attenuation_distance, float ior, float ior_outside) {
 	color_ = refraction_color;
 	attenuation_ = material::Sample::attenuation(absorption_color, attenuation_distance);

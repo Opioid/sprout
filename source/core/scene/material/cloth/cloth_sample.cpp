@@ -13,7 +13,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
 }
 
-float3 Sample::evaluate(float3_p wi, float& pdf) const {
+float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	float n_dot_wi = layer_.clamped_n_dot(wi);
 	pdf = n_dot_wi * math::Pi_inv;
 	return pdf * layer_.diffuse_color;
@@ -54,7 +54,7 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::Layer::set(float3_p color) {
+void Sample::Layer::set(const float3& color) {
 	this->diffuse_color = color;
 }
 

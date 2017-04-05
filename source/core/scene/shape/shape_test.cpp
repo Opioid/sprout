@@ -17,7 +17,7 @@ namespace scene { namespace shape { namespace testing {
 
 void print(const Intersection& intersection);
 
-void print_vector(float3_p v);
+void print_vector(const float3& v);
 
 bool check(const Intersection& intersection,
 		   const entity::Composed_transformation& /*transformation*/,
@@ -104,7 +104,7 @@ void print(const Intersection& intersection) {
 	std::cout << "uv: " << intersection.uv << std::endl;
 }
 
-void print_vector(float3_p v) {
+void print_vector(const float3& v) {
 	std::cout << v << " |" << math::length(v) << "|" << std::endl;
 }
 

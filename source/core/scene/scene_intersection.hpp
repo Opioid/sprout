@@ -40,17 +40,17 @@ struct Intersection {
 
 	float opacity(const Worker& worker, float time, Sampler_filter filter) const;
 
-	float3 thin_absorption(const Worker& worker, float3_p wo,
+	float3 thin_absorption(const Worker& worker, const float3& wo,
 						   float time, Sampler_filter filter) const;
 
-	const material::Sample& sample(const Worker& worker, float3_p wo,
+	const material::Sample& sample(const Worker& worker, const float3& wo,
 								   float time, Sampler_filter filter) const;
 
 	const material::BSSRDF& bssrdf(const Worker& worker) const {
 		return material()->bssrdf(worker);
 	}
 
-	bool same_hemisphere(float3_p v) const {
+	bool same_hemisphere(const float3& v) const {
 		return math::dot(geo.geo_n, v) > 0.f;
 	}
 

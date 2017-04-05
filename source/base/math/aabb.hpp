@@ -3,7 +3,7 @@
 #include "math/vector3.hpp"
 #include "math/matrix4x4.hpp"
 #include "math/ray.hpp"
-#include "math/vector.hpp"
+#include "simd/vector.hpp"
 
 namespace math {
 
@@ -12,11 +12,11 @@ class AABB {
 public:
 
 	AABB() = default;
-	constexpr AABB(FVector3f_a min, FVector3f_a max);
+	constexpr AABB(const Vector3f_a& min, const Vector3f_a& max);
 	AABB(FVector min, FVector max);
 
-	FVector3f_a min() const;
-	FVector3f_a max() const;
+	const Vector3f_a& min() const;
+	const Vector3f_a& max() const;
 
 	Vector3f_a position() const;
 	Vector3f_a halfsize() const;
@@ -24,15 +24,15 @@ public:
 	float surface_area() const;
 	float volume() const;
 
-	bool intersect(FVector3f_a p) const;
+	bool intersect(const Vector3f_a& p) const;
 
 	bool intersect_p(const Ray& ray) const;
 	bool intersect_p(const Ray& ray, float& min_t, float& max_t) const;
 
-	void set_min_max(FVector3f_a min, FVector3f_a max);
+	void set_min_max(const Vector3f_a& min, const Vector3f_a& max);
 	void set_min_max(FVector min, FVector max);
 
-	void insert(FVector3f_a p);
+	void insert(const Vector3f_a& p);
 
 	AABB transform(const Matrix4x4f_a& m) const;
 

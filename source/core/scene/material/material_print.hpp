@@ -6,7 +6,7 @@
 
 namespace scene { namespace material {
 
-inline void print(float3_p reflection, float pdf) {
+inline void print(const float3& reflection, float pdf) {
 	std::cout << "reflection " << reflection << std::endl;
 	std::cout << "pdf " << pdf << std::endl;
 }

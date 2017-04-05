@@ -14,8 +14,8 @@ namespace scene { namespace material { namespace substitute {
 namespace testing {
 
 struct Setup {
-	void test(float3_p wi, float3_p wo,
-			  float3_p t, float3_p b, float3_p n,
+	void test(const float3& wi, const float3& wo,
+			  const float3& t, const float3& b, const float3& n,
 			  sampler::Sampler& sampler);
 
 	float3 color	  = float3(1.f);
@@ -117,8 +117,8 @@ void test() {
 	*/
 }
 
-void Setup::test(float3_p wi, float3_p wo,
-				 float3_p t, float3_p b, float3_p n,
+void Setup::test(const float3& wi, const float3& wo,
+				 const float3& t, const float3& b, const float3& n,
 				 sampler::Sampler& sampler) {
 	Sample sample;
 

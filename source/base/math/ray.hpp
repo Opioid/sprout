@@ -6,7 +6,7 @@ namespace math {
 
 struct Ray {
 	Ray() = default;
-	Ray(FVector3f_a origin, FVector3f_a direction,
+	Ray(const Vector3f_a& origin, const Vector3f_a& direction,
 		float min_t = 0.f, float max_t = 1.f) :
 		origin(origin),
 		direction(direction),
@@ -18,7 +18,7 @@ struct Ray {
 		signs[2] = inv_direction[2] < 0.f ? 1 : 0;
 	}
 
-	void set_direction(FVector3f_a v) {
+	void set_direction(const Vector3f_a& v) {
 		direction = v;
 		inv_direction = reciprocal(v);
 

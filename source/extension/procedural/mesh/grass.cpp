@@ -83,7 +83,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 														 manager.thread_pool());
 }
 
-void Grass::add_blade(float3_p offset,
+void Grass::add_blade(const float3& offset,
 					  float rotation_y, float lean_factor, float width, float height,
 					  uint32_t vertex_offset,
 					  std::vector<scene::shape::triangle::Index_triangle>& triangles,

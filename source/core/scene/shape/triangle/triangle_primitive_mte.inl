@@ -106,7 +106,7 @@ inline float Triangle_MTE::area() const {
 	return 0.5f * math::length(math::cross(e1, e2));
 }
 
-inline float Triangle_MTE::area(float3_p scale) const {
+inline float Triangle_MTE::area(const float3& scale) const {
 	return 0.5f * math::length(math::cross(scale * e1, scale * e2));
 }
 
@@ -192,7 +192,7 @@ inline float Intersection_triangle_MTE::area() const {
 	return 0.5f * math::length(math::cross(e1, e2));
 }
 
-inline float Intersection_triangle_MTE::area(float3_p scale) const {
+inline float Intersection_triangle_MTE::area(const float3& scale) const {
 	return 0.5f * math::length(math::cross(scale * e1, scale * e2));
 }
 

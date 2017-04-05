@@ -9,7 +9,7 @@ Volume::Volume() :
 	local_aabb_(float3(-1.f), float3(1.f)),
 	absorption_(0.f), scattering_(0.f), anisotropy_(0.f) {}
 
-float Volume::phase(float3_p w, float3_p wp) const {
+float Volume::phase(const float3& w, const float3& wp) const {
 	float g = anisotropy_;
 	float k = 1.55f * g - 0.55f * g * g * g;
 	return phase_schlick(w, wp, k);
@@ -41,7 +41,7 @@ void Volume::on_set_transformation() {
 	aabb_ = local_aabb_.transform(world_transformation_.object_to_world);
 }
 
-float Volume::phase_schlick(float3_p w, float3_p wp, float k) {
+float Volume::phase_schlick(const float3& w, const float3& wp, float k) {
 	float d = 1.f - (k * math::dot(w, wp));
 	return 1.f / (4.f * math::Pi) * (1.f - k * k) / (d * d);
 }

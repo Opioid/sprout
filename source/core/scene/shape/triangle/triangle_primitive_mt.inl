@@ -3,7 +3,7 @@
 #include "triangle_primitive_mt.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/ray.hpp"
-#include "base/math/vector.inl"
+#include "base/simd/vector.inl"
 
 #include <iostream>
 
@@ -131,7 +131,7 @@ inline float Triangle_MT::area() const {
 	return 0.5f * math::length(math::cross(b.p - a.p, c.p - a.p));
 }
 
-inline float Triangle_MT::area(float3_p scale) const {
+inline float Triangle_MT::area(const float3& scale) const {
 	float3 sa = scale * a.p;
 	float3 sb = scale * b.p;
 	float3 sc = scale * c.p;
@@ -354,7 +354,7 @@ static inline float area(const Intersection_vertex_MT& a,
 static inline float area(const Intersection_vertex_MT& a,
 						 const Intersection_vertex_MT& b,
 						 const Intersection_vertex_MT& c,
-						 float3_p scale) {
+						 const float3& scale) {
 	const float3 sa = scale * a.p;
 	const float3 sb = scale * b.p;
 	const float3 sc = scale * c.p;
@@ -406,7 +406,7 @@ static inline float2 interpolate_uv(FVector u, FVector v,
 									const Shading_vertex_MTC& a,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c) {
-	const Vector w = math::sub(math::sub(simd::One, u), v);
+	const Vector w = sub(sub(simd::One, u), v);
 
 	const float3 auv(a.n_u[3], a.t_v[3], 0.f);
 	Vector va = load_float4(auv);
@@ -414,15 +414,15 @@ static inline float2 interpolate_uv(FVector u, FVector v,
 	const float3 buv(b.n_u[3], b.t_v[3], 0.f);
 	Vector vb = load_float4(buv);
 
-	va = math::mul(w, va);
-	vb = math::mul(u, vb);
-	va = math::add(va, vb);
+	va = mul(w, va);
+	vb = mul(u, vb);
+	va = add(va, vb);
 
 	const float3 cuv(c.n_u[3], c.t_v[3], 0.f);
 	Vector vc = load_float4(cuv);
 
-	vc = math::mul(v, vc);
-	Vector uv = math::add(va, vc);
+	vc = mul(v, vc);
+	Vector uv = add(va, vc);
 
 	float3 r;
 	store_float4(r.v, uv);
@@ -450,24 +450,24 @@ static inline void interpolate_data(FVector u, FVector v,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,
 									float3& n, float3& t, float2& tc) {
-	const Vector w = math::sub(math::sub(simd::One, u), v);
+	const Vector w = sub(sub(simd::One, u), v);
 
-	Vector va = math::mul(w, load_float4(a.n_u));
-	Vector vb = math::mul(u, load_float4(b.n_u));
-	va = math::add(va, vb);
-	Vector vc = math::mul(v, load_float4(c.n_u));
-	Vector v0 = math::add(va, vc);
+	Vector va = mul(w, load_float4(a.n_u));
+	Vector vb = mul(u, load_float4(b.n_u));
+	va = add(va, vb);
+	Vector vc = mul(v, load_float4(c.n_u));
+	Vector v0 = add(va, vc);
 
-	Vector vn = math::normalized3(v0);
+	Vector vn = normalized3(v0);
 	store_float4(n, vn);
 
-	va = math::mul(w, load_float4(a.t_v));
-	vb = math::mul(u, load_float4(b.t_v));
-	va = math::add(va, vb);
-	vc = math::mul(v, load_float4(c.t_v));
-	Vector v1 = math::add(va, vc);
+	va = mul(w, load_float4(a.t_v));
+	vb = mul(u, load_float4(b.t_v));
+	va = add(va, vb);
+	vc = mul(v, load_float4(c.t_v));
+	Vector v1 = add(va, vc);
 
-	Vector vt = math::normalized3(v1);
+	Vector vt = normalized3(v1);
 	store_float4(t, vt);
 
 	v0 = SU_MUX_HIGH(v0, v1);
@@ -482,23 +482,23 @@ static inline void interpolate_data(FVector u, FVector v,
 									const Shading_vertex_MTC& b,
 									const Shading_vertex_MTC& c,
 									Vector& n, Vector& t, float2& tc) {
-	const Vector w = math::sub(math::sub(simd::One, u), v);
+	const Vector w = sub(sub(simd::One, u), v);
 
-	Vector va = math::mul(w, load_float4(a.n_u));
-	Vector vb = math::mul(u, load_float4(b.n_u));
-	va = math::add(va, vb);
-	Vector vc = math::mul(v, load_float4(c.n_u));
-	Vector v0 = math::add(va, vc);
+	Vector va = mul(w, load_float4(a.n_u));
+	Vector vb = mul(u, load_float4(b.n_u));
+	va = add(va, vb);
+	Vector vc = mul(v, load_float4(c.n_u));
+	Vector v0 = add(va, vc);
 
-	n = math::normalized3(v0);
+	n = normalized3(v0);
 
-	va = math::mul(w, load_float4(a.t_v));
-	vb = math::mul(u, load_float4(b.t_v));
-	va = math::add(va, vb);
-	vc = math::mul(v, load_float4(c.t_v));
-	Vector v1 = math::add(va, vc);
+	va = mul(w, load_float4(a.t_v));
+	vb = mul(u, load_float4(b.t_v));
+	va = add(va, vb);
+	vc = mul(v, load_float4(c.t_v));
+	Vector v1 = add(va, vc);
 
-	t = math::normalized3(v1);
+	t = normalized3(v1);
 
 	v0 = SU_MUX_HIGH(v0, v1);
 	float4 r;
@@ -522,7 +522,7 @@ inline float4 snorm16_to_float(short4 v) {
 				  xnorm_to_float(v[3]));
 }
 
-inline short4 float_to_snorm16(float3_p v, float s) {
+inline short4 float_to_snorm16(const float3& v, float s) {
 	return short4(encoding::float_to_snorm16(v[0]),
 				  encoding::float_to_snorm16(v[1]),
 				  encoding::float_to_snorm16(v[2]),
@@ -728,7 +728,7 @@ inline float area(const Vertex_MTC& a,
 inline float area(const Vertex_MTC& a,
 				  const Vertex_MTC& b,
 				  const Vertex_MTC& c,
-				  float3_p scale) {
+				  const float3& scale) {
 	float3 sa = scale * a.p;
 	float3 sb = scale * b.p;
 	float3 sc = scale * c.p;

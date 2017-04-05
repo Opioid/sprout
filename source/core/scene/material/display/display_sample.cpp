@@ -11,7 +11,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
 }
 
-float3 Sample::evaluate(float3_p wi, float& pdf) const {
+float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
 		return float3::identity();
@@ -70,7 +70,7 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::Layer::set(float3_p radiance, float f0, float roughness) {
+void Sample::Layer::set(const float3& radiance, float f0, float roughness) {
 	emission_ = radiance;
 	f0_ = float3(f0);
 	a2_ = math::pow4(roughness);

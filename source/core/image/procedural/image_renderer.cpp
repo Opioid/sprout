@@ -19,7 +19,7 @@ Renderer::~Renderer() {
 	delete[] samples_;
 }
 
-void Renderer::set_brush(float3_p color) {
+void Renderer::set_brush(const float3& color) {
 	brush_ = float4(color, 1.f);
 }
 

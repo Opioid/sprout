@@ -33,7 +33,7 @@ int2 Texture::back_2() const {
 	return back_.xy();
 }
 
-int3 Texture::back_3() const {
+const int3& Texture::back_3() const {
 	return back_;
 }
 
@@ -41,7 +41,7 @@ float2 Texture::dimensions_float2() const {
 	return dimensions_float_.xy();
 }
 
-float3 Texture::dimensions_float3() const {
+const float3& Texture::dimensions_float3() const {
 	return dimensions_float_;
 }
 

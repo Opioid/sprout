@@ -13,15 +13,15 @@ class Sample {
 public:
 
 	struct Layer {
-		void set_tangent_frame(float3_p t, float3_p b, float3_p n);
-		void set_tangent_frame(float3_p n);
+		void set_tangent_frame(const float3& t, const float3& b, const float3& n);
+		void set_tangent_frame(const float3& n);
 
-		float clamped_n_dot(float3_p v) const;
-		float reversed_clamped_n_dot(float3_p v) const;
+		float clamped_n_dot(const float3& v) const;
+		float reversed_clamped_n_dot(const float3& v) const;
 
-		float3_p shading_normal() const;
+		const float3& shading_normal() const;
 
-		float3 tangent_to_world(float3_p v) const;
+		float3 tangent_to_world(const float3& v) const;
 
 		float3 t_;
 		float3 b_;
@@ -30,7 +30,7 @@ public:
 
 	virtual const Layer& base_layer() const = 0;
 
-	virtual float3 evaluate(float3_p wi, float& pdf) const = 0;
+	virtual float3 evaluate(const float3& wi, float& pdf) const = 0;
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
 
@@ -46,22 +46,22 @@ public:
 
 	virtual bool is_translucent() const = 0;
 
-	float clamped_geo_n_dot(float3_p v) const;
-	float reversed_clamped_geo_n_dot(float3_p v) const;
+	float clamped_geo_n_dot(const float3& v) const;
+	float reversed_clamped_geo_n_dot(const float3& v) const;
 
-	float3_p geometric_normal() const;
+	const float3& geometric_normal() const;
 
-	bool same_hemisphere(float3_p v) const;
+	bool same_hemisphere(const float3& v) const;
 
-	void set_basis(float3_p geo_n, float3_p wo);
+	void set_basis(const float3& geo_n, const float3& wo);
 
-	static float3 attenuation(float3_p color, float distance);
+	static float3 attenuation(const float3& color, float distance);
 
-	static float clamped_dot(float3_p a, float3_p b);
+	static float clamped_dot(const float3& a, const float3& b);
 
-	static float reversed_clamped_dot(float3_p a, float3_p b);
+	static float reversed_clamped_dot(const float3& a, const float3& b);
 
-	static float absolute_clamped_dot(float3_p a, float3_p b);
+	static float absolute_clamped_dot(const float3& a, const float3& b);
 
 // protected:
 

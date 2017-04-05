@@ -12,13 +12,13 @@ public:
 								 rnd::Generator& rng, Worker& worker,
 								 Sampler_filter filter) const override;
 
-	virtual float3 scattering(float3_p p, Worker& worker,
+	virtual float3 scattering(const float3& p, Worker& worker,
 							  Sampler_filter filter) const final override;
 
 protected:
 
 	// expects p in object space!
-	virtual float density(float3_p p, Worker& worker, Sampler_filter filter) const = 0;
+	virtual float density(const float3& p, Worker& worker, Sampler_filter filter) const = 0;
 
 private:
 

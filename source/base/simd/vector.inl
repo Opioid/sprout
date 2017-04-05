@@ -2,9 +2,6 @@
 
 #include "vector.hpp"
 #include "simd.inl"
-#include "vector4.inl"
-
-namespace math {
 
 /****************************************************************************
  *
@@ -44,6 +41,15 @@ static inline Vector SU_CALLCONV add(FVector a, FVector b) {
 	return _mm_add_ps(a, b);
 }
 
+static inline Vector SU_CALLCONV operator+(FVector a, FVector b) {
+	return _mm_add_ps(a, b);
+}
+
+static inline Vector& SU_CALLCONV operator+=(Vector& a, FVector b) {
+	a = _mm_add_ps(a, b);
+	return a;
+}
+
 static inline float SU_CALLCONV horizontal_sum(FVector a) {
 //	Vector t = _mm_hadd_ps(a, a);
 //	t = _mm_hadd_ps(t, t);
@@ -62,11 +68,28 @@ static inline Vector SU_CALLCONV sub(FVector a, FVector b) {
 	return _mm_sub_ps(a, b);
 }
 
+static inline Vector SU_CALLCONV operator-(FVector a, FVector b) {
+	return _mm_sub_ps(a, b);
+}
+
 static inline Vector SU_CALLCONV mul(FVector a, FVector b) {
 	return _mm_mul_ps(a, b);
 }
 
+static inline Vector SU_CALLCONV operator*(FVector a, FVector b) {
+	return _mm_mul_ps(a, b);
+}
+
+static inline Vector& SU_CALLCONV operator*=(Vector& a, FVector b) {
+	a = _mm_mul_ps(a, b);
+	return a;
+}
+
 static inline Vector SU_CALLCONV div(FVector a, FVector b) {
+	return _mm_div_ps(a, b);
+}
+
+static inline Vector SU_CALLCONV operator/(FVector a, FVector b) {
 	return _mm_div_ps(a, b);
 }
 
@@ -138,6 +161,4 @@ static inline Vector SU_CALLCONV max(FVector a, FVector b) {
 
 static inline Vector SU_CALLCONV splat_x(FVector v) {
 	return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
-}
-
 }

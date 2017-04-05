@@ -1,8 +1,8 @@
 #pragma once
 
 #include "base/math/vector3.hpp"
+#include "base/simd/simd.hpp"
 #include "base/math/ray.hpp"
-#include "base/math/vector.hpp"
 #include <vector>
 
 namespace scene { namespace shape {
@@ -51,7 +51,7 @@ public:
 	Vector normal_v(uint32_t index) const;
 
 	float area(uint32_t index) const;
-	float area(uint32_t index, float3_p scale) const;
+	float area(uint32_t index, const float3& scale) const;
 
 	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 
@@ -112,7 +112,7 @@ public:
 	float3 normal(uint32_t index) const;
 
 	float area(uint32_t index) const;
-	float area(uint32_t index, float3_p scale) const;
+	float area(uint32_t index, const float3& scale) const;
 
 	void sample(uint32_t index, float2 r2, float3& p, float2& tc) const;
 

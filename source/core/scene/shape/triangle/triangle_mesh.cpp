@@ -9,10 +9,10 @@
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "sampler/sampler.hpp"
-#include "base/math/matrix.inl"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/distribution/distribution_1d.inl"
+#include "base/simd/matrix.inl"
 
 namespace scene { namespace shape { namespace triangle {
 
@@ -87,7 +87,7 @@ bool Mesh::intersect(const Transformation& transformation, Ray& ray,
 		Vector geo_n_w = math::transform_vector(rotation, geo_n);
 		Vector n_w	   = math::transform_vector(rotation, n);
 		Vector t_w	   = math::transform_vector(rotation, t);
-		Vector b_w	   = math::mul(bitangent_sign, math::cross3(n_w, t_w));
+		Vector b_w	   = mul(bitangent_sign, cross3(n_w, t_w));
 
 		intersection.p = p_w;
 		store_float4(intersection.t, t_w);
@@ -141,7 +141,7 @@ float3 Mesh::thin_absorption(const Transformation& transformation, const Ray& ra
 }
 
 void Mesh::sample(uint32_t part, const Transformation& transformation,
-				  float3_p p, float3_p /*n*/, float area, bool two_sided,
+				  const float3& p, const float3& /*n*/, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& node_stack, Sample& sample) const {
 	Mesh::sample(part, transformation, p, area, two_sided,
@@ -149,7 +149,7 @@ void Mesh::sample(uint32_t part, const Transformation& transformation,
 }
 
 void Mesh::sample(uint32_t part, const Transformation& transformation,
-				  float3_p p, float area, bool two_sided,
+				  const float3& p, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
 	float r = sampler.generate_sample_1D(sampler_dimension);
@@ -187,7 +187,7 @@ void Mesh::sample(uint32_t part, const Transformation& transformation,
 }
 
 float Mesh::pdf(uint32_t part, const Transformation& transformation,
-				float3_p p, float3_p wi, float area, bool two_sided,
+				const float3& p, const float3& wi, float area, bool two_sided,
 				bool /*total_sphere*/, Node_stack& node_stack) const {
 	math::Ray ray;
 	ray.origin = math::transform_point(p, transformation.world_to_object);
@@ -223,11 +223,11 @@ float Mesh::pdf(uint32_t part, const Transformation& transformation,
 }
 
 void Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float3_p /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
+				  const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
 				  Sample& /*sample*/) const {}
 
 float Mesh::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float3_p /*p*/, float3_p /*wi*/, float /*area*/, bool /*two_sided*/,
+				   const float3& /*p*/, const float3& /*wi*/, float /*area*/, bool /*two_sided*/,
 				   float2& /*uv*/) const {
 	return 1.f;
 }
@@ -236,7 +236,7 @@ float Mesh::uv_weight(float2 /*uv*/) const {
 	return 1.f;
 }
 
-float Mesh::area(uint32_t part, float3_p scale) const {
+float Mesh::area(uint32_t part, const float3& scale) const {
 	// HACK: This only really works for uniform scales!
 	return distributions_[part].distribution.integral() * scale[0] * scale[1];
 }

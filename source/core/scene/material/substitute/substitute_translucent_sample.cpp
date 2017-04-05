@@ -11,7 +11,7 @@
 
 namespace scene { namespace material { namespace substitute {
 
-float3 Sample_translucent::evaluate(float3_p wi, float& pdf) const {
+float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
 		return float3::identity();
@@ -94,7 +94,7 @@ bool Sample_translucent::is_translucent() const {
 	return thickness_ > 0.f;
 }
 
-void Sample_translucent::set(float3_p diffuse_color, float thickness, float attenuation_distance) {
+void Sample_translucent::set(const float3& diffuse_color, float thickness, float attenuation_distance) {
 	thickness_ = thickness;
 
 	if (thickness > 0.f) {

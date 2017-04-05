@@ -8,37 +8,37 @@
 namespace image { namespace texture { namespace sampler {
 
 template<typename Address_mode>
-float Nearest_3D<Address_mode>::sample_1(const Texture& texture, float3_p uvw) const {
+float Nearest_3D<Address_mode>::sample_1(const Texture& texture, const float3& uvw) const {
 	const int3 xyz = map(texture, uvw);
 
 	return texture.at_1(xyz[0], xyz[1], xyz[2]);
 }
 
 template<typename Address_mode>
-float2 Nearest_3D<Address_mode>::sample_2(const Texture& texture, float3_p uvw) const {
+float2 Nearest_3D<Address_mode>::sample_2(const Texture& texture, const float3& uvw) const {
 	const int3 xyz = map(texture, uvw);
 
 	return texture.at_2(xyz[0], xyz[1], xyz[2]);
 }
 
 template<typename Address_mode>
-float3 Nearest_3D<Address_mode>::sample_3(const Texture& texture, float3_p uvw) const {
+float3 Nearest_3D<Address_mode>::sample_3(const Texture& texture, const float3& uvw) const {
 	const int3 xyz = map(texture, uvw);
 
 	return texture.at_3(xyz[0], xyz[1], xyz[2]);
 }
 
 template<typename Address_mode>
-float3 Nearest_3D<Address_mode>::address(float3_p uvw) const {
+float3 Nearest_3D<Address_mode>::address(const float3& uvw) const {
 	return float3(Address_mode::f(uvw[0]),
 				  Address_mode::f(uvw[1]),
 				  Address_mode::f(uvw[2]));
 }
 
 template<typename Address_mode>
-int3 Nearest_3D<Address_mode>::map(const Texture& texture, float3_p uvw) {
-	const auto b = texture.back_3();
-	const auto d = texture.dimensions_float3();
+int3 Nearest_3D<Address_mode>::map(const Texture& texture, const float3& uvw) {
+	const auto& b = texture.back_3();
+	const auto& d = texture.dimensions_float3();
 
 	const float u = Address_mode::f(uvw[0]);
 	const float v = Address_mode::f(uvw[1]);

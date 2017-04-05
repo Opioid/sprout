@@ -19,7 +19,7 @@ public:
 	void set_coating_normal_map(const Texture_adapter& normal_map);
 
 	void set_coating_weight(float weight);
-	void set_coating_color(float3_p color);
+	void set_coating_color(const float3& color);
 
 protected:
 
@@ -40,7 +40,7 @@ public:
 	Material_clearcoat(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
 					   bool two_sided);
 
-	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
+	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
@@ -54,7 +54,7 @@ public:
 	Material_thinfilm(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
 					  bool two_sided);
 
-	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
+	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 

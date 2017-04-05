@@ -13,7 +13,7 @@ Material::Material(Sample_cache& sample_cache, const Sampler_settings& sampler_s
 				   bool two_sided) :
 	material::Material(sample_cache, sampler_settings, two_sided) {}
 
-const material::Sample& Material::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
 										 const Worker& worker, Sampler_filter filter) {
 	auto& sample = sample_cache_.get<Sample>(worker.id());
 
@@ -53,7 +53,7 @@ void Material::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material::set_color(float3_p color) {
+void Material::set_color(const float3& color) {
 	color_ = color;
 }
 

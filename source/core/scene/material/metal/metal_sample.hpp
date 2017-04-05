@@ -10,7 +10,7 @@ public:
 
 	virtual const Layer& base_layer() const final override;
 
-	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
 
 	virtual float3 radiance() const final override;
 
@@ -28,7 +28,7 @@ public:
 	virtual bool is_translucent() const final override;
 
 	struct Layer : material::Sample::Layer {
-		void set(float3_p ior, float3_p absorption, float roughness);
+		void set(const float3& ior, const float3& absorption, float roughness);
 		float3 ior_;
 		float3 absorption_;
 		float a2_;
@@ -43,7 +43,7 @@ public:
 
 	virtual const Layer& base_layer() const final override;
 
-	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
 
 	virtual float3 radiance() const final override;
 
@@ -61,7 +61,7 @@ public:
 	virtual bool is_translucent() const final override;
 
 	struct Layer : material::Sample::Layer {
-		void set(float3_p ior, float3_p absorption, float2 roughness);
+		void set(const float3& ior, const float3& absorption, float2 roughness);
 
 		float3 ior_;
 		float3 absorption_;

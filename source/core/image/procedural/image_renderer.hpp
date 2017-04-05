@@ -43,7 +43,7 @@ public:
 	Renderer(int2 dimensions, int32_t sqrt_num_samples = 1);
 	~Renderer();
 
-	void set_brush(float3_p color);
+	void set_brush(const float3& color);
 	void set_brush(float4_p color);
 
 	void clear();

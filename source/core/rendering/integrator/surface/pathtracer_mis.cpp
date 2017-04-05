@@ -319,7 +319,7 @@ float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sample
 }
 
 float3 Pathtracer_MIS::resolve_transmission(Worker& worker, Ray& ray, Intersection& intersection,
-											float3_p attenuation, Sampler_filter filter,
+											const float3& attenuation, Sampler_filter filter,
 											Bxdf_result& sample_result) {
 	if (intersection.prop->is_open()) {
 		return transmittance_open_.resolve(worker, ray, intersection, attenuation,

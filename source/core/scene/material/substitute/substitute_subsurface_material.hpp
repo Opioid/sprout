@@ -10,7 +10,7 @@ public:
 
 	Material_subsurface(Sample_cache& sample_cache, const Sampler_settings& sampler_settings);
 
-	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
+	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 
@@ -20,8 +20,8 @@ public:
 
 	virtual size_t num_bytes() const final override;
 
-	void set_absorption(float3_p absorption);
-	void set_scattering(float3_p scattering);
+	void set_absorption(const float3& absorption);
+	void set_scattering(const float3& scattering);
 
 private:
 

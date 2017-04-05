@@ -12,7 +12,7 @@ Material_clearcoat::Material_clearcoat(Sample_cache& sample_cache,
 									   bool two_sided) :
 	Material_coating<coating::Clearcoat>(sample_cache, sampler_settings, two_sided) {}
 
-const material::Sample& Material_clearcoat::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Material_clearcoat::sample(const float3& wo, const Renderstate& rs,
 												   const Worker& worker, Sampler_filter filter) {
 	auto& sample = sample_cache_.get<Sample_clearcoat>(worker.id());
 
@@ -37,7 +37,7 @@ Material_thinfilm::Material_thinfilm(Sample_cache& sample_cache,
 									 bool two_sided) :
 	Material_coating<coating::Thinfilm>(sample_cache, sampler_settings, two_sided) {}
 
-const material::Sample& Material_thinfilm::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Material_thinfilm::sample(const float3& wo, const Renderstate& rs,
 												  const Worker& worker, Sampler_filter filter) {
 	auto& sample = sample_cache_.get<Sample_thinfilm>(worker.id());
 

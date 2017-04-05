@@ -10,7 +10,7 @@ public:
 
 	virtual const Layer& base_layer() const final override;
 
-	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
 
 	virtual float3 radiance() const final override;
 
@@ -28,7 +28,7 @@ public:
 	virtual bool is_translucent() const final override;
 
 	struct Layer : public material::Sample::Layer {
-		void set(float3_p radiance);
+		void set(const float3& radiance);
 
 		float3 radiance_;
 	};

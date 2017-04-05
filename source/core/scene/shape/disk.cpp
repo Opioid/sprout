@@ -21,7 +21,7 @@ Disk::Disk() {
 
 bool Disk::intersect(const Transformation& transformation, Ray& ray,
 					 Node_stack& /*node_stack*/, Intersection& intersection) const {
-	float3_p normal = transformation.rotation.r[2];
+	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -65,7 +65,7 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 
 bool Disk::intersect_p(const Transformation& transformation,
 					   const Ray& ray, Node_stack& /*node_stack*/) const {
-	float3_p normal = transformation.rotation.r[2];
+	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -89,7 +89,7 @@ bool Disk::intersect_p(const Transformation& transformation,
 float Disk::opacity(const Transformation& transformation, const Ray& ray,
 					const material::Materials& materials,
 					Worker& worker, Sampler_filter filter) const {
-	float3_p normal = transformation.rotation.r[2];
+	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -118,7 +118,7 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ray,
 							 const material::Materials& materials,
 							 Worker& worker, Sampler_filter filter) const {
-	float3_p normal = transformation.rotation.r[2];
+	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
 	float numer = math::dot(normal, ray.origin) - d;
@@ -146,7 +146,7 @@ float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ra
 }
 
 void Disk::sample(uint32_t part, const Transformation& transformation,
-				  float3_p p, float3_p /*n*/, float area, bool two_sided,
+				  const float3& p, const float3& /*n*/, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& node_stack, Sample& sample) const {
 	Disk::sample(part, transformation, p, area, two_sided,
@@ -154,7 +154,7 @@ void Disk::sample(uint32_t part, const Transformation& transformation,
 }
 
 void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
-				  float3_p p, float area, bool two_sided,
+				  const float3& p, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
 	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
@@ -187,7 +187,7 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
-				float3_p p, float3_p wi, float area, bool two_sided,
+				const float3& p, const float3& wi, float area, bool two_sided,
 				bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
 	float3 normal = transformation.rotation.r[2];
 
@@ -221,11 +221,11 @@ float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
 }
 
 void Disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float3_p /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
+				  const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
 				  Sample& /*sample*/) const {}
 
 float Disk::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   float3_p /*p*/, float3_p /*wi*/, float /*area*/, bool /*two_sided*/,
+				   const float3& /*p*/, const float3& /*wi*/, float /*area*/, bool /*two_sided*/,
 				   float2& /*uv*/) const {
 	return 1.f;
 }
@@ -234,7 +234,7 @@ float Disk::uv_weight(float2 /*uv*/) const {
 	return 1.f;
 }
 
-float Disk::area(uint32_t /*part*/, float3_p scale) const {
+float Disk::area(uint32_t /*part*/, const float3& scale) const {
 	return math::Pi * scale[0] * scale[0];
 }
 

@@ -217,7 +217,7 @@ float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& 
 }
 
 void Sphere::sample(uint32_t part, const Transformation& transformation,
-					float3_p p, float3_p /*n*/, float area, bool two_sided,
+					const float3& p, const float3& /*n*/, float area, bool two_sided,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& node_stack, Sample& sample) const {
 	Sphere::sample(part, transformation, p, area, two_sided,
@@ -225,7 +225,7 @@ void Sphere::sample(uint32_t part, const Transformation& transformation,
 }
 
 void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-					float3_p p, float /*area*/, bool /*two_sided*/,
+					const float3& p, float /*area*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& /*node_stack*/, Sample& sample) const {
 	float3 axis = transformation.position - p;
@@ -254,7 +254,7 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
-				  float3_p p, float3_p wi, float /*area*/, bool /*two_sided*/,
+				  const float3& p, const float3& wi, float /*area*/, bool /*two_sided*/,
 				  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
 	float3 axis = transformation.position - p;
 	float axis_squared_length = math::squared_length(axis);
@@ -275,7 +275,7 @@ float Sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
 }
 
 void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-					float3_p p, float2 uv, float area, bool /*two_sided*/,
+					const float3& p, float2 uv, float area, bool /*two_sided*/,
 					Sample& sample) const {
 	float phi   = (uv[0] + 0.75f) * (2.f * math::Pi);
 	float theta = uv[1] * math::Pi;
@@ -310,7 +310,7 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-					 float3_p p, float3_p wi, float area, bool /*two_sided*/, float2& uv) const {
+					 const float3& p, const float3& wi, float area, bool /*two_sided*/, float2& uv) const {
 	float3 v = transformation.position - p;
 	float b = math::dot(v, wi);
 	float radius = transformation.scale[0];
@@ -349,7 +349,7 @@ float Sphere::uv_weight(float2 uv) const {
 	return 1.f / sin_theta;
 }
 
-float Sphere::area(uint32_t /*part*/, float3_p scale) const {
+float Sphere::area(uint32_t /*part*/, const float3& scale) const {
 	return (4.f * math::Pi) * scale[0] * scale[0];
 }
 

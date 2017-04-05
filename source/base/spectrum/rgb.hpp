@@ -20,7 +20,7 @@ static inline float linear_to_sRGB(float c) {
 }
 
 // convert sRGB linear color to sRGB gamma color
-static inline float3 linear_RGB_to_sRGB(float3_p c) {
+static inline float3 linear_RGB_to_sRGB(const float3& c) {
 	return float3(linear_to_sRGB(c[0]),
 				  linear_to_sRGB(c[1]),
 				  linear_to_sRGB(c[2]));
@@ -55,7 +55,7 @@ static inline float3 sRGB_to_linear_RGB(byte3 c) {
 }
 
 // convert sRGB gamma color to sRGB linear color
-static inline float3 sRGB_to_linear_RGB(float3_p c) {
+static inline float3 sRGB_to_linear_RGB(const float3& c) {
 	return float3(sRGB_to_linear(c[0]),
 				  sRGB_to_linear(c[1]),
 				  sRGB_to_linear(c[1]));
@@ -69,7 +69,7 @@ static inline float4 sRGB_to_linear_RGB(byte4 c) {
 }
 
 // convert linear color to gamma color
-static inline float3 linear_to_gamma(float3_p c, float gamma) {
+static inline float3 linear_to_gamma(const float3& c, float gamma) {
 	float p = 1.f / gamma;
 
 	return float3(std::pow(c[0], p),
@@ -78,17 +78,17 @@ static inline float3 linear_to_gamma(float3_p c, float gamma) {
 }
 
 // convert gamma color to linear color
-static inline float3 gamma_to_linear(float3_p c, float gamma) {
+static inline float3 gamma_to_linear(const float3& c, float gamma) {
 	return float3(std::pow(c[0], gamma),
 				  std::pow(c[1], gamma),
 				  std::pow(c[2], gamma));
 }
 
-static inline float luminance(float3_p c) {
+static inline float luminance(const float3& c) {
 	return 0.212671f * c[0] + 0.715160f * c[1] + 0.072169f * c[2];
 }
 
-static inline float watt_to_lumen(float3_p c) {
+static inline float watt_to_lumen(const float3& c) {
 	return CIE_constant * luminance(c);
 }
 

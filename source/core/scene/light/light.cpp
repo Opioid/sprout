@@ -5,7 +5,7 @@
 
 namespace scene { namespace light {
 
-void Light::sample(float time, float3_p p, float3_p n, bool total_sphere,
+void Light::sample(float time, const float3& p, const float3& n, bool total_sphere,
 				   sampler::Sampler& sampler, uint32_t sampler_dimension,
 				   Worker& worker, Sampler_filter filter, Sample& result) const {
 	entity::Composed_transformation temp;
@@ -15,14 +15,14 @@ void Light::sample(float time, float3_p p, float3_p n, bool total_sphere,
 		   sampler, sampler_dimension, worker, filter, result);
 }
 
-void Light::sample(float time, float3_p p,
+void Light::sample(float time, const float3& p,
 				   sampler::Sampler& sampler, uint32_t sampler_dimension,
 				   Worker& worker, Sampler_filter filter, Sample& result) const {
 	sample(time, p, float3::identity(), true,
 		   sampler, sampler_dimension, worker, filter, result);
 }
 
-float Light::pdf(float time, float3_p p, float3_p wi, bool total_sphere,
+float Light::pdf(float time, const float3& p, const float3& wi, bool total_sphere,
 				 Worker& worker, Sampler_filter filter) const {
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(time, temp);

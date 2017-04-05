@@ -61,7 +61,7 @@ private:
 
 	public:
 
-		Split_candidate(uint8_t split_axis, float3_p p, bool spatial);
+		Split_candidate(uint8_t split_axis, const float3& p, bool spatial);
 
 		void evaluate(const References& references, float aabb_surface_area);
 

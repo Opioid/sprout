@@ -159,10 +159,10 @@ Vector Indexed_data<IV, SV>::normal_v(uint32_t index) const {
 	const Vector bp = load_float4(b.p);
 	const Vector cp = load_float4(c.p);
 
-	const Vector e1 = math::sub(bp, ap);
-	const Vector e2 = math::sub(cp, ap);
+	const Vector e1 = sub(bp, ap);
+	const Vector e2 = sub(cp, ap);
 
-	return math::normalized3(math::cross3(e1, e2));
+	return normalized3(cross3(e1, e2));
 }
 
 template<typename IV, typename SV>
@@ -176,7 +176,7 @@ float Indexed_data<IV, SV>::area(uint32_t index) const {
 }
 
 template<typename IV, typename SV>
-float Indexed_data<IV, SV>::area(uint32_t index, float3_p scale) const {
+float Indexed_data<IV, SV>::area(uint32_t index, const float3& scale) const {
 	const auto& tri = triangles_[index];
 	const IV& a = intersection_vertices_[tri.a];
 	const IV& b = intersection_vertices_[tri.b];
@@ -355,7 +355,7 @@ float Indexed_data_interleaved<V>::area(uint32_t index) const {
 }
 
 template<typename V>
-float Indexed_data_interleaved<V>::area(uint32_t index, float3_p scale) const {
+float Indexed_data_interleaved<V>::area(uint32_t index, const float3& scale) const {
 	const auto& tri = triangles_[index];
 	const V& a = vertices_[tri.a];
 	const V& b = vertices_[tri.b];

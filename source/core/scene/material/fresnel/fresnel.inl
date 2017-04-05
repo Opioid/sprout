@@ -13,7 +13,7 @@ static inline float schlick(float wo_dot_h, float f0) {
 	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
-static inline float3 schlick(float wo_dot_h, float3_p f0) {
+static inline float3 schlick(float wo_dot_h, const float3& f0) {
 	return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
 
 	// Gaussian approximation
@@ -25,7 +25,7 @@ static inline float schlick_f0(float n0, float n1) {
 	return t * t;
 }
 
-static inline float3 conductor(float wo_dot_h, float3_p eta, float3_p k) {
+static inline float3 conductor(float wo_dot_h, const float3& eta, const float3& k) {
 	float3 tmp_f = eta * eta + k * k;
 
 	float wo_dot_h2 = wo_dot_h * wo_dot_h;
@@ -121,19 +121,19 @@ static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm
 	return 1.f - beam_ratio * 0.5f * (ts + tp);
 }
 
-static inline float3 schlick_blending(float wo_dot_h, float3_p a, float3_p b, float f0) {
+static inline float3 schlick_blending(float wo_dot_h, const float3& a, const float3& b, float f0) {
 	return math::lerp(a, b, schlick(wo_dot_h, f0));
 }
 
 inline Schlick::Schlick(float f0) : f0_(f0) {}
 
-inline Schlick::Schlick(float3_p f0) : f0_(f0) {}
+inline Schlick::Schlick(const float3& f0) : f0_(f0) {}
 
 inline float3 Schlick::operator()(float wo_dot_h) const {
 	return schlick(wo_dot_h, f0_);
 }
 
-inline Schlick_blending::Schlick_blending(float3_p a, float3_p b, float f0) :
+inline Schlick_blending::Schlick_blending(const float3& a, const float3& b, float f0) :
 	a_(a), b_(b), f0_(f0) {}
 
 inline float3 Schlick_blending::operator()(float wo_dot_h) const {
@@ -143,7 +143,7 @@ inline float3 Schlick_blending::operator()(float wo_dot_h) const {
 inline Schlick_weighted::Schlick_weighted(float f0, float weight) :
 	schlick_(f0), weight_(weight) {}
 
-inline Schlick_weighted::Schlick_weighted(float3_p f0, float weight) :
+inline Schlick_weighted::Schlick_weighted(const float3& f0, float weight) :
 	schlick_(f0), weight_(weight) {}
 
 inline float3 Schlick_weighted::operator()(float wo_dot_h) const {
@@ -167,13 +167,13 @@ inline float3 Thinfilm_weighted::operator()(float wo_dot_h) const {
 	return weight_ * thinfilm_(wo_dot_h);
 }
 
-inline Conductor::Conductor(float3_p eta, float3_p k) : eta_(eta), k_(k) {}
+inline Conductor::Conductor(const float3& eta, const float3& k) : eta_(eta), k_(k) {}
 
 inline float3 Conductor::operator()(float wo_dot_h) const {
 	return conductor(wo_dot_h, eta_, k_);
 }
 
-inline Conductor_weighted::Conductor_weighted(float3_p eta, float3_p k, float weight) :
+inline Conductor_weighted::Conductor_weighted(const float3& eta, const float3& k, float weight) :
 	conductor_(eta, k),
 	weight_(weight) {}
 
@@ -181,7 +181,7 @@ inline float3 Conductor_weighted::operator()(float wo_dot_h) const {
 	return weight_ * conductor_(wo_dot_h);
 }
 
-inline Constant::Constant(float3_p f) : f_(f) {}
+inline Constant::Constant(const float3& f) : f_(f) {}
 
 inline float3 Constant::operator()(float /*wo_dot_h*/) const {
 	return f_;

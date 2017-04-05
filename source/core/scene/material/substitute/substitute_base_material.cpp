@@ -15,7 +15,7 @@ Material_base::Material_base(Sample_cache& sample_cache,
 							 bool two_sided) :
 	material::Material(sample_cache, sampler_settings, two_sided) {}
 
-float3 Material_base::sample_radiance(float3_p /*wi*/, float2 uv, float /*area*/,
+float3 Material_base::sample_radiance(const float3& /*wi*/, float2 uv, float /*area*/,
 									  float /*time*/, const Worker& worker,
 									  Sampler_filter filter) const {
 	if (emission_map_.is_valid()) {
@@ -55,7 +55,7 @@ void Material_base::set_emission_map(const Texture_adapter& emission_map) {
 	emission_map_ = emission_map;
 }
 
-void Material_base::set_color(float3_p color) {
+void Material_base::set_color(const float3& color) {
 	color_ = color;
 }
 

@@ -73,7 +73,7 @@ float3 Canopy::thin_absorption(const Transformation& /*transformation*/,
 }
 
 void Canopy::sample(uint32_t part, const Transformation& transformation,
-					float3_p p, float3_p /*n*/, float area, bool two_sided,
+					const float3& p, const float3& /*n*/, float area, bool two_sided,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& node_stack, Sample& sample) const {
 	Canopy::sample(part, transformation, p, area, two_sided,
@@ -81,7 +81,7 @@ void Canopy::sample(uint32_t part, const Transformation& transformation,
 }
 
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
-					float3_p /*p*/, float /*area*/, bool /*two_sided*/,
+					const float3& /*p*/, float /*area*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& /*node_stack*/, Sample& sample) const {
 	float2 uv = sampler.generate_sample_2D(sampler_dimension);
@@ -102,13 +102,13 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Canopy::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  float3_p /*p*/, float3_p /*wi*/, float /*area*/, bool /*two_sided*/,
+				  const float3& /*p*/, const float3& /*wi*/, float /*area*/, bool /*two_sided*/,
 				  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
 	return 1.f / (2.f * math::Pi);
 }
 
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
-					float3_p /*p*/, float2 uv, float /*area*/, bool /*two_sided*/,
+					const float3& /*p*/, float2 uv, float /*area*/, bool /*two_sided*/,
 					Sample& sample) const {
 	float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
@@ -143,7 +143,7 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Canopy::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-					 float3_p /*p*/, float3_p wi, float /*area*/, bool /*two_sided*/,
+					 const float3& /*p*/, const float3& wi, float /*area*/, bool /*two_sided*/,
 					 float2& uv) const {
 	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
 	xyz = math::normalized(xyz);
@@ -191,7 +191,7 @@ float Canopy::uv_weight(float2 uv) const {
 	return 1.f;
 }
 
-float Canopy::area(uint32_t /*part*/, float3_p /*scale*/) const {
+float Canopy::area(uint32_t /*part*/, const float3& /*scale*/) const {
 	return 2.f * math::Pi;
 }
 

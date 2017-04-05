@@ -3,23 +3,23 @@
 #include "aabb.hpp"
 #include "math/vector3.inl"
 #include "math/matrix4x4.inl"
-#include "math/vector.inl"
+#include "simd/vector.inl"
 #include <limits>
 
 namespace math {
 
-inline constexpr AABB::AABB(FVector3f_a min, FVector3f_a max) : bounds_{min, max} {}
+inline constexpr AABB::AABB(const Vector3f_a& min, const Vector3f_a& max) : bounds_{min, max} {}
 
 inline AABB::AABB(FVector min, FVector max) {
 	store_float4(bounds_[0], min);
 	store_float4(bounds_[1], max);
 }
 
-inline FVector3f_a AABB::min() const {
+inline const Vector3f_a& AABB::min() const {
 	return bounds_[0];
 }
 
-inline FVector3f_a AABB::max() const {
+inline const Vector3f_a& AABB::max() const {
 	return bounds_[1];
 }
 
@@ -41,7 +41,7 @@ inline float AABB::volume() const {
 	return d[0] * d[1] * d[2];
 }
 
-inline bool AABB::intersect(FVector3f_a p) const {
+inline bool AABB::intersect(const Vector3f_a& p) const {
 	if (p[0] >= bounds_[0][0] && p[0] <= bounds_[1][0]
 	&&  p[1] >= bounds_[0][1] && p[1] <= bounds_[1][1]
 	&&  p[2] >= bounds_[0][2] && p[2] <= bounds_[1][2]) {
@@ -107,15 +107,15 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 	// the order we use for those min/max is vital to filter out
 	// NaNs that happens when an inv_dir is +/- inf and
 	// (box_min - pos) is 0. inf * 0 = NaN
-	const Vector filtered_l1a = math::min(l1, simd::Infinity);
-	const Vector filtered_l2a = math::min(l2, simd::Infinity);
+	const Vector filtered_l1a = ::min(l1, simd::Infinity);
+	const Vector filtered_l2a = ::min(l2, simd::Infinity);
 
-	const Vector filtered_l1b = math::max(l1, simd::NegInfinity);
-	const Vector filtered_l2b = math::max(l2, simd::NegInfinity);
+	const Vector filtered_l1b = ::max(l1, simd::NegInfinity);
+	const Vector filtered_l2b = ::max(l2, simd::NegInfinity);
 
 	// now that we're back on our feet, test those slabs.
-	Vector max_t = math::max(filtered_l1a, filtered_l2a);
-	Vector min_t = math::min(filtered_l1b, filtered_l2b);
+	Vector max_t = ::max(filtered_l1a, filtered_l2a);
+	Vector min_t = ::min(filtered_l1b, filtered_l2b);
 
 	// unfold back. try to hide the latency of the shufps & co.
 	max_t = min1(max_t, SU_ROTATE_LEFT(max_t));
@@ -180,7 +180,7 @@ inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) co
 	return min_t < ray.max_t && max_t > ray.min_t;
 }
 
-inline void AABB::set_min_max(FVector3f_a min, FVector3f_a max) {
+inline void AABB::set_min_max(const Vector3f_a& min, const Vector3f_a& max) {
 	bounds_[0] = min;
 	bounds_[1] = max;
 }
@@ -190,7 +190,7 @@ inline void AABB::set_min_max(FVector min, FVector max) {
 	store_float4(bounds_[1], max);
 }
 
-inline void AABB::insert(FVector3f_a p) {
+inline void AABB::insert(const Vector3f_a& p) {
 	bounds_[0] = math::min(p, bounds_[0]);
 	bounds_[1] = math::max(p, bounds_[1]);
 }

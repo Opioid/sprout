@@ -13,7 +13,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return base_;
 }
 
-float3 Sample::evaluate(float3_p wi, float& pdf) const {
+float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
 		return float3::identity();
@@ -126,13 +126,13 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::Base_layer::set(float3_p color_a, float3_p color_b, float a2) {
+void Sample::Base_layer::set(const float3& color_a, const float3& color_b, float a2) {
 	color_a_ = color_a;
 	color_b_ = color_b;
 	a2_ = a2;
 }
 
-float3 Sample::Base_layer::evaluate(float3_p wi, float3_p wo, float3_p h,
+float3 Sample::Base_layer::evaluate(const float3& wi, const float3& wo, const float3& h,
 									float wo_dot_h, float& pdf) const {
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
@@ -150,7 +150,7 @@ float3 Sample::Base_layer::evaluate(float3_p wi, float3_p wo, float3_p h,
 	return n_dot_wi * ggx_reflection;
 }
 
-void Sample::Base_layer::sample(float3_p wo, sampler::Sampler& sampler,
+void Sample::Base_layer::sample(const float3& wo, sampler::Sampler& sampler,
 								bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
 
@@ -164,14 +164,14 @@ void Sample::Base_layer::sample(float3_p wo, sampler::Sampler& sampler,
 	result.reflection *= n_dot_wi;
 }
 
-void Sample::Flakes_layer::set(float3_p ior, float3_p absorption, float a2, float weight) {
+void Sample::Flakes_layer::set(const float3& ior, const float3& absorption, float a2, float weight) {
 	ior_ = ior;
 	absorption_ = absorption;
 	a2_ = a2;
 	weight_ = weight;
 }
 
-float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo, float3_p h, float wo_dot_h,
+float3 Sample::Flakes_layer::evaluate(const float3& wi, const float3& wo, const float3& h, float wo_dot_h,
 									  float3& fresnel_result, float& pdf) const {
 	float n_dot_wi = clamped_n_dot(wi);
 	float n_dot_wo = clamped_n_dot(wo);
@@ -183,7 +183,7 @@ float3 Sample::Flakes_layer::evaluate(float3_p wi, float3_p wo, float3_p h, floa
 												 *this, conductor, fresnel_result, pdf);
 }
 
-void Sample::Flakes_layer::sample(float3_p wo, sampler::Sampler& sampler,
+void Sample::Flakes_layer::sample(const float3& wo, sampler::Sampler& sampler,
 								  float3& fresnel_result, bxdf::Result& result) const {
 	float n_dot_wo = clamped_n_dot(wo);
 

@@ -15,7 +15,7 @@ Material_isotropic::Material_isotropic(Sample_cache& sample_cache,
 									   bool two_sided) :
 	Material(sample_cache, sampler_settings, two_sided) {}
 
-const material::Sample& Material_isotropic::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Material_isotropic::sample(const float3& wo, const Renderstate& rs,
 												   const Worker& worker,
 												   Sampler_settings::Filter filter) {
 	auto& sample = sample_cache_.get<Sample_isotropic>(worker.id());
@@ -45,11 +45,11 @@ void Material_isotropic::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Material_isotropic::set_ior(float3_p ior) {
+void Material_isotropic::set_ior(const float3& ior) {
 	ior_ = ior;
 }
 
-void Material_isotropic::set_absorption(float3_p absorption) {
+void Material_isotropic::set_absorption(const float3& absorption) {
 	absorption_ = absorption;
 }
 
@@ -62,7 +62,7 @@ Material_anisotropic::Material_anisotropic(Sample_cache& sample_cache,
 										   bool two_sided) :
 	Material(sample_cache, sampler_settings, two_sided) {}
 
-const material::Sample& Material_anisotropic::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Material_anisotropic::sample(const float3& wo, const Renderstate& rs,
 													 const Worker& worker,
 													 Sampler_settings::Filter filter) {
 	auto& sample = sample_cache_.get<Sample_anisotropic>(worker.id());
@@ -103,11 +103,11 @@ void Material_anisotropic::set_direction_map(const Texture_adapter& direction_ma
 	direction_map_ = direction_map;
 }
 
-void Material_anisotropic::set_ior(float3_p ior) {
+void Material_anisotropic::set_ior(const float3& ior) {
 	ior_ = ior;
 }
 
-void Material_anisotropic::set_absorption(float3_p absorption) {
+void Material_anisotropic::set_absorption(const float3& absorption) {
 	absorption_ = absorption;
 }
 

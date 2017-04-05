@@ -10,7 +10,7 @@ public:
 
 	Generic(float contrast, float shoulder, float mid_in, float mid_out, float hdr_max);
 
-	virtual float3 tonemap(float3_p color) const final override;
+	virtual float3 tonemap(const float3& color) const final override;
 
 private:
 

@@ -13,7 +13,7 @@ namespace scene { namespace material { namespace glass {
 Glass_rough::Glass_rough(Sample_cache& sample_cache, const Sampler_settings& sampler_settings) :
 	Material(sample_cache, sampler_settings, false) {}
 
-const material::Sample& Glass_rough::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate& rs,
 											const Worker& worker, Sampler_filter filter) {
 	auto& sample = sample_cache_.get<Sample_rough>(worker.id());
 
@@ -56,11 +56,11 @@ void Glass_rough::set_roughness_map(const Texture_adapter& roughness_map) {
 	roughness_map_ = roughness_map;
 }
 
-void Glass_rough::set_refraction_color(float3_p color) {
+void Glass_rough::set_refraction_color(const float3& color) {
 	refraction_color_ = color;
 }
 
-void Glass_rough::set_absorption_color(float3_p color) {
+void Glass_rough::set_absorption_color(const float3& color) {
 	absorption_color_ = color;
 }
 

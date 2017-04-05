@@ -9,11 +9,9 @@ CONFIG(debug, release|debug):DEFINES += _DEBUG
 
 include(../compiler_options.pri)
 
-SOURCES +=
+SOURCES += \
 
 HEADERS += \
-    simd.hpp \
-    simd.inl \
 
 include(atomic/atomic.pri)
 include(chrono/chrono.pri)
@@ -27,6 +25,7 @@ include(memory/memory.pri)
 include(net/net.pri)
 include(platform/platform.pri)
 include(random/random.pri)
+include(simd/simd.pri)
 include(spectrum/spectrum.pri)
 include(string/string.pri)
 include(thread/thread.pri)

@@ -6,9 +6,9 @@
 
 namespace scene { namespace material { namespace testing {
 
-void print_vector(float3_p v);
+void print_vector(const float3& v);
 
-bool check(float3_p result, float3_p h,
+bool check(const float3& result, const float3& h,
 		   float n_dot_wi, float n_dot_wo, float wo_dot_h, float pdf,
 		   const Sample::Layer& layer) {
 	if (!std::isfinite(pdf)
@@ -28,7 +28,7 @@ bool check(float3_p result, float3_p h,
 	return true;
 }
 
-bool check(float3_p result,
+bool check(const float3& result,
 		   float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h, float pdf,
 		   const Sample::Layer& layer) {
 	if (!std::isfinite(pdf)
@@ -48,7 +48,7 @@ bool check(float3_p result,
 	return true;
 }
 
-bool check(const bxdf::Result& result, float3_p wo, const Sample::Layer& layer) {
+bool check(const bxdf::Result& result, const float3& wo, const Sample::Layer& layer) {
 	if (!std::isfinite(result.pdf)
 	||  !math::all_finite(result.reflection)) {
 		std::cout << "wi: "; print_vector(result.wi);
@@ -68,7 +68,7 @@ bool check(const bxdf::Result& result, float3_p wo, const Sample::Layer& layer) 
 	return true;
 }
 
-bool check_normal_map(float3_p n, float3_p tangent_space_n, float2 uv) {
+bool check_normal_map(const float3& n, const float3& tangent_space_n, float2 uv) {
 	if (!math::all_finite(n)) {
 		std::cout << "n: "; print_vector(n);
 		std::cout << "ts_n: "; print_vector(tangent_space_n);
@@ -79,7 +79,7 @@ bool check_normal_map(float3_p n, float3_p tangent_space_n, float2 uv) {
 	return true;
 }
 
-void print_vector(float3_p v) {
+void print_vector(const float3& v) {
 	std::cout << v << " |" << math::length(v) << "|" << std::endl;
 }
 

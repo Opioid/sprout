@@ -15,11 +15,11 @@ class Split_candidate {
 public:
 
 	Split_candidate(const math::Plane& plane, uint8_t axis);
-	Split_candidate(uint8_t split_axis, float3_p pos, const std::vector<Prop*>& props);
+	Split_candidate(uint8_t split_axis, const float3& pos, const std::vector<Prop*>& props);
 
 	using index = std::vector<Prop*>::iterator;
 
-	Split_candidate(uint8_t split_axis, float3_p pos, index begin, index end);
+	Split_candidate(uint8_t split_axis, const float3& pos, index begin, index end);
 
 	uint64_t key() const;
 

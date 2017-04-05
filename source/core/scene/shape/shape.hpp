@@ -52,32 +52,32 @@ public:
 								   Worker& worker, Sampler_filter filter) const = 0;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float3_p n, float area, bool two_sided,
+						const float3& p, const float3& n, float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const = 0;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float area, bool two_sided,
+						const float3& p, float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const = 0;
 
 	virtual float pdf(uint32_t part, const Transformation& transformation,
-					  float3_p p, float3_p wi, float area, bool two_sided,
+					  const float3& p, const float3& wi, float area, bool two_sided,
 					  bool total_sphere, Node_stack& node_stack) const = 0;
 
 	// The following two functions are used for textured lights
 	// and should have the uv weight baked in!
 	virtual void sample(uint32_t part, const Transformation& transformation,
-						float3_p p, float2 uv, float area, bool two_sided,
+						const float3& p, float2 uv, float area, bool two_sided,
 						Sample& sample) const = 0;
 
 	virtual float pdf_uv(uint32_t part, const Transformation& transformation,
-						 float3_p p, float3_p wi, float area, bool two_sided,
+						 const float3& p, const float3& wi, float area, bool two_sided,
 						 float2& uv) const = 0;
 
 	virtual float uv_weight(float2 uv) const = 0;
 
-	virtual float area(uint32_t part, float3_p scale) const = 0;
+	virtual float area(uint32_t part, const float3& scale) const = 0;
 
 	virtual bool is_complex() const;
 	virtual bool is_finite() const;

@@ -3,7 +3,7 @@
 #include "math/sincos.hpp"
 #include "math/math.hpp"
 #include "math/vector2.inl"
-#include "math/vector.inl"
+#include "simd/vector.inl"
 #include "thread/thread_pool.hpp"
 
 namespace math {
@@ -32,14 +32,14 @@ void dft_1d(float2* result, const float* source, int32_t num) {
 
 		for (int32_t x = 0; x < m4; x += 4) {
 			Vector xf = load_float(static_cast<float>(x));
-			Vector xv = math::add(xf, zv);
-			Vector b = math::mul(a, xv);
+			Vector xv = add(xf, zv);
+			Vector b = mul(a, xv);
 			Vector sin_b;
 			Vector cos_b;
 			math::sincos(b, sin_b, cos_b);
 			Vector sv = load_unaligned_float4(&source[x]);
-			sum_x = math::add(sum_x, math::mul(sv, cos_b));
-			sum_y = math::add(sum_y, math::mul(sv, sin_b));
+			sum_x = add(sum_x, mul(sv, cos_b));
+			sum_y = add(sum_y, mul(sv, sin_b));
 		}
 
 //		float4 sx;
@@ -47,8 +47,8 @@ void dft_1d(float2* result, const float* source, int32_t num) {
 //		float4 sy;
 //		store_float4(sy, sum_y);
 
-		float2 sum(math::horizontal_sum(sum_x)/*sx[0] + sx[1] + sx[2] + sx[3]*/,
-				   math::horizontal_sum(sum_y)/*sy[0] + sy[1] + sy[2] + sy[3]*/);
+		float2 sum(horizontal_sum(sum_x)/*sx[0] + sx[1] + sx[2] + sx[3]*/,
+				   horizontal_sum(sum_y)/*sy[0] + sy[1] + sy[2] + sy[3]*/);
 
 		// Use scalar operations to handle the rest
 		for (int32_t x = m4; x < num; ++x) {

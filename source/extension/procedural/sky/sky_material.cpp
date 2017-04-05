@@ -25,7 +25,7 @@ namespace procedural { namespace sky {
 Sky_material::Sky_material(scene::material::Sample_cache& sample_cache, Model& model) :
 	Material(sample_cache, model) {}
 
-const scene::material::Sample& Sky_material::sample(float3_p wo, const scene::Renderstate& rs,
+const scene::material::Sample& Sky_material::sample(const float3& wo, const scene::Renderstate& rs,
 													const scene::Worker& worker,
 													Sampler_filter /*filter*/) {
 	auto& sample = sample_cache_.get<scene::material::light::Sample>(worker.id());
@@ -39,7 +39,7 @@ const scene::material::Sample& Sky_material::sample(float3_p wo, const scene::Re
 	return sample;
 }
 
-float3 Sky_material::sample_radiance(float3_p wi, float2 /*uv*/,
+float3 Sky_material::sample_radiance(const float3& wi, float2 /*uv*/,
 									 float /*area*/, float /*time*/,
 									 const scene::Worker& /*worker*/,
 									 Sampler_filter /*filter*/) const {
@@ -64,7 +64,7 @@ size_t Sky_material::num_bytes() const {
 Sky_baked_material::Sky_baked_material(scene::material::Sample_cache& sample_cache, Model& model) :
 	Material(sample_cache, model) {}
 
-const scene::material::Sample& Sky_baked_material::sample(float3_p wo, const scene::Renderstate& rs,
+const scene::material::Sample& Sky_baked_material::sample(const float3& wo, const scene::Renderstate& rs,
 														  const scene::Worker& worker,
 														  Sampler_filter filter) {
 	auto& sample = sample_cache_.get<scene::material::light::Sample>(worker.id());
@@ -81,7 +81,7 @@ const scene::material::Sample& Sky_baked_material::sample(float3_p wo, const sce
 	return sample;
 }
 
-float3 Sky_baked_material::sample_radiance(float3_p /*wi*/, float2 uv,
+float3 Sky_baked_material::sample_radiance(const float3& /*wi*/, float2 uv,
 										   float /*area*/, float /*time*/,
 										   const scene::Worker& worker,
 										   Sampler_filter filter) const {

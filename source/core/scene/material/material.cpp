@@ -33,7 +33,7 @@ const BSSRDF& Material::bssrdf(const Worker& worker) {
 	return sample_cache_.bssrdf(worker.id());
 }
 
-float3 Material::sample_radiance(float3_p /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
+float3 Material::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
 								 const Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	return float3(0.f);
 }
@@ -66,7 +66,7 @@ float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
 	}
 }
 
-float3 Material::thin_absorption(float3_p /*wo*/, float3_p /*n*/, float2 uv, float time,
+float3 Material::thin_absorption(const float3& /*wo*/, const float3& /*n*/, float2 uv, float time,
 								 const Worker& worker, Sampler_filter filter) const {
 	return float3(opacity(uv, time, worker, filter));
 }

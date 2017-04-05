@@ -10,7 +10,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
 }
 
-float3 Sample::evaluate(float3_p /*wi*/, float& pdf) const {
+float3 Sample::evaluate(const float3& /*wi*/, float& pdf) const {
 	pdf = 0.f;
 	return float3::identity();
 }
@@ -44,7 +44,7 @@ bool Sample::is_translucent() const {
 	return false;
 }
 
-void Sample::Layer::set(float3_p radiance) {
+void Sample::Layer::set(const float3& radiance) {
 	radiance_ = radiance;
 }
 

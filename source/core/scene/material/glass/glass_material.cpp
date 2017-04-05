@@ -12,7 +12,7 @@ namespace scene { namespace material { namespace glass {
 Glass::Glass(Sample_cache& sample_cache, const Sampler_settings& sampler_settings) :
 	Material(sample_cache, sampler_settings, false) {}
 
-const material::Sample& Glass::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Glass::sample(const float3& wo, const Renderstate& rs,
 									  const Worker& worker, Sampler_filter filter) {
 	auto& sample = sample_cache_.get<Sample>(worker.id());
 
@@ -42,11 +42,11 @@ void Glass::set_normal_map(const Texture_adapter& normal_map) {
 	normal_map_ = normal_map;
 }
 
-void Glass::set_refraction_color(float3_p color) {
+void Glass::set_refraction_color(const float3& color) {
 	refraction_color_ = color;
 }
 
-void Glass::set_absorption_color(float3_p color) {
+void Glass::set_absorption_color(const float3& color) {
 	absorption_color_ = color;
 }
 

@@ -153,8 +153,8 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 		_mm_store_ss(&ray.max_t, ray_max_t);
 	//	_mm_store_ss(&intersection.uv.v[0], u);
 	//	_mm_store_ss(&intersection.uv.v[1], v);
-		intersection.u = math::splat_x(u);
-		intersection.v = math::splat_x(v);
+		intersection.u = splat_x(u);
+		intersection.v = splat_x(v);
 
 		intersection.index = index;
 		return true;
@@ -299,8 +299,8 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-					u = math::splat_x(u);
-					v = math::splat_x(v);
+					u = splat_x(u);
+					v = splat_x(v);
 					float2 uv = data_.interpolate_uv(u, v, i);
 
 					const auto material = materials[data_.material_index(i)];
@@ -419,8 +419,8 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 				if (data_.intersect(ray_origin, ray_direction, ray_min_t, ray_max_t, i, u, v)) {
-					u = math::splat_x(u);
-					v = math::splat_x(v);
+					u = splat_x(u);
+					v = splat_x(v);
 					float2 uv = data_.interpolate_uv(u, v, i);
 
 					const float3 normal = data_.normal(i);
@@ -495,7 +495,7 @@ float Tree<Data>::triangle_area(uint32_t index) const {
 }
 
 template<typename Data>
-float Tree<Data>::triangle_area(uint32_t index, float3_p scale) const {
+float Tree<Data>::triangle_area(uint32_t index, const float3& scale) const {
     return data_.area(index, scale);
 }
 

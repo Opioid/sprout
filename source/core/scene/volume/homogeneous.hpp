@@ -12,7 +12,7 @@ public:
 								 rnd::Generator& rng, Worker& worker,
 								 Sampler_filter filter) const final override;
 
-	virtual float3 scattering(float3_p p, Worker& worker,
+	virtual float3 scattering(const float3& p, Worker& worker,
 							  Sampler_filter filter) const final override;
 
 private:

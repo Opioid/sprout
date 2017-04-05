@@ -16,7 +16,7 @@
 namespace scene { namespace material { namespace substitute {
 
 template<typename Sample>
-void Material_base::set_sample(float3_p wo, const Renderstate& rs,
+void Material_base::set_sample(const float3& wo, const Renderstate& rs,
 							   const Texture_sampler_2D& sampler, Sample& sample) {
 	sample.set_basis(rs.geo_n, wo);
 

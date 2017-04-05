@@ -28,7 +28,7 @@ inline float3 disk_to_hemisphere_equidistant(float2 uv) {
 	return float3(sin_col * cos_lon, sin_col * sin_lon, cos_col);
 }
 
-inline float2 hemisphere_to_disk_equidistant(float3_p dir) {
+inline float2 hemisphere_to_disk_equidistant(const float3& dir) {
 	// cartesian to spherical
 	float colatitude = std::acos(dir[2]);
 
@@ -42,7 +42,7 @@ inline float2 hemisphere_to_disk_equidistant(float3_p dir) {
 	return float2(r * cos_lon, r * sin_lon);
 }
 
-inline float2 hemisphere_to_disk_paraboloid(float3_p dir) {
+inline float2 hemisphere_to_disk_paraboloid(const float3& dir) {
 	float zoi = 1.f / (dir[2] + 1.f);
 	return float2(dir[0] * zoi, dir[1] * -zoi);
 }

@@ -26,9 +26,9 @@ public:
 								 rnd::Generator& rng, Worker& worker,
 								 Sampler_filter filter) const = 0;
 
-	virtual float3 scattering(float3_p p, Worker& worker, Sampler_filter filter) const = 0;
+	virtual float3 scattering(const float3& p, Worker& worker, Sampler_filter filter) const = 0;
 
-	float phase(float3_p w, float3_p wp) const;
+	float phase(const float3& w, const float3& wp) const;
 
 	virtual void set_parameters(const json::Value& parameters) final override;
 
@@ -44,7 +44,7 @@ protected:
 
 	virtual void set_parameter(const std::string& name, const json::Value& value) = 0;
 
-	static float phase_schlick(float3_p w, float3_p wp, float k);
+	static float phase_schlick(const float3& w, const float3& wp, float k);
 
 	math::AABB scene_bb_;
 	math::AABB aabb_;

@@ -44,7 +44,7 @@ bool Sample_base<Diffuse>::is_translucent() const {
 
 template<typename Diffuse>
 template<typename Coating>
-float3 Sample_base<Diffuse>::base_and_coating_evaluate(float3_p wi, const Coating& coating,
+float3 Sample_base<Diffuse>::base_and_coating_evaluate(const float3& wi, const Coating& coating,
 													   float& pdf) const {
 	const float3 h = math::normalized(wo_ + wi);
 	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
@@ -143,7 +143,7 @@ void Sample_base<Diffuse>::pure_specular_sample_and_coating(const Coating& coati
 }
 
 template<typename Diffuse>
-void Sample_base<Diffuse>::Layer::set(float3_p color, float3_p radiance, float ior,
+void Sample_base<Diffuse>::Layer::set(const float3& color, const float3& radiance, float ior,
 									  float constant_f0, float roughness, float metallic) {
 	diffuse_color_ = (1.f - metallic) * color;
 	f0_ = math::lerp(float3(constant_f0), color, metallic);
@@ -155,7 +155,7 @@ void Sample_base<Diffuse>::Layer::set(float3_p color, float3_p radiance, float i
 }
 
 template<typename Diffuse>
-float3 Sample_base<Diffuse>::Layer::base_evaluate(float3_p wi, float3_p wo, float3_p h,
+float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3& wo, const float3& h,
 												  float wo_dot_h, float& pdf) const {
 	const float n_dot_wi = clamped_n_dot(wi);
 	const float n_dot_wo = clamped_n_dot(wo);
@@ -177,7 +177,7 @@ float3 Sample_base<Diffuse>::Layer::base_evaluate(float3_p wi, float3_p wo, floa
 }
 
 template<typename Diffuse>
-void Sample_base<Diffuse>::Layer::diffuse_sample(float3_p wo, sampler::Sampler& sampler,
+void Sample_base<Diffuse>::Layer::diffuse_sample(const float3& wo, sampler::Sampler& sampler,
 												 bxdf::Result& result) const {
 	const float n_dot_wo = clamped_n_dot(wo);
 	const float n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
@@ -196,7 +196,7 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(float3_p wo, sampler::Sampler& 
 }
 
 template<typename Diffuse>
-void Sample_base<Diffuse>::Layer::specular_sample(float3_p wo, sampler::Sampler& sampler,
+void Sample_base<Diffuse>::Layer::specular_sample(const float3& wo, sampler::Sampler& sampler,
 												  bxdf::Result& result) const {
 	const float n_dot_wo = clamped_n_dot(wo);
 
@@ -214,7 +214,7 @@ void Sample_base<Diffuse>::Layer::specular_sample(float3_p wo, sampler::Sampler&
 }
 
 template<typename Diffuse>
-void Sample_base<Diffuse>::Layer::pure_specular_sample(float3_p wo, sampler::Sampler& sampler,
+void Sample_base<Diffuse>::Layer::pure_specular_sample(const float3& wo, sampler::Sampler& sampler,
 													   bxdf::Result& result) const {
 	const float n_dot_wo = clamped_n_dot(wo);
 

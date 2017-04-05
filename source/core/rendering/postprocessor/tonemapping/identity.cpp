@@ -3,7 +3,7 @@
 
 namespace rendering { namespace postprocessor { namespace tonemapping {
 
-float3 Identity::tonemap(float3_p color) const {
+float3 Identity::tonemap(const float3& color) const {
 	return color;
 }
 

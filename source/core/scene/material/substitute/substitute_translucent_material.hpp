@@ -10,7 +10,7 @@ public:
 
 	Material_translucent(Sample_cache& sample_cache, const Sampler_settings& sampler_settings);
 
-	virtual const material::Sample& sample(float3_p wo, const Renderstate& rs,
+	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   const Worker& worker,
 										   Sampler_filter filter) final override;
 

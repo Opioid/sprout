@@ -16,7 +16,7 @@ public:
 
 	virtual const Layer& base_layer() const final override;
 
-	virtual float3 evaluate(float3_p wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
 
 	virtual void sample(sampler::Sampler& sampler,
 						bxdf::Result& result) const final override;
@@ -34,7 +34,7 @@ public:
 	virtual bool is_translucent() const final override;
 
 	struct Layer : public material::Sample::Layer {
-		void set(float3_p refraction_color, float3_p absorption_color,
+		void set(const float3& refraction_color, const float3& absorption_color,
 				 float attenuation_distance, float ior, float ior_outside, float a2);
 
 		float3 color_;

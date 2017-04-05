@@ -13,7 +13,7 @@ Material_subsurface::Material_subsurface(Sample_cache& sample_cache,
 										 const Sampler_settings& sampler_settings) :
 	Material_base(sample_cache, sampler_settings, false) {}
 
-const material::Sample& Material_subsurface::sample(float3_p wo, const Renderstate& rs,
+const material::Sample& Material_subsurface::sample(const float3& wo, const Renderstate& rs,
 													const Worker& worker, Sampler_filter filter) {
 	auto& sample = sample_cache_.get<Sample_subsurface>(worker.id());
 
@@ -40,11 +40,11 @@ size_t Material_subsurface::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material_subsurface::set_absorption(float3_p absorption) {
+void Material_subsurface::set_absorption(const float3& absorption) {
 	absorption_ = absorption;
 }
 
-void Material_subsurface::set_scattering(float3_p scattering) {
+void Material_subsurface::set_scattering(const float3& scattering) {
 	scattering_ = scattering;
 }
 

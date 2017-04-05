@@ -10,7 +10,7 @@
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
-Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, float3_p p) :
+Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, const float3& p) :
 	aabb_0_(math::AABB::empty()),
 	aabb_1_(math::AABB::empty()),
 	d_(p.v[split_axis]),
@@ -48,7 +48,7 @@ float Builder_SAH::Split_candidate::cost() const {
 	return cost_;
 }
 
-bool Builder_SAH::Split_candidate::behind(float3_p point) const {
+bool Builder_SAH::Split_candidate::behind(const float3& point) const {
 	return point.v[axis_] < d_;
 }
 
@@ -76,7 +76,7 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
 
 	if (num_triangles <= sweep_threshold_) {
 		for (index i = begin; i != end; ++i) {
-			float3_p max = triangle_bounds[*i].max();
+			const float3& max = triangle_bounds[*i].max();
 			split_candidates_.push_back(Split_candidate(0, max));
 			split_candidates_.push_back(Split_candidate(1, max));
 			split_candidates_.push_back(Split_candidate(2, max));
@@ -85,7 +85,7 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
 		float3 halfsize = aabb.halfsize();
 		float3 position = aabb.position();
 
-		float3_p min = aabb.min();
+		const float3& min = aabb.min();
 
 		float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {

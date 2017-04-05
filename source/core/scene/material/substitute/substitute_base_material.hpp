@@ -13,7 +13,7 @@ public:
 	Material_base(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
 				  bool two_sided);
 
-	virtual float3 sample_radiance(float3_p wi, float2 uv, float area, float time,
+	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
 								   const Worker& worker,
 								   Sampler_filter filter) const final override;
 
@@ -26,7 +26,7 @@ public:
 	void set_surface_map(const Texture_adapter& surface_map);
 	void set_emission_map(const Texture_adapter& emission_map);
 
-	void set_color(float3_p color);
+	void set_color(const float3& color);
 	void set_ior(float ior, float external_ior = 1.f);
 	void set_roughness(float roughness);
 	void set_metallic(float metallic);
@@ -37,7 +37,7 @@ protected:
 	using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
 
 	template<typename Sample>
-	void set_sample(float3_p wo, const Renderstate& rs,
+	void set_sample(const float3& wo, const Renderstate& rs,
 					const Texture_sampler_2D& sampler, Sample& sample);
 
 	Texture_adapter color_map_;

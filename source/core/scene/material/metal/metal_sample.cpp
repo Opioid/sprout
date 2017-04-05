@@ -11,7 +11,7 @@ const material::Sample::Layer& Sample_isotropic::base_layer() const {
 	return layer_;
 }
 
-float3 Sample_isotropic::evaluate(float3_p wi, float& pdf) const {
+float3 Sample_isotropic::evaluate(const float3& wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
 		return float3::identity();
@@ -68,7 +68,7 @@ bool Sample_isotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_isotropic::Layer::set(float3_p ior, float3_p absorption, float roughness) {
+void Sample_isotropic::Layer::set(const float3& ior, const float3& absorption, float roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 	a2_ = math::pow4(roughness);
@@ -78,7 +78,7 @@ const material::Sample::Layer& Sample_anisotropic::base_layer() const {
 	return layer_;
 }
 
-float3 Sample_anisotropic::evaluate(float3_p wi, float& pdf) const {
+float3 Sample_anisotropic::evaluate(const float3& wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
 		pdf = 0.f;
 		return float3::identity();
@@ -133,7 +133,7 @@ bool Sample_anisotropic::is_translucent() const {
 	return false;
 }
 
-void Sample_anisotropic::Layer::set(float3_p ior, float3_p absorption, float2 roughness) {
+void Sample_anisotropic::Layer::set(const float3& ior, const float3& absorption, float2 roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
 
