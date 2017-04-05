@@ -2,7 +2,6 @@
 
 #include "triangle_bvh_data.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
-#include "scene/shape/triangle/triangle_primitive_mte.inl"
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/align.hpp"
 
