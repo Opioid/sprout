@@ -3,7 +3,7 @@
 #include "scene/scene_renderstate.hpp"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
 #include "scene/scene_intersection.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/entity/entity.hpp"
 #include "scene/entity/keyframe.hpp"

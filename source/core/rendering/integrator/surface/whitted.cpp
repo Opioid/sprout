@@ -2,7 +2,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/scene_intersection.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"

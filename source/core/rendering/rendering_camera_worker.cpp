@@ -4,7 +4,7 @@
 #include "sampler/camera_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/camera/camera.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sample_distribution.hpp"
 #include "base/random/generator.inl"

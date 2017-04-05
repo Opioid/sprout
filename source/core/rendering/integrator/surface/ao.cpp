@@ -1,7 +1,7 @@
 #include "ao.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene_intersection.inl"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"

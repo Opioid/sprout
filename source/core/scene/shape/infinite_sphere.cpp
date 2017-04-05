@@ -2,7 +2,7 @@
 #include "shape_sample.hpp"
 #include "shape_intersection.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"
 #include "base/math/sincos.hpp"

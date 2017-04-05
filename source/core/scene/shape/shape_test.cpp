@@ -5,7 +5,7 @@
 #include "shape_sample.hpp"
 #include "node_stack.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"

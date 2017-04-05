@@ -1,5 +1,5 @@
 #include "scene_bvh_tree.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/prop.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"

@@ -3,7 +3,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_intersection.inl"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"

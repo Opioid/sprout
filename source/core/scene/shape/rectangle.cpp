@@ -1,7 +1,7 @@
 #include "rectangle.hpp"
 #include "shape_sample.hpp"
 #include "shape_intersection.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "sampler/sampler.hpp"

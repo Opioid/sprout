@@ -6,7 +6,7 @@
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "base/math/sampling/sampling.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"

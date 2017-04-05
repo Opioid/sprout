@@ -1,5 +1,5 @@
 #include "prop.hpp"
-#include "scene/scene_ray.hpp"
+#include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape.hpp"
