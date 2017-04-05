@@ -59,10 +59,6 @@ static inline Vector SU_CALLCONV sub(FVector a, FVector b) {
 	return _mm_sub_ps(a, b);
 }
 
-static inline Vector SU_CALLCONV operator-(FVector a, FVector b) {
-	return _mm_sub_ps(a, b);
-}
-
 static inline Vector SU_CALLCONV mul(FVector a, FVector b) {
 	return _mm_mul_ps(a, b);
 }
