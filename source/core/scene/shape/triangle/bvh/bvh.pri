@@ -21,8 +21,6 @@ HEADERS += \
 	scene/shape/triangle/bvh/triangle_bvh_helper.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_indexed_data.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_indexed_data.inl \	
-	scene/shape/triangle/bvh/triangle_bvh_node.hpp \
-	scene/shape/triangle/bvh/triangle_bvh_node.inl \
 	scene/shape/triangle/bvh/triangle_bvh_tree.hpp \
 	scene/shape/triangle/bvh/triangle_bvh_tree.inl \
 

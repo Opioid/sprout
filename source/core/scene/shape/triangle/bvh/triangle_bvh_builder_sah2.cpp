@@ -1,6 +1,7 @@
 #include "triangle_bvh_builder_sah2.hpp"
 #include "triangle_bvh_tree.inl"
 #include "triangle_bvh_helper.hpp"
+#include "scene/bvh/scene_bvh_node.inl"
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
 #include "base/math/aabb.inl"
@@ -302,7 +303,7 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 	return split_candidates_[sc];
 }
 
-Node& Builder_SAH2::new_node() {
+scene::bvh::Node& Builder_SAH2::new_node() {
 	return nodes_[current_node_++];
 }
 

@@ -7,6 +7,8 @@
 
 namespace scene {
 
+namespace bvh { class Node; }
+
 class Worker;
 
 namespace shape {
@@ -24,8 +26,6 @@ struct Data_triangle;
 
 namespace bvh {
 
-class Node;
-
 template<typename Data>
 class Tree  {
 
@@ -33,6 +33,8 @@ public:
 
 	Tree();
 	~Tree();
+
+	using Node = scene::bvh::Node;
 
 	Node* allocate_nodes(uint32_t num_nodes);
 

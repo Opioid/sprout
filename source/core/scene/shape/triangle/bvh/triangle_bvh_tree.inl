@@ -1,8 +1,8 @@
 #pragma once
 
 #include "triangle_bvh_tree.hpp"
-#include "triangle_bvh_node.inl"
 #include "scene/scene_worker.hpp"
+#include "scene/bvh/scene_bvh_node.inl"
 #include "scene/shape/node_stack.hpp"
 #include "scene/shape/triangle/triangle_intersection.hpp"
 #include "base/math/aabb.inl"
@@ -22,7 +22,7 @@ Tree<Data>::~Tree() {
 }
 
 template<typename Data>
-Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
+scene::bvh::Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
 	num_nodes_ = num_nodes;
 
 	memory::free_aligned(nodes_);

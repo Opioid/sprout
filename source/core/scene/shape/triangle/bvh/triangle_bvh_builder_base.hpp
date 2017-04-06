@@ -5,7 +5,11 @@
 #include <cstddef>
 #include <vector>
 
-namespace scene { namespace shape {
+namespace scene {
+
+namespace bvh { class Node; }
+
+namespace shape {
 
 struct Vertex;
 
@@ -17,7 +21,6 @@ struct Triangle;
 namespace bvh {
 
 template<typename Data> class Tree;
-class Node;
 
 struct Build_node {
 	Build_node();
@@ -39,6 +42,7 @@ class Builder_base  {
 
 protected:
 
+	using Node = scene::bvh::Node;
 	using index = std::vector<uint32_t>::iterator;
 
 	void serialize(Build_node* node);

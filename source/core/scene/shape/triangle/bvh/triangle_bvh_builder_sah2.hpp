@@ -8,7 +8,11 @@
 
 namespace thread { class Pool; }
 
-namespace scene { namespace shape {
+namespace scene {
+
+namespace bvh { class Node; }
+
+namespace shape {
 
 struct Vertex;
 
@@ -19,7 +23,6 @@ struct Index_triangle;
 namespace bvh {
 
 template<typename Data> class Tree;
-class Node;
 
 class Builder_SAH2 /*: private Builder_base*/  {
 
@@ -120,6 +123,8 @@ private:
 	template<typename Data>
 	void serialize(Build_node* node, const Triangles& triangles,
 				   const Vertices& vertices, Tree<Data>& tree);
+
+	using Node = scene::bvh::Node;
 
 	Node& new_node();
 

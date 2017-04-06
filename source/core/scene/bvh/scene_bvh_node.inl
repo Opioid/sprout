@@ -1,10 +1,10 @@
 #pragma once
 
-#include "triangle_bvh_node.hpp"
+#include "scene_bvh_node.hpp"
 #include "base/math/vector.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene { namespace bvh {
 
 inline void Node::set_aabb(const float* min, const float* max) {
 	min_.v[0] = min[0];
@@ -106,4 +106,4 @@ inline bool Node::intersect_p(FVector ray_origin, FVector ray_inv_direction,
 				 _mm_comige_ss(max_t, min_t));
 }
 
-}}}}
+}}

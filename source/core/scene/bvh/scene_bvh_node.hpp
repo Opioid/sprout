@@ -4,7 +4,7 @@
 //#include "base/math/ray.hpp"
 #include "base/simd/simd.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene { namespace bvh {
 
 class Node {
 
@@ -68,4 +68,4 @@ private:
 	Max max_;
 };
 
-}}}}
+}}
