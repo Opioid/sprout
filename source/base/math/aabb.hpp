@@ -12,11 +12,11 @@ class AABB {
 public:
 
 	AABB() = default;
-	constexpr AABB(const Vector3f_a& min, const Vector3f_a& max);
+	constexpr AABB(const float3& min, const float3& max);
 	AABB(FVector min, FVector max);
 
-	const Vector3f_a& min() const;
-	const Vector3f_a& max() const;
+	const float3& min() const;
+	const float3& max() const;
 
 	Vector3f_a position() const;
 	Vector3f_a halfsize() const;
@@ -24,15 +24,15 @@ public:
 	float surface_area() const;
 	float volume() const;
 
-	bool intersect(const Vector3f_a& p) const;
+	bool intersect(const float3& p) const;
 
 	bool intersect_p(const Ray& ray) const;
 	bool intersect_p(const Ray& ray, float& min_t, float& max_t) const;
 
-	void set_min_max(const Vector3f_a& min, const Vector3f_a& max);
+	void set_min_max(const float3& min, const float3& max);
 	void set_min_max(FVector min, FVector max);
 
-	void insert(const Vector3f_a& p);
+	void insert(const float3& p);
 
 	AABB transform(const Matrix4x4f_a& m) const;
 
@@ -47,7 +47,7 @@ public:
 
 private:
 
-	Vector3f_a bounds_[2];
+	float3 bounds_[2];
 };
 
 }

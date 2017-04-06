@@ -244,6 +244,10 @@ static inline Vector SU_CALLCONV load_unaligned_float4(const float* source) {
  *
  ****************************************************************************/
 
+static inline float SU_CALLCONV get_x(FVector v) {
+	return _mm_cvtss_f32(v);
+}
+
 static inline void SU_CALLCONV store_float3(math::Vector3<float>& destination, FVector v) {
 	Vector t1 = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
 	Vector t2 = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));

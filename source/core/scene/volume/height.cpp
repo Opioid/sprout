@@ -55,16 +55,8 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 
 //	float3 result = d * ((fb - fa) / (hb - ha)) * attenuation;
 
-	float fa = -/*std::exp*/math::exp(-b_ * ha);
-	float fb = -/*std::exp*/math::exp(-b_ * hb);
-
-//	float3 e(-b_ * ha, -b_ * hb, 0.f);
-//	Vector se = math::exp(load_float4(e));
-//	float3 f;
-//	store_float4(f, se);
-//	float fa = -f[0];
-//	float fb = -f[1];
-
+	float fa = -math::exp(-b_ * ha);
+	float fb = -math::exp(-b_ * hb);
 
 	float3 result = d * ((a_ * (fb - fa) / b_) / (hb - ha)) * attenuation;
 
@@ -85,7 +77,7 @@ float Height::density(const float3& p, Worker& /*worker*/, Sampler_filter /*filt
 	// calculate height, relative to volume, in world space
 	float height = world_transformation_.scale[1] * (1.f + p[1]);
 
-	return a_ * /*std::exp*/math::exp(-b_ * height);
+	return a_ * math::exp(-b_ * height);
 }
 
 void Height::set_parameter(const std::string& name, const json::Value& value) {
