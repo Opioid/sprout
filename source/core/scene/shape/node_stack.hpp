@@ -18,8 +18,16 @@ public:
 		memory::free_aligned(stack_);
 	}
 
-	bool empty() const{
+	bool empty() const {
 		return 0 == end_;
+	}
+
+	bool zero() const {
+		return 0 == stack_[end_];
+	}
+
+	uint32_t end() const {
+		return end_;
 	}
 
 	void clear() {

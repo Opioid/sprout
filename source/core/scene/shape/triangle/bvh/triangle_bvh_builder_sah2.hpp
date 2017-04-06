@@ -137,9 +137,9 @@ private:
 	uint32_t num_nodes_;
 	uint32_t current_node_;
 
-	uint32_t num_references_;
-
 	Node* nodes_;
+
+	uint32_t num_references_;
 
 	const uint32_t num_slices_;
 	const uint32_t sweep_threshold_;

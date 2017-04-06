@@ -23,10 +23,12 @@ Tree<Data>::~Tree() {
 
 template<typename Data>
 scene::bvh::Node* Tree<Data>::allocate_nodes(uint32_t num_nodes) {
-	num_nodes_ = num_nodes;
+	if (num_nodes != num_nodes_) {
+		num_nodes_ = num_nodes;
 
-	memory::free_aligned(nodes_);
-	nodes_ = memory::allocate_aligned<Node>(num_nodes);
+		memory::free_aligned(nodes_);
+		nodes_ = memory::allocate_aligned<Node>(num_nodes);
+	}
 
 	return nodes_;
 }
@@ -166,7 +168,7 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 
 template<typename Data>
 bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const {
-	node_stack.clear();
+//	node_stack.clear();
 	node_stack.push(0);
 	uint32_t n = 0;
 
@@ -176,7 +178,7 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 	const Vector ray_min_t		   = simd::load_float(ray.min_t);
 		  Vector ray_max_t		   = simd::load_float(ray.max_t);
 
-	while (!node_stack.empty()) {
+	while (!node_stack.zero()/*empty()*/) {
 		const auto& node = nodes_[n];
 
 		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {

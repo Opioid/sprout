@@ -48,18 +48,27 @@ struct Build_node {
 	Build_node* children[2];
 };
 
+class Node;
+
 class Tree {
 
 public:
 
+	Tree();
+	~Tree();
+
 	void clear();
+
+	using Node = bvh::Node;
+
+	Node* allocate_nodes(uint32_t num_nodes);
 
 	const math::AABB& aabb() const;
 
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 				   Intersection& intersection) const;
 
-	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
+	bool intersect_p(const scene::Ray& ray, Worker& worker/*, shape::Node_stack& node_stack*/) const;
 
 	float opacity(const scene::Ray& ray, Worker& worker,
 				  material::Sampler_settings::Filter filter) const;
@@ -70,6 +79,9 @@ public:
 private:
 
 	Build_node root_;
+
+	uint32_t num_nodes_;
+	Node*	 nodes_;
 
 	uint32_t infinite_props_start_;
 	uint32_t infinite_props_end_;

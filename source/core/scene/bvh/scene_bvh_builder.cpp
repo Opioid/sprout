@@ -1,4 +1,5 @@
 #include "scene_bvh_builder.hpp"
+#include "scene_bvh_node.inl"
 #include "scene/prop.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
@@ -12,8 +13,12 @@ void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
 	tree.props_.reserve(finite_props.size() + infite_props.size());
 
 	if (finite_props.empty()) {
+		num_nodes_ = 0;
+
 		tree.root_.aabb.set_min_max(float3(-1.f), float3(1.f));
 	} else {
+		num_nodes_ = 1;
+
 		split(&tree.root_, finite_props.begin(), finite_props.end(), 4, tree.props_);
 	}
 
@@ -24,6 +29,11 @@ void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
 	}
 
 	tree.infinite_props_end_ = static_cast<uint32_t>(tree.props_.size());
+
+	nodes_ = tree.allocate_nodes(num_nodes_);
+
+	current_node_ = 0;
+	serialize(&tree.root_);
 }
 
 void Builder::split(Build_node* node, index begin, index end, uint32_t max_shapes,
@@ -52,28 +62,10 @@ void Builder::split(Build_node* node, index begin, index end, uint32_t max_shape
 
 			node->children[1] = new Build_node;
 			split(node->children[1], props1_begin, end, max_shapes, out_props);
+
+			num_nodes_ += 2;
 		}
 	}
-}
-
-void Builder::assign(Build_node* node, index begin, index end, std::vector<Prop*>& out_props) {
-	node->offset = static_cast<uint32_t>(out_props.size());
-
-	for (index i = begin; i != end; ++i) {
-		out_props.push_back(*i);
-	}
-
-	node->props_end = static_cast<uint32_t>(out_props.size());
-}
-
-math::AABB Builder::aabb(index begin, index end) {
-	math::AABB aabb = math::AABB::empty();
-
-	for (index i = begin; i != end; ++i) {
-		aabb = aabb.merge((*i)->aabb());
-	}
-
-	return aabb;
 }
 
 Split_candidate Builder::splitting_plane(const math::AABB& /*aabb*/, index begin, index end) {
@@ -97,6 +89,50 @@ Split_candidate Builder::splitting_plane(const math::AABB& /*aabb*/, index begin
 		[](const Split_candidate& a, const Split_candidate& b){ return a.key() < b.key(); });
 
 	return split_candidates_[0];
+}
+
+void Builder::serialize(Build_node* node) {
+	auto& n = new_node();
+	n.set_aabb(node->aabb.min().v, node->aabb.max().v);
+
+	if (node->children[0]) {
+		serialize(node->children[0]);
+
+		n.set_split_node(current_node_index(), node->axis);
+
+		serialize(node->children[1]);
+	} else {
+		uint8_t num_primitives = static_cast<uint8_t>(node->props_end - node->offset);
+		n.set_leaf_node(node->offset, num_primitives);
+	}
+}
+
+bvh::Node& Builder::new_node() {
+	return nodes_[current_node_++];
+}
+
+uint32_t Builder::current_node_index() const {
+	return current_node_;
+}
+
+void Builder::assign(Build_node* node, index begin, index end, std::vector<Prop*>& out_props) {
+	node->offset = static_cast<uint32_t>(out_props.size());
+
+	for (index i = begin; i != end; ++i) {
+		out_props.push_back(*i);
+	}
+
+	node->props_end = static_cast<uint32_t>(out_props.size());
+}
+
+math::AABB Builder::aabb(index begin, index end) {
+	math::AABB aabb = math::AABB::empty();
+
+	for (index i = begin; i != end; ++i) {
+		aabb = aabb.merge((*i)->aabb());
+	}
+
+	return aabb;
 }
 
 }}

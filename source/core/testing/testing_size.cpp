@@ -4,12 +4,12 @@
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
 #include "scene/scene_intersection.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/entity/entity.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_intersection.hpp"
-#include "scene/shape/triangle/bvh/triangle_bvh_node.inl"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
 #include "base/math/vector3.inl"
 #include <string>
@@ -55,7 +55,7 @@ void size() {
 
 	print_size<scene::Renderstate>("Renderstate", 112);
 
-	print_size<scene::shape::triangle::bvh::Node>("triangle::bvh::Node", 32);
+	print_size<scene::bvh::Node>("scene::bvh::Node", 32);
 
 	print_size<scene::shape::triangle::Intersection_vertex_MT>("Intersection_vertex_MT", 16);
 

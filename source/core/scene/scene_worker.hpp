@@ -39,6 +39,8 @@ public:
 
 	const Scene& scene() const;
 
+	shape::Node_stack& node_stack_a();
+
 	shape::Node_stack& node_stack();
 
 	const Texture_sampler_2D& sampler_2D(uint32_t key, Sampler_filter filter) const;
@@ -54,6 +56,8 @@ private:
 protected:
 
 	const Scene* scene_;
+
+	shape::Node_stack node_stack_a_;
 
 	shape::Node_stack node_stack_;
 

@@ -58,7 +58,7 @@ public:
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 				   Intersection& intersection) const;
 
-	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
+	bool intersect_p(const scene::Ray& ray, Worker& worker) const;
 
 	float opacity(const scene::Ray& ray, Worker& worker,
 				  material::Sampler_settings::Filter filter) const;
@@ -117,6 +117,7 @@ private:
 	bvh::Tree bvh_;
 
 	bool has_masked_material_;
+	bool has_translucent_shadow_;
 
 	std::vector<entity::Dummy*> dummies_;
 

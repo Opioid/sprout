@@ -11,7 +11,7 @@ namespace scene {
 using Texture_sampler_2D = image::texture::sampler::Sampler_2D;
 using Texture_sampler_3D = image::texture::sampler::Sampler_3D;
 
-Worker::Worker() : node_stack_(128) {}
+Worker::Worker() : node_stack_a_(32), node_stack_(128) {}
 
 void Worker::init(uint32_t id, const Scene& scene) {
 	id_ = id;
@@ -45,7 +45,7 @@ bool Worker::intersect(const Prop* prop, Ray& ray, Intersection& intersection) {
 }
 
 bool Worker::visibility(const Ray& ray) {
-	return !scene_->intersect_p(ray, node_stack_);
+	return !scene_->intersect_p(ray, *this/*node_stack_*/);
 }
 
 float Worker::masked_visibility(const Ray& ray, Sampler_filter filter) {
@@ -58,6 +58,10 @@ float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) {
 
 const scene::Scene& Worker::scene() const {
 	return *scene_;
+}
+
+scene::shape::Node_stack& Worker::node_stack_a() {
+	return node_stack_a_;
 }
 
 scene::shape::Node_stack& Worker::node_stack() {

@@ -13,6 +13,7 @@ class Prop;
 namespace bvh {
 
 class Builder {
+
 public:
 
 	void build(Tree& tree, std::vector<Prop*>& finite_props,
@@ -25,13 +26,24 @@ private:
 	void split(Build_node* node, index begin, index end, uint32_t max_shapes,
 			   std::vector<Prop*>& out_props);
 
+	Split_candidate splitting_plane(const math::AABB& aabb, index begin, index end);
+
+	void serialize(Build_node* node);
+
+	Node& new_node();
+
+	uint32_t current_node_index() const;
+
 	static void assign(Build_node* node, index begin, index end, std::vector<Prop*>& out_props);
 
 	static math::AABB aabb(index begin, index end);
 
-	Split_candidate splitting_plane(const math::AABB& aabb, index begin, index end);
-
 	std::vector<Split_candidate> split_candidates_;
+
+	uint32_t num_nodes_;
+	uint32_t current_node_;
+
+	Node* nodes_;
 };
 
 }}

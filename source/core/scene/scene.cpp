@@ -65,22 +65,26 @@ bool Scene::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 	return bvh_.intersect(ray, node_stack, intersection);
 }
 
-bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
-	return bvh_.intersect_p(ray, node_stack);
+bool Scene::intersect_p(const scene::Ray& ray, Worker& worker) const {
+	return bvh_.intersect_p(ray, worker);
 }
 
 float Scene::opacity(const scene::Ray& ray, Worker& worker,
 					 material::Sampler_settings::Filter filter) const {
 	if (has_masked_material_) {
 		return bvh_.opacity(ray, worker, filter);
-	} else {
-		return bvh_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 	}
+
+	return bvh_.intersect_p(ray, worker/*.node_stack()*/) ? 1.f : 0.f;
 }
 
 float3 Scene::thin_absorption(const scene::Ray& ray, Worker& worker,
 							  material::Sampler_settings::Filter filter) const {
-	return bvh_.thin_absorption(ray, worker, filter);
+	if (has_translucent_shadow_) {
+		return bvh_.thin_absorption(ray, worker, filter);
+	}
+
+	return float3(opacity(ray, worker, filter));
 }
 
 float Scene::tick_duration() const {
@@ -198,6 +202,7 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 
 void Scene::compile(thread::Pool& pool) {
 	has_masked_material_ = false;
+	has_translucent_shadow_ = false;
 
 	// handle changed transformations
 	for (const auto d : dummies_) {
@@ -211,11 +216,13 @@ void Scene::compile(thread::Pool& pool) {
 	for (auto p : finite_props_) {
 		p->calculate_world_transformation();
 		has_masked_material_ = has_masked_material_ || p->has_masked_material();
+		has_translucent_shadow_ = has_translucent_shadow_ || p->has_translucent_shadow();
 	}
 
 	for (auto p : infinite_props_) {
 		p->calculate_world_transformation();
 		has_masked_material_ = has_masked_material_ || p->has_masked_material();
+		has_translucent_shadow_ = has_translucent_shadow_ || p->has_translucent_shadow();
 	}
 
 	// rebuild the BVH
