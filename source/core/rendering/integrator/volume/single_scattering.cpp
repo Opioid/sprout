@@ -11,6 +11,9 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace rendering { namespace integrator { namespace volume {
 
 Single_scattering::Single_scattering(const take::Settings& take_settings,
@@ -49,7 +52,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 		return float4(0.f);
 	}
 
-	float range = max_t - min_t;
+	const float range = max_t - min_t;
 
 	if (range < 0.0001f) {
 		transmittance = float3(1.f);
@@ -72,14 +75,28 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 
 	min_t += rng_.random_float() * step;
 
+	float3 next = ray.point(min_t);
+	Ray tau_ray(current, next - current, 0.f, 1.f, ray.time);
+
+	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
+	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
+
 	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
 		previous = current;
 		current  = ray.point(min_t);
 
-		Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
+//		Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
+
 		float3 tau = volume.optical_depth(tau_ray, settings_.step_size, rng_,
 										  worker, Sampler_filter::Unknown);
 		tr *= math::exp(-tau);
+
+		tau_ray.origin = previous;
+		// This stays the same during the loop,
+		// but we need a different value in the first iteration.
+		// Would be nicer to restructure the loop.
+		tau_ray.direction = tau_ray_direction;
+		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Direct light scattering
 		float light_pdf;
@@ -108,22 +125,6 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 				radiance += p * tv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
 		}
-
-		// Indirect light scattering
-		/*
-		float2 uv(rng_.random_float(), rng_.random_float());
-		float3 dir = math::sample_sphere_uniform(uv);
-
-		math::Ray scatter_ray(current, dir, 0.f, 10000.f, ray.time);
-
-		float3 li = worker.surface_li(scatter_ray);
-
-		float p = volume->phase(w, -dir);
-
-		float3 l = Single_scattering::transmittance(volume, scatter_ray) * li;
-
-		radiance += p * tr * scattering * l;
-		*/
 	}
 
 	transmittance = tr;
