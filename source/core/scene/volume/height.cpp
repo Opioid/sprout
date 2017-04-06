@@ -14,9 +14,7 @@ Height::Height() : a_(1.f), b_(1.f) {}
 
 float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Generator& /*rng*/,
 							 Worker& /*worker*/, Sampler_filter /*filter*/) const {
-	float length = math::length(ray.direction);
-
-	math::Ray rn(ray.origin, ray.direction / length, ray.min_t * length, ray.max_t * length);
+	math::Ray rn = ray.normalized();
 
 	float min_t;
 	float max_t;

@@ -130,7 +130,7 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 }
 
 inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) const {
-	int8_t sign_0 = ray.signs[0];
+/*	int8_t sign_0 = ray.signs[0];
 	float min_t = (bounds_[    sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
 	float max_t = (bounds_[1 - sign_0][0] - ray.origin[0]) * ray.inv_direction[0];
 
@@ -178,6 +178,53 @@ inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) co
 	}
 
 	return min_t < ray.max_t && max_t > ray.min_t;
+*/
+
+	Vector ray_origin		 = simd::load_float4(ray.origin);
+	Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
+	Vector ray_min_t		 = simd::load_float(ray.min_t);
+	Vector ray_max_t		 = simd::load_float(ray.max_t);
+
+	const Vector bb_min = simd::load_float4(bounds_[0]);
+	const Vector bb_max = simd::load_float4(bounds_[1]);
+
+	const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
+	const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
+
+	// the order we use for those min/max is vital to filter out
+	// NaNs that happens when an inv_dir is +/- inf and
+	// (box_min - pos) is 0. inf * 0 = NaN
+	const Vector filtered_l1a = math::min(l1, simd::Infinity);
+	const Vector filtered_l2a = math::min(l2, simd::Infinity);
+
+	const Vector filtered_l1b = math::max(l1, simd::NegInfinity);
+	const Vector filtered_l2b = math::max(l2, simd::NegInfinity);
+
+	// now that we're back on our feet, test those slabs.
+	Vector max_t = math::max(filtered_l1a, filtered_l2a);
+	Vector min_t = math::min(filtered_l1b, filtered_l2b);
+
+	// unfold back. try to hide the latency of the shufps & co.
+	max_t = math::min1(max_t, SU_ROTATE_LEFT(max_t));
+	min_t = math::max1(min_t, SU_ROTATE_LEFT(min_t));
+
+	max_t = math::min1(max_t, SU_MUX_HIGH(max_t, max_t));
+	min_t = math::max1(min_t, SU_MUX_HIGH(min_t, min_t));
+
+	min_out = simd::get_x(min_t);
+	max_out = simd::get_x(max_t);
+
+	if (min_out < ray.min_t) {
+		min_out = ray.min_t;
+	}
+
+	if (max_out > ray.max_t) {
+		max_out = ray.max_t;
+	}
+
+	return 0 != (_mm_comige_ss(max_t, ray_min_t) &
+				 _mm_comige_ss(ray_max_t, min_t) &
+				 _mm_comige_ss(max_t, min_t));
 }
 
 inline void AABB::set_min_max(const float3& min, const float3& max) {
