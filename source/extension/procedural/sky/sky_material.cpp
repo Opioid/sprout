@@ -113,9 +113,8 @@ float Sky_baked_material::emission_pdf(float2 uv, const scene::Worker& worker,
 }
 
 void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint32_t /*part*/,
-										  const Transformation& transformation,
-										  float /*area*/, bool importance_sampling,
-										  thread::Pool& /*pool*/) {
+										  const Transformation& transformation, float /*area*/,
+										  bool importance_sampling, thread::Pool& /*pool*/) {
 	if (!model_.init()) {
 		return;
 	}

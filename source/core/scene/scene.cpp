@@ -66,7 +66,7 @@ bool Scene::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 }
 
 bool Scene::intersect_p(const scene::Ray& ray, Worker& worker) const {
-	return bvh_.intersect_p(ray, worker);
+	return bvh_.intersect_p(ray, worker.node_stack());
 }
 
 float Scene::opacity(const scene::Ray& ray, Worker& worker,
@@ -75,7 +75,7 @@ float Scene::opacity(const scene::Ray& ray, Worker& worker,
 		return bvh_.opacity(ray, worker, filter);
 	}
 
-	return bvh_.intersect_p(ray, worker/*.node_stack()*/) ? 1.f : 0.f;
+	return bvh_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 }
 
 float3 Scene::thin_absorption(const scene::Ray& ray, Worker& worker,

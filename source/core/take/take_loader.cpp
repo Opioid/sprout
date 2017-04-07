@@ -98,6 +98,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 
 	if (!take->sampler_factory) {
 		take->sampler_factory = std::make_shared<sampler::Random_factory>();
+		logging::warning("No known sampler was specified, defaulting to Random sampler.");
 	}
 
 	using namespace rendering::integrator;
@@ -305,23 +306,20 @@ Loader::load_filter(const json::Value& filter_value) {
 std::shared_ptr<sampler::Factory>
 Loader::load_sampler_factory(const json::Value& sampler_value, uint32_t& num_samples_per_pixel) {
 	for (auto& n : sampler_value.GetObject()) {
+		num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
+
 		if ("Uniform" == n.name) {
 			num_samples_per_pixel = 1;
 			return std::make_shared<sampler::Uniform_factory>();
 		} else if ("Random" == n.name) {
-			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 			return std::make_shared<sampler::Random_factory>();
 		} else if ("Hammersley" == n.name) {
-			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 			return std::make_shared<sampler::Hammersley_factory>();
 		} else if ("EMS" == n.name) {
-			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 			return std::make_shared<sampler::EMS_factory>();
 		} else if ("Golden_ratio" == n.name) {
-			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 			return std::make_shared<sampler::Golden_ratio_factory>();
 		} else if ("LD" == n.name) {
-			num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 			return std::make_shared<sampler::LD_factory>();
 		}
 	}

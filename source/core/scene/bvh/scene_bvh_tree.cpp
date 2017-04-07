@@ -7,8 +7,6 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 
-#include <iostream>
-
 namespace scene { namespace bvh {
 
 Build_node::Build_node() {
@@ -185,32 +183,7 @@ const math::AABB& Tree::aabb() const {
 bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 					 Intersection& intersection) const {
 	bool hit = false;
-	intersection.prop = nullptr;
-
-	if (root_.intersect(ray, props_, node_stack, intersection)) {
-		hit = true;
-	}
-
-	const Prop* prop = intersection.prop;
-
-	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
-		const auto p = props_[i];
-		if (p->intersect(ray, node_stack, intersection.geo)) {
-			prop = p;
-			hit = true;
-		}
-	}
-
-	intersection.prop = prop;
-	return hit;
-}
-
-bool Tree::intersect_p(const scene::Ray& ray, Worker& worker/*, shape::Node_stack& node_stack*/) const {
-//	if (root_.intersect_p(ray, props_, node_stack)) {
-//		return true;
-//	}
-
-	auto& node_stack = worker.node_stack();
+	const Prop* prop = nullptr;
 
 	node_stack.clear();
 	node_stack.push(0);
@@ -221,9 +194,6 @@ bool Tree::intersect_p(const scene::Ray& ray, Worker& worker/*, shape::Node_stac
 	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
 	const Vector ray_min_t		   = simd::load_float(ray.min_t);
 		  Vector ray_max_t		   = simd::load_float(ray.max_t);
-
-
-	size_t i = 0;
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes_[n];
@@ -242,32 +212,68 @@ bool Tree::intersect_p(const scene::Ray& ray, Worker& worker/*, shape::Node_stac
 			}
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
-				if (props_[i]->intersect_p(ray, worker.node_stack())) {
-
-				//	uint32_t end = node_stack.end();
-				//	std::cout << end << std::endl;
-
-					return true;
-				} else {
-				//	uint32_t end = node_stack.end();
-				//	std::cout << end << std::endl;
+				const auto p = props_[i];
+				if (p->intersect(ray, node_stack, intersection.geo)) {
+					prop = p;
+					hit = true;
 				}
-
-
 			}
 		}
-std::cout << i++ << std::endl;
+
 		n = node_stack.pop();
 	}
 
+	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
+		const auto p = props_[i];
+		if (p->intersect(ray, node_stack, intersection.geo)) {
+			prop = p;
+			hit = true;
+		}
+	}
 
+	intersection.prop = prop;
+	return hit;
+}
 
-std::cout << "here" << std::endl;
+bool Tree::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
+	node_stack.clear();
+	node_stack.push(0);
+	uint32_t n = 0;
 
+	const Vector ray_origin		   = simd::load_float4(ray.origin);
+//	const Vector ray_direction	   = simd::load_float4(ray.direction);
+	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
+	const Vector ray_min_t		   = simd::load_float(ray.min_t);
+		  Vector ray_max_t		   = simd::load_float(ray.max_t);
 
+	while (!node_stack.empty()) {
+		const auto& node = nodes_[n];
+
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
+			if (0 == node.num_primitives()) {
+				if (0 == ray.signs[node.axis()]) {
+					node_stack.push(node.next());
+					++n;
+				} else {
+					node_stack.push(n + 1);
+					n = node.next();
+				}
+
+				continue;
+			}
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				if (props_[i]->intersect_p(ray, node_stack)) {
+					return true;
+				}
+			}
+		}
+
+		n = node_stack.pop();
+	}
 
 	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
-		if (props_[i]->intersect_p(ray, worker.node_stack())) {
+		if (props_[i]->intersect_p(ray, node_stack)) {
 			return true;
 		}
 	}
@@ -277,15 +283,53 @@ std::cout << "here" << std::endl;
 
 float Tree::opacity(const scene::Ray& ray, Worker& worker,
 					material::Sampler_settings::Filter filter) const {
-	float opacity = root_.opacity(ray, props_, worker, filter);
+	auto& node_stack = worker.node_stack();
+	node_stack.clear();
+	node_stack.push(0);
+	uint32_t n = 0;
 
-	if (opacity < 1.f) {
-		for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
-			auto p = props_[i];
-			opacity += (1.f - opacity) * p->opacity(ray, worker, filter);
-			if (opacity >= 1.f) {
-				return 1.f;
+	float opacity = 0.f;
+
+	const Vector ray_origin		   = simd::load_float4(ray.origin);
+//	const Vector ray_direction	   = simd::load_float4(ray.direction);
+	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
+	const Vector ray_min_t		   = simd::load_float(ray.min_t);
+		  Vector ray_max_t		   = simd::load_float(ray.max_t);
+
+	while (!node_stack.empty()) {
+		auto& node = nodes_[n];
+
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
+			if (0 == node.num_primitives()) {
+				if (0 == ray.signs[node.axis()]) {
+					node_stack.push(node.next());
+					++n;
+				} else {
+					node_stack.push(n + 1);
+					n = node.next();
+				}
+
+				continue;
 			}
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				const auto p = props_[i];
+				opacity += (1.f - opacity) * p->opacity(ray, worker, filter);
+
+				if (opacity >= 1.f) {
+					return 1.f;
+				}
+			}
+		}
+
+		n = node_stack.pop();
+	}
+
+	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
+		const auto p = props_[i];
+		opacity += (1.f - opacity) * p->opacity(ray, worker, filter);
+		if (opacity >= 1.f) {
+			return 1.f;
 		}
 	}
 
@@ -294,15 +338,52 @@ float Tree::opacity(const scene::Ray& ray, Worker& worker,
 
 float3 Tree::thin_absorption(const scene::Ray& ray, Worker& worker,
 							 material::Sampler_settings::Filter filter) const {
-	float3 absorption = root_.thin_absorption(ray, props_, worker, filter);
+	auto& node_stack = worker.node_stack();
+	node_stack.clear();
+	node_stack.push(0);
+	uint32_t n = 0;
 
-	if (math::all_lesser(absorption, 1.f)) {
-		for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
-			auto p = props_[i];
-			absorption += (1.f - absorption) * p->thin_absorption(ray, worker, filter);
-			if (math::all_greater_equal(absorption, 1.f)) {
-				return float3(1.f);
+	float3 absorption(0.f);
+
+	const Vector ray_origin		   = simd::load_float3(ray.origin);
+//	const Vector ray_direction	   = simd::load_float3(ray.direction);
+	const Vector ray_inv_direction = simd::load_float3(ray.inv_direction);
+	const Vector ray_min_t		   = simd::load_float(ray.min_t);
+		  Vector ray_max_t		   = simd::load_float(ray.max_t);
+
+	while (!node_stack.empty()) {
+		auto& node = nodes_[n];
+
+		if (node.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
+			if (0 == node.num_primitives()) {
+				if (0 == ray.signs[node.axis()]) {
+					node_stack.push(node.next());
+					++n;
+				} else {
+					node_stack.push(n + 1);
+					n = node.next();
+				}
+
+				continue;
 			}
+
+			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
+				const auto p = props_[i];
+				absorption += (1.f - absorption) * p->thin_absorption(ray, worker, filter);
+				if (math::all_greater_equal(absorption, 1.f)) {
+					return float3(1.f);
+				}
+			}
+		}
+
+		n = node_stack.pop();
+	}
+
+	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
+		const auto p = props_[i];
+		absorption += (1.f - absorption) * p->thin_absorption(ray, worker, filter);
+		if (math::all_greater_equal(absorption, 1.f)) {
+			return float3(1.f);
 		}
 	}
 

@@ -30,6 +30,10 @@ public:
 		return end_;
 	}
 
+	uint32_t peek() const {
+		return stack_[end_];
+	}
+
 	void clear() {
 		end_ = 0;
 	}
