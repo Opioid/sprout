@@ -404,6 +404,7 @@ static inline Vector3f_a reciprocal(const Vector3f_a& v) {
 	Vector sx = simd::load_float4(v);
 
 	Vector rcp = _mm_rcp_ps(sx);
+	rcp = _mm_and_ps(rcp, simd::Mask3);
 	Vector mul = _mm_mul_ps(sx, _mm_mul_ps(rcp, rcp));
 
 	Vector3f_a result;

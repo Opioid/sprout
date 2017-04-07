@@ -16,10 +16,29 @@ class Builder {
 
 public:
 
+	Builder();
+	~Builder();
+
 	void build(Tree& tree, std::vector<Prop*>& finite_props,
 			   const std::vector<Prop*>& infite_props);
 
 private:
+
+	struct Build_node {
+		Build_node();
+		~Build_node();
+
+		void clear();
+
+		math::AABB aabb;
+
+		uint8_t axis;
+
+		uint32_t offset;
+		uint32_t props_end;
+
+		Build_node* children[2];
+	};
 
 	using index = std::vector<Prop*>::iterator;
 
@@ -39,6 +58,8 @@ private:
 	static math::AABB aabb(index begin, index end);
 
 	std::vector<Split_candidate> split_candidates_;
+
+	Build_node* root_;
 
 	uint32_t num_nodes_;
 	uint32_t current_node_;

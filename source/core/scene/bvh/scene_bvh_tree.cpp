@@ -9,140 +9,6 @@
 
 namespace scene { namespace bvh {
 
-Build_node::Build_node() {
-	children[0] = nullptr;
-	children[1] = nullptr;
-}
-
-Build_node::~Build_node() {
-	delete children[0];
-	delete children[1];
-}
-
-bool Build_node::intersect(scene::Ray& ray, const std::vector<Prop*>& props,
-						   shape::Node_stack& node_stack, Intersection& intersection) const {
-	if (!aabb.intersect_p(ray)) {
-		return false;
-	}
-
-	bool hit = false;
-
-	if (children[0]) {
-		const uint8_t c = ray.signs[axis];
-
-		if (children[c]->intersect(ray, props, node_stack, intersection)) {
-			hit = true;
-		}
-
-		if (children[1 - c]->intersect(ray, props, node_stack, intersection)) {
-			hit = true;
-		}
-	} else {
-		for (uint32_t i = offset; i < props_end; ++i) {
-			const auto p = props[i];
-			if (p->intersect(ray, node_stack, intersection.geo)) {
-				intersection.prop = p;
-				hit = true;
-			}
-		}
-	}
-
-	return hit;
-}
-
-bool Build_node::intersect_p(const scene::Ray& ray, const std::vector<Prop*>& props,
-							 shape::Node_stack& node_stack) const {
-	if (!aabb.intersect_p(ray)) {
-		return false;
-	}
-
-	if (children[0]) {
-		const uint8_t c = ray.signs[axis];
-
-		if (children[c]->intersect_p(ray, props, node_stack)) {
-			return true;
-		}
-
-		return children[1 - c]->intersect_p(ray, props, node_stack);
-	}
-
-	for (uint32_t i = offset; i < props_end; ++i) {
-		if (props[i]->intersect_p(ray, node_stack)) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-float Build_node::opacity(const scene::Ray& ray, const std::vector<Prop*>& props,
-						  Worker& worker, Sampler_filter filter) const {
-	if (!aabb.intersect_p(ray)) {
-		return 0.f;
-	}
-
-	float opacity = 0.f;
-
-	if (children[0]) {
-		const uint8_t c = ray.signs[axis];
-
-		opacity += (1.f - opacity) * children[c]->opacity(ray, props, worker, filter);
-		if (opacity >= 1.f) {
-			return 1.f;
-		}
-
-		opacity += (1.f - opacity) * children[1 - c]->opacity(ray, props, worker, filter);
-		if (opacity >= 1.f) {
-			return 1.f;
-		}
-	} else {
-		for (uint32_t i = offset; i < props_end; ++i) {
-			auto p = props[i];
-			opacity += (1.f - opacity) * p->opacity(ray, worker, filter);
-			if (opacity >= 1.f) {
-				return 1.f;
-			}
-		}
-	}
-
-	return opacity;
-}
-
-float3 Build_node::thin_absorption(const scene::Ray& ray, const std::vector<Prop*>& props,
-								   Worker& worker, Sampler_filter filter) const {
-	if (!aabb.intersect_p(ray)) {
-		return float3(0.f);
-	}
-
-	float3 absorption(0.f);
-
-	if (children[0]) {
-		const uint8_t c = ray.signs[axis];
-
-		float3 ta = children[c]->thin_absorption(ray, props, worker, filter);
-		absorption += (1.f - absorption) * ta;
-		if (math::all_greater_equal(absorption, 1.f)) {
-			return float3(1.f);
-		}
-
-		ta = children[1 - c]->thin_absorption(ray, props, worker, filter);
-		absorption += (1.f - absorption) * ta;
-		if (math::all_greater_equal(absorption, 1.f)) {
-			return float3(1.f);
-		}
-	} else {
-		for (uint32_t i = offset; i < props_end; ++i) {
-			const auto p = props[i];
-			absorption += (1.f - absorption) * p->thin_absorption(ray, worker, filter);
-			if (math::all_greater_equal(absorption, 1.f)) {
-				return float3(1.f);
-			}
-		}
-	}
-
-	return absorption;
-}
-
 Tree::Tree() : num_nodes_(0), nodes_(nullptr) {}
 
 Tree::~Tree() {
@@ -150,15 +16,6 @@ Tree::~Tree() {
 }
 
 void Tree::clear() {
-	delete root_.children[0];
-	root_.children[0] = nullptr;
-
-	delete root_.children[1];
-	root_.children[1] = nullptr;
-
-	root_.offset = 0;
-	root_.props_end = 0;
-
 	infinite_props_start_ = 0;
 	infinite_props_end_ = 0;
 
@@ -177,7 +34,7 @@ bvh::Node* Tree::allocate_nodes(uint32_t num_nodes) {
 }
 
 const math::AABB& Tree::aabb() const {
-	return root_.aabb;
+	return aabb_;
 }
 
 bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
@@ -186,7 +43,10 @@ bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 	const Prop* prop = nullptr;
 
 	node_stack.clear();
-	node_stack.push(0);
+	if (0 != num_nodes_) {
+		node_stack.push(0);
+	}
+
 	uint32_t n = 0;
 
 	const Vector ray_origin		   = simd::load_float4(ray.origin);
@@ -237,7 +97,10 @@ bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 
 bool Tree::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
 	node_stack.clear();
-	node_stack.push(0);
+	if (0 != num_nodes_) {
+		node_stack.push(0);
+	}
+
 	uint32_t n = 0;
 
 	const Vector ray_origin		   = simd::load_float4(ray.origin);
@@ -281,11 +144,14 @@ bool Tree::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 	return false;
 }
 
-float Tree::opacity(const scene::Ray& ray, Worker& worker,
-					material::Sampler_settings::Filter filter) const {
+float Tree::opacity(const scene::Ray& ray, Worker& worker, Sampler_filter filter) const {
 	auto& node_stack = worker.node_stack();
+
 	node_stack.clear();
-	node_stack.push(0);
+	if (0 != num_nodes_) {
+		node_stack.push(0);
+	}
+
 	uint32_t n = 0;
 
 	float opacity = 0.f;
@@ -336,11 +202,14 @@ float Tree::opacity(const scene::Ray& ray, Worker& worker,
 	return opacity;
 }
 
-float3 Tree::thin_absorption(const scene::Ray& ray, Worker& worker,
-							 material::Sampler_settings::Filter filter) const {
+float3 Tree::thin_absorption(const scene::Ray& ray, Worker& worker, Sampler_filter filter) const {
 	auto& node_stack = worker.node_stack();
+
 	node_stack.clear();
-	node_stack.push(0);
+	if (0 != num_nodes_) {
+		node_stack.push(0);
+	}
+
 	uint32_t n = 0;
 
 	float3 absorption(0.f);

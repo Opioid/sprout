@@ -6,6 +6,14 @@
 
 namespace scene { namespace bvh {
 
+Builder::Builder() : root_(new Build_node) {
+	root_->clear();
+}
+
+Builder::~Builder() {
+	delete root_;
+}
+
 void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
 					const std::vector<Prop*>& infite_props) {
 	tree.clear();
@@ -13,13 +21,15 @@ void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
 	tree.props_.reserve(finite_props.size() + infite_props.size());
 
 	if (finite_props.empty()) {
-		num_nodes_ = 0;
-
-		tree.root_.aabb.set_min_max(float3(-1.f), float3(1.f));
+		nodes_ = tree.allocate_nodes(0);
 	} else {
 		num_nodes_ = 1;
+		split(root_, finite_props.begin(), finite_props.end(), 4, tree.props_);
 
-		split(&tree.root_, finite_props.begin(), finite_props.end(), 4, tree.props_);
+		nodes_ = tree.allocate_nodes(num_nodes_);
+
+		current_node_ = 0;
+		serialize(root_);
 	}
 
 	tree.infinite_props_start_ = static_cast<uint32_t>(tree.props_.size());
@@ -30,10 +40,33 @@ void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
 
 	tree.infinite_props_end_ = static_cast<uint32_t>(tree.props_.size());
 
-	nodes_ = tree.allocate_nodes(num_nodes_);
+	tree.aabb_ = root_->aabb;
 
-	current_node_ = 0;
-	serialize(&tree.root_);
+	root_->clear();
+}
+
+Builder::Build_node::Build_node() {
+	children[0] = nullptr;
+	children[1] = nullptr;
+}
+
+Builder::Build_node::~Build_node() {
+	delete children[0];
+	delete children[1];
+}
+
+void Builder::Build_node::clear() {
+	delete children[0];
+	children[0] = nullptr;
+	delete children[1];
+	children[1] = nullptr;
+
+	props_end = 0;
+	offset = 0;
+
+	// This size will be used even if there are only infinite props in the scene.
+	// It is an arbitrary size that will be used to calculate the power of some lights.
+	aabb = math::AABB(float3(-1.f), float3(1.f));
 }
 
 void Builder::split(Build_node* node, index begin, index end, uint32_t max_shapes,
@@ -46,13 +79,12 @@ void Builder::split(Build_node* node, index begin, index end, uint32_t max_shape
 		Split_candidate sp = splitting_plane(node->aabb, begin, end);
 		node->axis = sp.axis();
 
-		index props1_begin = std::partition(begin, end,
-			[&sp](Prop* p) {
-				bool mib = math::plane::behind(sp.plane(), p->aabb().min());
-				bool mab = math::plane::behind(sp.plane(), p->aabb().max());
+		index props1_begin = std::partition(begin, end, [&sp](Prop* p) {
+			bool mib = math::plane::behind(sp.plane(), p->aabb().min());
+			bool mab = math::plane::behind(sp.plane(), p->aabb().max());
 
-				return mib && mab;
-			});
+			return mib && mab;
+		});
 
 		if (begin == props1_begin) {
 			assign(node, props1_begin, end, out_props);

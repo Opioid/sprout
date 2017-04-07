@@ -63,8 +63,6 @@ void size() {
 
 	print_size<scene::shape::triangle::Shading_vertex_MTC>("Shading_vertex_MTC", 32);
 
-	print_size<scene::bvh::Build_node>("bvh::Build_node", 64);
-
 	print_size<image::texture::Adapter>("texture::Adapter", 32);
 
 	print_size<scene::bvh::Split_candidate>("Split_candidate", 32);
