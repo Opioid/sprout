@@ -11,8 +11,8 @@ namespace math {
 inline constexpr AABB::AABB(const float3& min, const float3& max) : bounds_{min, max} {}
 
 inline AABB::AABB(FVector min, FVector max) {
-	simd::store_float4(bounds_[0], min);
-	simd::store_float4(bounds_[1], max);
+	simd::store_float4(bounds_[0].v, min);
+	simd::store_float4(bounds_[1].v, max);
 }
 
 inline const float3& AABB::min() const {
@@ -93,13 +93,13 @@ inline bool AABB::intersect_p(const Ray& ray) const {
 
 	return min_t < ray.max_t && max_t > ray.min_t;*/
 
-	Vector ray_origin		 = simd::load_float4(ray.origin);
-	Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
-	Vector ray_min_t		 = simd::load_float(ray.min_t);
-	Vector ray_max_t		 = simd::load_float(ray.max_t);
+	Vector ray_origin		 = simd::load_float4(ray.origin.v);
+	Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+	Vector ray_min_t		 = simd::load_float(&ray.min_t);
+	Vector ray_max_t		 = simd::load_float(&ray.max_t);
 
-	const Vector bb_min = simd::load_float4(bounds_[0]);
-	const Vector bb_max = simd::load_float4(bounds_[1]);
+	const Vector bb_min = simd::load_float4(bounds_[0].v);
+	const Vector bb_max = simd::load_float4(bounds_[1].v);
 
 	const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
 	const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
@@ -180,13 +180,13 @@ inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) co
 	return min_t < ray.max_t && max_t > ray.min_t;
 */
 
-	Vector ray_origin		 = simd::load_float4(ray.origin);
-	Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
-	Vector ray_min_t		 = simd::load_float(ray.min_t);
-	Vector ray_max_t		 = simd::load_float(ray.max_t);
+	Vector ray_origin		 = simd::load_float4(ray.origin.v);
+	Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+	Vector ray_min_t		 = simd::load_float(&ray.min_t);
+	Vector ray_max_t		 = simd::load_float(&ray.max_t);
 
-	const Vector bb_min = simd::load_float4(bounds_[0]);
-	const Vector bb_max = simd::load_float4(bounds_[1]);
+	const Vector bb_min = simd::load_float4(bounds_[0].v);
+	const Vector bb_max = simd::load_float4(bounds_[1].v);
 
 	const Vector l1 = mul(sub(bb_min, ray_origin), ray_inv_direction);
 	const Vector l2 = mul(sub(bb_max, ray_origin), ray_inv_direction);
@@ -233,8 +233,8 @@ inline void AABB::set_min_max(const float3& min, const float3& max) {
 }
 
 inline void AABB::set_min_max(FVector min, FVector max) {
-	simd::store_float4(bounds_[0], min);
-	simd::store_float4(bounds_[1], max);
+	simd::store_float4(bounds_[0].v, min);
+	simd::store_float4(bounds_[1].v, max);
 }
 
 inline void AABB::insert(const float3& p) {

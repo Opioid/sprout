@@ -49,11 +49,11 @@ bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 
 	uint32_t n = 0;
 
-	const Vector ray_origin		   = simd::load_float4(ray.origin);
-//	const Vector ray_direction	   = simd::load_float4(ray.direction);
-	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
-	const Vector ray_min_t		   = simd::load_float(ray.min_t);
-		  Vector ray_max_t		   = simd::load_float(ray.max_t);
+	const Vector ray_origin		   = simd::load_float4(ray.origin.v);
+//	const Vector ray_direction	   = simd::load_float4(ray.direction.v);
+	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+	const Vector ray_min_t		   = simd::load_float(&ray.min_t);
+		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes_[n];
@@ -103,11 +103,11 @@ bool Tree::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 
 	uint32_t n = 0;
 
-	const Vector ray_origin		   = simd::load_float4(ray.origin);
-//	const Vector ray_direction	   = simd::load_float4(ray.direction);
-	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
-	const Vector ray_min_t		   = simd::load_float(ray.min_t);
-		  Vector ray_max_t		   = simd::load_float(ray.max_t);
+	const Vector ray_origin		   = simd::load_float4(ray.origin.v);
+//	const Vector ray_direction	   = simd::load_float4(ray.direction.v);
+	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+	const Vector ray_min_t		   = simd::load_float(&ray.min_t);
+		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes_[n];
@@ -156,11 +156,11 @@ float Tree::opacity(const scene::Ray& ray, Worker& worker, Sampler_filter filter
 
 	float opacity = 0.f;
 
-	const Vector ray_origin		   = simd::load_float4(ray.origin);
-//	const Vector ray_direction	   = simd::load_float4(ray.direction);
-	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction);
-	const Vector ray_min_t		   = simd::load_float(ray.min_t);
-		  Vector ray_max_t		   = simd::load_float(ray.max_t);
+	const Vector ray_origin		   = simd::load_float4(ray.origin.v);
+//	const Vector ray_direction	   = simd::load_float4(ray.direction.v);
+	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+	const Vector ray_min_t		   = simd::load_float(&ray.min_t);
+		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];
@@ -214,11 +214,11 @@ float3 Tree::thin_absorption(const scene::Ray& ray, Worker& worker, Sampler_filt
 
 	float3 absorption(0.f);
 
-	const Vector ray_origin		   = simd::load_float3(ray.origin);
-//	const Vector ray_direction	   = simd::load_float3(ray.direction);
-	const Vector ray_inv_direction = simd::load_float3(ray.inv_direction);
-	const Vector ray_min_t		   = simd::load_float(ray.min_t);
-		  Vector ray_max_t		   = simd::load_float(ray.max_t);
+	const Vector ray_origin		   = simd::load_float4(ray.origin.v);
+//	const Vector ray_direction	   = simd::load_float4(ray.direction.v);
+	const Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
+	const Vector ray_min_t		   = simd::load_float(&ray.min_t);
+		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	while (!node_stack.empty()) {
 		auto& node = nodes_[n];

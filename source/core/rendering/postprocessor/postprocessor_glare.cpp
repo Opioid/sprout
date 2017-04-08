@@ -207,7 +207,7 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 		}
 	} else {
 		//float intensity = intensity_;
-		Vector intensity = simd::load_float(intensity_);
+		Vector intensity = simd::set_float4(intensity_);
 
 		const auto d = destination.description().dimensions.xy();
 
@@ -239,8 +239,8 @@ void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
 			for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0) {
 				int32_t si = (cd1 + ky) * d[0];
 				for (int32_t ki = kb[0] + krow, kl = ke[0] + krow; ki < kl; ++ki, ++si) {
-					Vector k = simd::load_float4(kernel_[ki]);
-					Vector h = simd::load_float4(high_pass_[si]);
+					Vector k = simd::load_float4(kernel_[ki].v);
+					Vector h = simd::load_float4(high_pass_[si].v);
 
 					glare = math::add(glare, math::mul(k, h));
 				}

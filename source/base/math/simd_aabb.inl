@@ -6,8 +6,8 @@
 namespace math {
 
 inline Simd_AABB::Simd_AABB(const AABB& box) :
-	min(simd::load_float3(box.min())),
-	max(simd::load_float3(box.max())) {}
+	min(simd::load_float3(box.min().v)),
+	max(simd::load_float3(box.max().v)) {}
 
 inline Simd_AABB::Simd_AABB(const float* min, const float* max) :
 	min(simd::load_float3(min)),

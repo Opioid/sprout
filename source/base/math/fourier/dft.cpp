@@ -19,19 +19,19 @@ void dft_1d(float2* result, const float* source, int32_t num) {
 	const int32_t m4 = num - r;
 
 	float4 zott = float4(0.f, 1.f, 2.f, 3.f);
-	const Vector zv = simd::load_float4(zott);
+	const Vector zv = simd::load_float4(zott.v);
 
 	for (int32_t k = 0, len = num / 2; k <= len; ++k) {
 		const float as = af * static_cast<float>(k);
 
 		// Use SSE to work on blocks of 4
-		const Vector a = simd::load_float(as);
+		const Vector a = simd::set_float4(as);
 
 		Vector sum_x = simd::Zero;
 		Vector sum_y = simd::Zero;
 
 		for (int32_t x = 0; x < m4; x += 4) {
-			Vector xf = simd::load_float(static_cast<float>(x));
+			Vector xf = simd::set_float4(static_cast<float>(x));
 			Vector xv = math::add(xf, zv);
 			Vector b = math::mul(a, xv);
 			Vector sin_b;

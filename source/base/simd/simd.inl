@@ -197,8 +197,12 @@ SU_GLOBALCONST(Vector_u32) NegInfinity			= {{{ 0xFF800000, 0xFF800000, 0xFF80000
  *
  ****************************************************************************/
 
-static inline Vector SU_CALLCONV load_float(float x) {
+static inline Vector SU_CALLCONV set_float4(float x) {
 	return _mm_set1_ps(x);
+}
+
+static inline Vector SU_CALLCONV load_float(const float* x) {
+	return _mm_load_ss(x);
 }
 
 static inline Vector SU_CALLCONV load_float3(const math::Vector3<float>& source) {
@@ -213,21 +217,6 @@ static inline Vector SU_CALLCONV load_float3(const float* source) {
 	// Reads an extra float which is zero'd
 	__m128 v = _mm_load_ps(source);
 	return _mm_and_ps(v, simd::Mask3);
-}
-
-static inline Vector SU_CALLCONV load_float3(const math::Vector3f_a& source) {
-	// Reads an extra float which is zero'd
-	__m128 v = _mm_load_ps(source.v);
-	return _mm_and_ps(v, simd::Mask3);
-}
-
-static inline Vector SU_CALLCONV load_float4(const math::Vector3f_a& source) {
-	// Reads an extra float!!!
-	return _mm_load_ps(source.v);
-}
-
-static inline Vector SU_CALLCONV load_float4(const math::Vector4f_a& source) {
-	return _mm_load_ps(source.v);
 }
 
 static inline Vector SU_CALLCONV load_float4(const float* source) {
@@ -261,14 +250,6 @@ static inline void SU_CALLCONV store_float3(math::Vector3<float>& destination, F
 //	_mm_storel_epi64(reinterpret_cast<__m128i*>(&destination), _mm_castps_si128(v));
 //	_mm_store_ss(&destination[2], t);
 //}
-
-static inline void SU_CALLCONV store_float4(math::Vector3f_a& destination, FVector v) {
-	_mm_store_ps(destination.v, v);
-}
-
-static inline void SU_CALLCONV store_float4(math::Vector4f_a& destination, FVector v) {
-	_mm_store_ps(destination.v, v);
-}
 
 static inline void SU_CALLCONV store_float4(float* destination, FVector v) {
 	_mm_store_ps(destination, v);

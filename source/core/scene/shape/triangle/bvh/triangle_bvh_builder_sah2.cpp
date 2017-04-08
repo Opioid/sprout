@@ -16,11 +16,9 @@ uint32_t Builder_SAH2::Reference::primitive() const {
 	return bounds[0].index;
 }
 
-void Builder_SAH2::Reference::set_min_max_primitive(FVector min,
-													FVector max,
-													uint32_t primitive) {
+void Builder_SAH2::Reference::set_min_max_primitive(FVector min, FVector max, uint32_t primitive) {
 	float3 tmp;
-	simd::store_float4(tmp, min);
+	simd::store_float4(tmp.v, min);
 	bounds[0].v[0] = tmp[0]; bounds[0].v[1] = tmp[1]; bounds[0].v[2] = tmp[2];
 	bounds[0].index = primitive;
 	simd::store_float4(bounds[1].v, max);

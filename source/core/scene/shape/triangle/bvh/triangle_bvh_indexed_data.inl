@@ -155,9 +155,9 @@ Vector Indexed_data<IV, SV>::normal_v(uint32_t index) const {
 	const IV& b = intersection_vertices_[tri.b];
 	const IV& c = intersection_vertices_[tri.c];
 
-	const Vector ap = simd::load_float4(a.p);
-	const Vector bp = simd::load_float4(b.p);
-	const Vector cp = simd::load_float4(c.p);
+	const Vector ap = simd::load_float4(a.p.v);
+	const Vector bp = simd::load_float4(b.p.v);
+	const Vector cp = simd::load_float4(c.p.v);
 
 	const Vector e1 = math::sub(bp, ap);
 	const Vector e2 = math::sub(cp, ap);

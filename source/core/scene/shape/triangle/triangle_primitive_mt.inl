@@ -199,9 +199,9 @@ static inline bool intersect(FVector origin, FVector direction, FVector min_t, V
 							 Vector& u_out, Vector& v_out) {
 	using namespace math;
 
-	Vector ap = simd::load_float4(a.p);
-	Vector bp = simd::load_float4(b.p);
-	Vector cp = simd::load_float4(c.p);
+	Vector ap = simd::load_float4(a.p.v);
+	Vector bp = simd::load_float4(b.p.v);
+	Vector cp = simd::load_float4(c.p.v);
 
 	Vector e1 = math::sub(bp, ap);
 	Vector e2 = math::sub(cp, ap);
@@ -307,9 +307,9 @@ static inline bool intersect_p(FVector origin, FVector direction,
 	// Implementation C
 	using namespace math;
 
-	Vector ap = simd::load_float4(a.p);
-	Vector bp = simd::load_float4(b.p);
-	Vector cp = simd::load_float4(c.p);
+	Vector ap = simd::load_float4(a.p.v);
+	Vector bp = simd::load_float4(b.p.v);
+	Vector cp = simd::load_float4(c.p.v);
 
 	Vector e1 = math::sub(bp, ap);
 	Vector e2 = math::sub(cp, ap);
@@ -409,17 +409,17 @@ static inline float2 interpolate_uv(FVector u, FVector v,
 	const Vector w = math::sub(math::sub(simd::One, u), v);
 
 	const float3 auv(a.n_u[3], a.t_v[3], 0.f);
-	Vector va = simd::load_float4(auv);
+	Vector va = simd::load_float4(auv.v);
 
 	const float3 buv(b.n_u[3], b.t_v[3], 0.f);
-	Vector vb = simd::load_float4(buv);
+	Vector vb = simd::load_float4(buv.v);
 
 	va = math::mul(w, va);
 	vb = math::mul(u, vb);
 	va = math::add(va, vb);
 
 	const float3 cuv(c.n_u[3], c.t_v[3], 0.f);
-	Vector vc = simd::load_float4(cuv);
+	Vector vc = simd::load_float4(cuv.v);
 
 	vc = math::mul(v, vc);
 	Vector uv = math::add(va, vc);
@@ -452,27 +452,27 @@ static inline void interpolate_data(FVector u, FVector v,
 									float3& n, float3& t, float2& tc) {
 	const Vector w = math::sub(math::sub(simd::One, u), v);
 
-	Vector va = math::mul(w, simd::load_float4(a.n_u));
-	Vector vb = math::mul(u, simd::load_float4(b.n_u));
+	Vector va = math::mul(w, simd::load_float4(a.n_u.v));
+	Vector vb = math::mul(u, simd::load_float4(b.n_u.v));
 	va = math::add(va, vb);
-	Vector vc = math::mul(v, simd::load_float4(c.n_u));
+	Vector vc = math::mul(v, simd::load_float4(c.n_u.v));
 	Vector v0 = math::add(va, vc);
 
 	Vector vn = math::normalized3(v0);
-	simd::store_float4(n, vn);
+	simd::store_float4(n.v, vn);
 
-	va = math::mul(w, simd::load_float4(a.t_v));
-	vb = math::mul(u, simd::load_float4(b.t_v));
+	va = math::mul(w, simd::load_float4(a.t_v.v));
+	vb = math::mul(u, simd::load_float4(b.t_v.v));
 	va = math::add(va, vb);
-	vc = math::mul(v, simd::load_float4(c.t_v));
+	vc = math::mul(v, simd::load_float4(c.t_v.v));
 	Vector v1 = math::add(va, vc);
 
 	Vector vt = math::normalized3(v1);
-	simd::store_float4(t, vt);
+	simd::store_float4(t.v, vt);
 
 	v0 = SU_MUX_HIGH(v0, v1);
 	float4 r;
-	simd::store_float4(r, v0);
+	simd::store_float4(r.v, v0);
 	tc[0] = r[3];
 	tc[1] = r[1];
 }
@@ -484,25 +484,25 @@ static inline void interpolate_data(FVector u, FVector v,
 									Vector& n, Vector& t, float2& tc) {
 	const Vector w = math::sub(math::sub(simd::One, u), v);
 
-	Vector va = math::mul(w, simd::load_float4(a.n_u));
-	Vector vb = math::mul(u, simd::load_float4(b.n_u));
+	Vector va = math::mul(w, simd::load_float4(a.n_u.v));
+	Vector vb = math::mul(u, simd::load_float4(b.n_u.v));
 	va = math::add(va, vb);
-	Vector vc = math::mul(v, simd::load_float4(c.n_u));
+	Vector vc = math::mul(v, simd::load_float4(c.n_u.v));
 	Vector v0 = math::add(va, vc);
 
 	n = math::normalized3(v0);
 
-	va = math::mul(w, simd::load_float4(a.t_v));
-	vb = math::mul(u, simd::load_float4(b.t_v));
+	va = math::mul(w, simd::load_float4(a.t_v.v));
+	vb = math::mul(u, simd::load_float4(b.t_v.v));
 	va = math::add(va, vb);
-	vc = math::mul(v, simd::load_float4(c.t_v));
+	vc = math::mul(v, simd::load_float4(c.t_v.v));
 	Vector v1 = math::add(va, vc);
 
 	t = math::normalized3(v1);
 
 	v0 = SU_MUX_HIGH(v0, v1);
 	float4 r;
-	simd::store_float4(r, v0);
+	simd::store_float4(r.v, v0);
 	tc[0] = r[3];
 	tc[1] = r[1];
 }
