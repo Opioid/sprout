@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vector.hpp"
+#include "simd/simd.hpp"
 
 struct alignas(16) Matrix3 {
 	Vector r[3];
@@ -11,7 +11,7 @@ struct alignas(16) Matrix4 {
 };
 
 // Fix-up for (1st) XMMATRIX parameter to pass in-register on vector call; by reference otherwise
-#if (_SU_VECTORCALL_ ) && !defined(_SU_NO_INTRINSICS_)
+#if (_SU_VECTORCALL_ )
 	using FMatrix3 = const Matrix3;
 	using FMatrix4 = const Matrix4;
 #else

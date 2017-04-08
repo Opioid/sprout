@@ -22,18 +22,6 @@ public:
 		return 0 == end_;
 	}
 
-	bool zero() const {
-		return 0 == stack_[end_];
-	}
-
-	uint32_t end() const {
-		return end_;
-	}
-
-	uint32_t peek() const {
-		return stack_[end_];
-	}
-
 	void clear() {
 		end_ = 0;
 	}

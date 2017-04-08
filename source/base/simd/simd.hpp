@@ -38,10 +38,10 @@
 
 #define SU_PERMUTE_PS(v, c) _mm_shuffle_ps(v, v, c)
 
-	// a,b,c,d -> b,c,d,a
+// a,b,c,d -> b,c,d,a
 #define SU_ROTATE_LEFT(v) _mm_shuffle_ps(v, v, 0x39)
 
-	// low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
+// low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
 #define SU_MUX_HIGH(low, high) _mm_movehl_ps(low, high)
 
 namespace simd {
@@ -49,21 +49,21 @@ namespace simd {
 using Vector = __m128;
 
 // Fix-up for (1st-3rd) Vector parameters that are pass-in-register for x86 and vector call; by reference otherwise
-#if (defined(_M_IX86) || _SU_VECTORCALL_ )
+#if (_SU_VECTORCALL_)
 	using FVector = const Vector;
 #else
 	using FVector = const Vector&;
 #endif
 
 // Fix-up for (4th) Vector parameter to pass in-register for x64 vector call; by reference otherwise
-#if ((_SU_VECTORCALL_ && !defined(_M_IX86)))
+#if (_SU_VECTORCALL_)
 	using GVector = const Vector;
 #else
 	using GVector = const Vector&;
 #endif
 
 // Fix-up for (5th & 6th) Vector parameter to pass in-register for vector call; by reference otherwise
-#if ( _SU_VECTORCALL_ )
+#if (_SU_VECTORCALL_)
 	using HVector = const Vector;
 #else
 	using HVector = const Vector&;
