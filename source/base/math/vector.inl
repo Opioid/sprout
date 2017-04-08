@@ -127,6 +127,14 @@ static inline Vector SU_CALLCONV rcp(FVector x) {
 	return _mm_sub_ps(_mm_add_ps(rcp, rcp), muls);
 }
 
+static inline Vector SU_CALLCONV reciprocal3(FVector v) {
+	Vector rcp = _mm_rcp_ps(v);
+	rcp = _mm_and_ps(rcp, simd::Mask3);
+	Vector mul = _mm_mul_ps(v, _mm_mul_ps(rcp, rcp));
+
+	return _mm_sub_ps(_mm_add_ps(rcp, rcp), mul);
+}
+
 static inline Vector SU_CALLCONV min(FVector a, FVector b) {
 	return _mm_min_ps(a, b);
 }
@@ -137,6 +145,13 @@ static inline Vector SU_CALLCONV max(FVector a, FVector b) {
 
 static inline Vector SU_CALLCONV splat_x(FVector v) {
 	return SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
+}
+
+static inline void SU_CALLCONV sign(FVector v, uint32_t s[4]) {
+	Vector sm = _mm_cmplt_ps(v, simd::Zero);
+	__m128i smi = _mm_castps_si128(sm);
+	smi = _mm_and_si128(smi, simd::Bool_mask);
+	_mm_store_si128(reinterpret_cast<__m128i*>(s), smi);
 }
 
 }

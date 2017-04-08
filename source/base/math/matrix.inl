@@ -59,4 +59,17 @@ inline Vector SU_CALLCONV transform_vector(FMatrix4 m, HVector v) {
 	return result;
 }
 
+inline Vector SU_CALLCONV transform_point(FMatrix4 m, HVector v) {
+	Vector result = SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
+	result = _mm_mul_ps(result, m.r[0]);
+	Vector temp = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
+	temp = _mm_mul_ps(temp, m.r[1]);
+	result = _mm_add_ps(result, temp);
+	temp = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
+	temp = _mm_mul_ps(temp, m.r[2]);
+	result = _mm_add_ps(result, temp);
+	result = _mm_add_ps(result, m.r[3]);
+	return result;
+}
+
 }

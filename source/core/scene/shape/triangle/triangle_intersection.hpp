@@ -1,6 +1,8 @@
 #pragma once
 
-#include "base/math/vector3.hpp"
+#include "base/simd/simd.hpp"
+#include <cstdint>
+//#include "base/math/vector3.hpp"
 
 namespace scene { namespace shape { namespace triangle {
 
