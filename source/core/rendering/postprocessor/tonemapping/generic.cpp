@@ -22,27 +22,6 @@ Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, fl
 }
 
 float3 Generic::tonemap(const float3& color) const {
-//	float peak = math::max_element(color);
-
-//	float3 ratio = color / peak;
-
-//	return tonemap_function(peak) * ratio;
-
-//	float peak = math::max_element(color);
-//	float tonemapped_peak = tonemap_function(peak);
-
-//	float3 ratio = color / tonemapped_peak;
-
-//	float crosstalk =  100.f;
-//	float saturation = 1.f;
-//	float cross_saturation = 1.f;
-
-//	ratio = math::pow(ratio, saturation / cross_saturation);
-//	ratio = math::lerp(ratio, float3(1.f, 1.f, 1.f), std::pow(tonemapped_peak, crosstalk));
-//	ratio = math::pow(ratio, cross_saturation);
-
-//	return tonemapped_peak * ratio;
-
 	return float3(tonemap_function(color[0]),
 				  tonemap_function(color[1]),
 				  tonemap_function(color[2]));
