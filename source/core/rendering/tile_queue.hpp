@@ -28,7 +28,7 @@ private:
 
 //	uint32_t current_consume_;
 
-	std::atomic_uint32_t current_consume_;
+	std::atomic<uint32_t> current_consume_;
 
 //	std::mutex mutex_;
 };
