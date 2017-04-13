@@ -1,4 +1,5 @@
 #include "rendering_driver_progressive.hpp"
+#include "rendering_camera_worker.hpp"
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"
 #include "rendering/sensor/sensor.hpp"
@@ -30,8 +31,8 @@ void Driver_progressive::render(exporting::Sink& exporter) {
 		return;
 	}
 
-	for (auto& worker : workers_) {
-		worker.prepare(view_.num_samples_per_pixel);
+	for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
+		workers_[i].prepare(view_.num_samples_per_pixel);
 	}
 
 	scene_.tick(thread_pool_);

@@ -1,5 +1,6 @@
 #include "testing_size.hpp"
 #include "image/texture/texture_adapter.hpp"
+#include "rendering/rendering_camera_worker.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
 #include "scene/scene_intersection.hpp"
@@ -66,6 +67,9 @@ void size() {
 	print_size<image::texture::Adapter>("texture::Adapter", 32);
 
 	print_size<scene::bvh::Split_candidate>("Split_candidate", 32);
+
+	print_size<scene::Worker>("scene::Worker", 168);
+	print_size<rendering::Camera_worker>("rendering::Camera_worker", 208);
 }
 
 }

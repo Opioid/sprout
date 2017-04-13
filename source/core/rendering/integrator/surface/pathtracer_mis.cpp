@@ -298,7 +298,7 @@ float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sample
 	if (light_sample.shape.pdf > 0.f) {
 		ray.set_direction(light_sample.shape.wi);
 
-		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.max_t = light_sample.shape.t - ray_offset;
 
 		const float3 tv = worker.tinted_visibility(ray, filter);

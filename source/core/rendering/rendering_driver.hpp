@@ -1,14 +1,18 @@
 #pragma once
 
-#include "rendering_camera_worker.hpp"
 #include "tile_queue.hpp"
 #include "image/typed_image.hpp"
 #include <memory>
-#include <vector>
 
 namespace take { struct View; }
 
-namespace scene { class Scene; }
+namespace scene {
+
+namespace camera { class Camera; }
+
+class Scene;
+
+}
 
 namespace sampler { class Factory; }
 
@@ -22,6 +26,8 @@ namespace surface { class Factory; }
 namespace volume { class Factory; }
 
 }
+
+class Camera_worker;
 
 class Driver {
 
@@ -55,7 +61,7 @@ protected:
 	take::View& view_;
 	thread::Pool& thread_pool_;
 
-	std::vector<Camera_worker> workers_;
+	Camera_worker* workers_;
 	Tile_queue tiles_;
 
 	image::Float_4 target_;

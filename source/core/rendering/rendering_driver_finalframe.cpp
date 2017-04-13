@@ -2,6 +2,7 @@
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"
 #include "progress/progress_sink.hpp"
+#include "rendering/rendering_camera_worker.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
@@ -27,8 +28,8 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 	auto& camera = *view_.camera;
 	auto& sensor = camera.sensor();
 
-	for (auto& worker : workers_) {
-		worker.prepare(view_.num_samples_per_pixel);
+	for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
+		workers_[i].prepare(view_.num_samples_per_pixel);
 	}
 
 	const uint32_t progress_range = calculate_progress_range(scene_, camera, tiles_.size(),

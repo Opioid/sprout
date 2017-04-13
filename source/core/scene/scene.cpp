@@ -65,8 +65,8 @@ bool Scene::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 	return bvh_.intersect(ray, node_stack, intersection);
 }
 
-bool Scene::intersect_p(const scene::Ray& ray, Worker& worker) const {
-	return bvh_.intersect_p(ray, worker.node_stack());
+bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
+	return bvh_.intersect_p(ray, node_stack);
 }
 
 float Scene::opacity(const scene::Ray& ray, Worker& worker,

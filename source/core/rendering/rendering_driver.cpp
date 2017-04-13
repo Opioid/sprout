@@ -1,10 +1,12 @@
 #include "rendering_driver.hpp"
+#include "rendering_camera_worker.hpp"
 #include "image/typed_image.inl"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
 #include "scene/camera/camera.hpp"
 #include "rendering/sensor/sensor.hpp"
 #include "take/take_view.hpp"
+#include "base/memory/align.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 #include "base/thread/thread_pool.hpp"
@@ -21,7 +23,7 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 	volume_integrator_factory_(volume_integrator_factory),
 	sampler_factory_(sampler_factory),
 	scene_(scene), view_(view), thread_pool_(thread_pool),
-	workers_(thread_pool.num_threads()),
+	workers_(memory::construct_aligned<Camera_worker>(thread_pool.num_threads())),
 	tiles_(view.camera->resolution(), int2(32, 32),
 		   view.camera->sensor().filter_radius_int()),
 	target_(image::Image::Description(image::Image::Type::Float_4,
@@ -33,7 +35,9 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 	}
 }
 
-Driver::~Driver() {}
+Driver::~Driver() {
+	memory::destroy_aligned(workers_, thread_pool_.num_threads());
+}
 
 scene::camera::Camera& Driver::camera() {
 	return *view_.camera;

@@ -35,7 +35,7 @@ public:
 	}
 
 	size_t num_bytes() const {
-		return sizeof(this) + static_cast<size_t>(num_elements_) * sizeof(uint32_t);
+		return sizeof(*this) + static_cast<size_t>(num_elements_) * sizeof(uint32_t);
 	}
 
 private:

@@ -52,14 +52,12 @@ public:
 
 	sampler::Sampler* sampler();
 
-	virtual size_t num_bytes() const final override;
-
 protected:
 
+	rnd::Generator rng_;
 	integrator::surface::Integrator* surface_integrator_;
 	integrator::volume::Integrator*  volume_integrator_;
 	sampler::Sampler* sampler_;
-	rnd::Generator rng_;
 };
 
 }
