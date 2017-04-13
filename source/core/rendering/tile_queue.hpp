@@ -1,7 +1,8 @@
 #pragma once
 
 #include "base/math/vector4.hpp"
-#include <condition_variable>
+//#include <condition_variable>
+#include <atomic>
 
 namespace rendering {
 
@@ -25,9 +26,11 @@ private:
 	uint32_t num_tiles_;
 	int4* tiles_;
 
-	uint32_t current_consume_;
+//	uint32_t current_consume_;
 
-	std::mutex mutex_;
+	std::atomic_uint32_t current_consume_;
+
+//	std::mutex mutex_;
 };
 
 }
