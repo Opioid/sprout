@@ -21,7 +21,7 @@ void Open::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 					 const float3& attenuation, sampler::Sampler& sampler,
-					 Sampler_filter filter, Bxdf_result& sample_result) {
+					 Sampler_filter filter, Bxdf_result& sample_result) const {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_attenuation = attenuation;
 

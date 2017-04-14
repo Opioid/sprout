@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rendering/integrator/integrator.hpp"
-#include "scene/material/sampler_settings.hpp"
 #include "base/math/vector3.hpp"
 
 namespace sampler { class Sampler; }
@@ -31,12 +30,9 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
 
-	using Sampler_filter = scene::material::Sampler_settings::Filter;
-	using Bxdf_result    = scene::material::bxdf::Result;
-
 	float3 resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
 				   const float3& attenuation, sampler::Sampler& sampler,
-				   Sampler_filter filter, Bxdf_result& sample_result);
+				   Sampler_filter filter, Bxdf_result& sample_result) const;
 
 	virtual size_t num_bytes() const final override;
 

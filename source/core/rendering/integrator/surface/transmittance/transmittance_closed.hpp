@@ -23,7 +23,7 @@ public:
 
 	float3 resolve(Worker& worker, Ray& ray, Intersection& intersection,
 				   const float3& attenuation, sampler::Sampler& sampler,
-				   Sampler_filter filter, Bxdf_result& sample_result);
+				   Sampler_filter filter, Bxdf_result& sample_result) const;
 
 	virtual size_t num_bytes() const final override;
 };

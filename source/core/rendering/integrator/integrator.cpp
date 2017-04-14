@@ -7,8 +7,4 @@ Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
 
 Integrator::~Integrator() {}
 
-const take::Settings& Integrator::take_settings() const {
-	return take_settings_;
-}
-
 }}

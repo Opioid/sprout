@@ -55,8 +55,6 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) = 0;
 
-	const take::Settings& take_settings() const;
-
 	virtual size_t num_bytes() const = 0;
 
 protected:
