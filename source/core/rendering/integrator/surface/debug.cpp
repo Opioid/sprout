@@ -56,13 +56,19 @@ size_t Debug::num_bytes() const {
 	return sizeof(*this);
 }
 
-Debug_factory::Debug_factory(const take::Settings& take_settings, Debug::Settings::Vector vector) :
-	Factory(take_settings) {
+Debug_factory::Debug_factory(const take::Settings& take_settings, uint32_t num_integrators,
+							 Debug::Settings::Vector vector) :
+	Factory(take_settings, num_integrators),
+	integrators_(memory::allocate_aligned<Debug>(num_integrators)) {
 	settings_.vector = vector;
 }
 
-Integrator* Debug_factory::create(rnd::Generator& rng) const {
-	return new Debug(rng, take_settings_, settings_);
+Debug_factory::~Debug_factory() {
+	memory::destroy_aligned(integrators_, num_integrators_);
+}
+
+Integrator* Debug_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Debug(rng, take_settings_, settings_);
 }
 
 }}}

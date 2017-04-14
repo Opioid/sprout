@@ -11,7 +11,7 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-class AO : public Integrator {
+class alignas(64) AO : public Integrator {
 
 public:
 
@@ -42,11 +42,16 @@ class AO_factory : public Factory {
 
 public:
 
-	AO_factory(const take::Settings& settings, uint32_t num_samples, float radius);
+	AO_factory(const take::Settings& settings, uint32_t num_integrators,
+			   uint32_t num_samples, float radius);
 
-	virtual Integrator* create(rnd::Generator& rng) const;
+	~AO_factory();
+
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const;
 
 private:
+
+	AO* integrators_;
 
 	AO::Settings settings_;
 };

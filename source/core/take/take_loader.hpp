@@ -68,11 +68,12 @@ private:
 	static std::shared_ptr<sampler::Factory>
 	load_sampler_factory(const json::Value& sampler_value, uint32_t& num_samples_per_pixel);
 
-	static void load_integrator_factories(const json::Value& integrator_value, Take& take);
+	static void load_integrator_factories(const json::Value& integrator_value,
+										  uint32_t num_workers, Take& take);
 
 	static std::shared_ptr<rendering::integrator::surface::Factory>
 	load_surface_integrator_factory(const json::Value& integrator_value,
-									const Settings& settings);
+									const Settings& settings, uint32_t num_workers);
 
 	static std::shared_ptr<rendering::integrator::volume::Factory>
 	load_volume_integrator_factory(const json::Value& integrator_value,

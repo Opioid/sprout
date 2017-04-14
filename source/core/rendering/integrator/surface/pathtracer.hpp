@@ -14,7 +14,7 @@ struct Sample;
 
 namespace rendering { namespace integrator { namespace surface {
 
-class Pathtracer : public Integrator {
+class alignas(64) Pathtracer : public Integrator {
 
 public:
 
@@ -56,14 +56,18 @@ class Pathtracer_factory : public Factory {
 
 public:
 
-	Pathtracer_factory(const take::Settings& take_settings,
+	Pathtracer_factory(const take::Settings& take_settings, uint32_t num_integrators,
 					   uint32_t min_bounces, uint32_t max_bounces,
 					   float path_termination_probability,
 					   bool enable_caustics);
 
-	virtual Integrator* create(rnd::Generator& rng) const final override;
+	~Pathtracer_factory();
+
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
 
 private:
+
+	Pathtracer* integrators_;
 
 	Pathtracer::Settings settings_;
 };

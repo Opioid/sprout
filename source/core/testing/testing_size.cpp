@@ -1,6 +1,8 @@
 #include "testing_size.hpp"
 #include "image/texture/texture_adapter.hpp"
 #include "rendering/rendering_camera_worker.hpp"
+#include "rendering/integrator/surface/whitted.hpp"
+#include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
 #include "scene/scene_intersection.hpp"
@@ -69,7 +71,10 @@ void size() {
 	print_size<scene::bvh::Split_candidate>("Split_candidate", 32);
 
 	print_size<scene::Worker>("scene::Worker", 168);
-	print_size<rendering::Camera_worker>("rendering::Camera_worker", 208);
+	print_size<rendering::Camera_worker>("rendering::Camera_worker", 256);
+
+	print_size<rendering::integrator::surface::Whitted>("Whitted", 128);
+	print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 640);
 }
 
 }

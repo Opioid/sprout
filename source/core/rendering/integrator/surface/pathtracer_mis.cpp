@@ -346,11 +346,13 @@ sampler::Sampler& Pathtracer_MIS::light_sampler(uint32_t bounce) {
 }
 
 Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settings,
+											   uint32_t num_integrators,
 											   uint32_t min_bounces, uint32_t max_bounces,
 											   float path_termination_probability,
 											   Light_sampling light_sampling,
 											   bool enable_caustics) :
-	Factory(take_settings) {
+	Factory(take_settings, num_integrators),
+	integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
 	settings_.path_continuation_probability = 1.f - path_termination_probability;
@@ -359,8 +361,12 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 	settings_.enable_caustics = enable_caustics;
 }
 
-Integrator* Pathtracer_MIS_factory::create(rnd::Generator& rng) const {
-	return new Pathtracer_MIS(rng, take_settings_, settings_);
+Pathtracer_MIS_factory::~Pathtracer_MIS_factory() {
+	memory::destroy_aligned(integrators_, num_integrators_);
+}
+
+Integrator* Pathtracer_MIS_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Pathtracer_MIS(rng, take_settings_, settings_);
 }
 
 }}}

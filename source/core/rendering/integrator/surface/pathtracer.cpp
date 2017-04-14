@@ -165,18 +165,24 @@ size_t Pathtracer::num_bytes() const {
 }
 
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
+									   uint32_t num_integrators,
 									   uint32_t min_bounces, uint32_t max_bounces,
 									   float path_termination_probability,
 									   bool enable_caustics) :
-	Factory(take_settings) {
+	Factory(take_settings, num_integrators),
+	integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
 	settings_.path_continuation_probability = 1.f - path_termination_probability;
 	settings_.enable_caustics = enable_caustics;
 }
 
-Integrator* Pathtracer_factory::create(rnd::Generator& rng) const {
-	return new Pathtracer(rng, take_settings_, settings_);
+Pathtracer_factory::~Pathtracer_factory() {
+	memory::destroy_aligned(integrators_, num_integrators_);
+}
+
+Integrator* Pathtracer_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Pathtracer(rng, take_settings_, settings_);
 }
 
 }}}

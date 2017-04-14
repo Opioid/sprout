@@ -16,7 +16,7 @@ namespace material { class Sample; }
 
 namespace rendering { namespace integrator { namespace surface {
 
-class Pathtracer_MIS : public Integrator {
+class alignas(64) Pathtracer_MIS : public Integrator {
 
 public:
 
@@ -87,15 +87,19 @@ class Pathtracer_MIS_factory : public Factory {
 
 public:
 
-	Pathtracer_MIS_factory(const take::Settings& take_settings,
+	Pathtracer_MIS_factory(const take::Settings& take_settings, uint32_t num_integrators,
 						   uint32_t min_bounces, uint32_t max_bounces,
 						   float path_termination_probability,
 						   Light_sampling light_sampling,
 						   bool enable_caustics);
 
-	virtual Integrator* create(rnd::Generator& rng) const final override;
+	~Pathtracer_MIS_factory();
+
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
 
 private:
+
+	Pathtracer_MIS* integrators_;
 
 	Pathtracer_MIS::Settings settings_;
 };

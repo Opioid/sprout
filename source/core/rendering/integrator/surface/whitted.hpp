@@ -8,7 +8,7 @@ namespace scene { namespace material { class Sample; } }
 
 namespace rendering { namespace integrator { namespace surface {
 
-class Whitted : public Integrator {
+class alignas(64) Whitted : public Integrator {
 
 public:
 
@@ -43,11 +43,16 @@ class Whitted_factory : public Factory {
 
 public:
 
-	Whitted_factory(const take::Settings& take_settings, uint32_t num_light_samples);
+	Whitted_factory(const take::Settings& take_settings, uint32_t num_integrators,
+					uint32_t num_light_samples);
 
-	virtual Integrator* create(rnd::Generator& rng) const;
+	~Whitted_factory();
+
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const;
 
 private:
+
+	Whitted* integrators_;
 
 	Whitted::Settings settings_;
 };

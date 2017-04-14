@@ -21,7 +21,6 @@ Worker::Worker() :
 Worker::~Worker() {
 	delete sampler_;
 	delete volume_integrator_;
-	delete surface_integrator_;
 }
 
 void Worker::init(uint32_t id, const scene::Scene& scene,
@@ -33,7 +32,7 @@ void Worker::init(uint32_t id, const scene::Scene& scene,
 
 	rng_ = rng;
 
-	surface_integrator_ = surface_integrator_factory.create(rng_);
+	surface_integrator_ = surface_integrator_factory.create(id, rng_);
 	volume_integrator_  = volume_integrator_factory.create(rng_);
 	sampler_ = sampler_factory.create(rng_);
 }

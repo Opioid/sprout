@@ -60,15 +60,21 @@ size_t AO::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-AO_factory::AO_factory(const take::Settings& settings, uint32_t num_samples, float radius) :
-	Factory(settings) {
+AO_factory::AO_factory(const take::Settings& settings, uint32_t num_integrators,
+					   uint32_t num_samples, float radius) :
+	Factory(settings, num_integrators),
+	integrators_(memory::allocate_aligned<AO>(num_integrators)) {
 	settings_.num_samples = num_samples;
 	settings_.num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);
 	settings_.radius = radius;
 }
 
-Integrator* AO_factory::create(rnd::Generator& rng) const {
-	return new AO(rng, take_settings_, settings_);
+AO_factory::~AO_factory() {
+	memory::destroy_aligned(integrators_, num_integrators_);
+}
+
+Integrator* AO_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) AO(rng, take_settings_, settings_);
 }
 
 }}}

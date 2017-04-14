@@ -10,6 +10,7 @@
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
@@ -124,14 +125,20 @@ size_t Whitted::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t num_light_samples) :
-	Factory(take_settings) {
+Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t num_integrators,
+								 uint32_t num_light_samples) :
+	Factory(take_settings, num_integrators),
+	integrators_(memory::allocate_aligned<Whitted>(num_integrators)) {
 	settings_.num_light_samples = num_light_samples;
 	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(num_light_samples);
 }
 
-Integrator* Whitted_factory::create(rnd::Generator& rng) const {
-	return new Whitted(rng, take_settings_, settings_);
+Whitted_factory::~Whitted_factory() {
+	memory::destroy_aligned(integrators_, num_integrators_);
+}
+
+Integrator* Whitted_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Whitted(rng, take_settings_, settings_);
 }
 
 }}}

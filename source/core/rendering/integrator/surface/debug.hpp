@@ -4,7 +4,7 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-class Debug : public Integrator {
+class alignas(64) Debug : public Integrator {
 
 public:
 
@@ -39,11 +39,16 @@ class Debug_factory : public Factory {
 
 public:
 
-	Debug_factory(const take::Settings& take_settings, Debug::Settings::Vector vector);
+	Debug_factory(const take::Settings& take_settings, uint32_t num_integrators,
+				  Debug::Settings::Vector vector);
 
-	virtual Integrator* create(rnd::Generator& rng) const final override;
+	~Debug_factory();
+
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
 
 private:
+
+	Debug* integrators_;
 
 	Debug::Settings settings_;
 };
