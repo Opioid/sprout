@@ -7,14 +7,13 @@
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
 #include "scene/material/bssrdf.hpp"
-#include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface { namespace sub {
 
-Bruteforce::Bruteforce(const take::Settings& settings, rnd::Generator& rng) :
-	Integrator(settings, rng),
+Bruteforce::Bruteforce(rnd::Generator& rng, const take::Settings& settings) :
+	Integrator(rng, settings),
 	sampler_(rng) {}
 
 void Bruteforce::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}

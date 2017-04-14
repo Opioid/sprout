@@ -8,8 +8,8 @@
 
 namespace rendering { namespace integrator { namespace volume {
 
-Attenuation::Attenuation(const take::Settings& take_settings, rnd::Generator& rng) :
-	Integrator(take_settings, rng) {}
+Attenuation::Attenuation(rnd::Generator& rng, const take::Settings& take_settings) :
+	Integrator(rng, take_settings) {}
 
 void Attenuation::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
@@ -53,7 +53,7 @@ Attenuation_factory::Attenuation_factory(const take::Settings& settings) :
 	Factory(settings) {}
 
 Integrator* Attenuation_factory::create(rnd::Generator& rng) const {
-	return new Attenuation(take_settings_, rng);
+	return new Attenuation(rng, take_settings_);
 }
 
 }}}

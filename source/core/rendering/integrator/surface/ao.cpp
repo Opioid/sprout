@@ -4,17 +4,14 @@
 #include "scene/scene_ray.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
-#include "take/take_settings.hpp"
 #include "base/math/sampling/sampling.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
-AO::AO(const take::Settings& take_settings,
-	   rnd::Generator& rng,
-	   const Settings& settings) :
-	Integrator(take_settings, rng),
+AO::AO(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings) :
+	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}
 
@@ -71,7 +68,7 @@ AO_factory::AO_factory(const take::Settings& settings, uint32_t num_samples, flo
 }
 
 Integrator* AO_factory::create(rnd::Generator& rng) const {
-	return new AO(take_settings_, rng, settings_);
+	return new AO(rng, take_settings_, settings_);
 }
 
 }}}

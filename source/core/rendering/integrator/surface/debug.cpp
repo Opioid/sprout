@@ -4,14 +4,13 @@
 #include "scene/scene_ray.inl"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
-#include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
-Debug::Debug(const take::Settings& take_settings, rnd::Generator& rng, const Settings& settings) :
-	Integrator(take_settings, rng),
+Debug::Debug(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings) :
+	Integrator(rng, take_settings),
 	settings_(settings) {}
 
 void Debug::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
@@ -63,7 +62,7 @@ Debug_factory::Debug_factory(const take::Settings& take_settings, Debug::Setting
 }
 
 Integrator* Debug_factory::create(rnd::Generator& rng) const {
-	return new Debug(take_settings_, rng, settings_);
+	return new Debug(rng, take_settings_, settings_);
 }
 
 }}}

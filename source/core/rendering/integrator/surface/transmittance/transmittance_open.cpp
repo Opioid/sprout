@@ -7,15 +7,12 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/scene_intersection.inl"
-#include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
-Open::Open(const take::Settings &take_settings,
-		   rnd::Generator &rng,
-		   uint32_t max_bounces) :
-	integrator::Integrator(take_settings, rng),
+Open::Open(rnd::Generator& rng, const take::Settings &take_settings, uint32_t max_bounces) :
+	integrator::Integrator(rng, take_settings),
 	max_bounces_(max_bounces) {}
 
 void Open::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}

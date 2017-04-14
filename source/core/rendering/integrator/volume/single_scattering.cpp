@@ -16,10 +16,9 @@
 
 namespace rendering { namespace integrator { namespace volume {
 
-Single_scattering::Single_scattering(const take::Settings& take_settings,
-									 rnd::Generator& rng,
+Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
 									 const Settings& settings) :
-	Integrator(take_settings, rng),
+	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}
 
@@ -145,7 +144,7 @@ Single_scattering_factory::Single_scattering_factory(const take::Settings& take_
 }
 
 Integrator* Single_scattering_factory::create(rnd::Generator& rng) const {
-	return new Single_scattering(take_settings_, rng, settings_);
+	return new Single_scattering(rng, take_settings_, settings_);
 }
 
 }}}

@@ -10,7 +10,6 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/scene_intersection.inl"
-#include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
@@ -19,16 +18,16 @@ namespace rendering { namespace integrator { namespace surface {
 
 using namespace scene;
 
-Pathtracer_MIS::Pathtracer_MIS(const take::Settings& take_settings, rnd::Generator& rng,
+Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
 							   const Settings& settings) :
-	Integrator(take_settings, rng),
+	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
 	light_samplers_{rng, rng, rng},
-	transmittance_open_(take_settings, rng, settings.max_bounces),
-	transmittance_closed_(take_settings, rng),
-	subsurface_(take_settings, rng) {}
+	transmittance_open_(rng, take_settings, settings.max_bounces),
+	transmittance_closed_(rng, take_settings),
+	subsurface_(rng, take_settings) {}
 
 void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -361,7 +360,7 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 }
 
 Integrator* Pathtracer_MIS_factory::create(rnd::Generator& rng) const {
-	return new Pathtracer_MIS(take_settings_, rng, settings_);
+	return new Pathtracer_MIS(rng, take_settings_, settings_);
 }
 
 }}}

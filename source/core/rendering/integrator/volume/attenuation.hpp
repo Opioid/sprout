@@ -8,7 +8,7 @@ class Attenuation : public Integrator {
 
 public:
 
-	Attenuation(const take::Settings& take_settings, rnd::Generator& rng);
+	Attenuation(rnd::Generator& rng, const take::Settings& take_settings);
 
 	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
 

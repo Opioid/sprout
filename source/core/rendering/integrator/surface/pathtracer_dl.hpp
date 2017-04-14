@@ -29,7 +29,7 @@ public:
 		bool	 enable_caustics;
 	};
 
-	Pathtracer_DL(const take::Settings& take_settings, rnd::Generator& rng,
+	Pathtracer_DL(rnd::Generator& rng, const take::Settings& take_settings,
 				  const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;

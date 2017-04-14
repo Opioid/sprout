@@ -17,7 +17,7 @@ public:
 
 	using Volume = scene::volume::Volume;
 
-	Integrator(const take::Settings& settings, rnd::Generator& rng);
+	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
 	virtual float3 transmittance(Worker& worker, const Ray& ray, const Volume& volume) = 0;

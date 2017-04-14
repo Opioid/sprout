@@ -13,7 +13,7 @@ class Integrator : public integrator::Integrator {
 
 public:
 
-	Integrator(const take::Settings& settings, rnd::Generator& rng);
+	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
 	virtual float3 li(Worker& worker, const Ray& ray, const Intersection& intersection) = 0;

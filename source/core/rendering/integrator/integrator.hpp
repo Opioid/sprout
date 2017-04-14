@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/material/sampler_settings.hpp"
+#include "take/take_settings.hpp"
 #include <cstddef>
 #include <cstdint>
 
@@ -21,8 +22,6 @@ struct Ray;
 class Scene;
 
 }
-
-namespace take { struct Settings; }
 
 namespace rendering { namespace integrator {
 
@@ -49,7 +48,7 @@ public:
 	using Bxdf_result	  = scene::material::bxdf::Result;
 	using Bxdf_type		  = scene::material::bxdf::Type;
 
-	Integrator(const take::Settings& settings, rnd::Generator& rng);
+	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) = 0;
@@ -62,8 +61,8 @@ public:
 
 protected:
 
-	const take::Settings& take_settings_;
 	rnd::Generator& rng_;
+	const take::Settings take_settings_;
 };
 
 }}

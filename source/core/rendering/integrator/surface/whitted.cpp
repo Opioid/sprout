@@ -15,9 +15,9 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-Whitted::Whitted(const take::Settings& take_settings, rnd::Generator& rng,
+Whitted::Whitted(rnd::Generator& rng, const take::Settings& take_settings,
 				 const Settings& settings) :
-	Integrator(take_settings, rng),
+	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng) {}
 
@@ -131,7 +131,7 @@ Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t n
 }
 
 Integrator* Whitted_factory::create(rnd::Generator& rng) const {
-	return new Whitted(take_settings_, rng, settings_);
+	return new Whitted(rng, take_settings_, settings_);
 }
 
 }}}

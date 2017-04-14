@@ -4,14 +4,13 @@
 #include "scene/scene_constants.hpp"
 #include "scene/scene_intersection.inl"
 #include "scene/scene_ray.inl"
-#include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
-Integrator::Integrator(const take::Settings& settings, rnd::Generator& rng) :
-	integrator::Integrator(settings, rng) {}
+Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
+	integrator::Integrator(rng, settings) {}
 
 Integrator::~Integrator() {}
 

@@ -19,7 +19,7 @@ class Bruteforce : public Integrator {
 
 public:
 
-	Bruteforce(const take::Settings& settings, rnd::Generator& rng);
+	Bruteforce(rnd::Generator& rng, const take::Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;
 

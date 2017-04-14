@@ -2,8 +2,8 @@
 
 namespace rendering { namespace integrator {
 
-Integrator::Integrator(const take::Settings& settings, rnd::Generator& rng) :
-	take_settings_(settings), rng_(rng) {}
+Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
+	rng_(rng), take_settings_(settings) {}
 
 Integrator::~Integrator() {}
 

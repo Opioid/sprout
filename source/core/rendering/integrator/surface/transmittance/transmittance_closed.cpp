@@ -7,13 +7,12 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
 #include "scene/scene_intersection.inl"
-#include "take/take_settings.hpp"
 #include "base/math/vector4.inl"
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
-Closed::Closed(const take::Settings &take_settings, rnd::Generator &rng) :
-	integrator::Integrator(take_settings, rng) {}
+Closed::Closed(rnd::Generator& rng, const take::Settings &take_settings) :
+	integrator::Integrator(rng, take_settings) {}
 
 void Closed::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 

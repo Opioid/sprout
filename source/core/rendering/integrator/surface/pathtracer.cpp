@@ -12,22 +12,20 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
-#include "take/take_settings.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
 
-Pathtracer::Pathtracer(const take::Settings& take_settings,
-					   rnd::Generator& rng,
+Pathtracer::Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
 					   const Settings& settings) :
-	Integrator(take_settings, rng),
+	Integrator(rng, take_settings),
 	settings_(settings),
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
-	transmittance_(take_settings, rng),
-	subsurface_(take_settings, rng) {}
+	transmittance_(rng, take_settings),
+	subsurface_(rng, take_settings) {}
 
 void Pathtracer::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -178,7 +176,7 @@ Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 }
 
 Integrator* Pathtracer_factory::create(rnd::Generator& rng) const {
-	return new Pathtracer(take_settings_, rng, settings_);
+	return new Pathtracer(rng, take_settings_, settings_);
 }
 
 }}}

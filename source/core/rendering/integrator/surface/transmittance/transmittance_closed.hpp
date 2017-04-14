@@ -15,7 +15,7 @@ class Closed : public integrator::Integrator {
 
 public:
 
-	Closed(const take::Settings& take_settings, rnd::Generator& rng);
+	Closed(rnd::Generator& rng, const take::Settings& take_settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;
 

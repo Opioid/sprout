@@ -25,7 +25,7 @@ class Open : public integrator::Integrator {
 
 public:
 
-	Open(const take::Settings& take_settings, rnd::Generator& rng, uint32_t max_bounces);
+	Open(rnd::Generator& rng, const take::Settings& take_settings, uint32_t max_bounces);
 
 	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
 

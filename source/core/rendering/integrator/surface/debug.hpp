@@ -20,7 +20,7 @@ public:
 		Vector vector;
 	};
 
-	Debug(const take::Settings& take_settings, rnd::Generator& rng, const Settings& settings);
+	Debug(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;
 

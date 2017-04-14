@@ -6,8 +6,8 @@
 
 namespace rendering { namespace integrator { namespace surface { namespace sub {
 
-Integrator::Integrator(const take::Settings& settings, rnd::Generator& rng) :
-	integrator::Integrator(settings, rng) {}
+Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
+	integrator::Integrator(rng, settings) {}
 
 Integrator::~Integrator() {}
 
