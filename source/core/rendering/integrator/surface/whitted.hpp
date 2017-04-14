@@ -34,7 +34,7 @@ private:
 	float3 estimate_direct_light(Worker& worker, const Ray& ray, const Intersection& intersection,
 								 const Material_sample& material_sample);
 
-	Settings settings_;
+	const Settings settings_;
 
 	sampler::Random sampler_;
 };

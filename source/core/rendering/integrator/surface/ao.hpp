@@ -33,7 +33,7 @@ public:
 
 private:
 
-	Settings settings_;
+	const Settings settings_;
 
 	sampler::Golden_ratio sampler_;
 };

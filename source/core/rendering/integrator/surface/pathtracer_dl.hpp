@@ -47,7 +47,7 @@ private:
 								 const Material_sample& material_sample,
 								 Sampler_filter filter);
 
-	const Settings& settings_;
+	const Settings settings_;
 
 	sampler::Random sampler_;
 

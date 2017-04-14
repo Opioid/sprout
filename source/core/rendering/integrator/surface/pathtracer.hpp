@@ -40,7 +40,7 @@ private:
 
 	sampler::Sampler& material_sampler(uint32_t bounce);
 
-	const Settings& settings_;
+	const Settings settings_;
 
 	sampler::Random sampler_;
 
