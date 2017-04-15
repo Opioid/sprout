@@ -310,7 +310,8 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-					 const float3& p, const float3& wi, float area, bool /*two_sided*/, float2& uv) const {
+					 const float3& p, const float3& wi, float area,
+					 bool /*two_sided*/, float2& uv) const {
 	float3 v = transformation.position - p;
 	float b = math::dot(v, wi);
 	float radius = transformation.scale[0];
@@ -350,7 +351,7 @@ float Sphere::uv_weight(float2 uv) const {
 }
 
 float Sphere::area(uint32_t /*part*/, const float3& scale) const {
-	return (4.f * math::Pi) * scale[0] * scale[0];
+	return (4.f * math::Pi) * (scale[0] * scale[0]);
 }
 
 size_t Sphere::num_bytes() const {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "simd/simd.hpp"
+#include "simd/simd.inl"
 #include <cmath>
 #include <cstdlib>
 #include <algorithm>
@@ -82,22 +82,19 @@ static T mod(T k, T n) {
 }
 
 static inline float sqrt(float x) {
-	Vector three = _mm_set1_ps(3.f);
-	Vector half  = _mm_set1_ps(0.5f);
 	Vector xs	 = _mm_load_ss(&x);
 	Vector res   = _mm_rsqrt_ss(xs);
 	Vector muls  = _mm_mul_ss(_mm_mul_ss(xs, res), res);
-	Vector sqrtx = _mm_mul_ss(xs, _mm_mul_ss(_mm_mul_ss(half, res), _mm_sub_ss(three, muls)));
+	Vector sqrtx = _mm_mul_ss(xs, _mm_mul_ss(_mm_mul_ss(simd::Half, res),
+											 _mm_sub_ss(simd::Three, muls)));
 	return _mm_cvtss_f32(sqrtx);
 }
 
 static inline float rsqrt(float x) {
-	Vector three = _mm_set1_ps(3.f);
-	Vector half  = _mm_set1_ps(0.5f);
 	Vector xs	 = _mm_load_ss(&x);
 	Vector res   = _mm_rsqrt_ss(xs);
 	Vector muls  = _mm_mul_ss(_mm_mul_ss(xs, res), res);
-	return _mm_cvtss_f32(_mm_mul_ss(_mm_mul_ss(half, res), _mm_sub_ss(three, muls)));
+	return _mm_cvtss_f32(_mm_mul_ss(_mm_mul_ss(simd::Half, res), _mm_sub_ss(simd::Three, muls)));
 }
 
 static inline float rcp(float x) {

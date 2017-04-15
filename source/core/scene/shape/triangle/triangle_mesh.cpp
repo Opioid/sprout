@@ -4,6 +4,7 @@
 #include "bvh/triangle_bvh_indexed_data.inl"
 // #include "bvh/triangle_bvh_data_interleaved.inl"
 #include "bvh/triangle_bvh_tree.inl"
+#include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/entity/composed_transformation.hpp"
 #include "scene/shape/shape_intersection.hpp"
@@ -236,7 +237,7 @@ float Mesh::pdf(uint32_t part, const Transformation& transformation,
 	ray.origin = math::transform_point(p, transformation.world_to_object);
 	ray.set_direction(math::transform_vector(wi, transformation.world_to_object));
 	ray.min_t = 0.f;
-	ray.max_t = 10000.f;
+	ray.max_t = scene::Ray_max_t;
 
 	Intersection pi;
 	if (tree_.intersect(ray, node_stack, pi)) {

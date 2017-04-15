@@ -84,6 +84,7 @@ SU_GLOBALCONST(Vector_f32) One					= {{{ 1.f, 1.f, 1.f, 1.f }}};
 SU_GLOBALCONST(Vector_i32) One_i				= {{{ 1, 1, 1, 1 }}};
 SU_GLOBALCONST(Vector_i32) Inverse_one_i		= {{{ ~1, ~1, ~1, ~1 }}};
 SU_GLOBALCONST(Vector_i32) Two_i				= {{{ 2, 2, 2, 2 }}};
+SU_GLOBALCONST(Vector_f32) Three				= {{{ 3.f, 3.f, 3.f, 3.f }}};
 SU_GLOBALCONST(Vector_i32) Four_i				= {{{ 4, 4, 4, 4 }}};
 //XMGLOBALCONST XMVECTORF32 g_XMOne3              = { 1.0f, 1.0f, 1.0f, 0.0f};
 SU_GLOBALCONST(Vector_f32) Zero					= {{{ 0.f, 0.f, 0.f, 0.f }}};

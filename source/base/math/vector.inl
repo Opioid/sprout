@@ -27,6 +27,12 @@ static inline Vector SU_CALLCONV max1(VVector a, VVector b) {
 	return _mm_max_ss(a, b);
 }
 
+static inline Vector SU_CALLCONV sqrt1(VVector x) {
+	Vector res   = _mm_rsqrt_ss(x);
+	Vector muls  = _mm_mul_ss(_mm_mul_ss(x, res), res);
+	return _mm_mul_ss(x, _mm_mul_ss(_mm_mul_ss(simd::Half, res), _mm_sub_ss(simd::Three, muls)));
+}
+
 static inline Vector SU_CALLCONV rcp1(VVector x) {
 	Vector rcp  = _mm_rcp_ss(x);
 	Vector muls = _mm_mul_ss(_mm_mul_ss(rcp, rcp), x);
@@ -87,12 +93,16 @@ static inline Vector SU_CALLCONV dot3_1(VVector a, VVector b) {
 	return _mm_add_ss(sums, shuf);
 }
 
+static inline Vector sqrt(VVector x) {
+	Vector res   = _mm_rsqrt_ps(x);
+	Vector muls  = _mm_mul_ps(_mm_mul_ps(x, res), res);
+	return _mm_mul_ps(x, _mm_mul_ps(_mm_mul_ps(simd::Half, res), _mm_sub_ps(simd::Three, muls)));
+}
+
 static inline Vector rsqrt(VVector x) {
-	Vector three = _mm_set1_ps(3.f);
-	Vector half	 = _mm_set1_ps(0.5f);
 	Vector res	 = _mm_rsqrt_ps(x);
 	Vector muls	 = _mm_mul_ps(_mm_mul_ps(x, res), res);
-	return _mm_mul_ps(_mm_mul_ps(half, res), _mm_sub_ps(three, muls));
+	return _mm_mul_ps(_mm_mul_ps(simd::Half, res), _mm_sub_ps(simd::Three, muls));
 }
 
 static inline Vector normalized3(VVector v) {
