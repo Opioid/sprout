@@ -102,24 +102,24 @@ bool Prop::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {
 	return shape_->intersect_p(transformation, ray, node_stack);
 }
 
-bool Prop::intersect_p(VVector ray_origin, VVector ray_direction,
-					   VVector ray_inv_direction, VVector ray_min_t, VVector ray_max_t,
-					   float ray_time, shape::Node_stack& node_stack) const {
-	if (!visible_in_shadow()) {
-		return false;
-	}
+//bool Prop::intersect_p(VVector ray_origin, VVector ray_direction,
+//					   VVector ray_inv_direction, VVector ray_min_t, VVector ray_max_t,
+//					   float ray_time, shape::Node_stack& node_stack) const {
+//	if (!visible_in_shadow()) {
+//		return false;
+//	}
 
-	if (shape_->is_complex()
-	&& !aabb_.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
-		return false;
-	}
+//	if (shape_->is_complex()
+//	&& !aabb_.intersect_p(ray_origin, ray_inv_direction, ray_min_t, ray_max_t)) {
+//		return false;
+//	}
 
-	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(ray_time, temp);
+//	entity::Composed_transformation temp;
+//	const auto& transformation = transformation_at(ray_time, temp);
 
-	return shape_->intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t,
-							   transformation, node_stack);
-}
+//	return shape_->intersect_p(ray_origin, ray_direction, ray_min_t, ray_max_t,
+//							   transformation, node_stack);
+//}
 
 float Prop::opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const {
 	if (!has_masked_material()) {

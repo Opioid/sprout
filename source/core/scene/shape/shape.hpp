@@ -43,10 +43,10 @@ public:
 	virtual bool intersect_p(const Transformation& transformation,
 							 const Ray& ray, Node_stack& node_stack) const = 0;
 
-	virtual bool intersect_p(VVector ray_origin, VVector ray_direction,
-							 VVector ray_min_t, VVector ray_max_t,
-							 const Transformation& transformation,
-							 Node_stack& node_stack) const;
+//	virtual bool intersect_p(VVector ray_origin, VVector ray_direction,
+//							 VVector ray_min_t, VVector ray_max_t,
+//							 const Transformation& transformation,
+//							 Node_stack& node_stack) const;
 
 	virtual float opacity(const Transformation& transformation, const Ray& ray,
 						  const material::Materials& materials,

@@ -160,21 +160,21 @@ bool Mesh::intersect_p(const Transformation& transformation, const Ray& ray,
 							 ray_min_t, ray_max_t, ray_signs, node_stack);
 }
 
-bool Mesh::intersect_p(VVector ray_origin, VVector ray_direction,
-					   VVector ray_min_t, VVector ray_max_t,
-					   const Transformation& transformation,
-					   Node_stack& node_stack) const {
-	Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
-	Vector tray_origin = math::transform_point(world_to_object, ray_origin);
-	Vector tray_direction = math::transform_vector(world_to_object, ray_direction);
+//bool Mesh::intersect_p(VVector ray_origin, VVector ray_direction,
+//					   VVector ray_min_t, VVector ray_max_t,
+//					   const Transformation& transformation,
+//					   Node_stack& node_stack) const {
+//	Matrix4 world_to_object = math::load_float4x4(transformation.world_to_object);
+//	Vector tray_origin = math::transform_point(world_to_object, ray_origin);
+//	Vector tray_direction = math::transform_vector(world_to_object, ray_direction);
 
-	Vector tray_inv_direction = math::reciprocal3(tray_direction);
-	alignas(16) uint32_t ray_signs[4];
-	math::sign(tray_inv_direction, ray_signs);
+//	Vector tray_inv_direction = math::reciprocal3(tray_direction);
+//	alignas(16) uint32_t ray_signs[4];
+//	math::sign(tray_inv_direction, ray_signs);
 
-	return tree_.intersect_p(tray_origin, tray_direction, tray_inv_direction,
-							 ray_min_t, ray_max_t, ray_signs, node_stack);
-}
+//	return tree_.intersect_p(tray_origin, tray_direction, tray_inv_direction,
+//							 ray_min_t, ray_max_t, ray_signs, node_stack);
+//}
 
 float Mesh::opacity(const Transformation& transformation, const Ray& ray,
 					const material::Materials& materials,
