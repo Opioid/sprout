@@ -45,16 +45,16 @@ void Worker::prepare(uint32_t num_samples_per_pixel) {
 
 float4 Worker::li(scene::Ray& ray) {
 	scene::Intersection intersection;
-	bool hit = intersect(ray, intersection);
+	const bool hit = intersect(ray, intersection);
 
-	auto volume = scene_->volume_region();
+	const auto volume = scene_->volume_region();
 
 	if (volume) {
 		float3 vtr;
-		float4 vli = volume_integrator_->li(*this, ray, *volume, vtr);
+		const float4 vli = volume_integrator_->li(*this, ray, *volume, vtr);
 
 		if (hit) {
-			float4 li = surface_integrator_->li(*this, ray, intersection);
+			const float4 li = surface_integrator_->li(*this, ray, intersection);
 			return float4(vtr * li.xyz(), li[3]) + vli;
 		} else {
 			return vli;
@@ -68,20 +68,8 @@ float4 Worker::li(scene::Ray& ray) {
 	}
 }
 
-float3 Worker::surface_li(scene::Ray& ray) {
-	scene::Intersection intersection;
-	bool hit = intersect(ray, intersection);
-
-	if (hit) {
-		scene::Ray tray = ray;
-		return surface_integrator_->li(*this, tray, intersection).xyz();
-	} else {
-		return float3(0.f);
-	}
-}
-
 float4 Worker::volume_li(const scene::Ray& ray, float3& transmittance) {
-	auto volume = scene_->volume_region();
+	const auto volume = scene_->volume_region();
 
 	if (!volume) {
 		transmittance = float3(1.f);
@@ -92,7 +80,7 @@ float4 Worker::volume_li(const scene::Ray& ray, float3& transmittance) {
 }
 
 float3 Worker::transmittance(const scene::Ray& ray) {
-	auto volume = scene_->volume_region();
+	const auto volume = scene_->volume_region();
 
 	if (!volume) {
 		return float3(1.f);

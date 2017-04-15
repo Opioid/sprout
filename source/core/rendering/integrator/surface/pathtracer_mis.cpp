@@ -16,8 +16,6 @@
 
 namespace rendering { namespace integrator { namespace surface {
 
-using namespace scene;
-
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
 							   const Settings& settings) :
 	Integrator(rng, take_settings),
@@ -36,14 +34,14 @@ void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel)
 		s.resize(num_samples_per_pixel, 1, 1, 1);
 	}
 
-	uint32_t num_light_samples = settings_.light_sampling.num_samples;
+	const uint32_t num_light_samples = settings_.light_sampling.num_samples;
 
 	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
 		for (auto& s : light_samplers_) {
 			s.resize(num_samples_per_pixel, num_light_samples, 1, 2);
 		}
 	} else {
-		uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
+		const uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
 		for (auto& s : light_samplers_) {
 			s.resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
 		}
@@ -149,7 +147,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
-		ray.max_t = Ray_max_t;
+		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
 
 		// For these cases we fallback to plain pathtracing
@@ -179,7 +177,7 @@ size_t Pathtracer_MIS::num_bytes() const {
 
 float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 											 Intersection& intersection,
-											 const material::Sample& material_sample,
+											 const Material_sample& material_sample,
 											 Sampler_filter filter,
 											 Bxdf_result& sample_result,
 											 bool& requires_bounce) {
@@ -242,7 +240,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 
 	secondary_ray.set_direction(sample_result.wi);
 	secondary_ray.min_t = ray_offset;
-	secondary_ray.max_t = Ray_max_t;
+	secondary_ray.max_t = scene::Ray_max_t;
 	++secondary_ray.depth;
 
 	if (intersect_and_resolve_mask(worker, secondary_ray, intersection, filter)) {
@@ -281,7 +279,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 	return result;
 }
 
-float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sampler_dimension,
+float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, uint32_t sampler_dimension,
 									  float light_weight, Worker& worker, Ray& ray,
 									  const Intersection& intersection,
 									  const Material_sample& material_sample,
@@ -289,7 +287,7 @@ float3 Pathtracer_MIS::evaluate_light(const light::Light* light, uint32_t sample
 	float3 result(0.f);
 
 	// Light source importance sample
-	light::Sample light_sample;
+	scene::light::Sample light_sample;
 	light->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
 				  material_sample.is_translucent(), light_sampler(ray.depth),
 				  sampler_dimension, worker, Sampler_filter::Nearest, light_sample);

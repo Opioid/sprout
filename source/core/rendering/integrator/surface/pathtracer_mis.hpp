@@ -46,7 +46,7 @@ private:
 
 	float3 estimate_direct_light(Worker& worker, const Ray& ray,
 								 Intersection& intersection,
-								 const scene::material::Sample& material_sample,
+								 const Material_sample& material_sample,
 								 Sampler_filter filter,
 								 Bxdf_result& sample_result,
 								 bool& requires_bounce);
