@@ -44,6 +44,10 @@ public:
 
 	bool intersect_p(const Ray& ray, shape::Node_stack& node_stack) const;
 
+	bool intersect_p(VVector ray_origin, VVector ray_direction,
+					 VVector ray_inv_direction, VVector ray_mint_, VVector ray_max_t,
+					 float ray_time, shape::Node_stack& node_stack) const;
+
 	float opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const;
 
 	float3 thin_absorption(const Ray& ray, Worker& worker, Sampler_filter filter) const;

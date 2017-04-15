@@ -27,6 +27,10 @@ public:
 	bool intersect(const float3& p) const;
 
 	bool intersect_p(const Ray& ray) const;
+
+	bool intersect_p(VVector ray_origin, VVector ray_inv_direction,
+					 VVector ray_min_t, VVector ray_max_t) const;
+
 	bool intersect_p(const Ray& ray, float& min_t, float& max_t) const;
 
 	void set_min_max(const float3& min, const float3& max);
