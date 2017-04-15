@@ -35,7 +35,7 @@ inline Matrix4 SU_CALLCONV load_float4x4(const Matrix4x4f_a& source) {
  *
  ****************************************************************************/
 
-inline Vector SU_CALLCONV transform_vector(FMatrix3 m, GVector v) {
+inline Vector SU_CALLCONV transform_vector(VMatrix3 m, VVector v) {
 	Vector result = SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
 	result = _mm_mul_ps(result, m.r[0]);
 	Vector temp = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
@@ -47,7 +47,7 @@ inline Vector SU_CALLCONV transform_vector(FMatrix3 m, GVector v) {
 	return result;
 }
 
-inline Vector SU_CALLCONV transform_vector(FMatrix4 m, HVector v) {
+inline Vector SU_CALLCONV transform_vector(VMatrix4 m, VVector v) {
 	Vector result = SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
 	result = _mm_mul_ps(result, m.r[0]);
 	Vector temp = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
@@ -59,7 +59,7 @@ inline Vector SU_CALLCONV transform_vector(FMatrix4 m, HVector v) {
 	return result;
 }
 
-inline Vector SU_CALLCONV transform_point(FMatrix4 m, HVector v) {
+inline Vector SU_CALLCONV transform_point(VMatrix4 m, VVector v) {
 	Vector result = SU_PERMUTE_PS(v, _MM_SHUFFLE(0, 0, 0, 0));
 	result = _mm_mul_ps(result, m.r[0]);
 	Vector temp = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));

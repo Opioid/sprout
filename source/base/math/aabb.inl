@@ -10,7 +10,7 @@ namespace math {
 
 inline constexpr AABB::AABB(const float3& min, const float3& max) : bounds_{min, max} {}
 
-inline AABB::AABB(FVector min, FVector max) {
+inline AABB::AABB(VVector min, VVector max) {
 	simd::store_float4(bounds_[0].v, min);
 	simd::store_float4(bounds_[1].v, max);
 }
@@ -232,7 +232,7 @@ inline void AABB::set_min_max(const float3& min, const float3& max) {
 	bounds_[1] = max;
 }
 
-inline void AABB::set_min_max(FVector min, FVector max) {
+inline void AABB::set_min_max(VVector min, VVector max) {
 	simd::store_float4(bounds_[0].v, min);
 	simd::store_float4(bounds_[1].v, max);
 }

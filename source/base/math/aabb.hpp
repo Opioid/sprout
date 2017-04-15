@@ -13,7 +13,7 @@ public:
 
 	AABB() = default;
 	constexpr AABB(const float3& min, const float3& max);
-	AABB(FVector min, FVector max);
+	AABB(VVector min, VVector max);
 
 	const float3& min() const;
 	const float3& max() const;
@@ -30,7 +30,7 @@ public:
 	bool intersect_p(const Ray& ray, float& min_t, float& max_t) const;
 
 	void set_min_max(const float3& min, const float3& max);
-	void set_min_max(FVector min, FVector max);
+	void set_min_max(VVector min, VVector max);
 
 	void insert(const float3& p);
 

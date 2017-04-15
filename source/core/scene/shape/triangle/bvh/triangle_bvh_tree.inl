@@ -117,8 +117,8 @@ bool Tree<Data>::intersect(math::Ray& ray, Node_stack& node_stack,
 }
 
 template<typename Data>
-bool Tree<Data>::intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
-						   FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
+bool Tree<Data>::intersect(VVector ray_origin, VVector ray_direction, VVector ray_inv_direction,
+						   VVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
 						   Node_stack& node_stack, Intersection& intersection) const {
 	node_stack.push(0xFFFFFFFF);
 	uint32_t n = 0;
@@ -206,8 +206,8 @@ bool Tree<Data>::intersect_p(const math::Ray& ray, Node_stack& node_stack) const
 }
 
 template<typename Data>
-bool Tree<Data>::intersect_p(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
-							 FVector ray_min_t, FVector ray_max_t, uint32_t ray_signs[4],
+bool Tree<Data>::intersect_p(VVector ray_origin, VVector ray_direction, VVector ray_inv_direction,
+							 VVector ray_min_t, VVector ray_max_t, uint32_t ray_signs[4],
 							 Node_stack& node_stack) const {
 	node_stack.push(0xFFFFFFFF);
 	uint32_t n = 0;
@@ -378,13 +378,13 @@ void Tree<Data>::interpolate_triangle_data(uint32_t index, float2 uv,
 }
 
 template<typename Data>
-void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index,
+void Tree<Data>::interpolate_triangle_data(VVector u, VVector v, uint32_t index,
 										   float3& n, float3& t, float2& tc) const {
 	data_.interpolate_data(u, v, index, n, t, tc);
 }
 
 template<typename Data>
-void Tree<Data>::interpolate_triangle_data(FVector u, FVector v, uint32_t index,
+void Tree<Data>::interpolate_triangle_data(VVector u, VVector v, uint32_t index,
 										   Vector& n, Vector& t, float2& tc) const {
 	data_.interpolate_data(u, v, index, n, t, tc);
 }

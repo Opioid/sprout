@@ -11,14 +11,8 @@ struct alignas(16) Matrix4 {
 };
 
 // Fix-up for (1st) XMMATRIX parameter to pass in-register on vector call; by reference otherwise
-#if (_SU_VECTORCALL_ )
-	using FMatrix3 = const Matrix3;
-	using FMatrix4 = const Matrix4;
-#else
-	using FMatrix3 = const Matrix3&;
-	using FMatrix4 = const Matrix4&;
-#endif
+using VMatrix3 = const Matrix3;
+using VMatrix4 = const Matrix4;
 
-// Fix-up for (2nd+) XMMATRIX parameters to pass by reference
-using CMatrix3 = const Matrix3&;
-using CMatrix4 = const Matrix4&;
+using RMatrix3 = const Matrix3&;
+using RMatrix4 = const Matrix4&;

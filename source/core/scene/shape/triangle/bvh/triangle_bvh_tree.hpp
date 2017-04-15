@@ -49,14 +49,14 @@ public:
 
 	bool intersect(math::Ray& ray, Node_stack& node_stack, Intersection& intersection) const;
 
-	bool intersect(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
-				   FVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
+	bool intersect(VVector ray_origin, VVector ray_direction, VVector ray_inv_direction,
+				   VVector ray_min_t, Vector& ray_max_t, uint32_t ray_signs[4],
 				   Node_stack& node_stack, Intersection& intersection) const;
 
 	bool intersect_p(const math::Ray& ray, Node_stack& node_stack) const;
 
-	bool intersect_p(FVector ray_origin, FVector ray_direction, FVector ray_inv_direction,
-					 FVector ray_min_t, FVector ray_max_t, uint32_t ray_signs[4],
+	bool intersect_p(VVector ray_origin, VVector ray_direction, VVector ray_inv_direction,
+					 VVector ray_min_t, VVector ray_max_t, uint32_t ray_signs[4],
 					 Node_stack& node_stack) const;
 
 	float opacity(math::Ray& ray, float time, const material::Materials& materials,
@@ -68,10 +68,10 @@ public:
 	void interpolate_triangle_data(uint32_t index, float2 uv,
 								   float3& n, float3& t, float2& tc) const;
 
-	void interpolate_triangle_data(FVector u, FVector v, uint32_t index,
+	void interpolate_triangle_data(VVector u, VVector v, uint32_t index,
 								   float3& n, float3& t, float2& tc) const;
 
-	void interpolate_triangle_data(FVector u, FVector v, uint32_t index,
+	void interpolate_triangle_data(VVector u, VVector v, uint32_t index,
 								   Vector& n, Vector& t, float2& tc) const;
 
 

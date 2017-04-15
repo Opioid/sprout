@@ -13,11 +13,11 @@ float3 triangle_max(const float3& a, const float3& b, const float3& c) {
 	return math::max(a, math::max(b, c));
 }
 
-Vector triangle_min(FVector a, FVector b, FVector c) {
+Vector triangle_min(VVector a, VVector b, VVector c) {
 	return math::min(a, math::min(b, c));
 }
 
-Vector triangle_max(FVector a, FVector b, FVector c) {
+Vector triangle_max(VVector a, VVector b, VVector c) {
 	return math::max(a, math::max(b, c));
 }
 

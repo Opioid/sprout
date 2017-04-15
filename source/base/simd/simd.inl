@@ -235,11 +235,11 @@ static inline Vector SU_CALLCONV load_unaligned_float4(const float* source) {
  *
  ****************************************************************************/
 
-static inline float SU_CALLCONV get_x(FVector v) {
+static inline float SU_CALLCONV get_x(VVector v) {
 	return _mm_cvtss_f32(v);
 }
 
-static inline void SU_CALLCONV store_float3(math::Vector3<float>& destination, FVector v) {
+static inline void SU_CALLCONV store_float3(math::Vector3<float>& destination, VVector v) {
 	Vector t1 = SU_PERMUTE_PS(v, _MM_SHUFFLE(1, 1, 1, 1));
 	Vector t2 = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
 	_mm_store_ss(&destination.v[0], v);
@@ -247,13 +247,13 @@ static inline void SU_CALLCONV store_float3(math::Vector3<float>& destination, F
 	_mm_store_ss(&destination.v[2], t2);
 }
 
-//static inline void SU_CALLCONV store_float3(Vector3f_a& destination, FVector v) {
+//static inline void SU_CALLCONV store_float3(Vector3f_a& destination, VVector v) {
 //	Vector t = SU_PERMUTE_PS(v, _MM_SHUFFLE(2, 2, 2, 2));
 //	_mm_storel_epi64(reinterpret_cast<__m128i*>(&destination), _mm_castps_si128(v));
 //	_mm_store_ss(&destination[2], t);
 //}
 
-static inline void SU_CALLCONV store_float4(float* destination, FVector v) {
+static inline void SU_CALLCONV store_float4(float* destination, VVector v) {
 	_mm_store_ps(destination, v);
 }
 

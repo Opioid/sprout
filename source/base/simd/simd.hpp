@@ -48,33 +48,15 @@ namespace simd {
 
 using Vector = __m128;
 
-// Fix-up for (1st-3rd) Vector parameters that are pass-in-register for x86 and vector call; by reference otherwise
-#if (_SU_VECTORCALL_)
-	using FVector = const Vector;
-#else
-	using FVector = const Vector&;
-#endif
-
-// Fix-up for (4th) Vector parameter to pass in-register for x64 vector call; by reference otherwise
-#if (_SU_VECTORCALL_)
-	using GVector = const Vector;
-#else
-	using GVector = const Vector&;
-#endif
-
-// Fix-up for (5th & 6th) Vector parameter to pass in-register for vector call; by reference otherwise
-#if (_SU_VECTORCALL_)
-	using HVector = const Vector;
-#else
-	using HVector = const Vector&;
-#endif
+// Fix-up for (1st-6th) Vector parameters that are pass-in-register for x64 unix and vector call;
+// by reference otherwise
+using VVector = const Vector;
 
 // Fix-up for (7th+) Vector parameters to pass by reference
-using CVector = const Vector&;
+using RVector = const Vector&;
 
 }
 
 using Vector  = simd::Vector;
-using FVector = simd::FVector;
-using GVector = simd::GVector;
-using HVector = simd::HVector;
+using VVector = simd::VVector;
+using RVector = simd::RVector;
