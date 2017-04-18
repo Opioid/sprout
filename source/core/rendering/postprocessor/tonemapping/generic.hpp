@@ -10,9 +10,11 @@ public:
 
 	Generic(float contrast, float shoulder, float mid_in, float mid_out, float hdr_max);
 
-	virtual float3 tonemap(const float3& color) const final override;
-
 private:
+
+	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
+					   const image::Float_4& source,
+					   image::Float_4& destination) final override;
 
 	float tonemap_function(float x) const;
 

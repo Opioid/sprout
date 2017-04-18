@@ -8,8 +8,7 @@ Postprocessor::Postprocessor(uint32_t num_passes) : num_passes_(num_passes) {}
 
 Postprocessor::~Postprocessor() {}
 
-void Postprocessor::apply(const image::Float_4& source,
-						  image::Float_4& destination,
+void Postprocessor::apply(const image::Float_4& source, image::Float_4& destination,
 						  thread::Pool& pool) {
 	for (uint32_t p = 0; p < num_passes_; ++p) {
 		pool.run_range([this, p, &source, &destination]

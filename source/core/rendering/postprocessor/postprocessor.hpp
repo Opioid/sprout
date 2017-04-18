@@ -18,15 +18,13 @@ public:
 
 	virtual size_t num_bytes() const = 0;
 
-	void apply(const image::Float_4& source,
-			   image::Float_4& destination,
+	void apply(const image::Float_4& source, image::Float_4& destination,
 			   thread::Pool& pool);
 
 private:
 
 	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
-					   const image::Float_4& source,
-					   image::Float_4& destination) = 0;
+					   const image::Float_4& source, image::Float_4& destination) = 0;
 
 	uint32_t num_passes_;
 };

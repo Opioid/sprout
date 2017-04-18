@@ -496,11 +496,13 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 
 rendering::postprocessor::tonemapping::Tonemapper*
 Loader::load_tonemapper(const json::Value& tonemapper_value) {
+	using namespace rendering::postprocessor::tonemapping;
+
 	for (auto& n : tonemapper_value.GetObject()) {
 		if ("ACES" == n.name) {
 			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-			return new rendering::postprocessor::tonemapping::Aces(hdr_max);
+			return new Aces(hdr_max);
 		} else if ("Generic" == n.name) {
 			float contrast = json::read_float(n.value, "contrast", 1.f);
 			float shoulder = json::read_float(n.value, "shoulder", 1.f);
@@ -508,14 +510,13 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 			float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
 			float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
 
-			return new rendering::postprocessor::tonemapping::Generic(contrast, shoulder, mid_in,
-																	  mid_out, hdr_max);
+			return new Generic(contrast, shoulder, mid_in, mid_out, hdr_max);
 		} else if ("Identity" == n.name) {
 			return new rendering::postprocessor::tonemapping::Identity();
 		} else if ("Uncharted" == n.name) {
 			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-			return new rendering::postprocessor::tonemapping::Uncharted(hdr_max);
+			return new Uncharted(hdr_max);
 		}
 	}
 

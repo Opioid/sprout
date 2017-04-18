@@ -10,9 +10,11 @@ public:
 
 	Aces(float hdr_max);
 
-	virtual float3 tonemap(const float3& color) const final override;
-
 private:
+
+	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
+					   const image::Float_4& source,
+					   image::Float_4& destination) final override;
 
 	static float tonemap_function(float x);
 

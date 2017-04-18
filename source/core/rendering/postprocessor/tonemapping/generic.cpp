@@ -1,4 +1,5 @@
 #include "generic.hpp"
+#include "image/typed_image.inl"
 #include "base/math/vector4.inl"
 
 namespace rendering { namespace postprocessor { namespace tonemapping {
@@ -7,24 +8,30 @@ Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, fl
 	a_(contrast),
 	d_(shoulder),
 	hdr_max_(hdr_max) {
-	float ad = contrast * shoulder;
+	const float ad = contrast * shoulder;
 
-	float midi_pow_a  = std::pow(mid_in, contrast);
-	float midi_pow_ad = std::pow(mid_in, ad);
-	float hdrm_pow_a  = std::pow(hdr_max, contrast);
-	float hdrm_pow_ad = std::pow(hdr_max, ad);
+	const float midi_pow_a  = std::pow(mid_in, contrast);
+	const float midi_pow_ad = std::pow(mid_in, ad);
+	const float hdrm_pow_a  = std::pow(hdr_max, contrast);
+	const float hdrm_pow_ad = std::pow(hdr_max, ad);
 
-	float u = hdrm_pow_ad * mid_out - midi_pow_ad * mid_out;
-	float v = midi_pow_ad * mid_out;
+	const float u = hdrm_pow_ad * mid_out - midi_pow_ad * mid_out;
+	const float v = midi_pow_ad * mid_out;
 
 	b_ = -((-midi_pow_a + (mid_out * (hdrm_pow_ad * midi_pow_a - hdrm_pow_a * v)) / u) / v);
 	c_ = (hdrm_pow_ad * midi_pow_a - hdrm_pow_a * v) / u;
 }
 
-float3 Generic::tonemap(const float3& color) const {
-	return float3(tonemap_function(color[0]),
-				  tonemap_function(color[1]),
-				  tonemap_function(color[2]));
+void Generic::apply(int32_t begin, int32_t end, uint32_t /*pass*/,
+					const image::Float_4& source, image::Float_4& destination) {
+	for (int32_t i = begin; i < end; ++i) {
+		const float4& color = source.at(i);
+
+		destination.at(i) = float4(tonemap_function(color[0]),
+								   tonemap_function(color[1]),
+								   tonemap_function(color[2]),
+								   color[3]);
+	}
 }
 
 float Generic::tonemap_function(float x) const {

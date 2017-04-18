@@ -1,4 +1,5 @@
 #include "aces.hpp"
+#include "image/typed_image.inl"
 #include "base/math/vector4.inl"
 
 namespace rendering { namespace postprocessor { namespace tonemapping {
@@ -6,10 +7,17 @@ namespace rendering { namespace postprocessor { namespace tonemapping {
 Aces::Aces(float hdr_max) :
 	normalization_factor_(normalization_factor(hdr_max, tonemap_function(hdr_max))) {}
 
-float3 Aces::tonemap(const float3& color) const {
-	return normalization_factor_ * float3(tonemap_function(color[0]),
-										  tonemap_function(color[1]),
-										  tonemap_function(color[2]));
+void Aces::apply(int32_t begin, int32_t end, uint32_t /*pass*/,
+				 const image::Float_4& source, image::Float_4& destination) {
+	float norm = normalization_factor_;
+	for (int32_t i = begin; i < end; ++i) {
+		const float4& color = source.at(i);
+
+		destination.at(i) = float4(norm * tonemap_function(color[0]),
+								   norm * tonemap_function(color[1]),
+								   norm * tonemap_function(color[2]),
+								   color[3]);
+	}
 }
 
 float Aces::tonemap_function(float x) {
