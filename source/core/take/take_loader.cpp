@@ -17,6 +17,7 @@
 #include "rendering/integrator/volume/single_scattering.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
 #include "rendering/postprocessor/postprocessor_glare.hpp"
+#include "rendering/postprocessor/postprocessor_glare2.hpp"
 #include "rendering/postprocessor/tonemapping/aces.hpp"
 #include "rendering/postprocessor/tonemapping/generic.hpp"
 #include "rendering/postprocessor/tonemapping/identity.hpp"

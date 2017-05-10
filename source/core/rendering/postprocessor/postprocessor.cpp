@@ -10,6 +10,8 @@ Postprocessor::~Postprocessor() {}
 
 void Postprocessor::apply(const image::Float_4& source, image::Float_4& destination,
 						  thread::Pool& pool) {
+	pre_apply(source, destination, pool);
+
 	for (uint32_t p = 0; p < num_passes_; ++p) {
 		pool.run_range([this, p, &source, &destination]
 			(uint32_t /*id*/, int32_t begin, int32_t end) {
@@ -17,6 +19,9 @@ void Postprocessor::apply(const image::Float_4& source, image::Float_4& destinat
 			}, 0, destination.area());
 	}
 }
+
+void Postprocessor::pre_apply(const image::Float_4& /*source*/, image::Float_4& /*destination*/,
+							  thread::Pool& /*pool*/) {}
 
 }}
 

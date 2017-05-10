@@ -23,6 +23,9 @@ public:
 
 private:
 
+	virtual void pre_apply(const image::Float_4& source, image::Float_4& destination,
+						   thread::Pool& pool);
+
 	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
 					   const image::Float_4& source, image::Float_4& destination) = 0;
 
