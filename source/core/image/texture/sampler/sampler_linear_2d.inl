@@ -62,10 +62,10 @@ float Linear_2D<Address_U, Address_V>::sample_1(const Texture& texture, float2 u
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float c00 = texture.at_element_1(xy_xy1[1], xy_xy1[0], min_element);
-	float c01 = texture.at_element_1(xy_xy1[1], xy_xy1[2], min_element);
-	float c10 = texture.at_element_1(xy_xy1[3], xy_xy1[0], min_element);
-	float c11 = texture.at_element_1(xy_xy1[3], xy_xy1[2], min_element);
+	float c00 = texture.at_element_1(xy_xy1[0], xy_xy1[1], min_element);
+	float c01 = texture.at_element_1(xy_xy1[2], xy_xy1[1], min_element);
+	float c10 = texture.at_element_1(xy_xy1[0], xy_xy1[3], min_element);
+	float c11 = texture.at_element_1(xy_xy1[2], xy_xy1[3], min_element);
 
 	return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }
@@ -78,10 +78,10 @@ float2 Linear_2D<Address_U, Address_V>::sample_2(const Texture& texture, float2 
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float2 c00 = texture.at_element_2(xy_xy1[1], xy_xy1[0], min_element);
-	float2 c01 = texture.at_element_2(xy_xy1[1], xy_xy1[2], min_element);
-	float2 c10 = texture.at_element_2(xy_xy1[3], xy_xy1[0], min_element);
-	float2 c11 = texture.at_element_2(xy_xy1[3], xy_xy1[2], min_element);
+	float2 c00 = texture.at_element_2(xy_xy1[0], xy_xy1[1], min_element);
+	float2 c01 = texture.at_element_2(xy_xy1[2], xy_xy1[1], min_element);
+	float2 c10 = texture.at_element_2(xy_xy1[0], xy_xy1[3], min_element);
+	float2 c11 = texture.at_element_2(xy_xy1[2], xy_xy1[3], min_element);
 
 	return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }
@@ -94,10 +94,10 @@ float3 Linear_2D<Address_U, Address_V>::sample_3(const Texture& texture, float2 
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float3 c00 = texture.at_element_3(xy_xy1[1], xy_xy1[0], min_element);
-	float3 c01 = texture.at_element_3(xy_xy1[1], xy_xy1[2], min_element);
-	float3 c10 = texture.at_element_3(xy_xy1[3], xy_xy1[0], min_element);
-	float3 c11 = texture.at_element_3(xy_xy1[3], xy_xy1[2], min_element);
+	float3 c00 = texture.at_element_3(xy_xy1[0], xy_xy1[1], min_element);
+	float3 c01 = texture.at_element_3(xy_xy1[2], xy_xy1[1], min_element);
+	float3 c10 = texture.at_element_3(xy_xy1[0], xy_xy1[3], min_element);
+	float3 c11 = texture.at_element_3(xy_xy1[2], xy_xy1[3], min_element);
 
 	return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }
