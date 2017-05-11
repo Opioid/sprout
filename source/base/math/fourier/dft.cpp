@@ -73,7 +73,6 @@ void idft_1d(float* result, const float2* source, int32_t num) {
 			sum += 2.f * (source[k][0] * std::cos(b) + source[k][1] * std::sin(b));
 		}
 
-
 		float b = a * static_cast<float>(len);
 		sum += source[len][0] * std::cos(b) + source[len][1] * std::sin(b);
 
