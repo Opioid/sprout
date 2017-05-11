@@ -5,11 +5,14 @@
 #include "base/math/vector.inl"
 #include "base/math/vector4.inl"
 #include "base/math/filter/gaussian.hpp"
+#include "base/math/fourier/dft.hpp"
 #include "base/spectrum/interpolated.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.hpp"
 #include "base/thread/thread_pool.hpp"
 #include <vector>
+
+#include "image/encoding/png/png_writer.hpp"
 
 #include "base/math/print.hpp"
 #include <iostream>
@@ -20,30 +23,40 @@ Glare2::Glare2(Adaption adaption, float threshold, float intensity) :
 	Postprocessor(2),
 	adaption_(adaption),
 	threshold_(threshold), intensity_(intensity),
-	high_pass_(nullptr),
+	high_pass_r_(nullptr),
+	high_pass_g_(nullptr),
+	high_pass_b_(nullptr),
+	high_pass_dft_r_(nullptr),
+	high_pass_dft_g_(nullptr),
+	high_pass_dft_b_(nullptr),
 	kernel_(nullptr) {}
 
 Glare2::~Glare2() {
 	memory::free_aligned(kernel_);
-	memory::free_aligned(high_pass_);
+	memory::free_aligned(high_pass_dft_b_);
+	memory::free_aligned(high_pass_dft_g_);
+	memory::free_aligned(high_pass_dft_r_);
+	memory::free_aligned(high_pass_b_);
+	memory::free_aligned(high_pass_g_);
+	memory::free_aligned(high_pass_r_);
 }
 
-float f0(float theta) {
+static inline float f0(float theta) {
 	float b = theta / 0.02f;
 	return 2.61f * 10e6f * math::exp(-(b * b));
 }
 
-float f1(float theta) {
+static inline float f1(float theta) {
 	float b = 1.f / (theta + 0.02f);
 	return 20.91f * b * b * b;
 }
 
-float f2(float theta) {
+static inline float f2(float theta) {
 	float b = 1.f / (theta + 0.02f);
 	return 72.37f * b * b;
 }
 
-float f3(float theta, float lambda) {
+static inline float f3(float theta, float lambda) {
 	float b = theta - 3.f * (lambda / 568.f);
 	return 436.9f * (568.f / lambda) * math::exp(-(b * b));
 }
@@ -51,7 +64,16 @@ float f3(float theta, float lambda) {
 void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	const auto dim = camera.sensor_dimensions();
 	dimensions_ = dim;
-	high_pass_ = memory::allocate_aligned<float3>(dim[0] * dim[1]);
+	const int32_t area = dim[0] * dim[1];
+	high_pass_r_ = memory::allocate_aligned<float>(area);
+	high_pass_g_ = memory::allocate_aligned<float>(area);
+	high_pass_b_ = memory::allocate_aligned<float>(area);
+
+	dimensions_dft_ = int2(math::dft_size(dim[0]), dim[1]);
+	const int32_t area_dft = dimensions_dft_[0] * dimensions_dft_[1];
+	high_pass_dft_r_ = memory::allocate_aligned<float2>(area_dft);
+	high_pass_dft_g_ = memory::allocate_aligned<float2>(area_dft);
+	high_pass_dft_b_ = memory::allocate_aligned<float2>(area_dft);
 
 	// This seems a bit arbitrary
 	const float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
@@ -189,8 +211,52 @@ size_t Glare2::num_bytes() const {
 		(kernel_dimensions_[0] * kernel_dimensions_[1]) * sizeof(float3);
 }
 
+void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination,
+					   thread::Pool& pool) {
+	const auto dim = destination.dimensions2();
+
+	pool.run_range([this, &source, &destination]
+		(uint32_t /*id*/, int32_t begin, int32_t end) {
+			float threshold = threshold_;
+
+			for (int32_t i = begin; i < end; ++i) {
+				float3 color = source.at(i).xyz();
+
+				float l = spectrum::luminance(color);
+
+				if (l > threshold) {
+					high_pass_r_[i] = color[0];
+					high_pass_g_[i] = color[1];
+					high_pass_b_[i] = color[2];
+				} else {
+					high_pass_r_[i] = 0.f;
+					high_pass_g_[i] = 0.f;
+					high_pass_b_[i] = 0.f;
+				}
+			}
+		}, 0, destination.area());
+
+
+	for (int32_t i = 0, len = destination.area(); i < len; ++i) {
+		destination.at(i) = float4(high_pass_r_[i], 0.f, 0.f, 1.f);
+	}
+
+	image::encoding::png::Writer::write("high_pass_r.png", high_pass_r_, dim, 16.f);
+	image::encoding::png::Writer::write("high_pass_g.png", high_pass_g_, dim, 16.f);
+	image::encoding::png::Writer::write("high_pass_b.png", high_pass_b_, dim, 16.f);
+
+
+	math::dft_2d(high_pass_dft_r_, high_pass_r_, dim[0], dim[1], pool);
+
+
+	image::encoding::png::Writer::write("high_pass_dft_r.png", high_pass_dft_r_,
+										dimensions_dft_, 16.f);
+}
+
 void Glare2::apply(int32_t begin, int32_t end, uint32_t pass,
-				  const image::Float_4& source, image::Float_4& destination) {
+				   const image::Float_4& source, image::Float_4& destination) {
+	return;
+/*
 	if (0 == pass) {
 		float threshold = threshold_;
 
@@ -200,9 +266,13 @@ void Glare2::apply(int32_t begin, int32_t end, uint32_t pass,
 			float l = spectrum::luminance(color);
 
 			if (l > threshold) {
-				high_pass_[i] = color;
+				high_pass_r_[i] = color[0];
+				high_pass_g_[i] = color[1];
+				high_pass_b_[i] = color[2];
 			} else {
-				high_pass_[i] = float3(0.f);
+				high_pass_r_[i] = 0.f;
+				high_pass_g_[i] = 0.f;
+				high_pass_b_[i] = 0.f;
 			}
 		}
 	} else {
@@ -218,22 +288,6 @@ void Glare2::apply(int32_t begin, int32_t end, uint32_t pass,
 			int32_t cd1 = c[1] - d[1];
 			int2 kb = d - c;
 			int2 ke = kb + d;
-/*
-			float3 glare(0.f);
-			for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0) {
-				int32_t si = (cd1 + ky) * d[0];
-				for (int32_t ki = kb[0] + krow, kl = ke[0] + krow; ki < kl; ++ki, ++si) {
-					float3 k = kernel_[ki];
-
-					glare += k * high_pass_[si];
-				}
-			}
-
-			float4 s = source.load(i);
-
-			destination.at(i) = float4(s.xyz() + intensity * glare, s[3]);
-*/
-
 
 			Vector glare = simd::Zero;
 			for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0) {
@@ -253,6 +307,7 @@ void Glare2::apply(int32_t begin, int32_t end, uint32_t pass,
 			simd::store_float4(reinterpret_cast<float*>(destination.address(i)), s);
 		}
 	}
+	*/
 }
 
 }}

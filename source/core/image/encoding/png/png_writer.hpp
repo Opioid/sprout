@@ -21,6 +21,10 @@ public:
 	static bool write(const std::string& name, const Byte_3& image);
 
 	static bool write(const std::string& name, const Byte_1& image);
+
+	static bool write(const std::string& name, const float* data, int2 dimensions, float scale);
+
+	static bool write(const std::string& name, const float2* data, int2 dimensions, float scale);
 };
 
 }}}

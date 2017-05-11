@@ -18,7 +18,7 @@ void dft_1d(float2* result, const float* source, int32_t num) {
 	const int32_t r  = num % 4;
 	const int32_t m4 = num - r;
 
-	float4 zott = float4(0.f, 1.f, 2.f, 3.f);
+	const float4 zott = float4(0.f, 1.f, 2.f, 3.f);
 	const Vector zv = simd::load_float4(zott.v);
 
 	for (int32_t k = 0, len = num / 2; k <= len; ++k) {
@@ -31,24 +31,18 @@ void dft_1d(float2* result, const float* source, int32_t num) {
 		Vector sum_y = simd::Zero;
 
 		for (int32_t x = 0; x < m4; x += 4) {
-			Vector xf = simd::set_float4(static_cast<float>(x));
-			Vector xv = math::add(xf, zv);
-			Vector b = math::mul(a, xv);
+			const Vector xf = simd::set_float4(static_cast<float>(x));
+			const Vector xv = math::add(xf, zv);
+			const Vector b = math::mul(a, xv);
 			Vector sin_b;
 			Vector cos_b;
 			math::sincos(b, sin_b, cos_b);
-			Vector sv = simd::load_unaligned_float4(&source[x]);
+			const Vector sv = simd::load_unaligned_float4(&source[x]);
 			sum_x = math::add(sum_x, mul(sv, cos_b));
 			sum_y = math::add(sum_y, mul(sv, sin_b));
 		}
 
-//		float4 sx;
-//		store_float4(sx, sum_x);
-//		float4 sy;
-//		store_float4(sy, sum_y);
-
-		float2 sum(horizontal_sum(sum_x)/*sx[0] + sx[1] + sx[2] + sx[3]*/,
-				   horizontal_sum(sum_y)/*sy[0] + sy[1] + sy[2] + sy[3]*/);
+		float2 sum(horizontal_sum(sum_x), horizontal_sum(sum_y));
 
 		// Use scalar operations to handle the rest
 		for (int32_t x = m4; x < num; ++x) {

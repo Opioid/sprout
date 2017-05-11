@@ -23,6 +23,9 @@ public:
 
 private:
 
+	virtual void pre_apply(const image::Float_4& source, image::Float_4& destination,
+						   thread::Pool& pool) final override;
+
 	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
 					   const image::Float_4& source,
 					   image::Float_4& destination) final override;
@@ -31,9 +34,17 @@ private:
 	float threshold_;
 	float intensity_;
 
-//	image::Float_3 high_pass_;
 	int2 dimensions_;
-	float3* high_pass_;
+
+	float* high_pass_r_;
+	float* high_pass_g_;
+	float* high_pass_b_;
+
+	int2 dimensions_dft_;
+
+	float2* high_pass_dft_r_;
+	float2* high_pass_dft_g_;
+	float2* high_pass_dft_b_;
 
 //	float*
 

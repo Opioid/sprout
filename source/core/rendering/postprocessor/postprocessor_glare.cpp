@@ -28,22 +28,22 @@ Glare::~Glare() {
 	memory::free_aligned(high_pass_);
 }
 
-float f0(float theta) {
+static inline float f0(float theta) {
 	float b = theta / 0.02f;
 	return 2.61f * 10e6f * math::exp(-(b * b));
 }
 
-float f1(float theta) {
+static inline float f1(float theta) {
 	float b = 1.f / (theta + 0.02f);
 	return 20.91f * b * b * b;
 }
 
-float f2(float theta) {
+static inline float f2(float theta) {
 	float b = 1.f / (theta + 0.02f);
 	return 72.37f * b * b;
 }
 
-float f3(float theta, float lambda) {
+static inline float f3(float theta, float lambda) {
 	float b = theta - 3.f * (lambda / 568.f);
 	return 436.9f * (568.f / lambda) * math::exp(-(b * b));
 }

@@ -37,10 +37,9 @@ public:
 	Image(const Description& description);
 	virtual ~Image();
 
-	void resize(const Description& description);
-
 	const Description& description() const;
 
+	int2 dimensions2() const;
 	int32_t area() const;
 	int32_t volume() const;
 
@@ -49,6 +48,8 @@ public:
 	virtual size_t num_bytes() const = 0;
 
 protected:
+
+	void resize(const Description& description);
 
 	Description description_;
 

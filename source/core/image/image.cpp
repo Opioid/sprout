@@ -34,14 +34,12 @@ Image::Image(const Description& description) :
 
 Image::~Image() {}
 
-void Image::resize(const Description& description) {
-	description_ = description;
-	area_ = description.dimensions[0] * description.dimensions[1];
-	volume_ = description.dimensions[0] * description.dimensions[1] * description.dimensions[2];
-}
-
 const Image::Description& Image::description() const {
 	return description_;
+}
+
+int2 Image::dimensions2() const {
+	return description_.dimensions.xy();
 }
 
 int32_t Image::area() const {
@@ -57,6 +55,12 @@ int2 Image::coordinates_2(int32_t index) const {
 	c[1] = index / description_.dimensions[0];
 	c[0] = index - c[1] * description_.dimensions[0];
 	return c;
+}
+
+void Image::resize(const Description& description) {
+	description_ = description;
+	area_ = description.dimensions[0] * description.dimensions[1];
+	volume_ = description.dimensions[0] * description.dimensions[1] * description.dimensions[2];
 }
 
 }
