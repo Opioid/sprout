@@ -66,14 +66,20 @@ void idft_1d(float* result, const float2* source, int32_t num) {
 
 		float a = -2.f * Pi * static_cast<float>(x) / fn;
 
-		for (int32_t k = 1, len = num / 2; k <= len; ++k) {
+		const int32_t len = num / 2;
+		for (int32_t k = 1; k < len; ++k) {
 			float b = a * static_cast<float>(k);
 
-			sum += source[k][0] * std::cos(b) + source[k][1] * std::sin(b);
+			sum += 2.f * (source[k][0] * std::cos(b) + source[k][1] * std::sin(b));
 		}
 
-		result[x] = sum;
+
+		float b = a * static_cast<float>(len);
+		sum += source[len][0] * std::cos(b) + source[len][1] * std::sin(b);
+
+		result[x] = sum / fn;
 	}
+
 }
 
 // https://www.nayuki.io/page/how-to-implement-the-discrete-fourier-transform
@@ -154,6 +160,10 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 	}, 0, row_size);
 
 	memory::free_aligned(tmp);
+}
+
+void idft_2d(float* result, const float2* source, int32_t width, int32_t height) {
+
 }
 
 }

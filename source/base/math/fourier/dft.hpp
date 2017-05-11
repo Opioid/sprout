@@ -16,4 +16,6 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height);
 
 void dft_2d(float2* result, const float* source, int32_t width, int32_t height, thread::Pool& pool);
 
+void idft_2d(float* result, const float2* source, int32_t width, int32_t height);
+
 }

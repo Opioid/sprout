@@ -255,6 +255,10 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 
 void Glare2::apply(int32_t begin, int32_t end, uint32_t pass,
 				   const image::Float_4& source, image::Float_4& destination) {
+	for (int32_t i = begin; i < end; ++i) {
+		destination.at(i) = source.at(i);
+	}
+
 	return;
 /*
 	if (0 == pass) {
