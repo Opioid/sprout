@@ -29,10 +29,14 @@ Glare2::Glare2(Adaption adaption, float threshold, float intensity) :
 	high_pass_dft_r_(nullptr),
 	high_pass_dft_g_(nullptr),
 	high_pass_dft_b_(nullptr),
-	kernel_(nullptr) {}
+	kernel_dft_r_(nullptr),
+	kernel_dft_g_(nullptr),
+	kernel_dft_b_(nullptr) {}
 
 Glare2::~Glare2() {
-	memory::free_aligned(kernel_);
+	memory::free_aligned(kernel_dft_b_);
+	memory::free_aligned(kernel_dft_g_);
+	memory::free_aligned(kernel_dft_r_);
 	memory::free_aligned(high_pass_dft_b_);
 	memory::free_aligned(high_pass_dft_g_);
 	memory::free_aligned(high_pass_dft_r_);
@@ -78,10 +82,6 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	// This seems a bit arbitrary
 	const float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
-	kernel_dimensions_ = 2 * dim;
-	int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
-	kernel_ = memory::allocate_aligned<float3>(kernel_size);
-
 	const spectrum::Interpolated CIE_X(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_X_360_830_1nm, spectrum::CIE_XYZ_Num);
 	const spectrum::Interpolated CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
 	const spectrum::Interpolated CIE_Z(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Z_360_830_1nm, spectrum::CIE_XYZ_Num);
@@ -98,6 +98,9 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		float  c;
 		float3 d;
 	};
+
+	kernel_dimensions_ = 2 * dim;
+	const int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
 
 	std::vector<F> f(kernel_size);
 
@@ -188,21 +191,48 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		break;
 	}
 
-	float a_n = scale[0] / a_sum;
-	float b_n = scale[1] / b_sum;
-	float c_n = scale[2] / c_sum;
+	const float a_n = scale[0] / a_sum;
+	const float b_n = scale[1] / b_sum;
+	const float c_n = scale[2] / c_sum;
+
+	float* kernel_r = memory::allocate_aligned<float>(kernel_size);
+	float* kernel_g = memory::allocate_aligned<float>(kernel_size);
+	float* kernel_b = memory::allocate_aligned<float>(kernel_size);
 
 	if (Adaption::Photopic == adaption_) {
-		for (int32_t i = 0, len = kernel_size; i < len; ++i) {
-			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c);
+		for (int32_t i = 0; i < kernel_size; ++i) {
+			const float k = a_n * f[i].a + b_n * f[i].b + c_n * f[i].c;
+
+			kernel_r[i] = k;
+			kernel_g[i] = k;
+			kernel_b[i] = k;
 		}
 	} else {
-		float3 d_n = scale[3] / d_sum;
+		const float3 d_n = scale[3] / d_sum;
 
-		for (int32_t i = 0, len = kernel_size; i < len; ++i) {
-			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d;
+		for (int32_t i = 0; i < kernel_size; ++i) {
+			const float3 k((a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d);
+
+			kernel_r[i] = k[0];
+			kernel_g[i] = k[1];
+			kernel_b[i] = k[2];
 		}
 	}
+
+	const int32_t kernel_dft_size = math::dft_size(kernel_dimensions_[0]) * kernel_dimensions_[1];
+
+	kernel_dft_r_ = memory::allocate_aligned<float2>(kernel_dft_size);
+	kernel_dft_g_ = memory::allocate_aligned<float2>(kernel_dft_size);
+	kernel_dft_b_ = memory::allocate_aligned<float2>(kernel_dft_size);
+
+	math::dft_2d(kernel_dft_r_, kernel_r, kernel_dimensions_[0], kernel_dimensions_[1], pool);
+	math::dft_2d(kernel_dft_g_, kernel_g, kernel_dimensions_[0], kernel_dimensions_[1], pool);
+	math::dft_2d(kernel_dft_b_, kernel_b, kernel_dimensions_[0], kernel_dimensions_[1], pool);
+
+	memory::free_aligned(kernel_b);
+	memory::free_aligned(kernel_g);
+	memory::free_aligned(kernel_r);
+
 }
 
 size_t Glare2::num_bytes() const {

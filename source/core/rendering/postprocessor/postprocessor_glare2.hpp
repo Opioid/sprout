@@ -49,7 +49,10 @@ private:
 //	float*
 
 	int2 kernel_dimensions_;
-	float3* kernel_;
+
+	float2* kernel_dft_r_;
+	float2* kernel_dft_g_;
+	float2* kernel_dft_b_;
 };
 
 }}
