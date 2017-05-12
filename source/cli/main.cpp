@@ -31,10 +31,21 @@
 #include "core/testing/testing_spectrum.hpp"
 
 #include "base/math/fourier/dft.hpp"
+#include <iostream>
 
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
+
+
+
+void print(const std::vector<float2>& v) {
+	for (auto i : v) {
+		std::cout << i << " ";
+	}
+
+	std::cout << std::endl;
+}
 
 int main(int argc, char* argv[]) {
 //	testing::size();
@@ -49,22 +60,37 @@ int main(int argc, char* argv[]) {
 //	return 1;
 
 
-	std::vector<float> source = { 0.29f, 0.54f, 0.45f, 1.3f,
-								  0.12f, 0.65f, 0.73f, 0.36f,
-								  0.43f, 0.82f, 0.25f, 0.53f,
-								  0.93f, 0.18f, 0.63f, 0.21f };
+//	std::vector<float> source = { 0.29f, 0.54f, 0.45f, 1.3f,
+//								  0.12f, 0.65f, 0.73f, 0.36f,
+//								  0.43f, 0.82f, 0.25f, 0.53f,
+//								  0.93f, 0.18f, 0.63f, 0.21f };
 
-//	std::vector<float> source = {0, 0.3, 0.6, 0.8, 1, 1, 0.9, 0.7, 0.5, 0.2, 0.2, 0.5, 0.7, 0.9, 1, 1, 0.8, 0.6, 0.3, 0};
+//	std::vector<float> result(source.size());
 
-	std::vector<float2> destination(math::dft_size(source.size()));
+////	std::vector<float> source = {0, 0.3, 0.6, 0.8, 1, 1, 0.9, 0.7, 0.5, 0.2, 0.2, 0.5, 0.7, 0.9, 1, 1, 0.8, 0.6, 0.3, 0};
 
-	math::dft_1d(destination.data(), source.data(), source.size());
+//	std::vector<float2> destination(math::dft_size(source.size()));
 
-	std::vector<float> result(source.size());
+//	math::dft_1d(destination.data(), source.data(), source.size());
 
-	math::idft_1d(result.data(), destination.data(), result.size());
+//	math::idft_1d(result.data(), destination.data(), result.size());
 
-	return 0;
+
+//	int32_t width = 4;
+//	int32_t height = 4;
+
+//	std::vector<float2> destination(math::dft_size(width) * height);
+
+//	math::dft_2d(destination.data(), source.data(), width, height);
+
+//	math::idft_2d(result.data(), destination.data(), width, height);
+
+//	std::cout << "control: " << std::endl;
+//	std::vector<float2> tmp(math::dft_size(width));
+//	math::dft_1d(tmp.data(), source.data(), width);
+//	print(tmp);
+
+//	return 0;
 
 
 	logging::init(logging::Type::Stdout);

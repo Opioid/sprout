@@ -6,6 +6,9 @@
 #include "math/vector2.inl"
 #include "thread/thread_pool.hpp"
 
+#include "math/print.hpp"
+#include <iostream>
+
 namespace math {
 
 int32_t dft_size(int32_t num) {
@@ -64,7 +67,7 @@ void idft_1d(float* result, const float2* source, int32_t num) {
 	for (int32_t x = 0; x < num; ++x) {
 		float sum = source[0][0];
 
-		float a = -2.f * Pi * static_cast<float>(x) / fn;
+		float a = (-2.f * Pi) * static_cast<float>(x) / fn;
 
 		const int32_t len = num / 2;
 		for (int32_t k = 1; k < len; ++k) {
@@ -124,7 +127,7 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 			thread::Pool& pool) {
 	int32_t row_size = dft_size(width);
 
-	float2* tmp = memory::allocate_aligned<float2>(height * row_size);
+	float2* tmp = memory::allocate_aligned<float2>(row_size * height);
 
 	pool.run_range([source, tmp, row_size, width](uint32_t /*id*/, int32_t begin, int32_t end) {
 		for (int32_t y = begin; y < end; ++y) {
@@ -162,7 +165,40 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 }
 
 void idft_2d(float* result, const float2* source, int32_t width, int32_t height) {
+	int32_t row_size = dft_size(width);
 
+	float2* tmp = memory::allocate_aligned<float2>(row_size * height);
+
+
+	const float af = (2.f * Pi) / static_cast<float>(height);
+	for (int32_t x = 0; x < row_size; ++x) {
+		for (int32_t k = 0; k < height; ++k) {
+			float2 sum(0.f);
+
+			const float a = af * static_cast<float>(k);
+
+			for (int32_t t = 0; t < height; ++t) {
+				const float angle = a * static_cast<float>(t);
+
+				float sin_a;
+				float cos_a;
+				math::sincos(angle, sin_a, cos_a);
+
+				const int32_t g = t * row_size + x;
+				sum[0] +=  source[g][0] * cos_a - source[g][1] * sin_a;
+				sum[1] +=  source[g][0] * sin_a + source[g][1] * cos_a;
+			}
+
+			const int32_t c = k * row_size + x;
+			tmp[c] = sum / static_cast<float>(height);
+		}
+	}
+
+	for (int32_t y = 0; y < height; ++y) {
+		idft_1d(result + y * width, tmp + y * row_size, width);
+	}
+
+	memory::free_aligned(tmp);
 }
 
 }

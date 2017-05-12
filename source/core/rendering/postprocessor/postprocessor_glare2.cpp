@@ -247,10 +247,17 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 
 
 	math::dft_2d(high_pass_dft_r_, high_pass_r_, dim[0], dim[1], pool);
+	math::dft_2d(high_pass_dft_g_, high_pass_g_, dim[0], dim[1], pool);
+	math::dft_2d(high_pass_dft_b_, high_pass_b_, dim[0], dim[1], pool);
 
 
-	image::encoding::png::Writer::write("high_pass_dft_r.png", high_pass_dft_r_,
-										dimensions_dft_, 16.f);
+//	image::encoding::png::Writer::write("high_pass_dft_r.png", high_pass_dft_r_,
+//										dimensions_dft_, 16.f);
+
+	math::idft_2d(high_pass_r_, high_pass_dft_r_, dim[0], dim[1]);
+
+
+	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 16.f);
 }
 
 void Glare2::apply(int32_t begin, int32_t end, uint32_t pass,
