@@ -308,11 +308,14 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
 					int32_t i = y * dim[0] + x;
 					int2 sc = int2(x, y) - offset;
-					float4 color(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i],
-								 source.at(sc[0], sc[1])[3]);
+//					float4 color(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i],
+//								 source.at(sc[0], sc[1])[3]);
 
+					const auto& source_color = source.at(sc[0], sc[1]);
+					float3 color(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
 
-					destination.store(sc[0], sc[1], color);
+					destination.store(sc[0], sc[1], float4(color + source_color.xyz(),
+														   source_color[3]));
 				}
 			}
 		}, offset[1], offset[1] + source.dimensions2()[1]);
@@ -323,9 +326,9 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 
 void Glare2::apply(int32_t begin, int32_t end, uint32_t pass,
 				   const image::Float_4& source, image::Float_4& destination) {
-//	for (int32_t i = begin; i < end; ++i) {
-//		destination.at(i) = source.at(i);
-//	}
+	for (int32_t i = begin; i < end; ++i) {
+		destination.at(i) = source.at(i);
+	}
 
 	return;
 /*
