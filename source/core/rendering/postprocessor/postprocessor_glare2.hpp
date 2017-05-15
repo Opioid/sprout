@@ -34,25 +34,19 @@ private:
 	float threshold_;
 	float intensity_;
 
-	int2 dimensions_;
-
-	float* high_pass_r_;
-	float* high_pass_g_;
-	float* high_pass_b_;
-
-	int2 dimensions_dft_;
-
-	float2* high_pass_dft_r_;
-	float2* high_pass_dft_g_;
-	float2* high_pass_dft_b_;
-
-//	float*
-
 	int2 kernel_dimensions_;
 
 	float2* kernel_dft_r_;
 	float2* kernel_dft_g_;
 	float2* kernel_dft_b_;
+
+	float* high_pass_r_;
+	float* high_pass_g_;
+	float* high_pass_b_;
+
+	float2* high_pass_dft_r_;
+	float2* high_pass_dft_g_;
+	float2* high_pass_dft_b_;
 };
 
 }}

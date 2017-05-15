@@ -23,26 +23,26 @@ Glare2::Glare2(Adaption adaption, float threshold, float intensity) :
 	Postprocessor(2),
 	adaption_(adaption),
 	threshold_(threshold), intensity_(intensity),
+	kernel_dft_r_(nullptr),
+	kernel_dft_g_(nullptr),
+	kernel_dft_b_(nullptr),
 	high_pass_r_(nullptr),
 	high_pass_g_(nullptr),
 	high_pass_b_(nullptr),
 	high_pass_dft_r_(nullptr),
 	high_pass_dft_g_(nullptr),
-	high_pass_dft_b_(nullptr),
-	kernel_dft_r_(nullptr),
-	kernel_dft_g_(nullptr),
-	kernel_dft_b_(nullptr) {}
+	high_pass_dft_b_(nullptr) {}
 
 Glare2::~Glare2() {
-	memory::free_aligned(kernel_dft_b_);
-	memory::free_aligned(kernel_dft_g_);
-	memory::free_aligned(kernel_dft_r_);
 	memory::free_aligned(high_pass_dft_b_);
 	memory::free_aligned(high_pass_dft_g_);
 	memory::free_aligned(high_pass_dft_r_);
 	memory::free_aligned(high_pass_b_);
 	memory::free_aligned(high_pass_g_);
 	memory::free_aligned(high_pass_r_);
+	memory::free_aligned(kernel_dft_b_);
+	memory::free_aligned(kernel_dft_g_);
+	memory::free_aligned(kernel_dft_r_);
 }
 
 static inline float f0(float theta) {
@@ -66,19 +66,6 @@ static inline float f3(float theta, float lambda) {
 }
 
 void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
-	const auto dim = camera.sensor_dimensions();
-	dimensions_ = dim;
-	const int32_t area = dim[0] * dim[1];
-	high_pass_r_ = memory::allocate_aligned<float>(area);
-	high_pass_g_ = memory::allocate_aligned<float>(area);
-	high_pass_b_ = memory::allocate_aligned<float>(area);
-
-	dimensions_dft_ = int2(math::dft_size(dim[0]), dim[1]);
-	const int32_t area_dft = dimensions_dft_[0] * dimensions_dft_[1];
-	high_pass_dft_r_ = memory::allocate_aligned<float2>(area_dft);
-	high_pass_dft_g_ = memory::allocate_aligned<float2>(area_dft);
-	high_pass_dft_b_ = memory::allocate_aligned<float2>(area_dft);
-
 	// This seems a bit arbitrary
 	const float solid_angle = 0.5f * math::radians_to_degrees(camera.pixel_solid_angle());
 
@@ -99,6 +86,7 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		float3 d;
 	};
 
+	const auto dim = camera.sensor_dimensions();
 	kernel_dimensions_ = 2 * dim;
 	const int32_t kernel_size = kernel_dimensions_[0] * kernel_dimensions_[1];
 
@@ -233,43 +221,61 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	memory::free_aligned(kernel_g);
 	memory::free_aligned(kernel_r);
 
+	high_pass_r_ = memory::allocate_aligned<float>(kernel_size);
+	high_pass_g_ = memory::allocate_aligned<float>(kernel_size);
+	high_pass_b_ = memory::allocate_aligned<float>(kernel_size);
+
+	high_pass_dft_r_ = memory::allocate_aligned<float2>(kernel_dft_size);
+	high_pass_dft_g_ = memory::allocate_aligned<float2>(kernel_dft_size);
+	high_pass_dft_b_ = memory::allocate_aligned<float2>(kernel_dft_size);
 }
 
 size_t Glare2::num_bytes() const {
 	return sizeof(*this) +
-		(dimensions_[0] * dimensions_[1]) * sizeof(float3) +
+	//	(dimensions_[0] * dimensions_[1]) * sizeof(float3) +
 		(kernel_dimensions_[0] * kernel_dimensions_[1]) * sizeof(float3);
 }
 
 void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination,
 					   thread::Pool& pool) {
-	const auto dim = destination.dimensions2();
+	const auto dim = kernel_dimensions_;
 
-	pool.run_range([this, &source, &destination]
+	pool.run_range([this, dim, &source]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
 			float threshold = threshold_;
 
-			for (int32_t i = begin; i < end; ++i) {
-				float3 color = source.at(i).xyz();
+			const int2 offset = dim / 4;
 
-				float l = spectrum::luminance(color);
+			const int2 source_dim = source.dimensions2();
 
-				if (l > threshold) {
-					high_pass_r_[i] = color[0];
-					high_pass_g_[i] = color[1];
-					high_pass_b_[i] = color[2];
-				} else {
-					high_pass_r_[i] = 0.f;
-					high_pass_g_[i] = 0.f;
-					high_pass_b_[i] = 0.f;
+			for (int32_t y = begin, i = begin * dim[0]; y < end; ++y) {
+				for (int32_t x = 0; x < dim[0]; ++x, ++i) {
+					float3 out(0.f);
+
+					int2 sc = int2(x, y) - offset;
+					if (sc[0] > 0 && sc[1] > 0
+					&&  sc[0] < source_dim[0] && sc[1] < source_dim[1]) {
+						float3 color = source.at(sc[0], sc[1]).xyz();
+
+						float l = spectrum::luminance(color);
+
+						if (l > threshold) {
+							out = color;
+						}
+					}
+
+					high_pass_r_[i] = out[0];
+					high_pass_g_[i] = out[1];
+					high_pass_b_[i] = out[2];
+
 				}
 			}
-		}, 0, destination.area());
+		}, 0, dim[1]);
 
 
-	for (int32_t i = 0, len = destination.area(); i < len; ++i) {
-		destination.at(i) = float4(high_pass_r_[i], 0.f, 0.f, 1.f);
-	}
+//	for (int32_t i = 0, len = destination.area(); i < len; ++i) {
+//		destination.at(i) = float4(high_pass_r_[i], 0.f, 0.f, 1.f);
+//	}
 
 	image::encoding::png::Writer::write("high_pass_r.png", high_pass_r_, dim, 16.f);
 	image::encoding::png::Writer::write("high_pass_g.png", high_pass_g_, dim, 16.f);
@@ -281,10 +287,35 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 	math::dft_2d(high_pass_dft_b_, high_pass_b_, dim[0], dim[1], pool);
 
 
-//	image::encoding::png::Writer::write("high_pass_dft_r.png", high_pass_dft_r_,
-//										dimensions_dft_, 16.f);
+	int2 kernel_dft_dimensions(math::dft_size(kernel_dimensions_[0]), kernel_dimensions_[1]);
+	image::encoding::png::Writer::write("high_pass_dft_r.png", high_pass_dft_r_,
+										kernel_dft_dimensions, 16.f);
 
 	math::idft_2d(high_pass_r_, high_pass_dft_r_, dim[0], dim[1]);
+	math::idft_2d(high_pass_g_, high_pass_dft_g_, dim[0], dim[1]);
+	math::idft_2d(high_pass_b_, high_pass_dft_b_, dim[0], dim[1]);
+
+
+	const int2 offset = dim / 4;
+
+	pool.run_range([this, dim, &source, &destination]
+		(uint32_t /*id*/, int32_t begin, int32_t end) {
+			const int2 offset = dim / 4;
+
+			const int2 source_dim = destination.dimensions2();
+
+			for (int32_t y = begin; y < end; ++y) {
+				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
+					int32_t i = y * dim[0] + x;
+					int2 sc = int2(x, y) - offset;
+					float4 color(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i],
+								 source.at(sc[0], sc[1])[3]);
+
+
+					destination.store(sc[0], sc[1], color);
+				}
+			}
+		}, offset[1], offset[1] + source.dimensions2()[1]);
 
 
 	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 16.f);
@@ -292,9 +323,9 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 
 void Glare2::apply(int32_t begin, int32_t end, uint32_t pass,
 				   const image::Float_4& source, image::Float_4& destination) {
-	for (int32_t i = begin; i < end; ++i) {
-		destination.at(i) = source.at(i);
-	}
+//	for (int32_t i = begin; i < end; ++i) {
+//		destination.at(i) = source.at(i);
+//	}
 
 	return;
 /*
