@@ -242,7 +242,7 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 
 	pool.run_range([this, dim, &source]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			float threshold = threshold_;
+			const float threshold = threshold_;
 
 			const int2 offset = dim / 4;
 
@@ -267,29 +267,34 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 					high_pass_r_[i] = out[0];
 					high_pass_g_[i] = out[1];
 					high_pass_b_[i] = out[2];
-
 				}
 			}
 		}, 0, dim[1]);
 
-
-//	for (int32_t i = 0, len = destination.area(); i < len; ++i) {
-//		destination.at(i) = float4(high_pass_r_[i], 0.f, 0.f, 1.f);
-//	}
-
-	image::encoding::png::Writer::write("high_pass_r.png", high_pass_r_, dim, 16.f);
-	image::encoding::png::Writer::write("high_pass_g.png", high_pass_g_, dim, 16.f);
-	image::encoding::png::Writer::write("high_pass_b.png", high_pass_b_, dim, 16.f);
+//	image::encoding::png::Writer::write("high_pass_r.png", high_pass_r_, dim, 16.f);
+//	image::encoding::png::Writer::write("high_pass_g.png", high_pass_g_, dim, 16.f);
+//	image::encoding::png::Writer::write("high_pass_b.png", high_pass_b_, dim, 16.f);
 
 
 	math::dft_2d(high_pass_dft_r_, high_pass_r_, dim[0], dim[1], pool);
 	math::dft_2d(high_pass_dft_g_, high_pass_g_, dim[0], dim[1], pool);
 	math::dft_2d(high_pass_dft_b_, high_pass_b_, dim[0], dim[1], pool);
 
+	const int32_t kernel_dft_size = math::dft_size(kernel_dimensions_[0]) * kernel_dimensions_[1];
 
-	int2 kernel_dft_dimensions(math::dft_size(kernel_dimensions_[0]), kernel_dimensions_[1]);
-	image::encoding::png::Writer::write("high_pass_dft_r.png", high_pass_dft_r_,
-										kernel_dft_dimensions, 16.f);
+	pool.run_range([this]
+		(uint32_t /*id*/, int32_t begin, int32_t end) {
+			for (int32_t i = begin; i < end; ++i) {
+				high_pass_dft_r_[i] = mul_complex(high_pass_dft_r_[i], kernel_dft_r_[i], 1.f);
+				high_pass_dft_g_[i] = mul_complex(high_pass_dft_g_[i], kernel_dft_g_[i], 1.f);
+				high_pass_dft_b_[i] = mul_complex(high_pass_dft_b_[i], kernel_dft_b_[i], 1.f);
+			}
+		}, 0, kernel_dft_size);
+
+
+//	int2 kernel_dft_dimensions(math::dft_size(kernel_dimensions_[0]), kernel_dimensions_[1]);
+//	image::encoding::png::Writer::write("high_pass_dft_r.png", high_pass_dft_r_,
+//										kernel_dft_dimensions, 16.f);
 
 	math::idft_2d(high_pass_r_, high_pass_dft_r_, dim[0], dim[1]);
 	math::idft_2d(high_pass_g_, high_pass_dft_g_, dim[0], dim[1]);
@@ -304,85 +309,45 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 
 			const int2 source_dim = destination.dimensions2();
 
+			const float intensity = intensity_;
+
 			for (int32_t y = begin; y < end; ++y) {
 				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
-					int32_t i = y * dim[0] + x;
-					int2 sc = int2(x, y) - offset;
-//					float4 color(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i],
-//								 source.at(sc[0], sc[1])[3]);
+					const int32_t i = y * dim[0] + x;
+					const int2 sc = int2(x, y) - offset;
 
 					const auto& source_color = source.at(sc[0], sc[1]);
-					float3 color(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
+					const float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
 
-					destination.store(sc[0], sc[1], float4(color + source_color.xyz(),
+					destination.store(sc[0], sc[1], float4(source_color.xyz() + intensity * glare,
 														   source_color[3]));
 				}
 			}
 		}, offset[1], offset[1] + source.dimensions2()[1]);
 
 
-	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 16.f);
+//	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 16.f);
 }
 
-void Glare2::apply(int32_t begin, int32_t end, uint32_t pass,
-				   const image::Float_4& source, image::Float_4& destination) {
-	for (int32_t i = begin; i < end; ++i) {
-		destination.at(i) = source.at(i);
-	}
-
+void Glare2::apply(int32_t /*begin*/, int32_t /*end*/, uint32_t /*pass*/,
+				   const image::Float_4& /*source*/, image::Float_4& /*destination*/) {
 	return;
-/*
-	if (0 == pass) {
-		float threshold = threshold_;
+}
 
-		for (int32_t i = begin; i < end; ++i) {
-			float3 color = source.at(i).xyz();
+float2 Glare2::mul_complex(float2 a, float2 b, float scale) {
+#ifdef USE_SIMD
+	const __m128 tR = _mm_sub_ps(_mm_mul_ps(a.r, b.r), _mm_mul_ps(a.i, b.i));
+	const __m128 tI = _mm_add_ps(_mm_mul_ps(a.r, b.i), _mm_mul_ps(a.i, b.r));
 
-			float l = spectrum::luminance(color);
-
-			if (l > threshold) {
-				high_pass_r_[i] = color[0];
-				high_pass_g_[i] = color[1];
-				high_pass_b_[i] = color[2];
-			} else {
-				high_pass_r_[i] = 0.f;
-				high_pass_g_[i] = 0.f;
-				high_pass_b_[i] = 0.f;
-			}
-		}
-	} else {
-		//float intensity = intensity_;
-		Vector intensity = simd::set_float4(intensity_);
-
-		const auto d = destination.description().dimensions.xy();
-
-		int32_t kd0 = kernel_dimensions_[0];
-
-		for (int32_t i = begin; i < end; ++i) {
-			int2 c = destination.coordinates_2(i);
-			int32_t cd1 = c[1] - d[1];
-			int2 kb = d - c;
-			int2 ke = kb + d;
-
-			Vector glare = simd::Zero;
-			for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0) {
-				int32_t si = (cd1 + ky) * d[0];
-				for (int32_t ki = kb[0] + krow, kl = ke[0] + krow; ki < kl; ++ki, ++si) {
-					Vector k = simd::load_float4(kernel_[ki].v);
-					Vector h = simd::load_float4(high_pass_[si].v);
-
-					glare = math::add(glare, math::mul(k, h));
-				}
-			}
-
-			glare = math::mul(glare, intensity);
-
-			Vector s = simd::load_float4(reinterpret_cast<float*>(source.address(i)));
-			s = math::add(s, glare);
-			simd::store_float4(reinterpret_cast<float*>(destination.address(i)), s);
-		}
-	}
-	*/
+	const __m128 s = _mm_set1_ps(scale);
+	res.r = _mm_mul_ps(tR, s);
+	res.i = _mm_mul_ps(tI, s);
+#else
+	float t[2];
+	t[0] = a[0]*b[0] - a[1]*b[1];
+	t[1] = a[0]*b[1] + a[1]*b[0];
+	return float2(t[0] * scale, t[1] * scale);
+#endif
 }
 
 }}

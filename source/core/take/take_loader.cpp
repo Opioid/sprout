@@ -477,6 +477,21 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 			float intensity = json::read_float(n->value, "intensity", 0.1f);
 			pipeline.add(new Bloom(angle, alpha, threshold, intensity));
 		} else if ("Glare" == n->name) {
+			Glare::Adaption adaption = Glare::Adaption::Mesopic;
+
+			std::string adaption_name = json::read_string(n->value, "adaption");
+			if ("Scotopic" == adaption_name) {
+				adaption = Glare::Adaption::Scotopic;
+			} else if ("Mesopic" == adaption_name) {
+				adaption = Glare::Adaption::Mesopic;
+			} else if ("Photopic" == adaption_name) {
+				adaption = Glare::Adaption::Photopic;
+			}
+
+			float threshold = json::read_float(n->value, "threshold", 2.f);
+			float intensity = json::read_float(n->value, "intensity", 1.f);
+			pipeline.add(new Glare(adaption, threshold, intensity));
+		} else if ("Glare2" == n->name) {
 			Glare2::Adaption adaption = Glare2::Adaption::Mesopic;
 
 			std::string adaption_name = json::read_string(n->value, "adaption");
