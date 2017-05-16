@@ -282,12 +282,13 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 
 	const int32_t kernel_dft_size = math::dft_size(kernel_dimensions_[0]) * kernel_dimensions_[1];
 
-	pool.run_range([this]
+	pool.run_range([this, dim]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
+			float scale = 1.f / (dim[0] * dim[1]);
 			for (int32_t i = begin; i < end; ++i) {
-				high_pass_dft_r_[i] = mul_complex(high_pass_dft_r_[i], kernel_dft_r_[i], 1.f);
-				high_pass_dft_g_[i] = mul_complex(high_pass_dft_g_[i], kernel_dft_g_[i], 1.f);
-				high_pass_dft_b_[i] = mul_complex(high_pass_dft_b_[i], kernel_dft_b_[i], 1.f);
+				high_pass_dft_r_[i] = mul_complex(high_pass_dft_r_[i], kernel_dft_r_[i], scale);
+				high_pass_dft_g_[i] = mul_complex(high_pass_dft_g_[i], kernel_dft_g_[i], scale);
+				high_pass_dft_b_[i] = mul_complex(high_pass_dft_b_[i], kernel_dft_b_[i], scale);
 			}
 		}, 0, kernel_dft_size);
 
@@ -316,11 +317,10 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 					const int32_t i = y * dim[0] + x;
 					const int2 sc = int2(x, y) - offset;
 
-					const auto& source_color = source.at(sc[0], sc[1]);
+					const auto& s = source.at(sc[0], sc[1]);
 					const float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
 
-					destination.store(sc[0], sc[1], float4(source_color.xyz() + intensity * glare,
-														   source_color[3]));
+					destination.store(sc[0], sc[1], float4(s.xyz() + intensity * glare, s[3]));
 				}
 			}
 		}, offset[1], offset[1] + source.dimensions2()[1]);

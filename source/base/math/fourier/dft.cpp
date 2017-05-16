@@ -73,13 +73,13 @@ void idft_1d(float* result, const float2* source, int32_t num) {
 		for (int32_t k = 1; k < len; ++k) {
 			float b = a * static_cast<float>(k);
 
-			sum += 2.f * (source[k][0] * std::cos(b) + source[k][1] * std::sin(b));
+			sum += 2.f * (source[k][0] * std::cos(b) - source[k][1] * std::sin(b));
 		}
 
 		float b = a * static_cast<float>(len);
 		sum += source[len][0] * std::cos(b) + source[len][1] * std::sin(b);
 
-		result[x] = sum / fn;
+		result[x] = sum;//R / fn;
 	}
 
 }
@@ -170,7 +170,7 @@ void idft_2d(float* result, const float2* source, int32_t width, int32_t height)
 	float2* tmp = memory::allocate_aligned<float2>(row_size * height);
 
 
-	const float af = (2.f * Pi) / static_cast<float>(height);
+	const float af = (-2.f * Pi) / static_cast<float>(height);
 	for (int32_t x = 0; x < row_size; ++x) {
 		for (int32_t k = 0; k < height; ++k) {
 			float2 sum(0.f);
@@ -190,7 +190,7 @@ void idft_2d(float* result, const float2* source, int32_t width, int32_t height)
 			}
 
 			const int32_t c = k * row_size + x;
-			tmp[c] = sum / static_cast<float>(height);
+			tmp[c] = sum;// / static_cast<float>(height);
 		}
 	}
 
