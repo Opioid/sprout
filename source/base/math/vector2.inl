@@ -39,6 +39,13 @@ static Vector2<T>& operator+=(Vector2<T>& a, Vector2<T> b) {
 }
 
 template<typename T>
+static Vector2<T>& operator*=(Vector2<T>& a, float s) {
+	a[0] *= s;
+	a[1] *= s;
+	return a;
+}
+
+template<typename T>
 static Vector2<T>& operator*=(Vector2<T>& a, Vector2<T> b) {
 	a[0] *= b[0];
 	a[1] *= b[1];

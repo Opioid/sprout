@@ -289,6 +289,10 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 				high_pass_dft_r_[i] = mul_complex(high_pass_dft_r_[i], kernel_dft_r_[i], scale);
 				high_pass_dft_g_[i] = mul_complex(high_pass_dft_g_[i], kernel_dft_g_[i], scale);
 				high_pass_dft_b_[i] = mul_complex(high_pass_dft_b_[i], kernel_dft_b_[i], scale);
+
+//				high_pass_dft_r_[i] *= scale;
+//				high_pass_dft_g_[i] *= scale;
+//				high_pass_dft_b_[i] *= scale;
 			}
 		}, 0, kernel_dft_size);
 
@@ -302,31 +306,31 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 	math::idft_2d(high_pass_b_, high_pass_dft_b_, dim[0], dim[1]);
 
 
-	const int2 offset = dim / 4;
+//	const int2 offset = dim / 4;
 
-	pool.run_range([this, dim, &source, &destination]
-		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			const int2 offset = dim / 4;
+//	pool.run_range([this, dim, &source, &destination]
+//		(uint32_t /*id*/, int32_t begin, int32_t end) {
+//			const int2 offset = dim / 4;
 
-			const int2 source_dim = destination.dimensions2();
+//			const int2 source_dim = destination.dimensions2();
 
-			const float intensity = intensity_;
+//			const float intensity = intensity_;
 
-			for (int32_t y = begin; y < end; ++y) {
-				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
-					const int32_t i = y * dim[0] + x;
-					const int2 sc = int2(x, y) - offset;
+//			for (int32_t y = begin; y < end; ++y) {
+//				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
+//					const int32_t i = y * dim[0] + x;
+//					const int2 sc = int2(x, y) - offset;
 
-					const auto& s = source.at(sc[0], sc[1]);
-					const float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
+//					const auto& s = source.at(sc[0], sc[1]);
+//					const float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
 
-					destination.store(sc[0], sc[1], float4(s.xyz() + intensity * glare, s[3]));
-				}
-			}
-		}, offset[1], offset[1] + source.dimensions2()[1]);
+//					destination.store(sc[0], sc[1], float4(s.xyz() + intensity * glare, s[3]));
+//				}
+//			}
+//		}, offset[1], offset[1] + source.dimensions2()[1]);
 
 
-//	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 16.f);
+	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 16.f);
 }
 
 void Glare2::apply(int32_t /*begin*/, int32_t /*end*/, uint32_t /*pass*/,
@@ -335,19 +339,7 @@ void Glare2::apply(int32_t /*begin*/, int32_t /*end*/, uint32_t /*pass*/,
 }
 
 float2 Glare2::mul_complex(float2 a, float2 b, float scale) {
-#ifdef USE_SIMD
-	const __m128 tR = _mm_sub_ps(_mm_mul_ps(a.r, b.r), _mm_mul_ps(a.i, b.i));
-	const __m128 tI = _mm_add_ps(_mm_mul_ps(a.r, b.i), _mm_mul_ps(a.i, b.r));
-
-	const __m128 s = _mm_set1_ps(scale);
-	res.r = _mm_mul_ps(tR, s);
-	res.i = _mm_mul_ps(tI, s);
-#else
-	float t[2];
-	t[0] = a[0]*b[0] - a[1]*b[1];
-	t[1] = a[0]*b[1] + a[1]*b[0];
-	return float2(t[0] * scale, t[1] * scale);
-#endif
+	return scale * float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
 }
 
 }}

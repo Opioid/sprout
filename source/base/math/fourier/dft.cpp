@@ -67,19 +67,19 @@ void idft_1d(float* result, const float2* source, int32_t num) {
 	for (int32_t x = 0; x < num; ++x) {
 		float sum = source[0][0];
 
-		float a = (-2.f * Pi) * static_cast<float>(x) / fn;
+		float a = (2.f * Pi) * static_cast<float>(x) / fn;
 
 		const int32_t len = num / 2;
 		for (int32_t k = 1; k < len; ++k) {
 			float b = a * static_cast<float>(k);
 
-			sum += 2.f * (source[k][0] * std::cos(b) - source[k][1] * std::sin(b));
+			sum += 2.f * (source[k][0] * std::cos(b) + source[k][1] * std::sin(b));
 		}
 
 		float b = a * static_cast<float>(len);
 		sum += source[len][0] * std::cos(b) + source[len][1] * std::sin(b);
 
-		result[x] = sum;//R / fn;
+		result[x] = sum;// / fn;
 	}
 
 }
@@ -95,7 +95,7 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height) 
 		dft_1d(tmp + y * row_size, source + y * width, width);
 	}
 
-	const float af = (2.f * Pi) / static_cast<float>(height);
+	const float af = (-2.f * Pi) / static_cast<float>(height);
 
 	for (int32_t x = 0; x < row_size; ++x) {
 		for (int32_t k = 0; k < height; ++k) {
@@ -111,8 +111,8 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height) 
 				math::sincos(angle, sin_a, cos_a);
 
 				const int32_t g = t * row_size + x;
-				sum[0] +=  tmp[g][0] * cos_a + tmp[g][1] * sin_a;
-				sum[1] += -tmp[g][0] * sin_a + tmp[g][1] * cos_a;
+				sum[0] +=  tmp[g][0] * cos_a - tmp[g][1] * sin_a;
+				sum[1] +=  tmp[g][0] * sin_a + tmp[g][1] * cos_a;
 			}
 
 			const int32_t c = k * row_size + x;
@@ -136,7 +136,7 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 	}, 0, height);
 
 	pool.run_range([tmp, result, row_size, height](uint32_t /*id*/, int32_t begin, int32_t end) {
-		const float af = (2.f * Pi) / static_cast<float>(height);
+		const float af = (-2.f * Pi) / static_cast<float>(height);
 		for (int32_t x = begin; x < end; ++x) {
 			for (int32_t k = 0; k < height; ++k) {
 				float2 sum(0.f);
@@ -151,8 +151,8 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 					math::sincos(angle, sin_a, cos_a);
 
 					const int32_t g = t * row_size + x;
-					sum[0] +=  tmp[g][0] * cos_a + tmp[g][1] * sin_a;
-					sum[1] += -tmp[g][0] * sin_a + tmp[g][1] * cos_a;
+					sum[0] +=  tmp[g][0] * cos_a - tmp[g][1] * sin_a;
+					sum[1] +=  tmp[g][0] * sin_a + tmp[g][1] * cos_a;
 				}
 
 				const int32_t c = k * row_size + x;
@@ -170,7 +170,7 @@ void idft_2d(float* result, const float2* source, int32_t width, int32_t height)
 	float2* tmp = memory::allocate_aligned<float2>(row_size * height);
 
 
-	const float af = (-2.f * Pi) / static_cast<float>(height);
+	const float af = (2.f * Pi) / static_cast<float>(height);
 	for (int32_t x = 0; x < row_size; ++x) {
 		for (int32_t k = 0; k < height; ++k) {
 			float2 sum(0.f);
