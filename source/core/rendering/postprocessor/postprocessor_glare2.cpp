@@ -213,9 +213,13 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	kernel_dft_g_ = memory::allocate_aligned<float2>(kernel_dft_size);
 	kernel_dft_b_ = memory::allocate_aligned<float2>(kernel_dft_size);
 
-	math::dft_2d(kernel_dft_r_, kernel_r, kernel_dimensions_[0], kernel_dimensions_[1], pool);
-	math::dft_2d(kernel_dft_g_, kernel_g, kernel_dimensions_[0], kernel_dimensions_[1], pool);
-	math::dft_2d(kernel_dft_b_, kernel_b, kernel_dimensions_[0], kernel_dimensions_[1], pool);
+	float2* tmp = memory::allocate_aligned<float2>(kernel_dft_size);
+
+	math::dft_2d(kernel_dft_r_, kernel_r, tmp, kernel_dimensions_[0], kernel_dimensions_[1], pool);
+	math::dft_2d(kernel_dft_g_, kernel_g, tmp, kernel_dimensions_[0], kernel_dimensions_[1], pool);
+	math::dft_2d(kernel_dft_b_, kernel_b, tmp, kernel_dimensions_[0], kernel_dimensions_[1], pool);
+
+	memory::free_aligned(tmp);
 
 	memory::free_aligned(kernel_b);
 	memory::free_aligned(kernel_g);
@@ -275,12 +279,13 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 //	image::encoding::png::Writer::write("high_pass_g.png", high_pass_g_, dim, 16.f);
 //	image::encoding::png::Writer::write("high_pass_b.png", high_pass_b_, dim, 16.f);
 
-
-	math::dft_2d(high_pass_dft_r_, high_pass_r_, dim[0], dim[1], pool);
-	math::dft_2d(high_pass_dft_g_, high_pass_g_, dim[0], dim[1], pool);
-	math::dft_2d(high_pass_dft_b_, high_pass_b_, dim[0], dim[1], pool);
-
 	const int32_t kernel_dft_size = math::dft_size(kernel_dimensions_[0]) * kernel_dimensions_[1];
+
+	float2* tmp = memory::allocate_aligned<float2>(kernel_dft_size);
+
+	math::dft_2d(high_pass_dft_r_, high_pass_r_, tmp, dim[0], dim[1], pool);
+	math::dft_2d(high_pass_dft_g_, high_pass_g_, tmp, dim[0], dim[1], pool);
+	math::dft_2d(high_pass_dft_b_, high_pass_b_, tmp, dim[0], dim[1], pool);
 
 	pool.run_range([this, dim]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
@@ -301,33 +306,34 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 //	image::encoding::png::Writer::write("high_pass_dft_r.png", high_pass_dft_r_,
 //										kernel_dft_dimensions, 16.f);
 
-	math::idft_2d(high_pass_r_, high_pass_dft_r_, dim[0], dim[1]);
-	math::idft_2d(high_pass_g_, high_pass_dft_g_, dim[0], dim[1]);
-	math::idft_2d(high_pass_b_, high_pass_dft_b_, dim[0], dim[1]);
+	math::idft_2d(high_pass_r_, high_pass_dft_r_, tmp, dim[0], dim[1], pool);
+	math::idft_2d(high_pass_g_, high_pass_dft_g_, tmp, dim[0], dim[1], pool);
+	math::idft_2d(high_pass_b_, high_pass_dft_b_, tmp, dim[0], dim[1], pool);
 
+	memory::free_aligned(tmp);
 
-//	const int2 offset = dim / 4;
+	const int2 offset = dim / 4;
 
-//	pool.run_range([this, dim, &source, &destination]
-//		(uint32_t /*id*/, int32_t begin, int32_t end) {
-//			const int2 offset = dim / 4;
+	pool.run_range([this, dim, &source, &destination]
+		(uint32_t /*id*/, int32_t begin, int32_t end) {
+			const int2 offset = dim / 4;
 
-//			const int2 source_dim = destination.dimensions2();
+			const int2 source_dim = destination.dimensions2();
 
-//			const float intensity = intensity_;
+			const float intensity = intensity_;
 
-//			for (int32_t y = begin; y < end; ++y) {
-//				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
-//					const int32_t i = y * dim[0] + x;
-//					const int2 sc = int2(x, y) - offset;
+			for (int32_t y = begin; y < end; ++y) {
+				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
+					const int32_t i = y * dim[0] + x;
+					const int2 sc = int2(x, y) - offset;
 
-//					const auto& s = source.at(sc[0], sc[1]);
-//					const float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
+					const auto& s = source.at(sc[0], sc[1]);
+					const float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
 
-//					destination.store(sc[0], sc[1], float4(s.xyz() + intensity * glare, s[3]));
-//				}
-//			}
-//		}, offset[1], offset[1] + source.dimensions2()[1]);
+					destination.store(sc[0], sc[1], float4(s.xyz() + intensity * glare, s[3]));
+				}
+			}
+		}, offset[1], offset[1] + source.dimensions2()[1]);
 
 
 	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 16.f);

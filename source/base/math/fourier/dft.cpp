@@ -73,11 +73,20 @@ void idft_1d(float* result, const float2* source, int32_t num) {
 		for (int32_t k = 1; k < len; ++k) {
 			float b = a * static_cast<float>(k);
 
-			sum += 2.f * (source[k][0] * std::cos(b) + source[k][1] * std::sin(b));
+			float sin_b;
+			float cos_b;
+			math::sincos(b, sin_b, cos_b);
+
+			sum += 2.f * (source[k][0] * cos_b + source[k][1] * sin_b);
 		}
 
 		float b = a * static_cast<float>(len);
-		sum += source[len][0] * std::cos(b) + source[len][1] * std::sin(b);
+
+		float sin_b;
+		float cos_b;
+		math::sincos(b, sin_b, cos_b);
+
+		sum += source[len][0] * cos_b + source[len][1] * sin_b;
 
 		result[x] = sum;// / fn;
 	}
@@ -129,6 +138,15 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 
 	float2* tmp = memory::allocate_aligned<float2>(row_size * height);
 
+	dft_2d(result, source, tmp, width, height, pool);
+
+	memory::free_aligned(tmp);
+}
+
+void dft_2d(float2* result, const float* source, float2* tmp,
+			int32_t width, int32_t height, thread::Pool& pool) {
+	int32_t row_size = dft_size(width);
+
 	pool.run_range([source, tmp, row_size, width](uint32_t /*id*/, int32_t begin, int32_t end) {
 		for (int32_t y = begin; y < end; ++y) {
 			dft_1d(tmp + y * row_size, source + y * width, width);
@@ -160,15 +178,11 @@ void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 			}
 		}
 	}, 0, row_size);
-
-	memory::free_aligned(tmp);
 }
 
-void idft_2d(float* result, const float2* source, int32_t width, int32_t height) {
+void idft_2d(float* result, const float2* source, float2* tmp,
+			 int32_t width, int32_t height, thread::Pool& pool) {
 	int32_t row_size = dft_size(width);
-
-	float2* tmp = memory::allocate_aligned<float2>(row_size * height);
-
 
 	const float af = (2.f * Pi) / static_cast<float>(height);
 	for (int32_t x = 0; x < row_size; ++x) {
@@ -194,11 +208,12 @@ void idft_2d(float* result, const float2* source, int32_t width, int32_t height)
 		}
 	}
 
-	for (int32_t y = 0; y < height; ++y) {
-		idft_1d(result + y * width, tmp + y * row_size, width);
-	}
+	pool.run_range([result, tmp, row_size, width](uint32_t /*id*/, int32_t begin, int32_t end) {
+		for (int32_t y = begin; y < end; ++y) {
+			idft_1d(result + y * width, tmp + y * row_size, width);
+		}
+	}, 0, height);
 
-	memory::free_aligned(tmp);
 }
 
 }
