@@ -332,7 +332,8 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 					const int32_t i = iy * dim[0] + ix;
 
 					const auto& s = source.at(sc[0], sc[1]);
-					const float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
+					float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
+					glare = math::max(glare, float3(0.f));
 
 					destination.store(sc[0], sc[1], float4(s.xyz() + intensity * glare, s[3]));
 				}
