@@ -324,8 +324,12 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 
 			for (int32_t y = begin; y < end; ++y) {
 				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
-					const int32_t i = y * dim[0] + x;
+					//const int32_t i = y * dim[0] + x;
 					const int2 sc = int2(x, y) - offset;
+
+					const int32_t iy = (y + source_dim[1]) % dim[1];
+					const int32_t ix = (x + source_dim[0]) % dim[0];
+					const int32_t i = iy * dim[0] + ix;
 
 					const auto& s = source.at(sc[0], sc[1]);
 					const float3 glare(high_pass_r_[i], high_pass_g_[i], high_pass_b_[i]);
@@ -336,7 +340,7 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 		}, offset[1], offset[1] + source.dimensions2()[1]);
 
 
-	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 16.f);
+//	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 128.f);
 }
 
 void Glare2::apply(int32_t /*begin*/, int32_t /*end*/, uint32_t /*pass*/,
@@ -345,6 +349,8 @@ void Glare2::apply(int32_t /*begin*/, int32_t /*end*/, uint32_t /*pass*/,
 }
 
 float2 Glare2::mul_complex(float2 a, float2 b, float scale) {
+//	return scale * float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
+
 	return scale * float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
 }
 
