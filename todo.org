@@ -1,5 +1,10 @@
 * Backlog
 
+** Miscellaneous
+
+*** TODO PCG Random Number Generator 
+[[http://www.pcg-random.org/]]
+
 ** Integrators
 
 *** TODO Subsurface scattering
@@ -59,7 +64,7 @@ File size on disk generally seems to be higher, though.
 
 ** Build system
 
-*** TODO cmake-based build system
+*** TODO Consider cmake-based build system
 
 ** Scene
 
