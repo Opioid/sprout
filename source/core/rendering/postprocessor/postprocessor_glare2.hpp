@@ -30,8 +30,6 @@ private:
 					   const image::Float_4& source,
 					   image::Float_4& destination) final override;
 
-	static float2 mul_complex(float2 a, float2 b, float scale);
-
 	Adaption adaption_;
 	float threshold_;
 	float intensity_;
@@ -49,6 +47,8 @@ private:
 	float2* high_pass_dft_r_;
 	float2* high_pass_dft_g_;
 	float2* high_pass_dft_b_;
+
+	float2* temp_;
 };
 
 }}

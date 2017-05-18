@@ -12,10 +12,7 @@
 #include "base/thread/thread_pool.hpp"
 #include <vector>
 
-#include "image/encoding/png/png_writer.hpp"
-
-#include "base/math/print.hpp"
-#include <iostream>
+// #include "image/encoding/png/png_writer.hpp"
 
 namespace rendering { namespace postprocessor {
 
@@ -31,9 +28,11 @@ Glare2::Glare2(Adaption adaption, float threshold, float intensity) :
 	high_pass_b_(nullptr),
 	high_pass_dft_r_(nullptr),
 	high_pass_dft_g_(nullptr),
-	high_pass_dft_b_(nullptr) {}
+	high_pass_dft_b_(nullptr),
+	temp_(nullptr) {}
 
 Glare2::~Glare2() {
+	memory::free_aligned(temp_);
 	memory::free_aligned(high_pass_dft_b_);
 	memory::free_aligned(high_pass_dft_g_);
 	memory::free_aligned(high_pass_dft_r_);
@@ -108,13 +107,13 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
 		for (int32_t y = begin; y < end; ++y) {
 			for (int32_t x = 0; x < kernel_dimensions_[0]; ++x) {
-				int2 p(-dim[0] + x, -dim[1] + y);
+				const int2 p(-dim[0] + x, -dim[1] + y);
 
-				float theta = math::length(float2(p)) * solid_angle;
+				const float theta = math::length(float2(p)) * solid_angle;
 
-				float a = f0(theta);
-				float b = f1(theta);
-				float c = f2(theta);
+				const float a = f0(theta);
+				const float b = f1(theta);
+				const float c = f2(theta);
 
 				init.a_sum += a;
 				init.b_sum += b;
@@ -125,8 +124,8 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 				if (Adaption::Photopic != adaption_) {
 					float3 xyz(0.f);
 					for (int32_t k = 0; k < wl_num_samples; ++k) {
-						float lambda = wl_start + static_cast<float>(k) * wl_step;
-						float val = wl_norm * f3(theta , lambda);
+						const float lambda = wl_start + static_cast<float>(k) * wl_step;
+						const float val = wl_norm * f3(theta , lambda);
 						xyz[0] += CIE_X.evaluate(lambda) * val;
 						xyz[1] += CIE_Y.evaluate(lambda) * val;
 						xyz[2] += CIE_Z.evaluate(lambda) * val;
@@ -137,7 +136,7 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 					init.d_sum += d;
 				}
 
-				int32_t i = y * kernel_dimensions_[0] + x;
+				const int32_t i = y * kernel_dimensions_[0] + x;
 				f[i] = F{ a, b, c, d };
 			}
 		}
@@ -213,13 +212,16 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	kernel_dft_g_ = memory::allocate_aligned<float2>(kernel_dft_size);
 	kernel_dft_b_ = memory::allocate_aligned<float2>(kernel_dft_size);
 
-	float2* tmp = memory::allocate_aligned<float2>(kernel_dft_size);
+	temp_ = memory::allocate_aligned<float2>(kernel_dft_size);
 
-	math::dft_2d(kernel_dft_r_, kernel_r, tmp, kernel_dimensions_[0], kernel_dimensions_[1], pool);
-	math::dft_2d(kernel_dft_g_, kernel_g, tmp, kernel_dimensions_[0], kernel_dimensions_[1], pool);
-	math::dft_2d(kernel_dft_b_, kernel_b, tmp, kernel_dimensions_[0], kernel_dimensions_[1], pool);
+	math::dft_2d(kernel_dft_r_, kernel_r, temp_,
+				 kernel_dimensions_[0], kernel_dimensions_[1], pool);
 
-	memory::free_aligned(tmp);
+	math::dft_2d(kernel_dft_g_, kernel_g, temp_,
+				 kernel_dimensions_[0], kernel_dimensions_[1], pool);
+
+	math::dft_2d(kernel_dft_b_, kernel_b, temp_,
+				 kernel_dimensions_[0], kernel_dimensions_[1], pool);
 
 	memory::free_aligned(kernel_b);
 	memory::free_aligned(kernel_g);
@@ -235,9 +237,18 @@ void Glare2::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 }
 
 size_t Glare2::num_bytes() const {
+	const size_t kernel_size = static_cast<size_t>(kernel_dimensions_[0] * kernel_dimensions_[1]);
+
+	const size_t kernel_dft_size = static_cast<size_t>(math::dft_size(kernel_dimensions_[0]) *
+													   kernel_dimensions_[1]);
+
 	return sizeof(*this) +
-	//	(dimensions_[0] * dimensions_[1]) * sizeof(float3) +
-		(kernel_dimensions_[0] * kernel_dimensions_[1]) * sizeof(float3);
+		kernel_size * sizeof(float) * 3  +
+		kernel_dft_size * sizeof(float2) * 7;
+}
+
+static inline float2 mul_complex(float2 a, float2 b, float scale) {
+	return scale * float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
 }
 
 void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination,
@@ -281,15 +292,13 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 
 	const int32_t kernel_dft_size = math::dft_size(kernel_dimensions_[0]) * kernel_dimensions_[1];
 
-	float2* tmp = memory::allocate_aligned<float2>(kernel_dft_size);
-
-	math::dft_2d(high_pass_dft_r_, high_pass_r_, tmp, dim[0], dim[1], pool);
-	math::dft_2d(high_pass_dft_g_, high_pass_g_, tmp, dim[0], dim[1], pool);
-	math::dft_2d(high_pass_dft_b_, high_pass_b_, tmp, dim[0], dim[1], pool);
+	math::dft_2d(high_pass_dft_r_, high_pass_r_, temp_, dim[0], dim[1], pool);
+	math::dft_2d(high_pass_dft_g_, high_pass_g_, temp_, dim[0], dim[1], pool);
+	math::dft_2d(high_pass_dft_b_, high_pass_b_, temp_, dim[0], dim[1], pool);
 
 	pool.run_range([this, dim]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			float scale = 1.f / (dim[0] * dim[1]);
+			const float scale = 1.f / (dim[0] * dim[1]);
 			for (int32_t i = begin; i < end; ++i) {
 				high_pass_dft_r_[i] = mul_complex(high_pass_dft_r_[i], kernel_dft_r_[i], scale);
 				high_pass_dft_g_[i] = mul_complex(high_pass_dft_g_[i], kernel_dft_g_[i], scale);
@@ -306,25 +315,20 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 //	image::encoding::png::Writer::write("high_pass_dft_r.png", high_pass_dft_r_,
 //										kernel_dft_dimensions, 16.f);
 
-	math::idft_2d(high_pass_r_, high_pass_dft_r_, tmp, dim[0], dim[1], pool);
-	math::idft_2d(high_pass_g_, high_pass_dft_g_, tmp, dim[0], dim[1], pool);
-	math::idft_2d(high_pass_b_, high_pass_dft_b_, tmp, dim[0], dim[1], pool);
-
-	memory::free_aligned(tmp);
+	math::idft_2d(high_pass_r_, high_pass_dft_r_, temp_, dim[0], dim[1], pool);
+	math::idft_2d(high_pass_g_, high_pass_dft_g_, temp_, dim[0], dim[1], pool);
+	math::idft_2d(high_pass_b_, high_pass_dft_b_, temp_, dim[0], dim[1], pool);
 
 	const int2 offset = dim / 4;
 
-	pool.run_range([this, dim, &source, &destination]
+	pool.run_range([this, dim, offset, &source, &destination]
 		(uint32_t /*id*/, int32_t begin, int32_t end) {
-			const int2 offset = dim / 4;
-
-			const int2 source_dim = destination.dimensions2();
+			const int2 source_dim = source.dimensions2();
 
 			const float intensity = intensity_;
 
 			for (int32_t y = begin; y < end; ++y) {
 				for (int32_t x = offset[0], width = offset[0] + source_dim[0]; x < width; ++x) {
-					//const int32_t i = y * dim[0] + x;
 					const int2 sc = int2(x, y) - offset;
 
 					const int32_t iy = (y + source_dim[1]) % dim[1];
@@ -347,12 +351,6 @@ void Glare2::pre_apply(const image::Float_4& source, image::Float_4& destination
 void Glare2::apply(int32_t /*begin*/, int32_t /*end*/, uint32_t /*pass*/,
 				   const image::Float_4& /*source*/, image::Float_4& /*destination*/) {
 	return;
-}
-
-float2 Glare2::mul_complex(float2 a, float2 b, float scale) {
-//	return scale * float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
-
-	return scale * float2(a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]);
 }
 
 }}

@@ -6,9 +6,6 @@
 #include "math/vector2.inl"
 #include "thread/thread_pool.hpp"
 
-#include "math/print.hpp"
-#include <iostream>
-
 namespace math {
 
 int32_t dft_size(int32_t num) {
@@ -90,47 +87,9 @@ void idft_1d(float* result, const float2* source, int32_t num) {
 
 		result[x] = sum;// / fn;
 	}
-
 }
 
 // https://www.nayuki.io/page/how-to-implement-the-discrete-fourier-transform
-
-void dft_2d(float2* result, const float* source, int32_t width, int32_t height) {
-	int32_t row_size = dft_size(width);
-
-	float2* tmp = memory::allocate_aligned<float2>(height * row_size);
-
-	for (int32_t y = 0; y < height; ++y) {
-		dft_1d(tmp + y * row_size, source + y * width, width);
-	}
-
-	const float af = (-2.f * Pi) / static_cast<float>(height);
-
-	for (int32_t x = 0; x < row_size; ++x) {
-		for (int32_t k = 0; k < height; ++k) {
-			float2 sum(0.f);
-
-			const float a = af * static_cast<float>(k);
-
-			for (int32_t t = 0; t < height; ++t) {
-				const float angle = a * static_cast<float>(t);
-
-				float sin_a;
-				float cos_a;
-				math::sincos(angle, sin_a, cos_a);
-
-				const int32_t g = t * row_size + x;
-				sum[0] +=  tmp[g][0] * cos_a + tmp[g][1] * sin_a;
-				sum[1] += -tmp[g][0] * sin_a + tmp[g][1] * cos_a;
-			}
-
-			const int32_t c = k * row_size + x;
-			result[c] = sum;
-		}
-	}
-
-	memory::free_aligned(tmp);
-}
 
 void dft_2d(float2* result, const float* source, int32_t width, int32_t height,
 			thread::Pool& pool) {
@@ -215,7 +174,6 @@ void idft_2d(float* result, const float2* source, float2* tmp,
 			idft_1d(result + y * width, tmp + y * row_size, width);
 		}
 	}, 0, height);
-
 }
 
 }
