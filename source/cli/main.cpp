@@ -30,6 +30,7 @@
 #include "core/testing/testing_size.hpp"
 #include "core/testing/testing_spectrum.hpp"
 
+#include "base/random/generator.inl"
 #include "base/math/fourier/dft.hpp"
 #include <iostream>
 
@@ -58,6 +59,28 @@ int main(int argc, char* argv[]) {
 //	testing::simd::unions();
 //	testing::spectrum();
 //	return 1;
+
+
+	rnd::Generator  rng(0, 0, 0, 0);
+	rnd::Generator2 rng2(0);
+
+	float maxr = 0.f;
+	float maxr2 = 0.f;
+
+	for (uint32_t i = 0; i < 100000; ++i) {
+		float r = rng.random_float();
+		float r2 = rng2.random_float();
+	//	std::cout << r << std::endl;
+
+		maxr = std::max(r, maxr);
+		maxr2 = std::max(r2, maxr2);
+	}
+
+	std::cout << "maxr " << maxr << std::endl;
+	std::cout << "maxr2 " << maxr2 << std::endl;
+
+
+	return 1;
 
 
 //	std::vector<float> source = { 0.29f, 0.54f, 0.45f, 1.3f,

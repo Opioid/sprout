@@ -26,4 +26,23 @@ private:
 	uint32_t z0, z1, z2, z3;
 };
 
+class Generator2 {
+
+public:
+
+	Generator2() = default;
+
+	Generator2(uint64_t seed);
+
+	float random_float();
+	uint32_t random_uint();
+
+private:
+
+	uint32_t advance_pcg32();
+
+	uint64_t state_;
+	uint64_t inc_;
+};
+
 }
