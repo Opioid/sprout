@@ -61,30 +61,43 @@ int main(int argc, char* argv[]) {
 //	return 1;
 
 
-	rnd::Generator  rng(0, 0, 0, 0);
-	rnd::Generator2 rng2(456456, 0);
-	rnd::Generator2 rng3(456456, 1);
+	rnd::Generator  rng(2, 8, 16, 128);
+	rnd::Generator2 rng2(0, 0);
+	rnd::Generator2 rng3(0, 1);
 
 	float maxr = 0.f;
 	float maxr2 = 0.f;
 
-	for (uint32_t i = 0; i < 16; ++i) {
-//		float r = rng.random_float();
-//		float r2 = rng2.random_float();
-//		float r3 = rng3.random_float();
-//		std::cout << r << " " << r2 << " " << r3 << std::endl;
+	float total  = 0.f;
+	float total2 = 0.f;
+	float total3 = 0.f;
 
+	constexpr uint32_t num_randoms = 1024*10;
+	for (uint32_t i = 0; i < num_randoms; ++i) {
+		float r = rng.random_float();
+		float r2 = rng2.random_float();
+		float r3 = rng3.random_float();
+	//	std::cout /*<< r */<< " " << r2 << " " << r3 << std::endl;
 
-		uint32_t ui2 = rng2.random_uint();
-		uint32_t ui3 = rng3.random_uint();
-		std::cout << ui2 << " " << ui3 << std::endl;
+		total += r;
+		total2 += r2;
+		total3 += r3;
+
+//		uint32_t ui2 = rng2.random_uint();
+//		uint32_t ui3 = rng3.random_uint();
+//		std::cout << ui2 << " " << ui3 << std::endl;
 
 //		maxr = std::max(r, maxr);
 //		maxr2 = std::max(r2, maxr2);
 	}
 
-	std::cout << "maxr " << maxr << std::endl;
-	std::cout << "maxr2 " << maxr2 << std::endl;
+//	std::cout << "maxr " << maxr << std::endl;
+//	std::cout << "maxr2 " << maxr2 << std::endl;
+
+	constexpr float nf = static_cast<float>(num_randoms);
+	std::cout << "avg  " << total / nf << std::endl;
+	std::cout << "avg2 " << total2 / nf << std::endl;
+	std::cout << "avg3 " << total3 / nf << std::endl;
 
 
 	return 1;

@@ -40,7 +40,12 @@ inline uint32_t Generator::advance_lfsr113() {
 }
 
 
-inline Generator2::Generator2(uint64_t state, uint64_t sequence) : state_(state), inc_(sequence) {}
+inline Generator2::Generator2(uint64_t state, uint64_t sequence) :
+	state_(0), inc_((sequence << 1u) | 1u) {
+	random_uint();
+	state_ += state;
+	random_uint();
+}
 
 inline float Generator2::random_float() {
 	const uint32_t bits = advance_pcg32();
@@ -59,9 +64,9 @@ inline uint32_t Generator2::advance_pcg32() {
 	state_ = oldstate * 6364136223846793005ULL + (inc_ | 1);
 
 	// Calculate output function (XSH RR), uses old state for max ILP
-	uint32_t xorshifted = static_cast<uint32_t>(((oldstate >> 18ull) ^ oldstate) >> 27ull);
+	uint32_t xorshifted = static_cast<uint32_t>(((oldstate >> 18u) ^ oldstate) >> 27u);
 
-	uint32_t rot = static_cast<uint32_t>(oldstate >> 59ull);
+	uint32_t rot = static_cast<uint32_t>(oldstate >> 59u);
 
 	return (xorshifted >> rot) | (xorshifted << ((0xFFFFFFFF - rot) & 31));
 }
