@@ -215,7 +215,8 @@ void render_dirt(image::Float_1& signal) {
 	dirt.set_brush(1.f);
 	dirt.clear();
 
-	rnd::Generator rng(0, 1, 2, 3);
+//	rnd::Generator rng(456, 90, 2123, 4598743);
+	rnd::Generator rng(0, 0);
 
 	float dirt_radius = 0.003f;
 

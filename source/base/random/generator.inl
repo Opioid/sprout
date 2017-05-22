@@ -3,7 +3,7 @@
 #include "generator.hpp"
 
 namespace rnd {
-
+/*
 inline Generator::Generator(uint32_t seed0, uint32_t seed1, uint32_t seed2, uint32_t seed3) :
 	z0(seed0 | 128), z1(seed1 | 128), z2(seed2 | 128), z3(seed3 | 128) {}
 
@@ -30,26 +30,26 @@ inline uint32_t Generator::advance_lfsr113() {
 
 	return z0 ^ z1 ^ z2 ^ z3;
 }
+*/
 
-
-inline Generator2::Generator2(uint64_t state, uint64_t sequence) :
+inline Generator::Generator(uint64_t state, uint64_t sequence) :
 	state_(0), inc_((sequence << 1u) | 1u) {
 	random_uint();
 	state_ += state;
 	random_uint();
 }
 
-inline float Generator2::random_float() {
+inline float Generator::random_float() {
 	const uint32_t bits = advance_pcg32();
 
 	return 2.3283064365386963e-10f * static_cast<float>(bits);
 }
 
-inline uint32_t Generator2::random_uint() {
+inline uint32_t Generator::random_uint() {
 	return advance_pcg32();
 }
 
-inline uint32_t Generator2::advance_pcg32() {
+inline uint32_t Generator::advance_pcg32() {
 	uint64_t oldstate = state_;
 
 	// Advance internal state

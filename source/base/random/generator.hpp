@@ -3,7 +3,7 @@
 #include <cstdint>
 
 namespace rnd {
-
+/*
 class Generator {
 
 public:
@@ -25,14 +25,14 @@ private:
 
 	uint32_t z0, z1, z2, z3;
 };
-
-class Generator2 {
+*/
+class Generator {
 
 public:
 
-	Generator2() = default;
+	Generator() = default;
 
-	Generator2(uint64_t state, uint64_t sequence);
+	Generator(uint64_t state, uint64_t sequence);
 
 	float random_float();
 	uint32_t random_uint();

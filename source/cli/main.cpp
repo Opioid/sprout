@@ -30,23 +30,9 @@
 #include "core/testing/testing_size.hpp"
 #include "core/testing/testing_spectrum.hpp"
 
-#include "base/random/generator.inl"
-#include "base/math/fourier/dft.hpp"
-#include <iostream>
-
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
-
-
-
-void print(const std::vector<float2>& v) {
-	for (auto i : v) {
-		std::cout << i << " ";
-	}
-
-	std::cout << std::endl;
-}
 
 int main(int argc, char* argv[]) {
 //	testing::size();
@@ -59,82 +45,6 @@ int main(int argc, char* argv[]) {
 //	testing::simd::unions();
 //	testing::spectrum();
 //	return 1;
-
-
-	rnd::Generator  rng(2, 8, 16, 128);
-	rnd::Generator2 rng2(0, 0);
-	rnd::Generator2 rng3(0, 1);
-
-	float maxr = 0.f;
-	float maxr2 = 0.f;
-
-	float total  = 0.f;
-	float total2 = 0.f;
-	float total3 = 0.f;
-
-	constexpr uint32_t num_randoms = 1024*10;
-	for (uint32_t i = 0; i < num_randoms; ++i) {
-		float r = rng.random_float();
-		float r2 = rng2.random_float();
-		float r3 = rng3.random_float();
-	//	std::cout /*<< r */<< " " << r2 << " " << r3 << std::endl;
-
-		total += r;
-		total2 += r2;
-		total3 += r3;
-
-//		uint32_t ui2 = rng2.random_uint();
-//		uint32_t ui3 = rng3.random_uint();
-//		std::cout << ui2 << " " << ui3 << std::endl;
-
-//		maxr = std::max(r, maxr);
-//		maxr2 = std::max(r2, maxr2);
-	}
-
-//	std::cout << "maxr " << maxr << std::endl;
-//	std::cout << "maxr2 " << maxr2 << std::endl;
-
-	constexpr float nf = static_cast<float>(num_randoms);
-	std::cout << "avg  " << total / nf << std::endl;
-	std::cout << "avg2 " << total2 / nf << std::endl;
-	std::cout << "avg3 " << total3 / nf << std::endl;
-
-
-	return 1;
-
-
-//	std::vector<float> source = { 0.29f, 0.54f, 0.45f, 1.3f,
-//								  0.12f, 0.65f, 0.73f, 0.36f,
-//								  0.43f, 0.82f, 0.25f, 0.53f,
-//								  0.93f, 0.18f, 0.63f, 0.21f };
-
-//	std::vector<float> result(source.size());
-
-////	std::vector<float> source = {0, 0.3, 0.6, 0.8, 1, 1, 0.9, 0.7, 0.5, 0.2, 0.2, 0.5, 0.7, 0.9, 1, 1, 0.8, 0.6, 0.3, 0};
-
-//	std::vector<float2> destination(math::dft_size(source.size()));
-
-//	math::dft_1d(destination.data(), source.data(), source.size());
-
-//	math::idft_1d(result.data(), destination.data(), result.size());
-
-
-//	int32_t width = 4;
-//	int32_t height = 4;
-
-//	std::vector<float2> destination(math::dft_size(width) * height);
-
-//	math::dft_2d(destination.data(), source.data(), width, height);
-
-//	math::idft_2d(result.data(), destination.data(), width, height);
-
-//	std::cout << "control: " << std::endl;
-//	std::vector<float2> tmp(math::dft_size(width));
-//	math::dft_1d(tmp.data(), source.data(), width);
-//	print(tmp);
-
-//	return 0;
-
 
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");

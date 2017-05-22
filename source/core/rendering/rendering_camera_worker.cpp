@@ -24,7 +24,11 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
 	sampler::Camera_sample sample;
 	scene::Ray ray;
 
-	rnd::Generator rng(tile[0] + 2, tile[1] + 8, tile[2] + 16, tile[3] + 128);
+//	rnd::Generator rng(tile[0] + 2, tile[1] + 8, tile[2] + 16, tile[3] + 128);
+
+	const uint64_t sequence = 0xFFFFFFFFFFFFFFFF - ((static_cast<uint64_t>(tile[0]) << 32) +
+													 static_cast<uint64_t>(tile[1]));
+	rnd::Generator rng(0, sequence);
 
 	for (int32_t y = tile[1], y_len = tile[3] + 1; y < y_len; ++y) {
 		for (int32_t x = tile[0], x_len = tile[2] + 1; x < x_len; ++x) {
