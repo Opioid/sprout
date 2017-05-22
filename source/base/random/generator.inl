@@ -4,16 +4,8 @@
 
 namespace rnd {
 
-inline Generator::Generator(uint32_t seed0, uint32_t seed1, uint32_t seed2, uint32_t seed3) {
-	seed(seed0, seed1, seed2, seed3);
-}
-
-inline void Generator::seed(uint32_t seed0, uint32_t seed1, uint32_t seed2, uint32_t seed3) {
-	z0 = seed0 | 128;
-	z1 = seed1 | 128;
-	z2 = seed2 | 128;
-	z3 = seed3 | 128;
-}
+inline Generator::Generator(uint32_t seed0, uint32_t seed1, uint32_t seed2, uint32_t seed3) :
+	z0(seed0 | 128), z1(seed1 | 128), z2(seed2 | 128), z3(seed3 | 128) {}
 
 inline float Generator::random_float() {
 	const uint32_t bits = advance_lfsr113();
