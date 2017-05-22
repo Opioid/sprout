@@ -32,7 +32,7 @@ public:
 
 	Generator2() = default;
 
-	Generator2(uint64_t seed);
+	Generator2(uint64_t state, uint64_t sequence);
 
 	float random_float();
 	uint32_t random_uint();

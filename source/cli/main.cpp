@@ -62,18 +62,25 @@ int main(int argc, char* argv[]) {
 
 
 	rnd::Generator  rng(0, 0, 0, 0);
-	rnd::Generator2 rng2(0);
+	rnd::Generator2 rng2(456456, 0);
+	rnd::Generator2 rng3(456456, 1);
 
 	float maxr = 0.f;
 	float maxr2 = 0.f;
 
-	for (uint32_t i = 0; i < 100000; ++i) {
-		float r = rng.random_float();
-		float r2 = rng2.random_float();
-	//	std::cout << r << std::endl;
+	for (uint32_t i = 0; i < 16; ++i) {
+//		float r = rng.random_float();
+//		float r2 = rng2.random_float();
+//		float r3 = rng3.random_float();
+//		std::cout << r << " " << r2 << " " << r3 << std::endl;
 
-		maxr = std::max(r, maxr);
-		maxr2 = std::max(r2, maxr2);
+
+		uint32_t ui2 = rng2.random_uint();
+		uint32_t ui3 = rng3.random_uint();
+		std::cout << ui2 << " " << ui3 << std::endl;
+
+//		maxr = std::max(r, maxr);
+//		maxr2 = std::max(r2, maxr2);
 	}
 
 	std::cout << "maxr " << maxr << std::endl;
