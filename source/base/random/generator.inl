@@ -39,14 +39,14 @@ inline Generator::Generator(uint64_t state, uint64_t sequence) :
 	random_uint();
 }
 
+inline uint32_t Generator::random_uint() {
+	return advance_pcg32();
+}
+
 inline float Generator::random_float() {
 	const uint32_t bits = advance_pcg32();
 
 	return 2.3283064365386963e-10f * static_cast<float>(bits);
-}
-
-inline uint32_t Generator::random_uint() {
-	return advance_pcg32();
 }
 
 inline uint32_t Generator::advance_pcg32() {

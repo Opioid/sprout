@@ -26,6 +26,9 @@ private:
 	uint32_t z0, z1, z2, z3;
 };
 */
+
+// http://www.pcg-random.org/
+
 class Generator {
 
 public:
@@ -34,8 +37,8 @@ public:
 
 	Generator(uint64_t state, uint64_t sequence);
 
-	float random_float();
 	uint32_t random_uint();
+	float random_float();
 
 private:
 

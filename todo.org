@@ -25,7 +25,6 @@
 
 *** TODO Lock-free tile enumeration
 - [X] Pre-determined "Tiled scanline" with initial offset (slower)
-- [ ] +Space filling curve (e.g. z-curve or hilbert-curve)+
 - [ ] Atomics for access to next tile
 
 It seems that the mutex communication is not the bottleneck in this scenario. 
@@ -34,7 +33,10 @@ Something with atomics might be interesting, but will probably not noticeably af
 ** Postprocessors
 
 *** TODO Glare filter
-- [ ] Implement in Fourier domain to increase performance
+- [-] Implement in Fourier domain to increase performance
+  - [X] Use normal DFT to transform to Fourier domain and back
+  - [ ] Investigate decreased quality, lattice like artifacts
+  - [ ] Use FFT to improve performance
 
 ** Shapes
 
@@ -53,7 +55,7 @@ Something with atomics might be interesting, but will probably not noticeably af
 - [-] Consider embedding json and binary data in single file
   - [X] Proof of concept
   - [ ] Support different vertex layouts
-- [ ] Investigate performance of streams vs. fread() etc.
+- [ ] Investigate performance of std::stream vs. fread() etc.
 
 There is a very simple mechanism for asynchronous BVH construction now. 
 It seems to work quite well in cases where BVH construction is followed by lengthy reads from disk.
