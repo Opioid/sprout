@@ -84,16 +84,11 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			break;
 		}
 
-		// Russian roulette termination
 		if (i > settings_.min_bounces) {
-			float q = std::min(spectrum::luminance(throughput),
-							   settings_.path_continuation_probability);
-
-			if (sampler_.generate_sample_1D() >= q) {
+			if (rendering::russian_roulette(throughput, settings_.path_continuation_probability,
+											sampler_.generate_sample_1D())) {
 				break;
 			}
-
-			throughput /= q;
 		}
 
 		material_sample.sample(sampler_, sample_result);
