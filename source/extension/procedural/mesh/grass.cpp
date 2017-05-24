@@ -17,7 +17,6 @@ namespace procedural { namespace mesh {
 
 std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mesh_value*/,
 														resource::Manager& manager) {
-
 	std::vector<scene::shape::triangle::Index_triangle> triangles;
 	std::vector<scene::shape::Vertex> vertices;
 	uint32_t num_parts = 1;
@@ -47,8 +46,7 @@ std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mes
 //	auto mask = manager.load<image::texture::Texture>("textures/how.png", options);;
 //	image::texture::sampler::Linear_2D<image::texture::sampler::Address_mode_repeat> sampler;
 
-//	rnd::Generator rng(456, 90, 2123, 4598743);
-	rnd::Generator rng(0, 0);
+	rnd::Generator rng;
 
 	uint32_t num_blades = 160 * 1024;
 
@@ -89,7 +87,6 @@ void Grass::add_blade(const float3& offset,
 					  uint32_t vertex_offset,
 					  std::vector<scene::shape::triangle::Index_triangle>& triangles,
 					  std::vector<scene::shape::Vertex>& vertices) const {
-
 	scene::shape::triangle::Index_triangle tri;
 	tri.material_index = 0;
 

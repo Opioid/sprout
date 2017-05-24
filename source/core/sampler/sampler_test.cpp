@@ -36,29 +36,25 @@ void test() {
 	uint32_t num_samples = 64;
 
 	{
-	//	rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-		rnd::Generator rng(0, 0);
+		rnd::Generator rng;
 		sampler::EMS sampler(rng);
 		sampler.resize(num_samples, 1, 1, 1);
 		render_set("ems", sampler, renderer, target);
 	}
 	{
-	//	rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-		rnd::Generator rng(0, 0);
+		rnd::Generator rng;
 		sampler::Golden_ratio sampler(rng);
 		sampler.resize(num_samples, 1, 1, 1);
 		render_set("golden_ratio", sampler, renderer, target);
 	}
 	{
-	//	rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-		rnd::Generator rng(0, 0);
+		rnd::Generator rng;
 		sampler::Random sampler(rng);
 		sampler.resize(num_samples, 1, 1, 1);
 		render_set("random_disk", sampler, renderer, target);
 	}
 	{
-	//	rnd::Generator rng(6783452, 456679345, 347834, 56745234);
-		rnd::Generator rng(0, 0);
+		rnd::Generator rng;
 		sampler::Hammersley sampler(rng);
 		sampler.resize(num_samples, 1, 1, 1);
 		render_set("hammersley", sampler, renderer, target);
@@ -67,7 +63,6 @@ void test() {
 
 void render_set(const std::string& name, sampler::Sampler& sampler,
 				image::procedural::Renderer& renderer, image::Byte_3& target) {
-//	rnd::Generator rng(68413684, 523489461, 318743219, 98765123);
 	rnd::Generator rng(0, 1);
 
 	render_disk(name + "_disk_0.png", sampler, rng, renderer, target);
