@@ -36,7 +36,7 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 	const auto& bssrdf = intersection.bssrdf(worker);
 
-	float step_size = 1.f;
+	const float step_size = 0.1f;
 
 	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / step_size));
 
