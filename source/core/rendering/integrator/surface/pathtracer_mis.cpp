@@ -17,15 +17,15 @@
 namespace rendering { namespace integrator { namespace surface {
 
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
-							   const Settings& settings) :
+							   const Settings& settings, sub::Integrator& subsurface) :
 	Integrator(rng, take_settings),
 	settings_(settings),
+	subsurface_(subsurface),
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
 	light_samplers_{rng, rng, rng},
 	transmittance_open_(rng, take_settings, settings.max_bounces),
-	transmittance_closed_(rng, take_settings),
-	subsurface_(rng, take_settings) {}
+	transmittance_closed_(rng, take_settings) {}
 
 void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -345,6 +345,7 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 											   Light_sampling light_sampling,
 											   bool enable_caustics) :
 	Factory(take_settings, num_integrators),
+	sub_factory_(new sub::Bruteforce_factory(take_settings, num_integrators, 1.f)),
 	integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
@@ -356,10 +357,12 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 
 Pathtracer_MIS_factory::~Pathtracer_MIS_factory() {
 	memory::destroy_aligned(integrators_, num_integrators_);
+	delete sub_factory_;
 }
 
 Integrator* Pathtracer_MIS_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Pathtracer_MIS(rng, take_settings_, settings_);
+	return new(&integrators_[id]) Pathtracer_MIS(rng, take_settings_, settings_,
+												 *sub_factory_->create(id, rng));
 }
 
 }}}

@@ -4,7 +4,7 @@
 
 namespace sampler {
 
-class Uniform : public Sampler {
+class alignas(64) Uniform : public Sampler {
 
 public:
 
@@ -30,7 +30,14 @@ class Uniform_factory : public Factory {
 
 public:
 
-	virtual Sampler* create(rnd::Generator& rng) const final override;
+	Uniform_factory(uint32_t num_samplers);
+	~Uniform_factory();
+
+	virtual Sampler* create(uint32_t id, rnd::Generator& rng) const final override;
+
+private:
+
+	Uniform* samplers_;
 };
 
 }

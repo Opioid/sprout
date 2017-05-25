@@ -1,6 +1,7 @@
 #include "sampler_uniform.hpp"
 #include "camera_sample.hpp"
 #include "base/math/vector3.inl"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
 namespace sampler {
@@ -32,8 +33,16 @@ void Uniform::on_resize() {}
 
 void Uniform::on_resume_pixel(rnd::Generator& /*scramble*/) {}
 
-Sampler* Uniform_factory::create(rnd::Generator& rng) const {
-	return new Uniform(rng);
+Uniform_factory::Uniform_factory(uint32_t num_samplers) :
+	Factory(num_samplers),
+	samplers_(memory::allocate_aligned<Uniform>(num_samplers)) {}
+
+Uniform_factory::~Uniform_factory() {
+	memory::destroy_aligned(samplers_, num_samplers_);
+}
+
+Sampler* Uniform_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&samplers_[id]) Uniform(rng);
 }
 
 }

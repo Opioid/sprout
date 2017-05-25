@@ -35,10 +35,11 @@ public:
 
 	using Surface_integrator_factory = std::shared_ptr<integrator::surface::Factory>;
 	using Volume_integrator_factory  = std::shared_ptr<integrator::volume::Factory>;
+	using Sampler_factory = std::shared_ptr<sampler::Factory>;
 
 	Driver(Surface_integrator_factory surface_integrator_factory,
 		   Volume_integrator_factory volume_integrator_factory,
-		   std::shared_ptr<sampler::Factory> sampler_factory,
+		   Sampler_factory sampler_factory,
 		   scene::Scene& scene,
 		   take::View& view,
 		   thread::Pool& thread_pool);
@@ -55,7 +56,7 @@ protected:
 
 	Surface_integrator_factory surface_integrator_factory_;
 	Volume_integrator_factory volume_integrator_factory_;
-	std::shared_ptr<sampler::Factory> sampler_factory_;
+	Sampler_factory sampler_factory_;
 
 	scene::Scene& scene_;
 	take::View& view_;

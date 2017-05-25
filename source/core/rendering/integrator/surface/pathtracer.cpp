@@ -19,13 +19,13 @@
 namespace rendering { namespace integrator { namespace surface {
 
 Pathtracer::Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
-					   const Settings& settings) :
+					   const Settings& settings, sub::Integrator& subsurface) :
 	Integrator(rng, take_settings),
 	settings_(settings),
+	subsurface_(subsurface),
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
-	transmittance_(rng, take_settings),
-	subsurface_(rng, take_settings) {}
+	transmittance_(rng, take_settings) {}
 
 void Pathtracer::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -165,6 +165,7 @@ Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 									   float path_termination_probability,
 									   bool enable_caustics) :
 	Factory(take_settings, num_integrators),
+	sub_factory_(new sub::Bruteforce_factory(take_settings, num_integrators, 1.f)),
 	integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;
@@ -174,10 +175,12 @@ Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 
 Pathtracer_factory::~Pathtracer_factory() {
 	memory::destroy_aligned(integrators_, num_integrators_);
+	delete sub_factory_;
 }
 
 Integrator* Pathtracer_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Pathtracer(rng, take_settings_, settings_);
+	return new(&integrators_[id]) Pathtracer(rng, take_settings_, settings_,
+											 *sub_factory_->create(id, rng));
 }
 
 }}}

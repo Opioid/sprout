@@ -15,7 +15,7 @@ namespace rendering {
 
 Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 			   Volume_integrator_factory volume_integrator_factory,
-			   std::shared_ptr<sampler::Factory> sampler_factory,
+			   Sampler_factory sampler_factory,
 			   scene::Scene& scene,
 			   take::View& view,
 			   thread::Pool& thread_pool) :
@@ -29,7 +29,6 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 	target_(image::Image::Description(image::Image::Type::Float_4,
 									  view.camera->sensor_dimensions())) {
 	for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
-	//	rnd::Generator rng(i + 2, i + 8, i + 16, i + 128);
 		rnd::Generator rng(0, i);
 		workers_[i].init(i, scene, rng, *surface_integrator_factory,
 						 *volume_integrator_factory, *sampler_factory_);
@@ -49,10 +48,8 @@ const scene::Scene& Driver::scene() const {
 }
 
 size_t Driver::num_bytes() const {
-	size_t worker_num_bytes = 0;
-	for (uint32_t i = 0, len = thread_pool_.num_threads(); i < len; ++i) {
-		worker_num_bytes += workers_[i].num_bytes();
-	}
+	// Every worker must have exactly the same size, so we only need to query a single one
+	size_t worker_num_bytes = thread_pool_.num_threads() * workers_[0].num_bytes();
 
 	return worker_num_bytes + target_.num_bytes();
 }

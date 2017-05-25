@@ -4,7 +4,7 @@
 
 namespace sampler {
 
-class Hammersley : public Sampler {
+class alignas(64) Hammersley : public Sampler {
 
 public:
 
@@ -32,7 +32,14 @@ class Hammersley_factory : public Factory {
 
 public:
 
-	virtual Sampler* create(rnd::Generator& rng) const final override;
+	Hammersley_factory(uint32_t num_samplers);
+	~Hammersley_factory();
+
+	virtual Sampler* create(uint32_t id, rnd::Generator& rng) const final override;
+
+private:
+
+	Hammersley* samplers_;
 };
 
 }

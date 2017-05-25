@@ -9,6 +9,9 @@ Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
 
 Integrator::~Integrator() {}
 
-Factory::Factory(const take::Settings& settings) : take_settings_(settings) {}
+Factory::Factory(const take::Settings& settings, uint32_t num_integrators) :
+	take_settings_(settings), num_integrators_(num_integrators) {}
+
+Factory::~Factory() {}
 
 }}}

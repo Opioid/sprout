@@ -52,7 +52,14 @@ class Factory {
 
 public:
 
-	virtual Sampler* create(rnd::Generator& rng) const = 0;
+	Factory(uint32_t num_samplers);
+	virtual ~Factory();
+
+	virtual Sampler* create(uint32_t id, rnd::Generator& rng) const = 0;
+
+protected:
+
+	const uint32_t num_samplers_;
 };
 
 }

@@ -138,13 +138,19 @@ size_t Single_scattering::num_bytes() const {
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
+													 uint32_t num_integrators,
 													 float step_size) :
-	Factory(take_settings) {
+	Factory(take_settings, num_integrators),
+	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)) {
 	settings_.step_size = step_size;
 }
 
-Integrator* Single_scattering_factory::create(rnd::Generator& rng) const {
-	return new Single_scattering(rng, take_settings_, settings_);
+Single_scattering_factory::~Single_scattering_factory() {
+	memory::destroy_aligned(integrators_, num_integrators_);
+}
+
+Integrator* Single_scattering_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Single_scattering(rng, take_settings_, settings_);
 }
 
 }}}

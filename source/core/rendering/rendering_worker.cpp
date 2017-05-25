@@ -18,10 +18,7 @@ Worker::Worker() :
 	volume_integrator_(nullptr),
 	sampler_(nullptr) {}
 
-Worker::~Worker() {
-	delete sampler_;
-	delete volume_integrator_;
-}
+Worker::~Worker() {}
 
 void Worker::init(uint32_t id, const scene::Scene& scene,
 				  const rnd::Generator& rng,
@@ -33,8 +30,8 @@ void Worker::init(uint32_t id, const scene::Scene& scene,
 	rng_ = rng;
 
 	surface_integrator_ = surface_integrator_factory.create(id, rng_);
-	volume_integrator_  = volume_integrator_factory.create(rng_);
-	sampler_ = sampler_factory.create(rng_);
+	volume_integrator_  = volume_integrator_factory.create(id, rng_);
+	sampler_ = sampler_factory.create(id, rng_);
 }
 
 void Worker::prepare(uint32_t num_samples_per_pixel) {

@@ -4,7 +4,7 @@
 
 namespace rendering { namespace integrator { namespace volume {
 
-class Attenuation : public Integrator {
+class alignas(64) Attenuation : public Integrator {
 
 public:
 
@@ -27,9 +27,15 @@ class Attenuation_factory : public Factory {
 
 public:
 
-	Attenuation_factory(const take::Settings& settings);
+	Attenuation_factory(const take::Settings& settings, uint32_t num_integrators);
 
-	virtual Integrator* create(rnd::Generator& rng) const;
+	~Attenuation_factory();
+
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
+
+private:
+
+	Attenuation* integrators_;
 };
 
 }}}

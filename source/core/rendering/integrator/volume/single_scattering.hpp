@@ -2,11 +2,10 @@
 
 #include "volume_integrator.hpp"
 #include "sampler/sampler_random.hpp"
-#include "scene/material/sampler_settings.hpp"
 
 namespace rendering { namespace integrator { namespace volume {
 
-class Single_scattering : public Integrator {
+class alignas(64) Single_scattering : public Integrator {
 
 public:
 
@@ -40,11 +39,16 @@ class Single_scattering_factory : public Factory {
 
 public:
 
-	Single_scattering_factory(const take::Settings& take_settings, float step_size);
+	Single_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
+							  float step_size);
 
-	virtual Integrator* create(rnd::Generator& rng) const;
+	~Single_scattering_factory();
+
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
 
 private:
+
+	Single_scattering* integrators_;
 
 	Single_scattering::Settings settings_;
 };

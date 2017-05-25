@@ -4,7 +4,7 @@
 
 namespace sampler {
 
-class EMS : public Sampler {
+class alignas(64) EMS : public Sampler {
 
 public:
 
@@ -32,7 +32,14 @@ class EMS_factory : public Factory {
 
 public:
 
-	virtual Sampler* create(rnd::Generator& rng) const final override;
+	EMS_factory(uint32_t num_samplers);
+	~EMS_factory();
+
+	virtual Sampler* create(uint32_t id, rnd::Generator& rng) const final override;
+
+private:
+
+	EMS* samplers_;
 };
 
 }

@@ -12,8 +12,10 @@
 
 namespace rendering { namespace integrator { namespace surface { namespace sub {
 
-Bruteforce::Bruteforce(rnd::Generator& rng, const take::Settings& settings) :
-	Integrator(rng, settings),
+Bruteforce::Bruteforce(rnd::Generator& rng, const take::Settings& take_settings,
+					   const Settings& settings) :
+	Integrator(rng, take_settings),
+	settings_(settings),
 	sampler_(rng) {}
 
 void Bruteforce::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
@@ -36,9 +38,7 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 	const auto& bssrdf = intersection.bssrdf(worker);
 
-	const float step_size = 1.f;
-
-	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / step_size));
+	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 
 	const float step = range / static_cast<float>(num_samples);
 
@@ -107,7 +107,23 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 }
 
 size_t Bruteforce::num_bytes() const {
-	return sizeof(*this);
+	return sizeof(*this) + sampler_.num_bytes();
 }
+
+Bruteforce_factory::Bruteforce_factory(const take::Settings& take_settings,
+									   uint32_t num_integrators, float step_size) :
+	Factory(take_settings, num_integrators),
+	integrators_(memory::allocate_aligned<Bruteforce>(num_integrators)) {
+	settings_.step_size = step_size;
+}
+
+Bruteforce_factory::~Bruteforce_factory() {
+	memory::destroy_aligned(integrators_, num_integrators_);
+}
+
+Integrator* Bruteforce_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Bruteforce(rng, take_settings_, settings_);
+}
+
 
 }}}}

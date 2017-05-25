@@ -73,7 +73,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 		} else if ("postprocessors" == n.name) {
 			load_postprocessors(n.value, *take);
 		} else if ("sampler" == n.name) {
-			take->sampler_factory = load_sampler_factory(n.value, take->view.num_samples_per_pixel);
+			take->sampler_factory = load_sampler_factory(n.value, thread_pool.num_threads(),
+														 take->view.num_samples_per_pixel);
 		} else if ("scene" == n.name) {
 			take->scene_filename = n.value.GetString();
 		} else if ("settings" == n.name) {
@@ -94,20 +95,21 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 			const auto d = take->view.camera->sensor().dimensions();
 			image::Writer* writer = new image::encoding::png::Writer(d);
 			take->exporter = std::make_unique<exporting::Image_sequence>("output_", writer);
-			logging::warning("No exporter was specified, defaulting to PNG writer.");
+			logging::warning("No valid exporter was specified, defaulting to PNG writer.");
 		}
 	}
 
 	if (!take->sampler_factory) {
-		take->sampler_factory = std::make_shared<sampler::Random_factory>();
-		logging::warning("No known sampler was specified, defaulting to Random sampler.");
+		take->sampler_factory = std::make_shared<
+				sampler::Random_factory>(thread_pool.num_threads());
+		logging::warning("No valid sampler was specified, defaulting to Random sampler.");
 	}
 
 	using namespace rendering::integrator;
 
 	if (!take->surface_integrator_factory) {
 		Light_sampling light_sampling{Light_sampling::Strategy::One, 1};
-		take->surface_integrator_factory = std::make_unique<
+		take->surface_integrator_factory = std::make_shared<
 				surface::Pathtracer_MIS_factory>(take->settings, thread_pool.num_threads(),
 												 4, 8, 0.5f, light_sampling, false);
 		logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
@@ -115,7 +117,8 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 
 	if (!take->volume_integrator_factory) {
 		take->volume_integrator_factory = std::make_shared<
-				volume::Attenuation_factory>(take->settings);
+				volume::Single_scattering_factory>(take->settings, thread_pool.num_threads(), 1.f);
+		logging::warning("No valid volume integrator specified, defaulting to Single Scattering.");
 	}
 
 	take->view.init(thread_pool);
@@ -307,23 +310,24 @@ Loader::load_filter(const json::Value& filter_value) {
 }
 
 std::shared_ptr<sampler::Factory>
-Loader::load_sampler_factory(const json::Value& sampler_value, uint32_t& num_samples_per_pixel) {
+Loader::load_sampler_factory(const json::Value& sampler_value, uint32_t num_workers,
+							 uint32_t& num_samples_per_pixel) {
 	for (auto& n : sampler_value.GetObject()) {
 		num_samples_per_pixel = json::read_uint(n.value, "samples_per_pixel");
 
 		if ("Uniform" == n.name) {
 			num_samples_per_pixel = 1;
-			return std::make_shared<sampler::Uniform_factory>();
+			return std::make_shared<sampler::Uniform_factory>(num_workers);
 		} else if ("Random" == n.name) {
-			return std::make_shared<sampler::Random_factory>();
+			return std::make_shared<sampler::Random_factory>(num_workers);
 		} else if ("Hammersley" == n.name) {
-			return std::make_shared<sampler::Hammersley_factory>();
+			return std::make_shared<sampler::Hammersley_factory>(num_workers);
 		} else if ("EMS" == n.name) {
-			return std::make_shared<sampler::EMS_factory>();
+			return std::make_shared<sampler::EMS_factory>(num_workers);
 		} else if ("Golden_ratio" == n.name) {
-			return std::make_shared<sampler::Golden_ratio_factory>();
+			return std::make_shared<sampler::Golden_ratio_factory>(num_workers);
 		} else if ("LD" == n.name) {
-			return std::make_shared<sampler::LD_factory>();
+			return std::make_shared<sampler::LD_factory>(num_workers);
 		}
 	}
 
@@ -339,7 +343,8 @@ void Loader::load_integrator_factories(const json::Value& integrator_value,
 																			  num_workers);
 		} else if ("volume" == n.name) {
 			take.volume_integrator_factory = load_volume_integrator_factory(n.value,
-																			take.settings);
+																			take.settings,
+																			num_workers);
 		}
 	}
 }
@@ -352,8 +357,8 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 	uint32_t default_min_bounces = 4;
 	uint32_t default_max_bounces = 8;
-	Light_sampling light_sampling{Light_sampling::Strategy::One, 1};
-	float default_path_termination_probability = 0.5f;
+	Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
+	float default_path_termination_probability = 0.9f;
 	bool default_caustics = true;
 
 	for (auto& n : integrator_value.GetObject()) {
@@ -439,15 +444,15 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 std::shared_ptr<rendering::integrator::volume::Factory>
 Loader::load_volume_integrator_factory(const json::Value& integrator_value,
-									   const Settings& settings) {
+									   const Settings& settings, uint32_t num_workers) {
 	using namespace rendering::integrator::volume;
 
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Attenuation" == n.name) {
-			return std::make_shared<Attenuation_factory>(settings);
+			return std::make_shared<Attenuation_factory>(settings, num_workers);
 		} else if ("Single_scattering" == n.name) {
 			float step_size = json::read_float(n.value, "step_size", 1.f);
-			return std::make_shared<Single_scattering_factory>(settings, step_size);
+			return std::make_shared<Single_scattering_factory>(settings, num_workers, step_size);
 		}
 	}
 

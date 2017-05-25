@@ -2,6 +2,7 @@
 #include "camera_sample.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/sampling/sample_distribution.hpp"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
 namespace sampler {
@@ -36,8 +37,16 @@ void EMS::on_resume_pixel(rnd::Generator& scramble) {
 	scramble_ = uint2(scramble.random_uint(), scramble.random_uint());
 }
 
-Sampler* EMS_factory::create(rnd::Generator& rng) const {
-	return new EMS(rng);
+EMS_factory::EMS_factory(uint32_t num_samplers) :
+	Factory(num_samplers),
+	samplers_(memory::allocate_aligned<EMS>(num_samplers)) {}
+
+EMS_factory::~EMS_factory() {
+	memory::destroy_aligned(samplers_, num_samplers_);
+}
+
+Sampler* EMS_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&samplers_[id]) EMS(rng);
 }
 
 }

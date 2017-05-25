@@ -15,11 +15,15 @@ class Prop;
 
 namespace rendering { namespace integrator { namespace surface { namespace sub {
 
-class Bruteforce : public Integrator {
+class alignas(64) Bruteforce : public Integrator {
 
 public:
 
-	Bruteforce(rnd::Generator& rng, const take::Settings& settings);
+	struct Settings {
+		float step_size;
+	};
+
+	Bruteforce(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;
 
@@ -32,7 +36,27 @@ public:
 
 private:
 
+	const Settings settings_;
+
 	sampler::Random sampler_;
+};
+
+class Bruteforce_factory : public Factory {
+
+public:
+
+	Bruteforce_factory(const take::Settings& take_settings, uint32_t num_integrators,
+					   float step_size);
+
+	~Bruteforce_factory();
+
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
+
+private:
+
+	Bruteforce* integrators_;
+
+	Bruteforce::Settings settings_;
 };
 
 }}}}

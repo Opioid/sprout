@@ -4,7 +4,7 @@
 
 namespace sampler {
 
-class Random : public Sampler {
+class alignas(64) Random : public Sampler {
 
 public:
 
@@ -30,7 +30,14 @@ class Random_factory : public Factory {
 
 public:
 
-	virtual Sampler* create(rnd::Generator& rng) const final override;
+	Random_factory(uint32_t num_samplers);
+	~Random_factory();
+
+	virtual Sampler* create(uint32_t id, rnd::Generator& rng) const final override;
+
+private:
+
+	Random* samplers_;
 };
 
 }

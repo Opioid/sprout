@@ -32,7 +32,7 @@ public:
 	};
 
 	Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
-				   const Settings& settings);
+				   const Settings& settings, sub::Integrator& subsurface);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;
 
@@ -69,6 +69,8 @@ private:
 
 	const Settings settings_;
 
+	sub::Integrator& subsurface_;
+
 	sampler::Random sampler_;
 
 	static constexpr uint32_t Num_material_samplers = 3;
@@ -79,8 +81,6 @@ private:
 
 	transmittance::Open   transmittance_open_;
 	transmittance::Closed transmittance_closed_;
-
-	sub::Bruteforce subsurface_;
 };
 
 class Pathtracer_MIS_factory : public Factory {
@@ -98,6 +98,8 @@ public:
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
 
 private:
+
+	sub::Factory* sub_factory_;
 
 	Pathtracer_MIS* integrators_;
 

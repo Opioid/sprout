@@ -54,4 +54,8 @@ void Sampler::resume_pixel(uint32_t iteration, rnd::Generator& scramble) {
 	on_resume_pixel(scramble);
 }
 
+Factory::Factory(uint32_t num_samplers) : num_samplers_(num_samplers) {}
+
+Factory::~Factory() {}
+
 }

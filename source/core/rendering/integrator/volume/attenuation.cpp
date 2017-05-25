@@ -49,11 +49,16 @@ size_t Attenuation::num_bytes() const {
 	return sizeof(*this);
 }
 
-Attenuation_factory::Attenuation_factory(const take::Settings& settings) :
-	Factory(settings) {}
+Attenuation_factory::Attenuation_factory(const take::Settings& settings, uint32_t num_integrators) :
+	Factory(settings, num_integrators),
+	integrators_(memory::allocate_aligned<Attenuation>(num_integrators)) {}
 
-Integrator* Attenuation_factory::create(rnd::Generator& rng) const {
-	return new Attenuation(rng, take_settings_);
+Attenuation_factory::~Attenuation_factory() {
+	memory::destroy_aligned(integrators_, num_integrators_);
+}
+
+Integrator* Attenuation_factory::create(uint32_t id, rnd::Generator& rng) const {
+	return new(&integrators_[id]) Attenuation(rng, take_settings_);
 }
 
 }}}

@@ -26,7 +26,8 @@ public:
 		bool enable_caustics;
 	};
 
-	Pathtracer(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings);
+	Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
+			   const Settings& settings, sub::Integrator& subsurface);
 
 	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;
 
@@ -42,14 +43,14 @@ private:
 
 	const Settings settings_;
 
+	sub::Integrator& subsurface_;
+
 	sampler::Random sampler_;
 
 	static constexpr uint32_t Num_material_samplers = 3;
 	sampler::Golden_ratio material_samplers_[Num_material_samplers];
 
 	transmittance::Closed transmittance_;
-
-	sub::Bruteforce subsurface_;
 };
 
 class Pathtracer_factory : public Factory {
@@ -66,6 +67,8 @@ public:
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
 
 private:
+
+	sub::Factory* sub_factory_;
 
 	Pathtracer* integrators_;
 

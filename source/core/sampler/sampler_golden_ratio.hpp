@@ -5,7 +5,7 @@
 
 namespace sampler {
 
-class Golden_ratio : public Sampler {
+class alignas(64) Golden_ratio : public Sampler {
 
 public:
 
@@ -35,7 +35,14 @@ class Golden_ratio_factory : public Factory {
 
 public:
 
-	virtual Sampler* create(rnd::Generator& rng) const final override;
+	Golden_ratio_factory(uint32_t num_samplers);
+	~Golden_ratio_factory();
+
+	virtual Sampler* create(uint32_t id, rnd::Generator& rng) const final override;
+
+private:
+
+	Golden_ratio* samplers_;
 };
 
 }
