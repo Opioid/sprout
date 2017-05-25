@@ -58,6 +58,7 @@ class Pathtracer_factory : public Factory {
 public:
 
 	Pathtracer_factory(const take::Settings& take_settings, uint32_t num_integrators,
+					   sub::Factory* sub_factory,
 					   uint32_t min_bounces, uint32_t max_bounces,
 					   float path_termination_probability,
 					   bool enable_caustics);

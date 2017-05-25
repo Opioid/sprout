@@ -161,11 +161,12 @@ size_t Pathtracer::num_bytes() const {
 
 Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 									   uint32_t num_integrators,
+									   sub::Factory* sub_factory,
 									   uint32_t min_bounces, uint32_t max_bounces,
 									   float path_termination_probability,
 									   bool enable_caustics) :
 	Factory(take_settings, num_integrators),
-	sub_factory_(new sub::Bruteforce_factory(take_settings, num_integrators, 1.f)),
+	sub_factory_(sub_factory),
 	integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)) {
 	settings_.min_bounces = min_bounces;
 	settings_.max_bounces = max_bounces;

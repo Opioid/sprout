@@ -18,26 +18,25 @@ namespace sampler { class Factory; }
 namespace thread { class Pool; }
 
 namespace rendering {
+	struct Focus;
 
-struct Focus;
+	namespace sensor {
+		class Sensor;
 
-namespace sensor {
+		namespace filter { class Filter; }
+	}
 
-class Sensor;
+	namespace integrator {
+		namespace surface {
+			class Factory;
 
-namespace filter { class Filter; }
+			namespace sub { class Factory; }
+		}
 
-}
+		namespace volume  { class Factory; }
+	}
 
-namespace integrator {
-
-namespace surface { class Factory; }
-namespace volume  { class Factory; }
-
-}
-
-namespace postprocessor {  namespace tonemapping { class Tonemapper; } }
-
+	namespace postprocessor { namespace tonemapping { class Tonemapper; } }
 }
 
 namespace take {
@@ -75,6 +74,10 @@ private:
 	static std::shared_ptr<rendering::integrator::surface::Factory>
 	load_surface_integrator_factory(const json::Value& integrator_value,
 									const Settings& settings, uint32_t num_workers);
+
+	static rendering::integrator::surface::sub::Factory*
+	load_subsurface_integrator_factory(const json::Value& integrator_value,
+									   const Settings& settings, uint32_t num_workers);
 
 	static std::shared_ptr<rendering::integrator::volume::Factory>
 	load_volume_integrator_factory(const json::Value& integrator_value,

@@ -13,6 +13,7 @@
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
+#include "rendering/integrator/surface/sub/bruteforce.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
@@ -108,10 +109,23 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 	using namespace rendering::integrator;
 
 	if (!take->surface_integrator_factory) {
+		float step_size = 1.f;
+		auto* sub_factory = new surface::sub::Bruteforce_factory(take->settings,
+																 thread_pool.num_threads(),
+																 step_size);
+
 		Light_sampling light_sampling{Light_sampling::Strategy::One, 1};
+		uint32_t min_bounces = 4;
+		uint32_t max_bounces = 8;
+		float path_termination_probability = 0.9f;
+		bool enable_caustics = false;
+
 		take->surface_integrator_factory = std::make_shared<
 				surface::Pathtracer_MIS_factory>(take->settings, thread_pool.num_threads(),
-												 4, 8, 0.5f, light_sampling, false);
+												 sub_factory, min_bounces, max_bounces,
+												 path_termination_probability,
+												 light_sampling, enable_caustics);
+
 		logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
 	}
 
@@ -381,8 +395,11 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
+			float step_size = 1.f;
+			auto* sub_factory = new sub::Bruteforce_factory(settings, num_workers, step_size);
+
 			return std::make_shared<Pathtracer_factory>(
-						settings, num_workers, min_bounces, max_bounces,
+						settings, num_workers, sub_factory, min_bounces, max_bounces,
 						path_termination_probability, enable_caustics);
 		} else if ("PTDL" == n.name) {
 			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
@@ -415,8 +432,11 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
+			float step_size = 1.f;
+			auto* sub_factory = new sub::Bruteforce_factory(settings, num_workers, step_size);
+
 			return std::make_shared<Pathtracer_MIS_factory>(
-						settings, num_workers, min_bounces, max_bounces,
+						settings, num_workers, sub_factory, min_bounces, max_bounces,
 						path_termination_probability, light_sampling, enable_caustics);
 		} else if ("Debug" == n.name) {
 			auto vector = Debug::Settings::Vector::Shading_normal;
@@ -436,6 +456,21 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			}
 
 			return std::make_shared<Debug_factory>(settings, num_workers, vector);
+		}
+	}
+
+	return nullptr;
+}
+
+rendering::integrator::surface::sub::Factory*
+load_subsurface_integrator_factory(const json::Value& integrator_value,
+								   const Settings& settings, uint32_t num_workers) {
+	using namespace rendering::integrator::surface::sub;
+
+	for (auto& n : integrator_value.GetObject()) {
+		if ("Bruteforce" == n.name) {
+			float step_size = json::read_float(n.value, "step_size", 1.f);
+			return new Bruteforce_factory(settings, num_workers, step_size);
 		}
 	}
 
