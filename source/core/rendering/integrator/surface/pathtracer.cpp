@@ -1,5 +1,6 @@
 #include "pathtracer.hpp"
 #include "integrator_helper.hpp"
+#include "sub/sub_integrator.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "image/texture/sampler/sampler_linear_2d.inl"
 #include "image/texture/sampler/sampler_nearest_2d.inl"
@@ -167,12 +168,13 @@ Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 									   bool enable_caustics) :
 	Factory(take_settings, num_integrators),
 	sub_factory_(sub_factory),
-	integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)) {
-	settings_.min_bounces = min_bounces;
-	settings_.max_bounces = max_bounces;
-	settings_.path_continuation_probability = 1.f - path_termination_probability;
-	settings_.enable_caustics = enable_caustics;
-}
+	integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)),
+	settings_ {
+		min_bounces,
+		max_bounces,
+		1.f - path_termination_probability,
+		enable_caustics
+	} {}
 
 Pathtracer_factory::~Pathtracer_factory() {
 	memory::destroy_aligned(integrators_, num_integrators_);

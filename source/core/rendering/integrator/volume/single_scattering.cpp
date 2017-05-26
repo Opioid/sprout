@@ -141,9 +141,8 @@ Single_scattering_factory::Single_scattering_factory(const take::Settings& take_
 													 uint32_t num_integrators,
 													 float step_size) :
 	Factory(take_settings, num_integrators),
-	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)) {
-	settings_.step_size = step_size;
-}
+	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
+	settings_{ step_size } {}
 
 Single_scattering_factory::~Single_scattering_factory() {
 	memory::destroy_aligned(integrators_, num_integrators_);

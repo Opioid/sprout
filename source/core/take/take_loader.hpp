@@ -76,6 +76,10 @@ private:
 									const Settings& settings, uint32_t num_workers);
 
 	static rendering::integrator::surface::sub::Factory*
+	find_subsurface_integrator_factory(const json::Value& parent_value,
+									   const Settings& settings, uint32_t num_workers);
+
+	static rendering::integrator::surface::sub::Factory*
 	load_subsurface_integrator_factory(const json::Value& integrator_value,
 									   const Settings& settings, uint32_t num_workers);
 

@@ -13,7 +13,8 @@
 #include "rendering/integrator/surface/pathtracer.hpp"
 #include "rendering/integrator/surface/pathtracer_dl.hpp"
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
-#include "rendering/integrator/surface/sub/bruteforce.hpp"
+#include "rendering/integrator/surface/sub/sub_bruteforce.hpp"
+#include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
@@ -110,9 +111,9 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 
 	if (!take->surface_integrator_factory) {
 		float step_size = 1.f;
-		auto* sub_factory = new surface::sub::Bruteforce_factory(take->settings,
-																 thread_pool.num_threads(),
-																 step_size);
+		auto* sub_factory = new surface::sub::Single_scattering_factory(take->settings,
+																		thread_pool.num_threads(),
+																		step_size);
 
 		Light_sampling light_sampling{Light_sampling::Strategy::One, 1};
 		uint32_t min_bounces = 4;
@@ -395,8 +396,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-			float step_size = 1.f;
-			auto* sub_factory = new sub::Bruteforce_factory(settings, num_workers, step_size);
+			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
 
 			return std::make_shared<Pathtracer_factory>(
 						settings, num_workers, sub_factory, min_bounces, max_bounces,
@@ -432,8 +432,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
-			float step_size = 1.f;
-			auto* sub_factory = new sub::Bruteforce_factory(settings, num_workers, step_size);
+			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
 
 			return std::make_shared<Pathtracer_MIS_factory>(
 						settings, num_workers, sub_factory, min_bounces, max_bounces,
@@ -463,14 +462,37 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 }
 
 rendering::integrator::surface::sub::Factory*
-load_subsurface_integrator_factory(const json::Value& integrator_value,
-								   const Settings& settings, uint32_t num_workers) {
+Loader::find_subsurface_integrator_factory(const json::Value& parent_value,
+										   const Settings& settings, uint32_t num_workers) {
+	using namespace rendering::integrator::surface::sub;
+
+	Factory* factory = nullptr;
+	const auto subsurface_node = parent_value.FindMember("subsurface");
+	if (parent_value.MemberEnd() != subsurface_node) {
+		factory = load_subsurface_integrator_factory(subsurface_node->value, settings,
+													 num_workers);
+	}
+
+	if (!factory) {
+		float step_size = 1.f;
+		factory = new Single_scattering_factory(settings, num_workers, step_size);
+
+		logging::warning("No valid subsurface integrator specified, "
+						 "defaulting to Single Scattering.");
+	}
+
+	return factory;
+}
+
+rendering::integrator::surface::sub::Factory*
+Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
+										   const Settings& settings, uint32_t num_workers) {
 	using namespace rendering::integrator::surface::sub;
 
 	for (auto& n : integrator_value.GetObject()) {
-		if ("Bruteforce" == n.name) {
+		if ("Single_scattering" == n.name) {
 			float step_size = json::read_float(n.value, "step_size", 1.f);
-			return new Bruteforce_factory(settings, num_workers, step_size);
+			return new Single_scattering_factory(settings, num_workers, step_size);
 		}
 	}
 

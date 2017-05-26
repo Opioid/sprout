@@ -1,5 +1,6 @@
 #include "pathtracer_mis.hpp"
 #include "integrator_helper.hpp"
+#include "sub/sub_integrator.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"
@@ -347,14 +348,15 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 											   bool enable_caustics) :
 	Factory(take_settings, num_integrators),
 	sub_factory_(sub_factory),
-	integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)) {
-	settings_.min_bounces = min_bounces;
-	settings_.max_bounces = max_bounces;
-	settings_.path_continuation_probability = 1.f - path_termination_probability;
-	settings_.light_sampling = light_sampling;
-	settings_.num_light_samples_reciprocal = 1.f / static_cast<float>(light_sampling.num_samples);
-	settings_.enable_caustics = enable_caustics;
-}
+	integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
+	settings_{
+		min_bounces,
+		max_bounces,
+		1.f - path_termination_probability,
+		light_sampling,
+		1.f / static_cast<float>(light_sampling.num_samples),
+		enable_caustics
+	} {}
 
 Pathtracer_MIS_factory::~Pathtracer_MIS_factory() {
 	memory::destroy_aligned(integrators_, num_integrators_);

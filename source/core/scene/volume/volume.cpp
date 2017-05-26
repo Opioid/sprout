@@ -10,8 +10,8 @@ Volume::Volume() :
 	absorption_(0.f), scattering_(0.f), anisotropy_(0.f) {}
 
 float Volume::phase(const float3& w, const float3& wp) const {
-	float g = anisotropy_;
-	float k = 1.55f * g - 0.55f * g * g * g;
+	const float g = anisotropy_;
+	const float k = 1.55f * g - 0.55f * g * g * g;
 	return phase_schlick(w, wp, k);
 }
 
@@ -42,7 +42,7 @@ void Volume::on_set_transformation() {
 }
 
 float Volume::phase_schlick(const float3& w, const float3& wp, float k) {
-	float d = 1.f - (k * math::dot(w, wp));
+	const float d = 1.f - (k * math::dot(w, wp));
 	return 1.f / (4.f * math::Pi) * (1.f - k * k) / (d * d);
 }
 

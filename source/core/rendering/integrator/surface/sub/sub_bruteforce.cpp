@@ -1,4 +1,4 @@
-#include "bruteforce.hpp"
+#include "sub_bruteforce.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_constants.hpp"

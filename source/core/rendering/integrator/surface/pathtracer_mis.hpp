@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
-#include "rendering/integrator/surface/sub/bruteforce.hpp"
 #include "transmittance/transmittance_closed.hpp"
 #include "transmittance/transmittance_open.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -15,6 +14,8 @@ namespace material { class Sample; }
 }
 
 namespace rendering { namespace integrator { namespace surface {
+
+namespace sub { class Integrator; class Factory; }
 
 class alignas(64) Pathtracer_MIS : public Integrator {
 
