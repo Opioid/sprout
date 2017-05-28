@@ -42,7 +42,7 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 	const float step = range / static_cast<float>(num_samples);
 
-	float3 w = -ray.direction;
+//	float3 w = -ray.direction;
 
 	float3 radiance(0.f);
 	float3 tr(1.f);

@@ -30,6 +30,8 @@
 #include "core/testing/testing_size.hpp"
 #include "core/testing/testing_spectrum.hpp"
 
+#include <iostream>
+
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
@@ -45,6 +47,21 @@ int main(int argc, char* argv[]) {
 //	testing::simd::unions();
 //	testing::spectrum();
 //	return 1;
+
+//	const int32_t lo = 0;
+//	const int32_t hi = 15;
+
+//	for (int32_t x = -2; x < 18; ++x) {
+//		std::cout << x << " >= " << lo << " && " << x << " <= " << hi << " == ";// << std::endl;
+
+//		const bool a = x >= lo && x <= hi;
+//		const bool b = static_cast<uint32_t>(x - lo) <= static_cast<uint32_t>(hi - lo);
+
+//		std::cout << a << ", " << b << std::endl;
+//	}
+
+//	return 0;
+
 
 	logging::init(logging::Type::Stdout);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");

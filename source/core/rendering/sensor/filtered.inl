@@ -5,6 +5,8 @@
 #include "sampler/camera_sample.hpp"
 #include "base/math/vector4.inl"
 
+#include <iostream>
+
 namespace rendering { namespace sensor {
 
 template<class Base, class Clamp>
@@ -95,6 +97,22 @@ void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, const f
 	if (pixel[0] < bounds[0] || pixel[1] < bounds[1]
 	||  bounds[2] < pixel[0] || bounds[3] < pixel[1]) {
 		return;
+	}
+
+	if ((pixel[0] < isolated_tile[0]) && !(pixel[0] > bounds[0])) {
+		std::cout << "a" << std::endl;
+	}
+
+	if ((pixel[1] < isolated_tile[1]) && !(pixel[1] > bounds[1])) {
+		std::cout << "b" << std::endl;
+	}
+
+	if ((pixel[0] > isolated_tile[2]) && !(pixel[0] < bounds[2])) {
+		std::cout << "c" << std::endl;
+	}
+
+	if ((pixel[1] > isolated_tile[3]) && !(pixel[1] < bounds[3])) {
+		std::cout << "d" << std::endl;
 	}
 
 	if ((pixel[0] < isolated_tile[0] && pixel[0] > bounds[0])
