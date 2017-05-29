@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/math/vector3.hpp"
+#include "base/math/vector4.hpp"
 
 namespace sampler { struct Camera_sample; }
 
@@ -15,8 +15,10 @@ public:
 
 	virtual int32_t filter_radius_int() const final override;
 
+	virtual int4 isolated_tile(const int4& tile) const final override;
+
 	virtual void add_sample(const sampler::Camera_sample& sample, const float4& color,
-							const int4& tile, const int4& bounds) final override;
+							const int4& isolated_tile, const int4& bounds) final override;
 
 private:
 

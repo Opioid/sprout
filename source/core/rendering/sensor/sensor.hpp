@@ -21,6 +21,8 @@ public:
 
 	virtual int32_t filter_radius_int() const = 0;
 
+	virtual int4 isolated_tile(const int4& tile) const = 0;
+
 	virtual void clear() = 0;
 
 	virtual void add_sample(const sampler::Camera_sample& sample, const float4& color,

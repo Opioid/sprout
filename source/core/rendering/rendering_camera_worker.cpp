@@ -19,7 +19,8 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
 
 	const int4 bounds = camera.view_bounds(view);
 
-	const int4 view_tile(bounds.xy() + tile.xy(), bounds.xy() + tile.zw());
+	const int4 isolated_view_tile = sensor.isolated_tile(int4(bounds.xy() + tile.xy(),
+															  bounds.xy() + tile.zw()));
 
 	sampler::Camera_sample sample;
 	scene::Ray ray;
@@ -44,9 +45,9 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
 
 				if (camera.generate_ray(sample, view, ray)) {
 					const float4 color = li(ray);
-					sensor.add_sample(sample, color, view_tile, bounds);
+					sensor.add_sample(sample, color, isolated_view_tile, bounds);
 				} else {
-					sensor.add_sample(sample, float4(0.f), view_tile, bounds);
+					sensor.add_sample(sample, float4(0.f), isolated_view_tile, bounds);
 				}
 			}
 		}
