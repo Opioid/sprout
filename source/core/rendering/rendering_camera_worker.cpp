@@ -17,10 +17,14 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
 						   float normalized_tick_offset, float normalized_tick_slice) {
 	auto& sensor = camera.sensor();
 
-	const int4 bounds = camera.view_bounds(view);
+	int4 bounds = camera.view_bounds(view);
+	bounds[2] -= bounds[0];
+	bounds[3] -= bounds[1];
 
-	const int4 isolated_view_tile = sensor.isolated_tile(int4(bounds.xy() + tile.xy(),
-															  bounds.xy() + tile.zw()));
+	int4 isolated_bounds = sensor.isolated_tile(int4(bounds.xy() + tile.xy(),
+													 bounds.xy() + tile.zw()));
+	isolated_bounds[2] -= isolated_bounds[0];
+	isolated_bounds[3] -= isolated_bounds[1];
 
 	sampler::Camera_sample sample;
 	scene::Ray ray;
@@ -45,9 +49,9 @@ void Camera_worker::render(scene::camera::Camera& camera, uint32_t view,
 
 				if (camera.generate_ray(sample, view, ray)) {
 					const float4 color = li(ray);
-					sensor.add_sample(sample, color, isolated_view_tile, bounds);
+					sensor.add_sample(sample, color, isolated_bounds, bounds);
 				} else {
-					sensor.add_sample(sample, float4(0.f), isolated_view_tile, bounds);
+					sensor.add_sample(sample, float4(0.f), isolated_bounds, bounds);
 				}
 			}
 		}

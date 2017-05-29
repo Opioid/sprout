@@ -96,16 +96,21 @@ void Filtered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, con
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, const float4& color,
 											   const int4& isolated_bounds, const int4& bounds) {
-	if (pixel[0] < bounds[0] || pixel[1] < bounds[1]
-	||  bounds[2] < pixel[0] || bounds[3] < pixel[1]) {
-		return;
-	}
+//	if (pixel[0] >= bounds[0] && pixel[0] <= bounds[2]
+//	&&	pixel[1] >= bounds[1] && pixel[1] <= bounds[3]) {
 
-	if (pixel[0] < isolated_bounds[0] || pixel[1] < isolated_bounds[1]
-	||	isolated_bounds[2] < pixel[0] || isolated_bounds[3] < pixel[1]) {
-		Base::add_pixel_atomic(pixel, color, weight);
-	} else {
-		Base::add_pixel(pixel, color, weight);
+	// This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
+
+	if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2])
+	&&	static_cast<uint32_t>(pixel[1] - bounds[1]) <= static_cast<uint32_t>(bounds[3])) {
+		if (static_cast<uint32_t>(pixel[0] - isolated_bounds[0])
+		<=  static_cast<uint32_t>(isolated_bounds[2])
+		&&	static_cast<uint32_t>(pixel[1] - isolated_bounds[1])
+		<=  static_cast<uint32_t>(isolated_bounds[3])) {
+			Base::add_pixel(pixel, color, weight);
+		} else {
+			Base::add_pixel_atomic(pixel, color, weight);
+		}
 	}
 }
 
@@ -113,18 +118,20 @@ template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
 												 const float4& color,
 												 const int4& isolated_bounds, const int4& bounds) {
-	if (pixel[0] < bounds[0] || pixel[1] < bounds[1]
-	||  bounds[2] < pixel[0] || bounds[3] < pixel[1]) {
-        return;
-    }
+	// This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
-	float weight = filter_->evaluate(relative_offset);
+	if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2])
+	&&	static_cast<uint32_t>(pixel[1] - bounds[1]) <= static_cast<uint32_t>(bounds[3])) {
+		const float weight = filter_->evaluate(relative_offset);
 
-	if (pixel[0] < isolated_bounds[0] || pixel[1] < isolated_bounds[1]
-	||	isolated_bounds[2] < pixel[0] || isolated_bounds[3] < pixel[1]) {
-		Base::add_pixel_atomic(pixel, color, weight);
-	} else {
-		Base::add_pixel(pixel, color, weight);
+		if (static_cast<uint32_t>(pixel[0] - isolated_bounds[0])
+		<=  static_cast<uint32_t>(isolated_bounds[2])
+		&&	static_cast<uint32_t>(pixel[1] - isolated_bounds[1])
+		<=  static_cast<uint32_t>(isolated_bounds[3])) {
+			Base::add_pixel(pixel, color, weight);
+		} else {
+			Base::add_pixel_atomic(pixel, color, weight);
+		}
 	}
 }
 
