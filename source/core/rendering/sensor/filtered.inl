@@ -19,7 +19,7 @@ Filtered<Base, Clamp>::~Filtered() {
 
 template<class Base, class Clamp>
 int32_t Filtered<Base, Clamp>::filter_radius_int() const {
-	return static_cast<int32_t>(filter_->radius() + 0.5f);
+	return static_cast<int32_t>(std::ceil(filter_->radius()));
 }
 
 template<class Base, class Clamp>
