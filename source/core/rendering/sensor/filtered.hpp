@@ -21,15 +21,15 @@ public:
 	virtual int4 isolated_tile(const int4& tile) const final override;
 
 	virtual void add_sample(const sampler::Camera_sample& sample, const float4&,
-							const int4& isolated_tile, const int4& bounds) final override;
+							const int4& isolated_bounds, const int4& bounds) final override;
 
 private:
 
 	void add_weighted_pixel(int2 pixel, float weight, const float4& color,
-							const int4& isolated_tile, const int4& bounds);
+							const int4& isolated_bounds, const int4& bounds);
 
 	void weight_and_add_pixel(int2 pixel, float2 relative_offset, const float4& color,
-							  const int4& isolated_tile, const int4& bounds);
+							  const int4& isolated_bounds, const int4& bounds);
 
 	Clamp clamp_;
 

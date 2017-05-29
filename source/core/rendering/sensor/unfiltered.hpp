@@ -18,7 +18,7 @@ public:
 	virtual int4 isolated_tile(const int4& tile) const final override;
 
 	virtual void add_sample(const sampler::Camera_sample& sample, const float4& color,
-							const int4& isolated_tile, const int4& bounds) final override;
+							const int4& isolated_bounds, const int4& bounds) final override;
 
 private:
 

@@ -26,7 +26,7 @@ public:
 	virtual void clear() = 0;
 
 	virtual void add_sample(const sampler::Camera_sample& sample, const float4& color,
-							const int4& tile, const int4& bounds) = 0;
+							const int4& isolated_bounds, const int4& bounds) = 0;
 
 	virtual size_t num_bytes() const = 0;
 

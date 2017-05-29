@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/math/vector3.hpp"
+#include "base/math/vector4.hpp"
 
 namespace rendering { namespace sensor { namespace clamp {
 
