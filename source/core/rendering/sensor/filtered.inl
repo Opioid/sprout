@@ -101,10 +101,8 @@ void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, const f
 		return;
 	}
 
-	if ((pixel[0] < isolated_tile[0])
-	||  (pixel[1] < isolated_tile[1])
-	||	(pixel[0] > isolated_tile[2])
-	||  (pixel[1] > isolated_tile[3])) {
+	if (pixel[0] < isolated_tile[0] || pixel[1] < isolated_tile[1]
+	||	isolated_tile[2] < pixel[0] || isolated_tile[3] < pixel[1]) {
 		Base::add_pixel_atomic(pixel, color, weight);
 	} else {
 		Base::add_pixel(pixel, color, weight);
@@ -122,10 +120,8 @@ void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_off
 
 	float weight = filter_->evaluate(relative_offset);
 
-	if ((pixel[0] < isolated_tile[0])
-	||  (pixel[1] < isolated_tile[1])
-	||	(pixel[0] > isolated_tile[2])
-	||  (pixel[1] > isolated_tile[3])) {
+	if (pixel[0] < isolated_tile[0] || pixel[1] < isolated_tile[1]
+	||	isolated_tile[2] < pixel[0] || isolated_tile[3] < pixel[1]) {
 		Base::add_pixel_atomic(pixel, color, weight);
 	} else {
 		Base::add_pixel(pixel, color, weight);
