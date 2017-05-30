@@ -116,8 +116,8 @@ void Filtered<Base, Clamp>::add_weighted_pixel(int2 pixel, float weight, const f
 
 template<class Base, class Clamp>
 void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_offset,
-												 const float4& color,
-												 const int4& isolated_bounds, const int4& bounds) {
+												 const float4& color, const int4& isolated_bounds,
+												 const int4& bounds) {
 	// This code assumes that (isolated_)bounds contains [x_lo, y_lo, x_hi - x_lo, y_hi - y_lo]
 
 	if (static_cast<uint32_t>(pixel[0] - bounds[0]) <= static_cast<uint32_t>(bounds[2])
