@@ -66,6 +66,8 @@ File size on disk generally seems to be higher, though.
 
 ** Build system
 
+*** TODO Investigate more Travus CI usage
+
 *** TODO Consider cmake-based build system
 
 ** Scene
