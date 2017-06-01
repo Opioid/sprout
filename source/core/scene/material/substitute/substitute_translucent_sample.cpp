@@ -51,41 +51,30 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result)
 		return;
 	}
 
-	if (thickness_ > 0.f) {
-		float p = sampler.generate_sample_1D();
+	const float p = sampler.generate_sample_1D();
 
+	if (thickness_ > 0.f) {
 		if (p < 0.5f) {
 			float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_,
 														 layer_, sampler, result);
 			result.wi  *= -1.f;
-			result.pdf *= 0.5f;
 			float approximated_distance = thickness_ / n_dot_wi;
 			float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
-			if (1.f == layer_.metallic_) {
-				layer_.pure_specular_sample(wo_, sampler, result);
-			} else {
-				if (p < 0.75f) {
-					layer_.diffuse_sample(wo_, sampler, result);
-				} else {
-					layer_.specular_sample(wo_, sampler, result);
-				}
-			}
-
-			result.pdf *= 0.5f;
-		}
-	} else {
-		if (1.f == layer_.metallic_) {
-			layer_.pure_specular_sample(wo_, sampler, result);
-		} else {
-			float p = sampler.generate_sample_1D();
-
-			if (p < 0.5f) {
+			if (p < 0.75f) {
 				layer_.diffuse_sample(wo_, sampler, result);
 			} else {
 				layer_.specular_sample(wo_, sampler, result);
 			}
+		}
+
+		result.pdf *= 0.5f;
+	} else {
+		if (p < 0.5f) {
+			layer_.diffuse_sample(wo_, sampler, result);
+		} else {
+			layer_.specular_sample(wo_, sampler, result);
 		}
 	}
 }
@@ -94,7 +83,8 @@ bool Sample_translucent::is_translucent() const {
 	return thickness_ > 0.f;
 }
 
-void Sample_translucent::set(const float3& diffuse_color, float thickness, float attenuation_distance) {
+void Sample_translucent::set(const float3& diffuse_color, float thickness,
+							 float attenuation_distance) {
 	thickness_ = thickness;
 
 	if (thickness > 0.f) {

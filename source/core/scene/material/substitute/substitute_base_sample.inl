@@ -155,8 +155,9 @@ void Sample_base<Diffuse>::Layer::set(const float3& color, const float3& radianc
 }
 
 template<typename Diffuse>
-float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3& wo, const float3& h,
-												  float wo_dot_h, float& pdf) const {
+float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3& wo,
+												  const float3& h, float wo_dot_h,
+												  float& pdf) const {
 	const float n_dot_wi = clamped_n_dot(wi);
 	const float n_dot_wo = clamped_n_dot(wo);
 

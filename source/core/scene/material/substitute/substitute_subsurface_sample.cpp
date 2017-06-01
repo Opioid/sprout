@@ -27,16 +27,12 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 		return;
 	}
 
-	if (1.f == layer_.metallic_) {
-		layer_.pure_specular_sample(wo_, sampler, result);
-	} else {
-		const float p = sampler.generate_sample_1D();
+	const float p = sampler.generate_sample_1D();
 
-		if (p < 0.5f) {
-			layer_.diffuse_sample(wo_, sampler, result);
-		} else {
-			layer_.specular_sample(wo_, sampler, result);
-		}
+	if (p < 0.5f) {
+		layer_.diffuse_sample(wo_, sampler, result);
+	} else {
+		layer_.specular_sample(wo_, sampler, result);
 	}
 }
 
