@@ -30,8 +30,6 @@
 #include "core/testing/testing_size.hpp"
 #include "core/testing/testing_spectrum.hpp"
 
-#include <iostream>
-
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes);
@@ -48,22 +46,7 @@ int main(int argc, char* argv[]) {
 //	testing::spectrum();
 //	return 1;
 
-//	const int32_t lo = 0;
-//	const int32_t hi = 15;
-
-//	for (int32_t x = -2; x < 18; ++x) {
-//		std::cout << x << " >= " << lo << " && " << x << " <= " << hi << " == ";// << std::endl;
-
-//		const bool a = x >= lo && x <= hi;
-//		const bool b = static_cast<uint32_t>(x - lo) <= static_cast<uint32_t>(hi - lo);
-
-//		std::cout << a << ", " << b << std::endl;
-//	}
-
-//	return 0;
-
-
-	logging::init(logging::Type::Stdout);
+	logging::init(logging::Type::Std_out);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");
 
 	options::init(argc, argv);
@@ -85,8 +68,8 @@ int main(int argc, char* argv[]) {
 	const uint32_t available_threads = std::max(std::thread::hardware_concurrency(), 1u);
 	uint32_t num_workers;
 	if (args.threads <= 0) {
-		num_workers = static_cast<uint32_t>(
-					std::max(static_cast<int32_t>(available_threads) + args.threads, 1));
+		const int32_t num_threads = static_cast<int32_t>(available_threads) + args.threads;
+		num_workers = static_cast<uint32_t>(std::max(num_threads, 1));
 	} else {
 		num_workers = std::min(available_threads, static_cast<uint32_t>(std::max(args.threads, 1)));
 	}

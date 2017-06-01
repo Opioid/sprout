@@ -34,7 +34,7 @@ float Sample_thin::ior() const {
 }
 
 void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float p = sampler.generate_sample_1D();
+	const float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
 		BSDF::reflect(*this, layer_, sampler, result);

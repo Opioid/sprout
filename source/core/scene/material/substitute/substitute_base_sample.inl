@@ -203,8 +203,8 @@ void Sample_base<Diffuse>::Layer::specular_sample(const float3& wo, sampler::Sam
 
 	const fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
-	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick,
-											 sampler, ggx_fresnel, result);
+	const float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick,
+												   sampler, ggx_fresnel, result);
 
 	float d_pdf;
 	const float3 d_reflection = Diffuse::reflection(result.h_dot_wi, n_dot_wi,

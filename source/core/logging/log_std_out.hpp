@@ -4,7 +4,8 @@
 
 namespace logging {
 
-class Stdout : public Log {
+class Std_out : public Log {
+
 public:
 
 	virtual void post(Type type, const std::string& text) final override;

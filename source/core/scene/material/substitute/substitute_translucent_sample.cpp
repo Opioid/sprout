@@ -26,17 +26,17 @@ float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
 	// then we don't need to calculate the reflection.
 	// In the other case, transmission won't be visible and we only need reflection.
 	if (thickness_ > 0.f && !same_hemisphere(wi)) {
-		float n_dot_wi = layer_.reversed_clamped_n_dot(wi);
-		float approximated_distance = thickness_ / n_dot_wi;
-		float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
-		pdf = 0.5f * n_dot_wi * math::Pi_inv;
-		return n_dot_wi * (math::Pi_inv * attenuation * layer_.diffuse_color_);
+		const float n_dot_wi = layer_.reversed_clamped_n_dot(wi);
+		const float approximated_distance = thickness_ / n_dot_wi;
+		const float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
+		pdf = n_dot_wi * (0.5f * math::Pi_inv);
+		return (n_dot_wi * math::Pi_inv) * (attenuation * layer_.diffuse_color_);
 	}
 
-	float3 h = math::normalized(wo_ + wi);
-	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+	const float3 h = math::normalized(wo_ + wi);
+	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
 
-	float3 result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
+	const float3 result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
 
 	if (thickness_ > 0.f) {
 		pdf *= 0.5f;
@@ -55,11 +55,11 @@ void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result)
 
 	if (thickness_ > 0.f) {
 		if (p < 0.5f) {
-			float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_,
-														 layer_, sampler, result);
-			result.wi  *= -1.f;
-			float approximated_distance = thickness_ / n_dot_wi;
-			float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
+			const float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_,
+															   layer_, sampler, result);
+			result.wi *= -1.f;
+			const float approximated_distance = thickness_ / n_dot_wi;
+			const float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 			result.reflection *= n_dot_wi * attenuation;
 		} else {
 			if (p < 0.75f) {

@@ -1,7 +1,6 @@
 #include "logging.hpp"
 #include "log_null.hpp"
-#include "log_stdout.hpp"
-
+#include "log_std_out.hpp"
 
 namespace logging {
 
@@ -12,9 +11,9 @@ void init(Type type) {
 	case Type::Null:
 		log = new Null;
 		break;
-	case Type::Stdout:
+	case Type::Std_out:
 	default:
-		log = new Stdout;
+		log = new Std_out;
 		break;
 	}
 }

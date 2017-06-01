@@ -6,7 +6,7 @@ namespace logging {
 
 enum class Type {
 	Null,
-	Stdout
+	Std_out
 };
 
 void init(Type type);

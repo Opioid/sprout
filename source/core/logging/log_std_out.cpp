@@ -1,9 +1,9 @@
-#include "log_stdout.hpp"
+#include "log_std_out.hpp"
 #include <iostream>
 
 namespace logging {
 
-void Stdout::post(Type type, const std::string& text) {
+void Std_out::post(Type type, const std::string& text) {
 	switch (type) {
 	case Type::Warning:
 		std::cout << "Warning: " << text << std::endl;
