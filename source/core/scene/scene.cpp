@@ -130,7 +130,7 @@ const light::Light* Scene::random_light(float random, float& pdf) const {
 		return nullptr;
 	}
 
-	uint32_t l = light_distribution_.sample_discrete(random, pdf);
+	const uint32_t l = light_distribution_.sample_discrete(random, pdf);
 
 	return lights_[l];
 }
@@ -140,8 +140,8 @@ const volume::Volume* Scene::volume_region() const {
 }
 
 void Scene::tick(thread::Pool& thread_pool) {
-	float simulation_time = static_cast<float>(simulation_time_);
-	float tick_duration	  = static_cast<float>(tick_duration_);
+	const float simulation_time = static_cast<float>(simulation_time_);
+	const float tick_duration	= static_cast<float>(tick_duration_);
 
 	for (auto m : materials_) {
 		m->tick(simulation_time, tick_duration);

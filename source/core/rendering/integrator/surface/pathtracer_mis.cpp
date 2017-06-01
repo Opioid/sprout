@@ -29,6 +29,8 @@ Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_s
 	transmittance_closed_(rng, take_settings) {}
 
 void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
+	num_lights_reciprocal_ = 1.f / static_cast<float>(scene.lights().size());
+
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
 	for (auto& s : material_samplers_) {
@@ -209,7 +211,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 		const float light_weight = static_cast<float>(lights.size());
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
 			const auto light = lights[l];
-			for (uint32_t i = 0, nls = settings_.light_sampling.num_samples; i < nls; ++i) {
+			for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
 				secondary_ray.min_t = ray_offset;
 
 				result += evaluate_light(light, l, light_weight, worker, secondary_ray,
@@ -245,7 +247,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 
 		if (light) {
 			if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
-				light_pdf = 1.f / static_cast<float>(worker.scene().lights().size());
+				light_pdf = num_lights_reciprocal_;
 			}
 
 			const float ls_pdf = light->pdf(ray.time, secondary_ray.origin, sample_result.wi,

@@ -73,7 +73,8 @@ float3 Infinite_sphere::thin_absorption(const Transformation& /*transformation*/
 }
 
 void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-							 const float3& /*p*/, const float3& n, float /*area*/, bool /*two_sided*/,
+							 const float3& /*p*/, const float3& n,
+							 float /*area*/, bool /*two_sided*/,
 							 sampler::Sampler& sampler, uint32_t sampler_dimension,
 							 Node_stack& /*node_stack*/, Sample& sample) const {
 	float3 x, y;

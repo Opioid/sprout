@@ -28,8 +28,8 @@ public:
 
 		Light_sampling light_sampling;
 
-		float    num_light_samples_reciprocal;
-		bool	 enable_caustics;
+		float num_light_samples_reciprocal;
+		bool  enable_caustics;
 	};
 
 	Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
@@ -69,6 +69,8 @@ private:
 	sampler::Sampler& light_sampler(uint32_t bounce);
 
 	const Settings settings_;
+
+	float num_lights_reciprocal_;
 
 	sub::Integrator& subsurface_;
 
