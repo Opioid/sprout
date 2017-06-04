@@ -3,6 +3,8 @@
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector3.hpp"
 
+namespace sampler { class Sampler; }
+
 namespace rendering {
 
 class Worker;
@@ -17,6 +19,10 @@ public:
 	virtual ~Integrator();
 
 	virtual float3 li(Worker& worker, const Ray& ray, const Intersection& intersection) = 0;
+
+	virtual float3 li(Worker& worker, Ray& ray, Intersection& intersection,
+					  sampler::Sampler& sampler, Sampler_filter filter,
+					  Bxdf_result& sample_result) = 0;
 };
 
 class Factory {

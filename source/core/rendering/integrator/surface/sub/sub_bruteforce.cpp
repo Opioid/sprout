@@ -106,6 +106,12 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 	return color;
 }
 
+float3 Bruteforce::li(Worker& worker, Ray& ray, Intersection& intersection,
+					  sampler::Sampler& sampler, Sampler_filter filter,
+					  Bxdf_result& sample_result) {
+	return float3(0.f);
+}
+
 size_t Bruteforce::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }

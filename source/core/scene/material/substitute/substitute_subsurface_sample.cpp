@@ -29,11 +29,30 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 
 	const float p = sampler.generate_sample_1D();
 
+//	if (p < 0.5f) {
+//		layer_.diffuse_sample(wo_, sampler, result);
+//	} else {
+//		layer_.specular_sample(wo_, sampler, result);
+//	}
+
 	if (p < 0.5f) {
-		layer_.diffuse_sample(wo_, sampler, result);
+//		const float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_,
+//														   layer_, sampler, result);
+//		result.wi *= -1.f;
+//		const float approximated_distance = thickness_ / n_dot_wi;
+//		const float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
+//		result.reflection *= n_dot_wi * attenuation;
+
+		result.type.set(bxdf::Type::SSS);
 	} else {
-		layer_.specular_sample(wo_, sampler, result);
+		if (p < 0.75f) {
+			layer_.diffuse_sample(wo_, sampler, result);
+		} else {
+			layer_.specular_sample(wo_, sampler, result);
+		}
 	}
+
+	result.pdf *= 0.5f;
 }
 
 }}}

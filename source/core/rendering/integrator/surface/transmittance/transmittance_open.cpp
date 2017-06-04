@@ -25,8 +25,8 @@ float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& inter
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_attenuation = attenuation;
 
-	for (uint32_t i = 0; i < max_bounces_;) {
-		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+	for (uint32_t i = max_bounces_; i > 0;) {
+		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
@@ -36,7 +36,7 @@ float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& inter
 			break;
 		}
 
-		float3 wo = -ray.direction;
+		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		material_sample.sample(sampler, sample_result);
@@ -48,7 +48,7 @@ float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& inter
 			used_attenuation = material_sample.attenuation();
 		} else {
 			++ray.depth;
-			++i;
+			--i;
 		}
 
 		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, used_attenuation);

@@ -14,9 +14,15 @@ struct Flags {
 		return static_cast<impl_type>(flag) == (values & static_cast<impl_type>(flag));
 	}
 
-	bool test_any(T flag_a, T flag_b) const {
-		return static_cast<impl_type>(flag_a) == (values & static_cast<impl_type>(flag_a))
-			|| static_cast<impl_type>(flag_b) == (values & static_cast<impl_type>(flag_b));
+	bool test_any(T a, T b) const {
+		return static_cast<impl_type>(a) == (values & static_cast<impl_type>(a))
+			|| static_cast<impl_type>(b) == (values & static_cast<impl_type>(b));
+	}
+
+	bool test_any(T a, T b, T c) const {
+		return static_cast<impl_type>(a) == (values & static_cast<impl_type>(a))
+			|| static_cast<impl_type>(b) == (values & static_cast<impl_type>(b))
+			|| static_cast<impl_type>(c) == (values & static_cast<impl_type>(c));
 	}
 
 	void set(T flag) {
