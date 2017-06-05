@@ -43,6 +43,8 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 //		const float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 //		result.reflection *= n_dot_wi * attenuation;
 
+		result.wi = -wo_;
+
 		result.type.set(bxdf::Type::SSS);
 	} else {
 		if (p < 0.75f) {

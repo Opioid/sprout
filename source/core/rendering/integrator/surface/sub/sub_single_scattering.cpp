@@ -112,10 +112,13 @@ float3 Single_scattering::li(Worker& worker, Ray& ray, Intersection& intersectio
 							 Bxdf_result& sample_result) {
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	Ray tray(intersection.geo.p, ray.direction, ray_offset, scene::Ray_max_t);
-	Intersection tintersection;
-	if (!worker.intersect(intersection.prop, tray, tintersection)) {
+//	Intersection tintersection;
+	if (!worker.intersect(intersection.prop, tray, intersection)) {
 		return float3(0.f);
 	}
+
+//	sample_result.wi = ray.direction;
+//	return float3(1.f, 0.f, 0.f);
 
 	float range = tray.max_t - tray.min_t;
 
@@ -162,13 +165,13 @@ float3 Single_scattering::li(Worker& worker, Ray& ray, Intersection& intersectio
 			Ray shadow_ray(current, light_sample.shape.wi, 0.f,
 						   light_sample.shape.t, ray.time);
 
-			if (!worker.intersect(intersection.prop, shadow_ray, tintersection)) {
+			if (!worker.intersect(intersection.prop, shadow_ray, intersection)) {
 				continue;
 			}
 
 			float prop_length = shadow_ray.length();
 
-			ray_offset = take_settings_.ray_offset_factor * tintersection.geo.epsilon;
+			ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 			shadow_ray.min_t = shadow_ray.max_t + ray_offset;
 			shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
