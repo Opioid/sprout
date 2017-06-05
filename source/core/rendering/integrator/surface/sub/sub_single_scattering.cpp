@@ -117,9 +117,6 @@ float3 Single_scattering::li(Worker& worker, Ray& ray, Intersection& intersectio
 		return float3(0.f);
 	}
 
-//	sample_result.wi = ray.direction;
-//	return float3(1.f, 0.f, 0.f);
-
 	float range = tray.max_t - tray.min_t;
 
 	if (range < 0.0001f) {
