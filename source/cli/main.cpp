@@ -24,15 +24,19 @@
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
+#include <istream>
+#include <sstream>
 
 #include "extension/procedural/starburst/starburst.hpp"
 #include "core/testing/testing_simd.hpp"
 #include "core/testing/testing_size.hpp"
 #include "core/testing/testing_spectrum.hpp"
 
-void log_memory_consumption(const resource::Manager& manager,
-							const take::Take& take,
-							size_t rendering_num_bytes);
+static void log_memory_consumption(const resource::Manager& manager,
+								   const take::Take& take,
+								   size_t rendering_num_bytes);
+
+static bool is_json(const std::string& text);
 
 int main(int argc, char* argv[]) {
 //	testing::size();
@@ -101,7 +105,10 @@ int main(int argc, char* argv[]) {
 	std::shared_ptr<take::Take> take;
 
 	try {
-		take = take::Loader::load(*file_system.read_stream(args.take), thread_pool);
+		auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
+										 : file_system.read_stream(args.take);
+
+		take = take::Loader::load(*stream, thread_pool);
 	} catch (const std::exception& e) {
 		logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
 		return 1;
@@ -174,11 +181,12 @@ int main(int argc, char* argv[]) {
 
 			driver.render(*take->exporter, progressor);
 		} else {
-			baking::Driver driver(take->surface_integrator_factory,
-								  take->volume_integrator_factory,
-								  take->sampler_factory);
+//			baking::Driver driver(take->surface_integrator_factory,
+//								  take->volume_integrator_factory,
+//								  take->sampler_factory);
 
-			driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
+//			driver.render(scene, take->view, thread_pool, *take->exporter, progressor);
+			logging::error("No camera specified.");
 		}
 
 		logging::info("Total render time " +
@@ -217,4 +225,14 @@ void log_memory_consumption(const resource::Manager& manager,
 	size_t total_num_bytes = image_num_bytes + material_num_bytes
 						   + mesh_num_bytes + renderer_num_bytes;
 	logging::info("Total: " + string::print_bytes(total_num_bytes));
+}
+
+bool is_json(const std::string& text) {
+	const auto it = text.find_first_not_of(" \t");
+
+	if (std::string::npos != it) {
+		return '{' == text[it];
+	}
+
+	return false;
 }

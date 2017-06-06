@@ -44,8 +44,7 @@ void System::pop_mount() {
 	mount_folders_.pop_back();
 }
 
-std::istream* System::open_read_stream(const std::string& name,
-									   std::string& resolved_name) const {
+std::istream* System::open_read_stream(const std::string& name, std::string& resolved_name) const {
 	for (auto& f : mount_folders_) {
 		// Ignore empty folders, because this is handled explicitely
 		if (f.empty()) {

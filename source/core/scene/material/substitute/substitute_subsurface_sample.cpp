@@ -29,12 +29,12 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 
 	const float p = sampler.generate_sample_1D();
 
-//	if (p < 0.5f) {
-//		layer_.diffuse_sample(wo_, sampler, result);
-//	} else {
-//		layer_.specular_sample(wo_, sampler, result);
-//	}
-
+	if (p < 0.5f) {
+		layer_.diffuse_sample(wo_, sampler, result);
+	} else {
+		layer_.specular_sample(wo_, sampler, result);
+	}
+/*
 	if (p < 0.5f) {
 //		const float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_,
 //														   layer_, sampler, result);
@@ -55,6 +55,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 	}
 
 	result.pdf *= 0.5f;
+	*/
 }
 
 }}}

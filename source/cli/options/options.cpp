@@ -12,8 +12,8 @@ void init(int argc, char* argv[]) {
 		TCLAP::CmdLine cmd("sprout is a global illumination renderer experiment", ' ', "0.1");
 
 		TCLAP::UnlabeledValueArg<std::string> take_arg(
-					"take", "The take file to render.",
-					true, "", "file path");
+					"take", "Path of the take file to render or json string describing the take.",
+					true, "", "file path/json string");
 
 		cmd.add(take_arg);
 

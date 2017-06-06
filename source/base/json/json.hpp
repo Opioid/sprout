@@ -53,8 +53,8 @@ uint3 read_uint3(const rapidjson::Value& value);
 
 // math::quaternion read_quaternion(const rapidjson::Value& value);
 
-float3x3   create_rotation_matrix(const float3& xyz);
-float3x3   read_rotation_matrix(const rapidjson::Value& value);
+float3x3 create_rotation_matrix(const float3& xyz);
+float3x3 read_rotation_matrix(const rapidjson::Value& value);
 math::Quaternion read_local_rotation(const rapidjson::Value& value);
 
 std::string read_string(const rapidjson::Value& value);

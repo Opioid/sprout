@@ -59,7 +59,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 	auto take = std::make_shared<Take>();
 
 	const json::Value* exporter_value = nullptr;
-	bool alpha_transparency = peek_alpha_transparency(*root);
+	const bool alpha_transparency = peek_alpha_transparency(*root);
 
 	for (auto& n : root->GetObject()) {
 		if ("camera" == n.name) {
@@ -110,16 +110,16 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 	using namespace rendering::integrator;
 
 	if (!take->surface_integrator_factory) {
-		float step_size = 1.f;
+		const float step_size = 1.f;
 		auto* sub_factory = new surface::sub::Single_scattering_factory(take->settings,
 																		thread_pool.num_threads(),
 																		step_size);
 
-		Light_sampling light_sampling{Light_sampling::Strategy::One, 1};
-		uint32_t min_bounces = 4;
-		uint32_t max_bounces = 8;
-		float path_termination_probability = 0.9f;
-		bool enable_caustics = false;
+		const Light_sampling light_sampling{Light_sampling::Strategy::One, 1};
+		const uint32_t min_bounces = 4;
+		const uint32_t max_bounces = 8;
+		const float path_termination_probability = 0.9f;
+		const bool enable_caustics = false;
 
 		take->surface_integrator_factory = std::make_shared<
 				surface::Pathtracer_MIS_factory>(take->settings, thread_pool.num_threads(),
@@ -267,7 +267,7 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
 		}
 	}
 
-	bool clamp = !math::any_negative(clamp_max);
+	const bool clamp = !math::any_negative(clamp_max);
 
 	if (filter) {
 		if (alpha_transparency) {
@@ -311,8 +311,8 @@ const rendering::sensor::filter::Filter*
 Loader::load_filter(const json::Value& filter_value) {
 	for (auto& n : filter_value.GetObject()) {
 		if ("Gaussian" == n.name) {
-			float radius = json::read_float(n.value, "radius", 1.f);
-			float alpha  = json::read_float(n.value, "alpha",  1.8f);
+			const float radius = json::read_float(n.value, "radius", 1.f);
+			const float alpha  = json::read_float(n.value, "alpha",  1.8f);
 
 			return new rendering::sensor::filter::Gaussian(radius, alpha);
 		}
@@ -378,23 +378,26 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 
 	for (auto& n : integrator_value.GetObject()) {
 		if ("AO" == n.name) {
-			uint32_t num_samples = json::read_uint(n.value, "num_samples", 1);
-			float radius = json::read_float(n.value, "radius", 1.f);
+			const uint32_t num_samples = json::read_uint(n.value, "num_samples", 1);
+			const float radius = json::read_float(n.value, "radius", 1.f);
 			return std::make_shared<AO_factory>(settings, num_workers, num_samples, radius);
 		} else if ("Whitted" == n.name) {
-			uint32_t num_light_samples = json::read_uint(
+			const uint32_t num_light_samples = json::read_uint(
 						n.value, "num_light_samples", light_sampling.num_samples);
 
 			return std::make_shared<Whitted_factory>(settings, num_workers, num_light_samples);
 		} else if ("PT" == n.name) {
-			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
-			uint32_t max_bounces = json::read_uint(n.value, "max_bounces", default_max_bounces);
+			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
+														 default_min_bounces);
 
-			float path_termination_probability = json::read_float(
+			const uint32_t max_bounces = json::read_uint(n.value, "max_bounces",
+														 default_max_bounces);
+
+			const float path_termination_probability = json::read_float(
 						n.value, "path_termination_probability",
 						default_path_termination_probability);
 
-			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
+			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
 
@@ -402,8 +405,11 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						settings, num_workers, sub_factory, min_bounces, max_bounces,
 						path_termination_probability, enable_caustics);
 		} else if ("PTDL" == n.name) {
-			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
-			uint32_t max_bounces = json::read_uint(n.value, "max_bounces", default_max_bounces);
+			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
+														 default_min_bounces);
+
+			const uint32_t max_bounces = json::read_uint(n.value, "max_bounces",
+														 default_max_bounces);
 
 			float path_termination_probability = json::read_float(
 						n.value, "path_termination_probability",
@@ -418,10 +424,13 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 						settings, num_workers, min_bounces, max_bounces,
 						path_termination_probability, num_light_samples, enable_caustics);
 		} else if ("PTMIS" == n.name) {
-			uint32_t min_bounces = json::read_uint(n.value, "min_bounces", default_min_bounces);
-			uint32_t max_bounces = json::read_uint(n.value, "max_bounces", default_max_bounces);
+			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
+														 default_min_bounces);
 
-			float path_termination_probability = json::read_float(
+			const uint32_t max_bounces = json::read_uint(n.value, "max_bounces",
+														 default_max_bounces);
+
+			const float path_termination_probability = json::read_float(
 						n.value, "path_termination_probability",
 						default_path_termination_probability);
 
@@ -430,7 +439,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 				load_light_sampling(light_sampling_node->value, light_sampling);
 			}
 
-			bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
+			const bool enable_caustics = json::read_bool(n.value, "caustics", default_caustics);
 
 			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
 
@@ -474,7 +483,7 @@ Loader::find_subsurface_integrator_factory(const json::Value& parent_value,
 	}
 
 	if (!factory) {
-		float step_size = 1.f;
+		const float step_size = 1.f;
 		factory = new Single_scattering_factory(settings, num_workers, step_size);
 
 		logging::warning("No valid subsurface integrator specified, "
@@ -490,8 +499,11 @@ Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
 	using namespace rendering::integrator::surface::sub;
 
 	for (auto& n : integrator_value.GetObject()) {
-		if ("Single_scattering" == n.name) {
-			float step_size = json::read_float(n.value, "step_size", 1.f);
+		if ("Bruteforce" == n.name) {
+			const float step_size = json::read_float(n.value, "step_size", 1.f);
+			return new Bruteforce_factory(settings, num_workers, step_size);
+		} else if ("Single_scattering" == n.name) {
+			const float step_size = json::read_float(n.value, "step_size", 1.f);
 			return new Single_scattering_factory(settings, num_workers, step_size);
 		}
 	}
@@ -508,7 +520,7 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 		if ("Attenuation" == n.name) {
 			return std::make_shared<Attenuation_factory>(settings, num_workers);
 		} else if ("Single_scattering" == n.name) {
-			float step_size = json::read_float(n.value, "step_size", 1.f);
+			const float step_size = json::read_float(n.value, "step_size", 1.f);
 			return std::make_shared<Single_scattering_factory>(settings, num_workers, step_size);
 		}
 	}
@@ -533,10 +545,10 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 		if ("tonemapper" == n->name) {
 			pipeline.add(load_tonemapper(n->value));
 		} else if ("Bloom" == n->name) {
-			float angle		= json::read_float(n->value, "angle", 0.05f);
-			float alpha		= json::read_float(n->value, "alpha", 0.005f);
-			float threshold = json::read_float(n->value, "threshold", 2.f);
-			float intensity = json::read_float(n->value, "intensity", 0.1f);
+			const float angle		= json::read_float(n->value, "angle", 0.05f);
+			const float alpha		= json::read_float(n->value, "alpha", 0.005f);
+			const float threshold = json::read_float(n->value, "threshold", 2.f);
+			const float intensity = json::read_float(n->value, "intensity", 0.1f);
 			pipeline.add(new Bloom(angle, alpha, threshold, intensity));
 		} else if ("Glare" == n->name) {
 			Glare::Adaption adaption = Glare::Adaption::Mesopic;
@@ -550,8 +562,8 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 				adaption = Glare::Adaption::Photopic;
 			}
 
-			float threshold = json::read_float(n->value, "threshold", 2.f);
-			float intensity = json::read_float(n->value, "intensity", 1.f);
+			const float threshold = json::read_float(n->value, "threshold", 2.f);
+			const float intensity = json::read_float(n->value, "intensity", 1.f);
 			pipeline.add(new Glare(adaption, threshold, intensity));
 		} else if ("Glare2" == n->name) {
 			Glare2::Adaption adaption = Glare2::Adaption::Mesopic;
@@ -565,8 +577,8 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 				adaption = Glare2::Adaption::Photopic;
 			}
 
-			float threshold = json::read_float(n->value, "threshold", 2.f);
-			float intensity = json::read_float(n->value, "intensity", 1.f);
+			const float threshold = json::read_float(n->value, "threshold", 2.f);
+			const float intensity = json::read_float(n->value, "intensity", 1.f);
 			pipeline.add(new Glare2(adaption, threshold, intensity));
 		}
 	}
@@ -578,21 +590,21 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 
 	for (auto& n : tonemapper_value.GetObject()) {
 		if ("ACES" == n.name) {
-			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
+			const float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
 			return new Aces(hdr_max);
 		} else if ("Generic" == n.name) {
-			float contrast = json::read_float(n.value, "contrast", 1.f);
-			float shoulder = json::read_float(n.value, "shoulder", 1.f);
-			float mid_in   = json::read_float(n.value, "mid_in",   0.18f);
-			float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
-			float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
+			const float contrast = json::read_float(n.value, "contrast", 1.f);
+			const float shoulder = json::read_float(n.value, "shoulder", 1.f);
+			const float mid_in   = json::read_float(n.value, "mid_in",   0.18f);
+			const float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
+			const float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
 
 			return new Generic(contrast, shoulder, mid_in, mid_out, hdr_max);
 		} else if ("Identity" == n.name) {
 			return new rendering::postprocessor::tonemapping::Identity();
 		} else if ("Uncharted" == n.name) {
-			float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
+			const float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
 			return new Uncharted(hdr_max);
 		}
