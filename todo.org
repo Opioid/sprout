@@ -61,12 +61,12 @@ There is a very simple mechanism for asynchronous BVH construction now.
 It seems to work reasonably well in cases where BVH construction is followed by lengthy reads from disk.
 In those cases the time required for BVH construction can be hidden to a certain degree.
 
-Proof of concept for binary files showed good improvements in loading time.
+Proof of concept for binary files showed good improvements in loading time. 
 File size on disk generally seems to be higher, though.
 
 ** Build system
 
-*** TODO Investigate more Travus CI usage
+*** TODO Investigate more Travis CI usage
 
 *** TODO Consider cmake-based build system
 
