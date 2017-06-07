@@ -98,12 +98,12 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 
 				float3 l = transmittance * light_sample.radiance;
 
-				radiance += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
+				radiance += range * p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
 		}
 	}
 
-	float3 color = step * radiance;
+	float3 color = /*step **/ radiance;
 	return color;
 }
 

@@ -40,6 +40,10 @@ public:
 
 private:
 
+	float3 estimate_direct_light(const float3& position, const scene::Prop* prop,
+								 const scene::material::BSSRDF& bssrdf, float time,
+								 Worker& worker);
+
 	const Settings settings_;
 
 	sampler::Random sampler_;
