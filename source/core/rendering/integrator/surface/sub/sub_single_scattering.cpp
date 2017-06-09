@@ -89,7 +89,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
 			if (mv > 0.f) {
 			//	float p = volume.phase(w, -light_sample.shape.wi);
-				float p = 1.f / (4.f * math::Pi);
+				constexpr float p = 1.f / (4.f * math::Pi);
 
 				float3 scattering = bssrdf.scattering();
 
@@ -98,12 +98,12 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 
 				float3 l = transmittance * light_sample.radiance;
 
-				radiance += range * p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
+				radiance += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
 			}
 		}
 	}
 
-	float3 color = /*step **/ radiance;
+	float3 color = step * radiance;
 	return color;
 }
 

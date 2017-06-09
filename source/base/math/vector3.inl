@@ -286,11 +286,11 @@ static bool any_inf(const Vector3<T>& v) {
  *
  ****************************************************************************/
 
-static inline Vector3f_a operator+(const Vector3f_a& a, float s) {
+static inline constexpr Vector3f_a operator+(const Vector3f_a& a, float s) {
 	return Vector3f_a(a[0] + s, a[1] + s, a[2] + s);
 }
 
-static inline Vector3f_a operator+(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a operator+(const Vector3f_a& a, const Vector3f_a& b) {
 //	__m128 ma = simd::load_float3(a.v);
 //	__m128 mb = simd::load_float3(b.v);
 //	__m128 mr = _mm_add_ps(ma, mb);
@@ -301,92 +301,92 @@ static inline Vector3f_a operator+(const Vector3f_a& a, const Vector3f_a& b) {
 	return Vector3f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
 }
 
-static inline Vector3f_a operator-(const Vector3f_a& a, float s) {
+static inline constexpr Vector3f_a operator-(const Vector3f_a& a, float s) {
 	return Vector3f_a(a[0] - s, a[1] - s, a[2] - s);
 }
 
-static inline Vector3f_a operator-(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a operator-(const Vector3f_a& a, const Vector3f_a& b) {
 	return Vector3f_a(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
 
-static inline Vector3f_a operator*(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a operator*(const Vector3f_a& a, const Vector3f_a& b) {
 	return Vector3f_a(a[0] * b[0], a[1] * b[1], a[2] * b[2]);
 }
 
-static inline Vector3f_a operator/(const Vector3f_a& a, float s) {
+static inline constexpr Vector3f_a operator/(const Vector3f_a& a, float s) {
 	float is = 1.f / s;
 	return Vector3f_a(is * a[0], is * a[1], is * a[2]);
 }
 
-static inline Vector3f_a operator/(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a operator/(const Vector3f_a& a, const Vector3f_a& b) {
 	return Vector3f_a(a[0] / b[0], a[1] / b[1], a[2] / b[2]);
 }
 
-static inline Vector3f_a operator+(float s, const Vector3f_a& v) {
+static inline constexpr Vector3f_a operator+(float s, const Vector3f_a& v) {
 	return Vector3f_a(s + v[0], s + v[1], s + v[2]);
 }
 
-static inline Vector3f_a operator-(float s, const Vector3f_a& v) {
+static inline constexpr Vector3f_a operator-(float s, const Vector3f_a& v) {
 	return Vector3f_a(s - v[0], s - v[1], s - v[2]);
 }
 
-static inline Vector3f_a operator*(float s, const Vector3f_a& v) {
+static inline constexpr Vector3f_a operator*(float s, const Vector3f_a& v) {
 	return Vector3f_a(s * v[0], s * v[1], s * v[2]);
 }
 
-static inline Vector3f_a operator/(float s, const Vector3f_a& v) {
+static inline constexpr Vector3f_a operator/(float s, const Vector3f_a& v) {
 	return Vector3f_a(s / v[0], s / v[1], s / v[2]);
 }
 
-static inline Vector3f_a operator-(const Vector3f_a& v) {
+static inline constexpr Vector3f_a operator-(const Vector3f_a& v) {
 	return Vector3f_a(-v[0], -v[1], -v[2]);
 }
 
-static inline Vector3f_a& operator+=(Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a& operator+=(Vector3f_a& a, const Vector3f_a& b) {
 	a[0] += b[0];
 	a[1] += b[1];
 	a[2] += b[2];
 	return a;
 }
 
-static inline Vector3f_a& operator-=(Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a& operator-=(Vector3f_a& a, const Vector3f_a& b) {
 	a[0] -= b[0];
 	a[1] -= b[1];
 	a[1] -= b[2];
 	return a;
 }
 
-static inline Vector3f_a& operator*=(Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a& operator*=(Vector3f_a& a, const Vector3f_a& b) {
 	a[0] *= b[0];
 	a[1] *= b[1];
 	a[2] *= b[2];
 	return a;
 }
 
-static inline Vector3f_a& operator*=(Vector3f_a& a, float s) {
+static inline constexpr Vector3f_a& operator*=(Vector3f_a& a, float s) {
 	a[0] *= s;
 	a[1] *= s;
 	a[2] *= s;
 	return a;
 }
 
-static inline Vector3f_a& operator/=(Vector3f_a& a, float s) {
-	float is = 1.f / s;
+static inline constexpr Vector3f_a& operator/=(Vector3f_a& a, float s) {
+	const float is = 1.f / s;
 	a[0] *= is;
 	a[1] *= is;
 	a[2] *= is;
 	return a;
 }
 
-static inline float dot(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr float dot(const Vector3f_a& a, const Vector3f_a& b) {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-static inline float length(const Vector3f_a& v) {
+static inline constexpr float length(const Vector3f_a& v) {
 	return std::sqrt(dot(v, v));
 }
 
-static inline float squared_length(const Vector3f_a& v) {
+static inline constexpr float squared_length(const Vector3f_a& v) {
 	return dot(v, v);
 }
 
@@ -412,25 +412,25 @@ static inline Vector3f_a reciprocal(const Vector3f_a& v) {
 	return result;
 }
 
-static inline Vector3f_a cross(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a cross(const Vector3f_a& a, const Vector3f_a& b) {
 	return Vector3f_a(a[1] * b[2] - a[2] * b[1],
 					  a[2] * b[0] - a[0] * b[2],
 					  a[0] * b[1] - a[1] * b[0]);
 }
 
-static inline Vector3f_a project(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a project(const Vector3f_a& a, const Vector3f_a& b) {
 	return dot(b, a) * b;
 }
 
-static inline float distance(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr float distance(const Vector3f_a& a, const Vector3f_a& b) {
 	return length(a - b);
 }
 
-static inline float squared_distance(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr float squared_distance(const Vector3f_a& a, const Vector3f_a& b) {
 	return squared_length(a - b);
 }
 
-static inline Vector3f_a saturate(const Vector3f_a& v) {
+static inline constexpr Vector3f_a saturate(const Vector3f_a& v) {
 	return Vector3f_a(std::min(std::max(v[0], 0.f), 1.f),
 					  std::min(std::max(v[1], 0.f), 1.f),
 					  std::min(std::max(v[2], 0.f), 1.f));
@@ -446,22 +446,22 @@ static inline Vector3f_a exp(const Vector3f_a& v) {
 	return r;
 }
 
-static inline Vector3f_a pow(const Vector3f_a& v, float e) {
+static inline constexpr Vector3f_a pow(const Vector3f_a& v, float e) {
 	return Vector3f_a(std::pow(v[0], e),
 					  std::pow(v[1], e),
 					  std::pow(v[2], e));
 }
 
-static inline Vector3f_a lerp(const Vector3f_a& a, const Vector3f_a& b, float t) {
-	float u = 1.f - t;
+static inline constexpr Vector3f_a lerp(const Vector3f_a& a, const Vector3f_a& b, float t) {
+	const float u = 1.f - t;
 	return u * a + t * b;
 }
 
-static inline Vector3f_a reflect(const Vector3f_a& normal, const Vector3f_a& v) {
+static inline constexpr Vector3f_a reflect(const Vector3f_a& normal, const Vector3f_a& v) {
 	return 2.f * dot(v, normal) * normal - v;
 }
 
-static inline void orthonormal_basis(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
+static inline constexpr void orthonormal_basis(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
 	// https://gist.github.com/roxlu/3082114
 /*
 	// Handle the singularity
@@ -487,74 +487,74 @@ static inline void orthonormal_basis(const Vector3f_a& n, Vector3f_a& t, Vector3
 	b = Vector3f_a(d, sign + n[1] * n[1] * c, -n[1]);
 }
 
-static inline Vector3f_a tangent(const Vector3f_a& n) {
+static inline constexpr Vector3f_a tangent(const Vector3f_a& n) {
 	const float sign = std::copysign(1.f, n[2]);
 	const float c = -1.f / (sign + n[2]);
 	const float d = n[0] * n[1] * c;
 	return Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
 }
 
-static inline Vector3f_a min(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a min(const Vector3f_a& a, const Vector3f_a& b) {
 	return Vector3f_a(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]));
 }
 
-static inline Vector3f_a max(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr Vector3f_a max(const Vector3f_a& a, const Vector3f_a& b) {
 	return Vector3f_a(std::max(a[0], b[0]), std::max(a[1], b[1]), std::max(a[2], b[2]));
 }
 
-static inline float max_element(const Vector3f_a& v) {
+static inline constexpr float max_element(const Vector3f_a& v) {
 	return std::max(std::max(v[0], v[1]), v[2]);
 }
 
-static inline Vector3f_a abs(const Vector3f_a& v) {
+static inline constexpr Vector3f_a abs(const Vector3f_a& v) {
 	return Vector3f_a(std::abs(v[0]), std::abs(v[1]), std::abs(v[2]));
 }
 
-static inline Vector3f_a cos(const Vector3f_a& v) {
+static inline constexpr Vector3f_a cos(const Vector3f_a& v) {
 	return Vector3f_a(std::cos(v[0]), std::cos(v[1]), std::cos(v[2]));
 }
 
-static inline bool operator==(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr bool operator==(const Vector3f_a& a, const Vector3f_a& b) {
 	return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
 }
 
-static inline bool operator!=(const Vector3f_a& a, const Vector3f_a& b) {
+static inline constexpr bool operator!=(const Vector3f_a& a, const Vector3f_a& b) {
 	return a[0] != b[0] || a[1] != b[1] || a[2] != b[2];
 }
 
-static inline bool all_lesser(const Vector3f_a& v, float s) {
+static inline constexpr bool all_lesser(const Vector3f_a& v, float s) {
 	return v[0] < s && v[1] < s && v[2] < s;
 }
 
-static inline bool all_greater_equal(const Vector3f_a& v, float s) {
+static inline constexpr bool all_greater_equal(const Vector3f_a& v, float s) {
 	return v[0] >= s && v[1] >= s && v[2] >= s;
 }
 
-static inline bool any_negative(const Vector3f_a& v) {
+static inline constexpr bool any_negative(const Vector3f_a& v) {
 	return v[0] < 0.f || v[1] < 0.f || v[2] < 0.f;
 }
 
-static inline bool any_greater_zero(const Vector3f_a& v) {
+static inline constexpr bool any_greater_zero(const Vector3f_a& v) {
 	return v[0] > 0.f || v[1] > 0.f || v[2] > 0.f;
 }
 
-static inline bool any_greater_one(const Vector3f_a& v) {
+static inline constexpr bool any_greater_one(const Vector3f_a& v) {
 	return v[0] > 1.f || v[1] > 1.f || v[2] > 1.f;
 }
 
-static inline bool any_lesser_one(const Vector3f_a& v) {
+static inline constexpr bool any_lesser_one(const Vector3f_a& v) {
 	return v[0] < 1.f || v[1] < 1.f || v[2] < 1.f;
 }
 
-static inline bool any_nan(const Vector3f_a& v) {
+static inline constexpr bool any_nan(const Vector3f_a& v) {
 	return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]);
 }
 
-static inline bool any_inf(const Vector3f_a& v) {
+static inline constexpr bool any_inf(const Vector3f_a& v) {
 	return std::isinf(v[0]) || std::isinf(v[1]) || std::isinf(v[2]);
 }
 
-static inline bool all_finite(const Vector3f_a& v) {
+static inline constexpr bool all_finite(const Vector3f_a& v) {
 	return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]);
 }
 

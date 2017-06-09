@@ -42,7 +42,7 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 	camera.update(workers_[0]);
 
 	for (uint32_t f = 0; f < view_.num_frames; ++f) {
-		uint32_t current_frame = view_.start_frame + f;
+		const uint32_t current_frame = view_.start_frame + f;
 		logging::info("Frame " + string::to_string(current_frame));
 
 		const auto render_start = std::chrono::high_resolution_clock::now();
@@ -117,13 +117,13 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 
 		progressor.end();
 
-		auto render_duration = chrono::seconds_since(render_start);
+		const auto render_duration = chrono::seconds_since(render_start);
 		logging::info("Render time " + string::to_string(render_duration) + " s");
 
-		auto export_start = std::chrono::high_resolution_clock::now();
+		const auto export_start = std::chrono::high_resolution_clock::now();
 		view_.pipeline.apply(sensor, target_, thread_pool_);
 		exporter.write(target_, current_frame, thread_pool_);
-		auto export_duration = chrono::seconds_since(export_start);
+		const auto export_duration = chrono::seconds_since(export_start);
 		logging::info("Export time " + string::to_string(export_duration) + " s");
 	}
 }
@@ -182,7 +182,7 @@ uint32_t Driver_finalframe::calculate_progress_range(const scene::Scene& scene,
 								 static_cast<float>(num_samples_per_iteration));
 	}
 
-	float range = static_cast<float>(num_tiles * camera.num_views()) * num_subframes;
+	const float range = static_cast<float>(num_tiles * camera.num_views()) * num_subframes;
 
 	return static_cast<uint32_t>(range);
 }

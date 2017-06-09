@@ -5,8 +5,7 @@
 
 namespace math {
 
-inline Ray::Ray(const float3& origin, const float3& direction,
-				float min_t, float max_t) :
+inline Ray::Ray(const float3& origin, const float3& direction, float min_t, float max_t) :
 	origin(origin),
 	direction(direction),
 	inv_direction(reciprocal(direction)),

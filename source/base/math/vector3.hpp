@@ -87,20 +87,20 @@ struct alignas(16) Vector3f_a {
 
 	constexpr Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {}
 
-	Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {}
+	constexpr Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {}
 
 	explicit constexpr Vector3f_a(float s) : v{s, s, s, 0.f} {}
 
-	explicit Vector3f_a(Vector2<float> xy, float z) : v{xy[0], xy[1], z, 0.f} {}
+	explicit constexpr Vector3f_a(const Vector2<float> xy, float z) : v{xy[0], xy[1], z, 0.f} {}
 
 	template<typename T>
 	explicit Vector3f_a(const Vector3<T>& v) : v{float(v[0]), float(v[1]), float(v[2]), 0.f} {}
 
-	Vector2<float> xy() const {
+	constexpr Vector2<float> xy() const {
 		return Vector2<float>(v[0], v[1]);
 	}
 
-	float operator[](uint32_t i) const{
+	constexpr float operator[](uint32_t i) const{
 		return v[i];
 	}
 
@@ -108,10 +108,10 @@ struct alignas(16) Vector3f_a {
 		return v[i];
 	}
 
-	float absolute_max(uint32_t& i) const {
-		float ax = std::abs(v[0]);
-		float ay = std::abs(v[1]);
-		float az = std::abs(v[2]);
+	constexpr float absolute_max(uint32_t& i) const {
+		const float ax = std::abs(v[0]);
+		const float ay = std::abs(v[1]);
+		const float az = std::abs(v[2]);
 
 		if (ax >= ay && ax >= az) {
 			i = 0;

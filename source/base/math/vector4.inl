@@ -130,20 +130,20 @@ static inline float dot(const Vector4f_a& a, const Vector4f_a& b) {
  *
  ****************************************************************************/
 
-static inline Vector4i_a operator+(const Vector4i_a& a, const Vector4i_a& b) {
+static inline constexpr Vector4i_a operator+(const Vector4i_a& a, const Vector4i_a& b) {
 	return Vector4i_a(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);
 }
 
-static inline Vector4i_a operator*(const Vector4i_a& a, const Vector4i_a& b) {
+static inline constexpr Vector4i_a operator*(const Vector4i_a& a, const Vector4i_a& b) {
 	return Vector4i_a(a[0] * b[0], a[1] * b[1], a[2] * b[2], a[3] * b[3]);
 }
 
-static inline Vector4i_a& operator+=(Vector4i_a& a, const Vector4i_a& b) {
+static inline constexpr Vector4i_a& operator+=(Vector4i_a& a, const Vector4i_a& b) {
 	a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; a[3] += b[3];
 	return a;
 }
 
-static inline Vector4i_a& operator-=(Vector4i_a& a, const Vector4i_a& b) {
+static inline constexpr Vector4i_a& operator-=(Vector4i_a& a, const Vector4i_a& b) {
 	a[0] -= b[0]; a[1] -= b[1]; a[2] -= b[2]; a[3] -= b[3];
 	return a;
 }

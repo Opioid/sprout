@@ -41,7 +41,7 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 	const auto& bssrdf = intersection.bssrdf(worker);
 
-	const uint32_t num_samples = 16;//static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 
 	const float step = range / static_cast<float>(num_samples);
 
@@ -58,6 +58,8 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 	float3 current = tray.point(min_t);
 
+	bool leave = false;
+
 	uint32_t i = 0;
 	for (i = 0; i < num_samples; ++i, min_t += step) {
 		const float3 tau = bssrdf.optical_depth(tau_ray_length);
@@ -67,21 +69,28 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 		radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
 											   ray.time, worker);
 
+		if (leave) {
+			break;
+		}
+
 		tray.origin = current;
 		const float2 uv(rng_.random_float(), rng_.random_float());
 		tray.set_direction(math::sample_sphere_uniform(uv));
 		tray.min_t = ray_offset;
-		pdf = rng_.random_float();
-		tau_ray_length = pdf * step;
-		tray.max_t = tau_ray_length;
+		pdf = 1.f;//rng_.random_float();
+		tray.max_t = pdf * step;
+
 		if (!worker.intersect(intersection.prop, tray, tintersection)) {
 			current = tray.point(tray.max_t);
+			tau_ray_length = tray.max_t;
 		} else {
-			break;
+			current = tintersection.geo.p;
+			tau_ray_length = tray.max_t;
+			leave = true;
 		}
 	}
 
-	float3 color = /*step **/ (1.f / static_cast<float>(i + 1)) * radiance;
+	float3 color = /*step **/ (range / static_cast<float>(i)) * radiance;
 	return color;
 }
 
@@ -125,7 +134,7 @@ float3 Bruteforce::estimate_direct_light(const float3& position, const scene::Pr
 		const float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
 		if (mv > 0.f) {
 			//	float p = volume.phase(w, -light_sample.shape.wi);
-			const float p = 1.f / (4.f * math::Pi);
+			constexpr float p = 1.f / (4.f * math::Pi);
 
 			const float3 scattering = bssrdf.scattering();
 
