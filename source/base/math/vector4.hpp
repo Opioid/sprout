@@ -72,7 +72,7 @@ struct alignas(16) Vector4f_a {
 	explicit constexpr Vector4f_a(const Vector3f_a& xyz, float w = 1.f) :
 		v{xyz[0], xyz[1], xyz[2], w} {}
 
-	explicit Vector4f_a(const Vector3<float>& xyz, float w = 1.f) :
+	explicit constexpr Vector4f_a(const Vector3<float>& xyz, float w = 1.f) :
 		v{xyz[0], xyz[1], xyz[2], w} {}
 
 	constexpr Vector3f_a xyz() const {
@@ -83,7 +83,7 @@ struct alignas(16) Vector4f_a {
 		return v[i];
 	}
 
-	float& operator[](uint32_t i) {
+	constexpr float& operator[](uint32_t i) {
 		return v[i];
 	}
 
@@ -123,7 +123,7 @@ struct alignas(16) Vector4i_a {
 		return v[i];
 	}
 
-	int32_t& operator[](uint32_t i) {
+	constexpr int32_t& operator[](uint32_t i) {
 		return v[i];
 	}
 };

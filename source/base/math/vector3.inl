@@ -37,12 +37,12 @@ Vector2<T> Vector3<T>::xy() const {
 }
 
 template<typename T>
-T Vector3<T>::operator[](uint32_t i) const{
+constexpr T Vector3<T>::operator[](uint32_t i) const{
 	return v[i];
 }
 
 template<typename T>
-T& Vector3<T>::operator[](uint32_t i) {
+constexpr T& Vector3<T>::operator[](uint32_t i) {
 	return v[i];
 }
 

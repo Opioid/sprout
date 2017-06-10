@@ -25,7 +25,7 @@ struct Vector2 {
 		return v[i];
 	}
 
-	T& operator[](uint32_t i) {
+	constexpr T& operator[](uint32_t i) {
 		return v[i];
 	}
 

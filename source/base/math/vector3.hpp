@@ -33,8 +33,8 @@ struct Vector3 {
 
 	Vector2<T> xy() const;
 
-	T operator[](uint32_t i) const;
-	T& operator[](uint32_t i);
+	constexpr T operator[](uint32_t i) const;
+	constexpr T& operator[](uint32_t i);
 
 	Vector3 operator+(T s) const;
 
@@ -94,7 +94,8 @@ struct alignas(16) Vector3f_a {
 	explicit constexpr Vector3f_a(const Vector2<float> xy, float z) : v{xy[0], xy[1], z, 0.f} {}
 
 	template<typename T>
-	explicit Vector3f_a(const Vector3<T>& v) : v{float(v[0]), float(v[1]), float(v[2]), 0.f} {}
+	explicit constexpr Vector3f_a(const Vector3<T>& v) :
+		v{float(v[0]), float(v[1]), float(v[2]), 0.f} {}
 
 	constexpr Vector2<float> xy() const {
 		return Vector2<float>(v[0], v[1]);
@@ -104,7 +105,7 @@ struct alignas(16) Vector3f_a {
 		return v[i];
 	}
 
-	float& operator[](uint32_t i) {
+	constexpr float& operator[](uint32_t i) {
 		return v[i];
 	}
 
