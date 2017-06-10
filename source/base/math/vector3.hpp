@@ -19,7 +19,7 @@ template<typename T>
 struct Vector3 {
 	T v[3];
 
-	Vector3();
+	Vector3() = default;
 
 	Vector3(T x, T y, T z);
 
@@ -85,52 +85,25 @@ struct alignas(16) Vector3f_a {
 
 	Vector3f_a() = default;
 
-	constexpr Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {}
+	constexpr Vector3f_a(float x, float y, float z);
 
-	constexpr Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {}
+	constexpr Vector3f_a(const float* v);
 
-	explicit constexpr Vector3f_a(float s) : v{s, s, s, 0.f} {}
+	explicit constexpr Vector3f_a(float s);
 
-	explicit constexpr Vector3f_a(const Vector2<float> xy, float z) : v{xy[0], xy[1], z, 0.f} {}
+	explicit constexpr Vector3f_a(const Vector2<float> xy, float z);
 
 	template<typename T>
-	explicit constexpr Vector3f_a(const Vector3<T>& v) :
-		v{float(v[0]), float(v[1]), float(v[2]), 0.f} {}
+	explicit constexpr Vector3f_a(const Vector3<T>& v);
 
-	constexpr Vector2<float> xy() const {
-		return Vector2<float>(v[0], v[1]);
-	}
+	constexpr Vector2<float> xy() const;
 
-	constexpr float operator[](uint32_t i) const{
-		return v[i];
-	}
+	constexpr float operator[](uint32_t i) const;
+	constexpr float& operator[](uint32_t i);
 
-	constexpr float& operator[](uint32_t i) {
-		return v[i];
-	}
+	constexpr float absolute_max(uint32_t& i) const;
 
-	constexpr float absolute_max(uint32_t& i) const {
-		const float ax = std::abs(v[0]);
-		const float ay = std::abs(v[1]);
-		const float az = std::abs(v[2]);
-
-		if (ax >= ay && ax >= az) {
-			i = 0;
-			return ax;
-		}
-
-		if (ay >= ax && ay >= az) {
-			i = 1;
-			return ay;
-		}
-
-		i = 2;
-		return az;
-	}
-
-	static constexpr Vector3f_a identity() {
-		return Vector3f_a(0.f, 0.f, 0.f);
-	}
+	static constexpr Vector3f_a identity() ;
 };
 
 }

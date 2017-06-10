@@ -319,7 +319,7 @@ static inline Quaternion slerp(const Quaternion& a, const Quaternion& b, float t
 					  sclp * a[3] + sclq * end[3]);
 }
 
-constexpr Quaternion identity() {
+static inline constexpr Quaternion identity() {
 	return Quaternion(0.f, 0.f, 0.f, 1.f);
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vector4.hpp"
+#include "vector4.inl"
 #include "matrix4x4.hpp"
 #include <ostream>
 

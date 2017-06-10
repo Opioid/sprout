@@ -1,6 +1,6 @@
 #include "json.hpp"
 #include "math/math.hpp"
-#include "math/vector3.inl"
+#include "math/vector4.inl"
 #include "math/matrix3x3.inl"
 #include "math/quaternion.inl"
 //#include "rapidjson/document.h"

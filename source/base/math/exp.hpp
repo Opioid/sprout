@@ -1,6 +1,7 @@
 #pragma once
 
-#include "simd/simd.inl"
+#include "memory/const.hpp"
+#include "simd/simd_const.hpp"
 
 namespace simd {
 

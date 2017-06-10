@@ -44,12 +44,6 @@ struct Vector4 {
 	static constexpr Vector4 identity();
 };
 
-template<typename T>
-Vector4<T> operator*(T s, const Vector4<T> &v);
-
-template<typename T>
-T dot(const Vector4<T>& a, const Vector4<T>& b);
-
 /****************************************************************************
  *
  * Aligned 4D float vector
@@ -61,35 +55,23 @@ struct alignas(16) Vector4f_a {
 
 	Vector4f_a() = default;
 
-	constexpr Vector4f_a(float x, float y, float z, float w = 1.f) :
-		v{x, y, z, w} {}
+	constexpr Vector4f_a(float x, float y, float z, float w = 1.f);
 
-	explicit constexpr Vector4f_a(float s) : v{s, s, s, s} {}
+	explicit constexpr Vector4f_a(float s);
 
-	explicit constexpr Vector4f_a(const Vector2<float> xy, float z, float w = 1.f) :
-		v{xy[0], xy[1], z, w} {}
+	explicit constexpr Vector4f_a(const Vector2<float> xy, float z, float w = 1.f);
 
-	explicit constexpr Vector4f_a(const Vector3f_a& xyz, float w = 1.f) :
-		v{xyz[0], xyz[1], xyz[2], w} {}
+	explicit constexpr Vector4f_a(const Vector3f_a& xyz, float w = 1.f);
 
-	explicit constexpr Vector4f_a(const Vector3<float>& xyz, float w = 1.f) :
-		v{xyz[0], xyz[1], xyz[2], w} {}
+	explicit constexpr Vector4f_a(const Vector3<float>& xyz, float w = 1.f);
 
-	constexpr Vector3f_a xyz() const {
-		return Vector3f_a(v);
-	}
+	constexpr Vector3f_a xyz() const;
 
-	constexpr float operator[](uint32_t i) const {
-		return v[i];
-	}
+	constexpr float operator[](uint32_t i) const;
 
-	constexpr float& operator[](uint32_t i) {
-		return v[i];
-	}
+	constexpr float& operator[](uint32_t i);
 
-	static constexpr Vector4f_a identity() {
-		return Vector4f_a(0.f, 0.f, 0.f, 0.f);
-	}
+	static constexpr Vector4f_a identity();
 };
 
 /****************************************************************************
@@ -103,29 +85,19 @@ struct alignas(16) Vector4i_a {
 
 	Vector4i_a() = default;
 
-	constexpr Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w) :
-		v{x, y, z, w} {}
+	constexpr Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w);
 
-	constexpr Vector4i_a(const Vector2<int32_t> xy, const Vector2<int32_t> zw) :
-		v{xy[0], xy[1], zw[0], zw[1]} {}
+	constexpr Vector4i_a(const Vector2<int32_t> xy, const Vector2<int32_t> zw);
 
-	explicit constexpr Vector4i_a(int32_t s) : v{s, s, s, s} {}
+	explicit constexpr Vector4i_a(int32_t s);
 
-	constexpr Vector2<int32_t> xy() const {
-		return Vector2<int32_t>(v[0], v[1]);
-	}
+	constexpr Vector2<int32_t> xy() const;
 
-	constexpr Vector2<int32_t> zw() const {
-		return Vector2<int32_t>(v[2], v[3]);
-	}
+	constexpr Vector2<int32_t> zw() const;
 
-	constexpr int32_t operator[](uint32_t i) const {
-		return v[i];
-	}
+	constexpr int32_t operator[](uint32_t i) const;
 
-	constexpr int32_t& operator[](uint32_t i) {
-		return v[i];
-	}
+	constexpr int32_t& operator[](uint32_t i);
 };
 
 }

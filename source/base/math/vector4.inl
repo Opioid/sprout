@@ -85,42 +85,72 @@ T dot(const Vector4<T>& a, const Vector4<T>& b) {
  *
  ****************************************************************************/
 
-static inline Vector4f_a operator+(const Vector4f_a& a, const Vector4f_a& b) {
+inline constexpr Vector4f_a::Vector4f_a(float x, float y, float z, float w) :
+	v{x, y, z, w} {}
+
+inline constexpr Vector4f_a::Vector4f_a(float s) : v{s, s, s, s} {}
+
+inline constexpr Vector4f_a::Vector4f_a(const Vector2<float> xy, float z, float w) :
+	v{xy[0], xy[1], z, w} {}
+
+inline constexpr Vector4f_a::Vector4f_a(const Vector3f_a& xyz, float w) :
+	v{xyz[0], xyz[1], xyz[2], w} {}
+
+inline constexpr Vector4f_a::Vector4f_a(const Vector3<float>& xyz, float w) :
+	v{xyz[0], xyz[1], xyz[2], w} {}
+
+inline constexpr Vector3f_a Vector4f_a::xyz() const {
+	return Vector3f_a(v);
+}
+
+inline constexpr float Vector4f_a::operator[](uint32_t i) const {
+	return v[i];
+}
+
+inline constexpr float& Vector4f_a::operator[](uint32_t i) {
+	return v[i];
+}
+
+inline constexpr Vector4f_a Vector4f_a::identity() {
+	return Vector4f_a(0.f, 0.f, 0.f, 0.f);
+}
+
+static inline constexpr Vector4f_a operator+(const Vector4f_a& a, const Vector4f_a& b) {
 	return Vector4f_a(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);
 }
 
-static inline Vector4f_a operator*(const Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr Vector4f_a operator*(const Vector4f_a& a, const Vector4f_a& b) {
 	return Vector4f_a(a[0] * b[0], a[1] * b[1], a[2] * b[2], a[3] * b[3]);
 }
 
-static inline Vector4f_a operator/(const Vector4f_a& a, float s) {
-	float is = 1.f / s;
+static inline constexpr Vector4f_a operator/(const Vector4f_a& a, float s) {
+	const float is = 1.f / s;
 	return Vector4f_a(is * a[0], is * a[1], is * a[2], is * a[3]);
 }
 
-static inline Vector4f_a& operator+=(Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr Vector4f_a& operator+=(Vector4f_a& a, const Vector4f_a& b) {
 	a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; a[3] += b[3];
 	return a;
 }
 
-static inline Vector4f_a& operator-=(Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr Vector4f_a& operator-=(Vector4f_a& a, const Vector4f_a& b) {
 	a[0] -= b[0]; a[1] -= b[1]; a[2] -= b[2]; a[3] -= b[3];
 	return a;
 }
 
-static inline bool operator==(const Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr bool operator==(const Vector4f_a& a, const Vector4f_a& b) {
 	return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
 }
 
-static inline bool operator!=(const Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr bool operator!=(const Vector4f_a& a, const Vector4f_a& b) {
 	return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];
 }
 
-static inline Vector4f_a operator*(float s, const Vector4f_a& a) {
+static inline constexpr Vector4f_a operator*(float s, const Vector4f_a& a) {
 	return Vector4f_a(s * a[0], s * a[1], s * a[2], s * a[3]);
 }
 
-static inline float dot(const Vector4f_a& a, const Vector4f_a& b) {
+static inline constexpr float dot(const Vector4f_a& a, const Vector4f_a& b) {
 	return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 }
 
@@ -129,6 +159,30 @@ static inline float dot(const Vector4f_a& a, const Vector4f_a& b) {
  * Aligned 4D int vector
  *
  ****************************************************************************/
+
+inline constexpr Vector4i_a::Vector4i_a(int32_t x, int32_t y, int32_t z, int32_t w) :
+		v{x, y, z, w} {}
+
+inline constexpr Vector4i_a::Vector4i_a(const Vector2<int32_t> xy, const Vector2<int32_t> zw) :
+	v{xy[0], xy[1], zw[0], zw[1]} {}
+
+inline constexpr Vector4i_a::Vector4i_a(int32_t s) : v{s, s, s, s} {}
+
+inline constexpr Vector2<int32_t> Vector4i_a::xy() const {
+	return Vector2<int32_t>(v[0], v[1]);
+}
+
+inline constexpr Vector2<int32_t> Vector4i_a::zw() const {
+	return Vector2<int32_t>(v[2], v[3]);
+}
+
+inline constexpr int32_t Vector4i_a::operator[](uint32_t i) const {
+	return v[i];
+}
+
+inline constexpr int32_t& Vector4i_a::operator[](uint32_t i) {
+	return v[i];
+}
 
 static inline constexpr Vector4i_a operator+(const Vector4i_a& a, const Vector4i_a& b) {
 	return Vector4i_a(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);

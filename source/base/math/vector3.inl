@@ -13,8 +13,8 @@ namespace math {
  *
  ****************************************************************************/
 
-template<typename T>
-Vector3<T>::Vector3() {}
+//template<typename T>
+//Vector3<T>::Vector3() {}
 
 template<typename T>
 Vector3<T>::Vector3(T x, T y, T z) : v{x, y, z} {}
@@ -37,7 +37,7 @@ Vector2<T> Vector3<T>::xy() const {
 }
 
 template<typename T>
-constexpr T Vector3<T>::operator[](uint32_t i) const{
+constexpr T Vector3<T>::operator[](uint32_t i) const {
 	return v[i];
 }
 
@@ -285,6 +285,54 @@ static bool any_inf(const Vector3<T>& v) {
  * Aligned 3D float vector
  *
  ****************************************************************************/
+
+inline constexpr Vector3f_a::Vector3f_a(float x, float y, float z) : v{x, y, z, 0.f} {}
+
+inline constexpr Vector3f_a::Vector3f_a(const float* v) : v{v[0], v[1], v[2], 0.f} {}
+
+inline constexpr Vector3f_a::Vector3f_a(float s) : v{s, s, s, 0.f} {}
+
+inline constexpr Vector3f_a::Vector3f_a(const Vector2<float> xy, float z) :
+	v{xy[0], xy[1], z, 0.f} {}
+
+template<typename T>
+constexpr Vector3f_a::Vector3f_a(const Vector3<T>& v) :
+	v{float(v[0]), float(v[1]), float(v[2]), 0.f} {}
+
+inline constexpr Vector2<float> Vector3f_a::xy() const {
+	return Vector2<float>(v[0], v[1]);
+}
+
+inline constexpr float Vector3f_a::operator[](uint32_t i) const{
+	return v[i];
+}
+
+inline constexpr float& Vector3f_a::operator[](uint32_t i) {
+	return v[i];
+}
+
+inline constexpr float Vector3f_a::absolute_max(uint32_t& i) const {
+	const float ax = std::abs(v[0]);
+	const float ay = std::abs(v[1]);
+	const float az = std::abs(v[2]);
+
+	if (ax >= ay && ax >= az) {
+		i = 0;
+		return ax;
+	}
+
+	if (ay >= ax && ay >= az) {
+		i = 1;
+		return ay;
+	}
+
+	i = 2;
+	return az;
+}
+
+inline constexpr Vector3f_a Vector3f_a::identity() {
+	return Vector3f_a(0.f, 0.f, 0.f);
+}
 
 static inline constexpr Vector3f_a operator+(const Vector3f_a& a, float s) {
 	return Vector3f_a(a[0] + s, a[1] + s, a[2] + s);
