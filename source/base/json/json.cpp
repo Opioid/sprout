@@ -114,8 +114,7 @@ float read_float(const rapidjson::Value& value, const std::string& name, float d
 }
 
 float2 read_float2(const rapidjson::Value& value) {
-	return float2(value[0u].GetFloat(),
-				  value[1].GetFloat());
+	return float2(value[0u].GetFloat(), value[1].GetFloat());
 }
 
 float2 read_float2(const rapidjson::Value& value, const std::string& name,

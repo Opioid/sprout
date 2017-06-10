@@ -128,16 +128,9 @@ struct alignas(16) Matrix3x3f_a {
 
 	constexpr Matrix3x3f_a(float m00, float m01, float m02,
 						   float m10, float m11, float m12,
-						   float m20, float m21, float m22) :
-		r{Vector3f_a(m00, m01, m02),
-		  Vector3f_a(m10, m11, m12),
-		  Vector3f_a(m20, m21, m22)} {}
+						   float m20, float m21, float m22);
 
-	static constexpr Matrix3x3f_a identity() {
-		return Matrix3x3f_a(1.f, 0.f, 0.f,
-							0.f, 1.f, 0.f,
-							0.f, 0.f, 1.f);
-	}
+	static constexpr Matrix3x3f_a identity();
 };
 
 }

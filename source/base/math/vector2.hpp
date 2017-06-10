@@ -10,28 +10,20 @@ struct Vector2 {
 
 	Vector2() = default;
 
-	constexpr Vector2(T s) : v{s, s} {}
+	constexpr Vector2(T s);
 
-	constexpr Vector2(T x, T y) : v{x, y} {}
+	constexpr Vector2(T x, T y);
 
 	template<typename U>
-	explicit constexpr Vector2(Vector2<U> v) : v{T(v[0]), T(v[1])} {}
+	explicit constexpr Vector2(Vector2<U> v);
 
-	constexpr Vector2 yx() const {
-		return Vector2(v[1], v[0]);
-	}
+	constexpr Vector2 yx() const;
 
-	constexpr T operator[](uint32_t i) const {
-		return v[i];
-	}
+	constexpr T operator[](uint32_t i) const;
 
-	constexpr T& operator[](uint32_t i) {
-		return v[i];
-	}
+	constexpr T& operator[](uint32_t i);
 
-	static constexpr Vector2 identity() {
-		return Vector2(T(0), T(0));
-	}
+	static constexpr Vector2 identity();
 };
 
 }

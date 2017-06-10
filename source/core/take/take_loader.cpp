@@ -182,7 +182,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 
 	int2 resolution;
 	if (sensor_value) {
-		resolution = json::read_int2(*sensor_value, "resolution");
+		resolution = json::read_int2(*sensor_value, "resolution", int2::identity());
 		if (int2::identity() == resolution) {
 			throw std::runtime_error("Sensor resolution is [0, 0]");
 		}
@@ -624,7 +624,7 @@ bool Loader::peek_alpha_transparency(const json::Value& take_value) {
 		return false;
 	}
 
-	return json::read_bool(node->value, "alpha_transparency");
+	return json::read_bool(node->value, "alpha_transparency", false);
 }
 
 bool Loader::peek_stereoscopic(const json::Value& parameters_value) {

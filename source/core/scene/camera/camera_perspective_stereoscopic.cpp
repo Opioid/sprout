@@ -77,7 +77,7 @@ void Perspective_stereoscopic::set_parameter(const std::string& name,
 	if ("fov" == name) {
 		set_fov(math::degrees_to_radians(json::read_float(value)));
 	} else if ("stereo" == name) {
-		set_interpupillary_distance(json::read_float(value, "ipd"));
+		set_interpupillary_distance(json::read_float(value, "ipd", 0.062f));
 	}
 }
 

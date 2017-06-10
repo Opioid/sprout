@@ -7,6 +7,36 @@
 namespace math {
 
 template<typename T>
+constexpr Vector2<T>::Vector2(T s) : v{s, s} {}
+
+template<typename T>
+constexpr Vector2<T>::Vector2(T x, T y) : v{x, y} {}
+
+template<typename T>
+template<typename U>
+constexpr Vector2<T>::Vector2(Vector2<U> v) : v{T(v[0]), T(v[1])} {}
+
+template<typename T>
+constexpr Vector2<T> Vector2<T>::yx() const {
+	return Vector2<T>(v[1], v[0]);
+}
+
+template<typename T>
+constexpr T Vector2<T>::operator[](uint32_t i) const {
+	return v[i];
+}
+
+template<typename T>
+constexpr T& Vector2<T>::operator[](uint32_t i) {
+	return v[i];
+}
+
+template<typename T>
+constexpr Vector2<T> Vector2<T>::identity() {
+	return Vector2<T>(T(0), T(0));
+}
+
+template<typename T>
 static constexpr Vector2<T> operator+(Vector2<T> a, Vector2<T> b) {
 	return Vector2<T>(a[0] + b[0], a[1] + b[1]);
 }
