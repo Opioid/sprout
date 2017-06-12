@@ -41,7 +41,7 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 	const auto& bssrdf = intersection.bssrdf(worker);
 
-	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+	const uint32_t num_samples = 128;//static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 
 	const float step = range / static_cast<float>(num_samples);
 
@@ -60,10 +60,14 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 	bool leave = false;
 
+	float travel_distance = 0.f;
+
 	uint32_t i = 0;
 	for (i = 0; i < num_samples; ++i, min_t += step) {
 		const float3 tau = bssrdf.optical_depth(tau_ray_length);
 		tr *= math::exp(-tau);
+
+		travel_distance += tau_ray_length;
 
 		// Direct light scattering
 		radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
@@ -78,7 +82,7 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 		tray.set_direction(math::sample_sphere_uniform(uv));
 		tray.min_t = ray_offset;
 		pdf = 1.f;//rng_.random_float();
-		tray.max_t = pdf * step;
+		tray.max_t = step;
 
 		if (!worker.intersect(intersection.prop, tray, tintersection)) {
 			current = tray.point(tray.max_t);
@@ -90,7 +94,7 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 		}
 	}
 
-	float3 color = /*step **/ (range / static_cast<float>(i)) * radiance;
+	float3 color = /*step **/ (1.f / static_cast<float>(i)) * radiance;
 	return color;
 }
 

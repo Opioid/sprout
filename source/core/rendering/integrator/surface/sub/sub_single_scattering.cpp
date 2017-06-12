@@ -80,7 +80,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 				continue;
 			}
 
-			float prop_length = shadow_ray.length();
+			const float prop_length = shadow_ray.length();
 
 			ray_offset = take_settings_.ray_offset_factor * tintersection.geo.epsilon;
 			shadow_ray.min_t = shadow_ray.max_t + ray_offset;
