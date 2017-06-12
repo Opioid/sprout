@@ -33721,41 +33721,62 @@ hk_real* solarDatasets[] =
 	solarDataset720
 };
 
-hk_real limbDarkeningDataset320[] =
-{ 0.087657, 0.767174, 0.658123, -1.02953, 0.703297, -0.186735 };
+hk_real limbDarkeningDataset320[] = {
+	hk_real(0.087657), hk_real(0.767174), hk_real(0.658123),
+	hk_real(-1.02953), hk_real(0.703297), hk_real(-0.186735)
+};
 
-hk_real limbDarkeningDataset360[] =
-{ 0.122953, 1.01278, 0.238687, -1.12208, 1.17087, -0.424947 };
+hk_real limbDarkeningDataset360[] = {
+	hk_real(0.122953), hk_real(1.01278), hk_real(0.238687),
+	hk_real(-1.12208), hk_real(1.17087), hk_real(-0.424947)
+};
 
-hk_real limbDarkeningDataset400[] =
-{ 0.123511, 1.08444, -0.405598, 0.370629, -0.240567, 0.0674778 };
+hk_real limbDarkeningDataset400[] = {
+	hk_real(0.123511), hk_real(1.08444), hk_real(-0.405598),
+	hk_real(0.370629), hk_real(-0.240567), hk_real(0.0674778)
+};
 
-hk_real limbDarkeningDataset440[] =
-{ 0.158489, 1.23346, -0.875754, 0.857812, -0.484919, 0.110895 };
+hk_real limbDarkeningDataset440[] = {
+	hk_real(0.158489), hk_real(1.23346), hk_real(-0.875754),
+	hk_real(0.857812), hk_real(-0.484919), hk_real(0.110895)
+};
 
-hk_real limbDarkeningDataset480[] =
-{ 0.198587, 1.30507, -1.25998, 1.49727, -1.04047, 0.299516 };
+hk_real limbDarkeningDataset480[] = {
+	hk_real(0.198587), hk_real(1.30507), hk_real(-1.25998),
+	hk_real(1.49727), hk_real(-1.04047), hk_real(0.299516)
+};
 
-hk_real limbDarkeningDataset520[] =
-{ 0.23695, 1.29927, -1.28034, 1.37760, -0.85054, 0.21706 };
+hk_real limbDarkeningDataset520[] = {
+	hk_real(0.23695), hk_real(1.29927), hk_real(-1.28034),
+	hk_real(1.37760), hk_real(-0.85054), hk_real(0.21706)
+};
 
-hk_real limbDarkeningDataset560[] =
-{ 0.26892, 1.34319, -1.58427, 1.91271, -1.31350, 0.37295 };
+hk_real limbDarkeningDataset560[] = {
+	hk_real(0.26892), hk_real(1.34319), hk_real(-1.58427),
+	hk_real(1.91271), hk_real(-1.31350), hk_real(0.37295)
+};
 
-hk_real limbDarkeningDataset600[] =
-{ 0.299804, 1.36718, -1.80884, 2.29294, -1.60595, 0.454874 };
+hk_real limbDarkeningDataset600[] = {
+	hk_real(0.299804), hk_real(1.36718), hk_real(-1.80884),
+	hk_real(2.29294), hk_real(-1.60595), hk_real(0.454874)
+};
 
-hk_real limbDarkeningDataset640[] =
-{ 0.33551, 1.30791, -1.79382, 2.44646, -1.89082, 0.594769 };
+hk_real limbDarkeningDataset640[] = {
+	hk_real(0.33551), hk_real(1.30791), hk_real(-1.79382),
+	hk_real(2.44646), hk_real(-1.89082), hk_real(0.594769)
+};
 
-hk_real limbDarkeningDataset680[] =
-{ 0.364007, 1.27316, -1.73824, 2.28535, -1.70203, 0.517758 };
+hk_real limbDarkeningDataset680[] = {
+	hk_real(0.364007), hk_real(1.27316), hk_real(-1.73824),
+	hk_real(2.28535), hk_real(-1.70203), hk_real(0.517758)
+};
 
-hk_real limbDarkeningDataset720[] =
-{ 0.389704, 1.2448, -1.69708, 2.14061, -1.51803, 0.440004 };
+hk_real limbDarkeningDataset720[] = {
+	hk_real(0.389704), hk_real(1.2448), hk_real(-1.69708),
+	hk_real(2.14061), hk_real(-1.51803), hk_real(0.440004)
+};
 
-hk_real * limbDarkeningDatasets[] =
-{
+hk_real* limbDarkeningDatasets[] = {
 	limbDarkeningDataset320,
 	limbDarkeningDataset360,
 	limbDarkeningDataset400,

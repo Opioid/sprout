@@ -311,7 +311,7 @@ inline constexpr float& Vector3f_a::operator[](uint32_t i) {
 	return v[i];
 }
 
-inline constexpr float Vector3f_a::absolute_max(uint32_t& i) const {
+inline float Vector3f_a::absolute_max(uint32_t& i) const {
 	const float ax = std::abs(v[0]);
 	const float ay = std::abs(v[1]);
 	const float az = std::abs(v[2]);
@@ -430,7 +430,7 @@ static inline constexpr float dot(const Vector3f_a& a, const Vector3f_a& b) {
 	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-static inline constexpr float length(const Vector3f_a& v) {
+static inline float length(const Vector3f_a& v) {
 	return std::sqrt(dot(v, v));
 }
 
@@ -470,7 +470,7 @@ static inline constexpr Vector3f_a project(const Vector3f_a& a, const Vector3f_a
 	return dot(b, a) * b;
 }
 
-static inline constexpr float distance(const Vector3f_a& a, const Vector3f_a& b) {
+static inline float distance(const Vector3f_a& a, const Vector3f_a& b) {
 	return length(a - b);
 }
 
@@ -509,7 +509,7 @@ static inline constexpr Vector3f_a reflect(const Vector3f_a& normal, const Vecto
 	return 2.f * dot(v, normal) * normal - v;
 }
 
-static inline constexpr void orthonormal_basis(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
+static inline void orthonormal_basis(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
 	// https://gist.github.com/roxlu/3082114
 /*
 	// Handle the singularity
@@ -535,7 +535,7 @@ static inline constexpr void orthonormal_basis(const Vector3f_a& n, Vector3f_a& 
 	b = Vector3f_a(d, sign + n[1] * n[1] * c, -n[1]);
 }
 
-static inline constexpr Vector3f_a tangent(const Vector3f_a& n) {
+static inline Vector3f_a tangent(const Vector3f_a& n) {
 	const float sign = std::copysign(1.f, n[2]);
 	const float c = -1.f / (sign + n[2]);
 	const float d = n[0] * n[1] * c;
@@ -594,15 +594,15 @@ static inline constexpr bool any_lesser_one(const Vector3f_a& v) {
 	return v[0] < 1.f || v[1] < 1.f || v[2] < 1.f;
 }
 
-static inline constexpr bool any_nan(const Vector3f_a& v) {
+static inline bool any_nan(const Vector3f_a& v) {
 	return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]);
 }
 
-static inline constexpr bool any_inf(const Vector3f_a& v) {
+static inline bool any_inf(const Vector3f_a& v) {
 	return std::isinf(v[0]) || std::isinf(v[1]) || std::isinf(v[2]);
 }
 
-static inline constexpr bool all_finite(const Vector3f_a& v) {
+static inline bool all_finite(const Vector3f_a& v) {
 	return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]);
 }
 

@@ -101,7 +101,7 @@ struct alignas(16) Vector3f_a {
 	constexpr float operator[](uint32_t i) const;
 	constexpr float& operator[](uint32_t i);
 
-	constexpr float absolute_max(uint32_t& i) const;
+	float absolute_max(uint32_t& i) const;
 
 	static constexpr Vector3f_a identity() ;
 };
