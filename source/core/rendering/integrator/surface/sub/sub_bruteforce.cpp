@@ -41,48 +41,36 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 
 	const auto& bssrdf = intersection.bssrdf(worker);
 
-	const uint32_t num_samples = 128;//static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+	const uint32_t num_samples = 1;//static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 
 	const float step = range / static_cast<float>(num_samples);
-
-//	float3 w = -ray.direction;
 
 	float3 radiance(0.f);
 	float3 tr(1.f);
 
-	float min_t = tray.min_t;
-	float pdf = rng_.random_float();
-	float tau_ray_length = pdf * step;
+	const float3 scatter = bssrdf.scattering();
+	const float average_scatter = (1.f / 3.f) * (scatter[0] + scatter[1] + scatter[2]);
 
-	min_t += tau_ray_length;
+	float tau_ray_length = rng_.random_float() * step;
+	float3 current = tray.point(tau_ray_length);
 
-	float3 current = tray.point(min_t);
-
-	bool leave = false;
-
-	float travel_distance = 0.f;
-
-	uint32_t i = 0;
-	for (i = 0; i < num_samples; ++i, min_t += step) {
+	for (uint32_t i = 0;; ++i) {
 		const float3 tau = bssrdf.optical_depth(tau_ray_length);
 		tr *= math::exp(-tau);
-
-		travel_distance += tau_ray_length;
 
 		// Direct light scattering
 		radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
 											   ray.time, worker);
 
-		if (leave) {
+	//	if (i >= num_samples) {
 			break;
-		}
+	//	}
 
 		tray.origin = current;
 		const float2 uv(rng_.random_float(), rng_.random_float());
 		tray.set_direction(math::sample_sphere_uniform(uv));
 		tray.min_t = ray_offset;
-		pdf = 1.f;//rng_.random_float();
-		tray.max_t = step;
+		tray.max_t = -std::log(rng_.random_float()) / average_scatter;
 
 		if (!worker.intersect(intersection.prop, tray, tintersection)) {
 			current = tray.point(tray.max_t);
@@ -90,12 +78,11 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 		} else {
 			current = tintersection.geo.p;
 			tau_ray_length = tray.max_t;
-			leave = true;
+			break;
 		}
 	}
 
-	float3 color = /*step **/ (1.f / static_cast<float>(i)) * radiance;
-	return color;
+	return radiance;
 }
 
 float3 Bruteforce::li(Worker& worker, Ray& ray, Intersection& intersection,
@@ -146,7 +133,7 @@ float3 Bruteforce::estimate_direct_light(const float3& position, const scene::Pr
 			const float3 transmittance = math::exp(-tau);
 			const float3 l = transmittance * light_sample.radiance;
 
-			return p * mv * scattering * l / (light_pdf * light_sample.shape.pdf);
+			return (p * mv) * (scattering * l) / (light_pdf * light_sample.shape.pdf);
 		}
 	}
 

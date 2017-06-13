@@ -41,17 +41,16 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 
 	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 
-	const float step = range / static_cast<float>(num_samples);
+	const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
 
-//	float3 w = -ray.direction;
+	const float step = range * num_samples_reciprocal;
 
 	float3 radiance(0.f);
 	float3 tr(1.f);
 
-	float min_t = tray.min_t;
 	float tau_ray_length = rng_.random_float() * step;
 
-	min_t += tau_ray_length;
+	float min_t = tray.min_t + tau_ray_length;
 
 	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
 		float3 tau = bssrdf.optical_depth(tau_ray_length);
@@ -86,7 +85,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 			shadow_ray.min_t = shadow_ray.max_t + ray_offset;
 			shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
-			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
+			const float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
 			if (mv > 0.f) {
 			//	float p = volume.phase(w, -light_sample.shape.wi);
 				constexpr float p = 1.f / (4.f * math::Pi);
@@ -94,17 +93,16 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 				float3 scattering = bssrdf.scattering();
 
 				tau = bssrdf.optical_depth(prop_length);
-				float3 transmittance = math::exp(-tau);
+				const float3 transmittance = math::exp(-tau);
 
-				float3 l = transmittance * light_sample.radiance;
+				const float3 l = transmittance * light_sample.radiance;
 
-				radiance += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
+				radiance += (p * mv * tr) * (scattering * l) / (light_pdf * light_sample.shape.pdf);
 			}
 		}
 	}
 
-	float3 color = step * radiance;
-	return color;
+	return num_samples_reciprocal * radiance;
 }
 
 float3 Single_scattering::li(Worker& worker, Ray& ray, Intersection& intersection,

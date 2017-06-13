@@ -74,7 +74,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 
 	min_t += rng_.random_float() * step;
 
-	float3 next = ray.point(min_t);
+	const float3 next = ray.point(min_t);
 	Ray tau_ray(current, next - current, 0.f, 1.f, ray.time);
 
 	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
@@ -86,8 +86,8 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 
 //		Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
 
-		float3 tau = volume.optical_depth(tau_ray, settings_.step_size, rng_,
-										  worker, Sampler_filter::Unknown);
+		const float3 tau = volume.optical_depth(tau_ray, settings_.step_size, rng_,
+												worker, Sampler_filter::Unknown);
 		tr *= math::exp(-tau);
 
 		tau_ray.origin = previous;
@@ -109,26 +109,27 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 					  Sampler_filter::Nearest, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
-			Ray shadow_ray(current, light_sample.shape.wi, 0.f,
-						   light_sample.shape.t - epsilon, ray.time);
+			const Ray shadow_ray(current, light_sample.shape.wi, 0.f,
+								 light_sample.shape.t - epsilon, ray.time);
 
-			float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+			const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
 			if (math::any_greater_zero(tv)) {
-				float p = volume.phase(w, -light_sample.shape.wi);
+				const float p = volume.phase(w, -light_sample.shape.wi);
 
-				float3 scattering = volume.scattering(current, worker, Sampler_filter::Unknown);
+				const float3 scattering = volume.scattering(current, worker,
+															Sampler_filter::Unknown);
 
-				float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
+				const float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
 							   * light_sample.radiance;
 
-				radiance += p * tv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
+				radiance += (p * tv * tr) * (scattering * l) / (light_pdf * light_sample.shape.pdf);
 			}
 		}
 	}
 
 	transmittance = tr;
 
-	float3 color = step * radiance;
+	const float3 color = step * radiance;
 
 	return float4(color, spectrum::luminance(color));
 }
