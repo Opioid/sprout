@@ -65,7 +65,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 			continue;
 		}
 
-		float3 current = tray.point(min_t);
+		const float3 current = tray.point(min_t);
 
 		scene::light::Sample light_sample;
 		light->sample(ray.time, current, sampler_, 0, worker,
