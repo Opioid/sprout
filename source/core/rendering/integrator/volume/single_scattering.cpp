@@ -35,10 +35,10 @@ float3 Single_scattering::transmittance(Worker& worker, const Ray& ray, const Vo
 		return float3(1.f);
 	}
 
-	Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
+	const Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume.optical_depth(tray, settings_.step_size, rng_,
-									  worker, Sampler_filter::Nearest);
+	const float3 tau = volume.optical_depth(tray, settings_.step_size, rng_,
+											worker, Sampler_filter::Nearest);
 	return math::exp(-tau);
 }
 

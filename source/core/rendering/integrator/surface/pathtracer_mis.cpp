@@ -249,7 +249,6 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 	if (intersect_and_resolve_mask(worker, secondary_ray, intersection, filter)) {
 		float light_pdf = 0.f;
 		const auto light = worker.scene().light(intersection.light_id(), light_pdf);
-
 		if (light) {
 			if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
 				light_pdf = num_lights_reciprocal_;

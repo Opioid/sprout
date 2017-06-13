@@ -7,8 +7,6 @@ namespace scene {
 
 namespace material { class BSSRDF; }
 
-namespace light { class Light; }
-
 class Prop;
 
 }

@@ -3,6 +3,15 @@
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector3.hpp"
 
+namespace scene {
+
+namespace material { class BSSRDF; }
+
+class Prop;
+
+}
+
+
 namespace sampler { class Sampler; }
 
 namespace rendering {
@@ -23,6 +32,12 @@ public:
 	virtual float3 li(Worker& worker, Ray& ray, Intersection& intersection,
 					  sampler::Sampler& sampler, Sampler_filter filter,
 					  Bxdf_result& sample_result) = 0;
+
+protected:
+
+	float3 estimate_direct_light(const float3& position, const scene::Prop* prop,
+								 const scene::material::BSSRDF& bssrdf, float time,
+								 sampler::Sampler& sampler, Worker& worker);
 };
 
 class Factory {

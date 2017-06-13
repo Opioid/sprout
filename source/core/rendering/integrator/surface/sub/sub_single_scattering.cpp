@@ -24,15 +24,14 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t /*num_samples_p
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection& intersection) {
-	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	Ray tray(intersection.geo.p, ray.direction, ray_offset, scene::Ray_max_t);
 	Intersection tintersection;
 	if (!worker.intersect(intersection.prop, tray, tintersection)) {
 		return float3(0.f);
 	}
 
-	float range = tray.max_t - tray.min_t;
-
+	const float range = tray.max_t - tray.min_t;
 	if (range < 0.0001f) {
 		return float3(0.f);
 	}
@@ -52,54 +51,17 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 
 	float min_t = tray.min_t + tau_ray_length;
 
-	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
-		float3 tau = bssrdf.optical_depth(tau_ray_length);
+	for (uint32_t i = num_samples; i > 0; --i, min_t += step) {
+		const float3 tau = bssrdf.optical_depth(tau_ray_length);
 		tr *= math::exp(-tau);
 
 		tau_ray_length = step;
 
-		// Direct light scattering
-		float light_pdf;
-		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
-		if (!light) {
-			continue;
-		}
-
 		const float3 current = tray.point(min_t);
 
-		scene::light::Sample light_sample;
-		light->sample(ray.time, current, sampler_, 0, worker,
-					  Sampler_filter::Nearest, light_sample);
-
-		if (light_sample.shape.pdf > 0.f) {
-			Ray shadow_ray(current, light_sample.shape.wi, 0.f,
-						   light_sample.shape.t, ray.time);
-
-			if (!worker.intersect(intersection.prop, shadow_ray, tintersection)) {
-				continue;
-			}
-
-			const float prop_length = shadow_ray.length();
-
-			ray_offset = take_settings_.ray_offset_factor * tintersection.geo.epsilon;
-			shadow_ray.min_t = shadow_ray.max_t + ray_offset;
-			shadow_ray.max_t = light_sample.shape.t - ray_offset;
-
-			const float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
-			if (mv > 0.f) {
-			//	float p = volume.phase(w, -light_sample.shape.wi);
-				constexpr float p = 1.f / (4.f * math::Pi);
-
-				float3 scattering = bssrdf.scattering();
-
-				tau = bssrdf.optical_depth(prop_length);
-				const float3 transmittance = math::exp(-tau);
-
-				const float3 l = transmittance * light_sample.radiance;
-
-				radiance += (p * mv * tr) * (scattering * l) / (light_pdf * light_sample.shape.pdf);
-			}
-		}
+		// Direct light scattering
+		radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
+											   ray.time, sampler_, worker);
 	}
 
 	return num_samples_reciprocal * radiance;
