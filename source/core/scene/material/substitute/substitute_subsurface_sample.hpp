@@ -14,6 +14,15 @@ public:
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
 	virtual void sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const final override;
+
+	void set(float ior, float ior_outside);
+
+private:
+
+	float ior_i_;
+	float ior_o_;
+	float eta_i_;
+	float eta_t_;
 };
 
 }}}

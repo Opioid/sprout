@@ -59,7 +59,69 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 }
 
 void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const {
+	if (!same_hemisphere(wo_)) {
+		result.pdf = 0.f;
+		return;
+	}
 
+
+
+	const float n_dot_wo = layer_.clamped_n_dot(wo_);
+
+	const float sint2 = (eta_i_ * eta_i_) * (1.f - n_dot_wo * n_dot_wo);
+
+	if (sint2 > 1.f) {
+		result.pdf = 0.f;
+		return;
+	}
+
+	const float n_dot_t = std::sqrt(1.f - sint2);
+
+	// fresnel has to be the same value that would have been computed by BRDF
+	const float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i_, eta_t_);
+
+//	const fresnel::Constant constant(1.f - f);
+
+
+	// Roughness zero will always have zero specular term (or worse NaN)
+	SOFT_ASSERT(layer_.a2_ >= Min_a2);
+
+	const float2 xi = sampler.generate_sample_2D();
+
+	const float a2 = layer_.a2_;
+	const float n_dot_h_squared = (1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f);
+	const float sin_theta = std::sqrt(1.f - n_dot_h_squared);
+	const float n_dot_h   = std::sqrt(n_dot_h_squared);
+	const float phi = (2.f * math::Pi) * xi[0];
+	float sin_phi;
+	float cos_phi;
+	math::sincos(phi, sin_phi, cos_phi);
+
+	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+	const float3 h = math::normalized(layer_.tangent_to_world(is));
+
+	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+
+	const float3 wi = math::normalized((eta_i_ * wo_dot_h - n_dot_t) * h - eta_i_ * wo_);
+
+	const float n_dot_wi = layer_.reversed_clamped_n_dot(wi);
+
+	const float d = ggx::distribution_isotropic(n_dot_h, a2);
+//	const float3 f = fresnel(wo_dot_h);
+
+	float denom = (ior_i_ + ior_o_) * wo_dot_h;
+	denom = denom * denom;
+
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+	result.reflection = float3(n_dot_wi * (1.f - f));
+	result.wi = wi;
+}
+
+void Sample_subsurface::set(float ior, float ior_outside) {
+	ior_i_ = ior;
+	ior_o_ = ior_outside;
+	eta_i_ = ior_outside / ior;
+	eta_t_ = ior / ior_outside;
 }
 
 }}}

@@ -8,6 +8,7 @@
 #include "scene/light/light_sample.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/bssrdf.hpp"
+#include "scene/material/material_sample.inl"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 
@@ -25,8 +26,15 @@ void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scra
 
 float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection& intersection,
 							 const Material_sample& material_sample) {
+	Bxdf_result sample_result;
+	material_sample.sample_sss(sampler_, sample_result);
+
+	if (0.f == sample_result.pdf) {
+		return float3(0.f);
+	}
+
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	Ray tray(intersection.geo.p, ray.direction, ray_offset, scene::Ray_max_t);
+	Ray tray(intersection.geo.p, /*ray.direction*/sample_result.wi, ray_offset, scene::Ray_max_t);
 	Intersection tintersection;
 	if (!worker.intersect(intersection.prop, tray, tintersection)) {
 		return float3(0.f);
@@ -63,7 +71,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 											   ray.time, sampler_, worker);
 	}
 
-	return num_samples_reciprocal * radiance;
+	return (num_samples_reciprocal * sample_result.pdf) * (sample_result.reflection * radiance);
 }
 
 float3 Single_scattering::li(Worker& worker, Ray& ray, Intersection& intersection,

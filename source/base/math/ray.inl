@@ -23,7 +23,7 @@ inline Ray::Ray(const float3& origin, const float3& direction, const float3& inv
 	inv_direction(inv_direction),
 	min_t(min_t),
 	max_t(max_t),
-	signs{ sign_x, sign_y, sign_z } {}
+	signs{sign_x, sign_y, sign_z} {}
 
 inline void Ray::set_direction(const float3& v) {
 	direction = v;
@@ -43,7 +43,7 @@ inline float Ray::length() const {
 }
 
 inline Ray Ray::normalized() const {
-	float length = math::length(direction);
+	const float length = math::length(direction);
 	return Ray(origin, direction / length, length * inv_direction,
 			   min_t * length, max_t * length, signs[0], signs[1], signs[2]);
 }

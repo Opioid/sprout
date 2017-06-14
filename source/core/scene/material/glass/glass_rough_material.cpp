@@ -3,9 +3,10 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
-#include "scene/material/ggx/ggx.inl"
+#include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
+#include "scene/material/ggx/ggx.inl"
 #include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace glass {
@@ -22,9 +23,7 @@ const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate&
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	if (normal_map_.is_valid()) {
-		float3 nm = normal_map_.sample_3(sampler, rs.uv);
-		float3 n  = math::normalized(rs.tangent_to_world(nm));
-
+		const float3 n = sample_normal(normal_map_, sampler, rs);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -32,7 +31,7 @@ const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate&
 
 	float a2;
 	if (roughness_map_.is_valid()) {
-		float roughness = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
+		const float roughness = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
 		a2 = math::pow4(roughness);
 	} else {
 		a2 = a2_;

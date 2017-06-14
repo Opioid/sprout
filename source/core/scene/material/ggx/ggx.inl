@@ -195,7 +195,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t, const 
 
 	const float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	float denom = layer.ior_i_ * wo_dot_h + layer.ior_o_ * wo_dot_h;
+	float denom = (layer.ior_i_ + layer.ior_o_) * wo_dot_h;
 	denom = denom * denom;
 
 	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);

@@ -21,6 +21,8 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 	set_sample(wo, rs, sampler, sample);
 
+	sample.set(ior_, rs.ior);
+
 	return sample;
 }
 

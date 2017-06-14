@@ -97,14 +97,14 @@ bool Sample_rough::is_translucent() const {
 
 void Sample_rough::Layer::set(const float3& refraction_color, const float3& absorption_color,
 							  float attenuation_distance, float ior,
-							  float ior_outside, float a_a2) {
+							  float ior_outside, float a2) {
 	color_ = refraction_color;
 	attenuation_ = material::Sample::attenuation(absorption_color, attenuation_distance);
 	ior_i_ = ior;
 	ior_o_ = ior_outside;
 	eta_i_ = ior_outside / ior;
 	eta_t_ = ior / ior_outside;
-	a2_ = a_a2;
+	a2_ = a2;
 }
 
 float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
