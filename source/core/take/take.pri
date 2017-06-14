@@ -1,5 +1,4 @@
 SOURCES += \
-	take/take.cpp \
 	take/take_loader.cpp \
 
 HEADERS += \
