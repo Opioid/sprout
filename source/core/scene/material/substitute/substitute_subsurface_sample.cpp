@@ -58,5 +58,9 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 	*/
 }
 
+void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const {
+
+}
+
 }}}
 

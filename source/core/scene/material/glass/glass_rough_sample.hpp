@@ -18,8 +18,7 @@ public:
 
 	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
 
-	virtual void sample(sampler::Sampler& sampler,
-						bxdf::Result& result) const final override;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
 	virtual float3 radiance() const final override;
 
