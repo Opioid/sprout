@@ -23,44 +23,43 @@ float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
 		return float3::identity();
 	}
 
-	float n_dot_wi = layer_.clamped_n_dot(wi);
-	float n_dot_wo = layer_.clamped_n_dot(wo_);
+	const float n_dot_wi = layer_.clamped_n_dot(wi);
+	const float n_dot_wo = layer_.clamped_n_dot(wo_);
 
-	float sint2 = (layer_.eta_i_ * layer_.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
+	const float sint2 = (layer_.eta_i_ * layer_.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
 	if (sint2 > 1.f) {
 		f = 1.f;
 	} else {
-		float n_dot_t = std::sqrt(1.f - sint2);
+		const float n_dot_t = std::sqrt(1.f - sint2);
 
 		// fresnel has to be the same value that would have been computed by BRDF
 		f = fresnel::dielectric(n_dot_wo, n_dot_t, layer_.eta_i_, layer_.eta_t_);
 	}
 
-	float3 h = math::normalized(wo_ + wi);
-	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+	const float3 h = math::normalized(wo_ + wi);
+	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
 
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
-	float3 f3(f);
-	fresnel::Constant constant(f3);
-	float3 reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-												   layer_, constant, pdf);
+	const fresnel::Constant constant(f);
+	const float3 reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+														 layer_, constant, pdf);
 
 	return n_dot_wi * reflection;
 
 }
 
 void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
-	float p = sampler.generate_sample_1D();
+	const float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
-		float n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
+		const float n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
 		result.pdf *= 0.5f;
 		result.reflection *= n_dot_wi;
 	} else {
-		float n_dot_wi = BSDF::refract(*this, layer_, sampler, result);
+		const float n_dot_wi = BSDF::refract(*this, layer_, sampler, result);
 		result.pdf *= 0.5f;
 		result.reflection *= n_dot_wi;
 	}
@@ -112,7 +111,7 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 								  sampler::Sampler& sampler, bxdf::Result& result) {
 	Layer tmp = layer;
 
-	if (!sample.same_hemisphere(sample.wo_)) {
+	if (!sample.same_hemisphere(sample.wo())) {
 		tmp.n_ *= -1.f;
 		tmp.ior_i_ = layer.ior_o_;
 		tmp.ior_o_ = layer.ior_i_;
@@ -120,26 +119,25 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 		tmp.eta_t_ = layer.eta_i_;
 	}
 
-	float n_dot_wo = tmp.clamped_n_dot(sample.wo_);
+	const float n_dot_wo = tmp.clamped_n_dot(sample.wo());
 
-	float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
+	const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
 	if (sint2 > 1.f) {
 		f = 1.f;
 	} else {
-		float n_dot_t = std::sqrt(1.f - sint2);
+		const float n_dot_t = std::sqrt(1.f - sint2);
 
 		// fresnel has to be the same value that would have been computed by BRDF
 		f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
 	}
 
-	float3 f3(f);
-	fresnel::Constant constant(f3);
-	float n_dot_wi = ggx::Isotropic::reflect(sample.wo_, n_dot_wo, tmp,
-											 constant, sampler, result);
+	const fresnel::Constant constant(f);
+	const float n_dot_wi = ggx::Isotropic::reflect(sample.wo(), n_dot_wo, tmp,
+												   constant, sampler, result);
 
-	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
+	SOFT_ASSERT(testing::check(result, sample.wo(), layer));
 
 	return n_dot_wi;
 }
@@ -148,7 +146,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 								  sampler::Sampler& sampler, bxdf::Result& result) {
 	Layer tmp = layer;
 
-	if (!sample.same_hemisphere(sample.wo_)) {
+	if (!sample.same_hemisphere(sample.wo())) {
 		tmp.n_ *= -1.f;
 		tmp.ior_i_ = layer.ior_o_;
 		tmp.ior_o_ = layer.ior_i_;
@@ -156,24 +154,23 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 		tmp.eta_t_ = layer.eta_i_;
 	}
 
-	float n_dot_wo = tmp.clamped_n_dot(sample.wo_);
+	const float n_dot_wo = tmp.clamped_n_dot(sample.wo());
 
-	float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
+	const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
 	if (sint2 > 1.f) {
 		result.pdf = 0.f;
 		return 0.f;
 	}
 
-	float n_dot_t = std::sqrt(1.f - sint2);
+	const float n_dot_t = std::sqrt(1.f - sint2);
 
 	// fresnel has to be the same value that would have been computed by BRDF
-	float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
+	const float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
 
-	float3 f3(1.f - f);
-	fresnel::Constant constant(f3);
-	float n_dot_wi = ggx::Isotropic::refract(sample.wo_, n_dot_wo, n_dot_t, tmp,
-											 constant, sampler, result);
+	const fresnel::Constant constant(1.f - f);
+	const float n_dot_wi = ggx::Isotropic::refract(sample.wo(), n_dot_wo, n_dot_t, tmp,
+												   constant, sampler, result);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 

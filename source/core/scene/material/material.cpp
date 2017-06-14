@@ -33,8 +33,9 @@ const BSSRDF& Material::bssrdf(const Worker& worker) {
 	return sample_cache_.bssrdf(worker.id());
 }
 
-float3 Material::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/, float /*time*/,
-								 const Worker& /*worker*/, Sampler_filter /*filter*/) const {
+float3 Material::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/,
+								 float /*time*/, const Worker& /*worker*/,
+								 Sampler_filter /*filter*/) const {
 	return float3(0.f);
 }
 
@@ -100,12 +101,8 @@ bool Material::is_emissive() const {
 		return true;
 	}
 
-	float3 e = average_radiance(1.f);
-	if (e[0] > 0.f || e[1] > 0.f || e[2] > 0.f) {
-		return true;
-	}
-
-	return false;
+	const float3 e = average_radiance(1.f);
+	return math::any_greater_zero(e);
 }
 
 bool Material::is_two_sided() const {

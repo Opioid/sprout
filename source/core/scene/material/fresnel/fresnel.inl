@@ -96,7 +96,7 @@ static inline float3 thinfilm(float wo_dot_h, float external_ior, float thinfilm
 
 	// Calculate the interference phase change.
 	float3 phi = float3(2.f * thinfilm_ior * thickness * cos1);
-	phi *= 2.f * math::Pi / float3(650.f, 510.f, 475.f);
+	phi *= (2.f * math::Pi) / float3(650.f, 510.f, 475.f);
 	phi += float3(delta);
 
 	// Obtain the various Fresnel amplitude coefficients.
@@ -180,6 +180,8 @@ inline Conductor_weighted::Conductor_weighted(const float3& eta, const float3& k
 inline float3 Conductor_weighted::operator()(float wo_dot_h) const {
 	return weight_ * conductor_(wo_dot_h);
 }
+
+inline Constant::Constant(float f) : f_(f) {}
 
 inline Constant::Constant(const float3& f) : f_(f) {}
 

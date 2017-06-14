@@ -8,7 +8,6 @@ namespace scene { namespace material {
 
 constexpr float Dot_min = 0.00001f;
 
-
 inline void Sample::Layer::set_tangent_frame(const float3& t, const float3& b, const float3& n) {
 	t_ = t;
 	b_ = b;
@@ -21,12 +20,12 @@ inline void Sample::Layer::set_tangent_frame(const float3& n) {
 }
 
 inline float Sample::Layer::clamped_n_dot(const float3& v) const {
-	// return std::max(math::dot(n, v), 0.00001f);
+	// return std::max(math::dot(n, v), Dot_min);
 	return math::clamp(math::dot(n_, v), Dot_min, 1.f);
 }
 
 inline float Sample::Layer::reversed_clamped_n_dot(const float3& v) const {
-	// return std::max(-math::dot(n, v), 0.00001f);
+	// return std::max(-math::dot(n, v), Dot_min);
 	return math::clamp(-math::dot(n_, v), Dot_min, 1.f);
 }
 
@@ -38,6 +37,12 @@ inline float3 Sample::Layer::tangent_to_world(const float3& v) const {
 	return float3(v[0] * t_[0] + v[1] * b_[0] + v[2] * n_[0],
 				  v[0] * t_[1] + v[1] * b_[1] + v[2] * n_[1],
 				  v[0] * t_[2] + v[1] * b_[2] + v[2] * n_[2]);
+}
+
+inline void Sample::sample_sss(sampler::Sampler& /*sampler*/, bxdf::Result& /*result*/) const {}
+
+inline const float3& Sample::wo() const {
+	return wo_;
 }
 
 inline float Sample::clamped_geo_n_dot(const float3& v) const {

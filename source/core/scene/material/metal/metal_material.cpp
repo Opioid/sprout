@@ -3,9 +3,10 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
-#include "scene/material/ggx/ggx.inl"
+#include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
+#include "scene/material/ggx/ggx.inl"
 #include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace metal {
@@ -24,9 +25,7 @@ const material::Sample& Material_isotropic::sample(const float3& wo, const Rende
 
 	if (normal_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
-
-		float3 nm = normal_map_.sample_3(sampler, rs.uv);
-		float3 n  = math::normalized(rs.tangent_to_world(nm));
+		const float3 n = sample_normal(normal_map_, sampler, rs);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

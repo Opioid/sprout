@@ -27,7 +27,8 @@ public:
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
-	virtual float3 li(Worker& worker, const Ray& ray, const Intersection& intersection) = 0;
+	virtual float3 li(Worker& worker, const Ray& ray, const Intersection& intersection,
+					  const Material_sample& material_sample) = 0;
 
 	virtual float3 li(Worker& worker, Ray& ray, Intersection& intersection,
 					  sampler::Sampler& sampler, Sampler_filter filter,

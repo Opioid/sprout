@@ -34,6 +34,9 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
 
+	// HACK: Should go away when SSS is integrated in a more uniform manner
+	virtual void sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const;
+
 	virtual float3 radiance() const = 0;
 
 	virtual float3 attenuation() const = 0;
@@ -45,6 +48,8 @@ public:
 	virtual bool is_transmissive() const = 0;
 
 	virtual bool is_translucent() const = 0;
+
+	const float3& wo() const;
 
 	float clamped_geo_n_dot(const float3& v) const;
 	float reversed_clamped_geo_n_dot(const float3& v) const;
@@ -63,7 +68,7 @@ public:
 
 	static float absolute_clamped_dot(const float3& a, const float3& b);
 
-// protected:
+protected:
 
 	float3 geo_n_;
 	float3 wo_;

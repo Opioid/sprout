@@ -23,7 +23,7 @@ static inline float balance_heuristic(float fpdf, float gpdf) {
 }
 
 static inline float power_heuristic(float fpdf, float gpdf) {
-	float f2 = fpdf * fpdf;
+	const float f2 = fpdf * fpdf;
 	return f2 / (f2 + gpdf * gpdf);
 }
 

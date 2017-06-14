@@ -25,7 +25,8 @@ void Bruteforce::prepare(const Scene& /*scene*/, uint32_t /*num_samples_per_pixe
 
 void Bruteforce::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& intersection) {
+float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& intersection,
+					  const Material_sample& material_sample) {
 	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	Ray tray(intersection.geo.p, ray.direction, ray_offset, scene::Ray_max_t);
 	Intersection tintersection;

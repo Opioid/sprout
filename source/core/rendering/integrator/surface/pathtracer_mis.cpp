@@ -78,15 +78,15 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 	}
 
 	for (uint32_t i = 0; ; ++i) {
-		const float3 wo = -ray.direction;
-		const auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
-
 		if (i > 0) {
 			float3 tr;
 			const float4 vli = worker.volume_li(ray, tr);
 			result += throughput * vli.xyz();
 			throughput *= tr;
 		}
+
+		const float3 wo = -ray.direction;
+		const auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
 		if ((primary_ray || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
@@ -226,7 +226,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 	}
 
 	if (intersection.material()->is_subsurface()) {
-		result += subsurface_.li(worker, ray, intersection);
+		result += subsurface_.li(worker, ray, intersection, material_sample);
 	}
 
 	// Material BSDF importance sample
@@ -249,32 +249,37 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 	if (intersect_and_resolve_mask(worker, secondary_ray, intersection, filter)) {
 		float light_pdf = 0.f;
 		const auto light = worker.scene().light(intersection.light_id(), light_pdf);
-		if (light) {
-			if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
-				light_pdf = num_lights_reciprocal_;
-			}
+		if (!light) {
+			return result;
+		}
 
-			const float ls_pdf = light->pdf(ray.time, secondary_ray.origin, sample_result.wi,
-											material_sample.is_translucent(),
-											worker, Sampler_filter::Nearest);
-			if (0.f == ls_pdf) {
-				return result;
-			}
+		if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
+			light_pdf = num_lights_reciprocal_;
+		}
 
-			const float3 wo = -sample_result.wi;
-			const auto& light_material_sample = intersection.sample(worker, wo, ray.time,
-																	Sampler_filter::Nearest);
+		const float ls_pdf = light->pdf(ray.time, secondary_ray.origin, sample_result.wi,
+										material_sample.is_translucent(),
+										worker, Sampler_filter::Nearest);
+		if (0.f == ls_pdf) {
+			return result;
+		}
 
-			if (light_material_sample.same_hemisphere(wo)) {
-				const float3 t = worker.transmittance(ray);
+		const float3 wo = -sample_result.wi;
+		// This will invalidate the contents of material_sample,
+		// so we must not use it after this point (e.g. in the calling function)!
+		// Exceptions are the Specular and Transmission cases, which never come here.
+		const auto& light_material_sample = intersection.sample(worker, wo, ray.time,
+																Sampler_filter::Nearest);
 
-				const float3 ls_energy = t * light_material_sample.radiance();
+		if (light_material_sample.same_hemisphere(wo)) {
+			const float3 t = worker.transmittance(ray);
 
-				const float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
+			const float3 ls_energy = t * light_material_sample.radiance();
 
-				result += (weight / sample_result.pdf)
-					   * (ls_energy * sample_result.reflection);
-			}
+			const float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
+
+			result += (weight / sample_result.pdf)
+				   * (ls_energy * sample_result.reflection);
 		}
 	}
 

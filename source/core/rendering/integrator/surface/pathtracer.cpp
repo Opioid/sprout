@@ -99,7 +99,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		}
 
 		if (intersection.material()->is_subsurface()) {
-			result += throughput * subsurface_.li(worker, ray, intersection);
+			result += throughput * subsurface_.li(worker, ray, intersection, material_sample);
 		}
 
 		material_sample.sample(material_sampler(i), sample_result);

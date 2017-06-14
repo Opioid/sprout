@@ -2,6 +2,7 @@
 #include "thinglass_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "rendering/integrator/surface/integrator_helper.hpp"
+#include "scene/material/material_helper.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/material/material_sample.inl"
@@ -21,10 +22,7 @@ const material::Sample& Thinglass::sample(const float3& wo, const Renderstate& r
 
 	if (normal_map_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
-
-		float3 nm = normal_map_.sample_3(sampler, rs.uv);
-		float3 n  = math::normalized(rs.tangent_to_world(nm));
-
+		const float3 n = sample_normal(normal_map_, sampler, rs);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
@@ -38,11 +36,11 @@ const material::Sample& Thinglass::sample(const float3& wo, const Renderstate& r
 
 float3 Thinglass::thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
 								  const Worker& worker, Sampler_filter filter) const {
-	float3 a = material::Sample::attenuation(absorption_color_, attenuation_distance_);
+	const float3 a = material::Sample::attenuation(absorption_color_, attenuation_distance_);
 
-	float n_dot_wi = material::Sample::absolute_clamped_dot(wo, n);
-	float approximated_distance = thickness_ / n_dot_wi;
-	float3 attenuation = rendering::attenuation(approximated_distance, a);
+	const float  n_dot_wi = material::Sample::absolute_clamped_dot(wo, n);
+	const float  approximated_distance = thickness_ / n_dot_wi;
+	const float3 attenuation = rendering::attenuation(approximated_distance, a);
 
 	return opacity(uv, time, worker, filter) * (1.f - refraction_color_ * attenuation);
 }

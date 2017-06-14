@@ -5,13 +5,11 @@
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/material/ggx/ggx.inl"
+#include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "base/math/vector3.inl"
-
-#include "scene/material/material_test.hpp"
-#include "base/debug/assert.hpp"
 
 namespace scene { namespace material { namespace substitute {
 
@@ -21,11 +19,7 @@ void Material_base::set_sample(const float3& wo, const Renderstate& rs,
 	sample.set_basis(rs.geo_n, wo);
 
 	if (normal_map_.is_valid()) {
-		float3 nm = normal_map_.sample_3(sampler, rs.uv);
-		float3 n = math::normalized(rs.tangent_to_world(nm));
-
-		SOFT_ASSERT(testing::check_normal_map(n, nm, rs.uv));
-
+		const float3 n = sample_normal(normal_map_, sampler, rs);
 		sample.layer_.set_tangent_frame(n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

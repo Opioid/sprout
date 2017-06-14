@@ -112,6 +112,7 @@ class Constant {
 
 public:
 
+	Constant(float f);
 	Constant(const float3& f);
 
 	float3 operator()(float wo_dot_h) const;
