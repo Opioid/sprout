@@ -107,13 +107,20 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	const float n_dot_wi = layer_.reversed_clamped_n_dot(wi);
 
 	const float d = ggx::distribution_isotropic(n_dot_h, a2);
+	const float g = ggx::G_smith(n_dot_wi, n_dot_wo, a2);
 //	const float3 f = fresnel(wo_dot_h);
+
+	const float refraction = d * g * (1.f - f);
+
+	const float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
 	float denom = (ior_i_ + ior_o_) * wo_dot_h;
 	denom = denom * denom;
 
+	const float ior_o_2 = ior_o_ * ior_o_;
+	result.reflection = float3(n_dot_wi * factor * ((ior_o_2 * refraction) / denom));
+
 	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-	result.reflection = float3(n_dot_wi * (1.f - f));
 	result.wi = wi;
 }
 

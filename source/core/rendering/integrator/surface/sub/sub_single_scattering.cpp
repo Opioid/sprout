@@ -71,7 +71,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 											   ray.time, sampler_, worker);
 	}
 
-	return (num_samples_reciprocal * sample_result.pdf) * (sample_result.reflection * radiance);
+	return (num_samples_reciprocal / sample_result.pdf) * (sample_result.reflection * radiance);
 }
 
 float3 Single_scattering::li(Worker& worker, Ray& ray, Intersection& intersection,
