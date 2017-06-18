@@ -64,8 +64,6 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 		return;
 	}
 
-
-
 	const float n_dot_wo = layer_.clamped_n_dot(wo_);
 
 	const float sint2 = (eta_i_ * eta_i_) * (1.f - n_dot_wo * n_dot_wo);
@@ -78,10 +76,9 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	const float n_dot_t = std::sqrt(1.f - sint2);
 
 	// fresnel has to be the same value that would have been computed by BRDF
-	const float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i_, eta_t_);
+	const float f = 1.f - fresnel::dielectric(n_dot_wo, n_dot_t, eta_i_, eta_t_);
 
 //	const fresnel::Constant constant(1.f - f);
-
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer_.a2_ >= Min_a2);
@@ -110,7 +107,7 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	const float g = ggx::G_smith(n_dot_wi, n_dot_wo, a2);
 //	const float3 f = fresnel(wo_dot_h);
 
-	const float refraction = d * g * (1.f - f);
+	const float refraction = d * g * f;
 
 	const float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
@@ -120,8 +117,23 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	const float ior_o_2 = ior_o_ * ior_o_;
 	result.reflection = float3(n_dot_wi * factor * ((ior_o_2 * refraction) / denom));
 
-	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+	result.pdf = /*0.5f **/ ( (d * n_dot_h) / (4.f * wo_dot_h) );
 	result.wi = wi;
+
+/*
+	const float2 s2d = sampler.generate_sample_2D();
+
+	const float3 is = math::sample_hemisphere_cosine(s2d);
+
+	const float3 wi = math::normalized(layer_.tangent_to_world(is));
+
+	const float n_dot_wi = layer_.clamped_n_dot(wi);
+
+	result.pdf = n_dot_wi * math::Pi_inv;
+	result.reflection = math::Pi_inv * layer_.diffuse_color_;
+	result.wi = wi;
+	result.type.clear_set(bxdf::Type::Diffuse_reflection);
+	*/
 }
 
 void Sample_subsurface::set(float ior, float ior_outside) {

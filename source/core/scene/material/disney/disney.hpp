@@ -27,8 +27,7 @@ public:
 private:
 
 	template<typename Layer>
-	static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
-						   const Layer& layer);
+	static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, const Layer& layer);
 };
 
 class Isotropic_no_lambert {
@@ -46,8 +45,7 @@ public:
 private:
 
 	template<typename Layer>
-	static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
-						   const Layer& layer);
+	static float3 evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, const Layer& layer);
 };
 
 }}}

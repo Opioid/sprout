@@ -56,7 +56,7 @@ float3 Integrator::estimate_direct_light(const float3& position, const scene::Pr
 			const float3 transmittance = math::exp(-tau);
 			const float3 l = transmittance * light_sample.radiance;
 
-			return (p * tv * t) * (scattering * l) / (light_pdf * light_sample.shape.pdf);
+			return ((p * tv * t) * (scattering * l)) / (light_pdf * light_sample.shape.pdf);
 		}
 	}
 
