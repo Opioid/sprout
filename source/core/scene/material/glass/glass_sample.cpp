@@ -76,15 +76,15 @@ float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+	const float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
 
-	float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
+	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
 	if (sint2 > 1.f) {
 		f = 1.f;
 	} else {
-		float n_dot_t = std::sqrt(1.f - sint2);
+		const float n_dot_t = std::sqrt(1.f - sint2);
 
 		// fresnel has to be the same value that would have been computed by BRDF
 		f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
@@ -112,19 +112,19 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+	const float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
 
-	float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
+	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
 	if (sint2 > 1.f) {
 		result.pdf = 0.f;
 		return 0.f;
 	}
 
-	float n_dot_t = std::sqrt(1.f - sint2);
+	const float n_dot_t = std::sqrt(1.f - sint2);
 
 	// fresnel has to be the same value that would have been computed by BRDF
-	float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
+	const float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
 	result.reflection = (1.f - f) * layer.color_;
 	result.wi = math::normalized((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
