@@ -35,7 +35,8 @@ float3 Integrator::estimate_direct_light(const float3& position, const scene::Pr
 			return float3(0.f);
 		}
 
-		const float prop_length = shadow_ray.length();
+		// Travel distance inside prop
+		const float prop_length = shadow_ray.max_t;//shadow_ray.length();
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		shadow_ray.min_t = shadow_ray.max_t + ray_offset;
