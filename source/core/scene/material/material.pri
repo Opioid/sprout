@@ -18,6 +18,7 @@ HEADERS += \
 	scene/material/material_sample.inl \
 	scene/material/material_sample_cache.hpp \
 	scene/material/material_sample_cache.inl \
+	scene/material/material_sample_helper.hpp \
 	scene/material/material_test.hpp \
 	scene/material/sampler_cache.hpp \
 	scene/material/sampler_settings.hpp \

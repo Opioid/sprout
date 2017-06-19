@@ -3,6 +3,7 @@
 #include "ggx.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/material_sample_helper.hpp"
 #include "scene/material/fresnel/fresnel.inl"
 #include "base/math/sincos.hpp"
 #include "base/math/math.hpp"
@@ -113,7 +114,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo,
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalized(layer.tangent_to_world(is));
 
-	const float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+	const float wo_dot_h = clamped_dot(wo, h);
 
 	const float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
 
@@ -143,7 +144,7 @@ float3 Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
 	const float3 h = math::normalized(wo + wi);
-	const float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+	const float wo_dot_h = clamped_dot(wo, h);
 	const float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
 	const float a2 = layer.a2_;
@@ -181,7 +182,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t, const 
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalized(layer.tangent_to_world(is));
 
-	const float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+	const float wo_dot_h = clamped_dot(wo, h);
 
 	const float3 wi = math::normalized((layer.eta_i_ * wo_dot_h - n_dot_t) * h - layer.eta_i_ * wo);
 
@@ -258,7 +259,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalized(layer.tangent_to_world(is));
 
-	const float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+	const float wo_dot_h = clamped_dot(wo, h);
 
 	const float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
 
@@ -321,7 +322,7 @@ float Anisotropic::reflect(const float3& wo, float n_dot_wo,
 	const float y_dot_h = math::dot(layer.b_, h);
 	const float n_dot_h = math::dot(layer.n_, h);
 
-	const float wo_dot_h = math::clamp(math::dot(wo, h), 0.00001f, 1.f);
+	const float wo_dot_h = clamped_dot(wo, h);
 
 	const float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
 

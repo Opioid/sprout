@@ -10,6 +10,8 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
+// http://blog.selfshadow.com/publications/s2015-shading-course/burley/s2015_pbs_disney_bsdf_notes.pdf
+
 namespace scene { namespace material { namespace disney {
 
 template<typename Layer>
@@ -27,7 +29,6 @@ template<typename Layer>
 float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 						 sampler::Sampler& sampler, bxdf::Result& result) {
 	const float2 s2d = sampler.generate_sample_2D();
-
 	const float3 is = math::sample_hemisphere_cosine(s2d);
 	const float3 wi = math::normalized(layer.tangent_to_world(is));
 
@@ -74,7 +75,6 @@ template<typename Layer>
 float Isotropic_no_lambert::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 									sampler::Sampler& sampler, bxdf::Result& result) {
 	const float2 s2d = sampler.generate_sample_2D();
-
 	const float3 is = math::sample_hemisphere_cosine(s2d);
 	const float3 wi = math::normalized(layer.tangent_to_world(is));
 
@@ -102,6 +102,7 @@ float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi, float n_do
 	const float fv = math::pow5(1.f - n_dot_wo);
 	const float rr = (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
 
+	// only the retro-reflection
 	return rr * ((fl + fv) + (fl * fv) * (rr - 1.f)) * (math::Pi_inv * layer.diffuse_color_);
 }
 

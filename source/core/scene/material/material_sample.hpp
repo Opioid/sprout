@@ -60,14 +60,6 @@ public:
 
 	void set_basis(const float3& geo_n, const float3& wo);
 
-	static float3 attenuation(const float3& color, float distance);
-
-	static float clamped_dot(const float3& a, const float3& b);
-
-	static float reversed_clamped_dot(const float3& a, const float3& b);
-
-	static float absolute_clamped_dot(const float3& a, const float3& b);
-
 protected:
 
 	float3 geo_n_;
