@@ -6,7 +6,7 @@ namespace scene { namespace material {
 
 constexpr float Dot_min = 0.00001f;
 
-static inline float3 attenuation(const float3& color, float distance) {
+static inline float3 absorption_coefficient(const float3& color, float distance) {
 	const float3 pushed = color + float3(0.01f);
 	return float3(1.f / (pushed[0] * distance),
 				  1.f / (pushed[1] * distance),

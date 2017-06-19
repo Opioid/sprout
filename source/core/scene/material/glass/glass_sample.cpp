@@ -59,7 +59,7 @@ bool Sample::is_translucent() const {
 void Sample::Layer::set(const float3& refraction_color, const float3& absorption_color,
 						float attenuation_distance, float ior, float ior_outside) {
 	color_ = refraction_color;
-	attenuation_ = material::attenuation(absorption_color, attenuation_distance);
+	attenuation_ = material::absorption_coefficient(absorption_color, attenuation_distance);
 	ior_ = ior;
 	ior_outside_ = ior_outside;
 }
