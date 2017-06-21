@@ -99,7 +99,7 @@ size_t Bruteforce::num_bytes() const {
 
 Bruteforce_factory::Bruteforce_factory(const take::Settings& take_settings,
 									   uint32_t num_integrators, float step_size) :
-	Factory(take_settings, num_integrators),
+	Factory(take_settings),
 	integrators_(memory::allocate_aligned<Bruteforce>(num_integrators)) {
 	settings_.step_size = step_size;
 }

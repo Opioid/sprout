@@ -30,7 +30,7 @@ class Factory {
 
 public:
 
-	Factory(const take::Settings& settings,	uint32_t num_integrators);
+	Factory(const take::Settings& settings);
 	virtual ~Factory();
 
 	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const = 0;
@@ -38,8 +38,6 @@ public:
 protected:
 
 	const take::Settings& take_settings_;
-
-	const uint32_t num_integrators_;
 };
 
 }}}

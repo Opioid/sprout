@@ -59,7 +59,7 @@ size_t Debug::num_bytes() const {
 
 Debug_factory::Debug_factory(const take::Settings& take_settings, uint32_t num_integrators,
 							 Debug::Settings::Vector vector) :
-	Factory(take_settings, num_integrators),
+	Factory(take_settings),
 	integrators_(memory::allocate_aligned<Debug>(num_integrators)) {
 	settings_.vector = vector;
 }

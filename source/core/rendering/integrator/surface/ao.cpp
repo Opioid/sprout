@@ -63,7 +63,7 @@ size_t AO::num_bytes() const {
 
 AO_factory::AO_factory(const take::Settings& settings, uint32_t num_integrators,
 					   uint32_t num_samples, float radius) :
-	Factory(settings, num_integrators),
+	Factory(settings),
 	integrators_(memory::allocate_aligned<AO>(num_integrators)) {
 	settings_.num_samples = num_samples;
 	settings_.num_samples_reciprocal = 1.f / static_cast<float>(settings_.num_samples);

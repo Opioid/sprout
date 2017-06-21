@@ -362,7 +362,7 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 											   float path_termination_probability,
 											   Light_sampling light_sampling,
 											   bool enable_caustics) :
-	Factory(take_settings, num_integrators),
+	Factory(take_settings),
 	sub_factory_(sub_factory),
 	integrators_(memory::allocate_aligned<Pathtracer_MIS>(num_integrators)),
 	settings_{

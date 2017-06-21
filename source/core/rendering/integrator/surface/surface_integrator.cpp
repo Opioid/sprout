@@ -45,8 +45,8 @@ bool Integrator::intersect_and_resolve_mask(Worker& worker, Ray& ray, Intersecti
 	return resolve_mask(worker, ray, intersection, filter);
 }
 
-Factory::Factory(const take::Settings& settings, uint32_t num_integrators) :
-	take_settings_(settings), num_integrators_(num_integrators) {}
+Factory::Factory(const take::Settings& settings) :
+	take_settings_(settings) {}
 
 Factory::~Factory() {}
 

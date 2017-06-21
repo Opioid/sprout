@@ -171,7 +171,7 @@ Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 									   uint32_t min_bounces, uint32_t max_bounces,
 									   float path_termination_probability,
 									   bool enable_caustics) :
-	Factory(take_settings, num_integrators),
+	Factory(take_settings),
 	sub_factory_(sub_factory),
 	integrators_(memory::allocate_aligned<Pathtracer>(num_integrators)),
 	settings_ {
