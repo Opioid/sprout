@@ -50,6 +50,13 @@ int main(int argc, char* argv[]) {
 //	testing::spectrum();
 //	return 1;
 
+	size_t num_elems = 8;
+	float3* floats = memory::construct_aligned<float3>(num_elems);
+
+
+	memory::destroy_aligned(floats, num_elems);
+
+
 	logging::init(logging::Type::Std_out);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");
 

@@ -23,6 +23,8 @@ void destroy_aligned(T* objects, size_t count) {
 	for (size_t i = 0; i < count; ++i) {
 		objects[i].~T();
 	}
+
+	free_aligned(objects);
 }
 
 }
