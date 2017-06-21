@@ -15,8 +15,11 @@ void* allocate_aligned(size_t size) {
 	return _aligned_malloc(size, L1_cache_line_size);
 #else
 	void* pointer;
-	posix_memalign(&pointer, L1_cache_line_size, size);
-	return pointer;
+	if (0 == posix_memalign(&pointer, L1_cache_line_size, size)) {
+		return pointer;
+	}
+
+	return nullptr;
 #endif
 }
 
