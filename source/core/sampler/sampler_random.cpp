@@ -37,7 +37,7 @@ Random_factory::Random_factory(uint32_t num_samplers) :
 	samplers_(memory::allocate_aligned<Random>(num_samplers)) {}
 
 Random_factory::~Random_factory() {
-	memory::destroy_aligned(samplers_, num_samplers_);
+	memory::free_aligned(samplers_);
 }
 
 Sampler* Random_factory::create(uint32_t id, rnd::Generator& rng) const {

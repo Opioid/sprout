@@ -5,6 +5,7 @@
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
@@ -64,7 +65,7 @@ Debug_factory::Debug_factory(const take::Settings& take_settings, uint32_t num_i
 }
 
 Debug_factory::~Debug_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 }
 
 Integrator* Debug_factory::create(uint32_t id, rnd::Generator& rng) const {

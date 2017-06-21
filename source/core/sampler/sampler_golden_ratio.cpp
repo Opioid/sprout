@@ -76,7 +76,7 @@ Golden_ratio_factory::Golden_ratio_factory(uint32_t num_samplers) :
 	samplers_(memory::allocate_aligned<Golden_ratio>(num_samplers)) {}
 
 Golden_ratio_factory::~Golden_ratio_factory() {
-	memory::destroy_aligned(samplers_, num_samplers_);
+	memory::free_aligned(samplers_);
 }
 
 Sampler* Golden_ratio_factory::create(uint32_t id, rnd::Generator& rng) const {

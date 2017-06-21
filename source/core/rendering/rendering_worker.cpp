@@ -9,6 +9,7 @@
 #include "scene/material/material.hpp"
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sample_distribution.hpp"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
 namespace rendering {
@@ -18,10 +19,13 @@ Worker::Worker() :
 	volume_integrator_(nullptr),
 	sampler_(nullptr) {}
 
-Worker::~Worker() {}
+Worker::~Worker() {
+	memory::safe_destruct(sampler_);
+	memory::safe_destruct(volume_integrator_);
+	memory::safe_destruct(surface_integrator_);
+}
 
-void Worker::init(uint32_t id, const scene::Scene& scene,
-				  const rnd::Generator& rng,
+void Worker::init(uint32_t id, const scene::Scene& scene, const rnd::Generator& rng,
 				  integrator::surface::Factory& surface_integrator_factory,
 				  integrator::volume::Factory& volume_integrator_factory,
 				  sampler::Factory& sampler_factory) {
@@ -31,7 +35,7 @@ void Worker::init(uint32_t id, const scene::Scene& scene,
 
 	surface_integrator_ = surface_integrator_factory.create(id, rng_);
 	volume_integrator_  = volume_integrator_factory.create(id, rng_);
-	sampler_ = sampler_factory.create(id, rng_);
+	sampler_			= sampler_factory.create(id, rng_);
 }
 
 void Worker::prepare(uint32_t num_samples_per_pixel) {

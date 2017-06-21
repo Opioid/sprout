@@ -6,6 +6,7 @@
 #include "scene/material/material_sample.inl"
 #include "base/math/sampling/sampling.hpp"
 #include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
@@ -70,7 +71,7 @@ AO_factory::AO_factory(const take::Settings& settings, uint32_t num_integrators,
 }
 
 AO_factory::~AO_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 }
 
 Integrator* AO_factory::create(uint32_t id, rnd::Generator& rng) const {

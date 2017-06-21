@@ -3,6 +3,7 @@
 #include "scene/prop.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
+#include "scene/shape/node_stack.inl"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"

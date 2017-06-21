@@ -15,6 +15,7 @@
 #include "scene/material/material_sample.inl"
 #include "base/spectrum/rgb.hpp"
 #include "base/math/vector3.inl"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
@@ -27,6 +28,10 @@ Pathtracer::Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
 	sampler_(rng),
 	material_samplers_{rng, rng, rng},
 	transmittance_(rng, take_settings) {}
+
+Pathtracer::~Pathtracer() {
+	memory::safe_destruct(subsurface_);
+}
 
 void Pathtracer::prepare(const Scene& /*scene*/, uint32_t num_samples_per_pixel) {
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
@@ -177,7 +182,7 @@ Pathtracer_factory::Pathtracer_factory(const take::Settings& take_settings,
 	} {}
 
 Pathtracer_factory::~Pathtracer_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 	delete sub_factory_;
 }
 

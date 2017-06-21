@@ -46,7 +46,7 @@ LD_factory::LD_factory(uint32_t num_samplers) :
 	samplers_(memory::allocate_aligned<LD>(num_samplers)) {}
 
 LD_factory::~LD_factory() {
-	memory::destroy_aligned(samplers_, num_samplers_);
+	memory::free_aligned(samplers_);
 }
 
 Sampler* LD_factory::create(uint32_t id, rnd::Generator& rng) const {

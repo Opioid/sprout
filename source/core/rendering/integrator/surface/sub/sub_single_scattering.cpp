@@ -10,6 +10,7 @@
 #include "scene/material/bssrdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface { namespace sub {
@@ -173,7 +174,7 @@ Single_scattering_factory::Single_scattering_factory(const take::Settings& take_
 	settings_{ step_size } {}
 
 Single_scattering_factory::~Single_scattering_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 }
 
 Integrator* Single_scattering_factory::create(uint32_t id, rnd::Generator& rng) const {

@@ -11,12 +11,24 @@ T* allocate_aligned(size_t count) {
 	return reinterpret_cast<T*>(allocate_aligned(count * sizeof(T)));
 }
 
+void free_aligned(void* pointer);
+
+template<class T>
+void safe_destruct(T* t) {
+	if (t) {
+		t->~T();
+	}
+}
+
+template<class T>
+void safe_destruct(T& t) {
+	t.~T();
+}
+
 template<typename T>
 T* construct_aligned(size_t count) {
 	return new(allocate_aligned<T>(count)) T[count];
 }
-
-void free_aligned(void* pointer);
 
 template<typename T>
 void destroy_aligned(T* objects, size_t count) {

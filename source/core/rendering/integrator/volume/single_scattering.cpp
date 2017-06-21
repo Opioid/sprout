@@ -8,6 +8,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/sampling/sampling.hpp"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
@@ -146,7 +147,7 @@ Single_scattering_factory::Single_scattering_factory(const take::Settings& take_
 	settings_{ step_size } {}
 
 Single_scattering_factory::~Single_scattering_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 }
 
 Integrator* Single_scattering_factory::create(uint32_t id, rnd::Generator& rng) const {

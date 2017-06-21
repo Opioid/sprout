@@ -9,6 +9,7 @@
 #include "scene/material/bssrdf.hpp"
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sampling.hpp"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
 #include <iostream>
@@ -104,7 +105,7 @@ Bruteforce_factory::Bruteforce_factory(const take::Settings& take_settings,
 }
 
 Bruteforce_factory::~Bruteforce_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 }
 
 Integrator* Bruteforce_factory::create(uint32_t id, rnd::Generator& rng) const {

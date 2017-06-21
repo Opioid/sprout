@@ -5,6 +5,7 @@
 #include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
+#include "base/memory/align.hpp"
 
 namespace rendering { namespace integrator { namespace volume {
 
@@ -54,7 +55,7 @@ Attenuation_factory::Attenuation_factory(const take::Settings& settings, uint32_
 	integrators_(memory::allocate_aligned<Attenuation>(num_integrators)) {}
 
 Attenuation_factory::~Attenuation_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 }
 
 Integrator* Attenuation_factory::create(uint32_t id, rnd::Generator& rng) const {

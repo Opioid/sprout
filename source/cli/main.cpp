@@ -32,6 +32,8 @@
 #include "core/testing/testing_size.hpp"
 #include "core/testing/testing_spectrum.hpp"
 
+#include "base/memory/align.hpp"
+
 static void log_memory_consumption(const resource::Manager& manager,
 								   const take::Take& take,
 								   size_t rendering_num_bytes);

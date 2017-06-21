@@ -134,7 +134,7 @@ Whitted_factory::Whitted_factory(const take::Settings& take_settings, uint32_t n
 }
 
 Whitted_factory::~Whitted_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 }
 
 Integrator* Whitted_factory::create(uint32_t id, rnd::Generator& rng) const {

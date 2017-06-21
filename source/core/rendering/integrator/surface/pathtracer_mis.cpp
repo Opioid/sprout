@@ -12,6 +12,7 @@
 #include "scene/material/material_sample.inl"
 #include "scene/scene_intersection.inl"
 #include "base/math/vector4.inl"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
@@ -27,6 +28,10 @@ Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_s
 	light_samplers_{rng, rng, rng},
 	transmittance_open_(rng, take_settings, settings.max_bounces),
 	transmittance_closed_(rng, take_settings) {}
+
+Pathtracer_MIS::~Pathtracer_MIS() {
+	memory::safe_destruct(subsurface_);
+}
 
 void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
 	num_lights_reciprocal_ = 1.f / static_cast<float>(scene.lights().size());
@@ -370,7 +375,7 @@ Pathtracer_MIS_factory::Pathtracer_MIS_factory(const take::Settings& take_settin
 	} {}
 
 Pathtracer_MIS_factory::~Pathtracer_MIS_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 	delete sub_factory_;
 }
 

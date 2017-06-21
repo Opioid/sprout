@@ -42,7 +42,7 @@ EMS_factory::EMS_factory(uint32_t num_samplers) :
 	samplers_(memory::allocate_aligned<EMS>(num_samplers)) {}
 
 EMS_factory::~EMS_factory() {
-	memory::destroy_aligned(samplers_, num_samplers_);
+	memory::free_aligned(samplers_);
 }
 
 Sampler* EMS_factory::create(uint32_t id, rnd::Generator& rng) const {

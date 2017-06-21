@@ -14,6 +14,7 @@
 #include "scene/material/material_sample.inl"
 #include "base/spectrum/rgb.hpp"
 #include "base/math/vector3.inl"
+#include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface {
@@ -198,7 +199,7 @@ Pathtracer_DL_factory::Pathtracer_DL_factory(const take::Settings& take_settings
 }
 
 Pathtracer_DL_factory::~Pathtracer_DL_factory() {
-	memory::destroy_aligned(integrators_, num_integrators_);
+	memory::free_aligned(integrators_);
 }
 
 Integrator* Pathtracer_DL_factory::create(uint32_t id, rnd::Generator& rng) const {
