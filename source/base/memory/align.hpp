@@ -27,7 +27,22 @@ void safe_destruct(T& t) {
 
 template<typename T>
 T* construct_aligned(size_t count) {
-	return new(allocate_aligned<T>(count)) T[count];
+	// This is more complicated than expected. See for example:
+	// https://stackoverflow.com/questions/8720425/array-placement-new-requires-unspecified-overhead-in-the-buffer
+	// Basically there is a small memory overhead for placement new[] that is "unknown" beforehand,
+	// but needs to be allocated as well
+
+	//	return new(allocate_aligned<T>(count)) T[count];
+
+	// It is easier to construct the array elements individually
+
+	T* buffer = allocate_aligned<T>(count);
+
+	for (size_t i = 0; i < count; ++i) {
+		new(&buffer[i]) T;
+	}
+
+	return buffer;
 }
 
 template<typename T>
