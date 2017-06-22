@@ -30,11 +30,11 @@ T* construct_aligned(size_t count) {
 	// This is more complicated than expected. See for example:
 	// https://stackoverflow.com/questions/8720425/array-placement-new-requires-unspecified-overhead-in-the-buffer
 	// Basically there is a small memory overhead for placement new[] that is "unknown" beforehand,
-	// but needs to be allocated as well
+	// but needs to be allocated as well.
 
 	//	return new(allocate_aligned<T>(count)) T[count];
 
-	// It is easier to construct the array elements individually
+	// It is easier to construct the array elements individually.
 
 	T* buffer = allocate_aligned<T>(count);
 
