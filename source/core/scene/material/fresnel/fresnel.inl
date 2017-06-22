@@ -21,7 +21,7 @@ static inline float3 schlick(float wo_dot_h, const float3& f0) {
 }
 
 static inline float schlick_f0(float n0, float n1) {
-	float t = (n0 - n1) / (n0 + n1);
+	const float t = (n0 - n1) / (n0 + n1);
 	return t * t;
 }
 
@@ -42,11 +42,11 @@ static inline float3 conductor(float wo_dot_h, const float3& eta, const float3& 
 }
 
 static inline float dielectric(float cos_theta_i, float cos_theta_t, float eta_i, float eta_t) {
-	float r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t)
-			  / (eta_t * cos_theta_i + eta_i * cos_theta_t);
+	const float r_p = (eta_t * cos_theta_i - eta_i * cos_theta_t)
+					/ (eta_t * cos_theta_i + eta_i * cos_theta_t);
 
-	float r_o = (eta_i * cos_theta_i - eta_t * cos_theta_t)
-			  / (eta_i * cos_theta_i + eta_t * cos_theta_t);
+	const float r_o = (eta_i * cos_theta_i - eta_t * cos_theta_t)
+					/ (eta_i * cos_theta_i + eta_t * cos_theta_t);
 
 	return 0.5f * (r_p * r_p + r_o * r_o);
 }

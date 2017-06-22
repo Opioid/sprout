@@ -16,7 +16,7 @@ float3 Sample_subsurface::evaluate(const float3& wi, float& pdf) const {
 	}
 
 	const float3 h = math::normalized(wo_ + wi);
-	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+	const float wo_dot_h = clamped_dot(wo_, h);
 
 	return layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
 }
@@ -97,7 +97,7 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalized(layer_.tangent_to_world(is));
 
-	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+	const float wo_dot_h = clamped_dot(wo_, h);
 
 	const float3 wi = math::normalized((eta_i_ * wo_dot_h - n_dot_t) * h - eta_i_ * wo_);
 

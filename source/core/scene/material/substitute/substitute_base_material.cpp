@@ -59,9 +59,9 @@ void Material_base::set_color(const float3& color) {
 	color_ = color;
 }
 
-void Material_base::set_ior(float ior, float externeal_ior) {
+void Material_base::set_ior(float ior, float external_ior) {
 	ior_ = ior;
-	constant_f0_ = fresnel::schlick_f0(externeal_ior, ior);
+	constant_f0_ = fresnel::schlick_f0(external_ior, ior);
 }
 
 void Material_base::set_roughness(float roughness) {

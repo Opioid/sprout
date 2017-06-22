@@ -15,8 +15,8 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 		return float3::identity();
 	}
 
-	float3 h = math::normalized(wo_ + wi);
-	float wo_dot_h = clamped_dot(wo_, h);
+	const float3 h = math::normalized(wo_ + wi);
+	const float wo_dot_h = clamped_dot(wo_, h);
 
 	return layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
 }
@@ -30,7 +30,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	if (1.f == layer_.metallic_) {
 		layer_.pure_specular_sample(wo_, sampler, result);
 	} else {
-		float p = sampler.generate_sample_1D();
+		const float p = sampler.generate_sample_1D();
 
 		if (p < 0.5f) {
 			layer_.diffuse_sample(wo_, sampler, result);

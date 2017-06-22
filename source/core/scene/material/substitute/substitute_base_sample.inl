@@ -47,7 +47,7 @@ template<typename Coating>
 float3 Sample_base<Diffuse>::base_and_coating_evaluate(const float3& wi, const Coating& coating,
 													   float& pdf) const {
 	const float3 h = math::normalized(wo_ + wi);
-	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+	const float wo_dot_h = clamped_dot(wo_, h);
 
 	float3 coating_attenuation;
 	float  coating_pdf;

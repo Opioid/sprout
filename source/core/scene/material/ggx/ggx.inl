@@ -90,9 +90,8 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 }
 
 template<typename Layer, typename Fresnel>
-float Isotropic::reflect(const float3& wo, float n_dot_wo,
-						 const Layer& layer, const Fresnel& fresnel,
-						 sampler::Sampler& sampler, bxdf::Result& result) {
+float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Result& result) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	// For reflections we could do a perfect mirror,
 	// but the decision is to always use a minimum roughness instead

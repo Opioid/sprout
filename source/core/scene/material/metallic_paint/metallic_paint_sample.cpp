@@ -20,7 +20,7 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	}
 
 	float3 h = math::normalized(wo_ + wi);
-	float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+	float wo_dot_h = clamped_dot(wo_, h);
 
 	float3 coating_attenuation;
 	float  coating_pdf;

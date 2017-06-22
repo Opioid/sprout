@@ -33,7 +33,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	const float3 wi = math::normalized(layer.tangent_to_world(is));
 
 	const float3 h = math::normalized(wo + wi);
-	const float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
+	const float h_dot_wi = clamped_dot(h, wi);
 
 	const float n_dot_wi = layer.clamped_n_dot(wi);
 
@@ -79,7 +79,7 @@ float Isotropic_no_lambert::reflect(const float3& wo, float n_dot_wo, const Laye
 	const float3 wi = math::normalized(layer.tangent_to_world(is));
 
 	const float3 h = math::normalized(wo + wi);
-	const float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
+	const float h_dot_wi = clamped_dot(h, wi);
 
 	const float n_dot_wi = layer.clamped_n_dot(wi);
 

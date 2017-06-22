@@ -34,7 +34,7 @@ float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
 	}
 
 	const float3 h = math::normalized(wo_ + wi);
-	const float wo_dot_h = math::clamp(math::dot(wo_, h), 0.00001f, 1.f);
+	const float wo_dot_h = clamped_dot(wo_, h);
 
 	const float3 result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
 

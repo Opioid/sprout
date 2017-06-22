@@ -18,7 +18,7 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 //	float3 brdf = lambert::Isotropic::reflection(layer_.diffuse_color, n_dot_wi, layer_, pdf);
 
 	float3 h = math::normalized(wo_ + wi);
-	float h_dot_wi = math::clamp(math::dot(h, wi), 0.00001f, 1.f);
+	float h_dot_wi = clamped_dot(h, wi);
 
 //	const float wi_dot_wo = math::dot(wi, wo_);
 //	const float sl_wi_wo = 2.f + 2.f * wi_dot_wo;
