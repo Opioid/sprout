@@ -29,23 +29,19 @@ protected:
 	float3 base_and_coating_evaluate(const float3& wi, const Coating& coating, float& pdf) const;
 
 	template<typename Coating>
-	void base_and_coating_sample(const Coating& coating,
-								 sampler::Sampler& sampler,
+	void base_and_coating_sample(const Coating& coating, sampler::Sampler& sampler,
 								 bxdf::Result& result) const;
 
 	template<typename Coating>
-	void diffuse_sample_and_coating(const Coating& coating,
-									sampler::Sampler& sampler,
+	void diffuse_sample_and_coating(const Coating& coating, sampler::Sampler& sampler,
 									bxdf::Result& result) const;
 
 	template<typename Coating>
-	void specular_sample_and_coating(const Coating& coating,
-									 sampler::Sampler& sampler,
+	void specular_sample_and_coating(const Coating& coating, sampler::Sampler& sampler,
 									 bxdf::Result& result) const;
 
 	template<typename Coating>
-	void pure_specular_sample_and_coating(const Coating& coating,
-										  sampler::Sampler& sampler,
+	void pure_specular_sample_and_coating(const Coating& coating, sampler::Sampler& sampler,
 										  bxdf::Result& result) const;
 
 public:
