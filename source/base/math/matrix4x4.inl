@@ -41,7 +41,7 @@ Matrix4x4<T>::Matrix4x4(const Matrix3x3<T>& m) :
 
 template<typename T>
 Matrix4x4<T>::Matrix4x4(const Transformation& t) {
-	set_basis_scale_origin(*this, create_matrix3x3(t.rotation), t.scale, t.position);
+	compose(*this, create_matrix3x3(t.rotation), t.scale, t.position);
 }
 
 template<typename T>
@@ -386,7 +386,7 @@ Matrix4x4<T> affine_inverted(const Matrix4x4<T>& m) {
 }
 
 template<typename T>
-void set_basis_scale_origin(Matrix4x4<T>& m,
+void compose(Matrix4x4<T>& m,
 							const Matrix3x3<T>& basis,
 							const Vector3<T>& scale,
 							const Vector3<T>& origin) {
@@ -414,10 +414,10 @@ inline Matrix4x4f_a::Matrix4x4f_a(float m00, float m01, float m02, float m03,
 	  Vector4f_a(m20, m21, m22, m23),
 	  Vector4f_a(m30, m31, m32, m33)} {}
 
-static inline void set_basis_scale_origin(Matrix4x4f_a& m,
-										  const Matrix3x3f_a& basis,
-										  const Vector3f_a& scale,
-										  const Vector3f_a& origin) {
+static inline void compose(Matrix4x4f_a& m,
+						   const Matrix3x3f_a& basis,
+						   const Vector3f_a& scale,
+						   const Vector3f_a& origin) {
 	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
 	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
 
@@ -431,10 +431,10 @@ static inline void set_basis_scale_origin(Matrix4x4f_a& m,
 	m.r[3][2] = origin[2];				  m.r[3][3] = 1.f;
 }
 
-static inline void set_basis_scale_origin(Matrix4x4f_a& m,
-										  const Matrix4x4f_a& basis,
-										  const Vector3f_a& scale,
-										  const Vector3f_a& origin) {
+static inline void compose(Matrix4x4f_a& m,
+						   const Matrix4x4f_a& basis,
+						   const Vector3f_a& scale,
+						   const Vector3f_a& origin) {
 	m.r[0][0] = basis.r[0][0] * scale[0]; m.r[0][1] = basis.r[0][1] * scale[0];
 	m.r[0][2] = basis.r[0][2] * scale[0]; m.r[0][3] = 0.f;
 
@@ -449,8 +449,7 @@ static inline void set_basis_scale_origin(Matrix4x4f_a& m,
 }
 
 inline Matrix4x4f_a::Matrix4x4f_a(const Transformation& t) {
-	set_basis_scale_origin(*this, quaternion::create_matrix3x3(t.rotation),
-						   t.scale, t.position);
+	compose(*this, quaternion::create_matrix3x3(t.rotation), t.scale, t.position);
 }
 
 inline Vector3f_a Matrix4x4f_a::x() const{
