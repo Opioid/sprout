@@ -7,6 +7,9 @@
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sampling.hpp"
 
+#include <iostream>
+#include "base/math/print.hpp"
+
 namespace scene { namespace material { namespace substitute {
 
 float3 Sample_subsurface::evaluate(const float3& wi, float& pdf) const {
@@ -100,6 +103,15 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	const float wo_dot_h = clamped_dot(wo_, h);
 
 	const float3 wi = math::normalized((eta_i_ * wo_dot_h - n_dot_t) * h - eta_i_ * wo_);
+
+
+	const float3 wi_alt = math::normalized(2.f * wo_dot_h * h - wo_);
+
+//	std::cout << wi << " : " << wi_alt << std::endl;
+
+	const float wi_dot_h = clamped_dot(wi_alt, h);
+	std::cout << math::dot(wo_, h) << " : " << wo_dot_h << " : " << wi_dot_h << std::endl;
+
 
 	const float n_dot_wi = layer_.reversed_clamped_n_dot(wi);
 
