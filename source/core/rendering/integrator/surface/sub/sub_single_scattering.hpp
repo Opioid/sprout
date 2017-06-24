@@ -32,7 +32,7 @@ public:
 					  const Material_sample& material_sample) final override;
 
 	virtual float3 li(Worker& worker, Ray& ray, Intersection& intersection,
-					  sampler::Sampler& sampler, Sampler_filter filter,
+					  const Material_sample& material_sample, Sampler_filter filter,
 					  Bxdf_result& sample_result) final override;
 
 	virtual size_t num_bytes() const final override;

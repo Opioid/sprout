@@ -88,7 +88,7 @@ float3 Bruteforce::li(Worker& worker, const Ray& ray, const Intersection& inters
 }
 
 float3 Bruteforce::li(Worker& worker, Ray& ray, Intersection& intersection,
-					  sampler::Sampler& sampler, Sampler_filter filter,
+					  const Material_sample& material_sample, Sampler_filter filter,
 					  Bxdf_result& sample_result) {
 	return float3(0.f);
 }

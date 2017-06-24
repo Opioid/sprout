@@ -29,21 +29,14 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 
 	const float p = sampler.generate_sample_1D();
 
-	if (p < 0.5f) {
-		layer_.diffuse_sample(wo_, sampler, result);
-	} else {
-		layer_.specular_sample(wo_, sampler, result);
-	}
-/*
-	if (p < 0.5f) {
-//		const float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_,
-//														   layer_, sampler, result);
-//		result.wi *= -1.f;
-//		const float approximated_distance = thickness_ / n_dot_wi;
-//		const float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
-//		result.reflection *= n_dot_wi * attenuation;
+//	if (p < 0.5f) {
+//		layer_.diffuse_sample(wo_, sampler, result);
+//	} else {
+//		layer_.specular_sample(wo_, sampler, result);
+//	}
 
-		result.wi = -wo_;
+	if (p < 0.5f) {
+		sample_sss(sampler, result);
 
 		result.type.set(bxdf::Type::SSS);
 	} else {
@@ -52,17 +45,18 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 		} else {
 			layer_.specular_sample(wo_, sampler, result);
 		}
+
+		result.pdf *= 0.5f;
 	}
 
-	result.pdf *= 0.5f;
-	*/
+
 }
 
 void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const {
-	if (!same_hemisphere(wo_)) {
-		result.pdf = 0.f;
-		return;
-	}
+//	if (!same_hemisphere(wo_)) {
+//		result.pdf = 0.f;
+//		return;
+//	}
 
 	const float n_dot_wo = layer_.clamped_n_dot(wo_);
 
@@ -114,23 +108,8 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	const float ior_o_2 = ior_o_ * ior_o_;
 	result.reflection = n_dot_wi * factor * ((ior_o_2 * refraction) / denom);
 
-	result.pdf = /*0.5f **/ ( (d * n_dot_h) / (4.f * wo_dot_h) );
+	result.pdf = 0.5f * ((d * n_dot_h) / (4.f * wo_dot_h));
 	result.wi = wi;
-
-/*
-	const float2 s2d = sampler.generate_sample_2D();
-
-	const float3 is = math::sample_hemisphere_cosine(s2d);
-
-	const float3 wi = math::normalized(layer_.tangent_to_world(is));
-
-	const float n_dot_wi = layer_.clamped_n_dot(wi);
-
-	result.pdf = n_dot_wi * math::Pi_inv;
-	result.reflection = math::Pi_inv * layer_.diffuse_color_;
-	result.wi = wi;
-	result.type.clear_set(bxdf::Type::Diffuse_reflection);
-	*/
 }
 
 void Sample_subsurface::set(float ior, float ior_outside) {
