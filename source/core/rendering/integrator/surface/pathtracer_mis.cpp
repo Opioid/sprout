@@ -142,9 +142,13 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 			throughput *= tr;
 			opacity += spectrum::luminance(tr);
 		} else if (sample_result.type.test(Bxdf_type::SSS)) {
-			result += throughput * subsurface_.li(worker, ray, intersection, material_sample,
+			result += throughput * subsurface_.li(worker, ray, intersection,
 												  Sampler_filter::Nearest, sample_result);
-			throughput *= sample_result.reflection;
+			if (0.f == sample_result.pdf) {
+				break;
+			}
+
+			throughput *= sample_result.reflection / sample_result.pdf;
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 			opacity = 1.f;

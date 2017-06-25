@@ -46,21 +46,31 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 			layer_.specular_sample(wo_, sampler, result);
 		}
 
-		result.pdf *= 0.5f;
+
 	}
 
-
+	result.pdf *= 0.5f;
 }
 
 void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const {
-//	if (!same_hemisphere(wo_)) {
-//		result.pdf = 0.f;
-//		return;
-//	}
+	Layer tmp = layer_;
 
-	const float n_dot_wo = layer_.clamped_n_dot(wo_);
+	float ior_i = ior_i_;
+	float ior_o = ior_o_;
+	float eta_i = eta_i_;
+	float eta_t = eta_t_;
 
-	const float sint2 = (eta_i_ * eta_i_) * (1.f - n_dot_wo * n_dot_wo);
+	if (!same_hemisphere(wo_)) {
+		tmp.n_ *= -1.f;
+		ior_i = ior_o_;
+		ior_o = ior_i_;
+		eta_i = eta_t_;
+		eta_t = eta_i_;
+	}
+
+	const float n_dot_wo = tmp.clamped_n_dot(wo_);
+
+	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
 	if (sint2 > 1.f) {
 		result.pdf = 0.f;
@@ -84,13 +94,13 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	math::sincos(phi, sin_phi, cos_phi);
 
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	const float3 h = math::normalized(layer_.tangent_to_world(is));
+	const float3 h = math::normalized(tmp.tangent_to_world(is));
 
 	const float wo_dot_h = clamped_dot(wo_, h);
 
-	const float3 wi = math::normalized((eta_i_ * wo_dot_h - n_dot_t) * h - eta_i_ * wo_);
+	const float3 wi = math::normalized((eta_i * wo_dot_h - n_dot_t) * h - eta_i * wo_);
 
-	const float n_dot_wi = layer_.reversed_clamped_n_dot(wi);
+	const float n_dot_wi = tmp.reversed_clamped_n_dot(wi);
 
 	const float d = ggx::distribution_isotropic(n_dot_h, a2);
 	const float g = ggx::G_smith(n_dot_wi, n_dot_wo, a2);
@@ -102,13 +112,14 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 
 	const float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	float denom = (ior_i_ + ior_o_) * wo_dot_h;
+	float denom = (ior_i + ior_o) * wo_dot_h;
 	denom = denom * denom;
 
-	const float ior_o_2 = ior_o_ * ior_o_;
-	result.reflection = n_dot_wi * factor * ((ior_o_2 * refraction) / denom);
+	const float ior_o_2 = ior_o * ior_o;
+	result.reflection = (n_dot_wi * factor) * ((ior_o_2 * refraction) / denom);
+					//  * layer_.diffuse_color_;
 
-	result.pdf = 0.5f * ((d * n_dot_h) / (4.f * wo_dot_h));
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.wi = wi;
 }
 
