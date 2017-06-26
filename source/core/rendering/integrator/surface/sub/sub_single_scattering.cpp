@@ -25,14 +25,15 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t /*num_samples_p
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Single_scattering::li(Worker& worker, Ray& ray, Intersection& intersection,
+float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& intersection,
 							 Sampler_filter filter, Bxdf_result& sample_result) {
 	if (0.f == sample_result.pdf) {
 		return float3(0.f);
 	}
 
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	Ray tray(intersection.geo.p, sample_result.wi, ray_offset, scene::Ray_max_t);
+	Ray tray(intersection.geo.p, sample_result.wi,
+			 ray_offset, scene::Ray_max_t, ray.time, ray.depth);
 	if (!worker.intersect(intersection.prop, tray, intersection)) {
 		return float3(0.f);
 	}

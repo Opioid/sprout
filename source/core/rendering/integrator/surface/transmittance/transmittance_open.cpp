@@ -19,25 +19,29 @@ void Open::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pix
 
 void Open::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& intersection,
+float3 Open::resolve(Worker& worker, const scene::Ray& ray, scene::Intersection& intersection,
 					 const float3& attenuation, sampler::Sampler& sampler,
 					 Sampler_filter filter, Bxdf_result& sample_result) const {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_attenuation = attenuation;
 
+	Ray tray;
+	tray.time = ray.time;
+	tray.depth = ray.depth;
+
 	for (uint32_t i = max_bounces_; i > 0;) {
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-		ray.origin = intersection.geo.p;
-		ray.set_direction(sample_result.wi);
-		ray.min_t = ray_offset;
-		ray.max_t = scene::Ray_max_t;
+		tray.origin = intersection.geo.p;
+		tray.set_direction(sample_result.wi);
+		tray.min_t = ray_offset;
+		tray.max_t = scene::Ray_max_t;
 
-		if (!worker.intersect(ray, intersection)) {
+		if (!worker.intersect(tray, intersection)) {
 			break;
 		}
 
-		const float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
+		const float3 wo = -tray.direction;
+		auto& material_sample = intersection.sample(worker, wo, tray.time, filter);
 
 		material_sample.sample(sampler, sample_result);
 		if (0.f == sample_result.pdf || float3::identity() == sample_result.reflection) {
@@ -47,12 +51,12 @@ float3 Open::resolve(Worker& worker, scene::Ray& ray, scene::Intersection& inter
 		if (material_sample.is_transmissive()) {
 			used_attenuation = material_sample.attenuation();
 		} else {
-			++ray.depth;
+			++tray.depth;
 			--i;
 		}
 
-		throughput *= rendering::attenuation(ray.origin, intersection.geo.p, used_attenuation);
-		throughput *= sample_result.reflection / sample_result.pdf;
+		throughput *= rendering::attenuation(tray.origin, intersection.geo.p, used_attenuation)
+					* sample_result.reflection / sample_result.pdf;
 
 		// Only inner reflections are handled here
 		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {

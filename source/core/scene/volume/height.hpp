@@ -10,9 +10,8 @@ public:
 
 	Height();
 
-	virtual float3 optical_depth(const math::Ray& ray, float step_size,
-								 rnd::Generator& rng, Worker& worker,
-								 Sampler_filter filter) const final override;
+	virtual float3 optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
+								 Worker& worker, Sampler_filter filter) const final override;
 
 private:
 

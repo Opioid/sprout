@@ -54,18 +54,16 @@ private:
 								 Bxdf_result& sample_result,
 								 bool& requires_bounce);
 
-	float3 evaluate_light(const scene::light::Light* light,
-						  uint32_t sampler_dimension, float light_weight,
-						  Worker& worker, Ray& ray,
+	float3 evaluate_light(const scene::light::Light* light, float light_weight,
+						  float time, float ray_offset, uint32_t depth,
+						  uint32_t sampler_dimension, Worker& worker,
 						  const Intersection& intersection,
 						  const Material_sample& material_sample,
 						  Sampler_filter filter);
 
-	float3 resolve_transmission(Worker& worker, Ray& ray,
-								Intersection& intersection,
-								const float3& attenuation,
-								Sampler_filter filter,
-								Bxdf_result& sample_result);
+	float3 resolve_transmission(Worker& worker, const Ray& ray,
+								Intersection& intersection, const float3& attenuation,
+								Sampler_filter filter, Bxdf_result& sample_result);
 
 	sampler::Sampler& material_sampler(uint32_t bounce);
 	sampler::Sampler& light_sampler(uint32_t bounce);

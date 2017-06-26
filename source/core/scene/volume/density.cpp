@@ -7,9 +7,8 @@
 
 namespace scene { namespace volume {
 
-float3 Density::optical_depth(const math::Ray& ray, float step_size,
-							  rnd::Generator& rng, Worker& worker,
-							  Sampler_filter filter) const {
+float3 Density::optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
+							  Worker& worker, Sampler_filter filter) const {
 	float length = math::length(ray.direction);
 
 	math::Ray rn(ray.origin, ray.direction / length, ray.min_t * length, ray.max_t * length);

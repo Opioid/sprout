@@ -26,7 +26,7 @@ public:
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
-	virtual float3 li(Worker& worker, Ray& ray, Intersection& intersection,
+	virtual float3 li(Worker& worker, const Ray& ray, Intersection& intersection,
 					  Sampler_filter filter, Bxdf_result& sample_result) = 0;
 
 protected:

@@ -29,7 +29,7 @@ bool Worker::intersect(Ray& ray, Intersection& intersection) {
 }
 
 bool Worker::intersect(const Prop* prop, Ray& ray, Intersection& intersection) {
-	bool hit = prop->intersect(ray, node_stack_, intersection.geo);
+	const bool hit = prop->intersect(ray, node_stack_, intersection.geo);
 	if (hit) {
 		intersection.prop = prop;
 	}
