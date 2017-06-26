@@ -141,9 +141,14 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 
 			throughput *= tr;
 			opacity += spectrum::luminance(tr);
-//		} else if (sample_result.type.test(Bxdf_type::SSS)) {
-//			result += throughput * subsurface_.li(worker, ray, intersection, sampler_,
-//												  Sampler_filter::Nearest, sample_result);
+		} else if (sample_result.type.test(Bxdf_type::SSS)) {
+			result += throughput * subsurface_.li(worker, ray, intersection,
+												  Sampler_filter::Nearest, sample_result);
+			if (0.f == sample_result.pdf) {
+				break;
+			}
+
+			throughput *= sample_result.reflection / sample_result.pdf;
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 			opacity = 1.f;
@@ -230,17 +235,17 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 		result *= settings_.num_light_samples_reciprocal / light_weight;
 	}
 
-	if (intersection.material()->is_subsurface()) {
-		result += subsurface_.li(worker, ray, intersection, material_sample);
-	}
+//	if (intersection.material()->is_subsurface()) {
+//		result += subsurface_.li(worker, ray, intersection, material_sample);
+//	}
 
 	// Material BSDF importance sample
 	material_sample.sample(material_sampler(ray.depth), sample_result);
 
 	// Those cases are handled outside
 	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular,
-												  Bxdf_type::Transmission/*,
-												  Bxdf_type::SSS*/);
+												  Bxdf_type::Transmission,
+												  Bxdf_type::SSS);
 
 	if (requires_bounce || 0.f == sample_result.pdf) {
 		return result;

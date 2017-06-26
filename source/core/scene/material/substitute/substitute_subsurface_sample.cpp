@@ -29,21 +29,14 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 
 	const float p = sampler.generate_sample_1D();
 
-	if (p < 0.5f) {
-		layer_.diffuse_sample(wo_, sampler, result);
-	} else {
-		layer_.specular_sample(wo_, sampler, result);
-	}
-/*
-	if (p < 0.5f) {
-//		const float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color_,
-//														   layer_, sampler, result);
-//		result.wi *= -1.f;
-//		const float approximated_distance = thickness_ / n_dot_wi;
-//		const float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
-//		result.reflection *= n_dot_wi * attenuation;
+//	if (p < 0.5f) {
+//		layer_.diffuse_sample(wo_, sampler, result);
+//	} else {
+//		layer_.specular_sample(wo_, sampler, result);
+//	}
 
-		result.wi = -wo_;
+	if (p < 0.5f) {
+		sample_sss(sampler, result);
 
 		result.type.set(bxdf::Type::SSS);
 	} else {
@@ -52,21 +45,32 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 		} else {
 			layer_.specular_sample(wo_, sampler, result);
 		}
+
+
 	}
 
 	result.pdf *= 0.5f;
-	*/
 }
 
 void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const {
+	Layer tmp = layer_;
+
+	float ior_i = ior_i_;
+	float ior_o = ior_o_;
+	float eta_i = eta_i_;
+	float eta_t = eta_t_;
+
 	if (!same_hemisphere(wo_)) {
-		result.pdf = 0.f;
-		return;
+		tmp.n_ *= -1.f;
+		ior_i = ior_o_;
+		ior_o = ior_i_;
+		eta_i = eta_t_;
+		eta_t = eta_i_;
 	}
 
-	const float n_dot_wo = layer_.clamped_n_dot(wo_);
+	const float n_dot_wo = tmp.clamped_n_dot(wo_);
 
-	const float sint2 = (eta_i_ * eta_i_) * (1.f - n_dot_wo * n_dot_wo);
+	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
 	if (sint2 > 1.f) {
 		result.pdf = 0.f;
@@ -74,11 +78,6 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	}
 
 	const float n_dot_t = std::sqrt(1.f - sint2);
-
-	// fresnel has to be the same value that would have been computed by BRDF
-	const float f = 1.f - fresnel::dielectric(n_dot_wo, n_dot_t, eta_i_, eta_t_);
-
-//	const fresnel::Constant constant(1.f - f);
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer_.a2_ >= Min_a2);
@@ -95,45 +94,33 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	math::sincos(phi, sin_phi, cos_phi);
 
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	const float3 h = math::normalized(layer_.tangent_to_world(is));
+	const float3 h = math::normalized(tmp.tangent_to_world(is));
 
 	const float wo_dot_h = clamped_dot(wo_, h);
 
-	const float3 wi = math::normalized((eta_i_ * wo_dot_h - n_dot_t) * h - eta_i_ * wo_);
+	const float3 wi = math::normalized((eta_i * wo_dot_h - n_dot_t) * h - eta_i * wo_);
 
-	const float n_dot_wi = layer_.reversed_clamped_n_dot(wi);
+	const float n_dot_wi = tmp.reversed_clamped_n_dot(wi);
 
 	const float d = ggx::distribution_isotropic(n_dot_h, a2);
 	const float g = ggx::G_smith(n_dot_wi, n_dot_wo, a2);
-//	const float3 f = fresnel(wo_dot_h);
+	// fresnel has to be the same value that would have been computed by BRDF
+	const fresnel::Schlick fresnel(layer_.f0_);
+	const float3 f = 1.f - fresnel(wo_dot_h);
 
-	const float refraction = d * g * f;
+	const float3 refraction = d * g * f;
 
 	const float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	float denom = (ior_i_ + ior_o_) * wo_dot_h;
+	float denom = (ior_i + ior_o) * wo_dot_h;
 	denom = denom * denom;
 
-	const float ior_o_2 = ior_o_ * ior_o_;
-	result.reflection = float3(n_dot_wi * factor * ((ior_o_2 * refraction) / denom));
+	const float ior_o_2 = ior_o * ior_o;
+	result.reflection = (n_dot_wi * factor) * ((ior_o_2 * refraction) / denom);
+					//  * layer_.diffuse_color_;
 
-	result.pdf = /*0.5f **/ ( (d * n_dot_h) / (4.f * wo_dot_h) );
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.wi = wi;
-
-/*
-	const float2 s2d = sampler.generate_sample_2D();
-
-	const float3 is = math::sample_hemisphere_cosine(s2d);
-
-	const float3 wi = math::normalized(layer_.tangent_to_world(is));
-
-	const float n_dot_wi = layer_.clamped_n_dot(wi);
-
-	result.pdf = n_dot_wi * math::Pi_inv;
-	result.reflection = math::Pi_inv * layer_.diffuse_color_;
-	result.wi = wi;
-	result.type.clear_set(bxdf::Type::Diffuse_reflection);
-	*/
 }
 
 void Sample_subsurface::set(float ior, float ior_outside) {

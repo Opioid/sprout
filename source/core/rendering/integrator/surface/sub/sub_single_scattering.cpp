@@ -72,21 +72,26 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, const Intersection&
 											   ray.time, sampler_, worker);
 	}
 
-	return (/*num_samples_reciprocal*/step / sample_result.pdf) * (sample_result.reflection * radiance);
+	return (step / sample_result.pdf) * (sample_result.reflection * radiance);
 }
 
 float3 Single_scattering::li(Worker& worker, Ray& ray, Intersection& intersection,
-							 sampler::Sampler& sampler, Sampler_filter filter,
-							 Bxdf_result& sample_result) {
-	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	Ray tray(intersection.geo.p, ray.direction, ray_offset, scene::Ray_max_t);
+							 Sampler_filter filter, Bxdf_result& sample_result) {
+//	Bxdf_result sample_result;
+//	material_sample.sample_sss(sampler_, sample_result);
+
+	if (0.f == sample_result.pdf) {
+		return float3(0.f);
+	}
+
+	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+	Ray tray(intersection.geo.p, /*ray.direction*/sample_result.wi, ray_offset, scene::Ray_max_t);
 //	Intersection tintersection;
 	if (!worker.intersect(intersection.prop, tray, intersection)) {
 		return float3(0.f);
 	}
 
-	float range = tray.max_t - tray.min_t;
-
+	const float range = tray.max_t - tray.min_t;
 	if (range < 0.0001f) {
 		return float3(0.f);
 	}
@@ -94,73 +99,36 @@ float3 Single_scattering::li(Worker& worker, Ray& ray, Intersection& intersectio
 	const auto& bssrdf = intersection.bssrdf(worker);
 
 	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-
-	const float step = range / static_cast<float>(num_samples);
-
-//	float3 w = -ray.direction;
+	const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
+	const float step = range * num_samples_reciprocal;
 
 	float3 radiance(0.f);
-	float3 tr(1.f);
+	float3 tr(sample_result.reflection / sample_result.pdf);
 
-	float min_t = tray.min_t;
 	float tau_ray_length = rng_.random_float() * step;
 
-	min_t += tau_ray_length;
+	float min_t = tray.min_t + tau_ray_length;
 
-	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
-		float3 tau = bssrdf.optical_depth(tau_ray_length);
+	for (uint32_t i = num_samples; i > 0; --i, min_t += step) {
+		const float3 tau = bssrdf.optical_depth(tau_ray_length);
 		tr *= math::exp(-tau);
 
 		tau_ray_length = step;
 
+		const float3 current = tray.point(min_t);
+
 		// Direct light scattering
-		float light_pdf;
-		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
-		if (!light) {
-			continue;
-		}
-
-		float3 current = tray.point(min_t);
-
-		scene::light::Sample light_sample;
-		light->sample(ray.time, current, sampler_, 0, worker,
-					  Sampler_filter::Nearest, light_sample);
-
-		if (light_sample.shape.pdf > 0.f) {
-			Ray shadow_ray(current, light_sample.shape.wi, 0.f,
-						   light_sample.shape.t, ray.time);
-
-			if (!worker.intersect(intersection.prop, shadow_ray, intersection)) {
-				continue;
-			}
-
-			float prop_length = shadow_ray.length();
-
-			ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-			shadow_ray.min_t = shadow_ray.max_t + ray_offset;
-			shadow_ray.max_t = light_sample.shape.t - ray_offset;
-
-			float mv = worker.masked_visibility(shadow_ray, Sampler_filter::Nearest);
-			if (mv > 0.f) {
-			//	float p = volume.phase(w, -light_sample.shape.wi);
-				float p = 1.f / (4.f * math::Pi);
-
-				float3 scattering = bssrdf.scattering();
-
-				tau = bssrdf.optical_depth(prop_length);
-				float3 transmittance = math::exp(-tau);
-
-				float3 l = transmittance * light_sample.radiance;
-
-				radiance += p * mv * tr * scattering * l / (light_pdf * light_sample.shape.pdf);
-			}
-		}
+		radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
+											   ray.time, sampler_, worker);
 	}
 
-	sample_result.wi = ray.direction;
+	const float3 wo = -tray.direction;
+	auto& material_sample_2 = intersection.sample(worker, wo, ray.time, filter);
 
-	float3 color = step * radiance;
-	return color;
+	material_sample_2.sample_sss(sampler_, sample_result);
+	sample_result.reflection *= tr;
+
+	return step * radiance;
 }
 
 size_t Single_scattering::num_bytes() const {
@@ -180,6 +148,5 @@ Single_scattering_factory::~Single_scattering_factory() {
 Integrator* Single_scattering_factory::create(uint32_t id, rnd::Generator& rng) const {
 	return new(&integrators_[id]) Single_scattering(rng, take_settings_, settings_);
 }
-
 
 }}}}
