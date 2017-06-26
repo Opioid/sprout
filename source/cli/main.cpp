@@ -27,12 +27,10 @@
 #include <istream>
 #include <sstream>
 
-#include "extension/procedural/starburst/starburst.hpp"
-#include "core/testing/testing_simd.hpp"
-#include "core/testing/testing_size.hpp"
-#include "core/testing/testing_spectrum.hpp"
-
-#include "base/memory/align.hpp"
+//#include "extension/procedural/starburst/starburst.hpp"
+//#include "core/testing/testing_simd.hpp"
+//#include "core/testing/testing_size.hpp"
+//#include "core/testing/testing_spectrum.hpp"
 
 static void log_memory_consumption(const resource::Manager& manager,
 								   const take::Take& take,
@@ -51,13 +49,6 @@ int main(int argc, char* argv[]) {
 //	testing::simd::unions();
 //	testing::spectrum();
 //	return 1;
-
-	size_t num_elems = 8;
-	float3* floats = memory::construct_aligned<float3>(num_elems);
-
-
-	memory::destroy_aligned(floats, num_elems);
-
 
 	logging::init(logging::Type::Std_out);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");

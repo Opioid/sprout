@@ -11,7 +11,6 @@ class Prop;
 
 }
 
-
 namespace sampler { class Sampler; }
 
 namespace rendering {
@@ -26,9 +25,6 @@ public:
 
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
-
-	virtual float3 li(Worker& worker, const Ray& ray, const Intersection& intersection,
-					  const Material_sample& material_sample) = 0;
 
 	virtual float3 li(Worker& worker, Ray& ray, Intersection& intersection,
 					  Sampler_filter filter, Bxdf_result& sample_result) = 0;
@@ -56,4 +52,3 @@ protected:
 };
 
 }}}}
-

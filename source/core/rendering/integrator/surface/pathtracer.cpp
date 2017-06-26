@@ -103,10 +103,6 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			}
 		}
 
-		if (intersection.material()->is_subsurface()) {
-			result += throughput * subsurface_.li(worker, ray, intersection, material_sample);
-		}
-
 		material_sample.sample(material_sampler(i), sample_result);
 		if (0.f == sample_result.pdf) {
 			break;
@@ -126,6 +122,14 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			if (0.f == sample_result.pdf) {
 				break;
 			}
+		} else if (sample_result.type.test(Bxdf_type::SSS)) {
+			result += throughput * subsurface_.li(worker, ray, intersection,
+												  Sampler_filter::Nearest, sample_result);
+			if (0.f == sample_result.pdf) {
+				break;
+			}
+
+			throughput *= sample_result.reflection / sample_result.pdf;
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 		}

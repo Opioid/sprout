@@ -55,17 +55,19 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const {
 	Layer tmp = layer_;
 
-	float ior_i = ior_i_;
-	float ior_o = ior_o_;
-	float eta_i = eta_i_;
-	float eta_t = eta_t_;
+	float ior_i;
+	float ior_o;
+	float eta_i;
 
 	if (!same_hemisphere(wo_)) {
 		tmp.n_ *= -1.f;
 		ior_i = ior_o_;
 		ior_o = ior_i_;
 		eta_i = eta_t_;
-		eta_t = eta_i_;
+	} else {
+		ior_i = ior_i_;
+		ior_o = ior_o_;
+		eta_i = eta_i_;
 	}
 
 	const float n_dot_wo = tmp.clamped_n_dot(wo_);
