@@ -1,3 +1,7 @@
+CONFIG += c++14
+CONFIG += rtti_off
+CONFIG(debug, release|debug):DEFINES += _DEBUG
+
 win32 {
     # disable RTTI (CONFIG += rtti_off is needed as well, otherwise the setting is overwritten)
     QMAKE_CXXFLAGS += /GR-
