@@ -34,23 +34,23 @@ public:
 	virtual const Transformation& transformation_at(
 			float time, Transformation& transformation) const = 0;
 
-	virtual void sample(const Transformation& transformation, float time,
-						const float3& p, const float3& n, bool total_sphere,
+	virtual void sample(const Transformation& transformation,
+						const float3& p, const float3& n, float time, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Worker& worker, Sampler_filter filter, Sample& result) const = 0;
 
-	void sample(float time, const float3& p, const float3& n, bool total_sphere,
+	void sample(const float3& p, const float3& n, float time, bool total_sphere,
 				sampler::Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
 				Sampler_filter filter, Sample& result) const;
 
-	void sample(float time, const float3& p, sampler::Sampler& sampler, uint32_t sampler_dimension,
+	void sample(const float3& p, float time, sampler::Sampler& sampler, uint32_t sampler_dimension,
 				Worker& worker, Sampler_filter filter, Sample& result) const;
 
 	virtual float pdf(const Transformation& transformation,
 					  const float3& p, const float3& wi, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const = 0;
 
-	float pdf(float time, const float3& p, const float3& wi, bool total_sphere,
+	float pdf(const float3& p, const float3& wi, float time, bool total_sphere,
 			  Worker& worker, Sampler_filter filter) const;
 
 	virtual float3 power(const math::AABB& scene_bb) const = 0;

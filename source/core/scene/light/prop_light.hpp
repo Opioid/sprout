@@ -17,8 +17,8 @@ public:
 	virtual const Transformation& transformation_at(
 			float time, Transformation& transformation) const final override;
 
-	virtual void sample(const Transformation& transformation, float time,
-						const float3& p, const float3& n, bool total_sphere,
+	virtual void sample(const Transformation& transformation,
+						const float3& p, const float3& n, float time, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Worker& worker, Sampler_filter filter, Sample& result) const override;
 

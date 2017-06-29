@@ -222,6 +222,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 			}
 		}
 
+		(void)filename;
 		SOFT_ASSERT(check(handler.vertices(), filename));
 
 		collection->add_swap_vertices(handler.vertices());

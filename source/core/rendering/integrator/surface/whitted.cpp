@@ -97,7 +97,7 @@ float3 Whitted::estimate_direct_light(Worker& worker, const Ray& ray,
 		const auto light = lights[l];
 		for (uint32_t i = 0, nls = settings_.num_light_samples; i < nls; ++i) {
 			scene::light::Sample light_sample;
-			light->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
+			light->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
 						  material_sample.is_translucent(), sampler_, l, worker,
 						  Sampler_filter::Nearest, light_sample);
 

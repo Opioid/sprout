@@ -13,8 +13,8 @@
 
 namespace scene { namespace light {
 
-void Prop_image_light::sample(const Transformation& transformation, float time,
-							  const float3& p, const float3& n, bool total_sphere,
+void Prop_image_light::sample(const Transformation& transformation,
+							  const float3& p, const float3& n, float time, bool total_sphere,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
 							  Worker& worker, Sampler_filter filter, Sample& result) const {
 	const auto material = prop_->material(part_);

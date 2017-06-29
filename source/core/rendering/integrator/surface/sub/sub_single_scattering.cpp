@@ -66,7 +66,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 
 		// Direct light scattering
 		radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
-											   ray.time, sampler_, worker);
+											   ray.time, ray.depth, sampler_, worker);
 	}
 
 	const float3 wo = -tray.direction;

@@ -15,7 +15,8 @@ Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
 Integrator::~Integrator() {}
 
 float3 Integrator::estimate_direct_light(const float3& position, const scene::Prop* prop,
-										 const scene::material::BSSRDF& bssrdf, float time,
+										 const scene::material::BSSRDF& bssrdf,
+										 float time, uint32_t depth,
 										 sampler::Sampler& sampler, Worker& worker) {
 	// Direct light scattering
 	float light_pdf;
@@ -25,10 +26,10 @@ float3 Integrator::estimate_direct_light(const float3& position, const scene::Pr
 	}
 
 	scene::light::Sample light_sample;
-	light->sample(time, position, sampler, 0, worker, Sampler_filter::Nearest, light_sample);
+	light->sample(position, time, sampler, 0, worker, Sampler_filter::Nearest, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
-		Ray shadow_ray(position, light_sample.shape.wi, 0.f, light_sample.shape.t, time);
+		Ray shadow_ray(position, light_sample.shape.wi, 0.f, light_sample.shape.t, time, ++depth);
 
 		Intersection intersection;
 		if (!worker.intersect(prop, shadow_ray, intersection)) {

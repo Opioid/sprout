@@ -156,7 +156,7 @@ float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(ray.time, intersection.geo.p, material_sample.geometric_normal(),
+		light->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
 					  material_sample.is_translucent(), sampler_, 0,
 					  worker, Sampler_filter::Nearest, light_sample);
 

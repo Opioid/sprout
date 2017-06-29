@@ -106,7 +106,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 		}
 
 		scene::light::Sample light_sample;
-		light->sample(ray.time, current, sampler_, 0, worker,
+		light->sample(current, ray.time, sampler_, 0, worker,
 					  Sampler_filter::Nearest, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {

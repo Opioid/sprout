@@ -145,6 +145,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 			result += throughput * subsurface_.li(worker, ray, intersection,
 												  Sampler_filter::Nearest, sample_result);
 			if (0.f == sample_result.pdf) {
+				// result += float3(1.f, 0.f, 0.f);
 				break;
 			}
 
@@ -253,7 +254,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 			light_pdf = num_lights_reciprocal_;
 		}
 
-		const float ls_pdf = light->pdf(ray.time, secondary_ray.origin, sample_result.wi,
+		const float ls_pdf = light->pdf(secondary_ray.origin, sample_result.wi, ray.time,
 										material_sample.is_translucent(),
 										worker, Sampler_filter::Nearest);
 		if (0.f == ls_pdf) {
@@ -290,17 +291,17 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 									  Sampler_filter filter) {
 	// Light source importance sample
 	scene::light::Sample light_sample;
-	light->sample(time, intersection.geo.p, material_sample.geometric_normal(),
+	light->sample(intersection.geo.p, material_sample.geometric_normal(), time,
 				  material_sample.is_translucent(), light_sampler(depth),
 				  sampler_dimension, worker, Sampler_filter::Nearest, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
-		const Ray tray(intersection.geo.p, light_sample.shape.wi,
-					   ray_offset, light_sample.shape.t - ray_offset, time, depth);
+		const Ray shadow_ray(intersection.geo.p, light_sample.shape.wi,
+							 ray_offset, light_sample.shape.t - ray_offset, time, depth);
 
-		const float3 tv = worker.tinted_visibility(tray, filter);
+		const float3 tv = worker.tinted_visibility(shadow_ray, filter);
 		if (math::any_greater_zero(tv)) {
-			const float3 t = worker.transmittance(tray);
+			const float3 t = worker.transmittance(shadow_ray);
 
 			float bxdf_pdf;
 			const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
