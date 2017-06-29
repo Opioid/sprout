@@ -51,7 +51,7 @@ float3 Closed::resolve(Worker& worker, const Ray& ray, Intersection& intersectio
 			used_attenuation = material_sample.attenuation();
 		}
 
-		throughput *= rendering::attenuation(tray.origin, intersection.geo.p, used_attenuation)
+		throughput *= rendering::attenuation(tray.max_t, used_attenuation)
 					* sample_result.reflection / sample_result.pdf;
 
 		// Only inner reflections are handled here
