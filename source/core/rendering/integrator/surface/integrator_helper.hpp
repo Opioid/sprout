@@ -18,13 +18,13 @@ static inline float3 attenuation(const float3& start, const float3& end, const f
 	return attenuation(math::distance(start, end), c);
 }
 
-static inline float balance_heuristic(float fpdf, float gpdf) {
-	return fpdf / (fpdf + gpdf);
+static inline float balance_heuristic(float f_pdf, float g_pdf) {
+	return f_pdf / (f_pdf + g_pdf);
 }
 
-static inline float power_heuristic(float fpdf, float gpdf) {
-	const float f2 = fpdf * fpdf;
-	return f2 / (f2 + gpdf * gpdf);
+static inline float power_heuristic(float f_pdf, float g_pdf) {
+	const float f2 = f_pdf * f_pdf;
+	return f2 / (f2 + g_pdf * g_pdf);
 }
 
 static inline bool russian_roulette(float3& throughput, float continuation_probability, float r) {
