@@ -151,7 +151,8 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 		tmp.ior_i_ = layer.ior_o_;
 		tmp.ior_o_ = layer.ior_i_;
 		tmp.eta_i_ = layer.eta_t_;
-		tmp.eta_t_ = layer.eta_i_;
+		// not needed
+	//	tmp.eta_t_ = layer.eta_i_;
 	}
 
 	const float n_dot_wo = tmp.clamped_n_dot(sample.wo());
@@ -168,9 +169,11 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 	// fresnel has to be the same value that would have been computed by BRDF
 	const float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp.eta_i_, tmp.eta_t_);
 
-	const fresnel::Constant constant(1.f - f);
+	const fresnel::Constant constant(f);
 	const float n_dot_wi = ggx::Isotropic::refract(sample.wo(), n_dot_wo, n_dot_t, tmp,
 												   constant, sampler, result);
+
+	result.reflection *= layer.color_;
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 

@@ -19,10 +19,14 @@ public:
 
 private:
 
-	float ior_i_;
-	float ior_o_;
-	float eta_i_;
-	float eta_t_;
+	struct IOR {
+		float ior_i_;
+		float ior_o_;
+		float eta_i_;
+		float eta_t_;
+	};
+
+	IOR ior_;
 };
 
 }}}

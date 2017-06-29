@@ -38,7 +38,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 	if (p < 0.5f) {
 		sample_sss(sampler, result);
 
-		result.type.set(bxdf::Type::SSS);
+		result.type.clear_set(bxdf::Type::SSS);
 	} else {
 		if (p < 0.75f) {
 			layer_.diffuse_sample(wo_, sampler, result);
@@ -53,26 +53,19 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 }
 
 void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const {
-	Layer tmp = layer_;
-
-	float ior_i;
-	float ior_o;
-	float eta_i;
+	Layer tmp_layer = layer_;
+	IOR tmp_ior = ior_;
 
 	if (!same_hemisphere(wo_)) {
-		tmp.n_ *= -1.f;
-		ior_i = ior_o_;
-		ior_o = ior_i_;
-		eta_i = eta_t_;
-	} else {
-		ior_i = ior_i_;
-		ior_o = ior_o_;
-		eta_i = eta_i_;
+		tmp_layer.n_ *= -1.f;
+		tmp_ior.ior_i_ = ior_.ior_o_;
+		tmp_ior.ior_o_ = ior_.ior_i_;
+		tmp_ior.eta_i_ = ior_.eta_t_;
 	}
 
-	const float n_dot_wo = tmp.clamped_n_dot(wo_);
+	const float n_dot_wo = tmp_layer.clamped_n_dot(wo_);
 
-	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
+	const float sint2 = (tmp_ior.eta_i_ * tmp_ior.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
 	if (sint2 > 1.f) {
 		result.pdf = 0.f;
@@ -80,6 +73,8 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 	}
 
 	const float n_dot_t = std::sqrt(1.f - sint2);
+
+	/*
 
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer_.a2_ >= Min_a2);
@@ -122,14 +117,19 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 					//  * layer_.diffuse_color_;
 
 	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-	result.wi = wi;
+	result.wi = wi;*/
+	const fresnel::Schlick schlick(layer_.f0_);
+	const float n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, n_dot_t, tmp_layer, tmp_ior,
+												   schlick, sampler, result);
+
+	result.reflection *= n_dot_wi;
 }
 
 void Sample_subsurface::set(float ior, float ior_outside) {
-	ior_i_ = ior;
-	ior_o_ = ior_outside;
-	eta_i_ = ior_outside / ior;
-	eta_t_ = ior / ior_outside;
+	ior_.ior_i_ = ior;
+	ior_.ior_o_ = ior_outside;
+	ior_.eta_i_ = ior_outside / ior;
+	ior_.eta_t_ = ior / ior_outside;
 }
 
 }}}

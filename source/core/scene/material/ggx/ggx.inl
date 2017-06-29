@@ -162,6 +162,13 @@ float3 Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
 template<typename Layer, typename Fresnel>
 float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Result& result) {
+	return refract(wo, n_dot_wo, n_dot_t, layer, layer, fresnel, sampler, result);
+}
+
+template<typename Layer, typename IOR, typename Fresnel>
+float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
+						 const Layer& layer, const IOR& ior, const Fresnel& fresnel,
+						 sampler::Sampler& sampler, bxdf::Result& result) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
@@ -183,25 +190,25 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t, const 
 
 	const float wo_dot_h = clamped_dot(wo, h);
 
-	const float3 wi = math::normalized((layer.eta_i_ * wo_dot_h - n_dot_t) * h - layer.eta_i_ * wo);
+	const float3 wi = math::normalized((ior.eta_i_ * wo_dot_h - n_dot_t) * h - ior.eta_i_ * wo);
 
 	const float n_dot_wi = layer.reversed_clamped_n_dot(wi);
 
 	const float d = distribution_isotropic(n_dot_h, a2);
 	const float g = G_smith(n_dot_wi, n_dot_wo, a2);
-	const float3 f = fresnel(wo_dot_h);
+	const float3 f = float3(1.f) - fresnel(wo_dot_h);
 
 	const float3 refraction = d * g * f;
 
 	const float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
 
-	float denom = (layer.ior_i_ + layer.ior_o_) * wo_dot_h;
+	float denom = (ior.ior_i_ + ior.ior_o_) * wo_dot_h;
 	denom = denom * denom;
 
 	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 
-	const float ior_o_2 = layer.ior_o_ * layer.ior_o_;
-	result.reflection = factor * ((ior_o_2 * refraction) / denom) * layer.color_;
+	const float ior_o_2 = ior.ior_o_ * ior.ior_o_;
+	result.reflection = factor * ((ior_o_2 * refraction) / denom);
 	result.wi = wi;
 	result.h = h;
 	result.h_dot_wi = wo_dot_h;
