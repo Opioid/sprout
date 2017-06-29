@@ -54,13 +54,17 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 
 void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const {
 	Layer tmp_layer = layer_;
-	IOR tmp_ior = ior_;
+	IOR tmp_ior;
 
 	if (!same_hemisphere(wo_)) {
 		tmp_layer.n_ *= -1.f;
 		tmp_ior.ior_i_ = ior_.ior_o_;
 		tmp_ior.ior_o_ = ior_.ior_i_;
 		tmp_ior.eta_i_ = ior_.eta_t_;
+	} else {
+		tmp_ior.ior_i_ = ior_.ior_i_;
+		tmp_ior.ior_o_ = ior_.ior_o_;
+		tmp_ior.eta_i_ = ior_.eta_i_;
 	}
 
 	const float n_dot_wo = tmp_layer.clamped_n_dot(wo_);
@@ -74,50 +78,6 @@ void Sample_subsurface::sample_sss(sampler::Sampler& sampler, bxdf::Result& resu
 
 	const float n_dot_t = std::sqrt(1.f - sint2);
 
-	/*
-
-	// Roughness zero will always have zero specular term (or worse NaN)
-	SOFT_ASSERT(layer_.a2_ >= Min_a2);
-
-	const float2 xi = sampler.generate_sample_2D();
-
-	const float a2 = layer_.a2_;
-	const float n_dot_h_squared = (1.f - xi[1]) / ((a2 - 1.f) * xi[1] + 1.f);
-	const float sin_theta = std::sqrt(1.f - n_dot_h_squared);
-	const float n_dot_h   = std::sqrt(n_dot_h_squared);
-	const float phi = (2.f * math::Pi) * xi[0];
-	float sin_phi;
-	float cos_phi;
-	math::sincos(phi, sin_phi, cos_phi);
-
-	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	const float3 h = math::normalized(tmp.tangent_to_world(is));
-
-	const float wo_dot_h = clamped_dot(wo_, h);
-
-	const float3 wi = math::normalized((eta_i * wo_dot_h - n_dot_t) * h - eta_i * wo_);
-
-	const float n_dot_wi = tmp.reversed_clamped_n_dot(wi);
-
-	const float d = ggx::distribution_isotropic(n_dot_h, a2);
-	const float g = ggx::G_smith(n_dot_wi, n_dot_wo, a2);
-	// fresnel has to be the same value that would have been computed by BRDF
-	const fresnel::Schlick fresnel(layer_.f0_);
-	const float3 f = 1.f - fresnel(wo_dot_h);
-
-	const float3 refraction = d * g * f;
-
-	const float factor = (wo_dot_h * wo_dot_h) / (n_dot_wi * n_dot_wo);
-
-	float denom = (ior_i + ior_o) * wo_dot_h;
-	denom = denom * denom;
-
-	const float ior_o_2 = ior_o * ior_o;
-	result.reflection = (n_dot_wi * factor) * ((ior_o_2 * refraction) / denom);
-					//  * layer_.diffuse_color_;
-
-	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-	result.wi = wi;*/
 	const fresnel::Schlick schlick(layer_.f0_);
 	const float n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, n_dot_t, tmp_layer, tmp_ior,
 												   schlick, sampler, result);

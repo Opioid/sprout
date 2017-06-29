@@ -20,7 +20,7 @@ float3 Material_base::sample_radiance(const float3& /*wi*/, float2 uv, float /*a
 									  Sampler_filter filter) const {
 	if (emission_map_.is_valid()) {
 		// For some reason Clang needs this to find inherited Material::sampler_key_
-		auto& sampler = worker.sampler_2D(this->sampler_key(), filter);
+		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 		return emission_factor_ * emission_map_.sample_3(sampler, uv);
 	} else {
 		return float3(0.f);
