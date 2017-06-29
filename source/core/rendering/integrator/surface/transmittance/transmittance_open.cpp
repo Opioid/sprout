@@ -11,7 +11,7 @@
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
-Open::Open(rnd::Generator& rng, const take::Settings &take_settings, uint32_t max_bounces) :
+Open::Open(rnd::Generator& rng, const take::Settings& take_settings, uint32_t max_bounces) :
 	integrator::Integrator(rng, take_settings),
 	max_bounces_(max_bounces) {}
 

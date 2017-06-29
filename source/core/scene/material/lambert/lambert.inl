@@ -17,6 +17,7 @@ float3 Isotropic::reflection(const float3& color, float n_dot_wi, const Layer& l
 	pdf = n_dot_wi * math::Pi_inv;
 	const float3 result = math::Pi_inv * color;
 
+	(void)layer;
 	SOFT_ASSERT(testing::check(result, float3::identity(), float3::identity(), pdf, layer));
 
 	return result;

@@ -11,7 +11,7 @@
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
-Closed::Closed(rnd::Generator& rng, const take::Settings &take_settings) :
+Closed::Closed(rnd::Generator& rng, const take::Settings& take_settings) :
 	integrator::Integrator(rng, take_settings) {}
 
 void Closed::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
