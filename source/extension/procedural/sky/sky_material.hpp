@@ -34,6 +34,7 @@ class Sky_baked_material : public Material {
 public:
 
 	Sky_baked_material(scene::material::Sample_cache& sample_cache, Model& model);
+	~Sky_baked_material();
 
 	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
 												  const scene::Worker& worker,

@@ -16,9 +16,9 @@
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.hpp"
 
-#include "core/image/encoding/png/png_writer.hpp"
-#include <fstream>
-#include <iostream>
+//#include "core/image/encoding/png/png_writer.hpp"
+//#include <fstream>
+//#include <iostream>
 
 namespace procedural { namespace sky {
 
@@ -64,7 +64,10 @@ size_t Sky_material::num_bytes() const {
 Sky_baked_material::Sky_baked_material(scene::material::Sample_cache& sample_cache, Model& model) :
 	Material(sample_cache, model) {}
 
-const scene::material::Sample& Sky_baked_material::sample(const float3& wo, const scene::Renderstate& rs,
+Sky_baked_material::~Sky_baked_material() {}
+
+const scene::material::Sample& Sky_baked_material::sample(const float3& wo,
+														  const scene::Renderstate& rs,
 														  const scene::Worker& worker,
 														  Sampler_filter filter) {
 	auto& sample = sample_cache_.get<scene::material::light::Sample>(worker.id());
