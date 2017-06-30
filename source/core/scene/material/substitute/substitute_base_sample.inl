@@ -18,7 +18,7 @@ float3 Sample_base<Diffuse>::radiance() const {
 }
 
 template<typename Diffuse>
-float3 Sample_base<Diffuse>::attenuation() const {
+float3 Sample_base<Diffuse>::absorption_coffecient() const {
 	return float3(100.f, 100.f, 100.f);
 }
 

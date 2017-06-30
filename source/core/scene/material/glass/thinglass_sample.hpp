@@ -14,7 +14,7 @@ public:
 
 	virtual float3 radiance() const final override;
 
-	virtual float3 attenuation() const final override;
+	virtual float3 absorption_coffecient() const final override;
 
 	virtual float ior() const final override;
 

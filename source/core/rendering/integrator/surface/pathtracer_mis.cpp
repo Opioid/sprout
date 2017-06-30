@@ -143,7 +143,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 				throughput *= sample_result.reflection / sample_result.pdf;
 			} else {
 				const float3 tr = resolve_transmission(worker, ray, intersection,
-													   material_sample.attenuation(),
+													   material_sample.absorption_coffecient(),
 													   Sampler_filter::Nearest, sample_result);
 				if (0.f == sample_result.pdf) {
 					break;

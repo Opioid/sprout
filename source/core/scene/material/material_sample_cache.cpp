@@ -7,6 +7,7 @@ namespace scene { namespace material {
 
 Sample_cache::Sample_cache(uint32_t bin_size, uint32_t num_bins) :
 	bin_size_(bin_size),
+	num_bins_(num_bins),
 	buffer_(memory::allocate_aligned<char>(bin_size * num_bins)),
 	bssrdfs_(new BSSRDF[num_bins]) {}
 
@@ -22,8 +23,8 @@ BSSRDF& Sample_cache::bssrdf(uint32_t id) {
 
 size_t Sample_cache::num_bytes() const {
 	return sizeof(*this) +
-			/*num_bins_ **/ sizeof(char) +
-			/*num_bins_ **/ sizeof(BSSRDF);
+			num_bins_ * bin_size_ * sizeof(char) +
+			num_bins_ * sizeof(BSSRDF);
 }
 
 }}

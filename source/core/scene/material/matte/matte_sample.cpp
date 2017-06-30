@@ -46,7 +46,7 @@ float3 Sample::radiance() const {
 	return float3::identity();
 }
 
-float3 Sample::attenuation() const {
+float3 Sample::absorption_coffecient() const {
 	return float3(100.f, 100.f, 100.f);
 }
 

@@ -25,7 +25,7 @@ float3 Sample_thin::radiance() const {
 	return float3::identity();
 }
 
-float3 Sample_thin::attenuation() const {
+float3 Sample_thin::absorption_coffecient() const {
 	return layer_.attenuation_;
 }
 

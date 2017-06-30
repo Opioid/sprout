@@ -24,8 +24,8 @@ float3 Sample::radiance() const {
 	return float3::identity();
 }
 
-float3 Sample::attenuation() const {
-	return layer_.attenuation_;
+float3 Sample::absorption_coffecient() const {
+	return layer_.absorption_coffecient_;
 }
 
 float Sample::ior() const {
@@ -59,7 +59,8 @@ bool Sample::is_translucent() const {
 void Sample::Layer::set(const float3& refraction_color, const float3& absorption_color,
 						float attenuation_distance, float ior, float ior_outside) {
 	color_ = refraction_color;
-	attenuation_ = material::absorption_coefficient(absorption_color, attenuation_distance);
+	absorption_coffecient_ = material::absorption_coefficient(absorption_color,
+															  attenuation_distance);
 	ior_ = ior;
 	ior_outside_ = ior_outside;
 }

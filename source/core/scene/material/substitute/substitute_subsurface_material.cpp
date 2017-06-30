@@ -43,11 +43,13 @@ size_t Material_subsurface::num_bytes() const {
 }
 
 void Material_subsurface::set_absorption(const float3& absorption) {
-	absorption_ = absorption;
+//	absorption_ = absorption;
+	absorption_ = material::absorption_coefficient(float3(1.f, 1.f, 1.f), 0.1f);
 }
 
 void Material_subsurface::set_scattering(const float3& scattering) {
-	scattering_ = scattering;
+//	scattering_ = scattering;
+	scattering_ = material::scattering_coefficient(float3(1.f, 1.f, 1.f), 0.1f);
 }
 
 }}}

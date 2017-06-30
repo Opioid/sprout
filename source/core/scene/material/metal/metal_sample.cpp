@@ -34,7 +34,7 @@ float3 Sample_isotropic::radiance() const {
 	return float3::identity();
 }
 
-float3 Sample_isotropic::attenuation() const {
+float3 Sample_isotropic::absorption_coffecient() const {
 	return float3(100.f, 100.f, 100.f);
 }
 
@@ -99,7 +99,7 @@ float3 Sample_anisotropic::radiance() const {
 	return float3::identity();
 }
 
-float3 Sample_anisotropic::attenuation() const {
+float3 Sample_anisotropic::absorption_coffecient() const {
 	return float3(100.f, 100.f, 100.f);
 }
 

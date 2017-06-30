@@ -115,7 +115,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			throughput *= transmittance_.resolve(worker, ray, intersection,
-												 material_sample.attenuation(),
+												 material_sample.absorption_coffecient(),
 												 sampler_, Sampler_filter::Nearest,
 												 sample_result);
 

@@ -30,7 +30,6 @@
 #include "metallic_paint/metallic_paint_material.hpp"
 #include "metallic_paint/metallic_paint_sample.hpp"
 #include "sky/sky_material_overcast.hpp"
-//#include "substitute/substitute_base_material.inl"
 #include "substitute/substitute_coating_material.inl"
 #include "substitute/substitute_coating_sample.hpp"
 #include "substitute/substitute_material.hpp"
@@ -285,13 +284,10 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 	float thickness = 0.f;
 
 	for (auto& n : glass_value.GetObject()) {
-		if ("color" == n.name) {
-			refraction_color = json::read_float3(n.value);
-			absorption_color = refraction_color;
+		if ("color" == n.name || "absorption_color" == n.name) {
+			absorption_color = json::read_float3(n.value);
 		} else if ("refraction_color" == n.name) {
 			refraction_color = json::read_float3(n.value);
-		} else if ("absorption_color" == n.name) {
-			absorption_color = json::read_float3(n.value);
 		} else if ("attenuation_distance" == n.name) {
 			attenuation_distance = json::read_float(n.value);
 		} else if ("ior" == n.name) {

@@ -24,6 +24,7 @@ public:
 private:
 
 	uint32_t bin_size_;
+	uint32_t num_bins_;
 	char* buffer_;
 
 	BSSRDF* bssrdfs_;

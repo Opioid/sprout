@@ -20,10 +20,10 @@ void Open::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pix
 void Open::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Open::resolve(Worker& worker, const scene::Ray& ray, scene::Intersection& intersection,
-					 const float3& attenuation, sampler::Sampler& sampler,
+					 const float3& absorption_coffecient, sampler::Sampler& sampler,
 					 Sampler_filter filter, Bxdf_result& sample_result) const {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
-	float3 used_attenuation = attenuation;
+	float3 used_absorption_coffecient = absorption_coffecient;
 
 	Ray tray;
 	tray.time = ray.time;
@@ -51,13 +51,13 @@ float3 Open::resolve(Worker& worker, const scene::Ray& ray, scene::Intersection&
 		}
 
 		if (material_sample.is_transmissive()) {
-			used_attenuation = material_sample.attenuation();
+			used_absorption_coffecient = material_sample.absorption_coffecient();
 		} else {
 			++tray.depth;
 			--i;
 		}
 
-		throughput *= rendering::attenuation(tray.max_t, used_attenuation)
+		throughput *= rendering::attenuation(tray.max_t, used_absorption_coffecient)
 					* sample_result.reflection / sample_result.pdf;
 
 		// Only inner reflections are handled here
