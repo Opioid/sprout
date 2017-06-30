@@ -14,12 +14,12 @@ constexpr float Pi	   = Pi_t<float>;
 constexpr float Pi_inv = Pi_inv_t<float>;
 
 template <typename T>
-static T degrees_to_radians(T degrees) {
+static constexpr T degrees_to_radians(T degrees) {
 	return degrees * (Pi_t<T> / T(180));
 }
 
 template <typename T>
-static T radians_to_degrees(T radians) {
+static constexpr T radians_to_degrees(T radians) {
 	return radians * (T(180) / Pi_t<T>);
 }
 
@@ -54,7 +54,7 @@ static T saturate(T a) {
 }
 
 template<typename T>
-T lerp(T a, T b, T t) {
+static constexpr T lerp(T a, T b, T t) {
 	T u = T(1) - t;
 	return u * a + t * b;
 }
@@ -65,18 +65,18 @@ static T exp2(T x) {
 }
 
 template<typename T>
-static T pow4(T x) {
+static constexpr T pow4(T x) {
 	T x2 = x * x;
 	return x2 * x2;
 }
 
 template<typename T>
-static T pow5(T x) {
+static constexpr T pow5(T x) {
 	return pow4(x) * x;
 }
 
 template<typename T>
-static T mod(T k, T n) {
+static constexpr T mod(T k, T n) {
 	// Works for negative k: % is the remainder, not modulo
 	return (k %= n) < T(0) ? k + n : k;
 }

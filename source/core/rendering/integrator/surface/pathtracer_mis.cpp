@@ -297,22 +297,23 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 				  material_sample.is_translucent(), light_sampler(depth),
 				  sampler_dimension, worker, Sampler_filter::Nearest, light_sample);
 
-	if (light_sample.shape.pdf > 0.f) {
-		const Ray shadow_ray(intersection.geo.p, light_sample.shape.wi,
-							 ray_offset, light_sample.shape.t - ray_offset, time, depth);
+		return float3(0.f);
+	}
 
-		const float3 tv = worker.tinted_visibility(shadow_ray, filter);
-		if (math::any_greater_zero(tv)) {
-			const float3 t = worker.transmittance(shadow_ray);
+	const Ray shadow_ray(intersection.geo.p, light_sample.shape.wi,
+						 ray_offset, light_sample.shape.t - ray_offset, time, depth);
 
-			float bxdf_pdf;
-			const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
+	if (math::any_greater_zero(tv)) {
+		const float3 t = worker.transmittance(shadow_ray);
 
-			const float weight = power_heuristic(light_sample.shape.pdf / light_weight, bxdf_pdf);
+		float bxdf_pdf;
+		const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-			return (weight / light_sample.shape.pdf * light_weight)
-				   * (tv * t) * (light_sample.radiance * f);
-		}
+		const float weight = power_heuristic(light_sample.shape.pdf / light_weight, bxdf_pdf);
+
+		return (weight / light_sample.shape.pdf * light_weight)
+			 * (tv * t) * (light_sample.radiance * f);
 	}
 
 	return float3(0.f);
