@@ -75,5 +75,3 @@ inline float3 Adapter::address(const Sampler_3D& sampler, const float3& uvw) con
 }
 
 }}
-
-
