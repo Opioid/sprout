@@ -168,7 +168,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 
 	result.reflection *= layer.color_;
 
-	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
+	SOFT_ASSERT(testing::check(result, sample.wo(), layer));
 
 	return n_dot_wi;
 }

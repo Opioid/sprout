@@ -80,3 +80,7 @@ File size on disk generally seems to be higher, though.
   - [ ] Updating of entity transformations
 
 The results are disappointing so far (e.g. less than 2x speedup for 12 threads).
+
+*** TODO Streamline zero lights case
+For example by automatically adding a null-light to scenes that otherwise don't have a light. 
+This would remove some checks spread out over the codebase. 
