@@ -297,6 +297,7 @@ float3 Pathtracer_MIS::evaluate_light(const scene::light::Light* light, float li
 				  material_sample.is_translucent(), light_sampler(depth),
 				  sampler_dimension, worker, Sampler_filter::Nearest, light_sample);
 
+	if (light_sample.shape.pdf <= 0.f) {
 		return float3(0.f);
 	}
 
