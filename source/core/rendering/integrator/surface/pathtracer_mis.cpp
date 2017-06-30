@@ -132,24 +132,26 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			const float3 tr = resolve_transmission(worker, ray, intersection,
-												   material_sample.attenuation(),
-												   Sampler_filter::Nearest, sample_result);
-			if (0.f == sample_result.pdf) {
-				break;
-			}
+			if (sample_result.type.test(Bxdf_type::SSS)) {
+				result += throughput * subsurface_.li(worker, ray, intersection,
+													  Sampler_filter::Nearest, sample_result);
+				if (0.f == sample_result.pdf) {
+					// result += float3(1.f, 0.f, 0.f);
+					break;
+				}
 
-			throughput *= tr;
-			opacity += spectrum::luminance(tr);
-		} else if (sample_result.type.test(Bxdf_type::SSS)) {
-			result += throughput * subsurface_.li(worker, ray, intersection,
-												  Sampler_filter::Nearest, sample_result);
-			if (0.f == sample_result.pdf) {
-				// result += float3(1.f, 0.f, 0.f);
-				break;
-			}
+				throughput *= sample_result.reflection / sample_result.pdf;
+			} else {
+				const float3 tr = resolve_transmission(worker, ray, intersection,
+													   material_sample.attenuation(),
+													   Sampler_filter::Nearest, sample_result);
+				if (0.f == sample_result.pdf) {
+					break;
+				}
 
-			throughput *= sample_result.reflection / sample_result.pdf;
+				throughput *= tr;
+				opacity += spectrum::luminance(tr);
+			}
 		} else {
 			throughput *= sample_result.reflection / sample_result.pdf;
 			opacity = 1.f;

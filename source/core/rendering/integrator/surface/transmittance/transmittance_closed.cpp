@@ -28,8 +28,10 @@ float3 Closed::resolve(Worker& worker, const Ray& ray, Intersection& intersectio
 	tray.time = ray.time;
 	tray.depth = ray.depth;
 
+	const float ray_offset_factor = take_settings_.ray_offset_factor;
+
 	for (;;) {
-		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
 		tray.min_t = ray_offset;

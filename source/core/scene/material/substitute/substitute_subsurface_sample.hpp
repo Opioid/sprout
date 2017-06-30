@@ -13,11 +13,11 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
-	virtual void sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const final override;
-
 	void set(float ior, float ior_outside);
 
 private:
+
+	void refract(bool same_side, sampler::Sampler& sampler, bxdf::Result& result) const;
 
 	struct IOR {
 		float ior_i_;

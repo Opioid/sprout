@@ -38,8 +38,6 @@ inline float3 Sample::Layer::tangent_to_world(const float3& v) const {
 				  v[0] * t_[2] + v[1] * b_[2] + v[2] * n_[2]);
 }
 
-inline void Sample::sample_sss(sampler::Sampler& /*sampler*/, bxdf::Result& /*result*/) const {}
-
 inline const float3& Sample::wo() const {
 	return wo_;
 }

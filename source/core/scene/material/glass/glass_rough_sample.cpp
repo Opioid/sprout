@@ -63,12 +63,6 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Result& result) const
 		result.pdf *= 0.5f;
 		result.reflection *= n_dot_wi;
 	}
-
-//	float n_dot_wi = BSDF::reflect(*this, layer_, sampler, result);
-//	result.reflection *= n_dot_wi;
-
-//	float n_dot_wi = BSDF::refract(*this, layer_, sampler, result);
-//	result.reflection *= n_dot_wi;
 }
 
 float3 Sample_rough::radiance() const {
@@ -112,7 +106,7 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 	Layer tmp = layer;
 
 	if (!sample.same_hemisphere(sample.wo())) {
-		tmp.n_ *= -1.f;
+		tmp.n_	  *= -1.f;
 		tmp.ior_i_ = layer.ior_o_;
 		tmp.ior_o_ = layer.ior_i_;
 		tmp.eta_i_ = layer.eta_t_;
@@ -147,12 +141,11 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 	Layer tmp = layer;
 
 	if (!sample.same_hemisphere(sample.wo())) {
-		tmp.n_ *= -1.f;
+		tmp.n_	  *= -1.f;
 		tmp.ior_i_ = layer.ior_o_;
 		tmp.ior_o_ = layer.ior_i_;
 		tmp.eta_i_ = layer.eta_t_;
-		// not needed
-	//	tmp.eta_t_ = layer.eta_i_;
+		tmp.eta_t_ = layer.eta_i_;
 	}
 
 	const float n_dot_wo = tmp.clamped_n_dot(sample.wo());

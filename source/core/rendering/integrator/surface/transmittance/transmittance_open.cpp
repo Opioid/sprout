@@ -29,8 +29,10 @@ float3 Open::resolve(Worker& worker, const scene::Ray& ray, scene::Intersection&
 	tray.time = ray.time;
 	tray.depth = ray.depth;
 
+	const float ray_offset_factor = take_settings_.ray_offset_factor;
+
 	for (uint32_t i = max_bounces_; i > 0;) {
-		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
 		tray.min_t = ray_offset;
@@ -59,7 +61,7 @@ float3 Open::resolve(Worker& worker, const scene::Ray& ray, scene::Intersection&
 					* sample_result.reflection / sample_result.pdf;
 
 		// Only inner reflections are handled here
-		if (sample_result.type.test(scene::material::bxdf::Type::Transmission)) {
+		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			break;
 		}
 	}

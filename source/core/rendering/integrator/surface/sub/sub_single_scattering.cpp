@@ -72,7 +72,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 	const float3 wo = -tray.direction;
 	auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
 
-	material_sample.sample_sss(sampler_, sample_result);
+	material_sample.sample(sampler_, sample_result);
 	sample_result.reflection *= tr;
 
 	return step * radiance;

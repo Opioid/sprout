@@ -34,9 +34,6 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
 
-	// HACK: Should go away when SSS is integrated in a more uniform manner
-	virtual void sample_sss(sampler::Sampler& sampler, bxdf::Result& result) const;
-
 	virtual float3 radiance() const = 0;
 
 	virtual float3 attenuation() const = 0;
