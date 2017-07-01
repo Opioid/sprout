@@ -45,7 +45,7 @@ float3 Thinglass::thin_absorption(const float3& wo, const float3& n, float2 uv, 
 	return opacity(uv, time, worker, filter) * (1.f - refraction_color_ * attenuation);
 }
 
-bool Thinglass::is_translucent() const {
+bool Thinglass::has_tinted_shadow() const {
 	return true;
 }
 

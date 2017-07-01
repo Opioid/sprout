@@ -71,7 +71,7 @@ bool Material::is_animated() const {
 	return false;
 }
 
-bool Material::is_translucent() const {
+bool Material::has_tinted_shadow() const {
 	return false;
 }
 

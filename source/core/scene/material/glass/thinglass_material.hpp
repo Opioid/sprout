@@ -16,7 +16,7 @@ public:
 	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
 								   Worker& worker, Sampler_filter filter) const final override;
 
-	virtual bool is_translucent() const final override;
+	virtual bool has_tinted_shadow() const final override;
 
 	virtual size_t num_bytes() const final override;
 

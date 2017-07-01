@@ -117,7 +117,7 @@ private:
 	bvh::Tree bvh_;
 
 	bool has_masked_material_;
-	bool has_translucent_shadow_;
+	bool has_tinted_shadow_;
 
 	std::vector<entity::Dummy*> dummies_;
 

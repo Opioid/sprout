@@ -64,7 +64,7 @@ public:
 
 	virtual bool is_animated() const;
 
-	virtual bool is_translucent() const;
+	virtual bool has_tinted_shadow() const;
 
 	virtual size_t num_bytes() const = 0;
 

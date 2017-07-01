@@ -80,7 +80,7 @@ float Scene::opacity(const scene::Ray& ray, Worker& worker,
 
 float3 Scene::thin_absorption(const scene::Ray& ray, Worker& worker,
 							  material::Sampler_settings::Filter filter) const {
-	if (has_translucent_shadow_) {
+	if (has_tinted_shadow_) {
 		return bvh_.thin_absorption(ray, worker, filter);
 	}
 
@@ -202,7 +202,7 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 
 void Scene::compile(thread::Pool& pool) {
 	has_masked_material_ = false;
-	has_translucent_shadow_ = false;
+	has_tinted_shadow_ = false;
 
 	// handle changed transformations
 	for (const auto d : dummies_) {
@@ -216,13 +216,13 @@ void Scene::compile(thread::Pool& pool) {
 	for (auto p : finite_props_) {
 		p->calculate_world_transformation();
 		has_masked_material_ = has_masked_material_ || p->has_masked_material();
-		has_translucent_shadow_ = has_translucent_shadow_ || p->has_translucent_shadow();
+		has_tinted_shadow_ = has_tinted_shadow_ || p->has_tinted_shadow();
 	}
 
 	for (auto p : infinite_props_) {
 		p->calculate_world_transformation();
 		has_masked_material_ = has_masked_material_ || p->has_masked_material();
-		has_translucent_shadow_ = has_translucent_shadow_ || p->has_translucent_shadow();
+		has_tinted_shadow_ = has_tinted_shadow_ || p->has_tinted_shadow();
 	}
 
 	// rebuild the BVH
