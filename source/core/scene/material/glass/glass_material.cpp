@@ -9,12 +9,12 @@
 
 namespace scene { namespace material { namespace glass {
 
-Glass::Glass(Sample_cache& sample_cache, const Sampler_settings& sampler_settings) :
-	Material(sample_cache, sampler_settings, false) {}
+Glass::Glass(const Sampler_settings& sampler_settings) :
+	Material(sampler_settings, false) {}
 
 const material::Sample& Glass::sample(const float3& wo, const Renderstate& rs,
-									  const Worker& worker, Sampler_filter filter) {
-	auto& sample = sample_cache_.get<Sample>(worker.id());
+									  Worker& worker, Sampler_filter filter) {
+	auto& sample = worker.sample_cache().get<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
 

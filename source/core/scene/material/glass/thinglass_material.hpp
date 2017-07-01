@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene/material/material.hpp"
-#include "image/texture/texture.hpp"
 
 namespace scene { namespace material { namespace glass {
 
@@ -9,15 +8,13 @@ class Thinglass : public Material {
 
 public:
 
-	Thinglass(Sample_cache& sample_cache, const Sampler_settings& sampler_settings);
+	Thinglass(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   const Worker& worker,
-										   Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) final override;
 
-	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv,
-								   float time, const Worker& worker,
-								   Sampler_filter filter) const final override;
+	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
+								   Worker& worker, Sampler_filter filter) const final override;
 
 	virtual bool is_translucent() const final override;
 

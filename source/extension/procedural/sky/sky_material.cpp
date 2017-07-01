@@ -10,6 +10,7 @@
 #include "core/scene/shape/shape.hpp"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/material/material_sample_cache.inl"
+#include "core/scene/material/light/light_material_sample.hpp"
 #include "base/math/mapping.inl"
 #include "base/math/matrix3x3.inl"
 #include "base/math/vector3.inl"
@@ -22,13 +23,13 @@
 
 namespace procedural { namespace sky {
 
-Sky_material::Sky_material(scene::material::Sample_cache& sample_cache, Model& model) :
-	Material(sample_cache, model) {}
+using namespace scene;
 
-const scene::material::Sample& Sky_material::sample(const float3& wo, const scene::Renderstate& rs,
-													const scene::Worker& worker,
-													Sampler_filter /*filter*/) {
-	auto& sample = sample_cache_.get<scene::material::light::Sample>(worker.id());
+Sky_material::Sky_material(Model& model) : Material(model) {}
+
+const material::Sample& Sky_material::sample(const float3& wo, const Renderstate& rs,
+											 Worker& worker, Sampler_filter /*filter*/) {
+	auto& sample = worker.sample_cache().get<material::light::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
 
@@ -39,9 +40,8 @@ const scene::material::Sample& Sky_material::sample(const float3& wo, const scen
 	return sample;
 }
 
-float3 Sky_material::sample_radiance(const float3& wi, float2 /*uv*/,
-									 float /*area*/, float /*time*/,
-									 const scene::Worker& /*worker*/,
+float3 Sky_material::sample_radiance(const float3& wi, float2 /*uv*/, float /*area*/,
+									 float /*time*/, Worker& /*worker*/,
 									 Sampler_filter /*filter*/) const {
 	return model_.evaluate_sky(wi);
 }
@@ -50,7 +50,7 @@ float3 Sky_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky(model_.zenith());
 }
 
-void Sky_material::prepare_sampling(const scene::shape::Shape& /*shape*/, uint32_t /*part*/,
+void Sky_material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 									const Transformation& /*transformation*/,
 									float /*area*/, bool /*importance_sampling*/,
 									thread::Pool& /*pool*/) {
@@ -61,16 +61,13 @@ size_t Sky_material::num_bytes() const {
 	return sizeof(*this);
 }
 
-Sky_baked_material::Sky_baked_material(scene::material::Sample_cache& sample_cache, Model& model) :
-	Material(sample_cache, model) {}
+Sky_baked_material::Sky_baked_material(Model& model) : Material(model) {}
 
 Sky_baked_material::~Sky_baked_material() {}
 
-const scene::material::Sample& Sky_baked_material::sample(const float3& wo,
-														  const scene::Renderstate& rs,
-														  const scene::Worker& worker,
-														  Sampler_filter filter) {
-	auto& sample = sample_cache_.get<scene::material::light::Sample>(worker.id());
+const material::Sample& Sky_baked_material::sample(const float3& wo, const Renderstate& rs,
+												   Worker& worker, Sampler_filter filter) {
+	auto& sample = worker.sample_cache().get<material::light::Sample>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -84,9 +81,8 @@ const scene::material::Sample& Sky_baked_material::sample(const float3& wo,
 	return sample;
 }
 
-float3 Sky_baked_material::sample_radiance(const float3& /*wi*/, float2 uv,
-										   float /*area*/, float /*time*/,
-										   const scene::Worker& worker,
+float3 Sky_baked_material::sample_radiance(const float3& /*wi*/, float2 uv, float /*area*/,
+										   float /*time*/, Worker& worker,
 										   Sampler_filter filter) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 	return emission_map_.sample_3(sampler, uv);
@@ -108,14 +104,13 @@ float2 Sky_baked_material::radiance_sample(float2 r2, float& pdf) const {
 	return uv;
 }
 
-float Sky_baked_material::emission_pdf(float2 uv, const scene::Worker& worker,
-									   Sampler_filter filter) const {
+float Sky_baked_material::emission_pdf(float2 uv, Worker& worker, Sampler_filter filter) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
-void Sky_baked_material::prepare_sampling(const scene::shape::Shape& shape, uint32_t /*part*/,
+void Sky_baked_material::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 										  const Transformation& transformation, float /*area*/,
 										  bool importance_sampling, thread::Pool& /*pool*/) {
 	if (!model_.init()) {

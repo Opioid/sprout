@@ -36,7 +36,7 @@ float4 Whitted::li(Worker& worker, Ray& ray, Intersection& intersection) {
 
 	float3 wo = -ray.direction;
 
-	float3 opacity = intersection.thin_absorption(worker, wo, ray.time, Sampler_filter::Unknown);
+	float3 opacity = intersection.thin_absorption(wo, ray.time, worker, Sampler_filter::Unknown);
 	float3 throughput = opacity;
 
 	while (math::any_lesser_one(opacity)) {
@@ -50,7 +50,7 @@ float4 Whitted::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			return float4(result, spectrum::luminance(opacity));
 		}
 
-		throughput = (1.f - opacity) * intersection.thin_absorption(worker, wo, ray.time,
+		throughput = (1.f - opacity) * intersection.thin_absorption(wo, ray.time, worker,
 																	Sampler_filter::Unknown);
 		opacity += throughput;
 	}
@@ -63,8 +63,8 @@ float4 Whitted::li(Worker& worker, Ray& ray, Intersection& intersection) {
 float3 Whitted::shade(Worker& worker, const Ray& ray, const Intersection& intersection) {
 	float3 result(0.f);
 
-	float3 wo = -ray.direction;
-	auto& material_sample = intersection.sample(worker, wo, ray.time, Sampler_filter::Unknown);
+	const float3 wo = -ray.direction;
+	auto& material_sample = intersection.sample(wo, ray.time, worker, Sampler_filter::Unknown);
 
 	if (material_sample.same_hemisphere(wo)) {
 		result += material_sample.radiance();

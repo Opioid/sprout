@@ -1,6 +1,5 @@
 #include "material.hpp"
 #include "bssrdf.hpp"
-#include "material_sample_cache.inl"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
@@ -9,9 +8,7 @@
 
 namespace scene { namespace material {
 
-Material::Material(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
-				   bool two_sided) :
-	sample_cache_(sample_cache),
+Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	sampler_key_(sampler_settings.key()),
 	two_sided_(two_sided) {}
 
@@ -29,12 +26,12 @@ void Material::set_parameters(const json::Value& parameters) {
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-const BSSRDF& Material::bssrdf(const Worker& worker) {
-	return sample_cache_.bssrdf(worker.id());
+const BSSRDF& Material::bssrdf(Worker& worker) {
+	return worker.sample_cache().bssrdf();
 }
 
 float3 Material::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/,
-								 float /*time*/, const Worker& /*worker*/,
+								 float /*time*/, Worker& /*worker*/,
 								 Sampler_filter /*filter*/) const {
 	return float3(0.f);
 }
@@ -52,13 +49,11 @@ float2 Material::radiance_sample(float2 r2, float& pdf) const {
 	return r2;
 }
 
-float Material::emission_pdf(float2 /*uv*/, const Worker& /*worker*/,
-							 Sampler_filter /*filter*/) const {
+float Material::emission_pdf(float2 /*uv*/, Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	return 1.f;
 }
 
-float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
-						Sampler_filter filter) const {
+float Material::opacity(float2 uv, float /*time*/, Worker& worker, Sampler_filter filter) const {
 	if (mask_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key_, filter);
 		return mask_.sample_1(sampler, uv);
@@ -68,7 +63,7 @@ float Material::opacity(float2 uv, float /*time*/, const Worker& worker,
 }
 
 float3 Material::thin_absorption(const float3& /*wo*/, const float3& /*n*/, float2 uv, float time,
-								 const Worker& worker, Sampler_filter filter) const {
+								 Worker& worker, Sampler_filter filter) const {
 	return float3(opacity(uv, time, worker, filter));
 }
 

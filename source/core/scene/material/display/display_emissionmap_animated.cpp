@@ -14,17 +14,16 @@
 
 namespace scene { namespace material { namespace display {
 
-Emissionmap_animated::Emissionmap_animated(Sample_cache& sample_cache,
-										   const Sampler_settings& sampler_settings,
+Emissionmap_animated::Emissionmap_animated(const Sampler_settings& sampler_settings,
 										   bool two_sided, const Texture_adapter& emission_map,
 										   float emission_factor, float animation_duration) :
-	light::Emissionmap_animated(sample_cache, sampler_settings, two_sided,
+	light::Emissionmap_animated(sampler_settings, two_sided,
 								emission_map, emission_factor, animation_duration)
 {}
 
 const material::Sample& Emissionmap_animated::sample(const float3& wo, const Renderstate& rs,
-													 const Worker& worker, Sampler_filter filter) {
-	auto& sample = sample_cache_.get<Sample>(worker.id());
+													 Worker& worker, Sampler_filter filter) {
+	auto& sample = worker.sample_cache().get<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
 

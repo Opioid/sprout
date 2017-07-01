@@ -9,10 +9,9 @@
 namespace scene { namespace material { namespace substitute {
 
 template<typename Coating>
-Material_coating<Coating>::Material_coating(Sample_cache& sample_cache,
-											const Sampler_settings& sampler_settings,
+Material_coating<Coating>::Material_coating(const Sampler_settings& sampler_settings,
 											bool two_sided) :
-	Material_base(sample_cache, sampler_settings, two_sided) {}
+	Material_base(sampler_settings, two_sided) {}
 
 template<typename Coating>
 size_t Material_coating<Coating>::num_bytes() const {

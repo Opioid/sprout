@@ -16,7 +16,7 @@ Integrator::~Integrator() {}
 
 bool Integrator::resolve_mask(Worker& worker, Ray& ray, Intersection& intersection,
 							  Sampler_filter filter) {
-	float opacity = intersection.opacity(worker, ray.time, filter);
+	float opacity = intersection.opacity(ray.time, worker, filter);
 
 	while (opacity < 1.f) {
 		if (opacity > 0.f && opacity > rng_.random_float()) {
@@ -30,7 +30,7 @@ bool Integrator::resolve_mask(Worker& worker, Ray& ray, Intersection& intersecti
 			return false;
 		}
 
-		opacity = intersection.opacity(worker, ray.time, filter);
+		opacity = intersection.opacity(ray.time, worker, filter);
 	}
 
 	return true;

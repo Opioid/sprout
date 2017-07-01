@@ -42,7 +42,8 @@ public:
 		   Sampler_factory sampler_factory,
 		   scene::Scene& scene,
 		   take::View& view,
-		   thread::Pool& thread_pool);
+		   thread::Pool& thread_pool,
+		   uint32_t max_sample_size);
 
 	~Driver();
 

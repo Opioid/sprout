@@ -7,14 +7,12 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Material_clearcoat::Material_clearcoat(Sample_cache& sample_cache,
-									   const Sampler_settings& sampler_settings,
-									   bool two_sided) :
-	Material_coating<coating::Clearcoat>(sample_cache, sampler_settings, two_sided) {}
+Material_clearcoat::Material_clearcoat(const Sampler_settings& sampler_settings, bool two_sided) :
+	Material_coating<coating::Clearcoat>(sampler_settings, two_sided) {}
 
 const material::Sample& Material_clearcoat::sample(const float3& wo, const Renderstate& rs,
-												   const Worker& worker, Sampler_filter filter) {
-	auto& sample = sample_cache_.get<Sample_clearcoat>(worker.id());
+												   Worker& worker, Sampler_filter filter) {
+	auto& sample = worker.sample_cache().get<Sample_clearcoat>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -32,14 +30,12 @@ void Material_clearcoat::set_clearcoat(float ior, float roughness) {
 	coating_.a2_ = math::pow4(ggx::clamp_roughness(roughness));
 }
 
-Material_thinfilm::Material_thinfilm(Sample_cache& sample_cache,
-									 const Sampler_settings& sampler_settings,
-									 bool two_sided) :
-	Material_coating<coating::Thinfilm>(sample_cache, sampler_settings, two_sided) {}
+Material_thinfilm::Material_thinfilm(const Sampler_settings& sampler_settings, bool two_sided) :
+	Material_coating<coating::Thinfilm>(sampler_settings, two_sided) {}
 
 const material::Sample& Material_thinfilm::sample(const float3& wo, const Renderstate& rs,
-												  const Worker& worker, Sampler_filter filter) {
-	auto& sample = sample_cache_.get<Sample_thinfilm>(worker.id());
+												  Worker& worker, Sampler_filter filter) {
+	auto& sample = worker.sample_cache().get<Sample_thinfilm>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

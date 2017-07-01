@@ -9,14 +9,14 @@ class Sky_material : public Material {
 
 public:
 
-	Sky_material(scene::material::Sample_cache& sample_cache, Model& model);
+	Sky_material(Model& model);
 
 	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
-												  const scene::Worker& worker,
+												  scene::Worker& worker,
 												  Sampler_filter filter) final override;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area,
-								   float time, const scene::Worker& worker,
+								   float time, scene::Worker& worker,
 								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
@@ -33,15 +33,15 @@ class Sky_baked_material : public Material {
 
 public:
 
-	Sky_baked_material(scene::material::Sample_cache& sample_cache, Model& model);
+	Sky_baked_material(Model& model);
 	~Sky_baked_material();
 
 	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
-												  const scene::Worker& worker,
+												  scene::Worker& worker,
 												  Sampler_filter filter) final override;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area,
-								   float time, const scene::Worker& worker,
+								   float time, scene::Worker& worker,
 								   Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
@@ -50,7 +50,7 @@ public:
 
 	virtual float2 radiance_sample(float2 r2, float& pdf) const final override;
 
-	virtual float emission_pdf(float2 uv, const scene::Worker& worker,
+	virtual float emission_pdf(float2 uv, scene::Worker& worker,
 							   Sampler_filter filter) const final override;
 
 	virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,

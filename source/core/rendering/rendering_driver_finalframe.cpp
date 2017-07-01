@@ -20,9 +20,10 @@ Driver_finalframe::Driver_finalframe(Surface_integrator_factory surface_integrat
 									 std::shared_ptr<sampler::Factory> sampler_factory,
 									 scene::Scene& scene,
 									 take::View& view,
-									 thread::Pool& thread_pool) :
+									 thread::Pool& thread_pool,
+									 uint32_t max_sample_size) :
 	Driver(surface_integrator_factory, volume_integrator_factory,
-		   sampler_factory, scene, view, thread_pool) {}
+		   sampler_factory, scene, view, thread_pool, max_sample_size) {}
 
 void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progressor) {
 	auto& camera = *view_.camera;

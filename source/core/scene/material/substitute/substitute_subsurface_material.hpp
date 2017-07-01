@@ -8,13 +8,12 @@ class Material_subsurface : public Material_base {
 
 public:
 
-	Material_subsurface(Sample_cache& sample_cache, const Sampler_settings& sampler_settings);
+	Material_subsurface(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   const Worker& worker,
-										   Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) final override;
 
-	virtual const BSSRDF& bssrdf(const Worker& worker) final override;
+	virtual const BSSRDF& bssrdf(Worker& worker) final override;
 
 	virtual bool is_subsurface() const final override;
 

@@ -18,9 +18,10 @@ Driver_progressive::Driver_progressive(Surface_integrator_factory surface_integr
 									   std::shared_ptr<sampler::Factory> sampler_factory,
 									   scene::Scene& scene,
 									   take::View& view,
-									   thread::Pool& thread_pool) :
+									   thread::Pool& thread_pool,
+									   uint32_t max_sample_size) :
 	Driver(surface_integrator_factory, volume_integrator_factory,
-		   sampler_factory, scene, view, thread_pool),
+		   sampler_factory, scene, view, thread_pool, max_sample_size),
 	iteration_(0),
 	samples_per_iteration_(1),
 	rendering_(false),

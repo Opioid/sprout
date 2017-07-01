@@ -10,13 +10,11 @@
 
 namespace scene { namespace material { namespace substitute {
 
-Material_base::Material_base(Sample_cache& sample_cache,
-							 const Sampler_settings& sampler_settings,
-							 bool two_sided) :
-	material::Material(sample_cache, sampler_settings, two_sided) {}
+Material_base::Material_base(const Sampler_settings& sampler_settings, bool two_sided) :
+	material::Material(sampler_settings, two_sided) {}
 
 float3 Material_base::sample_radiance(const float3& /*wi*/, float2 uv, float /*area*/,
-									  float /*time*/, const Worker& worker,
+									  float /*time*/, Worker& worker,
 									  Sampler_filter filter) const {
 	if (emission_map_.is_valid()) {
 		// For some reason Clang needs this to find inherited Material::sampler_key_

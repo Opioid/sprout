@@ -1,6 +1,7 @@
 #pragma once
 
 #include "shape/node_stack.hpp"
+#include "material/material_sample_cache.hpp"
 #include "material/sampler_cache.hpp"
 #include "base/math/vector3.hpp"
 
@@ -24,7 +25,7 @@ public:
 	Worker();
 	~Worker();
 
-	void init(uint32_t id, const Scene& scene);
+	void init(uint32_t id, const Scene& scene, uint32_t max_sample_size);
 
 	uint32_t id() const;
 
@@ -41,6 +42,8 @@ public:
 
 	shape::Node_stack& node_stack();
 
+	material::Sample_cache& sample_cache();
+
 	const Texture_sampler_2D& sampler_2D(uint32_t key, Sampler_filter filter) const;
 
 	const Texture_sampler_3D& sampler_3D(uint32_t key, Sampler_filter filter) const;
@@ -55,6 +58,7 @@ protected:
 
 	shape::Node_stack node_stack_;
 
+	material::Sample_cache		  sample_cache_;
 	const material::Sampler_cache sampler_cache_;
 };
 

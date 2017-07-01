@@ -22,8 +22,6 @@ namespace material {
 
 class Sample;
 
-class Sample_cache;
-
 class BSSRDF;
 
 class Material {
@@ -33,7 +31,7 @@ public:
 	using Transformation = entity::Composed_transformation;
 	using Sampler_filter = material::Sampler_settings::Filter;
 
-	Material(Sample_cache& sample_cache, const Sampler_settings& sampler_settings, bool two_sided);
+	Material(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual ~Material();
 
@@ -44,12 +42,12 @@ public:
 	virtual void tick(float absolute_time, float time_slice);
 
 	virtual const Sample& sample(const float3& wo, const Renderstate& rs,
-								 const Worker& worker, Sampler_filter filter) = 0;
+								 Worker& worker, Sampler_filter filter) = 0;
 
-	virtual const BSSRDF& bssrdf(const Worker& worker);
+	virtual const BSSRDF& bssrdf(Worker& worker);
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
-								   const Worker& worker, Sampler_filter filter) const;
+								   Worker& worker, Sampler_filter filter) const;
 
 	virtual float3 average_radiance(float area) const;
 
@@ -57,13 +55,12 @@ public:
 
 	virtual float2 radiance_sample(float2 r2, float& pdf) const;
 
-	virtual float emission_pdf(float2 uv, const Worker& worker, Sampler_filter filter) const;
+	virtual float emission_pdf(float2 uv, Worker& worker, Sampler_filter filter) const;
 
-	virtual float opacity(float2 uv, float time, const Worker& worker,
-						  Sampler_filter filter) const;
+	virtual float opacity(float2 uv, float time, Worker& worker, Sampler_filter filter) const;
 
 	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
-								   const Worker& worker, Sampler_filter filter) const;
+								   Worker& worker, Sampler_filter filter) const;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation, float area,
@@ -86,8 +83,6 @@ public:
 protected:
 
 	virtual void set_parameter(const std::string& name, const json::Value& value);
-
-	Sample_cache& sample_cache_;
 
 	Texture_adapter mask_;
 

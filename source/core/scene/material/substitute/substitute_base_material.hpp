@@ -10,12 +10,10 @@ class Material_base : public material::Material {
 
 public:
 
-	Material_base(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
-				  bool two_sided);
+	Material_base(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
-								   const Worker& worker,
-								   Sampler_filter filter) const final override;
+								   Worker& worker, Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
 

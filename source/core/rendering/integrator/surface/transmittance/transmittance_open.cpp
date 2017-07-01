@@ -43,7 +43,7 @@ float3 Open::resolve(Worker& worker, const scene::Ray& ray, scene::Intersection&
 		}
 
 		const float3 wo = -tray.direction;
-		auto& material_sample = intersection.sample(worker, wo, tray.time, filter);
+		auto& material_sample = intersection.sample(wo, tray.time, worker, filter);
 
 		material_sample.sample(sampler, sample_result);
 		if (0.f == sample_result.pdf || float3::identity() == sample_result.reflection) {

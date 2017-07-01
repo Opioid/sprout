@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
 		resource_manager.register_provider(texture_provider);
 	}
 
-	scene::material::Provider material_provider(thread_pool.num_threads());
+	scene::material::Provider material_provider;
 	resource_manager.register_provider(material_provider);
 
 	// The scene loader must be alive during rendering,
@@ -163,7 +163,11 @@ int main(int argc, char* argv[]) {
 	size_t rendering_num_bytes = 0;
 
 	if (args.progressive) {
-		rendering_num_bytes = controller::progressive(*take, scene, resource_manager, thread_pool);
+		rendering_num_bytes = controller::progressive(*take,
+													  scene,
+													  resource_manager,
+													  thread_pool,
+													  material_provider.max_sample_size());
 	} else {
 		progress::Stdout progressor;
 
@@ -175,7 +179,8 @@ int main(int argc, char* argv[]) {
 												take->sampler_factory,
 												scene,
 												take->view,
-												thread_pool);
+												thread_pool,
+												material_provider.max_sample_size());
 
 			rendering_num_bytes += driver.num_bytes();
 

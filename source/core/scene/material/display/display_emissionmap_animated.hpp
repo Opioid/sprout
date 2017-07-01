@@ -10,14 +10,12 @@ class Emissionmap_animated : public light::Emissionmap_animated {
 
 public:
 
-	Emissionmap_animated(Sample_cache& sample_cache,
-						 const Sampler_settings& sampler_settings,
+	Emissionmap_animated(const Sampler_settings& sampler_settings,
 						 bool two_sided, const Texture_adapter& emission_map,
 						 float emission_factor, float animation_duration);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   const Worker& worker,
-										   Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) final override;
 
 	virtual size_t num_bytes() const final override;
 

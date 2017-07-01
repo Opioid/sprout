@@ -7,17 +7,18 @@
 #include "core/scene/shape/shape.hpp"
 #include "core/scene/material/material_sample.inl"
 #include "core/scene/material/material_sample_cache.inl"
+#include "core/scene/material/light/light_material_sample.hpp"
 #include "base/math/vector4.inl"
 
 namespace procedural { namespace sky {
 
-Sun_material::Sun_material(scene::material::Sample_cache& sample_cache, Model& model) :
-	Material(sample_cache, model) {}
+using namespace scene;
 
-const scene::material::Sample& Sun_material::sample(const float3& wo, const scene::Renderstate& rs,
-													const scene::Worker& worker,
-													Sampler_filter /*filter*/) {
-	auto& sample = sample_cache_.get<scene::material::light::Sample>(worker.id());
+Sun_material::Sun_material(Model& model) : Material(model) {}
+
+const scene::material::Sample& Sun_material::sample(const float3& wo, const Renderstate& rs,
+													Worker& worker, Sampler_filter /*filter*/) {
+	auto& sample = worker.sample_cache().get<material::light::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
 
@@ -28,9 +29,8 @@ const scene::material::Sample& Sun_material::sample(const float3& wo, const scen
 	return sample;
 }
 
-float3 Sun_material::sample_radiance(const float3& wi, float2 /*uv*/,
-									 float /*area*/, float /*time*/,
-									 const scene::Worker& /*worker*/,
+float3 Sun_material::sample_radiance(const float3& wi, float2 /*uv*/, float /*area*/,
+									 float /*time*/, Worker& /*worker*/,
 									 Sampler_filter /*filter*/) const {
 	return model_.evaluate_sky_and_sun(wi);
 }
@@ -39,7 +39,7 @@ float3 Sun_material::average_radiance(float /*area*/) const {
 	return model_.evaluate_sky_and_sun(-model_.sun_direction());
 }
 
-void Sun_material::prepare_sampling(const scene::shape::Shape& /*shape*/, uint32_t /*part*/,
+void Sun_material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/,
 									const Transformation& /*transformation*/,
 									float /*area*/, bool /*importance_sampling*/,
 									thread::Pool& /*pool*/) {

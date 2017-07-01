@@ -19,7 +19,8 @@ public:
 					  std::shared_ptr<sampler::Factory> sampler_factory,
 					  scene::Scene& scene,
 					  take::View& view,
-					  thread::Pool& thread_pool);
+					  thread::Pool& thread_pool,
+					  uint32_t max_sample_size);
 
 	void render(exporting::Sink& exporter, progress::Sink& progressor);
 

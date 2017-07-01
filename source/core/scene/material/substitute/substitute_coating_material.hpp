@@ -10,8 +10,7 @@ class Material_coating : public Material_base {
 
 public:
 
-	Material_coating(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
-					 bool two_sided);
+	Material_coating(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual size_t num_bytes() const final override;
 
@@ -37,12 +36,10 @@ class Material_clearcoat : public Material_coating<coating::Clearcoat> {
 
 public:
 
-	Material_clearcoat(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
-					   bool two_sided);
+	Material_clearcoat(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   const Worker& worker,
-										   Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) final override;
 
 	void set_clearcoat(float ior, float roughness);
 };
@@ -51,12 +48,10 @@ class Material_thinfilm : public Material_coating<coating::Thinfilm> {
 
 public:
 
-	Material_thinfilm(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
-					  bool two_sided);
+	Material_thinfilm(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   const Worker& worker,
-										   Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) final override;
 
 	void set_thinfilm(float ior, float roughness, float thickness);
 };

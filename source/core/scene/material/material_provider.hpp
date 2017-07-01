@@ -19,7 +19,7 @@ class Provider : public resource::Provider<Material> {
 
 public:
 
-	Provider(uint32_t num_threads);
+	Provider();
 	~Provider();
 
 	virtual Material_ptr load(const std::string& filename, const memory::Variant_map& options,
@@ -32,8 +32,6 @@ public:
 	virtual size_t num_bytes() const final override;
 
 	Material_ptr fallback_material() const;
-
-	Sample_cache& sample_cache();
 
 private:
 
@@ -90,11 +88,11 @@ private:
 
 	static float3 read_spectrum(const json::Value& spectrum_value);
 
-	static uint32_t max_sample_size();
-
-	Sample_cache sample_cache_;
-
 	Material_ptr fallback_material_;
+
+public:
+
+	static uint32_t max_sample_size();
 };
 
 }}

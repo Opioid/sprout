@@ -82,7 +82,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		opacity = 1.f;
 
 		const float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
+		auto& material_sample = intersection.sample(wo, ray.time, worker, filter);
 
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();

@@ -66,7 +66,7 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		}
 
 		float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
+		auto& material_sample = intersection.sample(wo, ray.time, worker, filter);
 
 		if (material_sample.same_hemisphere(wo)
 		&& (primary_ray || sample_result.type.test(Bxdf_type::Specular))) {

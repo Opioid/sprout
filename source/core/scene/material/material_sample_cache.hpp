@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bssrdf.hpp"
 #include <cstddef>
 #include <cstdint>
 
@@ -11,23 +12,24 @@ class Sample_cache {
 
 public:
 
-	Sample_cache(uint32_t bin_size, uint32_t num_bins);
+	Sample_cache();
 	~Sample_cache();
 
-	template<typename T>
-	T& get(uint32_t id);
+	void init(uint32_t max_sample_size);
 
-	BSSRDF& bssrdf(uint32_t id);
+	template<typename T>
+	T& get();
+
+	BSSRDF& bssrdf();
 
 	size_t num_bytes() const;
 
 private:
 
-	uint32_t bin_size_;
-	uint32_t num_bins_;
+	uint32_t buffer_size_;
 	char* buffer_;
 
-	BSSRDF* bssrdfs_;
+	BSSRDF bssrdf_;
 };
 
 }}

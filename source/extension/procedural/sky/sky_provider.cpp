@@ -11,13 +11,14 @@
 #include "base/json/json.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/quaternion.inl"
-#include <iostream>
 
 namespace procedural { namespace sky {
 
+using namespace scene;
+
 Provider provider;
 
-void init(scene::Loader& loader, scene::material::Provider& material_provider) {
+void init(scene::Loader& loader, material::Provider& material_provider) {
 	provider.set_scene_loader(loader);
 	provider.set_material_provider(material_provider);
 
@@ -26,17 +27,16 @@ void init(scene::Loader& loader, scene::material::Provider& material_provider) {
 
 Provider::Provider() : material_provider_(nullptr) {}
 
-void Provider::set_scene_loader(scene::Loader& loader) {
+void Provider::set_scene_loader(Loader& loader) {
 	scene_loader_ = &loader;
 }
 
-void Provider::set_material_provider(scene::material::Provider& material_provider) {
+void Provider::set_material_provider(material::Provider& material_provider) {
 	material_provider_ = &material_provider;
 }
 
 scene::entity::Entity* Provider::create_extension(const json::Value& extension_value,
-												  scene::Scene& scene,
-												  resource::Manager& manager) {
+												  Scene& scene, resource::Manager& manager) {
 	Sky* sky = new Sky;
 
 	bool bake = true;
@@ -44,27 +44,24 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 	std::shared_ptr<Material> sky_material;
 
 	if (bake) {
-		sky_material = std::make_shared<Sky_baked_material>(material_provider_->sample_cache(),
-															sky->model());
+		sky_material = std::make_shared<Sky_baked_material>(sky->model());
 	} else {
-		sky_material = std::make_shared<Sky_material>(material_provider_->sample_cache(),
-													  sky->model());
+		sky_material = std::make_shared<Sky_material>(sky->model());
 	}
 
-	manager.store<scene::material::Material>("proc:sky", memory::Variant_map(), sky_material);
+	manager.store<material::Material>("proc:sky", memory::Variant_map(), sky_material);
 
-	auto sun_material = std::make_shared<Sun_material>(material_provider_->sample_cache(),
-													   sky->model());
+	auto sun_material = std::make_shared<Sun_material>(sky->model());
 
-	manager.store<scene::material::Material>("proc:sun", memory::Variant_map(), sun_material);
+	manager.store<material::Material>("proc:sun", memory::Variant_map(), sun_material);
 
-	scene::material::Materials materials(1);
+	material::Materials materials(1);
 
 	materials[0] = sky_material;
-	scene::Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), materials);
+	Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), materials);
 
 	materials[0] = sun_material;
-	scene::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), materials);
+	Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), materials);
 
 	sky->init(sky_prop, sun_prop);
 	sky->set_propagate_visibility(true);

@@ -91,7 +91,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 		}
 
 		const float3 wo = -ray.direction;
-		const auto& material_sample = intersection.sample(worker, wo, ray.time, filter);
+		const auto& material_sample = intersection.sample(wo, ray.time, worker, filter);
 
 		if ((primary_ray || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
@@ -267,7 +267,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 		// This will invalidate the contents of material_sample,
 		// so we must not use it after this point (e.g. in the calling function)!
 		// Exceptions are the Specular and Transmission cases, which never come here.
-		const auto& light_material_sample = intersection.sample(worker, wo, ray.time,
+		const auto& light_material_sample = intersection.sample(wo, ray.time, worker,
 																Sampler_filter::Nearest);
 
 		if (light_material_sample.same_hemisphere(wo)) {

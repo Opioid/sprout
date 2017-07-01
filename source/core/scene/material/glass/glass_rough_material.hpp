@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene/material/material.hpp"
-#include "image/texture/texture.hpp"
 
 namespace scene { namespace material { namespace glass {
 
@@ -9,11 +8,10 @@ class Glass_rough : public Material {
 
 public:
 
-	Glass_rough(Sample_cache& sample_cache, const Sampler_settings& sampler_settings);
+	Glass_rough(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   const Worker& worker,
-										   Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) final override;
 
 	virtual size_t num_bytes() const final override;
 

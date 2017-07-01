@@ -8,11 +8,10 @@ class Material_translucent : public Material_base {
 
 public:
 
-	Material_translucent(Sample_cache& sample_cache, const Sampler_settings& sampler_settings);
+	Material_translucent(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   const Worker& worker,
-										   Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) final override;
 
 	virtual size_t num_bytes() const final override;
 

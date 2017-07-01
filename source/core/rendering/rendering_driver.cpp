@@ -18,7 +18,8 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 			   Sampler_factory sampler_factory,
 			   scene::Scene& scene,
 			   take::View& view,
-			   thread::Pool& thread_pool) :
+			   thread::Pool& thread_pool,
+			   uint32_t max_sample_size) :
 	surface_integrator_factory_(surface_integrator_factory),
 	volume_integrator_factory_(volume_integrator_factory),
 	sampler_factory_(sampler_factory),
@@ -30,7 +31,7 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 									  view.camera->sensor_dimensions())) {
 	for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
 		rnd::Generator rng(0, i);
-		workers_[i].init(i, scene, rng, *surface_integrator_factory,
+		workers_[i].init(i, scene, max_sample_size, rng, *surface_integrator_factory,
 						 *volume_integrator_factory, *sampler_factory_);
 	}
 }

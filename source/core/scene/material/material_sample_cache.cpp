@@ -1,30 +1,28 @@
 #include "material_sample_cache.hpp"
-#include "bssrdf.hpp"
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 
 namespace scene { namespace material {
 
-Sample_cache::Sample_cache(uint32_t bin_size, uint32_t num_bins) :
-	bin_size_(bin_size),
-	num_bins_(num_bins),
-	buffer_(memory::allocate_aligned<char>(bin_size * num_bins)),
-	bssrdfs_(new BSSRDF[num_bins]) {}
+Sample_cache::Sample_cache() : buffer_size_(0), buffer_(nullptr) {}
 
 Sample_cache::~Sample_cache() {
-	delete[] bssrdfs_;
-
 	memory::free_aligned(buffer_);
 }
 
-BSSRDF& Sample_cache::bssrdf(uint32_t id) {
-	return bssrdfs_[id];
+void Sample_cache::init(uint32_t max_sample_size) {
+	uint32_t buffer_size = max_sample_size;
+	buffer_size_ = buffer_size;
+	buffer_ = memory::allocate_aligned<char>(buffer_size);
+}
+
+BSSRDF& Sample_cache::bssrdf() {
+	return bssrdf_;
 }
 
 size_t Sample_cache::num_bytes() const {
 	return sizeof(*this) +
-			num_bins_ * bin_size_ * sizeof(char) +
-			num_bins_ * sizeof(BSSRDF);
+			buffer_size_ * sizeof(char);
 }
 
 }}

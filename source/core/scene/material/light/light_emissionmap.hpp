@@ -9,16 +9,13 @@ class Emissionmap : public Material {
 
 public:
 
-	Emissionmap(Sample_cache& sample_cache, const Sampler_settings& sampler_settings,
-				bool two_sided);
+	Emissionmap(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   const Worker& worker,
-										   Sampler_filter filter) override;
+										   Worker& worker, Sampler_filter filter) override;
 
-	virtual float3 sample_radiance(const float3& wi, float2 uv, float area,
-								   float time, const Worker& worker,
-								   Sampler_filter filter) const final override;
+	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
+								   Worker& worker, Sampler_filter filter) const final override;
 
 	virtual float3 average_radiance(float area) const final override;
 
@@ -26,7 +23,7 @@ public:
 
 	virtual float2 radiance_sample(float2 r2, float& pdf) const final override;
 
-	virtual float emission_pdf(float2 uv, const Worker& worker,
+	virtual float emission_pdf(float2 uv, Worker& worker,
 							   Sampler_filter filter) const final override;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,

@@ -1,13 +1,12 @@
 #pragma once
 
-#include "prop.hpp"
 #include "shape/shape_intersection.hpp"
 #include "material/sampler_settings.hpp"
-#include "base/math/vector3.inl"
 
 namespace scene {
 
 class Worker;
+class Prop;
 
 namespace material {
 
@@ -22,37 +21,25 @@ class Prop;
 struct Intersection {
 	using Sampler_filter = material::Sampler_settings::Filter;
 
-	bool hit() const {
-		return nullptr != prop;
-	}
+	bool hit() const;
 
-	material::Material* material() const{
-		return prop->material(geo.part);
-	}
+	material::Material* material() const;
 
-	uint32_t light_id() const {
-		return prop->light_id(geo.part);
-	}
+	uint32_t light_id() const;
 
-	float area() const {
-		return prop->area(geo.part);
-	}
+	float area() const;
 
-	float opacity(const Worker& worker, float time, Sampler_filter filter) const;
+	float opacity(float time, Worker& worker, Sampler_filter filter) const;
 
-	float3 thin_absorption(const Worker& worker, const float3& wo,
-						   float time, Sampler_filter filter) const;
+	float3 thin_absorption(const float3& wo, float time,
+						   Worker& worker, Sampler_filter filter) const;
 
-	const material::Sample& sample(const Worker& worker, const float3& wo,
-								   float time, Sampler_filter filter) const;
+	const material::Sample& sample(const float3& wo, float time,
+								   Worker& worker, Sampler_filter filter) const;
 
-	const material::BSSRDF& bssrdf(const Worker& worker) const {
-		return material()->bssrdf(worker);
-	}
+	const material::BSSRDF& bssrdf(Worker& worker) const;
 
-	bool same_hemisphere(const float3& v) const {
-		return math::dot(geo.geo_n, v) > 0.f;
-	}
+	bool same_hemisphere(const float3& v) const;
 
 	shape::Intersection geo;
 	const Prop* prop;

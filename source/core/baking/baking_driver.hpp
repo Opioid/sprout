@@ -37,7 +37,8 @@ public:
 		   std::shared_ptr<sampler::Factory> sampler_factory);
 
 
-	void render(scene::Scene& scene, const take::View& view, thread::Pool& thread_pool,
+	void render(scene::Scene& scene, const take::View& view,
+				thread::Pool& thread_pool, uint32_t max_sample_size,
 				exporting::Sink& exporter, progress::Sink& progressor);
 
 private:
