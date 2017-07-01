@@ -22,8 +22,6 @@ namespace material {
 
 class Sample;
 
-class BSSRDF;
-
 class Material {
 
 public:
@@ -43,8 +41,6 @@ public:
 
 	virtual const Sample& sample(const float3& wo, const Renderstate& rs,
 								 Worker& worker, Sampler_filter filter) = 0;
-
-	virtual const BSSRDF& bssrdf(Worker& worker);
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
 								   Worker& worker, Sampler_filter filter) const;
@@ -67,8 +63,6 @@ public:
 								  bool importance_sampling, thread::Pool& pool);
 
 	virtual bool is_animated() const;
-
-	virtual bool is_subsurface() const;
 
 	virtual bool is_translucent() const;
 

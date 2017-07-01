@@ -36,10 +36,6 @@ float3 Sample::radiance() const {
 	return layer_.emission_;
 }
 
-float3 Sample::absorption_coffecient() const {
-	return float3(100.f, 100.f, 100.f);
-}
-
 float Sample::ior() const {
 	return 1.5f;
 }
@@ -56,18 +52,6 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 											 schlick, sampler, result);
 
 	result.reflection *= n_dot_wi;
-}
-
-bool Sample::is_pure_emissive() const {
-	return false;
-}
-
-bool Sample::is_transmissive() const {
-	return false;
-}
-
-bool Sample::is_translucent() const {
-	return false;
 }
 
 void Sample::Layer::set(const float3& radiance, float f0, float roughness) {

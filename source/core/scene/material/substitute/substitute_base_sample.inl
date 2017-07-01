@@ -18,28 +18,8 @@ float3 Sample_base<Diffuse>::radiance() const {
 }
 
 template<typename Diffuse>
-float3 Sample_base<Diffuse>::absorption_coffecient() const {
-	return float3(100.f, 100.f, 100.f);
-}
-
-template<typename Diffuse>
 float Sample_base<Diffuse>::ior() const {
 	return layer_.ior_;
-}
-
-template<typename Diffuse>
-bool Sample_base<Diffuse>::is_pure_emissive() const {
-	return false;
-}
-
-template<typename Diffuse>
-bool Sample_base<Diffuse>::is_transmissive() const {
-	return false;
-}
-
-template<typename Diffuse>
-bool Sample_base<Diffuse>::is_translucent() const {
-	return false;
 }
 
 template<typename Diffuse>

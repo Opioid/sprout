@@ -726,8 +726,10 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 	Texture_adapter mask;
 	bool two_sided = false;
 	float3 color(0.6f, 0.6f, 0.6f);
-	float3 absorption(0.f);
-	float3 scattering(0.f);
+	bool use_absorption_color = false;
+	float3 absorption_color(0.f);
+	bool use_scattering_color = false;
+	float3 scattering_color(0.f);
 	float roughness = 0.9f;
 	float metallic = 0.f;
 	float ior = 1.46f;
@@ -739,10 +741,12 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 	for (auto& n : substitute_value.GetObject()) {
 		if ("color" == n.name) {
 			color = json::read_float3(n.value);
-		} else if ("scattering" == n.name) {
-			scattering = json::read_float3(n.value);
-		} else if ("absorption" == n.name) {
-			absorption = json::read_float3(n.value);
+		} else if ("absorption_color" == n.name) {
+			use_absorption_color = true;
+			absorption_color = json::read_float3(n.value);
+		} else if ("scattering_color" == n.name) {
+			use_scattering_color = true;
+			scattering_color = json::read_float3(n.value);
 		} else if ("ior" == n.name) {
 			ior = json::read_float(n.value);
 		} else if ("roughness" == n.name) {
@@ -872,7 +876,7 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 
 			return material;
 		}
-	} else if (math::any_greater_zero(scattering)) {
+	} else if (attenuation_distance > 0.f) {
 		auto material = std::make_shared<substitute::Material_subsurface>(sampler_settings);
 
 		material->set_mask(mask);
@@ -882,8 +886,9 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 		material->set_emission_map(emission_map);
 
 		material->set_color(color);
-		material->set_absorption(absorption);
-		material->set_scattering(scattering);
+		material->set_absorption_color(use_absorption_color ? absorption_color : color);
+		material->set_scattering_color(use_scattering_color ? scattering_color : color);
+		material->set_attenuation_distance(attenuation_distance);
 		material->set_ior(ior);
 		material->set_roughness(roughness);
 		material->set_metallic(metallic);

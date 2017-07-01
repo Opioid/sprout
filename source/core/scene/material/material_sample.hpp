@@ -4,9 +4,15 @@
 
 namespace sampler { class Sampler; }
 
-namespace scene { namespace material {
+namespace scene {
+
+class Worker;
+
+namespace material {
 
 namespace bxdf { struct Result; }
+
+class BSSRDF;
 
 class Sample {
 
@@ -34,17 +40,21 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
 
-	virtual float3 radiance() const = 0;
+	virtual const BSSRDF& bssrdf(Worker& worker) const;
 
-	virtual float3 absorption_coffecient() const = 0;
+	virtual float3 radiance() const;
+
+	virtual float3 absorption_coffecient() const;
 
 	virtual float ior() const = 0;
 
-	virtual bool is_pure_emissive() const = 0;
+	virtual bool is_pure_emissive() const;
 
-	virtual bool is_transmissive() const = 0;
+	virtual bool is_transmissive() const;
 
-	virtual bool is_translucent() const = 0;
+	virtual bool is_translucent() const;
+
+	virtual bool is_subsurface() const;
 
 	const float3& wo() const;
 

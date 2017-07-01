@@ -30,14 +30,6 @@ float3 Sample_isotropic::evaluate(const float3& wi, float& pdf) const {
 												 layer_, conductor, pdf);
 }
 
-float3 Sample_isotropic::radiance() const {
-	return float3::identity();
-}
-
-float3 Sample_isotropic::absorption_coffecient() const {
-	return float3(100.f, 100.f, 100.f);
-}
-
 float Sample_isotropic::ior() const {
 	return 1.5f;
 }
@@ -54,18 +46,6 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Result& result) c
 	float n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_, conductor,
 											 sampler, result);
 	result.reflection *= n_dot_wi;
-}
-
-bool Sample_isotropic::is_pure_emissive() const {
-	return false;
-}
-
-bool Sample_isotropic::is_transmissive() const {
-	return false;
-}
-
-bool Sample_isotropic::is_translucent() const {
-	return false;
 }
 
 void Sample_isotropic::Layer::set(const float3& ior, const float3& absorption, float roughness) {
@@ -95,14 +75,6 @@ float3 Sample_anisotropic::evaluate(const float3& wi, float& pdf) const {
 												   layer_, conductor, pdf);
 }
 
-float3 Sample_anisotropic::radiance() const {
-	return float3::identity();
-}
-
-float3 Sample_anisotropic::absorption_coffecient() const {
-	return float3(100.f, 100.f, 100.f);
-}
-
 float Sample_anisotropic::ior() const {
 	return 1.5f;
 }
@@ -119,18 +91,6 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Result& result)
 	float n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_, conductor,
 											   sampler, result);
 	result.reflection *= n_dot_wi;
-}
-
-bool Sample_anisotropic::is_pure_emissive() const {
-	return false;
-}
-
-bool Sample_anisotropic::is_transmissive() const {
-	return false;
-}
-
-bool Sample_anisotropic::is_translucent() const {
-	return false;
 }
 
 void Sample_anisotropic::Layer::set(const float3& ior, const float3& absorption, float2 roughness) {

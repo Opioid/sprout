@@ -65,10 +65,6 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Result& result) const
 	}
 }
 
-float3 Sample_rough::radiance() const {
-	return float3::identity();
-}
-
 float3 Sample_rough::absorption_coffecient() const {
 	return layer_.absorption_coffecient_;
 }
@@ -77,16 +73,8 @@ float Sample_rough::ior() const {
 	return layer_.ior_i_;
 }
 
-bool Sample_rough::is_pure_emissive() const {
-	return false;
-}
-
 bool Sample_rough::is_transmissive() const {
 	return true;
-}
-
-bool Sample_rough::is_translucent() const {
-	return false;
 }
 
 void Sample_rough::Layer::set(const float3& refraction_color, const float3& absorption_color,

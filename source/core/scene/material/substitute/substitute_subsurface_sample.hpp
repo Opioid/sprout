@@ -13,11 +13,19 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
-	void set(float ior, float ior_outside);
+	virtual const BSSRDF& bssrdf(Worker& worker) const final override;
+
+	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
+			 float ior, float ior_outside);
+
+	virtual bool is_subsurface() const final override;
 
 private:
 
 	void refract(bool same_side, sampler::Sampler& sampler, bxdf::Result& result) const;
+
+	float3 absorption_coefficient_;
+	float3 scattering_coefficient_;
 
 	struct IOR {
 		float ior_i_;

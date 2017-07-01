@@ -17,4 +17,3 @@ void BSSRDF::set(const float3& absorption, const float3& scattering) {
 }
 
 }}
-

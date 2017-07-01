@@ -26,10 +26,6 @@ void Material::set_parameters(const json::Value& parameters) {
 
 void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
-const BSSRDF& Material::bssrdf(Worker& worker) {
-	return worker.sample_cache().bssrdf();
-}
-
 float3 Material::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/,
 								 float /*time*/, Worker& /*worker*/,
 								 Sampler_filter /*filter*/) const {
@@ -72,10 +68,6 @@ void Material::prepare_sampling(const shape::Shape& /*shape*/, uint32_t /*part*/
 								bool /*importance_sampling*/, thread::Pool& /*pool*/) {}
 
 bool Material::is_animated() const {
-	return false;
-}
-
-bool Material::is_subsurface() const {
 	return false;
 }
 

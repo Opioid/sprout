@@ -102,28 +102,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	}
 }
 
-float3 Sample::radiance() const {
-	return float3::identity();
-}
-
-float3 Sample::absorption_coffecient() const {
-	return float3(100.f, 100.f, 100.f);
-}
-
 float Sample::ior() const {
 	return 1.5f;
-}
-
-bool Sample::is_pure_emissive() const {
-	return false;
-}
-
-bool Sample::is_transmissive() const {
-	return false;
-}
-
-bool Sample::is_translucent() const {
-	return false;
 }
 
 void Sample::Base_layer::set(const float3& color_a, const float3& color_b, float a2) {

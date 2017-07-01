@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scene/material/material_sample.hpp"
-#include "scene/material/ggx/ggx.hpp"
 
 namespace scene { namespace material { namespace display {
 
@@ -15,18 +14,9 @@ public:
 
 	virtual float3 radiance() const final override;
 
-	virtual float3 absorption_coffecient() const final override;
-
 	virtual float ior() const final override;
 
-	virtual void sample(sampler::Sampler& sampler,
-								 bxdf::Result& result) const final override;
-
-	virtual bool is_pure_emissive() const final override;
-
-	virtual bool is_transmissive() const final override;
-
-	virtual bool is_translucent() const final override;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
 
 	struct Layer : material::Sample::Layer {
 		void set(const float3& radiance, float f0, float roughness);

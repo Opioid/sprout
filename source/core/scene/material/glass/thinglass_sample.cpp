@@ -21,10 +21,6 @@ float3 Sample_thin::evaluate(const float3& /*wi*/, float& pdf) const {
 	return float3::identity();
 }
 
-float3 Sample_thin::radiance() const {
-	return float3::identity();
-}
-
 float3 Sample_thin::absorption_coffecient() const {
 	return layer_.attenuation_;
 }
@@ -43,10 +39,6 @@ void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Result& result) const 
 		BSDF::refract(*this, layer_, sampler, result);
 		result.pdf *= 0.5f;
 	}
-}
-
-bool Sample_thin::is_pure_emissive() const {
-	return false;
 }
 
 bool Sample_thin::is_transmissive() const {

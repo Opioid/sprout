@@ -1,6 +1,7 @@
 #include "substitute_subsurface_sample.hpp"
 #include "substitute_base_sample.inl"
 #include "scene/material/bxdf.hpp"
+#include "scene/material/bssrdf.hpp"
 #include "scene/material/material_sample.inl"
 #include "sampler/sampler.hpp"
 #include "base/math/math.hpp"
@@ -47,11 +48,27 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 	}
 }
 
-void Sample_subsurface::set(float ior, float ior_outside) {
+const BSSRDF& Sample_subsurface::bssrdf(Worker& worker) const {
+	auto& bssrdf = worker.sample_cache().bssrdf();
+
+	bssrdf.set(absorption_coefficient_, scattering_coefficient_);
+
+	return bssrdf;
+}
+
+void Sample_subsurface::set(const float3& absorption_coefficient,
+							const float3& scattering_coefficient,
+							float ior, float ior_outside) {
+	absorption_coefficient_ = absorption_coefficient;
+	scattering_coefficient_ = scattering_coefficient;
 	ior_.ior_i_ = ior;
 	ior_.ior_o_ = ior_outside;
 	ior_.eta_i_ = ior_outside / ior;
 	ior_.eta_t_ = ior / ior_outside;
+}
+
+bool Sample_subsurface::is_subsurface() const {
+	return true;
 }
 
 void Sample_subsurface::refract(bool same_side, sampler::Sampler& sampler,

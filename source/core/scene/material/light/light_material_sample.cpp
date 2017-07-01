@@ -19,10 +19,6 @@ float3 Sample::radiance() const {
 	return layer_.radiance_;
 }
 
-float3 Sample::absorption_coffecient() const {
-	return float3(100.f, 100.f, 100.f);
-}
-
 float Sample::ior() const {
 	return 1.5f;
 }
@@ -34,14 +30,6 @@ void Sample::sample(sampler::Sampler& /*sampler*/, bxdf::Result& result) const {
 
 bool Sample::is_pure_emissive() const {
 	return true;
-}
-
-bool Sample::is_transmissive() const {
-	return false;
-}
-
-bool Sample::is_translucent() const {
-	return false;
 }
 
 void Sample::Layer::set(const float3& radiance) {

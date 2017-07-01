@@ -133,7 +133,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			if (sample_result.type.test(Bxdf_type::SSS)) {
-				result += throughput * subsurface_.li(worker, ray, intersection,
+				result += throughput * subsurface_.li(worker, ray, intersection, material_sample,
 													  Sampler_filter::Nearest, sample_result);
 				if (0.f == sample_result.pdf) {
 					// result += float3(1.f, 0.f, 0.f);

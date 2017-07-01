@@ -10,7 +10,6 @@ class Prop;
 
 namespace material {
 
-class BSSRDF;
 class Sample;
 class Material;
 
@@ -34,10 +33,8 @@ struct Intersection {
 	float3 thin_absorption(const float3& wo, float time,
 						   Worker& worker, Sampler_filter filter) const;
 
-	const material::Sample& sample(const float3& wo, float time,
-								   Worker& worker, Sampler_filter filter) const;
-
-	const material::BSSRDF& bssrdf(Worker& worker) const;
+	const material::Sample& sample(const float3& wo, float time, Worker& worker,
+								   Sampler_filter filter) const;
 
 	bool same_hemisphere(const float3& v) const;
 

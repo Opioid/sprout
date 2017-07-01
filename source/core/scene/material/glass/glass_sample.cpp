@@ -20,10 +20,6 @@ float3 Sample::evaluate(const float3& /*wi*/, float& pdf) const {
 	return float3::identity();
 }
 
-float3 Sample::radiance() const {
-	return float3::identity();
-}
-
 float3 Sample::absorption_coffecient() const {
 	return layer_.absorption_coffecient_;
 }
@@ -44,16 +40,8 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	}
 }
 
-bool Sample::is_pure_emissive() const {
-	return false;
-}
-
 bool Sample::is_transmissive() const {
 	return true;
-}
-
-bool Sample::is_translucent() const {
-	return false;
 }
 
 void Sample::Layer::set(const float3& refraction_color, const float3& absorption_color,

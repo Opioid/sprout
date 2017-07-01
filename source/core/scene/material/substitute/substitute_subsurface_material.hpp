@@ -13,19 +13,17 @@ public:
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   Worker& worker, Sampler_filter filter) final override;
 
-	virtual const BSSRDF& bssrdf(Worker& worker) final override;
-
-	virtual bool is_subsurface() const final override;
-
 	virtual size_t num_bytes() const final override;
 
-	void set_absorption(const float3& absorption);
-	void set_scattering(const float3& scattering);
+	void set_absorption_color(const float3& color);
+	void set_scattering_color(const float3& color);
+	void set_attenuation_distance(float attenuation_distance);
 
 private:
 
-	float3 absorption_;
-	float3 scattering_;
+	float3 absorption_color_;
+	float3 scattering_color_;
+	float attenuation_distance_;
 };
 
 }}}

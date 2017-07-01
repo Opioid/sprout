@@ -2,6 +2,7 @@
 
 #include "material_sample.hpp"
 #include "material_sample_helper.hpp"
+#include "scene/scene_worker.hpp"
 #include "base/math/vector3.inl"
 #include <cmath>
 
@@ -36,6 +37,34 @@ inline float3 Sample::Layer::tangent_to_world(const float3& v) const {
 	return float3(v[0] * t_[0] + v[1] * b_[0] + v[2] * n_[0],
 				  v[0] * t_[1] + v[1] * b_[1] + v[2] * n_[1],
 				  v[0] * t_[2] + v[1] * b_[2] + v[2] * n_[2]);
+}
+
+inline const BSSRDF& Sample::bssrdf(Worker& worker) const {
+	return worker.sample_cache().bssrdf();
+}
+
+inline float3 Sample::radiance() const {
+	return float3::identity();
+}
+
+inline float3 Sample::absorption_coffecient() const {
+	return float3::identity();
+}
+
+inline bool Sample::is_pure_emissive() const {
+	return false;
+}
+
+inline bool Sample::is_transmissive() const {
+	return false;
+}
+
+inline bool Sample::is_translucent() const {
+	return false;
+}
+
+inline bool Sample::is_subsurface() const {
+	return false;
 }
 
 inline const float3& Sample::wo() const {

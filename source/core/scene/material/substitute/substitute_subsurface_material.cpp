@@ -4,7 +4,6 @@
 #include "substitute_base_material.inl"
 #include "scene/scene_renderstate.hpp"
 #include "scene/scene_worker.hpp"
-#include "scene/material/bssrdf.hpp"
 #include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace substitute {
@@ -20,36 +19,27 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 	set_sample(wo, rs, sampler, sample);
 
-	sample.set(ior_, rs.ior);
+	sample.set(material::absorption_coefficient(absorption_color_, attenuation_distance_),
+			   material::scattering_coefficient(scattering_color_, attenuation_distance_),
+			   ior_, rs.ior);
 
 	return sample;
-}
-
-const BSSRDF& Material_subsurface::bssrdf(Worker& worker) {
-	auto& bssrdf = worker.sample_cache().bssrdf();
-
-	bssrdf.set(absorption_, scattering_);
-
-	return bssrdf;
-}
-
-bool Material_subsurface::is_subsurface() const {
-	return true;
 }
 
 size_t Material_subsurface::num_bytes() const {
 	return sizeof(*this);
 }
 
-void Material_subsurface::set_absorption(const float3& absorption) {
-//	absorption_ = absorption;
-	absorption_ = material::absorption_coefficient(float3(1.f, 1.f, 1.f), 0.1f);
+void Material_subsurface::set_absorption_color(const float3& color) {
+	absorption_color_ = color;
 }
 
-void Material_subsurface::set_scattering(const float3& scattering) {
-//	scattering_ = scattering;
-	scattering_ = material::scattering_coefficient(float3(1.f, 1.f, 1.f), 0.1f);
+void Material_subsurface::set_scattering_color(const float3& color) {
+	scattering_color_ = color;
+}
+
+void Material_subsurface::set_attenuation_distance(float attenuation_distance) {
+	attenuation_distance_ = attenuation_distance;
 }
 
 }}}
-

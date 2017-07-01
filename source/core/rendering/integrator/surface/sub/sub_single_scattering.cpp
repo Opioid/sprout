@@ -26,11 +26,8 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t /*num_samples_p
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& intersection,
-							 Sampler_filter filter, Bxdf_result& sample_result) {
-	if (0.f == sample_result.pdf) {
-		return float3(0.f);
-	}
-
+							 const Material_sample& sample, Sampler_filter filter,
+							 Bxdf_result& sample_result) {
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	Ray tray(intersection.geo.p, sample_result.wi,
 			 ray_offset, scene::Ray_max_t, ray.time, ray.depth);
@@ -43,7 +40,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 		return float3(0.f);
 	}
 
-	const auto& bssrdf = intersection.bssrdf(worker);
+	const auto& bssrdf = sample.bssrdf(worker);
 
 	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 	const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
