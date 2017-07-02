@@ -106,4 +106,3 @@ void Sample_subsurface::refract(bool same_side, sampler::Sampler& sampler,
 }
 
 }}}
-
