@@ -2,11 +2,10 @@
 #include "sky_model.hpp"
 #include "core/scene/prop.hpp"
 #include "core/scene/scene_renderstate.hpp"
-#include "core/scene/scene_worker.hpp"
+#include "core/scene/scene_worker.inl"
 #include "core/scene/shape/shape_sample.hpp"
 #include "core/scene/shape/shape.hpp"
 #include "core/scene/material/material_sample.inl"
-#include "core/scene/material/material_sample_cache.inl"
 #include "core/scene/material/light/light_material_sample.hpp"
 #include "base/math/vector4.inl"
 
