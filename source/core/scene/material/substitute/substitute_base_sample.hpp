@@ -9,11 +9,11 @@ class Sample_base : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const final override;
+	virtual const Layer& base_layer() const override final;
 
-	virtual float3 radiance() const final override;
+	virtual float3 radiance() const override final;
 
-	virtual float ior() const final override;
+	virtual float ior() const override final;
 
 protected:
 

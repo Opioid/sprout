@@ -13,11 +13,11 @@ public:
 	Material_base(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
-								   Worker& worker, Sampler_filter filter) const final override;
+								   Worker& worker, Sampler_filter filter) const override final;
 
-	virtual float3 average_radiance(float area) const final override;
+	virtual float3 average_radiance(float area) const override final;
 
-	virtual bool has_emission_map() const final override;
+	virtual bool has_emission_map() const override final;
 
 	void set_color_map(const Texture_adapter& color_map);
 	void set_normal_map(const Texture_adapter& normal_map);

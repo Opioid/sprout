@@ -32,7 +32,7 @@ public:
 	void set_shape_and_materials(std::shared_ptr<shape::Shape> shape,
 								 const material::Materials& materials);
 
-	virtual void set_parameters(const json::Value& parameters) final override;
+	virtual void set_parameters(const json::Value& parameters) override final;
 
 	void prepare_sampling(uint32_t part, uint32_t light_id,
 						  bool material_importance_sampling, thread::Pool& pool);
@@ -71,7 +71,7 @@ private:
 
 	bool visible(uint32_t ray_depth) const;
 
-	virtual void on_set_transformation() final override;
+	virtual void on_set_transformation() override final;
 
 	// Pre-transformed AABB in world space.
 	// For moving objects it must cover the entire area occupied by the object during the tick.

@@ -16,12 +16,12 @@ public:
 	Filtered(int2 dimensions, float exposure, const Clamp& clamp, const filter::Filter* filter);
 	~Filtered();
 
-	virtual int32_t filter_radius_int() const final override;
+	virtual int32_t filter_radius_int() const override final;
 
-	virtual int4 isolated_tile(const int4& tile) const final override;
+	virtual int4 isolated_tile(const int4& tile) const override final;
 
 	virtual void add_sample(const sampler::Camera_sample& sample, const float4&,
-							const int4& isolated_bounds, const int4& bounds) final override;
+							const int4& isolated_bounds, const int4& bounds) override final;
 
 private:
 

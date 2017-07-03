@@ -33,18 +33,18 @@ public:
 
 protected:
 
-	virtual int_type underflow() final override;
+	virtual int_type underflow() override final;
 
-	virtual pos_type seekpos(pos_type pos, std::ios_base::openmode) final override;
+	virtual pos_type seekpos(pos_type pos, std::ios_base::openmode) override final;
 
 	virtual pos_type seekoff(off_type off, std::ios_base::seekdir dir,
-							 std::ios_base::openmode mode) final override;
+							 std::ios_base::openmode mode) override final;
 
-	virtual int_type overflow(int_type c = traits_type::eof()) final override;
+	virtual int_type overflow(int_type c = traits_type::eof()) override final;
 
-	virtual int sync() final override;
+	virtual int sync() override final;
 
-	virtual std::streamsize showmanyc() final override;
+	virtual std::streamsize showmanyc() override final;
 
 private:
 

@@ -8,11 +8,11 @@ class Dummy : public Entity {
 
 public:
 
-	virtual void set_parameters(const json::Value& parameters) final override;
+	virtual void set_parameters(const json::Value& parameters) override final;
 
 private:
 
-	virtual void on_set_transformation() final override;
+	virtual void on_set_transformation() override final;
 };
 
 }}

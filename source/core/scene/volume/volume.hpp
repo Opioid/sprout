@@ -29,7 +29,7 @@ public:
 
 	float phase(const float3& w, const float3& wp) const;
 
-	virtual void set_parameters(const json::Value& parameters) final override;
+	virtual void set_parameters(const json::Value& parameters) override final;
 
 	void set_scene_aabb(const math::AABB& aabb);
 
@@ -37,7 +37,7 @@ public:
 
 private:
 
-	virtual void on_set_transformation() final override;
+	virtual void on_set_transformation() override final;
 
 protected:
 

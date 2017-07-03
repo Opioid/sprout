@@ -8,7 +8,7 @@ class Std_out : public Log {
 
 public:
 
-	virtual void post(Type type, const std::string& text) final override;
+	virtual void post(Type type, const std::string& text) override final;
 };
 
 }

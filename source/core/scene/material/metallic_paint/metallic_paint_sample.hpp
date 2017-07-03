@@ -9,13 +9,13 @@ class Sample : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const final override;
+	virtual const Layer& base_layer() const override final;
 
-	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
 
-	virtual float ior() const final override;
+	virtual float ior() const override final;
 
 	struct Base_layer : material::Sample::Layer {
 		void set(const float3& color_a, const float3& color_b, float a2);

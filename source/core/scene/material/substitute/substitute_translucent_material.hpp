@@ -11,9 +11,9 @@ public:
 	Material_translucent(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Worker& worker, Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) override final;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override final;
 
 	void set_thickness(float thickness);
 	void set_attenuation_distance(float attenuation_distance);

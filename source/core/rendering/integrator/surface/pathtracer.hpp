@@ -32,13 +32,13 @@ public:
 
 	~Pathtracer();
 
-	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) final override;
+	virtual void prepare(const Scene& scene, uint32_t num_samples_per_pixel) override final;
 
-	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
+	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float4 li(Worker& worker, scene::Ray& ray, Intersection& intersection) final override;
+	virtual float4 li(Worker& worker, scene::Ray& ray, Intersection& intersection) override final;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override final;
 
 private:
 
@@ -68,7 +68,7 @@ public:
 
 	~Pathtracer_factory();
 
-	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
 private:
 

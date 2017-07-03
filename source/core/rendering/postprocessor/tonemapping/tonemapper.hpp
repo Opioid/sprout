@@ -10,9 +10,9 @@ public:
 
 	virtual ~Tonemapper();
 
-	virtual void init(const scene::camera::Camera& camera, thread::Pool& pool) final override;
+	virtual void init(const scene::camera::Camera& camera, thread::Pool& pool) override final;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override final;
 
 protected:
 

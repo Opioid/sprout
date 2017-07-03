@@ -11,7 +11,7 @@ public:
 	~Null();
 
 	virtual void write(const image::Float_4& image, uint32_t frame,
-					   thread::Pool& pool) final override;
+					   thread::Pool& pool) override final;
 };
 
 }

@@ -14,10 +14,10 @@ public:
 private:
 
 	virtual float density(const float3& p, Worker& worker,
-						  Sampler_filter filter) const final override;
+						  Sampler_filter filter) const override final;
 
 	virtual void set_parameter(const std::string& name,
-	                           const json::Value& value) final override;
+	                           const json::Value& value) override final;
 
 	Texture_adapter grid_;
 };

@@ -19,7 +19,7 @@ class Grass : public scene::shape::triangle::Generator {
 public:
 
 	virtual std::shared_ptr<scene::shape::Shape> create_mesh(
-            const json::Value& mesh_value, resource::Manager& manager) final override;
+            const json::Value& mesh_value, resource::Manager& manager) override final;
 
 private:
 

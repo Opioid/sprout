@@ -10,17 +10,17 @@ public:
 
 	Attenuation(rnd::Generator& rng, const take::Settings& take_settings);
 
-	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) final override;
+	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) override final;
 
-	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) final override;
+	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
 	virtual float3 transmittance(Worker& worker, const Ray& ray,
-								 const Volume& volume) final override;
+								 const Volume& volume) override final;
 
 	virtual float4 li(Worker& worker, const Ray& ray, const Volume& volume,
-					  float3& transmittance) final override;
+					  float3& transmittance) override final;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override final;
 };
 
 class Attenuation_factory : public Factory {
@@ -31,7 +31,7 @@ public:
 
 	~Attenuation_factory();
 
-	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const final override;
+	virtual Integrator* create(uint32_t id, rnd::Generator& rng) const override final;
 
 private:
 

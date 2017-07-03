@@ -15,7 +15,7 @@ public:
 	Sky();
 	~Sky();
 
-	virtual void set_parameters(const json::Value& parameters) final override;
+	virtual void set_parameters(const json::Value& parameters) override final;
 
 	void init(scene::Prop* sky, scene::Prop* sun);
 
@@ -25,7 +25,7 @@ private:
 
 	void update();
 
-	virtual void on_set_transformation() final override;
+	virtual void on_set_transformation() override final;
 
 	Model model_;
 

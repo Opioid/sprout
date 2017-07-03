@@ -41,7 +41,7 @@ public:
 	virtual bool generate_ray(const sampler::Camera_sample& sample,
 							  uint32_t view, scene::Ray& ray) const = 0;
 
-	virtual void set_parameters(const json::Value& parameters) final override;
+	virtual void set_parameters(const json::Value& parameters) override final;
 
 	int2 resolution() const;
 
@@ -58,7 +58,7 @@ protected:
 
 	virtual void set_parameter(const std::string& name, const json::Value& value) = 0;
 
-	virtual void on_set_transformation() final override;
+	virtual void on_set_transformation() override final;
 
 	int2 resolution_;
 	rendering::sensor::Sensor* sensor_;

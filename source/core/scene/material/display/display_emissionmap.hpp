@@ -11,9 +11,9 @@ public:
 	Emissionmap(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Worker& worker, Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) override final;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override final;
 
 	void set_roughness(float roughness);
 	void set_ior(float ior);

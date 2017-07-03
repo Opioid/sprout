@@ -55,7 +55,7 @@ public:
 
 	T* data() const;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override final;
 
 private:
 

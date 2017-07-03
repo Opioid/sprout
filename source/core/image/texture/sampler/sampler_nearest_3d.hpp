@@ -9,11 +9,11 @@ class Nearest_3D : public Sampler_3D {
 
 public:
 
-	virtual float  sample_1(const Texture& texture, const float3& uvw) const final override;
-	virtual float2 sample_2(const Texture& texture, const float3& uvw) const final override;
-	virtual float3 sample_3(const Texture& texture, const float3& uvw) const final override;
+	virtual float  sample_1(const Texture& texture, const float3& uvw) const override final;
+	virtual float2 sample_2(const Texture& texture, const float3& uvw) const override final;
+	virtual float3 sample_3(const Texture& texture, const float3& uvw) const override final;
 
-	virtual float3 address(const float3& uvw) const final override;
+	virtual float3 address(const float3& uvw) const override final;
 
 private:
 

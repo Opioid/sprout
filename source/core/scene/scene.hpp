@@ -2,6 +2,7 @@
 
 #include "scene_worker.hpp"
 #include "material/material.hpp"
+#include "light/null_light.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "bvh/scene_bvh_tree.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
@@ -115,6 +116,8 @@ private:
 
     bvh::Builder builder_;
 	bvh::Tree bvh_;
+
+	light::Null_light null_light_;
 
 	bool has_masked_material_;
 	bool has_tinted_shadow_;

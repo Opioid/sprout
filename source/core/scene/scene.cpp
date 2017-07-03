@@ -118,7 +118,8 @@ const std::vector<light::Light*>& Scene::lights() const {
 
 const light::Light* Scene::light(uint32_t id, float& pdf) const {
 	if (lights_.empty() || 0xFFFFFFFF == id) {
-		return nullptr;
+		pdf = 1.f;
+		return &null_light_;
 	}
 
 	pdf = light_distribution_.pdf(id);
@@ -127,7 +128,8 @@ const light::Light* Scene::light(uint32_t id, float& pdf) const {
 
 const light::Light* Scene::random_light(float random, float& pdf) const {
 	if (lights_.empty()) {
-		return nullptr;
+		pdf = 1.f;
+		return &null_light_;
 	}
 
 	const uint32_t l = light_distribution_.sample_discrete(random, pdf);

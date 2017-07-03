@@ -9,10 +9,10 @@ public:
 
 //	Writer(math::uint2 dimensions);
 
-	virtual std::string file_extension() const final override;
+	virtual std::string file_extension() const override final;
 
 	virtual bool write(std::ostream& stream, const Float_4& image,
-					   thread::Pool& pool) final override;
+					   thread::Pool& pool) override final;
 
 private:
 

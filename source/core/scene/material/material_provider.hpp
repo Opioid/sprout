@@ -23,13 +23,13 @@ public:
 	~Provider();
 
 	virtual Material_ptr load(const std::string& filename, const memory::Variant_map& options,
-							  resource::Manager& manager) final override;
+							  resource::Manager& manager) override final;
 
 	virtual Material_ptr load(const void* data, const std::string& mount_folder,
 							  const memory::Variant_map& options,
-							  resource::Manager& manager) final override;
+							  resource::Manager& manager) override final;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override final;
 
 	Material_ptr fallback_material() const;
 

@@ -12,11 +12,11 @@ public:
 
 	Gaussian(float radius, float alpha);
 
-	virtual float radius() const final override;
+	virtual float radius() const override final;
 
-	virtual float evaluate(float d) const final override;
+	virtual float evaluate(float d) const override final;
 
-	virtual float evaluate(float2 p) const final override;
+	virtual float evaluate(float2 p) const override final;
 
 private:
 

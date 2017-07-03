@@ -9,16 +9,16 @@ class Sample_subsurface : public Sample_base<disney::Isotropic_no_lambert> {
 
 public:
 
-	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
 
-	virtual const BSSRDF& bssrdf(Worker& worker) const final override;
+	virtual const BSSRDF& bssrdf(Worker& worker) const override final;
 
 	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
 			 float ior, float ior_outside);
 
-	virtual bool is_subsurface() const final override;
+	virtual bool is_subsurface() const override final;
 
 private:
 

@@ -11,9 +11,9 @@ public:
 	Material_subsurface(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Worker& worker, Sampler_filter filter) final override;
+										   Worker& worker, Sampler_filter filter) override final;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override final;
 
 	void set_absorption_color(const float3& color);
 	void set_scattering_color(const float3& color);

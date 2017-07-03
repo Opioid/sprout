@@ -26,7 +26,7 @@ public:
 
 	virtual scene::entity::Entity* create_extension(const json::Value& extension_value,
 													scene::Scene& scene,
-													resource::Manager& manager) final override;
+													resource::Manager& manager) override final;
 
 private:
 

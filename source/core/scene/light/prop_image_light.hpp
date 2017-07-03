@@ -11,13 +11,13 @@ public:
 	virtual void sample(const Transformation& transformation,
 						const float3& p, const float3& n, float time, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension, Worker& worker,
-						Sampler_filter filter, Sample& result) const final override;
+						Sampler_filter filter, Sample& result) const override final;
 
 	virtual float pdf(const Transformation& transformation,
 					  const float3& p, const float3& wi, bool total_sphere,
-					  Worker& worker, Sampler_filter filter) const final override;
+					  Worker& worker, Sampler_filter filter) const override final;
 
-	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) final override;
+	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) override final;
 };
 
 }}

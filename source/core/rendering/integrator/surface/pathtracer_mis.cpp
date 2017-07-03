@@ -34,7 +34,9 @@ Pathtracer_MIS::~Pathtracer_MIS() {
 }
 
 void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel) {
-	num_lights_reciprocal_ = 1.f / static_cast<float>(scene.lights().size());
+	const uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
+
+	num_lights_reciprocal_ = num_lights > 0 ? 1.f / static_cast<float>(num_lights) : 0.f;
 
 	sampler_.resize(num_samples_per_pixel, 1, 1, 1);
 
@@ -49,7 +51,6 @@ void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel)
 			s.resize(num_samples_per_pixel, num_light_samples, 1, 2);
 		}
 	} else {
-		const uint32_t num_lights = static_cast<uint32_t>(scene.lights().size());
 		for (auto& s : light_samplers_) {
 			s.resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
 		}
@@ -205,9 +206,6 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 
 			float light_pdf;
 			const auto light = worker.scene().random_light(select, light_pdf);
-			if (!light) {
-				continue;
-			}
 
 			const float light_pdf_reciprocal = 1.f / light_pdf;
 
@@ -227,7 +225,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 			}
 		}
 
-		result *= settings_.num_light_samples_reciprocal / light_weight;
+		result *= settings_.num_light_samples_reciprocal * num_lights_reciprocal_;
 	}
 
 	// Material BSDF importance sample
@@ -248,9 +246,6 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 	if (intersect_and_resolve_mask(worker, secondary_ray, intersection, filter)) {
 		float light_pdf = 0.f;
 		const auto light = worker.scene().light(intersection.light_id(), light_pdf);
-		if (!light) {
-			return result;
-		}
 
 		if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
 			light_pdf = num_lights_reciprocal_;

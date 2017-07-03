@@ -25,11 +25,11 @@ public:
 					resource::Manager& resource_manager,
 					Camera& camera);
 
-	virtual void handle(const std::string& message) final override;
+	virtual void handle(const std::string& message) override final;
 
-	virtual std::string introduction() const final override;
+	virtual std::string introduction() const override final;
 
-	virtual std::string iteration() const final override;
+	virtual std::string iteration() const override final;
 
 private:
 

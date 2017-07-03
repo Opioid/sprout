@@ -12,7 +12,7 @@ public:
 								 Worker& worker, Sampler_filter filter) const override;
 
 	virtual float3 scattering(const float3& p, Worker& worker,
-							  Sampler_filter filter) const final override;
+							  Sampler_filter filter) const override final;
 
 protected:
 

@@ -8,13 +8,13 @@ class Sample_isotropic : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const final override;
+	virtual const Layer& base_layer() const override final;
 
-	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const override final;
 
-	virtual float ior() const final override;
+	virtual float ior() const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
 
 	struct Layer : material::Sample::Layer {
 		void set(const float3& ior, const float3& absorption, float roughness);
@@ -30,13 +30,13 @@ class Sample_anisotropic : public material::Sample {
 
 public:
 
-	virtual const Layer& base_layer() const final override;
+	virtual const Layer& base_layer() const override final;
 
-	virtual float3 evaluate(const float3& wi, float& pdf) const final override;
+	virtual float3 evaluate(const float3& wi, float& pdf) const override final;
 
-	virtual float ior() const final override;
+	virtual float ior() const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const final override;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
 
 	struct Layer : material::Sample::Layer {
 		void set(const float3& ior, const float3& absorption, float2 roughness);

@@ -17,14 +17,14 @@ public:
 
 	virtual std::shared_ptr<Image> load(const std::string& filename,
 										const memory::Variant_map& options,
-										resource::Manager& manager) final override;
+										resource::Manager& manager) override final;
 
 	virtual std::shared_ptr<Image> load(const void* data,
 										const std::string& mount_folder,
 										const memory::Variant_map& options,
-										resource::Manager& manager) final override;
+										resource::Manager& manager) override final;
 
-	virtual size_t num_bytes() const final override;
+	virtual size_t num_bytes() const override final;
 
 private:
 

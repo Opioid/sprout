@@ -9,9 +9,9 @@ public:
 
 	Stdout();
 
-	virtual void start(uint32_t resolution) final override;
-	virtual void end() final override;
-	virtual void tick() final override;
+	virtual void start(uint32_t resolution) override final;
+	virtual void end() override final;
+	virtual void tick() override final;
 
 private:
 

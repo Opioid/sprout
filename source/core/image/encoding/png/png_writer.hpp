@@ -11,12 +11,12 @@ public:
 
 	Writer(int2 dimensions);
 
-	virtual std::string file_extension() const final override;
+	virtual std::string file_extension() const override final;
 
 	bool write(std::ostream& stream, const Float_3& image, thread::Pool& pool);
 
 	virtual bool write(std::ostream& stream, const Float_4& image,
-					   thread::Pool& pool) final override;
+					   thread::Pool& pool) override final;
 
 	static bool write(const std::string& name, const Byte_3& image);
 

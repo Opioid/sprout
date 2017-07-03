@@ -15,7 +15,7 @@ public:
 	void init(Prop* prop, uint32_t part);
 
 	virtual const Transformation& transformation_at(
-			float time, Transformation& transformation) const final override;
+			float time, Transformation& transformation) const override final;
 
 	virtual void sample(const Transformation& transformation,
 						const float3& p, const float3& n, float time, bool total_sphere,
@@ -26,11 +26,11 @@ public:
 					  const float3& p, const float3& wi, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const override;
 
-	virtual float3 power(const math::AABB& scene_bb) const final override;
+	virtual float3 power(const math::AABB& scene_bb) const override final;
 
 	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) override;
 
-	virtual bool equals(const Prop* prop, uint32_t part) const final override;
+	virtual bool equals(const Prop* prop, uint32_t part) const override final;
 
 protected:
 
