@@ -1,10 +1,9 @@
 #include "substitute_base_material.hpp"
 #include "substitute_sample.hpp"
 #include "image/texture/texture_adapter.inl"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_sample.inl"
-#include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "base/math/vector4.inl"
 

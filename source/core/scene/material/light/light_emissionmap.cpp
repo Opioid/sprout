@@ -20,7 +20,7 @@ Emissionmap::Emissionmap(const Sampler_settings& sampler_settings, bool two_side
 
 const material::Sample& Emissionmap::sample(const float3& wo, const Renderstate& rs,
 											Worker& worker, Sampler_filter filter) {
-	auto& sample = worker.sample_cache().get<Sample>();
+	auto& sample = worker.sample<Sample>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

@@ -7,7 +7,6 @@
 #include "scene/material/ggx/ggx.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
-#include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "base/math/vector3.inl"
 

@@ -1,9 +1,8 @@
 #include "light_constant.hpp"
 #include "light_material_sample.hpp"
 #include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/material/material_sample.inl"
-#include "scene/material/material_sample_cache.inl"
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
 
@@ -14,7 +13,7 @@ Constant::Constant(const Sampler_settings& sampler_settings, bool two_sided) :
 
 const material::Sample& Constant::sample(const float3& wo, const Renderstate& rs,
 										 Worker& worker, Sampler_filter /*filter*/) {
-	auto& sample = worker.sample_cache().get<Sample>();
+	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
 

@@ -15,6 +15,7 @@ HEADERS += \
 	scene/scene_ray.inl \
 	scene/scene_renderstate.hpp \
 	scene/scene_worker.hpp \
+	scene/scene_worker.inl \
 
 include(animation/animation.pri)
 include(bvh/bvh.pri)

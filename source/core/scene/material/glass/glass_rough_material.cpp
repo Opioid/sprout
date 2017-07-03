@@ -2,10 +2,9 @@
 #include "glass_rough_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/material/material_helper.hpp"
 #include "scene/material/material_sample.inl"
-#include "scene/material/material_sample_cache.inl"
 #include "scene/material/ggx/ggx.inl"
 #include "base/math/vector4.inl"
 
@@ -16,7 +15,7 @@ Glass_rough::Glass_rough(const Sampler_settings& sampler_settings) :
 
 const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate& rs,
 											Worker& worker, Sampler_filter filter) {
-	auto& sample = worker.sample_cache().get<Sample_rough>();
+	auto& sample = worker.sample<Sample_rough>();
 
 	sample.set_basis(rs.geo_n, wo);
 

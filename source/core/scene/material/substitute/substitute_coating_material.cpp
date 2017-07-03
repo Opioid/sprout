@@ -1,7 +1,7 @@
 #include "substitute_coating_material.inl"
 #include "substitute_coating_sample.inl"
 #include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/material/coating/coating.inl"
 #include "base/math/vector4.inl"
 
@@ -12,7 +12,7 @@ Material_clearcoat::Material_clearcoat(const Sampler_settings& sampler_settings,
 
 const material::Sample& Material_clearcoat::sample(const float3& wo, const Renderstate& rs,
 												   Worker& worker, Sampler_filter filter) {
-	auto& sample = worker.sample_cache().get<Sample_clearcoat>();
+	auto& sample = worker.sample<Sample_clearcoat>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
@@ -35,7 +35,7 @@ Material_thinfilm::Material_thinfilm(const Sampler_settings& sampler_settings, b
 
 const material::Sample& Material_thinfilm::sample(const float3& wo, const Renderstate& rs,
 												  Worker& worker, Sampler_filter filter) {
-	auto& sample = worker.sample_cache().get<Sample_thinfilm>();
+	auto& sample = worker.sample<Sample_thinfilm>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

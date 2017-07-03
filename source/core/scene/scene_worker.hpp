@@ -44,6 +44,9 @@ public:
 
 	material::Sample_cache& sample_cache();
 
+	template<typename T>
+	T& sample();
+
 	const Texture_sampler_2D& sampler_2D(uint32_t key, Sampler_filter filter) const;
 
 	const Texture_sampler_3D& sampler_3D(uint32_t key, Sampler_filter filter) const;

@@ -1,8 +1,7 @@
 #include "sky_material_overcast.hpp"
 #include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/material/material_sample.inl"
-#include "scene/material/material_sample_cache.inl"
 #include "base/math/vector3.inl"
 
 namespace scene { namespace material { namespace sky {
@@ -13,7 +12,7 @@ Material_overcast::Material_overcast(const Sampler_settings& sampler_settings,
 
 const material::Sample& Material_overcast::sample(const float3& wo, const Renderstate& rs,
 												  Worker& worker, Sampler_filter /*filter*/) {
-	auto& sample = worker.sample_cache().get<light::Sample>();
+	auto& sample = worker.sample<light::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
 	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

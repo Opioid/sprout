@@ -149,8 +149,8 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset,
 		tiles_.restart();
 
 		thread_pool_.run_parallel(
-			[this, v, &progressor, sample_begin, sample_end,
-			 normalized_tick_offset, normalized_tick_slice]
+			[this, v, sample_begin, sample_end, normalized_tick_offset, normalized_tick_slice,
+			 &progressor]
 			(uint32_t index) {
 				auto& worker = workers_[index];
 

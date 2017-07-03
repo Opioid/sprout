@@ -2,9 +2,8 @@
 #include "display_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/material/material_sample.inl"
-#include "scene/material/material_sample_cache.inl"
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/shape/shape.hpp"
 #include "base/math/math.hpp"
@@ -19,7 +18,7 @@ Emissionmap::Emissionmap(const Sampler_settings& sampler_settings, bool two_side
 
 const material::Sample& Emissionmap::sample(const float3& wo, const Renderstate& rs,
 											Worker& worker, Sampler_filter filter) {
-	auto& sample = worker.sample_cache().get<Sample>();
+	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
 

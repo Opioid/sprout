@@ -3,7 +3,7 @@
 #include "substitute_base_sample.inl"
 #include "substitute_base_material.inl"
 #include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace substitute {
@@ -13,7 +13,7 @@ Material_subsurface::Material_subsurface(const Sampler_settings& sampler_setting
 
 const material::Sample& Material_subsurface::sample(const float3& wo, const Renderstate& rs,
 													Worker& worker, Sampler_filter filter) {
-	auto& sample = worker.sample_cache().get<Sample_subsurface>();
+	auto& sample = worker.sample<Sample_subsurface>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

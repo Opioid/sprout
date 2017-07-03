@@ -2,9 +2,8 @@
 #include "cloth_sample.hpp"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "scene/material/material_sample.inl"
-#include "scene/material/material_sample_cache.inl"
 #include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace cloth {
@@ -14,7 +13,7 @@ Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
 										 Worker& worker, Sampler_filter filter) {
-	auto& sample = worker.sample_cache().get<Sample>();
+	auto& sample = worker.sample<Sample>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 

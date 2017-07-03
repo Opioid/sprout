@@ -4,7 +4,7 @@
 #include "substitute_base_sample.inl"
 #include "image/texture/texture_adapter.inl"
 #include "scene/scene_renderstate.hpp"
-#include "scene/scene_worker.hpp"
+#include "scene/scene_worker.inl"
 #include "base/math/vector4.inl"
 
 namespace scene { namespace material { namespace substitute {
@@ -14,7 +14,7 @@ Material_translucent::Material_translucent(const Sampler_settings& sampler_setti
 
 const material::Sample& Material_translucent::sample(const float3& wo, const Renderstate& rs,
 													 Worker& worker, Sampler_filter filter) {
-	auto& sample = worker.sample_cache().get<Sample_translucent>();
+	auto& sample = worker.sample<Sample_translucent>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
