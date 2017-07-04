@@ -36,23 +36,16 @@ void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 }
 
 float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
-	Sampler_filter filter;
+	Sampler_filter filter = Sampler_filter::Unknown;
 	Bxdf_result sample_result;
-	Bxdf_result::Type_flag previous_sample_type;
 
 	float3 throughput(1.f);
 	float3 result(0.f);
 	float opacity = 0.f;
+	bool primary_ray = 0 == ray.depth;
+	bool requires_bounce = false;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		bool primary_ray = 0 == i || previous_sample_type.test(Bxdf_type::Specular);
-
-		if (primary_ray) {
-			filter = Sampler_filter::Unknown;
-		} else {
-			filter = Sampler_filter::Nearest;
-		}
-
 		if (!resolve_mask(worker, ray, intersection, filter)) {
 			break;
 		}
@@ -65,11 +58,10 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			throughput *= tr;
 		}
 
-		float3 wo = -ray.direction;
+		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray.time, worker, filter);
 
-		if (material_sample.same_hemisphere(wo)
-		&& (primary_ray || sample_result.type.test(Bxdf_type::Specular))) {
+		if ((primary_ray || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
 		}
 
@@ -97,9 +89,15 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			break;
 		}
 
-		if (ray.depth > 0 && !settings_.enable_caustics
-		&&  sample_result.type.test(Bxdf_type::Specular)) {
-			break;
+		requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
+
+		if (sample_result.type.test(Bxdf_type::Specular)) {
+			if (!settings_.enable_caustics && !primary_ray) {
+				break;
+			}
+		} else {
+			primary_ray = false;
+			filter = Sampler_filter::Nearest;
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
@@ -117,8 +115,6 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			throughput *= sample_result.reflection / sample_result.pdf;
 			opacity = 1.f;
 		}
-
-		previous_sample_type = sample_result.type;
 
 		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
