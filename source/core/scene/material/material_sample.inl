@@ -63,7 +63,7 @@ inline bool Sample::is_translucent() const {
 	return false;
 }
 
-inline bool Sample::is_subsurface() const {
+inline bool Sample::is_sss() const {
 	return false;
 }
 

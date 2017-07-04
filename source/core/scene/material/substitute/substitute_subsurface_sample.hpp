@@ -18,7 +18,7 @@ public:
 	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
 			 float ior, float ior_outside);
 
-	virtual bool is_subsurface() const override final;
+	virtual bool is_sss() const override final;
 
 private:
 

@@ -17,6 +17,8 @@ class Sample;
 
 }
 
+namespace light { class Light; }
+
 struct Intersection;
 struct Ray;
 class Scene;
@@ -42,6 +44,7 @@ public:
 	using Intersection	= scene::Intersection;
 	using Ray			= scene::Ray;
 	using Scene			= scene::Scene;
+	using Light			= scene::light::Light;
 
 	using Material_sample = scene::material::Sample;
 	using Sampler_filter  = scene::material::Sampler_settings::Filter;

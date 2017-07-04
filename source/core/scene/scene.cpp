@@ -17,6 +17,8 @@
 #include "base/math/distribution/distribution_1d.inl"
 #include "base/spectrum/rgb.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace scene {
 
 Scene::Scene() : tick_duration_(1.0 / 60.0), simulation_time_(0.0), volume_region_(nullptr) {
@@ -117,16 +119,18 @@ const std::vector<light::Light*>& Scene::lights() const {
 }
 
 const light::Light* Scene::light(uint32_t id, float& pdf) const {
-	if (lights_.empty() || 0xFFFFFFFF == id) {
-		pdf = 1.f;
-		return &null_light_;
-	}
+	// This would pose a problem,
+	// but I think it is more efficient to handle those cases outside or implicitely.
+	SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
 	pdf = light_distribution_.pdf(id);
 	return lights_[id];
 }
 
 const light::Light* Scene::random_light(float random, float& pdf) const {
+	// It would propably be nicer overall to have lights_[0] == &null_light_.
+	// This would make the condition uneccesary at the cost of evaluating the null light,
+	// which is cheap and very uncommon. Don't optimize for scene without lighting.
 	if (lights_.empty()) {
 		pdf = 1.f;
 		return &null_light_;

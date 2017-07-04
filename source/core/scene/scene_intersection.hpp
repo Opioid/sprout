@@ -24,6 +24,8 @@ struct Intersection {
 
 	material::Material* material() const;
 
+	bool is_light() const;
+
 	uint32_t light_id() const;
 
 	float area() const;

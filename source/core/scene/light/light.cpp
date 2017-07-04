@@ -30,5 +30,9 @@ float Light::pdf(const float3& p, const float3& wi, float time, bool total_spher
 	return pdf(transformation, p, wi, total_sphere, worker, filter);
 }
 
+bool Light::is_light(uint32_t id) {
+	return 0xFFFFFFFF != id;
+}
+
 }}
 

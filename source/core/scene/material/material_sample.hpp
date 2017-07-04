@@ -54,7 +54,7 @@ public:
 
 	virtual bool is_translucent() const;
 
-	virtual bool is_subsurface() const;
+	virtual bool is_sss() const;
 
 	const float3& wo() const;
 

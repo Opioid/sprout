@@ -114,7 +114,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			if (sample_result.type.test(Bxdf_type::SSS)) {
+			if (material_sample.is_sss()) {
 				result += throughput * subsurface_.li(worker, ray, intersection, material_sample,
 													  Sampler_filter::Nearest, sample_result);
 				if (0.f == sample_result.pdf) {

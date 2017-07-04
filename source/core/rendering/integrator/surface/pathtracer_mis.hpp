@@ -54,7 +54,7 @@ private:
 								 Bxdf_result& sample_result,
 								 bool& requires_bounce);
 
-	float3 evaluate_light(const scene::light::Light* light, float light_weight,
+	float3 evaluate_light(const Light* light, float light_weight,
 						  float time, float ray_offset, uint32_t depth,
 						  uint32_t sampler_dimension, Worker& worker,
 						  const Intersection& intersection,

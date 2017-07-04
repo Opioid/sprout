@@ -32,8 +32,6 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 
 		if (p < 0.5f) {
 			refract(same_side, sampler, result);
-
-			result.type.set(bxdf::Type::SSS);
 		} else {
 			if (p < 0.75f) {
 				layer_.diffuse_sample(wo_, sampler, result);
@@ -67,7 +65,7 @@ void Sample_subsurface::set(const float3& absorption_coefficient,
 	ior_.eta_t_ = ior / ior_outside;
 }
 
-bool Sample_subsurface::is_subsurface() const {
+bool Sample_subsurface::is_sss() const {
 	return true;
 }
 
