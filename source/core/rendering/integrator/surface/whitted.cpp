@@ -34,7 +34,7 @@ void Whitted::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 float4 Whitted::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	float3 result(0.f);
 
-	float3 wo = -ray.direction;
+	const float3 wo = -ray.direction;
 
 	float3 opacity = intersection.thin_absorption(wo, ray.time, worker, Sampler_filter::Unknown);
 	float3 throughput = opacity;
@@ -84,7 +84,7 @@ float3 Whitted::estimate_direct_light(Worker& worker, const Ray& ray,
 									  const Material_sample& material_sample) {
 	float3 result(0.f);
 
-	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
 	Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
@@ -105,14 +105,14 @@ float3 Whitted::estimate_direct_light(Worker& worker, const Ray& ray,
 				shadow_ray.set_direction(light_sample.shape.wi);
 				shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
-				float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Unknown);
+				const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Unknown);
 				if (math::any_greater_zero(tv)) {
-					float3 tr = worker.transmittance(shadow_ray);
+					const float3 tr = worker.transmittance(shadow_ray);
 
 					float bxdf_pdf;
-					float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+					const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-					result += tv * tr * light_sample.radiance * f / light_sample.shape.pdf;
+					result += (tv * tr) * (light_sample.radiance * f) / light_sample.shape.pdf;
 				}
 			}
 		}

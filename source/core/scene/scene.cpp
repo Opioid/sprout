@@ -41,8 +41,10 @@ Scene::~Scene() {
 		delete e;
 	}
 
-	for (auto l : lights_) {
-		delete l;
+	if (lights_[0] != &null_light_) {
+		for (auto l : lights_) {
+			delete l;
+		}
 	}
 
 	for (auto p : finite_props_) {
@@ -55,6 +57,12 @@ Scene::~Scene() {
 
 	for (const auto d : dummies_) {
 		delete d;
+	}
+}
+
+void Scene::finish() {
+	if (lights_.empty()) {
+		lights_.push_back(&null_light_);
 	}
 }
 
@@ -128,13 +136,7 @@ const light::Light* Scene::light(uint32_t id, float& pdf) const {
 }
 
 const light::Light* Scene::random_light(float random, float& pdf) const {
-	// It would propably be nicer overall to have lights_[0] == &null_light_.
-	// This would make the condition uneccesary at the cost of evaluating the null light,
-	// which is cheap and very uncommon. Don't optimize for scene without lighting.
-	if (lights_.empty()) {
-		pdf = 1.f;
-		return &null_light_;
-	}
+	SOFT_ASSERT(!lights_.empty());
 
 	const uint32_t l = light_distribution_.sample_discrete(random, pdf);
 
@@ -181,15 +183,15 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 	// for explanation why std::floor() variant
 	// seems to give results more in line with my expectations
 
-	double time_d = static_cast<double>(time);
+	const double time_d = static_cast<double>(time);
 
-	double tick_offset_d = time_d - std::floor(time_d / tick_duration_) * tick_duration_;
+	const double tick_offset_d = time_d - std::floor(time_d / tick_duration_) * tick_duration_;
 
 //	float tick_offset =  static_cast<float>(tick_offset_d);// time - std::floor(time / tick_duration_) * tick_duration_;
 
-	double first_tick_d = time_d - tick_offset_d;
+	const double first_tick_d = time_d - tick_offset_d;
 
-	float first_tick = static_cast<float>(first_tick_d);
+	const float first_tick = static_cast<float>(first_tick_d);
 
 	for (auto a : animations_) {
 		a->seek(first_tick);

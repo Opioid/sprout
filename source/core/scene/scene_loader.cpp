@@ -63,6 +63,8 @@ void Loader::load(const std::string& filename, Scene& scene) {
 		}
 	}
 
+	scene.finish();
+
 	resource_manager_.thread_pool().wait_async();
 }
 

@@ -54,6 +54,8 @@ public:
 	Scene();
 	~Scene();
 
+	void finish();
+
 	const math::AABB& aabb() const;
 
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
