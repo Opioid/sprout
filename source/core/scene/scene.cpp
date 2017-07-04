@@ -210,7 +210,7 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 
 void Scene::compile(thread::Pool& pool) {
 	has_masked_material_ = false;
-	has_tinted_shadow_ = false;
+	has_tinted_shadow_	 = false;
 
 	// handle changed transformations
 	for (const auto d : dummies_) {

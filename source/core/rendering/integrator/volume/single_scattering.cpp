@@ -101,9 +101,6 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 		// Direct light scattering
 		float light_pdf;
 		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
-		if (!light) {
-			continue;
-		}
 
 		scene::light::Sample light_sample;
 		light->sample(current, ray.time, sampler_, 0, worker,

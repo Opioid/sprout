@@ -120,7 +120,7 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 
 		previous_sample_type = sample_result.type;
 
-		float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+		const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.origin = intersection.geo.p;
 		ray.set_direction(sample_result.wi);
 		ray.min_t = ray_offset;
@@ -141,19 +141,16 @@ float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
 											Sampler_filter filter) {
 	float3 result = float3::identity();
 
-	float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
+	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 	Ray shadow_ray;
 	shadow_ray.origin = intersection.geo.p;
 	shadow_ray.min_t  = ray_offset;
 	shadow_ray.depth  = ray.depth + 1;
 	shadow_ray.time   = ray.time;
 
-	for (uint32_t i = 0; i < settings_.num_light_samples; ++i) {
+	for (uint32_t i = settings_.num_light_samples; i > 0; --i) {
 		float light_pdf;
 		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
-		if (!light) {
-			continue;
-		}
 
 		scene::light::Sample light_sample;
 		light->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
@@ -166,12 +163,13 @@ float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
 
 			float3 tv = worker.tinted_visibility(shadow_ray, filter);
 			if (math::any_greater_zero(tv)) {
-				float3 t = worker.transmittance(shadow_ray);
+				const float3 tr = worker.transmittance(shadow_ray);
 
 				float bxdf_pdf;
-				float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+				const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-				result += tv * t * light_sample.radiance * f / (light_pdf * light_sample.shape.pdf);
+				result += (tv * tr) * (light_sample.radiance * f)
+						/ (light_pdf * light_sample.shape.pdf);
 			}
 		}
 	}

@@ -242,7 +242,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 					  ray_offset, scene::Ray_max_t, ray.time, ray.depth + 1);
 
 	if (intersect_and_resolve_mask(worker, secondary_ray, intersection, filter)) {
-		uint32_t light_id = intersection.light_id();
+		const uint32_t light_id = intersection.light_id();
 		if (!Light::is_light(light_id)) {
 			return result;
 		}
@@ -275,8 +275,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 
 			const float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
 
-			result += (weight / sample_result.pdf)
-					* (ls_energy * sample_result.reflection);
+			result += (weight / sample_result.pdf) * (ls_energy * sample_result.reflection);
 		}
 	}
 
@@ -304,7 +303,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight,
 
 	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
 	if (math::any_greater_zero(tv)) {
-		const float3 t = worker.transmittance(shadow_ray);
+		const float3 tr = worker.transmittance(shadow_ray);
 
 		float bxdf_pdf;
 		const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
@@ -312,7 +311,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight,
 		const float weight = power_heuristic(light_sample.shape.pdf / light_weight, bxdf_pdf);
 
 		return (weight / light_sample.shape.pdf * light_weight)
-			 * (tv * t) * (light_sample.radiance * f);
+			 * (tv * tr) * (light_sample.radiance * f);
 	}
 
 	return float3(0.f);

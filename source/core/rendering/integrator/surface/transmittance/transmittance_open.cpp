@@ -58,7 +58,7 @@ float3 Open::resolve(Worker& worker, const scene::Ray& ray, scene::Intersection&
 		}
 
 		throughput *= rendering::attenuation(tray.max_t, used_absorption_coffecient)
-					* sample_result.reflection / sample_result.pdf;
+					* (sample_result.reflection / sample_result.pdf);
 
 		// Only inner reflections are handled here
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
