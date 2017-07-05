@@ -44,13 +44,13 @@ void Opaque::add_pixel_atomic(int2 pixel, const float4& color, float weight) {
 	atomic::add_assign(value[3], weight);
 }
 
-void Opaque::resolve(int32_t begin, int32_t end, image::Float_4& target) const {
-	float exposure_factor = exposure_factor_;
+void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const {
+	const float exposure_factor = exposure_factor_;
 
 	for (int32_t i = begin; i < end; ++i) {
 		auto& value = pixels_[i];
 
-		float3 color = value.xyz() / value[3];
+		const float3 color = value.xyz() / value[3];
 
 		target.at(i) = float4(exposure_factor * color, 1.f);
 	}

@@ -66,7 +66,7 @@ protected:
 	Camera_worker* workers_;
 	Tile_queue tiles_;
 
-	image::Float_4 target_;
+	image::Float4 target_;
 };
 
 }

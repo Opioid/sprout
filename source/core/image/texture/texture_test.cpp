@@ -8,12 +8,12 @@
 namespace image { namespace texture { namespace testing {
 
 bool is_valid_normal_map(const Image& image, const std::string& filename) {
-	if (Image::Type::Byte_3 != image.description().type) {
-		std::cout << "\"" << filename << "\" is not Byte_3" << std::endl;
+	if (Image::Type::Byte3 != image.description().type) {
+		std::cout << "\"" << filename << "\" is not Byte3" << std::endl;
 		return false;
 	}
 
-	const Byte_3& typed_image = static_cast<const Byte_3&>(image);
+	const Byte3& typed_image = static_cast<const Byte3&>(image);
 
 	int2 d = image.description().dimensions.xy();
 	for (int32_t y = 0; y < d[1]; ++y) {

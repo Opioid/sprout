@@ -13,7 +13,7 @@ Image_sequence::~Image_sequence() {
 	delete writer_;
 }
 
-void Image_sequence::write(const image::Float_4& image, uint32_t frame, thread::Pool& pool) {
+void Image_sequence::write(const image::Float4& image, uint32_t frame, thread::Pool& pool) {
 	std::ofstream stream(filename_ + string::to_string(frame, 6) + "." +
 						 writer_->file_extension(), std::ios::binary);
 	if (!stream) {

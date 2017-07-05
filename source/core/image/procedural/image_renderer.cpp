@@ -56,7 +56,7 @@ void Renderer::draw_circle(float2 pos, float radius) {
 	}
 }
 
-void Renderer::resolve_sRGB(Byte_3& image) const {
+void Renderer::resolve_sRGB(Byte3& image) const {
 	if (1 == sqrt_num_samples_) {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto s = samples_[i];
@@ -93,7 +93,7 @@ void Renderer::resolve_sRGB(Byte_3& image) const {
 	}
 }
 
-void Renderer::resolve(Byte_3& image) const {
+void Renderer::resolve(Byte3& image) const {
 	if (1 == sqrt_num_samples_) {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto s = samples_[i];
@@ -127,7 +127,7 @@ void Renderer::resolve(Byte_3& image) const {
 	}
 }
 
-void Renderer::resolve(Byte_1& image) const {
+void Renderer::resolve(Byte1& image) const {
 	if (1 == sqrt_num_samples_) {
 		for (int32_t i = 0, len = image.area(); i < len; ++i) {
 			auto& s = samples_[i];

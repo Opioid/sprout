@@ -29,7 +29,7 @@ void Pipeline::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		return;
 	}
 
-	image::Image::Description description(image::Image::Type::Float_4, camera.sensor_dimensions());
+	image::Image::Description description(image::Image::Type::Float4, camera.sensor_dimensions());
 	scratch_.resize(description);
 
 	for (auto pp : postprocessors_) {
@@ -46,12 +46,12 @@ size_t Pipeline::num_bytes() const {
 	return num_bytes;
 }
 
-void Pipeline::apply(const sensor::Sensor& sensor, image::Float_4& target,
+void Pipeline::apply(const sensor::Sensor& sensor, image::Float4& target,
 					 thread::Pool& pool) {
 	if (postprocessors_.empty()) {
 		sensor.resolve(pool, target);
 	} else {
-		image::Float_4* targets[2];
+		image::Float4* targets[2];
 
 		if (0 == postprocessors_.size() % 2) {
 			targets[0] = &target;

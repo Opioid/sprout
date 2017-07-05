@@ -23,7 +23,7 @@ Generic::Generic(float contrast, float shoulder, float mid_in, float mid_out, fl
 }
 
 void Generic::apply(int32_t begin, int32_t end, uint32_t /*pass*/,
-					const image::Float_4& source, image::Float_4& destination) {
+					const image::Float4& source, image::Float4& destination) {
 	for (int32_t i = begin; i < end; ++i) {
 		const float4& color = source.at(i);
 

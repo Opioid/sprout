@@ -36,12 +36,12 @@ public:
 
 	size_t num_bytes() const;
 
-	void apply(const sensor::Sensor& sensor, image::Float_4& target,
+	void apply(const sensor::Sensor& sensor, image::Float4& target,
 			   thread::Pool& pool);
 
 private:
 
-	image::Float_4 scratch_;
+	image::Float4 scratch_;
 
 	std::vector<Postprocessor*> postprocessors_;
 };

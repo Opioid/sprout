@@ -18,20 +18,20 @@
 namespace sampler { namespace testing {
 
 void render_set(const std::string& name, sampler::Sampler& sampler,
-				image::procedural::Renderer& renderer, image::Byte_3& target);
+				image::procedural::Renderer& renderer, image::Byte3& target);
 
 void render_disk(const std::string& name, sampler::Sampler& sampler, rnd::Generator& scramble,
-				 image::procedural::Renderer& renderer, image::Byte_3& target);
+				 image::procedural::Renderer& renderer, image::Byte3& target);
 
 void render_quad(const std::string& name, sampler::Sampler& sampler, rnd::Generator& scramble,
-				 image::procedural::Renderer& renderer, image::Byte_3& target);
+				 image::procedural::Renderer& renderer, image::Byte3& target);
 
 void test() {
 	std::cout << "sampler::testing::test()" << std::endl;
 
 	int2 dimensions(512, 512);
 	image::procedural::Renderer renderer(dimensions, 4);
-	image::Byte_3 target(image::Image::Description(image::Image::Type::Byte_3, dimensions));
+	image::Byte3 target(image::Image::Description(image::Image::Type::Byte3, dimensions));
 
 	uint32_t num_samples = 64;
 
@@ -62,7 +62,7 @@ void test() {
 }
 
 void render_set(const std::string& name, sampler::Sampler& sampler,
-				image::procedural::Renderer& renderer, image::Byte_3& target) {
+				image::procedural::Renderer& renderer, image::Byte3& target) {
 	rnd::Generator rng(0, 1);
 
 	render_disk(name + "_disk_0.png", sampler, rng, renderer, target);
@@ -73,7 +73,7 @@ void render_set(const std::string& name, sampler::Sampler& sampler,
 }
 
 void render_disk(const std::string& name, sampler::Sampler& sampler, rnd::Generator& scramble,
-				 image::procedural::Renderer& renderer, image::Byte_3& target) {
+				 image::procedural::Renderer& renderer, image::Byte3& target) {
 
 	std::cout << name << ": ";
 
@@ -145,7 +145,7 @@ void render_disk(const std::string& name, sampler::Sampler& sampler, rnd::Genera
 }
 
 void render_quad(const std::string& name, sampler::Sampler& sampler, rnd::Generator& scramble,
-				 image::procedural::Renderer& renderer, image::Byte_3& target) {
+				 image::procedural::Renderer& renderer, image::Byte3& target) {
 	renderer.set_brush(float3(0.18f));
 	renderer.clear();
 

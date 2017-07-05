@@ -10,9 +10,9 @@ namespace image { namespace encoding { namespace raw {
 std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 	int3 dimensions(512, 512, 32);
 
-	Image::Description description(Image::Type::Byte_1, dimensions);
+	Image::Description description(Image::Type::Byte1, dimensions);
 
-	auto volume = std::make_shared<Byte_1>(description);
+	auto volume = std::make_shared<Byte1>(description);
 
 	size_t num_bytes = dimensions[0] * dimensions[1] * dimensions[2];
 	stream.read(reinterpret_cast<char*>(volume->data()), num_bytes);
@@ -22,9 +22,9 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 	/*
 	int3 dimensions(3, 3, 3);
 
-	Image::Description description(Image::Type::Float_1, dimensions);
+	Image::Description description(Image::Type::Float1, dimensions);
 
-	auto volume = std::make_shared<Float_1>(description);
+	auto volume = std::make_shared<Float1>(description);
 
 	volume->at(0, 0, 0) = 0.1f; volume->at(1, 0, 0) = 0.2f; volume->at(2, 0, 0) = 0.3f;
 	volume->at(0, 1, 0) = 2.25f;  volume->at(1, 1, 0) = 2.f;  volume->at(2, 0, 0) = 1.75f;

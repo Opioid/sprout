@@ -24,14 +24,14 @@ public:
 private:
 
 	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
-					   const image::Float_4& source,
-					   image::Float_4& destination) override final;
+					   const image::Float4& source,
+					   image::Float4& destination) override final;
 
 	Adaption adaption_;
 	float threshold_;
 	float intensity_;
 
-//	image::Float_3 high_pass_;
+//	image::Float3 high_pass_;
 	int2 dimensions_;
 	float3* high_pass_;
 

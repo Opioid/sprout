@@ -37,9 +37,9 @@ static constexpr int32_t Num_bands = 64;
 
 using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 
-void render_dirt(image::Float_1& signal);
+void render_dirt(image::Float1& signal);
 
-void render_aperture(const Aperture& aperture, Float_1& signal);
+void render_aperture(const Aperture& aperture, Float1& signal);
 
 void centered_squared_magnitude(float* result, const float2* source,
 								int32_t width, int32_t height);
@@ -50,7 +50,7 @@ void squared_magnitude_transposed(float* result, const float2* source, int32_t d
 
 void diffraction(Spectrum* result, const float* source, int32_t bin, int32_t resolution);
 
-void write_signal(const std::string& name, const Float_1& signal);
+void write_signal(const std::string& name, const Float1& signal);
 
 void create(thread::Pool& pool) {
 	std::cout << "Starburst experiment" << std::endl;
@@ -61,11 +61,11 @@ void create(thread::Pool& pool) {
 
 	int2 dimensions(resolution, resolution);
 
-	Float_1 signal(Image::Description(Image::Type::Float_1, dimensions));
+	Float1 signal(Image::Description(Image::Type::Float1, dimensions));
 
 	std::vector<float2> signal_f(resolution * math::dft_size(resolution));
 
-	Float_3 float_image_a(Image::Description(Image::Type::Float_3, dimensions));
+	Float3 float_image_a(Image::Description(Image::Type::Float3, dimensions));
 
 	bool dirt = false;
 	if (dirt) {
@@ -84,17 +84,17 @@ void create(thread::Pool& pool) {
 	bool near_field = false;
 
 	if (near_field) {
-		Image::Description description(Image::Type::Float_2, dimensions);
+		Image::Description description(Image::Type::Float2, dimensions);
 
-		Float_2 signal_a(description);
-		Float_2 signal_b(description);
+		Float2 signal_a(description);
+		Float2 signal_b(description);
 
 		float alpha = 0.1f;
 
 		Row row(resolution, alpha, pool);
-		fdft<Float_1, float>(signal_b, signal, row, alpha, pool);
+		fdft<Float1, float>(signal_b, signal, row, alpha, pool);
 		signal_b.square_transpose();
-		fdft<Float_2, float2>(signal_a, signal_b, row, alpha, pool);
+		fdft<Float2, float2>(signal_a, signal_b, row, alpha, pool);
 		//	squared_magnitude(signal.data(), signal_a.data(), resolution, resolution);
 		squared_magnitude_transposed(signal.data(), signal_a.data(), resolution);
 
@@ -108,7 +108,7 @@ void create(thread::Pool& pool) {
 
 
 /*
-		Float_1 signal_t(Image::Description(Image::Type::Float_1, dimensions));
+		Float1 signal_t(Image::Description(Image::Type::Float1, dimensions));
 
 		Spectrum* spectral_data = new Spectrum[resolution * resolution];
 
@@ -195,7 +195,7 @@ void create(thread::Pool& pool) {
 	filter::Gaussian<packed_float3> gaussian(radius, radius * 0.0005f);
 	gaussian.apply(float_image_a, pool);
 
-	Byte_3 byte_image(Image::Description(Image::Type::Byte_3, dimensions));
+	Byte3 byte_image(Image::Description(Image::Type::Byte3, dimensions));
 
 	pool.run_range([&float_image_a, &byte_image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		for (int32_t i = begin; i < end; ++i) {
@@ -209,7 +209,7 @@ void create(thread::Pool& pool) {
 										byte_image);
 }
 
-void render_dirt(image::Float_1& signal) {
+void render_dirt(image::Float1& signal) {
 	Dirt dirt(signal.description().dimensions.xy(), 4);
 
 	dirt.set_brush(1.f);
@@ -261,7 +261,7 @@ void render_dirt(image::Float_1& signal) {
 //	gaussian.apply(signal);
 }
 
-void render_aperture(const Aperture& aperture, Float_1& signal) {
+void render_aperture(const Aperture& aperture, Float1& signal) {
 	int32_t num_sqrt_samples = 4;
 	std::vector<float2> kernel(num_sqrt_samples * num_sqrt_samples);
 
@@ -441,10 +441,10 @@ void diffraction(Spectrum* result, const float* squared_magnitude,
 	}
 }
 
-void write_signal(const std::string& name, const Float_1& signal) {
+void write_signal(const std::string& name, const Float1& signal) {
 	const auto d = signal.description().dimensions;
 
-	Byte_1 image(Image::Description(Image::Type::Byte_1, d));
+	Byte1 image(Image::Description(Image::Type::Byte1, d));
 
 	for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
 		float s = signal.load(i);

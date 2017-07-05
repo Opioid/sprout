@@ -13,11 +13,11 @@ public:
 
 	const byte3* data() const;
 
-	void to_sRGB(const image::Float_3& image, int32_t begin, int32_t end);
-	void to_sRGB(const image::Float_4& image, int32_t begin, int32_t end);
+	void to_sRGB(const image::Float3& image, int32_t begin, int32_t end);
+	void to_sRGB(const image::Float4& image, int32_t begin, int32_t end);
 
-	void to_byte(const image::Float_3& image, int32_t begin, int32_t end);
-	void to_byte(const image::Float_4& image, int32_t begin, int32_t end);
+	void to_byte(const image::Float3& image, int32_t begin, int32_t end);
+	void to_byte(const image::Float4& image, int32_t begin, int32_t end);
 
 protected:
 
@@ -33,11 +33,11 @@ public:
 
 	const byte4* data() const;
 
-	void to_sRGB(const image::Float_3& image, int32_t begin, int32_t end);
-	void to_sRGB(const image::Float_4& image, int32_t begin, int32_t end);
+	void to_sRGB(const image::Float3& image, int32_t begin, int32_t end);
+	void to_sRGB(const image::Float4& image, int32_t begin, int32_t end);
 
-	void to_byte(const image::Float_3& image, int32_t begin, int32_t end);
-	void to_byte(const image::Float_4& image, int32_t begin, int32_t end);
+	void to_byte(const image::Float3& image, int32_t begin, int32_t end);
+	void to_byte(const image::Float4& image, int32_t begin, int32_t end);
 
 protected:
 

@@ -50,7 +50,7 @@ void Server::shutdown() {
 	}
 }
 
-void Server::write(const image::Float_4& image, uint32_t frame, thread::Pool& pool) {
+void Server::write(const image::Float4& image, uint32_t frame, thread::Pool& pool) {
 	const auto d = image.description().dimensions;
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		srgb_.to_sRGB(image, begin, end); }, 0, d[0] * d[1]);

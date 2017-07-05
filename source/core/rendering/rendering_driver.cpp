@@ -27,7 +27,7 @@ Driver::Driver(Surface_integrator_factory surface_integrator_factory,
 	workers_(memory::construct_aligned<Camera_worker>(thread_pool.num_threads())),
 	tiles_(view.camera->resolution(), int2(32, 32),
 		   view.camera->sensor().filter_radius_int()),
-	target_(image::Image::Description(image::Image::Type::Float_4,
+	target_(image::Image::Description(image::Image::Type::Float4,
 									  view.camera->sensor_dimensions())) {
 	for (uint32_t i = 0, len = thread_pool.num_threads(); i < len; ++i) {
 		rnd::Generator rng(0, i);

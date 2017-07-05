@@ -5,11 +5,11 @@
 
 namespace image { namespace texture {
 
-class Byte_1_unorm : public Texture {
+class Byte1_unorm : public Texture {
 
 public:
 
-	Byte_1_unorm(std::shared_ptr<Image> image);
+	Byte1_unorm(std::shared_ptr<Image> image);
 
 	virtual float3 at_3(int32_t i) const override final;
 
@@ -34,7 +34,7 @@ public:
 
 private:
 
-	const Byte_1& image_;
+	const Byte1& image_;
 };
 
 }}

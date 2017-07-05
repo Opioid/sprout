@@ -158,7 +158,7 @@ private:
 };
 
 template<typename Source, typename T>
-static void fdft(image::Float_2& destination, const Source& source, const Row& row,
+static void fdft(image::Float2& destination, const Source& source, const Row& row,
 				 float alpha, uint32_t id, int32_t begin, int32_t end) {
 	const int32_t d = destination.description().dimensions[0];
 	const int32_t b = d - 1;
@@ -199,7 +199,7 @@ static void fdft(image::Float_2& destination, const Source& source, const Row& r
 }
 
 template<typename Source, typename T>
-static void fdft(image::Float_2& destination, const Source& source, const Row& row,
+static void fdft(image::Float2& destination, const Source& source, const Row& row,
 				 float alpha, thread::Pool& pool) {
 	const auto d = destination.description().dimensions;
 	pool.run_range([&destination, &source, &row, alpha]

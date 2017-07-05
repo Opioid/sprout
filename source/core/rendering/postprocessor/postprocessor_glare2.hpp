@@ -23,12 +23,12 @@ public:
 
 private:
 
-	virtual void pre_apply(const image::Float_4& source, image::Float_4& destination,
+	virtual void pre_apply(const image::Float4& source, image::Float4& destination,
 						   thread::Pool& pool) override final;
 
 	virtual void apply(int32_t begin, int32_t end, uint32_t pass,
-					   const image::Float_4& source,
-					   image::Float_4& destination) override final;
+					   const image::Float4& source,
+					   image::Float4& destination) override final;
 
 	Adaption adaption_;
 	float threshold_;

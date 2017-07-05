@@ -8,7 +8,7 @@ Postprocessor::Postprocessor(uint32_t num_passes) : num_passes_(num_passes) {}
 
 Postprocessor::~Postprocessor() {}
 
-void Postprocessor::apply(const image::Float_4& source, image::Float_4& destination,
+void Postprocessor::apply(const image::Float4& source, image::Float4& destination,
 						  thread::Pool& pool) {
 	pre_apply(source, destination, pool);
 
@@ -20,7 +20,7 @@ void Postprocessor::apply(const image::Float_4& source, image::Float_4& destinat
 	}
 }
 
-void Postprocessor::pre_apply(const image::Float_4& /*source*/, image::Float_4& /*destination*/,
+void Postprocessor::pre_apply(const image::Float4& /*source*/, image::Float4& /*destination*/,
 							  thread::Pool& /*pool*/) {}
 
 }}

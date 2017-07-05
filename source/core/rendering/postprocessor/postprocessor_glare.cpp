@@ -190,7 +190,7 @@ size_t Glare::num_bytes() const {
 }
 
 void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
-				  const image::Float_4& source, image::Float_4& destination) {
+				  const image::Float4& source, image::Float4& destination) {
 	if (0 == pass) {
 		float threshold = threshold_;
 

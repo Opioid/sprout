@@ -11,13 +11,13 @@ public:
 
 	enum class Type {
 		Unknown,
-		Byte_1,
-		Byte_2,
-		Byte_3,
-		Float_1,
-		Float_2,
-		Float_3,
-		Float_4
+		Byte1,
+		Byte2,
+		Byte3,
+		Float1,
+		Float2,
+		Float3,
+		Float4
 	};
 
 	struct Description {

@@ -15,8 +15,8 @@ std::shared_ptr<Image> Reader::read(std::istream& stream) const {
 
 	int2 dimensions(header.width, header.height);
 
-	auto image = std::make_shared<Float_3>(
-				Image::Description(Image::Type::Float_3, dimensions));
+	auto image = std::make_shared<Float3>(
+				Image::Description(Image::Type::Float3, dimensions));
 
 	read_pixels_RLE(stream, header.width, header.height, *image);
 
@@ -60,7 +60,7 @@ Reader::Header Reader::read_header(std::istream& stream) {
 
 void Reader::read_pixels_RLE(std::istream& stream,
 							 uint32_t scanline_width, uint32_t num_scanlines,
-							 Float_3& image) {
+							 Float3& image) {
 	if (scanline_width < 8 || scanline_width > 0x7fff) {
 		return read_pixels(stream, scanline_width * num_scanlines, image, 0);
 	}
@@ -138,7 +138,7 @@ void Reader::read_pixels_RLE(std::istream& stream,
 }
 
 void Reader::read_pixels(std::istream& stream, uint32_t num_pixels,
-						 Float_3& image, uint32_t offset) {
+						 Float3& image, uint32_t offset) {
 	uint8_t rgbe[4];
 
 	for (; num_pixels > 0; --num_pixels) {

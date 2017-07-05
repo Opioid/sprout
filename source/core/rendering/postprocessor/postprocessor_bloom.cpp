@@ -11,7 +11,7 @@ Bloom::Bloom(float angle, float alpha, float threshold, float intensity) :
 	angle_(angle), alpha_(alpha), threshold_(threshold), intensity_(intensity) {}
 
 void Bloom::init(const scene::camera::Camera& camera, thread::Pool& /*pool*/) {
-	image::Image::Description description(image::Image::Type::Float_4, camera.sensor_dimensions());
+	image::Image::Description description(image::Image::Type::Float4, camera.sensor_dimensions());
 	scratch_.resize(description);
 
 	float solid_angle = camera.pixel_solid_angle();
@@ -40,8 +40,8 @@ size_t Bloom::num_bytes() const {
 }
 
 void Bloom::apply(int32_t begin, int32_t end, uint32_t pass,
-				  const image::Float_4& source,
-				  image::Float_4& destination) {
+				  const image::Float4& source,
+				  image::Float4& destination) {
 	float threshold = threshold_;
 	float intensity = intensity_;
 
