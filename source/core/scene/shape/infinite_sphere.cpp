@@ -117,7 +117,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 }
 
 float Infinite_sphere::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-						   const float3& /*p*/, const float3& /*wi*/, float /*area*/,
+						   const float3& /*p*/, const float3& /*wi*/,
+						   float /*offset*/, float /*area*/,
 						   bool /*two_sided*/, bool total_sphere,
 						   Node_stack& /*node_stack*/) const {
 	if (total_sphere) {

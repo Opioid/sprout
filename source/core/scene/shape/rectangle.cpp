@@ -206,8 +206,9 @@ void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Rectangle::pdf(uint32_t /*part*/, const Transformation& transformation,
-					 const float3& p, const float3& wi, float area, bool two_sided,
-					 bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
+					 const float3& p, const float3& wi, float /*offset*/,
+					 float area, bool two_sided, bool /*total_sphere*/,
+					 Node_stack& /*node_stack*/) const {
 	float3 normal = transformation.rotation.r[2];
 
 	float denom = -math::dot(normal, wi);

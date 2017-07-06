@@ -254,8 +254,8 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 			light_pdf = num_lights_reciprocal_;
 		}
 
-		const float ls_pdf = light->pdf(secondary_ray.origin, sample_result.wi, ray.time,
-										material_sample.is_translucent(),
+		const float ls_pdf = light->pdf(secondary_ray.origin, sample_result.wi, ray_offset,
+										ray.time, material_sample.is_translucent(),
 										worker, Sampler_filter::Nearest);
 		if (0.f == ls_pdf) {
 			return result;

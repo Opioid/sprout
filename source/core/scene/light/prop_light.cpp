@@ -51,13 +51,13 @@ void Prop_light::sample(const Transformation& transformation,
 }
 
 float Prop_light::pdf(const Transformation& transformation,
-					  const float3& p, const float3& wi, bool total_sphere,
+					  const float3& p, const float3& wi, float offset, bool total_sphere,
 					  Worker& worker, Sampler_filter /*filter*/) const {
 	const float area = prop_->area(part_);
 
 	const bool two_sided = prop_->material(part_)->is_two_sided();
 
-	return prop_->shape()->pdf(part_, transformation, p, wi, area,
+	return prop_->shape()->pdf(part_, transformation, p, wi, offset, area,
 							   two_sided, total_sphere, worker.node_stack());
 }
 

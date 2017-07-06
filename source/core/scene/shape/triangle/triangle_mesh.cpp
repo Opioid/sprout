@@ -212,8 +212,8 @@ void Mesh::sample(uint32_t part, const Transformation& transformation,
 				  const float3& p, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
-	float r = sampler.generate_sample_1D(sampler_dimension);
-	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
+	const float  r  = sampler.generate_sample_1D(sampler_dimension);
+	const float2 r2 = sampler.generate_sample_2D(sampler_dimension);
 
 	uint32_t index = distributions_[part].sample(r);
 
@@ -247,12 +247,12 @@ void Mesh::sample(uint32_t part, const Transformation& transformation,
 }
 
 float Mesh::pdf(uint32_t part, const Transformation& transformation,
-				const float3& p, const float3& wi, float area, bool two_sided,
+				const float3& p, const float3& wi, float offset, float area, bool two_sided,
 				bool /*total_sphere*/, Node_stack& node_stack) const {
 	math::Ray ray;
 	ray.origin = math::transform_point(p, transformation.world_to_object);
 	ray.set_direction(math::transform_vector(wi, transformation.world_to_object));
-	ray.min_t = 0.f;
+	ray.min_t = offset;
 	ray.max_t = scene::Ray_max_t;
 
 	Intersection pi;

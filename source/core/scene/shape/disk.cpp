@@ -187,7 +187,7 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Disk::pdf(uint32_t /*part*/, const Transformation& transformation,
-				const float3& p, const float3& wi, float area, bool two_sided,
+				const float3& p, const float3& wi, float /*offset*/, float area, bool two_sided,
 				bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
 	float3 normal = transformation.rotation.r[2];
 

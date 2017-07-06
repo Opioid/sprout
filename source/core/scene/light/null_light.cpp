@@ -17,7 +17,8 @@ void Null_light::sample(const Transformation& /*transformation*/, const float3& 
 }
 
 float Null_light::pdf(const Transformation& /*transformation*/,
-					  const float3& /*p*/, const float3& /*wi*/, bool /*total_sphere*/,
+					  const float3& /*p*/, const float3& /*wi*/,
+					  float /*offset*/, bool /*total_sphere*/,
 					  Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	return 0.f;
 }

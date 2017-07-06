@@ -36,7 +36,7 @@ public:
 						Node_stack& node_stack, Sample& sample) const override final;
 
 	virtual float pdf(uint32_t part, const Transformation& transformation,
-					  const float3& p, const float3& wi, float area, bool two_sided,
+					  const float3& p, const float3& wi, float offset, float area, bool two_sided,
 					  bool total_sphere, Node_stack& node_stack) const override final;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,

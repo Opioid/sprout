@@ -21,7 +21,7 @@ public:
 						Worker& worker, Sampler_filter filter, Sample& result) const override;
 
 	virtual float pdf(const Transformation& transformation,
-					  const float3& p, const float3& wi, bool total_sphere,
+					  const float3& p, const float3& wi, float offset, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const override;
 
 	virtual float3 power(const math::AABB& scene_bb) const override final;

@@ -41,7 +41,8 @@ void Prop_image_light::sample(const Transformation& transformation,
 }
 
 float Prop_image_light::pdf(const Transformation& transformation,
-							const float3& p, const float3& wi, bool /*total_sphere*/,
+							const float3& p, const float3& wi,
+							float /*offset*/, bool /*total_sphere*/,
 							Worker& worker, Sampler_filter filter) const {
 	const float area = prop_->area(part_);
 

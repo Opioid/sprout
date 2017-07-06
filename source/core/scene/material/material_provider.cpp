@@ -1023,7 +1023,7 @@ float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 
 	for (auto& n : spectrum_value.GetObject()) {
 		if ("sRGB" == n.name) {
-			float3 srgb = json::read_float3(n.value);
+			const float3 srgb = json::read_float3(n.value);
 			return spectrum::sRGB_to_linear_RGB(srgb);
 		} else if ("RGB" == n.name) {
 			return json::read_float3(n.value);

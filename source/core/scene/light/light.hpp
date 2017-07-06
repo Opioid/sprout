@@ -47,10 +47,10 @@ public:
 				Worker& worker, Sampler_filter filter, Sample& result) const;
 
 	virtual float pdf(const Transformation& transformation,
-					  const float3& p, const float3& wi, bool total_sphere,
+					  const float3& p, const float3& wi, float offset, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const = 0;
 
-	float pdf(const float3& p, const float3& wi, float time, bool total_sphere,
+	float pdf(const float3& p, const float3& wi, float offset, float time, bool total_sphere,
 			  Worker& worker, Sampler_filter filter) const;
 
 	virtual float3 power(const math::AABB& scene_bb) const = 0;
