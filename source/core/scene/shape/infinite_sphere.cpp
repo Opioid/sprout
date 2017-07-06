@@ -157,8 +157,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 }
 
 float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-							  const float3& /*p*/, const float3& wi, float /*area*/, bool /*two_sided*/,
-							  float2& uv) const {
+							  const float3& /*p*/, const float3& wi,
+							  float /*area*/, bool /*two_sided*/, float2& uv) const {
 	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
 	xyz = math::normalized(xyz);
 	uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
