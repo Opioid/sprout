@@ -26,6 +26,10 @@ public:
 					  const float3& p, const float3& wi, float offset, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const override;
 
+	virtual float pdf(const float3& p, const float3& wi, const Intersection& intersection,
+					  float hit_t, float offset, float time, bool total_sphere,
+					  Worker& worker, Sampler_filter filter) const override;
+
 	virtual float3 power(const math::AABB& scene_bb) const override final;
 
 	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) override;

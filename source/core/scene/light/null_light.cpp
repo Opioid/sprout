@@ -23,6 +23,13 @@ float Null_light::pdf(const Transformation& /*transformation*/,
 	return 0.f;
 }
 
+float Null_light::pdf(const float3& /*p*/, const float3& /*wi*/,
+					  const Intersection& /*intersection*/,
+					  float /*hit_t*/, float /*offset*/, float /*time*/, bool /*total_sphere*/,
+					  Worker& /*worker*/, Sampler_filter /*filter*/) const {
+	return 0.f;
+}
+
 float3 Null_light::power(const math::AABB& /*scene_bb*/) const {
 	return float3::identity();
 }

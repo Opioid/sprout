@@ -13,7 +13,7 @@ namespace thread { class Pool; }
 namespace scene {
 
 namespace entity { struct Composed_transformation; }
-namespace shape { class Node_stack; }
+namespace shape { struct Intersection; class Node_stack; }
 
 class Worker;
 class Prop;
@@ -28,6 +28,7 @@ public:
 
 	using Transformation = entity::Composed_transformation;
 	using Sampler_filter = material::Sampler_settings::Filter;
+	using Intersection   = shape::Intersection;
 
 	virtual ~Light() {}
 
@@ -52,6 +53,10 @@ public:
 
 	float pdf(const float3& p, const float3& wi, float offset, float time, bool total_sphere,
 			  Worker& worker, Sampler_filter filter) const;
+
+	virtual float pdf(const float3& p, const float3& wi, const Intersection& intersection,
+					  float hit_t, float offset, float time, bool total_sphere,
+					  Worker& worker, Sampler_filter filter) const = 0;
 
 	virtual float3 power(const math::AABB& scene_bb) const = 0;
 

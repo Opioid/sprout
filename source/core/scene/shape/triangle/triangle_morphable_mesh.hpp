@@ -60,6 +60,9 @@ public:
 						 const float3& p, const float3& wi, float area, bool two_sided,
 						 float2& uv) const override final;
 
+	virtual float pdf_uv(const float3& wi, const shape::Intersection& intersection,
+						 float hit_t, float area, bool two_sided) const override final;
+
 	virtual float uv_weight(float2 uv) const override final;
 
 	virtual float area(uint32_t part, const float3& scale) const override final;

@@ -167,6 +167,11 @@ float Canopy::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 	return 1.f / (2.f * math::Pi /** std::cos(std::asin(r))*/);
 }
 
+float Canopy::pdf_uv(const float3& wi, const Intersection& intersection,
+					 float hit_t, float area, bool two_sided) const {
+	return 1.f;
+}
+
 float Canopy::uv_weight(float2 uv) const {
 	float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 

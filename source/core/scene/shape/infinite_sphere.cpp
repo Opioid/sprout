@@ -170,6 +170,13 @@ float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transform
 	return 1.f / ((4.f * math::Pi) * sin_theta);
 }
 
+float Infinite_sphere::pdf_uv(const float3& wi, const Intersection& intersection,
+							  float hit_t, float area, bool two_sided) const {
+	const float sin_theta = std::sin(intersection.uv[1] * math::Pi);
+
+	return 1.f / ((4.f * math::Pi) * sin_theta);
+}
+
 float Infinite_sphere::uv_weight(float2 uv) const {
 	float sin_theta = std::sin(uv[1] * math::Pi);
 

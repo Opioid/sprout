@@ -61,6 +61,15 @@ float Prop_light::pdf(const Transformation& transformation,
 							   two_sided, total_sphere, worker.node_stack());
 }
 
+float Prop_light::pdf(const float3& p, const float3& wi, const Intersection& intersection,
+					  float hit_t, float offset, float time, bool total_sphere,
+					  Worker& worker, Sampler_filter filter) const {
+	entity::Composed_transformation temp;
+	const auto& transformation = prop_->transformation_at(time, temp);
+
+	return pdf(transformation, p, wi, offset, total_sphere, worker, filter);
+}
+
 float3 Prop_light::power(const math::AABB& scene_bb) const {
 	const float area = prop_->area(part_);
 

@@ -135,8 +135,14 @@ void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transform
 							Sample& /*sample*/) const {}
 
 float Morphable_mesh::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
-							 const float3& /*p*/, const float3& /*wi*/, float /*area*/, bool /*two_sided*/,
+							 const float3& /*p*/, const float3& /*wi*/,
+							 float /*area*/, bool /*two_sided*/,
 							 float2& /*uv*/) const {
+	return 1.f;
+}
+
+float Morphable_mesh::pdf_uv(const float3& wi, const shape::Intersection& intersection,
+							 float hit_t, float area, bool two_sided) const {
 	return 1.f;
 }
 
