@@ -52,7 +52,8 @@ public:
 						 const float3& p, const float3& wi, float area, bool two_sided,
 						 float2& uv) const override final;
 
-	virtual float pdf_uv(const float3& wi, const Intersection& intersection,
+	virtual float pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
+						 const Transformation& transformation,
 						 float hit_t, float area, bool two_sided) const override final;
 
 	virtual float uv_weight(float2 uv) const override final;

@@ -292,7 +292,8 @@ float Mesh::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
 	return 1.f;
 }
 
-float Mesh::pdf_uv(const float3& wi, const shape::Intersection& intersection,
+float Mesh::pdf_uv(const float3& p, const float3& wi, const shape::Intersection& intersection,
+				   const Transformation& transformation,
 				   float hit_t, float area, bool two_sided) const {
 	return 1.f;
 }

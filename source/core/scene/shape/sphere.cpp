@@ -340,7 +340,8 @@ float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
 	return 0.f;
 }
 
-float Sphere::pdf_uv(const float3& wi, const Intersection& intersection,
+float Sphere::pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
+					 const Transformation& transformation,
 					 float hit_t, float area, bool two_sided) const {
 	return 1.f;
 }

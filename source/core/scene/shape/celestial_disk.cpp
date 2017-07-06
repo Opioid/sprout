@@ -122,7 +122,8 @@ float Celestial_disk::pdf_uv(uint32_t /*part*/, const Transformation& /*transfor
 	return 1.f;
 }
 
-float Celestial_disk::pdf_uv(const float3& wi, const Intersection& intersection,
+float Celestial_disk::pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
+							 const Transformation& transformation,
 							 float hit_t, float area, bool two_sided) const {
 	return 1.f;
 }

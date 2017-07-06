@@ -80,7 +80,8 @@ public:
 						 const float3& p, const float3& wi, float area, bool two_sided,
 						 float2& uv) const = 0;
 
-	virtual float pdf_uv(const float3& wi, const Intersection& intersection,
+	virtual float pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
+						 const Transformation& transformation,
 						 float hit_t, float area, bool two_sided) const = 0;
 
 	virtual float uv_weight(float2 uv) const = 0;

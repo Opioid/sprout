@@ -64,8 +64,8 @@ float Prop_image_light::pdf(const Transformation& transformation,
 float Prop_image_light::pdf(const float3& p, const float3& wi, const Intersection& intersection,
 							float hit_t, float offset, float time, bool total_sphere,
 							Worker& worker, Sampler_filter filter) const {
-//	entity::Composed_transformation temp;
-//	const auto& transformation = prop_->transformation_at(time, temp);
+	entity::Composed_transformation temp;
+	const auto& transformation = prop_->transformation_at(time, temp);
 
 //	return pdf(transformation, p, wi, offset, total_sphere, worker, filter);
 
@@ -77,7 +77,7 @@ float Prop_image_light::pdf(const float3& p, const float3& wi, const Intersectio
 	const bool two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
-	const float shape_pdf = prop_->shape()->pdf_uv(wi, intersection,
+	const float shape_pdf = prop_->shape()->pdf_uv(p, wi, intersection, transformation,
 												   hit_t, area, two_sided);
 
 	const float material_pdf = material->emission_pdf(intersection.uv, worker, filter);
