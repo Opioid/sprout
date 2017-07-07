@@ -22,14 +22,6 @@ void Light::sample(const float3& p, float time,
 		   sampler, sampler_dimension, worker, filter, result);
 }
 
-float Light::pdf(const float3& p, const float3& wi, float offset, float time, bool total_sphere,
-				 Worker& worker, Sampler_filter filter) const {
-	entity::Composed_transformation temp;
-	const auto& transformation = transformation_at(time, temp);
-
-	return pdf(transformation, p, wi, offset, total_sphere, worker, filter);
-}
-
 bool Light::is_light(uint32_t id) {
 	return 0xFFFFFFFF != id;
 }

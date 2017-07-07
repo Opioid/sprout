@@ -253,22 +253,14 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 //	}
 }
 
-float Sphere::pdf(uint32_t /*part*/, const Transformation& transformation,
-				  const float3& p, const float3& wi, float /*offset*/,
-				  float /*area*/, bool /*two_sided*/,
-				  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
-	float3 axis = transformation.position - p;
-	float axis_squared_length = math::squared_length(axis);
-	float radius_square = transformation.scale[0] * transformation.scale[0];
+float Sphere::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
+				  const Transformation& transformation,
+				  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
+	const float3 axis = transformation.position - ray.origin;
+	const float axis_squared_length = math::squared_length(axis);
+	const float radius_square = transformation.scale[0] * transformation.scale[0];
 
-	float b = math::dot(axis, wi);
-	float det = (b * b) - axis_squared_length + radius_square;
-
-	if (det <= 0.f) {
-		return 0.f;
-	}
-
-	float sin_theta_max2 = radius_square / axis_squared_length;
+	const float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 	cos_theta_max = std::min(0.99999995f, cos_theta_max);
 
@@ -310,44 +302,25 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 }
 
-float Sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-					 const float3& p, const float3& wi, float area,
-					 bool /*two_sided*/, float2& uv) const {
-	float3 v = transformation.position - p;
-	float b = math::dot(v, wi);
-	float radius = transformation.scale[0];
-	float det = (b * b) - math::dot(v, v) + (radius * radius);
-
-	if (det > 0.f) {
-		float dist = std::sqrt(det);
-
-		float t = b - dist;
-		float3 hit = p + t * wi;
-		float3 wn = math::normalized(hit - transformation.position);
-
-		float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
-		uv[0] = -std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
-		uv[1] =  std::acos(xyz[1]) * math::Pi_inv;
-
-		// sin_theta because of the uv weight
-		float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
-
-		float sl = t * t;
-		float c = -math::dot(wn, wi);
-		return sl / (c * area * sin_theta);
-	}
-
-	return 0.f;
-}
-
-float Sphere::pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
+float Sphere::pdf_uv(const Ray& ray, const Intersection& intersection,
 					 const Transformation& transformation,
-					 float hit_t, float area, bool two_sided) const {
-	return 1.f;
+					 float area, bool two_sided) const {
+//	float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
+//	uv[0] = -std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+//	uv[1] =  std::acos(xyz[1]) * math::Pi_inv;
+
+//	// sin_theta because of the uv weight
+//	float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
+
+	const float sin_theta = std::sin(intersection.uv[1] * math::Pi);
+
+	const float sl = ray.max_t * ray.max_t;
+	const float c = -math::dot(intersection.geo_n, ray.direction);
+	return sl / (c * area * sin_theta);
 }
 
 float Sphere::uv_weight(float2 uv) const {
-	float sin_theta = std::sin(uv[1] * math::Pi);
+	const float sin_theta = std::sin(uv[1] * math::Pi);
 
 	if (0.f == sin_theta) {
 		// this case never seemed to be an issue?!

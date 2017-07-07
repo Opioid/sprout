@@ -116,11 +116,9 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	SOFT_ASSERT(testing::check(sample));
 }
 
-float Infinite_sphere::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-						   const float3& /*p*/, const float3& /*wi*/,
-						   float /*offset*/, float /*area*/,
-						   bool /*two_sided*/, bool total_sphere,
-						   Node_stack& /*node_stack*/) const {
+float Infinite_sphere::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+						   const Transformation& /*transformation*/,
+						   float /*area*/, bool /*two_sided*/, bool total_sphere) const {
 	if (total_sphere) {
 		return 1.f / (4.f * math::Pi);
 	} else {
@@ -156,30 +154,24 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	SOFT_ASSERT(testing::check(sample, uv));
 }
 
-float Infinite_sphere::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-							  const float3& /*p*/, const float3& wi,
-							  float /*area*/, bool /*two_sided*/, float2& uv) const {
-	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
-	xyz = math::normalized(xyz);
-	uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
-	uv[1] = std::acos(xyz[1]) * math::Pi_inv;
+float Infinite_sphere::pdf_uv(const Ray& /*ray*/, const Intersection& intersection,
+							  const Transformation& /*transformation*/,
+							  float /*area*/, bool /*two_sided*/) const {
+//	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
+//	xyz = math::normalized(xyz);
+//	uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
+//	uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
-	// sin_theta because of the uv weight
-	const float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
+//	// sin_theta because of the uv weight
+//	const float sin_theta = std::sqrt(1.f - xyz[1] * xyz[1]);
 
-	return 1.f / ((4.f * math::Pi) * sin_theta);
-}
-
-float Infinite_sphere::pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
-							  const Transformation& transformation,
-							  float hit_t, float area, bool two_sided) const {
 	const float sin_theta = std::sin(intersection.uv[1] * math::Pi);
 
 	return 1.f / ((4.f * math::Pi) * sin_theta);
 }
 
 float Infinite_sphere::uv_weight(float2 uv) const {
-	float sin_theta = std::sin(uv[1] * math::Pi);
+	const float sin_theta = std::sin(uv[1] * math::Pi);
 
 	return sin_theta;
 }

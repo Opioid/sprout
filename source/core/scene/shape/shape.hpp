@@ -66,9 +66,11 @@ public:
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const = 0;
 
-	virtual float pdf(uint32_t part, const Transformation& transformation,
-					  const float3& p, const float3& wi, float offset, float area, bool two_sided,
-					  bool total_sphere, Node_stack& node_stack) const = 0;
+	// Both pdf functions implicitely assume that the passed
+	// ray/intersection/transformation combination actually lead to a hit.
+	virtual float pdf(const Ray& ray, const Intersection& intersection,
+					  const Transformation& transformation,
+					  float area, bool two_sided, bool total_sphere) const = 0;
 
 	// The following two functions are used for textured lights
 	// and should have the uv weight baked in!
@@ -76,13 +78,9 @@ public:
 						const float3& p, float2 uv, float area, bool two_sided,
 						Sample& sample) const = 0;
 
-	virtual float pdf_uv(uint32_t part, const Transformation& transformation,
-						 const float3& p, const float3& wi, float area, bool two_sided,
-						 float2& uv) const = 0;
-
-	virtual float pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
+	virtual float pdf_uv(const Ray& ray, const Intersection& intersection,
 						 const Transformation& transformation,
-						 float hit_t, float area, bool two_sided) const = 0;
+						 float area, bool two_sided) const = 0;
 
 	virtual float uv_weight(float2 uv) const = 0;
 

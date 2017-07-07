@@ -246,56 +246,27 @@ void Mesh::sample(uint32_t part, const Transformation& transformation,
 	}
 }
 
-float Mesh::pdf(uint32_t part, const Transformation& transformation,
-				const float3& p, const float3& wi, float offset, float area, bool two_sided,
-				bool /*total_sphere*/, Node_stack& node_stack) const {
-	math::Ray ray;
-	ray.origin = math::transform_point(p, transformation.world_to_object);
-	ray.set_direction(math::transform_vector(wi, transformation.world_to_object));
-	ray.min_t = offset;
-	ray.max_t = scene::Ray_max_t;
+float Mesh::pdf(const Ray& ray, const shape::Intersection& intersection,
+				const Transformation& /*transformation*/,
+				float area, bool two_sided, bool /*total_sphere*/) const {
+	float c = -math::dot(intersection.geo_n, ray.direction);
 
-	Intersection pi;
-	if (tree_.intersect(ray, node_stack, pi)) {
-		uint32_t shape_part = tree_.triangle_material_index(pi.index);
-		if (part != shape_part) {
-			return 0.f;
-		}
-
-		float3 sn = tree_.triangle_normal(pi.index);
-		float3 wn = math::transform_vector(sn, transformation.rotation);
-
-		float c = -math::dot(wn, wi);
-
-		if (two_sided) {
-			c = std::abs(c);
-		}
-
-		if (c <= 0.f) {
-			return 0.f;
-		}
-
-		float sl = ray.max_t * ray.max_t;
-		return sl / (c * area);
+	if (two_sided) {
+		c = std::abs(c);
 	}
 
-	return 0.f;
+	const float sl = ray.max_t * ray.max_t;
+	return sl / (c * area);
 }
 
 void Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				  const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
 				  Sample& /*sample*/) const {}
 
-float Mesh::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
-				   const float3& /*p*/, const float3& /*wi*/, float /*area*/, bool /*two_sided*/,
-				   float2& /*uv*/) const {
-	return 1.f;
-}
-
-float Mesh::pdf_uv(const float3& p, const float3& wi, const shape::Intersection& intersection,
-				   const Transformation& transformation,
-				   float hit_t, float area, bool two_sided) const {
-	return 1.f;
+float Mesh::pdf_uv(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+				   const Transformation& /*transformation*/,
+				   float /*area*/, bool /*two_sided*/) const {
+	return 0.f;
 }
 
 float Mesh::uv_weight(float2 /*uv*/) const {

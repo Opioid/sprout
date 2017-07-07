@@ -101,10 +101,9 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	SOFT_ASSERT(testing::check(sample));
 }
 
-float Canopy::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-				  const float3& /*p*/, const float3& /*wi*/, float /*offset*/,
-				  float /*area*/, bool /*two_sided*/,
-				  bool /*total_sphere*/, Node_stack& /*node_stack*/) const {
+float Canopy::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+				  const Transformation& /*transformation*/,
+				  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
 	return 1.f / (2.f * math::Pi);
 }
 
@@ -143,34 +142,10 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 
 }
 
-float Canopy::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-					 const float3& /*p*/, const float3& wi, float /*area*/, bool /*two_sided*/,
-					 float2& uv) const {
-	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
-	xyz = math::normalized(xyz);
-	float2 disk = math::hemisphere_to_disk_equidistant(xyz);
-	uv[0] = 0.5f * disk[0] + 0.5f;
-	uv[1] = 0.5f * disk[1] + 0.5f;
-
-
-//	float r = std::sqrt(disk.x * disk.x + disk.y * disk.y);
-
-//	// Equidistant projection
-//	float longitude = std::atan2(-uv.y, uv.x);
-//	float colatitude = r * math::Pi_div_2;
-
-//	float sin_col = std::sin(colatitude);
-//	float cos_col = std::cos(colatitude);
-//	float sin_lon = std::sin(longitude);
-//	float cos_lon = std::cos(longitude);
-
-	return 1.f / (2.f * math::Pi /** std::cos(std::asin(r))*/);
-}
-
-float Canopy::pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
-					 const Transformation& transformation,
-					 float hit_t, float area, bool two_sided) const {
-	return 1.f;
+float Canopy::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
+					 const Transformation& /*transformation*/,
+					 float /*area*/, bool /*two_sided*/) const {
+	return 1.f / (2.f * math::Pi);
 }
 
 float Canopy::uv_weight(float2 uv) const {

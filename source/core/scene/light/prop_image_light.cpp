@@ -2,6 +2,7 @@
 #include "light_sample.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/prop.hpp"
+#include "scene/scene_ray.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/shape_intersection.hpp"
@@ -41,34 +42,10 @@ void Prop_image_light::sample(const Transformation& transformation,
 	}
 }
 
-float Prop_image_light::pdf(const Transformation& transformation,
-							const float3& p, const float3& wi,
-							float /*offset*/, bool /*total_sphere*/,
-							Worker& worker, Sampler_filter filter) const {
-	const float area = prop_->area(part_);
-
-	const auto material = prop_->material(part_);
-
-	const bool two_sided = material->is_two_sided();
-
-	// this pdf includes the uv weight which adjusts for texture distortion by the shape
-	float2 uv;
-	const float shape_pdf = prop_->shape()->pdf_uv(part_, transformation, p, wi,
-												   area, two_sided, uv);
-
-	const float material_pdf = material->emission_pdf(uv, worker, filter);
-
-	return shape_pdf * material_pdf;
-}
-
-float Prop_image_light::pdf(const float3& p, const float3& wi, const Intersection& intersection,
-							float hit_t, float offset, float time, bool total_sphere,
+float Prop_image_light::pdf(const Ray& ray, const Intersection& intersection, bool /*total_sphere*/,
 							Worker& worker, Sampler_filter filter) const {
 	entity::Composed_transformation temp;
-	const auto& transformation = prop_->transformation_at(time, temp);
-
-//	return pdf(transformation, p, wi, offset, total_sphere, worker, filter);
-
+	const auto& transformation = prop_->transformation_at(ray.time, temp);
 
 	const float area = prop_->area(part_);
 
@@ -77,8 +54,8 @@ float Prop_image_light::pdf(const float3& p, const float3& wi, const Intersectio
 	const bool two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
-	const float shape_pdf = prop_->shape()->pdf_uv(p, wi, intersection, transformation,
-												   hit_t, area, two_sided);
+	const float shape_pdf = prop_->shape()->pdf_uv(ray, intersection, transformation,
+												   area, two_sided);
 
 	const float material_pdf = material->emission_pdf(intersection.uv, worker, filter);
 

@@ -40,21 +40,17 @@ public:
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const override final;
 
-	virtual float pdf(uint32_t part, const Transformation& transformation,
-					  const float3& p, const float3& wi, float offset, float area, bool two_sided,
-					  bool total_sphere, Node_stack& node_stack) const override final;
+	virtual float pdf(const Ray& ray, const Intersection& intersection,
+					  const Transformation& transformation,
+					  float area, bool two_sided, bool total_sphere) const override final;
 
 	virtual void sample(uint32_t part, const Transformation& transformation,
 						const float3& p, float2 uv, float area, bool two_sided,
 						Sample& sample) const override final;
 
-	virtual float pdf_uv(uint32_t part, const Transformation& transformation,
-						 const float3& p, const float3& wi, float area, bool two_sided,
-						 float2& uv) const override final;
-
-	virtual float pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
+	virtual float pdf_uv(const Ray& ray, const Intersection& intersection,
 						 const Transformation& transformation,
-						 float hit_t, float area, bool two_sided) const override final;
+						 float area, bool two_sided) const override final;
 
 	virtual float uv_weight(float2 uv) const override final;
 

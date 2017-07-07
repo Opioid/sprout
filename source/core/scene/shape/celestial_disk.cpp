@@ -105,10 +105,9 @@ void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformat
 	sample.pdf = 1.f / area;
 }
 
-float Celestial_disk::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-						  const float3& /*p*/, const float3& /*wi*/, float /*offset*/, float area,
-						  bool /*two_sided*/, bool /*total_sphere*/,
-						  Node_stack& /*node_stack*/) const {
+float Celestial_disk::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+						  const Transformation& /*transformation*/,
+						  float area, bool /*two_sided*/, bool /*total_sphere*/) const {
 	return 1.f / area;
 }
 
@@ -116,16 +115,10 @@ void Celestial_disk::sample(uint32_t /*part*/, const Transformation& /*transform
 							const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
 							Sample& /*sample*/) const {}
 
-float Celestial_disk::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
-							 const float3&/*p*/, const float3& /*wi*/, float /*area*/, bool /*two_sided*/,
-							 float2& /*uv*/) const {
-	return 1.f;
-}
-
-float Celestial_disk::pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
-							 const Transformation& transformation,
-							 float hit_t, float area, bool two_sided) const {
-	return 1.f;
+float Celestial_disk::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
+							 const Transformation& /*transformation*/,
+							 float area, bool /*two_sided*/) const {
+	return 1.f / area;
 }
 
 float Celestial_disk::uv_weight(float2 /*uv*/) const {

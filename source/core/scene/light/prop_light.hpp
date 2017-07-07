@@ -22,12 +22,7 @@ public:
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Worker& worker, Sampler_filter filter, Sample& result) const override;
 
-	virtual float pdf(const Transformation& transformation,
-					  const float3& p, const float3& wi, float offset, bool total_sphere,
-					  Worker& worker, Sampler_filter filter) const override;
-
-	virtual float pdf(const float3& p, const float3& wi, const Intersection& intersection,
-					  float hit_t, float offset, float time, bool total_sphere,
+	virtual float pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,
 					  Worker& worker, Sampler_filter filter) const override;
 
 	virtual float3 power(const math::AABB& scene_bb) const override final;

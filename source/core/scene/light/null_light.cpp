@@ -16,16 +16,8 @@ void Null_light::sample(const Transformation& /*transformation*/, const float3& 
 	result.shape.pdf = 0.f;
 }
 
-float Null_light::pdf(const Transformation& /*transformation*/,
-					  const float3& /*p*/, const float3& /*wi*/,
-					  float /*offset*/, bool /*total_sphere*/,
-					  Worker& /*worker*/, Sampler_filter /*filter*/) const {
-	return 0.f;
-}
-
-float Null_light::pdf(const float3& /*p*/, const float3& /*wi*/,
-					  const Intersection& /*intersection*/,
-					  float /*hit_t*/, float /*offset*/, float /*time*/, bool /*total_sphere*/,
+float Null_light::pdf(const Ray& /*ray*/, const Intersection& /*intersection*/,
+					  bool /*total_sphere*/,
 					  Worker& /*worker*/, Sampler_filter /*filter*/) const {
 	return 0.f;
 }

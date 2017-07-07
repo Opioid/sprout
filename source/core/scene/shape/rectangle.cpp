@@ -205,45 +205,18 @@ void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 }
 
-float Rectangle::pdf(uint32_t /*part*/, const Transformation& transformation,
-					 const float3& p, const float3& wi, float /*offset*/,
-					 float area, bool two_sided, bool /*total_sphere*/,
-					 Node_stack& /*node_stack*/) const {
-	float3 normal = transformation.rotation.r[2];
+float Rectangle::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
+					 const Transformation& transformation,
+					 float area, bool two_sided, bool /*total_sphere*/) const {
+	const float3 normal = transformation.rotation.r[2];
 
-	float denom = -math::dot(normal, wi);
-	float c = denom;
+	float c = -math::dot(normal, ray.direction);
 
 	if (two_sided) {
 		c = std::abs(c);
 	}
 
-	if (c <= 0.f) {
-		return 0.f;
-	}
-
-	float d = math::dot(normal, transformation.position);
-	float numer = math::dot(normal, p) - d;
-	float hit_t = numer / denom;
-
-	float3 ws = p + hit_t * wi; // ray.point(t);
-	float3 k = ws - transformation.position;
-
-	float3 t = -transformation.rotation.r[0];
-
-	float u = math::dot(t, k / transformation.scale[0]);
-	if (u > 1.f || u < -1.f) {
-		return 0.f;
-	}
-
-	float3 b = -transformation.rotation.r[1];
-
-	float v = math::dot(b, k / transformation.scale[1]);
-	if (v > 1.f || v < -1.f) {
-		return 0.f;
-	}
-
-	float sl = hit_t * hit_t;
+	const float sl = ray.max_t * ray.max_t;
 	return sl / (c * area);
 }
 
@@ -278,53 +251,10 @@ void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 }
 
-float Rectangle::pdf_uv(uint32_t /*part*/, const Transformation& transformation,
-						const float3& p, const float3& wi, float area, bool two_sided,
-						float2& uv) const {
-	float3 normal = transformation.rotation.r[2];
-
-	float denom = -math::dot(normal, wi);
-	float c = denom;
-
-	if (two_sided) {
-		c = std::abs(c);
-	}
-
-	if (c <= 0.f) {
-		return 0.f;
-	}
-
-	float d = math::dot(normal, transformation.position);
-	float numer = math::dot(normal, p) - d;
-	float hit_t = numer / denom;
-
-	float3 ws = p + hit_t * wi; // ray.point(t);
-	float3 k = ws - transformation.position;
-
-	float3 t = -transformation.rotation.r[0];
-
-	float u = math::dot(t, k / transformation.scale[0]);
-	if (u > 1.f || u < -1.f) {
-		return 0.f;
-	}
-
-	float3 b = -transformation.rotation.r[1];
-
-	float v = math::dot(b, k / transformation.scale[1]);
-	if (v > 1.f || v < -1.f) {
-		return 0.f;
-	}
-
-	uv = float2(0.5f * (u + 1.f), 0.5f * (v + 1.f));
-
-	float sl = hit_t * hit_t;
-	return sl / (c * area);
-}
-
-float Rectangle::pdf_uv(const float3& p, const float3& wi, const Intersection& intersection,
+float Rectangle::pdf_uv(const Ray& ray, const Intersection& intersection,
 						const Transformation& transformation,
-						float hit_t, float area, bool two_sided) const {
-	return 1.f;
+						float area, bool two_sided) const {
+	return pdf(ray, intersection, transformation, area, two_sided, false);
 }
 
 float Rectangle::uv_weight(float2 /*uv*/) const {

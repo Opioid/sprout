@@ -123,29 +123,20 @@ void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transform
 							sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
 							Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
 
-float Morphable_mesh::pdf(uint32_t /*part*/, const Transformation& /*transformation*/,
-						  const float3& /*p*/, const float3& /*wi*/, float /*offset*/,
-						  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/,
-						  shape::Node_stack& /*node_stack*/) const {
-	return 1.f;
+float Morphable_mesh::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+						  const Transformation& /*transformation*/,
+						  float /*area*/, bool /*two_sided*/, bool /*total_sphere*/) const {
+	return 0.f;
 }
 
 void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
 							Sample& /*sample*/) const {}
 
-float Morphable_mesh::pdf_uv(uint32_t /*part*/, const Transformation& /*transformation*/,
-							 const float3& /*p*/, const float3& /*wi*/,
-							 float /*area*/, bool /*two_sided*/,
-							 float2& /*uv*/) const {
-	return 1.f;
-}
-
-float Morphable_mesh::pdf_uv(const float3& p, const float3& wi,
-							 const shape::Intersection& intersection,
-							 const Transformation& transformation,
-							 float hit_t, float area, bool two_sided) const {
-	return 1.f;
+float Morphable_mesh::pdf_uv(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
+							 const Transformation& /*transformation*/,
+							 float /*area*/, bool /*two_sided*/) const {
+	return 0.f;
 }
 
 float Morphable_mesh::uv_weight(float2 /*uv*/) const {

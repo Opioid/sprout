@@ -1,5 +1,6 @@
 #include "prop_light.hpp"
 #include "light_sample.hpp"
+#include "scene/scene_ray.hpp"
 #include "scene/scene_worker.hpp"
 #include "scene/prop.hpp"
 #include "scene/shape/shape.hpp"
@@ -50,24 +51,16 @@ void Prop_light::sample(const Transformation& transformation,
 												area, time, worker, filter);
 }
 
-float Prop_light::pdf(const Transformation& transformation,
-					  const float3& p, const float3& wi, float offset, bool total_sphere,
-					  Worker& worker, Sampler_filter /*filter*/) const {
+float Prop_light::pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,
+					  Worker& /*worker*/, Sampler_filter /*filter*/) const {
+	entity::Composed_transformation temp;
+	const auto& transformation = prop_->transformation_at(ray.time, temp);
+
 	const float area = prop_->area(part_);
 
 	const bool two_sided = prop_->material(part_)->is_two_sided();
 
-	return prop_->shape()->pdf(part_, transformation, p, wi, offset, area,
-							   two_sided, total_sphere, worker.node_stack());
-}
-
-float Prop_light::pdf(const float3& p, const float3& wi, const Intersection& intersection,
-					  float hit_t, float offset, float time, bool total_sphere,
-					  Worker& worker, Sampler_filter filter) const {
-	entity::Composed_transformation temp;
-	const auto& transformation = prop_->transformation_at(time, temp);
-
-	return pdf(transformation, p, wi, offset, total_sphere, worker, filter);
+	return prop_->shape()->pdf(ray, intersection, transformation, area, two_sided, total_sphere);
 }
 
 float3 Prop_light::power(const math::AABB& scene_bb) const {
