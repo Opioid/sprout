@@ -30,6 +30,10 @@
 It seems that the mutex communication is not the bottleneck in this scenario. 
 Something with atomics might be interesting, but will probably not noticeably affect overall performance.
 
+*** TODO Deterministic random numbers
+Currently (some) random numbers are seeded per worker.
+This leads to indeterministic behavior as the workers render varying parts of the frame per run. 
+
 ** Postprocessors
 
 *** TODO Glare filter
