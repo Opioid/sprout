@@ -1016,6 +1016,24 @@ void Provider::read_coating_description(const json::Value& coating_value,
 	}
 }
 
+float3 Provider::read_color(const json::Value& color_value) {
+	if (color_value.IsArray()) {
+		return json::read_float3(color_value);
+	}
+
+	if (!color_value.IsString()) {
+		return float3(0.f);
+	}
+
+	const std::string hex_string = json::read_string(color_value);
+
+	if (hex_string.length() != 7 || '#' != hex_string[0]) {
+		return float3(0.f);
+	}
+
+	return float3(1.f, 0.f, 0.f);
+}
+
 float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 	if (!spectrum_value.IsObject()) {
 		return float3(0.f);
