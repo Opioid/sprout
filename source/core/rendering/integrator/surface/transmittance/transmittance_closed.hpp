@@ -2,6 +2,7 @@
 
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector3.hpp"
+// #include "sampler/sampler_golden_ratio.hpp"
 
 namespace sampler { class Sampler; }
 
@@ -23,9 +24,13 @@ public:
 
 	float3 resolve(Worker& worker, const Ray& ray, Intersection& intersection,
 				   const float3& attenuation, sampler::Sampler& sampler,
-				   Sampler_filter filter, Bxdf_result& sample_result) const;
+				   Sampler_filter filter, Bxdf_result& sample_result);
 
 	virtual size_t num_bytes() const override final;
+
+private:
+
+//	sampler::Golden_ratio samplers_[2];
 };
 
 }}}}

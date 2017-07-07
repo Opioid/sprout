@@ -55,6 +55,8 @@ void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel)
 			s.resize(num_samples_per_pixel, num_light_samples, num_lights, num_lights);
 		}
 	}
+
+	transmittance_closed_.prepare(scene, num_samples_per_pixel);
 }
 
 void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
@@ -67,6 +69,8 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	for (auto& s : light_samplers_) {
 		s.resume_pixel(sample, scramble);
 	}
+
+	transmittance_closed_.resume_pixel(sample, scramble);
 }
 
 float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) {

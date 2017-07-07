@@ -12,25 +12,34 @@
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
 
 Closed::Closed(rnd::Generator& rng, const take::Settings& take_settings) :
-	integrator::Integrator(rng, take_settings) {}
+	integrator::Integrator(rng, take_settings)
+	/*samplers_{rng, rng}*/ {}
 
-void Closed::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
+void Closed::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {
+//	for (auto& s : samplers_) {
+//		s.resize(num_samples_per_pixel, 1, 1, 1);
+//	}
+}
 
-void Closed::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
+void Closed::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {
+//	for (auto& s : samplers_) {
+//		s.resume_pixel(sample, scramble);
+//	}
+}
 
 float3 Closed::resolve(Worker& worker, const Ray& ray, Intersection& intersection,
 					   const float3& absorption_coffecient, sampler::Sampler& sampler,
-					   Sampler_filter filter, Bxdf_result& sample_result) const {
+					   Sampler_filter filter, Bxdf_result& sample_result) {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_absorption_coffecient = absorption_coffecient;
 
 	Ray tray;
-	tray.time = ray.time;
+	tray.time  = ray.time;
 	tray.depth = ray.depth;
 
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
-	for (;;) {
+	for (uint32_t i = ray.depth;; ++i) {
 		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
@@ -43,6 +52,12 @@ float3 Closed::resolve(Worker& worker, const Ray& ray, Intersection& intersectio
 
 		const float3 wo = -tray.direction;
 		auto& material_sample = intersection.sample(wo, tray.time, worker, filter);
+
+//		if (i < 2) {
+//			material_sample.sample(samplers_[i], sample_result);
+//		} else {
+//			material_sample.sample(sampler, sample_result);
+//		}
 
 		material_sample.sample(sampler, sample_result);
 		if (0.f == sample_result.pdf || float3::identity() == sample_result.reflection) {
