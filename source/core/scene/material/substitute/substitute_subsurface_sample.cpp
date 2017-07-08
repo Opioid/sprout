@@ -23,7 +23,7 @@ float3 Sample_subsurface::evaluate(const float3& wi, float& pdf) const {
 }
 
 void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
-	const bool same_side = same_hemisphere(wo_);
+/*	const bool same_side = same_hemisphere(wo_);
 
 	if (!same_side) {
 		refract(same_side, sampler, result);
@@ -44,6 +44,37 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 
 		result.pdf *= 0.5f;
 	}
+*/
+	const bool same_side = same_hemisphere(wo_);
+
+	const float p = sampler.generate_sample_1D();
+
+	if (same_side) {
+		if (p < 0.5f) {
+			refract(same_side, layer_, sampler, result);
+		} else {
+			if (p < 0.75f) {
+				layer_.diffuse_sample(wo_, sampler, result);
+			} else {
+				layer_.specular_sample(wo_, sampler, result);
+			}
+		}
+	} else {
+		Layer tmp_layer = layer_;
+		tmp_layer.n_ *= -1.f;
+
+		if (p < 0.5f) {
+			refract(same_side, tmp_layer, sampler, result);
+		} else {
+			if (p < 0.75f) {
+				tmp_layer.diffuse_sample(wo_, sampler, result);
+			} else {
+				tmp_layer.specular_sample(wo_, sampler, result);
+			}
+		}
+	}
+
+	result.pdf *= 0.5f;
 }
 
 const BSSRDF& Sample_subsurface::bssrdf(Worker& worker) const {
@@ -69,13 +100,11 @@ bool Sample_subsurface::is_sss() const {
 	return true;
 }
 
-void Sample_subsurface::refract(bool same_side, sampler::Sampler& sampler,
+void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
 								bxdf::Result& result) const {
-	Layer tmp_layer = layer_;
 	IOR tmp_ior;
 
 	if (!same_side) {
-		tmp_layer.n_  *= -1.f;
 		tmp_ior.ior_i_ = ior_.ior_o_;
 		tmp_ior.ior_o_ = ior_.ior_i_;
 		tmp_ior.eta_i_ = ior_.eta_t_;
@@ -85,7 +114,7 @@ void Sample_subsurface::refract(bool same_side, sampler::Sampler& sampler,
 		tmp_ior.eta_i_ = ior_.eta_i_;
 	}
 
-	const float n_dot_wo = tmp_layer.clamped_n_dot(wo_);
+	const float n_dot_wo = layer.clamped_n_dot(wo_);
 
 	const float sint2 = (tmp_ior.eta_i_ * tmp_ior.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -96,8 +125,8 @@ void Sample_subsurface::refract(bool same_side, sampler::Sampler& sampler,
 
 	const float n_dot_t = std::sqrt(1.f - sint2);
 
-	const fresnel::Schlick schlick(layer_.f0_);
-	const float n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, n_dot_t, tmp_layer, tmp_ior,
+	const fresnel::Schlick schlick(layer.f0_);
+	const float n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, n_dot_t, layer, tmp_ior,
 												   schlick, sampler, result);
 
 	result.reflection *= n_dot_wi;

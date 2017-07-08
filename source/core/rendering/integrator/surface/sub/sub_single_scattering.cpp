@@ -72,6 +72,11 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 	material_sample.sample(sampler_, sample_result);
 	sample_result.reflection *= tr;
 
+	if (!sample_result.type.test(Bxdf_type::Transmission)) {
+		sample_result.pdf = 0.f;
+	//	sample_result.reflection = float3(1.f, 0.f, 0.f);
+	}
+
 	return step * radiance;
 }
 

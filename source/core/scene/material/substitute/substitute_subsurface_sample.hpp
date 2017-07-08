@@ -22,7 +22,8 @@ public:
 
 private:
 
-	void refract(bool same_side, sampler::Sampler& sampler, bxdf::Result& result) const;
+	void refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
+				 bxdf::Result& result) const;
 
 	float3 absorption_coefficient_;
 	float3 scattering_coefficient_;
