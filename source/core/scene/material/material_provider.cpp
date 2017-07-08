@@ -141,7 +141,7 @@ Material_ptr Provider::load_cloth(const json::Value& cloth_value, resource::Mana
 
 	for (auto& n : cloth_value.GetObject()) {
 		if ("color" == n.name) {
-			color = json::read_float3(n.value);
+			color = read_color(n.value);
 		} else if ("two_sided" == n.name) {
 			two_sided = json::read_bool(n.value);
 		} else if ("textures" == n.name) {
@@ -196,7 +196,7 @@ Material_ptr Provider::load_display(const json::Value& display_value, resource::
 
 	for (auto& n : display_value.GetObject()) {
 		if ("radiance" == n.name) {
-			radiance = json::read_float3(n.value);
+			radiance = read_color(n.value);
 		} else if ("emission_factor" == n.name) {
 			emission_factor = json::read_float(n.value);
 		} else if ("roughness" == n.name) {
@@ -278,9 +278,9 @@ Material_ptr Provider::load_glass(const json::Value& glass_value, resource::Mana
 
 	for (auto& n : glass_value.GetObject()) {
 		if ("color" == n.name || "absorption_color" == n.name) {
-			absorption_color = json::read_float3(n.value);
+			absorption_color = read_color(n.value);
 		} else if ("refraction_color" == n.name) {
-			refraction_color = json::read_float3(n.value);
+			refraction_color = read_color(n.value);
 		} else if ("attenuation_distance" == n.name) {
 			attenuation_distance = json::read_float(n.value);
 		} else if ("ior" == n.name) {
@@ -361,7 +361,7 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 
 	for (auto& n : light_value.GetObject()) {
 		if ("emission" == n.name) {
-			radiance = json::read_float3(n.value);
+			radiance = read_color(n.value);
 		} else if ("emittance" == n.name) {
 			quantity = json::read_string(n.value, "quantity");
 
@@ -451,7 +451,7 @@ Material_ptr Provider::load_matte(const json::Value& matte_value, resource::Mana
 
 	for (auto& n : matte_value.GetObject()) {
 		if ("color" == n.name) {
-			color = json::read_float3(n.value);
+			color = read_color(n.value);
 		} else if ("two_sided" == n.name) {
 			two_sided = json::read_bool(n.value);
 		} else if ("textures" == n.name) {
@@ -502,9 +502,9 @@ Material_ptr Provider::load_metal(const json::Value& metal_value, resource::Mana
 
 	for (auto& n : metal_value.GetObject()) {
 		if ("ior" == n.name) {
-			ior = json::read_float3(n.value);
+			ior = read_color(n.value);
 		} else if ("absorption" == n.name) {
-			absorption = json::read_float3(n.value);
+			absorption = read_color(n.value);
 		} else if ("preset" == n.name) {
 			metal::ior_and_absorption(n.value.GetString(), ior, absorption);
 		} else if ("roughness" == n.name) {
@@ -595,9 +595,9 @@ Material_ptr Provider::load_metallic_paint(const json::Value& paint_value,
 
 	for (auto& n : paint_value.GetObject()) {
 		if ("color_a" == n.name) {
-			color_a = json::read_float3(n.value);
+			color_a = read_color(n.value);
 		} else if ("color_b" == n.name) {
-			color_b = json::read_float3(n.value);
+			color_b = read_color(n.value);
 		} else if ("roughness" == n.name) {
 			roughness  = json::read_float(n.value);
 		} else if ("two_sided" == n.name) {
@@ -684,7 +684,7 @@ Material_ptr Provider::load_sky(const json::Value& sky_value, resource::Manager&
 
 	for (auto& n : sky_value.GetObject()) {
 		if ("radiance" == n.name) {
-			radiance = json::read_float3(n.value);
+			radiance = read_color(n.value);
 		} else if ("two_sided" == n.name) {
 			two_sided = json::read_bool(n.value);
 		} else if ("textures" == n.name) {
@@ -740,13 +740,13 @@ Material_ptr Provider::load_substitute(const json::Value& substitute_value,
 
 	for (auto& n : substitute_value.GetObject()) {
 		if ("color" == n.name) {
-			color = json::read_float3(n.value);
+			color = read_color(n.value);
 		} else if ("absorption_color" == n.name) {
 			use_absorption_color = true;
-			absorption_color = json::read_float3(n.value);
+			absorption_color = read_color(n.value);
 		} else if ("scattering_color" == n.name) {
 			use_scattering_color = true;
-			scattering_color = json::read_float3(n.value);
+			scattering_color = read_color(n.value);
 		} else if ("ior" == n.name) {
 			ior = json::read_float(n.value);
 		} else if ("roughness" == n.name) {
@@ -1016,6 +1016,38 @@ void Provider::read_coating_description(const json::Value& coating_value,
 	}
 }
 
+float3 Provider::read_hex_RGB(const std::string& text) {
+	if (7 != text.length() || '#' != text[0]) {
+		return float3(0.f);
+	}
+
+	static constexpr int32_t hex_table[] = {
+		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0,1,2,3,4,5,6,7,8,9, 0, 0, 0, 0, 0, 0, 0,10,11,12,13,14,15, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	};
+
+	int32_t elements[3];
+
+	const char* buffer = &text.data()[1];
+	for (uint32_t i = 0, j = 0; i < 3; ++i, j += 2) {
+		elements[i] = (hex_table[static_cast<uint32_t>(buffer[j])] << 4)
+					+  hex_table[static_cast<uint32_t>(buffer[j + 1])];
+	}
+
+	return float3(static_cast<float>(elements[0]) / 255.f,
+				  static_cast<float>(elements[1]) / 255.f,
+				  static_cast<float>(elements[2]) / 255.f);
+}
+
 float3 Provider::read_color(const json::Value& color_value) {
 	if (color_value.IsArray()) {
 		return json::read_float3(color_value);
@@ -1026,12 +1058,7 @@ float3 Provider::read_color(const json::Value& color_value) {
 	}
 
 	const std::string hex_string = json::read_string(color_value);
-
-	if (hex_string.length() != 7 || '#' != hex_string[0]) {
-		return float3(0.f);
-	}
-
-	return float3(1.f, 0.f, 0.f);
+	return read_hex_RGB(hex_string);
 }
 
 float3 Provider::read_spectrum(const json::Value& spectrum_value) {
@@ -1041,10 +1068,10 @@ float3 Provider::read_spectrum(const json::Value& spectrum_value) {
 
 	for (auto& n : spectrum_value.GetObject()) {
 		if ("sRGB" == n.name) {
-			const float3 srgb = json::read_float3(n.value);
+			const float3 srgb = read_color(n.value);
 			return spectrum::sRGB_to_linear_RGB(srgb);
 		} else if ("RGB" == n.name) {
-			return json::read_float3(n.value);
+			return read_color(n.value);
 		} else if ("temperature" == n.name) {
 			float temperature = json::read_float(n.value);
 			temperature = std::max(800.f, temperature);

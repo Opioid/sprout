@@ -86,6 +86,8 @@ private:
 	static void read_coating_description(const json::Value& clearcoat_value,
 										 Coating_description& description);
 
+	static float3 read_hex_RGB(const std::string& text);
+
 	static float3 read_color(const json::Value& color_value);
 
 	static float3 read_spectrum(const json::Value& spectrum_value);

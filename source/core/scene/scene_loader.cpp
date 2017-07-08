@@ -269,7 +269,7 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 
 void Loader::load_light(const json::Value& /*light_value*/, Prop* prop, Scene& scene) {
 	for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
-		auto material = prop->material(i);
+		const auto material = prop->material(i);
 		if (material->is_emissive()) {
 			if (prop->shape()->is_analytical() && material->has_emission_map()) {
 				scene.create_prop_image_light(prop, i);
