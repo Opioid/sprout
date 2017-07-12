@@ -13,6 +13,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
+
 namespace rendering { namespace integrator { namespace surface { namespace sub {
 
 Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -28,56 +29,88 @@ void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scra
 float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& intersection,
 							 const Material_sample& sample, Sampler_filter filter,
 							 Bxdf_result& sample_result) {
-	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
-	Ray tray(intersection.geo.p, sample_result.wi,
-			 ray_offset, scene::Ray_max_t, ray.time, ray.depth);
-	if (!worker.intersect(intersection.prop, tray, intersection)) {
-		return float3(0.f);
-	}
-
-	const float range = tray.max_t - tray.min_t;
-	if (range < 0.0001f) {
-		return float3(0.f);
-	}
-
-	const auto& bssrdf = sample.bssrdf(worker);
-
-	const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
-	const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
-	const float step = range * num_samples_reciprocal;
-
-	float3 radiance(0.f);
+	float3 result(0.f);
 	float3 tr(sample_result.reflection / sample_result.pdf);
 
-	float tau_ray_length = rng_.random_float() * step;
+	Ray tray;
+	tray.time  = ray.time;
+	tray.depth = ray.depth;
 
-	float min_t = tray.min_t + tau_ray_length;
+	float3 first_result(0.f);
 
-	for (uint32_t i = num_samples; i > 0; --i, min_t += step) {
-		const float3 tau = bssrdf.optical_depth(tau_ray_length);
-		tr *= math::exp(-tau);
+	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
-		tau_ray_length = step;
+	for (int i = 0;; ++i) {
+		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
+		tray.origin = intersection.geo.p;
+		tray.set_direction(sample_result.wi);
+		tray.min_t = ray_offset;
+		tray.max_t = scene::Ray_max_t;
 
-		const float3 current = tray.point(min_t);
+		if (!worker.intersect(intersection.prop, tray, intersection)) {
+			break;
+		}
 
-		// Direct light scattering
-		radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
-											   ray.time, ray.depth, sampler_, worker);
+		const float range = tray.max_t - tray.min_t;
+		if (range < 0.0001f) {
+			break;
+		}
+
+		const auto& bssrdf = sample.bssrdf(worker);
+
+		const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+		const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
+		const float step = range * num_samples_reciprocal;
+
+		float3 radiance(0.f);
+
+		float tau_ray_length = rng_.random_float() * step;
+
+		float min_t = tray.min_t + tau_ray_length;
+
+		for (uint32_t j = num_samples; j > 0; --j, min_t += step) {
+			const float3 tau = bssrdf.optical_depth(tau_ray_length);
+			tr *= math::exp(-tau);
+
+			tau_ray_length = step;
+
+			const float3 current = tray.point(min_t);
+
+			// Direct light scattering
+			radiance += tr * estimate_direct_light(current, intersection.prop, bssrdf,
+												   ray.time, ray.depth, sampler_, worker);
+		}
+
+		if (0 == i) {
+			first_result = step * radiance;
+		}
+
+		result += step * radiance;
+
+		const float3 wo = -tray.direction;
+		auto& material_sample = intersection.sample(wo, ray.time, worker, filter);
+
+		material_sample.sample(sampler_, sample_result);
+
+		if (0.f == sample_result.pdf) {
+			break;
+		}
+
+		tr *= sample_result.reflection / sample_result.pdf;
+
+		if (sample_result.type.test(Bxdf_type::Transmission)) {
+			break;
+		}
 	}
 
-	const float3 wo = -tray.direction;
-	auto& material_sample = intersection.sample(wo, ray.time, worker, filter);
-
-	material_sample.sample(sampler_, sample_result);
-	sample_result.reflection *= tr;
-
-	if (!sample_result.type.test(Bxdf_type::Transmission)) {
-		sample_result.pdf = 0.f;
-	//	sample_result.reflection = float3(1.f, 0.f, 0.f);
+	if (result[0] > first_result[0]) {
+		//std::cout << "cowabanga" << std::endl;
+		result = float3(1.f, 0.f, 0.f);
 	}
 
-	return step * radiance;
+	sample_result.reflection = tr;
+
+	return result;
 }
 
 size_t Single_scattering::num_bytes() const {

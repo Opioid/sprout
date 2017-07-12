@@ -145,7 +145,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 					break;
 				}
 
-				throughput *= sample_result.reflection / sample_result.pdf;
+				throughput *= sample_result.reflection;// / sample_result.pdf;
 			} else {
 				const float3 tr = resolve_transmission(worker, ray, intersection,
 													   material_sample.absorption_coffecient(),
