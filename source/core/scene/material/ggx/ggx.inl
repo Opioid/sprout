@@ -20,24 +20,24 @@ constexpr float Min_roughness = 0.01314f;
 
 constexpr float Min_a2 = Min_roughness * Min_roughness * Min_roughness * Min_roughness;
 
-inline float clamp_roughness(float roughness) {
+static inline float clamp_roughness(float roughness) {
 	return std::max(roughness, Min_roughness);
 }
 
-inline float map_roughness(float roughness) {
+static inline float map_roughness(float roughness) {
 	return roughness * (1.f - Min_roughness) + Min_roughness;
 }
 
-inline float clamp_a2(float a2) {
+static inline float clamp_a2(float a2) {
 	return std::max(a2, Min_a2);
 }
 
-inline float distribution_isotropic(float n_dot_h, float a2) {
+static inline float distribution_isotropic(float n_dot_h, float a2) {
 	const float d = (n_dot_h * n_dot_h) * (a2 - 1.f) + 1.f;
 	return a2 / (math::Pi * d * d);
 }
 
-inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
+static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
 									  float2 a2, float axy) {
 	const float x = (x_dot_h * x_dot_h) / a2[0];
 	const float y = (y_dot_h * y_dot_h) / a2[1];
@@ -46,27 +46,37 @@ inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_
 	return 1.f / ((math::Pi * axy) * (d * d));
 }
 
-inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo, float a2) {
+static inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo, float a2) {
+	// Un-correlated version
+
 	// This is an optimized version that does the following in one step:
 	//
 	//    G_ggx(wi) * G_ggx(wo)
 	// ---------------------------
 	// 4 * dot(n, wi) * dot(n, wo)
 
-	const float g_wo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
-	const float g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
-	return 1.f / (g_wo * g_wi);
+//	const float g_wo = n_dot_wo + std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
+//	const float g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
+//	return 1.f / (g_wo * g_wi);
+
+	// Correlated version
+	// https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+	// Caution: the "n_dot_wi *" and "n_dot_wo *" are explicitely inversed, this is not a mistake.
+	const float g_wo = n_dot_wi * std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
+	const float g_wi = n_dot_wo * std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
+
+	return 0.5f / (g_wo + g_wi);
 }
 
-inline float3 microfacet(float d, float g, const float3& f, float n_dot_wi, float n_dot_wo) {
+static inline float3 microfacet(float d, float g, const float3& f, float n_dot_wi, float n_dot_wo) {
 	return (d * g * f) / (4.f * n_dot_wi * n_dot_wo);
 }
 
-inline float G_ggx(float n_dot_v, float a2) {
+static inline float G_ggx(float n_dot_v, float a2) {
 	return (2.f * n_dot_v) / (n_dot_v + std::sqrt(a2 + (1.f - a2) * (n_dot_v * n_dot_v)));
 }
 
-inline float G_smith(float n_dot_wi, float n_dot_wo, float a2) {
+static inline float G_smith(float n_dot_wi, float n_dot_wo, float a2) {
 	return G_ggx(n_dot_wi, a2) * G_ggx(n_dot_wo, a2);
 }
 

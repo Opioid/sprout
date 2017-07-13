@@ -12,10 +12,6 @@ namespace bxdf { struct Result; }
 
 namespace ggx {
 
-float clamp_roughness(float roughness);
-
-float map_roughness(float roughness);
-
 class Isotropic {
 
 public:
