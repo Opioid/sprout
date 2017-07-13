@@ -15,6 +15,17 @@
 
 ** Materials
 
+*** TODO Microfacets
+**** TODO Correlated shadowing/masking function
+[[https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf]]
+[[http://twvideo01.ubm-us.net/o1/vault/gdc2017/Presentations/Hammon_Earl_PBR_Diffuse_Lighting.pdf]]
+
+**** TODO Look into normalized Disney BRDF (see frostbite presentation)
+
+**** TODO Thin-film
+- [ ] Implement [[https://belcour.github.io/blog/research/2017/05/01/brdf-thin-film.html]]
+- [ ] Evaluate difference to existing thin-film fresnel
+
 *** TODO Cloth material
 - [ ] Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin)
 

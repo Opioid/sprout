@@ -103,11 +103,6 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 		}
 	}
 
-	if (result[0] > first_result[0]) {
-		//std::cout << "cowabanga" << std::endl;
-		result = float3(1.f, 0.f, 0.f);
-	}
-
 	sample_result.reflection = tr;
 
 	return result;
