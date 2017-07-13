@@ -10,7 +10,10 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
+// Original disney description
 // http://blog.selfshadow.com/publications/s2015-shading-course/burley/s2015_pbs_disney_bsdf_notes.pdf
+// More energy conserving variant
+// https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
 
 namespace scene { namespace material { namespace disney {
 
@@ -51,13 +54,25 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 template<typename Layer>
 float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, const Layer& layer) {
-	const float f_D90 = 0.5f + (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
-	const float fmo = f_D90 - 1.f;
+//	const float f_D90 = 0.5f + (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
+//	const float fmo   = f_D90 - 1.f;
+
+//	const float a = 1.f + fmo * math::pow5(1.f - n_dot_wi);
+//	const float b = 1.f + fmo * math::pow5(1.f - n_dot_wo);
+
+//	return (a * b) * (math::Pi_inv * layer.diffuse_color_);
+
+	// More energy conserving variant
+	const float energy_bias   = math::lerp(0.f, 0.5f, layer.roughness_);
+	const float energy_factor = math::lerp(1.f, 1.f / 1.51f, layer.roughness_);
+
+	const float f_D90 = energy_bias + (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
+	const float fmo	  = f_D90 - 1.f;
 
 	const float a = 1.f + fmo * math::pow5(1.f - n_dot_wi);
 	const float b = 1.f + fmo * math::pow5(1.f - n_dot_wo);
 
-	return (a * b) * (math::Pi_inv * layer.diffuse_color_);
+	return (a * b * energy_factor) * (math::Pi_inv * layer.diffuse_color_);
 }
 
 template<typename Layer>
