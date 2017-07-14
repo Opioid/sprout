@@ -365,7 +365,7 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 		} else if ("emittance" == n.name) {
 			quantity = json::read_string(n.value, "quantity");
 
-			auto s = n.value.FindMember("spectrum");
+			const auto s = n.value.FindMember("spectrum");
 			if (n.value.MemberEnd() != s) {
 				color = read_spectrum(s->value);
 			}
