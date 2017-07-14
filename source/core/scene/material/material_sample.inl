@@ -19,14 +19,19 @@ inline void Sample::Layer::set_tangent_frame(const float3& n) {
 	n_ = n;
 }
 
-inline float Sample::Layer::clamped_n_dot(const float3& v) const {
+inline float Sample::Layer::clamp_n_dot(const float3& v) const {
 	// return std::max(math::dot(n, v), Dot_min);
-	return clamped_dot(n_, v);
+	return clamp_dot(n_, v);
 }
 
-inline float Sample::Layer::reversed_clamped_n_dot(const float3& v) const {
+inline float Sample::Layer::clamp_abs_n_dot(const float3& v) const {
+	// return std::max(math::dot(n, v), Dot_min);
+	return clamp_abs_dot(n_, v);
+}
+
+inline float Sample::Layer::clamp_reverse_n_dot(const float3& v) const {
 	// return std::max(-math::dot(n, v), Dot_min);
-	return reversed_clamped_dot(n_, v);
+	return clamp_reverse_dot(n_, v);
 }
 
 inline const float3& Sample::Layer::shading_normal() const {
@@ -71,12 +76,12 @@ inline const float3& Sample::wo() const {
 	return wo_;
 }
 
-inline float Sample::clamped_geo_n_dot(const float3& v) const {
-	return clamped_dot(geo_n_, v);
+inline float Sample::clamp_geo_n_dot(const float3& v) const {
+	return clamp_dot(geo_n_, v);
 }
 
-inline float Sample::reversed_clamped_geo_n_dot(const float3& v) const {
-	return reversed_clamped_dot(geo_n_, v);
+inline float Sample::clamp_reverse_geo_n_dot(const float3& v) const {
+	return clamp_reverse_dot(geo_n_, v);
 }
 
 inline const float3& Sample::geometric_normal() const {

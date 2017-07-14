@@ -89,7 +89,7 @@ inline void Triangle_MT::interpolate(float2 uv, float3& p, float3& n, float2& tc
 	float w = 1.f - uv[0] - uv[1];
 
 	p  = w * a.p + uv[0] * b.p + uv[1] * c.p;
-	n  = math::normalized(w * a.n + uv[0] * b.n + uv[1] * c.n);
+	n  = math::normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
 	tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
@@ -109,8 +109,8 @@ inline void Triangle_MT::interpolate(float2 uv, float3& p) const {
 inline void Triangle_MT::interpolate_data(float2 uv, float3& n, float3& t, float2& tc) const {
 	float w = 1.f - uv[0] - uv[1];
 
-	n  = math::normalized(w * a.n + uv[0] * b.n + uv[1] * c.n);
-	t  = math::normalized(w * a.t + uv[0] * b.t + uv[1] * c.t);
+	n  = math::normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
+	t  = math::normalize(w * a.t + uv[0] * b.t + uv[1] * c.t);
 	tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
@@ -124,7 +124,7 @@ inline float3 Triangle_MT::normal() const {
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
 
-	return math::normalized(math::cross(e1, e2));
+	return math::normalize(math::cross(e1, e2));
 }
 
 inline float Triangle_MT::area() const {
@@ -377,8 +377,8 @@ static inline void interpolate_data(const Shading_vertex_MT& a,
 									float3& n, float3& t, float2& tc) {
 	const float w = 1.f - uv[0] - uv[1];
 
-	n  = math::normalized(w * a.n + uv[0] * b.n + uv[1] * c.n);
-	t  = math::normalized(w * a.t + uv[0] * b.t + uv[1] * c.t);
+	n  = math::normalize(w * a.n + uv[0] * b.n + uv[1] * c.n);
+	t  = math::normalize(w * a.t + uv[0] * b.t + uv[1] * c.t);
 	tc = w * a.uv + uv[0] * b.uv + uv[1] * c.uv;
 }
 
@@ -439,8 +439,8 @@ static inline void interpolate_data(const Shading_vertex_MTC& a,
 	const float4 n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
 	const float4 t_v = w * a.t_v + uv[0] * b.t_v + uv[1] * c.t_v;
 
-	n  = math::normalized(n_u.xyz());
-	t  = math::normalized(t_v.xyz());
+	n  = math::normalize(n_u.xyz());
+	t  = math::normalize(t_v.xyz());
 
 	tc = float2(n_u[3], t_v[3]);
 }
@@ -590,8 +590,8 @@ inline void interpolate_data(const Shading_vertex_MTCC& a,
 	float4 n_u = w * an_u + uv[0] * bn_u + uv[1] * cn_u;
 	float4 t_v = w * at_v + uv[0] * bt_v + uv[1] * ct_v;
 
-	n  = math::normalized(n_u.xyz());
-	t  = math::normalized(t_v.xyz());
+	n  = math::normalize(n_u.xyz());
+	t  = math::normalize(t_v.xyz());
 
 	tc = float2(n_u[3], t_v[3]);
 }
@@ -713,8 +713,8 @@ inline void interpolate_data(const Vertex_MTC& a,
 	float4 n_u = w * a.n_u + uv[0] * b.n_u + uv[1] * c.n_u;
 	float4 t_v = w * a.t_v + uv[0] * b.t_v + uv[1] * c.t_v;
 
-	n  = math::normalized(n_u.xyz());
-	t  = math::normalized(t_v.xyz());
+	n  = math::normalize(n_u.xyz());
+	t  = math::normalize(t_v.xyz());
 
 	tc = float2(n_u[3], t_v[3]);
 }

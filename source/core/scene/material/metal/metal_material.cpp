@@ -66,12 +66,12 @@ const material::Sample& Material_anisotropic::sample(const float3& wo, const Ren
 
 	if (normal_map_.is_valid()) {
 		float3 nm = normal_map_.sample_3(sampler, rs.uv);
-		float3 n  = math::normalized(rs.tangent_to_world(nm));
+		float3 n  = math::normalize(rs.tangent_to_world(nm));
 
 		sample.layer_.set_tangent_frame(n);
 	} else if (direction_map_.is_valid()) {
 		float2 tm = direction_map_.sample_2(sampler, rs.uv);
-		float3 t  = math::normalized(rs.tangent_to_world(tm));
+		float3 t  = math::normalize(rs.tangent_to_world(tm));
 		float3 b  = math::cross(rs.n, t);
 
 		sample.layer_.set_tangent_frame(t, b, rs.n);

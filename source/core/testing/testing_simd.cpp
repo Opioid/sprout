@@ -223,7 +223,7 @@ inline float3 simd_normalized_2(const float3& v) {
 
 	return result;
 
-//	return math::normalized(v);
+//	return math::normalize(v);
 }
 
 void normalize() {
@@ -242,8 +242,8 @@ void normalize() {
 	}
 
 	{
-		std::cout << "math::normalized()" << std::endl;
-		std::cout << vectors[0] << " : " << math::normalized(vectors[0]) << std::endl;
+		std::cout << "math::normalize()" << std::endl;
+		std::cout << vectors[0] << " : " << math::normalize(vectors[0]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
 
@@ -251,8 +251,8 @@ void normalize() {
 
 		for (size_t i = 0; i < num_values; ++i) {
 			float3 x = vectors[i];
-			float3 r = math::normalized(x);
-			result = math::normalized(r + result);
+			float3 r = math::normalize(x);
+			result = math::normalize(r + result);
 		}
 
 		const auto duration = chrono::seconds_since(start);
@@ -318,8 +318,8 @@ void normalize() {
 	}
 
 	{
-		std::cout << "math::normalized()" << std::endl;
-		std::cout << vectors[0] << " : " << math::normalized(vectors[0]) << std::endl;
+		std::cout << "math::normalize()" << std::endl;
+		std::cout << vectors[0] << " : " << math::normalize(vectors[0]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
 
@@ -327,8 +327,8 @@ void normalize() {
 
 		for (size_t i = 0; i < num_values; ++i) {
 			float3 x = vectors[i];
-			float3 r = math::normalized(x);
-			result = math::normalized(r + result);
+			float3 r = math::normalize(x);
+			result = math::normalize(r + result);
 		}
 
 		const auto duration = chrono::seconds_since(start);
@@ -436,7 +436,7 @@ void reciprocal() {
 	}
 
 	{
-		std::cout << vectors[0] << " : " << math::normalized(vectors[0]) << std::endl;
+		std::cout << vectors[0] << " : " << math::normalize(vectors[0]) << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
 
@@ -746,7 +746,7 @@ float dot(FUnion_vector a, FUnion_vector b) {
 	return a.x * b.x + a.y * b.y + a.z + b.z;
 }
 
-Union_vector normalized(FUnion_vector v) {
+Union_vector normalize(FUnion_vector v) {
 	return math::rsqrt(dot(v, v)) * v;
 }
 
@@ -780,7 +780,7 @@ float dot(Struct_vector a, Struct_vector b) {
 	return a.x * b.x + a.y * b.y + a.z + b.z;
 }
 
-Struct_vector normalized(FStruct_vector v) {
+Struct_vector normalize(FStruct_vector v) {
 	return math::rsqrt(dot(v, v)) * v;
 }
 
@@ -868,7 +868,7 @@ T dot(const Array_vector_t<T, N>& a, const Array_vector_t<T, N>& b) {
 }
 
 template<typename T, uint32_t N>
-Array_vector_t<T, N> normalized(const Array_vector_t<T, N>& v) {
+Array_vector_t<T, N> normalize(const Array_vector_t<T, N>& v) {
 	return math::rsqrt(dot(v, v)) * v;
 }
 
@@ -884,7 +884,7 @@ void test_union_vector(Union_vector* uvecs, size_t num_values) {
 		float d = dot(v, v);
 		Union_vector t = (v.y * (result + v)) / (d + 0.1f);
 		Union_vector w = (v.x * (result + v)) / (d + 0.3f);
-		Union_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
+		Union_vector n = /*normalize*/((v + t) + ((d * v) + (d * t)));
 		result = n + ((w + t) + (d * w));
 	}
 
@@ -904,7 +904,7 @@ void test_struct_vector(Struct_vector* svecs, size_t num_values) {
 		float d = dot(v, v);
 		Struct_vector t = (v.y * (result + v)) / (d + 0.1f);
 		Struct_vector w = (v.x * (result + v)) / (d + 0.3f);
-		Struct_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
+		Struct_vector n = /*normalize*/((v + t) + ((d * v) + (d * t)));
 		result = n + ((w + t) + (d * w));
 	}
 
@@ -924,7 +924,7 @@ void test_array_vector(Array_vector* vecs, size_t num_values) {
 		float d = dot(v, v);
 		Array_vector t = (v[1] * (result + v)) / (d + 0.1f);
 		Array_vector w = (v[0] * (result + v)) / (d + 0.3f);
-		Array_vector n = /*normalized*/((v + t) + ((d * v) + (d * t)));
+		Array_vector n = /*normalize*/((v + t) + ((d * v) + (d * t)));
 		result = n + ((w + t) + (d * w));
 	}
 
@@ -944,7 +944,7 @@ void test_array_vector_t(Array_vector_t<float, 3>* vecs, size_t num_values) {
 		float d = dot(v, v);
 		Array_vector_t<float, 3> t = (v[1] * (result + v)) / (d + 0.1f);
 		Array_vector_t<float, 3> w = (v[0] * (result + v)) / (d + 0.3f);
-		Array_vector_t<float, 3> n = /*normalized*/((v + t) + ((d * v) + (d * t)));
+		Array_vector_t<float, 3> n = /*normalize*/((v + t) + ((d * v) + (d * t)));
 		result = n + ((w + t) + (d * w));
 	}
 

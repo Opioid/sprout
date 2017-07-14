@@ -145,7 +145,7 @@ float3 Indexed_data<IV, SV>::normal(uint32_t index) const {
 
 	const float3 e1 = b.p - a.p;
 	const float3 e2 = c.p - a.p;
-	return math::normalized(math::cross(e1, e2));
+	return math::normalize(math::cross(e1, e2));
 }
 
 template<typename IV, typename SV>
@@ -341,7 +341,7 @@ float3 Indexed_data_interleaved<V>::normal(uint32_t index) const {
 
 	float3 e1 = b.p - a.p;
 	float3 e2 = c.p - a.p;
-	return math::normalized(math::cross(e1, e2));
+	return math::normalize(math::cross(e1, e2));
 }
 
 template<typename V>

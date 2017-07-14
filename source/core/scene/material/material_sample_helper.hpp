@@ -28,15 +28,15 @@ static inline float3 absorption_coefficient(const float3& color, float distance)
 	return (float3(1.f) - color) / distance;
 }
 
-static inline float clamped_dot(const float3& a, const float3& b) {
+static inline float clamp_dot(const float3& a, const float3& b) {
 	return math::clamp(math::dot(a, b), Dot_min, 1.f);
 }
 
-static inline float reversed_clamped_dot(const float3& a, const float3& b) {
+static inline float clamp_reverse_dot(const float3& a, const float3& b) {
 	return math::clamp(-math::dot(a, b), Dot_min, 1.f);
 }
 
-static inline float absolute_clamped_dot(const float3& a, const float3& b) {
+static inline float clamp_abs_dot(const float3& a, const float3& b) {
 	return math::clamp(std::abs(math::dot(a, b)), Dot_min, 1.f);
 }
 

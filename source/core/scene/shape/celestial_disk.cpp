@@ -99,7 +99,7 @@ void Celestial_disk::sample(uint32_t /*part*/, const Transformation& transformat
 	float radius = transformation.scale[0];
 	float3 ws = radius * math::transform_vector(ls, transformation.rotation);
 
-	sample.wi = math::normalized(ws - transformation.rotation.r[2]);
+	sample.wi = math::normalize(ws - transformation.rotation.r[2]);
 
 	sample.t = Almost_ray_max_t;
 	sample.pdf = 1.f / area;

@@ -37,7 +37,7 @@ float3 Thinglass::thin_absorption(const float3& wo, const float3& n, float2 uv, 
 								  Worker& worker, Sampler_filter filter) const {
 	const float3 a = material::absorption_coefficient(absorption_color_, attenuation_distance_);
 
-	const float  n_dot_wi = absolute_clamped_dot(wo, n);
+	const float  n_dot_wi = clamp_abs_dot(wo, n);
 	const float  approximated_distance = thickness_ / n_dot_wi;
 	const float3 attenuation = rendering::attenuation(approximated_distance, a);
 

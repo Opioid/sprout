@@ -16,8 +16,8 @@ float3 Sample_subsurface::evaluate(const float3& wi, float& pdf) const {
 		return float3::identity();
 	}
 
-	const float3 h = math::normalized(wo_ + wi);
-	const float wo_dot_h = clamped_dot(wo_, h);
+	const float3 h = math::normalize(wo_ + wi);
+	const float wo_dot_h = clamp_dot(wo_, h);
 
 	return layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
 }
@@ -114,7 +114,7 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 		tmp_ior.eta_i_ = ior_.eta_i_;
 	}
 
-	const float n_dot_wo = layer.clamped_n_dot(wo_);
+	const float n_dot_wo = layer.clamp_n_dot(wo_);
 
 	const float sint2 = (tmp_ior.eta_i_ * tmp_ior.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 

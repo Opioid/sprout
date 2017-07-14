@@ -26,15 +26,15 @@ float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
 	// then we don't need to calculate the reflection.
 	// In the other case, transmission won't be visible and we only need reflection.
 	if (thickness_ > 0.f && !same_hemisphere(wi)) {
-		const float n_dot_wi = layer_.reversed_clamped_n_dot(wi);
+		const float n_dot_wi = layer_.clamp_reverse_n_dot(wi);
 		const float approximated_distance = thickness_ / n_dot_wi;
 		const float3 attenuation = rendering::attenuation(approximated_distance, attenuation_);
 		pdf = n_dot_wi * (0.5f * math::Pi_inv);
 		return (n_dot_wi * math::Pi_inv) * (attenuation * layer_.diffuse_color_);
 	}
 
-	const float3 h = math::normalized(wo_ + wi);
-	const float wo_dot_h = clamped_dot(wo_, h);
+	const float3 h = math::normalize(wo_ + wi);
+	const float wo_dot_h = clamp_dot(wo_, h);
 
 	const float3 result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
 

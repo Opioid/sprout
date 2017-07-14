@@ -43,7 +43,7 @@ bool Perspective_stereoscopic::generate_ray(const sampler::Camera_sample& sample
 	float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
 
 	float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
-	direction = math::normalized(direction);
+	direction = math::normalize(direction);
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(sample.time, temp);

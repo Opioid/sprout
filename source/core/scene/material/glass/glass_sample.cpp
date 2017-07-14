@@ -65,7 +65,7 @@ float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	const float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+	const float n_dot_wo = math::saturate(std::abs(math::dot(n, sample.wo_))); //math::saturate(math::dot(n, sample.wo_));
 
 	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -80,7 +80,7 @@ float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
 	}
 
 	result.reflection = float3(f);
-	result.wi = math::normalized(2.f * n_dot_wo * n - sample.wo_);
+	result.wi = math::normalize(2.f * n_dot_wo * n - sample.wo_);
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_reflection);
 
@@ -101,7 +101,7 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	const float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+	const float n_dot_wo = math::saturate(std::abs(math::dot(n, sample.wo_))); //math::saturate(math::dot(n, sample.wo_));
 
 	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -116,7 +116,7 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 	const float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
 	result.reflection = (1.f - f) * layer.color_;
-	result.wi = math::normalized((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
+	result.wi = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_transmission);
 

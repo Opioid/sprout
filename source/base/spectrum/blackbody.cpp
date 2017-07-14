@@ -67,7 +67,7 @@ float3 blackbody(float temperature) {
 	xyz /= std::max(xyz[0], std::max(xyz[1], xyz[2]));
 
 	return spectrum::XYZ_to_linear_RGB(xyz);
-//  return math::normalized(spectrum::XYZ_to_linear_RGB(xyz));
+//  return math::normalize(spectrum::XYZ_to_linear_RGB(xyz));
 }
 
 float3 blackbody_fast(float temperature) {
@@ -98,7 +98,7 @@ float3 blackbody_fast(float temperature) {
 
 	xyz /= std::max(xyz[0], std::max(xyz[1], xyz[2]));
 
-	return /*math::normalized*/(spectrum::XYZ_to_linear_RGB(xyz));
+	return /*math::normalize*/(spectrum::XYZ_to_linear_RGB(xyz));
 }
 
 }

@@ -23,8 +23,8 @@ float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
 		return float3::identity();
 	}
 
-	const float n_dot_wi = layer_.clamped_n_dot(wi);
-	const float n_dot_wo = layer_.clamped_n_dot(wo_);
+	const float n_dot_wi = layer_.clamp_n_dot(wi);
+	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_); //layer_.clamp_n_dot(wo_);
 
 	const float sint2 = (layer_.eta_i_ * layer_.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -38,8 +38,8 @@ float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
 		f = fresnel::dielectric(n_dot_wo, n_dot_t, layer_.eta_i_, layer_.eta_t_);
 	}
 
-	const float3 h = math::normalized(wo_ + wi);
-	const float wo_dot_h = clamped_dot(wo_, h);
+	const float3 h = math::normalize(wo_ + wi);
+	const float wo_dot_h = clamp_dot(wo_, h);
 
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
@@ -102,7 +102,7 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 		tmp.eta_t_ = layer.eta_i_;
 	}
 
-	const float n_dot_wo = tmp.clamped_n_dot(sample.wo());
+	const float n_dot_wo = tmp.clamp_abs_n_dot(sample.wo()); //tmp.clamp_n_dot(sample.wo());
 
 	const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -137,7 +137,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 		tmp.eta_t_ = layer.eta_i_;
 	}
 
-	const float n_dot_wo = tmp.clamped_n_dot(sample.wo());
+	const float n_dot_wo = tmp.clamp_abs_n_dot(sample.wo()); //tmp.clamp_n_dot(sample.wo());
 
 	const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 

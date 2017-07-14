@@ -36,9 +36,9 @@ float3 reference_normal(float2 p, float2 range) {
 		v = float3(0.f, 0.f, 1.f);
 	}
 
-//	return math::normalized(v);
+//	return math::normalize(v);
 
-	v = math::normalized(v);
+	v = math::normalize(v);
 
 	return 0.5f * float3(v[0] + 1.f, v[1] + 1.f, v[2] + 1.f);
 }
@@ -72,7 +72,7 @@ void create_reference_normal_map(int2 dimensions) {
 				}
 			}
 
-//			v = math::normalized(v / static_cast<float>(aa.x * aa.y));
+//			v = math::normalize(v / static_cast<float>(aa.x * aa.y));
 
 //			pixel.x = spectrum::float_to_snorm(v.x);
 //			pixel.y = spectrum::float_to_snorm(v.y);

@@ -182,7 +182,7 @@ static T squared_length(const Vector3<T>& v) {
 }
 
 template<typename T>
-static Vector3<T> normalized(const Vector3<T>& v) {
+static Vector3<T> normalize(const Vector3<T>& v) {
 	return v / length(v);
 }
 
@@ -438,7 +438,7 @@ static inline constexpr float squared_length(const Vector3f_a& v) {
 	return dot(v, v);
 }
 
-static inline Vector3f_a normalized(const Vector3f_a& v) {
+static inline Vector3f_a normalize(const Vector3f_a& v) {
 	// This is slowest on both machines
 //	return v / length(v);
 

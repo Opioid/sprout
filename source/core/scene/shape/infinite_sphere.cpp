@@ -31,7 +31,7 @@ bool Infinite_sphere::intersect(const Transformation& transformation,
 		intersection.b = transformation.rotation.r[1];
 
 		float3 xyz = math::transform_vector_transposed(ray.direction, transformation.rotation);
-		xyz = math::normalized(xyz);
+		xyz = math::normalize(xyz);
 		intersection.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
 		intersection.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
@@ -86,7 +86,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.wi = dir;
 
 	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
-	xyz = math::normalized(xyz);
+	xyz = math::normalize(xyz);
 	sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
 	sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
@@ -106,7 +106,7 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.wi = dir;
 
 	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
-	xyz = math::normalized(xyz);
+	xyz = math::normalize(xyz);
 	sample.uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
 	sample.uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 
@@ -158,7 +158,7 @@ float Infinite_sphere::pdf_uv(const Ray& /*ray*/, const Intersection& intersecti
 							  const Transformation& /*transformation*/,
 							  float /*area*/, bool /*two_sided*/) const {
 //	float3 xyz = math::transform_vector_transposed(wi, transformation.rotation);
-//	xyz = math::normalized(xyz);
+//	xyz = math::normalize(xyz);
 //	uv[0] = std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
 //	uv[1] = std::acos(xyz[1]) * math::Pi_inv;
 

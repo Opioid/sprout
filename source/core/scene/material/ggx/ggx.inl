@@ -138,13 +138,13 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	math::sincos(phi, sin_phi, cos_phi);
 
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	const float3 h = math::normalized(layer.tangent_to_world(is));
+	const float3 h = math::normalize(layer.tangent_to_world(is));
 
-	const float wo_dot_h = clamped_dot(wo, h);
+	const float wo_dot_h = clamp_dot(wo, h);
 
-	const float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
+	const float3 wi = math::normalize(2.f * wo_dot_h * h - wo);
 
-	const float n_dot_wi = layer.clamped_n_dot(wi);
+	const float n_dot_wi = layer.clamp_n_dot(wi);
 
 	const float d = distribution_isotropic(n_dot_h, a2);
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
@@ -171,8 +171,8 @@ float3 Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.a2_ >= Min_a2);
 
-	const float3 h = math::normalized(wo + wi);
-	const float wo_dot_h = clamped_dot(wo, h);
+	const float3 h = math::normalize(wo + wi);
+	const float wo_dot_h = clamp_dot(wo, h);
 	const float n_dot_h  = math::saturate(math::dot(layer.n_, h));
 
 	const float a2 = layer.a2_;
@@ -215,13 +215,13 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 	math::sincos(phi, sin_phi, cos_phi);
 
 	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	const float3 h = math::normalized(layer.tangent_to_world(is));
+	const float3 h = math::normalize(layer.tangent_to_world(is));
 
-	const float wo_dot_h = clamped_dot(wo, h);
+	const float wo_dot_h = clamp_dot(wo, h);
 
-	const float3 wi = math::normalized((ior.eta_i_ * wo_dot_h - n_dot_t) * h - ior.eta_i_ * wo);
+	const float3 wi = math::normalize((ior.eta_i_ * wo_dot_h - n_dot_t) * h - ior.eta_i_ * wo);
 
-	const float n_dot_wi = layer.reversed_clamped_n_dot(wi);
+	const float n_dot_wi = layer.clamp_reverse_n_dot(wi);
 
 	const float d = distribution_isotropic(n_dot_h, a2);
 	const float g = G_smith(n_dot_wi, n_dot_wo, a2);
@@ -281,17 +281,17 @@ float Anisotropic::reflect(const float3& wo, float n_dot_wo,
 	const float t0 = std::sqrt(xi[1] / (1.f - xi[1]));
 	const float3 t1 = layer.a_[0] * cos_phi * layer.t_ + layer.a_[1] * sin_phi * layer.b_;
 
-	const float3 h = math::normalized(t0 * t1 + layer.n_);
+	const float3 h = math::normalize(t0 * t1 + layer.n_);
 
 	const float x_dot_h = math::dot(layer.t_, h);
 	const float y_dot_h = math::dot(layer.b_, h);
 	const float n_dot_h = math::dot(layer.n_, h);
 
-	const float wo_dot_h = clamped_dot(wo, h);
+	const float wo_dot_h = clamp_dot(wo, h);
 
-	const float3 wi = math::normalized(2.f * wo_dot_h * h - wo);
+	const float3 wi = math::normalize(2.f * wo_dot_h * h - wo);
 
-	const float n_dot_wi = layer.clamped_n_dot(wi);
+	const float n_dot_wi = layer.clamp_n_dot(wi);
 
 	const float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.a2_, layer.axy_);
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);

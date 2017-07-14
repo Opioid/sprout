@@ -86,7 +86,7 @@ float Sample_thin::BSDF::reflect(const Sample_thin& sample, const Layer& layer,
 	}
 
 	result.reflection = float3(f);
-	result.wi = math::normalized(2.f * n_dot_wo * n - sample.wo_);
+	result.wi = math::normalize(2.f * n_dot_wo * n - sample.wo_);
 	result.pdf = 1.f;
 	result.type.clear_set(bxdf::Type::Specular_reflection);
 
@@ -121,7 +121,7 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 	// fresnel has to be the same value that would have been computed by BRDF
 	float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
-	float n_dot_wi = layer.clamped_n_dot(sample.wo_);
+	float n_dot_wi = layer.clamp_n_dot(sample.wo_);
 	float approximated_distance = layer.thickness_ / n_dot_wi;
 	float3 attenuation = rendering::attenuation(approximated_distance, layer.attenuation_);
 

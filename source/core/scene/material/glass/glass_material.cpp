@@ -21,7 +21,7 @@ const material::Sample& Glass::sample(const float3& wo, const Renderstate& rs,
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 		float3 nm = normal_map_.sample_3(sampler, rs.uv);
-		float3 n  = math::normalized(rs.tangent_to_world(nm));
+		float3 n  = math::normalize(rs.tangent_to_world(nm));
 
 		sample.layer_.set_tangent_frame(n);
 	} else {

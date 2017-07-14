@@ -237,7 +237,7 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
 		const auto e1 = b - a;
 		const auto e2 = c - a;
 
-		triangle_normals[i] = math::normalized(math::cross(e1, e2));
+		triangle_normals[i] = math::normalize(math::cross(e1, e2));
 	}
 
 	struct Shading_normal {
@@ -263,7 +263,7 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
 	}
 
 	for (size_t i = 0, len = vertices.size(); i < len; ++i) {
-		vertices[i].n = math::normalized(normals[i].sum / static_cast<float>(normals[i].num));
+		vertices[i].n = math::normalize(normals[i].sum / static_cast<float>(normals[i].num));
 	}
 }
 

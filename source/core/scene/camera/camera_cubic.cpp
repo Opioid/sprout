@@ -84,7 +84,7 @@ bool Cubic::generate_ray(const sampler::Camera_sample& sample,
 
 	float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
-	direction = math::normalized(direction * view_rotations_[view]);
+	direction = math::normalize(direction * view_rotations_[view]);
 
 	entity::Composed_transformation temp;
 	auto& transformation = transformation_at(0.f, temp);

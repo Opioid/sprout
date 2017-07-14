@@ -22,8 +22,9 @@ public:
 		void set_tangent_frame(const float3& t, const float3& b, const float3& n);
 		void set_tangent_frame(const float3& n);
 
-		float clamped_n_dot(const float3& v) const;
-		float reversed_clamped_n_dot(const float3& v) const;
+		float clamp_n_dot(const float3& v) const;
+		float clamp_abs_n_dot(const float3& v) const;
+		float clamp_reverse_n_dot(const float3& v) const;
 
 		const float3& shading_normal() const;
 
@@ -58,8 +59,8 @@ public:
 
 	const float3& wo() const;
 
-	float clamped_geo_n_dot(const float3& v) const;
-	float reversed_clamped_geo_n_dot(const float3& v) const;
+	float clamp_geo_n_dot(const float3& v) const;
+	float clamp_reverse_geo_n_dot(const float3& v) const;
 
 	const float3& geometric_normal() const;
 

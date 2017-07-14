@@ -43,10 +43,10 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 			intersection.epsilon = 5e-4f * t0;
 
 			float3 p = ray.point(t0);
-			float3 n = math::normalized(p - transformation.position);
+			float3 n = math::normalize(p - transformation.position);
 
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-			xyz = math::normalized(xyz);
+			xyz = math::normalize(xyz);
 
 			float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
 			float theta = std::acos(xyz[1]);
@@ -57,7 +57,7 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 			float cos_phi   = std::cos(phi);
 
 			float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-			t = math::normalized(math::transform_vector(t, transformation.rotation));
+			t = math::normalize(math::transform_vector(t, transformation.rotation));
 
 			intersection.p = p;
 			intersection.t = t;
@@ -79,10 +79,10 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 			intersection.epsilon = 5e-4f * t1;
 
 			float3 p = ray.point(t1);
-			float3 n = math::normalized(p - transformation.position);
+			float3 n = math::normalize(p - transformation.position);
 
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-			xyz = math::normalized(xyz);
+			xyz = math::normalize(xyz);
 
 			float phi   = -std::atan2(xyz[0], xyz[2]) + math::Pi;
 			float theta = std::acos(xyz[1]);
@@ -93,7 +93,7 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 			float cos_phi   = std::cos(phi);
 
 			float3 t(sin_theta * cos_phi, 0.f, sin_theta * sin_phi);
-			t = math::normalized(math::transform_vector(t, transformation.rotation));
+			t = math::normalize(math::transform_vector(t, transformation.rotation));
 
 			intersection.p = p;
 			intersection.t = t;
@@ -151,9 +151,9 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 		float t0 = b - dist;
 
 		if (t0 > ray.min_t && t0 < ray.max_t) {
-			float3 n = math::normalized(ray.point(t0) - transformation.position);
+			float3 n = math::normalize(ray.point(t0) - transformation.position);
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-			xyz = math::normalized(xyz);
+			xyz = math::normalize(xyz);
 			float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz[1]) * math::Pi_inv);
 
@@ -163,9 +163,9 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 		float t1 = b + dist;
 
 		if (t1 > ray.min_t && t1 < ray.max_t) {
-			float3 n = math::normalized(ray.point(t1) - transformation.position);
+			float3 n = math::normalize(ray.point(t1) - transformation.position);
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-			xyz = math::normalized(xyz);
+			xyz = math::normalize(xyz);
 			float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz[1]) * math::Pi_inv);
 
@@ -189,9 +189,9 @@ float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& 
 		float t0 = b - dist;
 
 		if (t0 > ray.min_t && t0 < ray.max_t) {
-			float3 n = math::normalized(ray.point(t0) - transformation.position);
+			float3 n = math::normalize(ray.point(t0) - transformation.position);
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-			xyz = math::normalized(xyz);
+			xyz = math::normalize(xyz);
 			float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz[1]) * math::Pi_inv);
 
@@ -202,9 +202,9 @@ float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& 
 		float t1 = b + dist;
 
 		if (t1 > ray.min_t && t1 < ray.max_t) {
-			float3 n = math::normalized(ray.point(t1) - transformation.position);
+			float3 n = math::normalize(ray.point(t1) - transformation.position);
 			float3 xyz = math::transform_vector_transposed(n, transformation.rotation);
-			xyz = math::normalized(xyz);
+			xyz = math::normalize(xyz);
 			float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz[1]) * math::Pi_inv);
 
@@ -267,9 +267,8 @@ float Sphere::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
 	return math::cone_pdf_uniform(cos_theta_max);
 }
 
-void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
-					const float3& p, float2 uv, float area, bool /*two_sided*/,
-					Sample& sample) const {
+void Sphere::sample(uint32_t /*part*/, const Transformation& transformation, const float3& p,
+					float2 uv, float area, bool /*two_sided*/, Sample& sample) const {
 	float phi   = (uv[0] + 0.75f) * (2.f * math::Pi);
 	float theta = uv[1] * math::Pi;
 
@@ -287,7 +286,7 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 
 	float3 dir = axis / d;
 
-	float3 wn = math::normalized(ws - transformation.position);
+	float3 wn = math::normalize(ws - transformation.position);
 
 	float c = -math::dot(wn, dir);
 
@@ -303,8 +302,8 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 }
 
 float Sphere::pdf_uv(const Ray& ray, const Intersection& intersection,
-					 const Transformation& transformation,
-					 float area, bool two_sided) const {
+					 const Transformation& /*transformation*/,
+					 float area, bool /*two_sided*/) const {
 //	float3 xyz = math::transform_vector_transposed(wn, transformation.rotation);
 //	uv[0] = -std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f;
 //	uv[1] =  std::acos(xyz[1]) * math::Pi_inv;

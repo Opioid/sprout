@@ -15,7 +15,7 @@ static inline Plane create(const Vector3f_a& normal, const Vector3f_a& point) {
 }
 
 static inline Plane create(const Vector3f_a& v0, const Vector3f_a& v1, const Vector3f_a& v2) {
-	Vector3f_a n = normalized(cross(v2 - v1, v0 - v1));
+	Vector3f_a n = normalize(cross(v2 - v1, v0 - v1));
 
 	return create(n, v0);
 }

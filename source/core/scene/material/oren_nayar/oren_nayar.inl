@@ -31,9 +31,9 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	float2 s2d = sampler.generate_sample_2D();
 
 	float3 is = math::sample_hemisphere_cosine(s2d);
-	float3 wi = math::normalized(layer.tangent_to_world(is));
+	float3 wi = math::normalize(layer.tangent_to_world(is));
 
-	float n_dot_wi = layer.clamped_n_dot(wi);
+	float n_dot_wi = layer.clamp_n_dot(wi);
 
 	float on = f(wi, wo, n_dot_wi, n_dot_wo, layer.a2_);
 

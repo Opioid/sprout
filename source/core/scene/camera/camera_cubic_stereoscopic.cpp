@@ -82,7 +82,7 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 	float3 direction = left_top_ + coordinates[0] * d_x_ + coordinates[1] * d_y_;
 
 	const uint32_t face = view % 6;
-	direction = math::normalized(direction * view_rotations_[face]);
+	direction = math::normalize(direction * view_rotations_[face]);
 
 	const float a = -std::atan2(direction[0], direction[2]);
 

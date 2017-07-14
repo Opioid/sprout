@@ -17,7 +17,7 @@ Aperture::Aperture(uint32_t num_blades, float roundness, float rotation) : round
 		float3 c = float3(std::sin(start + delta), std::cos(start + delta), 0.f);
 
 		float3 cb = c - b;
-		float3 n = math::normalized(float3(cb[1], -cb[0], 0.f));
+		float3 n = math::normalize(float3(cb[1], -cb[0], 0.f));
 		float  d = math::dot(n, b);
 
 		blades_[i] = float3(n[0], n[1], d);

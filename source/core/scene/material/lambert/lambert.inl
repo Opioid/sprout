@@ -30,9 +30,9 @@ float Isotropic::reflect(const float3& color, const Layer& layer,
 
 	const float3 is = math::sample_hemisphere_cosine(s2d);
 
-	const float3 wi = math::normalized(layer.tangent_to_world(is));
+	const float3 wi = math::normalize(layer.tangent_to_world(is));
 
-	const float n_dot_wi = layer.clamped_n_dot(wi);
+	const float n_dot_wi = layer.clamp_n_dot(wi);
 
 	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = math::Pi_inv * color;

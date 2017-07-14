@@ -21,7 +21,7 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 
 	if (normal_map_.is_valid()) {
 		float3 nm = normal_map_.sample_3(sampler, rs.uv);
-		float3 n = math::normalized(rs.tangent_to_world(nm));
+		float3 n = math::normalize(rs.tangent_to_world(nm));
 		sample.layer_.set_tangent_frame(rs.t, rs.b, n);
 	} else {
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);

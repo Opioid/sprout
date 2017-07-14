@@ -33,12 +33,12 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 						 sampler::Sampler& sampler, bxdf::Result& result) {
 	const float2 s2d = sampler.generate_sample_2D();
 	const float3 is = math::sample_hemisphere_cosine(s2d);
-	const float3 wi = math::normalized(layer.tangent_to_world(is));
+	const float3 wi = math::normalize(layer.tangent_to_world(is));
 
-	const float3 h = math::normalized(wo + wi);
-	const float h_dot_wi = clamped_dot(h, wi);
+	const float3 h = math::normalize(wo + wi);
+	const float h_dot_wi = clamp_dot(h, wi);
 
-	const float n_dot_wi = layer.clamped_n_dot(wi);
+	const float n_dot_wi = layer.clamp_n_dot(wi);
 
 	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
@@ -91,12 +91,12 @@ float Isotropic_no_lambert::reflect(const float3& wo, float n_dot_wo, const Laye
 									sampler::Sampler& sampler, bxdf::Result& result) {
 	const float2 s2d = sampler.generate_sample_2D();
 	const float3 is = math::sample_hemisphere_cosine(s2d);
-	const float3 wi = math::normalized(layer.tangent_to_world(is));
+	const float3 wi = math::normalize(layer.tangent_to_world(is));
 
-	const float3 h = math::normalized(wo + wi);
-	const float h_dot_wi = clamped_dot(h, wi);
+	const float3 h = math::normalize(wo + wi);
+	const float h_dot_wi = clamp_dot(h, wi);
 
-	const float n_dot_wi = layer.clamped_n_dot(wi);
+	const float n_dot_wi = layer.clamp_n_dot(wi);
 
 	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);

@@ -35,7 +35,7 @@ void spectrum() {
 
 		for (size_t i = 0; i < num; ++i) {
 			xyz += spectra[i].XYZ();
-			xyz = math::normalized(xyz);
+			xyz = math::normalize(xyz);
 		}
 
 		const auto duration = chrono::seconds_since(start);

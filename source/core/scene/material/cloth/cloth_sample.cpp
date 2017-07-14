@@ -14,7 +14,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 }
 
 float3 Sample::evaluate(const float3& wi, float& pdf) const {
-	float n_dot_wi = layer_.clamped_n_dot(wi);
+	float n_dot_wi = layer_.clamp_n_dot(wi);
 	pdf = n_dot_wi * math::Pi_inv;
 	return pdf * layer_.diffuse_color;
 }

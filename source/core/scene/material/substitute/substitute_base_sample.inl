@@ -1,6 +1,7 @@
 #pragma once
 
 #include "substitute_base_sample.hpp"
+#include "scene/material/material_sample_helper.hpp"
 #include "scene/material/coating/coating.inl"
 #include "scene/material/disney/disney.inl"
 #include "base/math/vector3.inl"
@@ -26,8 +27,8 @@ template<typename Diffuse>
 template<typename Coating>
 float3 Sample_base<Diffuse>::base_and_coating_evaluate(const float3& wi, const Coating& coating,
 													   float& pdf) const {
-	const float3 h = math::normalized(wo_ + wi);
-	const float wo_dot_h = clamped_dot(wo_, h);
+	const float3 h = math::normalize(wo_ + wi);
+	const float wo_dot_h = clamp_dot(wo_, h);
 
 	float3 coating_attenuation;
 	float  coating_pdf;
@@ -138,8 +139,8 @@ template<typename Diffuse>
 float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3& wo,
 												  const float3& h, float wo_dot_h,
 												  float& pdf) const {
-	const float n_dot_wi = clamped_n_dot(wi);
-	const float n_dot_wo = clamped_n_dot(wo);
+	const float n_dot_wi = clamp_n_dot(wi);
+	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	float d_pdf;
 	const float3 d_reflection = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, *this, d_pdf);
@@ -160,7 +161,7 @@ float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::diffuse_sample(const float3& wo, sampler::Sampler& sampler,
 												 bxdf::Result& result) const {
-	const float n_dot_wo = clamped_n_dot(wo);
+	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 	const float n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
 
 	const float n_dot_h = math::saturate(math::dot(n_, result.h));
@@ -179,7 +180,7 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(const float3& wo, sampler::Samp
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::specular_sample(const float3& wo, sampler::Sampler& sampler,
 												  bxdf::Result& result) const {
-	const float n_dot_wo = clamped_n_dot(wo);
+	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	const fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
@@ -197,7 +198,7 @@ void Sample_base<Diffuse>::Layer::specular_sample(const float3& wo, sampler::Sam
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::pure_specular_sample(const float3& wo, sampler::Sampler& sampler,
 													   bxdf::Result& result) const {
-	const float n_dot_wo = clamped_n_dot(wo);
+	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	const fresnel::Schlick schlick(f0_);
 	const float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);

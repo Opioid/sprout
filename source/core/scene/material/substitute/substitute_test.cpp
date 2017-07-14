@@ -44,7 +44,7 @@ void test() {
 //	float3 b(-0.979966f, -0.172462f, 0.0996202f);
 //	float3 n(0.199167f, -0.848824f, 0.489725f);
 
-//	float3 arbitrary = math::normalized(float3(0.5f, 0.5f, 0.5f));
+//	float3 arbitrary = math::normalize(float3(0.5f, 0.5f, 0.5f));
 
 	float3 wo = float3(0.f, 0.f, 1.f);
 	float3 wi = float3(0.f, 0.f, 1.f);
@@ -82,7 +82,7 @@ void test() {
 	float3 b(0.f, 1.f, 0.f);
 	float3 n(0.f, 0.f, 1.f);
 
-	float3 arbitrary = math::normalized(float3(0.5f, 0.5f, 0.5f));
+	float3 arbitrary = math::normalize(float3(0.5f, 0.5f, 0.5f));
 
 	float3 wo = n;
 

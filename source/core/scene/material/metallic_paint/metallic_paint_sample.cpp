@@ -19,8 +19,8 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 		return float3::identity();
 	}
 
-	float3 h = math::normalized(wo_ + wi);
-	float wo_dot_h = clamped_dot(wo_, h);
+	float3 h = math::normalize(wo_ + wi);
+	float wo_dot_h = clamp_dot(wo_, h);
 
 	float3 coating_attenuation;
 	float  coating_pdf;
@@ -114,8 +114,8 @@ void Sample::Base_layer::set(const float3& color_a, const float3& color_b, float
 
 float3 Sample::Base_layer::evaluate(const float3& wi, const float3& wo, const float3& h,
 									float wo_dot_h, float& pdf) const {
-	float n_dot_wi = clamped_n_dot(wi);
-	float n_dot_wo = clamped_n_dot(wo);
+	float n_dot_wi = clamp_n_dot(wi);
+	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	float f = n_dot_wo;
 
@@ -132,7 +132,7 @@ float3 Sample::Base_layer::evaluate(const float3& wi, const float3& wo, const fl
 
 void Sample::Base_layer::sample(const float3& wo, sampler::Sampler& sampler,
 								bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot(wo);
+	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	float f = n_dot_wo;
 
@@ -153,8 +153,8 @@ void Sample::Flakes_layer::set(const float3& ior, const float3& absorption, floa
 
 float3 Sample::Flakes_layer::evaluate(const float3& wi, const float3& wo, const float3& h, float wo_dot_h,
 									  float3& fresnel_result, float& pdf) const {
-	float n_dot_wi = clamped_n_dot(wi);
-	float n_dot_wo = clamped_n_dot(wo);
+	float n_dot_wi = clamp_n_dot(wi);
+	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	const float n_dot_h = math::saturate(math::dot(n_, h));
 
@@ -165,7 +165,7 @@ float3 Sample::Flakes_layer::evaluate(const float3& wi, const float3& wo, const 
 
 void Sample::Flakes_layer::sample(const float3& wo, sampler::Sampler& sampler,
 								  float3& fresnel_result, bxdf::Result& result) const {
-	float n_dot_wo = clamped_n_dot(wo);
+	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	fresnel::Conductor_weighted conductor(ior_, absorption_, weight_);
 	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor, sampler,

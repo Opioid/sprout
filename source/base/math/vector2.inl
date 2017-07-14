@@ -125,7 +125,7 @@ static constexpr T squared_length(Vector2<T> v) {
 }
 
 template<typename T>
-static constexpr Vector2<T> normalized(Vector2<T> v) {
+static constexpr Vector2<T> normalize(Vector2<T> v) {
 	return v / length(v);
 }
 
