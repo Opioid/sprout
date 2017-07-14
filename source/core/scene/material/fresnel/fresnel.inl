@@ -133,6 +133,20 @@ inline float3 Schlick::operator()(float wo_dot_h) const {
 	return schlick(wo_dot_h, f0_);
 }
 
+
+inline Schlick_debug::Schlick_debug(float f0, bool full) : f0_(f0), full_(full) {}
+
+inline Schlick_debug::Schlick_debug(const float3& f0, bool full) : f0_(f0), full_(full) {}
+
+inline float3 Schlick_debug::operator()(float wo_dot_h) const {
+	if (full_) {
+		return float3(1.f, 1.f, 1.f);
+	}
+
+	return schlick(wo_dot_h, f0_);
+}
+
+
 inline Schlick_blending::Schlick_blending(const float3& a, const float3& b, float f0) :
 	a_(a), b_(b), f0_(f0) {}
 

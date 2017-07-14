@@ -65,8 +65,8 @@ void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Result& result) const
 	}
 }
 
-float3 Sample_rough::absorption_coffecient() const {
-	return layer_.absorption_coffecient_;
+float3 Sample_rough::absorption_coeffecient() const {
+	return layer_.absorption_coeffecient_;
 }
 
 float Sample_rough::ior() const {
@@ -81,8 +81,8 @@ void Sample_rough::Layer::set(const float3& refraction_color, const float3& abso
 							  float attenuation_distance, float ior,
 							  float ior_outside, float a2) {
 	color_ = refraction_color;
-	absorption_coffecient_ = material::absorption_coefficient(absorption_color,
-															  attenuation_distance);
+	absorption_coeffecient_ = material::absorption_coefficient(absorption_color,
+															   attenuation_distance);
 	ior_i_ = ior;
 	ior_o_ = ior_outside;
 	eta_i_ = ior_outside / ior;

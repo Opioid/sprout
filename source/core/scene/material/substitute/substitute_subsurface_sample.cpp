@@ -23,28 +23,7 @@ float3 Sample_subsurface::evaluate(const float3& wi, float& pdf) const {
 }
 
 void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
-/*	const bool same_side = same_hemisphere(wo_);
-
-	if (!same_side) {
-		refract(same_side, sampler, result);
-	} else {
-		const float p = sampler.generate_sample_1D();
-
-		if (p < 0.5f) {
-			refract(same_side, sampler, result);
-		} else {
-			if (p < 0.75f) {
-				layer_.diffuse_sample(wo_, sampler, result);
-			} else {
-				layer_.specular_sample(wo_, sampler, result);
-			}
-
-
-		}
-
-		result.pdf *= 0.5f;
-	}
-*/
+/*
 	const bool same_side = same_hemisphere(wo_);
 
 	const float p = sampler.generate_sample_1D();
@@ -66,15 +45,43 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 		if (p < 0.5f) {
 			refract(same_side, tmp_layer, sampler, result);
 		} else {
-			if (p < 0.75f) {
-				tmp_layer.diffuse_sample(wo_, sampler, result);
-			} else {
-				tmp_layer.specular_sample(wo_, sampler, result);
-			}
+			tmp_layer.pure_specular_sample(wo_, sampler, result);
 		}
 	}
 
 	result.pdf *= 0.5f;
+	*/
+
+	const bool same_side = same_hemisphere(wo_);
+
+	const float p = sampler.generate_sample_1D();
+
+	if (same_side) {
+		if (p < 0.5f) {
+			refract(same_side, layer_, sampler, result);
+		} else {
+			if (p < 0.75f) {
+				layer_.diffuse_sample(wo_, sampler, result);
+			} else {
+				layer_.specular_sample(wo_, sampler, result);
+			}
+		}
+	} else {
+		Layer tmp_layer = layer_;
+		tmp_layer.n_ *= -1.f;
+
+		if (p < 0.5f) {
+			refract(same_side, tmp_layer, sampler, result);
+		} else {
+			reflect_internaly(same_side, tmp_layer, sampler, result);
+		}
+	}
+
+	result.pdf *= 0.5f;
+}
+
+float3 Sample_subsurface::absorption_coeffecient() const {
+	return absorption_coefficient_;
 }
 
 const BSSRDF& Sample_subsurface::bssrdf(Worker& worker) const {
@@ -108,13 +115,15 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 		tmp_ior.ior_i_ = ior_.ior_o_;
 		tmp_ior.ior_o_ = ior_.ior_i_;
 		tmp_ior.eta_i_ = ior_.eta_t_;
+	//	tmp_ior.eta_t_ = ior_.eta_i_;
 	} else {
 		tmp_ior.ior_i_ = ior_.ior_i_;
 		tmp_ior.ior_o_ = ior_.ior_o_;
 		tmp_ior.eta_i_ = ior_.eta_i_;
+	//	tmp_ior.eta_t_ = ior_.eta_t_;
 	}
 
-	const float n_dot_wo = layer.clamp_n_dot(wo_);
+	const float n_dot_wo = layer.clamp_abs_n_dot(wo_); //layer.clamp_n_dot(wo_);
 
 	const float sint2 = (tmp_ior.eta_i_ * tmp_ior.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -125,9 +134,43 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 
 	const float n_dot_t = std::sqrt(1.f - sint2);
 
+	// fresnel has to be the same value that would have been computed by BRDF
+//	const float f = fresnel::dielectric(n_dot_wo, n_dot_t, tmp_ior.eta_i_, tmp_ior.eta_t_);
+//	const fresnel::Constant constant(f);
+
 	const fresnel::Schlick schlick(layer.f0_);
 	const float n_dot_wi = ggx::Isotropic::refract(wo_, n_dot_wo, n_dot_t, layer, tmp_ior,
 												   schlick, sampler, result);
+
+	result.reflection *= n_dot_wi;
+}
+
+void Sample_subsurface::reflect_internaly(bool same_side, const Layer& layer,
+										  sampler::Sampler& sampler, bxdf::Result& result) const {
+	IOR tmp_ior;
+
+	if (!same_side) {
+		tmp_ior.ior_i_ = ior_.ior_o_;
+		tmp_ior.ior_o_ = ior_.ior_i_;
+		tmp_ior.eta_i_ = ior_.eta_t_;
+	//	tmp_ior.eta_t_ = ior_.eta_i_;
+	} else {
+		tmp_ior.ior_i_ = ior_.ior_i_;
+		tmp_ior.ior_o_ = ior_.ior_o_;
+		tmp_ior.eta_i_ = ior_.eta_i_;
+	//	tmp_ior.eta_t_ = ior_.eta_t_;
+	}
+
+	const float n_dot_wo = layer.clamp_abs_n_dot(wo_); //tmp.clamp_n_dot(sample.wo());
+
+	const float sint2 = (tmp_ior.eta_i_ * tmp_ior.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
+
+	const fresnel::Schlick_debug schlick(layer.f0_, sint2 > 1.f);
+
+	const float n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer,
+												   schlick, sampler, result);
+
+	SOFT_ASSERT(testing::check(result, wo_, layer));
 
 	result.reflection *= n_dot_wi;
 }

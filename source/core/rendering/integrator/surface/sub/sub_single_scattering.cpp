@@ -13,7 +13,6 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
-
 namespace rendering { namespace integrator { namespace surface { namespace sub {
 
 Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -36,11 +35,9 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 	tray.time  = ray.time;
 	tray.depth = ray.depth;
 
-	float3 first_result(0.f);
-
 	const float ray_offset_factor = take_settings_.ray_offset_factor;
 
-	for (int i = 0;; ++i) {
+	for (uint32_t i = 0; /*i < 1*/; ++i) {
 		const float ray_offset = ray_offset_factor * intersection.geo.epsilon;
 		tray.origin = intersection.geo.p;
 		tray.set_direction(sample_result.wi);
@@ -81,10 +78,6 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 												   ray.time, ray.depth, sampler_, worker);
 		}
 
-		if (0 == i) {
-			first_result = step * radiance;
-		}
-
 		result += step * radiance;
 
 		const float3 wo = -tray.direction;
@@ -100,7 +93,9 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			break;
-		}
+		} /*else {
+			sample_result.pdf = 0.f;
+		}*/
 	}
 
 	sample_result.reflection = tr;

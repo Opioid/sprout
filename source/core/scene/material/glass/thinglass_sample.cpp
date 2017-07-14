@@ -21,7 +21,7 @@ float3 Sample_thin::evaluate(const float3& /*wi*/, float& pdf) const {
 	return float3::identity();
 }
 
-float3 Sample_thin::absorption_coffecient() const {
+float3 Sample_thin::absorption_coeffecient() const {
 	return layer_.attenuation_;
 }
 

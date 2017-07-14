@@ -20,7 +20,7 @@ float3 Sample::evaluate(const float3& /*wi*/, float& pdf) const {
 	return float3::identity();
 }
 
-float3 Sample::absorption_coffecient() const {
+float3 Sample::absorption_coeffecient() const {
 	return layer_.absorption_coffecient_;
 }
 

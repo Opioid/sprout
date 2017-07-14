@@ -45,7 +45,7 @@ public:
 
 	virtual float3 radiance() const;
 
-	virtual float3 absorption_coffecient() const;
+	virtual float3 absorption_coeffecient() const;
 
 	virtual float ior() const = 0;
 

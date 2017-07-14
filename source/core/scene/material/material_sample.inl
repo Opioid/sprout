@@ -52,7 +52,7 @@ inline float3 Sample::radiance() const {
 	return float3::identity();
 }
 
-inline float3 Sample::absorption_coffecient() const {
+inline float3 Sample::absorption_coeffecient() const {
 	return float3::identity();
 }
 

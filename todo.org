@@ -7,36 +7,39 @@
 
 ** Integrators
 
-*** TODO Subsurface scattering
+*** TODO Subsurface scattering [1/2]
 - [X] Implement single scattering 
 - [ ] Implement multiple scattering
   - [ ] Monte-carlo integrator
   - [ ] Next event estimation
 
-** Materials
+** Materials [0/3]
 
-*** TODO Microfacets
-**** DONE Correlated shadowing/masking function
+*** TODO Microfacets [0/3]
+**** TODO Correlated shadowing/masking function [1/2]
+- [X] Reflections
+- [ ] Refractions
+
 [[https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf]]
 [[http://twvideo01.ubm-us.net/o1/vault/gdc2017/Presentations/Hammon_Earl_PBR_Diffuse_Lighting.pdf]]
 
 **** TODO Look into normalized Disney BRDF (see frostbite presentation)
-The results look very good. Apparently rough surfaces were often to bright before.
+The results look very good. Apparently rough surfaces were often much to bright before.
 Now, we need to find out how this can be applied to the version were the included lambertian term is removed.
 
-**** TODO Thin-film
+**** TODO Thin-film [0/2]
 - [ ] Implement [[https://belcour.github.io/blog/research/2017/05/01/brdf-thin-film.html]]
 - [ ] Evaluate difference to existing thin-film fresnel
 
 *** TODO Cloth material
-- [ ] Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin)
+Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin)
 
 *** TODO Separate samplers
-- [ ] Consider adding support for separate samplers per texture
+Consider adding support for separate samplers per texture
 
 ** Renderer
 
-*** TODO Lock-free tile enumeration
+*** TODO Lock-free tile enumeration [1/2]
 - [X] Pre-determined "Tiled scanline" with initial offset (slower)
 - [ ] Atomics for access to next tile
 
@@ -49,7 +52,7 @@ This leads to indeterministic behavior as the workers render varying parts of th
 
 ** Postprocessors
 
-*** TODO Glare filter
+*** TODO Glare filter [0/1]
 - [-] Implement in Fourier domain to increase performance
   - [X] Use normal DFT to transform to Fourier domain and back
   - [ ] Investigate decreased quality, lattice like artifacts
@@ -57,7 +60,7 @@ This leads to indeterministic behavior as the workers render varying parts of th
 
 ** Shapes
 
-*** TODO Adding/improving analytical shapes
+*** TODO Adding/improving analytical shapes [0/2]
 - [-] Canopy/Half-sphere
   - [X] Intersection
   - [ ] UV sampling
@@ -67,7 +70,7 @@ This leads to indeterministic behavior as the workers render varying parts of th
 
 ** Resources
 
-*** TODO Faster file loading
+*** TODO Faster file loading [1/3]
 - [X] Consider concurrent loading during lengthy processing steps (e.g. building BVH)
 - [-] Consider embedding json and binary data in single file
   - [X] Proof of concept
@@ -89,7 +92,7 @@ File size on disk generally seems to be higher, though.
 
 ** Scene
 
-*** TODO Faster scene update
+*** TODO Faster scene update [0/1]
 - [-] Investigate opportunities to parallelize some parts of scene update
   - [-] Calculation of distribution LUTs for light sources
 	- [X] Image

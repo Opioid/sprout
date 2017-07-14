@@ -18,6 +18,23 @@ private:
 	const float3 f0_;
 };
 
+
+class Schlick_debug {
+
+public:
+
+	Schlick_debug(float f0, bool full);
+	Schlick_debug(const float3& f0, bool full);
+
+	float3 operator()(float wo_dot_h) const;
+
+private:
+
+	const float3 f0_;
+	const bool full_;
+};
+
+
 class Schlick_weighted {
 
 public:

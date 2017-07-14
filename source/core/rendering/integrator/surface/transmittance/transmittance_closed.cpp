@@ -65,7 +65,7 @@ float3 Closed::resolve(Worker& worker, const Ray& ray, Intersection& intersectio
 		}
 
 		if (material_sample.is_transmissive()) {
-			used_absorption_coffecient = material_sample.absorption_coffecient();
+			used_absorption_coffecient = material_sample.absorption_coeffecient();
 		}
 
 		throughput *= rendering::attenuation(tray.max_t, used_absorption_coffecient)

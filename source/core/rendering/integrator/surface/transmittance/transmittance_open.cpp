@@ -51,7 +51,7 @@ float3 Open::resolve(Worker& worker, const scene::Ray& ray, scene::Intersection&
 		}
 
 		if (material_sample.is_transmissive()) {
-			used_absorption_coffecient = material_sample.absorption_coffecient();
+			used_absorption_coffecient = material_sample.absorption_coeffecient();
 		} else {
 			++tray.depth;
 			--i;

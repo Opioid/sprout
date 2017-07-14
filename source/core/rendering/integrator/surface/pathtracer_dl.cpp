@@ -102,7 +102,7 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			const float3 tr = transmittance_.resolve(worker, ray, intersection,
-													 material_sample.absorption_coffecient(),
+													 material_sample.absorption_coeffecient(),
 													 sampler_, Sampler_filter::Nearest,
 													 sample_result);
 			if (0.f == sample_result.pdf) {

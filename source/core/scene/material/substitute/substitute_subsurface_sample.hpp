@@ -13,6 +13,8 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
 
+	virtual float3 absorption_coeffecient() const override final;
+
 	virtual const BSSRDF& bssrdf(Worker& worker) const override final;
 
 	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
@@ -24,6 +26,9 @@ private:
 
 	void refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
 				 bxdf::Result& result) const;
+
+	void reflect_internaly(bool same_side, const Layer& layer, sampler::Sampler& sampler,
+						   bxdf::Result& result) const;
 
 	float3 absorption_coefficient_;
 	float3 scattering_coefficient_;
