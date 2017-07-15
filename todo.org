@@ -16,9 +16,9 @@
 ** Materials [0/3]
 
 *** TODO Microfacets [0/3]
-**** TODO Correlated shadowing/masking function [1/2]
+**** TODO Correlated shadowing/masking function [2/2]
 - [X] Reflections
-- [ ] Refractions
+- [X] Refractions
 
 [[https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf]]
 [[http://twvideo01.ubm-us.net/o1/vault/gdc2017/Presentations/Hammon_Earl_PBR_Diffuse_Lighting.pdf]]
@@ -52,11 +52,11 @@ This leads to indeterministic behavior as the workers render varying parts of th
 
 ** Postprocessors
 
-*** TODO Glare filter [0/1]
-- [-] Implement in Fourier domain to increase performance
-  - [X] Use normal DFT to transform to Fourier domain and back
-  - [ ] Investigate decreased quality, lattice like artifacts
-  - [ ] Use FFT to improve performance
+*** TODO Glare filter [1/3]
+Implement in Fourier domain to increase performance
+- [X] Use normal DFT to transform to Fourier domain and back
+- [ ] Investigate decreased quality, lattice like artifacts
+- [ ] Use FFT to improve performance
 
 ** Shapes
 
@@ -92,12 +92,13 @@ File size on disk generally seems to be higher, though.
 
 ** Scene
 
-*** TODO Faster scene update [0/1]
-- [-] Investigate opportunities to parallelize some parts of scene update
-  - [-] Calculation of distribution LUTs for light sources
-	- [X] Image
-	- [ ] Mesh
-  - [ ] Updating of entity transformations
+*** TODO Faster scene update [0/2]
+Investigate opportunities to parallelize some parts of scene update
+
+- [-] Calculation of distribution LUTs for light sources
+  - [X] Image
+  - [ ] Mesh
+- [ ] Updating of entity transformations
 
 The results are disappointing so far (e.g. less than 2x speedup for 12 threads).
 

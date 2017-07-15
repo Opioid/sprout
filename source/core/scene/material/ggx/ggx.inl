@@ -38,7 +38,7 @@ static inline float distribution_isotropic(float n_dot_h, float a2) {
 }
 
 static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float y_dot_h,
-									  float2 a2, float axy) {
+											 float2 a2, float axy) {
 	const float x = (x_dot_h * x_dot_h) / a2[0];
 	const float y = (y_dot_h * y_dot_h) / a2[1];
 	const float d = (x + y) + (n_dot_h * n_dot_h);
@@ -48,7 +48,6 @@ static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float
 
 static inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo, float a2) {
 	// Un-correlated version
-
 	// This is an optimized version that does the following in one step:
 	//
 	//    G_ggx(wi) * G_ggx(wo)
@@ -61,6 +60,12 @@ static inline float geometric_visibility_and_denominator(float n_dot_wi, float n
 
 	// Correlated version
 	// https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+	// lambda_v = ( -1 + sqrt ( alphaG2 * (1 - NdotL2 ) / NdotL2 + 1)) * 0.5 f;
+	// lambda_l = ( -1 + sqrt ( alphaG2 * (1 - NdotV2 ) / NdotV2 + 1)) * 0.5 f;
+	// G_SmithGGXCorrelated = 1 / (1 + lambda_v + lambda_l );
+	// V_SmithGGXCorrelated = G_SmithGGXCorrelated / (4.0 f * NdotL * NdotV );
+
+	// Optimized version
 	// Caution: the "n_dot_wi *" and "n_dot_wo *" are explicitely inversed, this is not a mistake.
 	const float g_wo = n_dot_wi * std::sqrt((n_dot_wo - n_dot_wo * a2) * n_dot_wo + a2);
 	const float g_wi = n_dot_wo * std::sqrt((n_dot_wi - n_dot_wi * a2) * n_dot_wi + a2);
@@ -78,6 +83,13 @@ static inline float G_ggx(float n_dot_v, float a2) {
 
 static inline float G_smith(float n_dot_wi, float n_dot_wo, float a2) {
 	return G_ggx(n_dot_wi, a2) * G_ggx(n_dot_wo, a2);
+}
+
+static inline float G_smith_correlated(float n_dot_wi, float n_dot_wo, float a2) {
+	const float a = n_dot_wo * std::sqrt(a2 + (1.f - a2) * (n_dot_wi * n_dot_wi));
+	const float b = n_dot_wi * std::sqrt(a2 + (1.f - a2) * (n_dot_wo * n_dot_wo));
+
+	return (2.f * n_dot_wi * n_dot_wo) / (a + b);
 }
 
 template<typename Layer, typename Fresnel>
@@ -152,10 +164,10 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 	fresnel_result = f;
 
-	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.h = h;
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
@@ -224,7 +236,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 	const float n_dot_wi = layer.clamp_reverse_n_dot(wi);
 
 	const float d = distribution_isotropic(n_dot_h, a2);
-	const float g = G_smith(n_dot_wi, n_dot_wo, a2);
+	const float g = G_smith_correlated(n_dot_wi, n_dot_wo, a2);
 	const float3 f = float3(1.f) - fresnel(wo_dot_h);
 
 	const float3 refraction = d * g * f;
@@ -234,12 +246,11 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 	float denom = (ior.ior_i_ + ior.ior_o_) * wo_dot_h;
 	denom = denom * denom;
 
-	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-
 	const float ior_o_2 = ior.ior_o_ * ior.ior_o_;
 	result.reflection = factor * ((ior_o_2 * refraction) / denom);
 	result.wi = wi;
 	result.h = h;
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_transmission);
 
@@ -297,10 +308,10 @@ float Anisotropic::reflect(const float3& wo, float n_dot_wo,
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
 	const float3 f = fresnel(wo_dot_h);
 
-	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.h = h;
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
