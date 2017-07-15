@@ -19,12 +19,12 @@ private:
 };
 
 
-class Schlick_debug {
+class Schlick_conditional {
 
 public:
 
-	Schlick_debug(float f0, bool full);
-	Schlick_debug(const float3& f0, bool full);
+	Schlick_conditional(float f0, bool full);
+	Schlick_conditional(const float3& f0, bool full);
 
 	float3 operator()(float wo_dot_h) const;
 

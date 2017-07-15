@@ -134,11 +134,13 @@ inline float3 Schlick::operator()(float wo_dot_h) const {
 }
 
 
-inline Schlick_debug::Schlick_debug(float f0, bool full) : f0_(f0), full_(full) {}
+inline Schlick_conditional::Schlick_conditional(float f0, bool full) :
+	f0_(f0), full_(full) {}
 
-inline Schlick_debug::Schlick_debug(const float3& f0, bool full) : f0_(f0), full_(full) {}
+inline Schlick_conditional::Schlick_conditional(const float3& f0, bool full) :
+	f0_(f0), full_(full) {}
 
-inline float3 Schlick_debug::operator()(float wo_dot_h) const {
+inline float3 Schlick_conditional::operator()(float wo_dot_h) const {
 	if (full_) {
 		return float3(1.f, 1.f, 1.f);
 	}

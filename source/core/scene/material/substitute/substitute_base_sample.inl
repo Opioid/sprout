@@ -155,7 +155,10 @@ float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3
 
 	pdf = 0.5f * (d_pdf + ggx_pdf);
 
-	return n_dot_wi * (/*(1.f - ggx_fresnel) **/ d_reflection + ggx_reflection);
+	// Apparantly weight by (1 - fresnel) is not correct!
+	// So here we assume Diffuse has the proper fresnel built in - which Diseney does (?)
+
+	return n_dot_wi * (d_reflection + ggx_reflection);
 }
 
 template<typename Diffuse>
@@ -173,7 +176,7 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(const float3& wo, sampler::Samp
 															 n_dot_h, *this, schlick,
 															 ggx_fresnel, ggx_pdf);
 
-	result.reflection = n_dot_wi * (/*(1.f - ggx_fresnel) **/ result.reflection + ggx_reflection);
+	result.reflection = n_dot_wi * (result.reflection + ggx_reflection);
 	result.pdf = 0.5f * (result.pdf + ggx_pdf);
 }
 
@@ -191,7 +194,7 @@ void Sample_base<Diffuse>::Layer::specular_sample(const float3& wo, sampler::Sam
 	const float3 d_reflection = Diffuse::reflection(result.h_dot_wi, n_dot_wi,
 													n_dot_wo, *this, d_pdf);
 
-	result.reflection = n_dot_wi * (result.reflection + /*(1.f - ggx_fresnel) **/ d_reflection);
+	result.reflection = n_dot_wi * (result.reflection + d_reflection);
 	result.pdf = 0.5f * (result.pdf + d_pdf);
 }
 

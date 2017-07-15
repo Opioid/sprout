@@ -165,7 +165,7 @@ void Sample_subsurface::reflect_internaly(bool same_side, const Layer& layer,
 
 	const float sint2 = (tmp_ior.eta_i_ * tmp_ior.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
-	const fresnel::Schlick_debug schlick(layer.f0_, sint2 > 1.f);
+	const fresnel::Schlick_conditional schlick(layer.f0_, sint2 > 1.f);
 
 	const float n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer,
 												   schlick, sampler, result);
