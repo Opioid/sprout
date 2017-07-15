@@ -40,10 +40,10 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 
-	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 	result.wi = wi;
 	result.h = h;
+	result.pdf = n_dot_wi * math::Pi_inv;
 	result.h_dot_wi = h_dot_wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
@@ -98,10 +98,10 @@ float Isotropic_no_lambert::reflect(const float3& wo, float n_dot_wo, const Laye
 
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 
-	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
 	result.wi = wi;
 	result.h = h;
+	result.pdf = n_dot_wi * math::Pi_inv;
 	result.h_dot_wi = h_dot_wi;
 	result.type.clear_set(bxdf::Type::Diffuse_reflection);
 
@@ -113,9 +113,11 @@ float Isotropic_no_lambert::reflect(const float3& wo, float n_dot_wo, const Laye
 template<typename Layer>
 float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo,
 									  const Layer& layer) {
+	const float energy_factor = math::lerp(1.f, 1.f / 1.51f, layer.roughness_);
+
 	const float fl = math::pow5(1.f - n_dot_wi);
 	const float fv = math::pow5(1.f - n_dot_wo);
-	const float rr = (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
+	const float rr = energy_factor * (2.f * layer.roughness_) * (h_dot_wi * h_dot_wi);
 
 	// only the retro-reflection
 	return rr * ((fl + fv) + (fl * fv) * (rr - 1.f)) * (math::Pi_inv * layer.diffuse_color_);

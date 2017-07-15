@@ -27,7 +27,7 @@ private:
 	void refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
 				 bxdf::Result& result) const;
 
-	void reflect_internaly(bool same_side, const Layer& layer, sampler::Sampler& sampler,
+	void reflect_internally(bool same_side, const Layer& layer, sampler::Sampler& sampler,
 						   bxdf::Result& result) const;
 
 	float3 absorption_coefficient_;

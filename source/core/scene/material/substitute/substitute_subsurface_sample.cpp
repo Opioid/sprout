@@ -73,7 +73,7 @@ void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) 
 		if (p < 0.5f) {
 			refract(same_side, tmp_layer, sampler, result);
 		} else {
-			reflect_internaly(same_side, tmp_layer, sampler, result);
+			reflect_internally(same_side, tmp_layer, sampler, result);
 		}
 	}
 
@@ -145,7 +145,7 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 	result.reflection *= n_dot_wi;
 }
 
-void Sample_subsurface::reflect_internaly(bool same_side, const Layer& layer,
+void Sample_subsurface::reflect_internally(bool same_side, const Layer& layer,
 										  sampler::Sampler& sampler, bxdf::Result& result) const {
 	IOR tmp_ior;
 

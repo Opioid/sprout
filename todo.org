@@ -15,17 +15,17 @@
 
 ** Materials [0/3]
 
-*** TODO Microfacets [0/3]
-**** TODO Correlated shadowing/masking function [2/2]
+*** TODO Microfacets [2/3]
+**** DONE Correlated shadowing/masking function [2/2]
 - [X] Reflections
 - [X] Refractions
 
 [[https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf]]
 [[http://twvideo01.ubm-us.net/o1/vault/gdc2017/Presentations/Hammon_Earl_PBR_Diffuse_Lighting.pdf]]
 
-**** TODO Look into normalized Disney BRDF (see frostbite presentation)
-The results look very good. Apparently rough surfaces were often much to bright before.
-Now, we need to find out how this can be applied to the version were the included lambertian term is removed.
+**** DONE Look into normalized Disney BRDF (see frostbite presentation)
+The results look very good. Apparently rough surfaces were much too bright before.
+I'm not sure what this means for the subsurface scattering case, but I tried to modify it accordingly.
 
 **** TODO Thin-film [0/2]
 - [ ] Implement [[https://belcour.github.io/blog/research/2017/05/01/brdf-thin-film.html]]

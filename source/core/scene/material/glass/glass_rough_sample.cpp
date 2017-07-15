@@ -48,7 +48,6 @@ float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
 														 layer_, constant, pdf);
 
 	return n_dot_wi * reflection;
-
 }
 
 void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
