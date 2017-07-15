@@ -1,11 +1,11 @@
 * Backlog
 
-** Miscellaneous
+** Miscellaneous [1/1]
 
 *** DONE PCG Random Number Generator 
 [[http://www.pcg-random.org/]]
 
-** Integrators
+** Integrators [0/1]
 
 *** TODO Subsurface scattering [1/2]
 - [X] Implement single scattering 
@@ -37,7 +37,7 @@ Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin)
 *** TODO Separate samplers
 Consider adding support for separate samplers per texture
 
-** Renderer
+** Renderer [0/2]
 
 *** TODO Lock-free tile enumeration [1/2]
 - [X] Pre-determined "Tiled scanline" with initial offset (slower)
@@ -48,9 +48,11 @@ Something with atomics might be interesting, but will probably not noticeably af
 
 *** TODO Deterministic random numbers
 Currently (some) random numbers are seeded per worker.
-This leads to indeterministic behavior as the workers render varying parts of the frame per run. 
+This leads to indeterministic behavior as the workers render varying parts of the frame per run.
+For a deterministic result the seed should always be the same per pixel/tile in any run.
+Of course, this should have no impact on the converged result and only affect noise. 
 
-** Postprocessors
+** Postprocessors [0/1]
 
 *** TODO Glare filter [1/3]
 Implement in Fourier domain to increase performance
@@ -58,7 +60,7 @@ Implement in Fourier domain to increase performance
 - [ ] Investigate decreased quality, lattice like artifacts
 - [ ] Use FFT to improve performance
 
-** Shapes
+** Shapes [0/2]
 
 *** TODO Adding/improving analytical shapes [0/2]
 - [-] Canopy/Half-sphere
@@ -68,7 +70,7 @@ Implement in Fourier domain to increase performance
 
 *** TODO Consider visibility settings per part
 
-** Resources
+** Resources [0/1]
 
 *** TODO Faster file loading [1/3]
 - [X] Consider concurrent loading during lengthy processing steps (e.g. building BVH)
@@ -84,13 +86,13 @@ In those cases the time required for BVH construction can be hidden to a certain
 Proof of concept for binary files showed good improvements in loading time. 
 File size on disk generally seems to be higher, though.
 
-** Build system
+** Build system [0/2]
 
 *** TODO Investigate more Travis CI usage
 
 *** TODO Consider cmake-based build system
 
-** Scene
+** Scene [1/2]
 
 *** TODO Faster scene update [0/2]
 Investigate opportunities to parallelize some parts of scene update
