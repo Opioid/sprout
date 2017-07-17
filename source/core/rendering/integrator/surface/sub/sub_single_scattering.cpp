@@ -55,7 +55,7 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 
 		const auto& bssrdf = sample.bssrdf(worker);
 
-		const uint32_t num_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+		const uint32_t num_samples = 0 == i ? static_cast<uint32_t>(std::ceil(range / settings_.step_size)) : 1;
 		const float num_samples_reciprocal = 1.f / static_cast<float>(num_samples);
 		const float step = range * num_samples_reciprocal;
 
@@ -90,6 +90,10 @@ float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& inter
 		}
 
 		tr *= sample_result.reflection / sample_result.pdf;
+
+//		if (math::all_lesser(tr, 1.0f)) {
+//			break;
+//		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
 			break;
