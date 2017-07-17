@@ -7,8 +7,10 @@
 
 ** Integrators [0/1]
 
-*** TODO Subsurface scattering [1/2]
-- [X] Implement single scattering 
+*** TODO Subsurface scattering [0/2]
+- [-] Implement single scattering
+  - [X] Direct light only
+  - [ ] Indirect illumination
 - [ ] Implement multiple scattering
   - [ ] Monte-carlo integrator
   - [ ] Next event estimation
@@ -29,13 +31,14 @@ I'm not sure what this means for the subsurface scattering case, but I tried to 
 
 **** TODO Thin-film [0/2]
 - [ ] Implement [[https://belcour.github.io/blog/research/2017/05/01/brdf-thin-film.html]]
-- [ ] Evaluate difference to existing thin-film fresnel
+- [ ] Evaluate difference to existing thin-film Fresnel
 
 *** TODO Cloth material
 Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin)
 
 *** TODO Separate samplers
-Consider adding support for separate samplers per texture
+Consider adding support for separate samplers per different textures in a single material.
+E.g nearest neighbor filter for albedo color and bilinear for normal map.
 
 ** Renderer [0/2]
 
