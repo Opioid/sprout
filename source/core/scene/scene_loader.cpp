@@ -49,19 +49,25 @@ void Loader::load(const std::string& filename, Scene& scene) {
 	std::string resolved_name;
 	auto stream_pointer = resource_manager_.file_system().read_stream(filename, resolved_name);
 
+	const std::string mount_folder = string::parent_directory(resolved_name);
+
 	auto root = json::parse(*stream_pointer);
 
 	const json::Value::ConstMemberIterator materials_node = root->FindMember("materials");
 	if (root->MemberEnd() != materials_node) {
-		std::string mount_folder = string::parent_directory(resolved_name);
+//		std::string mount_folder = string::parent_directory(resolved_name);
 		load_materials(materials_node->value, mount_folder, scene);
 	}
+
+	resource_manager_.file_system().push_mount(mount_folder);
 
 	for (auto& n : root->GetObject()) {
 		if ("entities" == n.name) {
 			load_entities(n.value, nullptr, scene);
 		}
 	}
+
+	resource_manager_.file_system().pop_mount();
 
 	scene.finish();
 
