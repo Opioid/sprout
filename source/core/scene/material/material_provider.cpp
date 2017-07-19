@@ -8,6 +8,7 @@
 #include "image/texture/texture_provider.hpp"
 #include "cloth/cloth_material.hpp"
 #include "cloth/cloth_sample.hpp"
+#include "debug/debug_material.hpp"
 #include "display/display_constant.hpp"
 #include "display/display_emissionmap.hpp"
 #include "display/display_emissionmap_animated.hpp"
@@ -49,15 +50,10 @@
 namespace scene { namespace material {
 
 Provider::Provider() :
-	resource::Provider<Material>("Material") {
-	auto material = std::make_shared<substitute::Material>(
-				Sampler_settings(Sampler_settings::Filter::Linear), false);
-	material->set_color(float3(1.f, 0.f, 0.f)),
-	material->set_ior(1.45f),
-	material->set_roughness(1.f);
-	material->set_metallic(0.f);
-	fallback_material_ = material;
-}
+	resource::Provider<Material>("Material"),
+	fallback_material_(std::make_shared<debug::Material>(
+		Sampler_settings(Sampler_settings::Filter::Linear)))
+{}
 
 Provider::~Provider() {}
 

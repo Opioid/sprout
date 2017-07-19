@@ -25,6 +25,7 @@ HEADERS += \
 
 include(coating/coating.pri)
 include(cloth/cloth.pri)
+include(debug/debug.pri)
 include(disney/disney.pri)
 include(display/display.pri)
 include(fresnel/fresnel.pri)
