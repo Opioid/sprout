@@ -46,6 +46,9 @@ bool Canopy::intersect(const Transformation& transformation, Ray& ray,
 		intersection.uv[1] = 0.5f * disk[1] + 0.5f;
 
 		ray.max_t = Ray_max_t;
+
+		SOFT_ASSERT(testing::check(intersection, transformation, ray));
+
 		return true;
 	}
 

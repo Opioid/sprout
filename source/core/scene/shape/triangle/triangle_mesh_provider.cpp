@@ -34,6 +34,7 @@ namespace scene { namespace shape { namespace triangle {
 
 #ifdef SU_DEBUG
 bool check(const std::vector<Vertex>& vertices, const std::string& filename);
+bool check_and_fix(std::vector<Vertex>& vertices, const std::string& filename);
 #endif
 
 Provider::Provider() : resource::Provider<Shape>("Mesh") {}
@@ -103,7 +104,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 		bvh_preset = handler.bvh_preset();
 	}
 
-	SOFT_ASSERT(check(handler.vertices(), filename));
+	SOFT_ASSERT(check_and_fix(handler.vertices(), filename));
 
 //	Exporter::write(filename, handler);
 
@@ -392,6 +393,36 @@ bool check(const std::vector<Vertex>& vertices, const std::string& filename) {
 	}
 
 	return true;
+}
+
+bool check_and_fix(std::vector<Vertex>& vertices, const std::string& /*filename*/) {
+	bool errors = false;
+
+	for (size_t i = 0, len = vertices.size(); i < len; ++i) {
+		auto& v = vertices[i];
+
+		if (math::squared_length(v.n) < 0.1f) {
+		//	std::cout << filename << " vertex " << i << std::endl;
+
+		//	std::cout << "n: " << v.n << std::endl;
+			v.n = packed_float3(0.f, 1.f, 0.f);
+
+			errors = true;
+		}
+
+		if (math::squared_length(v.t) < 0.1f) {
+		//	std::cout << filename << " vertex " << i << std::endl;
+		//	std::cout << "t: " << v.t << " converted to ";
+
+			v.t = packed_float3(math::tangent(float3(v.n)));
+
+		//	std::cout << "t: " << v.t << std::endl;
+
+			errors = true;
+		}
+	}
+
+	return errors;
 }
 #endif
 
