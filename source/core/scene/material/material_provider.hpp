@@ -72,7 +72,7 @@ private:
 										 Texture_description& description);
 
 	static Texture_adapter create_texture(const Texture_description& description,
-										  const memory::Variant_map& options,
+										  memory::Variant_map& options,
 										  resource::Manager& manager);
 
 	struct Coating_description {

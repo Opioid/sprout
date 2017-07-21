@@ -249,10 +249,6 @@ Material_ptr Provider::load_display(const json::Value& display_value, resource::
 
 				memory::Variant_map options;
 
-				if (texture_description.num_elements > 1) {
-					options.set("num_elements", texture_description.num_elements);
-				}
-
 				if ("Emission" == texture_description.usage) {
 					options.set("usage", image::texture::Provider::Usage::Color);
 					emission_map = create_texture(texture_description, options, manager);
@@ -418,10 +414,6 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 				}
 
 				memory::Variant_map options;
-
-				if (texture_description.num_elements > 1) {
-					options.set("num_elements", texture_description.num_elements);
-				}
 
 				if ("Emission" == texture_description.usage) {
 					options.set("usage", image::texture::Provider::Usage::Color);
@@ -1005,8 +997,12 @@ void Provider::read_texture_description(const json::Value& texture_value,
 }
 
 Texture_adapter Provider::create_texture(const Texture_description& description,
-										 const memory::Variant_map& options,
+										 memory::Variant_map& options,
 										 resource::Manager& manager) {
+	if (description.num_elements > 1) {
+		options.set("num_elements", description.num_elements);
+	}
+
 	return Texture_adapter(manager.load<image::texture::Texture>(description.filename, options),
 						   description.scale);
 }
