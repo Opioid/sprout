@@ -54,6 +54,8 @@ public:
 		void pure_specular_sample(const float3& wo, sampler::Sampler& sampler,
 								  bxdf::Result& result) const;
 
+		float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const;
+
 		float3 diffuse_color_;
 		float3 f0_;
 		float3 emission_;

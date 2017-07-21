@@ -6,6 +6,8 @@
 #include "scene/material/disney/disney.inl"
 #include "base/math/vector3.inl"
 
+#include <iostream>
+
 namespace scene { namespace material { namespace substitute {
 
 template<typename Diffuse>
@@ -206,6 +208,20 @@ void Sample_base<Diffuse>::Layer::pure_specular_sample(const float3& wo, sampler
 	const fresnel::Schlick schlick(f0_);
 	const float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);
 	result.reflection *= n_dot_wi;
+}
+
+template<typename Diffuse>
+float Sample_base<Diffuse>::Layer::base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const {
+	// I think this is what we have to weigh lambert with if it is added to a microfacet BRDF.
+	// At the moment this is only used with the "translucent" material,
+	// which is kind of hacky anyway.
+
+//	const float a = fresnel::schlick(n_dot_wi, f0_[0]);
+//	const float b = fresnel::schlick(n_dot_wo, f0_[0]);
+//	return std::max(a, b);
+
+	// Same as above, but shorter
+	return fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_[0]);
 }
 
 }}}
