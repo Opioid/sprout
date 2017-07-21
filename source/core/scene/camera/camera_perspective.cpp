@@ -137,13 +137,9 @@ void Perspective::update_focus(rendering::Worker& worker) {
 		entity::Composed_transformation temp;
 		const auto& transformation = transformation_at(0.f, temp);
 
-		scene::Ray ray;
-		ray.origin = transformation.position;
-		ray.set_direction(math::transform_vector(direction, transformation.object_to_world));
-		ray.min_t = 0.f;
-		ray.max_t = Ray_max_t;
-		ray.time = 0.f;
-		ray.depth = 0;
+		scene::Ray ray(transformation.position,
+					   math::transform_vector(direction, transformation.object_to_world),
+					   0.f, Ray_max_t, 0.f, 0);
 
 		Intersection intersection;
 		if (worker.intersect(ray, intersection)) {
