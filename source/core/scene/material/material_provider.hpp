@@ -40,6 +40,8 @@ private:
 
 	Material_ptr load_cloth(const json::Value& cloth_value, resource::Manager& manager);
 
+	Material_ptr load_debug(const json::Value& debug_value, resource::Manager& manager);
+
 	Material_ptr load_display(const json::Value& display_value, resource::Manager& manager);
 
 	Material_ptr load_glass(const json::Value& glass_value, resource::Manager& manager);

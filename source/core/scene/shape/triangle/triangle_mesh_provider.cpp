@@ -396,33 +396,35 @@ bool check(const std::vector<Vertex>& vertices, const std::string& filename) {
 }
 
 bool check_and_fix(std::vector<Vertex>& vertices, const std::string& /*filename*/) {
-	bool errors = false;
+	bool success = true;
 
 	for (size_t i = 0, len = vertices.size(); i < len; ++i) {
 		auto& v = vertices[i];
 
 		if (math::squared_length(v.n) < 0.1f) {
-		//	std::cout << filename << " vertex " << i << std::endl;
+	//		std::cout << filename << " vertex " << i << std::endl;
 
-		//	std::cout << "n: " << v.n << std::endl;
+
+			std::cout << "n: " << v.n << " converted to ";
 			v.n = packed_float3(0.f, 1.f, 0.f);
+			std::cout << v.n << std::endl;
 
-			errors = true;
+			success = false;
 		}
 
 		if (math::squared_length(v.t) < 0.1f) {
 		//	std::cout << filename << " vertex " << i << std::endl;
-		//	std::cout << "t: " << v.t << " converted to ";
 
+
+			std::cout << "t: " << v.t << " converted to ";
 			v.t = packed_float3(math::tangent(float3(v.n)));
+			std::cout << v.t << std::endl;
 
-		//	std::cout << "t: " << v.t << std::endl;
-
-			errors = true;
+			success = false;
 		}
 	}
 
-	return errors;
+	return success;
 }
 #endif
 

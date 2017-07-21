@@ -98,6 +98,8 @@ Material_ptr Provider::load(const json::Value& value, const std::string& mount_f
 	for (auto& n : rendering_value.GetObject()) {
 		if ("Cloth" == n.name) {
 			material = load_cloth(n.value, manager);
+		} else if ("Debug" == n.name) {
+			material = load_debug(n.value, manager);
 		} else if ("Display" == n.name) {
 			material = load_display(n.value, manager);
 		} else if ("Glass" == n.name) {
@@ -173,6 +175,39 @@ Material_ptr Provider::load_cloth(const json::Value& cloth_value, resource::Mana
 	material->set_normal_map(normal_map);
 
 	material->set_color(color);
+
+	return material;
+}
+
+Material_ptr Provider::load_debug(const json::Value& debug_value, resource::Manager& manager) {
+	Sampler_settings sampler_settings;
+
+	Texture_adapter mask;
+
+	for (auto& n : debug_value.GetObject()) {
+		 if ("textures" == n.name) {
+			for (auto& tn : n.value.GetArray()) {
+				Texture_description texture_description;
+				read_texture_description(tn, texture_description);
+
+				if (texture_description.filename.empty()) {
+					continue;
+				}
+
+				memory::Variant_map options;
+				if ("Mask" == texture_description.usage) {
+					options.set("usage", image::texture::Provider::Usage::Mask);
+					mask = create_texture(texture_description, options, manager);
+				}
+			}
+		} else if ("sampler" == n.name) {
+			read_sampler_settings(n.value, sampler_settings);
+		}
+	}
+
+	auto material = std::make_shared<debug::Material>(sampler_settings);
+
+	material->set_mask(mask);
 
 	return material;
 }
