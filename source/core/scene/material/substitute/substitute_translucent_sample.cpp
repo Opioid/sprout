@@ -9,12 +9,10 @@
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sampling.hpp"
 
-#include <iostream>
-
 namespace scene { namespace material { namespace substitute {
 
 float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
-// Not side check needed because the material is two-sided by definition.
+// No side check needed because the material is two-sided by definition.
 
 	// This is a bit complicated to understand:
 	// If the material does not have transmission,
@@ -50,7 +48,7 @@ float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
 }
 
 void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
-// Not side check needed because the material is two-sided by definition.
+// No side check needed because the material is two-sided by definition.
 
 	const float p = sampler.generate_sample_1D();
 
