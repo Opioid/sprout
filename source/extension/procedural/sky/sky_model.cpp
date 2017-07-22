@@ -26,7 +26,7 @@ bool Model::init() {
 
 	release();
 
-	float elevation = std::max(math::dot(sun_direction_, zenith_) * -0.5f * math::Pi, 0.f);
+	const float elevation = std::max(math::dot(sun_direction_, zenith_) * -0.5f * math::Pi, 0.f);
 
 	/*
 	for (uint32_t i = 0; i < 3; ++i) {
@@ -67,11 +67,11 @@ void Model::set_turbidity(float turbidity) {
 }
 
 float3 Model::evaluate_sky(const float3& wi) const {
-	float wi_dot_z = std::max(wi[1], 0.00001f);
-	float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
+	const float wi_dot_z = std::max(wi[1], 0.00001f);
+	const float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
-	float theta = std::acos(wi_dot_z);
-	float gamma = std::acos(wi_dot_s);
+	const float theta = std::acos(wi_dot_z);
+	const float gamma = std::acos(wi_dot_s);
 
 	/*
 	float3 radiance;
@@ -93,11 +93,11 @@ float3 Model::evaluate_sky(const float3& wi) const {
 }
 
 float3 Model::evaluate_sky_and_sun(const float3& wi) const {
-	float wi_dot_z = std::max(wi[1], 0.00001f);
-	float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
+	const float wi_dot_z = std::max(wi[1], 0.00001f);
+	const float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
-	float theta = std::acos(wi_dot_z);
-	float gamma = std::acos(wi_dot_s);
+	const float theta = std::acos(wi_dot_z);
+	const float gamma = std::acos(wi_dot_s);
 
 	Spectrum radiance;
 	for (uint32_t i = 0; i < Num_bands; ++i) {

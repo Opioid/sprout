@@ -45,7 +45,8 @@ void Entity::tick(const Keyframe& frame) {
 
 	// In the current implementation
 	// "animation" means "transformation changes during simulation frame"
-	bool changed_transformation = local_frame_a_.transformation != local_frame_b_.transformation;
+	const bool changed_transformation =
+			local_frame_a_.transformation != local_frame_b_.transformation;
 
 	properties_.set(Properties::Animated, changed_transformation);
 }

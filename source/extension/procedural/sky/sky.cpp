@@ -12,7 +12,8 @@ Sky::Sky() :
 				  0.f,  0.f, 1.f,
 				  0.f, -1.f, 0.f),
 	ground_albedo_(0.2f, 0.2f, 0.2f),
-	turbidity_(2.f) {}
+	turbidity_(2.f),
+	implicit_rotation_(true) {}
 
 Sky::~Sky() {}
 
@@ -20,8 +21,8 @@ void Sky::init(scene::Prop* sky, scene::Prop* sun) {
 	sky_ = sky;
 	sun_ = sun;
 
-	attach(sky_);
-	attach(sun_);
+//	attach(sky_);
+//	attach(sun_);
 
 	update();
 
@@ -39,6 +40,7 @@ void Sky::set_parameters(const json::Value& parameters) {
 		if ("sun" == n.name) {
 			const float3 angles = json::read_float3(n.value, "rotation", float3::identity());
 			sun_rotation_ = json::create_rotation_matrix(angles);
+			implicit_rotation_ = false;
 		} else if ("ground_albedo" == n.name) {
 			ground_albedo_ = json::read_float3(n.value);
 		} else if ("turbidity" == n.name) {
@@ -67,6 +69,12 @@ void Sky::update() {
 	sun_->set_transformation(transformation);
 }
 
-void Sky::on_set_transformation() {}
+void Sky::on_set_transformation() {
+	if (implicit_rotation_) {
+		sun_rotation_ = math::quaternion::create_matrix3x3(local_frame_a().rotation);
+
+		update();
+	}
+}
 
 }}

@@ -71,9 +71,9 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 		sky->set_parameters(p->value);
 	}
 
-	bool visible_in_camera = true;
-	bool visible_in_reflection = true;
-	bool visible_in_shadow = true;
+	const bool visible_in_camera = true;
+	const bool visible_in_reflection = true;
+	const bool visible_in_shadow = true;
 
 	sky_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	sky_prop->set_open(false);

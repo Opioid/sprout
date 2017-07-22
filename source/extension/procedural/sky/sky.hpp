@@ -35,6 +35,8 @@ private:
 	float3x3 sun_rotation_;
 	float3 ground_albedo_;
 	float turbidity_;
+
+	bool implicit_rotation_;
 };
 
 }}
