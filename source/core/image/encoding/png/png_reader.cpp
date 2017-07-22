@@ -22,6 +22,9 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels,
 	Chunk chunk;
 	Info info;
 
+	info.stream.zalloc = nullptr;
+	info.stream.zfree  = nullptr;
+
 	for (;;) {
 		read_chunk(stream, chunk);
 
@@ -30,7 +33,9 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels,
 		}
 	}
 
-	mz_inflateEnd(&info.stream);
+	if (info.stream.zfree) {
+		mz_inflateEnd(&info.stream);
+	}
 
 	return create_image(info, channels, num_elements, swap_xy);
 }
@@ -182,7 +187,7 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
 	info.width  = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[0]);
 	info.height = byteswap(reinterpret_cast<uint32_t*>(chunk.data)[1]);
 
-	uint32_t depth = static_cast<uint32_t>(chunk.data[8]);
+	const uint32_t depth = static_cast<uint32_t>(chunk.data[8]);
 	if (8 != depth) {
 		throw std::runtime_error(string::to_string(depth) +  " bit depth PNG not supported");
 	}
@@ -191,25 +196,28 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
 
 	switch (color_type) {
 	case Color_type::Grayscale:
-		info.num_channels = 1; break;
+		info.num_channels = 1;
+		break;
 	case Color_type::Truecolor:
-		info.num_channels = 3; break;
+		info.num_channels = 3;
+		break;
 	case Color_type::Truecolor_alpha:
-		info.num_channels = 4; break;
+		info.num_channels = 4;
+		break;
 	default:
 		info.num_channels = 0;
+		break;
 	}
 
 	if (0 == info.num_channels) {
-		return false;
+		throw std::runtime_error("Indexed PNG not supported");
 	}
 
 	info.bytes_per_pixel = info.num_channels;
 
 	uint8_t interlace = chunk.data[12];
 	if (interlace) {
-		// currently don't support interlaced encoding
-		return false;
+		throw std::runtime_error("Interlaced PNG not supported");
 	}
 
 	info.buffer.resize(info.width * info.height * info.num_channels);
@@ -222,8 +230,6 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
 	info.current_row_data.resize(info.width * info.num_channels);
 	info.previous_row_data.resize(info.current_row_data.size());
 
-	info.stream.zalloc = nullptr;
-	info.stream.zfree  = nullptr;
 	if (MZ_OK != mz_inflateInit(&info.stream)) {
 		return false;
 	}
@@ -246,7 +252,7 @@ bool Reader::parse_data(const Chunk& chunk, Info& info) {
 		info.stream.next_out = buffer;
 		info.stream.avail_out = buffer_size;
 
-		int status = mz_inflate(&info.stream, MZ_NO_FLUSH);
+		const int status = mz_inflate(&info.stream, MZ_NO_FLUSH);
 		if (status != MZ_OK && status != MZ_STREAM_END
 			&& status != MZ_BUF_ERROR && status != MZ_NEED_DICT) {
 			return false;
