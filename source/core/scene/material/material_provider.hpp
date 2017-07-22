@@ -2,6 +2,7 @@
 
 #include "resource/resource_provider.hpp"
 #include "material_sample_cache.hpp"
+#include "image/channels.hpp"
 #include "image/texture/texture_types.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"
@@ -59,10 +60,11 @@ private:
 	Material_ptr load_substitute(const json::Value& substitute_value, resource::Manager& manager);
 
 	struct Texture_description {
-		std::string filename;
-		std::string usage;
-		float2		scale;
-		int32_t     num_elements;
+		std::string		filename;
+		std::string		usage;
+		image::Swizzle  swizzle;
+		float2			scale;
+		int32_t			num_elements;
 	};
 
 	static void read_sampler_settings(const json::Value& sampler_value,

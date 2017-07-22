@@ -36,7 +36,11 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 		int32_t num_elements = 1;
 		options.query("num_elements", num_elements);
 
-		return png_reader_.read(stream, channels, num_elements);
+		Swizzle swizzle = Swizzle::XYZW;
+		options.query("swizzle", swizzle);
+		const bool swap_xy = Swizzle::YXZW == swizzle;
+
+		return png_reader_.read(stream, channels, num_elements, swap_xy);
 	} else if (file::Type::RGBE == type) {
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);

@@ -21,10 +21,8 @@ class Reader {
 
 public:
 
-	Reader();
-
 	static std::shared_ptr<Image> read(std::istream& stream, Channels channels,
-									   int32_t num_elements);
+									   int32_t num_elements, bool swap_xy);
 
 private:
 
@@ -75,7 +73,7 @@ private:
 	};
 
 	static std::shared_ptr<Image> create_image(const Info& info, Channels channels,
-											   int32_t num_elements);
+											   int32_t num_elements, bool swap_xy);
 
 	static void read_chunk(std::istream& stream, Chunk& chunk);
 

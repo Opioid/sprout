@@ -12,4 +12,9 @@ enum class Channels {
 	XYZ  = XY | Z
 };
 
+enum class Swizzle {
+	XYZW,
+	YXZW
+};
+
 }

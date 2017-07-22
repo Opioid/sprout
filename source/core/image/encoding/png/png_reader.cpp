@@ -9,9 +9,8 @@
 
 namespace image { namespace encoding { namespace png {
 
-Reader::Reader() {}
-
-std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels, int32_t num_elements) {
+std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels,
+									int32_t num_elements, bool swap_xy) {
 	std::array<uint8_t, Signature_size> signature;
 
 	stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
@@ -33,11 +32,11 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels, int
 
 	mz_inflateEnd(&info.stream);
 
-	return create_image(info, channels, num_elements);
+	return create_image(info, channels, num_elements, swap_xy);
 }
 
 std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
-											int32_t num_elements) {
+											int32_t num_elements, bool swap_xy) {
 	if (0 == info.num_channels || Channels::None == channels) {
 		return nullptr;
 	}
@@ -133,6 +132,10 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 			int32_t o = i * info.num_channels;
 			for (int32_t c = 0; c < max_channels; ++c) {
 				color.v[c] = info.buffer[o + c];
+			}
+
+			if (swap_xy) {
+				std::swap(color[0], color[1]);
 			}
 
 			image->at(i) = color;

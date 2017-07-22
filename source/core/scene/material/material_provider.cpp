@@ -980,6 +980,7 @@ void Provider::read_texture_description(const json::Value& texture_value,
 										Texture_description& description) {
 	description.filename = "";
 	description.usage = "Color";
+	description.swizzle = image::Swizzle::XYZW;
 	description.scale = float2(1.f, 1.f);
 	description.num_elements = 1;
 
@@ -988,6 +989,11 @@ void Provider::read_texture_description(const json::Value& texture_value,
 			description.filename = json::read_string(n.value);
 		} else if ("usage" == n.name) {
 			description.usage = json::read_string(n.value);
+		} else if ("swizzle" == n.name) {
+			std::string swizzle = json::read_string(n.value);
+			if ("YXZW" == swizzle) {
+				description.swizzle = image::Swizzle::YXZW;
+			}
 		} else if ("scale" == n.name) {
 			description.scale = json::read_float2(n.value);
 		} else if ("num_elements" == n.name) {
@@ -1001,6 +1007,10 @@ Texture_adapter Provider::create_texture(const Texture_description& description,
 										 resource::Manager& manager) {
 	if (description.num_elements > 1) {
 		options.set("num_elements", description.num_elements);
+	}
+
+	if (image::Swizzle::XYZW != description.swizzle) {
+		options.set("swizzle", description.swizzle);
 	}
 
 	return Texture_adapter(manager.load<image::texture::Texture>(description.filename, options),
