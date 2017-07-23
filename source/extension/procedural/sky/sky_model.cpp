@@ -26,7 +26,7 @@ bool Model::init() {
 
 	release();
 
-	const float elevation = std::max(math::dot(sun_direction_, zenith_) * -0.5f * math::Pi, 0.f);
+	const float elevation = std::max(math::dot(sun_direction_, zenith_) * (-0.5f * math::Pi), 0.f);
 
 	/*
 	for (uint32_t i = 0; i < 3; ++i) {
@@ -83,7 +83,7 @@ float3 Model::evaluate_sky(const float3& wi) const {
 
 	Spectrum radiance;
 	for (uint32_t i = 0; i < Num_bands; ++i) {
-		float wl_center = Spectrum::wavelength_center(i);
+		const float wl_center = Spectrum::wavelength_center(i);
 		radiance.set_bin(i, static_cast<float>(arhosekskymodel_radiance(skymodel_states_[i],
 																		theta, gamma,
 																		wl_center)));
@@ -101,7 +101,7 @@ float3 Model::evaluate_sky_and_sun(const float3& wi) const {
 
 	Spectrum radiance;
 	for (uint32_t i = 0; i < Num_bands; ++i) {
-		float wl_center = Spectrum::wavelength_center(i);
+		const float wl_center = Spectrum::wavelength_center(i);
 		radiance.set_bin(i, static_cast<float>(arhosekskymodel_solar_radiance(skymodel_states_[i],
 																			  theta, gamma,
 																			  wl_center)));

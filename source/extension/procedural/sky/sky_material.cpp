@@ -96,7 +96,7 @@ bool Sky_baked_material::has_emission_map() const {
 }
 
 float2 Sky_baked_material::radiance_sample(float2 r2, float& pdf) const {
-	float2 uv = distribution_.sample_continuous(r2, pdf);
+	const float2 uv = distribution_.sample_continuous(r2, pdf);
 
 	pdf *= total_weight_;
 
@@ -118,27 +118,26 @@ void Sky_baked_material::prepare_sampling(const shape::Shape& shape, uint32_t /*
 
 //	std::cout << "Let's bake sky stuff" << std::endl;
 
-	int2 d(256, 256);
+	const int2 d(256, 256);
 
-	image::Image::Description description(image::Image::Type::Float3, d);
+	const image::Image::Description description(image::Image::Type::Float3, d);
 	auto cache = std::make_shared<image::Float3>(description);
 
 	for (int y = 0; y < d[1]; ++y) {
 		for (int x = 0; x < d[0]; ++x) {
-
-			float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
-					  (static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
+			const float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
+							(static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
 
 //			scene::shape::Sample sample;
 //			shape.sample(part, transformation, float3::identity(),
 //						 uv, area, sample);
 
-			float3 wi = unclipped_canopy_mapping(transformation, uv);
+			const float3 wi = unclipped_canopy_mapping(transformation, uv);
 
 			/*if (0.f == sample.pdf) {
 				cache->at(x, y) = packed_float3::identity;
 			} else*/ {
-				float3 radiance = model_.evaluate_sky(/*sample.*/wi);
+				const float3 radiance = model_.evaluate_sky(/*sample.*/wi);
 				cache->at(x, y) = packed_float3(radiance);
 			}
 		}

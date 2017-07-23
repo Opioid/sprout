@@ -39,7 +39,7 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 												  Scene& scene, resource::Manager& manager) {
 	Sky* sky = new Sky;
 
-	bool bake = true;
+	const bool bake = true;
 
 	std::shared_ptr<Material> sky_material;
 
