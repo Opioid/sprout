@@ -65,8 +65,11 @@ static inline float3 sample_hemisphere_uniform(float2 uv) {
 	const float r = std::sqrt(1.f - z * z);
 	const float phi = uv[1] * (2.f * Pi);
 
-	const float sin_phi = std::sin(phi);
-	const float cos_phi = std::cos(phi);
+//	const float sin_phi = std::sin(phi);
+//	const float cos_phi = std::cos(phi);
+	float sin_phi;
+	float cos_phi;
+	math::sincos(phi, sin_phi, cos_phi);
 
 	return float3(cos_phi * r, sin_phi * r, z);
 }
@@ -79,8 +82,11 @@ static inline float3 sample_oriented_hemisphere_uniform(float2 uv,
 	const float r = std::sqrt(1.f - za * za);
 	const float phi = uv[1] * (2.f * Pi);
 
-	const float sin_phi = std::sin(phi);
-	const float cos_phi = std::cos(phi);
+//	const float sin_phi = std::sin(phi);
+//	const float cos_phi = std::cos(phi);
+	float sin_phi;
+	float cos_phi;
+	math::sincos(phi, sin_phi, cos_phi);
 
 	return (cos_phi * r) * x + (sin_phi * r) * y + za * z;
 }
@@ -90,8 +96,11 @@ static inline float3 sample_oriented_hemisphere_uniform(float2 uv, const float3x
 	const float r = std::sqrt(1.f - za * za);
 	const float phi = uv[1] * (2.f * Pi);
 
-	const float sin_phi = std::sin(phi);
-	const float cos_phi = std::cos(phi);
+//	const float sin_phi = std::sin(phi);
+//	const float cos_phi = std::cos(phi);
+	float sin_phi;
+	float cos_phi;
+	math::sincos(phi, sin_phi, cos_phi);
 
 	return (cos_phi * r) * m.r[0] + (sin_phi * r) * m.r[1] + za * m.r[2];
 }
@@ -118,8 +127,11 @@ static inline float3 sample_sphere_uniform(float2 uv) {
 	const float r = std::sqrt(std::max(0.f, 1.f - z * z));
 	const float phi = uv[1] * (2.f * Pi);
 
-	const float sin_phi = std::sin(phi);
-	const float cos_phi = std::cos(phi);
+//	const float sin_phi = std::sin(phi);
+//	const float cos_phi = std::cos(phi);
+	float sin_phi;
+	float cos_phi;
+	math::sincos(phi, sin_phi, cos_phi);
 
 	return float3(cos_phi * r, sin_phi * r, z);
 }
@@ -132,8 +144,11 @@ static inline float3 sample_oriented_cone_uniform(float2 uv, float cos_theta_max
 	const float sin_theta = std::sqrt(1.f - cos_theta * cos_theta);
 	const float phi = uv[1] * (2.f * Pi);
 
-	float sin_phi = std::sin(phi);
-	float cos_phi = std::cos(phi);
+//	float sin_phi = std::sin(phi);
+//	float cos_phi = std::cos(phi);
+	float sin_phi;
+	float cos_phi;
+	math::sincos(phi, sin_phi, cos_phi);
 
 	return (cos_phi * sin_theta) * x + (sin_phi * sin_theta) * y + cos_theta * z;
 }
