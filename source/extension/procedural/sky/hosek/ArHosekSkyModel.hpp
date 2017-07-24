@@ -342,7 +342,8 @@ typedef struct ArHosekSkyModelState
 	ArHosekSkyModelConfiguration configs[11];
 	hk_real                      radiances[11];
 	hk_real                      turbidity;
-	hk_real                      solar_radius;
+//	hk_real                      solar_radius;
+	hk_real						 ar2;
 	hk_real                      emission_correction_factor_sky[11];
 	hk_real                      emission_correction_factor_sun[11];
 	hk_real                      albedo;
@@ -409,8 +410,10 @@ void arhosekskymodelstate_free(
 
 hk_real arhosekskymodel_radiance(
         ArHosekSkyModelState  * state,
-		hk_real                  theta,
+//		hk_real                  theta,
+		hk_real					 cos_theta,
 		hk_real                  gamma,
+		hk_real					 cos_gamma,
 		hk_real                  wavelength
         );
 
@@ -433,8 +436,10 @@ ArHosekSkyModelState  * arhosek_rgb_skymodelstate_alloc_init(
 
 hk_real arhosek_tristim_skymodel_radiance(
         ArHosekSkyModelState  * state,
-		hk_real                  theta,
+	//	hk_real                  theta,
+		hk_real					 cos_theta,
 		hk_real                  gamma,
+		hk_real					 cos_gamma,
         int                     channel
         );
 
@@ -445,7 +450,9 @@ hk_real arhosek_tristim_skymodel_radiance(
 hk_real arhosekskymodel_solar_radiance(
         ArHosekSkyModelState      * state,
 		hk_real                      theta,
+		hk_real						 cos_theta,
 		hk_real                      gamma,
+		hk_real						 cos_gamma,
 		hk_real                      wavelength
         );
 

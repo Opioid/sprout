@@ -62,7 +62,7 @@ void Sky::update() {
 
 	math::Transformation transformation {
 		float3::identity(),
-		float3(math::degrees_to_radians(0.26f)),
+		float3(math::degrees_to_radians(0.255f)), // 0.255 to better match hosek
 		math::quaternion::create(sun_rotation_)
 	};
 

@@ -70,7 +70,7 @@ float3 Model::evaluate_sky(const float3& wi) const {
 	const float wi_dot_z = std::max(wi[1], 0.00001f);
 	const float wi_dot_s = std::min(-math::dot(wi, sun_direction_), 0.99999f);
 
-	const float theta = std::acos(wi_dot_z);
+//	const float theta = std::acos(wi_dot_z);
 	const float gamma = std::acos(wi_dot_s);
 
 	/*
@@ -85,7 +85,8 @@ float3 Model::evaluate_sky(const float3& wi) const {
 	for (uint32_t i = 0; i < Num_bands; ++i) {
 		const float wl_center = Spectrum::wavelength_center(i);
 		radiance.set_bin(i, static_cast<float>(arhosekskymodel_radiance(skymodel_states_[i],
-																		theta, gamma,
+																		/*theta,*/ wi_dot_z,
+																		gamma, wi_dot_s,
 																		wl_center)));
 	}
 
@@ -103,7 +104,8 @@ float3 Model::evaluate_sky_and_sun(const float3& wi) const {
 	for (uint32_t i = 0; i < Num_bands; ++i) {
 		const float wl_center = Spectrum::wavelength_center(i);
 		radiance.set_bin(i, static_cast<float>(arhosekskymodel_solar_radiance(skymodel_states_[i],
-																			  theta, gamma,
+																			  theta, wi_dot_z,
+																			  gamma, wi_dot_s,
 																			  wl_center)));
 	}
 
