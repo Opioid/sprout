@@ -10,25 +10,19 @@ class Identifiable {
 
 public:
 
-	Identifiable(const std::string& name) : name_(name) {
-		s_id = id_manager.id(name);
-	}
-
-	const std::string& name() const {
-		return name_;
+	Identifiable(const std::string& name) {
+		type_id_ = id_manager.id(name);
 	}
 
 	static uint32_t id() {
-		return s_id;
+		return type_id_;
 	}
 
 private:
 
-	std::string name_;
-
-	static uint32_t s_id;
+	static uint32_t type_id_;
 };
 
-template<typename T> uint32_t Identifiable<T>::s_id = 0xFFFFFF;
+template<typename T> uint32_t Identifiable<T>::type_id_ = 0xFFFFFF;
 
 }

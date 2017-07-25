@@ -8,7 +8,7 @@ namespace resource {
 
 template<typename T>
 void Manager::register_provider(Provider<T>& provider) {
-	uint32_t id = Provider<T>::id();
+	const uint32_t id = Provider<T>::id();
 	auto old = caches_.find(id);
 
 	if (caches_.end() != old) {

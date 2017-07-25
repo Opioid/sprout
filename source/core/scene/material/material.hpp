@@ -78,13 +78,15 @@ protected:
 
 	virtual void set_parameter(const std::string& name, const json::Value& value);
 
-	Texture_adapter mask_;
-
 private:
 
 	uint32_t sampler_key_;
 
 	bool two_sided_;
+
+protected:
+
+	Texture_adapter mask_;
 };
 
 using Material_ptr = std::shared_ptr<material::Material>;

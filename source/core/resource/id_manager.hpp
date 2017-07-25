@@ -13,7 +13,9 @@ public:
 
 	std::string name(uint32_t id) const;
 
-	std::vector<std::string>& get_names() const;
+private:
+
+	std::vector<std::string>& names() const;
 };
 
 extern ID_manager id_manager;
