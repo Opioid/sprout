@@ -18,7 +18,7 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	}
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
-	const float n_dot_wo = layer_.clamp_n_dot(wo_);
+	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_); // layer_.clamp_n_dot(wo_);
 
 	const float3 h = math::normalize(wo_ + wi);
 	const float wo_dot_h = clamp_dot(wo_, h);
@@ -26,7 +26,8 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
 	const fresnel::Schlick schlick(layer_.f0_);
-	const float3 ggx_reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+	const float3 ggx_reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo,
+															 wo_dot_h, n_dot_h,
 															 layer_, schlick, pdf);
 
 	return n_dot_wi * ggx_reflection;
@@ -46,7 +47,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 		return;
 	}
 
-	const float n_dot_wo = layer_.clamp_n_dot(wo_);
+	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_); // layer_.clamp_n_dot(wo_);
 	const fresnel::Schlick schlick(layer_.f0_);
 	const float n_dot_wi = ggx::Isotropic::reflect(wo_, n_dot_wo, layer_,
 												   schlick, sampler, result);
