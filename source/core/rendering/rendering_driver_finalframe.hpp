@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rendering_driver.hpp"
+#include <memory>
+#include <vector>
 
 namespace scene { namespace camera { class Camera; } }
 
@@ -22,7 +24,9 @@ public:
 					  thread::Pool& thread_pool,
 					  uint32_t max_sample_size);
 
-	void render(exporting::Sink& exporter, progress::Sink& progressor);
+	using Exporters = std::vector<std::unique_ptr<exporting::Sink>>;
+
+	void render(Exporters& exporters, progress::Sink& progressor);
 
 private:
 

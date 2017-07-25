@@ -90,13 +90,14 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 
 	if (take->view.camera) {
 		if (exporter_value) {
-			take->exporter = load_exporter(*exporter_value, *take->view.camera);
+			take->exporters = load_exporters(*exporter_value, *take->view.camera);
 		}
 
-		if (!take->exporter) {
+		if (take->exporters.empty()) {
 			const auto d = take->view.camera->sensor().dimensions();
 			image::Writer* writer = new image::encoding::png::Writer(d);
-			take->exporter = std::make_unique<exporting::Image_sequence>("output_", writer);
+			take->exporters.push_back(std::make_unique<exporting::Image_sequence>("output_",
+																				  writer));
 			logging::warning("No valid exporter was specified, defaulting to PNG writer.");
 		}
 	}
@@ -636,8 +637,10 @@ bool Loader::peek_stereoscopic(const json::Value& parameters_value) {
 	return true;
 }
 
-std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& exporter_value,
-													   scene::camera::Camera& camera) {
+std::vector<std::unique_ptr<exporting::Sink>>
+Loader::load_exporters(const json::Value& exporter_value, scene::camera::Camera& camera) {
+	std::vector<std::unique_ptr<exporting::Sink>> exporters;
+
 	for (auto& n : exporter_value.GetObject()) {
 		if ("Image" == n.name) {
 			const std::string format = json::read_string(n.value, "format", "PNG");
@@ -650,7 +653,7 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& export
 				writer = new image::encoding::png::Writer(camera.sensor().dimensions());
 			}
 
-			return std::make_unique<exporting::Image_sequence>("output_", writer);
+			exporters.push_back(std::make_unique<exporting::Image_sequence>("output_", writer));
 		} else if ("Movie" == n.name) {
 			uint32_t framerate = json::read_uint(n.value, "framerate");
 
@@ -658,16 +661,17 @@ std::unique_ptr<exporting::Sink> Loader::load_exporter(const json::Value& export
 				framerate = static_cast<uint32_t>(1.f / camera.frame_duration() + 0.5f);
 			}
 
-			return std::make_unique<exporting::Ffmpeg>("output", camera.sensor().dimensions(),
-													   framerate);
+			exporters.push_back(std::make_unique<exporting::Ffmpeg>("output",
+																	camera.sensor().dimensions(),
+																	framerate));
 		} else if ("Null" == n.name) {
-			return std::make_unique<exporting::Null>();
+			exporters.push_back(std::make_unique<exporting::Null>());
 		} else if ("Statistics" == n.name) {
-			return std::make_unique<exporting::Statistics>();
+			exporters.push_back(std::make_unique<exporting::Statistics>());
 		}
 	}
 
-	return nullptr;
+	return exporters;
 }
 
 void Loader::load_settings(const json::Value& settings_value, Settings& settings) {

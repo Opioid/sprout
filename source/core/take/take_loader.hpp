@@ -6,6 +6,7 @@
 #include <istream>
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace exporting { class Sink; }
 
@@ -96,8 +97,8 @@ private:
 
 	static bool peek_stereoscopic(const json::Value& parameters_value);
 
-	static std::unique_ptr<exporting::Sink>
-	load_exporter(const json::Value& exporter_value, scene::camera::Camera& camera);
+	static std::vector<std::unique_ptr<exporting::Sink>>
+	load_exporters(const json::Value& exporter_value, scene::camera::Camera& camera);
 
 	static void load_settings(const json::Value& settings_value, Settings& settings);
 

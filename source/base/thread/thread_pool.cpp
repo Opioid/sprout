@@ -84,9 +84,9 @@ void Pool::wake_all() {
 }
 
 void Pool::wake_all(int32_t begin, int32_t end) {
-	float range = static_cast<float>(end - begin);
-
-	int32_t step = static_cast<int32_t>(std::ceil(range / static_cast<float>(threads_.size())));
+	const float range = static_cast<float>(end - begin);
+	const float num_threads = static_cast<float>(threads_.size());
+	const int32_t step = static_cast<int32_t>(std::ceil(range / num_threads));
 
 	int32_t b = 0;
 	int32_t e = begin;

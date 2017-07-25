@@ -25,7 +25,7 @@ Driver_finalframe::Driver_finalframe(Surface_integrator_factory surface_integrat
 	Driver(surface_integrator_factory, volume_integrator_factory,
 		   sampler_factory, scene, view, thread_pool, max_sample_size) {}
 
-void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progressor) {
+void Driver_finalframe::render(Exporters& exporters, progress::Sink& progressor) {
 	auto& camera = *view_.camera;
 	auto& sensor = camera.sensor();
 
@@ -122,8 +122,13 @@ void Driver_finalframe::render(exporting::Sink& exporter, progress::Sink& progre
 		logging::info("Render time " + string::to_string(render_duration) + " s");
 
 		const auto export_start = std::chrono::high_resolution_clock::now();
+
 		view_.pipeline.apply(sensor, target_, thread_pool_);
-		exporter.write(target_, current_frame, thread_pool_);
+
+		for (auto& e : exporters) {
+			e->write(target_, current_frame, thread_pool_);
+		}
+
 		const auto export_duration = chrono::seconds_since(export_start);
 		logging::info("Export time " + string::to_string(export_duration) + " s");
 	}

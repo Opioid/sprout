@@ -4,6 +4,7 @@
 #include "take_view.hpp"
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace exporting { class Sink; }
 
@@ -34,7 +35,7 @@ struct Take {
 
 	std::shared_ptr<sampler::Factory> sampler_factory;
 
-	std::unique_ptr<exporting::Sink> exporter;
+	std::vector<std::unique_ptr<exporting::Sink>> exporters;
 };
 
 }
