@@ -351,6 +351,13 @@ typedef struct ArHosekSkyModelState
 } 
 ArHosekSkyModelState;
 
+typedef struct ArHosekSkyModelSolarTemp
+{
+	hk_real elevation_minus_break_x;
+	int     pos_plus_1;
+}
+ArHosekSkyModelSolarTemp;
+
 /* ----------------------------------------------------------------------------
 
     arhosekskymodelstate_alloc_init() function
@@ -443,13 +450,19 @@ hk_real arhosek_tristim_skymodel_radiance(
         int                     channel
         );
 
+
+void arhosekskymodel_solar_radiance_temp(
+		ArHosekSkyModelSolarTemp* temp,
+		hk_real theta
+		);
+
 //   Delivers the complete function: sky + sun, including limb darkening.
 //   Please read the above description before using this - there are several
 //   caveats!
 
 hk_real arhosekskymodel_solar_radiance(
         ArHosekSkyModelState      * state,
-		hk_real                      theta,
+		ArHosekSkyModelSolarTemp  * temp,
 		hk_real						 cos_theta,
 		hk_real                      gamma,
 		hk_real						 cos_gamma,

@@ -716,39 +716,44 @@ hk_real arhosek_tristim_skymodel_radiance(
         * state->radiances[channel];
 }
 
-const int pieces = 45;
-const int order = 4;
+constexpr int pieces = 45;
+constexpr int order = 4;
 
 hk_real pow3(hk_real x) {
 	return x * x * x;
 }
 
-hk_real arhosekskymodel_sr_internal(
-        ArHosekSkyModelState  * state,
-        int                     turbidity,
-        int                     wl,
-		hk_real                 elevation
-        )
+void arhosekskymodel_solar_radiance_temp(
+		ArHosekSkyModelSolarTemp* temp,
+		hk_real theta
+		)
 {
-//    int pos =
-//		(int) (std::pow(hk_real(2)*elevation / hk_real(MATH_PI), hk_real(1)/hk_real(3)) * pieces); // floor
-    
+	hk_real elevation = ((hk_real(MATH_PI)/hk_real(2))-theta);
+
 	int pos =
 		(int) (std::cbrt(hk_real(2)*elevation / hk_real(MATH_PI)) * pieces); // floor
 
-    if ( pos > 44 ) pos = 44;
-
-//	const hk_real break_x =
-//		std::pow(((hk_real) pos / (hk_real) pieces), hk_real(3)) * (hk_real(MATH_PI) * hk_real(0.5));
+	if ( pos > 44 ) pos = 44;
 
 	const hk_real break_x =
 		pow3(((hk_real) pos / (hk_real) pieces)) * (hk_real(MATH_PI) * hk_real(0.5));
 
+	temp->elevation_minus_break_x = elevation - break_x;
+	temp->pos_plus_1 = pos + 1;
+}
+
+hk_real arhosekskymodel_sr_internal(
+        ArHosekSkyModelState  * state,
+		ArHosekSkyModelSolarTemp* temp,
+        int                     turbidity,
+		int                     wl
+        )
+{
 	const hk_real  * coefs =
-        solarDatasets[wl] + (order * pieces * turbidity + order * (pos+1) - 1);
+		solarDatasets[wl] + ((order * pieces) * turbidity + order * (temp->pos_plus_1) - 1);
 
 	hk_real res = 0.0;
-	const hk_real x = elevation - break_x;
+	const hk_real x = temp->elevation_minus_break_x;
 	hk_real x_exp = 1.0;
 
     for (int i = 0; i < order; ++i)
@@ -762,8 +767,8 @@ hk_real arhosekskymodel_sr_internal(
 
 hk_real arhosekskymodel_solar_radiance_internal2(
         ArHosekSkyModelState  * state,
+		ArHosekSkyModelSolarTemp * temp,
 		hk_real                  wavelength,
-		hk_real                  elevation,
 		hk_real                  gamma
         )
 {
@@ -798,32 +803,32 @@ hk_real arhosekskymodel_solar_radiance_internal2(
 		* (    (hk_real(1) - wl_frac)
              * arhosekskymodel_sr_internal(
                      state,
+					 temp,
                      turb_low,
-                     wl_low,
-                     elevation
+					 wl_low
                    )
            +   wl_frac
              * arhosekskymodel_sr_internal(
                      state,
+					 temp,
                      turb_low,
-                     wl_low+1,
-                     elevation
+					 wl_low+1
                    )
           )
       +   turb_frac
 		* (    ( hk_real(1) - wl_frac )
              * arhosekskymodel_sr_internal(
                      state,
+					 temp,
                      turb_low+1,
-                     wl_low,
-                     elevation
+					 wl_low
                    )
            +   wl_frac
              * arhosekskymodel_sr_internal(
                      state,
+					 temp,
                      turb_low+1,
-                     wl_low+1,
-                     elevation
+					 wl_low+1
                    )
           );
 
@@ -870,8 +875,8 @@ hk_real arhosekskymodel_solar_radiance_internal2(
 }
 
 hk_real arhosekskymodel_solar_radiance(
-        ArHosekSkyModelState  * state,
-		hk_real                  theta,
+		ArHosekSkyModelState     * state,
+		ArHosekSkyModelSolarTemp * temp,
 		hk_real					 cos_theta,
 		hk_real                  gamma,
 		hk_real					 cos_gamma,
@@ -881,15 +886,14 @@ hk_real arhosekskymodel_solar_radiance(
 	hk_real  direct_radiance =
         arhosekskymodel_solar_radiance_internal2(
             state,
+			temp,
             wavelength,
-			((hk_real(MATH_PI)/hk_real(2))-theta),
             gamma
             );
 
 	hk_real  inscattered_radiance =
         arhosekskymodel_radiance(
             state,
-	  //      theta,
 			cos_theta,
             gamma,
 			cos_gamma,
