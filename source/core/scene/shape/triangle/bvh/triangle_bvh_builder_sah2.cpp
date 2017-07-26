@@ -181,7 +181,7 @@ Builder_SAH2::Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold) :
 	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
 void Builder_SAH2::split(Build_node* node, References& references, const math::AABB& aabb,
-						 uint32_t max_primitives, thread::Pool& thread_pool) {
+						 uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool) {
 	node->aabb = aabb;
 
 	uint32_t num_primitives = static_cast<uint32_t>(references.size());
@@ -189,7 +189,7 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 	if (num_primitives <= max_primitives) {
 		assign(node, references);
 	} else {
-		Split_candidate sp = splitting_plane(references, aabb, thread_pool);
+		Split_candidate sp = splitting_plane(references, aabb, depth, thread_pool);
 
 		if (static_cast<float>(num_primitives) <= sp.cost()) {
 			assign(node, references);
@@ -206,17 +206,19 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 
 				assign(node, references);
 			} else {
+				++depth;
+
 				references = References();
 
 				node->children[0] = new Build_node;
 				split(node->children[0], references0, sp.aabb_0(),
-					  max_primitives, thread_pool);
+					  max_primitives, depth, thread_pool);
 
 				references0 = References();
 
 				node->children[1] = new Build_node;
 				split(node->children[1], references1, sp.aabb_1(),
-					  max_primitives, thread_pool);
+					  max_primitives, depth, thread_pool);
 
 				num_nodes_ += 2;
 			}
@@ -226,6 +228,7 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 
 Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& references,
 															const math::AABB& aabb,
+															uint32_t depth,
 															thread::Pool& thread_pool) {
 	static constexpr uint8_t X = 0;
 	static constexpr uint8_t Y = 1;
@@ -252,7 +255,7 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 	} else {
 		const float3& min = aabb.min();
 
-		float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
+		const float3 step = (2.f * halfsize) / static_cast<float>(num_slices_);
 		for (uint32_t i = 1, len = num_slices_; i < len; ++i) {
 			const float fi = static_cast<float>(i);
 
@@ -265,9 +268,11 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 			const float3 slice_z(position[0], position[1], min[2] + fi * step[2]);
 			split_candidates_.emplace_back(Z, slice_z, false);
 
-//			split_candidates_.push_back(Split_candidate(0, slice_x, true));
-//			split_candidates_.push_back(Split_candidate(1, slice_y, true));
-//			split_candidates_.push_back(Split_candidate(2, slice_z, true));
+			if (depth < spatial_split_threshold_) {
+				split_candidates_.emplace_back(X, slice_x, true);
+				split_candidates_.emplace_back(Y, slice_y, true);
+				split_candidates_.emplace_back(Z, slice_z, true);
+			}
 		}
 	}
 

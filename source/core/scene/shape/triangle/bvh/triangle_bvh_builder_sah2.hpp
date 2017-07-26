@@ -115,10 +115,10 @@ private:
 	};
 
 	void split(Build_node* node, References& references, const math::AABB& aabb,
-			   uint32_t max_primitives, thread::Pool& thread_pool);
+			   uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool);
 
 	Split_candidate splitting_plane(const References& references, const math::AABB& aabb,
-									thread::Pool& thread_pool);
+									uint32_t depth, thread::Pool& thread_pool);
 
 	template<typename Data>
 	void serialize(Build_node* node, const Triangles& triangles,
@@ -140,6 +140,8 @@ private:
 	Node* nodes_;
 
 	uint32_t num_references_;
+
+	uint32_t spatial_split_threshold_;
 
 	const uint32_t num_slices_;
 	const uint32_t sweep_threshold_;

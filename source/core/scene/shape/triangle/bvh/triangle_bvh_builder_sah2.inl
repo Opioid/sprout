@@ -22,6 +22,9 @@ void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Ver
 	Build_node root;
 
 	{
+		const float log2_num_triangles = std::log2(static_cast<float>(triangles.size()));
+		spatial_split_threshold_ = static_cast<uint32_t>(log2_num_triangles / 2.f + 0.5f);
+
 		References references(triangles.size());
 
 		std::vector<math::Simd_AABB> aabbs(thread_pool.num_threads());
@@ -52,7 +55,7 @@ void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Ver
 		num_nodes_ = 1;
 		num_references_ = 0;
 
-		split(&root, references, math::AABB(aabb.min, aabb.max), max_primitives, thread_pool);
+		split(&root, references, math::AABB(aabb.min, aabb.max), max_primitives, 0, thread_pool);
 	}
 
 	tree.allocate_triangles(num_references_, vertices);
