@@ -271,7 +271,7 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 		}
 	}
 
-	float aabb_surface_area = aabb.surface_area();
+	const float aabb_surface_area = aabb.surface_area();
 
 	// Arbitrary heuristic for starting the thread pool
 	if (num_triangles < 1024) {

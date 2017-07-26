@@ -7,7 +7,7 @@ namespace light {
 void Emittance::set_flux(const float3& color, float value) {
 	const float luminance = spectrum::watt_to_lumen(color);
 
-	value_ = value * color / (math::Pi * luminance);
+	value_ = (value / math::Pi * luminance) * color;
 
 	quantity_ = Quantity::Intensity;
 }
@@ -21,7 +21,7 @@ void Emittance::set_intensity(const float3& intensity) {
 void Emittance::set_intensity(const float3& color, float value) {
 	const float luminance = spectrum::watt_to_lumen(color);
 
-	value_ = value * color / luminance;
+	value_ = (value / luminance) * color;
 
 	quantity_ = Quantity::Intensity;
 }
@@ -29,7 +29,7 @@ void Emittance::set_intensity(const float3& color, float value) {
 void Emittance::set_exitance(const float3& color, float value) {
 	const float luminance = spectrum::watt_to_lumen(color);
 
-	value_ = value * color / (math::Pi * luminance);
+	value_ = (value / math::Pi * luminance) * color;
 
 	quantity_ = Quantity::Radiance;
 }
@@ -43,7 +43,7 @@ void Emittance::set_radiance(const float3& radiance) {
 void Emittance::set_luminance(const float3& color, float value) {
 	const float luminance = spectrum::watt_to_lumen(color);
 
-	value_ = value * color / luminance;
+	value_ = (value / luminance) * color;
 
 	quantity_ = Quantity::Radiance;
 }
