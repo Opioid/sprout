@@ -22,7 +22,7 @@ namespace math {
 // This is sincos from
 // http://gruntthepeon.free.fr/ssemath/sse_mathfun.h
 
-inline Vector sin(Vector x) {
+static inline Vector sin(Vector x) {
 	Vector xmm1, xmm2 = _mm_setzero_ps(), xmm3, sign_bit, y;
 	__m128i emm0, emm2;
 
@@ -104,7 +104,7 @@ inline Vector sin(Vector x) {
 	return y;
 }
 
-inline Vector cos(Vector x) {
+static inline Vector cos(Vector x) {
 	Vector xmm1, xmm2 = _mm_setzero_ps(), xmm3, y;
 
 	__m128i emm0, emm2;
@@ -182,7 +182,7 @@ inline Vector cos(Vector x) {
 	return y;
 }
 
-inline void sincos(Vector x, Vector& s, Vector& c) {
+static inline void sincos(Vector x, Vector& s, Vector& c) {
 	Vector xmm1, xmm2, xmm3 = _mm_setzero_ps(), sign_bit_sin, y;
 
 	__m128i emm0, emm2, emm4;
@@ -278,7 +278,7 @@ inline void sincos(Vector x, Vector& s, Vector& c) {
 	c = _mm_xor_ps(xmm2, sign_bit_cos);
 }
 
-inline void sincos(float xf, float& s, float& c) {
+static inline void sincos(float xf, float& s, float& c) {
 	Vector x = _mm_load_ss(&xf);
 
 	Vector xmm1, xmm2, xmm3 = _mm_setzero_ps(), sign_bit_sin, y;

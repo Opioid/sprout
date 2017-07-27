@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math.hpp"
+#include "math/sincos.hpp"
 #include "vector3.inl"
 
 namespace math {
@@ -36,14 +37,17 @@ inline float2 hemisphere_to_disk_equidistant(const float3& dir) {
 
 	float r = colatitude * (math::Pi_inv * 2.f);
 
-	float sin_lon = std::sin(longitude);
-	float cos_lon = std::cos(longitude);
+//	float sin_lon = std::sin(longitude);
+//	float cos_lon = std::cos(longitude);
+	float sin_lon;
+	float cos_lon;
+	math::sincos(longitude, sin_lon, cos_lon);
 
 	return float2(r * cos_lon, r * sin_lon);
 }
 
 inline float2 hemisphere_to_disk_paraboloid(const float3& dir) {
-	float zoi = 1.f / (dir[2] + 1.f);
+	const float zoi = 1.f / (dir[2] + 1.f);
 	return float2(dir[0] * zoi, dir[1] * -zoi);
 }
 

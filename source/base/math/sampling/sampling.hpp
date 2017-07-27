@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/sincos.hpp"
 #include "math/math.hpp"
+#include "math/sincos.hpp"
 #include "math/vector3.inl"
 #include "math/matrix3x3.inl"
 

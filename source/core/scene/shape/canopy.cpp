@@ -87,14 +87,14 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					const float3& /*p*/, float /*area*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& /*node_stack*/, Sample& sample) const {
-	float2 uv = sampler.generate_sample_2D(sampler_dimension);
-	float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
+	const float2 uv = sampler.generate_sample_2D(sampler_dimension);
+	const float3 dir = math::sample_oriented_hemisphere_uniform(uv, transformation.rotation);
 
 	sample.wi = dir;
 
 	float3 xyz = math::transform_vector_transposed(dir, transformation.rotation);
 	xyz = math::normalize(xyz);
-	float2 disk = math::hemisphere_to_disk_equidistant(xyz);
+	const float2 disk = math::hemisphere_to_disk_equidistant(xyz);
 	sample.uv[0] = 0.5f * disk[0] + 0.5f;
 	sample.uv[1] = 0.5f * disk[1] + 0.5f;
 
@@ -113,15 +113,15 @@ float Canopy::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*
 void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					const float3& /*p*/, float2 uv, float /*area*/, bool /*two_sided*/,
 					Sample& sample) const {
-	float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
+	const float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
-	float z = math::dot(disk, disk);
+	const float z = math::dot(disk, disk);
 	if (z > 1.f) {
 		sample.pdf = 0.f;
 		return;
 	}
 
-	float3 dir = math::disk_to_hemisphere_equidistant(disk);
+	const float3 dir = math::disk_to_hemisphere_equidistant(disk);
 
 	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;
@@ -141,8 +141,6 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 //	float cos_lon = std::cos(longitude);
 
 	sample.pdf = 1.f / (2.f * math::Pi /** std::cos(std::asin(r))*/);
-
-
 }
 
 float Canopy::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
@@ -152,9 +150,9 @@ float Canopy::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
 }
 
 float Canopy::uv_weight(float2 uv) const {
-	float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
+	const float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
-	float z = math::dot(disk, disk);
+	const float z = math::dot(disk, disk);
 	if (z > 1.f) {
 		return 0.f;
 	}
