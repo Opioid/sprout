@@ -4,6 +4,9 @@
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
 
+#include <iostream>
+
+
 namespace procedural { namespace sky {
 
 Model::Model() : dirty_(true) {
@@ -81,11 +84,14 @@ float3 Model::evaluate_sky(const float3& wi) const {
 	}
 	*/
 
+	const float sqrt_cos_theta = std::sqrt(wi_dot_z);
+
 	Spectrum radiance;
 	for (uint32_t i = 0; i < Num_bands; ++i) {
 		const float wl_center = Spectrum::wavelength_center(i);
 		radiance.set_bin(i, static_cast<float>(arhosekskymodel_radiance(skymodel_states_[i],
 																		/*theta,*/ wi_dot_z,
+																		sqrt_cos_theta,
 																		gamma, wi_dot_s,
 																		wl_center)));
 	}
@@ -100,8 +106,12 @@ float3 Model::evaluate_sky_and_sun(const float3& wi) const {
 	const float theta = std::acos(wi_dot_z);
 	const float gamma = std::acos(wi_dot_s);
 
+	const float sin_gamma = std::sqrt(1.f - wi_dot_s * wi_dot_s);
+
+	const float sqrt_cos_theta = std::sqrt(wi_dot_z);
+
 	ArHosekSkyModelSolarTemp temp;
-	arhosekskymodel_solar_radiance_temp(&temp, theta);
+	arhosekskymodel_solar_radiance_temp(&temp, theta, sin_gamma);
 
 	Spectrum radiance;
 	for (uint32_t i = 0; i < Num_bands; ++i) {
@@ -109,6 +119,7 @@ float3 Model::evaluate_sky_and_sun(const float3& wi) const {
 		radiance.set_bin(i, static_cast<float>(arhosekskymodel_solar_radiance(skymodel_states_[i],
 																			  &temp,
 																			  wi_dot_z,
+																			  sqrt_cos_theta,
 																			  gamma, wi_dot_s,
 																			  wl_center)));
 	}

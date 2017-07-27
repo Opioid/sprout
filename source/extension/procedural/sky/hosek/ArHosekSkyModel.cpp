@@ -324,11 +324,12 @@ hk_real pow1_5(hk_real x) {
 }
 
 hk_real ArHosekSkyModel_GetRadianceInternal(
-        ArHosekSkyModelConfiguration  configuration, 
-	//	hk_real                        theta,
-		hk_real                        cos_theta,
-		hk_real                        gamma,
-		hk_real						   cos_gamma
+		ArHosekSkyModelConfiguration configuration,
+	//	hk_real                      theta,
+		hk_real                      cos_theta,
+		hk_real                      sqrt_cos_theta,
+		hk_real                      gamma,
+		hk_real						 cos_gamma
         )
 {
 	const hk_real expM = std::exp(configuration[4] * gamma);
@@ -337,7 +338,7 @@ hk_real ArHosekSkyModel_GetRadianceInternal(
 //	const hk_real mieM = (hk_real(1.0) + std::cos(gamma)*std::cos(gamma)) / std::pow((hk_real(1.0) + configuration[8]*configuration[8] - hk_real(2.0)*configuration[8]*std::cos(gamma)), hk_real(1.5));
 	const hk_real mieM = (hk_real(1.0) + rayM) / pow1_5((hk_real(1.0) + configuration[8]*configuration[8] - hk_real(2.0)*configuration[8]*cos_gamma));
 //	const hk_real cos_theta = std::cos(theta);
-	const hk_real zenith = std::sqrt(cos_theta);
+	const hk_real zenith = sqrt_cos_theta; // std::sqrt(cos_theta);
 
 	return (hk_real(1.0) + configuration[0] * std::exp(configuration[1] / (cos_theta + hk_real(0.01)))) *
             (configuration[2] + configuration[3] * expM + configuration[5] * rayM + configuration[6] * mieM + configuration[7] * zenith);
@@ -569,6 +570,7 @@ hk_real arhosekskymodel_radiance(
         ArHosekSkyModelState  * state,
 	//	hk_real                  theta,
 		hk_real					 cos_theta,
+		hk_real                  sqrt_cos_theta,
 		hk_real                  gamma,
 		hk_real                  cos_gamma,
 		hk_real                  wavelength
@@ -587,6 +589,7 @@ hk_real arhosekskymodel_radiance(
                 state->configs[low_wl],
 		 //       theta,
 				cos_theta,
+				sqrt_cos_theta,
 				gamma,
 				cos_gamma
               )
@@ -606,6 +609,7 @@ hk_real arhosekskymodel_radiance(
                     state->configs[low_wl+1],
 			//        theta,
 					cos_theta,
+					sqrt_cos_theta,
 					gamma,
 					cos_gamma
                   )
@@ -700,6 +704,7 @@ hk_real arhosek_tristim_skymodel_radiance(
     ArHosekSkyModelState  * state,
 //	hk_real                  theta,
 	hk_real					 cos_theta,
+	hk_real                  sqrt_cos_theta,
 	hk_real                  gamma,
 	hk_real					 cos_gamma,
     int                     channel
@@ -710,6 +715,7 @@ hk_real arhosek_tristim_skymodel_radiance(
             state->configs[channel], 
 		//	theta,
 			cos_theta,
+			sqrt_cos_theta,
 			gamma,
 			cos_gamma
             ) 
@@ -725,7 +731,8 @@ hk_real pow3(hk_real x) {
 
 void arhosekskymodel_solar_radiance_temp(
 		ArHosekSkyModelSolarTemp* temp,
-		hk_real theta
+		hk_real theta,
+		hk_real sin_gamma
 		)
 {
 	hk_real elevation = ((hk_real(MATH_PI)/hk_real(2))-theta);
@@ -738,7 +745,10 @@ void arhosekskymodel_solar_radiance_temp(
 	const hk_real break_x =
 		pow3(((hk_real) pos / (hk_real) pieces)) * (hk_real(MATH_PI) * hk_real(0.5));
 
+	const hk_real sin_gamma_squared = sin_gamma * sin_gamma;
+
 	temp->elevation_minus_break_x = elevation - break_x;
+	temp->sin_gamma_squared = sin_gamma_squared;
 	temp->pos_plus_1 = pos + 1;
 }
 
@@ -768,8 +778,7 @@ hk_real arhosekskymodel_sr_internal(
 hk_real arhosekskymodel_solar_radiance_internal2(
         ArHosekSkyModelState  * state,
 		ArHosekSkyModelSolarTemp * temp,
-		hk_real                  wavelength,
-		hk_real                  gamma
+		hk_real                  wavelength
         )
 {
     assert(
@@ -843,8 +852,8 @@ hk_real arhosekskymodel_solar_radiance_internal2(
 
 //	const hk_real sol_rad_sin = std::sin(state->solar_radius);
 //	const hk_real ar2 = hk_real(1) / ( sol_rad_sin * sol_rad_sin );
-	const hk_real sin_gamma = std::sin(gamma);
-	hk_real sc2 = hk_real(1) - state->ar2 * sin_gamma * sin_gamma;
+//	const hk_real sin_gamma = std::sin(gamma);
+	hk_real sc2 = hk_real(1) - state->ar2 * temp->sin_gamma_squared;
     if (sc2 < 0.0 ) sc2 = 0.0;
 	hk_real sampleCosine = std::sqrt (sc2);
     
@@ -878,6 +887,7 @@ hk_real arhosekskymodel_solar_radiance(
 		ArHosekSkyModelState     * state,
 		ArHosekSkyModelSolarTemp * temp,
 		hk_real					 cos_theta,
+		hk_real					 sqrt_cos_theta,
 		hk_real                  gamma,
 		hk_real					 cos_gamma,
 		hk_real                  wavelength
@@ -887,14 +897,14 @@ hk_real arhosekskymodel_solar_radiance(
         arhosekskymodel_solar_radiance_internal2(
             state,
 			temp,
-            wavelength,
-            gamma
+			wavelength
             );
 
 	hk_real  inscattered_radiance =
         arhosekskymodel_radiance(
             state,
 			cos_theta,
+			sqrt_cos_theta,
             gamma,
 			cos_gamma,
             wavelength

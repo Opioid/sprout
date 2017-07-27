@@ -353,6 +353,7 @@ ArHosekSkyModelState;
 
 typedef struct ArHosekSkyModelSolarTemp
 {
+	hk_real sin_gamma_squared;
 	hk_real elevation_minus_break_x;
 	int     pos_plus_1;
 }
@@ -419,6 +420,7 @@ hk_real arhosekskymodel_radiance(
         ArHosekSkyModelState  * state,
 //		hk_real                  theta,
 		hk_real					 cos_theta,
+		hk_real                  sqrt_cos_theta,
 		hk_real                  gamma,
 		hk_real					 cos_gamma,
 		hk_real                  wavelength
@@ -445,6 +447,7 @@ hk_real arhosek_tristim_skymodel_radiance(
         ArHosekSkyModelState  * state,
 	//	hk_real                  theta,
 		hk_real					 cos_theta,
+		hk_real					 sqrt_cos_theta,
 		hk_real                  gamma,
 		hk_real					 cos_gamma,
         int                     channel
@@ -453,7 +456,8 @@ hk_real arhosek_tristim_skymodel_radiance(
 
 void arhosekskymodel_solar_radiance_temp(
 		ArHosekSkyModelSolarTemp* temp,
-		hk_real theta
+		hk_real theta,
+		hk_real gamma
 		);
 
 //   Delivers the complete function: sky + sun, including limb darkening.
@@ -464,6 +468,7 @@ hk_real arhosekskymodel_solar_radiance(
         ArHosekSkyModelState      * state,
 		ArHosekSkyModelSolarTemp  * temp,
 		hk_real						 cos_theta,
+		hk_real                      sqrt_cos_theta,
 		hk_real                      gamma,
 		hk_real						 cos_gamma,
 		hk_real                      wavelength
