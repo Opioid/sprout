@@ -595,8 +595,8 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 
 			return new Aces(hdr_max);
 		} else if ("Generic" == n.name) {
-			const float contrast = json::read_float(n.value, "contrast", 1.f);
-			const float shoulder = json::read_float(n.value, "shoulder", 1.f);
+			const float contrast = json::read_float(n.value, "contrast", 1.15f);
+			const float shoulder = json::read_float(n.value, "shoulder", 0.99f);
 			const float mid_in   = json::read_float(n.value, "mid_in",   0.18f);
 			const float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
 			const float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
