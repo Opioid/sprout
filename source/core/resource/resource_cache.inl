@@ -3,6 +3,8 @@
 #include "resource_cache.hpp"
 #include "file/file_system.hpp"
 #include "base/memory/variant_map.inl"
+#include "core/logging/logging.hpp"
+#include <sstream>
 
 namespace resource {
 
@@ -34,6 +36,12 @@ std::shared_ptr<T> Typed_cache<T>::load(const std::string& filename,
 	}
 
 	resources_[key] = resource;
+
+	if (logging::is_verbose()) {
+		std::stringstream stream;
+		stream << "Loaded " << provider_.name() << " resource \"" << filename << "\"";
+		logging::verbose(stream.str());
+	}
 
 	return resource;
 }

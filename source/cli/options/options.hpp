@@ -9,6 +9,7 @@ struct Options {
 	int threads;
 	bool progressive;
 	bool no_textures;
+	bool verbose;
 };
 
 namespace options {

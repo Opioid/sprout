@@ -18,6 +18,10 @@ public:
 		return type_id_;
 	}
 
+	static const std::string& name() {
+		return id_manager.name(type_id_);
+	}
+
 private:
 
 	static uint32_t type_id_;

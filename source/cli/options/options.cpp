@@ -14,7 +14,6 @@ void init(int argc, char* argv[]) {
 		TCLAP::UnlabeledValueArg<std::string> take_arg(
 					"take", "Path of the take file to render or json string describing the take.",
 					true, "", "file path/json string");
-
 		cmd.add(take_arg);
 
 		TCLAP::MultiArg<std::string> mount_args(
@@ -22,7 +21,6 @@ void init(int argc, char* argv[]) {
 					"Specifies a mount point for the data directory. "
 					"The default value is \"../data/\"",
 					false, "directory path");
-
 		cmd.add(mount_args);
 
 		TCLAP::ValueArg<int> threads_arg(
@@ -32,22 +30,25 @@ void init(int argc, char* argv[]) {
 					"-x creates a number of threads equal to the number of logical CPUs minus x. "
 					"The default value is 0.",
 					false, 0, "integer number");
-
 		cmd.add(threads_arg);
 
 		TCLAP::SwitchArg progressive_arg(
 					"p", "progressive",
 					"Starts sprout in progressive mode.",
 					false);
-
 		cmd.add(progressive_arg);
 
 		TCLAP::SwitchArg no_textures_arg(
 					"", "no-textures",
 					"Disables loading of all textures.",
 					false);
-
 		cmd.add(no_textures_arg);
+
+		TCLAP::SwitchArg verbose_arg(
+					"v", "verbose",
+					"Enables verbose logging.",
+					false);
+		cmd.add(verbose_arg);
 
 		cmd.parse(argc, argv);
 
@@ -56,6 +57,7 @@ void init(int argc, char* argv[]) {
 		options_.threads	 = threads_arg.getValue();
 		options_.progressive = progressive_arg.getValue();
 		options_.no_textures = no_textures_arg.getValue();
+		options_.verbose     = verbose_arg.getValue();
 	} catch (TCLAP::ArgException& e) {
 		std::stringstream stream;
 		stream << e.error() << " for arg " << e.argId();

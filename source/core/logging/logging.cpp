@@ -5,8 +5,9 @@
 namespace logging {
 
 Log* log = nullptr;
+bool log_verbose = false;
 
-void init(Type type) {
+void init(Type type, bool verbose) {
 	switch (type) {
 	case Type::Null:
 		log = new Null;
@@ -16,6 +17,8 @@ void init(Type type) {
 		log = new Std_out;
 		break;
 	}
+
+	log_verbose = verbose;
 }
 
 void release() {
@@ -33,6 +36,16 @@ void warning(const std::string& text) {
 
 void error(const std::string& text) {
 	log->post(Log::Type::Error, text);
+}
+
+void verbose(const std::string& text) {
+	if (log_verbose) {
+		log->post(Log::Type::Verbose, text);
+	}
+}
+
+bool is_verbose() {
+	return log_verbose;
 }
 
 }

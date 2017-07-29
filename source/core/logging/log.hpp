@@ -5,12 +5,14 @@
 namespace logging {
 
 class Log {
+
 public:
 
 	enum class Type {
 		Info,
 		Warning,
-		Error
+		Error,
+		Verbose
 	};
 
 	virtual ~Log() {}

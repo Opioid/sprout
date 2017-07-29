@@ -50,12 +50,11 @@ int main(int argc, char* argv[]) {
 //	testing::spectrum();
 //	return 1;
 
-	logging::init(logging::Type::Std_out);
-	logging::info("Welcome to sprout (" + platform::build() +  ")!");
-
 	options::init(argc, argv);
-
 	const auto& args = options::options();
+
+	logging::init(logging::Type::Std_out, args.verbose);
+	logging::info("Welcome to sprout (" + platform::build() +  ")!");
 
 	file::System file_system;
 
