@@ -18,6 +18,7 @@
 #include "bvh/triangle_bvh_indexed_data.inl"
 #include "file/file.hpp"
 #include "file/file_system.hpp"
+#include "logging/logging.hpp"
 #include "base/json/json.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
@@ -125,6 +126,8 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 			}
 
 			build_bvh(*mesh, triangles, vertices, bvh_preset, manager.thread_pool());
+
+			logging::verbose("Finished asynchronously building triangle mesh BVH.");
 		}
 	);
 
