@@ -65,10 +65,10 @@ Implement in Fourier domain to increase performance
 
 ** Shapes [0/2]
 
-*** TODO Adding/improving analytical shapes [0/2]
-- [-] Canopy/Half-sphere
+*** TODO Adding/improving analytical shapes [1/2]
+- [X] Canopy/Half-sphere
   - [X] Intersection
-  - [ ] UV sampling
+  - [X] UV sampling (works all of a sudden?)
 - [ ] Cylinder
 
 *** TODO Consider visibility settings per part
@@ -84,10 +84,10 @@ Implement in Fourier domain to increase performance
 
 There is a very simple mechanism for asynchronous BVH construction now. 
 It seems to work reasonably well in cases where BVH construction is followed by lengthy reads from disk.
-In those cases the time required for BVH construction can be hidden to a certain degree.
+A typical example is when texture data is being loaded during BVH construction.
 
 Proof of concept for binary files showed good improvements in loading time. 
-File size on disk generally seems to be higher, though.
+File size on disk generally seems to be higher, though (somewhat surprisingly for me).
 
 ** Build system [0/2]
 
