@@ -97,7 +97,6 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	const float2 disk = math::hemisphere_to_disk_equidistant(xyz);
 	sample.uv[0] = 0.5f * disk[0] + 0.5f;
 	sample.uv[1] = 0.5f * disk[1] + 0.5f;
-
 	sample.t   = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
 
@@ -126,21 +125,7 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	sample.wi = math::transform_vector(dir, transformation.rotation);
 	sample.uv = uv;
 	sample.t  = Ray_max_t;
-
-
-
-//	float r = std::sqrt(disk.x * disk.x + disk.y * disk.y);
-
-//	// Equidistant projection
-//	float longitude = std::atan2(-uv.y, uv.x);
-//	float colatitude = r * math::Pi_div_2;
-
-//	float sin_col = std::sin(colatitude);
-//	float cos_col = std::cos(colatitude);
-//	float sin_lon = std::sin(longitude);
-//	float cos_lon = std::cos(longitude);
-
-	sample.pdf = 1.f / (2.f * math::Pi /** std::cos(std::asin(r))*/);
+	sample.pdf = 1.f / (2.f * math::Pi);
 }
 
 float Canopy::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
@@ -156,20 +141,6 @@ float Canopy::uv_weight(float2 uv) const {
 	if (z > 1.f) {
 		return 0.f;
 	}
-
-
-//	float r = std::sqrt(disk.x * disk.x + disk.y * disk.y);
-
-//	// Equidistant projection
-//	float longitude = std::atan2(-uv.y, uv.x);
-//	float colatitude = r * math::Pi_div_2;
-
-//	float sin_col = std::sin(colatitude);
-//	float cos_col = std::cos(colatitude);
-//	float sin_lon = std::sin(longitude);
-//	float cos_lon = std::cos(longitude);
-
-//	return ( std::cos(std::asin(r))  );
 
 	return 1.f;
 }

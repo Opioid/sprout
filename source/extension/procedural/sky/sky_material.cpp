@@ -74,7 +74,7 @@ const material::Sample& Sky_baked_material::sample(const float3& wo, const Rende
 
 	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-	float3 radiance = emission_map_.sample_3(sampler, rs.uv);
+	const float3 radiance = emission_map_.sample_3(sampler, rs.uv);
 	sample.layer_.set(radiance);
 
 	return sample;
@@ -116,15 +116,13 @@ void Sky_baked_material::prepare_sampling(const shape::Shape& shape, uint32_t /*
 		return;
 	}
 
-//	std::cout << "Let's bake sky stuff" << std::endl;
-
 	const int2 d(256, 256);
 
 	const image::Image::Description description(image::Image::Type::Float3, d);
 	auto cache = std::make_shared<image::Float3>(description);
 
-	for (int y = 0; y < d[1]; ++y) {
-		for (int x = 0; x < d[0]; ++x) {
+	for (int32_t y = 0; y < d[1]; ++y) {
+		for (int32_t x = 0; x < d[0]; ++x) {
 			const float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
 							(static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
 
@@ -161,12 +159,12 @@ void Sky_baked_material::prepare_sampling(const shape::Shape& shape, uint32_t /*
 
 		for (int32_t y = 0, l = 0; y < d[1]; ++y) {
 			for (int32_t x = 0; x < d[0]; ++x, ++l) {
-				float3 radiance = float3(cache->at(x, y));
+				const float3 radiance = float3(cache->at(x, y));
 
-				float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
-						  (static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
+				const float2 uv((static_cast<float>(x) + 0.5f) / static_cast<float>(d[0]),
+								(static_cast<float>(y) + 0.5f) / static_cast<float>(d[1]));
 
-				float weight = shape.uv_weight(uv);
+				const float weight = shape.uv_weight(uv);
 
 				average_radiance += weight * radiance;
 
@@ -196,9 +194,9 @@ size_t Sky_baked_material::num_bytes() const {
 
 float3 Sky_baked_material::unclipped_canopy_mapping(const Transformation& transformation,
 													float2 uv) {
-	float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
+	const float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
 
-	float3 dir = math::disk_to_hemisphere_equidistant(disk);
+	const float3 dir = math::disk_to_hemisphere_equidistant(disk);
 
 	return math::transform_vector(dir, transformation.rotation);
 }

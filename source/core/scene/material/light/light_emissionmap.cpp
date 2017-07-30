@@ -27,7 +27,7 @@ const material::Sample& Emissionmap::sample(const float3& wo, const Renderstate&
 
 	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-	float3 radiance = emission_map_.sample_3(sampler, rs.uv);
+	const float3 radiance = emission_map_.sample_3(sampler, rs.uv);
 	sample.layer_.set(emission_factor_ * radiance);
 
 	return sample;
@@ -48,7 +48,7 @@ bool Emissionmap::has_emission_map() const {
 }
 
 float2 Emissionmap::radiance_sample(float2 r2, float& pdf) const {
-	float2 uv = distribution_.sample_continuous(r2, pdf);
+	const float2 uv = distribution_.sample_continuous(r2, pdf);
 
 	pdf *= total_weight_;
 
