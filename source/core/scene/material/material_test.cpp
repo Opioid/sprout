@@ -50,6 +50,7 @@ bool check(const float3& result,
 
 bool check(const bxdf::Result& result, const float3& wo, const Sample::Layer& layer) {
 	if (!std::isfinite(result.pdf)
+	||  !math::all_finite(result.wi)
 	||  !math::all_finite(result.reflection)) {
 		std::cout << "wi: "; print_vector(result.wi);
 		std::cout << "wo: "; print_vector(wo);

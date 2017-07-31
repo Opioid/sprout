@@ -99,6 +99,20 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 	return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer, fresnel, fresnel_result, pdf);
 }
 
+static inline float pdfly(float3 wi, float3 wh, float alphauv) {
+	float dot_wi_wh = math::dot(wi, wh);
+
+	float3 wh_inv_scaled = wh / alphauv;
+	float dot_wh_wh_inv_scaled = math::dot(wh_inv_scaled, wh_inv_scaled);
+	float3 wi_scaled = alphauv * wi;
+	float  dot_wi_wi_scaled = math::dot(wi_scaled, wi_scaled);
+	return dot_wi_wh / ((0.5f * math::Pi)*alphauv* dot_wh_wh_inv_scaled * dot_wh_wh_inv_scaled * (wi[2]+sqrt(dot_wi_wi_scaled)));
+
+};
+
+
+
+
 template<typename Layer, typename Fresnel>
 float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
 							 const Layer& layer, const Fresnel& fresnel,
@@ -127,6 +141,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	return reflect(wo, n_dot_wo, layer, fresnel, sampler, fresnel_result, result);
 }
 
+
 template<typename Layer, typename Fresnel>
 float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler,
@@ -149,8 +164,8 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	float cos_phi;
 	math::sincos(phi, sin_phi, cos_phi);
 
-	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	const float3 h = math::normalize(layer.tangent_to_world(is));
+	const float3 lh = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+	const float3 h = math::normalize(layer.tangent_to_world(lh));
 
 	const float wo_dot_h = clamp_dot(wo, h);
 
@@ -175,6 +190,80 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 	return n_dot_wi;
 }
+
+/*
+template<typename Layer, typename Fresnel>
+float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
+						 const Fresnel& fresnel, sampler::Sampler& sampler,
+						 float3& fresnel_result, bxdf::Result& result) {
+	// Roughness zero will always have zero specular term (or worse NaN)
+	// For reflections we could do a perfect mirror,
+	// but the decision is to always use a minimum roughness instead
+	SOFT_ASSERT(layer.a2_ >= Min_a2);
+
+	const float2 xi = sampler.generate_sample_2D();
+
+	const float a2 = layer.a2_;
+	const float aa  = std::sqrt(a2);
+
+
+
+	const float3 lwo = layer.world_to_tangent(wo);
+
+
+
+	float U1 = xi[0];
+	float U2 = xi[1];
+	// stretch view
+	float3 V = math::normalize(float3(aa * lwo[0], aa * lwo[1], lwo[2]));
+	// orthonormal basis
+	float3 T1 = (V[0] < 0.9999) ? math::normalize(math::cross(V, float3(0,0,1))) : float3(1,0,0);
+	float3 T2 = math::cross(T1, V);
+	// sample point with polar coordinates (r, phi)
+	float a = 1.0 / (1.0 + V[2]);
+	float r = sqrt(U1);
+	float phi = (U2<a) ? U2/a * math::Pi : math::Pi + (U2-a)/(1.0-a) * math::Pi;
+	float P1 = r*cos(phi);
+	float P2 = r*sin(phi)*((U2<a) ? 1.0 : V[2]);
+	// compute normal
+	float3 N = P1*T1 + P2*T2 + sqrt(std::max(0.0, 1.0 - P1*P1 - P2*P2))*V;
+	// unstretch
+
+	N = math::normalize(float3(aa*N[0], aa*N[1], std::max(0.f, N[2])));
+
+	float n_dot_h = N[2];
+
+	float3 h = layer.tangent_to_world(N);
+
+	float wo_dot_h = math::dot(h, wo);
+
+	const float3 wi = math::normalize(2.f * wo_dot_h * h - wo);
+
+	const float n_dot_wi = layer.clamp_n_dot(wi);
+
+//	float n_dot_h = layer.clamp_n_dot(h);
+
+
+	const float d = distribution_isotropic(n_dot_h, a2);
+	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
+	const float3 f = fresnel(wo_dot_h);
+
+	fresnel_result = f;
+
+	result.reflection = d * g * f;
+	result.wi = wi;
+	result.h = h;
+	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+	result.pdf = pdfly(wi, h, a2);
+	result.h_dot_wi = wo_dot_h;
+	result.type.clear_set(bxdf::Type::Glossy_reflection);
+
+	SOFT_ASSERT(testing::check(result, wo, layer));
+
+
+	return n_dot_wi;
+}
+*/
 
 template<typename Layer, typename Fresnel>
 float3 Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
@@ -226,8 +315,8 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 	float cos_phi;
 	math::sincos(phi, sin_phi, cos_phi);
 
-	const float3 is = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
-	const float3 h = math::normalize(layer.tangent_to_world(is));
+	const float3 lh = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
+	const float3 h = math::normalize(layer.tangent_to_world(lh));
 
 	const float wo_dot_h = clamp_dot(wo, h);
 

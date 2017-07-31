@@ -89,7 +89,7 @@ void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Result& result)
 
 	const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
 	const float n_dot_wi = ggx::Anisotropic::reflect(wo_, n_dot_wo, layer_, conductor,
-											   sampler, result);
+													 sampler, result);
 	result.reflection *= n_dot_wi;
 }
 

@@ -30,6 +30,8 @@ public:
 
 		float3 tangent_to_world(const float3& v) const;
 
+		float3 world_to_tangent(const float3& v) const;
+
 		float3 t_;
 		float3 b_;
 		float3 n_;
