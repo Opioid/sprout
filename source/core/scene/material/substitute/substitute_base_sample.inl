@@ -158,7 +158,7 @@ float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3
 	pdf = 0.5f * (d_pdf + ggx_pdf);
 
 	// Apparantly weight by (1 - fresnel) is not correct!
-	// So here we assume Diffuse has the proper fresnel built in - which Diseney does (?)
+	// So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
 
 	return n_dot_wi * (d_reflection + ggx_reflection);
 }

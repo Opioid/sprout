@@ -222,6 +222,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	// orthonormal basis
 	float3 T1 = (V[0] < 0.9999) ? math::normalize(math::cross(V, float3(0,0,1))) : float3(1,0,0);
 	float3 T2 = math::cross(T1, V);
+
 	// sample point with polar coordinates (r, phi)
 	float a = 1.0 / (1.0 + V[2]);
 	float r = sqrt(U1);
@@ -231,7 +232,6 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	// compute normal
 	float3 N = P1*T1 + P2*T2 + sqrt(std::max(0.0, 1.0 - P1*P1 - P2*P2))*V;
 	// unstretch
-
 	N = math::normalize(float3(aa*N[0], aa*N[1], std::max(0.f, N[2])));
 
 	float n_dot_h = N[2];
@@ -244,9 +244,6 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 
-//	float n_dot_h = layer.clamp_n_dot(h);
-
-
 	const float d = distribution_isotropic(n_dot_h, a2);
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
 	const float3 f = fresnel(wo_dot_h);
@@ -257,7 +254,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	result.wi = wi;
 	result.h = h;
 	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-	result.pdf = pdfly(layer.world_to_tangent(wi), N, aa);
+//	result.pdf = pdfly(layer.world_to_tangent(wi), N, aa);
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
