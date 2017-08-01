@@ -99,12 +99,15 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 	return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer, fresnel, fresnel_result, pdf);
 }
 
-static inline float pdfly(float3 wi, float3 wh, float alphauv) {
+static inline float pdfly(float3 wi, float3 wh, float aa) {
+	float3 alphauv1(aa, aa, 1.f);
+	float alphauv = aa * aa;
+
 	float dot_wi_wh = math::dot(wi, wh);
 
-	float3 wh_inv_scaled = wh / alphauv;
+	float3 wh_inv_scaled = wh / alphauv1;
 	float dot_wh_wh_inv_scaled = math::dot(wh_inv_scaled, wh_inv_scaled);
-	float3 wi_scaled = alphauv * wi;
+	float3 wi_scaled = alphauv1 * wi;
 	float  dot_wi_wi_scaled = math::dot(wi_scaled, wi_scaled);
 	return dot_wi_wh / ((0.5f * math::Pi)*alphauv* dot_wh_wh_inv_scaled * dot_wh_wh_inv_scaled * (wi[2]+sqrt(dot_wi_wi_scaled)));
 
@@ -254,7 +257,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	result.wi = wi;
 	result.h = h;
 	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-	result.pdf = pdfly(wi, h, a2);
+	result.pdf = pdfly(layer.world_to_tangent(wi), N, aa);
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
