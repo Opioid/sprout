@@ -158,7 +158,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	const float3 lh = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalize(layer.tangent_to_world(lh));
 
-	const float wo_dot_h = clamp_dot(wo, h);
+	const float wo_dot_h = clamp_abs_dot(wo, h);
 
 	const float3 wi = math::normalize(2.f * wo_dot_h * h - wo);
 
