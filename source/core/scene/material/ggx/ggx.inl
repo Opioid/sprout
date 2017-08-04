@@ -12,7 +12,7 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-#define EXPERIMENTAL_GGX
+//#define EXPERIMENTAL_GGX
 
 namespace scene { namespace material { namespace ggx {
 
@@ -203,7 +203,7 @@ inline float distribution_visible(float n_dot_wi, float n_dot_wo, float wi_dot_h
 //	 float g1 = 1.f / (1.f + lambda_l);
 
 
-	return (g1 * std::abs(wi_dot_h) * distribution_isotropic(n_dot_h, a2)) / std::abs(n_dot_wo);
+	return g1 * std::abs(wi_dot_h) * distribution_isotropic(n_dot_h, a2) / std::abs(n_dot_wo);
 }
 
 template<typename Layer, typename Fresnel>
