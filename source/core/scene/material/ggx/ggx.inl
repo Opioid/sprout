@@ -12,7 +12,7 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-//#define EXPERIMENTAL_GGX
+// #define EXPERIMENTAL_GGX
 
 namespace scene { namespace material { namespace ggx {
 
@@ -102,6 +102,28 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 }
 
 
+// https://hal.archives-ouvertes.fr/hal-01509746/document
+
+// https://hal.inria.fr/hal-00996995v2/document
+
+inline float distribution_visible(float n_dot_wi, float n_dot_wo, float wi_dot_h,
+								  float n_dot_h, float a2) {
+	float g1 = G_ggx(n_dot_wo, a2);
+
+	float NdotL2 = n_dot_wi * n_dot_wi;
+	float NdotV2 = n_dot_wo * n_dot_wo;
+
+
+//	 float lambda_v = ( -1.f + std::sqrt ( a2 * (1.f - NdotL2 ) / NdotL2 + 1.f)) * 0.5f;
+//	 float lambda_l = ( -1.f + std::sqrt ( a2 * (1.f - NdotV2 ) / NdotV2 + 1.f)) * 0.5f;
+//	 float g1 = 1.f / (1.f + lambda_v + lambda_l );
+
+//	 float g1 = 0.5f / (lambda_v);
+
+
+	return g1 * wi_dot_h * distribution_isotropic(n_dot_h, a2) / n_dot_wo;
+}
+
 
 template<typename Layer, typename Fresnel>
 float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
@@ -116,7 +138,11 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 	const float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
+#ifndef EXPERIMENTAL_GGX
 	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+#else
+	pdf = distribution_visible(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, a2) / (4.f * wo_dot_h);
+#endif
 	const float3 result = d * g * f;
 
 	SOFT_ASSERT(testing::check(result, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
@@ -158,7 +184,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	const float3 lh = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalize(layer.tangent_to_world(lh));
 
-	const float wo_dot_h = clamp_abs_dot(wo, h);
+	const float wo_dot_h = clamp_dot(wo, h);
 
 	const float3 wi = math::normalize(2.f * wo_dot_h * h - wo);
 
@@ -183,28 +209,6 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 }
 
 #else
-
-// https://hal.archives-ouvertes.fr/hal-01509746/document
-
-// https://hal.inria.fr/hal-00996995v2/document
-
-inline float distribution_visible(float n_dot_wi, float n_dot_wo, float wi_dot_h,
-								  float n_dot_h, float a2) {
-	float g1 = G_ggx(n_dot_wo, a2);
-
-//	float NdotL2 = n_dot_wi * n_dot_wi;
-//	float NdotV2 = n_dot_wo * n_dot_wo;
-
-
-//	 float lambda_v = ( -1.f + std::sqrt ( a2 * (1.f - NdotL2 ) / NdotL2 + 1.f)) * 0.5f;
-//	 float lambda_l = ( -1.f + std::sqrt ( a2 * (1.f - NdotV2 ) / NdotV2 + 1.f)) * 0.5f;
-//	 float g1 = 1.f / (1.f + lambda_v + lambda_l );
-
-//	 float g1 = 1.f / (1.f + lambda_l);
-
-
-	return g1 * std::abs(wi_dot_h) * distribution_isotropic(n_dot_h, a2) / std::abs(n_dot_wo);
-}
 
 template<typename Layer, typename Fresnel>
 float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
@@ -257,11 +261,11 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 
 
-	float wo_dot_h = clamp_dot(wo, h);
+	float wo_dot_h = clamp_abs_dot(wo, h);
 
 	const float3 wi = math::normalize(2.f * wo_dot_h * h - wo);
 
-	const float n_dot_wi = layer.clamp_n_dot(wi);
+	const float n_dot_wi = layer.clamp_abs_n_dot(wi);
 
 	const float d = distribution_isotropic(n_dot_h, a2);
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, a2);
