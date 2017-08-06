@@ -20,7 +20,8 @@ public:
 		void set(const float3& ior, const float3& absorption, float roughness);
 		float3 ior_;
 		float3 absorption_;
-		float a2_;
+		float alpha_;
+		float alpha2_;
 	};
 
 	Layer layer_;
@@ -44,7 +45,7 @@ public:
 		float3 ior_;
 		float3 absorption_;
 		float2 a_;
-		float2 a2_;
+		float2 alpha2_;
 		float axy_;
 	};
 

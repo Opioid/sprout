@@ -12,10 +12,11 @@ struct Coating_base {
 };
 
 struct Clearcoat : public Coating_base {
-	void set(float f0, float a2);
+	void set(float f0, float alpha, float alpha2);
 
 	template<typename Layer>
-	float3 evaluate(const float3& wi, const float3& wo, const float3& h, float wo_dot_h, float internal_ior,
+	float3 evaluate(const float3& wi, const float3& wo, const float3& h,
+					float wo_dot_h, float internal_ior,
 					const Layer& layer, float3& attenuation, float& pdf) const;
 
 	template<typename Layer>
@@ -24,14 +25,16 @@ struct Clearcoat : public Coating_base {
 				float3& attenuation, bxdf::Result& result) const;
 
 	float f0_;
-	float a2_;
+	float alpha_;
+	float alpha2_;
 };
 
 struct Thinfilm : public Coating_base {
-	void set(float ior, float a2, float thickness);
+	void set(float ior, float alpha, float alpha2, float thickness);
 
 	template<typename Layer>
-	float3 evaluate(const float3& wi, const float3& wo, const float3& h, float wo_dot_h, float internal_ior,
+	float3 evaluate(const float3& wi, const float3& wo, const float3& h,
+					float wo_dot_h, float internal_ior,
 					const Layer& layer, float3& attenuation, float& pdf) const;
 
 	template<typename Layer>
@@ -40,7 +43,8 @@ struct Thinfilm : public Coating_base {
 				float3& attenuation, bxdf::Result& result) const;
 
 	float ior_;
-	float a2_;
+	float alpha_;
+	float alpha2_;
 	float thickness_;
 };
 

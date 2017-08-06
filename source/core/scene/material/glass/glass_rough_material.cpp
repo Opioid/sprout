@@ -28,16 +28,16 @@ const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate&
 		sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
 
-	float a2;
+	float alpha;
 	if (roughness_map_.is_valid()) {
 		const float roughness = ggx::map_roughness(roughness_map_.sample_1(sampler, rs.uv));
-		a2 = math::pow4(roughness);
+		alpha = roughness * roughness;
 	} else {
-		a2 = a2_;
+		alpha = alpha_;
 	}
 
 	sample.layer_.set(refraction_color_, absorption_color_,
-					  attenuation_distance_, ior_, rs.ior, a2);
+					  attenuation_distance_, ior_, rs.ior, alpha);
 
 	return sample;
 }
@@ -71,7 +71,8 @@ void Glass_rough::set_ior(float ior) {
 }
 
 void Glass_rough::set_roughness(float roughness) {
-	a2_ = math::pow4(ggx::clamp_roughness(roughness));
+	roughness = ggx::clamp_roughness(roughness);
+	alpha_ = roughness * roughness;
 }
 
 }}}

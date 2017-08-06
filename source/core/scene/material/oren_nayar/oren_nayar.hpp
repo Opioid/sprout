@@ -26,7 +26,7 @@ public:
 
 private:
 
-	static float f(const float3& wi, const float3& wo, float n_dot_wi, float n_dot_wo, float a2);
+	static float f(const float3& wi, const float3& wo, float n_dot_wi, float n_dot_wo, float alpha2);
 };
 
 }}}

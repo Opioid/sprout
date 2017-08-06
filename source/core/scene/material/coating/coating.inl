@@ -12,9 +12,10 @@ inline void Coating_base::set_color_and_weight(const float3& color, float weight
 	weight_ = weight;
 }
 
-inline void Clearcoat::set(float f0, float a2) {
+inline void Clearcoat::set(float f0, float alpha, float alpha2) {
 	f0_ = f0;
-	a2_ = a2;
+	alpha_ = alpha;
+	alpha2_ = alpha2;
 }
 
 template<typename Layer>
@@ -52,9 +53,10 @@ void Clearcoat::sample(const float3& wo, float /*internal_ior*/,
 	result.reflection *= n_dot_wi;
 }
 
-inline void Thinfilm::set(float ior, float a2, float thickness) {
+inline void Thinfilm::set(float ior, float alpha, float alpha2, float thickness) {
 	ior_ = ior;
-	a2_  = a2;
+	alpha_ = alpha;
+	alpha2_  = alpha2;
 	thickness_ = thickness;
 }
 

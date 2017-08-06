@@ -62,7 +62,8 @@ public:
 
 		float ior_;
 		float roughness_;
-		float a2_;
+		float alpha_;
+		float alpha2_;
 		float metallic_;
 	};
 

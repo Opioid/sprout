@@ -133,7 +133,9 @@ void Sample_base<Diffuse>::Layer::set(const float3& color, const float3& radianc
 	emission_ = radiance;
 	ior_ = ior;
 	roughness_ = roughness;
-	a2_ = math::pow4(roughness);
+	const float alpha = roughness * roughness;
+	alpha_ = alpha;
+	alpha2_ = alpha * alpha;
 	metallic_ = metallic;
 }
 

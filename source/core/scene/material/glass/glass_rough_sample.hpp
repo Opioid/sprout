@@ -28,7 +28,7 @@ public:
 
 	struct Layer : public material::Sample::Layer {
 		void set(const float3& refraction_color, const float3& absorption_color,
-				 float attenuation_distance, float ior, float ior_outside, float a2);
+				 float attenuation_distance, float ior, float ior_outside, float alpha);
 
 		float3 color_;
 		float3 absorption_coeffecient_;
@@ -36,7 +36,8 @@ public:
 		float ior_o_;
 		float eta_i_;
 		float eta_t_;
-		float a2_;
+		float alpha_;
+		float alpha2_;
 	};
 
 	Layer layer_;

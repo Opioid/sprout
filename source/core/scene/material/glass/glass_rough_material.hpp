@@ -33,7 +33,7 @@ protected:
 	float3 absorption_color_;
 	float attenuation_distance_;
 	float ior_;
-	float a2_;
+	float alpha_;
 };
 
 }}}

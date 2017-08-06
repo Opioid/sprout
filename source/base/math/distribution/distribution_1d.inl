@@ -285,7 +285,14 @@ inline float Distribution_implicit_pdf_lut_1D::sample_continuous(float r, float&
 	const uint32_t offset = sample_discrete(r);
 
 	const float c = cdf_[offset + 1];
-	const float t = (c - r) / (c - cdf_[offset]);
+	const float v = c - cdf_[offset];
+
+	if (0.f == v) {
+		pdf = 0.f;
+		return 0.f;
+	}
+
+	const float t = (c - r) / v;
 
 	const float result = (static_cast<float>(offset) + t) / size_;
 

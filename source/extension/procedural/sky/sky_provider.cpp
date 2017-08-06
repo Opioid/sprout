@@ -78,11 +78,11 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 	sky_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	sky_prop->set_open(false);
 
-	if (bake) {
-		scene.create_prop_image_light(sky_prop, 0);
-	} else {
+//	if (bake) {
+//		scene.create_prop_image_light(sky_prop, 0);
+//	} else {
 		scene.create_prop_light(sky_prop, 0);
-	}
+//	}
 
 	sun_prop->set_visibility(visible_in_camera, visible_in_reflection, visible_in_shadow);
 	sun_prop->set_open(false);

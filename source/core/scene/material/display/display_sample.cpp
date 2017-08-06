@@ -58,7 +58,9 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 void Sample::Layer::set(const float3& radiance, float f0, float roughness) {
 	emission_ = radiance;
 	f0_ = float3(f0);
-	a2_ = math::pow4(roughness);
+	const float alpha = roughness * roughness;
+	alpha_ = alpha;
+	alpha2_ = alpha * alpha;
 }
 
 }}}

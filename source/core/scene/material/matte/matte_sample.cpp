@@ -49,7 +49,7 @@ float Sample::ior() const {
 void Sample::Layer::set(const float3& color) {
 	diffuse_color_ = color;
 	roughness_ = 1.f;
-	a2_ = math::pow4(roughness_);
+	alpha2_ = math::pow4(roughness_);
 }
 
 }}}

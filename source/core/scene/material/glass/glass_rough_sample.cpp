@@ -78,7 +78,7 @@ bool Sample_rough::is_transmissive() const {
 
 void Sample_rough::Layer::set(const float3& refraction_color, const float3& absorption_color,
 							  float attenuation_distance, float ior,
-							  float ior_outside, float a2) {
+							  float ior_outside, float alpha) {
 	color_ = refraction_color;
 	absorption_coeffecient_ = material::absorption_coefficient(absorption_color,
 															   attenuation_distance);
@@ -86,7 +86,8 @@ void Sample_rough::Layer::set(const float3& refraction_color, const float3& abso
 	ior_o_ = ior_outside;
 	eta_i_ = ior_outside / ior;
 	eta_t_ = ior / ior_outside;
-	a2_ = a2;
+	alpha_ = alpha;
+	alpha2_ = alpha * alpha;
 }
 
 float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,

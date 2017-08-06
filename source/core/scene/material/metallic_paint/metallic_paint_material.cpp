@@ -41,7 +41,7 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 		sample.flakes_.set_tangent_frame(rs.t, rs.b, rs.n);
 	}
 
-	sample.base_.set(color_a_, color_b_, a2_);
+	sample.base_.set(color_a_, color_b_, alpha_, alpha2_);
 
 	float flakes_weight;
 	if (flakes_mask_.is_valid()) {
@@ -52,11 +52,12 @@ const material::Sample& Material::sample(const float3& wo, const Renderstate& rs
 
 //	sample.flakes_.weight = 0.f;// - math::dot(sample.base_.n, sample.flakes_.n);
 
-	sample.flakes_.set(flakes_ior_, flakes_absorption_, flakes_a2_, flakes_weight);
+	sample.flakes_.set(flakes_ior_, flakes_absorption_,
+					   flakes_alpha_, flakes_alpha2_, flakes_weight);
 
 	sample.coating_.set_color_and_weight(coating_.color_, coating_.weight_);
 
-	sample.coating_.set(coating_.f0_, coating_.a2_);
+	sample.coating_.set(coating_.f0_, coating_.alpha_, coating_.alpha2_);
 
 	return sample;
 }
@@ -71,9 +72,11 @@ void Material::set_color(const float3& a, const float3& b) {
 }
 
 void Material::set_roughness(float roughness) {
-	a2_ = math::pow4(roughness);
+	roughness = ggx::clamp_roughness(roughness);
+	const float alpha = roughness * roughness;
+	alpha_  = alpha;
+	alpha2_ = alpha * alpha;
 }
-
 
 void Material::set_flakes_mask(const Texture_adapter& mask) {
 	flakes_mask_ = mask;
@@ -92,7 +95,9 @@ void Material::set_flakes_absorption(const float3& absorption) {
 }
 
 void Material::set_flakes_roughness(float roughness) {
-	flakes_a2_ = math::pow4(roughness);
+	const float alpha = roughness * roughness;
+	flakes_alpha_  = alpha;
+	flakes_alpha2_ = alpha * alpha;
 }
 
 void Material::set_coating_weight(float weight) {
@@ -105,7 +110,9 @@ void Material::set_coating_color(const float3& color) {
 
 void Material::set_clearcoat(float ior, float roughness) {
 	coating_.f0_ = fresnel::schlick_f0(1.f, ior);
-	coating_.a2_ = math::pow4(roughness);
+	const float alpha = roughness * roughness;
+	coating_.alpha_  = alpha;
+	coating_.alpha2_ = alpha * alpha;
 }
 
 }}}

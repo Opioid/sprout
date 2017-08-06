@@ -66,7 +66,9 @@ inline float2 Distribution_2D::sample_continuous(float2 r2, float& pdf) const {
 	float v_pdf;
 	result[1] = marginal_.sample_continuous(r2[1], v_pdf);
 
-	uint32_t c = std::min(static_cast<uint32_t>(result[1] * conditional_size_), conditional_max_);
+	const uint32_t i = static_cast<uint32_t>(result[1] * conditional_size_);
+	const uint32_t c = std::min(i, conditional_max_);
+
 	float u_pdf;
 	result[0] = conditional_[c].sample_continuous(r2[0], u_pdf);
 

@@ -18,7 +18,7 @@ public:
 	virtual float ior() const override final;
 
 	struct Base_layer : material::Sample::Layer {
-		void set(const float3& color_a, const float3& color_b, float a2);
+		void set(const float3& color_a, const float3& color_b, float alpha, float alpha2);
 
 		float3 evaluate(const float3& wi, const float3& wo, const float3& h,
 						float wo_dot_h, float& pdf) const;
@@ -28,11 +28,13 @@ public:
 		float3 color_a_;
 		float3 color_b_;
 
-		float a2_;
+		float alpha_;
+		float alpha2_;
 	};
 
 	struct Flakes_layer : material::Sample::Layer {
-		void set(const float3& ior, const float3& absorption, float a2, float weight);
+		void set(const float3& ior, const float3& absorption,
+				 float alpha, float alpha2, float weight);
 
 		float3 evaluate(const float3& wi, const float3& wo, const float3& h,
 						float wo_dot_h, float3& fresnel_result, float& pdf) const;
@@ -43,7 +45,8 @@ public:
 		float3 ior_;
 		float3 absorption_;
 
-		float a2_;
+		float alpha_;
+		float alpha2_;
 		float weight_;
 	};
 
@@ -55,4 +58,3 @@ public:
 };
 
 }}}
-

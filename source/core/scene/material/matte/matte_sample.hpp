@@ -21,7 +21,7 @@ public:
 
 		float3 diffuse_color_;
 		float  roughness_;
-		float  a2_;
+		float  alpha2_;
 	};
 
 	Layer layer_;

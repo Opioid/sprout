@@ -106,10 +106,12 @@ float Sample::ior() const {
 	return 1.5f;
 }
 
-void Sample::Base_layer::set(const float3& color_a, const float3& color_b, float a2) {
+void Sample::Base_layer::set(const float3& color_a, const float3& color_b,
+							 float alpha, float alpha2) {
 	color_a_ = color_a;
 	color_b_ = color_b;
-	a2_ = a2;
+	alpha_  = alpha;
+	alpha2_ = alpha2;
 }
 
 float3 Sample::Base_layer::evaluate(const float3& wi, const float3& wo, const float3& h,
@@ -144,15 +146,17 @@ void Sample::Base_layer::sample(const float3& wo, sampler::Sampler& sampler,
 	result.reflection *= n_dot_wi;
 }
 
-void Sample::Flakes_layer::set(const float3& ior, const float3& absorption, float a2, float weight) {
+void Sample::Flakes_layer::set(const float3& ior, const float3& absorption,
+							   float alpha, float alpha2, float weight) {
 	ior_ = ior;
 	absorption_ = absorption;
-	a2_ = a2;
+	alpha_  = alpha;
+	alpha2_ = alpha2;
 	weight_ = weight;
 }
 
-float3 Sample::Flakes_layer::evaluate(const float3& wi, const float3& wo, const float3& h, float wo_dot_h,
-									  float3& fresnel_result, float& pdf) const {
+float3 Sample::Flakes_layer::evaluate(const float3& wi, const float3& wo, const float3& h,
+									  float wo_dot_h, float3& fresnel_result, float& pdf) const {
 	float n_dot_wi = clamp_n_dot(wi);
 	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 

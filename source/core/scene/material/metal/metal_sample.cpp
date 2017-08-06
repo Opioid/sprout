@@ -51,7 +51,9 @@ void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Result& result) c
 void Sample_isotropic::Layer::set(const float3& ior, const float3& absorption, float roughness) {
 	ior_ = ior;
 	absorption_ = absorption;
-	a2_ = math::pow4(roughness);
+	const float alpha = roughness * roughness;
+	alpha_ = alpha;
+	alpha2_ = alpha * alpha;
 }
 
 const material::Sample::Layer& Sample_anisotropic::base_layer() const {
@@ -99,7 +101,7 @@ void Sample_anisotropic::Layer::set(const float3& ior, const float3& absorption,
 
 	const float2 a = roughness * roughness;
 	a_   = a;
-	a2_  = a * a;
+	alpha2_  = a * a;
 	axy_ = a[0] * a[1];
 }
 

@@ -23,7 +23,8 @@ public:
 
 		float3 emission_;
 		float3 f0_;
-		float a2_;
+		float alpha_;
+		float alpha2_;
 	};
 
 	Layer layer_;
