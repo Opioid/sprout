@@ -12,7 +12,7 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-// #define EXPERIMENTAL_GGX
+#define EXPERIMENTAL_GGX
 
 namespace scene { namespace material { namespace ggx {
 
@@ -101,7 +101,7 @@ static inline float pdf(float n_dot_h, float wo_dot_h, float d) {
 static inline float pdf_visible(float n_dot_wi, float n_dot_wo, float wo_dot_h, float d, float alpha2) {
 	const float g1 = G_ggx(n_dot_wo, alpha2);
 
-	 return (g1 * wo_dot_h * d / n_dot_wo) / (4.f * wo_dot_h);
+     return (g1 * wo_dot_h * d / n_dot_wo) / (4.f * wo_dot_h);
 
 //	return (0.25f * g1 * d) / n_dot_wo;
 }
@@ -220,10 +220,24 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	// orthonormal basis
 	const float3 cross_v_z = float3(v[1], -v[0], 0.f); // == cross(v, [0, 0, 1])
 //	const float3 t1 = (v[0] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
-	const float3 t1 = (v[0] < 0.9999f) ? math::normalize(math::cross(v, float3(0.f, 0.f, 1.f))) : float3(1.f, 0.f, 0.f);
+     float3 t1 = (v[0] < 0.9999f) ? math::normalize(math::cross(v, float3(0.f, 0.f, 1.f))) : float3(1.f, 0.f, 0.f);
 	// cross(t1, v);
 //	const float3 t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
-	const float3 t2 = math::cross(t1, v);
+
+
+ //    t1[0] *= -1.f;
+ //    t1[1] *= -1.f;
+ //    t1[2] *= -1.f;
+
+
+     float3 t2 = math::cross(t1, v);
+
+
+
+
+ //   t2[0] *= -1.f;
+ //   t2[1] *= -1.f;
+ //   t2[2] *= -1.f;
 
 //	float3 t1;
 //	float3 t2;
