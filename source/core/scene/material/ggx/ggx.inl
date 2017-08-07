@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ggx.hpp"
+#include "ggx_test.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material_sample_helper.hpp"
@@ -11,9 +12,6 @@
 
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
-
-#include <iostream>
-#include "math/print.hpp"
 
 #define EXPERIMENTAL_GGX
 
@@ -222,7 +220,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 	// orthonormal basis
 	const float3 cross_v_z = float3(v[1], -v[0], 0.f); // == cross(v, [0, 0, 1])
-	const float3 t1 = (v[0] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
+	const float3 t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
 	// cross(t1, v);
 	const float3 t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
@@ -244,7 +242,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	// unstretch
 	m = math::normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
 
-	const float n_dot_h = std::max(m[2], Dot_min);
+	const float n_dot_h = clamp(m[2]);
 
 	const float3 h = layer.tangent_to_world(m);
 
@@ -267,7 +265,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
-	SOFT_ASSERT(testing::check(result, wo, layer));
+	SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer, xi));
 
 	return n_dot_wi;
 }

@@ -1,8 +1,11 @@
 #include "substitute_test.hpp"
 #include "substitute_sample.hpp"
+#include "substitute_base_sample.inl"
 #include "scene/material/material_sample.inl"
 #include "scene/material/material_print.hpp"
+#include "scene/material/disney/disney.inl"
 #include "scene/material/ggx/ggx.inl"
+#include "sampler/sampler_constant.hpp"
 #include "sampler/sampler_random.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/print.hpp"
@@ -22,22 +25,24 @@ struct Setup {
 	float3 radiance	  = float3(0.f);
 	float ior         = 1.47f;
 	float constant_f0 = fresnel::schlick_f0(1.f, ior);
-	float roughness   = 0.0001f;
+	float roughness   = 0.0214962f;//ggx::clamp_roughness(0.0001f);
 	float metallic    = 0.f;
 };
 
 void test() {
 	rnd::Generator rng;
-	sampler::Random sampler(rng);
+	sampler::Constant sampler(rng);
 	sampler.resize(0, 1, 1, 1);
+	sampler.set(float2(0.018222f, 0.626882f));
+	sampler.set(1.f);
 
 	std::cout << "substitute::testing::test()" << std::endl;
 
 	Setup setup;
 
-	float3 t(1.f, 0.f, 0.f);
-	float3 b(0.f, 1.f, 0.f);
-	float3 n(0.f, 0.f, 1.f);
+	float3 t(0.999755f, 0.015535f, -0.0157584f);
+	float3 b(-0.015535f, -0.0144017f, -0.999776f);
+	float3 n(-0.0157584f, 0.999776f, -0.0141569f);
 
 
 //	float3 t(0.f, 0.500185f, 0.865919f);
@@ -46,8 +51,8 @@ void test() {
 
 //	float3 arbitrary = math::normalize(float3(0.5f, 0.5f, 0.5f));
 
-	float3 wo = float3(0.f, 0.f, 1.f);
-	float3 wi = float3(0.f, 0.f, 1.f);
+	float3 wo = float3(0.493474f, 0.129845f, -0.860014f);
+	float3 wi = float3(0.f, 1.f, 0.f);
 
 	setup.test(wi, wo, t, b, n, sampler);
 
@@ -123,6 +128,8 @@ void Setup::test(const float3& wi, const float3& wo,
 	Sample sample;
 
 	sample.layer_.set(color, radiance, ior, constant_f0, roughness, metallic);
+
+	std::cout << sample.layer_.alpha2_ << std::endl;
 
 	sample.set_basis(n, wo);
 	sample.layer_.set_tangent_frame(t, b, n);

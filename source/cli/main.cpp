@@ -28,6 +28,7 @@
 #include <sstream>
 
 //#include "extension/procedural/starburst/starburst.hpp"
+//#include "core/scene/material/substitute/substitute_test.hpp"
 //#include "core/testing/testing_simd.hpp"
 //#include "core/testing/testing_size.hpp"
 //#include "core/testing/testing_spectrum.hpp"
@@ -39,6 +40,7 @@ static void log_memory_consumption(const resource::Manager& manager,
 static bool is_json(const std::string& text);
 
 int main(int argc, char* argv[]) {
+//	scene::material::substitute::testing::test();
 //	testing::size();
 //	testing::simd::rsqrt();
 //	testing::simd::rcp();

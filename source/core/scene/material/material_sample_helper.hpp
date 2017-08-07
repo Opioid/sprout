@@ -28,6 +28,10 @@ static inline float3 absorption_coefficient(const float3& color, float distance)
 	return (float3(1.f) - color) / distance;
 }
 
+static inline float clamp(float x) {
+	return math::clamp(x, Dot_min, 1.f);
+}
+
 static inline float clamp_dot(const float3& a, const float3& b) {
 	return math::clamp(math::dot(a, b), Dot_min, 1.f);
 }

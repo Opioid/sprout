@@ -16,4 +16,6 @@ bool check(const bxdf::Result& result, const float3& wo, const Sample::Layer& la
 
 bool check_normal_map(const float3& n, const float3& tangent_space_n, float2 uv);
 
+void print_vector(const float3& v);
+
 }}}
