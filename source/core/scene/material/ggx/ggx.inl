@@ -226,8 +226,6 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	// cross(t1, v);
 	const float3 t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
-//	float3 t2 = math::cross(t1, v);
-
 	// sample point with polar coordinates (r, phi)
 	const float a = 1.f / (1.f + v[2]);
 	const float r = std::sqrt(xi[0]);
