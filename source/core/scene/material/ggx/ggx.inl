@@ -12,6 +12,9 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+#include "math/print.hpp"
+
 #define EXPERIMENTAL_GGX
 
 namespace scene { namespace material { namespace ggx {
@@ -98,12 +101,12 @@ static inline float pdf(float n_dot_h, float wo_dot_h, float d) {
 // This PDF is for the distribution of visible normals
 // https://hal.archives-ouvertes.fr/hal-01509746/document
 // https://hal.inria.fr/hal-00996995v2/document
-static inline float pdf_visible(float n_dot_wi, float n_dot_wo, float wo_dot_h, float d, float alpha2) {
+static inline float pdf_visible(float n_dot_wo, /*float wo_dot_h,*/ float d, float alpha2) {
 	const float g1 = G_ggx(n_dot_wo, alpha2);
 
-     return (g1 * wo_dot_h * d / n_dot_wo) / (4.f * wo_dot_h);
+//	return (g1 * wo_dot_h * d / n_dot_wo) / (4.f * wo_dot_h);
 
-//	return (0.25f * g1 * d) / n_dot_wo;
+	return (0.25f * g1 * d) / n_dot_wo;
 }
 
 template<typename Layer, typename Fresnel>
@@ -129,7 +132,7 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 #ifndef EXPERIMENTAL_GGX
 	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 #else
-	pdf = pdf_visible(n_dot_wi, n_dot_wo, wo_dot_h, d, alpha2);
+	pdf = pdf_visible(n_dot_wo, /*wo_dot_h,*/ d, alpha2);
 #endif
 	const float3 result = d * g * f;
 
@@ -219,29 +222,11 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 	// orthonormal basis
 	const float3 cross_v_z = float3(v[1], -v[0], 0.f); // == cross(v, [0, 0, 1])
-//	const float3 t1 = (v[0] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
-     float3 t1 = (v[0] < 0.9999f) ? math::normalize(math::cross(v, float3(0.f, 0.f, 1.f))) : float3(1.f, 0.f, 0.f);
+	const float3 t1 = (v[0] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
 	// cross(t1, v);
-//	const float3 t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
+	const float3 t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
 
-
- //    t1[0] *= -1.f;
- //    t1[1] *= -1.f;
- //    t1[2] *= -1.f;
-
-
-     float3 t2 = math::cross(t1, v);
-
-
-
-
- //   t2[0] *= -1.f;
- //   t2[1] *= -1.f;
- //   t2[2] *= -1.f;
-
-//	float3 t1;
-//	float3 t2;
-//	math::orthonormal_basis(v, t1, t2);
+//	float3 t2 = math::cross(t1, v);
 
 	// sample point with polar coordinates (r, phi)
 	const float a = 1.f / (1.f + v[2]);
@@ -261,7 +246,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	// unstretch
 	m = math::normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
 
-	const float n_dot_h = m[2];
+	const float n_dot_h = std::max(m[2], Dot_min);
 
 	const float3 h = layer.tangent_to_world(m);
 
@@ -269,7 +254,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 	const float3 wi = math::normalize(2.f * wo_dot_h * h - wo);
 
-	const float n_dot_wi = layer.clamp_abs_n_dot(wi);
+	const float n_dot_wi = layer.clamp_n_dot(wi);
 
 	const float d = distribution_isotropic(n_dot_h, alpha2);
 	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, alpha2);
@@ -280,7 +265,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.h = h;
-	result.pdf = pdf_visible(n_dot_wi, n_dot_wo, wo_dot_h, d, alpha2);
+	result.pdf = pdf_visible(n_dot_wo, /*wo_dot_h,*/ d, alpha2);
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
