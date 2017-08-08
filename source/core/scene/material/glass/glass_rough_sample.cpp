@@ -47,6 +47,7 @@ float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
 	const float3 reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
 														 layer_, constant, pdf);
 
+	pdf *= 0.5f;
 	return n_dot_wi * reflection;
 }
 

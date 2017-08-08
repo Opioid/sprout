@@ -324,7 +324,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 	SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
 
 	const float2 xi = sampler.generate_sample_2D();
-
+/*
 	const float alpha2 = layer.alpha2_;
 	const float n_dot_h_squared = (1.f - xi[1]) / ((alpha2 - 1.f) * xi[1] + 1.f);
 	const float sin_theta = std::sqrt(1.f - n_dot_h_squared);
@@ -338,6 +338,44 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 
 	const float3 lh = float3(sin_theta * cos_phi, sin_theta * sin_phi, n_dot_h);
 	const float3 h = math::normalize(layer.tangent_to_world(lh));
+*/
+
+	const float alpha  = layer.alpha_;
+	const float alpha2 = layer.alpha2_;
+
+	const float3 lwo = layer.world_to_tangent(wo);
+
+	// stretch view
+	const float3 v = math::normalize(float3(alpha * lwo[0], alpha * lwo[1], lwo[2]));
+
+	// orthonormal basis
+	const float3 cross_v_z = float3(v[1], -v[0], 0.f); // == cross(v, [0, 0, 1])
+	const float3 t1 = (v[2] < 0.9999f) ? math::normalize(cross_v_z) : float3(1.f, 0.f, 0.f);
+	// cross(t1, v);
+	const float3 t2 = float3(t1[1] * v[2], -t1[0] * v[2], t1[0] * v[1] - t1[1] * v[0]);
+
+	// sample point with polar coordinates (r, phi)
+	const float a = 1.f / (1.f + v[2]);
+	const float r = std::sqrt(xi[0]);
+	const float phi = (xi[1] < a) ? xi[1] / a * math::Pi
+								  : math::Pi + (xi[1] - a) / (1.f - a) * math::Pi;
+
+	float sin_phi;
+	float cos_phi;
+	math::sincos(phi, sin_phi, cos_phi);
+	const float p1 = r * cos_phi;
+	const float p2 = r * sin_phi * ((xi[1] < a) ? 1.f : v[2]);
+
+	// compute normal
+	float3 m = p1 * t1 + p2 * t2 + std::sqrt(std::max(1.f - p1 * p1 - p2 * p2, 0.f)) * v;
+
+	// unstretch
+	m = math::normalize(float3(alpha * m[0], alpha * m[1], std::max(m[2], 0.f)));
+
+	const float n_dot_h = clamp(m[2]);
+
+	const float3 h = layer.tangent_to_world(m);
+
 
 	const float wo_dot_h = clamp_dot(wo, h);
 
@@ -347,6 +385,8 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 
 	const float d = distribution_isotropic(n_dot_h, alpha2);
 	const float g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
+//	const float og1_wo = G_ggx(n_dot_wo, alpha2);
+//	const float g = optimized_geometric_visibility_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
 	const float3 f = float3(1.f) - fresnel(wo_dot_h);
 
 	const float3 refraction = d * g * f;
@@ -360,7 +400,8 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 	result.reflection = factor * ((ior_o_2 * refraction) / denom);
 	result.wi = wi;
 	result.h = h;
-	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+//	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_transmission);
 
