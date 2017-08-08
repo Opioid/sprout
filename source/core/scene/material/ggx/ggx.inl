@@ -13,8 +13,6 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-#define EXPERIMENTAL_GGX
-
 namespace scene { namespace material { namespace ggx {
 
 constexpr float Min_roughness = 0.01314f;
@@ -67,10 +65,20 @@ static inline float geometric_visibility_and_denominator(float n_dot_wi, float n
 
 	// Optimized version
 	// Caution: the "n_dot_wi *" and "n_dot_wo *" are explicitely inversed, this is not a mistake.
-	const float g_wo = n_dot_wi * std::sqrt((n_dot_wo - n_dot_wo * alpha2) * n_dot_wo + alpha2);
-	const float g_wi = n_dot_wo * std::sqrt((n_dot_wi - n_dot_wi * alpha2) * n_dot_wi + alpha2);
+	const float g_wo = n_dot_wi * std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
+	const float g_wi = n_dot_wo * std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
 
 	return 0.5f / (g_wo + g_wi);
+}
+
+static inline float optimized_geometric_visibility_and_g1_wo(float n_dot_wi, float n_dot_wo,
+															 float alpha2, float& og1_wo) {
+	const float t_wo = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
+	const float t_wi = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
+
+	og1_wo = t_wo + n_dot_wo;
+
+	return 0.5f / (n_dot_wi * t_wo + n_dot_wo * t_wi);
 }
 
 static inline float3 microfacet(float d, float g, const float3& f, float n_dot_wi, float n_dot_wo) {
@@ -99,12 +107,16 @@ static inline float pdf(float n_dot_h, float wo_dot_h, float d) {
 // This PDF is for the distribution of visible normals
 // https://hal.archives-ouvertes.fr/hal-01509746/document
 // https://hal.inria.fr/hal-00996995v2/document
-static inline float pdf_visible(float n_dot_wo, /*float wo_dot_h,*/ float d, float alpha2) {
+static inline float pdf_visible(float n_dot_wo, float wo_dot_h, float d, float alpha2) {
 	const float g1 = G_ggx(n_dot_wo, alpha2);
 
-//	return (g1 * wo_dot_h * d / n_dot_wo) / (4.f * wo_dot_h);
+	return (g1 * wo_dot_h * d / n_dot_wo) / (4.f * wo_dot_h);
+}
 
-	return (0.25f * g1 * d) / n_dot_wo;
+static inline float pdf_visible(float d, float og1_wo) {
+//	return (0.25f * g1_wo * d) / n_dot_wo;
+
+	return (0.5f * d) / og1_wo;
 }
 
 template<typename Layer, typename Fresnel>
@@ -123,15 +135,17 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 
 	const float alpha2 = layer.alpha2_;
 	const float d = distribution_isotropic(n_dot_h, alpha2);
-	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, alpha2);
+		  float og1_wo;
+	const float g = optimized_geometric_visibility_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
 	const float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
-#ifndef EXPERIMENTAL_GGX
-	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-#else
-	pdf = pdf_visible(n_dot_wo, /*wo_dot_h,*/ d, alpha2);
-#endif
+
+	// Legacy GGX
+	// pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+
+	pdf = pdf_visible(d, og1_wo);
+
 	const float3 result = d * g * f;
 
 	SOFT_ASSERT(testing::check(result, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
@@ -146,7 +160,8 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	return reflect(wo, n_dot_wo, layer, fresnel, sampler, fresnel_result, result);
 }
 
-#ifndef EXPERIMENTAL_GGX
+// Legacy GGX
+/*
 
 template<typename Layer, typename Fresnel>
 float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
@@ -197,7 +212,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	return n_dot_wi;
 }
 
-#else
+*/
 
 template<typename Layer, typename Fresnel>
 float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
@@ -253,7 +268,8 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 
 	const float d = distribution_isotropic(n_dot_h, alpha2);
-	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, alpha2);
+		  float og1_wo;
+	const float g = optimized_geometric_visibility_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
 	const float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
@@ -261,7 +277,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	result.reflection = d * g * f;
 	result.wi = wi;
 	result.h = h;
-	result.pdf = pdf_visible(n_dot_wo, /*wo_dot_h,*/ d, alpha2);
+	result.pdf = pdf_visible(d, og1_wo);
 	result.h_dot_wi = wo_dot_h;
 	result.type.clear_set(bxdf::Type::Glossy_reflection);
 
@@ -269,8 +285,6 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 	return n_dot_wi;
 }
-
-#endif
 
 template<typename Layer, typename Fresnel>
 float3 Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
