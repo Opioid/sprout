@@ -2,6 +2,7 @@
 
 #include "node_stack.hpp"
 #include "base/memory/align.hpp"
+#include "base/debug/assert.hpp"
 
 namespace scene { namespace shape {
 
@@ -22,6 +23,8 @@ inline void Node_stack::clear() {
 }
 
 inline void Node_stack::push(uint32_t value) {
+	SOFT_ASSERT(end_ < num_elements_);
+
 	stack_[end_++] = value;
 }
 

@@ -110,9 +110,9 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 	}
 
 	if (0 == num_side_0 || 0 == num_side_1) {
-		cost_ = 2.f + static_cast<float>(references.size());
+		cost_ = 1.5f + static_cast<float>(references.size());
 	} else {
-		cost_ = 2.f + (static_cast<float>(num_side_0) * aabb_0_.surface_area() +
+		cost_ = 1.5f + (static_cast<float>(num_side_0) * aabb_0_.surface_area() +
 					   static_cast<float>(num_side_1) * aabb_1_.surface_area()) / aabb_surface_area;
 	}
 
@@ -184,12 +184,12 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 						 uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool) {
 	node->aabb = aabb;
 
-	uint32_t num_primitives = static_cast<uint32_t>(references.size());
+	const uint32_t num_primitives = static_cast<uint32_t>(references.size());
 
-	if (num_primitives <= max_primitives) {
+	if (num_primitives <= max_primitives || depth >= 128) {
 		assign(node, references);
 	} else {
-		Split_candidate sp = splitting_plane(references, aabb, depth, thread_pool);
+		const Split_candidate sp = splitting_plane(references, aabb, depth, thread_pool);
 
 		if (static_cast<float>(num_primitives) <= sp.cost()) {
 			assign(node, references);
@@ -200,7 +200,9 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 			References references1;
 			sp.distribute(references, references0, references1);
 
-			if (references0.empty() || references1.empty()) {
+			if (references0.empty() || references1.empty()
+			|| 	references0.size() == references.size()
+			||  references1.size() == references.size()) {
 				// This can happen if we didn't find a good splitting plane.
 				// It means every triangle was (partially) on the same side of the plane.
 
