@@ -32,12 +32,12 @@ inline float3 AABB::halfsize() const {
 }
 
 inline float AABB::surface_area() const {
-	float3 d = bounds_[1] - bounds_[0];
+	const float3 d = bounds_[1] - bounds_[0];
 	return 2.f * (d[0] * d[1] + d[0] * d[2] + d[1] * d[2]);
 }
 
 inline float AABB::volume() const {
-	float3 d = bounds_[1] - bounds_[0];
+	const float3 d = bounds_[1] - bounds_[0];
 	return d[0] * d[1] * d[2];
 }
 

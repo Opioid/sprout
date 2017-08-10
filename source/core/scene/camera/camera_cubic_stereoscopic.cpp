@@ -13,12 +13,12 @@ namespace scene { namespace camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
 	Stereoscopic(int2(resolution[0], resolution[0])) {
-	float f = static_cast<float>(resolution[0]);
+	const float f = static_cast<float>(resolution[0]);
 
 	left_top_ = float3(-1.f, 1.f, 1.f);
 
-	float3 right_top  ( 1.f,  1.f, 1.f);
-	float3 left_bottom(-1.f, -1.f, 1.f);
+	const float3 right_top  ( 1.f,  1.f, 1.f);
+	const float3 left_bottom(-1.f, -1.f, 1.f);
 
 	d_x_ = (right_top - left_top_)   / f;
 	d_y_ = (left_bottom - left_top_) / f;

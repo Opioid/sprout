@@ -16,7 +16,7 @@ namespace scene { namespace camera {
 
 Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) :
 	Stereoscopic(resolution) {
-	float2 fr(resolution);
+	const float2 fr(resolution);
 	d_x_ = 1.f / fr[0];
 	d_y_ = 1.f / fr[1];
 
