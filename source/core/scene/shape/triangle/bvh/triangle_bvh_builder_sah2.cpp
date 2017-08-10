@@ -12,6 +12,8 @@
 
 #include "base/debug/assert.hpp"
 
+#include <iostream>
+
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 uint32_t Builder_SAH2::Reference::primitive() const {
@@ -111,15 +113,14 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 		aabb_1_.set_min_max(box_1.min, box_1.max);
 	}
 
-	const bool empty_side = 0 == num_side_0 || 0 == num_side_1;
-	const uint32_t num_references = static_cast<uint32_t>(references.size());
-	if (num_references > 0xFF
-	&& (empty_side || num_references == num_side_0 || num_references == num_side_1)) {
-		// We really want to avoid this case where the primitves are not split further,
-		// although they don't fit in a node.
-		cost_ = std::numeric_limits<float>().max();
-	} else if (empty_side) {
-		cost_ = 2.f + static_cast<float>(references.size());
+	if (0 == num_side_0 || 0 == num_side_1) {
+		if (references.size() > 0xFF) {
+			// We want to avoid this case where the primitives are not split further,
+			// although they don't fit in a node.
+			cost_ = std::numeric_limits<float>().max();
+		} else {
+			cost_ = 2.f + static_cast<float>(references.size());
+		}
 	} else {
 		const float weight_0 = static_cast<float>(num_side_0) * aabb_0_.surface_area();
 		const float weight_1 = static_cast<float>(num_side_1) * aabb_1_.surface_area();
@@ -210,16 +211,14 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 			References references1;
 			sp.distribute(references, references0, references1);
 
-			if (references0.empty() || references1.empty()
-			|| 	references0.size() == references.size()
-			||  references1.size() == references.size()) {
+			if (references0.empty() || references1.empty()) {
 				// This can happen if we didn't find a good splitting plane.
 				// It means every triangle was (partially) on the same side of the plane.
 
 				// TODO
-				// There is no check if the number of primitives
+				// There is no check whether the number of primitives
 				// fit into a leaf node before assigning,
-				// although the splittig algorithm at least tries to avoid such cases
+				// although the splittig algorithm at least tries to avoid such cases.
 
 				assign(node, references);
 			} else {
@@ -314,6 +313,7 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 	for (size_t i = 1, len = split_candidates_.size(); i < len; ++i) {
 		const float cost = split_candidates_[i].cost();
+
 		if (cost < min_cost) {
 			sc = i;
 			min_cost = cost;
