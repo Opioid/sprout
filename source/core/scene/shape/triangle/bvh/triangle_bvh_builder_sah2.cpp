@@ -320,7 +320,16 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 		}
 	}
 
-	return split_candidates_[sc];
+	const auto& sp = split_candidates_[sc];
+
+//	if (num_triangles > 0xFF) {
+//		if ((sp.num_side_0() == num_triangles && sp.aabb_0().almost_equal(aabb))
+//		||  (sp.num_side_1() == num_triangles && sp.aabb_1().almost_equal(aabb))) {
+//			std::cout << "failure" << std::endl;
+//		}
+//	}
+
+	return sp;
 }
 
 scene::bvh::Node& Builder_SAH2::new_node() {
