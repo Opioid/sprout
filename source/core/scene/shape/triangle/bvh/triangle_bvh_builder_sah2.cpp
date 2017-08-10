@@ -10,6 +10,8 @@
 #include "base/math/simd_aabb.inl"
 #include "base/thread/thread_pool.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 uint32_t Builder_SAH2::Reference::primitive() const {
@@ -109,11 +111,19 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 		aabb_1_.set_min_max(box_1.min, box_1.max);
 	}
 
-	if (0 == num_side_0 || 0 == num_side_1) {
-		cost_ = 1.5f + static_cast<float>(references.size());
+	const bool empty_side = 0 == num_side_0 || 0 == num_side_1;
+	const uint32_t num_references = static_cast<uint32_t>(references.size());
+	if (num_references > 0xFF
+	&& (empty_side || num_references == num_side_0 || num_references == num_side_1)) {
+		// We really want to avoid this case where the primitves are not split further,
+		// although they don't fit in a node.
+		cost_ = std::numeric_limits<float>().max();
+	} else if (empty_side) {
+		cost_ = 2.f + static_cast<float>(references.size());
 	} else {
-		cost_ = 1.5f + (static_cast<float>(num_side_0) * aabb_0_.surface_area() +
-					   static_cast<float>(num_side_1) * aabb_1_.surface_area()) / aabb_surface_area;
+		const float weight_0 = static_cast<float>(num_side_0) * aabb_0_.surface_area();
+		const float weight_1 = static_cast<float>(num_side_1) * aabb_1_.surface_area();
+		cost_ = 2.f + (weight_0 + weight_1) / aabb_surface_area;
 	}
 
 	num_side_0_ = num_side_0;
@@ -186,12 +196,12 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 
 	const uint32_t num_primitives = static_cast<uint32_t>(references.size());
 
-	if (num_primitives <= max_primitives || depth >= 128) {
+	if (num_primitives <= max_primitives) {
 		assign(node, references);
 	} else {
 		const Split_candidate sp = splitting_plane(references, aabb, depth, thread_pool);
 
-		if (static_cast<float>(num_primitives) <= sp.cost()) {
+		if (static_cast<float>(num_primitives) <= sp.cost() && num_primitives <= 0xFF) {
 			assign(node, references);
 		} else {
 			node->axis = sp.axis();
@@ -205,6 +215,11 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 			||  references1.size() == references.size()) {
 				// This can happen if we didn't find a good splitting plane.
 				// It means every triangle was (partially) on the same side of the plane.
+
+				// TODO
+				// There is no check if the number of primitives
+				// fit into a leaf node before assigning,
+				// although the splittig algorithm at least tries to avoid such cases
 
 				assign(node, references);
 			} else {
@@ -317,7 +332,9 @@ uint32_t Builder_SAH2::current_node_index() const {
 }
 
 void Builder_SAH2::assign(Build_node* node, const References& references) {
-	size_t num_references = references.size();
+	SOFT_ASSERT(references.size() <= 0xFF);
+
+	const size_t num_references = references.size();
 	node->primitives.resize(num_references);
 	for (size_t i = 0; i < num_references; ++i) {
 		node->primitives[i] = references[i].primitive();

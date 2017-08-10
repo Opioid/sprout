@@ -14,8 +14,6 @@
 #include "base/thread/thread_pool.hpp"
 #include <vector>
 
-#include <iostream>
-
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename Data>
@@ -81,12 +79,7 @@ void Builder_SAH2::serialize(Build_node* node, const Triangles& triangles,
 
 		serialize(node->children[1], triangles, vertices, tree);
 	} else {
-		uint32_t count = node->end_index - node->start_index;
-		if (count > 255) {
-			std::cout << "larm " << count << std::endl;
-		}
-
-		uint8_t num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
+		const uint8_t num_primitives = static_cast<uint8_t>(node->end_index - node->start_index);
 		n.set_leaf_node(node->start_index, num_primitives);
 
 		for (const auto p : node->primitives) {
