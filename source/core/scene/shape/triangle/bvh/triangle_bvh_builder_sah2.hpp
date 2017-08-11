@@ -81,6 +81,9 @@ private:
 		const math::AABB& aabb_0() const;
 		const math::AABB& aabb_1() const;
 
+		uint32_t num_side_0() const;
+		uint32_t num_side_1() const;
+
 	private:
 
 		math::AABB aabb_0_;
@@ -118,7 +121,7 @@ private:
 			   uint32_t max_primitives, uint32_t depth, thread::Pool& thread_pool);
 
 	Split_candidate splitting_plane(const References& references, const math::AABB& aabb,
-									uint32_t depth, thread::Pool& thread_pool);
+									uint32_t depth, bool& exhausted, thread::Pool& thread_pool);
 
 	template<typename Data>
 	void serialize(Build_node* node, const Triangles& triangles,

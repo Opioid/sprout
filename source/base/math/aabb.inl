@@ -312,6 +312,10 @@ inline void AABB::clip_max(float d, uint8_t axis) {
 	bounds_[1].v[axis] = std::min(d, bounds_[1][axis]);
 }
 
+inline bool AABB::operator==(const AABB& other) const {
+	return bounds_[0] == other.bounds_[0] && bounds_[1] == other.bounds_[1];
+}
+
 inline constexpr AABB AABB::empty() {
 	constexpr float max = std::numeric_limits<float>::max();
 	return AABB(float3(max), float3(-max));

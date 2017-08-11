@@ -46,6 +46,8 @@ public:
 	void clip_min(float d, uint8_t axis);
 	void clip_max(float d, uint8_t axis);
 
+	bool operator==(const AABB& other) const;
+
 	static constexpr AABB empty();
 	static constexpr AABB infinite();
 

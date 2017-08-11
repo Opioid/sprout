@@ -4,6 +4,7 @@
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/shape/shape_vertex.hpp"
 #include "scene/shape/triangle/triangle_primitive.hpp"
+#include "logging/logging.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/plane.inl"
@@ -11,8 +12,6 @@
 #include "base/thread/thread_pool.hpp"
 
 #include "base/debug/assert.hpp"
-
-#include <iostream>
 
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
@@ -113,14 +112,9 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 		aabb_1_.set_min_max(box_1.min, box_1.max);
 	}
 
-	if (0 == num_side_0 || 0 == num_side_1) {
-		if (references.size() > 0xFF) {
-			// We want to avoid this case where the primitives are not split further,
-			// although they don't fit in a node.
-			cost_ = std::numeric_limits<float>().max();
-		} else {
-			cost_ = 2.f + static_cast<float>(references.size());
-		}
+	const bool empty_side = 0 == num_side_0 || 0 == num_side_1;
+	if (empty_side) {
+		cost_ = 2.f + static_cast<float>(references.size());
 	} else {
 		const float weight_0 = static_cast<float>(num_side_0) * aabb_0_.surface_area();
 		const float weight_1 = static_cast<float>(num_side_1) * aabb_1_.surface_area();
@@ -188,6 +182,14 @@ const math::AABB& Builder_SAH2::Split_candidate::aabb_1() const {
 	return aabb_1_;
 }
 
+uint32_t Builder_SAH2::Split_candidate::num_side_0() const {
+	return num_side_0_;
+}
+
+uint32_t Builder_SAH2::Split_candidate::num_side_1() const {
+	return num_side_1_;
+}
+
 Builder_SAH2::Builder_SAH2(uint32_t num_slices, uint32_t sweep_threshold) :
 	num_slices_(num_slices), sweep_threshold_(sweep_threshold) {}
 
@@ -200,9 +202,11 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 	if (num_primitives <= max_primitives) {
 		assign(node, references);
 	} else {
-		const Split_candidate sp = splitting_plane(references, aabb, depth, thread_pool);
+		bool exhausted;
+		const Split_candidate sp = splitting_plane(references, aabb, depth, exhausted, thread_pool);
 
-		if (static_cast<float>(num_primitives) <= sp.cost() && num_primitives <= 0xFF) {
+		if (num_primitives <= 0xFF
+		&& (static_cast<float>(num_primitives) <= sp.cost() || exhausted)) {
 			assign(node, references);
 		} else {
 			node->axis = sp.axis();
@@ -222,6 +226,10 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 
 				assign(node, references);
 			} else {
+				if (exhausted) {
+					logging::error("Ohoh");
+				}
+
 				++depth;
 
 				references = References();
@@ -244,7 +252,7 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 
 Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& references,
 															const math::AABB& aabb,
-															uint32_t depth,
+															uint32_t depth, bool& exhausted,
 															thread::Pool& thread_pool) {
 	static constexpr uint8_t X = 0;
 	static constexpr uint8_t Y = 1;
@@ -322,12 +330,8 @@ Builder_SAH2::Split_candidate Builder_SAH2::splitting_plane(const References& re
 
 	const auto& sp = split_candidates_[sc];
 
-//	if (num_triangles > 0xFF) {
-//		if ((sp.num_side_0() == num_triangles && sp.aabb_0().almost_equal(aabb))
-//		||  (sp.num_side_1() == num_triangles && sp.aabb_1().almost_equal(aabb))) {
-//			std::cout << "failure" << std::endl;
-//		}
-//	}
+	exhausted = (sp.aabb_0() == aabb && num_triangles == sp.num_side_0()) ||
+				(sp.aabb_1() == aabb && num_triangles == sp.num_side_1());
 
 	return sp;
 }
