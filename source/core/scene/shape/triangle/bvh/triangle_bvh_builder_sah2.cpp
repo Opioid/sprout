@@ -11,8 +11,6 @@
 #include "base/math/simd_aabb.inl"
 #include "base/thread/thread_pool.hpp"
 
-#include "base/debug/assert.hpp"
-
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 uint32_t Builder_SAH2::Reference::primitive() const {
@@ -35,7 +33,10 @@ void Builder_SAH2::Reference::clip_max(float d, uint8_t axis) {
 	bounds[1].v[axis] = std::min(d, bounds[1].v[axis]);
 }
 
-Builder_SAH2::Build_node::Build_node() : start_index(0), end_index(0), children{nullptr, nullptr} {}
+Builder_SAH2::Build_node::Build_node() :
+	start_index(0),
+	end_index(0),
+	children{nullptr, nullptr} {}
 
 Builder_SAH2::Build_node::~Build_node() {
 	delete children[0];
@@ -59,26 +60,20 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 
 	if (spatial_) {
 		for (const auto& r : references) {
-		//	const auto& bounds = r.aabb;
-
 			math::Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
 			if (behind(r.bounds[1].v)) {
 				++num_side_0;
 
-			//	aabb_0_.merge_assign(bounds);
 				box_0.merge_assign(b);
 			} else if (!behind(r.bounds[0].v)) {
 				++num_side_1;
 
-			//	aabb_1_.merge_assign(bounds);
 				box_1.merge_assign(b);
 			} else {
 				++num_side_0;
 				++num_side_1;
 
-			//	aabb_0_.merge_assign(bounds);
-			//	aabb_1_.merge_assign(bounds);
 				box_0.merge_assign(b);
 				box_1.merge_assign(b);
 			}
@@ -91,19 +86,15 @@ void Builder_SAH2::Split_candidate::evaluate(const References& references,
 		aabb_1_.clip_min(d_, axis_);
 	} else {
 		for (const auto& r : references) {
-		//	const auto& bounds = r.aabb;
-
 			math::Simd_AABB b(r.bounds[0].v, r.bounds[1].v);
 
 			if (behind(r.bounds[1].v)) {
 				++num_side_0;
 
-			//	aabb_0_.merge_assign(bounds);
 				box_0.merge_assign(b);
 			} else {
 				++num_side_1;
 
-			//	aabb_1_.merge_assign(bounds);
 				box_1.merge_assign(b);
 			}
 		}
@@ -215,19 +206,17 @@ void Builder_SAH2::split(Build_node* node, References& references, const math::A
 			References references1;
 			sp.distribute(references, references0, references1);
 
-			if (references0.empty() || references1.empty()) {
+			if (num_primitives <= 0xFF && (references0.empty() || references1.empty())) {
 				// This can happen if we didn't find a good splitting plane.
 				// It means every triangle was (partially) on the same side of the plane.
-
-				// TODO
-				// There is no check whether the number of primitives
-				// fit into a leaf node before assigning,
-				// although the splittig algorithm at least tries to avoid such cases.
-
 				assign(node, references);
 			} else {
 				if (exhausted) {
-					logging::error("Ohoh");
+					// TODO
+					// Implement a fallback solution that arbitrarily distributes the primitives
+					// to sub-nodes without needing a meaningful splittng plane.
+					logging::warning("Cannot split node further");
+					return;
 				}
 
 				++depth;
@@ -345,8 +334,6 @@ uint32_t Builder_SAH2::current_node_index() const {
 }
 
 void Builder_SAH2::assign(Build_node* node, const References& references) {
-	SOFT_ASSERT(references.size() <= 0xFF);
-
 	const size_t num_references = references.size();
 	node->primitives.resize(num_references);
 	for (size_t i = 0; i < num_references; ++i) {

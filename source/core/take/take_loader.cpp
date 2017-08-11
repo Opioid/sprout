@@ -149,8 +149,12 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	const json::Value* type_value = nullptr;
 
 	for (auto& n : camera_value.GetObject()) {
-		type_name = n.name.GetString();
+		type_name  = n.name.GetString();
 		type_value = &n.value;
+
+		if ("Cubic" == type_name) {
+			break;
+		}
 	}
 
 	math::Transformation transformation {
