@@ -189,7 +189,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	if (sensor_value) {
 		resolution = json::read_int2(*sensor_value, "resolution", int2::identity());
 		if (int2::identity() == resolution) {
-			throw std::runtime_error("Sensor resolution is [0, 0]");
+			throw std::runtime_error("Sensor resolution must be greater than zero");
 		}
 	} else {
 		throw std::runtime_error("No sensor configuration included");
