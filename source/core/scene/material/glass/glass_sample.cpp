@@ -70,7 +70,7 @@ float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
 	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
-	if (sint2 > 1.f) {
+	if (sint2 >= 1.f) {
 		f = 1.f;
 	} else {
 		const float n_dot_t = std::sqrt(1.f - sint2);
@@ -105,7 +105,7 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 
 	const float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
-	if (sint2 > 1.f) {
+	if (sint2 >= 1.f) {
 		result.pdf = 0.f;
 		return 0.f;
 	}

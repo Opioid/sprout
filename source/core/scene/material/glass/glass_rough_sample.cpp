@@ -29,7 +29,7 @@ float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
 	const float sint2 = (layer_.eta_i_ * layer_.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
-	if (sint2 > 1.f) {
+	if (sint2 >= 1.f) {
 		f = 1.f;
 	} else {
 		const float n_dot_t = std::sqrt(1.f - sint2);
@@ -108,7 +108,7 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 	const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
 	float f;
-	if (sint2 > 1.f) {
+	if (sint2 >= 1.f) {
 		f = 1.f;
 	} else {
 		const float n_dot_t = std::sqrt(1.f - sint2);
@@ -142,7 +142,7 @@ float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
 
 	const float sint2 = (tmp.eta_i_ * tmp.eta_i_) * (1.f - n_dot_wo * n_dot_wo);
 
-	if (sint2 > 1.f) {
+	if (sint2 >= 1.f) {
 		result.pdf = 0.f;
 		return 0.f;
 	}
