@@ -4,8 +4,6 @@
 
 namespace spectrum {
 
-constexpr float CIE_constant = 683.002f;
-
 // convert sRGB linear value to sRGB gamma value
 static inline float linear_to_sRGB(float c) {
 	if (c <= 0.f) {
@@ -70,7 +68,7 @@ static inline float4 sRGB_to_linear_RGB(byte4 c) {
 
 // convert linear color to gamma color
 static inline float3 linear_to_gamma(const float3& c, float gamma) {
-	float p = 1.f / gamma;
+	const float p = 1.f / gamma;
 
 	return float3(std::pow(c[0], p),
 				  std::pow(c[1], p),
@@ -87,6 +85,8 @@ static inline float3 gamma_to_linear(const float3& c, float gamma) {
 static inline float luminance(const float3& c) {
 	return 0.212671f * c[0] + 0.715160f * c[1] + 0.072169f * c[2];
 }
+
+constexpr float CIE_constant = 683.002f;
 
 static inline float watt_to_lumen(const float3& c) {
 	return CIE_constant * luminance(c);
