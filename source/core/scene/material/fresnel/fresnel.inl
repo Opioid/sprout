@@ -6,6 +6,16 @@
 
 namespace scene { namespace material { namespace fresnel {
 
+static inline float schlick_f0(float n0, float n1) {
+	const float t = (n0 - n1) / (n0 + n1);
+	return t * t;
+}
+
+static inline float schlick_sqrt_eta(float eta) {
+	eta = std::min(eta, 1.f);
+	return std::sqrt(1.f - eta * eta);
+}
+
 static inline float schlick(float wo_dot_h, float f0) {
 	return f0 + math::pow5(1.f - wo_dot_h) * (1.f - f0);
 
@@ -20,9 +30,8 @@ static inline float3 schlick(float wo_dot_h, const float3& f0) {
 	// return f0 + (std::exp2((-5.55473f * wo_dot_h - 6.98316f) * wo_dot_h)) * (1.f - f0);
 }
 
-static inline float schlick_f0(float n0, float n1) {
-	const float t = (n0 - n1) / (n0 + n1);
-	return t * t;
+static inline float3 schlick(float wo_dot_h, const float3& f0, float sqrt_eta) {
+	return f0 + math::pow5(1.f - ((wo_dot_h - sqrt_eta) / (1.f - sqrt_eta))) * (1.f - f0);
 }
 
 static inline float3 conductor(float wo_dot_h, const float3& eta, const float3& k) {
@@ -133,6 +142,15 @@ inline float3 Schlick::operator()(float wo_dot_h) const {
 	return schlick(wo_dot_h, f0_);
 }
 
+inline Schlick_refract::Schlick_refract(float f0, float sqrt_eta) :
+	f0_(f0), sqrt_eta_(sqrt_eta) {}
+
+inline Schlick_refract::Schlick_refract(const float3& f0, float sqrt_eta) :
+	f0_(f0), sqrt_eta_(sqrt_eta) {}
+
+inline float3 Schlick_refract::operator()(float wo_dot_h) const {
+	return schlick(wo_dot_h, f0_, sqrt_eta_);
+}
 
 inline Schlick_conditional::Schlick_conditional(float f0, bool full) :
 	f0_(f0), full_(full) {}
@@ -142,12 +160,27 @@ inline Schlick_conditional::Schlick_conditional(const float3& f0, bool full) :
 
 inline float3 Schlick_conditional::operator()(float wo_dot_h) const {
 	if (full_) {
-		return float3(1.f, 1.f, 1.f);
+		return float3::identity();
 	}
 
 	return schlick(wo_dot_h, f0_);
 }
 
+inline Schlick_refract_conditional::Schlick_refract_conditional(float f0, float sqrt_eta,
+																bool full) :
+	f0_(f0), sqrt_eta_(sqrt_eta), full_(full) {}
+
+inline Schlick_refract_conditional::Schlick_refract_conditional(const float3& f0, float sqrt_eta,
+																bool full) :
+	f0_(f0), sqrt_eta_(sqrt_eta), full_(full) {}
+
+inline float3 Schlick_refract_conditional::operator()(float wo_dot_h) const {
+	if (full_) {
+		return float3(1.f);
+	}
+
+	return schlick(wo_dot_h, f0_, sqrt_eta_);
+}
 
 inline Schlick_blending::Schlick_blending(const float3& a, const float3& b, float f0) :
 	a_(a), b_(b), f0_(f0) {}

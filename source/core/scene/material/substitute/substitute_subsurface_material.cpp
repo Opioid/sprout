@@ -1,5 +1,4 @@
 #include "substitute_subsurface_material.hpp"
-#include "substitute_subsurface_sample.hpp"
 #include "substitute_base_sample.inl"
 #include "substitute_base_material.inl"
 #include "scene/scene_renderstate.hpp"
@@ -21,7 +20,7 @@ const material::Sample& Material_subsurface::sample(const float3& wo, const Rend
 
 	sample.set(material::absorption_coefficient(absorption_color_, attenuation_distance_),
 			   material::scattering_coefficient(scattering_color_, attenuation_distance_),
-			   ior_, rs.ior);
+			   ior_);
 
 	return sample;
 }
@@ -40,6 +39,19 @@ void Material_subsurface::set_scattering_color(const float3& color) {
 
 void Material_subsurface::set_attenuation_distance(float attenuation_distance) {
 	attenuation_distance_ = attenuation_distance;
+}
+
+void Material_subsurface::set_ior(float ior, float external_ior) {
+	Material_base::set_ior(ior, external_ior);
+
+	ior_.ior_i_ = ior;
+	ior_.ior_o_ = external_ior;
+	const float eta_i = external_ior / ior;
+	const float eta_t = ior / external_ior;
+	ior_.eta_i_ = eta_i;
+	ior_.eta_t_ = eta_t;
+	ior_.sqrt_eta_i = fresnel::schlick_sqrt_eta(eta_i);
+	ior_.sqrt_eta_i = fresnel::schlick_sqrt_eta(eta_t);
 }
 
 }}}

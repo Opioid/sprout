@@ -25,7 +25,7 @@ public:
 	void set_emission_map(const Texture_adapter& emission_map);
 
 	void set_color(const float3& color);
-	void set_ior(float ior, float external_ior = 1.f);
+	virtual void set_ior(float ior, float external_ior = 1.f);
 	void set_roughness(float roughness);
 	void set_metallic(float metallic);
 	void set_emission_factor(float emission_factor);

@@ -17,8 +17,17 @@ public:
 
 	virtual const BSSRDF& bssrdf(Worker& worker) const override final;
 
+	struct IOR {
+		float ior_i_;
+		float ior_o_;
+		float eta_i_;
+		float eta_t_;
+		float sqrt_eta_i;
+		float sqrt_eta_t;
+	};
+
 	void set(const float3& absorption_coefficient, const float3& scattering_coefficient,
-			 float ior, float ior_outside);
+			 const IOR& ior);
 
 	virtual bool is_sss() const override final;
 
@@ -32,13 +41,6 @@ private:
 
 	float3 absorption_coefficient_;
 	float3 scattering_coefficient_;
-
-	struct IOR {
-		float ior_i_;
-		float ior_o_;
-		float eta_i_;
-		float eta_t_;
-	};
 
 	IOR ior_;
 };

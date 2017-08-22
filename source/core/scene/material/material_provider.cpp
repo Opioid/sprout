@@ -448,11 +448,11 @@ Material_ptr Provider::load_light(const json::Value& light_value, resource::Mana
 	material->set_mask(mask);
 
 	if ("Flux" == quantity) {
-		material->emittance().set_flux(color, value);
+		material->emittance().set_luminous_flux(color, value);
 	} else if ("Intensity" == quantity) {
-		material->emittance().set_intensity(color, value);
+		material->emittance().set_luminous_intensity(color, value);
 	} else if ("Exitance" == quantity) {
-		material->emittance().set_exitance(color, value);
+		material->emittance().set_luminous_exitance(color, value);
 	} else if ("Luminance" == quantity) {
 		material->emittance().set_luminance(color, value);
 	} else if ("Radiance" == quantity) {
