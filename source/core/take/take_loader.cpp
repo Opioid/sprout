@@ -20,6 +20,7 @@
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
 #include "rendering/postprocessor/postprocessor_glare.hpp"
 #include "rendering/postprocessor/postprocessor_glare2.hpp"
+#include "rendering/postprocessor/postprocessor_glare3.hpp"
 #include "rendering/postprocessor/tonemapping/aces.hpp"
 #include "rendering/postprocessor/tonemapping/generic.hpp"
 #include "rendering/postprocessor/tonemapping/identity.hpp"
@@ -585,6 +586,21 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 			const float threshold = json::read_float(n->value, "threshold", 2.f);
 			const float intensity = json::read_float(n->value, "intensity", 1.f);
 			pipeline.add(new Glare2(adaption, threshold, intensity));
+		} else if ("Glare3" == n->name) {
+			Glare3::Adaption adaption = Glare3::Adaption::Mesopic;
+
+			std::string adaption_name = json::read_string(n->value, "adaption");
+			if ("Scotopic" == adaption_name) {
+				adaption = Glare3::Adaption::Scotopic;
+			} else if ("Mesopic" == adaption_name) {
+				adaption = Glare3::Adaption::Mesopic;
+			} else if ("Photopic" == adaption_name) {
+				adaption = Glare3::Adaption::Photopic;
+			}
+
+			const float threshold = json::read_float(n->value, "threshold", 2.f);
+			const float intensity = json::read_float(n->value, "intensity", 1.f);
+			pipeline.add(new Glare3(adaption, threshold, intensity));
 		}
 	}
 }
