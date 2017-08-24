@@ -14,8 +14,8 @@ void Postprocessor::apply(const image::Float4& source, image::Float4& destinatio
 
 	for (uint32_t p = 0; p < num_passes_; ++p) {
 		pool.run_range([this, p, &source, &destination]
-			(uint32_t /*id*/, int32_t begin, int32_t end) {
-				apply(begin, end, p, source, destination);
+			(uint32_t id, int32_t begin, int32_t end) {
+				apply(id, p, begin, end, source, destination);
 			}, 0, destination.area());
 	}
 }

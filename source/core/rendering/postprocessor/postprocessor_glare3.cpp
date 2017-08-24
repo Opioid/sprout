@@ -8,6 +8,7 @@
 #include "base/spectrum/interpolated.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.hpp"
+#include "base/random/generator.inl"
 #include "base/thread/thread_pool.hpp"
 #include <vector>
 
@@ -166,16 +167,16 @@ void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		break;
 	}
 
-	const float a_n = scale[0];// / a_sum;
-	const float b_n = scale[1];// / b_sum;
-	const float c_n = scale[2];// / c_sum;
+	const float a_n = scale[0] / a_sum;
+	const float b_n = scale[1] / b_sum;
+	const float c_n = scale[2] / c_sum;
 
 	if (Adaption::Photopic == adaption_) {
 		for (int32_t i = 0, len = kernel_size; i < len; ++i) {
 			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c);
 		}
 	} else {
-		const float3 d_n = float3(scale[3]);// / d_sum;
+		const float3 d_n = float3(scale[3]) / d_sum;
 
 		for (int32_t i = 0, len = kernel_size; i < len; ++i) {
 			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d;
@@ -189,7 +190,7 @@ size_t Glare3::num_bytes() const {
 			(kernel_dimensions_[0] * kernel_dimensions_[1]) * sizeof(float3);
 }
 
-void Glare3::apply(int32_t begin, int32_t end, uint32_t pass,
+void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 				   const image::Float4& source, image::Float4& destination) {
 	if (0 == pass) {
 		const float threshold = threshold_;
@@ -205,12 +206,20 @@ void Glare3::apply(int32_t begin, int32_t end, uint32_t pass,
 			}
 		}
 	} else {
-		const float intensity = intensity_;
-		// const Vector intensity = simd::set_float4(intensity_);
-
 		const auto d = destination.description().dimensions.xy();
 
+		const int32_t num_samples = 4096;
+
+		const float weight = static_cast<float>(d[0] * d[1]) / static_cast<float>(num_samples);
+
+		const float intensity = weight * intensity_;
+		// const Vector intensity = simd::set_float4(intensity_);
+
+
+
 		const int32_t kd0 = kernel_dimensions_[0];
+
+		rnd::Generator rng(0, id);
 
 		for (int32_t i = begin; i < end; ++i) {
 			const int2 c = destination.coordinates_2(i);
@@ -234,23 +243,48 @@ void Glare3::apply(int32_t begin, int32_t end, uint32_t pass,
 */
 
 			float3 glare(0.f);
-			float3 ksum(0.f);
-			for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0) {
-				int32_t si = (cd1 + ky) * d[0];
-				for (int32_t ki = kb[0] + krow, kl = ke[0] + krow; ki < kl; ++ki, ++si) {
+			for (int32_t j = 0; j < num_samples; ++j) {
+				const float r0 = rng.random_float();
+				const float r1 = rng.random_float();
+
+				const int32_t sx = static_cast<int32_t>(r0 * static_cast<float>(d[0] - 1));
+				const int32_t sy = static_cast<int32_t>(r1 * static_cast<float>(d[1] - 1));
+
+				const int32_t si = sy * d[0] + sx;
+
+				const int2 kc = kb + int2(sx, sy);
+
+				const int32_t ki = kc[1] * kd0 + kc[0];
+
+				const float3 k = kernel_[ki];
+
+				glare += k * high_pass_[si];
+			}
+
+			float4 s = source.load(i);
+
+			destination.at(i) = float4(s.xyz() + intensity * glare, s[3]);
+
+/*
+			float3 glare(0.f);
+			for (int32_t sy = 0; sy < d[1]; ++sy) {
+				for (int32_t sx = 0; sx < d[0]; ++sx) {
+					const int32_t si = sy * d[0] + sx;
+
+					const int2 kc = kb + int2(sx, sy);
+
+					const int32_t ki = kc[1] * kd0 + kc[0];
+
 					const float3 k = kernel_[ki];
 
 					glare += k * high_pass_[si];
-
-					ksum += k;
 				}
 			}
 
 			float4 s = source.load(i);
 
-			glare = glare / ksum;
-
 			destination.at(i) = float4(s.xyz() + intensity * glare, s[3]);
+			*/
 
 /*
 			Vector glare = simd::Zero;

@@ -189,7 +189,7 @@ size_t Glare::num_bytes() const {
 			(kernel_dimensions_[0] * kernel_dimensions_[1]) * sizeof(float3);
 }
 
-void Glare::apply(int32_t begin, int32_t end, uint32_t pass,
+void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
 				  const image::Float4& source, image::Float4& destination) {
 	if (0 == pass) {
 		float threshold = threshold_;

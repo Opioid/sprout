@@ -348,7 +348,7 @@ void Glare2::pre_apply(const image::Float4& source, image::Float4& destination,
 //	image::encoding::png::Writer::write("high_pass_ro.png", high_pass_r_, dim, 128.f);
 }
 
-void Glare2::apply(int32_t /*begin*/, int32_t /*end*/, uint32_t /*pass*/,
+void Glare2::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t /*begin*/, int32_t /*end*/,
 				   const image::Float4& /*source*/, image::Float4& /*destination*/) {
 	return;
 }
