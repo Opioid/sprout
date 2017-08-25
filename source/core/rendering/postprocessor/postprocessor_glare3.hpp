@@ -37,6 +37,14 @@ private:
 
 	int2 kernel_dimensions_;
 	float3* kernel_;
+
+	struct K {
+		int32_t o;
+		float w;
+	};
+
+	int32_t gauss_width_;
+	K* gauss_kernel_;
 };
 
 }}

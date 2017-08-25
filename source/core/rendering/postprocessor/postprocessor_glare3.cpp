@@ -19,13 +19,15 @@
 namespace rendering { namespace postprocessor {
 
 Glare3::Glare3(Adaption adaption, float threshold, float intensity) :
-	Postprocessor(2),
+	Postprocessor(4),
 	adaption_(adaption),
 	threshold_(threshold), intensity_(intensity),
 	high_pass_(nullptr),
-	kernel_(nullptr) {}
+	kernel_(nullptr),
+	gauss_kernel_(nullptr) {}
 
 Glare3::~Glare3() {
+	memory::free_aligned(gauss_kernel_);
 	memory::free_aligned(kernel_);
 	memory::free_aligned(high_pass_);
 }
@@ -183,6 +185,26 @@ void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 			kernel_[i] = float3(a_n * f[i].a + b_n * f[i].b + c_n * f[i].c) + d_n * f[i].d;
 		}
 	}
+
+	// Gaussian blur
+	const float radius = static_cast<float>(std::max(dim[0], dim[1])) * 0.05f;
+	gauss_width_ = 2 * std::max(static_cast<int32_t>(radius + 0.5f), 1) + 1;
+
+	gauss_kernel_ = memory::allocate_aligned<K>(gauss_width_);
+
+	const float fr = radius + 0.5f;
+	math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr), radius * 0.05f);
+
+	const int32_t ir = static_cast<int32_t>(radius);
+
+	for (int32_t x = 0, len = gauss_width_; x < len; ++x) {
+		const int32_t o = -ir + x;
+
+		const float fo = static_cast<float>(o);
+		const float w = gauss(fo * fo);
+
+		gauss_kernel_[x] = K{o, w};
+	}
 }
 
 size_t Glare3::num_bytes() const {
@@ -206,13 +228,13 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 				high_pass_[i] = float3(0.f);
 			}
 		}
-	} else {
+	} else if (1 == pass) {
 		const auto d = destination.description().dimensions.xy();
 
 		const float fdm0 = static_cast<float>(d[0] - 1);
 		const float fdm1 = static_cast<float>(d[1] - 1);
 
-		const int32_t num_samples = 1024;
+		const int32_t num_samples = 8096;//std::max(d[0], d[1]) * 2;
 
 		const float weight = static_cast<float>(d[0] * d[1]) / static_cast<float>(num_samples);
 
@@ -224,10 +246,10 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 		rnd::Generator rng(0, id);
 
 		for (int32_t i = begin; i < end; ++i) {
-			const uint32_t r = rng.random_uint();
-
 			const int2 c = destination.coordinates_2(i);
 			const int2 kb = d - c;
+
+			const uint32_t r = rng.random_uint();
 
 			float3 glare(0.f);
 			for (int32_t j = 0; j < num_samples; ++j) {
@@ -253,30 +275,11 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 				glare += k * high_pass_[si];
 			}
 
-			float4 s = source.load(i);
+			destination.at(i) = float4(intensity * glare);
 
-			destination.at(i) = float4(s.xyz() + intensity * glare, s[3]);
+		//	float4 s = source.load(i);
 
-/*
-			float3 glare(0.f);
-			for (int32_t sy = 0; sy < d[1]; ++sy) {
-				for (int32_t sx = 0; sx < d[0]; ++sx) {
-					const int32_t si = sy * d[0] + sx;
-
-					const int2 kc = kb + int2(sx, sy);
-
-					const int32_t ki = kc[1] * kd0 + kc[0];
-
-					const float3 k = kernel_[ki];
-
-					glare += k * high_pass_[si];
-				}
-			}
-
-			float4 s = source.load(i);
-
-			destination.at(i) = float4(s.xyz() + intensity * glare, s[3]);
-			*/
+		//	destination.at(i) = float4(s.xyz() + intensity * glare, s[3]);
 
 /*
 			Vector glare = simd::Zero;
@@ -296,6 +299,55 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 			s = math::add(s, glare);
 			simd::store_float4(reinterpret_cast<float*>(destination.address(i)), s);
 */
+		}
+	} else if (2 == pass) {
+		// vertical
+
+		const auto d = destination.description().dimensions.xy();
+
+		for (int32_t i = begin; i < end; ++i) {
+			const int2 c = destination.coordinates_2(i);
+			float3 accum(0.f);
+			float weight_sum = 0.f;
+			for (int32_t j = 0, len = gauss_width_; j < len; ++j) {
+				const auto k = gauss_kernel_[j];
+				int32_t kx = c[0] + k.o;
+
+				if (kx >= 0 && kx < d[0]) {
+					const int32_t si = c[1] * d[0] + kx;
+					const float3 v = destination.at(si).xyz();
+					accum += k.w * v;
+					weight_sum += k.w;
+				}
+			}
+
+			const int32_t di = c[1] * d[0] + c[0];
+			high_pass_[di] = accum / weight_sum;
+		}
+	} else if (3 == pass) {
+		// horizontal
+
+		const auto d = destination.description().dimensions.xy();
+
+		for (int32_t i = begin; i < end; ++i) {
+			const int2 c = destination.coordinates_2(i);
+			float3 accum(0.f);
+			float weight_sum = 0.f;
+			for (int32_t j = 0, len = gauss_width_; j < len; ++j) {
+				const auto k = gauss_kernel_[j];
+				int32_t ky = c[1] + k.o;
+
+				if (ky >= 0 && ky < d[1]) {
+					const int32_t si = ky * d[0] + c[0];
+					const float3 v = high_pass_[si];
+					accum += k.w * v;
+					weight_sum += k.w;
+				}
+			}
+
+			float4 s = source.load(i);
+
+			destination.at(i) = float4(s.xyz() + accum / weight_sum, s[3]);
 		}
 	}
 }
