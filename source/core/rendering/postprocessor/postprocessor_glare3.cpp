@@ -5,6 +5,7 @@
 #include "base/math/vector.inl"
 #include "base/math/vector4.inl"
 #include "base/math/filter/gaussian.hpp"
+#include "base/math/sampling/sample_distribution.hpp"
 #include "base/spectrum/interpolated.hpp"
 #include "base/spectrum/rgb.hpp"
 #include "base/spectrum/xyz.hpp"
@@ -208,47 +209,38 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 	} else {
 		const auto d = destination.description().dimensions.xy();
 
-		const int32_t num_samples = 4096;
+		const float fdm0 = static_cast<float>(d[0] - 1);
+		const float fdm1 = static_cast<float>(d[1] - 1);
+
+		const int32_t num_samples = 1024;
 
 		const float weight = static_cast<float>(d[0] * d[1]) / static_cast<float>(num_samples);
 
 		const float intensity = weight * intensity_;
 		// const Vector intensity = simd::set_float4(intensity_);
 
-
-
 		const int32_t kd0 = kernel_dimensions_[0];
 
 		rnd::Generator rng(0, id);
 
 		for (int32_t i = begin; i < end; ++i) {
+			const uint32_t r = rng.random_uint();
+
 			const int2 c = destination.coordinates_2(i);
-			const int32_t cd1 = c[1] - d[1];
 			const int2 kb = d - c;
-			const int2 ke = kb + d;
-/*
-			float3 glare(0.f);
-			for (int32_t ky = kb[1], krow = kb[1] * kd0; ky < ke[1]; ++ky, krow += kd0) {
-				int32_t si = (cd1 + ky) * d[0];
-				for (int32_t ki = kb[0] + krow, kl = ke[0] + krow; ki < kl; ++ki, ++si) {
-					const float3 k = kernel_[ki];
-
-					glare += k * high_pass_[si];
-				}
-			}
-
-			float4 s = source.load(i);
-
-			destination.at(i) = float4(s.xyz() + intensity * glare, s[3]);
-*/
 
 			float3 glare(0.f);
 			for (int32_t j = 0; j < num_samples; ++j) {
-				const float r0 = rng.random_float();
-				const float r1 = rng.random_float();
+//				const float r0 = rng.random_float();
+//				const float r1 = rng.random_float();
 
-				const int32_t sx = static_cast<int32_t>(r0 * static_cast<float>(d[0] - 1));
-				const int32_t sy = static_cast<int32_t>(r1 * static_cast<float>(d[1] - 1));
+//				const int32_t sx = static_cast<int32_t>(r0 * fdm0);
+//				const int32_t sy = static_cast<int32_t>(r1 * fdm1);
+
+				const float2 uv = math::hammersley(j, num_samples, r);
+
+				const int32_t sx = static_cast<int32_t>(uv[0] * fdm0);
+				const int32_t sy = static_cast<int32_t>(uv[1] * fdm1);
 
 				const int32_t si = sy * d[0] + sx;
 
