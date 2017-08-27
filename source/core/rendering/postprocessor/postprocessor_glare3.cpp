@@ -187,13 +187,13 @@ void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	}
 
 	// Gaussian blur
-	const float radius = static_cast<float>(std::max(dim[0], dim[1])) * 0.05f;
+	const float radius = 16.f; //static_cast<float>(std::max(dim[0], dim[1])) * 0.00125f;
 	gauss_width_ = 2 * std::max(static_cast<int32_t>(radius + 0.5f), 1) + 1;
 
 	gauss_kernel_ = memory::allocate_aligned<K>(gauss_width_);
 
 	const float fr = radius + 0.5f;
-	math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr), radius * 0.05f);
+	const math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr), /*radius * 0.5f*/0.15f);
 
 	const int32_t ir = static_cast<int32_t>(radius);
 
@@ -234,7 +234,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 		const float fdm0 = static_cast<float>(d[0] - 1);
 		const float fdm1 = static_cast<float>(d[1] - 1);
 
-		const int32_t num_samples = 8096;//std::max(d[0], d[1]) * 2;
+		const int32_t num_samples = 4096;//std::max(d[0], d[1]) * 2;
 
 		const float weight = static_cast<float>(d[0] * d[1]) / static_cast<float>(num_samples);
 
@@ -249,6 +249,8 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 			const int2 c = destination.coordinates_2(i);
 			const int2 kb = d - c;
 
+			const float2 center = (float2(c) + float2(0.5f)) / float2(d);
+
 			const uint32_t r = rng.random_uint();
 
 			float3 glare(0.f);
@@ -259,7 +261,12 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 //				const int32_t sx = static_cast<int32_t>(r0 * fdm0);
 //				const int32_t sy = static_cast<int32_t>(r1 * fdm1);
 
-				const float2 uv = math::hammersley(j, num_samples, r);
+				float2 uv = math::hammersley(j, num_samples, r);
+
+				const float2 d = uv - center;
+				const float scale = 2.f * std::max(std::abs(d[0]), std::abs(d[1]));
+
+				uv = scale * d + center;
 
 				const int32_t sx = static_cast<int32_t>(uv[0] * fdm0);
 				const int32_t sy = static_cast<int32_t>(uv[1] * fdm1);

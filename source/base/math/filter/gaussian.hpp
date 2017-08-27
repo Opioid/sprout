@@ -12,7 +12,7 @@ public:
 		exp_(std::exp(-alpha * squared_radius)),
 		alpha_(alpha) {}
 
-	float operator()(float squared_d) {
+	float operator()(float squared_d) const {
 		return std::max(0.f, std::exp(-alpha_ * squared_d) - exp_);
 	}
 
