@@ -263,10 +263,10 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 
 				float2 uv = math::hammersley(j, num_samples, r);
 
-				const float2 d = uv - center;
-				const float scale = 2.f * std::max(std::abs(d[0]), std::abs(d[1]));
+//				const float2 d = uv - center;
+//				const float scale = 2.f * std::max(std::abs(d[0]), std::abs(d[1]));
 
-				uv = scale * d + center;
+//				uv = scale * d + center;
 
 				const int32_t sx = static_cast<int32_t>(uv[0] * fdm0);
 				const int32_t sy = static_cast<int32_t>(uv[1] * fdm1);

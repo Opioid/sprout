@@ -32,7 +32,7 @@
 //#include "core/testing/testing_simd.hpp"
 //#include "core/testing/testing_size.hpp"
 //#include "core/testing/testing_spectrum.hpp"
-#include "core/sampler/sampler_test.hpp"
+//#include "core/sampler/sampler_test.hpp"
 
 static void log_memory_consumption(const resource::Manager& manager,
 								   const take::Take& take,
@@ -51,8 +51,8 @@ int main(int argc, char* argv[]) {
 //	testing::simd::minmax();
 //	testing::simd::unions();
 //	testing::spectrum();
-	sampler::testing::test();
-	return 1;
+//	sampler::testing::test();
+//	return 1;
 
 	options::init(argc, argv);
 	const auto& args = options::options();
