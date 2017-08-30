@@ -258,12 +258,12 @@ inline float Distribution_implicit_pdf_lut_1D::integral() const {
 }
 
 inline uint32_t Distribution_implicit_pdf_lut_1D::sample_discrete(float r) const {
-	uint32_t bucket = map(r);
+	const uint32_t bucket = map(r);
 
-	uint32_t begin = lut_[bucket];
-	uint32_t end   = lut_[bucket + 1];
+	const uint32_t begin = lut_[bucket];
+	const uint32_t end   = lut_[bucket + 1];
 
-	auto it = std::lower_bound(cdf_.begin() + begin, cdf_.begin() + end, r);
+	const auto it = std::lower_bound(cdf_.begin() + begin, cdf_.begin() + end, r);
 
 	uint32_t offset =  0;
 	if (it != cdf_.begin()) {
@@ -296,7 +296,7 @@ inline float Distribution_implicit_pdf_lut_1D::sample_continuous(float r, float&
 
 	const float result = (static_cast<float>(offset) + t) / size_;
 
-	pdf = c - cdf_[offset];
+	pdf = v;
 
 	return result;
 }
@@ -363,7 +363,7 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) {
 	uint32_t last = 0;
 
 	for (uint32_t i = 1, len = static_cast<uint32_t>(cdf_.size()); i < len; ++i) {
-		uint32_t mapped = map(cdf_[i]);
+		const uint32_t mapped = map(cdf_[i]);
 
 		if (mapped > border) {
 			last = i;

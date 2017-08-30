@@ -51,8 +51,6 @@ int main(int argc, char* argv[]) {
 //	testing::simd::minmax();
 //	testing::simd::unions();
 //	testing::spectrum();
-//	sampler::testing::test();
-//	return 1;
 
 	options::init(argc, argv);
 	const auto& args = options::options();

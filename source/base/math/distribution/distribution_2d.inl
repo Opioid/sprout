@@ -48,7 +48,7 @@ inline void Distribution_2D::init(std::vector<Distribution_impl>& conditional) {
 
 	std::vector<float> integrals(conditional_.size());
 
-	uint32_t num_conditional = static_cast<uint32_t>(conditional_.size());
+	const uint32_t num_conditional = static_cast<uint32_t>(conditional_.size());
 
 	for (uint32_t i = 0; i < num_conditional; ++i) {
 		integrals[i] = conditional_[i].integral();
@@ -78,10 +78,10 @@ inline float2 Distribution_2D::sample_continuous(float2 r2, float& pdf) const {
 }
 
 inline float Distribution_2D::pdf(float2 uv) const {
-	float v_pdf = marginal_.pdf(uv[1]);
+	const float v_pdf = marginal_.pdf(uv[1]);
 
-	uint32_t c = std::min(static_cast<uint32_t>(uv[1] * conditional_size_), conditional_max_);
-	float u_pdf = conditional_[c].pdf(uv[0]);
+	const uint32_t c = std::min(static_cast<uint32_t>(uv[1] * conditional_size_), conditional_max_);
+	const float u_pdf = conditional_[c].pdf(uv[0]);
 
 	return u_pdf * v_pdf;
 }
