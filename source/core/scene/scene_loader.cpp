@@ -30,6 +30,8 @@
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 
+#include <iostream>
+
 namespace scene {
 
 Loader::Loader(resource::Manager& manager, material::Material_ptr fallback_material) :
@@ -49,17 +51,18 @@ void Loader::load(const std::string& filename, Scene& scene) {
 	std::string resolved_name;
 	auto stream_pointer = resource_manager_.file_system().read_stream(filename, resolved_name);
 
-	const std::string mount_folder = string::parent_directory(resolved_name);
+	mount_folder_ = string::parent_directory(resolved_name);
 
 	auto root = json::parse(*stream_pointer);
 
 	const json::Value::ConstMemberIterator materials_node = root->FindMember("materials");
 	if (root->MemberEnd() != materials_node) {
+	//	local_materials_ = &materials_node->value;
 //		std::string mount_folder = string::parent_directory(resolved_name);
-		load_materials(materials_node->value, mount_folder, scene);
+		read_materials(materials_node->value);
 	}
 
-	resource_manager_.file_system().push_mount(mount_folder);
+	resource_manager_.file_system().push_mount(mount_folder_);
 
 	for (auto& n : root->GetObject()) {
 		if ("entities" == n.name) {
@@ -92,8 +95,7 @@ std::shared_ptr<shape::Shape> Loader::celestial_disk() {
 	return celestial_disk_;
 }
 
-void Loader::load_materials(const json::Value& materials_value,
-							const std::string& mount_folder, Scene& scene) {
+void Loader::read_materials(const json::Value& materials_value) {
 	if (!materials_value.IsArray()) {
 		return;
 	}
@@ -104,20 +106,9 @@ void Loader::load_materials(const json::Value& materials_value,
 			continue;
 		}
 
-		std::string name = name_node->value.GetString();
+		const std::string name = name_node->value.GetString();
 
-		const void* data = reinterpret_cast<const void*>(m);
-
-		try {
-			auto material = resource_manager_.load<material::Material>(name, data, mount_folder,
-																	   memory::Variant_map());
-
-			if (material->is_animated()) {
-				scene.add_material(material);
-			}
-		} catch (const std::exception& e) {
-			logging::error("Creating \"" + name + "\": " + e.what() + ".");
-		}
+		local_materials_[name] = m;
 	}
 }
 
@@ -405,6 +396,7 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 	materials.reserve(materials_value.Size());
 
 	for (auto& m : materials_value.GetArray()) {
+		/*
 		try {
 			bool was_cached;
 			auto material = resource_manager_.load<material::Material>(m.GetString(),
@@ -422,7 +414,52 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 			logging::error("Loading \"" + std::string(m.GetString()) + "\": " +
 						   e.what() + ". Using fallback material.");
 		}
+		*/
+
+		materials.push_back(load_material(m.GetString(), scene));
 	}
+}
+
+material::Material_ptr Loader::load_material(const std::string& name, Scene& scene) {
+	// First, check if we maybe already have cached the material.
+	auto material = resource_manager_.get<material::Material>(name, memory::Variant_map());
+	if (material) {
+		return material;
+	}
+
+	try {
+		// Otherwise, see if it is among the locally defined materials.
+		const auto material_node = local_materials_.find(name);
+		if (local_materials_.end() != material_node) {
+			const void* data = reinterpret_cast<const void*>(material_node->second);
+
+			material = resource_manager_.load<material::Material>(name, data, mount_folder_,
+																  memory::Variant_map());
+
+			if (material->is_animated()) {
+				scene.add_material(material);
+			}
+
+			return material;
+		}
+
+		// Lastly, try loading the material from the filesystem.
+		bool was_cached;
+		material = resource_manager_.load<material::Material>(name, memory::Variant_map(),
+																  was_cached);
+
+		// Technically, the was_cached business is no longer needed,
+		// because it is handled as a special case at the beginning of this function now.
+		if (material->is_animated() && !was_cached) {
+			scene.add_material(material);
+		}
+
+		return material;
+	} catch (const std::exception& e) {
+		logging::error("Loading \"" + name + "\": " + e.what() + ". Using fallback material.");
+	}
+
+	return fallback_material_;
 }
 
 }

@@ -57,8 +57,7 @@ public:
 
 private:
 
-	void load_materials(const json::Value& materials_value,
-						const std::string& mount_folder, Scene& scene);
+	void read_materials(const json::Value& materials_value);
 
 	void load_entities(const json::Value& entities_value,
 					   entity::Entity* parent,
@@ -85,6 +84,8 @@ private:
 	void load_materials(const json::Value& materials_value, Scene& scene,
 						material::Materials& materials);
 
+	material::Material_ptr load_material(const std::string& name, Scene& scene);
+
 	resource::Manager& resource_manager_;
 
 	std::shared_ptr<shape::Shape> canopy_;
@@ -96,6 +97,9 @@ private:
 	std::shared_ptr<shape::Shape> sphere_;
 
 	material::Material_ptr fallback_material_;
+
+	std::map<std::string, const json::Value*> local_materials_;
+	std::string mount_folder_;
 
 	std::map<std::string, entity::Extension_provider*> extension_providers_;
     std::map<std::string, shape::triangle::Generator*> mesh_generators_;
