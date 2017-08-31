@@ -19,16 +19,13 @@ Typed_cache<T>::~Typed_cache() {}
 template<typename T>
 std::shared_ptr<T> Typed_cache<T>::load(const std::string& filename,
 										const memory::Variant_map& options,
-										Manager& manager, bool& was_cached) {
+										Manager& manager) {
 	auto key = std::make_pair(filename, options);
 
 	auto cached = resources_.find(key);
 	if (resources_.end() != cached) {
-		was_cached = true;
 		return cached->second;
 	}
-
-	was_cached = false;
 
 	auto resource = provider_.load(filename, options, manager);
 	if (!resource) {

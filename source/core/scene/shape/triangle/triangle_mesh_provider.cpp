@@ -116,6 +116,8 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 	manager.thread_pool().run_async(
 		[mesh, parts = std::move(handler.parts()), triangles = std::move(handler.triangles()),
 		 vertices = std::move(handler.vertices()), bvh_preset, &manager]() mutable {
+			logging::verbose("Started asynchronously building triangle mesh BVH.");
+
 			for (auto& p : parts) {
 				uint32_t triangles_start = p.start_index / 3;
 				uint32_t triangles_end = (p.start_index + p.num_indices) / 3;

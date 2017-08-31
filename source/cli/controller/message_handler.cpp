@@ -85,7 +85,7 @@ void Message_handler::handle(const std::string& message) {
 			if ('\"' == index.front() && '\"' == index.back()) {
 				std::string index_string = index.substr(1, index.size() - 2);
 				scene::material::Material* material = resource_manager_.
-						get<scene::material::Material>(index_string, memory::Variant_map()).get();
+						get<scene::material::Material>(index_string).get();
 				handle_material(material, value, parameters);
 			}
 		} else {
