@@ -36,7 +36,7 @@ public:
 
 	virtual float pixel_solid_angle() const = 0;
 
-	virtual void update(rendering::Worker& worker) = 0;
+	void update(rendering::Worker& worker);
 
 	virtual bool generate_ray(const sampler::Camera_sample& sample,
 							  uint32_t view, scene::Ray& ray) const = 0;
@@ -55,6 +55,8 @@ public:
 	void set_motion_blur(bool motion_blur);
 
 protected:
+
+	virtual void on_update(rendering::Worker& worker) = 0;
 
 	virtual void set_parameter(const std::string& name, const json::Value& value) = 0;
 

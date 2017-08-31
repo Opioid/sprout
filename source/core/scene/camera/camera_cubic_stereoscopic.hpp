@@ -24,14 +24,14 @@ public:
 
 	virtual float pixel_solid_angle() const override final;
 
-	virtual void update(rendering::Worker& worker) override final;
-
 	virtual bool generate_ray(const sampler::Camera_sample& sample, uint32_t view,
 							  scene::Ray& ray) const override final;
 
 	void set_interpupillary_distance_falloff(float ipd_falloff);
 
 private:
+
+	virtual void on_update(rendering::Worker& worker) override final;
 
 	virtual void set_parameter(const std::string& name,
 							   const json::Value& value) override final;

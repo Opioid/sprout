@@ -10,7 +10,7 @@
 namespace image { namespace encoding { namespace png {
 
 std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels,
-									int32_t num_elements, bool swap_xy) {
+									int32_t num_elements, bool swap_xy, bool invert) {
 	std::array<uint8_t, Signature_size> signature;
 
 	stream.read(reinterpret_cast<char*>(signature.data()), sizeof(signature));
@@ -37,11 +37,11 @@ std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels,
 		mz_inflateEnd(&info.stream);
 	}
 
-	return create_image(info, channels, num_elements, swap_xy);
+	return create_image(info, channels, num_elements, swap_xy, invert);
 }
 
 std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
-											int32_t num_elements, bool swap_xy) {
+											int32_t num_elements, bool swap_xy, bool invert) {
 	if (0 == info.num_channels || Channels::None == channels) {
 		return nullptr;
 	}
@@ -101,9 +101,15 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 		}
 
 		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-			int32_t o = i * info.num_channels;
+			const int32_t o = i * info.num_channels;
 
-			image->at(i) = info.buffer[o + c];
+			int8_t color = info.buffer[o + c];
+
+			if (invert) {
+				color = 255 - color;
+			}
+
+			image->at(i) = color;
 		}
 
 		return image;
@@ -113,10 +119,10 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 
 		byte2 color(0, 0);
 
-		int32_t max_channels = std::min(2, info.num_channels);
+		const int32_t max_channels = std::min(2, info.num_channels);
 
 		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-			int32_t o = i * info.num_channels;
+			const int32_t o = i * info.num_channels;
 			for (int32_t c = 0; c < max_channels; ++c) {
 				color.v[c] = info.buffer[o + c];
 			}
@@ -131,10 +137,10 @@ std::shared_ptr<Image> Reader::create_image(const Info& info, Channels channels,
 
 		byte3 color(0, 0, 0);
 
-		int32_t max_channels = std::min(3, info.num_channels);
+		const int32_t max_channels = std::min(3, info.num_channels);
 
 		for (int32_t i = 0, len = info.width * info.height; i < len; ++i) {
-			int32_t o = i * info.num_channels;
+			const int32_t o = i * info.num_channels;
 			for (int32_t c = 0; c < max_channels; ++c) {
 				color.v[c] = info.buffer[o + c];
 			}
@@ -192,7 +198,7 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
 		throw std::runtime_error(string::to_string(depth) +  " bit depth PNG not supported");
 	}
 
-	Color_type color_type = static_cast<Color_type>(chunk.data[9]);
+	const Color_type color_type = static_cast<Color_type>(chunk.data[9]);
 
 	switch (color_type) {
 	case Color_type::Grayscale:
@@ -215,7 +221,7 @@ bool Reader::parse_header(const Chunk& chunk, Info& info) {
 
 	info.bytes_per_pixel = info.num_channels;
 
-	uint8_t interlace = chunk.data[12];
+	const uint8_t interlace = chunk.data[12];
 	if (interlace) {
 		throw std::runtime_error("Interlaced PNG not supported");
 	}
@@ -258,7 +264,7 @@ bool Reader::parse_data(const Chunk& chunk, Info& info) {
 			return false;
 		}
 
-		uint32_t decompressed = buffer_size - info.stream.avail_out;
+		const uint32_t decompressed = buffer_size - info.stream.avail_out;
 
 		for (uint32_t i = 0; i < decompressed; ++i) {
 			if (info.filter_byte) {
@@ -324,13 +330,13 @@ uint8_t Reader::average(uint8_t a, uint8_t b) {
 }
 
 uint8_t Reader::paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
-	int A = static_cast<int>(a);
-	int B = static_cast<int>(b);
-	int C = static_cast<int>(c);
-	int p = A + B - C;
-	int pa = std::abs(p - A);
-	int pb = std::abs(p - B);
-	int pc = std::abs(p - C);
+	const int A = static_cast<int>(a);
+	const int B = static_cast<int>(b);
+	const int C = static_cast<int>(c);
+	const int p = A + B - C;
+	const int pa = std::abs(p - A);
+	const int pb = std::abs(p - B);
+	const int pc = std::abs(p - C);
 
 	if (pa <= pb && pa <= pc) {
 		return a;

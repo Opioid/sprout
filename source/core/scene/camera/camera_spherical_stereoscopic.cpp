@@ -41,8 +41,6 @@ float Spherical_stereoscopic::pixel_solid_angle() const {
 	return 1.f;
 }
 
-void Spherical_stereoscopic::update(rendering::Worker& /*worker*/) {}
-
 bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 										  uint32_t view, scene::Ray& ray) const {
 	const float2 coordinates =  float2(sample.pixel) + sample.pixel_uv;
@@ -76,6 +74,8 @@ bool Spherical_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 
 	return true;
 }
+
+void Spherical_stereoscopic::on_update(rendering::Worker& /*worker*/) {}
 
 void Spherical_stereoscopic::set_parameter(const std::string& name,
 										   const json::Value& value) {

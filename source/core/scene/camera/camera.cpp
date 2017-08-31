@@ -18,6 +18,12 @@ Camera::~Camera() {
 	delete sensor_;
 }
 
+void Camera::update(rendering::Worker& worker) {
+	calculate_world_transformation();
+
+	on_update(worker);
+}
+
 void Camera::set_parameters(const json::Value& parameters) {
 	for (auto& n : parameters.GetObject()) {
 		if ("frame_duration" == n.name) {

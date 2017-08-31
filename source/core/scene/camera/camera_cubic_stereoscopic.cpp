@@ -73,8 +73,6 @@ float Cubic_stereoscopic::pixel_solid_angle() const {
 	return 1.f;
 }
 
-void Cubic_stereoscopic::update(rendering::Worker& /*worker*/) {}
-
 bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 									  uint32_t view, scene::Ray& ray) const {
 	const float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
@@ -110,6 +108,8 @@ bool Cubic_stereoscopic::generate_ray(const sampler::Camera_sample& sample,
 void Cubic_stereoscopic::set_interpupillary_distance_falloff(float ipd_falloff) {
 	ipd_falloff_ = std::sqrt(ipd_falloff);
 }
+
+void Cubic_stereoscopic::on_update(rendering::Worker& /*worker*/) {}
 
 void Cubic_stereoscopic::set_parameter(const std::string& name,
 									   const json::Value& value) {

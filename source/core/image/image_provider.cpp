@@ -40,7 +40,10 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 		options.query("swizzle", swizzle);
 		const bool swap_xy = Swizzle::YXZW == swizzle;
 
-		return png_reader_.read(stream, channels, num_elements, swap_xy);
+		bool invert = false;
+		options.query("invert", invert);
+
+		return png_reader_.read(stream, channels, num_elements, swap_xy, invert);
 	} else if (file::Type::RGBE == type) {
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);

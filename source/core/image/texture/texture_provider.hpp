@@ -23,6 +23,7 @@ public:
 		Anisotropy,
 		Roughness,
 		Surface,
+		Specularity,
 		Mask
 	};
 

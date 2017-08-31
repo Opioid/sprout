@@ -33,6 +33,8 @@ std::shared_ptr<Texture> Provider::load(const std::string& filename,
 	Usage usage = Usage::Unknown;
 	options.query("usage", usage);
 
+	bool invert = false;
+
 	if (Usage::Mask == usage) {
 		channels = Channels::W;
 	} else if (Usage::Anisotropy == usage) {
@@ -41,11 +43,18 @@ std::shared_ptr<Texture> Provider::load(const std::string& filename,
 		channels = Channels::XY;
 	} else if (Usage::Roughness == usage) {
 		channels = Channels::X;
+	} else if (Usage::Specularity == usage) {
+		channels = Channels::X;
+		invert = true;
 	}
 
 	memory::Variant_map image_options;
 	image_options.set("channels", channels);
 	image_options.inherit_except(options, "usage");
+
+	if (invert) {
+		image_options.set("invert", invert);
+	}
 
 	try {
 		auto image = manager.load<Image>(filename, image_options);

@@ -34,8 +34,6 @@ float Hemispherical::pixel_solid_angle() const {
 	return 1.f;
 }
 
-void Hemispherical::update(rendering::Worker& /*worker*/) {}
-
 bool Hemispherical::generate_ray(const sampler::Camera_sample& sample,
 								 uint32_t /*view*/, scene::Ray& ray) const {
 	float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
@@ -73,6 +71,8 @@ bool Hemispherical::generate_ray(const sampler::Camera_sample& sample,
 
 	return true;
 }
+
+void Hemispherical::on_update(rendering::Worker& /*worker*/) {}
 
 void Hemispherical::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 

@@ -37,31 +37,6 @@ float Perspective::pixel_solid_angle() const {
 	return fov_ / static_cast<float>(resolution_[0]);
 }
 
-void Perspective::update(rendering::Worker& worker) {
-	const float2 fr(resolution_);
-	const float ratio = fr[0] / fr[1];
-
-	const float z = ratio * math::Pi / fov_ * 0.5f;
-
-//	float3 left_top   (-ratio,  1.f, z);
-//	float3 right_top  ( ratio,  1.f, z);
-//	float3 left_bottom(-ratio, -1.f, z);
-
-	float3 left_top    = float3(-ratio,  1.f, 0.f) * lens_tilt_;
-	float3 right_top   = float3( ratio,  1.f, 0.f) * lens_tilt_;
-	float3 left_bottom = float3(-ratio, -1.f, 0.f) * lens_tilt_;
-
-	left_top[2]    += z;
-	right_top[2]   += z;
-	left_bottom[2] += z;
-
-	left_top_ = left_top + float3(lens_shift_, 0.f);
-	d_x_ = (right_top   - left_top) / fr[0];
-	d_y_ = (left_bottom - left_top) / fr[1];
-
-	update_focus(worker);
-}
-
 bool Perspective::generate_ray(const sampler::Camera_sample& sample,
 							   uint32_t /*view*/, scene::Ray& ray) const {
 	const float2 coordinates = float2(sample.pixel) + sample.pixel_uv;
@@ -127,6 +102,31 @@ void Perspective::set_focus(const Focus& focus) {
 	focus_.point[1] *= static_cast<float>(resolution_[1]);
 
 	focus_distance_ = focus_.distance;
+}
+
+void Perspective::on_update(rendering::Worker& worker) {
+	const float2 fr(resolution_);
+	const float ratio = fr[0] / fr[1];
+
+	const float z = ratio * math::Pi / fov_ * 0.5f;
+
+//	float3 left_top   (-ratio,  1.f, z);
+//	float3 right_top  ( ratio,  1.f, z);
+//	float3 left_bottom(-ratio, -1.f, z);
+
+	float3 left_top    = float3(-ratio,  1.f, 0.f) * lens_tilt_;
+	float3 right_top   = float3( ratio,  1.f, 0.f) * lens_tilt_;
+	float3 left_bottom = float3(-ratio, -1.f, 0.f) * lens_tilt_;
+
+	left_top[2]    += z;
+	right_top[2]   += z;
+	left_bottom[2] += z;
+
+	left_top_ = left_top + float3(lens_shift_, 0.f);
+	d_x_ = (right_top   - left_top) / fr[0];
+	d_y_ = (left_bottom - left_top) / fr[1];
+
+	update_focus(worker);
 }
 
 void Perspective::update_focus(rendering::Worker& worker) {
