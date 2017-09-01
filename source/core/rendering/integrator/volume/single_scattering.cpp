@@ -66,7 +66,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 
 	constexpr float epsilon = 5e-5f;
 
-	float3 w = -ray.direction;
+	const float3 w = -ray.direction;
 
 	float3 radiance(0.f);
 	float3 tr(1.f);
@@ -74,7 +74,9 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 	float3 current = ray.point(min_t);
 	float3 previous;
 
-	min_t += rng_.random_float() * step;
+	const float r = std::max(rng_.random_float(), 0.001f);
+
+	min_t += r * step;
 
 	const float3 next = ray.point(min_t);
 	Ray tau_ray(current, next - current, 0.f, 1.f, ray.time);
@@ -87,6 +89,11 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 		current  = ray.point(min_t);
 
 //		Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
+
+		if (float3(0.f) == tau_ray.direction) {
+			std::cout << "larmy larmsen" << std::endl;
+			std::cout << "i " << i << std::endl;
+		}
 
 		const float3 tau = volume.optical_depth(tau_ray, settings_.step_size, rng_,
 												worker, Sampler_filter::Unknown);
@@ -113,7 +120,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 
 			const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
 			if (math::any_greater_zero(tv)) {
-				const float p = volume.phase(w, -light_sample.shape.wi);
+				const float phase = volume.phase(w, -light_sample.shape.wi);
 
 				const float3 scattering = volume.scattering(current, worker,
 															Sampler_filter::Unknown);
@@ -121,7 +128,8 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 				const float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
 							   * light_sample.radiance;
 
-				radiance += (p * tv * tr) * (scattering * l) / (light_pdf * light_sample.shape.pdf);
+				radiance += (phase * tv * tr) * (scattering * l) /
+							(light_pdf * light_sample.shape.pdf);
 			}
 		}
 	}
@@ -135,6 +143,40 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 
 size_t Single_scattering::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
+}
+
+float3 Single_scattering::estimate_direct_light(Worker& worker, const float3& w, const float3& p,
+												float time, const Volume& volume) {
+	constexpr float epsilon = 5e-5f;
+
+	float3 result(0.f);
+
+	float light_pdf;
+	const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
+
+	scene::light::Sample light_sample;
+	light->sample(p, time, sampler_, 0, worker,
+				  Sampler_filter::Nearest, light_sample);
+
+	if (light_sample.shape.pdf > 0.f) {
+		const Ray shadow_ray(p, light_sample.shape.wi, 0.f,
+							 light_sample.shape.t - epsilon, time);
+
+		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+		if (math::any_greater_zero(tv)) {
+			const float phase = volume.phase(w, -light_sample.shape.wi);
+
+			const float3 scattering = volume.scattering(p, worker, Sampler_filter::Unknown);
+
+			const float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
+						   * light_sample.radiance;
+
+			result += (phase * tv) * (scattering * l)
+					/ (light_pdf * light_sample.shape.pdf);
+		}
+	}
+
+	return result;
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
