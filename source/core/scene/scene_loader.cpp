@@ -446,7 +446,7 @@ material::Material_ptr Loader::load_material(const std::string& name, Scene& sce
 		// Lastly, try loading the material from the filesystem.
 		bool was_cached;
 		material = resource_manager_.load<material::Material>(name, memory::Variant_map(),
-																  was_cached);
+															  was_cached);
 
 		// Technically, the was_cached business is no longer needed,
 		// because it is handled as a special case at the beginning of this function now.
