@@ -30,6 +30,9 @@ public:
 
 private:
 
+	float3 estimate_direct_light(Worker& worker, const float3& w, const float3& p,
+								 float time, const Volume& volume);
+
 	const Settings settings_;
 
 	sampler::Random sampler_;

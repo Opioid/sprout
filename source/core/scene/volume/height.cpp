@@ -8,13 +8,16 @@
 
 #include "base/debug/assert.hpp"
 
+#include "base/math/print.hpp"
+#include <iostream>
+
 namespace scene { namespace volume {
 
 Height::Height() : a_(1.f), b_(1.f) {}
 
 float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Generator& /*rng*/,
 							 Worker& /*worker*/, Sampler_filter /*filter*/) const {
-	math::Ray rn = ray.normalized();
+	const math::Ray rn = ray.normalized();
 
 	float min_t;
 	float max_t;
@@ -27,20 +30,22 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 	// Because everything happens in world space there could be differences
 	// when the volume is rotated because the local aabb is never checked.
 
-	float ay = rn.origin[1] + min_t * rn.direction[1];
-	float by = rn.origin[1] + max_t * rn.direction[1];
+	const float ay = rn.origin[1] + min_t * rn.direction[1];
+	const float by = rn.origin[1] + max_t * rn.direction[1];
 
-	float min_y = aabb_.min()[1];
-	float ha = ay - min_y;
-	float hb = by - min_y;
+	const float min_y = aabb_.min()[1];
+	const float ha = ay - min_y;
+	const float hb = by - min_y;
 
-	float3 attenuation = absorption_ + scattering_;
+	const float3 attenuation = absorption_ + scattering_;
 
-	float d = max_t - min_t;
+	const float d = max_t - min_t;
 
-	if (ha == hb) {
+	const float hb_ha = hb - ha;
+
+	if (0.f == hb_ha) {
 		// special case where density stays exactly the same along the ray
-		float3 result = d * (a_ * math::exp(-b_ * ha)) * attenuation;
+		const float3 result = d * (a_ * math::exp(-b_ * ha)) * attenuation;
 
 		SOFT_ASSERT(math::all_finite(result));
 
@@ -53,12 +58,24 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 
 //	float3 result = d * ((fb - fa) / (hb - ha)) * attenuation;
 
-	float fa = -math::exp(-b_ * ha);
-	float fb = -math::exp(-b_ * hb);
+	const float fa = -math::exp(-b_ * ha);
+	const float fb = -math::exp(-b_ * hb);
 
-	float3 result = d * ((a_ * (fb - fa) / b_) / (hb - ha)) * attenuation;
+	const float3 result = d * ((a_ * (fb - fa) / b_) / (hb_ha)) * attenuation;
 
 	SOFT_ASSERT(math::all_finite(result));
+
+	if (!math::all_finite(result)) {
+		std::cout << "ha " << ha << std::endl;
+		std::cout << "hb " << hb << std::endl;
+		std::cout << "hb_ha " << hb_ha << std::endl;
+		std::cout << "ay " << ay << std::endl;
+		std::cout << "by " << by << std::endl;
+		std::cout << "min_t " << min_t << std::endl;
+		std::cout << "max_t " << max_t << std::endl;
+		std::cout << ray.origin << std::endl;
+		std::cout << ray.direction << std::endl;
+	}
 
 	return result;
 
@@ -73,7 +90,7 @@ float Height::density(const float3& p, Worker& /*worker*/, Sampler_filter /*filt
 	}
 
 	// calculate height, relative to volume, in world space
-	float height = world_transformation_.scale[1] * (1.f + p[1]);
+	const float height = world_transformation_.scale[1] * (1.f + p[1]);
 
 	return a_ * math::exp(-b_ * height);
 }
