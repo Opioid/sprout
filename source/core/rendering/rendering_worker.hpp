@@ -45,7 +45,7 @@ public:
 	void prepare(uint32_t num_samples_per_pixel);
 
 	float4 li(scene::Ray& ray);
-	float4 volume_li(const scene::Ray& ray, float3& transmittance);
+	float4 volume_li(const scene::Ray& ray, bool primary_ray, float3& transmittance);
 
 	float3 transmittance(const scene::Ray& ray);
 

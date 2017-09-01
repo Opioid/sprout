@@ -17,8 +17,8 @@ public:
 	virtual float3 transmittance(Worker& worker, const Ray& ray,
 								 const Volume& volume) override final;
 
-	virtual float4 li(Worker& worker, const Ray& ray, const Volume& volume,
-					  float3& transmittance) override final;
+	virtual float4 li(Worker& worker, const Ray& ray, bool primary_ray,
+					  const Volume& volume, float3& transmittance) override final;
 
 	virtual size_t num_bytes() const override final;
 };

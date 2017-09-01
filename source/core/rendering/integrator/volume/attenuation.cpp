@@ -29,8 +29,8 @@ float3 Attenuation::transmittance(Worker& worker, const Ray& ray, const Volume& 
 	return math::exp(-tau);
 }
 
-float4 Attenuation::li(Worker& worker, const Ray& ray, const Volume& volume,
-					   float3& transmittance) {
+float4 Attenuation::li(Worker& worker, const Ray& ray, bool /*primary_ray*/,
+					   const Volume& volume, float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {

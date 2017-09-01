@@ -43,8 +43,8 @@ float3 Single_scattering::transmittance(Worker& worker, const Ray& ray, const Vo
 	return math::exp(-tau);
 }
 
-float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volume,
-							 float3& transmittance) {
+float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
+							 const Volume& volume, float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
@@ -59,8 +59,8 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, const Volume& volum
 		return float4(0.f);
 	}
 
-	const uint32_t num_samples =
-			 static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+	const uint32_t num_samples = primary_ray ?
+			 static_cast<uint32_t>(std::ceil(range / settings_.step_size)) : 1;
 
 	const float step = range / static_cast<float>(num_samples);
 

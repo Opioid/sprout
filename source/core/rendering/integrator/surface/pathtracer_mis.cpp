@@ -90,7 +90,7 @@ float4 Pathtracer_MIS::li(Worker& worker, Ray& ray, Intersection& intersection) 
 	for (uint32_t i = 0; ; ++i) {
 		if (i > 0) {
 			float3 tr;
-			const float4 vli = worker.volume_li(ray, tr);
+			const float4 vli = worker.volume_li(ray, primary_ray, tr);
 			result += throughput * vli.xyz();
 			throughput *= tr;
 		}
