@@ -29,7 +29,7 @@ namespace rendering { namespace integrator {
 
 struct Light_sampling {
 	enum class Strategy {
-		One,
+		Single,
 		All
 	};
 

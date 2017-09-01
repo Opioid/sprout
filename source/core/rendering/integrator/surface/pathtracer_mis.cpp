@@ -46,7 +46,7 @@ void Pathtracer_MIS::prepare(const Scene& scene, uint32_t num_samples_per_pixel)
 
 	const uint32_t num_light_samples = settings_.light_sampling.num_samples;
 
-	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
+	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (auto& s : light_samplers_) {
 			s.resize(num_samples_per_pixel, num_light_samples, 1, 2);
 		}
@@ -204,7 +204,7 @@ float3 Pathtracer_MIS::estimate_direct_light(Worker& worker, const Ray& ray,
 
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
 
-	if (Light_sampling::Strategy::One == settings_.light_sampling.strategy) {
+	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
 			const float select = light_sampler(ray.depth).generate_sample_1D(1);
 

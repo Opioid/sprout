@@ -117,7 +117,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 																		thread_pool.num_threads(),
 																		step_size);
 
-		const Light_sampling light_sampling{Light_sampling::Strategy::One, 1};
+		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
 		const uint32_t min_bounces = 4;
 		const uint32_t max_bounces = 8;
 		const float path_termination_probability = 0.9f;
@@ -708,8 +708,8 @@ void Loader::load_light_sampling(const json::Value& sampling_value,
 		if ("strategy" == n.name) {
 			std::string strategy = json::read_string(n.value);
 
-			if ("One" == strategy) {
-				sampling.strategy = rendering::integrator::Light_sampling::Strategy::One;
+			if ("Single" == strategy) {
+				sampling.strategy = rendering::integrator::Light_sampling::Strategy::Single;
 			} else if ("All" == strategy) {
 				sampling.strategy = rendering::integrator::Light_sampling::Strategy::All;
 			}
