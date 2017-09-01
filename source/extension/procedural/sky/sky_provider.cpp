@@ -49,11 +49,11 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 		sky_material = std::make_shared<Sky_material>(sky->model());
 	}
 
-	manager.store<material::Material>("proc:sky", memory::Variant_map(), sky_material);
+	manager.store<material::Material>("proc:sky", sky_material);
 
 	auto sun_material = std::make_shared<Sun_material>(sky->model());
 
-	manager.store<material::Material>("proc:sun", memory::Variant_map(), sun_material);
+	manager.store<material::Material>("proc:sun", sun_material);
 
 	material::Materials materials(1);
 

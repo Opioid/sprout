@@ -21,14 +21,6 @@ void Manager::register_provider(Provider<T>& provider) {
 template<typename T>
 std::shared_ptr<T> Manager::load(const std::string& filename,
 								 const memory::Variant_map& options) {
-	bool was_cached;
-	return load<T>(filename, options, was_cached);
-}
-
-template<typename T>
-std::shared_ptr<T> Manager::load(const std::string& filename,
-								 const memory::Variant_map& options,
-								 bool& was_cached) {
 	if (filename.empty()) {
 		return nullptr;
 	}
@@ -40,7 +32,7 @@ std::shared_ptr<T> Manager::load(const std::string& filename,
 		return nullptr;
 	}
 
-	return cache->load(filename, options, *this, was_cached);
+	return cache->load(filename, options, *this);
 }
 
 template<typename T>
@@ -79,8 +71,9 @@ std::shared_ptr<T> Manager::get(const std::string& filename,
 }
 
 template<typename T>
-void Manager::store(const std::string& name, const memory::Variant_map& options,
-					std::shared_ptr<T> resource) {
+void Manager::store(const std::string& name,
+					std::shared_ptr<T> resource,
+					const memory::Variant_map& options) {
 	if (name.empty() || !resource) {
 		return;
 	}

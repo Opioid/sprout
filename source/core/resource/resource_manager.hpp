@@ -1,9 +1,8 @@
 #pragma once
 
+#include "base/memory/variant_map.hpp"
 #include <map>
 #include <memory>
-
-namespace memory { class Variant_map; }
 
 namespace file { class System; }
 
@@ -31,23 +30,22 @@ public:
 	void register_provider(Provider<T>& provider);
 
 	template<typename T>
-	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options);
-
-	template<typename T>
-	std::shared_ptr<T> load(const std::string& filename, const memory::Variant_map& options,
-							bool& was_cached);
+	std::shared_ptr<T> load(const std::string& filename,
+							const memory::Variant_map& options = memory::Variant_map());
 
 	template<typename T>
 	std::shared_ptr<T> load(const std::string& name, const void* data,
 							const std::string& mount_folder,
-							const memory::Variant_map& options);
+							const memory::Variant_map& options = memory::Variant_map());
 
 	template<typename T>
-	std::shared_ptr<T> get(const std::string& filename, const memory::Variant_map& options);
+	std::shared_ptr<T> get(const std::string& filename,
+						   const memory::Variant_map& options = memory::Variant_map());
 
 	template<typename T>
-	void store(const std::string& name, const memory::Variant_map& options,
-			   std::shared_ptr<T> resource);
+	void store(const std::string& name,
+			   std::shared_ptr<T> resource,
+			   const memory::Variant_map& options = memory::Variant_map());
 
 	template<typename T>
 	size_t num_bytes() const;

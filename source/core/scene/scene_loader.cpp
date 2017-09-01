@@ -30,8 +30,6 @@
 #include "base/string/string.hpp"
 #include "base/thread/thread_pool.hpp"
 
-#include <iostream>
-
 namespace scene {
 
 Loader::Loader(resource::Manager& manager, material::Material_ptr fallback_material) :
@@ -396,33 +394,13 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 	materials.reserve(materials_value.Size());
 
 	for (auto& m : materials_value.GetArray()) {
-		/*
-		try {
-			bool was_cached;
-			auto material = resource_manager_.load<material::Material>(m.GetString(),
-																	   memory::Variant_map(),
-																	   was_cached);
-
-			if (material->is_animated() && !was_cached) {
-				scene.add_material(material);
-			}
-
-			materials.push_back(material);
-		} catch (const std::exception& e) {
-			materials.push_back(fallback_material_);
-
-			logging::error("Loading \"" + std::string(m.GetString()) + "\": " +
-						   e.what() + ". Using fallback material.");
-		}
-		*/
-
 		materials.push_back(load_material(m.GetString(), scene));
 	}
 }
 
 material::Material_ptr Loader::load_material(const std::string& name, Scene& scene) {
 	// First, check if we maybe already have cached the material.
-	auto material = resource_manager_.get<material::Material>(name, memory::Variant_map());
+	auto material = resource_manager_.get<material::Material>(name);
 	if (material) {
 		return material;
 	}
@@ -433,8 +411,7 @@ material::Material_ptr Loader::load_material(const std::string& name, Scene& sce
 		if (local_materials_.end() != material_node) {
 			const void* data = reinterpret_cast<const void*>(material_node->second);
 
-			material = resource_manager_.load<material::Material>(name, data, mount_folder_,
-																  memory::Variant_map());
+			material = resource_manager_.load<material::Material>(name, data, mount_folder_);
 
 			if (material->is_animated()) {
 				scene.add_material(material);
@@ -444,13 +421,9 @@ material::Material_ptr Loader::load_material(const std::string& name, Scene& sce
 		}
 
 		// Lastly, try loading the material from the filesystem.
-		bool was_cached;
-		material = resource_manager_.load<material::Material>(name, memory::Variant_map(),
-															  was_cached);
+		material = resource_manager_.load<material::Material>(name);
 
-		// Technically, the was_cached business is no longer needed,
-		// because it is handled as a special case at the beginning of this function now.
-		if (material->is_animated() && !was_cached) {
+		if (material->is_animated()) {
 			scene.add_material(material);
 		}
 
