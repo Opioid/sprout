@@ -8,9 +8,6 @@
 
 #include "base/debug/assert.hpp"
 
-#include "base/math/print.hpp"
-#include <iostream>
-
 namespace scene { namespace volume {
 
 Height::Height() : a_(1.f), b_(1.f) {}
@@ -64,18 +61,6 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 	const float3 result = d * ((a_ * (fb - fa) / b_) / (hb_ha)) * attenuation;
 
 	SOFT_ASSERT(math::all_finite(result));
-
-	if (!math::all_finite(result)) {
-		std::cout << "ha " << ha << std::endl;
-		std::cout << "hb " << hb << std::endl;
-		std::cout << "hb_ha " << hb_ha << std::endl;
-		std::cout << "ay " << ay << std::endl;
-		std::cout << "by " << by << std::endl;
-		std::cout << "min_t " << min_t << std::endl;
-		std::cout << "max_t " << max_t << std::endl;
-		std::cout << ray.origin << std::endl;
-		std::cout << ray.direction << std::endl;
-	}
 
 	return result;
 

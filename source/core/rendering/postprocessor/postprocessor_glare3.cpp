@@ -249,7 +249,7 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 			const int2 c = destination.coordinates_2(i);
 			const int2 kb = d - c;
 
-			const float2 center = (float2(c) + float2(0.5f)) / float2(d);
+//			const float2 center = (float2(c) + float2(0.5f)) / float2(d);
 
 			const uint32_t r = rng.random_uint();
 

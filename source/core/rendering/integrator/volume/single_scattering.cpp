@@ -12,9 +12,6 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
-#include <iostream>
-#include "base/math/print.hpp"
-
 namespace rendering { namespace integrator { namespace volume {
 
 Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -54,7 +51,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 
 	const float range = max_t - min_t;
 
-	if (range < 0.0001f) {
+	if (range < 0.001f) {
 		transmittance = float3(1.f);
 		return float4(0.f);
 	}
@@ -74,7 +71,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 	float3 current = ray.point(min_t);
 	float3 previous;
 
-	const float r = std::max(rng_.random_float(), 0.001f);
+	const float r = std::max(rng_.random_float(), 0.0001f);
 
 	min_t += r * step;
 
@@ -85,15 +82,16 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
 
 	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
+		// This happens sometimes when the range is very small compared to the world coordinates
+		if (float3::identity() == tau_ray.direction) {
+			tau_ray.origin = previous;
+			tau_ray.direction = tau_ray_direction;
+			tau_ray.inv_direction = inv_tau_ray_direction;
+			continue;
+		}
+
 		previous = current;
 		current  = ray.point(min_t);
-
-//		Ray tau_ray(previous, current - previous, 0.f, 1.f, ray.time);
-
-		if (float3(0.f) == tau_ray.direction) {
-			std::cout << "larmy larmsen" << std::endl;
-			std::cout << "i " << i << std::endl;
-		}
 
 		const float3 tau = volume.optical_depth(tau_ray, settings_.step_size, rng_,
 												worker, Sampler_filter::Unknown);
