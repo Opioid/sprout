@@ -11,6 +11,7 @@ public:
 
 	struct Settings {
 		float step_size;
+		bool light_sampling_single;
 	};
 
 	Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -33,6 +34,11 @@ private:
 	float3 estimate_direct_light(Worker& worker, const float3& w, const float3& p,
 								 float time, const Volume& volume);
 
+	float3 evaluate_light(const Light* light, float light_weight,
+						  const float3& w, const float3& p,
+						  float time, uint32_t sampler_dimension,
+						  Worker& worker, const Volume& volume);
+
 	const Settings settings_;
 
 	sampler::Random sampler_;
@@ -43,7 +49,7 @@ class Single_scattering_factory : public Factory {
 public:
 
 	Single_scattering_factory(const take::Settings& take_settings, uint32_t num_integrators,
-							  float step_size);
+							  float step_size, bool light_sampling_single);
 
 	~Single_scattering_factory();
 

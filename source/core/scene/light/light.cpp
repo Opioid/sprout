@@ -27,4 +27,3 @@ bool Light::is_light(uint32_t id) {
 }
 
 }}
-

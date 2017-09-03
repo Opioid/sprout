@@ -140,6 +140,8 @@ const light::Light* Scene::random_light(float random, float& pdf) const {
 
 	const uint32_t l = light_distribution_.sample_discrete(random, pdf);
 
+	SOFT_ASSERT(l < static_cast<uint32_t>(lights_.size()));
+
 	return lights_[l];
 }
 

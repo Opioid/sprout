@@ -27,7 +27,7 @@ inline uint32_t Distribution_1D::sample_discrete(float r) const {
 }
 
 inline uint32_t Distribution_1D::sample_discrete(float r, float& pdf) const {
-	uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample_discrete(r);
 
 	pdf = pdf_[offset];
 
@@ -35,12 +35,12 @@ inline uint32_t Distribution_1D::sample_discrete(float r, float& pdf) const {
 }
 
 inline float Distribution_1D::sample_continuous(float r, float& pdf) const {
-	uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample_discrete(r);
 
 	pdf = pdf_[offset];
 
-	float c = cdf_[offset + 1];
-	float t = (c - r) / (c - cdf_[offset]);
+	const float c = cdf_[offset + 1];
+	const float t = (c - r) / (c - cdf_[offset]);
 
 	return (static_cast<float>(offset) + t) / size_;
 }
@@ -50,7 +50,7 @@ inline float Distribution_1D::pdf(uint32_t index) const {
 }
 
 inline float Distribution_1D::pdf(float u) const {
-	uint32_t offset = static_cast<uint32_t>(u * size_);
+	const uint32_t offset = static_cast<uint32_t>(u * size_);
 
 	return pdf_[offset];
 }

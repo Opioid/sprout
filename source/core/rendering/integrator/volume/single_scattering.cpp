@@ -12,6 +12,8 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
+#include <iostream>
+
 namespace rendering { namespace integrator { namespace volume {
 
 Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -51,17 +53,15 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 
 	const float range = max_t - min_t;
 
-	if (range < 0.001f) {
+	if (range < 0.0001f) {
 		transmittance = float3(1.f);
 		return float4(0.f);
 	}
-
+constexpr float epsilon = 5e-5f;
 	const uint32_t num_samples = primary_ray ?
 			 static_cast<uint32_t>(std::ceil(range / settings_.step_size)) : 1;
 
 	const float step = range / static_cast<float>(num_samples);
-
-	constexpr float epsilon = 5e-5f;
 
 	const float3 w = -ray.direction;
 
@@ -82,7 +82,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
 
 	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
-		// This happens sometimes when the range is very small compared to the world coordinates
+		// This happens sometimes when the range is very small compared to the world coordinates.
 		if (float3::identity() == tau_ray.direction) {
 			tau_ray.origin = previous;
 			tau_ray.direction = tau_ray_direction;
@@ -105,6 +105,8 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Direct light scattering
+		radiance += tr * estimate_direct_light(worker, w, current, ray.time, volume);
+/*
 		float light_pdf;
 		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
 
@@ -129,7 +131,7 @@ float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
 				radiance += (phase * tv * tr) * (scattering * l) /
 							(light_pdf * light_sample.shape.pdf);
 			}
-		}
+		}*/
 	}
 
 	transmittance = tr;
@@ -145,15 +147,67 @@ size_t Single_scattering::num_bytes() const {
 
 float3 Single_scattering::estimate_direct_light(Worker& worker, const float3& w, const float3& p,
 												float time, const Volume& volume) {
-	constexpr float epsilon = 5e-5f;
+/*	float3 result(0.f);
 
-	float3 result(0.f);
+	if (settings_.light_sampling_single) {
+		float light_pdf;
+		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
 
+		result = evaluate_light(light, light_pdf, w, p, time, 0, worker, volume);
+	} else {
+		const auto& lights = worker.scene().lights();
+		const float light_weight = 1.f;//static_cast<float>(lights.size());
+
+		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
+			const auto light = lights[l];
+
+			result += evaluate_light(light, light_weight, w, p, time, l, worker, volume);
+		}
+	}
+
+	return result;
+	*/
+//std::cout << "a" << std::endl;
 	float light_pdf;
 	const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
-
+//std::cout << "b" << std::endl;
 	scene::light::Sample light_sample;
 	light->sample(p, time, sampler_, 0, worker,
+				  Sampler_filter::Nearest, light_sample);
+//std::cout << "c" << std::endl;
+	if (light_sample.shape.pdf > 0.f) {
+//std::cout << "d" << std::endl;
+		const Ray shadow_ray(p, light_sample.shape.wi, 0.f,
+							 light_sample.shape.t - 0.00005f, time);
+//std::cout << "e" << std::endl;
+		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+//std::cout << "f" << std::endl;
+		if (math::any_greater_zero(tv)) {
+//std::cout << "g" << std::endl;
+			const float phase = volume.phase(w, -light_sample.shape.wi);
+//std::cout << "h" << std::endl;
+			const float3 scattering = volume.scattering(p, worker,
+														Sampler_filter::Unknown);
+//std::cout << "j" << std::endl;
+			const float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
+						   * light_sample.radiance;
+//std::cout << "k" << std::endl;
+			return (phase * tv) * (scattering * l) /
+				   (light_pdf * light_sample.shape.pdf);
+		}
+	}
+//std::cout << "l" << std::endl;
+	return float3(0.f);
+}
+
+float3 Single_scattering::evaluate_light(const Light* light, float light_weight,
+										 const float3& w, const float3& p,
+										 float time, uint32_t sampler_dimension,
+										 Worker& worker, const Volume& volume) {
+	constexpr float epsilon = 5e-5f;
+
+	scene::light::Sample light_sample;
+	light->sample(p, time, sampler_, sampler_dimension, worker,
 				  Sampler_filter::Nearest, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
@@ -169,20 +223,19 @@ float3 Single_scattering::estimate_direct_light(Worker& worker, const float3& w,
 			const float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
 						   * light_sample.radiance;
 
-			result += (phase * tv) * (scattering * l)
-					/ (light_pdf * light_sample.shape.pdf);
+			return (phase * tv) * (scattering * l) / (light_weight * light_sample.shape.pdf);
 		}
 	}
 
-	return result;
+	return float3(0.f);
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
 													 uint32_t num_integrators,
-													 float step_size) :
+													 float step_size, bool light_sampling_single) :
 	Factory(take_settings, num_integrators),
 	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
-	settings_{ step_size } {}
+	settings_{step_size, light_sampling_single} {}
 
 Single_scattering_factory::~Single_scattering_factory() {
 	memory::free_aligned(integrators_);

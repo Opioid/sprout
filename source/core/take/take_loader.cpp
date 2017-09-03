@@ -99,6 +99,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 			image::Writer* writer = new image::encoding::png::Writer(d);
 			take->exporters.push_back(std::make_unique<exporting::Image_sequence>("output_",
 																				  writer));
+
 			logging::warning("No valid exporter was specified, defaulting to PNG writer.");
 		}
 	}
@@ -106,6 +107,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 	if (!take->sampler_factory) {
 		take->sampler_factory = std::make_shared<
 				sampler::Random_factory>(thread_pool.num_threads());
+
 		logging::warning("No valid sampler was specified, defaulting to Random sampler.");
 	}
 
@@ -134,7 +136,9 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 
 	if (!take->volume_integrator_factory) {
 		take->volume_integrator_factory = std::make_shared<
-				volume::Single_scattering_factory>(take->settings, thread_pool.num_threads(), 1.f);
+				volume::Single_scattering_factory>(take->settings, thread_pool.num_threads(),
+												   1.f, true);
+
 		logging::warning("No valid volume integrator specified, defaulting to Single Scattering.");
 	}
 
@@ -520,14 +524,27 @@ Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
 std::shared_ptr<rendering::integrator::volume::Factory>
 Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 									   const Settings& settings, uint32_t num_workers) {
+	using namespace rendering::integrator;
 	using namespace rendering::integrator::volume;
+
+	Light_sampling light_sampling{Light_sampling::Strategy::All, 1};
 
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Attenuation" == n.name) {
 			return std::make_shared<Attenuation_factory>(settings, num_workers);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			return std::make_shared<Single_scattering_factory>(settings, num_workers, step_size);
+
+			const auto light_sampling_node = n.value.FindMember("light_sampling");
+			if (n.value.MemberEnd() != light_sampling_node) {
+				load_light_sampling(light_sampling_node->value, light_sampling);
+			}
+
+			const bool light_sampling_single =
+					Light_sampling::Strategy::Single == light_sampling.strategy;
+
+			return std::make_shared<Single_scattering_factory>(settings, num_workers,
+															   step_size, light_sampling_single);
 		}
 	}
 
