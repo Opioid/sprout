@@ -50,8 +50,8 @@ or a newer version.
 
 ** Dependencies
 
-I try to keep the required dependencies reasonably low in this project.
-At the moment there are three of them.
+I try to keep the number of required dependencies reasonably low in this project.
+At the moment there are three.
 All of them are header-only libraries and included in the repository.
 
 1. [[https://code.google.com/p/miniz/][Miniz]] for encoding/decoding PNG images and decompressing gz archives
