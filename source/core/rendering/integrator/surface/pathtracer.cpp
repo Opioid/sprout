@@ -49,7 +49,7 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	}
 }
 
-float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
+float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Sampler_filter filter;
 	Bxdf_result sample_result;
 	Bxdf_result::Type_flag previous_sample_type;
@@ -68,7 +68,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			filter = Sampler_filter::Nearest;
 		}
 
-		if (!resolve_mask(worker, ray, intersection, filter)) {
+		if (!resolve_mask(ray, intersection, filter, worker)) {
 			break;
 		}
 
@@ -82,7 +82,7 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		opacity = 1.f;
 
 		const float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(wo, ray.time, worker, filter);
+		auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
 		if (material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
@@ -123,10 +123,10 @@ float4 Pathtracer::li(Worker& worker, Ray& ray, Intersection& intersection) {
 
 				throughput *= sample_result.reflection / sample_result.pdf;
 			} else {
-				const float3 tr = transmittance_.resolve(worker, ray, intersection,
+				const float3 tr = transmittance_.resolve(ray, intersection,
 														 material_sample.absorption_coeffecient(),
 														 sampler_, Sampler_filter::Nearest,
-														 sample_result);
+														 worker, sample_result);
 
 				if (0.f == sample_result.pdf) {
 					break;

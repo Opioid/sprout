@@ -8,7 +8,7 @@
 namespace scene { namespace volume {
 
 float3 Density::optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
-							  Worker& worker, Sampler_filter filter) const {
+							  Sampler_filter filter, Worker& worker) const {
 	float length = math::length(ray.direction);
 
 	math::Ray rn(ray.origin, ray.direction / length, ray.min_t * length, ray.max_t * length);
@@ -32,7 +32,7 @@ float3 Density::optical_depth(const math::Ray& ray, float step_size, rnd::Genera
 
 	for (; min_t < max_t; min_t += step_size) {
 		float3 p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
-		tau += density(p_o, worker, filter);
+		tau += density(p_o, filter, worker);
 	}
 
 	float3 attenuation = absorption_ + scattering_;
@@ -40,9 +40,9 @@ float3 Density::optical_depth(const math::Ray& ray, float step_size, rnd::Genera
 	return step_size * tau * attenuation;
 }
 
-float3 Density::scattering(const float3& p, Worker& worker, Sampler_filter filter) const {
+float3 Density::scattering(const float3& p, Sampler_filter filter, Worker& worker) const {
 	float3 p_o = math::transform_point(p, world_transformation_.world_to_object);
-	return density(p_o, worker, filter) * scattering_;
+	return density(p_o, filter, worker) * scattering_;
 }
 
 }}

@@ -13,7 +13,7 @@ namespace scene { namespace volume {
 
 Grid::Grid(Texture_ptr grid) : grid_(grid) {}
 
-float Grid::density(const float3& p, Worker& worker, Sampler_filter filter) const {
+float Grid::density(const float3& p, Sampler_filter filter, Worker& worker) const {
 	// p is in object space already
 
 	if (!local_aabb_.intersect(p)) {

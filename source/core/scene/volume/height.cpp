@@ -13,7 +13,7 @@ namespace scene { namespace volume {
 Height::Height() : a_(1.f), b_(1.f) {}
 
 float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Generator& /*rng*/,
-							 Worker& /*worker*/, Sampler_filter /*filter*/) const {
+							 Sampler_filter /*filter*/, Worker& /*worker*/) const {
 	const math::Ray rn = ray.normalized();
 
 	float min_t;
@@ -68,7 +68,7 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 //	return old_result;
 }
 
-float Height::density(const float3& p, Worker& /*worker*/, Sampler_filter /*filter*/) const {
+float Height::density(const float3& p, Sampler_filter /*filter*/, Worker& /*worker*/) const {
 	// p is in object space already
 	if (!local_aabb_.intersect(p)) {
 		return 0.f;

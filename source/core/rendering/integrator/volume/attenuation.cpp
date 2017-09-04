@@ -16,7 +16,7 @@ void Attenuation::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_
 
 void Attenuation::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Attenuation::transmittance(Worker& worker, const Ray& ray, const Volume& volume) {
+float3 Attenuation::transmittance(const Ray& ray, const Volume& volume, Worker& worker) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
@@ -25,12 +25,12 @@ float3 Attenuation::transmittance(Worker& worker, const Ray& ray, const Volume& 
 
 	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume.optical_depth(tray, 1.f, rng_, worker, Sampler_filter::Nearest);
+	float3 tau = volume.optical_depth(tray, 1.f, rng_, Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
-float4 Attenuation::li(Worker& worker, const Ray& ray, bool /*primary_ray*/,
-					   const Volume& volume, float3& transmittance) {
+float4 Attenuation::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
+					   Worker& worker, float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
@@ -40,7 +40,7 @@ float4 Attenuation::li(Worker& worker, const Ray& ray, bool /*primary_ray*/,
 
 	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	const float3 tau = volume.optical_depth(tray, 1.f, rng_, worker, Sampler_filter::Unknown);
+	const float3 tau = volume.optical_depth(tray, 1.f, rng_, Sampler_filter::Unknown, worker);
 	transmittance = math::exp(-tau);
 
 	return float4(0.f);

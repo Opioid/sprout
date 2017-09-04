@@ -27,9 +27,9 @@ void Closed::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {
 //	}
 }
 
-float3 Closed::resolve(Worker& worker, const Ray& ray, Intersection& intersection,
+float3 Closed::resolve(const Ray& ray, Intersection& intersection,
 					   const float3& absorption_coffecient, sampler::Sampler& sampler,
-					   Sampler_filter filter, Bxdf_result& sample_result) {
+					   Sampler_filter filter, Worker& worker, Bxdf_result& sample_result) {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_absorption_coffecient = absorption_coffecient;
 
@@ -51,7 +51,7 @@ float3 Closed::resolve(Worker& worker, const Ray& ray, Intersection& intersectio
 		}
 
 		const float3 wo = -tray.direction;
-		auto& material_sample = intersection.sample(wo, tray.time, worker, filter);
+		auto& material_sample = intersection.sample(wo, tray.time, filter, worker);
 
 //		if (i < 2) {
 //			material_sample.sample(samplers_[i], sample_result);

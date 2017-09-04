@@ -24,10 +24,10 @@ void AO::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 AO::li(Worker& worker, Ray& ray, Intersection& intersection) {
+float4 AO::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float result = 0.f;
 
-	if (!resolve_mask(worker, ray, intersection, Sampler_filter::Unknown)) {
+	if (!resolve_mask(ray, intersection, Sampler_filter::Unknown, worker)) {
 		return float4(result, result, result, 1.f);
 	}
 
@@ -38,8 +38,8 @@ float4 AO::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	occlusion_ray.time   = ray.time;
 
 	const float3 wo = -ray.direction;
-	const auto& material_sample = intersection.sample(wo, ray.time, worker,
-													  Sampler_filter::Unknown);
+	const auto& material_sample = intersection.sample(wo, ray.time, Sampler_filter::Unknown,
+													  worker);
 
 	for (uint32_t i = settings_.num_samples; i > 0; --i) {
 		const float2 sample = sampler_.generate_sample_2D();

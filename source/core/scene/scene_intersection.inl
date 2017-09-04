@@ -23,17 +23,17 @@ inline float Intersection::area() const {
 	return prop->area(geo.part);
 }
 
-inline float Intersection::opacity(float time, Worker& worker, Sampler_filter filter) const {
+inline float Intersection::opacity(float time, Sampler_filter filter, Worker& worker) const {
 	return material()->opacity(geo.uv, time, worker, filter);
 }
 
 inline float3 Intersection::thin_absorption(const float3& wo, float time,
-											Worker& worker, Sampler_filter filter) const {
+											Sampler_filter filter, Worker& worker) const {
 	return material()->thin_absorption(wo, geo.geo_n, geo.uv, time, worker, filter);
 }
 
-inline const material::Sample& Intersection::sample(const float3& wo, float time, Worker& worker,
-													Sampler_filter filter) const {
+inline const material::Sample& Intersection::sample(const float3& wo, float time,
+													Sampler_filter filter, Worker& worker) const {
 	material::Material* material = Intersection::material();
 
 	Renderstate rs;

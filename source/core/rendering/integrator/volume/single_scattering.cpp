@@ -28,7 +28,7 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t num_samples_per
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Single_scattering::transmittance(Worker& worker, const Ray& ray, const Volume& volume) {
+float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume, Worker& worker) {
 	float min_t;
 	float max_t;
 	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
@@ -38,12 +38,12 @@ float3 Single_scattering::transmittance(Worker& worker, const Ray& ray, const Vo
 	const Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
 	const float3 tau = volume.optical_depth(tray, settings_.step_size, rng_,
-											worker, Sampler_filter::Nearest);
+											Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
-float4 Single_scattering::li(Worker& worker, const Ray& ray, bool primary_ray,
-							 const Volume& volume, float3& transmittance) {
+float4 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& volume,
+							 Worker& worker, float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
@@ -84,7 +84,7 @@ constexpr float epsilon = 5e-5f;
 	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
 		// This happens sometimes when the range is very small compared to the world coordinates.
 		if (float3::identity() == tau_ray.direction) {
-			tau_ray.origin = previous;
+			tau_ray.origin = current;
 			tau_ray.direction = tau_ray_direction;
 			tau_ray.inv_direction = inv_tau_ray_direction;
 			continue;
@@ -94,7 +94,7 @@ constexpr float epsilon = 5e-5f;
 		current  = ray.point(min_t);
 
 		const float3 tau = volume.optical_depth(tau_ray, settings_.step_size, rng_,
-												worker, Sampler_filter::Unknown);
+												Sampler_filter::Unknown, worker);
 		tr *= math::exp(-tau);
 
 		tau_ray.origin = previous;
@@ -105,14 +105,14 @@ constexpr float epsilon = 5e-5f;
 		tau_ray.inv_direction = inv_tau_ray_direction;
 
 		// Direct light scattering
-		radiance += tr * estimate_direct_light(worker, w, current, ray.time, volume);
+		radiance += tr * estimate_direct_light(w, current, ray.time, volume, worker);
 /*
 		float light_pdf;
 		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
 
 		scene::light::Sample light_sample;
-		light->sample(current, ray.time, sampler_, 0, worker,
-					  Sampler_filter::Nearest, light_sample);
+		light->sample(current, ray.time, sampler_, 0, Sampler_filter::Nearest,
+					  worker, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
 			const Ray shadow_ray(current, light_sample.shape.wi, 0.f,
@@ -125,7 +125,7 @@ constexpr float epsilon = 5e-5f;
 				const float3 scattering = volume.scattering(current, worker,
 															Sampler_filter::Unknown);
 
-				const float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
+				const float3 l = Single_scattering::transmittance(shadow_ray, volume, worker)
 							   * light_sample.radiance;
 
 				radiance += (phase * tv * tr) * (scattering * l) /
@@ -145,8 +145,8 @@ size_t Single_scattering::num_bytes() const {
 	return sizeof(*this) + sampler_.num_bytes();
 }
 
-float3 Single_scattering::estimate_direct_light(Worker& worker, const float3& w, const float3& p,
-												float time, const Volume& volume) {
+float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p, float time,
+												const Volume& volume, Worker& worker) {
 /*	float3 result(0.f);
 
 	if (settings_.light_sampling_single) {
@@ -172,7 +172,7 @@ float3 Single_scattering::estimate_direct_light(Worker& worker, const float3& w,
 	const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
 //std::cout << "b" << std::endl;
 	scene::light::Sample light_sample;
-	light->sample(p, time, sampler_, 0, worker, Sampler_filter::Nearest, light_sample);
+	light->sample(p, time, sampler_, 0, Sampler_filter::Nearest, worker, light_sample);
 //std::cout << "c" << std::endl;
 	if (light_sample.shape.pdf > 0.f) {
 //std::cout << "d" << std::endl;
@@ -184,9 +184,9 @@ float3 Single_scattering::estimate_direct_light(Worker& worker, const float3& w,
 //std::cout << "g" << std::endl;
 			const float phase = volume.phase(w, -light_sample.shape.wi);
 //std::cout << "h" << std::endl;
-			const float3 scattering = volume.scattering(p, worker, Sampler_filter::Unknown);
+			const float3 scattering = volume.scattering(p, Sampler_filter::Unknown, worker);
 //std::cout << "j" << std::endl;
-			const float3 tr = Single_scattering::transmittance(worker, shadow_ray, volume);
+			const float3 tr = Single_scattering::transmittance(shadow_ray, volume, worker);
 //std::cout << "k" << std::endl;
 			const float3 l = tr * light_sample.radiance;
 //std::cout << "l" << std::endl;
@@ -200,12 +200,12 @@ float3 Single_scattering::estimate_direct_light(Worker& worker, const float3& w,
 float3 Single_scattering::evaluate_light(const Light* light, float light_weight,
 										 const float3& w, const float3& p,
 										 float time, uint32_t sampler_dimension,
-										 Worker& worker, const Volume& volume) {
+										 const Volume& volume, Worker& worker) {
 	constexpr float epsilon = 5e-5f;
 
 	scene::light::Sample light_sample;
-	light->sample(p, time, sampler_, sampler_dimension, worker,
-				  Sampler_filter::Nearest, light_sample);
+	light->sample(p, time, sampler_, sampler_dimension,
+				  Sampler_filter::Nearest, worker, light_sample);
 
 	if (light_sample.shape.pdf > 0.f) {
 		const Ray shadow_ray(p, light_sample.shape.wi, 0.f,
@@ -215,9 +215,9 @@ float3 Single_scattering::evaluate_light(const Light* light, float light_weight,
 		if (math::any_greater_zero(tv)) {
 			const float phase = volume.phase(w, -light_sample.shape.wi);
 
-			const float3 scattering = volume.scattering(p, worker, Sampler_filter::Unknown);
+			const float3 scattering = volume.scattering(p, Sampler_filter::Unknown, worker);
 
-			const float3 l = Single_scattering::transmittance(worker, shadow_ray, volume)
+			const float3 l = Single_scattering::transmittance(shadow_ray, volume, worker)
 						   * light_sample.radiance;
 
 			return (phase * tv) * (scattering * l) / (light_weight * light_sample.shape.pdf);

@@ -20,10 +20,10 @@ public:
 	virtual void sample(const Transformation& transformation,
 						const float3& p, const float3& n, float time, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
-						Worker& worker, Sampler_filter filter, Sample& result) const override;
+						Sampler_filter filter, Worker& worker, Sample& result) const override;
 
 	virtual float pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,
-					  Worker& worker, Sampler_filter filter) const override;
+					  Sampler_filter filter, Worker& worker) const override;
 
 	virtual float3 power(const math::AABB& scene_bb) const override final;
 

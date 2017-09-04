@@ -18,7 +18,7 @@ void Debug::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pi
 
 void Debug::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float4 Debug::li(Worker& worker, Ray& ray, Intersection& intersection) {
+float4 Debug::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	float3 vector;
 
 	switch (settings_.vector) {
@@ -33,7 +33,7 @@ float4 Debug::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		break;
 	case Settings::Vector::Shading_normal: {
 		float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(wo, ray.time, worker, Sampler_filter::Unknown);
+		auto& material_sample = intersection.sample(wo, ray.time, Sampler_filter::Unknown, worker);
 
 		if (!material_sample.same_hemisphere(wo)) {
 			return float4(0.f, 0.f, 0.f, 1.f);

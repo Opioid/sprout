@@ -12,13 +12,13 @@ const Light::Transformation& Null_light::transformation_at(
 void Null_light::sample(const Transformation& /*transformation*/, const float3& /*p*/,
 						const float3& /*n*/, float /*time*/, bool /*total_sphere*/,
 						sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-						Worker& /*worker*/, Sampler_filter /*filter*/, Sample& result) const {
+						Sampler_filter /*filter*/, Worker& /*worker*/, Sample& result) const {
 	result.shape.pdf = 0.f;
 }
 
 float Null_light::pdf(const Ray& /*ray*/, const Intersection& /*intersection*/,
 					  bool /*total_sphere*/,
-					  Worker& /*worker*/, Sampler_filter /*filter*/) const {
+					  Sampler_filter /*filter*/, Worker& /*worker*/) const {
 	return 0.f;
 }
 

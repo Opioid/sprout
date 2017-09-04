@@ -41,29 +41,26 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float4 li(Worker& worker, Ray& ray, Intersection& intersection) override final;
+	virtual float4 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
 private:
 
-	float3 estimate_direct_light(Worker& worker, const Ray& ray,
-								 Intersection& intersection,
+	float3 estimate_direct_light(const Ray& ray, Intersection& intersection,
 								 const Material_sample& material_sample,
-								 Sampler_filter filter,
+								 Sampler_filter filter, Worker& worker,
 								 Bxdf_result& sample_result,
 								 bool& requires_bounce);
 
-	float3 evaluate_light(const Light* light, float light_weight,
-						  float time, float ray_offset, uint32_t depth,
-						  uint32_t sampler_dimension, Worker& worker,
-						  const Intersection& intersection,
-						  const Material_sample& material_sample,
-						  Sampler_filter filter);
+	float3 evaluate_light(const Light* light, float light_weight, float time,
+						  float ray_offset, uint32_t depth,  uint32_t sampler_dimension,
+						  const Intersection& intersection, const Material_sample& material_sample,
+						  Sampler_filter filter, Worker& worker);
 
-	float3 resolve_transmission(Worker& worker, const Ray& ray,
-								Intersection& intersection, const float3& attenuation,
-								Sampler_filter filter, Bxdf_result& sample_result);
+	float3 resolve_transmission(const Ray& ray, Intersection& intersection,
+								const float3& attenuation, Sampler_filter filter,
+								Worker& worker, Bxdf_result& sample_result);
 
 	sampler::Sampler& material_sampler(uint32_t bounce);
 	sampler::Sampler& light_sampler(uint32_t bounce);

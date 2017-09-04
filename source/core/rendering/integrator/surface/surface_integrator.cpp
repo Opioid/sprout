@@ -14,9 +14,9 @@ Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
 
 Integrator::~Integrator() {}
 
-bool Integrator::resolve_mask(Worker& worker, Ray& ray, Intersection& intersection,
-							  Sampler_filter filter) {
-	float opacity = intersection.opacity(ray.time, worker, filter);
+bool Integrator::resolve_mask(Ray& ray, Intersection& intersection,
+							  Sampler_filter filter, Worker& worker) {
+	float opacity = intersection.opacity(ray.time, filter, worker);
 
 	while (opacity < 1.f) {
 		if (opacity > 0.f && opacity > rng_.random_float()) {
@@ -30,19 +30,19 @@ bool Integrator::resolve_mask(Worker& worker, Ray& ray, Intersection& intersecti
 			return false;
 		}
 
-		opacity = intersection.opacity(ray.time, worker, filter);
+		opacity = intersection.opacity(ray.time, filter, worker);
 	}
 
 	return true;
 }
 
-bool Integrator::intersect_and_resolve_mask(Worker& worker, Ray& ray, Intersection& intersection,
-											Sampler_filter filter) {
+bool Integrator::intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
+											Sampler_filter filter, Worker& worker) {
 	if (!worker.intersect(ray, intersection)) {
 		return false;
 	}
 
-	return resolve_mask(worker, ray, intersection, filter);
+	return resolve_mask(ray, intersection, filter, worker);
 }
 
 Factory::Factory(const take::Settings& settings) :

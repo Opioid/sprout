@@ -20,10 +20,10 @@ public:
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
-	virtual float3 transmittance(Worker& worker, const Ray& ray, const Volume& volume) = 0;
+	virtual float3 transmittance(const Ray& ray, const Volume& volume, Worker& worker) = 0;
 
-	virtual float4 li(Worker& worker, const Ray& ray, bool primary_ray,
-					  const Volume& volume, float3& transmittance) = 0;
+	virtual float4 li(const Ray& ray, bool primary_ray, const Volume& volume,
+					  Worker& worker, float3& transmittance) = 0;
 };
 
 class Factory {

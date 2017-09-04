@@ -16,14 +16,15 @@ public:
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
 	virtual ~Integrator();
 
-	virtual float4 li(Worker& worker, Ray& ray, Intersection& intersection) = 0;
+	virtual float4 li(Ray& ray, Intersection& intersection, Worker& worker) = 0;
 
 protected:
 
-	bool resolve_mask(Worker& worker, Ray& ray, Intersection& intersection, Sampler_filter filter);
+	bool resolve_mask(Ray& ray, Intersection& intersection,
+					  Sampler_filter filter, Worker& worker);
 
-	bool intersect_and_resolve_mask(Worker& worker, Ray& ray, Intersection& intersection,
-									Sampler_filter filter);
+	bool intersect_and_resolve_mask(Ray& ray, Intersection& intersection,
+									Sampler_filter filter, Worker& worker);
 };
 
 class Factory {

@@ -21,23 +21,23 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float3 transmittance(Worker& worker, const Ray& ray,
-								 const Volume& volume) override final;
+	virtual float3 transmittance(const Ray& ray, const Volume& volume,
+								 Worker& worker) override final;
 
-	virtual float4 li(Worker& worker, const Ray& ray, bool primary_ray,
-					  const Volume& volume, float3& transmittance) override final;
+	virtual float4 li(const Ray& ray, bool primary_ray, const Volume& volume,
+					  Worker& worker, float3& transmittance) override final;
 
 	virtual size_t num_bytes() const override final;
 
 private:
 
-	float3 estimate_direct_light(Worker& worker, const float3& w, const float3& p,
-								 float time, const Volume& volume);
+	float3 estimate_direct_light(const float3& w, const float3& p, float time,
+								 const Volume& volume, Worker& worker);
 
 	float3 evaluate_light(const Light* light, float light_weight,
 						  const float3& w, const float3& p,
 						  float time, uint32_t sampler_dimension,
-						  Worker& worker, const Volume& volume);
+						  const Volume& volume, Worker& worker);
 
 	const Settings settings_;
 

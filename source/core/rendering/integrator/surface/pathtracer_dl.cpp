@@ -35,7 +35,7 @@ void Pathtracer_DL::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 	sampler_.resume_pixel(sample, scramble);
 }
 
-float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
+float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Sampler_filter filter = Sampler_filter::Unknown;
 	Bxdf_result sample_result;
 
@@ -46,7 +46,7 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	bool requires_bounce = false;
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		if (!resolve_mask(worker, ray, intersection, filter)) {
+		if (!resolve_mask(ray, intersection, filter, worker)) {
 			break;
 		}
 
@@ -59,7 +59,7 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		}
 
 		const float3 wo = -ray.direction;
-		auto& material_sample = intersection.sample(wo, ray.time, worker, filter);
+		auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
 		if ((primary_ray || requires_bounce) && material_sample.same_hemisphere(wo)) {
 			result += throughput * material_sample.radiance();
@@ -70,8 +70,8 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 			break;
 		}
 
-		result += throughput * estimate_direct_light(worker, ray, intersection,
-													 material_sample, filter);
+		result += throughput * estimate_direct_light(ray, intersection, material_sample,
+													 filter, worker);
 
 		if (i == settings_.max_bounces - 1) {
 			break;
@@ -101,10 +101,10 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 		}
 
 		if (sample_result.type.test(Bxdf_type::Transmission)) {
-			const float3 tr = transmittance_.resolve(worker, ray, intersection,
+			const float3 tr = transmittance_.resolve(ray, intersection,
 													 material_sample.absorption_coeffecient(),
 													 sampler_, Sampler_filter::Nearest,
-													 sample_result);
+													 worker, sample_result);
 			if (0.f == sample_result.pdf) {
 				break;
 			}
@@ -131,10 +131,9 @@ float4 Pathtracer_DL::li(Worker& worker, Ray& ray, Intersection& intersection) {
 	return float4(result, opacity);
 }
 
-float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
-											const Intersection& intersection,
+float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& intersection,
 											const Material_sample& material_sample,
-											Sampler_filter filter) {
+											Sampler_filter filter, Worker& worker) {
 	float3 result = float3::identity();
 
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -151,7 +150,7 @@ float3 Pathtracer_DL::estimate_direct_light(Worker& worker, const Ray& ray,
 		scene::light::Sample light_sample;
 		light->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
 					  material_sample.is_translucent(), sampler_, 0,
-					  worker, Sampler_filter::Nearest, light_sample);
+					  Sampler_filter::Nearest, worker, light_sample);
 
 		if (light_sample.shape.pdf > 0.f) {
 			shadow_ray.set_direction(light_sample.shape.wi);

@@ -53,17 +53,17 @@ float4 Worker::li(scene::Ray& ray) {
 
 	if (volume) {
 		float3 vtr;
-		const float4 vli = volume_integrator_->li(*this, ray, true, *volume, vtr);
+		const float4 vli = volume_integrator_->li(ray, true, *volume, *this, vtr);
 
 		if (hit) {
-			const float4 li = surface_integrator_->li(*this, ray, intersection);
+			const float4 li = surface_integrator_->li(ray, intersection, *this);
 			return float4(vtr * li.xyz(), li[3]) + vli;
 		} else {
 			return vli;
 		}
 	} else {
 		if (hit) {
-			return surface_integrator_->li(*this, ray, intersection);
+			return surface_integrator_->li(ray, intersection, *this);
 		} else {
 			return float4::identity();
 		}
@@ -78,7 +78,7 @@ float4 Worker::volume_li(const scene::Ray& ray, bool primary_ray, float3& transm
 		return float4(0.f);
 	}
 
-	return volume_integrator_->li(*this, ray, primary_ray, *volume, transmittance);
+	return volume_integrator_->li(ray, primary_ray, *volume, *this, transmittance);
 }
 
 float3 Worker::transmittance(const scene::Ray& ray) {
@@ -88,7 +88,7 @@ float3 Worker::transmittance(const scene::Ray& ray) {
 		return float3(1.f);
 	}
 
-	return volume_integrator_->transmittance(*this, ray, *volume);
+	return volume_integrator_->transmittance(ray, *volume, *this);
 }
 
 sampler::Sampler* Worker::sampler() {

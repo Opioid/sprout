@@ -23,16 +23,16 @@ public:
 
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
-	virtual float4 li(Worker& worker, Ray& ray, Intersection& intersection) override final;
+	virtual float4 li(Ray& ray, Intersection& intersection, Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
 private:
 
-	float3 shade(Worker& worker, const Ray& ray, const Intersection& intersection);
+	float3 shade(const Ray& ray, const Intersection& intersection, Worker& worker);
 
-	float3 estimate_direct_light(Worker& worker, const Ray& ray, const Intersection& intersection,
-								 const Material_sample& material_sample);
+	float3 estimate_direct_light(const Ray& ray, const Intersection& intersection,
+								 const Material_sample& material_sample, Worker& worker);
 
 	const Settings settings_;
 
