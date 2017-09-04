@@ -43,8 +43,8 @@ static inline float distribution_anisotropic(float n_dot_h, float x_dot_h, float
 	return 1.f / ((math::Pi * axy) * (d * d));
 }
 
-static inline float geometric_visibility_and_denominator(float n_dot_wi, float n_dot_wo,
-														 float alpha2) {
+static inline float masking_shadowing_and_denominator(float n_dot_wi, float n_dot_wo,
+													  float alpha2) {
 	// Un-correlated version
 	// This is an optimized version that does the following in one step:
 	//
@@ -56,7 +56,7 @@ static inline float geometric_visibility_and_denominator(float n_dot_wi, float n
 //	const float g_wi = n_dot_wi + std::sqrt((n_dot_wi - n_dot_wi * alpha2) * n_dot_wi + alpha2);
 //	return 1.f / (g_wo * g_wi);
 
-	// Correlated version
+	// Height-correlated version
 	// https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
 	// lambda_v = ( -1 + sqrt ( alphaG2 * (1 - NdotL2 ) / NdotL2 + 1)) * 0.5 f;
 	// lambda_l = ( -1 + sqrt ( alphaG2 * (1 - NdotV2 ) / NdotV2 + 1)) * 0.5 f;
@@ -71,8 +71,8 @@ static inline float geometric_visibility_and_denominator(float n_dot_wi, float n
 	return 0.5f / (g_wo + g_wi);
 }
 
-static inline float optimized_geometric_visibility_and_g1_wo(float n_dot_wi, float n_dot_wo,
-															 float alpha2, float& og1_wo) {
+static inline float optimized_masking_shadowing_and_g1_wo(float n_dot_wi, float n_dot_wo,
+														  float alpha2, float& og1_wo) {
 	const float t_wo = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wo * n_dot_wo));
 	const float t_wi = std::sqrt(alpha2 + (1.f - alpha2) * (n_dot_wi * n_dot_wi));
 
@@ -136,7 +136,7 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 	const float alpha2 = layer.alpha2_;
 	const float d = distribution_isotropic(n_dot_h, alpha2);
 		  float og1_wo;
-	const float g = optimized_geometric_visibility_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
+	const float g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
 	const float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
@@ -269,7 +269,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 
 	const float d = distribution_isotropic(n_dot_h, alpha2);
 		  float og1_wo;
-	const float g = optimized_geometric_visibility_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
+	const float g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
 	const float3 f = fresnel(wo_dot_h);
 
 	fresnel_result = f;
@@ -299,7 +299,7 @@ float3 Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
 
 	const float alpha2 = layer.alpha2_;
 	const float d = distribution_isotropic(n_dot_h, alpha2);
-	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, alpha2);
+	const float g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, alpha2);
 	const float3 f = fresnel(wo_dot_h);
 
 	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
@@ -386,7 +386,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 	const float d = distribution_isotropic(n_dot_h, alpha2);
 	const float g = G_smith_correlated(n_dot_wi, n_dot_wo, alpha2);
 //	const float og1_wo = G_ggx(n_dot_wo, alpha2);
-//	const float g = optimized_geometric_visibility_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
+//	const float g = optimized_masking_shadowing_and_g1_wo(n_dot_wi, n_dot_wo, alpha2, og1_wo);
 	const float3 f = float3(1.f) - fresnel(wo_dot_h);
 
 	const float3 refraction = d * g * f;
@@ -419,7 +419,7 @@ float3 Anisotropic::reflection(const float3& h, float n_dot_wi, float n_dot_wo, 
 	const float y_dot_h = math::dot(layer.b_, h);
 
 	const float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.alpha2_, layer.axy_);
-	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
+	const float g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
 	const float3 f = fresnel(wo_dot_h);
 
 	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
@@ -456,7 +456,7 @@ float Anisotropic::reflect(const float3& wo, float n_dot_wo,
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 
 	const float d = distribution_anisotropic(n_dot_h, x_dot_h, y_dot_h, layer.alpha2_, layer.axy_);
-	const float g = geometric_visibility_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
+	const float g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
 	const float3 f = fresnel(wo_dot_h);
 
 	result.reflection = d * g * f;
