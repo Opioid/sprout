@@ -286,9 +286,8 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	return result;
 }
 
-float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight,
-									  float time, float ray_offset, uint32_t depth,
-									  uint32_t sampler_dimension,
+float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight, float time,
+									  float ray_offset, uint32_t depth, uint32_t sampler_dimension,
 									  const Intersection& intersection,
 									  const Material_sample& material_sample,
 									  Sampler_filter filter, Worker& worker) {

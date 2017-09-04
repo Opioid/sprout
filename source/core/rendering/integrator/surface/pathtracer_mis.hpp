@@ -50,12 +50,12 @@ private:
 	float3 estimate_direct_light(const Ray& ray, Intersection& intersection,
 								 const Material_sample& material_sample,
 								 Sampler_filter filter, Worker& worker,
-								 Bxdf_result& sample_result,
-								 bool& requires_bounce);
+								 Bxdf_result& sample_result, bool& requires_bounce);
 
 	float3 evaluate_light(const Light* light, float light_weight, float time,
-						  float ray_offset, uint32_t depth,  uint32_t sampler_dimension,
-						  const Intersection& intersection, const Material_sample& material_sample,
+						  float ray_offset, uint32_t depth, uint32_t sampler_dimension,
+						  const Intersection& intersection,
+						  const Material_sample& material_sample,
 						  Sampler_filter filter, Worker& worker);
 
 	float3 resolve_transmission(const Ray& ray, Intersection& intersection,
