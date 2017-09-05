@@ -52,8 +52,7 @@ int main(int argc, char* argv[]) {
 //	testing::simd::unions();
 //	testing::spectrum();
 
-	options::init(argc, argv);
-	const auto& args = options::options();
+	const auto args = options::parse(argc, argv);
 
 	logging::init(logging::Type::Std_out, args.verbose);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");

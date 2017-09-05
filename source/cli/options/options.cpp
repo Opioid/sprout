@@ -5,9 +5,7 @@
 
 namespace options {
 
-Options options_;
-
-void init(int argc, char* argv[]) {
+Options parse(int argc, char* argv[]) {
 	try {
 		TCLAP::CmdLine cmd("sprout is a global illumination renderer experiment", ' ', "0.1");
 
@@ -52,21 +50,21 @@ void init(int argc, char* argv[]) {
 
 		cmd.parse(argc, argv);
 
-		options_.take		 = take_arg.getValue();
-		options_.mounts		 = mount_args.getValue();
-		options_.threads	 = threads_arg.getValue();
-		options_.progressive = progressive_arg.getValue();
-		options_.no_textures = no_textures_arg.getValue();
-		options_.verbose     = verbose_arg.getValue();
+		return Options{
+			take_arg.getValue(),
+			mount_args.getValue(),
+			threads_arg.getValue(),
+			progressive_arg.getValue(),
+			no_textures_arg.getValue(),
+			verbose_arg.getValue()
+		};
 	} catch (TCLAP::ArgException& e) {
 		std::stringstream stream;
 		stream << e.error() << " for arg " << e.argId();
 		logging::error(stream.str());
-	}
-}
 
-const Options& options() {
-	return options_;
+		return Options{};
+	}
 }
 
 }

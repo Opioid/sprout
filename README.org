@@ -6,7 +6,7 @@
 ** Brief
 
 sprout is a small raytracing renderer written in C++. 
-I work on it mainly for fun and to learn about physically based rendering and global illumination.
+I work on it for fun and to learn about physically based rendering and global illumination.
 
 The overall architecture is heavily inspired by [[http://www.pbrt.org/][PBRT]] 
 while the implementation details differ more or less strongly in various places.
@@ -54,7 +54,7 @@ I try to keep the number of required dependencies reasonably low in this project
 At the moment there are three.
 All of them are header-only libraries and included in the repository.
 
-1. [[https://code.google.com/p/miniz/][Miniz]] for encoding/decoding PNG images and decompressing gz archives
+1. [[https://github.com/richgel999/miniz][Miniz]] for encoding/decoding PNG images and decompressing gz archives
 2. [[https://github.com/miloyip/rapidjson][RapidJSON]] for parsing json files
 3. [[http://tclap.sourceforge.net/][TCLAP]] for parsing command line arguments
 
