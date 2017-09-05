@@ -150,8 +150,8 @@ int main(int argc, char* argv[]) {
 										 take->camera_animation.get());
 		}
 	} catch (const std::exception& e) {
-		logging::error("Scene \"" + take->scene_filename + "\" could not be loaded: "
-					   + e.what() + ".");
+		logging::error("Scene \"" + take->scene_filename + "\" could not be loaded: " +
+					   e.what() + ".");
 		logging::release();
 		return 1;
 	}
@@ -161,6 +161,8 @@ int main(int argc, char* argv[]) {
 
 	logging::info("Rendering...");
 
+	const uint32_t max_sample_size = material_provider.max_sample_size();
+
 	size_t rendering_num_bytes = 0;
 
 	if (args.progressive) {
@@ -168,7 +170,7 @@ int main(int argc, char* argv[]) {
 													  scene,
 													  resource_manager,
 													  thread_pool,
-													  material_provider.max_sample_size());
+													  max_sample_size);
 	} else {
 		progress::Stdout progressor;
 
@@ -181,7 +183,7 @@ int main(int argc, char* argv[]) {
 												scene,
 												take->view,
 												thread_pool,
-												material_provider.max_sample_size());
+												max_sample_size);
 
 			rendering_num_bytes += driver.num_bytes();
 
