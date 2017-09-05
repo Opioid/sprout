@@ -1,70 +1,62 @@
 #include "options.hpp"
 #include "core/logging/logging.hpp"
+#include "cxxopts/cxxopts.hpp"
 #include <sstream>
-#include <tclap/CmdLine.h>
 
 namespace options {
 
 Options parse(int argc, char* argv[]) {
+	Options result;
+
 	try {
-		TCLAP::CmdLine cmd("sprout is a global illumination renderer experiment", ' ', "0.1");
+		cxxopts::Options options("sprout", "sprout is a global illumination renderer experiment");
 
-		TCLAP::UnlabeledValueArg<std::string> take_arg(
-					"take", "Path of the take file to render or json string describing the take.",
-					true, "", "file path/json string");
-		cmd.add(take_arg);
+		options.add_options()
+			("help", "Print help.")
 
-		TCLAP::MultiArg<std::string> mount_args(
-					"m", "mount",
-					"Specifies a mount point for the data directory. "
-					"The default value is \"../data/\"",
-					false, "directory path");
-		cmd.add(mount_args);
+			("i, input",
+			 "Path of the take file to render or json string describing the take.",
+			 cxxopts::value<std::string>(result.take), "file path/json string")
 
-		TCLAP::ValueArg<int> threads_arg(
-					"t", "threads",
-					"Specifies the number of threads used by sprout. "
-					"0 creates one thread for each logical CPU. "
-					"-x creates a number of threads equal to the number of logical CPUs minus x. "
-					"The default value is 0.",
-					false, 0, "integer number");
-		cmd.add(threads_arg);
+			("m, mount",
+			 "Specifies a mount point for the data directory. "
+			 "The default value is \"../data/\"",
+			 cxxopts::value<std::vector<std::string>>(result.mounts), "directory path")
 
-		TCLAP::SwitchArg progressive_arg(
-					"p", "progressive",
-					"Starts sprout in progressive mode.",
-					false);
-		cmd.add(progressive_arg);
+			("t, threads",
+			 "Specifies the number of threads used by sprout. "
+			 "0 creates one thread for each logical CPU. "
+			 "-x creates a number of threads equal to the number of logical CPUs minus x. "
+			 "The default value is 0.",
+			 cxxopts::value<int>(result.threads), "integer number")
 
-		TCLAP::SwitchArg no_textures_arg(
-					"", "no-textures",
-					"Disables loading of all textures.",
-					false);
-		cmd.add(no_textures_arg);
+			("p, progressive",
+			 "Starts sprout in progressive mode.",
+			 cxxopts::value<bool>(result.progressive))
 
-		TCLAP::SwitchArg verbose_arg(
-					"v", "verbose",
-					"Enables verbose logging.",
-					false);
-		cmd.add(verbose_arg);
+			("no-textures",
+			 "Disables loading of all textures.",
+			 cxxopts::value<bool>(result.no_textures))
 
-		cmd.parse(argc, argv);
+			("v, verbose",
+			 "Enables verbose logging.",
+			 cxxopts::value<bool>(result.verbose))
+		;
 
-		return Options{
-			take_arg.getValue(),
-			mount_args.getValue(),
-			threads_arg.getValue(),
-			progressive_arg.getValue(),
-			no_textures_arg.getValue(),
-			verbose_arg.getValue()
-		};
-	} catch (TCLAP::ArgException& e) {
+		options.parse(argc, argv);
+
+		if (options.count("help")) {
+			std::stringstream stream;
+			stream << options.help({"", "Group"});
+			logging::info(stream.str());
+		}
+	} catch (const cxxopts::OptionException& e) {
 		std::stringstream stream;
-		stream << e.error() << " for arg " << e.argId();
+		stream << "Parsing options: " << e.what();
 		logging::error(stream.str());
-
-		return Options{};
 	}
+
+	return result;
 }
 
 }

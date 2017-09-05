@@ -52,9 +52,11 @@ int main(int argc, char* argv[]) {
 //	testing::simd::unions();
 //	testing::spectrum();
 
+
+	logging::init(logging::Type::Std_out, false/*args.verbose*/);
+
 	const auto args = options::parse(argc, argv);
 
-	logging::init(logging::Type::Std_out, args.verbose);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");
 
 	file::System file_system;

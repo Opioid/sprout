@@ -56,7 +56,7 @@ All of them are header-only libraries and included in the repository.
 
 1. [[https://github.com/richgel999/miniz][Miniz]] for encoding/decoding PNG images and decompressing gz archives
 2. [[https://github.com/miloyip/rapidjson][RapidJSON]] for parsing json files
-3. [[http://tclap.sourceforge.net/][TCLAP]] for parsing command line arguments
+3. [[https://github.com/jarro2783/cxxopts][cxxopts]] for parsing command line arguments
 
 If you have [[https://www.ffmpeg.org/][FFmpeg]] installed you can export animations to mp4, 
 but it is neither required to build nor to run.
