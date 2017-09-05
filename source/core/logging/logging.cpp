@@ -44,6 +44,10 @@ void verbose(const std::string& text) {
 	}
 }
 
+void set_verbose(bool verbose) {
+	log_verbose = verbose;
+}
+
 bool is_verbose() {
 	return log_verbose;
 }

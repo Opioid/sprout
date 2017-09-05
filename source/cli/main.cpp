@@ -53,10 +53,11 @@ int main(int argc, char* argv[]) {
 //	testing::spectrum();
 
 
-	logging::init(logging::Type::Std_out, false/*args.verbose*/);
+	logging::init(logging::Type::Std_out);
 
 	const auto args = options::parse(argc, argv);
 
+	logging::set_verbose(args.verbose);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");
 
 	file::System file_system;
