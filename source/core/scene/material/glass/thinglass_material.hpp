@@ -11,10 +11,10 @@ public:
 	Thinglass(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Worker& worker, Sampler_filter filter) override final;
+										   Sampler_filter filter, Worker& worker) override final;
 
 	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
-								   Worker& worker, Sampler_filter filter) const override final;
+								   Sampler_filter filter, Worker& worker) const override final;
 
 	virtual bool has_tinted_shadow() const override final;
 

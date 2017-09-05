@@ -88,7 +88,7 @@ bool Disk::intersect_p(const Transformation& transformation,
 
 float Disk::opacity(const Transformation& transformation, const Ray& ray,
 					const material::Materials& materials,
-					Worker& worker, Sampler_filter filter) const {
+					Sampler_filter filter, Worker& worker) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
@@ -108,7 +108,7 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 			float2 uv((-math::dot(transformation.rotation.r[0], sk) + 1.f) * uv_scale,
 					  (-math::dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
-			return materials[0]->opacity(uv, ray.time, worker, filter);
+			return materials[0]->opacity(uv, ray.time, filter, worker);
 		}
 	}
 
@@ -117,7 +117,7 @@ float Disk::opacity(const Transformation& transformation, const Ray& ray,
 
 float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ray,
 							 const material::Materials& materials,
-							 Worker& worker, Sampler_filter filter) const {
+							 Sampler_filter filter, Worker& worker) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
@@ -138,7 +138,7 @@ float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ra
 					  (math::dot(transformation.rotation.r[1], sk) + 1.f) * uv_scale);
 
 			return materials[0]->thin_absorption(ray.direction, normal, uv,
-												 ray.time, worker, filter);
+												 ray.time, filter, worker);
 		}
 	}
 

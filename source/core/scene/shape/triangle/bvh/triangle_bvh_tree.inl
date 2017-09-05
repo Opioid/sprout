@@ -243,7 +243,7 @@ bool Tree<Data>::intersect_p(VVector ray_origin, VVector ray_direction, VVector 
 
 template<typename Data>
 float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials& materials,
-						  Worker& worker, material::Sampler_settings::Filter filter) const {
+						  material::Sampler_settings::Filter filter, Worker& worker) const {
 	auto& node_stack = worker.node_stack();
 //	node_stack.clear();
 //	node_stack.push(0);
@@ -287,7 +287,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 					const auto material = materials[data_.material_index(i)];
 
-					opacity += (1.f - opacity) * material->opacity(uv, time, worker, filter);
+					opacity += (1.f - opacity) * material->opacity(uv, time, filter, worker);
 					if (opacity >= 1.f) {
 						return 1.f;
 					}
@@ -306,7 +306,7 @@ float Tree<Data>::opacity(math::Ray& ray, float time, const material::Materials&
 
 template<typename Data>
 float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materials& materials,
-							  Worker& worker, material::Sampler_settings::Filter filter) const {
+							  material::Sampler_settings::Filter filter, Worker& worker) const {
 	auto& node_stack = worker.node_stack();
 //	node_stack.clear();
 //	node_stack.push(0);
@@ -353,7 +353,7 @@ float3 Tree<Data>::absorption(math::Ray& ray, float time, const material::Materi
 					const auto material = materials[data_.material_index(i)];
 
 					const float3 ta = material->thin_absorption(ray.direction, normal, uv,
-																time, worker, filter);
+																time, filter, worker);
 					absorption += (1.f - absorption) * ta;
 					if (math::all_greater_equal(absorption, 1.f)) {
 						return float3(1.f);

@@ -48,9 +48,9 @@ public:
 //					 VVector ray_inv_direction, VVector ray_mint_, VVector ray_max_t,
 //					 float ray_time, shape::Node_stack& node_stack) const;
 
-	float opacity(const Ray& ray, Worker& worker, Sampler_filter filter) const;
+	float opacity(const Ray& ray, Sampler_filter filter, Worker& worker) const;
 
-	float3 thin_absorption(const Ray& ray, Worker& worker, Sampler_filter filter) const;
+	float3 thin_absorption(const Ray& ray, Sampler_filter filter, Worker& worker) const;
 
 	const shape::Shape* shape() const;
 	shape::Shape* shape();

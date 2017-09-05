@@ -12,7 +12,7 @@ Material::Material(const Sampler_settings& sampler_settings) :
 	material::Material(sampler_settings, true) {}
 
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
-										 Worker& worker, Sampler_filter /*filter*/) {
+										 Sampler_filter /*filter*/, Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);

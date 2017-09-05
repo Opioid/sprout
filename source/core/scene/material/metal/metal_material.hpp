@@ -11,7 +11,7 @@ public:
 	Material_isotropic(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Worker& worker, Sampler_filter filter) override final;
+										   Sampler_filter filter, Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -38,7 +38,7 @@ public:
 	Material_anisotropic(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Worker& worker, Sampler_filter filter) override final;
+										   Sampler_filter filter, Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 

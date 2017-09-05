@@ -17,10 +17,10 @@ public:
 	virtual void tick(float absolute_time, float time_slice) override final;
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Worker& worker, Sampler_filter filter) override;
+										   Sampler_filter filter, Worker& worker) override;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
-								   Worker& worker, Sampler_filter filter) const override final;
+								   Sampler_filter filter, Worker& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 
@@ -28,11 +28,11 @@ public:
 
 	virtual float2 radiance_sample(float2 r2, float& pdf) const override final;
 
-	virtual float emission_pdf(float2 uv, Worker& worker,
-							   Sampler_filter filter) const override final;
+	virtual float emission_pdf(float2 uv, Sampler_filter filter,
+							   Worker& worker) const override final;
 
-	virtual float opacity(float2 uv, float time, Worker& worker,
-						  Sampler_filter filter) const override final;
+	virtual float opacity(float2 uv, float time, Sampler_filter filter,
+						  Worker& worker) const override final;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation,

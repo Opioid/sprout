@@ -48,7 +48,7 @@ void Prop_light::sample(const Transformation& transformation,
 	}
 
 	result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv,
-												area, time, worker, filter);
+												area, time, filter, worker);
 }
 
 float Prop_light::pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,

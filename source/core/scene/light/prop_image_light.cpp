@@ -36,7 +36,7 @@ void Prop_image_light::sample(const Transformation& transformation,
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
 		result.shape.pdf *= material_pdf;
 		result.radiance = material->sample_radiance(result.shape.wi, uv,
-													area, time, worker, filter);
+													area, time, filter, worker);
 	} else {
 		result.shape.pdf = 0.f;
 	}
@@ -57,7 +57,7 @@ float Prop_image_light::pdf(const Ray& ray, const Intersection& intersection, bo
 	const float shape_pdf = prop_->shape()->pdf_uv(ray, intersection, transformation,
 												   area, two_sided);
 
-	const float material_pdf = material->emission_pdf(intersection.uv, worker, filter);
+	const float material_pdf = material->emission_pdf(intersection.uv, filter, worker);
 
 	return shape_pdf * material_pdf;
 }

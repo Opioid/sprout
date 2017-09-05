@@ -39,7 +39,7 @@ public:
 	Material_clearcoat(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Worker& worker, Sampler_filter filter) override final;
+										   Sampler_filter filter, Worker& worker) override final;
 
 	void set_clearcoat(float ior, float roughness);
 };
@@ -51,7 +51,7 @@ public:
 	Material_thinfilm(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Worker& worker, Sampler_filter filter) override final;
+										   Sampler_filter filter, Worker& worker) override final;
 
 	void set_thinfilm(float ior, float roughness, float thickness);
 };

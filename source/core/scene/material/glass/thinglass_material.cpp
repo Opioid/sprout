@@ -14,7 +14,7 @@ Thinglass::Thinglass(const Sampler_settings& sampler_settings) :
 	Material(sampler_settings, true) {}
 
 const material::Sample& Thinglass::sample(const float3& wo, const Renderstate& rs,
-										  Worker& worker, Sampler_filter filter) {
+										  Sampler_filter filter, Worker& worker) {
 	auto& sample = worker.sample<Sample_thin>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -34,14 +34,14 @@ const material::Sample& Thinglass::sample(const float3& wo, const Renderstate& r
 }
 
 float3 Thinglass::thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
-								  Worker& worker, Sampler_filter filter) const {
+								  Sampler_filter filter, Worker& worker) const {
 	const float3 a = material::absorption_coefficient(absorption_color_, attenuation_distance_);
 
 	const float  n_dot_wi = clamp_abs_dot(wo, n);
 	const float  approximated_distance = thickness_ / n_dot_wi;
 	const float3 attenuation = rendering::attenuation(approximated_distance, a);
 
-	return opacity(uv, time, worker, filter) * (1.f - refraction_color_ * attenuation);
+	return opacity(uv, time, filter, worker) * (1.f - refraction_color_ * attenuation);
 }
 
 bool Thinglass::has_tinted_shadow() const {

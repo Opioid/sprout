@@ -11,7 +11,7 @@ Material_overcast::Material_overcast(const Sampler_settings& sampler_settings,
 	Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material_overcast::sample(const float3& wo, const Renderstate& rs,
-												  Worker& worker, Sampler_filter /*filter*/) {
+												  Sampler_filter /*filter*/, Worker& worker) {
 	auto& sample = worker.sample<light::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -23,8 +23,8 @@ const material::Sample& Material_overcast::sample(const float3& wo, const Render
 }
 
 float3 Material_overcast::sample_radiance(const float3& wi, float2 /*uv*/, float /*area*/,
-										  float /*time*/, Worker& /*worker*/,
-										  Sampler_filter /*filter*/) const {
+										  float /*time*/, Sampler_filter /*filter*/,
+										  Worker& /*worker*/) const {
 	return overcast(wi);
 }
 

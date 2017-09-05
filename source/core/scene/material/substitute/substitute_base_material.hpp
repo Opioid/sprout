@@ -13,7 +13,7 @@ public:
 	Material_base(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
-								   Worker& worker, Sampler_filter filter) const override final;
+								   Sampler_filter filter, Worker& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 

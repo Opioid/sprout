@@ -24,12 +24,12 @@ inline float Intersection::area() const {
 }
 
 inline float Intersection::opacity(float time, Sampler_filter filter, Worker& worker) const {
-	return material()->opacity(geo.uv, time, worker, filter);
+	return material()->opacity(geo.uv, time, filter, worker);
 }
 
 inline float3 Intersection::thin_absorption(const float3& wo, float time,
 											Sampler_filter filter, Worker& worker) const {
-	return material()->thin_absorption(wo, geo.geo_n, geo.uv, time, worker, filter);
+	return material()->thin_absorption(wo, geo.geo_n, geo.uv, time, filter, worker);
 }
 
 inline const material::Sample& Intersection::sample(const float3& wo, float time,
@@ -55,7 +55,7 @@ inline const material::Sample& Intersection::sample(const float3& wo, float time
 	rs.time = time;
 	rs.ior  = 1.f;
 
-	return material->sample(wo, rs, worker, filter);
+	return material->sample(wo, rs, filter, worker);
 }
 
 inline bool Intersection::same_hemisphere(const float3& v) const {

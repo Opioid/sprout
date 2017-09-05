@@ -12,7 +12,7 @@ Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
-										 Worker& worker, Sampler_filter filter) {
+										 Sampler_filter filter, Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);

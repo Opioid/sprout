@@ -147,7 +147,7 @@ bool Tree::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 	return false;
 }
 
-float Tree::opacity(const scene::Ray& ray, Worker& worker, Sampler_filter filter) const {
+float Tree::opacity(const scene::Ray& ray, Sampler_filter filter, Worker& worker) const {
 	auto& node_stack = worker.node_stack();
 
 	node_stack.clear();
@@ -183,7 +183,7 @@ float Tree::opacity(const scene::Ray& ray, Worker& worker, Sampler_filter filter
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 				const auto p = props_[i];
-				opacity += (1.f - opacity) * p->opacity(ray, worker, filter);
+				opacity += (1.f - opacity) * p->opacity(ray, filter, worker);
 
 				if (opacity >= 1.f) {
 					return 1.f;
@@ -196,7 +196,7 @@ float Tree::opacity(const scene::Ray& ray, Worker& worker, Sampler_filter filter
 
 	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
 		const auto p = props_[i];
-		opacity += (1.f - opacity) * p->opacity(ray, worker, filter);
+		opacity += (1.f - opacity) * p->opacity(ray, filter, worker);
 		if (opacity >= 1.f) {
 			return 1.f;
 		}
@@ -205,7 +205,7 @@ float Tree::opacity(const scene::Ray& ray, Worker& worker, Sampler_filter filter
 	return opacity;
 }
 
-float3 Tree::thin_absorption(const scene::Ray& ray, Worker& worker, Sampler_filter filter) const {
+float3 Tree::thin_absorption(const scene::Ray& ray, Sampler_filter filter, Worker& worker) const {
 	auto& node_stack = worker.node_stack();
 
 	node_stack.clear();
@@ -241,7 +241,7 @@ float3 Tree::thin_absorption(const scene::Ray& ray, Worker& worker, Sampler_filt
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 				const auto p = props_[i];
-				absorption += (1.f - absorption) * p->thin_absorption(ray, worker, filter);
+				absorption += (1.f - absorption) * p->thin_absorption(ray, filter, worker);
 				if (math::all_greater_equal(absorption, 1.f)) {
 					return float3(1.f);
 				}
@@ -253,7 +253,7 @@ float3 Tree::thin_absorption(const scene::Ray& ray, Worker& worker, Sampler_filt
 
 	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
 		const auto p = props_[i];
-		absorption += (1.f - absorption) * p->thin_absorption(ray, worker, filter);
+		absorption += (1.f - absorption) * p->thin_absorption(ray, filter, worker);
 		if (math::all_greater_equal(absorption, 1.f)) {
 			return float3(1.f);
 		}

@@ -79,22 +79,22 @@ bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) co
 	return bvh_.intersect_p(ray, node_stack);
 }
 
-float Scene::opacity(const scene::Ray& ray, Worker& worker,
-					 material::Sampler_settings::Filter filter) const {
+float Scene::opacity(const scene::Ray& ray, material::Sampler_settings::Filter filter,
+					 Worker& worker) const {
 	if (has_masked_material_) {
-		return bvh_.opacity(ray, worker, filter);
+		return bvh_.opacity(ray, filter, worker);
 	}
 
 	return bvh_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 }
 
-float3 Scene::thin_absorption(const scene::Ray& ray, Worker& worker,
-							  material::Sampler_settings::Filter filter) const {
+float3 Scene::thin_absorption(const scene::Ray& ray, material::Sampler_settings::Filter filter,
+							  Worker& worker) const {
 	if (has_tinted_shadow_) {
-		return bvh_.thin_absorption(ray, worker, filter);
+		return bvh_.thin_absorption(ray, filter, worker);
 	}
 
-	return float3(opacity(ray, worker, filter));
+	return float3(opacity(ray, filter, worker));
 }
 
 float Scene::tick_duration() const {

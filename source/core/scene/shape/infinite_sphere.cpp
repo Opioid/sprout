@@ -59,7 +59,7 @@ bool Infinite_sphere::intersect_p(const Transformation& /*transformation*/,
 
 float Infinite_sphere::opacity(const Transformation& /*transformation*/,
 							   const Ray& /*ray*/, const material::Materials& /*materials*/,
-							   Worker& /*worker*/, Sampler_filter /*filter*/) const {
+							   Sampler_filter /*filter*/, Worker& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return 0.f;
 }
@@ -67,7 +67,7 @@ float Infinite_sphere::opacity(const Transformation& /*transformation*/,
 float3 Infinite_sphere::thin_absorption(const Transformation& /*transformation*/,
 										const Ray& /*ray*/,
 										const material::Materials& /*materials*/,
-										Worker& /*worker*/, Sampler_filter /*filter*/) const {
+										Sampler_filter /*filter*/, Worker& /*worker*/) const {
 	// Implementation for this is not really needed, so just skip it
 	return float3(0.f);
 }

@@ -95,7 +95,7 @@ bool Rectangle::intersect_p(const Transformation& transformation,
 
 float Rectangle::opacity(const Transformation& transformation, const Ray& ray,
 						 const material::Materials& materials,
-						 Worker& worker, Sampler_filter filter) const {
+						 Sampler_filter filter, Worker& worker) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
@@ -121,7 +121,7 @@ float Rectangle::opacity(const Transformation& transformation, const Ray& ray,
 		}
 
 		float2 uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
-		return materials[0]->opacity(uv, ray.time, worker, filter);
+		return materials[0]->opacity(uv, ray.time, filter, worker);
 	}
 
 	return 0.f;
@@ -129,7 +129,7 @@ float Rectangle::opacity(const Transformation& transformation, const Ray& ray,
 
 float3 Rectangle::thin_absorption(const Transformation& transformation, const Ray& ray,
 								  const material::Materials& materials,
-								  Worker& worker, Sampler_filter filter) const {
+								  Sampler_filter filter, Worker& worker) const {
 	const float3& normal = transformation.rotation.r[2];
 	float d = math::dot(normal, transformation.position);
 	float denom = -math::dot(normal, ray.direction);
@@ -156,7 +156,7 @@ float3 Rectangle::thin_absorption(const Transformation& transformation, const Ra
 
 		float2 uv(0.5f * (u + 1.f), 0.5f * (v + 1.f));
 		return materials[0]->thin_absorption(ray.direction, normal, uv,
-											 ray.time, worker, filter);
+											 ray.time, filter, worker);
 	}
 
 	return float3(0.f);

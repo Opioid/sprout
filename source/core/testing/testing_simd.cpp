@@ -212,18 +212,18 @@ inline float simd_dotlly(const float3& a, const float3& b) {
 }
 
 inline float3 simd_normalized_2(const float3& v) {
-	Vector sx = ::simd::load_float4(v.v);
+//	Vector sx = ::simd::load_float4(v.v);
 
-	Vector d = _mm_dp_ps(sx, sx, 0x77);
+//	Vector d = _mm_dp_ps(sx, sx, 0x77);
 
-	Vector il = math::rsqrt(d);
+//	Vector il = math::rsqrt(d);
 
-	float3 result;
-	::simd::store_float4(result.v, _mm_mul_ps(il, sx));
+//	float3 result;
+//	::simd::store_float4(result.v, _mm_mul_ps(il, sx));
 
-	return result;
+//	return result;
 
-//	return math::normalize(v);
+	return math::normalize(v);
 }
 
 void normalize() {

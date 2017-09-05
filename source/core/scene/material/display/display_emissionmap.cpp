@@ -17,7 +17,7 @@ Emissionmap::Emissionmap(const Sampler_settings& sampler_settings, bool two_side
 	light::Emissionmap(sampler_settings, two_sided) {}
 
 const material::Sample& Emissionmap::sample(const float3& wo, const Renderstate& rs,
-											Worker& worker, Sampler_filter filter) {
+											Sampler_filter filter, Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);

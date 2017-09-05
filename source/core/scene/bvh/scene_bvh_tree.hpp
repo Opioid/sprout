@@ -38,11 +38,9 @@ public:
 
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const scene::Ray& ray, Worker& worker,
-				  Sampler_filter filter) const;
+	float opacity(const scene::Ray& ray, Sampler_filter filter, Worker& worker) const;
 
-	float3 thin_absorption(const scene::Ray& ray, Worker& worker,
-						   Sampler_filter filter) const;
+	float3 thin_absorption(const scene::Ray& ray, Sampler_filter filter, Worker& worker) const;
 
 private:
 

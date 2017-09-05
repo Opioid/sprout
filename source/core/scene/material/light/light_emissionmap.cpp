@@ -18,7 +18,7 @@ Emissionmap::Emissionmap(const Sampler_settings& sampler_settings, bool two_side
 	average_emission_(float3(-1.f)) {}
 
 const material::Sample& Emissionmap::sample(const float3& wo, const Renderstate& rs,
-											Worker& worker, Sampler_filter filter) {
+											Sampler_filter filter, Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -34,7 +34,7 @@ const material::Sample& Emissionmap::sample(const float3& wo, const Renderstate&
 }
 
 float3 Emissionmap::sample_radiance(const float3& /*wi*/, float2 uv, float /*area*/,
-									float /*time*/, Worker& worker, Sampler_filter filter) const {
+									float /*time*/, Sampler_filter filter, Worker& worker) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 	return emission_factor_ * emission_map_.sample_3(sampler, uv);
 }
@@ -55,7 +55,7 @@ float2 Emissionmap::radiance_sample(float2 r2, float& pdf) const {
 	return uv;
 }
 
-float Emissionmap::emission_pdf(float2 uv, Worker& worker, Sampler_filter filter) const {
+float Emissionmap::emission_pdf(float2 uv, Sampler_filter filter, Worker& worker) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;

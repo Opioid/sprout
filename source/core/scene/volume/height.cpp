@@ -64,7 +64,7 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 
 	return result;
 
-//	float3 old_result = Density::optical_depth(ray, step_size, rng, worker, filter);
+//	float3 old_result = Density::optical_depth(ray, step_size, rng, filter, worker);
 //	return old_result;
 }
 

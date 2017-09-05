@@ -10,8 +10,8 @@ public:
 
 	Material(const Sampler_settings& sampler_settings, bool two_sided);
 
-	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs, Worker& worker,
-										   Sampler_filter filter) override final;
+	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
+										   Sampler_filter filter, Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 

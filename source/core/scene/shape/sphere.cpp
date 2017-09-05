@@ -140,7 +140,7 @@ bool Sphere::intersect_p(const Transformation& transformation, const Ray& ray,
 
 float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 					  const material::Materials& materials,
-					  Worker& worker, Sampler_filter filter) const {
+					  Sampler_filter filter, Worker& worker) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale[0];
@@ -157,7 +157,7 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 			float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz[1]) * math::Pi_inv);
 
-			return materials[0]->opacity(uv, ray.time, worker, filter);
+			return materials[0]->opacity(uv, ray.time, filter, worker);
 		}
 
 		float t1 = b + dist;
@@ -169,7 +169,7 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 			float2 uv = float2(-std::atan2(xyz[0], xyz[2]) * (math::Pi_inv * 0.5f) + 0.5f,
 								std::acos(xyz[1]) * math::Pi_inv);
 
-			return materials[0]->opacity(uv, ray.time, worker, filter);
+			return materials[0]->opacity(uv, ray.time, filter, worker);
 		}
 	}
 
@@ -178,7 +178,7 @@ float Sphere::opacity(const Transformation& transformation, const Ray& ray,
 
 float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& ray,
 							   const material::Materials& materials,
-							   Worker& worker, Sampler_filter filter) const {
+							   Sampler_filter filter, Worker& worker) const {
 	float3 v = transformation.position - ray.origin;
 	float b = math::dot(v, ray.direction);
 	float radius = transformation.scale[0];
@@ -196,7 +196,7 @@ float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& 
 								std::acos(xyz[1]) * math::Pi_inv);
 
 			return materials[0]->thin_absorption(ray.direction, n, uv,
-												 ray.time, worker, filter);
+												 ray.time, filter, worker);
 		}
 
 		float t1 = b + dist;
@@ -209,7 +209,7 @@ float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& 
 								std::acos(xyz[1]) * math::Pi_inv);
 
 			return materials[0]->thin_absorption(ray.direction, n, uv,
-												 ray.time, worker, filter);
+												 ray.time, filter, worker);
 		}
 	}
 
