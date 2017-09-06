@@ -13,7 +13,7 @@ win32 {
     # warning level
     QMAKE_CXXFLAGS_WARN_ON -= -W3
     QMAKE_CXXFLAGS_WARN_ON += -W4
-#    QMAKE_CXXFLAGS_WARN_ON += -Wall
+ #   QMAKE_CXXFLAGS_WARN_ON += -Wall
     # disable warnings
     QMAKE_CXXFLAGS += /wd4201	# nameless struct/union extension
     QMAKE_CXXFLAGS += /wd4324	# pad due to alignment specifier
@@ -25,6 +25,7 @@ win32 {
     QMAKE_CXXFLAGS += /wd4626	# assignment operator implicitly deleted
     QMAKE_CXXFLAGS += /wd4710	# function not inlined
     QMAKE_CXXFLAGS += /wd4711	# function selected for automatic inline expansion
+ #   QMAKE_CXXFLAGS += /wd4820	# bytes' bytes padding added after construct
     QMAKE_CXXFLAGS += /wd5026	# move constructor operator implicitly deleted
     QMAKE_CXXFLAGS += /wd5027	# move assignment operator implicitly deleted
 } else {

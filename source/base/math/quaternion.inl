@@ -221,8 +221,8 @@ static inline Quaternion create(const Matrix3x3f_a& m) {
 		temp[1] = (m.r[0][2] - m.r[2][0]) * s;
 		temp[2] = (m.r[1][0] - m.r[0][1]) * s;
 	} else {
-		const uint32_t i = m.r[0][0] < m.r[1][1] ? (m.r[1][1] < m.r[2][2] ? 2 : 1)
-												 : (m.r[0][0] < m.r[2][2] ? 2 : 0);
+		const uint32_t i = m.r[0][0] < m.r[1][1] ? (m.r[1][1] < m.r[2][2] ? 2u : 1u)
+												 : (m.r[0][0] < m.r[2][2] ? 2u : 0u);
 		const uint32_t j = (i + 1) % 3;
 		const uint32_t k = (i + 2) % 3;
 

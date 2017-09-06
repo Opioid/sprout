@@ -25,14 +25,13 @@ Worker::~Worker() {
 	memory::safe_destruct(surface_integrator_);
 }
 
-void Worker::init(uint32_t id, const scene::Scene& scene,
-				  uint32_t max_sample_size, const rnd::Generator& rng,
+void Worker::init(uint32_t id, const scene::Scene& scene, uint32_t max_sample_size,
 				  integrator::surface::Factory& surface_integrator_factory,
 				  integrator::volume::Factory& volume_integrator_factory,
 				  sampler::Factory& sampler_factory) {
 	scene::Worker::init(id, scene, max_sample_size);
 
-	rng_ = rng;
+	rng_ = rnd::Generator(0, id);
 
 	surface_integrator_ = surface_integrator_factory.create(id, rng_);
 	volume_integrator_  = volume_integrator_factory.create(id, rng_);

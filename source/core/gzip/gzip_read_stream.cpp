@@ -15,16 +15,16 @@ bool Filebuffer::is_open() const {
 	return nullptr != stream_;
 }
 
-Filebuffer* Filebuffer::open(const char* filename, std::ios_base::openmode mode) {
-	// Return failure if this file buf is open already
-	if (is_open()) {
-		return nullptr;
-	}
+//Filebuffer* Filebuffer::open(const char* filename, std::ios_base::openmode mode) {
+//	// Return failure if this file buf is open already
+//	if (is_open()) {
+//		return nullptr;
+//	}
 
-	open(std::move(new std::ifstream(filename, mode)));
+//	open(std::move(new std::ifstream(filename, mode)));
 
-	return this;
-}
+//	return this;
+//}
 
 Filebuffer* Filebuffer::open(std::istream* stream) {
 	stream_ = stream;
@@ -102,7 +102,7 @@ Filebuffer::int_type Filebuffer::underflow() {
 		if (0 == z_stream_.avail_in) {
 			stream_->read(read_buffer_.data(), read_buffer_.size());
 
-			size_t read_bytes = stream_ ? read_buffer_.size() : stream_->gcount();
+			size_t read_bytes = *stream_ ? read_buffer_.size() : stream_->gcount();
 
 			z_stream_.avail_in = static_cast<uint32_t>(read_bytes);
 			z_stream_.next_in  = reinterpret_cast<uint8_t*>(read_buffer_.data());
@@ -271,15 +271,15 @@ bool Filebuffer::init_z_stream() {
 
 Read_stream::Read_stream() : __istream_type(&stream_buffer_) {}
 
-Read_stream::Read_stream(const std::string& name, std::ios_base::openmode mode) :
-	__istream_type(&stream_buffer_)/*, name_(name)*/ {
-	open(name.c_str(), mode);
-}
+//Read_stream::Read_stream(const std::string& name, std::ios_base::openmode mode) :
+//	__istream_type(&stream_buffer_)/*, name_(name)*/ {
+//	open(name.c_str(), mode);
+//}
 
-Read_stream::Read_stream(const char* name, std::ios_base::openmode mode) :
-	__istream_type(&stream_buffer_)/*, name_(name)*/ {
-	open(name, mode);
-}
+//Read_stream::Read_stream(const char* name, std::ios_base::openmode mode) :
+//	__istream_type(&stream_buffer_)/*, name_(name)*/ {
+//	open(name, mode);
+//}
 
 Read_stream::Read_stream(std::istream* stream) :
 	__istream_type(&stream_buffer_) {
@@ -298,11 +298,11 @@ bool Read_stream::is_open() const {
 	return rdbuf()->is_open();
 }
 
-void Read_stream::open(const char* name, std::ios_base::openmode mode) {
-	if (!rdbuf()->open(name, mode | std::ios_base::in)) {
-		__istream_type::setstate(std::ios_base::failbit);
-	}
-}
+//void Read_stream::open(const char* name, std::ios_base::openmode mode) {
+//	if (!rdbuf()->open(name, mode | std::ios_base::in)) {
+//		__istream_type::setstate(std::ios_base::failbit);
+//	}
+//}
 
 void Read_stream::open(std::istream* stream) {
 	if (!rdbuf()->open(stream)) {

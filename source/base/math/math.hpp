@@ -1,6 +1,6 @@
 #pragma once
 
-#include "simd/simd.inl"
+#include "simd/simd_const.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <algorithm>

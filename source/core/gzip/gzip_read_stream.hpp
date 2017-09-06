@@ -25,7 +25,7 @@ public:
 
 	bool is_open() const;
 
-	Filebuffer* open(const char* filename, std::ios_base::openmode mode);
+//	Filebuffer* open(const char* filename, std::ios_base::openmode mode);
 
 	Filebuffer* open(std::istream* stream);
 
@@ -75,11 +75,11 @@ public:
 
 	Read_stream();
 
-	explicit Read_stream(const std::string& name,
-						 std::ios_base::openmode mode = std::ios_base::binary);
+//	explicit Read_stream(const std::string& name,
+//						 std::ios_base::openmode mode = std::ios_base::binary);
 
-	explicit Read_stream(const char* name,
-						 std::ios_base::openmode mode = std::ios_base::binary);
+//	explicit Read_stream(const char* name,
+//						 std::ios_base::openmode mode = std::ios_base::binary);
 
 	explicit Read_stream(std::istream* stream);
 
@@ -89,8 +89,7 @@ public:
 
 	bool is_open() const;
 
-	void open(char const* name, 
-			  std::ios_base::openmode mode = std::ios_base::binary);
+//	void open(char const* name, std::ios_base::openmode mode = std::ios_base::binary);
 	
 	void open(std::istream* stream);
 

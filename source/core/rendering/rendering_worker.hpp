@@ -36,8 +36,7 @@ public:
 	Worker();
 	~Worker();
 
-	void init(uint32_t id, const scene::Scene& scene,
-			  uint32_t max_sample_size, const rnd::Generator& rng,
+	void init(uint32_t id, const scene::Scene& scene, uint32_t max_sample_size,
 			  integrator::surface::Factory& surface_integrator_factory,
 			  integrator::volume::Factory& volume_integrator_factory,
 			  sampler::Factory& sampler_factory);

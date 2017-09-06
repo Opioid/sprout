@@ -30,9 +30,8 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/,
 
 	image::Float4 target(image::Image::Description(image::Image::Type::Float4, dimensions));
 
-	rnd::Generator rng;
 	baking::Baking_worker worker;
-	worker.init(0, scene, max_sample_size, rng, *surface_integrator_factory_,
+	worker.init(0, scene, max_sample_size, *surface_integrator_factory_,
 				*volume_integrator_factory_, *sampler_factory_);
 
 	scene::Ray ray;
@@ -50,8 +49,7 @@ void Driver::render(scene::Scene& scene, const take::View& /*view*/,
 
 	for (int32_t y = 0; y < dimensions[1]; ++y) {
 		for (int32_t x = 0; x < dimensions[0]; ++x) {
-
-			worker.sampler()->resume_pixel(0, rng);
+		//	worker.sampler()->resume_pixel(0, rng);
 
 			float3 offset((static_cast<float>(x) + 0.5f) *
 						   (bake_quad_range[0] / static_cast<float>(dimensions[0])),

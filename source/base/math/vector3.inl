@@ -4,6 +4,7 @@
 #include "vector2.inl"
 #include "math.hpp"
 #include "exp.hpp"
+#include "simd/simd.inl"
 
 namespace math {
 
@@ -494,7 +495,7 @@ static inline Vector3f_a exp(const Vector3f_a& v) {
 	return r;
 }
 
-static inline constexpr Vector3f_a pow(const Vector3f_a& v, float e) {
+static inline Vector3f_a pow(const Vector3f_a& v, float e) {
 	return Vector3f_a(std::pow(v[0], e),
 					  std::pow(v[1], e),
 					  std::pow(v[2], e));
@@ -554,11 +555,11 @@ static inline constexpr float max_element(const Vector3f_a& v) {
 	return std::max(std::max(v[0], v[1]), v[2]);
 }
 
-static inline constexpr Vector3f_a abs(const Vector3f_a& v) {
+static inline Vector3f_a abs(const Vector3f_a& v) {
 	return Vector3f_a(std::abs(v[0]), std::abs(v[1]), std::abs(v[2]));
 }
 
-static inline constexpr Vector3f_a cos(const Vector3f_a& v) {
+static inline Vector3f_a cos(const Vector3f_a& v) {
 	return Vector3f_a(std::cos(v[0]), std::cos(v[1]), std::cos(v[2]));
 }
 

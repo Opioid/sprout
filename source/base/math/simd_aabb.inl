@@ -2,6 +2,7 @@
 
 #include "simd_aabb.hpp"
 #include "math/vector.inl"
+#include "simd/simd.inl"
 
 namespace math {
 

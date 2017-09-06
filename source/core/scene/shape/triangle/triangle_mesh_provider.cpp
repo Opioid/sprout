@@ -340,7 +340,7 @@ std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool&
 
 	delete[] json_string;
 
-	int64_t binary_start = json_size + 4 + sizeof(uint64_t);
+	uint64_t binary_start = json_size + 4u + sizeof(uint64_t);
 
 	std::vector<Vertex> vertices(vertices_size / sizeof(Vertex));
 
