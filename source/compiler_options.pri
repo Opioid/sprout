@@ -34,6 +34,9 @@ win32 {
     QMAKE_CXXFLAGS += -march=native
 #    QMAKE_CXXFLAGS_RELEASE -= -O2
 #    QMAKE_CXXFLAGS_RELEASE += -O3
+#    QMAKE_CXXFLAGS_RELEASE += -O1
+
+#    QMAKE_CXXFLAGS_RELEASE += -fsanitize=address
 }
 
 #QMAKE_CFLAGS_RELEASE += -Zi

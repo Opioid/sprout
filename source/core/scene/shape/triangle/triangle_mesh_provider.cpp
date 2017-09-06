@@ -55,13 +55,17 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 		return load_binary(*stream_pointer, manager.thread_pool());
 	}
 
-	rapidjson::IStreamWrapper json_stream(*stream_pointer);
-
 	Json_handler handler;
 
-	rapidjson::Reader reader;
+	{
+		rapidjson::IStreamWrapper json_stream(*stream_pointer);
 
-	reader.Parse(json_stream, handler);
+		rapidjson::Reader reader;
+
+		reader.Parse(json_stream, handler);
+
+		delete stream_pointer.release();
+	}
 
 	if (!handler.morph_targets().empty()) {
 		return load_morphable_mesh(filename, handler.morph_targets(), manager);
