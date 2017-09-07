@@ -18,7 +18,7 @@ std::unique_ptr<std::istream> System::read_stream(const std::string& name,
 		throw std::runtime_error("Stream \"" + name + "\" could not be opened");
 	}
 
-	Type type = query_type(*stream);
+	const Type type = query_type(*stream);
 
 	if (Type::GZIP == type) {
 		return std::unique_ptr<std::istream>(new gzip::Read_stream(stream));

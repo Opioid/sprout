@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 
 	const auto loading_start = std::chrono::high_resolution_clock::now();
 
-	std::shared_ptr<take::Take> take;
+	std::unique_ptr<take::Take> take;
 
 	try {
 		auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
@@ -143,17 +143,13 @@ int main(int argc, char* argv[]) {
 
 	scene::Scene scene;
 
-	try {
-		scene_loader.load(take->scene_filename, scene);
-
+	if (scene_loader.load(take->scene_filename, scene)) {
 		if (take->camera_animation && take->view.camera) {
 			scene.add_animation(take->camera_animation);
 			scene.create_animation_stage(take->view.camera.get(),
 										 take->camera_animation.get());
 		}
-	} catch (const std::exception& e) {
-		logging::error("Scene \"" + take->scene_filename + "\" could not be loaded: " +
-					   e.what() + ".");
+	} else {
 		logging::release();
 		return 1;
 	}

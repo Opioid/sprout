@@ -45,34 +45,41 @@ Loader::Loader(resource::Manager& manager, material::Material_ptr fallback_mater
 
 Loader::~Loader() {}
 
-void Loader::load(const std::string& filename, Scene& scene) {
-	std::string resolved_name;
-	auto stream_pointer = resource_manager_.file_system().read_stream(filename, resolved_name);
+bool Loader::load(const std::string& filename, Scene& scene) {
+	bool success = true;
 
-	mount_folder_ = string::parent_directory(resolved_name);
+	try {
+		std::string resolved_name;
+		auto stream_pointer = resource_manager_.file_system().read_stream(filename, resolved_name);
 
-	auto root = json::parse(*stream_pointer);
+		mount_folder_ = string::parent_directory(resolved_name);
 
-	const json::Value::ConstMemberIterator materials_node = root->FindMember("materials");
-	if (root->MemberEnd() != materials_node) {
-	//	local_materials_ = &materials_node->value;
-//		std::string mount_folder = string::parent_directory(resolved_name);
-		read_materials(materials_node->value);
-	}
+		auto root = json::parse(*stream_pointer);
 
-	resource_manager_.file_system().push_mount(mount_folder_);
-
-	for (auto& n : root->GetObject()) {
-		if ("entities" == n.name) {
-			load_entities(n.value, nullptr, scene);
+		const json::Value::ConstMemberIterator materials_node = root->FindMember("materials");
+		if (root->MemberEnd() != materials_node) {
+			read_materials(materials_node->value);
 		}
+
+		resource_manager_.file_system().push_mount(mount_folder_);
+
+		for (auto& n : root->GetObject()) {
+			if ("entities" == n.name) {
+				load_entities(n.value, nullptr, scene);
+			}
+		}
+
+		resource_manager_.file_system().pop_mount();
+
+		scene.finish();
+	} catch (std::exception& e) {
+		success = false;
+		logging::error("Scene \"" + filename + "\" could not be loaded: " + e.what() + ".");
 	}
-
-	resource_manager_.file_system().pop_mount();
-
-	scene.finish();
 
 	resource_manager_.thread_pool().wait_async();
+
+	return success;
 }
 
 void Loader::register_extension_provider(const std::string& name,

@@ -2,11 +2,10 @@
 
 #include "take_settings.hpp"
 #include "take_view.hpp"
+#include "exporting/exporting_sink.hpp"
 #include <string>
 #include <memory>
 #include <vector>
-
-namespace exporting { class Sink; }
 
 namespace scene { namespace animation { class Animation; } }
 

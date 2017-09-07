@@ -49,7 +49,7 @@ class Loader {
 
 public:
 
-	static std::shared_ptr<Take> load(std::istream& stream, thread::Pool& thread_pool);
+	static std::unique_ptr<Take> load(std::istream& stream, thread::Pool& thread_pool);
 
 private:
 

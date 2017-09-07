@@ -54,10 +54,10 @@
 
 namespace take {
 
-std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_pool) {
+std::unique_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_pool) {
 	auto root = json::parse(stream);
 
-	auto take = std::make_shared<Take>();
+	auto take = std::make_unique<Take>();
 
 	const json::Value* exporter_value = nullptr;
 	const bool alpha_transparency = peek_alpha_transparency(*root);

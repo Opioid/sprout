@@ -47,7 +47,7 @@ public:
 	Loader(resource::Manager& manager, material::Material_ptr fallback_material);
     ~Loader();
 
-	void load(const std::string& filename, Scene& scene);
+	bool load(const std::string& filename, Scene& scene);
 
 	void register_extension_provider(const std::string& name, entity::Extension_provider* provider);
     void register_mesh_generator(const std::string& name, shape::triangle::Generator* generator);
