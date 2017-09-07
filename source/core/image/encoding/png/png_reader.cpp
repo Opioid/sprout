@@ -7,8 +7,6 @@
 #include <cstring>
 #include <istream>
 
-#include "base/debug/assert.hpp"
-
 namespace image { namespace encoding { namespace png {
 
 std::shared_ptr<Image> Reader::read(std::istream& stream, Channels channels,
@@ -164,8 +162,6 @@ void Reader::read_chunk(std::istream& stream, Chunk& chunk) {
 	uint32_t length = 0;
 	stream.read(reinterpret_cast<char*>(&length), sizeof(uint32_t));
 	chunk.length = byteswap(length);
-
-	SOFT_ASSERT(length > 0);
 
 	chunk.type.resize(chunk.length + 4);
 	chunk.data = chunk.type.data() + 4;
