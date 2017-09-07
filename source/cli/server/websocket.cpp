@@ -146,6 +146,11 @@ void Websocket::decode_text(const char* buffer, size_t size, std::string& text) 
 
 		payload_start = mask_start + 4;
 	} else {
+		mask[0] = 0;
+		mask[1] = 0;
+		mask[2] = 0;
+		mask[3] = 0;
+
 		payload_start = mask_start;
 	}
 

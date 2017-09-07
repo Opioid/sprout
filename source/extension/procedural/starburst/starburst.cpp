@@ -310,7 +310,7 @@ void centered_squared_magnitude(float* result, const float2* source,
 	float normalization = 2.f / fr;
 
 	for (int32_t y = 0; y < height; ++y) {
-		int32_t ro = y;
+		int32_t ro;
 
 		if (y < height / 2) {
 			ro = y + height / 2;

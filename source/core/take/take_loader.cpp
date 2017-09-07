@@ -150,7 +150,7 @@ std::shared_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 void Loader::load_camera(const json::Value& camera_value, bool alpha_transparency, Take& take) {
 	using namespace scene::camera;
 
-	std::string type_name = "Perspective";
+	std::string type_name;
 	const json::Value* type_value = nullptr;
 
 	for (auto& n : camera_value.GetObject()) {
@@ -160,6 +160,11 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 		if ("Cubic" == type_name) {
 			break;
 		}
+	}
+
+	if (!type_value) {
+		// Can this happen at all!
+		throw std::runtime_error("Empty camera object");
 	}
 
 	math::Transformation transformation {

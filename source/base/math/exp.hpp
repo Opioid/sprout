@@ -25,7 +25,7 @@ namespace math {
 // http://gruntthepeon.free.fr/ssemath/sse_mathfun.h
 
 static inline Vector exp(Vector x) {
-	Vector tmp = _mm_setzero_ps();
+	Vector tmp;
 	Vector fx;
 
 	__m128i emm0;
@@ -78,7 +78,7 @@ static inline Vector exp(Vector x) {
 }
 
 static inline float exp(float s) {
-	Vector tmp = _mm_setzero_ps();
+	Vector tmp;
 	Vector fx;
 
 	__m128i emm0;

@@ -23,7 +23,7 @@ namespace math {
 // http://gruntthepeon.free.fr/ssemath/sse_mathfun.h
 
 static inline Vector sin(Vector x) {
-	Vector xmm1, xmm2 = _mm_setzero_ps(), xmm3, sign_bit, y;
+	Vector xmm1, xmm2, xmm3, sign_bit, y;
 	__m128i emm0, emm2;
 
 	sign_bit = x;
@@ -105,7 +105,7 @@ static inline Vector sin(Vector x) {
 }
 
 static inline Vector cos(Vector x) {
-	Vector xmm1, xmm2 = _mm_setzero_ps(), xmm3, y;
+	Vector xmm1, xmm2, xmm3, y;
 
 	__m128i emm0, emm2;
 
@@ -183,7 +183,7 @@ static inline Vector cos(Vector x) {
 }
 
 static inline void sincos(Vector x, Vector& s, Vector& c) {
-	Vector xmm1, xmm2, xmm3 = _mm_setzero_ps(), sign_bit_sin, y;
+	Vector xmm1, xmm2, xmm3, sign_bit_sin, y;
 
 	__m128i emm0, emm2, emm4;
 
@@ -281,7 +281,7 @@ static inline void sincos(Vector x, Vector& s, Vector& c) {
 static inline void sincos(float xf, float& s, float& c) {
 	Vector x = _mm_load_ss(&xf);
 
-	Vector xmm1, xmm2, xmm3 = _mm_setzero_ps(), sign_bit_sin, y;
+	Vector xmm1, xmm2, xmm3, sign_bit_sin, y;
 
 	__m128i emm0, emm2, emm4;
 

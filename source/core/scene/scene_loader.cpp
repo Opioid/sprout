@@ -330,16 +330,16 @@ entity::Entity* Loader::load_extension(const std::string& type,
 }
 
 std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value) {
-	std::string type = json::read_string(shape_value, "type");
+	const std::string type = json::read_string(shape_value, "type");
 	if (!type.empty()) {
         return shape(type, shape_value);
 	}
 
-	std::string file = json::read_string(shape_value, "file");
+	const std::string file = json::read_string(shape_value, "file");
 	if (!file.empty()) {
 		memory::Variant_map options;
 
-		std::string bvh_preset_value = json::read_string(shape_value, "bvh_preset");
+		const std::string bvh_preset_value = json::read_string(shape_value, "bvh_preset");
 
 		if ("fast" == bvh_preset_value) {
 			options.set("bvh_preset", shape::triangle::BVH_preset::Fast);

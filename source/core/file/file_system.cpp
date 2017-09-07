@@ -45,6 +45,8 @@ void System::pop_mount() {
 }
 
 std::istream* System::open_read_stream(const std::string& name, std::string& resolved_name) const {
+	// TODO: Use something like std::filesytem::exists() when it is available
+
 	for (auto& f : mount_folders_) {
 		// Ignore empty folders, because this is handled explicitely
 		if (f.empty()) {
@@ -57,6 +59,8 @@ std::istream* System::open_read_stream(const std::string& name, std::string& res
 		if (*stream) {
 			return stream;
 		}
+
+		delete stream;
 	}
 
 	std::istream* stream = new std::ifstream(name, std::ios::binary);
