@@ -6,7 +6,7 @@
 #include "core/image/image_provider.hpp"
 #include "core/image/texture/texture_provider.hpp"
 #include "core/progress/progress_sink_null.hpp"
-#include "core/progress/progress_sink_stdout.hpp"
+#include "core/progress/progress_sink_std_out.hpp"
 #include "core/rendering/rendering_driver_finalframe.hpp"
 #include "core/rendering/sensor/sensor.hpp"
 #include "core/resource/resource_manager.inl"
@@ -164,13 +164,10 @@ int main(int argc, char* argv[]) {
 	size_t rendering_num_bytes = 0;
 
 	if (args.progressive) {
-		rendering_num_bytes = controller::progressive(*take,
-													  scene,
-													  resource_manager,
-													  thread_pool,
-													  max_sample_size);
+		rendering_num_bytes = controller::progressive(*take, scene, resource_manager,
+													  thread_pool, max_sample_size);
 	} else {
-		progress::Stdout progressor;
+		progress::Std_out progressor;
 
 		const auto rendering_start = std::chrono::high_resolution_clock::now();
 
@@ -178,10 +175,8 @@ int main(int argc, char* argv[]) {
 			rendering::Driver_finalframe driver(take->surface_integrator_factory,
 												take->volume_integrator_factory,
 												take->sampler_factory,
-												scene,
-												take->view,
-												thread_pool,
-												max_sample_size);
+												scene, take->view,
+												thread_pool, max_sample_size);
 
 			rendering_num_bytes += driver.num_bytes();
 
