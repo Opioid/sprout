@@ -9,11 +9,11 @@ const Light::Transformation& Null_light::transformation_at(
 	return transformation;
 }
 
-void Null_light::sample(const Transformation& /*transformation*/, const float3& /*p*/,
+bool Null_light::sample(const Transformation& /*transformation*/, const float3& /*p*/,
 						const float3& /*n*/, float /*time*/, bool /*total_sphere*/,
 						sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-						Sampler_filter /*filter*/, Worker& /*worker*/, Sample& result) const {
-	result.shape.pdf = 0.f;
+						Sampler_filter /*filter*/, Worker& /*worker*/, Sample& /*result*/) const {
+	return false;
 }
 
 float Null_light::pdf(const Ray& /*ray*/, const Intersection& /*intersection*/,

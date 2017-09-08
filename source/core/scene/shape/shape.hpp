@@ -56,12 +56,12 @@ public:
 								   const material::Materials& materials,
 								   Sampler_filter filter, Worker& worker) const = 0;
 
-	virtual void sample(uint32_t part, const Transformation& transformation,
+	virtual bool sample(uint32_t part, const Transformation& transformation,
 						const float3& p, const float3& n, float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const = 0;
 
-	virtual void sample(uint32_t part, const Transformation& transformation,
+	virtual bool sample(uint32_t part, const Transformation& transformation,
 						const float3& p, float area, bool two_sided,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Node_stack& node_stack, Sample& sample) const = 0;
@@ -74,7 +74,7 @@ public:
 
 	// The following two functions are used for textured lights
 	// and should have the uv weight baked in!
-	virtual void sample(uint32_t part, const Transformation& transformation,
+	virtual bool sample(uint32_t part, const Transformation& transformation,
 						const float3& p, float2 uv, float area, bool two_sided,
 						Sample& sample) const = 0;
 

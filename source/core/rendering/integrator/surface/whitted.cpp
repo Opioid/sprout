@@ -97,11 +97,9 @@ float3 Whitted::estimate_direct_light(const Ray& ray, const Intersection& inters
 		const auto light = lights[l];
 		for (uint32_t i = 0, nls = settings_.num_light_samples; i < nls; ++i) {
 			scene::light::Sample light_sample;
-			light->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
-						  material_sample.is_translucent(), sampler_, l,
-						  Sampler_filter::Nearest, worker, light_sample);
-
-			if (light_sample.shape.pdf > 0.f) {
+			if (light->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
+							  material_sample.is_translucent(), sampler_, l,
+							  Sampler_filter::Nearest, worker, light_sample)) {
 				shadow_ray.set_direction(light_sample.shape.wi);
 				shadow_ray.max_t = light_sample.shape.t - ray_offset;
 

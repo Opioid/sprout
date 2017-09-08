@@ -216,15 +216,15 @@ float3 Sphere::thin_absorption(const Transformation& transformation, const Ray& 
 	return float3(0.f);
 }
 
-void Sphere::sample(uint32_t part, const Transformation& transformation,
+bool Sphere::sample(uint32_t part, const Transformation& transformation,
 					const float3& p, const float3& /*n*/, float area, bool two_sided,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& node_stack, Sample& sample) const {
-	Sphere::sample(part, transformation, p, area, two_sided,
-				   sampler, sampler_dimension, node_stack, sample);
+	return Sphere::sample(part, transformation, p, area, two_sided,
+						  sampler, sampler_dimension, node_stack, sample);
 }
 
-void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
+bool Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 					const float3& p, float /*area*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& /*node_stack*/, Sample& sample) const {
@@ -251,6 +251,8 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 //	if (std::isinf(sample.pdf)) {
 //		sample.pdf = 1.f;
 //	}
+
+	return true;
 }
 
 float Sphere::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
@@ -267,7 +269,7 @@ float Sphere::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
 	return math::cone_pdf_uniform(cos_theta_max);
 }
 
-void Sphere::sample(uint32_t /*part*/, const Transformation& transformation, const float3& p,
+bool Sphere::sample(uint32_t /*part*/, const Transformation& transformation, const float3& p,
 					float2 uv, float area, bool /*two_sided*/, Sample& sample) const {
 	float phi   = (uv[0] + 0.75f) * (2.f * math::Pi);
 	float theta = uv[1] * math::Pi;
@@ -291,14 +293,16 @@ void Sphere::sample(uint32_t /*part*/, const Transformation& transformation, con
 	float c = -math::dot(wn, dir);
 
 	if (c <= 0.f) {
-		sample.pdf = 0.f;
-	} else {
-		sample.wi = dir;
-		sample.uv = uv;
-		sample.t  = d;
-		// sin_theta because of the uv weight
-		sample.pdf = sl / (c * area * sin_theta);
+		return false;
 	}
+
+	sample.wi = dir;
+	sample.uv = uv;
+	sample.t  = d;
+	// sin_theta because of the uv weight
+	sample.pdf = sl / (c * area * sin_theta);
+
+	return true;
 }
 
 float Sphere::pdf_uv(const Ray& ray, const Intersection& intersection,

@@ -22,7 +22,7 @@ const Light::Transformation& Prop_light::transformation_at(
 	return prop_->transformation_at(time, transformation);
 }
 
-void Prop_light::sample(const Transformation& transformation,
+bool Prop_light::sample(const Transformation& transformation,
 						const float3& p, const float3& n, float time, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, Worker& worker, Sample& result) const {
@@ -33,22 +33,25 @@ void Prop_light::sample(const Transformation& transformation,
 	const bool two_sided = material->is_two_sided();
 
 	if (total_sphere) {
-		prop_->shape()->sample(part_, transformation, p, area, two_sided,
-							   sampler, sampler_dimension,
-							   worker.node_stack(), result.shape);
+		if (!prop_->shape()->sample(part_, transformation, p, area, two_sided, sampler,
+									sampler_dimension, worker.node_stack(), result.shape)) {
+			return false;
+		}
 	} else {
-		prop_->shape()->sample(part_, transformation, p, n, area, two_sided,
-							   sampler, sampler_dimension,
-							   worker.node_stack(), result.shape);
+		if (!prop_->shape()->sample(part_, transformation, p, n, area, two_sided, sampler,
+									sampler_dimension, worker.node_stack(), result.shape)) {
+			return false;
+		}
 
 		if (math::dot(result.shape.wi, n) <= 0.f) {
-			result.shape.pdf = 0.f;
-			return;
+			return false;
 		}
 	}
 
 	result.radiance = material->sample_radiance(result.shape.wi, result.shape.uv,
 												area, time, filter, worker);
+
+	return true;
 }
 
 float Prop_light::pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,

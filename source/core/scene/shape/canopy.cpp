@@ -75,15 +75,15 @@ float3 Canopy::thin_absorption(const Transformation& /*transformation*/,
 	return float3(0.f);
 }
 
-void Canopy::sample(uint32_t part, const Transformation& transformation,
+bool Canopy::sample(uint32_t part, const Transformation& transformation,
 					const float3& p, const float3& /*n*/, float area, bool two_sided,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& node_stack, Sample& sample) const {
-	Canopy::sample(part, transformation, p, area, two_sided,
-				   sampler, sampler_dimension, node_stack, sample);
+	return Canopy::sample(part, transformation, p, area, two_sided,
+						  sampler, sampler_dimension, node_stack, sample);
 }
 
-void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
+bool Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					const float3& /*p*/, float /*area*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& /*node_stack*/, Sample& sample) const {
@@ -101,6 +101,8 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	sample.pdf = 1.f / (2.f * math::Pi);
 
 	SOFT_ASSERT(testing::check(sample));
+
+	return true;
 }
 
 float Canopy::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
@@ -109,7 +111,7 @@ float Canopy::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*
 	return 1.f / (2.f * math::Pi);
 }
 
-void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
+bool Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 					const float3& /*p*/, float2 uv, float /*area*/, bool /*two_sided*/,
 					Sample& sample) const {
 	const float2 disk(2.f * uv[0] - 1.f, 2.f * uv[1] - 1.f);
@@ -117,7 +119,7 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	const float z = math::dot(disk, disk);
 	if (z > 1.f) {
 		sample.pdf = 0.f;
-		return;
+		return false;
 	}
 
 	const float3 dir = math::disk_to_hemisphere_equidistant(disk);
@@ -126,6 +128,8 @@ void Canopy::sample(uint32_t /*part*/, const Transformation& transformation,
 	sample.uv = uv;
 	sample.t  = Ray_max_t;
 	sample.pdf = 1.f / (2.f * math::Pi);
+
+	return true;
 }
 
 float Canopy::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,

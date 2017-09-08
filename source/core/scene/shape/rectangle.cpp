@@ -162,15 +162,15 @@ float3 Rectangle::thin_absorption(const Transformation& transformation, const Ra
 	return float3(0.f);
 }
 
-void Rectangle::sample(uint32_t part, const Transformation& transformation,
+bool Rectangle::sample(uint32_t part, const Transformation& transformation,
 					   const float3& p, const float3& /*n*/, float area, bool two_sided,
 					   sampler::Sampler& sampler, uint32_t sampler_dimension,
 					   Node_stack& node_stack, Sample& sample) const {
-	Rectangle::sample(part, transformation, p, area, two_sided,
-					  sampler, sampler_dimension, node_stack, sample);
+	return Rectangle::sample(part, transformation, p, area, two_sided,
+							 sampler, sampler_dimension, node_stack, sample);
 }
 
-void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
+bool Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 					   const float3& p, float area, bool two_sided,
 					   sampler::Sampler& sampler, uint32_t sampler_dimension,
 					   Node_stack& /*node_stack*/, Sample& sample) const {
@@ -197,12 +197,14 @@ void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 
 	if (c <= 0.f) {
-		sample.pdf = 0.f;
-	} else {
-		sample.wi = wi;
-		sample.t = t;
-		sample.pdf = sl / (c * area);
+		return false;
 	}
+
+	sample.wi = wi;
+	sample.t = t;
+	sample.pdf = sl / (c * area);
+
+	return true;
 }
 
 float Rectangle::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
@@ -220,7 +222,7 @@ float Rectangle::pdf(const Ray& ray, const shape::Intersection& /*intersection*/
 	return sl / (c * area);
 }
 
-void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
+bool Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 					   const float3& p, float2 uv, float area, bool two_sided,
 					   Sample& sample) const {
 	float3 ls(-2.f * uv[0] + 1.f, -2.f * uv[1] + 1.f, 0.f);
@@ -241,14 +243,16 @@ void Rectangle::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 
 	if (c <= 0.f) {
-		sample.pdf = 0.f;
-	} else {
-		sample.wi = dir;
-		sample.uv = uv;
-		sample.t  = d;
-		// sin_theta because of the uv weight
-		sample.pdf = sl / (c * area /** sin_theta*/);
+		return false;
 	}
+
+	sample.wi = dir;
+	sample.uv = uv;
+	sample.t  = d;
+	// sin_theta because of the uv weight
+	sample.pdf = sl / (c * area /** sin_theta*/);
+
+	return true;
 }
 
 float Rectangle::pdf_uv(const Ray& ray, const Intersection& intersection,

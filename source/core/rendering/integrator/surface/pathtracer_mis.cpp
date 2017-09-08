@@ -293,16 +293,14 @@ float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight, fl
 									  Sampler_filter filter, Worker& worker) {
 	// Light source importance sample
 	scene::light::Sample light_sample;
-	light->sample(intersection.geo.p, material_sample.geometric_normal(), time,
-				  material_sample.is_translucent(), light_sampler(depth),
-				  sampler_dimension, Sampler_filter::Nearest, worker, light_sample);
-
-	if (light_sample.shape.pdf <= 0.f) {
+	if (!light->sample(intersection.geo.p, material_sample.geometric_normal(), time,
+					   material_sample.is_translucent(), light_sampler(depth),
+					   sampler_dimension, Sampler_filter::Nearest, worker, light_sample)) {
 		return float3(0.f);
 	}
 
-	const Ray shadow_ray(intersection.geo.p, light_sample.shape.wi,
-						 ray_offset, light_sample.shape.t - ray_offset, time, depth);
+	const Ray shadow_ray(intersection.geo.p, light_sample.shape.wi, ray_offset,
+						 light_sample.shape.t - ray_offset, time, depth);
 
 	const float3 tv = worker.tinted_visibility(shadow_ray, filter);
 	if (math::any_greater_zero(tv)) {

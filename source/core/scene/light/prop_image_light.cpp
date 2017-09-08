@@ -15,7 +15,7 @@
 
 namespace scene { namespace light {
 
-void Prop_image_light::sample(const Transformation& transformation,
+bool Prop_image_light::sample(const Transformation& transformation,
 							  const float3& p, const float3& n, float time, bool total_sphere,
 							  sampler::Sampler& sampler, uint32_t sampler_dimension,
 							  Sampler_filter filter, Worker& worker, Sample& result) const {
@@ -31,15 +31,19 @@ void Prop_image_light::sample(const Transformation& transformation,
 	const bool two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
-	prop_->shape()->sample(part_, transformation, p, uv, area, two_sided, result.shape);
+	if (!prop_->shape()->sample(part_, transformation, p, uv, area, two_sided, result.shape)) {
+		return false;
+	}
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
 		result.shape.pdf *= material_pdf;
-		result.radiance = material->sample_radiance(result.shape.wi, uv,
-													area, time, filter, worker);
-	} else {
-		result.shape.pdf = 0.f;
+		result.radiance = material->sample_radiance(result.shape.wi, uv, area,
+													time, filter, worker);
+
+		return true;
 	}
+
+	return false;
 }
 
 float Prop_image_light::pdf(const Ray& ray, const Intersection& intersection, bool /*total_sphere*/,

@@ -113,15 +113,19 @@ float3 Morphable_mesh::thin_absorption(const Transformation& transformation, con
 	return tree_.absorption(tray, ray.time, materials, filter, worker);
 }
 
-void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							const float3& /*p*/, const float3& /*n*/, float /*area*/, bool /*two_sided*/,
 							sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-							Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
+							Node_stack& /*node_stack*/, Sample& /*sample*/) const {
+	return false;
+}
 
-void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							const float3& /*p*/, float /*area*/, bool /*two_sided*/,
 							sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-							Node_stack& /*node_stack*/, Sample& /*sample*/) const {}
+							Node_stack& /*node_stack*/, Sample& /*sample*/) const {
+	return false;
+}
 
 float Morphable_mesh::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
 						  const Transformation& /*transformation*/,
@@ -129,9 +133,12 @@ float Morphable_mesh::pdf(const Ray& /*ray*/, const shape::Intersection& /*inter
 	return 0.f;
 }
 
-void Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+bool Morphable_mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 							const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
-							Sample& /*sample*/) const {}
+							Sample& sample) const {
+	sample.pdf = 0.f;
+	return false;
+}
 
 float Morphable_mesh::pdf_uv(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
 							 const Transformation& /*transformation*/,

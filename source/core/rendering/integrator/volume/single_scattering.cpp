@@ -172,10 +172,8 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 	const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
 //std::cout << "b" << std::endl;
 	scene::light::Sample light_sample;
-	light->sample(p, time, sampler_, 0, Sampler_filter::Nearest, worker, light_sample);
+	if (light->sample(p, time, sampler_, 0, Sampler_filter::Nearest, worker, light_sample)) {
 //std::cout << "c" << std::endl;
-	if (light_sample.shape.pdf > 0.f) {
-//std::cout << "d" << std::endl;
 		const Ray shadow_ray(p, light_sample.shape.wi, 0.f, light_sample.shape.t - 0.00005f, time);
 //std::cout << "e" << std::endl;
 		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);

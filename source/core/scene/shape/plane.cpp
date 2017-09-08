@@ -101,18 +101,18 @@ float3 Plane::thin_absorption(const Transformation& transformation, const Ray& r
 	return float3(0.f);
 }
 
-void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+bool Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				   const float3& /*p*/, const float3& /*n*/, float /*area*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-				   Node_stack& /*node_stack*/, Sample& sample) const {
-	sample.pdf = 0.f;
+				   Node_stack& /*node_stack*/, Sample& /*sample*/) const {
+	return false;
 }
 
-void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+bool Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				   const float3& /*p*/, float /*area*/, bool /*two_sided*/,
 				   sampler::Sampler& /*sampler*/, uint32_t /*sampler_dimension*/,
-				   Node_stack& /*node_stack*/, Sample& sample) const {
-	sample.pdf = 0.f;
+				   Node_stack& /*node_stack*/, Sample& /*sample*/) const {
+	return false;
 }
 
 float Plane::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
@@ -121,9 +121,12 @@ float Plane::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/
 	return 0.f;
 }
 
-void Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+bool Plane::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				   const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
-				   Sample& /*sample*/) const {}
+				   Sample& sample) const {
+	sample.pdf = 0.f;
+	return false;
+}
 
 float Plane::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
 					const Transformation& /*transformation*/,

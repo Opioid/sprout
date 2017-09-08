@@ -31,11 +31,13 @@ win32 {
 } else {
     # disable RTTI (CONFIG += rtti_off is needed as well, otherwise the setting is overwritten)
     QMAKE_CXXFLAGS += -fno-rtti
-    QMAKE_CXXFLAGS += -march=native
-#    QMAKE_CXXFLAGS_RELEASE -= -O2
+#    QMAKE_CXXFLAGS += -march=native
+    QMAKE_CXXFLAGS += -msse3
+    QMAKE_CXXFLAGS_RELEASE -= -O2
 #    QMAKE_CXXFLAGS_RELEASE += -O3
 #    QMAKE_CXXFLAGS_RELEASE += -O1
 
+    QMAKE_CXXFLAGS_RELEASE += -g
 #    QMAKE_CXXFLAGS_RELEASE += -fsanitize=address
 }
 

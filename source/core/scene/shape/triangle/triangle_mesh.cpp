@@ -200,15 +200,15 @@ float3 Mesh::thin_absorption(const Transformation& transformation, const Ray& ra
 	return tree_.absorption(tray, ray.time, materials, filter, worker);
 }
 
-void Mesh::sample(uint32_t part, const Transformation& transformation,
+bool Mesh::sample(uint32_t part, const Transformation& transformation,
 				  const float3& p, const float3& /*n*/, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& node_stack, Sample& sample) const {
-	Mesh::sample(part, transformation, p, area, two_sided,
-				 sampler, sampler_dimension, node_stack, sample);
+	return Mesh::sample(part, transformation, p, area, two_sided,
+						sampler, sampler_dimension, node_stack, sample);
 }
 
-void Mesh::sample(uint32_t part, const Transformation& transformation,
+bool Mesh::sample(uint32_t part, const Transformation& transformation,
 				  const float3& p, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
@@ -237,13 +237,15 @@ void Mesh::sample(uint32_t part, const Transformation& transformation,
 	}
 
 	if (c <= 0.f) {
-		sample.pdf = 0.f;
-	} else {
-		sample.wi = dir;
-		sample.uv = tc;
-		sample.t = d;
-		sample.pdf = sl / (c * area);
+		return false;
 	}
+
+	sample.wi = dir;
+	sample.uv = tc;
+	sample.t = d;
+	sample.pdf = sl / (c * area);
+
+	return true;
 }
 
 float Mesh::pdf(const Ray& ray, const shape::Intersection& intersection,
@@ -259,9 +261,11 @@ float Mesh::pdf(const Ray& ray, const shape::Intersection& intersection,
 	return sl / (c * area);
 }
 
-void Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+bool Mesh::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				  const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
-				  Sample& /*sample*/) const {}
+				  Sample& /*sample*/) const {
+	return false;
+}
 
 float Mesh::pdf_uv(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
 				   const Transformation& /*transformation*/,

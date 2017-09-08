@@ -145,15 +145,15 @@ float3 Disk::thin_absorption(const Transformation& transformation, const Ray& ra
 	return float3(0.f);
 }
 
-void Disk::sample(uint32_t part, const Transformation& transformation,
+bool Disk::sample(uint32_t part, const Transformation& transformation,
 				  const float3& p, const float3& /*n*/, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& node_stack, Sample& sample) const {
-	Disk::sample(part, transformation, p, area, two_sided,
-				 sampler, sampler_dimension, node_stack, sample);
+	return Disk::sample(part, transformation, p, area, two_sided,
+						sampler, sampler_dimension, node_stack, sample);
 }
 
-void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
+bool Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 				  const float3& p, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
@@ -178,12 +178,14 @@ void Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 	}
 
 	if (c <= 0.f) {
-		sample.pdf = 0.f;
-	} else {
-		sample.wi = wi;
-		sample.t = t;
-		sample.pdf = sl / (c * area);
+		return false;
 	}
+
+	sample.wi = wi;
+	sample.t = t;
+	sample.pdf = sl / (c * area);
+
+	return true;
 }
 
 float Disk::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
@@ -202,9 +204,11 @@ float Disk::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
 
 }
 
-void Disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
+bool Disk::sample(uint32_t /*part*/, const Transformation& /*transformation*/,
 				  const float3& /*p*/, float2 /*uv*/, float /*area*/, bool /*two_sided*/,
-				  Sample& /*sample*/) const {}
+				  Sample& /*sample*/) const {
+	return false;
+}
 
 float Disk::pdf_uv(const Ray& /*ray*/, const Intersection& /*intersection*/,
 				   const Transformation& /*transformation*/,

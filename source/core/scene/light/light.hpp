@@ -36,16 +36,16 @@ public:
 	virtual const Transformation& transformation_at(
 			float time, Transformation& transformation) const = 0;
 
-	virtual void sample(const Transformation& transformation,
+	virtual bool sample(const Transformation& transformation,
 						const float3& p, const float3& n, float time, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
 						Sampler_filter filter, Worker& worker, Sample& result) const = 0;
 
-	void sample(const float3& p, const float3& n, float time, bool total_sphere,
+	bool sample(const float3& p, const float3& n, float time, bool total_sphere,
 				sampler::Sampler& sampler, uint32_t sampler_dimension,
 				Sampler_filter filter, Worker& worker, Sample& result) const;
 
-	void sample(const float3& p, float time,
+	bool sample(const float3& p, float time,
 				sampler::Sampler& sampler, uint32_t sampler_dimension,
 				Sampler_filter filter, Worker& worker, Sample& result) const;
 

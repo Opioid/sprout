@@ -72,7 +72,7 @@ float3 Infinite_sphere::thin_absorption(const Transformation& /*transformation*/
 	return float3(0.f);
 }
 
-void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
+bool Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							 const float3& /*p*/, const float3& n,
 							 float /*area*/, bool /*two_sided*/,
 							 sampler::Sampler& sampler, uint32_t sampler_dimension,
@@ -94,9 +94,11 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.pdf = 1.f / (2.f * math::Pi);
 
 	SOFT_ASSERT(testing::check(sample));
+
+	return true;
 }
 
-void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
+bool Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							 const float3& /*p*/, float /*area*/, bool /*two_sided*/,
 							 sampler::Sampler& sampler, uint32_t sampler_dimension,
 							 Node_stack& /*node_stack*/, Sample& sample) const {
@@ -114,6 +116,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.pdf = 1.f / (4.f * math::Pi);
 
 	SOFT_ASSERT(testing::check(sample));
+
+	return true;
 }
 
 float Infinite_sphere::pdf(const Ray& /*ray*/, const shape::Intersection& /*intersection*/,
@@ -126,7 +130,7 @@ float Infinite_sphere::pdf(const Ray& /*ray*/, const shape::Intersection& /*inte
 	}
 }
 
-void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
+bool Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 							 const float3& /*p*/, float2 uv, float /*area*/, bool /*two_sided*/,
 							 Sample& sample) const {
 	const float phi   = (uv[0] - 0.5f) * (2.f * math::Pi);
@@ -152,6 +156,8 @@ void Infinite_sphere::sample(uint32_t /*part*/, const Transformation& transforma
 	sample.pdf = 1.f / ((4.f * math::Pi) * sin_theta);
 
 	SOFT_ASSERT(testing::check(sample, uv));
+
+	return true;
 }
 
 float Infinite_sphere::pdf_uv(const Ray& /*ray*/, const Intersection& intersection,
