@@ -363,7 +363,7 @@ static inline constexpr Vector3f_a operator*(const Vector3f_a& a, const Vector3f
 }
 
 static inline constexpr Vector3f_a operator/(const Vector3f_a& a, float s) {
-	float is = 1.f / s;
+	const float is = 1.f / s;
 	return Vector3f_a(is * a[0], is * a[1], is * a[2]);
 }
 

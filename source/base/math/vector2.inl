@@ -147,7 +147,7 @@ static constexpr Vector2<T> saturate(Vector2<T> v) {
 
 template<typename T>
 static constexpr Vector2<T> lerp(Vector2<T> a, Vector2<T> b, T t) {
-	T u = T(1) - t;
+	const T u = T(1) - t;
 	return u * a + t * b;
 }
 
