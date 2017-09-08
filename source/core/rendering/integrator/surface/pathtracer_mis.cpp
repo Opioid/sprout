@@ -77,6 +77,8 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	Sampler_filter filter = Sampler_filter::Unknown;
 	Bxdf_result sample_result;
 
+	sample_result.reflection = float3(1.f, 2.f, 3.f);
+
 	float3 throughput(1.f);
 	float3 result(0.f);
 	float opacity = 0.f;
