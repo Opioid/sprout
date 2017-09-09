@@ -53,6 +53,8 @@ protected:
 	float3 scattering_;
 
 	float anisotropy_;
+
+	bool match_scene_scale_;
 };
 
 }}
