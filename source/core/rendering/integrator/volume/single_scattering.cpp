@@ -147,13 +147,13 @@ size_t Single_scattering::num_bytes() const {
 
 float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p, float time,
 												const Volume& volume, Worker& worker) {
-/*	float3 result(0.f);
+	float3 result(0.f);
 
 	if (settings_.light_sampling_single) {
 		float light_pdf;
 		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
 
-		result = evaluate_light(light, light_pdf, w, p, time, 0, worker, volume);
+		result = evaluate_light(light, light_pdf, w, p, time, 0, volume, worker);
 	} else {
 		const auto& lights = worker.scene().lights();
 		const float light_weight = 1.f;//static_cast<float>(lights.size());
@@ -161,38 +161,11 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
 			const auto light = lights[l];
 
-			result += evaluate_light(light, light_weight, w, p, time, l, worker, volume);
+			result += evaluate_light(light, light_weight, w, p, time, l, volume, worker);
 		}
 	}
 
 	return result;
-	*/
-//std::cout << "a" << std::endl;
-	float light_pdf;
-	const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
-//std::cout << "b" << std::endl;
-	scene::light::Sample light_sample;
-	if (light->sample(p, time, sampler_, 0, Sampler_filter::Nearest, worker, light_sample)) {
-//std::cout << "c" << std::endl;
-		const Ray shadow_ray(p, light_sample.shape.wi, 0.f, light_sample.shape.t - 0.00005f, time);
-//std::cout << "e" << std::endl;
-		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
-//std::cout << "f" << std::endl;
-		if (math::any_greater_zero(tv)) {
-//std::cout << "g" << std::endl;
-			const float phase = volume.phase(w, -light_sample.shape.wi);
-//std::cout << "h" << std::endl;
-			const float3 scattering = volume.scattering(p, Sampler_filter::Unknown, worker);
-//std::cout << "j" << std::endl;
-			const float3 tr = Single_scattering::transmittance(shadow_ray, volume, worker);
-//std::cout << "k" << std::endl;
-			const float3 l = tr * light_sample.radiance;
-//std::cout << "l" << std::endl;
-			return (phase * tv) * (scattering * l) / (light_pdf * light_sample.shape.pdf);
-		}
-	}
-//std::cout << "l" << std::endl;
-	return float3(0.f);
 }
 
 float3 Single_scattering::evaluate_light(const Light* light, float light_weight,
@@ -202,24 +175,25 @@ float3 Single_scattering::evaluate_light(const Light* light, float light_weight,
 	constexpr float epsilon = 5e-5f;
 
 	scene::light::Sample light_sample;
-	light->sample(p, time, sampler_, sampler_dimension,
-				  Sampler_filter::Nearest, worker, light_sample);
+	if (!light->sample(p, time, sampler_, sampler_dimension, Sampler_filter::Nearest,
+					   worker, light_sample)) {
+		return float3::identity();
+	}
 
-	if (light_sample.shape.pdf > 0.f) {
-		const Ray shadow_ray(p, light_sample.shape.wi, 0.f,
-							 light_sample.shape.t - epsilon, time);
+	const Ray shadow_ray(p, light_sample.shape.wi, 0.f,
+						 light_sample.shape.t - epsilon, time);
 
-		const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
-		if (math::any_greater_zero(tv)) {
-			const float phase = volume.phase(w, -light_sample.shape.wi);
+	const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
+	if (math::any_greater_zero(tv)) {
+		const float phase = volume.phase(w, -light_sample.shape.wi);
 
-			const float3 scattering = volume.scattering(p, Sampler_filter::Unknown, worker);
+		const float3 scattering = volume.scattering(p, Sampler_filter::Unknown, worker);
 
-			const float3 l = Single_scattering::transmittance(shadow_ray, volume, worker)
-						   * light_sample.radiance;
+		const float3 tr = Single_scattering::transmittance(shadow_ray, volume, worker);
 
-			return (phase * tv) * (scattering * l) / (light_weight * light_sample.shape.pdf);
-		}
+		const float3 l = tr * light_sample.radiance;
+
+		return (phase * tv) * (scattering * l) / (light_weight * light_sample.shape.pdf);
 	}
 
 	return float3(0.f);

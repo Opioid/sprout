@@ -246,43 +246,45 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	Ray secondary_ray(intersection.geo.p, sample_result.wi,
 					  ray_offset, scene::Ray_max_t, ray.time, ray.depth + 1);
 
-	if (intersect_and_resolve_mask(secondary_ray, intersection, filter, worker)) {
-		const uint32_t light_id = intersection.light_id();
-		if (!Light::is_light(light_id)) {
-			return result;
-		}
+	if (!intersect_and_resolve_mask(secondary_ray, intersection, filter, worker)) {
+		return result;
+	}
 
-		float light_pdf = 0.f;
-		const auto light = worker.scene().light(light_id, light_pdf);
+	const uint32_t light_id = intersection.light_id();
+	if (!Light::is_light(light_id)) {
+		return result;
+	}
 
-		if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
-			light_pdf = num_lights_reciprocal_;
-		}
+	float light_pdf = 0.f;
+	const auto light = worker.scene().light(light_id, light_pdf);
 
-		const float ls_pdf = light->pdf(secondary_ray, intersection.geo,
-										material_sample.is_translucent(),
-										Sampler_filter::Nearest, worker);
+	if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
+		light_pdf = num_lights_reciprocal_;
+	}
 
-		if (0.f == ls_pdf) {
-			return result;
-		}
+	const float ls_pdf = light->pdf(secondary_ray, intersection.geo,
+									material_sample.is_translucent(),
+									Sampler_filter::Nearest, worker);
 
-		const float3 wo = -sample_result.wi;
-		// This will invalidate the contents of material_sample,
-		// so we must not use it after this point (e.g. in the calling function)!
-		// Important exceptions are the Specular and Transmission cases, which never come here.
-		const auto& light_material_sample = intersection.sample(wo, ray.time,
-																Sampler_filter::Nearest, worker);
+	if (0.f == ls_pdf) {
+		return result;
+	}
 
-		if (light_material_sample.same_hemisphere(wo)) {
-			const float3 t = worker.transmittance(secondary_ray);
+	const float3 wo = -sample_result.wi;
+	// This will invalidate the contents of material_sample,
+	// so we must not use it after this point (e.g. in the calling function)!
+	// Important exceptions are the Specular and Transmission cases, which never come here.
+	const auto& light_material_sample = intersection.sample(wo, ray.time, Sampler_filter::Nearest,
+															worker);
 
-			const float3 ls_energy = t * light_material_sample.radiance();
+	if (light_material_sample.same_hemisphere(wo)) {
+		const float3 t = worker.transmittance(secondary_ray);
 
-			const float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
+		const float3 ls_energy = t * light_material_sample.radiance();
 
-			result += (weight / sample_result.pdf) * (ls_energy * sample_result.reflection);
-		}
+		const float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
+
+		result += (weight / sample_result.pdf) * (ls_energy * sample_result.reflection);
 	}
 
 	return result;
