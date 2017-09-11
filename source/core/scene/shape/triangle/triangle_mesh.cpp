@@ -15,6 +15,8 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
+#include <iostream>
+
 namespace scene { namespace shape { namespace triangle {
 
 bool Mesh::init() {
@@ -211,24 +213,24 @@ bool Mesh::sample(uint32_t part, const Transformation& transformation,
 bool Mesh::sample(uint32_t part, const Transformation& transformation,
 				  const float3& p, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
-				  Node_stack& /*node_stack*/, Sample& sample) const {
+				  Node_stack& node_stack, Sample& sample) const {
 	const float  r  = sampler.generate_sample_1D(sampler_dimension);
 	const float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-
-	uint32_t index = distributions_[part].sample(r);
+	float pdf;
+	const uint32_t index = distributions_[part].sample(r, pdf);
 
 	float3 sv;
 	float2 tc;
 	tree_.sample(index, r2, sv, tc);
-	float3 v = math::transform_point(sv, transformation.object_to_world);
+	const float3 v = math::transform_point(sv, transformation.object_to_world);
 
-	float3 sn = tree_.triangle_normal(index);
-	float3 wn = math::transform_vector(sn, transformation.rotation);
+	const float3 sn = tree_.triangle_normal(index);
+	const float3 wn = math::transform_vector(sn, transformation.rotation);
 
-	float3 axis = v - p;
-	float sl = math::squared_length(axis);
-	float d  = std::sqrt(sl);
-	float3 dir = axis / d;
+	const float3 axis = v - p;
+	const float sl = math::squared_length(axis);
+	const float d  = std::sqrt(sl);
+	const float3 dir = axis / d;
 
 	float c = -math::dot(wn, dir);
 
@@ -237,6 +239,47 @@ bool Mesh::sample(uint32_t part, const Transformation& transformation,
 	}
 
 	if (c <= 0.f) {
+/*		float ump_lump = std::abs(c);//sl / (std::abs(c) * area);
+
+		const float3 op = math::transform_point(p, transformation.world_to_object);
+
+		math::Ray ray(op, math::normalize(sv - op), 0.f, 1000.f);
+
+		Intersection intersection;
+		if (tree_.intersect(ray, node_stack, intersection)) {
+//			tree_.sample(intersection.index, float2(intersection.u, intersection.v), sv, tc);
+
+			const float3 sv1 = ray.point(ray.max_t);
+
+			const float3 v1 = math::transform_point(sv1, transformation.object_to_world);
+
+			const float3 sn1 = tree_.triangle_normal(intersection.index);
+			const float3 wn1 = math::transform_vector(sn1, transformation.rotation);
+
+			const float3 axis1 = v1 - p;
+			const float sl1 = math::squared_length(axis1);
+			const float d1  = std::sqrt(sl1);
+
+			c = -math::dot(wn1, dir);
+
+			if (two_sided) {
+				c = std::abs(c);
+			}
+
+			if (c <= 0.f) {
+				return false;
+			}
+
+//			std::cout << "potato" << std::endl;
+
+			sample.wi = dir;
+			sample.uv = float2(0.f, 0.f);
+			sample.t = d1;
+			sample.pdf = sl1 / (c * area);
+			sample.pdf /= ump_lump;
+			return true;
+		}
+*/
 		return false;
 	}
 
@@ -307,7 +350,7 @@ size_t Mesh::num_bytes() const {
 }
 
 void Mesh::Distribution::init(uint32_t part, const Tree& tree) {
-	uint32_t num_triangles = tree.num_triangles(part);
+	const uint32_t num_triangles = tree.num_triangles(part);
 
 	std::vector<float> areas(num_triangles);
 
@@ -330,6 +373,10 @@ bool Mesh::Distribution::empty() const {
 
 uint32_t Mesh::Distribution::sample(float r) const {
 	return triangle_mapping[distribution.sample_discrete(r)];
+}
+
+uint32_t Mesh::Distribution::sample(float r, float& pdf) const {
+	return triangle_mapping[distribution.sample_discrete(r, pdf)];
 }
 
 size_t Mesh::Distribution::num_bytes() const {

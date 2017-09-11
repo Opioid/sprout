@@ -92,6 +92,8 @@ private:
 
 		uint32_t sample(float r) const;
 
+		uint32_t sample(float r, float& pdf) const;
+
 		size_t num_bytes() const;
 
 		std::vector<uint32_t> triangle_mapping;
