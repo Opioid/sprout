@@ -221,8 +221,9 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		result *= settings_.num_light_samples_reciprocal;
 	} else {
 		const auto& lights = worker.scene().lights();
-		const float light_weight = static_cast<float>(lights.size());
-		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
+		const uint32_t num_lights = static_cast<uint32_t>(lights.size());
+		const float light_weight = static_cast<float>(num_lights);
+		for (uint32_t l = 0; l < num_lights; ++l) {
 			const auto light = lights[l];
 			for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
 				result += evaluate_light(light, light_weight, ray.time, ray_offset, ray.depth,

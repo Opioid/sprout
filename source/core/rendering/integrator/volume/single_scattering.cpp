@@ -12,8 +12,6 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
-#include <iostream>
-
 namespace rendering { namespace integrator { namespace volume {
 
 Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
@@ -57,7 +55,7 @@ float4 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		transmittance = float3(1.f);
 		return float4(0.f);
 	}
-constexpr float epsilon = 5e-5f;
+
 	const uint32_t num_samples = primary_ray ?
 			 static_cast<uint32_t>(std::ceil(range / settings_.step_size)) : 1;
 
@@ -81,7 +79,7 @@ constexpr float epsilon = 5e-5f;
 	const float3 tau_ray_direction     = ray.point(min_t + step) - next;
 	const float3 inv_tau_ray_direction = math::reciprocal(tau_ray_direction);
 
-	for (uint32_t i = 0; i < num_samples; ++i, min_t += step) {
+	for (uint32_t i = num_samples; i > 0; --i, min_t += step) {
 		// This happens sometimes when the range is very small compared to the world coordinates.
 		if (float3::identity() == tau_ray.direction) {
 			tau_ray.origin = current;
@@ -106,32 +104,6 @@ constexpr float epsilon = 5e-5f;
 
 		// Direct light scattering
 		radiance += tr * estimate_direct_light(w, current, ray.time, volume, worker);
-/*
-		float light_pdf;
-		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
-
-		scene::light::Sample light_sample;
-		light->sample(current, ray.time, sampler_, 0, Sampler_filter::Nearest,
-					  worker, light_sample);
-
-		if (light_sample.shape.pdf > 0.f) {
-			const Ray shadow_ray(current, light_sample.shape.wi, 0.f,
-								 light_sample.shape.t - epsilon, ray.time);
-
-			const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
-			if (math::any_greater_zero(tv)) {
-				const float phase = volume.phase(w, -light_sample.shape.wi);
-
-				const float3 scattering = volume.scattering(current, worker,
-															Sampler_filter::Unknown);
-
-				const float3 l = Single_scattering::transmittance(shadow_ray, volume, worker)
-							   * light_sample.radiance;
-
-				radiance += (phase * tv * tr) * (scattering * l) /
-							(light_pdf * light_sample.shape.pdf);
-			}
-		}*/
 	}
 
 	transmittance = tr;
@@ -147,21 +119,30 @@ size_t Single_scattering::num_bytes() const {
 
 float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p, float time,
 												const Volume& volume, Worker& worker) {
+	const uint32_t num_samples = settings_.light_sampling.num_samples;
+
 	float3 result(0.f);
 
-	if (settings_.light_sampling_single) {
-		float light_pdf;
-		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
+	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
+		for (uint32_t i = num_samples; i > 0; --i) {
+			float light_pdf;
+			const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
 
-		result = evaluate_light(light, light_pdf, w, p, time, 0, volume, worker);
+			result += evaluate_light(light, light_pdf, w, p, time, 0, volume, worker);
+		}
+
+		result /= static_cast<float>(num_samples);
 	} else {
 		const auto& lights = worker.scene().lights();
-		const float light_weight = 1.f;//static_cast<float>(lights.size());
+
+		const float light_weight = static_cast<float>(num_samples);
 
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
 			const auto light = lights[l];
 
-			result += evaluate_light(light, light_weight, w, p, time, l, volume, worker);
+			for (uint32_t i = num_samples; i > 0; --i) {
+				result += evaluate_light(light, light_weight, w, p, time, l, volume, worker);
+			}
 		}
 	}
 
@@ -201,10 +182,11 @@ float3 Single_scattering::evaluate_light(const Light* light, float light_weight,
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
 													 uint32_t num_integrators,
-													 float step_size, bool light_sampling_single) :
+													 float step_size,
+													 Light_sampling light_sampling) :
 	Factory(take_settings, num_integrators),
 	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
-	settings_{step_size, light_sampling_single} {}
+	settings_{step_size, light_sampling} {}
 
 Single_scattering_factory::~Single_scattering_factory() {
 	memory::free_aligned(integrators_);

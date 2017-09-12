@@ -135,9 +135,10 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 	}
 
 	if (!take->volume_integrator_factory) {
+		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
 		take->volume_integrator_factory = std::make_shared<
 				volume::Single_scattering_factory>(take->settings, thread_pool.num_threads(),
-												   1.f, true);
+												   1.f, light_sampling);
 
 		logging::warning("No valid volume integrator specified, defaulting to Single Scattering.");
 	}
@@ -545,11 +546,8 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 				load_light_sampling(light_sampling_node->value, light_sampling);
 			}
 
-			const bool light_sampling_single =
-					Light_sampling::Strategy::Single == light_sampling.strategy;
-
 			return std::make_shared<Single_scattering_factory>(settings, num_workers,
-															   step_size, light_sampling_single);
+															   step_size, light_sampling);
 		}
 	}
 
