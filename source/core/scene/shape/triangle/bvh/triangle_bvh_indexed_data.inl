@@ -187,7 +187,7 @@ float Indexed_data<IV, SV>::area(uint32_t index, const float3& scale) const {
 
 template<typename IV, typename SV>
 void Indexed_data<IV, SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
-	float2 uv = math::sample_triangle_uniform(r2);
+	const float2 uv = math::sample_triangle_uniform(r2);
 
 	const auto& tri = triangles_[index];
 	const IV& ia = intersection_vertices_[tri.a];

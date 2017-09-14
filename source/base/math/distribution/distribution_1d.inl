@@ -115,23 +115,22 @@ inline float Distribution_lut_1D::integral() const {
 }
 
 inline uint32_t Distribution_lut_1D::sample_discrete(float r) const {
-	uint32_t bucket = map(r);
+	const uint32_t bucket = map(r);
 
-	uint32_t begin = lut_[bucket];
-	uint32_t end   = lut_[bucket + 1];
+	const uint32_t begin = lut_[bucket];
+	const uint32_t end   = lut_[bucket + 1];
 
-	auto it = std::lower_bound(cdf_.begin() + begin, cdf_.begin() + end, r);
+	const auto it = std::lower_bound(cdf_.begin() + begin, cdf_.begin() + end, r);
 
-	uint32_t offset =  0;
 	if (it != cdf_.begin()) {
-		offset = static_cast<uint32_t>(it - cdf_.begin() - 1);
+		return static_cast<uint32_t>(it - cdf_.begin() - 1);
 	}
 
-	return offset;
+	return 0;
 }
 
 inline uint32_t Distribution_lut_1D::sample_discrete(float r, float& pdf) const {
-	uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample_discrete(r);
 
 	pdf = pdf_[offset];
 
@@ -139,12 +138,12 @@ inline uint32_t Distribution_lut_1D::sample_discrete(float r, float& pdf) const 
 }
 
 inline float Distribution_lut_1D::sample_continuous(float r, float& pdf) const {
-	uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample_discrete(r);
 
 	pdf = pdf_[offset];
 
-	float c = cdf_[offset + 1];
-	float t = (c - r) / (c - cdf_[offset]);
+	const float c = cdf_[offset + 1];
+	const float t = (c - r) / (c - cdf_[offset]);
 
 	return (static_cast<float>(offset) + t) / size_;
 }
@@ -154,7 +153,7 @@ inline float Distribution_lut_1D::pdf(uint32_t index) const {
 }
 
 inline float Distribution_lut_1D::pdf(float u) const {
-	uint32_t offset = static_cast<uint32_t>(u * size_);
+	const uint32_t offset = static_cast<uint32_t>(u * size_);
 
 	return pdf_[offset];
 }
@@ -265,16 +264,15 @@ inline uint32_t Distribution_implicit_pdf_lut_1D::sample_discrete(float r) const
 
 	const auto it = std::lower_bound(cdf_.begin() + begin, cdf_.begin() + end, r);
 
-	uint32_t offset =  0;
 	if (it != cdf_.begin()) {
-		offset = static_cast<uint32_t>(it - cdf_.begin() - 1);
+		return static_cast<uint32_t>(it - cdf_.begin() - 1);
 	}
 
-	return offset;
+	return 0;
 }
 
 inline uint32_t Distribution_implicit_pdf_lut_1D::sample_discrete(float r, float& pdf) const {
-	uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample_discrete(r);
 
 	pdf = cdf_[offset + 1] - cdf_[offset];
 
