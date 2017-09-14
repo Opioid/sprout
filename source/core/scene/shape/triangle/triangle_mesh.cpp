@@ -213,7 +213,7 @@ bool Mesh::sample(uint32_t part, const Transformation& transformation,
 bool Mesh::sample(uint32_t part, const Transformation& transformation,
 				  const float3& p, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
-				  Node_stack& node_stack, Sample& sample) const {
+				  Node_stack& /*node_stack*/, Sample& sample) const {
 	const float  r  = sampler.generate_sample_1D(sampler_dimension);
 	const float2 r2 = sampler.generate_sample_2D(sampler_dimension);
 	float pdf;

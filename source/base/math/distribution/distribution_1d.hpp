@@ -78,6 +78,9 @@ class Distribution_implicit_pdf_lut_1D {
 
 public:
 
+	Distribution_implicit_pdf_lut_1D();
+	~Distribution_implicit_pdf_lut_1D();
+
 	void init(const float* data, uint32_t len, uint32_t lut_size = 0);
 
 	float integral() const;
@@ -101,8 +104,11 @@ private:
 
 	uint32_t lut_heuristic(uint32_t len) const;
 
-	std::vector<uint32_t> lut_;
-	std::vector<float> cdf_;
+	uint32_t* lut_;
+	uint32_t  lut_size_;
+
+	float*   cdf_;
+	uint32_t cdf_size_;
 
 	float integral_;
 	float size_;

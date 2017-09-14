@@ -1,6 +1,7 @@
 #pragma once
 
 #include "distribution_1d.hpp"
+#include "memory/align.hpp"
 #include <algorithm>
 
 #include <iostream>
@@ -239,6 +240,18 @@ inline uint32_t Distribution_lut_1D::lut_heuristic(uint32_t len) const {
 
 //==================================================================================================
 
+inline Distribution_implicit_pdf_lut_1D::Distribution_implicit_pdf_lut_1D() :
+	lut_(nullptr),
+	lut_size_(0),
+	cdf_(nullptr),
+	cdf_size_(0)
+{}
+
+inline Distribution_implicit_pdf_lut_1D::~Distribution_implicit_pdf_lut_1D() {
+	memory::free_aligned(cdf_);
+	memory::free_aligned(lut_);
+}
+
 inline void Distribution_implicit_pdf_lut_1D::init(const float* data, uint32_t len,
 												   uint32_t lut_size) {
 	precompute_1D_pdf_cdf(data, len);
@@ -247,7 +260,7 @@ inline void Distribution_implicit_pdf_lut_1D::init(const float* data, uint32_t l
 		lut_size = lut_heuristic(len);
 	}
 
-	lut_size = std::min(lut_size, static_cast<uint32_t>(cdf_.size() - 1));
+	lut_size = std::min(lut_size, cdf_size_ - 1);
 
 	init_lut(lut_size);
 }
@@ -262,10 +275,10 @@ inline uint32_t Distribution_implicit_pdf_lut_1D::sample_discrete(float r) const
 	const uint32_t begin = lut_[bucket];
 	const uint32_t end   = lut_[bucket + 1];
 
-	const auto it = std::lower_bound(cdf_.begin() + begin, cdf_.begin() + end, r);
+	const float* it = std::lower_bound(cdf_ + begin, cdf_ + end, r);
 
-	if (it != cdf_.begin()) {
-		return static_cast<uint32_t>(it - cdf_.begin() - 1);
+	if (it != cdf_) {
+		return static_cast<uint32_t>(it - cdf_ - 1);
 	}
 
 	return 0;
@@ -304,15 +317,15 @@ inline float Distribution_implicit_pdf_lut_1D::pdf(uint32_t index) const {
 }
 
 inline float Distribution_implicit_pdf_lut_1D::pdf(float u) const {
-	uint32_t offset = static_cast<uint32_t>(u * size_);
+	const uint32_t offset = static_cast<uint32_t>(u * size_);
 
 	return cdf_[offset + 1] - cdf_[offset];
 }
 
 inline size_t Distribution_implicit_pdf_lut_1D::num_bytes() const {
 	return sizeof(*this) +
-		   sizeof(float) * cdf_.size() +
-		   sizeof(uint32_t) * lut_.size();
+		   sizeof(float) * cdf_size_ +
+		   sizeof(uint32_t) * lut_size_;
 }
 
 inline uint32_t Distribution_implicit_pdf_lut_1D::map(float s) const {
@@ -327,7 +340,9 @@ inline void Distribution_implicit_pdf_lut_1D::precompute_1D_pdf_cdf(const float*
 	}
 
 	if (0.f == integral) {
-		cdf_.resize(2);
+		cdf_size_ = 2;
+		cdf_ = memory::allocate_aligned<float>(cdf_size_);
+
 		cdf_[0] = 0.f;
 		cdf_[1] = 1.f;
 
@@ -337,7 +352,8 @@ inline void Distribution_implicit_pdf_lut_1D::precompute_1D_pdf_cdf(const float*
 		return;
 	}
 
-	cdf_.resize(len + 2);
+	cdf_size_ = len + 2;
+	cdf_ = memory::allocate_aligned<float>(cdf_size_);
 
 	cdf_[0] = 0.f;
 	for (uint32_t i = 1; i <= len; ++i) {
@@ -352,7 +368,8 @@ inline void Distribution_implicit_pdf_lut_1D::precompute_1D_pdf_cdf(const float*
 }
 
 inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) {
-	lut_.resize(lut_size + 2),
+	lut_size_ = lut_size + 2;
+	lut_ = memory::allocate_aligned<uint32_t>(lut_size_);
 	lut_range_ = static_cast<float>(lut_size);
 
 	lut_[0] = 0;
@@ -360,7 +377,7 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) {
 	uint32_t border = 0;
 	uint32_t last = 0;
 
-	for (uint32_t i = 1, len = static_cast<uint32_t>(cdf_.size()); i < len; ++i) {
+	for (uint32_t i = 1, len = cdf_size_; i < len; ++i) {
 		const uint32_t mapped = map(cdf_[i]);
 
 		if (mapped > border) {
@@ -374,7 +391,7 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) {
 		}
 	}
 
-	for (uint32_t i = border + 1, len = static_cast<uint32_t>(lut_.size()); i < len; ++i) {
+	for (uint32_t i = border + 1, len = lut_size_; i < len; ++i) {
 		lut_[i] = last;
 	}
 }
