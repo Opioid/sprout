@@ -7,13 +7,16 @@ namespace thread { class Pool; }
 
 namespace math {
 
-class Distribution_2D {
+template<typename T>
+class Distribution_t_2D {
 
 public:
 
 //	using Distribution_impl = Distribution_1D;
 //	using Distribution_impl = Distribution_lut_1D;
-	using Distribution_impl = Distribution_implicit_pdf_lut_1D;
+//	using Distribution_impl = Distribution_implicit_pdf_lut_1D;
+
+	using Distribution_impl = T;
 
 	void init(const float* data, int2 dimensions);
 	void init(const float* data, int2 dimensions, thread::Pool& pool);
@@ -34,5 +37,7 @@ private:
 	float conditional_size_;
 	uint32_t conditional_max_;
 };
+
+using Distribution_2D = Distribution_t_2D<Distribution_implicit_pdf_lut_1D>;
 
 }

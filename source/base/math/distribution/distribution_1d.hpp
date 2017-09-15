@@ -81,7 +81,7 @@ public:
 	Distribution_implicit_pdf_lut_1D();
 	~Distribution_implicit_pdf_lut_1D();
 
-	void init(const float* data, uint32_t len, uint32_t lut_size = 0);
+	void init(const float* data, uint32_t len, uint32_t lut_bucket_size = 0);
 
 	float integral() const;
 
@@ -93,7 +93,7 @@ public:
 	float pdf(uint32_t index) const;
 	float pdf(float u) const;
 
-	const uint32_t lut_size() const;
+	uint32_t lut_size() const;
 
 	size_t num_bytes() const;
 

@@ -253,14 +253,16 @@ inline Distribution_implicit_pdf_lut_1D::~Distribution_implicit_pdf_lut_1D() {
 }
 
 inline void Distribution_implicit_pdf_lut_1D::init(const float* data, uint32_t len,
-												   uint32_t lut_size) {
+												   uint32_t lut_bucket_size) {
 	precompute_1D_pdf_cdf(data, len);
 
-	if (0 == lut_size) {
-		lut_size = lut_heuristic(len);
-	}
+//	if (0 == lut_bucket_size) {
+//		lut_size = lut_heuristic(len);
+//	}
 
-	lut_size = std::min(lut_size, cdf_size_ - 1);
+	uint32_t lut_size = 0 == lut_bucket_size ? len / 16 : len / lut_bucket_size;
+
+	lut_size = std::min(std::max(lut_size, 1u), cdf_size_ - 1);
 
 	init_lut(lut_size);
 }
@@ -322,7 +324,7 @@ inline float Distribution_implicit_pdf_lut_1D::pdf(float u) const {
 	return cdf_[offset + 1] - cdf_[offset];
 }
 
-inline const uint32_t Distribution_implicit_pdf_lut_1D::lut_size() const {
+inline uint32_t Distribution_implicit_pdf_lut_1D::lut_size() const {
 	return lut_size_ - 2;
 }
 

@@ -2,11 +2,13 @@
 
 #include "distribution_2d.hpp"
 #include "distribution_1d.inl"
+#include "math/vector2.inl"
 #include "thread/thread_pool.hpp"
 
 namespace math {
 
-inline void Distribution_2D::init(const float* data, int2 dimensions) {
+template<typename T>
+void Distribution_t_2D<T>::init(const float* data, int2 dimensions) {
 	conditional_.resize(dimensions[1]);
 
 	std::vector<float> integrals(dimensions[1]);
@@ -23,7 +25,8 @@ inline void Distribution_2D::init(const float* data, int2 dimensions) {
 	conditional_max_  = static_cast<uint32_t>(conditional_.size() - 1);
 }
 
-inline void Distribution_2D::init(const float* data, int2 dimensions, thread::Pool& pool) {
+template<typename T>
+void Distribution_t_2D<T>::init(const float* data, int2 dimensions, thread::Pool& pool) {
 	conditional_.resize(dimensions[1]);
 
 	std::vector<float> integrals(dimensions[1]);
@@ -43,7 +46,8 @@ inline void Distribution_2D::init(const float* data, int2 dimensions, thread::Po
 	conditional_max_  = static_cast<uint32_t>(conditional_.size() - 1);
 }
 
-inline void Distribution_2D::init(std::vector<Distribution_impl>& conditional) {
+template<typename T>
+void Distribution_t_2D<T>::init(std::vector<Distribution_impl>& conditional) {
 	conditional_ = std::move(conditional);
 
 	std::vector<float> integrals(conditional_.size());
@@ -60,7 +64,8 @@ inline void Distribution_2D::init(std::vector<Distribution_impl>& conditional) {
 	conditional_max_  = num_conditional - 1;
 }
 
-inline float2 Distribution_2D::sample_continuous(float2 r2, float& pdf) const {
+template<typename T>
+float2 Distribution_t_2D<T>::sample_continuous(float2 r2, float& pdf) const {
 	float2 result;
 
 	float v_pdf;
@@ -77,7 +82,8 @@ inline float2 Distribution_2D::sample_continuous(float2 r2, float& pdf) const {
 	return result;
 }
 
-inline float Distribution_2D::pdf(float2 uv) const {
+template<typename T>
+float Distribution_t_2D<T>::pdf(float2 uv) const {
 	const float v_pdf = marginal_.pdf(uv[1]);
 
 	const uint32_t c = std::min(static_cast<uint32_t>(uv[1] * conditional_size_), conditional_max_);
@@ -86,7 +92,8 @@ inline float Distribution_2D::pdf(float2 uv) const {
 	return u_pdf * v_pdf;
 }
 
-inline size_t Distribution_2D::num_bytes() const {
+template<typename T>
+size_t Distribution_t_2D<T>::num_bytes() const {
 	size_t num_bytes = 0;
 	for (auto& c : conditional_) {
 		num_bytes += c.num_bytes();

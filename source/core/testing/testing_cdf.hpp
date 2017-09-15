@@ -2,6 +2,8 @@
 
 namespace testing { namespace cdf {
 
-void test_1d();
+void test_1D();
+
+void test_2D();
 
 }}
