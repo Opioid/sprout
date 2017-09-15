@@ -93,6 +93,8 @@ public:
 	float pdf(uint32_t index) const;
 	float pdf(float u) const;
 
+	const uint32_t lut_size() const;
+
 	size_t num_bytes() const;
 
 private:

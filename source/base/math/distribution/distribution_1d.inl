@@ -322,6 +322,10 @@ inline float Distribution_implicit_pdf_lut_1D::pdf(float u) const {
 	return cdf_[offset + 1] - cdf_[offset];
 }
 
+inline const uint32_t Distribution_implicit_pdf_lut_1D::lut_size() const {
+	return lut_size_ - 2;
+}
+
 inline size_t Distribution_implicit_pdf_lut_1D::num_bytes() const {
 	return sizeof(*this) +
 		   sizeof(float) * cdf_size_ +
