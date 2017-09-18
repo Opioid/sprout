@@ -118,4 +118,48 @@ private:
 	float lut_range_;
 };
 
+class Distribution_implicit_pdf_lut_lin_1D {
+
+public:
+
+	Distribution_implicit_pdf_lut_lin_1D();
+	~Distribution_implicit_pdf_lut_lin_1D();
+
+	void init(const float* data, uint32_t len, uint32_t lut_bucket_size = 0);
+
+	float integral() const;
+
+	uint32_t sample_discrete(float r) const;
+	uint32_t sample_discrete(float r, float& pdf) const;
+
+	float sample_continuous(float r, float& pdf) const;
+
+	float pdf(uint32_t index) const;
+	float pdf(float u) const;
+
+	uint32_t lut_size() const;
+
+	size_t num_bytes() const;
+
+private:
+
+	uint32_t map(float s) const;
+
+	void precompute_1D_pdf_cdf(const float* data, uint32_t len);
+	void init_lut(uint32_t lut_size);
+
+	uint32_t lut_heuristic(uint32_t len) const;
+
+	uint32_t* lut_;
+	uint32_t  lut_size_;
+
+	float*   cdf_;
+	uint32_t cdf_size_;
+
+	float integral_;
+	float size_;
+
+	float lut_range_;
+};
+
 }
