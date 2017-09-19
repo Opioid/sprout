@@ -114,11 +114,11 @@ void test_2D() {
 
 	const image::texture::Float3 texture(image);
 
-	math::Distribution_t_2D<math::Distribution_1D> a;
-	init(a, texture);
+//	math::Distribution_t_2D<math::Distribution_1D> a;
+//	init(a, texture);
 
-	math::Distribution_t_2D<math::Distribution_lut_1D> b;
-	init(b, texture);
+//	math::Distribution_t_2D<math::Distribution_lut_1D> b;
+//	init(b, texture);
 
 	math::Distribution_t_2D<math::Distribution_implicit_pdf_lut_1D> c;
 	init(c, texture);
@@ -126,11 +126,11 @@ void test_2D() {
 	math::Distribution_t_2D<math::Distribution_implicit_pdf_lut_lin_1D> d;
 	init(d, texture);
 
-	std::cout << "Distribution_2D" << std::endl;
-	test_distribution(a, samples);
+//	std::cout << "Distribution_2D" << std::endl;
+//	test_distribution(a, samples);
 
-	std::cout << "Distribution_lut_2D" << std::endl;
-	test_distribution(b, samples);
+//	std::cout << "Distribution_lut_2D" << std::endl;
+//	test_distribution(b, samples);
 
 	std::cout << "Distribution_implicit_pdf_lut_2D" << std::endl;
 	test_distribution(c, samples);

@@ -79,6 +79,10 @@ float2 Distribution_t_2D<T>::sample_continuous(float2 r2, float& pdf) const {
 
 	pdf = u_pdf * v_pdf;
 
+	if (!std::isfinite(result[0])) {
+		return float2(0.f, 0.f);
+	}
+
 	return result;
 }
 
