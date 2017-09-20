@@ -29,7 +29,7 @@
 
 //#include "extension/procedural/starburst/starburst.hpp"
 //#include "core/scene/material/substitute/substitute_test.hpp"
-#include "core/testing/testing_cdf.hpp"
+//#include "core/testing/testing_cdf.hpp"
 //#include "core/testing/testing_simd.hpp"
 //#include "core/testing/testing_size.hpp"
 //#include "core/testing/testing_spectrum.hpp"
@@ -53,9 +53,9 @@ int main(int argc, char* argv[]) {
 //	testing::simd::unions();
 //	testing::spectrum();
 
-	testing::cdf::test_2D();
+//	testing::cdf::test_1D();
 
-	return 1;
+//	return 1;
 
 	logging::init(logging::Type::Std_out);
 

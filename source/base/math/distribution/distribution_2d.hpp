@@ -38,6 +38,6 @@ private:
 	uint32_t conditional_max_;
 };
 
-using Distribution_2D = Distribution_t_2D<Distribution_implicit_pdf_lut_1D>;
+using Distribution_2D = Distribution_t_2D<Distribution_implicit_pdf_lut_lin_1D>;
 
 }
