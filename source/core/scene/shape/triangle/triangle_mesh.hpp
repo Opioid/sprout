@@ -97,7 +97,7 @@ private:
 		size_t num_bytes() const;
 
 		std::vector<uint32_t> triangle_mapping;
-		math::Distribution_lut_1D distribution;
+		math::Distribution_implicit_pdf_lut_lin_1D distribution;
 	};
 
 	std::vector<Distribution> distributions_;
