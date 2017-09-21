@@ -5,6 +5,8 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/align.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace scene { namespace shape { namespace triangle { namespace bvh {
 
 template<typename IV, typename SV>
@@ -187,6 +189,8 @@ float Indexed_data<IV, SV>::area(uint32_t index, const float3& scale) const {
 
 template<typename IV, typename SV>
 void Indexed_data<IV, SV>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
+	SOFT_ASSERT(index < num_triangles_);
+
 	const float2 uv = math::sample_triangle_uniform(r2);
 
 	const auto& tri = triangles_[index];
@@ -366,7 +370,9 @@ float Indexed_data_interleaved<V>::area(uint32_t index, const float3& scale) con
 
 template<typename V>
 void Indexed_data_interleaved<V>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
-	float2 uv = math::sample_triangle_uniform(r2);
+	SOFT_ASSERT(index < num_triangles_);
+
+	const float2 uv = math::sample_triangle_uniform(r2);
 
 	const auto& tri = triangles_[index];
 	const V& ia = vertices_[tri.a];

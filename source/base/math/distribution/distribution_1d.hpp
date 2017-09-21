@@ -41,7 +41,7 @@ class Distribution_lut_1D {
 
 public:
 
-	void init(const float* data, uint32_t len, uint32_t lut_size = 0);
+	void init(const float* data, uint32_t len, uint32_t lut_bucket_size = 0);
 
 	float integral() const;
 
@@ -61,8 +61,6 @@ private:
 
 	void precompute_1D_pdf_cdf(const float* data, uint32_t len);
 	void init_lut(uint32_t lut_size);
-
-	uint32_t lut_heuristic(uint32_t len) const;
 
 	std::vector<uint32_t> lut_;
 	std::vector<float> pdf_;
@@ -103,8 +101,6 @@ private:
 
 	void precompute_1D_pdf_cdf(const float* data, uint32_t len);
 	void init_lut(uint32_t lut_size);
-
-	uint32_t lut_heuristic(uint32_t len) const;
 
 	uint32_t* lut_;
 	uint32_t  lut_size_;
@@ -147,8 +143,6 @@ private:
 
 	void precompute_1D_pdf_cdf(const float* data, uint32_t len);
 	void init_lut(uint32_t lut_size);
-
-	uint32_t lut_heuristic(uint32_t len) const;
 
 	uint32_t* lut_;
 	uint32_t  lut_size_;

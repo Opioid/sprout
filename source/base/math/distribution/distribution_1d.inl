@@ -4,8 +4,6 @@
 #include "memory/align.hpp"
 #include <algorithm>
 
-#include <iostream>
-
 namespace math {
 
 inline void Distribution_1D::init(const float* data, size_t len) {
@@ -99,12 +97,10 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(const float* data, size_t len
 
 //==================================================================================================
 
-inline void Distribution_lut_1D::init(const float* data, uint32_t len, uint32_t lut_size) {
+inline void Distribution_lut_1D::init(const float* data, uint32_t len, uint32_t lut_bucket_size) {
 	precompute_1D_pdf_cdf(data, len);
 
-	if (0 == lut_size) {
-		lut_size = lut_heuristic(len);
-	}
+	uint32_t lut_size = 0 == lut_bucket_size ? len / 16 : len / lut_bucket_size;
 
 	lut_size = std::min(lut_size, static_cast<uint32_t>(pdf_.size()));
 
@@ -234,10 +230,6 @@ inline void Distribution_lut_1D::init_lut(uint32_t lut_size) {
 	}
 }
 
-inline uint32_t Distribution_lut_1D::lut_heuristic(uint32_t len) const {
-	return std::max(len / 16, 1u);
-}
-
 //==================================================================================================
 
 inline Distribution_implicit_pdf_lut_1D::Distribution_implicit_pdf_lut_1D() :
@@ -255,10 +247,6 @@ inline Distribution_implicit_pdf_lut_1D::~Distribution_implicit_pdf_lut_1D() {
 inline void Distribution_implicit_pdf_lut_1D::init(const float* data, uint32_t len,
 												   uint32_t lut_bucket_size) {
 	precompute_1D_pdf_cdf(data, len);
-
-//	if (0 == lut_bucket_size) {
-//		lut_size = lut_heuristic(len);
-//	}
 
 	uint32_t lut_size = 0 == lut_bucket_size ? len / 16 : len / lut_bucket_size;
 
@@ -383,7 +371,7 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) {
 	uint32_t border = 0;
 	uint32_t last = 0;
 
-	for (uint32_t i = 1, len = cdf_size_; i < len; ++i) {
+	for (uint32_t i = 1, len = cdf_size_ - 1; i < len; ++i) {
 		const uint32_t mapped = map(cdf_[i]);
 
 		if (mapped > border) {
@@ -400,10 +388,6 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) {
 	for (uint32_t i = border + 1, len = lut_size_; i < len; ++i) {
 		lut_[i] = last;
 	}
-}
-
-inline uint32_t Distribution_implicit_pdf_lut_1D::lut_heuristic(uint32_t len) const {
-	return std::max(len / 16, 1u);
 }
 
 //==================================================================================================
@@ -423,10 +407,6 @@ inline Distribution_implicit_pdf_lut_lin_1D::~Distribution_implicit_pdf_lut_lin_
 inline void Distribution_implicit_pdf_lut_lin_1D::init(const float* data, uint32_t len,
 													   uint32_t lut_bucket_size) {
 	precompute_1D_pdf_cdf(data, len);
-
-//	if (0 == lut_bucket_size) {
-//		lut_size = lut_heuristic(len);
-//	}
 
 	uint32_t lut_size = 0 == lut_bucket_size ? len / 16 : len / lut_bucket_size;
 
@@ -644,7 +624,7 @@ inline void Distribution_implicit_pdf_lut_lin_1D::init_lut(uint32_t lut_size) {
 	uint32_t border = 0;
 	uint32_t last = 0;
 
-	for (uint32_t i = 1, len = cdf_size_; i < len; ++i) {
+	for (uint32_t i = 1, len = cdf_size_ - 1; i < len; ++i) {
 		const uint32_t mapped = map(cdf_[i]);
 
 		if (mapped > border) {
@@ -662,10 +642,5 @@ inline void Distribution_implicit_pdf_lut_lin_1D::init_lut(uint32_t lut_size) {
 		lut_[i] = last;
 	}
 }
-
-inline uint32_t Distribution_implicit_pdf_lut_lin_1D::lut_heuristic(uint32_t len) const {
-	return std::max(len / 16, 1u);
-}
-
 
 }

@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 //	testing::simd::unions();
 //	testing::spectrum();
 
-//	testing::cdf::test_1D();
+//	testing::cdf::test_2D();
 
 //	return 1;
 

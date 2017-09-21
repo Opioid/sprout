@@ -83,6 +83,8 @@ void Data_interleaved<Triangle>::sample(uint32_t index, float2 r2,
 
 template<typename Triangle>
 void Data_interleaved<Triangle>::sample(uint32_t index, float2 r2, float3& p, float2& tc) const {
+	SOFT_ASSERT(index < triangles_.size());
+
 	triangles_[index].interpolate(math::sample_triangle_uniform(r2), p, tc);
 }
 
