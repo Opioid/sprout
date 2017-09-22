@@ -104,4 +104,11 @@ static inline float rcp(float x) {
 	return _mm_cvtss_f32(_mm_sub_ss(_mm_add_ss(rcp, rcp), muls));
 }
 
+// https://twitter.com/ian_mallett/status/910006486453043203
+// copysign1(x) == std::copysign(1.f, x)
+static inline float copysign1(float x) {
+	const Vector result = _mm_and_ps(simd::Sign_mask, _mm_set1_ps(x));
+	return _mm_cvtss_f32(_mm_or_ps(result, simd::One));
+}
+
 }

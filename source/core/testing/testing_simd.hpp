@@ -12,4 +12,6 @@ void minmax();
 
 void unions();
 
+void basis();
+
 }}

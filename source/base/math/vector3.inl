@@ -530,10 +530,48 @@ static inline void orthonormal_basis(const Vector3f_a& n, Vector3f_a& t, Vector3
 	// http://jcgt.org/published/0006/01/01/
 
 	const float sign = std::copysign(1.f, n[2]);
+//	const float sign = copysign1(n[2]);
 	const float c = -1.f / (sign + n[2]);
 	const float d = n[0] * n[1] * c;
 	t = Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
 	b = Vector3f_a(d, sign + n[1] * n[1] * c, -n[1]);
+}
+
+static inline void orthonormal_basis1(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
+	const float sign = copysign1(n[2]);
+	const float c = -1.f / (sign + n[2]);
+	const float d = n[0] * n[1] * c;
+	t = Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
+	b = Vector3f_a(d, sign + n[1] * n[1] * c, -n[1]);
+}
+
+// https://twitter.com/ian_mallett/status/846631289822232577
+
+static inline void orthonormal_basis_sse(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
+	const Vector u = simd::load_float3(n.v);
+
+	const float sign = copysign1(n[2]);
+
+	__m128 temp0 = _mm_set_ps1(1.f / (sign + n[2]));
+
+	__m128 temp0_0 = _mm_shuffle_ps(u, u, _MM_SHUFFLE(0, 1, 0, 0));
+	temp0 = _mm_mul_ps(temp0, temp0_0);
+
+	__m128 temp0_1 = _mm_shuffle_ps(u, u, _MM_SHUFFLE(0, 1, 1, 0));
+	temp0 = _mm_mul_ps(temp0, temp0_1);
+
+	__m128 temp1 = _mm_shuffle_ps(temp0, u, _MM_SHUFFLE(3, 0, 1, 0));
+	__m128 temp2 = _mm_set_ps1(sign);
+	__m128 temp3 = _mm_set_ps(0.f, 0.f, 0.f, 1.f);
+	temp1 = _mm_mul_ps(temp1, temp2);
+
+	simd::store_float4(t.v, _mm_sub_ps(temp3, temp1));
+
+	__m128 temp4 = _mm_set_ps(0.f, 0.f, sign, 0.f);
+	__m128 temp5 = _mm_shuffle_ps(temp0, u, _MM_SHUFFLE(3, 1, 2,1));
+
+	simd::store_float4(b.v, _mm_sub_ps(temp4, temp5));
+
 }
 
 static inline Vector3f_a tangent(const Vector3f_a& n) {

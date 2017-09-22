@@ -990,4 +990,81 @@ void unions() {
 	delete[] uvecs;
 }
 
+void basis() {
+	std::cout << "testing::simd::basis()" << std::endl;
+
+	rnd::Generator rng;
+
+	size_t num_values = 1024 * 1024 * (64 + 0);
+
+	float3* vectors = new float3[num_values];
+
+	for (size_t i = 0; i < num_values; ++i) {
+		vectors[i] = math::normalize(float3(1.f - (2.f * rng.random_float()),
+											1.f - (2.f * rng.random_float()),
+											1.f - (2.f * rng.random_float())));
+	}
+
+	float3* ts = new float3[num_values];
+	float3* bs = new float3[num_values];
+
+	{
+		std::cout << "math::orhonormal_basis()" << std::endl;
+
+		auto start = std::chrono::high_resolution_clock::now();
+
+		float3 result(0.f);
+
+		for (size_t i = 0; i < num_values; ++i) {
+			math::orthonormal_basis(vectors[i], bs[i], ts[i]);
+
+			result += bs[i] + ts[i];
+		}
+
+		const auto duration = chrono::seconds_since(start);
+		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
+	}
+
+	{
+		std::cout << "math::orhonormal_basis_sse()" << std::endl;
+
+		auto start = std::chrono::high_resolution_clock::now();
+
+		float3 result(0.f);
+
+		for (size_t i = 0; i < num_values; ++i) {
+			math::orthonormal_basis_sse(vectors[i], bs[i], ts[i]);
+
+			result += bs[i] + ts[i];
+		}
+
+		const auto duration = chrono::seconds_since(start);
+		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
+	}
+
+	{
+		std::cout << "math::orhonormal_basis1()" << std::endl;
+
+		auto start = std::chrono::high_resolution_clock::now();
+
+		float3 result(0.f);
+
+		for (size_t i = 0; i < num_values; ++i) {
+			math::orthonormal_basis1(vectors[i], bs[i], ts[i]);
+
+			result += bs[i] + ts[i];
+		}
+
+		const auto duration = chrono::seconds_since(start);
+		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+		std::cout << std::endl;
+	}
+
+	delete[] bs;
+	delete[] ts;
+	delete[] vectors;
+}
+
 }}
