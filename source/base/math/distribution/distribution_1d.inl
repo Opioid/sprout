@@ -4,6 +4,8 @@
 #include "memory/align.hpp"
 #include <algorithm>
 
+#include <iostream>
+
 namespace math {
 
 inline void Distribution_1D::init(const float* data, size_t len) {
@@ -392,6 +394,11 @@ inline void Distribution_implicit_pdf_lut_1D::init_lut(uint32_t lut_size) {
 
 //==================================================================================================
 
+// The initial motivation for this version comes from the following article:
+// https://dirtyhandscoding.wordpress.com/2017/08/25/performance-comparison-linear-search-vs-binary-search/
+// For the data I tested the
+
+
 inline Distribution_implicit_pdf_lut_lin_1D::Distribution_implicit_pdf_lut_lin_1D() :
 	lut_(nullptr),
 	lut_size_(0),
@@ -419,80 +426,6 @@ inline float Distribution_implicit_pdf_lut_lin_1D::integral() const {
 	return integral_;
 }
 
-// https://stackoverflow.com/questions/994593/how-to-do-an-integer-log2-in-c
-
-static inline int64_t mylog2(int64_t val) {
-	if (val == 0) return INT64_MAX;
-	if (val == 1) return 0;
-	int64_t ret = 0;
-	while (val > 1) {
-		val >>= 1;
-		ret++;
-	}
-	return ret;
-}
-
-static inline int32_t mylog2_(int32_t val) {
-	if (val == 0) return INT32_MAX;
-	if (val == 1) return 0;
-	int32_t ret = 0;
-	while (val > 1) {
-		val >>= 1;
-		ret++;
-	}
-	return ret;
-}
-
-// https://dirtyhandscoding.wordpress.com/2017/08/25/performance-comparison-linear-search-vs-binary-search/
-/*
-static inline const float* binary_search_branchless(const float* begin, const float* end, float key) {
-	intptr_t pos = -1;
-	intptr_t logstep = mylog2(end - begin);
-	intptr_t step = intptr_t(1) << logstep;
-	while (step > 0) {
-		pos = begin[pos + step] < key ? pos + step : pos;
-		step >>= 1;
-	}
-
-//	if (begin + pos + 1 >= end) {
-//		intptr_t dif = end - begin;
-//		return end - 1;
-//	}
-
-	return begin + pos + 1;
-}*/
-
-static inline uint32_t binary_search_branchless(const float* buffer,
-												uint32_t begin, uint32_t end,
-												float key) {
-	int32_t pos = -1;
-	int32_t logstep = mylog2_(end - begin);
-	int32_t step = int32_t(1) << logstep;
-	while (step > 0) {
-		pos = buffer[begin + pos + step] < key ? pos + step : pos;
-		step >>= 1;
-	}
-
-//	if (begin + pos + 1 >= end) {
-//		intptr_t dif = end - begin;
-//		return end - 1;
-//	}
-
-	return begin + pos + 1;
-}
-
-static inline uint32_t linear_search_scalar(const float* buffer,
-											uint32_t begin, uint32_t end,
-											float key) {
-	uint32_t index = begin;
-
-	for (uint32_t i = begin; i < end; ++i) {
-		index += (buffer[i] < key);
-	}
-
-	return index;
-}
-
 static inline uint32_t search(const float* buffer, uint32_t begin, uint32_t end, float key) {
 	for (uint32_t i = begin; i < end; ++i) {
 		if (buffer[i] >= key) {
@@ -501,6 +434,14 @@ static inline uint32_t search(const float* buffer, uint32_t begin, uint32_t end,
 	}
 
 	return end;
+
+//	for (uint32_t i = begin;; ++i) {
+//		if (buffer[i] >= key) {
+//			return i;
+//		}
+//	}
+
+//	return end;
 }
 
 inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r) const {
@@ -509,12 +450,11 @@ inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r) c
 	const uint32_t begin = lut_[bucket];
 	const uint32_t end   = lut_[bucket + 1];
 
-//	const float* it = std::lower_bound(cdf_ + begin, cdf_ + end, r);
-
-//	const float* it = binary_search_branchless(cdf_ + begin, cdf_ + end, r);
-//	const uint32_t it = binary_search_branchless(cdf_, begin, end, r);
-//	const uint32_t it = linear_search_scalar(cdf_, begin, end, r);
 	const uint32_t it = search(cdf_, begin, end, r);
+
+//	if (it > end) {
+//		std::cout << (it - end) << std::endl;
+//	}
 
 	if (0 != it) {
 		return it - 1;

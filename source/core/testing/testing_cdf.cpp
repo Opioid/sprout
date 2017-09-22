@@ -55,14 +55,14 @@ void test_1D() {
 	math::Distribution_implicit_pdf_lut_1D c;
 	c.init(values.data(), static_cast<uint32_t>(num_values));
 
-	math::Distribution_implicit_pdf_lut_1D d;
-	d.init(values.data(), static_cast<uint32_t>(num_values), 8);
+//	math::Distribution_implicit_pdf_lut_1D d;
+//	d.init(values.data(), static_cast<uint32_t>(num_values), 8);
 
 	math::Distribution_implicit_pdf_lut_lin_1D e;
 	e.init(values.data(), static_cast<uint32_t>(num_values));
 
-	math::Distribution_implicit_pdf_lut_lin_1D f;
-	f.init(values.data(), static_cast<uint32_t>(num_values), 8);
+//	math::Distribution_implicit_pdf_lut_lin_1D f;
+//	f.init(values.data(), static_cast<uint32_t>(num_values), 8);
 
 
 //	std::cout << "Distribution_1D" << std::endl;
@@ -74,21 +74,21 @@ void test_1D() {
 	std::cout << "Distribution_implicit_pdf_lut_1D(" << c.lut_size() << ")" << std::endl;
 	test_distribution(c, samples);
 
-	std::cout << "Distribution_implicit_pdf_lut_1D(" << d.lut_size() << ")" << std::endl;
-	test_distribution(d, samples);
+//	std::cout << "Distribution_implicit_pdf_lut_1D(" << d.lut_size() << ")" << std::endl;
+//	test_distribution(d, samples);
 
 	std::cout << "Distribution_implicit_pdf_lut_lin_1D(" << e.lut_size() << ")" << std::endl;
 	test_distribution(e, samples);
 
-	std::cout << "Distribution_implicit_pdf_lut_lin_1D(" << f.lut_size() << ")" << std::endl;
-	test_distribution(f, samples);
+//	std::cout << "Distribution_implicit_pdf_lut_lin_1D(" << f.lut_size() << ")" << std::endl;
+//	test_distribution(f, samples);
 }
 
 void test_2D() {
 	image::encoding::rgbe::Reader reader;
 
-	const std::string name = "../data/textures/uffizi_spherical.hdr";
-//	const std::string name = "../data/textures/river_road_spherical.hdr";
+//	const std::string name = "../data/textures/uffizi_spherical.hdr";
+	const std::string name = "../data/textures/river_road_spherical.hdr";
 //	const std::string name = "../data/textures/city_night_lights_spherical.hdr";
 //	const std::string name = "../data/textures/ennis_spherical.hdr";
 
@@ -112,11 +112,11 @@ void test_2D() {
 
 	const image::texture::Float3 texture(image);
 
-//	math::Distribution_t_2D<math::Distribution_1D> a;
-//	init(a, texture);
+	math::Distribution_t_2D<math::Distribution_1D> a;
+	init(a, texture);
 
-//	math::Distribution_t_2D<math::Distribution_lut_1D> b;
-//	init(b, texture);
+	math::Distribution_t_2D<math::Distribution_lut_1D> b;
+	init(b, texture);
 
 	math::Distribution_t_2D<math::Distribution_implicit_pdf_lut_1D> c;
 	init(c, texture);
@@ -124,11 +124,11 @@ void test_2D() {
 	math::Distribution_t_2D<math::Distribution_implicit_pdf_lut_lin_1D> d;
 	init(d, texture);
 
-//	std::cout << "Distribution_2D" << std::endl;
-//	test_distribution(a, samples);
+	std::cout << "Distribution_2D" << std::endl;
+	test_distribution(a, samples);
 
-//	std::cout << "Distribution_lut_2D" << std::endl;
-//	test_distribution(b, samples);
+	std::cout << "Distribution_lut_2D" << std::endl;
+	test_distribution(b, samples);
 
 	std::cout << "Distribution_implicit_pdf_lut_2D" << std::endl;
 	test_distribution(c, samples);
