@@ -1008,6 +1008,42 @@ void basis() {
 	float3* ts = new float3[num_values];
 	float3* bs = new float3[num_values];
 
+//	{
+//		std::cout << "math::orhonormal_basis_sse()" << std::endl;
+
+//		auto start = std::chrono::high_resolution_clock::now();
+
+//		float3 result(0.f);
+
+//		for (size_t i = 0; i < num_values; ++i) {
+//			math::orthonormal_basis_sse(vectors[i], bs[i], ts[i]);
+
+//			result += bs[i] + ts[i];
+//		}
+
+//		const auto duration = chrono::seconds_since(start);
+//		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+//		std::cout << std::endl;
+//	}
+
+//	{
+//		std::cout << "math::orhonormal_basis1()" << std::endl;
+
+//		auto start = std::chrono::high_resolution_clock::now();
+
+//		float3 result(0.f);
+
+//		for (size_t i = 0; i < num_values; ++i) {
+//			math::orthonormal_basis1(vectors[i], bs[i], ts[i]);
+
+//			result += bs[i] + ts[i];
+//		}
+
+//		const auto duration = chrono::seconds_since(start);
+//		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+//		std::cout << std::endl;
+//	}
+
 	{
 		std::cout << "math::orhonormal_basis()" << std::endl;
 
@@ -1026,41 +1062,60 @@ void basis() {
 		std::cout << std::endl;
 	}
 
-	{
-		std::cout << "math::orhonormal_basis_sse()" << std::endl;
+//	{
+//			std::cout << "math::orhonormal_basis_sse()" << std::endl;
 
-		auto start = std::chrono::high_resolution_clock::now();
+//			auto start = std::chrono::high_resolution_clock::now();
 
-		float3 result(0.f);
+//			float3 result(0.f);
 
-		for (size_t i = 0; i < num_values; ++i) {
-			math::orthonormal_basis_sse(vectors[i], bs[i], ts[i]);
+//			for (size_t i = 0; i < num_values; ++i) {
+//				math::orthonormal_basis_sse(vectors[i], bs[i], ts[i]);
 
-			result += bs[i] + ts[i];
+//				result += bs[i] + ts[i];
+//			}
+
+//			const auto duration = chrono::seconds_since(start);
+//			std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+//			std::cout << std::endl;
+//		}
+
+//		{
+//			std::cout << "math::orhonormal_basis1()" << std::endl;
+
+//			auto start = std::chrono::high_resolution_clock::now();
+
+//			float3 result(0.f);
+
+//			for (size_t i = 0; i < num_values; ++i) {
+//				math::orthonormal_basis1(vectors[i], bs[i], ts[i]);
+
+//				result += bs[i] + ts[i];
+//			}
+
+//			const auto duration = chrono::seconds_since(start);
+//			std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+//			std::cout << std::endl;
+//		}
+
+		{
+			std::cout << "math::orhonormal_basis()" << std::endl;
+
+			auto start = std::chrono::high_resolution_clock::now();
+
+			float3 result(0.f);
+
+			for (size_t i = 0; i < num_values; ++i) {
+				math::orthonormal_basis(vectors[i], bs[i], ts[i]);
+
+				result += bs[i] + ts[i];
+			}
+
+			const auto duration = chrono::seconds_since(start);
+			std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
+			std::cout << std::endl;
 		}
 
-		const auto duration = chrono::seconds_since(start);
-		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
-		std::cout << std::endl;
-	}
-
-	{
-		std::cout << "math::orhonormal_basis1()" << std::endl;
-
-		auto start = std::chrono::high_resolution_clock::now();
-
-		float3 result(0.f);
-
-		for (size_t i = 0; i < num_values; ++i) {
-			math::orthonormal_basis1(vectors[i], bs[i], ts[i]);
-
-			result += bs[i] + ts[i];
-		}
-
-		const auto duration = chrono::seconds_since(start);
-		std::cout << result << " in " << string::to_string(duration) << " s" << std::endl;
-		std::cout << std::endl;
-	}
 
 	delete[] bs;
 	delete[] ts;

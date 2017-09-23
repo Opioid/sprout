@@ -529,15 +529,7 @@ static inline void orthonormal_basis(const Vector3f_a& n, Vector3f_a& t, Vector3
 	// Building an Orthonormal Basis, Revisited
 	// http://jcgt.org/published/0006/01/01/
 
-	const float sign = std::copysign(1.f, n[2]);
-//	const float sign = copysign1(n[2]);
-	const float c = -1.f / (sign + n[2]);
-	const float d = n[0] * n[1] * c;
-	t = Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
-	b = Vector3f_a(d, sign + n[1] * n[1] * c, -n[1]);
-}
-
-static inline void orthonormal_basis1(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
+//	const float sign = std::copysign(1.f, n[2]);
 	const float sign = copysign1(n[2]);
 	const float c = -1.f / (sign + n[2]);
 	const float d = n[0] * n[1] * c;
@@ -546,7 +538,7 @@ static inline void orthonormal_basis1(const Vector3f_a& n, Vector3f_a& t, Vector
 }
 
 // https://twitter.com/ian_mallett/status/846631289822232577
-
+/*
 static inline void orthonormal_basis_sse(const Vector3f_a& n, Vector3f_a& t, Vector3f_a& b) {
 	const Vector u = simd::load_float3(n.v);
 
@@ -571,8 +563,7 @@ static inline void orthonormal_basis_sse(const Vector3f_a& n, Vector3f_a& t, Vec
 	__m128 temp5 = _mm_shuffle_ps(temp0, u, _MM_SHUFFLE(3, 1, 2,1));
 
 	simd::store_float4(b.v, _mm_sub_ps(temp4, temp5));
-
-}
+}*/
 
 static inline Vector3f_a tangent(const Vector3f_a& n) {
 	const float sign = std::copysign(1.f, n[2]);
