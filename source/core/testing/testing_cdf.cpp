@@ -37,23 +37,23 @@ void test_1D() {
 
 	rnd::Generator rng;
 
-	const size_t num_values = 1024 * 10;
+//	const size_t num_values = 1024 * 10;
 
-	std::vector<float> values(num_values);
+//	std::vector<float> values(num_values);
 
-	for (size_t i = 0, len = values.size(); i < len; ++i) {
-		values[i] = 8.f * rng.random_float();
-	}
+//	for (size_t i = 0, len = values.size(); i < len; ++i) {
+//		values[i] = 8.f * rng.random_float();
+//	}
 
-//	std::vector<float> values = { 0.4f, 3.f, 0.2f, 9.f };
+	std::vector<float> values = { 0.0f, 3.f, 0.0f, 0.f };
 
-	const size_t num_samples = 1024 * 1024 * 32;
+//	const size_t num_samples = 1024 * 1024 * 32;
 
-	std::vector<float> samples(num_samples);
+//	std::vector<float> samples(num_samples);
 
-	for (size_t i = 0, len = samples.size(); i < len; ++i) {
-		samples[i] = rng.random_float();
-	}
+//	for (size_t i = 0, len = samples.size(); i < len; ++i) {
+//		samples[i] = rng.random_float();
+//	}
 
 
 
@@ -79,8 +79,8 @@ void test_1D() {
 //	std::cout << "Distribution_1D" << std::endl;
 //	test_distribution(a, samples);
 
-	std::cout << "Distribution_lut_1D" << std::endl;
-	test_distribution(b, samples);
+//	std::cout << "Distribution_lut_1D" << std::endl;
+//	test_distribution(b, samples);
 
 //	std::cout << "Distribution_implicit_pdf_lut_1D(" << c.lut_size() << ")" << std::endl;
 //	test_distribution(c, samples);
@@ -88,13 +88,17 @@ void test_1D() {
 //	std::cout << "Distribution_implicit_pdf_lut_1D(" << d.lut_size() << ")" << std::endl;
 //	test_distribution(d, samples);
 
-	std::cout << "Distribution_implicit_pdf_lut_lin_1D(" << e.lut_size() << ")" << std::endl;
-	test_distribution(e, samples);
+//	std::cout << "Distribution_implicit_pdf_lut_lin_1D(" << e.lut_size() << ")" << std::endl;
+//	test_distribution(e, samples);
 
 //	std::cout << "Distribution_implicit_pdf_lut_lin_1D(" << f.lut_size() << ")" << std::endl;
 //	test_distribution(f, samples);
 
 //	compare_distributions(a, e, 1.f);
+
+//	float pdf;
+//	const float result = e.sample_discrete(0.5f, pdf);
+//	std::cout << result << " " << pdf << std::endl;
 }
 
 void test_2D() {
