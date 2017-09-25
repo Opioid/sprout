@@ -326,16 +326,6 @@ float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight, fl
 
 		const float weight = power_heuristic(light_sample.shape.pdf / light_weight, bxdf_pdf);
 
-		const float3 thing = (weight / light_sample.shape.pdf * light_weight)
-						   * (tv * tr) * (light_sample.radiance * f);
-
-	//	SOFT_ASSERT(math::all_finite(thing));
-
-		if (!math::all_finite(thing)) {
-			std::cout << "weight: " << weight << std::endl;
-			std::cout << "light_sample.shape.pdf: " << light_sample.shape.pdf << std::endl;
-		}
-
 		return (weight / light_sample.shape.pdf * light_weight)
 			 * (tv * tr) * (light_sample.radiance * f);
 	}
