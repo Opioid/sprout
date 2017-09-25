@@ -32,6 +32,11 @@ bool check(const Intersection& intersection,
 }
 
 bool check(const Sample& sample) {
+	if (sample.pdf <= 0.f) {
+		std::cout << "pdf " << sample.pdf << std::endl;
+		return false;
+	}
+
 	if (!math::all_finite(sample.uv)) {
 		return false;
 	}
@@ -40,6 +45,11 @@ bool check(const Sample& sample) {
 }
 
 bool check(const Sample& sample, float2 uv) {
+	if (sample.pdf <= 0.f) {
+		std::cout << "pdf " << sample.pdf << std::endl;
+		return false;
+	}
+
 	if (!math::all_finite(sample.uv)) {
 		std::cout << "uv " << uv << std::endl;
 		return false;

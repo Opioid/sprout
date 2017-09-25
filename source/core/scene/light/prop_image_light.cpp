@@ -25,6 +25,9 @@ bool Prop_image_light::sample(const Transformation& transformation,
 
 	float material_pdf;
 	const float2 uv = material->radiance_sample(s2d, material_pdf);
+	if (0.f == material_pdf) {
+		return false;
+	}
 
 	const float area = prop_->area(part_);
 

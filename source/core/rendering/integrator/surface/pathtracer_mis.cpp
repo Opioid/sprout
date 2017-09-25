@@ -16,6 +16,8 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
+#include "base/debug/assert.hpp"
+
 namespace rendering { namespace integrator { namespace surface {
 
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
@@ -180,6 +182,8 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 	}
 
+
+
 	return float4(result, opacity);
 }
 
@@ -241,6 +245,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	requires_bounce = sample_result.type.test_any(Bxdf_type::Specular, Bxdf_type::Transmission);
 
 	if (requires_bounce || 0.f == sample_result.pdf) {
+		SOFT_ASSERT(math::all_finite(result));
 		return result;
 	}
 
@@ -248,11 +253,13 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 					  ray_offset, scene::Ray_max_t, ray.time, ray.depth + 1);
 
 	if (!intersect_and_resolve_mask(secondary_ray, intersection, filter, worker)) {
+		SOFT_ASSERT(math::all_finite(result));
 		return result;
 	}
 
 	const uint32_t light_id = intersection.light_id();
 	if (!Light::is_light(light_id)) {
+		SOFT_ASSERT(math::all_finite(result));
 		return result;
 	}
 
@@ -268,6 +275,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 									Sampler_filter::Nearest, worker);
 
 	if (0.f == ls_pdf) {
+		SOFT_ASSERT(math::all_finite(result));
 		return result;
 	}
 
@@ -287,6 +295,8 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 
 		result += (weight / sample_result.pdf) * (ls_energy * sample_result.reflection);
 	}
+
+	SOFT_ASSERT(math::all_finite(result));
 
 	return result;
 }
@@ -315,6 +325,16 @@ float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight, fl
 		const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
 		const float weight = power_heuristic(light_sample.shape.pdf / light_weight, bxdf_pdf);
+
+		const float3 thing = (weight / light_sample.shape.pdf * light_weight)
+						   * (tv * tr) * (light_sample.radiance * f);
+
+	//	SOFT_ASSERT(math::all_finite(thing));
+
+		if (!math::all_finite(thing)) {
+			std::cout << "weight: " << weight << std::endl;
+			std::cout << "light_sample.shape.pdf: " << light_sample.shape.pdf << std::endl;
+		}
 
 		return (weight / light_sample.shape.pdf * light_weight)
 			 * (tv * tr) * (light_sample.radiance * f);
