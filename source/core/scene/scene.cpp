@@ -127,7 +127,7 @@ const std::vector<light::Light*>& Scene::lights() const {
 }
 
 const light::Light* Scene::light(uint32_t id, float& pdf) const {
-	// This would pose a problem,
+	// If the assert doesn't hold it would pose a problem,
 	// but I think it is more efficient to handle those cases outside or implicitely.
 	SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 

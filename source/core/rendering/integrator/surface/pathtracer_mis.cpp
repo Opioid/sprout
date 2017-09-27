@@ -79,8 +79,6 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	Sampler_filter filter = Sampler_filter::Unknown;
 	Bxdf_result sample_result;
 
-	sample_result.reflection = float3(1.f, 2.f, 3.f);
-
 	float3 throughput(1.f);
 	float3 result(0.f);
 	float opacity = 0.f;
@@ -182,8 +180,6 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 	}
 
-
-
 	return float4(result, opacity);
 }
 
@@ -263,7 +259,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		return result;
 	}
 
-	float light_pdf = 0.f;
+	float light_pdf;
 	const auto light = worker.scene().light(light_id, light_pdf);
 
 	if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
