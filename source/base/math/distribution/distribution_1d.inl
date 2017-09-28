@@ -69,9 +69,10 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(const float* data, size_t len
 	if (0.f == integral) {
 		pdf_.resize(1, 0.f);
 
-		cdf_.resize(2);
+		cdf_.resize(3);
 		cdf_[0] = 0.f;
 		cdf_[1] = 1.f;
+		cdf_[2] = 1.f;
 
 		integral_ = 0.f;
 		size_ = 1.f;
@@ -80,7 +81,7 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(const float* data, size_t len
 	}
 
 	pdf_.resize(len);
-	cdf_.resize(len + 1);
+	cdf_.resize(len + 2);
 
 	for (size_t i = 0; i < len; ++i) {
 		pdf_[i] = data[i] / integral;
@@ -91,6 +92,8 @@ inline void Distribution_1D::precompute_1D_pdf_cdf(const float* data, size_t len
 		cdf_[i] = cdf_[i - 1] + pdf_[i - 1];
 	}
 	cdf_[len] = 1.f;
+	// This takes care of corner case: pdf(1)
+	cdf_[len + 1] = 1.f;
 
 	integral_ = integral;
 
@@ -176,9 +179,10 @@ inline void Distribution_lut_1D::precompute_1D_pdf_cdf(const float* data, uint32
 	if (0.f == integral) {
 		pdf_.resize(1, 0.f);
 
-		cdf_.resize(2);
+		cdf_.resize(3);
 		cdf_[0] = 0.f;
 		cdf_[1] = 1.f;
+		cdf_[2] = 1.f;
 
 		integral_ = 0.f;
 		size_ = 1.f;
@@ -187,7 +191,7 @@ inline void Distribution_lut_1D::precompute_1D_pdf_cdf(const float* data, uint32
 	}
 
 	pdf_.resize(len);
-	cdf_.resize(len + 1);
+	cdf_.resize(len + 2);
 
 	for (uint32_t i = 0; i < len; ++i) {
 		pdf_[i] = data[i] / integral;
@@ -198,6 +202,8 @@ inline void Distribution_lut_1D::precompute_1D_pdf_cdf(const float* data, uint32
 		cdf_[i] = cdf_[i - 1] + pdf_[i - 1];
 	}
 	cdf_[len] = 1.f;
+	// This takes care of corner case: pdf(1)
+	cdf_[len + 1] = 1.f;
 
 	integral_ = integral;
 
@@ -336,11 +342,12 @@ inline void Distribution_implicit_pdf_lut_1D::precompute_1D_pdf_cdf(const float*
 	}
 
 	if (0.f == integral) {
-		cdf_size_ = 2;
+		cdf_size_ = 3;
 		cdf_ = memory::allocate_aligned<float>(cdf_size_);
 
 		cdf_[0] = 0.f;
 		cdf_[1] = 1.f;
+		cdf_[2] = 1.f;
 
 		integral_ = 0.f;
 		size_ = 1.f;
@@ -356,6 +363,8 @@ inline void Distribution_implicit_pdf_lut_1D::precompute_1D_pdf_cdf(const float*
 		cdf_[i] = cdf_[i - 1] + data[i - 1] / integral;
 	}
 	cdf_[len] = 1.f;
+	// This takes care of corner case: pdf(1)
+	cdf_[len + 1] = 1.f;
 
 	integral_ = integral;
 
@@ -546,7 +555,7 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(const fl
 		cdf_[i] = cdf_[i - 1] + data[i - 1] / integral;
 	}
 	cdf_[len] = 1.f;
-	// This takes care of a corner case: pdf(1)
+	// This takes care of corner case: pdf(1)
 	cdf_[len + 1] = 1.f;
 
 	integral_ = integral;
