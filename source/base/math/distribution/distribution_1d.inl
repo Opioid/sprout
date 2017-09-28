@@ -4,6 +4,8 @@
 #include "memory/align.hpp"
 #include <algorithm>
 
+#include "debug/assert.hpp"
+
 namespace math {
 
 inline void Distribution_1D::init(const float* data, size_t len) {
@@ -458,6 +460,8 @@ inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r) c
 inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r, float& pdf) const {
 	const uint32_t offset = sample_discrete(r);
 
+	SOFT_ASSERT(offset + 1 < cdf_size_);
+
 	pdf = cdf_[offset + 1] - cdf_[offset];
 
 	return offset;
@@ -465,6 +469,8 @@ inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r, f
 
 inline float Distribution_implicit_pdf_lut_lin_1D::sample_continuous(float r, float& pdf) const {
 	const uint32_t offset = sample_discrete(r);
+
+	SOFT_ASSERT(offset + 1 < cdf_size_);
 
 	const float c = cdf_[offset + 1];
 	const float v = c - cdf_[offset];
@@ -484,11 +490,15 @@ inline float Distribution_implicit_pdf_lut_lin_1D::sample_continuous(float r, fl
 }
 
 inline float Distribution_implicit_pdf_lut_lin_1D::pdf(uint32_t index) const {
+	SOFT_ASSERT(index + 1 < cdf_size_);
+
 	return cdf_[index + 1] - cdf_[index];
 }
 
 inline float Distribution_implicit_pdf_lut_lin_1D::pdf(float u) const {
 	const uint32_t offset = static_cast<uint32_t>(u * size_);
+
+	SOFT_ASSERT(offset + 1 < cdf_size_);
 
 	return cdf_[offset + 1] - cdf_[offset];
 }
@@ -515,11 +525,12 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(const fl
 	}
 
 	if (0.f == integral) {
-		cdf_size_ = 2;
+		cdf_size_ = 3;
 		cdf_ = memory::allocate_aligned<float>(cdf_size_);
 
 		cdf_[0] = 0.f;
 		cdf_[1] = 1.f;
+		cdf_[2] = 1.f;
 
 		integral_ = 0.f;
 		size_ = 1.f;
@@ -527,7 +538,7 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(const fl
 		return;
 	}
 
-	cdf_size_ = len + 1;
+	cdf_size_ = len + 2;
 	cdf_ = memory::allocate_aligned<float>(cdf_size_);
 
 	cdf_[0] = 0.f;
@@ -535,6 +546,8 @@ inline void Distribution_implicit_pdf_lut_lin_1D::precompute_1D_pdf_cdf(const fl
 		cdf_[i] = cdf_[i - 1] + data[i - 1] / integral;
 	}
 	cdf_[len] = 1.f;
+	// This takes care of a corner case: pdf(1)
+	cdf_[len + 1] = 1.f;
 
 	integral_ = integral;
 

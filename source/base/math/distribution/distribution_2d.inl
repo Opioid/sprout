@@ -86,7 +86,8 @@ template<typename T>
 float Distribution_t_2D<T>::pdf(float2 uv) const {
 	const float v_pdf = marginal_.pdf(uv[1]);
 
-	const uint32_t c = std::min(static_cast<uint32_t>(uv[1] * conditional_size_), conditional_max_);
+	const uint32_t i = static_cast<uint32_t>(uv[1] * conditional_size_);
+	const uint32_t c = std::min(i, conditional_max_);
 	const float u_pdf = conditional_[c].pdf(uv[0]);
 
 	return u_pdf * v_pdf;

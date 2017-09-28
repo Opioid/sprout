@@ -94,7 +94,7 @@ void test_1D() {
 //	std::cout << "Distribution_implicit_pdf_lut_lin_1D(" << f.lut_size() << ")" << std::endl;
 //	test_distribution(f, samples);
 
-//	compare_distributions(a, e, 1.f);
+	compare_distributions(a, e, 0.3f);
 
 //	float pdf;
 //	const float result = e.sample_discrete(0.5f, pdf);
@@ -173,17 +173,21 @@ void compare_distributions(const T& a, const U& b, float r) {
 	float a_pdf_1;
 	const float a_r = a.sample_continuous(r, a_pdf_1);
 
+	float a_pdf_2 = a.pdf(r);
+
 	float b_pdf_0;
 	uint32_t b_d = b.sample_discrete(r, b_pdf_0);
 
 	float b_pdf_1;
 	const float b_r = b.sample_continuous(r, b_pdf_1);
 
+	float b_pdf_2 = b.pdf(r);
+
 	std::cout << "a(" << r << "): " << a_d << ", " << a_r << ", "
-			  << a_pdf_0 << ", " << a_pdf_1<< std::endl;
+			  << a_pdf_0 << ", " << a_pdf_1 << ", " << a_pdf_2 << std::endl;
 
 	std::cout << "b(" << r << "): " << b_d << ", " << b_r << ", "
-			  << b_pdf_0 << ", " << b_pdf_1<< std::endl;
+			  << b_pdf_0 << ", " << b_pdf_1 << ", " << b_pdf_2 << std::endl;
 }
 
 template<typename T, typename U>

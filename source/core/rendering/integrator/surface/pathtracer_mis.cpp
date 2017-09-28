@@ -118,7 +118,7 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		if (!intersection.hit()
 		||  (requires_bounce ? i == settings_.max_bounces : i >= settings_.max_bounces - 1)
-		||  ((0.f == sample_result.pdf) | (float3::identity() == sample_result.reflection))) {
+		||  ((0.f == sample_result.pdf) /*| (float3::identity() == sample_result.reflection)*/)) {
 			break;
 		}
 
@@ -143,11 +143,10 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 				result += throughput * subsurface_.li(worker, ray, intersection, material_sample,
 													  Sampler_filter::Nearest, sample_result);
 				if (0.f == sample_result.pdf) {
-					// result += float3(1.f, 0.f, 0.f);
 					break;
 				}
 
-				throughput *= sample_result.reflection;// / sample_result.pdf;
+				throughput *= sample_result.reflection;
 			} else {
 				const float3 tr = resolve_transmission(ray, intersection,
 													   material_sample.absorption_coeffecient(),
