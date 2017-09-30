@@ -1,0 +1,19 @@
+include("${CMAKE_CURRENT_LIST_DIR}/integrator/integrator.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/postprocessor/postprocessor.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/sensor/sensor.cmake")
+
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_camera_worker.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_camera_worker.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_driver_finalframe.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_driver_finalframe.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_driver_progressive.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_driver_progressive.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_driver.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_driver.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_worker.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rendering_worker.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/tile_queue.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/tile_queue.hpp"
+) 

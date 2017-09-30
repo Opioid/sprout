@@ -1,0 +1,9 @@
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/attenuation.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/attenuation.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/single_scattering.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/single_scattering.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/volume_integrator.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/volume_integrator.hpp"
+)

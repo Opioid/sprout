@@ -1,0 +1,29 @@
+include("${CMAKE_CURRENT_LIST_DIR}/triangle/triangle.cmake")
+
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/canopy.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/canopy.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/celestial_disk.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/celestial_disk.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/disk.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/disk.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/infinite_sphere.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/infinite_sphere.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/morphable_shape.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/node_stack.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/node_stack.inl"
+  "${CMAKE_CURRENT_LIST_DIR}/plane.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/plane.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rectangle.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rectangle.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/shape_intersection.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/shape_sample.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/shape_test.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/shape_test.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/shape_vertex.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/shape.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/shape.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/sphere.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/sphere.hpp"
+)  

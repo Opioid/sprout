@@ -1,0 +1,9 @@
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/animation_loader.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/animation_loader.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/animation_stage.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/animation_stage.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/animation.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/animation.hpp"  
+) 

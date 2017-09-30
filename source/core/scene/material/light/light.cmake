@@ -1,0 +1,11 @@
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/light_constant.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/light_constant.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/light_emissionmap_animated.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/light_emissionmap_animated.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/light_emissionmap.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/light_emissionmap.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/light_material_sample.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/light_material_sample.hpp"
+)  

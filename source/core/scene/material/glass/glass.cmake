@@ -1,0 +1,17 @@
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/glass_material.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/glass_material.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/glass_rough_material.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/glass_rough_material.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/glass_rough_sample.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/glass_rough_sample.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/glass_sample.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/glass_sample.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/glass_test.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/glass_test.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/thinglass_material.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/thinglass_material.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/thinglass_sample.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/thinglass_sample.hpp"
+) 

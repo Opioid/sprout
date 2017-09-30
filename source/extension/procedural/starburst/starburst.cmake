@@ -1,0 +1,10 @@
+target_sources(extension
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/aperture.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/aperture.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/dirt.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/dirt.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/fdft.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/starburst.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/starburst.hpp"
+) 

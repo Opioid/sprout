@@ -1,0 +1,9 @@
+target_sources(cli
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/camera_controller.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/camera_controller.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/controller_progressive.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/controller_progressive.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/message_handler.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/message_handler.hpp"
+) 

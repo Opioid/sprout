@@ -1,0 +1,13 @@
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/id_manager.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/id_manager.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/identifiable.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/resource_cache.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/resource_cache.inl"
+  "${CMAKE_CURRENT_LIST_DIR}/resource_manager.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/resource_manager.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/resource_manager.inl"
+  "${CMAKE_CURRENT_LIST_DIR}/resource_provider.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/resource_provider.inl"
+)   

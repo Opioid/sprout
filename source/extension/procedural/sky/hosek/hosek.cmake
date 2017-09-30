@@ -1,0 +1,9 @@
+target_sources(extension
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/ArHosekSkyModel.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/ArHosekSkyModel.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/ArHosekSkyModelData_CIEXYZ.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/ArHosekSkyModelData_RGB.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/ArHosekSkyModelData_Spectral.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/ArHosekSkyModelReal.hpp"
+) 

@@ -1,0 +1,21 @@
+include("${CMAKE_CURRENT_LIST_DIR}/sub/sub.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/transmittance/transmittance.cmake")
+
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/ao.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/ao.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/debug.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/debug.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/integrator_helper.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pathtracer_dl.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pathtracer_dl.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pathtracer_mis.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pathtracer_mis.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pathtracer.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/pathtracer.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/surface_integrator.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/surface_integrator.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/whitted.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/whitted.hpp"
+) 
