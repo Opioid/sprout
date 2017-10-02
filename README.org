@@ -30,16 +30,13 @@ as well as the camera settings.
 #+BEGIN_EXAMPLE
 mkdir build
 cd build
-qmake ../source "QMAKE_CXX = g++-5" "QMAKE_CXXFLAGS += -std=c++14"
+cmake -DCMAKE_BUILD_TYPE=Release ../source
 make
 #+END_EXAMPLE
 
 [[https://travis-ci.org/Opioid/sprout][https://api.travis-ci.org/Opioid/sprout.svg?branch%3Dmaster]]
 
-All source files needed to build the project are included in the repository.
-In order to build the project qmake is needed. 
-Unfortunately there doesn't exist a cmake project yet.
-Personally I use Qt Creator on both Linux and Windows.
+All source files needed to build the project are included in the repository and organized with cmake.
 
 sprout needs a compiler with c++14 support.
 
