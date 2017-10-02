@@ -3,10 +3,6 @@ add_library(base "")
 target_include_directories(base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>)
 target_include_directories(base PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../../thirdparty/include/>)
 
-if (UNIX)
-  target_link_libraries(base PRIVATE pthread)
-endif()
-
 include("${CMAKE_CURRENT_LIST_DIR}/atomic/atomic.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/chrono/chrono.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/crypto/crypto.cmake")
