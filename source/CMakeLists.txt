@@ -9,31 +9,30 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if (UNIX AND NOT APPLE)
-  set(LINUX TRUE)
+	set(LINUX TRUE)
 endif()
 
-
 if (LINUX) 
-  # linux stuff here
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -fno-rtti")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-  #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
+	# linux stuff here
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -fno-rtti")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+	#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
-  #strip debug symbols
-  #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
-  if (CMAKE_BUILD_TYPE MATCHES RELEASE)
-	set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
-  endif (CMAKE_BUILD_TYPE MATCHES RELEASE)
+	#strip debug symbols
+	#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
+	if (CMAKE_BUILD_TYPE MATCHES RELEASE)
+		set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
+	endif (CMAKE_BUILD_TYPE MATCHES RELEASE)
 elseif (MSVC)
 	if (CMAKE_CXX_FLAGS MATCHES "/GR")
-	  string(REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+		string(REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     endif()
 
 	# Force to always compile with W4
 	if (CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-      string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+		string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 	else ()
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 	endif()
 
 	# disable specific warnings
@@ -47,7 +46,7 @@ elseif (MSVC)
     add_compile_options(/wd4626) # assignment operator implicitly deleted
     add_compile_options(/wd4710) # function not inlined
     add_compile_options(/wd4711) # function selected for automatic inline expansion
- #  add_compile_options(/wd4820) # bytes' bytes padding added after construct
+	#  add_compile_options(/wd4820) # bytes' bytes padding added after construct
     add_compile_options(/wd5026) # move constructor operator implicitly deleted
     add_compile_options(/wd5027) # move assignment operator implicitly deleted
 endif()

@@ -21,6 +21,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/take/take.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/testing/testing.cmake")
 
 target_sources(core
-  PRIVATE
-  "${CMAKE_CURRENT_LIST_DIR}/../../thirdparty/include/miniz/miniz.cpp"
+	PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/../../thirdparty/include/miniz/miniz.cpp"
 )

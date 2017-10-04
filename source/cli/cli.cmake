@@ -12,7 +12,7 @@ find_package(Threads REQUIRED)
 target_link_libraries(cli PRIVATE base core extension Threads::Threads)
 
 if (WIN32)
-  target_link_libraries(cli PRIVATE ws2_32)
+	target_link_libraries(cli PRIVATE ws2_32)
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/controller/controller.cmake")
