@@ -10,5 +10,5 @@ install:
 script:
  - mkdir build
  - cd build
- - qmake ../source "QMAKE_CXX = g++-5" "QMAKE_CXXFLAGS += -std=c++14"
+ - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-5 ../source
  - make

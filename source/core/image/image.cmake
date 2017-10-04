@@ -1,0 +1,22 @@
+include("${CMAKE_CURRENT_LIST_DIR}/encoding/encoding.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/filter/filter.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/procedural/procedural.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/testing/testing.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/texture/texture.cmake")
+
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/channels.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/image_helper.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/image_helper.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/image_provider.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/image_provider.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/image_writer.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/image_writer.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/image.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/image.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/tiled_image.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/tiled_image.inl"
+  "${CMAKE_CURRENT_LIST_DIR}/typed_image.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/typed_image.inl"
+) 

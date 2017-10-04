@@ -1,0 +1,12 @@
+target_sources(base
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/blackbody.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/blackbody.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/discrete.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/discrete.inl"
+  "${CMAKE_CURRENT_LIST_DIR}/interpolated.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/interpolated.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/rgb.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/xyz.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/xyz.hpp"
+) 

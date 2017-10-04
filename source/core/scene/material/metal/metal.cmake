@@ -1,0 +1,11 @@
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/metal_material.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/metal_material.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/metal_presets.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/metal_presets.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/metal_sample.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/metal_sample.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/metal_test.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/metal_test.hpp"
+) 

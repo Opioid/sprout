@@ -1,0 +1,13 @@
+target_sources(core
+  PRIVATE
+  "${CMAKE_CURRENT_LIST_DIR}/aces.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/aces.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/generic.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/generic.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/identity.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/identity.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/tonemapper.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/tonemapper.hpp"
+  "${CMAKE_CURRENT_LIST_DIR}/uncharted.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/uncharted.hpp"
+) 
