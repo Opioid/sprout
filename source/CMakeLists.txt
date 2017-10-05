@@ -8,13 +8,19 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # On Linux this should give -fPIC/fPIE
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+option(NAN "Soft assert on NaN" OFF)
+
+if (NAN)
+	add_definitions(-DSU_DEBUG)
+endif (NAN)
+
 if (UNIX AND NOT APPLE)
 	set(LINUX TRUE)
 endif()
 
 if (LINUX) 
 	# linux stuff here
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -fno-rtti")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -W -Wall -Wextra -fno-rtti")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
@@ -23,6 +29,10 @@ if (LINUX)
 	if (CMAKE_BUILD_TYPE MATCHES RELEASE)
 		set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
 	endif (CMAKE_BUILD_TYPE MATCHES RELEASE)
+
+	# Enable specific extra warnings
+	# add_compile_options(-Wuseless-cast)
+	# add_compile_options(-Wshadow)
 elseif (MSVC)
 	if (CMAKE_CXX_FLAGS MATCHES "/GR")
 		string(REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
