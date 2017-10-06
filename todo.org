@@ -89,11 +89,11 @@ A typical example is when texture data is being loaded during BVH construction.
 Proof of concept for binary files showed good improvements in loading time. 
 File size on disk generally seems to be higher, though (somewhat surprisingly for me).
 
-** Build system [0/2]
+** Build system [1/2]
 
 *** TODO Investigate more Travis CI usage
 
-*** TODO Consider cmake-based build system
+*** DONE Consider cmake-based build system
 
 ** Scene [1/2]
 
