@@ -177,7 +177,8 @@ bool Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 		c = std::abs(c);
 	}
 
-	if (c <= 0.f) {
+	// Arbitrary epsilon that helped in one case
+	if (c <= 0.000004f) {
 		return false;
 	}
 
