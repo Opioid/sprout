@@ -12,11 +12,11 @@ Options parse(int argc, char* argv[]) {
 		cxxopts::Options options("sprout", "sprout is a global illumination renderer experiment");
 
 		options.add_options()
-			("help", "Print help.")
+			("h, help", "Print help.")
 
 			("i, input",
 			 "Path of the take file to render or json string describing the take.",
-			 cxxopts::value<std::string>(result.take), "file path/json string")
+			 cxxopts::value<std::string>(result.take), "json file/string")
 
 			("m, mount",
 			 "Specifies a mount point for the data directory. "
@@ -28,7 +28,7 @@ Options parse(int argc, char* argv[]) {
 			 "0 creates one thread for each logical CPU. "
 			 "-x creates a number of threads equal to the number of logical CPUs minus x. "
 			 "The default value is 0.",
-			 cxxopts::value<int>(result.threads), "integer number")
+			 cxxopts::value<int>(result.threads), "integer")
 
 			("p, progressive",
 			 "Starts sprout in progressive mode.",
@@ -45,7 +45,7 @@ Options parse(int argc, char* argv[]) {
 
 		options.parse(argc, argv);
 
-		if (options.count("help")) {
+		if (0 == argc && options.count("help")) {
 			std::stringstream stream;
 			stream << options.help({"", "Group"});
 			logging::info(stream.str());

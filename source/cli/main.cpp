@@ -66,6 +66,11 @@ int main(int argc, char* argv[]) {
 	logging::set_verbose(args.verbose);
 	logging::info("Welcome to sprout (" + platform::build() +  ")!");
 
+	if (args.take.empty()) {
+		logging::release();
+		return 1;
+	}
+
 	file::System file_system;
 
 	if (args.mounts.empty()) {
