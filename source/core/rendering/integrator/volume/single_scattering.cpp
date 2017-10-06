@@ -56,8 +56,8 @@ float4 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		return float4(0.f);
 	}
 
-	const uint32_t num_samples = primary_ray ?
-			 static_cast<uint32_t>(std::ceil(range / settings_.step_size)) : 1;
+	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
+	const uint32_t num_samples = primary_ray ? max_samples : 1;
 
 	const float step = range / static_cast<float>(num_samples);
 
