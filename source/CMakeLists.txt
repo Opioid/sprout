@@ -10,9 +10,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(NAN "Soft assert on NaN" OFF)
 
-if (NAN)
+if (${NAN})
 	add_definitions(-DSU_DEBUG)
-endif (NAN)
+endif ()
 
 if (UNIX AND NOT APPLE)
 	set(LINUX TRUE)
