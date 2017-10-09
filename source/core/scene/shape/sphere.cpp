@@ -228,29 +228,24 @@ bool Sphere::sample(uint32_t /*part*/, const Transformation& transformation,
 					const float3& p, float /*area*/, bool /*two_sided*/,
 					sampler::Sampler& sampler, uint32_t sampler_dimension,
 					Node_stack& /*node_stack*/, Sample& sample) const {
-	float3 axis = transformation.position - p;
-	float axis_squared_length = math::squared_length(axis);
-
-	float radius_square = transformation.scale[0] * transformation.scale[0];
-	float sin_theta_max2 = radius_square / axis_squared_length;
+	const float3 axis = transformation.position - p;
+	const float axis_squared_length = math::squared_length(axis);
+	const float radius_square = transformation.scale[0] * transformation.scale[0];
+	const float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 	cos_theta_max = std::min(0.99999995f, cos_theta_max);
 
-	float axis_length = std::sqrt(axis_squared_length);
-	float3 z = axis / axis_length;
+	const float axis_length = std::sqrt(axis_squared_length);
+	const float3 z = axis / axis_length;
 	float3 x, y;
 	math::orthonormal_basis(z, x, y);
 
-	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-	float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
+	const float2 r2 = sampler.generate_sample_2D(sampler_dimension);
+	const float3 dir = math::sample_oriented_cone_uniform(r2, cos_theta_max, x, y, z);
 
 	sample.wi = dir;
 	sample.t = axis_length - transformation.scale[0]; // this is not accurate
 	sample.pdf = math::cone_pdf_uniform(cos_theta_max);
-
-//	if (std::isinf(sample.pdf)) {
-//		sample.pdf = 1.f;
-//	}
 
 	return true;
 }
@@ -261,7 +256,6 @@ float Sphere::pdf(const Ray& ray, const shape::Intersection& /*intersection*/,
 	const float3 axis = transformation.position - ray.origin;
 	const float axis_squared_length = math::squared_length(axis);
 	const float radius_square = transformation.scale[0] * transformation.scale[0];
-
 	const float sin_theta_max2 = radius_square / axis_squared_length;
 	float cos_theta_max  = std::sqrt(std::max(0.f, 1.f - sin_theta_max2));
 	cos_theta_max = std::min(0.99999995f, cos_theta_max);

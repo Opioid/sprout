@@ -157,19 +157,19 @@ bool Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 				  const float3& p, float area, bool two_sided,
 				  sampler::Sampler& sampler, uint32_t sampler_dimension,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
-	float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-	float2 xy = math::sample_disk_concentric(r2);
+	const float2 r2 = sampler.generate_sample_2D(sampler_dimension);
+	const float2 xy = math::sample_disk_concentric(r2);
 
-	float3 ls = float3(xy, 0.f);
-	float3 ws = transformation.position
-			  + transformation.scale[0] * math::transform_vector(ls, transformation.rotation);
+	const float3 ls = float3(xy, 0.f);
+	const float3 ws = transformation.position
+					+ transformation.scale[0] * math::transform_vector(ls, transformation.rotation);
 
-	float3 axis = ws - p;
+	const float3 axis = ws - p;
 
-	float sl = math::squared_length(axis);
-	float t  = std::sqrt(sl);
+	const float sl = math::squared_length(axis);
+	const float t  = std::sqrt(sl);
 
-	float3 wi = axis / t;
+	const float3 wi = axis / t;
 
 	float c = -math::dot(transformation.rotation.r[2], wi);
 
@@ -177,14 +177,19 @@ bool Disk::sample(uint32_t /*part*/, const Transformation& transformation,
 		c = std::abs(c);
 	}
 
-	// Arbitrary epsilon that helped in one case
-	if (c <= 0.000004f) {
+	if (c <= 0.f) {
+		return false;
+	}
+
+	const float pdf = sl / (c * area);
+
+	if (pdf > 1.6e19f) {
 		return false;
 	}
 
 	sample.wi = wi;
 	sample.t = t;
-	sample.pdf = sl / (c * area);
+	sample.pdf = pdf;
 
 	return true;
 }
