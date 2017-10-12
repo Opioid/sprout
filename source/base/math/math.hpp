@@ -29,7 +29,7 @@ static T cot(T x) {
 }
 
 template <typename T>
-static int sign(T val) {
+static constexpr int sign(T val) {
 	return (T(0) < val) - (val < T(0));
 }
 
