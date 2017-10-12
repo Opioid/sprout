@@ -69,6 +69,17 @@ float4 Worker::li(scene::Ray& ray) {
 	}
 }
 
+float4 Worker::surface_li(scene::Ray& ray) {
+	scene::Intersection intersection;
+	const bool hit = intersect(ray, intersection);
+
+	if (hit) {
+		return surface_integrator_->li(ray, intersection, *this);
+	} else {
+		return float4::identity();
+	}
+}
+
 float4 Worker::volume_li(const scene::Ray& ray, bool primary_ray, float3& transmittance) {
 	const auto volume = scene_->volume_region();
 

@@ -106,6 +106,11 @@ float4 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		radiance += tr * estimate_direct_light(w, current, ray.time, volume, worker);
 	}
 
+	// indirect lighting
+//	const float3 sp = ray.point(min_t + 0.5f * range);
+
+//	worker.li();
+
 	transmittance = tr;
 
 	const float3 color = step * radiance;
