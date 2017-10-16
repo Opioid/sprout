@@ -67,5 +67,4 @@ size_t progressive(take::Take& take, scene::Scene& scene, resource::Manager& res
 	return driver.num_bytes();
 }
 
-
 }
