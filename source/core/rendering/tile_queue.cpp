@@ -62,7 +62,7 @@ void Tile_queue::restart() {
 bool Tile_queue::pop(int4& tile) {
 //	std::lock_guard<std::mutex> lock(mutex_);
 
-	uint32_t current = current_consume_++;
+	const uint32_t current = current_consume_++;
 
 	if (current < num_tiles_) {
 		tile = tiles_[current];
@@ -73,7 +73,7 @@ bool Tile_queue::pop(int4& tile) {
 }
 
 void Tile_queue::push(const int4& tile) {
-	uint32_t current = num_tiles_ - current_consume_--;
+	const uint32_t current = num_tiles_ - current_consume_--;
 
 	tiles_[current] = tile;
 }

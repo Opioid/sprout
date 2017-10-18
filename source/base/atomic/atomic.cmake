@@ -1,4 +1,4 @@
 target_sources(base
-  PUBLIC
+  PRIVATE
   "${CMAKE_CURRENT_LIST_DIR}/atomic.hpp"
 ) 
