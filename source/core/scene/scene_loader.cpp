@@ -45,12 +45,17 @@ Loader::Loader(resource::Manager& manager, material::Material_ptr fallback_mater
 
 Loader::~Loader() {}
 
-bool Loader::load(const std::string& filename, Scene& scene) {
+bool Loader::load(const std::string& filename, const std::string& take_name, Scene& scene) {
 	bool success = true;
 
 	try {
+		std::string take_mount_folder = string::parent_directory(take_name);
+		resource_manager_.file_system().push_mount(take_mount_folder);
+
 		std::string resolved_name;
 		auto stream_pointer = resource_manager_.file_system().read_stream(filename, resolved_name);
+
+		resource_manager_.file_system().pop_mount();
 
 		mount_folder_ = string::parent_directory(resolved_name);
 
