@@ -22,8 +22,20 @@ uint32_t Task_queue<T>::size() const {
 }
 
 template<typename T>
+void Task_queue<T>::clear() {
+	current_consume_ = num_tasks_;
+}
+
+template<typename T>
 void Task_queue<T>::restart() {
 	current_consume_ = 0;
+}
+
+template<typename T>
+void Task_queue<T>::push(const T& task) {
+	const uint32_t current = num_tasks_ - current_consume_--;
+
+	tasks_[current] = task;
 }
 
 template<typename T>
@@ -36,13 +48,6 @@ bool Task_queue<T>::pop(T& task) {
 	}
 
 	return false;
-}
-
-template<typename T>
-void Task_queue<T>::push(const T& task) {
-	const uint32_t current = num_tasks_ - current_consume_--;
-
-	tasks_[current] = task;
 }
 
 }

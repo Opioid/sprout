@@ -14,13 +14,13 @@ public:
 
 	uint32_t size() const;
 
+	void clear();
+
 	void restart();
 
-	bool pop(T& task);
-
-protected:
-
 	void push(const T& task);
+
+	bool pop(T& task);
 
 private:
 

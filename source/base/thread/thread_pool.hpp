@@ -1,5 +1,6 @@
 #pragma once
 
+#include "task_queue.hpp"
 #include <condition_variable>
 #include <functional>
 #include <thread>
@@ -66,10 +67,17 @@ private:
 	std::vector<Unique> uniques_;
 	std::vector<std::thread> threads_;
 
+	struct Task {
+		int32_t begin;
+		int32_t end;
+	};
+
+	Task_queue<Task> tasks_;
+
 	Async async_;
 	std::thread async_thread_;
 
-	static void loop(uint32_t id, Unique& unique, const Shared& shared);
+	static void loop(uint32_t id, Unique& unique, const Shared& shared, Task_queue<Task>& tasks);
 
 	static void async_loop(Async& async);
 };

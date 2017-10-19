@@ -159,12 +159,7 @@ void Driver_finalframe::render_subframe(float normalized_tick_offset,
 			(uint32_t index) {
 				auto& worker = workers_[index];
 
-				for (;;) {
-					int4 tile;
-					if (!tiles_.pop(tile)) {
-						break;
-					}
-
+				for (int4 tile; tiles_.pop(tile);) {
 					worker.render(*view_.camera, v, tile, sample_begin, sample_end,
 								  normalized_tick_offset, normalized_tick_slice);
 

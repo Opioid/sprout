@@ -1,13 +1,17 @@
 #include "thread_pool.hpp"
+#include "task_queue.inl"
 #include <algorithm>
 #include <cmath>
+
+//#define GRANULAR_TASKS
 
 namespace thread {
 
 Pool::Pool(uint32_t num_threads) :
 	num_threads_(num_threads),
 	uniques_(num_threads),
-	threads_(num_threads) {
+	threads_(num_threads),
+	tasks_(num_threads * 2) {
 	shared_.quit  = false;
 
 	for (uint32_t i = 0; i < num_threads; ++i) {
@@ -15,7 +19,8 @@ Pool::Pool(uint32_t num_threads) :
 	}
 
 	for (uint32_t i = 0; i < num_threads; ++i) {
-		threads_[i] = std::thread(loop, i, std::ref(uniques_[i]), std::cref(shared_));
+		threads_[i] = std::thread(loop, i, std::ref(uniques_[i]), std::cref(shared_),
+								  std::ref(tasks_));
 	}
 
 	async_.quit = false;
@@ -84,6 +89,19 @@ void Pool::wake_all() {
 }
 
 void Pool::wake_all(int32_t begin, int32_t end) {
+#ifdef GRANULAR_TASKS
+	const float range = static_cast<float>(end - begin);
+	const float num_tasks = static_cast<float>(tasks_.size());
+	const int32_t step = static_cast<int32_t>(std::ceil(range / num_tasks));
+
+	tasks_.clear();
+
+	for (int32_t i = begin; i < end; i += step) {
+		tasks_.push(Task{i, std::min(i + step, end)});
+	}
+
+	wake_all();
+#else
 	const float range = static_cast<float>(end - begin);
 	const float num_threads = static_cast<float>(threads_.size());
 	const int32_t step = static_cast<int32_t>(std::ceil(range / num_threads));
@@ -102,6 +120,7 @@ void Pool::wake_all(int32_t begin, int32_t end) {
 		lock.unlock();
 		u.wake_signal.notify_one();
 	}
+#endif
 }
 
 void Pool::wake_async() {
@@ -118,7 +137,7 @@ void Pool::wait_all() {
 	}
 }
 
-void Pool::loop(uint32_t id, Unique& unique, const Shared& shared) {
+void Pool::loop(uint32_t id, Unique& unique, const Shared& shared, Task_queue<Task>& tasks) {
 	for (;;) {
 		std::unique_lock<std::mutex> lock(unique.mutex);
 		unique.wake_signal.wait(lock, [&unique]{ return unique.wake; });
@@ -128,7 +147,13 @@ void Pool::loop(uint32_t id, Unique& unique, const Shared& shared) {
 		}
 
 		if (shared.range_program) {
+#ifdef GRANULAR_TASKS
+			for (Task task; tasks.pop(task);) {
+				shared.range_program(id, task.begin, task.end);
+			}
+#else
 			shared.range_program(id, unique.begin, unique.end);
+#endif
 		} else if (shared.parallel_program) {
 			shared.parallel_program(id);
 		}
