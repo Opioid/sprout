@@ -117,10 +117,12 @@ int main(int argc, char* argv[]) {
 	const auto loading_start = std::chrono::high_resolution_clock::now();
 
 	std::unique_ptr<take::Take> take;
+	std::string take_name;
 
 	try {
+
 		auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
-										 : file_system.read_stream(args.take);
+										 : file_system.read_stream(args.take, take_name);
 
 		take = take::Loader::load(*stream, thread_pool);
 	} catch (const std::exception& e) {
@@ -154,7 +156,7 @@ int main(int argc, char* argv[]) {
 
 	scene::Scene scene;
 
-	if (scene_loader.load(take->scene_filename, scene)) {
+	if (scene_loader.load(take->scene_filename, take_name, scene)) {
 		if (take->camera_animation && take->view.camera) {
 			scene.add_animation(take->camera_animation);
 			scene.create_animation_stage(take->view.camera.get(),
