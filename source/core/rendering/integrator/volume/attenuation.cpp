@@ -40,7 +40,7 @@ float4 Attenuation::li(const Ray& ray, bool /*primary_ray*/, const Volume& volum
 
 	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	const float3 tau = volume.optical_depth(tray, 1.f, rng_, Sampler_filter::Unknown, worker);
+	const float3 tau = volume.optical_depth(tray, 1.f, rng_, Sampler_filter::Undefined, worker);
 	transmittance = math::exp(-tau);
 
 	return float4(0.f);

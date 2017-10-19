@@ -42,7 +42,7 @@ private:
 
 	ArHosekSkyModelState* skymodel_states_[Num_bands];
 
-	bool dirty_;
+	bool dirty_ = true;
 
 	static const float3 zenith_;
 

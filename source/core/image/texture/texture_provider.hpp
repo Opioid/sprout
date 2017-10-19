@@ -17,7 +17,7 @@ public:
 	Provider();
 
 	enum class Usage {
-		Unknown,
+		Undefined,
 		Color,
 		Normal,
 		Anisotropy,

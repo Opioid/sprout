@@ -12,7 +12,7 @@ class Sky : public scene::entity::Entity {
 
 public:
 
-	Sky();
+	Sky() = default;
 	~Sky();
 
 	virtual void set_parameters(const json::Value& parameters) override final;
@@ -32,11 +32,15 @@ private:
 	scene::Prop* sky_;
 	scene::Prop* sun_;
 
-	float3x3 sun_rotation_;
-	float3 ground_albedo_;
-	float turbidity_;
+	float3x3 sun_rotation_ = float3x3(1.f,  0.f, 0.f,
+									  0.f,  0.f, 1.f,
+									  0.f, -1.f, 0.f);
 
-	bool implicit_rotation_;
+	float3 ground_albedo_ = float3(0.2f, 0.2f, 0.2f);
+
+	float turbidity_ = 2.f;
+
+	bool implicit_rotation_ = true;
 };
 
 }}

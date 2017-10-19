@@ -12,7 +12,6 @@ class Sample_cache {
 
 public:
 
-	Sample_cache();
 	~Sample_cache();
 
 	void init(uint32_t max_sample_size);
@@ -26,8 +25,8 @@ public:
 
 private:
 
-	uint32_t buffer_size_;
-	char* buffer_;
+	uint32_t buffer_size_ = 0;
+	char* buffer_ = nullptr;
 
 	BSSRDF bssrdf_;
 };

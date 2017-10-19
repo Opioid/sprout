@@ -949,7 +949,7 @@ Sampler_settings::Address read_address(const json::Value& address_value) {
 		return Sampler_settings::Address::Repeat;
 	}
 
-	return Sampler_settings::Address::Unknown;
+	return Sampler_settings::Address::Undefined;
 }
 
 void Provider::read_sampler_settings(const json::Value& sampler_value, Sampler_settings& settings) {

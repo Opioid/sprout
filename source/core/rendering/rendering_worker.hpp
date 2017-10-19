@@ -33,7 +33,6 @@ class Worker : public scene::Worker {
 
 public:
 
-	Worker();
 	~Worker();
 
 	void init(uint32_t id, const scene::Scene& scene, uint32_t max_sample_size,
@@ -54,9 +53,9 @@ public:
 protected:
 
 	rnd::Generator rng_;
-	integrator::surface::Integrator* surface_integrator_;
-	integrator::volume::Integrator*  volume_integrator_;
-	sampler::Sampler* sampler_;
+	integrator::surface::Integrator* surface_integrator_ = nullptr;
+	integrator::volume::Integrator*  volume_integrator_  = nullptr;
+	sampler::Sampler* sampler_ = nullptr;
 };
 
 }

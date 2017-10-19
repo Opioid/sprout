@@ -21,7 +21,7 @@
 
 namespace scene {
 
-Scene::Scene() : tick_duration_(1.0 / 60.0), simulation_time_(0.0), volume_region_(nullptr) {
+Scene::Scene() {
 	dummies_.reserve(16);
 	finite_props_.reserve(16);
 	infinite_props_.reserve(16);

@@ -45,11 +45,6 @@ void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
 	root_->clear();
 }
 
-Builder::Build_node::Build_node() {
-	children[0] = nullptr;
-	children[1] = nullptr;
-}
-
 Builder::Build_node::~Build_node() {
 	delete children[0];
 	delete children[1];

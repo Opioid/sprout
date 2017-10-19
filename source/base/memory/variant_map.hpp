@@ -33,7 +33,7 @@ public:
 private:
 
 	struct Variant {
-		Variant();
+		Variant() = default;
 		Variant(bool bool_value);
 		Variant(int32_t int_value);
 		Variant(uint32_t uint_value);
@@ -42,14 +42,14 @@ private:
 		bool operator<(const Variant& other) const;
 
 		enum class Type {
-			Unknown,
+			Undefined,
 			Bool,
 			Int,
 			Uint,
 			Float
 		};
 
-		Type type;
+		Type type = Type::Undefined;
 
 		union {
 			bool	 bool_value;

@@ -40,7 +40,7 @@ void print(std::stringstream& stream, Encoding encoding) {
 		stream << "Float32x3";
 		break;
 	default:
-		stream << "Unknown";
+		stream << "Undefined";
 	}
 }
 

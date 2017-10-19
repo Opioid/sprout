@@ -4,8 +4,6 @@
 
 namespace scene { namespace material {
 
-Sample_cache::Sample_cache() : buffer_size_(0), buffer_(nullptr) {}
-
 Sample_cache::~Sample_cache() {
 	memory::free_aligned(buffer_);
 }

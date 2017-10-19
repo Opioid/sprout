@@ -10,8 +10,6 @@
 
 namespace scene { namespace bvh {
 
-Tree::Tree() : num_nodes_(0), nodes_(nullptr) {}
-
 Tree::~Tree() {
 	memory::free_aligned(nodes_);
 }

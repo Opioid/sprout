@@ -92,7 +92,7 @@ float4 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		current  = ray.point(min_t);
 
 		const float3 tau = volume.optical_depth(tau_ray, settings_.step_size, rng_,
-												Sampler_filter::Unknown, worker);
+												Sampler_filter::Undefined, worker);
 		tr *= math::exp(-tau);
 
 		tau_ray.origin = previous;
@@ -173,7 +173,7 @@ float3 Single_scattering::evaluate_light(const Light* light, float light_weight,
 	if (math::any_greater_zero(tv)) {
 		const float phase = volume.phase(w, -light_sample.shape.wi);
 
-		const float3 scattering = volume.scattering(p, Sampler_filter::Unknown, worker);
+		const float3 scattering = volume.scattering(p, Sampler_filter::Undefined, worker);
 
 		const float3 tr = Single_scattering::transmittance(shadow_ray, volume, worker);
 

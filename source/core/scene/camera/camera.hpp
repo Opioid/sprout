@@ -63,12 +63,12 @@ protected:
 	virtual void on_set_transformation() override final;
 
 	int2 resolution_;
-	rendering::sensor::Sensor* sensor_;
+	rendering::sensor::Sensor* sensor_ = nullptr;
 
-	int32_t filter_radius_;
+	int32_t filter_radius_ = 0;
 
-	float frame_duration_;
-	bool motion_blur_;
+	float frame_duration_ = 0.f;
+	bool motion_blur_ = true;
 };
 
 }}

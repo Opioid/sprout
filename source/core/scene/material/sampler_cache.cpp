@@ -40,7 +40,7 @@ Sampler_cache::~Sampler_cache() {
 }
 
 const Texture_sampler_2D& Sampler_cache::sampler_2D(uint32_t key, Sampler_filter filter) const {
-	if (Sampler_filter::Unknown == filter) {
+	if (Sampler_filter::Undefined == filter) {
 		return *samplers_2D_[key];
 	} else {
 		uint32_t address = key & static_cast<uint32_t>(Sampler_settings::Address_flat::Mask);
@@ -50,7 +50,7 @@ const Texture_sampler_2D& Sampler_cache::sampler_2D(uint32_t key, Sampler_filter
 }
 
 const Texture_sampler_3D& Sampler_cache::sampler_3D(uint32_t key, Sampler_filter filter) const {
-	if (Sampler_filter::Unknown == filter) {
+	if (Sampler_filter::Undefined == filter) {
 		return *samplers_3D_[key];
 	} else {
 		uint32_t address = key & static_cast<uint32_t>(Sampler_settings::Address_flat::Mask);

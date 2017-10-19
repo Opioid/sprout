@@ -63,7 +63,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		bool primary_ray = 0 == i || previous_sample_type.test(Bxdf_type::Specular);
 
 		if (primary_ray) {
-			filter = Sampler_filter::Unknown;
+			filter = Sampler_filter::Undefined;
 		} else {
 			filter = Sampler_filter::Nearest;
 		}

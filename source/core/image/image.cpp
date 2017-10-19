@@ -3,11 +3,6 @@
 
 namespace image {
 
-Image::Description::Description() :
-	type(Type::Unknown),
-	dimensions(0, 0, 0),
-	num_elements(0) {}
-
 Image::Description::Description(Type type, int2 dimensions, int32_t num_elements) :
 	type(type),
 	dimensions(dimensions, 1),
@@ -24,8 +19,6 @@ size_t Image::Description::num_pixels() const {
 							   dimensions[2] *
 							   num_elements);
 }
-
-Image::Image() : area_(0), volume_(0) {}
 
 Image::Image(const Description& description) :
 	description_(description),

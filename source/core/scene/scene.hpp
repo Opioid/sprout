@@ -113,8 +113,8 @@ private:
 
 	void add_named_entity(entity::Entity* entity, const std::string& name);
 
-	double tick_duration_;
-	double simulation_time_;
+	double tick_duration_ = 1.0 / 60.0;
+	double simulation_time_ = 0.0;
 
     bvh::Builder builder_;
 	bvh::Tree bvh_;
@@ -141,7 +141,7 @@ private:
 
 	math::Distribution_1D light_distribution_;
 
-	volume::Volume* volume_region_;
+	volume::Volume* volume_region_ = nullptr;
 
 	std::vector<std::shared_ptr<material::Material>> materials_;
 

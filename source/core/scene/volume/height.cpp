@@ -10,8 +10,6 @@
 
 namespace scene { namespace volume {
 
-Height::Height() : a_(1.f), b_(1.f) {}
-
 float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Generator& /*rng*/,
 							 Sampler_filter /*filter*/, Worker& /*worker*/) const {
 	const math::Ray rn = ray.normalized();

@@ -30,7 +30,7 @@ std::shared_ptr<Texture> Provider::load(const std::string& filename,
 										resource::Manager& manager) {
 	Channels channels = Channels::XYZ;
 
-	Usage usage = Usage::Unknown;
+	Usage usage = Usage::Undefined;
 	options.query("usage", usage);
 
 	bool invert = false;
@@ -59,7 +59,7 @@ std::shared_ptr<Texture> Provider::load(const std::string& filename,
 	try {
 		auto image = manager.load<Image>(filename, image_options);
 		if (!image) {
-			logging::error("Loading texture \"" + filename + "\": Unknown error.");
+			logging::error("Loading texture \"" + filename + "\": Undefined error.");
 			return nullptr;
 		}
 

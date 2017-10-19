@@ -45,7 +45,7 @@ Provider::~Provider() {}
 std::shared_ptr<Shape> Provider::load(const std::string& filename,
 									  const memory::Variant_map& options,
 									  resource::Manager& manager) {
-	BVH_preset bvh_preset = BVH_preset::Unknown;
+	BVH_preset bvh_preset = BVH_preset::Undefined;
 	options.query("bvh_preset", bvh_preset);
 
 	auto stream_pointer = manager.file_system().read_stream(filename);
@@ -105,7 +105,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 		}
 	}
 
-	if (BVH_preset::Unknown == bvh_preset) {
+	if (BVH_preset::Undefined == bvh_preset) {
 		bvh_preset = handler.bvh_preset();
 	}
 

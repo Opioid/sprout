@@ -22,7 +22,7 @@ public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;
 
-	Tree();
+	Tree() = default;
 	~Tree();
 
 	void clear();
@@ -44,8 +44,8 @@ public:
 
 private:
 
-	uint32_t num_nodes_;
-	Node*	 nodes_;
+	uint32_t num_nodes_ = 0;
+	Node*	 nodes_		= nullptr;
 
 	uint32_t infinite_props_start_;
 	uint32_t infinite_props_end_;

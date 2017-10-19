@@ -7,7 +7,7 @@ Type query_type(std::istream& stream) {
 	char header[4];
 	stream.read(header, sizeof(header));
 
-	Type type = Type::Unknown;
+	Type type = Type::Undefined;
 
 	if (!strncmp("\037\213", header, 2)) {
 		type = Type::GZIP;

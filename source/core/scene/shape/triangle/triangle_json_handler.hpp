@@ -78,7 +78,7 @@ private:
 	void increment_vertex_element(uint32_t num_elements);
 
 	enum class Number {
-		Unknown,
+		Undefined,
 		Material_index,
 		Start_index,
 		Num_indices,
@@ -91,13 +91,13 @@ private:
 	};
 
 	enum class String_type {
-		Unknown,
+		Undefined,
 		BVH_preset,
 		Morph_target
 	};
 
 	enum class Object {
-		Unknown,
+		Undefined,
 		Geometry,
 		Morph_targets,
 		Part,

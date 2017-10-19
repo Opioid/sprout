@@ -157,7 +157,7 @@ void Loader::load_entities(const json::Value& entities_value,
 		}
 
 		if (!entity) {
-			logging::error("Cannot create entity \"" + type_name + "\": Unknown type.");
+			logging::error("Cannot create entity \"" + type_name + "\": Undefined type.");
 			continue;
 		}
 
@@ -310,7 +310,7 @@ volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scen
 	}
 
 	if (!volume) {
-		throw std::runtime_error("Cannot create shape \"" + shape_type + "\": Unknown type.");
+		throw std::runtime_error("Cannot create shape \"" + shape_type + "\": Undefined type.");
 	}
 
 	if (parameters_value) {
@@ -385,7 +385,7 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
 				logging::error("Cannot create shape \"" + type + "\": " + e.what() + ".");
 			}
 		} else {
-			logging::error("Cannot create shape \"" + type + "\": Unknown type.");
+			logging::error("Cannot create shape \"" + type + "\": Undefined type.");
 		}
 	}
 

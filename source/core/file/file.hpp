@@ -7,7 +7,7 @@
 namespace file {
 
 enum class Type {
-	Unknown,
+	Undefined,
 	GZIP,
 	PNG,
 	RGBE,

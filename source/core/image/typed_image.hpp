@@ -10,7 +10,7 @@ class Typed_image : public Image {
 
 public:
 
-	Typed_image();
+	Typed_image() = default;
 	Typed_image(const Image::Description& description);
 	~Typed_image();
 
@@ -59,7 +59,7 @@ public:
 
 private:
 
-	T* data_;
+	T* data_ = nullptr;
 };
 
 using Byte1 = Typed_image<uint8_t>;

@@ -8,7 +8,7 @@ template<typename T>
 struct Flags {
 	using impl_type = typename std::underlying_type<T>::type;
 
-	Flags() : values(impl_type(0)) {}
+	Flags() = default;
 
 	bool test(T flag) const {
 		return static_cast<impl_type>(flag) == (values & static_cast<impl_type>(flag));
@@ -53,7 +53,7 @@ struct Flags {
 		return values != other.values;
 	}
 
-	impl_type values;
+	impl_type values = impl_type(0);
 };
 
 }

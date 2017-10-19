@@ -47,7 +47,7 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 	} else if (file::Type::RGBE == type) {
 		encoding::rgbe::Reader reader;
 		return reader.read(stream);
-	} else if (file::Type::Unknown == type) {
+	} else if (file::Type::Undefined == type) {
 		encoding::raw::Reader reader;
 		return reader.read(stream);
 	}

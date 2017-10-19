@@ -7,10 +7,6 @@
 namespace image {
 
 template<typename T>
-Typed_image<T>::Typed_image() :
-	data_(nullptr) {}
-
-template<typename T>
 Typed_image<T>::Typed_image(const Image::Description& description) :
 	Image(description),
 	data_(memory::allocate_aligned<T>(description.num_pixels())) {}

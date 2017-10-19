@@ -3,16 +3,12 @@
 #include "base/json/json.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
+#include "base/math/matrix4x4.inl"
 #include "base/math/quaternion.inl"
 
 namespace scene { namespace camera {
 
-Camera::Camera(int2 resolution) :
-	resolution_(resolution),
-	sensor_(nullptr),
-	filter_radius_(0),
-	frame_duration_(0.f),
-	motion_blur_(true) {}
+Camera::Camera(int2 resolution) : resolution_(resolution) {}
 
 Camera::~Camera() {
 	delete sensor_;

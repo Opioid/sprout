@@ -10,18 +10,18 @@ Json_handler::Json_handler () {
 void Json_handler::clear(bool read_indices) {
 	read_indices_ = read_indices;
 	object_level_ = 0;
-	top_object_ = Object::Unknown;
+	top_object_ = Object::Undefined;
 	vertices_.clear();
 	triangles_.clear();
 	parts_.clear();
-	expected_number_ = Number::Unknown;
-	expected_string_ = String_type::Unknown;
-	expected_object_ = Object::Unknown;
+	expected_number_ = Number::Undefined;
+	expected_string_ = String_type::Undefined;
+	expected_object_ = Object::Undefined;
 	current_vertex_ = 0;
 	current_vertex_element_ = 0;
 	current_triangle_ = 0;
 	current_triangle_element_ = 0;
-	bvh_preset_ = BVH_preset::Unknown,
+	bvh_preset_ = BVH_preset::Undefined,
 	has_positions_ = false;
 	has_normals_ = false;
 	has_tangents_ = false;
@@ -140,7 +140,7 @@ bool Json_handler::Key(const char* str, rapidjson::SizeType /*length*/, bool /*c
 			expected_object_ = Object::Part;
 		} else if ("vertices" == name) {
 			top_object_ = Object::Vertices;
-			expected_object_ = Object::Unknown;
+			expected_object_ = Object::Undefined;
 
 			if (!parts_.empty()) {
 				auto& p = parts_.back();

@@ -14,11 +14,6 @@
 
 namespace rendering {
 
-Worker::Worker() :
-	surface_integrator_(nullptr),
-	volume_integrator_(nullptr),
-	sampler_(nullptr) {}
-
 Worker::~Worker() {
 	memory::safe_destruct(sampler_);
 	memory::safe_destruct(volume_integrator_);

@@ -3,17 +3,10 @@
 #include "base/json/json.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
+#include "base/math/matrix4x4.inl"
 #include "base/math/quaternion.inl"
 
 namespace procedural { namespace sky {
-
-Sky::Sky() :
-	sun_rotation_(1.f,  0.f, 0.f,
-				  0.f,  0.f, 1.f,
-				  0.f, -1.f, 0.f),
-	ground_albedo_(0.2f, 0.2f, 0.2f),
-	turbidity_(2.f),
-	implicit_rotation_(true) {}
 
 Sky::~Sky() {}
 

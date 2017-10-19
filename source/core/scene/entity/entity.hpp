@@ -13,7 +13,7 @@ class Entity {
 
 public:
 
-	Entity();
+	Entity() = default;
 	virtual ~Entity();
 
 	virtual void set_parameters(const json::Value& parameters) = 0;
@@ -80,9 +80,9 @@ protected:
 	Keyframe local_frame_a_;
 	Keyframe local_frame_b_;
 
-	Entity* parent_;
-	Entity* next_;
-	Entity* child_;
+	Entity* parent_ = nullptr;
+	Entity* next_	= nullptr;
+	Entity* child_	= nullptr;
 };
 
 }}

@@ -9,7 +9,7 @@
 
 namespace procedural { namespace sky {
 
-Model::Model() : dirty_(true) {
+Model::Model() {
 	for (uint32_t i = 0; i < Num_bands; ++i) {
 		skymodel_states_[i] = nullptr;
 	}

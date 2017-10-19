@@ -25,7 +25,7 @@ public:
 private:
 
 	struct Build_node {
-		Build_node();
+		Build_node() = default;
 		~Build_node();
 
 		void clear();
@@ -37,7 +37,7 @@ private:
 		uint32_t offset;
 		uint32_t props_end;
 
-		Build_node* children[2];
+		Build_node* children[2] = { nullptr, nullptr };
 	};
 
 	using index = std::vector<Prop*>::iterator;

@@ -9,7 +9,7 @@ struct Sampler_settings {
 	enum class Address : uint32_t {
 		Clamp	= 0 << 0,
 		Repeat	= 1 << 0,
-		Unknown = 0xFFFFFFFF
+		Undefined = 0xFFFFFFFF
 	};
 
 	enum class Address_flat : uint32_t {
@@ -23,7 +23,7 @@ struct Sampler_settings {
 	enum class Filter : uint32_t {
 		Nearest = 0 << 2,
 		Linear	= 1 << 2,
-		Unknown = 0xFFFFFFFF
+		Undefined = 0xFFFFFFFF
 	};
 
 	Sampler_settings(Filter filter = Filter::Linear,

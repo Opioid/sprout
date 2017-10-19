@@ -4,8 +4,6 @@
 
 namespace scene { namespace entity {
 
-Entity::Entity() : parent_(nullptr), next_(nullptr), child_(nullptr) {}
-
 Entity::~Entity() {}
 
 const math::Transformation& Entity::local_frame_a() const {
