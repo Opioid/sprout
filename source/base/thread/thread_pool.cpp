@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-//#define GRANULAR_TASKS
+// #define GRANULAR_TASKS
 
 namespace thread {
 
@@ -11,7 +11,7 @@ Pool::Pool(uint32_t num_threads) :
 	num_threads_(num_threads),
 	uniques_(num_threads),
 	threads_(num_threads),
-	tasks_(num_threads * 2) {
+	tasks_(num_threads * 8) {
 	shared_.quit  = false;
 
 	for (uint32_t i = 0; i < num_threads; ++i) {

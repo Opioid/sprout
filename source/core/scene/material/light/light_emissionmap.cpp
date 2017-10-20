@@ -77,7 +77,7 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 
 		std::vector<math::Distribution_2D::Distribution_impl> conditional(d[1]);
 
-		std::vector<float4> artws(pool.num_threads());
+		std::vector<float4> artws(pool.num_threads(), float4::identity());
 
 		const float2 rd(1.f / static_cast<float>(d[0]), 1.f / static_cast<float>(d[1]));
 
@@ -106,7 +106,7 @@ void Emissionmap::prepare_sampling(const shape::Shape& shape, uint32_t /*part*/,
 					conditional[y].init(luminance.data(), d[0]);
 				}
 
-				artws[id] = artw;
+				artws[id] += artw;
 			}, 0, d[1]);
 
 		// artw: (float3(averave_radiance), total_weight)

@@ -22,11 +22,12 @@ public:
 
 	bool pop(T& task);
 
-private:
+public:
 
 	uint32_t num_tasks_;
 	T* tasks_;
 
+	uint32_t top_;
 	std::atomic<uint32_t> current_consume_;
 };
 
