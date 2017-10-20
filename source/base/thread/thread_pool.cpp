@@ -14,7 +14,7 @@ Pool::Pool(uint32_t num_threads) :
 	uniques_(num_threads),
 	threads_(num_threads)
 #ifdef GRANULAR_TASKS
-	, tasks_(num_threads * 4)
+	, tasks_(num_threads * 64)
 #endif
 {
 	for (uint32_t i = 0; i < num_threads; ++i) {
