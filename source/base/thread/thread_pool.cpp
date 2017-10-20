@@ -1,35 +1,31 @@
 #include "thread_pool.hpp"
-#include "task_queue.inl"
+
+#ifdef GRANULAR_TASKS
+	#include "task_queue.inl"
+#endif
+
 #include <algorithm>
 #include <cmath>
-
-// #define GRANULAR_TASKS
 
 namespace thread {
 
 Pool::Pool(uint32_t num_threads) :
 	num_threads_(num_threads),
 	uniques_(num_threads),
-	threads_(num_threads),
-	tasks_(num_threads * 8) {
-	shared_.quit  = false;
-
+	threads_(num_threads)
+#ifdef GRANULAR_TASKS
+	, tasks_(num_threads * 4)
+#endif
+{
 	for (uint32_t i = 0; i < num_threads; ++i) {
-		uniques_[i].wake = false;
+		threads_[i] = std::thread(&Pool::loop, this, i);
 	}
 
-	for (uint32_t i = 0; i < num_threads; ++i) {
-		threads_[i] = std::thread(loop, i, std::ref(uniques_[i]), std::cref(shared_),
-								  std::ref(tasks_));
-	}
-
-	async_.quit = false;
-	async_.wake = false;
 	async_thread_ = std::thread(async_loop, std::ref(async_));
 }
 
 Pool::~Pool() {
-	shared_.quit = true;
+	quit_ = true;
 
 	wake_all();
 
@@ -49,8 +45,8 @@ uint32_t Pool::num_threads() const {
 }
 
 void Pool::run_parallel(Parallel_program program) {
-	shared_.parallel_program = program;
-	shared_.range_program = nullptr;
+	parallel_program_ = program;
+	range_program_	  = nullptr;
 
 	wake_all();
 
@@ -58,8 +54,8 @@ void Pool::run_parallel(Parallel_program program) {
 }
 
 void Pool::run_range(Range_program program, int32_t begin, int32_t end) {
-	shared_.range_program = program;
-	shared_.parallel_program = nullptr;
+	range_program_	  = program;
+	parallel_program_ = nullptr;
 
 	wake_all(begin, end);
 
@@ -97,7 +93,7 @@ void Pool::wake_all(int32_t begin, int32_t end) {
 	tasks_.clear();
 
 	for (int32_t i = begin; i < end; i += step) {
-		tasks_.push(Task{i, std::min(i + step, end)});
+		tasks_.push({i, std::min(i + step, end)});
 	}
 
 	wake_all();
@@ -137,25 +133,27 @@ void Pool::wait_all() {
 	}
 }
 
-void Pool::loop(uint32_t id, Unique& unique, const Shared& shared, Task_queue<Task>& tasks) {
+void Pool::loop(uint32_t id) {
+	Unique& unique = uniques_[id];
+
 	for (;;) {
 		std::unique_lock<std::mutex> lock(unique.mutex);
 		unique.wake_signal.wait(lock, [&unique]{ return unique.wake; });
 
-		if (shared.quit) {
+		if (quit_) {
 			break;
 		}
 
-		if (shared.range_program) {
+		if (range_program_) {
 #ifdef GRANULAR_TASKS
-			for (Task task; tasks.pop(task);) {
-				shared.range_program(id, task.begin, task.end);
+			for (Task task; tasks_.pop(task);) {
+				range_program_(id, task.begin, task.end);
 			}
 #else
-			shared.range_program(id, unique.begin, unique.end);
+			range_program_(id, unique.begin, unique.end);
 #endif
-		} else if (shared.parallel_program) {
-			shared.parallel_program(id);
+		} else if (parallel_program_) {
+			parallel_program_(id);
 		}
 
 		unique.wake = false;

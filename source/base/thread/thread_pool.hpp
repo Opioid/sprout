@@ -1,10 +1,15 @@
 #pragma once
 
-#include "task_queue.hpp"
 #include <condition_variable>
 #include <functional>
 #include <thread>
 #include <vector>
+
+// #define GRANULAR_TASKS
+
+#ifdef GRANULAR_TASKS
+	#include "task_queue.hpp"
+#endif
 
 namespace thread {
 
@@ -42,13 +47,7 @@ private:
 		std::condition_variable wake_signal;
 		std::condition_variable done_signal;
 		std::mutex mutex;
-		bool wake;
-	};
-
-	struct Shared {
-		Parallel_program parallel_program;
-		Range_program    range_program;
-		bool quit;
+		bool wake = false;
 	};
 
 	struct Async {
@@ -56,13 +55,16 @@ private:
 		std::condition_variable wake_signal;
 		std::condition_variable done_signal;
 		std::mutex mutex;
-		bool wake;
-		bool quit;
+		bool wake = false;
+		bool quit = false;
 	};
 
 	uint32_t num_threads_;
 
-	Shared shared_;
+	bool quit_ = false;
+
+	Parallel_program parallel_program_;
+	Range_program    range_program_;
 
 	std::vector<Unique> uniques_;
 	std::vector<std::thread> threads_;
@@ -72,12 +74,14 @@ private:
 		int32_t end;
 	};
 
+#ifdef GRANULAR_TASKS
 	Task_queue<Task> tasks_;
+#endif
 
 	Async async_;
 	std::thread async_thread_;
 
-	static void loop(uint32_t id, Unique& unique, const Shared& shared, Task_queue<Task>& tasks);
+	void loop(uint32_t id);
 
 	static void async_loop(Async& async);
 };
