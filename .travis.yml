@@ -10,5 +10,6 @@ install:
 script:
  - mkdir build
  - cd build
+ - cmake --version
  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-6 ../source
  - make
