@@ -14,7 +14,7 @@
 #include "shape_test.hpp"
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 Canopy::Canopy() {
 	aabb_.set_min_max(float3::identity(), float3::identity());
@@ -161,4 +161,4 @@ size_t Canopy::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}
+}

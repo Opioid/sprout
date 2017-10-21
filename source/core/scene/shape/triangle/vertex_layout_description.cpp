@@ -1,11 +1,9 @@
 #include "vertex_layout_description.hpp"
 #include <sstream>
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
-
-
-}}}
+}
 
 using Encoding = scene::shape::triangle::Vertex_layout_description::Encoding;
 

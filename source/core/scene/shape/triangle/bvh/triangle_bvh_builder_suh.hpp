@@ -4,7 +4,7 @@
 #include "base/math/plane.hpp"
 #include "base/math/vector3.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 class Builder_SUH : private Builder_base  {
 
@@ -70,4 +70,4 @@ private:
 									const std::vector<Vertex>& vertices);
 };
 
-}}}}
+}

@@ -8,7 +8,7 @@
 #include "base/math/plane.inl"
 #include "base/thread/thread_pool.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 Builder_SAH::Split_candidate::Split_candidate(uint8_t split_axis, const float3& p) :
 	aabb_0_(math::AABB::empty()),
@@ -126,4 +126,4 @@ Builder_SAH::Split_candidate Builder_SAH::splitting_plane(
 	return split_candidates_[sc];
 }
 
-}}}}
+}

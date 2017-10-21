@@ -5,7 +5,7 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/align.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 template<typename Intersection_triangle, typename Shading_triangle>
 Data<Intersection_triangle, Shading_triangle>::Data() :
@@ -29,12 +29,14 @@ uint32_t Data<Intersection_triangle, Shading_triangle>::current_triangle() const
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
-bool Data<Intersection_triangle, Shading_triangle>::intersect(uint32_t index, math::Ray& ray, float2& uv) const {
+bool Data<Intersection_triangle, Shading_triangle>::intersect(uint32_t index, math::Ray& ray,
+															  float2& uv) const {
 	return intersection_triangles_[index].intersect(ray, uv);
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
-bool Data<Intersection_triangle, Shading_triangle>::intersect_p(uint32_t index, const math::Ray& ray) const {
+bool Data<Intersection_triangle, Shading_triangle>::intersect_p(uint32_t index,
+																const math::Ray& ray) const {
 	return intersection_triangles_[index].intersect_p(ray);
 }
 
@@ -45,7 +47,8 @@ void Data<Intersection_triangle, Shading_triangle>::interpolate_data(
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
-float2 Data<Intersection_triangle, Shading_triangle>::interpolate_uv(uint32_t index, float2 uv) const {
+float2 Data<Intersection_triangle, Shading_triangle>::interpolate_uv(uint32_t index,
+																	 float2 uv) const {
 	return shading_triangles_[index].interpolate_uv(uv);
 }
 
@@ -70,7 +73,8 @@ float Data<Intersection_triangle, Shading_triangle>::area(uint32_t index) const 
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
-float Data<Intersection_triangle, Shading_triangle>::area(uint32_t index, const float3& scale) const {
+float Data<Intersection_triangle, Shading_triangle>::area(uint32_t index,
+														  const float3& scale) const {
 	return intersection_triangles_[index].area(scale);
 }
 
@@ -83,8 +87,8 @@ void Data<Intersection_triangle, Shading_triangle>::sample(uint32_t index, float
 }
 
 template<typename Intersection_triangle, typename Shading_triangle>
-void Data<Intersection_triangle, Shading_triangle>::allocate_triangles(uint32_t num_triangles,
-																	   const std::vector<Vertex>& /*vertices*/) {
+void Data<Intersection_triangle, Shading_triangle>::allocate_triangles(
+		uint32_t num_triangles, const std::vector<Vertex>& /*vertices*/) {
 	num_triangles_ = num_triangles;
 	current_triangle_ = 0;
 
@@ -97,7 +101,8 @@ void Data<Intersection_triangle, Shading_triangle>::allocate_triangles(uint32_t 
 
 template<typename Intersection_triangle, typename Shading_triangle>
 void Data<Intersection_triangle, Shading_triangle>::add_triangle(
-		uint32_t a, uint32_t b, uint32_t c, uint32_t material_index, const std::vector<Vertex>& vertices) {
+		uint32_t a, uint32_t b, uint32_t c, uint32_t material_index,
+		const std::vector<Vertex>& vertices) {
 	const Vertex& va = vertices[a];
 	const Vertex& vb = vertices[b];
 	const Vertex& vc = vertices[c];
@@ -111,4 +116,4 @@ size_t Data<Intersection_triangle, Shading_triangle>::num_bytes() const {
 	return num_triangles_ * (sizeof(Intersection_triangle) + sizeof(Shading_triangle));
 }
 
-}}}}
+}

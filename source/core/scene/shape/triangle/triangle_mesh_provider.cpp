@@ -31,7 +31,7 @@
 #	include <iostream>
 #endif
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 #ifdef SU_DEBUG
 bool check(const std::vector<Vertex>& vertices, const std::string& filename);
@@ -282,8 +282,6 @@ void fill_triangles(const std::vector<Part>& parts, const Index* indices,
 }
 
 std::shared_ptr<Shape> Provider::load_binary(std::istream& stream, thread::Pool& thread_pool) {
-	std::cout << "Load binary" << std::endl;
-
 	stream.seekg(4);
 
 	uint64_t json_size = 0;
@@ -437,5 +435,4 @@ bool check_and_fix(std::vector<Vertex>& vertices, const std::string& /*filename*
 }
 #endif
 
-}}}
-
+}

@@ -3,7 +3,7 @@
 #include "vertex_encoding.hpp"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 //constexpr float F22 = static_cast<float>(1 << 22);
 constexpr float FN = static_cast<float>((1 << 23) - 1);
@@ -49,5 +49,4 @@ inline void Norm23x2_Sign1x2::encode(const packed_float3& v, float s) {
 	data[2] = static_cast<uint16_t>((y >> 9) | (zs << 14) | (is << 15));
 }
 
-
-}}}
+}

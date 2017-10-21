@@ -3,7 +3,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 Shape::~Shape() {}
 
@@ -48,4 +48,4 @@ Morphable_shape* Shape::morphable_shape() {
 	return nullptr;
 }
 
-}}
+}

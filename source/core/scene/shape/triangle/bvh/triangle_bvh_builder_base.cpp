@@ -6,7 +6,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 Build_node::Build_node() : start_index(0), end_index(0) {
 	children[0] = nullptr;
@@ -79,4 +79,4 @@ math::AABB Builder_base::submesh_aabb(index begin, index end,
 	return math::AABB(min, max);
 }
 
-}}}}
+}

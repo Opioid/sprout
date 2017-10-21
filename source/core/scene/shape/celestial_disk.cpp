@@ -10,7 +10,7 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 Celestial_disk::Celestial_disk() {
 	aabb_.set_min_max(float3::identity(), float3::identity());
@@ -142,5 +142,4 @@ size_t Celestial_disk::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}
-
+}

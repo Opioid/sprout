@@ -9,7 +9,7 @@
 #include <iostream>
 #include "base/math/print.hpp"
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 std::string extract_filename(const std::string& filename) {
 	size_t i = filename.find_last_of('/') + 1;
@@ -207,4 +207,4 @@ void Exporter::write(const std::string& filename, const Json_handler& handler) {
 	}
 }
 
-}}}
+}

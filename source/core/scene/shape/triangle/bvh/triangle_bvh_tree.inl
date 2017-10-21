@@ -9,7 +9,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 template<typename Data>
 Tree<Data>::Tree() : num_nodes_(0), nodes_(nullptr), num_parts_(0), num_part_triangles_(nullptr) {}
@@ -474,4 +474,4 @@ size_t Tree<Data>::num_bytes() const {
 		   data_.num_bytes();
 }
 
-}}}}
+}

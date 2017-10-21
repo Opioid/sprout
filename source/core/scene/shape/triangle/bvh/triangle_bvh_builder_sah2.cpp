@@ -11,7 +11,7 @@
 #include "base/math/simd_aabb.inl"
 #include "base/thread/thread_pool.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 uint32_t Builder_SAH2::Reference::primitive() const {
 	return bounds[0].index;
@@ -345,4 +345,4 @@ void Builder_SAH2::assign(Build_node* node, const References& references) {
 	node->end_index = num_references_;
 }
 
-}}}}
+}

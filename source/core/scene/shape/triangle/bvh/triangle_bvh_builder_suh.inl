@@ -10,7 +10,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/plane.inl"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 template<typename Data>
 void Builder_SUH::build(Tree<Data>& tree,
@@ -79,4 +79,4 @@ void Builder_SUH::split(Build_node* node,
 	}
 }
 
-}}}}
+}

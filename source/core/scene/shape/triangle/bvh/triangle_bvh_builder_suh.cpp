@@ -7,7 +7,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/plane.inl"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 Builder_SUH::Split_candidate::Split_candidate(uint8_t bb_axis, uint8_t split_axis,
 											  const float3& p,
@@ -213,4 +213,4 @@ Builder_SUH::Split_candidate Builder_SUH::splitting_plane(
 	return split_candidates_[sc];
 }
 
-}}}}
+}

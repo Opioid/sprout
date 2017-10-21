@@ -2,7 +2,7 @@
 
 #include "shape.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 class Rectangle : public Shape {
 
@@ -54,6 +54,4 @@ public:
 	virtual size_t num_bytes() const override final;
 };
 
-}}
-
-
+}

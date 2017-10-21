@@ -2,11 +2,11 @@
 
 #include "base/math/vector3.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 struct Vertex;
 
-namespace triangle { namespace bvh {
+namespace triangle::bvh {
 
 template<typename Intersection_triangle, typename Shading_triangle>
 class Data {
@@ -54,4 +54,4 @@ private:
 	Shading_triangle*	   shading_triangles_;
 };
 
-}}}}
+}}

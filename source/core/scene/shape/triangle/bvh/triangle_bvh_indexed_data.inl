@@ -7,7 +7,7 @@
 
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 template<typename IV, typename SV>
 Indexed_data<IV, SV>::Indexed_data() :
@@ -429,4 +429,4 @@ Index_triangle::Index_triangle(uint32_t a, uint32_t b, uint32_t c,
 	a(a), b(b), c(c),
 	bts_material_index(bitangent_sign < 0.f ? BTS_mask | material_index : material_index) {}
 
-}}}}
+}

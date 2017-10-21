@@ -14,7 +14,7 @@
 #include "base/thread/thread_pool.hpp"
 #include <vector>
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 template<typename Data>
 void Builder_SAH2::build(Tree<Data>& tree, const Triangles& triangles, const Vertices& vertices,
@@ -89,4 +89,4 @@ void Builder_SAH2::serialize(Build_node* node, const Triangles& triangles,
 	}
 }
 
-}}}}
+}

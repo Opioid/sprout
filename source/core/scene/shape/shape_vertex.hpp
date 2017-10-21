@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 struct Vertex {
 	packed_float3 p;
@@ -12,4 +12,4 @@ struct Vertex {
 	float bitangent_sign;
 };
 
-}}
+}

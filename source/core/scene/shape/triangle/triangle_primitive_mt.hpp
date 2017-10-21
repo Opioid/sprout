@@ -5,7 +5,7 @@
 
 namespace math { struct Ray; }
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 struct Triangle_MT {
 	Triangle_MT(const shape::Vertex& a, const shape::Vertex& b, const shape::Vertex& c,
@@ -74,4 +74,4 @@ struct Vertex_MTC {
 	float4 t_v;
 };
 
-}}}
+}

@@ -13,7 +13,7 @@
 #include "shape_test.hpp"
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 Sphere::Sphere() {
 	aabb_.set_min_max(float3(-1.f), float3(1.f));
@@ -335,4 +335,4 @@ size_t Sphere::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}
+}

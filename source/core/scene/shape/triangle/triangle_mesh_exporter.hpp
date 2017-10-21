@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 class Json_handler;
 
@@ -13,4 +13,4 @@ public:
 	static void write(const std::string& filename, const Json_handler& handler);
 };
 
-}}}
+}

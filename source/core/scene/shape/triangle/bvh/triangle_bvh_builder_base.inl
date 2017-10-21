@@ -5,7 +5,7 @@
 #include "triangle_bvh_helper.hpp"
 #include "../triangle_primitive.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 template<typename Data>
 void Builder_base::assign(Build_node* node,
@@ -23,4 +23,4 @@ void Builder_base::assign(Build_node* node,
 	node->end_index = tree.current_triangle();
 }
 
-}}}}
+}

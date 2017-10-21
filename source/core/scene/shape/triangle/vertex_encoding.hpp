@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.hpp"
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 struct Norm23x2_Sign1x2 {
 	void decode(packed_float3& v, float& s) const;
@@ -18,4 +18,4 @@ struct Compressed_vertex {
 	float2 uv;
 };
 
-}}}
+}

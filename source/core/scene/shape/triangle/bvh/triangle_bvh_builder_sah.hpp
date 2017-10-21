@@ -6,7 +6,7 @@
 
 namespace thread { class Pool; }
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 class Builder_SAH : private Builder_base  {
 
@@ -78,4 +78,4 @@ private:
 	const uint32_t sweep_threshold_;
 };
 
-}}}}
+}

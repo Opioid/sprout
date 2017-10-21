@@ -5,11 +5,11 @@
 #include "base/math/ray.hpp"
 #include <vector>
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 struct Vertex;
 
-namespace triangle { namespace bvh {
+namespace triangle::bvh {
 
 template<typename IV, typename SV>
 class Indexed_data {
@@ -144,4 +144,4 @@ private:
 	V*				vertices_;
 };
 
-}}}}
+}}

@@ -15,7 +15,7 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 Morphable_mesh::Morphable_mesh(std::shared_ptr<Morph_target_collection> collection,
 							   uint32_t num_parts) :
@@ -184,6 +184,4 @@ size_t Morphable_mesh::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}}
-
-
+}

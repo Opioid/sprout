@@ -4,7 +4,7 @@
 #include "scene/shape/triangle/triangle_primitive_mt.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 template<typename Triangle>
 Data_interleaved<Triangle>::~Data_interleaved() {}
@@ -122,4 +122,4 @@ size_t Data_interleaved<Triangle>::num_bytes() const {
 	return triangles_.size() * sizeof(Triangle);
 }
 
-}}}}
+}

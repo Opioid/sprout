@@ -3,7 +3,7 @@
 #include <string>
 #include <iosfwd>
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 class Vertex_layout_description {
 
@@ -26,12 +26,13 @@ public:
 	};
 };
 
-}}}
+}
 
 /*
 std::stringstream& operator<<(std::stringstream& stream,
 							  scene::shape::triangle::Vertex_layout_description::Encoding encoding);
 							  */
 
-std::stringstream& operator<<(std::stringstream& stream,
-							  const scene::shape::triangle::Vertex_layout_description::Element& element);
+std::stringstream& operator<<(
+		std::stringstream& stream,
+		const scene::shape::triangle::Vertex_layout_description::Element& element);

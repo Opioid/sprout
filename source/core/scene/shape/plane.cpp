@@ -7,7 +7,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 Plane::Plane() {
 	aabb_.set_min_max(float3::identity(), float3::identity());
@@ -150,4 +150,4 @@ size_t Plane::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}
+}

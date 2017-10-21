@@ -4,7 +4,7 @@
 #include "base/math/plane.hpp"
 #include "base/simd/simd.hpp"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 float3 triangle_min(const float3& a, const float3& b, const float3& c);
 float3 triangle_max(const float3& a, const float3& b, const float3& c);
@@ -23,4 +23,4 @@ uint32_t triangle_side(const float3& a, const float3& b, const float3& c, const 
 bool triangle_completely_behind(const float3& a, const float3& b, const float3& c,
 								const math::Plane& p);
 
-}}}}
+}

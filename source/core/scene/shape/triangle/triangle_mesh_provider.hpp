@@ -7,7 +7,7 @@
 
 namespace thread { class Pool; }
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 class Shape;
 struct Vertex;
@@ -58,4 +58,4 @@ private:
 	static std::shared_ptr<Shape> load_binary(std::istream& stream, thread::Pool& thread_pool);
 };
 
-}}}
+}}

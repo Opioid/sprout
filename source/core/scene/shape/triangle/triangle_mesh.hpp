@@ -8,7 +8,7 @@
 // #include "bvh/triangle_bvh_data_interleaved.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 class Mesh : public Shape {
 
@@ -103,5 +103,4 @@ private:
 	std::vector<Distribution> distributions_;
 };
 
-}}}
-
+}

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 enum class BVH_preset {
 	Undefined = 0,
@@ -8,4 +8,4 @@ enum class BVH_preset {
 	Slow	= 2
 };
 
-}}}
+}

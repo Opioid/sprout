@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 struct Index_triangle {
 	Index_triangle() = default;
@@ -15,4 +15,4 @@ struct Index_triangle {
 	uint32_t material_index;
 };
 
-}}}
+}

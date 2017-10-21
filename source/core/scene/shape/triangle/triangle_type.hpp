@@ -1,6 +1,6 @@
 #pragma once
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 using Triangle_type = struct Triangle_MTE;
 
@@ -14,4 +14,4 @@ using Shading_vertex_type = struct Shading_vertex_MTC;
 
 using Vertex_type = struct Vertex_MTC;
 
-}}}
+}

@@ -3,7 +3,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/plane.inl"
 
-namespace scene { namespace shape { namespace triangle { namespace bvh {
+namespace scene::shape::triangle::bvh {
 
 float3 triangle_min(const float3& a, const float3& b, const float3& c) {
 	return math::min(a, math::min(b, c));
@@ -66,4 +66,4 @@ bool triangle_completely_behind(const float3& a, const float3& b, const float3& 
 	return false;
 }
 
-}}}}
+}

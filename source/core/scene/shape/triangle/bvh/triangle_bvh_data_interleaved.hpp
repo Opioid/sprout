@@ -4,11 +4,11 @@
 #include "base/simd/simd.hpp"
 #include <vector>
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 struct Vertex;
 
-namespace triangle { namespace bvh {
+namespace triangle::bvh {
 
 template<typename Triangle>
 class Data_interleaved {
@@ -59,4 +59,4 @@ private:
 	std::vector<Triangle> triangles_;
 };
 
-}}}}
+}}

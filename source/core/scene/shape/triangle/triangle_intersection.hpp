@@ -4,7 +4,7 @@
 #include <cstdint>
 //#include "base/math/vector3.hpp"
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 struct Intersection {
 	Vector u;
@@ -14,5 +14,4 @@ struct Intersection {
 	uint32_t index;
 };
 
-}}}
-
+}

@@ -8,7 +8,7 @@
 //#include "bvh/triangle_bvh_data_interleaved.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 struct Triangle_MT;
 class  Morph_target_collection;
@@ -91,5 +91,4 @@ private:
 	friend class Provider;
 };
 
-}}}
-
+}

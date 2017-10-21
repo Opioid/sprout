@@ -1,7 +1,7 @@
 #include "triangle_json_handler.hpp"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 Json_handler::Json_handler () {
 	clear();
@@ -352,4 +352,4 @@ void Json_handler::increment_vertex_element(uint32_t num_elements) {
 	}
 }
 
-}}}
+}

@@ -4,7 +4,7 @@
 #include "base/math/vector3.inl"
 #include "base/thread/thread_pool.hpp"
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 std::vector<Index_triangle>& Morph_target_collection::triangles() {
 	return triangles_;
@@ -38,4 +38,4 @@ void Morph_target_collection::morph(uint32_t a, uint32_t b, float weight, thread
 	}, 0, static_cast<int32_t>(va.size()));
 }
 
-}}}
+}

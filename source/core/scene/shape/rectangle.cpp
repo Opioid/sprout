@@ -10,7 +10,7 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 Rectangle::Rectangle() {
 	aabb_.set_min_max(float3(-10.f, -10.f, -0.1f), float3(10.f, 10.f, 0.1f));
@@ -273,5 +273,4 @@ size_t Rectangle::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}
-
+}

@@ -13,7 +13,7 @@
 #include "base/math/print.hpp"
 #include <iostream>
 
-namespace scene { namespace shape { namespace testing {
+namespace scene::shape::testing {
 
 void print(const Intersection& intersection);
 
@@ -118,4 +118,4 @@ void print_vector(const float3& v) {
 	std::cout << v << " |" << math::length(v) << "|" << std::endl;
 }
 
-}}}
+}

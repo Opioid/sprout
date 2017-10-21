@@ -8,7 +8,7 @@
 #include <string>
 #include <cstdint>
 
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 struct Part {
 	Part() = default;
@@ -135,4 +135,4 @@ private:
 	std::vector<std::string> morph_targets_;
 };
 
-}}}
+}

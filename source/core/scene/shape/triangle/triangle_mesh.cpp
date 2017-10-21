@@ -15,9 +15,7 @@
 #include "base/math/matrix3x3.inl"
 #include "base/math/distribution/distribution_1d.inl"
 
-#include <iostream>
-
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 bool Mesh::init() {
 	aabb_ = tree_.aabb();
@@ -383,5 +381,4 @@ size_t Mesh::Distribution::num_bytes() const {
 	return sizeof(*this) + triangle_mapping.size() * sizeof(uint32_t) + distribution.num_bytes();
 }
 
-
-}}}
+}

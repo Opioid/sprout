@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 struct Intersection {
 	float3 p;		// posisition in world space
@@ -14,4 +14,4 @@ struct Intersection {
 	uint32_t part;
 };
 
-}}
+}

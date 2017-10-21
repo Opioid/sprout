@@ -5,9 +5,7 @@
 #include "base/math/ray.hpp"
 #include "base/math/vector.inl"
 
-#include <iostream>
-
-namespace scene { namespace shape { namespace triangle {
+namespace scene::shape::triangle {
 
 inline Triangle_MT::Triangle_MT(const shape::Vertex& a,
 								const shape::Vertex& b,
@@ -541,15 +539,6 @@ inline Shading_vertex_MTCC::Shading_vertex_MTCC(const packed_float3& n,
 												float2 uv) :
 	n_u(float_to_snorm16(n, uv[0])),
 	t_v(float_to_snorm16(t, uv[1])) {
-
-
-	const float u = xnorm_to_float(n_u[3]);
-	const float du = std::abs(uv[0] - u);
-
-	if (du > 0.1f) {
-		std::cout << uv[0] << " vs " << u << std::endl;
-	}
-
 	// Not too happy about handling degenerate tangents here (only one very special case even)
 	if (0.f == t[0] && 0.f == t[1] && 0.f == t[2]) {
 		t_v = float_to_snorm16(math::tangent(float3(n)), uv[1]);
@@ -735,4 +724,4 @@ inline float area(const Vertex_MTC& a,
 	return 0.5f * math::length(math::cross(sb - sa, sc - sa));
 }
 
-}}}
+}
