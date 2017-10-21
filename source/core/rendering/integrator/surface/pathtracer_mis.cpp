@@ -18,7 +18,7 @@
 
 #include "base/debug/assert.hpp"
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 Pathtracer_MIS::Pathtracer_MIS(rnd::Generator& rng, const take::Settings& take_settings,
 							   const Settings& settings, sub::Integrator& subsurface) :
@@ -385,4 +385,4 @@ Integrator* Pathtracer_MIS_factory::create(uint32_t id, rnd::Generator& rng) con
 												 *sub_factory_->create(id, rng));
 }
 
-}}}
+}

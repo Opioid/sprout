@@ -2,7 +2,7 @@
 
 #include "sampler_2d.hpp"
 
-namespace image { namespace texture { namespace sampler {
+namespace image::texture::sampler {
 
 template<typename Address_mode_U, typename Address_mode_V>
 class Nearest_2D : public Sampler_2D {
@@ -29,4 +29,4 @@ private:
 	static int2 map(const Texture& texture, float2 uv);
 };
 
-}}}
+}

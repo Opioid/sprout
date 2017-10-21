@@ -3,7 +3,7 @@
 #include "base/math/vector3.hpp"
 #include <memory>
 
-namespace image { namespace texture {
+namespace image::texture {
 
 namespace sampler { class Sampler_2D; class Sampler_3D; }
 
@@ -51,5 +51,4 @@ private:
 	float2 scale_;
 };
 
-}}
-
+}

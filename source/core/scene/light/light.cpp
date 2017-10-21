@@ -3,7 +3,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/matrix4x4.inl"
 
-namespace scene { namespace light {
+namespace scene::light {
 
 bool Light::sample(const float3& p, const float3& n, float time, bool total_sphere,
 				   sampler::Sampler& sampler, uint32_t sampler_dimension,
@@ -26,4 +26,4 @@ bool Light::is_light(uint32_t id) {
 	return 0xFFFFFFFF != id;
 }
 
-}}
+}

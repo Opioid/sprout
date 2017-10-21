@@ -4,9 +4,9 @@
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 
-namespace scene { namespace material { class Sample; } }
+namespace scene::material { class Sample; }
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 class alignas(64) Whitted : public Integrator {
 
@@ -57,4 +57,4 @@ private:
 	Whitted::Settings settings_;
 };
 
-}}}
+}

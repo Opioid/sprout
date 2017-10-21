@@ -11,7 +11,7 @@ class Prop;
 
 }
 
-namespace rendering { namespace integrator { namespace surface { namespace sub {
+namespace rendering::integrator::surface::sub {
 
 class alignas(64) Bruteforce : public Integrator {
 
@@ -58,4 +58,4 @@ private:
 	Bruteforce::Settings settings_;
 };
 
-}}}}
+}

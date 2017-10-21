@@ -2,7 +2,7 @@
 #include "base/math/vector4.inl"
 #include "base/thread/thread_pool.hpp"
 
-namespace rendering { namespace postprocessor {
+namespace rendering::postprocessor {
 
 Postprocessor::Postprocessor(uint32_t num_passes) : num_passes_(num_passes) {}
 
@@ -23,5 +23,4 @@ void Postprocessor::apply(const image::Float4& source, image::Float4& destinatio
 void Postprocessor::pre_apply(const image::Float4& /*source*/, image::Float4& /*destination*/,
 							  thread::Pool& /*pool*/) {}
 
-}}
-
+}

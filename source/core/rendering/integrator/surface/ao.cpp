@@ -9,7 +9,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 AO::AO(rnd::Generator& rng, const take::Settings& take_settings, const Settings& settings) :
 	Integrator(rng, take_settings),
@@ -78,4 +78,4 @@ Integrator* AO_factory::create(uint32_t id, rnd::Generator& rng) const {
 	return new(&integrators_[id]) AO(rng, take_settings_, settings_);
 }
 
-}}}
+}

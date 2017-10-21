@@ -14,7 +14,7 @@
 #include "base/math/print.hpp"
 #include <iostream>
 
-namespace rendering { namespace postprocessor {
+namespace rendering::postprocessor {
 
 Glare::Glare(Adaption adaption, float threshold, float intensity) :
 	Postprocessor(2),
@@ -255,4 +255,4 @@ void Glare::apply(uint32_t /*id*/, uint32_t pass, int32_t begin, int32_t end,
 	}
 }
 
-}}
+}

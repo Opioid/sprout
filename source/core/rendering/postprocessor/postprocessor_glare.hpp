@@ -2,7 +2,7 @@
 
 #include "postprocessor.hpp"
 
-namespace rendering { namespace postprocessor {
+namespace rendering::postprocessor {
 
 class Glare : public Postprocessor {
 
@@ -39,4 +39,4 @@ private:
 	float3* kernel_;
 };
 
-}}
+}

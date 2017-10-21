@@ -7,13 +7,9 @@
 #include "sampler/sampler_hammersley.hpp"
 #include "scene/material/sampler_settings.hpp"
 
-namespace scene {
+namespace scene::material { class Sample; }
 
-namespace material { class Sample; }
-
-}
-
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 class alignas(64) Pathtracer_DL : public Integrator {
 
@@ -73,4 +69,4 @@ private:
 	Pathtracer_DL::Settings settings_;
 };
 
-}}}
+}

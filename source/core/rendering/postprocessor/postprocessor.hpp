@@ -5,7 +5,7 @@
 
 namespace thread { class Pool; }
 
-namespace rendering { namespace postprocessor {
+namespace rendering::postprocessor {
 
 class Postprocessor {
 
@@ -32,5 +32,4 @@ private:
 	uint32_t num_passes_;
 };
 
-}}
-
+}

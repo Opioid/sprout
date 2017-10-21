@@ -5,13 +5,13 @@
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
 
-namespace scene { namespace light {
+namespace scene::light {
 
 struct Sample;
 
-}}
+}
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 namespace sub { class Integrator; class Factory; }
 
@@ -79,4 +79,4 @@ private:
 	Pathtracer::Settings settings_;
 };
 
-}}}
+}

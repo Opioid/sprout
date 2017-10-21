@@ -6,7 +6,7 @@ namespace thread { class Pool; }
 
 namespace sampler { struct Camera_sample; }
 
-namespace rendering { namespace sensor {
+namespace rendering::sensor {
 
 class Sensor {
 
@@ -43,4 +43,4 @@ protected:
 	float exposure_factor_;
 };
 
-}}
+}

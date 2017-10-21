@@ -4,7 +4,7 @@
 #include "base/memory/align.hpp"
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 inline Node_stack::Node_stack(uint32_t size) :
 	num_elements_(size),
@@ -36,4 +36,4 @@ inline size_t Node_stack::num_bytes() const {
 	return sizeof(*this) + static_cast<size_t>(num_elements_) * sizeof(uint32_t);
 }
 
-}}
+}

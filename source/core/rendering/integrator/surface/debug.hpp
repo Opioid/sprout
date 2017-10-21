@@ -2,7 +2,7 @@
 
 #include "surface_integrator.hpp"
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 class alignas(64) Debug : public Integrator {
 
@@ -53,4 +53,4 @@ private:
 	Debug::Settings settings_;
 };
 
-}}}
+}

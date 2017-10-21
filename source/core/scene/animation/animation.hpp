@@ -4,9 +4,7 @@
 #include <vector>
 #include <cstddef>
 
-namespace scene {
-
-namespace animation {
+namespace scene::animation {
 
 class Animation {
 
@@ -34,4 +32,4 @@ private:
 	entity::Keyframe interpolated_frame_;
 };
 
-}}
+}

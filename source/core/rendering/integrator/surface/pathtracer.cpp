@@ -18,7 +18,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 Pathtracer::Pathtracer(rnd::Generator& rng, const take::Settings& take_settings,
 					   const Settings& settings, sub::Integrator& subsurface) :
@@ -201,4 +201,4 @@ Integrator* Pathtracer_factory::create(uint32_t id, rnd::Generator& rng) const {
 											 *sub_factory_->create(id, rng));
 }
 
-}}}
+}

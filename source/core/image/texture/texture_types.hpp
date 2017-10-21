@@ -3,7 +3,7 @@
 #include "texture_adapter.hpp"
 #include <memory>
 
-namespace image { namespace texture { class Texture; }}
+namespace image::texture { class Texture; }
 
 using Texture_ptr = std::shared_ptr<image::texture::Texture>;
 

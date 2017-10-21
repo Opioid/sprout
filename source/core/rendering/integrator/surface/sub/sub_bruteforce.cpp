@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-namespace rendering { namespace integrator { namespace surface { namespace sub {
+namespace rendering::integrator::surface::sub {
 
 Bruteforce::Bruteforce(rnd::Generator& rng, const take::Settings& take_settings,
 					   const Settings& settings) :
@@ -51,4 +51,4 @@ Integrator* Bruteforce_factory::create(uint32_t id, rnd::Generator& rng) const {
 	return new(&integrators_[id]) Bruteforce(rng, take_settings_, settings_);
 }
 
-}}}}
+}

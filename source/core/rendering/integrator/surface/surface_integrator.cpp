@@ -7,7 +7,7 @@
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
 	integrator::Integrator(rng, settings) {}
@@ -50,4 +50,4 @@ Factory::Factory(const take::Settings& settings) :
 
 Factory::~Factory() {}
 
-}}}
+}

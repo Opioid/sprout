@@ -13,7 +13,7 @@ namespace material { class Sample; }
 
 }
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 namespace sub { class Integrator; class Factory; }
 
@@ -107,7 +107,4 @@ private:
 	Pathtracer_MIS::Settings settings_;
 };
 
-}}}
-
-
-
+}

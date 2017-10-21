@@ -9,7 +9,7 @@
 // #include "sampler/sampler_sobol.hpp"
 #include "sampler/sampler_random.hpp"
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 class alignas(64) AO : public Integrator {
 
@@ -56,4 +56,4 @@ private:
 	AO::Settings settings_;
 };
 
-}}}
+}

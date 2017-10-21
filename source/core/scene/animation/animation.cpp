@@ -4,7 +4,7 @@
 #include "base/math/quaternion.inl"
 #include "base/math/transformation.inl"
 
-namespace scene { namespace animation {
+namespace scene::animation {
 
 void Animation::init(uint32_t count) {
     current_time_ = 0.f;
@@ -72,4 +72,4 @@ const entity::Keyframe& Animation::interpolated_frame() const {
 	return interpolated_frame_;
 }
 
-}}
+}

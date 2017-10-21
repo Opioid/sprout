@@ -6,7 +6,7 @@
 #include "base/math/vector3.inl"
 #include <cmath>
 
-namespace scene { namespace material {
+namespace scene::material {
 
 inline void Sample::Layer::set_tangent_frame(const float3& t, const float3& b, const float3& n) {
 	t_ = t;
@@ -103,4 +103,4 @@ inline void Sample::set_basis(const float3& geo_n, const float3& wo) {
 	wo_    = wo;
 }
 
-}}
+}

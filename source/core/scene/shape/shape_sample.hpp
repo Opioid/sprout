@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 struct Sample {
 	float3 wi;
@@ -11,4 +11,4 @@ struct Sample {
 	float pdf;
 };
 
-}}
+}

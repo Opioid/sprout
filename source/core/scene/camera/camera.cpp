@@ -6,7 +6,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/quaternion.inl"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 Camera::Camera(int2 resolution) : resolution_(resolution) {}
 
@@ -70,4 +70,4 @@ void Camera::set_motion_blur(bool motion_blur) {
 
 void Camera::on_set_transformation() {}
 
-}}
+}

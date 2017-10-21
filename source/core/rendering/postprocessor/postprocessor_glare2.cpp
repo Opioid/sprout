@@ -14,7 +14,7 @@
 
 // #include "image/encoding/png/png_writer.hpp"
 
-namespace rendering { namespace postprocessor {
+namespace rendering::postprocessor {
 
 Glare2::Glare2(Adaption adaption, float threshold, float intensity) :
 	Postprocessor(2),
@@ -353,4 +353,4 @@ void Glare2::apply(uint32_t /*id*/, uint32_t /*pass*/, int32_t /*begin*/, int32_
 	return;
 }
 
-}}
+}

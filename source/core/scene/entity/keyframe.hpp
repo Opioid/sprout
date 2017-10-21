@@ -2,7 +2,7 @@
 
 #include "base/math/transformation.hpp"
 
-namespace scene { namespace entity {
+namespace scene::entity {
 
 struct alignas(16) Keyframe {
 	void interpolate(const Keyframe& other, float t, Keyframe& result) const;
@@ -19,4 +19,4 @@ struct alignas(16) Keyframe {
 	float time;
 };
 
-}}
+}

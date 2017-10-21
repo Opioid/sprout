@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material {
+namespace scene::material {
 
 constexpr float Dot_min = 0.00001f;
 
@@ -44,4 +44,4 @@ static inline float clamp_abs_dot(const float3& a, const float3& b) {
 	return math::clamp(std::abs(math::dot(a, b)), Dot_min, 1.f);
 }
 
-}}
+}

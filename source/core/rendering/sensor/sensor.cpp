@@ -3,7 +3,7 @@
 #include "base/math/vector4.inl"
 #include "base/thread/thread_pool.hpp"
 
-namespace rendering { namespace sensor {
+namespace rendering::sensor {
 
 Sensor::Sensor(int2 dimensions, float exposure) :
 	dimensions_(dimensions),
@@ -20,4 +20,4 @@ void Sensor::resolve(thread::Pool& pool, image::Float4& target) const {
 		resolve(begin, end, target); }, 0, target.area());
 }
 
-}}
+}

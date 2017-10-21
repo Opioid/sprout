@@ -14,7 +14,7 @@
 #include "base/random/generator.inl"
 #include "base/spectrum/rgb.hpp"
 
-namespace rendering { namespace integrator { namespace surface {
+namespace rendering::integrator::surface {
 
 Whitted::Whitted(rnd::Generator& rng, const take::Settings& take_settings,
 				 const Settings& settings) :
@@ -139,4 +139,4 @@ Integrator* Whitted_factory::create(uint32_t id, rnd::Generator& rng) const {
 	return new(&integrators_[id]) Whitted(rng, take_settings_, settings_);
 }
 
-}}}
+}

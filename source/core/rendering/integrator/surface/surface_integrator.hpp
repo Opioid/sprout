@@ -7,7 +7,7 @@ namespace rendering {
 
 class Worker;
 
-namespace integrator { namespace surface {
+namespace integrator::surface {
 
 class Integrator : public integrator::Integrator {
 
@@ -41,4 +41,4 @@ protected:
 	const take::Settings& take_settings_;
 };
 
-}}}
+}}

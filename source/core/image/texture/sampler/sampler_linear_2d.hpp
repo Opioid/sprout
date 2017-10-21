@@ -3,7 +3,7 @@
 #include "sampler_2d.hpp"
 #include "base/math/vector4.hpp"
 
-namespace image { namespace texture { namespace sampler {
+namespace image::texture::sampler {
 
 template<typename Address_U, typename Address_V>
 class Linear_2D : public Sampler_2D {
@@ -32,4 +32,4 @@ private:
 	static float2 map(const Texture& texture, float2 uv, int4& xy_xy1);
 };
 
-}}}
+}

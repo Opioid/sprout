@@ -5,7 +5,7 @@
 #include "material/sampler_cache.hpp"
 #include "base/math/vector3.hpp"
 
-namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
+namespace image::texture::sampler { class Sampler_2D; }
 
 namespace scene {
 

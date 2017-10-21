@@ -7,14 +7,14 @@
 #include <memory>
 #include <vector>
 
-namespace scene { namespace animation { class Animation; } }
+namespace scene::animation { class Animation; }
 
-namespace rendering { namespace integrator {
+namespace rendering::integrator {
 
 namespace surface { class Factory; }
 namespace volume  { class Factory; }
 
-}}
+}
 
 namespace sampler { class Factory; }
 

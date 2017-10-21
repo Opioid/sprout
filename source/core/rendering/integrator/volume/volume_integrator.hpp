@@ -3,13 +3,13 @@
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector4.hpp"
 
-namespace scene { namespace volume { class Volume; } }
+namespace scene::volume { class Volume; }
 
 namespace rendering {
 
 class Worker;
 
-namespace integrator { namespace volume {
+namespace integrator::volume {
 
 class Integrator : public integrator::Integrator {
 
@@ -42,4 +42,4 @@ protected:
 	const uint32_t num_integrators_;
 };
 
-}}}
+}}

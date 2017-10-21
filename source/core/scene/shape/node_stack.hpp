@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <cstddef>
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 class Node_stack {
 
@@ -30,4 +30,4 @@ private:
 	uint32_t* stack_;
 };
 
-}}
+}
