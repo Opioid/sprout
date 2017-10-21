@@ -14,9 +14,8 @@
 #include <vector>
 
 #include "base/math/print.hpp"
-#include <iostream>
 
-namespace rendering { namespace postprocessor {
+namespace rendering::postprocessor {
 
 Glare3::Glare3(Adaption adaption, float threshold, float intensity) :
 	Postprocessor(4),
@@ -92,8 +91,8 @@ void Glare3::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 
 	std::vector<Init> inits(pool.num_threads());
 
-	pool.run_range([this, dim, solid_angle,  wl_start, wl_step, wl_norm,
-				   wl_num_samples, &CIE_X, &CIE_Y, &CIE_Z, &f, &inits]
+	pool.run_range([this, dim, solid_angle, wl_norm,
+				   &CIE_X, &CIE_Y, &CIE_Z, &f, &inits]
 				   (uint32_t id, int32_t begin, int32_t end) {
 		Init& init = inits[id];
 
@@ -359,4 +358,4 @@ void Glare3::apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
 	}
 }
 
-}}
+}

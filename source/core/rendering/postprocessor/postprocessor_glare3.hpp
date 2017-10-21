@@ -2,7 +2,7 @@
 
 #include "postprocessor.hpp"
 
-namespace rendering { namespace postprocessor {
+namespace rendering::postprocessor {
 
 class Glare3 : public Postprocessor {
 
@@ -47,4 +47,4 @@ private:
 	K* gauss_kernel_;
 };
 
-}}
+}
