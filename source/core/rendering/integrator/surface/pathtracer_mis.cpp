@@ -211,9 +211,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 			float light_pdf;
 			const auto light = worker.scene().random_light(select, light_pdf);
 
-			const float light_pdf_reciprocal = 1.f / light_pdf;
-
-			result += evaluate_light(light, light_pdf_reciprocal, ray.time, ray_offset, ray.depth,
+			result += evaluate_light(light, light_pdf, ray.time, ray_offset, ray.depth,
 									 0, intersection, material_sample, filter, worker);
 		}
 
@@ -221,7 +219,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	} else {
 		const auto& lights = worker.scene().lights();
 		const uint32_t num_lights = static_cast<uint32_t>(lights.size());
-		const float light_weight = static_cast<float>(num_lights);
+		const float light_weight = 1.f / static_cast<float>(num_lights);
 		for (uint32_t l = 0; l < num_lights; ++l) {
 			const auto light = lights[l];
 			for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
@@ -319,10 +317,10 @@ float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight, fl
 		float bxdf_pdf;
 		const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
-		const float weight = power_heuristic(light_sample.shape.pdf / light_weight, bxdf_pdf);
+		const float light_pdf = light_sample.shape.pdf * light_weight;
+		const float weight = power_heuristic(light_pdf, bxdf_pdf);
 
-		return (weight / light_sample.shape.pdf * light_weight)
-			 * (tv * tr) * (light_sample.radiance * f);
+		return (weight / light_pdf) * (tv * tr) * (light_sample.radiance * f);
 	}
 
 	return float3(0.f);
