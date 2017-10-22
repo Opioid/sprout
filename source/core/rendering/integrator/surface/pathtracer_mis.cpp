@@ -218,9 +218,8 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		result *= settings_.num_light_samples_reciprocal;
 	} else {
 		const auto& lights = worker.scene().lights();
-		const uint32_t num_lights = static_cast<uint32_t>(lights.size());
-		const float light_weight = 1.f / static_cast<float>(num_lights);
-		for (uint32_t l = 0; l < num_lights; ++l) {
+		const float light_weight = num_lights_reciprocal_;
+		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
 			const auto light = lights[l];
 			for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
 				result += evaluate_light(light, light_weight, ray.time, ray_offset, ray.depth,
@@ -228,7 +227,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 			}
 		}
 
-		result *= settings_.num_light_samples_reciprocal * num_lights_reciprocal_;
+		result *= settings_.num_light_samples_reciprocal * light_weight;
 	}
 
 	// Material BSDF importance sample
@@ -242,8 +241,8 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		return result;
 	}
 
-	Ray secondary_ray(intersection.geo.p, sample_result.wi,
-					  ray_offset, scene::Ray_max_t, ray.time, ray.depth + 1);
+	Ray secondary_ray(intersection.geo.p, sample_result.wi, ray_offset,
+					  scene::Ray_max_t, ray.time, ray.depth + 1);
 
 	if (!intersect_and_resolve_mask(secondary_ray, intersection, filter, worker)) {
 		SOFT_ASSERT(math::all_finite(result));
