@@ -64,10 +64,10 @@ void Glare::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	const spectrum::Interpolated CIE_Y(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Y_360_830_1nm, spectrum::CIE_XYZ_Num);
 	const spectrum::Interpolated CIE_Z(spectrum::CIE_Wavelengths_360_830_1nm, spectrum::CIE_Z_360_830_1nm, spectrum::CIE_XYZ_Num);
 
-	constexpr float wl_start = 400.f;
-	constexpr float wl_end = 700.f;
-	constexpr int32_t wl_num_samples = 64;
-	constexpr float wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
+	static constexpr float wl_start = 400.f;
+	static constexpr float wl_end = 700.f;
+	static constexpr int32_t wl_num_samples = 64;
+	static constexpr float wl_step = (wl_end - wl_start) / static_cast<float>(wl_num_samples);
 	const	  float wl_norm = 1.f / CIE_Y.integrate(wl_start, wl_end);
 
 	struct F {

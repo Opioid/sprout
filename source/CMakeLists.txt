@@ -42,6 +42,9 @@ if (LINUX)
 	# add_compile_options(-Wuseless-cast)
 	# add_compile_options(-Wshadow)
 elseif (MSVC)
+	# set(CMAKE_CXX_STANDARD 17) doesn't seem to work for visual studio target at the moment
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+
 	if (CMAKE_CXX_FLAGS MATCHES "/GR")
 		string(REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     endif()
@@ -64,9 +67,12 @@ elseif (MSVC)
     add_compile_options(/wd4626) # assignment operator implicitly deleted
     add_compile_options(/wd4710) # function not inlined
     add_compile_options(/wd4711) # function selected for automatic inline expansion
-	#  add_compile_options(/wd4820) # bytes' bytes padding added after construct
+	# add_compile_options(/wd4820) # bytes' bytes padding added after construct
     add_compile_options(/wd5026) # move constructor operator implicitly deleted
     add_compile_options(/wd5027) # move assignment operator implicitly deleted
+
+	# To avoid warning spam originates from rapidjson
+	add_definitions(-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 endif()
 
 include(base/base.cmake)
