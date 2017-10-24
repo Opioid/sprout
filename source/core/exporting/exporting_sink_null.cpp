@@ -7,8 +7,7 @@ Null::Null() {}
 
 Null::~Null() {}
 
-void Null::write(const image::Float4& /*image*/, uint32_t /*frame*/,
-				 thread::Pool& /*pool*/) {}
+void Null::write(const image::Float4& /*image*/, uint32_t /*frame*/, thread::Pool& /*pool*/) {}
 
 }
 

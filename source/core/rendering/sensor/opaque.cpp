@@ -4,7 +4,7 @@
 #include "base/memory/align.hpp"
 #include "base/math/vector4.inl"
 
-namespace rendering { namespace sensor {
+namespace rendering::sensor {
 
 Opaque::Opaque(int2 dimensions, float exposure) :
 	Sensor(dimensions, exposure) {
@@ -20,6 +20,10 @@ void Opaque::clear() {
 	for (int32_t i = 0, len = d[0] * d[1]; i < len; ++i) {
 		pixels_[i] = float4(0.f);
 	}
+}
+
+bool Opaque::has_alpha_transparency() const {
+	return false;
 }
 
 size_t Opaque::num_bytes() const {
@@ -48,7 +52,7 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const {
 	const float exposure_factor = exposure_factor_;
 
 	for (int32_t i = begin; i < end; ++i) {
-		auto& value = pixels_[i];
+		const auto& value = pixels_[i];
 
 		const float3 color = value.xyz() / value[3];
 
@@ -56,4 +60,4 @@ void Opaque::resolve(int32_t begin, int32_t end, image::Float4& target) const {
 	}
 }
 
-}}
+}

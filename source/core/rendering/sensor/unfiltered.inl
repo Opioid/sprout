@@ -3,7 +3,7 @@
 #include "unfiltered.hpp"
 #include "sampler/camera_sample.hpp"
 
-namespace rendering { namespace sensor {
+namespace rendering::sensor {
 
 template<class Base, class Clamp>
 Unfiltered<Base, Clamp>::Unfiltered(int2 dimensions, float exposure, const Clamp& clamp) :
@@ -25,4 +25,4 @@ void Unfiltered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, c
 	Base::add_pixel(bounds.xy() + sample.pixel, clamp_.clamp(color), 1.f);
 }
 
-}}
+}

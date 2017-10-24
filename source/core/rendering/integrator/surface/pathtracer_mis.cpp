@@ -118,7 +118,8 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		if (!intersection.hit()
 		||  (requires_bounce ? i == settings_.max_bounces : i >= settings_.max_bounces - 1)
-		||  ((0.f == sample_result.pdf) /*| (float3::identity() == sample_result.reflection)*/)) {
+		||  (0.f == sample_result.pdf)) {
+			opacity = 1.f; // I am not really happy with this being here
 			break;
 		}
 
@@ -177,6 +178,10 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 				break;
 			}
 		}
+	}
+
+	if (opacity < 1.f) {
+		return float4(1.f, 0.f, 0.f, 1.f);
 	}
 
 	return float4(result, opacity);

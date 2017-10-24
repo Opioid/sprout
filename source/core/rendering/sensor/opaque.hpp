@@ -2,7 +2,7 @@
 
 #include "sensor.hpp"
 
-namespace rendering { namespace sensor {
+namespace rendering::sensor {
 
 class Opaque : public Sensor {
 
@@ -12,6 +12,8 @@ public:
 	virtual ~Opaque();
 
 	virtual void clear() override final;
+
+	virtual bool has_alpha_transparency() const override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -27,4 +29,4 @@ protected:
 	float4* pixels_;
 };
 
-}}
+}

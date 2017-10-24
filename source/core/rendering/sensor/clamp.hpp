@@ -2,7 +2,7 @@
 
 #include "base/math/vector4.hpp"
 
-namespace rendering { namespace sensor { namespace clamp {
+namespace rendering::sensor::clamp {
 
 class Identity {
 
@@ -24,4 +24,4 @@ private:
 	float3 max_;
 };
 
-}}}
+}

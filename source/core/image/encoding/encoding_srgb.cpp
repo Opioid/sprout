@@ -4,7 +4,7 @@
 #include "base/spectrum/rgb.hpp"
 #include "base/math/vector3.inl"
 
-namespace image { namespace encoding {
+namespace image::encoding {
 
 Srgb::Srgb(int2 dimensions) :
 	rgb_(new byte3[static_cast<size_t>(dimensions[0] * dimensions[1])]) {}
@@ -48,7 +48,7 @@ void Srgb::to_byte(const image::Float4& image, int32_t begin, int32_t end) {
 }
 
 Srgb_alpha::Srgb_alpha(int2 dimensions) :
-	rgba_(new byte4[dimensions[0] * dimensions[1]])
+	rgba_(new byte4[(dimensions[0] * dimensions[1])])
 {}
 
 Srgb_alpha::~Srgb_alpha() {
@@ -89,4 +89,4 @@ void Srgb_alpha::to_byte(const image::Float4& image, int32_t begin, int32_t end)
 	}
 }
 
-}}
+}

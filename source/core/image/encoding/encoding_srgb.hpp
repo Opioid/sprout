@@ -2,7 +2,7 @@
 
 #include "image/typed_image.hpp"
 
-namespace image { namespace encoding {
+namespace image::encoding {
 
 class Srgb {
 
@@ -44,4 +44,4 @@ protected:
 	byte4* rgba_;
 };
 
-}}
+}

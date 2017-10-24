@@ -10,9 +10,9 @@
 
 namespace exporting { class Sink; }
 
-namespace math { namespace random { class Generator; } }
+namespace math::random { class Generator; }
 
-namespace scene { namespace camera { class Camera; } }
+namespace scene::camera { class Camera; }
 
 namespace sampler { class Factory; }
 
@@ -37,7 +37,7 @@ namespace rendering {
 		namespace volume  { class Factory; }
 	}
 
-	namespace postprocessor { namespace tonemapping { class Tonemapper; } }
+	namespace postprocessor::tonemapping { class Tonemapper; }
 }
 
 namespace take {
@@ -98,7 +98,7 @@ private:
 	static bool peek_stereoscopic(const json::Value& parameters_value);
 
 	static std::vector<std::unique_ptr<exporting::Sink>>
-	load_exporters(const json::Value& exporter_value, scene::camera::Camera& camera);
+	load_exporters(const json::Value& exporter_value, const scene::camera::Camera& camera);
 
 	static void load_settings(const json::Value& settings_value, Settings& settings);
 

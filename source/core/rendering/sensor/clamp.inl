@@ -3,7 +3,7 @@
 #include "clamp.hpp"
 #include "base/math/vector3.inl"
 
-namespace rendering { namespace sensor { namespace clamp {
+namespace rendering::sensor::clamp {
 
 inline float4 Identity::clamp(const float4& color) const {
 	return color;
@@ -18,4 +18,4 @@ inline float4 Clamp::clamp(const float4& color) const {
 				  color[3]);
 }
 
-}}}
+}

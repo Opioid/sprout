@@ -4,7 +4,7 @@
 
 namespace sampler { struct Camera_sample; }
 
-namespace rendering { namespace sensor {
+namespace rendering::sensor {
 
 namespace filter { class Filter; }
 
@@ -36,4 +36,4 @@ private:
 	const filter::Filter* filter_;
 };
 
-}}
+}

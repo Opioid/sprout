@@ -4,7 +4,7 @@
 
 namespace sampler { struct Camera_sample; }
 
-namespace rendering { namespace sensor {
+namespace rendering::sensor {
 
 template<class Base, class Clamp>
 class Unfiltered : public Base {
@@ -25,4 +25,4 @@ private:
 	Clamp clamp_;
 };
 
-}}
+}

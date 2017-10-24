@@ -3,7 +3,7 @@
 #include "base/atomic/atomic.hpp"
 #include "base/math/vector4.inl"
 
-namespace rendering { namespace sensor {
+namespace rendering::sensor {
 
 Transparent::Transparent(int2 dimensions, float exposure) :
 	Sensor(dimensions, exposure),
@@ -19,6 +19,10 @@ void Transparent::clear() {
 		pixels_[i].color = float4(0.f);
 		pixels_[i].weight_sum = 0.f;
 	}
+}
+
+bool Transparent::has_alpha_transparency() const {
+	return true;
 }
 
 size_t Transparent::num_bytes() const {
@@ -57,4 +61,4 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) con
 	}
 }
 
-}}
+}

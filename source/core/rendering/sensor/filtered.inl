@@ -5,7 +5,7 @@
 #include "sampler/camera_sample.hpp"
 #include "base/math/vector4.inl"
 
-namespace rendering { namespace sensor {
+namespace rendering::sensor {
 
 template<class Base, class Clamp>
 Filtered<Base, Clamp>::Filtered(int2 dimensions, float exposure, const Clamp& clamp,
@@ -135,4 +135,4 @@ void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_off
 	}
 }
 
-}}
+}

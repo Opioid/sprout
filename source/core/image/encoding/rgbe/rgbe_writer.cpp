@@ -5,7 +5,7 @@
 
 // http://www.graphics.cornell.edu/~bjw/rgbe
 
-namespace image { namespace encoding { namespace rgbe {
+namespace image::encoding::rgbe {
 
 std::string Writer::file_extension() const {
 	return "hdr";
@@ -171,4 +171,4 @@ byte4 Writer::float_to_rgbe(const float4& c) {
 	}
 }
 
-}}}
+}

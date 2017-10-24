@@ -5,6 +5,7 @@
 namespace exporting {
 
 class Null : public Sink {
+
 public:
 
 	Null();

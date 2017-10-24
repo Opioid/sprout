@@ -2,9 +2,10 @@
 
 #include "image/image_writer.hpp"
 
-namespace image { namespace encoding { namespace rgbe {
+namespace image::encoding::rgbe {
 
 class Writer : public image::Writer {
+
 public:
 
 //	Writer(math::uint2 dimensions);
@@ -27,4 +28,4 @@ private:
 	static byte4 float_to_rgbe(const float4& c);
 };
 
-}}}
+}

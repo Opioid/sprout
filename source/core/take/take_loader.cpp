@@ -678,7 +678,7 @@ bool Loader::peek_stereoscopic(const json::Value& parameters_value) {
 }
 
 std::vector<std::unique_ptr<exporting::Sink>>
-Loader::load_exporters(const json::Value& exporter_value, scene::camera::Camera& camera) {
+Loader::load_exporters(const json::Value& exporter_value, const scene::camera::Camera& camera) {
 	std::vector<std::unique_ptr<exporting::Sink>> exporters;
 
 	for (auto& n : exporter_value.GetObject()) {
@@ -690,7 +690,11 @@ Loader::load_exporters(const json::Value& exporter_value, scene::camera::Camera&
 			if ("RGBE" == format) {
 				writer = new image::encoding::rgbe::Writer;
 			} else {
-				writer = new image::encoding::png::Writer(camera.sensor().dimensions());
+				if (camera.sensor().has_alpha_transparency()) {
+					writer = new image::encoding::png::Writer_alpha(camera.sensor().dimensions());
+				} else {
+					writer = new image::encoding::png::Writer(camera.sensor().dimensions());
+				}
 			}
 
 			exporters.push_back(std::make_unique<exporting::Image_sequence>("output_", writer));
