@@ -10,14 +10,13 @@
 namespace exporting {
 
 Ffmpeg::Ffmpeg(const std::string& filename, int2 dimensions, uint32_t framerate) :
-	Srgb_alpha(dimensions) {
-	// start ffmpeg telling it to expect raw rgba 720p-60hz frames
+	Srgb(dimensions) {
 	// -i - tells it to read frames from stdin
 	std::ostringstream cmd;
 
 	cmd << "ffmpeg";
 	cmd << " -r " << framerate;
-	cmd << " -f rawvideo -pix_fmt rgba";
+	cmd << " -f rawvideo -pix_fmt rgb24";
 	cmd << " -s " << dimensions[0] << "x" << dimensions[1];
 	cmd << " -i - -threads 0 -preset veryslow -y -pix_fmt yuv420p -crf 18 ";
 	cmd << filename << ".mp4";
@@ -48,7 +47,7 @@ void Ffmpeg::write(const image::Float4& image, uint32_t /*frame*/, thread::Pool&
 	pool.run_range([this, &image](uint32_t /*id*/, int32_t begin, int32_t end) {
 		to_sRGB(image, begin, end); }, 0, d[0] * d[1]);
 
-	fwrite(rgba_, sizeof(byte4) * d[0] * d[1], 1, stream_);
+	fwrite(rgb_, sizeof(byte3) * d[0] * d[1], 1, stream_);
 }
 
 }

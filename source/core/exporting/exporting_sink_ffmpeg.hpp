@@ -7,7 +7,7 @@
 
 namespace exporting {
 
-class Ffmpeg : public Sink, image::encoding::Srgb_alpha {
+class Ffmpeg : public Sink, image::encoding::Srgb {
 
 public:
 
