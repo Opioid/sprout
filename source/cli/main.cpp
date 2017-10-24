@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 	const auto args = options::parse(argc, argv);
 
 	logging::set_verbose(args.verbose);
-	logging::info("Welcome to sprout (" + platform::build() +  ")!");
+	logging::info("Welcome to sprout (" + platform::build() + ")!");
 
 	if (args.take.empty()) {
 		logging::release();
@@ -120,7 +120,6 @@ int main(int argc, char* argv[]) {
 	std::string take_name;
 
 	try {
-
 		auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
 										 : file_system.read_stream(args.take, take_name);
 
@@ -222,22 +221,22 @@ void log_memory_consumption(const resource::Manager& manager,
 							size_t rendering_num_bytes) {
 	logging::info("Memory consumption:");
 
-	size_t image_num_bytes = manager.num_bytes<image::Image>();
+	const size_t image_num_bytes = manager.num_bytes<image::Image>();
 	logging::info("Images: " + string::print_bytes(image_num_bytes));
 
-	size_t material_num_bytes = manager.num_bytes<scene::material::Material>();
+	const size_t material_num_bytes = manager.num_bytes<scene::material::Material>();
 	logging::info("Materials: " + string::print_bytes(material_num_bytes));
 
-	size_t mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
+	const size_t mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
 	logging::info("Meshes: " + string::print_bytes(mesh_num_bytes));
 
-	size_t renderer_num_bytes = take.view.pipeline.num_bytes()
-							  + take.view.camera->sensor().num_bytes()
-							  + rendering_num_bytes;
+	const size_t renderer_num_bytes = take.view.pipeline.num_bytes()
+									+ take.view.camera->sensor().num_bytes()
+									+ rendering_num_bytes;
 	logging::info("Renderer: " + string::print_bytes(renderer_num_bytes));
 
-	size_t total_num_bytes = image_num_bytes + material_num_bytes
-						   + mesh_num_bytes + renderer_num_bytes;
+	const size_t total_num_bytes = image_num_bytes + material_num_bytes
+								 + mesh_num_bytes + renderer_num_bytes;
 	logging::info("Total: " + string::print_bytes(total_num_bytes));
 }
 
