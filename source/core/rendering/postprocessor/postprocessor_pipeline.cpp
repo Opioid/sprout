@@ -4,7 +4,7 @@
 #include "rendering/sensor/sensor.hpp"
 #include "base/math/vector4.inl"
 
-namespace rendering { namespace postprocessor {
+namespace rendering::postprocessor {
 
 Pipeline::Pipeline() {}
 
@@ -70,4 +70,4 @@ void Pipeline::apply(const sensor::Sensor& sensor, image::Float4& target,
 	}
 }
 
-}}
+}

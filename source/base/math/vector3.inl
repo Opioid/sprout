@@ -15,9 +15,6 @@ namespace math {
  ****************************************************************************/
 
 template<typename T>
-constexpr Vector3<T>::Vector3(T x, T y, T z) : v{x, y, z} {}
-
-template<typename T>
 constexpr Vector3<T>::Vector3(T s) : v{s, s, s} {}
 
 template<typename T>

@@ -21,7 +21,7 @@ struct Vector3 {
 
 	Vector3() = default;
 
-	constexpr Vector3(T x, T y, T z);
+	constexpr Vector3(T x, T y, T z) : v{x, y, z} {}
 
 	explicit constexpr Vector3(T s);
 

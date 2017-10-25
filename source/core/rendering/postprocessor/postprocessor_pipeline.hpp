@@ -16,7 +16,6 @@ namespace tonemapping { class Tonemapper; }
 
 }
 
-
 namespace postprocessor {
 
 class Postprocessor;
@@ -47,4 +46,3 @@ private:
 };
 
 }}
-
