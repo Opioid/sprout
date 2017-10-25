@@ -120,16 +120,16 @@ static inline float pdf_visible(float d, float og1_wo) {
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-							 const Layer& layer, const Fresnel& fresnel, float& pdf) {
+bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+								   const Layer& layer, const Fresnel& fresnel) {
 	float3 fresnel_result;
-	return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer, fresnel, fresnel_result, pdf);
+	return reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, layer, fresnel, fresnel_result);
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-							 const Layer& layer, const Fresnel& fresnel,
-							 float3& fresnel_result, float& pdf) {
+bxdf::Result Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+								   const Layer& layer, const Fresnel& fresnel,
+								   float3& fresnel_result) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
 
@@ -144,13 +144,13 @@ float3 Isotropic::reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, flo
 	// Legacy GGX
 	// pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 
-	pdf = pdf_visible(d, og1_wo);
+	const float3 reflection = d * g * f;
 
-	const float3 result = d * g * f;
+	const float pdf = pdf_visible(d, og1_wo);
 
-	SOFT_ASSERT(testing::check(result, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
+	SOFT_ASSERT(testing::check(reflection, n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h, pdf, layer));
 
-	return result;
+	return { reflection, pdf };
 }
 
 template<typename Layer, typename Fresnel>
@@ -287,9 +287,9 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 }
 
 template<typename Layer, typename Fresnel>
-float3 Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
-							 float n_dot_wo, float /*n_dot_t*/, const Layer& layer,
-							 const Fresnel& fresnel, float& pdf) {
+bxdf::Result Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
+								   float n_dot_wo, float /*n_dot_t*/, const Layer& layer,
+								   const Fresnel& fresnel) {
 	// Roughness zero will always have zero specular term (or worse NaN)
 	SOFT_ASSERT(layer.alpha2_ >= Min_alpha2);
 
@@ -302,12 +302,12 @@ float3 Isotropic::refraction(const float3& wi, const float3& wo, float n_dot_wi,
 	const float g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, alpha2);
 	const float3 f = fresnel(wo_dot_h);
 
-	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-	const float3 result = (d * g) * (f * layer.color);
+	const float3 reflection = (d * g) * (f * layer.color);
+	const float  pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 
-	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
+	SOFT_ASSERT(testing::check(reflection, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
 
-	return result;
+	return { reflection, pdf };
 }
 
 template<typename Layer, typename Fresnel>
@@ -411,8 +411,8 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 }
 
 template<typename Layer, typename Fresnel>
-float3 Anisotropic::reflection(const float3& h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-							   const Layer& layer, const Fresnel& fresnel, float &pdf) {
+bxdf::Result Anisotropic::reflection(const float3& h, float n_dot_wi, float n_dot_wo,
+									 float wo_dot_h, const Layer& layer, const Fresnel& fresnel) {
 	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	const float x_dot_h = math::dot(layer.t_, h);
@@ -422,12 +422,12 @@ float3 Anisotropic::reflection(const float3& h, float n_dot_wi, float n_dot_wo, 
 	const float g = masking_shadowing_and_denominator(n_dot_wi, n_dot_wo, layer.axy_);
 	const float3 f = fresnel(wo_dot_h);
 
-	pdf = (d * n_dot_h) / (4.f * wo_dot_h);
-	const float3 result = d * g * f;
+	const float pdf = (d * n_dot_h) / (4.f * wo_dot_h);
+	const float3 reflection = d * g * f;
 
-	SOFT_ASSERT(testing::check(result, h, n_dot_wi, n_dot_wo, wo_dot_h, pdf, layer));
+	SOFT_ASSERT(testing::check(reflection, h, n_dot_wi, n_dot_wo, wo_dot_h, layer));
 
-	return result;
+	return { reflection, pdf };
 }
 
 template<typename Layer, typename Fresnel>

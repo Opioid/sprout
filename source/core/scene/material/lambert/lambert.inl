@@ -13,14 +13,14 @@
 namespace scene::material::lambert {
 
 template<typename Layer>
-float3 Isotropic::reflection(const float3& color, float n_dot_wi, const Layer& layer, float& pdf) {
-	pdf = n_dot_wi * math::Pi_inv;
-	const float3 result = math::Pi_inv * color;
+bxdf::Result Isotropic::reflection(const float3& color, float n_dot_wi, const Layer& layer) {
+	const float3 reflection = math::Pi_inv * color;
+	const float  pdf = n_dot_wi * math::Pi_inv;
 
 	(void)layer;
 	SOFT_ASSERT(testing::check(result, float3::identity(), float3::identity(), pdf, layer));
 
-	return result;
+	return { reflection, pdf };
 }
 
 template<typename Layer>
@@ -34,9 +34,9 @@ float Isotropic::reflect(const float3& color, const Layer& layer,
 
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 
-	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = math::Pi_inv * color;
 	result.wi = wi;
+	result.pdf = n_dot_wi * math::Pi_inv;
 	result.type.clear(bxdf::Type::Diffuse_reflection);
 
 	SOFT_ASSERT(testing::check(result, float3::identity(), layer));

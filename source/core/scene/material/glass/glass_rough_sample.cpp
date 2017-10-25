@@ -43,12 +43,10 @@ bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
 	const fresnel::Constant constant(f);
-	float pdf;
-	const float3 reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-														 layer_, constant, pdf);
+	const auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+												layer_, constant);
 
-	pdf *= 0.5f;
-	return { n_dot_wi * reflection, pdf };
+	return { n_dot_wi * ggx.reflection, 0.5f * ggx.pdf };
 }
 
 void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {

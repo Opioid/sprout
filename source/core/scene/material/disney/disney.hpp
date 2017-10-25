@@ -6,7 +6,7 @@ namespace sampler { class Sampler; }
 
 namespace scene { namespace material {
 
-namespace bxdf { struct Result; }
+namespace bxdf { struct Result; struct Sample; }
 
 class Sample;
 
@@ -17,8 +17,8 @@ class Isotropic {
 public:
 
 	template<typename Layer>
-	static float3 reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
-							 const Layer& layer, float& pdf);
+	static bxdf::Result reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+								   const Layer& layer);
 
 	template<typename Layer>
 	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
@@ -35,8 +35,8 @@ class Isotropic_no_lambert {
 public:
 
 	template<typename Layer>
-	static float3 reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
-							 const Layer& layer, float& pdf);
+	static bxdf::Result reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+								   const Layer& layer);
 
 	template<typename Layer>
 	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,

@@ -8,7 +8,7 @@ namespace scene { namespace material {
 
 class Sample;
 
-namespace bxdf { struct Result; }
+namespace bxdf { struct Result; struct Sample; }
 
 namespace ggx {
 
@@ -17,13 +17,13 @@ class Isotropic {
 public:
 
 	template<typename Layer, typename Fresnel>
-	static float3 reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-							 const Layer& layer, const Fresnel& fresnel, float& pdf);
+	static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+								   const Layer& layer, const Fresnel& fresnel);
 
 	template<typename Layer, typename Fresnel>
-	static float3 reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
-							 const Layer& layer, const Fresnel& fresnel,
-							 float3& fresnel_result, float& pdf);
+	static bxdf::Result reflection(float n_dot_wi, float n_dot_wo, float wo_dot_h, float n_dot_h,
+								   const Layer& layer, const Fresnel& fresnel,
+								   float3& fresnel_result);
 
 	template<typename Layer, typename Fresnel>
 	static float reflect(const float3& wo, float n_dot_wo,
@@ -36,9 +36,9 @@ public:
 						 float3& fresnel_result, bxdf::Sample& result);
 
 	template<typename Layer, typename Fresnel>
-	static float3 refraction(const float3& wi, const float3& wo, float n_dot_wi,
-							 float n_dot_wo, float n_dot_t, const Layer& layer,
-							 const Fresnel& fresnel, float& pdf);
+	static bxdf::Result refraction(const float3& wi, const float3& wo, float n_dot_wi,
+								   float n_dot_wo, float n_dot_t, const Layer& layer,
+								   const Fresnel& fresnel);
 
 	template<typename Layer, typename Fresnel>
 	static float refract(const float3& wo, float n_dot_wo, float n_dot_t, const Layer& layer,
@@ -55,8 +55,8 @@ class Anisotropic {
 public:
 
 	template<typename Layer, typename Fresnel>
-	static float3 reflection(const float3& h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
-							 const Layer& layer, const Fresnel& fresnel, float& pdf);
+	static bxdf::Result reflection(const float3& h, float n_dot_wi, float n_dot_wo, float wo_dot_h,
+								   const Layer& layer, const Fresnel& fresnel);
 
 	template<typename Layer, typename Fresnel>
 	static float reflect(const float3& wo, float n_dot_wo,

@@ -25,11 +25,10 @@ bxdf::Result Sample_isotropic::evaluate(const float3& wi) const {
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
 	const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-	float pdf;
-	const float3 reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-														 layer_, conductor, pdf);
+	const auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+												layer_, conductor);
 
-	return { n_dot_wi * reflection, pdf };
+	return { n_dot_wi * ggx.reflection, ggx.pdf };
 }
 
 float Sample_isotropic::ior() const {
@@ -74,11 +73,10 @@ bxdf::Result Sample_anisotropic::evaluate(const float3& wi) const {
 	const float wo_dot_h = clamp_dot(wo_, h);
 
 	const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-	float pdf;
-	const float3 reflection = ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
-														   layer_, conductor, pdf);
+	const auto ggx = ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
+												  layer_, conductor);
 
-	return { n_dot_wi * reflection, pdf };
+	return { n_dot_wi * ggx.reflection, ggx.pdf };
 }
 
 float Sample_anisotropic::ior() const {

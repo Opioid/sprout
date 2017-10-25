@@ -18,14 +18,14 @@
 namespace scene::material::disney {
 
 template<typename Layer>
-float3 Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
-							 const Layer& layer, float& pdf) {
-	pdf = n_dot_wi * math::Pi_inv;
-	const float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
+bxdf::Result Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+								   const Layer& layer) {
+	const float3 reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
+	const float  pdf = n_dot_wi * math::Pi_inv;
 
-	SOFT_ASSERT(testing::check(result, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
+	SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
 
-	return result;
+	return { reflection, pdf };
 }
 
 template<typename Layer>
@@ -76,14 +76,14 @@ float3 Isotropic::evaluate(float h_dot_wi, float n_dot_wi, float n_dot_wo, const
 }
 
 template<typename Layer>
-float3 Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
-										const Layer& layer, float& pdf) {
-	pdf = n_dot_wi * math::Pi_inv;
-	const float3 result = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
+bxdf::Result Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
+											  const Layer& layer) {
+	const float3 reflection = evaluate(h_dot_wi, n_dot_wi, n_dot_wo, layer);
+	const float  pdf = n_dot_wi * math::Pi_inv;
 
-	SOFT_ASSERT(testing::check(result, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
+	SOFT_ASSERT(testing::check(reflection, float3(0.f), n_dot_wi, n_dot_wo, h_dot_wi, pdf, layer));
 
-	return result;
+	return { reflection, pdf };
 }
 
 template<typename Layer>

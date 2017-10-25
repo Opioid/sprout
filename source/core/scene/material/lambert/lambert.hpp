@@ -4,9 +4,9 @@
 
 namespace sampler { class Sampler; }
 
-namespace scene { namespace material {
+namespace scene::material {
 
-namespace bxdf { struct Result; }
+namespace bxdf { struct Result; struct Sample; }
 
 class Sample;
 
@@ -17,12 +17,12 @@ class Isotropic {
 public:
 
 	template<typename Layer>
-	static float3 reflection(const float3& color, float n_dot_wi,
-							 const Layer& layer, float& pdf);
+	static bxdf::Result reflection(const float3& color, float n_dot_wi,
+								   const Layer& layer);
 
 	template<typename Layer>
 	static float reflect(const float3& color, const Layer& layer,
 						 sampler::Sampler& sampler, bxdf::Sample& result);
 };
 
-}}}
+}}

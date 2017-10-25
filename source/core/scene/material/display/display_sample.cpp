@@ -25,12 +25,10 @@ bxdf::Result Sample::evaluate(const float3& wi) const {
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
 	const fresnel::Schlick schlick(layer_.f0_);
-	float pdf;
-	const float3 ggx_reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo,
-															 wo_dot_h, n_dot_h,
-															 layer_, schlick, pdf);
+	const auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+												layer_, schlick);
 
-	return { n_dot_wi * ggx_reflection, pdf };
+	return { n_dot_wi * ggx.reflection, ggx.pdf };
 }
 
 float3 Sample::radiance() const {

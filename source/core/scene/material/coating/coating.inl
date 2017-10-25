@@ -20,23 +20,20 @@ inline void Clearcoat::set(float f0, float alpha, float alpha2) {
 
 template<typename Layer>
 bxdf::Result Clearcoat::evaluate(const float3& wi, const float3& wo, const float3& h,
-						   float wo_dot_h, float /*internal_ior*/, const Layer& layer,
-						   float3& attenuation) const {
+								 float wo_dot_h, float /*internal_ior*/, const Layer& layer,
+								 float3& attenuation) const {
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 	const float n_dot_wo = layer.clamp_abs_n_dot(wo); //layer.clamp_n_dot(wo);
 
 	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	const fresnel::Schlick_weighted schlick(f0_, weight_);
-	float pdf;
-	const float3 reflection = n_dot_wi * ggx::Isotropic::reflection(n_dot_wi, n_dot_wo,
-																	wo_dot_h, n_dot_h,
-																	layer, schlick,
-																	attenuation, pdf);
+	const auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+												layer, schlick, attenuation);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f), color_, weight_);
 
-	return { reflection, pdf };
+	return { n_dot_wi * ggx.reflection, ggx.pdf };
 }
 
 template<typename Layer>
@@ -72,15 +69,12 @@ bxdf::Result Thinfilm::evaluate(const float3& wi, const float3& wo, const float3
 	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	const fresnel::Thinfilm_weighted thinfilm(1.f, ior_, internal_ior, thickness_, weight_);
-	float pdf;
-	const float3 reflection = n_dot_wi * ggx::Isotropic::reflection(n_dot_wi, n_dot_wo,
-																	wo_dot_h, n_dot_h,
-																	layer, thinfilm,
-																	attenuation, pdf);
+	const auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+												layer, thinfilm, attenuation);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f), color_, weight_);
 
-	return { reflection, pdf };
+	return { n_dot_wi * ggx.reflection, ggx.pdf };
 }
 
 template<typename Layer>
