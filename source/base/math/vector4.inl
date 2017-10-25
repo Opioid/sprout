@@ -15,48 +15,48 @@ template<typename T>
 constexpr Vector4<T>::Vector4(T x, T y, T z, T w) : v{x, y, z, w} {}
 
 template<typename T>
-Vector4<T>::Vector4(T s) : v{s, s, s, s} {}
+constexpr Vector4<T>::Vector4(T s) : v{s, s, s, s} {}
 
 template<typename T>
-Vector4<T>::Vector4(Vector2<T> xy, T z, T w) : v{xy[0], xy[1], z, w} {}
+constexpr Vector4<T>::Vector4(Vector2<T> xy, T z, T w) : v{xy[0], xy[1], z, w} {}
 
 template<typename T>
-Vector4<T>::Vector4(const Vector3<T>& xyz, T w) : v{xyz[0], xyz[1], xyz[2], w} {}
+constexpr Vector4<T>::Vector4(const Vector3<T>& xyz, T w) : v{xyz[0], xyz[1], xyz[2], w} {}
 
 template<typename T>
-T Vector4<T>::operator[](uint32_t i) const{
+constexpr T Vector4<T>::operator[](uint32_t i) const{
 	return v[i];
 }
 
 template<typename T>
-T& Vector4<T>::operator[](uint32_t i) {
+constexpr T& Vector4<T>::operator[](uint32_t i) {
 	return v[i];
 }
 
 template<typename T>
-Vector4<T> Vector4<T>::operator+(const Vector4& v) const {
+constexpr Vector4<T> Vector4<T>::operator+(const Vector4& v) const {
 	return Vector4(v[0] + v[0], v[1] + v[1], v[2] + v[2], v[3] + v[3]);
 }
 
 template<typename T>
-Vector4<T> Vector4<T>::operator*(const Vector4& v) const {
+constexpr Vector4<T> Vector4<T>::operator*(const Vector4& v) const {
 	return Vector4(v[0] * v[0], v[1] * v[1], v[2] * v[2], v[3] * v[3]);
 }
 
 template<typename T>
-Vector4<T> Vector4<T>::operator/(T s) const {
+constexpr Vector4<T> Vector4<T>::operator/(T s) const {
 	T is = T(1) / s;
 	return Vector4(is * v[0], is * v[1], is * v[2], is * v[2]);
 }
 
 template<typename T>
-Vector4<T>& Vector4<T>::operator+=(const Vector4& v) {
+constexpr Vector4<T>& Vector4<T>::operator+=(const Vector4& v) {
 	v[0] += v[0]; v[1] += v[1]; v[2] += v[2]; v[3] += v[3];
 	return *this;
 }
 
 template<typename T>
-Vector4<T>& Vector4<T>::operator-=(const Vector4& v) {
+constexpr Vector4<T>& Vector4<T>::operator-=(const Vector4& v) {
 	v[0] -= v[0]; v[1] -= v[1]; v[2] -= v[2]; v[3] -= v[3];
 	return *this;
 }
@@ -67,12 +67,12 @@ constexpr Vector4<T> Vector4<T>::identity() {
 }
 
 template<typename T>
-Vector4<T> operator*(T s, const Vector4<T> &v) {
+constexpr Vector4<T> operator*(T s, const Vector4<T> &v) {
 	return Vector4<T>(s * v[0], s * v[1], s * v[2], s * v[3]);
 }
 
 template<typename T>
-T dot(const Vector4<T>& a, const Vector4<T>& b) {
+constexpr T dot(const Vector4<T>& a, const Vector4<T>& b) {
 	return (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 }
 
