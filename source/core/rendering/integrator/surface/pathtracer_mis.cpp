@@ -180,10 +180,6 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 		}
 	}
 
-	if (opacity < 1.f) {
-		return float4(1.f, 0.f, 0.f, 1.f);
-	}
-
 	return float4(result, opacity);
 }
 
