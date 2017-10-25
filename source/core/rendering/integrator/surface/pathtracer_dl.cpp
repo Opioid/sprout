@@ -157,10 +157,9 @@ float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& 
 			if (math::any_greater_zero(tv)) {
 				const float3 tr = worker.transmittance(shadow_ray);
 
-				float bxdf_pdf;
-				const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+				const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
 
-				result += (tv * tr) * (light_sample.radiance * f)
+				result += (tv * tr) * (light_sample.radiance * bxdf.reflection)
 						/ (light.pdf * light_sample.shape.pdf);
 			}
 		}

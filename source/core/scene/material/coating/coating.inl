@@ -19,22 +19,24 @@ inline void Clearcoat::set(float f0, float alpha, float alpha2) {
 }
 
 template<typename Layer>
-float3 Clearcoat::evaluate(const float3& wi, const float3& wo, const float3& h,
+bxdf::Result Clearcoat::evaluate(const float3& wi, const float3& wo, const float3& h,
 						   float wo_dot_h, float /*internal_ior*/, const Layer& layer,
-						   float3& attenuation, float& pdf) const {
+						   float3& attenuation) const {
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 	const float n_dot_wo = layer.clamp_abs_n_dot(wo); //layer.clamp_n_dot(wo);
 
 	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	const fresnel::Schlick_weighted schlick(f0_, weight_);
-	const float3 result = n_dot_wi * ggx::Isotropic::reflection(n_dot_wi, n_dot_wo,
-																wo_dot_h, n_dot_h,
-																layer, schlick, attenuation, pdf);
+	float pdf;
+	const float3 reflection = n_dot_wi * ggx::Isotropic::reflection(n_dot_wi, n_dot_wo,
+																	wo_dot_h, n_dot_h,
+																	layer, schlick,
+																	attenuation, pdf);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f), color_, weight_);
 
-	return result;
+	return { reflection, pdf };
 }
 
 template<typename Layer>
@@ -61,22 +63,24 @@ inline void Thinfilm::set(float ior, float alpha, float alpha2, float thickness)
 }
 
 template<typename Layer>
-float3 Thinfilm::evaluate(const float3& wi, const float3& wo, const float3& h,
+bxdf::Result Thinfilm::evaluate(const float3& wi, const float3& wo, const float3& h,
 						  float wo_dot_h, float internal_ior, const Layer& layer,
-						  float3& attenuation, float& pdf) const {
+						  float3& attenuation) const {
 	const float n_dot_wi = layer.clamp_n_dot(wi);
 	const float n_dot_wo = layer.clamp_abs_n_dot(wo); //layer.clamp_n_dot(wo);
 
 	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
 	const fresnel::Thinfilm_weighted thinfilm(1.f, ior_, internal_ior, thickness_, weight_);
-	const float3 result = n_dot_wi * ggx::Isotropic::reflection(n_dot_wi, n_dot_wo,
-																wo_dot_h, n_dot_h,
-																layer, thinfilm, attenuation, pdf);
+	float pdf;
+	const float3 reflection = n_dot_wi * ggx::Isotropic::reflection(n_dot_wi, n_dot_wo,
+																	wo_dot_h, n_dot_h,
+																	layer, thinfilm,
+																	attenuation, pdf);
 
 	attenuation = (1.f - attenuation) * math::lerp(float3(1.f), color_, weight_);
 
-	return result;
+	return { reflection, pdf };
 }
 
 template<typename Layer>
@@ -95,10 +99,10 @@ void Thinfilm::sample(const float3& wo, float internal_ior, const Layer& layer,
 }
 
 template<typename Coating>
-float3 Coating_layer<Coating>::evaluate(const float3& wi, const float3& wo, const float3& h,
-										float wo_dot_h, float internal_ior,
-										float3& attenuation, float& pdf) const {
-	return Coating::evaluate(wi, wo, h, wo_dot_h, internal_ior, *this, attenuation, pdf);
+bxdf::Result Coating_layer<Coating>::evaluate(const float3& wi, const float3& wo, const float3& h,
+											  float wo_dot_h, float internal_ior,
+											  float3& attenuation) const {
+	return Coating::evaluate(wi, wo, h, wo_dot_h, internal_ior, *this, attenuation);
 }
 
 template<typename Coating>

@@ -9,13 +9,12 @@
 namespace scene::material::substitute {
 
 template<typename Coating_layer>
-float3 Sample_coating<Coating_layer>::evaluate(const float3& wi, float& pdf) const {
+bxdf::Result Sample_coating<Coating_layer>::evaluate(const float3& wi) const {
 	if (!same_hemisphere(wo_)) {
-		pdf = 0.f;
-		return float3::identity();
+		return { float3::identity(), 0.f };
 	}
 
-	return base_and_coating_evaluate(wi, coating_, pdf);
+	return base_and_coating_evaluate(wi, coating_);
 }
 
 template<typename Coating_layer>

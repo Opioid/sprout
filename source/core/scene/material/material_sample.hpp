@@ -10,7 +10,7 @@ class Worker;
 
 namespace material {
 
-namespace bxdf { struct Sample; }
+namespace bxdf { struct Result; struct Sample; }
 
 class BSSRDF;
 
@@ -39,7 +39,7 @@ public:
 
 	virtual const Layer& base_layer() const = 0;
 
-	virtual float3 evaluate(const float3& wi, float& pdf) const = 0;
+	virtual bxdf::Result evaluate(const float3& wi) const = 0;
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const = 0;
 

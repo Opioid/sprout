@@ -132,9 +132,10 @@ void Setup::test(const float3& wi, const float3& wo,
 	sample.set_basis(n, wo);
 	sample.layer_.set_tangent_frame(t, b, n);
 
-	float pdf;
-	float3 reflection = sample.evaluate(wi, pdf);
-	print(reflection, pdf);
+	{
+		const auto result = sample.evaluate(wi);
+		print(result.reflection, result.pdf);
+	}
 
 	bxdf::Sample result;
 	sample.sample(sampler, result);

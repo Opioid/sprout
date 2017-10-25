@@ -312,13 +312,12 @@ float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight, fl
 	if (math::any_greater_zero(tv)) {
 		const float3 tr = worker.transmittance(shadow_ray);
 
-		float bxdf_pdf;
-		const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+		const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
 
 		const float light_pdf = light_sample.shape.pdf * light_weight;
-		const float weight = power_heuristic(light_pdf, bxdf_pdf);
+		const float weight = power_heuristic(light_pdf, bxdf.pdf);
 
-		return (weight / light_pdf) * (tv * tr) * (light_sample.radiance * f);
+		return (weight / light_pdf) * (tv * tr) * (light_sample.radiance * bxdf.reflection);
 	}
 
 	return float3(0.f);

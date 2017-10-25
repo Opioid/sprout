@@ -13,10 +13,10 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
 }
 
-float3 Sample::evaluate(const float3& wi, float& pdf) const {
-	float n_dot_wi = layer_.clamp_n_dot(wi);
-	pdf = n_dot_wi * math::Pi_inv;
-	return pdf * layer_.diffuse_color;
+bxdf::Result Sample::evaluate(const float3& wi) const {
+	const float n_dot_wi = layer_.clamp_n_dot(wi);
+	const float pdf = n_dot_wi * math::Pi_inv;
+	return { pdf * layer_.diffuse_color, pdf };
 }
 
 float Sample::ior() const {

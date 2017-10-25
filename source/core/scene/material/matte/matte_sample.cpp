@@ -11,7 +11,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
 }
 
-float3 Sample::evaluate(const float3& wi, float& pdf) const {
+bxdf::Result Sample::evaluate(const float3& wi) const {
 	float n_dot_wi = layer_.clamp_n_dot(wi);
 	float n_dot_wo = layer_.clamp_abs_n_dot(wo_); // layer_.clamp_n_dot(wo_);
 
@@ -25,11 +25,12 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 //	const float rcpl_wi_wo = math::rsqrt(sl_wi_wo);
 //	const float h_dot_wi = math::clamp(rcpl_wi_wo + rcpl_wi_wo * wi_dot_wo, 0.00001f, 1.f);
 
-	float3 brdf = disney::Isotropic::reflection(h_dot_wi, n_dot_wi, n_dot_wo, layer_, pdf);
+	float pdf;
+	const float3 brdf = disney::Isotropic::reflection(h_dot_wi, n_dot_wi, n_dot_wo, layer_, pdf);
 
 //	float3 brdf = oren_nayar::Isotropic::reflection(wi, wo_, n_dot_wi, n_dot_wo, layer_, pdf);
 
-	return n_dot_wi * brdf;
+	return { n_dot_wi * brdf, pdf };
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {

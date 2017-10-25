@@ -9,16 +9,15 @@
 
 namespace scene::material::substitute {
 
-float3 Sample::evaluate(const float3& wi, float& pdf) const {
+bxdf::Result Sample::evaluate(const float3& wi) const {
 	if (!same_hemisphere(wo_)) {
-		pdf = 0.f;
-		return float3::identity();
+		return { float3::identity(), 0.f };
 	}
 
 	const float3 h = math::normalize(wo_ + wi);
 	const float wo_dot_h = clamp_dot(wo_, h);
 
-	return layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
+	return layer_.base_evaluate(wi, wo_, h, wo_dot_h);
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {

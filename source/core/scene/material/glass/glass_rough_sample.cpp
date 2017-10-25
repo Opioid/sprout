@@ -16,11 +16,10 @@ const material::Sample::Layer& Sample_rough::base_layer() const {
 	return layer_;
 }
 
-float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
+bxdf::Result Sample_rough::evaluate(const float3& wi) const {
 	if (!same_hemisphere(wo_)) {
 		// only handling reflection for now
-		pdf = 0.f;
-		return float3::identity();
+		return { float3::identity(), 0.f };
 	}
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
@@ -44,11 +43,12 @@ float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
 	const fresnel::Constant constant(f);
+	float pdf;
 	const float3 reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
 														 layer_, constant, pdf);
 
 	pdf *= 0.5f;
-	return n_dot_wi * reflection;
+	return { n_dot_wi * reflection, pdf };
 }
 
 void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {

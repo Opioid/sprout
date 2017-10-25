@@ -11,7 +11,7 @@
 
 namespace scene::material::substitute {
 
-float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
+bxdf::Result Sample_translucent::evaluate(const float3& wi) const {
 // No side check needed because the material is two-sided by definition.
 
 	// This is a bit complicated to understand:
@@ -31,17 +31,20 @@ float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
 		const float n_dot_wo = layer_.clamp_reverse_n_dot(wo_);
 		const float f = layer_.base_diffuse_fresnel_hack(n_dot_wi, n_dot_wo);
 
-		pdf = n_dot_wi * (0.5f * math::Pi_inv);
-		return (n_dot_wi * math::Pi_inv * (1.f - f)) * (attenuation * layer_.diffuse_color_);
+		const float pdf = n_dot_wi * (0.5f * math::Pi_inv);
+		return {
+			(n_dot_wi * math::Pi_inv * (1.f - f)) * (attenuation * layer_.diffuse_color_),
+			pdf
+		};
 	}
 
 	const float3 h = math::normalize(wo_ + wi);
 	const float wo_dot_h = clamp_dot(wo_, h);
 
-	const float3 result = layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
+	auto result = layer_.base_evaluate(wi, wo_, h, wo_dot_h);
 
 	if (thickness_ > 0.f) {
-		pdf *= 0.5f;
+		result.pdf *= 0.5f;
 	}
 
 	return result;

@@ -11,10 +11,9 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
 }
 
-float3 Sample::evaluate(const float3& wi, float& pdf) const {
+bxdf::Result Sample::evaluate(const float3& wi) const {
 	if (!same_hemisphere(wo_)) {
-		pdf = 0.f;
-		return float3::identity();
+		return { float3::identity(), 0.f };
 	}
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
@@ -26,11 +25,12 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
 	const fresnel::Schlick schlick(layer_.f0_);
+	float pdf;
 	const float3 ggx_reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo,
 															 wo_dot_h, n_dot_h,
 															 layer_, schlick, pdf);
 
-	return n_dot_wi * ggx_reflection;
+	return { n_dot_wi * ggx_reflection, pdf };
 }
 
 float3 Sample::radiance() const {

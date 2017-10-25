@@ -18,22 +18,22 @@ public:
 protected:
 
 	template<typename Coating>
-	float3 base_and_coating_evaluate(const float3& wi, const Coating& coating, float& pdf) const;
+	bxdf::Result base_and_coating_evaluate(const float3& wi, const Coating& coating_layer) const;
 
 	template<typename Coating>
-	void base_and_coating_sample(const Coating& coating, sampler::Sampler& sampler,
+	void base_and_coating_sample(const Coating& coating_layer, sampler::Sampler& sampler,
 								 bxdf::Sample& result) const;
 
 	template<typename Coating>
-	void diffuse_sample_and_coating(const Coating& coating, sampler::Sampler& sampler,
+	void diffuse_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
 									bxdf::Sample& result) const;
 
 	template<typename Coating>
-	void specular_sample_and_coating(const Coating& coating, sampler::Sampler& sampler,
+	void specular_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
 									 bxdf::Sample& result) const;
 
 	template<typename Coating>
-	void pure_specular_sample_and_coating(const Coating& coating, sampler::Sampler& sampler,
+	void pure_specular_sample_and_coating(const Coating& coating_layer, sampler::Sampler& sampler,
 										  bxdf::Sample& result) const;
 
 public:
@@ -42,8 +42,8 @@ public:
 		void set(const float3& color, const float3& radiance, float ior,
 				 float constant_f0, float roughness, float metallic);
 
-		float3 base_evaluate(const float3& wi, const float3& wo, const float3& h,
-							 float wo_dot_h, float& pdf) const;
+		bxdf::Result base_evaluate(const float3& wi, const float3& wo, const float3& h,
+								   float wo_dot_h) const;
 
 		void diffuse_sample(const float3& wo, sampler::Sampler& sampler,
 							bxdf::Sample& result) const;

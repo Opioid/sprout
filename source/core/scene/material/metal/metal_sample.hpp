@@ -10,7 +10,7 @@ public:
 
 	virtual const Layer& base_layer() const override final;
 
-	virtual float3 evaluate(const float3& wi, float& pdf) const override final;
+	virtual bxdf::Result evaluate(const float3& wi) const override final;
 
 	virtual float ior() const override final;
 
@@ -33,7 +33,7 @@ public:
 
 	virtual const Layer& base_layer() const override final;
 
-	virtual float3 evaluate(const float3& wi, float& pdf) const override final;
+	virtual bxdf::Result evaluate(const float3& wi) const override final;
 
 	virtual float ior() const override final;
 

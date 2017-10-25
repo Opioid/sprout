@@ -14,7 +14,7 @@ const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
 }
 
-float3 Sample::evaluate(const float3& wi, float& pdf) const {
+bxdf::Result Sample::evaluate(const float3& wi) const {
 	const float3 n = math::cross(layer_.t_, layer_.b_);
 	const bool same_side = math::dot(n, layer_.n_) > 0.f;
 
@@ -22,10 +22,10 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 
 	const float3 color = same_side ? color_front : color_back;
 
-	pdf = n_dot_wi * math::Pi_inv;
+	const float pdf = n_dot_wi * math::Pi_inv;
 	const float3 lambert = math::Pi_inv * color;
 
-	return n_dot_wi * lambert;
+	return { n_dot_wi * lambert, pdf };
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {

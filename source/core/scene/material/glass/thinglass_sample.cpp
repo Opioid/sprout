@@ -16,9 +16,8 @@ const material::Sample::Layer& Sample_thin::base_layer() const {
 	return layer_;
 }
 
-float3 Sample_thin::evaluate(const float3& /*wi*/, float& pdf) const {
-	pdf = 0.f;
-	return float3::identity();
+bxdf::Result Sample_thin::evaluate(const float3& /*wi*/) const {
+	return { float3::identity(), 0.f };
 }
 
 float3 Sample_thin::absorption_coeffecient() const {

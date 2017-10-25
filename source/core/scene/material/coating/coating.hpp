@@ -15,9 +15,9 @@ struct Clearcoat : public Coating_base {
 	void set(float f0, float alpha, float alpha2);
 
 	template<typename Layer>
-	float3 evaluate(const float3& wi, const float3& wo, const float3& h,
-					float wo_dot_h, float internal_ior,
-					const Layer& layer, float3& attenuation, float& pdf) const;
+	bxdf::Result evaluate(const float3& wi, const float3& wo, const float3& h,
+						  float wo_dot_h, float internal_ior,
+						  const Layer& layer, float3& attenuation) const;
 
 	template<typename Layer>
 	void sample(const float3& wo, float internal_ior,
@@ -33,9 +33,9 @@ struct Thinfilm : public Coating_base {
 	void set(float ior, float alpha, float alpha2, float thickness);
 
 	template<typename Layer>
-	float3 evaluate(const float3& wi, const float3& wo, const float3& h,
-					float wo_dot_h, float internal_ior,
-					const Layer& layer, float3& attenuation, float& pdf) const;
+	bxdf::Result evaluate(const float3& wi, const float3& wo, const float3& h,
+						  float wo_dot_h, float internal_ior,
+						  const Layer& layer, float3& attenuation) const;
 
 	template<typename Layer>
 	void sample(const float3& wo, float internal_ior,
@@ -50,8 +50,8 @@ struct Thinfilm : public Coating_base {
 
 template<typename Coating>
 struct Coating_layer : Sample::Layer, Coating {
-	float3 evaluate(const float3& wi, const float3& wo, const float3& h, float wo_dot_h,
-					float internal_ior, float3& attenuation, float& pdf) const;
+	bxdf::Result evaluate(const float3& wi, const float3& wo, const float3& h,
+						  float wo_dot_h, float internal_ior, float3& attenuation) const;
 
 	void sample(const float3& wo, float internal_ior, sampler::Sampler& sampler,
 				float3& attenuation, bxdf::Sample& result) const;

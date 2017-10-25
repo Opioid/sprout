@@ -6,6 +6,7 @@
 #include "scene/scene_intersection.inl"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
+#include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
 #include "take/take_settings.hpp"
@@ -107,10 +108,10 @@ float3 Whitted::estimate_direct_light(const Ray& ray, const Intersection& inters
 				if (math::any_greater_zero(tv)) {
 					const float3 tr = worker.transmittance(shadow_ray);
 
-					float bxdf_pdf;
-					const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
+					const auto bxdf = material_sample.evaluate(light_sample.shape.wi);
 
-					result += (tv * tr) * (light_sample.radiance * f) / light_sample.shape.pdf;
+					result += (tv * tr) * (light_sample.radiance * bxdf.reflection) /
+							  light_sample.shape.pdf;
 				}
 			}
 		}

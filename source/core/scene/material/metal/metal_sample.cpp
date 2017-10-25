@@ -11,10 +11,9 @@ const material::Sample::Layer& Sample_isotropic::base_layer() const {
 	return layer_;
 }
 
-float3 Sample_isotropic::evaluate(const float3& wi, float& pdf) const {
+bxdf::Result Sample_isotropic::evaluate(const float3& wi) const {
 	if (!same_hemisphere(wo_)) {
-		pdf = 0.f;
-		return float3::identity();
+		return { float3::identity(), 0.f };
 	}
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
@@ -26,8 +25,11 @@ float3 Sample_isotropic::evaluate(const float3& wi, float& pdf) const {
 	const float n_dot_h = math::saturate(math::dot(layer_.n_, h));
 
 	const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-	return n_dot_wi * ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
-												 layer_, conductor, pdf);
+	float pdf;
+	const float3 reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
+														 layer_, conductor, pdf);
+
+	return { n_dot_wi * reflection, pdf };
 }
 
 float Sample_isotropic::ior() const {
@@ -60,10 +62,9 @@ const material::Sample::Layer& Sample_anisotropic::base_layer() const {
 	return layer_;
 }
 
-float3 Sample_anisotropic::evaluate(const float3& wi, float& pdf) const {
+bxdf::Result Sample_anisotropic::evaluate(const float3& wi) const {
 	if (!same_hemisphere(wo_)) {
-		pdf = 0.f;
-		return float3::identity();
+		return { float3::identity(), 0.f };
 	}
 
 	const float n_dot_wi = layer_.clamp_n_dot(wi);
@@ -73,8 +74,11 @@ float3 Sample_anisotropic::evaluate(const float3& wi, float& pdf) const {
 	const float wo_dot_h = clamp_dot(wo_, h);
 
 	const fresnel::Conductor conductor(layer_.ior_, layer_.absorption_);
-	return n_dot_wi * ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
-												   layer_, conductor, pdf);
+	float pdf;
+	const float3 reflection = ggx::Anisotropic::reflection(h, n_dot_wi, n_dot_wo, wo_dot_h,
+														   layer_, conductor, pdf);
+
+	return { n_dot_wi * reflection, pdf };
 }
 
 float Sample_anisotropic::ior() const {

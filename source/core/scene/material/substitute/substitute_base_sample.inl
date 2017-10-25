@@ -27,48 +27,44 @@ float Sample_base<Diffuse>::ior() const {
 
 template<typename Diffuse>
 template<typename Coating>
-float3 Sample_base<Diffuse>::base_and_coating_evaluate(const float3& wi, const Coating& coating,
-													   float& pdf) const {
+bxdf::Result Sample_base<Diffuse>::base_and_coating_evaluate(const float3& wi,
+															 const Coating& coating_layer) const {
 	const float3 h = math::normalize(wo_ + wi);
 	const float wo_dot_h = clamp_dot(wo_, h);
 
 	float3 coating_attenuation;
-	float  coating_pdf;
-	const float3 coating_reflection = coating.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_,
-													   coating_attenuation, coating_pdf);
+	const auto coating = coating_layer.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_,
+												coating_attenuation);
 
-	float base_pdf;
-	const float3 base_reflection = layer_.base_evaluate(wi, wo_, h, wo_dot_h, base_pdf);
+	const auto base = layer_.base_evaluate(wi, wo_, h, wo_dot_h);
 
-	pdf = (coating_pdf + 2.f * base_pdf) / 3.f;
-	return coating_reflection + coating_attenuation * base_reflection;
+	const float pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
+	return { coating.reflection + coating_attenuation * base.reflection, pdf };
 }
 
 template<typename Diffuse>
 template<typename Coating>
-void Sample_base<Diffuse>::base_and_coating_sample(const Coating& coating,
+void Sample_base<Diffuse>::base_and_coating_sample(const Coating& coating_layer,
 												   sampler::Sampler& sampler,
 												   bxdf::Sample& result) const {
 	const float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
 		float3 coating_attenuation;
-		coating.sample(wo_, layer_.ior_, sampler, coating_attenuation, result);
+		coating_layer.sample(wo_, layer_.ior_, sampler, coating_attenuation, result);
 
-		float base_pdf;
-		const float3 base_reflection = layer_.base_evaluate(result.wi, wo_, result.h,
-															result.h_dot_wi, base_pdf);
+		const auto base = layer_.base_evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
-		result.pdf = (result.pdf + 2.f * base_pdf) / 3.f;
-		result.reflection = result.reflection + coating_attenuation * base_reflection;
+		result.pdf = (result.pdf + 2.f * base.pdf) / 3.f;
+		result.reflection = result.reflection + coating_attenuation * base.reflection;
 	} else {
 		if (1.f == layer_.metallic_) {
-			pure_specular_sample_and_coating(coating, sampler, result);
+			pure_specular_sample_and_coating(coating_layer, sampler, result);
 		} else {
 			if (p < 0.75f) {
-				diffuse_sample_and_coating(coating, sampler, result);
+				diffuse_sample_and_coating(coating_layer, sampler, result);
 			} else {
-				specular_sample_and_coating(coating, sampler, result);
+				specular_sample_and_coating(coating_layer, sampler, result);
 			}
 		}
 	}
@@ -76,53 +72,50 @@ void Sample_base<Diffuse>::base_and_coating_sample(const Coating& coating,
 
 template<typename Diffuse>
 template<typename Coating>
-void Sample_base<Diffuse>::diffuse_sample_and_coating(const Coating& coating,
+void Sample_base<Diffuse>::diffuse_sample_and_coating(const Coating& coating_layer,
 													  sampler::Sampler& sampler,
 													  bxdf::Sample& result) const {
 	layer_.diffuse_sample(wo_, sampler, result);
 
 	float3 coating_attenuation;
-	float  coating_pdf;
-	const float3 coating_reflection = coating.evaluate(result.wi, wo_, result.h,
-													   result.h_dot_wi, layer_.ior_,
-													   coating_attenuation, coating_pdf);
+	const auto coating = coating_layer.evaluate(result.wi, wo_, result.h,
+												result.h_dot_wi, layer_.ior_,
+												coating_attenuation);
 
-	result.pdf = (2.f * result.pdf + coating_pdf) / 3.f;
-	result.reflection = coating_attenuation * result.reflection + coating_reflection;
+	result.pdf = (2.f * result.pdf + coating.pdf) / 3.f;
+	result.reflection = coating_attenuation * result.reflection + coating.reflection;
 }
 
 template<typename Diffuse>
 template<typename Coating>
-void Sample_base<Diffuse>::specular_sample_and_coating(const Coating& coating,
+void Sample_base<Diffuse>::specular_sample_and_coating(const Coating& coating_layer,
 													   sampler::Sampler& sampler,
 													   bxdf::Sample& result) const {
 	layer_.specular_sample(wo_, sampler, result);
 
 	float3 coating_attenuation;
-	float  coating_pdf;
-	const float3 coating_reflection = coating.evaluate(result.wi, wo_, result.h,
-													   result.h_dot_wi, layer_.ior_,
-													   coating_attenuation, coating_pdf);
+	const auto coating = coating_layer.evaluate(result.wi, wo_, result.h,
+												result.h_dot_wi, layer_.ior_,
+												coating_attenuation);
 
-	result.pdf = (2.f * result.pdf + coating_pdf) / 3.f;
-	result.reflection = coating_attenuation * result.reflection + coating_reflection;
+	result.pdf = (2.f * result.pdf + coating.pdf) / 3.f;
+	result.reflection = coating_attenuation * result.reflection + coating.reflection;
 }
 
 template<typename Diffuse>
 template<typename Coating>
-void Sample_base<Diffuse>::pure_specular_sample_and_coating(const Coating& coating,
+void Sample_base<Diffuse>::pure_specular_sample_and_coating(const Coating& coating_layer,
 															sampler::Sampler& sampler,
 															bxdf::Sample& result) const {
 	layer_.pure_specular_sample(wo_, sampler, result);
 
 	float3 coating_attenuation;
-	float  coating_pdf;
-	const float3 coating_reflection = coating.evaluate(result.wi, wo_, result.h,
-													   result.h_dot_wi, layer_.ior_,
-													   coating_attenuation, coating_pdf);
+	const auto coating = coating_layer.evaluate(result.wi, wo_, result.h,
+												result.h_dot_wi, layer_.ior_,
+												coating_attenuation);
 
-	result.pdf = 0.5f * (result.pdf + coating_pdf);
-	result.reflection = coating_attenuation * result.reflection + coating_reflection;
+	result.pdf = 0.5f * (result.pdf + coating.pdf);
+	result.reflection = coating_attenuation * result.reflection + coating.reflection;
 }
 
 template<typename Diffuse>
@@ -140,9 +133,8 @@ void Sample_base<Diffuse>::Layer::set(const float3& color, const float3& radianc
 }
 
 template<typename Diffuse>
-float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3& wo,
-												  const float3& h, float wo_dot_h,
-												  float& pdf) const {
+bxdf::Result Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3& wo,
+														const float3& h, float wo_dot_h) const {
 	const float n_dot_wi = clamp_n_dot(wi);
 	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
@@ -157,12 +149,12 @@ float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3
 	const float3 ggx_reflection = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
 															 *this, schlick, ggx_fresnel, ggx_pdf);
 
-	pdf = 0.5f * (d_pdf + ggx_pdf);
+	const float pdf = 0.5f * (d_pdf + ggx_pdf);
 
 	// Apparantly weight by (1 - fresnel) is not correct!
 	// So here we assume Diffuse has the proper fresnel built in - which Disney does (?)
 
-	return n_dot_wi * (d_reflection + ggx_reflection);
+	return { n_dot_wi * (d_reflection + ggx_reflection), pdf };
 }
 
 template<typename Diffuse>
