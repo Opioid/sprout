@@ -19,11 +19,11 @@ float3 Integrator::estimate_direct_light(const float3& position, const scene::Pr
 										 float time, uint32_t depth,
 										 sampler::Sampler& sampler, Worker& worker) {
 	// Direct light scattering
-	float light_pdf;
-	const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
+	const auto light = worker.scene().random_light(rng_.random_float());
 
 	scene::light::Sample light_sample;
-	if (!light->sample(position, time, sampler, 0, Sampler_filter::Nearest, worker, light_sample)) {
+	if (!light.ptr->sample(position, time, sampler, 0, Sampler_filter::Nearest,
+						   worker, light_sample)) {
 		return float3(0.f);
 	}
 
@@ -56,7 +56,7 @@ float3 Integrator::estimate_direct_light(const float3& position, const scene::Pr
 		const float3 transmittance = math::exp(-tau);
 		const float3 l = transmittance * light_sample.radiance;
 
-		return ((p * tv * t) * (scattering * l)) / (light_pdf * light_sample.shape.pdf);
+		return ((p * tv * t) * (scattering * l)) / (light.pdf * light_sample.shape.pdf);
 	}
 
 	return float3(0.f);

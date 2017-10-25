@@ -209,10 +209,9 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
 			const float select = light_sampler(ray.depth).generate_sample_1D(1);
 
-			float light_pdf;
-			const auto light = worker.scene().random_light(select, light_pdf);
+			const auto light = worker.scene().random_light(select);
 
-			result += evaluate_light(light, light_pdf, ray.time, ray_offset, ray.depth,
+			result += evaluate_light(light.ptr, light.pdf, ray.time, ray_offset, ray.depth,
 									 0, intersection, material_sample, filter, worker);
 		}
 
@@ -256,16 +255,15 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		return result;
 	}
 
-	float light_pdf;
-	const auto light = worker.scene().light(light_id, light_pdf);
+	auto light = worker.scene().light(light_id);
 
 	if (Light_sampling::Strategy::All == settings_.light_sampling.strategy) {
-		light_pdf = num_lights_reciprocal_;
+		light.pdf = num_lights_reciprocal_;
 	}
 
-	const float ls_pdf = light->pdf(secondary_ray, intersection.geo,
-									material_sample.is_translucent(),
-									Sampler_filter::Nearest, worker);
+	const float ls_pdf = light.ptr->pdf(secondary_ray, intersection.geo,
+										material_sample.is_translucent(),
+										Sampler_filter::Nearest, worker);
 
 	if (0.f == ls_pdf) {
 		SOFT_ASSERT(math::all_finite(result));
@@ -284,7 +282,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 
 		const float3 ls_energy = t * light_material_sample.radiance();
 
-		const float weight = power_heuristic(sample_result.pdf, ls_pdf * light_pdf);
+		const float weight = power_heuristic(sample_result.pdf, ls_pdf * light.pdf);
 
 		result += (weight / sample_result.pdf) * (ls_energy * sample_result.reflection);
 	}

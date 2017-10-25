@@ -126,23 +126,24 @@ const std::vector<light::Light*>& Scene::lights() const {
 	return lights_;
 }
 
-const light::Light* Scene::light(uint32_t id, float& pdf) const {
+Scene::Light Scene::light(uint32_t id) const {
 	// If the assert doesn't hold it would pose a problem,
 	// but I think it is more efficient to handle those cases outside or implicitely.
 	SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
-	pdf = light_distribution_.pdf(id);
-	return lights_[id];
+	const float pdf = light_distribution_.pdf(id);
+	return { lights_[id], pdf };
 }
 
-const light::Light* Scene::random_light(float random, float& pdf) const {
+Scene::Light Scene::random_light(float random) const {
 	SOFT_ASSERT(!lights_.empty());
 
+	float pdf;
 	const uint32_t l = light_distribution_.sample_discrete(random, pdf);
 
 	SOFT_ASSERT(l < static_cast<uint32_t>(lights_.size()));
 
-	return lights_[l];
+	return { lights_[l], pdf };
 }
 
 const volume::Volume* Scene::volume_region() const {

@@ -46,7 +46,6 @@ struct Intersection;
 struct Ray;
 class Prop;
 
-
 class Scene {
 
 public:
@@ -77,8 +76,9 @@ public:
 
 	const std::vector<light::Light*>& lights() const;
 
-	const light::Light* light(uint32_t id, float& pdf) const;
-	const light::Light* random_light(float random, float& pdf) const;
+	struct Light { const light::Light* ptr; float pdf; };
+	Light light(uint32_t id) const;
+	Light random_light(float random) const;
 
 	const volume::Volume* volume_region() const;
 

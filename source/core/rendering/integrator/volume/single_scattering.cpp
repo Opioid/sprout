@@ -130,10 +130,9 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 
 	if (Light_sampling::Strategy::Single == settings_.light_sampling.strategy) {
 		for (uint32_t i = num_samples; i > 0; --i) {
-			float light_pdf;
-			const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
+			const auto light = worker.scene().random_light(rng_.random_float());
 
-			result += evaluate_light(light, light_pdf, w, p, time, 0, volume, worker);
+			result += evaluate_light(light.ptr, light.pdf, w, p, time, 0, volume, worker);
 		}
 
 		result /= static_cast<float>(num_samples);

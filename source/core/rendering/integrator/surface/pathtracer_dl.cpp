@@ -144,13 +144,12 @@ float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& 
 	shadow_ray.time   = ray.time;
 
 	for (uint32_t i = settings_.num_light_samples; i > 0; --i) {
-		float light_pdf;
-		const auto light = worker.scene().random_light(rng_.random_float(), light_pdf);
+		const auto light = worker.scene().random_light(rng_.random_float());
 
 		scene::light::Sample light_sample;
-		if (light->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
-						  material_sample.is_translucent(), sampler_, 0,
-						  Sampler_filter::Nearest, worker, light_sample)) {
+		if (light.ptr->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
+							  material_sample.is_translucent(), sampler_, 0,
+							  Sampler_filter::Nearest, worker, light_sample)) {
 			shadow_ray.set_direction(light_sample.shape.wi);
 			shadow_ray.max_t = light_sample.shape.t - ray_offset;
 
@@ -162,7 +161,7 @@ float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& 
 				const float3 f = material_sample.evaluate(light_sample.shape.wi, bxdf_pdf);
 
 				result += (tv * tr) * (light_sample.radiance * f)
-						/ (light_pdf * light_sample.shape.pdf);
+						/ (light.pdf * light_sample.shape.pdf);
 			}
 		}
 	}
