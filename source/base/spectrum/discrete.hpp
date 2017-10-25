@@ -14,26 +14,26 @@ public:
 
 	Discrete_spectral_power_distribution(const Interpolated& interpolated);
 
-	float value(int32_t bin) const;
+	constexpr float value(int32_t bin) const;
 
 	void set_bin(int32_t bin, float value);
 
 	void clear(float s);
 
-	float3 XYZ() const;
+	constexpr float3 XYZ() const;
 
-	float3 normalized_XYZ() const;
+	constexpr float3 normalized_XYZ() const;
 
 	static void init(float start_wavelength = 380.f, float end_wavelength = 720.f);
 
 	static constexpr int32_t num_bands();
 
-	static float wavelength_center(int32_t bin);
+	static constexpr float wavelength_center(int32_t bin);
 
 private:
 
-	static float start_wavelength();
-	static float end_wavelength();
+	static constexpr float start_wavelength();
+	static constexpr float end_wavelength();
 
 	alignas(16) float values_[N];
 

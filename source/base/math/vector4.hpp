@@ -18,9 +18,9 @@ template<typename T>
 struct Vector4 {
 	T v[4];
 
-	Vector4();
+	Vector4() = default;
 
-	Vector4(T x, T y, T z, T w = T(1));
+	constexpr Vector4(T x, T y, T z, T w = T(1));
 
 	explicit Vector4(T s);
 

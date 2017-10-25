@@ -2,7 +2,7 @@
 #include "base/encoding/encoding.inl"
 #include "base/spectrum/rgb.hpp"
 
-namespace image { namespace texture { namespace encoding {
+namespace image::texture::encoding {
 
 float srgb_float[256];
 float snorm_float[256];
@@ -34,5 +34,4 @@ float cached_unorm_to_float(uint8_t byte) {
 	return unorm_float[byte];
 }
 
-}}}
-
+}

@@ -88,7 +88,7 @@ float Sample_thin::BSDF::reflect(const Sample_thin& sample, const Layer& layer,
 	result.reflection = float3(f);
 	result.wi = math::normalize(2.f * n_dot_wo * n - sample.wo_);
 	result.pdf = 1.f;
-	result.type.clear_set(bxdf::Type::Specular_reflection);
+	result.type.clear(bxdf::Type::Specular_reflection);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
@@ -129,7 +129,7 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 	result.wi = -sample.wo_;
 	result.pdf = 1.f;
 	// The integrator should not handle this like a proper transmission.
-	result.type.clear_set(bxdf::Type::Specular_reflection);
+	result.type.clear(bxdf::Type::Specular_reflection);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 

@@ -21,17 +21,17 @@ struct Vector3 {
 
 	Vector3() = default;
 
-	Vector3(T x, T y, T z);
+	constexpr Vector3(T x, T y, T z);
 
-	explicit Vector3(T s);
+	explicit constexpr Vector3(T s);
 
-	explicit Vector3(Vector2<T> xy, T z = T(0));
+	explicit constexpr Vector3(Vector2<T> xy, T z = T(0));
 
-	explicit Vector3(const T* v);
+	explicit constexpr Vector3(const T* v);
 
-	explicit Vector3(const Vector3f_a& a);
+	explicit constexpr Vector3(const Vector3f_a& a);
 
-	Vector2<T> xy() const;
+	constexpr Vector2<T> xy() const;
 
 	constexpr T operator[](uint32_t i) const;
 	constexpr T& operator[](uint32_t i);
@@ -111,6 +111,6 @@ struct alignas(16) Vector3f_a {
 using byte3  = math::Vector3<uint8_t>;
 // using float3 = Vector3<float>;
 using float3 = math::Vector3f_a;
-using int3  = math::Vector3<int32_t>;
+using int3   = math::Vector3<int32_t>;
 using uint3  = math::Vector3<uint32_t>;
 using packed_float3 = math::Vector3<float>;

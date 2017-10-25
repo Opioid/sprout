@@ -6,7 +6,7 @@
 #include "sampler/sampler_3d.hpp"
 #include "base/math/vector3.inl"
 
-namespace image { namespace texture {
+namespace image::texture {
 
 inline Adapter::Adapter() {}
 
@@ -74,4 +74,4 @@ inline float3 Adapter::address(const Sampler_3D& sampler, const float3& uvw) con
 	return sampler.address(uvw);
 }
 
-}}
+}

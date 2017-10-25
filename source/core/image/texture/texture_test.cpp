@@ -5,7 +5,7 @@
 #include "base/math/print.hpp"
 #include <iostream>
 
-namespace image { namespace texture { namespace testing {
+namespace image::texture::testing {
 
 bool is_valid_normal_map(const Image& image, const std::string& filename) {
 	if (Image::Type::Byte3 != image.description().type) {
@@ -55,5 +55,4 @@ bool is_valid_normal_map(const Image& image, const std::string& filename) {
 	return true;
 }
 
-}}}
-
+}

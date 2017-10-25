@@ -12,10 +12,7 @@ namespace math {
  ****************************************************************************/
 
 template<typename T>
-Vector4<T>::Vector4() {}
-
-template<typename T>
-Vector4<T>::Vector4(T x, T y, T z, T w) : v{x, y, z, w} {}
+constexpr Vector4<T>::Vector4(T x, T y, T z, T w) : v{x, y, z, w} {}
 
 template<typename T>
 Vector4<T>::Vector4(T s) : v{s, s, s, s} {}

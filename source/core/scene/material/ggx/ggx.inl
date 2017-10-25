@@ -205,7 +205,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	result.h = h;
 	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.h_dot_wi = wo_dot_h;
-	result.type.clear_set(bxdf::Type::Glossy_reflection);
+	result.type.clear(bxdf::Type::Glossy_reflection);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
@@ -279,7 +279,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	result.h = h;
 	result.pdf = pdf_visible(d, og1_wo);
 	result.h_dot_wi = wo_dot_h;
-	result.type.clear_set(bxdf::Type::Glossy_reflection);
+	result.type.clear(bxdf::Type::Glossy_reflection);
 
 	SOFT_ASSERT(check(result, wo, n_dot_wi, n_dot_wo, wo_dot_h, layer, xi));
 
@@ -403,7 +403,7 @@ float Isotropic::refract(const float3& wo, float n_dot_wo, float n_dot_t,
 //	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.pdf = pdf_visible(n_dot_wo, wo_dot_h, d, alpha2);
 	result.h_dot_wi = wo_dot_h;
-	result.type.clear_set(bxdf::Type::Glossy_transmission);
+	result.type.clear(bxdf::Type::Glossy_transmission);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
@@ -464,7 +464,7 @@ float Anisotropic::reflect(const float3& wo, float n_dot_wo,
 	result.h = h;
 	result.pdf = (d * n_dot_h) / (4.f * wo_dot_h);
 	result.h_dot_wi = wo_dot_h;
-	result.type.clear_set(bxdf::Type::Glossy_reflection);
+	result.type.clear(bxdf::Type::Glossy_reflection);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 

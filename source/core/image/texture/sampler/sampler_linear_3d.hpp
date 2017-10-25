@@ -2,7 +2,7 @@
 
 #include "sampler_3d.hpp"
 
-namespace image { namespace texture { namespace sampler {
+namespace image::texture::sampler {
 
 template<typename Address_mode>
 class Linear_3D : public Sampler_3D {
@@ -20,4 +20,4 @@ private:
 	static float3 map(const Texture& texture, const float3& uvw, int3& xyz, int3& xyz1);
 };
 
-}}}
+}

@@ -19,7 +19,7 @@
 #include "texture_test.hpp"
 #include "base/debug/assert.hpp"
 
-namespace image { namespace texture {
+namespace image::texture {
 
 Provider::Provider() : resource::Provider<Texture>("Texture") {
 	encoding::init();
@@ -105,4 +105,4 @@ size_t Provider::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}
+}

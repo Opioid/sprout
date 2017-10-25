@@ -2,7 +2,7 @@
 
 #include "base/math/vector4.inl"
 
-namespace image { namespace texture { namespace sampler {
+namespace image::texture::sampler {
 
 static inline float bilinear(float c00, float c01, float c10, float c11, float s, float t) {
 	const float _s = 1.f - s;
@@ -58,4 +58,4 @@ static inline float4 bilinear(const float4& c00, const float4& c01,
 	return _t * (_s * c00 + s * c01) + t * (_s * c10 + s * c11);
 }
 
-}}}
+}

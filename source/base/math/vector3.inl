@@ -14,26 +14,23 @@ namespace math {
  *
  ****************************************************************************/
 
-//template<typename T>
-//Vector3<T>::Vector3() {}
+template<typename T>
+constexpr Vector3<T>::Vector3(T x, T y, T z) : v{x, y, z} {}
 
 template<typename T>
-Vector3<T>::Vector3(T x, T y, T z) : v{x, y, z} {}
+constexpr Vector3<T>::Vector3(T s) : v{s, s, s} {}
 
 template<typename T>
-Vector3<T>::Vector3(T s) : v{s, s, s} {}
+constexpr Vector3<T>::Vector3(Vector2<T> xy, T z) : v{xy[0], xy[1], z} {}
 
 template<typename T>
-Vector3<T>::Vector3(Vector2<T> xy, T z) : v{xy[0], xy[1], z} {}
+constexpr Vector3<T>::Vector3(const T* v) : v{v[0], v[1], v[2]} {}
 
 template<typename T>
-Vector3<T>::Vector3(const T* v) : v{v[0], v[1], v[2]} {}
+constexpr Vector3<T>::Vector3(const Vector3f_a& v) : v{v[0], v[1], v[2]} {}
 
 template<typename T>
-Vector3<T>::Vector3(const Vector3f_a& v) : v{v[0], v[1], v[2]} {}
-
-template<typename T>
-Vector2<T> Vector3<T>::xy() const {
+constexpr Vector2<T> Vector3<T>::xy() const {
 	return Vector2<T>(v[0], v[1]);
 }
 

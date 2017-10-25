@@ -82,7 +82,7 @@ float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
 	result.reflection = float3(f);
 	result.wi = math::normalize(2.f * n_dot_wo * n - sample.wo_);
 	result.pdf = 1.f;
-	result.type.clear_set(bxdf::Type::Specular_reflection);
+	result.type.clear(bxdf::Type::Specular_reflection);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 
@@ -118,7 +118,7 @@ float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
 	result.reflection = (1.f - f) * layer.color_;
 	result.wi = math::normalize((eta_i * n_dot_wo - n_dot_t) * n - eta_i * sample.wo_);
 	result.pdf = 1.f;
-	result.type.clear_set(bxdf::Type::Specular_transmission);
+	result.type.clear(bxdf::Type::Specular_transmission);
 
 	SOFT_ASSERT(testing::check(result, sample.wo_, layer));
 

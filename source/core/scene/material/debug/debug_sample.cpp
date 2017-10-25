@@ -45,7 +45,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	result.reflection = n_dot_wi * math::Pi_inv * color;
 	result.wi = wi;
 	result.pdf = n_dot_wi * math::Pi_inv;
-	result.type.clear_set(bxdf::Type::Diffuse_reflection);
+	result.type.clear(bxdf::Type::Diffuse_reflection);
 }
 
 float Sample::ior() const {

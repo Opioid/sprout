@@ -168,17 +168,17 @@ static constexpr Vector2<T> max(Vector2<T> a, Vector2<T> b) {
 }
 
 template<typename T>
-static constexpr bool any_nan(const Vector2<T> v) {
+static bool any_nan(const Vector2<T> v) {
 	return std::isnan(v[0]) || std::isnan(v[1]);
 }
 
 template<typename T>
-static constexpr bool any_inf(const Vector2<T> v) {
+static bool any_inf(const Vector2<T> v) {
 	return std::isinf(v[0]) || std::isinf(v[1]);
 }
 
 template<typename T>
-static constexpr bool all_finite(const Vector2<T> v) {
+static bool all_finite(const Vector2<T> v) {
 	return std::isfinite(v[0]) && std::isfinite(v[1]);
 }
 

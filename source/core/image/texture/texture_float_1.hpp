@@ -3,7 +3,7 @@
 #include "texture.hpp"
 #include "image/typed_image.hpp"
 
-namespace image { namespace texture {
+namespace image::texture {
 
 class Float1 : public Texture {
 
@@ -37,4 +37,4 @@ private:
 	const image::Float1& image_;
 };
 
-}}
+}

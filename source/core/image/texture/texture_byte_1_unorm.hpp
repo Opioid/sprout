@@ -3,7 +3,7 @@
 #include "texture.hpp"
 #include "image/typed_image.hpp"
 
-namespace image { namespace texture {
+namespace image::texture {
 
 class Byte1_unorm : public Texture {
 
@@ -37,5 +37,4 @@ private:
 	const Byte1& image_;
 };
 
-}}
-
+}

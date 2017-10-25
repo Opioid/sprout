@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.hpp"
 
-namespace image { namespace texture {
+namespace image::texture {
 
 class Texture;
 
@@ -21,4 +21,4 @@ public:
 	virtual float3 address(const float3& uvw) const = 0;
 };
 
-}}}
+}}

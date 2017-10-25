@@ -2,7 +2,7 @@
 #include "image/image.hpp"
 #include "base/math/vector4.inl"
 
-namespace image { namespace texture {
+namespace image::texture {
 
 Texture::Texture(std::shared_ptr<Image> image) :
 	untyped_image_(image),
@@ -91,4 +91,4 @@ float4 Texture::average_4() const {
 	return average / (df[0] * df[1]);
 }
 
-}}
+}

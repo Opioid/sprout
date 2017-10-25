@@ -5,7 +5,7 @@
 #include "image/texture/texture.hpp"
 #include <algorithm>
 
-namespace image { namespace texture { namespace sampler {
+namespace image::texture::sampler {
 
 template<typename Address_mode>
 float Nearest_3D<Address_mode>::sample_1(const Texture& texture, const float3& uvw) const {
@@ -49,4 +49,4 @@ int3 Nearest_3D<Address_mode>::map(const Texture& texture, const float3& uvw) {
 				std::min(static_cast<int32_t>(w * d[2]), b[2]));
 }
 
-}}}
+}

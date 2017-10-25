@@ -2,7 +2,7 @@
 
 #include "base/math/math.hpp"
 
-namespace image { namespace texture { namespace sampler {
+namespace image::texture::sampler {
 
 struct Address_mode_identity {
 	static float f(float x) {
@@ -92,4 +92,4 @@ struct Address_mode_repeat {
 	}
 };
 
-}}}
+}

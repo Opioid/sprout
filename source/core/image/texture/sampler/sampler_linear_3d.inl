@@ -6,7 +6,7 @@
 #include "image/texture/texture.hpp"
 #include <algorithm>
 
-namespace image { namespace texture { namespace sampler {
+namespace image::texture::sampler {
 
 template<typename Address_mode>
 float Linear_3D<Address_mode>::sample_1(const Texture& texture, const float3& uvw) const {
@@ -104,4 +104,4 @@ float3 Linear_3D<Address_mode>::map(const Texture& texture, const float3& uvw,
 	return float3(u - fu, v - fv, w - fw);
 }
 
-}}}
+}

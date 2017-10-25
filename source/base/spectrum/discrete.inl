@@ -17,7 +17,7 @@ Discrete_spectral_power_distribution<N>::Discrete_spectral_power_distribution(
 }
 
 template<int32_t N>
-float Discrete_spectral_power_distribution<N>::value(int32_t bin) const {
+constexpr float Discrete_spectral_power_distribution<N>::value(int32_t bin) const {
 	return values_[bin];
 }
 
@@ -34,7 +34,7 @@ void Discrete_spectral_power_distribution<N>::clear(float s) {
 }
 
 template<int32_t N>
-float3 Discrete_spectral_power_distribution<N>::XYZ() const {
+constexpr float3 Discrete_spectral_power_distribution<N>::XYZ() const {
 	float3 xyz(0.f);
 	for (int32_t i = 0; i < N; ++i) {
 		xyz += values_[i] * cie_[i];
@@ -44,7 +44,7 @@ float3 Discrete_spectral_power_distribution<N>::XYZ() const {
 }
 
 template<int32_t N>
-float3 Discrete_spectral_power_distribution<N>::normalized_XYZ() const {
+constexpr float3 Discrete_spectral_power_distribution<N>::normalized_XYZ() const {
 	constexpr float normalization = 1.f / 106.856895f;
 	return normalization * XYZ();
 }
@@ -81,18 +81,17 @@ constexpr int32_t Discrete_spectral_power_distribution<N>::num_bands() {
 }
 
 template<int32_t N>
-float Discrete_spectral_power_distribution<N>::wavelength_center(int32_t bin) {
+constexpr float Discrete_spectral_power_distribution<N>::wavelength_center(int32_t bin) {
 	return (wavelengths_[bin] + wavelengths_[bin + 1]) * 0.5f;
 }
 
-
 template<int32_t N>
-float Discrete_spectral_power_distribution<N>::start_wavelength() {
+constexpr float Discrete_spectral_power_distribution<N>::start_wavelength() {
 	return wavelengths_[0];
 }
 
 template<int32_t N>
-float Discrete_spectral_power_distribution<N>::end_wavelength() {
+constexpr float Discrete_spectral_power_distribution<N>::end_wavelength() {
 	return wavelengths_[N];
 }
 

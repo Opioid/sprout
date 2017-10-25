@@ -2,7 +2,7 @@
 #include "image/typed_image.inl"
 #include "base/math/vector4.inl"
 
-namespace image { namespace texture {
+namespace image::texture {
 
 Float3::Float3(std::shared_ptr<Image> image) :
 	Texture(image),
@@ -111,4 +111,4 @@ float4 Float3::at_4(int32_t x, int32_t y, int32_t z) const {
 	return float4(image_.load(x, y, z), 1.f);
 }
 
-}}
+}

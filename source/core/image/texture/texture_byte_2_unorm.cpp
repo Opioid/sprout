@@ -3,7 +3,7 @@
 #include "image/typed_image.inl"
 #include "base/math/vector4.inl"
 
-namespace image { namespace texture {
+namespace image::texture {
 
 Byte2_unorm::Byte2_unorm(std::shared_ptr<Image> image) :
 	Texture(image),
@@ -164,4 +164,4 @@ float4 Byte2_unorm::at_4(int32_t x, int32_t y, int32_t z) const {
 				  1.f);
 }
 
-}}
+}

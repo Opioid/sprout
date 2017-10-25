@@ -40,7 +40,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	result.pdf = n_dot_wi * math::Pi_inv;
 	result.reflection = on * layer.diffuse_color;
 	result.wi = wi;
-	result.type.clear_set(bxdf::Type::Diffuse_reflection);
+	result.type.clear(bxdf::Type::Diffuse_reflection);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 

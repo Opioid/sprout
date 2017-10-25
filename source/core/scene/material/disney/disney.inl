@@ -45,7 +45,7 @@ float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 	result.h = h;
 	result.pdf = n_dot_wi * math::Pi_inv;
 	result.h_dot_wi = h_dot_wi;
-	result.type.clear_set(bxdf::Type::Diffuse_reflection);
+	result.type.clear(bxdf::Type::Diffuse_reflection);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
@@ -103,7 +103,7 @@ float Isotropic_no_lambert::reflect(const float3& wo, float n_dot_wo, const Laye
 	result.h = h;
 	result.pdf = n_dot_wi * math::Pi_inv;
 	result.h_dot_wi = h_dot_wi;
-	result.type.clear_set(bxdf::Type::Diffuse_reflection);
+	result.type.clear(bxdf::Type::Diffuse_reflection);
 
 	SOFT_ASSERT(testing::check(result, wo, layer));
 
