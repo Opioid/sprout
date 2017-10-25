@@ -5,7 +5,7 @@
                          (if (stringp d) d (car d))))))
          (eval . (setq-local company-clang-arguments
 							 (list
-							  (concat "-std=c++14")
+							  (concat "-std=c++17")
 							  (concat "-I" my-project-path)
 							  (concat "-I" my-project-path "base")
 							  (concat "-I" my-project-path "core")
