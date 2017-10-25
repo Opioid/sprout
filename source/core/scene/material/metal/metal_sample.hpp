@@ -2,7 +2,7 @@
 
 #include "scene/material/material_sample.hpp"
 
-namespace scene { namespace material { namespace metal {
+namespace scene::material::metal {
 
 class Sample_isotropic : public material::Sample {
 
@@ -52,5 +52,5 @@ public:
 	Layer layer_;
 };
 
-}}}
+}
 

@@ -7,7 +7,7 @@
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace metallic_paint {
+namespace scene::material::metallic_paint {
 
 const material::Sample::Layer& Sample::base_layer() const {
 	return base_;
@@ -177,4 +177,4 @@ void Sample::Flakes_layer::sample(const float3& wo, sampler::Sampler& sampler,
 	result.reflection *= n_dot_wi;
 }
 
-}}}
+}

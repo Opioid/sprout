@@ -2,7 +2,7 @@
 
 #include "substitute_base_material.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 class Material_translucent : public Material_base {
 
@@ -11,7 +11,8 @@ public:
 	Material_translucent(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -24,4 +25,4 @@ private:
 	float attenuation_distance_;
 };
 
-}}}
+}

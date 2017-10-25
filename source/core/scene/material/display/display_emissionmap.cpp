@@ -11,22 +11,22 @@
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.hpp"
 
-namespace scene { namespace material { namespace display {
+namespace scene::material::display {
 
 Emissionmap::Emissionmap(const Sampler_settings& sampler_settings, bool two_sided) :
 	light::Emissionmap(sampler_settings, two_sided) {}
 
 const material::Sample& Emissionmap::sample(const float3& wo, const Renderstate& rs,
-											Sampler_filter filter, Worker& worker) {
+											Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
 
 	sample.layer_.set_tangent_frame(rs.t, rs.b, rs.n);
 
-	auto& sampler = worker.sampler_2D(sampler_key(), filter);
+	const auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
-	float3 radiance = emission_map_.sample_3(sampler, rs.uv);
+	const float3 radiance = emission_map_.sample_3(sampler, rs.uv);
 	sample.layer_.set(emission_factor_ * radiance, f0_, roughness_);
 
 	return sample;
@@ -44,4 +44,4 @@ void Emissionmap::set_ior(float ior) {
 	f0_ = fresnel::schlick_f0(1.f, ior);
 }
 
-}}}
+}

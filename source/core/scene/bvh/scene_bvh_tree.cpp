@@ -145,7 +145,7 @@ bool Tree::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 	return false;
 }
 
-float Tree::opacity(const scene::Ray& ray, Sampler_filter filter, Worker& worker) const {
+float Tree::opacity(const scene::Ray& ray, Sampler_filter filter, const Worker& worker) const {
 	auto& node_stack = worker.node_stack();
 
 	node_stack.clear();
@@ -203,7 +203,8 @@ float Tree::opacity(const scene::Ray& ray, Sampler_filter filter, Worker& worker
 	return opacity;
 }
 
-float3 Tree::thin_absorption(const scene::Ray& ray, Sampler_filter filter, Worker& worker) const {
+float3 Tree::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
+							 const Worker& worker) const {
 	auto& node_stack = worker.node_stack();
 
 	node_stack.clear();

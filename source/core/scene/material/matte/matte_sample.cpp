@@ -5,7 +5,7 @@
 // #include "scene/material/oren_nayar/oren_nayar.inl"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material { namespace matte {
+namespace scene::material::matte {
 
 const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
@@ -52,4 +52,4 @@ void Sample::Layer::set(const float3& color) {
 	alpha2_ = math::pow4(roughness_);
 }
 
-}}}
+}

@@ -4,7 +4,7 @@
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace fresnel {
+namespace scene::material::fresnel {
 
 static inline float schlick_f0(float n0, float n1) {
 	const float t = (n0 - n1) / (n0 + n1);
@@ -238,4 +238,4 @@ inline float3 Constant::operator()(float /*wo_dot_h*/) const {
 	return f_;
 }
 
-}}}
+}

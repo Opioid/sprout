@@ -2,7 +2,7 @@
 
 #include "scene/material/material_sample.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 template<typename Diffuse>
 class Sample_base : public material::Sample {
@@ -70,4 +70,4 @@ public:
 	Layer layer_;
 };
 
-}}}
+}

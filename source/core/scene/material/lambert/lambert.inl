@@ -10,7 +10,7 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace material { namespace lambert {
+namespace scene::material::lambert {
 
 template<typename Layer>
 float3 Isotropic::reflection(const float3& color, float n_dot_wi, const Layer& layer, float& pdf) {
@@ -44,4 +44,4 @@ float Isotropic::reflect(const float3& color, const Layer& layer,
 	return n_dot_wi;
 }
 
-}}}
+}

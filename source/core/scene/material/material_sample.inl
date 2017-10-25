@@ -50,7 +50,7 @@ inline float3 Sample::Layer::world_to_tangent(const float3& v) const {
 				  v[0] * n_[0] + v[1] * n_[1] + v[2] * n_[2]);
 }
 
-inline const BSSRDF& Sample::bssrdf(Worker& worker) const {
+inline const BSSRDF& Sample::bssrdf(const Worker& worker) const {
 	return worker.sample_cache().bssrdf();
 }
 

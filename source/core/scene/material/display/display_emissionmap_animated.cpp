@@ -11,7 +11,7 @@
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.hpp"
 
-namespace scene { namespace material { namespace display {
+namespace scene::material::display {
 
 Emissionmap_animated::Emissionmap_animated(const Sampler_settings& sampler_settings,
 										   bool two_sided, const Texture_adapter& emission_map,
@@ -21,7 +21,7 @@ Emissionmap_animated::Emissionmap_animated(const Sampler_settings& sampler_setti
 {}
 
 const material::Sample& Emissionmap_animated::sample(const float3& wo, const Renderstate& rs,
-													 Sampler_filter filter, Worker& worker) {
+													 Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -48,4 +48,4 @@ void Emissionmap_animated::set_ior(float ior) {
 	f0_ = fresnel::schlick_f0(1.f, ior);
 }
 
-}}}
+}

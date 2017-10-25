@@ -25,5 +25,4 @@ public:
 						 sampler::Sampler& sampler, bxdf::Result& result);
 };
 
-
 }}}

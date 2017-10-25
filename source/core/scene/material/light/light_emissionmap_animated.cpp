@@ -10,7 +10,7 @@
 #include "base/math/distribution/distribution_2d.inl"
 #include "base/spectrum/rgb.hpp"
 
-namespace scene { namespace material { namespace light {
+namespace scene::material::light {
 
 Emissionmap_animated::Emissionmap_animated(const Sampler_settings& sampler_settings,
 										   bool two_sided, const Texture_adapter& emission_map,
@@ -33,7 +33,7 @@ void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 }
 
 const material::Sample& Emissionmap_animated::sample(const float3& wo, const Renderstate& rs,
-													 Sampler_filter filter, Worker& worker) {
+													 Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -50,7 +50,7 @@ const material::Sample& Emissionmap_animated::sample(const float3& wo, const Ren
 
 float3 Emissionmap_animated::sample_radiance(const float3& /*wi*/, float2 uv, float /*area*/,
 											 float /*time*/, Sampler_filter filter,
-											 Worker& worker) const {
+											 const Worker& worker) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 	return emission_factor_ * emission_map_.sample_3(sampler, uv, element_);
 }
@@ -71,14 +71,15 @@ float2 Emissionmap_animated::radiance_sample(float2 r2, float& pdf) const {
 	return uv;
 }
 
-float Emissionmap_animated::emission_pdf(float2 uv, Sampler_filter filter, Worker& worker) const {
+float Emissionmap_animated::emission_pdf(float2 uv, Sampler_filter filter,
+										 const Worker& worker) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
 }
 
 float Emissionmap_animated::opacity(float2 uv, float /*time*/, Sampler_filter filter,
-									Worker& worker) const {
+									const Worker& worker) const {
 	if (mask_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
 		return mask_.sample_1(sampler, uv, element_);
@@ -165,4 +166,4 @@ size_t Emissionmap_animated::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}}
+}

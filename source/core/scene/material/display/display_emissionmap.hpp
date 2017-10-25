@@ -2,7 +2,7 @@
 
 #include "scene/material/light/light_emissionmap.hpp"
 
-namespace scene { namespace material { namespace display {
+namespace scene::material::display {
 
 class Emissionmap : public light::Emissionmap {
 
@@ -11,7 +11,8 @@ public:
 	Emissionmap(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -25,4 +26,4 @@ private:
 	float f0_;
 };
 
-}}}
+}

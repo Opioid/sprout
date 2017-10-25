@@ -6,13 +6,13 @@
 #include "scene/material/material_sample.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace matte {
+namespace scene::material::matte {
 
 Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
-										 Sampler_filter /*filter*/, Worker& worker) {
+										 Sampler_filter /*filter*/, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 //	auto& sampler = worker.sampler_2D(sampler_key_, filter);
@@ -34,4 +34,4 @@ void Material::set_color(const float3& color) {
 	color_ = color;
 }
 
-}}}
+}

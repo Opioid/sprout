@@ -60,10 +60,10 @@ public:
 					 Node_stack& node_stack) const;
 
 	float opacity(math::Ray& ray, float time, const material::Materials& materials,
-				  material::Sampler_settings::Filter filter, Worker& worker) const;
+				  material::Sampler_settings::Filter filter, const Worker& worker) const;
 
 	float3 absorption(math::Ray& ray, float time, const material::Materials& materials,
-					  material::Sampler_settings::Filter filter, Worker& worker) const;
+					  material::Sampler_settings::Filter filter, const Worker& worker) const;
 
 	void interpolate_triangle_data(uint32_t index, float2 uv,
 								   float3& n, float3& t, float2& tc) const;

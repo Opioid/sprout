@@ -4,7 +4,7 @@
 #include "base/math/print.hpp"
 #include <iostream>
 
-namespace scene { namespace material { namespace testing {
+namespace scene::material::testing {
 
 void print_vector(const float3& v);
 
@@ -84,4 +84,4 @@ void print_vector(const float3& v) {
 	std::cout << v << " |" << math::length(v) << "|" << std::endl;
 }
 
-}}}
+}

@@ -7,7 +7,7 @@
 #include "base/math/print.hpp"
 #include <iostream>
 
-namespace scene { namespace material { namespace ggx {
+namespace scene::material::ggx {
 
 template<typename Layer>
 bool check(const bxdf::Result& result, const float3& wo,

@@ -2,7 +2,7 @@
 
 #include "sky_material_base.hpp"
 
-namespace procedural { namespace sky {
+namespace procedural::sky {
 
 class Sun_material : public Material {
 
@@ -12,11 +12,11 @@ public:
 
 	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
 												  Sampler_filter filter,
-												  scene::Worker& worker) override final;
+												  const scene::Worker& worker) override final;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
 								   Sampler_filter filter,
-								   scene::Worker& worker) const override final;
+								   const scene::Worker& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 
@@ -28,4 +28,4 @@ public:
 	virtual size_t num_bytes() const override final;
 };
 
-}}
+}

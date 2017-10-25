@@ -43,7 +43,7 @@ public:
 
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const = 0;
 
-	virtual const BSSRDF& bssrdf(Worker& worker) const;
+	virtual const BSSRDF& bssrdf(const Worker& worker) const;
 
 	virtual float3 radiance() const;
 

@@ -10,7 +10,7 @@
 #include "scene/material/fresnel/fresnel.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 template<typename Sample>
 void Material_base::set_sample(const float3& wo, const Renderstate& rs,
@@ -50,4 +50,4 @@ void Material_base::set_sample(const float3& wo, const Renderstate& rs,
 	sample.layer_.set(color, radiance, ior_, constant_f0_, surface[0], surface[1]);
 }
 
-}}}
+}

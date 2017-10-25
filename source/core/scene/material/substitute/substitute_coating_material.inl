@@ -6,7 +6,7 @@
 #include "scene/scene_renderstate.hpp"
 #include "scene/material/material_helper.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 template<typename Coating>
 Material_coating<Coating>::Material_coating(const Sampler_settings& sampler_settings,
@@ -60,4 +60,4 @@ void Material_coating<Coating>::set_coating_basis(const Renderstate& rs,
 	}
 }
 
-}}}
+}

@@ -6,13 +6,13 @@
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
 
-namespace scene { namespace material { namespace light {
+namespace scene::material::light {
 
 Constant::Constant(const Sampler_settings& sampler_settings, bool two_sided) :
 	Material(sampler_settings, two_sided) {}
 
 const material::Sample& Constant::sample(const float3& wo, const Renderstate& rs,
-										 Sampler_filter /*filter*/, Worker& worker) {
+										 Sampler_filter /*filter*/, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -25,7 +25,7 @@ const material::Sample& Constant::sample(const float3& wo, const Renderstate& rs
 }
 
 float3 Constant::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float area, float /*time*/,
-								 Sampler_filter /*filter*/, Worker& /*worker*/) const {
+								 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	return emittance_.radiance(area);
 }
 
@@ -51,4 +51,4 @@ size_t Constant::num_bytes() const {
 	return emittance_;
 }
 
-}}}
+}

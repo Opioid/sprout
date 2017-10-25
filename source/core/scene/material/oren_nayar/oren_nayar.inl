@@ -10,7 +10,7 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace material { namespace oren_nayar {
+namespace scene::material::oren_nayar {
 
 template<typename Layer>
 float3 Isotropic::reflection(const float3& wi, const float3& wo, float n_dot_wi, float n_dot_wo,

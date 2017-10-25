@@ -3,7 +3,7 @@
 #include "substitute_base_sample.hpp"
 #include "scene/material/disney/disney.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 class Sample_translucent : public Sample_base<disney::Isotropic> {
 
@@ -23,4 +23,4 @@ private:
 	float thickness_;
 };
 
-}}}
+}

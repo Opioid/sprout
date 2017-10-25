@@ -6,7 +6,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/math.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 template<typename Coating_layer>
 float3 Sample_coating<Coating_layer>::evaluate(const float3& wi, float& pdf) const {
@@ -28,4 +28,4 @@ void Sample_coating<Coating_layer>::sample(sampler::Sampler& sampler, bxdf::Resu
 	base_and_coating_sample(coating_, sampler, result);
 }
 
-}}}
+}

@@ -3,7 +3,7 @@
 #include "substitute_base_sample.hpp"
 #include "scene/material/disney/disney.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 class Sample : public Sample_base<disney::Isotropic> {
 
@@ -14,4 +14,4 @@ public:
 	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
 };
 
-}}}
+}

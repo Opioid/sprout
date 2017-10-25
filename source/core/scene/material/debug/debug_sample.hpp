@@ -2,7 +2,7 @@
 
 #include "scene/material/material_sample.hpp"
 
-namespace scene { namespace material { namespace debug {
+namespace scene::material::debug {
 
 class Sample : public material::Sample {
 
@@ -21,4 +21,4 @@ public:
 	Layer layer_;
 };
 
-}}}
+}

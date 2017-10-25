@@ -3,7 +3,7 @@
 #include "substitute_base_material.hpp"
 #include "substitute_subsurface_sample.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 class Material_subsurface : public Material_base {
 
@@ -12,7 +12,8 @@ public:
 	Material_subsurface(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -30,5 +31,4 @@ private:
 	Sample_subsurface::IOR ior_;
 };
 
-}}}
-
+}

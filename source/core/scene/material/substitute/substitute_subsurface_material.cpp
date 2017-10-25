@@ -5,13 +5,13 @@
 #include "scene/scene_worker.inl"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 Material_subsurface::Material_subsurface(const Sampler_settings& sampler_settings) :
 	Material_base(sampler_settings, false) {}
 
 const material::Sample& Material_subsurface::sample(const float3& wo, const Renderstate& rs,
-													Sampler_filter filter, Worker& worker) {
+													Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample_subsurface>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -54,4 +54,4 @@ void Material_subsurface::set_ior(float ior, float external_ior) {
 	ior_.sqrt_eta_i = fresnel::schlick_sqrt_eta(eta_t);
 }
 
-}}}
+}

@@ -7,7 +7,7 @@
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace material { namespace cloth {
+namespace scene::material::cloth {
 
 const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
@@ -38,4 +38,4 @@ void Sample::Layer::set(const float3& color) {
 	this->diffuse_color = color;
 }
 
-}}}
+}

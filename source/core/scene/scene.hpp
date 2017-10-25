@@ -64,10 +64,10 @@ public:
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
 	float opacity(const scene::Ray& ray, material::Sampler_settings::Filter filter,
-				  Worker& worker) const;
+				  const Worker& worker) const;
 
 	float3 thin_absorption(const scene::Ray& ray, material::Sampler_settings::Filter filter,
-						   Worker& worker) const;
+						   const Worker& worker) const;
 
 	float tick_duration() const;
 	float simulation_time() const;

@@ -80,7 +80,7 @@ bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) co
 }
 
 float Scene::opacity(const scene::Ray& ray, material::Sampler_settings::Filter filter,
-					 Worker& worker) const {
+					 const Worker& worker) const {
 	if (has_masked_material_) {
 		return bvh_.opacity(ray, filter, worker);
 	}
@@ -89,7 +89,7 @@ float Scene::opacity(const scene::Ray& ray, material::Sampler_settings::Filter f
 }
 
 float3 Scene::thin_absorption(const scene::Ray& ray, material::Sampler_settings::Filter filter,
-							  Worker& worker) const {
+							  const Worker& worker) const {
 	if (has_tinted_shadow_) {
 		return bvh_.thin_absorption(ray, filter, worker);
 	}

@@ -5,9 +5,7 @@
 #include "base/math/vector3.inl"
 #include "base/random/generator.hpp"
 
-namespace scene { namespace material { namespace glass {
-
-namespace testing {
+namespace scene::material::glass::testing {
 
 void test() {
 	rnd::Generator rng;
@@ -64,5 +62,3 @@ void test() {
 }
 
 }
-
-}}}

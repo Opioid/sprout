@@ -3,7 +3,7 @@
 #include "substitute_base_material.hpp"
 #include "scene/material/coating/coating.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 template<typename Coating>
 class Material_coating : public Material_base {
@@ -39,7 +39,8 @@ public:
 	Material_clearcoat(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	void set_clearcoat(float ior, float roughness);
 };
@@ -51,9 +52,10 @@ public:
 	Material_thinfilm(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	void set_thinfilm(float ior, float roughness, float thickness);
 };
 
-}}}
+}

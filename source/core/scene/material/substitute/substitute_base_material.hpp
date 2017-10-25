@@ -2,9 +2,9 @@
 
 #include "scene/material/material.hpp"
 
-namespace image { namespace texture { namespace sampler { class Sampler_2D; }}}
+namespace image::texture::sampler { class Sampler_2D; }
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 class Material_base : public material::Material {
 
@@ -13,7 +13,8 @@ public:
 	Material_base(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
-								   Sampler_filter filter, Worker& worker) const override final;
+								   Sampler_filter filter,
+								   const Worker& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 
@@ -51,4 +52,4 @@ protected:
 	float emission_factor_;
 };
 
-}}}
+}

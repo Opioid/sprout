@@ -15,7 +15,7 @@
 // More energy conserving variant
 // https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
 
-namespace scene { namespace material { namespace disney {
+namespace scene::material::disney {
 
 template<typename Layer>
 float3 Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
@@ -123,4 +123,4 @@ float3 Isotropic_no_lambert::evaluate(float h_dot_wi, float n_dot_wi, float n_do
 	return rr * ((fl + fv) + (fl * fv) * (rr - 1.f)) * (math::Pi_inv * layer.diffuse_color_);
 }
 
-}}}
+}

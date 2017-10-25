@@ -5,13 +5,13 @@
 #include "scene/material/coating/coating.inl"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 Material_clearcoat::Material_clearcoat(const Sampler_settings& sampler_settings, bool two_sided) :
 	Material_coating<coating::Clearcoat>(sampler_settings, two_sided) {}
 
 const material::Sample& Material_clearcoat::sample(const float3& wo, const Renderstate& rs,
-												   Sampler_filter filter, Worker& worker) {
+												   Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample_clearcoat>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -37,7 +37,7 @@ Material_thinfilm::Material_thinfilm(const Sampler_settings& sampler_settings, b
 	Material_coating<coating::Thinfilm>(sampler_settings, two_sided) {}
 
 const material::Sample& Material_thinfilm::sample(const float3& wo, const Renderstate& rs,
-												  Sampler_filter filter, Worker& worker) {
+												  Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample_thinfilm>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -60,4 +60,4 @@ void Material_thinfilm::set_thinfilm(float ior, float roughness, float thickness
 	coating_.thickness_ = thickness;
 }
 
-}}}
+}

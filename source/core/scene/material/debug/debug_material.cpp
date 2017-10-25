@@ -6,13 +6,13 @@
 #include "scene/material/material_sample.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace debug {
+namespace scene::material::debug {
 
 Material::Material(const Sampler_settings& sampler_settings) :
 	material::Material(sampler_settings, true) {}
 
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
-										 Sampler_filter /*filter*/, Worker& worker) {
+										 Sampler_filter /*filter*/, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -26,4 +26,4 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}}
+}

@@ -5,7 +5,7 @@
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace material { namespace debug {
+namespace scene::material::debug {
 
 constexpr float3 color_front(0.5f, 1.f, 0.f);
 constexpr float3 color_back (1.f, 0.f, 0.5f);
@@ -52,4 +52,4 @@ float Sample::ior() const {
 	return 1.47f;
 }
 
-}}}
+}

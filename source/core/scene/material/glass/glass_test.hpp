@@ -1,11 +1,7 @@
 #pragma once
 
-namespace scene { namespace material { namespace glass {
-
-namespace testing {
+namespace scene::material::glass::testing {
 
 void test();
 
 }
-
-}}}

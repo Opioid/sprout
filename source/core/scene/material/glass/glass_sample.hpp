@@ -2,7 +2,7 @@
 
 #include "scene/material/material_sample.hpp"
 
-namespace scene { namespace material { namespace glass {
+namespace scene::material::glass {
 
 class Sample : public material::Sample {
 
@@ -44,4 +44,4 @@ public:
 	};
 };
 
-}}}
+}

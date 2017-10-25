@@ -4,7 +4,7 @@
 #include "sampler/sampler.hpp"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace light {
+namespace scene::material::light {
 
 const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
@@ -36,4 +36,4 @@ void Sample::Layer::set(const float3& radiance) {
 	radiance_ = radiance;
 }
 
-}}}
+}

@@ -10,7 +10,7 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace material { namespace glass {
+namespace scene::material::glass {
 
 const material::Sample::Layer& Sample_thin::base_layer() const {
 	return layer_;
@@ -136,4 +136,4 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 	return 1.f;
 }
 
-}}}
+}

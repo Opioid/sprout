@@ -3,7 +3,7 @@
 #include "scene/material/material_sample.hpp"
 #include "scene/material/coating/coating.hpp"
 
-namespace scene { namespace material { namespace metallic_paint {
+namespace scene::material::metallic_paint {
 
 class Sample : public material::Sample {
 
@@ -57,4 +57,4 @@ public:
 	coating::Clearcoat_layer coating_;
 };
 
-}}}
+}

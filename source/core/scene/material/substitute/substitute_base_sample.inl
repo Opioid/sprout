@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 template<typename Diffuse>
 const material::Sample::Layer& Sample_base<Diffuse>::base_layer() const {
@@ -226,4 +226,4 @@ float Sample_base<Diffuse>::Layer::base_diffuse_fresnel_hack(float n_dot_wi, flo
 	return fresnel::schlick(std::min(n_dot_wi, n_dot_wo), f0_[0]);
 }
 
-}}}
+}

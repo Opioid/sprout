@@ -7,7 +7,7 @@
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	if (!same_hemisphere(wo_)) {
@@ -40,4 +40,4 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
 	}
 }
 
-}}}
+}

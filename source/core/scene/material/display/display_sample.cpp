@@ -5,7 +5,7 @@
 #include "scene/material/ggx/ggx.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace display {
+namespace scene::material::display {
 
 const material::Sample::Layer& Sample::base_layer() const {
 	return layer_;
@@ -63,4 +63,4 @@ void Sample::Layer::set(const float3& radiance, float f0, float roughness) {
 	alpha2_ = alpha * alpha;
 }
 
-}}}
+}

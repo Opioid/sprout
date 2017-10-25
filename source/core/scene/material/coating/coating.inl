@@ -5,7 +5,7 @@
 #include "scene/material/fresnel/fresnel.inl"
 #include "scene/material/ggx/ggx.inl"
 
-namespace scene { namespace material { namespace coating {
+namespace scene::material::coating {
 
 inline void Coating_base::set_color_and_weight(const float3& color, float weight) {
 	color_ = color;
@@ -108,4 +108,4 @@ void Coating_layer<Coating>::sample(const float3& wo, float internal_ior,
 	Coating::sample(wo, internal_ior, *this, sampler, attenuation, result);
 }
 
-}}}
+}

@@ -2,7 +2,7 @@
 
 #include "base/math/vector3.hpp"
 
-namespace scene { namespace material { namespace fresnel {
+namespace scene::material::fresnel {
 
 class Schlick {
 
@@ -168,4 +168,4 @@ private:
 	const float3 f_;
 };
 
-}}}
+}

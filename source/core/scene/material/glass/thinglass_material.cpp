@@ -8,13 +8,13 @@
 #include "scene/material/material_sample.inl"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material { namespace glass {
+namespace scene::material::glass {
 
 Thinglass::Thinglass(const Sampler_settings& sampler_settings) :
 	Material(sampler_settings, true) {}
 
 const material::Sample& Thinglass::sample(const float3& wo, const Renderstate& rs,
-										  Sampler_filter filter, Worker& worker) {
+										  Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample_thin>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -34,7 +34,7 @@ const material::Sample& Thinglass::sample(const float3& wo, const Renderstate& r
 }
 
 float3 Thinglass::thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
-								  Sampler_filter filter, Worker& worker) const {
+								  Sampler_filter filter, const Worker& worker) const {
 	const float3 a = material::absorption_coefficient(absorption_color_, attenuation_distance_);
 
 	const float  n_dot_wi = clamp_abs_dot(wo, n);
@@ -76,4 +76,4 @@ void Thinglass::set_thickness(float thickness) {
 	thickness_ = thickness;
 }
 
-}}}
+}

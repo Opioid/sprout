@@ -1,7 +1,7 @@
 #include "metal_presets.hpp"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace metal {
+namespace scene::material::metal {
 
 void ior_and_absorption(const std::string& name, float3& ior, float3& absorption) {
 	// http://www.3delight.com/en/modules/forum/viewtopic.php?t=4205
@@ -89,4 +89,4 @@ void ior_and_absorption(const std::string& name, float3& ior, float3& absorption
 	}
 }
 
-}}}
+}

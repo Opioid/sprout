@@ -4,14 +4,14 @@
 #include "scene/material/material_sample.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace sky {
+namespace scene::material::sky {
 
 Material_overcast::Material_overcast(const Sampler_settings& sampler_settings,
 									 bool two_sided) :
 	Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material_overcast::sample(const float3& wo, const Renderstate& rs,
-												  Sampler_filter /*filter*/, Worker& worker) {
+												  Sampler_filter /*filter*/, const Worker& worker) {
 	auto& sample = worker.sample<light::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -24,7 +24,7 @@ const material::Sample& Material_overcast::sample(const float3& wo, const Render
 
 float3 Material_overcast::sample_radiance(const float3& wi, float2 /*uv*/, float /*area*/,
 										  float /*time*/, Sampler_filter /*filter*/,
-										  Worker& /*worker*/) const {
+										  const Worker& /*worker*/) const {
 	return overcast(wi);
 }
 
@@ -48,4 +48,4 @@ float3 Material_overcast::overcast(const float3& wi) const {
 	return ((1.f + 2.f * math::dot(float3(0.f, 1.f, 0.f), wi)) / 3.f) * color_;
 }
 
-}}}
+}

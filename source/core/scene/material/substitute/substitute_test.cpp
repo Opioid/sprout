@@ -12,9 +12,7 @@
 #include "base/random/generator.inl"
 #include <iostream>
 
-namespace scene { namespace material { namespace substitute {
-
-namespace testing {
+namespace scene::material::substitute::testing {
 
 struct Setup {
 	void test(const float3& wi, const float3& wo,
@@ -145,5 +143,3 @@ void Setup::test(const float3& wi, const float3& wo,
 }
 
 }
-
-}}}

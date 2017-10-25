@@ -13,7 +13,7 @@
 #include "scene/material/material_test.hpp"
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace material { namespace ggx {
+namespace scene::material::ggx {
 
 constexpr float Min_roughness = 0.01314f;
 
@@ -471,4 +471,4 @@ float Anisotropic::reflect(const float3& wo, float n_dot_wo,
 	return n_dot_wi;
 }
 
-}}}
+}

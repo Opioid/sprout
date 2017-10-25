@@ -121,7 +121,7 @@ bool Prop::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {
 //							   transformation, node_stack);
 //}
 
-float Prop::opacity(const Ray& ray, Sampler_filter filter, Worker& worker) const {
+float Prop::opacity(const Ray& ray, Sampler_filter filter, const Worker& worker) const {
 	if (!has_masked_material()) {
 		return intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 	}
@@ -140,7 +140,7 @@ float Prop::opacity(const Ray& ray, Sampler_filter filter, Worker& worker) const
 	return shape_->opacity(transformation, ray, materials_, filter, worker);
 }
 
-float3 Prop::thin_absorption(const Ray& ray, Sampler_filter filter, Worker& worker) const {
+float3 Prop::thin_absorption(const Ray& ray, Sampler_filter filter, const Worker& worker) const {
 	if (!has_tinted_shadow()) {
 		return float3(opacity(ray, filter, worker));
 	}

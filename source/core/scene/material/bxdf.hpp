@@ -3,7 +3,7 @@
 #include "base/math/vector3.hpp"
 #include "base/flags/flags.hpp"
 
-namespace scene { namespace material { namespace bxdf {
+namespace scene::material::bxdf {
 
 enum class Type {
 	Reflection				= 1 << 0,
@@ -30,4 +30,4 @@ struct Result {
 	Type_flag type;
 };
 
-}}}
+}

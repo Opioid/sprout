@@ -3,7 +3,7 @@
 #include "sky_material_base.hpp"
 #include "base/math/distribution/distribution_2d.hpp"
 
-namespace procedural { namespace sky {
+namespace procedural::sky {
 
 class Sky_material : public Material {
 
@@ -13,11 +13,11 @@ public:
 
 	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
 												  Sampler_filter filter,
-												  scene::Worker& worker) override final;
+												  const scene::Worker& worker) override final;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area,
 								   float time, Sampler_filter filter,
-								   scene::Worker& worker) const override final;
+								   const scene::Worker& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 
@@ -38,11 +38,11 @@ public:
 
 	virtual const scene::material::Sample& sample(const float3& wo, const scene::Renderstate& rs,
 												  Sampler_filter filter,
-												  scene::Worker& worker) override final;
+												  const scene::Worker& worker) override final;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area,
 								   float time, Sampler_filter filter,
-								   scene::Worker& worker) const override final;
+								   const scene::Worker& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 
@@ -51,7 +51,7 @@ public:
 	virtual float2 radiance_sample(float2 r2, float& pdf) const override final;
 
 	virtual float emission_pdf(float2 uv, Sampler_filter filter,
-							   scene::Worker& worker) const override final;
+							   const scene::Worker& worker) const override final;
 
 	virtual void prepare_sampling(const scene::shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation,
@@ -73,4 +73,4 @@ private:
 	math::Distribution_2D distribution_;
 };
 
-}}
+}

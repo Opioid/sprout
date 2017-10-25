@@ -20,14 +20,14 @@
 //#include <fstream>
 //#include <iostream>
 
-namespace procedural { namespace sky {
+namespace procedural::sky {
 
 using namespace scene;
 
 Sky_material::Sky_material(Model& model) : Material(model) {}
 
 const material::Sample& Sky_material::sample(const float3& wo, const Renderstate& rs,
-											 Sampler_filter /*filter*/, Worker& worker) {
+											 Sampler_filter /*filter*/, const Worker& worker) {
 	auto& sample = worker.sample<material::light::Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -41,7 +41,7 @@ const material::Sample& Sky_material::sample(const float3& wo, const Renderstate
 
 float3 Sky_material::sample_radiance(const float3& wi, float2 /*uv*/, float /*area*/,
 									 float /*time*/, Sampler_filter /*filter*/,
-									 Worker& /*worker*/) const {
+									 const Worker& /*worker*/) const {
 	return model_.evaluate_sky(wi);
 }
 
@@ -65,10 +65,10 @@ Sky_baked_material::Sky_baked_material(Model& model) : Material(model) {}
 Sky_baked_material::~Sky_baked_material() {}
 
 const material::Sample& Sky_baked_material::sample(const float3& wo, const Renderstate& rs,
-												   Sampler_filter filter, Worker& worker) {
+												   Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<material::light::Sample>();
 
-	auto& sampler = worker.sampler_2D(sampler_key(), filter);
+	const auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	sample.set_basis(rs.geo_n, wo);
 
@@ -82,7 +82,7 @@ const material::Sample& Sky_baked_material::sample(const float3& wo, const Rende
 
 float3 Sky_baked_material::sample_radiance(const float3& /*wi*/, float2 uv, float /*area*/,
 										   float /*time*/, Sampler_filter filter,
-										   Worker& worker) const {
+										   const Worker& worker) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 	return emission_map_.sample_3(sampler, uv);
 }
@@ -103,7 +103,8 @@ float2 Sky_baked_material::radiance_sample(float2 r2, float& pdf) const {
 	return uv;
 }
 
-float Sky_baked_material::emission_pdf(float2 uv, Sampler_filter filter, Worker& worker) const {
+float Sky_baked_material::emission_pdf(float2 uv, Sampler_filter filter,
+									   const Worker& worker) const {
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
 
 	return distribution_.pdf(sampler.address(uv)) * total_weight_;
@@ -201,4 +202,4 @@ float3 Sky_baked_material::unclipped_canopy_mapping(const Transformation& transf
 	return math::transform_vector(dir, transformation.rotation);
 }
 
-}}
+}

@@ -2,7 +2,7 @@
 
 #include "scene/material/material_sample.hpp"
 
-namespace scene { namespace material {
+namespace scene::material {
 
 namespace bxdf { struct Result; }
 
@@ -54,4 +54,4 @@ public:
 	};
 };
 
-}}}
+}}

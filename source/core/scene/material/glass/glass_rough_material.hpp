@@ -2,7 +2,7 @@
 
 #include "scene/material/material.hpp"
 
-namespace scene { namespace material { namespace glass {
+namespace scene::material::glass {
 
 class Glass_rough : public Material {
 
@@ -11,7 +11,8 @@ public:
 	Glass_rough(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -36,5 +37,5 @@ protected:
 	float alpha_;
 };
 
-}}}
+}
 

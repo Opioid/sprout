@@ -5,7 +5,7 @@
 #include "base/math/math.hpp"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace material { namespace metal {
+namespace scene::material::metal {
 
 const material::Sample::Layer& Sample_isotropic::base_layer() const {
 	return layer_;
@@ -105,4 +105,4 @@ void Sample_anisotropic::Layer::set(const float3& ior, const float3& absorption,
 	axy_ = a[0] * a[1];
 }
 
-}}}
+}

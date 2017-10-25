@@ -7,13 +7,13 @@
 #include "scene/scene_worker.inl"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 Material_translucent::Material_translucent(const Sampler_settings& sampler_settings) :
 	Material_base(sampler_settings, true) {}
 
 const material::Sample& Material_translucent::sample(const float3& wo, const Renderstate& rs,
-													 Sampler_filter filter, Worker& worker) {
+													 Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample_translucent>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -40,4 +40,4 @@ void Material_translucent::set_attenuation_distance(float attenuation_distance) 
 	attenuation_distance_ = attenuation_distance;
 }
 
-}}}
+}

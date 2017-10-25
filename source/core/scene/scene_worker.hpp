@@ -29,23 +29,22 @@ public:
 
 	uint32_t id() const;
 
-	bool intersect(Ray& ray, Intersection& intersection);
-	bool intersect(const Prop* prop, Ray& ray, Intersection& intersection);
+	bool intersect(Ray& ray, Intersection& intersection) const;
+	bool intersect(const Prop* prop, Ray& ray, Intersection& intersection) const;
 
-	bool visibility(const Ray& ray);
+	bool visibility(const Ray& ray) const;
 
-	float masked_visibility(const Ray& ray, Sampler_filter filter);
+	float masked_visibility(const Ray& ray, Sampler_filter filter) const;
 
-	float3 tinted_visibility(const Ray& ray, Sampler_filter filter);
+	float3 tinted_visibility(const Ray& ray, Sampler_filter filter) const;
 
 	const Scene& scene() const;
 
-	shape::Node_stack& node_stack();
+	shape::Node_stack& node_stack() const;
 
-	material::Sample_cache& sample_cache();
+	material::Sample_cache& sample_cache() const;
 
-	template<typename T>
-	T& sample();
+	template<typename T> T& sample() const;
 
 	const Texture_sampler_2D& sampler_2D(uint32_t key, Sampler_filter filter) const;
 
@@ -59,10 +58,10 @@ protected:
 
 	const Scene* scene_;
 
-	shape::Node_stack node_stack_;
+	mutable shape::Node_stack node_stack_;
 
-	material::Sample_cache		  sample_cache_;
-	const material::Sampler_cache sampler_cache_;
+	mutable material::Sample_cache  sample_cache_;
+	const   material::Sampler_cache sampler_cache_;
 };
 
 }

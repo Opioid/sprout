@@ -4,7 +4,7 @@
 #include "scene/material/coating/coating.hpp"
 #include "scene/material/disney/disney.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 template<typename Coating_layer>
 class Sample_coating : public Sample_base<disney::Isotropic> {
@@ -21,4 +21,4 @@ public:
 using Sample_clearcoat = Sample_coating<coating::Clearcoat_layer>;
 using Sample_thinfilm  = Sample_coating<coating::Thinfilm_layer>;
 
-}}}
+}

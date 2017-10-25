@@ -4,7 +4,7 @@
 #include "scene/material/material_sample_cache.hpp"
 #include "scene/material/light/light_material_sample.hpp"
 
-namespace scene { namespace material { namespace sky {
+namespace scene::material::sky {
 
 class Material_overcast : public Material {
 
@@ -13,10 +13,12 @@ public:
 	Material_overcast(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
-								   Sampler_filter filter, Worker& worker) const override final;
+								   Sampler_filter filter,
+								   const Worker& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 
@@ -31,5 +33,4 @@ private:
 	float3 color_;
 };
 
-}}}
-
+}

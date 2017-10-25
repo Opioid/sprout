@@ -8,13 +8,13 @@
 #include "scene/material/ggx/ggx.inl"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material { namespace glass {
+namespace scene::material::glass {
 
 Glass_rough::Glass_rough(const Sampler_settings& sampler_settings) :
 	Material(sampler_settings, false) {}
 
 const material::Sample& Glass_rough::sample(const float3& wo, const Renderstate& rs,
-											Sampler_filter filter, Worker& worker) {
+											Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample_rough>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -75,4 +75,4 @@ void Glass_rough::set_roughness(float roughness) {
 	alpha_ = roughness * roughness;
 }
 
-}}}
+}

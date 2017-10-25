@@ -178,7 +178,7 @@ bool Mesh::intersect_p(const Transformation& transformation, const Ray& ray,
 
 float Mesh::opacity(const Transformation& transformation, const Ray& ray,
 					const material::Materials& materials,
-					Sampler_filter filter, Worker& worker) const {
+					Sampler_filter filter, const Worker& worker) const {
 	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
 	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
@@ -190,7 +190,7 @@ float Mesh::opacity(const Transformation& transformation, const Ray& ray,
 
 float3 Mesh::thin_absorption(const Transformation& transformation, const Ray& ray,
 							 const material::Materials& materials,
-							 Sampler_filter filter, Worker& worker) const {
+							 Sampler_filter filter, const Worker& worker) const {
 	math::Ray tray;
 	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
 	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));

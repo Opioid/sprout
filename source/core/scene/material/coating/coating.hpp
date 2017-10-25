@@ -2,7 +2,7 @@
 
 #include "scene/material/material_sample.hpp"
 
-namespace scene { namespace material { namespace coating {
+namespace scene::material::coating {
 
 struct Coating_base {
 	void set_color_and_weight(const float3& color, float weight);
@@ -60,4 +60,4 @@ struct Coating_layer : Sample::Layer, Coating {
 using Clearcoat_layer = Coating_layer<Clearcoat>;
 using Thinfilm_layer  = Coating_layer<Thinfilm>;
 
-}}}
+}

@@ -9,7 +9,7 @@
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
 // No side check needed because the material is two-sided by definition.
@@ -96,4 +96,4 @@ void Sample_translucent::set(const float3& diffuse_color, float thickness,
 	}
 }
 
-}}}
+}

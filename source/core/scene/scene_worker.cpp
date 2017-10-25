@@ -25,11 +25,11 @@ uint32_t Worker::id() const {
 	return id_;
 }
 
-bool Worker::intersect(Ray& ray, Intersection& intersection) {
+bool Worker::intersect(Ray& ray, Intersection& intersection) const {
 	return scene_->intersect(ray, node_stack_, intersection);
 }
 
-bool Worker::intersect(const Prop* prop, Ray& ray, Intersection& intersection) {
+bool Worker::intersect(const Prop* prop, Ray& ray, Intersection& intersection) const {
 	const bool hit = prop->intersect(ray, node_stack_, intersection.geo);
 	if (hit) {
 		intersection.prop = prop;
@@ -45,15 +45,15 @@ bool Worker::intersect(const Prop* prop, Ray& ray, Intersection& intersection) {
 	return hit;
 }
 
-bool Worker::visibility(const Ray& ray) {
+bool Worker::visibility(const Ray& ray) const {
 	return !scene_->intersect_p(ray, node_stack_);
 }
 
-float Worker::masked_visibility(const Ray& ray, Sampler_filter filter) {
+float Worker::masked_visibility(const Ray& ray, Sampler_filter filter) const {
 	return 1.f - scene_->opacity(ray, filter, *this);
 }
 
-float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) {
+float3 Worker::tinted_visibility(const Ray& ray, Sampler_filter filter) const {
 	return float3(1.f) - scene_->thin_absorption(ray, filter, *this);
 }
 
@@ -61,11 +61,11 @@ const scene::Scene& Worker::scene() const {
 	return *scene_;
 }
 
-scene::shape::Node_stack& Worker::node_stack() {
+scene::shape::Node_stack& Worker::node_stack() const {
 	return node_stack_;
 }
 
-material::Sample_cache& Worker::sample_cache() {
+material::Sample_cache& Worker::sample_cache() const {
 	return sample_cache_;
 }
 

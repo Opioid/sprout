@@ -6,13 +6,13 @@
 #include "scene/scene_worker.inl"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	Material_base(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
-										 Sampler_filter filter, Worker& worker) {
+										 Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -26,4 +26,4 @@ size_t Material::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}}
+}

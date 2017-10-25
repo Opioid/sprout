@@ -7,13 +7,13 @@
 #include "scene/material/coating/coating.inl"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material { namespace metallic_paint {
+namespace scene::material::metallic_paint {
 
 Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
 const material::Sample& Material::sample(const float3& wo, const Renderstate& rs,
-										 Sampler_filter filter, Worker& worker) {
+										 Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();
 
 	sample.set_basis(rs.geo_n, wo);
@@ -115,4 +115,4 @@ void Material::set_clearcoat(float ior, float roughness) {
 	coating_.alpha2_ = alpha * alpha;
 }
 
-}}}
+}

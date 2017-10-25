@@ -3,7 +3,7 @@
 #include "substitute_base_sample.hpp"
 #include "scene/material/disney/disney.hpp"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 class Sample_subsurface : public Sample_base<disney::Isotropic_no_lambert> {
 
@@ -15,7 +15,7 @@ public:
 
 	virtual float3 absorption_coeffecient() const override final;
 
-	virtual const BSSRDF& bssrdf(Worker& worker) const override final;
+	virtual const BSSRDF& bssrdf(const Worker& worker) const override final;
 
 	struct IOR {
 		float ior_i_;
@@ -45,5 +45,5 @@ private:
 	IOR ior_;
 };
 
-}}}
+}
 

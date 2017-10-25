@@ -7,14 +7,14 @@
 #include "scene/material/fresnel/fresnel.inl"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material { namespace substitute {
+namespace scene::material::substitute {
 
 Material_base::Material_base(const Sampler_settings& sampler_settings, bool two_sided) :
 	material::Material(sampler_settings, two_sided) {}
 
 float3 Material_base::sample_radiance(const float3& /*wi*/, float2 uv, float /*area*/,
 									  float /*time*/, Sampler_filter filter,
-									  Worker& worker) const {
+									  const Worker& worker) const {
 	if (emission_map_.is_valid()) {
 		// For some reason Clang needs this to find inherited Material::sampler_key_
 		auto& sampler = worker.sampler_2D(sampler_key(), filter);
@@ -73,4 +73,4 @@ void Material_base::set_emission_factor(float emission_factor) {
 	emission_factor_ = emission_factor;
 }
 
-}}}
+}

@@ -2,7 +2,7 @@
 
 #include "scene/material/material.hpp"
 
-namespace scene { namespace material { namespace glass {
+namespace scene::material::glass {
 
 class Thinglass : public Material {
 
@@ -11,10 +11,12 @@ public:
 	Thinglass(const Sampler_settings& sampler_settings);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	virtual float3 thin_absorption(const float3& wo, const float3& n, float2 uv, float time,
-								   Sampler_filter filter, Worker& worker) const override final;
+								   Sampler_filter filter,
+								   const Worker& worker) const override final;
 
 	virtual bool has_tinted_shadow() const override final;
 
@@ -39,4 +41,4 @@ private:
 	float thickness_;
 };
 
-}}}
+}

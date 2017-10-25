@@ -4,7 +4,7 @@
 #include "image/texture/texture.hpp"
 #include "base/math/distribution/distribution_2d.hpp"
 
-namespace scene { namespace material { namespace display {
+namespace scene::material::display {
 
 class Emissionmap_animated : public light::Emissionmap_animated {
 
@@ -15,7 +15,8 @@ public:
 						 float emission_factor, float animation_duration);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -29,4 +30,4 @@ private:
 	float f0_;
 };
 
-}}}
+}

@@ -3,7 +3,7 @@
 #include "scene/material/material.hpp"
 #include "scene/material/coating/coating.hpp"
 
-namespace scene { namespace material { namespace metallic_paint {
+namespace scene::material::metallic_paint {
 
 class Material : public material::Material {
 
@@ -12,7 +12,8 @@ public:
 	Material(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override final;
+										   Sampler_filter filter,
+										   const Worker& worker) override final;
 
 	virtual size_t num_bytes() const override final;
 
@@ -49,5 +50,4 @@ protected:
 	coating::Clearcoat coating_;
 };
 
-}}}
-
+}

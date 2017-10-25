@@ -3,7 +3,7 @@
 #include "scene/material/material.hpp"
 #include "base/math/distribution/distribution_2d.hpp"
 
-namespace scene { namespace material { namespace light {
+namespace scene::material::light {
 
 class Emissionmap : public Material {
 
@@ -12,10 +12,11 @@ public:
 	Emissionmap(const Sampler_settings& sampler_settings, bool two_sided);
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
-										   Sampler_filter filter, Worker& worker) override;
+										   Sampler_filter filter, const Worker& worker) override;
 
 	virtual float3 sample_radiance(const float3& wi, float2 uv, float area, float time,
-								   Sampler_filter filter, Worker& worker) const override final;
+								   Sampler_filter filter,
+								   const Worker& worker) const override final;
 
 	virtual float3 average_radiance(float area) const override final;
 
@@ -24,7 +25,7 @@ public:
 	virtual float2 radiance_sample(float2 r2, float& pdf) const override final;
 
 	virtual float emission_pdf(float2 uv, Sampler_filter filter,
-							   Worker& worker) const override final;
+							   const Worker& worker) const override final;
 
 	virtual void prepare_sampling(const shape::Shape& shape, uint32_t part,
 								  const Transformation& transformation,
@@ -49,4 +50,4 @@ protected:
 	float total_weight_;
 };
 
-}}}
+}

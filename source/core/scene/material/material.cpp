@@ -6,7 +6,7 @@
 #include "base/json/json.hpp"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace material {
+namespace scene::material {
 
 Material::Material(const Sampler_settings& sampler_settings, bool two_sided) :
 	sampler_key_(sampler_settings.key()),
@@ -28,7 +28,7 @@ void Material::tick(float /*absolute_time*/, float /*time_slice*/) {}
 
 float3 Material::sample_radiance(const float3& /*wi*/, float2 /*uv*/, float /*area*/,
 								 float /*time*/, Sampler_filter /*filter*/,
-								 Worker& /*worker*/) const {
+								 const Worker& /*worker*/) const {
 	return float3(0.f);
 }
 
@@ -45,11 +45,13 @@ float2 Material::radiance_sample(float2 r2, float& pdf) const {
 	return r2;
 }
 
-float Material::emission_pdf(float2 /*uv*/, Sampler_filter /*filter*/, Worker& /*worker*/) const {
+float Material::emission_pdf(float2 /*uv*/, Sampler_filter /*filter*/,
+							 const Worker& /*worker*/) const {
 	return 1.f;
 }
 
-float Material::opacity(float2 uv, float /*time*/, Sampler_filter filter, Worker& worker) const {
+float Material::opacity(float2 uv, float /*time*/, Sampler_filter filter,
+						const Worker& worker) const {
 	if (mask_.is_valid()) {
 		auto& sampler = worker.sampler_2D(sampler_key_, filter);
 		return mask_.sample_1(sampler, uv);
@@ -59,7 +61,7 @@ float Material::opacity(float2 uv, float /*time*/, Sampler_filter filter, Worker
 }
 
 float3 Material::thin_absorption(const float3& /*wo*/, const float3& /*n*/, float2 uv, float time,
-								 Sampler_filter filter, Worker& worker) const {
+								 Sampler_filter filter, const Worker& worker) const {
 	return float3(opacity(uv, time, filter, worker));
 }
 
@@ -98,4 +100,4 @@ bool Material::is_two_sided() const {
 
 void Material::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
-}}
+}

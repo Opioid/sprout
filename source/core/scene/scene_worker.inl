@@ -6,7 +6,7 @@
 namespace scene {
 
 template<typename T>
-T& Worker::sample() {
+T& Worker::sample() const {
 	return sample_cache_.get<T>();
 }
 
