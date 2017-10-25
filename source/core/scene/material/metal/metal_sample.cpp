@@ -34,7 +34,7 @@ float Sample_isotropic::ior() const {
 	return 1.5f;
 }
 
-void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_isotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 		return;
@@ -81,7 +81,7 @@ float Sample_anisotropic::ior() const {
 	return 1.5f;
 }
 
-void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_anisotropic::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 		return;

@@ -12,7 +12,7 @@ public:
 
 	virtual float3 evaluate(const float3& wi, float& pdf) const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	virtual float ior() const override final;
 

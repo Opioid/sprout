@@ -32,7 +32,7 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	return n_dot_wi * brdf;
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 //	float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color, layer_, sampler, result);
 
 	float n_dot_wo = layer_.clamp_abs_n_dot(wo_); // layer_.clamp_n_dot(wo_);

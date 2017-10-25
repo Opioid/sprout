@@ -32,7 +32,7 @@ public:
 
 	float3 resolve(const scene::Ray& ray, scene::Intersection& intersection,
 				   const float3& absorption_coffecient, sampler::Sampler& sampler,
-				   Sampler_filter filter, Worker& worker, Bxdf_result& sample_result) const;
+				   Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result) const;
 
 	virtual size_t num_bytes() const override final;
 

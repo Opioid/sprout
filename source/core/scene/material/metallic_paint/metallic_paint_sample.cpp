@@ -41,7 +41,7 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	return coating_reflection + coating_attenuation * (base_reflection + flakes_reflection);
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	if (!same_hemisphere(wo_)) {
 		result.pdf = 0.f;
 		return;
@@ -133,7 +133,7 @@ float3 Sample::Base_layer::evaluate(const float3& wi, const float3& wo, const fl
 }
 
 void Sample::Base_layer::sample(const float3& wo, sampler::Sampler& sampler,
-								bxdf::Result& result) const {
+								bxdf::Sample& result) const {
 	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	float f = n_dot_wo;
@@ -168,7 +168,7 @@ float3 Sample::Flakes_layer::evaluate(const float3& wi, const float3& wo, const 
 }
 
 void Sample::Flakes_layer::sample(const float3& wo, sampler::Sampler& sampler,
-								  float3& fresnel_result, bxdf::Result& result) const {
+								  float3& fresnel_result, bxdf::Sample& result) const {
 	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	fresnel::Conductor_weighted conductor(ior_, absorption_, weight_);

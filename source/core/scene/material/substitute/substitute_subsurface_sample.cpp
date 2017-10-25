@@ -22,7 +22,7 @@ float3 Sample_subsurface::evaluate(const float3& wi, float& pdf) const {
 	return layer_.base_evaluate(wi, wo_, h, wo_dot_h, pdf);
 }
 
-void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_subsurface::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 /*
 	const bool same_side = same_hemisphere(wo_);
 
@@ -105,7 +105,7 @@ bool Sample_subsurface::is_sss() const {
 }
 
 void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sampler& sampler,
-								bxdf::Result& result) const {
+								bxdf::Sample& result) const {
 	IOR tmp_ior;
 
 	if (!same_side) {
@@ -145,7 +145,7 @@ void Sample_subsurface::refract(bool same_side, const Layer& layer, sampler::Sam
 }
 
 void Sample_subsurface::reflect_internally(bool same_side, const Layer& layer,
-										   sampler::Sampler& sampler, bxdf::Result& result) const {
+										   sampler::Sampler& sampler, bxdf::Sample& result) const {
 	IOR tmp_ior;
 
 	if (!same_side) {

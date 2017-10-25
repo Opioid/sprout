@@ -18,7 +18,7 @@ public:
 
 	virtual float3 evaluate(const float3& wi, float& pdf) const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	virtual float3 absorption_coeffecient() const override final;
 
@@ -47,10 +47,10 @@ public:
 	public:
 
 		static float reflect(const Sample& sample, const Layer& layer,
-							 sampler::Sampler& sampler, bxdf::Result& result);
+							 sampler::Sampler& sampler, bxdf::Sample& result);
 
 		static float refract(const Sample& sample, const Layer& layer,
-							 sampler::Sampler& sampler, bxdf::Result& result);
+							 sampler::Sampler& sampler, bxdf::Sample& result);
 	};
 };
 

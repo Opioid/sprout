@@ -28,7 +28,7 @@ float Sample::ior() const {
 	return layer_.ior_;
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
@@ -54,7 +54,7 @@ void Sample::Layer::set(const float3& refraction_color, const float3& absorption
 }
 
 float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
-							sampler::Sampler& /*sampler*/, bxdf::Result& result) {
+							sampler::Sampler& /*sampler*/, bxdf::Sample& result) {
 	float3 n = layer.n_;
 	float eta_i = 1.f / layer.ior_;
 	float eta_t = layer.ior_;
@@ -90,7 +90,7 @@ float Sample::BSDF::reflect(const Sample& sample, const Layer& layer,
 }
 
 float Sample::BSDF::refract(const Sample& sample, const Layer& layer,
-							sampler::Sampler& /*sampler*/, bxdf::Result& result) {
+							sampler::Sampler& /*sampler*/, bxdf::Sample& result) {
 	float3 n = layer.n_;
 	float eta_i = 1.f / layer.ior_;
 	float eta_t = layer.ior_;

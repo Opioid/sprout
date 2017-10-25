@@ -28,7 +28,7 @@ void Bruteforce::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/)
 
 float3 Bruteforce::li(Worker& /*worker*/, const Ray& /*ray*/, Intersection& /*intersection*/,
 					  const Material_sample& /*sample*/, Sampler_filter /*filter*/,
-					  Bxdf_result& /*sample_result*/) {
+					  Bxdf_sample& /*sample_result*/) {
 	return float3(0.f);
 }
 

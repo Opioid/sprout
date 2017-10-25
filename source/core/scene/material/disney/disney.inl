@@ -30,7 +30,7 @@ float3 Isotropic::reflection(float h_dot_wi, float n_dot_wi, float n_dot_wo,
 
 template<typename Layer>
 float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
-						 sampler::Sampler& sampler, bxdf::Result& result) {
+						 sampler::Sampler& sampler, bxdf::Sample& result) {
 	const float2 s2d = sampler.generate_sample_2D();
 	const float3 is = math::sample_hemisphere_cosine(s2d);
 	const float3 wi = math::normalize(layer.tangent_to_world(is));
@@ -88,7 +88,7 @@ float3 Isotropic_no_lambert::reflection(float h_dot_wi, float n_dot_wi, float n_
 
 template<typename Layer>
 float Isotropic_no_lambert::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
-									sampler::Sampler& sampler, bxdf::Result& result) {
+									sampler::Sampler& sampler, bxdf::Sample& result) {
 	const float2 s2d = sampler.generate_sample_2D();
 	const float3 is = math::sample_hemisphere_cosine(s2d);
 	const float3 wi = math::normalize(layer.tangent_to_world(is));

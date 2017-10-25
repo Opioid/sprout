@@ -51,7 +51,7 @@ float3 Sample_rough::evaluate(const float3& wi, float& pdf) const {
 	return n_dot_wi * reflection;
 }
 
-void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_rough::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
@@ -92,7 +92,7 @@ void Sample_rough::Layer::set(const float3& refraction_color, const float3& abso
 }
 
 float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
-								  sampler::Sampler& sampler, bxdf::Result& result) {
+								  sampler::Sampler& sampler, bxdf::Sample& result) {
 	Layer tmp = layer;
 
 	if (!sample.same_hemisphere(sample.wo())) {
@@ -127,7 +127,7 @@ float Sample_rough::BSDF::reflect(const Sample& sample, const Layer& layer,
 }
 
 float Sample_rough::BSDF::refract(const Sample& sample, const Layer& layer,
-								  sampler::Sampler& sampler, bxdf::Result& result) {
+								  sampler::Sampler& sampler, bxdf::Sample& result) {
 	Layer tmp = layer;
 
 	if (!sample.same_hemisphere(sample.wo())) {

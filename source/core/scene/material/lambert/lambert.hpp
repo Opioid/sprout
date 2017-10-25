@@ -22,7 +22,7 @@ public:
 
 	template<typename Layer>
 	static float reflect(const float3& color, const Layer& layer,
-						 sampler::Sampler& sampler, bxdf::Result& result);
+						 sampler::Sampler& sampler, bxdf::Sample& result);
 };
 
 }}}

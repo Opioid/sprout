@@ -82,7 +82,7 @@ void test() {
 	float3 reflection = sample.evaluate(wi, pdf);
 	print(reflection, pdf);
 
-	bxdf::Result result;
+	bxdf::Sample result;
 	sample.sample(sampler, result);
 
 	print(result);
@@ -119,7 +119,7 @@ void Setup::test(const float3& wi, const float3& wo,
 	float3 reflection = sample.evaluate(wi, pdf);
 	print(reflection, pdf);
 
-	bxdf::Result result;
+	bxdf::Sample result;
 	sample.sample(sampler, result);
 
 	print(result);

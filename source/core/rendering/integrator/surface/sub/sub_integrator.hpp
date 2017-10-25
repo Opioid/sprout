@@ -28,7 +28,7 @@ public:
 
 	virtual float3 li(Worker& worker, const Ray& ray, Intersection& intersection,
 					  const Material_sample& sample, Sampler_filter filter,
-					  Bxdf_result& sample_result) = 0;
+					  Bxdf_sample& sample_result) = 0;
 
 protected:
 

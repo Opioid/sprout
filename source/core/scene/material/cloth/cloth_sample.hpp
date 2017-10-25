@@ -14,7 +14,7 @@ public:
 
 	virtual float ior() const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	struct Layer : public material::Sample::Layer {
 		void set(const float3& color);

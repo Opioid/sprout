@@ -47,7 +47,7 @@ float3 Sample_translucent::evaluate(const float3& wi, float& pdf) const {
 	return result;
 }
 
-void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_translucent::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 // No side check needed because the material is two-sided by definition.
 
 	const float p = sampler.generate_sample_1D();

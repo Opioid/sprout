@@ -77,7 +77,7 @@ void Pathtracer_MIS::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 
 float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Sampler_filter filter = Sampler_filter::Undefined;
-	Bxdf_result sample_result;
+	Bxdf_sample sample_result;
 
 	float3 throughput(1.f);
 	float3 result(0.f);
@@ -204,7 +204,7 @@ size_t Pathtracer_MIS::num_bytes() const {
 float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& intersection,
 											 const Material_sample& material_sample,
 											 Sampler_filter filter, Worker& worker,
-											 Bxdf_result& sample_result, bool& requires_bounce) {
+											 Bxdf_sample& sample_result, bool& requires_bounce) {
 	float3 result(0.f);
 
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -332,7 +332,7 @@ float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight, fl
 
 float3 Pathtracer_MIS::resolve_transmission(const Ray& ray, Intersection& intersection,
 											const float3& attenuation, Sampler_filter filter,
-											Worker& worker, Bxdf_result& sample_result) {
+											Worker& worker, Bxdf_sample& sample_result) {
 	if (intersection.prop->is_open()) {
 		return transmittance_open_.resolve(ray, intersection, attenuation,
 										   sampler_, filter, worker, sample_result);

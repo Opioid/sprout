@@ -48,7 +48,7 @@ template<typename Diffuse>
 template<typename Coating>
 void Sample_base<Diffuse>::base_and_coating_sample(const Coating& coating,
 												   sampler::Sampler& sampler,
-												   bxdf::Result& result) const {
+												   bxdf::Sample& result) const {
 	const float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
@@ -78,7 +78,7 @@ template<typename Diffuse>
 template<typename Coating>
 void Sample_base<Diffuse>::diffuse_sample_and_coating(const Coating& coating,
 													  sampler::Sampler& sampler,
-													  bxdf::Result& result) const {
+													  bxdf::Sample& result) const {
 	layer_.diffuse_sample(wo_, sampler, result);
 
 	float3 coating_attenuation;
@@ -95,7 +95,7 @@ template<typename Diffuse>
 template<typename Coating>
 void Sample_base<Diffuse>::specular_sample_and_coating(const Coating& coating,
 													   sampler::Sampler& sampler,
-													   bxdf::Result& result) const {
+													   bxdf::Sample& result) const {
 	layer_.specular_sample(wo_, sampler, result);
 
 	float3 coating_attenuation;
@@ -112,7 +112,7 @@ template<typename Diffuse>
 template<typename Coating>
 void Sample_base<Diffuse>::pure_specular_sample_and_coating(const Coating& coating,
 															sampler::Sampler& sampler,
-															bxdf::Result& result) const {
+															bxdf::Sample& result) const {
 	layer_.pure_specular_sample(wo_, sampler, result);
 
 	float3 coating_attenuation;
@@ -167,7 +167,7 @@ float3 Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3
 
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::diffuse_sample(const float3& wo, sampler::Sampler& sampler,
-												 bxdf::Result& result) const {
+												 bxdf::Sample& result) const {
 	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 	const float n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
 
@@ -186,7 +186,7 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(const float3& wo, sampler::Samp
 
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::specular_sample(const float3& wo, sampler::Sampler& sampler,
-												  bxdf::Result& result) const {
+												  bxdf::Sample& result) const {
 	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	const fresnel::Schlick schlick(f0_);
@@ -204,7 +204,7 @@ void Sample_base<Diffuse>::Layer::specular_sample(const float3& wo, sampler::Sam
 
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::pure_specular_sample(const float3& wo, sampler::Sampler& sampler,
-													   bxdf::Result& result) const {
+													   bxdf::Sample& result) const {
 	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
 
 	const fresnel::Schlick schlick(f0_);

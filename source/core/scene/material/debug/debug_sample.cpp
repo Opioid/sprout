@@ -28,7 +28,7 @@ float3 Sample::evaluate(const float3& wi, float& pdf) const {
 	return n_dot_wi * lambert;
 }
 
-void Sample::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const float3 n = math::cross(layer_.t_, layer_.b_);
 	const bool same_side = math::dot(n, layer_.n_) > 0.f;
 

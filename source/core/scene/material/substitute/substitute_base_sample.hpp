@@ -22,19 +22,19 @@ protected:
 
 	template<typename Coating>
 	void base_and_coating_sample(const Coating& coating, sampler::Sampler& sampler,
-								 bxdf::Result& result) const;
+								 bxdf::Sample& result) const;
 
 	template<typename Coating>
 	void diffuse_sample_and_coating(const Coating& coating, sampler::Sampler& sampler,
-									bxdf::Result& result) const;
+									bxdf::Sample& result) const;
 
 	template<typename Coating>
 	void specular_sample_and_coating(const Coating& coating, sampler::Sampler& sampler,
-									 bxdf::Result& result) const;
+									 bxdf::Sample& result) const;
 
 	template<typename Coating>
 	void pure_specular_sample_and_coating(const Coating& coating, sampler::Sampler& sampler,
-										  bxdf::Result& result) const;
+										  bxdf::Sample& result) const;
 
 public:
 
@@ -46,13 +46,13 @@ public:
 							 float wo_dot_h, float& pdf) const;
 
 		void diffuse_sample(const float3& wo, sampler::Sampler& sampler,
-							bxdf::Result& result) const;
+							bxdf::Sample& result) const;
 
 		void specular_sample(const float3& wo, sampler::Sampler& sampler,
-							 bxdf::Result& result) const;
+							 bxdf::Sample& result) const;
 
 		void pure_specular_sample(const float3& wo, sampler::Sampler& sampler,
-								  bxdf::Result& result) const;
+								  bxdf::Sample& result) const;
 
 		float base_diffuse_fresnel_hack(float n_dot_wi, float n_dot_wo) const;
 

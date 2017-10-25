@@ -27,7 +27,7 @@ float3 Isotropic::reflection(const float3& wi, const float3& wo, float n_dot_wi,
 
 template<typename Layer>
 float Isotropic::reflect(const float3& wo, float n_dot_wo, const Layer& layer,
-						 sampler::Sampler& sampler, bxdf::Result& result) {
+						 sampler::Sampler& sampler, bxdf::Sample& result) {
 	float2 s2d = sampler.generate_sample_2D();
 
 	float3 is = math::sample_hemisphere_cosine(s2d);

@@ -21,7 +21,7 @@ void Open::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Open::resolve(const scene::Ray& ray, scene::Intersection& intersection,
 					 const float3& absorption_coffecient, sampler::Sampler& sampler,
-					 Sampler_filter filter, Worker& worker, Bxdf_result& sample_result) const {
+					 Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result) const {
 	float3 throughput = sample_result.reflection / sample_result.pdf;
 	float3 used_absorption_coffecient = absorption_coffecient;
 

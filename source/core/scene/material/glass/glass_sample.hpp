@@ -16,7 +16,7 @@ public:
 
 	virtual float ior() const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	virtual bool is_transmissive() const override final;
 
@@ -37,10 +37,10 @@ public:
 	public:
 
 		static float reflect(const Sample& sample, const Layer& layer,
-							 sampler::Sampler& sampler, bxdf::Result& result);
+							 sampler::Sampler& sampler, bxdf::Sample& result);
 
 		static float refract(const Sample& sample, const Layer& layer,
-							 sampler::Sampler& sampler, bxdf::Result& result);
+							 sampler::Sampler& sampler, bxdf::Sample& result);
 	};
 };
 

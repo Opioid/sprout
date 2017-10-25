@@ -51,8 +51,8 @@ void Pathtracer::resume_pixel(uint32_t sample, rnd::Generator& scramble) {
 
 float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Sampler_filter filter;
-	Bxdf_result sample_result;
-	Bxdf_result::Type_flag previous_sample_type;
+	Bxdf_sample sample_result;
+	Bxdf_sample::Type_flag previous_sample_type;
 
 	float3 throughput(1.f);
 	float3 result(0.f);

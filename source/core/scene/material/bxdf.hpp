@@ -19,7 +19,7 @@ enum class Type {
 	Specular_transmission	= Transmission | Specular
 };
 
-struct Result {
+struct Sample {
 	float3 reflection;
 	float3 wi;
 	float3 h;			// intermediate result, convenient to store here

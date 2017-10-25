@@ -29,7 +29,7 @@ float Sample_thin::ior() const {
 	return layer_.ior_;
 }
 
-void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Result& result) const {
+void Sample_thin::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	const float p = sampler.generate_sample_1D();
 
 	if (p < 0.5f) {
@@ -60,7 +60,7 @@ void Sample_thin::Layer::set(const float3& refraction_color, const float3& absor
 }
 
 float Sample_thin::BSDF::reflect(const Sample_thin& sample, const Layer& layer,
-								 sampler::Sampler& /*sampler*/, bxdf::Result& result) {
+								 sampler::Sampler& /*sampler*/, bxdf::Sample& result) {
 	float3 n = layer.n_;
 	float eta_i = 1.f / layer.ior_;
 	float eta_t = layer.ior_;
@@ -96,7 +96,7 @@ float Sample_thin::BSDF::reflect(const Sample_thin& sample, const Layer& layer,
 }
 
 float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
-								 sampler::Sampler& /*sampler*/, bxdf::Result& result) {
+								 sampler::Sampler& /*sampler*/, bxdf::Sample& result) {
 	float3 n = layer.n_;
 	float eta_i = 1.f / layer.ior_;
 	float eta_t = layer.ior_;

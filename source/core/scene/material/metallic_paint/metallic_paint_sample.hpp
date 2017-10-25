@@ -13,7 +13,7 @@ public:
 
 	virtual float3 evaluate(const float3& wi, float& pdf) const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	virtual float ior() const override final;
 
@@ -23,7 +23,7 @@ public:
 		float3 evaluate(const float3& wi, const float3& wo, const float3& h,
 						float wo_dot_h, float& pdf) const;
 
-		void sample(const float3& wo, sampler::Sampler& sampler, bxdf::Result& result) const;
+		void sample(const float3& wo, sampler::Sampler& sampler, bxdf::Sample& result) const;
 
 		float3 color_a_;
 		float3 color_b_;
@@ -40,7 +40,7 @@ public:
 						float wo_dot_h, float3& fresnel_result, float& pdf) const;
 
 		void sample(const float3& wo, sampler::Sampler& sampler,
-					float3& fresnel_result, bxdf::Result& result) const;
+					float3& fresnel_result, bxdf::Sample& result) const;
 
 		float3 ior_;
 		float3 absorption_;

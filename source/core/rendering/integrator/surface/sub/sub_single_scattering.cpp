@@ -27,7 +27,7 @@ void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scra
 
 float3 Single_scattering::li(Worker& worker, const Ray& ray, Intersection& intersection,
 							 const Material_sample& sample, Sampler_filter filter,
-							 Bxdf_result& sample_result) {
+							 Bxdf_sample& sample_result) {
 	float3 result(0.f);
 	float3 tr(sample_result.reflection / sample_result.pdf);
 

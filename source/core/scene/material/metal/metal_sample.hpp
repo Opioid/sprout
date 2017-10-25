@@ -14,7 +14,7 @@ public:
 
 	virtual float ior() const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	struct Layer : material::Sample::Layer {
 		void set(const float3& ior, const float3& absorption, float roughness);
@@ -37,7 +37,7 @@ public:
 
 	virtual float ior() const override final;
 
-	virtual void sample(sampler::Sampler& sampler, bxdf::Result& result) const override final;
+	virtual void sample(sampler::Sampler& sampler, bxdf::Sample& result) const override final;
 
 	struct Layer : material::Sample::Layer {
 		void set(const float3& ior, const float3& absorption, float2 roughness);

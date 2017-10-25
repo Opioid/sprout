@@ -28,12 +28,12 @@ public:
 	template<typename Layer, typename Fresnel>
 	static float reflect(const float3& wo, float n_dot_wo,
 						 const Layer& layer, const Fresnel& fresnel,
-						 sampler::Sampler& sampler, bxdf::Result& result);
+						 sampler::Sampler& sampler, bxdf::Sample& result);
 
 	template<typename Layer, typename Fresnel>
 	static float reflect(const float3& wo, float n_dot_wo, const Layer& layer,
 						 const Fresnel& fresnel, sampler::Sampler& sampler,
-						 float3& fresnel_result, bxdf::Result& result);
+						 float3& fresnel_result, bxdf::Sample& result);
 
 	template<typename Layer, typename Fresnel>
 	static float3 refraction(const float3& wi, const float3& wo, float n_dot_wi,
@@ -42,12 +42,12 @@ public:
 
 	template<typename Layer, typename Fresnel>
 	static float refract(const float3& wo, float n_dot_wo, float n_dot_t, const Layer& layer,
-						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Result& result);
+						 const Fresnel& fresnel, sampler::Sampler& sampler, bxdf::Sample& result);
 
 	template<typename Layer, typename IOR, typename Fresnel>
 	static float refract(const float3& wo, float n_dot_wo, float n_dot_t,
 						 const Layer& layer, const IOR& ior, const Fresnel& fresnel,
-						 sampler::Sampler& sampler, bxdf::Result& result);
+						 sampler::Sampler& sampler, bxdf::Sample& result);
 };
 
 class Anisotropic {
@@ -61,7 +61,7 @@ public:
 	template<typename Layer, typename Fresnel>
 	static float reflect(const float3& wo, float n_dot_wo,
 						 const Layer& layer, const Fresnel& fresnel,
-						 sampler::Sampler& sampler, bxdf::Result& result);
+						 sampler::Sampler& sampler, bxdf::Sample& result);
 };
 
 }}}

@@ -24,7 +24,7 @@ public:
 
 	float3 resolve(const Ray& ray, Intersection& intersection,
 				   const float3& attenuation, sampler::Sampler& sampler,
-				   Sampler_filter filter, Worker& worker, Bxdf_result& sample_result);
+				   Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result);
 
 	virtual size_t num_bytes() const override final;
 

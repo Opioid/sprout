@@ -11,7 +11,7 @@ namespace scene {
 
 namespace material {
 
-namespace bxdf { struct Result; enum class Type; }
+namespace bxdf { struct Sample; enum class Type; }
 
 class Sample;
 
@@ -25,7 +25,7 @@ class Scene;
 
 }
 
-namespace rendering { namespace integrator {
+namespace rendering::integrator {
 
 struct Light_sampling {
 	enum class Strategy {
@@ -48,7 +48,7 @@ public:
 
 	using Material_sample = scene::material::Sample;
 	using Sampler_filter  = scene::material::Sampler_settings::Filter;
-	using Bxdf_result	  = scene::material::bxdf::Result;
+	using Bxdf_sample	  = scene::material::bxdf::Sample;
 	using Bxdf_type		  = scene::material::bxdf::Type;
 
 	Integrator(rnd::Generator& rng, const take::Settings& settings);
@@ -66,4 +66,4 @@ protected:
 	const take::Settings take_settings_;
 };
 
-}}
+}

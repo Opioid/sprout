@@ -12,7 +12,7 @@ void test() {
 	sampler::Random sampler(rng);
 	sampler.resize(0, 1, 1, 1);
 
-	bxdf::Result result;
+	bxdf::Sample result;
 
 	Sample sample;
 
