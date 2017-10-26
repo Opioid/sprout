@@ -62,5 +62,3 @@ I list this code separately from the other third-party dependencies,
 because it can easily be removed without impairing the overall functionality of the renderer. 
 The main changes are a conversion from ~double~ to ~float~ type 
 and optimizations regarding pow() with a constant exponent.
-
-[[file:doc/images/conference.mp4]]
