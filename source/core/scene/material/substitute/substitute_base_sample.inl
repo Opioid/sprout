@@ -30,14 +30,12 @@ bxdf::Result Sample_base<Diffuse>::base_and_coating_evaluate(const float3& wi,
 	const float3 h = math::normalize(wo_ + wi);
 	const float wo_dot_h = clamp_dot(wo_, h);
 
-	float3 coating_attenuation;
-	const auto coating = coating_layer.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_,
-												coating_attenuation);
+	const auto coating = coating_layer.evaluate(wi, wo_, h, wo_dot_h, layer_.ior_);
 
 	const auto base = layer_.base_evaluate(wi, wo_, h, wo_dot_h);
 
 	const float pdf = (coating.pdf + 2.f * base.pdf) / 3.f;
-	return { coating.reflection + coating_attenuation * base.reflection, pdf };
+	return { coating.reflection + coating.attenuation * base.reflection, pdf };
 }
 
 template<typename Diffuse>
@@ -75,11 +73,10 @@ void Sample_base<Diffuse>::diffuse_sample_and_coating(const Coating& coating_lay
 													  bxdf::Sample& result) const {
 	layer_.diffuse_sample(wo_, sampler, result);
 
-	float3 coating_attenuation;
 	const auto coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-												layer_.ior_, coating_attenuation);
+												layer_.ior_);
 
-	result.reflection = coating_attenuation * result.reflection + coating.reflection;
+	result.reflection = coating.attenuation * result.reflection + coating.reflection;
 	result.pdf = (2.f * result.pdf + coating.pdf) / 3.f;
 }
 
@@ -90,11 +87,10 @@ void Sample_base<Diffuse>::specular_sample_and_coating(const Coating& coating_la
 													   bxdf::Sample& result) const {
 	layer_.specular_sample(wo_, sampler, result);
 
-	float3 coating_attenuation;
 	const auto coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-												layer_.ior_, coating_attenuation);
+												layer_.ior_);
 
-	result.reflection = coating_attenuation * result.reflection + coating.reflection;
+	result.reflection = coating.attenuation * result.reflection + coating.reflection;
 	result.pdf = (2.f * result.pdf + coating.pdf) / 3.f;
 }
 
@@ -105,11 +101,10 @@ void Sample_base<Diffuse>::pure_specular_sample_and_coating(const Coating& coati
 															bxdf::Sample& result) const {
 	layer_.pure_specular_sample(wo_, sampler, result);
 
-	float3 coating_attenuation;
 	const auto coating = coating_layer.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-												layer_.ior_, coating_attenuation);
+												layer_.ior_);
 
-	result.reflection = coating_attenuation * result.reflection + coating.reflection;
+	result.reflection = coating.attenuation * result.reflection + coating.reflection;
 	result.pdf = 0.5f * (result.pdf + coating.pdf);
 }
 

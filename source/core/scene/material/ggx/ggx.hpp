@@ -4,7 +4,7 @@
 
 namespace sampler { class Sampler; }
 
-namespace scene { namespace material {
+namespace scene::material {
 
 class Sample;
 
@@ -64,4 +64,4 @@ public:
 						 sampler::Sampler& sampler, bxdf::Sample& result);
 };
 
-}}}
+}}

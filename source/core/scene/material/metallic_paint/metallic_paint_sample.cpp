@@ -18,11 +18,10 @@ bxdf::Result Sample::evaluate(const float3& wi) const {
 		return { float3::identity(), 0.f };
 	}
 
-	float3 h = math::normalize(wo_ + wi);
-	float wo_dot_h = clamp_dot(wo_, h);
+	const float3 h = math::normalize(wo_ + wi);
+	const float wo_dot_h = clamp_dot(wo_, h);
 
-	float3 coating_attenuation;
-	const auto coating = coating_.evaluate(wi, wo_, h, wo_dot_h, 1.f, coating_attenuation);
+	const auto coating = coating_.evaluate(wi, wo_, h, wo_dot_h, 1.f);
 
 	float3 flakes_fresnel;
 	const auto flakes = flakes_.evaluate(wi, wo_, h, wo_dot_h, flakes_fresnel);
@@ -33,7 +32,7 @@ bxdf::Result Sample::evaluate(const float3& wi) const {
 
 	const float pdf = (coating.pdf + flakes.pdf + base.pdf) / 3.f;
 
-	return { coating.reflection + coating_attenuation * bottom, pdf };
+	return { coating.reflection + coating.attenuation * bottom, pdf };
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
@@ -61,9 +60,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 	} else if (p < 0.7f) {
 		base_.sample(wo_, sampler, result);
 
-		float3 coating_attenuation;
-		const auto coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-											   1.f, coating_attenuation);
+		const auto coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi, 1.f);
 
 		float3 flakes_fresnel;
 		const auto flakes = flakes_.evaluate(result.wi, wo_, result.h,
@@ -71,21 +68,19 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 
 		const float3 bottom = (1.f - flakes_fresnel) * result.reflection + flakes.reflection;
 
-		result.reflection = coating.reflection + coating_attenuation * bottom;
+		result.reflection = coating.reflection + coating.attenuation * bottom;
 		result.pdf = (result.pdf + coating.pdf + flakes.pdf) / 3.f;
 	} else {
 		float3 flakes_fresnel;
 		flakes_.sample(wo_, sampler, flakes_fresnel, result);
 
-		float3 coating_attenuation;
-		const auto coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi,
-											   1.f, coating_attenuation);
+		const auto coating = coating_.evaluate(result.wi, wo_, result.h, result.h_dot_wi, 1.f);
 
 		const auto base = base_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
 		const float3 bottom = ((1.f - flakes_fresnel) * base.reflection + result.reflection);
 
-		result.reflection = coating.reflection + coating_attenuation * bottom;
+		result.reflection = coating.reflection + coating.attenuation * bottom;
 		result.pdf = (result.pdf + base.pdf + coating.pdf) / 3.f;
 	}
 }
