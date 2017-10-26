@@ -17,8 +17,13 @@ struct Coating_base {
 	float  weight_;
 };
 
-struct Clearcoat : public Coating_base {
+class Clearcoat : public Coating_base {
+
+public:
+
 	void set(float f0, float alpha, float alpha2);
+
+protected:
 
 	template<typename Layer>
 	Result evaluate(const float3& wi, const float3& wo, const float3& h,
@@ -28,14 +33,21 @@ struct Clearcoat : public Coating_base {
 	void sample(const float3& wo, float internal_ior,
 				const Layer& layer, sampler::Sampler& sampler,
 				float3& attenuation, bxdf::Sample& result) const;
+
+public:
 
 	float f0_;
 	float alpha_;
 	float alpha2_;
 };
 
-struct Thinfilm : public Coating_base {
+class Thinfilm : public Coating_base {
+
+public:
+
 	void set(float ior, float alpha, float alpha2, float thickness);
+
+protected:
 
 	template<typename Layer>
 	Result evaluate(const float3& wi, const float3& wo, const float3& h,
@@ -45,6 +57,8 @@ struct Thinfilm : public Coating_base {
 	void sample(const float3& wo, float internal_ior,
 				const Layer& layer, sampler::Sampler& sampler,
 				float3& attenuation, bxdf::Sample& result) const;
+
+public:
 
 	float ior_;
 	float alpha_;
@@ -53,7 +67,10 @@ struct Thinfilm : public Coating_base {
 };
 
 template<typename Coating>
-struct Coating_layer : Sample::Layer, Coating {
+class Coating_layer : public Sample::Layer, public Coating {
+
+public:
+
 	Result evaluate(const float3& wi, const float3& wo, const float3& h,
 					float wo_dot_h, float internal_ior) const;
 

@@ -139,8 +139,8 @@ All instructions on how to use this code are in the accompanying header file.
 
 // internal definitions
 
-typedef hk_real *ArHosekSkyModel_Dataset;
-typedef hk_real *ArHosekSkyModel_Radiance_Dataset;
+typedef const hk_real* ArHosekSkyModel_Dataset;
+typedef const hk_real* ArHosekSkyModel_Radiance_Dataset;
 
 // internal functions
 
@@ -152,7 +152,7 @@ void ArHosekSkyModel_CookConfiguration(
 		hk_real                        solar_elevation
         )
 {
-	hk_real  * elev_matrix;
+	const hk_real* elev_matrix;
 
     int     int_turbidity = (int)turbidity;
 	hk_real  turbidity_rem = turbidity - (hk_real)int_turbidity;
@@ -248,7 +248,7 @@ hk_real ArHosekSkyModel_CookRadianceConfiguration(
 		hk_real                            solar_elevation
         )
 {
-	hk_real* elev_matrix;
+	const hk_real* elev_matrix;
 
     int int_turbidity = (int)turbidity;
 	hk_real turbidity_rem = turbidity - (hk_real)int_turbidity;

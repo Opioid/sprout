@@ -102,7 +102,7 @@ the model.
 
 // Uses Sep 9 pattern / Aug 23 mean dataset
 
-hk_real datasetXYZ1[] =
+constexpr hk_real datasetXYZ1[] =
 {
 	// albedo 0, turbidity 1
 	-1.117001e+000,
@@ -1206,7 +1206,7 @@ hk_real datasetXYZ1[] =
 	6.232887e-001,
 };
 
-hk_real datasetXYZRad1[] =
+constexpr hk_real datasetXYZRad1[] =
 {
 	// albedo 0, turbidity 1
 	1.560219e+000,
@@ -1350,7 +1350,7 @@ hk_real datasetXYZRad1[] =
 	2.523432e+001,
 };
 
-hk_real datasetXYZ2[] =
+constexpr hk_real datasetXYZ2[] =
 {
 	// albedo 0, turbidity 1
 	-1.127942e+000,
@@ -2454,7 +2454,7 @@ hk_real datasetXYZ2[] =
 	6.118645e-001,
 };
 
-hk_real datasetXYZRad2[] =
+constexpr hk_real datasetXYZRad2[] =
 {
 	// albedo 0, turbidity 1
 	1.632341e+000,
@@ -2598,7 +2598,7 @@ hk_real datasetXYZRad2[] =
 	2.641780e+001,
 };
 
-hk_real datasetXYZ3[] =
+constexpr hk_real datasetXYZ3[] =
 {
 	// albedo 0, turbidity 1
 	-1.310023e+000,
@@ -3702,7 +3702,7 @@ hk_real datasetXYZ3[] =
 	6.791814e-001,
 };
 
-hk_real datasetXYZRad3[] =
+constexpr hk_real datasetXYZRad3[] =
 {
 	// albedo 0, turbidity 1
 	1.168084e+000,
@@ -3848,14 +3848,14 @@ hk_real datasetXYZRad3[] =
 
 
 
-hk_real* datasetsXYZ[] =
+constexpr const hk_real* datasetsXYZ[] =
 {
 	datasetXYZ1,
 	datasetXYZ2,
 	datasetXYZ3
 };
 
-hk_real* datasetsXYZRad[] =
+constexpr const hk_real* datasetsXYZRad[] =
 {
 	datasetXYZRad1,
 	datasetXYZRad2,

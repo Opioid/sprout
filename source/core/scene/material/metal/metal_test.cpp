@@ -99,7 +99,7 @@ void test() {
 
 	std::cout << "d == " << d << std::endl;
 
-	float n_dot_wo = 1.f;
+	const float n_dot_wo = 1.f;
 	float g = ggx::geometric_visibility(n_dot_wo, n_dot_wo, ggx::Min_alpha2);
 	std::cout << "g == " << g << std::endl;
 	*/

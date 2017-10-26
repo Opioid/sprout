@@ -67,7 +67,7 @@ Result Thinfilm::evaluate(const float3& wi, const float3& wo, const float3& h,
 
 	const float n_dot_h = math::saturate(math::dot(layer.n_, h));
 
-	const fresnel::Thinfilm_weighted thinfilm(1.f, ior_, internal_ior, thickness_, weight_);
+	const fresnel::Thinfilm_weighted thinfilm({ 1.f, ior_, internal_ior, thickness_ }, weight_);
 	float3 fresnel;
 	const auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
 												layer, thinfilm, fresnel);
@@ -82,7 +82,7 @@ void Thinfilm::sample(const float3& wo, float internal_ior, const Layer& layer,
 					  sampler::Sampler& sampler, float3& attenuation, bxdf::Sample& result) const {
 	const float n_dot_wo = layer.clamp_abs_n_dot(wo); //layer.clamp_n_dot(wo);
 
-	const fresnel::Thinfilm_weighted thinfilm(1.f, ior_, internal_ior, thickness_, weight_);
+	const fresnel::Thinfilm_weighted thinfilm({ 1.f, ior_, internal_ior, thickness_ }, weight_);
 
 	const float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, layer, thinfilm,
 												   sampler, attenuation, result);

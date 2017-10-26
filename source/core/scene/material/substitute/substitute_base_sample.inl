@@ -126,7 +126,7 @@ template<typename Diffuse>
 bxdf::Result Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const float3& wo,
 														const float3& h, float wo_dot_h) const {
 	const float n_dot_wi = clamp_n_dot(wi);
-	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
+	const float n_dot_wo = clamp_abs_n_dot(wo);
 
 	const auto d = Diffuse::reflection(wo_dot_h, n_dot_wi, n_dot_wo, *this);
 
@@ -148,7 +148,7 @@ bxdf::Result Sample_base<Diffuse>::Layer::base_evaluate(const float3& wi, const 
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::diffuse_sample(const float3& wo, sampler::Sampler& sampler,
 												 bxdf::Sample& result) const {
-	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
+	const float n_dot_wo = clamp_abs_n_dot(wo);
 	const float n_dot_wi = Diffuse::reflect(wo, n_dot_wo, *this, sampler, result);
 
 	const float n_dot_h = math::saturate(math::dot(n_, result.h));
@@ -165,7 +165,7 @@ void Sample_base<Diffuse>::Layer::diffuse_sample(const float3& wo, sampler::Samp
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::specular_sample(const float3& wo, sampler::Sampler& sampler,
 												  bxdf::Sample& result) const {
-	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
+	const float n_dot_wo = clamp_abs_n_dot(wo);
 
 	const fresnel::Schlick schlick(f0_);
 	float3 ggx_fresnel;
@@ -181,7 +181,7 @@ void Sample_base<Diffuse>::Layer::specular_sample(const float3& wo, sampler::Sam
 template<typename Diffuse>
 void Sample_base<Diffuse>::Layer::pure_specular_sample(const float3& wo, sampler::Sampler& sampler,
 													   bxdf::Sample& result) const {
-	const float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
+	const float n_dot_wo = clamp_abs_n_dot(wo);
 
 	const fresnel::Schlick schlick(f0_);
 	const float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, schlick, sampler, result);

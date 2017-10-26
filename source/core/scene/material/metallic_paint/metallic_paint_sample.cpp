@@ -28,7 +28,7 @@ bxdf::Result Sample::evaluate(const float3& wi) const {
 
 	const auto base = base_.evaluate(wi, wo_, h, wo_dot_h);
 
-	const float3 bottom = ((1.f - flakes_fresnel) * base.reflection + flakes.reflection);
+	const float3 bottom = (1.f - flakes_fresnel) * base.reflection + flakes.reflection;
 
 	const float pdf = (coating.pdf + flakes.pdf + base.pdf) / 3.f;
 
@@ -53,7 +53,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 
 		const auto base = base_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
-		const float3 bottom = ((1.f - flakes_fresnel) * base.reflection + flakes.reflection);
+		const float3 bottom = (1.f - flakes_fresnel) * base.reflection + flakes.reflection;
 
 		result.reflection = result.reflection + coating_attenuation * bottom;
 		result.pdf = (result.pdf + base.pdf + flakes.pdf) / 3.f;
@@ -78,7 +78,7 @@ void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
 
 		const auto base = base_.evaluate(result.wi, wo_, result.h, result.h_dot_wi);
 
-		const float3 bottom = ((1.f - flakes_fresnel) * base.reflection + result.reflection);
+		const float3 bottom = (1.f - flakes_fresnel) * base.reflection + result.reflection;
 
 		result.reflection = coating.reflection + coating.attenuation * bottom;
 		result.pdf = (result.pdf + base.pdf + coating.pdf) / 3.f;
@@ -98,9 +98,9 @@ void Sample::Base_layer::set(const float3& color_a, const float3& color_b,
 }
 
 bxdf::Result Sample::Base_layer::evaluate(const float3& wi, const float3& wo, const float3& h,
-									float wo_dot_h) const {
-	float n_dot_wi = clamp_n_dot(wi);
-	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
+										  float wo_dot_h) const {
+	const float n_dot_wi = clamp_n_dot(wi);
+	const float n_dot_wo = clamp_abs_n_dot(wo);
 
 	float f = n_dot_wo;
 
@@ -108,7 +108,7 @@ bxdf::Result Sample::Base_layer::evaluate(const float3& wi, const float3& wo, co
 
 	const float n_dot_h = math::saturate(math::dot(n_, h));
 
-	fresnel::Schlick fresnel(color);
+	const fresnel::Schlick fresnel(color);
 	const auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
 												*this, fresnel);
 
@@ -117,14 +117,14 @@ bxdf::Result Sample::Base_layer::evaluate(const float3& wi, const float3& wo, co
 
 void Sample::Base_layer::sample(const float3& wo, sampler::Sampler& sampler,
 								bxdf::Sample& result) const {
-	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
+	const float n_dot_wo = clamp_abs_n_dot(wo);
 
 	float f = n_dot_wo;
 
 	float3 color = math::lerp(color_b_, color_a_, f);
 
-	fresnel::Schlick fresnel(color);
-	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, fresnel, sampler, result);
+	const fresnel::Schlick fresnel(color);
+	const float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, fresnel, sampler, result);
 	result.reflection *= n_dot_wi;
 }
 
@@ -139,12 +139,12 @@ void Sample::Flakes_layer::set(const float3& ior, const float3& absorption,
 
 bxdf::Result Sample::Flakes_layer::evaluate(const float3& wi, const float3& wo, const float3& h,
 											float wo_dot_h, float3& fresnel_result) const {
-	float n_dot_wi = clamp_n_dot(wi);
-	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
+	const float n_dot_wi = clamp_n_dot(wi);
+	const float n_dot_wo = clamp_abs_n_dot(wo);
 
 	const float n_dot_h = math::saturate(math::dot(n_, h));
 
-	fresnel::Conductor_weighted conductor(ior_, absorption_, weight_);
+	const fresnel::Conductor_weighted conductor({ ior_, absorption_ }, weight_);
 	const auto ggx = ggx::Isotropic::reflection(n_dot_wi, n_dot_wo, wo_dot_h, n_dot_h,
 												*this, conductor, fresnel_result);
 
@@ -153,11 +153,11 @@ bxdf::Result Sample::Flakes_layer::evaluate(const float3& wi, const float3& wo, 
 
 void Sample::Flakes_layer::sample(const float3& wo, sampler::Sampler& sampler,
 								  float3& fresnel_result, bxdf::Sample& result) const {
-	float n_dot_wo = clamp_abs_n_dot(wo); //clamp_n_dot(wo);
+	const float n_dot_wo = clamp_abs_n_dot(wo);
 
-	fresnel::Conductor_weighted conductor(ior_, absorption_, weight_);
-	float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor, sampler,
-											 fresnel_result, result);
+	const fresnel::Conductor_weighted conductor({ ior_, absorption_ }, weight_);
+	const float n_dot_wi = ggx::Isotropic::reflect(wo, n_dot_wo, *this, conductor, sampler,
+												   fresnel_result, result);
 	result.reflection *= n_dot_wi;
 }
 

@@ -64,21 +64,6 @@ private:
 	const bool full_;
 };
 
-class Schlick_weighted {
-
-public:
-
-	Schlick_weighted(float f0, float weight);
-	Schlick_weighted(const float3& f0, float weight);
-
-	float3 operator()(float wo_dot_h) const;
-
-private:
-
-	const Schlick schlick_;
-	const float weight_;
-};
-
 class Schlick_blending {
 
 public:
@@ -111,21 +96,6 @@ private:
 	const float thickness_;
 };
 
-class Thinfilm_weighted {
-
-public:
-
-	Thinfilm_weighted(float external_ior, float thinfilm_ior,
-					  float internal_ior, float thickness, float weight);
-
-	float3 operator()(float wo_dot_h) const;
-
-private:
-
-	const Thinfilm thinfilm_;
-	const float weight_;
-};
-
 class Conductor {
 
 public:
@@ -138,20 +108,6 @@ private:
 
 	const float3 eta_;
 	const float3 k_;
-};
-
-class Conductor_weighted {
-
-public:
-
-	Conductor_weighted(const float3& eta, const float3& k, float weight);
-
-	float3 operator()(float wo_dot_h) const;
-
-private:
-
-	const Conductor conductor_;
-	const float weight_;
 };
 
 class Constant {
@@ -167,5 +123,25 @@ private:
 
 	const float3 f_;
 };
+
+
+template<typename T>
+class Weighted {
+
+public:
+
+	Weighted(const T& fresnel, float weight);
+
+	float3 operator()(float wo_dot_h) const;
+
+private:
+
+	const T fresnel_;
+	const float weight_;
+};
+
+using Schlick_weighted   = Weighted<Schlick>;
+using Thinfilm_weighted  = Weighted<Thinfilm>;
+using Conductor_weighted = Weighted<Conductor>;
 
 }

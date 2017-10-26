@@ -70,7 +70,7 @@ float Sample_thin::BSDF::reflect(const Sample_thin& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+	const float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
 
 	float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -106,7 +106,7 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 		eta_i = layer.ior_;
 	}
 
-	float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
+	const float n_dot_wo = math::saturate(math::dot(n, sample.wo_));
 
 	float sint2 = (eta_i * eta_i) * (1.f - n_dot_wo * n_dot_wo);
 
@@ -120,7 +120,7 @@ float Sample_thin::BSDF::refract(const Sample_thin& sample, const Layer& layer,
 	// fresnel has to be the same value that would have been computed by BRDF
 	float f = fresnel::dielectric(n_dot_wo, n_dot_t, eta_i, eta_t);
 
-	float n_dot_wi = layer.clamp_n_dot(sample.wo_);
+	const float n_dot_wi = layer.clamp_n_dot(sample.wo_);
 	float approximated_distance = layer.thickness_ / n_dot_wi;
 	float3 attenuation = rendering::attenuation(approximated_distance, layer.attenuation_);
 

@@ -189,16 +189,6 @@ inline float3 Schlick_blending::operator()(float wo_dot_h) const {
 	return schlick_blending(wo_dot_h, a_, b_, f0_);
 }
 
-inline Schlick_weighted::Schlick_weighted(float f0, float weight) :
-	schlick_(f0), weight_(weight) {}
-
-inline Schlick_weighted::Schlick_weighted(const float3& f0, float weight) :
-	schlick_(f0), weight_(weight) {}
-
-inline float3 Schlick_weighted::operator()(float wo_dot_h) const {
-	return weight_ * schlick_(wo_dot_h);
-}
-
 inline Thinfilm::Thinfilm(float external_ior, float thinfilm_ior,
 						  float internal_ior, float thickness) :
 	external_ior_(external_ior), thinfilm_ior_(thinfilm_ior),
@@ -208,26 +198,10 @@ inline float3 Thinfilm::operator()(float wo_dot_h) const {
 	return thinfilm(wo_dot_h, external_ior_, thinfilm_ior_, internal_ior_, thickness_);
 }
 
-inline Thinfilm_weighted::Thinfilm_weighted(float external_ior, float thinfilm_ior,
-											float internal_ior, float thickness, float weight) :
-	thinfilm_(external_ior, thinfilm_ior, internal_ior, thickness), weight_(weight) {}
-
-inline float3 Thinfilm_weighted::operator()(float wo_dot_h) const {
-	return weight_ * thinfilm_(wo_dot_h);
-}
-
 inline Conductor::Conductor(const float3& eta, const float3& k) : eta_(eta), k_(k) {}
 
 inline float3 Conductor::operator()(float wo_dot_h) const {
 	return conductor(wo_dot_h, eta_, k_);
-}
-
-inline Conductor_weighted::Conductor_weighted(const float3& eta, const float3& k, float weight) :
-	conductor_(eta, k),
-	weight_(weight) {}
-
-inline float3 Conductor_weighted::operator()(float wo_dot_h) const {
-	return weight_ * conductor_(wo_dot_h);
 }
 
 inline Constant::Constant(float f) : f_(f) {}
@@ -236,6 +210,14 @@ inline Constant::Constant(const float3& f) : f_(f) {}
 
 inline float3 Constant::operator()(float /*wo_dot_h*/) const {
 	return f_;
+}
+
+template<typename T>
+Weighted<T>::Weighted(const T& fresnel, float weight) : fresnel_(fresnel), weight_(weight) {}
+
+template<typename T>
+float3 Weighted<T>::operator()(float wo_dot_h) const {
+	return weight_ * fresnel_(wo_dot_h);
 }
 
 }

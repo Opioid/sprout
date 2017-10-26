@@ -12,8 +12,8 @@ const material::Sample::Layer& Sample::base_layer() const {
 }
 
 bxdf::Result Sample::evaluate(const float3& wi) const {
-	float n_dot_wi = layer_.clamp_n_dot(wi);
-	float n_dot_wo = layer_.clamp_abs_n_dot(wo_); // layer_.clamp_n_dot(wo_);
+	const float n_dot_wi = layer_.clamp_n_dot(wi);
+	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_); // layer_.clamp_n_dot(wo_);
 
 //	float3 brdf = lambert::Isotropic::reflection(layer_.diffuse_color, n_dot_wi, layer_, pdf);
 
@@ -33,11 +33,11 @@ bxdf::Result Sample::evaluate(const float3& wi) const {
 }
 
 void Sample::sample(sampler::Sampler& sampler, bxdf::Sample& result) const {
-//	float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color, layer_, sampler, result);
+//	const float n_dot_wi = lambert::Isotropic::reflect(layer_.diffuse_color, layer_, sampler, result);
 
-	float n_dot_wo = layer_.clamp_abs_n_dot(wo_); // layer_.clamp_n_dot(wo_);
+	const float n_dot_wo = layer_.clamp_abs_n_dot(wo_); // layer_.clamp_n_dot(wo_);
 
-	float n_dot_wi = disney::Isotropic::reflect(wo_, n_dot_wo, layer_, sampler, result);
+	const float n_dot_wi = disney::Isotropic::reflect(wo_, n_dot_wo, layer_, sampler, result);
 
 	result.reflection *= n_dot_wi;
 }
