@@ -19,14 +19,14 @@ Celestial_disk::Celestial_disk() {
 bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 							   Node_stack& /*node_stack*/, Intersection& intersection) const {
 	const float3& n = transformation.rotation.r[2];
-	float b = math::dot(n, ray.direction);
+	const float b = math::dot(n, ray.direction);
 
 	if (b > 0.f) {
 		return false;
 	}
 
-	float radius = transformation.scale[0];
-	float det = (b * b) - math::dot(n, n) + (radius * radius);
+	const float radius = transformation.scale[0];
+	const float det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		intersection.epsilon = 5e-4f;
@@ -50,14 +50,14 @@ bool Celestial_disk::intersect(const Transformation& transformation, Ray& ray,
 bool Celestial_disk::intersect_p(const Transformation& transformation,
 								 const Ray& ray, Node_stack& /*node_stack*/) const {
 	const float3& n = transformation.rotation.r[2];
-	float b = math::dot(n, ray.direction);
+	const float b = math::dot(n, ray.direction);
 
 	if (b > 0.f) {
 		return false;
 	}
 
-	float radius = transformation.scale[0];
-	float det = (b * b) - math::dot(n, n) + (radius * radius);
+	const float radius = transformation.scale[0];
+	const float det = (b * b) - math::dot(n, n) + (radius * radius);
 
 	if (det > 0.f && ray.max_t >= Ray_max_t) {
 		return true;
@@ -130,8 +130,8 @@ float Celestial_disk::uv_weight(float2 /*uv*/) const {
 }
 
 float Celestial_disk::area(uint32_t /*part*/, const float3& scale) const {
-	float radius = scale[0];
-	return math::Pi * radius * radius;
+	const float radius = scale[0];
+	return math::Pi * (radius * radius);
 }
 
 bool Celestial_disk::is_finite() const {

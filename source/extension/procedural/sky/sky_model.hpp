@@ -5,7 +5,7 @@
 
 struct ArHosekSkyModelState;
 
-namespace procedural { namespace sky {
+namespace procedural::sky {
 
 class Model {
 
@@ -27,7 +27,7 @@ public:
 
 	float3 evaluate_sky_and_sun(const float3& wi) const;
 
-	static float3 zenith();
+	static constexpr float3 zenith() { return float3(0.f, 1.f, 0.f); };
 
 private:
 
@@ -44,9 +44,7 @@ private:
 
 	bool dirty_ = true;
 
-	static const float3 zenith_;
-
 	using Spectrum = spectrum::Discrete_spectral_power_distribution<Num_bands>;
 };
 
-}}
+}

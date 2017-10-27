@@ -4,10 +4,7 @@
 #include "base/spectrum/discrete.inl"
 #include "base/spectrum/xyz.hpp"
 
-#include <iostream>
-
-
-namespace procedural { namespace sky {
+namespace procedural::sky {
 
 Model::Model() {
 	for (uint32_t i = 0; i < Num_bands; ++i) {
@@ -29,7 +26,7 @@ bool Model::init() {
 
 	release();
 
-	const float elevation = std::max(math::dot(sun_direction_, zenith_) * (-0.5f * math::Pi), 0.f);
+	const float elevation = std::max(math::dot(sun_direction_, zenith()) * (-0.5f * math::Pi), 0.f);
 
 	/*
 	for (uint32_t i = 0; i < 3; ++i) {
@@ -127,16 +124,12 @@ float3 Model::evaluate_sky_and_sun(const float3& wi) const {
 	return spectrum::XYZ_to_linear_RGB(radiance.XYZ());
 }
 
-float3 Model::zenith() {
-	return zenith_;
-}
-
 void Model::release() {
 	for (uint32_t i = 0; i < Num_bands; ++i) {
 		arhosekskymodelstate_free(skymodel_states_[i]);
 	}
 }
 
-const float3 Model::zenith_ = float3(0.f, 1.f, 0.f);
+//const float3 Model::zenith_ = float3(0.f, 1.f, 0.f);
 
-}}
+}
