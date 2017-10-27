@@ -219,25 +219,29 @@ int main(int argc, char* argv[]) {
 void log_memory_consumption(const resource::Manager& manager,
 							const take::Take& take,
 							size_t rendering_num_bytes) {
-	logging::info("Memory consumption:");
+	if (logging::is_verbose()) {
+		return;
+	}
+
+	logging::verbose("Memory consumption:");
 
 	const size_t image_num_bytes = manager.num_bytes<image::Image>();
-	logging::info("Images: " + string::print_bytes(image_num_bytes));
+	logging::verbose("Images: " + string::print_bytes(image_num_bytes));
 
 	const size_t material_num_bytes = manager.num_bytes<scene::material::Material>();
-	logging::info("Materials: " + string::print_bytes(material_num_bytes));
+	logging::verbose("Materials: " + string::print_bytes(material_num_bytes));
 
 	const size_t mesh_num_bytes = manager.num_bytes<scene::shape::Shape>();
-	logging::info("Meshes: " + string::print_bytes(mesh_num_bytes));
+	logging::verbose("Meshes: " + string::print_bytes(mesh_num_bytes));
 
 	const size_t renderer_num_bytes = take.view.pipeline.num_bytes()
 									+ take.view.camera->sensor().num_bytes()
 									+ rendering_num_bytes;
-	logging::info("Renderer: " + string::print_bytes(renderer_num_bytes));
+	logging::verbose("Renderer: " + string::print_bytes(renderer_num_bytes));
 
 	const size_t total_num_bytes = image_num_bytes + material_num_bytes
 								 + mesh_num_bytes + renderer_num_bytes;
-	logging::info("Total: " + string::print_bytes(total_num_bytes));
+	logging::verbose("Total: " + string::print_bytes(total_num_bytes));
 }
 
 bool is_json(const std::string& text) {
