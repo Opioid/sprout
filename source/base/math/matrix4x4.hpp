@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_MATRIX4X4_HPP
+#define SU_BASE_MATH_MATRIX4X4_HPP
 
 #include "vector3.hpp"
 #include "vector4.hpp"
@@ -168,3 +169,5 @@ struct alignas(16) Matrix4x4f_a {
 }
 
 using float4x4 = math::Matrix4x4f_a;
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_VECTOR_INL
+#define SU_BASE_MATH_VECTOR_INL
 
 #include "vector.hpp"
 #include "simd/simd_const.hpp"
@@ -165,3 +166,5 @@ static inline void SU_CALLCONV sign(VVector v, uint32_t s[4]) {
 }
 
 }
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_MATRIX_HPP
+#define SU_BASE_MATH_MATRIX_HPP
 
 #include "simd/simd.hpp"
 
@@ -16,3 +17,5 @@ using VMatrix4 = const Matrix4;
 
 using RMatrix3 = const Matrix3&;
 using RMatrix4 = const Matrix4&;
+
+#endif

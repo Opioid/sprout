@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_QUATERNION_HPP
+#define SU_BASE_MATH_QUATERNION_HPP
 
 #include "vector4.hpp"
 
@@ -73,3 +74,5 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t);
 using Quaternion = Vector4f_a;
 
 }
+
+#endif

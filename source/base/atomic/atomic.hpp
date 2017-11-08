@@ -12,7 +12,7 @@
 
 namespace atomic {
 
-static inline void add_assign(volatile float& a, float b) {
+static inline void add_assign(volatile float& a, float b) noexcept {
 	union bits { float f; uint32_t i; };
 
 	bits old_value;

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_MATRIX4X4_INL
+#define SU_BASE_MATH_MATRIX4X4_INL
 
 #include "matrix4x4.hpp"
 #include "transformation.inl"
@@ -574,3 +575,5 @@ static inline void set_rotation_x(Matrix4x4f_a& m, float a) {
 }
 
 }
+
+#endif
