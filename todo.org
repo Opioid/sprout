@@ -5,6 +5,10 @@
 *** DONE PCG Random Number Generator 
 [[http://www.pcg-random.org/]]
 
+*** Replace #pragma once with #define guards
+
+*** Port atomic::add_assign(float) to c++11
+
 ** Integrators [0/1]
 
 *** TODO Subsurface scattering [0/2]
@@ -40,11 +44,11 @@ Investigate dedicated cloth material with alternative BRDF (e.g. Ashikhmin)
 Consider adding support for separate samplers per different textures in a single material.
 E.g nearest neighbor filter for albedo color and bilinear for normal map.
 
-** Renderer [0/2]
+** Renderer [1/2]
 
-*** TODO Lock-free tile enumeration [1/2]
-- [X] Pre-determined "Tiled scanline" with initial offset (slower)
-- [ ] Atomics for access to next tile
+*** DONE Lock-free tile enumeration [2/2]
+- [X] Pre-determined "Tiled scanline" with initial offset (seemed slower)
+- [X] Atomics for access to next tile
 
 It seems that the mutex communication is not the bottleneck in this scenario. 
 Something with atomics might be interesting, but will probably not noticeably affect overall performance.

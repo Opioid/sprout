@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_ATOMIC_ATOMIC_HPP
+#define SU_BASE_ATOMIC_ATOMIC_HPP
 
 #include <cstdint>
 
@@ -37,3 +38,5 @@ static inline void add_assign(volatile float& a, float b) {
 }
 
 }
+
+#endif
