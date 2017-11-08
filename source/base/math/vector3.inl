@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_VECTOR3_INL
+#define SU_BASE_MATH_VECTOR3_INL
 
 #include "vector3.hpp"
 #include "vector2.inl"
@@ -629,3 +630,5 @@ static inline bool all_finite(const Vector3f_a& v) {
 }
 
 }
+
+#endif

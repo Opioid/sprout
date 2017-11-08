@@ -1,7 +1,7 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_TILE_QUEUE_HPP
+#define SU_CORE_RENDERING_TILE_QUEUE_HPP
 
 #include "base/math/vector4.hpp"
-//#include <condition_variable>
 #include <atomic>
 
 namespace rendering {
@@ -26,11 +26,9 @@ private:
 	uint32_t num_tiles_;
 	int4* tiles_;
 
-//	uint32_t current_consume_;
-
 	std::atomic<uint32_t> current_consume_;
-
-//	std::mutex mutex_;
 };
 
 }
+
+#endif

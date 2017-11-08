@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_VECTOR4_INL
+#define SU_BASE_MATH_VECTOR4_INL
 
 #include "vector4.hpp"
 #include "vector3.inl"
@@ -200,3 +201,5 @@ static inline constexpr Vector4i_a& operator-=(Vector4i_a& a, const Vector4i_a& 
 }
 
 }
+
+#endif

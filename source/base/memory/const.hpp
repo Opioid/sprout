@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MEMORY_CONST_HPP
+#define SU_BASE_MEMORY_CONST_HPP
 
 // The purpose of the following global constants is to prevent redundant
 // reloading of the constants when they are referenced by more than one
@@ -14,4 +15,6 @@
 #	elif defined(_MSC_VER)
 #		define SU_GLOBALCONST(X) extern const __declspec(selectany) X
 #	endif
+#endif
+
 #endif

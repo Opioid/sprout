@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_THREAD_POOL_HPP
+#define SU_BASE_THREAD_POOL_HPP
 
 #include <condition_variable>
 #include <functional>
@@ -87,3 +88,5 @@ private:
 };
 
 }
+
+#endif

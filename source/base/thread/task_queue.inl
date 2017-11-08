@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_THREAD_TASK_QUEUE_INL
+#define SU_BASE_THREAD_TASK_QUEUE_INL
 
 #include "task_queue.hpp"
 #include "memory/align.hpp"
@@ -41,7 +42,8 @@ void Task_queue<T>::push(const T& task) {
 
 template<typename T>
 bool Task_queue<T>::pop(T& task) {
-	const uint32_t current = current_consume_++;
+	// const uint32_t current = current_consume_++;
+	const uint32_t current = current_consume_.fetch_add(1, std::memory_order_relaxed);
 
 	if (current < top_) {
 		task = tasks_[current];
@@ -52,3 +54,5 @@ bool Task_queue<T>::pop(T& task) {
 }
 
 }
+
+#endif

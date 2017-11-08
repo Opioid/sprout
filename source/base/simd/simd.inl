@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SIMD_SIMD_INL
+#define SU_BASE_SIMD_SIMD_INL
 
 #include "simd.hpp"
 #include "simd_const.hpp"
@@ -71,3 +72,5 @@ static inline void SU_CALLCONV store_float4(float* destination, VVector v) {
 }
 
 }
+
+#endif

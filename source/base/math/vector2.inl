@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_VECTOR2_INL
+#define SU_BASE_MATH_VECTOR2_INL
 
 #include "vector2.hpp"
 #include <algorithm>
@@ -183,3 +184,5 @@ static bool all_finite(const Vector2<T> v) {
 }
 
 }
+
+#endif
