@@ -7,8 +7,6 @@
 
 *** Replace #pragma once with #define guards
 
-*** Port atomic::add_assign(float) to c++11
-
 ** Integrators [0/1]
 
 *** TODO Subsurface scattering [0/2]
