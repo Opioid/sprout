@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_RENDERING_INTEGRATOR_SURFACE_INTEGRATOR_HPP
+#define SU_RENDERING_INTEGRATOR_SURFACE_INTEGRATOR_HPP
 
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector4.hpp"
@@ -42,3 +43,5 @@ protected:
 };
 
 }}
+
+#endif

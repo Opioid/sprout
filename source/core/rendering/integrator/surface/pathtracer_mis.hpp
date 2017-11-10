@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_MIS_HPP
+#define SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_MIS_HPP
 
 #include "rendering/integrator/surface/surface_integrator.hpp"
 #include "transmittance/transmittance_closed.hpp"
@@ -108,3 +109,5 @@ private:
 };
 
 }
+
+#endif

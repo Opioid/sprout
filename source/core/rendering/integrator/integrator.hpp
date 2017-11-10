@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_RENDERING_INTEGRATOR_INTEGRATOR_HPP
+#define SU_RENDERING_INTEGRATOR_INTEGRATOR_HPP
 
 #include "scene/material/sampler_settings.hpp"
 #include "take/take_settings.hpp"
@@ -67,3 +68,5 @@ protected:
 };
 
 }
+
+#endif

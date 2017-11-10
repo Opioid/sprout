@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_SCENE_MATERIAL_SAMPLER_SETTINGS_HPP
+#define SU_SCENE_MATERIAL_SAMPLER_SETTINGS_HPP
 
 #include <cstdint>
 
-namespace scene { namespace material {
+namespace scene::material {
 
 struct Sampler_settings {
 
@@ -37,4 +38,6 @@ struct Sampler_settings {
 	Address address_v;
 };
 
-}}
+}
+
+#endif
