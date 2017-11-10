@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_1D_INL
+#define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_1D_INL
 
 #include "distribution_1d.hpp"
 #include "memory/align.hpp"
@@ -593,3 +594,5 @@ inline void Distribution_implicit_pdf_lut_lin_1D::init_lut(uint32_t lut_size) {
 }
 
 }
+
+#endif

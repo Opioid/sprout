@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_SINCOS_HPP
+#define SU_BASE_MATH_SINCOS_HPP
 
 #include "simd/simd.inl"
 
@@ -380,3 +381,5 @@ static inline void sincos(float xf, float& s, float& c) {
 }
 
 }
+
+#endif

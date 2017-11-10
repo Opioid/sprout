@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_AABB_INL
+#define SU_BASE_MATH_AABB_INL
 
 #include "aabb.hpp"
 #include "math/vector.inl"
@@ -327,3 +328,5 @@ inline constexpr AABB AABB::infinite() {
 }
 
 }
+
+#endif

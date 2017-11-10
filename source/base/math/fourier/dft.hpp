@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_FOURIER_DFT_HPP
+#define SU_BASE_MATH_FOURIER_DFT_HPP
 
 #include "math/vector2.hpp"
 
@@ -22,3 +23,5 @@ void idft_2d(float* result, const float2* source, float2* temp,
 			 int32_t width, int32_t height, thread::Pool& pool);
 
 }
+
+#endif

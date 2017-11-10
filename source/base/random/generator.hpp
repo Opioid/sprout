@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_RANDOM_GENERATOR_HPP
+#define SU_BASE_RANDOM_GENERATOR_HPP
 
 #include <cstdint>
 
@@ -24,3 +25,5 @@ private:
 };
 
 }
+
+#endif

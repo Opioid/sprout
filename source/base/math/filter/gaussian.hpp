@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_BASE_MATH_FILTER_GAUSSIAN_HPP
+#define SU_BASE_MATH_FILTER_GAUSSIAN_HPP
 
 #include <cmath>
 
-namespace math { namespace filter {
+namespace math::filter {
 
 class Gaussian_functor {
 
@@ -22,4 +23,6 @@ private:
 	float alpha_;
 };
 
-}}
+}
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_SAMPLING_DISTRIBUTION_HPP
+#define SU_BASE_MATH_SAMPLING_DISTRIBUTION_HPP
 
 #include "math/vector2.inl"
 
@@ -150,3 +151,5 @@ static inline void golden_ratio(float2* samples, uint32_t num_samples, float2 r)
 }
 
 }
+
+#endif

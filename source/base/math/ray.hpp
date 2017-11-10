@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_RAY_HPP
+#define SU_BASE_MATH_RAY_HPP
 
 #include "vector3.hpp"
 
@@ -27,3 +28,5 @@ struct Ray {
 };
 
 }
+
+#endif

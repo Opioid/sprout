@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_PRINT_HPP
+#define SU_BASE_MATH_PRINT_HPP
 
 #include "vector4.inl"
 #include "matrix4x4.hpp"
@@ -43,3 +44,5 @@ std::ostream& operator<<(std::ostream& stream, const math::Matrix4x4<T>& m) {
 				  << " " << m.m30 << ", " << m.m31 << ", " << m.m32 << ", " << m.m33 << "]";
 }
 */
+
+#endif

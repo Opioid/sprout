@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MEMORY_VARIANT_MAP_INL
+#define SU_BASE_MEMORY_VARIANT_MAP_INL
 
 #include "variant_map.hpp"
 
@@ -6,7 +7,7 @@ namespace memory {
 
 template<typename T>
 bool Variant_map::query(const std::string& key, T& value) const {
-	auto i = map_.find(key);
+	const auto i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -24,7 +25,7 @@ bool Variant_map::query(const std::string& key, T& value) const {
 }
 
 inline bool Variant_map::query(const std::string& key, bool& value) const {
-	auto i = map_.find(key);
+	const auto i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -42,7 +43,7 @@ inline bool Variant_map::query(const std::string& key, bool& value) const {
 }
 
 inline bool Variant_map::query(const std::string& key, int32_t& value) const {
-	auto i = map_.find(key);
+	const auto i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -60,7 +61,7 @@ inline bool Variant_map::query(const std::string& key, int32_t& value) const {
 }
 
 inline bool Variant_map::query(const std::string& key, uint32_t& value) const {
-	auto i = map_.find(key);
+	const auto i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -78,7 +79,7 @@ inline bool Variant_map::query(const std::string& key, uint32_t& value) const {
 }
 
 inline bool Variant_map::query(const std::string& key, float& value) const {
-	auto i = map_.find(key);
+	const auto i = map_.find(key);
 
 	if (map_.end() == i) {
 		return false;
@@ -117,7 +118,7 @@ inline void Variant_map::set(const std::string& key, float value) {
 }
 
 inline void Variant_map::inherit(const Variant_map& other, const std::string& key) {
-	auto i = other.map_.find(key);
+	const auto i = other.map_.find(key);
 
 	if (other.map_.end() == i) {
 		return;
@@ -135,3 +136,5 @@ inline void Variant_map::inherit_except(const Variant_map& other, const std::str
 }
 
 }
+
+#endif

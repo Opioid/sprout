@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_SIMD_AABB_HPP
+#define SU_BASE_MATH_SIMD_AABB_HPP
 
 #include "math/aabb.hpp"
 #include "simd/simd.hpp"
@@ -19,3 +20,5 @@ struct Simd_AABB {
 };
 
 }
+
+#endif

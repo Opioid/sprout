@@ -13,7 +13,7 @@
 #include "base/memory/variant_map.hpp"
 #include "base/random/generator.inl"
 
-namespace procedural { namespace mesh {
+namespace procedural::mesh {
 
 std::shared_ptr<scene::shape::Shape> Grass::create_mesh(const json::Value& /*mesh_value*/,
 														resource::Manager& manager) {
@@ -267,4 +267,4 @@ void Grass::calculate_normals(std::vector<scene::shape::triangle::Index_triangle
 	}
 }
 
-}}
+}

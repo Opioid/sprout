@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_2D_INL
+#define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_2D_INL
 
 #include "distribution_2d.hpp"
 #include "distribution_1d.inl"
@@ -105,3 +106,4 @@ size_t Distribution_t_2D<T>::num_bytes() const {
 
 }
 
+#endif

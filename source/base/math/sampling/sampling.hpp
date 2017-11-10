@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_SAMPLING_SAMPLING_HPP
+#define SU_BASE_MATH_SAMPLING_SAMPLING_HPP
 
 #include "math/math.hpp"
 #include "math/sincos.hpp"
@@ -158,3 +159,5 @@ static inline float cone_pdf_uniform(float cos_theta_max) {
 }
 
 }
+
+#endif

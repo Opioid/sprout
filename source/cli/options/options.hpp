@@ -1,7 +1,10 @@
-#pragma once
+#ifndef SU_CLI_OPTIONS_OPTIONS_HPP
+#define SU_CLI_OPTIONS_OPTIONS_HPP
 
 #include <string>
 #include <vector>
+
+namespace options {
 
 struct Options {
 	std::string take;
@@ -12,8 +15,8 @@ struct Options {
 	bool verbose = false;
 };
 
-namespace options {
-
 Options parse(int argc, char* argv[]);
 
 }
+
+#endif

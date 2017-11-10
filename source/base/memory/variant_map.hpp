@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MEMORY_VARIANT_MAP_HPP
+#define SU_BASE_MEMORY_VARIANT_MAP_HPP
 
 #include <map>
 #include <string>
@@ -63,3 +64,5 @@ private:
 };
 
 }
+
+#endif

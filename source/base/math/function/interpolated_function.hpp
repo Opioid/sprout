@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_INTERPOLATED_FUNCTION_HPP
+#define SU_BASE_MATH_INTERPOLATED_FUNCTION_HPP
 
 #include <cstddef>
 
@@ -26,3 +27,5 @@ private:
 };
 
 }
+
+#endif

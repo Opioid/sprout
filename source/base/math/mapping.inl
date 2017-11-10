@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_MAPPING_INL
+#define SU_BASE_MATH_MAPPING_INL
 
 #include "math.hpp"
 #include "math/sincos.hpp"
@@ -54,3 +55,5 @@ static inline float2 hemisphere_to_disk_paraboloid(const float3& dir) {
 }
 
 }
+
+#endif

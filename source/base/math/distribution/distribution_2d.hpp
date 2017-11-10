@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_2D_HPP
+#define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_2D_HPP
 
 #include "distribution_1d.hpp"
 #include "math/vector3.hpp"
@@ -37,3 +38,5 @@ private:
 using Distribution_2D = Distribution_t_2D<Distribution_implicit_pdf_lut_lin_1D>;
 
 }
+
+#endif

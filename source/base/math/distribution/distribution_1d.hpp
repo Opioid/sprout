@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_1D_HPP
+#define SU_BASE_MATH_DISTRIBUTION_DISTRIBUTION_1D_HPP
 
 #include <vector>
 #include <cstddef>
@@ -157,3 +158,5 @@ private:
 };
 
 }
+
+#endif

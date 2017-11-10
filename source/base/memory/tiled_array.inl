@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MEMORY_TILED_ARRAY_INL
+#define SU_BASE_MEMORY_TILED_ARRAY_INL
 
 #include "tiled_array.hpp"
 
@@ -74,3 +75,5 @@ uint32_t Tiled_array<T, Log_tile_size>::offset(uint32_t x) const {
 }
 
 }
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_AABB_HPP
+#define SU_BASE_MATH_AABB_HPP
 
 #include "math/vector3.hpp"
 #include "math/matrix4x4.hpp"
@@ -57,3 +58,5 @@ private:
 };
 
 }
+
+#endif

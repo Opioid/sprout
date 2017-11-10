@@ -1,3 +1,6 @@
+#ifndef SU_BASE_MATH_INTERPOLATED_FUNCTION_INL
+#define SU_BASE_MATH_INTERPOLATED_FUNCTION_INL
+
 #include "interpolated_function.hpp"
 #include "math/math.hpp"
 
@@ -40,3 +43,5 @@ T Interpolated_function<T>::operator()(float x) const {
 }
 
 }
+
+#endif

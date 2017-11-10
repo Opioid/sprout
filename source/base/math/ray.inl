@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_RAY_INL
+#define SU_BASE_MATH_RAY_INL
 
 #include "ray.hpp"
 #include "vector3.inl"
@@ -49,3 +50,5 @@ inline Ray Ray::normalized() const {
 }
 
 }
+
+#endif

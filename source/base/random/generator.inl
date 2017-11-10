@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_RANDOM_GENERATOR_INL
+#define SU_BASE_RANDOM_GENERATOR_INL
 
 #include "generator.hpp"
 
@@ -22,17 +23,19 @@ inline float Generator::random_float() {
 }
 
 inline uint32_t Generator::advance_pcg32() {
-	uint64_t oldstate = state_;
+	const uint64_t oldstate = state_;
 
 	// Advance internal state
 	state_ = oldstate * 6364136223846793005ULL + (inc_ | 1);
 
 	// Calculate output function (XSH RR), uses old state for max ILP
-	uint32_t xorshifted = static_cast<uint32_t>(((oldstate >> 18u) ^ oldstate) >> 27u);
+	const uint32_t xorshifted = static_cast<uint32_t>(((oldstate >> 18u) ^ oldstate) >> 27u);
 
-	uint32_t rot = static_cast<uint32_t>(oldstate >> 59u);
+	const uint32_t rot = static_cast<uint32_t>(oldstate >> 59u);
 
 	return (xorshifted >> rot) | (xorshifted << ((0xFFFFFFFF - rot) & 31));
 }
 
 }
+
+#endif

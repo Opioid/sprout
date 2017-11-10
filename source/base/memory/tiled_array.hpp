@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MEMORY_TILED_ARRAY_HPP
+#define SU_BASE_MEMORY_TILED_ARRAY_HPP
 
 #include <cstdint>
 
@@ -36,3 +37,5 @@ private:
 };
 
 }
+
+#endif

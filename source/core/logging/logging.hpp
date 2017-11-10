@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_LOGGING_LOGGING_HPP
+#define SU_CORE_LOGGING_LOGGING_HPP
 
 #include <string>
 
@@ -21,3 +22,5 @@ void set_verbose(bool verbose);
 bool is_verbose();
 
 }
+
+#endif

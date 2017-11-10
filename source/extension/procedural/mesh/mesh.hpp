@@ -1,9 +1,12 @@
-#pragma once
+#ifndef SU_EXTENSION_PROCEDURAL_MESH_HPP
+#define SU_EXTENSION_PROCEDURAL_MESH_HPP
 
 namespace scene { class Loader; }
 
-namespace procedural { namespace mesh {
+namespace procedural::mesh {
 
 void init(scene::Loader& loader);
 
-}}
+}
+
+#endif

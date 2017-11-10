@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SIMD_AABB_INL
+#define SU_BASE_SIMD_AABB_INL
 
 #include "simd_aabb.hpp"
 #include "math/vector.inl"
@@ -27,3 +28,5 @@ inline void Simd_AABB::merge_assign(VVector other_min, VVector other_max) {
 }
 
 }
+
+#endif

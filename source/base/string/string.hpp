@@ -1,3 +1,6 @@
+#ifndef SU_BASE_STRING_STRING_HPP
+#define SU_BASE_STRING_STRING_HPP
+
 #include "math/print.hpp"
 #include <algorithm>
 #include <cctype>
@@ -58,3 +61,5 @@ static inline std::string print_bytes(size_t num_bytes) {
 }
 
 }
+
+#endif
