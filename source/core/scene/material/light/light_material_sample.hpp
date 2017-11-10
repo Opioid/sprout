@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_MATERIAL_LIGHT_SAMPLE_HPP
+#define SU_SCENE_MATERIAL_LIGHT_SAMPLE_HPP
 
 #include "scene/material/material_sample.hpp"
 
@@ -30,3 +31,5 @@ public:
 };
 
 }
+
+#endif

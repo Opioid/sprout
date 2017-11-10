@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_MATERIAL_SAMPLE_HPP
+#define SU_SCENE_MATERIAL_SAMPLE_HPP
 
 #include "base/math/vector3.hpp"
 
@@ -77,3 +78,5 @@ protected:
 };
 
 }}
+
+#endif
