@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_VECTOR3_HPP
+#define SU_BASE_MATH_VECTOR3_HPP
 
 #include "vector2.hpp"
 #include <cstdint>
@@ -114,3 +115,5 @@ using float3 = math::Vector3f_a;
 using int3   = math::Vector3<int32_t>;
 using uint3  = math::Vector3<uint32_t>;
 using packed_float3 = math::Vector3<float>;
+
+#endif

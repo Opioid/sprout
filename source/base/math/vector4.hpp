@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_VECTOR4_HPP
+#define SU_BASE_MATH_VECTOR4_HPP
 
 #include "vector3.hpp"
 #include <cstdint>
@@ -107,3 +108,5 @@ using short4 = math::Vector4<int16_t>;
 // using float4 = Vector4<float>;
 using float4 = math::Vector4f_a;
 using int4   = math::Vector4i_a;
+
+#endif

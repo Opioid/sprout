@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SIMD_CONST_HPP
+#define SU_BASE_SIMD_CONST_HPP
 
 #include "simd.hpp"
 #include "memory/const.hpp"
@@ -196,3 +197,4 @@ SU_GLOBALCONST(Vector_u32) NegInfinity			= {{{ 0xFF800000, 0xFF800000, 0xFF80000
 
 }
 
+#endif

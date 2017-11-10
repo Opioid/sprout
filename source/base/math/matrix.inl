@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_MATRIX_INL
+#define SU_BASE_MATH_MATRIX_INL
 
 #include "matrix.hpp"
 #include "vector.inl"
@@ -73,3 +74,5 @@ inline Vector SU_CALLCONV transform_point(VMatrix4 m, VVector v) {
 }
 
 }
+
+#endif

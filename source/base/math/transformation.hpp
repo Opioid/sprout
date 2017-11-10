@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_TRANSFORMATION_HPP
+#define SU_BASE_MATH_TRANSFORMATION_HPP
 
 #include "vector3.hpp"
 #include "quaternion.hpp"
@@ -16,3 +17,5 @@ struct Transformation {
 };
 
 }
+
+#endif

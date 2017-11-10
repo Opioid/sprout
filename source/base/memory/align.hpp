@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MEMORY_ALIGN_HPP
+#define SU_BASE_MEMORY_ALIGN_HPP
 
 #include <cstddef>
 
@@ -55,3 +56,5 @@ void destroy_aligned(T* objects, size_t count) {
 }
 
 }
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_EXP_HPP
+#define SU_BASE_MATH_EXP_HPP
 
 #include "memory/const.hpp"
 #include "simd/simd_const.hpp"
@@ -132,3 +133,5 @@ static inline float exp(float s) {
 }
 
 }
+
+#endif

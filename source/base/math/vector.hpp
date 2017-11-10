@@ -1,1 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_VECTOR_HPP
+#define SU_BASE_MATH_VECTOR_HPP
+
+
+#endif

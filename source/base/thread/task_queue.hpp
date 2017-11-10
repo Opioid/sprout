@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_THREAD_TASK_QUEUE_HPP
+#define SU_BASE_THREAD_TASK_QUEUE_HPP
 
 #include <atomic>
 
@@ -32,3 +33,5 @@ public:
 };
 
 }
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_MATRIX3X3_INL
+#define SU_BASE_MATH_MATRIX3X3_INL
 
 #include "matrix3x3.hpp"
 #include "vector4.inl"
@@ -373,3 +374,5 @@ static inline void set_rotation(Matrix3x3f_a& m, const Vector3f_a& v, float a) {
 }
 
 }
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_QUATERNION_INL
+#define SU_BASE_MATH_QUATERNION_INL
 
 #include "quaternion.hpp"
 #include "matrix3x3.inl"
@@ -179,7 +180,7 @@ Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T t) {
 
 namespace quaternion {
 
-static inline Quaternion create(const Matrix3x3<float>& m) {
+static inline Quaternion create(const Matrix3x3<float>& m) noexcept {
 	float trace = m.m00 + m.m11 + m.m22;
 	Quaternion temp;
 
@@ -208,7 +209,7 @@ static inline Quaternion create(const Matrix3x3<float>& m) {
 	return temp;
 }
 
-static inline Quaternion create(const Matrix3x3f_a& m) {
+static inline Quaternion create(const Matrix3x3f_a& m) noexcept {
 	const float trace = m.r[0][0] + m.r[1][1] + m.r[2][2];
 	Quaternion temp;
 
@@ -238,7 +239,7 @@ static inline Quaternion create(const Matrix3x3f_a& m) {
 	return temp;
 }
 
-static inline Matrix3x3f_a create_matrix3x3(const Quaternion& q) {
+static inline Matrix3x3f_a create_matrix3x3(const Quaternion& q) noexcept {
 	float d = dot(q, q);
 
 	float s = 2.f / d;
@@ -253,35 +254,35 @@ static inline Matrix3x3f_a create_matrix3x3(const Quaternion& q) {
 						xz - wy,         yz + wx,         1.f - (xx + yy));
 }
 
-static inline Quaternion create_rotation_x(float a) {
+static inline Quaternion create_rotation_x(float a) noexcept {
 	return Quaternion(std::sin(a * 0.5f),
 					  0.f,
 					  0.f,
 					  std::cos(a * 0.5f));
 }
 
-static inline Quaternion create_rotation_y(float a) {
+static inline Quaternion create_rotation_y(float a) noexcept {
 	return Quaternion(0.f,
 					  std::sin(a * 0.5f),
 					  0.f,
 					  std::cos(a * 0.5f));
 }
 
-static inline Quaternion create_rotation_z(float a) {
+static inline Quaternion create_rotation_z(float a) noexcept {
 	return Quaternion(0.f,
 					  0.f,
 					  std::sin(a * 0.5f),
 					  std::cos(a * 0.5f));
 }
 
-static inline Quaternion mul(const Quaternion& a, const Quaternion& b) {
+static inline Quaternion mul(const Quaternion& a, const Quaternion& b) noexcept {
 	return Quaternion((a[3] * b[0] + a[0] * b[3]) + (a[1] * b[2] - a[2] * b[1]),
 					  (a[3] * b[1] + a[1] * b[3]) + (a[2] * b[0] - a[0] * b[2]),
 					  (a[3] * b[2] + a[2] * b[3]) + (a[0] * b[1] - a[1] * b[0]),
 					  (a[3] * b[3] - a[0] * b[0]) - (a[1] * b[1] + a[2] * b[2]));
 }
 
-static inline Quaternion slerp(const Quaternion& a, const Quaternion& b, float t) {
+static inline Quaternion slerp(const Quaternion& a, const Quaternion& b, float t) noexcept {
 	// calc cosine theta
 	float cosom = (a[0] * b[0] + a[1] * b[1]) + (a[2] * b[2] + a[3] * b[3]);
 
@@ -319,10 +320,10 @@ static inline Quaternion slerp(const Quaternion& a, const Quaternion& b, float t
 					  sclp * a[3] + sclq * end[3]);
 }
 
-static inline constexpr Quaternion identity() {
+static inline constexpr Quaternion identity() noexcept {
 	return Quaternion(0.f, 0.f, 0.f, 1.f);
 }
 
-}
+}}
 
-}
+#endif

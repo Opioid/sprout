@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_VECTOR2_HPP
+#define SU_BASE_MATH_VECTOR2_HPP
 
 #include <cstdint>
 
@@ -32,3 +33,5 @@ using byte2  = math::Vector2<uint8_t>;
 using float2 = math::Vector2<float>;
 using int2   = math::Vector2<int32_t>;
 using uint2  = math::Vector2<uint32_t>;
+
+#endif

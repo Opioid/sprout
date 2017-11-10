@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_MATH_HPP
+#define SU_BASE_MATH_MATH_HPP
 
 #include "simd/simd_const.hpp"
 #include <cmath>
@@ -7,11 +8,11 @@
 
 namespace math {
 
-template<typename T> constexpr T Pi_t	  = T(3.14159265358979323846);
-template<typename T> constexpr T Pi_inv_t = T(0.318309886183790671538);
+template<typename T> static constexpr T Pi_t	 = T(3.14159265358979323846);
+template<typename T> static constexpr T Pi_inv_t = T(0.318309886183790671538);
 
-constexpr float Pi	   = Pi_t<float>;
-constexpr float Pi_inv = Pi_inv_t<float>;
+static constexpr float Pi	  = Pi_t<float>;
+static constexpr float Pi_inv = Pi_inv_t<float>;
 
 template <typename T>
 static constexpr T degrees_to_radians(T degrees) {
@@ -112,3 +113,5 @@ static inline float copysign1(float x) {
 }
 
 }
+
+#endif

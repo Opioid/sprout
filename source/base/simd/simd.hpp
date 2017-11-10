@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SIMD_SIMD_HPP
+#define SU_BASE_SIMD_SIMD_HPP
 
 #if defined(_MSC_VER)
 #	include <intrin.h>
@@ -60,3 +61,5 @@ using RVector = const Vector&;
 using Vector  = simd::Vector;
 using VVector = simd::VVector;
 using RVector = simd::RVector;
+
+#endif

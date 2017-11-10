@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_MATH_MATRIX3X3_HPP
+#define SU_BASE_MATH_MATRIX3X3_HPP
 
 #include "vector3.hpp"
 #include "vector4.hpp"
@@ -137,3 +138,5 @@ struct alignas(16) Matrix3x3f_a {
 
 // using float3x3 = Matrix3x3<float>;
 using float3x3 = math::Matrix3x3f_a;
+
+#endif
