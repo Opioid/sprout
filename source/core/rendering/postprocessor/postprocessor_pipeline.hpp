@@ -4,6 +4,7 @@
 #include "scene/camera/camera.hpp"
 #include "image/typed_image.hpp"
 #include <vector>
+#include <memory>
 
 namespace thread { class Pool; }
 
@@ -19,12 +20,12 @@ class Pipeline {
 
 public:
 
-	Pipeline();
+	Pipeline() = default;
 	~Pipeline();
 
 	void reserve(size_t num_pps);
 
-	void add(Postprocessor* pp);
+	void add(std::unique_ptr<Postprocessor> pp);
 
 	void init(const scene::camera::Camera& camera, thread::Pool& pool);
 
@@ -38,7 +39,7 @@ private:
 
 	image::Float4 scratch_;
 
-	std::vector<Postprocessor*> postprocessors_;
+	std::vector<std::unique_ptr<Postprocessor>> postprocessors_;
 };
 
 }}

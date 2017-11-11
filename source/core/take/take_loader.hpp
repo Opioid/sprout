@@ -38,7 +38,7 @@ namespace rendering {
 		namespace volume  { class Factory; }
 	}
 
-	namespace postprocessor::tonemapping { class Tonemapper; }
+	namespace postprocessor { class Postprocessor; }
 }
 
 namespace take {
@@ -93,7 +93,7 @@ private:
 	static void load_postprocessors(const json::Value& pp_value, resource::Manager& manager,
 									Take& take);
 
-	static rendering::postprocessor::tonemapping::Tonemapper*
+	static std::unique_ptr<rendering::postprocessor::Postprocessor>
 	load_tonemapper(const json::Value& tonemapper_value);
 
 	static bool peek_stereoscopic(const json::Value& parameters_value);

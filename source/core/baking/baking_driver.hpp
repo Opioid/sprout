@@ -14,14 +14,12 @@ namespace exporting { class Sink; }
 
 namespace progress { class Sink; }
 
-namespace rendering {
-
-namespace integrator {
+namespace rendering::integrator {
 
 namespace surface { class Factory; }
 namespace volume { class Factory; }
 
-}}
+}
 
 namespace baking {
 

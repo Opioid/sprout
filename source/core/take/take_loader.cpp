@@ -586,18 +586,19 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 
 			if (take.view.camera
 			&& backplate->dimensions_2() != take.view.camera->sensor_dimensions()) {
-				logging::warning("Not using backplate \"" + name + "\","
+				logging::warning("Not using backplate \"" + name + "\", "
 								 "because resolution doesn't match sensor resolution.");
 				continue;
 			}
 
-			pipeline.add(new Backplate(backplate));
+			pipeline.add(std::make_unique<Backplate>(backplate));
 		} else if ("Bloom" == n->name) {
 			const float angle	  = json::read_float(n->value, "angle", 0.05f);
 			const float alpha	  = json::read_float(n->value, "alpha", 0.005f);
 			const float threshold = json::read_float(n->value, "threshold", 2.f);
 			const float intensity = json::read_float(n->value, "intensity", 0.1f);
-			pipeline.add(new Bloom(angle, alpha, threshold, intensity));
+
+			pipeline.add(std::make_unique<Bloom>(angle, alpha, threshold, intensity));
 		} else if ("Glare" == n->name) {
 			Glare::Adaption adaption = Glare::Adaption::Mesopic;
 
@@ -612,7 +613,8 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 
 			const float threshold = json::read_float(n->value, "threshold", 2.f);
 			const float intensity = json::read_float(n->value, "intensity", 1.f);
-			pipeline.add(new Glare(adaption, threshold, intensity));
+
+			pipeline.add(std::make_unique<Glare>(adaption, threshold, intensity));
 		} else if ("Glare2" == n->name) {
 			Glare2::Adaption adaption = Glare2::Adaption::Mesopic;
 
@@ -627,7 +629,8 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 
 			const float threshold = json::read_float(n->value, "threshold", 2.f);
 			const float intensity = json::read_float(n->value, "intensity", 1.f);
-			pipeline.add(new Glare2(adaption, threshold, intensity));
+
+			pipeline.add(std::make_unique<Glare2>(adaption, threshold, intensity));
 		} else if ("Glare3" == n->name) {
 			Glare3::Adaption adaption = Glare3::Adaption::Mesopic;
 
@@ -642,12 +645,13 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 
 			const float threshold = json::read_float(n->value, "threshold", 2.f);
 			const float intensity = json::read_float(n->value, "intensity", 1.f);
-			pipeline.add(new Glare3(adaption, threshold, intensity));
+
+			pipeline.add(std::make_unique<Glare3>(adaption, threshold, intensity));
 		}
 	}
 }
 
-rendering::postprocessor::tonemapping::Tonemapper*
+std::unique_ptr<rendering::postprocessor::Postprocessor>
 Loader::load_tonemapper(const json::Value& tonemapper_value) {
 	using namespace rendering::postprocessor::tonemapping;
 
@@ -655,7 +659,7 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 		if ("ACES" == n.name) {
 			const float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-			return new Aces(hdr_max);
+			return std::make_unique<Aces>(hdr_max);
 		} else if ("Generic" == n.name) {
 			const float contrast = json::read_float(n.value, "contrast", 1.15f);
 			const float shoulder = json::read_float(n.value, "shoulder", 0.99f);
@@ -663,13 +667,13 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 			const float mid_out  = json::read_float(n.value, "mid_out",  0.18f);
 			const float hdr_max  = json::read_float(n.value, "hdr_max",  1.f);
 
-			return new Generic(contrast, shoulder, mid_in, mid_out, hdr_max);
+			return std::make_unique<Generic>(contrast, shoulder, mid_in, mid_out, hdr_max);
 		} else if ("Identity" == n.name) {
-			return new rendering::postprocessor::tonemapping::Identity();
+			return std::make_unique<Identity>();
 		} else if ("Uncharted" == n.name) {
 			const float hdr_max = json::read_float(n.value, "hdr_max", 1.f);
 
-			return new Uncharted(hdr_max);
+			return std::make_unique<Uncharted>(hdr_max);
 		}
 	}
 
