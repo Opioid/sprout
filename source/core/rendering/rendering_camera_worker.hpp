@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_RENDERING_CAMERA_WORKER_HPP
+#define SU_RENDERING_CAMERA_WORKER_HPP
 
 #include "rendering_worker.hpp"
 
-namespace scene { namespace camera { class Camera; }}
+namespace scene::camera { class Camera; }
 
 namespace rendering {
 
@@ -18,3 +19,5 @@ public:
 };
 
 }
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_POSTPROCESSOR_PIPELINE_HPP
+#define SU_CORE_RENDERING_POSTPROCESSOR_PIPELINE_HPP
 
 #include "scene/camera/camera.hpp"
 #include "image/typed_image.hpp"
@@ -8,13 +9,7 @@ namespace thread { class Pool; }
 
 namespace rendering {
 
-namespace sensor {
-
-class Sensor;
-
-namespace tonemapping { class Tonemapper; }
-
-}
+namespace sensor { class Sensor; }
 
 namespace postprocessor {
 
@@ -35,8 +30,7 @@ public:
 
 	size_t num_bytes() const;
 
-	void apply(const sensor::Sensor& sensor, image::Float4& target,
-			   thread::Pool& pool);
+	void apply(const sensor::Sensor& sensor, image::Float4& target, thread::Pool& pool);
 
 private:
 
@@ -46,3 +40,5 @@ private:
 };
 
 }}
+
+#endif

@@ -29,7 +29,8 @@ void Pipeline::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 		return;
 	}
 
-	image::Image::Description description(image::Image::Type::Float4, camera.sensor_dimensions());
+	const image::Image::Description description(image::Image::Type::Float4,
+												camera.sensor_dimensions());
 	scratch_.resize(description);
 
 	for (auto pp : postprocessors_) {

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_SHAPE_NODE_STACK_INL
+#define SU_SCENE_SHAPE_NODE_STACK_INL
 
 #include "node_stack.hpp"
 #include "base/memory/align.hpp"
@@ -37,3 +38,5 @@ inline size_t Node_stack::num_bytes() const {
 }
 
 }
+
+#endif

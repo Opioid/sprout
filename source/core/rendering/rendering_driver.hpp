@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_DRIVER_HPP
+#define SU_CORE_RENDERING_DRIVER_HPP
 
 #include "tile_queue.hpp"
 #include "image/typed_image.hpp"
@@ -70,3 +71,5 @@ protected:
 };
 
 }
+
+#endif

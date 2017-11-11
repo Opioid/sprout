@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_SHAPE_NODE_STACK_HPP
+#define SU_SCENE_SHAPE_NODE_STACK_HPP
 
 #include <cstdint>
 #include <cstddef>
@@ -31,3 +32,5 @@ private:
 };
 
 }
+
+#endif

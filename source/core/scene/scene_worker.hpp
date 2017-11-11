@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_WORKER_HPP
+#define SU_SCENE_WORKER_HPP
 
 #include "shape/node_stack.hpp"
 #include "material/material_sample_cache.hpp"
@@ -65,3 +66,5 @@ protected:
 };
 
 }
+
+#endif

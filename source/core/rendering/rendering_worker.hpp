@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_RENDERING_WORKER_HPP
+#define SU_RENDERING_WORKER_HPP
 
 #include "scene/scene_worker.hpp"
 #include "base/math/vector4.hpp"
@@ -59,3 +60,5 @@ protected:
 };
 
 }
+
+#endif
