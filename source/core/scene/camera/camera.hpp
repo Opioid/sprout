@@ -3,6 +3,7 @@
 #include "scene/entity/entity.hpp"
 #include "base/math/vector2.hpp"
 #include "base/math/vector4.hpp"
+#include <memory>
 #include <string>
 
 namespace sampler { struct Camera_sample; }
@@ -46,7 +47,7 @@ public:
 	int2 resolution() const;
 
 	rendering::sensor::Sensor& sensor() const;
-	void set_sensor(rendering::sensor::Sensor* sensor);
+	void set_sensor(std::unique_ptr<rendering::sensor::Sensor> sensor);
 
 	float frame_duration() const;
 	void set_frame_duration(float frame_duration);
@@ -63,7 +64,7 @@ protected:
 	virtual void on_set_transformation() override final;
 
 	int2 resolution_;
-	rendering::sensor::Sensor* sensor_ = nullptr;
+	std::unique_ptr<rendering::sensor::Sensor> sensor_;
 
 	int32_t filter_radius_ = 0;
 

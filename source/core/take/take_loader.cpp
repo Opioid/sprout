@@ -123,9 +123,8 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
 	if (!take->surface_integrator_factory) {
 		const float step_size = 1.f;
-		auto* sub_factory = new surface::sub::Single_scattering_factory(take->settings,
-																		num_threads,
-																		step_size);
+		auto sub_factory = std::make_unique<
+				surface::sub::Single_scattering_factory>(take->settings, num_threads, step_size);
 
 		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
 		const uint32_t min_bounces = 4;
@@ -135,7 +134,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
 		take->surface_integrator_factory = std::make_shared<
 				surface::Pathtracer_MIS_factory>(take->settings, num_threads,
-												 sub_factory, min_bounces, max_bounces,
+												 std::move(sub_factory), min_bounces, max_bounces,
 												 path_termination_probability,
 												 light_sampling, enable_caustics);
 
@@ -266,13 +265,14 @@ void Loader::load_camera(const json::Value& camera_value, Take& take) {
 	if (sensor_value) {
 		auto sensor = load_sensor(*sensor_value, camera->sensor_dimensions());
 
-		camera->set_sensor(sensor);
+		camera->set_sensor(std::move(sensor));
 	}
 
 	take.view.camera = camera;
 }
 
-rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value, int2 dimensions) {
+std::unique_ptr<rendering::sensor::Sensor>
+Loader::load_sensor(const json::Value& sensor_value, int2 dimensions) {
 	using namespace rendering::sensor;
 
 	bool alpha_transparency = false;
@@ -297,39 +297,40 @@ rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value, 
 	if (filter) {
 		if (alpha_transparency) {
 			if (clamp) {
-				return new Filtered<Transparent, clamp::Clamp>(dimensions, exposure,
-															   clamp::Clamp(clamp_max), filter);
+				return std::make_unique<Filtered<Transparent, clamp::Clamp>>(
+					dimensions, exposure, clamp::Clamp(clamp_max), filter);
 			} else {
-				return new Filtered<Transparent, clamp::Identity>(dimensions, exposure,
-																  clamp::Identity(), filter);
+				return std::make_unique<Filtered<Transparent, clamp::Identity>>(
+					dimensions, exposure, clamp::Identity(), filter);
 			}
 		}
 
 		if (clamp) {
-			return new Filtered<Opaque, clamp::Clamp>(dimensions, exposure,
-													  clamp::Clamp(clamp_max), filter);
+			return std::make_unique<Filtered<Opaque, clamp::Clamp>>(
+				dimensions, exposure, clamp::Clamp(clamp_max), filter);
 		} else {
-			return new Filtered<Opaque, clamp::Identity>(dimensions, exposure,
-														 clamp::Identity(), filter);
+			return std::make_unique<Filtered<Opaque, clamp::Identity>>(
+				dimensions, exposure, clamp::Identity(), filter);
 		}
 	}
 
 	if (alpha_transparency) {
 		if (clamp) {
-			return new Unfiltered<Transparent, clamp::Clamp>(dimensions, exposure,
-															 clamp::Clamp(clamp_max));
+			return std::make_unique<Unfiltered<Transparent, clamp::Clamp>>(
+				dimensions, exposure, clamp::Clamp(clamp_max));
 		} else {
-			return new Unfiltered<Transparent, clamp::Identity>(dimensions, exposure,
-																clamp::Identity());
+			return std::make_unique<Unfiltered<Transparent, clamp::Identity>>(
+				dimensions, exposure, clamp::Identity());
 		}
 	}
 
 	if (clamp) {
-		return new Unfiltered<Opaque, clamp::Clamp>(dimensions, exposure,
-													clamp::Clamp(clamp_max));
+		return std::make_unique<Unfiltered<Opaque, clamp::Clamp>>(
+			dimensions, exposure, clamp::Clamp(clamp_max));
 	}
 
-	return new Unfiltered<Opaque, clamp::Identity>(dimensions, exposure, clamp::Identity());
+	return std::make_unique<Unfiltered<Opaque, clamp::Identity>>(
+		dimensions, exposure, clamp::Identity());
 }
 
 const rendering::sensor::filter::Filter*
@@ -427,7 +428,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
 
 			return std::make_shared<Pathtracer_factory>(
-						settings, num_workers, sub_factory, min_bounces, max_bounces,
+						settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
 						path_termination_probability, enable_caustics);
 		} else if ("PTDL" == n.name) {
 			const uint32_t min_bounces = json::read_uint(n.value, "min_bounces",
@@ -469,7 +470,7 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 			auto sub_factory = find_subsurface_integrator_factory(n.value, settings, num_workers);
 
 			return std::make_shared<Pathtracer_MIS_factory>(
-						settings, num_workers, sub_factory, min_bounces, max_bounces,
+						settings, num_workers, std::move(sub_factory), min_bounces, max_bounces,
 						path_termination_probability, light_sampling, enable_caustics);
 		} else if ("Debug" == n.name) {
 			auto vector = Debug::Settings::Vector::Shading_normal;
@@ -495,12 +496,12 @@ Loader::load_surface_integrator_factory(const json::Value& integrator_value,
 	return nullptr;
 }
 
-rendering::integrator::surface::sub::Factory*
+std::unique_ptr<rendering::integrator::surface::sub::Factory>
 Loader::find_subsurface_integrator_factory(const json::Value& parent_value,
 										   const Settings& settings, uint32_t num_workers) {
 	using namespace rendering::integrator::surface::sub;
 
-	Factory* factory = nullptr;
+	std::unique_ptr<Factory> factory;
 	const auto subsurface_node = parent_value.FindMember("subsurface");
 	if (parent_value.MemberEnd() != subsurface_node) {
 		factory = load_subsurface_integrator_factory(subsurface_node->value, settings,
@@ -509,7 +510,7 @@ Loader::find_subsurface_integrator_factory(const json::Value& parent_value,
 
 	if (!factory) {
 		const float step_size = 1.f;
-		factory = new Single_scattering_factory(settings, num_workers, step_size);
+		factory = std::make_unique<Single_scattering_factory>(settings, num_workers, step_size);
 
 		logging::warning("No valid subsurface integrator specified, "
 						 "defaulting to Single Scattering.");
@@ -518,7 +519,7 @@ Loader::find_subsurface_integrator_factory(const json::Value& parent_value,
 	return factory;
 }
 
-rendering::integrator::surface::sub::Factory*
+std::unique_ptr<rendering::integrator::surface::sub::Factory>
 Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
 										   const Settings& settings, uint32_t num_workers) {
 	using namespace rendering::integrator::surface::sub;
@@ -526,10 +527,10 @@ Loader::load_subsurface_integrator_factory(const json::Value& integrator_value,
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Bruteforce" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			return new Bruteforce_factory(settings, num_workers, step_size);
+			return std::make_unique<Bruteforce_factory>(settings, num_workers, step_size);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
-			return new Single_scattering_factory(settings, num_workers, step_size);
+			return std::make_unique<Single_scattering_factory>(settings, num_workers, step_size);
 		}
 	}
 

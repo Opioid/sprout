@@ -61,7 +61,7 @@ private:
 
 	static void load_camera(const json::Value& camera_value, Take& take);
 
-	static rendering::sensor::Sensor*
+	static std::unique_ptr<rendering::sensor::Sensor>
 	load_sensor(const json::Value& sensor_value, int2 dimensions);
 
 	static const rendering::sensor::filter::Filter*
@@ -78,11 +78,11 @@ private:
 	load_surface_integrator_factory(const json::Value& integrator_value,
 									const Settings& settings, uint32_t num_workers);
 
-	static rendering::integrator::surface::sub::Factory*
+	static std::unique_ptr<rendering::integrator::surface::sub::Factory>
 	find_subsurface_integrator_factory(const json::Value& parent_value,
 									   const Settings& settings, uint32_t num_workers);
 
-	static rendering::integrator::surface::sub::Factory*
+	static std::unique_ptr<rendering::integrator::surface::sub::Factory>
 	load_subsurface_integrator_factory(const json::Value& integrator_value,
 									   const Settings& settings, uint32_t num_workers);
 

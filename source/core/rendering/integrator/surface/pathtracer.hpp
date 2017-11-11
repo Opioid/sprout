@@ -1,15 +1,13 @@
-#pragma once
+#ifndef SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_HPP
+#define SU_RENDERING_INTEGRATOR_SURFACE_PATHTRACER_HPP
 
 #include "surface_integrator.hpp"
 #include "transmittance/transmittance_closed.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_random.hpp"
+#include <memory>
 
-namespace scene::light {
-
-struct Sample;
-
-}
+namespace scene::light { struct Sample; }
 
 namespace rendering::integrator::surface {
 
@@ -61,7 +59,7 @@ class Pathtracer_factory : public Factory {
 public:
 
 	Pathtracer_factory(const take::Settings& take_settings, uint32_t num_integrators,
-					   sub::Factory* sub_factory,
+					   std::unique_ptr<sub::Factory> sub_factory,
 					   uint32_t min_bounces, uint32_t max_bounces,
 					   float path_termination_probability,
 					   bool enable_caustics);
@@ -72,7 +70,7 @@ public:
 
 private:
 
-	sub::Factory* sub_factory_;
+	std::unique_ptr<sub::Factory> sub_factory_;
 
 	Pathtracer* integrators_;
 
@@ -80,3 +78,5 @@ private:
 };
 
 }
+
+#endif

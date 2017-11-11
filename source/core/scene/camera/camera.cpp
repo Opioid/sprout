@@ -10,9 +10,7 @@ namespace scene::camera {
 
 Camera::Camera(int2 resolution) : resolution_(resolution) {}
 
-Camera::~Camera() {
-	delete sensor_;
-}
+Camera::~Camera() {}
 
 void Camera::update(rendering::Worker& worker) {
 	calculate_world_transformation();
@@ -47,9 +45,8 @@ rendering::sensor::Sensor& Camera::sensor() const {
 	return *sensor_;
 }
 
-void Camera::set_sensor(rendering::sensor::Sensor* sensor) {
-	delete sensor_;
-	sensor_ = sensor;
+void Camera::set_sensor(std::unique_ptr<rendering::sensor::Sensor> sensor) {
+	sensor_ = std::move(sensor);
 }
 
 float Camera::frame_duration() const {
