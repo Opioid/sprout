@@ -105,9 +105,12 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
 		if (take->exporters.empty()) {
 			const auto d = take->view.camera->sensor().dimensions();
-			image::Writer* writer = new image::encoding::png::Writer(d);
-			take->exporters.push_back(std::make_unique<exporting::Image_sequence>("output_",
-																				  writer));
+
+			std::unique_ptr<image::Writer> writer =
+				std::make_unique<image::encoding::png::Writer>(d);
+
+			take->exporters.push_back(
+				std::make_unique<exporting::Image_sequence>("output_", std::move(writer)));
 
 			logging::warning("No valid exporter was specified, defaulting to PNG writer.");
 		}
@@ -124,7 +127,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	if (!take->surface_integrator_factory) {
 		const float step_size = 1.f;
 		auto sub_factory = std::make_unique<
-				surface::sub::Single_scattering_factory>(take->settings, num_threads, step_size);
+			surface::sub::Single_scattering_factory>(take->settings, num_threads, step_size);
 
 		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
 		const uint32_t min_bounces = 4;
@@ -133,10 +136,10 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 		const bool enable_caustics = false;
 
 		take->surface_integrator_factory = std::make_shared<
-				surface::Pathtracer_MIS_factory>(take->settings, num_threads,
-												 std::move(sub_factory), min_bounces, max_bounces,
-												 path_termination_probability,
-												 light_sampling, enable_caustics);
+			surface::Pathtracer_MIS_factory>(take->settings, num_threads,
+											 std::move(sub_factory), min_bounces, max_bounces,
+											 path_termination_probability,
+											 light_sampling, enable_caustics);
 
 		logging::warning("No valid surface integrator specified, defaulting to PTMIS.");
 	}
@@ -144,8 +147,8 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	if (!take->volume_integrator_factory) {
 		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
 		take->volume_integrator_factory = std::make_shared<
-				volume::Single_scattering_factory>(take->settings, num_threads,
-												   1.f, light_sampling);
+			volume::Single_scattering_factory>(take->settings, num_threads,
+											   1.f, light_sampling);
 
 		logging::warning("No valid volume integrator specified, defaulting to Single Scattering.");
 	}
@@ -222,7 +225,7 @@ void Loader::load_camera(const json::Value& camera_value, Take& take) {
 	if ("Cubic" == type_name) {
 		if (stereo) {
 			Cubic_stereoscopic::Layout layout =
-					Cubic_stereoscopic::Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz;
+				Cubic_stereoscopic::Layout::rxlmxryrmyrzrmzlxlmxlylmylzlmz;
 
 			if ("lxlmxlylmylzlmzrxrmxryrmyrzrmz" == layout_type) {
 				layout = Cubic_stereoscopic::Layout::lxlmxlylmylzlmzrxrmxryrmyrzrmz;
@@ -704,20 +707,23 @@ Loader::load_exporters(const json::Value& exporter_value, const View& view) {
 		if ("Image" == n.name) {
 			const std::string format = json::read_string(n.value, "format", "PNG");
 
-			image::Writer* writer;
+			std::unique_ptr<image::Writer> writer;
 
 			if ("RGBE" == format) {
-				writer = new image::encoding::rgbe::Writer;
+				writer = std::unique_ptr<image::encoding::rgbe::Writer>();
 			} else {
 				const bool transparent_sensor = camera.sensor().has_alpha_transparency();
 				if (view.pipeline.has_alpha_transparency(transparent_sensor)) {
-					writer = new image::encoding::png::Writer_alpha(camera.sensor().dimensions());
+					writer = std::make_unique<image::encoding::png::Writer_alpha>(
+						camera.sensor().dimensions());
 				} else {
-					writer = new image::encoding::png::Writer(camera.sensor().dimensions());
+					writer = std::make_unique<image::encoding::png::Writer>(
+						camera.sensor().dimensions());
 				}
 			}
 
-			exporters.push_back(std::make_unique<exporting::Image_sequence>("output_", writer));
+			exporters.push_back(std::make_unique<exporting::Image_sequence>(
+				"output_", std::move(writer)));
 		} else if ("Movie" == n.name) {
 			uint32_t framerate = json::read_uint(n.value, "framerate");
 
@@ -725,9 +731,8 @@ Loader::load_exporters(const json::Value& exporter_value, const View& view) {
 				framerate = static_cast<uint32_t>(1.f / camera.frame_duration() + 0.5f);
 			}
 
-			exporters.push_back(std::make_unique<exporting::Ffmpeg>("output",
-																	camera.sensor().dimensions(),
-																	framerate));
+			exporters.push_back(std::make_unique<exporting::Ffmpeg>(
+				"output", camera.sensor().dimensions(), framerate));
 		} else if ("Null" == n.name) {
 			exporters.push_back(std::make_unique<exporting::Null>());
 		} else if ("Statistics" == n.name) {

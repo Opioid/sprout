@@ -6,12 +6,8 @@
 
 namespace exporting {
 
-Image_sequence::Image_sequence(const std::string& filename, image::Writer* writer) :
-	filename_(filename), writer_(writer) {}
-
-Image_sequence::~Image_sequence() {
-	delete writer_;
-}
+Image_sequence::Image_sequence(const std::string& filename, std::unique_ptr<image::Writer> writer) :
+	filename_(filename), writer_(std::move(writer)) {}
 
 void Image_sequence::write(const image::Float4& image, uint32_t frame, thread::Pool& pool) {
 	std::ofstream stream(filename_ + string::to_string(frame, 6) + "." +
