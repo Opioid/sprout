@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_POSTPROCESSOR_POSTPROCESSOR_HPP
+#define SU_CORE_RENDERING_POSTPROCESSOR_POSTPROCESSOR_HPP
 
 #include "image/typed_image.hpp"
 #include "scene/camera/camera.hpp"
@@ -18,8 +19,9 @@ public:
 
 	virtual size_t num_bytes() const = 0;
 
-	void apply(const image::Float4& source, image::Float4& destination,
-			   thread::Pool& pool);
+	virtual bool alpha_out(bool alpha_in) const;
+
+	void apply(const image::Float4& source, image::Float4& destination, thread::Pool& pool);
 
 private:
 
@@ -33,3 +35,5 @@ private:
 };
 
 }
+
+#endif

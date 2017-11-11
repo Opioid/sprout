@@ -44,6 +44,7 @@ namespace rendering {
 namespace take {
 
 struct Take;
+struct View;
 struct Settings;
 
 class Loader {
@@ -98,7 +99,7 @@ private:
 	static bool peek_stereoscopic(const json::Value& parameters_value);
 
 	static std::vector<std::unique_ptr<exporting::Sink>>
-	load_exporters(const json::Value& exporter_value, const scene::camera::Camera& camera);
+	load_exporters(const json::Value& exporter_value, const View& view);
 
 	static void load_settings(const json::Value& settings_value, Settings& settings);
 

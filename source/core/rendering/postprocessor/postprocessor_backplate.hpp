@@ -14,6 +14,8 @@ public:
 
 	virtual void init(const scene::camera::Camera& camera, thread::Pool& pool) override final;
 
+	virtual bool alpha_out(bool alpha_in) const override final;
+
 	virtual size_t num_bytes() const override final;
 
 private:

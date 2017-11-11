@@ -8,6 +8,10 @@ Postprocessor::Postprocessor(uint32_t num_passes) : num_passes_(num_passes) {}
 
 Postprocessor::~Postprocessor() {}
 
+bool Postprocessor::alpha_out(bool alpha_in) const {
+	return alpha_in;
+}
+
 void Postprocessor::apply(const image::Float4& source, image::Float4& destination,
 						  thread::Pool& pool) {
 	pre_apply(source, destination, pool);

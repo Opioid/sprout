@@ -28,9 +28,11 @@ public:
 
 	void init(const scene::camera::Camera& camera, thread::Pool& pool);
 
-	size_t num_bytes() const;
+	bool has_alpha_transparency(bool alpha_in) const;
 
 	void apply(const sensor::Sensor& sensor, image::Float4& target, thread::Pool& pool);
+
+	size_t num_bytes() const;
 
 private:
 

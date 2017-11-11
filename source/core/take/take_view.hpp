@@ -1,9 +1,10 @@
-#pragma once
+#ifndef SU_CORE_TAKE_VIEW_HPP
+#define SU_CORE_TAKE_VIEW_HPP
 
 #include "rendering/postprocessor/postprocessor_pipeline.hpp"
 #include <memory>
 
-namespace scene { namespace camera { class Camera; } }
+namespace scene::camera { class Camera; }
 
 namespace take {
 
@@ -27,3 +28,5 @@ struct View {
 };
 
 }
+
+#endif

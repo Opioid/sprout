@@ -6,6 +6,7 @@
 #include "exporting/exporting_sink_statistics.hpp"
 #include "image/encoding/png/png_writer.hpp"
 #include "image/encoding/rgbe/rgbe_writer.hpp"
+#include "image/texture/texture.hpp"
 #include "logging/logging.hpp"
 #include "rendering/integrator/surface/ao.hpp"
 #include "rendering/integrator/surface/debug.hpp"
@@ -63,6 +64,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 
 	auto take = std::make_unique<Take>();
 
+	const json::Value* postprocessors_value = nullptr;
 	const json::Value* exporter_value = nullptr;
 
 	for (auto& n : root->GetObject()) {
@@ -77,7 +79,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 		} else if ("integrator" == n.name) {
 			load_integrator_factories(n.value, num_threads, *take);
 		} else if ("postprocessors" == n.name) {
-			load_postprocessors(n.value, manager, *take);
+			postprocessors_value = &n.value;
 		} else if ("sampler" == n.name) {
 			take->sampler_factory = load_sampler_factory(n.value, num_threads,
 														 take->view.num_samples_per_pixel);
@@ -93,8 +95,12 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	}
 
 	if (take->view.camera) {
+		if (postprocessors_value) {
+			load_postprocessors(*postprocessors_value, manager, *take);
+		}
+
 		if (exporter_value) {
-			take->exporters = load_exporters(*exporter_value, *take->view.camera);
+			take->exporters = load_exporters(*exporter_value, take->view);
 		}
 
 		if (take->exporters.empty()) {
@@ -578,6 +584,13 @@ void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager&
 			const std::string name = json::read_string(n->value, "file");
 			auto backplate = manager.load<image::texture::Texture>(name);
 
+			if (take.view.camera
+			&& backplate->dimensions_2() != take.view.camera->sensor_dimensions()) {
+				logging::warning("Not using backplate \"" + name + "\","
+								 "because resolution doesn't match sensor resolution.");
+				continue;
+			}
+
 			pipeline.add(new Backplate(backplate));
 		} else if ("Bloom" == n->name) {
 			const float angle	  = json::read_float(n->value, "angle", 0.05f);
@@ -673,7 +686,13 @@ bool Loader::peek_stereoscopic(const json::Value& parameters_value) {
 }
 
 std::vector<std::unique_ptr<exporting::Sink>>
-Loader::load_exporters(const json::Value& exporter_value, const scene::camera::Camera& camera) {
+Loader::load_exporters(const json::Value& exporter_value, const View& view) {
+	if (!view.camera) {
+		return {};
+	}
+
+	const auto& camera = *view.camera;
+
 	std::vector<std::unique_ptr<exporting::Sink>> exporters;
 
 	for (auto& n : exporter_value.GetObject()) {
@@ -685,7 +704,8 @@ Loader::load_exporters(const json::Value& exporter_value, const scene::camera::C
 			if ("RGBE" == format) {
 				writer = new image::encoding::rgbe::Writer;
 			} else {
-				if (camera.sensor().has_alpha_transparency()) {
+				const bool transparent_sensor = camera.sensor().has_alpha_transparency();
+				if (view.pipeline.has_alpha_transparency(transparent_sensor)) {
 					writer = new image::encoding::png::Writer_alpha(camera.sensor().dimensions());
 				} else {
 					writer = new image::encoding::png::Writer(camera.sensor().dimensions());

@@ -11,6 +11,10 @@ Backplate::Backplate(const Texture_ptr& backplate) :
 
 void Backplate::init(const scene::camera::Camera& /*camera*/, thread::Pool& /*pool*/) {}
 
+bool Backplate::alpha_out(bool /*alpha_in*/) const {
+	return false;
+}
+
 size_t Backplate::num_bytes() const {
 	return sizeof(*this);
 }

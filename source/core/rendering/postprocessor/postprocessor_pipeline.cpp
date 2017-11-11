@@ -38,13 +38,12 @@ void Pipeline::init(const scene::camera::Camera& camera, thread::Pool& pool) {
 	}
 }
 
-size_t Pipeline::num_bytes() const {
-	size_t num_bytes = 0;
+bool Pipeline::has_alpha_transparency(bool alpha_in) const {
 	for (auto pp : postprocessors_) {
-		num_bytes += pp->num_bytes();
+		alpha_in = pp->alpha_out(alpha_in);
 	}
 
-	return num_bytes;
+	return alpha_in;
 }
 
 void Pipeline::apply(const sensor::Sensor& sensor, image::Float4& target,
@@ -69,6 +68,15 @@ void Pipeline::apply(const sensor::Sensor& sensor, image::Float4& target,
 			std::swap(targets[0], targets[1]);
 		}
 	}
+}
+
+size_t Pipeline::num_bytes() const {
+	size_t num_bytes = 0;
+	for (auto pp : postprocessors_) {
+		num_bytes += pp->num_bytes();
+	}
+
+	return num_bytes;
 }
 
 }

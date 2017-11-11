@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_TAKE_TAKE_HPP
+#define SU_CORE_TAKE_TAKE_HPP
 
 #include "take_settings.hpp"
 #include "take_view.hpp"
@@ -38,3 +39,5 @@ struct Take {
 };
 
 }
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_TAKE_SETTINGS_HPP
+#define SU_CORE_TAKE_SETTINGS_HPP
 
 namespace take {
 
@@ -7,3 +8,5 @@ struct Settings {
 };
 
 }
+
+#endif
