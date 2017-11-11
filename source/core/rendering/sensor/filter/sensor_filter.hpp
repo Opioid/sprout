@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_SENSOR_FILTER_FILTER_HPP
+#define SU_CORE_RENDERING_SENSOR_FILTER_FILTER_HPP
 
 #include "base/math/vector3.hpp"
 
-namespace rendering { namespace sensor { namespace filter {
+namespace rendering::sensor::filter {
 
 class Filter {
 
@@ -16,4 +17,6 @@ public:
 	virtual float evaluate(float2 p) const = 0;
 };
 
-}}}
+}
+
+#endif

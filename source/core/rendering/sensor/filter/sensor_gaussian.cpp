@@ -4,7 +4,7 @@
 #include "base/math/function/interpolated_function.inl"
 #include <algorithm>
 
-namespace rendering { namespace sensor { namespace filter {
+namespace rendering::sensor::filter {
 
 Gaussian::Gaussian(float radius, float alpha) :
 	radius_(radius),
@@ -32,4 +32,4 @@ inline float Gaussian::gaussian(float d) const {
 	return std::max(0.f, std::exp(-alpha_ * d * d) - exp_);
 }
 
-}}}
+}

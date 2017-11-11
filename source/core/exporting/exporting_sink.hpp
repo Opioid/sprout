@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_EXPORTING_SINK_HPP
+#define SU_CORE_EXPORTING_SINK_HPP
 
 #include "image/typed_image.hpp"
 
@@ -16,3 +17,5 @@ public:
 };
 
 }
+
+#endif

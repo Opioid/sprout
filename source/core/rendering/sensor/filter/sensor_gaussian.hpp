@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_SENSOR_FILTER_GAUSSIAN_HPP
+#define SU_CORE_RENDERING_SENSOR_FILTER_GAUSSIAN_HPP
 
 #include "sensor_filter.hpp"
 #include "base/math/vector3.hpp"
 #include "base/math/function/interpolated_function.hpp"
 
-namespace rendering { namespace sensor { namespace filter {
+namespace rendering::sensor::filter {
 
 class Gaussian : public Filter {
 
@@ -31,4 +32,6 @@ private:
 	float alpha_;
 };
 
-}}}
+}
+
+#endif

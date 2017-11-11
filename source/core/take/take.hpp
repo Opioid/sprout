@@ -4,8 +4,8 @@
 #include "take_settings.hpp"
 #include "take_view.hpp"
 #include "exporting/exporting_sink.hpp"
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace scene::animation { class Animation; }
