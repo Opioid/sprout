@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_LOADER_HPP
+#define SU_CORE_SCENE_LOADER_HPP
 
 #include "material/material.hpp"
 #include "base/json/json_types.hpp"
@@ -106,3 +107,5 @@ private:
 };
 
 }
+
+#endif

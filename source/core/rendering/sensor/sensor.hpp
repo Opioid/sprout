@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_SENSOR_SENSOR_HPP
+#define SU_CORE_RENDERING_SENSOR_SENSOR_HPP
 
 #include "image/typed_image.hpp"
 
@@ -46,3 +47,5 @@ protected:
 };
 
 }
+
+#endif

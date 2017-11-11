@@ -1,9 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_VOLUME_GRID_HPP
+#define SU_CORE_SCENE_VOLUME_GRID_HPP
 
 #include "density.hpp"
+#include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_types.hpp"
 
-namespace scene { namespace volume {
+namespace scene::volume {
 
 class Grid : public Density {
 
@@ -22,4 +24,6 @@ private:
 	Texture_adapter grid_;
 };
 
-}}
+}
+
+#endif

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sampler_settings.hpp"
+#include "image/texture/texture_adapter.hpp"
 #include "image/texture/texture_types.hpp"
 #include "base/json/json_types.hpp"
 #include "base/math/vector3.hpp"

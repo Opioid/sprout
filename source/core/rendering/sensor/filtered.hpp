@@ -1,6 +1,11 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_SENSOR_FILTERED_HPP
+#define SU_CORE_RENDERING_SENSOR_FILTERED_HPP
 
 #include "base/math/vector4.hpp"
+
+namespace image::texture { class Texture; }
+
+using Texture_ptr = std::shared_ptr<image::texture::Texture>;
 
 namespace sampler { struct Camera_sample; }
 
@@ -14,6 +19,8 @@ class Filtered : public Base {
 public:
 
 	Filtered(int2 dimensions, float exposure, const Clamp& clamp, const filter::Filter* filter);
+	Filtered(int2 dimensions, float exposure, const Texture_ptr& backplate,
+			 const Clamp& clamp, const filter::Filter* filter);
 	~Filtered();
 
 	virtual int32_t filter_radius_int() const override final;
@@ -37,3 +44,5 @@ private:
 };
 
 }
+
+#endif

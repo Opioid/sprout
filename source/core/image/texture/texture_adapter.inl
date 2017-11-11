@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_ADAPTER_INL
+#define SU_CORE_IMAGE_TEXTURE_ADAPTER_INL
 
 #include "texture_adapter.hpp"
 #include "texture.hpp"
@@ -75,3 +76,5 @@ inline float3 Adapter::address(const Sampler_3D& sampler, const float3& uvw) con
 }
 
 }
+
+#endif

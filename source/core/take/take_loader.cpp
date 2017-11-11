@@ -17,6 +17,7 @@
 #include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
+#include "rendering/postprocessor/postprocessor_backplate.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
 #include "rendering/postprocessor/postprocessor_glare.hpp"
 #include "rendering/postprocessor/postprocessor_glare2.hpp"
@@ -31,6 +32,7 @@
 #include "rendering/sensor/filtered.inl"
 #include "rendering/sensor/unfiltered.inl"
 #include "rendering/sensor/filter/sensor_gaussian.hpp"
+#include "resource/resource_manager.inl"
 #include "sampler/sampler_ems.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
 #include "sampler/sampler_ld.hpp"
@@ -54,17 +56,18 @@
 
 namespace take {
 
-std::unique_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_pool) {
+std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& manager) {
+	const uint32_t num_threads = manager.thread_pool().num_threads();
+
 	auto root = json::parse(stream);
 
 	auto take = std::make_unique<Take>();
 
 	const json::Value* exporter_value = nullptr;
-	const bool alpha_transparency = peek_alpha_transparency(*root);
 
 	for (auto& n : root->GetObject()) {
 		if ("camera" == n.name) {
-			load_camera(n.value, alpha_transparency, *take);
+			load_camera(n.value, *take);
 		} else if ("export" == n.name) {
 			exporter_value = &n.value;
 		} else if ("start_frame" == n.name) {
@@ -72,11 +75,11 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 		} else if ("num_frames" == n.name) {
 			take->view.num_frames = json::read_uint(n.value);
 		} else if ("integrator" == n.name) {
-			load_integrator_factories(n.value, thread_pool.num_threads(), *take);
+			load_integrator_factories(n.value, num_threads, *take);
 		} else if ("postprocessors" == n.name) {
-			load_postprocessors(n.value, *take);
+			load_postprocessors(n.value, manager, *take);
 		} else if ("sampler" == n.name) {
-			take->sampler_factory = load_sampler_factory(n.value, thread_pool.num_threads(),
+			take->sampler_factory = load_sampler_factory(n.value, num_threads,
 														 take->view.num_samples_per_pixel);
 		} else if ("scene" == n.name) {
 			take->scene_filename = n.value.GetString();
@@ -105,8 +108,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 	}
 
 	if (!take->sampler_factory) {
-		take->sampler_factory = std::make_shared<
-				sampler::Random_factory>(thread_pool.num_threads());
+		take->sampler_factory = std::make_shared<sampler::Random_factory>(num_threads);
 
 		logging::warning("No valid sampler was specified, defaulting to Random sampler.");
 	}
@@ -116,7 +118,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 	if (!take->surface_integrator_factory) {
 		const float step_size = 1.f;
 		auto* sub_factory = new surface::sub::Single_scattering_factory(take->settings,
-																		thread_pool.num_threads(),
+																		num_threads,
 																		step_size);
 
 		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
@@ -126,7 +128,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 		const bool enable_caustics = false;
 
 		take->surface_integrator_factory = std::make_shared<
-				surface::Pathtracer_MIS_factory>(take->settings, thread_pool.num_threads(),
+				surface::Pathtracer_MIS_factory>(take->settings, num_threads,
 												 sub_factory, min_bounces, max_bounces,
 												 path_termination_probability,
 												 light_sampling, enable_caustics);
@@ -137,18 +139,18 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, thread::Pool& thread_po
 	if (!take->volume_integrator_factory) {
 		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
 		take->volume_integrator_factory = std::make_shared<
-				volume::Single_scattering_factory>(take->settings, thread_pool.num_threads(),
+				volume::Single_scattering_factory>(take->settings, num_threads,
 												   1.f, light_sampling);
 
 		logging::warning("No valid volume integrator specified, defaulting to Single Scattering.");
 	}
 
-	take->view.init(thread_pool);
+	take->view.init(manager.thread_pool());
 
 	return take;
 }
 
-void Loader::load_camera(const json::Value& camera_value, bool alpha_transparency, Take& take) {
+void Loader::load_camera(const json::Value& camera_value, Take& take) {
 	using namespace scene::camera;
 
 	std::string type_name;
@@ -256,7 +258,7 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	camera->set_transformation(transformation);
 
 	if (sensor_value) {
-		auto sensor = load_sensor(*sensor_value, camera->sensor_dimensions(), alpha_transparency);
+		auto sensor = load_sensor(*sensor_value, camera->sensor_dimensions());
 
 		camera->set_sensor(sensor);
 	}
@@ -264,17 +266,18 @@ void Loader::load_camera(const json::Value& camera_value, bool alpha_transparenc
 	take.view.camera = camera;
 }
 
-rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value,
-											   int2 dimensions,
-											   bool alpha_transparency) {
+rendering::sensor::Sensor* Loader::load_sensor(const json::Value& sensor_value, int2 dimensions) {
 	using namespace rendering::sensor;
 
+	bool alpha_transparency = false;
 	float exposure = 0.f;
 	float3 clamp_max(-1.f);
 	const filter::Filter* filter = nullptr;
 
 	for (auto& n : sensor_value.GetObject()) {
-		if ("exposure" == n.name) {
+		if ("alpha_transparency" == n.name) {
+			alpha_transparency = json::read_bool(n.value);
+		} else if ("exposure" == n.name) {
 			exposure = json::read_float(n.value);
 		} else if ("clamp" == n.name) {
 			clamp_max = json::read_float3(n.value);
@@ -554,7 +557,8 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 	return nullptr;
 }
 
-void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
+void Loader::load_postprocessors(const json::Value& pp_value, resource::Manager& manager,
+								 Take& take) {
 	if (!pp_value.IsArray()) {
 		return;
 	}
@@ -570,9 +574,14 @@ void Loader::load_postprocessors(const json::Value& pp_value, Take& take) {
 
 		if ("tonemapper" == n->name) {
 			pipeline.add(load_tonemapper(n->value));
+		} else if ("Backplate" == n->name) {
+			const std::string name = json::read_string(n->value, "file");
+			auto backplate = manager.load<image::texture::Texture>(name);
+
+			pipeline.add(new Backplate(backplate));
 		} else if ("Bloom" == n->name) {
-			const float angle		= json::read_float(n->value, "angle", 0.05f);
-			const float alpha		= json::read_float(n->value, "alpha", 0.005f);
+			const float angle	  = json::read_float(n->value, "angle", 0.05f);
+			const float alpha	  = json::read_float(n->value, "alpha", 0.005f);
 			const float threshold = json::read_float(n->value, "threshold", 2.f);
 			const float intensity = json::read_float(n->value, "intensity", 0.1f);
 			pipeline.add(new Bloom(angle, alpha, threshold, intensity));
@@ -652,20 +661,6 @@ Loader::load_tonemapper(const json::Value& tonemapper_value) {
 	}
 
 	return nullptr;
-}
-
-bool Loader::peek_alpha_transparency(const json::Value& take_value) {
-	const auto export_node = take_value.FindMember("export");
-	if (take_value.MemberEnd() == export_node) {
-		return false;
-	}
-
-	const auto node = export_node->value.FindMember("Image");
-	if (export_node->value.MemberEnd() == node) {
-		return false;
-	}
-
-	return json::read_bool(node->value, "alpha_transparency", false);
 }
 
 bool Loader::peek_stereoscopic(const json::Value& parameters_value) {

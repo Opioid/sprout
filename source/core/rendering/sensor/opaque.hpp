@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_SENSOR_OPAQUE_HPP
+#define SU_CORE_RENDERING_SENSOR_OPAQUE_HPP
 
 #include "sensor.hpp"
 
@@ -30,3 +31,5 @@ protected:
 };
 
 }
+
+#endif

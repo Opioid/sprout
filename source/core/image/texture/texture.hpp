@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
+#define SU_CORE_IMAGE_TEXTURE_TEXTURE_HPP
 
 #include "base/math/vector4.hpp"
 #include <memory>
@@ -63,3 +64,5 @@ protected:
 };
 
 }}
+
+#endif

@@ -1,5 +1,6 @@
 #include "transparent.hpp"
 #include "image/typed_image.inl"
+#include "base/memory/align.hpp"
 #include "base/atomic/atomic.hpp"
 #include "base/math/vector4.inl"
 
@@ -7,10 +8,10 @@ namespace rendering::sensor {
 
 Transparent::Transparent(int2 dimensions, float exposure) :
 	Sensor(dimensions, exposure),
-	pixels_(new Pixel[dimensions[0] * dimensions[1]]) {}
+	pixels_(memory::allocate_aligned<Pixel>(dimensions[0] * dimensions[1])) {}
 
 Transparent::~Transparent() {
-	delete[] pixels_;
+	memory::free_aligned(pixels_);
 }
 
 void Transparent::clear() {
@@ -53,7 +54,7 @@ void Transparent::resolve(int32_t begin, int32_t end, image::Float4& target) con
 	const float exposure_factor = exposure_factor_;
 
 	for (int32_t i = begin; i < end; ++i) {
-		auto& value = pixels_[i];
+		const auto& value = pixels_[i];
 
 		const float4 color = value.color / value.weight_sum;
 

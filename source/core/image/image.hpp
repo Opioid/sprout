@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_IMAGE_HPP
+#define SU_CORE_IMAGE_IMAGE_HPP
 
 #include "base/math/vector3.hpp"
 #include <cstddef>
@@ -58,3 +59,5 @@ protected:
 };
 
 }
+
+#endif

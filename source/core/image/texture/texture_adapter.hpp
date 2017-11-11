@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_ADAPTER_HPP
+#define SU_CORE_IMAGE_TEXTURE_ADAPTER_HPP
 
 #include "base/math/vector3.hpp"
 #include <memory>
@@ -52,3 +53,5 @@ private:
 };
 
 }
+
+#endif

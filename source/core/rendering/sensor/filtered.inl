@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_SENSOR_FILTERED_INL
+#define SU_CORE_RENDERING_SENSOR_FILTERED_INL
 
 #include "filtered.hpp"
 #include "filter/sensor_filter.hpp"
@@ -11,6 +12,11 @@ template<class Base, class Clamp>
 Filtered<Base, Clamp>::Filtered(int2 dimensions, float exposure, const Clamp& clamp,
 								const filter::Filter* filter) :
 	Base(dimensions, exposure), clamp_(clamp), filter_(filter) {}
+
+template<class Base, class Clamp>
+Filtered<Base, Clamp>::Filtered(int2 dimensions, float exposure, const Texture_ptr& backplate,
+								const Clamp& clamp, const filter::Filter* filter) :
+	Base(dimensions, exposure, backplate), clamp_(clamp), filter_(filter) {}
 
 template<class Base, class Clamp>
 Filtered<Base, Clamp>::~Filtered() {
@@ -136,3 +142,5 @@ void Filtered<Base, Clamp>::weight_and_add_pixel(int2 pixel, float2 relative_off
 }
 
 }
+
+#endif

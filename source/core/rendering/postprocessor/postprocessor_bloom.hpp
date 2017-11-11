@@ -1,9 +1,10 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_POSTPROCESSOR_BLOOM_HPP
+#define SU_CORE_RENDERING_POSTPROCESSOR_BLOOM_HPP
 
 #include "postprocessor.hpp"
 #include <vector>
 
-namespace rendering { namespace postprocessor {
+namespace rendering::postprocessor {
 
 class Bloom : public Postprocessor {
 
@@ -18,8 +19,7 @@ public:
 private:
 
 	virtual void apply(uint32_t id, uint32_t pass, int32_t begin, int32_t end,
-					   const image::Float4& source,
-					   image::Float4& destination) override final;
+					   const image::Float4& source, image::Float4& destination) override final;
 
 	float angle_;
 	float alpha_;
@@ -36,4 +36,6 @@ private:
 	std::vector<K> kernel_;
 };
 
-}}
+}
+
+#endif

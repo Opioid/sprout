@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TYPED_IMAGE_INL
+#define SU_CORE_IMAGE_TYPED_IMAGE_INL
 
 #include "typed_image.hpp"
 #include "base/math/vector4.inl"
@@ -176,3 +177,5 @@ size_t Typed_image<T>::num_bytes() const {
 }
 
 }
+
+#endif

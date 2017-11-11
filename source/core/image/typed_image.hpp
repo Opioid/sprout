@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TYPED_IMAGE_HPP
+#define SU_CORE_IMAGE_TYPED_IMAGE_HPP
 
 #include "image.hpp"
 #include "base/math/vector4.hpp"
@@ -73,3 +74,5 @@ using Float3 = Typed_image<packed_float3>;
 using Float4 = Typed_image<float4>;
 
 }
+
+#endif

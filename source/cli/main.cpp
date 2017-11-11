@@ -116,23 +116,7 @@ int main(int argc, char* argv[]) {
 
 	const auto loading_start = std::chrono::high_resolution_clock::now();
 
-	std::unique_ptr<take::Take> take;
-	std::string take_name;
-
-	try {
-		auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
-										 : file_system.read_stream(args.take, take_name);
-
-		take = take::Loader::load(*stream, thread_pool);
-	} catch (const std::exception& e) {
-		logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
-		return 1;
-	}
-
 	resource::Manager resource_manager(file_system, thread_pool);
-
-	scene::shape::triangle::Provider mesh_provider;
-	resource_manager.register_provider(mesh_provider);
 
 	image::Provider image_provider;
 	resource_manager.register_provider(image_provider);
@@ -142,8 +126,24 @@ int main(int argc, char* argv[]) {
 		resource_manager.register_provider(texture_provider);
 	}
 
+	std::unique_ptr<take::Take> take;
+	std::string take_name;
+
+	try {
+		auto stream = is_json(args.take) ? std::make_unique<std::stringstream>(args.take)
+										 : file_system.read_stream(args.take, take_name);
+
+		take = take::Loader::load(*stream, resource_manager);
+	} catch (const std::exception& e) {
+		logging::error("Take \"" + args.take + "\" could not be loaded: " + e.what() + ".");
+		return 1;
+	}
+
 	scene::material::Provider material_provider;
 	resource_manager.register_provider(material_provider);
+
+	scene::shape::triangle::Provider mesh_provider;
+	resource_manager.register_provider(mesh_provider);
 
 	// The scene loader must be alive during rendering,
 	// otherwise some resources might be released prematurely.

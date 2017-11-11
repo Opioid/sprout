@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_SENSOR_UNFILTERED_INL
+#define SU_CORE_RENDERING_SENSOR_UNFILTERED_INL
 
 #include "unfiltered.hpp"
 #include "sampler/camera_sample.hpp"
@@ -26,3 +27,5 @@ void Unfiltered<Base, Clamp>::add_sample(const sampler::Camera_sample& sample, c
 }
 
 }
+
+#endif

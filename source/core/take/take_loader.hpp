@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_TAKE_LOADER_HPP
+#define SU_CORE_TAKE_LOADER_HPP
 
 #include "rendering/integrator/integrator.hpp"
 #include "base/json/json_types.hpp"
@@ -12,11 +13,11 @@ namespace exporting { class Sink; }
 
 namespace math::random { class Generator; }
 
+namespace resource { class Manager; }
+
 namespace scene::camera { class Camera; }
 
 namespace sampler { class Factory; }
-
-namespace thread { class Pool; }
 
 namespace rendering {
 	struct Focus;
@@ -49,7 +50,7 @@ class Loader {
 
 public:
 
-	static std::unique_ptr<Take> load(std::istream& stream, thread::Pool& thread_pool);
+	static std::unique_ptr<Take> load(std::istream& stream, resource::Manager& manager);
 
 private:
 
@@ -57,10 +58,10 @@ private:
 		float interpupillary_distance = 0.f;
 	};
 
-	static void load_camera(const json::Value& camera_value, bool alpha_transparency, Take& take);
+	static void load_camera(const json::Value& camera_value, Take& take);
 
 	static rendering::sensor::Sensor*
-	load_sensor(const json::Value& sensor_value, int2 dimensions, bool alpha_transparency);
+	load_sensor(const json::Value& sensor_value, int2 dimensions);
 
 	static const rendering::sensor::filter::Filter*
 	load_filter(const rapidjson::Value& filter_value);
@@ -88,12 +89,11 @@ private:
 	load_volume_integrator_factory(const json::Value& integrator_value,
 								   const Settings& settings, uint32_t num_workers);
 
-	static void load_postprocessors(const json::Value& pp_value, Take& take);
+	static void load_postprocessors(const json::Value& pp_value, resource::Manager& manager,
+									Take& take);
 
 	static rendering::postprocessor::tonemapping::Tonemapper*
 	load_tonemapper(const json::Value& tonemapper_value);
-
-	static bool peek_alpha_transparency(const json::Value& take_value);
 
 	static bool peek_stereoscopic(const json::Value& parameters_value);
 
@@ -107,3 +107,5 @@ private:
 };
 
 }
+
+#endif

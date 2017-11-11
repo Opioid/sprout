@@ -1,6 +1,7 @@
 #include "rendering_driver_finalframe.hpp"
 #include "exporting/exporting_sink.hpp"
 #include "logging/logging.hpp"
+#include "image/texture/texture_adapter.hpp"
 #include "progress/progress_sink.hpp"
 #include "rendering/rendering_camera_worker.hpp"
 #include "rendering/sensor/sensor.hpp"

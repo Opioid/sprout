@@ -1,15 +1,14 @@
 #include "opaque.hpp"
 #include "image/typed_image.inl"
-#include "base/atomic/atomic.hpp"
 #include "base/memory/align.hpp"
+#include "base/atomic/atomic.hpp"
 #include "base/math/vector4.inl"
 
 namespace rendering::sensor {
 
 Opaque::Opaque(int2 dimensions, float exposure) :
-	Sensor(dimensions, exposure) {
-	pixels_ = memory::allocate_aligned<float4>(dimensions[0] * dimensions[1]);
-}
+	Sensor(dimensions, exposure),
+	pixels_(memory::allocate_aligned<float4>(dimensions[0] * dimensions[1])) {}
 
 Opaque::~Opaque() {
 	memory::free_aligned(pixels_);

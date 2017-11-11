@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_SENSOR_TRANSPARENT_HPP
+#define SU_CORE_RENDERING_SENSOR_TRANSPARENT_HPP
 
 #include "sensor.hpp"
 
@@ -34,3 +35,5 @@ protected:
 };
 
 }
+
+#endif

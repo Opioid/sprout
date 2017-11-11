@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_PROVIDER_HPP
+#define SU_CORE_IMAGE_TEXTURE_PROVIDER_HPP
 
 #include "resource/resource_provider.hpp"
 
@@ -40,3 +41,5 @@ public:
 };
 
 }}
+
+#endif
