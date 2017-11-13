@@ -17,6 +17,8 @@
 
 namespace scene::shape::triangle {
 
+Mesh::~Mesh() {}
+
 bool Mesh::init() {
 	aabb_ = tree_.aabb();
 

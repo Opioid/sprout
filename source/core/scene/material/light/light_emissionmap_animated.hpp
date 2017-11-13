@@ -14,6 +14,8 @@ public:
 						 bool two_sided, const Texture_adapter& emission_map,
 						 float emission_factor, float animation_duration);
 
+	~Emissionmap_animated();
+
 	virtual void tick(float absolute_time, float time_slice) override final;
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,

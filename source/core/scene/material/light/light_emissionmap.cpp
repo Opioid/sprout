@@ -17,6 +17,8 @@ Emissionmap::Emissionmap(const Sampler_settings& sampler_settings, bool two_side
 	Material(sampler_settings, two_sided),
 	average_emission_(float3(-1.f)) {}
 
+Emissionmap::~Emissionmap() {}
+
 const material::Sample& Emissionmap::sample(const float3& wo, const Renderstate& rs,
 											Sampler_filter filter, const Worker& worker) {
 	auto& sample = worker.sample<Sample>();

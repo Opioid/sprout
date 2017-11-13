@@ -10,6 +10,7 @@ class Emissionmap : public Material {
 public:
 
 	Emissionmap(const Sampler_settings& sampler_settings, bool two_sided);
+	~Emissionmap();
 
 	virtual const material::Sample& sample(const float3& wo, const Renderstate& rs,
 										   Sampler_filter filter, const Worker& worker) override;

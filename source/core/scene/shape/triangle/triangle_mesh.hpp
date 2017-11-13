@@ -14,6 +14,8 @@ class Mesh : public Shape {
 
 public:
 
+	~Mesh();
+
 //	using Tree = bvh::Tree<bvh::Data_interleaved<Triangle_type>>;
 
 //	using Tree = bvh::Tree<bvh::Data<Intersection_triangle_type, Shading_triangle_type>>;

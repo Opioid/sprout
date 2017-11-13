@@ -22,6 +22,8 @@ Emissionmap_animated::Emissionmap_animated(const Sampler_settings& sampler_setti
 	frame_length_(animation_duration / static_cast<float>(emission_map.texture()->num_elements())),
 	element_(0) {}
 
+Emissionmap_animated::~Emissionmap_animated() {}
+
 void Emissionmap_animated::tick(float absolute_time, float /*time_slice*/) {
 	int32_t element = static_cast<int32_t>(absolute_time / frame_length_) %
 										   emission_map_.texture()->num_elements();
