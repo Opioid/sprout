@@ -1,5 +1,5 @@
 #ifndef SU_CORE_LOGGING_NULL_HPP
-#define SU_CORE_LOGGING_NUKK_HPP
+#define SU_CORE_LOGGING_NULL_HPP
 
 #include "log.hpp"
 

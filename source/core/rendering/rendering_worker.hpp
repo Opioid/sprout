@@ -1,5 +1,5 @@
 #ifndef SU_CORE_RENDERING_WORKER_HPP
-#define SU_CPRE_RENDERING_WORKER_HPP
+#define SU_CORE_RENDERING_WORKER_HPP
 
 #include "scene/scene_worker.hpp"
 #include "base/math/vector4.hpp"
