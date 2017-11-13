@@ -23,9 +23,8 @@ bool Prop_image_light::sample(const Transformation& transformation,
 
 	const float2 s2d = sampler.generate_sample_2D(sampler_dimension);
 
-	float material_pdf;
-	const float2 uv = material->radiance_sample(s2d, material_pdf);
-	if (0.f == material_pdf) {
+	const auto rs = material->radiance_sample(s2d);
+	if (0.f == rs.pdf) {
 		return false;
 	}
 
@@ -34,13 +33,13 @@ bool Prop_image_light::sample(const Transformation& transformation,
 	const bool two_sided = material->is_two_sided();
 
 	// this pdf includes the uv weight which adjusts for texture distortion by the shape
-	if (!prop_->shape()->sample(part_, transformation, p, uv, area, two_sided, result.shape)) {
+	if (!prop_->shape()->sample(part_, transformation, p, rs.uv, area, two_sided, result.shape)) {
 		return false;
 	}
 
 	if (math::dot(result.shape.wi, n) > 0.f || total_sphere) {
-		result.shape.pdf *= material_pdf;
-		result.radiance = material->sample_radiance(result.shape.wi, uv, area,
+		result.shape.pdf *= rs.pdf;
+		result.radiance = material->sample_radiance(result.shape.wi, rs.uv, area,
 													time, filter, worker);
 
 		return true;

@@ -40,9 +40,8 @@ bool Material::has_emission_map() const {
 	return false;
 }
 
-float2 Material::radiance_sample(float2 r2, float& pdf) const {
-	pdf = 1.f;
-	return r2;
+Material::Sample_2D Material::radiance_sample(float2 r2) const {
+	return { r2, 1.f };
 }
 
 float Material::emission_pdf(float2 /*uv*/, Sampler_filter /*filter*/,

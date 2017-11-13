@@ -65,12 +65,10 @@ bool Emissionmap_animated::has_emission_map() const {
 	return emission_map_.is_valid();
 }
 
-float2 Emissionmap_animated::radiance_sample(float2 r2, float& pdf) const {
-	float2 uv = distribution_.sample_continuous(r2, pdf);
+Material::Sample_2D Emissionmap_animated::radiance_sample(float2 r2) const {
+	const auto result = distribution_.sample_continuous(r2);
 
-	pdf *= total_weight_;
-
-	return uv;
+	return { result.uv, result.pdf * total_weight_ };
 }
 
 float Emissionmap_animated::emission_pdf(float2 uv, Sampler_filter filter,

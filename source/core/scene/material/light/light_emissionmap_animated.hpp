@@ -29,7 +29,7 @@ public:
 
 	virtual bool has_emission_map() const override final;
 
-	virtual float2 radiance_sample(float2 r2, float& pdf) const override final;
+	virtual Sample_2D radiance_sample(float2 r2) const override final;
 
 	virtual float emission_pdf(float2 uv, Sampler_filter filter,
 							   const Worker& worker) const override final;

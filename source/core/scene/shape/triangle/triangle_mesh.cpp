@@ -216,15 +216,14 @@ bool Mesh::sample(uint32_t part, const Transformation& transformation,
 				  Node_stack& /*node_stack*/, Sample& sample) const {
 	const float  r  = sampler.generate_sample_1D(sampler_dimension);
 	const float2 r2 = sampler.generate_sample_2D(sampler_dimension);
-	float pdf;
-	const uint32_t index = distributions_[part].sample(r, pdf);
+	const auto s = distributions_[part].sample(r);
 
 	float3 sv;
 	float2 tc;
-	tree_.sample(index, r2, sv, tc);
+	tree_.sample(s.offset, r2, sv, tc);
 	const float3 v = math::transform_point(sv, transformation.object_to_world);
 
-	const float3 sn = tree_.triangle_normal(index);
+	const float3 sn = tree_.triangle_normal(s.offset);
 	const float3 wn = math::transform_vector(sn, transformation.rotation);
 
 	const float3 axis = v - p;
@@ -371,8 +370,9 @@ bool Mesh::Distribution::empty() const {
 	return triangle_mapping.empty();
 }
 
-uint32_t Mesh::Distribution::sample(float r, float& pdf) const {
-	return triangle_mapping[distribution.sample_discrete(r, pdf)];
+Mesh::Distribution::Distribution_1D::Discrete Mesh::Distribution::sample(float r) const {
+	const auto result = distribution.sample_discrete(r);
+	return { triangle_mapping[result.offset], result.pdf };
 }
 
 size_t Mesh::Distribution::num_bytes() const {

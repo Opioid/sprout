@@ -19,7 +19,8 @@ public:
 	void init(const float* data, int2 dimensions, thread::Pool& pool);
 	void init(std::vector<Distribution_impl>& conditional);
 
-	float2 sample_continuous(float2 r2, float& pdf) const;
+	struct Continuous { float2 uv; float pdf; };
+	Continuous sample_continuous(float2 r2) const;
 
 	float pdf(float2 uv) const;
 

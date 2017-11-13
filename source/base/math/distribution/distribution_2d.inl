@@ -66,21 +66,15 @@ void Distribution_t_2D<T>::init(std::vector<Distribution_impl>& conditional) {
 }
 
 template<typename T>
-float2 Distribution_t_2D<T>::sample_continuous(float2 r2, float& pdf) const {
-	float2 result;
+typename Distribution_t_2D<T>::Continuous Distribution_t_2D<T>::sample_continuous(float2 r2) const {
+	const auto v = marginal_.sample_continuous(r2[1]);
 
-	float v_pdf;
-	result[1] = marginal_.sample_continuous(r2[1], v_pdf);
-
-	const uint32_t i = static_cast<uint32_t>(result[1] * conditional_size_);
+	const uint32_t i = static_cast<uint32_t>(v.offset * conditional_size_);
 	const uint32_t c = std::min(i, conditional_max_);
 
-	float u_pdf;
-	result[0] = conditional_[c].sample_continuous(r2[0], u_pdf);
+	const auto u = conditional_[c].sample_continuous(r2[0]);
 
-	pdf = u_pdf * v_pdf;
-
-	return result;
+	return { float2(u.offset, v.offset), u.pdf * v.pdf };
 }
 
 template<typename T>

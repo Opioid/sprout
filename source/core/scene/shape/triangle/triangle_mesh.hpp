@@ -89,15 +89,17 @@ private:
     Tree tree_;
 
 	struct Distribution {
+		using Distribution_1D = math::Distribution_implicit_pdf_lut_lin_1D;
+
 		void init(uint32_t part, const Tree& tree);
 		bool empty() const;
 
-		uint32_t sample(float r, float& pdf) const;
+		Distribution_1D::Discrete sample(float r) const;
 
 		size_t num_bytes() const;
 
 		std::vector<uint32_t> triangle_mapping;
-		math::Distribution_implicit_pdf_lut_lin_1D distribution;
+		Distribution_1D distribution;
 	};
 
 	std::vector<Distribution> distributions_;

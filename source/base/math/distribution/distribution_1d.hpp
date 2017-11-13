@@ -16,9 +16,11 @@ public:
 
 	uint32_t sample(float r) const;
 
-	uint32_t sample_discrete(float r, float& pdf) const;
+	struct Discrete { uint32_t offset; float pdf; };
+	Discrete sample_discrete(float r) const;
 
-	float sample_continuous(float r, float& pdf) const;
+	struct Continuous { float offset; float pdf; };
+	Continuous sample_continuous(float r) const;
 
 	float pdf(uint32_t index) const;
 	float pdf(float u) const;
@@ -49,9 +51,11 @@ public:
 
 	uint32_t sample(float r) const;
 
-	uint32_t sample_discrete(float r, float& pdf) const;
+	struct Discrete { uint32_t offset; float pdf; };
+	Discrete sample_discrete(float r) const;
 
-	float sample_continuous(float r, float& pdf) const;
+	struct Continuous { float offset; float pdf; };
+	Continuous sample_continuous(float r) const;
 
 	float pdf(uint32_t index) const;
 	float pdf(float u) const;
@@ -88,9 +92,11 @@ public:
 
 	uint32_t sample(float r) const;
 
-	uint32_t sample_discrete(float r, float& pdf) const;
+	struct Discrete { uint32_t offset; float pdf; };
+	Discrete sample_discrete(float r) const;
 
-	float sample_continuous(float r, float& pdf) const;
+	struct Continuous { float offset; float pdf; };
+	Continuous sample_continuous(float r) const;
 
 	float pdf(uint32_t index) const;
 	float pdf(float u) const;
@@ -131,9 +137,11 @@ public:
 
 	uint32_t sample(float r) const;
 
-	uint32_t sample_discrete(float r, float& pdf) const;
+	struct Discrete { uint32_t offset; float pdf; };
+	Discrete sample_discrete(float r) const;
 
-	float sample_continuous(float r, float& pdf) const;
+	struct Continuous { float offset; float pdf; };
+	Continuous sample_continuous(float r) const;
 
 	float pdf(uint32_t index) const;
 	float pdf(float u) const;

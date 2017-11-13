@@ -95,12 +95,10 @@ bool Sky_baked_material::has_emission_map() const {
 	return true;
 }
 
-float2 Sky_baked_material::radiance_sample(float2 r2, float& pdf) const {
-	const float2 uv = distribution_.sample_continuous(r2, pdf);
+Material::Sample_2D Sky_baked_material::radiance_sample(float2 r2) const {
+	const auto result = distribution_.sample_continuous(r2);
 
-	pdf *= total_weight_;
-
-	return uv;
+	return { result.uv, result.pdf * total_weight_ };
 }
 
 float Sky_baked_material::emission_pdf(float2 uv, Sampler_filter filter,

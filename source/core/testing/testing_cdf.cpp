@@ -167,27 +167,23 @@ void test_2D() {
 
 template<typename T, typename U>
 void compare_distributions(const T& a, const U& b, float r) {
-	float a_pdf_0;
-	uint32_t a_d = a.sample_discrete(r, a_pdf_0);
+	const auto a_d = a.sample_discrete(r);
 
-	float a_pdf_1;
-	const float a_r = a.sample_continuous(r, a_pdf_1);
+	const auto a_r = a.sample_continuous(r);
 
-	float a_pdf_2 = a.pdf(r);
+	const float a_pdf_2 = a.pdf(r);
 
-	float b_pdf_0;
-	uint32_t b_d = b.sample_discrete(r, b_pdf_0);
+	const auto b_d = b.sample_discrete(r);
 
-	float b_pdf_1;
-	const float b_r = b.sample_continuous(r, b_pdf_1);
+	const auto b_r = b.sample_continuous(r);
 
-	float b_pdf_2 = b.pdf(r);
+	const float b_pdf_2 = b.pdf(r);
 
-	std::cout << "a(" << r << "): " << a_d << ", " << a_r << ", "
-			  << a_pdf_0 << ", " << a_pdf_1 << ", " << a_pdf_2 << std::endl;
+	std::cout << "a(" << r << "): " << a_d.offset << ", " << a_r.offset << ", "
+			  << a_d.pdf << ", " << a_r.pdf << ", " << a_pdf_2 << std::endl;
 
-	std::cout << "b(" << r << "): " << b_d << ", " << b_r << ", "
-			  << b_pdf_0 << ", " << b_pdf_1 << ", " << b_pdf_2 << std::endl;
+	std::cout << "b(" << r << "): " << b_d.offset << ", " << b_r.offset << ", "
+			  << b_d.pdf << ", " << b_r.pdf << ", " << b_pdf_2 << std::endl;
 }
 
 template<typename T, typename U>
@@ -240,11 +236,10 @@ void test_distribution(const T& d, const std::vector<float2>& samples) {
 	const float inv_num_samples = 1.f / static_cast<float>(samples.size());
 
 	for (size_t i = 0, len = samples.size(); i < len; ++i) {
-		float pdf;
-		const float2 r = d.sample_continuous(samples[i], pdf);
+		const auto r = d.sample_continuous(samples[i]);
 
-		accumulated_r += inv_num_samples * r;
-		accumulated_pdf += inv_num_samples * pdf;
+		accumulated_r += inv_num_samples * r.uv;
+		accumulated_pdf += inv_num_samples * r.pdf;
 	}
 
 	const auto duration = chrono::seconds_since(start);

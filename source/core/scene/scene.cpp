@@ -138,12 +138,11 @@ Scene::Light Scene::light(uint32_t id) const {
 Scene::Light Scene::random_light(float random) const {
 	SOFT_ASSERT(!lights_.empty());
 
-	float pdf;
-	const uint32_t l = light_distribution_.sample_discrete(random, pdf);
+	const auto l = light_distribution_.sample_discrete(random);
 
-	SOFT_ASSERT(l < static_cast<uint32_t>(lights_.size()));
+	SOFT_ASSERT(l.offset < static_cast<uint32_t>(lights_.size()));
 
-	return { *lights_[l], pdf };
+	return { *lights_[l.offset], l.pdf };
 }
 
 const volume::Volume* Scene::volume_region() const {

@@ -50,7 +50,8 @@ public:
 
 	virtual bool has_emission_map() const;
 
-	virtual float2 radiance_sample(float2 r2, float& pdf) const;
+	struct Sample_2D { float2 uv; float pdf; };
+	virtual Sample_2D radiance_sample(float2 r2) const;
 
 	virtual float emission_pdf(float2 uv, Sampler_filter filter, const Worker& worker) const;
 
