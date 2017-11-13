@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_SAMPLE_HPP
+#define SU_CORE_SCENE_SHAPE_SAMPLE_HPP
 
 #include "base/math/vector3.hpp"
 
@@ -12,3 +13,5 @@ struct Sample {
 };
 
 }
+
+#endif

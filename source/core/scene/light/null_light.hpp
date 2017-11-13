@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_LIGHT_NULL_LIGHT_HPP
+#define SU_CORE_SCENE_LIGHT_NULL_LIGHT_HPP
 
 #include "light.hpp"
 
@@ -31,3 +32,5 @@ public:
 };
 
 }}
+
+#endif

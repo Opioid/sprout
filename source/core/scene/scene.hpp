@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SCENE_HPP
+#define SU_CORE_SCENE_SCENE_HPP
 
 #include "scene_worker.hpp"
 #include "material/material.hpp"
@@ -153,3 +154,5 @@ private:
 };
 
 }
+
+#endif
