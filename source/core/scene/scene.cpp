@@ -79,8 +79,7 @@ bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) co
 	return bvh_.intersect_p(ray, node_stack);
 }
 
-float Scene::opacity(const scene::Ray& ray, material::Sampler_settings::Filter filter,
-					 const Worker& worker) const {
+float Scene::opacity(const scene::Ray& ray, Sampler_filter filter, const Worker& worker) const {
 	if (has_masked_material_) {
 		return bvh_.opacity(ray, filter, worker);
 	}
@@ -88,7 +87,7 @@ float Scene::opacity(const scene::Ray& ray, material::Sampler_settings::Filter f
 	return bvh_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 }
 
-float3 Scene::thin_absorption(const scene::Ray& ray, material::Sampler_settings::Filter filter,
+float3 Scene::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 							  const Worker& worker) const {
 	if (has_tinted_shadow_) {
 		return bvh_.thin_absorption(ray, filter, worker);
@@ -226,13 +225,13 @@ void Scene::compile(thread::Pool& pool) {
 	for (auto p : finite_props_) {
 		p->calculate_world_transformation();
 		has_masked_material_ = has_masked_material_ || p->has_masked_material();
-		has_tinted_shadow_ = has_tinted_shadow_ || p->has_tinted_shadow();
+		has_tinted_shadow_   = has_tinted_shadow_   || p->has_tinted_shadow();
 	}
 
 	for (auto p : infinite_props_) {
 		p->calculate_world_transformation();
 		has_masked_material_ = has_masked_material_ || p->has_masked_material();
-		has_tinted_shadow_ = has_tinted_shadow_ || p->has_tinted_shadow();
+		has_tinted_shadow_   = has_tinted_shadow_   || p->has_tinted_shadow();
 	}
 
 	// rebuild the BVH
@@ -271,7 +270,7 @@ entity::Dummy* Scene::create_dummy(const std::string& name) {
 	return dummy;
 }
 
-Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape,
+Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
 						 const material::Materials& materials) {
 	Prop* prop = new Prop;
 
@@ -288,7 +287,7 @@ Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape,
 	return prop;
 }
 
-Prop* Scene::create_prop(std::shared_ptr<shape::Shape> shape,
+Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
 						 const material::Materials& materials,
 						 const std::string& name) {
 	Prop* prop = create_prop(shape, materials);
@@ -355,11 +354,11 @@ void Scene::add_extension(entity::Entity* extension, const std::string& name) {
 }
 
 
-void Scene::add_material(std::shared_ptr<material::Material> material) {
+void Scene::add_material(const material::Material_ptr& material) {
 	materials_.push_back(material);
 }
 
-void Scene::add_animation(std::shared_ptr<animation::Animation> animation) {
+void Scene::add_animation(const std::shared_ptr<animation::Animation>& animation) {
     animations_.push_back(animation);
 }
 

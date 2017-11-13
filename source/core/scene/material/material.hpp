@@ -28,7 +28,7 @@ class Material {
 public:
 
 	using Transformation = entity::Composed_transformation;
-	using Sampler_filter = material::Sampler_settings::Filter;
+	using Sampler_filter = Sampler_settings::Filter;
 
 	Material(const Sampler_settings& sampler_settings, bool two_sided);
 

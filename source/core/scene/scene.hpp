@@ -23,8 +23,6 @@ class Dummy;
 
 }
 
-namespace material { class Material; }
-
 namespace light {
 
 class Light;
@@ -50,6 +48,8 @@ class Scene {
 
 public:
 
+	using Sampler_filter = material::Sampler_settings::Filter;
+
 	Scene();
 	~Scene();
 
@@ -62,10 +62,9 @@ public:
 
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
-	float opacity(const scene::Ray& ray, material::Sampler_settings::Filter filter,
-				  const Worker& worker) const;
+	float opacity(const scene::Ray& ray, Sampler_filter filter, const Worker& worker) const;
 
-	float3 thin_absorption(const scene::Ray& ray, material::Sampler_settings::Filter filter,
+	float3 thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 						   const Worker& worker) const;
 
 	float tick_duration() const;
@@ -90,8 +89,11 @@ public:
 	entity::Dummy* create_dummy();
 	entity::Dummy* create_dummy(const std::string& name);
 
-	Prop* create_prop(std::shared_ptr<shape::Shape> shape, const material::Materials& materials);
-	Prop* create_prop(std::shared_ptr<shape::Shape> shape, const material::Materials& materials,
+	Prop* create_prop(const std::shared_ptr<shape::Shape>& shape,
+					  const material::Materials& materials);
+
+	Prop* create_prop(const std::shared_ptr<shape::Shape>& shape,
+					  const material::Materials& materials,
 					  const std::string& name);
 
 	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
@@ -104,8 +106,8 @@ public:
 	void add_extension(entity::Entity* extension);
 	void add_extension(entity::Entity* extension, const std::string& name);
 
-	void add_material(std::shared_ptr<material::Material> material);
-    void add_animation(std::shared_ptr<animation::Animation> animation);
+	void add_material(const material::Material_ptr& material);
+	void add_animation(const std::shared_ptr<animation::Animation>& animation);
 
     void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
 
@@ -143,7 +145,7 @@ private:
 
 	volume::Volume* volume_region_ = nullptr;
 
-	std::vector<std::shared_ptr<material::Material>> materials_;
+	std::vector<material::Material_ptr> materials_;
 
     std::vector<std::shared_ptr<animation::Animation>> animations_;
 

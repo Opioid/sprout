@@ -30,7 +30,7 @@
 
 namespace scene {
 
-Loader::Loader(resource::Manager& manager, material::Material_ptr fallback_material) :
+Loader::Loader(resource::Manager& manager, const material::Material_ptr& fallback_material) :
 	resource_manager_(manager),
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
@@ -132,9 +132,9 @@ void Loader::load_entities(const json::Value& entities_value,
 			continue;
 		}
 
-		std::string type_name = type_node->value.GetString();
+		const std::string type_name = type_node->value.GetString();
 
-		std::string name = json::read_string(e, "name");
+		const std::string name = json::read_string(e, "name");
 
 		entity::Entity* entity = nullptr;
 

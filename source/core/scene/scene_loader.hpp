@@ -45,7 +45,7 @@ class Loader {
 
 public:
 
-	Loader(resource::Manager& manager, material::Material_ptr fallback_material);
+	Loader(resource::Manager& manager, const material::Material_ptr& fallback_material);
     ~Loader();
 
 	bool load(const std::string& filename, const std::string& take_name, Scene& scene);

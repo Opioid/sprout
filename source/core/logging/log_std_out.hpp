@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_LOGGING_STD_OUT_HPP
+#define SU_CORE_LOGGING_STD_OUT_HPP
 
 #include "log.hpp"
 
@@ -13,4 +14,4 @@ public:
 
 }
 
-
+#endif

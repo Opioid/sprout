@@ -6,7 +6,6 @@
 namespace scene::material {
 
 struct Sampler_settings {
-
 	enum class Address : uint32_t {
 		Clamp	= 0 << 0,
 		Repeat	= 1 << 0,

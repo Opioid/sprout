@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_BSSRDF_HPP
+#define SU_CORE_SCENE_MATERIAL_BSSRDF_HPP
 
 #include "base/math/vector3.hpp"
 
-namespace scene { namespace material {
+namespace scene::material {
 
 class BSSRDF {
 
@@ -20,4 +21,6 @@ private:
 	float3 scattering_;
 };
 
-}}
+}
+
+#endif

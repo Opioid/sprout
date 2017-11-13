@@ -1,29 +1,25 @@
 #include "logging.hpp"
 #include "log_null.hpp"
 #include "log_std_out.hpp"
+#include <memory>
 
 namespace logging {
 
-Log* log = nullptr;
+std::unique_ptr<Log> log;
 bool log_verbose = false;
 
 void init(Type type, bool verbose) {
 	switch (type) {
 	case Type::Null:
-		log = new Null;
+		log = std::make_unique<Null>();
 		break;
 	case Type::Std_out:
 	default:
-		log = new Std_out;
+		log = std::make_unique<Std_out>();
 		break;
 	}
 
 	log_verbose = verbose;
-}
-
-void release() {
-	delete log;
-	log = nullptr;
 }
 
 void info(const std::string& text) {

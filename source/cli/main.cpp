@@ -67,7 +67,6 @@ int main(int argc, char* argv[]) {
 	logging::info("Welcome to sprout (" + platform::build() + ")!");
 
 	if (args.take.empty()) {
-		logging::release();
 		return 1;
 	}
 
@@ -162,7 +161,6 @@ int main(int argc, char* argv[]) {
 										 take->camera_animation.get());
 		}
 	} else {
-		logging::release();
 		return 1;
 	}
 
@@ -210,8 +208,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	log_memory_consumption(resource_manager, *take, rendering_num_bytes);
-
-	logging::release();
 
 	return 0;
 }

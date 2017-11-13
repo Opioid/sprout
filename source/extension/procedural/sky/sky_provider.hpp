@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_EXTENSION_PROCEDURAL_SKY_PROVIDER_HPP
+#define SU_EXTENSION_PROCEDURAL_SKY_PROVIDER_HPP
 
 #include "core/scene/entity/entity_extension_provider.hpp"
 #include <memory>
@@ -11,7 +12,7 @@ namespace material { class Provider; }
 
 }
 
-namespace procedural { namespace sky {
+namespace procedural::sky {
 
 void init(scene::Loader& loader, scene::material::Provider& material_provider);
 
@@ -34,4 +35,6 @@ private:
 	scene::material::Provider* material_provider_;
 };
 
-}}
+}
+
+#endif

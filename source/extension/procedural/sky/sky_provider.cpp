@@ -13,7 +13,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/quaternion.inl"
 
-namespace procedural { namespace sky {
+namespace procedural::sky {
 
 using namespace scene;
 
@@ -92,4 +92,4 @@ scene::entity::Entity* Provider::create_extension(const json::Value& extension_v
 	return sky;
 }
 
-}}
+}

@@ -21,8 +21,8 @@ public:
 
 	using Shape = scene::shape::Shape;
 
-	virtual std::shared_ptr<scene::shape::Shape> create_mesh(
-            const json::Value& mesh_value, resource::Manager& manager) override final;
+	virtual std::shared_ptr<Shape> create_mesh(const json::Value& mesh_value,
+											   resource::Manager& manager) override final;
 
 private:
 

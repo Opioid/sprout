@@ -11,7 +11,6 @@ enum class Type {
 };
 
 void init(Type type, bool verbose = false);
-void release();
 
 void info(const std::string& text);
 void warning(const std::string& text);
