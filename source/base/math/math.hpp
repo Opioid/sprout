@@ -45,11 +45,6 @@ static T round(T x) {
 }
 
 template<typename T>
-static T clamp(T a, T mi, T ma) {
-	return std::min(std::max(a, mi), ma);
-}
-
-template<typename T>
 static T saturate(T a) {
 	return std::min(std::max(a, T(0)), T(1));
 }

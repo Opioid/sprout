@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SAMPLE_HELPER_HPP
+#define SU_CORE_SCENE_MATERIAL_SAMPLE_HELPER_HPP
 
 #include "base/math/vector3.inl"
 
@@ -29,19 +30,21 @@ static inline float3 absorption_coefficient(const float3& color, float distance)
 }
 
 static inline float clamp(float x) {
-	return math::clamp(x, Dot_min, 1.f);
+	return std::clamp(x, Dot_min, 1.f);
 }
 
 static inline float clamp_dot(const float3& a, const float3& b) {
-	return math::clamp(math::dot(a, b), Dot_min, 1.f);
+	return std::clamp(math::dot(a, b), Dot_min, 1.f);
 }
 
 static inline float clamp_reverse_dot(const float3& a, const float3& b) {
-	return math::clamp(-math::dot(a, b), Dot_min, 1.f);
+	return std::clamp(-math::dot(a, b), Dot_min, 1.f);
 }
 
 static inline float clamp_abs_dot(const float3& a, const float3& b) {
-	return math::clamp(std::abs(math::dot(a, b)), Dot_min, 1.f);
+	return std::clamp(std::abs(math::dot(a, b)), Dot_min, 1.f);
 }
 
 }
+
+#endif
