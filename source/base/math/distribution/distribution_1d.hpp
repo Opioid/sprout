@@ -14,7 +14,8 @@ public:
 
 	float integral() const;
 
-	uint32_t sample_discrete(float r) const;
+	uint32_t sample(float r) const;
+
 	uint32_t sample_discrete(float r, float& pdf) const;
 
 	float sample_continuous(float r, float& pdf) const;
@@ -46,7 +47,8 @@ public:
 
 	float integral() const;
 
-	uint32_t sample_discrete(float r) const;
+	uint32_t sample(float r) const;
+
 	uint32_t sample_discrete(float r, float& pdf) const;
 
 	float sample_continuous(float r, float& pdf) const;
@@ -84,7 +86,8 @@ public:
 
 	float integral() const;
 
-	uint32_t sample_discrete(float r) const;
+	uint32_t sample(float r) const;
+
 	uint32_t sample_discrete(float r, float& pdf) const;
 
 	float sample_continuous(float r, float& pdf) const;
@@ -126,7 +129,8 @@ public:
 
 	float integral() const;
 
-	uint32_t sample_discrete(float r) const;
+	uint32_t sample(float r) const;
+
 	uint32_t sample_discrete(float r, float& pdf) const;
 
 	float sample_continuous(float r, float& pdf) const;

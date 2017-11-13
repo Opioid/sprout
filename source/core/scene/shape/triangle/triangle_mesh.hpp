@@ -90,8 +90,6 @@ private:
 		void init(uint32_t part, const Tree& tree);
 		bool empty() const;
 
-		uint32_t sample(float r) const;
-
 		uint32_t sample(float r, float& pdf) const;
 
 		size_t num_bytes() const;

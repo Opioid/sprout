@@ -17,7 +17,7 @@ inline float Distribution_1D::integral() const {
 	return integral_;
 }
 
-inline uint32_t Distribution_1D::sample_discrete(float r) const {
+inline uint32_t Distribution_1D::sample(float r) const {
 	auto it = std::lower_bound(cdf_.begin(), cdf_.end(), r);
 
 	uint32_t offset = 0;
@@ -29,7 +29,7 @@ inline uint32_t Distribution_1D::sample_discrete(float r) const {
 }
 
 inline uint32_t Distribution_1D::sample_discrete(float r, float& pdf) const {
-	const uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample(r);
 
 	pdf = pdf_[offset];
 
@@ -37,7 +37,7 @@ inline uint32_t Distribution_1D::sample_discrete(float r, float& pdf) const {
 }
 
 inline float Distribution_1D::sample_continuous(float r, float& pdf) const {
-	const uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample(r);
 
 	pdf = pdf_[offset];
 
@@ -117,7 +117,7 @@ inline float Distribution_lut_1D::integral() const {
 	return integral_;
 }
 
-inline uint32_t Distribution_lut_1D::sample_discrete(float r) const {
+inline uint32_t Distribution_lut_1D::sample(float r) const {
 	const uint32_t bucket = map(r);
 
 	const uint32_t begin = lut_[bucket];
@@ -133,7 +133,7 @@ inline uint32_t Distribution_lut_1D::sample_discrete(float r) const {
 }
 
 inline uint32_t Distribution_lut_1D::sample_discrete(float r, float& pdf) const {
-	const uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample(r);
 
 	pdf = pdf_[offset];
 
@@ -141,7 +141,7 @@ inline uint32_t Distribution_lut_1D::sample_discrete(float r, float& pdf) const 
 }
 
 inline float Distribution_lut_1D::sample_continuous(float r, float& pdf) const {
-	const uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample(r);
 
 	pdf = pdf_[offset];
 
@@ -268,7 +268,7 @@ inline float Distribution_implicit_pdf_lut_1D::integral() const {
 	return integral_;
 }
 
-inline uint32_t Distribution_implicit_pdf_lut_1D::sample_discrete(float r) const {
+inline uint32_t Distribution_implicit_pdf_lut_1D::sample(float r) const {
 	const uint32_t bucket = map(r);
 
 	const uint32_t begin = lut_[bucket];
@@ -284,7 +284,7 @@ inline uint32_t Distribution_implicit_pdf_lut_1D::sample_discrete(float r) const
 }
 
 inline uint32_t Distribution_implicit_pdf_lut_1D::sample_discrete(float r, float& pdf) const {
-	const uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample(r);
 
 	pdf = cdf_[offset + 1] - cdf_[offset];
 
@@ -292,7 +292,7 @@ inline uint32_t Distribution_implicit_pdf_lut_1D::sample_discrete(float r, float
 }
 
 inline float Distribution_implicit_pdf_lut_1D::sample_continuous(float r, float& pdf) const {
-	const uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample(r);
 
 	const float c = cdf_[offset + 1];
 	const float v = c - cdf_[offset];
@@ -452,7 +452,7 @@ static inline uint32_t search(const float* buffer, uint32_t begin, /*uint32_t en
 	}
 }
 
-inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r) const {
+inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample(float r) const {
 	const uint32_t bucket = map(r);
 
 	const uint32_t begin = lut_[bucket];
@@ -468,7 +468,7 @@ inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r) c
 }
 
 inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r, float& pdf) const {
-	const uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample(r);
 
 	SOFT_ASSERT(offset + 1 < cdf_size_);
 
@@ -478,7 +478,7 @@ inline uint32_t Distribution_implicit_pdf_lut_lin_1D::sample_discrete(float r, f
 }
 
 inline float Distribution_implicit_pdf_lut_lin_1D::sample_continuous(float r, float& pdf) const {
-	const uint32_t offset = sample_discrete(r);
+	const uint32_t offset = sample(r);
 
 	SOFT_ASSERT(offset + 1 < cdf_size_);
 

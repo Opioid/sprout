@@ -40,8 +40,8 @@ All source files needed to build the project are included in the repository and 
 
 sprout needs a compiler with c++17 support.
 
-On Linux it should work with Clang 5 and libstdc++ 6 or higher. 
-It should also build with GCC 6 or higher.
+On Linux it should work with Clang 5 and libstdc++ 7 or higher. 
+It should also build with GCC 7 or higher.
 On Windows it should work with Visual Studio 2017 preview or a newer version.
 
 ** Dependencies

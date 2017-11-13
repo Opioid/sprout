@@ -369,10 +369,6 @@ bool Mesh::Distribution::empty() const {
 	return triangle_mapping.empty();
 }
 
-uint32_t Mesh::Distribution::sample(float r) const {
-	return triangle_mapping[distribution.sample_discrete(r)];
-}
-
 uint32_t Mesh::Distribution::sample(float r, float& pdf) const {
 	return triangle_mapping[distribution.sample_discrete(r, pdf)];
 }
