@@ -132,7 +132,7 @@ Scene::Light Scene::light(uint32_t id) const {
 	SOFT_ASSERT(!lights_.empty() && light::Light::is_light(id));
 
 	const float pdf = light_distribution_.pdf(id);
-	return { lights_[id], pdf };
+	return { *lights_[id], pdf };
 }
 
 Scene::Light Scene::random_light(float random) const {
@@ -143,7 +143,7 @@ Scene::Light Scene::random_light(float random) const {
 
 	SOFT_ASSERT(l < static_cast<uint32_t>(lights_.size()));
 
-	return { lights_[l], pdf };
+	return { *lights_[l], pdf };
 }
 
 const volume::Volume* Scene::volume_region() const {

@@ -147,9 +147,9 @@ float3 Pathtracer_DL::estimate_direct_light(const Ray& ray, const Intersection& 
 		const auto light = worker.scene().random_light(rng_.random_float());
 
 		scene::light::Sample light_sample;
-		if (light.ptr->sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
-							  material_sample.is_translucent(), sampler_, 0,
-							  Sampler_filter::Nearest, worker, light_sample)) {
+		if (light.ref.sample(intersection.geo.p, material_sample.geometric_normal(), ray.time,
+							 material_sample.is_translucent(), sampler_, 0,
+							 Sampler_filter::Nearest, worker, light_sample)) {
 			shadow_ray.set_direction(light_sample.shape.wi);
 			shadow_ray.max_t = light_sample.shape.t - ray_offset;
 

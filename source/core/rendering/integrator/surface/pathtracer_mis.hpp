@@ -54,7 +54,7 @@ private:
 								 Sampler_filter filter, Worker& worker,
 								 Bxdf_sample& sample_result, bool& requires_bounce);
 
-	float3 evaluate_light(const Light* light, float light_weight, float time,
+	float3 evaluate_light(const Light& light, float light_weight, float time,
 						  float ray_offset, uint32_t depth, uint32_t sampler_dimension,
 						  const Intersection& intersection,
 						  const Material_sample& material_sample,

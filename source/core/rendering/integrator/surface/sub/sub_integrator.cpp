@@ -22,8 +22,8 @@ float3 Integrator::estimate_direct_light(const float3& position, const scene::Pr
 	const auto light = worker.scene().random_light(rng_.random_float());
 
 	scene::light::Sample light_sample;
-	if (!light.ptr->sample(position, time, sampler, 0, Sampler_filter::Nearest,
-						   worker, light_sample)) {
+	if (!light.ref.sample(position, time, sampler, 0, Sampler_filter::Nearest,
+						  worker, light_sample)) {
 		return float3(0.f);
 	}
 

@@ -132,7 +132,7 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 		for (uint32_t i = num_samples; i > 0; --i) {
 			const auto light = worker.scene().random_light(rng_.random_float());
 
-			result += evaluate_light(light.ptr, light.pdf, w, p, time, 0, volume, worker);
+			result += evaluate_light(light.ref, light.pdf, w, p, time, 0, volume, worker);
 		}
 
 		result /= static_cast<float>(num_samples);
@@ -142,7 +142,7 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 		const float light_weight = static_cast<float>(num_samples);
 
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
-			const auto light = lights[l];
+			const auto& light = *lights[l];
 
 			for (uint32_t i = num_samples; i > 0; --i) {
 				result += evaluate_light(light, light_weight, w, p, time, l, volume, worker);
@@ -153,15 +153,15 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 	return result;
 }
 
-float3 Single_scattering::evaluate_light(const Light* light, float light_weight,
+float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 										 const float3& w, const float3& p,
 										 float time, uint32_t sampler_dimension,
 										 const Volume& volume, Worker& worker) {
 	constexpr float epsilon = 5e-5f;
 
 	scene::light::Sample light_sample;
-	if (!light->sample(p, time, sampler_, sampler_dimension, Sampler_filter::Nearest,
-					   worker, light_sample)) {
+	if (!light.sample(p, time, sampler_, sampler_dimension, Sampler_filter::Nearest,
+					  worker, light_sample)) {
 		return float3::identity();
 	}
 

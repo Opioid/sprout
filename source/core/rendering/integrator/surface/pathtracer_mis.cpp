@@ -211,7 +211,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 
 			const auto light = worker.scene().random_light(select);
 
-			result += evaluate_light(light.ptr, light.pdf, ray.time, ray_offset, ray.depth,
+			result += evaluate_light(light.ref, light.pdf, ray.time, ray_offset, ray.depth,
 									 0, intersection, material_sample, filter, worker);
 		}
 
@@ -220,7 +220,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		const auto& lights = worker.scene().lights();
 		const float light_weight = num_lights_reciprocal_;
 		for (uint32_t l = 0, len = static_cast<uint32_t>(lights.size()); l < len; ++l) {
-			const auto light = lights[l];
+			const auto& light = *lights[l];
 			for (uint32_t i = settings_.light_sampling.num_samples; i > 0; --i) {
 				result += evaluate_light(light, light_weight, ray.time, ray_offset, ray.depth,
 										 l, intersection, material_sample, filter, worker);
@@ -261,9 +261,9 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 		light.pdf = num_lights_reciprocal_;
 	}
 
-	const float ls_pdf = light.ptr->pdf(secondary_ray, intersection.geo,
-										material_sample.is_translucent(),
-										Sampler_filter::Nearest, worker);
+	const float ls_pdf = light.ref.pdf(secondary_ray, intersection.geo,
+									   material_sample.is_translucent(),
+									   Sampler_filter::Nearest, worker);
 
 	if (0.f == ls_pdf) {
 		SOFT_ASSERT(math::all_finite(result));
@@ -292,16 +292,16 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	return result;
 }
 
-float3 Pathtracer_MIS::evaluate_light(const Light* light, float light_weight, float time,
+float3 Pathtracer_MIS::evaluate_light(const Light& light, float light_weight, float time,
 									  float ray_offset, uint32_t depth, uint32_t sampler_dimension,
 									  const Intersection& intersection,
 									  const Material_sample& material_sample,
 									  Sampler_filter filter, Worker& worker) {
 	// Light source importance sample
 	scene::light::Sample light_sample;
-	if (!light->sample(intersection.geo.p, material_sample.geometric_normal(), time,
-					   material_sample.is_translucent(), light_sampler(depth),
-					   sampler_dimension, Sampler_filter::Nearest, worker, light_sample)) {
+	if (!light.sample(intersection.geo.p, material_sample.geometric_normal(), time,
+					  material_sample.is_translucent(), light_sampler(depth),
+					  sampler_dimension, Sampler_filter::Nearest, worker, light_sample)) {
 		return float3(0.f);
 	}
 

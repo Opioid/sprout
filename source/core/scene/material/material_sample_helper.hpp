@@ -2,6 +2,7 @@
 #define SU_CORE_SCENE_MATERIAL_SAMPLE_HELPER_HPP
 
 #include "base/math/vector3.inl"
+#include <algorithm>
 
 namespace scene::material {
 

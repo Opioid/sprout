@@ -76,7 +76,7 @@ public:
 
 	const std::vector<light::Light*>& lights() const;
 
-	struct Light { const light::Light* ptr; float pdf; };
+	struct Light { const light::Light& ref; float pdf; };
 	Light light(uint32_t id) const;
 	Light random_light(float random) const;
 
