@@ -1,14 +1,15 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SAMPLER_CACHE_HPP
+#define SU_CORE_SCENE_MATERIAL_SAMPLER_CACHE_HPP
 
 #include "sampler_settings.hpp"
 #include <cstdint>
 
-namespace image { namespace texture { namespace sampler {
+namespace image::texture::sampler {
 	class Sampler_2D;
 	class Sampler_3D;
-}}}
+}
 
-namespace scene { namespace material {
+namespace scene::material {
 
 class Sampler_cache {
 
@@ -33,4 +34,6 @@ private:
 	Texture_sampler_3D* samplers_3D_[Num_samplers];
 };
 
-}}
+}
+
+#endif

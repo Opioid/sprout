@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_DRIVER_FINALFRAME_HPP
+#define SU_CORE_RENDERING_DRIVER_FINALFRAME_HPP
 
 #include "rendering_driver.hpp"
 #include <memory>
@@ -44,3 +45,5 @@ private:
 };
 
 }
+
+#endif

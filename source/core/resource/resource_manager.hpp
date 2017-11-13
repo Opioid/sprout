@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RESOURCE_MANAGER_HPP
+#define SU_CORE_RESOURCE_MANAGER_HPP
 
 #include "base/memory/variant_map.hpp"
 #include <map>
@@ -20,10 +21,10 @@ class Manager {
 
 public:
 
-	Manager(file::System& file_system, thread::Pool& thread_pool);
+	Manager(file::System& filesystem, thread::Pool& thread_pool);
 	~Manager();
 
-	file::System& file_system();
+	file::System& filesystem();
 	thread::Pool& thread_pool();
 
 	template<typename T>
@@ -58,10 +59,12 @@ private:
 	template<typename T>
 	Typed_cache<T>* typed_cache();
 
-	file::System& file_system_;
+	file::System& filesystem_;
 	thread::Pool& thread_pool_;
 
 	std::map<uint32_t, Cache*> caches_;
 };
 
 }
+
+#endif

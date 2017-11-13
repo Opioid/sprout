@@ -3,8 +3,8 @@
 
 namespace resource {
 
-Manager::Manager(file::System& file_system, thread::Pool& thread_pool) :
-	file_system_(file_system),
+Manager::Manager(file::System& filesystem, thread::Pool& thread_pool) :
+	filesystem_(filesystem),
 	thread_pool_(thread_pool) {}
 
 Manager::~Manager() {
@@ -13,8 +13,8 @@ Manager::~Manager() {
 	}
 }
 
-file::System& Manager::file_system() {
-	return file_system_;
+file::System& Manager::filesystem() {
+	return filesystem_;
 }
 
 thread::Pool& Manager::thread_pool() {

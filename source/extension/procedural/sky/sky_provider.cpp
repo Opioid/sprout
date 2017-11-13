@@ -26,8 +26,6 @@ void init(scene::Loader& loader, material::Provider& material_provider) {
 	loader.register_extension_provider("Sky", &provider);
 }
 
-Provider::Provider() : material_provider_(nullptr) {}
-
 void Provider::set_scene_loader(Loader& loader) {
 	scene_loader_ = &loader;
 }
@@ -36,8 +34,8 @@ void Provider::set_material_provider(material::Provider& material_provider) {
 	material_provider_ = &material_provider;
 }
 
-scene::entity::Entity* Provider::create_extension(const json::Value& extension_value,
-												  Scene& scene, resource::Manager& manager) {
+entity::Entity* Provider::create_extension(const json::Value& extension_value,
+										   Scene& scene, resource::Manager& manager) {
 	Sky* sky = new Sky;
 
 	const bool bake = true;

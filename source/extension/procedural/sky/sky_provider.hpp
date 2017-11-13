@@ -2,7 +2,6 @@
 #define SU_EXTENSION_PROCEDURAL_SKY_PROVIDER_HPP
 
 #include "core/scene/entity/entity_extension_provider.hpp"
-#include <memory>
 
 namespace scene {
 
@@ -20,8 +19,6 @@ class Provider : public scene::entity::Extension_provider {
 
 public:
 
-	Provider();
-
 	void set_scene_loader(scene::Loader& loader);
 	void set_material_provider(scene::material::Provider& provider);
 
@@ -31,8 +28,8 @@ public:
 
 private:
 
-	scene::Loader* scene_loader_;
-	scene::material::Provider* material_provider_;
+	scene::Loader* scene_loader_ = nullptr;
+	scene::material::Provider* material_provider_ = nullptr;
 };
 
 }

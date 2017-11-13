@@ -1,6 +1,6 @@
 #include "sampler_settings.hpp"
 
-namespace scene { namespace material {
+namespace scene::material {
 
 Sampler_settings::Sampler_settings(Filter filter, Address address_u, Address address_v) :
 	filter(filter), address_u(address_u), address_v(address_v) {}
@@ -13,4 +13,4 @@ uint32_t Sampler_settings::key() const {
 	return key;
 }
 
-}}
+}

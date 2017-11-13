@@ -102,7 +102,7 @@ public:
 
 	volume::Volume* create_height_volume();
 	volume::Volume* create_homogenous_volume();
-	volume::Volume* create_grid_volume(Texture_ptr grid);
+	volume::Volume* create_grid_volume(const Texture_ptr& grid);
 
 	void add_extension(entity::Entity* extension);
 	void add_extension(entity::Entity* extension, const std::string& name);

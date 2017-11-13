@@ -47,24 +47,26 @@ bool Loader::load(const std::string& filename, const std::string& take_name, Sce
 	bool success = true;
 
 	try {
-		std::string take_mount_folder = string::parent_directory(take_name);
-		resource_manager_.file_system().push_mount(take_mount_folder);
+		auto& filesystem = resource_manager_.filesystem();
+
+		const std::string take_mount_folder = string::parent_directory(take_name);
+		filesystem.push_mount(take_mount_folder);
 
 		std::string resolved_name;
-		auto stream_pointer = resource_manager_.file_system().read_stream(filename, resolved_name);
+		auto stream_pointer = filesystem.read_stream(filename, resolved_name);
 
-		resource_manager_.file_system().pop_mount();
+		filesystem.pop_mount();
 
 		mount_folder_ = string::parent_directory(resolved_name);
 
 		auto root = json::parse(*stream_pointer);
 
-		const json::Value::ConstMemberIterator materials_node = root->FindMember("materials");
-		if (root->MemberEnd() != materials_node) {
+		if (const auto materials_node = root->FindMember("materials");
+			root->MemberEnd() != materials_node) {
 			read_materials(materials_node->value);
 		}
 
-		resource_manager_.file_system().push_mount(mount_folder_);
+		filesystem.push_mount(mount_folder_);
 
 		for (auto& n : root->GetObject()) {
 			if ("entities" == n.name) {
@@ -72,7 +74,7 @@ bool Loader::load(const std::string& filename, const std::string& take_name, Sce
 			}
 		}
 
-		resource_manager_.file_system().pop_mount();
+		filesystem.pop_mount();
 
 		scene.finish();
 	} catch (std::exception& e) {
@@ -195,8 +197,7 @@ void Loader::load_entities(const json::Value& entities_value,
 		}
 
 		if (animation_value) {
-			auto animation = animation::load(*animation_value, transformation);
-			if (animation) {
+			if (auto animation = animation::load(*animation_value, transformation); animation) {
 				scene.add_animation(animation);
 				scene.create_animation_stage(entity, animation.get());
 			}
@@ -274,8 +275,7 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 
 void Loader::load_light(const json::Value& /*light_value*/, Prop* prop, Scene& scene) {
 	for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
-		const auto material = prop->material(i);
-		if (material->is_emissive()) {
+		if (const auto material = prop->material(i); material->is_emissive()) {
 			if (prop->shape()->is_analytical() && material->has_emission_map()) {
 				scene.create_prop_image_light(prop, i);
 			} else {
@@ -323,12 +323,9 @@ volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scen
 	return volume;
 }
 
-entity::Entity* Loader::load_extension(const std::string& type,
-									   const json::Value& extension_value,
-									   const std::string& name,
-									   Scene& scene) {
-	auto p = extension_providers_.find(type);
-	if (extension_providers_.end() != p) {
+entity::Entity* Loader::load_extension(const std::string& type, const json::Value& extension_value,
+									   const std::string& name, Scene& scene) {
+	if (auto p = extension_providers_.find(type); extension_providers_.end() != p) {
 		entity::Entity* entity = p->second->create_extension(extension_value, scene,
 															 resource_manager_);
 		scene.add_extension(entity, name);
@@ -340,13 +337,11 @@ entity::Entity* Loader::load_extension(const std::string& type,
 }
 
 std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value) {
-	const std::string type = json::read_string(shape_value, "type");
-	if (!type.empty()) {
+	if (const std::string type = json::read_string(shape_value, "type"); !type.empty()) {
         return shape(type, shape_value);
 	}
 
-	const std::string file = json::read_string(shape_value, "file");
-	if (!file.empty()) {
+	if (const std::string file = json::read_string(shape_value, "file"); !file.empty()) {
 		memory::Variant_map options;
 
 		const std::string bvh_preset_value = json::read_string(shape_value, "bvh_preset");
@@ -380,8 +375,7 @@ std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
 	} else if ("Sphere" == type) {
 		return sphere_;
     } else {
-        auto g = mesh_generators_.find(type);
-        if (mesh_generators_.end() != g) {
+		if (auto g = mesh_generators_.find(type); mesh_generators_.end() != g) {
 			try {
 				return g->second->create_mesh(shape_value, resource_manager_);
 			} catch (const std::exception& e) {

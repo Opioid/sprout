@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_CAMERA_CAMERA_HPP
+#define SU_CORE_SCENE_CAMERA_CAMERA_HPP
 
 #include "scene/entity/entity.hpp"
 #include "base/math/vector2.hpp"
@@ -73,3 +74,5 @@ protected:
 };
 
 }}
+
+#endif

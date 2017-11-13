@@ -333,7 +333,7 @@ volume::Volume* Scene::create_homogenous_volume() {
 	return volume_region_;
 }
 
-volume::Volume* Scene::create_grid_volume(Texture_ptr grid) {
+volume::Volume* Scene::create_grid_volume(const Texture_ptr& grid) {
 	volume_region_ = new volume::Grid(grid);
 
 	entities_.push_back(volume_region_);

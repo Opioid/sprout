@@ -18,8 +18,9 @@
 #include "core/scene/camera/camera.hpp"
 #include "core/take/take_loader.hpp"
 #include "core/take/take.hpp"
-#include "extension/procedural/sky/sky_provider.hpp"
+#include "extension/procedural/aurora/aurora_provider.hpp"
 #include "extension/procedural/mesh/mesh.hpp"
+#include "extension/procedural/sky/sky_provider.hpp"
 #include "base/chrono/chrono.hpp"
 #include "base/platform/platform.hpp"
 #include "base/string/string.hpp"
@@ -37,8 +38,7 @@
 
 //#include <iostream>
 
-static void log_memory_consumption(const resource::Manager& manager,
-								   const take::Take& take,
+static void log_memory_consumption(const resource::Manager& manager, const take::Take& take,
 								   size_t rendering_num_bytes);
 
 static bool is_json(const std::string& text);
@@ -149,8 +149,9 @@ int main(int argc, char* argv[]) {
 	// This is confusing and should be adressed.
 	scene::Loader scene_loader(resource_manager, material_provider.fallback_material());
 
-	procedural::sky::init(scene_loader, material_provider);
+	procedural::aurora::init(scene_loader);
 	procedural::mesh::init(scene_loader);
+	procedural::sky::init(scene_loader, material_provider);
 
 	scene::Scene scene;
 
@@ -212,8 +213,7 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
-void log_memory_consumption(const resource::Manager& manager,
-							const take::Take& take,
+void log_memory_consumption(const resource::Manager& manager, const take::Take& take,
 							size_t rendering_num_bytes) {
 	if (logging::is_verbose()) {
 		return;

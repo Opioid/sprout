@@ -23,7 +23,7 @@ std::shared_ptr<Image> Provider::load(const std::string& filename,
 		return flakes_provider_.create_mask(options);
 	}
 
-	auto stream_pointer = manager.file_system().read_stream(filename);
+	auto stream_pointer = manager.filesystem().read_stream(filename);
 
 	auto& stream = *stream_pointer;
 

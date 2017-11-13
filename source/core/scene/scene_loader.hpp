@@ -60,9 +60,7 @@ private:
 
 	void read_materials(const json::Value& materials_value);
 
-	void load_entities(const json::Value& entities_value,
-					   entity::Entity* parent,
-					   Scene& scene);
+	void load_entities(const json::Value& entities_value, entity::Entity* parent, Scene& scene);
 
 	void set_visibility(entity::Entity* entity, const json::Value& visibility_value);
 
@@ -72,10 +70,8 @@ private:
 
 	volume::Volume* load_volume(const json::Value& volume_value, Scene& scene);
 
-	entity::Entity* load_extension(const std::string& type,
-								   const json::Value& extension_value,
-								   const std::string& name,
-								   Scene& scene);
+	entity::Entity* load_extension(const std::string& type, const json::Value& extension_value,
+								   const std::string& name, Scene& scene);
 
 	std::shared_ptr<shape::Shape> load_shape(const json::Value& shape_value);
 

@@ -48,7 +48,7 @@ std::shared_ptr<Shape> Provider::load(const std::string& filename,
 	BVH_preset bvh_preset = BVH_preset::Undefined;
 	options.query("bvh_preset", bvh_preset);
 
-	auto stream_pointer = manager.file_system().read_stream(filename);
+	auto stream_pointer = manager.filesystem().read_stream(filename);
 
 	file::Type type = file::query_type(*stream_pointer);
 	if (file::Type::SUM == type) {
@@ -183,7 +183,7 @@ std::shared_ptr<Shape> Provider::load_morphable_mesh(const std::string& filename
 	Json_handler handler;
 
 	for (auto& targets : morph_targets) {
-		auto stream_pointer = manager.file_system().read_stream(targets);
+		auto stream_pointer = manager.filesystem().read_stream(targets);
 
 		rapidjson::IStreamWrapper json_stream(*stream_pointer);
 

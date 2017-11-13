@@ -60,7 +60,7 @@ Provider::~Provider() {}
 Material_ptr Provider::load(const std::string& filename, const memory::Variant_map& /*options*/,
 							resource::Manager& manager) {
 	std::string resolved_name;
-	auto stream_pointer = manager.file_system().read_stream(filename, resolved_name);
+	auto stream_pointer = manager.filesystem().read_stream(filename, resolved_name);
 
 	auto root = json::parse(*stream_pointer);
 
@@ -89,7 +89,7 @@ Material_ptr Provider::load(const json::Value& value, const std::string& mount_f
 		throw std::runtime_error("Material has no render node");
 	}
 
-	manager.file_system().push_mount(mount_folder);
+	manager.filesystem().push_mount(mount_folder);
 
 	std::shared_ptr<Material> material;
 
@@ -119,7 +119,7 @@ Material_ptr Provider::load(const json::Value& value, const std::string& mount_f
 		}
 	}
 
-	manager.file_system().pop_mount();
+	manager.filesystem().pop_mount();
 
 	if (!material) {
 		throw std::runtime_error("Material is of unknown type");
