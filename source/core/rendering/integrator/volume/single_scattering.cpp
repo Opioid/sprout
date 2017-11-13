@@ -26,7 +26,8 @@ void Single_scattering::prepare(const Scene& /*scene*/, uint32_t num_samples_per
 
 void Single_scattering::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume, Worker& worker) {
+float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
+										const Worker& worker) {
 	float min_t;
 	float max_t;
 	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
@@ -41,7 +42,7 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume, Wo
 }
 
 float4 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& volume,
-							 Worker& worker, float3& transmittance) {
+							 const Worker& worker, float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
@@ -123,7 +124,7 @@ size_t Single_scattering::num_bytes() const {
 }
 
 float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p, float time,
-												const Volume& volume, Worker& worker) {
+												const Volume& volume, const Worker& worker) {
 	const uint32_t num_samples = settings_.light_sampling.num_samples;
 
 	float3 result(0.f);
@@ -156,7 +157,7 @@ float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p
 float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 										 const float3& w, const float3& p,
 										 float time, uint32_t sampler_dimension,
-										 const Volume& volume, Worker& worker) {
+										 const Volume& volume, const Worker& worker) {
 	constexpr float epsilon = 5e-5f;
 
 	scene::light::Sample light_sample;

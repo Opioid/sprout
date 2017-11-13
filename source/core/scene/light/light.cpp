@@ -7,7 +7,7 @@ namespace scene::light {
 
 bool Light::sample(const float3& p, const float3& n, float time, bool total_sphere,
 				   sampler::Sampler& sampler, uint32_t sampler_dimension,
-				   Sampler_filter filter, Worker& worker, Sample& result) const {
+				   Sampler_filter filter, const Worker& worker, Sample& result) const {
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(time, temp);
 
@@ -17,7 +17,7 @@ bool Light::sample(const float3& p, const float3& n, float time, bool total_sphe
 
 bool Light::sample(const float3& p, float time,
 				   sampler::Sampler& sampler, uint32_t sampler_dimension,
-				   Sampler_filter filter, Worker& worker, Sample& result) const {
+				   Sampler_filter filter, const Worker& worker, Sample& result) const {
 	return sample(p, float3::identity(), time, true, sampler,
 				  sampler_dimension, filter, worker, result);
 }

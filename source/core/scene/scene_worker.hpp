@@ -1,5 +1,5 @@
-#ifndef SU_SCENE_WORKER_HPP
-#define SU_SCENE_WORKER_HPP
+#ifndef SU_CORE_SCENE_WORKER_HPP
+#define SU_CORE_SCENE_WORKER_HPP
 
 #include "shape/node_stack.hpp"
 #include "material/material_sample_cache.hpp"

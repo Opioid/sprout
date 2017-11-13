@@ -2,7 +2,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 
-namespace scene { namespace material {
+namespace scene::material {
 
 Sample_cache::~Sample_cache() {
 	memory::free_aligned(buffer_);
@@ -19,8 +19,7 @@ BSSRDF& Sample_cache::bssrdf() {
 }
 
 size_t Sample_cache::num_bytes() const {
-	return sizeof(*this) +
-			buffer_size_ * sizeof(char);
+	return sizeof(*this) + buffer_size_ * sizeof(char);
 }
 
-}}
+}

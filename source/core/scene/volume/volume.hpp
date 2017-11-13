@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_VOLUME_VOLUME_HPP
+#define SU_CORE_SCENE_VOLUME_VOLUME_HPP
 
 #include "scene/entity/entity.hpp"
 #include "scene/material/sampler_settings.hpp"
@@ -23,9 +24,10 @@ public:
 	Volume();
 
 	virtual float3 optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
-								 Sampler_filter filter, Worker& worker) const = 0;
+								 Sampler_filter filter, const Worker& worker) const = 0;
 
-	virtual float3 scattering(const float3& p, Sampler_filter filter, Worker& worker) const = 0;
+	virtual float3 scattering(const float3& p, Sampler_filter filter,
+							  const Worker& worker) const = 0;
 
 	float phase(const float3& w, const float3& wp) const;
 
@@ -58,3 +60,5 @@ protected:
 };
 
 }}
+
+#endif

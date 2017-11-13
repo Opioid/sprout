@@ -15,10 +15,10 @@ public:
 	virtual void resume_pixel(uint32_t sample, rnd::Generator& scramble) override final;
 
 	virtual float3 transmittance(const Ray& ray, const Volume& volume,
-								 Worker& worker) override final;
+								 const Worker& worker) override final;
 
 	virtual float4 li(const Ray& ray, bool primary_ray, const Volume& volume,
-					  Worker& worker, float3& transmittance) override final;
+					  const Worker& worker, float3& transmittance) override final;
 
 	virtual size_t num_bytes() const override final;
 };

@@ -1,5 +1,5 @@
-#ifndef SU_SCENE_SHAPE_NODE_STACK_HPP
-#define SU_SCENE_SHAPE_NODE_STACK_HPP
+#ifndef SU_CORE_SCENE_SHAPE_NODE_STACK_HPP
+#define SU_CORE_SCENE_SHAPE_NODE_STACK_HPP
 
 #include <cstdint>
 #include <cstddef>

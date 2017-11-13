@@ -10,7 +10,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/matrix4x4.inl"
 
-namespace scene { namespace light {
+namespace scene::light {
 
 void Prop_light::init(Prop* prop, uint32_t part) {
 	prop_ = prop;
@@ -25,7 +25,7 @@ const Light::Transformation& Prop_light::transformation_at(
 bool Prop_light::sample(const Transformation& transformation,
 						const float3& p, const float3& n, float time, bool total_sphere,
 						sampler::Sampler& sampler, uint32_t sampler_dimension,
-						Sampler_filter filter, Worker& worker, Sample& result) const {
+						Sampler_filter filter, const Worker& worker, Sample& result) const {
 	auto material = prop_->material(part_);
 
 	const float area = prop_->area(part_);
@@ -55,7 +55,7 @@ bool Prop_light::sample(const Transformation& transformation,
 }
 
 float Prop_light::pdf(const Ray& ray, const Intersection& intersection, bool total_sphere,
-					  Sampler_filter /*filter*/, Worker& /*worker*/) const {
+					  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	entity::Composed_transformation temp;
 	const auto& transformation = prop_->transformation_at(ray.time, temp);
 
@@ -86,4 +86,4 @@ bool Prop_light::equals(const Prop* prop, uint32_t part) const {
 	return prop_ == prop && part_ == part;
 }
 
-}}
+}

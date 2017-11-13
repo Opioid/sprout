@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_SAMPLE_CACHE_HPP
+#define SU_CORE_SCENE_MATERIAL_SAMPLE_CACHE_HPP
 
 #include "bssrdf.hpp"
 #include <cstddef>
 #include <cstdint>
 
-namespace scene { namespace material {
+namespace scene::material {
 
 class BSSRDF;
 
@@ -31,4 +32,6 @@ private:
 	BSSRDF bssrdf_;
 };
 
-}}
+}
+
+#endif

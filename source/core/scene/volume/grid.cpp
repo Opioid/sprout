@@ -9,11 +9,11 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace volume {
+namespace scene::volume {
 
 Grid::Grid(Texture_ptr grid) : grid_(grid) {}
 
-float Grid::density(const float3& p, Sampler_filter filter, Worker& worker) const {
+float Grid::density(const float3& p, Sampler_filter filter, const Worker& worker) const {
 	// p is in object space already
 
 	if (!local_aabb_.intersect(p)) {
@@ -23,13 +23,11 @@ float Grid::density(const float3& p, Sampler_filter filter, Worker& worker) cons
 	float3 p_g = 0.5f * (float3(1.f) + p);
 	p_g[1] = 1.f - p_g[1];
 
-	auto& sampler = worker.sampler_3D(static_cast<uint32_t>(Sampler_filter::Linear), filter);
+	const auto& sampler = worker.sampler_3D(static_cast<uint32_t>(Sampler_filter::Linear), filter);
 
-	float density = grid_.sample_1(sampler, p_g);
-
-	return density;
+	return grid_.sample_1(sampler, p_g);
 }
 
 void Grid::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
-}}
+}
