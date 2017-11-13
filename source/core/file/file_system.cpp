@@ -21,7 +21,7 @@ std::unique_ptr<std::istream> System::read_stream(const std::string& name,
 	const Type type = query_type(*stream);
 
 	if (Type::GZIP == type) {
-		return std::unique_ptr<std::istream>(new gzip::Read_stream(stream));
+		return std::make_unique<gzip::Read_stream>(stream);
 	}
 
 	return std::unique_ptr<std::istream>(stream);
