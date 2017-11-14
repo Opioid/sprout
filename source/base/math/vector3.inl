@@ -23,7 +23,7 @@ template<typename T>
 constexpr Vector3<T>::Vector3(const T* v) : v{v[0], v[1], v[2]} {}
 
 template<typename T>
-constexpr Vector3<T>::Vector3(const Vector3f_a& v) : v{v[0], v[1], v[2]} {}
+constexpr Vector3<T>::Vector3(const Vector3f_a& v) : v{T(v[0]), T(v[1]), T(v[2])} {}
 
 template<typename T>
 constexpr Vector2<T> Vector3<T>::xy() const {

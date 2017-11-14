@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SPECTRUM_RGB_HPP
+#define SU_BASE_SPECTRUM_RGB_HPP
 
 #include "math/vector4.inl"
 
@@ -93,3 +94,5 @@ static inline constexpr float watt_to_lumen(const float3& c) {
 }
 
 }
+
+#endif

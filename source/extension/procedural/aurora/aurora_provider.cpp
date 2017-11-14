@@ -1,5 +1,8 @@
 #include "aurora_provider.hpp"
 #include "aurora.hpp"
+#include "volume_rasterizer.hpp"
+#include "core/image/typed_image.inl"
+#include "core/image/texture/texture_byte_3_srgb.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/volume/height.hpp"
@@ -26,11 +29,28 @@ void Provider::set_scene_loader(Loader& loader) {
 
 entity::Entity* Provider::create_extension(const json::Value& extension_value,
 										   Scene& scene, resource::Manager& /*manager*/) {
-	Aurora* aurora = new Aurora();
+	using namespace image;
 
-	volume::Volume* volume = scene.create_height_volume();
+	const int3 dimensions(16);
 
-	constexpr char* parameters =
+	auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
+
+	Volume_rasterizer renderer(dimensions);
+
+	renderer.clear();
+
+	renderer.draw_sphere(float3(2.f, 2.f, 2.f), 1.f);
+
+	renderer.resolve(*target);
+
+	auto texture = std::make_shared<texture::Byte3_sRGB>(target);
+
+
+
+
+	volume::Volume* volume = scene.create_grid_volume(texture);
+
+	constexpr char const* parameters =
 		"{ \"scattering\": [1.0, 1.0, 1.0] }";
 
 	volume->set_parameters(*json::parse(parameters));
@@ -42,6 +62,8 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 	};
 
 	volume->set_transformation(transformation);
+
+	Aurora* aurora = new Aurora();
 
 	aurora->attach(volume);
 

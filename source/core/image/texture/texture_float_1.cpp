@@ -4,7 +4,7 @@
 
 namespace image::texture {
 
-Float1::Float1(std::shared_ptr<Image> image) :
+Float1::Float1(const std::shared_ptr<Image>& image) :
 	Texture(image),
 	image_(*reinterpret_cast<const image::Float1*>(image.get())) {}
 

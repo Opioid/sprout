@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_ENCODING_SRGB_HPP
+#define SU_CORE_IMAGE_ENCODING_SRGB_HPP
 
 #include "image/typed_image.hpp"
 
@@ -45,3 +46,5 @@ protected:
 };
 
 }
+
+#endif

@@ -31,7 +31,7 @@ float3 Density::optical_depth(const math::Ray& ray, float step_size, rnd::Genera
 	const float3 rd_o = math::transform_vector(rn.direction, world_transformation_.world_to_object);
 
 	for (; min_t < max_t; min_t += step_size) {
-		float3 p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
+		const float3 p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
 		tau += density(p_o, filter, worker);
 	}
 

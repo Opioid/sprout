@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_PROCEDURAL_RENDERER_HPP
+#define SU_CORE_IMAGE_PROCEDURAL_RENDERER_HPP
 
 #include "image/typed_image.hpp"
 
-namespace image { namespace procedural {
+namespace image::procedural {
 
 template<typename T>
 class Typed_renderer {
@@ -71,4 +72,6 @@ private:
 	float4 brush_;
 };
 
-}}
+}
+
+#endif

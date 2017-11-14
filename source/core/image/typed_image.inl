@@ -65,73 +65,73 @@ T& Typed_image<T>::at(int32_t index) {
 
 template<typename T>
 T Typed_image<T>::load(int32_t x, int32_t y) const {
-	int32_t i = y * description_.dimensions[0] + x;
+	const int32_t i = y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 void Typed_image<T>::store(int32_t x, int32_t y, T v) {
-	int32_t i = y * description_.dimensions[0] + x;
+	const int32_t i = y * description_.dimensions[0] + x;
 	data_[i] = v;
 }
 
 template<typename T>
 T Typed_image<T>::load_element(int32_t x, int32_t y, int32_t element) const {
-	int32_t i = element * area_ + y * description_.dimensions[0] + x;
+	const int32_t i = element * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 const T& Typed_image<T>::at(int32_t x, int32_t y) const {
-	int32_t i = y * description_.dimensions[0] + x;
+	const int32_t i = y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T& Typed_image<T>::at(int32_t x, int32_t y) {
-	int32_t i = y * description_.dimensions[0] + x;
+	const int32_t i = y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 const T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) const {
-	int32_t i = element * area_ + y * description_.dimensions[0] + x;
+	const int32_t i = element * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t element) {
-	int32_t i = element * area_ + y * description_.dimensions[0] + x;
+	const int32_t i = element * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T Typed_image<T>::load(int32_t x, int32_t y, int32_t z) const {
-	int32_t i = z * area_ + y * description_.dimensions[0] + x;
+	const int32_t i = z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 const T& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) const {
-	int32_t i = z * area_ + y * description_.dimensions[0] + x;
+	const int32_t i = z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T& Typed_image<T>::at(int32_t x, int32_t y, int32_t z) {
-	int32_t i = z * area_ + y * description_.dimensions[0] + x;
+	const int32_t i = z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 const T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) const {
-	int32_t i = element * volume_ + z * area_ + y * description_.dimensions[0] + x;
+	const int32_t i = element * volume_ + z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
 template<typename T>
 T& Typed_image<T>::at_element(int32_t x, int32_t y, int32_t z, int32_t element) {
-	int32_t i = element * volume_ + z * area_ + y * description_.dimensions[0] + x;
+	const int32_t i = element * volume_ + z * area_ + y * description_.dimensions[0] + x;
 	return data_[i];
 }
 
@@ -155,8 +155,8 @@ void Typed_image<T>::square_transpose() {
 	const int32_t n = description_.dimensions[0];
 	for (int32_t y = 0, height = n - 2; y < height; ++y) {
 		for (int32_t x = y + 1, width = n -1; x < width; ++x) {
-			int32_t a = y * n + x;
-			int32_t b = x * n + y;
+			const int32_t a = y * n + x;
+			const int32_t b = x * n + y;
 			std::swap(data_[a], data_[b]);
 		}
 	}

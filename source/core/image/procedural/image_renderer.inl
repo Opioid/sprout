@@ -1,11 +1,12 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_PROCEDURAL_RENDERER_INL
+#define SU_CORE_IMAGE_PROCEDURAL_RENDERER_INL
 
 #include "image_renderer.hpp"
 #include "image/typed_image.inl"
 #include "base/math/vector3.inl"
 #include "base/spectrum/rgb.hpp"
 
-namespace image { namespace procedural {
+namespace image::procedural {
 
 template<typename T>
 Typed_renderer<T>::Typed_renderer(int2 dimensions, int32_t sqrt_num_samples) :
@@ -110,4 +111,6 @@ void Typed_renderer<T>::set_row(int32_t start_x, int32_t end_x, int32_t y, T col
 	}
 }
 
-}}
+}
+
+#endif

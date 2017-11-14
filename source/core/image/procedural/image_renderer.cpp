@@ -5,7 +5,7 @@
 #include "base/math/vector4.inl"
 #include "base/spectrum/rgb.hpp"
 
-namespace image { namespace procedural {
+namespace image::procedural {
 
 Renderer::Renderer(int2 dimensions, int32_t sqrt_num_samples) :
 	sqrt_num_samples_(sqrt_num_samples),
@@ -175,4 +175,4 @@ void Renderer::set_row(int32_t start_x, int32_t end_x, int32_t y, const float4& 
 	}
 }
 
-}}
+}

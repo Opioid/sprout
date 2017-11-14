@@ -5,7 +5,7 @@
 
 namespace image::texture {
 
-Byte3_snorm::Byte3_snorm(std::shared_ptr<Image> image) :
+Byte3_snorm::Byte3_snorm(const std::shared_ptr<Image>& image) :
 	Texture(image),
 	image_(*static_cast<const Byte3*>(image.get())) {}
 

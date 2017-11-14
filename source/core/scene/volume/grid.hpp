@@ -11,7 +11,7 @@ class Grid : public Density {
 
 public:
 
-	Grid(Texture_ptr grid);
+	Grid(const Texture_ptr& grid);
 
 private:
 

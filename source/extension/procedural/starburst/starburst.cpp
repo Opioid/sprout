@@ -7,9 +7,6 @@
 #include "core/image/encoding/png/png_writer.hpp"
 #include "core/image/filter/image_gaussian.inl"
 #include "core/image/procedural/image_renderer.inl"
-#include "core/image/texture/texture_float_2.hpp"
-#include "core/image/texture/sampler/sampler_linear_2d.inl"
-#include "core/image/texture/sampler/bilinear.hpp"
 #include "base/encoding/encoding.inl"
 #include "base/math/vector3.inl"
 #include "base/math/fourier/dft.hpp"
@@ -29,7 +26,7 @@
 // Code for fractional DFT implementation
 // http://onlinelibrary.wiley.com/store/10.1111/cgf.12953/asset/supinfo/cgf12953-sup-0002-S1.pdf?v=1&s=e3aaf53493a15c5111513bf1dbe1a6ee549ee804
 
-namespace procedural { namespace starburst {
+namespace procedural::starburst {
 
 using namespace image;
 
@@ -455,4 +452,4 @@ void write_signal(const std::string& name, const Float1& signal) {
 	image::encoding::png::Writer::write(name, image);
 }
 
-}}
+}

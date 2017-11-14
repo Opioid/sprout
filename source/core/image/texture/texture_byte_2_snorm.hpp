@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_BYTE2_SNORM_HPP
+#define SU_CORE_IMAGE_TEXTURE_BYTE2_SNORM_HPP
 
 #include "texture.hpp"
 #include "image/typed_image.hpp"
@@ -9,7 +10,7 @@ class Byte2_snorm : public Texture {
 
 public:
 
-	Byte2_snorm(std::shared_ptr<Image> image);
+	Byte2_snorm(const std::shared_ptr<Image>& image);
 
 	virtual float3 at_3(int32_t i) const override final;
 
@@ -38,3 +39,5 @@ private:
 };
 
 }
+
+#endif

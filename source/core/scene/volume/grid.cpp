@@ -11,7 +11,7 @@
 
 namespace scene::volume {
 
-Grid::Grid(Texture_ptr grid) : grid_(grid) {}
+Grid::Grid(const Texture_ptr& grid) : grid_(grid) {}
 
 float Grid::density(const float3& p, Sampler_filter filter, const Worker& worker) const {
 	// p is in object space already

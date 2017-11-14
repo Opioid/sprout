@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_FLOAT2_HPP
+#define SU_CORE_IMAGE_TEXTURE_FLOAT2_HPP
 
 #include "texture.hpp"
 #include "image/typed_image.hpp"
@@ -9,7 +10,7 @@ class Float2 : public Texture {
 
 public:
 
-	Float2(std::shared_ptr<Image> image);
+	Float2(const std::shared_ptr<Image>& image);
 
 	virtual float3 at_3(int32_t i) const override final;
 
@@ -38,3 +39,5 @@ private:
 };
 
 }
+
+#endif
