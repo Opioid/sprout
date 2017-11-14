@@ -1,6 +1,6 @@
-#pragma once
+#ifndef SU_BASE_RANDOM_SHUFFLE_HPP
+#define SU_BASE_RANDOM_SHUFFLE_HPP
 
-#include "shuffle.hpp"
 #include "generator.inl"
 
 namespace rnd {
@@ -16,3 +16,5 @@ void shuffle(T* data, uint32_t count, Generator& rng) {
 }
 
 }
+
+#endif

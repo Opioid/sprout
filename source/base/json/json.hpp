@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_JSON_JSON_HPP
+#define SU_BASE_JSON_JSON_HPP
 
 #include "math/vector4.hpp"
 #include "math/matrix3x3.hpp"
@@ -16,6 +17,7 @@
 namespace json {
 
 std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer);
+std::unique_ptr<rapidjson::Document> parse(const char* buffer);
 std::unique_ptr<rapidjson::Document> parse(const std::string& buffer);
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream);
 
@@ -62,3 +64,5 @@ std::string read_string(const rapidjson::Value& value, const std::string& name,
 void read_transformation(const rapidjson::Value& value, math::Transformation& transformation);
 
 }
+
+#endif

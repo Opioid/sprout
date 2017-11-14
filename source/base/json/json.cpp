@@ -61,16 +61,20 @@ std::unique_ptr<rapidjson::Document> parse_insitu(char* buffer) {
 	return document;
 }
 
-std::unique_ptr<rapidjson::Document> parse(const std::string& buffer) {
+std::unique_ptr<rapidjson::Document> parse(const char* buffer) {
 	std::unique_ptr<rapidjson::Document> document = std::make_unique<rapidjson::Document>();
 
-	document->Parse(buffer.c_str());
+	document->Parse(buffer);
 
 	if (document->HasParseError()) {
 		throw std::runtime_error(rapidjson::GetParseError_En(document->GetParseError()));
 	}
 
 	return document;
+}
+
+std::unique_ptr<rapidjson::Document> parse(const std::string& buffer) {
+	return parse(buffer.c_str());
 }
 
 std::unique_ptr<rapidjson::Document> parse(std::istream& stream) {

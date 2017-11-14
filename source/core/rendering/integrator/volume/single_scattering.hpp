@@ -1,9 +1,10 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_SINGLE_SCATTERING_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_VOLUME_SINGLE_SCATTERING_HPP
 
 #include "volume_integrator.hpp"
 #include "sampler/sampler_random.hpp"
 
-namespace rendering { namespace integrator { namespace volume {
+namespace rendering::integrator::volume {
 
 class alignas(64) Single_scattering : public Integrator {
 
@@ -63,4 +64,6 @@ private:
 	Single_scattering::Settings settings_;
 };
 
-}}}
+}
+
+#endif

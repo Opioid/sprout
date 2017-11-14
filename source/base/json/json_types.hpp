@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_JSON_TYPES_HPP
+#define SU_BASE_JSON_TYPES_HPP
 
 namespace rapidjson {
 
@@ -19,3 +20,5 @@ namespace json {
 using Value = rapidjson::Value;
 
 }
+
+#endif

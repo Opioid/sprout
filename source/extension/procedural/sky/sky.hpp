@@ -2,7 +2,6 @@
 
 #include "sky_model.hpp"
 #include "core/scene/entity/entity.hpp"
-#include "base/json/json_types.hpp"
 
 namespace scene { class Prop; }
 

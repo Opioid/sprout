@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SPECTRUM_DISCRETE_HPP
+#define SU_BASE_SPECTRUM_DISCRETE_HPP
 
 #include "interpolated.hpp"
 #include "math/vector3.hpp"
@@ -45,3 +46,5 @@ private:
 };
 
 }
+
+#endif

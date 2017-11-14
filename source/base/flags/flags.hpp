@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_FLAGS_FLAGS_HPP
+#define SU_BASE_FLAGS_FLAGS_HPP
 
 #include <type_traits>
 
@@ -57,3 +58,5 @@ struct Flags {
 };
 
 }
+
+#endif

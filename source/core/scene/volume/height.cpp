@@ -8,7 +8,7 @@
 
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace volume {
+namespace scene::volume {
 
 float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Generator& /*rng*/,
 							 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
@@ -86,4 +86,4 @@ void Height::set_parameter(const std::string& name, const json::Value& value) {
 	}
 }
 
-}}
+}

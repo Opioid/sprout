@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SPECTRUM_XYZ_HPP
+#define SU_BASE_SPECTRUM_XYZ_HPP
 
 #include "math/vector3.inl"
 
@@ -23,3 +24,5 @@ extern const float CIE_Z_360_830_1nm[CIE_XYZ_Num];
 extern const float CIE_Wavelengths_360_830_1nm[CIE_XYZ_Num];
 
 }
+
+#endif

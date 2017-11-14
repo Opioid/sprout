@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_ENCODING_ENCODING_INL
+#define SU_BASE_ENCODING_ENCODING_INL
 
 #include "math/vector3.inl"
 #include "math/vector4.inl"
@@ -63,3 +64,5 @@ static inline constexpr int16_t float_to_snorm16(float x) {
 }
 
 }
+
+#endif

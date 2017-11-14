@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SPECTRUM_DISCRETE_INL
+#define SU_BASE_SPECTRUM_DISCRETE_INL
 
 #include "discrete.hpp"
 #include "xyz.hpp"
@@ -105,3 +106,5 @@ template<int32_t N>
 float Discrete_spectral_power_distribution<N>::step_;
 
 }
+
+#endif

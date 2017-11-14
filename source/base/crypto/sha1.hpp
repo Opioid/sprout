@@ -1,9 +1,10 @@
-#pragma once
+#ifndef SU_BASE_CRYPTO_SHA1_HPP
+#define SU_BASE_CRYPTO_SHA1_HPP
 
 #include <string>
 #include <vector>
 
-namespace crypto { namespace sha1 {
+namespace crypto::sha1 {
 
 std::vector<uint8_t> encode(const std::string& input);
 
@@ -38,4 +39,6 @@ private:
 	std::string buffer_;
 };
 
-}}
+}
+
+#endif

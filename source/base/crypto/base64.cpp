@@ -1,7 +1,7 @@
 #include "base64.hpp"
 #include <sstream>
 
-namespace crypto { namespace base64 {
+namespace crypto::base64 {
 
 static constexpr char base64_rfc4648_alphabet[] = {
 	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
@@ -55,4 +55,4 @@ std::string encode(const uint8_t* data, size_t size) {
 	return result.str();
 }
 
-}}
+}

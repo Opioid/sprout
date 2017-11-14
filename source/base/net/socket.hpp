@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_NET_SOCKET_HPP
+#define SU_BASE_NET_SOCKET_HPP
 
 #include <string>
 #include <cstdint>
@@ -53,3 +54,5 @@ public:
 };
 
 }
+
+#endif

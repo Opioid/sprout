@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SPECTRUM_INTERPOLATED_HPP
+#define SU_BASE_SPECTRUM_INTERPOLATED_HPP
 
 #include <vector>
 #include <cstddef>
@@ -27,3 +28,5 @@ private:
 };
 
 }
+
+#endif

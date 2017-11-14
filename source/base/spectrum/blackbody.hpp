@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_BASE_SPECTRUM_BLACKBODY_HPP
+#define SU_BASE_SPECTRUM_BLACKBODY_HPP
 
 #include "math/vector3.hpp"
 
@@ -10,3 +11,5 @@ float3 blackbody(float temperature);
 float3 blackbody_fast(float temperature);
 
 }
+
+#endif

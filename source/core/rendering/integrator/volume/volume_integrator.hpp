@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATOR_VOLUME_INTEGRATOR_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_VOLUME_INTEGRATOR_HPP
 
 #include "rendering/integrator/integrator.hpp"
 #include "base/math/vector4.hpp"
@@ -43,3 +44,5 @@ protected:
 };
 
 }}
+
+#endif

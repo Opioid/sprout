@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
+#define SU_CORE_SCENE_MATERIAL_MATERIAL_HPP
 
 #include "sampler_settings.hpp"
 #include "image/texture/texture_adapter.hpp"
@@ -95,3 +96,5 @@ using Material_ptr = std::shared_ptr<material::Material>;
 using Materials = std::vector<Material_ptr>;
 
 }}
+
+#endif
