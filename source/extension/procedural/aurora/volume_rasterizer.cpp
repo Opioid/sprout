@@ -36,7 +36,7 @@ void Volume_rasterizer::clear() {
 void Volume_rasterizer::draw_sphere(const float3& pos, float radius) {
 	const int3 c(pos);
 
-	const int32_t i = c[3] * area_ + c[1] * dimensions_[0] + c[0];
+	const int32_t i = c[2] * area_ + c[1] * dimensions_[0] + c[0];
 
 	samples_[i] = float3(1.f);
 }
