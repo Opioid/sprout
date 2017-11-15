@@ -29,7 +29,7 @@ void Volume_rasterizer::clear() {
 	const int32_t len = dimensions_[0] * dimensions_[1] * dimensions_[2];
 
 	for (int32_t i = 0; i < len; ++i) {
-		samples_[i] = float3(0.f);
+		samples_[i] = float3(1.f);
 	}
 }
 

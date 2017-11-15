@@ -49,7 +49,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 
 	math::Transformation transformation {
 		float3::identity(),
-		float3(1.f),
+		float3(0.1f),
 		math::quaternion::identity()
 	};
 
