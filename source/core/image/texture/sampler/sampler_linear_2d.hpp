@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_SAMPLER_LINEAR_2D_HPP
+#define SU_CORE_IMAGE_TEXTURE_SAMPLER_LINEAR_2D_HPP
 
 #include "sampler_2d.hpp"
 #include "base/math/vector4.hpp"
@@ -33,3 +34,5 @@ private:
 };
 
 }
+
+#endif

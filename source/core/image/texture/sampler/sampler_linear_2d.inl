@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_SAMPLER_LINEAR_2D_INL
+#define SU_CORE_IMAGE_TEXTURE_SAMPLER_LINEAR_2D_INL
 
 #include "sampler_linear_2d.hpp"
 #include "address_mode.hpp"
@@ -11,9 +12,9 @@ namespace image::texture::sampler {
 template<typename Address_U, typename Address_V>
 float Linear_2D<Address_U, Address_V>::sample_1(const Texture& texture, float2 uv) const {
 	int4 xy_xy1;
-	float2 st = map(texture, uv, xy_xy1);
+	const float2 st = map(texture, uv, xy_xy1);
 
-	float4 c = texture.gather_1(xy_xy1);
+	const float4 c = texture.gather_1(xy_xy1);
 
 	return bilinear(c, st[0], st[1]);
 }
@@ -21,7 +22,7 @@ float Linear_2D<Address_U, Address_V>::sample_1(const Texture& texture, float2 u
 template<typename Address_U, typename Address_V>
 float2 Linear_2D<Address_U, Address_V>::sample_2(const Texture& texture, float2 uv) const {
 	int4 xy_xy1;
-	float2 st = map(texture, uv, xy_xy1);
+	const float2 st = map(texture, uv, xy_xy1);
 
 	float2 c[4];
 	texture.gather_2(xy_xy1, c);
@@ -58,14 +59,14 @@ template<typename Address_U, typename Address_V>
 float Linear_2D<Address_U, Address_V>::sample_1(const Texture& texture, float2 uv,
 												int32_t element) const {
 	int4 xy_xy1;
-	float2 st = map(texture, uv, xy_xy1);
+	const float2 st = map(texture, uv, xy_xy1);
 
 	int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float c00 = texture.at_element_1(xy_xy1[0], xy_xy1[1], min_element);
-	float c01 = texture.at_element_1(xy_xy1[2], xy_xy1[1], min_element);
-	float c10 = texture.at_element_1(xy_xy1[0], xy_xy1[3], min_element);
-	float c11 = texture.at_element_1(xy_xy1[2], xy_xy1[3], min_element);
+	const float c00 = texture.at_element_1(xy_xy1[0], xy_xy1[1], min_element);
+	const float c01 = texture.at_element_1(xy_xy1[2], xy_xy1[1], min_element);
+	const float c10 = texture.at_element_1(xy_xy1[0], xy_xy1[3], min_element);
+	const float c11 = texture.at_element_1(xy_xy1[2], xy_xy1[3], min_element);
 
 	return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }
@@ -74,14 +75,14 @@ template<typename Address_U, typename Address_V>
 float2 Linear_2D<Address_U, Address_V>::sample_2(const Texture& texture, float2 uv,
 												 int32_t element) const {
 	int4 xy_xy1;
-	float2 st = map(texture, uv, xy_xy1);
+	const float2 st = map(texture, uv, xy_xy1);
 
-	int32_t min_element = std::min(texture.num_elements() - 1, element);
+	const int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float2 c00 = texture.at_element_2(xy_xy1[0], xy_xy1[1], min_element);
-	float2 c01 = texture.at_element_2(xy_xy1[2], xy_xy1[1], min_element);
-	float2 c10 = texture.at_element_2(xy_xy1[0], xy_xy1[3], min_element);
-	float2 c11 = texture.at_element_2(xy_xy1[2], xy_xy1[3], min_element);
+	const float2 c00 = texture.at_element_2(xy_xy1[0], xy_xy1[1], min_element);
+	const float2 c01 = texture.at_element_2(xy_xy1[2], xy_xy1[1], min_element);
+	const float2 c10 = texture.at_element_2(xy_xy1[0], xy_xy1[3], min_element);
+	const float2 c11 = texture.at_element_2(xy_xy1[2], xy_xy1[3], min_element);
 
 	return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }
@@ -90,14 +91,14 @@ template<typename Address_U, typename Address_V>
 float3 Linear_2D<Address_U, Address_V>::sample_3(const Texture& texture, float2 uv,
 												 int32_t element) const {
 	int4 xy_xy1;
-	float2 st = map(texture, uv, xy_xy1);
+	const float2 st = map(texture, uv, xy_xy1);
 
-	int32_t min_element = std::min(texture.num_elements() - 1, element);
+	const int32_t min_element = std::min(texture.num_elements() - 1, element);
 
-	float3 c00 = texture.at_element_3(xy_xy1[0], xy_xy1[1], min_element);
-	float3 c01 = texture.at_element_3(xy_xy1[2], xy_xy1[1], min_element);
-	float3 c10 = texture.at_element_3(xy_xy1[0], xy_xy1[3], min_element);
-	float3 c11 = texture.at_element_3(xy_xy1[2], xy_xy1[3], min_element);
+	const float3 c00 = texture.at_element_3(xy_xy1[0], xy_xy1[1], min_element);
+	const float3 c01 = texture.at_element_3(xy_xy1[2], xy_xy1[1], min_element);
+	const float3 c10 = texture.at_element_3(xy_xy1[0], xy_xy1[3], min_element);
+	const float3 c11 = texture.at_element_3(xy_xy1[2], xy_xy1[3], min_element);
 
 	return bilinear(c00, c01, c10, c11, st[0], st[1]);
 }
@@ -130,3 +131,5 @@ float2 Linear_2D<Address_U, Address_V>::map(const Texture& texture, float2 uv, i
 }
 
 }
+
+#endif

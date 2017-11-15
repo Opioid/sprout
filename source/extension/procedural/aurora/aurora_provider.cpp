@@ -49,6 +49,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 
 
 	volume::Volume* volume = scene.create_grid_volume(texture);
+	// volume::Volume* volume = scene.create_height_volume();
 
 	constexpr char const* parameters =
 		"{ \"scattering\": [1.0, 1.0, 1.0] }";

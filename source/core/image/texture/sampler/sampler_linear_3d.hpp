@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_IMAGE_TEXTURE_SAMPLER_LINEAR_3D_HPP
+#define SU_CORE_IMAGE_TEXTURE_SAMPLER_LINEAR_3D_HPP
 
 #include "sampler_3d.hpp"
 
@@ -21,3 +22,5 @@ private:
 };
 
 }
+
+#endif
