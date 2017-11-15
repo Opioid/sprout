@@ -28,6 +28,8 @@ public:
 
 		size_t num_pixels() const;
 
+		uint32_t num_channels() const;
+
 		Type type = Type::Undefined;
 		int3 dimensions = int3(0, 0, 0);
 

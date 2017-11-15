@@ -23,6 +23,9 @@ public:
 
 	Volume();
 
+	virtual float3 emission(const math::Ray& ray, float step_size, rnd::Generator& rng,
+							Sampler_filter filter, const Worker& worker) const = 0;
+
 	virtual float3 optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
 								 Sampler_filter filter, const Worker& worker) const = 0;
 

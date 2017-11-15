@@ -1,6 +1,7 @@
 #ifndef SU_EXTENSION_PROCEDURAL_AURORA_PROVIDER_HPP
 #define SU_EXTENSION_PROCEDURAL_AURORA_PROVIDER_HPP
 
+#include "core/image/typed_image.hpp"
 #include "core/scene/entity/entity_extension_provider.hpp"
 
 namespace scene { class Loader; }
@@ -20,6 +21,8 @@ public:
 													resource::Manager& manager) override final;
 
 private:
+
+	static void render(image::Byte3& target);
 
 	scene::Loader* scene_loader_ = nullptr;
 };

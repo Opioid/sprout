@@ -9,6 +9,9 @@ class Homogeneous : public Volume {
 
 public:
 
+	virtual float3 emission(const math::Ray& ray, float step_size, rnd::Generator& rng,
+							Sampler_filter filter, const Worker& worker) const override final;
+
 	virtual float3 optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
 								 Sampler_filter filter, const Worker& worker) const override final;
 

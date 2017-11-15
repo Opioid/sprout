@@ -1,15 +1,16 @@
 #include "scene.hpp"
-#include "scene/animation/animation.hpp"
-#include "scene/animation/animation_stage.hpp"
-#include "scene/entity/dummy.hpp"
-#include "scene/prop.hpp"
-#include "scene/scene_intersection.hpp"
-#include "scene/shape/shape.hpp"
-#include "scene/light/prop_light.hpp"
-#include "scene/light/prop_image_light.hpp"
-#include "scene/volume/grid.hpp"
-#include "scene/volume/height.hpp"
-#include "scene/volume/homogeneous.hpp"
+#include "animation/animation.hpp"
+#include "animation/animation_stage.hpp"
+#include "entity/dummy.hpp"
+#include "prop.hpp"
+#include "scene_intersection.hpp"
+#include "shape/shape.hpp"
+#include "light/prop_light.hpp"
+#include "light/prop_image_light.hpp"
+#include "volume/grid.hpp"
+#include "volume/height.hpp"
+#include "volume/homogeneous.hpp"
+#include "image/texture/texture.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
@@ -334,7 +335,11 @@ volume::Volume* Scene::create_homogenous_volume() {
 }
 
 volume::Volume* Scene::create_grid_volume(const Texture_ptr& grid) {
-	volume_region_ = new volume::Grid(grid);
+	if (3 == grid->num_channels()) {
+		volume_region_ = new volume::Emission_grid(grid);
+	} else {
+		volume_region_ = new volume::Grid(grid);
+	}
 
 	entities_.push_back(volume_region_);
 

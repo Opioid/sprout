@@ -23,6 +23,30 @@ private:
 	Texture_adapter grid_;
 };
 
+class Emission_grid : public Volume {
+
+public:
+
+	Emission_grid(const Texture_ptr& grid);
+
+	virtual float3 emission(const math::Ray& ray, float step_size, rnd::Generator& rng,
+							Sampler_filter filter, const Worker& worker) const override final;
+
+	virtual float3 optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
+								 Sampler_filter filter, const Worker& worker) const override final;
+
+	virtual float3 scattering(const float3& p, Sampler_filter filter,
+							  const Worker& worker) const override final;
+
+private:
+
+	float3 emission(const float3& p, Sampler_filter filter, const Worker& worker) const;
+
+	virtual void set_parameter(const std::string& name, const json::Value& value) override final;
+
+	Texture_adapter grid_;
+};
+
 }
 
 #endif

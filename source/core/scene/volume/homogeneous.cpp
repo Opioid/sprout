@@ -5,6 +5,11 @@
 
 namespace scene::volume {
 
+float3 Homogeneous::emission(const math::Ray& /*ray*/, float /*step_size*/, rnd::Generator& /*rng*/,
+							 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+	return float3(0.f);
+}
+
 float3 Homogeneous::optical_depth(const math::Ray& ray, float /*step_size*/,
 								  rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
 								  const Worker& /*worker*/) const {

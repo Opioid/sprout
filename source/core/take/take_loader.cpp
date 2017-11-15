@@ -17,6 +17,7 @@
 #include "rendering/integrator/surface/sub/sub_bruteforce.hpp"
 #include "rendering/integrator/surface/sub/sub_single_scattering.hpp"
 #include "rendering/integrator/volume/attenuation.hpp"
+#include "rendering/integrator/volume/emission.hpp"
 #include "rendering/integrator/volume/single_scattering.hpp"
 #include "rendering/postprocessor/postprocessor_backplate.hpp"
 #include "rendering/postprocessor/postprocessor_bloom.hpp"
@@ -551,6 +552,8 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 	for (auto& n : integrator_value.GetObject()) {
 		if ("Attenuation" == n.name) {
 			return std::make_shared<Attenuation_factory>(settings, num_workers);
+		} else if ("Emission" == n.name) {
+			return std::make_shared<Emission_factory>(settings, num_workers);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 

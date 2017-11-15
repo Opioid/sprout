@@ -35,18 +35,9 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 
 	auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 
-	Volume_rasterizer renderer(dimensions);
-
-	renderer.clear();
-
-	renderer.draw_sphere(float3(2.f, 2.f, 2.f), 1.f);
-
-	renderer.resolve(*target);
+	render(*target);
 
 	auto texture = std::make_shared<texture::Byte3_sRGB>(target);
-
-
-
 
 	volume::Volume* volume = scene.create_grid_volume(texture);
 	// volume::Volume* volume = scene.create_height_volume();
@@ -69,6 +60,16 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 	aurora->attach(volume);
 
 	return aurora;
+}
+
+void Provider::render(image::Byte3& target) {
+	Volume_rasterizer renderer(target.description().dimensions);
+
+	renderer.clear();
+
+	renderer.draw_sphere(float3(2.f, 2.f, 2.f), 1.f);
+
+	renderer.resolve(target);
 }
 
 }

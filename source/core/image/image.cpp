@@ -20,6 +20,24 @@ size_t Image::Description::num_pixels() const {
 							   num_elements);
 }
 
+uint32_t Image::Description::num_channels() const {
+	switch (type) {
+	case Type::Byte1:
+	case Type::Float1:
+		return 1;
+	case Type::Byte2:
+	case Type::Float2:
+		return 2;
+	case Type::Byte3:
+	case Type::Float3:
+		return 3;
+	case Type::Float4:
+		return 4;
+	default:
+		return 0;
+	}
+}
+
 Image::Image(const Description& description) :
 	description_(description),
 	area_(description.dimensions[0] * description.dimensions[1]),

@@ -7,7 +7,7 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 
-namespace rendering { namespace integrator { namespace volume {
+namespace rendering::integrator::volume {
 
 Attenuation::Attenuation(rnd::Generator& rng, const take::Settings& take_settings) :
 	Integrator(rng, take_settings) {}
@@ -23,19 +23,19 @@ float3 Attenuation::transmittance(const Ray& ray, const Volume& volume, const Wo
 		return float3(1.f);
 	}
 
-	scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
+	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
 	float3 tau = volume.optical_depth(tray, 1.f, rng_, Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
-float4 Attenuation::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
+float3 Attenuation::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
 					   const Worker& worker, float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
 		transmittance = float3(1.f);
-		return float4::identity();
+		return float3::identity();
 	}
 
 	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
@@ -43,7 +43,7 @@ float4 Attenuation::li(const Ray& ray, bool /*primary_ray*/, const Volume& volum
 	const float3 tau = volume.optical_depth(tray, 1.f, rng_, Sampler_filter::Undefined, worker);
 	transmittance = math::exp(-tau);
 
-	return float4(0.f);
+	return float3(0.f);
 }
 
 size_t Attenuation::num_bytes() const {
@@ -62,4 +62,4 @@ Integrator* Attenuation_factory::create(uint32_t id, rnd::Generator& rng) const 
 	return new(&integrators_[id]) Attenuation(rng, take_settings_);
 }
 
-}}}
+}

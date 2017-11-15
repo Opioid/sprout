@@ -7,6 +7,11 @@
 
 namespace scene::volume {
 
+float3 Density::emission(const math::Ray& /*ray*/, float /*step_size*/, rnd::Generator& /*rng*/,
+						 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+	return float3(0.f);
+}
+
 float3 Density::optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
 							  Sampler_filter filter, const Worker& worker) const {
 	const float length = math::length(ray.direction);

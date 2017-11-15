@@ -10,7 +10,6 @@
 #include "base/math/sampling/sampling.hpp"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
-#include "base/spectrum/rgb.hpp"
 
 namespace rendering { namespace integrator { namespace volume {
 
@@ -41,20 +40,20 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 	return math::exp(-tau);
 }
 
-float4 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& volume,
+float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& volume,
 							 const Worker& worker, float3& transmittance) {
 	float min_t;
 	float max_t;
 	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
 		transmittance = float3(1.f);
-		return float4(0.f);
+		return float3(0.f);
 	}
 
 	const float range = max_t - min_t;
 
 	if (range < 0.0001f) {
 		transmittance = float3(1.f);
-		return float4(0.f);
+		return float3(0.f);
 	}
 
 	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
@@ -116,7 +115,7 @@ float4 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 
 	const float3 color = step * radiance;
 
-	return float4(color, spectrum::luminance(color));
+	return color;
 }
 
 size_t Single_scattering::num_bytes() const {

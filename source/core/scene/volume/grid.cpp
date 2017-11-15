@@ -30,4 +30,40 @@ float Grid::density(const float3& p, Sampler_filter filter, const Worker& worker
 
 void Grid::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
+Emission_grid::Emission_grid(const Texture_ptr& grid) : grid_(grid) {}
+
+float3 Emission_grid::emission(const math::Ray& ray, float step_size, rnd::Generator& rng,
+							   Sampler_filter filter, const Worker& worker) const {
+	return emission(ray.origin, filter, worker);
+}
+
+float3 Emission_grid::optical_depth(const math::Ray& /*ray*/, float /*step_size*/,
+									rnd::Generator& /*rng*/, Sampler_filter /*filter*/,
+									const Worker& /*worker*/) const {
+	return float3(0.f);
+}
+
+
+float3 Emission_grid::scattering(const float3& /*p*/, Sampler_filter /*filter*/,
+								 const Worker& /*worker*/) const {
+	return float3(0.f);
+}
+
+float3 Emission_grid::emission(const float3& p, Sampler_filter filter, const Worker& worker) const {
+	// p is in object space already
+
+	if (!local_aabb_.intersect(p)) {
+		return float3(0.f);
+	}
+
+	float3 p_g = 0.5f * (float3(1.f) + p);
+	p_g[1] = 1.f - p_g[1];
+
+	const auto& sampler = worker.sampler_3D(static_cast<uint32_t>(Sampler_filter::Linear), filter);
+
+	return grid_.sample_3(sampler, p_g);
+}
+
+void Emission_grid::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
+
 }

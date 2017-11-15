@@ -19,6 +19,7 @@ public:
 
 	const Image* image() const;
 
+	int32_t num_channels() const;
 	int32_t width() const;
 	int2 dimensions_2() const;
 	int3 dimensions_3() const;
@@ -26,7 +27,6 @@ public:
 	const int3& back_3() const;
 	float2 dimensions_float2() const;
 	const float3& dimensions_float3() const;
-
 	int32_t num_elements() const;
 
 	virtual float3 at_3(int32_t i) const = 0;

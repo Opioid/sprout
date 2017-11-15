@@ -17,6 +17,10 @@ const Image* Texture::image() const {
 	return untyped_image_.get();
 }
 
+int32_t Texture::num_channels() const {
+	return untyped_image_->description().num_channels();
+}
+
 int32_t Texture::width() const {
 	return untyped_image_->description().dimensions[0];
 }
