@@ -15,16 +15,16 @@ float Linear_3D<Address_mode>::sample_1(const Texture& texture, const float3& uv
 	const float3 stu = map(texture, uvw, xyz, xyz1);
 
 	const float c000 = texture.at_1(xyz[0],  xyz[1],  xyz[2]);
-	const float c010 = texture.at_1(xyz1[0], xyz[1],  xyz[2]);
-	const float c100 = texture.at_1(xyz[0],  xyz1[1], xyz[2]);
+	const float c100 = texture.at_1(xyz1[0], xyz[1],  xyz[2]);
+	const float c010 = texture.at_1(xyz[0],  xyz1[1], xyz[2]);
 	const float c110 = texture.at_1(xyz1[0], xyz1[1], xyz[2]);
 	const float c001 = texture.at_1(xyz[0],  xyz[1],  xyz1[2]);
-	const float c011 = texture.at_1(xyz1[0], xyz[1],  xyz1[2]);
-	const float c101 = texture.at_1(xyz[0],  xyz1[1], xyz1[2]);
+	const float c101 = texture.at_1(xyz1[0], xyz[1],  xyz1[2]);
+	const float c011 = texture.at_1(xyz[0],  xyz1[1], xyz1[2]);
 	const float c111 = texture.at_1(xyz1[0], xyz1[1], xyz1[2]);
 
-	const float c0 = bilinear(c000, c010, c100, c110, stu[0], stu[1]);
-	const float c1 = bilinear(c001, c011, c101, c111, stu[0], stu[1]);
+	const float c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
+	const float c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
 
 	return math::lerp(c0, c1, stu[2]);
 }
@@ -35,16 +35,16 @@ float2 Linear_3D<Address_mode>::sample_2(const Texture& texture, const float3& u
 	const float3 stu = map(texture, uvw, xyz, xyz1);
 
 	const float2 c000 = texture.at_2(xyz[0],  xyz[1],  xyz[2]);
-	const float2 c010 = texture.at_2(xyz1[0], xyz[1],  xyz[2]);
-	const float2 c100 = texture.at_2(xyz[0],  xyz1[1], xyz[2]);
+	const float2 c100 = texture.at_2(xyz1[0], xyz[1],  xyz[2]);
+	const float2 c010 = texture.at_2(xyz[0],  xyz1[1], xyz[2]);
 	const float2 c110 = texture.at_2(xyz1[0], xyz1[1], xyz[2]);
 	const float2 c001 = texture.at_2(xyz[0],  xyz[1],  xyz1[2]);
-	const float2 c011 = texture.at_2(xyz1[0], xyz[1],  xyz1[2]);
-	const float2 c101 = texture.at_2(xyz[0],  xyz1[1], xyz1[2]);
+	const float2 c101 = texture.at_2(xyz1[0], xyz[1],  xyz1[2]);
+	const float2 c011 = texture.at_2(xyz[0],  xyz1[1], xyz1[2]);
 	const float2 c111 = texture.at_2(xyz1[0], xyz1[1], xyz1[2]);
 
-	const float2 c0 = bilinear(c000, c010, c100, c110, stu[0], stu[1]);
-	const float2 c1 = bilinear(c001, c011, c101, c111, stu[0], stu[1]);
+	const float2 c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
+	const float2 c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
 
 	return math::lerp(c0, c1, stu[2]);
 }
@@ -55,16 +55,16 @@ float3 Linear_3D<Address_mode>::sample_3(const Texture& texture, const float3& u
 	const float3 stu = map(texture, uvw, xyz, xyz1);
 
 	const float3 c000 = texture.at_3(xyz[0],  xyz[1],  xyz[2]);
-	const float3 c010 = texture.at_3(xyz1[0], xyz[1],  xyz[2]);
-	const float3 c100 = texture.at_3(xyz[0],  xyz1[1], xyz[2]);
+	const float3 c100 = texture.at_3(xyz1[0], xyz[1],  xyz[2]);
+	const float3 c010 = texture.at_3(xyz[0],  xyz1[1], xyz[2]);
 	const float3 c110 = texture.at_3(xyz1[0], xyz1[1], xyz[2]);
 	const float3 c001 = texture.at_3(xyz[0],  xyz[1],  xyz1[2]);
-	const float3 c011 = texture.at_3(xyz1[0], xyz[1],  xyz1[2]);
-	const float3 c101 = texture.at_3(xyz[0],  xyz1[1], xyz1[2]);
+	const float3 c101 = texture.at_3(xyz1[0], xyz[1],  xyz1[2]);
+	const float3 c011 = texture.at_3(xyz[0],  xyz1[1], xyz1[2]);
 	const float3 c111 = texture.at_3(xyz1[0], xyz1[1], xyz1[2]);
 
-	const float3 c0 = bilinear(c000, c010, c100, c110, stu[0], stu[1]);
-	const float3 c1 = bilinear(c001, c011, c101, c111, stu[0], stu[1]);
+	const float3 c0 = bilinear(c000, c100, c010, c110, stu[0], stu[1]);
+	const float3 c1 = bilinear(c001, c101, c011, c111, stu[0], stu[1]);
 
 	return math::lerp(c0, c1, stu[2]);
 }
