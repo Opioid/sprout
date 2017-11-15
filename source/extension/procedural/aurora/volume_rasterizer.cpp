@@ -25,11 +25,15 @@ void Volume_rasterizer::resolve(image::Byte3& target) const {
 	}
 }
 
+void Volume_rasterizer::set_brush(const float3& color) {
+	brush_ = color;
+}
+
 void Volume_rasterizer::clear() {
 	const int32_t len = dimensions_[0] * dimensions_[1] * dimensions_[2];
 
 	for (int32_t i = 0; i < len; ++i) {
-		samples_[i] = float3(1.f);
+		samples_[i] = brush_;
 	}
 }
 
@@ -38,7 +42,7 @@ void Volume_rasterizer::draw_sphere(const float3& pos, float radius) {
 
 	const int32_t i = c[2] * area_ + c[1] * dimensions_[0] + c[0];
 
-	samples_[i] = float3(1.f);
+	samples_[i] = brush_;
 }
 
 }

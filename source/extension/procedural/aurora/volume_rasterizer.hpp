@@ -14,6 +14,8 @@ public:
 
 	void resolve(image::Byte3& target) const;
 
+	void set_brush(const float3& color);
+
 	void clear();
 
 	void draw_sphere(const float3& pos, float radius);
@@ -23,6 +25,8 @@ private:
 	int3 dimensions_;
 
 	int32_t area_;
+
+	float3 brush_;
 
 	float3* samples_;
 };

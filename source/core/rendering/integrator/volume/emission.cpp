@@ -9,8 +9,10 @@
 
 namespace rendering::integrator::volume {
 
-Emission::Emission(rnd::Generator& rng, const take::Settings& take_settings) :
-	Integrator(rng, take_settings) {}
+Emission::Emission(rnd::Generator& rng, const take::Settings& take_settings,
+				   const Settings& settings) :
+	Integrator(rng, take_settings),
+	settings_(settings) {}
 
 void Emission::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pixel*/) {}
 
@@ -25,7 +27,8 @@ float3 Emission::transmittance(const Ray& ray, const Volume& volume, const Worke
 
 	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume.optical_depth(tray, 1.f, rng_, Sampler_filter::Nearest, worker);
+	const float3 tau = volume.optical_depth(tray, settings_.step_size, rng_,
+											Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
@@ -40,7 +43,8 @@ float3 Emission::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
 
 	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	const float3 emission = volume.emission(tray, 1.f, rng_, Sampler_filter::Undefined, worker);
+	const float3 emission = volume.emission(tray, settings_.step_size, rng_,
+											Sampler_filter::Undefined, worker);
 
 	transmittance = float3(1.f);
 
@@ -51,16 +55,18 @@ size_t Emission::num_bytes() const {
 	return sizeof(*this);
 }
 
-Emission_factory::Emission_factory(const take::Settings& settings, uint32_t num_integrators) :
+Emission_factory::Emission_factory(const take::Settings& settings, uint32_t num_integrators,
+								   float step_size) :
 	Factory(settings, num_integrators),
-	integrators_(memory::allocate_aligned<Emission>(num_integrators)) {}
+	integrators_(memory::allocate_aligned<Emission>(num_integrators)),
+	settings_{step_size} {}
 
 Emission_factory::~Emission_factory() {
 	memory::free_aligned(integrators_);
 }
 
 Integrator* Emission_factory::create(uint32_t id, rnd::Generator& rng) const {
-	return new(&integrators_[id]) Emission(rng, take_settings_);
+	return new(&integrators_[id]) Emission(rng, take_settings_, settings_);
 }
 
 }

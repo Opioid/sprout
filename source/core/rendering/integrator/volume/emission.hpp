@@ -9,7 +9,12 @@ class alignas(64) Emission : public Integrator {
 
 public:
 
-	Emission(rnd::Generator& rng, const take::Settings& take_settings);
+	struct Settings {
+		float step_size;
+	};
+
+	Emission(rnd::Generator& rng, const take::Settings& take_settings,
+			 const Settings& settings);
 
 	virtual void prepare(const scene::Scene& scene, uint32_t num_samples_per_pixel) override final;
 
@@ -22,13 +27,15 @@ public:
 					  const Worker& worker, float3& transmittance) override final;
 
 	virtual size_t num_bytes() const override final;
+
+	const Settings settings_;
 };
 
 class Emission_factory : public Factory {
 
 public:
 
-	Emission_factory(const take::Settings& settings, uint32_t num_integrators);
+	Emission_factory(const take::Settings& settings, uint32_t num_integrators, float step_size);
 
 	~Emission_factory();
 
@@ -37,6 +44,8 @@ public:
 private:
 
 	Emission* integrators_;
+
+	const Emission::Settings settings_;
 };
 
 }

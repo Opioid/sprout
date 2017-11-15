@@ -7,10 +7,9 @@
 #include "scene/scene_worker.hpp"
 #include "base/json/json.hpp"
 #include "base/math/aabb.inl"
+#include "base/math/ray.inl"
 #include "base/math/vector3.inl"
 #include "base/random/generator.inl"
-
-#include <iostream>
 
 namespace scene::volume {
 
@@ -65,10 +64,6 @@ float3 Emission_grid::emission(const math::Ray& ray, float step_size, rnd::Gener
 		emission += Emission_grid::emission(p_o, filter, worker);
 	}
 
-//	if (emission[0] > 0.f) {
-//		std::cout << "alarm" << std::endl;
-//	}
-
 	return step_size * emission;
 }
 
@@ -96,13 +91,7 @@ float3 Emission_grid::emission(const float3& p, Sampler_filter filter, const Wor
 
 	const auto& sampler = worker.sampler_3D(static_cast<uint32_t>(Sampler_filter::Linear), filter);
 
-	float3 e = grid_.sample_3(sampler, p_g);
-
-//	if (e[0] > 0.f) {
-//		std::cout << "alarm" << std::endl;
-//	}
-
-	return e;
+	return grid_.sample_3(sampler, p_g);
 }
 
 void Emission_grid::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}

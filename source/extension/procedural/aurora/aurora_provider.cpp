@@ -31,7 +31,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 										   Scene& scene, resource::Manager& /*manager*/) {
 	using namespace image;
 
-	const int3 dimensions(16);
+	const int3 dimensions(64);
 
 	auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 
@@ -49,7 +49,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 
 	math::Transformation transformation {
 		float3::identity(),
-		float3(0.1f),
+		float3(1.f),
 		math::quaternion::identity()
 	};
 
@@ -65,9 +65,33 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 void Provider::render(image::Byte3& target) {
 	Volume_rasterizer renderer(target.description().dimensions);
 
+	renderer.set_brush(float3(0.f));
 	renderer.clear();
 
+	renderer.set_brush(float3(1.f, 0.f, 0.f));
+	renderer.draw_sphere(float3(0.f, 0.f, 0.f), 1.f);
+
+	renderer.set_brush(float3(1.f, 0.f, 0.f));
 	renderer.draw_sphere(float3(2.f, 2.f, 2.f), 1.f);
+
+	renderer.set_brush(float3(0.f, 1.f, 0.f));
+	renderer.draw_sphere(float3(3.f, 3.f, 3.f), 1.f);
+
+	renderer.set_brush(float3(0.f, 0.f, 1.f));
+	renderer.draw_sphere(float3(4.f, 4.f, 4.f), 1.f);
+	renderer.set_brush(float3(0.2f, 0.2f, 1.f));
+	renderer.draw_sphere(float3(4.f, 5.f, 4.f), 1.f);
+	renderer.set_brush(float3(0.4f, 0.4f, 1.f));
+	renderer.draw_sphere(float3(4.f, 6.f, 4.f), 1.f);
+
+	renderer.set_brush(float3(1.f, 0.f, 0.f));
+	renderer.draw_sphere(float3(8.f, 5.f, 2.f), 1.f);
+
+	renderer.set_brush(float3(0.f, 1.f, 0.f));
+	renderer.draw_sphere(float3(8.f, 5.f, 3.f), 1.f);
+
+	renderer.set_brush(float3(0.f, 0.f, 1.f));
+	renderer.draw_sphere(float3(8.f, 5.f, 4.f), 1.f);
 
 	renderer.resolve(target);
 }

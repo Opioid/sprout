@@ -553,7 +553,9 @@ Loader::load_volume_integrator_factory(const json::Value& integrator_value,
 		if ("Attenuation" == n.name) {
 			return std::make_shared<Attenuation_factory>(settings, num_workers);
 		} else if ("Emission" == n.name) {
-			return std::make_shared<Emission_factory>(settings, num_workers);
+			const float step_size = json::read_float(n.value, "step_size", 1.f);
+
+			return std::make_shared<Emission_factory>(settings, num_workers, step_size);
 		} else if ("Single_scattering" == n.name) {
 			const float step_size = json::read_float(n.value, "step_size", 1.f);
 
