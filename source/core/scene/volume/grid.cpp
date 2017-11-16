@@ -89,7 +89,7 @@ float3 Emission_grid::emission(const float3& p, Sampler_filter filter, const Wor
 
 	const auto& sampler = worker.sampler_3D(static_cast<uint32_t>(Sampler_filter::Linear), filter);
 
-	return grid_.sample_3(sampler, p_g);
+	return 0.0001f * grid_.sample_3(sampler, p_g);
 }
 
 void Emission_grid::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}

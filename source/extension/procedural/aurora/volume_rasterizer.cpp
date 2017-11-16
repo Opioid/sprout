@@ -40,6 +40,12 @@ void Volume_rasterizer::clear() {
 void Volume_rasterizer::splat(const float3& position, const float3& color) {
 	const int3 c(position);
 
+	if (c[0] < 0 || c[0] >= dimensions_[0]
+	||  c[1] < 0 || c[1] >= dimensions_[1]
+	||  c[2] < 0 || c[2] >= dimensions_[2]) {
+		return;
+	}
+
 	const int32_t i = c[2] * area_ + c[1] * dimensions_[0] + c[0];
 
 	samples_[i] = color;

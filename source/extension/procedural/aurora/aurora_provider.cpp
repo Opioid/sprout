@@ -33,7 +33,8 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 										   Scene& scene, resource::Manager& /*manager*/) {
 	using namespace image;
 
-	const int3 dimensions(2048, 512, 256);
+	// const int3 dimensions(2048, 512, 256);
+	const int3 dimensions(3072, 384, 192);
 
 	auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 
@@ -51,7 +52,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 
 	math::Transformation transformation {
 		float3::identity(),
-		float3(4.f, 1.f, 0.5f),
+		float3(800000.f, 100000.f, 50000.f),
 		math::quaternion::identity()
 	};
 
@@ -81,10 +82,10 @@ void Provider::render(image::Byte3& target) {
 	renderer.clear();
 
 
-	const float start_height_deviation = 10000.f;
+	const float start_height_deviation = 20000.f;
 	const float start_height = ground_to_bottom_ + aurora_height_ - start_height_deviation;
 
-	const uint32_t num_particles = 16384;
+	const uint32_t num_particles = 2 * 16384;
 
 	const float nf = static_cast<float>(num_particles);
 
@@ -99,7 +100,7 @@ void Provider::render(image::Byte3& target) {
 
 		const float3 position(x * aurora_volume_[0],
 							  start_height + r0 * start_height_deviation,
-							  0.5f * aurora_volume_[2] + z * 30000.f);
+							  0.5f * aurora_volume_[2] + z * 50000.f);
 
 
 
@@ -114,16 +115,16 @@ void Provider::simulate_particle(const float3& start, rnd::Generator& rng,
 								 Volume_rasterizer& renderer) const {
 	constexpr float step_size = 500.f;
 
-	float3 color(0.05f, 0.1f, 0.075f);
+	float3 color(0.025f, 0.05f, 0.0375f);
 
 	float3 position = start;
 	for (; position[1] > ground_to_bottom_;) {
 		renderer.splat(world_to_grid(position), color);
 
-		color += float3(0.001f, 0.01f, 0.005f);
+		color += float3(0.0001f, 0.005f, 0.003f);
 
-		position[0] += (1.f - 2.f * rng.random_float()) * 400.f;
-		position[2] += (1.f - 2.f * rng.random_float()) * 400.f;
+		position[0] += (1.f - 2.f * rng.random_float()) * 500.f;
+		position[2] += (1.f - 2.f * rng.random_float()) * 500.f;
 
 		position[1] -= step_size;
 	}
