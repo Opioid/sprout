@@ -4,9 +4,13 @@
 #include "core/image/typed_image.hpp"
 #include "core/scene/entity/entity_extension_provider.hpp"
 
+namespace rnd { class Generator; }
+
 namespace scene { class Loader; }
 
 namespace procedural::aurora {
+
+class Volume_rasterizer;
 
 void init(scene::Loader& loader);
 
@@ -22,9 +26,21 @@ public:
 
 private:
 
-	static void render(image::Byte3& target);
+	void render(image::Byte3& target);
+
+	void simulate_particle(const float3& start, rnd::Generator& rng,
+						   Volume_rasterizer& renderer) const;
+
+	float3 world_to_grid(const float3& position) const;
 
 	scene::Loader* scene_loader_ = nullptr;
+
+	float voxel_ratio_;
+
+	float3 aurora_volume_;
+
+	static constexpr float ground_to_bottom_ = 100000.f;
+	static constexpr float aurora_height_    = 200000.f;
 };
 
 }

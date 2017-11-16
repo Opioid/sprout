@@ -21,7 +21,7 @@ void Emission::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {
 float3 Emission::transmittance(const Ray& ray, const Volume& volume, const Worker& worker) {
 	float min_t;
 	float max_t;
-	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
+	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
 		return float3(1.f);
 	}
 
@@ -36,7 +36,7 @@ float3 Emission::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
 					const Worker& worker, float3& transmittance) {
 	float min_t;
 	float max_t;
-	if (!worker.scene().aabb().intersect_p(ray, min_t, max_t)) {
+	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
 		transmittance = float3(1.f);
 		return float3::identity();
 	}

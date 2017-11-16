@@ -36,8 +36,6 @@ Emission_grid::Emission_grid(const Texture_ptr& grid) : grid_(grid) {}
 
 float3 Emission_grid::emission(const math::Ray& ray, float step_size, rnd::Generator& rng,
 							   Sampler_filter filter, const Worker& worker) const {
-//	return float3(1.f);//emission(ray.origin, filter, worker);
-
 	const float length = math::length(ray.direction);
 
 	const math::Ray rn(ray.origin, ray.direction / length, ray.min_t * length, ray.max_t * length);

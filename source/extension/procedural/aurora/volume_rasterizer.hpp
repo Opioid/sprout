@@ -18,6 +18,8 @@ public:
 
 	void clear();
 
+	void splat(const float3& position, const float3& color);
+
 	void draw_sphere(const float3& pos, float radius);
 
 private:
