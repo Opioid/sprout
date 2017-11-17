@@ -34,7 +34,8 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 	using namespace image;
 
 	// const int3 dimensions(2048, 512, 256);
-	const int3 dimensions(3072, 384, 192);
+	// const int3 dimensions(3072, 384, 192);
+	const int3 dimensions(3200, 320, 160);
 
 	auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 
@@ -52,7 +53,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 
 	math::Transformation transformation {
 		float3::identity(),
-		float3(800000.f, 100000.f, 50000.f),
+		float3(1000000.f, 100000.f, 50000.f),
 		math::quaternion::identity()
 	};
 
