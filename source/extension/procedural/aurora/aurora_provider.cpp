@@ -1,5 +1,6 @@
 #include "aurora_provider.hpp"
 #include "aurora.hpp"
+#include "aurora_spectrum.hpp"
 #include "volume_rasterizer.hpp"
 #include "core/image/typed_image.inl"
 #include "core/image/texture/texture_byte_3_srgb.hpp"
@@ -23,6 +24,8 @@ void init(scene::Loader& loader) {
 	provider.set_scene_loader(loader);
 
 	loader.register_extension_provider("Aurora", &provider);
+
+	spectrum::init();
 }
 
 void Provider::set_scene_loader(Loader& loader) {
@@ -120,9 +123,11 @@ void Provider::simulate_particle(const float3& start, rnd::Generator& rng,
 
 	float3 position = start;
 	for (; position[1] > ground_to_bottom_;) {
-		renderer.splat(world_to_grid(position), color);
+		const float normalized_height = (position[1] - ground_to_bottom_) / aurora_height_;
 
-		color += float3(0.0001f, 0.005f, 0.003f);
+		renderer.splat(world_to_grid(position), spectrum::linear_rgb(normalized_height));
+
+	//	color += float3(0.0001f, 0.005f, 0.003f);
 
 		position[0] += (1.f - 2.f * rng.random_float()) * 500.f;
 		position[2] += (1.f - 2.f * rng.random_float()) * 500.f;

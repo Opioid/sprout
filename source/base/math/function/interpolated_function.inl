@@ -11,9 +11,9 @@ template<typename F>
 Interpolated_function<T>::Interpolated_function(float range_begin, float range_end,
 												size_t num_samples, F f) :
 	range_end_(range_end), samples_(new T[num_samples + 1]) {
-	float range = range_end - range_begin;
+	const float range = range_end - range_begin;
 
-	float interval = range / static_cast<float>(num_samples - 1);
+	const float interval = range / static_cast<float>(num_samples - 1);
 
 	inverse_range_ = 1.f / interval;
 
@@ -31,13 +31,32 @@ Interpolated_function<T>::~Interpolated_function() {
 }
 
 template<typename T>
+void Interpolated_function<T>::from_array(float range_begin, float range_end,
+										  size_t num_samples, const T t[]) {
+	delete[] samples_;
+
+	range_end_ = range_end;
+	samples_ = new T[num_samples];
+
+	const float range = range_end - range_begin;
+
+	const float interval = range / static_cast<float>(num_samples - 1);
+
+	inverse_range_ = 1.f / interval;
+
+	for (size_t i = 0; i < num_samples; ++i) {
+		samples_[i] = t[i];
+	}
+}
+
+template<typename T>
 T Interpolated_function<T>::operator()(float x) const {
 	x = std::min(x, range_end_);
 
-	float o = x * inverse_range_;
-	uint32_t offset = static_cast<uint32_t>(o);
+	const float o = x * inverse_range_;
+	const uint32_t offset = static_cast<uint32_t>(o);
 
-	float t = o - static_cast<float>(offset);
+	const float t = o - static_cast<float>(offset);
 
 	return lerp(samples_[offset], samples_[offset + 1], t);
 }
