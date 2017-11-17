@@ -28,7 +28,7 @@ private:
 
 	void render(image::Byte3& target);
 
-	void simulate_particle(const float3& start, rnd::Generator& rng,
+	void simulate_particle(const float3& start, float peak_height, rnd::Generator& rng,
 						   Volume_rasterizer& renderer) const;
 
 	float3 world_to_grid(const float3& position) const;

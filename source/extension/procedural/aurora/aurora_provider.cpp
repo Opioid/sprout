@@ -8,11 +8,14 @@
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/volume/height.hpp"
 #include "base/json/json.hpp"
+#include "base/math/sampling/sampling.hpp"
 #include "base/math/sampling/sample_distribution.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
 #include "base/math/quaternion.inl"
 #include "base/random/generator.inl"
+
+#include <iostream>
 
 namespace procedural::aurora {
 
@@ -25,7 +28,7 @@ void init(scene::Loader& loader) {
 
 	loader.register_extension_provider("Aurora", &provider);
 
-	spectrum::init();
+
 }
 
 void Provider::set_scene_loader(Loader& loader) {
@@ -34,11 +37,14 @@ void Provider::set_scene_loader(Loader& loader) {
 
 entity::Entity* Provider::create_extension(const json::Value& extension_value,
 										   Scene& scene, resource::Manager& /*manager*/) {
+	spectrum::init();
+
 	using namespace image;
 
 	// const int3 dimensions(2048, 512, 256);
 	// const int3 dimensions(3072, 384, 192);
-	const int3 dimensions(3200, 320, 160);
+//	const int3 dimensions(3200, 320, 160);
+	const int3 dimensions(3200, 320, 256);
 
 	auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 
@@ -56,7 +62,8 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 
 	math::Transformation transformation {
 		float3::identity(),
-		float3(1000000.f, 100000.f, 50000.f),
+	//	float3(1000000.f, 100000.f, 50000.f),
+		float3(1000000.f, 100000.f, 80000.f),
 		math::quaternion::identity()
 	};
 
@@ -86,10 +93,10 @@ void Provider::render(image::Byte3& target) {
 	renderer.clear();
 
 
-	const float start_height_deviation = 20000.f;
+	const float start_height_deviation = 60000.f;
 	const float start_height = ground_to_bottom_ + aurora_height_ - start_height_deviation;
 
-	const uint32_t num_particles = 2 * 16384;
+	const uint32_t num_particles = 256 * 16384;
 
 	const float nf = static_cast<float>(num_particles);
 
@@ -100,37 +107,51 @@ void Provider::render(image::Byte3& target) {
 
 		const float x = math::radical_inverse_vdC(i, 0);// cf / nf;
 
-		const float z = std::sin(x * (2.f * math::Pi));
+		const float z = std::sin(x * (2.f * math::Pi)) * 50000.f
+					  + std::sin(3.5f * x * (2.f * math::Pi)) * 20000.f
+					  + (x * x) * std::sin(17.f * x * (2.f * math::Pi)) * 10000.f;
+
+		const float y = start_height + std::sin(x * (7.f * math::Pi)) * start_height_deviation;
+	//	const float y = start_height + start_height_deviation;
 
 		const float3 position(x * aurora_volume_[0],
-							  start_height + r0 * start_height_deviation,
-							  0.5f * aurora_volume_[2] + z * 50000.f);
+							  ground_to_bottom_ + aurora_height_,
+							  0.5f * aurora_volume_[2] + z);
 
 
 
-		simulate_particle(position, rng, renderer);
+		simulate_particle(position, y, rng, renderer);
 	}
 
 
 	renderer.resolve(target);
 }
 
-void Provider::simulate_particle(const float3& start, rnd::Generator& rng,
+void Provider::simulate_particle(const float3& start, float peak_height, rnd::Generator& rng,
 								 Volume_rasterizer& renderer) const {
-	constexpr float step_size = 500.f;
+	const float step_size = 1.f / voxel_ratio_;
 
-	float3 color(0.025f, 0.05f, 0.0375f);
+	const float range = (start[1] - ground_to_bottom_);
+	const float grace_range = (start[1] - peak_height);
 
 	float3 position = start;
 	for (; position[1] > ground_to_bottom_;) {
 		const float normalized_height = (position[1] - ground_to_bottom_) / aurora_height_;
 
-		renderer.splat(world_to_grid(position), spectrum::linear_rgb(normalized_height));
+		const float progress = 1.f - (position[1] - ground_to_bottom_) / range;
+		const float grace_progress = std::min(1.f - (position[1] - peak_height) / grace_range, 1.f);
 
-	//	color += float3(0.0001f, 0.005f, 0.003f);
+		//	const float progress = 1.f - normalized_height;
+		const float spread = (100.f + progress * 500.f);
 
-		position[0] += (1.f - 2.f * rng.random_float()) * 500.f;
-		position[2] += (1.f - 2.f * rng.random_float()) * 500.f;
+		renderer.splat(world_to_grid(position),
+					   progress * grace_progress * spectrum::linear_rgb(normalized_height));
+
+		const float2 r2(rng.random_float(), rng.random_float());
+		const float2 uv = math::sample_disk_concentric(r2);
+
+		position[0] += uv[0] * spread;
+		position[2] += uv[1] * spread;
 
 		position[1] -= step_size;
 	}

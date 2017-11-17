@@ -561,8 +561,16 @@ static inline Vector3f_a tangent(const Vector3f_a& n) {
 	return Vector3f_a(1.f + sign * n[0] * n[0] * c, sign * d, -sign * n[0]);
 }
 
+static inline constexpr Vector3f_a min(const Vector3f_a& a, float s) {
+	return Vector3f_a(std::min(a[0], s), std::min(a[1], s), std::min(a[2], s));
+}
+
 static inline constexpr Vector3f_a min(const Vector3f_a& a, const Vector3f_a& b) {
 	return Vector3f_a(std::min(a[0], b[0]), std::min(a[1], b[1]), std::min(a[2], b[2]));
+}
+
+static inline constexpr Vector3f_a max(const Vector3f_a& a, float s) {
+	return Vector3f_a(std::max(a[0], s), std::max(a[1], s), std::max(a[2], s));
 }
 
 static inline constexpr Vector3f_a max(const Vector3f_a& a, const Vector3f_a& b) {
