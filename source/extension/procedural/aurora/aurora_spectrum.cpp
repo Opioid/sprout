@@ -33,7 +33,7 @@ void init() {
 	const float3 cie_630(CIE_X.evaluate(wl_630),
 						 CIE_Y.evaluate(wl_630),
 						 CIE_Z.evaluate(wl_630));
-/*
+
 	constexpr float intensities_427[] = {
 		0.f,
 		0.21f,
@@ -61,8 +61,8 @@ void init() {
 
 		0.f
 	};
-	*/
-	constexpr float intensities_427[] = {
+
+/*	constexpr float intensities_427[] = {
 		0.f,
 		0.1f,
 		0.15f,
@@ -88,7 +88,7 @@ void init() {
 		0.05f,
 
 		0.01f
-	};
+	};*/
 
 	constexpr float intensities_557[] = {
 		0.f,
@@ -157,7 +157,7 @@ void init() {
 	for (size_t i = 0; i < num_elements; ++i) {
 		float3 xyz(0.f);
 
-		xyz += 0.25f * intensities_427[i] * cie_427;
+		xyz += 1.f * intensities_427[i] * cie_427;
 		xyz += std::min(1.f * intensities_557[i], 1.f) * cie_557;
 		xyz += intensities_630[i] * cie_630;
 

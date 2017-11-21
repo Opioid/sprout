@@ -20,7 +20,7 @@ public:
 
 	void splat(const float3& position, const float3& color);
 
-	void draw_sphere(const float3& pos, float radius);
+	float3* data();
 
 private:
 

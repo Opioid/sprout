@@ -6,7 +6,7 @@
 
 namespace image::texture {
 
-class Byte3_sRGB : public Texture {
+class Byte3_sRGB final : public Texture {
 
 public:
 

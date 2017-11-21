@@ -51,12 +51,8 @@ void Volume_rasterizer::splat(const float3& position, const float3& color) {
 	samples_[i] = color;
 }
 
-void Volume_rasterizer::draw_sphere(const float3& pos, float radius) {
-	const int3 c(pos);
-
-	const int32_t i = c[2] * area_ + c[1] * dimensions_[0] + c[0];
-
-	samples_[i] = brush_;
+float3* Volume_rasterizer::data() {
+	return samples_;
 }
 
 }

@@ -1,9 +1,11 @@
 #include "aurora_provider.hpp"
 #include "aurora.hpp"
 #include "aurora_spectrum.hpp"
+#include "volume_filter.hpp"
 #include "volume_rasterizer.hpp"
 #include "core/image/typed_image.inl"
 #include "core/image/texture/texture_byte_3_srgb.hpp"
+#include "core/resource/resource_manager.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/volume/height.hpp"
@@ -14,6 +16,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/quaternion.inl"
 #include "base/random/generator.inl"
+#include "base/thread/thread_pool.hpp"
 
 #include <iostream>
 
@@ -36,7 +39,7 @@ void Provider::set_scene_loader(Loader& loader) {
 }
 
 entity::Entity* Provider::create_extension(const json::Value& extension_value,
-										   Scene& scene, resource::Manager& /*manager*/) {
+										   Scene& scene, resource::Manager& manager) {
 	spectrum::init();
 
 	using namespace image;
@@ -44,11 +47,14 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 	// const int3 dimensions(2048, 512, 256);
 	// const int3 dimensions(3072, 384, 192);
 //	const int3 dimensions(3200, 320, 160);
-	const int3 dimensions(3200, 320, 256);
+//	const int3 dimensions(3200, 320, 256);
+
+	const int3 dimensions(1600, 160, 128);
+//	const int3 dimensions(800, 80, 64);
 
 	auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 
-	render(*target);
+	render(*target, manager.thread_pool());
 
 	auto texture = std::make_shared<texture::Byte3_sRGB>(target);
 
@@ -76,7 +82,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 	return aurora;
 }
 
-void Provider::render(image::Byte3& target) {
+void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 	rnd::Generator rng;
 
 	Volume_rasterizer renderer(target.description().dimensions);
@@ -96,7 +102,7 @@ void Provider::render(image::Byte3& target) {
 	const float start_height_deviation = 60000.f;
 	const float start_height = ground_to_bottom_ + aurora_height_ - start_height_deviation;
 
-	const uint32_t num_particles = 256 * 16384;
+	const uint32_t num_particles = 16384;
 
 	const float nf = static_cast<float>(num_particles);
 
@@ -123,6 +129,10 @@ void Provider::render(image::Byte3& target) {
 		simulate_particle(position, y, rng, renderer);
 	}
 
+	const float filter_radius = 16.f;
+	Volume_filter filter(target.description().dimensions, filter_radius, thread_pool.num_threads());
+
+	filter.filter(renderer.data());
 
 	renderer.resolve(target);
 }
@@ -135,7 +145,7 @@ void Provider::simulate_particle(const float3& start, float peak_height, rnd::Ge
 	const float grace_range = (start[1] - peak_height);
 
 	float3 position = start;
-	for (; position[1] > ground_to_bottom_;) {
+	for (float edge = ground_to_bottom_ + (4.f * step_size); position[1] > edge;) {
 		const float normalized_height = (position[1] - ground_to_bottom_) / aurora_height_;
 
 		const float progress = 1.f - (position[1] - ground_to_bottom_) / range;

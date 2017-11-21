@@ -7,7 +7,7 @@
 namespace image {
 
 template<typename T>
-class Typed_image : public Image {
+class Typed_image final : public Image {
 
 public:
 

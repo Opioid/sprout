@@ -6,7 +6,7 @@
 
 namespace image::texture {
 
-class Float1 : public Texture {
+class Float1 final : public Texture {
 
 public:
 

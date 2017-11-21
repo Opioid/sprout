@@ -11,7 +11,7 @@ namespace texture {
 
 class Texture;
 
-class Provider : public resource::Provider<Texture> {
+class Provider final : public resource::Provider<Texture> {
 
 public:
 

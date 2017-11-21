@@ -8,6 +8,8 @@ namespace rnd { class Generator; }
 
 namespace scene { class Loader; }
 
+namespace thread { class Pool; }
+
 namespace procedural::aurora {
 
 class Volume_rasterizer;
@@ -26,7 +28,7 @@ public:
 
 private:
 
-	void render(image::Byte3& target);
+	void render(image::Byte3& target, thread::Pool& thread_pool);
 
 	void simulate_particle(const float3& start, float peak_height, rnd::Generator& rng,
 						   Volume_rasterizer& renderer) const;
