@@ -49,8 +49,10 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 //	const int3 dimensions(3200, 320, 160);
 //	const int3 dimensions(3200, 320, 256);
 
-	const int3 dimensions(1600, 160, 128);
+//	const int3 dimensions(1600, 160, 128);
 //	const int3 dimensions(800, 80, 64);
+
+	const int3 dimensions(320, 32, 16);
 
 	auto target = std::make_shared<Byte3>(Image::Description(Image::Type::Byte3, dimensions));
 
@@ -102,7 +104,7 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 	const float start_height_deviation = 60000.f;
 	const float start_height = ground_to_bottom_ + aurora_height_ - start_height_deviation;
 
-	const uint32_t num_particles = 16384;
+	const uint32_t num_particles = 1;//16384;
 
 	const float nf = static_cast<float>(num_particles);
 
@@ -111,7 +113,7 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 
 		const float r0 = rng.random_float();
 
-		const float x = math::radical_inverse_vdC(i, 0);// cf / nf;
+		const float x = 0.5f;//math::radical_inverse_vdC(i, 0);// cf / nf;
 
 		const float z = std::sin(x * (2.f * math::Pi)) * 50000.f
 					  + std::sin(3.5f * x * (2.f * math::Pi)) * 20000.f
@@ -129,8 +131,10 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 		simulate_particle(position, y, rng, renderer);
 	}
 
-	const float filter_radius = 16.f;
-	Volume_filter filter(target.description().dimensions, filter_radius, thread_pool.num_threads());
+	const float filter_radius = 4.f;
+	const float alpha = 0.6f;
+	Volume_filter filter(target.description().dimensions, filter_radius, alpha,
+						 thread_pool.num_threads());
 
 	filter.filter(renderer.data(), thread_pool);
 
@@ -139,7 +143,7 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 
 void Provider::simulate_particle(const float3& start, float peak_height, rnd::Generator& rng,
 								 Volume_rasterizer& renderer) const {
-	const float step_size = 1.f / voxel_ratio_;
+/*	const float step_size = 1.f / voxel_ratio_;
 
 	const float range = (start[1] - ground_to_bottom_);
 	const float grace_range = (start[1] - peak_height);
@@ -154,8 +158,9 @@ void Provider::simulate_particle(const float3& start, float peak_height, rnd::Ge
 		//	const float progress = 1.f - normalized_height;
 		const float spread = (100.f + progress * 500.f);
 
-		renderer.splat(world_to_grid(position),
-					   progress * grace_progress * spectrum::linear_rgb(normalized_height));
+		const float3 color = progress * grace_progress * spectrum::linear_rgb(normalized_height);
+
+		renderer.splat(world_to_grid(position), color);
 
 		const float2 r2(rng.random_float(), rng.random_float());
 		const float2 uv = math::sample_disk_concentric(r2);
@@ -165,8 +170,11 @@ void Provider::simulate_particle(const float3& start, float peak_height, rnd::Ge
 
 		position[1] -= step_size;
 	}
+*/
 
-
+	const float3 position = start + float3(0.f, -50000.f, 0.f);
+	const float3 color = spectrum::linear_rgb(0.5f);
+	renderer.splat(world_to_grid(position), color);
 }
 
 float3 Provider::world_to_grid(const float3& position) const {

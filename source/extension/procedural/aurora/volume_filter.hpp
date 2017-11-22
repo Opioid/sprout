@@ -11,7 +11,7 @@ class Volume_filter {
 
 public:
 
-	Volume_filter(const int3& dimensions, float radius, uint32_t num_buckets);
+	Volume_filter(const int3& dimensions, float radius, float alpha, uint32_t num_buckets);
 	~Volume_filter();
 
 	void filter(float3* target, thread::Pool& pool) const;
