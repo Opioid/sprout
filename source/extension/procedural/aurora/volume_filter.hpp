@@ -3,6 +3,8 @@
 
 #include "image/typed_image.hpp"
 
+namespace thread { class Pool; }
+
 namespace procedural::aurora {
 
 class Volume_filter {
@@ -12,9 +14,13 @@ public:
 	Volume_filter(const int3& dimensions, float radius, uint32_t num_buckets);
 	~Volume_filter();
 
-	void filter(float3* target) const;
+	void filter(float3* target, thread::Pool& pool) const;
 
 private:
+
+	void filter_slices(uint32_t id, int32_t begin, int32_t end, float3* target) const;
+
+	void filter_z(uint32_t id, int32_t begin, int32_t end, float3* target) const;
 
 	int3 dimensions_;
 

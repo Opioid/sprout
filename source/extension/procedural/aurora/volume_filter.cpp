@@ -2,6 +2,7 @@
 #include "base/memory/align.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/filter/gaussian.hpp"
+#include "base/thread/thread_pool.hpp"
 
 #include "base/math/print.hpp"
 #include <iostream>
@@ -43,13 +44,24 @@ Volume_filter::~Volume_filter() {
 	memory::free_aligned(kernel_);
 }
 
-void Volume_filter::filter(float3* target) const {
-	float3* scratch = scratch_[0];
+void Volume_filter::filter(float3* target, thread::Pool& pool) const {
+	pool.run_range([this, target]
+		(uint32_t id, int32_t begin, int32_t end) {
+			filter_slices(id, begin, end, target);
+		}, 0, dimensions_[2]);
+
+	pool.run_range([this, target]
+		(uint32_t id, int32_t begin, int32_t end) {
+			filter_z(id, begin, end, target);
+		}, 0, dimensions_[0]);
+}
+
+void Volume_filter::filter_slices(uint32_t id, int32_t begin, int32_t end, float3* target) const {
+	float3* scratch = scratch_[id];
 
 	const int32_t area = dimensions_[0] * dimensions_[1];
 
-	for (int32_t z = 0, depth = dimensions_[2]; z < depth; ++z) {
-
+	for (int32_t z = begin; z < end; ++z) {
 		for (int32_t y = 0, height = dimensions_[1]; y < height; ++y) {
 			for (int32_t x = 0, width = dimensions_[0]; x < width; ++x) {
 
@@ -105,9 +117,14 @@ void Volume_filter::filter(float3* target) const {
 			}
 		}
 	}
+}
 
+void Volume_filter::filter_z(uint32_t id, int32_t begin, int32_t end, float3* target) const {
+	float3* scratch = scratch_[id];
 
-	for (int32_t x = 0, width = dimensions_[0]; x < width; ++x) {
+	const int32_t area = dimensions_[0] * dimensions_[1];
+
+	for (int32_t x = begin; x < end; ++x) {
 		for (int32_t y = 0, height = dimensions_[1]; y < height; ++y) {
 			for (int32_t z = 0, depth = dimensions_[2]; z < depth; ++z) {
 
@@ -147,10 +164,6 @@ void Volume_filter::filter(float3* target) const {
 			}
 		}
 	}
-
-
-
 }
-
 
 }

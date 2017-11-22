@@ -132,7 +132,7 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 	const float filter_radius = 16.f;
 	Volume_filter filter(target.description().dimensions, filter_radius, thread_pool.num_threads());
 
-	filter.filter(renderer.data());
+	filter.filter(renderer.data(), thread_pool);
 
 	renderer.resolve(target);
 }
