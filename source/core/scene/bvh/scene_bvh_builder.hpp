@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_BVH_BUILDER_HPP
+#define SU_CORE_SCENE_BVH_BUILDER_HPP
 
 #include "scene_bvh_split_candidate.hpp"
 #include "scene_bvh_tree.hpp"
@@ -68,3 +69,5 @@ private:
 };
 
 }}
+
+#endif

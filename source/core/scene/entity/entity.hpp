@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_ENTITY_ENTITY_HPP
+#define SU_CORE_SCENE_ENTITY_ENTITY_HPP
 
 #include "composed_transformation.hpp"
 #include "keyframe.hpp"
@@ -7,7 +8,7 @@
 #include "base/math/quaternion.hpp"
 #include "base/math/transformation.hpp"
 
-namespace scene { namespace entity {
+namespace scene::entity {
 
 class Entity {
 
@@ -85,4 +86,6 @@ protected:
 	Entity* child_	= nullptr;
 };
 
-}}
+}
+
+#endif

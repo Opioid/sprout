@@ -2,7 +2,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/transformation.inl"
 
-namespace scene { namespace entity {
+namespace scene::entity {
 
 Entity::~Entity() {}
 
@@ -185,4 +185,4 @@ void Entity::remove_sibling(Entity* node) {
 	}
 }
 
-}}
+}

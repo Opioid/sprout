@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_BVH_TREE_HPP
+#define SU_CORE_SCENE_BVH_TREE_HPP
 
 #include "scene/material/sampler_settings.hpp"
 #include "scene/scene_intersection.hpp"
@@ -58,5 +59,6 @@ private:
 	friend class Builder;
 };
 
-
 }}
+
+#endif

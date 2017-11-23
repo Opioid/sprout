@@ -4,7 +4,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
 
-namespace scene { namespace bvh {
+namespace scene::bvh {
 
 Builder::Builder() : root_(new Build_node) {
 	root_->clear();
@@ -162,4 +162,4 @@ math::AABB Builder::aabb(index begin, index end) {
 	return aabb;
 }
 
-}}
+}

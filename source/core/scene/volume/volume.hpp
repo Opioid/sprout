@@ -50,8 +50,8 @@ protected:
 
 	static float phase_schlick(const float3& w, const float3& wp, float k);
 
-	math::AABB scene_bb_;
 	math::AABB aabb_;
+	math::AABB scene_bb_;
 	math::AABB local_aabb_;
 
 	float3 absorption_;

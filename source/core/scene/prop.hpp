@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_PROP_HPP
+#define SU_CORE_SCENE_PROP_HPP
 
 #include "scene/entity/entity.hpp"
 #include "scene/material/material.hpp"
@@ -90,3 +91,5 @@ private:
 };
 
 }
+
+#endif

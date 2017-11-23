@@ -120,7 +120,7 @@ private:
 	double simulation_time_ = 0.0;
 
     bvh::Builder builder_;
-	bvh::Tree bvh_;
+	bvh::Tree surfaces_;
 
 	light::Null_light null_light_;
 

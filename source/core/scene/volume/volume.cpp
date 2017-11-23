@@ -3,7 +3,7 @@
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
 
-namespace scene { namespace volume {
+namespace scene::volume {
 
 Volume::Volume() :
 	local_aabb_(float3(-1.f), float3(1.f)),
@@ -57,4 +57,4 @@ float Volume::phase_schlick(const float3& w, const float3& wp, float k) {
 	return 1.f / (4.f * math::Pi) * (1.f - k * k) / (d * d);
 }
 
-}}
+}

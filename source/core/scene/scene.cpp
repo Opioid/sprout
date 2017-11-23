@@ -68,30 +68,30 @@ void Scene::finish() {
 }
 
 const math::AABB& Scene::aabb() const {
-	return bvh_.aabb();
+	return surfaces_.aabb();
 }
 
 bool Scene::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 					  Intersection& intersection) const {
-	return bvh_.intersect(ray, node_stack, intersection);
+	return surfaces_.intersect(ray, node_stack, intersection);
 }
 
 bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
-	return bvh_.intersect_p(ray, node_stack);
+	return surfaces_.intersect_p(ray, node_stack);
 }
 
 float Scene::opacity(const scene::Ray& ray, Sampler_filter filter, const Worker& worker) const {
 	if (has_masked_material_) {
-		return bvh_.opacity(ray, filter, worker);
+		return surfaces_.opacity(ray, filter, worker);
 	}
 
-	return bvh_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
+	return surfaces_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 }
 
 float3 Scene::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 							  const Worker& worker) const {
 	if (has_tinted_shadow_) {
-		return bvh_.thin_absorption(ray, filter, worker);
+		return surfaces_.thin_absorption(ray, filter, worker);
 	}
 
 	return float3(opacity(ray, filter, worker));
@@ -236,7 +236,7 @@ void Scene::compile(thread::Pool& pool) {
 	}
 
 	// rebuild the BVH
-	builder_.build(bvh_, finite_props_, infinite_props_);
+	builder_.build(surfaces_, finite_props_, infinite_props_);
 
 	// resort lights PDF
 	light_powers_.clear();
@@ -244,13 +244,13 @@ void Scene::compile(thread::Pool& pool) {
 	for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
 		auto l = lights_[i];
 		l->prepare_sampling(i, pool);
-		light_powers_.push_back(std::sqrt(spectrum::luminance(l->power(bvh_.aabb()))));
+		light_powers_.push_back(std::sqrt(spectrum::luminance(l->power(surfaces_.aabb()))));
 	}
 
 	light_distribution_.init(light_powers_.data(), light_powers_.size());
 
 	if (volume_region_) {
-		volume_region_->set_scene_aabb(bvh_.aabb());
+		volume_region_->set_scene_aabb(surfaces_.aabb());
 	}
 }
 
