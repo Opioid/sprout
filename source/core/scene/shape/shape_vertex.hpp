@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_VERTEX_HPP
+#define SU_CORE_SCENE_SHAPE_VERTEX_HPP
 
 #include "base/math/vector3.hpp"
 
@@ -13,3 +14,5 @@ struct Vertex {
 };
 
 }
+
+#endif

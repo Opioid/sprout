@@ -12,7 +12,7 @@
 // the layout should match
 // https://developers.google.com/vr/jump/rendering-ods-content.pdf
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 Spherical_stereoscopic::Spherical_stereoscopic(int2 resolution) :
 	Stereoscopic(resolution) {
@@ -91,4 +91,4 @@ void Spherical_stereoscopic::set_parameter(const std::string& name,
 	}
 }
 
-}}
+}

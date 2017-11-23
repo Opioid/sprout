@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_CORE_SCENE_CAMERA_HEMISPHERICAL_HPP
+#define SU_CORE_SCENE_CAMERA_HEMISPHERICAL_HPP
 
 #include "camera.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 class Hemispherical : public Camera {
 
@@ -31,4 +32,6 @@ private:
 	float d_y_;
 };
 
-}}
+}
+
+#endif

@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_INFINITE_SPHERE_HPP
+#define SU_CORE_SCENE_SHAPE_INFINITE_SPHERE_HPP
 
 #include "shape.hpp"
 
 namespace scene::shape {
 
-class Infinite_sphere : public Shape {
+class Infinite_sphere final : public Shape {
 
 public:
 
@@ -57,3 +58,5 @@ public:
 };
 
 }
+
+#endif

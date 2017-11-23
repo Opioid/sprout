@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_PROVIDER_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_PROVIDER_HPP
 
 #include "resource/resource_provider.hpp"
 #include "triangle_bvh_preset.hpp"
@@ -59,3 +60,5 @@ private:
 };
 
 }}
+
+#endif

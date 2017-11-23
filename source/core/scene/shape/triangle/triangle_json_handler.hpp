@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_JSON_HANDLER_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_JSON_HANDLER_HPP
 
 #include "triangle_bvh_preset.hpp"
 #include "triangle_primitive.hpp"
@@ -136,3 +137,5 @@ private:
 };
 
 }
+
+#endif

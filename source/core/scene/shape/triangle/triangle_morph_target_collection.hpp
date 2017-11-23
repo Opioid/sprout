@@ -1,11 +1,12 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_MORPH_TARGET_COLLECTION_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_MORPH_TARGET_COLLECTION_HPP
 
 #include <vector>
 #include <cstdint>
 
 namespace thread { class Pool; }
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 struct Vertex;
 
@@ -34,4 +35,6 @@ private:
 	std::vector<std::vector<Vertex>> morph_targets_;
 };
 
-}}}
+}}
+
+#endif

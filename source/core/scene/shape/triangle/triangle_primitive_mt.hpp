@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_PRIMITIVE_MT_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_PRIMITIVE_MT_HPP
 
 #include "scene/shape/shape_vertex.hpp"
 #include "base/math/vector4.hpp"
@@ -75,3 +76,5 @@ struct Vertex_MTC {
 };
 
 }
+
+#endif

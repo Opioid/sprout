@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_LAYOUT_DESCRIPTION_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_LAYOUT_DESCRIPTION_HPP
 
 #include <string>
 #include <iosfwd>
@@ -36,3 +37,5 @@ std::stringstream& operator<<(std::stringstream& stream,
 std::stringstream& operator<<(
 		std::stringstream& stream,
 		const scene::shape::triangle::Vertex_layout_description::Element& element);
+
+#endif

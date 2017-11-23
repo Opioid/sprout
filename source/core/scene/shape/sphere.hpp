@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_SPHERE_HPP
+#define SU_CORE_SCENE_SHAPE_SPHERE_HPP
 
 #include "shape.hpp"
 
 namespace scene::shape {
 
-class Sphere : public Shape {
+class Sphere final : public Shape {
 
 public:
 
@@ -60,3 +61,5 @@ public:
 };
 
 }
+
+#endif

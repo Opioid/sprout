@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_ENCODING_INL
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_ENCODING_INL
 
 #include "vertex_encoding.hpp"
 #include "base/math/vector3.inl"
@@ -50,3 +51,5 @@ inline void Norm23x2_Sign1x2::encode(const packed_float3& v, float s) {
 }
 
 }
+
+#endif

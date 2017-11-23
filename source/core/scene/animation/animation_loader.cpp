@@ -4,7 +4,7 @@
 #include "base/math/vector3.inl"
 #include "base/math/quaternion.inl"
 
-namespace scene { namespace animation {
+namespace scene::animation {
 
 std::shared_ptr<animation::Animation> load_keyframes(
 		const json::Value& keyframes_value, const math::Transformation& default_transformation);
@@ -130,4 +130,4 @@ void read_morphing(const json::Value& value, entity::Keyframe::Morphing& morphin
 	}
 }
 
-}}
+}

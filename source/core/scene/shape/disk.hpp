@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_DISK_HPP
+#define SU_CORE_SCENE_SHAPE_DISK_HPP
 
 #include "shape.hpp"
 
 namespace scene::shape {
 
-class Disk : public Shape {
+class Disk final : public Shape {
 
 public:
 
@@ -55,3 +56,5 @@ public:
 };
 
 }
+
+#endif

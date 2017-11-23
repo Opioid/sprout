@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_ANIMATION_ANIMATION_HPP
+#define SU_CORE_SCENE_ANIMATION_ANIMATION_HPP
 
 #include "scene/entity/keyframe.hpp"
 #include <vector>
@@ -33,3 +34,5 @@ private:
 };
 
 }
+
+#endif

@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_CORE_SCENE_CAMERA_SPHERCICAL_STEREOSCOPIC_HPP
+#define SU_CORE_SCENE_CAMERA_SPHERCICAL_STEREOSCOPIC_HPP
 
 #include "camera_stereoscopic.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 class Spherical_stereoscopic : public Stereoscopic {
 
@@ -33,4 +34,6 @@ private:
 	int4 view_bounds_[2];
 };
 
-}}
+}
+
+#endif

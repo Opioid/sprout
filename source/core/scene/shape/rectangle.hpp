@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_RECTANGLE_HPP
+#define SU_CORE_SCENE_SHAPE_RECTANGLE_HPP
 
 #include "shape.hpp"
 
 namespace scene::shape {
 
-class Rectangle : public Shape {
+class Rectangle final : public Shape {
 
 public:
 
@@ -55,3 +56,5 @@ public:
 };
 
 }
+
+#endif

@@ -13,7 +13,7 @@
 #include "shape_test.hpp"
 #include "base/debug/assert.hpp"
 
-namespace scene { namespace shape {
+namespace scene::shape {
 
 Disk::Disk() {
 	aabb_.set_min_max(float3(-1.f, -1.f, -0.1f), float3(1.f, 1.f, 0.1f));
@@ -234,4 +234,4 @@ size_t Disk::num_bytes() const {
 	return sizeof(*this);
 }
 
-}}
+}

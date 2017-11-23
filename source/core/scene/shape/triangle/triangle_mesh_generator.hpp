@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_GENERATOR_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_GENERATOR_HPP
 
 #include "base/json/json_types.hpp"
 #include <memory>
@@ -22,3 +23,5 @@ public:
 };
 
 }}
+
+#endif

@@ -9,7 +9,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 Hemispherical::Hemispherical(int2 resolution) :
 	Camera(resolution) {
@@ -76,4 +76,4 @@ void Hemispherical::on_update(rendering::Worker& /*worker*/) {}
 
 void Hemispherical::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
-}}
+}

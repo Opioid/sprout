@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_INTERSECTION_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_INTERSECTION_HPP
 
 #include "base/simd/simd.hpp"
 #include <cstdint>
@@ -15,3 +16,5 @@ struct Intersection {
 };
 
 }
+
+#endif

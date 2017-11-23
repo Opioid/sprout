@@ -9,7 +9,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 Cubic_stereoscopic::Cubic_stereoscopic(Layout layout, int2 resolution) :
 	Stereoscopic(int2(resolution[0], resolution[0])) {
@@ -127,4 +127,4 @@ void Cubic_stereoscopic::set_parameter(const std::string& name,
 	}
 }
 
-}}
+}

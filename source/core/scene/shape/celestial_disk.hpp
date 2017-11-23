@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_CELESTIAL_DISK_HPP
+#define SU_CORE_SCENE_SHAPE_CELESTIAL_DISK_HPP
 
 #include "shape.hpp"
 
 namespace scene::shape {
 
-class Celestial_disk : public Shape {
+class Celestial_disk final : public Shape {
 
 public:
 
@@ -57,3 +58,5 @@ public:
 };
 
 }
+
+#endif

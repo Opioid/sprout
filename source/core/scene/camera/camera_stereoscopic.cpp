@@ -1,7 +1,7 @@
 #include "camera_stereoscopic.hpp"
 #include "base/math/vector4.inl"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 Stereoscopic::Stereoscopic(int2 resolution) :
 	Camera(resolution) {
@@ -16,4 +16,4 @@ void Stereoscopic::set_interpupillary_distance(float ipd) {
 	eye_offsets_[1] = float3( half_ipd, 0.f, 0.f);
 }
 
-}}
+}

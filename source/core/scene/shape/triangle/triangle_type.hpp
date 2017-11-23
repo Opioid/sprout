@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_TYPE_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_TYPE_HPP
 
 namespace scene::shape::triangle {
 
@@ -15,3 +16,5 @@ using Shading_vertex_type = struct Shading_vertex_MTC;
 using Vertex_type = struct Vertex_MTC;
 
 }
+
+#endif

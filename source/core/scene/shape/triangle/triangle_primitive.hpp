@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_PRIMITIVE_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_PRIMITIVE_HPP
 
 #include <cstdint>
 
@@ -16,3 +17,5 @@ struct Index_triangle {
 };
 
 }
+
+#endif

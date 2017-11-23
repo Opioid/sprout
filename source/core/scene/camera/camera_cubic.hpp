@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_CORE_SCENE_CAMERA_CUBIC_HPP
+#define SU_CORE_SCENE_CAMERA_CUBIC_HPP
 
 #include "camera.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 class Cubic : public Camera {
 
@@ -43,4 +44,6 @@ private:
 	float3x3 view_rotations_[6];
 };
 
-}}
+}
+
+#endif

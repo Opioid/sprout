@@ -12,7 +12,7 @@
 #include "base/math/plane.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 Perspective::Perspective(int2 resolution) :
 	Camera(resolution),
@@ -188,4 +188,4 @@ void Perspective::load_focus(const json::Value& focus_value, Focus& focus) {
 	}
 }
 
-}}
+}

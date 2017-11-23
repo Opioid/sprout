@@ -8,7 +8,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 Cubic::Cubic(Layout layout, int2 resolution) :
 	Camera(int2(resolution[0], resolution[1])) {
@@ -102,4 +102,4 @@ void Cubic::on_update(rendering::Worker& /*worker*/) {}
 void Cubic::set_parameter(const std::string& /*name*/,
 						  const json::Value& /*value*/) {}
 
-}}
+}

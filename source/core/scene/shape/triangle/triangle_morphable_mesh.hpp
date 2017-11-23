@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_MORPHABLE_MESH_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_MORPHABLE_MESH_HPP
 
 #include "triangle_type.hpp"
 #include "scene/shape/shape.hpp"
@@ -92,3 +93,5 @@ private:
 };
 
 }
+
+#endif

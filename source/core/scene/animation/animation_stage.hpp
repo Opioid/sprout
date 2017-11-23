@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_ANIMATION_STAGE_HPP
+#define SU_CORE_SCENE_ANIMATION_STAGE_HPP
 
 namespace scene {
 
@@ -24,3 +25,4 @@ private:
 
 }}
 
+#endif

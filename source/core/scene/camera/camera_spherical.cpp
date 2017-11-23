@@ -8,7 +8,7 @@
 #include "base/math/matrix4x4.inl"
 #include "base/math/sampling/sampling.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 Spherical::Spherical(int2 resolution) :
 	Camera(resolution) {
@@ -67,4 +67,4 @@ void Spherical::on_update(rendering::Worker& /*worker*/) {}
 
 void Spherical::set_parameter(const std::string& /*name*/, const json::Value& /*value*/) {}
 
-}}
+}

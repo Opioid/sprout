@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TEST_HPP
+#define SU_CORE_SCENE_SHAPE_TEST_HPP
 
 #include "base/math/vector2.hpp"
 
@@ -26,3 +27,5 @@ bool check(const Sample& sample, float2 uv);
 void test();
 
 }}}
+
+#endif

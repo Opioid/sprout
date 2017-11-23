@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_ENCODING_HPP
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_ENCODING_HPP
 
 #include "base/math/vector3.hpp"
 
@@ -19,3 +20,5 @@ struct Compressed_vertex {
 };
 
 }
+
+#endif

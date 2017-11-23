@@ -1,10 +1,11 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_PLANE_HPP
+#define SU_CORE_SCENE_SHAPE_PLANE_HPP
 
 #include "shape.hpp"
 
 namespace scene::shape {
 
-class Plane : public Shape {
+class Plane final : public Shape {
 
 public:
 
@@ -57,3 +58,5 @@ public:
 };
 
 }
+
+#endif

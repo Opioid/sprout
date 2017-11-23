@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_CORE_SCENE_CAMERA_PERSPECTIVE_HPP
+#define SU_CORE_SCENE_CAMERA_PERSPECTIVE_HPP
 
 #include "camera.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 class Perspective : public Camera {
 
@@ -67,4 +68,6 @@ private:
 	float focus_distance_;
 };
 
-}}
+}
+
+#endif

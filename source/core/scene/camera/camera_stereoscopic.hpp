@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_CORE_SCENE_CAMERA_STEREOSCOPIC_HPP
+#define SU_CORE_SCENE_CAMERA_STEREOSCOPIC_HPP
 
 #include "camera.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 class Stereoscopic : public Camera {
 
@@ -18,4 +19,6 @@ protected:
 	float3 eye_offsets_[2];
 };
 
-}}
+}
+
+#endif

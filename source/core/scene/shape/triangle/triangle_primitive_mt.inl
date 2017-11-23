@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_TRIANGLE_PRIMITIVE_MT_INL
+#define SU_CORE_SCENE_SHAPE_TRIANGLE_PRIMITIVE_MT_INL
 
 #include "triangle_primitive_mt.hpp"
 #include "base/encoding/encoding.inl"
@@ -725,3 +726,5 @@ inline float area(const Vertex_MTC& a,
 }
 
 }
+
+#endif

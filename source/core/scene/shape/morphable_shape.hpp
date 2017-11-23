@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_MORPHABLE_SHAPE_HPP
+#define SU_CORE_SCENE_SHAPE_MORPHABLE_SHAPE_HPP
 
 namespace thread { class Pool; }
 
@@ -12,3 +13,5 @@ public:
 };
 
 }
+
+#endif

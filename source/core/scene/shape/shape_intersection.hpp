@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_SCENE_SHAPE_INTERSECTION_HPP
+#define SU_CORE_SCENE_SHAPE_INTERSECTION_HPP
 
 #include "base/math/vector3.hpp"
 
@@ -15,3 +16,5 @@ struct Intersection {
 };
 
 }
+
+#endif

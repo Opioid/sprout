@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_CORE_SCENE_CAMERA_SPHERICAL_HPP
+#define SU_CORE_SCENE_CAMERA_SPHERICAL_HPP
 
 #include "camera.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 class Spherical : public Camera {
 public:
@@ -30,4 +31,6 @@ private:
 	float d_y_;
 };
 
-}}
+}
+
+#endif

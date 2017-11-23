@@ -1,9 +1,10 @@
-#pragma once
+#ifndef SU_CORE_SCENE_CAMERA_CUBIC_STEREOSCOPIC_HPP
+#define SU_CORE_SCENE_CAMERA_CUBIC_STEREOSCOPIC_HPP
 
 #include "camera_stereoscopic.hpp"
 #include "base/math/matrix3x3.hpp"
 
-namespace scene { namespace camera {
+namespace scene::camera {
 
 class Cubic_stereoscopic : public Stereoscopic {
 
@@ -49,4 +50,6 @@ private:
 	float3x3 view_rotations_[6];
 };
 
-}}
+}
+
+#endif
