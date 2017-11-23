@@ -9,15 +9,15 @@
 
 namespace procedural::aurora {
 
-Volume_filter::Volume_filter(const int3& dimensions, float radius, uint32_t num_buckets) :
+Volume_filter::Volume_filter(const int3& dimensions, float radius, float alpha,
+							 uint32_t num_buckets) :
 	dimensions_(dimensions),
 	kernel_width_(static_cast<int32_t>(radius + 0.5f) * 2 + 1),
 	kernel_(memory::allocate_aligned<K>(kernel_width_)),
 	num_buckets_(num_buckets),
 	scratch_(new float3*[num_buckets]) {
-	const float fr = static_cast<float>(radius) + 0.5f;
-	const float alpha = 0.05f;
-	math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr), alpha);
+	const float fr = radius + 0.5f;
+	math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr * fr), alpha);
 
 	const int32_t ir = static_cast<int32_t>(radius + 0.5f);
 
@@ -25,7 +25,7 @@ Volume_filter::Volume_filter(const int3& dimensions, float radius, uint32_t num_
 		const int32_t o = -ir + x;
 
 		const float fo = static_cast<float>(o);
-		const float w = gauss(fo * fo);
+		const float w = gauss(std::abs(fo * fo * fo));
 
 		kernel_[x] = K{o, w};
 	}
@@ -109,10 +109,9 @@ void Volume_filter::filter_slices(uint32_t id, int32_t begin, int32_t end, float
 					}
 				}
 
-				const float3 filtered = accum / weight_sum;
-
 				const int32_t o = z * area + y * dimensions_[0] + x;
 
+				const float3 filtered = accum / weight_sum;
 				target[o] = filtered;
 			}
 		}
@@ -156,11 +155,9 @@ void Volume_filter::filter_z(uint32_t id, int32_t begin, int32_t end, float3* ta
 		for (int32_t y = 0, height = dimensions_[1]; y < height; ++y) {
 			for (int32_t z = 0, depth = dimensions_[2]; z < depth; ++z) {
 				const int32_t i = y * dimensions_[0] + z;
-				const float3 temp = scratch[i];
-
 				const int32_t o = z * area + y * dimensions_[0] + x;
 
-				target[o] = temp;
+				target[o] = scratch[i];
 			}
 		}
 	}
