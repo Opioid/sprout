@@ -51,7 +51,7 @@ private:
 
 	float3 estimate_direct_light(const Ray& ray, Intersection& intersection,
 								 const Material_sample& material_sample,
-								 Sampler_filter filter, Worker& worker,
+								 Sampler_filter filter, bool primary_ray, Worker& worker,
 								 Bxdf_sample& sample_result, bool& requires_bounce);
 
 	float3 evaluate_light(const Light& light, float light_weight, float time,

@@ -93,13 +93,6 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	}
 
 	for (uint32_t i = 0; ; ++i) {
-		if (i > 0) {
-			float3 tr;
-			const float3 vli = worker.volume_li(ray, primary_ray, tr);
-			result += throughput * vli;
-			throughput *= tr;
-		}
-
 		const float3 wo = -ray.direction;
 		const auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
@@ -116,8 +109,10 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 			break;
 		}
 
-		result += throughput * estimate_direct_light(ray, intersection, material_sample, filter,
-													 worker, sample_result, requires_bounce);
+		const float3 direct_light = estimate_direct_light(ray, intersection, material_sample,
+														  filter, primary_ray, worker,
+														  sample_result, requires_bounce);
+		result += throughput * direct_light;
 
 		if (!intersection.hit()
 		||  (requires_bounce ? i == settings_.max_bounces : i >= settings_.max_bounces - 1)
@@ -177,9 +172,16 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 
 		// For these cases we fall back to plain pathtracing
 		if (requires_bounce) {
-			if (!intersect_and_resolve_mask(ray, intersection, filter, worker)) {
-				break;
-			}
+			hit = intersect_and_resolve_mask(ray, intersection, filter, worker);
+
+			float3 tr;
+			const float3 vli = worker.volume_li(ray, primary_ray, tr);
+			result += throughput * vli;
+			throughput *= tr;
+		}
+
+		if (!hit) {
+			break;
 		}
 	}
 
@@ -202,8 +204,9 @@ size_t Pathtracer_MIS::num_bytes() const {
 
 float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& intersection,
 											 const Material_sample& material_sample,
-											 Sampler_filter filter, Worker& worker,
-											 Bxdf_sample& sample_result, bool& requires_bounce) {
+											 Sampler_filter filter, bool primary_ray,
+											 Worker& worker, Bxdf_sample& sample_result,
+											 bool& requires_bounce) {
 	float3 result(0.f);
 
 	const float ray_offset = take_settings_.ray_offset_factor * intersection.geo.epsilon;
@@ -247,7 +250,16 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 	Ray secondary_ray(intersection.geo.p, sample_result.wi, ray_offset,
 					  scene::Ray_max_t, ray.time, ray.depth + 1);
 
-	if (!intersect_and_resolve_mask(secondary_ray, intersection, filter, worker)) {
+	const bool hit = intersect_and_resolve_mask(secondary_ray, intersection, filter, worker);
+
+	const float3 weighted_reflection = sample_result.reflection / sample_result.pdf;
+
+	float3 tr;
+	const float3 vli = worker.volume_li(ray, primary_ray, tr);
+	result += weighted_reflection * vli;
+	sample_result.reflection *= tr;
+
+	if (!hit) {
 		SOFT_ASSERT(math::all_finite(result));
 		return result;
 	}
@@ -287,7 +299,7 @@ float3 Pathtracer_MIS::estimate_direct_light(const Ray& ray, Intersection& inter
 
 		const float weight = power_heuristic(sample_result.pdf, ls_pdf * light.pdf);
 
-		result += (weight / sample_result.pdf) * (ls_energy * sample_result.reflection);
+		result += weight * (ls_energy * weighted_reflection);
 	}
 
 	SOFT_ASSERT(math::all_finite(result));

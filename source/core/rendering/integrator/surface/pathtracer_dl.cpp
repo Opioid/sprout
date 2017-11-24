@@ -53,14 +53,6 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	}
 
 	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		if (i > 0) {
-		//	throughput *= worker.transmittance(ray);
-			float3 tr;
-			const float3 vli = worker.volume_li(ray, primary_ray, tr);
-			result += throughput * vli;
-			throughput *= tr;
-		}
-
 		const float3 wo = -ray.direction;
 		auto& material_sample = intersection.sample(wo, ray.time, filter, worker);
 
