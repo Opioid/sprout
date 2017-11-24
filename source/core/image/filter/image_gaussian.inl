@@ -8,20 +8,20 @@ namespace image { namespace filter {
 
 template<typename T>
 Gaussian<T>::Gaussian(float radius, float alpha) {
-	int32_t width = 2 * static_cast<int32_t>(radius + 0.5f) + 1;
+	const int32_t width = 2 * static_cast<int32_t>(radius + 0.5f) + 1;
 
 	kernel_.resize(width);
 
-	float fr = radius + 0.5f;
-	math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr), alpha);
+	const float fr = radius + 0.5f;
+	math::filter::Gaussian_functor gauss(fr * fr, alpha);
 
-	int32_t ir = static_cast<int32_t>(radius);
+	const int32_t ir = static_cast<int32_t>(radius);
 
 	for (int32_t x = 0; x < width; ++x) {
-		int32_t o = -ir + x;
+		const int32_t o = -ir + x;
 
-		float fo = static_cast<float>(o);
-		float w = gauss(fo * fo);
+		const float fo = static_cast<float>(o);
+		const float w = gauss(fo * fo);
 
 		kernel_[x] = K{o, w};
 	}

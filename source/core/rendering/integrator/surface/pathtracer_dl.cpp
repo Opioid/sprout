@@ -39,17 +39,20 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Sampler_filter filter = Sampler_filter::Undefined;
 	Bxdf_sample sample_result;
 
-	float3 throughput(1.f);
-	float3 result(0.f);
 	float opacity = 0.f;
 	bool primary_ray = 0 == ray.depth;
 	bool requires_bounce = false;
 
-	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
-		if (!resolve_mask(ray, intersection, filter, worker)) {
-			break;
-		}
+	bool hit = resolve_mask(ray, intersection, filter, worker);
 
+	float3 throughput(1.f);
+	float3 result = worker.volume_li(ray, true, throughput);
+
+	if (!hit) {
+		return float4(result, 1.f);
+	}
+
+	for (uint32_t i = 0; i < settings_.max_bounces; ++i) {
 		if (i > 0) {
 		//	throughput *= worker.transmittance(ray);
 			float3 tr;
@@ -123,7 +126,14 @@ float4 Pathtracer_DL::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
 
-		if (!worker.intersect(ray, intersection)) {
+		hit = intersect_and_resolve_mask(ray, intersection, filter, worker);
+
+		float3 tr;
+		const float3 vli = worker.volume_li(ray, primary_ray, tr);
+		result += throughput * vli;
+		throughput *= tr;
+
+		if (!hit) {
 			break;
 		}
 	}

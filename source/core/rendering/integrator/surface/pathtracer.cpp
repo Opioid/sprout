@@ -54,12 +54,15 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 	Bxdf_sample sample_result;
 	Bxdf_sample::Type_flag previous_sample_type;
 
-	float3 throughput(1.f);
-	float3 result(0.f);
 	float opacity = 0.f;
 
-	if (!resolve_mask(ray, intersection, filter, worker)) {
-		return float4(result, opacity);
+	bool hit = resolve_mask(ray, intersection, filter, worker);
+
+	float3 throughput(1.f);
+	float3 result = worker.volume_li(ray, true, throughput);
+
+	if (!hit) {
+		return float4(result, 1.f);
 	}
 
 	// pathtracer needs as many iterations as bounces, because it has no forward prediction
@@ -142,7 +145,7 @@ float4 Pathtracer::li(Ray& ray, Intersection& intersection, Worker& worker) {
 		ray.max_t = scene::Ray_max_t;
 		++ray.depth;
 
-		const bool hit = intersect_and_resolve_mask(ray, intersection, filter, worker);
+		hit = intersect_and_resolve_mask(ray, intersection, filter, worker);
 
 		float3 tr;
 		const float3 vli = worker.volume_li(ray, primary_ray, tr);

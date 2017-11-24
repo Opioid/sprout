@@ -43,24 +43,11 @@ float4 Worker::li(scene::Ray& ray) {
 	scene::Intersection intersection;
 	const bool hit = intersect(ray, intersection);
 
-	const auto volume = scene_->volume_region();
-
-	if (volume) {
-		float3 vtr;
-		const float3 vli = volume_integrator_->li(ray, true, *volume, *this, vtr);
-
-		if (hit) {
-			const float4 li = surface_integrator_->li(ray, intersection, *this);
-			return float4(vtr * li.xyz() + vli, li[3]);
-		} else {
-			return float4(vli, 1.f);
-		}
+	if (hit) {
+		return surface_integrator_->li(ray, intersection, *this);
 	} else {
-		if (hit) {
-			return surface_integrator_->li(ray, intersection, *this);
-		} else {
-			return float4::identity();
-		}
+		float3 vtr;
+		return float4(volume_li(ray, true, vtr), 1.f);
 	}
 }
 

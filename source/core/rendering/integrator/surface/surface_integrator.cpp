@@ -16,10 +16,13 @@ Integrator::~Integrator() {}
 
 bool Integrator::resolve_mask(Ray& ray, Intersection& intersection,
 							  Sampler_filter filter, Worker& worker) {
+	const float start_min_t = ray.min_t;
+
 	float opacity = intersection.opacity(ray.time, filter, worker);
 
 	while (opacity < 1.f) {
 		if (opacity > 0.f && opacity > rng_.random_float()) {
+			ray.min_t = start_min_t;
 			return true;
 		}
 
@@ -27,12 +30,14 @@ bool Integrator::resolve_mask(Ray& ray, Intersection& intersection,
 		ray.min_t = ray.max_t + take_settings_.ray_offset_factor * intersection.geo.epsilon;
 		ray.max_t = scene::Ray_max_t;
 		if (!worker.intersect(ray, intersection)) {
+			ray.min_t = start_min_t;
 			return false;
 		}
 
 		opacity = intersection.opacity(ray.time, filter, worker);
 	}
 
+	ray.min_t = start_min_t;
 	return true;
 }
 

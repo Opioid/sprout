@@ -79,14 +79,17 @@ float4 Pathtracer_MIS::li(Ray& ray, Intersection& intersection, Worker& worker) 
 	Sampler_filter filter = Sampler_filter::Undefined;
 	Bxdf_sample sample_result;
 
-	float3 throughput(1.f);
-	float3 result(0.f);
 	float opacity = 0.f;
 	bool primary_ray = 0 == ray.depth;
 	bool requires_bounce = false;
 
-	if (!resolve_mask(ray, intersection, filter, worker)) {
-		return float4(result, opacity);
+	bool hit = resolve_mask(ray, intersection, filter, worker);
+
+	float3 throughput(1.f);
+	float3 result = worker.volume_li(ray, true, throughput);
+
+	if (!hit) {
+		return float4(result, 1.f);
 	}
 
 	for (uint32_t i = 0; ; ++i) {

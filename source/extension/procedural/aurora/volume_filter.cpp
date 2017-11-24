@@ -17,7 +17,7 @@ Volume_filter::Volume_filter(const int3& dimensions, float radius, float alpha,
 	num_buckets_(num_buckets),
 	scratch_(new float3*[num_buckets]) {
 	const float fr = radius + 0.5f;
-	math::filter::Gaussian_functor gauss(static_cast<float>(fr * fr * fr), alpha);
+	math::filter::Gaussian_functor gauss(fr * fr, alpha);
 
 	const int32_t ir = static_cast<int32_t>(radius + 0.5f);
 
@@ -25,7 +25,7 @@ Volume_filter::Volume_filter(const int3& dimensions, float radius, float alpha,
 		const int32_t o = -ir + x;
 
 		const float fo = static_cast<float>(o);
-		const float w = gauss(std::abs(fo * fo * fo));
+		const float w = gauss(fo * fo);
 
 		kernel_[x] = K{o, w};
 	}
