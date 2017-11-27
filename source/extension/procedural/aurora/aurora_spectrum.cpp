@@ -157,7 +157,7 @@ void init() {
 	for (size_t i = 0; i < num_elements; ++i) {
 		float3 xyz(0.f);
 
-		xyz += 1.f * intensities_427[i] * cie_427;
+		xyz += 0.f * intensities_427[i] * cie_427;
 		xyz += std::min(1.f * intensities_557[i], 1.f) * cie_557;
 		xyz += intensities_630[i] * cie_630;
 

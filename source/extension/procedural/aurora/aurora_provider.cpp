@@ -107,7 +107,7 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 	const float start_height_deviation = 60000.f;
 	const float start_height = ground_to_bottom_ + aurora_height_ - start_height_deviation;
 
-	const uint32_t num_particles = 4 * 16384;
+	const uint32_t num_particles = 16 * 16384;
 
 	const float nf = static_cast<float>(num_particles);
 
@@ -118,9 +118,11 @@ void Provider::render(image::Byte3& target, thread::Pool& thread_pool) {
 
 		const float x = math::radical_inverse_vdC(i, 0);// cf / nf;
 
+	//	const float ix = 1.f - x;
+
 		const float z = std::sin(x * (2.f * math::Pi)) * 50000.f
 					  + std::sin(3.5f * x * (2.f * math::Pi)) * 20000.f
-					  + (x * x) * std::sin(17.f * x * (2.f * math::Pi)) * 10000.f;
+					  + (x * x) * std::sin(17.f * x * (2.f * math::Pi)) * 12000.f;
 
 		const float y = start_height + std::sin(x * (7.f * math::Pi)) * start_height_deviation;
 	//	const float y = start_height + start_height_deviation;
