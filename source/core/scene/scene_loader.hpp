@@ -27,6 +27,8 @@ namespace light { class Light; }
 
 namespace volume { class Volume; }
 
+namespace prop { class Prop; }
+
 namespace shape {
 
 class Shape;
@@ -39,7 +41,6 @@ class Provider;
 }}
 
 class Scene;
-class Prop;
 
 class Loader {
 
@@ -64,9 +65,9 @@ private:
 
 	void set_visibility(entity::Entity* entity, const json::Value& visibility_value);
 
-	Prop* load_prop(const json::Value& prop_value, const std::string& name, Scene& scene);
+	prop::Prop* load_prop(const json::Value& prop_value, const std::string& name, Scene& scene);
 
-	void load_light(const json::Value& light_value, Prop* prop, Scene& scene);
+	void load_light(const json::Value& light_value, prop::Prop* prop, Scene& scene);
 
 	volume::Volume* load_volume(const json::Value& volume_value, Scene& scene);
 

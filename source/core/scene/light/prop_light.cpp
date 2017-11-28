@@ -2,7 +2,7 @@
 #include "light_sample.hpp"
 #include "scene/scene_ray.hpp"
 #include "scene/scene_worker.hpp"
-#include "scene/prop.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/shape/shape.hpp"
 #include "scene/shape/shape_sample.hpp"
 #include "scene/material/material.hpp"

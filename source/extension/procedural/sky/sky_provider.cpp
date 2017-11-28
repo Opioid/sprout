@@ -3,11 +3,11 @@
 #include "sky_material.hpp"
 #include "sun_material.hpp"
 #include "core/resource/resource_manager.inl"
-#include "core/scene/prop.hpp"
 #include "core/scene/scene.hpp"
 #include "core/scene/scene_loader.hpp"
 #include "core/scene/material/material_provider.hpp"
 #include "core/scene/material/light/light_constant.hpp"
+#include "core/scene/prop/prop.hpp"
 #include "base/json/json.hpp"
 #include "base/math/matrix4x4.inl"
 #include "base/math/vector3.inl"
@@ -57,10 +57,10 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 	material::Materials materials(1);
 
 	materials[0] = sky_material;
-	Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), materials);
+	prop::Prop* sky_prop = scene.create_prop(scene_loader_->canopy(), materials);
 
 	materials[0] = sun_material;
-	Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), materials);
+	prop::Prop* sun_prop = scene.create_prop(scene_loader_->celestial_disk(), materials);
 
 	sky->init(sky_prop, sun_prop);
 	sky->set_propagate_visibility(true);

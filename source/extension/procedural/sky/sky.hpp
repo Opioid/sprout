@@ -1,11 +1,12 @@
-#pragma once
+#ifndef SU_EXTENSION_PROCEDURAL_SKY_HPP
+#define SU_EXTENSION_PROCEDURAL_SKY_HPP
 
 #include "sky_model.hpp"
 #include "core/scene/entity/entity.hpp"
 
-namespace scene { class Prop; }
+namespace scene::prop { class Prop; }
 
-namespace procedural { namespace sky {
+namespace procedural::sky {
 
 class Sky : public scene::entity::Entity {
 
@@ -16,7 +17,7 @@ public:
 
 	virtual void set_parameters(const json::Value& parameters) override final;
 
-	void init(scene::Prop* sky, scene::Prop* sun);
+	void init(scene::prop::Prop* sky, scene::prop::Prop* sun);
 
 	Model& model();
 
@@ -28,8 +29,8 @@ private:
 
 	Model model_;
 
-	scene::Prop* sky_;
-	scene::Prop* sun_;
+	scene::prop::Prop* sky_;
+	scene::prop::Prop* sun_;
 
 	float3x3 sun_rotation_ = float3x3(1.f,  0.f, 0.f,
 									  0.f,  0.f, 1.f,
@@ -42,4 +43,6 @@ private:
 	bool implicit_rotation_ = true;
 };
 
-}}
+}
+
+#endif

@@ -10,7 +10,7 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.inl"
-#include "scene/scene_intersection.inl"
+#include "scene/prop/prop_intersection.inl"
 #include "base/math/vector4.inl"
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"

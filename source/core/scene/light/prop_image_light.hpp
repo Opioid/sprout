@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SU_SCENE_LIGHT_PROP_IMAGE_LIGHT_HPP
+#define SU_SCENE_LIGHT_PROP_IMAGE_LIGHT_HPP
 
 #include "prop_light.hpp"
 
-namespace scene { namespace light {
+namespace scene::light {
 
 class Prop_image_light : public Prop_light {
 
@@ -20,4 +21,6 @@ public:
 	virtual void prepare_sampling(uint32_t light_id, thread::Pool& pool) override final;
 };
 
-}}
+}
+
+#endif

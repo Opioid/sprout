@@ -3,7 +3,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene_constants.hpp"
 #include "scene/scene_ray.inl"
-#include "scene/scene_intersection.hpp"
+#include "scene/prop/prop_intersection.hpp"
 #include "sampler/camera_sample.hpp"
 #include "base/json/json.hpp"
 #include "base/math/math.hpp"
@@ -138,7 +138,7 @@ void Perspective::update_focus(rendering::Worker& worker) {
 					   math::transform_vector(direction, transformation.object_to_world),
 					   0.f, Ray_max_t, 0.f, 0);
 
-		Intersection intersection;
+		prop::Intersection intersection;
 		if (worker.intersect(ray, intersection)) {
 			focus_distance_ = ray.max_t + focus_.point[2];
 		} else {

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_LIGHT_LIGHT_HPP
+#define SU_SCENE_LIGHT_LIGHT_HPP
 
 #include "scene/material/sampler_settings.hpp"
 #include "base/math/aabb.hpp"
@@ -13,10 +14,10 @@ namespace thread { class Pool; }
 namespace scene {
 
 namespace entity { struct Composed_transformation; }
+namespace prop { class Prop; }
 namespace shape { struct Intersection; class Node_stack; }
 
 class Worker;
-class Prop;
 struct Ray;
 
 namespace light {
@@ -27,6 +28,7 @@ class Light {
 
 public:
 
+	using Prop			 = prop::Prop;
 	using Transformation = entity::Composed_transformation;
 	using Sampler_filter = material::Sampler_settings::Filter;
 	using Intersection   = shape::Intersection;
@@ -62,3 +64,5 @@ public:
 };
 
 }}
+
+#endif

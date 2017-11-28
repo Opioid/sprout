@@ -6,7 +6,7 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
-#include "scene/scene_intersection.inl"
+#include "scene/prop/prop_intersection.inl"
 #include "base/math/vector4.inl"
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {

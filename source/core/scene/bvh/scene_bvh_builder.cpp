@@ -1,6 +1,6 @@
 #include "scene_bvh_builder.hpp"
 #include "scene_bvh_node.inl"
-#include "scene/prop.hpp"
+#include "scene/prop/prop.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/plane.inl"
 

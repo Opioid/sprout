@@ -3,10 +3,10 @@
 #include "rendering/integrator/volume/volume_integrator.hpp"
 #include "sampler/sampler.hpp"
 #include "scene/scene.hpp"
-#include "scene/prop.hpp"
-#include "scene/scene_intersection.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/material/material.hpp"
+#include "scene/prop/prop.hpp"
+#include "scene/prop/prop_intersection.inl"
 #include "base/math/vector4.inl"
 #include "base/math/sampling/sample_distribution.hpp"
 #include "base/memory/align.hpp"
@@ -40,7 +40,7 @@ void Worker::prepare(uint32_t num_samples_per_pixel) {
 }
 
 float4 Worker::li(scene::Ray& ray) {
-	scene::Intersection intersection;
+	scene::prop::Intersection intersection;
 	const bool hit = intersect(ray, intersection);
 
 	if (hit) {
@@ -52,7 +52,7 @@ float4 Worker::li(scene::Ray& ray) {
 }
 
 float4 Worker::surface_li(scene::Ray& ray) {
-	scene::Intersection intersection;
+	scene::prop::Intersection intersection;
 	const bool hit = intersect(ray, intersection);
 
 	if (hit) {

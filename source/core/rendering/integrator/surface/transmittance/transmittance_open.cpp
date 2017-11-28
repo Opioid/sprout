@@ -6,7 +6,7 @@
 #include "scene/material/bxdf.hpp"
 #include "scene/material/material.hpp"
 #include "scene/material/material_sample.hpp"
-#include "scene/scene_intersection.inl"
+#include "scene/prop/prop_intersection.inl"
 #include "base/math/vector4.inl"
 
 namespace rendering { namespace integrator { namespace surface { namespace transmittance {
@@ -19,7 +19,7 @@ void Open::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per_pix
 
 void Open::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
-float3 Open::resolve(const scene::Ray& ray, scene::Intersection& intersection,
+float3 Open::resolve(const Ray& ray, Intersection& intersection,
 					 const float3& absorption_coffecient, sampler::Sampler& sampler,
 					 Sampler_filter filter, Worker& worker, Bxdf_sample& sample_result) const {
 	float3 throughput = sample_result.reflection / sample_result.pdf;

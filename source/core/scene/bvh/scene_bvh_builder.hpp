@@ -9,13 +9,15 @@
 
 namespace scene {
 
-class Prop;
+namespace prop { class Prop; }
 
 namespace bvh {
 
 class Builder {
 
 public:
+
+	using Prop = prop::Prop;
 
 	Builder();
 	~Builder();

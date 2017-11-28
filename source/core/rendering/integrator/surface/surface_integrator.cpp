@@ -2,8 +2,8 @@
 #include "image/texture/sampler/sampler_2d.hpp"
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene_constants.hpp"
-#include "scene/scene_intersection.inl"
 #include "scene/scene_ray.inl"
+#include "scene/prop/prop_intersection.inl"
 #include "base/math/vector4.inl"
 #include "base/random/generator.inl"
 

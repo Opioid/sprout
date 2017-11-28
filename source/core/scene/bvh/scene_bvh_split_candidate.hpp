@@ -6,13 +6,15 @@
 
 namespace scene {
 
-class Prop;
+namespace prop { class Prop; }
 
 namespace bvh {
 
 class Split_candidate {
 
 public:
+
+	using Prop = prop::Prop;
 
 	Split_candidate(const math::Plane& plane, uint8_t axis);
 	Split_candidate(uint8_t split_axis, const float3& pos, const std::vector<Prop*>& props);

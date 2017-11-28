@@ -5,6 +5,7 @@
 #include "scene/material/bssrdf.hpp"
 #include "scene/light/light.hpp"
 #include "scene/light/light_sample.hpp"
+#include "scene/prop/prop_intersection.hpp"
 #include "base/random/generator.inl"
 
 namespace rendering { namespace integrator { namespace surface { namespace sub {
@@ -14,7 +15,7 @@ Integrator::Integrator(rnd::Generator& rng, const take::Settings& settings) :
 
 Integrator::~Integrator() {}
 
-float3 Integrator::estimate_direct_light(const float3& position, const scene::Prop* prop,
+float3 Integrator::estimate_direct_light(const float3& position, const scene::prop::Prop* prop,
 										 const scene::material::BSSRDF& bssrdf,
 										 float time, uint32_t depth,
 										 sampler::Sampler& sampler, Worker& worker) {

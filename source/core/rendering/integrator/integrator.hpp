@@ -20,7 +20,8 @@ class Sample;
 
 namespace light { class Light; }
 
-struct Intersection;
+namespace prop { class Prop; struct Intersection; }
+
 struct Ray;
 class Scene;
 
@@ -42,7 +43,8 @@ class Integrator {
 
 public:
 
-	using Intersection	= scene::Intersection;
+	using Prop			= scene::prop::Prop;
+	using Intersection	= scene::prop::Intersection;
 	using Ray			= scene::Ray;
 	using Scene			= scene::Scene;
 	using Light			= scene::light::Light;

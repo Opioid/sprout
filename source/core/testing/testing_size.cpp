@@ -5,13 +5,13 @@
 #include "rendering/integrator/surface/pathtracer_mis.hpp"
 #include "scene/scene_renderstate.hpp"
 #include "scene/bvh/scene_bvh_split_candidate.hpp"
-#include "scene/scene_intersection.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/bvh/scene_bvh_node.inl"
 #include "scene/bvh/scene_bvh_builder.hpp"
 #include "scene/entity/entity.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
 #include "base/math/vector3.inl"
@@ -52,7 +52,7 @@ void size() {
 
 	print_size<scene::shape::Intersection>("shape::Intersection", 96);
 
-	print_size<scene::Intersection>("scene::Intersection", 112);
+	print_size<scene::prop::Intersection>("prop::Intersection", 112);
 
 	print_size<scene::entity::Entity>("Entity", 496);
 

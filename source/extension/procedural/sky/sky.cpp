@@ -1,5 +1,5 @@
 #include "sky.hpp"
-#include "core/scene/prop.hpp"
+#include "core/scene/prop/prop.hpp"
 #include "base/json/json.hpp"
 #include "base/math/vector3.inl"
 #include "base/math/matrix3x3.inl"
@@ -10,7 +10,7 @@ namespace procedural { namespace sky {
 
 Sky::~Sky() {}
 
-void Sky::init(scene::Prop* sky, scene::Prop* sun) {
+void Sky::init(scene::prop::Prop* sky, scene::prop::Prop* sun) {
 	sky_ = sky;
 	sun_ = sun;
 

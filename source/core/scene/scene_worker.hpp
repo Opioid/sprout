@@ -10,10 +10,13 @@ namespace image::texture::sampler { class Sampler_2D; }
 
 namespace scene {
 
-class Prop;
 class Scene;
-struct Intersection;
 struct Ray;
+
+namespace prop {
+	class Prop;
+	struct Intersection;
+}
 
 class Worker {
 
@@ -30,8 +33,8 @@ public:
 
 	uint32_t id() const;
 
-	bool intersect(Ray& ray, Intersection& intersection) const;
-	bool intersect(const Prop* prop, Ray& ray, Intersection& intersection) const;
+	bool intersect(Ray& ray, prop::Intersection& intersection) const;
+	bool intersect(const prop::Prop* prop, Ray& ray, prop::Intersection& intersection) const;
 
 	bool visibility(const Ray& ray) const;
 

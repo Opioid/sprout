@@ -1,7 +1,7 @@
 #include "scene_worker.hpp"
-#include "prop.hpp"
 #include "scene.hpp"
-#include "scene_intersection.hpp"
+#include "prop/prop.hpp"
+#include "prop/prop_intersection.hpp"
 #include "material/sampler_cache.hpp"
 #include "shape/node_stack.inl"
 #include "base/math/vector4.inl"
@@ -25,11 +25,11 @@ uint32_t Worker::id() const {
 	return id_;
 }
 
-bool Worker::intersect(Ray& ray, Intersection& intersection) const {
+bool Worker::intersect(Ray& ray, prop::Intersection& intersection) const {
 	return scene_->intersect(ray, node_stack_, intersection);
 }
 
-bool Worker::intersect(const Prop* prop, Ray& ray, Intersection& intersection) const {
+bool Worker::intersect(const prop::Prop* prop, Ray& ray, prop::Intersection& intersection) const {
 	const bool hit = prop->intersect(ray, node_stack_, intersection.geo);
 	if (hit) {
 		intersection.prop = prop;

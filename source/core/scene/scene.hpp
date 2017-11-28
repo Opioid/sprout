@@ -39,11 +39,17 @@ class Stage;
 
 }
 
-namespace volume { class Volume; }
+namespace prop {
 
 struct Intersection;
-struct Ray;
 class Prop;
+
+}
+
+
+namespace volume { class Volume; }
+
+struct Ray;
 
 class Scene {
 
@@ -59,7 +65,7 @@ public:
 	const math::AABB& aabb() const;
 
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-				   Intersection& intersection) const;
+				   prop::Intersection& intersection) const;
 
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
@@ -90,15 +96,15 @@ public:
 	entity::Dummy* create_dummy();
 	entity::Dummy* create_dummy(const std::string& name);
 
-	Prop* create_prop(const std::shared_ptr<shape::Shape>& shape,
-					  const material::Materials& materials);
+	prop::Prop* create_prop(const std::shared_ptr<shape::Shape>& shape,
+							const material::Materials& materials);
 
-	Prop* create_prop(const std::shared_ptr<shape::Shape>& shape,
-					  const material::Materials& materials,
-					  const std::string& name);
+	prop::Prop* create_prop(const std::shared_ptr<shape::Shape>& shape,
+							const material::Materials& materials,
+							const std::string& name);
 
-	light::Prop_light* create_prop_light(Prop* prop, uint32_t part);
-	light::Prop_image_light* create_prop_image_light(Prop* prop, uint32_t part);
+	light::Prop_light* create_prop_light(prop::Prop* prop, uint32_t part);
+	light::Prop_image_light* create_prop_image_light(prop::Prop* prop, uint32_t part);
 
 	volume::Volume* create_height_volume();
 	volume::Volume* create_homogenous_volume();
@@ -129,8 +135,8 @@ private:
 
 	std::vector<entity::Dummy*> dummies_;
 
-	std::vector<Prop*> finite_props_;
-	std::vector<Prop*> infinite_props_;
+	std::vector<prop::Prop*> finite_props_;
+	std::vector<prop::Prop*> infinite_props_;
 
 	std::vector<light::Light*> lights_;
 

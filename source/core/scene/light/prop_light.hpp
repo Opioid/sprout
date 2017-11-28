@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_SCENE_LIGHT_PROP_LIGHT_HPP
+#define SU_SCENE_LIGHT_PROP_LIGHT_HPP
 
 #include "light.hpp"
 
@@ -40,3 +41,5 @@ protected:
 };
 
 }}
+
+#endif

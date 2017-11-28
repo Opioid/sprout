@@ -2,14 +2,17 @@
 #define SU_CORE_SCENE_BVH_TREE_HPP
 
 #include "scene/material/sampler_settings.hpp"
-#include "scene/scene_intersection.hpp"
 #include "scene/shape/node_stack.hpp"
 #include "base/math/aabb.hpp"
 #include <vector>
 
 namespace scene {
 
-class Prop;
+namespace prop {
+	class Prop;
+	struct Intersection;
+}
+
 class Worker;
 struct Ray;
 
@@ -35,7 +38,7 @@ public:
 	const math::AABB& aabb() const;
 
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-				   Intersection& intersection) const;
+				   prop::Intersection& intersection) const;
 
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
@@ -52,7 +55,7 @@ private:
 	uint32_t infinite_props_start_;
 	uint32_t infinite_props_end_;
 
-	std::vector<Prop*> props_;
+	std::vector<prop::Prop*> props_;
 
 	math::AABB aabb_;
 

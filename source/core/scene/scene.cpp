@@ -2,8 +2,8 @@
 #include "animation/animation.hpp"
 #include "animation/animation_stage.hpp"
 #include "entity/dummy.hpp"
-#include "prop.hpp"
-#include "scene_intersection.hpp"
+#include "prop/prop.hpp"
+#include "prop/prop_intersection.hpp"
 #include "shape/shape.hpp"
 #include "light/prop_light.hpp"
 #include "light/prop_image_light.hpp"
@@ -72,7 +72,7 @@ const math::AABB& Scene::aabb() const {
 }
 
 bool Scene::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-					  Intersection& intersection) const {
+					  prop::Intersection& intersection) const {
 	return surfaces_.intersect(ray, node_stack, intersection);
 }
 
@@ -271,9 +271,9 @@ entity::Dummy* Scene::create_dummy(const std::string& name) {
 	return dummy;
 }
 
-Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
-						 const material::Materials& materials) {
-	Prop* prop = new Prop;
+prop::Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
+							   const material::Materials& materials) {
+	prop::Prop* prop = new prop::Prop;
 
 	if (shape->is_finite()) {
 		finite_props_.push_back(prop);
@@ -288,17 +288,17 @@ Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
 	return prop;
 }
 
-Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
-						 const material::Materials& materials,
-						 const std::string& name) {
-	Prop* prop = create_prop(shape, materials);
+prop::Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
+							   const material::Materials& materials,
+							   const std::string& name) {
+	prop::Prop* prop = create_prop(shape, materials);
 
 	add_named_entity(prop, name);
 
 	return prop;
 }
 
-light::Prop_light* Scene::create_prop_light(Prop* prop, uint32_t part) {
+light::Prop_light* Scene::create_prop_light(prop::Prop* prop, uint32_t part) {
 	light::Prop_light* light = new light::Prop_light;
 
 	lights_.push_back(light);
@@ -308,7 +308,7 @@ light::Prop_light* Scene::create_prop_light(Prop* prop, uint32_t part) {
 	return light;
 }
 
-light::Prop_image_light* Scene::create_prop_image_light(Prop* prop, uint32_t part) {
+light::Prop_image_light* Scene::create_prop_image_light(prop::Prop* prop, uint32_t part) {
 	light::Prop_image_light* light = new light::Prop_image_light;
 
 	lights_.push_back(light);

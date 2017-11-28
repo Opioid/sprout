@@ -1,8 +1,9 @@
 #include "scene_bvh_tree.hpp"
 #include "scene_bvh_node.inl"
-#include "scene/prop.hpp"
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
+#include "scene/prop/prop.hpp"
+#include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/node_stack.inl"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
@@ -37,9 +38,9 @@ const math::AABB& Tree::aabb() const {
 }
 
 bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-					 Intersection& intersection) const {
+					 prop::Intersection& intersection) const {
 	bool hit = false;
-	const Prop* prop = nullptr;
+	const prop::Prop* prop = nullptr;
 
 	node_stack.clear();
 	if (0 != num_nodes_) {

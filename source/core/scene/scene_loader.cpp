@@ -2,13 +2,13 @@
 #include "logging/logging.hpp"
 #include "image/texture/texture_provider.hpp"
 #include "scene.hpp"
-#include "prop.hpp"
 #include "animation/animation.hpp"
 #include "animation/animation_loader.hpp"
 #include "entity/dummy.hpp"
 #include "entity/entity_extension_provider.hpp"
 #include "light/prop_light.hpp"
 #include "light/prop_image_light.hpp"
+#include "prop/prop.hpp"
 #include "shape/canopy.hpp"
 #include "shape/celestial_disk.hpp"
 #include "shape/disk.hpp"
@@ -142,7 +142,7 @@ void Loader::load_entities(const json::Value& entities_value,
 
 		try {
 			if ("Light" == type_name) {
-				scene::Prop* prop = load_prop(e, name, scene);
+				scene::prop::Prop* prop = load_prop(e, name, scene);
 				entity = prop;
 				if (prop && prop->visible_in_reflection()) {
 					load_light(e, prop, scene);
@@ -233,7 +233,8 @@ void Loader::set_visibility(entity::Entity* entity, const json::Value& visibilit
 //	entity->set_propagate_visibility(propagate);
 }
 
-Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, Scene& scene) {
+prop::Prop* Loader::load_prop(const json::Value& prop_value,
+							  const std::string& name, Scene& scene) {
 	std::shared_ptr<shape::Shape> shape;
 	material::Materials materials;
 	const json::Value* visibility = nullptr;
@@ -259,7 +260,7 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 		materials.push_back(fallback_material_);
 	}
 
-	Prop* prop = scene.create_prop(shape, materials, name);
+	prop::Prop* prop = scene.create_prop(shape, materials, name);
 
 	// Bit annoying that this is done again in load_entities(),
 	// but visibility information is already used when creating lights.
@@ -273,7 +274,7 @@ Prop* Loader::load_prop(const json::Value& prop_value, const std::string& name, 
 	return prop;
 }
 
-void Loader::load_light(const json::Value& /*light_value*/, Prop* prop, Scene& scene) {
+void Loader::load_light(const json::Value& /*light_value*/, prop::Prop* prop, Scene& scene) {
 	for (uint32_t i = 0, len = prop->shape()->num_parts(); i < len; ++i) {
 		if (const auto material = prop->material(i); material->is_emissive()) {
 			if (prop->shape()->is_analytical() && material->has_emission_map()) {
