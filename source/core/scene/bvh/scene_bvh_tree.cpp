@@ -9,16 +9,13 @@
 #include "base/math/vector3.inl"
 #include "base/memory/align.hpp"
 
-namespace scene { namespace bvh {
+namespace scene::bvh {
 
 Tree::~Tree() {
 	memory::free_aligned(nodes_);
 }
 
 void Tree::clear() {
-	infinite_props_start_ = 0;
-	infinite_props_end_ = 0;
-
 	props_.clear();
 }
 
@@ -83,8 +80,8 @@ bool Tree::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 		n = node_stack.pop();
 	}
 
-	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
-		const auto p = props_[i];
+	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
+		const auto p = infinite_props_[i];
 		if (p->intersect(ray, node_stack, intersection.geo)) {
 			prop = p;
 			hit = true;
@@ -137,8 +134,8 @@ bool Tree::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) con
 		n = node_stack.pop();
 	}
 
-	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
-		if (props_[i]->intersect_p(ray, node_stack)) {
+	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
+		if (infinite_props_[i]->intersect_p(ray, node_stack)) {
 			return true;
 		}
 	}
@@ -193,8 +190,8 @@ float Tree::opacity(const scene::Ray& ray, Sampler_filter filter, const Worker& 
 		n = node_stack.pop();
 	}
 
-	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
-		const auto p = props_[i];
+	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
+		const auto p = infinite_props_[i];
 		opacity += (1.f - opacity) * p->opacity(ray, filter, worker);
 		if (opacity >= 1.f) {
 			return 1.f;
@@ -251,8 +248,8 @@ float3 Tree::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 		n = node_stack.pop();
 	}
 
-	for (uint32_t i = infinite_props_start_; i < infinite_props_end_; ++i) {
-		const auto p = props_[i];
+	for (uint32_t i = 0, len = num_infinite_props_; i < len; ++i) {
+		const auto p = infinite_props_[i];
 		absorption += (1.f - absorption) * p->thin_absorption(ray, filter, worker);
 		if (math::all_greater_equal(absorption, 1.f)) {
 			return float3(1.f);
@@ -262,4 +259,4 @@ float3 Tree::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 	return absorption;
 }
 
-}}
+}

@@ -52,10 +52,10 @@ private:
 	uint32_t num_nodes_ = 0;
 	Node*	 nodes_		= nullptr;
 
-	uint32_t infinite_props_start_;
-	uint32_t infinite_props_end_;
-
 	std::vector<prop::Prop*> props_;
+
+	uint32_t num_infinite_props_;
+	prop::Prop* const* infinite_props_;
 
 	math::AABB aabb_;
 
