@@ -11,6 +11,7 @@
 #include "scene/entity/entity.hpp"
 #include "scene/entity/keyframe.hpp"
 #include "scene/entity/composed_transformation.hpp"
+#include "scene/prop/prop.hpp"
 #include "scene/prop/prop_intersection.hpp"
 #include "scene/shape/shape_intersection.hpp"
 #include "scene/shape/triangle/triangle_primitive_mt.hpp"
@@ -68,7 +69,7 @@ void size() {
 
 	print_size<image::texture::Adapter>("texture::Adapter", 32);
 
-	print_size<scene::bvh::Split_candidate>("Split_candidate", 32);
+	print_size<scene::bvh::Split_candidate<scene::prop::Prop>>("Split_candidate", 32);
 
 	print_size<scene::Worker>("scene::Worker", 168);
 	print_size<rendering::Camera_worker>("rendering::Camera_worker", 256);

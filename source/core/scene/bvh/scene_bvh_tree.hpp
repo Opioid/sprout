@@ -4,14 +4,11 @@
 #include "base/math/aabb.hpp"
 #include <vector>
 
-namespace scene {
-
-namespace prop { class Prop; }
-
-namespace bvh {
+namespace scene::bvh {
 
 class Node;
 
+template<typename T>
 struct Tree {
 	Tree() = default;
 	~Tree();
@@ -25,11 +22,11 @@ struct Tree {
 	uint32_t num_nodes_ = 0;
 	Node*	 nodes_		= nullptr;
 
-	std::vector<prop::Prop*> props_;
+	std::vector<T*> data_;
 
 	math::AABB aabb_;
 };
 
-}}
+}
 
 #endif

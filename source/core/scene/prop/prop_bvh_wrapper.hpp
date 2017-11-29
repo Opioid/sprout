@@ -21,7 +21,7 @@ public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;
 
-	bvh::Tree& tree();
+	bvh::Tree<Prop>& tree();
 
 	void set_infinite_props(const std::vector<Prop*>& infite_props);
 
@@ -39,10 +39,10 @@ public:
 
 private:
 
-	bvh::Tree tree_;
+	bvh::Tree<Prop> tree_;
 
 	uint32_t num_infinite_props_;
-	prop::Prop* const* infinite_props_;
+	Prop* const* infinite_props_;
 };
 
 }}

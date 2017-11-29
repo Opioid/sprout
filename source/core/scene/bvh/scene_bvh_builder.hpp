@@ -2,27 +2,25 @@
 #define SU_CORE_SCENE_BVH_BUILDER_HPP
 
 #include "scene_bvh_split_candidate.hpp"
-#include "scene_bvh_tree.hpp"
+#include "base/math/aabb.hpp"
 #include "base/math/plane.hpp"
 #include <vector>
 #include <cstddef>
 
-namespace scene {
+namespace scene::bvh {
 
-namespace prop { class Prop; }
+class Node;
+template<typename T> struct Tree;
 
-namespace bvh {
-
+template<typename T>
 class Builder {
 
 public:
 
-	using Prop = prop::Prop;
-
 	Builder();
 	~Builder();
 
-	void build(Tree& tree, std::vector<Prop*>& finite_props);
+	void build(Tree<T>& tree, std::vector<T*>& finite_props);
 
 private:
 
@@ -42,12 +40,12 @@ private:
 		Build_node* children[2] = { nullptr, nullptr };
 	};
 
-	using index = std::vector<Prop*>::iterator;
+	using index = typename std::vector<T*>::iterator;
 
 	void split(Build_node* node, index begin, index end, uint32_t max_shapes,
-			   std::vector<Prop*>& out_props);
+			   std::vector<T*>& out_props);
 
-	Split_candidate splitting_plane(const math::AABB& aabb, index begin, index end);
+	Split_candidate<T> splitting_plane(const math::AABB& aabb, index begin, index end);
 
 	void serialize(Build_node* node);
 
@@ -55,11 +53,11 @@ private:
 
 	uint32_t current_node_index() const;
 
-	static void assign(Build_node* node, index begin, index end, std::vector<Prop*>& out_props);
+	static void assign(Build_node* node, index begin, index end, std::vector<T*>& out_data);
 
 	static math::AABB aabb(index begin, index end);
 
-	std::vector<Split_candidate> split_candidates_;
+	std::vector<Split_candidate<T>> split_candidates_;
 
 	Build_node* root_;
 
@@ -69,6 +67,6 @@ private:
 	Node* nodes_;
 };
 
-}}
+}
 
 #endif

@@ -1,25 +1,21 @@
-#pragma once
+#ifndef SU_CORE_SCENE_BVH_SPLIT_CANDIDATE_HPP
+#define SU_CORE_SCENE_BVH_SPLIT_CANDIDATE_HPP
 
 #include "base/math/plane.hpp"
 #include <cstdint>
 #include <vector>
 
-namespace scene {
+namespace scene::bvh {
 
-namespace prop { class Prop; }
-
-namespace bvh {
-
+template<typename T>
 class Split_candidate {
 
 public:
 
-	using Prop = prop::Prop;
-
 	Split_candidate(const math::Plane& plane, uint8_t axis);
-	Split_candidate(uint8_t split_axis, const float3& pos, const std::vector<Prop*>& props);
+	Split_candidate(uint8_t split_axis, const float3& pos, const std::vector<T*>& data);
 
-	using index = std::vector<Prop*>::iterator;
+	using index = typename std::vector<T*>::iterator;
 
 	Split_candidate(uint8_t split_axis, const float3& pos, index begin, index end);
 
@@ -38,4 +34,6 @@ private:
 	uint8_t axis_;
 };
 
-}}
+}
+
+#endif

@@ -4,11 +4,12 @@
 #include "scene/scene_ray.inl"
 #include "scene/scene_worker.hpp"
 #include "scene/bvh/scene_bvh_node.inl"
+#include "scene/bvh/scene_bvh_tree.inl"
 #include "scene/shape/node_stack.inl"
 
 namespace scene::prop {
 
-bvh::Tree& BVH_wrapper::tree() {
+bvh::Tree<Prop>& BVH_wrapper::tree() {
 	return tree_;
 }
 
@@ -24,7 +25,7 @@ const math::AABB& BVH_wrapper::aabb() const {
 bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 							Intersection& intersection) const {
 	bool hit = false;
-	const prop::Prop* prop = nullptr;
+	const Prop* prop = nullptr;
 
 	node_stack.clear();
 	if (0 != tree_.num_nodes_) {
@@ -40,7 +41,7 @@ bool BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	bvh::Node*   nodes = tree_.nodes_;
-	Prop* const* props = tree_.props_.data();
+	Prop* const* props = tree_.data_.data();
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes[n];
@@ -97,7 +98,7 @@ bool BVH_wrapper::intersect_p(const scene::Ray& ray, shape::Node_stack& node_sta
 		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	bvh::Node*   nodes = tree_.nodes_;
-	Prop* const* props = tree_.props_.data();
+	Prop* const* props = tree_.data_.data();
 
 	while (!node_stack.empty()) {
 		const auto& node = nodes[n];
@@ -156,7 +157,7 @@ float BVH_wrapper::opacity(const scene::Ray& ray, Sampler_filter filter,
 		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	bvh::Node*   nodes = tree_.nodes_;
-	Prop* const* props = tree_.props_.data();
+	Prop* const* props = tree_.data_.data();
 
 	while (!node_stack.empty()) {
 		auto& node = nodes[n];
@@ -218,7 +219,7 @@ float3 BVH_wrapper::thin_absorption(const scene::Ray& ray, Sampler_filter filter
 		  Vector ray_max_t		   = simd::load_float(&ray.max_t);
 
 	bvh::Node*   nodes = tree_.nodes_;
-	Prop* const* props = tree_.props_.data();
+	Prop* const* props = tree_.data_.data();
 
 	while (!node_stack.empty()) {
 		auto& node = nodes[n];

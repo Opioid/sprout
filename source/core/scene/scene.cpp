@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "bvh/scene_bvh_builder.inl"
 #include "animation/animation.hpp"
 #include "animation/animation_stage.hpp"
 #include "entity/dummy.hpp"
