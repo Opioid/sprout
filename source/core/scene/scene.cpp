@@ -235,8 +235,10 @@ void Scene::compile(thread::Pool& pool) {
 		has_tinted_shadow_   = has_tinted_shadow_   || p->has_tinted_shadow();
 	}
 
-	// rebuild the BVH
-	builder_.build(surfaces_, finite_props_, infinite_props_);
+	// rebuild the surface BVH
+	builder_.build(surfaces_.tree(), finite_props_);
+	surfaces_.set_infinite_props(infinite_props_);
+
 
 	// resort lights PDF
 	light_powers_.clear();

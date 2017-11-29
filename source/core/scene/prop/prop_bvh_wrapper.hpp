@@ -1,6 +1,7 @@
 #ifndef SU_CORE_SCENE_PROP_BVH_WRAPPER_HPP
 #define SU_CORE_SCENE_PROP_BVH_WRAPPER_HPP
 
+#include "scene/bvh/scene_bvh_tree.hpp"
 #include "scene/material/sampler_settings.hpp"
 #include "scene/shape/node_stack.hpp"
 
@@ -20,8 +21,14 @@ public:
 
 	using Sampler_filter = material::Sampler_settings::Filter;
 
+	bvh::Tree& tree();
+
+	void set_infinite_props(const std::vector<Prop*>& infite_props);
+
+	const math::AABB& aabb() const;
+
 	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-				   prop::Intersection& intersection) const;
+				   Intersection& intersection) const;
 
 	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
 
@@ -32,7 +39,10 @@ public:
 
 private:
 
+	bvh::Tree tree_;
 
+	uint32_t num_infinite_props_;
+	prop::Prop* const* infinite_props_;
 };
 
 }}

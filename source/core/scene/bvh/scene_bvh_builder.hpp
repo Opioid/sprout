@@ -22,8 +22,7 @@ public:
 	Builder();
 	~Builder();
 
-	void build(Tree& tree, std::vector<Prop*>& finite_props,
-			   const std::vector<Prop*>& infite_props);
+	void build(Tree& tree, std::vector<Prop*>& finite_props);
 
 private:
 

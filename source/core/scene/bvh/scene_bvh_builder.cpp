@@ -14,8 +14,7 @@ Builder::~Builder() {
 	delete root_;
 }
 
-void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
-					const std::vector<Prop*>& infite_props) {
+void Builder::build(Tree& tree, std::vector<Prop*>& finite_props) {
 	tree.clear();
 
 	tree.props_.reserve(finite_props.size());
@@ -31,9 +30,6 @@ void Builder::build(Tree& tree, std::vector<Prop*>& finite_props,
 		current_node_ = 0;
 		serialize(root_);
 	}
-
-	tree.num_infinite_props_ = static_cast<uint32_t>(infite_props.size());
-	tree.infinite_props_	 = infite_props.data();
 
 	tree.aabb_ = root_->aabb;
 

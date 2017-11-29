@@ -6,6 +6,7 @@
 #include "light/null_light.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "bvh/scene_bvh_tree.hpp"
+#include "prop/prop_bvh_wrapper.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 #include <map>
 #include <vector>
@@ -126,7 +127,7 @@ private:
 	double simulation_time_ = 0.0;
 
     bvh::Builder builder_;
-	bvh::Tree surfaces_;
+	prop::BVH_wrapper surfaces_;
 
 	light::Null_light null_light_;
 
