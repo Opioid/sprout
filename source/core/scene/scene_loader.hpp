@@ -88,6 +88,7 @@ private:
 
 	resource::Manager& resource_manager_;
 
+	std::shared_ptr<shape::Shape> box_;
 	std::shared_ptr<shape::Shape> canopy_;
 	std::shared_ptr<shape::Shape> celestial_disk_;
 	std::shared_ptr<shape::Shape> disk_;

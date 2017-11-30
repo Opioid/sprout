@@ -9,6 +9,7 @@
 #include "light/prop_light.hpp"
 #include "light/prop_image_light.hpp"
 #include "prop/prop.hpp"
+#include "shape/box.hpp"
 #include "shape/canopy.hpp"
 #include "shape/celestial_disk.hpp"
 #include "shape/disk.hpp"
@@ -32,6 +33,7 @@ namespace scene {
 
 Loader::Loader(resource::Manager& manager, const material::Material_ptr& fallback_material) :
 	resource_manager_(manager),
+	box_(std::make_shared<shape::Box>()),
 	canopy_(std::make_shared<shape::Canopy>()),
 	celestial_disk_(std::make_shared<shape::Celestial_disk>()),
 	disk_(std::make_shared<shape::Disk>()),
@@ -365,7 +367,9 @@ std::shared_ptr<shape::Shape> Loader::load_shape(const json::Value& shape_value)
 
 std::shared_ptr<shape::Shape> Loader::shape(const std::string& type,
 											const json::Value& shape_value) const {
-	if ("Canopy" == type) {
+	if ("Box" == type) {
+		return box_;
+	} else if ("Canopy" == type) {
 		return canopy_;
 	} else if ("Celestial_disk" == type) {
 		return celestial_disk_;
@@ -409,18 +413,17 @@ void Loader::load_materials(const json::Value& materials_value, Scene& scene,
 
 material::Material_ptr Loader::load_material(const std::string& name, Scene& scene) {
 	// First, check if we maybe already have cached the material.
-	auto material = resource_manager_.get<material::Material>(name);
-	if (material) {
+	if (auto material = resource_manager_.get<material::Material>(name); material) {
 		return material;
 	}
 
 	try {
 		// Otherwise, see if it is among the locally defined materials.
-		const auto material_node = local_materials_.find(name);
-		if (local_materials_.end() != material_node) {
+		if (const auto material_node = local_materials_.find(name);
+			local_materials_.end() != material_node) {
 			const void* data = reinterpret_cast<const void*>(material_node->second);
 
-			material = resource_manager_.load<material::Material>(name, data, mount_folder_);
+			auto material = resource_manager_.load<material::Material>(name, data, mount_folder_);
 
 			if (material->is_animated()) {
 				scene.add_material(material);
@@ -430,7 +433,7 @@ material::Material_ptr Loader::load_material(const std::string& name, Scene& sce
 		}
 
 		// Lastly, try loading the material from the filesystem.
-		material = resource_manager_.load<material::Material>(name);
+		auto material = resource_manager_.load<material::Material>(name);
 
 		if (material->is_animated()) {
 			scene.add_material(material);
