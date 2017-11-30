@@ -39,6 +39,7 @@
 //#include <iostream>
 
 static void log_memory_consumption(const resource::Manager& manager, const take::Take& take,
+								   const scene::Loader& loader, const scene::Scene& scene,
 								   size_t rendering_num_bytes);
 
 static bool is_json(const std::string& text);
@@ -208,14 +209,15 @@ int main(int argc, char* argv[]) {
 					  string::to_string(chrono::seconds_since(total_start)) + " s");
 	}
 
-	log_memory_consumption(resource_manager, *take, rendering_num_bytes);
+	log_memory_consumption(resource_manager, *take, scene_loader, scene, rendering_num_bytes);
 
 	return 0;
 }
 
 void log_memory_consumption(const resource::Manager& manager, const take::Take& take,
+							const scene::Loader& loader, const scene::Scene& scene,
 							size_t rendering_num_bytes) {
-	if (logging::is_verbose()) {
+	if (!logging::is_verbose()) {
 		return;
 	}
 
@@ -235,8 +237,11 @@ void log_memory_consumption(const resource::Manager& manager, const take::Take& 
 									+ rendering_num_bytes;
 	logging::verbose("Renderer: " + string::print_bytes(renderer_num_bytes));
 
-	const size_t total_num_bytes = image_num_bytes + material_num_bytes
-								 + mesh_num_bytes + renderer_num_bytes;
+	const size_t scene_num_bytes = loader.num_bytes() + scene.num_bytes();
+	logging::verbose("Scene: " + string::print_bytes(scene_num_bytes));
+
+	const size_t total_num_bytes = image_num_bytes + material_num_bytes + mesh_num_bytes
+								 + renderer_num_bytes + scene_num_bytes;
 	logging::verbose("Total: " + string::print_bytes(total_num_bytes));
 }
 

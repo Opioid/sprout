@@ -70,6 +70,8 @@ public:
 	bool is_open() const;
 	void set_open(bool open);
 
+	size_t num_bytes() const;
+
 private:
 
 	bool visible(uint32_t ray_depth) const;

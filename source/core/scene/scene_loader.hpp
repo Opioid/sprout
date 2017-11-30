@@ -57,6 +57,8 @@ public:
 	std::shared_ptr<shape::Shape> canopy();
 	std::shared_ptr<shape::Shape> celestial_disk();
 
+	size_t num_bytes() const;
+
 private:
 
 	void read_materials(const json::Value& materials_value);

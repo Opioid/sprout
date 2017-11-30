@@ -199,6 +199,10 @@ void Prop::set_open(bool open) {
 	properties_.set(Properties::Open, open);
 }
 
+size_t Prop::num_bytes() const {
+	return sizeof(*this);
+}
+
 bool Prop::visible(uint32_t ray_depth) const {
 	if (0 == ray_depth) {
 		if (!properties_.test(Properties::Visible_in_camera)) {

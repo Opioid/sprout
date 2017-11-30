@@ -6,6 +6,7 @@
 #include "light/null_light.hpp"
 #include "bvh/scene_bvh_builder.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
+#include "volume/volume_bvh_wrapper.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 #include <map>
 #include <vector>
@@ -45,7 +46,6 @@ struct Intersection;
 class Prop;
 
 }
-
 
 namespace volume { class Volume; }
 
@@ -118,6 +118,8 @@ public:
 
     void create_animation_stage(entity::Entity* entity, animation::Animation* animation);
 
+	size_t num_bytes() const;
+
 private:
 
 	void add_named_entity(entity::Entity* entity, const std::string& name);
@@ -140,6 +142,8 @@ private:
 
 	std::vector<light::Light*> lights_;
 
+	std::vector<volume::Volume*> volumes_;
+
 	std::vector<entity::Entity*> extensions_;
 
 	std::vector<entity::Entity*> entities_;
@@ -149,8 +153,6 @@ private:
 	std::vector<float> light_powers_;
 
 	math::Distribution_1D light_distribution_;
-
-	volume::Volume* volume_region_ = nullptr;
 
 	std::vector<material::Material_ptr> materials_;
 

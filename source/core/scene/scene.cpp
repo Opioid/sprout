@@ -28,6 +28,7 @@ Scene::Scene() {
 	finite_props_.reserve(16);
 	infinite_props_.reserve(16);
 	lights_.reserve(16);
+	volumes_.reserve(16);
 	extensions_.reserve(16);
 	entities_.reserve(16);
 	light_powers_.reserve(16);
@@ -37,10 +38,12 @@ Scene::Scene() {
 }
 
 Scene::~Scene() {
-	delete volume_region_;
-
 	for (auto e : extensions_) {
 		delete e;
+	}
+
+	for (auto v : volumes_) {
+		delete v;
 	}
 
 	if (lights_[0] != &null_light_) {
@@ -147,7 +150,11 @@ Scene::Light Scene::random_light(float random) const {
 }
 
 const volume::Volume* Scene::volume_region() const {
-	return volume_region_;
+	if (!volumes_.empty()) {
+		return volumes_[0];
+	}
+
+	return nullptr;
 }
 
 void Scene::tick(thread::Pool& thread_pool) {
@@ -240,6 +247,9 @@ void Scene::compile(thread::Pool& pool) {
 	builder_.build(surfaces_.tree(), finite_props_);
 	surfaces_.set_infinite_props(infinite_props_);
 
+	for (auto v : volumes_) {
+		v->set_scene_aabb(surfaces_.aabb());
+	}
 
 	// resort lights PDF
 	light_powers_.clear();
@@ -252,9 +262,6 @@ void Scene::compile(thread::Pool& pool) {
 
 	light_distribution_.init(light_powers_.data(), light_powers_.size());
 
-	if (volume_region_) {
-		volume_region_->set_scene_aabb(surfaces_.aabb());
-	}
 }
 
 entity::Dummy* Scene::create_dummy() {
@@ -322,31 +329,36 @@ light::Prop_image_light* Scene::create_prop_image_light(prop::Prop* prop, uint32
 }
 
 volume::Volume* Scene::create_height_volume() {
-	volume_region_ = new volume::Height;
+	volume::Volume* volume = new volume::Height;
 
-	entities_.push_back(volume_region_);
+	volumes_.push_back(volume);
+	entities_.push_back(volume);
 
-	return volume_region_;
+	return volume;
 }
 
 volume::Volume* Scene::create_homogenous_volume() {
-	volume_region_ = new volume::Homogeneous;
+	volume::Volume* volume = new volume::Homogeneous;
 
-	entities_.push_back(volume_region_);
+	volumes_.push_back(volume);
+	entities_.push_back(volume);
 
-	return volume_region_;
+	return volume;
 }
 
 volume::Volume* Scene::create_grid_volume(const Texture_ptr& grid) {
+	volume::Volume* volume;
+
 	if (3 == grid->num_channels()) {
-		volume_region_ = new volume::Emission_grid(grid);
+		volume = new volume::Emission_grid(grid);
 	} else {
-		volume_region_ = new volume::Grid(grid);
+		volume = new volume::Grid(grid);
 	}
 
-	entities_.push_back(volume_region_);
+	volumes_.push_back(volume);
+	entities_.push_back(volume);
 
-	return volume_region_;
+	return volume;
 }
 
 void Scene::add_extension(entity::Entity* extension) {
@@ -372,6 +384,20 @@ void Scene::add_animation(const std::shared_ptr<animation::Animation>& animation
 
 void Scene::create_animation_stage(entity::Entity* entity, animation::Animation* animation) {
     animation_stages_.push_back(animation::Stage(entity, animation));
+}
+
+size_t Scene::num_bytes() const {
+	size_t num_bytes = 0;
+
+	for (auto p : finite_props_) {
+		num_bytes += p->num_bytes();
+	}
+
+	for (auto p : infinite_props_) {
+		num_bytes += p->num_bytes();
+	}
+
+	return num_bytes + sizeof(*this);
 }
 
 void Scene::add_named_entity(entity::Entity* entity, const std::string& name) {

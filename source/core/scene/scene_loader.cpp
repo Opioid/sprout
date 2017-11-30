@@ -105,6 +105,10 @@ std::shared_ptr<shape::Shape> Loader::celestial_disk() {
 	return celestial_disk_;
 }
 
+size_t Loader::num_bytes() const {
+	return 0;
+}
+
 void Loader::read_materials(const json::Value& materials_value) {
 	if (!materials_value.IsArray()) {
 		return;
