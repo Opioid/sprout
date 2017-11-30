@@ -33,8 +33,6 @@ void Volume::set_parameters(const json::Value& parameters) {
 }
 
 void Volume::set_scene_aabb(const math::AABB& aabb) {
-	scene_bb_ = aabb;
-
 	if (match_scene_scale_) {
 		set_transformation(math::Transformation{
 			aabb.position(),

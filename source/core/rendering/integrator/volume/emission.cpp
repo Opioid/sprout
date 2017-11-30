@@ -25,7 +25,7 @@ float3 Emission::transmittance(const Ray& ray, const Volume& volume, const Worke
 		return float3(1.f);
 	}
 
-	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
+	const Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
 	const float3 tau = volume.optical_depth(tray, settings_.step_size, rng_,
 											Sampler_filter::Nearest, worker);
@@ -41,7 +41,7 @@ float3 Emission::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
 		return float3::identity();
 	}
 
-	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
+	const Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
 	const float3 emission = volume.emission(tray, settings_.step_size, rng_,
 											Sampler_filter::Undefined, worker);
