@@ -1,4 +1,5 @@
 include("${CMAKE_CURRENT_LIST_DIR}/animation/animation.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/body/body.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/bvh/bvh.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/camera/camera.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/entity/entity.cmake")
@@ -10,6 +11,8 @@ include("${CMAKE_CURRENT_LIST_DIR}/volume/volume.cmake")
 
 target_sources(core
 	PRIVATE
+	"${CMAKE_CURRENT_LIST_DIR}/scene.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/scene.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/scene_constants.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/scene_loader.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/scene_loader.hpp"
@@ -19,6 +22,4 @@ target_sources(core
 	"${CMAKE_CURRENT_LIST_DIR}/scene_worker.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/scene_worker.hpp"
 	"${CMAKE_CURRENT_LIST_DIR}/scene_worker.inl"
-	"${CMAKE_CURRENT_LIST_DIR}/scene.cpp"
-	"${CMAKE_CURRENT_LIST_DIR}/scene.hpp"
 	)  

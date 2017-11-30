@@ -55,6 +55,8 @@ void size() {
 
 	print_size<scene::prop::Intersection>("prop::Intersection", 112);
 
+	print_size<scene::prop::Prop>("prop::Prop", 592);
+
 	print_size<scene::entity::Entity>("Entity", 496);
 
 	print_size<scene::Renderstate>("Renderstate", 112);
@@ -67,15 +69,15 @@ void size() {
 
 	print_size<scene::shape::triangle::Shading_vertex_MTC>("Shading_vertex_MTC", 32);
 
-	print_size<image::texture::Adapter>("texture::Adapter", 32);
+	print_size<image::texture::Adapter>("texture::Adapter", 24);
 
 	print_size<scene::bvh::Split_candidate<scene::prop::Prop>>("Split_candidate", 32);
 
-	print_size<scene::Worker>("scene::Worker", 168);
+	print_size<scene::Worker>("scene::Worker", 208);
 	print_size<rendering::Camera_worker>("rendering::Camera_worker", 256);
 
 	print_size<rendering::integrator::surface::Whitted>("Whitted", 128);
-	print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 640);
+	print_size<rendering::integrator::surface::Pathtracer_MIS>("PTMIS", 576);
 }
 
 }
