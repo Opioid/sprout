@@ -50,6 +50,21 @@ bool Body::intersect(Ray& ray, shape::Node_stack& node_stack,
 	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
 
+bool Body::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const {
+	if (!visible(ray.depth)) {
+		return false;
+	}
+
+	if (shape_->is_complex() && !aabb_.intersect_p(ray)) {
+		return false;
+	}
+
+	entity::Composed_transformation temp;
+	const auto& transformation = transformation_at(ray.time, temp);
+
+	return shape_->intersect(transformation, ray, node_stack, epsilon);
+}
+
 bool Body::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {
 	if (!visible_in_shadow()) {
 		return false;

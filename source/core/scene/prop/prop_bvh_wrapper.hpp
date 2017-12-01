@@ -3,9 +3,10 @@
 
 #include "scene/bvh/scene_bvh_tree.hpp"
 #include "scene/material/sampler_settings.hpp"
-#include "scene/shape/node_stack.hpp"
 
 namespace scene {
+
+namespace shape { class Node_stack; }
 
 class Worker;
 struct Ray;

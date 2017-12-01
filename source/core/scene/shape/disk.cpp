@@ -63,6 +63,11 @@ bool Disk::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
+bool Disk::intersect(const Transformation& /*transformation*/, Ray& /*ray*/,
+					 Node_stack& /*node_stack*/, float& /*epsilon*/) const {
+	return false;
+}
+
 bool Disk::intersect(const Transformation& /*transformation*/, const Ray& /*ray*/,
 					 Node_stack& /*node_stack*/, float& /*min*/, float& /*max*/) const {
 	return false;

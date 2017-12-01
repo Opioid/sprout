@@ -31,9 +31,12 @@ public:
 
 	virtual uint32_t num_parts() const override final;
 
-	virtual bool intersect(const Transformation& transformation,
-						   Ray& ray, Node_stack& node_stack,
+	virtual bool intersect(const Transformation& transformation, Ray& ray,
+						   Node_stack& node_stack,
 						   shape::Intersection& intersection) const override final;
+
+	virtual bool intersect(const Transformation& transformation, Ray& ray,
+						   Node_stack& node_stack, float& epsilon) const override final;
 
 	virtual bool intersect(const Transformation& transformation, const Ray& ray,
 						   Node_stack& node_stack, float& min, float& max) const override final;

@@ -104,6 +104,25 @@ bool Box::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
+bool Box::intersect(const Transformation& transformation, Ray& ray,
+					Node_stack& /*node_stack*/, float& epsilon) const {
+	math::Ray tray;
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+	tray.min_t = ray.min_t;
+	tray.max_t = ray.max_t;
+
+	float min_t;
+	float max_t;
+	if (math::AABB(float3(-1.f), float3(1.f)).intersect_p(tray, min_t, max_t)) {
+		ray.max_t = min_t;
+		epsilon = 5e-4f;
+		return true;
+	}
+
+	return false;
+}
+
 bool Box::intersect(const Transformation& transformation, const Ray& ray,
 					 Node_stack& /*node_stack*/, float& min, float& max) const {
 	math::Ray tray;

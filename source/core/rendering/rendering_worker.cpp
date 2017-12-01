@@ -63,7 +63,10 @@ float4 Worker::surface_li(scene::Ray& ray) {
 }
 
 float3 Worker::volume_li(const scene::Ray& ray, bool primary_ray, float3& transmittance) {
-	const auto volume = scene_->volume_region();
+	scene::Ray tray = ray;
+
+	float epsilon;
+	const auto volume = scene_->closest_volume(tray, node_stack_, epsilon);
 
 	if (!volume) {
 		transmittance = float3(1.f);
@@ -74,7 +77,10 @@ float3 Worker::volume_li(const scene::Ray& ray, bool primary_ray, float3& transm
 }
 
 float3 Worker::transmittance(const scene::Ray& ray) {
-	const auto volume = scene_->volume_region();
+	scene::Ray tray = ray;
+
+	float epsilon;
+	const auto volume = scene_->closest_volume(tray, node_stack_, epsilon);
 
 	if (!volume) {
 		return float3(1.f);

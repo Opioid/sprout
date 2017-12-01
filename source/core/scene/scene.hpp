@@ -74,6 +74,9 @@ public:
 	float3 thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 						   const Worker& worker) const;
 
+	const volume::Volume* closest_volume(scene::Ray& ray, shape::Node_stack& node_stack,
+										 float& epsilon) const;
+
 	float tick_duration() const;
 	float simulation_time() const;
 
@@ -128,8 +131,11 @@ private:
 	double tick_duration_ = 1.0 / 60.0;
 	double simulation_time_ = 0.0;
 
-	bvh::Builder<prop::Prop> builder_;
-	prop::BVH_wrapper		 surfaces_;
+	bvh::Builder<prop::Prop> prop_builder_;
+	prop::BVH_wrapper		 prop_bvh_;
+
+	bvh::Builder<volume::Volume> volume_builder_;
+	volume::BVH_wrapper          volume_bvh_;
 
 	light::Null_light null_light_;
 

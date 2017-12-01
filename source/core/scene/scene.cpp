@@ -75,33 +75,38 @@ void Scene::finish() {
 }
 
 const math::AABB& Scene::aabb() const {
-	return surfaces_.aabb();
+	return prop_bvh_.aabb();
 }
 
 bool Scene::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
 					  prop::Intersection& intersection) const {
-	return surfaces_.intersect(ray, node_stack, intersection);
+	return prop_bvh_.intersect(ray, node_stack, intersection);
 }
 
 bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
-	return surfaces_.intersect_p(ray, node_stack);
+	return prop_bvh_.intersect_p(ray, node_stack);
 }
 
 float Scene::opacity(const scene::Ray& ray, Sampler_filter filter, const Worker& worker) const {
 	if (has_masked_material_) {
-		return surfaces_.opacity(ray, filter, worker);
+		return prop_bvh_.opacity(ray, filter, worker);
 	}
 
-	return surfaces_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
+	return prop_bvh_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 }
 
 float3 Scene::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 							  const Worker& worker) const {
 	if (has_tinted_shadow_) {
-		return surfaces_.thin_absorption(ray, filter, worker);
+		return prop_bvh_.thin_absorption(ray, filter, worker);
 	}
 
 	return float3(opacity(ray, filter, worker));
+}
+
+const volume::Volume* Scene::closest_volume(scene::Ray& ray, shape::Node_stack& node_stack,
+											float& epsilon) const {
+	return volume_bvh_.intersect(ray, node_stack, epsilon);
 }
 
 float Scene::tick_duration() const {
@@ -250,12 +255,15 @@ void Scene::compile(thread::Pool& pool) {
 		v->calculate_world_transformation();
 	}
 
-	// rebuild the surface BVH
-	builder_.build(surfaces_.tree(), finite_props_);
-	surfaces_.set_infinite_props(infinite_props_);
+	// rebuild prop BVH
+	prop_builder_.build(prop_bvh_.tree(), finite_props_);
+	prop_bvh_.set_infinite_props(infinite_props_);
+
+	// rebbuild volume BVH
+	volume_builder_.build(volume_bvh_.tree(), volumes_);
 
 	for (auto v : volumes_) {
-		v->set_scene_aabb(surfaces_.aabb());
+		v->set_scene_aabb(prop_bvh_.aabb());
 	}
 
 	// resort lights PDF
@@ -264,7 +272,7 @@ void Scene::compile(thread::Pool& pool) {
 	for (uint32_t i = 0, len = static_cast<uint32_t>(lights_.size()); i < len; ++i) {
 		auto l = lights_[i];
 		l->prepare_sampling(i, pool);
-		light_powers_.push_back(std::sqrt(spectrum::luminance(l->power(surfaces_.aabb()))));
+		light_powers_.push_back(std::sqrt(spectrum::luminance(l->power(prop_bvh_.aabb()))));
 	}
 
 	light_distribution_.init(light_powers_.data(), light_powers_.size());
