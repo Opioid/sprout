@@ -11,14 +11,12 @@ public:
 
 	Box();
 
-	virtual math::AABB transformed_aabb(const float4x4& m,
-										const math::Transformation& t) const override final;
-
-	virtual math::AABB transformed_aabb(const math::Transformation& t) const override final;
-
 	virtual bool intersect(const Transformation& transformation,
 						   Ray& ray, Node_stack& node_stack,
 						   Intersection& intersection) const override final;
+
+	virtual bool intersect(const Transformation& transformation, const Ray& ray,
+							Node_stack& node_stack, float& min, float& max) const override final;
 
 	virtual bool intersect_p(const Transformation& transformation, const Ray& ray,
 							 Node_stack& node_stack) const override final;

@@ -46,7 +46,10 @@ Scene::~Scene() {
 		delete v;
 	}
 
-	if (lights_[0] != &null_light_) {
+	// Normally lights_ should never be empty; containing null_light instead
+	// But it can happen for partially constructed scenes,
+	// and we still don't want the destructor to crash.
+	if (!lights_.empty() && lights_[0] != &null_light_) {
 		for (auto l : lights_) {
 			delete l;
 		}
@@ -243,6 +246,10 @@ void Scene::compile(thread::Pool& pool) {
 		has_tinted_shadow_   = has_tinted_shadow_   || p->has_tinted_shadow();
 	}
 
+	for (auto v : volumes_) {
+		v->calculate_world_transformation();
+	}
+
 	// rebuild the surface BVH
 	builder_.build(surfaces_.tree(), finite_props_);
 	surfaces_.set_infinite_props(infinite_props_);
@@ -328,25 +335,30 @@ light::Prop_image_light* Scene::create_prop_image_light(prop::Prop* prop, uint32
 	return light;
 }
 
-volume::Volume* Scene::create_height_volume() {
+volume::Volume* Scene::create_height_volume(const std::shared_ptr<shape::Shape>& shape) {
 	volume::Volume* volume = new volume::Height;
 
+	volume->set_shape(shape);
+
 	volumes_.push_back(volume);
 	entities_.push_back(volume);
 
 	return volume;
 }
 
-volume::Volume* Scene::create_homogenous_volume() {
+volume::Volume* Scene::create_homogenous_volume(const std::shared_ptr<shape::Shape>& shape) {
 	volume::Volume* volume = new volume::Homogeneous;
 
+	volume->set_shape(shape);
+
 	volumes_.push_back(volume);
 	entities_.push_back(volume);
 
 	return volume;
 }
 
-volume::Volume* Scene::create_grid_volume(const Texture_ptr& grid) {
+volume::Volume* Scene::create_grid_volume(const std::shared_ptr<shape::Shape>& shape,
+										  const Texture_ptr& grid) {
 	volume::Volume* volume;
 
 	if (3 == grid->num_channels()) {
@@ -354,6 +366,8 @@ volume::Volume* Scene::create_grid_volume(const Texture_ptr& grid) {
 	} else {
 		volume = new volume::Grid(grid);
 	}
+
+	volume->set_shape(shape);
 
 	volumes_.push_back(volume);
 	entities_.push_back(volume);

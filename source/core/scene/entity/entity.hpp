@@ -14,6 +14,8 @@ class Entity {
 
 public:
 
+	using Transformation = Composed_transformation;
+
 	Entity() = default;
 	virtual ~Entity();
 
@@ -26,8 +28,7 @@ public:
 	// depending on whether the entity is animated or not.
 	// This can sometimes avoid a relatively costly copy,
 	// while keeping the animated state out of the interface.
-	const Composed_transformation& transformation_at(float tick_delta,
-													 Composed_transformation& transformation) const;
+	const Transformation& transformation_at(float tick_delta, Transformation& transformation) const;
 
 	void set_transformation(const math::Transformation& t);
 

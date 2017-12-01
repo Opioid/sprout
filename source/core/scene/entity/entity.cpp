@@ -10,8 +10,8 @@ const math::Transformation& Entity::local_frame_a() const {
 	return local_frame_a_.transformation;
 }
 
-const Composed_transformation& Entity::transformation_at(
-		float tick_delta, Composed_transformation& transformation) const {
+const Composed_transformation& Entity::transformation_at(float tick_delta,
+														 Transformation& transformation) const {
 	if (!properties_.test(Properties::Animated)) {
 		return world_transformation_;
 	}

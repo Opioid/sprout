@@ -1,11 +1,12 @@
-#pragma once
+#ifndef SU_CORE_SCENE_ENTITY_COMPOSED_TRANSFORMATION_HPP
+#define SU_CORE_SCENE_ENTITY_COMPOSED_TRANSFORMATION_HPP
 
 #include "base/math/vector3.hpp"
 #include "base/math/matrix3x3.hpp"
 #include "base/math/matrix4x4.hpp"
 #include "base/math/transformation.hpp"
 
-namespace scene { namespace entity {
+namespace scene::entity {
 
 struct Composed_transformation {
 	void set(const math::Transformation& t);
@@ -17,4 +18,6 @@ struct Composed_transformation {
 	float3   scale;
 };
 
-}}
+}
+
+#endif

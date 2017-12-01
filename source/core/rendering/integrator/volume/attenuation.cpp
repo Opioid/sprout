@@ -2,6 +2,7 @@
 #include "rendering/rendering_worker.hpp"
 #include "scene/scene.hpp"
 #include "scene/scene_ray.inl"
+#include "scene/shape/shape.hpp"
 #include "scene/volume/volume.hpp"
 #include "base/math/aabb.inl"
 #include "base/math/vector3.inl"
@@ -19,13 +20,21 @@ void Attenuation::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/
 float3 Attenuation::transmittance(const Ray& ray, const Volume& volume, const Worker& worker) {
 	float min_t;
 	float max_t;
-	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
+//	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
+//		return float3(1.f);
+//	}
+
+	scene::entity::Composed_transformation temp;
+	const auto& transformation = volume.transformation_at(ray.time, temp);
+
+	if (!volume.shape()->intersect(transformation, ray, worker.node_stack(), min_t, max_t)) {
 		return float3(1.f);
 	}
 
 	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	float3 tau = volume.optical_depth(tray, 1.f, rng_, Sampler_filter::Nearest, worker);
+	float3 tau = volume.optical_depth(transformation, tray, 1.f, rng_,
+									  Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
@@ -33,14 +42,21 @@ float3 Attenuation::li(const Ray& ray, bool /*primary_ray*/, const Volume& volum
 					   const Worker& worker, float3& transmittance) {
 	float min_t;
 	float max_t;
-	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
-		transmittance = float3(1.f);
-		return float3::identity();
+//	if (!volume.aabb().intersect_p(ray, min_t, max_t)) {
+//		return float3(1.f);
+//	}
+
+	scene::entity::Composed_transformation temp;
+	const auto& transformation = volume.transformation_at(ray.time, temp);
+
+	if (!volume.shape()->intersect(transformation, ray, worker.node_stack(), min_t, max_t)) {
+		return float3(1.f);
 	}
 
 	const scene::Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
 
-	const float3 tau = volume.optical_depth(tray, 1.f, rng_, Sampler_filter::Undefined, worker);
+	const float3 tau = volume.optical_depth(transformation, tray, 1.f, rng_,
+											Sampler_filter::Undefined, worker);
 	transmittance = math::exp(-tau);
 
 	return float3(0.f);

@@ -19,15 +19,6 @@ Box::Box() {
 	aabb_.set_min_max(float3(-1.f), float3(1.f));
 }
 
-math::AABB Box::transformed_aabb(const float4x4& /*m*/, const math::Transformation& t) const {
-	return transformed_aabb(t);
-}
-
-math::AABB Box::transformed_aabb(const math::Transformation& t) const {
-	const float3 halfsize(t.scale[0]);
-	return math::AABB(t.position - halfsize, t.position + halfsize);
-}
-
 bool Box::intersect(const Transformation& transformation, Ray& ray,
 					Node_stack& /*node_stack*/, Intersection& intersection) const {
 	float3 v = transformation.position - ray.origin;
@@ -111,6 +102,17 @@ bool Box::intersect(const Transformation& transformation, Ray& ray,
 	}
 
 	return false;
+}
+
+bool Box::intersect(const Transformation& transformation, const Ray& ray,
+					 Node_stack& /*node_stack*/, float& min, float& max) const {
+	math::Ray tray;
+	tray.origin = math::transform_point(ray.origin, transformation.world_to_object);
+	tray.set_direction(math::transform_vector(ray.direction, transformation.world_to_object));
+	tray.min_t = ray.min_t;
+	tray.max_t = ray.max_t;
+
+	return math::AABB(float3(-1.f), float3(1.f)).intersect_p(tray, min, max);
 }
 
 bool Box::intersect_p(const Transformation& transformation, const Ray& ray,

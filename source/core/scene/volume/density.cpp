@@ -7,37 +7,26 @@
 
 namespace scene::volume {
 
-float3 Density::emission(const math::Ray& /*ray*/, float /*step_size*/, rnd::Generator& /*rng*/,
+float3 Density::emission(const Transformation& /*transformation*/, const math::Ray& /*ray*/,
+						 float /*step_size*/, rnd::Generator& /*rng*/,
 						 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	return float3(0.f);
 }
 
-float3 Density::optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
+float3 Density::optical_depth(const Transformation& transformation, const math::Ray& ray,
+							  float step_size, rnd::Generator& rng,
 							  Sampler_filter filter, const Worker& worker) const {
-	const float length = math::length(ray.direction);
+	const math::Ray rn = ray.normalized();
 
-	const math::Ray rn(ray.origin, ray.direction / length, ray.min_t * length, ray.max_t * length);
-
-	float min_t;
-	float max_t;
-	if (!aabb_.intersect_p(rn, min_t, max_t)) {
-		return float3(0.f);
-	}
-
-	min_t += rng.random_float() * step_size;
-
+	float min_t = rn.min_t + rng.random_float() * step_size;
 	float tau = 0.f;
 
-//	math::Ray r_o(math::transform_point(rn.origin, world_transformation_.world_to_object),
-//				  math::transform_vector(rn.direction, world_transformation_.world_to_object),
-//				  rn.min_t, rn.max_t);
+	const float3 rp_o = math::transform_point(rn.origin, transformation.world_to_object);
+	const float3 rd_o = math::transform_vector(rn.direction, transformation.world_to_object);
 
-	const float3 rp_o = math::transform_point(rn.origin, world_transformation_.world_to_object);
-	const float3 rd_o = math::transform_vector(rn.direction, world_transformation_.world_to_object);
-
-	for (; min_t < max_t; min_t += step_size) {
-		const float3 p_o = rp_o + min_t * rd_o; // r_o.point(min_t);
-		tau += density(p_o, filter, worker);
+	for (; min_t < rn.max_t; min_t += step_size) {
+		const float3 p_o = rp_o + min_t * rd_o;
+		tau += density(transformation, p_o, filter, worker);
 	}
 
 	const float3 attenuation = absorption_ + scattering_;
@@ -45,9 +34,10 @@ float3 Density::optical_depth(const math::Ray& ray, float step_size, rnd::Genera
 	return step_size * tau * attenuation;
 }
 
-float3 Density::scattering(const float3& p, Sampler_filter filter, const Worker& worker) const {
-	const float3 p_o = math::transform_point(p, world_transformation_.world_to_object);
-	return density(p_o, filter, worker) * scattering_;
+float3 Density::scattering(const Transformation& transformation, const float3& p,
+						   Sampler_filter filter, const Worker& worker) const {
+	const float3 p_o = math::transform_point(p, transformation.world_to_object);
+	return density(transformation, p_o, filter, worker) * scattering_;
 }
 
 }

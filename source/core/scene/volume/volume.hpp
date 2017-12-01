@@ -1,7 +1,7 @@
 #ifndef SU_CORE_SCENE_VOLUME_VOLUME_HPP
 #define SU_CORE_SCENE_VOLUME_VOLUME_HPP
 
-#include "scene/entity/entity.hpp"
+#include "scene/body/body.hpp"
 #include "scene/material/sampler_settings.hpp"
 #include "base/math/aabb.hpp"
 #include "base/math/ray.hpp"
@@ -15,7 +15,7 @@ class Worker;
 
 namespace volume {
 
-class Volume : public entity::Entity {
+class Volume : public body::Body {
 
 public:
 
@@ -23,14 +23,16 @@ public:
 
 	Volume();
 
-	virtual float3 emission(const math::Ray& ray, float step_size, rnd::Generator& rng,
+	virtual float3 emission(const Transformation& transformation, const math::Ray& ray,
+							float step_size, rnd::Generator& rng,
 							Sampler_filter filter, const Worker& worker) const = 0;
 
-	virtual float3 optical_depth(const math::Ray& ray, float step_size, rnd::Generator& rng,
+	virtual float3 optical_depth(const Transformation& transformation, const math::Ray& ray,
+								 float step_size, rnd::Generator& rng,
 								 Sampler_filter filter, const Worker& worker) const = 0;
 
-	virtual float3 scattering(const float3& p, Sampler_filter filter,
-							  const Worker& worker) const = 0;
+	virtual float3 scattering(const Transformation& transformation, const float3& p,
+							  Sampler_filter filter, const Worker& worker) const = 0;
 
 	float phase(const float3& w, const float3& wp) const;
 
@@ -42,7 +44,7 @@ public:
 
 private:
 
-	virtual void on_set_transformation() override final;
+//	virtual void on_set_transformation() override final;
 
 protected:
 
@@ -50,7 +52,6 @@ protected:
 
 	static float phase_schlick(const float3& w, const float3& wp, float k);
 
-	math::AABB aabb_;
 	math::AABB local_aabb_;
 
 	float3 absorption_;

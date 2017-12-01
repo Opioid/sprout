@@ -4,6 +4,8 @@
 #include "volume_integrator.hpp"
 #include "sampler/sampler_random.hpp"
 
+namespace scene::entity { struct Composed_transformation; }
+
 namespace rendering::integrator::volume {
 
 class alignas(64) Single_scattering : public Integrator {
@@ -33,11 +35,15 @@ public:
 
 private:
 
-	float3 estimate_direct_light(const float3& w, const float3& p, float time,
+	using Transformation = scene::entity::Composed_transformation;
+
+	float3 estimate_direct_light(const float3& w, const float3& p,
+								 const Transformation& transformation, float time,
 								 const Volume& volume, const Worker& worker);
 
 	float3 evaluate_light(const Light& light, float light_weight,
 						  const float3& w, const float3& p,
+						  const Transformation& transformation,
 						  float time, uint32_t sampler_dimension,
 						  const Volume& volume, const Worker& worker);
 

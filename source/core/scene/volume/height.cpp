@@ -10,23 +10,18 @@
 
 namespace scene::volume {
 
-float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Generator& /*rng*/,
+float3 Height::optical_depth(const Transformation& /*transformation*/, const math::Ray& ray,
+							 float /*step_size*/, rnd::Generator& /*rng*/,
 							 Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	const math::Ray rn = ray.normalized();
-
-	float min_t;
-	float max_t;
-	if (!aabb_.intersect_p(rn, min_t, max_t)) {
-		return float3(0.f);
-	}
 
 	// This is an optimization of the generic stochastic method
 	// implemented in Density::opptical_depth.
 	// Because everything happens in world space there could be differences
 	// when the volume is rotated because the local aabb is never checked.
 
-	const float ay = rn.origin[1] + min_t * rn.direction[1];
-	const float by = rn.origin[1] + max_t * rn.direction[1];
+	const float ay = rn.origin[1] + rn.min_t * rn.direction[1];
+	const float by = rn.origin[1] + rn.max_t * rn.direction[1];
 
 	const float min_y = aabb_.min()[1];
 	const float ha = ay - min_y;
@@ -34,7 +29,7 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 
 	const float3 attenuation = absorption_ + scattering_;
 
-	const float d = max_t - min_t;
+	const float d = rn.max_t - rn.min_t;
 
 	const float hb_ha = hb - ha;
 
@@ -66,14 +61,12 @@ float3 Height::optical_depth(const math::Ray& ray, float /*step_size*/, rnd::Gen
 //	return old_result;
 }
 
-float Height::density(const float3& p, Sampler_filter /*filter*/, const Worker& /*worker*/) const {
+float Height::density(const Transformation& transformation, const float3& p,
+					  Sampler_filter /*filter*/, const Worker& /*worker*/) const {
 	// p is in object space already
-	if (!local_aabb_.intersect(p)) {
-		return 0.f;
-	}
 
 	// calculate height, relative to volume, in world space
-	const float height = world_transformation_.scale[1] * (1.f + p[1]);
+	const float height = transformation.scale[1] * (1.f + p[1]);
 
 	return a_ * math::exp(-b_ * height);
 }

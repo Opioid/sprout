@@ -99,6 +99,10 @@ void Loader::register_mesh_generator(const std::string& name,
     mesh_generators_[name] = generator;
 }
 
+std::shared_ptr<shape::Shape> Loader::box() {
+	return box_;
+}
+
 std::shared_ptr<shape::Shape> Loader::canopy() {
 	return canopy_;
 }
@@ -293,34 +297,42 @@ void Loader::load_light(const json::Value& /*light_value*/, prop::Prop* prop, Sc
 }
 
 volume::Volume* Loader::load_volume(const json::Value& volume_value, Scene& scene) {
-	std::string shape_type;
-	std::string file;
+	std::shared_ptr<shape::Shape> shape;
+	std::string behavior_type;
+	std::string behavior_file;
 	const json::Value* parameters_value = nullptr;
 
 	for (auto& n : volume_value.GetObject()) {
 		if ("shape" == n.name) {
-			shape_type = json::read_string(n.value, "type");
-			file = json::read_string(n.value, "file");
+			shape = load_shape(n.value);
+		} else if ("behavior" == n.name && n.value.IsObject()) {
+			behavior_type = json::read_string(n.value, "type");
+			behavior_file = json::read_string(n.value, "file");
 		} else if ("parameters" == n.name) {
 			parameters_value = &n.value;
 		}
 	}
 
+	if (!shape) {
+		return nullptr;
+	}
+
 	volume::Volume* volume = nullptr;
 
-	if ("Homogenous" == shape_type) {
-		volume = scene.create_homogenous_volume();
-	} else if ("Height" == shape_type) {
-		volume = scene.create_height_volume();
-	} else if (!file.empty()) {
+	if ("Homogenous" == behavior_type) {
+		volume = scene.create_homogenous_volume(shape);
+	} else if ("Height" == behavior_type) {
+		volume = scene.create_height_volume(shape);
+	} else if (!behavior_file.empty()) {
 		memory::Variant_map options;
 		options.set("usage", image::texture::Provider::Usage::Mask);
-		auto grid = resource_manager_.load<image::texture::Texture>(file, options);
-		volume = scene.create_grid_volume(grid);
+		auto grid = resource_manager_.load<image::texture::Texture>(behavior_file, options);
+		volume = scene.create_grid_volume(shape, grid);
 	}
 
 	if (!volume) {
-		throw std::runtime_error("Cannot create shape \"" + shape_type + "\": Undefined type.");
+		throw std::runtime_error("Cannot create behavior \"" + behavior_type + "\": "
+								 "Undefined type");
 	}
 
 	if (parameters_value) {

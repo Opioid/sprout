@@ -30,8 +30,6 @@ void init(scene::Loader& loader) {
 	provider.set_scene_loader(loader);
 
 	loader.register_extension_provider("Aurora", &provider);
-
-
 }
 
 void Provider::set_scene_loader(Loader& loader) {
@@ -62,7 +60,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 
 	auto texture = std::make_shared<texture::Byte3_sRGB>(target);
 
-	volume::Volume* volume = scene.create_grid_volume(texture);
+	volume::Volume* volume = scene.create_grid_volume(scene_loader_->box(), texture);
 	//volume::Volume* volume = scene.create_height_volume();
 
 	constexpr char const* parameters =

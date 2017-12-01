@@ -113,6 +113,34 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
+bool Sphere::intersect(const Transformation& transformation, const Ray& ray,
+					   Node_stack& /*node_stack*/, float& min_t, float& max_t) const {
+	const float3 v = transformation.position - ray.origin;
+	const float b = math::dot(v, ray.direction);
+	const float radius = transformation.scale[0];
+	const float det = (b * b) - math::dot(v, v) + (radius * radius);
+
+	if (det > 0.f) {
+		const float dist = std::sqrt(det);
+		const float t0 = b - dist;
+		const float t1 = b + dist;
+
+		if (t0 > ray.min_t && t0 < ray.max_t) {
+			min_t = t0;
+			max_t = std::min(t1, ray.max_t);
+			return true;
+		}
+
+		if (t1 > ray.min_t) {
+			min_t = ray.min_t;
+			max_t = std::min(t1, ray.max_t);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool Sphere::intersect_p(const Transformation& transformation, const Ray& ray,
 						 Node_stack& /*node_stack*/) const {
 	float3 v = transformation.position - ray.origin;

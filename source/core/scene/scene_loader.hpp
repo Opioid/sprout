@@ -54,6 +54,7 @@ public:
 	void register_extension_provider(const std::string& name, entity::Extension_provider* provider);
     void register_mesh_generator(const std::string& name, shape::triangle::Generator* generator);
 
+	std::shared_ptr<shape::Shape> box();
 	std::shared_ptr<shape::Shape> canopy();
 	std::shared_ptr<shape::Shape> celestial_disk();
 
