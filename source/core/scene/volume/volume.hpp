@@ -42,10 +42,6 @@ public:
 
 	const math::AABB& aabb() const;
 
-private:
-
-//	virtual void on_set_transformation() override final;
-
 protected:
 
 	virtual void set_parameter(const std::string& name, const json::Value& value) = 0;

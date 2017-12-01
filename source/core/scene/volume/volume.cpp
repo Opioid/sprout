@@ -46,10 +46,6 @@ const math::AABB& Volume::aabb() const {
 	return aabb_;
 }
 
-//void Volume::on_set_transformation() {
-//	aabb_ = local_aabb_.transform(world_transformation_.object_to_world);
-//}
-
 float Volume::phase_schlick(const float3& w, const float3& wp, float k) {
 	const float d = 1.f - (k * math::dot(w, wp));
 	return 1.f / (4.f * math::Pi) * (1.f - k * k) / (d * d);
