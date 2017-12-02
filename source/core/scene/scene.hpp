@@ -74,8 +74,9 @@ public:
 	float3 thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 						   const Worker& worker) const;
 
-	const volume::Volume* closest_volume(scene::Ray& ray, shape::Node_stack& node_stack,
-										 float& epsilon) const;
+	const volume::Volume* closest_volume_segment(scene::Ray& ray,
+												 shape::Node_stack& node_stack,
+												 float& epsilon) const;
 
 	float tick_duration() const;
 	float simulation_time() const;

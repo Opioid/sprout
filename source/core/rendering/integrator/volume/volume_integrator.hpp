@@ -24,7 +24,7 @@ public:
 	virtual float3 transmittance(const Ray& ray, const Volume& volume, const Worker& worker) = 0;
 
 	virtual float3 li(const Ray& ray, bool primary_ray, const Volume& volume,
-					  const Worker& worker, float3& transmittance) = 0;
+					  Worker& worker, float3& transmittance) = 0;
 };
 
 class Factory {

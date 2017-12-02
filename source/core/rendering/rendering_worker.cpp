@@ -63,30 +63,51 @@ float4 Worker::surface_li(scene::Ray& ray) {
 }
 
 float3 Worker::volume_li(const scene::Ray& ray, bool primary_ray, float3& transmittance) {
+	float3 tr(1.f);
+	float3 radiance(0.f);
+
 	scene::Ray tray = ray;
 
-	float epsilon;
-	const auto volume = scene_->closest_volume(tray, node_stack_, epsilon);
+	for (;;) {
+		float epsilon;
+		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
 
-	if (!volume) {
-		transmittance = float3(1.f);
-		return float3(0.f);
+		if (!volume) {
+			break;
+		}
+
+		float3 temp;
+		radiance += tr * volume_integrator_->li(tray, primary_ray, *volume, *this, temp);
+		tr *= temp;
+
+		tray.min_t = tray.max_t + epsilon;
+		tray.max_t = ray.max_t;
 	}
 
-	return volume_integrator_->li(ray, primary_ray, *volume, *this, transmittance);
+	transmittance = tr;
+	return radiance;
 }
 
 float3 Worker::transmittance(const scene::Ray& ray) {
+	float3 transmission(1.f);
+
 	scene::Ray tray = ray;
 
-	float epsilon;
-	const auto volume = scene_->closest_volume(tray, node_stack_, epsilon);
+	for (;;) {
+		float epsilon;
+		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
 
-	if (!volume) {
-		return float3(1.f);
+		if (!volume) {
+			break;
+		}
+
+		transmission *= volume_integrator_->transmittance(tray, *volume, *this);
+
+		tray.min_t = tray.max_t + epsilon;
+		tray.max_t = ray.max_t;
 	}
 
-	return volume_integrator_->transmittance(ray, *volume, *this);
+	return transmission;
 }
 
 sampler::Sampler* Worker::sampler() {

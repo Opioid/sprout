@@ -31,32 +31,18 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 	scene::entity::Composed_transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
-	float min_t;
-	float max_t;
-	if (!volume.shape()->intersect(transformation, ray, worker.node_stack(), min_t, max_t)) {
-		return float3(1.f);
-	}
-
-	const Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
-
-	const float3 tau = volume.optical_depth(transformation, tray, settings_.step_size, rng_,
+	const float3 tau = volume.optical_depth(transformation, ray, settings_.step_size, rng_,
 											Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
 float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& volume,
-							 const Worker& worker, float3& transmittance) {
+							 Worker& worker, float3& transmittance) {
 	scene::entity::Composed_transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
-	float min_t;
-	float max_t;
-	if (!volume.shape()->intersect(transformation, ray, worker.node_stack(), min_t, max_t)) {
-		transmittance = float3(1.f);
-		return float3(0.f);
-	}
-
-	const float range = max_t - min_t;
+	float min_t = ray.min_t;
+	const float range = ray.max_t - ray.min_t;
 
 	if (range < 0.0001f) {
 		transmittance = float3(1.f);
@@ -132,7 +118,7 @@ size_t Single_scattering::num_bytes() const {
 
 float3 Single_scattering::estimate_direct_light(const float3& w, const float3& p,
 												const Transformation& transformation, float time,
-												const Volume& volume, const Worker& worker) {
+												const Volume& volume, Worker& worker) {
 	const uint32_t num_samples = settings_.light_sampling.num_samples;
 
 	float3 result(0.f);
@@ -168,7 +154,7 @@ float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 										 const float3& w, const float3& p,
 										 const Transformation& transformation,
 										 float time, uint32_t sampler_dimension,
-										 const Volume& volume, const Worker& worker) {
+										 const Volume& volume, Worker& worker) {
 	constexpr float epsilon = 5e-5f;
 
 	scene::light::Sample light_sample;
@@ -187,7 +173,8 @@ float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 		const float3 scattering = volume.scattering(transformation, p,
 													Sampler_filter::Undefined, worker);
 
-		const float3 tr = Single_scattering::transmittance(shadow_ray, volume, worker);
+//		const float3 tr = Single_scattering::transmittance(shadow_ray, volume, worker);
+		const float3 tr = worker.transmittance(shadow_ray);
 
 		const float3 l = tr * light_sample.radiance;
 

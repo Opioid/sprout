@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "scene_ray.hpp"
 #include "bvh/scene_bvh_builder.inl"
 #include "animation/animation.hpp"
 #include "animation/animation_stage.hpp"
@@ -104,9 +105,30 @@ float3 Scene::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 	return float3(opacity(ray, filter, worker));
 }
 
-const volume::Volume* Scene::closest_volume(scene::Ray& ray, shape::Node_stack& node_stack,
-											float& epsilon) const {
-	return volume_bvh_.intersect(ray, node_stack, epsilon);
+const volume::Volume* Scene::closest_volume_segment(scene::Ray& ray,
+													shape::Node_stack& node_stack,
+													float& epsilon) const {
+	const float old_min_t = ray.min_t;
+	const float old_max_t = ray.max_t;
+
+	float local_epsilon;
+	const volume::Volume* volume = volume_bvh_.intersect(ray, node_stack, local_epsilon);
+
+	if (volume) {
+		scene::entity::Composed_transformation temp;
+		const auto& transformation = volume->transformation_at(ray.time, temp);
+
+		ray.min_t = ray.max_t + local_epsilon;
+		ray.max_t = old_max_t;
+
+		if (!volume->shape()->intersect(transformation, ray, node_stack, epsilon)) {
+			// In this case we are inside the volume, or the volume is very thin.
+			ray.max_t = ray.min_t;
+			ray.min_t = old_min_t;
+		}
+	}
+
+	return volume;
 }
 
 float Scene::tick_duration() const {

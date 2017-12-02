@@ -23,34 +23,17 @@ float3 Emission::transmittance(const Ray& ray, const Volume& volume, const Worke
 	scene::entity::Composed_transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
-	float min_t;
-	float max_t;
-	if (!volume.shape()->intersect(transformation, ray, worker.node_stack(), min_t, max_t)) {
-		return float3(1.f);
-	}
-
-	const Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
-
-	const float3 tau = volume.optical_depth(transformation, tray, settings_.step_size, rng_,
+	const float3 tau = volume.optical_depth(transformation, ray, settings_.step_size, rng_,
 											Sampler_filter::Nearest, worker);
 	return math::exp(-tau);
 }
 
 float3 Emission::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
-					const Worker& worker, float3& transmittance) {
+					Worker& worker, float3& transmittance) {
 	scene::entity::Composed_transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
-	float min_t;
-	float max_t;
-	if (!volume.shape()->intersect(transformation, ray, worker.node_stack(), min_t, max_t)) {
-		transmittance = float3(1.f);
-		return float3::identity();
-	}
-
-	const Ray tray(ray.origin, ray.direction, min_t, max_t, ray.time);
-
-	const float3 emission = volume.emission(transformation, tray, settings_.step_size, rng_,
+	const float3 emission = volume.emission(transformation, ray, settings_.step_size, rng_,
 											Sampler_filter::Undefined, worker);
 
 	transmittance = float3(1.f);
