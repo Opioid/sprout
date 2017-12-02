@@ -56,10 +56,6 @@ bool Infinite_sphere::intersect(const Transformation& /*transformation*/, Ray& /
 	return false;
 }
 
-bool Infinite_sphere::intersect(const Transformation& /*transformation*/, const Ray& /*ray*/,
-								Node_stack& /*node_stack*/, float& /*min*/, float& /*max*/) const {
-	return false;
-}
 
 bool Infinite_sphere::intersect_p(const Transformation& /*transformation*/,
 								  const Ray& /*ray*/, Node_stack& /*node_stack*/) const {

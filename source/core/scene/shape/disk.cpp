@@ -68,11 +68,6 @@ bool Disk::intersect(const Transformation& /*transformation*/, Ray& /*ray*/,
 	return false;
 }
 
-bool Disk::intersect(const Transformation& /*transformation*/, const Ray& /*ray*/,
-					 Node_stack& /*node_stack*/, float& /*min*/, float& /*max*/) const {
-	return false;
-}
-
 bool Disk::intersect_p(const Transformation& transformation,
 					   const Ray& ray, Node_stack& /*node_stack*/) const {
 	const float3& normal = transformation.rotation.r[2];

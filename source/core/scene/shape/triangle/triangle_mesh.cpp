@@ -140,11 +140,6 @@ bool Mesh::intersect(const Transformation& /*transformation*/, Ray& /*ray*/,
 	return false;
 }
 
-bool Mesh::intersect(const Transformation& /*transformation*/, const Ray& /*ray*/,
-					 Node_stack& /*node_stack*/, float& /*min*/, float& /*max*/) const {
-	return false;
-}
-
 bool Mesh::intersect_p(const Transformation& transformation, const Ray& ray,
 					   Node_stack& node_stack) const {
 //	math::Ray tray;
