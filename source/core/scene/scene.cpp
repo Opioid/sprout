@@ -79,16 +79,15 @@ const math::AABB& Scene::aabb() const {
 	return prop_bvh_.aabb();
 }
 
-bool Scene::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-					  prop::Intersection& intersection) const {
+bool Scene::intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const {
 	return prop_bvh_.intersect(ray, node_stack, intersection);
 }
 
-bool Scene::intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const {
+bool Scene::intersect_p(const Ray& ray, Node_stack& node_stack) const {
 	return prop_bvh_.intersect_p(ray, node_stack);
 }
 
-float Scene::opacity(const scene::Ray& ray, Sampler_filter filter, const Worker& worker) const {
+float Scene::opacity(const Ray& ray, Sampler_filter filter, const Worker& worker) const {
 	if (has_masked_material_) {
 		return prop_bvh_.opacity(ray, filter, worker);
 	}
@@ -96,8 +95,7 @@ float Scene::opacity(const scene::Ray& ray, Sampler_filter filter, const Worker&
 	return prop_bvh_.intersect_p(ray, worker.node_stack()) ? 1.f : 0.f;
 }
 
-float3 Scene::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
-							  const Worker& worker) const {
+float3 Scene::thin_absorption(const Ray& ray, Sampler_filter filter, const Worker& worker) const {
 	if (has_tinted_shadow_) {
 		return prop_bvh_.thin_absorption(ray, filter, worker);
 	}
@@ -105,8 +103,7 @@ float3 Scene::thin_absorption(const scene::Ray& ray, Sampler_filter filter,
 	return float3(opacity(ray, filter, worker));
 }
 
-const volume::Volume* Scene::closest_volume_segment(scene::Ray& ray,
-													shape::Node_stack& node_stack,
+const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_stack,
 													float& epsilon) const {
 	const float old_min_t = ray.min_t;
 	const float old_max_t = ray.max_t;
@@ -115,7 +112,7 @@ const volume::Volume* Scene::closest_volume_segment(scene::Ray& ray,
 	const volume::Volume* volume = volume_bvh_.intersect(ray, node_stack, local_epsilon);
 
 	if (volume) {
-		scene::entity::Composed_transformation temp;
+		entity::Composed_transformation temp;
 		const auto& transformation = volume->transformation_at(ray.time, temp);
 
 		ray.min_t = ray.max_t + local_epsilon;
@@ -318,8 +315,7 @@ entity::Dummy* Scene::create_dummy(const std::string& name) {
 	return dummy;
 }
 
-prop::Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
-							   const material::Materials& materials) {
+prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials& materials) {
 	prop::Prop* prop = new prop::Prop;
 
 	if (shape->is_finite()) {
@@ -335,8 +331,7 @@ prop::Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
 	return prop;
 }
 
-prop::Prop* Scene::create_prop(const std::shared_ptr<shape::Shape>& shape,
-							   const material::Materials& materials,
+prop::Prop* Scene::create_prop(const Shape_ptr& shape, const material::Materials& materials,
 							   const std::string& name) {
 	prop::Prop* prop = create_prop(shape, materials);
 
@@ -365,7 +360,7 @@ light::Prop_image_light* Scene::create_prop_image_light(prop::Prop* prop, uint32
 	return light;
 }
 
-volume::Volume* Scene::create_height_volume(const std::shared_ptr<shape::Shape>& shape) {
+volume::Volume* Scene::create_height_volume(const Shape_ptr& shape) {
 	volume::Volume* volume = new volume::Height;
 
 	volume->set_shape(shape);
@@ -376,7 +371,7 @@ volume::Volume* Scene::create_height_volume(const std::shared_ptr<shape::Shape>&
 	return volume;
 }
 
-volume::Volume* Scene::create_homogenous_volume(const std::shared_ptr<shape::Shape>& shape) {
+volume::Volume* Scene::create_homogenous_volume(const Shape_ptr& shape) {
 	volume::Volume* volume = new volume::Homogeneous;
 
 	volume->set_shape(shape);
@@ -387,8 +382,7 @@ volume::Volume* Scene::create_homogenous_volume(const std::shared_ptr<shape::Sha
 	return volume;
 }
 
-volume::Volume* Scene::create_grid_volume(const std::shared_ptr<shape::Shape>& shape,
-										  const Texture_ptr& grid) {
+volume::Volume* Scene::create_grid_volume(const Shape_ptr& shape, const Texture_ptr& grid) {
 	volume::Volume* volume;
 
 	if (3 == grid->num_channels()) {

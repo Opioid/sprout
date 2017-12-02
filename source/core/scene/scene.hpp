@@ -55,7 +55,9 @@ class Scene {
 
 public:
 
+	using Node_stack = shape::Node_stack;
 	using Sampler_filter = material::Sampler_settings::Filter;
+	using Shape_ptr = std::shared_ptr<shape::Shape>;
 
 	Scene();
 	~Scene();
@@ -64,18 +66,15 @@ public:
 
 	const math::AABB& aabb() const;
 
-	bool intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-				   prop::Intersection& intersection) const;
+	bool intersect(Ray& ray, Node_stack& node_stack, prop::Intersection& intersection) const;
 
-	bool intersect_p(const scene::Ray& ray, shape::Node_stack& node_stack) const;
+	bool intersect_p(const Ray& ray, Node_stack& node_stack) const;
 
-	float opacity(const scene::Ray& ray, Sampler_filter filter, const Worker& worker) const;
+	float opacity(const Ray& ray, Sampler_filter filter, const Worker& worker) const;
 
-	float3 thin_absorption(const scene::Ray& ray, Sampler_filter filter,
-						   const Worker& worker) const;
+	float3 thin_absorption(const Ray& ray, Sampler_filter filter, const Worker& worker) const;
 
-	const volume::Volume* closest_volume_segment(scene::Ray& ray,
-												 shape::Node_stack& node_stack,
+	const volume::Volume* closest_volume_segment(Ray& ray, Node_stack& node_stack,
 												 float& epsilon) const;
 
 	float tick_duration() const;
@@ -100,20 +99,17 @@ public:
 	entity::Dummy* create_dummy();
 	entity::Dummy* create_dummy(const std::string& name);
 
-	prop::Prop* create_prop(const std::shared_ptr<shape::Shape>& shape,
-							const material::Materials& materials);
+	prop::Prop* create_prop(const Shape_ptr& shape, const material::Materials& materials);
 
-	prop::Prop* create_prop(const std::shared_ptr<shape::Shape>& shape,
-							const material::Materials& materials,
+	prop::Prop* create_prop(const Shape_ptr& shape, const material::Materials& materials,
 							const std::string& name);
 
 	light::Prop_light* create_prop_light(prop::Prop* prop, uint32_t part);
 	light::Prop_image_light* create_prop_image_light(prop::Prop* prop, uint32_t part);
 
-	volume::Volume* create_height_volume(const std::shared_ptr<shape::Shape>& shape);
-	volume::Volume* create_homogenous_volume(const std::shared_ptr<shape::Shape>& shape);
-	volume::Volume* create_grid_volume(const std::shared_ptr<shape::Shape>& shape,
-									   const Texture_ptr& grid);
+	volume::Volume* create_height_volume(const Shape_ptr& shape);
+	volume::Volume* create_homogenous_volume(const Shape_ptr& shape);
+	volume::Volume* create_grid_volume(const Shape_ptr& shape, const Texture_ptr& grid);
 
 	void add_extension(entity::Entity* extension);
 	void add_extension(entity::Entity* extension, const std::string& name);
