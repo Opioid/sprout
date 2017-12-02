@@ -12,7 +12,7 @@ namespace scene::material { class Sample; }
 
 namespace rendering::integrator::surface {
 
-class alignas(64) Pathtracer_DL : public Integrator {
+class alignas(64) Pathtracer_DL final : public Integrator {
 
 public:
 
@@ -50,7 +50,7 @@ private:
 	transmittance::Closed transmittance_;
 };
 
-class Pathtracer_DL_factory : public Factory {
+class Pathtracer_DL_factory final : public Factory {
 
 public:
 

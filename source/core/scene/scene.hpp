@@ -7,6 +7,7 @@
 #include "bvh/scene_bvh_builder.hpp"
 #include "prop/prop_bvh_wrapper.hpp"
 #include "volume/volume_bvh_wrapper.hpp"
+#include "take/take_settings.hpp"
 #include "base/math/distribution/distribution_1d.hpp"
 #include <map>
 #include <vector>
@@ -17,6 +18,13 @@ namespace thread { class Pool; }
 namespace scene {
 
 namespace shape { class Shape; }
+
+namespace animation {
+
+class Animation;
+class Stage;
+
+}
 
 namespace entity {
 
@@ -30,13 +38,6 @@ namespace light {
 class Light;
 class Prop_light;
 class Prop_image_light;
-
-}
-
-namespace animation {
-
-class Animation;
-class Stage;
 
 }
 
@@ -59,7 +60,7 @@ public:
 	using Sampler_filter = material::Sampler_settings::Filter;
 	using Shape_ptr = std::shared_ptr<shape::Shape>;
 
-	Scene();
+	Scene(const take::Settings& settings);
 	~Scene();
 
 	void finish();
@@ -124,6 +125,8 @@ public:
 private:
 
 	void add_named_entity(entity::Entity* entity, const std::string& name);
+
+	const take::Settings take_settings_;
 
 	double tick_duration_ = 1.0 / 60.0;
 	double simulation_time_ = 0.0;

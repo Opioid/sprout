@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATROR_SURFACE_SUB_BRUTEFORCE_HPP
+#define SU_CORE_RENDERING_INTEGRATROR_SURFACE_SUB_BRUTEFORCE_HPP
 
 #include "sub_integrator.hpp"
 #include "sampler/sampler_random.hpp"
@@ -13,7 +14,7 @@ class Prop;
 
 namespace rendering::integrator::surface::sub {
 
-class alignas(64) Bruteforce : public Integrator {
+class alignas(64) Bruteforce final : public Integrator {
 
 public:
 
@@ -40,7 +41,7 @@ private:
 	sampler::Random sampler_;
 };
 
-class Bruteforce_factory : public Factory {
+class Bruteforce_factory final : public Factory {
 
 public:
 
@@ -59,3 +60,5 @@ private:
 };
 
 }
+
+#endif

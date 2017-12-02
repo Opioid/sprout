@@ -19,7 +19,7 @@ namespace rendering::integrator::surface {
 
 namespace sub { class Integrator; class Factory; }
 
-class alignas(64) Pathtracer_MIS : public Integrator {
+class alignas(64) Pathtracer_MIS final : public Integrator {
 
 public:
 
@@ -85,15 +85,14 @@ private:
 	transmittance::Closed transmittance_closed_;
 };
 
-class Pathtracer_MIS_factory : public Factory {
+class Pathtracer_MIS_factory final : public Factory {
 
 public:
 
 	Pathtracer_MIS_factory(const take::Settings& take_settings, uint32_t num_integrators,
 						   std::unique_ptr<sub::Factory> sub_factory,
 						   uint32_t min_bounces, uint32_t max_bounces,
-						   float path_termination_probability,
-						   Light_sampling light_sampling,
+						   float path_termination_probability, Light_sampling light_sampling,
 						   bool enable_caustics);
 
 	~Pathtracer_MIS_factory();

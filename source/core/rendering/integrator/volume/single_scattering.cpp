@@ -12,7 +12,7 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
-namespace rendering { namespace integrator { namespace volume {
+namespace rendering::integrator::volume {
 
 Single_scattering::Single_scattering(rnd::Generator& rng, const take::Settings& take_settings,
 									 const Settings& settings) :
@@ -38,16 +38,16 @@ float3 Single_scattering::transmittance(const Ray& ray, const Volume& volume,
 
 float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& volume,
 							 Worker& worker, float3& transmittance) {
-	scene::entity::Composed_transformation temp;
-	const auto& transformation = volume.transformation_at(ray.time, temp);
-
 	float min_t = ray.min_t;
-	const float range = ray.max_t - ray.min_t;
+	const float range = ray.max_t - min_t;
 
-	if (range < 0.0001f) {
+	if (range < 0.0005f) {
 		transmittance = float3(1.f);
 		return float3(0.f);
 	}
+
+	Transformation temp;
+	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const uint32_t max_samples = static_cast<uint32_t>(std::ceil(range / settings_.step_size));
 	const uint32_t num_samples = primary_ray ? max_samples : 1;
@@ -84,8 +84,8 @@ float3 Single_scattering::li(const Ray& ray, bool primary_ray, const Volume& vol
 		previous = current;
 		current  = ray.point(min_t);
 
-		const float3 tau = volume.optical_depth(transformation, tau_ray, settings_.step_size, rng_,
-												Sampler_filter::Undefined, worker);
+		const float3 tau = volume.optical_depth(transformation, tau_ray, settings_.step_size,
+												rng_, Sampler_filter::Undefined, worker);
 		tr *= math::exp(-tau);
 
 		tau_ray.origin = previous;
@@ -158,20 +158,19 @@ float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 	constexpr float epsilon = 5e-5f;
 
 	scene::light::Sample light_sample;
-	if (!light.sample(p, time, sampler_, sampler_dimension, Sampler_filter::Nearest,
-					  worker, light_sample)) {
+	if (!light.sample(p, time, sampler_, sampler_dimension,
+					  Sampler_filter::Nearest, worker, light_sample)) {
 		return float3::identity();
 	}
 
-	const Ray shadow_ray(p, light_sample.shape.wi, 0.f,
-						 light_sample.shape.t - epsilon, time);
+	const Ray shadow_ray(p, light_sample.shape.wi, 0.f, light_sample.shape.t - epsilon, time);
 
 	const float3 tv = worker.tinted_visibility(shadow_ray, Sampler_filter::Nearest);
 	if (math::any_greater_zero(tv)) {
 		const float phase = volume.phase(w, -light_sample.shape.wi);
 
-		const float3 scattering = volume.scattering(transformation, p,
-													Sampler_filter::Undefined, worker);
+		const float3 scattering = volume.scattering(transformation, p, Sampler_filter::Undefined,
+													worker);
 
 //		const float3 tr = Single_scattering::transmittance(shadow_ray, volume, worker);
 		const float3 tr = worker.transmittance(shadow_ray);
@@ -185,8 +184,7 @@ float3 Single_scattering::evaluate_light(const Light& light, float light_weight,
 }
 
 Single_scattering_factory::Single_scattering_factory(const take::Settings& take_settings,
-													 uint32_t num_integrators,
-													 float step_size,
+													 uint32_t num_integrators, float step_size,
 													 Light_sampling light_sampling) :
 	Factory(take_settings, num_integrators),
 	integrators_(memory::allocate_aligned<Single_scattering>(num_integrators)),
@@ -200,4 +198,4 @@ Integrator* Single_scattering_factory::create(uint32_t id, rnd::Generator& rng) 
 	return new(&integrators_[id]) Single_scattering(rng, take_settings_, settings_);
 }
 
-}}}
+}

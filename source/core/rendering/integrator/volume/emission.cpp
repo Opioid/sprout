@@ -20,7 +20,7 @@ void Emission::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_per
 void Emission::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Emission::transmittance(const Ray& ray, const Volume& volume, const Worker& worker) {
-	scene::entity::Composed_transformation temp;
+	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const float3 tau = volume.optical_depth(transformation, ray, settings_.step_size, rng_,
@@ -30,7 +30,7 @@ float3 Emission::transmittance(const Ray& ray, const Volume& volume, const Worke
 
 float3 Emission::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
 					Worker& worker, float3& transmittance) {
-	scene::entity::Composed_transformation temp;
+	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const float3 emission = volume.emission(transformation, ray, settings_.step_size, rng_,

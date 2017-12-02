@@ -24,7 +24,7 @@
 
 namespace scene {
 
-Scene::Scene() {
+Scene::Scene(const take::Settings& settings) : take_settings_(settings) {
 	dummies_.reserve(16);
 	finite_props_.reserve(16);
 	infinite_props_.reserve(16);
@@ -115,7 +115,7 @@ const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_s
 		entity::Composed_transformation temp;
 		const auto& transformation = volume->transformation_at(ray.time, temp);
 
-		ray.min_t = ray.max_t + local_epsilon;
+		ray.min_t = ray.max_t + (local_epsilon * take_settings_.ray_offset_factor);
 		ray.max_t = old_max_t;
 
 		if (!volume->shape()->intersect(transformation, ray, node_stack, epsilon)) {
@@ -223,8 +223,6 @@ float Scene::seek(float time, thread::Pool& thread_pool) {
 	const double time_d = static_cast<double>(time);
 
 	const double tick_offset_d = time_d - std::floor(time_d / tick_duration_) * tick_duration_;
-
-//	float tick_offset =  static_cast<float>(tick_offset_d);// time - std::floor(time / tick_duration_) * tick_duration_;
 
 	const double first_tick_d = time_d - tick_offset_d;
 

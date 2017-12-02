@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATOR_SURFACE_SURFACE_HPP
+#define SU_CORE_RENDERING_INTEGRATOR_SURFACE_SURFACE_HPP
 
 #include "surface_integrator.hpp"
 #include "sampler/sampler_golden_ratio.hpp"
@@ -8,7 +9,7 @@ namespace scene::material { class Sample; }
 
 namespace rendering::integrator::surface {
 
-class alignas(64) Whitted : public Integrator {
+class alignas(64) Whitted final : public Integrator {
 
 public:
 
@@ -39,7 +40,7 @@ private:
 	sampler::Random sampler_;
 };
 
-class Whitted_factory : public Factory {
+class Whitted_factory final : public Factory {
 
 public:
 
@@ -58,3 +59,5 @@ private:
 };
 
 }
+
+#endif

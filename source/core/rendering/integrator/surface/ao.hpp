@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SU_CORE_RENDERING_INTEGRATRO_SURFACE_AO_HPP
+#define SU_CORE_RENDERING_INTEGRATRO_SURFACE_AO_HPP
 
 #include "surface_integrator.hpp"
 #include "sampler/sampler_ems.hpp"
@@ -11,7 +12,7 @@
 
 namespace rendering::integrator::surface {
 
-class alignas(64) AO : public Integrator {
+class alignas(64) AO final : public Integrator {
 
 public:
 
@@ -38,7 +39,7 @@ private:
 	sampler::Golden_ratio sampler_;
 };
 
-class AO_factory : public Factory {
+class AO_factory final : public Factory {
 
 public:
 
@@ -57,3 +58,5 @@ private:
 };
 
 }
+
+#endif

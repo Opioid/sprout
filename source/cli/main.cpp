@@ -154,13 +154,12 @@ int main(int argc, char* argv[]) {
 	procedural::mesh::init(scene_loader);
 	procedural::sky::init(scene_loader, material_provider);
 
-	scene::Scene scene;
+	scene::Scene scene(take->settings);
 
 	if (scene_loader.load(take->scene_filename, take_name, scene)) {
 		if (take->camera_animation && take->view.camera) {
 			scene.add_animation(take->camera_animation);
-			scene.create_animation_stage(take->view.camera.get(),
-										 take->camera_animation.get());
+			scene.create_animation_stage(take->view.camera.get(), take->camera_animation.get());
 		}
 	} else {
 		return 1;

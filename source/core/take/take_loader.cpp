@@ -130,7 +130,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 		auto sub_factory = std::make_unique<
 			surface::sub::Single_scattering_factory>(take->settings, num_threads, step_size);
 
-		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
+		const Light_sampling light_sampling { Light_sampling::Strategy::Single, 1 };
 		const uint32_t min_bounces = 4;
 		const uint32_t max_bounces = 8;
 		const float path_termination_probability = 0.9f;
@@ -146,7 +146,7 @@ std::unique_ptr<Take> Loader::load(std::istream& stream, resource::Manager& mana
 	}
 
 	if (!take->volume_integrator_factory) {
-		const Light_sampling light_sampling{Light_sampling::Strategy::Single, 1};
+		const Light_sampling light_sampling { Light_sampling::Strategy::Single, 1 };
 		take->volume_integrator_factory = std::make_shared<
 			volume::Single_scattering_factory>(take->settings, num_threads,
 											   1.f, light_sampling);

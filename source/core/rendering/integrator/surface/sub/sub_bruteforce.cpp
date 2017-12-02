@@ -12,8 +12,6 @@
 #include "base/memory/align.hpp"
 #include "base/random/generator.inl"
 
-#include <iostream>
-
 namespace rendering::integrator::surface::sub {
 
 Bruteforce::Bruteforce(rnd::Generator& rng, const take::Settings& take_settings,

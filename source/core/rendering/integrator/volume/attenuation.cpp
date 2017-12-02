@@ -18,7 +18,7 @@ void Attenuation::prepare(const scene::Scene& /*scene*/, uint32_t /*num_samples_
 void Attenuation::resume_pixel(uint32_t /*sample*/, rnd::Generator& /*scramble*/) {}
 
 float3 Attenuation::transmittance(const Ray& ray, const Volume& volume, const Worker& worker) {
-	scene::entity::Composed_transformation temp;
+	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const float3 tau = volume.optical_depth(transformation, ray, 1.f, rng_,
@@ -28,7 +28,7 @@ float3 Attenuation::transmittance(const Ray& ray, const Volume& volume, const Wo
 
 float3 Attenuation::li(const Ray& ray, bool /*primary_ray*/, const Volume& volume,
 					   Worker& worker, float3& transmittance) {
-	scene::entity::Composed_transformation temp;
+	Transformation temp;
 	const auto& transformation = volume.transformation_at(ray.time, temp);
 
 	const float3 tau = volume.optical_depth(transformation, ray, 1.f, rng_,
