@@ -62,7 +62,7 @@ bool Rectangle::intersect(const Transformation& transformation, Ray& ray,
 }
 
 bool Rectangle::intersect(const Transformation& /*transformation*/, Ray& /*ray*/,
-						  Node_stack& /*node_stack*/, float& /*epsilon*/) const {
+						  Node_stack& /*node_stack*/, float& /*epsilon*/, bool& /*inside*/) const {
 	return false;
 }
 

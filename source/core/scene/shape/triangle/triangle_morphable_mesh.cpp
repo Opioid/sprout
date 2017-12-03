@@ -78,8 +78,9 @@ bool Morphable_mesh::intersect(const Transformation& transformation, Ray& ray,
 	return false;
 }
 
-bool Morphable_mesh::intersect(const Transformation& /*transformation*/, Ray& /*ray*/,
-							   Node_stack& /*node_stack*/, float& /*epsilon*/) const {
+bool Morphable_mesh::intersect(const Transformation& /*transformation*/,
+							   Ray& /*ray*/, Node_stack& /*node_stack*/,
+							   float& /*epsilon*/, bool& /*inside*/) const {
 	return false;
 }
 

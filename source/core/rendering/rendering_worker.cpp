@@ -68,7 +68,7 @@ float3 Worker::volume_li(const scene::Ray& ray, bool primary_ray, float3& transm
 
 	scene::Ray tray = ray;
 
-	for (;;) {
+	for (; tray.min_t < ray.max_t;) {
 		float epsilon;
 		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
 
@@ -93,7 +93,7 @@ float3 Worker::transmittance(const scene::Ray& ray) {
 
 	scene::Ray tray = ray;
 
-	for (;;) {
+	for (; tray.min_t < ray.max_t;) {
 		float epsilon;
 		const auto volume = scene_->closest_volume_segment(tray, node_stack_, epsilon);
 

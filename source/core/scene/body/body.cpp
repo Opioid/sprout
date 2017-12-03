@@ -50,7 +50,7 @@ bool Body::intersect(Ray& ray, shape::Node_stack& node_stack,
 	return shape_->intersect(transformation, ray, node_stack, intersection);
 }
 
-bool Body::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) const {
+bool Body::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon, bool& inside) const {
 	if (!visible(ray.depth)) {
 		return false;
 	}
@@ -62,7 +62,7 @@ bool Body::intersect(Ray& ray, shape::Node_stack& node_stack, float& epsilon) co
 	entity::Composed_transformation temp;
 	const auto& transformation = transformation_at(ray.time, temp);
 
-	return shape_->intersect(transformation, ray, node_stack, epsilon);
+	return shape_->intersect(transformation, ray, node_stack, epsilon, inside);
 }
 
 bool Body::intersect_p(const Ray& ray, shape::Node_stack& node_stack) const {

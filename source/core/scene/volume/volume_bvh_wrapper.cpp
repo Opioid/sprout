@@ -17,7 +17,7 @@ const math::AABB& BVH_wrapper::aabb() const {
 }
 
 const Volume* BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_stack,
-									 float& epsilon) const {
+									 float& epsilon, bool& inside) const {
 	const Volume* volume = nullptr;
 
 	node_stack.clear();
@@ -54,7 +54,7 @@ const Volume* BVH_wrapper::intersect(scene::Ray& ray, shape::Node_stack& node_st
 
 			for (uint32_t i = node.indices_start(), len = node.indices_end(); i < len; ++i) {
 				const auto v = volumes[i];
-				if (v->intersect(ray, node_stack, epsilon)) {
+				if (v->intersect(ray, node_stack, epsilon, inside)) {
 					volume = v;
 				}
 			}

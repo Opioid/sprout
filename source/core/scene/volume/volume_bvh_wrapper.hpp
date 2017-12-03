@@ -22,7 +22,8 @@ public:
 
 	const math::AABB& aabb() const;
 
-	const Volume* intersect(scene::Ray& ray, shape::Node_stack& node_stack, float& epsilon) const;
+	const Volume* intersect(scene::Ray& ray, shape::Node_stack& node_stack,
+							float& epsilon, bool& inside) const;
 
 private:
 

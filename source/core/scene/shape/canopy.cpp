@@ -56,7 +56,7 @@ bool Canopy::intersect(const Transformation& transformation, Ray& ray,
 }
 
 bool Canopy::intersect(const Transformation& /*transformation*/, Ray& /*ray*/,
-					   Node_stack& /*node_stack*/, float& /*epsilon*/) const {
+					   Node_stack& /*node_stack*/, float& /*epsilon*/, bool& /*inside*/) const {
 	return false;
 }
 

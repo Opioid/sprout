@@ -114,7 +114,7 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 }
 
 bool Sphere::intersect(const Transformation& transformation, Ray& ray,
-					   Node_stack& /*node_stack*/, float& epsilon) const {
+					   Node_stack& /*node_stack*/, float& epsilon, bool& inside) const {
 	const float3 v = transformation.position - ray.origin;
 	const float b = math::dot(v, ray.direction);
 	const float radius = transformation.scale[0];
@@ -127,7 +127,7 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 		if (t0 > ray.min_t && t0 < ray.max_t) {
 			ray.max_t = t0;
 			epsilon = 5e-4f * t0;
-
+			inside = false;
 			return true;
 		}
 
@@ -136,6 +136,7 @@ bool Sphere::intersect(const Transformation& transformation, Ray& ray,
 		if (t1 > ray.min_t && t1 < ray.max_t) {
 			ray.max_t = t1;
 			epsilon = 5e-4f * t1;
+			inside = true;
 			return true;
 		}
 	}

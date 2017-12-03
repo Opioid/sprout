@@ -261,7 +261,7 @@ inline bool AABB::intersect_p(const Ray& ray, float& min_out, float& max_out) co
 				 _mm_comige_ss(max_t, min_t));
 }
 
-inline bool AABB::intersect_p(const Ray& ray, float& hit_t) const {
+inline bool AABB::intersect_p(const Ray& ray, float& hit_t, bool& inside) const {
 	Vector ray_origin		 = simd::load_float4(ray.origin.v);
 	Vector ray_inv_direction = simd::load_float4(ray.inv_direction.v);
 	Vector ray_min_t		 = simd::load_float(&ray.min_t);
@@ -298,8 +298,10 @@ inline bool AABB::intersect_p(const Ray& ray, float& hit_t) const {
 
 	if (min_out < ray.min_t) {
 		hit_t = max_out;
+		inside = true;
 	} else {
 		hit_t = min_out;
+		inside = false;
 	}
 
 	if (hit_t > ray.max_t) {
