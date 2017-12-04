@@ -115,7 +115,7 @@ bool Box::intersect(const Transformation& transformation, Ray& ray,
 	float hit_t;
 	if (math::AABB(float3(-1.f), float3(1.f)).intersect_p(tray, hit_t, inside)) {
 		ray.max_t = hit_t;
-		epsilon = 1e-5f * hit_t;
+		epsilon = 3e-5f * hit_t;
 		return true;
 	}
 
