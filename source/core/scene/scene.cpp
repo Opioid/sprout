@@ -114,32 +114,39 @@ const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_s
 	bool inside;
 	const volume::Volume* volume = volume_bvh_.intersect(ray, node_stack, local_epsilon, inside);
 
-	if (volume) {
-		if (inside) {
-			if (ray.max_t > original_max_t) {
-				ray.max_t = original_max_t;
-			}
+	if (!volume) {
+		return nullptr;
+	}
 
-			epsilon = local_epsilon;
-			return volume;
-		} else if (ray.max_t > original_max_t) {
-			return nullptr;
-		}
-
-		entity::Composed_transformation temp;
-		const auto& transformation = volume->transformation_at(ray.time, temp);
-
-		ray.min_t = ray.max_t + (local_epsilon * take_settings_.ray_offset_factor);
-		ray.max_t = Ray_max_t;
-
-		if (!volume->shape()->intersect(transformation, ray, node_stack, epsilon, inside)) {
-			// In this case the volume is very thin at this position
-			return nullptr;
-		}
-
+	if (inside) {
 		if (ray.max_t > original_max_t) {
 			ray.max_t = original_max_t;
 		}
+
+		epsilon = local_epsilon;
+		return volume;
+	} else if (ray.max_t > original_max_t) {
+		return nullptr;
+	}
+
+	entity::Composed_transformation temp;
+	const auto& transformation = volume->transformation_at(ray.time, temp);
+
+	const float next = ray.max_t + (local_epsilon * take_settings_.ray_offset_factor);
+
+	if (next > original_max_t) {
+		return nullptr;
+	}
+
+	ray.min_t = next;
+	ray.max_t = Ray_max_t;
+
+	if (!volume->shape()->intersect(transformation, ray, node_stack, epsilon, inside)) {
+		return nullptr;
+	}
+
+	if (ray.max_t > original_max_t) {
+		ray.max_t = original_max_t;
 	}
 
 	return volume;
