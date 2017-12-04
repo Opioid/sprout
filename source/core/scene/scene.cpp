@@ -125,7 +125,7 @@ const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_s
 
 		epsilon = local_epsilon;
 		return volume;
-	} else if (ray.max_t > original_max_t) {
+	} else if (ray.max_t >= original_max_t) {
 		return nullptr;
 	}
 
@@ -134,7 +134,7 @@ const volume::Volume* Scene::closest_volume_segment(Ray& ray, Node_stack& node_s
 
 	const float next = ray.max_t + (local_epsilon * take_settings_.ray_offset_factor);
 
-	if (next > original_max_t) {
+	if (next >= original_max_t) {
 		return nullptr;
 	}
 
