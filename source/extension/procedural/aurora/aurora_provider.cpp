@@ -48,7 +48,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 //	const int3 dimensions(3200, 320, 256);
 
 //	const int3 dimensions(1600, 160, 128);
-	const int3 dimensions(800, 80, 64);
+	const int3 dimensions(1000, 80, 64);
 
 //	const int3 dimensions(320, 32, 16);
 
@@ -71,7 +71,7 @@ entity::Entity* Provider::create_extension(const json::Value& extension_value,
 	math::Transformation transformation {
 		float3::identity(),
 	//	float3(1000000.f, 100000.f, 50000.f),
-		float3(1000000.f, 100000.f, 80000.f),
+		float3(1250000.f, 100000.f, 80000.f),
 	//	float3(10.f, 1.f, 1.f),
 		math::quaternion::identity()
 	};
